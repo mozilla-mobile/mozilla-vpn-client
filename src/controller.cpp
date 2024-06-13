@@ -230,7 +230,7 @@ void Controller::quit() {
 
   if (m_state == StateOn || m_state == StateOnPartial ||
       m_state == StateSwitching || m_state == StateSilentSwitching ||
-      m_state == StateConnecting || m_state == StateCheckSubscription) {
+      m_state == StateConnecting) {
     deactivate();
     return;
   }
@@ -308,7 +308,7 @@ void Controller::serverUnavailable() {
   m_nextStep = ServerUnavailable;
 
   if (m_state == StateSwitching || m_state == StateConnecting ||
-      m_state == StateConfirming || m_state == StateCheckSubscription) {
+      m_state == StateConfirming) {
     logger.info() << "Server location is unavailable and we are not in "
                      "StateOn. Deactivate!";
     deactivate();
@@ -957,8 +957,7 @@ void Controller::backendFailure() {
 
   if (m_state == StateOn || m_state == StateOnPartial ||
       m_state == StateSwitching || m_state == StateSilentSwitching ||
-      m_state == StateConnecting || m_state == StateCheckSubscription ||
-      m_state == StateConfirming) {
+      m_state == StateConnecting || m_state == StateConfirming) {
     deactivate();
     return;
   }
@@ -1020,12 +1019,6 @@ bool Controller::activate(const ServerData& serverData,
         m_isDeviceConnected = true;
         emit isDeviceConnectedChanged();
       }
-    }
-
-    // Before attempting to enable VPN connection we should check that the
-    // subscription is active.
-    if (initiator != ExtensionUser) {
-      setState(StateCheckSubscription);
     }
 
     // Set up a network request to check the subscription status.
@@ -1099,8 +1092,7 @@ bool Controller::deactivate(ActivationPrincipal user) {
 
   if (m_state != StateOn && m_state != StateOnPartial &&
       m_state != StateSwitching && m_state != StateSilentSwitching &&
-      m_state != StateConfirming && m_state != StateConnecting &&
-      m_state != StateCheckSubscription) {
+      m_state != StateConfirming && m_state != StateConnecting) {
     logger.warning() << "Already disconnected";
     return false;
   }
@@ -1117,8 +1109,7 @@ bool Controller::deactivate(ActivationPrincipal user) {
   }
 
   if (m_state == StateOn || m_state == StateOnPartial ||
-      m_state == StateConfirming || m_state == StateConnecting ||
-      m_state == StateCheckSubscription) {
+      m_state == StateConfirming || m_state == StateConnecting) {
     setState(StateDisconnecting);
   }
 

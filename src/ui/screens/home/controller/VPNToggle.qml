@@ -90,8 +90,7 @@ MZButtonBase {
         },
         State {
             name: "stateConnecting"
-            when: (VPNController.state === VPNController.StateConnecting ||
-                   VPNController.state === VPNController.StateCheckSubscription)
+            when: (VPNController.state === VPNController.StateConnecting)
 
             PropertyChanges {
                 target: cursor

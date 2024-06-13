@@ -31,7 +31,6 @@ class Controller : public QObject, public LogSerializer {
   enum State {
     StateInitializing,
     StateOff,
-    StateCheckSubscription,
     StateConnecting,
     StateConfirming,
     StateOn,

@@ -185,8 +185,6 @@ void SystemTrayNotificationHandler::updateContextMenu() {
       [[fallthrough]];
     case Controller::StateConnecting:
       [[fallthrough]];
-    case Controller::StateCheckSubscription:
-      [[fallthrough]];
     case Controller::StateConfirming:
       statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectingTo);
       break;
