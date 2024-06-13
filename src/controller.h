@@ -48,8 +48,8 @@ class Controller : public QObject, public LogSerializer {
     ReasonConfirming,
   };
   /**
-   * @brief Who asked the Connection 
-   * to be Iniated? A Webextension 
+   * @brief Who asked the Connection
+   * to be Iniated? A Webextension
    * or a User Interaction inside the Client?
    */
   enum ActivationPrincipal {
@@ -230,7 +230,7 @@ class Controller : public QObject, public LogSerializer {
   QDateTime m_connectedTimeInUTC;
 
   State m_state = StateInitializing;
-  ActivationPrincipal m_iniator = Null;
+  ActivationPrincipal m_initiator = Null;
   bool m_enableDisconnectInConfirming = false;
   QList<InterfaceConfig> m_activationQueue;
   int m_connectionRetry = 0;

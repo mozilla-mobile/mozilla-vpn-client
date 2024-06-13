@@ -281,10 +281,10 @@ void Controller::handshakeTimeout() {
     logger.info() << "Connection Attempt: Using Port 53 Option this time.";
     // On the first retry, opportunisticly try again using the port 53
     // option enabled, if that feature is disabled.
-    activateInternal(ForceDNSPort, RandomizeServerSelection, m_iniator);
+    activateInternal(ForceDNSPort, RandomizeServerSelection, m_initiator);
     return;
   } else if (m_connectionRetry < CONNECTION_MAX_RETRY) {
-    activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_iniator);
+    activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
     return;
   }
 
@@ -357,7 +357,7 @@ void Controller::activateInternal(
     ActivationPrincipal initiator = ClientUser) {
   logger.debug() << "Activation internal";
   Q_ASSERT(m_impl);
-  m_iniator = initiator;
+  m_initiator = initiator;
 
   clearConnectedTime();
   m_handshakeTimer.stop();
@@ -722,7 +722,7 @@ void Controller::connected(const QString& pubkey) {
 
   // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
-  if (m_iniator == ExtensionUser) {
+  if (m_initiator == ExtensionUser) {
     setState(StateOnPartial);
   } else {
     setState(StateOn);
@@ -773,7 +773,7 @@ void Controller::disconnected() {
     // Else move the iniator to Client User
     // as the extension cannot switch servers.
     auto target_iniator = m_state == StateSilentSwitching
-                              ? m_iniator
+                              ? m_initiator
                               : ActivationPrincipal::ClientUser;
     activate(m_nextServerData, target_iniator, m_nextServerSelectionPolicy);
     return;
@@ -784,7 +784,7 @@ void Controller::disconnected() {
   if (m_state != StateConfirming) {
     emit recordConnectionEndTelemetry();
   }
-  m_iniator = Null;
+  m_initiator = Null;
   setState(StateOff);
 }
 
@@ -1079,7 +1079,7 @@ bool Controller::activate(const ServerData& serverData,
 
 bool Controller::deactivate(ActivationPrincipal user) {
   logger.debug() << "Deactivation" << m_state;
-  if (m_iniator > user) {
+  if (m_initiator > user) {
     // i.e the Firefox Extension cannot deativate the
     // vpn if we are in full device protection.
     logger.warning()
