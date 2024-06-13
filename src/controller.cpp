@@ -617,6 +617,9 @@ void Controller::activateNext() {
 
   m_impl->activate(config, stateToReason(m_state));
 
+  if (m_initiator == ExtensionUser) {
+    return;
+  }
   // Move to the confirming state if we are awaiting any connection handshakes.
   setState(StateConfirming);
 }
@@ -1021,7 +1024,9 @@ bool Controller::activate(const ServerData& serverData,
 
     // Before attempting to enable VPN connection we should check that the
     // subscription is active.
-    setState(StateCheckSubscription);
+    if (initiator != ExtensionUser) {
+      setState(StateCheckSubscription);
+    }
 
     // Set up a network request to check the subscription status.
     // "task" is an empty task function which is being used to
@@ -1048,7 +1053,9 @@ bool Controller::activate(const ServerData& serverData,
                 return;
               }
 
-              setState(StateConnecting);
+              if (initiator != ExtensionUser) {
+                setState(StateConnecting);
+              }
 
               clearRetryCounter();
               activateInternal(DoNotForceDNSPort, serverSelectionPolicy,
@@ -1058,7 +1065,10 @@ bool Controller::activate(const ServerData& serverData,
     connect(request, &NetworkRequest::requestCompleted, this,
             [this, serverSelectionPolicy, initiator](const QByteArray& data) {
               MozillaVPN::instance()->accountChecked(data);
-              setState(StateConnecting);
+
+              if (initiator != ExtensionUser) {
+                setState(StateConnecting);
+              }
 
               clearRetryCounter();
               activateInternal(DoNotForceDNSPort, serverSelectionPolicy,
@@ -1068,7 +1078,7 @@ bool Controller::activate(const ServerData& serverData,
     connect(request, &QObject::destroyed, task, &QObject::deleteLater);
     return true;
   }
-  if (m_state == StateOnPartial) {
+  if (initiator != ExtensionUser) {
     setState(StateConnecting);
   }
 
