@@ -18,7 +18,7 @@ class ConnectionHealth {
     // PingAnalyzer calculates the stability.
 
     enum ConnectionStability {
-        case stable, unstable, noSignal
+        case pending, stable, unstable, noSignal
     }
 
     private let logger = IOSLoggerImpl(tag: "ConnectionHealthSwift")
@@ -29,8 +29,10 @@ class ConnectionHealth {
     private let checkTime = 15.0 // 15 seconds
     private let toleranceTime = 1.0 // 1 seconds
     private var timer: Timer?
+    private var nextPossibleServerSwitch = Date()
+    private let serverSwitchCooldownMinutes: TimeInterval = 60*5 // 5 minutes
 
-    private var lastHealthStatus: ConnectionStability = .stable
+    private var lastHealthStatus: ConnectionStability = .pending
     private var connectionHealthTimerId: GleanTimerId? = nil
 
     private var pingAddress: String?
@@ -73,19 +75,25 @@ class ConnectionHealth {
         let _ = PingAnalyzer(pingAddress: pingAddress) { (connectivity) in
             guard let connectivity = connectivity else {
                 self.logger.error(message: "PingAnalyzer returned error")
+                GleanMetrics.ConnectionHealth.pingAnalyzerError.record()
                 return
             }
 
             self.logger.info(message: "ConnectionHealth connectivity: \(connectivity)")
             self.recordMetrics(with: connectivity)
 
-            if connectivity == .unstable {
-                self.logger.info(message: "Unstable, starting silent switch from network extension")
+            let isServerSwitchCriteriaReached = ((connectivity == .noSignal) || (connectivity == .unstable && self.lastHealthStatus == .unstable))
+            let isTimeForSilentServerSwitch = (self.nextPossibleServerSwitch < Date())
+            if isServerSwitchCriteriaReached && isTimeForSilentServerSwitch {
+                self.logger.info(message: "Starting silent switch from network extension")
                 self.serverSwitchingDelegate?.silentServerSwitch()
+                self.nextPossibleServerSwitch = Date(timeIntervalSinceNow: self.serverSwitchCooldownMinutes)
             }
+
+            self.lastHealthStatus = connectivity
         }
 
-        // Timer set to repeat until stop() is run, so no need to call any repeat step here.
+        // Timer set to repeat until stop() is run, so no need to call any repeat step in this function.
     }
 
     private func recordMetrics(with stability: ConnectionStability) {
@@ -93,6 +101,7 @@ class ConnectionHealth {
         case .stable: GleanMetrics.ConnectionHealth.stableCount.add()
         case .unstable: GleanMetrics.ConnectionHealth.unstableCount.add()
         case .noSignal: GleanMetrics.ConnectionHealth.noSignalCount.add()
+        case .pending: GleanMetrics.ConnectionHealth.pendingCount.add()
         }
 
         if (lastHealthStatus == stability) {
@@ -105,12 +114,11 @@ class ConnectionHealth {
         case .stable: GleanMetrics.ConnectionHealth.changedToStable.record()
         case .unstable: GleanMetrics.ConnectionHealth.changedToUnstable.record()
         case .noSignal: GleanMetrics.ConnectionHealth.changedToNoSignal.record()
+        case .pending: GleanMetrics.ConnectionHealth.changedToPending.record()
         }
 
         stopTimingDistributionMetric(for: lastHealthStatus)
         startTimingDistributionMetric(for: stability)
-
-        lastHealthStatus = stability
     }
 
     private func startTimingDistributionMetric(for stability: ConnectionStability) {
@@ -118,6 +126,7 @@ class ConnectionHealth {
         case .stable: connectionHealthTimerId = GleanMetrics.ConnectionHealth.stableTime.start()
         case .unstable: connectionHealthTimerId = GleanMetrics.ConnectionHealth.unstableTime.start()
         case .noSignal: connectionHealthTimerId = GleanMetrics.ConnectionHealth.noSignalTime.start()
+        case .pending: connectionHealthTimerId = GleanMetrics.ConnectionHealth.pendingTime.start()
         }
     }
 
@@ -131,6 +140,7 @@ class ConnectionHealth {
         case .stable: GleanMetrics.ConnectionHealth.stableTime.stopAndAccumulate(connectionHealthTimerId)
         case .unstable: GleanMetrics.ConnectionHealth.unstableTime.stopAndAccumulate(connectionHealthTimerId)
         case .noSignal: GleanMetrics.ConnectionHealth.noSignalTime.stopAndAccumulate(connectionHealthTimerId)
+        case .pending: GleanMetrics.ConnectionHealth.pendingTime.stopAndAccumulate(connectionHealthTimerId)
         }
 
         // Set to nil to defensively ensure there is no future erroenous attempt to turn it off

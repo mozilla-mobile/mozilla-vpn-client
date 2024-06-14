@@ -1406,6 +1406,30 @@ session:
       - vpn-telemetry@mozilla.com
     expires: never
 
+  daemon_silent_server_switch:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      (Mobile only) The daemon requests a silent server switch.
+
+      Extra key only included on iOS.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6406
+    data_reviews:
+      - TBA
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys:
+      was_server_available:
+        description: True when the daemon has a saved server to switch to, false otherwise.
+        type: boolean
+
 connection_health:
   changed_to_no_signal:
     type: event
@@ -1486,6 +1510,29 @@ connection_health:
     data_reviews:
       - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
       - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-07-15
+
+  changed_to_pending:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      (iOS only) The connection status changed to pending.
+
+      This event is recorded in daemon.
+
+      Pending status is when the app is first started or when there is
+      no internet.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6406
+    data_reviews:
+      - TBA
     data_sensitivity:
       - technical
     notification_emails:
@@ -1574,6 +1621,31 @@ connection_health:
       - vpn-telemetry@mozilla.com
     expires: 2024-07-15
 
+  pending_count:
+    type: counter
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      (iOS only) Count of times that the connection health check is in pending.
+
+      The health check counters must not be considered as markers of time.
+      There is a possible situation in the health check (which calls the
+      telemetry) which frequently results in more than one count per second.
+      The situation: A health check is conducted because a network check did not
+      return, and milliseconds later that network check returns and another
+      health check is started because of the return.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6406
+    data_reviews:
+      - TBA
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-07-15
+
   no_signal_time:
     type: timing_distribution
     lifetime: ping
@@ -1642,3 +1714,39 @@ connection_health:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
     expires: 2024-07-15
+
+  pending_time:
+    type: timing_distribution
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      (iOS only) Time spent in pending state.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6406
+    data_reviews:
+      - TBA
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-07-15
+
+  ping_analyzer_error:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      The iOS PingAnalyzer returned an error.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6406
+    data_reviews:
+      - TBA
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-08-15

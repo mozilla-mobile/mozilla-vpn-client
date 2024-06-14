@@ -245,10 +245,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
     func silentServerSwitch() {
         if let fallbackServerConfig = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["fallbackConfig"] as? String), !fallbackServerConfig.isEmpty {
             self.logger.info(message: "Sending silent server switch in Network Extension")
+            GleanMetrics.Session.daemonSilentServerSwitch.record(GleanMetrics.Session.DaemonSilentServerSwitchExtra(wasServerAvailable: true))
             updateServerConfig(with: fallbackServerConfig)
             (protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["fallbackConfig"] = ""
         } else {
             logger.info(message: "Silent server switch called, but no fallbackConfig available")
+            GleanMetrics.Session.daemonSilentServerSwitch.record(GleanMetrics.Session.DaemonSilentServerSwitchExtra(wasServerAvailable: false))
         }
     }
 }
