@@ -46,6 +46,7 @@ class AppPermission final : public QAbstractListModel {
   };
 
   static AppPermission* instance();
+  static void mock();
 
   // Returns count of disabled apps
   Q_INVOKABLE int disabledAppCount();
@@ -76,7 +77,7 @@ class AppPermission final : public QAbstractListModel {
   void receiveAppList(const QMap<QString, QString>& applist);
 
  private:
-  explicit AppPermission(QObject* parent);
+  explicit AppPermission(AppListProvider* provider, QObject* parent = nullptr);
 
   AppListProvider* m_listprovider = nullptr;
   QList<AppDescription> m_applist;

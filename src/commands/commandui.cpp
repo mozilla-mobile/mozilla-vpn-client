@@ -161,6 +161,9 @@ int CommandUI::run(QStringList& tokens) {
     if (testingOption.m_set) {
       Constants::setStaging();
 
+      // Provide a mocked AppListProvider for testing.
+      AppPermission::mock();
+
       // When running automated tests, create a mocked daemon.
       MockDaemon* daemon = new MockDaemon(qApp);
       qputenv("MVPN_CONTROL_SOCKET", daemon->socketPath().toLocal8Bit());
