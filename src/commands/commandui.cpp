@@ -309,13 +309,6 @@ int CommandUI::run(QStringList& tokens) {
     XdgStartAtBootWatcher startAtBootWatcher;
 #endif
 
-#ifdef MZ_LINUX
-    // Dependencies - so far, only for linux.
-    if (!LinuxDependencies::checkDependencies()) {
-      return 1;
-    }
-#endif
-
     // Prior to Qt 6.5, there was no default QML import path. We must set one.
 #if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
     engine->addImportPath("qrc:/");
