@@ -39,15 +39,17 @@ jobs:
         shell: bash
         run: |
           mkdir -p build/cmake
-          mkdir -p build/profile
-          cmake -S $(pwd) -B build/cmake -GNinja
-          cmake --build build/cmake --target dummyvpn
+          cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          cmake --build build/cmake
+          cp ./build/cmake/src/mozillavpn build/
 
-          mkdir -p build/profile
-          rsync -a --include '*/' --include '*.gcno' --exclude '*' \
-              build/cmake/tests/dummyvpn/CMakeFiles/dummyvpn.dir/ build/profile/
-          cp ./build/cmake/tests/dummyvpn/dummyvpn build/
-          cp -r ./build/cmake/tests/dummyvpn/addons build/addons
+      - name: Compile test addons
+        shell: bash
+        run: |
+          mkdir -p build/addons
+          cmake -S $(pwd)/tests/functional/addons -B build/addons \
+            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
+          cmake --build build/addons
 
       - uses: actions/upload-artifact@v4
         with:
@@ -112,8 +114,8 @@ jobs:
       - name: Check build
         shell: bash
         run: |
-          chmod +x ./build/dummyvpn
-          ./build/dummyvpn -v
+          chmod +x ./build/mozillavpn
+          ./build/mozillavpn -v
 
       - name: Running ${{ matrix.test.name }} Tests
         id: runTests
@@ -122,7 +124,7 @@ jobs:
           TZ: Europe/London
           HEADLESS: yes
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/dummyvpn
+          MVPN_BIN: ./build/mozillavpn
         run: |
           export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
           mkdir -p $ARTIFACT_DIR
