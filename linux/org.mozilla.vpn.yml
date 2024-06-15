@@ -19,7 +19,6 @@ build-options:
 modules:
   - flatpak-pydeps.yaml
   - flatpak-libnm.yaml
-  - flatpak-libsecret.yaml
   - flatpak-qt5compat.yaml
 
   - name: mozillavpn

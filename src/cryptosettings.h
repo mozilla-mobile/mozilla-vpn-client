@@ -5,35 +5,53 @@
 #ifndef CRYPTOSETTINGS_H
 #define CRYPTOSETTINGS_H
 
+#include <QByteArray>
 #include <QSettings>
 
 constexpr int CRYPTO_SETTINGS_KEY_SIZE = 32;
 
-class CryptoSettings final {
+class CryptoSettings {
  public:
   enum Version {
     NoEncryption,
     EncryptionChachaPolyV1,
+    EncryptionChachaPolyV2,
   };
 
+  static void create();
+  static QSettings::Format format();
+
+  // Callback methods for QSetting::Format
   static bool readFile(QIODevice& device, QSettings::SettingsMap& map);
   static bool writeFile(QIODevice& device, const QSettings::SettingsMap& map);
 
+ protected:
+  explicit CryptoSettings();
+  virtual ~CryptoSettings();
+
+  static QByteArray generateRandomBytes(qsizetype length);
+
+  // Implementations must provide these methods to retrieve keys.
+  virtual void resetKey() = 0;
+  virtual QByteArray getKey(const QByteArray& metadata) = 0;
+  virtual QByteArray getMetaData() { return QByteArray(); }
+  virtual Version getSupportedVersion() = 0;
+
  private:
-  static void resetKey();
-  static bool getKey(uint8_t[CRYPTO_SETTINGS_KEY_SIZE]);
-
-  static Version getSupportedVersion();
-  static bool writeVersion(QIODevice& device, Version version);
-
+  // Plantext file implementation
   static bool readJsonFile(QIODevice& device, QSettings::SettingsMap& map);
-  static bool readEncryptedChachaPolyV1File(QIODevice& device,
-                                            QSettings::SettingsMap& map);
-
   static bool writeJsonFile(QIODevice& device,
                             const QSettings::SettingsMap& map);
-  static bool writeEncryptedChachaPolyV1File(QIODevice& device,
-                                             const QSettings::SettingsMap& map);
+
+  // Encrypted V1 and V2 implementation
+  bool readEncryptedChachaPolyFile(Version fileVersion, QIODevice& device,
+                                   QSettings::SettingsMap& map);
+
+  bool writeEncryptedChachaPolyFile(QIODevice& device,
+                                    const QSettings::SettingsMap& map);
+
+ protected:
+  uint64_t m_lastNonce = 0;
 };
 
 #endif  // CRYPTOSETTINGS_H

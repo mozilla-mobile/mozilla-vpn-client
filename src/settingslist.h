@@ -747,7 +747,18 @@ SETTING_STRING(tunnelUuid,        // getter
                false,             // remove when reset
                true               // sensitive (do not log)
 )
+
+SETTING_STRING(xdgSecretToken,        // getter
+               setXdgSecretToken,     // setter
+               removeXdgSecretToken,  // remover
+               hasXdgSecretToken,     // has
+               "xdgSecretToken",      // key
+               "",                    // default value
+               false,                 // remove when reset
+               false                  // sensitive (do not log)
+)
 #endif
+
 SETTING_STRING(unauthedExperimenterId,        // getter
                setUnauthedExperimenterId,     // setter
                removeUnauthedExperimenterId,  // remover

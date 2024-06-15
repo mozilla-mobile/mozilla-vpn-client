@@ -2,12 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "androidcryptosettings.h"
+
 #include <jni.h>
 
 #include <QApplication>
 #include <QJniEnvironment>
 #include <QJniObject>
-#include <QRandomGenerator>
 #include <QTimer>
 
 #include "androidcommons.h"
@@ -52,58 +53,35 @@ inline void jni_clear() {
   QJniObject::callStaticMethod<void>(KEYSTORE_CLASS, "clear", "()V");
 }
 
-bool initialized = false;
-QByteArray key;
 }  // namespace
 
-// static
-void CryptoSettings::resetKey() {
+void AndroidCryptoSettings::resetKey() {
   logger.debug() << "Reset the key in the keychain";
   jni_clear();
-  initialized = false;
+  m_initialized = false;
 }
 
-// static
-bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
-  if (initialized) {
-    if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-      memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-      return true;
-    }
-    logger.warning() << "Malformed key?";
+QByteArray AndroidCryptoSettings::getKey(const QByteArray& metadata) {
+  Q_UNUSED(metadata);
+
+  if (m_initialized) {
+    return m_key;
   }
 
   if (!jni_hasKey()) {
     logger.warning() << "Key not found. Let's create it.";
-    key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
-    QRandomGenerator* rg = QRandomGenerator::system();
-    for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
-      key[i] = rg->generate() & 0xFF;
-    }
-    jni_setKey(key);
-    if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-      memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-      return true;
-    }
+    m_key = generateRandomBytes(CRYPTO_SETTINGS_KEY_SIZE);
+    jni_setKey(m_key);
+    return m_key;
   }
 
-  key = jni_getKey();
-  if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-    memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-    return true;
-  }
-  return false;
+  return jni_getKey();
 }
 
-// static
-CryptoSettings::Version CryptoSettings::getSupportedVersion() {
-  logger.debug() << "Get supported settings method";
-
-  uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
-  if (getKey(key)) {
-    logger.debug() << "Encryption supported!";
-    return CryptoSettings::EncryptionChachaPolyV1;
+CryptoSettings::Version AndroidCryptoSettings::getSupportedVersion() {
+  if (getKey(QByteArray()).isEmpty()) {
+    logger.warning() << "No encryption";
+    return CryptoSettings::NoEncryption;
   }
-  logger.debug() << "No encryption";
-  return CryptoSettings::NoEncryption;
+  return CryptoSettings::EncryptionChachaPolyV1;
 }

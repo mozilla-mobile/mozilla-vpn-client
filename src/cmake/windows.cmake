@@ -68,6 +68,8 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsservicemanager.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscommons.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscommons.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscryptosettings.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscryptosettings.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsnetworkwatcher.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsnetworkwatcher.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowspingsender.cpp

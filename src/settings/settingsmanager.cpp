@@ -33,10 +33,6 @@ constexpr const char* SETTINGS_APP_NAME = "vpn_dummy";
 #else
 constexpr const char* SETTINGS_APP_NAME = "vpn";
 #endif
-
-const QSettings::Format MozFormat = QSettings::registerFormat(
-    "moz", CryptoSettings::readFile, CryptoSettings::writeFile);
-
 }  // namespace
 
 // static
@@ -59,8 +55,8 @@ void SettingsManager::testCleanup() {
 
 SettingsManager::SettingsManager(QObject* parent)
     : QObject(parent),
-      m_settings(MozFormat, QSettings::UserScope, SETTINGS_ORGANIZATION_NAME,
-                 SETTINGS_APP_NAME),
+      m_settings(CryptoSettings::format(), QSettings::UserScope,
+                 SETTINGS_ORGANIZATION_NAME, SETTINGS_APP_NAME),
       m_settingsConnector(this, &m_settings) {
   MZ_COUNT_CTOR(SettingsManager);
 
