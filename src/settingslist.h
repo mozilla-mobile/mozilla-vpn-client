@@ -479,6 +479,24 @@ SETTING_BOOL(recommendedServerSelected,        // getter
              false                             // sensitive (do not log)
 )
 
+#ifdef MVPN_SOCKS5PROXY
+SETTING_BOOL(socks5ProxyEnabled,     // getter
+             setSocks5ProxyEnabled,  // setter
+             hasSocks5ProxyEnabled,  // has
+             "socks5ProxyEnabled",   // key
+             false,                  // default value
+             true                    // remove when reset
+)
+
+SETTING_INT(socks5ProxyPort,     // getter
+            setSocks5ProxyPort,  // setter
+            hasSocks5ProxyPort,  // has
+            "socks5ProxyPort",   // key
+            8888,                // default value
+            true                 // remove when reset
+)
+#endif
+
 SETTING_STRING(
     stagingServerAddress,        // getter
     setStagingServerAddress,     // setter

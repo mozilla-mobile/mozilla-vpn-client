@@ -152,6 +152,7 @@ add_subdirectory(qtglean)
 add_subdirectory(src)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
+add_subdirectory(socks5proxy)
 add_subdirectory(translations)
 add_subdirectory(addons)
 
