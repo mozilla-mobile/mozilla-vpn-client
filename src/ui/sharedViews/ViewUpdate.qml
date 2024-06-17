@@ -201,6 +201,4 @@ MZFlickable {
 
     }
 
-    Component.onCompleted: VPN.updateViewShown()
-
 }

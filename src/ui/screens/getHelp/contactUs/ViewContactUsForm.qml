@@ -198,7 +198,6 @@ MZViewBase {
                 MZButton {
                     text: MZI18n.InAppSupportWorkflowSupportPrimaryButtonText
                     onClicked: {
-                      Glean.sample.supportCaseSubmitted.record();
                       contactUsRoot._emailAddress = (VPN.userAuthenticated ? VPNUser.email : emailInput.text);
                       contactUsRoot.createSupportTicket(contactUsRoot._emailAddress, subjectInput.text, textArea.userEntry, dropDown.currentValue);
                     }

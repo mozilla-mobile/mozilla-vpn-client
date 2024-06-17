@@ -39,22 +39,11 @@ Updater* Updater::create(
 
 Updater::Updater(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(Updater);
-  connect(this, &Updater::updateRecommended, [this] {
-    m_recommendedOrRequired = true;
+  connect(this, &Updater::updateRecommended,
+          [this] { m_recommendedOrRequired = true; });
 
-    mozilla::glean::sample::update_step.record(
-        mozilla::glean::sample::UpdateStepExtra{
-            ._state =
-                QVariant::fromValue(RecommendedUpdateAvailable).toString()});
-  });
-
-  connect(this, &Updater::updateRequired, [this] {
-    m_recommendedOrRequired = true;
-
-    mozilla::glean::sample::update_step.record(
-        mozilla::glean::sample::UpdateStepExtra{
-            ._state = QVariant::fromValue(RequiredUpdateAvailable).toString()});
-  });
+  connect(this, &Updater::updateRequired,
+          [this] { m_recommendedOrRequired = true; });
   logger.debug() << "Updater created";
 }
 
@@ -69,11 +58,4 @@ QString Updater::appVersion() {
     return MozillaVPN::appVersionForUpdate();
   }
   return Constants::versionString();
-}
-
-// static
-void Updater::updateViewShown() {
-  mozilla::glean::sample::update_step.record(
-      mozilla::glean::sample::UpdateStepExtra{
-          ._state = QVariant::fromValue(UpdateViewShown).toString()});
 }

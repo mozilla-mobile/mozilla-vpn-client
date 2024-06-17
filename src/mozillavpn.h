@@ -114,7 +114,6 @@ class MozillaVPN final : public App {
   Q_INVOKABLE void hardResetAndQuit();
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelReauthentication();
-  Q_INVOKABLE void updateViewShown();
   Q_INVOKABLE static void statusBarCheck();
 
   Q_INVOKABLE void gleanSetDebugViewTag(QString tag);

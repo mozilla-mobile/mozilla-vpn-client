@@ -262,14 +262,6 @@ int CommandUI::run(QStringList& tokens) {
     vpn.setStartMinimized(minimizedOption.m_set ||
                           (qgetenv("MVPN_MINIMIZED") == "1"));
 
-    if (updateOption.m_set) {
-      mozilla::glean::sample::update_step.record(
-          mozilla::glean::sample::UpdateStepExtra{
-              ._state =
-                  QVariant::fromValue(Updater::ApplicationRestartedAfterUpdate)
-                      .toString()});
-    }
-
 #ifndef Q_OS_WIN
     // Signal handling for a proper shutdown.
     SignalHandler sh;

@@ -263,8 +263,6 @@ void Controller::handshakeTimeout() {
   vpn->serverLatency()->setCooldown(
       hop.m_serverPublicKey, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
 
-  emit handshakeFailed(hop.m_serverPublicKey);
-
   if (m_nextStep == Quit || m_nextStep == Disconnect || m_nextStep == Update) {
     deactivate();
     return;

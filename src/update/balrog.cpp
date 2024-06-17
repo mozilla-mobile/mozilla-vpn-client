@@ -81,12 +81,6 @@ QString Balrog::userAgent() {
 }
 
 void Balrog::start(Task* task) {
-  if (m_downloadAndInstall) {
-    mozilla::glean::sample::update_step.record(
-        mozilla::glean::sample::UpdateStepExtra{
-            ._state = QVariant::fromValue(UpdateProcessStarted).toString()});
-  }
-
   QString url = balrogUrl();
   logger.debug() << "URL:" << url;
 
@@ -349,10 +343,6 @@ bool Balrog::computeHash(const QString& url, const QByteArray& data,
     return false;
   }
 
-  mozilla::glean::sample::update_step.record(
-      mozilla::glean::sample::UpdateStepExtra{
-          ._state = QVariant::fromValue(BalrogValidationCompleted).toString()});
-
   return saveFileAndInstall(url, data);
 }
 
@@ -390,10 +380,6 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
   }
 
   file.close();
-
-  mozilla::glean::sample::update_step.record(
-      mozilla::glean::sample::UpdateStepExtra{
-          ._state = QVariant::fromValue(BalrogFileSaved).toString()});
 
   return install(tmpFile);
 }
@@ -485,11 +471,6 @@ bool Balrog::install(const QString& filePath) {
         exit(0);
       });
 #endif
-
-  mozilla::glean::sample::update_step.record(
-      mozilla::glean::sample::UpdateStepExtra{
-          ._state =
-              QVariant::fromValue(InstallationProcessExecuted).toString()});
 
   return true;
 }

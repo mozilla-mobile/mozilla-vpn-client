@@ -20,10 +20,7 @@ MZViewBase {
             property bool skipEnsureVisible: true
 
             labelText: MZI18n.GetHelpLinkText
-            onClicked: {
-                Glean.sample.getHelpClickedInitialize.record();
-                MZNavigator.requestScreen(VPN.ScreenGetHelp);
-            }
+            onClicked: MZNavigator.requestScreen(VPN.ScreenGetHelp);
         }
     }
 

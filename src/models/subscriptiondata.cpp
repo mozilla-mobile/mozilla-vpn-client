@@ -138,10 +138,6 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     planIntervalMonths = 1;
   } else {
     logger.error() << "Unexpected interval type:" << planInterval;
-
-    mozilla::glean::sample::unhandled_sub_plan_interval.record(
-        mozilla::glean::sample::UnhandledSubPlanIntervalExtra{
-            ._interval = planInterval});
     return false;
   }
 
@@ -167,10 +163,6 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     default:
       logger.error() << "Unexpected billing interval:"
                      << planIntervalMonthsTotal;
-
-      mozilla::glean::sample::unhandled_sub_plan_interval.record(
-          mozilla::glean::sample::UnhandledSubPlanIntervalExtra{
-              ._interval = planInterval, ._intervalCount = planIntervalCount});
       return false;
   }
 

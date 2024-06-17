@@ -32,11 +32,6 @@ void ProfileFlow::setState(State state) {
 
   m_state = state;
   emit stateChanged(m_state);
-
-  mozilla::glean::sample::profile_flow_state_changed.record(
-      mozilla::glean::sample::ProfileFlowStateChangedExtra{
-          ._state = QVariant::fromValue(state).toString(),
-      });
 }
 
 // Only used for testing and debugging the re-authentication flow

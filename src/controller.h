@@ -135,7 +135,6 @@ class Controller : public QObject, public LogSerializer {
   void stateChanged();
   void timeChanged();
   void enableDisconnectInConfirmingChanged();
-  void handshakeFailed(const QString& serverHostname);
   void connectionRetryChanged();
   void recordConnectionStartTelemetry();
   void recordConnectionEndTelemetry();

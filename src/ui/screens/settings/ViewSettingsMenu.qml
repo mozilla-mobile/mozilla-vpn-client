@@ -45,7 +45,6 @@ MZViewBase {
                     if (subscriptionManagementEnabled) {
                         VPNProfileFlow.start();
                     } else {
-                        Glean.sample.manageAccountClicked.record();
                         MZUrlOpener.openUrlLabel("account");
                     }
                 }

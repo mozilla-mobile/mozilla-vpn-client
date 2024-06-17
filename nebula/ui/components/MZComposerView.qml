@@ -130,12 +130,7 @@ ColumnLayout {
                     text: loader.composerBlock.text
                     colorScheme: loader.composerBlock.style === MZComposerBlockButton.Primary ? MZTheme.theme.blueButton : MZTheme.theme.redButton
 
-                    onClicked: {
-                        Glean.sample.addonCtaClicked.record({
-                            addon_id: addon.id
-                        });
-                        loader.composerBlock.click();
-                    }
+                    onClicked: loader.composerBlock.click()
                 }
             }
 
