@@ -546,27 +546,6 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
     return false;
   }
 
-  /* Create a routing policy rule to suppress zero-length prefix lookups from
-   * in the main routing table. This is equivalent to:
-   *     ip rule add table main suppress_prefixlength 0
-   */
-  memset(buf, 0, sizeof(buf));
-  nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
-  nlmsg->nlmsg_type = action;
-  nlmsg->nlmsg_flags = flags;
-  nlmsg->nlmsg_pid = getpid();
-  nlmsg->nlmsg_seq = m_nlseq++;
-  rule->family = addrfamily;
-  rule->table = RT_TABLE_MAIN;
-  rule->action = FR_ACT_TO_TBL;
-  rule->flags = 0;
-  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_SUPPRESS_PREFIXLEN, 0);
-  result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0, (struct sockaddr*)&nladdr,
-                  sizeof(nladdr));
-  if (result != static_cast<ssize_t>(nlmsg->nlmsg_len)) {
-    return false;
-  }
-
   return true;
 }
 
