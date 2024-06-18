@@ -269,7 +269,7 @@ void Socks5Client::readyRead() {
   }
 }
 
-qint64 Socks5Client::proxy(QTcpSocket* a, QTcpSocket* b) {
+qint64 Socks5Client::proxy(QIODevice* a, QIODevice* b) {
   Q_ASSERT(a && b);
 
   qint64 bytes = 0;
@@ -278,8 +278,7 @@ qint64 Socks5Client::proxy(QTcpSocket* a, QTcpSocket* b) {
     qint64 val =
         a->read(buffer, qMin(a->bytesAvailable(), (qint64)sizeof(buffer)));
     if (val <= 0 || b->write(buffer, val) != val) {
-      m_inSocket->close();
-      return 0;
+      return -1;
     }
 
     bytes += val;
@@ -304,8 +303,11 @@ void Socks5Client::configureOutSocket() {
 
   connect(m_outSocket, &QTcpSocket::readyRead, this, [this]() {
     qint64 bytes = proxy(m_outSocket, m_inSocket);
-    if (bytes) {
+    if (bytes > 0) {
       emit m_parent->dataSentReceived(0, bytes);
+    } else if (bytes < 0) {
+      // We hit an error. close.
+      m_inSocket->close();
     }
   });
 

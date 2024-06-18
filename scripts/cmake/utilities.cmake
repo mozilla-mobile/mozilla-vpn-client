@@ -178,9 +178,7 @@ function(mz_add_new_module)
             get_filename_component(TEST_NAME ${TEST_FILE} NAME_WE)
             set(TEST_TARGET_NAME "${MZ_ADD_NEW_MODULE_TARGET_NAME}-${TEST_NAME}")
 
-            mz_add_test_target(
-                TARGET_NAME
-                    ${TEST_TARGET_NAME}
+            mz_add_test_target(${TEST_TARGET_NAME}
                 TEST_COMMAND
                     ${TEST_TARGET_NAME}
                 PARENT_TARGET
@@ -228,40 +226,29 @@ function(mz_add_library)
     )
 endfunction()
 
-function(mz_add_test_target)
+function(mz_add_test_target TARGET_NAME)
+    set(MZ_ADD_TEST_TEST_COMMAND ${TARGET_NAME})
     cmake_parse_arguments(
         MZ_ADD_TEST # prefix
         "" # options
         "" # single-value args
-        "TARGET_NAME;TEST_COMMAND;PARENT_TARGET;SOURCES;DEPENDENCIES" # multi-value args
+        "TEST_COMMAND;PARENT_TARGET;SOURCES;DEPENDENCIES" # multi-value args
         ${ARGN})
 
     # Test targets are executable targets.
-    qt_add_executable(${MZ_ADD_TEST_TARGET_NAME}
+    qt_add_executable(${TARGET_NAME}
         ${MZ_ADD_TEST_SOURCES}
     )
+    set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "Tests")
 
     add_test(
-        NAME ${MZ_ADD_TEST_TARGET_NAME}
-        COMMAND ${MZ_ADD_TEST_TEST_COMMAND}
+        NAME ${TARGET_NAME}
+        COMMAND ${TARGET_NAME}
     )
-
-    target_compile_definitions(${MZ_ADD_TEST_TARGET_NAME} PRIVATE
-        UNIT_TEST
-        "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
-        "$<$<CONFIG:Debug>:MZ_DEBUG>"
-    )
-
-    target_link_libraries(${MZ_ADD_TEST_TARGET_NAME} PRIVATE Qt6::Test)
-    target_link_libraries(${MZ_ADD_TEST_TARGET_NAME} PUBLIC
+    target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Test)
+    target_link_libraries(${TARGET_NAME} PUBLIC
         ${MZ_ADD_TEST_PARENT_TARGET}
         ${MZ_ADD_TEST_DEPENDENCIES}
-    )
-
-    target_include_directories(${TEST_TARGET_NAME} PRIVATE
-        ${CMAKE_CURRENT_SOURCE_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR}
-        ${CMAKE_SOURCE_DIR}/src
     )
 endfunction()
 

@@ -20,7 +20,15 @@ class Socks5Client final : public QObject {
  private:
   void readyRead();
   void configureOutSocket();
-  qint64 proxy(QTcpSocket* a, QTcpSocket* b);
+
+  /**
+   * @brief Copies incoming bytes to another QIODevice
+   *
+   * @param rx- the source device
+   * @param tx- the output device
+   * @return qint64 - The Bytes Written, -1 on error.
+   */
+  static qint64 proxy(QIODevice* rx, QIODevice* tx);
 
   static uint8_t socketErrorToSocks5Rep(QAbstractSocket::SocketError error);
 
