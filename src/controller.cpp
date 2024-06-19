@@ -569,11 +569,6 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   logger.debug() << "Catch all IPv6";
   list.append(IPAddress("::0/0"));
 
-#ifdef MZ_IOS
-  // Note: On iOS, we use the `excludeLocalNetworks` flag to ensure
-  // LAN traffic is allowed through. This is in the swift code.
-  Q_UNUSED(exitServer);
-#else
   // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
   list.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
@@ -583,7 +578,6 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   // Ensure that the Mullvad proxy services are always allowed.
   list.append(
       IPAddress(QHostAddress(MULLVAD_PROXY_RANGE), MULLVAD_PROXY_RANGE_LENGTH));
-#endif
 
   return list;
 }
