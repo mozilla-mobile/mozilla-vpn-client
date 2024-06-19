@@ -388,42 +388,6 @@ bool WireguardUtilsLinux::excludeLocalNetworks(
   return true;
 }
 
-bool WireguardUtilsLinux::setupWireguardRoutingTable(int family) {
-  constexpr size_t rtm_max_size = sizeof(struct rtmsg) +
-                                  2 * RTA_SPACE(sizeof(uint32_t)) +
-                                  RTA_SPACE(sizeof(struct in6_addr));
-
-  char buf[NLMSG_SPACE(rtm_max_size)];
-  struct nlmsghdr* nlmsg = reinterpret_cast<struct nlmsghdr*>(buf);
-  struct rtmsg* rtm = static_cast<struct rtmsg*>(NLMSG_DATA(nlmsg));
-
-  /* Create a routing policy rule that for all packets sent to the Wireguard
-   * routing table to just go to the Wireguard interface. This is
-   * equivalent to:
-   *    ip route add default dev moz0 proto static table $WG_ROUTE_TABLE
-   */
-  memset(buf, 0, sizeof(buf));
-  nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
-  nlmsg->nlmsg_type = RTM_NEWROUTE;
-  nlmsg->nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK | NLM_F_EXCL | NLM_F_CREATE;
-  nlmsg->nlmsg_pid = getpid();
-  nlmsg->nlmsg_seq = m_nlseq++;
-  rtm->rtm_family = family;
-  rtm->rtm_type = RTN_UNICAST;
-  rtm->rtm_table = RT_TABLE_UNSPEC;
-  rtm->rtm_protocol = RTPROT_STATIC;
-  rtm->rtm_scope = RT_SCOPE_LINK;
-  nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_TABLE, WG_ROUTE_TABLE);
-  nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_OIF, m_ifindex);
-
-  struct sockaddr_nl nladdr;
-  memset(&nladdr, 0, sizeof(nladdr));
-  nladdr.nl_family = AF_NETLINK;
-  size_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
-                         (struct sockaddr*)&nladdr, sizeof(nladdr));
-  return (result == nlmsg->nlmsg_len);
-}
-
 // PRIVATE METHODS
 QStringList WireguardUtilsLinux::currentInterfaces() {
   char* deviceNames = wg_list_device_names();
@@ -593,10 +557,6 @@ bool WireguardUtilsLinux::rtmSendRoute(int action, const IPAddress& dest,
     return false;
   }
 
-  // Add a throw routes to the wireguard routing table - which sends
-  // the lookup back to the main table. This should only be used for
-  // setting up LAN address exclusions. This is equivalent to:
-  //     ip route add table $WG_ROUTE_TABLE <destination> throw
   memset(buf, 0, sizeof(buf));
   nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
   nlmsg->nlmsg_type = action;
@@ -736,8 +696,6 @@ void WireguardUtilsLinux::nlsockHandleNewlink(struct nlmsghdr* nlmsg) {
   // Check for the interface going up.
   if ((diff & IFF_UP) && (msg->ifi_flags & IFF_UP)) {
     logger.info() << "Wireguard interface is UP";
-    setupWireguardRoutingTable(AF_INET);
-    setupWireguardRoutingTable(AF_INET6);
 
     // Setup any routes that are waiting on the interface to go UP.
     while (!m_routesQueued.isEmpty()) {
