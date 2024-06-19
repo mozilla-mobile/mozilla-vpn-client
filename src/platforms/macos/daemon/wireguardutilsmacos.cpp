@@ -249,7 +249,7 @@ bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix) {
     return m_rtmonitor->insertRoute(prefix);
   }
 
- // Ensure that we do not replace the default route.
+  // Ensure that we do not replace the default route.
   if (prefix.type() == QAbstractSocket::IPv4Protocol) {
     return m_rtmonitor->insertRoute(IPAddress("0.0.0.0/1")) &&
            m_rtmonitor->insertRoute(IPAddress("128.0.0.0/1"));
@@ -267,7 +267,6 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
     return false;
   }
 
-  // Rmove non-default routes.
   if (prefix.prefixLength() > 0) {
     return m_rtmonitor->deleteRoute(prefix);
   }
@@ -292,7 +291,7 @@ bool WireguardUtilsMacos::excludeLocalNetworks(const QList<IPAddress>& routes) {
   // doesn't really exclude the LAN traffic, we just don't take any action to
   // overrule the routes of other interfaces.
   bool result = true;
-  for (const auto &prefix : routes) {
+  for (const auto& prefix : routes) {
     logger.error() << "Attempting to exclude:" << prefix.toString();
     if (!m_rtmonitor->insertRoute(prefix, RTF_IFSCOPE | RTF_REJECT)) {
       result = false;
