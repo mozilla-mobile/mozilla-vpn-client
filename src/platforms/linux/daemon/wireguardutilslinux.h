@@ -31,6 +31,7 @@ class WireguardUtilsLinux final : public WireguardUtils {
 
   bool updateRoutePrefix(const IPAddress& prefix) override;
   bool deleteRoutePrefix(const IPAddress& prefix) override;
+  bool excludeLocalNetworks(const QList<IPAddress>& lanAddressRanges) override;
 
   void excludeCgroup(const QString& cgroup);
   void resetCgroup(const QString& cgroup);
@@ -80,7 +81,11 @@ class WireguardUtilsLinux final : public WireguardUtils {
   // The interface has to be UP before we can send routes to it, but annoyingly
   // we bring the interface up at the same time as we create the first peer.
   // When this occurs, we need to queue the routes to that peer for later.
-  QList<IPAddress> m_routeQueue;
+  QList<IPAddress> m_routesQueued;
+
+  // Excluded routes are not automatically removed when the interface goes down
+  // therefore, we have to remove them manually in deleteInterface()
+  QList<IPAddress> m_routesExcluded;
 
  private slots:
   void nlsockReady();

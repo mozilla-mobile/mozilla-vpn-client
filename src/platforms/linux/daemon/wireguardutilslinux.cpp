@@ -23,7 +23,6 @@
 #include <chrono>
 #include <thread>
 
-#include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/linux/linuxdependencies.h"
@@ -312,7 +311,7 @@ bool WireguardUtilsLinux::deleteInterface() {
   if (!m_firewall.down()) {
     return false;
   }
-  m_routeQueue.clear();
+  m_routesQueued.clear();
 
   // Clear routing policy rules
   if (!rtmSendRule(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, AF_INET)) {
@@ -362,7 +361,7 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
 bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix) {
   if (!(m_ifflags & IFF_UP)) {
     // If the interface is not up yet - queue the route for later.
-    m_routeQueue.append(prefix);
+    m_routesQueued.append(prefix);
     return true;
   }
 
@@ -371,12 +370,22 @@ bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix) {
 }
 
 bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddress& prefix) {
-  if (m_routeQueue.removeAll(prefix) > 0) {
+  if (m_routesQueued.removeAll(prefix) > 0) {
     // If the route is still queued for IFF_UP then nothing to do.
     return true;
   }
 
   return rtmSendRoute(RTM_DELROUTE, prefix, RTN_UNICAST);
+}
+
+bool WireguardUtilsLinux::excludeLocalNetworks(
+    const QList<IPAddress>& lanAddressRanges) {
+  for (const IPAddress& prefix : lanAddressRanges) {
+    m_routesExcluded.append(prefix);
+    rtmSendRoute(RTM_NEWROUTE, prefix, RTN_THROW, NLM_F_CREATE | NLM_F_REPLACE);
+  }
+
+  return true;
 }
 
 bool WireguardUtilsLinux::setupWireguardRoutingTable(int family) {
@@ -730,15 +739,9 @@ void WireguardUtilsLinux::nlsockHandleNewlink(struct nlmsghdr* nlmsg) {
     setupWireguardRoutingTable(AF_INET);
     setupWireguardRoutingTable(AF_INET6);
 
-    // Setup LAN exclusions
-    for (const IPAddress& dest :
-        Controller::getExcludedIPAddressRanges().flatten()) {
-      rtmSendRoute(RTM_NEWROUTE, dest, RTN_THROW, NLM_F_CREATE | NLM_F_REPLACE);
-    }
-
     // Setup any routes that are waiting on the interface to go UP.
-    while (!m_routeQueue.isEmpty()) {
-      rtmSendRoute(RTM_NEWROUTE, m_routeQueue.takeLast(), RTN_UNICAST,
+    while (!m_routesQueued.isEmpty()) {
+      rtmSendRoute(RTM_NEWROUTE, m_routesQueued.takeLast(), RTN_UNICAST,
                    NLM_F_CREATE | NLM_F_REPLACE);
     }
   }
@@ -756,10 +759,10 @@ void WireguardUtilsLinux::nlsockHandleDellink(struct nlmsghdr* nlmsg) {
   }
 
   // Clear LAN exclusions
-  for (const IPAddress& dest :
-       Controller::getExcludedIPAddressRanges().flatten()) {
-    rtmSendRoute(RTM_DELROUTE, dest, RTN_THROW);
+  for (const IPAddress& prefix : m_routesExcluded) {
+    rtmSendRoute(RTM_DELROUTE, prefix, RTN_THROW);
   }
+  m_routesExcluded.clear();
 
   // Interface is down!
   m_ifindex = 0;

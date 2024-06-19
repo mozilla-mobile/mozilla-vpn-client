@@ -12,6 +12,7 @@
 #include <QMetaEnum>
 #include <QTimer>
 
+#include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -117,6 +118,12 @@ bool Daemon::activate(const InterfaceConfig& config) {
   if (!wgutils()->interfaceExists()) {
     if (!wgutils()->addInterface(config)) {
       logger.error() << "Interface creation failed.";
+      return false;
+    }
+
+    auto lanAddressRanges = Controller::getExcludedIPAddressRanges().flatten();
+    if (!wgutils()->excludeLocalNetworks(lanAddressRanges)) {
+      logger.error() << "LAN exclusion failed.";
       return false;
     }
   }
