@@ -47,17 +47,6 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool rtmSendRoute(int action, const IPAddress& prefix, int type,
                     int flags = 0);
 
-  /**
-   * This table is made up of a single routing rule:
-   *    default dev moz0 proto static scope link
-   *
-   * This rule simply states that all packets that make it here,
-   * just go through the moz0 interface.
-   *
-   * Packets that make it to this table must go through the Wireguard interface.
-   * Firewall rules and ip rules are responsible for making sure of that.
-   */
-  bool setupWireguardRoutingTable(int family);
   void nlsockHandleNewlink(struct nlmsghdr* nlmsg);
   void nlsockHandleDellink(struct nlmsghdr* nlmsg);
   static bool setupCgroupClass(const QString& path, unsigned long classid);
