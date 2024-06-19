@@ -311,7 +311,6 @@ bool WireguardUtilsLinux::deleteInterface() {
   if (!m_firewall.down()) {
     return false;
   }
-  m_routesQueued.clear();
 
   // Clear routing policy rules
   if (!rtmSendRule(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, AF_INET)) {
@@ -359,22 +358,11 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
 }
 
 bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix) {
-  if (!(m_ifflags & IFF_UP)) {
-    // If the interface is not up yet - queue the route for later.
-    m_routesQueued.append(prefix);
-    return true;
-  }
-
   return rtmSendRoute(RTM_NEWROUTE, prefix, RTN_UNICAST,
                       NLM_F_CREATE | NLM_F_REPLACE);
 }
 
 bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddress& prefix) {
-  if (m_routesQueued.removeAll(prefix) > 0) {
-    // If the route is still queued for IFF_UP then nothing to do.
-    return true;
-  }
-
   return rtmSendRoute(RTM_DELROUTE, prefix, RTN_UNICAST);
 }
 
@@ -534,11 +522,7 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
   nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_TABLE, WG_ROUTE_TABLE);
   ssize_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
                           (struct sockaddr*)&nladdr, sizeof(nladdr));
-  if (result != static_cast<ssize_t>(nlmsg->nlmsg_len)) {
-    return false;
-  }
-
-  return true;
+  return (result == static_cast<ssize_t>(nlmsg->nlmsg_len));
 }
 
 bool WireguardUtilsLinux::rtmSendRoute(int action, const IPAddress& dest,
@@ -584,11 +568,7 @@ bool WireguardUtilsLinux::rtmSendRoute(int action, const IPAddress& dest,
   nladdr.nl_family = AF_NETLINK;
   ssize_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
                           (struct sockaddr*)&nladdr, sizeof(nladdr));
-  if (result != static_cast<ssize_t>(nlmsg->nlmsg_len)) {
-    return false;
-  }
-
-  return true;
+  return (result == static_cast<ssize_t>(nlmsg->nlmsg_len));
 }
 
 bool WireguardUtilsLinux::rtmIncludePeer(int action, const IPAddress& prefix,
@@ -696,12 +676,6 @@ void WireguardUtilsLinux::nlsockHandleNewlink(struct nlmsghdr* nlmsg) {
   // Check for the interface going up.
   if ((diff & IFF_UP) && (msg->ifi_flags & IFF_UP)) {
     logger.info() << "Wireguard interface is UP";
-
-    // Setup any routes that are waiting on the interface to go UP.
-    while (!m_routesQueued.isEmpty()) {
-      rtmSendRoute(RTM_NEWROUTE, m_routesQueued.takeLast(), RTN_UNICAST,
-                   NLM_F_CREATE | NLM_F_REPLACE);
-    }
   }
 
   logger.debug() << "RTM_NEWLINK flags:"
