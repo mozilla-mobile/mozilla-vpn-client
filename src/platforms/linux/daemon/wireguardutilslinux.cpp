@@ -23,6 +23,7 @@
 #include <chrono>
 #include <thread>
 
+#include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/linux/linuxdependencies.h"
@@ -220,9 +221,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
     return false;
   }
 
-  // Rules that allow traffic or not are applied on the firewall for Linux.
-  //
-  // To work around the issue, just set default routes for the exit hop.
+  // Configure the allowed addresses for this peer.
   if ((config.m_hopType == InterfaceConfig::SingleHop) ||
       (config.m_hopType == InterfaceConfig::MultiHopExit)) {
     if (!config.m_deviceIpv4Address.isNull()) {
@@ -241,8 +240,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
       }
 
       // Direct multihop exit destinations to use the wireguard table.
-      int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
-      rtmIncludePeer(RTM_NEWRULE, flags, ip);
+      rtmIncludePeer(RTM_NEWRULE, ip, NLM_F_CREATE | NLM_F_REPLACE);
     }
   }
 
@@ -290,7 +288,7 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   // Clear routing policy tweaks for multihop.
   if (config.m_hopType == InterfaceConfig::MultiHopEntry) {
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-      rtmIncludePeer(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, ip);
+      rtmIncludePeer(RTM_DELRULE, ip);
     }
   }
 
@@ -314,6 +312,7 @@ bool WireguardUtilsLinux::deleteInterface() {
   if (!m_firewall.down()) {
     return false;
   }
+  m_routeQueue.clear();
 
   // Clear routing policy rules
   if (!rtmSendRule(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, AF_INET)) {
@@ -358,6 +357,26 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
   }
   wg_free_device(device);
   return peerList;
+}
+
+bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix) {
+  if (!(m_ifflags & IFF_UP)) {
+    // If the interface is not up yet - queue the route for later.
+    m_routeQueue.append(prefix);
+    return true;
+  }
+
+  return rtmSendRoute(RTM_NEWROUTE, prefix, RTN_UNICAST,
+                        NLM_F_CREATE | NLM_F_REPLACE);
+}
+
+bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddress& prefix) {
+  if (m_routeQueue.removeAll(prefix) > 0) {
+    // If the route is still queued for IFF_UP then nothing to do.
+    return true;
+  }
+
+  return rtmSendRoute(RTM_DELROUTE, prefix, RTN_UNICAST);
 }
 
 bool WireguardUtilsLinux::setupWireguardRoutingTable(int family) {
@@ -549,8 +568,62 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
   return true;
 }
 
-bool WireguardUtilsLinux::rtmIncludePeer(int action, int flags,
-                                         const IPAddress& prefix) {
+bool WireguardUtilsLinux::rtmSendRoute(int action, const IPAddress& dest,
+                                       int type, int flags) {
+  constexpr size_t rtm_max_size = sizeof(struct rtmsg) +
+                                  2 * RTA_SPACE(sizeof(uint32_t)) +
+                                  RTA_SPACE(sizeof(struct in6_addr));
+
+  char buf[NLMSG_SPACE(rtm_max_size)];
+  struct nlmsghdr* nlmsg = reinterpret_cast<struct nlmsghdr*>(buf);
+  struct rtmsg* rtm = static_cast<struct rtmsg*>(NLMSG_DATA(nlmsg));
+
+  wg_allowedip ip;
+  if (!buildAllowedIp(&ip, dest)) {
+    logger.warning() << "Invalid destination prefix";
+    return false;
+  }
+
+  // Add a throw routes to the wireguard routing table - which sends
+  // the lookup back to the main table. This should only be used for
+  // setting up LAN address exclusions. This is equivalent to:
+  //     ip route add table $WG_ROUTE_TABLE <destination> throw
+  memset(buf, 0, sizeof(buf));
+  nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
+  nlmsg->nlmsg_type = action;
+  nlmsg->nlmsg_flags = flags | NLM_F_REQUEST | NLM_F_ACK;
+  nlmsg->nlmsg_pid = getpid();
+  nlmsg->nlmsg_seq = m_nlseq++;
+  rtm->rtm_dst_len = ip.cidr;
+  rtm->rtm_family = ip.family;
+  rtm->rtm_type = type;
+  rtm->rtm_table = RT_TABLE_UNSPEC;
+  rtm->rtm_protocol = RTPROT_BOOT;
+  rtm->rtm_scope = RT_SCOPE_UNIVERSE;
+  nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_TABLE, WG_ROUTE_TABLE);
+  if (rtm->rtm_family == AF_INET6) {
+    nlmsg_append_attr(nlmsg, sizeof(buf), RTA_DST, &ip.ip6, sizeof(ip.ip6));
+  } else {
+    nlmsg_append_attr(nlmsg, sizeof(buf), RTA_DST, &ip.ip4, sizeof(ip.ip4));
+  }
+  if (type == RTN_UNICAST) {
+    nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_OIF, m_ifindex);
+  }
+
+  struct sockaddr_nl nladdr;
+  memset(&nladdr, 0, sizeof(nladdr));
+  nladdr.nl_family = AF_NETLINK;
+  ssize_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
+                          (struct sockaddr*)&nladdr, sizeof(nladdr));
+  if (result != static_cast<ssize_t>(nlmsg->nlmsg_len)) {
+    return false;
+  }
+
+  return true;
+}
+
+bool WireguardUtilsLinux::rtmIncludePeer(int action, const IPAddress& prefix,
+                                         int flags) {
   constexpr size_t fib_max_size = sizeof(struct fib_rule_hdr) +
                                   RTA_SPACE(sizeof(struct in6_addr)) +
                                   2 * RTA_SPACE(sizeof(quint32));
@@ -569,7 +642,7 @@ bool WireguardUtilsLinux::rtmIncludePeer(int action, int flags,
   memset(buf, 0, sizeof(buf));
   nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
   nlmsg->nlmsg_type = action;
-  nlmsg->nlmsg_flags = flags;
+  nlmsg->nlmsg_flags = flags | NLM_F_REQUEST | NLM_F_ACK;
   nlmsg->nlmsg_pid = getpid();
   nlmsg->nlmsg_seq = m_nlseq++;
   rule->table = RT_TABLE_UNSPEC;
@@ -656,6 +729,18 @@ void WireguardUtilsLinux::nlsockHandleNewlink(struct nlmsghdr* nlmsg) {
     logger.info() << "Wireguard interface is UP";
     setupWireguardRoutingTable(AF_INET);
     setupWireguardRoutingTable(AF_INET6);
+
+    // Setup LAN exclusions
+    for (const IPAddress& dest :
+        Controller::getExcludedIPAddressRanges().flatten()) {
+      rtmSendRoute(RTM_NEWROUTE, dest, RTN_THROW, NLM_F_CREATE | NLM_F_REPLACE);
+    }
+
+    // Setup any routes that are waiting on the interface to go UP.
+    while (!m_routeQueue.isEmpty()) {
+      rtmSendRoute(RTM_NEWROUTE, m_routeQueue.takeLast(), RTN_UNICAST,
+                   NLM_F_CREATE | NLM_F_REPLACE);
+    }
   }
 
   logger.debug() << "RTM_NEWLINK flags:"
@@ -668,6 +753,12 @@ void WireguardUtilsLinux::nlsockHandleDellink(struct nlmsghdr* nlmsg) {
   // Ignore messages unless they pertain to the wireguard interface.
   if (msg->ifi_index != static_cast<int>(m_ifindex)) {
     return;
+  }
+
+  // Clear LAN exclusions
+  for (const IPAddress& dest :
+       Controller::getExcludedIPAddressRanges().flatten()) {
+    rtmSendRoute(RTM_DELROUTE, dest, RTN_THROW);
   }
 
   // Interface is down!
