@@ -533,6 +533,13 @@ void WireguardUtilsWindows::buildMibForwardRow(const IPAddress& prefix,
   entry->Age = 0;
 }
 bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
+  // Defaults routes are handled by excludeLocalAddresses() instead.
+  // TODO: Support disabling LAN exclusions for Windows?
+  if (prefix.prefixLength() == 0) {
+    return true;
+  }
+
+  // Build the route
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);
 
@@ -550,6 +557,12 @@ bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
 }
 
 bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix) {
+  // Defaults routes are handled by excludeLocalAddresses() instead.
+  // TODO: Support disabling LAN exclusions for Windows?
+  if (prefix.prefixLength() == 0) {
+    return true;
+  }
+
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);
 

@@ -241,44 +241,28 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsMacos::getPeerStatus() {
 }
 
 bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix) {
+  // Defaults routes are handled by excludeLocalAddresses() instead.
+  // TODO: Support disabling LAN exclusions for MacOS?
+  if (prefix.prefixLength() == 0) {
+    return true;
+  }
+
   if (!m_rtmonitor) {
     return false;
   }
-  if (prefix.prefixLength() > 0) {
-    return m_rtmonitor->insertRoute(prefix);
-  }
-
-  // Ensure that we do not replace the default route.
-  if (prefix.type() == QAbstractSocket::IPv4Protocol) {
-    return m_rtmonitor->insertRoute(IPAddress("0.0.0.0/1")) &&
-           m_rtmonitor->insertRoute(IPAddress("128.0.0.0/1"));
-  }
-  if (prefix.type() == QAbstractSocket::IPv6Protocol) {
-    return m_rtmonitor->insertRoute(IPAddress("::/1")) &&
-           m_rtmonitor->insertRoute(IPAddress("8000::/1"));
-  }
-
-  return false;
-}
+  return m_rtmonitor->insertRoute(prefix);}
 
 bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
+  // Defaults routes are handled by excludeLocalAddresses() instead.
+  // TODO: Support disabling LAN exclusions for MacOS?
+  if (prefix.prefixLength() == 0) {
+    return true;
+  }
+
   if (!m_rtmonitor) {
     return false;
   }
-  if (prefix.prefixLength() > 0) {
-    return m_rtmonitor->insertRoute(prefix);
-  }
-
-  // Ensure that we do not replace the default route.
-  if (prefix.type() == QAbstractSocket::IPv4Protocol) {
-    return m_rtmonitor->deleteRoute(IPAddress("0.0.0.0/1")) &&
-           m_rtmonitor->deleteRoute(IPAddress("128.0.0.0/1"));
-  } else if (prefix.type() == QAbstractSocket::IPv6Protocol) {
-    return m_rtmonitor->deleteRoute(IPAddress("::/1")) &&
-           m_rtmonitor->deleteRoute(IPAddress("8000::/1"));
-  } else {
-    return false;
-  }
+  return m_rtmonitor->insertRoute(prefix);
 }
 
 bool WireguardUtilsMacos::addExclusionRoute(const IPAddress& prefix) {
