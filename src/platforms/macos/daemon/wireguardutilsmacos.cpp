@@ -5,6 +5,7 @@
 #include "wireguardutilsmacos.h"
 
 #include <errno.h>
+#include <net/route.h>
 
 #include <QByteArray>
 #include <QDir>
@@ -241,29 +242,65 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsMacos::getPeerStatus() {
 }
 
 bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix) {
-  // Defaults routes are handled by excludeLocalAddresses() instead.
-  // TODO: Support disabling LAN exclusions for MacOS?
-  if (prefix.prefixLength() == 0) {
-    return true;
-  }
-
   if (!m_rtmonitor) {
     return false;
   }
-  return m_rtmonitor->insertRoute(prefix);
+  if (prefix.prefixLength() > 0) {
+    return m_rtmonitor->insertRoute(prefix);
+  }
+
+ // Ensure that we do not replace the default route.
+  if (prefix.type() == QAbstractSocket::IPv4Protocol) {
+    return m_rtmonitor->insertRoute(IPAddress("0.0.0.0/1")) &&
+           m_rtmonitor->insertRoute(IPAddress("128.0.0.0/1"));
+  }
+  if (prefix.type() == QAbstractSocket::IPv6Protocol) {
+    return m_rtmonitor->insertRoute(IPAddress("::/1")) &&
+           m_rtmonitor->insertRoute(IPAddress("8000::/1"));
+  }
+
+  return false;
 }
 
 bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
-  // Defaults routes are handled by excludeLocalAddresses() instead.
-  // TODO: Support disabling LAN exclusions for MacOS?
-  if (prefix.prefixLength() == 0) {
-    return true;
-  }
-
   if (!m_rtmonitor) {
     return false;
   }
-  return m_rtmonitor->insertRoute(prefix);
+
+  // Rmove non-default routes.
+  if (prefix.prefixLength() > 0) {
+    return m_rtmonitor->deleteRoute(prefix);
+  }
+  // Ensure that we do not replace the default route.
+  if (prefix.type() == QAbstractSocket::IPv4Protocol) {
+    return m_rtmonitor->deleteRoute(IPAddress("0.0.0.0/1")) &&
+           m_rtmonitor->deleteRoute(IPAddress("128.0.0.0/1"));
+  } else if (prefix.type() == QAbstractSocket::IPv6Protocol) {
+    return m_rtmonitor->deleteRoute(IPAddress("::/1")) &&
+           m_rtmonitor->deleteRoute(IPAddress("8000::/1"));
+  } else {
+    return false;
+  }
+}
+
+bool WireguardUtilsMacos::excludeLocalNetworks(const QList<IPAddress>& routes) {
+  if (!m_rtmonitor) {
+    return false;
+  }
+
+  // Explicitly discard LAN traffic that makes its way into the tunnel. This
+  // doesn't really exclude the LAN traffic, we just don't take any action to
+  // overrule the routes of other interfaces.
+  bool result = true;
+  for (const auto &prefix : routes) {
+    logger.error() << "Attempting to exclude:" << prefix.toString();
+    if (!m_rtmonitor->insertRoute(prefix, RTF_IFSCOPE | RTF_REJECT)) {
+      result = false;
+    }
+  }
+
+  // TODO: A kill switch would be nice though :)
+  return result;
 }
 
 bool WireguardUtilsMacos::addExclusionRoute(const IPAddress& prefix) {
