@@ -532,6 +532,7 @@ void WireguardUtilsWindows::buildMibForwardRow(const IPAddress& prefix,
   entry->Immortal = false;
   entry->Age = 0;
 }
+
 bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
   // Defaults routes are handled by excludeLocalAddresses() instead.
   // TODO: Support disabling LAN exclusions for Windows?

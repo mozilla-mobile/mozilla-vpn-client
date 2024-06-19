@@ -250,7 +250,8 @@ bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix) {
   if (!m_rtmonitor) {
     return false;
   }
-  return m_rtmonitor->insertRoute(prefix);}
+  return m_rtmonitor->insertRoute(prefix);
+}
 
 bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
   // Defaults routes are handled by excludeLocalAddresses() instead.
