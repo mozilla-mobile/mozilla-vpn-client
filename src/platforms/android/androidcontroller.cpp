@@ -168,7 +168,7 @@ void AndroidController::activate(const InterfaceConfig& config,
   const auto fullAllowedIPs =
       IPAddress::excludeAddresses(config.m_allowedIPAddressRanges, localRoutes);
   QJsonArray jAllowedIPs;
-  foreach (auto item, allowedIPs) {
+  foreach (auto item, fullAllowedIPs) {
     jAllowedIPs.append(QJsonValue(item.toString()));
   }
 
