@@ -17,8 +17,6 @@ class Socks5Client final : public QObject {
   Socks5Client(Socks5* parent, QTcpSocket* socket, uint16_t port);
   ~Socks5Client();
 
- private:
-  void readyRead();
   void configureOutSocket();
 
   /**
@@ -30,9 +28,41 @@ class Socks5Client final : public QObject {
    */
   static qint64 proxy(QIODevice* rx, QIODevice* tx);
 
-  static uint8_t socketErrorToSocks5Rep(QAbstractSocket::SocketError error);
+  enum Socks5Replies : uint8_t {
+    Success = 0x00u,
+    ErrorGeneral = 0x01u,
+    ConnectionNotAllowed = 0x02u,
+    ErrorNetworkUnreachable = 0x03u,
+    ErrorHostUnreachable = 0x04u,
+    ErrorConnectionRefused = 0x05u,
+    ErrorTTLExpired = 0x06u,
+    ErrorCommandNotSupported = 0x07u,
+    ErrorAddressNotSupported = 0x08u,
+  };
+
+  static Socks5Replies socketErrorToSocks5Rep(
+      QAbstractSocket::SocketError error);
+
+  /**
+   * @brief Reads <T> from a QIODevice
+   * Returns T if enough data
+   * was read, std::nothing if nothing was found
+   *
+   * This function has no side effects on the connection
+   * if nothing was returned.
+   *
+   * There is no formal typecheck that the underlying
+   * data of <T> is correct.
+   *
+   * @tparam T - Type to read
+   * @param connection - A QIODevice to read from
+   * @return std::optional<T> - The read T if enough bytes were written.
+   */
+  template <typename T>
+  static std::optional<T> readPaket(QIODevice* connection);
 
  private:
+  void readyRead();
   Socks5* m_parent;
 
   enum {

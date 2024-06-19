@@ -245,6 +245,8 @@ function(mz_add_test_target TARGET_NAME)
         NAME ${TARGET_NAME}
         COMMAND ${TARGET_NAME}
     )
+
+    add_dependencies(build_tests ${TARGET_NAME})
     target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Test)
     target_link_libraries(${TARGET_NAME} PUBLIC
         ${MZ_ADD_TEST_PARENT_TARGET}

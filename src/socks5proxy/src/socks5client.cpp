@@ -65,7 +65,8 @@ PACK(struct ServerResponsePacket {
   uint16_t m_port = 0x00;
 });
 
-ServerResponsePacket createServerResponsePacket(uint8_t rep, uint16_t port) {
+ServerResponsePacket createServerResponsePacket(uint8_t rep,
+                                                uint16_t port = 0x00u) {
   return ServerResponsePacket{0x05, rep, 0x00, 0x01, 0x00, port};
 }
 
@@ -84,27 +85,18 @@ Socks5Client::~Socks5Client() { m_parent->clientDismissed(); }
 void Socks5Client::readyRead() {
   switch (m_state) {
     case ClientGreeting: {
-      if (m_inSocket->bytesAvailable() < (qint64)sizeof(ClientGreetingPacket)) {
+      const auto packet = readPaket<ClientGreetingPacket>(m_inSocket);
+      if (!packet) {
         return;
       }
-
-      ClientGreetingPacket packet;
-      if (m_inSocket->read((char*)&packet, sizeof(ClientGreetingPacket)) !=
-          sizeof(ClientGreetingPacket)) {
-        m_inSocket->close();
-        return;
-      }
-
-      if (packet.version != 0x5) {
-        ServerResponsePacket packet(createServerResponsePacket(
-            0x01 /*  general SOCKS server failure */, 0x00));
+      if (packet.value().version != 0x5) {
+        ServerResponsePacket packet(createServerResponsePacket(ErrorGeneral));
         m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
         m_inSocket->close();
         return;
       }
-
       m_state = AuthenticationMethods;
-      m_authNumber = packet.nauth;
+      m_authNumber = packet.value().nauth;
       [[fallthrough]];
     }
 
@@ -134,59 +126,39 @@ void Socks5Client::readyRead() {
     }
 
     case ClientConnectionRequest: {
-      if (m_inSocket->bytesAvailable() <
-          (qint64)sizeof(ClientConnectionRequestPacket)) {
+      auto const packet = readPaket<ClientConnectionRequestPacket>(m_inSocket);
+      if (!packet) {
         return;
       }
-
-      ClientConnectionRequestPacket packet;
-      if (m_inSocket->read((char*)&packet,
-                           sizeof(ClientConnectionRequestPacket)) !=
-          sizeof(ClientConnectionRequestPacket)) {
-        m_inSocket->close();
-        return;
-      }
-
-      if (packet.version != 0x5 || packet.rsv != 0x00) {
-        ServerResponsePacket packet(createServerResponsePacket(
-            0x01 /*  general SOCKS server failure */, 0x00));
+      if (packet.value().version != 0x5 || packet.value().rsv != 0x00) {
+        ServerResponsePacket packet(createServerResponsePacket(ErrorGeneral));
         m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
         m_inSocket->close();
         return;
       }
-
-      if (packet.cmd != 0x01 /* connection */) {
+      if (packet.value().cmd != 0x01u /* connection */) {
         ServerResponsePacket packet(
-            createServerResponsePacket(0x07 /* Command not supported */, 0x00));
+            createServerResponsePacket(ErrorCommandNotSupported));
         m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
         m_inSocket->close();
         return;
       }
-
       m_state = ClientConnectionAddress;
-      m_addressType = packet.atype;
+      m_addressType = packet.value().atype;
       [[fallthrough]];
     }
 
     case ClientConnectionAddress: {
       if (m_addressType == 0x01 /* Ipv4 */) {
-        if (m_inSocket->bytesAvailable() <
-            (qint64)sizeof(ClientConnectionAddressIpv4Packet)) {
+        auto const packet =
+            readPaket<ClientConnectionAddressIpv4Packet>(m_inSocket);
+        if (!packet) {
           return;
         }
-
-        ClientConnectionAddressIpv4Packet packet;
-        if (m_inSocket->read((char*)&packet,
-                             sizeof(ClientConnectionAddressIpv4Packet)) !=
-            sizeof(ClientConnectionAddressIpv4Packet)) {
-          m_inSocket->close();
-          return;
-        }
-
         struct sockaddr_in sa;
         sa.sin_family = AF_INET;
-        sa.sin_port = ntohs(packet.port);
-        memcpy(&(sa.sin_addr), (void*)&packet.ip_dst, 4);
+        sa.sin_port = ntohs(packet.value().port);
+        memcpy(&(sa.sin_addr), (void*)&packet.value().ip_dst, 4);
 
         m_outSocket = new QTcpSocket(this);
         m_outSocket->connectToHost(QHostAddress((struct sockaddr*)&sa),
@@ -221,23 +193,15 @@ void Socks5Client::readyRead() {
       }
 
       else if (m_addressType == 0x04 /* Ipv6 */) {
-        if (m_inSocket->bytesAvailable() <
-            (qint64)sizeof(ClientConnectionAddressIpv6Packet)) {
+        auto const packet =
+            readPaket<ClientConnectionAddressIpv6Packet>(m_inSocket);
+        if (!packet) {
           return;
         }
-
-        ClientConnectionAddressIpv6Packet packet;
-        if (m_inSocket->read((char*)&packet,
-                             sizeof(ClientConnectionAddressIpv6Packet)) !=
-            sizeof(ClientConnectionAddressIpv6Packet)) {
-          m_inSocket->close();
-          return;
-        }
-
         struct sockaddr_in6 sa;
         sa.sin6_family = AF_INET6;
-        sa.sin6_port = ntohs(packet.port);
-        memcpy(&(sa.sin6_addr), (void*)&packet.ip_dst, 16);
+        sa.sin6_port = ntohs(packet.value().port);
+        memcpy(&(sa.sin6_addr), (void*)&packet.value().ip_dst, 16);
 
         m_outSocket = new QTcpSocket(this);
         m_outSocket->connectToHost(QHostAddress((struct sockaddr*)&sa),
@@ -246,8 +210,8 @@ void Socks5Client::readyRead() {
       }
 
       else {
-        ServerResponsePacket packet(createServerResponsePacket(
-            0x08 /* Address type not supported */, 0x00));
+        ServerResponsePacket packet(
+            createServerResponsePacket(ErrorAddressNotSupported));
         m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
         m_inSocket->close();
         return;
@@ -317,24 +281,45 @@ void Socks5Client::configureOutSocket() {
   connect(m_outSocket, &QTcpSocket::errorOccurred, this,
           [this](QAbstractSocket::SocketError error) {
             if (m_state != Proxy) {
-              ServerResponsePacket packet(createServerResponsePacket(
-                  socketErrorToSocks5Rep(error), 0x00));
+              ServerResponsePacket packet(
+                  createServerResponsePacket(socketErrorToSocks5Rep(error)));
               m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
             }
             m_inSocket->close();
           });
 }
 
-uint8_t Socks5Client::socketErrorToSocks5Rep(
+Socks5Client::Socks5Replies Socks5Client::socketErrorToSocks5Rep(
     QAbstractSocket::SocketError error) {
   switch (error) {
     case QAbstractSocket::HostNotFoundError:
-      return 0x04;  // Host unreachable
-
+      return ErrorHostUnreachable;
     case QAbstractSocket::ConnectionRefusedError:
-      return 0x05;  // Connection refused
-
+      return ErrorConnectionRefused;
+    case QAbstractSocket::NetworkError:
+      return ErrorNetworkUnreachable;
+    case QAbstractSocket::SocketTimeoutError:
+      return ErrorTTLExpired;
     default:
-      return 0x01;  // general SOCKS server failure
+      return ErrorGeneral;
   }
+}
+
+template <typename T>
+std::optional<T> Socks5Client::readPaket(QIODevice* connection) {
+  // There are not enough bytes to read don't touch the connection.
+  if (connection->bytesAvailable() < (qint64)sizeof(T)) {
+    return {};
+  }
+  connection->startTransaction();
+  T packet;
+  if (connection->read((char*)&packet, sizeof(T)) != sizeof(T)) {
+    // If we did not read the correct amount of data
+    // Abort the transaction and reset the buffer, so the
+    // caller can try to read again.
+    connection->rollbackTransaction();
+    return {};
+  }
+  connection->commitTransaction();
+  return packet;
 }

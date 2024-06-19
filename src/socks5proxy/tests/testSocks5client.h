@@ -7,9 +7,11 @@
 #include <QObject>
 #include <QTest>
 
-class TestServer final : public QObject {
+class TestSocks5Client final : public QObject {
   Q_OBJECT
 
  private slots:
-  void testCanConnect();
+  void proxyEmpty();
+  void proxy();
+  void proxyClosed();
 };
