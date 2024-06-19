@@ -57,6 +57,7 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/src/daemon/daemon.h
         ${CMAKE_SOURCE_DIR}/src/daemon/dnsutils.h
         ${CMAKE_SOURCE_DIR}/src/daemon/iputils.h
+        ${CMAKE_SOURCE_DIR}/src/daemon/wireguardutils.cpp
         ${CMAKE_SOURCE_DIR}/src/daemon/wireguardutils.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.h

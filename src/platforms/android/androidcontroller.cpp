@@ -162,8 +162,13 @@ void AndroidController::activate(const InterfaceConfig& config,
   jServer["publicKey"] = config.m_serverPublicKey;
   jServer["port"] = (double)config.m_serverPort;
 
+  // TODO: This could be done better with VpnService.Builder.excludeRoute()
+  // we just need a way to get this config down that far.
+  const auto localRoutes = Controller::getExcludedIPAddressRanges().flatten();
+  const auto fullAllowedIPs =
+      IPAddress::excludeAddresses(config.m_allowedIPAddressRanges, localRoutes);
   QJsonArray jAllowedIPs;
-  foreach (auto item, config.m_allowedIPAddressRanges) {
+  foreach (auto item, allowedIPs) {
     jAllowedIPs.append(QJsonValue(item.toString()));
   }
 

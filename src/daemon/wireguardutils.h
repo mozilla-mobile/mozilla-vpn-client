@@ -43,6 +43,7 @@ class WireguardUtils : public QObject {
 
   virtual bool updateRoutePrefix(const IPAddress& prefix) = 0;
   virtual bool deleteRoutePrefix(const IPAddress& prefix) = 0;
+  virtual bool excludeLocalNetworks(const QList<IPAddress>& addresses);
 
   virtual bool addExclusionRoute(const IPAddress& prefix) {
     Q_UNUSED(prefix);
