@@ -8,10 +8,12 @@
 
 #define MAX_CLIENTS 1024
 
-Socks5::Socks5(QObject* parent, uint16_t port) : QObject(parent) {
+Socks5::Socks5(QObject* parent, uint16_t port,
+               QHostAddress listenAddress = QHostAddress::Any)
+    : QObject(parent) {
   connect(&m_server, &QTcpServer::newConnection, this, &Socks5::newConnection);
-
-  if (!m_server.listen(QHostAddress::Any, port)) {
+  qDebug() << "port" << port;
+  if (!m_server.listen(listenAddress, port)) {
     qDebug() << "Unable to listen to the proxy port" << port;
     return;
   }

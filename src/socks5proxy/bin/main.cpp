@@ -2,8 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QRandomGenerator>
 #include <QTimer>
 
 #include "socks5.h"
@@ -16,6 +18,7 @@ struct Event {
 };
 
 QList<Event> s_events;
+QTimer timer;
 
 static void cleanup() {
   qint64 now = QDateTime::currentMSecsSinceEpoch();
@@ -44,64 +47,139 @@ static QString bytesToString(qint64 bytes) {
   return QString("%1Gb").arg(bytes / 1024 * 1024 * 1024);
 }
 
-static void update(Socks5* socks5) {
-  QString output;
+struct CliOptions {
+  uint16_t port = QRandomGenerator::global()->bounded(49152, 65535);
+  QHostAddress addr = QHostAddress::LocalHost;
+  QString username = {};
+  QString password = {};
+  bool verbose = false;
+};
 
-  {
-    QTextStream out(&output);
-    out << "Connections: " << socks5->connections();
+static CliOptions parseArgs(const QCoreApplication& app) {
+  QCommandLineParser parser;
+  parser.setApplicationDescription(
+      "A Socks5 Proxy allowing to bypass MozillaVPN");
+  parser.addHelpOption();
+  // A boolean option with a single name (-p)
+  QCommandLineOption portOption({"p", "port"}, "The Port to Listen on", "port");
+  parser.addOption(portOption);
 
-    qint64 bytesSent = 0;
-    qint64 bytesReceived = 0;
-    QStringList addresses;
-    for (const Event& event : s_events) {
-      if (!event.m_newConnection.isEmpty() &&
-          !addresses.contains(event.m_newConnection)) {
-        addresses.append(event.m_newConnection);
+  QCommandLineOption addressOption({"a", "address"}, "The Address to Listen on",
+                                   "address");
+  parser.addOption(addressOption);
+
+  QCommandLineOption userOption({"u", "user"}, "The Username", "username");
+  parser.addOption(userOption);
+
+  QCommandLineOption passOption({"P", "password"}, "The password", "password");
+  parser.addOption(passOption);
+
+  QCommandLineOption verboseOption({"v", "verbose"}, "Verbose");
+  parser.addOption(verboseOption);
+  parser.process(app);
+
+  CliOptions out = {};
+  if (parser.isSet(portOption)) {
+    auto portString = parser.value(portOption);
+    const auto p = portString.toInt();
+    qDebug() << "AAAAAAAA" << p;
+    qDebug() << "VBBBBBB" << portString;
+    if (p > 65535 || p <= 0) {
+      qFatal() << "Port is Not Valid";
+    }
+    out.port = p;
+  }
+  if (parser.isSet(addressOption)) {
+    auto valueString = parser.value(addressOption);
+    out.addr = QHostAddress(valueString);
+    qDebug() << "addr" << out.addr;
+  }
+  if (parser.isSet(userOption)) {
+    out.username = parser.value(userOption);
+    qDebug() << "username" << out.username;
+  }
+  if (parser.isSet(passOption)) {
+    out.password = parser.value(passOption);
+    qDebug() << "password" << out.password;
+  }
+  if (parser.isSet(verboseOption)) {
+    out.verbose = true;
+    qDebug() << "verboseOption" << out.verbose;
+  }
+  return out;
+};
+
+static void startVerboseCLI(const Socks5* socks5) {
+  qDebug() << "HELLOOO";
+
+  auto printStatus = [socks5]() {
+    QString output;
+    {
+      QTextStream out(&output);
+      out << "Connections: " << socks5->connections();
+
+      qint64 bytesSent = 0;
+      qint64 bytesReceived = 0;
+      QStringList addresses;
+      for (const Event& event : s_events) {
+        if (!event.m_newConnection.isEmpty() &&
+            !addresses.contains(event.m_newConnection)) {
+          addresses.append(event.m_newConnection);
+        }
+
+        bytesSent += event.m_bytesSent;
+        bytesReceived += event.m_bytesReceived;
       }
 
-      bytesSent += event.m_bytesSent;
-      bytesReceived += event.m_bytesReceived;
+      out << " [" << addresses.join(", ") << "]";
+      out << " Up: " << bytesToString(bytesSent);
+      out << " Down: " << bytesToString(bytesReceived);
     }
 
-    out << " [" << addresses.join(", ") << "]";
-    out << " Up: " << bytesToString(bytesSent);
-    out << " Down: " << bytesToString(bytesReceived);
-  }
+    output.truncate(80);
+    while (output.length() < 80) output.append(' ');
+    QTextStream out(stdout);
+    out << output << '\r';
+  };
+  QObject::connect(socks5, &Socks5::connectionsChanged,
+                   [printStatus]() { printStatus(); });
+  QObject::connect(
+      socks5, &Socks5::incomingConnection,
+      [printStatus](const QString& peerAddress) {
+        s_events.append(
+            Event{peerAddress, 0, 0, QDateTime::currentMSecsSinceEpoch()});
+        printStatus();
+      });
 
-  output.truncate(80);
-  while (output.length() < 80) output.append(' ');
-  QTextStream out(stdout);
-  out << output << '\r';
+  QObject::connect(
+      socks5, &Socks5::dataSentReceived,
+      [printStatus](qint64 sent, qint64 received) {
+        s_events.append(Event{QString(), sent, received,
+                              QDateTime::currentMSecsSinceEpoch()});
+        printStatus();
+      });
+
+  QObject::connect(&timer, &QTimer::timeout, [printStatus]() {
+    cleanup();
+    printStatus();
+  });
+  timer.start(1000);
 }
 
 int main(int argc, char** argv) {
   QCoreApplication app(argc, argv);
+  QCoreApplication::setApplicationName("loophole");
+  QCoreApplication::setApplicationVersion("0.1");
+  auto const config = parseArgs(app);
 
-  Socks5* socks5 = new Socks5(&app, 8888);
-  QObject::connect(socks5, &Socks5::connectionsChanged,
-                   [&]() { update(socks5); });
+  if (!config.username.isEmpty() || !config.password.isEmpty()) {
+    qFatal() << "AAH NOT IMPLENTED SORRYY";
+    return;
+  }
 
-  QObject::connect(
-      socks5, &Socks5::incomingConnection, [&](const QString& peerAddress) {
-        s_events.append(
-            Event{peerAddress, 0, 0, QDateTime::currentMSecsSinceEpoch()});
-        update(socks5);
-      });
-
-  QObject::connect(
-      socks5, &Socks5::dataSentReceived, [&](qint64 sent, qint64 received) {
-        s_events.append(Event{QString(), sent, received,
-                              QDateTime::currentMSecsSinceEpoch()});
-        update(socks5);
-      });
-
-  QTimer timer;
-  QObject::connect(&timer, &QTimer::timeout, [socks5]() {
-    cleanup();
-    update(socks5);
-  });
-  timer.start(1000);
-
+  Socks5* socks5 = new Socks5(&app, config.port, config.addr);
+  if (config.verbose) {
+    startVerboseCLI(socks5);
+  }
   return app.exec();
 }

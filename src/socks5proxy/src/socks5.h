@@ -13,7 +13,7 @@ class Socks5 final : public QObject {
   Q_PROPERTY(uint16_t connections READ connections NOTIFY connectionsChanged);
 
  public:
-  explicit Socks5(QObject* parent, uint16_t port);
+  explicit Socks5(QObject* parent, uint16_t port, QHostAddress listenAddress);
   ~Socks5();
 
   void clientDismissed();
