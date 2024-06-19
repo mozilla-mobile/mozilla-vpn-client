@@ -16,7 +16,7 @@ bool WireguardUtils::excludeLocalNetworks(const QList<IPAddress>& addresses) {
   bool result = true;
   for (auto prefix : IPAddress::excludeAddresses(defaultRoutes, addresses)) {
     if (!updateRoutePrefix(prefix)) {
-        result = false;
+      result = false;
     }
   }
 

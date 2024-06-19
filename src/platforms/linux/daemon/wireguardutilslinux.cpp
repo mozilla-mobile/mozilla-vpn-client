@@ -366,7 +366,7 @@ bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix) {
   }
 
   return rtmSendRoute(RTM_NEWROUTE, prefix, RTN_UNICAST,
-                        NLM_F_CREATE | NLM_F_REPLACE);
+                      NLM_F_CREATE | NLM_F_REPLACE);
 }
 
 bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddress& prefix) {
