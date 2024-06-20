@@ -6,6 +6,7 @@
 #include <QCoreApplication>
 #include <QDateTime>
 #include <QRandomGenerator>
+#include <QString>
 #include <QTimer>
 
 #include "socks5.h"
@@ -111,8 +112,6 @@ static CliOptions parseArgs(const QCoreApplication& app) {
 };
 
 static void startVerboseCLI(const Socks5* socks5) {
-  qDebug() << "HELLOOO";
-
   auto printStatus = [socks5]() {
     QString output;
     {
@@ -182,5 +181,12 @@ int main(int argc, char** argv) {
   if (config.verbose) {
     startVerboseCLI(socks5);
   }
+  qDebug() << "Starting on port" << QString::number(config.port);
+
+  QObject::connect(socks5, &Socks5::incomingConnection,
+                   [](const QString& peerAddress) {
+                     qDebug() << "Connection from  on port" << peerAddress;
+                   });
+
   return app.exec();
 }
