@@ -109,6 +109,10 @@ void ProxyController::stop() {
 }
 
 bool ProxyController::canActivate() {
+  // This is not for prod rn.
+  if (Constants::inProduction()) {
+    return false;
+  }
 #ifndef MZ_WINDOWS
   return false;
 #else
