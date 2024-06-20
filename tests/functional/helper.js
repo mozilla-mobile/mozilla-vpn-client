@@ -357,7 +357,7 @@ module.exports = {
    * if condition returns true.
    *
    * @param {()=> Promise<Boolean>} condition -  A Callable Function, returning
-   *     true if the Condition is fulfulledbcondition
+   *     true if the Condition is fulfilledbycondition
    * @param {*} waitTimeInMilliSecs -
    * @param {string} description - Description of the Condition to debug
    *     Failures
