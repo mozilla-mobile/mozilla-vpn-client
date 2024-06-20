@@ -11,3 +11,8 @@ target_link_libraries(loophole PUBLIC
     Qt6::Network
     libSocks5proxy
 )
+
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/loophole.exe
+    DESTINATION .
+)

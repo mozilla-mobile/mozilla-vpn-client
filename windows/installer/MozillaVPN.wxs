@@ -84,6 +84,7 @@
         <File Source="WdfCoinstaller01011.dll" />
         <File Source="mozillavpn.json" />
         <File Source="mozillavpnnp.exe" />
+        <File Source="loophole.exe" />
 
         <!-- Broker Service -->
         <ServiceInstall

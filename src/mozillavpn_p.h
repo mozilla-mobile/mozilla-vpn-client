@@ -21,6 +21,7 @@
 #include "models/user.h"
 #include "networkwatcher.h"
 #include "profileflow.h"
+#include "proxycontroller.h"
 #include "releasemonitor.h"
 #include "serverlatency.h"
 #include "statusicon.h"
@@ -47,6 +48,7 @@ struct MozillaVPNPrivate {
   Telemetry m_telemetry;
   User m_user;
   TaskGetFeatureListWorker m_taskGetFeatureListWorker;
+  ProxyController m_proxyController;
 };
 
 #endif  // MOZILLAVPN_PRIVATE_H

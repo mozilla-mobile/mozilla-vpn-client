@@ -35,6 +35,7 @@ class SubscriptionData;
 class SupportCategoryModel;
 class Telemetry;
 class User;
+class ProxyController;
 
 class MozillaVPN final : public App {
   Q_OBJECT
@@ -143,6 +144,8 @@ class MozillaVPN final : public App {
   SubscriptionData* subscriptionData() const;
   Telemetry* telemetry() const;
   User* user() const;
+
+  ProxyController* proxyController() const;
 
   // Called at the end of the authentication flow. We can continue adding the
   // device if it doesn't exist yet, or we can go to OFF state.

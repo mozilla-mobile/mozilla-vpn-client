@@ -24,6 +24,7 @@
 #include "mozillavpn.h"
 #include "networkrequest.h"
 #include "networkwatcher.h"
+#include "proxycontroller.h"
 #include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
@@ -399,6 +400,10 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // Splittunnel-feature could have been disabled due to a driver conflict.
   if (Feature::get(Feature::Feature_splitTunnel)->isSupported()) {
     exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
+    // Add the Proxy to the excluded list, if activateable
+    if (vpn->proxyController()->canActivate()) {
+      exitConfig.m_vpnDisabledApps.append(vpn->proxyController()->binaryPath());
+    }
   }
   if (Feature::get(Feature::Feature_alwaysPort53)->isSupported()) {
     dnsPort = ForceDNSPort;

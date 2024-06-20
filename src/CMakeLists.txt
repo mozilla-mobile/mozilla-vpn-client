@@ -52,9 +52,9 @@ target_link_libraries(mozillavpn PRIVATE
 
 if(NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(webextension)
-    add_subdirectory(socks5proxy)
     target_link_libraries(mozillavpn PRIVATE mz_webextension)
 endif()
+add_subdirectory(socks5proxy)
 
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 

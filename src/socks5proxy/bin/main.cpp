@@ -48,7 +48,8 @@ static QString bytesToString(qint64 bytes) {
 }
 
 struct CliOptions {
-  uint16_t port = QRandomGenerator::global()->bounded(49152, 65535);
+  uint16_t port =
+      static_cast<uint16_t>(QRandomGenerator::global()->bounded(49152, 65535));
   QHostAddress addr = QHostAddress::LocalHost;
   QString username = {};
   QString password = {};
@@ -174,7 +175,7 @@ int main(int argc, char** argv) {
 
   if (!config.username.isEmpty() || !config.password.isEmpty()) {
     qFatal() << "AAH NOT IMPLENTED SORRYY";
-    return;
+    return 1;
   }
 
   Socks5* socks5 = new Socks5(&app, config.port, config.addr);
