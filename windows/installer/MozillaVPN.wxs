@@ -84,7 +84,10 @@
         <File Source="WdfCoinstaller01011.dll" />
         <File Source="mozillavpn.json" />
         <File Source="mozillavpnnp.exe" />
+        <!-- loophole binary 
+        TODO: This is currently not supposed to ship, add this later to the package. 
         <File Source="loophole.exe" />
+        -->
 
         <!-- Broker Service -->
         <ServiceInstall
