@@ -119,8 +119,6 @@ void MozillaVPN::requestDeleteAccount() {}
 
 void MozillaVPN::cancelReauthentication() {}
 
-void MozillaVPN::updateViewShown() {}
-
 void MozillaVPN::scheduleRefreshDataTasks() {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}
