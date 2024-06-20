@@ -164,8 +164,8 @@ replace-with = "vendored-sources"
 
 [source.vendored-sources]
 directory = "$(realpath -s --relative-to="${WORKDIR}/${SUBPROJECT}" "$WORKDIR/3rdparty/cargo-deps")"
-done
 EOF
+done
 print G "done."
 
 printn Y "Removing the packaging templates... "
