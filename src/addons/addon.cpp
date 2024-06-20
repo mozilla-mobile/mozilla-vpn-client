@@ -477,12 +477,6 @@ void Addon::updateAddonStatus(Status newStatus) {
   QString newStatusSetting = statusMetaEnum.valueToKey(newStatus);
 
   m_settingGroup->set(ADDON_SETTINGS_STATUS_KEY, newStatusSetting);
-
-  mozilla::glean::sample::addon_state_changed.record(
-      mozilla::glean::sample::AddonStateChangedExtra{
-          ._addonId = m_id,
-          ._state = newStatusSetting,
-      });
 }
 
 void Addon::retranslate() {

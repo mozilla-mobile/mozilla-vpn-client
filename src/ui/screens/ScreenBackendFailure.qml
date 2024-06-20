@@ -37,7 +37,5 @@ MZStackView {
                 statusLinkVisible: true
             }
         );
-
-        Glean.sample.backendFailureViewed.record();
     }
 }

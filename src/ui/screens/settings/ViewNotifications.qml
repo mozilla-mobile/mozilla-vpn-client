@@ -85,8 +85,4 @@ MZViewBase {
             onClicked: MZSettings.serverUnavailableNotification = !MZSettings.serverUnavailableNotification
         }
     }
-
-    Component.onCompleted: {
-        Glean.sample.notificationsViewOpened.record();
-    }
 }

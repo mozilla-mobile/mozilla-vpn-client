@@ -33,8 +33,6 @@ class TestAddon final : public TestHelper {
   void message_load_status();
   void message_dismiss();
 
-  void telemetry_status_change();
-
  private:
   SettingsHolder* m_settingsHolder = nullptr;
 };

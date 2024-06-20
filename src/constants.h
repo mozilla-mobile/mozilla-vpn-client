@@ -169,8 +169,6 @@ TIMEREXPR(captivePortalRequest, 10s, 4s, 0ms)
 TIMEREXPR(statusIconAnimation, 200ms, 200ms, 0ms)
 // How often glean pings are sent
 TIMEREXPR(gleanTimeout, 20min, 20min, 0ms)
-// How often to check in on the controller state
-TIMEREXPR(controllerRecordPeriodicState, 180min, 1min, 0ms)
 #undef TIMEREXPR
 }  // namespace Timers
 

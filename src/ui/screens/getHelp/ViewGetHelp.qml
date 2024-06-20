@@ -35,10 +35,7 @@ MZViewBase {
             iconSource: "qrc:/nebula/resources/externalLink.svg"
             backgroundColor: MZTheme.theme.clickableRowBlue
             width: parent.width - MZTheme.theme.windowMargin
-            onClicked: {
-                Glean.sample.helpMenuHelpCenterOpened.record();
-                MZUrlOpener.openUrlLabel("sumo")
-            }
+            onClicked: MZUrlOpener.openUrlLabel("sumo")
         }
 
         MZExternalLinkListItem {
@@ -50,10 +47,7 @@ MZViewBase {
             iconMirror: MZLocalizer.isRightToLeft
             backgroundColor: MZTheme.theme.iconButtonLightBackground
             width: parent.width - MZTheme.theme.windowMargin
-            onClicked: {
-                Glean.sample.helpContactSupportOpened.record();
-                getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/contactUs/ViewContactUsForm.qml");
-            }
+            onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/contactUs/ViewContactUsForm.qml");
         }
 
         MZExternalLinkListItem {
@@ -65,10 +59,7 @@ MZViewBase {
             iconMirror: !MZFeatureList.get("shareLogs").isSupported && MZLocalizer.isRightToLeft
             backgroundColor: MZFeatureList.get("shareLogs").isSupported ?MZTheme.theme.clickableRowBlue : MZTheme.theme.iconButtonLightBackground
             width: parent.width - MZTheme.theme.windowMargin
-            onClicked: {
-                Glean.sample.helpMenuViewLogsOpened.record();
-                MZLog.requestViewLogs()
-            }
+            onClicked: MZLog.requestViewLogs()
         }
 
         MZExternalLinkListItem {

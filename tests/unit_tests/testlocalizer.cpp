@@ -45,24 +45,6 @@ void TestLocalizer::basic() {
            QVariant());
 }
 
-void testGleanEntries(const QString& language) {
-  QCOMPARE(mozilla::glean::sample::non_default_language_used
-               .testGetNumRecordedErrors(ErrorType::InvalidValue),
-           0);
-  QCOMPARE(mozilla::glean::sample::non_default_language_used
-               .testGetNumRecordedErrors(ErrorType::InvalidOverflow),
-           0);
-
-  auto gleanValues =
-      mozilla::glean::sample::non_default_language_used.testGetValue();
-  QCOMPARE(gleanValues.length(), language.isEmpty() ? 0 : 1);
-
-  if (!language.isEmpty()) {
-    QCOMPARE(gleanValues[0]["extra"].toObject()["language_code"].toString(),
-             language);
-  }
-}
-
 void TestLocalizer::systemLanguage() {
   SettingsManager::instance()->hardReset();
 
@@ -71,25 +53,21 @@ void TestLocalizer::systemLanguage() {
   m_settingsHolder->setLanguageCode("");
   QCOMPARE(m_settingsHolder->languageCode(), "");
   QCOMPARE(l.languageCodeOrSystem(), "en");
-  testGleanEntries(QString());
 
   m_settingsHolder->setLanguageCode("en");
   QCOMPARE(m_settingsHolder->languageCode(), "en");
   QVERIFY(!m_settingsHolder->previousLanguageCode().isEmpty());
   QCOMPARE(l.languageCodeOrSystem(), "en");
-  testGleanEntries("en");
 
   m_settingsHolder->setLanguageCode("");
   QCOMPARE(m_settingsHolder->languageCode(), "");
   QCOMPARE(m_settingsHolder->previousLanguageCode(), "en");
   QCOMPARE(l.languageCodeOrSystem(), "en");
-  testGleanEntries("en");
 }
 
 void TestLocalizer::localizeCurrency() {
   Localizer l;
   m_settingsHolder->setLanguageCode("en_GB");
-  testGleanEntries("en_GB");
 
   // Invalid iso4217 values
   QCOMPARE(l.localizeCurrency(123.123, "FOOBAR"), "FOOBAR123.12");

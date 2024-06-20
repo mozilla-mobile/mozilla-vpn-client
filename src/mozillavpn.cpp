@@ -1232,11 +1232,6 @@ void MozillaVPN::cancelReauthentication() {
   cancelAuthentication();
 }
 
-void MozillaVPN::updateViewShown() {
-  logger.debug() << "Update view shown";
-  Updater::updateViewShown();
-}
-
 void MozillaVPN::scheduleRefreshDataTasks() {
   QList<Task*> refreshTasks{
       new TaskAccount(ErrorHandler::PropagateError),
