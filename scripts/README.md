@@ -15,7 +15,7 @@ can be used to run tests locally or via the CI.
 
 # Linux-specific scripts
 
-- ./linux/script.sh - compile the client and upload it to the PPA
+- ./linux/script.sh - prepare sources for packaging
 - ./linux/getdeps.py - extract dependencies from the Debian package control file.
 
 # CI tools

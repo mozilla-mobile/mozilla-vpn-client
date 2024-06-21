@@ -37,7 +37,7 @@ jobs:
         shell: bash
         env:
           GITREF: ${{github.ref}}
-        run: ./scripts/linux/script.sh --source --gitref ${GITREF}
+        run: ./scripts/linux/script.sh --gitref ${GITREF}
 
       - name: Upload source bundle
         uses: actions/upload-artifact@v4

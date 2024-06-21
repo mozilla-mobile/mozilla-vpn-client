@@ -14,4 +14,10 @@ else
     GITREF="refs/heads/${MOZILLAVPN_HEAD_REF}"
 fi
 
-./scripts/linux/script.sh --source -g ${GITREF}
+# Extracted the vendored cargo dependencies ontop.
+CARGO_OPTIONS=""
+if [[ -d ${MOZ_FETCHES_DIR}/cargo-deps ]]; then
+   CARGO_OPTIONS="--cargo-deps ${MOZ_FETCHES_DIR}/cargo-deps"
+fi
+
+./scripts/linux/script.sh -g ${GITREF} ${CARGO_OPTIONS}

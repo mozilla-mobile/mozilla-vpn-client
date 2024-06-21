@@ -11,11 +11,11 @@ set -e
 REVISION=1
 RELEASE=
 GITREF=
-SOURCEONLY=N
 PPA_URL=
 DPKG_SIGN="--no-sign"
 RPM=N
 DEB=N
+VENDOR_CARGO_SRC=
 
 if [ -f .env ]; then
   . .env
@@ -28,7 +28,7 @@ helpFunction() {
   print N "  -r, --release DIST     Build packages for distribution DIST"
   print N "  -g, --gitref REF       Generated version suffix from REF"
   print N "  -v, --version REV      Set package revision to REV"
-  print N "      --source           Build source packages only (no binary)"
+  print N "      --cargo-deps DIR   Vendor cargo dependencies from DIR"
   print N ""
   print N "Signing options:"
   print N "      --sign             Enable package signing (default: disabled)"
@@ -64,7 +64,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --source)
-    SOURCEONLY=Y
+    # Deprecated option - ignore it.
     shift
     ;;
   --sign)
@@ -78,6 +78,11 @@ while [[ $# -gt 0 ]]; do
     ;;
   --no-sign)
     DPKG_SIGN="--no-sign"
+    shift
+    ;;
+  --cargo-deps)
+    VENDOR_CARGO_SRC="$2"
+    shift
     shift
     ;;
   *)
@@ -140,16 +145,27 @@ printn Y "Downloading Go dependencies..."
 (cd $WORKDIR/linux/netfilter && go mod vendor)
 print G "done."
 
-printn Y "Downloading Rust dependencies (extension)..."
-(cd $WORKDIR/extension/bridge && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
-print G "done."
+if [ -d "$VENDOR_CARGO_SRC" ]; then
+  mkdir -p $WORKDIR/3rdparty/cargo-deps
+  rsync -a "$VENDOR_CARGO_SRC/" $WORKDIR/3rdparty/cargo-deps
+else
+  printn Y "Downloading Rust dependencies..."
+  cargo vendor --manifest-path $WORKDIR/Cargo.toml $WORKDIR/3rdparty/cargo-deps > /dev/null
+fi
+for MANIFEST in $(git ls-files -c 'Cargo.toml'); do
+    SUBPROJECT=$(dirname ${MANIFEST})
+    CONFIGFILE="${SUBPROJECT}/.cargo/config.toml"
+    echo "Generating ${CONFIGFILE}"
 
-printn Y "Downloading Rust dependencies (signature)..."
-(cd $WORKDIR/signature && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
-print G "done."
+    mkdir -p $WORKDIR/${SUBPROJECT}
+    cat << EOF > $WORKDIR/${CONFIGFILE}
+[source.crates-io]
+replace-with = "vendored-sources"
 
-printn Y "Downloading Rust dependencies (qtglean)..."
-(cd $WORKDIR/qtglean && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
+[source.vendored-sources]
+directory = "$(realpath -s --relative-to="${WORKDIR}/${SUBPROJECT}" "$WORKDIR/3rdparty/cargo-deps")"
+EOF
+done
 print G "done."
 
 printn Y "Removing the packaging templates... "
@@ -208,53 +224,16 @@ build_deb_source() {
   (cd $WORKDIR && dpkg-buildpackage --build=source $DPKG_SIGN --no-check-builddeps) || die "Failed"
 }
 
-## If we are just doing source packaging, then build the dpkg and rpm sources.
-if [ "$SOURCEONLY" == "Y" ]; then
-  print Y "Building RPM sources"
-  build_rpm_source
+print Y "Building RPM sources"
+build_rpm_source
 
-  print Y "Building Debian sources"
-  build_deb_source
+print Y "Building Debian sources"
+build_deb_source
 
-  print Y "Building Flatpak sources"
-  build_flatpak_manifest
-
-  print Y "Cleaning up working directory..."
-  rm -rf $WORKDIR || die "Failed"
-
-  print G "All done."
-  exit 0
-fi
-
-## Prepare the distribution's packaging sources
-case $RELEASE in
-  fedora|rpm)
-    print Y "Building RPM packages for $distro"
-    build_rpm_source
-    ;;
-  
-  flatpak)
-    print Y "Building Flatpak sources"
-    build_flatpak_manifest
-    ;;
-
-  *)
-    print Y "Building Debian packages for $RELEASE"
-    build_deb_source $RELEASE
-    ;;
-esac
+print Y "Building Flatpak sources"
+build_flatpak_manifest
 
 print Y "Cleaning up working directory..."
 rm -rf $WORKDIR || die "Failed"
-
-## Build Binary packages
-if [ "$SOURCEONLY" != "Y" ]; then
-  for changeset in $(find . -type f -name '*_source.changes'); do
-    print Y "Building binary package from $changeset"
-    dpkg-source -x ${changeset%_source.changes}.dsc
-    (cd $WORKDIR && dpkg-buildpackage --build=binary $DPKG_SIGN) || die "Failed"
-    rm -rf $WORKDIR
-  done
-fi
 
 print G "All done."
