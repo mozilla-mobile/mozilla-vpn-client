@@ -48,7 +48,7 @@ class Controller : public QObject, public LogSerializer {
   };
   /**
    * @brief Who asked the Connection
-   * to be Iniated? A Webextension
+   * to be Initiated? A Webextension
    * or a User Interaction inside the Client?
    */
   enum ActivationPrincipal {
