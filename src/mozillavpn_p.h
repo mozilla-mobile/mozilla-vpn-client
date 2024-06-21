@@ -21,11 +21,14 @@
 #include "models/user.h"
 #include "networkwatcher.h"
 #include "profileflow.h"
-#include "proxycontroller.h"
 #include "releasemonitor.h"
 #include "serverlatency.h"
 #include "statusicon.h"
 #include "telemetry.h"
+
+#if defined MZ_PROXY_ENABLED
+#  include "proxycontroller.h"
+#endif
 
 struct MozillaVPNPrivate {
   CaptivePortal m_captivePortal;
@@ -48,7 +51,9 @@ struct MozillaVPNPrivate {
   Telemetry m_telemetry;
   User m_user;
   TaskGetFeatureListWorker m_taskGetFeatureListWorker;
+#if defined MZ_PROXY_ENABLED
   ProxyController m_proxyController;
+#endif
 };
 
 #endif  // MOZILLAVPN_PRIVATE_H

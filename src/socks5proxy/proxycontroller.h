@@ -5,9 +5,6 @@
 
 #pragma once
 
-#include <QByteArray>
-#include <QCoreApplication>
-#include <QJsonObject>
 #include <QObject>
 #include <QPointer>
 #include <QProcess>

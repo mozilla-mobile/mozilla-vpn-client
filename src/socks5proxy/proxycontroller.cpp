@@ -29,9 +29,6 @@ Logger logger("ProxyController");
 const QString ProxyController::binaryPath() {
   auto binaryPath = QCoreApplication::applicationFilePath();
   auto info = QFileInfo(binaryPath);
-  if (!info.exists()) {
-    Q_ASSERT(false);
-  }
   QDir dir = info.absoluteDir();
   return dir.filePath(LOOPHOLE_BIN);
 }

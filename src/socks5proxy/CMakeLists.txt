@@ -7,11 +7,15 @@ if(NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(src)
     add_subdirectory(bin)
     add_subdirectory(tests)
+
+    target_include_directories(shared-sources INTERFACE .)
+    target_compile_definitions(shared-sources INTERFACE MZ_PROXY_ENABLED)
+    target_sources(shared-sources INTERFACE
+        proxycontroller.cpp
+        proxycontroller.h
+    )
+
+
 endif()
 
-target_include_directories(shared-sources INTERFACE .)
-target_sources(shared-sources INTERFACE
-    proxycontroller.cpp
-    proxycontroller.h
-)
 

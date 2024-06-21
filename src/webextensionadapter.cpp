@@ -20,7 +20,9 @@
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
-#include "proxycontroller.h"
+#if defined MZ_PROXY_ENABLED
+#  include "proxycontroller.h"
+#endif
 #include "settingsholder.h"
 #include "webextensionadapter.h"
 
@@ -105,7 +107,6 @@ void WebExtensionAdapter::writeState() {
 
 QJsonObject WebExtensionAdapter::serializeStatus() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  auto* proxyController = vpn->proxyController();
 
   QJsonObject locationObj;
   locationObj["exit_country_code"] = vpn->serverData()->exitCountryCode();
@@ -139,7 +140,9 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
     int index = meta->indexOfEnumerator(qt_getEnumName(state));
     obj["vpn"] = meta->enumerator(index).valueToKey(state);
   }
+#if defined MZ_PROXY_ENABLED
   {
+    auto* proxyController = vpn->proxyController();
     QJsonObject p;
     std::visit(match{
                    [&p](ProxyController::Stopped s) {
@@ -154,6 +157,12 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
                proxyController->state());
     obj["localProxy"] = p;
   }
+#else
+  QJsonObject p;
+  p["available"] = false;
+  p["url"] = "";
+  obj["localProxy"] = p;
+#endif
 
   return obj;
 }

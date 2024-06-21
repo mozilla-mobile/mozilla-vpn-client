@@ -87,7 +87,7 @@ static CliOptions parseArgs(const QCoreApplication& app) {
     qDebug() << "AAAAAAAA" << p;
     qDebug() << "VBBBBBB" << portString;
     if (p > 65535 || p <= 0) {
-      qFatal() << "Port is Not Valid";
+      qFatal("Port is Not Valid");
     }
     out.port = p;
   }
@@ -173,7 +173,8 @@ int main(int argc, char** argv) {
   auto const config = parseArgs(app);
 
   if (!config.username.isEmpty() || !config.password.isEmpty()) {
-    qFatal() << "AAH NOT IMPLENTED SORRYY";
+    // Todo: actually do auth.
+    qFatal("AAH NOT IMPLENTED SORRYY");
     return 1;
   }
 
