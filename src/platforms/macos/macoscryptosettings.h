@@ -14,10 +14,16 @@ class MacOSCryptoSettings final : public CryptoSettings {
 
   void resetKey() override;
   QByteArray getKey(const QByteArray& metadata) override;
-  CryptoSettings::Version getSupportedVersion() override;
+  CryptoSettings::Version getSupportedVersion() override {
+    return m_keyVersion;
+  }
 
  private:
+  static bool checkCodesign();
+  static bool checkEntitlement(const QString& name);
+
   bool m_initialized = false;
+  CryptoSettings::Version m_keyVersion = CryptoSettings::NoEncryption;
   QByteArray m_key;
   QString m_appId;
 };
