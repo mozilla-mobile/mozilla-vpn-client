@@ -108,6 +108,7 @@ void LocalSocketController::initializeInternal() {
   m_daemonState = eInitializing;
 
   logger.debug() << "Connecting to:" << m_path;
+  m_socket->abort();
   m_socket->connectToServer(m_path);
 }
 
