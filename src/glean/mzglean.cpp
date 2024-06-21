@@ -107,7 +107,6 @@ void MZGlean::initialize(const QString& channel) {
                              QLocale::system().name().toUtf8());
       return;
     }
-
 #  if defined(MZ_IOS)
     new IOSGleanBridge(SettingsHolder::instance()->gleanEnabled(), channel);
 #  elif defined(MZ_ANDROID)
