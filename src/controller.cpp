@@ -397,6 +397,7 @@ void Controller::activateInternal(
   exitConfig.m_serverPublicKey = exitServer.publicKey();
   exitConfig.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
   exitConfig.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
+  exitConfig.m_serverPort = exitServer.choosePort();
   exitConfig.m_allowedIPAddressRanges = allowedIPList;
   exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
 #if defined(MZ_ANDROID) || defined(MZ_IOS)
