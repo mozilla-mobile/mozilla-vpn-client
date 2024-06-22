@@ -9,7 +9,9 @@
 #include "logger.h"
 
 #import <Foundation/Foundation.h>
-#import <Security/SecTask.h>
+#ifdef MZ_MACOS
+#  import <Security/SecTask.h>
+#endif
 
 namespace {
 Logger logger("MacOSCryptoSettings");
@@ -138,7 +140,7 @@ bool MacOSCryptoSettings::checkCodesign() {
 
 // static
 bool MacOSCryptoSettings::checkEntitlement(const QString& name) {
-#ifdef MZ_MACOS  // Convert the entitlement to a string.
+#ifdef MZ_MACOS
   SecTaskRef task = SecTaskCreateFromSelf(kCFAllocatorSystemDefault);
   if (task == nullptr) {
     return false;
