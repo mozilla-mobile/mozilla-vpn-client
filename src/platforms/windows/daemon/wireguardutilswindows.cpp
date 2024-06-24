@@ -581,11 +581,3 @@ bool WireguardUtilsWindows::excludeLocalNetworks(const QList<IPAddress>& address
 
   return result;
 }
-
-bool WireguardUtilsWindows::addExclusionRoute(const IPAddress& prefix) {
-  return m_routeMonitor.addExclusionRoute(prefix);
-}
-
-bool WireguardUtilsWindows::deleteExclusionRoute(const IPAddress& prefix) {
-  return m_routeMonitor.deleteExclusionRoute(prefix);
-}
