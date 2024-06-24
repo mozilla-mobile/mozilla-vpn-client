@@ -321,7 +321,7 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   // Enable the windows firewall
   NET_IFINDEX ifindex;
   ConvertInterfaceLuidToIndex(&luid, &ifindex);
-  if (!WindowsFirewall::instance()->enableKillSwitch(ifindex)) {
+  if (!WindowsFirewall::instance()->enableInterface(ifindex)) {
     logger.error() << "Failed enabling Killswitch";
     WindowsFirewall::instance()->disableKillSwitch();
     return false;
@@ -579,5 +579,10 @@ bool WireguardUtilsWindows::excludeLocalNetworks(const QList<IPAddress>& address
     }
   }
 
-  return result;
+  // Permit LAN traffic through the firewall.
+  if (!WindowsFirewall::instance()->enableLanBypass(addresses)) {
+    result = false;
+  }
+
+  return true;
 }
