@@ -49,13 +49,11 @@
 #  include "platforms/dummy/dummycontroller.h"
 #endif
 
-#ifndef MZ_IOS
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
 // private address range.
 constexpr const char* MULLVAD_PROXY_RANGE = "10.124.0.0";
 constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
-#endif
 
 namespace {
 Logger logger("Controller");
