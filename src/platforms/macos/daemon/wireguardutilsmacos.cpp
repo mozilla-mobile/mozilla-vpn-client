@@ -302,20 +302,6 @@ bool WireguardUtilsMacos::excludeLocalNetworks(const QList<IPAddress>& routes) {
   return result;
 }
 
-bool WireguardUtilsMacos::addExclusionRoute(const IPAddress& prefix) {
-  if (!m_rtmonitor) {
-    return false;
-  }
-  return m_rtmonitor->addExclusionRoute(prefix);
-}
-
-bool WireguardUtilsMacos::deleteExclusionRoute(const IPAddress& prefix) {
-  if (!m_rtmonitor) {
-    return false;
-  }
-  return m_rtmonitor->deleteExclusionRoute(prefix);
-}
-
 QString WireguardUtilsMacos::uapiCommand(const QString& command) {
   QLocalSocket socket;
   QTimer uapiTimeout;
