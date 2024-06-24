@@ -84,8 +84,6 @@ static CliOptions parseArgs(const QCoreApplication& app) {
   if (parser.isSet(portOption)) {
     auto portString = parser.value(portOption);
     const auto p = portString.toInt();
-    qDebug() << "AAAAAAAA" << p;
-    qDebug() << "VBBBBBB" << portString;
     if (p > 65535 || p <= 0) {
       qFatal("Port is Not Valid");
     }
@@ -94,19 +92,15 @@ static CliOptions parseArgs(const QCoreApplication& app) {
   if (parser.isSet(addressOption)) {
     auto valueString = parser.value(addressOption);
     out.addr = QHostAddress(valueString);
-    qDebug() << "addr" << out.addr;
   }
   if (parser.isSet(userOption)) {
     out.username = parser.value(userOption);
-    qDebug() << "username" << out.username;
   }
   if (parser.isSet(passOption)) {
     out.password = parser.value(passOption);
-    qDebug() << "password" << out.password;
   }
   if (parser.isSet(verboseOption)) {
     out.verbose = true;
-    qDebug() << "verboseOption" << out.verbose;
   }
   return out;
 };
