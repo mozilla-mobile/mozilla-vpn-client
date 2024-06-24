@@ -21,6 +21,8 @@
 #include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
+#include "tasks/controlleraction/taskcontrolleraction.h"
+#include "taskscheduler.h"
 #include "webextensionadapter.h"
 
 namespace {
@@ -43,10 +45,22 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
   m_commands = QList<RequestType>({
       RequestType{"activate",
                   [](const QJsonObject&) {
-                    MozillaVPN::instance()->activate();
+                    auto t = new TaskControllerAction(
+                        TaskControllerAction::eActivateForExtension);
+                    TaskScheduler::scheduleTask(t);
+                    QJsonObject obj;
+                    obj["ok"] = true;
                     return QJsonObject();
                   }},
-
+      RequestType{"deactivate",
+                  [](const QJsonObject&) {
+                    auto t = new TaskControllerAction(
+                        TaskControllerAction::eDeactivateForExtension);
+                    TaskScheduler::scheduleTask(t);
+                    QJsonObject obj;
+                    obj["ok"] = true;
+                    return QJsonObject();
+                  }},
       RequestType{"servers",
                   [this](const QJsonObject&) {
                     QJsonObject servers;
@@ -85,7 +99,8 @@ WebExtensionAdapter::~WebExtensionAdapter() {
 }
 
 void WebExtensionAdapter::writeState() {
-  QJsonObject obj = serializeStatus();
+  QJsonObject obj;
+  obj["status"] = serializeStatus();
   obj["t"] = "status";
 
   emit onOutgoingMessage(obj);
@@ -122,6 +137,10 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
 
   {
     Controller::State state = vpn->controller()->state();
+    if (state == Controller::StateOnPartial) {
+      state = Controller::StateOn;  // Old extensions like MAC dont know and
+                                    // dont need to know about this state.
+    }
     const QMetaObject* meta = qt_getEnumMetaObject(state);
     int index = meta->indexOfEnumerator(qt_getEnumName(state));
     obj["vpn"] = meta->enumerator(index).valueToKey(state);
