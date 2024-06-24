@@ -5,8 +5,16 @@
 
 mz_add_test_target(testSocks5client
     SOURCES
-        testSocks5client.cpp
-        testSocks5client.h
+        testsocks5client.cpp
+        testsocks5client.h
+    DEPENDENCIES
+        libSocks5proxy
+)
+
+mz_add_test_target(testSocks5
+    SOURCES
+        testsocks5.cpp
+        testsocks5.h
     DEPENDENCIES
         libSocks5proxy
 )

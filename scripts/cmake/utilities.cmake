@@ -239,6 +239,9 @@ function(mz_add_test_target TARGET_NAME)
     qt_add_executable(${TARGET_NAME}
         ${MZ_ADD_TEST_SOURCES}
     )
+    target_compile_definitions(${TARGET_NAME} PRIVATE
+        "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
+    )
     set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "Tests")
 
     add_test(
