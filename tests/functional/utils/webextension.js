@@ -59,7 +59,8 @@ function getMessageStream(sock = new net.Socket) {
           const out = data.slice(0, len)
           data = data.slice(len)
           return out;
-        } while (data.length != 0) {
+        };
+        while (data.length != 0) {
           const header = nom(4)
           const len = header.readUint32LE(0);
           const payload = nom(len);

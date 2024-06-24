@@ -14,6 +14,7 @@ const {
   readResponseOfType
 } = require('./utils/webextension.js')
 
+if(!vpn.runningOnWasm()) {
 
 describe('WebExtension API', function() {
   this.timeout(60000);
@@ -87,3 +88,5 @@ describe('WebExtension API', function() {
        sock.destroy();
      });
 });
+
+}
