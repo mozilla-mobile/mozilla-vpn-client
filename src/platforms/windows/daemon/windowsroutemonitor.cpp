@@ -13,6 +13,12 @@ namespace {
 Logger logger("WindowsRouteMonitor");
 };  // namespace
 
+// Attempt to mark routing entries that we create with a relatively
+// high metric. This ensures that we can skip over routes of our own
+// creation when processing route changes, and ensures that we give
+// way to other routing entries.
+constexpr const ULONG EXCLUSION_ROUTE_METRIC = 0x5e72;
+
 // Called by the kernel on route changes - perform some basic filtering and
 // invoke the routeChanged slot to do the real work.
 static void routeChangeCallback(PVOID context, PMIB_IPFORWARD_ROW2 row,
@@ -30,6 +36,11 @@ static void routeChangeCallback(PVOID context, PMIB_IPFORWARD_ROW2 row,
       return;
     }
   } else {
+    return;
+  }
+  // Ignore route changes that we created.
+  if ((row->Protocol == MIB_IPPROTO_NETMGMT) &&
+      (row->Metric == EXCLUSION_ROUTE_METRIC)) {
     return;
   }
 
@@ -55,6 +66,29 @@ static int prefixcmp(const void* a, const void* b, size_t bits) {
   }
 
   return 0;
+}
+
+static bool routeContainsDest(const PMIB_IPFORWARD_ROW2 route,
+                              const PMIB_IPFORWARD_ROW2 dest) {
+  const IP_ADDRESS_PREFIX* routePrefix = &route->DestinationPrefix;
+  const IP_ADDRESS_PREFIX* destPrefix = &dest->DestinationPrefix;
+  if (routePrefix->Prefix.si_family != destPrefix->Prefix.si_family) {
+    return false;
+  }
+  if (routePrefix->PrefixLength > destPrefix->PrefixLength) {
+    return false;
+  }
+  if (routePrefix->Prefix.si_family == AF_INET) {
+    return prefixcmp(&routePrefix->Prefix.Ipv4.sin_addr,
+                    &destPrefix->Prefix.Ipv4.sin_addr,
+                    routePrefix->PrefixLength) == 0;
+  } if (routePrefix->Prefix.si_family == AF_INET6) {
+    return prefixcmp(&routePrefix->Prefix.Ipv6.sin6_addr,
+                    &destPrefix->Prefix.Ipv6.sin6_addr,
+                    routePrefix->PrefixLength) == 0;
+  } else {
+    return false;
+  }
 }
 
 WindowsRouteMonitor::WindowsRouteMonitor(QObject* parent) : QObject(parent) {
@@ -126,38 +160,24 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
     if (row->InterfaceLuid.Value == m_luid) {
       continue;
     }
-    // Ignore host routes, and shorter potential matches.
-    if (row->DestinationPrefix.PrefixLength >=
-        data->DestinationPrefix.PrefixLength) {
+    if (row->DestinationPrefix.PrefixLength < bestMatch) {
       continue;
     }
-    if (row->DestinationPrefix.PrefixLength < bestMatch) {
+    // Ignore routes of our own creation.
+    if ((row->Protocol == data->Protocol) && (row->Metric == data->Metric)) {
       continue;
     }
 
     // Check if the routing table entry matches the destination.
+    if (!routeContainsDest(row, data)) {
+      continue;
+    }
     if (data->DestinationPrefix.Prefix.si_family == AF_INET6) {
-      if (row->DestinationPrefix.Prefix.Ipv6.sin6_family != AF_INET6) {
-        continue;
-      }
       if (!m_validInterfacesIpv6.contains(row->InterfaceLuid.Value)) {
         continue;
       }
-      if (prefixcmp(&data->DestinationPrefix.Prefix.Ipv6.sin6_addr,
-                    &row->DestinationPrefix.Prefix.Ipv6.sin6_addr,
-                    row->DestinationPrefix.PrefixLength) != 0) {
-        continue;
-      }
     } else if (data->DestinationPrefix.Prefix.si_family == AF_INET) {
-      if (row->DestinationPrefix.Prefix.Ipv4.sin_family != AF_INET) {
-        continue;
-      }
       if (!m_validInterfacesIpv4.contains(row->InterfaceLuid.Value)) {
-        continue;
-      }
-      if (prefixcmp(&data->DestinationPrefix.Prefix.Ipv4.sin_addr,
-                    &row->DestinationPrefix.Prefix.Ipv4.sin_addr,
-                    row->DestinationPrefix.PrefixLength) != 0) {
         continue;
       }
     } else {
@@ -174,9 +194,13 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
 
     // If we got here, then this is the longest prefix match so far.
     memcpy(&nexthop, &row->NextHop, sizeof(SOCKADDR_INET));
-    bestLuid = row->InterfaceLuid.Value;
     bestMatch = row->DestinationPrefix.PrefixLength;
     bestMetric = row->Metric;
+    if (bestMatch == data->DestinationPrefix.PrefixLength) {
+      bestLuid = 0; // Don't write to the table if we find an exact match.
+    } else {
+      bestLuid = row->InterfaceLuid.Value;
+    }
   }
 
   // If neither the interface nor next-hop have changed, then do nothing.
@@ -185,13 +209,15 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
     return;
   }
 
-  // Update the routing table entry.
+  // Delete the previous routing table entry, if any.
   if (data->InterfaceLuid.Value != 0) {
     DWORD result = DeleteIpForwardEntry2(data);
     if ((result != NO_ERROR) && (result != ERROR_NOT_FOUND)) {
       logger.error() << "Failed to delete route:" << result;
     }
   }
+
+  // Update the routing table entry.
   data->InterfaceLuid.Value = bestLuid;
   memcpy(&data->NextHop, &nexthop, sizeof(SOCKADDR_INET));
   if (data->InterfaceLuid.Value != 0) {
@@ -232,7 +258,7 @@ bool WindowsRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
   // Set the rest of the flags for a static route.
   data->ValidLifetime = 0xffffffff;
   data->PreferredLifetime = 0xffffffff;
-  data->Metric = 0;
+  data->Metric = EXCLUSION_ROUTE_METRIC;
   data->Protocol = MIB_IPPROTO_NETMGMT;
   data->Loopback = false;
   data->AutoconfigureAddress = false;

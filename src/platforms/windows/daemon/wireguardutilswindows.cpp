@@ -339,6 +339,7 @@ bool WireguardUtilsWindows::deleteInterface() {
   if (!m_adapter) {
     return false;
   }
+  m_routeMonitor.flushExclusionRoutes();
   if (m_deviceIpv4_Handle != 0) {
     DeleteIPAddress(m_deviceIpv4_Handle);
   }
@@ -534,12 +535,6 @@ void WireguardUtilsWindows::buildMibForwardRow(const IPAddress& prefix,
 }
 
 bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
-  // Defaults routes are handled by excludeLocalAddresses() instead.
-  // TODO: Support disabling LAN exclusions for Windows?
-  if (prefix.prefixLength() == 0) {
-    return true;
-  }
-
   // Build the route
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);
@@ -558,12 +553,7 @@ bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
 }
 
 bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix) {
-  // Defaults routes are handled by excludeLocalAddresses() instead.
-  // TODO: Support disabling LAN exclusions for Windows?
-  if (prefix.prefixLength() == 0) {
-    return true;
-  }
-
+  // Build the route
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);
 
@@ -578,6 +568,18 @@ bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix) {
                    << "result:" << result;
   }
   return result == NO_ERROR;
+}
+
+bool WireguardUtilsWindows::excludeLocalNetworks(const QList<IPAddress>& addresses) {
+  // For each destination - attempt to exclude it from the VPN tunnel.
+  bool result = true;
+  for (const IPAddress& prefix : addresses) {
+    if (!m_routeMonitor.addExclusionRoute(prefix)) {
+      result = false;
+    }
+  }
+
+  return result;
 }
 
 bool WireguardUtilsWindows::addExclusionRoute(const IPAddress& prefix) {
