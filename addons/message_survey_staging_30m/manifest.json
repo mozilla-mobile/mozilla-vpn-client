@@ -6,6 +6,8 @@
   "type": "message",
   "conditions": {
     "env": "staging",
+    "min_os_version": {"ios": "14.0", "macos": "12.4"},
+    "max_os_version": {"ios": "24", "macos": "19.4"},
     "translation_threshold": 0,
     "trigger_time": 1800
   },

@@ -87,6 +87,8 @@ Add-ons can enable and disable themselves using the `conditions` key in the mani
 | locales | An array of locales to be checked | Array of string | No | Yes |
 | min_client_version | The min client version | String | No | No |
 | max_client_version | The max client version | String | No | No |
+| min_os_version | The max OS version | String | No | No |
+| max_os_version | The max OS version | String | No | No |
 | platforms | An array of platforms to be checked | Array of string | No | No |
 | settings | An array of Condition Setting object. See below | Array of Condition Setting object | No | No |
 | trigger_time | A number identifying the number of seconds from the first execution of the client | Integer |  No | Yes |
@@ -162,7 +164,7 @@ cmake --build build-addons
 
 4. Expose the generated build directory through a webservice. For example: `python3 -m http.server --directory build-addons/`
 5. Open the dev-menu from the get-help view and set a custom add-on URL: `http://localhost:8000/`
-6. Scroll down and disable the signature-addon feature from the dev-menu, list of features
+6. In the dev menu's list of features, disable the addon-signature feature
 7. Be sure you are doing all of this using a staging environment
 
 If all has done correctly, you can see the app fetching the manifest.json (and

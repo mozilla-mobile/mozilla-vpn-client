@@ -202,7 +202,7 @@ QList<ConditionCallback> s_conditionCallbacks{
 
        if (!min.isEmpty() &&
            VersionUtils::compareVersions(min, currentVersion) == 1) {
-         logger.info() << "Min version is" << min << " curent"
+         logger.info() << "Min version is" << min << " current"
                        << currentVersion;
          return false;
        }
@@ -221,11 +221,66 @@ QList<ConditionCallback> s_conditionCallbacks{
 
        if (!max.isEmpty() &&
            VersionUtils::compareVersions(max, currentVersion) == -1) {
-         logger.info() << "Max version is" << max << " curent"
+         logger.info() << "Max version is" << max << " current"
                        << currentVersion;
          return false;
        }
 
+       return true;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
+     },
+     nullptr},
+
+    {"min_os_version",
+     [](const QJsonValue& value) -> bool {
+       QJsonObject minOsDictionary = value.toObject();
+
+       QString currentPlatform = Env::platform();
+       if (minOsDictionary.isEmpty()) {
+         return true;
+       }
+
+       for (const QString& key : minOsDictionary.keys()) {
+         if (currentPlatform == key) {
+           QString currentVersion = Env::osVersion();
+           QString minOsVersion = minOsDictionary[key].toString();
+           logger.info() << "Min OS version is" << minOsVersion << " current"
+                         << currentVersion;
+           return (VersionUtils::compareVersions(minOsVersion,
+                                                 currentVersion) <= 0);
+         }
+       }
+
+       logger.info() << "Min OS rule not set for" << currentPlatform;
+       return true;
+     },
+     [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
+       return nullptr;
+     },
+     nullptr},
+
+    {"max_os_version",
+     [](const QJsonValue& value) -> bool {
+       QJsonObject maxOsDictionary = value.toObject();
+       QString currentPlatform = Env::platform();
+       if (maxOsDictionary.isEmpty()) {
+         return true;
+       }
+
+       for (const QString& key : maxOsDictionary.keys()) {
+         if (currentPlatform == key) {
+           QString currentVersion = Env::osVersion();
+           QString maxOsVersion = maxOsDictionary[key].toString();
+           logger.info() << "Max OS version is" << maxOsVersion << " current"
+                         << currentVersion;
+           return (VersionUtils::compareVersions(maxOsVersion,
+                                                 currentVersion) >= 0);
+         }
+       }
+
+       logger.info() << "Min OS rule not set for" << currentPlatform;
        return true;
      },
      [](QObject*, const QJsonValue&) -> AddonConditionWatcher* {
