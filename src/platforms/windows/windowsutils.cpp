@@ -42,7 +42,7 @@ void WindowsUtils::windowsLog(const QString& msg) {
 
 // Static
 QString WindowsUtils::windowsVersion() {
-    QSettings regCurrentVersion(
+  QSettings regCurrentVersion(
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
       QSettings::NativeFormat);
 
