@@ -91,7 +91,8 @@ static bool routeContainsDest(const PMIB_IPFORWARD_ROW2 route,
   }
 }
 
-WindowsRouteMonitor::WindowsRouteMonitor(QObject* parent) : QObject(parent) {
+WindowsRouteMonitor::WindowsRouteMonitor(quint64 luid, QObject* parent) :
+    QObject(parent), m_luid(luid) {
   MZ_COUNT_CTOR(WindowsRouteMonitor);
   logger.debug() << "WindowsRouteMonitor created.";
 

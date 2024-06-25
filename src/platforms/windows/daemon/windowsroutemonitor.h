@@ -21,15 +21,14 @@ class WindowsRouteMonitor final : public QObject {
   Q_OBJECT
 
  public:
-  WindowsRouteMonitor(QObject* parent);
+  WindowsRouteMonitor(quint64 luid, QObject* parent);
   ~WindowsRouteMonitor();
 
   bool addExclusionRoute(const IPAddress& prefix);
   bool deleteExclusionRoute(const IPAddress& prefix);
   void flushExclusionRoutes();
 
-  void setLuid(quint64 luid) { m_luid = luid; }
-  quint64 getLuid() { return m_luid; }
+  quint64 getLuid() const { return m_luid; }
 
  public slots:
   void routeChanged();
@@ -42,7 +41,7 @@ class WindowsRouteMonitor final : public QObject {
   QMap<quint64, ULONG> m_interfaceMetricsIpv4;
   QMap<quint64, ULONG> m_interfaceMetricsIpv6;
 
-  quint64 m_luid = 0;
+  const quint64 m_luid = 0;
   HANDLE m_routeHandle = INVALID_HANDLE_VALUE;
 };
 
