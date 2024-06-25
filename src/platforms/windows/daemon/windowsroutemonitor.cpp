@@ -105,7 +105,7 @@ WindowsRouteMonitor::~WindowsRouteMonitor() {
   logger.debug() << "WindowsRouteMonitor destroyed.";
 }
 
-void WindowsRouteMonitor::updateValidInterfaces(int family) {
+void WindowsRouteMonitor::updateInterfaceMetrics(int family) {
   PMIB_IPINTERFACE_TABLE table;
   DWORD result = GetIpInterfaceTable(family, &table);
   if (result != NO_ERROR) {
@@ -116,10 +116,10 @@ void WindowsRouteMonitor::updateValidInterfaces(int family) {
 
   // Flush the list of interfaces that are valid for routing.
   if ((family == AF_INET) || (family == AF_UNSPEC)) {
-    m_validInterfacesIpv4.clear();
+    m_interfaceMetricsIpv4.clear();
   }
   if ((family == AF_INET6) || (family == AF_UNSPEC)) {
-    m_validInterfacesIpv6.clear();
+    m_interfaceMetricsIpv6.clear();
   }
 
   // Rebuild the list of interfaces that are valid for routing.
@@ -135,12 +135,12 @@ void WindowsRouteMonitor::updateValidInterfaces(int family) {
     if (row->Family == AF_INET) {
       logger.debug() << "Interface" << row->InterfaceIndex
                      << "is valid for IPv4 routing";
-      m_validInterfacesIpv4.append(row->InterfaceLuid.Value);
+      m_interfaceMetricsIpv4[row->InterfaceLuid.Value] = row->Metric;
     }
     if (row->Family == AF_INET6) {
       logger.debug() << "Interface" << row->InterfaceIndex
                      << "is valid for IPv6 routing";
-      m_validInterfacesIpv6.append(row->InterfaceLuid.Value);
+      m_interfaceMetricsIpv6[row->InterfaceLuid.Value] = row->Metric;
     }
   }
 }
@@ -172,30 +172,38 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
     if (!routeContainsDest(row, data)) {
       continue;
     }
+
+    // Compute the combined interface and routing metric.
+    ULONG routeMetric = row->Metric;
     if (data->DestinationPrefix.Prefix.si_family == AF_INET6) {
-      if (!m_validInterfacesIpv6.contains(row->InterfaceLuid.Value)) {
+      if (!m_interfaceMetricsIpv6.contains(row->InterfaceLuid.Value)) {
         continue;
       }
+      routeMetric += m_interfaceMetricsIpv6[row->InterfaceLuid.Value];
     } else if (data->DestinationPrefix.Prefix.si_family == AF_INET) {
-      if (!m_validInterfacesIpv4.contains(row->InterfaceLuid.Value)) {
+      if (!m_interfaceMetricsIpv4.contains(row->InterfaceLuid.Value)) {
         continue;
       }
+      routeMetric += m_interfaceMetricsIpv4[row->InterfaceLuid.Value];
     } else {
       // Unsupported destination address family.
       continue;
+    }
+    if (routeMetric < row->Metric) {
+      routeMetric = ULONG_MAX;
     }
 
     // Prefer routes with lower metric if we find multiple matches
     // with the same prefix length.
     if ((row->DestinationPrefix.PrefixLength == bestMatch) &&
-        (row->Metric >= bestMetric)) {
+        (routeMetric >= bestMetric)) {
       continue;
     }
 
     // If we got here, then this is the longest prefix match so far.
     memcpy(&nexthop, &row->NextHop, sizeof(SOCKADDR_INET));
     bestMatch = row->DestinationPrefix.PrefixLength;
-    bestMetric = row->Metric;
+    bestMetric = routeMetric;
     if (bestMatch == data->DestinationPrefix.PrefixLength) {
       bestLuid = 0; // Don't write to the table if we find an exact match.
     } else {
@@ -280,7 +288,7 @@ bool WindowsRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
     delete data;
     return false;
   }
-  updateValidInterfaces(family);
+  updateInterfaceMetrics(family);
   updateExclusionRoute(data, table);
   FreeMibTable(table);
 
@@ -334,7 +342,7 @@ void WindowsRouteMonitor::routeChanged() {
     return;
   }
 
-  updateValidInterfaces(AF_UNSPEC);
+  updateInterfaceMetrics(AF_UNSPEC);
   for (MIB_IPFORWARD_ROW2* data : m_exclusionRoutes) {
     updateExclusionRoute(data, table);
   }

@@ -11,6 +11,8 @@
 #include <winsock2.h>
 #include <ws2ipdef.h>
 
+#include <QHash>
+#include <QMap>
 #include <QObject>
 
 #include "ipaddress.h"
@@ -34,11 +36,11 @@ class WindowsRouteMonitor final : public QObject {
 
  private:
   void updateExclusionRoute(MIB_IPFORWARD_ROW2* data, void* table);
-  void updateValidInterfaces(int family);
+  void updateInterfaceMetrics(int family);
 
   QHash<IPAddress, MIB_IPFORWARD_ROW2*> m_exclusionRoutes;
-  QList<quint64> m_validInterfacesIpv4;
-  QList<quint64> m_validInterfacesIpv6;
+  QMap<quint64, ULONG> m_interfaceMetricsIpv4;
+  QMap<quint64, ULONG> m_interfaceMetricsIpv6;
 
   quint64 m_luid = 0;
   HANDLE m_routeHandle = INVALID_HANDLE_VALUE;
