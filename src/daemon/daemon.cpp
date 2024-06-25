@@ -339,9 +339,12 @@ bool Daemon::deactivate(bool emitSignals) {
     }
   }
 
-  if (emitSignals) {
-    emit disconnected();
-  }
+  // Emit signals upon return.
+  auto guard = qScopeGuard([&]() {
+    if (emitSignals) {
+      emit disconnected();
+    }
+  });
 
   // Cleanup DNS
   if (!dnsutils()->restoreResolvers()) {

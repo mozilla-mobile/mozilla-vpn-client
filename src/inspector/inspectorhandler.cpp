@@ -731,7 +731,7 @@ static QList<InspectorCommand> s_commands{
 
     InspectorCommand{"glean_test_reset", "Resets Glean for testing", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
-                       MZGlean::initialize();
+                       MZGlean::initialize("testing");
                        return QJsonObject();
                      }},
 

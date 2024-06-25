@@ -13,6 +13,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "platforms/dummy/dummyapplistprovider.h"
 #include "settingsholder.h"
 
 #if defined(MZ_ANDROID)
@@ -21,8 +22,6 @@
 #  include "platforms/linux/linuxapplistprovider.h"
 #elif defined(MZ_WINDOWS)
 #  include "platforms/windows/windowsapplistprovider.h"
-#else
-#  include "platforms/dummy/dummyapplistprovider.h"
 #endif
 
 #include <QFileDialog>
@@ -50,21 +49,14 @@ bool sortApplicationCallback(const AppPermission::AppDescription& a,
 
 }  // namespace
 
-AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
+AppPermission::AppPermission(AppListProvider* provider, QObject* parent)
+    : QAbstractListModel(parent) {
   MZ_COUNT_CTOR(AppPermission);
   Q_ASSERT(!s_instance);
   s_instance = this;
 
-  m_listprovider =
-#if defined(MZ_ANDROID)
-      new AndroidAppListProvider(this);
-#elif defined(MZ_LINUX)
-      new LinuxAppListProvider(this);
-#elif defined(MZ_WINDOWS)
-      new WindowsAppListProvider(this);
-#else
-      new DummyAppListProvider(this);
-#endif
+  m_listprovider = provider;
+  provider->setParent(this);
 
   connect(SettingsHolder::instance(), &SettingsHolder::vpnDisabledAppsChanged,
           this, [this]() {
@@ -75,18 +67,33 @@ AppPermission::AppPermission(QObject* parent) : QAbstractListModel(parent) {
   connect(m_listprovider, &AppListProvider::newAppList, this,
           &AppPermission::receiveAppList);
 }
+
 AppPermission::~AppPermission() {
   MZ_COUNT_DTOR(AppPermission);
   Q_ASSERT(s_instance = this);
   s_instance = nullptr;
 }
 
+// static
 AppPermission* AppPermission::instance() {
   if (s_instance == nullptr) {
-    new AppPermission(qApp);
+#if defined(MZ_ANDROID)
+    s_instance = new AppPermission(new AndroidAppListProvider(qApp));
+#elif defined(MZ_LINUX)
+    s_instance = new AppPermission(new LinuxAppListProvider(qApp));
+#elif defined(MZ_WINDOWS)
+    s_instance = new AppPermission(new WindowsAppListProvider(qApp));
+#else
+    s_instance = new AppPermission(new DummyAppListProvider(qApp));
+#endif
   }
   Q_ASSERT(s_instance);
   return s_instance;
+}
+
+// static
+void AppPermission::mock() {
+  s_instance = new AppPermission(new DummyAppListProvider(qApp));
 }
 
 QHash<int, QByteArray> AppPermission::roleNames() const {

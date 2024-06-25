@@ -4,6 +4,7 @@
 
 #include "controller.h"
 
+#include <QFileInfo>
 #include <QNetworkInformation>
 
 #include "app.h"
@@ -16,6 +17,7 @@
 #include "frontend/navigator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
+#include "localsocketcontroller.h"
 #include "logger.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
@@ -39,14 +41,12 @@
 #  include "platforms/linux/networkmanagercontroller.h"
 #elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
-#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
-#  include "localsocketcontroller.h"
 #elif defined(MZ_IOS)
 #  include "platforms/ios/ioscontroller.h"
 #elif defined(MZ_ANDROID)
 #  include "platforms/android/androidcontroller.h"
-#else
-#  include "platforms/dummy/dummycontroller.h"
+#elif defined(MZ_WASM)
+#  include "platforms/wasm/wasmcontroller.h"
 #endif
 
 // The Mullvad proxy services are located at internal IPv4 addresses in the
@@ -103,6 +103,31 @@ Controller::~Controller() {
   MZ_COUNT_DTOR(Controller);
 }
 
+// Check if we can use a LocalSocketController and return its path if so.
+QString Controller::useLocalSocketPath() const {
+#ifndef MZ_WASM
+  // The control socket can be overriden for testing.
+  QString path = qEnvironmentVariable("MVPN_CONTROL_SOCKET");
+  if (!Constants::inProduction() && !path.isEmpty()) {
+    return path;
+  }
+#endif
+
+#if defined(MZ_MACOS)
+  // MacOS had a path change, so check both /tmp/ and /var/.
+  if (QFileInfo::exists(Constants::MACOS_DAEMON_VAR_PATH)) {
+    return Constants::MACOS_DAEMON_VAR_PATH;
+  } else {
+    return Constants::MACOS_DAEMON_TMP_PATH;
+  }
+#elif defined(MZ_WINDOWS)
+  return Constants::WINDOWS_DAEMON_PATH;
+#endif
+
+  // Otherwise, we will need some other controller.
+  return QString();
+}
+
 void Controller::initialize() {
   logger.debug() << "Initializing the controller";
 
@@ -118,19 +143,26 @@ void Controller::initialize() {
   m_serverData = *MozillaVPN::instance()->serverData();
   m_nextServerData = *MozillaVPN::instance()->serverData();
 
+  QString path = useLocalSocketPath();
+  if (!path.isEmpty()) {
+    m_impl.reset(new LocalSocketController(path));
+  } else {
+    // We must use a specialized platform controller
 #if defined(MZ_FLATPAK)
-  m_impl.reset(new NetworkManagerController());
+    m_impl.reset(new NetworkManagerController());
 #elif defined(MZ_LINUX)
-  m_impl.reset(new LinuxController());
-#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
-  m_impl.reset(new LocalSocketController());
+    m_impl.reset(new LinuxController());
 #elif defined(MZ_IOS)
-  m_impl.reset(new IOSController());
+    m_impl.reset(new IOSController());
 #elif defined(MZ_ANDROID)
-  m_impl.reset(new AndroidController());
+    m_impl.reset(new AndroidController());
+#elif defined(MZ_WASM)
+    m_impl.reset(new WasmController());
 #else
-  m_impl.reset(new DummyController());
+    qCritical() << "No platform controller available for "
+                << Constants::PLATFORM_NAME;
 #endif
+  }
 
   connect(m_impl.get(), &ControllerImpl::connected, this,
           &Controller::connected);
@@ -960,13 +992,11 @@ void Controller::backendFailure() {
   }
 }
 
-#ifdef MZ_DUMMY
 QString Controller::currentServerString() const {
   return QString("%1-%2-%3-%4")
       .arg(m_serverData.exitCountryCode(), m_serverData.exitCityName(),
            m_serverData.entryCountryCode(), m_serverData.entryCityName());
 }
-#endif
 
 // These will eventually go back to the controller but to get the code working
 // for now they will reside here
@@ -988,9 +1018,7 @@ bool Controller::activate(const ServerData& serverData,
   logger.debug() << "Set isSwitchingServer to" << isSwitchingServer;
 
   m_serverData = serverData;
-#ifdef MZ_DUMMY
   emit currentServerChanged();
-#endif
 
   if (m_state == Controller::StateOff) {
     if (m_portalDetected) {

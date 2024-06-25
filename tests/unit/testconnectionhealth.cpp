@@ -11,7 +11,7 @@
 
 void TestConnectionHealth::init() {
   m_settingsHolder = new SettingsHolder();
-  MZGlean::initialize();
+  MZGlean::initialize("testing");
 }
 
 void TestConnectionHealth::cleanup() { delete m_settingsHolder; }

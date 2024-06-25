@@ -2,20 +2,22 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef DUMMYCONTROLLER_H
-#define DUMMYCONTROLLER_H
+#ifndef WASMCONTROLLER_H
+#define WASMCONTROLLER_H
 
 #include <QDateTime>
 #include <QObject>
 
 #include "controllerimpl.h"
 
-class DummyController final : public ControllerImpl {
-  Q_DISABLE_COPY_MOVE(DummyController)
+class MockDaemon;
+
+class WasmController final : public ControllerImpl {
+  Q_DISABLE_COPY_MOVE(WasmController)
 
  public:
-  DummyController();
-  ~DummyController();
+  WasmController();
+  ~WasmController();
 
   void initialize(const Device* device, const Keys* keys) override {
     Q_UNUSED(device);
@@ -36,11 +38,7 @@ class DummyController final : public ControllerImpl {
   void cleanupBackendLogs() override;
 
  private:
-  int64_t m_txBytes = 0;
-  int64_t m_rxBytes = 0;
-  bool m_connected = false;
-  QString m_publicKey;
-  QTimer m_delayTimer;
+  MockDaemon* m_mock = nullptr;
 };
 
-#endif  // DUMMYCONTROLLER_H
+#endif  // WASMCONTROLLER_H

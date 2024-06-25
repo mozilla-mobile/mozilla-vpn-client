@@ -97,9 +97,7 @@ class Controller : public QObject, public LogSerializer {
                          const QString& deviceIpv4Address, uint64_t txBytes,
                          uint64_t rxBytes)>&& callback);
 
-#ifdef MZ_DUMMY
   QString currentServerString() const;
-#endif
 
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
@@ -125,11 +123,9 @@ class Controller : public QObject, public LogSerializer {
   Q_PROPERTY(bool isDeviceConnected READ isDeviceConnected NOTIFY
                  isDeviceConnectedChanged);
 
-#ifdef MZ_DUMMY
-  // This is just for testing purposes. Not exposed in prod.
+  // This is just for testing purposes.
   Q_PROPERTY(QString currentServerString READ currentServerString NOTIFY
                  currentServerChanged);
-#endif
 
  private slots:
   void timerTimeout();
@@ -156,9 +152,7 @@ class Controller : public QObject, public LogSerializer {
   void activationBlockedForCaptivePortal();
   void isDeviceConnectedChanged();
 
-#ifdef MZ_DUMMY
   void currentServerChanged();
-#endif
 
  public:
   Controller();
@@ -219,6 +213,7 @@ class Controller : public QObject, public LogSerializer {
   bool processNextStep();
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
+  QString useLocalSocketPath() const;
 
  private:
   QTimer m_timer;

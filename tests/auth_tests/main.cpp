@@ -31,6 +31,10 @@ int main(int argc, char* argv[]) {
   Q_UNUSED(leakDetector);
 #endif
 
+  QCoreApplication::setApplicationName("Mozilla VPN Auth Tests");
+  QCoreApplication::setOrganizationName("Mozilla Testing");
+  QCoreApplication::setApplicationVersion(Constants::versionString());
+
   SettingsHolder settingsHolder;
   Constants::setStaging();
 

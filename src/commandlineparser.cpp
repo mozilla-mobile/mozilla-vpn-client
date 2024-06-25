@@ -4,6 +4,7 @@
 
 #include "commandlineparser.h"
 
+#include <QCoreApplication>
 #include <QTextStream>
 
 #include "command.h"
@@ -48,6 +49,10 @@ int CommandLineParser::parse(int argc, char* argv[]) {
 #endif
     tokens.append(QString(argv[i]));
   }
+
+  QCoreApplication::setApplicationName("Mozilla VPN");
+  QCoreApplication::setOrganizationName("Mozilla");
+  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   QList<Option*> options;
 

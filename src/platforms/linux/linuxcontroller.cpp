@@ -160,24 +160,7 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
     return;
   }
 
-  Q_ASSERT(obj.contains("serverIpv4Gateway"));
-  QJsonValue serverIpv4Gateway = obj.value("serverIpv4Gateway");
-  Q_ASSERT(serverIpv4Gateway.isString());
-
-  Q_ASSERT(obj.contains("deviceIpv4Address"));
-  QJsonValue deviceIpv4Address = obj.value("deviceIpv4Address");
-  Q_ASSERT(deviceIpv4Address.isString());
-
-  Q_ASSERT(obj.contains("txBytes"));
-  QJsonValue txBytes = obj.value("txBytes");
-  Q_ASSERT(txBytes.isDouble());
-
-  Q_ASSERT(obj.contains("rxBytes"));
-  QJsonValue rxBytes = obj.value("rxBytes");
-  Q_ASSERT(rxBytes.isDouble());
-
-  emit statusUpdated(serverIpv4Gateway.toString(), deviceIpv4Address.toString(),
-                     txBytes.toDouble(), rxBytes.toDouble());
+  emitStatusFromJson(obj);
 }
 
 void LinuxController::getBackendLogs(

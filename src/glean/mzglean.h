@@ -31,7 +31,7 @@ class MZGlean final : public QObject {
 
   static void registerLogHandler(void (*messageHandler)(int32_t, char*));
 
-  static void initialize();
+  static void initialize(const QString& channel);
   static void shutdown();
 
   static void setDebugViewTag(QString tag);

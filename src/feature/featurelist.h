@@ -68,6 +68,13 @@ FEATURE(customDNS,              // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_true)
 
+FEATURE(enableUpdateServer,         // Feature ID
+        "Enable Update Server",     // Feature name
+        FeatureCallback_hasBalrog,  // Can be flipped on
+        FeatureCallback_hasBalrog,  // Can be flipped off
+        QStringList(),              // feature dependencies
+        FeatureCallback_hasBalrog)
+
 FEATURE(factoryReset,          // Feature ID
         "Factory reset",       // Feature name
         FeatureCallback_true,  // Can be flipped on

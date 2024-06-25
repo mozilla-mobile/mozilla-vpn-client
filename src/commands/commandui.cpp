@@ -18,6 +18,7 @@
 #include "connectionhealth.h"
 #include "constants.h"
 #include "controller.h"
+#include "daemon/mock/mockdaemon.h"
 #include "feature/feature.h"
 #include "fontloader.h"
 #include "glean/generated/metrics.h"
@@ -117,43 +118,58 @@ CommandUI::~CommandUI() { MZ_COUNT_DTOR(CommandUI); }
 
 int CommandUI::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
+  QString appName = tokens[0];
+
+  CommandLineParser::Option hOption = CommandLineParser::helpOption();
+  CommandLineParser::Option minimizedOption("m", "minimized",
+                                            "Start minimized.");
+  CommandLineParser::Option startAtBootOption("s", "start-at-boot",
+                                              "Start at boot (if configured).");
+  CommandLineParser::Option testingOption("t", "testing",
+                                          "Enable testing mode.");
+  CommandLineParser::Option updateOption(
+      "u", "updated", "This execution completes an update flow.");
+
+  QList<CommandLineParser::Option*> options;
+  options.append(&hOption);
+  options.append(&minimizedOption);
+  options.append(&startAtBootOption);
+  options.append(&testingOption);
+  options.append(&updateOption);
+
+  CommandLineParser clp;
+  if (clp.parse(tokens, options, false)) {
+    return 1;
+  }
+
+  if (hOption.m_set) {
+    clp.showHelp(this, appName, options, false, false);
+    return 0;
+  }
+
+  // Change the application organization for testing mode.
+  // This should ensure we wind up with a different settings file.
+  if (testingOption.m_set) {
+    QCoreApplication::setOrganizationName("Mozilla Testing");
+
+    LogHandler::setStderr(true);
+  }
+
   return runQmlApp([&]() {
-    MozillaVPN vpn;
-    vpn.telemetry()->startTimeToFirstScreenTimer();
-
-    QString appName = tokens[0];
-
-    CommandLineParser::Option hOption = CommandLineParser::helpOption();
-    CommandLineParser::Option minimizedOption("m", "minimized",
-                                              "Start minimized.");
-    CommandLineParser::Option startAtBootOption(
-        "s", "start-at-boot", "Start at boot (if configured).");
-    CommandLineParser::Option testingOption("t", "testing",
-                                            "Enable testing mode.");
-    CommandLineParser::Option updateOption(
-        "u", "updated", "This execution completes an update flow.");
-
-    QList<CommandLineParser::Option*> options;
-    options.append(&hOption);
-    options.append(&minimizedOption);
-    options.append(&startAtBootOption);
-    options.append(&testingOption);
-    options.append(&updateOption);
-
-    CommandLineParser clp;
-    if (clp.parse(tokens, options, false)) {
-      return 1;
-    }
-
-    if (hOption.m_set) {
-      clp.showHelp(this, appName, options, false, false);
-      return 0;
-    }
+    Telemetry::startTimeToFirstScreenTimer();
 
     if (testingOption.m_set) {
       Constants::setStaging();
+
+      // Provide a mocked AppListProvider for testing.
+      AppPermission::mock();
+
+      // When running automated tests, create a mocked daemon.
+      MockDaemon* daemon = new MockDaemon(qApp);
+      qputenv("MVPN_CONTROL_SOCKET", daemon->socketPath().toLocal8Bit());
     }
 
+    MozillaVPN vpn;
     logger.info() << "MozillaVPN" << Constants::versionString();
     logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
@@ -233,7 +249,13 @@ int CommandUI::run(QStringList& tokens) {
     ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
     // Glean.rs
-    MZGlean::initialize();
+    QString gleanChannel = "production";
+    if (testingOption.m_set) {
+      gleanChannel = "testing";
+    } else if (!Constants::inProduction()) {
+      gleanChannel = "staging";
+    }
+    MZGlean::initialize(gleanChannel);
     // Clear leftover Glean.js stored data.
     // TODO: This code can be removed starting one year after it is released.
     auto offlineStorageDirectory =
@@ -285,13 +307,6 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MZ_FLATPAK
     XdgStartAtBootWatcher startAtBootWatcher;
-#endif
-
-#ifdef MZ_LINUX
-    // Dependencies - so far, only for linux.
-    if (!LinuxDependencies::checkDependencies()) {
-      return 1;
-    }
 #endif
 
     // Prior to Qt 6.5, there was no default QML import path. We must set one.

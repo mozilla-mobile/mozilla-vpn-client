@@ -75,7 +75,25 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/constants.h
     ${CMAKE_CURRENT_SOURCE_DIR}/controller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/controller.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/controllerimpl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/controllerimpl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/dnsutilsmock.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/dnsutilsmock.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/mockdaemon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/mockdaemon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/mockdaemonserver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/mockdaemonserver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/wireguardutilsmock.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/wireguardutilsmock.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dnshelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dnshelper.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dnspingsender.cpp
@@ -89,6 +107,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/ipaddresslookup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/keyregenerator.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/keyregenerator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/device.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/device.h

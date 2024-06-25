@@ -10,6 +10,13 @@ const fxaEndpoints = require('./servers/fxa_endpoints.js')
 describe('User authentication', function() {
   this.timeout(300000);
 
+  beforeEach(async () => {
+    if (!(await vpn.isFeatureEnabled('inAppAuthentication'))) {
+        await vpn.flipFeatureOn('inAppAuthentication');
+        await vpn.flipFeatureOn('inAppAccountCreate');
+      }
+  });
+
   it('Completes authentication in app', async () => {
     await vpn.authenticateInApp();
   });
@@ -38,10 +45,6 @@ describe('User authentication', function() {
     };
 
     it('Account creation', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
-      }
 
       //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
       await vpn.skipOnboarding();
@@ -185,11 +188,6 @@ describe('User authentication', function() {
     };
 
     it('Account creation with email verification', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
-      }
-
       //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
       await vpn.skipOnboarding();
 
@@ -292,11 +290,6 @@ describe('User authentication', function() {
     };
 
     it('Account creation with TOTP', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
-      }
-
       //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
       await vpn.skipOnboarding();
 
@@ -383,11 +376,6 @@ describe('User authentication', function() {
     };
 
     it('Authentication with unblock code', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
-      }
-
       //skip onboarding. normally done in helper::authenticateInApp(), but this test logs in manually
       await vpn.skipOnboarding();
       
@@ -460,12 +448,6 @@ describe('User authentication', function() {
     };
 
     it('Account creation with stub account', async () => {
-
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
-      }
-
       await vpn.waitForInitialView();
 
       await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
@@ -510,11 +492,6 @@ describe('User authentication', function() {
     };
 
     it('Account creation with SSO account', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-        await vpn.flipFeatureOn('inAppAccountCreate');
-      }
-
       await vpn.waitForInitialView();
 
       await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());

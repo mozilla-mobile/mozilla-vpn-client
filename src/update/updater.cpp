@@ -5,6 +5,7 @@
 #include "updater.h"
 
 #include "constants.h"
+#include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -25,7 +26,9 @@ Updater* Updater::create(
     QObject* parent, bool downloadAndInstall,
     ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy) {
 #ifdef MVPN_BALROG
-  return new Balrog(parent, downloadAndInstall, errorPropagationPolicy);
+  if (Feature::get(Feature::Feature_enableUpdateServer)->isSupported()) {
+    return new Balrog(parent, downloadAndInstall, errorPropagationPolicy);
+  }
 #endif
 
   Q_UNUSED(errorPropagationPolicy);
