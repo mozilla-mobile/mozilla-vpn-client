@@ -46,7 +46,7 @@ QString WindowsUtils::windowsVersion() {
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
       QSettings::NativeFormat);
 
-  return regCurrentVersion.value("CurrentBuild");
+  return regCurrentVersion.value("CurrentBuild").toString();
 }
 
 // static
