@@ -539,6 +539,12 @@ void WireguardUtilsWindows::buildMibForwardRow(const IPAddress& prefix,
 }
 
 bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
+  if (m_routeMonitor && (prefix.prefixLength() == 0)) {
+    // If we are setting up a default route, instruct the route monitor to
+    // capture traffic to all non-excluded destinations
+    m_routeMonitor->setDetaultRouteCapture(true);
+  }
+
   // Build the route
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);
@@ -557,6 +563,11 @@ bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
 }
 
 bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix) {
+  if (m_routeMonitor && (prefix.prefixLength() == 0)) {
+    // Deactivate the route capture feature.
+    m_routeMonitor->setDetaultRouteCapture(false);
+  }
+
   // Build the route
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);
