@@ -9,12 +9,23 @@
 #include "logger.h"
 
 #import <Foundation/Foundation.h>
+#ifdef MZ_MACOS
+#  import <Security/SecTask.h>
+#endif
 
 namespace {
 Logger logger("MacOSCryptoSettings");
 }  // namespace
 
 MacOSCryptoSettings::MacOSCryptoSettings() : CryptoSettings() {
+  if (checkCodesign() && checkEntitlement("keychain-access-groups")) {
+    // If we are signed and have entitlements - we can use the encryption key.
+    m_keyVersion = CryptoSettings::EncryptionChachaPolyV1;
+  } else {
+    logger.warning() << "Disabling encryption: Codesign is invalid";
+    m_keyVersion = CryptoSettings::NoEncryption;
+  }
+
   NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
   if (appId) {
     m_appId = QString::fromNSString(appId);
@@ -106,13 +117,63 @@ QByteArray MacOSCryptoSettings::getKey(const QByteArray& metadata) {
   return m_key;
 }
 
-CryptoSettings::Version MacOSCryptoSettings::getSupportedVersion() {
-  logger.debug() << "Get supported settings method";
-
-  if (getKey(QByteArray()).isEmpty()) {
-    logger.debug() << "No encryption";
-    return CryptoSettings::NoEncryption;
+// static
+bool MacOSCryptoSettings::checkCodesign() {
+#ifdef MZ_MACOS
+  SecTaskRef task = SecTaskCreateFromSelf(kCFAllocatorSystemDefault);
+  CFStringRef signer = SecTaskCopySigningIdentifier(task, nullptr);
+  CFRelease(task);
+  if (signer != nullptr) {
+    logger.debug() << "Got signature from:"
+                   << QString::fromNSString(static_cast<NSString*>(signer));
+    CFRelease(signer);
+    return true;
   }
-  logger.debug() << "Encryption supported!";
-  return CryptoSettings::EncryptionChachaPolyV1;
+  return false;
+#else
+  // For iOS we probably need to roll our own solution by calling the
+  // csopt syscall directly, as the SecTask framework is only available
+  // for MacOS.
+  return true;
+#endif
+}
+
+// static
+bool MacOSCryptoSettings::checkEntitlement(const QString& name) {
+#ifdef MZ_MACOS
+  SecTaskRef task = SecTaskCreateFromSelf(kCFAllocatorSystemDefault);
+  if (task == nullptr) {
+    return false;
+  }
+  CFStringRef cfName = CFStringCreateWithCString(
+      kCFAllocatorSystemDefault, qUtf8Printable(name), kCFStringEncodingUTF8);
+  auto guard = qScopeGuard([&] {
+    CFRelease(task);
+    CFRelease(cfName);
+  });
+
+  CFErrorRef error = nullptr;
+  CFTypeRef result = SecTaskCopyValueForEntitlement(task, cfName, &error);
+  if (error != nullptr) {
+    CFStringRef desc = CFErrorCopyDescription(error);
+    logger.error() << "Failed to check entitlements:"
+                   << QString::fromNSString(static_cast<NSString*>(desc));
+    CFRelease(desc);
+    CFRelease(error);
+  }
+  if (result != nullptr) {
+    CFRelease(result);
+  }
+
+  // Return success if we got anything back from the entitlement.
+  return (result != nullptr);
+#else
+  // For iOS we probably need to roll our own solution by calling the
+  // csopt syscall directly, as the SecTask methods are only available
+  // for MacOS.
+  //
+  // Check out https://github.com/Apple-FOSS-Mirror/security_systemkeychain/
+  // for inspiration, specifically the procinfo() function in src/cs_misc.cpp.
+  return true;
+#endif
 }
