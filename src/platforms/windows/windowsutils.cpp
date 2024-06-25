@@ -16,9 +16,6 @@ namespace {
 Logger logger("WindowsUtils");
 }  // namespace
 
-constexpr const int WINDOWS_11_BUILD =
-    22000;  // Build Number of the first release win 11 iso
-
 QString WindowsUtils::getErrorMessage(quint32 code) {
   LPSTR messageBuffer = nullptr;
   size_t size = FormatMessageA(
@@ -45,15 +42,11 @@ void WindowsUtils::windowsLog(const QString& msg) {
 
 // Static
 QString WindowsUtils::windowsVersion() {
-  QSettings regCurrentVersion(
+    QSettings regCurrentVersion(
       "HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion",
       QSettings::NativeFormat);
 
-  int buildNr = regCurrentVersion.value("CurrentBuild").toInt();
-  if (buildNr >= WINDOWS_11_BUILD) {
-    return "11";
-  }
-  return QSysInfo::productVersion();
+  return regCurrentVersion.value("CurrentBuild");
 }
 
 // static

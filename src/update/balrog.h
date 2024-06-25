@@ -25,8 +25,6 @@ class Balrog final : public Updater {
   void start(Task* task) override;
 
  private:
-  static QString userAgent();
-
   bool processData(Task* task, const QByteArray& data);
   bool fetchSignature(Task* task, NetworkRequest* request,
                       const QByteArray& data);
@@ -44,6 +42,7 @@ class Balrog final : public Updater {
                       QNetworkReply::NetworkError error);
 
  private:
+  static QString buildTarget();
   static QString balrogUrl();
   static QStringList rootCertHashes();
   TemporaryDir m_tmpDir;
