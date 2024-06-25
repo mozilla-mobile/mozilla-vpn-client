@@ -20,6 +20,7 @@
 #include "platforms/windows/windowsutils.h"
 #include "windowsdaemon.h"
 #include "windowsfirewall.h"
+#include "windowsroutemonitor.h"
 #include "wireguard.h"
 DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_PEER_FLAG)
 DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_INTERFACE_FLAG)
@@ -231,8 +232,7 @@ std::unique_ptr<WireguardUtilsWindows> WireguardUtilsWindows::create(
 WireguardUtilsWindows::WireguardUtilsWindows(
     QObject* parent, std::unique_ptr<WireGuardAPI> wireguard)
     : WireguardUtils(parent),
-      m_wireguard_api(std::move(wireguard)),
-      m_routeMonitor(this) {
+      m_wireguard_api(std::move(wireguard)) {
   MZ_COUNT_CTOR(WireguardUtilsWindows);
   logger.debug() << "WireguardUtilsWindows created.";
 }
@@ -300,10 +300,11 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   NET_LUID luid;
   m_wireguard_api->GetAdapterLUID(wireguard_adapter, &luid);
   m_luid = luid.Value;
-  m_routeMonitor.setLuid(luid.Value);
-  auto resetLUIDOnFailure = qScopeGuard([this]() {
-    m_routeMonitor.setLuid(0);
-    m_luid = 0;
+
+  m_routeMonitor = new WindowsRouteMonitor(luid.Value, this);
+  auto destroyRouteMonitorOnFailure = qScopeGuard([this]() {
+    delete m_routeMonitor;
+    m_routeMonitor = nullptr;
   });
 
   // Set the Adapters Address:
@@ -327,7 +328,7 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
     return false;
   };
   cleanupDeviceOnFailure.dismiss();
-  resetLUIDOnFailure.dismiss();
+  destroyRouteMonitorOnFailure.dismiss();
   m_adapter = wireguard_adapter;
   return true;
 }
@@ -339,7 +340,10 @@ bool WireguardUtilsWindows::deleteInterface() {
   if (!m_adapter) {
     return false;
   }
-  m_routeMonitor.flushExclusionRoutes();
+  if (m_routeMonitor) {
+    delete m_routeMonitor;
+    m_routeMonitor = nullptr;
+  }
   if (m_deviceIpv4_Handle != 0) {
     DeleteIPAddress(m_deviceIpv4_Handle);
   }
@@ -401,9 +405,9 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
     return false;
   }
   // Exclude the server address, except for multihop exit servers.
-  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
-    m_routeMonitor.addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-    m_routeMonitor.addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+  if (m_routeMonitor && (config.m_hopType != InterfaceConfig::MultiHopExit)) {
+    m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
+    m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
   }
   return true;
 }
@@ -493,9 +497,9 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
   }
   Q_ASSERT(getPeerStatus().count() < currentPeers);
   // Clear exclustion routes for this peer.
-  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
-    m_routeMonitor.deleteExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-    m_routeMonitor.deleteExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+  if (m_routeMonitor && (config.m_hopType != InterfaceConfig::MultiHopExit)) {
+    m_routeMonitor->deleteExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
+    m_routeMonitor->deleteExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
   }
   // Disable the windows firewall for this peer.
   WindowsFirewall::instance()->disablePeerTraffic(config.m_serverPublicKey);
@@ -571,10 +575,13 @@ bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix) {
 }
 
 bool WireguardUtilsWindows::excludeLocalNetworks(const QList<IPAddress>& addresses) {
+  // If the interface isn't up then something went horribly wrong.
+  Q_ASSERT(m_routeMonitor);
+
   // For each destination - attempt to exclude it from the VPN tunnel.
   bool result = true;
   for (const IPAddress& prefix : addresses) {
-    if (!m_routeMonitor.addExclusionRoute(prefix)) {
+    if (!m_routeMonitor->addExclusionRoute(prefix)) {
       result = false;
     }
   }
@@ -584,5 +591,5 @@ bool WireguardUtilsWindows::excludeLocalNetworks(const QList<IPAddress>& address
     result = false;
   }
 
-  return true;
+  return result;
 }
