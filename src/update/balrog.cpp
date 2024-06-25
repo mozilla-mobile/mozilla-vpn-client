@@ -14,6 +14,7 @@
 #include <QSslKey>
 
 #include "constants.h"
+#include "env.h"
 #include "errorhandler.h"
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
@@ -38,9 +39,9 @@ bool verify_content_signature(const char* x5u_ptr, size_t x5u_length,
 }
 
 #if defined(MZ_WINDOWS)
-constexpr const char* BALROG_WINDOWS_UA = "WINNT_x86_64";
+constexpr const char* BALROG_WINDOWS_BUILD_TARGET = "WINNT_x86_64";
 #elif defined(MZ_MACOS)
-constexpr const char* BALROG_MACOS_UA = "Darwin_x86";
+constexpr const char* BALROG_MACOS_BUILD_TARGET = "Darwin_x86";
 #else
 #  error Platform not supported yet
 #endif
@@ -70,13 +71,13 @@ Balrog::~Balrog() {
 }
 
 // static
-QString Balrog::userAgent() {
+QString Balrog::buildTarget() {
 #if defined(MZ_WINDOWS)
-  return BALROG_WINDOWS_UA;
+  return BALROG_WINDOWS_BUILD_TARGET;
 #elif defined(MZ_MACOS)
-  return BALROG_MACOS_UA;
+  return BALROG_MACOS_BUILD_TARGET;
 #else
-#  error Unsupported platform
+#  error Balrog: Unsupported platform
 #endif
 }
 
@@ -502,8 +503,8 @@ QString Balrog::balrogUrl() {
     channel = "release-cdntest";
   }
 
-  QStringList path = {"json",      "1",     product,      appVersion(),
-                      userAgent(), channel, "update.json"};
+  QStringList path = {"json",        "2",     product,          appVersion(),
+                      buildTarget(), channel, Env::osVersion(), "update.json"};
   QUrl url;
   url.setScheme("https");
   url.setHost(hostname);
