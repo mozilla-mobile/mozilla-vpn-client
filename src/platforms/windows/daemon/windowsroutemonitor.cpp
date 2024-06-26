@@ -370,6 +370,13 @@ bool WindowsRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
   logger.debug() << "Adding exclusion route for"
                  << logger.sensitive(prefix.toString());
 
+  // Silently ignore non-routeable addresses.
+  QHostAddress addr = prefix.address();
+  if (addr.isLoopback() || addr.isBroadcast() || addr.isLinkLocal() ||
+      addr.isMulticast()) {
+    return true;
+  }
+
   if (m_exclusionRoutes.contains(prefix)) {
     logger.warning() << "Exclusion route already exists";
     return false;
