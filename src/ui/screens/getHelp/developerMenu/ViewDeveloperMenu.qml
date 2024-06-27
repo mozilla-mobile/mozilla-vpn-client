@@ -275,27 +275,10 @@ MZViewBase {
             }
         }
 
-        MZButton {
-            id: resetAndQuit
-            objectName: "resetAndQuitButton"
-            property int clickNeeded: 5
-
-            text: "Reset and Quit"
-            onClicked: {
-                if (clickNeeded) {
-                    text = "Reset and Quit (" + clickNeeded + ")";
-                    --clickNeeded;
-                    return;
-                }
-
-                VPN.hardResetAndQuit()
-            }
-        }
-
         ColumnLayout {
             Layout.alignment: Qt.AlignHCenter
             Layout.fillWidth: true
-            Layout.maximumWidth: resetAndQuit.width
+            Layout.maximumWidth: unstableNetworkExtension.width
             Layout.topMargin: MZTheme.theme.vSpacingSmall
 
             MZTextBlock {
