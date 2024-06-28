@@ -363,30 +363,8 @@ Item {
                 property: "color"
                 duration: 200
             }
-
-        },
-        Transition {
-            to: "stateDisconnecting"
-
-            ColorAnimation {
-                target: boxBackground
-                property: "color"
-                duration: 200
-            }
-
-            ColorAnimation {
-                target: logoTitle
-                property: "color"
-                duration: 200
-            }
-
-            ColorAnimation {
-                target: logoSubtitle
-                property: "color"
-                duration: 200
-            }
-
         }
+        // There is no color transition when going to "disconnecting" to fix a bug. Disconnecting screen wasn't being shown: https://mozilla-hub.atlassian.net/browse/VPN-6449?focusedCommentId=903140
     ]
 
     MZAnimatedRings {
