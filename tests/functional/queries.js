@@ -265,8 +265,7 @@ const screenGetHelp = {
 };
 
 const screenDeveloperMenu = {
-  SCREEN: new QmlQueryComposer('//developerScreen-flickable'),
-  RESET_AND_QUIT_BUTTON: new QmlQueryComposer('//resetAndQuitButton'),
+  SCREEN: new QmlQueryComposer('//developerScreen-flickable')
 };
 
 const screenSettings = {

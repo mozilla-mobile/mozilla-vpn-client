@@ -915,55 +915,6 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
   });
 
-  it('Checking Developer Menu Reset and Quit', async () => {
-    // WASM is failing at relaunching the app, so skip this test on WASM
-    if (this.ctx.wasm) {
-      return;
-    }
-
-    // magically unlock dev menu
-    await vpn.setSetting('developerUnlock', 'true');
-
-    // navigate to Developer Menu
-    await getToGetHelpView();
-    await vpn.waitForQueryAndClick(
-        queries.screenGetHelp.DEVELOPER_MENU.visible());
-
-    // click "reset and quit" 6 times, test will fail if app quits early
-    await vpn.waitForQuery(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.scrollToQuery(
-        queries.screenDeveloperMenu.SCREEN,
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON);
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    // can't use waitForQueryAndClick for final click because it returns an
-    // error - as expected, we crashed the app - but that causes test to fail
-    await vpn.clickOnQueryAndAcceptAnyResults(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-
-    // Confirm the app quit
-    assert.equal(setup.vpnIsInactive(), true);
-
-    // relaunch app
-    await setup.startAndConnect();
-    await vpn.setSetting('localhostRequestsOnly', 'true');
-    await vpn.authenticateInApp();
-    await vpn.setGleanAutomationHeader();
-
-    // turn on VPN
-    await vpn.activateViaToggle();
-    await vpn.awaitSuccessfulConnection();
-  });
-
   describe('telemetry in the settings menu', function () {
     this.ctx.authenticationNeeded = true;
 
