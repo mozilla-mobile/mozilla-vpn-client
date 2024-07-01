@@ -1055,9 +1055,9 @@ texttable==1.7.0 \
     # via
     #   aqtinstall
     #   py7zr
-translate-toolkit==3.13.0 \
-    --hash=sha256:375e96e5af8a4942ed1f21ef70ae55c0435602e223eede2f0f4a14f2779e75c7 \
-    --hash=sha256:d31a1191894d0ad4ed99697663f1462e9a1820af3bbcf6848235add20cc00e62
+translate-toolkit==3.13.1 \
+    --hash=sha256:31e9d0e207c58c6d485a6c42898b26d875428e3d8bf0fb9c22a528c70829ac2e \
+    --hash=sha256:4f1e56668dc01fb0967d8c6fee11984869353f849036c4b1a130db64eaf26730
     # via -r requirements.in
 urllib3==2.0.7 \
     --hash=sha256:c97dfde1f7bd43a71c8d2a58e369e9b2bf692d1334ea9f9cae55add7d0dd0f84 \
