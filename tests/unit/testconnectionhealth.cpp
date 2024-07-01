@@ -128,8 +128,8 @@ void TestConnectionHealth::testTelemetry() {
 
   // Stops (stopping resets status to stable)
   connectionHealth.stop();
-  metricsTestErrorAndChange(2, 1, 1);
-  metricsTestCount(2, 1, 1);
+  metricsTestErrorAndChange(1, 1, 1);
+  metricsTestCount(1, 1, 1);
   metricsTestTimespan(1, 1, 1);
 }
 

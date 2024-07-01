@@ -2118,6 +2118,13 @@ void MozillaVPN::registerInspectorCommands() {
         return QJsonObject();
       });
 
+  InspectorHandler::registerCommand(
+      "force_silent_switch", "Force the VPN to silently switch servers", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        MozillaVPN::instance()->silentSwitch();
+        return QJsonObject();
+      });
+
 #ifdef MZ_MACOS
   InspectorHandler::registerCommand(
       "force_daemon_crash", "Force the VPN daemon to crash", 0,

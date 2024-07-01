@@ -93,7 +93,6 @@ void ConnectionHealth::stop() {
   m_dnsPingTimer.stop();
 
   stopTimingDistributionMetric(m_stability);
-  setStability(Stable);
 }
 
 void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
@@ -343,8 +342,6 @@ void ConnectionHealth::stopTimingDistributionMetric(
       mozilla::glean::connection_health::stable_time.stopAndAccumulate(
           m_metricsTimerId);
   }
-  m_metricsTimerId = -1;  // used as a signal to prevent turning it off twice
-                          // when ConnectionHealth moves between idle and stop.
 #endif
 }
 

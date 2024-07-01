@@ -322,28 +322,10 @@ void Controller::handshakeTimeout() {
 }
 
 void Controller::serverUnavailable() {
-  logger.error() << "server unavailable";
+  logger.info() << "Server Unavailable - Ping succeeded: " << m_pingReceived;
 
-  // If VPN is already active and server location becomes unavailable we do not
-  // deactivate the VPN or proceed with next steps. We specifically do not want
-  // to deactivate the VPN in the case of server location becoming unavailable
-  // because the user may not notice that they are no longer protected which can
-  // cause the traffic to leak outside the tunnel without their knowledge.
-  if (m_state == StateOn || m_state == StateOnPartial) {
-    return;
-  }
-
-  m_nextStep = ServerUnavailable;
-
-  if (m_state == StateSwitching || m_state == StateConnecting ||
-      m_state == StateConfirming) {
-    logger.info() << "Server location is unavailable and we are not in "
-                     "StateOn. Deactivate!";
-    deactivate();
-    return;
-  }
-  logger.info() << "Server location is unavailable. Do not deactivate the VPN "
-                   "automatically.";
+  emit readyToServerUnavailable(m_pingReceived);
+  return;
 }
 
 void Controller::updateRequired() {
@@ -649,8 +631,11 @@ void Controller::activateNext() {
   if (m_initiator == ExtensionUser) {
     return;
   }
-  // Move to the confirming state if we are awaiting any connection handshakes.
-  setState(StateConfirming);
+
+  if (m_state != StateSilentSwitching) {
+    // Move to the StateConfirming if we are awaiting any connection handshakes
+    setState(StateConfirming);
+  }
 }
 
 void Controller::setState(State state) {
@@ -836,13 +821,6 @@ bool Controller::processNextStep() {
 
   if (nextStep == BackendFailure) {
     emit readyToBackendFailure();
-    return true;
-  }
-
-  if (nextStep == ServerUnavailable) {
-    logger.info() << "Server Unavailable - Ping succeeded: " << m_pingReceived;
-
-    emit readyToServerUnavailable(m_pingReceived);
     return true;
   }
 
