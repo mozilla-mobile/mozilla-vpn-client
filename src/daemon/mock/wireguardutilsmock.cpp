@@ -67,10 +67,6 @@ bool WireguardUtilsMock::deleteRoutePrefix(const IPAddress& prefix) {
   return true;
 }
 
-bool WireguardUtilsMock::addExclusionRoute(const IPAddress& prefix) {
-  return true;
-}
-
-bool WireguardUtilsMock::deleteExclusionRoute(const IPAddress& prefix) {
+bool WireguardUtilsMock::excludeLocalNetworks(const QList<IPAddress>& addrs) {
   return true;
 }
