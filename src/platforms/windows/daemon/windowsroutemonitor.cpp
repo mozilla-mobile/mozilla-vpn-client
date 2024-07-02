@@ -69,7 +69,9 @@ WindowsRouteMonitor::WindowsRouteMonitor(quint64 luid, QObject* parent)
 WindowsRouteMonitor::~WindowsRouteMonitor() {
   MZ_COUNT_DTOR(WindowsRouteMonitor);
   CancelMibChangeNotify2(m_routeHandle);
-  flushExclusionRoutes();
+
+  flushRouteTable(m_exclusionRoutes);
+  flushRouteTable(m_clonedRoutes);
   logger.debug() << "WindowsRouteMonitor destroyed.";
 }
 
@@ -180,7 +182,7 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
   }
 
   // If neither the interface nor next-hop have changed, then do nothing.
-  if ((data->InterfaceLuid.Value) == bestLuid &&
+  if (data->InterfaceLuid.Value == bestLuid &&
       memcmp(&nexthop, &data->NextHop, sizeof(SOCKADDR_INET)) == 0) {
     return;
   }
@@ -216,7 +218,7 @@ bool WindowsRouteMonitor::routeContainsDest(const IP_ADDRESS_PREFIX* route,
   if (route->Prefix.si_family == AF_INET) {
     return prefixcmp(&route->Prefix.Ipv4.sin_addr, &dest->Prefix.Ipv4.sin_addr,
                      route->PrefixLength) == 0;
-  } if (route->Prefix.si_family == AF_INET6) {
+  } else if (route->Prefix.si_family == AF_INET6) {
     return prefixcmp(&route->Prefix.Ipv6.sin6_addr,
                      &dest->Prefix.Ipv6.sin6_addr, route->PrefixLength) == 0;
   } else {
