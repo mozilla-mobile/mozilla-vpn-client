@@ -210,7 +210,7 @@ bool WindowsFirewall::enableLanBypass(const QList<IPAddress>& ranges) {
     FwpmTransactionAbort0(m_sessionHandle);
     disableKillSwitch();
   });
-  
+
   // Blocking unprotected traffic
   logger.info() << "Blocking unprotected traffic";
   for (const IPAddress& prefix : ranges) {

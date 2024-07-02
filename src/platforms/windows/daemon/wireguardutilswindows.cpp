@@ -231,8 +231,7 @@ std::unique_ptr<WireguardUtilsWindows> WireguardUtilsWindows::create(
 
 WireguardUtilsWindows::WireguardUtilsWindows(
     QObject* parent, std::unique_ptr<WireGuardAPI> wireguard)
-    : WireguardUtils(parent),
-      m_wireguard_api(std::move(wireguard)) {
+    : WireguardUtils(parent), m_wireguard_api(std::move(wireguard)) {
   MZ_COUNT_CTOR(WireguardUtilsWindows);
   logger.debug() << "WireguardUtilsWindows created.";
 }
@@ -585,7 +584,8 @@ bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix) {
   return result == NO_ERROR;
 }
 
-bool WireguardUtilsWindows::excludeLocalNetworks(const QList<IPAddress>& addresses) {
+bool WireguardUtilsWindows::excludeLocalNetworks(
+    const QList<IPAddress>& addresses) {
   // If the interface isn't up then something went horribly wrong.
   Q_ASSERT(m_routeMonitor);
 

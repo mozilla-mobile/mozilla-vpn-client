@@ -58,8 +58,8 @@ static int prefixcmp(const void* a, const void* b, size_t bits) {
   return 0;
 }
 
-WindowsRouteMonitor::WindowsRouteMonitor(quint64 luid, QObject* parent) :
-    QObject(parent), m_luid(luid) {
+WindowsRouteMonitor::WindowsRouteMonitor(quint64 luid, QObject* parent)
+    : QObject(parent), m_luid(luid) {
   MZ_COUNT_CTOR(WindowsRouteMonitor);
   logger.debug() << "WindowsRouteMonitor created.";
 
@@ -173,7 +173,7 @@ void WindowsRouteMonitor::updateExclusionRoute(MIB_IPFORWARD_ROW2* data,
     bestMatch = row->DestinationPrefix.PrefixLength;
     bestMetric = routeMetric;
     if (bestMatch == data->DestinationPrefix.PrefixLength) {
-      bestLuid = 0; // Don't write to the table if we find an exact match.
+      bestLuid = 0;  // Don't write to the table if we find an exact match.
     } else {
       bestLuid = row->InterfaceLuid.Value;
     }
@@ -214,20 +214,19 @@ bool WindowsRouteMonitor::routeContainsDest(const IP_ADDRESS_PREFIX* route,
     return false;
   }
   if (route->Prefix.si_family == AF_INET) {
-    return prefixcmp(&route->Prefix.Ipv4.sin_addr,
-                    &dest->Prefix.Ipv4.sin_addr,
-                    route->PrefixLength) == 0;
+    return prefixcmp(&route->Prefix.Ipv4.sin_addr, &dest->Prefix.Ipv4.sin_addr,
+                     route->PrefixLength) == 0;
   } if (route->Prefix.si_family == AF_INET6) {
     return prefixcmp(&route->Prefix.Ipv6.sin6_addr,
-                    &dest->Prefix.Ipv6.sin6_addr,
-                    route->PrefixLength) == 0;
+                     &dest->Prefix.Ipv6.sin6_addr, route->PrefixLength) == 0;
   } else {
     return false;
   }
 }
 
 // static
-QHostAddress WindowsRouteMonitor::prefixToAddress(const IP_ADDRESS_PREFIX* dest) {
+QHostAddress WindowsRouteMonitor::prefixToAddress(
+    const IP_ADDRESS_PREFIX* dest) {
   if (dest->Prefix.si_family == AF_INET6) {
     return QHostAddress(dest->Prefix.Ipv6.sin6_addr.s6_addr);
   } else if (dest->Prefix.si_family == AF_INET) {
@@ -263,7 +262,7 @@ void WindowsRouteMonitor::updateCapturedRoutes(int family) {
   }
 }
 
-void WindowsRouteMonitor::updateCapturedRoutes(int family, void *ptable) {
+void WindowsRouteMonitor::updateCapturedRoutes(int family, void* ptable) {
   PMIB_IPFORWARD_TABLE2 table = reinterpret_cast<PMIB_IPFORWARD_TABLE2>(ptable);
   if (!m_defaultRouteCapture) {
     return;
@@ -481,7 +480,6 @@ void WindowsRouteMonitor::setDetaultRouteCapture(bool enable) {
     return;
   }
 }
-
 
 void WindowsRouteMonitor::routeChanged() {
   logger.debug() << "Routes changed";

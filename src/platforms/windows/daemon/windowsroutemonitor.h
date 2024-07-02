@@ -45,7 +45,7 @@ class WindowsRouteMonitor final : public QObject {
   void updateExclusionRoute(MIB_IPFORWARD_ROW2* data, void* table);
   void updateInterfaceMetrics(int family);
   void updateCapturedRoutes(int family);
-  void updateCapturedRoutes(int family, void *table);
+  void updateCapturedRoutes(int family, void* table);
 
   QHash<IPAddress, MIB_IPFORWARD_ROW2*> m_exclusionRoutes;
   QMap<quint64, ULONG> m_interfaceMetricsIpv4;
