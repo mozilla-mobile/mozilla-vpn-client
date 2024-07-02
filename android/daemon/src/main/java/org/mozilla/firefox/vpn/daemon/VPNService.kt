@@ -25,6 +25,7 @@ import org.mozilla.firefox.qt.common.CoreBinder
 import org.mozilla.firefox.qt.common.Prefs
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Pings
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
+import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
 import java.io.File
 import java.util.*
 
@@ -47,6 +48,8 @@ class VPNService : android.net.VpnService() {
         override fun onFinish() {
             Log.i(tag, "Sending daemon_timer ping")
             if (shouldRecordTimerAndEndMetrics) {
+                ConnectionHealth.dataTransferredRx.accumulate(getConfigValue("rx_bytes")?.toInt());
+                ConnectionHealth.dataTransferredTx.accumulate(getConfigValue("tx_bytes")?.toInt());
                 Pings.daemonsession.submit(
                     Pings.daemonsessionReasonCodes.daemonTimer,
                 )
@@ -450,6 +453,8 @@ class VPNService : android.net.VpnService() {
         CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
         if (shouldRecordTimerAndEndMetrics) {
             Session.daemonSessionEnd.set()
+            ConnectionHealth.dataTransferredRx.accumulate(getConfigValue("rx_bytes")?.toInt());
+            ConnectionHealth.dataTransferredTx.accumulate(getConfigValue("tx_bytes")?.toInt());
             Pings.daemonsession.submit(
                 Pings.daemonsessionReasonCodes.daemonEnd,
             )

@@ -49,7 +49,7 @@ impl ExtraKeys for {{ obj.name|Camelize }}{{ suffix }} {
 pub mod {{ category_name|snake_case }} {
     use glean::private::*;
     #[allow(unused_imports)]
-    use glean::{CommonMetricData, Lifetime, TimeUnit};
+    use glean::{CommonMetricData, Lifetime, TimeUnit, MemoryUnit};
     #[allow(unused_imports)] // ExtraKeys might be unusued, let's avoid warnings
     use glean::traits::{ExtraKeys, NoExtraKeys};
     #[allow(unused_imports)] // HistogramType might be unusued, let's avoid warnings
