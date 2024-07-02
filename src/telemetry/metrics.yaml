@@ -704,7 +704,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   changed_to_unstable:
     type: event
@@ -732,7 +732,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   changed_to_stable:
     type: event
@@ -760,7 +760,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   changed_to_pending:
     type: event
@@ -783,7 +783,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   no_signal_count:
     type: counter
@@ -810,7 +810,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   unstable_count:
     type: counter
@@ -837,7 +837,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   stable_count:
     type: counter
@@ -864,7 +864,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   pending_count:
     type: counter
@@ -889,7 +889,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   no_signal_time:
     type: timing_distribution
@@ -912,7 +912,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   unstable_time:
     type: timing_distribution
@@ -935,7 +935,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   stable_time:
     type: timing_distribution
@@ -958,7 +958,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   pending_time:
     type: timing_distribution
@@ -976,7 +976,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   ping_analyzer_error:
     type: event
