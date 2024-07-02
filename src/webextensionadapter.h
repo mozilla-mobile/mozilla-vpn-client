@@ -6,6 +6,7 @@
 #define WEBEXTENSIONADAPTER_H
 
 #include <QList>
+#include <QPropertyObserver>
 
 #include "webextension/baseadapter.h"
 
@@ -27,6 +28,7 @@ class WebExtensionAdapter : public WebExtension::BaseAdapter {
   void writeState();
   QJsonObject serializeStatus();
   void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj);
+  QPropertyObserver mProxyStateChanged;
 };
 
 #endif  // WEBEXTENSIONADAPTER_H

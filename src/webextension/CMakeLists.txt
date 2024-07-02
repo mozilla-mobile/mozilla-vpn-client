@@ -11,6 +11,8 @@ mz_add_new_module(
         connection.h
         server.cpp
         server.h
+    INCLUDE_DIRECTORIES 
+        ${CMAKE_CURRENT_SOURCE_DIR}
     TEST_SOURCES
         tests/testbaseadapter.cpp
         tests/testbaseadapter.h

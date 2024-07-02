@@ -26,6 +26,10 @@
 #include "statusicon.h"
 #include "telemetry.h"
 
+#if defined MZ_PROXY_ENABLED
+#  include "proxycontroller.h"
+#endif
+
 struct MozillaVPNPrivate {
   CaptivePortal m_captivePortal;
   CaptivePortalDetection m_captivePortalDetection;
@@ -47,6 +51,9 @@ struct MozillaVPNPrivate {
   Telemetry m_telemetry;
   User m_user;
   TaskGetFeatureListWorker m_taskGetFeatureListWorker;
+#if defined MZ_PROXY_ENABLED
+  ProxyController m_proxyController;
+#endif
 };
 
 #endif  // MOZILLAVPN_PRIVATE_H
