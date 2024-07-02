@@ -220,9 +220,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
     return false;
   }
 
-  // Rules that allow traffic or not are applied on the firewall for Linux.
-  //
-  // To work around the issue, just set default routes for the exit hop.
+  // Configure the allowed addresses for this peer.
   if ((config.m_hopType == InterfaceConfig::SingleHop) ||
       (config.m_hopType == InterfaceConfig::MultiHopExit)) {
     if (!config.m_deviceIpv4Address.isNull()) {
@@ -241,8 +239,7 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
       }
 
       // Direct multihop exit destinations to use the wireguard table.
-      int flags = NLM_F_REQUEST | NLM_F_CREATE | NLM_F_REPLACE | NLM_F_ACK;
-      rtmIncludePeer(RTM_NEWRULE, flags, ip);
+      rtmIncludePeer(RTM_NEWRULE, ip, NLM_F_CREATE | NLM_F_REPLACE);
     }
   }
 
@@ -290,7 +287,7 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   // Clear routing policy tweaks for multihop.
   if (config.m_hopType == InterfaceConfig::MultiHopEntry) {
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-      rtmIncludePeer(RTM_DELRULE, NLM_F_REQUEST | NLM_F_ACK, ip);
+      rtmIncludePeer(RTM_DELRULE, ip);
     }
   }
 
@@ -360,40 +357,23 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsLinux::getPeerStatus() {
   return peerList;
 }
 
-bool WireguardUtilsLinux::setupWireguardRoutingTable(int family) {
-  constexpr size_t rtm_max_size = sizeof(struct rtmsg) +
-                                  2 * RTA_SPACE(sizeof(uint32_t)) +
-                                  RTA_SPACE(sizeof(struct in6_addr));
+bool WireguardUtilsLinux::updateRoutePrefix(const IPAddress& prefix) {
+  return rtmSendRoute(RTM_NEWROUTE, prefix, RTN_UNICAST,
+                      NLM_F_CREATE | NLM_F_REPLACE);
+}
 
-  char buf[NLMSG_SPACE(rtm_max_size)];
-  struct nlmsghdr* nlmsg = reinterpret_cast<struct nlmsghdr*>(buf);
-  struct rtmsg* rtm = static_cast<struct rtmsg*>(NLMSG_DATA(nlmsg));
+bool WireguardUtilsLinux::deleteRoutePrefix(const IPAddress& prefix) {
+  return rtmSendRoute(RTM_DELROUTE, prefix, RTN_UNICAST);
+}
 
-  /* Create a routing policy rule that for all packets sent to the Wireguard
-   * routing table to just go to the Wireguard interface. This is
-   * equivalent to:
-   *    ip route add default dev moz0 proto static table $WG_ROUTE_TABLE
-   */
-  memset(buf, 0, sizeof(buf));
-  nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
-  nlmsg->nlmsg_type = RTM_NEWROUTE;
-  nlmsg->nlmsg_flags = NLM_F_REQUEST | NLM_F_ACK | NLM_F_EXCL | NLM_F_CREATE;
-  nlmsg->nlmsg_pid = getpid();
-  nlmsg->nlmsg_seq = m_nlseq++;
-  rtm->rtm_family = family;
-  rtm->rtm_type = RTN_UNICAST;
-  rtm->rtm_table = RT_TABLE_UNSPEC;
-  rtm->rtm_protocol = RTPROT_STATIC;
-  rtm->rtm_scope = RT_SCOPE_LINK;
-  nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_TABLE, WG_ROUTE_TABLE);
-  nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_OIF, m_ifindex);
+bool WireguardUtilsLinux::excludeLocalNetworks(
+    const QList<IPAddress>& lanAddressRanges) {
+  for (const IPAddress& prefix : lanAddressRanges) {
+    m_routesExcluded.append(prefix);
+    rtmSendRoute(RTM_NEWROUTE, prefix, RTN_THROW, NLM_F_CREATE | NLM_F_REPLACE);
+  }
 
-  struct sockaddr_nl nladdr;
-  memset(&nladdr, 0, sizeof(nladdr));
-  nladdr.nl_family = AF_NETLINK;
-  size_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
-                         (struct sockaddr*)&nladdr, sizeof(nladdr));
-  return (result == nlmsg->nlmsg_len);
+  return true;
 }
 
 // PRIVATE METHODS
@@ -542,36 +522,57 @@ bool WireguardUtilsLinux::rtmSendRule(int action, int flags, int addrfamily) {
   nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_TABLE, WG_ROUTE_TABLE);
   ssize_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
                           (struct sockaddr*)&nladdr, sizeof(nladdr));
-  if (result != static_cast<ssize_t>(nlmsg->nlmsg_len)) {
-    return false;
-  }
-
-  /* Create a routing policy rule to suppress zero-length prefix lookups from
-   * in the main routing table. This is equivalent to:
-   *     ip rule add table main suppress_prefixlength 0
-   */
-  memset(buf, 0, sizeof(buf));
-  nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
-  nlmsg->nlmsg_type = action;
-  nlmsg->nlmsg_flags = flags;
-  nlmsg->nlmsg_pid = getpid();
-  nlmsg->nlmsg_seq = m_nlseq++;
-  rule->family = addrfamily;
-  rule->table = RT_TABLE_MAIN;
-  rule->action = FR_ACT_TO_TBL;
-  rule->flags = 0;
-  nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_SUPPRESS_PREFIXLEN, 0);
-  result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0, (struct sockaddr*)&nladdr,
-                  sizeof(nladdr));
-  if (result != static_cast<ssize_t>(nlmsg->nlmsg_len)) {
-    return false;
-  }
-
-  return true;
+  return (result == static_cast<ssize_t>(nlmsg->nlmsg_len));
 }
 
-bool WireguardUtilsLinux::rtmIncludePeer(int action, int flags,
-                                         const IPAddress& prefix) {
+bool WireguardUtilsLinux::rtmSendRoute(int action, const IPAddress& dest,
+                                       int type, int flags) {
+  constexpr size_t rtm_max_size = sizeof(struct rtmsg) +
+                                  2 * RTA_SPACE(sizeof(uint32_t)) +
+                                  RTA_SPACE(sizeof(struct in6_addr));
+
+  char buf[NLMSG_SPACE(rtm_max_size)];
+  struct nlmsghdr* nlmsg = reinterpret_cast<struct nlmsghdr*>(buf);
+  struct rtmsg* rtm = static_cast<struct rtmsg*>(NLMSG_DATA(nlmsg));
+
+  wg_allowedip ip;
+  if (!buildAllowedIp(&ip, dest)) {
+    logger.warning() << "Invalid destination prefix";
+    return false;
+  }
+
+  memset(buf, 0, sizeof(buf));
+  nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct rtmsg));
+  nlmsg->nlmsg_type = action;
+  nlmsg->nlmsg_flags = flags | NLM_F_REQUEST | NLM_F_ACK;
+  nlmsg->nlmsg_pid = getpid();
+  nlmsg->nlmsg_seq = m_nlseq++;
+  rtm->rtm_dst_len = ip.cidr;
+  rtm->rtm_family = ip.family;
+  rtm->rtm_type = type;
+  rtm->rtm_table = RT_TABLE_UNSPEC;
+  rtm->rtm_protocol = RTPROT_BOOT;
+  rtm->rtm_scope = RT_SCOPE_UNIVERSE;
+  nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_TABLE, WG_ROUTE_TABLE);
+  if (rtm->rtm_family == AF_INET6) {
+    nlmsg_append_attr(nlmsg, sizeof(buf), RTA_DST, &ip.ip6, sizeof(ip.ip6));
+  } else {
+    nlmsg_append_attr(nlmsg, sizeof(buf), RTA_DST, &ip.ip4, sizeof(ip.ip4));
+  }
+  if (type == RTN_UNICAST) {
+    nlmsg_append_attr32(nlmsg, sizeof(buf), RTA_OIF, m_ifindex);
+  }
+
+  struct sockaddr_nl nladdr;
+  memset(&nladdr, 0, sizeof(nladdr));
+  nladdr.nl_family = AF_NETLINK;
+  ssize_t result = sendto(m_nlsock, buf, nlmsg->nlmsg_len, 0,
+                          (struct sockaddr*)&nladdr, sizeof(nladdr));
+  return (result == static_cast<ssize_t>(nlmsg->nlmsg_len));
+}
+
+bool WireguardUtilsLinux::rtmIncludePeer(int action, const IPAddress& prefix,
+                                         int flags) {
   constexpr size_t fib_max_size = sizeof(struct fib_rule_hdr) +
                                   RTA_SPACE(sizeof(struct in6_addr)) +
                                   2 * RTA_SPACE(sizeof(quint32));
@@ -590,7 +591,7 @@ bool WireguardUtilsLinux::rtmIncludePeer(int action, int flags,
   memset(buf, 0, sizeof(buf));
   nlmsg->nlmsg_len = NLMSG_LENGTH(sizeof(struct fib_rule_hdr));
   nlmsg->nlmsg_type = action;
-  nlmsg->nlmsg_flags = flags;
+  nlmsg->nlmsg_flags = flags | NLM_F_REQUEST | NLM_F_ACK;
   nlmsg->nlmsg_pid = getpid();
   nlmsg->nlmsg_seq = m_nlseq++;
   rule->table = RT_TABLE_UNSPEC;
@@ -675,8 +676,6 @@ void WireguardUtilsLinux::nlsockHandleNewlink(struct nlmsghdr* nlmsg) {
   // Check for the interface going up.
   if ((diff & IFF_UP) && (msg->ifi_flags & IFF_UP)) {
     logger.info() << "Wireguard interface is UP";
-    setupWireguardRoutingTable(AF_INET);
-    setupWireguardRoutingTable(AF_INET6);
   }
 
   logger.debug() << "RTM_NEWLINK flags:"
@@ -690,6 +689,12 @@ void WireguardUtilsLinux::nlsockHandleDellink(struct nlmsghdr* nlmsg) {
   if (msg->ifi_index != static_cast<int>(m_ifindex)) {
     return;
   }
+
+  // Clear LAN exclusions
+  for (const IPAddress& prefix : m_routesExcluded) {
+    rtmSendRoute(RTM_DELROUTE, prefix, RTN_THROW);
+  }
+  m_routesExcluded.clear();
 
   // Interface is down!
   m_ifindex = 0;
