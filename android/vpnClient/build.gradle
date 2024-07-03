@@ -79,7 +79,7 @@ dependencies {
     testImplementation("androidx.test:core-ktx:1.6.0-rc01")
     testImplementation 'junit:junit:4.13.2'
     testImplementation project(path: ':vpnClient')
-    testImplementation "org.robolectric:robolectric:4.11.1"
+    testImplementation "org.robolectric:robolectric:4.12.2"
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
