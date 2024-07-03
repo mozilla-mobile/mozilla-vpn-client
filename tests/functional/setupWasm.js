@@ -27,12 +27,14 @@ const firefox = require('selenium-webdriver/firefox');
 
 const { tmpdir } = require('os');
 const path = require('path');
-const fs = require("fs")
+const fs = require("fs");
+const net = require("net");
 
-const stdout = path.join(tmpdir(), "stdout.txt")
+const stdout = path.join(tmpdir(), "wasm-stdout.txt");
 
 let driver;
 let url;
+let logServer;
 
 exports.mochaHooks = {
   async beforeAll() {
@@ -45,6 +47,26 @@ exports.mochaHooks = {
       await wasm.start(false);
       url = wasm.url;
     }
+
+    // Create a named pipe to receive log content.
+    let pipePath = path.join(tmpdir(), "wasm-stdout.pipe");
+    fs.rmSync(pipePath, {'force': true});
+    logServer = net.createServer().listen(pipePath, 8);
+    logServer.on('connection', (s) => {
+      s.end(); // Server has nothing to write to the socket
+      s.on('data', (msg) => {
+        fs.appendFile(stdout, msg.toString(), () => {});
+      }).on('end', () => {
+        s.destroy();
+      });
+    }).on('close', () => {
+      fs.rmSync(pipePath, {'force': true});
+    });
+
+    let logSocket = net.createConnection(pipePath);
+    logSocket.on('close', () => {
+      logSocket.destroy();
+    });
 
     await guardian.start(false);
     await fxaServer.start(guardian.url, false);
@@ -75,7 +97,7 @@ exports.mochaHooks = {
         new firefox.ServiceBuilder()
           .setStdio([
             'ignore',
-            fs.openSync(stdout, 'w'),
+            logSocket,
             'ignore',
           ])
       )
@@ -95,10 +117,15 @@ exports.mochaHooks = {
     captivePortalServer.throwExceptionsIfAny();
 
     await driver.quit();
+
+    logServer.close();
   },
 
   async beforeEach() {
     this.currentTest.ctx.wasm = true;
+
+    // Clear out the log file.
+    fs.truncateSync(stdout);
 
     guardian.overrideEndpoints =
       this.currentTest.ctx.guardianOverrideEndpoints || null;
@@ -128,9 +155,6 @@ exports.mochaHooks = {
       console.log(fs.readFileSync(stdout).toString());
       console.log('::endgroup');
     }
-
-    // Clear our logs from file.
-    fs.writeFileSync(stdout, "");
 
     // Close VPN app
     // If something's gone really wrong with the test,
