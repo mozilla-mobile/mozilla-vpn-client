@@ -35,6 +35,7 @@ const stdout = path.join(tmpdir(), "wasm-stdout.txt");
 let driver;
 let url;
 let logServer;
+let logSocket;
 
 exports.mochaHooks = {
   async beforeAll() {
@@ -63,7 +64,7 @@ exports.mochaHooks = {
       fs.rmSync(pipePath, {'force': true});
     });
 
-    let logSocket = net.createConnection(pipePath);
+    logSocket = net.createConnection(pipePath);
     logSocket.on('close', () => {
       logSocket.destroy();
     });
@@ -118,6 +119,7 @@ exports.mochaHooks = {
 
     await driver.quit();
 
+    logSocket.destroy();
     logServer.close();
   },
 
