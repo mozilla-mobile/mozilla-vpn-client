@@ -19,7 +19,7 @@ task-defaults:
         with-attributes:
             build-type:
                 - linux64/release-deb
-        set-name: false
+        set-name: null
     worker-type: beetmover-apt
     worker:
         product: vpn
