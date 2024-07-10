@@ -21,7 +21,7 @@ tasks:
                 attribute: shipping-phase
             copy-attributes: true
             unique-kinds: false
-            set-name: false
+            set-name: null
         shipit-product:
             by-build-type:
                 addons/opt: Mozilla-vpn-addons

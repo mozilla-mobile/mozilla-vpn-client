@@ -19,7 +19,7 @@ task-defaults:
     from-deps:
         kinds: [beetmover-promote]
         group-by: all
-        set-name: false
+        set-name: null
         unique-kinds: false
     worker-type: beetmover
     worker:
