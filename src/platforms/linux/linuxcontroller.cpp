@@ -78,9 +78,18 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
 void LinuxController::dbusNameOwnerChanged(const QString& name,
                                            const QString& prevOwner,
                                            const QString& newOwner) {
-  // If the daemon stops, or re-starts then we have been disconnected.
-  if (name == m_dbus->serviceName()) {
-    logger.info() << "DBus name" << name << "has changed owner to" << newOwner;
+  if (name != m_dbus->serviceName()) {
+    return;
+  }
+
+  if (prevOwner.isEmpty()) {
+    // The daemon has started.
+    logger.info() << "DBus name" << name << "has owner:" << newOwner;
+    return;
+  } else {
+    // Otherwise, the daemon has stopped or re-started somehow.
+    logger.info() << "DBus name" << name << "has changed owner:" << newOwner;
+    REPORTERROR(ErrorHandler::ControllerError, "controller");
     emit disconnected();
   }
 }
