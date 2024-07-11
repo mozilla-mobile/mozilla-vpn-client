@@ -678,7 +678,7 @@ func NetfilterRemoveTables() int32 {
 	for _, table := range tables {
 		if table.Name == "mozvpn-inet" {
 			log.Println("Removing netfilter table")
-			mozvpn_ctx.conn.DelTable(mozvpn_ctx.table)
+			mozvpn_ctx.conn.DelTable(table)
 		}
 	}
 
