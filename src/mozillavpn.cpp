@@ -1350,6 +1350,11 @@ void MozillaVPN::registerUrlOpenerLabels() {
 void MozillaVPN::errorHandled() {
   ErrorHandler::AlertType alert = ErrorHandler::instance()->alert();
 
+  // Controller errors should trigger a system tray notification.
+  if (alert == ErrorHandler::ControllerErrorAlert) {
+    NotificationHandler::instance()->connectionFailureNotification();
+  }
+
   // Any error in authenticating state sends to the Initial state.
   if (state() == App::StateAuthenticating) {
     if (alert == ErrorHandler::GeoIpRestrictionAlert) {

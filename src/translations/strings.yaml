@@ -279,6 +279,8 @@ notifications:
   captivePortalBlockMessage2: The guest Wi-Fi network you’re connected to requires action. Click to turn off VPN to see the portal.
   captivePortalUnblockTitle: Guest Wi-Fi portal detected
   captivePortalUnblockMessage2: The guest Wi-Fi network you’re connected to may not be secure. Click to turn on VPN to secure your device.
+  connectionFailedTitle: Connection failed
+  connectionFailedMessage: Sorry, something went wrong with your VPN connection.
   subscriptionNotFound: Your Mozilla VPN subscription cannot be found. Please open the app to resolve this subscription issue.
   unsecuredNetworkTitle: Unsecured Wi-Fi network detected
   unsecuredNetworkMessage:

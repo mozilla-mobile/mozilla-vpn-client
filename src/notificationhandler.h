@@ -27,6 +27,7 @@ class NotificationHandler : public QObject {
     ServerUnavailable,
     NewInAppMessage,
     SubscriptionNotFound,
+    ConnectionFailure,
   };
 
   static NotificationHandler* create(QObject* parent);
@@ -46,6 +47,8 @@ class NotificationHandler : public QObject {
                                    const QString& message);
 
   void subscriptionNotFoundNotification();
+
+  void connectionFailureNotification();
 
   void showNotification();
 
