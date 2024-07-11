@@ -59,15 +59,13 @@ func NetfilterSetLogger(loggerFn uintptr) {
 }
 
 type nftCtx struct {
-	table_inet  *nftables.Table
-	table_v6    *nftables.Table
+	table       *nftables.Table
 	cgroup_mark *nftables.Chain
 	cgroup_nat  *nftables.Chain
 	conntrack   *nftables.Chain
 	preroute    *nftables.Chain
 	input       *nftables.Chain
 	output      *nftables.Chain
-	preroute_v6 *nftables.Chain
 	addrset     *nftables.Set
 	fwmark      uint32
 	conn        nftables.Conn
@@ -99,7 +97,7 @@ func (ctx *nftCtx) nftApplyFwMark() {
 	// Apply a conntrack mark to excluded outbound packets so that we can
 	// identify the corresponding inbound packet flows.
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.conntrack,
 		Exprs: []expr.Any{
 			// Match packets with a fwmark set.
@@ -127,19 +125,19 @@ func (ctx *nftCtx) nftApplyFwMark() {
 
 	// Inbound packets from wireguard servers should be marked for RPF.
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.preroute,
 		Exprs: []expr.Any{
 			// For now, we only support IPv4 in this check.
 			// TODO: Support IPv6.
 			&expr.Meta{
-				Key:      expr.MetaKeyPROTOCOL,
+				Key:      expr.MetaKeyNFPROTO,
 				Register: 1,
 			},
 			&expr.Cmp{
 				Op:       expr.CmpOpEq,
 				Register: 1,
-				Data:     binaryutil.BigEndian.PutUint16(linux.ETH_P_IP),
+				Data:     []byte{linux.NFPROTO_IPV4},
 			},
 			// Match UDP packets
 			&expr.Meta{
@@ -181,7 +179,7 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 	log.Println("Restricting network traffic", ifname)
 
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.input,
 		Exprs: []expr.Any{
 			// Accept packet from loopback interfaces
@@ -201,7 +199,7 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 	})
 
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.input,
 		Exprs: []expr.Any{
 			// Accept all packets from the VPN interface
@@ -221,7 +219,7 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 	})
 
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.input,
 		Exprs: []expr.Any{
 			// Accept all packets from the VPN server
@@ -261,7 +259,7 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 	})
 
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.input,
 		Exprs: []expr.Any{
 			// Accept packets if they originated from an excluded connection.
@@ -282,7 +280,7 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 	})
 
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.input,
 		Exprs: []expr.Any{
 			&expr.Meta{
@@ -303,7 +301,7 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 	// Output
 
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.output,
 		Exprs: []expr.Any{
 			// Accept packet to loopback interfaces
@@ -323,7 +321,7 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 	})
 
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.output,
 		Exprs: []expr.Any{
 			// Accept all packets to the VPN interface
@@ -343,7 +341,7 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 	})
 
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.output,
 		Exprs: []expr.Any{
 			// Accept all packets to the VPN server
@@ -383,7 +381,7 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 	})
 
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.output,
 		Exprs: []expr.Any{
 			&expr.Meta{
@@ -429,7 +427,7 @@ func (ctx *nftCtx) nftMarkCgroup2xt(cgroup string) {
 	xtmatch := nftXtCgroupMatch(cgroup)
 
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.cgroup_mark,
 		Exprs: []expr.Any{
 			// Match the cgroup v2 path for originated packets.
@@ -469,7 +467,7 @@ func (ctx *nftCtx) nftMarkCgroup2xt(cgroup string) {
 
 	// Masquerade outgoing packets from split tunnelling to trigger rerouting.
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.cgroup_nat,
 		Exprs: []expr.Any{
 			&xtmatch,
@@ -521,7 +519,7 @@ func (ctx *nftCtx) nftMarkCgroup1netcls(cgroup uint32) {
 	}
 
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.cgroup_mark,
 		Exprs: []expr.Any{
 			&loadcgroup,
@@ -551,7 +549,7 @@ func (ctx *nftCtx) nftMarkCgroup1netcls(cgroup uint32) {
 
 	// Masquerade outgoing packets from split tunnelling to trigger rerouting.
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.cgroup_nat,
 		Exprs: []expr.Any{
 			&loadcgroup,
@@ -574,7 +572,7 @@ func (ctx *nftCtx) nftMarkCgroup1netcls(cgroup uint32) {
 
 func (ctx *nftCtx) nftBlockCgroup(cgroup uint32) {
 	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table_inet,
+		Table: ctx.table,
 		Chain: ctx.cgroup_mark,
 		Exprs: []expr.Any{
 			// Match packets from the cgroup
@@ -607,34 +605,34 @@ func (ctx *nftCtx) nftBlockCgroup(cgroup uint32) {
 
 //export NetfilterCreateTables
 func NetfilterCreateTables() int32 {
-	mozvpn_ctx.table_inet = mozvpn_ctx.conn.AddTable(&nftables.Table{
+	mozvpn_ctx.table = mozvpn_ctx.conn.AddTable(&nftables.Table{
 		Family: nftables.TableFamilyINet,
 		Name:   "mozvpn-inet",
 	})
 	mozvpn_ctx.cgroup_mark = mozvpn_ctx.conn.AddChain(&nftables.Chain{
 		Name:     "mozvpn-cgroup-mark",
-		Table:    mozvpn_ctx.table_inet,
+		Table:    mozvpn_ctx.table,
 		Type:     nftables.ChainTypeRoute,
 		Hooknum:  nftables.ChainHookOutput,
 		Priority: nftables.ChainPriorityRaw,
 	})
 	mozvpn_ctx.cgroup_nat = mozvpn_ctx.conn.AddChain(&nftables.Chain{
 		Name:     "mozvpn-cgroup-nat",
-		Table:    mozvpn_ctx.table_inet,
+		Table:    mozvpn_ctx.table,
 		Type:     nftables.ChainTypeNAT,
 		Hooknum:  nftables.ChainHookPostrouting,
 		Priority: nftables.ChainPriorityNATSource,
 	})
 	mozvpn_ctx.conntrack = mozvpn_ctx.conn.AddChain(&nftables.Chain{
 		Name:     "mozvpn-conntrack",
-		Table:    mozvpn_ctx.table_inet,
+		Table:    mozvpn_ctx.table,
 		Type:     nftables.ChainTypeRoute,
 		Hooknum:  nftables.ChainHookOutput,
 		Priority: nftables.ChainPriorityConntrack + 1,
 	})
 	mozvpn_ctx.preroute = mozvpn_ctx.conn.AddChain(&nftables.Chain{
 		Name:     "mozvpn-preroute",
-		Table:    mozvpn_ctx.table_inet,
+		Table:    mozvpn_ctx.table,
 		Type:     nftables.ChainTypeFilter,
 		Hooknum:  nftables.ChainHookPrerouting,
 		Priority: nftables.ChainPriorityRaw,
@@ -643,7 +641,7 @@ func NetfilterCreateTables() int32 {
 	dropPolicy := nftables.ChainPolicyDrop
 	mozvpn_ctx.input = mozvpn_ctx.conn.AddChain(&nftables.Chain{
 		Name:     "mozvpn-input",
-		Table:    mozvpn_ctx.table_inet,
+		Table:    mozvpn_ctx.table,
 		Type:     nftables.ChainTypeFilter,
 		Hooknum:  nftables.ChainHookInput,
 		Priority: nftables.ChainPriorityFilter,
@@ -651,27 +649,15 @@ func NetfilterCreateTables() int32 {
 	})
 	mozvpn_ctx.output = mozvpn_ctx.conn.AddChain(&nftables.Chain{
 		Name:     "mozvpn-output",
-		Table:    mozvpn_ctx.table_inet,
+		Table:    mozvpn_ctx.table,
 		Type:     nftables.ChainTypeFilter,
 		Hooknum:  nftables.ChainHookOutput,
 		Priority: nftables.ChainPriorityFilter,
 		Policy:   &dropPolicy,
 	})
 
-	mozvpn_ctx.table_v6 = mozvpn_ctx.conn.AddTable(&nftables.Table{
-		Family: nftables.TableFamilyIPv6,
-		Name:   "mozvpn-v6",
-	})
-	mozvpn_ctx.preroute_v6 = mozvpn_ctx.conn.AddChain(&nftables.Chain{
-		Name:     "mozvpn-preroute-v6",
-		Table:    mozvpn_ctx.table_v6,
-		Type:     nftables.ChainTypeFilter,
-		Hooknum:  nftables.ChainHookPrerouting,
-		Priority: nftables.ChainPriorityRaw,
-	})
-
 	mozvpn_ctx.addrset = &nftables.Set{
-		Table:   mozvpn_ctx.table_inet,
+		Table:   mozvpn_ctx.table,
 		Name:    "mozvpn-addrset",
 		KeyType: nftables.TypeIPAddr,
 	}
@@ -691,13 +677,8 @@ func NetfilterRemoveTables() int32 {
 
 	for _, table := range tables {
 		if table.Name == "mozvpn-inet" {
-			log.Println("Removing netfilter inet table")
-			mozvpn_ctx.conn.DelTable(mozvpn_ctx.table_inet)
-		}
-
-		if table.Name == "mozvpn-v6" {
-			log.Println("Removing netfilter ipv6 table")
-			mozvpn_ctx.conn.DelTable(mozvpn_ctx.table_v6)
+			log.Println("Removing netfilter table")
+			mozvpn_ctx.conn.DelTable(mozvpn_ctx.table)
 		}
 	}
 
@@ -804,13 +785,13 @@ func NetfilterAllowPrefix(prefix string) int32 {
 	log.Println("Allow traffic from", prefix)
 
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.output,
 		Exprs: buildIpNetExpr(ipnet, DADDR),
 	})
 
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.input,
 		Exprs: buildIpNetExpr(ipnet, SADDR),
 	})
@@ -846,9 +827,19 @@ func NetfilterIsolateIpv6(ifname string, ipv6addr string) int32 {
 	// Inbound packets from any interface other than the tunnel should
 	// be dropped if they are routed to an address assigned to the tunnel.
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_v6,
-		Chain: mozvpn_ctx.preroute_v6,
+		Table: mozvpn_ctx.table,
+		Chain: mozvpn_ctx.preroute,
 		Exprs: []expr.Any{
+			// Match IPv6 packets only
+			&expr.Meta{
+				Key:      expr.MetaKeyNFPROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     []byte{linux.NFPROTO_IPV6},
+			},
 			// Match packets arriving from outside the tunnel
 			&expr.Meta{
 				Key:      expr.MetaKeyIIFNAME,
@@ -924,7 +915,7 @@ func NetfilterResetCgroupV2(cgroup string) int32 {
 	xtcgroup := nftXtCgroupMatch(cgroup)
 
 	// Delete all mangle rules matching against the cgroup.
-	rules, err := mozvpn_ctx.conn.GetRules(mozvpn_ctx.table_inet, mozvpn_ctx.cgroup_mark)
+	rules, err := mozvpn_ctx.conn.GetRules(mozvpn_ctx.table, mozvpn_ctx.cgroup_mark)
 	if err != nil {
 		log.Println("Failed to inspect inet/mangle rules", err)
 	} else {
@@ -932,7 +923,7 @@ func NetfilterResetCgroupV2(cgroup string) int32 {
 	}
 
 	// Delete all NAT rules matching against the cgroup.
-	rules, err = mozvpn_ctx.conn.GetRules(mozvpn_ctx.table_inet, mozvpn_ctx.cgroup_nat)
+	rules, err = mozvpn_ctx.conn.GetRules(mozvpn_ctx.table, mozvpn_ctx.cgroup_nat)
 	if err != nil {
 		log.Println("Failed to inspect inet/nat rules", err)
 	} else {
@@ -971,7 +962,7 @@ func NetfilterAllowNDP() int32 {
 	ip6rule = ip6rule[:len(ip6rule)-1]
 
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.output,
 		Exprs: append(ip6rule, []expr.Any{
 			&expr.Meta{
@@ -1022,7 +1013,7 @@ func NetfilterAllowNDP() int32 {
 	ip6rule = ip6rule[:len(ip6rule)-1]
 
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.output,
 		Exprs: append(ip6rule, []expr.Any{
 			&expr.Meta{
@@ -1073,7 +1064,7 @@ func NetfilterAllowNDP() int32 {
 	ip6rule = ip6rule[:len(ip6rule)-1]
 
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.output,
 		Exprs: append(ip6rule, []expr.Any{
 			&expr.Meta{
@@ -1114,7 +1105,7 @@ func NetfilterAllowNDP() int32 {
 	})
 
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.output,
 		Exprs: append(ip6rule, []expr.Any{
 			&expr.Meta{
@@ -1157,7 +1148,7 @@ func NetfilterAllowNDP() int32 {
 	// Input
 
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.input,
 		Exprs: append(ip6rule, []expr.Any{
 			&expr.Meta{
@@ -1198,7 +1189,7 @@ func NetfilterAllowNDP() int32 {
 	})
 
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.input,
 		Exprs: append(ip6rule, []expr.Any{
 			&expr.Meta{
@@ -1239,7 +1230,7 @@ func NetfilterAllowNDP() int32 {
 	})
 
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.input,
 		Exprs: append(ip6rule, []expr.Any{
 			&expr.Meta{
@@ -1280,7 +1271,7 @@ func NetfilterAllowNDP() int32 {
 	})
 
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.input,
 		Exprs: append(ip6rule, []expr.Any{
 			&expr.Meta{
@@ -1335,7 +1326,7 @@ func NetfilterAllowDHCP() int32 {
 
 	// udp sport 68 ip daddr 255.255.255.255 udp dport 67 accept
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.output,
 		Exprs: []expr.Any{
 			&expr.Meta{
@@ -1406,7 +1397,7 @@ func NetfilterAllowDHCP() int32 {
 
 	// udp sport 67 udp dport 68 accept
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.output,
 		Exprs: []expr.Any{
 			&expr.Meta{
@@ -1459,7 +1450,7 @@ func NetfilterAllowDHCP() int32 {
 
 	// udp sport 68 ip daddr 255.255.255.255 udp dport 67 accept
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.input,
 		Exprs: []expr.Any{
 			&expr.Meta{
@@ -1529,7 +1520,7 @@ func NetfilterAllowDHCP() int32 {
 	})
 
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.input,
 		Exprs: []expr.Any{
 			&expr.Meta{
@@ -1585,7 +1576,7 @@ func NetfilterAllowDHCP() int32 {
 func NetfilterBlockDNS() int32 {
 	// udp dport 53 reject
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.output,
 		Exprs: []expr.Any{
 			&expr.Meta{
@@ -1617,7 +1608,7 @@ func NetfilterBlockDNS() int32 {
 
 	// tcp dport 53 reject with tcp reset
 	mozvpn_ctx.conn.AddRule(&nftables.Rule{
-		Table: mozvpn_ctx.table_inet,
+		Table: mozvpn_ctx.table,
 		Chain: mozvpn_ctx.output,
 		Exprs: []expr.Any{
 			&expr.Meta{
