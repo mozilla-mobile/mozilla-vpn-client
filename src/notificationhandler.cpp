@@ -340,6 +340,21 @@ void NotificationHandler::subscriptionNotFoundNotification() {
                  Constants::DEFAULT_OS_NOTIFICATION_MSEC);
 }
 
+void NotificationHandler::connectionFailureNotification() {
+  logger.debug() << "connection failure notification";
+
+  I18nStrings* i18nStrings = I18nStrings::instance();
+  Q_ASSERT(i18nStrings);
+
+  QString notificationTitle =
+      i18nStrings->t(I18nStrings::NotificationsConnectionFailedTitle);
+  QString notificationBody =
+      i18nStrings->t(I18nStrings::NotificationsConnectionFailedMessage);
+
+  notifyInternal(ConnectionFailure, notificationTitle, notificationBody,
+                 Constants::DEFAULT_OS_NOTIFICATION_MSEC);
+}
+
 void NotificationHandler::notifyInternal(Message type, const QString& title,
                                          const QString& message,
                                          int timerMsec) {
