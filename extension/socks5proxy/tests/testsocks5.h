@@ -7,7 +7,7 @@
 #include <QObject>
 #include <QTest>
 
-class TestLoophole final : public QObject {
+class TestSocks5 final : public QObject {
   Q_OBJECT
 
  private slots:

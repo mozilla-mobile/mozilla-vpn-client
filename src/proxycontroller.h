@@ -34,7 +34,7 @@ class ProxyController {
   /**
    * @brief Returns the Path of the Binary to Exclude
    *
-   * @return const QString& - Path :)
+   * @return const QString - Path :)
    */
   static const QString binaryPath();
   /**
@@ -50,10 +50,10 @@ class ProxyController {
   static QUrl generateProxyUrl();
 
   /**
-   * @brief Get the Arguments for the loophole process
+   * @brief Get the Arguments for the socksproxy process
    *
    * @param proxyURL - The expected socks5 Proxy url
-   * @return const QStringList - arguments to pass to loophole to achive that
+   * @return const QStringList - arguments to pass to socksproxy to achive that
    * state.
    */
   static const QStringList getArguments(const QUrl& proxyURL);

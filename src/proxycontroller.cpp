@@ -17,9 +17,9 @@
 
 #ifdef MZ_WINDOWS
 #  include "platforms/windows/windowscommons.h"
-constexpr auto const LOOPHOLE_BIN = "loophole.exe";
+constexpr auto const SOCKSPROXY_BIN = "socksproxy.exe";
 #else
-constexpr auto const LOOPHOLE_BIN = "loophole";
+constexpr auto const SOCKSPROXY_BIN = "socksproxy";
 #endif
 
 namespace {
@@ -30,12 +30,12 @@ const QString ProxyController::binaryPath() {
   auto binaryPath = QCoreApplication::applicationFilePath();
   auto info = QFileInfo(binaryPath);
   QDir dir = info.absoluteDir();
-  return dir.filePath(LOOPHOLE_BIN);
+  return dir.filePath(SOCKSPROXY_BIN);
 }
 
 void ProxyController::start() {
-  auto loopholeFile = QFileInfo(binaryPath());
-  if (!loopholeFile.exists()) {
+  auto socksProxyFile = QFileInfo(binaryPath());
+  if (!socksProxyFile.exists()) {
     Q_ASSERT(false);
     return;
   }
@@ -50,48 +50,48 @@ void ProxyController::start() {
   mCrashSignal = QObject::connect(
       mCurrentProcess, &QProcess::finished,
       [this, url](int exitCode, QProcess::ExitStatus) {
-        logger.error() << "Loophole Closed Unexpected with " << exitCode;
-        logger.debug() << "Loophole scheudled restart";
+        logger.error() << "SocksProxy Closed Unexpected with " << exitCode;
+        logger.debug() << "SocksProxy scheudled restart";
         mCurrentProcess->deleteLater();
         start();
       });
   QObject::connect(mCurrentProcess, &QProcess::readyReadStandardOutput,
                    [this]() {
-                     logger.debug() << "LOOPHOLE.exe"
+                     logger.debug() << "SocksProxy.exe"
                                     << mCurrentProcess->readAllStandardOutput();
                    });
   QObject::connect(mCurrentProcess, &QProcess::started, [this, url]() {
-    logger.debug() << "Loophole available under:" << url.toString();
+    logger.debug() << "SocksProxy available under:" << url.toString();
     m_state.setValue(Started{url});
   });
   QObject::connect(mCurrentProcess, &QProcess::errorOccurred,
                    [this](QProcess::ProcessError error) {
                      switch (error) {
                        case QProcess::ProcessError::Crashed:
-                         logger.error() << "Loophole crashed!";
+                         logger.error() << "SocksProxy crashed!";
                          break;
                        case QProcess::ProcessError::FailedToStart:
-                         logger.error() << "Loophole FailedToStart!";
+                         logger.error() << "SocksProxy FailedToStart!";
                          break;
                        case QProcess::ProcessError::ReadError:
-                         logger.error() << "Loophole ReadError!";
+                         logger.error() << "SocksProxy ReadError!";
                          break;
                        case QProcess::ProcessError::Timedout:
-                         logger.error() << "Loophole Timedout!";
+                         logger.error() << "SocksProxy Timedout!";
                          break;
                        case QProcess::ProcessError::UnknownError:
-                         logger.error() << "Loophole UnknownError!";
+                         logger.error() << "SocksProxy UnknownError!";
                          break;
                        case QProcess::ProcessError::WriteError:
-                         logger.error() << "Loophole UnknownError!";
+                         logger.error() << "SocksProxy UnknownError!";
                          break;
                      }
                      stop();
                    });
-  mCurrentProcess->setProgram(loopholeFile.absoluteFilePath());
+  mCurrentProcess->setProgram(socksProxyFile.absoluteFilePath());
   mCurrentProcess->setArguments(getArguments(url));
-  logger.error() << "Try to start Loophole!  "
-                 << loopholeFile.absoluteFilePath() << getArguments(url);
+  logger.error() << "Try to start SocksProxy!  "
+                 << socksProxyFile.absoluteFilePath() << getArguments(url);
   mCurrentProcess->start(QIODeviceBase::ReadOnly);
 }
 
@@ -99,7 +99,7 @@ void ProxyController::stop() {
   if (!mCurrentProcess && std::holds_alternative<Stopped>(m_state.value())) {
     return;
   }
-  logger.debug() << "Loophole stopping";
+  logger.debug() << "SocksProxy stopping";
   // We no longer need signals from this obj
   m_state = Stopped{};
   mCurrentProcess->kill();

@@ -142,6 +142,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/networkmanager.h
     ${CMAKE_SOURCE_DIR}/src/networkrequest.cpp
     ${CMAKE_SOURCE_DIR}/src/networkrequest.h
+    ${CMAKE_SOURCE_DIR}/src/proxycontroller.cpp
+    ${CMAKE_SOURCE_DIR}/src/proxycontroller.h
     ${CMAKE_SOURCE_DIR}/src/qmlengineholder.cpp
     ${CMAKE_SOURCE_DIR}/src/qmlengineholder.h
     ${CMAKE_SOURCE_DIR}/src/qmlpath.cpp

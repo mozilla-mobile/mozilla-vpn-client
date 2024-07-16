@@ -86,7 +86,7 @@
         <File Source="mozillavpnnp.exe" />
         <!-- loophole binary 
         TODO: This is currently not supposed to ship, add this later to the package. 
-        <File Source="loophole.exe" />
+        <File Source="socksproxy.exe" />
         -->
 
         <!-- Broker Service -->

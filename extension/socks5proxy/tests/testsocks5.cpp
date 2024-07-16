@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "testsocks5.h"
+
 #include <QBuffer>
 #include <QEventLoop>
 #include <QFileInfo>
@@ -16,7 +18,6 @@
 
 #include "socks5.h"
 #include "socks5client.h"
-#include "testloophole.h"
 
 constexpr auto testData = "Hello Moto";
 #pragma region Helpers
@@ -90,7 +91,7 @@ QFuture<QByteArray> connectTo(uint serverPort, quint16 proxyPort) {
  * Then dials the server and revices a string.
  *
  */
-void TestLoophole::proxyTCP() {
+void TestSocks5::proxyTCP() {
   auto const proxyPort = rollPort();
   auto const serverPort = rollPort();
   auto const serverHadConnection = makeServer(serverPort);
@@ -116,4 +117,4 @@ void TestLoophole::proxyTCP() {
   QCOMPARE(connectionToServer.result(), QByteArray{testData});
 }
 
-QTEST_MAIN(TestLoophole)
+QTEST_MAIN(TestSocks5)

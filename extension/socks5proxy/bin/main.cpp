@@ -162,7 +162,7 @@ static void startVerboseCLI(const Socks5* socks5) {
 
 int main(int argc, char** argv) {
   QCoreApplication app(argc, argv);
-  QCoreApplication::setApplicationName("loophole");
+  QCoreApplication::setApplicationName("socksproxy");
   QCoreApplication::setApplicationVersion("0.1");
   auto const config = parseArgs(app);
 
