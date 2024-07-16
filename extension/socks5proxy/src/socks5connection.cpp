@@ -192,6 +192,7 @@ void Socks5Connection::readyRead() {
         }
 
         m_outSocket = new QTcpSocket(this);
+        // Todo VPN-6510: Let's resolve the Host with the local device DNS
         m_outSocket->connectToHost(QByteArray(buffer, length), ntohs(port));
         configureOutSocket();
       }
