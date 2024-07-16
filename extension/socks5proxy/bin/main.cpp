@@ -18,20 +18,6 @@ struct Event {
   qint64 m_when;
 };
 
-QList<Event> s_events;
-QTimer timer;
-
-static void cleanup() {
-  qint64 now = QDateTime::currentMSecsSinceEpoch();
-
-  QMutableListIterator<Event> i(s_events);
-  while (i.hasNext()) {
-    if ((now - i.next().m_when) > 1000) {
-      i.remove();
-    }
-  }
-}
-
 static QString bytesToString(qint64 bytes) {
   if (bytes < 1024) {
     return QString("%1b").arg(bytes);
@@ -106,6 +92,19 @@ static CliOptions parseArgs(const QCoreApplication& app) {
 };
 
 static void startVerboseCLI(const Socks5* socks5) {
+  static QList<Event> s_events;
+  static QTimer timer;
+
+  auto cleanup = []() {
+    qint64 now = QDateTime::currentMSecsSinceEpoch();
+    QMutableListIterator<Event> i(s_events);
+    while (i.hasNext()) {
+      if ((now - i.next().m_when) > 1000) {
+        i.remove();
+      }
+    }
+  };
+
   auto printStatus = [socks5]() {
     QString output;
     {
@@ -153,7 +152,7 @@ static void startVerboseCLI(const Socks5* socks5) {
         printStatus();
       });
 
-  QObject::connect(&timer, &QTimer::timeout, [printStatus]() {
+  QObject::connect(&timer, &QTimer::timeout, [printStatus, cleanup]() {
     cleanup();
     printStatus();
   });
