@@ -12,9 +12,17 @@ target_link_libraries(socksproxy PUBLIC
     libSocks5proxy
 )
 
-install(FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/socksproxy.exe
-    DESTINATION .
-)
+if(WIN32)
+    install(FILES
+        ${CMAKE_CURRENT_BINARY_DIR}/socksproxy.exe
+        DESTINATION .)
+elseif(LINUX)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/socksproxy
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/socksproxy)
+else()
+    # TODO: This is currently pointless on macos, 
+    # so no point in shipping it.
+endif()
+
 
 add_dependencies(mozillavpn socksproxy)
