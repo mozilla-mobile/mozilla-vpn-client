@@ -106,16 +106,21 @@ void ProxyController::stop() {
 }
 
 bool ProxyController::canActivate() {
-  // This is not for prod rn.
-  if (Constants::inProduction()) {
-    return false;
-  }
+  if (!m_canActivate.has_value()) {
+    m_canActivate = ([]() {
 #ifndef MZ_WINDOWS
-  return false;
+      return false;
 #else
-  auto const* f = Feature::get(Feature::Feature_splitTunnel);
-  return f->isSupported() && QFileInfo(binaryPath()).exists();
+      // This is not for prod rn.
+      if (Constants::inProduction()) {
+        return false;
+      }
+      auto const* f = Feature::get(Feature::Feature_splitTunnel);
+      return f->isSupported() && QFileInfo(binaryPath()).exists();
 #endif
+    })();
+  }
+  return m_canActivate.value();
 }
 
 // static

@@ -40,7 +40,7 @@ class ProxyController {
   /**
    * Returns true if an activation is possible
    */
-  static bool canActivate();
+  bool canActivate();
 
   /**
    * @brief Generates a pseudo-random socks5URL
@@ -62,4 +62,5 @@ class ProxyController {
   QProperty<State> m_state;
   QPointer<QProcess> mCurrentProcess;
   QMetaObject::Connection mCrashSignal;
+  std::optional<bool> m_canActivate;
 };
