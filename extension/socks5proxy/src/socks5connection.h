@@ -59,7 +59,7 @@ class Socks5Connection final : public QObject {
    * @return std::optional<T> - The read T if enough bytes were written.
    */
   template <typename T>
-  static std::optional<T> readPaket(QIODevice* connection);
+  static std::optional<T> readPacket(QIODevice* connection);
 
  private:
   void readyRead();

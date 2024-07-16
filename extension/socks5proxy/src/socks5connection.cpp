@@ -87,7 +87,7 @@ Socks5Connection::~Socks5Connection() { m_parent->clientDismissed(); }
 void Socks5Connection::readyRead() {
   switch (m_state) {
     case ClientGreeting: {
-      const auto packet = readPaket<ClientGreetingPacket>(m_inSocket);
+      const auto packet = readPacket<ClientGreetingPacket>(m_inSocket);
       if (!packet) {
         return;
       }
@@ -128,7 +128,7 @@ void Socks5Connection::readyRead() {
     }
 
     case ClientConnectionRequest: {
-      auto const packet = readPaket<ClientConnectionRequestPacket>(m_inSocket);
+      auto const packet = readPacket<ClientConnectionRequestPacket>(m_inSocket);
       if (!packet) {
         return;
       }
@@ -153,7 +153,7 @@ void Socks5Connection::readyRead() {
     case ClientConnectionAddress: {
       if (m_addressType == 0x01 /* Ipv4 */) {
         auto const packet =
-            readPaket<ClientConnectionAddressIpv4Packet>(m_inSocket);
+            readPacket<ClientConnectionAddressIpv4Packet>(m_inSocket);
         if (!packet) {
           return;
         }
@@ -196,7 +196,7 @@ void Socks5Connection::readyRead() {
 
       else if (m_addressType == 0x04 /* Ipv6 */) {
         auto const packet =
-            readPaket<ClientConnectionAddressIpv6Packet>(m_inSocket);
+            readPacket<ClientConnectionAddressIpv6Packet>(m_inSocket);
         if (!packet) {
           return;
         }
@@ -308,7 +308,7 @@ Socks5Connection::Socks5Replies Socks5Connection::socketErrorToSocks5Rep(
 }
 
 template <typename T>
-std::optional<T> Socks5Connection::readPaket(QIODevice* connection) {
+std::optional<T> Socks5Connection::readPacket(QIODevice* connection) {
   // There are not enough bytes to read don't touch the connection.
   if (connection->bytesAvailable() < (qint64)sizeof(T)) {
     return {};
