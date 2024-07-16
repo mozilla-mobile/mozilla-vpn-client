@@ -92,6 +92,8 @@ void Socks5Connection::readyRead() {
         return;
       }
       if (packet.value().version != 0x5) {
+        // We only currently want to support socks5.
+        // as otherwise we could not support udp or auth.
         ServerResponsePacket packet(createServerResponsePacket(ErrorGeneral));
         m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
         m_inSocket->close();
