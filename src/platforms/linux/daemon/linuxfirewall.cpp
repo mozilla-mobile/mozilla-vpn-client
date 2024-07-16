@@ -54,6 +54,7 @@ LinuxFirewall::LinuxFirewall(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(LinuxFirewall);
 
   NetfilterSetLogger((GoUintptr)&NetfilterLogger);
+  NetfilterRemoveTables();
 }
 
 LinuxFirewall::~LinuxFirewall() {
