@@ -171,7 +171,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  Socks5* socks5 = new Socks5(&app, config.port, config.addr);
+  Socks5* socks5 = new Socks5(config.port, config.addr, &app);
   if (config.verbose) {
     startVerboseCLI(socks5);
   }

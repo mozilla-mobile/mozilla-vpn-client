@@ -95,7 +95,7 @@ void TestSocks5::proxyTCP() {
   auto const proxyPort = rollPort();
   auto const serverPort = rollPort();
   auto const serverHadConnection = makeServer(serverPort);
-  Socks5 proxy{nullptr, proxyPort, QHostAddress::LocalHost};
+  Socks5 proxy{proxyPort, QHostAddress::LocalHost, nullptr};
   auto const proxyHadConnection =
       QtFuture::connect(&proxy, &Socks5::incomingConnection);
   auto const proxyHadData =
