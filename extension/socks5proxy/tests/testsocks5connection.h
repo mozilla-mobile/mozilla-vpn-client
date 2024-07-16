@@ -7,7 +7,7 @@
 #include <QObject>
 #include <QTest>
 
-class TestSocks5Client final : public QObject {
+class TestSocks5Connection final : public QObject {
   Q_OBJECT
 
  private slots:

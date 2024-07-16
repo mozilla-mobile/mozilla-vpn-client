@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "socks5client.h"
+#include "socks5connection.h"
 
 #include "socks5.h"
 
@@ -72,17 +72,19 @@ ServerResponsePacket createServerResponsePacket(uint8_t rep,
 
 }  // namespace
 
-Socks5Client::Socks5Client(Socks5* parent, QTcpSocket* socket, uint16_t port)
+Socks5Connection::Socks5Connection(Socks5* parent, QTcpSocket* socket,
+                                   uint16_t port)
     : QObject(parent), m_parent(parent), m_inSocket(socket), m_socksPort(port) {
   connect(m_inSocket, &QTcpSocket::disconnected, this, &QObject::deleteLater);
-  connect(m_inSocket, &QIODevice::readyRead, this, &Socks5Client::readyRead);
+  connect(m_inSocket, &QIODevice::readyRead, this,
+          &Socks5Connection::readyRead);
 
   readyRead();
 }
 
-Socks5Client::~Socks5Client() { m_parent->clientDismissed(); }
+Socks5Connection::~Socks5Connection() { m_parent->clientDismissed(); }
 
-void Socks5Client::readyRead() {
+void Socks5Connection::readyRead() {
   switch (m_state) {
     case ClientGreeting: {
       const auto packet = readPaket<ClientGreetingPacket>(m_inSocket);
@@ -233,7 +235,7 @@ void Socks5Client::readyRead() {
   }
 }
 
-qint64 Socks5Client::proxy(QIODevice* a, QIODevice* b) {
+qint64 Socks5Connection::proxy(QIODevice* a, QIODevice* b) {
   Q_ASSERT(a && b);
 
   qint64 bytes = 0;
@@ -251,7 +253,7 @@ qint64 Socks5Client::proxy(QIODevice* a, QIODevice* b) {
   return bytes;
 }
 
-void Socks5Client::configureOutSocket() {
+void Socks5Connection::configureOutSocket() {
   connect(m_outSocket, &QTcpSocket::connected, this, [this]() {
     m_state = Proxy;
 
@@ -289,7 +291,7 @@ void Socks5Client::configureOutSocket() {
           });
 }
 
-Socks5Client::Socks5Replies Socks5Client::socketErrorToSocks5Rep(
+Socks5Connection::Socks5Replies Socks5Connection::socketErrorToSocks5Rep(
     QAbstractSocket::SocketError error) {
   switch (error) {
     case QAbstractSocket::HostNotFoundError:
@@ -306,7 +308,7 @@ Socks5Client::Socks5Replies Socks5Client::socketErrorToSocks5Rep(
 }
 
 template <typename T>
-std::optional<T> Socks5Client::readPaket(QIODevice* connection) {
+std::optional<T> Socks5Connection::readPaket(QIODevice* connection) {
   // There are not enough bytes to read don't touch the connection.
   if (connection->bytesAvailable() < (qint64)sizeof(T)) {
     return {};

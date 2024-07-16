@@ -3,10 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-mz_add_test_target(testSocks5client
+mz_add_test_target(testSocks5connection
     SOURCES
-        testsocks5client.cpp
-        testsocks5client.h
+        testsocks5connection.cpp
+        testsocks5connection.h
     DEPENDENCIES
         libSocks5proxy
 )

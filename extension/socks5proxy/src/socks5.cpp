@@ -4,7 +4,7 @@
 
 #include "socks5.h"
 
-#include "socks5client.h"
+#include "socks5connection.h"
 
 #define MAX_CLIENTS 1024
 
@@ -30,7 +30,7 @@ void Socks5::newConnection() {
 
     emit incomingConnection(socket->peerAddress().toString());
 
-    new Socks5Client(this, socket, m_server.serverPort());
+    new Socks5Connection(this, socket, m_server.serverPort());
     ++m_clientCount;
     emit connectionsChanged();
   }

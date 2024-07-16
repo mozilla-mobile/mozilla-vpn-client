@@ -2,20 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef SOCKS5CLIENT_H
-#define SOCKS5CLIENT_H
+#ifndef Socks5Connection_H
+#define Socks5Connection_H
 
 #include <QObject>
 #include <QTcpSocket>
 
 class Socks5;
 
-class Socks5Client final : public QObject {
+class Socks5Connection final : public QObject {
   Q_OBJECT
 
  public:
-  Socks5Client(Socks5* parent, QTcpSocket* socket, uint16_t port);
-  ~Socks5Client();
+  Socks5Connection(Socks5* parent, QTcpSocket* socket, uint16_t port);
+  ~Socks5Connection();
 
   void configureOutSocket();
 
@@ -82,4 +82,4 @@ class Socks5Client final : public QObject {
   uint8_t m_addressType = 0;
 };
 
-#endif  // SOCKS5CLIENT_H
+#endif  // Socks5Connection_H

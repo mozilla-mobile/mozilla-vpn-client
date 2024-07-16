@@ -9,8 +9,8 @@ target_link_libraries(libSocks5proxy PUBLIC Qt6::Core Qt6::Network)
 target_sources(libSocks5proxy PRIVATE
     socks5.h
     socks5.cpp
-    socks5client.cpp
-    socks5client.h
+    socks5connection.cpp
+    socks5connection.h
 )
 
 

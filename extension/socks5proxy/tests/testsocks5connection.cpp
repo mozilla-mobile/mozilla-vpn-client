@@ -2,26 +2,26 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "testSocks5client.h"
+#include "testsocks5connection.h"
 
 #include <QBuffer>
 #include <QEventLoop>
 #include <QObject>
 #include <QTest>
 
-#include "socks5client.h"
+#include "socks5connection.h"
 
 /**
  * Data should be copied, in order from rx to tx
  */
-void TestSocks5Client::proxy() {
+void TestSocks5Connection::proxy() {
   QBuffer rxBuffer;
   QBuffer txBuffer;
   rxBuffer.open(QIODevice::ReadWrite);
   rxBuffer.write("abc");
   rxBuffer.seek(0);
   txBuffer.open(QIODevice::ReadWrite);
-  const auto bytesWritten = Socks5Client::proxy(&rxBuffer, &txBuffer);
+  const auto bytesWritten = Socks5Connection::proxy(&rxBuffer, &txBuffer);
   QCOMPARE(bytesWritten, 3);
 
   txBuffer.seek(0);
@@ -33,12 +33,12 @@ void TestSocks5Client::proxy() {
  * An empty device should just not
  * forward any device
  */
-void TestSocks5Client::proxyEmpty() {
+void TestSocks5Connection::proxyEmpty() {
   QBuffer rxBuffer;
   QBuffer txBuffer;
   rxBuffer.open(QIODevice::ReadWrite);
   txBuffer.open(QIODevice::ReadWrite);
-  const auto bytesWritten = Socks5Client::proxy(&rxBuffer, &txBuffer);
+  const auto bytesWritten = Socks5Connection::proxy(&rxBuffer, &txBuffer);
   QCOMPARE(bytesWritten, 0);
 }
 
@@ -46,7 +46,7 @@ void TestSocks5Client::proxyEmpty() {
  * In case of writing to a closed
  * IODevice it should return an error (-1)
  */
-void TestSocks5Client::proxyClosed() {
+void TestSocks5Connection::proxyClosed() {
   QBuffer rxBuffer;
   QBuffer txBuffer;
 
@@ -55,8 +55,8 @@ void TestSocks5Client::proxyClosed() {
   rxBuffer.write(data);
   rxBuffer.seek(0);
 
-  const auto bytesWritten = Socks5Client::proxy(&rxBuffer, &txBuffer);
+  const auto bytesWritten = Socks5Connection::proxy(&rxBuffer, &txBuffer);
   QCOMPARE(bytesWritten, -1);
 }
 
-QTEST_MAIN(TestSocks5Client)
+QTEST_MAIN(TestSocks5Connection)

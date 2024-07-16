@@ -17,7 +17,7 @@
 #include <QTimer>
 
 #include "socks5.h"
-#include "socks5client.h"
+#include "socks5connection.h"
 
 constexpr auto testData = "Hello Moto";
 #pragma region Helpers
