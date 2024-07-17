@@ -8,14 +8,12 @@
 #include <QObject>
 #include <QTcpSocket>
 
-class Socks5;
-
 class Socks5Connection final : public QObject {
   Q_OBJECT
 
  public:
-  Socks5Connection(Socks5* parent, QTcpSocket* socket, uint16_t port);
-  ~Socks5Connection();
+  Socks5Connection(QTcpSocket* socket, uint16_t port);
+  ~Socks5Connection() = default;
 
   void configureOutSocket();
 
@@ -60,10 +58,11 @@ class Socks5Connection final : public QObject {
    */
   template <typename T>
   static std::optional<T> readPacket(QIODevice* connection);
+ signals:
+  void dataSentReceived(qint64 sent, qint64 received);
 
  private:
   void readyRead();
-  Socks5* m_parent;
 
   enum {
     ClientGreeting,

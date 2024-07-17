@@ -8,8 +8,8 @@
 
 #define MAX_CLIENTS 1024
 
-Socks5::Socks5(QObject* parent, uint16_t port,
-               QHostAddress listenAddress = QHostAddress::Any)
+Socks5::Socks5(uint16_t port, QHostAddress listenAddress = QHostAddress::Any,
+               QObject* parent = nullptr)
     : QObject(parent) {
   connect(&m_server, &QTcpServer::newConnection, this, &Socks5::newConnection);
   qDebug() << "port" << port;
@@ -30,7 +30,13 @@ void Socks5::newConnection() {
 
     emit incomingConnection(socket->peerAddress().toString());
 
-    new Socks5Connection(this, socket, m_server.serverPort());
+    auto const con = new Socks5Connection(socket, m_server.serverPort());
+    connect(con, &QObject::destroyed, this, &Socks5::clientDismissed);
+    connect(con, &Socks5Connection::dataSentReceived,
+            [this](qint64 sent, qint64 received) {
+              emit dataSentReceived(sent, received);
+            });
+
     ++m_clientCount;
     emit connectionsChanged();
   }

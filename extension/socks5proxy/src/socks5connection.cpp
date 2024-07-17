@@ -72,17 +72,14 @@ ServerResponsePacket createServerResponsePacket(uint8_t rep,
 
 }  // namespace
 
-Socks5Connection::Socks5Connection(Socks5* parent, QTcpSocket* socket,
-                                   uint16_t port)
-    : QObject(parent), m_parent(parent), m_inSocket(socket), m_socksPort(port) {
+Socks5Connection::Socks5Connection(QTcpSocket* socket, uint16_t port)
+    : QObject(socket), m_inSocket(socket), m_socksPort(port) {
   connect(m_inSocket, &QTcpSocket::disconnected, this, &QObject::deleteLater);
   connect(m_inSocket, &QIODevice::readyRead, this,
           &Socks5Connection::readyRead);
 
   readyRead();
 }
-
-Socks5Connection::~Socks5Connection() { m_parent->clientDismissed(); }
 
 void Socks5Connection::readyRead() {
   switch (m_state) {
@@ -228,7 +225,7 @@ void Socks5Connection::readyRead() {
     case Proxy: {
       qint64 bytes = proxy(m_inSocket, m_outSocket);
       if (bytes) {
-        emit m_parent->dataSentReceived(bytes, 0);
+        emit dataSentReceived(bytes, 0);
       }
     } break;
 
@@ -273,7 +270,7 @@ void Socks5Connection::configureOutSocket() {
   connect(m_outSocket, &QTcpSocket::readyRead, this, [this]() {
     qint64 bytes = proxy(m_outSocket, m_inSocket);
     if (bytes > 0) {
-      emit m_parent->dataSentReceived(0, bytes);
+      emit dataSentReceived(0, bytes);
     } else if (bytes < 0) {
       // We hit an error. close.
       m_inSocket->close();
