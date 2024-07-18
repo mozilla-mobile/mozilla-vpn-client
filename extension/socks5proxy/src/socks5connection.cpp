@@ -235,6 +235,7 @@ void Socks5Connection::readyRead() {
   }
 }
 
+// TODO: VPN-6513 make sure we cannot drop bytes even under pressure.
 qint64 Socks5Connection::proxy(QIODevice* a, QIODevice* b) {
   Q_ASSERT(a && b);
 
