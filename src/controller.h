@@ -197,7 +197,6 @@ class Controller : public QObject, public LogSerializer {
     Update,
     Disconnect,
     BackendFailure,
-    ServerUnavailable,
   };
 
   NextStep m_nextStep = None;
