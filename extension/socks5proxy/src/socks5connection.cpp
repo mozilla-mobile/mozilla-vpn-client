@@ -13,7 +13,10 @@
 #  include <arpa/inet.h>
 #endif
 
+#include <QDnsLookup>
 #include <QHostAddress>
+
+constexpr const int MAX_DNS_LOOKUP_ATTEMPTS = 5;
 
 namespace {
 
@@ -161,10 +164,7 @@ void Socks5Connection::readyRead() {
         sa.sin_port = ntohs(packet.value().port);
         memcpy(&(sa.sin_addr), (void*)&packet.value().ip_dst, 4);
 
-        m_outSocket = new QTcpSocket(this);
-        m_outSocket->connectToHost(QHostAddress((struct sockaddr*)&sa),
-                                   sa.sin_port);
-        configureOutSocket();
+        configureOutSocket(QHostAddress((struct sockaddr*)&sa), sa.sin_port);
       }
 
       else if (m_addressType == 0x03 /* Domain name */) {
@@ -176,7 +176,7 @@ void Socks5Connection::readyRead() {
           return;
         }
 
-        char buffer[INT8_MAX];
+        char buffer[UINT8_MAX];
         if (m_inSocket->read(buffer, length) != length) {
           m_inSocket->close();
           return;
@@ -188,10 +188,17 @@ void Socks5Connection::readyRead() {
           return;
         }
 
-        m_outSocket = new QTcpSocket(this);
         // Todo VPN-6510: Let's resolve the Host with the local device DNS
-        m_outSocket->connectToHost(QByteArray(buffer, length), ntohs(port));
-        configureOutSocket();
+        QString hostname = QString::fromUtf8(buffer, length);
+        qDebug() << "Starting lookup for: " << hostname;
+
+        // Start a DNS lookup to handle this request.
+        m_dnsLookupAttempts = MAX_DNS_LOOKUP_ATTEMPTS;
+        QDnsLookup* lookup = new QDnsLookup(QDnsLookup::ANY, hostname, this);
+        connect(lookup, &QDnsLookup::finished, this,
+                [this, port](){ dnsResolutionFinished(htons(port)); });
+
+        lookup->lookup();
       }
 
       else if (m_addressType == 0x04 /* Ipv6 */) {
@@ -205,10 +212,7 @@ void Socks5Connection::readyRead() {
         sa.sin6_port = ntohs(packet.value().port);
         memcpy(&(sa.sin6_addr), (void*)&packet.value().ip_dst, 16);
 
-        m_outSocket = new QTcpSocket(this);
-        m_outSocket->connectToHost(QHostAddress((struct sockaddr*)&sa),
-                                   sa.sin6_port);
-        configureOutSocket();
+        configureOutSocket(QHostAddress((struct sockaddr*)&sa), sa.sin6_port);
       }
 
       else {
@@ -254,7 +258,78 @@ qint64 Socks5Connection::proxy(QIODevice* a, QIODevice* b) {
   return bytes;
 }
 
-void Socks5Connection::configureOutSocket() {
+void Socks5Connection::dnsResolutionFinished(quint16 port) {
+  QDnsLookup* lookup = qobject_cast<QDnsLookup*>(QObject::sender());
+
+  // Garbage collect the lookup when we're finished.
+  m_dnsLookupAttempts--;
+  auto guard = qScopeGuard([lookup]() {
+                           if (lookup->isFinished()) {
+                             lookup->deleteLater();
+                           }});
+
+  qDebug() << "Finished lookup for:" << lookup->name();
+
+  if (lookup->error() != QDnsLookup::NoError) {
+    qDebug() << "Received error:" << lookup->errorString();
+    ServerResponsePacket packet(
+        createServerResponsePacket(ErrorHostUnreachable));
+    m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
+    m_inSocket->close();
+    return;
+  }
+
+  auto hostRecords = lookup->hostAddressRecords();
+  if (hostRecords.length() > 0) {
+    // Proceed to the outbound socket setup
+    qDebug() << "Lookup host:" << hostRecords.first().value().toString();
+    configureOutSocket(hostRecords.first().value(), port);
+    return;
+  }
+
+  auto cnameRecords = lookup->canonicalNameRecords();
+  if (cnameRecords.length() > 0) {
+    qDebug() << "Lookup cname:" << cnameRecords.first().value();
+    // Restart the DNS lookup using the canonical name
+    if (m_dnsLookupAttempts > 0) {
+      lookup->setName(cnameRecords.first().value());
+      lookup->lookup();
+      return;
+    }
+  }
+
+  auto serviceRecords = lookup->serviceRecords();
+  if (serviceRecords.length() > 0) {
+    qDebug() << "Lookup service:" << serviceRecords.first().target();
+    // TODO: Not supported.
+    //
+    // In theory we can restart the DNS lookup with the target name, but
+    // the port may have changed too and that is stored somewhere in the
+    // signal binding. Service records aren't used a whole lot out in the
+    // wild either.
+    //
+    // We can also receive more than one service record and we are expected
+    // to load balance/fallback amongst them.
+    ServerResponsePacket packet(
+        createServerResponsePacket(ErrorHostUnreachable));
+    m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
+    m_inSocket->close();
+    return;
+  }
+
+  // Otherwise, no such host was found.
+  ServerResponsePacket packet(
+      createServerResponsePacket(ErrorHostUnreachable));
+  m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
+  m_inSocket->close();
+}
+
+void Socks5Connection::configureOutSocket(const QHostAddress& dest,
+                                          quint16 port) {
+  m_outSocket = new QTcpSocket();
+
+  m_outSocket->connectToHost(dest, port);
+
   connect(m_outSocket, &QTcpSocket::connected, this, [this]() {
     m_state = Proxy;
 
