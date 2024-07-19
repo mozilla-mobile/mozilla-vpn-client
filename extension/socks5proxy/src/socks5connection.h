@@ -15,8 +15,6 @@ class Socks5Connection final : public QObject {
   Socks5Connection(QTcpSocket* socket, uint16_t port);
   ~Socks5Connection() = default;
 
-  void configureOutSocket();
-
   /**
    * @brief Copies incoming bytes to another QIODevice
    *
@@ -58,10 +56,13 @@ class Socks5Connection final : public QObject {
    */
   template <typename T>
   static std::optional<T> readPacket(QIODevice* connection);
+
  signals:
   void dataSentReceived(qint64 sent, qint64 received);
 
  private:
+  void configureOutSocket(const QHostAddress& dest, quint16 port);
+  void dnsResolutionFinished(quint16 port);
   void readyRead();
 
   enum {
@@ -79,6 +80,8 @@ class Socks5Connection final : public QObject {
   uint16_t m_socksPort = 0;
 
   uint8_t m_addressType = 0;
+
+  int m_dnsLookupAttempts = 0;
 };
 
 #endif  // Socks5Connection_H
