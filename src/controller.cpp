@@ -1096,9 +1096,17 @@ bool Controller::activate(const ServerData& serverData,
     connect(request, &QObject::destroyed, task, &QObject::deleteLater);
     return true;
   }
+
+  // The next few lines are not run on iOS to prevent a bad bug.
+  // These 3 lines were added in
+  // https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9639, and caused
+  // a bug on iOS where server switches stopped working. See more details in
+  // VPN-6495.
+#ifndef MZ_IOS
   if (initiator != ExtensionUser) {
     setState(StateConnecting);
   }
+#endif
 
   clearRetryCounter();
   activateInternal(DoNotForceDNSPort, serverSelectionPolicy, initiator);
