@@ -8,6 +8,9 @@
 #include <QObject>
 #include <QTcpServer>
 
+class QAbstractSocket;
+class QHostAddress;
+
 class Socks5 final : public QObject {
   Q_OBJECT
   Q_PROPERTY(uint16_t connections READ connections NOTIFY connectionsChanged);
@@ -24,7 +27,8 @@ class Socks5 final : public QObject {
 
  signals:
   void connectionsChanged();
-  void incomingConnection(const QString& peerAddress);
+  void incomingConnection(QAbstractSocket* socket, const QHostAddress& peer);
+  void outgoingConnection(QAbstractSocket* socket, const QHostAddress& dest);
   void dataSentReceived(qint64 sent, qint64 received);
 
  private:

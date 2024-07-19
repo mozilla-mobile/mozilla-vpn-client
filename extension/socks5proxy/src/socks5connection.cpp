@@ -327,6 +327,7 @@ void Socks5Connection::dnsResolutionFinished(quint16 port) {
 void Socks5Connection::configureOutSocket(const QHostAddress& dest,
                                           quint16 port) {
   m_outSocket = new QTcpSocket();
+  emit setupOutSocket(m_outSocket, dest);
 
   m_outSocket->connectToHost(dest, port);
 
