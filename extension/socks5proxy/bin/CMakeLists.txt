@@ -16,7 +16,11 @@ if(WIN32)
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/socksproxy.exe
         DESTINATION .)
-elseif(LINUX)
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    target_sources(socksproxy PRIVATE
+        linuxbypass.cpp
+        linuxbypass.h)
+
     # TODO: not install that yet.
     #install(FILES ${CMAKE_CURRENT_BINARY_DIR}/socksproxy
     #    DESTINATION ${CMAKE_INSTALL_DATADIR}/socksproxy)

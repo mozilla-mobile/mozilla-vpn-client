@@ -11,6 +11,10 @@
 
 #include "socks5.h"
 
+#ifdef __linux__
+#  include "linuxbypass.h"
+#endif
+
 struct Event {
   QString m_newConnection;
   qint64 m_bytesSent;
@@ -138,9 +142,10 @@ static void startVerboseCLI(const Socks5* socks5) {
                    [printStatus]() { printStatus(); });
   QObject::connect(
       socks5, &Socks5::incomingConnection,
-      [printStatus](const QString& peerAddress) {
+      [printStatus](QAbstractSocket*s, const QHostAddress& peer) {
+        Q_UNUSED(s);
         s_events.append(
-            Event{peerAddress, 0, 0, QDateTime::currentMSecsSinceEpoch()});
+            Event{peer.toString(), 0, 0, QDateTime::currentMSecsSinceEpoch()});
         printStatus();
       });
 
@@ -178,9 +183,14 @@ int main(int argc, char** argv) {
   qDebug() << "Starting on port" << QString::number(config.port);
 
   QObject::connect(socks5, &Socks5::incomingConnection,
-                   [](const QString& peerAddress) {
-                     qDebug() << "Connection from  on port" << peerAddress;
+                   [](QAbstractSocket* s, const QHostAddress& peer) {
+                     Q_UNUSED(s);
+                     qDebug() << "Connection from  on port" << peer.toString();
                    });
+
+#ifdef __linux__
+  QObject::connect(socks5, &Socks5::outgoingConnection, &setupLinuxBypass);
+#endif
 
   return app.exec();
 }

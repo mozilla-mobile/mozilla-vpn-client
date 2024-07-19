@@ -28,13 +28,18 @@ void Socks5::newConnection() {
       return;
     }
 
-    emit incomingConnection(socket->peerAddress().toString());
+    emit incomingConnection(socket, socket->peerAddress());
 
     auto const con = new Socks5Connection(socket, m_server.serverPort());
     connect(con, &QObject::destroyed, this, &Socks5::clientDismissed);
     connect(con, &Socks5Connection::dataSentReceived,
             [this](qint64 sent, qint64 received) {
               emit dataSentReceived(sent, received);
+            });
+
+    connect(con, &Socks5Connection::setupOutSocket, this,
+            [this](QAbstractSocket* s, const QHostAddress& dest) {
+              emit outgoingConnection(s, dest);
             });
 
     ++m_clientCount;

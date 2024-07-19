@@ -58,6 +58,7 @@ class Socks5Connection final : public QObject {
   static std::optional<T> readPacket(QIODevice* connection);
 
  signals:
+  void setupOutSocket(QAbstractSocket* socket, const QHostAddress& dest);
   void dataSentReceived(qint64 sent, qint64 received);
 
  private:

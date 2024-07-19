@@ -112,7 +112,7 @@ void TestSocks5::proxyTCP() {
   // Data Sent should be 10.
   QCOMPARE(std::get<1>(proxyHadData.result()), qsizetype(10));
   // The Proxy server should have gotten a connection
-  QCOMPARE(QHostAddress{proxyHadConnection.result()}, QHostAddress::LocalHost);
+  QCOMPARE(std::get<1>(proxyHadConnection.result()), QHostAddress::LocalHost);
   // We should have gotten the correct string
   QCOMPARE(connectionToServer.result(), QByteArray{testData});
 }
