@@ -172,6 +172,16 @@ Window {
             serverUnavailablePopup.receivedPing = receivedPing
             serverUnavailablePopup.open();
         }
+
+        function onStateChanged() {
+            if (VPNController.state !== VPNController.StateOn) {
+                return
+            }
+            if (serverUnavailablePopup.opened) {
+                serverUnavailablePopup.close();
+                console.log("Connection stabilized and server unavailable popup visible. Closing server unavailable popup");
+            }
+        }
     }
 
     MZBottomNavigationBar {
