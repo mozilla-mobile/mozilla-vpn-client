@@ -117,3 +117,32 @@ implementing the [NEPacketTunnelProvider](https://developer.apple.com/documentat
 class.
 
 ## Crashes and Recovery
+
+Because the VPN is designed to intercept all network traffic originating from the user's device and encrypt it, a crash
+or failure of this software can be especially severe, and has the potential to permanently break the user's internet
+connectivity if handled incorrectly. Therefore additional steps are taken to ensure that a crash of this software can be
+recovered from.
+
+In the GUI client software communication with the daemon is guarded by a timeout mechanism and communication errors must
+be handled gracefully. These errors are detected by the `Controller` class, and reported as a `ErrorHandler::ControllerError`.
+Such failures typically result in a re-initialization of the controller class which will bring the client back to the
+deactivated state. Detection of these errors will trigger an error banner in the GUI client, as well as a system tray
+notification in case the GUI client is not visible in the foreground.
+
+Where possible the services are configured to automatically restart daemon processes which exit abormally (eg: crash):
+ - Linux: The `mozillavpn.service` file sets `Restart=on-failure`
+ - MacOS: The `org.mozilla.macos.FirefoxVPN.daemon.plist` set `KeepAlive` to `true`
+ - Windows: The ServiceConfig is set with `FirstFailureActionType` and `SecondFailureActionType` to `restart`
+
+When starting, the daemon processes MUST check for the existence of any VPNs, firewalls, kill-switches and drivers which
+were created by a previous instance of the daemon and stop them as necessary to return to a known state and to ensure
+that the host network connectivity is restored.
+
+If the VPN connection was active at the time of the crash, the daemon SHOULD NOT attempt to re-activate the connection. The
+context of such a connection is likely to have been lost in the crash and it is desired that the daemon should remain
+stateless. An attempt to re-activate the connection may lead to the same condition which triggered the crash, therefore we
+feel it is safer to leave the VPN inactive after recovery.
+
+Because the daemon runs as a privileged process, has no UI, and is outside of direct user control, it does not currently
+support crash reporting via Sentry. However, we can still get telemetry about the frequency of crashes and controller
+communication errors through analysis of the `error_alert_shown` ping.
