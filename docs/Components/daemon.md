@@ -30,7 +30,7 @@ and describe a common set of commands:
    peer has been successfully established. The public key of the Wireguard peer is provided as an argument to this
    signal.
 
- - `disconnected`: An asychronous signal sent from the daemon to inform the GUI client that the VPN has been terminated
+ - `disconnected`: An asynchronos signal sent from the daemon to inform the GUI client that the VPN has been terminated
    and the connection to all Wireguard peers has been stopped.
 
 ## Platform Implementations
@@ -67,7 +67,7 @@ Communication with the Linux daemon is achieved using the D-Bus protocol, descri
 system bus, and takes ownership of the name `org.mozilla.vpn.dbus`.
 
 The Linux kernel includes support for the Wireguard protocol, so this daemon only needs to respond to the communication
-protocol and retain the necessary capabilities to orchestrate interface bringup, configuration and management.
+protocol and retain the necessary capabilities to orchestrate interface creation, configuration and management.
 
 ### MacOS launchd
 
@@ -135,9 +135,9 @@ Where possible the services are configured to automatically restart daemon proce
  - MacOS: The `org.mozilla.macos.FirefoxVPN.daemon.plist` set `KeepAlive` to `true`
  - Windows: The service config is set with `FirstFailureActionType` and `SecondFailureActionType` to `restart`
 
-When starting, the daemon processes MUST check for the existence of any VPNs, firewalls, kill-switches and drivers which
-were created by a previous instance of the daemon and stop them as necessary to return to a known state and to ensure
-that the host network connectivity is restored.
+When starting, the daemon processes MUST check for the existence of any VPN interfaces, firewalls, kill-switches and
+drivers which were created by a previous instance of the daemon and stop them as necessary to return to a known state
+and to ensure that the host network connectivity is restored.
 
 If the VPN connection was active at the time of the crash, the daemon SHOULD NOT attempt to re-activate the connection.
 The context of such a connection is likely to have been lost in the crash and it is desired that the daemon should
