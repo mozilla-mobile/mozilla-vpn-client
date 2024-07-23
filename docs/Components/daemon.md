@@ -110,7 +110,7 @@ this driver at startup, and register it for split tunneling if possible.
 
 The Android daemon is a [Service](https://developer.android.com/develop/background-work/services) configure to run in
 the background, this ensures that the VPN tunnel can continue to run even if the GUI is suspended to save on resources.
-Unlike the standard Android guidelines, this services is explicitly configured to run in a separate procecess.
+Unlike the standard Android guidelines, this services is explicitly configured to run in a separate process.
 
 Communication with the daemon is achieved using [bindings](https://developer.android.com/develop/background-work/services/bound-services). The protocol is similar to the desktop daemons, except that it takes the form of:
 `{requestType:int, data:json}`

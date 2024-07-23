@@ -85,6 +85,7 @@ TOTP
 TP
 TaskGetFeatureList
 UniFFI
+VpnService
 VPN's
 WebAssembly
 WebSockets
