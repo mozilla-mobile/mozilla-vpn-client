@@ -26,11 +26,11 @@ and describe a common set of commands:
 
  - `cleanupLogs`: Method called to delete logs messages from the daemon.
 
- - `connected`: An asynchronos signal sent from the daemon to inform the GUI client that a VPN connection to a Wireguard
+ - `connected`: An asynchronous signal sent from the daemon to inform the GUI client that a VPN connection to a Wireguard
    peer has been successfully established. The public key of the Wireguard peer is provided as an argument to this
    signal.
 
- - `disconnected`: An asynchronos signal sent from the daemon to inform the GUI client that the VPN has been terminated
+ - `disconnected`: An asynchronous signal sent from the daemon to inform the GUI client that the VPN has been terminated
    and the connection to all Wireguard peers has been stopped.
 
 ## Platform Implementations
