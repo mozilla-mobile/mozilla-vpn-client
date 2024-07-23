@@ -302,8 +302,7 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
 
   m_routeMonitor = new WindowsRouteMonitor(luid.Value, this);
   auto destroyRouteMonitorOnFailure = qScopeGuard([this]() {
-    delete m_routeMonitor;
-    m_routeMonitor = nullptr;
+    m_routeMonitor->deleteLater();
   });
 
   // Set the Adapters Address:
@@ -340,8 +339,7 @@ bool WireguardUtilsWindows::deleteInterface() {
     return false;
   }
   if (m_routeMonitor) {
-    delete m_routeMonitor;
-    m_routeMonitor = nullptr;
+    m_routeMonitor->deleteLater();
   }
   if (m_deviceIpv4_Handle != 0) {
     DeleteIPAddress(m_deviceIpv4_Handle);

@@ -6,6 +6,7 @@
 #define WIREGUARDUTILSWINDOWS_H
 
 #include <QObject>
+#include <QPointer>
 
 #include "daemon/wireguardutils.h"
 #include "wireguard.h"
@@ -50,7 +51,7 @@ class WireguardUtilsWindows final : public WireguardUtils {
   std::unique_ptr<WireGuardAPI> m_wireguard_api;
   ulong m_deviceIpv4_Handle = 0;
 
-  WindowsRouteMonitor* m_routeMonitor = nullptr;
+  QPointer<WindowsRouteMonitor> m_routeMonitor;
   WIREGUARD_ADAPTER_HANDLE m_adapter = NULL;
 };
 
