@@ -20,6 +20,9 @@
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
+#if defined MZ_PROXY_ENABLED
+#  include "proxycontroller.h"
+#endif
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "taskscheduler.h"
@@ -27,8 +30,16 @@
 
 namespace {
 
+// See https://en.cppreference.com/w/cpp/utility/variant/visit
+template <class... Ts>
+struct match : Ts... {
+  using Ts::operator()...;
+};
+template <class... Ts>
+match(Ts...) -> match<Ts...>;
+
 Logger logger("WebExtensionAdapter");
-}
+}  // namespace
 
 WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
     : BaseAdapter(parent) {
@@ -41,6 +52,9 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
           &WebExtensionAdapter::writeState);
   connect(vpn->controller(), &Controller::stateChanged, this,
           &WebExtensionAdapter::writeState);
+
+  mProxyStateChanged = vpn->proxyController()->stateBindable().subscribe(
+      [this]() { serializeStatus(); });
 
   m_commands = QList<RequestType>({
       RequestType{"activate",
@@ -145,6 +159,29 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
     int index = meta->indexOfEnumerator(qt_getEnumName(state));
     obj["vpn"] = meta->enumerator(index).valueToKey(state);
   }
+#if defined MZ_PROXY_ENABLED
+  {
+    auto* proxyController = vpn->proxyController();
+    QJsonObject p;
+    std::visit(match{
+                   [&p](ProxyController::Stopped s) {
+                     p["available"] = false;
+                     p["url"] = "";
+                   },
+                   [&p](ProxyController::Started s) {
+                     p["available"] = true;
+                     p["url"] = s.url.toString();
+                   },
+               },
+               proxyController->state());
+    obj["localProxy"] = p;
+  }
+#else
+  QJsonObject p;
+  p["available"] = false;
+  p["url"] = "";
+  obj["localProxy"] = p;
+#endif
 
   return obj;
 }

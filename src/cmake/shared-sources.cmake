@@ -222,6 +222,8 @@ if(NOT CMAKE_CROSSCOMPILING)
      target_sources(shared-sources INTERFACE
         ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/desktopauthenticationlistener.cpp
         ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/desktopauthenticationlistener.h
+        ${CMAKE_SOURCE_DIR}/src/proxycontroller.cpp
+        ${CMAKE_SOURCE_DIR}/src/proxycontroller.h
        )
 endif()
 

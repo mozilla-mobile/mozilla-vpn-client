@@ -1120,7 +1120,15 @@ void MozillaVPN::controllerStateChanged() {
   if (m_updating && m_private->m_controller.state() == Controller::StateOff) {
     update();
   }
-
+#if defined MZ_PROXY_ENABLED
+  if (m_private->m_proxyController.canActivate()) {
+    if (m_private->m_controller.state() == Controller::StateOn) {
+      m_private->m_proxyController.start();
+    } else {
+      m_private->m_proxyController.stop();
+    }
+  }
+#endif
   NetworkManager::instance()->clearCache();
 }
 
