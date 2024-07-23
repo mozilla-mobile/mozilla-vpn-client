@@ -20,6 +20,7 @@
 #include "platforms/windows/windowsutils.h"
 #include "windowsdaemon.h"
 #include "windowsfirewall.h"
+#include "windowsroutemonitor.h"
 #include "wireguard.h"
 DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_PEER_FLAG)
 DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_INTERFACE_FLAG)
@@ -230,9 +231,7 @@ std::unique_ptr<WireguardUtilsWindows> WireguardUtilsWindows::create(
 
 WireguardUtilsWindows::WireguardUtilsWindows(
     QObject* parent, std::unique_ptr<WireGuardAPI> wireguard)
-    : WireguardUtils(parent),
-      m_wireguard_api(std::move(wireguard)),
-      m_routeMonitor(this) {
+    : WireguardUtils(parent), m_wireguard_api(std::move(wireguard)) {
   MZ_COUNT_CTOR(WireguardUtilsWindows);
   logger.debug() << "WireguardUtilsWindows created.";
 }
@@ -300,11 +299,10 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   NET_LUID luid;
   m_wireguard_api->GetAdapterLUID(wireguard_adapter, &luid);
   m_luid = luid.Value;
-  m_routeMonitor.setLuid(luid.Value);
-  auto resetLUIDOnFailure = qScopeGuard([this]() {
-    m_routeMonitor.setLuid(0);
-    m_luid = 0;
-  });
+
+  m_routeMonitor = new WindowsRouteMonitor(luid.Value, this);
+  auto destroyRouteMonitorOnFailure =
+      qScopeGuard([this]() { m_routeMonitor->deleteLater(); });
 
   // Set the Adapters Address:
   m_deviceIpv4_Handle =
@@ -321,13 +319,13 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   // Enable the windows firewall
   NET_IFINDEX ifindex;
   ConvertInterfaceLuidToIndex(&luid, &ifindex);
-  if (!WindowsFirewall::instance()->enableKillSwitch(ifindex)) {
+  if (!WindowsFirewall::instance()->enableInterface(ifindex)) {
     logger.error() << "Failed enabling Killswitch";
     WindowsFirewall::instance()->disableKillSwitch();
     return false;
   };
   cleanupDeviceOnFailure.dismiss();
-  resetLUIDOnFailure.dismiss();
+  destroyRouteMonitorOnFailure.dismiss();
   m_adapter = wireguard_adapter;
   return true;
 }
@@ -338,6 +336,9 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
 bool WireguardUtilsWindows::deleteInterface() {
   if (!m_adapter) {
     return false;
+  }
+  if (m_routeMonitor) {
+    m_routeMonitor->deleteLater();
   }
   if (m_deviceIpv4_Handle != 0) {
     DeleteIPAddress(m_deviceIpv4_Handle);
@@ -400,9 +401,9 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
     return false;
   }
   // Exclude the server address, except for multihop exit servers.
-  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
-    m_routeMonitor.addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-    m_routeMonitor.addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+  if (m_routeMonitor && (config.m_hopType != InterfaceConfig::MultiHopExit)) {
+    m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
+    m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
   }
   return true;
 }
@@ -492,9 +493,9 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
   }
   Q_ASSERT(getPeerStatus().count() < currentPeers);
   // Clear exclustion routes for this peer.
-  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
-    m_routeMonitor.deleteExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-    m_routeMonitor.deleteExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+  if (m_routeMonitor && (config.m_hopType != InterfaceConfig::MultiHopExit)) {
+    m_routeMonitor->deleteExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
+    m_routeMonitor->deleteExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
   }
   // Disable the windows firewall for this peer.
   WindowsFirewall::instance()->disablePeerTraffic(config.m_serverPublicKey);
@@ -532,7 +533,15 @@ void WireguardUtilsWindows::buildMibForwardRow(const IPAddress& prefix,
   entry->Immortal = false;
   entry->Age = 0;
 }
+
 bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
+  if (m_routeMonitor && (prefix.prefixLength() == 0)) {
+    // If we are setting up a default route, instruct the route monitor to
+    // capture traffic to all non-excluded destinations
+    m_routeMonitor->setDetaultRouteCapture(true);
+  }
+
+  // Build the route
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);
 
@@ -550,6 +559,12 @@ bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
 }
 
 bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix) {
+  if (m_routeMonitor && (prefix.prefixLength() == 0)) {
+    // Deactivate the route capture feature.
+    m_routeMonitor->setDetaultRouteCapture(false);
+  }
+
+  // Build the route
   MIB_IPFORWARD_ROW2 entry;
   buildMibForwardRow(prefix, &entry);
 
@@ -566,10 +581,23 @@ bool WireguardUtilsWindows::deleteRoutePrefix(const IPAddress& prefix) {
   return result == NO_ERROR;
 }
 
-bool WireguardUtilsWindows::addExclusionRoute(const IPAddress& prefix) {
-  return m_routeMonitor.addExclusionRoute(prefix);
-}
+bool WireguardUtilsWindows::excludeLocalNetworks(
+    const QList<IPAddress>& addresses) {
+  // If the interface isn't up then something went horribly wrong.
+  Q_ASSERT(m_routeMonitor);
 
-bool WireguardUtilsWindows::deleteExclusionRoute(const IPAddress& prefix) {
-  return m_routeMonitor.deleteExclusionRoute(prefix);
+  // For each destination - attempt to exclude it from the VPN tunnel.
+  bool result = true;
+  for (const IPAddress& prefix : addresses) {
+    if (!m_routeMonitor->addExclusionRoute(prefix)) {
+      result = false;
+    }
+  }
+
+  // Permit LAN traffic through the firewall.
+  if (!WindowsFirewall::instance()->enableLanBypass(addresses)) {
+    result = false;
+  }
+
+  return result;
 }

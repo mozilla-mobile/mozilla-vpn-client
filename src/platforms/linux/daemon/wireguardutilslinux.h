@@ -29,6 +29,10 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool deletePeer(const InterfaceConfig& config) override;
   QList<PeerStatus> getPeerStatus() override;
 
+  bool updateRoutePrefix(const IPAddress& prefix) override;
+  bool deleteRoutePrefix(const IPAddress& prefix) override;
+  bool excludeLocalNetworks(const QList<IPAddress>& lanAddressRanges) override;
+
   void excludeCgroup(const QString& cgroup);
   void resetCgroup(const QString& cgroup);
   void resetAllCgroups();
@@ -37,19 +41,12 @@ class WireguardUtilsLinux final : public WireguardUtils {
   QStringList currentInterfaces();
   bool setPeerEndpoint(struct sockaddr* sa, const QString& address, int port);
   bool addPeerPrefix(struct wg_peer* peer, const IPAddress& prefix);
+
   bool rtmSendRule(int action, int flags, int addrfamily);
-  /**
-   * This table is made up of a single routing rule:
-   *    default dev moz0 proto static scope link
-   *
-   * This rule simply states that all packets that make it here,
-   * just go through the moz0 interface.
-   *
-   * Packets that make it to this table must go through the Wireguard interface.
-   * Firewall rules and ip rules are responsible for making sure of that.
-   */
-  bool setupWireguardRoutingTable(int family);
-  bool rtmIncludePeer(int action, int flags, const IPAddress& prefix);
+  bool rtmIncludePeer(int action, const IPAddress& prefix, int flags = 0);
+  bool rtmSendRoute(int action, const IPAddress& prefix, int type,
+                    int flags = 0);
+
   void nlsockHandleNewlink(struct nlmsghdr* nlmsg);
   void nlsockHandleDellink(struct nlmsghdr* nlmsg);
   static bool setupCgroupClass(const QString& path, unsigned long classid);
@@ -69,6 +66,10 @@ class WireguardUtilsLinux final : public WireguardUtils {
 
   unsigned int m_ifindex = 0;
   int m_ifflags = 0;
+
+  // Excluded routes are not automatically removed when the interface goes down
+  // therefore, we have to remove them manually in deleteInterface()
+  QList<IPAddress> m_routesExcluded;
 
  private slots:
   void nlsockReady();

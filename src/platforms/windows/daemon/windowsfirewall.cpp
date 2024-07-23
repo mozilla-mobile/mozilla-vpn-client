@@ -159,7 +159,7 @@ bool WindowsFirewall::init() {
   return true;
 }
 
-bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex) {
+bool WindowsFirewall::enableInterface(int vpnAdapterIndex) {
 // Checks if the FW_Rule was enabled succesfully,
 // disables the whole killswitch and returns false if not.
 #define FW_OK(rule)                                                       \
@@ -182,7 +182,7 @@ bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex) {
     }                                                                     \
   }
 
-  logger.info() << "Enabling Killswitch Using Adapter:" << vpnAdapterIndex;
+  logger.info() << "Enabling firewall Using Adapter:" << vpnAdapterIndex;
   FW_OK(allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT,
                               "Allow usage of VPN Adapter"));
   FW_OK(allowDHCPTraffic(MED_WEIGHT, "Allow DHCP Traffic"));
@@ -196,6 +196,37 @@ bool WindowsFirewall::enableKillSwitch(int vpnAdapterIndex) {
   logger.debug() << "Killswitch on! Rules:" << m_activeRules.length();
   return true;
 #undef FW_OK
+}
+
+// Allow unprotected traffic sent to the following local address ranges.
+bool WindowsFirewall::enableLanBypass(const QList<IPAddress>& ranges) {
+  // Start the firewall transaction
+  auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
+  if (result != ERROR_SUCCESS) {
+    disableKillSwitch();
+    return false;
+  }
+  auto cleanup = qScopeGuard([&] {
+    FwpmTransactionAbort0(m_sessionHandle);
+    disableKillSwitch();
+  });
+
+  // Blocking unprotected traffic
+  logger.info() << "Blocking unprotected traffic";
+  for (const IPAddress& prefix : ranges) {
+    if (!allowTrafficTo(prefix, MED_WEIGHT, "Allow LAN bypass traffic")) {
+      return false;
+    }
+  }
+
+  result = FwpmTransactionCommit0(m_sessionHandle);
+  if (result != ERROR_SUCCESS) {
+    logger.error() << "FwpmTransactionCommit0 failed with error:" << result;
+    return false;
+  }
+
+  cleanup.dismiss();
+  return true;
 }
 
 bool WindowsFirewall::enablePeerTraffic(const InterfaceConfig& config) {
@@ -403,6 +434,56 @@ bool WindowsFirewall::allowTrafficOfAdapter(int networkAdapter, uint8_t weight,
   filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
   if (!enableFilter(&filter, title,
                     description.arg("in").arg(networkAdapter))) {
+    return false;
+  }
+  return true;
+}
+
+bool WindowsFirewall::allowTrafficTo(const IPAddress& addr, int weight,
+                                     const QString& title,
+                                     const QString& peer) {
+  GUID layerKeyOut;
+  GUID layerKeyIn;
+  if (addr.type() == QAbstractSocket::IPv4Protocol) {
+    layerKeyOut = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
+    layerKeyIn = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
+  } else {
+    layerKeyOut = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
+    layerKeyIn = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
+  }
+
+  // Match the IP address range.
+  FWPM_FILTER_CONDITION0 cond[1] = {};
+  FWP_RANGE0 ipRange;
+  QByteArray lowIpV6Buffer;
+  QByteArray highIpV6Buffer;
+
+  importAddress(addr.address(), ipRange.valueLow, &lowIpV6Buffer);
+  importAddress(addr.broadcastAddress(), ipRange.valueHigh, &highIpV6Buffer);
+
+  cond[0].fieldKey = FWPM_CONDITION_IP_REMOTE_ADDRESS;
+  cond[0].matchType = FWP_MATCH_RANGE;
+  cond[0].conditionValue.type = FWP_RANGE_TYPE;
+  cond[0].conditionValue.rangeValue = &ipRange;
+
+  // Assemble the Filter base
+  FWPM_FILTER0 filter;
+  memset(&filter, 0, sizeof(filter));
+  filter.action.type = FWP_ACTION_PERMIT;
+  filter.weight.type = FWP_UINT8;
+  filter.weight.uint8 = weight;
+  filter.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
+  filter.numFilterConditions = 1;
+  filter.filterCondition = cond;
+
+  // Send the filters down to the firewall.
+  QString description = "Permit traffic %1 " + addr.toString();
+  filter.layerKey = layerKeyOut;
+  if (!enableFilter(&filter, title, description.arg("to"), peer)) {
+    return false;
+  }
+  filter.layerKey = layerKeyIn;
+  if (!enableFilter(&filter, title, description.arg("from"), peer)) {
     return false;
   }
   return true;

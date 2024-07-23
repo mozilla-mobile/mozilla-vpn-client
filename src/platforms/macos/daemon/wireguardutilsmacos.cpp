@@ -5,6 +5,7 @@
 #include "wireguardutilsmacos.h"
 
 #include <errno.h>
+#include <net/route.h>
 
 #include <QByteArray>
 #include <QDir>
@@ -265,10 +266,10 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
   if (!m_rtmonitor) {
     return false;
   }
-  if (prefix.prefixLength() > 0) {
-    return m_rtmonitor->insertRoute(prefix);
-  }
 
+  if (prefix.prefixLength() > 0) {
+    return m_rtmonitor->deleteRoute(prefix);
+  }
   // Ensure that we do not replace the default route.
   if (prefix.type() == QAbstractSocket::IPv4Protocol) {
     return m_rtmonitor->deleteRoute(IPAddress("0.0.0.0/1")) &&
@@ -281,18 +282,24 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
   }
 }
 
-bool WireguardUtilsMacos::addExclusionRoute(const IPAddress& prefix) {
+bool WireguardUtilsMacos::excludeLocalNetworks(const QList<IPAddress>& routes) {
   if (!m_rtmonitor) {
     return false;
   }
-  return m_rtmonitor->addExclusionRoute(prefix);
-}
 
-bool WireguardUtilsMacos::deleteExclusionRoute(const IPAddress& prefix) {
-  if (!m_rtmonitor) {
-    return false;
+  // Explicitly discard LAN traffic that makes its way into the tunnel. This
+  // doesn't really exclude the LAN traffic, we just don't take any action to
+  // overrule the routes of other interfaces.
+  bool result = true;
+  for (const auto& prefix : routes) {
+    logger.error() << "Attempting to exclude:" << prefix.toString();
+    if (!m_rtmonitor->insertRoute(prefix, RTF_IFSCOPE | RTF_REJECT)) {
+      result = false;
+    }
   }
-  return m_rtmonitor->deleteExclusionRoute(prefix);
+
+  // TODO: A kill switch would be nice though :)
+  return result;
 }
 
 QString WireguardUtilsMacos::uapiCommand(const QString& command) {

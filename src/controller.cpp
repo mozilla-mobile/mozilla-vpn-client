@@ -550,16 +550,6 @@ Controller::IPAddressList Controller::getExcludedIPAddressRanges() {
   excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
   excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
 
-  logger.debug() << "Filtering out explicitely-set network address ranges";
-  for (const QString& ipv4String :
-       SettingsHolder::instance()->excludedIpv4Addresses()) {
-    excludeIPv4s.append(IPAddress(ipv4String));
-  }
-  for (const QString& ipv6String :
-       SettingsHolder::instance()->excludedIpv6Addresses()) {
-    excludeIPv6s.append(IPAddress(ipv6String));
-  }
-
   return IPAddressList{
       .v6 = excludeIPv6s,
       .v4 = excludeIPv4s,
@@ -573,20 +563,11 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
 
   QList<IPAddress> list;
 
-#ifdef MZ_IOS
-  // Note: On iOS, we use the `excludeLocalNetworks` flag to ensure
-  // LAN traffic is allowed through. This is in the swift code.
-
-  Q_UNUSED(exitServer);
-
   logger.debug() << "Catch all IPv4";
   list.append(IPAddress("0.0.0.0/0"));
 
   logger.debug() << "Catch all IPv6";
   list.append(IPAddress("::0/0"));
-#else
-
-  auto excludedIPs = getExcludedIPAddressRanges();
 
   // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
@@ -597,13 +578,6 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   // Ensure that the Mullvad proxy services are always allowed.
   list.append(
       IPAddress(QHostAddress(MULLVAD_PROXY_RANGE), MULLVAD_PROXY_RANGE_LENGTH));
-
-  // Allow access to everything not covered by an excluded address.
-  QList<IPAddress> allowedIPv4 = {IPAddress("0.0.0.0/0")};
-  list.append(IPAddress::excludeAddresses(allowedIPv4, excludedIPs.v4));
-  QList<IPAddress> allowedIPv6 = {IPAddress("::/0")};
-  list.append(IPAddress::excludeAddresses(allowedIPv6, excludedIPs.v6));
-#endif
 
   return list;
 }
