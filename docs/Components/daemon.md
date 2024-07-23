@@ -102,13 +102,22 @@ Windows does not include native support for the Wireguard protocol, so in order 
 [Wireguard NT](https://github.com/WireGuard/wireguard-nt) kernel driver is installed by the windows service. This driver
 is instantiated when bringing up the VPN tunnel to handle the connection.
 
-Additionally, a [split-tunneling](https://github.com/mullvad/win-split-tunnel) driver may also be provided, which can be used
-by the VPN to allow some applications to access the network directly and bypass the VPN. The daemon will check for this driver
-at startup, and register it for split tunneling if possible.
+Additionally, a [split-tunneling](https://github.com/mullvad/win-split-tunnel) driver may also be provided, which can be
+used by the VPN to allow some applications to access the network directly and bypass the VPN. The daemon will check for
+this driver at startup, and register it for split tunneling if possible.
 
-### Android daemon???
+### Android Service
 
-TODO: How does Android work, exactly?
+The Android daemon is a [Service](https://developer.android.com/develop/background-work/services) configure to run in
+the background, this ensures that the VPN tunnel can continue to run even if the GUI is suspended to save on resources.
+Unlike the standard Android guidelines, this services is explicitly configured to run in a separate procecess.
+
+Communication with the daemon is achieved using [bindings](https://developer.android.com/develop/background-work/services/bound-services). The protocol is similar to the desktop daemons, except that it takes the form of:
+`{requestType:int, data:json}`
+
+The VPN tunnel is run within the process by creating a raw TUN device via the
+[VpnService.Builder](https://developer.android.com/reference/android/net/VpnService.Builder) API, and then creating a
+[wireguard-go](https://git.zx2c4.com/wireguard-go) process to implement the Wireguard protocol.
 
 ### iOS Network Extension
 
