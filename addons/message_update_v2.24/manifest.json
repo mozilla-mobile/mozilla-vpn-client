@@ -1,19 +1,19 @@
 {
   "api_version": "0.1",
-  "id": "message_update_v2.23",
-  "name": "Update to Mozilla VPN 2.23",
+  "id": "message_update_v2.24",
+  "name": "Update to Mozilla VPN 2.24",
   "type": "message",
   "conditions": {
-    "max_client_version": "2.22.9",
+    "max_client_version": "2.23.9",
     "javascript": "osCheck.js"
   },
   "javascript": {
     "enable": "enable.js"
   },
   "message": {
-    "date": 1713466835,
-    "id": "message_update_v2.23",
-    "title": "Update to Mozilla VPN 2.23",
+    "date": 1722476590,
+    "id": "message_update_v2.24",
+    "title": "Update to Mozilla VPN 2.24",
     "subtitle": "We’ve released an updated version of Mozilla VPN! Update to the latest version for the best possible Mozilla VPN experience.",
     "badge": "new_update",
     "blocks": [
@@ -46,7 +46,7 @@
       {
         "id": "extra_1",
         "type": "text",
-        "content": "Download the new Mozilla VPN 2.23"
+        "content": "Download the new Mozilla VPN 2.24"
       }
     ]
   }
