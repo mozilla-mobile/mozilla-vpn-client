@@ -301,9 +301,8 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   m_luid = luid.Value;
 
   m_routeMonitor = new WindowsRouteMonitor(luid.Value, this);
-  auto destroyRouteMonitorOnFailure = qScopeGuard([this]() {
-    m_routeMonitor->deleteLater();
-  });
+  auto destroyRouteMonitorOnFailure =
+      qScopeGuard([this]() { m_routeMonitor->deleteLater(); });
 
   // Set the Adapters Address:
   m_deviceIpv4_Handle =
