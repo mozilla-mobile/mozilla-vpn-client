@@ -276,9 +276,17 @@ bool WireguardUtilsWindows::interfaceExists() { return m_adapter != NULL; }
  * Returns true on success.
  */
 bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
-  // Create the Adapter and Cleanup fallbacks in case of failure.
-  WIREGUARD_ADAPTER_HANDLE wireguard_adapter = m_wireguard_api->CreateAdapter(
-      (const wchar_t*)interfaceName().utf16(), L"Mozilla", &ADAPTER_GUID);
+  // Check if there is a MozillaVPN adapter and open that first
+  WIREGUARD_ADAPTER_HANDLE wireguard_adapter =
+      m_wireguard_api->OpenAdapter((const wchar_t*)interfaceName().utf16());
+  if (wireguard_adapter == NULL) {
+    logger.info() << "Creating new adapter";
+    // Create the Adapter and Cleanup fallbacks in case of failure.
+    wireguard_adapter = m_wireguard_api->CreateAdapter(
+        (const wchar_t*)interfaceName().utf16(), L"Mozilla", &ADAPTER_GUID);
+  } else {
+    logger.info() << "Adopting existing adapter";
+  }
   if (wireguard_adapter == NULL) {
     logger.error() << "Failed creating Wireguard Adapter";
     return false;
