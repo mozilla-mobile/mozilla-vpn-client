@@ -36,6 +36,19 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {
           &WindowsDaemon::monitorBackendFailure);
   connect(this, &WindowsDaemon::activationFailure,
           []() { WindowsFirewall::instance()->disableKillSwitch(); });
+
+  /**
+   * In case when upgrading the daemon was not shut down cleanly
+   * this service could be orphaned and alive.
+   * Let's make sure we clean that up.
+   * TODO: Remove this in a few updates.
+   */
+  auto maybeService = WindowsServiceManager::open("WireGuardTunnel$MozillaVPN");
+  if (maybeService) {
+    maybeService->stopService();
+    maybeService->deleteService();
+    return;
+  }
 }
 
 WindowsDaemon::~WindowsDaemon() {

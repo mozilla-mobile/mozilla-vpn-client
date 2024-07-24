@@ -139,3 +139,11 @@ bool WindowsServiceManager::stopService() {
   }
   return ok;
 }
+
+bool WindowsServiceManager::deleteService() {
+  if (!DeleteService(m_service)) {
+    WindowsUtils::windowsLog("Failed to delete the service");
+    return false;
+  }
+  return true;
+}

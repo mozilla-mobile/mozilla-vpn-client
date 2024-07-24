@@ -37,6 +37,9 @@ class WindowsServiceManager : public QObject {
   // Starts to poll for serviceStopped
   bool stopService();
 
+  // Attempts to delete the Service;
+  bool deleteService();
+
  signals:
   // Gets Emitted after the Service moved From SERVICE_START_PENDING to
   // SERVICE_RUNNING
