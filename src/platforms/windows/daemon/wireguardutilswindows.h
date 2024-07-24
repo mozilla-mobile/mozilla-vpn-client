@@ -24,10 +24,7 @@ class WireguardUtilsWindows final : public WireguardUtils {
   ~WireguardUtilsWindows();
 
   bool interfaceExists() override;
-  QString interfaceName() override {
-    return WireguardUtilsWindows::s_interfaceName();
-  }
-  static const QString s_interfaceName() { return "MozillaVPN"; }
+  QString interfaceName() override { return "Mozilla_VPN"; }
   bool addInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
 
