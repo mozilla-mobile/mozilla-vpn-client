@@ -29,7 +29,7 @@
   },
   "workspaces":[
     "tools/languagelocalizer",
-    "tools/translationsreport",
+    "tools/translationsreport/app",
     "tools/mozillavpn.dev",
     "tools/inspector"
   ]
