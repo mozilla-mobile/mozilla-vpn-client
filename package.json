@@ -26,7 +26,7 @@
     "websocket": "^1.0.34"
   },
   "workspaces":[
-    "tools/translationsreport",
+    "tools/translationsreport/app",
     "tools/mozillavpn.dev",
     "tools/inspector"
   ]
