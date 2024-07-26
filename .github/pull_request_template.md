@@ -2,6 +2,10 @@
 
     Describe your changes
 
+## Testing
+
+    How should QA test these changes?
+
 ## Reference
 
     i.e Jira or Github issue URL
