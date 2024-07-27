@@ -26,6 +26,10 @@ On Ubuntu, apt install the following dependencies
 * wireguard (>=1.0.20200319)
 * wireguard-tools (>=1.0.20200319)
 
+On Fedora, ensure dependencies are installed
+
+    sudo dnf install libsecret-devel libcap-devel wireguard-tools make
+
 # Build and install
 
 Make the build directory
