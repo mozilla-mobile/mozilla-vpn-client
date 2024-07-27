@@ -40,6 +40,11 @@ Configure
 
     cmake -S . -B build -DCMAKE_PREFIX_PATH=$(Qt install path)/gcc_64/lib/cmake/
 
+> hint about $(Qt install path): If you forgot where you installed it, you can use the following
+
+    sudo updatedb  # if you just installed Qt
+    locate -br ^gcc_64$
+
 Compile
 
     cmake --build build -j$(nproc)
