@@ -170,13 +170,13 @@ void AndroidController::activate(const InterfaceConfig& config,
     if (item.prefixLength() > 0) {
       jAllowedIPs.append(QJsonValue(item.toString()));
     } else if (item.type() == QAbstractSocket::IPv4Protocol) {
-      QList<IPAddress> routeV4 = {item};
-      foreach(auto prefix, IPAddress::excludeAddresses(routeV4, lanRoutes.v4)) {
+      QList<IPAddress> list = {item};
+      foreach (auto prefix, IPAddress::excludeAddresses(list, lanRoutes.v4)) {
         jAllowedIPs.append(QJsonValue(prefix.toString()));
       }
     } else if (item.type() == QAbstractSocket::IPv6Protocol) {
-      QList<IPAddress> routeV6 = {item};
-      foreach(auto prefix, IPAddress::excludeAddresses(routeV6, lanRoutes.v6)) {
+      QList<IPAddress> list = {item};
+      foreach (auto prefix, IPAddress::excludeAddresses(list, lanRoutes.v6)) {
         jAllowedIPs.append(QJsonValue(prefix.toString()));
       }
     }
