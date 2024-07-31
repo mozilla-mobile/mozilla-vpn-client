@@ -162,14 +162,24 @@ void AndroidController::activate(const InterfaceConfig& config,
   jServer["publicKey"] = config.m_serverPublicKey;
   jServer["port"] = (double)config.m_serverPort;
 
-  // TODO: This could be done better with VpnService.Builder.excludeRoute()
-  // we just need a way to get this config down that far.
-  const auto localRoutes = Controller::getExcludedIPAddressRanges().flatten();
-  const auto fullAllowedIPs =
-      IPAddress::excludeAddresses(config.m_allowedIPAddressRanges, localRoutes);
+  // This could be done better with VpnService.Builder.excludeRoute()
+  // but that requires API level 33 (Android 13).
+  const auto lanRoutes = Controller::getExcludedIPAddressRanges();
   QJsonArray jAllowedIPs;
-  foreach (auto item, fullAllowedIPs) {
-    jAllowedIPs.append(QJsonValue(item.toString()));
+  foreach (auto item, config.m_allowedIPAddressRanges) {
+    if (item.prefixLength() > 0) {
+      jAllowedIPs.append(QJsonValue(item.toString()));
+    } else if (item.type() == QAbstractSocket::IPv4Protocol) {
+      QList<IPAddress> routeV4 = {item};
+      foreach(auto prefix, IPAddress::excludeAddresses(routeV4, lanRoutes.v4)) {
+        jAllowedIPs.append(QJsonValue(prefix.toString()));
+      }
+    } else if (item.type() == QAbstractSocket::IPv6Protocol) {
+      QList<IPAddress> routeV6 = {item};
+      foreach(auto prefix, IPAddress::excludeAddresses(routeV6, lanRoutes.v6)) {
+        jAllowedIPs.append(QJsonValue(prefix.toString()));
+      }
+    }
   }
 
   QJsonArray excludedApps;
