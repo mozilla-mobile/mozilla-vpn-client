@@ -107,7 +107,9 @@ ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress address) {
         logger.error() << "Failed to set IPAddress: ERROR_NOT_SUPPORTED";
         break;
       default:
-        WindowsUtils::windowsLog("WELP, failed to add ip address to adapter");
+        logger.info() << "";
+        logger.error() << "WELP, failed to add ip address to adapter: "
+                       << WindowsUtils::getErrorMessage(dwResult);
     }
     return 0;
   }
