@@ -1,0 +1,76 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# This file contains the strings for the MozillaVPN addons.
+# At the top level of this document, you must specify the categories. For each
+# category, there is a list of string IDs. Each string ID can be:
+# - a string: this will be the English translation of that string ID
+# - an object composed of a `value` key and, optional, a `comment` key. Both
+#   keys can be a string or an array of strings. The `value` contains the
+#   English translation; the comment is useful to describe what the string is
+#   and where it is used.
+#
+# Example:
+#
+#initialView:
+#  # This is a simple string
+#  getStartedButton: Get started
+#
+#  # StringID with a value and a comment
+#  learnMore:
+#    value: Learn more
+#    comment: This is the `learn more` link shown in the initial view
+#
+#  # Multiple line string (with a multiple line comment)
+#  subTitle:
+#    value:
+#      - A fast, secure and easy to use VPN. Built
+#      - by the makers of Firefox
+#    comment:
+#      - Also comments can be written using
+#      - multiple lines!
+#
+# If a string contains arguments, add '%<number>' for each argument. For
+# instance, you can write 2 strings in these way:
+#   foo:
+#     value: You have %1 active devices
+#     comment: %1 is the number of active devices.
+#   bar:
+#     value: Your device %1 has been created at %2.
+#     comment: %1 is the device name. %2 is a date/time value.
+#
+# Please, write a comment to describe what the arguments are about.
+#
+
+commonStrings:
+  updateTitle:
+    value: Update to Mozilla VPN %1
+    comment: Title for update message. %1 is replaced by the version number, such as 2.24.0
+  downloadTitle:
+    value: Download the new Mozilla VPN %1
+    comment: Alternative title used for some versions. %1 is replaced by the version number, such as 2.24.0
+  subtitle:
+    value: We’ve released an updated version of Mozilla VPN! Update to the latest version for the best possible Mozilla VPN experience.
+    comment: Subtitle for default update message
+  contentText:
+    value: This update includes minor bug fixes, UI adjustments and other performance improvements.
+    comment: Default update notes
+  updateButton:
+    value: Update now
+    comment: Label for `update now` button
+  downloadButton:
+    value: Download update
+    comment: Label for `Download update` button
+  getHelpButton:
+    value: Get help
+    comment: Label for `Get help` button
+  tester:
+    value: shouldn't show up in translation file
+    comment: Label for `Get help` button
+
+# 224updateMessage:
+#   somethingSpecificJustToThisOne:
+#     value: This is just an example
+#     comment: Use this as as template for strings that we expect to only use in one message.
+

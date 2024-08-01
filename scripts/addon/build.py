@@ -21,6 +21,105 @@ comment_types = {
 }
 
 
+# TODO: THIS ABSOLUTELY SHOULD NOT BE HERE, SHOULD USE THE ONE IN SHARED, BUT IT IS NOT WORKING
+# special loader with duplicate key checking
+# From: https://gist.github.com/pypt/94d747fe5180851196eb
+class UniqueKeyLoader(yaml.SafeLoader):
+    def construct_mapping(self, node, deep=False):
+        mapping = []
+        for key_node, value_node in node.value:
+            key = self.construct_object(key_node, deep=deep)
+            if key in mapping:
+                print(f"Warning!! {key} is duplicated!")
+            assert key not in mapping
+            mapping.append(key)
+        return super().construct_mapping(node, deep)
+
+def pascalize(string):
+    output = ""
+    for chunk in string.split("_"):
+        output += chunk[0].upper()
+        output += chunk[1:]
+    return output
+
+def parseYAMLTranslationStrings(yamlfile):
+    if not os.path.isfile(yamlfile):
+        exit(f"Unable to find {yamlfile}")
+
+    yaml_strings = {}
+    with open(yamlfile, "r", encoding="utf-8") as yaml_file:
+        # Enforce a new line at the end of the file
+        last_line = yaml_file.readlines()[-1]
+        if last_line == last_line.rstrip():
+            exit("The yaml file must have an empty line at the end")
+
+        # Reset position after reading the whole content
+        yaml_file.seek(0)
+        yaml_content = yaml.load(yaml_file, UniqueKeyLoader)
+        if yaml_content is None:
+            return yaml_strings
+
+        if type(yaml_content) is not dict:
+            exit(f"The {yamlfile} file must contain collections only")
+
+        for category in yaml_content:
+            for key in yaml_content[category]:
+                string_id = f"{category}.{key}"
+                obj = yaml_content[category][key]
+                value = []
+                comments = []
+
+                if type(obj) is str:
+                    if len(obj) == 0:
+                        stop(string_id)
+                    value = [obj]
+
+                elif type(obj) is dict:
+                    if not ("value" in obj):
+                        exit(
+                            f"The key {string_id} must contain a `value` string or an array of strings"
+                        )
+
+                    if type(obj["value"]) is str:
+                        value = [obj["value"]]
+
+                    elif type(obj["value"]) is list:
+                        for x in range(0, len(obj["value"])):
+                            value.append(obj["value"][x])
+
+                    else:
+                        exit(
+                            f"The value of {string_id} must be a string or an array of strings"
+                        )
+
+                    if "comment" in obj:
+                        if type(obj["comment"]) is str:
+                            comments = [obj["comment"]]
+
+                        elif type(obj["comment"]) is list:
+                            for x in range(0, len(obj["comment"])):
+                                comments.append(obj["comment"][x])
+
+                        else:
+                            exit(
+                                f"The comment of {string_id} must be a string or an array of strings"
+                            )
+
+                    if len(value) == 0:
+                        stop(string_id)
+
+                else:
+                    stop(string_id)
+
+                yaml_strings[pascalize(f"{category}_{key}")] = {
+                    "string_id": string_id,
+                    "value": value,
+                    "comments": comments,
+                }
+
+        return yaml_strings
+
+
 def retrieve_strings_tutorial(manifest, filename):
     tutorial_strings = {}
 
@@ -79,7 +178,7 @@ def retrieve_strings_tutorial(manifest, filename):
     return tutorial_strings
 
 
-def retrieve_strings_blocks(blocks, filename, strings, prefix):
+def retrieve_strings_blocks(blocks, filename, strings, prefix, shared_strings):
     for block in blocks:
         if "id" not in block:
             exit(f"{filename} does not have an id for one of the blocks")
@@ -89,16 +188,25 @@ def retrieve_strings_blocks(blocks, filename, strings, prefix):
             exit(f"{filename} does not have a content for block id {block['id']}")
 
         block_id = block["id"]
-        block_string_id = f"{prefix}.block.{block_id}"
+        legacy_block_string_id = f"{prefix}.block.{block_id}"
+        block_string_id = legacy_block_string_id if not shared_strings else block["content"]
         block_default_comment = comment_types.get(block["type"], "")
         if block_string_id in strings:
             exit(f"Duplicate block enum {block_string_id} when parsing {filename}")
 
         if not isinstance(block["content"], list):
-            strings[block_string_id] = {
-                "value": block["content"],
-                "comments": block.get("comment", block_default_comment),
-            }
+            if shared_strings:
+                translation_obj = find_translation_object(shared_strings, block_string_id)
+                strings[block_string_id] = {
+                    "value": translation_obj['value'][0],
+                    "comments": translation_comment(translation_obj),
+                    "legacy_id": legacy_block_string_id
+                }
+            else:
+                strings[block_string_id] = {
+                    "value": block["content"],
+                    "comments": block.get("comment", block_default_comment)
+                }
             continue
 
         for subblock in block["content"]:
@@ -112,16 +220,23 @@ def retrieve_strings_blocks(blocks, filename, strings, prefix):
                 )
 
             subblock_id = subblock["id"]
-            subblock_string_id = f"{prefix}.block.{block_id}.{subblock_id}"
+            subblock_string_id = f"{prefix}.block.{block_id}.{subblock_id}" if not shared_strings else subblock["content"]
             if subblock_string_id in strings:
                 exit(
                     f"Duplicate sub-block enum {subblock_string_id} when parsing {filename}"
                 )
 
-            strings[subblock_string_id] = {
-                "value": subblock["content"],
-                "comments": subblock.get("comment", block_default_comment),
-            }
+            if shared_strings:
+                translation_obj = find_translation_object(shared_strings, subblock_string_id)
+                strings[subblock_string_id] = {
+                    "value": translation_obj['value'][0],
+                    "comments": translation_comment(translation_obj)
+                }
+            else:
+                strings[subblock_string_id] = {
+                    "value": subblock["content"],
+                    "comments": subblock.get("comment", block_default_comment)
+                }
 
     return strings
 
@@ -151,12 +266,10 @@ def retrieve_strings_guide(manifest, filename):
             "comments": guide_json.get("subtitle_comment", "Subtitle for a guide view"),
         }
 
-    return retrieve_strings_blocks(guide_json["blocks"], filename, guide_strings, f"guide.{guide_id}")
+    return retrieve_strings_blocks(guide_json["blocks"], filename, guide_strings, f"guide.{guide_id}", None)
 
 
 def retrieve_strings_message(manifest, filename):
-    message_strings = {}
-
     message_json = manifest["message"]
     if "id" not in message_json:
         exit(f"Message {filename} does not have an id")
@@ -164,6 +277,15 @@ def retrieve_strings_message(manifest, filename):
         exit(f"Message {filename} does not have a title")
     if "blocks" not in message_json:
         exit(f"Message {filename} does not have a blocks")
+
+    use_shared_strings = "usesSharedMessageStrings" in manifest and manifest["usesSharedMessageStrings"] == True
+    if use_shared_strings:
+        return retrieve_shared_strings_message(message_json, filename)
+    else:
+        return retrieve_legacy_strings_message(message_json, filename)
+
+def retrieve_legacy_strings_message(message_json, filename):
+    message_strings = {}
 
     message_id = message_json["id"]
     title_id = f"message.{message_id}.title"
@@ -177,8 +299,54 @@ def retrieve_strings_message(manifest, filename):
         "comments": message_json.get("subtitle_comment", "Subtitle for a message view"),
     }
 
-    return retrieve_strings_blocks(message_json["blocks"], filename, message_strings, f"message.{message_id}")
+    return retrieve_strings_blocks(message_json["blocks"], filename, message_strings, f"message.{message_id}", None)
 
+def retrieve_shared_strings_message(message_json, filename):
+    message_strings = {}
+
+    addons_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../addons")
+    strings_file = os.path.normpath(os.path.join(addons_dir, "strings.yaml"))
+    json_translations = parseYAMLTranslationStrings(strings_file)
+
+    # For addons to work with older clients, the final strings must be in the id format expected by addons in the client.
+    # However, to properly pull the translations for all languages, the shared string ID must be used.
+    # Thus, the legacy_id is recorded here, and the shared id is swapped out for legacy_id in `filter_xliff_and_update_ids`.
+    title_id = message_json["title"]
+    title_object = find_translation_object(json_translations, title_id)
+    message_id = message_json["id"]
+    legacy_title_id = f"message.{message_id}.title"
+    message_strings[title_id] = {
+        "value": title_object['value'][0],
+        "comments": translation_comment(title_object),
+        "legacy_id": legacy_title_id
+    }
+    subtitle_id = message_json["subtitle"]
+    subtitle_object = find_translation_object(json_translations, subtitle_id)
+    legacy_subtitle_id = f"message.{message_id}.subtitle"
+    message_strings[subtitle_id] = {
+        "value": subtitle_object['value'][0],
+        "comments": translation_comment(subtitle_object),
+        "legacy_id": legacy_subtitle_id
+    }
+
+    return retrieve_strings_blocks(message_json["blocks"], filename, message_strings, f"message.{message_id}", json_translations)
+
+def find_translation_object(json_translations, target_id):
+    if not target_id or not isinstance(target_id, str):
+        exit(f"No target string")
+
+    for unneeded_title, needed_object in json_translations.items():
+        if needed_object['string_id'] == target_id:
+            # Make sure the found object has a value section, and that value section is a list with at least 1 entry and that first entry is a string.
+            if not needed_object['value'] or not isinstance(needed_object['value'], list) or len(needed_object['value']) < 1 or not isinstance(needed_object['value'][0], str):
+                exit(f"No value for translation {target_id}")
+            return needed_object
+    exit(f"No translation object found for {target_id}")
+
+def translation_comment(translation_object):
+    if not translation_object['comments'] or not isinstance(translation_object['comments'], list) or len(translation_object['comments']) < 1 or not isinstance(translation_object['comments'][0], str):
+        return None
+    return translation_object['comments'][0]
 
 def write_en_language(filename, strings):
     ts = ET.Element("TS")
@@ -246,6 +414,41 @@ def get_file_list(path, prefix):
 
     return file_list
 
+# Keeps only the strings with ids in `ids_to_filter``
+def filter_xliff_and_update_ids(input_file, output_file, relevant_strings):
+    tree = ET.parse(input_file)
+    root = tree.getroot()
+    ns = {'xliff': 'urn:oasis:names:tc:xliff:document:1.2'}
+    body = root.find('.//xliff:body', ns)
+
+    ids_to_filter = list(relevant_strings.keys())
+
+    # Iterate over all 'trans-unit' elements
+    for trans_unit in root.findall('.//xliff:trans-unit', ns):
+        # Check the id attribute...
+        if trans_unit.get('id') not in ids_to_filter:
+            # ...and remove if not in the filter list
+            if body is not None:
+                body.remove(trans_unit)
+        else:
+            # ...and replace it with the legacy ID if it is in the list
+            string_details = relevant_strings[trans_unit.get('id')]
+            if not string_details or not isinstance(string_details, dict) or not isinstance(string_details['legacy_id'], str):
+                exit(f"No legacy_id for {string_details}")
+            trans_unit.set('id', string_details['legacy_id'])
+
+    # Write the filtered tree to the output file, creating the folders if needed
+    output_dir = os.path.dirname(os.path.abspath(output_file))
+    addons_dir = os.path.dirname(output_dir)
+    lang_dir = os.path.dirname(addons_dir)
+    if not os.path.isdir(lang_dir):
+        os.mkdir(lang_dir)
+    if not os.path.isdir(addons_dir):
+        os.mkdir(addons_dir)
+    if not os.path.isdir(output_dir):
+        os.mkdir(output_dir)
+    with open(output_file, 'wb') as f:
+        tree.write(f, encoding='utf-8', xml_declaration=True)
 
 parser = argparse.ArgumentParser(description="Generate an addon package")
 parser.add_argument(
@@ -393,6 +596,7 @@ with open(args.source, "r", encoding="utf-8") as file:
         os.system(f"{lrelease} -idbased {ts_file}")
 
         # Include internationalization if the i18n path was specified.
+        use_shared_strings = "usesSharedMessageStrings" in manifest and manifest["usesSharedMessageStrings"] == True
         completeness = []
         i18nlocales = []
         if args.i18npath is not None:
@@ -401,9 +605,15 @@ with open(args.source, "r", encoding="utf-8") as file:
             if not os.path.isdir(os.path.join(args.i18npath, locale)) or locale.startswith("."):
                 continue
 
-            xliff_path = os.path.join(
-                args.i18npath, locale, "addons", manifest["id"], "strings.xliff"
-            )
+            xliff_path = os.path.join(args.i18npath, locale, "addons", manifest["id"], "strings.xliff")
+            if use_shared_strings:
+                shared_xliff_path = os.path.join(args.i18npath, locale, "addons", "strings.xliff")
+                # make sure we have a shared translation file
+                if not os.path.isfile(shared_xliff_path):
+                    continue
+
+                xliff_path = os.path.join(tmp_path, "i18n", locale, "addons", manifest["id"], "strings.xliff")
+                filter_xliff_and_update_ids(shared_xliff_path, xliff_path, strings)
 
             if os.path.isfile(xliff_path):
                 locale_file = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
@@ -416,12 +626,22 @@ with open(args.source, "r", encoding="utf-8") as file:
                     # The fallback translations are computed in reverse order.
                     # First "en" where we have 100% of translations by default.
                     xliff_path_en = os.path.join(args.i18npath, "en", "addons", manifest["id"], "strings.xliff")
+                    if use_shared_strings:
+                        shared_xliff_path = os.path.join(args.i18npath, "en", "addons", "strings.xliff")
+                        xliff_path_en = os.path.join(tmp_path, "i18n", "en", "addons", manifest["id"], "strings.xliff")
+                        filter_xliff_and_update_ids(shared_xliff_path, xliff_path_en, strings)
                     locale_file_en = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
                     os.system(f"{lconvert} -if xlf -i {xliff_path_en} -o {locale_file_en}")
 
                     # Then the fallback languages
                     for fallback in translations_fallback[locale]:
                         xliff_path_fallback = os.path.join(args.i18npath, fallback, "addons", manifest["id"], "strings.xliff")
+                        if use_shared_strings:
+                            shared_xliff_path = os.path.join(args.i18npath, fallback, "addons", "strings.xliff")
+                            if not os.path.isfile(shared_xliff_path):
+                                continue
+                            xliff_path_fallback = os.path.join(tmp_path, "i18n", fallback, "addons", manifest["id"], "strings.xliff")
+                            filter_xliff_and_update_ids(shared_xliff_path, xliff_path_fallback, strings)
                         locale_file_fallback = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
                         os.system(f"{lconvert} -if xlf -i {xliff_path_fallback} -no-untranslated -o {locale_file_fallback}")
 

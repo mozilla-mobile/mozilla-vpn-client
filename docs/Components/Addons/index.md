@@ -27,6 +27,7 @@ least a manifest.json file. The properties of this JSON file are:
 | name | The name of the add-on | String | Yes |
 | api_version | The version of the add-on framework | String | Yes |
 | type | One of the supported types (message, guide, ...) | String | Yes |
+| usesSharedMessageStrings | Message type only: Whether it uses the translation file shared between all messages (default: false) | Boolean | No |
 | conditions | List of conditions to meet | Array of Condition objects | No |
 | state | Object describing the state of the addon | Collection of state objects | No |
 
