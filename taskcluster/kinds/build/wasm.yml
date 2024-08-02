@@ -10,7 +10,7 @@ wasm/opt:
         kind: build
         tier: 1
         platform: web/opt
-    worker-type: b-linux
+    worker-type: b-linux-large
     worker:
         docker-image: {in-tree: wasm}
         max-run-time: 3600
