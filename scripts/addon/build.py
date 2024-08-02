@@ -278,7 +278,7 @@ def retrieve_strings_message(manifest, filename):
     if "blocks" not in message_json:
         exit(f"Message {filename} does not have a blocks")
 
-    use_shared_strings = "usesSharedMessageStrings" in manifest and manifest["usesSharedMessageStrings"] == True
+    use_shared_strings = "usesSharedStrings" in message_json and message_json["usesSharedStrings"] == True
     if use_shared_strings:
         return retrieve_shared_strings_message(message_json, filename)
     else:
@@ -310,7 +310,7 @@ def retrieve_shared_strings_message(message_json, filename):
 
     # For addons to work with older clients, the final strings must be in the id format expected by addons in the client.
     # However, to properly pull the translations for all languages, the shared string ID must be used.
-    # Thus, the legacy_id is recorded here, and the shared id is swapped out for legacy_id in `filter_xliff_and_update_ids`.
+    # Thus, the legacy_id is recorded here, and the shared id is swapped out for legacy_id in `transform_shared_strings`.
     title_id = message_json["title"]
     title_object = find_translation_object(json_translations, title_id)
     message_id = message_json["id"]
@@ -414,8 +414,9 @@ def get_file_list(path, prefix):
 
     return file_list
 
-# Keeps only the strings with ids in `ids_to_filter``
-def filter_xliff_and_update_ids(input_file, output_file, relevant_strings):
+# Filter xliff file to those in `ids_to_filter`, and transform the ID to legacy ID
+# Additionally, swap in the short version string if needed
+def transform_shared_strings(input_file, output_file, relevant_strings, short_version):
     tree = ET.parse(input_file)
     root = tree.getroot()
     ns = {'xliff': 'urn:oasis:names:tc:xliff:document:1.2'}
@@ -436,6 +437,14 @@ def filter_xliff_and_update_ids(input_file, output_file, relevant_strings):
             if not string_details or not isinstance(string_details, dict) or not isinstance(string_details['legacy_id'], str):
                 exit(f"No legacy_id for {string_details}")
             trans_unit.set('id', string_details['legacy_id'])
+
+            # Then, swap in the short version number if needed.
+            # All languages have source, but only non-English langauges have target.
+            source = trans_unit.find('.//xliff:source', ns)
+            source.text = source.text.replace('%1', short_version)
+            target = trans_unit.find('.//xliff:target', ns)
+            if type(target) is ET.Element:
+                target.text = target.text.replace('%1', short_version)
 
     # Write the filtered tree to the output file, creating the folders if needed
     output_dir = os.path.dirname(os.path.abspath(output_file))
@@ -595,8 +604,16 @@ with open(args.source, "r", encoding="utf-8") as file:
         shutil.copyfile(template_ts_file, ts_file)
         os.system(f"{lrelease} -idbased {ts_file}")
 
+        # Prepare for shared strings, if they will be used
+        use_shared_strings = "message" in manifest and "usesSharedStrings" in manifest["message"] and manifest["message"]["usesSharedStrings"] == True
+        short_version = None
+        if use_shared_strings:
+            # Confirm that shortVersion exists and is a string
+            if "shortVersion" not in manifest["message"] or type(manifest["message"]["shortVersion"]) is not str:
+                exit("shortVersion string required when usesSharedStrings is true")
+            short_version = manifest["message"]["shortVersion"]
+
         # Include internationalization if the i18n path was specified.
-        use_shared_strings = "usesSharedMessageStrings" in manifest and manifest["usesSharedMessageStrings"] == True
         completeness = []
         i18nlocales = []
         if args.i18npath is not None:
@@ -613,7 +630,7 @@ with open(args.source, "r", encoding="utf-8") as file:
                     continue
 
                 xliff_path = os.path.join(tmp_path, "i18n", locale, "addons", manifest["id"], "strings.xliff")
-                filter_xliff_and_update_ids(shared_xliff_path, xliff_path, strings)
+                transform_shared_strings(shared_xliff_path, xliff_path, strings, short_version)
 
             if os.path.isfile(xliff_path):
                 locale_file = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
@@ -629,7 +646,7 @@ with open(args.source, "r", encoding="utf-8") as file:
                     if use_shared_strings:
                         shared_xliff_path = os.path.join(args.i18npath, "en", "addons", "strings.xliff")
                         xliff_path_en = os.path.join(tmp_path, "i18n", "en", "addons", manifest["id"], "strings.xliff")
-                        filter_xliff_and_update_ids(shared_xliff_path, xliff_path_en, strings)
+                        transform_shared_strings(shared_xliff_path, xliff_path_en, strings, short_version)
                     locale_file_en = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
                     os.system(f"{lconvert} -if xlf -i {xliff_path_en} -o {locale_file_en}")
 
@@ -641,7 +658,7 @@ with open(args.source, "r", encoding="utf-8") as file:
                             if not os.path.isfile(shared_xliff_path):
                                 continue
                             xliff_path_fallback = os.path.join(tmp_path, "i18n", fallback, "addons", manifest["id"], "strings.xliff")
-                            filter_xliff_and_update_ids(shared_xliff_path, xliff_path_fallback, strings)
+                            transform_shared_strings(shared_xliff_path, xliff_path_fallback, strings, short_version)
                         locale_file_fallback = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
                         os.system(f"{lconvert} -if xlf -i {xliff_path_fallback} -no-untranslated -o {locale_file_fallback}")
 

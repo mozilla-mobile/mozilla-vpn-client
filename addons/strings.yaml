@@ -46,10 +46,10 @@
 commonStrings:
   updateTitle:
     value: Update to Mozilla VPN %1
-    comment: Title for update message. %1 is replaced by the version number, such as 2.24.0
+    comment: Title for update message. %1 is replaced by the version number, such as 2.24
   downloadTitle:
     value: Download the new Mozilla VPN %1
-    comment: Alternative title used for some versions. %1 is replaced by the version number, such as 2.24.0
+    comment: Alternative title used for some versions. %1 is replaced by the version number, such as 2.24
   subtitle:
     value: We’ve released an updated version of Mozilla VPN! Update to the latest version for the best possible Mozilla VPN experience.
     comment: Subtitle for default update message
