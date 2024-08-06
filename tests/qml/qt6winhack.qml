@@ -10,7 +10,6 @@ import QtQuick.Controls 2.15
 import QtQuick.Layout 1.14
 import QtQuick.Windows 2.12
 import Qt5Compat.GraphicalEffects
-import QtGraphicalEffects 1.0
 import Qt.labs.qmlmodels 1.0
 
 Item {}
