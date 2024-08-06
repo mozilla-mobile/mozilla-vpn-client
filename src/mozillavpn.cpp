@@ -1507,7 +1507,7 @@ void MozillaVPN::registerNavigatorScreens() {
       });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
+      MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenHome.qml",
       QVector<int>{App::StateMain}, [](int*) -> int8_t { return 99; },
       []() -> bool { return false; });
@@ -1519,7 +1519,7 @@ void MozillaVPN::registerNavigatorScreens() {
       []() -> bool { return false; });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenMessaging, Navigator::LoadPolicy::LoadPersistently,
+      MozillaVPN::ScreenMessaging, Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenMessaging.qml",
       QVector<int>{App::StateMain}, [](int*) -> int8_t { return 0; },
       []() -> bool {
@@ -1543,7 +1543,7 @@ void MozillaVPN::registerNavigatorScreens() {
       []() -> bool { return false; });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenSettings, Navigator::LoadPolicy::LoadPersistently,
+      MozillaVPN::ScreenSettings, Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenSettings.qml",
       QVector<int>{App::StateMain}, [](int*) -> int8_t { return 0; },
       []() -> bool {
