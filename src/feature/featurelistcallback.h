@@ -194,4 +194,12 @@ bool FeatureCallback_hasBalrog() {
 #endif
 }
 
+bool FeatureCallback_proxyCanTurnOn() {
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
+  return true;
+#else
+  return false;
+#endif
+}
+
 #endif  // FEATURELISTCALLBACK_H
