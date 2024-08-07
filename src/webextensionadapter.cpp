@@ -13,6 +13,7 @@
 #include <functional>
 
 #include "controller.h"
+#include "feature/feature.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -96,6 +97,12 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
 
                     QJsonObject obj;
                     obj["disabled_apps"] = apps;
+                    return obj;
+                  }},
+      RequestType{"featurelist",
+                  [this](const QJsonObject&) {
+                    QJsonObject obj;
+                    obj["featurelist"] = serializeFeaturelist();
                     return obj;
                   }},
 
@@ -185,6 +192,12 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
 #endif
 
   return obj;
+}
+
+QJsonObject WebExtensionAdapter::serializeFeaturelist() {
+  auto out = QJsonObject();
+  out["localProxy"] = Feature::get(Feature::Feature_localProxy)->isSupported();
+  return out;
 }
 
 void WebExtensionAdapter::serializeServerCountry(ServerCountryModel* model,
