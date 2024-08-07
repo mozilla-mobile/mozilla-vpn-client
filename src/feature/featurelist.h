@@ -227,5 +227,5 @@ FEATURE(localProxy,                      // Feature ID
         "LocalProxy",                    // Feature name
         FeatureCallback_proxyCanTurnOn,  // Can be flipped on
         FeatureCallback_true,            // Can be flipped off
-        QStringList(),                   // feature dependencies
+        QStringList("splitTunnel"),      // feature dependencies
         FeatureCallback_inStaging)
