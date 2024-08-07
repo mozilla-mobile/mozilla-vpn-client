@@ -87,7 +87,30 @@ ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress address) {
       AddIPAddress(ipAddrBinary.S_un.S_addr, subnetMaskBinary.S_un.S_addr,
                    ifIndex, &nteContext, &nteInstance);
   if (dwResult != NO_ERROR) {
-    WindowsUtils::windowsLog("WELP, failed to add ip address to adapter");
+    switch (dwResult) {
+      case ERROR_DEV_NOT_EXIST:
+        logger.error() << "Failed to set IPAddress: ERROR_DEV_NOT_EXIST";
+        break;
+      case ERROR_DUP_DOMAINNAME:
+        logger.error() << "Failed to set IPAddress: ERROR_DUP_DOMAINNAME";
+        break;
+      case ERROR_GEN_FAILURE:
+        logger.error() << "Failed to set IPAddress: ERROR_GEN_FAILURE";
+        break;
+      case ERROR_INVALID_HANDLE:
+        logger.error() << "Failed to set IPAddress: ERROR_INVALID_HANDLE";
+        break;
+      case ERROR_INVALID_PARAMETER:
+        logger.error() << "Failed to set IPAddress: ERROR_INVALID_PARAMETER";
+        break;
+      case ERROR_NOT_SUPPORTED:
+        logger.error() << "Failed to set IPAddress: ERROR_NOT_SUPPORTED";
+        break;
+      default:
+        logger.info() << "";
+        logger.error() << "WELP, failed to add ip address to adapter: "
+                       << WindowsUtils::getErrorMessage(dwResult);
+    }
     return 0;
   }
   return nteContext;
@@ -255,9 +278,17 @@ bool WireguardUtilsWindows::interfaceExists() { return m_adapter != NULL; }
  * Returns true on success.
  */
 bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
-  // Create the Adapter and Cleanup fallbacks in case of failure.
-  WIREGUARD_ADAPTER_HANDLE wireguard_adapter = m_wireguard_api->CreateAdapter(
-      (const wchar_t*)interfaceName().utf16(), L"Mozilla", &ADAPTER_GUID);
+  // Check if there is a MozillaVPN adapter and open that first
+  WIREGUARD_ADAPTER_HANDLE wireguard_adapter =
+      m_wireguard_api->OpenAdapter((const wchar_t*)interfaceName().utf16());
+  if (wireguard_adapter == NULL) {
+    logger.info() << "Creating new adapter";
+    // Create the Adapter and Cleanup fallbacks in case of failure.
+    wireguard_adapter = m_wireguard_api->CreateAdapter(
+        (const wchar_t*)interfaceName().utf16(), L"Mozilla", &ADAPTER_GUID);
+  } else {
+    logger.info() << "Adopting existing adapter";
+  }
   if (wireguard_adapter == NULL) {
     logger.error() << "Failed creating Wireguard Adapter";
     return false;
