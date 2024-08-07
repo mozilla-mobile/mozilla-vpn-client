@@ -48,6 +48,6 @@
     "eslint-plugin-import": "^2.25.4",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.2.0",
-    "node-gyp-build": "^4.3.0"
+    "node-gyp-build": "^4.8.1"
   }
 }
