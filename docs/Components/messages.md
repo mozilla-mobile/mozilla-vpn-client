@@ -18,7 +18,7 @@ property object with the following properties:
 | -- | -- | --| -- |
 | id | A unique identifier for the message | String | Yes |
 | usesSharedStrings | Whether it uses the translation file shared between all messages (default: false) | Boolean | No |
-| shortVersion | A human-readable version number to insert into user-facing strings | Strings | Yes if usesSharedMessageStrings is true, No otherwise |
+| shortVersion | A human-readable version number to insert into user-facing strings | Strings | Yes if usesSharedStrings is true, No otherwise |
 | title | The subject of the message  | String | Yes |
 | subtitle | A brief description of the message | String | No |
 | title_comment | An optional comment to describe the meaning of the title | String | No |
