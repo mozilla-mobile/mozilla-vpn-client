@@ -48,7 +48,7 @@ commonStrings:
   subtitle:
     value: We’ve released an updated version of Mozilla VPN! Update to the latest version for the best possible Mozilla VPN experience.
     comment: Subtitle for default update message
-  contentText:
+  generalUpdateContent:
     value: This update includes minor bug fixes, UI adjustments and other performance improvements.
     comment: Default update notes
   updateButton:

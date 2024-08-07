@@ -335,12 +335,12 @@ def find_translation_object(json_translations, target_id):
     if not target_id or not isinstance(target_id, str):
         exit(f"No target string")
 
-    for unneeded_title, needed_object in json_translations.items():
-        if needed_object['string_id'] == target_id:
+    for translation_object in json_translations.values():
+        if translation_object['string_id'] == target_id:
             # Make sure the found object has a value section, and that value section is a list with at least 1 entry and that first entry is a string.
-            if not needed_object['value'] or not isinstance(needed_object['value'], list) or len(needed_object['value']) < 1 or not isinstance(needed_object['value'][0], str):
+            if not translation_object['value'] or not isinstance(translation_object['value'], list) or len(translation_object['value']) < 1 or not isinstance(translation_object['value'][0], str):
                 exit(f"No value for translation {target_id}")
-            return needed_object
+            return translation_object
     exit(f"No translation object found for {target_id}")
 
 def translation_comment(translation_object):
