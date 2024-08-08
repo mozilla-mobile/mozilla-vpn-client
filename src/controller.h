@@ -60,6 +60,7 @@ class Controller : public QObject, public LogSerializer {
 
  public:
   qint64 time() const;
+  qint64 connectionTimestamp() const;
   void serverUnavailable();
   void captivePortalPresent();
   void captivePortalGone();
