@@ -12,7 +12,7 @@ buildscript {
     }
     dependencies {
         classpath SharedDependencies.com_android_tools_build_gradle
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.22"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:2.0.10"
         classpath "org.jetbrains.kotlin:kotlin-serialization:1.6.0"
     }
 }
