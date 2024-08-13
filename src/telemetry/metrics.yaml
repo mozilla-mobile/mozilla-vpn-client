@@ -994,4 +994,4 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-08-15
+    expires: 2024-12-31
