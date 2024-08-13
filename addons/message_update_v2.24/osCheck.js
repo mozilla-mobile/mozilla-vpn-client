@@ -23,6 +23,7 @@
     const majorVersion = Number(majorVersionString);
 
     majorVersion >= minVersion ? condition.enable() : condition.disable();
+    return;
   }
 
   // For all other platforms, enable the addon.
