@@ -27,10 +27,19 @@ Logger logger("ProxyController");
 }
 
 const QString ProxyController::binaryPath() {
+// On Release expect it to be in the same folder
+// as the executable
+#ifndef MZ_DEBUG
   auto binaryPath = QCoreApplication::applicationFilePath();
   auto info = QFileInfo(binaryPath);
   QDir dir = info.absoluteDir();
   return dir.filePath(SOCKSPROXY_BIN);
+#else
+  auto binaryPath = QCoreApplication::applicationFilePath();
+  auto currentDir = QFileInfo(binaryPath).dir();
+  auto socksproxydir = QFileInfo(currentDir, "../extension/socks5proxy/bin/");
+  return socksproxydir.absoluteDir().filePath(SOCKSPROXY_BIN);
+#endif
 }
 
 void ProxyController::start() {
@@ -108,16 +117,18 @@ void ProxyController::stop() {
 bool ProxyController::canActivate() {
   if (!m_canActivate.has_value()) {
     m_canActivate = ([]() {
-#ifndef MZ_WINDOWS
-      return false;
-#else
-      // This is not for prod rn.
-      if (Constants::inProduction()) {
+      auto const* f = Feature::get(Feature::Feature_localProxy);
+      if (!f->isSupported()) {
+        logger.info() << "SocksProxy disabled due to Feature Flag";
         return false;
       }
-      auto const* f = Feature::get(Feature::Feature_splitTunnel);
-      return f->isSupported() && QFileInfo(binaryPath()).exists();
-#endif
+      if (!QFileInfo(binaryPath()).exists()) {
+        logger.info() << "SocksProxy disabled due to Missing Binary";
+        logger.info() << "Expected socksproxy here: " << binaryPath();
+        return false;
+      }
+      logger.info() << "Socksproxy is supported";
+      return true;
     })();
   }
   return m_canActivate.value();
