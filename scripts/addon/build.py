@@ -13,112 +13,16 @@ import shutil
 import subprocess
 import sys
 
+# hack to be able to re-use parseYAMLTranslationStrings
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../utils')))
+from generate_strings import parseYAMLTranslationStrings
+
 comment_types = {
     "text": "Standard text in a composer block",
     "title": "Title in a composer block",
     "ulist": "Bullet unordered list item in a composer block",
     "olist": "Bullet ordered list item in a composer block",
 }
-
-
-# TODO: THIS ABSOLUTELY SHOULD NOT BE HERE, SHOULD USE THE ONE IN SHARED, BUT IT IS NOT WORKING
-# special loader with duplicate key checking
-# From: https://gist.github.com/pypt/94d747fe5180851196eb
-class UniqueKeyLoader(yaml.SafeLoader):
-    def construct_mapping(self, node, deep=False):
-        mapping = []
-        for key_node, value_node in node.value:
-            key = self.construct_object(key_node, deep=deep)
-            if key in mapping:
-                print(f"Warning!! {key} is duplicated!")
-            assert key not in mapping
-            mapping.append(key)
-        return super().construct_mapping(node, deep)
-
-def pascalize(string):
-    output = ""
-    for chunk in string.split("_"):
-        output += chunk[0].upper()
-        output += chunk[1:]
-    return output
-
-def parseYAMLTranslationStrings(yamlfile):
-    if not os.path.isfile(yamlfile):
-        exit(f"Unable to find {yamlfile}")
-
-    yaml_strings = {}
-    with open(yamlfile, "r", encoding="utf-8") as yaml_file:
-        # Enforce a new line at the end of the file
-        last_line = yaml_file.readlines()[-1]
-        if last_line == last_line.rstrip():
-            exit("The yaml file must have an empty line at the end")
-
-        # Reset position after reading the whole content
-        yaml_file.seek(0)
-        yaml_content = yaml.load(yaml_file, UniqueKeyLoader)
-        if yaml_content is None:
-            return yaml_strings
-
-        if type(yaml_content) is not dict:
-            exit(f"The {yamlfile} file must contain collections only")
-
-        for category in yaml_content:
-            for key in yaml_content[category]:
-                string_id = f"{category}.{key}"
-                obj = yaml_content[category][key]
-                value = []
-                comments = []
-
-                if type(obj) is str:
-                    if len(obj) == 0:
-                        stop(string_id)
-                    value = [obj]
-
-                elif type(obj) is dict:
-                    if not ("value" in obj):
-                        exit(
-                            f"The key {string_id} must contain a `value` string or an array of strings"
-                        )
-
-                    if type(obj["value"]) is str:
-                        value = [obj["value"]]
-
-                    elif type(obj["value"]) is list:
-                        for x in range(0, len(obj["value"])):
-                            value.append(obj["value"][x])
-
-                    else:
-                        exit(
-                            f"The value of {string_id} must be a string or an array of strings"
-                        )
-
-                    if "comment" in obj:
-                        if type(obj["comment"]) is str:
-                            comments = [obj["comment"]]
-
-                        elif type(obj["comment"]) is list:
-                            for x in range(0, len(obj["comment"])):
-                                comments.append(obj["comment"][x])
-
-                        else:
-                            exit(
-                                f"The comment of {string_id} must be a string or an array of strings"
-                            )
-
-                    if len(value) == 0:
-                        stop(string_id)
-
-                else:
-                    stop(string_id)
-
-                yaml_strings[pascalize(f"{category}_{key}")] = {
-                    "string_id": string_id,
-                    "value": value,
-                    "comments": comments,
-                }
-
-        return yaml_strings
-
 
 def retrieve_strings_tutorial(manifest, filename):
     tutorial_strings = {}
