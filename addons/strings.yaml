@@ -35,8 +35,8 @@
 # Add '%1' where the version should go. This will get replaced with the addons message's
 # 'shortVersion' (from manifeste.json), for instance '2.24'
 #
-# Please, write a comment to describe what the arguments are about.
 #
+# Strings that are no longer needed should be removed from this file.
 
 commonStrings:
   updateTitle:

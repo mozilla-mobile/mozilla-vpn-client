@@ -11,6 +11,10 @@ import shutil
 import atexit
 import subprocess
 
+# hack to be able to re-use things in shared.py
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
+from shared import qtquery
+
 # Use the project root as the working directory
 prevdir = os.getcwd()
 workdir = os.path.join(os.path.dirname(__file__), '..', '..')
@@ -37,15 +41,6 @@ def title(text):
 
 # Step 1
 title("Find the Qt localization tools...")
-def qtquery(qmake, propname):
-    try:
-        qtquery = os.popen(f'{qmake} -query {propname}')
-        qtpath = qtquery.read().strip()
-        if len(qtpath) > 0:
-            return qtpath
-    finally:
-        pass
-    return None
 
 qtbinpath = args.qtpath
 if qtbinpath is None:
