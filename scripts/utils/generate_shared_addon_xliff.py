@@ -14,7 +14,7 @@ from generate_strings import parseYAMLTranslationStrings
 
 # hack to be able to access shared.py
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-from shared import write_en_language, qtquery
+from shared import write_en_language, find_qtbinpath
 
 
 # parseYAMLTranslationStrings prints comments and values as a list. This must be flattened for write_en_language.
@@ -25,28 +25,16 @@ def prune_lists_to_strings(data):
                 if isinstance(sub_value, list) and sub_value:
                     value[sub_key] = sub_value[0]
         else:
-            print("Unexpected input")
-            sys.exit(1)
+            sys.exit("Unexpected input")
     return data
-
-print("Preparing the addons shared string file")
 
 # Make sure we have all the required things
 # Lookup our required tools for addon generation.
 
-qtbinpath = qtquery('qmake', 'QT_INSTALL_BINS')
-if qtbinpath is None:
-    qtbinpath = qtquery('qmake6', 'QT_INSTALL_BINS')
-if qtbinpath is None:
-    print('Unable to locate qmake tool.')
-    sys.exit(1)
-if not os.path.isdir(qtbinpath):
-    print(f"QT path is not a diretory: {qtbinpath}")
-    sys.exit(1)
+qtbinpath = find_qtbinpath(None)
 lconvert = os.path.join(qtbinpath, 'lconvert')
 if lconvert is None:
-    print("Unable to locate lconvert path.", file=sys.stderr)
-    sys.exit(1)
+    sys.exit("Unable to locate lconvert path.", file=sys.stderr)
 
 parser = argparse.ArgumentParser(description="Prepare shared addon strings for translation repo")
 parser.add_argument(
@@ -54,13 +42,12 @@ parser.add_argument(
     "--outfile",
     default=None,
     dest="outfile",
+    required=True,
     help="File for output, including .xliff extension"
 )
 args = parser.parse_args()
-if args.outfile is None:
-    print("No output file specified")
-    sys.exit(1)
 
+print("Preparing the addons shared string file")
 print("First, pull in the strings from the YAML file")
 addons_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../addons")
 strings_file = os.path.normpath(os.path.join(addons_dir, "strings.yaml"))

@@ -53,13 +53,13 @@ commonStrings:
     comment: Default update notes
   updateButton:
     value: Update now
-    comment: Label for `update now` button
+    comment: Button label
   downloadButton:
     value: Download update
-    comment: Label for `Download update` button
+    comment: Button label
   getHelpButton:
     value: Get help
-    comment: Label for `Get help` button
+    comment: Button label
   # tester:
   #   value: shouldn't show up in translation file
   #   comment: Label for `Get help` button

@@ -13,7 +13,7 @@ import subprocess
 
 # hack to be able to re-use things in shared.py
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../')))
-from shared import qtquery
+from shared import find_qtbinpath
 
 # Use the project root as the working directory
 prevdir = os.getcwd()
@@ -42,19 +42,7 @@ def title(text):
 # Step 1
 title("Find the Qt localization tools...")
 
-qtbinpath = args.qtpath
-if qtbinpath is None:
-  qtbinpath = qtquery('qmake', 'QT_INSTALL_BINS')
-if qtbinpath is None:
-    qtbinpath = qtquery('qmake6', 'QT_INSTALL_BINS')
-if qtbinpath is None:
-    print('Unable to locate qmake tool.')
-    sys.exit(1)
-
-if not os.path.isdir(qtbinpath):
-    print(f"QT path is not a diretory: {qtbinpath}")
-    sys.exit(1)
-
+qtbinpath = find_qtbinpath(args.qtpath)
 lupdate = os.path.join(qtbinpath, 'lupdate')
 lconvert = os.path.join(qtbinpath, 'lconvert')
 lrelease = os.path.join(qtbinpath, 'lrelease')

@@ -1,4 +1,5 @@
 import os
+import sys
 import xml.etree.ElementTree as ET
 
 def write_en_language(filename, strings):
@@ -28,6 +29,18 @@ def write_en_language(filename, strings):
 
     with open(filename, "w", encoding="utf-8") as f:
         f.write(ET.tostring(ts, encoding="unicode"))
+
+def find_qtbinpath(potential_path):
+    qtbinpath = potential_path
+    if qtbinpath is None:
+        qtbinpath = qtquery('qmake', 'QT_INSTALL_BINS')
+    if qtbinpath is None:
+        qtbinpath = qtquery('qmake6', 'QT_INSTALL_BINS')
+    if qtbinpath is None:
+        sys.exit('Unable to locate qmake tool.')
+    if not os.path.isdir(qtbinpath):
+        sys.exit(f"QT path is not a directory: {qtbinpath}")
+    return qtbinpath
 
 def qtquery(qmake, propname):
     try:
