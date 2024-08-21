@@ -7,5 +7,5 @@ modules:
     buildsystem: cmake
     sources:
       - type: git
-        tag: v6.5.2
+        tag: v6.6.3
         url: https://github.com/qt/qt5compat
