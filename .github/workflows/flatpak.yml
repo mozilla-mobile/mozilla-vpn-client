@@ -1,0 +1,59 @@
+name: Flatpak Packages
+on:
+  push:
+    branches:
+      - main
+      - "releases/**"
+  pull_request:
+    branches:
+      - main
+      - "releases/**"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: "Build Flatpaks"
+    runs-on: ubuntu-latest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:kde-6.6
+      options: --privileged
+
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          path: src
+      
+      - name: Checkout tools
+        uses: actions/checkout@v4
+        with:
+          repository: flatpak/flatpak-builder-tools
+          path: tools
+      
+      - name: Install pip tools
+        shell: bash
+        run: pip install requirements-parser PyYAML toml
+
+      - name: Generate Python deps
+        shell: bash
+        working-directory: src
+        run: ../tools/pip/flatpak-pip-generator -r requirements.txt --output linux/flatpak-pydeps --yaml --build-only
+
+      - name: Generate Cargo deps
+        shell: bash
+        working-directory: src
+        run: |
+          ../tools/cargo/flatpak-cargo-generator.py -o flatpak-sources-cargo.json Cargo.lock
+          cat flatpak-sources-cargo.json | \
+              python3 -c 'import sys, yaml, json; print(yaml.dump(json.loads(sys.stdin.read())))' \
+              > linux/flatpak-sources-cargo.yaml
+
+      - name: Build
+        uses: flathub-infra/flatpak-github-actions/flatpak-builder@master
+        with:
+          bundle: mozillavpn.flatpak
+          manifest-path: src/linux/org.mozilla.vpn.yml
+          cache-key: flatpak-builder-${{ github.sha }}

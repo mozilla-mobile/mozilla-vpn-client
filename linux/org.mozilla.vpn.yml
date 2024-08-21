@@ -27,5 +27,6 @@ modules:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
       - -DBUILD_FLATPAK=ON
     sources:
+      - flatpak-sources-cargo.yaml
       - type: dir
         path: ..
