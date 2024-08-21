@@ -420,16 +420,18 @@ with open(args.source, "r", encoding="utf-8") as file:
                     os.system(f"{lconvert} -if xlf -i {xliff_path_en} -o {locale_file_en}")
 
                     # Then the fallback languages
+                    locale_file_fallbacks = []
                     for fallback in translations_fallback[locale]:
                         xliff_path_fallback = os.path.join(args.i18npath, fallback, "addons", manifest["id"], "strings.xliff")
-                        locale_file_fallback = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
+                        locale_file_fallback = os.path.join(tmp_path, "i18n", f"locale_{fallback}.ts")
+                        locale_file_fallbacks.append(locale_file_fallback)
                         os.system(f"{lconvert} -if xlf -i {xliff_path_fallback} -no-untranslated -o {locale_file_fallback}")
 
                     # Finally, the current language
                     os.system(f"{lconvert} -if xlf -i {xliff_path} -no-untranslated -o {locale_file}")
 
                     # All is unified in reverse order.
-                    os.system(f"{lconvert} -i {locale_file_en} {' '.join(translations_fallback[locale])} {locale_file} -o {locale_file}")
+                    os.system(f"{lconvert} -i {locale_file_en} {' '.join(locale_file_fallbacks)} {locale_file} -o {locale_file}")
                 else:
                     os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
 
