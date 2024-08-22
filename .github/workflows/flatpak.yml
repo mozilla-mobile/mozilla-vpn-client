@@ -43,10 +43,7 @@ jobs:
 
       - name: Update Cargo dependencies
         shell: bash
-        working-directory: src
-        run: |
-          ../tools/cargo/flatpak-cargo-generator.py -o flatpak-sources-cargo.json Cargo.lock
-          cat flatpak-sources-cargo.json | yq -y > linux/flatpak/flatpak-vpn-crates.yaml
+        run: src/linux/flatpak/flatpak-update-crates.sh
 
       - name: Update git reference
         shell: bash
