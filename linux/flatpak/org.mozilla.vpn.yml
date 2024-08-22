@@ -32,7 +32,7 @@ modules:
 
       # Install vendored Rust crates
       - flatpak-vpn-crates.yaml
-      - type: script
+      - type: shell
         commands:
           - mkdir .cargo
           - cp cargo/config .cargo/config.toml

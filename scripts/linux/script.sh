@@ -136,17 +136,16 @@ printn Y "Downloading Go dependencies..."
 (cd $WORKDIR/linux/netfilter && go mod vendor)
 print G "done."
 
-printn Y "Downloading Rust dependencies (extension)..."
-(cd $WORKDIR/extension/bridge && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
-print G "done."
+print Y "Downloading Rust dependencies..."
+cargo vendor --manifest-path $WORKDIR/Cargo.toml $WORKDIR/3rdparty/cargo-vendor > /dev/null
+mkdir -p $WORKDIR/.cargo
+cat << EOF > $WORKDIR/.cargo/config.toml
+[source.vendored-sources]
+directory = "3rdparty/cargo-vendor"
 
-printn Y "Downloading Rust dependencies (signature)..."
-(cd $WORKDIR/signature && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
-print G "done."
-
-printn Y "Downloading Rust dependencies (qtglean)..."
-(cd $WORKDIR/qtglean && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
-print G "done."
+[source.crates-io]
+replace-with = "vendored-sources"
+EOF
 
 printn Y "Removing the packaging templates... "
 rm -f $WORKDIR/linux/mozillavpn.spec || die "Failed"
