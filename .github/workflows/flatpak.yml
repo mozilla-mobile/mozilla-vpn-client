@@ -36,21 +36,23 @@ jobs:
       
       - name: Install pip tools
         shell: bash
-        run: pip install requirements-parser PyYAML toml
-
-      - name: Generate Python deps
-        shell: bash
-        working-directory: src
-        run: ../tools/pip/flatpak-pip-generator -r requirements.txt --output linux/flatpak-pydeps --yaml --build-only
+        run: pip install requirements-parser PyYAML toml yq
 
       - name: Generate Cargo deps
         shell: bash
         working-directory: src
         run: |
           ../tools/cargo/flatpak-cargo-generator.py -o flatpak-sources-cargo.json Cargo.lock
-          cat flatpak-sources-cargo.json | \
-              python3 -c 'import sys, yaml, json; print(yaml.dump(json.loads(sys.stdin.read())))' \
-              > linux/flatpak-sources-cargo.yaml
+          cat flatpak-sources-cargo.json | yq -y > linux/flatpak-vpn-crates.yaml
+
+      - name: Update git reference
+        shell: bash
+        working-directory: src/linux
+        run: |
+          yq -yi '.modules[-1].sources[0] = {"type": "git"}' org.mozilla.vpn.yml
+          yq -yi ".modules[-1].sources[0].url = \"https://github.com/${{ github.repository }}\"" org.mozilla.vpn.yml
+          yq -yi ".modules[-1].sources[0].commit = \"${{ github.sha }}\"" org.mozilla.vpn.yml
+          cat org.mozilla.vpn.yml
 
       - name: Build
         uses: flathub-infra/flatpak-github-actions/flatpak-builder@master

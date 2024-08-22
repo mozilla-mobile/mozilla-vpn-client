@@ -178,7 +178,7 @@ EOF
 ## Update the flatpak manifest to use the source tarball.
 build_flatpak_manifest() {
 # Copy recipies for dependent modules.
-cp $WORKDIR/linux/flatpak-*.yaml .
+cp $WORKDIR/linux/flatpak-* .
 
 # Truncate the YAML at the sources, and replace it with the tarball archive
 sed -e '1,/[[:space:]]\+sources:/!d' $WORKDIR/linux/org.mozilla.vpn.yml > org.mozilla.vpn.yml

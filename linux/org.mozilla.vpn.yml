@@ -15,19 +15,28 @@ build-options:
   append-path: "/usr/lib/sdk/rust-stable/bin"
   env:
     - CARGO_HOME=/run/build/rust-flatpak/cargo
-
 modules:
   - flatpak-rpds.yaml
   - flatpak-glean-parser.yaml
   - flatpak-libnm.yaml
   - flatpak-qt5compat.yaml
-
   - name: mozillavpn
     buildsystem: cmake-ninja
     config-opts:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
       - -DBUILD_FLATPAK=ON
     sources:
-      - flatpak-sources-cargo.yaml
       - type: dir
         path: ..
+
+      # Install vendored Rust crates
+      - flatpak-vpn-crates.yaml
+      - type: inline
+        dest: .cargo
+        dest-filename: config.toml
+        contents: |
+          [source.vendored-sources]
+          directory = "cargo/vendor"
+
+          [source.crates-io]
+          replace-with = "vendored-sources"
