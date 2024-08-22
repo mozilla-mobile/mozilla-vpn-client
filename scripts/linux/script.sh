@@ -94,6 +94,7 @@ fi
 
 printn Y "Computing the version... "
 SHORTVERSION=$(cat version.txt)
+GITHASH=$(git rev-parse HEAD)
 
 # Adjust the package version if a gitref was provided:
 #  - Pull requests are suffixed with "~pr<Pull Request Number>"
@@ -177,14 +178,15 @@ EOF
 
 ## Update the flatpak manifest to use the source tarball.
 build_flatpak_manifest() {
-# Copy recipies for dependent modules.
-cp $WORKDIR/linux/flatpak-* .
+  # Copy the flatpak manifests
+  cp -r ../linux/flatpak . || die "Failed"
 
-# Truncate the YAML at the sources, and replace it with the tarball archive
-sed -e '1,/[[:space:]]\+sources:/!d' $WORKDIR/linux/org.mozilla.vpn.yml > org.mozilla.vpn.yml
-cat << EOF >> org.mozilla.vpn.yml
+  # Truncate the YAML at the sources, and replace it with the tarball archive
+  sed -e '1,/[[:space:]]\+sources:/!d' ../linux/flatpak/org.mozilla.vpn.yml > flatpak/org.mozilla.vpn.yml
+  cat << EOF >> flatpak/org.mozilla.vpn.yml
       - type: archive
-        path: mozillavpn_$SHORTVERSION.orig.tar.gz
+        path: ../mozillavpn_$SHORTVERSION.orig.tar.gz
+        sha256: $(sha256sum ../mozillavpn_$SHORTVERSION.orig.tar.gz | awk '{print $1}')
 EOF
 }
 

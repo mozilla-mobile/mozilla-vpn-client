@@ -7,7 +7,7 @@
 # Find the app-id and manifest in the mounted source directory.
 FLATPAK_APP_ID=
 FLATPAK_APP_MANIFEST=
-for srcfile in $(find ${VCS_PATH} -maxdepth 2 -name '*.yml') $(find ${VCS_PATH} -maxdepth 2  -name '*.yaml'); do
+for srcfile in $(find ${VCS_PATH} -maxdepth 3 -name '*.yml') $(find ${VCS_PATH} -maxdepth 3  -name '*.yaml'); do
     if yq -e '."app-id"' $srcfile &> /dev/null; then
         FLATPAK_APP_ID=$(yq -re '."app-id"' $srcfile)
         FLATPAK_APP_MANIFEST="$srcfile"

@@ -26,17 +26,13 @@ modules:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
       - -DBUILD_FLATPAK=ON
     sources:
-      - type: dir
-        path: ..
+      - type: git
+        url: https://github.com/mozilla-mobile/mozilla-vpn-client
+        branch: main
 
       # Install vendored Rust crates
       - flatpak-vpn-crates.yaml
-      - type: inline
-        dest: .cargo
-        dest-filename: config.toml
-        contents: |
-          [source.vendored-sources]
-          directory = "cargo/vendor"
-
-          [source.crates-io]
-          replace-with = "vendored-sources"
+      - type: script
+        commands:
+          - mkdir .cargo
+          - cp cargo/config .cargo/config.toml

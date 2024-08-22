@@ -40,6 +40,6 @@ case $1 in
     ;;
   *)
     echo "Unsupported arachive: $1" >&2
+    exit 1
     ;;
 esac
-

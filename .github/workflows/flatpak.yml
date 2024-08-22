@@ -26,6 +26,9 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: src
+          sparse-checkout: |
+            linux/flatpak
+            Cargo.lock
       
       - name: Checkout tools
         uses: actions/checkout@v4
@@ -38,18 +41,18 @@ jobs:
         shell: bash
         run: pip install requirements-parser PyYAML toml yq
 
-      - name: Generate Cargo deps
+      - name: Update Cargo dependencies
         shell: bash
         working-directory: src
         run: |
           ../tools/cargo/flatpak-cargo-generator.py -o flatpak-sources-cargo.json Cargo.lock
-          cat flatpak-sources-cargo.json | yq -y > linux/flatpak-vpn-crates.yaml
+          cat flatpak-sources-cargo.json | yq -y > linux/flatpak/flatpak-vpn-crates.yaml
 
       - name: Update git reference
         shell: bash
-        working-directory: src/linux
+        working-directory: src/linux/flatpak
         run: |
-          yq -yi '.modules[-1].sources[0] = {"type": "git"}' org.mozilla.vpn.yml
+          yq -yi 'del(.modules[-1].sources[0].branch)' org.mozilla.vpn.yml
           yq -yi ".modules[-1].sources[0].url = \"https://github.com/${{ github.repository }}\"" org.mozilla.vpn.yml
           yq -yi ".modules[-1].sources[0].commit = \"${{ github.sha }}\"" org.mozilla.vpn.yml
           cat org.mozilla.vpn.yml
@@ -58,5 +61,5 @@ jobs:
         uses: flathub-infra/flatpak-github-actions/flatpak-builder@master
         with:
           bundle: mozillavpn.flatpak
-          manifest-path: src/linux/org.mozilla.vpn.yml
+          manifest-path: src/linux/flatpak/org.mozilla.vpn.yml
           cache-key: flatpak-builder-${{ github.sha }}

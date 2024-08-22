@@ -16,8 +16,7 @@ task-defaults:
     run:
         resources:
             - taskcluster/scripts/podman-worker.py
-            - linux/org.mozilla.vpn.yml
-            - linux/flatpak-*.yaml
+            - linux/flatpak/*
 
 flatpak-sdks:
     description: "Flatpak Bundle SDKs"

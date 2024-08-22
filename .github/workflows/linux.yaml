@@ -46,47 +46,6 @@ jobs:
           path: .tmp
           include-hidden-files: true
 
-  flatpak:
-    name: Flatpak Packages
-    needs: source-bundle
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Download Source Package
-        uses: actions/download-artifact@v4
-        with:
-          name: Sources
-
-      - name: Install Flatpak Tools
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get install flatpak flatpak-builder -y
-          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-
-      - name: Installing Dependencies
-        shell: bash
-        run: |
-          mkdir fp-build-dir
-          flatpak-builder --user --install-deps-from=flathub --install-deps-only fp-build-dir org.mozilla.vpn.yml
-
-      - name: Building Flatpak
-        shell: bash
-        run: flatpak-builder --user fp-build-dir org.mozilla.vpn.yml
-
-      - name: Exporting Flatpak
-        shell: bash
-        run: |
-          mkdir fp-export-dir
-          flatpak build-export fp-export-dir fp-build-dir
-          flatpak build-bundle fp-export-dir mozillavpn.flatpak org.mozilla.vpn
-
-      - name: Uploading
-        uses: actions/upload-artifact@v4
-        with:
-          name: Flatpak Build
-          path: mozillavpn.flatpak
-
   rpmbuild:
     name: RPM Packages
     needs: source-bundle
