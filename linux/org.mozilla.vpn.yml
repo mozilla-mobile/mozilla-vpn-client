@@ -17,8 +17,8 @@ build-options:
     - CARGO_HOME=/run/build/rust-flatpak/cargo
 
 modules:
-  - flatpak-maturin.yaml
-  - flatpak-pydeps.yaml
+  - flatpak-rpds.yaml
+  - flatpak-glean-parser.yaml
   - flatpak-libnm.yaml
   - flatpak-qt5compat.yaml
 
