@@ -14,13 +14,9 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    name: "Build Flatpaks"
+  manifest:
+    name: "Generate Manifest"
     runs-on: ubuntu-latest
-    container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:kde-6.6
-      options: --privileged
-
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -39,11 +35,11 @@ jobs:
       
       - name: Install pip tools
         shell: bash
-        run: pip install requirements-parser PyYAML toml yq
+        run: pip install requirements-parser PyYAML toml aiohttp yq
 
       - name: Update Cargo dependencies
         shell: bash
-        run: src/linux/flatpak/flatpak-update-crates.sh
+        run: src/linux/flatpak/flatpak-update-crates.sh src/Cargo.lock
 
       - name: Update git reference
         shell: bash
@@ -54,9 +50,56 @@ jobs:
           yq -yi ".modules[-1].sources[0].commit = \"${{ github.sha }}\"" org.mozilla.vpn.yml
           cat org.mozilla.vpn.yml
 
+      - name: Upload manifest
+        uses: actions/upload-artifact@v4
+        with:
+          name: mozillavpn-manifest
+          path: src/linux/flatpak
+
+  linter:
+    name: "Linters"
+    runs-on: ubuntu-latest
+    needs:
+      - manifest
+    
+    steps:
+      - name: Download manifest
+        uses: actions/download-artifact@v4
+        with:
+          name: mozillavpn-manifest
+          path: manifest/
+      
+      - name: Install Flatpak Linting Tools
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install flatpak flatpak-builder -y
+          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
+          flatpak install --user flathub -y org.flatpak.Builder
+      
+      - name: Run Manifest Linters
+        shell: bash
+        run: flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest manifest/org.mozilla.vpn.yml
+
+  build:
+    name: "Build"
+    runs-on: ubuntu-latest
+    needs:
+      - manifest
+    container:
+      image: ghcr.io/flathub-infra/flatpak-github-actions:kde-6.6
+      options: --privileged
+
+    steps:
+      - name: Download manifest
+        uses: actions/download-artifact@v4
+        with:
+          name: mozillavpn-manifest
+          path: manifest/
+
       - name: Build
         uses: flathub-infra/flatpak-github-actions/flatpak-builder@master
         with:
           bundle: mozillavpn.flatpak
-          manifest-path: src/linux/flatpak/org.mozilla.vpn.yml
+          manifest-path: manifest/org.mozilla.vpn.yml
           cache-key: flatpak-builder-${{ github.sha }}
