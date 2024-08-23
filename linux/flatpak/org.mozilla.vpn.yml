@@ -31,7 +31,7 @@ modules:
         branch: main
 
       # Install vendored Rust crates
-      - flatpak-vpn-crates.yaml
+      - flatpak-vpn-crates.json
       - type: shell
         commands:
           - mkdir .cargo

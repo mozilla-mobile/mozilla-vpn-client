@@ -33,7 +33,7 @@ modules:
       - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
           --prefix=${FLATPAK_DEST} "maturin" --no-build-isolation
     sources:
-      - flatpak-maturin-crates.yaml
+      - flatpak-maturin-crates.json
       - type: file
         path: flatpak-embed-crates.sh
       - type: file
@@ -49,7 +49,7 @@ modules:
       - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
           --prefix=${FLATPAK_DEST} "rpds-py" --no-build-isolation
     sources:
-      - flatpak-rpds-crates.yaml
+      - flatpak-rpds-crates.json
       - type: file
         path: flatpak-embed-crates.sh
       - type: file
