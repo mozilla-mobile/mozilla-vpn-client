@@ -81,6 +81,10 @@ jobs:
         shell: bash
         run: flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest manifest/org.mozilla.vpn.yml
 
+      - name: Run Appstream Linters
+        shell: bash
+        run: flatpak run --command=flatpak-builder-lint org.flatpak.Builder appstream manifest/org.mozilla.vpn.metainfo.xml
+
   build:
     name: "Build"
     runs-on: ubuntu-latest
