@@ -35,11 +35,16 @@ jobs:
       
       - name: Install pip tools
         shell: bash
-        run: pip install requirements-parser PyYAML toml aiohttp yq
+        run: pip install requirements-parser PyYAML toml aiohttp yq python-dateutil
 
       - name: Update Cargo dependencies
         shell: bash
         run: src/linux/flatpak/flatpak-update-crates.sh src/Cargo.lock
+
+      - name: Generate Appstream metainfo
+        shell: bash
+        working-directory: src/linux/flatpak
+        run: ./appstream-metainfo.sh > org.mozilla.vpn.metainfo.xml
 
       - name: Update git reference
         shell: bash

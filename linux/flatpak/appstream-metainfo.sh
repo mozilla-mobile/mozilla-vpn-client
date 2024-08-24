@@ -1,3 +1,5 @@
+#!/bin/sh
+cat << EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <component type="desktop-application">
   <id>org.mozilla.vpn</id>
@@ -12,6 +14,8 @@
   <developer id="org.mozilla">
     <name>Mozilla Corporation</name>
   </developer>
+
+$(python $(dirname $0)/appstream-releases.py | sed s'/^/  /g')
 
   <url type="homepage">https://vpn.mozilla.org</url>
   <url type="vcs-browser">https://github.com/mozilla-mobile/mozilla-vpn-client</url>
@@ -31,3 +35,4 @@
   
   <launchable type="desktop-id">org.mozilla.vpn.desktop</launchable>
 </component>
+EOF
