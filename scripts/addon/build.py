@@ -416,7 +416,7 @@ with open(args.source, "r", encoding="utf-8") as file:
                     # The fallback translations are computed in reverse order.
                     # First "en" where we have 100% of translations by default.
                     xliff_path_en = os.path.join(args.i18npath, "en", "addons", manifest["id"], "strings.xliff")
-                    locale_file_en = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
+                    locale_file_en = os.path.join(tmp_path, "i18n", "locale_en_fallback.ts")
                     os.system(f"{lconvert} -if xlf -i {xliff_path_en} -o {locale_file_en}")
 
                     # Then the fallback languages
