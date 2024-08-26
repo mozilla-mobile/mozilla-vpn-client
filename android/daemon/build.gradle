@@ -118,7 +118,7 @@ dependencies {
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.1'
 
     implementation SharedDependencies.androidx_core
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:2.0.20"
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
 
     implementation project(path: ':qtglean')
