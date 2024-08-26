@@ -23,27 +23,29 @@ jobs:
         with:
           path: src
           sparse-checkout: |
-            linux/flatpak
+            linux/
             Cargo.lock
-      
+
       - name: Checkout tools
         uses: actions/checkout@v4
         with:
           repository: flatpak/flatpak-builder-tools
           path: tools
-      
+
       - name: Install pip tools
         shell: bash
-        run: pip install requirements-parser PyYAML toml aiohttp yq python-dateutil
+        run: pip install requirements-parser PyYAML toml aiohttp yq
 
       - name: Update Cargo dependencies
         shell: bash
         run: src/linux/flatpak/flatpak-update-crates.sh src/Cargo.lock
 
-      - name: Generate Appstream metainfo
+      - name: Fetch Appstream metainfo
         shell: bash
-        working-directory: src/linux/flatpak
-        run: ./appstream-metainfo.sh | tee org.mozilla.vpn.metainfo.xml
+        run: |
+          cp src/linux/extra/org.mozilla.vpn.metainfo.xml src/linux/flatpak/
+          curl -sSL -o src/linux/flatpak/org.mozilla.vpn.releases.xml \
+            https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml
 
       - name: Update git reference
         shell: bash
@@ -80,7 +82,7 @@ jobs:
           sudo apt-get install flatpak flatpak-builder -y
           flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
           flatpak install --user flathub -y org.flatpak.Builder
-      
+
       - name: Run Manifest Linters
         shell: bash
         run: flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest manifest/org.mozilla.vpn.yml

@@ -20,6 +20,7 @@ modules:
   - flatpak-glean-parser.yaml
   - flatpak-libnm.yaml
   - flatpak-qt5compat.yaml
+
   - name: mozillavpn
     buildsystem: cmake-ninja
     config-opts:

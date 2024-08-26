@@ -119,6 +119,9 @@ configure_file(${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.desktop.in
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
 
+install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.metainfo.xml
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
+
 install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/16x16/org.mozilla.vpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/16x16/apps)
 
