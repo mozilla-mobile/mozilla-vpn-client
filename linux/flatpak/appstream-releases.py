@@ -18,7 +18,7 @@ from xml.etree import ElementTree
 
 GITHUB_TOKEN = os.environ.get('GITHUB_TOKEN')
 
-class release_info:
+class ReleaseInfo:
     def __init__(self, owner, project, tag):
         headers = {
             'Accept': 'application/vnd.github+json',
@@ -56,7 +56,7 @@ class release_info:
         return f"{self.tag}"
     
     def __repr__(self):
-        return f"release_info({self.owner}, {self.project}, {self.tag})"
+        return f"ReleaseInfo({self.owner}, {self.project}, {self.tag})"
 
     @property
     def date(self):
@@ -105,7 +105,7 @@ def fetch_releases(gitremote, limit=8):
     tags.sort(key=Version, reverse=True)
 
     # Fetch the release data
-    return [release_info(user, project, tag) for tag in tags[:limit]]
+    return [ReleaseInfo(user, project, tag) for tag in tags[:limit]]
 
 if __name__ == "__main__":
     ## Parse arguments to locate the input files and options.

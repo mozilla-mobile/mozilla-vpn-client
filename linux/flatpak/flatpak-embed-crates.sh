@@ -16,7 +16,7 @@ case $1 in
     gunzip -c $1 > $TMPDIR/archive.tar
     ;;
   *)
-    echo "Unsupported archive: $1" >&2
+    echo "Unsupported archive format: $1" >&2
     exit 1
     ;;
 esac
@@ -39,7 +39,7 @@ case $1 in
     gzip -c $TMPDIR/archive.tar > $1
     ;;
   *)
-    echo "Unsupported arachive: $1" >&2
+    echo "Unsupported archive format: $1" >&2
     exit 1
     ;;
 esac

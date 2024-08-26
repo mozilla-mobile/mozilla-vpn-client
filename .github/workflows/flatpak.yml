@@ -43,7 +43,7 @@ jobs:
       - name: Generate Appstream metainfo
         shell: bash
         working-directory: src/linux/flatpak
-        run: ./appstream-metainfo.sh > org.mozilla.vpn.metainfo.xml
+        run: ./appstream-metainfo.sh | tee org.mozilla.vpn.metainfo.xml
 
       - name: Update git reference
         shell: bash
