@@ -29,8 +29,7 @@ jobs:
       - name: Checkout tools
         uses: actions/checkout@v4
         with:
-          repository: oskirby/flatpak-builder-tools
-          ref: pip-fix-case-sensitivity
+          repository: flatpak/flatpak-builder-tools
           path: tools
       
       - name: Install pip tools
