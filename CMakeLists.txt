@@ -167,9 +167,6 @@ if(NOT CMAKE_CROSSCOMPILING)
 
         # E2E Tests
         add_subdirectory(tests/auth_tests EXCLUDE_FROM_ALL)
-
-        # Dummy Testing Client
-        add_subdirectory(tests/dummyvpn EXCLUDE_FROM_ALL)
     endif()
 endif()
 
