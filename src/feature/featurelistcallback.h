@@ -82,7 +82,7 @@ bool FeatureCallback_inAppAuthentication() {
 }
 
 bool FeatureCallback_splitTunnel() {
-#if defined(MZ_ANDROID) || defined(MZ_WASM)
+#if defined(MZ_ANDROID) || defined(MZ_WASM) || defined(UNIT_TEST)
   return true;
 #elif defined(MZ_WINDOWS)
   return !WindowsSplitTunnel::detectConflict();
