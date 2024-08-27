@@ -443,7 +443,7 @@ bool Navigator::eventHandled() {
 #elif defined(MZ_IOS)
   return false;
 #elif defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
-    defined(MZ_DUMMY) || defined(UNIT_TEST)
+    defined(MZ_WASM) || defined(UNIT_TEST)
   logger.error() << "We should not be here! Why "
                     "CloseEventHandler::eventHandled() is called on desktop?!?";
   return true;

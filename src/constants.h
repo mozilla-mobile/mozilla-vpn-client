@@ -128,7 +128,7 @@ constexpr const char* PLATFORM_NAME =
     "android"
 #elif defined(MZ_WINDOWS)
     "windows"
-#elif defined(UNIT_TEST) || defined(MZ_DUMMY)
+#elif defined(UNIT_TEST) || defined(MZ_WASM)
     "dummy"
 #else
 #  error "Unsupported platform"

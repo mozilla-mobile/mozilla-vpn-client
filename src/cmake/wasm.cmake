@@ -33,5 +33,3 @@ add_custom_command(
      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/tests/functional/servers/guardian_endpoints.js ${WASM_FINAL_DIR}/guardian_endpoints.js
      COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/tools/logviewer ${WASM_FINAL_DIR}/logviewer
 )
-
-add_compile_definitions("MZ_DUMMY")

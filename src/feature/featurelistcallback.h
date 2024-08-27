@@ -49,7 +49,7 @@ bool FeatureCallback_annualUpgrade() {
 
 bool FeatureCallback_captivePortal() {
 #if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
-    defined(MZ_DUMMY) || defined(MZ_WASM)
+    defined(MZ_WASM)
   return true;
 #else
   // If we decide to enable the captive-portal notification for
@@ -70,7 +70,7 @@ bool FeatureCallback_captivePortal() {
 }
 
 bool FeatureCallback_inAppAuthentication() {
-#if defined(MZ_DUMMY)
+#if defined(MZ_WASM)
   return true;
 #else
   if (Constants::inProduction() || FeatureCallback_iosOrAndroid()) {
@@ -82,7 +82,7 @@ bool FeatureCallback_inAppAuthentication() {
 }
 
 bool FeatureCallback_splitTunnel() {
-#if defined(MZ_ANDROID) || defined(MZ_DUMMY)
+#if defined(MZ_ANDROID) || defined(MZ_WASM)
   return true;
 #elif defined(MZ_WINDOWS)
   return !WindowsSplitTunnel::detectConflict();
@@ -140,7 +140,7 @@ bool FeatureCallback_splitTunnel() {
 
 bool FeatureCallback_startOnBoot() {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
-    defined(MZ_WASM) || defined(MZ_DUMMY)
+    defined(MZ_WASM)
   return true;
 #else
   return false;
@@ -149,7 +149,7 @@ bool FeatureCallback_startOnBoot() {
 
 bool FeatureCallback_unsecuredNetworkNotification() {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
-    defined(MZ_WASM) || defined(MZ_DUMMY)
+    defined(MZ_WASM)
   return true;
 #else
   return false;
@@ -168,7 +168,7 @@ bool FeatureCallback_freeTrial() {
 
 bool FeatureCallback_shareLogs() {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
-    defined(MZ_IOS) || defined(MZ_DUMMY)
+    defined(MZ_IOS) || defined(MZ_WASM)
   return true;
 #elif defined(MZ_ANDROID)
   return AndroidCommons::getSDKVersion() >=
