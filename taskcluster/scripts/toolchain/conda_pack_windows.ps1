@@ -39,7 +39,6 @@ conda info --envs
 
 conda activate VPN
 . "$REPO_ROOT_PATH\scripts\windows\conda_setup_win_sdk.ps1" # <- This download's all sdk things we need :3 
-. "$REPO_ROOT_PATH\scripts\windows\conda_install_extras.ps1" # <- Downloads gcc. 
 conda deactivate
 conda activate VPN
 

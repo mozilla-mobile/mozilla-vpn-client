@@ -1,0 +1,31 @@
+name: vpn
+channels:
+  - conda-forge
+dependencies:
+  - clang=14.0.6
+  - clang-tools=14.0.6
+  - clangxx=14.0.6
+  - m2w64-gcc=5.3.0
+  - llvm=14.0.6
+  - llvmdev=14.0.6
+  - lld=14.0.6
+  - python=3.9
+  - nodejs=18.16.*
+  - pip=22.3.1
+  - rust=1.75
+  - rust-std-aarch64-apple-ios=1.75
+  - rust-std-x86_64-apple-ios=1.75
+  - rust-std-armv7-linux-androideabi=1.75
+  - rust-std-x86_64-linux-android=1.75
+  - rust-std-i686-linux-android=1.75
+  - rust-std-aarch64-linux-android=1.75
+  - go=1.18
+  - compiler-rt
+  - cmake=3.26.3
+  - ninja=1.11.0
+  - conda-forge::openjdk=17
+  - pip:
+      - -r requirements.txt
+      - -r taskcluster/scripts/requirements.txt
+variables:
+  QT_VERSION: 6.6.3
