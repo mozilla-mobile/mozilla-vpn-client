@@ -92,6 +92,10 @@ if [[ "$STATICQT" == "Y" ]]; then
   export PATH=${MOZ_FETCHES_DIR}/qt_dist/bin:${PATH}
   sed -rie '/\s+(qt6-|qml6-|libqt6|qmake)/d' $(pwd)/mozillavpn-source/debian/control
 fi
+# Strip out the Cargo build dependency if it was installed manually.
+if which cargo > /dev/null 2>&1; then
+  sed -rie '/\s+(cargo)/d' $(pwd)/mozillavpn-source/debian/control
+fi
 
 # Install the package build dependencies.
 mk-build-deps $(pwd)/mozillavpn-source/debian/control
