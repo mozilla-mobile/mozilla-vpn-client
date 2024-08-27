@@ -65,12 +65,7 @@ QUrl AuthenticationListener::createAuthenticationUrl(
     const QString& emailAddress) {
   QString path = QString("/api/v2/%1/login/").arg(Constants::AUTH_PROD_NAME);
 
-#if !defined(MZ_DUMMY)
   path.append(Constants::PLATFORM_NAME);
-#else
-  // Let's use ios here.
-  path.append("ios");
-#endif
 
   QUrl url(Constants::apiBaseUrl());
   url.setPath(path);
