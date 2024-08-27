@@ -87,7 +87,7 @@ VPN binary.
 export MVPN_BIN=$(pwd)/build/src/mozillavpn
 ```
 
-The functional tests also require the testing addons to be built. This subproject can be found
+The functional tests also require the testing addons to be built. This sub project can be found
 at `tests/functional/addons` and can be built as follows:
 
 ```
