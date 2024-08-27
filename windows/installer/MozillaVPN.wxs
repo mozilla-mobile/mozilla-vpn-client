@@ -168,9 +168,16 @@
     <CustomAction Id="LaunchVPNAfterUpdate" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="ui --updated" Return="asyncNoWait" />
     <InstallExecuteSequence>
    <!-- This will schedule a reboot only if the OS is Windows 10 -->
-      <ScheduleReboot After="InstallFinalize">VersionNT = 603</ScheduleReboot>
-      <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize">NOT WIX_UPGRADE_DETECTED AND NOT(VersionNT = 603)</Custom>
-      <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize">WIX_UPGRADE_DETECTED AND NOT(VersionNT = 603)</Custom>
+      <ScheduleReboot After="InstallFinalize">
+        <![CDATA[WindowsBuild < 22000 ]]>
+      </ScheduleReboot>
+      <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize">
+        <![CDATA[NOT WIX_UPGRADE_DETECTED AND NOT(WindowsBuild < 22000 )]]> 
+      </Custom>
+      <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize">
+        <![CDATA[WIX_UPGRADE_DETECTED AND NOT(WindowsBuild < 22000 )]]> 
+        
+      </Custom>
     </InstallExecuteSequence>
 
     <!--
