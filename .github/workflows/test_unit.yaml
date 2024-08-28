@@ -149,7 +149,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: 3rdparty/wireguard-nt
-          key: wireguard-nt-${{ hashFiles(windows/wireguard_nt/CMakeLists.txt) }}
+          key: wireguard-nt-${{ hashFiles('windows/wireguard_nt/CMakeLists.txt') }}
 
       - name: Download Wireguard NT
         if: steps.cache-wireguard-nt.outputs.cache-hit != 'true'
