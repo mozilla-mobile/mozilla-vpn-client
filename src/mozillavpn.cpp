@@ -1507,7 +1507,7 @@ void MozillaVPN::registerNavigatorScreens() {
       });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
+      MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenHome.qml",
       QVector<int>{App::StateMain}, [](int*) -> int8_t { return 99; },
       []() -> bool { return false; });
