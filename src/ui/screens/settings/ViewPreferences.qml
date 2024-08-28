@@ -81,7 +81,7 @@ MZViewBase {
             Layout.leftMargin: MZTheme.theme.windowMargin
             showDivider: false
 
-            labelText: MZI18n.LocalNetworkAccessLabel
+            labelText: MZI18n.LocalNetworkAccessLabelTitle
             subLabelText: MZI18n.LocalNetworkAccessSubLabel
             checked: MZSettings.localNetworkAccess
             enabled: isIOS && vpnIsOff
@@ -103,7 +103,7 @@ MZViewBase {
             messages: [
                 {
                     type: "warning",
-                    message: MZI18n.LocalNetworkAccessVpnMustBeOff,
+                    message: MZI18n.LocalNetworkAccessVpnMustBeOffTip,
                 }
             ]
         }

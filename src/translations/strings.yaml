@@ -354,9 +354,9 @@ settings:
     comment: Button label to clear all apps from the exclusions list
 
 localNetworkAccess:
-  label: Local network access
+  labelTitle: Exclude local network traffic
   subLabel: Access Apple CarPlay, AirDrop, AirPlay and local network devices like printers.
-  vpnMustBeOff: VPN must be off to edit “Local network access”
+  vpnMustBeOffTip: VPN must be off to edit “Exclude local network traffic”
 
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?
