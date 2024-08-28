@@ -13,7 +13,7 @@ MZButtonBase {
 
     property var connectionRetryOverX: VPNController.connectionRetry > 1
     property var enableDisconnectInConfirming: VPNController.enableDisconnectInConfirming
-    property var toggleColor: MZTheme.theme.vpnToggleDisconnected
+    property var toggleColor: {}
     property var toolTipTitle: ""
     Accessible.name: toolTipTitle
 
