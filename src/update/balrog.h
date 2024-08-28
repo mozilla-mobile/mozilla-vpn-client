@@ -35,7 +35,7 @@ class Balrog final : public Updater {
                          const QByteArray& updateData,
                          const QByteArray& signatureBlob);
   bool computeHash(const QString& url, const QByteArray& data,
-                   const QString& hashValue, const QString& hashFunction);
+                   const QByteArray& expect, const QString& algorithm);
   bool saveFileAndInstall(const QString& url, const QByteArray& data);
   bool install(const QString& filePath);
   void propagateError(NetworkRequest* request,
