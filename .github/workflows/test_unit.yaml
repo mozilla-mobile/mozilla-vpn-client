@@ -153,6 +153,7 @@ jobs:
 
       - name: Download Wireguard NT
         if: steps.cache-wireguard-nt.outputs.cache-hit != 'true'
+        shell: bash
         run: |
           WIREGUARD_NT_URL=$(grep -Eo 'DOWNLOAD[[:space:]].*' windows/wireguard_nt/CMakeLists.txt | awk '{print $2}')
           mkdir -p 3rdparty/wireguard-nt
