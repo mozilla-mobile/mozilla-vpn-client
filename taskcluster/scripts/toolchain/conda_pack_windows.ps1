@@ -45,4 +45,4 @@ conda activate VPN
 conda install conda-pack
 
 New-Item -ItemType Directory $TASK_WORKDIR\public\build
-conda-pack --name VPN -o $TASK_WORKDIR\public\build\conda-windows.tar.gz
+conda run conda-pack --name VPN -o $TASK_WORKDIR\public\build\conda-windows.tar.gz
