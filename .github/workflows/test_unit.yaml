@@ -156,8 +156,8 @@ jobs:
         shell: bash
         run: |
           WIREGUARD_NT_URL=$(grep -Eo 'DOWNLOAD[[:space:]].*' windows/wireguard_nt/CMakeLists.txt | awk '{print $2}')
-          mkdir -p 3rdparty/wireguard-nt
-          curl -sSL -o 3rdparty/wireguard-nt/$(basename $WIREGUARD_NT_URL) $WIREGUARD_NT_URL
+          curl -sSL -o wireguard-nt.zip $WIREGUARD_NT_URL
+          unzip -d 3rdparty/ wireguard-nt.zip
 
       - name: Building tests
         run: |
