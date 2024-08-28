@@ -47,6 +47,18 @@
     <Property Id="DISABLEROLLBACK" Value="yes" />
     <Property Id="MSIDISABLERMRESTART" Value="1" />
     <Property Id="MSIRMSHUTDOWN" Value="1" />
+    
+    <Property Id="WINDOWS_BUILD_NUMBER">
+      <!-- Search for the Windows build number in the registry, given wix NT_VERSION 
+           is unchanged between w10 and w11 ~_~
+       -->
+      <RegistrySearch Id="SearchWindowsBuildNumber"
+                      Root="HKLM"
+                      Key="SOFTWARE\Microsoft\Windows NT\CurrentVersion"
+                      Name="CurrentBuild"
+                      Type="raw"
+                      />
+    </Property>
 
     <!--
       Upgrading
@@ -167,15 +179,15 @@
     <CustomAction Id="LaunchVPNFirstExecution" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
     <CustomAction Id="LaunchVPNAfterUpdate" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="ui --updated" Return="asyncNoWait" />
     <InstallExecuteSequence>
-   <!-- This will schedule a reboot only if the OS is Windows 10 -->
+      <!-- This will schedule a reboot only if the OS is Windows 10 -->
       <ScheduleReboot After="InstallFinalize">
-        <![CDATA[WindowsBuild < 22000 ]]>
+        <![CDATA[WINDOWS_BUILD_NUMBER < 22000]]>
       </ScheduleReboot>
       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize">
-        <![CDATA[NOT WIX_UPGRADE_DETECTED AND NOT(WindowsBuild < 22000 )]]> 
+        <![CDATA[NOT WIX_UPGRADE_DETECTED AND (WINDOWS_BUILD_NUMBER >= 22000 )]]> 
       </Custom>
       <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize">
-        <![CDATA[WIX_UPGRADE_DETECTED AND NOT(WindowsBuild < 22000 )]]> 
+        <![CDATA[WIX_UPGRADE_DETECTED AND (WINDOWS_BUILD_NUMBER >= 22000)]]> 
         
       </Custom>
     </InstallExecuteSequence>
