@@ -326,7 +326,7 @@ settings:
   appExclusionSettings: App exclusions
   dnsSettings: DNS settings
   preferencesSettings: Preferences
-  dataCollectionDescription: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla
+  shareTechnicalDataDescription: Help improve Mozilla VPN by sharing crash reports, diagnostics, and product usage data.
   startAtBootTitle:
     value: Connect VPN on startup
     comment: Startup refers to a device's startup, not the VPN client's.
@@ -395,8 +395,8 @@ updateButton:
 telemetryPolicyView:
   description: We strive to provide you with choices and collect only the data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional.
   question: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla?
-  dataCollectionAndUse:
-    value: Data collection and use
+  shareTechnicalData:
+    value: Share technical data
     comment: Headline of telemetry policy view and checkbox label
   doNotAllow:
     value: Don’t allow
