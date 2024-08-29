@@ -24,7 +24,8 @@ describe('WebExtension API', function() {
     const sock = await connectExtension();
     const messagePipe = getMessageStream(sock);
     sentToClient(new ExtensionMessage('status'), sock);
-    await readResponseOfType('status', messagePipe);
+    const msg = await readResponseOfType('status', messagePipe);
+    assert(msg.version && msg.version != "", "A Version is sent in status")
     sock.destroy();
   });
   it('A Webextension can activate the VPN', async () => {
