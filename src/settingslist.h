@@ -520,6 +520,7 @@ SETTING_BOOL(startAtBoot,                  // getter
              false,                        // remove when reset
              false                         // sensitive (do not log)
 )
+#undef START_AT_BOOT_DEFAULT_VALUE
 
 SETTING_BYTEARRAY(subscriptionData,        // getter
                   setSubscriptionData,     // setter
