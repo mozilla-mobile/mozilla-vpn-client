@@ -132,6 +132,7 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
   QJsonObject obj;
   obj["authenticated"] = App::isUserAuthenticated();
   obj["location"] = locationObj;
+  obj["version"] = Constants::versionString();
   obj["connectedSince"] =
       QString::number(vpn->controller()->connectionTimestamp());
   {
