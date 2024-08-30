@@ -50,8 +50,6 @@ if( ${_SUPPORTED} GREATER -1 )
         # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
         # this is super easy to link against and we do not need another binary shipped with the client.
         SET(SENTRY_ARGS
-            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
-            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
             -DCMAKE_OSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
             -DSENTRY_BACKEND=breakpad
         )
@@ -71,7 +69,10 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE breakpad_client.lib)
         target_link_libraries(shared-sources INTERFACE dbghelp.lib)
         target_link_libraries(shared-sources INTERFACE version.lib)
-        SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE} )
+        SET(SENTRY_ARGS
+            -DSENTRY_BACKEND=breakpad
+            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+        )
     endif()
 
     if(ANDROID)
@@ -94,7 +95,7 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_directories( shared-sources INTERFACE ${EXTERNAL_INSTALL_LOCATION}/lib64)
         # We are using breakpad as a backend - in process stackwalking is never the best option ... however!
         # this is super easy to link against and we do not need another binary shipped with the client.
-        SET(SENTRY_ARGS -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER} -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER} -DSENTRY_BACKEND=breakpad)
+        SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad)
     endif()
     
 
@@ -103,7 +104,17 @@ if( ${_SUPPORTED} GREATER -1 )
         SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/sentry
         GIT_SUBMODULES 3rdparty/sentry
         GIT_SUBMODULES_RECURSE true
-        CMAKE_ARGS -DSENTRY_TRANSPORT=none -DSENTRY_BUILD_TESTS=OFF  -DSENTRY_BUILD_EXAMPLES=OFF -DSENTRY_BUILD_SHARED_LIBS=OFF -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION} ${SENTRY_ARGS}
+        CMAKE_ARGS
+            -DSENTRY_TRANSPORT=none
+            -DSENTRY_BUILD_TESTS=OFF
+            -DSENTRY_BUILD_EXAMPLES=OFF
+            -DSENTRY_BUILD_SHARED_LIBS=OFF
+            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+            -DCMAKE_CXX_COMPILER=${CMAKE_CXX_COMPILER}
+            -DCMAKE_C_FLAGS=${CMAKE_C_FLAGS}
+            -DCMAKE_CXX_FLAGS=${CMAKE_CXX_FLAGS}
+            -DCMAKE_INSTALL_PREFIX=${EXTERNAL_INSTALL_LOCATION}
+            ${SENTRY_ARGS}
     )
 
     target_include_directories(shared-sources INTERFACE ${EXTERNAL_INSTALL_LOCATION}/include)

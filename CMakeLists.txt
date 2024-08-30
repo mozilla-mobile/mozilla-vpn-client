@@ -16,6 +16,9 @@ if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "default build type" FORCE)
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
+if(WIN32)
+    include(scripts/cmake/windows-tooling.cmake)
+endif()
 
 file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/version.txt" APP_VERSION)
 message(APP_VERSION=${APP_VERSION})
@@ -43,13 +46,6 @@ if(WIN32)
     ## See: https://gitlab.kitware.com/cmake/cmake/-/issues/22014
     if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_EQUAL 3.20)
         cmake_policy(SET CMP0116 OLD)
-    endif()
-
-    ## CMake also has trouble finding OpenSSL libraries on Windows, and may
-    ## need some help.
-    if(EXISTS "C:/MozillaVPNBuild/SSL" AND NOT DEFINED OPENSSL_ROOT_DIR)
-        set(OPENSSL_ROOT_DIR "C:/MozillaVPNBuild/SSL")
-        find_package(OpenSSL REQUIRED)
     endif()
 
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)

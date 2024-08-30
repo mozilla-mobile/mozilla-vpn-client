@@ -108,6 +108,14 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_BUILD_FW_NAME}.framework/${RUST_BUILD_FW_NAME}")
     endif()
 
+    # TODO: Any reason not to do this on every platform? This is just some basic inheriting-the-toolchain stuff.
+    if(MSVC)
+        list(APPEND RUST_BUILD_CARGO_ENV RUSTFLAGS="-Clinker=${CMAKE_LINKER}")
+        list(APPEND RUST_BUILD_CARGO_ENV CC=${CMAKE_C_COMPILER})
+        list(APPEND RUST_BUILD_CARGO_ENV AR=${CMAKE_AR})
+        list(APPEND RUST_BUILD_CARGO_ENV LD=${CMAKE_LINKER})
+    endif()
+
     if(ANDROID)
         get_filename_component(ANDROID_TOOLCHAIN_ROOT_BIN ${CMAKE_C_COMPILER} DIRECTORY)
 
