@@ -10,7 +10,7 @@ task-defaults:
     run:
         resources:
             - requirements.txt
-            - env.yml
+            - env-windows.yml
 
 windows-conda-pack: 
         fetches:
