@@ -7,16 +7,13 @@ on:
       - "v[0-9]+.[0-9a-z]+.[0-9a-z]+"
   schedule:
     - cron: "0 5 * * *"
-  pull_request:
-    branches:
-      - main
 
 jobs:
   ppa-release-candidate:
     name: PPA Releases
     if: github.repository == 'mozilla-mobile/mozilla-vpn-client'
     runs-on: ubuntu-latest
-    #environment: PPA Automation
+    environment: PPA Automation
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
@@ -42,7 +39,7 @@ jobs:
           GITREF: ${{github.ref}}
         run: |
           git clone --depth 1 -b ubuntu/devel git://git.launchpad.net/ubuntu/+source/distro-info-data
-          echo "releases<<EOF" >> $GITHUB_OUTPUT
+          echo -n "releases" >> $GITHUB_OUTPUT
           tail -n+2 distro-info-data/ubuntu.csv | while read -r line; do
             IFS=',' read -ra data <<< "$line"
             now=$(date +%s)
@@ -54,10 +51,10 @@ jobs:
               echo "Ignoring release ${data[2]} -> unreleased ${data[4]}"
               continue # Ignore releases more than 60 days in the future
             fi
-            echo "Accepting release ${data[2]}"
-            echo "${data[2]}" >> $GITHUB_OUTPUT
+            echo "Targeting release ${data[2]}"
+            echo -n "${data[2]} " >> $GITHUB_OUTPUT
           done
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "" >> $GITHUB_OUTPUT
 
           if [[ "$GITREF" == "refs/heads/main" ]]; then
             echo "ppa-url=ppa:okirby/mozilla-vpn-nightly" >> $GITHUB_OUTPUT
@@ -81,8 +78,8 @@ jobs:
         env:
           DEBEMAIL: ${{ github.actor }}@users.noreply.github.com
           DEBFULLNAME: ${{ github.actor }}
-          #GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-          #GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
           GNUPGHOME: ${{ runner.temp }}/gnupg-data
           PPA_TARGET_DISTS: ${{ steps.decision.outputs.releases }}
           PPA_URL: ${{ steps.decision.outputs.ppa-url }}
@@ -91,10 +88,10 @@ jobs:
           echo "allow-preset-passphrase" > $GNUPGHOME/gpg-agent.conf
           gpgconf --kill gpg-agent
 
-          # echo "$GPG_PRIVATE_KEY" | gpg --import --batch
-          # KEYID=$(gpg --with-colons --list-keys | grep -m1 '^fpr:' | tr -d [fpr:])
-          # KEYGRIP=$(gpg --with-colons --with-keygrip --list-keys | grep -m1 '^grp:' | tr -d [grp:])
-          # echo "$GPG_PASSWORD" | /lib/gnupg2/gpg-preset-passphrase --preset $KEYGRIP
+          echo "$GPG_PRIVATE_KEY" | gpg --import --batch
+          KEYID=$(gpg --with-colons --list-keys | grep -m1 '^fpr:' | tr -d [fpr:])
+          KEYGRIP=$(gpg --with-colons --with-keygrip --list-keys | grep -m1 '^grp:' | tr -d [grp:])
+          echo "$GPG_PASSWORD" | /lib/gnupg2/gpg-preset-passphrase --preset $KEYGRIP
 
           JOB_EXIT_CODE=0
           PACKAGE_DSC_FILE=$(find . -name '*.dsc')
@@ -106,9 +103,9 @@ jobs:
             PACKAGE_DIST_VERSION=${PACKAGE_BASE_VERSION}-${dist}1
 
             dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${PACKAGE_DIST_VERSION} -D ${dist}  "Release for ${dist}"
-            #(cd mozillavpn-source && dpkg-buildpackage --build=source --sign-key=$KEYID -sa --no-check-builddeps)
+            (cd mozillavpn-source && dpkg-buildpackage --build=source --sign-key=$KEYID -sa --no-check-builddeps)
 
-            #dput $PPA_URL ${PACKAGE_SOURCE_NAME}_${PACKAGE_DIST_VERSION}_source.changes || JOB_EXIT_CODE=1
+            dput $PPA_URL ${PACKAGE_SOURCE_NAME}_${PACKAGE_DIST_VERSION}_source.changes || JOB_EXIT_CODE=1
             rm -rf $(pwd)/mozillavpn-source
           done
 
