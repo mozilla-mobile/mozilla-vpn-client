@@ -76,14 +76,15 @@ ctest --test-dir build -j $(nproc) --output-on-failure
 
 ### Running the functional tests
 
-Functional tests can be run against the production build of the application by providing the
-`--testing` flag to the command line. This option switches the client in to staging mode, and
-enables mocking for platform and backend features necessary to facilitate automated testing.
-
 To run the tests, we must set the `MVPN_BIN` environment variable and point it to the Mozilla
 VPN binary.
 
 ```
+# Linux:
+export MVPN_BIN=$(pwd)/build/mozillavpn
+# macOS:
+export MVPN_BIN=$(pwd)/build/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN
+# Others:
 export MVPN_BIN=$(pwd)/build/src/mozillavpn
 ```
 
@@ -100,20 +101,21 @@ export MVPN_ADDONS_PATH=build-addons/
 * Install node (if needed) and then `npm install` to install the testing
   dependencies
 * Make a .env file and place it in the root folder for the repo. It should include:
- * `MVPN_BIN` (location of compiled mvpn binary. This must be a VPN binary, see note above.)
- * `MVPN_ADDONS_PATH` (location of the compiled test addons project)
  * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)
  * Sample .env file:
   ```
   export PATH=$PATH:~/Qt/6.6.3/macos/bin:$PATH
   export QT_MACOS_BIN=~/Qt/6.6.3/macos/bin
   MVPN_API_BASE_URL=http://localhost:5000
-  MVPN_BIN=build/src/mozillavpn
-  MVPN_ADDONS_PATH=build-addons/
   ARTIFACT_DIR=tests/artifact
   ```
 
 **To run a test**: from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthenticationInApp.js`.
+
+(Functional tests are run against the production build of the application by providing the
+`--testing` flag to the command line when running the app. This option switches the client in to staging mode, and
+enables mocking for platform and backend features necessary to facilitate automated testing.
+This flag is added automatically when setupVpn.js starts the VPN, which is done for all functional tests.)
 
 ## Developer Options and staging environment
 
