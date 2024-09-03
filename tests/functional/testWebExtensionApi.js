@@ -12,7 +12,8 @@ const {
   getMessageStream,
   ExtensionMessage,
   readResponseOfType
-} = require('./utils/webextension.js')
+} = require('./utils/webextension.js');
+
 
 if(!vpn.runningOnWasm()) {
 
@@ -23,9 +24,10 @@ describe('WebExtension API', function() {
   it('A Webextension can query the Status of the VPN', async () => {
     const sock = await connectExtension();
     const messagePipe = getMessageStream(sock);
+    const statusPromise = readResponseOfType('status', messagePipe);
     sentToClient(new ExtensionMessage('status'), sock);
-    const msg = await readResponseOfType('status', messagePipe);
-    assert(msg.version && msg.version != "", "A Version is sent in status")
+    const msg = await statusPromise
+    assert(msg.version, `A Version is sent in msg: ${JSON.stringify(msg)}` )
     sock.destroy();
   });
   it('A Webextension can activate the VPN', async () => {
