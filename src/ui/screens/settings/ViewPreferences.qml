@@ -82,7 +82,7 @@ MZViewBase {
             showDivider: false
 
             labelText: MZI18n.LocalNetworkAccessLabelTitle
-            subLabelText: MZI18n.LocalNetworkAccessSubLabel
+            subLabelText: vpnIsOff ? MZI18n.LocalNetworkAccessSubLabel : MZI18n.LocalNetworkAccessDisabledSubLabel
             checked: MZSettings.localNetworkAccess
             enabled: isIOS && vpnIsOff
             dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
@@ -91,21 +91,6 @@ MZViewBase {
                     MZSettings.localNetworkAccess = !MZSettings.localNetworkAccess
                 }
             }
-        }
-
-        MZContextualAlerts {
-            Layout.topMargin: MZTheme.theme.listSpacing
-            Layout.rightMargin: MZTheme.theme.windowMargin
-            Layout.leftMargin: MZTheme.theme.windowMargin
-
-            visible: isIOS && !vpnIsOff
-
-            messages: [
-                {
-                    type: "warning",
-                    message: MZI18n.LocalNetworkAccessVpnMustBeOffTip,
-                }
-            ]
         }
 
         ColumnLayout {

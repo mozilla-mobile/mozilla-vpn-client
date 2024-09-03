@@ -356,7 +356,7 @@ settings:
 localNetworkAccess:
   labelTitle: Exclude local network traffic
   subLabel: Access Apple CarPlay, AirDrop, AirPlay and local network devices like printers.
-  vpnMustBeOffTip: VPN must be off to edit “Exclude local network traffic”
+  disabledSubLabel: Access Apple CarPlay, AirDrop, AirPlay and local network devices like printers. The VPN must be off to edit this setting.
 
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?
