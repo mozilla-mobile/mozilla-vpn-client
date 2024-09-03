@@ -122,6 +122,32 @@ install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
 install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.metainfo.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
 
+if(EXISTS ${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.releases.xml)
+    install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.releases.xml
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
+else()
+    file(DOWNLOAD
+        "https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml"
+        ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.releases.xml
+        STATUS APPSTREAM_RELEASES_STATUS
+    )
+
+    # If the download failed - generate a minimal releases document
+    list(GET APPSTREAM_RELEASES_STATUS 0 APPSTREAM_RELEASES_STATUS_CODE)
+    if(NOT APPSTREAM_RELEASES_STATUS_CODE EQUAL 0)
+        message("Generating minimal appstream releases file")
+        string(TIMESTAMP APPSTREAM_RELEASE_DATE "%Y-%m-%d")
+        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.releases.xml
+            "<releases>\n"
+            "  <release version=\"${PROJECT_VERSION}\" date=\"${APPSTREAM_RELEASE_DATE}\"/>\n"
+            "</releases>\n"
+        )
+    endif()
+
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.releases.xml
+        DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
+endif()
+
 install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/16x16/org.mozilla.vpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/16x16/apps)
 

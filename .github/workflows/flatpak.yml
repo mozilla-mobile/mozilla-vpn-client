@@ -42,10 +42,12 @@ jobs:
 
       - name: Fetch Appstream metainfo
         shell: bash
+        working-directory: src/linux/flatpak
         run: |
-          cp src/linux/extra/org.mozilla.vpn.metainfo.xml src/linux/flatpak/
-          curl -sSL -o src/linux/flatpak/org.mozilla.vpn.releases.xml \
+          cp ${{ github.workspace }}/src/linux/extra/org.mozilla.vpn.metainfo.xml .
+          curl -sSL -o org.mozilla.vpn.releases.xml \
             https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml
+          yq -yi '.modules[-1].sources += [{"type": "file", "path": "org.mozilla.vpn.releases.xml", "dest": "linux/extra"}]' org.mozilla.vpn.yml
 
       - name: Update git reference
         shell: bash
