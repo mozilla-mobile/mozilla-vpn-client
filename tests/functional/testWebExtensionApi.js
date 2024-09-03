@@ -90,6 +90,20 @@ describe('WebExtension API', function() {
        }, 500, 'VPN should still report StateOn');
        sock.destroy();
      });
+
+  it('A Webextension can get a Subset of the Featurelist', async () => {
+    const sock = await connectExtension();
+    const messagePipe = getMessageStream(sock);
+    const isProxyEnabled = await this.isFeatureEnabled('localProxy');
+
+
+    const response = readResponseOfType('featurelist', messagePipe);
+    sentToClient(new ExtensionMessage('featurelist'), sock);
+    const msg = await response;
+    assert(msg.featurelist.localProxy === isProxyEnabled);
+
+    sock.destroy();
+  });
 });
 
 }
