@@ -41,11 +41,6 @@ describe('User authentication in browser', function() {
 
   it('Completes authentication after logout', async () => {
     await vpn.authenticateInBrowser(this.ctx.wasm);
-    await vpn.waitForCondition(async () => {
-      return await vpn.getQueryProperty(
-                 queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
-    });
-    await vpn.deactivate();
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
     await vpn.waitForQueryAndClick(

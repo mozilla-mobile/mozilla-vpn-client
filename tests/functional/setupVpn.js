@@ -107,6 +107,7 @@ exports.mochaHooks = {
 
       await startAndConnect();
       await vpn.reset();
+      await vpn.setSetting('startAtBoot', false);
       await vpn.setSetting('localhostRequestsOnly', 'true');
       await vpn.authenticateInApp();
 
@@ -182,7 +183,6 @@ exports.mochaHooks = {
     // then this can fail and cause the tests to hang.
     // Logging the error lets us clean-up and move on.
     try {
-      await vpn.deactivate();
       await vpn.hardReset();
       await vpn.quit();
     } catch (error) {

@@ -5,6 +5,7 @@
 const assert = require('assert');
 const vpn = require('./helper.js');
 const queries = require('./queries.js');
+const setup = require('./setupVpn.js');
 
 describe('Connectivity', function() {
   this.ctx.authenticationNeeded = true;
@@ -56,6 +57,17 @@ describe('Connectivity', function() {
 
     assert.equal(vpn.lastNotification().title, 'VPN Connected');
     assert(vpn.lastNotification().message.startsWith('Connected through '));
+  });
+
+  it('Automatically connect when startAtBoot is active', async () => {
+    await vpn.setSetting('startAtBoot', true);
+    await vpn.quit();
+    await setup.startAndConnect();
+    await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+    await vpn.waitForCondition(async () => {
+      return await vpn.getQueryProperty(
+                 queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
+    });
   });
 
   it('Disconnecting and disconnected', async () => {
