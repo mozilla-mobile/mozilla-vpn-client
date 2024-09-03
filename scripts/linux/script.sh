@@ -183,7 +183,7 @@ build_flatpak_manifest() {
   cat << EOF >> flatpak/org.mozilla.vpn.yml
       - type: archive
         path: ../mozillavpn_$SHORTVERSION.orig.tar.gz
-        sha256: $(sha256sum ../mozillavpn_$SHORTVERSION.orig.tar.gz | awk '{print $1}')
+        sha256: $(sha256sum mozillavpn_$SHORTVERSION.orig.tar.gz | awk '{print $1}')
 EOF
 }
 
