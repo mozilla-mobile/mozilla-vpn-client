@@ -64,8 +64,8 @@ MZViewBase {
             Layout.leftMargin: MZTheme.theme.windowMargin
             showDivider: isIOS
 
-            labelText: MZI18n.TelemetryPolicyViewDataCollectionAndUse
-            subLabelText: MZI18n.SettingsDataCollectionDescription
+            labelText: MZI18n.TelemetryPolicyViewShareTechnicalData
+            subLabelText: MZI18n.SettingsShareTechnicalDataDescription
             checked: MZSettings.gleanEnabled
             dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
             onClicked: MZSettings.gleanEnabled = !MZSettings.gleanEnabled
