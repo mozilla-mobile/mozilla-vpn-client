@@ -107,6 +107,7 @@ exports.mochaHooks = {
 
       await startAndConnect();
       await vpn.reset();
+      await vpn.setSetting('startAtBoot', 'false');
       await vpn.setSetting('localhostRequestsOnly', 'true');
       await vpn.authenticateInApp();
 
@@ -139,6 +140,7 @@ exports.mochaHooks = {
       await startAndConnect();
       await vpn.gleanTestReset();
       await vpn.reset();
+      await vpn.setSetting('startAtBoot', 'false');
     }
 
     await vpn.setGleanAutomationHeader();
@@ -166,6 +168,9 @@ exports.mochaHooks = {
         const buffer = Buffer.from(data, 'base64');
         const title = this.currentTest.title.toLowerCase();
         const filename = title.replace(/[^a-z0-9]/g, '_');
+        if (!fs.existsSync(process.env.ARTIFACT_DIR)) {
+          fs.mkdirSync(process.env.ARTIFACT_DIR);
+        }
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir);
         }

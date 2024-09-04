@@ -417,7 +417,7 @@ module.exports = {
       req.on('close', resolve);
       req.on('error', error => {
         throw new Error(
-            `Unable to connect to ${urlObj.hostname} to complete the
+            `Unable to connect to complete the
             auth. ${error.name}, ${error.message}, ${error.stack}`);
       });
       req.end();

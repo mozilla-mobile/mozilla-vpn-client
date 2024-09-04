@@ -506,15 +506,21 @@ SETTING_BOOL(stagingServer,                 // getter
              false                          // sensitive (do not log)
 )
 
-SETTING_BOOL(startAtBoot,        // getter
-             setStartAtBoot,     // setter
-             removeStartAtBoot,  // remover
-             hasStartAtBoot,     // has
-             "startAtBoot",      // key
-             false,              // default value
-             false,              // remove when reset
-             false               // sensitive (do not log)
+#if defined(MZ_LINUX) || defined(MZ_WINDOWS) || defined(MZ_MACOS)
+#  define START_AT_BOOT_DEFAULT_VALUE true
+#else
+#  define START_AT_BOOT_DEFAULT_VALUE false
+#endif
+SETTING_BOOL(startAtBoot,                  // getter
+             setStartAtBoot,               // setter
+             removeStartAtBoot,            // remover
+             hasStartAtBoot,               // has
+             "startAtBoot",                // key
+             START_AT_BOOT_DEFAULT_VALUE,  // default value
+             false,                        // remove when reset
+             false                         // sensitive (do not log)
 )
+#undef START_AT_BOOT_DEFAULT_VALUE
 
 SETTING_BYTEARRAY(subscriptionData,        // getter
                   setSubscriptionData,     // setter

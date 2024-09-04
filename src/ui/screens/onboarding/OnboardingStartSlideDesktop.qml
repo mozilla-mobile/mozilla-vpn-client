@@ -38,7 +38,7 @@ ColumnLayout {
         Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
         Layout.fillWidth: true
 
-        text: MZI18n.OnboardingStartSlideBody
+        text: MZI18n.OnboardingStartSlideBody2
         horizontalAlignment: Text.AlignLeft
         color: MZTheme.theme.fontColor
     }
