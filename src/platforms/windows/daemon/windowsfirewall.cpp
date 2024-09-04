@@ -212,9 +212,8 @@ bool WindowsFirewall::enableLanBypass(const QList<IPAddress>& ranges) {
   });
 
   // Blocking unprotected traffic
-  logger.info() << "Blocking unprotected traffic";
   for (const IPAddress& prefix : ranges) {
-    if (!allowTrafficTo(prefix, MED_WEIGHT, "Allow LAN bypass traffic")) {
+    if (!allowTrafficTo(prefix, LOW_WEIGHT + 1, "Allow LAN bypass traffic")) {
       return false;
     }
   }

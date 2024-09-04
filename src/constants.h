@@ -128,7 +128,7 @@ constexpr const char* PLATFORM_NAME =
     "android"
 #elif defined(MZ_WINDOWS)
     "windows"
-#elif defined(UNIT_TEST) || defined(MZ_DUMMY)
+#elif defined(UNIT_TEST) || defined(MZ_WASM)
     "dummy"
 #else
 #  error "Unsupported platform"
@@ -299,12 +299,12 @@ constexpr const char* APPLE_STORE_URL =
     "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
 #endif
 
-// TODO: #if defined(MZ_LINUX) - but it breaks dummyvpn
+#if defined(MZ_LINUX)
 constexpr const char* LINUX_CRYPTO_SETTINGS_KEY =
     "org.mozilla.vpn.cryptosettings";
 constexpr const char* LINUX_CRYPTO_SETTINGS_DESC =
     "VPN settings encryption key";
-// TODO: #endif
+#endif
 
 constexpr const char* LINUX_APP_ID = "org.mozilla.vpn";
 

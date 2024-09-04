@@ -325,6 +325,30 @@ void Controller::handshakeTimeout() {
   serverUnavailable();
 }
 
+qint64 Controller::connectionTimestamp() const {
+  switch (m_state) {
+    case Controller::State::StateConfirming:
+      [[fallthrough]];
+    case Controller::State::StateConnecting:
+      [[fallthrough]];
+    case Controller::State::StateDisconnecting:
+      [[fallthrough]];
+    case Controller::State::StateInitializing:
+      [[fallthrough]];
+    case Controller::State::StateOff:
+      return 0;
+    case Controller::State::StateOn:
+      [[fallthrough]];
+    case Controller::State::StateOnPartial:
+      [[fallthrough]];
+    case Controller::State::StateSilentSwitching:
+      [[fallthrough]];
+    case Controller::State::StateSwitching:
+      return m_connectedTimeInUTC.toMSecsSinceEpoch();
+  }
+  Q_UNREACHABLE();
+}
+
 void Controller::serverUnavailable() {
   logger.info() << "Server Unavailable - Ping succeeded: " << m_pingReceived;
 

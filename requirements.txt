@@ -527,9 +527,9 @@ multivolumefile==0.2.3 \
     --hash=sha256:237f4353b60af1703087cf7725755a1f6fcaeeea48421e1896940cd1c920d678 \
     --hash=sha256:a0648d0aafbc96e59198d5c17e9acad7eb531abea51035d08ce8060dcad709d6
     # via py7zr
-oathtool==2.3.1 \
-    --hash=sha256:0df3f6d9bf7f712873fdf1444f33cd58a6bd5b687ed04a256abd78393acf2c25 \
-    --hash=sha256:11acec8b2b5655d5220524bbe44f5c9d63918178239cda6892c5571fcbd0f859
+oathtool==2.3.2 \
+    --hash=sha256:f115a2b82b0892589b4bc78e6a25b02996656f0a79fa3be6531ba1bfdc503b1d \
+    --hash=sha256:f902f0cf99f8860d39b26cb52d4cde04604ec79d41118b29a4c68248ac3cdc5a
     # via -r requirements.in
 patch==1.16 \
     --hash=sha256:c62073f356cff054c8ac24496f1a3d7cfa137835c31e9af39a9f5292fd75bd9f
@@ -1055,14 +1055,18 @@ texttable==1.7.0 \
     # via
     #   aqtinstall
     #   py7zr
-translate-toolkit==3.13.0 \
-    --hash=sha256:375e96e5af8a4942ed1f21ef70ae55c0435602e223eede2f0f4a14f2779e75c7 \
-    --hash=sha256:d31a1191894d0ad4ed99697663f1462e9a1820af3bbcf6848235add20cc00e62
+translate-toolkit==3.13.3 \
+    --hash=sha256:5bd73841a0ae99dbb583489879a4fa742860b3faa75ef2bb9d4f06f9e3195d75 \
+    --hash=sha256:efabe2b974243da53cfdc31082d81f536008607a4ad4e65a3098a85b44ae2d6e
     # via -r requirements.in
 urllib3==2.0.7 \
     --hash=sha256:c97dfde1f7bd43a71c8d2a58e369e9b2bf692d1334ea9f9cae55add7d0dd0f84 \
     --hash=sha256:fdb6d215c776278489906c2f8916e6e7d4f5a9b602ccbcfdf7f016fc8da0596e
     # via requests
+wcwidth==0.2.13 \
+    --hash=sha256:3da69048e4540d84af32131829ff948f1e022c1c6bdb8d6102117aac784f6859 \
+    --hash=sha256:72ea0c06399eb286d978fdedb6923a9eb47e1c486ce63e9b4e64fc18303972b5
+    # via translate-toolkit
 yamllint==1.35.1 \
     --hash=sha256:2e16e504bb129ff515b37823b472750b36b6de07963bd74b307341ef5ad8bdc3 \
     --hash=sha256:7a003809f88324fd2c877734f2d575ee7881dd9043360657cc8049c809eba6cd

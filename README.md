@@ -76,36 +76,46 @@ ctest --test-dir build -j $(nproc) --output-on-failure
 
 ### Running the functional tests
 
-**New build required**: Functional tests require a dummy build of the application, which is not
-built by default. To build the `dummyvpn` target, in the root folder of this repository run:
+To run the tests, we must set the `MVPN_BIN` environment variable and point it to the Mozilla
+VPN binary.
 
 ```
-cmake --build build -j$(nproc) --target dummyvpn
+# Linux:
+export MVPN_BIN=$(pwd)/build/mozillavpn
+# macOS:
+export MVPN_BIN=$(pwd)/build/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN
+# Others:
+export MVPN_BIN=$(pwd)/build/src/mozillavpn
 ```
 
-This will create a dummy build under the `tests/dummyvpn` folder. To run the functional
-tests against this build, make sure the `MVPN_BIN` environment variable is set:
+The functional tests also require the testing addons to be built. This sub project can be found
+at `tests/functional/addons` and can be built as follows:
 
 ```
-export MVPN_BIN=$(pwd)/build/tests/dummyvpn/dummyvpn
+cmake -B build-addons/ -S tests/functional/addons
+cmake --build build-addons/
+export MVPN_ADDONS_PATH=build-addons/
 ```
 
 **Other dependencies**:
 * Install node (if needed) and then `npm install` to install the testing
   dependencies
 * Make a .env file and place it in the root folder for the repo. It should include:
- * `MVPN_BIN` (location of compiled mvpn binary. This must be a dummy binary, see note above.)
  * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)
  * Sample .env file:
   ```
   export PATH=$PATH:~/Qt/6.6.3/macos/bin:$PATH
   export QT_MACOS_BIN=~/Qt/6.6.3/macos/bin
   MVPN_API_BASE_URL=http://localhost:5000
-  MVPN_BIN=dummybuild/src/mozillavpn
   ARTIFACT_DIR=tests/artifact
   ```
 
 **To run a test**: from the root of the project: `npm run functionalTest path/to/testFile.js`. To run, say, the authentication tests: `npm run functionalTest tests/functional/testAuthenticationInApp.js`.
+
+(Functional tests are run against the production build of the application by providing the
+`--testing` flag to the command line when running the app. This option switches the client in to staging mode, and
+enables mocking for platform and backend features necessary to facilitate automated testing.
+This flag is added automatically when setupVpn.js starts the VPN, which is done for all functional tests.)
 
 ## Developer Options and staging environment
 

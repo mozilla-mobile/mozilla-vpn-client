@@ -13,6 +13,7 @@
 #include <functional>
 
 #include "controller.h"
+#include "feature/feature.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -98,6 +99,12 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
                     obj["disabled_apps"] = apps;
                     return obj;
                   }},
+      RequestType{"featurelist",
+                  [this](const QJsonObject&) {
+                    QJsonObject obj;
+                    obj["featurelist"] = serializeFeaturelist();
+                    return obj;
+                  }},
 
       RequestType{"status",
                   [this](const QJsonObject&) {
@@ -132,7 +139,9 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
   QJsonObject obj;
   obj["authenticated"] = App::isUserAuthenticated();
   obj["location"] = locationObj;
-
+  obj["version"] = Constants::versionString();
+  obj["connectedSince"] =
+      QString::number(vpn->controller()->connectionTimestamp());
   {
     int stateValue = vpn->state();
     if (stateValue > App::StateCustom) {
@@ -184,6 +193,12 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
 #endif
 
   return obj;
+}
+
+QJsonObject WebExtensionAdapter::serializeFeaturelist() {
+  auto out = QJsonObject();
+  out["localProxy"] = Feature::get(Feature::Feature_localProxy)->isSupported();
+  return out;
 }
 
 void WebExtensionAdapter::serializeServerCountry(ServerCountryModel* model,

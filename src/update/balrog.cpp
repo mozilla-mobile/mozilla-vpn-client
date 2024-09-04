@@ -292,7 +292,8 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
     return false;
   }
 
-  QString hashValue = obj.value("hashValue").toString();
+  QString hashString = obj.value("hashValue").toString();
+  QByteArray hashValue = QByteArray::fromHex(hashString.toUtf8());
   if (hashValue.isEmpty()) {
     logger.error() << "No hashValue item";
     return false;
@@ -326,20 +327,17 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
 }
 
 bool Balrog::computeHash(const QString& url, const QByteArray& data,
-                         const QString& hashValue,
-                         const QString& hashFunction) {
+                         const QByteArray& expect, const QString& algorithm) {
   logger.debug() << "Compute the hash";
 
-  if (hashFunction != "sha512") {
+  if (algorithm != "sha512") {
     logger.error() << "Invalid hash function";
     return false;
   }
 
   QCryptographicHash hash(QCryptographicHash::Sha512);
   hash.addData(data);
-  QByteArray hashHex = hash.result().toHex();
-
-  if (hashHex != hashValue) {
+  if (hash.result() != expect) {
     logger.error() << "Hash doesn't match";
     return false;
   }

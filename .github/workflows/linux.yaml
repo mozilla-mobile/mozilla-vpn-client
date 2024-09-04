@@ -44,6 +44,7 @@ jobs:
         with:
           name: Sources
           path: .tmp
+          include-hidden-files: true
 
   flatpak:
     name: Flatpak Packages
@@ -91,7 +92,7 @@ jobs:
     needs: source-bundle
     runs-on: ubuntu-latest
     container:
-      image: fedora:39
+      image: fedora:40
 
     steps:
       - name: Download Source Package
@@ -101,6 +102,7 @@ jobs:
 
       - name: Install Build Dependencies
         run: |
+          dnf -y update
           dnf -y install rpmdevtools 'dnf-command(builddep)'
           dnf -y builddep mozillavpn.spec
 

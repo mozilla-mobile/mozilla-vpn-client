@@ -144,10 +144,25 @@ jobs:
           cache: "pip"
       - run: pip install -r requirements.txt
 
+      - name: Cache Wireguard NT
+        id: cache-wireguard-nt
+        uses: actions/cache@v4
+        with:
+          path: 3rdparty/wireguard-nt
+          key: wireguard-nt-${{ hashFiles('windows/wireguard_nt/CMakeLists.txt') }}
+
+      - name: Download Wireguard NT
+        if: steps.cache-wireguard-nt.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          WIREGUARD_NT_URL=$(grep -Eo 'DOWNLOAD[[:space:]].*' windows/wireguard_nt/CMakeLists.txt | awk '{print $2}')
+          curl -sSL -o wireguard-nt.zip $WIREGUARD_NT_URL
+          unzip -d 3rdparty/ wireguard-nt.zip
+
       - name: Building tests
         run: |
           mkdir ./build
-          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake" -DWINTUN_FOLDER="not-existing"
+          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake" -DWIREGUARD_FOLDER="3rdparty/wireguard-nt"
           cmake --build ./build --target build_tests
 
       - name: Running native messaging tests
