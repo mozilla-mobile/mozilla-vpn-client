@@ -13,15 +13,48 @@ CODESIGN_APP_IDENTIFIER="@BUILD_OSX_APP_IDENTIFIER@"
 CODESIGN_TEAM_IDENTIFIER="@BUILD_VPN_DEVELOPMENT_TEAM@"
 CODESIGN_CERT_SUBJECT="Developer ID Application: Mozilla Corporation (${CODESIGN_TEAM_IDENTIFIER})"
 
+DAEMON_PLIST_PATH="/Library/LaunchDaemons/${CODESIGN_APP_IDENTIFIER}.daemon.plist"
+
 mkdir -p $LOG_DIR
 exec 2>&1 > $LOG_DIR/postinstall.log
 
 echo "Running postinstall at $(date)"
 echo "Installing Mozilla VPN to ${APP_DIR}"
 
-DAEMON_PLIST_PATH="/Library/LaunchDaemons/${CODESIGN_APP_IDENTIFIER}.daemon.plist"
+pkill -x "Mozilla VPN" || echo "Unable to kill GUI, not running?"
+sleep 1
 
-DAEMON_PLIST=$(cat <<-EOM
+## Before MacOS 13, take extra care to prevent tampering with the app.
+echo "Restrict App file permissions..."
+chown -R root "$APP_DIR"
+chmod -R go-w "$APP_DIR"
+if [ -n "$(find "$APP_DIR" -type l)" ]; then
+  echo "Symlinks detected in application directory! Aborting."
+  rm -rf "$APP_DIR"
+  exit 1
+fi
+
+echo "Validate application codesign..."
+CODESIGN_REQS="anchor apple generic"
+CODESIGN_REQS+=" and certificate leaf[subject.OU] = \"${CODESIGN_TEAM_IDENTIFIER}\""
+CODESIGN_REQS+=" and certificate leaf[subject.CN] = \"${CODESIGN_CERT_SUBJECT}\""
+if ! codesign -v --verbose=4 -R="${CODESIGN_REQS}" "$APP_DIR"; then
+  echo "Codesign failed! Aborting."
+  rm -rf "$APP_DIR"
+  exit 1
+fi
+echo "Codesign successful!"
+
+UPDATING=
+if [ -f "$DAEMON_PLIST_PATH" ]; then
+  UPDATING=1
+  # Load the daemon
+  echo "Update detected - Unloading the Daemon"
+  launchctl unload -w $DAEMON_PLIST_PATH
+fi
+
+echo "Loading the Daemon at $DAEMON_PLIST_PATH"
+cat << EOF > $DAEMON_PLIST_PATH
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
@@ -48,38 +81,7 @@ DAEMON_PLIST=$(cat <<-EOM
                 <string>$LOG_DIR/stderr.log</string>
         </dict>
 </plist>
-EOM
-)
-
-pkill -x "Mozilla VPN" || echo "Unable to kill GUI, not running?"
-sleep 1
-
-## Before MacOS 13, take extra care to prevent tampering with the app.
-echo "Restrict App file permissions..."
-chown -R root "$APP_DIR"
-chmod -R go-w "$APP_DIR"
-
-echo "Validate application codesign..."
-CODESIGN_REQS="anchor apple generic"
-CODESIGN_REQS+=" and certificate leaf[subject.OU] = \"${CODESIGN_TEAM_IDENTIFIER}\""
-CODESIGN_REQS+=" and certificate leaf[subject.CN] = \"${CODESIGN_CERT_SUBJECT}\""
-if ! codesign -v --verbose=4 -R="${CODESIGN_REQS}" "$APP_DIR"; then
-  echo "Codesign failed! Aborting."
-  rm -rf "$APP_DIR"
-  exit 1
-fi
-echo "Codesign successful!"
-
-UPDATING=
-if [ -f "$DAEMON_PLIST_PATH" ]; then
-  UPDATING=1
-  # Load the daemon
-  echo "Update detected - Unloading the Daemon"
-  launchctl unload -w $DAEMON_PLIST_PATH
-fi
-
-echo "$DAEMON_PLIST" > $DAEMON_PLIST_PATH
-echo "Loading the Daemon at $DAEMON_PLIST_PATH"
+EOF
 launchctl load -w $DAEMON_PLIST_PATH
 
 if [ -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" ]; then
