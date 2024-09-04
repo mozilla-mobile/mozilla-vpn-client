@@ -60,6 +60,11 @@ describe('Connectivity', function() {
   });
 
   it('Automatically connect when startAtBoot is active', async () => {
+    if (this.ctx.wasm) {
+      // This test cannot run in wasm
+      return;
+    }
+
     await vpn.setSetting('startAtBoot', true);
     await vpn.quit();
     await setup.startAndConnect();
