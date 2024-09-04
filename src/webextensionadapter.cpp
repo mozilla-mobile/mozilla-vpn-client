@@ -161,8 +161,9 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
   {
     Controller::State state = vpn->controller()->state();
     if (state == Controller::StateOnPartial) {
-      state = Controller::StateOnPartial;  // Old extensions like MAC dont know and
-                                    // dont need to know about this state.
+      state =
+          Controller::StateOnPartial;  // Old extensions like MAC dont know and
+                                       // dont need to know about this state.
     }
     const QMetaObject* meta = qt_getEnumMetaObject(state);
     int index = meta->indexOfEnumerator(qt_getEnumName(state));
