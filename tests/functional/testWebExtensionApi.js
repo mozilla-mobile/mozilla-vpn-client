@@ -94,7 +94,7 @@ describe('WebExtension API', function() {
   it('A Webextension can get a Subset of the Featurelist', async () => {
     const sock = await connectExtension();
     const messagePipe = getMessageStream(sock);
-    const isProxyEnabled = await this.isFeatureEnabled('localProxy');
+    const isProxyEnabled = await vpn.isFeatureEnabled('localProxy');
 
 
     const response = readResponseOfType('featurelist', messagePipe);
