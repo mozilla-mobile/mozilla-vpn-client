@@ -38,6 +38,14 @@ if lconvert is None:
 
 parser = argparse.ArgumentParser(description="Prepare shared addon strings for translation repo")
 parser.add_argument(
+    "-i",
+    "--infile",
+    default=None,
+    dest="infile",
+    required=True,
+    help="File for input, including .yaml extension"
+)
+parser.add_argument(
     "-o",
     "--outfile",
     default=None,
@@ -49,9 +57,7 @@ args = parser.parse_args()
 
 print("Preparing the addons shared string file")
 print("First, pull in the strings from the YAML file")
-addons_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../addons")
-strings_file = os.path.normpath(os.path.join(addons_dir, "strings.yaml"))
-translation_strings = parseYAMLTranslationStrings(strings_file)
+translation_strings = parseYAMLTranslationStrings(args.infile)
 translation_strings = prune_lists_to_strings(translation_strings)
 
 print("Then, write the strings to a .ts file")

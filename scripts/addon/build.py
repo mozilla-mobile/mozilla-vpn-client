@@ -212,7 +212,8 @@ def retrieve_legacy_strings_message(message_json, filename):
 def retrieve_shared_strings_message(message_json, filename):
     message_strings = {}
 
-    addons_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../addons")
+    # Manifest file is one level up from the main `addons` directory.
+    addons_dir = os.path.join(os.path.dirname(os.path.abspath(filename)), "../")
     strings_file = os.path.normpath(os.path.join(addons_dir, "strings.yaml"))
     json_translations = parseYAMLTranslationStrings(strings_file)
 
