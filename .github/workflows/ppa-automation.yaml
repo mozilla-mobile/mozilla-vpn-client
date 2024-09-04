@@ -117,3 +117,4 @@ jobs:
         with:
           name: Sources
           path: .tmp
+          include-hidden-files: true
