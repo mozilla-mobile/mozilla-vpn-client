@@ -1,6 +1,6 @@
 app-id: org.mozilla.vpn
 runtime: org.kde.Platform
-runtime-version: '6.5'
+runtime-version: '6.6'
 sdk: org.kde.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -15,9 +15,9 @@ build-options:
   append-path: "/usr/lib/sdk/rust-stable/bin"
   env:
     - CARGO_HOME=/run/build/rust-flatpak/cargo
-
 modules:
-  - flatpak-pydeps.yaml
+  - flatpak-rpds.yaml
+  - flatpak-glean-parser.yaml
   - flatpak-libnm.yaml
   - flatpak-qt5compat.yaml
 
@@ -27,5 +27,13 @@ modules:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
       - -DBUILD_FLATPAK=ON
     sources:
-      - type: dir
-        path: ..
+      - type: git
+        url: https://github.com/mozilla-mobile/mozilla-vpn-client
+        branch: main
+
+      # Install vendored Rust crates
+      - flatpak-vpn-crates.json
+      - type: shell
+        commands:
+          - mkdir .cargo
+          - cp cargo/config .cargo/config.toml

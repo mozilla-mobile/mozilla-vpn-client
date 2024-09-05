@@ -4,8 +4,8 @@ build-commands: []
 buildsystem: simple
 modules:
   - name: libqt6core5compat6
-    buildsystem: cmake
+    buildsystem: cmake-ninja
     sources:
       - type: git
-        tag: v6.5.2
+        tag: v6.6.3
         url: https://github.com/qt/qt5compat
