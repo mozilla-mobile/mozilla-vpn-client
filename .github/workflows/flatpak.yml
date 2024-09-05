@@ -23,7 +23,7 @@ jobs:
         with:
           path: src
           sparse-checkout: |
-            linux/
+            linux/flatpak/
             Cargo.lock
 
       - name: Checkout tools
@@ -40,22 +40,21 @@ jobs:
         shell: bash
         run: src/linux/flatpak/flatpak-update-crates.sh src/Cargo.lock
 
-      - name: Fetch Appstream metainfo
+      - name: Add Appstream metainfo
         shell: bash
         working-directory: src/linux/flatpak
         run: |
-          cp ${{ github.workspace }}/src/linux/extra/org.mozilla.vpn.metainfo.xml .
           curl -sSL -o org.mozilla.vpn.releases.xml \
             https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml
-          yq -yi '.modules[-1].sources += [{"type": "file", "path": "org.mozilla.vpn.releases.xml", "dest": "linux/extra"}]' org.mozilla.vpn.yml
+          python -m yq -yi '.modules += ["mozillavpn-metainfo.yaml"]' org.mozilla.vpn.yml
 
       - name: Update git reference
         shell: bash
         working-directory: src/linux/flatpak
         run: |
-          yq -yi 'del(.modules[-1].sources[0].branch)' org.mozilla.vpn.yml
-          yq -yi ".modules[-1].sources[0].url = \"https://github.com/${{ github.repository }}\"" org.mozilla.vpn.yml
-          yq -yi ".modules[-1].sources[0].commit = \"${{ github.sha }}\"" org.mozilla.vpn.yml
+          python -m yq -yi 'del(.modules[-1].sources[0].branch)' org.mozilla.vpn.yml
+          python -m yq -yi ".modules[-1].sources[0].url = \"https://github.com/${{ github.repository }}\"" org.mozilla.vpn.yml
+          python -m yq -yi ".modules[-1].sources[0].commit = \"${{ github.sha }}\"" org.mozilla.vpn.yml
           cat org.mozilla.vpn.yml
 
       - name: Upload manifest

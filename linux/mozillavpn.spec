@@ -69,5 +69,3 @@ install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 %{_datadir}/icons/hicolor/32x32/apps/org.mozilla.vpn.png
 %{_datadir}/icons/hicolor/48x48/apps/org.mozilla.vpn.png
 %{_datadir}/icons/hicolor/64x64/apps/org.mozilla.vpn.png
-%{_datadir}/metainfo/org.mozilla.vpn.metainfo.xml
-%{_datadir}/metainfo/org.mozilla.vpn.releases.xml
