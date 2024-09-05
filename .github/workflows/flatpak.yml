@@ -40,14 +40,6 @@ jobs:
         shell: bash
         run: src/linux/flatpak/flatpak-update-crates.sh src/Cargo.lock
 
-      - name: Add Appstream metainfo
-        shell: bash
-        working-directory: src/linux/flatpak
-        run: |
-          curl -sSL -o org.mozilla.vpn.releases.xml \
-            https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml
-          python -m yq -yi '.modules += ["mozillavpn-metainfo.yaml"]' org.mozilla.vpn.yml
-
       - name: Update git reference
         shell: bash
         working-directory: src/linux/flatpak
@@ -56,6 +48,14 @@ jobs:
           python -m yq -yi ".modules[-1].sources[0].url = \"https://github.com/${{ github.repository }}\"" org.mozilla.vpn.yml
           python -m yq -yi ".modules[-1].sources[0].commit = \"${{ github.sha }}\"" org.mozilla.vpn.yml
           cat org.mozilla.vpn.yml
+
+      - name: Add Appstream metainfo
+        shell: bash
+        working-directory: src/linux/flatpak
+        run: |
+          curl -sSL -o org.mozilla.vpn.releases.xml \
+            https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml
+          python -m yq -yi '.modules += ["mozillavpn-appstream.yaml"]' org.mozilla.vpn.yml
 
       - name: Upload manifest
         uses: actions/upload-artifact@v4
