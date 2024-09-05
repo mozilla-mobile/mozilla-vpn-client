@@ -39,7 +39,7 @@ jobs:
           GITREF: ${{github.ref}}
         run: |
           git clone --depth 1 -b ubuntu/devel git://git.launchpad.net/ubuntu/+source/distro-info-data
-          echo -n "releases" >> $GITHUB_OUTPUT
+          echo -n "releases=" >> $GITHUB_OUTPUT
           tail -n+2 distro-info-data/ubuntu.csv | while read -r line; do
             IFS=',' read -ra data <<< "$line"
             now=$(date +%s)
