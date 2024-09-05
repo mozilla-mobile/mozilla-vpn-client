@@ -1,0 +1,4 @@
+Package: mozillavpn
+Pin: origin packages.mozilla.org
+Pin-Priority: 100
+

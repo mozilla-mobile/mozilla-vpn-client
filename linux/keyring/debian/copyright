@@ -1,0 +1,15 @@
+Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
+Upstream-Name: mozillavpn 
+Upstream-Contact: vpn@mozilla.com
+Source: https://vpn.mozilla.org
+
+Files: *
+Copyright: 2024 Mozilla Corporation
+License: MPL-2.0
+
+License: MPL-2.0
+ Unless otherwise specified below, all files in the Mozilla VPN project are
+ licensed under the Mozilla Public License version 2.0 (*MPL2*), with copyright
+ belonging to the Mozilla Foundation.  The full text of the MPL is [available on
+ Mozilla's website.] (https://www.mozilla.org/en-US/MPL/2.0/) and a copy is
+ provided below.
