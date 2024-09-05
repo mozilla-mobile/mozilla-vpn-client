@@ -40,7 +40,7 @@ def parse_control(filename):
             if restart.match(line):
                 section, text = line.split(':', 1)
                 section = convert_case(section)
-                contents[section] = text
+                contents[section] = text.lstrip()
             elif section is not None:
                 contents[section] = contents[section] + '\n' + line
 
@@ -70,17 +70,11 @@ if __name__ == "__main__":
     with tempfile.TemporaryDirectory() as tempdir:
         # Unpack the Debian package.
         archivedir = os.path.join(tempdir, 'archive')
-        os.mkdir(archivedir)
-        subprocess.check_call(['ar', 'x', f'--output={archivedir}', args.filename])
-
-        # Unpack the control files.
-        # TODO: Support other compression algorithms besides gzip?
-        controldir = os.path.join(tempdir, 'control')
-        os.mkdir(controldir)
-        subprocess.check_call(['tar', '-C', controldir, '-xf', os.path.join(archivedir, 'control.tar.gz')])
+        subprocess.check_call(['dpkg-deb', '-R', args.filename, archivedir])
 
         # Parse the control file
-        contents = parse_control(os.path.join(controldir, 'control'))
+        controlfile = os.path.join(archivedir, 'DEBIAN', 'control')
+        contents = parse_control(controlfile)
 
         # Set/update extra values in the control file
         for keyval in args.set:
@@ -90,10 +84,9 @@ if __name__ == "__main__":
         # Ensure the 'Description' always goes last and then write the updated control file.
         contents.move_to_end('Description')
         write_control(contents, file=sys.stderr)
-        with open(os.path.join(controldir, 'control'), 'w') as fp:
+        with open(controlfile, 'w') as fp:
             write_control(contents, file=fp)
 
         # Repack the Debian package files.
         print(f"Writing updated package to {os.path.abspath(args.output)}", file=sys.stderr)
-        subprocess.check_call(['tar', '-C', controldir, '-cf', os.path.join(archivedir, 'control.tar.gz')] + os.listdir(controldir))
-        subprocess.check_call(['ar', 'ru', os.path.abspath(args.output)] + os.listdir(archivedir), cwd=archivedir)
+        subprocess.check_call(['dpkg-deb', '-Zgzip', '-b', archivedir, args.output])
