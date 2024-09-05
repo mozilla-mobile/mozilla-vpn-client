@@ -7,6 +7,12 @@ $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/"
 
+# Install Miniconda
+New-Item -ItemType Directory -Force -Path "$TASK_WORKDIR/conda"
+$CONDA_DIR =resolve-path "$TASK_WORKDIR/conda"
+Start-Process "$FETCHES_PATH/miniconda_installer.exe" -Wait -ArgumentList @('/S',"/D=$CONDA_DIR")
+. "$CONDA_DIR/shell/condabin/conda-hook.ps1"
+
 # Prep Env:
 # Switch to the work dir, configure qt
 Set-Location -Path $TASK_WORKDIR
@@ -39,25 +45,8 @@ $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 
 
 ## Setup the conda environment
-. $SOURCE_DIR/scripts/utils/call_bat.ps1  $FETCHES_PATH/Scripts/activate.bat
+conda activate $FETCHES_PATH
 conda-unpack
-
-# Conda Pack excpets to be run under cmd. therefore it will
-# (unlike conda) ignore activate.d powershell scripts.
-# So let's manually run the activation scripts.
-#
-$CONDA_PREFIX = $env:CONDA_PREFIX
-
-$ACTIVATION_SCRIPTS = Get-ChildItem -Path "$CONDA_PREFIX\etc\conda\activate.d" -Filter "*.ps1"
-foreach ($script in  $ACTIVATION_SCRIPTS)  {
-    Write-Output "Activating: $CONDA_PREFIX\etc\conda\activate.d\$script"
-    . "$CONDA_PREFIX\etc\conda\activate.d\$script"
-}
-# This is a wierd bug `PREFIX/bin` does not seem to be on the PATH
-# when we run the activate.bat :shrugs:
-# This will cause go to be missing.
-$env:PATH="$CONDA_PREFIX\bin;$env:Path"
-gci env:* | sort-object name
 
 
 # Okay We are ready to build!
