@@ -13,6 +13,11 @@ Set-Location -Path $TASK_WORKDIR
 . "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
 
 
+# Ensure we are working from a full checkout of all submodules. Taskcluster
+# doesn't handle recursive submodules, so we'll need to do it ourselves.
+git -C "$REPO_ROOT_PATH" submodule update --init --recursive
+
+
 # We have not yet removed our VC_Redist strategy. Therefore we rely on the old vsstudio bundle to get us that :)
 # TODO: We need to handle this at some point.
 $env:VCToolsRedistDir=(resolve-path "$FETCHES_PATH/VisualStudio/VC/Redist/MSVC/14.30.30704/").ToString()
@@ -42,9 +47,6 @@ directory = "$CARGO_VENDOR_PATH"
 [source.crates-io]
 replace-with = "vendored-sources"
 "@ | Out-File -Encoding utf8 $REPO_ROOT_PATH\.cargo\config.toml
-
-# And a little debug to be sure.
-Get-Content $REPO_ROOT_PATH\.cargo\config.toml
 }
 
 
