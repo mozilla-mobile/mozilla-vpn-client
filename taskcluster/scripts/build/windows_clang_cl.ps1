@@ -33,10 +33,11 @@ if (Test-Path -Path $SSL_PATH) {
 
 ## Use vendored rust crates, if present
 if (Test-Path -Path "$FETCHES_PATH\cargo-vendor") {
+    $CARGO_VENDOR_PATH = "$FETCHES_PATH/cargo-vendor" -replace @('\\', '/')
     New-Item -Path "$REPO_ROOT_PATH\.cargo" -ItemType "directory"
 @"
 [source.vendored-sources]
-directory = "$FETCHES_PATH\cargo-vendor"
+directory = "$CARGO_VENDOR_PATH"
 
 [source.crates-io]
 replace-with = "vendored-sources"
