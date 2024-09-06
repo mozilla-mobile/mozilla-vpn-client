@@ -6,6 +6,8 @@ cargo-vendor:
     description: "Vendored Rust Crates"
     worker-type: b-linux
     worker:
+        env:
+            FOO: bar    # Bug: taskcluster fails if there is no env key?
         max-run-time: 3600
         docker-image: {in-tree: build}
     treeherder:
