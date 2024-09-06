@@ -45,7 +45,7 @@ $SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
 
 
 ## Setup the conda environment
-$FETCHES_PATH/Scripts/conda-unpack
+Start-Process "$FETCHES_PATH/Scripts/conda-unpack" -Wait
 conda activate $FETCHES_PATH
 conda info
 
