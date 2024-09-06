@@ -31,15 +31,24 @@ if (Test-Path -Path $SSL_PATH) {
 }
 
 
-# Extract the sources
-$SOURCE_DSC = resolve-path "$FETCHES_PATH/mozillavpn_*.dsc"
-$SOURCE_VERSION = ((select-string $SOURCE_DSC -Pattern '^Version:') -split " ")[1]
-tar -xzvf (resolve-path "$FETCHES_PATH/mozillavpn_$SOURCE_VERSION.orig.tar.gz" -Relative)
-$SOURCE_DIR = resolve-path "$TASK_WORKDIR/mozillavpn-$SOURCE_VERSION"
+## Use vendored rust crates, if present
+if (Test-Path -Path "$FETCHES_PATH\cargo-vendor") {
+    New-Item -Path "$REPO_ROOT_PATH\.cargo" -ItemType "directory"
+@"
+[source.vendored-sources]
+directory = "$FETCHES_PATH\cargo-vendor"
+
+[source.crates-io]
+replace-with = "vendored-sources"
+"@ | Out-File -Encoding utf8 $REPO_ROOT_PATH\.cargo\config.toml
+
+# And a little debug to be sure.
+Get-Content $REPO_ROOT_PATH\.cargo\config.toml
+}
 
 
 ## Setup the conda environment
-. $SOURCE_DIR/scripts/utils/call_bat.ps1  $FETCHES_PATH/Scripts/activate.bat
+. $REPO_ROOT_PATH/scripts/utils/call_bat.ps1  $FETCHES_PATH/Scripts/activate.bat
 conda-unpack
 
 # Conda Pack excpets to be run under cmd. therefore it will
@@ -65,7 +74,7 @@ mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 
 # Do the generic build
-cmake -S $SOURCE_DIR -B $BUILD_DIR -GNinja `
+cmake -S $REPO_ROOT_PATH -B $BUILD_DIR -GNinja `
         -DCMAKE_BUILD_TYPE=Release `
         -DPYTHON_EXECUTABLE="$CONDA_PREFIX\python.exe" `
         -DGOLANG_BUILD_TOOL="$CONDA_PREFIX\bin\go.exe" `
@@ -91,7 +100,7 @@ Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
 
 Get-command python
-python  $SOURCE_DIR/taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
+python  $REPO_ROOT_PATH/taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
 $env:SENTRY_AUTH_TOKEN=$(Get-Content sentry_debug_file_upload_key)
 # Are we logged in?
 sentry-cli-Windows-x86_64.exe info

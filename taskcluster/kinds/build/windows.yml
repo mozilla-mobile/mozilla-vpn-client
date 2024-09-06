@@ -19,9 +19,8 @@ task-defaults:
             - win-conda
             - wireguard-nt
         toolchain:
+            - cargo-vendor
             - conda-windows-x86_64
-        build:
-            - artifact: mozillavpn-sources.tar.gz
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
