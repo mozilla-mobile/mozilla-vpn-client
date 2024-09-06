@@ -14,6 +14,9 @@ if(DEFINED ENV{CONDA_PREFIX})
     if(NOT CMAKE_MT)
         find_program(CMAKE_MT NAMES llvm-mt REQUIRED DOC "LLVM Manifest Tool")
     endif()
+    if(NOT PYTHON_EXECUTABLE)
+        find_program(PYTHON_EXECUTABLE PATHS "$ENV{CONDA_PREFIX}" NAMES python REQUIRED DOC "Python Interpreter (Conda)")
+    endif()
 
     # Clear Conda's attempts to enforce optimization. It breaks on an MSVC-style compiler.
     set(ENV{AR})
