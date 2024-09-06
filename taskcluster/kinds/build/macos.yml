@@ -13,6 +13,7 @@ task-defaults:
     worker-type: b-macos
     fetches:
         toolchain:
+            - cargo-vendor
             - conda-macos
     worker:
         taskcluster-proxy: true

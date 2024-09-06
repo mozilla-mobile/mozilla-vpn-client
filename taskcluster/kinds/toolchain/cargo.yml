@@ -1,0 +1,18 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+cargo-vendor:
+    description: "Vendored Rust Crates"
+    worker-type: b-linux
+    worker:
+        max-run-time: 3600
+        docker-image: {in-tree: build}
+    treeherder:
+        symbol: TL(cargo-vendor)
+    run:
+        script: cargo_vendor_crates.sh
+        resources:
+            - Cargo.lock
+        toolchain-alias: cargo-vendor
+        toolchain-artifact: public/build/cargo-vendor.tar.xz
