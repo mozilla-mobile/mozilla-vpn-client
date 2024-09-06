@@ -10,7 +10,6 @@ task-defaults:
     run:
         resources:
             - requirements.txt
-            - env-windows.yml
 
 windows-conda-pack: 
         fetches:
@@ -19,6 +18,7 @@ windows-conda-pack:
         run:
             script: conda_pack_windows.ps1
             resources:
+                - env-windows.yml
                 - scripts/windows/conda_setup_win_qt.ps1
                 - scripts/windows/conda_setup_win_sdk.ps1
             toolchain-alias: conda-windows-x86_64

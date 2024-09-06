@@ -22,7 +22,7 @@ Write-Output("Downloading x-win")
 Invoke-WebRequest -Uri "https://github.com/Jake-Shadle/xwin/releases/download/$X_WIN_VERSION/xwin-$X_WIN_VERSION-x86_64-pc-windows-msvc.tar.gz" -OutFile "$conda_folder\xwin.tar.gz"  
 $ProgressPreference = 'Continue'
 Write-Output("Unpack x-win")
-tar -C "$conda_folder" -xf "$conda_folder\xwin.tar.gz"
+Start-Process -WorkingDirectory "$conda_folder" -Wait tar -ArgumentList @('-xf', "xwin.tar.gz")
 Remove-Item "$conda_folder\xwin.tar.gz" -ErrorAction SilentlyContinue -Force -Recurse
 
 # Splat the CRT and SDK files to /xwin/crt and /xwin/sdk respectively
