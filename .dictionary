@@ -238,6 +238,7 @@ settingHolder
 setupVpn
 shader
 shaders
+shortVersion
 sig
 signup
 src
@@ -259,6 +260,7 @@ unenrolled
 uniffi
 uploader
 urls
+usesSharedStrings
 utils
 uuid
 vm

@@ -55,7 +55,6 @@ jobs:
           cp -r ./build/cmake/src/Mozilla\ VPN.app/ build/Mozilla\ VPN.app
 
       - name: Compile test addons
-        shell: bash
         run: |
           mkdir -p build/addons
           cmake -S $(pwd)/tests/functional/addons -B build/addons \
