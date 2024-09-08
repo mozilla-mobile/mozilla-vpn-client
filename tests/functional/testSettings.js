@@ -359,6 +359,14 @@ describe('Settings', function() {
       await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.APP_PREFERENCES.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
       await vpn.waitForQuery(
           queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
               .visible()
@@ -407,6 +415,14 @@ describe('Settings', function() {
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
       await vpn.waitForQueryAndClick(
+          queries.screenSettings.APP_PREFERENCES.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+      await vpn.waitForQueryAndClick(
           queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
               .visible()
               .prop('checked', false));
@@ -426,6 +442,16 @@ describe('Settings', function() {
 
       await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.APP_PREFERENCES.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
 
       await vpn.waitForQuery(
           queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
