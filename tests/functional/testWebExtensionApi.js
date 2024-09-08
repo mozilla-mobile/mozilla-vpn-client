@@ -38,7 +38,7 @@ describe('WebExtension API', function() {
     await vpn.waitForCondition(async () => {
       sentToClient(new ExtensionMessage('status'), sock);
       const msg = await readResponseOfType('status', messagePipe);
-      return msg.status.vpn === 'StateOn';
+      return msg.status.vpn === 'StateOnPartial';
     });
     const currentstate =
         await vpn.getMozillaProperty('Mozilla.VPN', 'VPNController', 'state');
@@ -53,7 +53,7 @@ describe('WebExtension API', function() {
     await vpn.waitForCondition(async () => {
       sentToClient(new ExtensionMessage('status'), sock);
       const msg = await readResponseOfType('status', messagePipe);
-      return msg.status.vpn === 'StateOn';
+      return msg.status.vpn === 'StateOnPartial';
     });
     sentToClient(new ExtensionMessage('deactivate'), sock);
     await vpn.waitForCondition(async () => {
