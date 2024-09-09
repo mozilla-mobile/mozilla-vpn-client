@@ -160,11 +160,11 @@ namespace Timers {
 #endif
 using namespace std::chrono_literals;
 // How often we check for updates
-TIMEREXPR(releaseMonitor, 6h, 4s, 0s)
+TIMEREXPR(releaseMonitor, 6h, 30s, 0s)
 // How often should we do periodic things (i.e update Serverlist)
 TIMEREXPR(schedulePeriodicTask, 60min, 5min, 0ms)
 // How often we should check for a Captive portal
-TIMEREXPR(captivePortalRequest, 10s, 4s, 0ms)
+TIMEREXPR(captivePortalRequest, 10s, 30s, 0ms)
 // How fast the animated icon should move
 TIMEREXPR(statusIconAnimation, 200ms, 200ms, 0ms)
 // How often glean pings are sent
