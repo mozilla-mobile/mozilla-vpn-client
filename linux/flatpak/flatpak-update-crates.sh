@@ -42,13 +42,15 @@ EOF
 # Grab the latest flatpak builder tools
 curl -sSL https://github.com/flatpak/flatpak-builder-tools/raw/master/cargo/flatpak-cargo-generator.py -o $TMPDIR/flatpak-cargo-generator.py
 
-if [ $# -ge 2 ]; then
+if [ $# -ge 1 ]; then
   # The caller can provide a Cargo.lock file as an argument
+  echo "Generating dependencies from $1" >&2
   CARGO_LOCK_FILE=$1
 else
   # Otherwise - we need to download the Cargo.lock from the source
   CARGO_LOCK_URL=$(parse_cargo_url ${SRCDIR}/org.mozilla.vpn.yml)
   CARGO_LOCK_FILE=$TMPDIR/Cargo.lock
+  echo "Generating dependencies from $CARGO_LOCK_URL" >&2
   curl -sSL $CARGO_LOCK_URL -o $CARGO_LOCK_FILE
 fi
 
