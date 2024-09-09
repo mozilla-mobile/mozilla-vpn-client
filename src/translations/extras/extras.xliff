@@ -513,6 +513,12 @@
       <trans-unit id="servers.Istanbul" xml:space="preserve">
         <source>Istanbul</source>
       </trans-unit>
+      <trans-unit id="servers.pe" xml:space="preserve">
+        <source>Peru</source>
+      </trans-unit>
+      <trans-unit id="servers.Lima" xml:space="preserve">
+        <source>Lima</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
