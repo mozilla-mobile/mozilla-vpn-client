@@ -28,7 +28,7 @@ describe('WebExtension API', function() {
     sentToClient(new ExtensionMessage('status'), sock);
     const msg = await statusPromise
     assert(msg.status.version, `A Version is sent in msg: ${JSON.stringify(msg)}` )
-    assert(msg.status.connectionHealth, `The current Connection Health status is sent in msg: ${JSON.stringify(connectionHealth)}` )
+    assert(msg.status.connectionHealth, `The current Connection Health status is sent in msg: ${JSON.stringify(msg)}` )
     sock.destroy();
   });
   it('A Webextension can activate the VPN', async () => {
