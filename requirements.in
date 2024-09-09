@@ -1,9 +1,8 @@
+aqtinstall==3.1.15
 glean-parser==13.0.0
 oathtool==2.3.2
 pyrsistent==0.20.0
 yamllint==1.35.1
-aqtinstall==3.1.15
-translate-toolkit==3.13.*
 
 # Windows-only dependency included via glean-parser.
 # Dependabot misses this, so let's make it explict.
