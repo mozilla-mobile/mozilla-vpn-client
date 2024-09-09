@@ -176,7 +176,7 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
     }
   }
   obj["vpn"] = asString(vpn->controller()->state());
-  obj["connectionHealth"] = vpn->connectionHealth()->stability();
+  obj["connectionHealth"] = asString(vpn->connectionHealth()->stability());
 #if defined MZ_PROXY_ENABLED
   {
     auto* proxyController = vpn->proxyController();
