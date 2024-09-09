@@ -111,7 +111,7 @@ describe('WebExtension API', function() {
     const statusPromise = readResponseOfType('status', messagePipe);
     await vpn.forceConnectionStabilityStatus("unstable");
     const msg = await statusPromise
-    assert(msg.status.connectionHealth === "unstable", "The extension was notified of the instability")
+    assert(msg.status.connectionHealth === "unstable", "The extension was notified of the instability: "+ msg.status.connectionHealth)
     sock.destroy();
   });
 });
