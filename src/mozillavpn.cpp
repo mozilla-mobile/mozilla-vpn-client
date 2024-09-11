@@ -767,6 +767,8 @@ void MozillaVPN::logout() {
 
   ErrorHandler::instance()->requestAlert(ErrorHandler::LogoutAlert);
 
+  deactivate();
+
   TaskScheduler::deleteTasks();
 
   // Schedule the removal of our device and let it run in the background.

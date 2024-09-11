@@ -31,6 +31,6 @@ MZFooterLink {
 
     onClicked: () => {
         preLogoutCallback();
-        VPNController.logout();
+        VPN.logout();
     }
 }

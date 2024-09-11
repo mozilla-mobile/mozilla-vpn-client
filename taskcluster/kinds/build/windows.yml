@@ -10,8 +10,6 @@ task-defaults:
         tier: 1
         platform: windows/x86_64
     worker-type: b-win2022
-    dependencies:
-        build: build-source/vpn
     fetches:
         fetch:
             - win-dev-env
@@ -19,9 +17,8 @@ task-defaults:
             - win-conda
             - wireguard-nt
         toolchain:
+            - cargo-vendor
             - conda-windows-x86_64
-        build:
-            - artifact: mozillavpn-sources.tar.gz
     worker:
         taskcluster-proxy: true
         chain-of-trust: true

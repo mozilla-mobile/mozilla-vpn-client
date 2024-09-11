@@ -28,3 +28,4 @@ tasks-from:
     - conda_android.yml
     - conda_windows.yml
     - conda_osx.yml
+    - cargo.yml
