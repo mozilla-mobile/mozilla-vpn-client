@@ -39,8 +39,6 @@ void Controller::disconnected() {}
 
 void Controller::timerTimeout() {}
 
-void Controller::logout() {}
-
 bool Controller::processNextStep() { return false; }
 
 void Controller::setState(State) {}
