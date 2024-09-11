@@ -26,4 +26,3 @@ tasks-from:
     - wasm.yml
     - ios.yml
     - addons.yml
-    - flatpak.yml
