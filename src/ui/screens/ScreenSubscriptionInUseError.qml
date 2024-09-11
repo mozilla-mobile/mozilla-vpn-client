@@ -27,7 +27,7 @@ MZStackView {
            primaryButtonText: MZI18n.GlobalSignOut,
            primaryButtonObjectName: "errorSignOutButton",
            primaryButtonOnClick: () => {
-               VPNController.logout();
+               VPN.logout();
                stackView.pop();
            },
            secondaryButtonIsSignOff: false,

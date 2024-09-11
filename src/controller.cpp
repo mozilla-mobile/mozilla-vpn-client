@@ -372,23 +372,6 @@ void Controller::updateRequired() {
   }
 }
 
-void Controller::logout() {
-  logger.debug() << "Logout";
-
-  MozillaVPN::instance()->logout();
-
-  if (m_state == StateOff) {
-    return;
-  }
-
-  m_nextStep = Disconnect;
-
-  if (m_state == StateOn || m_state == StateOnPartial) {
-    deactivate();
-    return;
-  }
-}
-
 void Controller::activateInternal(
     DNSPortPolicy dnsPort,
     ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection,
