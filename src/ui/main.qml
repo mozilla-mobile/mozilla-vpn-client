@@ -155,7 +155,7 @@ Window {
     Connections {
         target: VPN
         function onAccountDeleted() {
-            VPNController.logout();
+            VPN.logout();
         }
     }
 

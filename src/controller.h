@@ -83,7 +83,6 @@ class Controller : public QObject, public LogSerializer {
 
   int connectionRetry() const { return m_connectionRetry; }
   State state() const;
-  Q_INVOKABLE void logout();
   bool silentServerSwitchingSupported() const;
   void cleanupBackendLogs();
 
