@@ -73,6 +73,18 @@ then
     npm install -g @sentry/cli
 fi
 
+# Use vendored crates - if available.
+if [ -d ${MOZ_FETCHES_DIR}/cargo-vendor ]; then
+mkdir -p .cargo
+cat << EOF > .cargo/config.toml
+[source.vendored-sources]
+directory = "${MOZ_FETCHES_DIR}/cargo-vendor"
+
+[source.crates-io]
+replace-with = "vendored-sources"
+EOF
+fi
+
 print Y "Configuring the build..."
 if [ -d ${TASK_HOME}/build ]; then
     echo "Found old build-folder, weird!"

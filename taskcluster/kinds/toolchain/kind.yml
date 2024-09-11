@@ -29,3 +29,4 @@ tasks-from:
     - conda_windows.yml
     - conda_osx.yml
     - flatpak.yml
+    - cargo.yml
