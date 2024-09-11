@@ -167,7 +167,7 @@ class MozillaVPN final : public App {
 
   Q_INVOKABLE void silentSwitch();
 
-  void logout();
+  Q_INVOKABLE void logout();
 
   bool startMinimized() const { return m_startMinimized; }
 
