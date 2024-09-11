@@ -38,6 +38,69 @@ function(get_rust_library_filename SHARED CRATE_NAME)
     endif()
 endfunction()
 
+function(write_cargo_target_stanza FILENAME ARCH)
+    file(APPEND ${FILENAME} "[target.${ARCH}]\n")
+    file(APPEND ${FILENAME} "linker = \"${CMAKE_LINKER}\"\n")
+    file(APPEND ${FILENAME} "cc = \"${CMAKE_C_COMPILER}\"\n")
+    file(APPEND ${FILENAME} "\n")
+endfunction()
+
+### Helper function to generate a cargo configuration file.
+#
+# Accepts the following arguments:
+#   HOME: Cargo home directory to be passed as CARGO_HOME
+#   VENDOR: Directory in which Rust crates are vendored.
+#
+function(make_cargo_config)
+    cmake_parse_arguments(CARGO_CONFIG
+        ""
+        "HOME;VENDOR"
+        ""
+        ${ARGN})
+
+    if(NOT CARGO_CONFIG_HOME)
+        set(CARGO_CONFIG_HOME ${CMAKE_BINARY_DIR}/cargo_home)
+    endif()
+    file(MAKE_DIRECTORY ${CARGO_CONFIG_HOME})
+    set(CARGO_CONFIG_FILE ${CARGO_CONFIG_HOME}/config.toml)
+    file(WRITE ${CARGO_CONFIG_HOME}/config.toml "")
+
+    # If a vendor directory has been specified, and exists, add it to the config.
+    if(EXISTS ${CARGO_CONFIG_VENDOR})
+        file(TO_NATIVE_PATH "${CARGO_CONFIG_VENDOR}" CARGO_VENDOR_NATIVE_PATH)
+        file(APPEND ${CARGO_CONFIG_FILE}
+            "[source.vendored-sources]\n"
+            "directory = \"${CARGO_VENDOR_NATIVE_PATH}\"\n\n"
+            "[source.crates-io]\n"
+            "replace-with = \"vendored-sources\"\n"
+            "\n"
+        )
+    endif()
+
+    # Instruct cargo to use CMake's C/C++ toolchain.
+    if(APPLE)
+        # All apple targets should be supported by the unversal compiler
+        write_cargo_target_stanza(${CARGO_CONFIG_FILE} "aarch64-apple-darwin")
+        write_cargo_target_stanza(${CARGO_CONFIG_FILE} "x86_64-apple-darwin")
+        write_cargo_target_stanza(${CARGO_CONFIG_FILE} "aarch64-apple-ios")
+        write_cargo_target_stanza(${CARGO_CONFIG_FILE} "aarch64-apple-ios-sim")
+        write_cargo_target_stanza(${CARGO_CONFIG_FILE} "x86_64-apple-ios")
+    elif(MSVC)
+        write_cargo_target_stanza(${CARGO_CONFIG_FILE} "x86_64-pc-windows-msvc")
+    elif(ANDROID)
+        if (CMAKE_ANDROID_ARCH STREQUAL "arm")
+            set(ANDROID_RUST_ARCH "armv7-linux-androideabi")
+        else()
+            set(ANDROID_RUST_ARCH "${CMAKE_SYSTEM_PROCESSOR}-linux-android")
+        endif()
+        write_cargo_target_stanza(${CARGO_CONFIG_FILE} ${ANDROID_RUST_ARCH})
+    else()
+        # All other platforms
+        write_cargo_target_stanza(${CARGO_CONFIG_FILE} ${RUSTC_HOST_ARCH})
+    endif()
+endfunction()
+
+
 ### Helper function to build Rust static libraries.
 #
 # Accepts the following arguments:
@@ -63,9 +126,6 @@ function(build_rust_archives)
         "ARCH;BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
         "CARGO_ENV;SHARED;FW_NAME"
         ${ARGN})
-
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
-    list(APPEND RUST_BUILD_CARGO_ENV CARGO_HOME=\"${CMAKE_BINARY_DIR}/cargo_home\")
 
     if(NOT DEFINED RUST_BUILD_SHARED)
         message(FATAL_ERROR "Mandatory argument SHARED was not found")
@@ -254,6 +314,14 @@ function(add_rust_library TARGET_NAME)
             set(RUST_TARGET_ARCH ${RUSTC_HOST_ARCH})
         endif()
     endif()
+
+    # Setup a custom cargo home.
+    file(MAKE_DIRECTORY ${RUST_TARGET_BINARY_DIR}/cargo-home)
+    list(APPEND CARGO_ENV CARGO_HOME=\"${CMAKE_BINARY_DIR}/cargo_home\")
+    make_cargo_config(
+        HOME ${RUST_TARGET_BINARY_DIR}/cargo-home
+        VENDOR ${CMAKE_SOURCE_DIR}/3rdparty/cargo-vendor
+    )
 
     get_rust_library_filename(${RUST_TARGET_SHARED} ${RUST_TARGET_CRATE_NAME})
 
