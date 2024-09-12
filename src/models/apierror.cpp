@@ -8,9 +8,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-ApiError::ApiError(const ApiError& other) {
-  *this = other;
-}
+ApiError::ApiError(const ApiError& other) { *this = other; }
 
 ApiError& ApiError::operator=(const ApiError& other) {
   if (this == &other) return *this;

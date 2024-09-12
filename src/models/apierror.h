@@ -5,8 +5,8 @@
 #ifndef APIERROR_H
 #define APIERROR_H
 
-#include <QString>
 #include <QObject>
+#include <QString>
 
 class QByteArray;
 
@@ -14,7 +14,7 @@ class ApiError final {
   Q_GADGET
 
  public:
-  ApiError() {};
+  ApiError(){};
   ApiError(const ApiError& other);
   ApiError& operator=(const ApiError& other);
 
