@@ -19,7 +19,7 @@ task-defaults:
         build: build-linux64/release-deb
     run:
         using: run-task
-        use-caches: true
+        use-caches: false
         cwd: '{checkout}'
         command: ./taskcluster/scripts/test/linux.sh
 
