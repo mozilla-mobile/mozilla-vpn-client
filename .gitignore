@@ -30,6 +30,7 @@ linux/netfilter/vendor/
 .tmp
 .env
 .venv
+.cache/clangd
 __pycache__
 lottie.mjs
 qml_lint_result.txt
