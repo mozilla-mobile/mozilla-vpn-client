@@ -16,7 +16,7 @@ task-defaults:
         build:
             - artifact: mozillavpn.deb
     dependencies:
-        build: build-linux/release-deb
+        build: build-linux64/release-deb
     run:
         using: run-task
         use-caches: true
