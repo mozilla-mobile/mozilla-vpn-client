@@ -18,7 +18,8 @@ MAINTAINER Naomi Kirby <naomi@mozilla.com>
 
 RUN apt-get update \
     && apt-get install -y tzdata \
-    && apt-get install -y locales \
+    && apt-get install -y git \
+                          locales \
                           python3 \
                           sudo \
     && apt-get clean
