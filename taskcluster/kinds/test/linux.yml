@@ -1,0 +1,32 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+    worker-type: b-linux
+    worker:
+        max-run-time: 3600
+    description: "Run Linux Tests"
+    treeherder:
+        symbol: T(linux)
+        kind: test
+        platform: android/arm64-v8a
+        tier: 1
+    fetches:
+        build:
+            - artifact: mozillavpn.deb
+    dependencies:
+        build: build-linux/release-deb
+    run:
+        using: run-task
+        use-caches: true
+        cwd: '{checkout}'
+        command: ./taskcluster/scripts/test/linux.sh
+
+focal:
+    worker:
+        docker-image: ubuntu:focal
+
+jammy:
+    worker:
+        docker-image: ubuntu:jammy

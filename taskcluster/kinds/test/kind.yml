@@ -17,3 +17,4 @@ kind-dependencies:
 tasks-from:
     - taskgraph.yml
     - junit.yml
+    - linux.yml
