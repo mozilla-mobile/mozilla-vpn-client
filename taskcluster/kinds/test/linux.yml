@@ -16,8 +16,11 @@ task-defaults:
             - node-linux-x64
         build:
             - artifact: mozillavpn.deb
+            - artifact: addons.zip
     dependencies:
-        build: build-linux64/release-deb
+        build:
+            - build-linux64/release-deb
+            - build-addons-testing
     run:
         using: run-task
         use-caches: true

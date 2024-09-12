@@ -13,9 +13,13 @@ sudo apt install -y $MOZ_FETCHES_DIR/mozillavpn.deb
 echo "Installed version"
 mozillavpn --version
 
+echo "Listing addons:"
+ls -al ${MOZ_FETCHES_DIR}/addons
+
 # Install npm and prepare to run functional tests.
 # TODO: This path manipulation should be Node.js version agnostic.
 export PATH=${PATH}:${MOZ_FETCHES_DIR}/node-v20.17.0-linux-x64/bin
+export MVPN_ADDONS_PATH=${MOZ_FETCHES_DIR}/addons
 export MVPN_BIN=$(which mozillavpn)
 (cd $VCS_PATH && npm install)
 
