@@ -12,7 +12,7 @@ task-defaults:
             - artifact: mozillavpn-sources.tar.gz
     dependencies:
         build: build-source/vpn
-    worker-type: b-linux-large
+    worker-type: b-linux
     worker:
         max-run-time: 3600
         chain-of-trust: true
@@ -83,6 +83,7 @@ linux64/release-deb:
     fetches:
         toolchain:
             - qt-linux
+    worker-type: b-linux-large # Give this task more resources to unblock tests faster.
     worker:
         docker-image: {in-tree: linux-qt6-build}
     run:

@@ -59,7 +59,7 @@ def loader(kind, path, config, params, loaded_tasks):
         for script in scripts:
             test = deepcopy(platform)
             test["name"] = f'{platform["name"]}-{script2name(script)}'
-            test["description"] += f' {script2phrase(script)} ({platform["name"]})'
+            test["description"] += f' {script2phrase(script).title()} ({platform["name"]})'
             test["treeherder"]["symbol"] = f'T({script2name(script)})'
 
             yield test
