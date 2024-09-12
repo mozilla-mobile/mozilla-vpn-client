@@ -55,7 +55,9 @@ void ProxyController::start() {
   }
 
   if (mCurrentProcess) {
+    // It should not be alive q_q
     mCurrentProcess->kill();
+    mCurrentProcess->waitForFinished();
     mCurrentProcess->deleteLater();
   }
   auto const url = generateProxyUrl();
@@ -80,29 +82,30 @@ void ProxyController::start() {
     logger.debug() << "SocksProxy available under:" << url.toString();
     m_state.setValue(Started{url});
   });
-  QObject::connect(mCurrentProcess, &QProcess::errorOccurred,
-                   [](QProcess::ProcessError error) {
-                     switch (error) {
-                       case QProcess::ProcessError::Crashed:
-                         logger.error() << "SocksProxy crashed!";
-                         break;
-                       case QProcess::ProcessError::FailedToStart:
-                         logger.error() << "SocksProxy FailedToStart!";
-                         break;
-                       case QProcess::ProcessError::ReadError:
-                         logger.error() << "SocksProxy ReadError!";
-                         break;
-                       case QProcess::ProcessError::Timedout:
-                         logger.error() << "SocksProxy Timedout!";
-                         break;
-                       case QProcess::ProcessError::UnknownError:
-                         logger.error() << "SocksProxy UnknownError!";
-                         break;
-                       case QProcess::ProcessError::WriteError:
-                         logger.error() << "SocksProxy UnknownError!";
-                         break;
-                     }
-                   });
+  mErrorSignal =
+      QObject::connect(mCurrentProcess, &QProcess::errorOccurred,
+                       [](QProcess::ProcessError error) {
+                         switch (error) {
+                           case QProcess::ProcessError::Crashed:
+                             logger.error() << "SocksProxy crashed!";
+                             break;
+                           case QProcess::ProcessError::FailedToStart:
+                             logger.error() << "SocksProxy FailedToStart!";
+                             break;
+                           case QProcess::ProcessError::ReadError:
+                             logger.error() << "SocksProxy ReadError!";
+                             break;
+                           case QProcess::ProcessError::Timedout:
+                             logger.error() << "SocksProxy Timedout!";
+                             break;
+                           case QProcess::ProcessError::UnknownError:
+                             logger.error() << "SocksProxy UnknownError!";
+                             break;
+                           case QProcess::ProcessError::WriteError:
+                             logger.error() << "SocksProxy UnknownError!";
+                             break;
+                         }
+                       });
   mCurrentProcess->setProgram(socksProxyFile.absoluteFilePath());
   mCurrentProcess->setArguments(getArguments(url));
   logger.error() << "Try to start SocksProxy!  "
@@ -119,12 +122,18 @@ void ProxyController::stop() {
   // We're stopping the process, so disconnect
   // the listner to restart the process.
   QObject::disconnect(mCrashSignal);
-
+  QObject::disconnect(mErrorSignal);
   logger.debug() << "SocksProxy stopping";
   // We no longer need signals from this obj
   m_state = Stopped{};
+  // Once the Process is stopped, we can delete it
+  QObject::connect(mCurrentProcess, &QProcess::finished,
+                   [p = mCurrentProcess.get()]() {
+                     logger.info() << "Deleting proxy with args "
+                                   << p->arguments() << " has stopped.";
+                     p->deleteLater();
+                   });
   mCurrentProcess->kill();
-  mCurrentProcess->deleteLater();
 }
 
 bool ProxyController::canActivate() {

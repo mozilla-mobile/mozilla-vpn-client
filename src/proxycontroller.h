@@ -62,5 +62,6 @@ class ProxyController {
   QProperty<State> m_state;
   QPointer<QProcess> mCurrentProcess;
   QMetaObject::Connection mCrashSignal;
+  QMetaObject::Connection mErrorSignal;
   std::optional<bool> m_canActivate;
 };
