@@ -11,9 +11,9 @@ transforms:
 
 
 kind-dependencies:
+    - fetch
     - toolchain
     - build
 
 tasks-from:
-    - taskgraph.yml
-    - junit.yml
+    - linux.yml
