@@ -12,7 +12,7 @@ task-defaults:
         kind: test
         tier: 1
     fetches:
-        toolchain:
+        fetch:
             - node-linux-x64
         build:
             - artifact: mozillavpn.deb
