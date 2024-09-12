@@ -5,8 +5,6 @@
 
 #include "proxycontroller.h"
 
-#include <QObject.h>
-
 #include <QDir>
 #include <QFileInfo>
 #include <QJsonDocument>
