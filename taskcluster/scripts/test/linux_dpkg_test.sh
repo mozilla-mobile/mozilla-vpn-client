@@ -6,9 +6,18 @@
 
 set -e
 
-# Install the mozillavpn.deb package.
-apt-get update
-apt install $MOZ_FETCHES_DIR/mozillavpn.deb
+# Install the mozillavpn.deb package
+sudo apt-get update
+sudo apt install $MOZ_FETCHES_DIR/mozillavpn.deb
 
 echo "Installed version"
 mozillavpn --version
+
+# Install npm and prepare to run functional tests.
+# TODO: This path manipulation should be Node.js version agnostic.
+export PATH=${PATH}:${MOZ_FETCHES_DIR}/node-v20.17.0-linux-x64/bin
+export MVPN_BIN=$(which mozillavpn)
+(cd $VCS_PATH && npm install)
+
+# Let's run a test
+(cd $VCS_PATH && xvfb-run -a npm run functionalTest -- --retries 3 tests/functional/testSettings.js)

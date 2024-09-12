@@ -65,6 +65,14 @@ tasks:
             artifact-name: miniconda.sh
             size: 106401416
         fetch-alias: miniconda-osx
+    node-linux-x64:
+        description: Node.js linux-x64 v20.17.0 LTS
+        fetch:
+            type: static-url
+            url: https://nodejs.org/dist/v20.17.0/node-v20.17.0-linux-x64.tar.xz
+            sha256: a24db3dcd151a52e75965dba04cf1b3cd579ff30d6e0af9da1aede4d0f17486b
+            artifact-name: node-linux-x64.tar.xz
+            size: 25767616
     qt-source-tarball:
         description: Qt 6.2.4 Source Tarball
         fetch:

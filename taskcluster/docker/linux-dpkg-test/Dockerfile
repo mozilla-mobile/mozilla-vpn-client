@@ -22,6 +22,7 @@ RUN apt-get update \
                           locales \
                           python3 \
                           sudo \
+                          xvfb \
     && apt-get clean
 
 RUN locale-gen "$LANG"
