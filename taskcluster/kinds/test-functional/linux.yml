@@ -6,7 +6,7 @@ task-defaults:
     worker-type: b-linux
     worker:
         max-run-time: 3600
-    description: "Run Linux Tests"
+    description: "Functional Test"
     treeherder:
         symbol: T(linux)
         kind: test
@@ -37,4 +37,4 @@ jammy:
     worker:
         docker-image: {in-tree: linux-test-jammy}
     treeherder:
-      platform: linux/jammy
+        platform: linux/jammy
