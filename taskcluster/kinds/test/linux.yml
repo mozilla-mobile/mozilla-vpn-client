@@ -14,13 +14,13 @@ task-defaults:
     fetches:
         fetch:
             - node-linux-x64
-        build:
+        release-deb:
             - artifact: mozillavpn.deb
+        test-addons:
             - artifact: addons.zip
     dependencies:
-        build:
-            - build-linux64/release-deb
-            - build-addons-testing
+        release-deb: build-linux64/release-deb
+        test-addons: build-addons-testing
     run:
         using: run-task
         use-caches: true
