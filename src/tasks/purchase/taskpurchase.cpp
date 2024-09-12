@@ -22,9 +22,11 @@ Logger logger("TaskPurchase");
 
 #ifdef MZ_IOS
 // static
-TaskPurchase* TaskPurchase::createForIOS(const QString& receipt) {
+TaskPurchase* TaskPurchase::createForIOS(const QString& receipt,
+                                         bool isOlderOS) {
   TaskPurchase* task = new TaskPurchase(IOS);
-  task->m_iOSReceipt = receipt;
+  task->m_iOSData = receipt;
+  task->isOlderOS = isOlderOS;
   return task;
 }
 #endif
@@ -56,9 +58,18 @@ TaskPurchase::TaskPurchase(Op op) : Task("TaskPurchase"), m_op(op) {
 TaskPurchase::~TaskPurchase() { MZ_COUNT_DTOR(TaskPurchase); }
 
 void TaskPurchase::run() {
+#ifdef MZ_IOS
+  // APIv2 returns 200, APIv1 returns 201
+  int expectedStatusCode;
+  if (isOlderOS) {
+    expectedStatusCode = 201;
+  } else {
+    expectedStatusCode = 200;
+  }
+#endif
   NetworkRequest* request = new NetworkRequest(this,
 #ifdef MZ_IOS
-                                               201
+                                               expectedStatusCode
 #else
                                                200
 #endif
@@ -68,10 +79,17 @@ void TaskPurchase::run() {
   switch (m_op) {
 #ifdef MZ_IOS
     case IOS:
-      request->post(
-          Constants::apiUrl(Constants::PurchasesIOS),
-          QJsonObject{{"receipt", m_iOSReceipt},
-                      {"appId", QString::fromNSString(IOSUtils::appId())}});
+      Constants::ApiEndpoint endpoint;
+      QJsonObject body;
+      if (isOlderOS) {
+        endpoint = Constants::PurchasesIOS;
+        body = QJsonObject{{"receipt", m_iOSData},
+                           {"appId", QString::fromNSString(IOSUtils::appId())}};
+      } else {
+        endpoint = Constants::PurchasesIOSv2;
+        body = QJsonObject{{"originalTransactionId", m_iOSData}};
+      }
+      request->post(Constants::apiUrl(endpoint), body);
       break;
 #endif
 #ifdef MZ_ANDROID

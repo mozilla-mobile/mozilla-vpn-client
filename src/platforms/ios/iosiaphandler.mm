@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "platforms/ios/iosiaphandler.h"
+#include "Mozilla-Swift.h"
 
 #include "app.h"
 #include "errorhandler.h"
@@ -137,7 +138,7 @@ bool s_transactionsProcessed = false;
         logger.debug() << "transaction deferred";
         break;
       default:
-        logger.warning() << "transaction unknwon state";
+        logger.warning() << "transaction unknown state";
         break;
     }
   }
@@ -201,9 +202,13 @@ bool s_transactionsProcessed = false;
 IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
   MZ_COUNT_CTOR(IOSIAPHandler);
 
-  m_delegate = [[IOSIAPHandlerDelegate alloc] initWithObject:this];
-  [[SKPaymentQueue defaultQueue]
-      addTransactionObserver:static_cast<IOSIAPHandlerDelegate*>(m_delegate)];
+  if (@available(iOS 15, *)) {
+    swiftIAPHandler = [[InAppPurchaseHandler alloc] init];
+  } else {
+    m_delegate = [[IOSIAPHandlerDelegate alloc] initWithObject:this];
+    [[SKPaymentQueue defaultQueue]
+        addTransactionObserver:static_cast<IOSIAPHandlerDelegate*>(m_delegate)];
+  }
 }
 
 IOSIAPHandler::~IOSIAPHandler() {
@@ -214,6 +219,9 @@ IOSIAPHandler::~IOSIAPHandler() {
 
   [delegate dealloc];
   m_delegate = nullptr;
+  if (@available(iOS 15, *)) {
+    swiftIAPHandler = nullptr;
+  }
 }
 
 void IOSIAPHandler::nativeRegisterProducts() {
@@ -222,21 +230,88 @@ void IOSIAPHandler::nativeRegisterProducts() {
     productIdentifiers = [productIdentifiers setByAddingObject:product.m_name.toNSString()];
   }
 
-  logger.debug() << "We are about to register" << [productIdentifiers count] << "products";
+  logger.debug() << "We are about to register" << [productIdentifiers count] << "products...";
 
-  SKProductsRequest* productsRequest =
-      [[SKProductsRequest alloc] initWithProductIdentifiers:productIdentifiers];
+  if (@available(iOS 15, *)) {
+    logger.debug() << "...using StoreKit2 API.";
+    [(InAppPurchaseHandler*)swiftIAPHandler getProductsWith:productIdentifiers
+        productRegistrationCallback:^(NSString* productIdentifier, NSString* currencyCode,
+                                      NSString* totalPrice, NSString* monthlyPrice,
+                                      double monthlyPriceNumber, NSInteger freeTrialDays) {
+          ProductsHandler* productsHandler = ProductsHandler::instance();
+          Q_ASSERT(productsHandler->isRegistering());
+          logger.debug() << "Product registered";
+          ProductsHandler::Product* productData =
+              productsHandler->findProduct(QString::fromNSString(productIdentifier));
+          Q_ASSERT(productData);
+          productData->m_price = QString::fromNSString(totalPrice);
+          productData->m_trialDays = (int)freeTrialDays;
+          productData->m_monthlyPrice = QString::fromNSString(monthlyPrice);
+          productData->m_nonLocalizedMonthlyPrice = monthlyPriceNumber;
+          productData->m_currencyCode = QString::fromNSString(currencyCode);
 
-  IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
-  productsRequest.delegate = delegate;
-  [productsRequest start];
+          logger.debug() << "Id:" << QString::fromNSString(productIdentifier);
+          logger.debug() << "Price:" << productData->m_price;
+          logger.debug() << "Monthly price:" << productData->m_monthlyPrice;
+        }
+        registrationCompleteCallback:^(void) {
+          ProductsHandler* productsHandler = ProductsHandler::instance();
+          QMetaObject::invokeMethod(productsHandler, "productsRegistrationCompleted",
+                                    Qt::QueuedConnection);
+        }
+        registrationFailureCallback:^{
+          logger.error() << "Registration failure";
+          ProductsHandler* productsHandler = ProductsHandler::instance();
+          NSArray* productIdentifiersArray = [productIdentifiers allObjects];
+          for (unsigned long i = 0, count = [productIdentifiersArray count]; i < count; ++i) {
+            NSString* identifier = [productIdentifiersArray objectAtIndex:i];
+            productsHandler->unknownProductRegistered(QString::fromNSString(identifier));
+          }
+        }
+        completionHandler:^{
+        }];
+  } else {
+    logger.debug() << "...using legacy StoreKit API.";
+    SKProductsRequest* productsRequest =
+        [[SKProductsRequest alloc] initWithProductIdentifiers:productIdentifiers];
+
+    IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
+    productsRequest.delegate = delegate;
+    [productsRequest start];
+  }
 }
 
 void IOSIAPHandler::nativeStartSubscription(ProductsHandler::Product* product) {
-  Q_ASSERT(product->m_extra);
-  SKProduct* skProduct = static_cast<SKProduct*>(product->m_extra);
-  SKPayment* payment = [SKPayment paymentWithProduct:skProduct];
-  [[SKPaymentQueue defaultQueue] addPayment:payment];
+  if (@available(iOS 15, *)) {
+    logger.debug() << "Using StoreKit2 APIs";
+    NSString* productId = product->m_name.toNSString();
+    [(InAppPurchaseHandler*)swiftIAPHandler startSubscriptionFor:productId
+        errorCallback:^(void) {
+          logger.debug() << "Subscription error with StoreKit2.";
+          QMetaObject::invokeMethod(this, "stopSubscription", Qt::QueuedConnection);
+          QMetaObject::invokeMethod(this, "subscriptionCanceled", Qt::QueuedConnection);
+        }
+        successCallback:^(NSString* transactionIdentifier) {
+          if (App::instance()->userAuthenticated()) {
+            logger.debug() << "Subscription completed with StoreKit2. Starting validation.";
+            QMetaObject::invokeMethod(this, "processCompletedTransactions", Qt::QueuedConnection,
+                                      Q_ARG(QStringList, {QString::fromNSString(productId)}),
+                                      Q_ARG(QString, QString::fromNSString(transactionIdentifier)));
+          } else {
+            logger.debug() << "Subscription completed with StoreKit2. User not signed in.";
+            QMetaObject::invokeMethod(this, "stopSubscription", Qt::QueuedConnection);
+            QMetaObject::invokeMethod(this, "subscriptionCanceled", Qt::QueuedConnection);
+          }
+        }
+        completionHandler:^{
+        }];
+  } else {
+    logger.debug() << "Using legacy StoreKit API.";
+    Q_ASSERT(product->m_extra);
+    SKProduct* skProduct = static_cast<SKProduct*>(product->m_extra);
+    SKPayment* payment = [SKPayment paymentWithProduct:skProduct];
+    [[SKPaymentQueue defaultQueue] addPayment:payment];
+  }
 }
 
 void IOSIAPHandler::nativeRestoreSubscription() {
@@ -317,21 +392,26 @@ void IOSIAPHandler::productRegistered(void* a_product) {
   productData->m_extra = product;
 }
 
-void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
+void IOSIAPHandler::processCompletedTransactions(const QStringList& ids, const QString transactionIdentifier) {
   logger.debug() << "process completed transactions";
 
   if (m_subscriptionState != eActive) {
     logger.warning() << "Completing transaction out of subscription process!";
   }
 
-  QString receipt = IOSUtils::IAPReceipt();
-  if (receipt.isEmpty()) {
-    logger.warning() << "Empty receipt found";
-    emit subscriptionFailed();
-    return;
+  TaskPurchase* purchase;
+  if (@available(iOS 15, *)) {
+    purchase = TaskPurchase::createForIOS(transactionIdentifier, false);
+  } else {
+    QString receipt = IOSUtils::IAPReceipt();
+    if (receipt.isEmpty()) {
+      logger.warning() << "Empty receipt found";
+      emit subscriptionFailed();
+      return;
+    }
+    purchase = TaskPurchase::createForIOS(receipt, true);
   }
 
-  TaskPurchase* purchase = TaskPurchase::createForIOS(receipt);
   Q_ASSERT(purchase);
 
   connect(
