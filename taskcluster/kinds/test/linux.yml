@@ -10,7 +10,6 @@ task-defaults:
     treeherder:
         symbol: T(linux)
         kind: test
-        platform: android/arm64-v8a
         tier: 1
     fetches:
         build:
@@ -26,7 +25,11 @@ task-defaults:
 focal:
     worker:
         docker-image: ubuntu:focal
+    treeherder:
+      platform: linux/focal
 
 jammy:
     worker:
         docker-image: ubuntu:jammy
+    treeherder:
+      platform: linux/jammy
