@@ -8,7 +8,7 @@ set -e
 
 # Install the mozillavpn.deb package
 sudo apt-get update
-sudo apt install $MOZ_FETCHES_DIR/mozillavpn.deb
+sudo apt install -y $MOZ_FETCHES_DIR/mozillavpn.deb
 
 echo "Installed version"
 mozillavpn --version
