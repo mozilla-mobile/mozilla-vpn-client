@@ -18,7 +18,8 @@ MAINTAINER Naomi Kirby <naomi@mozilla.com>
 
 RUN apt-get update \
     && apt-get install -y tzdata \
-    && apt-get install -y sudo \
+    && apt-get install -y locales \
+                          sudo \
     && apt-get clean
 
 RUN locale-gen "$LANG"
