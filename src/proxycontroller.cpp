@@ -5,18 +5,20 @@
 
 #include "proxycontroller.h"
 
+#include <QObject.h>
+
 #include <QDir>
 #include <QFileInfo>
 #include <QJsonDocument>
 #include <QJsonParseError>
+#include <QProcess>
 #include <QRandomGenerator>
+#include <QTimer>
 
-#include "constants.h"
 #include "feature/feature.h"
 #include "logger.h"
 
 #ifdef MZ_WINDOWS
-#  include "platforms/windows/windowscommons.h"
 constexpr auto const SOCKSPROXY_BIN = "socksproxy.exe";
 #else
 constexpr auto const SOCKSPROXY_BIN = "socksproxy";
@@ -43,6 +45,9 @@ const QString ProxyController::binaryPath() {
 }
 
 void ProxyController::start() {
+  if (mCurrentProcess && std::holds_alternative<Started>(m_state.value())) {
+    return;
+  }
   auto socksProxyFile = QFileInfo(binaryPath());
   if (!socksProxyFile.exists()) {
     Q_ASSERT(false);
@@ -58,11 +63,13 @@ void ProxyController::start() {
   mCurrentProcess = new QProcess();
   mCrashSignal = QObject::connect(
       mCurrentProcess, &QProcess::finished,
-      [this, url](int exitCode, QProcess::ExitStatus) {
+      [this](int exitCode, QProcess::ExitStatus) {
         logger.error() << "SocksProxy Closed Unexpected with " << exitCode;
-        logger.debug() << "SocksProxy scheudled restart";
         mCurrentProcess->deleteLater();
-        start();
+        using namespace std::literals::chrono_literals;
+        // scheudle a restart
+        QTimer::singleShot(100ms, [this]() { start(); });
+        logger.debug() << "SocksProxy scheudled restart";
       });
   QObject::connect(mCurrentProcess, &QProcess::readyReadStandardOutput,
                    [this]() {
@@ -74,7 +81,7 @@ void ProxyController::start() {
     m_state.setValue(Started{url});
   });
   QObject::connect(mCurrentProcess, &QProcess::errorOccurred,
-                   [this](QProcess::ProcessError error) {
+                   [](QProcess::ProcessError error) {
                      switch (error) {
                        case QProcess::ProcessError::Crashed:
                          logger.error() << "SocksProxy crashed!";
@@ -95,23 +102,29 @@ void ProxyController::start() {
                          logger.error() << "SocksProxy UnknownError!";
                          break;
                      }
-                     stop();
                    });
   mCurrentProcess->setProgram(socksProxyFile.absoluteFilePath());
   mCurrentProcess->setArguments(getArguments(url));
   logger.error() << "Try to start SocksProxy!  "
-                 << socksProxyFile.absoluteFilePath() << getArguments(url);
+                 << socksProxyFile.absoluteFilePath()
+                 << getArguments(url).join("");
   mCurrentProcess->start(QIODeviceBase::ReadOnly);
 }
 
 void ProxyController::stop() {
   if (!mCurrentProcess && std::holds_alternative<Stopped>(m_state.value())) {
+    // We already stopped.
     return;
   }
+  // We're stopping the process, so disconnect
+  // the listner to restart the process.
+  QObject::disconnect(mCrashSignal);
+
   logger.debug() << "SocksProxy stopping";
   // We no longer need signals from this obj
   m_state = Stopped{};
   mCurrentProcess->kill();
+  mCurrentProcess->deleteLater();
 }
 
 bool ProxyController::canActivate() {
