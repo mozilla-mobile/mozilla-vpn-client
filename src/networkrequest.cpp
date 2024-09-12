@@ -15,6 +15,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/apierror.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
 #include "task.h"
@@ -253,6 +254,15 @@ void NetworkRequest::processData(QNetworkReply::NetworkError error,
                    << "status code:" << status
                    << "- body:" << logger.sensitive(data);
     logger.error() << "Failed to access:" << m_request.url().toString(options);
+
+    ApiError err;
+    QString contentType =
+        m_reply->header(QNetworkRequest::ContentTypeHeader).toString();
+    if (contentType.contains("json") && err.fromJson(data)) {
+      logger.error() << "Remote API error" << err.errnum()
+                     << "-" << err.message();
+    }
+
     emit requestFailed(error, data);
     return;
   }

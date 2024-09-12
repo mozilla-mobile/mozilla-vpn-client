@@ -110,6 +110,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/apierror.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/models/apierror.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/device.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/device.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/devicemodel.cpp
