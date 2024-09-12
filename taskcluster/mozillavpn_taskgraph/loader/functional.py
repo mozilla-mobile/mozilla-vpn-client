@@ -61,5 +61,6 @@ def loader(kind, path, config, params, loaded_tasks):
             test["name"] = f'{platform["name"]}-{script2name(script)}'
             test["description"] += f' {script2phrase(script).title()} ({platform["name"]})'
             test["treeherder"]["symbol"] = f'T({script2name(script)})'
+            test["run"]["command"] += f' tests/functional/{script}'
 
             yield test
