@@ -20,7 +20,7 @@ task-defaults:
         using: run-task
         use-caches: true
         cwd: '{checkout}'
-        command: ./taskcluster/scripts/test/linux.sh
+        command: /builds/worker/test.sh
 
 focal:
     worker:

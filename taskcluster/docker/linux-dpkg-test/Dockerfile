@@ -9,6 +9,21 @@ FROM $DOCKER_BASE_IMAGE
 MAINTAINER Naomi Kirby <naomi@mozilla.com>
 
 #----------------------------------------------------------------------------------------------------------------------
+#-- Extra Packages ----------------------------------------------------------------------------------------------------
+#----------------------------------------------------------------------------------------------------------------------
+    ENV CURL='curl --location --retry 5' \
+    DEBIAN_FRONTEND='noninteractive' \
+    LANG='en_US.UTF-8' \
+    TERM='dumb'
+
+RUN apt-get update \
+    && apt-get install -y tzdata \
+    && apt-get install -y sudo \
+    && apt-get clean
+
+RUN locale-gen "$LANG"
+
+#----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
 
@@ -26,6 +41,8 @@ RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bi
 #----------------------------------------------------------------------------------------------------------------------
 
 # %include-run-task
+# %include taskcluster/scripts/test/linux_dpkg_test.sh
+ADD topsrcdir/taskcluster/scripts/test/linux_dpkg_test.sh /builds/worker/test.sh
 
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \
