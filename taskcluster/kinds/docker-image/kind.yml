@@ -67,3 +67,13 @@ tasks:
         definition: linux-rpm-build
         args:
             DOCKER_BASE_IMAGE: fedora:38
+    linux-test-focal:
+        symbol: I(test-focal)
+        definition: linux-dpkg-test
+        args:
+            DOCKER_BASE_IMAGE: ubuntu:focal
+    linux-test-jammy:
+        symbol: I(test-jammy)
+        definition: linux-dpkg-test
+        args:
+            DOCKER_BASE_IMAGE: ubuntu:jammy

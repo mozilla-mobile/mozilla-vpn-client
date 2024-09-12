@@ -18,18 +18,18 @@ task-defaults:
         build: build-linux64/release-deb
     run:
         using: run-task
-        use-caches: false
+        use-caches: true
         cwd: '{checkout}'
         command: ./taskcluster/scripts/test/linux.sh
 
 focal:
     worker:
-        docker-image: ubuntu:focal
+        docker-image: {in-tree: linux-test-focal}
     treeherder:
       platform: linux/focal
 
 jammy:
     worker:
-        docker-image: ubuntu:jammy
+        docker-image: {in-tree: linux-test-jammy}
     treeherder:
       platform: linux/jammy
