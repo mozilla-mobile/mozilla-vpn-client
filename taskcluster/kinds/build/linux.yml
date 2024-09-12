@@ -84,6 +84,9 @@ linux64/release-deb:
             - qt-linux
     worker:
         docker-image: {in-tree: linux-qt6-build}
+    add-index-routes:
+        name: linux-static
+        type: build
     run:
         command: /builds/worker/builder.sh -s
 
