@@ -22,6 +22,7 @@ RUN apt-get update \
                           locales \
                           python3 \
                           sudo \
+                          unzip \
                           xvfb \
     && apt-get clean
 
