@@ -79,10 +79,10 @@ void TestModels::apiErrorParse_data() {
   obj.insert("error", "Hello World!");
   QTest::addRow("success") << QJsonDocument(obj).toJson() << 401 << 123
                            << "Hello World!";
-  
+
   obj.insert("extra", "Something amazing!");
-  QTest::addRow("extra keys") << QJsonDocument(obj).toJson() << 401 << 123
-                              << "Hello World!";
+  QTest::addRow("extra keys")
+      << QJsonDocument(obj).toJson() << 401 << 123 << "Hello World!";
 }
 
 void TestModels::apiErrorInvalid() {
@@ -103,7 +103,7 @@ void TestModels::apiErrorInvalid_data() {
   QTest::addColumn<QByteArray>("json");
 
   QTest::addRow("null") << QJsonDocument().toJson();
-  QTest::addRow("empty") <<  QJsonDocument(QJsonObject()).toJson();
+  QTest::addRow("empty") << QJsonDocument(QJsonObject()).toJson();
 
   QJsonObject obj;
   obj.insert("code", 401);
