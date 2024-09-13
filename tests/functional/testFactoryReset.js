@@ -71,7 +71,7 @@ describe('Factory Reset', function() {
     await vpn.clickOnQueryAndAcceptAnyResults(queries.screenGetHelp.resetView.CONFIRM_RESET_BUTTON.visible());
 
     // Confirm the app quit
-    assert.equal(setup.vpnIsInactive(), true);
+	await vpn.waitForCondition(() => !setup.vpnIsRunning());
 
     // relaunch app
 	await setup.startAndConnect();
