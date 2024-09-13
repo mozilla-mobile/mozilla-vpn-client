@@ -398,6 +398,18 @@ void IOSIAPHandler::productRegistered(void* a_product) {
   productData->m_extra = product;
 }
 
+// Called directly when using StoreKit1
+void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
+  if (@available(iOS 15, *)) {
+    logger.error() << "This block should never be hit.";
+    assert(NO);
+  } else {
+    // For StoreKit1, we don't need a transaction identifier, so giving it some garbage.
+    processCompletedTransactions(ids, "this should never be seen");
+  }
+}
+
+// Called directly when using StoreKit2
 void IOSIAPHandler::processCompletedTransactions(const QStringList& ids, const QString transactionIdentifier) {
   logger.debug() << "process completed transactions";
 

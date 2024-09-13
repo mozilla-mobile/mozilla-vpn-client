@@ -19,6 +19,7 @@ class IOSIAPHandler final : public PurchaseIAPHandler {
 
  public slots:
   void productRegistered(void* product);
+  void processCompletedTransactions(const QStringList& ids);
   void processCompletedTransactions(const QStringList& ids,
                                     const QString transactionIdentifier);
   void noSubscriptionFoundError();
