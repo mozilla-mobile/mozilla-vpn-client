@@ -66,23 +66,16 @@ tasks:
             size: 106401416
         fetch-alias: miniconda-osx
     qt-source-tarball:
-        description: Qt 6.2.4 Source Tarball
-        fetch:
-            type: static-url
-            url: https://download.qt.io/archive/qt/6.2/6.2.4/single/qt-everywhere-src-6.2.4.tar.xz
-            sha256: cfe41905b6bde3712c65b102ea3d46fc80a44c9d1487669f14e4a6ee82ebb8fd
-            size: 661663792
-    qt-source-tarball-6.6.0:
-        description: Qt 6.6.0 Source Tarball
-        fetch:
-            type: static-url
-            url: https://download.qt.io/archive/qt/6.6/6.6.0/single/qt-everywhere-src-6.6.0.tar.xz
-            sha256: 652538fcb5d175d8f8176c84c847b79177c87847b7273dccaec1897d80b50002
-            size: 812361632
-    qt-source-tarball-6.6.3:
         description: Qt 6.6.3 Source Tarball
         fetch:
             type: static-url
             url: https://download.qt.io/archive/qt/6.6/6.6.3/single/qt-everywhere-src-6.6.3.tar.xz
             sha256: 69d0348fef415da98aa890a34651e9cfb232f1bffcee289b7b4e21386bf36104
             size: 801192112
+    qt-source-tarball-next:
+        description: Qt 6.7.2 Source Tarball
+        fetch:
+            type: static-url
+            url: https://download.qt.io/archive/qt/6.7/6.7.2/single/qt-everywhere-src-6.7.2.tar.xz
+            sha256: 0aaea247db870193c260e8453ae692ca12abc1bd841faa1a6e6c99459968ca8a
+            size: 935696876
