@@ -203,7 +203,25 @@ IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
   MZ_COUNT_CTOR(IOSIAPHandler);
 
   if (@available(iOS 15, *)) {
-    swiftIAPHandler = [[InAppPurchaseHandler alloc] init];
+    swiftIAPHandler = [[InAppPurchaseHandler alloc]
+        initWithErrorCallback:^(void) {
+          logger.debug() << "Subscription error with StoreKit2.";
+          QMetaObject::invokeMethod(this, "stopSubscription", Qt::QueuedConnection);
+          QMetaObject::invokeMethod(this, "subscriptionCanceled", Qt::QueuedConnection);
+        }
+        successCallback:^(NSString* productIdentifier, NSString* transactionIdentifier) {
+          if (App::instance()->userAuthenticated()) {
+            logger.debug() << "Subscription completed with StoreKit2. Starting validation.";
+            QMetaObject::invokeMethod(
+                this, "processCompletedTransactions", Qt::QueuedConnection,
+                Q_ARG(QStringList, {QString::fromNSString(productIdentifier)}),
+                Q_ARG(QString, QString::fromNSString(transactionIdentifier)));
+          } else {
+            logger.debug() << "Subscription completed with StoreKit2. User not signed in.";
+            QMetaObject::invokeMethod(this, "stopSubscription", Qt::QueuedConnection);
+            QMetaObject::invokeMethod(this, "subscriptionCanceled", Qt::QueuedConnection);
+          }
+        }];
   } else {
     m_delegate = [[IOSIAPHandlerDelegate alloc] initWithObject:this];
     [[SKPaymentQueue defaultQueue]
@@ -286,25 +304,8 @@ void IOSIAPHandler::nativeStartSubscription(ProductsHandler::Product* product) {
     logger.debug() << "Using StoreKit2 APIs";
     NSString* productId = product->m_name.toNSString();
     [(InAppPurchaseHandler*)swiftIAPHandler startSubscriptionFor:productId
-        errorCallback:^(void) {
-          logger.debug() << "Subscription error with StoreKit2.";
-          QMetaObject::invokeMethod(this, "stopSubscription", Qt::QueuedConnection);
-          QMetaObject::invokeMethod(this, "subscriptionCanceled", Qt::QueuedConnection);
-        }
-        successCallback:^(NSString* transactionIdentifier) {
-          if (App::instance()->userAuthenticated()) {
-            logger.debug() << "Subscription completed with StoreKit2. Starting validation.";
-            QMetaObject::invokeMethod(this, "processCompletedTransactions", Qt::QueuedConnection,
-                                      Q_ARG(QStringList, {QString::fromNSString(productId)}),
-                                      Q_ARG(QString, QString::fromNSString(transactionIdentifier)));
-          } else {
-            logger.debug() << "Subscription completed with StoreKit2. User not signed in.";
-            QMetaObject::invokeMethod(this, "stopSubscription", Qt::QueuedConnection);
-            QMetaObject::invokeMethod(this, "subscriptionCanceled", Qt::QueuedConnection);
-          }
-        }
-        completionHandler:^{
-        }];
+                                               completionHandler:^{
+                                               }];
   } else {
     logger.debug() << "Using legacy StoreKit API.";
     Q_ASSERT(product->m_extra);
@@ -315,8 +316,13 @@ void IOSIAPHandler::nativeStartSubscription(ProductsHandler::Product* product) {
 }
 
 void IOSIAPHandler::nativeRestoreSubscription() {
-  s_transactionsProcessed = false;
-  [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+  if (@available(iOS 15, *)) {
+    [(InAppPurchaseHandler*)swiftIAPHandler restoreSubscriptionsWithCompletionHandler:^{
+    }];
+  } else {
+    s_transactionsProcessed = false;
+    [[SKPaymentQueue defaultQueue] restoreCompletedTransactions];
+  }
 }
 
 void IOSIAPHandler::productRegistered(void* a_product) {

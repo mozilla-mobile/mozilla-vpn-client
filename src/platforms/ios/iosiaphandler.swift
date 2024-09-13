@@ -14,6 +14,22 @@ import StoreKit
   // to subscribe.
   private var productList: [Product] = []
 
+  var transactionUpdates: Task<Void, Never>? = nil
+  var errorCallback: (() -> Void)
+  var successCallback: ((NSString, NSString) -> Void)
+
+  @objc init(errorCallback: @escaping (() -> Void), successCallback: @escaping ((NSString, NSString) -> Void)) {
+    self.errorCallback = errorCallback
+    self.successCallback = successCallback
+    super.init()
+    transactionUpdates = newTransactionListenerTask()
+  }
+
+  deinit {
+    transactionUpdates?.cancel()
+  }
+
+  // MARK: - Getting products
   @objc func getProducts(with productIdentifiers: Set<String>, productRegistrationCallback: @escaping ((NSString, NSString, NSString, NSString, Double, Int) -> Void), registrationCompleteCallback: @escaping (() ->Void), registrationFailureCallback: @escaping (() ->Void)) async {
       do {
         productList = try await Product.products(for: Array(productIdentifiers))
@@ -65,7 +81,8 @@ import StoreKit
         }
     }
 
-  @objc func startSubscription(for productIdentifier: String, errorCallback: @escaping (() -> Void), successCallback: @escaping ((NSString) -> Void)) async {
+  // MARK: - Starting subscription
+  @objc func startSubscription(for productIdentifier: String) async {
     guard let product = productList.first(where: {$0.id == productIdentifier}) else {
       InAppPurchaseHandler.logger.error(message: "Could not find a product with ID \(productIdentifier)")
       errorCallback()
@@ -75,36 +92,61 @@ import StoreKit
 
     do {
       let purchaseResult = try await product.purchase()
-      switch purchaseResult {
-      case .success(let verificationResult):
-        switch verificationResult {
-        case .verified(let transaction):
-          InAppPurchaseHandler.logger.error(message: "StoreKit subscription returned success and verified")
-          let originalTransactionIdentifier: String = "\(transaction.originalID)"
-          successCallback(NSString(string: originalTransactionIdentifier))
-          await transaction.finish()
-        case .unverified(_, let verificationError):
-          InAppPurchaseHandler.logger.error(message: "StoreKit subscription returned success, but unverified: \(verificationError.localizedDescription)")
-          errorCallback()
-          break
-        }
-      case .pending:
-        InAppPurchaseHandler.logger.error(message: "StoreKit subscription returned pending")
-        // do not call error nor success - wait for further updates via `Transaction.updates`
-        break
-      case .userCancelled:
-        InAppPurchaseHandler.logger.error(message: "StoreKit subscription returned userCancelled")
-        errorCallback()
-        break
-      @unknown default:
-        InAppPurchaseHandler.logger.error(message: "purchaseResult using a new enum")
-        errorCallback()
-        break
-      }
+      await handlePurchaseResult(purchaseResult)
     } catch {
       InAppPurchaseHandler.logger.error(message: "Error purchasing product: \(error.localizedDescription)")
       errorCallback()
       assertionFailure()
+    }
+  }
+
+  private func handlePurchaseResult(_ purchaseResult: Product.PurchaseResult) async {
+    switch purchaseResult {
+    case .success(let verificationResult):
+      switch verificationResult {
+      case .verified(let transaction):
+        InAppPurchaseHandler.logger.info(message: "StoreKit subscription returned success and verified")
+        let originalTransactionIdentifier: String = "\(transaction.originalID)"
+        successCallback(NSString(string: transaction.productID), NSString(string: originalTransactionIdentifier))
+        await transaction.finish()
+      case .unverified(_, let verificationError):
+        InAppPurchaseHandler.logger.info(message: "StoreKit subscription returned success, but unverified: \(verificationError.localizedDescription)")
+        errorCallback()
+        break
+      }
+    case .pending:
+      InAppPurchaseHandler.logger.info(message: "StoreKit subscription returned pending")
+      // do not call error nor success - wait for further updates via `Transaction.updates`
+      break
+    case .userCancelled:
+      InAppPurchaseHandler.logger.info(message: "StoreKit subscription returned userCancelled")
+      errorCallback()
+      break
+    @unknown default:
+      InAppPurchaseHandler.logger.error(message: "purchaseResult using a new enum")
+      errorCallback()
+      break
+    }
+  }
+
+  @objc func restoreSubscriptions() async {
+    InAppPurchaseHandler.logger.info(message: "Syncing subscriptions via StoreKit2")
+    try? await AppStore.sync()
+    var didFindVerifiedTransaction = false
+    for await verificationResult in Transaction.currentEntitlements {
+        switch verificationResult {
+        case .verified(let transaction):
+          InAppPurchaseHandler.logger.info(message: "Found verified transaction")
+          didFindVerifiedTransaction = true
+          let originalTransactionIdentifier: String = "\(transaction.originalID)"
+          successCallback(NSString(string: transaction.productID), NSString(string: originalTransactionIdentifier))
+        case .unverified(let unverifiedTransaction, let verificationError):
+          InAppPurchaseHandler.logger.info(message: "Found unverified transaction \(unverifiedTransaction.originalID) with error: \(verificationError.localizedDescription)")
+        }
+    }
+    if !didFindVerifiedTransaction {
+      InAppPurchaseHandler.logger.info(message: "Found no verified transactions")
+      errorCallback()
     }
   }
 
@@ -129,6 +171,44 @@ import StoreKit
     @unknown default:
       InAppPurchaseHandler.logger.error(message: "unit using a new enum")
       return length
+    }
+  }
+
+  // MARK: - Listening for new transactions
+  private func newTransactionListenerTask() -> Task<Void, Never> {
+    InAppPurchaseHandler.logger.info(message: "Creating transaction listener")
+      return Task(priority: .background) {
+          for await verificationResult in Transaction.updates {
+              self.handle(updatedTransaction: verificationResult)
+          }
+      }
+  }
+
+  private func handle(updatedTransaction verificationResult: VerificationResult<Transaction>) {
+    guard case .verified(let transaction) = verificationResult else {
+        InAppPurchaseHandler.logger.info(message: "Unverified transaction returend")
+        return
+    }
+
+    if let _ = transaction.revocationDate {
+      InAppPurchaseHandler.logger.info(message: "Transaction was revoked")
+      errorCallback()
+    } else if let expirationDate = transaction.expirationDate,
+        expirationDate < Date() {
+      // Expirations handled by server
+      InAppPurchaseHandler.logger.info(message: "Transaction has expired")
+      errorCallback()
+        return
+    } else if transaction.isUpgraded {
+        // Do nothing, there is an active transaction
+        // for a higher level of service.
+      InAppPurchaseHandler.logger.info(message: "Transaction was upgraded")
+      errorCallback()
+        return
+    } else {
+      InAppPurchaseHandler.logger.info(message: "New successful transaction returned")
+      let originalTransactionIdentifier: String = "\(transaction.originalID)"
+      successCallback(NSString(string: transaction.productID), NSString(string: originalTransactionIdentifier))
     }
   }
 }
