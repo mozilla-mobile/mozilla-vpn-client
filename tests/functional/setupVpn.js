@@ -31,6 +31,12 @@ let vpnProcessTerminatePromise = null;
 let stdErr = '';
 
 async function startAndConnect() {
+  // Wait for existing processes to terminate, if any.
+  if (vpnProcessTerminatePromise) {
+    await vpnProcessTerminatePromise;
+    vpnProcessTerminatePromise = null;
+  }
+
   vpnProcess = spawn(app, ['ui', '--testing']);
   stdErr += 'VPN Process ID: ' + vpnProcess.pid;
   vpnProcess.stderr.on('data', (data) => {
@@ -45,17 +51,17 @@ async function startAndConnect() {
   await vpn.connect(vpnWS, {hostname: '127.0.0.1'});
 }
 
-function vpnIsInactive() {
+function vpnIsRunning() {
   try {
     vpnProcess.kill(pid, 0);
-    return false;
-  } catch (e) {
     return true;
+  } catch (e) {
+    return false;
   }
 }
 
 exports.startAndConnect = startAndConnect;
-exports.vpnIsInactive = vpnIsInactive;
+exports.vpnIsRunning = vpnIsRunning;
 
 exports.mochaHooks = {
   async beforeAll() {
@@ -194,6 +200,8 @@ exports.mochaHooks = {
     vpnProcess.stdin.pause();
     vpnProcess.kill();
 
-    await vpnProcessTerminatePromise;
+    if (vpnProcessTerminatePromise) {
+      await vpnProcessTerminatePromise;
+    }
   },
 }
