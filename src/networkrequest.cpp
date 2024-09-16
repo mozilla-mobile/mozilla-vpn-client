@@ -15,6 +15,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/apierror.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
 #include "task.h"
@@ -249,10 +250,23 @@ void NetworkRequest::processData(QNetworkReply::NetworkError error,
 
   if (error != QNetworkReply::NoError) {
     QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
-    logger.error() << "Network error:" << errorString
-                   << "status code:" << status
-                   << "- body:" << logger.sensitive(data);
+    logger.error() << "Network error:" << status << errorString;
     logger.error() << "Failed to access:" << m_request.url().toString(options);
+
+    // If the response looks and smells like guardian API error, then log it.
+    ApiError err;
+    QString contentType =
+        m_reply->header(QNetworkRequest::ContentTypeHeader).toString();
+    if (contentType.contains("json") && err.fromJson(data)) {
+      logger.error() << "Remote API error" << err.errnum() << "-"
+                     << err.message();
+    }
+#ifdef MZ_DEBUG
+    else {
+      logger.error() << "Error body:" << data;
+    }
+#endif
+
     emit requestFailed(error, data);
     return;
   }

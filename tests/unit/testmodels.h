@@ -8,6 +8,12 @@ class TestModels final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void apiErrorBasic();
+  void apiErrorParse();
+  void apiErrorParse_data();
+  void apiErrorInvalid();
+  void apiErrorInvalid_data();
+
   void deviceBasic();
   void deviceCurrentDeviceName();
   void deviceFromJson_data();

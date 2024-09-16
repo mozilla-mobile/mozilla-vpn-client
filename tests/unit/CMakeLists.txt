@@ -58,6 +58,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/dnspingsender.h
     ${MZ_SOURCE_DIR}/ipaddresslookup.cpp
     ${MZ_SOURCE_DIR}/ipaddresslookup.h
+    ${MZ_SOURCE_DIR}/models/apierror.cpp
+    ${MZ_SOURCE_DIR}/models/apierror.h
     ${MZ_SOURCE_DIR}/models/device.cpp
     ${MZ_SOURCE_DIR}/models/device.h
     ${MZ_SOURCE_DIR}/models/devicemodel.cpp

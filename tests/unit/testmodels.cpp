@@ -11,6 +11,7 @@
 #include "constants.h"
 #include "helper.h"
 #include "localizer.h"
+#include "models/apierror.h"
 #include "models/device.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
@@ -23,6 +24,114 @@
 #include "models/serverdata.h"
 #include "models/user.h"
 #include "settingsholder.h"
+
+// ApiError
+// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+void TestModels::apiErrorBasic() {
+  ApiError err;
+
+  QCOMPARE(err.code(), 0);
+  QCOMPARE(err.errnum(), 0);
+  QCOMPARE(err.message(), "");
+  QCOMPARE(err.error(), err.message());
+}
+
+void TestModels::apiErrorParse() {
+  ApiError err;
+
+  // Parsing should succeed.
+  QFETCH(QByteArray, json);
+  QFETCH(int, code);
+  QFETCH(int, errnum);
+  QFETCH(QString, message);
+  QCOMPARE(err.fromJson(json), true);
+
+  QCOMPARE(err.code(), code);
+  QCOMPARE(err.errnum(), errnum);
+  QCOMPARE(err.message(), message);
+  QCOMPARE(err.error(), message);
+
+  // Check the copy constructor.
+  ApiError copy(err);
+  QCOMPARE(copy.code(), code);
+  QCOMPARE(copy.errnum(), errnum);
+  QCOMPARE(copy.message(), message);
+  QCOMPARE(copy.error(), message);
+
+  // Check the assignment operator.
+  ApiError assign = err;
+  QCOMPARE(assign.code(), code);
+  QCOMPARE(assign.errnum(), errnum);
+  QCOMPARE(assign.message(), message);
+  QCOMPARE(assign.error(), message);
+}
+
+void TestModels::apiErrorParse_data() {
+  QTest::addColumn<QByteArray>("json");
+  QTest::addColumn<int>("code");
+  QTest::addColumn<int>("errnum");
+  QTest::addColumn<QString>("message");
+
+  QJsonObject obj;
+  obj.insert("code", 401);
+  obj.insert("errno", 123);
+  obj.insert("error", "Hello World!");
+  QTest::addRow("success") << QJsonDocument(obj).toJson() << 401 << 123
+                           << "Hello World!";
+
+  obj.insert("extra", "Something amazing!");
+  QTest::addRow("extra keys")
+      << QJsonDocument(obj).toJson() << 401 << 123 << "Hello World!";
+}
+
+void TestModels::apiErrorInvalid() {
+  ApiError err;
+
+  // Parsing should fail.
+  QFETCH(QByteArray, json);
+  QCOMPARE(err.fromJson(json), false);
+
+  // Nothing should change.
+  QCOMPARE(err.code(), 0);
+  QCOMPARE(err.errnum(), 0);
+  QCOMPARE(err.message(), "");
+  QCOMPARE(err.error(), err.message());
+}
+
+void TestModels::apiErrorInvalid_data() {
+  QTest::addColumn<QByteArray>("json");
+
+  QTest::addRow("null") << QJsonDocument().toJson();
+  QTest::addRow("empty") << QJsonDocument(QJsonObject()).toJson();
+
+  QJsonObject obj;
+  obj.insert("code", 401);
+  obj.insert("errno", 123);
+  obj.insert("error", "Hello World!");
+
+  QTest::addRow("array") << QJsonDocument(QJsonArray({obj})).toJson();
+  QTest::addRow("unclosed") << QJsonDocument(obj).toJson().replace('}', '{');
+  QTest::addRow("extra junk") << QJsonDocument(obj).toJson().append("Hi There");
+
+  QJsonObject badcode(obj);
+  badcode.remove("code");
+  QTest::addRow("code missing") << QJsonDocument(badcode).toJson();
+  badcode.insert("code", QJsonArray());
+  QTest::addRow("code invalid") << QJsonDocument(badcode).toJson();
+
+  QJsonObject baderrno(obj);
+  baderrno.remove("errno");
+  QTest::addRow("errno missing") << QJsonDocument(baderrno).toJson();
+  baderrno.insert("errno", QJsonObject());
+  QTest::addRow("errno invalid") << QJsonDocument(baderrno).toJson();
+
+  QJsonObject badmessage(obj);
+  badmessage.remove("error");
+  QTest::addRow("error missing") << QJsonDocument(badmessage).toJson();
+  badmessage.insert("error", 666);
+  QTest::addRow("error invalid") << QJsonDocument(badmessage).toJson();
+}
 
 // Device
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
