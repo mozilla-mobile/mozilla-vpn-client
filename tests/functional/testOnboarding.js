@@ -703,14 +703,16 @@ describe('Onboarding', function() {
 
       //Verify that connectOnStartupEnabled event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
-      const connectOnStartupEnabledEvents = await vpn.waitForGleanValue("interaction", "connectOnStartupEnabled", "main");
+      const connectOnStartupEnabledEvents = await vpn.waitForGleanValue(
+          'interaction', 'connectOnStartupDisabled', 'main');
       assert.equal(connectOnStartupEnabledEvents.length, 1);
       const connectOnStartupEnabledEventsExtras = connectOnStartupEnabledEvents[0].extra;
       assert.equal(startScreenTelemetryId, connectOnStartupEnabledEventsExtras.screen);
 
       //Verify that connectOnStartupDisabled event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
-      const connectOnStartupDisabledEvents = await vpn.waitForGleanValue("interaction", "connectOnStartupDisabled", "main");
+      const connectOnStartupDisabledEvents = await vpn.waitForGleanValue(
+          'interaction', 'connectOnStartupEnabled', 'main');
       assert.equal(connectOnStartupDisabledEvents.length, 1);
       const connectOnStartupDisabledEventsExtras = connectOnStartupDisabledEvents[0].extra;
       assert.equal(startScreenTelemetryId, connectOnStartupDisabledEventsExtras.screen);
