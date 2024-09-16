@@ -15,6 +15,8 @@ ColumnLayout {
     objectName: "onboardingStartSlide"
 
     property string telemetryScreenId: "connect_on_startup"
+    // `startAtBootCheckbox` was added to change the default `startAtBoot` setting to true. We  couldn't simply change the `startAtBoot` default in `settingslist.h`
+    // without affecting older VPN clients. See https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9878
     property bool startAtBootCheckbox: true
 
     signal nextClicked()
