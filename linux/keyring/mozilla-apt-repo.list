@@ -1,0 +1,2 @@
+deb [signed-by=/usr/share/keyrings/mozilla-apt-keyring.gpg] https://packages.mozilla.org/apt mozilla main
+
