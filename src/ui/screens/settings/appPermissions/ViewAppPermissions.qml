@@ -55,7 +55,7 @@ MZViewBase {
         }
     }
 
-    _menuTitle: MZI18n.SettingsAppExclusionSettings
+    _menuTitle: MZI18n.SettingsAppExclusionTitle
     _viewContentData: ColumnLayout {
         AppPermissionsList {
             id: enabledList
