@@ -15,6 +15,7 @@ ColumnLayout {
     objectName: "onboardingStartSlide"
 
     property string telemetryScreenId: "connect_on_startup"
+    property bool startAtBootCheckbox: true
 
     signal nextClicked()
     signal backClicked()
@@ -61,11 +62,11 @@ ColumnLayout {
         MZSettingsToggle {
             objectName: "startAtBootToggle"
 
-            checked: MZSettings.startAtBoot
+            checked: startAtBootCheckbox
             onClicked: {
-                MZSettings.startAtBoot = !MZSettings.startAtBoot
+                startAtBootCheckbox = !startAtBootCheckbox
 
-                if (MZSettings.startAtBoot) {
+                if (startAtBootCheckbox) {
                     Glean.interaction.connectOnStartupEnabled.record({
                         screen: root.telemetryScreenId,
                     });
@@ -109,6 +110,8 @@ ColumnLayout {
         text: MZI18n.GlobalGetStarted
 
         onClicked: {
+            MZSettings.startAtBoot = startAtBootCheckbox
+
             Glean.interaction.getStartedSelected.record({
                 screen: root.telemetryScreenId,
             });
