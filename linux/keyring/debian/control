@@ -1,7 +1,7 @@
 Source: mozilla-vpn-keyring
 Section: misc
 Priority: important
-Maintainer: Naomi Kirby <nkirby@mozilla.com>
+Maintainer: Mozilla VPN Team <vpn@mozilla.com>
 Build-Depends: debhelper-compat (= 13)
 Standards-Version: 4.6.0
 Homepage: https://vpn.mozilla.org/
@@ -14,4 +14,3 @@ Depends: ${misc:Depends}
 Description: GnuPG archive keys of the Mozilla APT repository
  Mozilla digitally signs its Rlease files. This package contains
  the archive keys and APT configuration used for that.
-
