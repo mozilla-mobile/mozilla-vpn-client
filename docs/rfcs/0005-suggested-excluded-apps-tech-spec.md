@@ -154,7 +154,7 @@ The excluded apps list will likely live in the client repo. There are ways to we
 Considerations for roll out
 ----------------------
 
-While the reworked exclulded apps page will affect all platforms that support split tunneling, notifications will only be shown to users who have already allowed our app to send them. On mobile, we show the "approve notifications" screen immediately upon launching the app for the first time, which likely depresses approval rates. We may want to re-consider how we show this as part of onboarding.
+While the reworked excluded apps page will affect all platforms that support split tunneling, notifications will only be shown to users who have already allowed our app to send them. On mobile, we show the "approve notifications" screen immediately upon launching the app for the first time, which likely depresses approval rates. We may want to re-consider how we show this as part of onboarding.
 
 Test Plan
 ---------
