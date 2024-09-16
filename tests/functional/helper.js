@@ -466,6 +466,9 @@ module.exports = {
 
     // Click on get started and wait for authenticating view
     await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+    // Wait for the authentication view to finish loading.
+    await this.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
+
     await this.waitForQuery(
         queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
     await this.setQueryProperty(
