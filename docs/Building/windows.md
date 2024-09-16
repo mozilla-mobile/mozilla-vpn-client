@@ -21,14 +21,12 @@ You may need to enable [powershell scripts.](https://learn.microsoft.com/en-us/p
 For the setup you need to use powershell.
 
 ```powershell
-$ conda env create -f env.yml
+$ conda env create -f env.win.yml
 $ conda activate vpn
 # Setup the conda env for clang-cl compilation
 $ ./scripts/windows/conda_setup_win_sdk.ps1
 # Setup the conda env to use a prebuild Qt from Moz-CI
 $ ./scripts/windows/conda_setup_win_qt.ps1
-# Install conda Packages only needed on Windows
-$ ./scripts/windows/conda_install_extras.ps1
 # Reactivate the env to apply the changes:
 $ conda deactivate
 $ conda activate vpn

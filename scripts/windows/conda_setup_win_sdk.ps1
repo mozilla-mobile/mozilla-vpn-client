@@ -75,9 +75,6 @@ $activate = @"
 `$env:CL_FLAGS="-Wno-unused-command-line-argument -fuse-ld=lld-link `$env:CONDA_PREFIX\\xwin\\crt\\include `$env:CONDA_PREFIX\\xwin\\sdk\\include\\ucrt `$env:CONDA_PREFIX\\xwin\\sdk\\include\\um `$env:CONDA_PREFIX\\xwin\\sdk\\include\\shared"
 `$env:RUSTFLAGS="-Clinker=`$env:CONDA_PREFIX/Library/bin/lld-link.exe -Lnative=\\xwin\\crt\\lib\\x86_64 -Lnative=`$env:CONDA_PREFIX\\xwin\\sdk\\lib\\um\\x86_64 -Lnative=`$env:CONDA_PREFIX\\xwin\\sdk\\lib\\ucrt\\x86_64"
 
-# Conda/go does not ship an activate.ps1 -> therefore stuff is broken on powershell. 
-`$env:GOROOT="`$env:CONDA_PREFIX\go"
-
 `$env:INCLUDE="$INCLUDE_TARGET"
 `$env:LIB="$XWIN_PATH\sdk\lib\ucrt\x86_64;$XWIN_PATH\sdk\lib\um\x86_64;$XWIN_PATH\crt\lib\x86_64;"
 "@
@@ -87,9 +84,6 @@ Out-File -Encoding utf8 `
 
 
 $deactivate = @"
-Remove-Item Env:\OPENSSL_ROOT_DIR
-Remove-Item Env:\QT_HOST_PATH
-Remove-Item Env:\CMAKE_PREFIX_PATH
 Remove-Item Env:\CXX
 Remove-Item Env:\CC
 Remove-Item Env:\AR
@@ -106,7 +100,6 @@ Remove-Item Env:\AR_x86_64_pc_windows_msvc
 Remove-Item Env:\LD_x86_64_pc_windows_msvc
 Remove-Item Env:\CL_FLAGS
 Remove-Item Env:\RUSTFLAGS
-Remove-Item Env:\GOROOT
 Remove-Item Env:\INCLUDE
 Remove-Item Env:\LIB
 
