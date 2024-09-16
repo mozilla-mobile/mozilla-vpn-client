@@ -5,13 +5,14 @@
 
 $X_WIN_VERSION = "0.6.5"
 
-$conda_env = conda info --json | ConvertFrom-Json
-$OLD_PWD = $PWD # Backup that to go back once we done. 
-
-if( $conda_env.active_prefix_name -eq "base"){
-    Write-Output("Not in an active conda env. abort")
+if ($conda_folder -eq $null -or $conda_folder -like "*base*") {
+    Write-Output("Not in an active conda environment or in base environment. Abort.")
     return -1
 }
+Write-Output("Installing in $conda_folder")
+$OLD_PWD = $PWD # Backup that to go back once we done. 
+Set-Location $conda_folder 
+
 $conda_folder = $conda_env.active_prefix 
 Set-Location $conda_folder
 Write-Output("Downloading x-win")
@@ -46,19 +47,19 @@ xwin --accept-license `
 
 ## Generate the INCLUDE env
 $XWIN_PATH="`$env:CONDA_PREFIX\xwin"
-$INCLUDE_ADDS =   `
-                  "$XWIN_PATH\sdk\include;",`
-                  "$XWIN_PATH\crt\include;",`
-                  "$XWIN_PATH\sdk\include\cppwinrt\winrt;",`
+$LIB_ADDS =   `
+                  "$XWIN_PATH\VC\Tools\MSVC\14.29.16.10\lib\x64;",`
+                  "$XWIN_PATH\Windows Kits\10\lib\10.0.22000\ucrt\x64;",`
+                  "$XWIN_PATH\Windows Kits\10\lib\10.0.22000\ucrt\x64;",`
                   "$XWIN_PATH\sdk\include\shared;",`
                   "$XWIN_PATH\sdk\include\ucrt;" ,`
                   "$XWIN_PATH\sdk\include\um;",`
                   "$XWIN_PATH\sdk\include\winrt"
-$INCLUDE_TARGET =""
-ForEach-Object -InputObject $INCLUDE_ADDS {
-    $INCLUDE_TARGET +=($XWIN_PATH+"\"+$_)
+$LIB_TARGET =""
+ForEach-Object -InputObject $LIB_ADDS {
+    $LIB_TARGET +=($XWIN_PATH+"\"+$_)
 }
-$INCLUDE_TARGET= $INCLUDE_TARGET-replace("; ",";")
+$LIB_TARGET= $LIB_TARGET-replace("; ",";")
 
 # Generate & write (de/)activation scripts
 
@@ -68,6 +69,8 @@ $activate = @"
 `$env:CC="clang-cl"
 `$env:AR="llvm-lib"
 `$env:LD="lld-link"
+
+`$env:LIB="$LIB_TARGET"
 
 `$env:CMAKE_CXX_COMPILER="clang-cl"
 `$env:CMAKE_C_COMPILER="clang-cl"
@@ -82,8 +85,8 @@ $activate = @"
 `$env:LD_x86_64_pc_windows_msvc="lld-link"
 `$env:CFLAGS="/winsysroot $XWIN_PATH"
 `$env:CXXFLAGS="/winsysroot $XWIN_PATH"
-`$env:CL_FLAGS="-Wno-unused-command-line-argument -fuse-ld=lld-link `$env:CONDA_PREFIX\\xwin\\crt\\include `$env:CONDA_PREFIX\\xwin\\sdk\\include\\ucrt `$env:CONDA_PREFIX\\xwin\\sdk\\include\\um `$env:CONDA_PREFIX\\xwin\\sdk\\include\\shared"
-`$env:RUSTFLAGS="-Clinker=`$env:CONDA_PREFIX/Library/bin/lld-link.exe -Lnative=\\xwin\\crt\\lib\\x86_64 -Lnative=`$env:CONDA_PREFIX\\xwin\\sdk\\lib\\um\\x86_64 -Lnative=`$env:CONDA_PREFIX\\xwin\\sdk\\lib\\ucrt\\x86_64"
+`$env:CL_FLAGS="-Wno-unused-command-line-argument -fuse-ld=lld-link"
+`$env:RUSTFLAGS="-Clinker=`$env:CONDA_PREFIX/Library/bin/lld-link.exe"
 
 "@
 Out-File -Encoding utf8 `
