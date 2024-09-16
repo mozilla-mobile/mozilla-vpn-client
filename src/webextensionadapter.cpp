@@ -10,6 +10,7 @@
 #include <QJsonObject>
 #include <QMetaEnum>
 #include <QTcpSocket>
+#include <QWindow>
 #include <functional>
 
 #include "controller.h"
@@ -24,6 +25,7 @@
 #if defined MZ_PROXY_ENABLED
 #  include "proxycontroller.h"
 #endif
+#include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "taskscheduler.h"
@@ -86,7 +88,21 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
                     obj["servers"] = servers;
                     return obj;
                   }},
-
+      RequestType{"focus",
+                  [](const QJsonObject&) {
+                    QmlEngineHolder* engine = QmlEngineHolder::instance();
+                    engine->showWindow();
+                    return QJsonObject{};
+                  }},
+      RequestType{"openAuth",
+                  [](const QJsonObject&) {
+                    MozillaVPN* vpn = MozillaVPN::instance();
+                    if (vpn->state() != MozillaVPN::StateInitialize) {
+                      return QJsonObject{};
+                    }
+                    vpn->authenticate();
+                    return QJsonObject{};
+                  }},
       RequestType{"disabled_apps",
                   [](const QJsonObject&) {
                     QJsonArray apps;
