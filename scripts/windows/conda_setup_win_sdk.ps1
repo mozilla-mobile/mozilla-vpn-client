@@ -82,6 +82,9 @@ Out-File -Encoding utf8 `
          -FilePath  "$conda_folder\etc\conda\activate.d\vpn_clang_cl.ps1"`
          -InputObject $activate 
 
+Copy-Item $conda_folder\Library\bin\llvm-mt.exe $conda_folder\Library\bin\mt.exe
+Copy-Item $conda_folder\Library\bin\lld-link.exe $conda_folder\Library\bin\link.exe
+Copy-Item $conda_folder\Library\bin\clang-cl.exe $conda_folder\Library\bin\cl.exe
 
 $deactivate = @"
 Remove-Item Env:\CXX
