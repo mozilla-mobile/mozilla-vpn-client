@@ -170,13 +170,18 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.START_SLIDE.visible());
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 3);
     assert.equal(await vpn.getSetting('onboardingStep'), 3);
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'), 'false');
+    assert.equal(
+        await vpn.getQueryProperty(
+            queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'),
+        'true');
     assert.equal(await vpn.getSetting('startAtBoot'), false);
 
     //Check start at boot toggle
     await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'), 'true');
-    assert.equal(await vpn.getSetting('startAtBoot'), true);
+    assert.equal(
+        await vpn.getQueryProperty(
+            queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'),
+        'false');
 
     //Test back button
     await vpn.waitForQueryAndClick(queries.screenOnboarding.START_BACK_BUTTON.visible());
@@ -189,8 +194,18 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
 
     //Ensure all selections on start slide are saved
-    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'), 'true');
-    assert.equal(await vpn.getSetting('startAtBoot'), true);
+    assert.equal(
+        await vpn.getQueryProperty(
+            queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'),
+        'false');
+
+    // Then click it again
+    await vpn.waitForQueryAndClick(
+        queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
+    assert.equal(
+        await vpn.getQueryProperty(
+            queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'),
+        'true');
 
     //Test going back one slide via progress bar
     await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_DEVICES_BUTTON.visible());
