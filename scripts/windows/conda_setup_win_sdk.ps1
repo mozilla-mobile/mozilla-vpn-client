@@ -5,10 +5,10 @@
 
 $X_WIN_VERSION = "0.6.5"
 
-if ($conda_folder -eq $null -or $conda_folder -like "*base*") {
-    Write-Output("Not in an active conda environment or in base environment. Abort.")
-    return -1
-}
+$conda_env = conda info --json | ConvertFrom-Json
+$conda_folder = $conda_env.active_prefix 
+
+
 Write-Output("Installing in $conda_folder")
 $OLD_PWD = $PWD # Backup that to go back once we done. 
 Set-Location $conda_folder 
@@ -49,12 +49,7 @@ xwin --accept-license `
 $XWIN_PATH="`$env:CONDA_PREFIX\xwin"
 $LIB_ADDS =   `
                   "$XWIN_PATH\VC\Tools\MSVC\14.29.16.10\lib\x64;",`
-                  "$XWIN_PATH\Windows Kits\10\lib\10.0.22000\ucrt\x64;",`
-                  "$XWIN_PATH\Windows Kits\10\lib\10.0.22000\ucrt\x64;",`
-                  "$XWIN_PATH\sdk\include\shared;",`
-                  "$XWIN_PATH\sdk\include\ucrt;" ,`
-                  "$XWIN_PATH\sdk\include\um;",`
-                  "$XWIN_PATH\sdk\include\winrt"
+                  "$XWIN_PATH\Windows Kits\10\lib\10.0.22000\ucrt\x64;"
 $LIB_TARGET =""
 ForEach-Object -InputObject $LIB_ADDS {
     $LIB_TARGET +=($XWIN_PATH+"\"+$_)
