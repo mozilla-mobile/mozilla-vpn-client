@@ -5,11 +5,11 @@
 
 #pragma once
 
-#include <QObject>
 #include <QPointer>
-#include <QProcess>
 #include <QProperty>
 #include <QUrl>
+
+class QProcess;
 
 class ProxyController {
  public:
@@ -29,7 +29,7 @@ class ProxyController {
   // Returns true if the proxy is alive
   State state() { return m_state.value(); }
   // Returns a bindable in case state changes.
-  QBindable<State> stateBindable() { return QBindable<State>(&m_state); }
+  QBindable<State> stateBindable() { return {&m_state}; }
 
   /**
    * @brief Returns the Path of the Binary to Exclude
@@ -62,5 +62,6 @@ class ProxyController {
   QProperty<State> m_state;
   QPointer<QProcess> mCurrentProcess;
   QMetaObject::Connection mCrashSignal;
+  QMetaObject::Connection mErrorSignal;
   std::optional<bool> m_canActivate;
 };
