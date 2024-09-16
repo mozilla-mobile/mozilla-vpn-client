@@ -68,13 +68,13 @@ ViewFullScreen {
             Layout.topMargin: 12
             Layout.fillWidth: true
 
-            text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.SettingsAppExclusionTitle)
+            text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.SettingsAppExclusionSettings)
             textFormat: Text.RichText
             color: MZTheme.theme.fontColor
             horizontalAlignment: Text.AlignLeft
             visible: MZFeatureList.get("splitTunnel").isSupported
 
-            Accessible.name: MZI18n.SettingsAppExclusionTitle
+            Accessible.name: MZI18n.SettingsAppExclusionSettings
         }
 
         MZInterLabel {

@@ -64,7 +64,7 @@ MZViewBase {
 
             MZSettingsItem {
                 objectName: "appExclusionSettings"
-                settingTitle: MZI18n.SettingsAppExclusionTitle
+                settingTitle: MZI18n.SettingsAppExclusionSettings
                 imageLeftSrc: "qrc:/ui/resources/settings/apppermissions.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
