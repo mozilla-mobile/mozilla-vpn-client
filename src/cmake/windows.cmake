@@ -72,8 +72,6 @@ else()
     target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/ui/qt6winhack.qrc)
 endif()
 
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
-
 # Use Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
 target_sources(mozillavpn PRIVATE
