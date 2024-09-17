@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QString>
 #include <QStringList>
+#include <memory>
 
 // Note: the ws2tcpip.h import must come before the others.
 // clang-format off
@@ -18,12 +19,30 @@
 #include <tlhelp32.h>
 #include <windows.h>
 
-class WindowsSplitTunnel final : public QObject {
-  Q_OBJECT
-  Q_DISABLE_COPY_MOVE(WindowsSplitTunnel)
+class WindowsFirewall;
+
+class WindowsSplitTunnel final {
  public:
-  explicit WindowsSplitTunnel(QObject* parent);
-  ~WindowsSplitTunnel() override;
+  /**
+   * @brief Installs and Initializes the Split Tunnel Driver.
+   *
+   * @param fw -
+   * @return std::unique_ptr<WindowsSplitTunnel> - Is null on failure.
+   */
+  static std::unique_ptr<WindowsSplitTunnel> create(WindowsFirewall* fw);
+
+  /**
+   * @brief Construct a new Windows Split Tunnel object
+   *
+   * @param driverIO - The Handle to the Driver's IO file, it assumes the driver
+   * is in STATE_INITIALIZED and the Firewall has been setup.
+   * Prefer using create() to get to this state.
+   */
+  WindowsSplitTunnel(HANDLE driverIO);
+  /**
+   * @brief Destroy the Windows Split Tunnel object and uninstalls the Driver.
+   */
+  ~WindowsSplitTunnel();
 
   // void excludeApps(const QStringList& paths);
   // Excludes an Application from the VPN
@@ -33,16 +52,10 @@ class WindowsSplitTunnel final : public QObject {
   void start(int inetAdapterIndex);
   // Deletes Rules and puts the driver into passive mode
   void stop();
-  // Resets the Whole Driver
-  void reset();
 
   // Just close connection, leave state as is
   void close();
-
-  // Installes the Kernel Driver as Driver Service
-  static SC_HANDLE installDriver();
-  static bool uninstallDriver();
-  static bool isInstalled();
+  void reset();
   static bool detectConflict();
 
   // States for GetState
@@ -56,15 +69,17 @@ class WindowsSplitTunnel final : public QObject {
     STATE_ZOMBIE = 5,
   };
 
- private slots:
-  void initDriver();
-
  private:
+  // Installes the Kernel Driver as Driver Service
+  static SC_HANDLE installDriver();
+  static bool uninstallDriver();
+  static bool isInstalled();
+  static bool initDriver(HANDLE driverIO);
+  static DRIVER_STATE getState(HANDLE driverIO);
+  static bool resetDriver(HANDLE driverIO);
+
   HANDLE m_driver = INVALID_HANDLE_VALUE;
   DRIVER_STATE getState();
-
-  // Initializes the WFP Sublayer
-  bool initSublayer();
 
   // Generates a Configuration for Each APP
   std::vector<uint8_t> generateAppConfiguration(const QStringList& appPaths);

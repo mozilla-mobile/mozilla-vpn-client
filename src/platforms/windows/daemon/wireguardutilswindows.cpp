@@ -218,20 +218,27 @@ struct WireGuardAPI {
 };
 
 std::unique_ptr<WireguardUtilsWindows> WireguardUtilsWindows::create(
-    QObject* parent) {
+    WindowsFirewall* fw, QObject* parent) {
+  if (!fw) {
+    logger.error() << "WireguardUtilsWindows::create: no wfp handle";
+    return {};
+  }
   auto wg_nt = WireGuardAPI::create();
   if (!wg_nt) {
     WindowsUtils::windowsLog("Failed to get a wireguard.dll");
     return {};
   }
   // Can't use make_unique here as the Constructor is private :(
-  auto utils = new WireguardUtilsWindows(parent, std::move(wg_nt));
+  auto utils = new WireguardUtilsWindows(parent, fw, std::move(wg_nt));
   return std::unique_ptr<WireguardUtilsWindows>(utils);
 }
 
 WireguardUtilsWindows::WireguardUtilsWindows(
-    QObject* parent, std::unique_ptr<WireGuardAPI> wireguard)
-    : WireguardUtils(parent), m_wireguard_api(std::move(wireguard)) {
+    QObject* parent, WindowsFirewall* fw,
+    std::unique_ptr<WireGuardAPI> wireguard)
+    : WireguardUtils(parent),
+      m_wireguard_api(std::move(wireguard)),
+      m_firewall(fw) {
   MZ_COUNT_CTOR(WireguardUtilsWindows);
   logger.debug() << "WireguardUtilsWindows created.";
 }
@@ -319,9 +326,9 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   // Enable the windows firewall
   NET_IFINDEX ifindex;
   ConvertInterfaceLuidToIndex(&luid, &ifindex);
-  if (!WindowsFirewall::instance()->enableInterface(ifindex)) {
+  if (!m_firewall->enableInterface(ifindex)) {
     logger.error() << "Failed enabling Killswitch";
-    WindowsFirewall::instance()->disableKillSwitch();
+    m_firewall->disableKillSwitch();
     return false;
   };
   cleanupDeviceOnFailure.dismiss();
@@ -343,7 +350,7 @@ bool WireguardUtilsWindows::deleteInterface() {
   if (m_deviceIpv4_Handle != 0) {
     DeleteIPAddress(m_deviceIpv4_Handle);
   }
-  WindowsFirewall::instance()->disableKillSwitch();
+  m_firewall->disableKillSwitch();
   m_wireguard_api->SetAdapterState(m_adapter, WIREGUARD_ADAPTER_STATE_DOWN);
   m_wireguard_api->CloseAdapter(m_adapter);
   m_adapter = NULL;
@@ -352,7 +359,7 @@ bool WireguardUtilsWindows::deleteInterface() {
 
 bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   // Enable the windows firewall for this peer.
-  if (!WindowsFirewall::instance()->enablePeerTraffic(config)) {
+  if (!m_firewall->enablePeerTraffic(config)) {
     return false;
   };
 
@@ -498,7 +505,7 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
     m_routeMonitor->deleteExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
   }
   // Disable the windows firewall for this peer.
-  WindowsFirewall::instance()->disablePeerTraffic(config.m_serverPublicKey);
+  m_firewall->disablePeerTraffic(config.m_serverPublicKey);
   return true;
 }
 
@@ -595,7 +602,7 @@ bool WireguardUtilsWindows::excludeLocalNetworks(
   }
 
   // Permit LAN traffic through the firewall.
-  if (!WindowsFirewall::instance()->enableLanBypass(addresses)) {
+  if (!m_firewall->enableLanBypass(addresses)) {
     result = false;
   }
 

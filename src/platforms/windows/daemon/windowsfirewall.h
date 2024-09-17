@@ -26,10 +26,17 @@ struct FWP_CONDITION_VALUE0_;
 
 class WindowsFirewall final : public QObject {
  public:
-  ~WindowsFirewall();
-
-  static WindowsFirewall* instance();
-  bool init();
+  /**
+   * @brief Opens the Windows Filtering Platform, initializes the session,
+   * sublayer. Returns a WindowsFirewall object if successful, otherwise
+   * nullptr. If there is already a WindowsFirewall object, it will be returned.
+   *
+   * @param parent - parent QObject
+   * @return WindowsFirewall* - nullptr if failed to open the Windows Filtering
+   * Platform.
+   */
+  static WindowsFirewall* create(QObject* parent);
+  ~WindowsFirewall() override;
 
   bool enableInterface(int vpnAdapterIndex);
   bool enableLanBypass(const QList<IPAddress>& ranges);
@@ -38,7 +45,8 @@ class WindowsFirewall final : public QObject {
   bool disableKillSwitch();
 
  private:
-  WindowsFirewall(QObject* parent);
+  static bool initSublayer();
+  WindowsFirewall(HANDLE session, QObject* parent);
   HANDLE m_sessionHandle;
   bool m_init = false;
   QList<uint64_t> m_activeRules;

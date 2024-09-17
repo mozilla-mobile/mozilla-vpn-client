@@ -4,9 +4,15 @@
 
 #include "windowssplittunnel.h"
 
+#include <qassert.h>
+
+#include <memory>
+
 #include "../windowscommons.h"
 #include "../windowsservicemanager.h"
 #include "logger.h"
+#include "platforms/windows/daemon/windowsfirewall.h"
+#include "platforms/windows/daemon/windowssplittunnel.h"
 #include "platforms/windows/windowsutils.h"
 #include "windowsfirewall.h"
 
@@ -144,96 +150,113 @@ ProcessInfo getProcessInfo(HANDLE process, const PROCESSENTRY32W& processMeta) {
 
 }  // namespace
 
-WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent) : QObject(parent) {
+std::unique_ptr<WindowsSplitTunnel> WindowsSplitTunnel::create(
+    WindowsFirewall* fw) {
+  if (fw == nullptr) {
+    // Pre-Condition:
+    // Make sure the Windows Firewall has created the sublayer
+    // otherwise the driver will fail to initialize
+    logger.error() << "Failed to did not pass a WindowsFirewall obj"
+                   << "The Driver cannot work with the sublayer not created";
+    return nullptr;
+  }
+  // 00: Check if we conflict with mullvad, if so.
   if (detectConflict()) {
     logger.error() << "Conflict detected, abort Split-Tunnel init.";
-    uninstallDriver();
-    return;
+    return nullptr;
   }
+  // 01: Check if the driver is installed, if not do so.
   if (!isInstalled()) {
     logger.debug() << "Driver is not Installed, doing so";
     auto handle = installDriver();
     if (handle == INVALID_HANDLE_VALUE) {
       WindowsUtils::windowsLog("Failed to install Driver");
-      return;
+      return nullptr;
     }
     logger.debug() << "Driver installed";
     CloseServiceHandle(handle);
   } else {
-    logger.debug() << "Driver is installed";
+    logger.debug() << "Driver was installed";
   }
-  initDriver();
+  // 02: Now check if the service is running
+  auto driver_manager =
+      WindowsServiceManager::open(QString::fromWCharArray(DRIVER_SERVICE_NAME));
+  if (Q_UNLIKELY(driver_manager == nullptr)) {
+    // Let's be fair if we end up here,
+    // after checking it exists and installing it,
+    // this is super unlikeley
+    Q_ASSERT(false);
+    logger.error()
+        << "WindowsServiceManager was unable fo find Split Tunnel service?";
+    return nullptr;
+  }
+  if (!driver_manager->isRunning()) {
+    logger.debug() << "Driver is not running, starting it";
+    // Start the service
+    if (!driver_manager->startService()) {
+      logger.error() << "Failed to start Split Tunnel Service";
+      return nullptr;
+    };
+  }
+  // 03: Open the Driver Symlink
+  auto driverFile = CreateFileW(DRIVER_SYMLINK, GENERIC_READ | GENERIC_WRITE, 0,
+                                nullptr, OPEN_EXISTING, 0, nullptr);
+  ;
+  if (driverFile == INVALID_HANDLE_VALUE) {
+    WindowsUtils::windowsLog("Failed to open Driver: ");
+    return nullptr;
+  }
+  if (!initDriver(driverFile)) {
+    logger.error() << "Failed to init driver";
+    return nullptr;
+  }
+  // We're ready to talk to the driver, it's alive and setup.
+  return std::make_unique<WindowsSplitTunnel>(driverFile);
+}
+
+bool WindowsSplitTunnel::initDriver(HANDLE driverIO) {
+  // We need to now check the state and init it, if required
+  auto state = getState(driverIO);
+  if (state == STATE_UNKNOWN) {
+    logger.debug() << "Cannot check if driver is initialized";
+    return false;
+  }
+  if (state >= STATE_INITIALIZED) {
+    logger.debug() << "Driver already initialized: " << state;
+    // Reset Driver as it has wfp handles probably >:(
+    resetDriver(driverIO);
+
+    auto newState = getState(driverIO);
+    logger.debug() << "New state after reset:" << newState;
+    if (newState >= STATE_INITIALIZED) {
+      logger.debug() << "Reset unsuccesfull";
+      return false;
+    }
+  }
+
+  DWORD bytesReturned;
+  auto ok = DeviceIoControl(driverIO, IOCTL_INITIALIZE, nullptr, 0, nullptr, 0,
+                            &bytesReturned, nullptr);
+  if (!ok) {
+    auto err = GetLastError();
+    logger.error() << "Driver init failed err -" << err;
+    logger.error() << "State:" << getState(driverIO);
+
+    return false;
+  }
+  logger.debug() << "Driver initialized" << getState(driverIO);
+  return true;
+}
+
+WindowsSplitTunnel::WindowsSplitTunnel(HANDLE driverIO) : m_driver(driverIO) {
+  logger.debug() << "Connected to the Driver";
+
+  Q_ASSERT(getState() == STATE_INITIALIZED);
 }
 
 WindowsSplitTunnel::~WindowsSplitTunnel() {
   CloseHandle(m_driver);
   uninstallDriver();
-}
-
-void WindowsSplitTunnel::initDriver() {
-  if (detectConflict()) {
-    logger.error() << "Conflict detected, abort Split-Tunnel init.";
-    return;
-  }
-  logger.debug() << "Try to open Split Tunnel Driver";
-  // Open the Driver Symlink
-  m_driver = CreateFileW(DRIVER_SYMLINK, GENERIC_READ | GENERIC_WRITE, 0,
-                         nullptr, OPEN_EXISTING, 0, nullptr);
-  ;
-
-  if (m_driver == INVALID_HANDLE_VALUE) {
-    WindowsUtils::windowsLog("Failed to open Driver: ");
-
-    // If the handle is not present, try again after the serivce has started;
-    auto driver_manager = WindowsServiceManager::open(
-        QString::fromWCharArray(DRIVER_SERVICE_NAME));
-    if (driver_manager == nullptr) {
-      return;
-    }
-    QObject::connect(driver_manager.get(),
-                     &WindowsServiceManager::serviceStarted, this,
-                     &WindowsSplitTunnel::initDriver);
-    driver_manager->startService();
-    return;
-  }
-
-  logger.debug() << "Connected to the Driver";
-  // Reset Driver as it has wfp handles probably >:(
-
-  if (!WindowsFirewall::instance()->init()) {
-    logger.error() << "Init WFP-Sublayer failed, driver won't be functional";
-    return;
-  }
-
-  // We need to now check the state and init it, if required
-
-  auto state = getState();
-  if (state == STATE_UNKNOWN) {
-    logger.debug() << "Cannot check if driver is initialized";
-  }
-  if (state >= STATE_INITIALIZED) {
-    logger.debug() << "Driver already initialized: " << state;
-    reset();
-
-    auto newState = getState();
-    logger.debug() << "New state after reset:" << newState;
-    if (newState >= STATE_INITIALIZED) {
-      logger.debug() << "Reset unsuccesfull";
-      return;
-    }
-  }
-
-  DWORD bytesReturned;
-  auto ok = DeviceIoControl(m_driver, IOCTL_INITIALIZE, nullptr, 0, nullptr, 0,
-                            &bytesReturned, nullptr);
-  if (!ok) {
-    auto err = GetLastError();
-    logger.error() << "Driver init failed err -" << err;
-    logger.error() << "State:" << getState();
-
-    return;
-  }
-  logger.debug() << "Driver initialized" << getState();
 }
 
 void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
@@ -319,25 +342,27 @@ void WindowsSplitTunnel::stop() {
   logger.debug() << "Stopping Split tunnel successfull";
 }
 
-void WindowsSplitTunnel::reset() {
+bool WindowsSplitTunnel::resetDriver(HANDLE driverIO) {
   DWORD bytesReturned;
-  auto ok = DeviceIoControl(m_driver, IOCTL_ST_RESET, nullptr, 0, nullptr, 0,
+  auto ok = DeviceIoControl(driverIO, IOCTL_ST_RESET, nullptr, 0, nullptr, 0,
                             &bytesReturned, nullptr);
   if (!ok) {
     logger.error() << "Reset Split tunnel not successfull";
-    return;
+    return false;
   }
   logger.debug() << "Reset Split tunnel successfull";
+  return true;
 }
 
-WindowsSplitTunnel::DRIVER_STATE WindowsSplitTunnel::getState() {
-  if (m_driver == INVALID_HANDLE_VALUE) {
+// static
+WindowsSplitTunnel::DRIVER_STATE WindowsSplitTunnel::getState(HANDLE driverIO) {
+  if (driverIO == INVALID_HANDLE_VALUE) {
     logger.debug() << "Can't query State from non Opened Driver";
     return STATE_UNKNOWN;
   }
   DWORD bytesReturned;
   SIZE_T outBuffer;
-  bool ok = DeviceIoControl(m_driver, IOCTL_GET_STATE, nullptr, 0, &outBuffer,
+  bool ok = DeviceIoControl(driverIO, IOCTL_GET_STATE, nullptr, 0, &outBuffer,
                             sizeof(outBuffer), &bytesReturned, nullptr);
   if (!ok) {
     WindowsUtils::windowsLog("getState response failure");
@@ -348,6 +373,9 @@ WindowsSplitTunnel::DRIVER_STATE WindowsSplitTunnel::getState() {
     return STATE_UNKNOWN;
   }
   return static_cast<WindowsSplitTunnel::DRIVER_STATE>(outBuffer);
+}
+WindowsSplitTunnel::DRIVER_STATE WindowsSplitTunnel::getState() {
+  return getState(m_driver);
 }
 
 std::vector<uint8_t> WindowsSplitTunnel::generateAppConfiguration(
