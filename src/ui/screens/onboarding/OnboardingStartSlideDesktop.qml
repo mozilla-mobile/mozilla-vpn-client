@@ -15,9 +15,6 @@ ColumnLayout {
     objectName: "onboardingStartSlide"
 
     property string telemetryScreenId: "connect_on_startup"
-    // `startAtBootCheckbox` was added to change the default `startAtBoot` setting to true. We  couldn't simply change the `startAtBoot` default in `settingslist.h`
-    // without affecting older VPN clients. See https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9878
-    property bool startAtBootCheckbox: true
 
     signal nextClicked()
     signal backClicked()
@@ -64,11 +61,11 @@ ColumnLayout {
         MZSettingsToggle {
             objectName: "startAtBootToggle"
 
-            checked: startAtBootCheckbox
+            checked: MZSettings.startAtBoot
             onClicked: {
-                startAtBootCheckbox = !startAtBootCheckbox
+                MZSettings.startAtBoot = !MZSettings.startAtBoot
 
-                if (startAtBootCheckbox) {
+                if (MZSettings.startAtBoot) {
                     Glean.interaction.connectOnStartupEnabled.record({
                         screen: root.telemetryScreenId,
                     });
@@ -112,8 +109,6 @@ ColumnLayout {
         text: MZI18n.GlobalGetStarted
 
         onClicked: {
-            MZSettings.startAtBoot = startAtBootCheckbox
-
             Glean.interaction.getStartedSelected.record({
                 screen: root.telemetryScreenId,
             });

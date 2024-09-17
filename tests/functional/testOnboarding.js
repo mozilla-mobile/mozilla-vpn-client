@@ -170,18 +170,13 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.START_SLIDE.visible());
     assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.ONBOARDING_VIEW, 'currentIndex'), 3);
     assert.equal(await vpn.getSetting('onboardingStep'), 3);
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'),
-        'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'), 'false');
     assert.equal(await vpn.getSetting('startAtBoot'), false);
 
     //Check start at boot toggle
     await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'),
-        'false');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'), 'true');
+    assert.equal(await vpn.getSetting('startAtBoot'), true);
 
     //Test back button
     await vpn.waitForQueryAndClick(queries.screenOnboarding.START_BACK_BUTTON.visible());
@@ -194,18 +189,8 @@ describe('Onboarding', function() {
     await vpn.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
 
     //Ensure all selections on start slide are saved
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'),
-        'false');
-
-    // Then click it again
-    await vpn.waitForQueryAndClick(
-        queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'),
-        'true');
+    assert.equal(await vpn.getQueryProperty(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE, 'checked'), 'true');
+    assert.equal(await vpn.getSetting('startAtBoot'), true);
 
     //Test going back one slide via progress bar
     await vpn.waitForQueryAndClick(queries.screenOnboarding.STEP_PROG_BAR_DEVICES_BUTTON.visible());
@@ -703,16 +688,14 @@ describe('Onboarding', function() {
 
       //Verify that connectOnStartupEnabled event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
-      const connectOnStartupEnabledEvents = await vpn.waitForGleanValue(
-          'interaction', 'connectOnStartupDisabled', 'main');
+      const connectOnStartupEnabledEvents = await vpn.waitForGleanValue("interaction", "connectOnStartupEnabled", "main");
       assert.equal(connectOnStartupEnabledEvents.length, 1);
       const connectOnStartupEnabledEventsExtras = connectOnStartupEnabledEvents[0].extra;
       assert.equal(startScreenTelemetryId, connectOnStartupEnabledEventsExtras.screen);
 
       //Verify that connectOnStartupDisabled event is recorded
       await vpn.waitForQueryAndClick(queries.screenOnboarding.START_START_AT_BOOT_TOGGLE.visible());
-      const connectOnStartupDisabledEvents = await vpn.waitForGleanValue(
-          'interaction', 'connectOnStartupEnabled', 'main');
+      const connectOnStartupDisabledEvents = await vpn.waitForGleanValue("interaction", "connectOnStartupDisabled", "main");
       assert.equal(connectOnStartupDisabledEvents.length, 1);
       const connectOnStartupDisabledEventsExtras = connectOnStartupDisabledEvents[0].extra;
       assert.equal(startScreenTelemetryId, connectOnStartupDisabledEventsExtras.screen);
