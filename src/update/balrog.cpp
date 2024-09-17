@@ -86,6 +86,7 @@ void Balrog::start(Task* task) {
   logger.debug() << "URL:" << url;
 
   NetworkRequest* request = new NetworkRequest(task, 200);
+  request->addExpectedStatus(404);
   request->get(url);
 
   connect(request, &NetworkRequest::requestFailed, this,
@@ -98,7 +99,10 @@ void Balrog::start(Task* task) {
           [this, task, request](const QByteArray& data) {
             logger.debug() << "Request completed";
 
-            if (!fetchSignature(task, request, data)) {
+            if (request->statusCode() != 200) {
+              logger.info() << "No updates available.";
+              deleteLater();
+            } else if (!fetchSignature(task, request, data)) {
               logger.warning() << "Ignore failure.";
               deleteLater();
             }

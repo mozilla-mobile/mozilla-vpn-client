@@ -36,6 +36,8 @@ class NetworkRequest final : public QObject {
       std::function<bool(NetworkRequest*, QIODevice*)>&&
           postResourceIODeviceCallback);
 
+  void addExpectedStatus(int code) { m_expectedStatusCodes.append(code); }
+
 #ifdef UNIT_TEST
   static void resetRequestHandler();
 #endif
@@ -84,6 +86,8 @@ class NetworkRequest final : public QObject {
   bool isRedirect() const;
 
   void maybeDeleteLater();
+  QString expectStatusString() const;
+
 
  private slots:
   void replyFinished();
@@ -119,7 +123,8 @@ class NetworkRequest final : public QObject {
 
   QNetworkReply* m_reply = nullptr;
   QByteArray m_replyData;
-  int m_expectedStatusCode = 0;
+  QList<int> m_expectedStatusCodes;
+
 #ifdef MZ_WASM
   // In wasm network request, m_reply is null. So we need to store the "status
   // code" in a variable member.
