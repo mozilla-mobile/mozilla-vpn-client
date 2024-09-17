@@ -17,7 +17,6 @@ jobs:
     env:
       DEBEMAIL: ${{ github.actor }}@users.noreply.github.com
       DEBFULLNAME: ${{ github.actor }}
-      GNUPGHOME: ${{ runner.temp }}/gnupg-data
       GITREF: ${{ github.ref }}
     steps:
       - name: Checkout sources
@@ -79,6 +78,7 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSWORD: ${{ secrets.GPG_PASSWORD }}
+          GNUPGHOME: ${{ runner.temp }}/gnupg-data
         run: |
           mkdir -m700 $GNUPGHOME
           echo "allow-preset-passphrase" > $GNUPGHOME/gpg-agent.conf
@@ -99,6 +99,7 @@ jobs:
           KEYID: ${{ steps.keys.outputs.keyid }}
           PPA_TARGET_DISTS: ${{ steps.decision.outputs.releases }}
           PPA_URL: ${{ steps.decision.outputs.ppa-url }}
+          GNUPGHOME: ${{ runner.temp }}/gnupg-data
         run: |
           JOB_EXIT_CODE=0
           PACKAGE_DSC_FILE=$(find . -name '*.dsc')
@@ -126,6 +127,7 @@ jobs:
           KEYID: ${{ steps.keys.outputs.keyid }}
           PPA_TARGET_DISTS: ${{ steps.decision.outputs.releases }}
           PPA_URL: ${{ steps.decision.outputs.ppa-url }}
+          GNUPGHOME: ${{ runner.temp }}/gnupg-data
         run: |
           JOB_EXIT_CODE=0
           for dist in ${PPA_TARGET_DISTS}; do
