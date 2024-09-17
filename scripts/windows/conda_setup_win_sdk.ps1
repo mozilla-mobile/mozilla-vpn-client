@@ -47,14 +47,6 @@ xwin --accept-license `
 
 ## Generate the INCLUDE env
 $XWIN_PATH="`$env:CONDA_PREFIX\xwin"
-$LIB_ADDS =   `
-                  "$XWIN_PATH\VC\Tools\MSVC\14.29.16.10\lib\x64;",`
-                  "$XWIN_PATH\Windows Kits\10\lib\10.0.22000\ucrt\x64;"
-$LIB_TARGET =""
-ForEach-Object -InputObject $LIB_ADDS {
-    $LIB_TARGET +=($XWIN_PATH+"\"+$_)
-}
-$LIB_TARGET= $LIB_TARGET-replace("; ",";")
 
 # Generate & write (de/)activation scripts
 
@@ -65,7 +57,7 @@ $activate = @"
 `$env:AR="llvm-lib"
 `$env:LD="lld-link"
 
-`$env:LIB="$LIB_TARGET"
+`$env:LIB=";$XWIN_PATH\VC\Tools\MSVC\14.29.16.10\lib\x64;$XWIN_PATH\Windows Kits\10\lib\10.0.22000\ucrt\x64;"
 
 `$env:CMAKE_CXX_COMPILER="clang-cl"
 `$env:CMAKE_C_COMPILER="clang-cl"

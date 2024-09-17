@@ -28,14 +28,6 @@ Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x64.msm
 Copy-Item -Path $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC143_CRT_x86.msm -Destination $env:VCToolsRedistDir\\MergeModules\\Microsoft_VC142_CRT_x86.msm
 
 
-# Setup Openssl Import
-$SSL_PATH = "$FETCHES_PATH/QT_OUT/SSL"
-if (Test-Path -Path $SSL_PATH) {
-    $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
-    $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
-}
-
-
 ## Use vendored rust crates, if present
 if (Test-Path -Path "$FETCHES_PATH\cargo-vendor") {
     $CARGO_VENDOR_PATH = "$FETCHES_PATH/cargo-vendor" -replace @('\\', '/')
