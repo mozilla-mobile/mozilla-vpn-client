@@ -19,9 +19,130 @@
 #include <QNetworkInterface>
 #include <QScopeGuard>
 
+#pragma region
+
+// Driver Configuration structures
+using CONFIGURATION_ENTRY = struct {
+  // Offset into buffer region that follows all entries.
+  // The image name uses the device path.
+  SIZE_T ImageNameOffset;
+  // Length of the String
+  USHORT ImageNameLength;
+};
+
+using CONFIGURATION_HEADER = struct {
+  // Number of entries immediately following the header.
+  SIZE_T NumEntries;
+
+  // Total byte length: header + entries + string buffer.
+  SIZE_T TotalLength;
+};
+
+// Used to Configure Which IP is network/vpn
+using IP_ADDRESSES_CONFIG = struct {
+  IN_ADDR TunnelIpv4;
+  IN_ADDR InternetIpv4;
+
+  IN6_ADDR TunnelIpv6;
+  IN6_ADDR InternetIpv6;
+};
+
+// Used to Define Which Processes are alive on activation
+using PROCESS_DISCOVERY_HEADER = struct {
+  SIZE_T NumEntries;
+  SIZE_T TotalLength;
+};
+
+using PROCESS_DISCOVERY_ENTRY = struct {
+  HANDLE ProcessId;
+  HANDLE ParentProcessId;
+
+  SIZE_T ImageNameOffset;
+  USHORT ImageNameLength;
+};
+
+using ProcessInfo = struct {
+  DWORD ProcessId;
+  DWORD ParentProcessId;
+  FILETIME CreationTime;
+  std::wstring DevicePath;
+};
+
+#ifndef CTL_CODE
+
+#  define FILE_ANY_ACCESS 0x0000
+
+#  define METHOD_BUFFERED 0
+#  define METHOD_IN_DIRECT 1
+#  define METHOD_NEITHER 3
+
+#  define CTL_CODE(DeviceType, Function, Method, Access) \
+    (((DeviceType) << 16) | ((Access) << 14) | ((Function) << 2) | (Method))
+#endif
+
+// Known ControlCodes
+#define IOCTL_INITIALIZE CTL_CODE(0x8000, 1, METHOD_NEITHER, FILE_ANY_ACCESS)
+
+#define IOCTL_DEQUEUE_EVENT \
+  CTL_CODE(0x8000, 2, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+#define IOCTL_REGISTER_PROCESSES \
+  CTL_CODE(0x8000, 3, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+#define IOCTL_REGISTER_IP_ADDRESSES \
+  CTL_CODE(0x8000, 4, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+#define IOCTL_GET_IP_ADDRESSES \
+  CTL_CODE(0x8000, 5, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+#define IOCTL_SET_CONFIGURATION \
+  CTL_CODE(0x8000, 6, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+#define IOCTL_GET_CONFIGURATION \
+  CTL_CODE(0x8000, 7, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+#define IOCTL_CLEAR_CONFIGURATION \
+  CTL_CODE(0x8000, 8, METHOD_NEITHER, FILE_ANY_ACCESS)
+
+#define IOCTL_GET_STATE CTL_CODE(0x8000, 9, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+#define IOCTL_QUERY_PROCESS \
+  CTL_CODE(0x8000, 10, METHOD_BUFFERED, FILE_ANY_ACCESS)
+
+#define IOCTL_ST_RESET CTL_CODE(0x8000, 11, METHOD_NEITHER, FILE_ANY_ACCESS)
+
+constexpr static const auto DRIVER_SYMLINK = L"\\\\.\\MULLVADSPLITTUNNEL";
+constexpr static const auto DRIVER_FILENAME = "mullvad-split-tunnel.sys";
+constexpr static const auto DRIVER_SERVICE_NAME = L"MozillaVPNSplitTunnel";
+constexpr static const auto MV_SERVICE_NAME = L"MullvadVPN";
+
+#pragma endregion
+
 namespace {
 Logger logger("WindowsSplitTunnel");
+
+ProcessInfo getProcessInfo(HANDLE process, const PROCESSENTRY32W& processMeta) {
+  ProcessInfo pi;
+  pi.ParentProcessId = processMeta.th32ParentProcessID;
+  pi.ProcessId = processMeta.th32ProcessID;
+  pi.CreationTime = {0, 0};
+  pi.DevicePath = L"";
+
+  FILETIME creationTime, null_time;
+  auto ok = GetProcessTimes(process, &creationTime, &null_time, &null_time,
+                            &null_time);
+  if (ok) {
+    pi.CreationTime = creationTime;
+  }
+  wchar_t imagepath[MAX_PATH + 1];
+  if (K32GetProcessImageFileNameW(
+          process, imagepath, sizeof(imagepath) / sizeof(*imagepath)) != 0) {
+    pi.DevicePath = imagepath;
+  }
+  return pi;
 }
+
+}  // namespace
 
 WindowsSplitTunnel::WindowsSplitTunnel(QObject* parent) : QObject(parent) {
   if (detectConflict()) {
@@ -209,7 +330,7 @@ void WindowsSplitTunnel::reset() {
   logger.debug() << "Reset Split tunnel successfull";
 }
 
-DRIVER_STATE WindowsSplitTunnel::getState() {
+WindowsSplitTunnel::DRIVER_STATE WindowsSplitTunnel::getState() {
   if (m_driver == INVALID_HANDLE_VALUE) {
     logger.debug() << "Can't query State from non Opened Driver";
     return STATE_UNKNOWN;
@@ -226,7 +347,7 @@ DRIVER_STATE WindowsSplitTunnel::getState() {
     WindowsUtils::windowsLog("getState response is empty");
     return STATE_UNKNOWN;
   }
-  return static_cast<DRIVER_STATE>(outBuffer);
+  return static_cast<WindowsSplitTunnel::DRIVER_STATE>(outBuffer);
 }
 
 std::vector<uint8_t> WindowsSplitTunnel::generateAppConfiguration(
@@ -410,28 +531,6 @@ std::vector<uint8_t> WindowsSplitTunnel::generateProcessBlob() {
 void WindowsSplitTunnel::close() {
   CloseHandle(m_driver);
   m_driver = INVALID_HANDLE_VALUE;
-}
-
-ProcessInfo WindowsSplitTunnel::getProcessInfo(
-    HANDLE process, const PROCESSENTRY32W& processMeta) {
-  ProcessInfo pi;
-  pi.ParentProcessId = processMeta.th32ParentProcessID;
-  pi.ProcessId = processMeta.th32ProcessID;
-  pi.CreationTime = {0, 0};
-  pi.DevicePath = L"";
-
-  FILETIME creationTime, null_time;
-  auto ok = GetProcessTimes(process, &creationTime, &null_time, &null_time,
-                            &null_time);
-  if (ok) {
-    pi.CreationTime = creationTime;
-  }
-  wchar_t imagepath[MAX_PATH + 1];
-  if (K32GetProcessImageFileNameW(
-          process, imagepath, sizeof(imagepath) / sizeof(*imagepath)) != 0) {
-    pi.DevicePath = imagepath;
-  }
-  return pi;
 }
 
 // static
