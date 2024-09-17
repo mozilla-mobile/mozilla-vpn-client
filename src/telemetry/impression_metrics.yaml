@@ -437,7 +437,7 @@ impression:
     send_in_pings:
       - main
     description: |
-      The user has just moved on to the app exclusions screen 
+      The user has just moved on to the Excluded Apps screen
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:
@@ -473,7 +473,7 @@ impression:
     send_in_pings:
       - main
     description: |
-      The user has opened the app exclusions help sheet
+      The user has opened the Excluded Apps help sheet
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5092
     data_reviews:

@@ -962,7 +962,7 @@ interaction:
       - main
     description: |
       The user has clicked the button that opens
-      the app exclusions modal
+      the Excluded Apps modal
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:
@@ -980,7 +980,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The user has clicked on Clear all to clear all App Exclusions
+      The user has clicked on Clear all to clear all Excluded Apps
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:
@@ -998,7 +998,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The user has clicked on Add application in App Exclusions
+      The user has clicked on Add application in Excluded Apps
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:
@@ -1016,7 +1016,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The user has clicked on the search field in app exclusions
+      The user has clicked on the search field in Excluded Apps
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:

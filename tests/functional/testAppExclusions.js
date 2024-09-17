@@ -90,7 +90,7 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
     await vpn.waitForQuery(queries.screenSettings.privacyView.VIEW.visible());
 
-    //Go back to the app exclusions view
+    // Go back to the Excluded Apps view
     await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
@@ -105,7 +105,7 @@ describe('Settings', function() {
     await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_CLOSE_BUTTON.visible());
   });
 
-  describe('Checking app exclusions screen telemetry', function () {
+  describe('Checking Excluded Apps screen telemetry', function() {
     // No Glean on WASM.
     if(vpn.runningOnWasm()) {
       return;
@@ -113,7 +113,7 @@ describe('Settings', function() {
 
     const appExclusionsTelemetryScreenId = "app_exclusions"
 
-    it('Record telemetry when user clicks on App Exclusions', async () => {
+    it('Record telemetry when user clicks on Excluded Apps', async () => {
       await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
       await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
@@ -125,7 +125,7 @@ describe('Settings', function() {
       assert.equal(element.extra.screen, "settings");
     });
 
-    it('Checking app exclusions screen impression telemetry', async () => {
+    it('Checking Excluded Apps screen impression telemetry', async () => {
       const appExclusionsSreenEvents = await vpn.gleanTestGetValue("impression", "appExclusionsScreen", "main");
       assert.equal(appExclusionsSreenEvents.length, 1);
       const appExclusionsSreenEventsExtras = appExclusionsSreenEvents[0].extra;

@@ -6,7 +6,7 @@ Epic: [VPN-4412: Suggest Apps to Exclude from VPN Protection](https://mozilla-hu
 Context / Problem Statement
 ---------------------------
 
-We're looking to create tools that prompt the user in ways that help them stay more secure. Split tunneling (called 'App Exclusion' to users) is a feature that can reduce the need to turn off the VPN entirely by excluding traffic in specific apps from the VPN tunnel, but many users don't know about it. The current feature is in settings, and provides an alphabetical checklist of installed apps:
+We're looking to create tools that prompt the user in ways that help them stay more secure. Split tunneling (called 'Excluded Apps' to users) is a feature that can reduce the need to turn off the VPN entirely by excluding traffic in specific apps from the VPN tunnel, but many users don't know about it. The current feature is in settings, and provides an alphabetical checklist of installed apps:
 
 <img src="./images/0005-01.png" height="500" />
 
@@ -47,12 +47,12 @@ This work is broken into four sections, with the bulk of code coming in the midd
         -   The precise methods to determine whether an app belongs on the list is described in the [epic](https://mozilla-hub.atlassian.net/browse/VPN-4412).
     -   From Santiago (this is a reminder to review these later): https://github.com/citizenlab/test-lists/tree/master/lists, https://ooni.org/ for Android https://docs.google.com/spreadsheets/d/1j2REPQkcdPg5bNW5B3T-L8dnlNPPwAms1WlBiYvVwoc/edit#gid=0
 -   (5-8 points) Deep linking into app for notification to work ([VPN-5034](https://mozilla-hub.atlassian.net/browse/VPN-5034)): This may be even fewer points, based on the scope (in ticket).
--   (2-5 points) Create initial list of recommended app exclusions, from work done by Product.
+-   (2-5 points) Create initial list of recommended excluded apps, from work done by Product.
 
 ### Create daily task in app (12-16 points total)
 <img src="./images/0005-02.png" width="800" alt="New daily task" />
 
--   (3-5 points) Daily task at noon (local) to check for suggested apps that are installed on the device (after one week from first install) and not already excluded, halt task if don't have notification permissions or if the platform doesn't have app exclusions feature.
+-   (3-5 points) Daily task at noon (local) to check for suggested apps that are installed on the device (after one week from first install) and not already excluded, halt task if don't have notification permissions or if the platform doesn't have excluded apps feature.
     -   This will be run by the app for desktop, and in the daemon on Android. (iOS does not have split tunnel.)
         -   After running the job, we will create timer for noon the following day to run the job next. Additionally, we'll record the time for this job as a setting, and we'll check this timestamp on app/daemon launch - if the deadline has passed we'll immediately run the task.
         -   We're not concerned if the user's clock shifts. The vast majority of these daily checks will not result in any notification to the user (except in the rare case that the user consistently adds new apps daily that happen to be on the suggested list). The worst case scenario would be that a user gets two notifications in a 24 hour period. This isn't the planned user interaction, but given the low likelihood (neither clock changes nor the installation of new suggested apps is a common event) it's not worth building a system that considers this.
@@ -71,7 +71,7 @@ This work is broken into four sections, with the bulk of code coming in the midd
 ### Improve existing split tunnel screen (11-17 points total)
 [Figma mocks](https://www.figma.com/file/UZYzma7hlcfE5ke3z8jGbN/App-exclusions-suggestions?type=design&node-id=196-6366&mode=design&t=RL1hdfBQLMS1rKVa-0)
 
-<img src="./images/0005-03.png" width="500" alt="Updated flow for existing App Exclusion screen" />
+<img src="./images/0005-03.png" width="500" alt="Updated flow for existing Excluded Apps screen" />
 
 -   (2 points) Run the task on the launch of screen
     -   Update the "have seen these apps" settings list with all suggested apps. (If a new suggested app is installed and the Settings screen is opened by a user before the daily job runs to send a notification, we thus never send a notification. This behavior was confirmed by Santiago.)
@@ -140,7 +140,7 @@ Metrics
 
 We will create several metrics as part of this work; they are described in the appropriate spots in the "Implementation" section.
 
-We'd expect the `apps_excluded` metric to increase after this is implemented on platforms which have app exclusions. Both the number of people with more than 0 apps excluded and the average count of apps excluded should increase.
+We'd expect the `apps_excluded` metric to increase after this is implemented on platforms which have "excluded apps". Both the number of people with more than 0 apps excluded and the average count of apps excluded should increase.
 
 We will use Nimbus to roll out the test of this feature.
 
@@ -154,7 +154,7 @@ The excluded apps list will likely live in the client repo. There are ways to we
 Considerations for roll out
 ----------------------
 
-While the reworked app exclusion page will affect all platforms that support split tunneling, notifications will only be shown to users who have already allowed our app to send them. On mobile, we show the "approve notifications" screen immediately upon launching the app for the first time, which likely depresses approval rates. We may want to re-consider how we show this as part of onboarding.
+While the reworked excluded apps page will affect all platforms that support split tunneling, notifications will only be shown to users who have already allowed our app to send them. On mobile, we show the "approve notifications" screen immediately upon launching the app for the first time, which likely depresses approval rates. We may want to re-consider how we show this as part of onboarding.
 
 Test Plan
 ---------

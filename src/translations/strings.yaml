@@ -146,15 +146,10 @@ splittunnel:
       - Success! You added “%1” to this list.
     comment:
       - Displayed in notification after the user added a missing app to the split-tunnel List; %1 is the name of the added application
-  infoText2:
-    value:
-      - For any questions about setting app exclusions, we’ve provided some helpful tips on our website.
-    comment:
-      - This displays as informational text below split tunneling settings. The link directs to a sumo article which will help certain users who are having network issues using this feature.
   infoLinkText: Learn more
-  infoCardDescription:
-    value: VPN must be off to edit App exclusions
-    comment: Displays inside the information card at the top of the app exclusions screen when the VPN is on
+  infoCardDescription2:
+    value: VPN must be off to edit Excluded apps
+    comment: Displays inside the information card at the top of the Excluded apps screen when the VPN is on
 
 multiHopFeature:
   singleHopToggleCTA: Single-hop
@@ -323,7 +318,7 @@ systray:
 
 settings:
   privacySettings: Privacy features
-  appExclusionSettings: App exclusions
+  appExclusionTitle: Excluded apps
   dnsSettings: DNS settings
   preferencesSettings: Preferences
   shareTechnicalDataDescription: Help improve Mozilla VPN by sharing crash reports, diagnostics, and product usage data.
