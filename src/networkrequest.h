@@ -88,7 +88,6 @@ class NetworkRequest final : public QObject {
   void maybeDeleteLater();
   QString expectStatusString() const;
 
-
  private slots:
   void replyFinished();
   void timeout();

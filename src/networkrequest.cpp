@@ -68,8 +68,7 @@ void NetworkRequest::resetRequestHandler() {
 }
 #endif
 
-NetworkRequest::NetworkRequest(Task* parent, int status)
-    : QObject(parent) {
+NetworkRequest::NetworkRequest(Task* parent, int status) : QObject(parent) {
   MZ_COUNT_CTOR(NetworkRequest);
   logger.debug() << "Network request created by" << parent->name();
 
@@ -296,8 +295,8 @@ void NetworkRequest::processData(QNetworkReply::NetworkError error,
     return;
   }
 
-  // Otherwise, if we get this far and an expected response code was provided, but
-  // but not found. Then handle this as an error.
+  // Otherwise, if we get this far and an expected response code was provided,
+  // but not found. Handle this as an error.
   if (!m_expectedStatusCodes.isEmpty()) {
     // If the status was found, it should be handled earlier in this function.
     Q_ASSERT(!m_expectedStatusCodes.contains(status));
