@@ -147,7 +147,7 @@ splittunnel:
     comment:
       - Displayed in notification after the user added a missing app to the split-tunnel List; %1 is the name of the added application
   infoLinkText: Learn more
-  infoCardDescription:
+  infoCardDescription2:
     value: VPN must be off to edit Excluded apps
     comment: Displays inside the information card at the top of the Excluded apps screen when the VPN is on
 
@@ -318,7 +318,7 @@ systray:
 
 settings:
   privacySettings: Privacy features
-  appExclusionSettings: Excluded apps
+  appExclusionTitle: Excluded apps
   dnsSettings: DNS settings
   preferencesSettings: Preferences
   shareTechnicalDataDescription: Help improve Mozilla VPN by sharing crash reports, diagnostics, and product usage data.

@@ -64,7 +64,7 @@ ColumnLayout {
                             id: textBlock
                             Layout.fillWidth: true
 
-                            text: MZI18n.SplittunnelInfoCardDescription
+                            text: MZI18n.SplittunnelInfoCardDescription2
                             verticalAlignment: Text.AlignVCenter
                         }
                     }
