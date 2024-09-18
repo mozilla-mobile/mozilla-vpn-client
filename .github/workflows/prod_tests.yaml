@@ -54,7 +54,7 @@ jobs:
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
       matrix:
-        container: [ubuntu:jammy, ubuntu:focal]
+        container: ["ubuntu:jammy", "ubuntu:focal"]
         test: ${{ fromJson(needs.setup-test-matrix.outputs.tests) }}
 
     runs-on: ubuntu-latest
