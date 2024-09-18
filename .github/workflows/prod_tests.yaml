@@ -3,6 +3,7 @@ on:
   check_suite:
     types: [completed]
 
+jobs:
   helloworld:
     name: Hello World!
     runs-on: ubuntu-22.04
