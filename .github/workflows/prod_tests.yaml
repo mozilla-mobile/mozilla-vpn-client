@@ -1,16 +1,71 @@
 name: Production Tests
 on:
-  check_suite:
-    types: [completed]
+  # TODO: Probably just make this on push.
+  push:
+    branches:
+      - main
+      - "releases/**"
+  pull_request:
+    branches:
+      - main
+      - "releases/**"
 
 jobs:
-  helloworld:
-    name: Hello World!
-    runs-on: ubuntu-22.04
+  setup-test-matrix:
+    name: Prepare test matrix
+    runs-on: ubuntu-latest
     steps:
-      - name: Did we run?
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Generate tasklist
+        id: tasklist
         shell: bash
         run: |
-          echo "Hello World!"
-          echo "Event is: ${{ github.event }}"
-          echo "URL is: ${{ github.event.check_suite.url }}"
+          echo -n "tests=" >> $GITHUB_OUTPUT
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c >> $GITHUB_OUTPUT
+
+      - name: Wait for build to succeed
+        uses: fountainhead/action-wait-for-check@v1.2.0
+        id: wait-for-build
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          checkName: build-linux64/release-deb
+          ref: ${{ github.sha }}
+
+      - name: Find Taskcluster Task URL
+        id: find-taskcluster
+        shell: bash
+        run: |
+          echo -n "details=" >> $GITHUB_OUTPUT
+          curl -L \
+            -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            -H "X-GitHub-Api-Version: 2022-11-28" \
+            https://api.github.com/repos/${{ github.owner }}/${{ github.repository }}/commits/${{ github.sha }}/check-runs \ 
+            | jq -r '.check_runs[] | select(.name == "build-linux64/release-deb").details_url' >> $GITHUB_OUTPUT
+
+  run-prod-tests:
+    name: Production tests
+    needs:
+      - setup-test-matrix
+    strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
+      matrix:
+        container: [ubuntu:jammy, ubuntu:focal]
+        test: ${{ fromJson(needs.setup-test-matrix.outputs.tests) }}
+
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    container: ${{ matrix.container }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Hello World
+        shell: bash
+        run: |
+          echo "Hello World ${{ matrix.test }}"
+          echo "Taskcluster URL: ${{ needs.setup-test-matrix.outputs.details }}"
