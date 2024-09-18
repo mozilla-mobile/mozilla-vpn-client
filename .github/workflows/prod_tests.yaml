@@ -1,0 +1,15 @@
+name: Production Tests
+on:
+  check_suite:
+    types: [completed]
+
+  helloworld:
+    name: Hello World!
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Did we run?
+        shell: bash
+        run: |
+          echo "Hello World!"
+          echo "Event is: ${{ github.event }}"
+          echo "URL is: ${{ github.event.check_suite.url }}"
