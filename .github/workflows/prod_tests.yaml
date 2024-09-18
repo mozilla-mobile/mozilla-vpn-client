@@ -33,6 +33,8 @@ jobs:
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           checkName: build-linux64/release-deb
+          timeoutSeconds: 3600
+          intervalSeconds: 30
           ref: ${{ github.sha }}
 
       - name: Find Taskcluster Task URL
@@ -44,7 +46,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             -H "X-GitHub-Api-Version: 2022-11-28" \
-            https://api.github.com/repos/${{ github.owner }}/${{ github.repository }}/commits/${{ github.sha }}/check-runs \ 
+            https://api.github.com/repos/${{ github.repository }}/commits/${{ github.sha }}/check-runs \ 
             | jq -r '.check_runs[] | select(.name == "build-linux64/release-deb").details_url' >> $GITHUB_OUTPUT
 
   run-prod-tests:
