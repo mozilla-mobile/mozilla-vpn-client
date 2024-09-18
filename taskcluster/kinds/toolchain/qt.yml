@@ -13,7 +13,7 @@ qt-macos-6.6:
     description: "Mac QT compile Task"
     fetches:
         fetch:
-            - qt-source-tarball-6.6.3
+            - qt-source-tarball
             - miniconda-osx
     run:
         use-caches: false
@@ -75,26 +75,20 @@ qt-linux:
     worker-type: b-linux-large
     worker:
         docker-image: {in-tree: linux-qt6-build}
-        env:
-            QT_VERSION: "6.2.4"
-            QT_MAJOR: "6.2"
 
-qt-linux-6.6.0:
+qt-linux-next:
     description: "Linux QT compile Task"
     fetches:
         fetch:
-            - qt-source-tarball-6.6.0
+            - qt-source-tarball-next
     run:
         script: compile_qt_6_linux.sh
         resources:
             - scripts/utils/qt6_compile.sh
-        toolchain-alias: qt-linux-6.6
+        toolchain-alias: qt-linux-next
         toolchain-artifact: public/build/qt6_linux.tar.xz
     treeherder:
-        symbol: TL(qt-linux-6.6)
+        symbol: TL(qt-linux-next)
     worker-type: b-linux-large
     worker:
         docker-image: {in-tree: linux-qt6-build}
-        env:
-            QT_VERSION: "6.6.0"
-            QT_MAJOR: "6.6"

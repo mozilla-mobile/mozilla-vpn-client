@@ -97,7 +97,7 @@ linux64/next-deb:
         platform: linux/x86_64
     fetches:
         toolchain:
-            - qt-linux-6.6
+            - qt-linux-next
     worker:
         docker-image: {in-tree: linux-qt6-build}
     run:
