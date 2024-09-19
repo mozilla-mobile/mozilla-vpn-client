@@ -200,5 +200,15 @@
     <InstallExecuteSequence>
       <Custom Action="CloseApplication" After="StopServices" />
     </InstallExecuteSequence>
+
+    <!--
+      Force reinstall of components when running in maintenence mode.
+    -->
+    <CustomAction Id="ForceReinstall" Property="REINSTALL" Value="MozillaVPNFeature"/>
+    <InstallExecuteSequence>
+      <Custom Action="ForceReinstall" Before="CostInitialize">
+        Installed AND NOT (REMOVE="ALL") and NOT REINSTALL
+      </Custom>
+    </InstallExecuteSequence>
   </Product>
 </Wix>
