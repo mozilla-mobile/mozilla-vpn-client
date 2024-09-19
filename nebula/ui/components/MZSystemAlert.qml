@@ -76,6 +76,14 @@ MZAlert {
                 }
             },
             State {
+                name: MZErrorHandler.SplitTunnelErrorAlert
+                PropertyChanges {
+                    target: alertBox
+                    alertText: MZI18n.SplittunnelErrorActivating
+                    visible: true
+                }
+            },
+            State {
                 name: MZErrorHandler.UnrecoverableErrorAlert
                 PropertyChanges {
                     target: alertBox

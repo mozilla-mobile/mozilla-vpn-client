@@ -130,6 +130,7 @@ settingsDev:
   restartRequired: VPN must be restarted to take effect
 
 splittunnel:
+  errorActivating: Error activating App exclusions
   missingAppActionButton:
     value:
       - Add apps manually

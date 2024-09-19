@@ -259,12 +259,12 @@ WindowsSplitTunnel::~WindowsSplitTunnel() {
   uninstallDriver();
 }
 
-void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
+bool WindowsSplitTunnel::excludeApps(const QStringList& appPaths) {
   auto state = getState();
   if (state != STATE_READY && state != STATE_RUNNING) {
     logger.warning() << "Driver is not in the right State to set Rules"
                      << state;
-    return;
+    return false;
   }
 
   logger.debug() << "Pushing new Ruleset for Split-Tunnel " << state;
@@ -278,12 +278,13 @@ void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
     auto err = GetLastError();
     WindowsUtils::windowsLog("Set Config Failed:");
     logger.error() << "Failed to set Config err code " << err;
-    return;
+    return false;
   }
   logger.debug() << "New Configuration applied: " << getState();
+  return true;
 }
 
-void WindowsSplitTunnel::start(int inetAdapterIndex) {
+bool WindowsSplitTunnel::start(int inetAdapterIndex) {
   // To Start we need to send 2 things:
   // Network info (what is vpn what is network)
   logger.debug() << "Starting SplitTunnel";
@@ -296,7 +297,7 @@ void WindowsSplitTunnel::start(int inetAdapterIndex) {
                               0, &bytesReturned, nullptr);
     if (!ok) {
       logger.error() << "Driver init failed";
-      return;
+      return false;
     }
   }
 
@@ -309,14 +310,14 @@ void WindowsSplitTunnel::start(int inetAdapterIndex) {
                               nullptr);
     if (!ok) {
       logger.error() << "Failed to set Process Config";
-      return;
+      return false;
     }
     logger.debug() << "Set Process Config ok || new State:" << getState();
   }
 
   if (getState() == STATE_INITIALIZED) {
     logger.warning() << "Driver is still not ready after process list send";
-    return;
+    return false;
   }
   logger.debug() << "Driver is  ready || new State:" << getState();
 
@@ -326,9 +327,10 @@ void WindowsSplitTunnel::start(int inetAdapterIndex) {
                             nullptr);
   if (!ok) {
     logger.error() << "Failed to set Network Config";
-    return;
+    return false;
   }
   logger.debug() << "New Network Config Applied || new State:" << getState();
+  return true;
 }
 
 void WindowsSplitTunnel::stop() {
