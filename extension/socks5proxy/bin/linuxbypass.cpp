@@ -8,7 +8,12 @@
 #include <errno.h>
 #include <sys/socket.h>
 
-void setupLinuxBypass(QAbstractSocket* s, const QHostAddress& dest) {
+LinuxBypass::LinuxBypass(Socks5* proxy) : QObject(proxy) {
+  connect(proxy, &Socks5::outgoingConnection, this,
+          &LinuxBypass::outgoingConnection);
+}
+
+void LinuxBypass::outgoingConnection(QAbstractSocket* s, const QHostAddress& dest) {
   constexpr const int vpn_firewall_mark = 51820;
   int af = AF_INET;
 

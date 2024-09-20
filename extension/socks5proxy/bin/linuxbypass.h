@@ -5,9 +5,21 @@
 #ifndef LINUXBYPASS_H
 #define LINUXBYPASS_H
 
+#include <QObject>
+
+class Socks5;
 class QAbstractSocket;
 class QHostAddress;
 
-void setupLinuxBypass(QAbstractSocket* s, const QHostAddress& dest);
+class LinuxBypass : public QObject {
+  Q_OBJECT
+
+ public:
+  LinuxBypass(Socks5* proxy);
+  ~LinuxBypass() = default;
+
+ private slots:
+  void outgoingConnection(QAbstractSocket* s, const QHostAddress& dest);
+};
 
 #endif  // LINUXBYPASS_H
