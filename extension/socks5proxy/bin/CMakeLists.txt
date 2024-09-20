@@ -13,6 +13,10 @@ target_link_libraries(socksproxy PUBLIC
 )
 
 if(WIN32)
+    target_sources(socksproxy PRIVATE
+        windowsbypass.cpp
+        windowsbypass.h)
+
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/socksproxy.exe
         DESTINATION .)

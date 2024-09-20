@@ -14,6 +14,9 @@
 #ifdef __linux__
 #  include "linuxbypass.h"
 #endif
+#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#  include "windowsbypass.h"
+#endif
 
 struct Event {
   QString m_newConnection;
@@ -189,7 +192,9 @@ int main(int argc, char** argv) {
                    });
 
 #ifdef __linux__
-  QObject::connect(socks5, &Socks5::outgoingConnection, &setupLinuxBypass);
+  LinuxBypass* bypass = new LinuxBypass(socks5);
+#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+  WindowsBypass* bypass = new WindowsBypass(socks5);
 #endif
 
   return app.exec();
