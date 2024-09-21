@@ -10,6 +10,7 @@ finish-args:
   - "--share=network"
   - "--socket=fallback-x11"
   - "--socket=wayland"
+  - "--device=dri"
   - "--talk-name=org.kde.StatusNotifierWatcher"
   - "--system-talk-name=org.freedesktop.NetworkManager"
   - "--env=QML2_IMPORT_PATH=/app/lib64/qml:/app/lib/qml:/app/qml"
