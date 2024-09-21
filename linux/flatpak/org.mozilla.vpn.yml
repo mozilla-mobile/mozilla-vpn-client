@@ -8,7 +8,9 @@ command: mozillavpn
 finish-args:
   - "--share=ipc"
   - "--share=network"
-  - "--socket=x11"
+  - "--socket=fallback-x11"
+  - "--socket=wayland"
+  - "--talk-name=org.kde.StatusNotifierWatcher"
   - "--system-talk-name=org.freedesktop.NetworkManager"
   - "--env=QML2_IMPORT_PATH=/app/lib64/qml:/app/lib/qml:/app/qml"
 build-options:
