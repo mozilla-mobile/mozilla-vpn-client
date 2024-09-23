@@ -519,6 +519,12 @@
       <trans-unit id="servers.Lima" xml:space="preserve">
         <source>Lima</source>
       </trans-unit>
+      <trans-unit id="servers.cy" xml:space="preserve">
+        <source>Cyprus</source>
+      </trans-unit>
+      <trans-unit id="servers.Nicosia" xml:space="preserve">
+        <source>Nicosia</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
