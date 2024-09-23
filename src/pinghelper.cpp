@@ -49,6 +49,9 @@ void PingHelper::start(const QString& serverIpv4Gateway,
   if (!m_pingSender->isValid()) {
     m_pingSender->deleteLater();
     m_pingSender = new DnsPingSender(m_source, this);
+    if (!((DnsPingSender*)m_pingSender)->start()) {
+      logger.error() << "Unable to start DNSPingSender.";
+    }
   }
 
   connect(m_pingSender, &PingSender::recvPing, this, &PingHelper::pingReceived,
