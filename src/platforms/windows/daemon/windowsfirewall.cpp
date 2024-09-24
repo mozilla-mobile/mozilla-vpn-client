@@ -14,6 +14,7 @@
 #include <windows.h>
 
 #include <QApplication>
+#include <QDir>
 #include <QFileInfo>
 #include <QHostAddress>
 #include <QNetworkInterface>
@@ -189,6 +190,8 @@ bool WindowsFirewall::enableInterface(int vpnAdapterIndex) {
   FW_OK(allowHyperVTraffic(MED_WEIGHT, "Allow Hyper-V Traffic"));
   FW_OK(allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT,
                                 "Allow all for Mozilla VPN.exe"));
+  FW_OK(allowTrafficForAppOnAll(getProxyPath(), MAX_WEIGHT,
+                                "Allow all for socksproxy.exe"));
   FW_OK(blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS"));
   FW_OK(
       allowLoopbackTraffic(MED_WEIGHT, "Allow Loopback traffic on device %1"));
@@ -807,6 +810,15 @@ QString WindowsFirewall::getCurrentPath() {
   }
 
   return QString::fromLocal8Bit(buffer);
+}
+
+QString WindowsFirewall::getProxyPath() {
+  QString execPath = getCurrentPath();
+  if (execPath.isEmpty()) {
+    return "";
+  }
+
+  return QFileInfo(execPath).dir().absoluteFilePath("socksproxy.exe");
 }
 
 void WindowsFirewall::importAddress(const QHostAddress& addr,

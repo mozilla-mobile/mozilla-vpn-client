@@ -429,12 +429,6 @@ void Controller::activateInternal(
   // Splittunnel-feature could have been disabled due to a driver conflict.
   if (Feature::get(Feature::Feature_splitTunnel)->isSupported()) {
     exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
-// Add the Proxy to the excluded list, if activateable
-#if defined MZ_PROXY_ENABLED
-    if (vpn->proxyController()->canActivate()) {
-      exitConfig.m_vpnDisabledApps.append(vpn->proxyController()->binaryPath());
-    }
-#endif
   }
   if (Feature::get(Feature::Feature_alwaysPort53)->isSupported()) {
     dnsPort = ForceDNSPort;
