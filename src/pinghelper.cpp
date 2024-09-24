@@ -12,6 +12,7 @@
 #include "logger.h"
 #include "pingsender.h"
 #include "pingsenderfactory.h"
+#include "platforms/dummy/dummypingsender.h"
 
 // Maximum window size for ping statistics.
 constexpr int PING_STATS_WINDOW = 32;
@@ -47,10 +48,14 @@ void PingHelper::start(const QString& serverIpv4Gateway,
   // we happen to be on one of these unlucky devices, create a DnsPingSender
   // instead.
   if (!m_pingSender->isValid()) {
+    logger.warning() << "PingSenderFactory is not valid, trying DnsPingSender.";
     m_pingSender->deleteLater();
     m_pingSender = new DnsPingSender(m_source, this);
-    if (!((DnsPingSender*)m_pingSender)->start()) {
-      logger.error() << "Unable to start DNSPingSender.";
+    if (!m_pingSender->isValid()) {
+      logger.error()
+          << "DnsPingSender is also not valid, using DummyPingSender.";
+      m_pingSender->deleteLater();
+      m_pingSender = new DummyPingSender(m_source, this);
     }
   }
 
