@@ -33,7 +33,7 @@ static void netChangeCallback(PVOID context, PMIB_IPINTERFACE_ROW row,
 
 // Called by the kernel on network interface changes.
 // Runs in some unknown thread, so invoke a Qt signal to do the real work.
-static void addrChangeCallback(PVOID context, PMIB_UNICASTIPADDRESS_ROW  row,
+static void addrChangeCallback(PVOID context, PMIB_UNICASTIPADDRESS_ROW row,
                                MIB_NOTIFICATION_TYPE type) {
   WindowsBypass* bypass = static_cast<WindowsBypass*>(context);
   Q_UNUSED(type);
@@ -107,7 +107,7 @@ void WindowsBypass::outgoingConnection(QAbstractSocket* s,
     source.Ipv6.sin6_family = AF_INET6;
     source.Ipv6.sin6_port = 0;
     source.Ipv6.sin6_flowinfo = 0;
-    source.Ipv6.sin6_scope_id = 0; // TODO: Do we need to provide a scope?
+    source.Ipv6.sin6_scope_id = 0;  // TODO: Do we need to provide a scope?
     memcpy(&source.Ipv6.sin6_addr.s6_addr, &v6addr, 16);
     qDebug() << "Routing" << dest.toString() << "via"
              << data.ipv6addr.toString();
@@ -124,8 +124,8 @@ void WindowsBypass::outgoingConnection(QAbstractSocket* s,
   }
 
   // Bind it to force its traffic to use a specific interface.
-  int result = bind(newsock, reinterpret_cast<sockaddr*>(&source),
-                    sizeof(source)); 
+  int result =
+      bind(newsock, reinterpret_cast<sockaddr*>(&source), sizeof(source));
   if (result != 0) {
     qWarning() << "socket bind failed:" << WSAGetLastError();
     closesocket(newsock);

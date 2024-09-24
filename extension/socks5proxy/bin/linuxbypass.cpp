@@ -4,18 +4,19 @@
 
 #include "linuxbypass.h"
 
-#include <QAbstractSocket>
-#include <QHostAddress>
-
 #include <errno.h>
 #include <sys/socket.h>
+
+#include <QAbstractSocket>
+#include <QHostAddress>
 
 LinuxBypass::LinuxBypass(Socks5* proxy) : QObject(proxy) {
   connect(proxy, &Socks5::outgoingConnection, this,
           &LinuxBypass::outgoingConnection);
 }
 
-void LinuxBypass::outgoingConnection(QAbstractSocket* s, const QHostAddress& dest) {
+void LinuxBypass::outgoingConnection(QAbstractSocket* s,
+                                     const QHostAddress& dest) {
   constexpr const int vpn_firewall_mark = 51820;
   int af = AF_INET;
 
@@ -35,7 +36,8 @@ void LinuxBypass::outgoingConnection(QAbstractSocket* s, const QHostAddress& des
   if (err != 0) {
     qWarning() << "setsockopt(SO_MARK) failed:" << strerror(errno);
     close(newsock);
-  } else if (!s->setSocketDescriptor(newsock, QAbstractSocket::UnconnectedState)) {
+  } else if (!s->setSocketDescriptor(newsock,
+                                     QAbstractSocket::UnconnectedState)) {
     qWarning() << "setSocketDescriptor() failed:" << s->errorString();
   }
 }
