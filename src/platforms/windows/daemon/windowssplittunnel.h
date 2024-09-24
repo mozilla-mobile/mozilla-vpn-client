@@ -84,10 +84,11 @@ class WindowsSplitTunnel final {
   // Generates a Configuration for Each APP
   std::vector<uint8_t> generateAppConfiguration(const QStringList& appPaths);
   // Generates a Configuration which IP's are VPN and which network
-  std::vector<uint8_t> generateIPConfiguration(int inetAdapterIndex);
+  std::vector<std::byte> generateIPConfiguration(int inetAdapterIndex);
   std::vector<uint8_t> generateProcessBlob();
 
-  void getAddress(int adapterIndex, IN_ADDR* out_ipv4, IN6_ADDR* out_ipv6);
+  [[nodiscard]] bool getAddress(int adapterIndex, IN_ADDR* out_ipv4,
+                                IN6_ADDR* out_ipv6);
   // Collects info about an Opened Process
 
   // Converts a path to a Dos Path:

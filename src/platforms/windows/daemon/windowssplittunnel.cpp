@@ -423,53 +423,52 @@ std::vector<uint8_t> WindowsSplitTunnel::generateAppConfiguration(
   return outBuffer;
 }
 
-std::vector<uint8_t> WindowsSplitTunnel::generateIPConfiguration(
+std::vector<std::byte> WindowsSplitTunnel::generateIPConfiguration(
     int inetAdapterIndex) {
-  std::vector<uint8_t> out(sizeof(IP_ADDRESSES_CONFIG));
+  std::vector<std::byte> out(sizeof(IP_ADDRESSES_CONFIG));
 
   auto config = reinterpret_cast<IP_ADDRESSES_CONFIG*>(&out[0]);
 
   auto ifaces = QNetworkInterface::allInterfaces();
   // Always the VPN
-  getAddress(WindowsCommons::VPNAdapterIndex(), &config->TunnelIpv4,
-             &config->TunnelIpv6);
-  // 2nd best route
-  getAddress(inetAdapterIndex, &config->InternetIpv4, &config->InternetIpv6);
+  if (!getAddress(WindowsCommons::VPNAdapterIndex(), &config->TunnelIpv4,
+                  &config->TunnelIpv6)) {
+    return {};
+  }
+  // 2nd best route is usually the internet adapter
+  if (!getAddress(inetAdapterIndex, &config->InternetIpv4,
+                  &config->InternetIpv6)) {
+    return {};
+  };
   return out;
 }
-void WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
+bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
                                     IN6_ADDR* out_ipv6) {
   QNetworkInterface target =
       QNetworkInterface::interfaceFromIndex(adapterIndex);
   logger.debug() << "Getting adapter info for:" << target.humanReadableName();
 
-  // take the first v4/v6 Adress and convert to in_addr
-  for (auto address : target.addressEntries()) {
-    if (address.ip().protocol() == QAbstractSocket::IPv4Protocol) {
-      auto adrr = address.ip().toString();
-      std::wstring wstr = adrr.toStdWString();
-      logger.debug() << "IpV4" << logger.sensitive(adrr);
-      PCWSTR w_str_ip = wstr.c_str();
-      auto ok = InetPtonW(AF_INET, w_str_ip, out_ipv4);
-      if (ok != 1) {
-        logger.debug() << "Ipv4 Conversation error" << WSAGetLastError();
+  auto get = [&target](QAbstractSocket::NetworkLayerProtocol protocol) {
+    for (auto address : target.addressEntries()) {
+      if (address.ip().protocol() != protocol) {
+        continue;
       }
-      break;
+      return address.ip().toString().toStdWString();
     }
+    return std::wstring{};
+  };
+  auto ipv4 = get(QAbstractSocket::IPv4Protocol);
+  auto ipv6 = get(QAbstractSocket::IPv6Protocol);
+
+  if (InetPtonW(AF_INET, ipv4.c_str(), out_ipv4) != 1) {
+    logger.debug() << "Ipv4 Conversation error" << WSAGetLastError();
+    return false;
   }
-  for (auto address : target.addressEntries()) {
-    if (address.ip().protocol() == QAbstractSocket::IPv6Protocol) {
-      auto adrr = address.ip().toString();
-      std::wstring wstr = adrr.toStdWString();
-      logger.debug() << "IpV6" << logger.sensitive(adrr);
-      PCWSTR w_str_ip = wstr.c_str();
-      auto ok = InetPtonW(AF_INET6, w_str_ip, out_ipv6);
-      if (ok != 1) {
-        logger.error() << "Ipv6 Conversation error" << WSAGetLastError();
-      }
-      break;
-    }
+  if (InetPtonW(AF_INET6, ipv6.c_str(), out_ipv6) != 1) {
+    logger.debug() << "Ipv6 Conversation error" << WSAGetLastError();
+    return false;
   }
+  return true;
 }
 
 std::vector<uint8_t> WindowsSplitTunnel::generateProcessBlob() {
@@ -571,15 +570,15 @@ SC_HANDLE WindowsSplitTunnel::installDriver() {
     return (SC_HANDLE)INVALID_HANDLE_VALUE;
   }
   auto path = driver.absolutePath() + "/" + DRIVER_FILENAME;
-  LPCWSTR binPath = (const wchar_t*)path.utf16();
+  auto binPath = (const wchar_t*)path.utf16();
   auto scm_rights = SC_MANAGER_ALL_ACCESS;
-  auto serviceManager = OpenSCManager(NULL,  // local computer
-                                      NULL,  // servicesActive database
+  auto serviceManager = OpenSCManager(nullptr,  // local computer
+                                      nullptr,  // servicesActive database
                                       scm_rights);
-  auto service = CreateService(serviceManager, DRIVER_SERVICE_NAME, displayName,
-                               SERVICE_ALL_ACCESS, SERVICE_KERNEL_DRIVER,
-                               SERVICE_DEMAND_START, SERVICE_ERROR_NORMAL,
-                               binPath, nullptr, 0, nullptr, nullptr, nullptr);
+  auto service = CreateService(
+      serviceManager, DRIVER_SERVICE_NAME, displayName, SERVICE_ALL_ACCESS,
+      SERVICE_KERNEL_DRIVER, SERVICE_AUTO_START, SERVICE_ERROR_NORMAL, binPath,
+      nullptr, nullptr, nullptr, nullptr, nullptr);
   CloseServiceHandle(serviceManager);
   return service;
 }
