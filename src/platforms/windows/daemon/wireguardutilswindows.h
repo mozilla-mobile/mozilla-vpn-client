@@ -11,6 +11,7 @@
 #include "daemon/wireguardutils.h"
 #include "wireguard.h"
 
+class WindowsFirewall;
 class WindowsRouteMonitor;
 struct WireGuardAPI;
 
@@ -20,7 +21,8 @@ class WireguardUtilsWindows final : public WireguardUtils {
  public:
   // Creates a WireguardUtilsWindows instance, may fail due to i.e
   // wireguard-nt failing to initialize, returns nullptr in that case.
-  static std::unique_ptr<WireguardUtilsWindows> create(QObject* parent);
+  static std::unique_ptr<WireguardUtilsWindows> create(WindowsFirewall* fw,
+                                                       QObject* parent);
   ~WireguardUtilsWindows();
 
   bool interfaceExists() override;
@@ -43,7 +45,7 @@ class WireguardUtilsWindows final : public WireguardUtils {
   void backendFailure();
 
  private:
-  WireguardUtilsWindows(QObject* parent,
+  WireguardUtilsWindows(QObject* parent, WindowsFirewall* fw,
                         std::unique_ptr<WireGuardAPI> wireguard_api);
   void buildMibForwardRow(const IPAddress& prefix, void* row);
 
@@ -52,6 +54,7 @@ class WireguardUtilsWindows final : public WireguardUtils {
   ulong m_deviceIpv4_Handle = 0;
 
   QPointer<WindowsRouteMonitor> m_routeMonitor;
+  QPointer<WindowsFirewall> m_firewall;
   WIREGUARD_ADAPTER_HANDLE m_adapter = NULL;
 };
 
