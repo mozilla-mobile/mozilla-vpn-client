@@ -57,7 +57,7 @@ class TaskPurchase final : public Task {
   QString m_iOSData;
   // `@available(iOS 15, *)` is not available in C++, so this value must be
   // passed in and saved
-  bool isOlderOS;
+  bool m_isOlderOS;
 #endif
 #ifdef MZ_ANDROID
   QString m_androidSku;

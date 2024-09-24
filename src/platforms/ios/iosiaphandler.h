@@ -36,7 +36,7 @@ class IOSIAPHandler final : public PurchaseIAPHandler {
   // 15+. So the entire class must be marked as only available in iOS 15. But we
   // can't mark this variable as only available in iOS 15+ here. Hence, we have
   // this variable as a `void`, and cast it to InAppPurchaseHandler as needed.
-  void* swiftIAPHandler;
+  void* swiftIAPHandler = nullptr;
 };
 
 #endif  // IOSIAPHANDLER_H

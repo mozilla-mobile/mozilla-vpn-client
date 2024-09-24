@@ -248,10 +248,9 @@ void IOSIAPHandler::nativeRegisterProducts() {
     productIdentifiers = [productIdentifiers setByAddingObject:product.m_name.toNSString()];
   }
 
-  logger.debug() << "We are about to register" << [productIdentifiers count] << "products...";
-
   if (@available(iOS 15, *)) {
-    logger.debug() << "...using StoreKit2 API.";
+    logger.debug() << "Registering" << [productIdentifiers count]
+                   << "products using StoreKit2 API.";
     [(InAppPurchaseHandler*)swiftIAPHandler getProductsWith:productIdentifiers
         productRegistrationCallback:^(NSString* productIdentifier, NSString* currencyCode,
                                       NSString* totalPrice, NSString* monthlyPrice,
@@ -289,7 +288,7 @@ void IOSIAPHandler::nativeRegisterProducts() {
         completionHandler:^{
         }];
   } else {
-    logger.debug() << "...using legacy StoreKit API.";
+    logger.debug() << "Registering" << [productIdentifiers count] << "using legacy StoreKit API.";
     SKProductsRequest* productsRequest =
         [[SKProductsRequest alloc] initWithProductIdentifiers:productIdentifiers];
 

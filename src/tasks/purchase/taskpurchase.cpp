@@ -26,7 +26,7 @@ TaskPurchase* TaskPurchase::createForIOS(const QString& receipt,
                                          bool isOlderOS) {
   TaskPurchase* task = new TaskPurchase(IOS);
   task->m_iOSData = receipt;
-  task->isOlderOS = isOlderOS;
+  task->m_isOlderOS = isOlderOS;
   return task;
 }
 #endif
@@ -61,7 +61,7 @@ void TaskPurchase::run() {
 #ifdef MZ_IOS
   // APIv2 returns 200, APIv1 returns 201
   int expectedStatusCode;
-  if (isOlderOS) {
+  if (m_isOlderOS) {
     expectedStatusCode = 201;
   } else {
     expectedStatusCode = 200;
@@ -81,7 +81,7 @@ void TaskPurchase::run() {
     case IOS:
       Constants::ApiEndpoint endpoint;
       QJsonObject body;
-      if (isOlderOS) {
+      if (m_isOlderOS) {
         endpoint = Constants::PurchasesIOS;
         body = QJsonObject{{"receipt", m_iOSData},
                            {"appId", QString::fromNSString(IOSUtils::appId())}};
