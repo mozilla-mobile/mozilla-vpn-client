@@ -8,6 +8,18 @@ add_library(mozillavpn-sources INTERFACE)
 
 mz_target_handle_warnings(mozillavpn-sources)
 
+# VPN client include paths
+set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons
+    ${CMAKE_CURRENT_SOURCE_DIR}/composer
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal
+    ${CMAKE_CURRENT_SOURCE_DIR}/glean
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+
 # VPN Client source files
 target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/accessiblenotification.cpp
