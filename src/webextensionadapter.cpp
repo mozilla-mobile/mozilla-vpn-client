@@ -13,6 +13,7 @@
 #include <QWindow>
 #include <functional>
 
+#include "connectionhealth.h"
 #include "controller.h"
 #include "feature/feature.h"
 #include "leakdetector.h"
@@ -41,6 +42,13 @@ struct match : Ts... {
 template <class... Ts>
 match(Ts...) -> match<Ts...>;
 
+template <typename T>
+const char* asString(T qEnumValue) {
+  const QMetaObject* meta = qt_getEnumMetaObject(qEnumValue);
+  int index = meta->indexOfEnumerator(qt_getEnumName(qEnumValue));
+  return meta->enumerator(index).valueToKey(qEnumValue);
+};
+
 Logger logger("WebExtensionAdapter");
 }  // namespace
 
@@ -54,6 +62,8 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
   connect(vpn, &MozillaVPN::stateChanged, this,
           &WebExtensionAdapter::writeState);
   connect(vpn->controller(), &Controller::stateChanged, this,
+          &WebExtensionAdapter::writeState);
+  connect(vpn->connectionHealth(), &ConnectionHealth::stabilityChanged, this,
           &WebExtensionAdapter::writeState);
 
   mProxyStateChanged = vpn->proxyController()->stateBindable().subscribe(
@@ -161,25 +171,13 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
   {
     int stateValue = vpn->state();
     if (stateValue > App::StateCustom) {
-      MozillaVPN::CustomState state =
-          static_cast<MozillaVPN::CustomState>(stateValue);
-      const QMetaObject* meta = qt_getEnumMetaObject(state);
-      int index = meta->indexOfEnumerator(qt_getEnumName(state));
-      obj["app"] = meta->enumerator(index).valueToKey(state);
+      obj["app"] = asString(static_cast<MozillaVPN::CustomState>(stateValue));
     } else {
-      App::State state = static_cast<App::State>(stateValue);
-      const QMetaObject* meta = qt_getEnumMetaObject(state);
-      int index = meta->indexOfEnumerator(qt_getEnumName(state));
-      obj["app"] = meta->enumerator(index).valueToKey(state);
+      obj["app"] = asString(static_cast<App::State>(stateValue));
     }
   }
-
-  {
-    Controller::State state = vpn->controller()->state();
-    const QMetaObject* meta = qt_getEnumMetaObject(state);
-    int index = meta->indexOfEnumerator(qt_getEnumName(state));
-    obj["vpn"] = meta->enumerator(index).valueToKey(state);
-  }
+  obj["vpn"] = asString(vpn->controller()->state());
+  obj["connectionHealth"] = asString(vpn->connectionHealth()->stability());
 #if defined MZ_PROXY_ENABLED
   {
     auto* proxyController = vpn->proxyController();

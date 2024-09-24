@@ -28,6 +28,7 @@ describe('WebExtension API', function() {
     sentToClient(new ExtensionMessage('status'), sock);
     const msg = await statusPromise
     assert(msg.status.version, `A Version is sent in msg: ${JSON.stringify(msg)}` )
+    assert(msg.status.connectionHealth, `The current Connection Health status is sent in msg: ${JSON.stringify(msg)}` )
     sock.destroy();
   });
   it('A Webextension can activate the VPN', async () => {
@@ -102,6 +103,15 @@ describe('WebExtension API', function() {
     const msg = await response;
     assert(msg.featurelist.localProxy === isProxyEnabled);
 
+    sock.destroy();
+  });
+  it('A Webextension will be notified if the stability becomes instable ', async () => {
+    const sock = await connectExtension();
+    const messagePipe = getMessageStream(sock);
+    const statusPromise = readResponseOfType('status', messagePipe);
+    await vpn.forceConnectionStabilityStatus("unstable");
+    const msg = await statusPromise
+    assert(msg.status.connectionHealth == "Unstable", "The extension was notified of the instability: "+ msg.status.connectionHealth)
     sock.destroy();
   });
 });
