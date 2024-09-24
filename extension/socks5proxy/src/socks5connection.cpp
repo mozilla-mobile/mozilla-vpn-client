@@ -266,7 +266,8 @@ void Socks5Connection::dnsResolutionFinished(quint16 port) {
   auto guard = qScopeGuard([lookup]() {
     if (lookup->isFinished()) {
       lookup->deleteLater();
-  }});
+    }
+  });
 
   qDebug() << "Finished lookup for:" << lookup->name();
 

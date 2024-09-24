@@ -145,7 +145,7 @@ static void startVerboseCLI(const Socks5* socks5) {
                    [printStatus]() { printStatus(); });
   QObject::connect(
       socks5, &Socks5::incomingConnection,
-      [printStatus](QAbstractSocket*s, const QHostAddress& peer) {
+      [printStatus](QAbstractSocket* s, const QHostAddress& peer) {
         Q_UNUSED(s);
         s_events.append(
             Event{peer.toString(), 0, 0, QDateTime::currentMSecsSinceEpoch()});
