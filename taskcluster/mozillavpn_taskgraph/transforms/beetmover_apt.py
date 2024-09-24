@@ -54,14 +54,13 @@ def beetmover_apt(config, tasks):
 
         if task["attributes"]["shipping-phase"] == "ship-client":
             bucket = "release"
-            project_name = "mozillavpn"
         else:
             bucket = "dep"
-            project_name = "mozillavpn:releng"
 
+        scope_prefix = config.graph_config["scriptworker"]["scope-prefix"]
         task["scopes"] = [
-            f"project:{project_name}:beetmover:apt-repo:{bucket}",
-            f"project:{project_name}:beetmover:action:import-from-gcs-to-artifact-registry"
+            f"{scope_prefix}:beetmover:apt-repo:{bucket}",
+            f"{scope_prefix}:beetmover:action:import-from-gcs-to-artifact-registry"
         ]
 
         task["label"] = f"beetmover-apt-{task['name']}"
