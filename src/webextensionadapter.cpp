@@ -42,7 +42,8 @@ struct match : Ts... {
 template <class... Ts>
 match(Ts...) -> match<Ts...>;
 
-const char* asString(auto qEnumValue) {
+template <typename T>
+const char* asString(T qEnumValue) {
   const QMetaObject* meta = qt_getEnumMetaObject(qEnumValue);
   int index = meta->indexOfEnumerator(qt_getEnumName(qEnumValue));
   return meta->enumerator(index).valueToKey(qEnumValue);

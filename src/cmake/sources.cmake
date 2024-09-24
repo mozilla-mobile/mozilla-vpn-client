@@ -230,11 +230,6 @@ if(NOT CMAKE_CROSSCOMPILING)
         ${CMAKE_CURRENT_SOURCE_DIR}/webextensionadapter.h
         ${CMAKE_CURRENT_SOURCE_DIR}/webextensionadapter.cpp
     )
-    # TODO: As long as we support focal, we need to manully enable c++ concepts.
-    if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
-        set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/webextensionadapter.cpp PROPERTIES COMPILE_FLAGS -fconcepts)
-    endif()
-
     target_compile_definitions(mozillavpn-sources INTERFACE MVPN_WEBEXTENSION)
 endif()
 
