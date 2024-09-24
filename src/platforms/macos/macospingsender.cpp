@@ -52,6 +52,8 @@ MacOSPingSender::MacOSPingSender(const QHostAddress& source, QObject* parent)
   addr.sin_addr.s_addr = qToBigEndian<quint32>(ipv4addr);
 
   if (bind(m_socket, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
+    close(m_socket);
+    m_socket = -1;
     logger.error() << "bind error:" << strerror(errno);
     return;
   }

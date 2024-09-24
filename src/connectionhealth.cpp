@@ -128,7 +128,7 @@ void ConnectionHealth::startIdle() {
   m_dnsPingInitialized = false;
   m_dnsPingLatency = PING_TIME_UNSTABLE.count();
 
-  if (m_dnsPingSender.start()) {
+  if (m_dnsPingSender.isValid()) {
     m_dnsPingTimer.start(PING_INTERVAL_IDLE);
     // Send an initial ping right away.
     m_dnsPingTimestamp = QDateTime::currentMSecsSinceEpoch();
