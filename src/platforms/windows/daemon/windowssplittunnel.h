@@ -53,9 +53,6 @@ class WindowsSplitTunnel final {
   // Deletes Rules and puts the driver into passive mode
   void stop();
 
-  // Just close connection, leave state as is
-  void close();
-  void reset();
   static bool detectConflict();
 
   // States for GetState
