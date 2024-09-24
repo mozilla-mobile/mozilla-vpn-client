@@ -196,7 +196,7 @@ void Socks5Connection::readyRead() {
         m_dnsLookupAttempts = MAX_DNS_LOOKUP_ATTEMPTS;
         QDnsLookup* lookup = new QDnsLookup(QDnsLookup::ANY, hostname, this);
         connect(lookup, &QDnsLookup::finished, this,
-                [this, port](){ dnsResolutionFinished(htons(port)); });
+                [this, port]() { dnsResolutionFinished(htons(port)); });
 
         lookup->lookup();
       }
@@ -264,9 +264,9 @@ void Socks5Connection::dnsResolutionFinished(quint16 port) {
   // Garbage collect the lookup when we're finished.
   m_dnsLookupAttempts--;
   auto guard = qScopeGuard([lookup]() {
-                           if (lookup->isFinished()) {
-                             lookup->deleteLater();
-                           }});
+    if (lookup->isFinished()) {
+      lookup->deleteLater();
+  }});
 
   qDebug() << "Finished lookup for:" << lookup->name();
 
@@ -318,8 +318,7 @@ void Socks5Connection::dnsResolutionFinished(quint16 port) {
   }
 
   // Otherwise, no such host was found.
-  ServerResponsePacket packet(
-      createServerResponsePacket(ErrorHostUnreachable));
+  ServerResponsePacket packet(createServerResponsePacket(ErrorHostUnreachable));
   m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
   m_inSocket->close();
 }

@@ -5,9 +5,9 @@
 #include "windowsbypass.h"
 
 #include <WS2tcpip.h>
+#include <netioapi.h>
 #include <windows.h>
 #include <winsock2.h>
-#include <netioapi.h>
 
 #include <QAbstractSocket>
 #include <QHostAddress>
@@ -17,7 +17,8 @@
 #include "socks5.h"
 
 // Fixed GUID of the Wireguard NT driver.
-constexpr const QUuid WIREGUARD_NT_GUID(0xf64063ab, 0xbfee, 0x4881, 0xbf, 0x79, 0x36, 0x6e, 0x4c, 0xc7, 0xba, 0x75);
+constexpr const QUuid WIREGUARD_NT_GUID(0xf64063ab, 0xbfee, 0x4881, 0xbf, 0x79,
+                                        0x36, 0x6e, 0x4c, 0xc7, 0xba, 0x75);
 
 // Called by the kernel on network interface changes.
 // Runs in some unknown thread, so invoke a Qt signal to do the real work.
@@ -33,7 +34,7 @@ static void netChangeCallback(PVOID context, PMIB_IPINTERFACE_ROW row,
 // Called by the kernel on network interface changes.
 // Runs in some unknown thread, so invoke a Qt signal to do the real work.
 static void addrChangeCallback(PVOID context, PMIB_UNICASTIPADDRESS_ROW  row,
-                              MIB_NOTIFICATION_TYPE type) {
+                               MIB_NOTIFICATION_TYPE type) {
   WindowsBypass* bypass = static_cast<WindowsBypass*>(context);
   Q_UNUSED(type);
 
@@ -77,7 +78,8 @@ WindowsBypass::~WindowsBypass() {
   CancelMibChangeNotify2(m_routeChangeHandle);
 }
 
-void WindowsBypass::outgoingConnection(QAbstractSocket* s, const QHostAddress& dest) {
+void WindowsBypass::outgoingConnection(QAbstractSocket* s,
+                                       const QHostAddress& dest) {
   const MIB_IPFORWARD_ROW2* route = lookupRoute(dest);
   if (route == nullptr) {
     // No routing exclusions to apply.
@@ -92,21 +94,23 @@ void WindowsBypass::outgoingConnection(QAbstractSocket* s, const QHostAddress& d
       return;
     }
     source.Ipv4.sin_family = AF_INET;
-    source.Ipv4.sin_port = 0; // TODO: Do we need to do port selection?
+    source.Ipv4.sin_port = 0;
     source.Ipv4.sin_addr.s_addr =
         qToBigEndian<quint32>(data.ipv4addr.toIPv4Address());
-    qDebug() << "Routing" << dest.toString() << "via" << data.ipv4addr.toString();
+    qDebug() << "Routing" << dest.toString() << "via"
+             << data.ipv4addr.toString();
   } else if (dest.protocol() == QAbstractSocket::IPv6Protocol) {
     if (data.ipv6addr.isNull()) {
       return;
     }
-    Q_IPV6ADDR v6addr = data.ipv6addr.toIPv6Address();;
+    Q_IPV6ADDR v6addr = data.ipv6addr.toIPv6Address();
     source.Ipv6.sin6_family = AF_INET6;
-    source.Ipv6.sin6_port = 0; // TODO: Do we need to do port selection?
+    source.Ipv6.sin6_port = 0;
     source.Ipv6.sin6_flowinfo = 0;
     source.Ipv6.sin6_scope_id = 0; // TODO: Do we need to provide a scope?
     memcpy(&source.Ipv6.sin6_addr.s6_addr, &v6addr, 16);
-    qDebug() << "Routing" << dest.toString() << "via" << data.ipv6addr.toString();
+    qDebug() << "Routing" << dest.toString() << "via"
+             << data.ipv6addr.toString();
   } else {
     // Otherwise, this isn't an internet address we support.
     return;
@@ -120,7 +124,9 @@ void WindowsBypass::outgoingConnection(QAbstractSocket* s, const QHostAddress& d
   }
 
   // Bind it to force its traffic to use a specific interface.
-  if (bind(newsock, reinterpret_cast<sockaddr*>(&source), sizeof(source)) != 0) {
+  int result = bind(newsock, reinterpret_cast<sockaddr*>(&source),
+                    sizeof(source)); 
+  if (result != 0) {
     qWarning() << "socket bind failed:" << WSAGetLastError();
     closesocket(newsock);
     return;
@@ -135,7 +141,8 @@ void WindowsBypass::outgoingConnection(QAbstractSocket* s, const QHostAddress& d
 // static
 QString WindowsBypass::win32strerror(unsigned long code) {
   LPWSTR buffer = nullptr;
-  DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS;
+  DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
+                FORMAT_MESSAGE_IGNORE_INSERTS;
   DWORD size = FormatMessageW(flags, nullptr, code,
                               MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
                               (LPWSTR)&buffer, 0, nullptr);
@@ -146,12 +153,12 @@ QString WindowsBypass::win32strerror(unsigned long code) {
 
 quint64 WindowsBypass::getVpnLuid() const {
   // Get the LUID of the wireguard interface, if it's up.
-  NET_LUID vpnInterfaceLuid;
+  NET_LUID luid;
   GUID vpnInterfaceGuid = WIREGUARD_NT_GUID;
-  if (ConvertInterfaceGuidToLuid(&vpnInterfaceGuid, &vpnInterfaceLuid) != NO_ERROR) {
+  if (ConvertInterfaceGuidToLuid(&vpnInterfaceGuid, &luid) != NO_ERROR) {
     return 0;
   } else {
-    return vpnInterfaceLuid.Value;
+    return luid.Value;
   }
 }
 
@@ -222,7 +229,7 @@ void WindowsBypass::refreshAddresses() {
     }
 
     // Ignore unrouteable addresses.
-    if (addr.isLinkLocal() || addr.isMulticast()|| addr.isLoopback()) {
+    if (addr.isLinkLocal() || addr.isMulticast() || addr.isLoopback()) {
       continue;
     }
 
@@ -241,10 +248,11 @@ void WindowsBypass::refreshAddresses() {
 }
 
 // In this function, we basically try our best to re-implement the Windows
-// lookup algorithm, but instead we use our own local copy of the table.
+// routing algorithm, but instead we use our own local copy of the table.
 // This returns the best route to the destination, or a null pointer if
 // we can't find a matching route.
-const MIB_IPFORWARD_ROW2* WindowsBypass::lookupRoute(const QHostAddress& dest) const {
+const MIB_IPFORWARD_ROW2* WindowsBypass::lookupRoute(
+    const QHostAddress& dest) const {
   int bestLength = -1;
   ULONG bestMetric = ULONG_MAX;
   const MIB_IPFORWARD_ROW2* bestMatch = nullptr;
@@ -294,7 +302,8 @@ const MIB_IPFORWARD_ROW2* WindowsBypass::lookupRoute(const QHostAddress& dest) c
   return bestMatch;
 }
 
-void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2>& table, int family) {
+void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2>& table,
+                                int family) {
   // Fetch the routing table.
   MIB_IPFORWARD_TABLE2* mib;
   DWORD result = GetIpForwardTable2(family, &mib);
