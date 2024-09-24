@@ -27,7 +27,18 @@ static void netChangeCallback(PVOID context, PMIB_IPINTERFACE_ROW row,
   Q_UNUSED(type);
 
   // Invoke the route changed signal to do the real work in Qt.
-  QMetaObject::invokeMethod(bypass, "refreshInterfaces", Qt::QueuedConnection);
+  QMetaObject::invokeMethod(bypass, "refreshIfMetrics", Qt::QueuedConnection);
+}
+
+// Called by the kernel on network interface changes.
+// Runs in some unknown thread, so invoke a Qt signal to do the real work.
+static void addrChangeCallback(PVOID context, PMIB_UNICASTIPADDRESS_ROW  row,
+                              MIB_NOTIFICATION_TYPE type) {
+  WindowsBypass* bypass = static_cast<WindowsBypass*>(context);
+  Q_UNUSED(type);
+
+  // Invoke the route changed signal to do the real work in Qt.
+  QMetaObject::invokeMethod(bypass, "refreshAddresses", Qt::QueuedConnection);
 }
 
 // Called by the kernel on route changes.
@@ -40,13 +51,6 @@ static void routeChangeCallback(PVOID context, PMIB_IPFORWARD_ROW2 row,
   // Ignore routing changes into the Wireguard tunnel.
   int family = AF_UNSPEC;
   if (row) {
-    GUID rowGuid;
-    if (ConvertInterfaceLuidToGuid(&row->InterfaceLuid, &rowGuid) != NO_ERROR) {
-      return;
-    }
-    if (QUuid(rowGuid) == WIREGUARD_NT_GUID) {
-      return;
-    }
     family = row->DestinationPrefix.Prefix.si_family;
   }
 
@@ -61,12 +65,15 @@ WindowsBypass::WindowsBypass(Socks5* proxy) : QObject(proxy) {
 
   NotifyIpInterfaceChange(AF_UNSPEC, netChangeCallback, this, true,
                           &m_netChangeHandle);
+  NotifyUnicastIpAddressChange(AF_UNSPEC, addrChangeCallback, this, true,
+                               &m_addrChangeHandle);
   NotifyRouteChange2(AF_UNSPEC, routeChangeCallback, this, true,
                      &m_routeChangeHandle);
 }
 
 WindowsBypass::~WindowsBypass() {
   CancelMibChangeNotify2(m_netChangeHandle);
+  CancelMibChangeNotify2(m_addrChangeHandle);
   CancelMibChangeNotify2(m_routeChangeHandle);
 }
 
@@ -77,14 +84,52 @@ void WindowsBypass::outgoingConnection(QAbstractSocket* s, const QHostAddress& d
     return;
   }
 
-  char buffer[NDIS_IF_MAX_STRING_SIZE+1];
-  ConvertInterfaceLuidToNameA(&route->InterfaceLuid, buffer, sizeof(buffer));
-  
-  qDebug() << "Routing" << dest.toString() << "via" << buffer;
+  // Find the accompanying source addresses.
+  SOCKADDR_INET source = {0};
+  const InterfaceData data = m_interfaceData.value(route->InterfaceLuid.Value);
+  if (dest.protocol() == QAbstractSocket::IPv4Protocol) {
+    if (data.ipv4addr.isNull()) {
+      return;
+    }
+    source.Ipv4.sin_family = AF_INET;
+    source.Ipv4.sin_port = 0; // TODO: Do we need to do port selection?
+    source.Ipv4.sin_addr.s_addr =
+        qToBigEndian<quint32>(data.ipv4addr.toIPv4Address());
+    qDebug() << "Routing" << dest.toString() << "via" << data.ipv4addr.toString();
+  } else if (dest.protocol() == QAbstractSocket::IPv6Protocol) {
+    if (data.ipv6addr.isNull()) {
+      return;
+    }
+    Q_IPV6ADDR v6addr = data.ipv6addr.toIPv6Address();;
+    source.Ipv6.sin6_family = AF_INET6;
+    source.Ipv6.sin6_port = 0; // TODO: Do we need to do port selection?
+    source.Ipv6.sin6_flowinfo = 0;
+    source.Ipv6.sin6_scope_id = 0; // TODO: Do we need to provide a scope?
+    memcpy(&source.Ipv6.sin6_addr.s6_addr, &v6addr, 16);
+    qDebug() << "Routing" << dest.toString() << "via" << data.ipv6addr.toString();
+  } else {
+    // Otherwise, this isn't an internet address we support.
+    return;
+  }
 
-  // TODO: Interface binding shenanigans.
-  // The magic goes here.
-  return;
+  // Create a new socket for this connection.
+  SOCKET newsock = socket(source.si_family, SOCK_STREAM, IPPROTO_TCP);
+  if (newsock == INVALID_SOCKET) {
+    qWarning() << "socket creation failed:" << WSAGetLastError();
+    return;
+  }
+
+  // Bind it to force its traffic to use a specific interface.
+  if (bind(newsock, reinterpret_cast<sockaddr*>(&source), sizeof(source)) != 0) {
+    qWarning() << "socket bind failed:" << WSAGetLastError();
+    closesocket(newsock);
+    return;
+  }
+
+  // Provide the socket descriptor to this connection.
+  if (!s->setSocketDescriptor(newsock, QAbstractSocket::UnconnectedState)) {
+    qWarning() << "setSocketDescriptor() failed:" << s->errorString();
+  }
 }
 
 // static
@@ -99,9 +144,20 @@ QString WindowsBypass::win32strerror(unsigned long code) {
   return result;
 }
 
+quint64 WindowsBypass::getVpnLuid() const {
+  // Get the LUID of the wireguard interface, if it's up.
+  NET_LUID vpnInterfaceLuid;
+  GUID vpnInterfaceGuid = WIREGUARD_NT_GUID;
+  if (ConvertInterfaceGuidToLuid(&vpnInterfaceGuid, &vpnInterfaceLuid) != NO_ERROR) {
+    return 0;
+  } else {
+    return vpnInterfaceLuid.Value;
+  }
+}
+
 // Refresh our understanding of the current interfaces, and identify the VPN
 // tunnel, if running.
-void WindowsBypass::refreshInterfaces() {
+void WindowsBypass::refreshIfMetrics() {
   // Fetch the interface table.
   MIB_IPINTERFACE_TABLE* table;
   DWORD result = GetIpInterfaceTable(AF_UNSPEC, &table);
@@ -111,24 +167,77 @@ void WindowsBypass::refreshInterfaces() {
   }
   auto guard = qScopeGuard([table]() { FreeMibTable(table); });
 
-  m_vpnInterfaceIndex = -1;
+  const quint64 vpnInterfaceLuid = getVpnLuid();
   for (ULONG i = 0; i < table->NumEntries; i++) {
     const MIB_IPINTERFACE_ROW* row = &table->Table[i];
-    GUID rowGuid;
-    if (ConvertInterfaceLuidToGuid(&row->InterfaceLuid, &rowGuid) != NO_ERROR) {
+    if (row->InterfaceLuid.Value == vpnInterfaceLuid) {
       continue;
     }
 
-    if (QUuid(rowGuid) == WIREGUARD_NT_GUID) {
-      m_vpnInterfaceIndex = row->InterfaceIndex;
+    if (!m_interfaceData.contains(row->InterfaceLuid.Value)) {
+      // Ignore interfaces with no source addresses.
+      continue;
+    }
+    m_interfaceData[row->InterfaceLuid.Value].metric = row->Metric;
+  }
+}
+
+void WindowsBypass::refreshAddresses() {
+  // Get the unicast address table.
+  MIB_UNICASTIPADDRESS_TABLE* table;
+  DWORD result = GetUnicastIpAddressTable(AF_UNSPEC, &table);
+  if (result != NO_ERROR) {
+    qWarning() << "GetUnicastIpAddressTable() failed:" << win32strerror(result);
+    return;
+  }
+  auto guard = qScopeGuard([table]() { FreeMibTable(table); });
+
+  // Clear the inteface data while we rebuild it.
+  m_interfaceData.clear();
+
+  // Populate entries.
+  const quint64 vpnInterfaceLuid = getVpnLuid();
+  for (ULONG i = 0; i < table->NumEntries; i++) {
+    const MIB_UNICASTIPADDRESS_ROW* row = &table->Table[i];
+    if (row->SkipAsSource) {
+      continue;
+    }
+    if (row->InterfaceLuid.Value == vpnInterfaceLuid) {
+      continue;
+    }
+    if ((row->DadState == IpDadStateInvalid) ||
+        (row->DadState == IpDadStateTentative) ||
+        (row->DadState == IpDadStateDuplicate)) {
+      continue;
+    }
+
+    QHostAddress addr;
+    if (row->Address.si_family == AF_INET) {
+      quint32 rowAddr = row->Address.Ipv4.sin_addr.s_addr;
+      addr.setAddress(qFromBigEndian<quint32>(rowAddr));
+    } else if (row->Address.si_family == AF_INET6) {
+      addr.setAddress(row->Address.Ipv6.sin6_addr.s6_addr);
+    } else {
+      continue;
+    }
+
+    // Ignore unrouteable addresses.
+    if (addr.isLinkLocal() || addr.isMulticast()|| addr.isLoopback()) {
+      continue;
+    }
+
+    // Store the address.
+    // TODO: Compare amongst multiple addresses on an interface.
+    qDebug() << "Using " << addr.toString() << "for source address";
+    if (row->Address.si_family == AF_INET) {
+      m_interfaceData[row->InterfaceLuid.Value].ipv4addr = addr;
+    } else {
+      m_interfaceData[row->InterfaceLuid.Value].ipv6addr = addr;
     }
   }
 
-  if (m_vpnInterfaceIndex > 0) {
-    qInfo() << "VPN tunnel is up:" << m_vpnInterfaceIndex;
-  } else {
-    qInfo() << "VPN tunnel is down";
-  }
+  // Refresh the interface metrics too.
+  refreshIfMetrics();
 }
 
 // In this function, we basically try our best to re-implement the Windows
@@ -162,21 +271,23 @@ const MIB_IPFORWARD_ROW2* WindowsBypass::lookupRoute(const QHostAddress& dest) c
     // Find the route with the longest prefix match and lowest matric.
     QHostAddress prefix;
     if (family == AF_INET) {
-      prefix.setAddress(row.DestinationPrefix.Prefix.Ipv4.sin_addr.s_addr);
+      quint32 addr = row.DestinationPrefix.Prefix.Ipv4.sin_addr.s_addr;
+      prefix.setAddress(qFromBigEndian<quint32>(addr));
     } else {
       prefix.setAddress(row.DestinationPrefix.Prefix.Ipv6.sin6_addr.s6_addr);
     }
     if (!dest.isInSubnet(prefix, row.DestinationPrefix.PrefixLength)) {
       continue;
     }
-    // TODO: Need to check interface metrics too for proper tiebreaking.
-    if ((row.DestinationPrefix.PrefixLength == bestLength) && (row.Metric < bestMetric)) {
+    ULONG ifMetric = m_interfaceData.value(row.InterfaceLuid.Value).metric;
+    if ((row.DestinationPrefix.PrefixLength == bestLength) &&
+        ((row.Metric + ifMetric) < bestMetric)) {
       continue;
     }
-    
+
     // This is the best route so far.
     bestLength = row.DestinationPrefix.PrefixLength;
-    bestMetric = row.Metric;
+    bestMetric = row.Metric + ifMetric;
     bestMatch = &row;
   }
 
@@ -184,15 +295,6 @@ const MIB_IPFORWARD_ROW2* WindowsBypass::lookupRoute(const QHostAddress& dest) c
 }
 
 void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2>& table, int family) {
-  // Get the LUID of the wireguard interface, if it's up.
-  NET_LUID vpnInterfaceLuid;
-  GUID vpnInterfaceGuid = WIREGUARD_NT_GUID;
-  if (ConvertInterfaceGuidToLuid(&vpnInterfaceGuid, &vpnInterfaceLuid) != NO_ERROR) {
-    // If the interface is not up, then don't have to do any manipulation.
-    table.clear();
-    return;
-  }
-
   // Fetch the routing table.
   MIB_IPFORWARD_TABLE2* mib;
   DWORD result = GetIpForwardTable2(family, &mib);
@@ -204,13 +306,14 @@ void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2>& table, int family) 
   auto guard = qScopeGuard([mib] { FreeMibTable(mib); });
 
   // First pass: iterate over the table and estimate the size to allocate.
+  const quint64 vpnInterfaceLuid = getVpnLuid();
   ULONG tableSize = 0;
   for (ULONG i = 0; i < mib->NumEntries; i++) {
-    if (mib->Table[i].InterfaceLuid.Value != vpnInterfaceLuid.Value) {
+    if (mib->Table[i].InterfaceLuid.Value != vpnInterfaceLuid) {
       tableSize++;
     }
   }
-  // If there were no routes to exclude, then we disable routing exclusions.
+  // If there were no routes to exclude, then we can disable routing exclusions.
   if (tableSize == mib->NumEntries) {
     table.clear();
     return;
@@ -221,7 +324,7 @@ void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2>& table, int family) 
   table.clear();
   table.reserve(tableSize);
   for (ULONG i = 0; i < mib->NumEntries; i++) {
-    if (mib->Table[i].InterfaceLuid.Value != vpnInterfaceLuid.Value) {
+    if (mib->Table[i].InterfaceLuid.Value != vpnInterfaceLuid) {
       table.append(mib->Table[i]);
     }
   }
