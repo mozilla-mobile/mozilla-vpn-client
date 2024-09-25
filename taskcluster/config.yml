@@ -137,5 +137,10 @@ release-promotion:
         - toolchain
         - toolchain-openssl
 
+scriptworker:
+    scope-prefix: project:mozillavpn:releng
+
 shipit:
+    # TODO: Remove this when using mozilla-taskgraph 2.1 or higher. It'll use
+    # the 'scriptworker' config above then.
     scope-prefix: project:mozillavpn:releng:ship-it
