@@ -10,6 +10,8 @@
 #include <QAbstractSocket>
 #include <QHostAddress>
 
+#include "socks5.h"
+
 LinuxBypass::LinuxBypass(Socks5* proxy) : QObject(proxy) {
   connect(proxy, &Socks5::outgoingConnection, this,
           &LinuxBypass::outgoingConnection);
