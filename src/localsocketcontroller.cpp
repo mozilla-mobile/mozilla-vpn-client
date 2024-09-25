@@ -4,7 +4,6 @@
 
 #include "localsocketcontroller.h"
 
-#include <qassert.h>
 #include <stdint.h>
 
 #include <QJsonDocument>
