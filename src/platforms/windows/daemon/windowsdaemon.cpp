@@ -16,6 +16,7 @@
 #include <QTextStream>
 #include <QtGlobal>
 
+#include "daemon/daemonerrors.h"
 #include "dnsutilswindows.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -57,6 +58,12 @@ void WindowsDaemon::prepareActivation(const InterfaceConfig& config) {
 
 bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
   if (!m_splitTunnelManager) {
+    if (config.m_vpnDisabledApps.length() > 0) {
+      // The Client has sent us a list of disabled apps, but we failed
+      // to init the the split tunnel driver.
+      // So let the client know this was not possible
+      emit backendFailure(DaemonError::ERROR_SPLIT_TUNNEL_INIT_FAILURE);
+    }
     return true;
   }
 
@@ -65,11 +72,15 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
     return true;
   }
   if (config.m_vpnDisabledApps.length() > 0) {
-    m_splitTunnelManager->start(m_inetAdapterIndex);
-    m_splitTunnelManager->setRules(config.m_vpnDisabledApps);
-  } else {
-    m_splitTunnelManager->stop();
+    if (!m_splitTunnelManager->start(m_inetAdapterIndex)) {
+      emit backendFailure(DaemonError::ERROR_SPLIT_TUNNEL_START_FAILURE);
+    };
+    if (!m_splitTunnelManager->excludeApps(config.m_vpnDisabledApps)) {
+      emit backendFailure(DaemonError::ERROR_SPLIT_TUNNEL_EXCLUDE_FAILURE);
+    };
+    return true;
   }
+  m_splitTunnelManager->stop();
   return true;
 }
 
