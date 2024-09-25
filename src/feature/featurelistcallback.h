@@ -39,22 +39,23 @@ struct FeatureSupportedPlatforms {
 };
 
 consteval auto enableForPlatform(FeatureSupportedPlatforms support) {
+  return [support]() constexpr {
 #if defined(MZ_WINDOWS)
-  auto value = support.windows;
+    return support.windows;
 #elif defined(MZ_MACOS)
-  auto value = support.macos;
+    return support.macos;
 #elif defined(MZ_LINUX)
-  auto value = support.linux;
+    return support.linux;
 #elif defined(MZ_ANDROID)
-  auto value = support.android;
+    return support.android;
 #elif defined(MZ_IOS)
-  auto value = support.ios;
+    return support.ios;
 #elif defined(MZ_WASM)
-  auto value = support.wasm;
+    return support.wasm;
 #else
-  auto value = false;
+    return false;
 #endif
-  return [value]() { return value; };
+  };
 }
 
 // Custom callback functions
