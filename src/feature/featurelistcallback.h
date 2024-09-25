@@ -38,7 +38,16 @@ struct FeatureSupportedPlatforms {
   bool wasm = false;
 };
 
-consteval auto enableForPlatform(FeatureSupportedPlatforms support) {
+// TODO : Remove once focal support is removed
+// as that is that is the only distro we support
+// that does not have consteval q_q
+#if defined(__cpp_consteval)  // If consteval is supported
+#  define constIshExpr consteval
+#else  // Fallback to constexpr
+#  define constIshExpr constexpr
+#endif
+
+constIshExpr auto enableForPlatform(FeatureSupportedPlatforms support) {
   return [support]() constexpr {
 #if defined(MZ_WINDOWS)
     return support.windows;
@@ -57,6 +66,7 @@ consteval auto enableForPlatform(FeatureSupportedPlatforms support) {
 #endif
   };
 }
+#undef constIshExpr
 
 // Custom callback functions
 // -------------------------
