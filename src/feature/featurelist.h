@@ -44,7 +44,7 @@ FEATURE(annualUpgrade,         // Feature ID
         enableForPlatform({
             .windows = true,
             .macos = true,
-            .linux = true,
+            .gnu_linux = true,
         }))
 
 FEATURE(appReview,              // Feature ID
@@ -197,7 +197,7 @@ FEATURE(startOnBoot,            // Feature ID
         FeatureCallback_false,  // Can be flipped off
         QStringList(),          // feature dependencies
         enableForPlatform(
-            {.windows = true, .macos = true, .linux = true, .wasm = true}))
+            {.windows = true, .macos = true, .gnu_linux = true, .wasm = true}))
 
 FEATURE(stagingUpdateServer,        // Feature ID
         "Staging Update Server",    // Feature name
@@ -226,7 +226,7 @@ FEATURE(unsecuredNetworkNotification,      // Feature ID
         FeatureCallback_false,             // Can be flipped off
         QStringList(),                     // feature dependencies
         enableForPlatform(
-            {.windows = true, .macos = true, .linux = true, .wasm = true}))
+            {.windows = true, .macos = true, .gnu_linux = true, .wasm = true}))
 
 FEATURE(webPurchase,           // Feature ID
         "Web Purchase",        // Feature name
@@ -236,14 +236,14 @@ FEATURE(webPurchase,           // Feature ID
         enableForPlatform({
             .windows = true,
             .macos = true,
-            .linux = true,
+            .gnu_linux = true,
         }))
 
 FEATURE(localProxy,    // Feature ID
         "LocalProxy",  // Feature name
         enableForPlatform({
             .windows = true,
-            .linux = true,
+            .gnu_linux = true,
         }),                          // Can be flipped on
         FeatureCallback_true,        // Can be flipped off
         QStringList("splitTunnel"),  // feature dependencies
@@ -254,7 +254,7 @@ FEATURE(webExtension,      // Feature ID
         enableForPlatform({// Can be flipped on
                            .windows = true,
                            .macos = true,
-                           .linux = true}),
+                           .gnu_linux = true}),
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
         enableForPlatform({    // default value

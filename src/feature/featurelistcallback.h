@@ -32,7 +32,7 @@ bool FeatureCallback_inStaging() { return !Constants::inProduction(); }
 struct FeatureSupportedPlatforms {
   bool windows = false;
   bool macos = false;
-  bool linux = false;
+  bool gnu_linux = false;  // TIL, "linux" is reserved keyword on gcc.
   bool android = false;
   bool ios = false;
   bool wasm = false;
@@ -45,7 +45,7 @@ consteval auto enableForPlatform(FeatureSupportedPlatforms support) {
 #elif defined(MZ_MACOS)
     return support.macos;
 #elif defined(MZ_LINUX)
-    return support.linux;
+    return support.gnu_linux;
 #elif defined(MZ_ANDROID)
     return support.android;
 #elif defined(MZ_IOS)
