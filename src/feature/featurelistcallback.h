@@ -29,23 +29,36 @@ bool FeatureCallback_false() { return false; }
 
 bool FeatureCallback_inStaging() { return !Constants::inProduction(); }
 
-bool FeatureCallback_iosOrAndroid() {
-#if defined(MZ_IOS) || defined(MZ_ANDROID)
-  return true;
+struct FeatureSupportedPlatforms {
+  bool windows = false;
+  bool macos = false;
+  bool linux = false;
+  bool android = false;
+  bool ios = false;
+  bool wasm = false;
+};
+
+consteval auto enableForPlatform(FeatureSupportedPlatforms support) {
+#if defined(MZ_WINDOWS)
+  auto value = support.windows;
+#elif defined(MZ_MACOS)
+  auto value = support.macos;
+#elif defined(MZ_LINUX)
+  auto value = support.linux;
+#elif defined(MZ_ANDROID)
+  auto value = support.android;
+#elif defined(MZ_IOS)
+  auto value = support.ios;
+#elif defined(MZ_WASM)
+  auto value = support.wasm;
 #else
-  return false;
+  auto value = false;
 #endif
+  return [value]() { return value; };
 }
 
 // Custom callback functions
 // -------------------------
-
-bool FeatureCallback_annualUpgrade() {
-  if (FeatureCallback_iosOrAndroid()) {
-    return false;
-  }
-  return true;
-}
 
 bool FeatureCallback_captivePortal() {
 #if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
@@ -73,7 +86,10 @@ bool FeatureCallback_inAppAuthentication() {
 #if defined(MZ_WASM)
   return true;
 #else
-  if (Constants::inProduction() || FeatureCallback_iosOrAndroid()) {
+  if (Constants::inProduction() || enableForPlatform({
+                                       .android = true,
+                                       .ios = true,
+                                   })()) {
     return true;
   }
 
@@ -138,34 +154,6 @@ bool FeatureCallback_splitTunnel() {
 #endif
 }
 
-bool FeatureCallback_startOnBoot() {
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
-    defined(MZ_WASM)
-  return true;
-#else
-  return false;
-#endif
-}
-
-bool FeatureCallback_unsecuredNetworkNotification() {
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
-    defined(MZ_WASM)
-  return true;
-#else
-  return false;
-#endif
-}
-
-// Free trials are currently not being used on any platforms
-// Leaving this code in case we want to re-enable them in the future
-bool FeatureCallback_freeTrial() {
-#if defined(MZ_IOS)
-  return true;
-#else
-  return false;
-#endif
-}
-
 bool FeatureCallback_shareLogs() {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
     defined(MZ_IOS) || defined(MZ_WASM)
@@ -175,14 +163,6 @@ bool FeatureCallback_shareLogs() {
          29;  // Android Q (10) is required for this
 #else
   return false;
-#endif
-}
-
-bool FeatureCallback_webPurchase() {
-#if defined(MZ_IOS) || defined(MZ_ANDROID) || defined(MZ_WASM)
-  return false;
-#else
-  return true;
 #endif
 }
 
