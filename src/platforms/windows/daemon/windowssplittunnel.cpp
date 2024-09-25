@@ -221,8 +221,8 @@ std::unique_ptr<WindowsSplitTunnel> WindowsSplitTunnel::create(
                              nullptr, OPEN_EXISTING, 0, nullptr);
     if (driverFile == INVALID_HANDLE_VALUE) {
       logger.error() << "Opening Failed again, sorry!";
+      return nullptr;
     }
-    return nullptr;
   }
   if (!initDriver(driverFile)) {
     logger.error() << "Failed to init driver";
