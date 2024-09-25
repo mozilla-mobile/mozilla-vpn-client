@@ -158,4 +158,6 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service
         DESTINATION ${SYSTEMD_UNIT_DIR})
+
+    install(SCRIPT ${CMAKE_SOURCE_DIR}/scripts/linux/postinst.cmake)
 endif()
