@@ -14,10 +14,6 @@ Apple ID. If you are a Mozilla developer, this is an Apple ID associated with yo
 
 See [here](./index.md#conda) for conda environment instructions.
 
-Install extra conda packages
-
-    ./scripts/macos/conda_install_extras.sh
-
 Your Xcode install comes with a copy of the MacOS-SDK.
 We need to tell the conda environment where to find it.
 
