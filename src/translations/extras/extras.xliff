@@ -83,6 +83,9 @@
       <trans-unit id="languages.lo" xml:space="preserve">
         <source>Lao</source>
       </trans-unit>
+      <trans-unit id="languages.ko" xml:space="preserve">
+        <source>Korean</source>
+      </trans-unit>
       <trans-unit id="languages.nl" xml:space="preserve">
         <source>Dutch</source>
       </trans-unit>
@@ -121,6 +124,9 @@
       </trans-unit>
       <trans-unit id="languages.uk" xml:space="preserve">
         <source>Ukrainian</source>
+      </trans-unit>
+      <trans-unit id="languages.vi" xml:space="preserve">
+        <source>Vietnamese</source>
       </trans-unit>
       <trans-unit id="languages.zh_CN" xml:space="preserve">
         <source>Simplified Chinese</source>
