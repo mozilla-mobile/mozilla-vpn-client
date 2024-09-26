@@ -78,6 +78,10 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
     if (!m_splitTunnelManager->excludeApps(config.m_vpnDisabledApps)) {
       emit backendFailure(DaemonError::ERROR_SPLIT_TUNNEL_EXCLUDE_FAILURE);
     };
+    // Now the driver should be running (State == 4)
+    if (!m_splitTunnelManager->isRunning()) {
+      emit backendFailure(DaemonError::ERROR_SPLIT_TUNNEL_START_FAILURE);
+    }
     return true;
   }
   m_splitTunnelManager->stop();

@@ -204,7 +204,25 @@ std::unique_ptr<WindowsSplitTunnel> WindowsSplitTunnel::create(
   ;
   if (driverFile == INVALID_HANDLE_VALUE) {
     WindowsUtils::windowsLog("Failed to open Driver: ");
-    return nullptr;
+    // Only once, if the opening did not work. Try to reboot it. #
+    logger.info()
+        << "Failed to open driver, attempting only once to reboot driver";
+    if (!driver_manager->stopService()) {
+      logger.error() << "Unable stop driver";
+      return nullptr;
+    };
+    logger.info() << "Stopped driver, starting it again.";
+    if (!driver_manager->startService()) {
+      logger.error() << "Unable start driver";
+      return nullptr;
+    };
+    logger.info() << "Opening again.";
+    driverFile = CreateFileW(DRIVER_SYMLINK, GENERIC_READ | GENERIC_WRITE, 0,
+                             nullptr, OPEN_EXISTING, 0, nullptr);
+    if (driverFile == INVALID_HANDLE_VALUE) {
+      logger.error() << "Opening Failed again, sorry!";
+      return nullptr;
+    }
   }
   if (!initDriver(driverFile)) {
     logger.error() << "Failed to init driver";
@@ -280,7 +298,7 @@ bool WindowsSplitTunnel::excludeApps(const QStringList& appPaths) {
     logger.error() << "Failed to set Config err code " << err;
     return false;
   }
-  logger.debug() << "New Configuration applied: " << getState();
+  logger.debug() << "New Configuration applied: " << stateString();
   return true;
 }
 
@@ -312,14 +330,14 @@ bool WindowsSplitTunnel::start(int inetAdapterIndex) {
       logger.error() << "Failed to set Process Config";
       return false;
     }
-    logger.debug() << "Set Process Config ok || new State:" << getState();
+    logger.debug() << "Set Process Config ok || new State:" << stateString();
   }
 
   if (getState() == STATE_INITIALIZED) {
     logger.warning() << "Driver is still not ready after process list send";
     return false;
   }
-  logger.debug() << "Driver is  ready || new State:" << getState();
+  logger.debug() << "Driver is  ready || new State:" << stateString();
 
   auto config = generateIPConfiguration(inetAdapterIndex);
   auto ok = DeviceIoControl(m_driver, IOCTL_REGISTER_IP_ADDRESSES, &config[0],
@@ -329,7 +347,7 @@ bool WindowsSplitTunnel::start(int inetAdapterIndex) {
     logger.error() << "Failed to set Network Config";
     return false;
   }
-  logger.debug() << "New Network Config Applied || new State:" << getState();
+  logger.debug() << "New Network Config Applied || new State:" << stateString();
   return true;
 }
 
@@ -672,4 +690,26 @@ bool WindowsSplitTunnel::detectConflict() {
   err = GetLastError();
   CloseServiceHandle(servicehandle);
   return err == ERROR_SERVICE_DOES_NOT_EXIST;
+}
+
+bool WindowsSplitTunnel::isRunning() { return getState() == STATE_RUNNING; }
+
+QString WindowsSplitTunnel::stateString() {
+  switch (getState()) {
+    case STATE_UNKNOWN:
+      return "STATE_UNKNOWN";
+    case STATE_NONE:
+      return "STATE_NONE";
+    case STATE_STARTED:
+      return "STATE_STARTED";
+    case STATE_INITIALIZED:
+      return "STATE_INITIALIZED";
+    case STATE_READY:
+      return "STATE_READY";
+    case STATE_RUNNING:
+      return "STATE_RUNNING";
+    case STATE_ZOMBIE:
+      return "STATE_ZOMBIE";
+      break;
+  }
 }
