@@ -47,7 +47,7 @@ struct FeatureSupportedPlatforms {
 #  define constIshExpr constexpr
 #endif
 
-constIshExpr auto enableForPlatform(FeatureSupportedPlatforms support) {
+constIshExpr auto byPlatform(FeatureSupportedPlatforms support) {
   return [support]() constexpr {
 #if defined(MZ_WINDOWS)
     return support.windows;
@@ -97,7 +97,7 @@ bool FeatureCallback_inAppAuthentication() {
 #if defined(MZ_WASM)
   return true;
 #else
-  if (Constants::inProduction() || enableForPlatform({
+  if (Constants::inProduction() || byPlatform({
                                        .android = true,
                                        .ios = true,
                                    })()) {

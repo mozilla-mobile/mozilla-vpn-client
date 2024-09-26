@@ -17,7 +17,7 @@ FEATURE(accountDeletion,        // Feature ID
         FeatureCallback_true,   // Can be flipped on
         FeatureCallback_false,  // Can be flipped off
         QStringList(),          // feature dependencies
-        enableForPlatform({
+        byPlatform({
             .android = true,
             .ios = true,
         }))
@@ -41,7 +41,7 @@ FEATURE(annualUpgrade,         // Feature ID
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        enableForPlatform({
+        byPlatform({
             .windows = true,
             .macos = true,
             .gnu_linux = true,
@@ -52,7 +52,7 @@ FEATURE(appReview,              // Feature ID
         FeatureCallback_false,  // Can be flipped on
         FeatureCallback_false,  // Can be flipped off
         QStringList(),          // feature dependencies
-        enableForPlatform({
+        byPlatform({
             .android = true,
             .ios = true,
         }))
@@ -196,7 +196,7 @@ FEATURE(startOnBoot,            // Feature ID
         FeatureCallback_true,   // Can be flipped on
         FeatureCallback_false,  // Can be flipped off
         QStringList(),          // feature dependencies
-        enableForPlatform(
+        byPlatform(
             {.windows = true, .macos = true, .gnu_linux = true, .wasm = true}))
 
 FEATURE(stagingUpdateServer,        // Feature ID
@@ -225,7 +225,7 @@ FEATURE(unsecuredNetworkNotification,      // Feature ID
         FeatureCallback_true,              // Can be flipped on
         FeatureCallback_false,             // Can be flipped off
         QStringList(),                     // feature dependencies
-        enableForPlatform(
+        byPlatform(
             {.windows = true, .macos = true, .gnu_linux = true, .wasm = true}))
 
 FEATURE(webPurchase,           // Feature ID
@@ -233,7 +233,7 @@ FEATURE(webPurchase,           // Feature ID
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        enableForPlatform({
+        byPlatform({
             .windows = true,
             .macos = true,
             .gnu_linux = true,
@@ -241,7 +241,7 @@ FEATURE(webPurchase,           // Feature ID
 
 FEATURE(localProxy,    // Feature ID
         "LocalProxy",  // Feature name
-        enableForPlatform({
+        byPlatform({
             .windows = true,
             .gnu_linux = true,
         }),                          // Can be flipped on
@@ -249,13 +249,13 @@ FEATURE(localProxy,    // Feature ID
         QStringList("splitTunnel"),  // feature dependencies
         FeatureCallback_inStaging)
 
-FEATURE(webExtension,      // Feature ID
-        "webExtension",    // Feature name
-        enableForPlatform({// Can be flipped on
-                           .windows = true,
-                           .macos = true,
-                           .gnu_linux = true}),
+FEATURE(webExtension,    // Feature ID
+        "webExtension",  // Feature name
+        byPlatform({     // Can be flipped on
+                    .windows = true,
+                    .macos = true,
+                    .gnu_linux = true}),
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        enableForPlatform({    // default value
-                           .windows = true}))
+        byPlatform({           // default value
+                    .windows = true}))
