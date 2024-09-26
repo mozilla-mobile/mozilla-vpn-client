@@ -51,18 +51,18 @@ constIshExpr auto byPlatform(FeatureSupportedPlatforms support) {
   return [support]() constexpr {
 #if defined(MZ_WINDOWS)
     return support.windows;
-#elif defined(MZ_MACOS)
-    return support.macos;
-#elif defined(MZ_LINUX)
-    return support.gnu_linux;
 #elif defined(MZ_ANDROID)
     return support.android;
 #elif defined(MZ_IOS)
     return support.ios;
+#elif defined(MZ_MACOS)
+    return support.macos;
+#elif defined(MZ_LINUX)
+    return support.gnu_linux;
 #elif defined(MZ_WASM)
     return support.wasm;
 #else
-    return false;
+#  error Undefined MZ_Platform ?
 #endif
   };
 }
