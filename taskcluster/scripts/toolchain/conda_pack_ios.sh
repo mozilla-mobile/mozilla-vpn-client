@@ -37,6 +37,7 @@ conda env config vars set QT_VERSION=${BACKUP_QT_VERSION}
 env
 conda deactivate
 conda activate vpn
+./scripts/macos/conda_install_extras.sh
 ./scripts/macos/conda_setup_qt.sh
 
 conda deactivate
