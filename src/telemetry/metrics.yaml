@@ -1418,7 +1418,7 @@ connection_health:
       This metric is accumulated periodically on a 3hr interval
       while the VPN is turned on.
 
-      This metric is recorded in **bytes**.
+      This metric is recorded in **bytes**. It is not collected on iOS.
 
       > **Note**: This metric is recorded on the vpnsession ping for
       > desktop platforms and on the daemonsession ping for mobile platforms.
@@ -1448,7 +1448,7 @@ connection_health:
       This metric is accumulated periodically on a 3hr interval
       while the VPN is turned on.
 
-      This metric is recorded in **bytes**.
+      This metric is recorded in **bytes**. It is not collected on iOS.
 
       > **Note**: This metric is recorded on the vpnsession ping for
       > desktop platforms and on the daemonsession ping for mobile platforms.

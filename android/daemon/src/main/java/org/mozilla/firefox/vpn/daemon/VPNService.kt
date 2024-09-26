@@ -459,7 +459,6 @@ class VPNService : android.net.VpnService() {
         CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
         if (shouldRecordTimerAndEndMetrics) {
             Session.daemonSessionEnd.set()
-
             Pings.daemonsession.submit(
                 Pings.daemonsessionReasonCodes.daemonEnd,
             )

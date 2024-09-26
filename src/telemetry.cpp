@@ -205,7 +205,6 @@ void Telemetry::initialize() {
             controller->getStatus([](const QString& serverIpv4Gateway,
                                      const QString& deviceIpv4Address,
                                      uint64_t txBytes, uint64_t rxBytes) {
-              logger.info() << "MATTHEW " << txBytes;
               Q_UNUSED(serverIpv4Gateway);
               Q_UNUSED(deviceIpv4Address);
 
