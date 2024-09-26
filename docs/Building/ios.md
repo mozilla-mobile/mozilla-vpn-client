@@ -22,6 +22,7 @@ Install extra conda packages
 
 ```bash 
 $ conda activate vpn
+$ ./scripts/macos/conda_install_extras.sh
 ```
 
 
