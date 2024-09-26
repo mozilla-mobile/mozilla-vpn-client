@@ -21,7 +21,7 @@ You may need to enable [powershell scripts.](https://learn.microsoft.com/en-us/p
 For the setup you need to use powershell.
 
 ```powershell
-$ conda env create -f env.yml
+$ conda env create -f env-windows.yml
 $ conda activate vpn
 # Setup the conda env for clang-cl compilation
 $ ./scripts/windows/conda_setup_win_sdk.ps1

@@ -81,7 +81,6 @@ jobs:
 
       - name: Install dependencies
         run: |
-          ./scripts/macos/conda_install_extras.sh
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           brew install ninja
 
