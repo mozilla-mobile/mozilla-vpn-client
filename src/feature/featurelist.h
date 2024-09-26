@@ -41,11 +41,8 @@ FEATURE(annualUpgrade,         // Feature ID
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        byPlatform({
-            .windows = true,
-            .macos = true,
-            .gnu_linux = true,
-        }))
+        byPlatform(
+            {.windows = true, .macos = true, .gnu_linux = true, .wasm = true}))
 
 FEATURE(appReview,              // Feature ID
         "App Review",           // Feature name
