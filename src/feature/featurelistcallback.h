@@ -29,23 +29,47 @@ bool FeatureCallback_false() { return false; }
 
 bool FeatureCallback_inStaging() { return !Constants::inProduction(); }
 
-bool FeatureCallback_iosOrAndroid() {
-#if defined(MZ_IOS) || defined(MZ_ANDROID)
-  return true;
-#else
-  return false;
+struct FeatureSupportedPlatforms {
+  bool windows = false;
+  bool macos = false;
+  bool gnu_linux = false;  // TIL, "linux" is reserved keyword on gcc.
+  bool android = false;
+  bool ios = false;
+  bool wasm = false;
+};
+
+// TODO : Remove once focal support is removed
+// as that is that is the only distro we support
+// that does not have consteval q_q
+#if defined(__cpp_consteval)  // If consteval is supported
+#  define constIshExpr consteval
+#else  // Fallback to constexpr
+#  define constIshExpr constexpr
 #endif
+
+constIshExpr auto byPlatform(FeatureSupportedPlatforms support) {
+  return [support]() constexpr {
+#if defined(MZ_WINDOWS)
+    return support.windows;
+#elif defined(MZ_ANDROID)
+    return support.android;
+#elif defined(MZ_IOS)
+    return support.ios;
+#elif defined(MZ_MACOS)
+    return support.macos;
+#elif defined(MZ_LINUX)
+    return support.gnu_linux;
+#elif defined(MZ_WASM)
+    return support.wasm;
+#else
+    return false;
+#endif
+  };
 }
+#undef constIshExpr
 
 // Custom callback functions
 // -------------------------
-
-bool FeatureCallback_annualUpgrade() {
-  if (FeatureCallback_iosOrAndroid()) {
-    return false;
-  }
-  return true;
-}
 
 bool FeatureCallback_captivePortal() {
 #if defined(MZ_LINUX) || defined(MZ_MACOS) || defined(MZ_WINDOWS) || \
@@ -73,7 +97,10 @@ bool FeatureCallback_inAppAuthentication() {
 #if defined(MZ_WASM)
   return true;
 #else
-  if (Constants::inProduction() || FeatureCallback_iosOrAndroid()) {
+  if (Constants::inProduction() || byPlatform({
+                                       .android = true,
+                                       .ios = true,
+                                   })()) {
     return true;
   }
 
@@ -138,34 +165,6 @@ bool FeatureCallback_splitTunnel() {
 #endif
 }
 
-bool FeatureCallback_startOnBoot() {
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
-    defined(MZ_WASM)
-  return true;
-#else
-  return false;
-#endif
-}
-
-bool FeatureCallback_unsecuredNetworkNotification() {
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
-    defined(MZ_WASM)
-  return true;
-#else
-  return false;
-#endif
-}
-
-// Free trials are currently not being used on any platforms
-// Leaving this code in case we want to re-enable them in the future
-bool FeatureCallback_freeTrial() {
-#if defined(MZ_IOS)
-  return true;
-#else
-  return false;
-#endif
-}
-
 bool FeatureCallback_shareLogs() {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS) || \
     defined(MZ_IOS) || defined(MZ_WASM)
@@ -175,14 +174,6 @@ bool FeatureCallback_shareLogs() {
          29;  // Android Q (10) is required for this
 #else
   return false;
-#endif
-}
-
-bool FeatureCallback_webPurchase() {
-#if defined(MZ_IOS) || defined(MZ_ANDROID) || defined(MZ_WASM)
-  return false;
-#else
-  return true;
 #endif
 }
 

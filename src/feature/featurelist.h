@@ -17,7 +17,10 @@ FEATURE(accountDeletion,        // Feature ID
         FeatureCallback_true,   // Can be flipped on
         FeatureCallback_false,  // Can be flipped off
         QStringList(),          // feature dependencies
-        FeatureCallback_iosOrAndroid)
+        byPlatform({
+            .android = true,
+            .ios = true,
+        }))
 
 FEATURE(addonSignature,             // Feature ID
         "Addons Signature",         // Feature name
@@ -38,14 +41,18 @@ FEATURE(annualUpgrade,         // Feature ID
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        FeatureCallback_annualUpgrade)
+        byPlatform(
+            {.windows = true, .macos = true, .gnu_linux = true, .wasm = true}))
 
 FEATURE(appReview,              // Feature ID
         "App Review",           // Feature name
         FeatureCallback_false,  // Can be flipped on
         FeatureCallback_false,  // Can be flipped off
         QStringList(),          // feature dependencies
-        FeatureCallback_iosOrAndroid)
+        byPlatform({
+            .android = true,
+            .ios = true,
+        }))
 
 FEATURE(captivePortal,          // Feature ID
         "Captive Portal",       // Feature name
@@ -186,7 +193,8 @@ FEATURE(startOnBoot,            // Feature ID
         FeatureCallback_true,   // Can be flipped on
         FeatureCallback_false,  // Can be flipped off
         QStringList(),          // feature dependencies
-        FeatureCallback_startOnBoot)
+        byPlatform(
+            {.windows = true, .macos = true, .gnu_linux = true, .wasm = true}))
 
 FEATURE(stagingUpdateServer,        // Feature ID
         "Staging Update Server",    // Feature name
@@ -214,18 +222,37 @@ FEATURE(unsecuredNetworkNotification,      // Feature ID
         FeatureCallback_true,              // Can be flipped on
         FeatureCallback_false,             // Can be flipped off
         QStringList(),                     // feature dependencies
-        FeatureCallback_unsecuredNetworkNotification)
+        byPlatform(
+            {.windows = true, .macos = true, .gnu_linux = true, .wasm = true}))
 
 FEATURE(webPurchase,           // Feature ID
         "Web Purchase",        // Feature name
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        FeatureCallback_webPurchase)
+        byPlatform({
+            .windows = true,
+            .macos = true,
+            .gnu_linux = true,
+        }))
 
-FEATURE(localProxy,                      // Feature ID
-        "LocalProxy",                    // Feature name
-        FeatureCallback_proxyCanTurnOn,  // Can be flipped on
-        FeatureCallback_true,            // Can be flipped off
-        QStringList("splitTunnel"),      // feature dependencies
+FEATURE(localProxy,    // Feature ID
+        "LocalProxy",  // Feature name
+        byPlatform({
+            .windows = true,
+            .gnu_linux = true,
+        }),                          // Can be flipped on
+        FeatureCallback_true,        // Can be flipped off
+        QStringList("splitTunnel"),  // feature dependencies
         FeatureCallback_inStaging)
+
+FEATURE(webExtension,    // Feature ID
+        "webExtension",  // Feature name
+        byPlatform({     // Can be flipped on
+                    .windows = true,
+                    .macos = true,
+                    .gnu_linux = true}),
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        byPlatform({           // default value
+                    .windows = true}))
