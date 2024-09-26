@@ -114,3 +114,39 @@ jobs:
           bundle: mozillavpn.flatpak
           manifest-path: manifest/org.mozilla.vpn.yml
           cache-key: flatpak-builder-${{ github.sha }}
+
+  dependabot-cargo:
+    name: "Update flatpak crates"
+    runs-on: ubuntu-latest
+    #if: ${{ github.event_name == 'pull_request'}} && startsWith('dependabot/cargo/', gitub.head_ref)
+    if: ${{ github.event_name == 'pull_request'}}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.WIKI_TOKEN }}
+
+      - name: Install pip tools
+        shell: bash
+        run: pip install requirements-parser PyYAML toml aiohttp yq
+
+      - name: Update flatpak rust crates
+        id: update
+        shell: bash
+        run: |
+          ./linux/flatpak/flatpak-update-crates.sh ./Cargo.lock
+          echo -n "changed-files=" >> $GITHUB_OUTPUT
+          git diff --name-only | grep '^linux/flatpak/flatpak-vpn-crates.json' >> $GITHUB_OUTPUT
+
+      - name: Commit the changes
+        shell: bash
+        if: ${{ steps.update.outputs.changed-files }}
+        run: |
+          git add ${{ steps.update.outputs.changed-files }}
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+          git commit -m "[dependabot skip] Update ${{ steps.update.outputs.changed-files }}"
+          # TODO: I am scared. Let's check this first...
+          # git push
+          git format-patch --stdout HEAD~1
