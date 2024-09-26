@@ -62,7 +62,7 @@ constIshExpr auto byPlatform(FeatureSupportedPlatforms support) {
 #elif defined(MZ_WASM)
     return support.wasm;
 #else
-#  error Undefined MZ_Platform ?
+    return false;
 #endif
   };
 }
