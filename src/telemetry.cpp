@@ -196,10 +196,10 @@ void Telemetry::initialize() {
         }
       });
 
+#ifndef MZ_MOBILE
   connect(controller, &Controller::recordDataTransferTelemetry, this,
           [controller]() {
 // On mobile, these metrics are recorded in the daemon process.
-#ifndef MZ_MOBILE
             Q_ASSERT(controller);
 
             controller->getStatus([](const QString& serverIpv4Gateway,
@@ -214,8 +214,8 @@ void Telemetry::initialize() {
               mozilla::glean::connection_health::data_transferred_rx
                   .accumulate_single_sample(rxBytes);
             });
-#endif
           });
+#endif
 }
 
 void Telemetry::connectionStabilityEvent() {
