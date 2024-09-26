@@ -16,6 +16,7 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+#include "settingsholder.h"
 
 namespace {
 Logger logger("ConnectionHealth");
@@ -48,21 +49,18 @@ ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
 // On mobile, these metrics are recorded in the daemon process.
 #ifndef MZ_MOBILE
   m_metricsTimer.setSingleShot(false);
-  m_metricsTimer.setInterval(
-      std::chrono::duration_cast<std::chrono::hours>(3h));
-  connect(&m_metricsTimer, &QTimer::timeout, this, []() {
-    MozillaVPN::instance()->controller()->getStatus(
-        [](const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
-           uint64_t txBytes, uint64_t rxBytes) {
-          Q_UNUSED(serverIpv4Gateway);
-          Q_UNUSED(deviceIpv4Address);
 
-          mozilla::glean::connection_health::data_transferred_tx.accumulate(
-              txBytes);
-          mozilla::glean::connection_health::data_transferred_rx.accumulate(
-              rxBytes);
-        });
+  if (SettingsHolder::instance()->shortTimerSessionPing()) {
+    m_metricsTimer.setInterval(
+        std::chrono::duration_cast<std::chrono::minutes>(3min));
+  } else {
+    m_metricsTimer.setInterval(
+        std::chrono::duration_cast<std::chrono::hours>(3h));
+  }
+  connect(&m_metricsTimer, &QTimer::timeout, this, []() {
+    emit MozillaVPN::instance()->controller()->recordDataTransferTelemetry();
   });
+  m_metricsTimer.start();
 #endif
 
   m_noSignalTimer.setSingleShot(true);

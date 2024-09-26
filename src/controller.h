@@ -139,6 +139,7 @@ class Controller : public QObject, public LogSerializer {
   void connectionRetryChanged();
   void recordConnectionStartTelemetry();
   void recordConnectionEndTelemetry();
+  void recordDataTransferTelemetry();
   void readyToQuit();
   void readyToUpdate();
   void readyToBackendFailure();

@@ -830,11 +830,6 @@ void Controller::getStatus(
                      uint64_t rxBytes)>
       callback = std::move(a_callback);
 
-  if (m_state != StateOn && m_state != StateConfirming) {
-    callback(QString(), QString(), 0, 0);
-    return;
-  }
-
   bool requestStatus = m_getStatusCallbacks.isEmpty();
 
   m_getStatusCallbacks.append(std::move(callback));
@@ -1059,6 +1054,8 @@ bool Controller::deactivate() {
       m_state == StateConnecting || m_state == StateCheckSubscription) {
     setState(StateDisconnecting);
   }
+
+  emit recordDataTransferTelemetry();
 
   m_pingCanary.stop();
   m_handshakeTimer.stop();

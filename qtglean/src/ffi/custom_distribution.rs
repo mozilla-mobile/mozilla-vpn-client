@@ -11,12 +11,12 @@ use glean::ErrorType;
 use crate::ffi::helpers;
 
 #[no_mangle]
-pub extern "C" fn glean_custom_distribution_accumulate_samples(id: u32, samples: Vec<i64>) {
+pub extern "C" fn glean_custom_distribution_accumulate_sample(id: u32, sample: i64) {
     with_metric!(
         CUSTOM_DISTRIBUTION_MAP,
         id,
         metric,
-        metric.accumulate_samples(samples)
+        metric.accumulate_samples(vec![sample])
     );
 }
 

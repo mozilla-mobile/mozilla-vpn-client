@@ -42,10 +42,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
     override init() {
         super.init()
         
-        metricsTimer = Timer.scheduledTimer(withTimeInterval: metricsInteval, repeats: true) { [self] _ in
-            recordRxTxBytes()
+        metricsTimer = Timer.scheduledTimer(withTimeInterval: metricsInteval, repeats: true) { [weak self] _ in
+          self?.recordRxTxBytes()
         }
-        
         
         connectionHealthMonitor.serverSwitchingDelegate = self
 

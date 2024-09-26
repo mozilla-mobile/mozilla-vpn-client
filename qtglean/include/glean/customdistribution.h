@@ -18,7 +18,7 @@ class CustomDistributionMetric final : public QObject {
  public:
   explicit CustomDistributionMetric(int aId);
 
-  Q_INVOKABLE void accumulate(qint64 sample) const;
+  Q_INVOKABLE void accumulate_single_sample(qint64 sample) const;
 
   // Test  only functions
 

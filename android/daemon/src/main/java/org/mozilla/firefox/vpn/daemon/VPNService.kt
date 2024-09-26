@@ -48,8 +48,8 @@ class VPNService : android.net.VpnService() {
         override fun onFinish() {
             Log.i(tag, "Sending daemon_timer ping")
             if (shouldRecordTimerAndEndMetrics) {
-                ConnectionHealth.dataTransferredRx.accumulate(getConfigValue("rx_bytes")?.toInt());
-                ConnectionHealth.dataTransferredTx.accumulate(getConfigValue("tx_bytes")?.toInt());
+                ConnectionHealth.dataTransferredRx.accumulateSingleSample(getConfigValue("rx_bytes")?.toInt());
+                ConnectionHealth.dataTransferredTx.accumulateSingleSample(getConfigValue("tx_bytes")?.toInt());
                 Pings.daemonsession.submit(
                     Pings.daemonsessionReasonCodes.daemonTimer,
                 )
@@ -453,8 +453,8 @@ class VPNService : android.net.VpnService() {
         CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
         if (shouldRecordTimerAndEndMetrics) {
             Session.daemonSessionEnd.set()
-            ConnectionHealth.dataTransferredRx.accumulate(getConfigValue("rx_bytes")?.toInt());
-            ConnectionHealth.dataTransferredTx.accumulate(getConfigValue("tx_bytes")?.toInt());
+            ConnectionHealth.dataTransferredRx.accumulateSingleSample(getConfigValue("rx_bytes")?.toInt());
+            ConnectionHealth.dataTransferredTx.accumulateSingleSample(getConfigValue("tx_bytes")?.toInt());
             Pings.daemonsession.submit(
                 Pings.daemonsessionReasonCodes.daemonEnd,
             )

@@ -17,6 +17,7 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/quantity.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/string.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/counter.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/customdistribution.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/event.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/ping.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/distributiondata.h
@@ -28,6 +29,7 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/quantity.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/string.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/counter.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/customdistribution.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/event.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/ping.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/timingdistribution.cpp
