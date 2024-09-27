@@ -118,7 +118,7 @@ jobs:
   dependabot-cargo:
     name: "Update flatpak crates"
     runs-on: ubuntu-latest
-    #if: ${{ github.event_name == 'pull_request'}} && startsWith('dependabot/cargo/', gitub.head_ref)
+    #if: ${{ github.event_name == 'pull_request'}} && startsWith(gitub.head_ref, 'dependabot/cargo/')
     if: ${{ github.event_name == 'pull_request'}}
     steps:
       - name: Checkout sources
@@ -132,20 +132,17 @@ jobs:
         run: pip install requirements-parser PyYAML toml aiohttp yq
 
       - name: Update flatpak rust crates
-        id: update
         shell: bash
-        run: |
-          ./linux/flatpak/flatpak-update-crates.sh ./Cargo.lock
-          echo -n "changed-files=" >> $GITHUB_OUTPUT
-          git diff --name-only | grep '^linux/flatpak/flatpak-vpn-crates.json' >> $GITHUB_OUTPUT
+        run: ./linux/flatpak/flatpak-update-crates.sh ./Cargo.lock
 
       - name: Commit the changes
         shell: bash
-        if: ${{ steps.update.outputs.changed-files }}
         run: |
-          git add ${{ steps.update.outputs.changed-files }}
-          git config user.name "${GITHUB_ACTOR}"
-          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
-          git commit -m "[dependabot skip] Update ${{ steps.update.outputs.changed-files }}"
-          git format-patch --stdout HEAD~1
-          git push
+          if git diff --name-only | grep -q '^linux/flatpak/flatpak-vpn-crates.json'; then
+            git add linux/flatpak/flatpak-vpn-crates.json
+            git config user.name "${GITHUB_ACTOR}"
+            git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+            git commit -m "[dependabot skip] Update linux/flatpak/flatpak-vpn-crates.json"
+            git format-patch --stdout HEAD~1
+            git push
+          fi
