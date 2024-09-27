@@ -115,9 +115,6 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
-  QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
-
   Localizer localizer;
   SimpleNetworkManager snm;
 
@@ -141,9 +138,6 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
-
-  QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   Localizer localizer;
   SimpleNetworkManager snm;
@@ -196,9 +190,6 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 #endif
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
-
-  QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   Localizer localizer;
 

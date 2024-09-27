@@ -392,7 +392,7 @@ describe('Subscription view', function() {
     await vpn.waitForQueryAndClick(
         queries.screenSettings.USER_PROFILE.visible());
 
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
     await vpn.waitForQuery(
         queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
@@ -433,7 +433,7 @@ describe('Subscription view', function() {
     await vpn.waitForQueryAndClick(
         queries.screenSettings.USER_PROFILE.visible());
 
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
     await vpn.waitForQuery(
         queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());

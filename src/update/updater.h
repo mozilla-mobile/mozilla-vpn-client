@@ -33,8 +33,6 @@ class Updater : public QObject {
       QObject* parent, bool downloadAndInstall,
       ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy);
 
-  static void updateViewShown();
-
   Updater(QObject* parent);
   virtual ~Updater();
 

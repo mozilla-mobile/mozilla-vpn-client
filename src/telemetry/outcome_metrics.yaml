@@ -23,7 +23,7 @@ outcome:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
   registration_started:
     type: event
     lifetime: ping
@@ -40,7 +40,7 @@ outcome:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
   two_fa_verification_failed:
     type: event
     lifetime: ping
@@ -57,7 +57,7 @@ outcome:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       type:
         description: |
@@ -79,7 +79,7 @@ outcome:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       type:
         description: |
@@ -101,7 +101,7 @@ outcome:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
   registration_completed:
     type: event
     lifetime: ping
@@ -118,7 +118,7 @@ outcome:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
   subscription_started:
     type: event
     lifetime: ping
@@ -135,7 +135,7 @@ outcome:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
   subscription_completed:
     type: event
     lifetime: ping
@@ -152,7 +152,7 @@ outcome:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
   subscription_failed:
     type: event
     lifetime: ping
@@ -169,7 +169,7 @@ outcome:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       reason:
         description: |
@@ -202,7 +202,7 @@ outcome:
     notification_emails:
         - vpn-telemetry@mozilla.com
         - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
   onboarding_completed:
     type: event
     lifetime: ping
@@ -219,7 +219,7 @@ outcome:
     notification_emails:
         - vpn-telemetry@mozilla.com
         - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
   onboarding_ntwrk_perm_granted:
     type: event
     lifetime: ping
@@ -236,7 +236,7 @@ outcome:
     notification_emails:
         - vpn-telemetry@mozilla.com
         - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
   onboarding_ntwrk_perm_denied:
     type: event
     lifetime: ping
@@ -253,4 +253,4 @@ outcome:
     notification_emails:
         - vpn-telemetry@mozilla.com
         - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30

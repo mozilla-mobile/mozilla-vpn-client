@@ -11,11 +11,7 @@ set -e
 REVISION=1
 RELEASE=
 GITREF=
-SOURCEONLY=N
-PPA_URL=
 DPKG_SIGN="--no-sign"
-RPM=N
-DEB=N
 
 if [ -f .env ]; then
   . .env
@@ -28,7 +24,7 @@ helpFunction() {
   print N "  -r, --release DIST     Build packages for distribution DIST"
   print N "  -g, --gitref REF       Generated version suffix from REF"
   print N "  -v, --version REV      Set package revision to REV"
-  print N "      --source           Build source packages only (no binary)"
+  print N "      --source           Deprecated option (ignored - always true)"
   print N ""
   print N "Signing options:"
   print N "      --sign             Enable package signing (default: disabled)"
@@ -64,7 +60,7 @@ while [[ $# -gt 0 ]]; do
     shift
     ;;
   --source)
-    SOURCEONLY=Y
+    # Ignored
     shift
     ;;
   --sign)
@@ -140,17 +136,16 @@ printn Y "Downloading Go dependencies..."
 (cd $WORKDIR/linux/netfilter && go mod vendor)
 print G "done."
 
-printn Y "Downloading Rust dependencies (extension)..."
-(cd $WORKDIR/extension/bridge && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
-print G "done."
+print Y "Downloading Rust dependencies..."
+cargo vendor --manifest-path $WORKDIR/Cargo.toml $WORKDIR/3rdparty/cargo-vendor > /dev/null
+mkdir -p $WORKDIR/.cargo
+cat << EOF > $WORKDIR/.cargo/config.toml
+[source.vendored-sources]
+directory = "3rdparty/cargo-vendor"
 
-printn Y "Downloading Rust dependencies (signature)..."
-(cd $WORKDIR/signature && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
-print G "done."
-
-printn Y "Downloading Rust dependencies (qtglean)..."
-(cd $WORKDIR/qtglean && mkdir -p .cargo && cargo vendor > .cargo/config.toml)
-print G "done."
+[source.crates-io]
+replace-with = "vendored-sources"
+EOF
 
 printn Y "Removing the packaging templates... "
 rm -f $WORKDIR/linux/mozillavpn.spec || die "Failed"
@@ -172,25 +167,28 @@ Source0: mozillavpn_$SHORTVERSION.orig.tar.gz
 $(sed -e '/^%prep/ a %autosetup' ../linux/mozillavpn.spec | grep -v -e "^Version:" -e "^Release" -e "^%define")
 EOF
 
-  rpmbuild --define "_srcrpmdir $(pwd)" --define "_sourcedir $(pwd)" -bs mozillavpn.spec
+  # Build the source RPM only if the rpmbuild tool can be found.
+  if which rpmbuild 2>/dev/null; then
+    rpmbuild --define "_srcrpmdir $(pwd)" --define "_sourcedir $(pwd)" -bs mozillavpn.spec
+  fi
 }
 
 ## Update the flatpak manifest to use the source tarball.
 build_flatpak_manifest() {
-# Copy recipies for dependent modules.
-cp $WORKDIR/linux/flatpak-*.yaml .
+  # Copy the flatpak manifests
+  cp -r ../linux/flatpak . || die "Failed"
 
-# Truncate the YAML at the sources, and replace it with the tarball archive
-sed -e '1,/[[:space:]]\+sources:/!d' $WORKDIR/linux/org.mozilla.vpn.yml > org.mozilla.vpn.yml
-cat << EOF >> org.mozilla.vpn.yml
+  # Truncate the YAML at the sources, and replace it with the tarball archive
+  sed -e '1,/[[:space:]]\+sources:/!d' ../linux/flatpak/org.mozilla.vpn.yml > flatpak/org.mozilla.vpn.yml
+  cat << EOF >> flatpak/org.mozilla.vpn.yml
       - type: archive
-        path: mozillavpn_$SHORTVERSION.orig.tar.gz
+        path: ../mozillavpn_$SHORTVERSION.orig.tar.gz
+        sha256: $(sha256sum mozillavpn_$SHORTVERSION.orig.tar.gz | awk '{print $1}')
 EOF
 }
 
 ## Build the DSC and debian tarball.
 build_deb_source() {
-  print Y "Building sources for $distro..."
   rm -rf $WORKDIR/debian || die "Failed"
   cp -r ../linux/debian $WORKDIR || die "Failed"
 
@@ -198,63 +196,20 @@ build_deb_source() {
   sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/DATE/$(date -R)/g" $WORKDIR/debian/changelog || die "Failed"
 
-  # If a target distribution was provided, add a changelog entry targeting that distro.
-  if [[ $# -gt 0 ]]; then
-    export DEBEMAIL=${DEBEMAIL:-"vpn@mozilla.com"}
-    export DEBFULLNAME=${DEBFULLNAME:-"Mozilla VPN Team"}
-    dch -c $WORKDIR/debian/changelog -v "${SHORTVERSION}-${1}${REVISION}" -D ${1} "Release for ${1}"
-  fi
-
   (cd $WORKDIR && dpkg-buildpackage --build=source $DPKG_SIGN --no-check-builddeps) || die "Failed"
 }
 
-## If we are just doing source packaging, then build the dpkg and rpm sources.
-if [ "$SOURCEONLY" == "Y" ]; then
-  print Y "Building RPM sources"
-  build_rpm_source
+print Y "Building RPM sources"
+build_rpm_source
 
-  print Y "Building Debian sources"
-  build_deb_source
+print Y "Building Debian sources"
+build_deb_source
 
-  print Y "Building Flatpak sources"
-  build_flatpak_manifest
-
-  print Y "Cleaning up working directory..."
-  rm -rf $WORKDIR || die "Failed"
-
-  print G "All done."
-  exit 0
-fi
-
-## Prepare the distribution's packaging sources
-case $RELEASE in
-  fedora|rpm)
-    print Y "Building RPM packages for $distro"
-    build_rpm_source
-    ;;
-  
-  flatpak)
-    print Y "Building Flatpak sources"
-    build_flatpak_manifest
-    ;;
-
-  *)
-    print Y "Building Debian packages for $RELEASE"
-    build_deb_source $RELEASE
-    ;;
-esac
+print Y "Building Flatpak sources"
+build_flatpak_manifest
 
 print Y "Cleaning up working directory..."
 rm -rf $WORKDIR || die "Failed"
 
-## Build Binary packages
-if [ "$SOURCEONLY" != "Y" ]; then
-  for changeset in $(find . -type f -name '*_source.changes'); do
-    print Y "Building binary package from $changeset"
-    dpkg-source -x ${changeset%_source.changes}.dsc
-    (cd $WORKDIR && dpkg-buildpackage --build=binary $DPKG_SIGN) || die "Failed"
-    rm -rf $WORKDIR
-  done
-fi
-
 print G "All done."
+exit 0

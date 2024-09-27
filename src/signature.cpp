@@ -46,7 +46,7 @@ bool Signature::verify(const QByteArray& publicKey, const QByteArray& content,
   return IOSCommons::verifySignature(publicKey, content, signature);
 #elif defined(MZ_ANDROID)
   return AndroidCommons::verifySignature(publicKey, content, signature);
-#elif defined(MZ_WASM) or defined(UNIT_TEST) or defined(MZ_DUMMY)
+#elif defined(MZ_WASM) or defined(UNIT_TEST)
   Q_UNUSED(publicKey);
   Q_UNUSED(content);
   Q_UNUSED(signature);

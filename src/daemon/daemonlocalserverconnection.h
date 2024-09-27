@@ -7,13 +7,14 @@
 
 #include <QObject>
 
+class Daemon;
 class QLocalSocket;
 
 class DaemonLocalServerConnection final : public QObject {
   Q_DISABLE_COPY_MOVE(DaemonLocalServerConnection)
 
  public:
-  DaemonLocalServerConnection(QObject* parent, QLocalSocket* socket);
+  DaemonLocalServerConnection(Daemon* daemon, QLocalSocket* socket);
   ~DaemonLocalServerConnection();
 
  private:
@@ -28,6 +29,7 @@ class DaemonLocalServerConnection final : public QObject {
   void write(const QJsonObject& obj);
 
  private:
+  Daemon* m_daemon = nullptr;
   QLocalSocket* m_socket = nullptr;
   QByteArray m_buffer;
 };

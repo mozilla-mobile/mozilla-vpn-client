@@ -54,6 +54,7 @@ MozillaVPN
 Mozillians
 Mullvad
 NDK
+NEPacketTunnelProvider
 NONINFRINGEMENT
 NotificationsUnsecuredNetworkMessage
 OpenSSL
@@ -84,6 +85,7 @@ TOTP
 TP
 TaskGetFeatureList
 UniFFI
+VpnService
 VPN's
 WebAssembly
 WebSockets
@@ -159,10 +161,12 @@ ici
 idfv
 ie
 init
+interprocess
 ios
 javascript
 js
 json
+launchd
 le
 libcap
 libsecret
@@ -198,7 +202,7 @@ onboarding
 ons
 os
 perl
-podman
+plist
 powershell
 ppa
 pre
@@ -230,8 +234,10 @@ sdk
 sdks
 serverData
 settingHolder
+setupVpn
 shader
 shaders
+shortVersion
 sig
 signup
 src
@@ -239,6 +245,7 @@ stringID
 sublicense
 submodule
 symlink
+systemd
 sécuriser
 sécurisé
 taskcluster
@@ -252,6 +259,7 @@ unenrolled
 uniffi
 uploader
 urls
+usesSharedStrings
 utils
 uuid
 vm

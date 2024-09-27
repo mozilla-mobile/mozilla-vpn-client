@@ -15,6 +15,7 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/apierror.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
 #include "task.h"
@@ -67,10 +68,13 @@ void NetworkRequest::resetRequestHandler() {
 }
 #endif
 
-NetworkRequest::NetworkRequest(Task* parent, int status)
-    : QObject(parent), m_expectedStatusCode(status) {
+NetworkRequest::NetworkRequest(Task* parent, int status) : QObject(parent) {
   MZ_COUNT_CTOR(NetworkRequest);
   logger.debug() << "Network request created by" << parent->name();
+
+  if (status != 0) {
+    addExpectedStatus(status);
+  }
 
   m_request.setHeader(QNetworkRequest::ContentTypeHeader, "application/json");
   m_request.setAttribute(QNetworkRequest::Http2AllowedAttribute, false);
@@ -186,6 +190,22 @@ void NetworkRequest::deleteResource(const QUrl& url) {
   m_timer.start(REQUEST_TIMEOUT);
 }
 
+// Debug helper: format the expected status codes into a string for logging.
+QString NetworkRequest::expectStatusString() const {
+  if (m_expectedStatusCodes.isEmpty()) {
+    return "any";
+  } else if (m_expectedStatusCodes.count() == 1) {
+    return QString::number(m_expectedStatusCodes.first());
+  }
+
+  // Otherwise, format an array of codes.
+  QStringList list;
+  for (int code : m_expectedStatusCodes) {
+    list.append(QString::number(code));
+  }
+  return QString("[%1]").arg(list.join(","));
+}
+
 void NetworkRequest::replyFinished() {
   Q_ASSERT(m_reply);
   Q_ASSERT(m_reply->isFinished());
@@ -227,11 +247,8 @@ void NetworkRequest::replyFinished() {
 #endif
 
   int status = statusCode();
-
-  QString expect =
-      m_expectedStatusCode ? QString::number(m_expectedStatusCode) : "any";
   logger.debug() << "Network reply received - status:" << status
-                 << "- expected:" << expect;
+                 << "- expected:" << expectStatusString();
 
   m_replyData.append(m_reply->readAll());
   processData(m_reply->error(), m_reply->errorString(), status, m_replyData);
@@ -247,21 +264,44 @@ void NetworkRequest::processData(QNetworkReply::NetworkError error,
   m_finalStatusCode = status;
 #endif
 
+  // Check for expected HTTP reponse statuses. This can distinguish successful
+  // responses (eg: 200 vs. 201), but it allows for expected error conditions
+  // (eg: 404 when it's okay for the resource not to exist).
+  if ((status != 0) && m_expectedStatusCodes.contains(status)) {
+    emit requestCompleted(data);
+    return;
+  }
+
   if (error != QNetworkReply::NoError) {
     QUrl::FormattingOptions options = QUrl::RemoveQuery | QUrl::RemoveUserInfo;
-    logger.error() << "Network error:" << errorString
-                   << "status code:" << status
-                   << "- body:" << logger.sensitive(data);
+    logger.error() << "Network error:" << status << errorString;
     logger.error() << "Failed to access:" << m_request.url().toString(options);
+
+    // If the response looks and smells like guardian API error, then log it.
+    ApiError err;
+    QString contentType =
+        m_reply->header(QNetworkRequest::ContentTypeHeader).toString();
+    if (contentType.contains("json") && err.fromJson(data)) {
+      logger.error() << "Remote API error" << err.errnum() << "-"
+                     << err.message();
+    }
+#ifdef MZ_DEBUG
+    else {
+      logger.error() << "Error body:" << data;
+    }
+#endif
+
     emit requestFailed(error, data);
     return;
   }
 
-  // This is an extra check for succeeded requests (status code 200 vs 201, for
-  // instance). The real network status check is done in the previous if-stmt.
-  if (m_expectedStatusCode && status != m_expectedStatusCode) {
+  // Otherwise, if we get this far and an expected response code was provided,
+  // but not found. Handle this as an error.
+  if (!m_expectedStatusCodes.isEmpty()) {
+    // If the status was found, it should be handled earlier in this function.
+    Q_ASSERT(!m_expectedStatusCodes.contains(status));
     logger.error() << "Status code unexpected - status code:" << status
-                   << "- expected:" << m_expectedStatusCode;
+                   << "- expected:" << expectStatusString();
     emit requestFailed(QNetworkReply::ConnectionRefusedError, data);
     return;
   }

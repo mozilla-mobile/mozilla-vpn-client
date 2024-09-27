@@ -324,11 +324,6 @@ void Localizer::settingsChanged() {
     settingsHolder->setPreviousLanguageCode(m_code);
   }
 
-  if (!code.isEmpty()) {
-    mozilla::glean::sample::non_default_language_used.record(
-        mozilla::glean::sample::NonDefaultLanguageUsedExtra{._languageCode =
-                                                                code});
-  }
   mozilla::glean::settings::using_system_language.set(code.isEmpty());
 
   m_code = code;

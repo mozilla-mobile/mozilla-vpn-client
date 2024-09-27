@@ -7,6 +7,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QFile>
+#include <QRegularExpression>
 #include <QSettings>
 #include <QStandardPaths>
 
@@ -20,32 +21,34 @@ Logger logger("SettingsManager");
 
 SettingsManager* s_instance = nullptr;
 
-#ifndef UNIT_TEST
-constexpr const char* SETTINGS_ORGANIZATION_NAME = "mozilla";
-#else
-constexpr const char* SETTINGS_ORGANIZATION_NAME = "mozilla_testing";
-#endif
-
 #if defined UNIT_TEST
 constexpr const char* SETTINGS_APP_NAME = "vpn_unit";
-#elif defined MZ_DUMMY
-constexpr const char* SETTINGS_APP_NAME = "vpn_dummy";
 #else
 constexpr const char* SETTINGS_APP_NAME = "vpn";
 #endif
-
-const QSettings::Format MozFormat = QSettings::registerFormat(
-    "moz", CryptoSettings::readFile, CryptoSettings::writeFile);
-
 }  // namespace
 
 // static
 SettingsManager* SettingsManager::instance() {
   if (!s_instance) {
     s_instance = new SettingsManager(qApp);
+    qAddPostRoutine([]() { delete s_instance; });
   }
 
   return s_instance;
+}
+
+// static
+QString SettingsManager::getOrganizationName() {
+  QString name = QApplication::organizationName().toLower();
+  // Replace all non-alphanumeric chars with underscores.
+  for (qsizetype i = 0; i < name.size(); i++) {
+    QChar c = name.at(i);
+    if (!c.isLetterOrNumber()) {
+      name[i] = '_';
+    }
+  }
+  return name;
 }
 
 #ifdef UNIT_TEST
@@ -58,8 +61,8 @@ void SettingsManager::testCleanup() {
 
 SettingsManager::SettingsManager(QObject* parent)
     : QObject(parent),
-      m_settings(MozFormat, QSettings::UserScope, SETTINGS_ORGANIZATION_NAME,
-                 SETTINGS_APP_NAME),
+      m_settings(CryptoSettings::format(), QSettings::UserScope,
+                 getOrganizationName(), SETTINGS_APP_NAME),
       m_settingsConnector(this, &m_settings) {
   MZ_COUNT_CTOR(SettingsManager);
 

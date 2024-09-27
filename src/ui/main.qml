@@ -155,7 +155,7 @@ Window {
     Connections {
         target: VPN
         function onAccountDeleted() {
-            VPNController.logout();
+            VPN.logout();
         }
     }
 
@@ -172,6 +172,16 @@ Window {
             serverUnavailablePopup.receivedPing = receivedPing
             serverUnavailablePopup.open();
         }
+
+        function onStateChanged() {
+            if (VPNController.state !== VPNController.StateOn) {
+                return
+            }
+            if (serverUnavailablePopup.opened) {
+                serverUnavailablePopup.close();
+                console.log("Connection stabilized and server unavailable popup visible. Closing server unavailable popup");
+            }
+        }
     }
 
     MZBottomNavigationBar {
@@ -185,7 +195,6 @@ Window {
         ]
 
         visible: showNavigationBar.includes(MZNavigator.screen) &&
-                 VPN.userState === VPN.UserAuthenticated &&
                  VPN.state === VPN.StateMain
     }
 

@@ -9,12 +9,13 @@
 #include <winsvc.h>
 
 #include <QCoreApplication>
+#include <QLocalServer>
 #include <QThread>
 #include <QTimer>
 
 #include "commandlineparser.h"
 #include "constants.h"
-#include "daemon/daemonlocalserver.h"
+#include "daemon/daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "windowsdaemon.h"
@@ -77,8 +78,19 @@ int WindowsDaemonServer::run(QStringList& tokens) {
 
   WindowsDaemon daemon;
 
-  DaemonLocalServer server(qApp);
-  if (!server.initialize()) {
+  QLocalServer server(qApp);
+  server.setSocketOptions(QLocalServer::WorldAccessOption);
+  connect(&server, &QLocalServer::newConnection, [&]() {
+    logger.debug() << "New connection received";
+    if (!server.hasPendingConnections()) {
+      return;
+    }
+
+    QLocalSocket* socket = server.nextPendingConnection();
+    Q_ASSERT(socket);
+    new DaemonLocalServerConnection(&daemon, socket);
+  });
+  if (!server.listen(Constants::WINDOWS_DAEMON_PATH)) {
     logger.error() << "Failed to initialize the server";
     return 1;
   }

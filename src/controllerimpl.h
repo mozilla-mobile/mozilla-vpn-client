@@ -16,6 +16,7 @@ class Server;
 class QDateTime;
 class IPAddress;
 class QHostAddress;
+class QJsonObject;
 
 // This object is allocated when the VPN is about to be activated.
 // It's kept alive, basically forever, except in these scenarios, in which it's
@@ -76,6 +77,10 @@ class ControllerImpl : public QObject {
   virtual bool multihopSupported() { return false; }
 
   virtual bool silentServerSwitchingSupported() const { return true; }
+
+ protected:
+  // Helper method - process a JSON status and emit the statusUpdated signal.
+  void emitStatusFromJson(const QJsonObject& obj);
 
  signals:
   // This signal is emitted when the controller is initialized. Note that the

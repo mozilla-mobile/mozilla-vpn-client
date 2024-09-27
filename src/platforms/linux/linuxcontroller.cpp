@@ -78,9 +78,18 @@ void LinuxController::initializeCompleted(QDBusPendingCallWatcher* call) {
 void LinuxController::dbusNameOwnerChanged(const QString& name,
                                            const QString& prevOwner,
                                            const QString& newOwner) {
-  // If the daemon stops, or re-starts then we have been disconnected.
-  if (name == m_dbus->serviceName()) {
-    logger.info() << "DBus name" << name << "has changed owner to" << newOwner;
+  if (name != m_dbus->serviceName()) {
+    return;
+  }
+
+  if (prevOwner.isEmpty()) {
+    // The daemon has started.
+    logger.info() << "DBus name" << name << "has owner:" << newOwner;
+    return;
+  } else {
+    // Otherwise, the daemon has stopped or re-started somehow.
+    logger.info() << "DBus name" << name << "has changed owner:" << newOwner;
+    REPORTERROR(ErrorHandler::ControllerError, "controller");
     emit disconnected();
   }
 }
@@ -160,24 +169,7 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
     return;
   }
 
-  Q_ASSERT(obj.contains("serverIpv4Gateway"));
-  QJsonValue serverIpv4Gateway = obj.value("serverIpv4Gateway");
-  Q_ASSERT(serverIpv4Gateway.isString());
-
-  Q_ASSERT(obj.contains("deviceIpv4Address"));
-  QJsonValue deviceIpv4Address = obj.value("deviceIpv4Address");
-  Q_ASSERT(deviceIpv4Address.isString());
-
-  Q_ASSERT(obj.contains("txBytes"));
-  QJsonValue txBytes = obj.value("txBytes");
-  Q_ASSERT(txBytes.isDouble());
-
-  Q_ASSERT(obj.contains("rxBytes"));
-  QJsonValue rxBytes = obj.value("rxBytes");
-  Q_ASSERT(rxBytes.isDouble());
-
-  emit statusUpdated(serverIpv4Gateway.toString(), deviceIpv4Address.toString(),
-                     txBytes.toDouble(), rxBytes.toDouble());
+  emitStatusFromJson(obj);
 }
 
 void LinuxController::getBackendLogs(

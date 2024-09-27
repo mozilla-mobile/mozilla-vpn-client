@@ -13,6 +13,7 @@ class RFC4291 final {
  public:
   static IPAddress ipv6LoopbackAddressBlock();
   static IPAddress ipv6MulticastAddressBlock();
+  static IPAddress ipv6LinkLocalAddressBlock();
 };
 
 #endif  // RFC4291_H

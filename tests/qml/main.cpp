@@ -19,6 +19,10 @@ App* App::instance() {
 }
 
 int main(int argc, char* argv[]) {
+  QCoreApplication::setApplicationName("Mozilla VPN QML Tests");
+  QCoreApplication::setOrganizationName("Mozilla Testing");
+  QCoreApplication::setApplicationVersion(Constants::versionString());
+
   // In order to be able to call our TestHelper constructor how we want,
   // we do not follow the exact instructions here
   // https://doc.qt.io/qt-5/qtquicktest-index.html#executing-c-before-qml-tests

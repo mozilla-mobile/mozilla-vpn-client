@@ -111,7 +111,6 @@ void ConnectionHealth::stop() {
   m_dnsPingTimer.stop();
 
   stopTimingDistributionMetric(m_stability);
-  setStability(Stable);
 }
 
 void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
@@ -147,7 +146,7 @@ void ConnectionHealth::startIdle() {
   m_dnsPingInitialized = false;
   m_dnsPingLatency = PING_TIME_UNSTABLE.count();
 
-  if (m_dnsPingSender.start()) {
+  if (m_dnsPingSender.isValid()) {
     m_dnsPingTimer.start(PING_INTERVAL_IDLE);
     // Send an initial ping right away.
     m_dnsPingTimestamp = QDateTime::currentMSecsSinceEpoch();
@@ -361,8 +360,6 @@ void ConnectionHealth::stopTimingDistributionMetric(
       mozilla::glean::connection_health::stable_time.stopAndAccumulate(
           m_metricsTimerId);
   }
-  m_metricsTimerId = -1;  // used as a signal to prevent turning it off twice
-                          // when ConnectionHealth moves between idle and stop.
 #endif
 }
 

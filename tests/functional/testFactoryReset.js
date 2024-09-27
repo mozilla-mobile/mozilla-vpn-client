@@ -71,7 +71,7 @@ describe('Factory Reset', function() {
     await vpn.clickOnQueryAndAcceptAnyResults(queries.screenGetHelp.resetView.CONFIRM_RESET_BUTTON.visible());
 
     // Confirm the app quit
-    assert.equal(setup.vpnIsInactive(), true);
+	await vpn.waitForCondition(() => !setup.vpnIsRunning());
 
     // relaunch app
 	await setup.startAndConnect();
@@ -80,7 +80,7 @@ describe('Factory Reset', function() {
   	await vpn.waitForQuery(queries.screenInitialize.SCREEN.visible());
 
   	//Check that the user is logged out
-  	await vpn.waitForMozillaProperty('Mozilla.VPN', 'VPN', 'userState', 'UserNotAuthenticated');
+  	await vpn.waitForMozillaProperty('Mozilla.VPN', 'VPN', 'userAuthenticated', 'false');
 
 	//Check that settings were reset to factory
 	assert.equal(await vpn.getSetting('dnsProviderFlags'), 0);

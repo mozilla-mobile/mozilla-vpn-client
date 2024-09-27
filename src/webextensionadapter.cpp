@@ -10,9 +10,12 @@
 #include <QJsonObject>
 #include <QMetaEnum>
 #include <QTcpSocket>
+#include <QWindow>
 #include <functional>
 
+#include "connectionhealth.h"
 #include "controller.h"
+#include "feature/feature.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -20,13 +23,34 @@
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
+#if defined MZ_PROXY_ENABLED
+#  include "proxycontroller.h"
+#endif
+#include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "tasks/controlleraction/taskcontrolleraction.h"
+#include "taskscheduler.h"
 #include "webextensionadapter.h"
 
 namespace {
 
+// See https://en.cppreference.com/w/cpp/utility/variant/visit
+template <class... Ts>
+struct match : Ts... {
+  using Ts::operator()...;
+};
+template <class... Ts>
+match(Ts...) -> match<Ts...>;
+
+template <typename T>
+const char* asString(T qEnumValue) {
+  const QMetaObject* meta = qt_getEnumMetaObject(qEnumValue);
+  int index = meta->indexOfEnumerator(qt_getEnumName(qEnumValue));
+  return meta->enumerator(index).valueToKey(qEnumValue);
+};
+
 Logger logger("WebExtensionAdapter");
-}
+}  // namespace
 
 WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
     : BaseAdapter(parent) {
@@ -39,14 +63,31 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
           &WebExtensionAdapter::writeState);
   connect(vpn->controller(), &Controller::stateChanged, this,
           &WebExtensionAdapter::writeState);
+  connect(vpn->connectionHealth(), &ConnectionHealth::stabilityChanged, this,
+          &WebExtensionAdapter::writeState);
+
+  mProxyStateChanged = vpn->proxyController()->stateBindable().subscribe(
+      [this]() { serializeStatus(); });
 
   m_commands = QList<RequestType>({
       RequestType{"activate",
                   [](const QJsonObject&) {
-                    MozillaVPN::instance()->activate();
+                    auto t = new TaskControllerAction(
+                        TaskControllerAction::eActivateForExtension);
+                    TaskScheduler::scheduleTask(t);
+                    QJsonObject obj;
+                    obj["ok"] = true;
                     return QJsonObject();
                   }},
-
+      RequestType{"deactivate",
+                  [](const QJsonObject&) {
+                    auto t = new TaskControllerAction(
+                        TaskControllerAction::eDeactivateForExtension);
+                    TaskScheduler::scheduleTask(t);
+                    QJsonObject obj;
+                    obj["ok"] = true;
+                    return QJsonObject();
+                  }},
       RequestType{"servers",
                   [this](const QJsonObject&) {
                     QJsonObject servers;
@@ -57,7 +98,21 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
                     obj["servers"] = servers;
                     return obj;
                   }},
-
+      RequestType{"focus",
+                  [](const QJsonObject&) {
+                    QmlEngineHolder* engine = QmlEngineHolder::instance();
+                    engine->showWindow();
+                    return QJsonObject{};
+                  }},
+      RequestType{"openAuth",
+                  [](const QJsonObject&) {
+                    MozillaVPN* vpn = MozillaVPN::instance();
+                    if (vpn->state() != MozillaVPN::StateInitialize) {
+                      return QJsonObject{};
+                    }
+                    vpn->authenticate();
+                    return QJsonObject{};
+                  }},
       RequestType{"disabled_apps",
                   [](const QJsonObject&) {
                     QJsonArray apps;
@@ -68,6 +123,12 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
 
                     QJsonObject obj;
                     obj["disabled_apps"] = apps;
+                    return obj;
+                  }},
+      RequestType{"featurelist",
+                  [this](const QJsonObject&) {
+                    QJsonObject obj;
+                    obj["featurelist"] = serializeFeaturelist();
                     return obj;
                   }},
 
@@ -85,7 +146,8 @@ WebExtensionAdapter::~WebExtensionAdapter() {
 }
 
 void WebExtensionAdapter::writeState() {
-  QJsonObject obj = serializeStatus();
+  QJsonObject obj;
+  obj["status"] = serializeStatus();
   obj["t"] = "status";
 
   emit onOutgoingMessage(obj);
@@ -103,31 +165,50 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
   QJsonObject obj;
   obj["authenticated"] = App::isUserAuthenticated();
   obj["location"] = locationObj;
-
+  obj["version"] = Constants::versionString();
+  obj["connectedSince"] =
+      QString::number(vpn->controller()->connectionTimestamp());
   {
     int stateValue = vpn->state();
     if (stateValue > App::StateCustom) {
-      MozillaVPN::CustomState state =
-          static_cast<MozillaVPN::CustomState>(stateValue);
-      const QMetaObject* meta = qt_getEnumMetaObject(state);
-      int index = meta->indexOfEnumerator(qt_getEnumName(state));
-      obj["app"] = meta->enumerator(index).valueToKey(state);
+      obj["app"] = asString(static_cast<MozillaVPN::CustomState>(stateValue));
     } else {
-      App::State state = static_cast<App::State>(stateValue);
-      const QMetaObject* meta = qt_getEnumMetaObject(state);
-      int index = meta->indexOfEnumerator(qt_getEnumName(state));
-      obj["app"] = meta->enumerator(index).valueToKey(state);
+      obj["app"] = asString(static_cast<App::State>(stateValue));
     }
   }
-
+  obj["vpn"] = asString(vpn->controller()->state());
+  obj["connectionHealth"] = asString(vpn->connectionHealth()->stability());
+#if defined MZ_PROXY_ENABLED
   {
-    Controller::State state = vpn->controller()->state();
-    const QMetaObject* meta = qt_getEnumMetaObject(state);
-    int index = meta->indexOfEnumerator(qt_getEnumName(state));
-    obj["vpn"] = meta->enumerator(index).valueToKey(state);
+    auto* proxyController = vpn->proxyController();
+    QJsonObject p;
+    std::visit(match{
+                   [&p](ProxyController::Stopped s) {
+                     p["available"] = false;
+                     p["url"] = "";
+                   },
+                   [&p](ProxyController::Started s) {
+                     p["available"] = true;
+                     p["url"] = s.url.toString();
+                   },
+               },
+               proxyController->state());
+    obj["localProxy"] = p;
   }
+#else
+  QJsonObject p;
+  p["available"] = false;
+  p["url"] = "";
+  obj["localProxy"] = p;
+#endif
 
   return obj;
+}
+
+QJsonObject WebExtensionAdapter::serializeFeaturelist() {
+  auto out = QJsonObject();
+  out["localProxy"] = Feature::get(Feature::Feature_localProxy)->isSupported();
+  return out;
 }
 
 void WebExtensionAdapter::serializeServerCountry(ServerCountryModel* model,

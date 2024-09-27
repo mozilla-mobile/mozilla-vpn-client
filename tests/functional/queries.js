@@ -151,6 +151,7 @@ const screenTelemetry = {
 const screenAuthenticationInApp = {
   AUTH_TERMS_OF_SERVICE: new QmlQueryComposer('//termsOfService'),
   AUTH_PRIVACY_NOTICE: new QmlQueryComposer('//privacyPolicy'),
+  AUTH_LOADER: new QmlQueryComposer('//authLoader'),
 
   AUTH_START_TEXT_INPUT: new QmlQueryComposer('//authStart-textInput'),
   AUTH_START_BUTTON: new QmlQueryComposer('//authStart-button'),
@@ -265,8 +266,7 @@ const screenGetHelp = {
 };
 
 const screenDeveloperMenu = {
-  SCREEN: new QmlQueryComposer('//developerScreen-flickable'),
-  RESET_AND_QUIT_BUTTON: new QmlQueryComposer('//resetAndQuitButton'),
+  SCREEN: new QmlQueryComposer('//developerScreen-flickable')
 };
 
 const screenSettings = {

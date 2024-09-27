@@ -35,6 +35,9 @@ class SubscriptionData;
 class SupportCategoryModel;
 class Telemetry;
 class User;
+#if defined MZ_PROXY_ENABLED
+class ProxyController;
+#endif
 
 class MozillaVPN final : public App {
   Q_OBJECT
@@ -114,7 +117,7 @@ class MozillaVPN final : public App {
   Q_INVOKABLE void hardResetAndQuit();
   Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelReauthentication();
-  Q_INVOKABLE void updateViewShown();
+  Q_INVOKABLE static void statusBarCheck();
 
   Q_INVOKABLE void gleanSetDebugViewTag(QString tag);
   Q_INVOKABLE void gleanSetLogPings(bool flag);
@@ -142,6 +145,9 @@ class MozillaVPN final : public App {
   SubscriptionData* subscriptionData() const;
   Telemetry* telemetry() const;
   User* user() const;
+#if defined MZ_PROXY_ENABLED
+  ProxyController* proxyController() const;
+#endif
 
   // Called at the end of the authentication flow. We can continue adding the
   // device if it doesn't exist yet, or we can go to OFF state.
@@ -161,7 +167,7 @@ class MozillaVPN final : public App {
 
   Q_INVOKABLE void silentSwitch();
 
-  void logout();
+  Q_INVOKABLE void logout();
 
   bool startMinimized() const { return m_startMinimized; }
 

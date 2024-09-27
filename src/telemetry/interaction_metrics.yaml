@@ -33,7 +33,7 @@ interaction:
     notification_emails:
       - brizental@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: &interaction_extra_keys
       screen:
         description: The screen where the interaction happened
@@ -57,7 +57,7 @@ interaction:
     notification_emails:
       - brizental@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   get_help_selected:
     type: event
@@ -75,7 +75,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -97,7 +97,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -119,7 +119,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -141,7 +141,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -163,7 +163,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -185,7 +185,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   change_email_selected:
     type: event
@@ -203,7 +203,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -225,7 +225,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -247,7 +247,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -269,7 +269,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -291,7 +291,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -313,7 +313,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -335,7 +335,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -357,7 +357,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -379,7 +379,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -401,7 +401,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -423,7 +423,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -445,7 +445,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - brizental@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       screen:
         description: |
@@ -467,7 +467,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   block_ads_disabled:
     type: event
@@ -485,7 +485,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   block_trackers_enabled:
     type: event
@@ -503,7 +503,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   block_trackers_disabled:
     type: event
@@ -521,7 +521,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   block_malware_enabled:
     type: event
@@ -539,7 +539,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   block_malware_disabled:
     type: event
@@ -557,7 +557,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   show_android_qr_selected:
     type: event
@@ -575,7 +575,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   show_ios_qr_selected:
     type: event
@@ -593,7 +593,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   connect_on_startup_enabled:
     type: event
@@ -611,7 +611,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   connect_on_startup_disabled:
     type: event
@@ -629,7 +629,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   get_started_selected:
     type: event
@@ -647,7 +647,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   approve_mozilla_vpn_selected:
     type: event
@@ -665,7 +665,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   data_use_selected:
     type: event
@@ -683,7 +683,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   more_privacy_selected:
     type: event
@@ -701,7 +701,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   add_devices_selected:
     type: event
@@ -719,7 +719,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   privacy_features_selected:
     type: event
@@ -737,7 +737,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   my_devices_selected:
     type: event
@@ -755,7 +755,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   app_preferences_selected:
     type: event
@@ -773,7 +773,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   about_us_selected:
     type: event
@@ -791,7 +791,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   home_selected:
     type: event
@@ -809,7 +809,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   messages_selected:
     type: event
@@ -827,7 +827,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   account_selected:
     type: event
@@ -845,7 +845,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   settings_selected:
     type: event
@@ -863,7 +863,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   vpn_on_startup_enabled:
     type: event
@@ -881,7 +881,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   vpn_on_startup_disabled:
     type: event
@@ -899,7 +899,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   notifications_selected:
     type: event
@@ -917,7 +917,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   language_selected:
     type: event
@@ -935,7 +935,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   dns_settings_selected:
     type: event
@@ -953,7 +953,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - gela@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   app_exclusions_selected:
     type: event
@@ -962,7 +962,7 @@ interaction:
       - main
     description: |
       The user has clicked the button that opens
-      the app exclusions modal
+      the Excluded Apps modal
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:
@@ -972,7 +972,7 @@ interaction:
     notification_emails:
       - gela@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   clear_app_exclusions_selected:
     type: event
@@ -980,7 +980,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The user has clicked on Clear all to clear all App Exclusions
+      The user has clicked on Clear all to clear all Excluded Apps
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:
@@ -990,7 +990,7 @@ interaction:
     notification_emails:
       - gela@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   add_application_selected:
     type: event
@@ -998,7 +998,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The user has clicked on Add application in App Exclusions
+      The user has clicked on Add application in Excluded Apps
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:
@@ -1008,7 +1008,7 @@ interaction:
     notification_emails:
       - gela@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   search_selected:
     type: event
@@ -1016,7 +1016,7 @@ interaction:
     send_in_pings:
       - main
     description: |
-      The user has clicked on the search field in app exclusions
+      The user has clicked on the search field in Excluded Apps
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-5363
     data_reviews:
@@ -1026,7 +1026,7 @@ interaction:
     notification_emails:
       - gela@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   edit_selected:
     type: event
@@ -1044,7 +1044,7 @@ interaction:
     notification_emails:
       - vpn-telemetry@mozilla.com
       - mlichtenstein@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   manage_subscription_selected:
     type: event
@@ -1062,7 +1062,7 @@ interaction:
     notification_emails:
       - mlichtenstein@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   change_plan_selected:
     type: event
@@ -1080,7 +1080,7 @@ interaction:
     notification_emails:
       - mlichtenstein@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   help_tooltip_selected:
     type: event
@@ -1098,7 +1098,7 @@ interaction:
     notification_emails:
       - mlichtenstein@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   learn_more_selected:
     type: event
@@ -1116,7 +1116,7 @@ interaction:
     notification_emails:
       - mlichtenstein@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys
   reset_vpn_selected:
     type: event
@@ -1133,5 +1133,5 @@ interaction:
       - interaction
     notification_emails:
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys: *interaction_extra_keys

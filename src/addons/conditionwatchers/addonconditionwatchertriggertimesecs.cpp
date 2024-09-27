@@ -45,19 +45,15 @@ bool AddonConditionWatcherTriggerTimeSecs::conditionApplied() const {
 
 bool AddonConditionWatcherTriggerTimeSecs::maybeStartTimer() {
   QDateTime now = QDateTime::currentDateTime();
-  QDateTime installation = SettingsHolder::instance()->installationTime();
+  QDateTime expire =
+      SettingsHolder::instance()->installationTime().addSecs(m_triggerTimeSecs);
 
-  // Note: triggerTimeSecs is seconds!
-  CheckedInt<int> secs =
-      static_cast<int>(m_triggerTimeSecs - installation.secsTo(now));
-  if (secs.value() <= 0) {
+  if (expire <= now) {
     return true;
   }
 
   m_timer.setSingleShot(true);
-  secs *= 1000;
-  m_timer.start(secs.isValid() ? secs.value()
-                               : std::numeric_limits<int>::max());
+  m_timer.start(now.msecsTo(expire));
 
   return false;
 }

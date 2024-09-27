@@ -185,8 +185,6 @@ void SystemTrayNotificationHandler::updateContextMenu() {
       [[fallthrough]];
     case Controller::StateConnecting:
       [[fallthrough]];
-    case Controller::StateCheckSubscription:
-      [[fallthrough]];
     case Controller::StateConfirming:
       statusLabel = i18nStrings->t(I18nStrings::SystrayStatusConnectingTo);
       break;
@@ -223,8 +221,6 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 }
 
 void SystemTrayNotificationHandler::updateIcon() {
-  logger.debug() << "Update icon";
-
 #if defined(MZ_LINUX) || defined(MZ_WINDOWS)
   MozillaVPN* vpn = MozillaVPN::instance();
   m_systemTrayIcon->setIcon(vpn->statusIcon()->icon());

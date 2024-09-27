@@ -14,6 +14,7 @@
 #include <QSslKey>
 
 #include "constants.h"
+#include "env.h"
 #include "errorhandler.h"
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
@@ -38,9 +39,9 @@ bool verify_content_signature(const char* x5u_ptr, size_t x5u_length,
 }
 
 #if defined(MZ_WINDOWS)
-constexpr const char* BALROG_WINDOWS_UA = "WINNT_x86_64";
+constexpr const char* BALROG_WINDOWS_BUILD_TARGET = "WINNT_x86_64";
 #elif defined(MZ_MACOS)
-constexpr const char* BALROG_MACOS_UA = "Darwin_x86";
+constexpr const char* BALROG_MACOS_BUILD_TARGET = "Darwin_x86";
 #else
 #  error Platform not supported yet
 #endif
@@ -70,27 +71,22 @@ Balrog::~Balrog() {
 }
 
 // static
-QString Balrog::userAgent() {
+QString Balrog::buildTarget() {
 #if defined(MZ_WINDOWS)
-  return BALROG_WINDOWS_UA;
+  return BALROG_WINDOWS_BUILD_TARGET;
 #elif defined(MZ_MACOS)
-  return BALROG_MACOS_UA;
+  return BALROG_MACOS_BUILD_TARGET;
 #else
-#  error Unsupported platform
+#  error Balrog: Unsupported platform
 #endif
 }
 
 void Balrog::start(Task* task) {
-  if (m_downloadAndInstall) {
-    mozilla::glean::sample::update_step.record(
-        mozilla::glean::sample::UpdateStepExtra{
-            ._state = QVariant::fromValue(UpdateProcessStarted).toString()});
-  }
-
   QString url = balrogUrl();
   logger.debug() << "URL:" << url;
 
   NetworkRequest* request = new NetworkRequest(task, 200);
+  request->addExpectedStatus(404);
   request->get(url);
 
   connect(request, &NetworkRequest::requestFailed, this,
@@ -103,7 +99,10 @@ void Balrog::start(Task* task) {
           [this, task, request](const QByteArray& data) {
             logger.debug() << "Request completed";
 
-            if (!fetchSignature(task, request, data)) {
+            if (request->statusCode() != 200) {
+              logger.info() << "No updates available.";
+              deleteLater();
+            } else if (!fetchSignature(task, request, data)) {
               logger.warning() << "Ignore failure.";
               deleteLater();
             }
@@ -297,7 +296,8 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
     return false;
   }
 
-  QString hashValue = obj.value("hashValue").toString();
+  QString hashString = obj.value("hashValue").toString();
+  QByteArray hashValue = QByteArray::fromHex(hashString.toUtf8());
   if (hashValue.isEmpty()) {
     logger.error() << "No hashValue item";
     return false;
@@ -331,27 +331,20 @@ bool Balrog::processData(Task* task, const QByteArray& data) {
 }
 
 bool Balrog::computeHash(const QString& url, const QByteArray& data,
-                         const QString& hashValue,
-                         const QString& hashFunction) {
+                         const QByteArray& expect, const QString& algorithm) {
   logger.debug() << "Compute the hash";
 
-  if (hashFunction != "sha512") {
+  if (algorithm != "sha512") {
     logger.error() << "Invalid hash function";
     return false;
   }
 
   QCryptographicHash hash(QCryptographicHash::Sha512);
   hash.addData(data);
-  QByteArray hashHex = hash.result().toHex();
-
-  if (hashHex != hashValue) {
+  if (hash.result() != expect) {
     logger.error() << "Hash doesn't match";
     return false;
   }
-
-  mozilla::glean::sample::update_step.record(
-      mozilla::glean::sample::UpdateStepExtra{
-          ._state = QVariant::fromValue(BalrogValidationCompleted).toString()});
 
   return saveFileAndInstall(url, data);
 }
@@ -390,10 +383,6 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
   }
 
   file.close();
-
-  mozilla::glean::sample::update_step.record(
-      mozilla::glean::sample::UpdateStepExtra{
-          ._state = QVariant::fromValue(BalrogFileSaved).toString()});
 
   return install(tmpFile);
 }
@@ -486,11 +475,6 @@ bool Balrog::install(const QString& filePath) {
       });
 #endif
 
-  mozilla::glean::sample::update_step.record(
-      mozilla::glean::sample::UpdateStepExtra{
-          ._state =
-              QVariant::fromValue(InstallationProcessExecuted).toString()});
-
   return true;
 }
 
@@ -521,8 +505,8 @@ QString Balrog::balrogUrl() {
     channel = "release-cdntest";
   }
 
-  QStringList path = {"json",      "1",     product,      appVersion(),
-                      userAgent(), channel, "update.json"};
+  QStringList path = {"json",        "2",     product,          appVersion(),
+                      buildTarget(), channel, Env::osVersion(), "update.json"};
   QUrl url;
   url.setScheme("https");
   url.setHost(hostname);

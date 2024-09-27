@@ -128,7 +128,7 @@ constexpr const char* PLATFORM_NAME =
     "android"
 #elif defined(MZ_WINDOWS)
     "windows"
-#elif defined(UNIT_TEST) || defined(MZ_DUMMY)
+#elif defined(UNIT_TEST) || defined(MZ_WASM)
     "dummy"
 #else
 #  error "Unsupported platform"
@@ -160,17 +160,15 @@ namespace Timers {
 #endif
 using namespace std::chrono_literals;
 // How often we check for updates
-TIMEREXPR(releaseMonitor, 6h, 4s, 0s)
+TIMEREXPR(releaseMonitor, 6h, 30s, 0s)
 // How often should we do periodic things (i.e update Serverlist)
 TIMEREXPR(schedulePeriodicTask, 60min, 5min, 0ms)
 // How often we should check for a Captive portal
-TIMEREXPR(captivePortalRequest, 10s, 4s, 0ms)
+TIMEREXPR(captivePortalRequest, 10s, 30s, 0ms)
 // How fast the animated icon should move
 TIMEREXPR(statusIconAnimation, 200ms, 200ms, 0ms)
 // How often glean pings are sent
 TIMEREXPR(gleanTimeout, 20min, 20min, 0ms)
-// How often to check in on the controller state
-TIMEREXPR(controllerRecordPeriodicState, 180min, 1min, 0ms)
 #undef TIMEREXPR
 }  // namespace Timers
 
@@ -301,14 +299,19 @@ constexpr const char* APPLE_STORE_URL =
     "https://apps.apple.com/us/app/mozilla-vpn-secure-private/id1489407738";
 #endif
 
-// TODO: #if defined(MZ_LINUX) - but it breaks dummyvpn
+#if defined(MZ_LINUX)
 constexpr const char* LINUX_CRYPTO_SETTINGS_KEY =
     "org.mozilla.vpn.cryptosettings";
 constexpr const char* LINUX_CRYPTO_SETTINGS_DESC =
     "VPN settings encryption key";
-// TODO: #endif
+#endif
 
 constexpr const char* LINUX_APP_ID = "org.mozilla.vpn";
+
+constexpr const char* WINDOWS_DAEMON_PATH = "\\\\.\\pipe\\mozillavpn";
+constexpr const char* MACOS_DAEMON_TMP_PATH = "/tmp/mozillavpn.socket";
+constexpr const char* MACOS_DAEMON_VAR_PATH =
+    "/var/run/mozillavpn/daemon.socket";
 
 };  // namespace Constants
 

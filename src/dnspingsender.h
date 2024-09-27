@@ -17,13 +17,10 @@ class DnsPingSender final : public PingSender {
   DnsPingSender(const QHostAddress& source, QObject* parent = nullptr);
   ~DnsPingSender();
 
+  bool isValid() override { return m_socket.isValid(); };
+
   void sendPing(const QHostAddress& dest, quint16 sequence) override;
 
-  /**
-   * Starts the Underlying socket, returns true
-   * if the PingSender is now ready to be used.
-   */
-  [[nodiscard]] bool start();
   void stop() { m_socket.close(); }
 
  private:

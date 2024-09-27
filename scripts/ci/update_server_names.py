@@ -8,10 +8,10 @@ import re
 import requests
 import sys
 import xml.etree.ElementTree as etree
-from translate.misc.xml_helpers import reindent
 
 MULLVAD_SERVER_LIST_API = "https://api.mullvad.net/public/relays/wireguard/v2"
 XLIFF_NAMESPACE = "{urn:oasis:names:tc:xliff:document:1.2}"
+
 
 def fetch_server_list():
     country_names = {}
@@ -23,7 +23,7 @@ def fetch_server_list():
         if response.status_code == 200:
             data = response.json()
 
-            locations = data.get('locations', {})
+            locations = data.get("locations", {})
             for country_code, location in locations.items():
                 country_code = country_code.split("-")[0]
                 country_name = location.get("country", None)
@@ -69,8 +69,13 @@ if __name__ == "__main__":
 
     script_path = os.path.dirname(os.path.abspath(__file__))
     xliff_path = os.path.join(
-        script_path, os.path.pardir, os.path.pardir, 'src', 'translations',
-        'extras', 'extras.xliff'
+        script_path,
+        os.path.pardir,
+        os.path.pardir,
+        "src",
+        "translations",
+        "extras",
+        "extras.xliff",
     )
     if not os.path.exists(xliff_path):
         sys.exit(f"extras.xliff not found in path {xliff_path}")
@@ -79,10 +84,10 @@ if __name__ == "__main__":
     root = tree.getroot()
 
     found_server_names = []
-    for trans_unit in root.findall(f'.//{XLIFF_NAMESPACE}trans-unit'):
-        unit_id = trans_unit.get('id')
-        if unit_id.startswith('servers.'):
-            found_server_names.append(unit_id.split('.')[1])
+    for trans_unit in root.findall(f".//{XLIFF_NAMESPACE}trans-unit"):
+        unit_id = trans_unit.get("id")
+        if unit_id.startswith("servers."):
+            found_server_names.append(unit_id.split(".")[1])
 
     ###
     # 3. Get the list of missing servers strings and update extras.xliff
@@ -93,27 +98,35 @@ if __name__ == "__main__":
         print("Server list is up to date!")
         sys.exit(0)
 
-    missing_string_map = { key: value for key, value in string_map.items() if key in missing}
+    missing_string_map = {
+        key: value for key, value in string_map.items() if key in missing
+    }
 
     # Iterate over the entries and add them to the XLIFF tree
-    servers_node = root.find(f".//{XLIFF_NAMESPACE}file[@original='../src/apps/vpn/ui/screens/home/ViewServers.qml']//{XLIFF_NAMESPACE}body")
+    servers_node = root.find(
+        f".//{XLIFF_NAMESPACE}file[@original='../src/apps/vpn/ui/screens/home/ViewServers.qml']//{XLIFF_NAMESPACE}body"
+    )
     if servers_node is None:
         sys.exit("Unable to find servers node. Has the extras.xliff file been changed?")
 
     for id, source in missing_string_map.items():
-        new_unit = etree.SubElement(servers_node, "{urn:oasis:names:tc:xliff:document:1.2}trans-unit")
+        new_unit = etree.SubElement(
+            servers_node, "{urn:oasis:names:tc:xliff:document:1.2}trans-unit"
+        )
         new_unit.set("id", f"servers.{id}")
 
         new_unit.set("{urn:oasis:names:tc:xliff:document:1.2}xml:space", "preserve")
 
-        source_node = etree.SubElement(new_unit, "{urn:oasis:names:tc:xliff:document:1.2}source")
+        source_node = etree.SubElement(
+            new_unit, "{urn:oasis:names:tc:xliff:document:1.2}source"
+        )
         source_node.text = source
 
     # Save the new tree to extras.xliff file
     with open(xliff_path, "w", encoding="utf-8") as fp:
-        etree.register_namespace('',"urn:oasis:names:tc:xliff:document:1.2")
+        etree.register_namespace("", "urn:oasis:names:tc:xliff:document:1.2")
         # Fix indentation
-        reindent(root)
+        etree.indent(root)
         # Create the XLIFF string we are going to write to the file
         xml_string = etree.tostring(
             root,
@@ -126,7 +139,7 @@ if __name__ == "__main__":
         # Make sure the xliff tag doesn't get unnecessarily changed
         xml_string = xml_string.replace(
             '<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">',
-            '<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">'
+            '<xliff version="1.2" xmlns="urn:oasis:names:tc:xliff:document:1.2">',
         )
         # Truncate the original file for rewriting
         fp.truncate(0)

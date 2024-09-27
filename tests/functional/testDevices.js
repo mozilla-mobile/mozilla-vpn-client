@@ -209,7 +209,7 @@ describe('Devices', function() {
 
       // Wait for VPN client screen to move from spinning wheel to next screen
       await vpn.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
 
       await vpn.waitForQuery(
           queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
@@ -342,7 +342,7 @@ describe('Devices', function() {
 
       // Wait for VPN client screen to move from spinning wheel to next screen
       await vpn.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
 
       await vpn.waitForQuery(
         queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
@@ -468,7 +468,7 @@ describe('Devices', function() {
 
       // Wait for VPN client screen to move from spinning wheel to next screen
       await vpn.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
 
       await vpn.waitForQuery(
           queries.screenSettings.myDevicesView.DEVICE_LIST.visible());

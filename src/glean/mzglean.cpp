@@ -70,7 +70,7 @@ void MZGlean::registerLogHandler(void (*messageHandler)(int32_t, char*)) {
 }
 
 // static
-void MZGlean::initialize() {
+void MZGlean::initialize(const QString& channel) {
   logger.debug() << "Initializing MZGlean";
 
   if (Feature::get(Feature::Feature_gleanRust)->isSupported()) {
@@ -100,33 +100,31 @@ void MZGlean::initialize() {
       return;
     }
 
-#if defined(MZ_WASM)
-    return;
-#elif defined(UNIT_TEST) || defined(MZ_DUMMY)
-    glean_test_reset_glean(SettingsHolder::instance()->gleanEnabled(),
-                           gleanDirectory.absolutePath().toUtf8(),
-                           QLocale::system().name().toUtf8());
-#elif defined(MZ_IOS)
-    new IOSGleanBridge(SettingsHolder::instance()->gleanEnabled(),
-                       Constants::inProduction() ? "production" : "staging");
-#elif defined(MZ_ANDROID)
-    AndroidCommons::initializeGlean(
-        SettingsHolder::instance()->gleanEnabled(),
-        Constants::inProduction() ? "production" : "staging");
-#else
+#ifndef MZ_WASM
+    if (channel == "testing") {
+      glean_test_reset_glean(SettingsHolder::instance()->gleanEnabled(),
+                             gleanDirectory.absolutePath().toUtf8(),
+                             QLocale::system().name().toUtf8());
+      return;
+    }
+#  if defined(MZ_IOS)
+    new IOSGleanBridge(SettingsHolder::instance()->gleanEnabled(), channel);
+#  elif defined(MZ_ANDROID)
+    AndroidCommons::initializeGlean(SettingsHolder::instance()->gleanEnabled(),
+                                    channel);
+#  else
     SettingsHolder* settingsHolder = SettingsHolder::instance();
     Q_ASSERT(settingsHolder);
 
     glean_initialize(SettingsHolder::instance()->gleanEnabled(),
-                     gleanDirectory.absolutePath().toUtf8(),
-                     Constants::inProduction() ? "production" : "staging",
+                     gleanDirectory.absolutePath().toUtf8(), channel.toUtf8(),
                      QLocale::system().name().toUtf8());
 
     setLogPings(settingsHolder->gleanLogPings());
     if (settingsHolder->gleanDebugTagActive()) {
       setDebugViewTag(settingsHolder->gleanDebugTag());
     }
-
+#  endif
 #endif
   }
 }

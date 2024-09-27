@@ -33,19 +33,6 @@ target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.rc)
 
 # Windows platform source files
 target_sources(mozillavpn PRIVATE
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsapplistprovider.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsapplistprovider.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsappimageprovider.cpp
@@ -56,14 +43,8 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemon.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemonserver.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemonserver.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemontunnel.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsdaemontunnel.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsroutemonitor.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsroutemonitor.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowstunnellogger.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowstunnellogger.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowstunnelservice.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowstunnelservice.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/wireguardutilswindows.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/wireguardutilswindows.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/daemon/windowsfirewall.cpp
@@ -74,6 +55,8 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsservicemanager.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscommons.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscommons.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscryptosettings.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowscryptosettings.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsnetworkwatcher.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsnetworkwatcher.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowspingsender.cpp

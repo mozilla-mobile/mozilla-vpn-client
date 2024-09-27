@@ -64,7 +64,7 @@ ColumnLayout {
                             id: textBlock
                             Layout.fillWidth: true
 
-                            text: MZI18n.SplittunnelInfoCardDescription
+                            text: MZI18n.SplittunnelInfoCardDescription2
                             verticalAlignment: Text.AlignVCenter
                         }
                     }
@@ -366,9 +366,12 @@ ColumnLayout {
                     iconComponent: Component {
                         MZIcon {
                             source: "qrc:/nebula/resources/plus.svg"
-                            sourceSize.height: MZTheme.theme.iconSmallSize
-                            sourceSize.width: MZTheme.theme.iconSmallSize
-                            anchors.verticalCenter: parent.verticalCenter
+                            sourceSize.height: MZTheme.theme.iconSizeSmall
+                            sourceSize.width: MZTheme.theme.iconSizeSmall
+                            anchors.bottom: parent.bottom
+                            anchors.right: parent.right
+                            anchors.rightMargin: -2
+                            anchors.bottomMargin: 1
                         }
                     }
                 }

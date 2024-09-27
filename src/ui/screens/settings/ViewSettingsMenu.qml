@@ -45,7 +45,6 @@ MZViewBase {
                     if (subscriptionManagementEnabled) {
                         VPNProfileFlow.start();
                     } else {
-                        Glean.sample.manageAccountClicked.record();
                         MZUrlOpener.openUrlLabel("account");
                     }
                 }
@@ -65,7 +64,7 @@ MZViewBase {
 
             MZSettingsItem {
                 objectName: "appExclusionSettings"
-                settingTitle: MZI18n.SettingsAppExclusionSettings
+                settingTitle: MZI18n.SettingsAppExclusionTitle
                 imageLeftSrc: "qrc:/ui/resources/settings/apppermissions.svg"
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft

@@ -9,27 +9,6 @@
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
 sample:
-  addon_cta_clicked:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      User clicked primary CTA in an addon
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4487
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1794825
-    data_sensitivity:
-      - interaction
-    extra_keys:
-      addon_id:
-        description: Addon identifier
-        type: string
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
 
   addon_message_state_changed:
     type: event
@@ -47,7 +26,7 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       message_id:
         description: |
@@ -56,58 +35,6 @@ sample:
       message_state:
         description: |
           Received, Notified, Read, or Dismissed
-        type: string
-
-  addon_state_changed:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      An addon's state changed
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4487
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1794825
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      addon_id:
-        description: |
-          Addon identifier
-        type: string
-      state:
-        description: |
-          Installed, Enabled, or Disabled
-        type: string
-
-  authentication_acnt_del_step:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has advanced in the authentication flow for the account deletion.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774568
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      state:
-        description: |
-          The name of the authentication state, e.g. "sign-in", "sign-out",
-          "totp", etc. The list of states can be found in
-          `authenticationinapp.h`.
         type: string
 
   authentication_error:
@@ -126,97 +53,12 @@ sample:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       reason:
         description: |
           The error shown: Timeout | IncorrectPassword | InvalidEmail |
           InvalidOrExpiredVerificiationCode | InvalidTOTP | InvalidUnblockCode
-        type: string
-
-  authentication_inapp_error:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The authentication in app has failed for a non-handled FxA error.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      errno:
-        description: The FxA error number
-        type: string
-      validation:
-        description: Extra validation string for errno 107
-        type: string
-      verificationmethod:
-        description: Verification method to be used for errno 125
-        type: string
-      error:
-        description: Error string
-        type: string
-      message:
-        description: Extra error message
-        type: string
-
-  authentication_inapp_step:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has advanced in the authentication flow.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      state:
-        description: |
-          The name of the authentication state, e.g. "sign-in", "sign-out",
-          "totp", etc. The list of states can be found in
-          `authenticationinapp.h`.
-        type: string
-
-  authentication_sub_manage_step:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has advanced in the authentication flow for the
-      subscription management.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2956
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774568
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      state:
-        description: |
-          The name of the authentication state, e.g. "sign-in", "sign-out",
-          "totp", etc. The list of states can be found in
-          `authenticationinapp.h`.
         type: string
 
   bottom_navigation_bar_click:
@@ -235,7 +77,7 @@ sample:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       bar_button:
         description: |
@@ -260,58 +102,7 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
-
-  guide_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened a guide from the tips and tricks page
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-2292
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mlichtenstein@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      id:
-        description: |
-          The id of the guide that was opened
-        type: string
-
-  guide_closed:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has closed a guide from the tips and tricks page
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-2292
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1776499
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mlichtenstein@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      id:
-        description: |
-          The id of the guide that was closed
-        type: string
-      duration_ms:
-        description: |
-          The amount of time that the user spent in the guide (in seconds)
-        type: quantity
-        unit: milliseconds
+    expires: 2025-06-30
 
   error_alert_shown:
     type: event
@@ -329,7 +120,7 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       task:
         description: The name of the task that has generated this error.
@@ -342,28 +133,6 @@ sample:
         description: |
           The line number where the error has been triggered
         type: quantity
-
-  non_default_language_used:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has chosen a default language.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3742
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5525
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      language_code:
-        description: The language code chosen.
-        type: string
 
   iap_g_no_sku_details:
     type: event
@@ -381,7 +150,7 @@ sample:
     notification_emails:
       - sstreich@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   iap_g_launchbillingflow_failed:
     type: event
@@ -399,7 +168,7 @@ sample:
     notification_emails:
       - sstreich@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   iap_g_unexpected_purchasestate:
     type: event
@@ -417,7 +186,7 @@ sample:
     notification_emails:
       - sstreich@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   iap_g_sku_without_month:
     type: event
@@ -435,7 +204,7 @@ sample:
     notification_emails:
       - sstreich@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   iap_g_query_purchases_failed:
     type: event
@@ -453,7 +222,7 @@ sample:
     notification_emails:
       - sstreich@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   iap_g_query_sku_details_failed:
     type: event
@@ -471,7 +240,7 @@ sample:
     notification_emails:
       - sstreich@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   iap_g_billing_not_available:
     type: event
@@ -489,7 +258,7 @@ sample:
     notification_emails:
       - sstreich@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   iap_g_purchases_updated_failed:
     type: event
@@ -509,7 +278,7 @@ sample:
     notification_emails:
       - sstreich@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       reason:
         description: |
@@ -534,7 +303,7 @@ sample:
     notification_emails:
       - sstreich@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   iap_g_purchase_ack_failed:
     type: event
@@ -552,61 +321,7 @@ sample:
     notification_emails:
       - sstreich@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
-
-  app_permissions_view_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened the app permissions view
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  authentication_aborted:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has aborted the authentication flow.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  authentication_completed:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has completed the authentication flow.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   authentication_failure:
     type: event
@@ -624,7 +339,7 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   authentication_failure_by_geo:
     type: event
@@ -642,405 +357,7 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
-
-  authentication_started:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has started the authentication flow.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  backend_failure_viewed:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has been shown the "Something went wrong…" error view.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  get_help_clicked_initialize:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has clicked "Help" from the initial view.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  manage_account_clicked:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has clicked the `manage account` button
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  max_device_reached:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      Device limit reached
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  notifications_view_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened the notifications view
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  settings_view_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has opened the settings
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  dns_settings_view_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user has viewed the advanced DNS Settings
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/1242
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  connectivity_handshake_timeout:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The connection handshake with the VPN server is taking too long, and has
-      timed out.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-1595
-      - https://mozilla-hub.atlassian.net/browse/VPN-2279
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774439
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      server:
-        description: |
-          The mullvad server public key and the connection latency, packet
-          loss, stddev.
-        type: string
-      transport:
-        description:
-          The Host network type (i.e wifi or 4g). Possible values are Unknown,
-          Disconnected, Local, Site, Online
-        type: string
-
-  connectivity_stable:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The connection has been stable for more than 10 seconds after the
-      activation
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-1595
-      - https://mozilla-hub.atlassian.net/browse/VPN-2279
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1759345
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774439
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      server:
-        description: The mullvad server public key
-        type: string
-      latency:
-        description: Server response latency
-        type: string
-      loss:
-        description: Number of package loss
-        type: string
-      stddev:
-        description: Standard deviation of the ping responses
-        type: string
-      transport:
-        description: |
-          The Host network type (i.e wifi or 4g).
-          Possible values are Unknown, Disconnected, Local, Site, Online
-        type: string
-
-  server_unavailable_error:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      A "Server unavailable" error has occured.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/4589
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4594#issuecomment-1271601927
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - brizental@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  app_step:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The application state flow (authenticating, subscribing, main, etc).
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3411
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1767028
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - brizental@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      state:
-        description: |
-          The name of the app state, e.g. "authenticating", "device-limit",
-          "main", "subscription-needed", etc. The complete list is
-          `app.h`'s `State` enum along with the `CustomState` enum in the
-          app's header file (e.g. `mozillavpn.h`).
-        type: string
-
-  controller_step:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-      - vpnsession
-    description: |
-      The controller state flow (off, connecting, switching, etc).
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3449
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1770530
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      state:
-        description: |
-          The name of the controller state, e.g. "off", "connecting",
-          "switching", etc. The list can be found in `controller.h`.
-        type: string
-
-  controller_state_on:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      Controller state is on.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2643
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1773423
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  controller_state_off:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      Controller state is off. It is important to note that mobile reports of
-      this event are likely to be unreliable because they come from an
-      non-active background process which is not guaranteed to be alive.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/2643
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1773423
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  update_step:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The update flow (update required available, installer started, etc)
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3455
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1770531
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      state:
-        description: |
-          The name of the update states. The list can be found in `updater.h`.
-        type: string
-
-  unhandled_sub_plan_interval:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      Unhandled subscription plan interval from the
-      subscription management view.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774568
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      interval:
-        description: |
-          Unhandled interval
-        type: string
-      interval_count:
-        description: |
-          Unhandled interval count
-        type: quantity
-        unit: months
-
-  profile_flow_state_changed:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The profile flow state changed.
-    bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/3627
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1774568
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - amarchesini@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-    extra_keys:
-      state:
-        description: |
-          The name of the profile flow state. The list of states can be found in
-          `profileflow.h`.
-        type: string
+    expires: 2025-06-30
 
   delete_account_requested:
     type: event
@@ -1058,7 +375,7 @@ sample:
     notification_emails:
       - amarchesini@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   user_changed_endpoint_geo:
     type: event
@@ -1076,85 +393,13 @@ sample:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     extra_keys:
       server:
         description: |
           Which server changed:
           multiHopEntryServer | multiHopExitServer | singleHopServer
         type: string
-
-  help_menu_help_center_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user selected the help center option within the help menu
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  help_contact_support_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user selected the contact support option within the help menu
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  support_case_submitted:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user submitted a support case
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
-
-  help_menu_view_logs_opened:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - main
-    description: |
-      The user selected the view logs option within the help menu
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-3630
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/5702#issuecomment-1397761161
-    data_sensitivity:
-      - interaction
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: never
 
 performance:
   time_to_main_screen:
@@ -1170,7 +415,7 @@ performance:
     notification_emails:
       - brizental@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
     time_unit: microsecond
 
 settings:
@@ -1190,7 +435,7 @@ settings:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   using_system_language:
     type: boolean
@@ -1208,7 +453,7 @@ settings:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
 session:
   session_start:
@@ -1226,7 +471,7 @@ session:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   session_end:
     type: datetime
@@ -1243,7 +488,7 @@ session:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   session_id:
     type: uuid
@@ -1310,7 +555,7 @@ session:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   apps_excluded:
     type: quantity
@@ -1328,7 +573,7 @@ session:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   daemon_session_start:
     type: datetime
@@ -1346,7 +591,7 @@ session:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   daemon_session_end:
     type: datetime
@@ -1364,7 +609,7 @@ session:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
 
   daemon_session_id:
     type: uuid
@@ -1404,7 +649,31 @@ session:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: never
+    expires: 2025-06-30
+
+  daemon_silent_server_switch:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      (Mobile only) The daemon requests a silent server switch.
+
+      Extra key only included on iOS.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6406
+    data_reviews:
+      - TBA
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2025-06-30
+    extra_keys:
+      was_server_available:
+        description: True when the daemon has a saved server to switch to, false otherwise.
+        type: boolean
 
 connection_health:
   data_transferred_tx:
@@ -1495,7 +764,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   changed_to_unstable:
     type: event
@@ -1523,7 +792,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   changed_to_stable:
     type: event
@@ -1551,7 +820,30 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
+
+  changed_to_pending:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      (iOS only) The connection status changed to pending.
+
+      This event is recorded in daemon.
+
+      Pending status is when the app is first started or when there is
+      no internet.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6406
+    data_reviews:
+      - TBA
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2025-04-15
 
   no_signal_count:
     type: counter
@@ -1578,7 +870,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   unstable_count:
     type: counter
@@ -1605,7 +897,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   stable_count:
     type: counter
@@ -1632,7 +924,32 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
+
+  pending_count:
+    type: counter
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      (iOS only) Count of times that the connection health check is in pending.
+
+      The health check counters must not be considered as markers of time.
+      There is a possible situation in the health check (which calls the
+      telemetry) which frequently results in more than one count per second.
+      The situation: A health check is conducted because a network check did not
+      return, and milliseconds later that network check returns and another
+      health check is started because of the return.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6406
+    data_reviews:
+      - TBA
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2025-04-15
 
   no_signal_time:
     type: timing_distribution
@@ -1655,7 +972,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   unstable_time:
     type: timing_distribution
@@ -1678,7 +995,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
 
   stable_time:
     type: timing_distribution
@@ -1701,4 +1018,40 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-07-15
+    expires: 2025-04-15
+
+  pending_time:
+    type: timing_distribution
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      (iOS only) Time spent in pending state.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6406
+    data_reviews:
+      - TBA
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2025-04-15
+
+  ping_analyzer_error:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - daemonsession
+    description: |
+      The iOS PingAnalyzer returned an error.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6406
+    data_reviews:
+      - TBA
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2024-12-31

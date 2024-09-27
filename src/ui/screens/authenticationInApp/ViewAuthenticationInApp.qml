@@ -15,7 +15,9 @@ Item {
 
     Loader {
         id: loader
+        objectName: "authLoader"
         property bool isReauthFlow: false
+        property bool ready: status === Loader.Ready
 
         // This is only necessary to fix a text layout bug in Qt 6.4,
         // which can sometimes be pulled in on Linux. Remove this once we move

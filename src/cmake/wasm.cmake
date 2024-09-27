@@ -3,10 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 target_sources(mozillavpn PRIVATE
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummycontroller.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummycontroller.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.h
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmcontroller.cpp
+     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmcontroller.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmnetworkwatcher.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmnetworkwatcher.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmwindowcontroller.cpp
@@ -33,5 +33,3 @@ add_custom_command(
      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/tests/functional/servers/guardian_endpoints.js ${WASM_FINAL_DIR}/guardian_endpoints.js
      COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/tools/logviewer ${WASM_FINAL_DIR}/logviewer
 )
-
-add_compile_definitions("MZ_DUMMY")

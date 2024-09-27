@@ -200,14 +200,6 @@ mod test {
         (v.not_before.timestamp() + v.not_after.timestamp()) / 2
     }
 
-    #[cfg(test)]
-    extern "C" fn ffi_logfn_panic(msg: *const c_char) {
-        match unsafe { CStr::from_ptr(msg) }.to_str() {
-            Err(_e) => {}
-            Ok(x) => panic!("{}", x),
-        };
-    }
-
     #[test]
     fn test_rsa_success() {
         let addon_message = data_encoding::BASE64
@@ -268,12 +260,17 @@ mod test {
     }
 
     #[test]
-    #[should_panic]
     fn test_rsa_ffi_logger() {
         let mut addon_message = data_encoding::BASE64
             .decode(RSA_ADDON_MESSAGE_BASE64)
             .unwrap();
         addon_message.extend_from_slice(b"Hello World");
+
+        // Capture the FFI log message via a callback.
+        static mut LOG_MESSAGE: String = String::new();
+        extern "C" fn callback(msg: *const c_char) {
+            unsafe { LOG_MESSAGE.push_str(CStr::from_ptr(msg).to_str().unwrap()); }
+        }
 
         let r = verify_rsa(
             RSA_PUBLIC_KEY.as_ptr(),
@@ -282,9 +279,10 @@ mod test {
             addon_message.len(),
             RSA_ADDON_SIGNATURE.as_ptr(),
             RSA_ADDON_SIGNATURE.len(),
-            Some(ffi_logfn_panic),
+            Some(callback),
         );
         assert!(!r, "RSA signature check failed to catch an error");
+        unsafe { assert_eq!(LOG_MESSAGE, "ring::error::Unspecified"); }
     }
 
     #[test]
@@ -393,10 +391,15 @@ WW91IGFyZSBhd2Vzb21lISBHb29kIEpvYiEK
     }
 
     #[test]
-    #[should_panic(expected = "Hostname mismatch")]
     fn test_verify_ffi_logger() {
         let prod_signature_cstr = CString::new(PROD_SIGNATURE).unwrap().into_raw();
         let invalid_hostname_cstr = CString::new("example.com").unwrap().into_raw();
+
+        // Capture the FFI log message via a callback.
+        static mut LOG_MESSAGE: String = String::new();
+        extern "C" fn callback(msg: *const c_char) {
+            unsafe { LOG_MESSAGE.push_str(CStr::from_ptr(msg).to_str().unwrap()); }
+        }
 
         let r = verify_content_signature(
             PROD_CERT_CHAIN.as_ptr(),
@@ -405,9 +408,10 @@ WW91IGFyZSBhd2Vzb21lISBHb29kIEpvYiEK
             PROD_INPUT_DATA.len(),
             prod_signature_cstr,
             invalid_hostname_cstr,
-            Some(ffi_logfn_panic),
+            Some(callback),
         );
         assert!(!r, "Verification failed to catch invalid hostname via FFI");
+        unsafe { assert_eq!(LOG_MESSAGE, "Hostname mismatch"); };
 
         // Retake pointers for garbage collection.
         unsafe {

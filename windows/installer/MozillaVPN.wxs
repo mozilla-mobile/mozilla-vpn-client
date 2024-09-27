@@ -77,14 +77,15 @@
         <File Id="MozillaVPNExecutable" Source="Mozilla VPN.exe" KeyPath="yes">
           <Shortcut Id="MozillaVPNShortcut" Directory="ProgramMenuFolder" Name="Mozilla VPN" Description="A fast, secure and easy to use VPN. Built by the makers of Firefox." WorkingDirectory="MozillaVPNFolder" Advertise="yes" />
         </File>
-        <File Source="tunnel.dll" />
-        <File Source="wintun.dll" />
+        <File Source="wireguard.dll" />
         <File Source="mullvad-split-tunnel.cat" />
         <File Source="mullvad-split-tunnel.inf" />
         <File Source="mullvad-split-tunnel.sys" />
         <File Source="WdfCoinstaller01011.dll" />
         <File Source="mozillavpn.json" />
         <File Source="mozillavpnnp.exe" />
+        <File Source="socksproxy.exe" />
+
 
         <!-- Broker Service -->
         <ServiceInstall
@@ -175,6 +176,16 @@
     <CustomAction Id="CloseApplication" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="immediate" Return="ignore"/>
     <InstallExecuteSequence>
       <Custom Action="CloseApplication" After="StopServices" />
+    </InstallExecuteSequence>
+
+    <!--
+      Force reinstall of components when running in maintenence mode.
+    -->
+    <CustomAction Id="ForceReinstall" Property="REINSTALL" Value="MozillaVPNFeature"/>
+    <InstallExecuteSequence>
+      <Custom Action="ForceReinstall" Before="CostInitialize">
+        Installed AND NOT (REMOVE="ALL") and NOT REINSTALL
+      </Custom>
     </InstallExecuteSequence>
   </Product>
 </Wix>

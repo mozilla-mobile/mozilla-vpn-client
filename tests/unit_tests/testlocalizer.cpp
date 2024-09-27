@@ -24,7 +24,7 @@ void TestLocalizer::init() {
   // the state of the test that actually is testing telemetry.
   //
   // Note: on tests Glean::initialize clears Glean's storage.
-  MZGlean::initialize();
+  MZGlean::initialize("testing");
 }
 
 void TestLocalizer::cleanup() { delete m_settingsHolder; }
@@ -45,24 +45,6 @@ void TestLocalizer::basic() {
            QVariant());
 }
 
-void testGleanEntries(const QString& language) {
-  QCOMPARE(mozilla::glean::sample::non_default_language_used
-               .testGetNumRecordedErrors(ErrorType::InvalidValue),
-           0);
-  QCOMPARE(mozilla::glean::sample::non_default_language_used
-               .testGetNumRecordedErrors(ErrorType::InvalidOverflow),
-           0);
-
-  auto gleanValues =
-      mozilla::glean::sample::non_default_language_used.testGetValue();
-  QCOMPARE(gleanValues.length(), language.isEmpty() ? 0 : 1);
-
-  if (!language.isEmpty()) {
-    QCOMPARE(gleanValues[0]["extra"].toObject()["language_code"].toString(),
-             language);
-  }
-}
-
 void TestLocalizer::systemLanguage() {
   SettingsManager::instance()->hardReset();
 
@@ -71,25 +53,21 @@ void TestLocalizer::systemLanguage() {
   m_settingsHolder->setLanguageCode("");
   QCOMPARE(m_settingsHolder->languageCode(), "");
   QCOMPARE(l.languageCodeOrSystem(), "en");
-  testGleanEntries(QString());
 
   m_settingsHolder->setLanguageCode("en");
   QCOMPARE(m_settingsHolder->languageCode(), "en");
   QVERIFY(!m_settingsHolder->previousLanguageCode().isEmpty());
   QCOMPARE(l.languageCodeOrSystem(), "en");
-  testGleanEntries("en");
 
   m_settingsHolder->setLanguageCode("");
   QCOMPARE(m_settingsHolder->languageCode(), "");
   QCOMPARE(m_settingsHolder->previousLanguageCode(), "en");
   QCOMPARE(l.languageCodeOrSystem(), "en");
-  testGleanEntries("en");
 }
 
 void TestLocalizer::localizeCurrency() {
   Localizer l;
   m_settingsHolder->setLanguageCode("en_GB");
-  testGleanEntries("en_GB");
 
   // Invalid iso4217 values
   QCOMPARE(l.localizeCurrency(123.123, "FOOBAR"), "FOOBAR123.12");
@@ -365,7 +343,23 @@ void TestLocalizer::formattedDate() {
   QVERIFY(date.isValid());
 
   QFETCH(QString, result);
-  QCOMPARE(Localizer::instance()->formatDate(now, date, "Yesterday"), result);
+
+  /*
+
+    CLDR (Common Locale Data Repository) 42 changed the formatting here
+    from a white space to a Narrow No-Break Space. Qt adopted CLDR 42 in Qt6.5.
+    This means that tests run with Qt6.2.4 should expect a white space,
+    and tests run with Qt6.6 should expect a Narrow No-Break Space (U+202F).
+    We can remove this workaround once all the tests are running on 6.6
+
+    CLDR change: https://unicode-org.atlassian.net/browse/CLDR-14032
+    Qt6.5 CLDR change note: https://doc.qt.io/qt-6/license-changes.html#qt-6-5-0
+
+  */
+
+  QString expectedString =
+      Localizer::instance()->formatDate(now, date, "Yesterday");
+  QCOMPARE(expectedString.replace(" ", " "), result);
 }
 
 void TestLocalizer::nativeLanguageName_data() {

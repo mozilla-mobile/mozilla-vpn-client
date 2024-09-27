@@ -82,9 +82,9 @@ if(APPLE)
     set(CMAKE_XCODE_ATTRIBUTE_GROUP_ID_IOS ${BUILD_IOS_GROUP_IDENTIFIER})
 
     if(IOS)
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET 14.0)
     else()
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 10.15)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0)
     endif()
 endif()
 
@@ -167,9 +167,6 @@ if(NOT CMAKE_CROSSCOMPILING)
 
         # E2E Tests
         add_subdirectory(tests/auth_tests EXCLUDE_FROM_ALL)
-
-        # Dummy Testing Client
-        add_subdirectory(tests/dummyvpn EXCLUDE_FROM_ALL)
     endif()
 endif()
 
@@ -177,7 +174,8 @@ endif()
 if(WIN32)
     add_subdirectory(windows/installer)
     add_subdirectory(windows/split-tunnel)
-    add_subdirectory(windows/tunnel)
+    add_subdirectory(windows/wireguard_nt)
+
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_subdirectory(macos/loginitem)
     add_subdirectory(macos/pkg)
@@ -186,7 +184,4 @@ elseif(IOS)
     if(BUILD_ADJUST_SDK_TOKEN)
         add_subdirectory(ios/adjust)
     endif()
-
-    # A final post-processing hack to enable simulation builds.
-    include(scripts/cmake/ios-arch-fixup.cmake)
 endif()

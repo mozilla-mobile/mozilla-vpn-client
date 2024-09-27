@@ -12,7 +12,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang$")
 else()
     # /MP -> Compile Files Paraell
     # /Zc:preprocessor -> Enable Modern Macros, needed for settingsholder
-    set(CMAKE_CXX_FLAGS  "/MP /Zc:preprocessor")
+    set(CMAKE_CXX_FLAGS  "/MP /Zc:preprocessor /wd5105")
     # Enable "edit and continue" when using msvc + debug build
     set(CMAKE_CXX_FLAGS_DEBUG  "/MTd /ZI /Ob0 /Od /RTC1")
     set(CMAKE_CXX_FLAGS_DEBUG  "/MTd /ZI /Ob0 /Od /RTC1")

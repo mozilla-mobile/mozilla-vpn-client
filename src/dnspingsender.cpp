@@ -55,17 +55,13 @@ DnsPingSender::DnsPingSender(const QHostAddress& source, QObject* parent)
   m_source = source;
 
   connect(&m_socket, &QUdpSocket::readyRead, this, &DnsPingSender::readData);
-}
 
-DnsPingSender::~DnsPingSender() { MZ_COUNT_DTOR(DnsPingSender); }
-
-bool DnsPingSender::start() {
   auto state = m_socket.state();
   if (state != QAbstractSocket::UnconnectedState) {
     logger.info()
         << "Attempted to start UDP socket, but it's in an invalid state:"
         << state;
-    return false;
+    m_socket.abort();
   }
 
   bool bindResult = false;
@@ -77,13 +73,14 @@ bool DnsPingSender::start() {
 
   if (!bindResult) {
     logger.error() << "Unable to bind UDP socket. Socket state:" << state;
-    return false;
+    m_socket.abort();
   }
 
   logger.debug() << "UDP socket bound to:"
                  << m_socket.localAddress().toString();
-  return true;
 }
+
+DnsPingSender::~DnsPingSender() { MZ_COUNT_DTOR(DnsPingSender); }
 
 void DnsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
   if (dest.isNull()) {

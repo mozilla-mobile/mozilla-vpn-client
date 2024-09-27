@@ -52,11 +52,6 @@ tasks:
         definition: linux-dpkg-build
         args:
             DOCKER_BASE_IMAGE: ubuntu:jammy
-    linux-build-mantic:
-        symbol: I(linux-mantic)
-        definition: linux-dpkg-build
-        args:
-            DOCKER_BASE_IMAGE: ubuntu:mantic
     linux-build-noble:
         symbol: I(linux-noble)
         definition: linux-dpkg-build

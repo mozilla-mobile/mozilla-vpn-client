@@ -35,7 +35,6 @@ target_link_libraries(qml_tests PRIVATE qtglean lottie nebula translations)
 
 target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
-target_compile_definitions(qml_tests PRIVATE MZ_DUMMY)
 
 # VPN Client source files
 target_sources(qml_tests PRIVATE
@@ -43,6 +42,8 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/controller.h
     ${MZ_SOURCE_DIR}/dnspingsender.cpp
     ${MZ_SOURCE_DIR}/dnspingsender.h
+    ${MZ_SOURCE_DIR}/models/apierror.cpp
+    ${MZ_SOURCE_DIR}/models/apierror.h
     ${MZ_SOURCE_DIR}/models/location.cpp
     ${MZ_SOURCE_DIR}/models/location.h
     ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.cpp
@@ -190,7 +191,7 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/networkmanager.h
     ${MZ_SOURCE_DIR}/networkrequest.cpp
     ${MZ_SOURCE_DIR}/networkrequest.h
-    ${MZ_SOURCE_DIR}/platforms/wasm/wasmcryptosettings.cpp
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummycryptosettings.h
     ${MZ_SOURCE_DIR}/qmlengineholder.cpp
     ${MZ_SOURCE_DIR}/qmlengineholder.h
     ${MZ_SOURCE_DIR}/qmlpath.cpp
@@ -284,12 +285,3 @@ file(GLOB QML_TEST_SOURCES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "tst_*.qml")
 foreach(QML_SOURCE ${QML_TEST_SOURCES})
     add_test(NAME ${QML_SOURCE} COMMAND qml_tests ${QML_TEST_ARGS} -input ${CMAKE_CURRENT_SOURCE_DIR}/${QML_SOURCE})
 endforeach()
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    find_package(Qt6 REQUIRED COMPONENTS DBus)
-    target_link_libraries(qml_tests PRIVATE Qt6::DBus)
-
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
-    target_link_libraries(qml_tests PRIVATE PkgConfig::libsecret)
-endif()

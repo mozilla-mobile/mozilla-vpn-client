@@ -1,32 +1,38 @@
 [submodule "3rdparty/wireguard-tools"]
 	path = 3rdparty/wireguard-tools
 	url = https://github.com/WireGuard/wireguard-tools
+	shallow = true
 [submodule "3rdparty/wireguard-apple"]
 	path = 3rdparty/wireguard-apple
 	url = https://github.com/WireGuard/wireguard-apple
+	shallow = true
 [submodule "3rdparty/openSSL"]
 	path = 3rdparty/openSSL
 	url = https://github.com/KDAB/android_openssl
+	shallow = true
 [submodule "3rdparty/wireguard-go"]
 	path = 3rdparty/wireguard-go
 	url = https://github.com/WireGuard/wireguard-go
+	shallow = true
 [submodule "3rdparty/adjust-ios-sdk"]
 	path = 3rdparty/adjust-ios-sdk
 	url = https://github.com/adjust/ios_sdk.git
+	shallow = true
 [submodule "3rdparty/adjust-android-sdk"]
 	path = 3rdparty/adjust-android-sdk
 	url = https://github.com/adjust/android_sdk
+	shallow = true
 [submodule "3rdparty/glean"]
 	path = 3rdparty/glean
 	url = https://github.com/mozilla/glean.git
 	branch = release
+	shallow = true
 [submodule "3rdparty/sentry"]
 	path = 3rdparty/sentry
 	url = https://github.com/getsentry/sentry-native/
-[submodule "3rdparty/swiftyping"]
-	path = 3rdparty/swiftyping
-	url = https://github.com/samiyr/SwiftyPing.git
+	shallow = true
 [submodule "3rdparty/i18n"]
 	path = 3rdparty/i18n
 	url = https://github.com/mozilla-l10n/mozilla-vpn-client-l10n.git
 	branch = main
+	shallow = true

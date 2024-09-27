@@ -2,41 +2,47 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "macoscryptosettings.h"
+
 #include "constants.h"
 #include "cryptosettings.h"
 #include "logger.h"
 
-#include <QRandomGenerator>
-
 #import <Foundation/Foundation.h>
+#ifdef MZ_MACOS
+#  import <Security/SecTask.h>
+#endif
 
 namespace {
-
 Logger logger("MacOSCryptoSettings");
-
-bool initialized = false;
-QByteArray key;
-
-NSString* getAppId() {
-  NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
-  if (!appId) {
-#ifdef MZ_IOS
-    appId = QString(Constants::IOS_FALLBACK_APP_ID).toNSString();
-#else
-    appId = QString(Constants::MACOS_FALLBACK_APP_ID).toNSString();
-#endif
-  }
-  return appId;
-}
-
 }  // namespace
 
-// static
-void CryptoSettings::resetKey() {
+MacOSCryptoSettings::MacOSCryptoSettings() : CryptoSettings() {
+  if (checkCodesign() && checkEntitlement("keychain-access-groups")) {
+    // If we are signed and have entitlements - we can use the encryption key.
+    m_keyVersion = CryptoSettings::EncryptionChachaPolyV1;
+  } else {
+    logger.warning() << "Disabling encryption: Codesign is invalid";
+    m_keyVersion = CryptoSettings::NoEncryption;
+  }
+
+  NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
+  if (appId) {
+    m_appId = QString::fromNSString(appId);
+  } else {
+#ifdef MZ_IOS
+    m_appId = Constants::IOS_FALLBACK_APP_ID;
+#else
+    m_appId = Constants::MACOS_FALLBACK_APP_ID;
+#endif
+  }
+}
+
+void MacOSCryptoSettings::resetKey() {
   logger.debug() << "Reset the key in the keychain";
 
   NSData* service = QByteArray(Constants::CRYPTO_SETTINGS_SERVICE).toNSData();
-  NSString* appId = getAppId();
+  NSString* appId = m_appId.toNSString();
 
   NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
 
@@ -49,19 +55,19 @@ void CryptoSettings::resetKey() {
 
   [query release];
 
-  initialized = false;
+  m_initialized = false;
 }
 
-// static
-bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
-#if defined(MZ_IOS) || defined(MZ_MACOS)
-  if (!initialized) {
-    initialized = true;
+QByteArray MacOSCryptoSettings::getKey(const QByteArray& metadata) {
+  Q_UNUSED(metadata);
+
+  if (!m_initialized) {
+    m_initialized = true;
 
     logger.debug() << "Retrieving the key from the keychain";
 
     NSData* service = QByteArray(Constants::CRYPTO_SETTINGS_SERVICE).toNSData();
-    NSString* appId = getAppId();
+    NSString* appId = m_appId.toNSString();
 
     NSMutableDictionary* query = [[NSMutableDictionary alloc] init];
 
@@ -78,21 +84,13 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
     [query release];
 
     if (status == noErr) {
-      key = QByteArray::fromNSData(keyData);
-
-      logger.debug() << "Key found with length:" << key.length();
-      if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-        memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-        return true;
-      }
+      m_key = QByteArray::fromNSData(keyData);
+      logger.debug() << "Key found with length:" << m_key.length();
+      return m_key;
     }
 
     logger.warning() << "Key not found. Let's create it. Error:" << status;
-    key = QByteArray(CRYPTO_SETTINGS_KEY_SIZE, 0x00);
-    QRandomGenerator* rg = QRandomGenerator::system();
-    for (int i = 0; i < CRYPTO_SETTINGS_KEY_SIZE; ++i) {
-      key[i] = rg->generate() & 0xFF;
-    }
+    m_key = generateRandomBytes(CRYPTO_SETTINGS_KEY_SIZE);
 
     query = [[NSMutableDictionary alloc] init];
 
@@ -103,44 +101,79 @@ bool CryptoSettings::getKey(uint8_t output[CRYPTO_SETTINGS_KEY_SIZE]) {
 
     SecItemDelete((CFDictionaryRef)query);
 
-    keyData = key.toNSData();
+    keyData = m_key.toNSData();
     [query setObject:keyData forKey:(id)kSecValueData];
 
     status = SecItemAdd((CFDictionaryRef)query, NULL);
 
     if (status != noErr) {
       logger.error() << "Failed to store the key. Error:" << status;
-      key = QByteArray();
+      m_key = QByteArray();
     }
 
     [query release];
   }
 
-  if (key.length() == CRYPTO_SETTINGS_KEY_SIZE) {
-    memcpy(output, key.data(), CRYPTO_SETTINGS_KEY_SIZE);
-    return true;
-  }
-
-  logger.error() << "Invalid key";
-#else
-  Q_UNUSED(output);
-#endif
-
-  return false;
+  return m_key;
 }
 
 // static
-CryptoSettings::Version CryptoSettings::getSupportedVersion() {
-  logger.debug() << "Get supported settings method";
-
-#if (defined(MZ_IOS) || defined(MZ_MACOS)) && !defined(UNIT_TEST)
-  uint8_t key[CRYPTO_SETTINGS_KEY_SIZE];
-  if (getKey(key)) {
-    logger.debug() << "Encryption supported!";
-    return CryptoSettings::EncryptionChachaPolyV1;
+bool MacOSCryptoSettings::checkCodesign() {
+#ifdef MZ_MACOS
+  SecTaskRef task = SecTaskCreateFromSelf(kCFAllocatorSystemDefault);
+  CFStringRef signer = SecTaskCopySigningIdentifier(task, nullptr);
+  CFRelease(task);
+  if (signer != nullptr) {
+    logger.debug() << "Got signature from:"
+                   << QString::fromNSString(static_cast<NSString*>(signer));
+    CFRelease(signer);
+    return true;
   }
+  return false;
+#else
+  // For iOS we probably need to roll our own solution by calling the
+  // csopt syscall directly, as the SecTask framework is only available
+  // for MacOS.
+  return true;
 #endif
+}
 
-  logger.debug() << "No encryption";
-  return CryptoSettings::NoEncryption;
+// static
+bool MacOSCryptoSettings::checkEntitlement(const QString& name) {
+#ifdef MZ_MACOS
+  SecTaskRef task = SecTaskCreateFromSelf(kCFAllocatorSystemDefault);
+  if (task == nullptr) {
+    return false;
+  }
+  CFStringRef cfName = CFStringCreateWithCString(
+      kCFAllocatorSystemDefault, qUtf8Printable(name), kCFStringEncodingUTF8);
+  auto guard = qScopeGuard([&] {
+    CFRelease(task);
+    CFRelease(cfName);
+  });
+
+  CFErrorRef error = nullptr;
+  CFTypeRef result = SecTaskCopyValueForEntitlement(task, cfName, &error);
+  if (error != nullptr) {
+    CFStringRef desc = CFErrorCopyDescription(error);
+    logger.error() << "Failed to check entitlements:"
+                   << QString::fromNSString(static_cast<NSString*>(desc));
+    CFRelease(desc);
+    CFRelease(error);
+  }
+  if (result != nullptr) {
+    CFRelease(result);
+  }
+
+  // Return success if we got anything back from the entitlement.
+  return (result != nullptr);
+#else
+  // For iOS we probably need to roll our own solution by calling the
+  // csopt syscall directly, as the SecTask methods are only available
+  // for MacOS.
+  //
+  // Check out https://github.com/Apple-FOSS-Mirror/security_systemkeychain/
+  // for inspiration, specifically the procinfo() function in src/cs_misc.cpp.
+  return true;
+#endif
 }

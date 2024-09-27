@@ -4,6 +4,7 @@
 
 #include "controller.h"
 
+#include <QFileInfo>
 #include <QNetworkInformation>
 
 #include "app.h"
@@ -16,6 +17,7 @@
 #include "frontend/navigator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
+#include "localsocketcontroller.h"
 #include "logger.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
@@ -35,27 +37,27 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
 
+#if defined MZ_PROXY_ENABLED
+#  include "proxycontroller.h"
+#endif
+
 #if defined(MZ_FLATPAK)
 #  include "platforms/linux/networkmanagercontroller.h"
 #elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
-#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
-#  include "localsocketcontroller.h"
 #elif defined(MZ_IOS)
 #  include "platforms/ios/ioscontroller.h"
 #elif defined(MZ_ANDROID)
 #  include "platforms/android/androidcontroller.h"
-#else
-#  include "platforms/dummy/dummycontroller.h"
+#elif defined(MZ_WASM)
+#  include "platforms/wasm/wasmcontroller.h"
 #endif
 
-#ifndef MZ_IOS
 // The Mullvad proxy services are located at internal IPv4 addresses in the
 // 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
 // private address range.
 constexpr const char* MULLVAD_PROXY_RANGE = "10.124.0.0";
 constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
-#endif
 
 namespace {
 Logger logger("Controller");
@@ -105,6 +107,31 @@ Controller::~Controller() {
   MZ_COUNT_DTOR(Controller);
 }
 
+// Check if we can use a LocalSocketController and return its path if so.
+QString Controller::useLocalSocketPath() const {
+#ifndef MZ_WASM
+  // The control socket can be overriden for testing.
+  QString path = qEnvironmentVariable("MVPN_CONTROL_SOCKET");
+  if (!Constants::inProduction() && !path.isEmpty()) {
+    return path;
+  }
+#endif
+
+#if defined(MZ_MACOS)
+  // MacOS had a path change, so check both /tmp/ and /var/.
+  if (QFileInfo::exists(Constants::MACOS_DAEMON_VAR_PATH)) {
+    return Constants::MACOS_DAEMON_VAR_PATH;
+  } else {
+    return Constants::MACOS_DAEMON_TMP_PATH;
+  }
+#elif defined(MZ_WINDOWS)
+  return Constants::WINDOWS_DAEMON_PATH;
+#endif
+
+  // Otherwise, we will need some other controller.
+  return QString();
+}
+
 void Controller::initialize() {
   logger.debug() << "Initializing the controller";
 
@@ -120,19 +147,26 @@ void Controller::initialize() {
   m_serverData = *MozillaVPN::instance()->serverData();
   m_nextServerData = *MozillaVPN::instance()->serverData();
 
+  QString path = useLocalSocketPath();
+  if (!path.isEmpty()) {
+    m_impl.reset(new LocalSocketController(path));
+  } else {
+    // We must use a specialized platform controller
 #if defined(MZ_FLATPAK)
-  m_impl.reset(new NetworkManagerController());
+    m_impl.reset(new NetworkManagerController());
 #elif defined(MZ_LINUX)
-  m_impl.reset(new LinuxController());
-#elif defined(MZ_MACOS) || defined(MZ_WINDOWS)
-  m_impl.reset(new LocalSocketController());
+    m_impl.reset(new LinuxController());
 #elif defined(MZ_IOS)
-  m_impl.reset(new IOSController());
+    m_impl.reset(new IOSController());
 #elif defined(MZ_ANDROID)
-  m_impl.reset(new AndroidController());
+    m_impl.reset(new AndroidController());
+#elif defined(MZ_WASM)
+    m_impl.reset(new WasmController());
 #else
-  m_impl.reset(new DummyController());
+    qCritical() << "No platform controller available for "
+                << Constants::PLATFORM_NAME;
 #endif
+  }
 
   connect(m_impl.get(), &ControllerImpl::connected, this,
           &Controller::connected);
@@ -201,7 +235,7 @@ qint64 Controller::time() const {
 }
 
 void Controller::timerTimeout() {
-  Q_ASSERT(m_state == StateOn);
+  Q_ASSERT(m_state == StateOn || m_state == StateOnPartial);
 #ifdef MZ_IOS
   // When locking an iOS device with an app in the foreground, the app's JS
   // runtime is stopped pretty quick by the system. For this VPN app, that
@@ -228,9 +262,9 @@ void Controller::quit() {
 
   m_nextStep = Quit;
 
-  if (m_state == StateOn || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateCheckSubscription) {
+  if (m_state == StateOn || m_state == StateOnPartial ||
+      m_state == StateSwitching || m_state == StateSilentSwitching ||
+      m_state == StateConnecting) {
     deactivate();
     return;
   }
@@ -263,8 +297,6 @@ void Controller::handshakeTimeout() {
   vpn->serverLatency()->setCooldown(
       hop.m_serverPublicKey, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
 
-  emit handshakeFailed(hop.m_serverPublicKey);
-
   if (m_nextStep == Quit || m_nextStep == Disconnect || m_nextStep == Update) {
     deactivate();
     return;
@@ -274,14 +306,17 @@ void Controller::handshakeTimeout() {
   ++m_connectionRetry;
   emit connectionRetryChanged();
   logger.info() << "Connection attempt " << m_connectionRetry;
+  InterfaceConfig& exit_hop = m_activationQueue.last();
+  Q_ASSERT(exit_hop.m_hopType != InterfaceConfig::HopType::MultiHopEntry);
+
   if (m_connectionRetry == 1) {
     logger.info() << "Connection Attempt: Using Port 53 Option this time.";
     // On the first retry, opportunisticly try again using the port 53
     // option enabled, if that feature is disabled.
-    activateInternal(ForceDNSPort, RandomizeServerSelection);
+    activateInternal(ForceDNSPort, RandomizeServerSelection, m_initiator);
     return;
   } else if (m_connectionRetry < CONNECTION_MAX_RETRY) {
-    activateInternal(DoNotForceDNSPort, RandomizeServerSelection);
+    activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
     return;
   }
 
@@ -290,29 +325,35 @@ void Controller::handshakeTimeout() {
   serverUnavailable();
 }
 
+qint64 Controller::connectionTimestamp() const {
+  switch (m_state) {
+    case Controller::State::StateConfirming:
+      [[fallthrough]];
+    case Controller::State::StateConnecting:
+      [[fallthrough]];
+    case Controller::State::StateDisconnecting:
+      [[fallthrough]];
+    case Controller::State::StateInitializing:
+      [[fallthrough]];
+    case Controller::State::StateOff:
+      return 0;
+    case Controller::State::StateOn:
+      [[fallthrough]];
+    case Controller::State::StateOnPartial:
+      [[fallthrough]];
+    case Controller::State::StateSilentSwitching:
+      [[fallthrough]];
+    case Controller::State::StateSwitching:
+      return m_connectedTimeInUTC.toMSecsSinceEpoch();
+  }
+  Q_UNREACHABLE();
+}
+
 void Controller::serverUnavailable() {
-  logger.error() << "server unavailable";
+  logger.info() << "Server Unavailable - Ping succeeded: " << m_pingReceived;
 
-  // If VPN is already active and server location becomes unavailable we do not
-  // deactivate the VPN or proceed with next steps. We specifically do not want
-  // to deactivate the VPN in the case of server location becoming unavailable
-  // because the user may not notice that they are no longer protected which can
-  // cause the traffic to leak outside the tunnel without their knowledge.
-  if (m_state == StateOn) {
-    return;
-  }
-
-  m_nextStep = ServerUnavailable;
-
-  if (m_state == StateSwitching || m_state == StateConnecting ||
-      m_state == StateConfirming || m_state == StateCheckSubscription) {
-    logger.info() << "Server location is unavailable and we are not in "
-                     "StateOn. Deactivate!";
-    deactivate();
-    return;
-  }
-  logger.info() << "Server location is unavailable. Do not deactivate the VPN "
-                   "automatically.";
+  emit readyToServerUnavailable(m_pingReceived);
+  return;
 }
 
 void Controller::updateRequired() {
@@ -325,33 +366,19 @@ void Controller::updateRequired() {
 
   m_nextStep = Update;
 
-  if (m_state == StateOn) {
+  if (m_state == StateOn || m_state == StateOnPartial) {
     deactivate();
     return;
   }
 }
 
-void Controller::logout() {
-  logger.debug() << "Logout";
-
-  MozillaVPN::instance()->logout();
-
-  if (m_state == StateOff) {
-    return;
-  }
-
-  m_nextStep = Disconnect;
-
-  if (m_state == StateOn) {
-    deactivate();
-    return;
-  }
-}
-
-void Controller::activateInternal(DNSPortPolicy dnsPort,
-                                  ServerSelectionPolicy serverSelectionPolicy) {
+void Controller::activateInternal(
+    DNSPortPolicy dnsPort,
+    ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection,
+    ActivationPrincipal initiator = ClientUser) {
   logger.debug() << "Activation internal";
   Q_ASSERT(m_impl);
+  m_initiator = initiator;
 
   clearConnectedTime();
   m_handshakeTimer.stop();
@@ -378,6 +405,9 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   }
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
+  auto allowedIPList = initiator == ExtensionUser
+                           ? getExtensionProxyAddressRanges(exitServer)
+                           : getAllowedIPAddressRanges(exitServer);
   // Prepare the exit server's connection data.
   InterfaceConfig exitConfig;
   exitConfig.m_privateKey = vpn->keys()->privateKey();
@@ -389,7 +419,7 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   exitConfig.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
   exitConfig.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
   exitConfig.m_serverPort = exitServer.choosePort();
-  exitConfig.m_allowedIPAddressRanges = getAllowedIPAddressRanges(exitServer);
+  exitConfig.m_allowedIPAddressRanges = allowedIPList;
   exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
 #if defined(MZ_ANDROID) || defined(MZ_IOS)
   exitConfig.m_installationId = settingsHolder->installationId();
@@ -399,6 +429,12 @@ void Controller::activateInternal(DNSPortPolicy dnsPort,
   // Splittunnel-feature could have been disabled due to a driver conflict.
   if (Feature::get(Feature::Feature_splitTunnel)->isSupported()) {
     exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
+// Add the Proxy to the excluded list, if activateable
+#if defined MZ_PROXY_ENABLED
+    if (vpn->proxyController()->canActivate()) {
+      exitConfig.m_vpnDisabledApps.append(vpn->proxyController()->binaryPath());
+    }
+#endif
   }
   if (Feature::get(Feature::Feature_alwaysPort53)->isSupported()) {
     dnsPort = ForceDNSPort;
@@ -504,50 +540,41 @@ void Controller::clearConnectedTime() {
   m_timer.stop();
 }
 
+// static
+Controller::IPAddressList Controller::getExcludedIPAddressRanges() {
+  QList<IPAddress> excludeIPv4s;
+  QList<IPAddress> excludeIPv6s;
+
+  // filtering out the RFC1918 local area network
+  logger.debug() << "Filtering out the local area networks (rfc 1918)";
+  excludeIPv4s.append(RFC1918::ipv4());
+
+  logger.debug() << "Filtering out the local area networks";
+  excludeIPv6s.append(RFC4193::ipv6());
+  excludeIPv6s.append(RFC4291::ipv6LinkLocalAddressBlock());
+
+  logger.debug() << "Filtering out multicast addresses";
+  excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
+  excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
+
+  return IPAddressList{
+      .v6 = excludeIPv6s,
+      .v4 = excludeIPv4s,
+  };
+}
+
+// static
 QList<IPAddress> Controller::getAllowedIPAddressRanges(
     const Server& exitServer) {
   logger.debug() << "Computing the allowed IP addresses";
 
   QList<IPAddress> list;
 
-#ifdef MZ_IOS
-  // Note: On iOS, we use the `excludeLocalNetworks` flag to ensure
-  // LAN traffic is allowed through. This is in the swift code.
-
-  Q_UNUSED(exitServer);
-
   logger.debug() << "Catch all IPv4";
   list.append(IPAddress("0.0.0.0/0"));
 
   logger.debug() << "Catch all IPv6";
   list.append(IPAddress("::0/0"));
-#else
-  QList<IPAddress> excludeIPv4s;
-  QList<IPAddress> excludeIPv6s;
-  // For multi-hop connections, the last entry in the server list is the
-  // ingress node to the network of wireguard servers, and must not be
-  // routed through the VPN.
-
-  // filtering out the RFC1918 local area network
-  logger.debug() << "Filtering out the local area networks (rfc 1918)";
-  excludeIPv4s.append(RFC1918::ipv4());
-
-  logger.debug() << "Filtering out the local area networks (rfc 4193)";
-  excludeIPv6s.append(RFC4193::ipv6());
-
-  logger.debug() << "Filtering out multicast addresses";
-  excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
-  excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
-
-  logger.debug() << "Filtering out explicitely-set network address ranges";
-  for (const QString& ipv4String :
-       SettingsHolder::instance()->excludedIpv4Addresses()) {
-    excludeIPv4s.append(IPAddress(ipv4String));
-  }
-  for (const QString& ipv6String :
-       SettingsHolder::instance()->excludedIpv6Addresses()) {
-    excludeIPv6s.append(IPAddress(ipv6String));
-  }
 
   // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
@@ -559,14 +586,16 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   list.append(
       IPAddress(QHostAddress(MULLVAD_PROXY_RANGE), MULLVAD_PROXY_RANGE_LENGTH));
 
-  // Allow access to everything not covered by an excluded address.
-  QList<IPAddress> allowedIPv4 = {IPAddress("0.0.0.0/0")};
-  list.append(IPAddress::excludeAddresses(allowedIPv4, excludeIPv4s));
-  QList<IPAddress> allowedIPv6 = {IPAddress("::/0")};
-  list.append(IPAddress::excludeAddresses(allowedIPv6, excludeIPv6s));
-#endif
-
   return list;
+}
+
+// static
+QList<IPAddress> Controller::getExtensionProxyAddressRanges(
+    const Server& exitServer) {
+  return {
+      IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32),
+      IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128),
+      IPAddress(QHostAddress{MULLVAD_PROXY_RANGE}, MULLVAD_PROXY_RANGE_LENGTH)};
 }
 
 void Controller::activateNext() {
@@ -590,8 +619,14 @@ void Controller::activateNext() {
 
   m_impl->activate(config, stateToReason(m_state));
 
-  // Move to the confirming state if we are awaiting any connection handshakes.
-  setState(StateConfirming);
+  if (m_initiator == ExtensionUser) {
+    return;
+  }
+
+  if (m_state != StateSilentSwitching) {
+    // Move to the StateConfirming if we are awaiting any connection handshakes
+    setState(StateConfirming);
+  }
 }
 
 void Controller::setState(State state) {
@@ -625,13 +660,12 @@ bool Controller::silentSwitchServers(
       return false;
     }
 
-    isSwitchingServer = true;
-
     MozillaVPN::instance()->serverLatency()->setCooldown(
         m_serverData.exitServerPublicKey(),
         Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
   }
 
+  isSwitchingServer = true;
   m_nextServerData = m_serverData;
   m_nextServerSelectionPolicy = serverCoolDownPolicy == eServerCoolDownNeeded
                                     ? RandomizeServerSelection
@@ -680,7 +714,7 @@ void Controller::connected(const QString& pubkey) {
   m_connectionRetry = 0;
   emit connectionRetryChanged();
 
-  if (m_state == StateOn) {
+  if (m_state == StateOn || m_state == StateOnPartial) {
     // The only place StateOn is set is in this function, Controller::connected.
     // If this function is called when the state is already StateOn, it is
     // because there was a silent server switch initiated from the daemon. (Only
@@ -696,7 +730,11 @@ void Controller::connected(const QString& pubkey) {
 
   // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
-  setState(StateOn);
+  if (m_initiator == ExtensionUser) {
+    setState(StateOnPartial);
+  } else {
+    setState(StateOn);
+  }
   resetConnectedTime();
 
   if (isSwitchingServer == false) {
@@ -738,8 +776,14 @@ void Controller::disconnected() {
   }
 
   if (nextStep == None &&
-      (m_state == StateSwitching || m_state == StateSilentSwitching)) {
-    activate(m_nextServerData, m_nextServerSelectionPolicy);
+      (m_state == StateSilentSwitching || m_state == StateSwitching)) {
+    // If we are only silently switching, keep the iniator
+    // Else move the iniator to Client User
+    // as the extension cannot switch servers.
+    auto target_iniator = m_state == StateSilentSwitching
+                              ? m_initiator
+                              : ActivationPrincipal::ClientUser;
+    activate(m_nextServerData, target_iniator, m_nextServerSelectionPolicy);
     return;
   }
 
@@ -748,7 +792,7 @@ void Controller::disconnected() {
   if (m_state != StateConfirming) {
     emit recordConnectionEndTelemetry();
   }
-
+  m_initiator = Null;
   setState(StateOff);
 }
 
@@ -768,13 +812,6 @@ bool Controller::processNextStep() {
 
   if (nextStep == BackendFailure) {
     emit readyToBackendFailure();
-    return true;
-  }
-
-  if (nextStep == ServerUnavailable) {
-    logger.info() << "Server Unavailable - Ping succeeded: " << m_pingReceived;
-
-    emit readyToServerUnavailable(m_pingReceived);
     return true;
   }
 
@@ -845,7 +882,7 @@ void Controller::statusUpdated(const QString& serverIpv4Gateway,
   logger.debug() << "Status updated";
   QList<std::function<void(const QString& serverIpv4Gateway,
                            const QString& deviceIpv4Address, uint64_t txBytes,
-                           uint64_t rxBytes)>>
+                           uint64_t rxBytes)> >
       list;
 
   list.swap(m_getStatusCallbacks);
@@ -911,29 +948,29 @@ void Controller::backendFailure() {
 
   m_nextStep = BackendFailure;
 
-  if (m_state == StateOn || m_state == StateSwitching ||
-      m_state == StateSilentSwitching || m_state == StateConnecting ||
-      m_state == StateCheckSubscription || m_state == StateConfirming) {
+  if (m_state == StateOn || m_state == StateOnPartial ||
+      m_state == StateSwitching || m_state == StateSilentSwitching ||
+      m_state == StateConnecting || m_state == StateConfirming) {
     deactivate();
     return;
   }
 }
 
-#ifdef MZ_DUMMY
 QString Controller::currentServerString() const {
   return QString("%1-%2-%3-%4")
       .arg(m_serverData.exitCountryCode(), m_serverData.exitCityName(),
            m_serverData.entryCountryCode(), m_serverData.entryCityName());
 }
-#endif
 
 // These will eventually go back to the controller but to get the code working
 // for now they will reside here
 
 bool Controller::activate(const ServerData& serverData,
+                          ActivationPrincipal initiator,
                           ServerSelectionPolicy serverSelectionPolicy) {
   logger.debug() << "Activation" << m_state;
   if (m_state != Controller::StateOff &&
+      m_state != Controller::StateOnPartial &&
       m_state != Controller::StateSwitching &&
       m_state != Controller::StateSilentSwitching) {
     logger.debug() << "Already connected";
@@ -945,10 +982,7 @@ bool Controller::activate(const ServerData& serverData,
   logger.debug() << "Set isSwitchingServer to" << isSwitchingServer;
 
   m_serverData = serverData;
-
-#ifdef MZ_DUMMY
   emit currentServerChanged();
-#endif
 
   if (m_state == Controller::StateOff) {
     if (m_portalDetected) {
@@ -976,10 +1010,6 @@ bool Controller::activate(const ServerData& serverData,
       }
     }
 
-    // Before attempting to enable VPN connection we should check that the
-    // subscription is active.
-    setState(StateCheckSubscription);
-
     // Set up a network request to check the subscription status.
     // "task" is an empty task function which is being used to
     // replicate the behavior of a TaskAccount.
@@ -989,8 +1019,8 @@ bool Controller::activate(const ServerData& serverData,
     request->get(Constants::apiUrl(Constants::Account));
 
     connect(request, &NetworkRequest::requestFailed, this,
-            [this, serverSelectionPolicy](QNetworkReply::NetworkError error,
-                                          const QByteArray&) {
+            [this, serverSelectionPolicy, initiator](
+                QNetworkReply::NetworkError error, const QByteArray&) {
               logger.error() << "Account request failed" << error;
               REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
                                  "PreActivationSubscriptionCheck");
@@ -1005,36 +1035,61 @@ bool Controller::activate(const ServerData& serverData,
                 return;
               }
 
-              setState(StateConnecting);
+              if (initiator != ExtensionUser) {
+                setState(StateConnecting);
+              }
 
               clearRetryCounter();
-              activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
+              activateInternal(DoNotForceDNSPort, serverSelectionPolicy,
+                               initiator);
             });
 
     connect(request, &NetworkRequest::requestCompleted, this,
-            [this, serverSelectionPolicy](const QByteArray& data) {
+            [this, serverSelectionPolicy, initiator](const QByteArray& data) {
               MozillaVPN::instance()->accountChecked(data);
-              setState(StateConnecting);
+
+              if (initiator != ExtensionUser) {
+                setState(StateConnecting);
+              }
 
               clearRetryCounter();
-              activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
+              activateInternal(DoNotForceDNSPort, serverSelectionPolicy,
+                               initiator);
             });
 
     connect(request, &QObject::destroyed, task, &QObject::deleteLater);
     return true;
   }
 
+  // The next few lines are not run on iOS to prevent a bad bug.
+  // These 3 lines were added in
+  // https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9639, and caused
+  // a bug on iOS where server switches stopped working. See more details in
+  // VPN-6495.
+#ifndef MZ_IOS
+  if (initiator != ExtensionUser) {
+    setState(StateConnecting);
+  }
+#endif
+
   clearRetryCounter();
-  activateInternal(DoNotForceDNSPort, serverSelectionPolicy);
+  activateInternal(DoNotForceDNSPort, serverSelectionPolicy, initiator);
   return true;
 }
 
-bool Controller::deactivate() {
+bool Controller::deactivate(ActivationPrincipal user) {
   logger.debug() << "Deactivation" << m_state;
+  if (m_initiator > user) {
+    // i.e the Firefox Extension cannot deativate the
+    // vpn if we are in full device protection.
+    logger.warning()
+        << "ActivationPrincipal does not have permission allowed to deactivate";
+    return false;
+  }
 
-  if (m_state != StateOn && m_state != StateSwitching &&
-      m_state != StateSilentSwitching && m_state != StateConfirming &&
-      m_state != StateConnecting && m_state != StateCheckSubscription) {
+  if (m_state != StateOn && m_state != StateOnPartial &&
+      m_state != StateSwitching && m_state != StateSilentSwitching &&
+      m_state != StateConfirming && m_state != StateConnecting) {
     logger.warning() << "Already disconnected";
     return false;
   }
@@ -1050,8 +1105,8 @@ bool Controller::deactivate() {
     m_portalDetected = false;
   }
 
-  if (m_state == StateOn || m_state == StateConfirming ||
-      m_state == StateConnecting || m_state == StateCheckSubscription) {
+  if (m_state == StateOn || m_state == StateOnPartial ||
+      m_state == StateConfirming || m_state == StateConnecting) {
     setState(StateDisconnecting);
   }
 

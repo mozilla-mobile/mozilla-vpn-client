@@ -1,0 +1,73 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# This file contains the strings for the MozillaVPN addons.
+# At the top level of this document, you must specify the categories. For each
+# category, there is a list of string IDs. Each string ID can be:
+# - a string: this will be the English translation of that string ID
+# - an object composed of a `value` key and, optional, a `comment` key. Both
+#   keys can be a string or an array of strings. The `value` contains the
+#   English translation; the comment is useful to describe what the string is
+#   and where it is used.
+#
+# Example:
+#
+#initialView:
+#  # This is a simple string
+#  getStartedButton: Get started
+#
+#  # StringID with a value and a comment
+#  learnMore:
+#    value: Learn more
+#    comment: This is the `learn more` link shown in the initial view
+#
+#  # Multiple line string (with a multiple line comment)
+#  subTitle:
+#    value:
+#      - A fast, secure and easy to use VPN. Built
+#      - by the makers of Firefox
+#    comment:
+#      - Also comments can be written using
+#      - multiple lines!
+#
+# String can contain just one specific type of argument, the short version number.
+# Add '%1' where the version should go. This will get replaced with the addons message's
+# 'shortVersion' (from manifeste.json), for instance '2.24'
+#
+#
+# Strings that are no longer needed should be removed from this file.
+
+commonStrings:
+  updateTitle:
+    value: Update to Mozilla VPN %1
+    comment: Title for update message. %1 is replaced by the version number, such as 2.24
+  downloadTitle:
+    value: Download the new Mozilla VPN %1
+    comment: Alternative title used for some versions. %1 is replaced by the version number, such as 2.24
+  subtitle:
+    value: We’ve released an updated version of Mozilla VPN! Update to the latest version for the best possible Mozilla VPN experience.
+    comment: Subtitle for default update message
+  generalUpdateContent:
+    value: This update includes minor bug fixes, UI adjustments and other performance improvements.
+    comment: Default update notes
+  updateButton:
+    value: Update now
+    comment: Button label
+  downloadButton:
+    value: Download update
+    comment: Button label
+  getHelpButton:
+    value: Get help
+    comment: Button label
+  # tester:
+  #   value: shouldn't show up in translation file
+  #   comment: Label for `Get help` button
+
+# 224updateMessage:
+#   somethingSpecificJustToThisMessage:
+#     value: This is just an example
+#     comment: Use this as as template for strings that we expect to only use in one message.
+
+# These sample commented out translations can be used in testing, to ensure this is working as expected. Feel free to remove in
+# the near future, when this file has more translations.

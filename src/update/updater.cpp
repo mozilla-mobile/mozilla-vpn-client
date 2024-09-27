@@ -5,6 +5,7 @@
 #include "updater.h"
 
 #include "constants.h"
+#include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -25,7 +26,9 @@ Updater* Updater::create(
     QObject* parent, bool downloadAndInstall,
     ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy) {
 #ifdef MVPN_BALROG
-  return new Balrog(parent, downloadAndInstall, errorPropagationPolicy);
+  if (Feature::get(Feature::Feature_enableUpdateServer)->isSupported()) {
+    return new Balrog(parent, downloadAndInstall, errorPropagationPolicy);
+  }
 #endif
 
   Q_UNUSED(errorPropagationPolicy);
@@ -39,22 +42,11 @@ Updater* Updater::create(
 
 Updater::Updater(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(Updater);
-  connect(this, &Updater::updateRecommended, [this] {
-    m_recommendedOrRequired = true;
+  connect(this, &Updater::updateRecommended,
+          [this] { m_recommendedOrRequired = true; });
 
-    mozilla::glean::sample::update_step.record(
-        mozilla::glean::sample::UpdateStepExtra{
-            ._state =
-                QVariant::fromValue(RecommendedUpdateAvailable).toString()});
-  });
-
-  connect(this, &Updater::updateRequired, [this] {
-    m_recommendedOrRequired = true;
-
-    mozilla::glean::sample::update_step.record(
-        mozilla::glean::sample::UpdateStepExtra{
-            ._state = QVariant::fromValue(RequiredUpdateAvailable).toString()});
-  });
+  connect(this, &Updater::updateRequired,
+          [this] { m_recommendedOrRequired = true; });
   logger.debug() << "Updater created";
 }
 
@@ -69,11 +61,4 @@ QString Updater::appVersion() {
     return MozillaVPN::appVersionForUpdate();
   }
   return Constants::versionString();
-}
-
-// static
-void Updater::updateViewShown() {
-  mozilla::glean::sample::update_step.record(
-      mozilla::glean::sample::UpdateStepExtra{
-          ._state = QVariant::fromValue(UpdateViewShown).toString()});
 }

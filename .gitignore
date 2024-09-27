@@ -30,6 +30,7 @@ linux/netfilter/vendor/
 .tmp
 .env
 .venv
+.cache/clangd
 __pycache__
 lottie.mjs
 qml_lint_result.txt
@@ -124,8 +125,6 @@ CMakeLists.txt.user
 #Windows
 .deps
 lib*.dll
-tunnel.dll
-tunnel.h
 *.wixobj
 *.msm
 *.dll

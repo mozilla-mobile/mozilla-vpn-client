@@ -31,10 +31,10 @@ class Controller : public QObject, public LogSerializer {
   enum State {
     StateInitializing,
     StateOff,
-    StateCheckSubscription,
     StateConnecting,
     StateConfirming,
     StateOn,
+    StateOnPartial,
     StateDisconnecting,
     StateSilentSwitching,
     StateSwitching,
@@ -46,9 +46,21 @@ class Controller : public QObject, public LogSerializer {
     ReasonSwitching,
     ReasonConfirming,
   };
+  /**
+   * @brief Who asked the Connection
+   * to be Initiated? A Webextension
+   * or a User Interaction inside the Client?
+   */
+  enum ActivationPrincipal {
+    Null = 0,
+    ExtensionUser = 1,
+    ClientUser = 2,
+  };
+  Q_ENUM(ActivationPrincipal)
 
  public:
   qint64 time() const;
+  qint64 connectionTimestamp() const;
   void serverUnavailable();
   void captivePortalPresent();
   void captivePortalGone();
@@ -72,7 +84,6 @@ class Controller : public QObject, public LogSerializer {
 
   int connectionRetry() const { return m_connectionRetry; }
   State state() const;
-  Q_INVOKABLE void logout();
   bool silentServerSwitchingSupported() const;
   void cleanupBackendLogs();
 
@@ -86,17 +97,15 @@ class Controller : public QObject, public LogSerializer {
                          const QString& deviceIpv4Address, uint64_t txBytes,
                          uint64_t rxBytes)>&& callback);
 
-#ifdef MZ_DUMMY
   QString currentServerString() const;
-#endif
 
  public slots:
   // These 2 methods activate/deactivate the VPN. Return true if a signal will
   // be emitted at the end of the operation.
   bool activate(
-      const ServerData& serverData,
+      const ServerData& serverData, ActivationPrincipal = ClientUser,
       ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
-  bool deactivate();
+  bool deactivate(ActivationPrincipal = ClientUser);
 
   Q_INVOKABLE void quit();
   Q_INVOKABLE void forceDaemonCrash();
@@ -114,11 +123,9 @@ class Controller : public QObject, public LogSerializer {
   Q_PROPERTY(bool isDeviceConnected READ isDeviceConnected NOTIFY
                  isDeviceConnectedChanged);
 
-#ifdef MZ_DUMMY
-  // This is just for testing purposes. Not exposed in prod.
+  // This is just for testing purposes.
   Q_PROPERTY(QString currentServerString READ currentServerString NOTIFY
                  currentServerChanged);
-#endif
 
  private slots:
   void timerTimeout();
@@ -135,7 +142,6 @@ class Controller : public QObject, public LogSerializer {
   void stateChanged();
   void timeChanged();
   void enableDisconnectInConfirmingChanged();
-  void handshakeFailed(const QString& serverHostname);
   void connectionRetryChanged();
   void recordConnectionStartTelemetry();
   void recordConnectionEndTelemetry();
@@ -147,16 +153,29 @@ class Controller : public QObject, public LogSerializer {
   void activationBlockedForCaptivePortal();
   void isDeviceConnectedChanged();
 
-#ifdef MZ_DUMMY
   void currentServerChanged();
-#endif
 
  public:
   Controller();
   ~Controller();
 
   void initialize();
+
+  struct IPAddressList {
+    QList<IPAddress> v6;
+    QList<IPAddress> v4;
+
+    QList<IPAddress> flatten() {
+      QList<IPAddress> list;
+      list.append(v6);
+      list.append(v4);
+      return list;
+    }
+  };
+  static IPAddressList getExcludedIPAddressRanges();
   static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
+  static QList<IPAddress> getExtensionProxyAddressRanges(
+      const Server& exitServer);
 
   enum ServerCoolDownPolicyForSilentSwitch {
     eServerCoolDownNeeded,
@@ -173,7 +192,6 @@ class Controller : public QObject, public LogSerializer {
     Update,
     Disconnect,
     BackendFailure,
-    ServerUnavailable,
   };
 
   NextStep m_nextStep = None;
@@ -184,7 +202,8 @@ class Controller : public QObject, public LogSerializer {
   };
 
   void activateInternal(DNSPortPolicy dnsPort,
-                        ServerSelectionPolicy serverSelectionPolicy);
+                        ServerSelectionPolicy serverSelectionPolicy,
+                        ActivationPrincipal);
 
   void clearConnectedTime();
   void clearRetryCounter();
@@ -194,6 +213,7 @@ class Controller : public QObject, public LogSerializer {
   bool processNextStep();
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
+  QString useLocalSocketPath() const;
 
  private:
   QTimer m_timer;
@@ -203,6 +223,7 @@ class Controller : public QObject, public LogSerializer {
   QDateTime m_connectedTimeInUTC;
 
   State m_state = StateInitializing;
+  ActivationPrincipal m_initiator = Null;
   bool m_enableDisconnectInConfirming = false;
   QList<InterfaceConfig> m_activationQueue;
   int m_connectionRetry = 0;

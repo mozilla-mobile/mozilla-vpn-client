@@ -43,7 +43,7 @@ jobs:
 
       - name: Install Qt6
         run: |
-          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
+          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
           unzip -a -d ${{ github.workspace }} qt6_mac.zip
 
       - name: Compile test client
@@ -51,9 +51,15 @@ jobs:
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
-          cmake --build build/cmake --target dummyvpn
-          cp ./build/cmake/tests/dummyvpn/dummyvpn build/
-          cp -r ./build/cmake/tests/dummyvpn/addons build/addons
+          cmake --build build/cmake
+          cp -r ./build/cmake/src/Mozilla\ VPN.app/ build/Mozilla\ VPN.app
+
+      - name: Compile test addons
+        run: |
+          mkdir -p build/addons
+          cmake -S $(pwd)/tests/functional/addons -B build/addons \
+            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
+          cmake --build build/addons
 
       - uses: actions/upload-artifact@v4
         with:
@@ -112,8 +118,8 @@ jobs:
       - name: Check build
         shell: bash
         run: |
-          chmod +x ./build/dummyvpn
-          ./build/dummyvpn -v
+          chmod +x ./build/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN
+          ./build/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN -v
 
       - name: Running ${{ matrix.test.name }} Tests
         shell: bash
@@ -122,7 +128,8 @@ jobs:
           TZ: Europe/London
           HEADLESS: yes
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-          MVPN_BIN: ./build/dummyvpn
+          MVPN_ADDONS_PATH: ./build/addons
+          MVPN_BIN: ./build/Mozilla VPN.app/Contents/MacOS/Mozilla VPN
         run: |
           export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
           mkdir -p $ARTIFACT_DIR

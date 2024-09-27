@@ -10,7 +10,7 @@
 #  include "platforms/macos/macospingsender.h"
 #elif defined(MZ_WINDOWS)
 #  include "platforms/windows/windowspingsender.h"
-#elif defined(MZ_DUMMY) || defined(UNIT_TEST)
+#elif defined(MZ_WASM) || defined(UNIT_TEST)
 #  include "platforms/dummy/dummypingsender.h"
 #else
 #  error "Unsupported platform"

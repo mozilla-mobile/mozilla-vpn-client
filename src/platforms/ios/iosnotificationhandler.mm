@@ -30,7 +30,7 @@
          withCompletionHandler:
              (void (^)(UNNotificationPresentationOptions options))completionHandler {
   Q_UNUSED(center)
-  completionHandler(UNNotificationPresentationOptionAlert);
+  completionHandler(UNNotificationPresentationOptionList | UNNotificationPresentationOptionBanner);
 }
 
 - (void)userNotificationCenter:(UNUserNotificationCenter*)center

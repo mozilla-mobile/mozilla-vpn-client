@@ -31,6 +31,12 @@ let vpnProcessTerminatePromise = null;
 let stdErr = '';
 
 async function startAndConnect() {
+  // Wait for existing processes to terminate, if any.
+  if (vpnProcessTerminatePromise) {
+    await vpnProcessTerminatePromise;
+    vpnProcessTerminatePromise = null;
+  }
+
   vpnProcess = spawn(app, ['ui', '--testing']);
   stdErr += 'VPN Process ID: ' + vpnProcess.pid;
   vpnProcess.stderr.on('data', (data) => {
@@ -45,17 +51,17 @@ async function startAndConnect() {
   await vpn.connect(vpnWS, {hostname: '127.0.0.1'});
 }
 
-function vpnIsInactive() {
+function vpnIsRunning() {
   try {
     vpnProcess.kill(pid, 0);
-    return false;
-  } catch (e) {
     return true;
+  } catch (e) {
+    return false;
   }
 }
 
 exports.startAndConnect = startAndConnect;
-exports.vpnIsInactive = vpnIsInactive;
+exports.vpnIsRunning = vpnIsRunning;
 
 exports.mochaHooks = {
   async beforeAll() {
@@ -107,6 +113,7 @@ exports.mochaHooks = {
 
       await startAndConnect();
       await vpn.reset();
+      await vpn.setSetting('startAtBoot', 'false');
       await vpn.setSetting('localhostRequestsOnly', 'true');
       await vpn.authenticateInApp();
 
@@ -139,6 +146,7 @@ exports.mochaHooks = {
       await startAndConnect();
       await vpn.gleanTestReset();
       await vpn.reset();
+      await vpn.setSetting('startAtBoot', 'false');
     }
 
     await vpn.setGleanAutomationHeader();
@@ -166,6 +174,9 @@ exports.mochaHooks = {
         const buffer = Buffer.from(data, 'base64');
         const title = this.currentTest.title.toLowerCase();
         const filename = title.replace(/[^a-z0-9]/g, '_');
+        if (!fs.existsSync(process.env.ARTIFACT_DIR)) {
+          fs.mkdirSync(process.env.ARTIFACT_DIR);
+        }
         if (!fs.existsSync(dir)) {
           fs.mkdirSync(dir);
         }
@@ -189,6 +200,8 @@ exports.mochaHooks = {
     vpnProcess.stdin.pause();
     vpnProcess.kill();
 
-    await vpnProcessTerminatePromise;
+    if (vpnProcessTerminatePromise) {
+      await vpnProcessTerminatePromise;
+    }
   },
 }

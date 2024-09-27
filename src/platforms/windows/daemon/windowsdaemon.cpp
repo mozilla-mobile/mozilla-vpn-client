@@ -5,6 +5,7 @@
 #include "windowsdaemon.h"
 
 #include <Windows.h>
+#include <qassert.h>
 
 #include <QCoreApplication>
 #include <QJsonDocument>
@@ -18,24 +19,28 @@
 #include "dnsutilswindows.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "platforms/windows/daemon/windowsfirewall.h"
+#include "platforms/windows/daemon/windowssplittunnel.h"
 #include "platforms/windows/windowscommons.h"
-#include "platforms/windows/windowsservicemanager.h"
 #include "windowsfirewall.h"
 
 namespace {
 Logger logger("WindowsDaemon");
 }
 
-WindowsDaemon::WindowsDaemon() : Daemon(nullptr), m_splitTunnelManager(this) {
+WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
   MZ_COUNT_CTOR(WindowsDaemon);
+  m_firewallManager = WindowsFirewall::create(this);
+  Q_ASSERT(m_firewallManager != nullptr);
 
-  m_wgutils = new WireguardUtilsWindows(this);
+  m_wgutils = WireguardUtilsWindows::create(m_firewallManager, this);
   m_dnsutils = new DnsUtilsWindows(this);
+  m_splitTunnelManager = WindowsSplitTunnel::create(m_firewallManager);
 
-  connect(m_wgutils, &WireguardUtilsWindows::backendFailure, this,
+  connect(m_wgutils.get(), &WireguardUtilsWindows::backendFailure, this,
           &WindowsDaemon::monitorBackendFailure);
   connect(this, &WindowsDaemon::activationFailure,
-          []() { WindowsFirewall::instance()->disableKillSwitch(); });
+          [this]() { m_firewallManager->disableKillSwitch(); });
 }
 
 WindowsDaemon::~WindowsDaemon() {
@@ -51,24 +56,19 @@ void WindowsDaemon::prepareActivation(const InterfaceConfig& config) {
 }
 
 bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
-  if (op == Down) {
-    m_splitTunnelManager.stop();
+  if (!m_splitTunnelManager) {
     return true;
   }
 
-  if (op == Up) {
-    logger.debug() << "Tunnel UP, Starting SplitTunneling";
-    if (!WindowsSplitTunnel::isInstalled()) {
-      logger.warning() << "Split Tunnel Driver not Installed yet, fixing this.";
-      WindowsSplitTunnel::installDriver();
-    }
+  if (op == Down) {
+    m_splitTunnelManager->stop();
+    return true;
   }
-
   if (config.m_vpnDisabledApps.length() > 0) {
-    m_splitTunnelManager.start(m_inetAdapterIndex);
-    m_splitTunnelManager.setRules(config.m_vpnDisabledApps);
+    m_splitTunnelManager->start(m_inetAdapterIndex);
+    m_splitTunnelManager->setRules(config.m_vpnDisabledApps);
   } else {
-    m_splitTunnelManager.stop();
+    m_splitTunnelManager->stop();
   }
   return true;
 }

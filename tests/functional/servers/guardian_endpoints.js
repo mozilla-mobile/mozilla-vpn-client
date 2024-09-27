@@ -257,7 +257,16 @@ exports.endpoints = {
   },
 
   POSTs: {
-    '/api/v2/vpn/featurelist': {status: 200, body: {features: {}, experimentalFeatures: {}}},
+    '/api/v2/vpn/featurelist': {
+      status: 200,
+      body: {
+        featuresOverwrite: {
+          'enableUpdateServer': false,
+          'splitTunnel': true
+        },
+        experimentalFeatures: {}
+      }
+    },
 
     '/api/v2/vpn/login/verify': {
       status: 200,

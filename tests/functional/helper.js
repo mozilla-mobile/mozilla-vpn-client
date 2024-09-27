@@ -66,10 +66,13 @@ module.exports = {
   async activateViaToggle() {
     await this.waitForQueryAndClick(
         queries.screenHome.CONTROLLER_TOGGLE.visible().prop(
-            'state', 'stateOff'));
+            'toolTipTitle', 'Turn VPN on'));
   },
 
   async activate(awaitConnectionOkay = false) {
+    await this.waitForMozillaProperty(
+      'Mozilla.VPN', 'VPNController', 'state', 'StateOff');
+
     const json = await this._writeCommand('activate');
     assert(
         json.type === 'activate' && !('error' in json),
@@ -352,18 +355,33 @@ module.exports = {
     return await this.getMozillaProperty(
         'Mozilla.Shared', 'MZUrlOpener', 'lastUrl');
   },
-
-  async waitForCondition(condition, waitTimeInMilliSecs = 500) {
+  /**
+   * Calls condition() every waitTimeInMilliSecs, promise resolves
+   * if condition returns true.
+   *
+   * @param {()=> Promise<Boolean>} condition -  A Callable Function, returning
+   *     true if the Condition is fulfilledbycondition
+   * @param {*} waitTimeInMilliSecs -
+   * @param {string} description - Description of the Condition to debug
+   *     Failures
+   * @returns {Promise<void>}
+   */
+  async waitForCondition(
+      condition, waitTimeInMilliSecs = 500, description = '') {
     // If the condition takes longer than 15 seconds, give up.
     let active = true;
     let timeout = setTimeout(() => { active = false }, 15000);
     while (true) {
       if (await condition()) {
+        if (description != '') {
+          // If there is a description mark the assert
+          assert(true, 'Condition passed: ' + description);
+        }
         clearTimeout(timeout)
         return;
       }
       // Asserting here produces a more useful backtrace for diagnosing tests.
-      assert(active, "Condition timed out");
+      assert(active, 'Condition timed out: ' + description);
       await new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
     }
   },
@@ -399,7 +417,7 @@ module.exports = {
       req.on('close', resolve);
       req.on('error', error => {
         throw new Error(
-            `Unable to connect to ${urlObj.hostname} to complete the
+            `Unable to connect to complete the
             auth. ${error.name}, ${error.message}, ${error.stack}`);
       });
       req.end();
@@ -413,7 +431,7 @@ module.exports = {
       await this.skipOnboarding();
     }
 
-    if (await this.isFeatureFlippedOn('inAppAuthentication')) {
+    if (await this.isFeatureEnabled('inAppAuthentication')) {
       await this.flipFeatureOff('inAppAuthentication');
     }
 
@@ -431,7 +449,7 @@ module.exports = {
 
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForMozillaProperty(
-        'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+        'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
   },
 
   async authenticateInApp(skipOnboarding = true) {
@@ -439,11 +457,18 @@ module.exports = {
       await this.skipOnboarding();
     }
 
+    if (!await this.isFeatureEnabled('inAppAuthentication')) {
+      await this.flipFeatureOn('inAppAuthentication');
+    }
+
     // This method must be called when the client is on the "Get Started" view.
     await this.waitForInitialView();
 
     // Click on get started and wait for authenticating view
     await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
+    // Wait for the authentication view to finish loading.
+    await this.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
+
     await this.waitForQuery(
         queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
     await this.setQueryProperty(
@@ -465,7 +490,7 @@ module.exports = {
 
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForMozillaProperty(
-        'Mozilla.VPN', 'VPN', 'userState', 'UserAuthenticated');
+        'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
   },
 
   async skipOnboarding() {
@@ -473,31 +498,38 @@ module.exports = {
   },
 
   async completeTelemetryPolicy() {
-      await this.waitForQuery(queries.screenTelemetry.BUTTON.visible());
-      await this.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
-      await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+    await this.waitForQuery(queries.screenTelemetry.BUTTON.visible());
+    await this.clickOnQuery(queries.screenTelemetry.BUTTON.visible());
+    await this.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
   },
 
   async completeOnboarding() {
     await this.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
     switch(await this.getSetting('onboardingStep')) {
-    case 0:
-      await this.waitForQueryAndClick(queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
-      await this.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-    case 1:
-      await this.waitForQueryAndClick(queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
-      await this.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-    case 2:
-      await this.waitForQueryAndClick(queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
-      await this.waitForQuery(queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
-    case 3:
-      await this.waitForQueryAndClick(queries.screenOnboarding.START_NEXT_BUTTON.visible());
-      await this.waitForQuery(queries.screenHome.SCREEN.visible());
-      assert.equal(await this.getSetting('onboardingCompleted'), true);
-    default:
-      break;
+      case 0:
+        await this.waitForQueryAndClick(
+            queries.screenOnboarding.DATA_NEXT_BUTTON.visible());
+        await this.waitForQuery(
+            queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+      case 1:
+        await this.waitForQueryAndClick(
+            queries.screenOnboarding.PRIVACY_NEXT_BUTTON.visible());
+        await this.waitForQuery(
+            queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+      case 2:
+        await this.waitForQueryAndClick(
+            queries.screenOnboarding.DEVICES_NEXT_BUTTON.visible());
+        await this.waitForQuery(
+            queries.screenOnboarding.STEP_NAV_STACK_VIEW.ready());
+      case 3:
+        await this.waitForQueryAndClick(
+            queries.screenOnboarding.START_NEXT_BUTTON.visible());
+        await this.waitForQuery(queries.screenHome.SCREEN.visible());
+        assert.equal(await this.getSetting('onboardingCompleted'), true);
+      default:
+        break;
     }
- },
+  },
 
   async logout() {
     const json = await this._writeCommand('logout');
@@ -686,14 +718,17 @@ module.exports = {
 
   // By default gets the last recorded event.
   // `offset` can be used to change that, it adds the offset from the last.
-  // So, for example, if we want the next to last event we give it an `offset` of 1.
-  async getOneEventOfType({
-    eventCategory,
-    eventName,
-    // When expectedEventCount is provided it will be asserted on.
-    // When it's not provided the last event will be tested.
-    expectedEventCount
-  }, offset = 0) {
+  // So, for example, if we want the next to last event we give it an `offset`
+  // of 1.
+  async getOneEventOfType(
+      {
+        eventCategory,
+        eventName,
+        // When expectedEventCount is provided it will be asserted on.
+        // When it's not provided the last event will be tested.
+        expectedEventCount
+      },
+      offset = 0) {
     let events;
     await this.waitForCondition(async () => {
       events = await this.gleanTestGetValue(eventCategory, eventName, "main");
@@ -710,7 +745,7 @@ module.exports = {
     return events[computedEventCount - (1 + offset)];
   },
 
-  async testLastInteractionEvent (options) {
+  async testLastInteractionEvent(options) {
     const defaults = { eventCategory: "interaction", action: "select" };
     const optionsWithDefaults = { ...defaults, ...options };
 

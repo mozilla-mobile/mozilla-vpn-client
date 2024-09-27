@@ -67,7 +67,7 @@ MZViewBase {
             ColumnLayout {
                 objectName: "contactUs-unauthedUserInputs"
                 spacing: 24
-                visible: VPN.userState !== VPN.UserAuthenticated
+                visible: !VPN.userAuthenticated
                 Layout.alignment: Qt.AlignHCenter
 
                 ColumnLayout {
@@ -109,7 +109,7 @@ MZViewBase {
                 objectName: "contactUs-userInfo"
                 enabled: false
                 Layout.fillWidth: true
-                visible: VPN.userState === VPN.UserAuthenticated
+                visible: VPN.userAuthenticated
                 Layout.topMargin: -MZTheme.theme.windowMargin / 2
                 Layout.bottomMargin: -MZTheme.theme.windowMargin / 2
                 Layout.leftMargin: undefined
@@ -198,12 +198,11 @@ MZViewBase {
                 MZButton {
                     text: MZI18n.InAppSupportWorkflowSupportPrimaryButtonText
                     onClicked: {
-                      Glean.sample.supportCaseSubmitted.record();
-                      contactUsRoot._emailAddress = (VPN.userState === VPN.UserAuthenticated ? VPNUser.email : emailInput.text);
+                      contactUsRoot._emailAddress = (VPN.userAuthenticated ? VPNUser.email : emailInput.text);
                       contactUsRoot.createSupportTicket(contactUsRoot._emailAddress, subjectInput.text, textArea.userEntry, dropDown.currentValue);
                     }
                     enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
-                             (VPN.userState === VPN.UserAuthenticated ? true :
+                             (VPN.userAuthenticated  ? true :
                                 (MZAuthInApp.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
                              )
                     opacity: enabled ? 1 : .5

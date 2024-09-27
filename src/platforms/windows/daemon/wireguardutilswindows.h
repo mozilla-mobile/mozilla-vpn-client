@@ -5,23 +5,27 @@
 #ifndef WIREGUARDUTILSWINDOWS_H
 #define WIREGUARDUTILSWINDOWS_H
 
-#include <windows.h>
-
-#include <QHostAddress>
 #include <QObject>
+#include <QPointer>
 
 #include "daemon/wireguardutils.h"
-#include "windowsroutemonitor.h"
-#include "windowstunnelservice.h"
+#include "wireguard.h"
+
+class WindowsFirewall;
+class WindowsRouteMonitor;
+struct WireGuardAPI;
 
 class WireguardUtilsWindows final : public WireguardUtils {
   Q_OBJECT
 
  public:
-  WireguardUtilsWindows(QObject* parent);
+  // Creates a WireguardUtilsWindows instance, may fail due to i.e
+  // wireguard-nt failing to initialize, returns nullptr in that case.
+  static std::unique_ptr<WireguardUtilsWindows> create(WindowsFirewall* fw,
+                                                       QObject* parent);
   ~WireguardUtilsWindows();
 
-  bool interfaceExists() override { return m_tunnel.isRunning(); }
+  bool interfaceExists() override;
   QString interfaceName() override {
     return WireguardUtilsWindows::s_interfaceName();
   }
@@ -35,19 +39,23 @@ class WireguardUtilsWindows final : public WireguardUtils {
 
   bool updateRoutePrefix(const IPAddress& prefix) override;
   bool deleteRoutePrefix(const IPAddress& prefix) override;
-
-  bool addExclusionRoute(const IPAddress& prefix) override;
-  bool deleteExclusionRoute(const IPAddress& prefix) override;
+  bool excludeLocalNetworks(const QList<IPAddress>& addresses) override;
 
  signals:
   void backendFailure();
 
  private:
+  WireguardUtilsWindows(QObject* parent, WindowsFirewall* fw,
+                        std::unique_ptr<WireGuardAPI> wireguard_api);
   void buildMibForwardRow(const IPAddress& prefix, void* row);
 
   quint64 m_luid = 0;
-  WindowsTunnelService m_tunnel;
-  WindowsRouteMonitor m_routeMonitor;
+  std::unique_ptr<WireGuardAPI> m_wireguard_api;
+  ulong m_deviceIpv4_Handle = 0;
+
+  QPointer<WindowsRouteMonitor> m_routeMonitor;
+  QPointer<WindowsFirewall> m_firewall;
+  WIREGUARD_ADAPTER_HANDLE m_adapter = NULL;
 };
 
 #endif  // WIREGUARDUTILSWINDOWS_H

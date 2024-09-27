@@ -25,10 +25,6 @@ WebUpdater::~WebUpdater() {
 }
 
 void WebUpdater::start(Task*) {
-  mozilla::glean::sample::update_step.record(
-      mozilla::glean::sample::UpdateStepExtra{
-          ._state = QVariant::fromValue(FallbackInBrowser).toString()});
-
   UrlOpener::instance()->openUrlLabel("update");
   deleteLater();
 }

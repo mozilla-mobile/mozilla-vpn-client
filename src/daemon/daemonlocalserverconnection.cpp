@@ -18,20 +18,23 @@ namespace {
 Logger logger("DaemonLocalServerConnection");
 }  // namespace
 
-DaemonLocalServerConnection::DaemonLocalServerConnection(QObject* parent,
+DaemonLocalServerConnection::DaemonLocalServerConnection(Daemon* daemon,
                                                          QLocalSocket* socket)
-    : QObject(parent) {
+    : QObject(daemon) {
   MZ_COUNT_CTOR(DaemonLocalServerConnection);
 
   logger.debug() << "Connection created";
 
+  Q_ASSERT(daemon);
+  m_daemon = daemon;
   Q_ASSERT(socket);
   m_socket = socket;
 
   connect(m_socket, &QLocalSocket::readyRead, this,
           &DaemonLocalServerConnection::readData);
+  connect(m_socket, &QLocalSocket::disconnected, this,
+          &DaemonLocalServerConnection::deleteLater);
 
-  Daemon* daemon = Daemon::instance();
   connect(daemon, &Daemon::connected, this,
           &DaemonLocalServerConnection::connected);
   connect(daemon, &Daemon::disconnected, this,
@@ -119,7 +122,7 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
       return;
     }
 
-    if (!Daemon::instance()->activate(config)) {
+    if (!m_daemon->activate(config)) {
       logger.error() << "Failed to activate the interface";
       emit disconnected();
     }
@@ -128,12 +131,12 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
 
   if (type == "deactivate") {
     accessControl->resetSession();
-    Daemon::instance()->deactivate();
+    m_daemon->deactivate();
     return;
   }
 
   if (type == "status") {
-    QJsonObject obj = Daemon::instance()->getStatus();
+    QJsonObject obj = m_daemon->getStatus();
     obj.insert("type", "status");
     write(obj);
     return;
@@ -142,13 +145,13 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   if (type == "logs") {
     QJsonObject obj;
     obj.insert("type", "logs");
-    obj.insert("logs", Daemon::instance()->logs().replace("\n", "|"));
+    obj.insert("logs", m_daemon->logs().replace("\n", "|"));
     write(obj);
     return;
   }
 
   if (type == "cleanlogs") {
-    Daemon::instance()->cleanLogs();
+    m_daemon->cleanLogs();
     return;
   }
 

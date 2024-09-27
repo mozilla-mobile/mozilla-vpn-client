@@ -64,8 +64,8 @@ MZViewBase {
             Layout.leftMargin: MZTheme.theme.windowMargin
             showDivider: isIOS
 
-            labelText: MZI18n.TelemetryPolicyViewDataCollectionAndUse
-            subLabelText: MZI18n.SettingsDataCollectionDescription
+            labelText: MZI18n.TelemetryPolicyViewShareTechnicalData
+            subLabelText: MZI18n.SettingsShareTechnicalDataDescription
             checked: MZSettings.gleanEnabled
             dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
             onClicked: MZSettings.gleanEnabled = !MZSettings.gleanEnabled
@@ -81,8 +81,8 @@ MZViewBase {
             Layout.leftMargin: MZTheme.theme.windowMargin
             showDivider: false
 
-            labelText: MZI18n.LocalNetworkAccessLabel
-            subLabelText: MZI18n.LocalNetworkAccessSubLabel
+            labelText: MZI18n.LocalNetworkAccessLabelTitle
+            subLabelText: vpnIsOff ? MZI18n.LocalNetworkAccessSubLabel : MZI18n.LocalNetworkAccessDisabledSubLabel
             checked: MZSettings.localNetworkAccess
             enabled: isIOS && vpnIsOff
             dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
@@ -91,21 +91,6 @@ MZViewBase {
                     MZSettings.localNetworkAccess = !MZSettings.localNetworkAccess
                 }
             }
-        }
-
-        MZContextualAlerts {
-            Layout.topMargin: MZTheme.theme.listSpacing
-            Layout.rightMargin: MZTheme.theme.windowMargin
-            Layout.leftMargin: MZTheme.theme.windowMargin
-
-            visible: isIOS && !vpnIsOff
-
-            messages: [
-                {
-                    type: "warning",
-                    message: MZI18n.LocalNetworkAccessVpnMustBeOff,
-                }
-            ]
         }
 
         ColumnLayout {

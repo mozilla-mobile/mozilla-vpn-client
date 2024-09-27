@@ -60,11 +60,6 @@ void LinuxSystemTrayNotificationHandler::notify(Message type,
                                                 int timerMsec) {
   QStringList actions;
   switch (type) {
-    case None:
-    case ServerUnavailable:
-    case NewInAppMessage:
-      break;
-
     case UnsecuredNetwork:
       actions.append(ACTION_ID);
       actions.append(qtTrId("vpn.toggle.on"));
@@ -81,7 +76,8 @@ void LinuxSystemTrayNotificationHandler::notify(Message type,
       break;
 
     default:
-      Q_ASSERT(false);
+      // For all other message, there are no actions to perform.
+      break;
   }
 
   m_lastMessage = type;

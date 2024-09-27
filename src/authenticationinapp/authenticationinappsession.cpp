@@ -918,11 +918,6 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
         break;
       }
 
-      mozilla::glean::sample::authentication_inapp_error.record(
-          mozilla::glean::sample::AuthenticationInappErrorExtra{
-              ._errno = "107",
-              ._validation = QJsonDocument(objValidation).toJson()});
-
       logger.error() << "Unsupported validation parameter";
       break;
     }
@@ -947,10 +942,6 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
         unblockCodeNeeded();
         break;
       }
-
-      mozilla::glean::sample::authentication_inapp_error.record(
-          mozilla::glean::sample::AuthenticationInappErrorExtra{
-              ._errno = "125", ._verificationmethod = verificationMethod});
 
       logger.error() << "Unsupported verification method:"
                      << verificationMethod;
@@ -1117,11 +1108,6 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
     case 998:  // An internal validation check failed.
       [[fallthrough]];
     default:
-      mozilla::glean::sample::authentication_inapp_error.record(
-          mozilla::glean::sample::AuthenticationInappErrorExtra{
-              ._errno = QString::number(errorCode),
-              ._error = obj["error"].toString(),
-              ._message = obj["message"].toString()});
       logger.error() << "Unsupported error code:" << errorCode;
       break;
   }

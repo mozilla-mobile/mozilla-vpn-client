@@ -80,6 +80,10 @@
 #  include "adjust/adjusthandler.h"
 #endif
 
+#ifdef MZ_IOS
+#  include "platforms/ios/ioscommons.h"
+#endif
+
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
@@ -310,7 +314,6 @@ void MozillaVPN::initialize() {
   // here as after this point only settings are checked that are set after a
   // successfull subscription.
   if (m_private->m_user.subscriptionNeeded()) {
-    setUserState(UserAuthenticated);
     setState(StateAuthenticating);
     TaskScheduler::scheduleTask(
         new TaskFunction([this]() { maybeStateMain(); }));
@@ -363,7 +366,6 @@ void MozillaVPN::initialize() {
   }
 
   scheduleRefreshDataTasks();
-  setUserState(UserAuthenticated);
   maybeStateMain();
 }
 
@@ -407,7 +409,6 @@ void MozillaVPN::maybeStateMain() {
     SettingsManager::instance()->reset();
     REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
 
-    setUserState(UserNotAuthenticated);
     setState(StateInitialize);
     return;
   }
@@ -456,25 +457,13 @@ void MozillaVPN::authenticateWithType(
     AuthenticationListener::AuthenticationType authenticationType) {
   logger.debug() << "Authenticate";
 
+  // If we try to start an authentication flow when already logged in, there
+  // is a bug elsewhere.
+  Q_ASSERT(state() == StateInitialize);
+
   setState(StateAuthenticating);
 
   ErrorHandler::instance()->hideAlert();
-
-  if (userState() != UserNotAuthenticated) {
-    // If we try to start an authentication flow when already logged in, there
-    // is a bug elsewhere.
-    Q_ASSERT(userState() == UserLoggingOut);
-
-    LogoutObserver* lo = new LogoutObserver(this);
-    // Let's use QueuedConnection to avoid nested tasks executions.
-    connect(
-        lo, &LogoutObserver::ready, this,
-        [this, authenticationType]() {
-          authenticateWithType(authenticationType);
-        },
-        Qt::QueuedConnection);
-    return;
-  }
 
   TaskScheduler::scheduleTask(new TaskHeartbeat());
 
@@ -519,7 +508,6 @@ void MozillaVPN::completeAuthentication(const QByteArray& json,
   m_private->m_deviceModel.writeSettings();
 
   SettingsHolder::instance()->setToken(token);
-  setUserState(UserAuthenticated);
 
   if (m_private->m_user.subscriptionNeeded()) {
     maybeStateMain();
@@ -778,33 +766,18 @@ void MozillaVPN::logout() {
   logger.debug() << "Logout";
 
   ErrorHandler::instance()->requestAlert(ErrorHandler::LogoutAlert);
-  setUserState(UserLoggingOut);
+
+  deactivate();
 
   TaskScheduler::deleteTasks();
 
-  PurchaseHandler::instance()->stopSubscription();
-  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
-    ProductsHandler::instance()->stopProductsRegistration();
-  }
-
-  controller()->deleteOSTunnelConfig();
-
-  // update-required state is the only one we want to keep when logging out.
-  if (state() != StateUpdateRequired) {
-    setState(StateInitialize);
-  }
-
+  // Schedule the removal of our device and let it run in the background.
   if (m_private->m_deviceModel.hasCurrentDevice(keys())) {
     TaskScheduler::scheduleTask(new TaskRemoveDevice(keys()->publicKey()));
-
-    // Immediately after the scheduling of the device removal, we want to
-    // delete the session token, so that, in case the app is terminated, at
-    // the next execution we go back to the init screen.
-    reset(false);
-    return;
   }
 
-  TaskScheduler::scheduleTask(new TaskFunction([this]() { reset(false); }));
+  // update-required state is the only one we want to keep when logging out.
+  reset(state() != StateUpdateRequired);
 }
 
 void MozillaVPN::reset(bool forceInitialState) {
@@ -823,10 +796,11 @@ void MozillaVPN::reset(bool forceInitialState) {
     ProductsHandler::instance()->stopProductsRegistration();
   }
 
-  setUserState(UserNotAuthenticated);
-
   if (forceInitialState) {
     setState(StateInitialize);
+  } else {
+    // Manually emit a potential auth change if we are not changing state.
+    emit userAuthenticationMaybeChanged();
   }
 }
 
@@ -876,7 +850,7 @@ void MozillaVPN::onboardingCompleted() {
     return;
   }
 
-  if (userState() != UserAuthenticated) {
+  if (!userAuthenticated()) {
     authenticate();
     return;
   }
@@ -1148,7 +1122,15 @@ void MozillaVPN::controllerStateChanged() {
   if (m_updating && m_private->m_controller.state() == Controller::StateOff) {
     update();
   }
-
+#if defined MZ_PROXY_ENABLED
+  if (m_private->m_proxyController.canActivate()) {
+    if (m_private->m_controller.state() == Controller::StateOn) {
+      m_private->m_proxyController.start();
+    } else {
+      m_private->m_proxyController.stop();
+    }
+  }
+#endif
   NetworkManager::instance()->clearCache();
 }
 
@@ -1174,7 +1156,7 @@ void MozillaVPN::heartbeatCompleted(bool success) {
     return;
   }
 
-  if (!modelsInitialized() || userState() != UserAuthenticated) {
+  if (!modelsInitialized() || !userAuthenticated()) {
     setState(StateInitialize);
     return;
   }
@@ -1224,7 +1206,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
     if (!modelsInitialized()) {
       logger.error() << "Failed to complete the key regeneration";
       REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
-      setUserState(UserNotAuthenticated);
+      setState(StateInitialize);
       return;
     }
   }));
@@ -1258,11 +1240,6 @@ void MozillaVPN::cancelReauthentication() {
   AuthenticationInApp::instance()->terminateSession();
 
   cancelAuthentication();
-}
-
-void MozillaVPN::updateViewShown() {
-  logger.debug() << "Update view shown";
-  Updater::updateViewShown();
 }
 
 void MozillaVPN::scheduleRefreshDataTasks() {
@@ -1382,6 +1359,11 @@ void MozillaVPN::registerUrlOpenerLabels() {
 
 void MozillaVPN::errorHandled() {
   ErrorHandler::AlertType alert = ErrorHandler::instance()->alert();
+
+  // Controller errors should trigger a system tray notification.
+  if (alert == ErrorHandler::ControllerErrorAlert) {
+    NotificationHandler::instance()->connectionFailureNotification();
+  }
 
   // Any error in authenticating state sends to the Initial state.
   if (state() == App::StateAuthenticating) {
@@ -1527,7 +1509,7 @@ void MozillaVPN::registerNavigatorScreens() {
       });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadPersistently,
+      MozillaVPN::ScreenHome, Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenHome.qml",
       QVector<int>{App::StateMain}, [](int*) -> int8_t { return 99; },
       []() -> bool { return false; });
@@ -1539,7 +1521,7 @@ void MozillaVPN::registerNavigatorScreens() {
       []() -> bool { return false; });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenMessaging, Navigator::LoadPolicy::LoadPersistently,
+      MozillaVPN::ScreenMessaging, Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenMessaging.qml",
       QVector<int>{App::StateMain}, [](int*) -> int8_t { return 0; },
       []() -> bool {
@@ -1563,7 +1545,7 @@ void MozillaVPN::registerNavigatorScreens() {
       []() -> bool { return false; });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenSettings, Navigator::LoadPolicy::LoadPersistently,
+      MozillaVPN::ScreenSettings, Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenSettings.qml",
       QVector<int>{App::StateMain}, [](int*) -> int8_t { return 0; },
       []() -> bool {
@@ -2151,6 +2133,13 @@ void MozillaVPN::registerInspectorCommands() {
         return QJsonObject();
       });
 
+  InspectorHandler::registerCommand(
+      "force_silent_switch", "Force the VPN to silently switch servers", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        MozillaVPN::instance()->silentSwitch();
+        return QJsonObject();
+      });
+
 #ifdef MZ_MACOS
   InspectorHandler::registerCommand(
       "force_daemon_crash", "Force the VPN daemon to crash", 0,
@@ -2214,6 +2203,19 @@ void MozillaVPN::ensureApplicationIdExists() {
   if (!settingsHolder->hasInstallationId()) {
     QString uuid = mozilla::glean::session::installation_id.generateAndSet();
     settingsHolder->setInstallationId(uuid);
+  }
+#endif
+}
+
+// There is a bug for iOS 16 and below where the status bar text is the wrong
+// color when app is restored from background. This fixes the bug. More info:
+// VPN-2387 Remove this code when the app's minimum supported iOS version is
+// iOS 17.
+void MozillaVPN::statusBarCheck() {
+#ifdef MZ_IOS
+  if (QGuiApplication::applicationState() ==
+      Qt::ApplicationState::ApplicationActive) {
+    IOSCommons::statusBarUpdateHack();
   }
 #endif
 }

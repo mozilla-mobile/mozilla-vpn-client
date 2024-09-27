@@ -13,13 +13,14 @@ MZButtonBase {
 
     property var connectionRetryOverX: VPNController.connectionRetry > 1
     property var enableDisconnectInConfirming: VPNController.enableDisconnectInConfirming
-    property var toggleColor: MZTheme.theme.vpnToggleDisconnected
+    property var toggleColor: {}
     property var toolTipTitle: ""
     Accessible.name: toolTipTitle
 
     function handleClick() {
         toolTip.close();
-        if (VPNController.state !== VPNController.StateOff) {
+        if (VPNController.state !== VPNController.StateOff &&
+            VPNController.state !== VPNController.StateOnPartial) {
             return VPN.deactivate();
         }
 
@@ -44,8 +45,7 @@ MZButtonBase {
 
     states: [
         State {
-            name: "stateInitializing"
-            when: VPNController.state === VPNController.StateInitializing
+            name: VPNController.StateInitializing
 
             PropertyChanges {
                 target: cursor
@@ -65,8 +65,7 @@ MZButtonBase {
 
         },
         State {
-            name: "stateOff"
-            when: VPNController.state === VPNController.StateOff
+            name: VPNController.StateOff
 
             PropertyChanges {
                 target: cursor
@@ -83,13 +82,34 @@ MZButtonBase {
                 target: toggleButton
                 //% "Turn VPN on"
                 toolTipTitle: qsTrId("vpn.toggle.on")
+                toggleColor: MZTheme.theme.vpnToggleDisconnected
             }
 
         },
+
         State {
-            name: "stateConnecting"
-            when: (VPNController.state === VPNController.StateConnecting ||
-                   VPNController.state === VPNController.StateCheckSubscription)
+            name: VPNController.StateOnPartial
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 4
+            }
+
+            PropertyChanges {
+                target: toggle
+                color: "#9E9E9E"
+                border.color: MZTheme.theme.white
+            }
+
+            PropertyChanges {
+                target: toggleButton
+                //% "Turn VPN on"
+                toolTipTitle: qsTrId("vpn.toggle.on")
+            }
+        },
+
+
+        State {
+            name: VPNController.StateConnecting
 
             PropertyChanges {
                 target: cursor
@@ -112,8 +132,7 @@ MZButtonBase {
 
         },
         State {
-            name: "stateConfirming"
-            when: VPNController.state === VPNController.StateConfirming
+            name: VPNController.StateConfirming
 
             PropertyChanges {
                 target: cursor
@@ -136,9 +155,7 @@ MZButtonBase {
 
         },
         State {
-            name: "stateOn"
-            when: (VPNController.state === VPNController.StateOn ||
-                   VPNController.state === VPNController.StateSilentSwitching)
+            name: VPNController.StateOn
 
             PropertyChanges {
                 target: cursor
@@ -156,11 +173,30 @@ MZButtonBase {
                 toolTipTitle: qsTrId("vpn.toggle.off")
                 toggleColor: MZTheme.theme.vpnToggleConnected
             }
+        },
 
+        State {
+            name: VPNController.StateSilentSwitching
+
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 32
+            }
+
+            PropertyChanges {
+                target: toggle
+                color: "#3FE1B0"
+                border.color: MZTheme.theme.ink
+            }
+
+            PropertyChanges {
+                target: toggleButton
+                toolTipTitle: qsTrId("vpn.toggle.off")
+                toggleColor: MZTheme.theme.vpnToggleConnected
+            }
         },
         State {
-            name: "stateDisconnecting"
-            when: VPNController.state === VPNController.StateDisconnecting
+            name: VPNController.StateDisconnecting
 
             PropertyChanges {
                 target: cursor
@@ -181,8 +217,7 @@ MZButtonBase {
 
         },
         State {
-            name: "stateSwitching"
-            when: VPNController.state === VPNController.StateSwitching
+            name: VPNController.StateSwitching
 
             PropertyChanges {
                 target: cursor
@@ -277,6 +312,7 @@ MZButtonBase {
     function toggleClickable() {
         return VPN.state === VPN.StateMain &&
                (VPNController.state === VPNController.StateOn ||
+               VPNController.state === VPNController.StateOnPartial ||
                 VPNController.state === VPNController.StateSilentSwitching ||
                 VPNController.state === VPNController.StateOff ||
                 (VPNController.state === VPNController.StateConfirming &&
@@ -338,7 +374,7 @@ MZButtonBase {
 
         Behavior on color {
             ColorAnimation {
-                duration: 200
+                duration: 100
             }
 
         }

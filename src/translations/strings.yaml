@@ -146,15 +146,10 @@ splittunnel:
       - Success! You added “%1” to this list.
     comment:
       - Displayed in notification after the user added a missing app to the split-tunnel List; %1 is the name of the added application
-  infoText2:
-    value:
-      - For any questions about setting app exclusions, we’ve provided some helpful tips on our website.
-    comment:
-      - This displays as informational text below split tunneling settings. The link directs to a sumo article which will help certain users who are having network issues using this feature.
   infoLinkText: Learn more
-  infoCardDescription:
-    value: VPN must be off to edit App exclusions
-    comment: Displays inside the information card at the top of the app exclusions screen when the VPN is on
+  infoCardDescription2:
+    value: VPN must be off to edit Excluded apps
+    comment: Displays inside the information card at the top of the Excluded apps screen when the VPN is on
 
 multiHopFeature:
   singleHopToggleCTA: Single-hop
@@ -279,6 +274,8 @@ notifications:
   captivePortalBlockMessage2: The guest Wi-Fi network you’re connected to requires action. Click to turn off VPN to see the portal.
   captivePortalUnblockTitle: Guest Wi-Fi portal detected
   captivePortalUnblockMessage2: The guest Wi-Fi network you’re connected to may not be secure. Click to turn on VPN to secure your device.
+  connectionFailedTitle: Connection failed
+  connectionFailedMessage: Sorry, something went wrong with your VPN connection.
   subscriptionNotFound: Your Mozilla VPN subscription cannot be found. Please open the app to resolve this subscription issue.
   unsecuredNetworkTitle: Unsecured Wi-Fi network detected
   unsecuredNetworkMessage:
@@ -321,10 +318,10 @@ systray:
 
 settings:
   privacySettings: Privacy features
-  appExclusionSettings: App exclusions
+  appExclusionTitle: Excluded apps
   dnsSettings: DNS settings
   preferencesSettings: Preferences
-  dataCollectionDescription: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla
+  shareTechnicalDataDescription: Help improve Mozilla VPN by sharing crash reports, diagnostics, and product usage data.
   startAtBootTitle:
     value: Connect VPN on startup
     comment: Startup refers to a device's startup, not the VPN client's.
@@ -352,9 +349,9 @@ settings:
     comment: Button label to clear all apps from the exclusions list
 
 localNetworkAccess:
-  label: Local network access
+  labelTitle: Exclude local network traffic
   subLabel: Access Apple CarPlay, AirDrop, AirPlay and local network devices like printers.
-  vpnMustBeOff: VPN must be off to edit “Local network access”
+  disabledSubLabel: Access Apple CarPlay, AirDrop, AirPlay and local network devices like printers. The VPN must be off to edit this setting.
 
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?
@@ -393,8 +390,8 @@ updateButton:
 telemetryPolicyView:
   description: We strive to provide you with choices and collect only the data we need to improve Mozilla VPN. Sharing this data with Mozilla is optional.
   question: Allow Mozilla VPN to send technical, interaction, and campaign and referral data to Mozilla?
-  dataCollectionAndUse:
-    value: Data collection and use
+  shareTechnicalData:
+    value: Share technical data
     comment: Headline of telemetry policy view and checkbox label
   doNotAllow:
     value: Don’t allow
@@ -584,7 +581,7 @@ onboarding:
   devicesSlideQRCodeAndroid: QR Code that links to the Mozilla VPN product page on the Google Play Store
   devicesSlideQRCodeApple: QR Code that links to the Mozilla VPN product page on the iOS App Store
   startSlideHeader: Connect Mozilla VPN on startup
-  startSlideBody: Turn on to launch the VPN whenever you start your device. We’ll automatically reconnect you to the same server location you last used.
+  startSlideBody2: Launch the VPN whenever you start your device. We’ll automatically reconnect you to the same server location you last used.
   startSlideMobileHeader: Allow Mozilla VPN to create a VPN connection
   startSlideMobileBody: Your mobile device will now ask you to allow Mozilla VPN to create a connection. Please allow this so that the VPN works correctly on your device.
   startSlideAllowButtonLabel: Allow VPN connection

@@ -20,7 +20,7 @@ jobs:
     name: Translations
     runs-on: ubuntu-22.04
     env:
-      QTVERSION: 6.2.4
+      QTVERSION: 6.6.3
 
     steps:
       - name: Clone repository

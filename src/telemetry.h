@@ -15,25 +15,16 @@ class Telemetry final : public QObject {
 
   void initialize();
 
-  void startTimeToFirstScreenTimer();
-  void stopTimeToFirstScreenTimer();
+  static void startTimeToFirstScreenTimer();
+  static void stopTimeToFirstScreenTimer();
 
  private:
   void connectionStabilityEvent();
   void vpnSessionPingTimeout();
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
-  void periodicStateRecorder();
-#endif
 
  private:
   QTimer m_connectionStabilityTimer;
   QTimer m_vpnSessionPingTimer;
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
-  QTimer m_gleanControllerUpTimer;
-#endif
-
-  // The Glean timer id for the performance.time_to_main_screen metric.
-  qint64 m_timeToFirstScreenTimerId = 0;
 };
 
 #endif  // TELEMETRY_H

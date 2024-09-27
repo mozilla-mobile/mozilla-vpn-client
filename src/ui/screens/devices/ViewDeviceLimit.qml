@@ -20,15 +20,12 @@ MZViewBase {
             property bool skipEnsureVisible: true
 
             labelText: MZI18n.GetHelpLinkText
-            onClicked: {
-                Glean.sample.getHelpClickedInitialize.record();
-                MZNavigator.requestScreen(VPN.ScreenGetHelp);
-            }
+            onClicked: MZNavigator.requestScreen(VPN.ScreenGetHelp);
         }
     }
 
     //% "Devices"
-    _menuTitle: qsTrId("vpn.devices.myDevices")
+    _menuTitle: MZI18n.DevicesSectionTitle
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.vSpacingSmall
@@ -89,7 +86,7 @@ MZViewBase {
             labelText: MZI18n.GlobalSignOut
             fontName: MZTheme.theme.fontBoldFamily
             linkColor: MZTheme.theme.redLinkButton
-            onClicked: VPNController.logout();
+            onClicked: VPN.logout();
         }
     }
 

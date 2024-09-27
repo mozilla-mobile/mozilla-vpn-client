@@ -53,8 +53,9 @@ describe('Settings', function() {
     }
 
     await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
-    await vpn.waitForQuery(queries.screenSettings.APP_EXCLUSIONS.visible());
-
+    if (await vpn.isFeatureFlippedOn('splitTunnel')) {
+      await vpn.waitForQuery(queries.screenSettings.APP_EXCLUSIONS.visible());
+    }
     await vpn.waitForQuery(queries.screenSettings.MY_DEVICES.visible());
     await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
     await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
@@ -358,6 +359,14 @@ describe('Settings', function() {
       await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.APP_PREFERENCES.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
       await vpn.waitForQuery(
           queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
               .visible()
@@ -406,6 +415,14 @@ describe('Settings', function() {
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
       await vpn.waitForQueryAndClick(
+          queries.screenSettings.APP_PREFERENCES.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+      await vpn.waitForQueryAndClick(
           queries.screenSettings.appPreferencesView.dnsSettingsView.CUSTOM_DNS
               .visible()
               .prop('checked', false));
@@ -425,6 +442,16 @@ describe('Settings', function() {
 
       await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.APP_PREFERENCES.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
 
       await vpn.waitForQuery(
           queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
@@ -912,55 +939,6 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-  });
-
-  it('Checking Developer Menu Reset and Quit', async () => {
-    // WASM is failing at relaunching the app, so skip this test on WASM
-    if (this.ctx.wasm) {
-      return;
-    }
-
-    // magically unlock dev menu
-    await vpn.setSetting('developerUnlock', 'true');
-
-    // navigate to Developer Menu
-    await getToGetHelpView();
-    await vpn.waitForQueryAndClick(
-        queries.screenGetHelp.DEVELOPER_MENU.visible());
-
-    // click "reset and quit" 6 times, test will fail if app quits early
-    await vpn.waitForQuery(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.scrollToQuery(
-        queries.screenDeveloperMenu.SCREEN,
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON);
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-    // can't use waitForQueryAndClick for final click because it returns an
-    // error - as expected, we crashed the app - but that causes test to fail
-    await vpn.clickOnQueryAndAcceptAnyResults(
-        queries.screenDeveloperMenu.RESET_AND_QUIT_BUTTON.visible());
-
-    // Confirm the app quit
-    assert.equal(setup.vpnIsInactive(), true);
-
-    // relaunch app
-    await setup.startAndConnect();
-    await vpn.setSetting('localhostRequestsOnly', 'true');
-    await vpn.authenticateInApp();
-    await vpn.setGleanAutomationHeader();
-
-    // turn on VPN
-    await vpn.activateViaToggle();
-    await vpn.awaitSuccessfulConnection();
   });
 
   describe('telemetry in the settings menu', function () {

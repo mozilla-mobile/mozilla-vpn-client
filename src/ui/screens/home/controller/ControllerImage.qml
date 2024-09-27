@@ -15,12 +15,10 @@ Rectangle {
 
     color: MZTheme.theme.transparent
     opacity: 1
+    state: VPNController.state
     states: [
         State {
-            name: "stateConnecting"
-            when: (VPNController.state === VPNController.StateConnecting ||
-                   VPNController.state === VPNController.StateCheckSubscription)
-
+            name: VPNController.StateConnecting
             PropertyChanges {
                 target: logo
                 opacity: 0.6
@@ -37,8 +35,7 @@ Rectangle {
             }
         },
         State {
-            name: "stateConfirming"
-            when: VPNController.state === VPNController.StateConfirming
+            name: VPNController.StateConfirming
 
             PropertyChanges {
                 target: logo
@@ -57,8 +54,7 @@ Rectangle {
 
         },
         State {
-            name: "stateDisconnecting"
-            when: VPNController.state === VPNController.StateDisconnecting
+            name: VPNController.StateDisconnecting
 
             PropertyChanges {
                 target: logo
@@ -75,11 +71,9 @@ Rectangle {
                 source: "qrc:/ui/resources/shield-off.svg"
                 opacity: 1
             }
-
         },
         State {
-            name: "stateSwitching"
-            when: VPNController.state === VPNController.StateSwitching
+            name: VPNController.StateSwitching
 
             PropertyChanges {
                 target: logo
@@ -100,9 +94,19 @@ Rectangle {
             }
         },
         State {
-            name: "stateOff"
-            when: VPNController.state === VPNController.StateOff
-
+            name: VPNController.StateOff
+            PropertyChanges {
+                target: insetCircle
+                color: MZTheme.colors.error.default
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: "qrc:/ui/resources/shield-off.svg"
+                opacity: 1
+            }
+        },
+        State {
+            name: VPNController.StateOnPartial
             PropertyChanges {
                 target: insetCircle
                 color: MZTheme.colors.error.default
@@ -115,8 +119,7 @@ Rectangle {
 
         },
         State {
-            name: "stateInitializing"
-            when: VPNController.state === VPNController.StateInitializing
+            name: VPNController.StateInitializing
 
             PropertyChanges {
                 target: logo
@@ -134,11 +137,7 @@ Rectangle {
             }
         },
         State {
-            name: "stateOn"
-            when: (VPNController.state === VPNController.StateOn ||
-                   VPNController.state === VPNController.StateSilentSwitching) &&
-                VPNConnectionHealth.stability === VPNConnectionHealth.Stable
-
+            name: VPNController.StateOn
             PropertyChanges {
                 target: logo
                 showVPNOnIcon: true
@@ -152,48 +151,6 @@ Rectangle {
                 source: "qrc:/ui/resources/shield-on.svg"
                 opacity: 1
             }
-        },
-        State {
-            name: "unstableOn"
-            when: (VPNController.state === VPNController.StateOn ||
-                   VPNController.state === VPNController.StateSilentSwitching) &&
-                VPNConnectionHealth.stability === VPNConnectionHealth.Unstable
-
-            PropertyChanges {
-                target: logo
-                showVPNOnIcon: true
-                opacity: 1
-            }
-            PropertyChanges {
-                target: insetCircle
-                color: MZTheme.colors.warning.default
-            }
-            PropertyChanges {
-                target: insetIcon
-                source: "qrc:/ui/resources/shield-on.svg"
-                opacity: 1
-            }
-        },
-        State {
-            name: "noSignalOn"
-            when: (VPNController.state === VPNController.StateOn ||
-                   VPNController.state === VPNController.StateSilentSwitching) &&
-                VPNConnectionHealth.stability === VPNConnectionHealth.NoSignal
-
-            PropertyChanges {
-                target: logo
-                showVPNOnIcon: true
-                opacity: 1
-            }
-            PropertyChanges {
-                target: insetCircle
-                color: MZTheme.colors.error.default
-            }
-            PropertyChanges {
-                target: insetIcon
-                source: "qrc:/ui/resources/shield-off.svg"
-                opacity: 1
-            }
         }
     ]
     transitions: [
@@ -205,18 +162,17 @@ Rectangle {
                     property: "color"
                     duration: 100
                 }
-
                 PropertyAnimation {
                     target: logo
                     property: "opacity"
-                    duration: 200
+                    duration: 100
                 }
 
                 PropertyAnimation {
                     target: insetCircle
                     property: "scale"
                     to: 0.9
-                    duration: 200
+                    duration: 100
                     easing.type: Easing.Linear
                 }
             }
@@ -224,11 +180,24 @@ Rectangle {
         Transition {
             to: VPNController.StateConfirming
             ParallelAnimation {
+                PropertyAnimation {
+                    target: insetCircle
+                    property: "color"
+                    duration: 100
+                }
 
                 PropertyAnimation {
-                    target: insetIcon
+                    target: logo
                     property: "opacity"
                     duration: 100
+                }
+
+                PropertyAnimation {
+                    target: insetCircle
+                    property: "scale"
+                    to: 0.9
+                    duration: 100
+                    easing.type: Easing.Linear
                 }
             }
 
@@ -250,8 +219,8 @@ Rectangle {
                 PropertyAnimation {
                     target: insetCircle
                     property: "scale"
-                    to: 0.9
-                    duration: 150
+                    to: 0.85
+                    duration: 200
                     easing.type: Easing.Linear
                 }
             }
@@ -265,7 +234,6 @@ Rectangle {
                     property: "opacity"
                     duration: 100
                 }
-
                 PropertyAnimation {
                     target: insetCircle
                     property: "scale"
@@ -282,7 +250,7 @@ Rectangle {
                     target: insetCircle
                     property: "scale"
                     to: 0.9
-                    duration: 200
+                    duration: 100
                     easing.type: Easing.Linear
                 }
 
@@ -329,6 +297,29 @@ Rectangle {
             }
         }
     ]
+
+
+    Connections{
+        target: VPNConnectionHealth
+        function onStabilityChanged() {
+            switch(VPNConnectionHealth.stability) {
+                case(VPNConnectionHealth.NoSignal):
+                    insetCircle.color = MZTheme.colors.error.default;
+                    insetIcon.source = "qrc:/ui/resources/shield-off.svg";
+                    break;
+            
+                case(VPNConnectionHealth.Stable):
+                    insetCircle.color = MZTheme.colors.success.default;
+                    insetIcon.source = "qrc:/ui/resources/shield-on.svg";
+                    break;
+            
+                case(VPNConnectionHealth.Unstable):
+                    insetCircle.color = MZTheme.colors.warning.default;
+                    break;
+            
+            }
+        }
+    }
 
     Rectangle {
         // green or red circle in upper right hand area of

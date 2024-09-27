@@ -135,11 +135,6 @@ int CommandStatus::run(QStringList& tokens) {
       case Controller::StateOff:
         stream << "off";
         break;
-
-      case Controller::StateCheckSubscription:
-        stream << "check subscription";
-        break;
-
       case Controller::StateConnecting:
         stream << "connecting";
         break;
@@ -149,6 +144,8 @@ int CommandStatus::run(QStringList& tokens) {
         break;
 
       case Controller::StateOn:
+        [[fallthrough]];
+      case Controller::StateOnPartial:
         [[fallthrough]];
       case Controller::StateSilentSwitching:
         stream << "on";

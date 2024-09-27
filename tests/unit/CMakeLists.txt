@@ -36,7 +36,6 @@ target_link_libraries(unit_tests PRIVATE
 
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
 target_compile_definitions(unit_tests PRIVATE MZ_DEBUG)
-target_compile_definitions(unit_tests PRIVATE MZ_DUMMY)
 
 target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations)
 
@@ -59,6 +58,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/dnspingsender.h
     ${MZ_SOURCE_DIR}/ipaddresslookup.cpp
     ${MZ_SOURCE_DIR}/ipaddresslookup.h
+    ${MZ_SOURCE_DIR}/models/apierror.cpp
+    ${MZ_SOURCE_DIR}/models/apierror.h
     ${MZ_SOURCE_DIR}/models/device.cpp
     ${MZ_SOURCE_DIR}/models/device.h
     ${MZ_SOURCE_DIR}/models/devicemodel.cpp
@@ -239,7 +240,7 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/networkmanager.h
     ${MZ_SOURCE_DIR}/networkrequest.cpp
     ${MZ_SOURCE_DIR}/networkrequest.h
-    ${MZ_SOURCE_DIR}/platforms/wasm/wasmcryptosettings.cpp
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummycryptosettings.h
     ${MZ_SOURCE_DIR}/qmlpath.cpp
     ${MZ_SOURCE_DIR}/qmlengineholder.cpp
     ${MZ_SOURCE_DIR}/qmlengineholder.h
@@ -325,6 +326,8 @@ target_sources(unit_tests PRIVATE
     testconnectionhealth.h
     testcommandlineparser.cpp
     testcommandlineparser.h
+    testcryptosettings.cpp
+    testcryptosettings.h
     testdnshelper.cpp
     testdnshelper.h
     testipaddresslookup.cpp
@@ -365,12 +368,3 @@ foreach(filename ${UTEST_SOURCES})
         set_property(TEST ${UTEST_CLASS} PROPERTY ENVIRONMENT LANG="en" LANGUAGE="en")
     endforeach()
 endforeach()
-
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    find_package(Qt6 REQUIRED COMPONENTS DBus)
-    target_link_libraries(unit_tests PRIVATE Qt6::DBus)
-
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
-    target_link_libraries(unit_tests PRIVATE PkgConfig::libsecret)
-endif()

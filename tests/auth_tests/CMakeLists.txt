@@ -57,17 +57,7 @@ target_link_libraries(app_auth_tests PRIVATE
     translations
 )
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    find_package(Qt6 REQUIRED COMPONENTS DBus)
-    target_link_libraries(app_auth_tests PRIVATE Qt6::DBus)
-
-    find_package(PkgConfig REQUIRED)
-    pkg_check_modules(libsecret REQUIRED IMPORTED_TARGET libsecret-1)
-    target_link_libraries(app_auth_tests PRIVATE PkgConfig::libsecret)
-endif()
-
 target_compile_definitions(app_auth_tests PRIVATE MZ_DEBUG)
-target_compile_definitions(app_auth_tests PRIVATE MZ_DUMMY)
 
 # Unit test source files
 target_sources(app_auth_tests PRIVATE

@@ -38,19 +38,6 @@ target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
 
 # MacOS platform source files
 target_sources(mozillavpn PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserver.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonaccesscontrol.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.cpp
@@ -65,6 +52,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macospingsender.cpp

@@ -87,7 +87,7 @@ jobs:
 
       - name: Install Qt6
         run: |
-          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-mac.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
+          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
           unzip -a mac.zip
           sudo mv qt_dist /opt
           cd ..
@@ -128,7 +128,7 @@ jobs:
       - name: Install Qt
         shell: pwsh
         run: |
-          Invoke-WebRequest -Uri https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -OutFile win.zip
+          Invoke-WebRequest -Uri https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -OutFile win.zip
           Expand-Archive win.zip
           mv win\QT_OUT "C:\\MozillaVPNBuild"
 
@@ -144,10 +144,25 @@ jobs:
           cache: "pip"
       - run: pip install -r requirements.txt
 
+      - name: Cache Wireguard NT
+        id: cache-wireguard-nt
+        uses: actions/cache@v4
+        with:
+          path: 3rdparty/wireguard-nt
+          key: wireguard-nt-${{ hashFiles('windows/wireguard_nt/CMakeLists.txt') }}
+
+      - name: Download Wireguard NT
+        if: steps.cache-wireguard-nt.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          WIREGUARD_NT_URL=$(grep -Eo 'DOWNLOAD[[:space:]].*' windows/wireguard_nt/CMakeLists.txt | awk '{print $2}')
+          curl -sSL -o wireguard-nt.zip $WIREGUARD_NT_URL
+          unzip -d 3rdparty/ wireguard-nt.zip
+
       - name: Building tests
         run: |
           mkdir ./build
-          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake" -DWINTUN_FOLDER="not-existing"
+          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake" -DWIREGUARD_FOLDER="3rdparty/wireguard-nt"
           cmake --build ./build --target build_tests
 
       - name: Running native messaging tests
@@ -179,6 +194,10 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
+
+      - name: Fetch glean submodules
+        run: |
+          git submodule update --init 3rdparty/glean
 
       - name: Signature library tests
         shell: bash

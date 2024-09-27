@@ -51,7 +51,6 @@ void CaptivePortalDetection::networkChanged() {
 
   Controller::State state = vpn->controller()->state();
   if (state != Controller::StateOn && state != Controller::StateConnecting &&
-      state != Controller::StateCheckSubscription &&
       state != Controller::StateConfirming) {
     // Network Changed but we're not connected, no need to test for captive
     // portal
@@ -80,7 +79,6 @@ void CaptivePortalDetection::stateChanged() {
   if ((state != Controller::StateOn ||
        vpn->connectionHealth()->stability() == ConnectionHealth::Stable) &&
       state != Controller::StateConnecting &&
-      state != Controller::StateCheckSubscription &&
       state != Controller::StateConfirming) {
     logger.warning() << "No captive portal detection required";
     m_impl.reset();

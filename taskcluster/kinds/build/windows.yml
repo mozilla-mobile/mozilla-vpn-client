@@ -10,18 +10,15 @@ task-defaults:
         tier: 1
         platform: windows/x86_64
     worker-type: b-win2022
-    dependencies:
-        build: build-source/vpn
     fetches:
         fetch:
             - win-dev-env
             - win-sentry-cli
             - win-conda
-            - wintun
+            - wireguard-nt
         toolchain:
+            - cargo-vendor
             - conda-windows-x86_64
-        build:
-            - artifact: mozillavpn-sources.tar.gz
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
@@ -43,16 +40,8 @@ task-defaults:
 windows/opt:
     fetches:
         toolchain:
-            - qt-windows-x86_64-6.2.4
+            - qt-windows-x86_64-6.6
     description: "Windows Build"
     treeherder:
         symbol: B
-
-windows/next:
-    fetches:
-        toolchain:
-            - qt-windows-x86_64-6.6.0
-    description: "Windows Build for Next Version of QT"
-    treeherder:
-        symbol: NEXT
 

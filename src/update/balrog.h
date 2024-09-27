@@ -25,8 +25,6 @@ class Balrog final : public Updater {
   void start(Task* task) override;
 
  private:
-  static QString userAgent();
-
   bool processData(Task* task, const QByteArray& data);
   bool fetchSignature(Task* task, NetworkRequest* request,
                       const QByteArray& data);
@@ -37,13 +35,14 @@ class Balrog final : public Updater {
                          const QByteArray& updateData,
                          const QByteArray& signatureBlob);
   bool computeHash(const QString& url, const QByteArray& data,
-                   const QString& hashValue, const QString& hashFunction);
+                   const QByteArray& expect, const QString& algorithm);
   bool saveFileAndInstall(const QString& url, const QByteArray& data);
   bool install(const QString& filePath);
   void propagateError(NetworkRequest* request,
                       QNetworkReply::NetworkError error);
 
  private:
+  static QString buildTarget();
   static QString balrogUrl();
   static QStringList rootCertHashes();
   TemporaryDir m_tmpDir;

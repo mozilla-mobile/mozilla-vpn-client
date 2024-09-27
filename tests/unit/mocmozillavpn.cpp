@@ -143,8 +143,6 @@ void MozillaVPN::requestDeleteAccount() {}
 
 void MozillaVPN::cancelReauthentication() {}
 
-void MozillaVPN::updateViewShown() {}
-
 bool MozillaVPN::checkCurrentDevice() { return true; }
 
 void MozillaVPN::scheduleRefreshDataTasks() {}
@@ -154,6 +152,8 @@ void MozillaVPN::registerUrlOpenerLabels() {}
 void MozillaVPN::gleanSetDebugViewTag(QString tag) {}
 
 void MozillaVPN::gleanSetLogPings(bool flag) {}
+
+void MozillaVPN::statusBarCheck() {}
 
 // static
 QString MozillaVPN::appVersionForUpdate() { return "42"; }

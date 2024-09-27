@@ -7,17 +7,6 @@ option(BUILD_FLATPAK "Build for Flatpak distribution" OFF)
 find_package(Qt6 REQUIRED COMPONENTS DBus)
 target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
 
-# Link to libsecret
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(LIBSECRET REQUIRED IMPORTED_TARGET libsecret-1)
-if (QT_FEATURE_static)
-    target_link_libraries(mozillavpn PRIVATE ${LIBSECRET_STATIC_LIBRARIES})
-    target_include_directories(mozillavpn PRIVATE ${LIBSECRET_STATIC_INCLUDE_DIRS})
-    target_compile_options(mozillavpn PRIVATE ${LIBSECRET_STATIC_CFLAGS})
-else()
-    target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBSECRET)
-endif()
-
 # Linux platform source files
 target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/backendlogsobserver.cpp
@@ -39,19 +28,23 @@ target_sources(mozillavpn PRIVATE
 )
 
 if(NOT BUILD_FLATPAK)
-    # Link to libcap
+    # Link to libcap and libsecret
+    find_package(PkgConfig REQUIRED)
     pkg_check_modules(LIBCAP REQUIRED IMPORTED_TARGET libcap)
+    pkg_check_modules(LIBSECRET REQUIRED IMPORTED_TARGET libsecret-1)
     if (QT_FEATURE_static)
-        target_link_libraries(mozillavpn PRIVATE ${LIBCAP_STATIC_LIBRARIES})
-        target_include_directories(mozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS})
-        target_compile_options(mozillavpn PRIVATE ${LIBCAP_STATIC_CFLAGS})
+        target_link_libraries(mozillavpn PRIVATE ${LIBCAP_STATIC_LIBRARIES} ${LIBSECRET_STATIC_LIBRARIES})
+        target_include_directories(mozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS} ${LIBSECRET_STATIC_INCLUDE_DIRS})
+        target_compile_options(mozillavpn PRIVATE ${LIBCAP_STATIC_CFLAGS} ${LIBSECRET_STATIC_CFLAGS})
     else()
-        target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP)
+        target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP PkgConfig::LIBSECRET)
     endif()
 
     target_sources(mozillavpn PRIVATE
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.h
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcryptosettings.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcryptosettings.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbusclient.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbusclient.h
     )
@@ -60,11 +53,6 @@ if(NOT BUILD_FLATPAK)
     target_sources(mozillavpn PRIVATE
         ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c
         ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
-        ${CMAKE_SOURCE_DIR}/src/daemon/daemon.cpp
-        ${CMAKE_SOURCE_DIR}/src/daemon/daemon.h
-        ${CMAKE_SOURCE_DIR}/src/daemon/dnsutils.h
-        ${CMAKE_SOURCE_DIR}/src/daemon/iputils.h
-        ${CMAKE_SOURCE_DIR}/src/daemon/wireguardutils.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbusservice.cpp
@@ -75,6 +63,8 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/iputilslinux.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/iputilslinux.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/linuxdaemon.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/linuxfirewall.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/linuxfirewall.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.h
     )
@@ -113,6 +103,10 @@ else()
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagerconnection.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagercontroller.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagercontroller.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.h
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.cpp
     )
