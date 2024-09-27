@@ -11,6 +11,15 @@
 #include "distributiondata.h"
 #include "errortype.h"
 
+// !!!IMPORTANT!!!
+// All work for memory_distribution metric type was done as part of this
+// PR: https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9318
+// After it was written, it was decided to use a custom_distribution
+// data type instead.
+// This memory distribution work has NOT been tested, though the code has
+// stayed in so that this work is not lost, in the event we want to use
+// this data type in the future.
+
 class MemoryDistributionMetric final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(MemoryDistributionMetric)
