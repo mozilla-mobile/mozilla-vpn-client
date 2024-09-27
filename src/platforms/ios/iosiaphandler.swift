@@ -112,20 +112,16 @@ import StoreKit
       case .unverified(_, let verificationError):
         InAppPurchaseHandler.logger.info(message: "StoreKit subscription returned success, but unverified: \(verificationError.localizedDescription)")
         errorCallback()
-        break
       }
     case .pending:
       InAppPurchaseHandler.logger.info(message: "StoreKit subscription returned pending")
       // do not call error nor success - wait for further updates via `Transaction.updates`
-      break
     case .userCancelled:
       InAppPurchaseHandler.logger.info(message: "StoreKit subscription returned userCancelled")
       errorCallback()
-      break
     @unknown default:
       InAppPurchaseHandler.logger.error(message: "purchaseResult using a new enum")
       errorCallback()
-      break
     }
   }
 
