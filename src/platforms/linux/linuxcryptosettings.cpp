@@ -94,7 +94,8 @@ void LinuxCryptoSettings::resetKey() {
   XdgCryptoSettings::resetKey();
 }
 
-QByteArray LinuxCryptoSettings::getKey(Version version, const QByteArray& metadata) {
+QByteArray LinuxCryptoSettings::getKey(Version version,
+                                       const QByteArray& metadata) {
   if (version == EncryptionChachaPolyV1) {
     // A legacy key is being requested - get it from the libsecrets API.
     return m_legacyKey;
