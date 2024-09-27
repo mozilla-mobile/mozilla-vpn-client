@@ -19,7 +19,7 @@ void CustomDistributionMetric::accumulate_single_sample(qint64 sample) const {
 #ifndef __wasm__
   glean_custom_distribution_accumulate_sample(m_id, sample);
 #else
-  Q_UNUSED(timerId);
+  Q_UNUSED(sample);
 #endif
 }
 
