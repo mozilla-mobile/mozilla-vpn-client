@@ -147,6 +147,5 @@ jobs:
           git config user.name "${GITHUB_ACTOR}"
           git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
           git commit -m "[dependabot skip] Update ${{ steps.update.outputs.changed-files }}"
-          # TODO: I am scared. Let's check this first...
-          # git push
           git format-patch --stdout HEAD~1
+          git push
