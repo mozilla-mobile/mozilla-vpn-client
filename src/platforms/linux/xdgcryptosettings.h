@@ -10,7 +10,7 @@
 #include "cryptosettings.h"
 #include "xdgportal.h"
 
-class XdgCryptoSettings final : public CryptoSettings, public XdgPortal {
+class XdgCryptoSettings : public CryptoSettings, public XdgPortal {
  public:
   XdgCryptoSettings();
   virtual ~XdgCryptoSettings() = default;
