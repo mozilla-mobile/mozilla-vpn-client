@@ -118,8 +118,7 @@ jobs:
   dependabot-cargo:
     name: "Update flatpak crates"
     runs-on: ubuntu-latest
-    #if: ${{ github.event_name == 'pull_request'}} && startsWith(gitub.head_ref, 'dependabot/cargo/')
-    if: ${{ github.event_name == 'pull_request'}}
+    if: ${{ startsWith(github.head_ref, 'dependabot/cargo/') && github.event_name == 'pull_request' }}
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
