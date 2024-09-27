@@ -692,13 +692,13 @@ connection_health:
       > **Note**: This metric is recorded on the vpnsession ping for
       > desktop platforms and on the daemonsession ping for mobile platforms.
     bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/VPN-5759
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/VPN-6285
     data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9318#pullrequestreview-1977421644
     data_sensitivity:
       - technical
     notification_emails:
-      - brizental@mozilla.com
+      - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
     expires: never
     range_min: 1
@@ -722,13 +722,13 @@ connection_health:
       > **Note**: This metric is recorded on the vpnsession ping for
       > desktop platforms and on the daemonsession ping for mobile platforms.
     bugs:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/VPN-5759
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/VPN-6285
     data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/TODO
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9318#pullrequestreview-1977421644
     data_sensitivity:
       - technical
     notification_emails:
-      - brizental@mozilla.com
+      - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
     expires: never
     range_min: 1
