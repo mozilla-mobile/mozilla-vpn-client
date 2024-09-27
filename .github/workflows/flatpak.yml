@@ -103,7 +103,7 @@ jobs:
           cache-key: flatpak-builder-${{ github.sha }}
 
   dependabot-cargo:
-    name: "Update flatpak crates"
+    name: "Update Crates"
     runs-on: ubuntu-latest
     if: ${{ startsWith(github.head_ref, 'dependabot/cargo/') && github.event_name == 'pull_request' }}
     steps:
@@ -115,9 +115,9 @@ jobs:
 
       - name: Install pip tools
         shell: bash
-        run: pip install requirements-parser PyYAML toml aiohttp yq
+        run: pip install requirements-parser PyYAML toml aiohttp
 
-      # Don't continue if there are changes to the flatpak directory.
+      # Do not continue if there are changes to the flatpak directory.
       - name: Inspect pull request
         id: inspect
         shell: bash
