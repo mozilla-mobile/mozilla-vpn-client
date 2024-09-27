@@ -15,8 +15,9 @@ class AndroidCryptoSettings final : public CryptoSettings {
   virtual ~AndroidCryptoSettings() = default;
 
   void resetKey() override;
-  QByteArray getKey(const QByteArray& metadata) override;
-  CryptoSettings::Version getSupportedVersion() override;
+  QByteArray getKey(CryptoSettings::Version version,
+                    const QByteArray& metadata) override;
+  CryptoSettings::Version getPreferredVersion() override;
 
  private:
   bool m_initialized = false;

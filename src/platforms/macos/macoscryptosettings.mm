@@ -58,7 +58,9 @@ void MacOSCryptoSettings::resetKey() {
   m_initialized = false;
 }
 
-QByteArray MacOSCryptoSettings::getKey(const QByteArray& metadata) {
+QByteArray MacOSCryptoSettings::getKey(CryptoSettings::Version version,
+                                       const QByteArray& metadata) {
+  Q_UNUSED(version);
   Q_UNUSED(metadata);
 
   if (!m_initialized) {

@@ -24,7 +24,9 @@ void WindowsCryptoSettings::resetKey() {
   }
 }
 
-QByteArray WindowsCryptoSettings::getKey(const QByteArray& metadata) {
+QByteArray WindowsCryptoSettings::getKey(CryptoSettings::Version version,
+                                         const QByteArray& metadata) {
+  Q_UNUSED(version);
   Q_UNUSED(metadata);
 
   if (!m_initialized) {
@@ -69,6 +71,6 @@ QByteArray WindowsCryptoSettings::getKey(const QByteArray& metadata) {
   return m_key;
 }
 
-CryptoSettings::Version WindowsCryptoSettings::getSupportedVersion() {
+CryptoSettings::Version WindowsCryptoSettings::getPreferredVersion() {
   return CryptoSettings::EncryptionChachaPolyV1;
 }

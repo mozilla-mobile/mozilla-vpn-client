@@ -14,12 +14,14 @@ class DummyCryptoSettings final : public CryptoSettings {
   virtual ~DummyCryptoSettings() = default;
 
   virtual void resetKey() override { m_fakeKeyValue++; };
-  virtual QByteArray getKey(const QByteArray& metadata) override {
+  virtual QByteArray getKey(CryptoSettings::Version version,
+                            const QByteArray& metadata) override {
     Q_UNUSED(metadata);
+    Q_UNUSED(version);
     return QByteArray(CRYPTO_SETTINGS_KEY_SIZE, m_fakeKeyValue);
   };
   virtual QByteArray getMetaData() override { return m_metadata; };
-  virtual Version getSupportedVersion() override { return m_keyVersion; };
+  virtual Version getPreferredVersion() override { return m_keyVersion; };
 
  private:
   char m_fakeKeyValue = 'A';
