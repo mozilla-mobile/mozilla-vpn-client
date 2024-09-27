@@ -29,6 +29,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.h
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.h
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.cpp
 )
 
 # Resolving the parent window handle for the XDG desktop portal on Wayland
@@ -107,8 +109,6 @@ else()
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagerconnection.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagercontroller.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagercontroller.cpp
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.h
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.cpp
     )
 endif()
 include(GNUInstallDirs)
@@ -135,11 +135,6 @@ install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/128x128/org.mozilla.vpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
 
 if(NOT BUILD_FLATPAK)
-    configure_file(${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn-startup.desktop.in
-        ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn-startup.desktop)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn-startup.desktop
-        DESTINATION /etc/xdg/autostart)
-
     install(FILES ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.conf
         DESTINATION /usr/share/dbus-1/system.d)
 
