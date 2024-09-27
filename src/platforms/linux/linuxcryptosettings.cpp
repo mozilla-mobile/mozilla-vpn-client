@@ -16,7 +16,7 @@
 #include <libsecret/secret.h>
 
 namespace {
-Logger logger("CryptoSettings");
+Logger logger("LinuxCryptoSettings");
 }  // namespace
 
 static const SecretSchema* cryptosettings_get_schema(void) {
@@ -67,7 +67,7 @@ LinuxCryptoSettings::LinuxCryptoSettings() : XdgCryptoSettings() {
     return;
   } else if (password != nullptr) {
     // We successfully retrieved a key from libsecret.
-    logger.info() << "Legacy encryption key found:" << password;
+    logger.info() << "Legacy encryption key found";
     m_legacyKey = QByteArray::fromBase64(QByteArray(password, -1));
     secret_password_free(password);
   }
