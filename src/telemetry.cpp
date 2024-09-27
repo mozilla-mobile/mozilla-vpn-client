@@ -135,7 +135,7 @@ void Telemetry::initialize() {
 #ifndef MZ_MOBILE
   connect(controller, &Controller::recordDataTransferTelemetry, this,
           [controller]() {
-// On mobile, these metrics are recorded in the daemon process.
+            // On mobile, these metrics are recorded in the daemon process.
             Q_ASSERT(controller);
 
             controller->getStatus([](const QString& serverIpv4Gateway,

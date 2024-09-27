@@ -48,7 +48,7 @@ class VPNService : android.net.VpnService() {
         override fun onFinish() {
             Log.i(tag, "Sending daemon_timer ping")
             if (shouldRecordTimerAndEndMetrics) {
-                recordDataTransferMetrics();
+                recordDataTransferMetrics()
                 Pings.daemonsession.submit(
                     Pings.daemonsessionReasonCodes.daemonTimer,
                 )
@@ -621,11 +621,11 @@ class VPNService : android.net.VpnService() {
     }
 
     private fun recordDataTransferMetrics() {
-        val rxBytes = getConfigValue("rx_bytes")?.toLong();
-        val txBytes = getConfigValue("tx_bytes")?.toLong();
+        val rxBytes = getConfigValue("rx_bytes")?.toLong()
+        val txBytes = getConfigValue("tx_bytes")?.toLong()
         if (rxBytes != null && txBytes != null) {
-            ConnectionHealth.dataTransferredRx.accumulateSingleSample(rxBytes);
-            ConnectionHealth.dataTransferredTx.accumulateSingleSample(txBytes);
+            ConnectionHealth.dataTransferredRx.accumulateSingleSample(rxBytes)
+            ConnectionHealth.dataTransferredTx.accumulateSingleSample(txBytes)
         } else {
             Log.e(tag, "Config gave bad value for rxBytes and/or txBytes")
         }
