@@ -23,9 +23,9 @@ import mozilla.telemetry.glean.config.Configuration
 import org.json.JSONObject
 import org.mozilla.firefox.qt.common.CoreBinder
 import org.mozilla.firefox.qt.common.Prefs
+import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Pings
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
-import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
 import java.io.File
 import java.util.*
 
