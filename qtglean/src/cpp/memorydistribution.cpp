@@ -28,7 +28,7 @@ void MemoryDistributionMetric::accumulate(qint64 sample) const {
 #ifndef __wasm__
   glean_memory_distribution_accumulate(m_id, sample);
 #else
-  Q_UNUSED(timerId);
+  Q_UNUSED(sample);
 #endif
 }
 
