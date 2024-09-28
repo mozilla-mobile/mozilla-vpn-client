@@ -120,7 +120,7 @@ QByteArray XdgCryptoSettings::getKey(CryptoSettings::Version version,
       return QByteArray();
     } else {
       // We need to rebind our signals if the reply path changed.
-      const QVariant& qv = reply.arguments().constFirst();
+      QVariant qv = reply.arguments().value(0);
       setReplyPath(qv.value<QDBusObjectPath>().path());
     }
 
