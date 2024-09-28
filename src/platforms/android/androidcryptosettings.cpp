@@ -81,7 +81,7 @@ QByteArray AndroidCryptoSettings::getKey(CryptoSettings::Version version,
 }
 
 CryptoSettings::Version AndroidCryptoSettings::getPreferredVersion() {
-  if (getKey(QByteArray()).isEmpty()) {
+  if (getKey(CryptoSettings::EncryptionChachaPolyV1, QByteArray()).isEmpty()) {
     logger.warning() << "No encryption";
     return CryptoSettings::NoEncryption;
   }
