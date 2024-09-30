@@ -687,7 +687,7 @@ connection_health:
       This metric is accumulated periodically on a 3hr interval
       while the VPN is turned on.
 
-      This metric is recorded in **bytes**. It is not collected on iOS.
+      This metric is not collected on iOS.
 
       > **Note**: This metric is recorded on the vpnsession ping for
       > desktop platforms and on the daemonsession ping for mobile platforms.
@@ -704,6 +704,7 @@ connection_health:
     range_min: 1
     range_max: 100000000000 # 100GB
     bucket_count: 10
+    unit: bytes
     histogram_type: exponential
 
   data_transferred_rx:
@@ -717,7 +718,7 @@ connection_health:
       This metric is accumulated periodically on a 3hr interval
       while the VPN is turned on.
 
-      This metric is recorded in **bytes**. It is not collected on iOS.
+      This metric is not collected on iOS.
 
       > **Note**: This metric is recorded on the vpnsession ping for
       > desktop platforms and on the daemonsession ping for mobile platforms.
@@ -734,6 +735,7 @@ connection_health:
     range_min: 1
     range_max: 100000000000 # 100GB
     bucket_count: 10
+    unit: bytes
     histogram_type: exponential
 
   changed_to_no_signal:
