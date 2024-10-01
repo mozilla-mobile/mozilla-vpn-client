@@ -16,7 +16,7 @@ class TaskPurchase final : public Task {
 
  public:
 #ifdef MZ_IOS
-  static TaskPurchase* createForIOS(const QString& receipt);
+  static TaskPurchase* createForIOS(const QString& receipt, bool isOlderOS);
 #endif
 #ifdef MZ_ANDROID
   static TaskPurchase* createForAndroid(const QString& sku,
@@ -52,7 +52,12 @@ class TaskPurchase final : public Task {
  private:
   Op m_op;
 #ifdef MZ_IOS
-  QString m_iOSReceipt;
+  // m_iOSData is the originalTransactionId for iOS 15+, and the receipt for
+  // earlier versions of iOS
+  QString m_iOSData;
+  // `@available(iOS 15, *)` is not available in C++, so this value must be
+  // passed in and saved
+  bool m_isOlderOS;
 #endif
 #ifdef MZ_ANDROID
   QString m_androidSku;
