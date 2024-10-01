@@ -35,6 +35,7 @@ enum ApiEndpoint {
 #endif
 #ifdef MZ_IOS
   PurchasesIOS,
+  PurchasesIOSv2,
 #endif
 #ifdef MZ_WASM
   PurchasesWasm,

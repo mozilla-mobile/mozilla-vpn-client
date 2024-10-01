@@ -94,6 +94,7 @@ QString Constants::apiUrl(ApiEndpoint endpoint) {
 #endif
 #ifdef MZ_IOS
       {ApiEndpoint::PurchasesIOS, "/api/v1/vpn/purchases/ios"},
+      {ApiEndpoint::PurchasesIOSv2, "/api/v2/vpn/purchases/ios"},
 #endif
 #ifdef MZ_WASM
       {ApiEndpoint::PurchasesWasm, "/api/v1/vpn/purchases/wasm"},

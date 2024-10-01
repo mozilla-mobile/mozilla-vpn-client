@@ -98,6 +98,7 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macospingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosiaphandler.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosiaphandler.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosiaphandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscontroller.mm
