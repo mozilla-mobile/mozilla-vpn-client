@@ -17,7 +17,7 @@ import Mozilla.Shared 1.0
       contentItem: ColumnLayout {
           Rectangle {
               anchors.left: parent.left
-              anchors. right: parent.right
+              anchors.right: parent.right
               height: 20
               color: "green"
 

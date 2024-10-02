@@ -31,6 +31,34 @@ MZViewBase {
 
         spacing: MZTheme.theme.windowMargin
 
+        // MZTextBlock {
+        //     id: subLabel
+        //     Layout.fillWidth: true
+
+        //     text: "HELLO WORLD WE AR EMULTILINE>HELLO WORLD WE AR EMULTILINE>HELLO WORLD WE AR EMULTILINE>HELLO WORLD WE AR EMULTILINE>HELLO WORLD WE AR EMULTILINE>HELLO WORLD WE AR EMULTILINE>HELLO WORLD WE AR EMULTILINE>HELLO WORLD WE AR EMULTILIN"
+        //     font.pixelSize: MZTheme.theme.fontSizeSmall
+        //     visible: !!text.length
+        //     wrapMode: Text.Wrap
+        // }
+
+        MZExternalLinkListItem {
+            objectName: "androidStartAtBootLink"
+
+            // height: 80
+            // canGrowVertical: false
+            accessibleName: _startAtBootTitle
+            title: _startAtBootTitle
+            subLabelText: MZI18n.SettingsStartAtBootSubtitle
+            iconSource: "qrc:/nebula/resources/externalLink.svg"
+            visible: Qt.platform.os === "android"
+            backgroundColor: MZTheme.theme.clickableRowBlue
+            Layout.fillWidth: true
+            Layout.topMargin: MZTheme.theme.toggleRowDividerSpacing
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            Layout.leftMargin: MZTheme.theme.windowMargin
+            onClicked: MZUrlOpener.openUrl("https://support.mozilla.org/kb/how-enable-always-vpn-android")
+        }
+
         MZToggleRow {
             objectName: "startAtBootToogle"
 
