@@ -5,8 +5,10 @@
 #include <QCommandLineParser>
 #include <QCoreApplication>
 #include <QDateTime>
+#include <QLocalServer>
 #include <QRandomGenerator>
 #include <QString>
+#include <QTcpServer>
 #include <QTimer>
 
 #include "socks5.h"
@@ -42,9 +44,9 @@ static QString bytesToString(qint64 bytes) {
 }
 
 struct CliOptions {
-  uint16_t port =
-      static_cast<uint16_t>(QRandomGenerator::global()->bounded(49152, 65535));
+  uint16_t port = 0;
   QHostAddress addr = QHostAddress::LocalHost;
+  QString localSocketName;
   QString username = {};
   QString password = {};
   bool verbose = false;
@@ -69,6 +71,9 @@ static CliOptions parseArgs(const QCoreApplication& app) {
   QCommandLineOption passOption({"P", "password"}, "The password", "password");
   parser.addOption(passOption);
 
+  QCommandLineOption localOption({"l", "local"}, "Local socket name", "name");
+  parser.addOption(localOption);
+
   QCommandLineOption verboseOption({"v", "verbose"}, "Verbose");
   parser.addOption(verboseOption);
   parser.process(app);
@@ -91,6 +96,9 @@ static CliOptions parseArgs(const QCoreApplication& app) {
   }
   if (parser.isSet(passOption)) {
     out.password = parser.value(passOption);
+  }
+  if (parser.isSet(localOption)) {
+    out.localSocketName = parser.value(localOption);
   }
   if (parser.isSet(verboseOption)) {
     out.verbose = true;
@@ -145,10 +153,9 @@ static void startVerboseCLI(const Socks5* socks5) {
                    [printStatus]() { printStatus(); });
   QObject::connect(
       socks5, &Socks5::incomingConnection,
-      [printStatus](QAbstractSocket* s, const QHostAddress& peer) {
-        Q_UNUSED(s);
+      [printStatus](Socks5Connection* conn) {
         s_events.append(
-            Event{peer.toString(), 0, 0, QDateTime::currentMSecsSinceEpoch()});
+            Event{conn->clientName(), 0, 0, QDateTime::currentMSecsSinceEpoch()});
         printStatus();
       });
 
@@ -179,16 +186,39 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  Socks5* socks5 = new Socks5(config.port, config.addr, &app);
+  Socks5* socks5;
+  if (!config.localSocketName.isEmpty()) {
+    QLocalServer* server = new QLocalServer();
+    socks5 = new Socks5(server);
+    if (server->listen(config.localSocketName)) {
+      qDebug() << "Starting on local socket" << server->fullServerName();
+    } else if ((server->serverError() == QAbstractSocket::AddressInUseError) &&
+               QLocalServer::removeServer(config.localSocketName) &&
+               server->listen(config.localSocketName)) {
+      qDebug() << "(Re)starting on local socket" << server->fullServerName();
+    } else {
+      qWarning() << "Unable to listen to the local socket" << config.localSocketName;
+      qWarning() << "Listen failed:" << server->errorString();
+      return 1;
+    }
+  } else {
+    QTcpServer* server = new QTcpServer(socks5);
+    socks5 = new Socks5(server);
+    if (server->listen(config.addr, config.port)) {
+      qDebug() << "Starting on port" << config.port;
+    } else {
+      qWarning() << "Unable to listen to the proxy port" << config.port;
+      return 1;
+    }
+  }
+
   if (config.verbose) {
     startVerboseCLI(socks5);
   }
-  qDebug() << "Starting on port" << QString::number(config.port);
 
   QObject::connect(socks5, &Socks5::incomingConnection,
-                   [](QAbstractSocket* s, const QHostAddress& peer) {
-                     Q_UNUSED(s);
-                     qDebug() << "Connection from  on port" << peer.toString();
+                   [](Socks5Connection* conn) {
+                     qDebug() << "Connection from peer" << conn->clientName();
                    });
 
 #ifdef __linux__

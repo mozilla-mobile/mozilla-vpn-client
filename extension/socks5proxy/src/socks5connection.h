@@ -5,14 +5,18 @@
 #ifndef Socks5Connection_H
 #define Socks5Connection_H
 
+#include <QByteArray>
+#include <QIODevice>
 #include <QObject>
+#include <QLocalSocket>
 #include <QTcpSocket>
 
 class Socks5Connection final : public QObject {
   Q_OBJECT
 
  public:
-  Socks5Connection(QTcpSocket* socket, uint16_t port);
+  Socks5Connection(QTcpSocket* socket);
+  Socks5Connection(QLocalSocket* socket);
   ~Socks5Connection() = default;
 
   /**
@@ -57,6 +61,8 @@ class Socks5Connection final : public QObject {
   template <typename T>
   static std::optional<T> readPacket(QIODevice* connection);
 
+  const QString& clientName() const { return m_clientName; }
+
  signals:
   void setupOutSocket(QAbstractSocket* socket, const QHostAddress& dest);
   void dataSentReceived(qint64 sent, qint64 received);
@@ -75,9 +81,10 @@ class Socks5Connection final : public QObject {
   } m_state = ClientGreeting;
 
   uint8_t m_authNumber = 0;
-  QTcpSocket* m_inSocket = nullptr;
+  QIODevice* m_inSocket = nullptr;
   QTcpSocket* m_outSocket = nullptr;
 
+  QString m_clientName;
   uint16_t m_socksPort = 0;
 
   uint8_t m_addressType = 0;
