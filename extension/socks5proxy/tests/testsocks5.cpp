@@ -95,12 +95,21 @@ void TestSocks5::proxyTCP() {
   auto const proxyPort = rollPort();
   auto const serverPort = rollPort();
   auto const serverHadConnection = makeServer(serverPort);
-  Socks5 proxy{proxyPort, QHostAddress::LocalHost, nullptr};
-  auto const proxyHadConnection =
-      QtFuture::connect(&proxy, &Socks5::incomingConnection);
+
+  // Create a TCP Server and connect the proxy to it.
+  QTcpServer proxyServer;
+  Socks5 proxy(&proxyServer);
+  proxyServer.listen(QHostAddress::LocalHost, proxyPort);
+
   auto const proxyHadData =
       QtFuture::connect(&proxy, &Socks5::dataSentReceived);
   auto const connectionToServer = connectTo(serverPort, proxyPort);
+
+  QString proxyClientName;
+  QObject::connect(&proxy, &Socks5::incomingConnection,
+                   [&](Socks5Connection* conn) {
+                     proxyClientName = conn->clientName();
+                   });
 
   while (!connectionToServer.isFinished()) {
     QTest::qWait(250);
@@ -112,7 +121,7 @@ void TestSocks5::proxyTCP() {
   // Data Sent should be 10.
   QCOMPARE(std::get<1>(proxyHadData.result()), qsizetype(10));
   // The Proxy server should have gotten a connection
-  QCOMPARE(std::get<1>(proxyHadConnection.result()), QHostAddress::LocalHost);
+  QCOMPARE(proxyClientName, "127.0.0.1");
   // We should have gotten the correct string
   QCOMPARE(connectionToServer.result(), QByteArray{testData});
 }

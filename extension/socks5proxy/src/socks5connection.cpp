@@ -75,12 +75,31 @@ ServerResponsePacket createServerResponsePacket(uint8_t rep,
 
 }  // namespace
 
-Socks5Connection::Socks5Connection(QTcpSocket* socket, uint16_t port)
-    : QObject(socket), m_inSocket(socket), m_socksPort(port) {
-  connect(m_inSocket, &QTcpSocket::disconnected, this, &QObject::deleteLater);
+Socks5Connection::Socks5Connection(QTcpSocket* socket)
+    : QObject(socket), m_inSocket(socket) {
   connect(m_inSocket, &QIODevice::readyRead, this,
           &Socks5Connection::readyRead);
 
+  m_socksPort = socket->localPort();
+  m_clientName = socket->peerAddress().toString();
+  readyRead();
+}
+
+Socks5Connection::Socks5Connection(QLocalSocket* socket) {
+  connect(m_inSocket, &QIODevice::readyRead, this,
+          &Socks5Connection::readyRead);
+  
+  m_socksPort = 0;
+  // TODO: Some magic may be required here to resolve the entity of which app
+  // tried to connect. Some breadcrumbs:
+  //   - Linux: SO_PEERCRED can get us the cllient PID, from which we can get
+  //            the cgroup name, systemd scope and parse out the application ID.
+  //   - Windows: GetNamedPipeClientProcessId() and GetProcessImageFileNameA()
+  //              can get us the path to the calling executable.
+  //   - MacOS: SecTaskCopySigningIdentifier() can be used to grab information
+  //            about processes and their code signatures. Somewhere in there
+  //            I would expect to find the application ID too.
+  m_clientName = "TODO";
   readyRead();
 }
 
