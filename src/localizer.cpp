@@ -77,8 +77,9 @@ QList<QPair<QString, QString>> Localizer::parseBCP47Languages(
       continue;
     }
 
-    QString country = parts.last();
-    if (country.length() == 2) {
+    // Chinese is often reported as `zh-Hant-HK`, and we want the middle section.
+    QString country = parts[1];
+    if (country.length() == 2 || country == "Hans" || country == "Hant") {
       codes.append(QPair<QString, QString>{parts[0], country});
       continue;
     }
@@ -125,8 +126,8 @@ QString Localizer::systemLanguageCode() const {
 #endif
 
   for (const QPair<QString, QString>& language : uiLanguages) {
-    QString language = language.first;
-    QString locale = language.second;
+    QString languagePart = language.first;
+    QString localePart = language.second;
 
     // iOS reports Chinese as "zh-Hans" and "zh-Hant". Android reports
     // them as "zh-CN" and "zh-Hans". However the app uses "zh-CN" and
@@ -136,16 +137,16 @@ QString Localizer::systemLanguageCode() const {
     // the app only looks at the strings before the 1st and 2nd dashes, we
     // ignore the country - which is what we want to do, as we don't have
     // translations for Chinese beyond simplified and traditional.)
-    if (language == "zh") {
-      if (locale == "Hans") {
-        locale = "CN";
+    if (languagePart == "zh") {
+      if (localePart == "Hans") {
+        localePart = "CN";
       }
-      if (locale == "Hant") {
-        locale = "TW";
+      if (localePart == "Hant") {
+        localePart = "TW";
       }
     }
 
-    QString selectedLanguage = findLanguageCode(language, locale);
+    QString selectedLanguage = findLanguageCode(languagePart, localePart);
     if (!selectedLanguage.isEmpty()) {
       return selectedLanguage;
     }
