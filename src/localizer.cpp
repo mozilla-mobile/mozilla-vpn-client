@@ -100,11 +100,28 @@ QList<QPair<QString, QString>> Localizer::parseIOSLanguages(
     // <language>-<script>_<country>. And we don't care about the script.
     QString countryCode;
 
-    QStringList parts = language.split('_');
+    QStringList parts = language.split('-');
     if (parts.length() > 1) {
       countryCode = parts[1];
     }
 
+    QString language = parts[0].split('-')[0];
+
+    // iOS reports Chinese as "zh-Hans" and "zh-Hant". However the app uses
+    // "zh_CN" and "zh-TW". We need to manually adjust these. More info:
+    // https://stackoverflow.com/questions/4892372/language-codes-for-simplified-chinese-and-traditional-chinese
+    // (For country-specific variants, it reports it as "zh-Hant-MO", etc. Since
+    // the app only looks at the strings before the 1st and 2nd dashes, we
+    // ignore the country - which is what we want to do, as we don't have
+    // translations for Chinese beyond simplified and traditional.)
+    if (language == "zh") {
+      if (countryCode == "Hans") {
+        countryCode = "CN";
+      }
+      if (countryCode == "Hant") {
+        countryCode = "TW";
+      }
+    }
     codes.append(QPair<QString, QString>{parts[0].split('-')[0], countryCode});
   }
 
