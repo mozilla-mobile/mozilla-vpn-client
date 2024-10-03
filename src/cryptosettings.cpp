@@ -229,7 +229,7 @@ bool CryptoSettings::writeFile(QIODevice& device,
                                const QSettings::SettingsMap& map) {
   logger.debug() << "Writing the settings file";
 
-  // Without a SryptoSettings we can only write plaintext settings.
+  // Without a CryptoSettings we can only write plaintext settings.
   if (s_instance == nullptr) {
     return writeJsonFile(device, map);
   }
@@ -332,7 +332,7 @@ bool CryptoSettings::writeEncryptedChachaPolyFile(
     header.append(1, metadata.length() & 0xff);
     header.append(1, (metadata.length() >> 8) & 0xff);
     header.append(metadata);
-  } else if (fileVersion != EncryptionChachaPolyV1) {
+  } else {
     logger.error() << "Unsupported encrypted file version:" << header[0];
     return false;
   }

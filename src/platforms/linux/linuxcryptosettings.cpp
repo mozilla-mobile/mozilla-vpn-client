@@ -7,7 +7,6 @@
 #include <QtDBus/QtDBus>
 
 #include "constants.h"
-#include "cryptosettings.h"
 #include "logger.h"
 #include "xdgcryptosettings.h"
 
@@ -63,6 +62,7 @@ LinuxCryptoSettings::LinuxCryptoSettings() : XdgCryptoSettings() {
   auto schema = cryptosettings_get_schema();
   gchar* password = secret_password_lookup_sync(schema, nullptr, &err, nullptr);
   if (err != nullptr) {
+    logger.info() << "Error while fetching legacy key:" << err->message;
     g_error_free(err);
     return;
   } else if (password != nullptr) {
