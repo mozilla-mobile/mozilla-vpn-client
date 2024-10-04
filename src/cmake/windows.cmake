@@ -92,9 +92,4 @@ find_program(QT_WINDEPLOY_EXECUTABLE
 set(WINDEPLOYQT_FLAGS "--verbose 1 --no-translations --compiler-runtime --dir . --plugindir plugins")
 install(CODE "execute_process(COMMAND \"${QT_WINDEPLOY_EXECUTABLE}\" \"$<TARGET_FILE:mozillavpn>\" ${WINDEPLOYQT_FLAGS} WORKING_DIRECTORY \${CMAKE_INSTALL_PREFIX})")
 
-# Use the merge module that comes with our version of Visual Studio
-cmake_path(CONVERT "$ENV{VCToolsRedistDir}" TO_CMAKE_PATH_LIST VC_TOOLS_REDIST_PATH)
-install(FILES ${VC_TOOLS_REDIST_PATH}/MergeModules/Microsoft_VC${MSVC_TOOLSET_VERSION}_CRT_x64.msm
-    DESTINATION . RENAME Microsoft_CRT_x64.msm)
-
 install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ui/resources/logo.ico DESTINATION .)
