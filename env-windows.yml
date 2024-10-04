@@ -2,12 +2,12 @@ name: vpn
 channels:
   - conda-forge
 dependencies:
-  - clang=14.0.6
-  - clang-tools=14.0.6
-  - clangxx=14.0.6
-  - llvm=14.0.6
-  - llvmdev=14.0.6
-  - lld=14.0.6
+  - clang=16.0.6
+  - clang-tools=16.0.6
+  - clangxx=16.0.6
+  - llvm=16.0.6
+  - llvmdev=16.0.6
+  - lld=16.0.6
   - python=3.9
   - nodejs=18.16.*
   - pip=22.3.1
