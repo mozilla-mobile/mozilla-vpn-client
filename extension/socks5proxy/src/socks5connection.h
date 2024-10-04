@@ -7,8 +7,8 @@
 
 #include <QByteArray>
 #include <QIODevice>
-#include <QObject>
 #include <QLocalSocket>
+#include <QObject>
 #include <QTcpSocket>
 
 class Socks5Connection final : public QObject {

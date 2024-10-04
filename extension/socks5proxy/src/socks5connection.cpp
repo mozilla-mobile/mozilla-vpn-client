@@ -88,7 +88,7 @@ Socks5Connection::Socks5Connection(QTcpSocket* socket)
 Socks5Connection::Socks5Connection(QLocalSocket* socket) {
   connect(m_inSocket, &QIODevice::readyRead, this,
           &Socks5Connection::readyRead);
-  
+
   m_socksPort = 0;
   // TODO: Some magic may be required here to resolve the entity of which app
   // tried to connect. Some breadcrumbs:

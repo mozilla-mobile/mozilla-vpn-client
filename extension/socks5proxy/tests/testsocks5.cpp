@@ -106,10 +106,9 @@ void TestSocks5::proxyTCP() {
   auto const connectionToServer = connectTo(serverPort, proxyPort);
 
   QString proxyClientName;
-  QObject::connect(&proxy, &Socks5::incomingConnection,
-                   [&](Socks5Connection* conn) {
-                     proxyClientName = conn->clientName();
-                   });
+  QObject::connect(
+      &proxy, &Socks5::incomingConnection,
+      [&](Socks5Connection* conn) { proxyClientName = conn->clientName(); });
 
   while (!connectionToServer.isFinished()) {
     QTest::qWait(250);

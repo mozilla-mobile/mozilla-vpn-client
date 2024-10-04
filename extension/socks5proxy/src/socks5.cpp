@@ -25,7 +25,8 @@ Socks5::Socks5(QTcpServer* server) : QObject(server) {
 
 Socks5::~Socks5() { m_shuttingDown = true; }
 
-template <typename T> void Socks5::newConnection(T* server) {
+template <typename T>
+void Socks5::newConnection(T* server) {
   while (server->hasPendingConnections() && (m_clientCount < MAX_CLIENTS)) {
     auto* socket = server->nextPendingConnection();
     if (!socket) {
@@ -33,11 +34,10 @@ template <typename T> void Socks5::newConnection(T* server) {
     }
 
     auto const con = new Socks5Connection(socket);
-    connect(con, &QObject::destroyed, this,
-            [&]() {
-              clientDismissed();
-              newConnection(server);
-            });
+    connect(con, &QObject::destroyed, this, [&]() {
+      clientDismissed();
+      newConnection(server);
+    });
     connect(con, &Socks5Connection::dataSentReceived,
             [this](qint64 sent, qint64 received) {
               emit dataSentReceived(sent, received);

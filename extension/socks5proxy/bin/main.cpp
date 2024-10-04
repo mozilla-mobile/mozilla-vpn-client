@@ -154,8 +154,8 @@ static void startVerboseCLI(const Socks5* socks5) {
   QObject::connect(
       socks5, &Socks5::incomingConnection,
       [printStatus](Socks5Connection* conn) {
-        s_events.append(
-            Event{conn->clientName(), 0, 0, QDateTime::currentMSecsSinceEpoch()});
+        s_events.append(Event{conn->clientName(), 0, 0,
+                              QDateTime::currentMSecsSinceEpoch()});
         printStatus();
       });
 
@@ -197,7 +197,8 @@ int main(int argc, char** argv) {
                server->listen(config.localSocketName)) {
       qDebug() << "(Re)starting on local socket" << server->fullServerName();
     } else {
-      qWarning() << "Unable to listen to the local socket" << config.localSocketName;
+      qWarning() << "Unable to listen to the local socket"
+                 << config.localSocketName;
       qWarning() << "Listen failed:" << server->errorString();
       return 1;
     }

@@ -33,7 +33,8 @@ class Socks5 final : public QObject {
 
  private:
   void clientDismissed();
-  template <typename T> void newConnection(T* server);
+  template <typename T>
+  void newConnection(T* server);
 
   uint16_t m_clientCount = 0;
   bool m_shuttingDown = false;
