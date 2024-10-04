@@ -96,8 +96,7 @@ jobs:
       - name: Install test dependecies
         run: |
           sudo apt-get update
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -r linux/debian/control)
-          sudo apt install --no-upgrade firefox xvfb -y
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -r linux/debian/control) xvfb
 
       - uses: actions/setup-python@v5
         with:
@@ -107,7 +106,7 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: lts/iron
           cache: "npm"
       - run: npm install
 
@@ -122,11 +121,9 @@ jobs:
         shell: bash
         env:
           TZ: Europe/London
-          HEADLESS: yes
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_BIN: ./build/mozillavpn
         run: |
-          export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
           mkdir -p $ARTIFACT_DIR
           xvfb-run -a npm run functionalTest --  --retries 3 ${{matrix.test.path}}
 

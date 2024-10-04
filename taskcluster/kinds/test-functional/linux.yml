@@ -1,0 +1,40 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+    worker-type: b-linux
+    worker:
+        max-run-time: 3600
+    description: "Functional Test"
+    treeherder:
+        symbol: T(linux)
+        kind: test
+        tier: 1
+    fetches:
+        fetch:
+            - node-linux-x64
+        release-deb:
+            - artifact: mozillavpn.deb
+        test-addons:
+            - artifact: addons.zip
+    dependencies:
+        release-deb: build-linux64/release-deb
+        test-addons: build-addons-testing
+    run:
+        using: run-task
+        use-caches: true
+        cwd: '{checkout}'
+        command: /builds/worker/test.sh
+
+focal:
+    worker:
+        docker-image: {in-tree: linux-test-focal}
+    treeherder:
+      platform: linux/focal
+
+jammy:
+    worker:
+        docker-image: {in-tree: linux-test-jammy}
+    treeherder:
+        platform: linux/jammy

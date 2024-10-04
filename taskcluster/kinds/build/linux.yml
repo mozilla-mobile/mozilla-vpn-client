@@ -22,6 +22,7 @@ task-defaults:
               path: /builds/worker/artifacts
     run:
         using: run-task
+        checkout: false
         use-caches: true
         command: /builds/worker/builder.sh
 
@@ -82,6 +83,7 @@ linux64/release-deb:
     fetches:
         toolchain:
             - qt-linux
+    worker-type: b-linux-large # Give this task more resources to unblock tests faster.
     worker:
         docker-image: {in-tree: linux-qt6-build}
     add-index-routes:
