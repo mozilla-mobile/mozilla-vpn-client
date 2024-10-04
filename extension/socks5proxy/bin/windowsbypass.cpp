@@ -80,6 +80,10 @@ WindowsBypass::~WindowsBypass() {
 
 void WindowsBypass::outgoingConnection(QAbstractSocket* s,
                                        const QHostAddress& dest) {
+  if (!dest.isGlobal() || dest.isUniqueLocalUnicast()) {
+    // No routing exclusions to apply.
+    return;
+  }
   const MIB_IPFORWARD_ROW2* route = lookupRoute(dest);
   if (route == nullptr) {
     // No routing exclusions to apply.
@@ -199,10 +203,8 @@ void WindowsBypass::refreshAddresses() {
   }
   auto guard = qScopeGuard([table]() { FreeMibTable(table); });
 
-  // Clear the inteface data while we rebuild it.
-  m_interfaceData.clear();
-
   // Populate entries.
+  QHash<quint64, InterfaceData> data;
   const quint64 vpnInterfaceLuid = getVpnLuid();
   for (ULONG i = 0; i < table->NumEntries; i++) {
     const MIB_UNICASTIPADDRESS_ROW* row = &table->Table[i];
@@ -229,7 +231,13 @@ void WindowsBypass::refreshAddresses() {
     }
 
     // Ignore unrouteable addresses.
-    if (addr.isLinkLocal() || addr.isMulticast() || addr.isLoopback()) {
+    // TODO: Or would !isGlobal() || isUniqueLocalUnicast() be more consise?
+    if (addr.isLinkLocal() || addr.isMulticast() || addr.isLoopback() ||
+        addr.isUniqueLocalUnicast()) {
+      continue;
+    }
+    // Ignore everything except preferred addresses.
+    if (row->DadState != IpDadStatePreferred) {
       continue;
     }
 
@@ -237,11 +245,14 @@ void WindowsBypass::refreshAddresses() {
     // TODO: Compare amongst multiple addresses on an interface.
     qDebug() << "Using " << addr.toString() << "for source address";
     if (row->Address.si_family == AF_INET) {
-      m_interfaceData[row->InterfaceLuid.Value].ipv4addr = addr;
+      data[row->InterfaceLuid.Value].ipv4addr = addr;
     } else {
-      m_interfaceData[row->InterfaceLuid.Value].ipv6addr = addr;
+      data[row->InterfaceLuid.Value].ipv6addr = addr;
     }
   }
+
+  // Swap the updated table into use.
+  m_interfaceData.swap(data);
 
   // Refresh the interface metrics too.
   refreshIfMetrics();
@@ -287,15 +298,29 @@ const MIB_IPFORWARD_ROW2* WindowsBypass::lookupRoute(
     if (!dest.isInSubnet(prefix, row.DestinationPrefix.PrefixLength)) {
       continue;
     }
-    ULONG ifMetric = m_interfaceData.value(row.InterfaceLuid.Value).metric;
+
+    // Ensure this route has a valid source address.
+    auto ifData = m_interfaceData.value(row.InterfaceLuid.Value);
+    if (family == AF_INET) {
+      if (ifData.ipv4addr.isNull()) {
+        continue;
+      }
+    } else {
+      if (ifData.ipv6addr.isNull()) {
+        continue;
+      }
+    }
+
+    // Choose the route with the best metric in case of a tie.
+    ULONG rowMetric = row.Metric + ifData.metric;
     if ((row.DestinationPrefix.PrefixLength == bestLength) &&
-        ((row.Metric + ifMetric) < bestMetric)) {
+        (rowMetric < bestMetric)) {
       continue;
     }
 
     // This is the best route so far.
     bestLength = row.DestinationPrefix.PrefixLength;
-    bestMetric = row.Metric + ifMetric;
+    bestMetric = rowMetric;
     bestMatch = &row;
   }
 
