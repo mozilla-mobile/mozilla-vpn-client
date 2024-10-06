@@ -35,12 +35,7 @@ $env:PATH ="$CONDA_DIR;$FETCHES_PATH;$QTPATH;$env:PATH"
 ## Conda is now ready - let's enable the env
 conda env create --force -f $REPO_ROOT_PATH/env-windows.yml -n VPN
 conda run -n VPN conda info
-
-conda activate VPN
-. "$REPO_ROOT_PATH\scripts\windows\conda_setup_win_sdk.ps1" # <- This download's all sdk things we need :3 
-. "$REPO_ROOT_PATH\scripts\windows\conda_install_extras.ps1" # <- Tweaks the conda env for Clang/LLVM
-conda deactivate
-conda activate VPN
+conda run -n VPN powershell -file "$REPO_ROOT_PATH\scripts\windows\conda-setup-xwin-sdk.ps1"
 
 conda install conda-pack
 

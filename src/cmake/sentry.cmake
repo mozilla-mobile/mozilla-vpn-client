@@ -69,10 +69,10 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE breakpad_client.lib)
         target_link_libraries(shared-sources INTERFACE dbghelp.lib)
         target_link_libraries(shared-sources INTERFACE version.lib)
-        SET(SENTRY_ARGS
-            -DCMAKE_MT=${CMAKE_MT}
-            -DSENTRY_BACKEND=breakpad
-        )
+        SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad)
+        if(DEFINED ENV{CONDA_PREFIX})
+            LIST(APPEND SENTRY_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/scripts/windows/conda-toolchain.cmake)
+        endif()
     endif()
 
     if(ANDROID)

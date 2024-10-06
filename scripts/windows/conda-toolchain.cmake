@@ -34,9 +34,12 @@ if(NOT PYTHON_EXECUTABLE)
     find_program(PYTHON_EXECUTABLE PATHS "$ENV{CONDA_PREFIX}" NAMES python REQUIRED DOC "Python Interpreter (Conda)")
 endif()
 
-# Write a cargo config file to pass the compiler to Rust too.
-function(generate_cargo_config RUST_TARGET_ARCH)
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
-    configure_file(${CMAKE_SOURCE_DIR}/scripts/windows/cargo-config.toml.in ${CMAKE_BINARY_DIR}/cargo_home/config.toml)
-endfunction()
-generate_cargo_config(x86_64-pc-windows-msvc)
+if(EXISTS $ENV{CONDA_PREFIX}/xwin)
+    cmake_path(CONVERT "$ENV{CONDA_PREFIX}\\xwin" TO_CMAKE_PATH_LIST XWIN_PREFIX)
+
+    set(CMAKE_C_FLAGS_INIT "/winsysroot ${XWIN_PREFIX} -fuse-ld=lld-link")
+    set(CMAKE_CXX_FLAGS_INIT "/winsysroot ${XWIN_PREFIX} -fuse-ld=lld-link")
+
+    # See: https://github.com/llvm/llvm-project/issues/54409
+    set(CMAKE_EXE_LINKER_FLAGS "/winsysroot:${XWIN_PREFIX} /machine:x64")
+endif()
