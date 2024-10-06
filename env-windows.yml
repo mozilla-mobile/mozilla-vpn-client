@@ -20,6 +20,7 @@ dependencies:
   - cmake=3.26.3
   - ninja=1.11.0
   - conda-forge::openjdk=17
+  - conda-pack=0.8.0
   - pip:
       - -r requirements.txt
       - -r taskcluster/scripts/requirements.txt

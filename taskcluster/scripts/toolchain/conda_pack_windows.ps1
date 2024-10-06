@@ -37,7 +37,5 @@ conda env create --force -f $REPO_ROOT_PATH/env-windows.yml -n VPN
 conda run -n VPN conda info
 conda run -n VPN powershell -file "$REPO_ROOT_PATH\scripts\windows\conda-setup-xwin-sdk.ps1"
 
-conda install conda-pack
-
 New-Item -ItemType Directory $TASK_WORKDIR\public\build
-conda-pack --name VPN -o $TASK_WORKDIR\public\build\conda-windows.tar.gz
+conda run -n VPN conda-pack --name VPN -o $TASK_WORKDIR\public\build\conda-windows.tar.gz
