@@ -14,6 +14,33 @@ else()
     error("Failed to find rustc host arch")
 endif()
 
+# Generate a config.toml to inherit the compiler and linker from Cmake.
+function(generate_config_toml)
+    cmake_parse_arguments(CONFIG
+        ""
+        "OUTPUT;LINKER;ARCH"
+        ""
+        ${ARGN})
+
+    if(NOT CONFIG_OUTPUT)
+        set(CONFIG_OUTPUT ${CMAKE_BINARY_DIR}/cargo_home/config.toml)
+    endif()
+    if(NOT CONFIG_LINKER)
+        set(CONFIG_LINKER ${CMAKE_LINKER})
+    endif()
+    if(NOT CONFIG_ARCH)
+        set(CONFIG_ARCH ${RUSTC_HOST_ARCH})
+    endif()
+
+    configure_file(${CMAKE_CURRENT_FUNCTION_LIST_DIR}/cargo-config.toml.in ${CONFIG_OUTPUT})
+endfunction()
+
+if(APPLE AND XCODE)
+    generate_config_toml(LINKER /usr/bin/cc)
+else()
+    generate_config_toml()
+endif()
+
 ## For the Ninja generator, setup a job pool for Cargo targets, which share a
 ## common lock on the package repository, and build aggressively in parallel
 ## anyways.
@@ -141,7 +168,7 @@ function(build_rust_archives)
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build -v --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
         )
 
         ## Outputs for the debug build
@@ -151,7 +178,7 @@ function(build_rust_archives)
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build -v --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
         )
 
         ## Reset our policy changes
