@@ -104,6 +104,7 @@ MZButtonBase {
                 target: toggleButton
                 //% "Turn VPN on"
                 toolTipTitle: qsTrId("vpn.toggle.on")
+                toggleColor: MZTheme.theme.vpnToggleDisconnected
             }
         },
 
@@ -266,7 +267,7 @@ MZButtonBase {
         radius: height / 2
         border.color: toggleColor.focusBorder
         color: MZTheme.theme.transparent
-        opacity: toggleButton.activeFocus && (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateSilentSwitching || VPNController.state === VPNController.StateOff) ? 1 : 0
+        opacity: toggleButton.activeFocus && (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOnPartial || VPNController.state === VPNController.StateSilentSwitching || VPNController.state === VPNController.StateOff) ? 1 : 0
 
         MZFocusOutline {
             id: vpnFocusOutline
