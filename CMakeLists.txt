@@ -59,6 +59,11 @@ if(WIN32)
         set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/unsigned"
             CACHE PATH "default install path" FORCE)
     endif()
+
+    ## Generate a cargo/config.toml file to pass the Conda toolchain into rust too.
+    if(DEFINED ENV{CONDA_PREFIX})
+        configure_file(scripts/windows/cargo-config.toml.in ${CMAKE_BINARY_DIR}/cargo_home/config.toml)
+    endif()
 endif()
 if(APPLE)
     enable_language(OBJC)
