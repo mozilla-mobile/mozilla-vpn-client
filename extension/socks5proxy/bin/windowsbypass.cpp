@@ -247,11 +247,19 @@ void WindowsBypass::refreshAddresses() {
     }
   }
 
+  // Fetch the interface metrics too.
+  for(auto i = data.begin(); i != data.end(); i++) {
+    MIB_IPINTERFACE_ROW row = {0};
+    row.InterfaceLuid.Value = i.key();
+    if (GetIpInterfaceEntry(&row) == NO_ERROR) {
+      i->metric = row.Metric;
+    } else {
+      i->metric = ULONG_MAX;
+    }
+  }
+
   // Swap the updated table into use.
   m_interfaceData.swap(data);
-
-  // Refresh the interface metrics too.
-  refreshIfMetrics();
 }
 
 // In this function, we basically try our best to re-implement the Windows
@@ -312,6 +320,9 @@ const MIB_IPFORWARD_ROW2* WindowsBypass::lookupRoute(
 
     // Choose the route with the best metric in case of a tie.
     ULONG rowMetric = row.Metric + ifData.metric;
+    if (Q_UNLIKELY(rowMetric < row.Metric)) {
+      rowMetric = ULONG_MAX;  // check for saturation arithmetic.
+    }
     if ((row.DestinationPrefix.PrefixLength == bestLength) &&
         (rowMetric < bestMetric)) {
       continue;
