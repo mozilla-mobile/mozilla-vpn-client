@@ -31,7 +31,7 @@ static void netChangeCallback(PVOID context, PMIB_IPINTERFACE_ROW row,
   QMetaObject::invokeMethod(bypass, "refreshIfMetrics", Qt::QueuedConnection);
 }
 
-// Called by the kernel on network interface changes.
+// Called by the kernel on unicast address changes.
 // Runs in some unknown thread, so invoke a Qt signal to do the real work.
 static void addrChangeCallback(PVOID context, PMIB_UNICASTIPADDRESS_ROW row,
                                MIB_NOTIFICATION_TYPE type) {
@@ -81,7 +81,7 @@ WindowsBypass::~WindowsBypass() {
 void WindowsBypass::outgoingConnection(QAbstractSocket* s,
                                        const QHostAddress& dest) {
   if (!dest.isGlobal() || dest.isUniqueLocalUnicast()) {
-    // No routing exclusions to apply.
+    // This destination should not require exclusion.
     return;
   }
   const MIB_IPFORWARD_ROW2* route = lookupRoute(dest);
@@ -213,9 +213,8 @@ void WindowsBypass::refreshAddresses() {
     if (row->InterfaceLuid.Value == vpnInterfaceLuid) {
       continue;
     }
-    if ((row->DadState == IpDadStateInvalid) ||
-        (row->DadState == IpDadStateTentative) ||
-        (row->DadState == IpDadStateDuplicate)) {
+    // Ignore everything except preferred addresses.
+    if (row->DadState != IpDadStatePreferred) {
       continue;
     }
 
@@ -324,17 +323,19 @@ const MIB_IPFORWARD_ROW2* WindowsBypass::lookupRoute(
   return bestMatch;
 }
 
-void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2>& table,
-                                int family) {
+void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2> &table, int family) {
+  // Update the output table on exit.
+  QVector<MIB_IPFORWARD_ROW2> update;
+  auto swapGuard = qScopeGuard([&] { table.swap(update); });
+
   // Fetch the routing table.
   MIB_IPFORWARD_TABLE2* mib;
   DWORD result = GetIpForwardTable2(family, &mib);
   if (result != NO_ERROR) {
     qWarning() << "GetIpForwardTable2() failed:" << win32strerror(result);
-    table.clear();
     return;
   }
-  auto guard = qScopeGuard([mib] { FreeMibTable(mib); });
+  auto mibGuard = qScopeGuard([mib] { FreeMibTable(mib); });
 
   // First pass: iterate over the table and estimate the size to allocate.
   const quint64 vpnInterfaceLuid = getVpnLuid();
@@ -344,19 +345,18 @@ void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2>& table,
       tableSize++;
     }
   }
-  // If there were no routes to exclude, then we can disable routing exclusions.
+  // If there were no routes to exclude, then we can disable routing exclusions
+  // by returning an empty routing table.
   if (tableSize == mib->NumEntries) {
-    table.clear();
     return;
   }
 
   // Allocate memory for the table populate it with the entries which do not
   // route into the VPN.
-  table.clear();
-  table.reserve(tableSize);
+  update.reserve(tableSize);
   for (ULONG i = 0; i < mib->NumEntries; i++) {
     if (mib->Table[i].InterfaceLuid.Value != vpnInterfaceLuid) {
-      table.append(mib->Table[i]);
+      update.append(mib->Table[i]);
     }
   }
 }
