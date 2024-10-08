@@ -7,7 +7,7 @@ security, we will always put your privacy first._
 
 See: https://vpn.mozilla.org
 
-![Mozilla VPN Connected to New York](docs/screenshots/linux-screenshot-home-active.png) ![Mozilla VPN Server Selection](docs/screenshots/linux-screenshot-server-selection.png)
+![Mozilla VPN Connected to New York](docs/screenshots/linux-screenshot-home-active.png) ![Mozilla VPN Server Selection](docs/screenshots/linux-screenshot-selection-multihop.png)
 
 ## Getting Involved
 
