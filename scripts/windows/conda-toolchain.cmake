@@ -36,6 +36,7 @@ if(EXISTS $ENV{CONDA_PREFIX}/xwin)
 
     set(CMAKE_C_FLAGS_INIT "/winsysroot ${XWIN_PREFIX} -fuse-ld=lld-link")
     set(CMAKE_CXX_FLAGS_INIT "/winsysroot ${XWIN_PREFIX} -fuse-ld=lld-link")
+    set(CMAKE_RC_FLAGS_INIT "/winsysroot ${XWIN_PREFIX} -fuse-ld=lld-link")
     set(CMAKE_LINKER ${CMAKE_CURRENT_LIST_DIR}/xwin-link.bat CACHE FILEPATH "LLD Linker for the Xwin SDK")
 elseif(NOT CMAKE_LINKER)
     find_program(CMAKE_LINKER NAMES lld-link REQUIRED DOC "LLD Linker (MSVC Compatible)")
