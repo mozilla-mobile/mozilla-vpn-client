@@ -269,9 +269,12 @@ const MIB_IPFORWARD_ROW2* WindowsBypass::lookupRoute(
   if (dest.protocol() == QAbstractSocket::IPv4Protocol) {
     family = AF_INET;
     table = &m_routeTableIpv4;
-  } else {
+  } else if (dest.protocol() == QAbstractSocket::IPv6Protocol) {
     family = AF_INET6;
     table = &m_routeTableIpv6;
+  } else {
+    // This address is not routable.
+    return nullptr;
   }
 
   for (qsizetype i = 0; i < table->count(); i++) {
