@@ -15,8 +15,8 @@ class Socks5Connection final : public QObject {
   Q_OBJECT
 
  public:
-  Socks5Connection(QTcpSocket* socket);
-  Socks5Connection(QLocalSocket* socket);
+  explicit Socks5Connection(QTcpSocket* socket);
+  explicit Socks5Connection(QLocalSocket* socket);
   ~Socks5Connection() = default;
 
   /**

@@ -11,11 +11,11 @@ class Socks5;
 class QAbstractSocket;
 class QHostAddress;
 
-class LinuxBypass : public QObject {
+class LinuxBypass final : public QObject {
   Q_OBJECT
 
  public:
-  LinuxBypass(Socks5* proxy);
+  explicit LinuxBypass(Socks5* proxy);
   ~LinuxBypass() = default;
 
  private slots:

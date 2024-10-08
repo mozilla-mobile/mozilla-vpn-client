@@ -90,7 +90,7 @@ Socks5Connection::Socks5Connection(QLocalSocket* socket) {
           &Socks5Connection::readyRead);
 
   m_socksPort = 0;
-  // TODO: Some magic may be required here to resolve the entity of which app
+  // TODO: Some magic may be required here to resolve the entity of which client
   // tried to connect. Some breadcrumbs:
   //   - Linux: SO_PEERCRED can get us the cllient PID, from which we can get
   //            the cgroup name, systemd scope and parse out the application ID.

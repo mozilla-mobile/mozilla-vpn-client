@@ -27,7 +27,7 @@ static void netChangeCallback(PVOID context, PMIB_IPINTERFACE_ROW row,
   WindowsBypass* bypass = static_cast<WindowsBypass*>(context);
   Q_UNUSED(type);
 
-  // Invoke the route changed signal to do the real work in Qt.
+  // Invoke the interface changed signal to do the real work in Qt.
   QMetaObject::invokeMethod(bypass, "refreshIfMetrics", Qt::QueuedConnection);
 }
 
@@ -38,7 +38,7 @@ static void addrChangeCallback(PVOID context, PMIB_UNICASTIPADDRESS_ROW row,
   WindowsBypass* bypass = static_cast<WindowsBypass*>(context);
   Q_UNUSED(type);
 
-  // Invoke the route changed signal to do the real work in Qt.
+  // Invoke the address changed signal to do the real work in Qt.
   QMetaObject::invokeMethod(bypass, "refreshAddresses", Qt::QueuedConnection);
 }
 
@@ -49,7 +49,7 @@ static void routeChangeCallback(PVOID context, PMIB_IPFORWARD_ROW2 row,
   WindowsBypass* bypass = static_cast<WindowsBypass*>(context);
   Q_UNUSED(type);
 
-  // Ignore routing changes into the Wireguard tunnel.
+  // Pass the address family to the route change signal too.
   int family = AF_UNSPEC;
   if (row) {
     family = row->DestinationPrefix.Prefix.si_family;
@@ -161,9 +161,8 @@ quint64 WindowsBypass::getVpnLuid() const {
   GUID vpnInterfaceGuid = WIREGUARD_NT_GUID;
   if (ConvertInterfaceGuidToLuid(&vpnInterfaceGuid, &luid) != NO_ERROR) {
     return 0;
-  } else {
-    return luid.Value;
   }
+  return luid.Value;
 }
 
 // Refresh our understanding of the current interfaces, and identify the VPN
@@ -230,10 +229,8 @@ void WindowsBypass::refreshAddresses() {
       continue;
     }
 
-    // Ignore unrouteable addresses.
-    // TODO: Or would !isGlobal() || isUniqueLocalUnicast() be more consise?
-    if (addr.isLinkLocal() || addr.isMulticast() || addr.isLoopback() ||
-        addr.isUniqueLocalUnicast()) {
+    // Only use addresses that route globally.
+    if (!addr.isGlobal() || addr.isUniqueLocalUnicast()) {
       continue;
     }
     // Ignore everything except preferred addresses.

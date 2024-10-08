@@ -16,11 +16,11 @@ class QHostAddress;
 
 struct _MIB_IPFORWARD_ROW2;
 
-class WindowsBypass : public QObject {
+class WindowsBypass final : public QObject {
   Q_OBJECT
 
  public:
-  WindowsBypass(Socks5* proxy);
+  explicit WindowsBypass(Socks5* proxy);
   ~WindowsBypass();
 
  private:
