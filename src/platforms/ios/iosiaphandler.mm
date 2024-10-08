@@ -200,8 +200,6 @@ bool s_transactionsProcessed = false;
 @end
 
 IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
-  MZ_COUNT_CTOR(IOSIAPHandler);
-
   if (@available(iOS 15, *)) {
     swiftIAPHandler = [[InAppPurchaseHandler alloc]
         initWithErrorCallback:^(void) {
@@ -223,6 +221,7 @@ IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
           }
         }];
   } else {
+    MZ_COUNT_CTOR(IOSIAPHandler);
     m_delegate = [[IOSIAPHandlerDelegate alloc] initWithObject:this];
     [[SKPaymentQueue defaultQueue]
         addTransactionObserver:static_cast<IOSIAPHandlerDelegate*>(m_delegate)];
@@ -230,15 +229,15 @@ IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
 }
 
 IOSIAPHandler::~IOSIAPHandler() {
-  MZ_COUNT_DTOR(IOSIAPHandler);
-
-  IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
-  [[SKPaymentQueue defaultQueue] removeTransactionObserver:delegate];
-
-  [delegate dealloc];
-  m_delegate = nullptr;
   if (@available(iOS 15, *)) {
     swiftIAPHandler = nullptr;
+  } else {
+    MZ_COUNT_DTOR(IOSIAPHandler);
+    IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
+    [[SKPaymentQueue defaultQueue] removeTransactionObserver:delegate];
+
+    [delegate dealloc];
+    m_delegate = nullptr;
   }
 }
 
