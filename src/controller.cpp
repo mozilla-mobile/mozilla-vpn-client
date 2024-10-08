@@ -867,7 +867,7 @@ void Controller::getStatus(
                      uint64_t rxBytes)>
       callback = std::move(a_callback);
 
-  if (m_state != StateOn && m_state != StateConfirming) {
+  if (m_state != StateOn && m_state != StateConfirming && m_state != StateOnPartial) {
     callback(QString(), QString(), 0, 0);
     return;
   }
