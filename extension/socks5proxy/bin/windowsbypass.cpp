@@ -26,9 +26,10 @@ static void netChangeCallback(PVOID context, PMIB_IPINTERFACE_ROW row,
                               MIB_NOTIFICATION_TYPE type) {
   WindowsBypass* bypass = static_cast<WindowsBypass*>(context);
   Q_UNUSED(type);
-
-  // Invoke the interface changed signal to do the real work in Qt.
-  QMetaObject::invokeMethod(bypass, "refreshIfMetrics", Qt::QueuedConnection);
+  if (row) {
+    QMetaObject::invokeMethod(bypass, "interfaceChanged", Qt::QueuedConnection,
+                              Q_ARG(quint64, row->InterfaceLuid.Value));
+  }
 }
 
 // Called by the kernel on unicast address changes.
@@ -64,7 +65,7 @@ WindowsBypass::WindowsBypass(Socks5* proxy) : QObject(proxy) {
   connect(proxy, &Socks5::outgoingConnection, this,
           &WindowsBypass::outgoingConnection);
 
-  NotifyIpInterfaceChange(AF_UNSPEC, netChangeCallback, this, true,
+  NotifyIpInterfaceChange(AF_UNSPEC, netChangeCallback, this, false,
                           &m_netChangeHandle);
   NotifyUnicastIpAddressChange(AF_UNSPEC, addrChangeCallback, this, true,
                                &m_addrChangeHandle);
@@ -165,33 +166,6 @@ quint64 WindowsBypass::getVpnLuid() const {
   return luid.Value;
 }
 
-// Refresh our understanding of the current interfaces, and identify the VPN
-// tunnel, if running.
-void WindowsBypass::refreshIfMetrics() {
-  // Fetch the interface table.
-  MIB_IPINTERFACE_TABLE* table;
-  DWORD result = GetIpInterfaceTable(AF_UNSPEC, &table);
-  if (result != NO_ERROR) {
-    qWarning() << "GetIpInterfaceTable() failed:" << win32strerror(result);
-    return;
-  }
-  auto guard = qScopeGuard([table]() { FreeMibTable(table); });
-
-  const quint64 vpnInterfaceLuid = getVpnLuid();
-  for (ULONG i = 0; i < table->NumEntries; i++) {
-    const MIB_IPINTERFACE_ROW* row = &table->Table[i];
-    if (row->InterfaceLuid.Value == vpnInterfaceLuid) {
-      continue;
-    }
-
-    if (!m_interfaceData.contains(row->InterfaceLuid.Value)) {
-      // Ignore interfaces with no source addresses.
-      continue;
-    }
-    m_interfaceData[row->InterfaceLuid.Value].metric = row->Metric;
-  }
-}
-
 void WindowsBypass::refreshAddresses() {
   // Get the unicast address table.
   MIB_UNICASTIPADDRESS_TABLE* table;
@@ -260,6 +234,25 @@ void WindowsBypass::refreshAddresses() {
 
   // Swap the updated table into use.
   m_interfaceData.swap(data);
+}
+
+void WindowsBypass::interfaceChanged(quint64 luid) {
+  qDebug() << "Interface changed for:" << QString::number(luid, 16);
+
+  auto i = m_interfaceData.find(luid);
+  if (i == m_interfaceData.end()) {
+    // Nothing to update.
+    return;
+  }
+
+  // Update the interface metric.
+  MIB_IPINTERFACE_ROW row = {0};
+  row.InterfaceLuid.Value = luid;
+  if (GetIpInterfaceEntry(&row) == NO_ERROR) {
+    i->metric = row.Metric;
+  } else {
+    i->metric = ULONG_MAX;
+  }
 }
 
 // In this function, we basically try our best to re-implement the Windows

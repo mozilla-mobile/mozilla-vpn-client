@@ -31,8 +31,8 @@ class WindowsBypass final : public QObject {
 
  private slots:
   void outgoingConnection(QAbstractSocket* s, const QHostAddress& dest);
+  void interfaceChanged(quint64 luid);
   void refreshRoutes(int family);
-  void refreshIfMetrics();
   void refreshAddresses();
 
  private:
