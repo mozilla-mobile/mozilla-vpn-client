@@ -56,7 +56,7 @@ QString toPascalCase(const QString& s) {
   for (int i = 0; i < words.size(); i++) {
     QString word = words.at(i);
     if (!word.isEmpty()) {
-      words[i] = word.at(0).toUpper() + word.mid(1);
+      words[i] = word.at(0).toUpper() + word.mid(1).toLower();
     }
   }
 
@@ -634,11 +634,12 @@ QString Localizer::getTranslatedCityName(const QString& cityName) const {
   // Malmö -> ServersMalm, São Paulo, SP -> ServersSoPaulo, Berlin, BE ->
   // ServersBerlin
 
-  QRegularExpression acceptedChars("[^a-zA-Z]");
+  QRegularExpression acceptedChars("[^a-zA-Z ]");
   QString parsedCityName =
-      cityName.split(u',')[0]
-          .replace(" ", "")             // Remove state suffix
-          .replace(acceptedChars, "");  // Remove special characters
+      cityName
+          .split(u',')[0]              // Remove state suffix
+          .replace(acceptedChars, "")  // Remove special characters
+          .replace(" ", "_");          // Prepare for toPascalCase
 
   QString i18nCityId = QString("Servers%1").arg(toPascalCase(parsedCityName));
 
