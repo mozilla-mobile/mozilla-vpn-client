@@ -645,6 +645,11 @@ QString Localizer::getTranslatedCityName(const QString& cityName) const {
 
   auto value = getCapitalizedStringFromI18n(i18nCityId);
 
+  if (cityName.contains("Malm") || cityName.contains("Salt")) {
+    logger.debug() << "TEMP:" << cityName << " parsed " << parsedCityName
+                   << " i18nCityId " << i18nCityId << " value " << value;
+  }
+
   // The server list is ever changing, so it is plausible that a translation
   // doesn't exist yet for a given server.
   if (value.isEmpty()) {
