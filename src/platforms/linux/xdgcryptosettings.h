@@ -10,15 +10,16 @@
 #include "cryptosettings.h"
 #include "xdgportal.h"
 
-class XdgCryptoSettings final : public CryptoSettings, public XdgPortal {
+class XdgCryptoSettings : public CryptoSettings, public XdgPortal {
  public:
   XdgCryptoSettings();
   virtual ~XdgCryptoSettings() = default;
 
   void resetKey() override;
-  QByteArray getKey(const QByteArray& metadata) override;
+  QByteArray getKey(CryptoSettings::Version version,
+                    const QByteArray& metadata) override;
   QByteArray getMetaData() override;
-  CryptoSettings::Version getSupportedVersion() override { return m_version; };
+  CryptoSettings::Version getPreferredVersion() override { return m_version; };
 
  private slots:
   void handleResponse(uint code, QVariantMap results);

@@ -29,6 +29,9 @@ void TestCryptoSettings::writeTestData(CryptoSettings& crypto) {
 
   // Copy the file to the final location so that QSettings can't cache it.
   QFile file(m_tempdir->filePath("write.moz"));
+  if (QFile::exists(testFileName())) {
+    QFile::remove(testFileName());
+  }
   file.copy(testFileName());
 }
 
@@ -92,14 +95,15 @@ void TestCryptoSettings::readAndWrite() {
 
 void TestCryptoSettings::resetKeyOnRollover() {
   DummyCryptoSettings crypto;
+  CryptoSettings::Version version = CryptoSettings::EncryptionChachaPolyV1;
   QByteArray metadata;
-  QByteArray initialKey = crypto.getKey(metadata);
+  QByteArray initialKey = crypto.getKey(version, metadata);
   crypto.m_lastNonce = UINT64_MAX - 1;
 
   writeTestData(crypto);
   QCOMPARE(parseVersion(), CryptoSettings::EncryptionChachaPolyV1);
 
-  QByteArray finalKey = crypto.getKey(metadata);
+  QByteArray finalKey = crypto.getKey(version, metadata);
   QVERIFY(crypto.m_lastNonce < 10);
   QVERIFY(initialKey != finalKey);
 }
@@ -171,7 +175,7 @@ void TestCryptoSettings::readFailsWithMacError() {
   QCOMPARE(CryptoSettings::readFile(file, map), false);
 }
 
-void TestCryptoSettings::writeV1andReadV2() {
+void TestCryptoSettings::writeV1readV2upgrade() {
   DummyCryptoSettings crypto;
   crypto.m_keyVersion = CryptoSettings::EncryptionChachaPolyV1;
 
@@ -183,6 +187,10 @@ void TestCryptoSettings::writeV1andReadV2() {
   crypto.m_keyVersion = CryptoSettings::EncryptionChachaPolyV2;
   QSettings rSettings(testFileName(), crypto.format());
   checkTestData(rSettings);
+
+  // Write the settings again, and they should now use v2.
+  writeTestData(crypto);
+  QCOMPARE(parseVersion(), CryptoSettings::EncryptionChachaPolyV2);
 }
 
 void TestCryptoSettings::writeV2WithMetaData() {

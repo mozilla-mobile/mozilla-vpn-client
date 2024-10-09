@@ -61,7 +61,9 @@ void AndroidCryptoSettings::resetKey() {
   m_initialized = false;
 }
 
-QByteArray AndroidCryptoSettings::getKey(const QByteArray& metadata) {
+QByteArray AndroidCryptoSettings::getKey(CryptoSettings::Version version,
+                                         const QByteArray& metadata) {
+  Q_UNUSED(version);
   Q_UNUSED(metadata);
 
   if (m_initialized) {
@@ -78,8 +80,8 @@ QByteArray AndroidCryptoSettings::getKey(const QByteArray& metadata) {
   return jni_getKey();
 }
 
-CryptoSettings::Version AndroidCryptoSettings::getSupportedVersion() {
-  if (getKey(QByteArray()).isEmpty()) {
+CryptoSettings::Version AndroidCryptoSettings::getPreferredVersion() {
+  if (getKey(CryptoSettings::EncryptionChachaPolyV1, QByteArray()).isEmpty()) {
     logger.warning() << "No encryption";
     return CryptoSettings::NoEncryption;
   }

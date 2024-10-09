@@ -25,7 +25,20 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxpingsender.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxsystemtraynotificationhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxsystemtraynotificationhandler.h
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.cpp
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.h
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.cpp
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.h
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.h
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.cpp
 )
+
+# Resolving the parent window handle for the XDG desktop portal on Wayland
+# needs the Gui internal header files on Qt 6.5.0 and later. Otherwise it
+# only works for X11.
+if(Qt6_VERSION VERSION_GREATER_EQUAL 6.5.0)
+    target_link_libraries(mozillavpn PRIVATE Qt6::GuiPrivate)
+endif()
 
 if(NOT BUILD_FLATPAK)
     # Link to libcap and libsecret
@@ -88,13 +101,6 @@ else()
     # Linux source files for sandboxed builds
     target_compile_definitions(mozillavpn PRIVATE MZ_FLATPAK)
 
-    # Resolving the parent window handle for the XDG desktop portal on Wayland
-    # needs the Gui internal header files on Qt 6.5.0 and later. Otherwise it
-    # only works for X11.
-    if(Qt6_VERSION VERSION_GREATER_EQUAL 6.5.0)
-        target_link_libraries(mozillavpn PRIVATE Qt6::GuiPrivate)
-    endif()
-
     # Network Manager controller - experimental
     pkg_check_modules(libnm REQUIRED IMPORTED_TARGET libnm)
     target_link_libraries(mozillavpn PRIVATE PkgConfig::libnm)
@@ -103,12 +109,6 @@ else()
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagerconnection.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagercontroller.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagercontroller.cpp
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.cpp
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.h
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.cpp
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.h
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.h
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.cpp
     )
 endif()
 include(GNUInstallDirs)
@@ -135,11 +135,6 @@ install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/128x128/org.mozilla.vpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/128x128/apps)
 
 if(NOT BUILD_FLATPAK)
-    configure_file(${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn-startup.desktop.in
-        ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn-startup.desktop)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn-startup.desktop
-        DESTINATION /etc/xdg/autostart)
-
     install(FILES ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.conf
         DESTINATION /usr/share/dbus-1/system.d)
 

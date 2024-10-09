@@ -58,10 +58,6 @@
 
 #ifdef MZ_LINUX
 #  include "eventlistener.h"
-#  include "platforms/linux/linuxdependencies.h"
-#endif
-
-#ifdef MZ_FLATPAK
 #  include "platforms/linux/xdgstartatbootwatcher.h"
 #endif
 
@@ -305,7 +301,7 @@ int CommandUI::run(QStringList& tokens) {
     WindowsStartAtBootWatcher startAtBootWatcher;
 #endif
 
-#ifdef MZ_FLATPAK
+#ifdef MZ_LINUX
     XdgStartAtBootWatcher startAtBootWatcher;
 #endif
 

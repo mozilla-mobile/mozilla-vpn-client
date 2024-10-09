@@ -33,9 +33,9 @@ class CryptoSettings {
 
   // Implementations must provide these methods to retrieve keys.
   virtual void resetKey() = 0;
-  virtual QByteArray getKey(const QByteArray& metadata) = 0;
+  virtual QByteArray getKey(Version version, const QByteArray& metadata) = 0;
   virtual QByteArray getMetaData() { return QByteArray(); }
-  virtual Version getSupportedVersion() = 0;
+  virtual Version getPreferredVersion() = 0;
 
  private:
   // Plantext file implementation

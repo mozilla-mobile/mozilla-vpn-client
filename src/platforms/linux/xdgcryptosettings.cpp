@@ -85,7 +85,13 @@ QByteArray XdgCryptoSettings::xdgReadSecretFile(int fd) {
   return data;
 }
 
-QByteArray XdgCryptoSettings::getKey(const QByteArray& metadata) {
+QByteArray XdgCryptoSettings::getKey(CryptoSettings::Version version,
+                                     const QByteArray& metadata) {
+  if (version != CryptoSettings::EncryptionChachaPolyV2) {
+    // This version is not supported.
+    return QByteArray();
+  }
+
   // Retrieve the key if we don't already have a copy.
   if (m_key.isEmpty()) {
     QJsonObject obj = QJsonDocument::fromJson(metadata).object();
@@ -114,7 +120,7 @@ QByteArray XdgCryptoSettings::getKey(const QByteArray& metadata) {
       return QByteArray();
     } else {
       // We need to rebind our signals if the reply path changed.
-      const QVariant& qv = reply.arguments().constFirst();
+      QVariant qv = reply.arguments().value(0);
       setReplyPath(qv.value<QDBusObjectPath>().path());
     }
 

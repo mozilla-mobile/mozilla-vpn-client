@@ -748,7 +748,9 @@ SETTING_STRING(tunnelUuid,        // getter
                false,             // remove when reset
                true               // sensitive (do not log)
 )
+#endif
 
+#if defined(MZ_LINUX)
 SETTING_STRING(xdgSecretToken,        // getter
                setXdgSecretToken,     // setter
                removeXdgSecretToken,  // remover
