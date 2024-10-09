@@ -232,13 +232,14 @@ IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
 IOSIAPHandler::~IOSIAPHandler() {
   MZ_COUNT_DTOR(IOSIAPHandler);
 
-  IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
-  [[SKPaymentQueue defaultQueue] removeTransactionObserver:delegate];
-
-  [delegate dealloc];
-  m_delegate = nullptr;
   if (@available(iOS 15, *)) {
     swiftIAPHandler = nullptr;
+  } else {
+    IOSIAPHandlerDelegate* delegate = static_cast<IOSIAPHandlerDelegate*>(m_delegate);
+    [[SKPaymentQueue defaultQueue] removeTransactionObserver:delegate];
+
+    [delegate dealloc];
+    m_delegate = nullptr;
   }
 }
 
