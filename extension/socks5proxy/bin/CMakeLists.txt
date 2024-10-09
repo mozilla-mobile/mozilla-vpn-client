@@ -25,6 +25,10 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         linuxbypass.cpp
         linuxbypass.h)
 
+    find_package(PkgConfig REQUIRED)
+    pkg_check_modules(LIBCAP REQUIRED IMPORTED_TARGET libcap)
+    target_link_libraries(socksproxy PRIVATE PkgConfig::LIBCAP)
+
     # TODO: not install that yet.
     #install(FILES ${CMAKE_CURRENT_BINARY_DIR}/socksproxy
     #    DESTINATION ${CMAKE_INSTALL_DATADIR}/socksproxy)

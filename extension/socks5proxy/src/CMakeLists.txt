@@ -13,7 +13,6 @@ target_sources(libSocks5proxy PRIVATE
     socks5connection.h
 )
 
-
 target_include_directories(libSocks5proxy PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )
