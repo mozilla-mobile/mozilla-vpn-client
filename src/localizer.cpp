@@ -77,7 +77,8 @@ QList<QPair<QString, QString>> Localizer::parseBCP47Languages(
       continue;
     }
 
-    // Chinese is often reported as `zh-Hant-HK`, and we want the middle section.
+    // Chinese is often reported as `zh-Hant-HK`, and we want the middle
+    // section.
     QString country = parts[1];
     if (country.length() == 2 || country == "Hans" || country == "Hant") {
       codes.append(QPair<QString, QString>{parts[0], country});
@@ -100,14 +101,17 @@ QList<QPair<QString, QString>> Localizer::parseIOSLanguages(
     // The language code comes in the format <language>-<country> or
     // <language>-<script>-<country>.
     // For an iOS device set to these 6 languages: Chinese Traditional (Macao),
-    // Chinese Traditional, Chinese Simplified, English, Mexican Spanish, Spanish
-    // ...we get these language codes: [zh-Hant-MO,zh-Hant-US,zh-Hans-US,en-US,es-MX,es-US]
-    // iOS shows the 2 part versions for nearly all languages, and shows the 3 part version
-    // only when there is a script - like for Chinese variants.
-    // Thus, we can pull the second chunk of the locale string in all cases to get the
-    // translations flow required by our app. That second chunk gives the country for all
-    // languages except Chinese, where it gives the script - and in both these
-    // situations, this is what we want (script for Chinese, country for all others).
+    // Chinese Traditional, Chinese Simplified, English, Mexican Spanish,
+    // Spanish
+    // ...we get these language codes:
+    // [zh-Hant-MO,zh-Hant-US,zh-Hans-US,en-US,es-MX,es-US]
+    // iOS shows the 2 part versions for nearly all languages, and shows the
+    // 3 part version only when there is a script - like for Chinese variants.
+    // Thus, we can pull the second chunk of the locale string in all cases to
+    // get the translations flow required by our app. That second chunk gives
+    // the country for all languages except Chinese, where it gives the script -
+    // and in both these situations, this is what we want (script for Chinese,
+    // country for all others).
     QString countryCode;
 
     QStringList parts = language.split('-');
