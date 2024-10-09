@@ -27,6 +27,7 @@ LinuxBypass::LinuxBypass(Socks5* proxy) : QObject(proxy) {
   cap_value_t newcaps[] = {CAP_NET_RAW};
   const int numcaps = sizeof(newcaps) / sizeof(cap_value_t);
   cap_set_flag(caps, CAP_EFFECTIVE, numcaps, newcaps, CAP_SET);
+  cap_set_flag(caps, CAP_PERMITTED, numcaps, newcaps, CAP_SET);
   if (cap_set_proc(caps) != 0) {
     qWarning() << "Failed to set CAP_NET_RAW: disabling split tunnel";
     cap_clear(caps);
