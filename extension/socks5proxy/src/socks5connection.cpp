@@ -80,6 +80,8 @@ Socks5Connection::Socks5Connection(QTcpSocket* socket)
   connect(m_inSocket, &QIODevice::readyRead, this,
           &Socks5Connection::readyRead);
 
+  connect(socket, &QTcpSocket::disconnected, this, &QObject::deleteLater);
+
   m_socksPort = socket->localPort();
   m_clientName = socket->peerAddress().toString();
   readyRead();
@@ -88,6 +90,8 @@ Socks5Connection::Socks5Connection(QTcpSocket* socket)
 Socks5Connection::Socks5Connection(QLocalSocket* socket) {
   connect(m_inSocket, &QIODevice::readyRead, this,
           &Socks5Connection::readyRead);
+
+  connect(socket, &QLocalSocket::disconnected, this, &QObject::deleteLater);
 
   m_socksPort = 0;
   // TODO: Some magic may be required here to resolve the entity of which client
