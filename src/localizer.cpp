@@ -79,8 +79,14 @@ QList<QPair<QString, QString>> Localizer::parseBCP47Languages(
 
     // Chinese is often reported as `zh-Hant-HK`, and we want the middle
     // section.
-    QString country = parts[1];
-    if (country.length() == 2 || country == "Hans" || country == "Hant") {
+    QString script = parts[1];
+    if (script == "Hans" || script == "Hant") {
+      codes.append(QPair<QString, QString>{parts[0], script});
+      continue;
+    }
+
+    QString country = parts.last();
+    if (country.length() == 2) {
       codes.append(QPair<QString, QString>{parts[0], country});
       continue;
     }
