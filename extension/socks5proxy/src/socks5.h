@@ -29,7 +29,6 @@ class Socks5 final : public QObject {
   void connectionsChanged();
   void incomingConnection(Socks5Connection* connection);
   void outgoingConnection(QAbstractSocket* socket, const QHostAddress& dest);
-  void dataSentReceived(qint64 sent, qint64 received);
 
  private:
   void clientDismissed();

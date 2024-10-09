@@ -38,10 +38,6 @@ void Socks5::newConnection(T* server) {
       clientDismissed();
       newConnection(server);
     });
-    connect(con, &Socks5Connection::dataSentReceived,
-            [this](qint64 sent, qint64 received) {
-              emit dataSentReceived(sent, received);
-            });
 
     connect(con, &Socks5Connection::setupOutSocket, this,
             [this](QAbstractSocket* s, const QHostAddress& dest) {

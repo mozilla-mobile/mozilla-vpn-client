@@ -35,14 +35,13 @@ VerboseLogger::VerboseLogger(Socks5* socks5)
   connect(socks5, &Socks5::connectionsChanged, this,
           &VerboseLogger::printStatus);
 
-  connect(socks5, &Socks5::dataSentReceived, this,
-      [this](qint64 sent, qint64 received) {
-        m_tx_bytes.addSample(sent);
-        m_rx_bytes.addSample(received);
-      });
-
   connect(socks5, &Socks5::incomingConnection, this,
       [this](Socks5Connection* conn) {
+        connect(conn, &Socks5Connection::dataSentReceived, this,
+                &VerboseLogger::dataSentReceived);
+        connect(conn, &Socks5Connection::stateChanged, this,
+                &VerboseLogger::connectionStateChanged);
+
         m_events.append(Event{conn->clientName(),
                               QDateTime::currentMSecsSinceEpoch()});
         printStatus();
@@ -97,6 +96,22 @@ void VerboseLogger::printStatus() {
   out << output << '\r';
 
   s_lastStatus = output;
+}
+
+void VerboseLogger::dataSentReceived(qint64 sent, qint64 received) {
+  m_tx_bytes.addSample(sent);
+  m_rx_bytes.addSample(received);
+}
+
+void VerboseLogger::connectionStateChanged() {
+  Socks5Connection* conn = qobject_cast<Socks5Connection*>(QObject::sender());
+  if (conn->state() == Socks5Connection::Proxy) {
+    auto msg = qDebug() << "Connecting" << conn->clientName() << "to";
+    for (const QString& hostname : conn->dnsLookupStack()) {
+      msg << hostname << "->";
+    }
+    msg << conn->destAddress().toString();
+  }
 }
 
 // static

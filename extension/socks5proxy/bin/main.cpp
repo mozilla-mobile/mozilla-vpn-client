@@ -126,11 +126,6 @@ int main(int argc, char** argv) {
     new VerboseLogger(socks5);
   }
 
-  QObject::connect(socks5, &Socks5::incomingConnection,
-                   [](Socks5Connection* conn) {
-                     qDebug() << "Connection from peer" << conn->clientName();
-                   });
-
 #ifdef __linux__
   new LinuxBypass(socks5);
 #elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)

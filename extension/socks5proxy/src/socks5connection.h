@@ -14,6 +14,9 @@
 class Socks5Connection final : public QObject {
   Q_OBJECT
 
+ private:
+  explicit Socks5Connection(QIODevice* socket);
+
  public:
   explicit Socks5Connection(QTcpSocket* socket);
   explicit Socks5Connection(QLocalSocket* socket);
@@ -27,6 +30,14 @@ class Socks5Connection final : public QObject {
    * @return qint64 - The Bytes Written, -1 on error.
    */
   static qint64 proxy(QIODevice* rx, QIODevice* tx);
+
+  enum Socks5State {
+    ClientGreeting,
+    AuthenticationMethods,
+    ClientConnectionRequest,
+    ClientConnectionAddress,
+    Proxy,
+  };
 
   enum Socks5Replies : uint8_t {
     Success = 0x00u,
@@ -63,22 +74,23 @@ class Socks5Connection final : public QObject {
 
   const QString& clientName() const { return m_clientName; }
 
+  const QHostAddress& destAddress() const { return m_destAddress; }
+  const QStringList& dnsLookupStack() const { return m_dnsLookupStack; }
+
+  const Socks5State& state() const { return m_state; }
+
  signals:
   void setupOutSocket(QAbstractSocket* socket, const QHostAddress& dest);
   void dataSentReceived(qint64 sent, qint64 received);
+  void stateChanged();
 
  private:
-  void configureOutSocket(const QHostAddress& dest, quint16 port);
+  void setState(Socks5State state);
+  void configureOutSocket(quint16 port);
   void dnsResolutionFinished(quint16 port);
   void readyRead();
 
-  enum {
-    ClientGreeting,
-    AuthenticationMethods,
-    ClientConnectionRequest,
-    ClientConnectionAddress,
-    Proxy,
-  } m_state = ClientGreeting;
+  Socks5State m_state = ClientGreeting;
 
   uint8_t m_authNumber = 0;
   QIODevice* m_inSocket = nullptr;
@@ -88,8 +100,10 @@ class Socks5Connection final : public QObject {
   uint16_t m_socksPort = 0;
 
   uint8_t m_addressType = 0;
+  QHostAddress m_destAddress;
 
   int m_dnsLookupAttempts = 0;
+  QStringList m_dnsLookupStack;
 };
 
 #endif  // Socks5Connection_H

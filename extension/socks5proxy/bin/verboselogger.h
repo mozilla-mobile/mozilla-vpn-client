@@ -11,6 +11,7 @@
 #include <QVector>
 
 class Socks5;
+class Socks5Connection;
 
 // Calculates a boxcar average
 class BoxcarAverage final {
@@ -58,6 +59,8 @@ class VerboseLogger final : public QObject {
  private:
   static void logHandler(QtMsgType type, const QMessageLogContext& ctx,
                          const QString& msg);
+  void dataSentReceived(qint64 sent, qint64 received);
+  void connectionStateChanged();
   void tick();
 
  private:
