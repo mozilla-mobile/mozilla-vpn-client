@@ -4,7 +4,6 @@
 
 #include <QCommandLineParser>
 #include <QCoreApplication>
-#include <QDateTime>
 #include <QLocalServer>
 #include <QRandomGenerator>
 #include <QString>
@@ -12,6 +11,7 @@
 #include <QTimer>
 
 #include "socks5.h"
+#include "verboselogger.h"
 
 #ifdef __linux__
 #  include "linuxbypass.h"
@@ -19,55 +19,6 @@
 #if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
 #  include "windowsbypass.h"
 #endif
-
-struct Event {
-  QString m_newConnection;
-  qint64 m_when;
-};
-
-class BoxcarAverage final {
-  public:
-   BoxcarAverage(int buckets = 8) : m_buckets(buckets) { advance(); }
-
-   void addSample(qint64 sample) {
-    m_data[0] += sample;
-   }
-
-   void advance() {
-    if (m_data.length() >= m_buckets) {
-      m_data.resize(m_buckets - 1);
-    }
-    m_data.push_front(0);
-   }
-
-   qint64 average() const {
-    qint64 sum = 0;
-    for (auto x : m_data) {
-      sum += x;
-    }
-    return m_data.isEmpty() ? 0 : sum / m_data.length();
-   }
-
-  private:
-   const int m_buckets;
-   QVector<qint64> m_data;
-};
-
-static QString bytesToString(qint64 bytes) {
-  if (bytes < 1024) {
-    return QString("%1b").arg(bytes);
-  }
-
-  if (bytes < 1024 * 1024) {
-    return QString("%1Kb").arg(bytes / 1024);
-  }
-
-  if (bytes < 1024 * 1024 * 1024) {
-    return QString("%1Mb").arg(bytes / (1024 * 1024));
-  }
-
-  return QString("%1Gb").arg(bytes / (1024 * 1024 * 1024));
-}
 
 struct CliOptions {
   uint16_t port = 0;
@@ -132,89 +83,6 @@ static CliOptions parseArgs(const QCoreApplication& app) {
   return out;
 };
 
-static void startVerboseCLI(const Socks5* socks5) {
-  static QList<Event> s_events;
-  static QString s_lastStatus;
-  static QTimer timer;
-
-  // Run a boxcar average of the data trasnfered.
-  constexpr const int max_counters = 8;
-  static BoxcarAverage rx_average(max_counters);
-  static BoxcarAverage tx_average(max_counters);
-
-  auto cleanup = [&]() {
-    // Update the boxcar average.
-    rx_average.advance();
-    tx_average.advance();
-  
-    qint64 now = QDateTime::currentMSecsSinceEpoch();
-    QMutableListIterator<Event> i(s_events);
-    while (i.hasNext()) {
-      if ((now - i.next().m_when) > 1000) {
-        i.remove();
-      }
-    }
-  };
-
-  auto printStatus = [socks5]() {
-    QString output;
-    {
-      QTextStream out(&output);
-      out << "Connections: " << socks5->connections();
-
-      QStringList addresses;
-      for (const Event& event : s_events) {
-        if (!event.m_newConnection.isEmpty() &&
-            !addresses.contains(event.m_newConnection)) {
-          addresses.append(event.m_newConnection);
-        }
-      }
-
-      out << " [" << addresses.join(", ") << "]";
-      out << " Up: " << bytesToString(tx_average.average()) << "/s";
-      out << " Down: " << bytesToString(rx_average.average()) << "/s";
-    }
-
-    output.truncate(80);
-    while (output.length() < 80) output.append(' ');
-    QTextStream out(stdout);
-    out << output << '\r';
-    s_lastStatus = output;
-  };
-  QObject::connect(socks5, &Socks5::connectionsChanged,
-                   [printStatus]() { printStatus(); });
-  QObject::connect(
-      socks5, &Socks5::incomingConnection,
-      [printStatus](Socks5Connection* conn) {
-        s_events.append(Event{conn->clientName(),
-                              QDateTime::currentMSecsSinceEpoch()});
-        printStatus();
-      });
-
-  QObject::connect(
-      socks5, &Socks5::dataSentReceived,
-      [](qint64 sent, qint64 received) {
-        tx_average.addSample(sent);
-        rx_average.addSample(received);
-      });
-
-  QObject::connect(&timer, &QTimer::timeout, [printStatus, cleanup]() {
-    cleanup();
-    printStatus();
-  });
-  timer.start(1000);
-
-  // Install a message handler that plays nice with the verbose output.
-  // Clears the current line - prints the log message - reprints the status.
-  qInstallMessageHandler(
-    [](QtMsgType type, const QMessageLogContext& ctx, const QString& msg) {
-      QTextStream out(stdout);
-      out << QString(80, ' ') << '\r';
-      out << msg << "\r\n";
-      out << s_lastStatus << '\r';
-    });
-}
-
 int main(int argc, char** argv) {
   QCoreApplication app(argc, argv);
   QCoreApplication::setApplicationName("socksproxy");
@@ -255,7 +123,7 @@ int main(int argc, char** argv) {
   }
 
   if (config.verbose) {
-    startVerboseCLI(socks5);
+    new VerboseLogger(socks5);
   }
 
   QObject::connect(socks5, &Socks5::incomingConnection,
