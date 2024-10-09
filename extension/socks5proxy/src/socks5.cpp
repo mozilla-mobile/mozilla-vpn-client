@@ -34,7 +34,7 @@ void Socks5::newConnection(T* server) {
     }
 
     auto const con = new Socks5Connection(socket);
-    connect(con, &QObject::destroyed, this, [&]() {
+    connect(con, &QObject::destroyed, this, [this, server]() {
       clientDismissed();
       newConnection(server);
     });
