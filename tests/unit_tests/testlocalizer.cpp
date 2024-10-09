@@ -158,17 +158,17 @@ void TestLocalizer::parseIOSLanguages_data() {
   {
     LanguageList a;
     a.append(QPair<QString, QString>{"aa", "bb"});
-    QTest::addRow("language_country") << QStringList("aa_bb") << a;
+    QTest::addRow("language-country") << QStringList("aa-bb") << a;
   }
   {
     LanguageList a;
-    a.append(QPair<QString, QString>{"aa", ""});
+    a.append(QPair<QString, QString>{"aa", "cc"});
     QTest::addRow("language-script") << QStringList("aa-cc") << a;
   }
   {
     LanguageList a;
-    a.append(QPair<QString, QString>{"aa", "bb"});
-    QTest::addRow("language-script_country") << QStringList("aa-cc_bb") << a;
+    a.append(QPair<QString, QString>{"aa", "cc"});
+    QTest::addRow("language-script-country") << QStringList("aa-cc-bb") << a;
   }
 }
 
