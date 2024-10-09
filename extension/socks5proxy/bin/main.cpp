@@ -203,7 +203,7 @@ int main(int argc, char** argv) {
       return 1;
     }
   } else {
-    QTcpServer* server = new QTcpServer(socks5);
+    QTcpServer* server = new QTcpServer();
     socks5 = new Socks5(server);
     if (server->listen(config.addr, config.port)) {
       qDebug() << "Starting on port" << config.port;
