@@ -313,6 +313,7 @@ void Socks5Connection::dnsResolutionFinished(quint16 port) {
     // Restart the DNS lookup using the canonical name
     if (m_dnsLookupAttempts > 0) {
       lookup->setName(cnameRecords.first().value());
+      lookup->setType(QDnsLookup::ANY);
       lookup->lookup();
       return;
     }
@@ -334,6 +335,17 @@ void Socks5Connection::dnsResolutionFinished(quint16 port) {
         createServerResponsePacket(ErrorHostUnreachable));
     m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
     m_inSocket->close();
+    return;
+  }
+
+  // If we get this far, the request didn't fail, but we also didn't get any
+  // records that we could make sense of. Fallback to an explicit IPv4 (A) query
+  // if this originated from an ANY query.
+  if ((lookup->type() == QDnsLookup::ANY) && (m_dnsLookupAttempts > 0)) {
+    qDebug() << "Restarting lookup for" << lookup->name()
+             << "using IPv4 fallback";
+    lookup->setType(QDnsLookup::A);
+    lookup->lookup();
     return;
   }
 
