@@ -6,8 +6,8 @@
 #define VERBOSELOGGER_H
 
 #include <QObject>
-#include <QTimer>
 #include <QString>
+#include <QTimer>
 #include <QVector>
 
 class Socks5;
@@ -19,25 +19,23 @@ class BoxcarAverage final {
   BoxcarAverage(int buckets = 8) : m_buckets(buckets) { advance(); }
 
   // Increment the data in the current bucket.
-  void addSample(qint64 sample) {
-   m_data[0] += sample;
-  }
+  void addSample(qint64 sample) { m_data[0] += sample; }
 
   // Advance the boxcar average to the next bucket.
   void advance() {
-   if (m_data.length() >= m_buckets) {
-     m_data.resize(m_buckets - 1);
-   }
-   m_data.push_front(0);
+    if (m_data.length() >= m_buckets) {
+      m_data.resize(m_buckets - 1);
+    }
+    m_data.push_front(0);
   }
 
   // Calculate the average value over the buckets.
   qint64 average() const {
-   qint64 sum = 0;
-   for (auto x : m_data) {
-     sum += x;
-   }
-   return m_data.isEmpty() ? 0 : sum / m_data.length();
+    qint64 sum = 0;
+    for (auto x : m_data) {
+      sum += x;
+    }
+    return m_data.isEmpty() ? 0 : sum / m_data.length();
   }
 
  private:

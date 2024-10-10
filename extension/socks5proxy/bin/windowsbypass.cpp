@@ -222,7 +222,7 @@ void WindowsBypass::refreshAddresses() {
   }
 
   // Fetch the interface metrics too.
-  for(auto i = data.begin(); i != data.end(); i++) {
+  for (auto i = data.begin(); i != data.end(); i++) {
     MIB_IPINTERFACE_ROW row = {0};
     row.InterfaceLuid.Value = i.key();
     if (GetIpInterfaceEntry(&row) == NO_ERROR) {
@@ -330,7 +330,8 @@ const MIB_IPFORWARD_ROW2* WindowsBypass::lookupRoute(
   return bestMatch;
 }
 
-void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2> &table, int family) {
+void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2>& table,
+                                int family) {
   // Update the output table on exit.
   QVector<MIB_IPFORWARD_ROW2> update;
   auto swapGuard = qScopeGuard([&] { table.swap(update); });

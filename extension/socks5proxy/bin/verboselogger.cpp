@@ -36,16 +36,16 @@ VerboseLogger::VerboseLogger(Socks5* socks5)
           &VerboseLogger::printStatus);
 
   connect(socks5, &Socks5::incomingConnection, this,
-      [this](Socks5Connection* conn) {
-        connect(conn, &Socks5Connection::dataSentReceived, this,
-                &VerboseLogger::dataSentReceived);
-        connect(conn, &Socks5Connection::stateChanged, this,
-                &VerboseLogger::connectionStateChanged);
+          [this](Socks5Connection* conn) {
+            connect(conn, &Socks5Connection::dataSentReceived, this,
+                    &VerboseLogger::dataSentReceived);
+            connect(conn, &Socks5Connection::stateChanged, this,
+                    &VerboseLogger::connectionStateChanged);
 
-        m_events.append(Event{conn->clientName(),
-                              QDateTime::currentMSecsSinceEpoch()});
-        printStatus();
-      });
+            m_events.append(
+                Event{conn->clientName(), QDateTime::currentMSecsSinceEpoch()});
+            printStatus();
+          });
 
   // Install a custom log handler that plays nicely with the status.
   QLoggingCategory::defaultCategory()->setEnabled(QtMsgType::QtDebugMsg, true);
@@ -82,7 +82,7 @@ void VerboseLogger::printStatus() {
     for (const Event& event : m_events) {
       if (!event.m_newConnection.isEmpty() &&
           !addresses.contains(event.m_newConnection)) {
-          addresses.append(event.m_newConnection);
+        addresses.append(event.m_newConnection);
       }
     }
     out << " [" << addresses.join(", ") << "]";
