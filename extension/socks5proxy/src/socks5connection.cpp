@@ -375,7 +375,7 @@ void Socks5Connection::dnsResolutionFinished(quint16 port) {
 
 void Socks5Connection::configureOutSocket(quint16 port) {
   Q_ASSERT(!m_destAddress.isNull());
-  m_outSocket = new QTcpSocket();
+  m_outSocket = new QTcpSocket(this);
   emit setupOutSocket(m_outSocket, m_destAddress);
 
   m_outSocket->connectToHost(m_destAddress, port);
