@@ -34,6 +34,7 @@ MZInformationCard 0.1 MZInformationCard.qml
 MZInterLabel 0.1 MZInterLabel.qml
 MZLightLabel 0.1 MZLightLabel.qml
 MZLinkButton 0.1 MZLinkButton.qml
+MZLinkRow 0.1 MZLinkRow.qml
 MZList 0.1 MZList.qml
 MZLoader 0.1 MZLoader.qml
 MZLogsButton 0.1 MZLogsButton.qml

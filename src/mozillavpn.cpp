@@ -1355,6 +1355,10 @@ void MozillaVPN::registerUrlOpenerLabels() {
 
   uo->registerUrlLabel("sumoMultihop",
                        []() -> QString { return Constants::SUMO_MULTIHOP; });
+
+  uo->registerUrlLabel("sumoAlwaysOnAndroid", []() -> QString {
+    return Constants::SUMO_ALWAYS_ON_ANDROID;
+  });
 }
 
 void MozillaVPN::errorHandled() {
