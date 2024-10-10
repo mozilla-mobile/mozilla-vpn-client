@@ -93,6 +93,7 @@ Socks5Connection::Socks5Connection(QTcpSocket* socket)
 
 Socks5Connection::Socks5Connection(QLocalSocket* socket)
     : Socks5Connection(static_cast<QIODevice*>(socket)) {
+
   connect(socket, &QLocalSocket::disconnected, this, &QObject::deleteLater);
 
   // TODO: Some magic may be required here to resolve the entity of which client
@@ -104,7 +105,7 @@ Socks5Connection::Socks5Connection(QLocalSocket* socket)
   //   - MacOS: SecTaskCopySigningIdentifier() can be used to grab information
   //            about processes and their code signatures. Somewhere in there
   //            I would expect to find the application ID too.
-  m_clientName = "TODO";
+  m_clientName = localClientName(socket);
 }
 
 void Socks5Connection::setState(Socks5State newstate) {

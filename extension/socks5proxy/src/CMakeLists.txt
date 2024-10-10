@@ -13,6 +13,12 @@ target_sources(libSocks5proxy PRIVATE
     socks5connection.h
 )
 
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    target_sources(libSocks5proxy PRIVATE socks5local_linux.cpp)
+else()
+    target_sources(libSocks5proxy PRIVATE socks5local_default.cpp)
+endif()
+
 target_include_directories(libSocks5proxy PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}
 )

@@ -90,6 +90,9 @@ class Socks5Connection final : public QObject {
   void dnsResolutionFinished(quint16 port);
   void readyRead();
 
+  // Implemented by platform-specific code in socks5local_<platform>.cpp
+  static QString localClientName(QLocalSocket* s);
+
   Socks5State m_state = ClientGreeting;
 
   uint8_t m_authNumber = 0;
