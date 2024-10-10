@@ -99,8 +99,12 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
                                    const QString& deviceIpv4Address) {
   logger.debug() << "ConnectionHealth active started";
 
-  if (serverIpv4Gateway.isEmpty() ||
-      MozillaVPN::instance()->controller()->state() != Controller::StateOn) {
+  bool isNotOnOrOnPartial =
+      MozillaVPN::instance()->controller()->state() != Controller::StateOn &&
+      MozillaVPN::instance()->controller()->state() !=
+          Controller::StateOnPartial;
+
+  if (serverIpv4Gateway.isEmpty() || isNotOnOrOnPartial) {
     logger.info() << "ConnectionHealth not starting because no connection";
     return;
   }
@@ -153,11 +157,12 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   // setStability. Do not record count metrics in these cases.
   Controller::State state = MozillaVPN::instance()->controller()->state();
   if (state == Controller::StateOn || state == Controller::StateSwitching ||
-      state == Controller::StateSilentSwitching) {
+      state == Controller::StateSilentSwitching ||
+      state == Controller::StateOnPartial) {
     recordMetrics(m_stability, stability);
   }
 
-  if (stability == Unstable) {
+  if (state != Controller::StateOnPartial && stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
   }
 
@@ -180,6 +185,7 @@ void ConnectionHealth::connectionStateChanged() {
   }
 
   switch (state) {
+    case Controller::StateOnPartial:
     case Controller::StateOn:
       MozillaVPN::instance()->controller()->getStatus(
           [this](const QString& serverIpv4Gateway,

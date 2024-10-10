@@ -69,7 +69,7 @@ Item {
 
                 PropertyChanges {
                     target: stability
-                    visible: true
+                    visible: (VPNController.state !== VPNController.StateOnPartial)
                     opacity: 1
                 }
                 PropertyChanges {
@@ -89,6 +89,10 @@ Item {
             State {
                 name: VPNConnectionHealth.NoSignal
                 extend: VPNConnectionHealth.Unstable
+                PropertyChanges {
+                    target: stability
+                    visible: (VPNController.state !== VPNController.StateOnPartial)
+                }
                 PropertyChanges {
                     target: stabilityLabel
                     color: MZTheme.theme.red

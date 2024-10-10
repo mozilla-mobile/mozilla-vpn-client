@@ -302,6 +302,9 @@ Rectangle {
     Connections{
         target: VPNConnectionHealth
         function onStabilityChanged() {
+            if (VPNController.state === VPNController.StateOnPartial) {
+                return;
+            }
             switch(VPNConnectionHealth.stability) {
                 case(VPNConnectionHealth.NoSignal):
                     insetCircle.color = MZTheme.colors.error.default;
