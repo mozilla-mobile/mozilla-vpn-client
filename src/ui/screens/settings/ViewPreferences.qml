@@ -38,7 +38,7 @@ MZViewBase {
             title: _startAtBootTitle
             subLabelText: MZI18n.SettingsStartAtBootSubtitle
             visible: Qt.platform.os === "android"
-            destinationUrl: "https://support.mozilla.org/kb/how-enable-always-vpn-android"
+            onClicked: MZUrlOpener.openUrlLabel("sumoAlwaysOnAndroid")
         }
 
         MZToggleRow {

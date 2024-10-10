@@ -9,14 +9,15 @@ import Mozilla.Shared 1.0
         
         
 RowLayout {
-    id: toggleRow
+    id: linkRow
     Layout.fillWidth: true
     Layout.rightMargin: MZTheme.theme.windowMargin
     Layout.leftMargin: MZTheme.theme.windowMargin
-    property string destinationUrl: ""
     property alias title: label.text
     property alias subLabelText: subLabel.text
     property var accessibleName: ""
+
+    signal clicked()
 
     spacing: 16
     Accessible.name: accessibleName
@@ -69,6 +70,6 @@ RowLayout {
             source: "qrc:/nebula/resources/externalLink.svg"
             anchors.centerIn: parent
         }
-        onClicked: MZUrlOpener.openUrl(destinationUrl)
+        onClicked: linkRow.clicked()
     }
 }
