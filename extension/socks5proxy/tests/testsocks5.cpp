@@ -101,14 +101,17 @@ void TestSocks5::proxyTCP() {
   Socks5 proxy(&proxyServer);
   proxyServer.listen(QHostAddress::LocalHost, proxyPort);
 
-  auto const proxyHadData =
-      QtFuture::connect(&proxy, &Socks5::dataSentReceived);
+  QFuture<std::tuple<qint64,qint64>> proxyHadData;
   auto const connectionToServer = connectTo(serverPort, proxyPort);
 
   QString proxyClientName;
   QObject::connect(
       &proxy, &Socks5::incomingConnection,
-      [&](Socks5Connection* conn) { proxyClientName = conn->clientName(); });
+      [&](Socks5Connection* conn) {
+        proxyClientName = conn->clientName();
+        proxyHadData =
+            QtFuture::connect(conn, &Socks5Connection::dataSentReceived);
+      });
 
   while (!connectionToServer.isFinished()) {
     QTest::qWait(250);
