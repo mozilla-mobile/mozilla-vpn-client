@@ -6,32 +6,35 @@
 #define SOCKS5_H
 
 #include <QObject>
-#include <QTcpServer>
+
+#include "socks5connection.h"
+
+class QAbstractSocket;
+class QHostAddress;
+class QLocalServer;
+class QTcpServer;
 
 class Socks5 final : public QObject {
   Q_OBJECT
   Q_PROPERTY(uint16_t connections READ connections NOTIFY connectionsChanged);
 
  public:
-  explicit Socks5(uint16_t port, QHostAddress listenAddress, QObject* parent);
+  explicit Socks5(QLocalServer* server);
+  explicit Socks5(QTcpServer* server);
   ~Socks5();
-
-  void clientDismissed();
-
-  int port() const;
 
   uint16_t connections() const { return m_clientCount; }
 
  signals:
   void connectionsChanged();
-  void incomingConnection(const QString& peerAddress);
-  void dataSentReceived(qint64 sent, qint64 received);
+  void incomingConnection(Socks5Connection* connection);
+  void outgoingConnection(QAbstractSocket* socket, const QHostAddress& dest);
 
  private:
-  void newConnection();
+  void clientDismissed();
+  template <typename T>
+  void newConnection(T* server);
 
- private:
-  QTcpServer m_server;
   uint16_t m_clientCount = 0;
   bool m_shuttingDown = false;
 };

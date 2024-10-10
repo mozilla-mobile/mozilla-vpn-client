@@ -4,40 +4,48 @@
 
 #include "socks5.h"
 
+#include <QLocalServer>
+#include <QLocalSocket>
+#include <QTcpServer>
+#include <QTcpSocket>
+
 #include "socks5connection.h"
 
 #define MAX_CLIENTS 1024
 
-Socks5::Socks5(uint16_t port, QHostAddress listenAddress = QHostAddress::Any,
-               QObject* parent = nullptr)
-    : QObject(parent) {
-  connect(&m_server, &QTcpServer::newConnection, this, &Socks5::newConnection);
-  qDebug() << "port" << port;
-  if (!m_server.listen(listenAddress, port)) {
-    qDebug() << "Unable to listen to the proxy port" << port;
-    return;
-  }
+Socks5::Socks5(QLocalServer* server) : QObject(server) {
+  connect(server, &QLocalServer::newConnection, this,
+          [this, server]() { newConnection(server); });
+}
+
+Socks5::Socks5(QTcpServer* server) : QObject(server) {
+  connect(server, &QTcpServer::newConnection, this,
+          [this, server]() { newConnection(server); });
 }
 
 Socks5::~Socks5() { m_shuttingDown = true; }
 
-void Socks5::newConnection() {
-  while (m_server.hasPendingConnections() && m_clientCount < MAX_CLIENTS) {
-    QTcpSocket* socket = m_server.nextPendingConnection();
+template <typename T>
+void Socks5::newConnection(T* server) {
+  while (server->hasPendingConnections() && (m_clientCount < MAX_CLIENTS)) {
+    auto* socket = server->nextPendingConnection();
     if (!socket) {
       return;
     }
 
-    emit incomingConnection(socket->peerAddress().toString());
+    auto const con = new Socks5Connection(socket);
+    connect(con, &QObject::destroyed, this, [this, server]() {
+      clientDismissed();
+      newConnection(server);
+    });
 
-    auto const con = new Socks5Connection(socket, m_server.serverPort());
-    connect(con, &QObject::destroyed, this, &Socks5::clientDismissed);
-    connect(con, &Socks5Connection::dataSentReceived,
-            [this](qint64 sent, qint64 received) {
-              emit dataSentReceived(sent, received);
+    connect(con, &Socks5Connection::setupOutSocket, this,
+            [this](QAbstractSocket* s, const QHostAddress& dest) {
+              emit outgoingConnection(s, dest);
             });
 
     ++m_clientCount;
+    emit incomingConnection(con);
     emit connectionsChanged();
   }
 }
@@ -48,9 +56,5 @@ void Socks5::clientDismissed() {
   if (!m_shuttingDown) {
     --m_clientCount;
     emit connectionsChanged();
-
-    newConnection();
   }
 }
-
-int Socks5::port() const { return m_server.serverPort(); }

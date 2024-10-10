@@ -173,6 +173,34 @@ func (ctx *nftCtx) nftApplyFwMark() {
 			},
 		},
 	})
+
+	// Inbound packets from an excluded connection should be marked for RPF.
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table,
+		Chain: ctx.preroute,
+		Exprs: []expr.Any{
+			// Mark packets if they originated from an excluded connection.
+			&expr.Ct{
+				Key:      expr.CtKeyMARK,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op:       expr.CmpOpEq,
+				Register: 1,
+				Data:     binaryutil.NativeEndian.PutUint32(ctmark_excluded),
+			},
+			// Set the firewall mark.
+			&expr.Immediate{
+				Register: 1,
+				Data:     binaryutil.NativeEndian.PutUint32(ctx.fwmark),
+			},
+			&expr.Meta{
+				Key:            expr.MetaKeyMARK,
+				Register:       1,
+				SourceRegister: true,
+			},
+		},
+	})
 }
 
 func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
@@ -251,27 +279,6 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 				SourceRegister: 1,
 				SetName:        ctx.addrset.Name,
 				SetID:          ctx.addrset.ID,
-			},
-			&expr.Verdict{
-				Kind: expr.VerdictAccept,
-			},
-		},
-	})
-
-	ctx.conn.AddRule(&nftables.Rule{
-		Table: ctx.table,
-		Chain: ctx.input,
-		Exprs: []expr.Any{
-			// Accept packets if they originated from an excluded connection.
-			// TODO: Any other conntrack state we should check?
-			&expr.Ct{
-				Key:      expr.CtKeyMARK,
-				Register: 1,
-			},
-			&expr.Cmp{
-				Op:       expr.CmpOpEq,
-				Register: 1,
-				Data:     binaryutil.NativeEndian.PutUint32(ctmark_excluded),
 			},
 			&expr.Verdict{
 				Kind: expr.VerdictAccept,

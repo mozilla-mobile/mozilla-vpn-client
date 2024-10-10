@@ -5,17 +5,22 @@
 #ifndef Socks5Connection_H
 #define Socks5Connection_H
 
+#include <QByteArray>
+#include <QIODevice>
+#include <QLocalSocket>
 #include <QObject>
 #include <QTcpSocket>
 
 class Socks5Connection final : public QObject {
   Q_OBJECT
 
- public:
-  Socks5Connection(QTcpSocket* socket, uint16_t port);
-  ~Socks5Connection() = default;
+ private:
+  explicit Socks5Connection(QIODevice* socket);
 
-  void configureOutSocket();
+ public:
+  explicit Socks5Connection(QTcpSocket* socket);
+  explicit Socks5Connection(QLocalSocket* socket);
+  ~Socks5Connection() = default;
 
   /**
    * @brief Copies incoming bytes to another QIODevice
@@ -25,6 +30,14 @@ class Socks5Connection final : public QObject {
    * @return qint64 - The Bytes Written, -1 on error.
    */
   static qint64 proxy(QIODevice* rx, QIODevice* tx);
+
+  enum Socks5State {
+    ClientGreeting,
+    AuthenticationMethods,
+    ClientConnectionRequest,
+    ClientConnectionAddress,
+    Proxy,
+  };
 
   enum Socks5Replies : uint8_t {
     Success = 0x00u,
@@ -58,27 +71,42 @@ class Socks5Connection final : public QObject {
    */
   template <typename T>
   static std::optional<T> readPacket(QIODevice* connection);
+
+  const QString& clientName() const { return m_clientName; }
+
+  const QHostAddress& destAddress() const { return m_destAddress; }
+  const QStringList& dnsLookupStack() const { return m_dnsLookupStack; }
+
+  const Socks5State& state() const { return m_state; }
+
  signals:
+  void setupOutSocket(QAbstractSocket* socket, const QHostAddress& dest);
   void dataSentReceived(qint64 sent, qint64 received);
+  void stateChanged();
 
  private:
+  void setState(Socks5State state);
+  void configureOutSocket(quint16 port);
+  void dnsResolutionFinished(quint16 port);
   void readyRead();
 
-  enum {
-    ClientGreeting,
-    AuthenticationMethods,
-    ClientConnectionRequest,
-    ClientConnectionAddress,
-    Proxy,
-  } m_state = ClientGreeting;
+  // Implemented by platform-specific code in socks5local_<platform>.cpp
+  static QString localClientName(QLocalSocket* s);
+
+  Socks5State m_state = ClientGreeting;
 
   uint8_t m_authNumber = 0;
-  QTcpSocket* m_inSocket = nullptr;
+  QIODevice* m_inSocket = nullptr;
   QTcpSocket* m_outSocket = nullptr;
 
+  QString m_clientName;
   uint16_t m_socksPort = 0;
 
   uint8_t m_addressType = 0;
+  QHostAddress m_destAddress;
+
+  int m_dnsLookupAttempts = 0;
+  QStringList m_dnsLookupStack;
 };
 
 #endif  // Socks5Connection_H
