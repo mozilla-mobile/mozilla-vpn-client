@@ -84,7 +84,6 @@ Socks5Connection::Socks5Connection(QIODevice* socket)
 
 Socks5Connection::Socks5Connection(QTcpSocket* socket)
     : Socks5Connection(static_cast<QIODevice*>(socket)) {
-
   connect(socket, &QTcpSocket::disconnected, this, &QObject::deleteLater);
 
   m_socksPort = socket->localPort();
@@ -93,7 +92,6 @@ Socks5Connection::Socks5Connection(QTcpSocket* socket)
 
 Socks5Connection::Socks5Connection(QLocalSocket* socket)
     : Socks5Connection(static_cast<QIODevice*>(socket)) {
-
   connect(socket, &QLocalSocket::disconnected, this, &QObject::deleteLater);
 
   // TODO: Some magic may be required here to resolve the entity of which client

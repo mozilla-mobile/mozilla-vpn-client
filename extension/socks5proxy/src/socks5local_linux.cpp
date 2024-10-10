@@ -2,17 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "socks5connection.h"
-
 #include <sys/socket.h>
 
-#include <QLocalSocket>
 #include <QFile>
+#include <QLocalSocket>
+
+#include "socks5connection.h"
 
 // Read /proc/<pid>/cgroup and parse out the cgroupv2 control group path.
 static QString lookupCgroupForPid(pid_t pid) {
   QFile cgfile(QString("/proc/%1/cgroup").arg(pid));
-  if (!cgfile.exists() || !cgfile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
+  if (!cgfile.exists() ||
+      !cgfile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
     return QString();
   }
   while (true) {
@@ -40,7 +41,6 @@ QString Socks5Connection::localClientName(QLocalSocket* s) {
   if (!peer.pid) {
     return QString();
   }
-
 
   QString cgscope;
   for (const QString& segment : lookupCgroupForPid(peer.pid).split("/")) {
