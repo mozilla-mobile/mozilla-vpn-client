@@ -16,6 +16,9 @@ if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "default build type" FORCE)
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
+if(WIN32 AND DEFINED ENV{CONDA_PREFIX})
+    include(scripts/windows/conda-toolchain.cmake)
+endif()
 
 file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/version.txt" APP_VERSION)
 message(APP_VERSION=${APP_VERSION})
@@ -55,6 +58,11 @@ if(WIN32)
     if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
         set(CMAKE_INSTALL_PREFIX "${CMAKE_BINARY_DIR}/unsigned"
             CACHE PATH "default install path" FORCE)
+    endif()
+
+    ## Generate a cargo/config.toml file to pass the Conda toolchain into rust too.
+    if(DEFINED ENV{CONDA_PREFIX})
+        configure_file(scripts/windows/cargo-config.toml.in ${CMAKE_BINARY_DIR}/cargo_home/config.toml)
     endif()
 endif()
 if(APPLE)
