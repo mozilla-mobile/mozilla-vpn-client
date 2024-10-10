@@ -653,7 +653,7 @@ QString Localizer::getTranslatedCityName(const QString& cityName) const {
 
   auto value = getCapitalizedStringFromI18n(i18nCityId);
 
-  if (cityName.contains("Malm") || cityName.contains("Salt")) {
+  if (cityName.contains("Malm")) {
     logger.debug() << "TEMP:" << cityName << " parsed " << parsedCityName
                    << " i18nCityId " << i18nCityId << " value " << value;
   }
@@ -679,8 +679,15 @@ QString Localizer::getTranslationCode() {
 
 // static
 QString Localizer::getCapitalizedStringFromI18n(const QString& id) {
-  QString str = I18nStrings::instance()->t(I18nStrings::getString(id));
-  return toUpper(QLocale(getTranslationCode()), str);
+  I18nStrings::String gstr = I18nStrings::getString(id);
+  QString str = I18nStrings::instance()->t(gstr);
+  QString gtc = getTranslationCode();
+  QString finalOne = toUpper(QLocale(gtc), str);
+  if (id.contains("Malm")) {
+    logger.debug() << "TEMP2:" << gstr << " str " << str << " gtc " << gtc
+                   << " returning " << finalOne;
+  }
+  return finalOne;
 }
 
 // static
