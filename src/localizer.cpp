@@ -50,18 +50,26 @@ QString toUpper(const QLocale& locale, QString input) {
   return input.replace(0, 1, locale.toUpper(QString(input[0])));
 }
 
-QString toPascalCase(const QString& s) {
+QString changeCasing(const QString& s, bool shouldLowerCase) {
   QStringList words = s.split("_");
 
   for (int i = 0; i < words.size(); i++) {
     QString word = words.at(i);
     if (!word.isEmpty()) {
-      words[i] = word.at(0).toUpper() + word.mid(1).toLower();
+      if (shouldLowerCase) {
+        words[i] = word.at(0).toUpper() + word.mid(1).toLower();
+      } else {
+        words[i] = word.at(0).toUpper() + word.mid(1);
+      }
     }
   }
 
   return words.join("");
 }
+
+QString toPascalCase(const QString& s) { return changeCasing(s, true); }
+
+QString toLanguageId(const QString& s) { return changeCasing(s, false); }
 
 }  // namespace
 
@@ -490,7 +498,7 @@ int Localizer::rowCount(const QModelIndex&) const {
 }
 
 QString Localizer::localizedLanguageName(const QString& languageCode) const {
-  QString i18nLangId = QString("Languages%1").arg(toPascalCase(languageCode));
+  QString i18nLangId = QString("Languages%1").arg(toLanguageId(languageCode));
   QString value = getCapitalizedStringFromI18n(i18nLangId);
 
   // Value should never be empty, because the ultimate fallback locale is "en"
