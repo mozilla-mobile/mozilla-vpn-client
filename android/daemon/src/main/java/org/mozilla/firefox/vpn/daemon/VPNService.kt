@@ -23,6 +23,7 @@ import mozilla.telemetry.glean.config.Configuration
 import org.json.JSONObject
 import org.mozilla.firefox.qt.common.CoreBinder
 import org.mozilla.firefox.qt.common.Prefs
+import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Pings
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
 import java.io.File
@@ -37,8 +38,8 @@ class VPNService : android.net.VpnService() {
     private var mAlreadyInitialised = false
     val mConnectionHealth = ConnectionHealth(this)
     private var mCityname = ""
-    private var mBackgroundPingTimerMSec: Long = 3 * 60 * 60 * 1000 // 3 hours, in milliseconds
-    private var mShortTimerBackgroundPingMSec: Long = 3 * 60 * 1000 // 3 minutes, in milliseconds
+    private val mBackgroundPingTimerMSec: Long = 3 * 60 * 60 * 1000 // 3 hours, in milliseconds
+    private val mShortTimerBackgroundPingMSec: Long = 3 * 60 * 1000 // 3 minutes, in milliseconds
     private val mMetricsTimer: CountDownTimer = object : CountDownTimer(
         if (isUsingShortTimerSessionPing) mShortTimerBackgroundPingMSec else mBackgroundPingTimerMSec,
         if (isUsingShortTimerSessionPing) mShortTimerBackgroundPingMSec / 4 else mBackgroundPingTimerMSec / 4,
@@ -47,6 +48,7 @@ class VPNService : android.net.VpnService() {
         override fun onFinish() {
             Log.i(tag, "Sending daemon_timer ping")
             if (shouldRecordTimerAndEndMetrics) {
+                recordDataTransferMetrics()
                 Pings.daemonsession.submit(
                     Pings.daemonsessionReasonCodes.daemonTimer,
                 )
@@ -311,6 +313,8 @@ class VPNService : android.net.VpnService() {
         }
         if (currentTunnelHandle < 0) {
             throw Error("Activation Error Wireguard-Error -> $currentTunnelHandle")
+        } else {
+            Log.i(tag, "Updated tunnel handle to: " + currentTunnelHandle)
         }
         protect(wgGetSocketV4(currentTunnelHandle))
         protect(wgGetSocketV6(currentTunnelHandle))
@@ -437,6 +441,11 @@ class VPNService : android.net.VpnService() {
 
     fun turnOff() {
         Log.v(tag, "Try to disable tunnel")
+        if (shouldRecordTimerAndEndMetrics) {
+            // Data metrics must be recorded prior to wgTurnOff, or we can't get data from the cocnfig
+            recordDataTransferMetrics()
+        }
+
         wgTurnOff(currentTunnelHandle)
         currentTunnelHandle = -1
         // If the client is "dead", on a disconnect the
@@ -609,6 +618,17 @@ class VPNService : android.net.VpnService() {
         )
 
         Log.i(tag, "Initialized Glean for daemon. Upload enabled state: $uploadEnabled")
+    }
+
+    private fun recordDataTransferMetrics() {
+        val rxBytes = getConfigValue("rx_bytes")?.toLong()
+        val txBytes = getConfigValue("tx_bytes")?.toLong()
+        if (rxBytes != null && txBytes != null) {
+            ConnectionHealth.dataTransferredRx.accumulateSingleSample(rxBytes)
+            ConnectionHealth.dataTransferredTx.accumulateSingleSample(txBytes)
+        } else {
+            Log.e(tag, "Config gave bad value for rxBytes and/or txBytes")
+        }
     }
 
     companion object {

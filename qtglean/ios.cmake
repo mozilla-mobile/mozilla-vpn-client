@@ -100,8 +100,19 @@ target_sources(iosglean PUBLIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/gleanFFI.h
 )
 
+# This is a horrible, horrible hack.
+# Metrics.yaml is used for all platforms. Unfortunately, iOS's Glean SDK does not support custom distributions.
+# While we use a custom Glean for the main iOS app, we use stock Glean SDK for the network extension. Thus,
+# we need to remove the metrics of `custom distribution` type before VPNMetrics.swift is created, otherwise
+# we will get compile errors.
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/generated/iosmetrics.yaml
+    COMMAND sed '/data_transferred_tx/,/histogram_type/d' ${CMAKE_SOURCE_DIR}/src/telemetry/metrics.yaml > ${CMAKE_CURRENT_BINARY_DIR}/generated/temp.yaml
+    COMMAND sed '/data_transferred_rx/,/histogram_type/d' ${CMAKE_CURRENT_BINARY_DIR}/generated/temp.yaml > ${CMAKE_CURRENT_BINARY_DIR}/generated/iosmetrics.yaml
+)
+
 list(APPEND PINGS_LIST ${CMAKE_SOURCE_DIR}/src/telemetry/pings.yaml)
-list(APPEND METRICS_LIST ${CMAKE_SOURCE_DIR}/src/telemetry/metrics.yaml)
+list(APPEND METRICS_LIST ${CMAKE_CURRENT_BINARY_DIR}/generated/iosmetrics.yaml)
 
 # We execute this as a command and not a process,
 # because different from the Glean internal stuff
