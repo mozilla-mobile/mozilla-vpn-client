@@ -16,8 +16,9 @@
 #ifdef __linux__
 #  include "linuxbypass.h"
 #endif
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#if defined(PROXY_OS_WIN)
 #  include "windowsbypass.h"
+#  include "winsvcthread.h"
 #endif
 
 struct CliOptions {
@@ -27,6 +28,9 @@ struct CliOptions {
   QString username = {};
   QString password = {};
   bool verbose = false;
+#if defined(PROXY_OS_WIN)
+  bool service = false;
+#endif
 };
 
 static CliOptions parseArgs(const QCoreApplication& app) {
@@ -53,6 +57,11 @@ static CliOptions parseArgs(const QCoreApplication& app) {
 
   QCommandLineOption verboseOption({"v", "verbose"}, "Verbose");
   parser.addOption(verboseOption);
+
+#if defined(PROXY_OS_WIN)
+  QCommandLineOption serviceOption({"s", "service"}, "Windows service mode");
+  parser.addOption(serviceOption);
+#endif
   parser.process(app);
 
   CliOptions out = {};
@@ -80,6 +89,11 @@ static CliOptions parseArgs(const QCoreApplication& app) {
   if (parser.isSet(verboseOption)) {
     out.verbose = true;
   }
+#if defined(PROXY_OS_WIN)
+  if (parser.isSet(serviceOption)) {
+    out.service = true;
+  }
+#endif
   return out;
 };
 
@@ -94,6 +108,12 @@ int main(int argc, char** argv) {
     qFatal("AAH NOT IMPLENTED SORRYY");
     return 1;
   }
+
+#if defined(PROXY_OS_WIN)
+  if (config.service) {
+    WinSvcThread::startDispatcher("Mozilla VPN Proxy");
+  }
+#endif
 
   Socks5* socks5;
   if (!config.localSocketName.isEmpty()) {
@@ -129,7 +149,7 @@ int main(int argc, char** argv) {
 
 #ifdef __linux__
   new LinuxBypass(socks5);
-#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#elif defined(PROXY_OS_WIN)
   new WindowsBypass(socks5);
 #endif
 
