@@ -4,8 +4,10 @@
 
 #include <QCommandLineParser>
 #include <QCoreApplication>
+#include <QDir>
 #include <QLocalServer>
 #include <QRandomGenerator>
+#include <QStandardPaths>
 #include <QString>
 #include <QTcpServer>
 #include <QTimer>
@@ -92,6 +94,8 @@ static CliOptions parseArgs(const QCoreApplication& app) {
 #if defined(PROXY_OS_WIN)
   if (parser.isSet(serviceOption)) {
     out.service = true;
+    // Force logging when running as a service.
+    out.verbose = true;
   }
 #endif
   return out;
@@ -144,7 +148,14 @@ int main(int argc, char** argv) {
   }
 
   if (config.verbose) {
-    new VerboseLogger(socks5);
+    auto *logger = new VerboseLogger(socks5);
+#if defined(PROXY_OS_WIN)
+    if (config.service) {
+      auto location = QStandardPaths::AppLocalDataLocation;
+      QDir logdir(QStandardPaths::writableLocation(location));
+      logger->setLogfile(logdir.filePath("socksproxy.log"));
+    }
+#endif
   }
 
 #ifdef __linux__
