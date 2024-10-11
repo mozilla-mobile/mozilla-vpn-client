@@ -99,6 +99,7 @@ int main(int argc, char** argv) {
   if (!config.localSocketName.isEmpty()) {
     QLocalServer* server = new QLocalServer();
     socks5 = new Socks5(server);
+    server->setSocketOptions(QLocalServer::WorldAccessOption);
     if (server->listen(config.localSocketName)) {
       qDebug() << "Starting on local socket" << server->fullServerName();
     } else if ((server->serverError() == QAbstractSocket::AddressInUseError) &&
@@ -115,7 +116,7 @@ int main(int argc, char** argv) {
     QTcpServer* server = new QTcpServer();
     socks5 = new Socks5(server);
     if (server->listen(config.addr, config.port)) {
-      qDebug() << "Starting on port" << config.port;
+      qDebug() << "Starting on port" << server->serverPort();
     } else {
       qWarning() << "Unable to listen to the proxy port" << config.port;
       return 1;
