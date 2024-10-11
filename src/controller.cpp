@@ -344,7 +344,12 @@ qint64 Controller::connectionTimestamp() const {
     case Controller::State::StateSilentSwitching:
       [[fallthrough]];
     case Controller::State::StateSwitching:
-      return m_connectedTimeInUTC.toMSecsSinceEpoch();
+      if (m_connectedTimeInUTC.isValid()) {
+        return m_connectedTimeInUTC.toMSecsSinceEpoch();
+      }
+      const QDateTime& initialTimeStampForExtension =
+          QDateTime::currentDateTimeUtc();
+      return initialTimeStampForExtension.toMSecsSinceEpoch();
   }
   Q_UNREACHABLE();
 }
