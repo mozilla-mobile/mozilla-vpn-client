@@ -5,10 +5,10 @@
 #include "windowsbypass.h"
 
 #include <WS2tcpip.h>
+#include <fwpmu.h>
 #include <netioapi.h>
 #include <windows.h>
 #include <winsock2.h>
-#include <fwpmu.h>
 
 #include <QAbstractSocket>
 #include <QFileInfo>
@@ -79,7 +79,7 @@ WindowsBypass::WindowsBypass(Socks5* proxy) : QObject(proxy) {
                                &m_addrChangeHandle);
   NotifyRouteChange2(AF_UNSPEC, routeChangeCallback, this, true,
                      &m_routeChangeHandle);
-  
+
   // Watch for changes to the firewall
   FWPM_SESSION0 session;
   memset(&session, 0, sizeof(session));
@@ -92,7 +92,7 @@ WindowsBypass::WindowsBypass(Socks5* proxy) : QObject(proxy) {
   }
 
   GUID fwguid = KILLSWITCH_FW_GUID;
-  FWPM_SUBLAYER_ENUM_TEMPLATE0 fwmatch { .providerKey = &fwguid };
+  FWPM_SUBLAYER_ENUM_TEMPLATE0 fwmatch {.providerKey = &fwguid};
   FWPM_SUBLAYER_SUBSCRIPTION0 fwsub = {0};
   fwsub.enumTemplate = &fwmatch;
   fwsub.flags = FWPM_SUBSCRIPTION_FLAG_NOTIFY_ON_ADD;
@@ -101,7 +101,8 @@ WindowsBypass::WindowsBypass(Socks5* proxy) : QObject(proxy) {
                                          &WindowsBypass::setupFirewall, this,
                                          &m_fwChangeHandle);
   if (result != ERROR_SUCCESS) {
-    qDebug() << "Failed to create firewall subscription:" << win32strerror(result);
+    qDebug() << "Failed to create firewall subscription:"
+             << win32strerror(result);
     return;
   }
 
@@ -115,7 +116,6 @@ WindowsBypass::WindowsBypass(Socks5* proxy) : QObject(proxy) {
     setupFirewall(this, &change);
     FwpmFreeMemory0((void**)&fwlayer);
   }
-
 }
 
 WindowsBypass::~WindowsBypass() {
@@ -470,10 +470,10 @@ void WindowsBypass::setupFirewall(void* context,
   filter.flags = FWPM_FILTER_FLAG_CLEAR_ACTION_RIGHT;
   filter.displayData.name = filterName;
 
-  // Start a transaction so that the firewall changes can be made asynchronously.
+  // Start a transaction so that the firewall changes can be made atomically.
   HANDLE handle = reinterpret_cast<WindowsBypass*>(context)->m_fwEngineHandle;
   FwpmTransactionBegin0(handle, 0);
-  auto txnguard = qScopeGuard([handle]() { FwpmTransactionAbort0 (handle); });
+  auto txnguard = qScopeGuard([handle]() { FwpmTransactionAbort0(handle); });
 
   WCHAR descv4out[] = L"Permit outbound IPv4 traffic from proxy";
   filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;

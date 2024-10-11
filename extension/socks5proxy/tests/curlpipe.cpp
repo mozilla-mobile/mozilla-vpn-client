@@ -12,14 +12,13 @@
 #include <QTcpSocket>
 
 class MockWorker final : public QObject {
- Q_OBJECT
+  Q_OBJECT
  public:
   MockWorker(QTcpSocket* s, const QString& name, QObject* parent = nullptr);
 
  private:
   void pipeRead();
   void socketRead();
-  void connected();
 
   const QString m_name;
   QLocalSocket* m_pipe = nullptr;
@@ -44,9 +43,6 @@ MockWorker::MockWorker(QTcpSocket* s, const QString& name, QObject* parent)
   connect(m_socket, &QTcpSocket::errorOccurred, this, &QObject::deleteLater);
 
   m_pipe->connectToServer(m_name);
-}
-
-void MockWorker::connected() {
 }
 
 void MockWorker::pipeRead() {
@@ -86,14 +82,15 @@ int main(int argc, char** argv) {
 
   // Setup a QTcpServer to broker connection to the named pipes.
   QTcpServer server;
-  QObject::connect(&server, &QTcpServer::newConnection,
-                   [&]() {
-                     while (server.hasPendingConnections()) {
-                       auto* s = server.nextPendingConnection();
-                       if (!s) break;
-                       auto* worker = new MockWorker(s, pipeName);
-                     }
-                   });
+  QObject::connect(&server, &QTcpServer::newConnection, [&]() {
+    while (server.hasPendingConnections()) {
+      auto* s = server.nextPendingConnection();
+      if (!s) {
+        break;
+      }
+      auto* worker = new MockWorker(s, pipeName);
+    }
+  });
   server.listen(QHostAddress::LocalHost);
   QString proxyUrl = QString("socks5://127.0.0.1:%1").arg(server.serverPort());
 

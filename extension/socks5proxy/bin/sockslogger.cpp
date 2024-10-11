@@ -6,8 +6,8 @@
 
 #include <QDateTime>
 #include <QDir>
-#include <QLoggingCategory>
 #include <QFile>
+#include <QLoggingCategory>
 
 #include "socks5.h"
 
@@ -150,7 +150,7 @@ bool SocksLogger::makeLogDir(const QDir& dir) {
 
 void SocksLogger::setVerbose(bool enabled) {
   // Enable debug logging when logging to a file, or the verbose option is set.
-  auto *c = QLoggingCategory::defaultCategory();
+  auto* c = QLoggingCategory::defaultCategory();
   c->setEnabled(QtMsgType::QtDebugMsg, enabled || !m_logFileName.isEmpty());
   m_verbose = enabled;
 }
@@ -162,10 +162,7 @@ void SocksLogger::setLogfile(const QString& logfile) {
     return;
   }
   m_logFileName = logfile;
-
-  // Enable debug logging when logging to a file, or the verbose option is set.
-  auto *category = QLoggingCategory::defaultCategory();
-  category->setEnabled(QtMsgType::QtDebugMsg, m_verbose || !logfile.isEmpty());
+  setVerbose(m_verbose);
 
   QMutexLocker lock(&m_logFileMutex);
 
@@ -180,8 +177,8 @@ void SocksLogger::setLogfile(const QString& logfile) {
   // Open the new log file, if any.
   if (!m_logFileName.isEmpty()) {
     m_logFileDevice = new QFile(m_logFileName, this);
-    const auto mode = QIODeviceBase::WriteOnly | QIODeviceBase::Text |
-                      QIODeviceBase::Append;
+    const auto mode =
+        QIODeviceBase::WriteOnly | QIODeviceBase::Text | QIODeviceBase::Append;
     const auto perms = QFileDevice::ReadOwner | QFileDevice::WriteOwner |
                        QFileDevice::ReadGroup;
     m_logFileDevice->open(mode, perms);

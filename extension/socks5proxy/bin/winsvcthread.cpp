@@ -4,11 +4,11 @@
 
 #include "winsvcthread.h"
 
-#include <QCoreApplication>
-#include <QDebug>
-
 #include <windows.h>
 #include <winsvc.h>
+
+#include <QCoreApplication>
+#include <QDebug>
 
 // static
 WinSvcThread* WinSvcThread::s_instance = nullptr;
@@ -39,8 +39,8 @@ void WinSvcThread::run() {
   };
 
   SERVICE_TABLE_ENTRYW serviceTable[] = {
-    {(LPWSTR)s_instance->m_serviceName.utf16(), lambdaServiceMain},
-    {nullptr, nullptr},
+      {(LPWSTR)s_instance->m_serviceName.utf16(), lambdaServiceMain},
+      {nullptr, nullptr},
   };
 
   // The service dispatcher blocks until the service is stopped.
@@ -121,7 +121,7 @@ ulong WinSvcThread::svcCtrlHandler(ulong code, ulong type, void* evdata,
     case SERVICE_CONTROL_INTERROGATE:
       // Always report that we support interrogation.
       return NO_ERROR;
-    
+
     default:
       return ERROR_CALL_NOT_IMPLEMENTED;
   }

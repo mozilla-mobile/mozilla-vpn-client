@@ -61,7 +61,7 @@ class SocksLogger final : public QObject {
   void setVerbose(bool enabled);
 
  public slots:
-  void incomingConnection(Socks5Connection* conn);  
+  void incomingConnection(Socks5Connection* conn);
 
  private:
   static bool makeLogDir(const QDir& dir);
