@@ -31,26 +31,10 @@ QString VerboseLogger::bytesToString(qint64 bytes) {
   return QString("%1Gb").arg(bytes / (1024 * 1024 * 1024));
 }
 
-VerboseLogger::VerboseLogger(Socks5* socks5)
-    : QObject(socks5), m_socks(socks5) {
+VerboseLogger::VerboseLogger(QObject* parent) : QObject(parent) {
   connect(&m_timer, &QTimer::timeout, this, &VerboseLogger::tick);
   m_timer.setSingleShot(false);
   m_timer.start(1000);
-
-  connect(socks5, &Socks5::connectionsChanged, this,
-          &VerboseLogger::printStatus);
-
-  connect(socks5, &Socks5::incomingConnection, this,
-          [this](Socks5Connection* conn) {
-            connect(conn, &Socks5Connection::dataSentReceived, this,
-                    &VerboseLogger::dataSentReceived);
-            connect(conn, &Socks5Connection::stateChanged, this,
-                    &VerboseLogger::connectionStateChanged);
-
-            m_events.append(
-                Event{conn->clientName(), QDateTime::currentMSecsSinceEpoch()});
-            printStatus();
-          });
 
   // Store our singleton reference.
   s_instance = this;
@@ -63,6 +47,19 @@ VerboseLogger::VerboseLogger(Socks5* socks5)
 VerboseLogger::~VerboseLogger() {
   qInstallMessageHandler(nullptr);
   s_instance = nullptr;
+}
+
+void VerboseLogger::incomingConnection(Socks5Connection* conn) {
+  connect(conn, &Socks5Connection::dataSentReceived, this,
+          &VerboseLogger::dataSentReceived);
+  connect(conn, &Socks5Connection::stateChanged, this,
+          &VerboseLogger::connectionStateChanged);
+  connect(conn, &QObject::destroyed, this, [this]() { m_numConnections--; });
+
+  m_events.append(
+      Event{conn->clientName(), QDateTime::currentMSecsSinceEpoch()});
+  m_numConnections++;
+  printStatus();
 }
 
 void VerboseLogger::tick() {
@@ -97,7 +94,7 @@ void VerboseLogger::printStatus() {
   QString output;
   {
     QTextStream out(&output);
-    out << "Connections: " << m_socks->connections();
+    out << "Connections: " << m_numConnections;
 
     QStringList addresses;
     for (const Event& event : m_events) {

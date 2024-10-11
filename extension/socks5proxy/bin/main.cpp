@@ -113,15 +113,26 @@ int main(int argc, char** argv) {
     return 1;
   }
 
+    auto *logger = new VerboseLogger();
+
 #if defined(PROXY_OS_WIN)
   if (config.service) {
-    WinSvcThread::startDispatcher("Mozilla VPN Proxy");
+    // Log to a file when running in service mode.
+    auto location = QStandardPaths::AppLocalDataLocation;
+    QDir logdir(QStandardPaths::writableLocation(location));
+    logger->setLogfile(logdir.filePath("socksproxy.log"));
+
+    WinSvcThread* svc = new WinSvcThread("Mozilla VPN Proxy");
+    svc->start();
   }
 #endif
 
   Socks5* socks5;
   if (!config.localSocketName.isEmpty()) {
-    QLocalServer* server = new QLocalServer();
+    QLocalServer* server = new QLocalServer(&app);
+    QObject::connect(&app, &QCoreApplication::aboutToQuit, server,
+                     &QLocalServer::close);
+
     socks5 = new Socks5(server);
     server->setSocketOptions(QLocalServer::WorldAccessOption);
     if (server->listen(config.localSocketName)) {
@@ -137,7 +148,10 @@ int main(int argc, char** argv) {
       return 1;
     }
   } else {
-    QTcpServer* server = new QTcpServer();
+    QTcpServer* server = new QTcpServer(&app);
+    QObject::connect(&app, &QCoreApplication::aboutToQuit, server,
+                     &QTcpServer::close);
+
     socks5 = new Socks5(server);
     if (server->listen(config.addr, config.port)) {
       qDebug() << "Starting on port" << server->serverPort();
@@ -146,16 +160,11 @@ int main(int argc, char** argv) {
       return 1;
     }
   }
+  QObject::connect(socks5, &Socks5::incomingConnection, logger,
+                   &VerboseLogger::incomingConnection);
 
   if (config.verbose) {
-    auto *logger = new VerboseLogger(socks5);
-#if defined(PROXY_OS_WIN)
-    if (config.service) {
-      auto location = QStandardPaths::AppLocalDataLocation;
-      QDir logdir(QStandardPaths::writableLocation(location));
-      logger->setLogfile(logdir.filePath("socksproxy.log"));
-    }
-#endif
+    // HMM?
   }
 
 #ifdef __linux__

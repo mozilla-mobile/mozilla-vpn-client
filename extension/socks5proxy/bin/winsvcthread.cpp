@@ -11,27 +11,40 @@
 #include <winsvc.h>
 
 // static
-bool WinSvcThread::startDispatcher(const QString& name) {
-  auto serviceMain = [](DWORD argc, LPWSTR* argv) {
-    Q_UNUSED(argc);
-    Q_UNUSED(argv);
-    auto* svc = new WinSvcThread(QString::fromWCharArray(argv[0]));
-    svc->start();
- };
-
-  SERVICE_TABLE_ENTRYW serviceTable[] = {
-    {(LPWSTR)name.utf16(), serviceMain},
-    {nullptr, nullptr},
-  };
-  return StartServiceCtrlDispatcherW(serviceTable);
-}
+WinSvcThread* WinSvcThread::s_instance = nullptr;
 
 WinSvcThread::WinSvcThread(const QString& name, QObject* parent)
     : QThread(parent), m_serviceName(name) {
+  Q_ASSERT(s_instance == nullptr);
+  s_instance = this;
+
   m_serviceStatus = new SERVICE_STATUS;
   ZeroMemory(m_serviceStatus, sizeof(SERVICE_STATUS));
   m_serviceStatus->dwServiceType = SERVICE_WIN32_OWN_PROCESS;
   m_serviceStatus->dwCurrentState = SERVICE_START_PENDING;
+
+  connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, this,
+          &WinSvcThread::aboutToQuit);
+}
+
+void WinSvcThread::run() {
+  auto lambdaServiceMain = [](DWORD argc, LPWSTR* argv) {
+    Q_UNUSED(argc);
+    Q_UNUSED(argv);
+    QStringList arguments;
+    for (DWORD i = 0; i < argc; i++) {
+      arguments.append(QString::fromWCharArray(argv[i]));
+    }
+    s_instance->svcMain(arguments);
+  };
+
+  SERVICE_TABLE_ENTRYW serviceTable[] = {
+    {(LPWSTR)s_instance->m_serviceName.utf16(), lambdaServiceMain},
+    {nullptr, nullptr},
+  };
+
+  // The service dispatcher blocks until the service is stopped.
+  StartServiceCtrlDispatcherW(serviceTable);
 }
 
 WinSvcThread::~WinSvcThread() {
@@ -44,19 +57,13 @@ WinSvcThread::~WinSvcThread() {
   delete m_serviceStatus;
 }
 
-void WinSvcThread::run() {
+void WinSvcThread::svcMain(const QStringList& arguments) {
   LPCWSTR wname = (LPCWSTR)m_serviceName.utf16();
   m_svcCtrlHandle = RegisterServiceCtrlHandlerEx(wname, svcCtrlHandler, this);
   if (!m_svcCtrlHandle) {
     qWarning() << "Failed to register the service handler";
     return;
   }
-  if (!SetServiceStatus(m_svcCtrlHandle, m_serviceStatus)) {
-    m_serviceStatus->dwWin32ExitCode = GetLastError();
-    qWarning() << "SetServiceStatus failed";
-    return;
-  }
-
   if (!SetServiceStatus(m_svcCtrlHandle, m_serviceStatus)) {
     m_serviceStatus->dwWin32ExitCode = GetLastError();
     qWarning() << "SetServiceStatus failed";
@@ -72,11 +79,22 @@ void WinSvcThread::run() {
     qWarning() << "SetServiceStatus failed";
     return;
   }
+}
 
-  // Run the thread's event loop until the service shuts down.
-  exec();
+void WinSvcThread::aboutToQuit() {
+  m_serviceStatus->dwControlsAccepted = 0;
+  m_serviceStatus->dwCurrentState = SERVICE_STOPPED;
+  m_serviceStatus->dwWin32ExitCode = GetLastError();
+  m_serviceStatus->dwCheckPoint = 1;
+  if (SetServiceStatus(m_svcCtrlHandle, m_serviceStatus) == FALSE) {
+    qWarning() << "SetServiceStatus failed";
+  }
+}
 
-  // When the event loop exits, we are shutting down.
+void WinSvcThread::svcCtrlStop() {
+  if (m_serviceStatus->dwCurrentState != SERVICE_RUNNING) {
+    return;
+  }
   m_serviceStatus->dwControlsAccepted = 0;
   m_serviceStatus->dwCurrentState = SERVICE_STOP_PENDING;
   m_serviceStatus->dwWin32ExitCode = 0;
@@ -86,7 +104,7 @@ void WinSvcThread::run() {
   }
 
   // Request the application to exit.
-  QCoreApplication::instance()->exit();
+  QCoreApplication::instance()->quit();
 }
 
 ulong WinSvcThread::svcCtrlHandler(ulong code, ulong type, void* evdata,
@@ -97,7 +115,7 @@ ulong WinSvcThread::svcCtrlHandler(ulong code, ulong type, void* evdata,
   WinSvcThread* svc = reinterpret_cast<WinSvcThread*>(context);
   switch (code) {
     case SERVICE_CONTROL_STOP:
-      svc->exit();
+      svc->svcCtrlStop();
       return NO_ERROR;
 
     case SERVICE_CONTROL_INTERROGATE:
