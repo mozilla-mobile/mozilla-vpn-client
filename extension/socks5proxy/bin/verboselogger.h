@@ -5,11 +5,14 @@
 #ifndef VERBOSELOGGER_H
 #define VERBOSELOGGER_H
 
+#include <QMutex>
 #include <QObject>
 #include <QString>
 #include <QTimer>
 #include <QVector>
 
+class QDir;
+class QFile;
 class Socks5;
 class Socks5Connection;
 
@@ -48,13 +51,18 @@ class VerboseLogger final : public QObject {
 
  public:
   explicit VerboseLogger(Socks5* proxy);
-  ~VerboseLogger() = default;
+  ~VerboseLogger();
 
   static QString bytesToString(qint64 value);
-
   void printStatus();
 
+  const QString& logfile() const { return m_logFileName; }
+  void setLogfile(const QString& filename);
+
  private:
+  static bool makeLogDir(const QDir& dir);
+  void logfileHandler(QtMsgType type, const QMessageLogContext& ctx,
+                      const QString& msg);
   static void logHandler(QtMsgType type, const QMessageLogContext& ctx,
                          const QString& msg);
   void dataSentReceived(qint64 sent, qint64 received);
@@ -63,6 +71,11 @@ class VerboseLogger final : public QObject {
 
  private:
   Socks5* m_socks = nullptr;
+  static VerboseLogger* s_instance;
+
+  QString m_logFileName;
+  QMutex m_logFileMutex;
+  QFile* m_logFileDevice = nullptr;
 
   struct Event {
     QString m_newConnection;
@@ -71,7 +84,7 @@ class VerboseLogger final : public QObject {
   QList<Event> m_events;
 
   QTimer m_timer;
-  static QString s_lastStatus;
+  QString m_lastStatus;
 
   BoxcarAverage m_rx_bytes;
   BoxcarAverage m_tx_bytes;
