@@ -50,18 +50,32 @@ QString toUpper(const QLocale& locale, QString input) {
   return input.replace(0, 1, locale.toUpper(QString(input[0])));
 }
 
-QString toPascalCase(const QString& s) {
+QString changeCasing(const QString& s, bool shouldLowerCase) {
   QStringList words = s.split("_");
 
   for (int i = 0; i < words.size(); i++) {
     QString word = words.at(i);
     if (!word.isEmpty()) {
-      words[i] = word.at(0).toUpper() + word.mid(1);
+      if (shouldLowerCase) {
+        words[i] = word.at(0).toUpper() + word.mid(1).toLower();
+      } else {
+        words[i] = word.at(0).toUpper() + word.mid(1);
+      }
     }
   }
 
   return words.join("");
 }
+
+// toPascalCase will capitalize the first letter of a word, and make
+// all other letters in the word lowercase.
+// Examples: McAllen -> Mcallen, en_FS -> EnFs, sample_thing -> SampleThing
+QString toPascalCase(const QString& s) { return changeCasing(s, true); }
+
+// toLanguageId will capitalize the first letter of a word, and keep
+// all other letters in the word the same case as the input.
+// Examples: McAllen -> McAllen, en_FS -> EnFS, sample_thing -> SampleThing
+QString toLanguageId(const QString& s) { return changeCasing(s, false); }
 
 }  // namespace
 
@@ -490,7 +504,7 @@ int Localizer::rowCount(const QModelIndex&) const {
 }
 
 QString Localizer::localizedLanguageName(const QString& languageCode) const {
-  QString i18nLangId = QString("Languages%1").arg(toPascalCase(languageCode));
+  QString i18nLangId = QString("Languages%1").arg(toLanguageId(languageCode));
   QString value = getCapitalizedStringFromI18n(i18nLangId);
 
   // Value should never be empty, because the ultimate fallback locale is "en"
@@ -634,11 +648,12 @@ QString Localizer::getTranslatedCityName(const QString& cityName) const {
   // Malmö -> ServersMalm, São Paulo, SP -> ServersSoPaulo, Berlin, BE ->
   // ServersBerlin
 
-  QRegularExpression acceptedChars("[^a-zA-Z]");
+  QRegularExpression acceptedChars("[^a-zA-Z ]");
   QString parsedCityName =
-      cityName.split(u',')[0]
-          .replace(" ", "")             // Remove state suffix
-          .replace(acceptedChars, "");  // Remove special characters
+      cityName
+          .split(u',')[0]              // Remove state suffix
+          .replace(acceptedChars, "")  // Remove special characters
+          .replace(" ", "_");          // Prepare for toPascalCase
 
   QString i18nCityId = QString("Servers%1").arg(toPascalCase(parsedCityName));
 
