@@ -16,11 +16,15 @@ class WinSvcThread final : public QThread {
   WinSvcThread(const QString& name, QObject* parent = nullptr);
   ~WinSvcThread();
 
-  static bool startDispatcher(const QString& name);
-
+ private slots:
+  void aboutToQuit();
+  
  private:
   void run() override;
+  void svcMain(const QStringList& arguments);
+  void svcCtrlStop();
 
+  static WinSvcThread* s_instance;
   static ulong svcCtrlHandler(ulong control, ulong type, void* event, void* ctx);
 
   struct SERVICE_STATUS_HANDLE__* m_svcCtrlHandle;

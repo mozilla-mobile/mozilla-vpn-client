@@ -50,7 +50,7 @@ class VerboseLogger final : public QObject {
   Q_OBJECT
 
  public:
-  explicit VerboseLogger(Socks5* proxy);
+  explicit VerboseLogger(QObject* parent = nullptr);
   ~VerboseLogger();
 
   static QString bytesToString(qint64 value);
@@ -58,6 +58,9 @@ class VerboseLogger final : public QObject {
 
   const QString& logfile() const { return m_logFileName; }
   void setLogfile(const QString& filename);
+
+ public slots:
+  void incomingConnection(Socks5Connection* conn);  
 
  private:
   static bool makeLogDir(const QDir& dir);
@@ -70,7 +73,6 @@ class VerboseLogger final : public QObject {
   void tick();
 
  private:
-  Socks5* m_socks = nullptr;
   static VerboseLogger* s_instance;
 
   QString m_logFileName;
@@ -82,6 +84,7 @@ class VerboseLogger final : public QObject {
     qint64 m_when;
   };
   QList<Event> m_events;
+  qsizetype m_numConnections = 0;
 
   QTimer m_timer;
   QString m_lastStatus;
