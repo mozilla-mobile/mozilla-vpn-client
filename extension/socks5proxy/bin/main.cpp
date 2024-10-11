@@ -59,8 +59,8 @@ static CliOptions parseArgs(const QCoreApplication& app) {
   QCommandLineOption localOption({"n", "pipe"}, "SOCKS proxy over named pipe",
                                  "name");
 #else
-  QCommandLineOption localOption({"-n", "unix"} "SOCKS proxy over UNIX socket",
-                                 "path");
+  QCommandLineOption localOption(
+      {"-n", "unix"} "SOCKS proxy over UNIX domain socket", "path");
 #endif
   parser.addOption(localOption);
 
@@ -126,7 +126,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  auto *logger = new SocksLogger(&app);
+  auto* logger = new SocksLogger(&app);
   logger->setVerbose(config.verbose);
   if (config.logfile) {
     auto location = QStandardPaths::AppLocalDataLocation;

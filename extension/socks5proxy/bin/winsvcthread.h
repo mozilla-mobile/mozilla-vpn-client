@@ -18,14 +18,15 @@ class WinSvcThread final : public QThread {
 
  private slots:
   void aboutToQuit();
-  
+
  private:
   void run() override;
   void svcMain(const QStringList& arguments);
   void svcCtrlStop();
 
   static WinSvcThread* s_instance;
-  static ulong svcCtrlHandler(ulong control, ulong type, void* event, void* ctx);
+  static ulong svcCtrlHandler(ulong control, ulong type, void* event,
+                              void* context);
 
   struct SERVICE_STATUS_HANDLE__* m_svcCtrlHandle;
   struct _SERVICE_STATUS* m_serviceStatus;
