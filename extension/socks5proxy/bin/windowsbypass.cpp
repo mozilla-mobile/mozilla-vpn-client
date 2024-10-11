@@ -8,17 +8,25 @@
 #include <netioapi.h>
 #include <windows.h>
 #include <winsock2.h>
+#include <fwpmu.h>
 
 #include <QAbstractSocket>
+#include <QFileInfo>
 #include <QHostAddress>
 #include <QScopeGuard>
 #include <QUuid>
 
 #include "socks5.h"
 
+#pragma comment(lib, "Fwpuclnt")
+
 // Fixed GUID of the Wireguard NT driver.
 constexpr const QUuid WIREGUARD_NT_GUID(0xf64063ab, 0xbfee, 0x4881, 0xbf, 0x79,
                                         0x36, 0x6e, 0x4c, 0xc7, 0xba, 0x75);
+
+// Fixed GUID of the VPN Killswitch firewall sublayer
+constexpr const QUuid KILLSWITCH_FW_GUID(0xc78056ff, 0x2bc1, 0x4211, 0xaa, 0xdd,
+                                         0x7f, 0x35, 0x8d, 0xef, 0x20, 0x2d);
 
 // Called by the kernel on network interface changes.
 // Runs in some unknown thread, so invoke a Qt signal to do the real work.
@@ -71,12 +79,53 @@ WindowsBypass::WindowsBypass(Socks5* proxy) : QObject(proxy) {
                                &m_addrChangeHandle);
   NotifyRouteChange2(AF_UNSPEC, routeChangeCallback, this, true,
                      &m_routeChangeHandle);
+  
+  // Watch for changes to the firewall
+  FWPM_SESSION0 session;
+  memset(&session, 0, sizeof(session));
+  session.flags = FWPM_SESSION_FLAG_DYNAMIC;
+  DWORD result = FwpmEngineOpen0(nullptr, RPC_C_AUTHN_WINNT, nullptr,
+                                 &session, &m_fwEngineHandle);
+  if (result != ERROR_SUCCESS) {
+    qDebug() << "Failed to open firewall engine:" << win32strerror(result);
+    return;
+  }
+
+  GUID fwguid = KILLSWITCH_FW_GUID;
+  FWPM_SUBLAYER_ENUM_TEMPLATE0 fwmatch { .providerKey = &fwguid };
+  FWPM_SUBLAYER_SUBSCRIPTION0 fwsub = {0};
+  fwsub.enumTemplate = &fwmatch;
+  fwsub.flags = FWPM_SUBSCRIPTION_FLAG_NOTIFY_ON_ADD;
+  fwsub.sessionKey = session.sessionKey;
+  result = FwpmSubLayerSubscribeChanges0(m_fwEngineHandle, &fwsub,
+                                         &WindowsBypass::setupFirewall, this,
+                                         &m_fwChangeHandle);
+  if (result != ERROR_SUCCESS) {
+    qDebug() << "Failed to create firewall subscription:" << win32strerror(result);
+    return;
+  }
+
+  // If the sublayer already exists - immediately generate a notification.
+  FWPM_SUBLAYER0* fwlayer;
+  result = FwpmSubLayerGetByKey0(m_fwEngineHandle, &fwguid, &fwlayer);
+  if (result == ERROR_SUCCESS) {
+    FWPM_SUBLAYER_CHANGE0 change;
+    change.changeType = FWPM_CHANGE_ADD;
+    change.subLayerKey = KILLSWITCH_FW_GUID;
+    setupFirewall(this, &change);
+    FwpmFreeMemory0((void**)&fwlayer);
+  }
+
 }
 
 WindowsBypass::~WindowsBypass() {
   CancelMibChangeNotify2(m_netChangeHandle);
   CancelMibChangeNotify2(m_addrChangeHandle);
   CancelMibChangeNotify2(m_routeChangeHandle);
+  if (m_fwEngineHandle) {
+    FwpmSubLayerUnsubscribeChanges0(m_fwEngineHandle, m_fwChangeHandle);
+    FwpmEngineClose0(m_fwEngineHandle);
+  }
 }
 
 void WindowsBypass::outgoingConnection(QAbstractSocket* s,
@@ -377,5 +426,87 @@ void WindowsBypass::refreshRoutes(int family) {
     updateTable(m_routeTableIpv4, AF_INET);
   } else if (family == AF_INET6) {
     updateTable(m_routeTableIpv6, AF_INET6);
+  }
+}
+
+void WindowsBypass::setupFirewall(void* context,
+                                  const FWPM_SUBLAYER_CHANGE0* change) {
+  // Ignore everything except sublayer creation.
+  if (change->changeType != FWPM_CHANGE_ADD) {
+    return;
+  }
+  if (change->subLayerKey != KILLSWITCH_FW_GUID) {
+    return;
+  }
+
+  // Get the AppID for the current executable;
+  FWP_BYTE_BLOB* appID = NULL;
+  WCHAR filePath[MAX_PATH];
+  GetModuleFileNameW(nullptr, filePath, MAX_PATH);
+  DWORD result = FwpmGetAppIdFromFileName0(filePath, &appID);
+  if (result != ERROR_SUCCESS) {
+    qDebug() << "Firewall setup failed:" << win32strerror(result);
+    return;
+  }
+  auto guard = qScopeGuard([appID]() { FwpmFreeMemory0((void**)&appID); });
+
+  // Condition: Request must come from the .exe
+  FWPM_FILTER_CONDITION0 conds;
+  conds.fieldKey = FWPM_CONDITION_ALE_APP_ID;
+  conds.matchType = FWP_MATCH_EQUAL;
+  conds.conditionValue.type = FWP_BYTE_BLOB_TYPE;
+  conds.conditionValue.byteBlob = appID;
+
+  // Assemble the Filter base
+  WCHAR filterName[] = L"Permit socksproxy bypass traffic";
+  FWPM_FILTER0 filter;
+  memset(&filter, 0, sizeof(filter));
+  filter.filterCondition = &conds;
+  filter.numFilterConditions = 1;
+  filter.action.type = FWP_ACTION_PERMIT;
+  filter.weight.type = FWP_UINT8;
+  filter.weight.uint8 = 15;
+  filter.subLayerKey = KILLSWITCH_FW_GUID;
+  filter.flags = FWPM_FILTER_FLAG_CLEAR_ACTION_RIGHT;
+  filter.displayData.name = filterName;
+
+  // Start a transaction so that the firewall changes can be made asynchronously.
+  HANDLE handle = reinterpret_cast<WindowsBypass*>(context)->m_fwEngineHandle;
+  FwpmTransactionBegin0(handle, 0);
+  auto txnguard = qScopeGuard([handle]() { FwpmTransactionAbort0 (handle); });
+
+  WCHAR descv4out[] = L"Permit outbound IPv4 traffic from proxy";
+  filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
+  filter.displayData.description = descv4out;
+  if (FwpmFilterAdd0(handle, &filter, nullptr, nullptr) != ERROR_SUCCESS) {
+    return;
+  }
+
+  WCHAR descv4in[] = L"Permit inbound IPv4 traffic to proxy";
+  filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
+  filter.displayData.description = descv4in;
+  if (FwpmFilterAdd0(handle, &filter, nullptr, nullptr) != ERROR_SUCCESS) {
+    return;
+  }
+
+  WCHAR descv6out[] = L"Permit outbound IPv6 traffic from proxy";
+  filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
+  filter.displayData.description = descv6out;
+  if (FwpmFilterAdd0(handle, &filter, nullptr, nullptr) != ERROR_SUCCESS) {
+    return;
+  }
+
+  WCHAR descv6in[] = L"Permit inbound IPv6 traffic to proxy";
+  filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
+  filter.displayData.description = descv6in;
+  if (FwpmFilterAdd0(handle, &filter, nullptr, nullptr) != ERROR_SUCCESS) {
+    return;
+  }
+
+  // Commit the transaction
+  if (FwpmTransactionCommit0(handle) == ERROR_SUCCESS) {
+    txnguard.dismiss();
+  } else {
+    qDebug() << "Firewall setup failed:" << win32strerror(result);
   }
 }
