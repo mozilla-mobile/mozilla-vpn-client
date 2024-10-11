@@ -59,8 +59,8 @@ static CliOptions parseArgs(const QCoreApplication& app) {
   QCommandLineOption localOption({"n", "pipe"}, "SOCKS proxy over named pipe",
                                  "name");
 #else
-  QCommandLineOption localOption(
-      {"n", "unix"}, "SOCKS proxy over UNIX domain socket", "path");
+  QCommandLineOption localOption({"n", "unix"},
+                                 "SOCKS proxy over UNIX domain socket", "path");
 #endif
   parser.addOption(localOption);
 
