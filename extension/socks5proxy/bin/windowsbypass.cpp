@@ -84,15 +84,15 @@ WindowsBypass::WindowsBypass(Socks5* proxy) : QObject(proxy) {
   FWPM_SESSION0 session;
   memset(&session, 0, sizeof(session));
   session.flags = FWPM_SESSION_FLAG_DYNAMIC;
-  DWORD result = FwpmEngineOpen0(nullptr, RPC_C_AUTHN_WINNT, nullptr,
-                                 &session, &m_fwEngineHandle);
+  DWORD result = FwpmEngineOpen0(nullptr, RPC_C_AUTHN_WINNT, nullptr, &session,
+                                 &m_fwEngineHandle);
   if (result != ERROR_SUCCESS) {
     qDebug() << "Failed to open firewall engine:" << win32strerror(result);
     return;
   }
 
   GUID fwguid = KILLSWITCH_FW_GUID;
-  FWPM_SUBLAYER_ENUM_TEMPLATE0 fwmatch {.providerKey = &fwguid};
+  FWPM_SUBLAYER_ENUM_TEMPLATE0 fwmatch{.providerKey = &fwguid};
   FWPM_SUBLAYER_SUBSCRIPTION0 fwsub = {0};
   fwsub.enumTemplate = &fwmatch;
   fwsub.flags = FWPM_SUBSCRIPTION_FLAG_NOTIFY_ON_ADD;
