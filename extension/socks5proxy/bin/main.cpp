@@ -60,7 +60,7 @@ static CliOptions parseArgs(const QCoreApplication& app) {
                                  "name");
 #else
   QCommandLineOption localOption(
-      { "n", "unix" } "SOCKS proxy over UNIX domain socket", "path");
+      {"n", "unix"}, "SOCKS proxy over UNIX domain socket", "path");
 #endif
   parser.addOption(localOption);
 
