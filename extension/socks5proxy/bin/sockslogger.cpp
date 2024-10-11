@@ -33,8 +33,7 @@ QString SocksLogger::bytesToString(qint64 bytes) {
   return QString("%1Gb").arg(bytes / (1024 * 1024 * 1024));
 }
 
-SocksLogger::SocksLogger(QtMsgType level, QObject* parent)
-   : QObject(parent), m_logLevel(level) {
+SocksLogger::SocksLogger(QObject* parent) : QObject(parent) {
   connect(&m_timer, &QTimer::timeout, this, &SocksLogger::tick);
   m_timer.setSingleShot(false);
   m_timer.start(1000);
@@ -43,7 +42,6 @@ SocksLogger::SocksLogger(QtMsgType level, QObject* parent)
   s_instance = this;
 
   // Install a custom log handler that plays nicely with the status.
-  QLoggingCategory::defaultCategory()->setEnabled(QtMsgType::QtDebugMsg, true);
   qInstallMessageHandler(logHandler);
 }
 
@@ -150,6 +148,13 @@ bool SocksLogger::makeLogDir(const QDir& dir) {
   return parent.mkdir(dir.dirName());
 }
 
+void SocksLogger::setVerbose(bool enabled) {
+  // Enable debug logging when logging to a file, or the verbose option is set.
+  auto *c = QLoggingCategory::defaultCategory();
+  c->setEnabled(QtMsgType::QtDebugMsg, enabled || !m_logFileName.isEmpty());
+  m_verbose = enabled;
+}
+
 void SocksLogger::setLogfile(const QString& logfile) {
   qInfo() << "Logging to:" << logfile;
   if (!makeLogDir(QFileInfo(logfile).dir())) {
@@ -157,6 +162,10 @@ void SocksLogger::setLogfile(const QString& logfile) {
     return;
   }
   m_logFileName = logfile;
+
+  // Enable debug logging when logging to a file, or the verbose option is set.
+  auto *category = QLoggingCategory::defaultCategory();
+  category->setEnabled(QtMsgType::QtDebugMsg, m_verbose || !logfile.isEmpty());
 
   QMutexLocker lock(&m_logFileMutex);
 
@@ -199,7 +208,7 @@ void SocksLogger::logHandler(QtMsgType type, const QMessageLogContext& ctx,
     return;
   }
 
-  if (type >= s_instance->m_logLevel) {
+  if (s_instance->m_verbose || (type != QtMsgType::QtDebugMsg)) {
     // A message logger that plays nicely with the status output.
     // Clears the current line - prints the log message - reprints the status.
     out << QString(80, ' ') << '\r';

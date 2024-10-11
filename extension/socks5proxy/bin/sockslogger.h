@@ -50,7 +50,7 @@ class SocksLogger final : public QObject {
   Q_OBJECT
 
  public:
-  explicit SocksLogger(QtMsgType level, QObject* parent = nullptr);
+  explicit SocksLogger(QObject* parent = nullptr);
   ~SocksLogger();
 
   static QString bytesToString(qint64 value);
@@ -58,6 +58,7 @@ class SocksLogger final : public QObject {
 
   const QString& logfile() const { return m_logFileName; }
   void setLogfile(const QString& filename);
+  void setVerbose(bool enabled);
 
  public slots:
   void incomingConnection(Socks5Connection* conn);  
@@ -75,7 +76,7 @@ class SocksLogger final : public QObject {
  private:
   static SocksLogger* s_instance;
 
-  QtMsgType m_logLevel;
+  bool m_verbose = false;
   QString m_logFileName;
   QMutex m_logFileMutex;
   QFile* m_logFileDevice = nullptr;

@@ -29,7 +29,8 @@ struct CliOptions {
   QString localSocketName;
   QString username = {};
   QString password = {};
-  QtMsgType logLevel = QtMsgType::QtCriticalMsg;
+  bool verbose = false;
+  bool logfile = false;
 #if defined(PROXY_OS_WIN)
   bool service = false;
 #endif
@@ -54,8 +55,17 @@ static CliOptions parseArgs(const QCoreApplication& app) {
   QCommandLineOption passOption({"P", "password"}, "The password", "password");
   parser.addOption(passOption);
 
-  QCommandLineOption localOption({"l", "local"}, "Local socket name", "name");
+#if defined(PROXY_OS_WIN)
+  QCommandLineOption localOption({"n", "pipe"}, "SOCKS proxy over named pipe",
+                                 "name");
+#else
+  QCommandLineOption localOption({"-n", "unix"} "SOCKS proxy over UNIX socket",
+                                 "path");
+#endif
   parser.addOption(localOption);
+
+  QCommandLineOption logfileOption({"l", "logfile"}, "Save logs to file");
+  parser.addOption(logfileOption);
 
   QCommandLineOption verboseOption({"v", "verbose"}, "Verbose");
   parser.addOption(verboseOption);
@@ -88,12 +98,17 @@ static CliOptions parseArgs(const QCoreApplication& app) {
   if (parser.isSet(localOption)) {
     out.localSocketName = parser.value(localOption);
   }
+  if (parser.isSet(logfileOption)) {
+    out.logfile = true;
+  }
   if (parser.isSet(verboseOption)) {
-    out.logLevel = QtMsgType::QtDebugMsg;
+    out.verbose = true;
   }
 #if defined(PROXY_OS_WIN)
   if (parser.isSet(serviceOption)) {
     out.service = true;
+    // Enforce logging when started as a service.
+    out.logfile = true;
   }
 #endif
   return out;
@@ -111,15 +126,16 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-  auto *logger = new SocksLogger(config.logLevel, &app);
-
-#if defined(PROXY_OS_WIN)
-  if (config.service) {
-    // Log to a file when running in service mode.
+  auto *logger = new SocksLogger(&app);
+  logger->setVerbose(config.verbose);
+  if (config.logfile) {
     auto location = QStandardPaths::AppLocalDataLocation;
     QDir logdir(QStandardPaths::writableLocation(location));
     logger->setLogfile(logdir.filePath("socksproxy.log"));
+  }
 
+#if defined(PROXY_OS_WIN)
+  if (config.service) {
     WinSvcThread* svc = new WinSvcThread("Mozilla VPN Proxy");
     svc->start();
   }
