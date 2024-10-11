@@ -67,8 +67,14 @@ QString changeCasing(const QString& s, bool shouldLowerCase) {
   return words.join("");
 }
 
+// toPascalCase will capitalize the first letter of a word, and make
+// all other letters in the word lowercase.
+// Examples: McAllen -> Mcallen, en_FS -> EnFs, sample_thing -> SampleThing
 QString toPascalCase(const QString& s) { return changeCasing(s, true); }
 
+// toLanguageId will capitalize the first letter of a word, and keep
+// all other letters in the word the same case as the input.
+// Examples: McAllen -> McAllen, en_FS -> EnFS, sample_thing -> SampleThing
 QString toLanguageId(const QString& s) { return changeCasing(s, false); }
 
 }  // namespace
