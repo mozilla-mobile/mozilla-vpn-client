@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "verboselogger.h"
+#include "sockslogger.h"
 
 #include <QDateTime>
 #include <QDir>
@@ -14,8 +14,10 @@
 // 4MB of log data ought to be enough for anyone.
 constexpr const qsizetype LOGFILE_MAX_SIZE = 4 * 1024 * 1024;
 
+SocksLogger* SocksLogger::s_instance = nullptr;
+
 // static
-QString VerboseLogger::bytesToString(qint64 bytes) {
+QString SocksLogger::bytesToString(qint64 bytes) {
   if (bytes < 1024) {
     return QString("%1b").arg(bytes);
   }
@@ -31,8 +33,9 @@ QString VerboseLogger::bytesToString(qint64 bytes) {
   return QString("%1Gb").arg(bytes / (1024 * 1024 * 1024));
 }
 
-VerboseLogger::VerboseLogger(QObject* parent) : QObject(parent) {
-  connect(&m_timer, &QTimer::timeout, this, &VerboseLogger::tick);
+SocksLogger::SocksLogger(QtMsgType level, QObject* parent)
+   : QObject(parent), m_logLevel(level) {
+  connect(&m_timer, &QTimer::timeout, this, &SocksLogger::tick);
   m_timer.setSingleShot(false);
   m_timer.start(1000);
 
@@ -44,16 +47,16 @@ VerboseLogger::VerboseLogger(QObject* parent) : QObject(parent) {
   qInstallMessageHandler(logHandler);
 }
 
-VerboseLogger::~VerboseLogger() {
+SocksLogger::~SocksLogger() {
   qInstallMessageHandler(nullptr);
   s_instance = nullptr;
 }
 
-void VerboseLogger::incomingConnection(Socks5Connection* conn) {
+void SocksLogger::incomingConnection(Socks5Connection* conn) {
   connect(conn, &Socks5Connection::dataSentReceived, this,
-          &VerboseLogger::dataSentReceived);
+          &SocksLogger::dataSentReceived);
   connect(conn, &Socks5Connection::stateChanged, this,
-          &VerboseLogger::connectionStateChanged);
+          &SocksLogger::connectionStateChanged);
   connect(conn, &QObject::destroyed, this, [this]() { m_numConnections--; });
 
   m_events.append(
@@ -62,7 +65,7 @@ void VerboseLogger::incomingConnection(Socks5Connection* conn) {
   printStatus();
 }
 
-void VerboseLogger::tick() {
+void SocksLogger::tick() {
   // Update the boxcar average.
   m_tx_bytes.advance();
   m_rx_bytes.advance();
@@ -88,9 +91,7 @@ void VerboseLogger::tick() {
   }
 }
 
-VerboseLogger* VerboseLogger::s_instance = nullptr;
-
-void VerboseLogger::printStatus() {
+void SocksLogger::printStatus() {
   QString output;
   {
     QTextStream out(&output);
@@ -116,12 +117,12 @@ void VerboseLogger::printStatus() {
   m_lastStatus = output;
 }
 
-void VerboseLogger::dataSentReceived(qint64 sent, qint64 received) {
+void SocksLogger::dataSentReceived(qint64 sent, qint64 received) {
   m_tx_bytes.addSample(sent);
   m_rx_bytes.addSample(received);
 }
 
-void VerboseLogger::connectionStateChanged() {
+void SocksLogger::connectionStateChanged() {
   Socks5Connection* conn = qobject_cast<Socks5Connection*>(QObject::sender());
   if (conn->state() == Socks5Connection::Proxy) {
     auto msg = qDebug() << "Connecting" << conn->clientName() << "to";
@@ -133,7 +134,7 @@ void VerboseLogger::connectionStateChanged() {
 }
 
 // static and recursive!
-bool VerboseLogger::makeLogDir(const QDir& dir) {
+bool SocksLogger::makeLogDir(const QDir& dir) {
   if (dir.exists()) {
     return true;
   }
@@ -149,7 +150,7 @@ bool VerboseLogger::makeLogDir(const QDir& dir) {
   return parent.mkdir(dir.dirName());
 }
 
-void VerboseLogger::setLogfile(const QString& logfile) {
+void SocksLogger::setLogfile(const QString& logfile) {
   qInfo() << "Logging to:" << logfile;
   if (!makeLogDir(QFileInfo(logfile).dir())) {
     qInfo() << "Failed to create directory";
@@ -178,8 +179,8 @@ void VerboseLogger::setLogfile(const QString& logfile) {
   }
 }
 
-void VerboseLogger::logfileHandler(
-    QtMsgType type, const QMessageLogContext& ctx, const QString& msg) {
+void SocksLogger::logfileHandler(QtMsgType type, const QMessageLogContext& ctx,
+                                 const QString& msg) {
   QMutexLocker lock(&m_logFileMutex);
   if (m_logFileDevice) {
     // Write the line into the logfile.
@@ -189,8 +190,8 @@ void VerboseLogger::logfileHandler(
 }
 
 // static
-void VerboseLogger::logHandler(QtMsgType type, const QMessageLogContext& ctx,
-                               const QString& msg) {
+void SocksLogger::logHandler(QtMsgType type, const QMessageLogContext& ctx,
+                             const QString& msg) {
   QTextStream out(stdout);
   if (!s_instance) {
     // No logger? Just dump everything to console.
@@ -198,11 +199,13 @@ void VerboseLogger::logHandler(QtMsgType type, const QMessageLogContext& ctx,
     return;
   }
 
-  // A message logger that plays nicely with the status output.
-  // Clears the current line - prints the log message - reprints the status.
-  out << QString(80, ' ') << '\r';
-  out << msg << "\r\n";
-  out << s_instance->m_lastStatus << '\r';
+  if (type >= s_instance->m_logLevel) {
+    // A message logger that plays nicely with the status output.
+    // Clears the current line - prints the log message - reprints the status.
+    out << QString(80, ' ') << '\r';
+    out << msg << "\r\n";
+    out << s_instance->m_lastStatus << '\r';
+  }
 
   // Handle logging to file.
   s_instance->logfileHandler(type, ctx, msg);

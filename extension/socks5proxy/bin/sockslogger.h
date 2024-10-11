@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef VERBOSELOGGER_H
-#define VERBOSELOGGER_H
+#ifndef SOCKSLOGGER_H
+#define SOCKSLOGGER_H
 
 #include <QMutex>
 #include <QObject>
@@ -46,12 +46,12 @@ class BoxcarAverage final {
   QVector<qint64> m_data;
 };
 
-class VerboseLogger final : public QObject {
+class SocksLogger final : public QObject {
   Q_OBJECT
 
  public:
-  explicit VerboseLogger(QObject* parent = nullptr);
-  ~VerboseLogger();
+  explicit SocksLogger(QtMsgType level, QObject* parent = nullptr);
+  ~SocksLogger();
 
   static QString bytesToString(qint64 value);
   void printStatus();
@@ -73,8 +73,9 @@ class VerboseLogger final : public QObject {
   void tick();
 
  private:
-  static VerboseLogger* s_instance;
+  static SocksLogger* s_instance;
 
+  QtMsgType m_logLevel;
   QString m_logFileName;
   QMutex m_logFileMutex;
   QFile* m_logFileDevice = nullptr;
@@ -93,4 +94,4 @@ class VerboseLogger final : public QObject {
   BoxcarAverage m_tx_bytes;
 };
 
-#endif  // VERBOSELOGGER_H
+#endif  // SOCKSLOGGER_H

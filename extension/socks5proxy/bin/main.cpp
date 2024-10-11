@@ -13,7 +13,7 @@
 #include <QTimer>
 
 #include "socks5.h"
-#include "verboselogger.h"
+#include "sockslogger.h"
 
 #ifdef __linux__
 #  include "linuxbypass.h"
@@ -29,7 +29,7 @@ struct CliOptions {
   QString localSocketName;
   QString username = {};
   QString password = {};
-  bool verbose = false;
+  QtMsgType logLevel = QtMsgType::QtCriticalMsg;
 #if defined(PROXY_OS_WIN)
   bool service = false;
 #endif
@@ -89,13 +89,11 @@ static CliOptions parseArgs(const QCoreApplication& app) {
     out.localSocketName = parser.value(localOption);
   }
   if (parser.isSet(verboseOption)) {
-    out.verbose = true;
+    out.logLevel = QtMsgType::QtDebugMsg;
   }
 #if defined(PROXY_OS_WIN)
   if (parser.isSet(serviceOption)) {
     out.service = true;
-    // Force logging when running as a service.
-    out.verbose = true;
   }
 #endif
   return out;
@@ -113,7 +111,7 @@ int main(int argc, char** argv) {
     return 1;
   }
 
-    auto *logger = new VerboseLogger();
+  auto *logger = new SocksLogger(config.logLevel, &app);
 
 #if defined(PROXY_OS_WIN)
   if (config.service) {
@@ -161,11 +159,7 @@ int main(int argc, char** argv) {
     }
   }
   QObject::connect(socks5, &Socks5::incomingConnection, logger,
-                   &VerboseLogger::incomingConnection);
-
-  if (config.verbose) {
-    // HMM?
-  }
+                   &SocksLogger::incomingConnection);
 
 #ifdef __linux__
   new LinuxBypass(socks5);

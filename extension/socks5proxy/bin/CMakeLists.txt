@@ -4,8 +4,8 @@
 
 qt_add_executable(socksproxy 
     main.cpp
-    verboselogger.cpp
-    verboselogger.h
+    sockslogger.cpp
+    sockslogger.h
 )
 
 target_link_libraries(socksproxy PUBLIC 
