@@ -2,10 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-// NOLINTBEGIN: psapi.h must be included after windows.h
+// psapi.h must be included after windows.h
+// clang-format off
 #include <windows.h>
 #include <psapi.h>
-// NOLINTEND
+// clang-format on
 
 #include <QLocalSocket>
 #include <QScopeGuard>
