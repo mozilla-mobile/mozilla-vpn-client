@@ -39,11 +39,23 @@ class VPNService : android.net.VpnService() {
     private var mCityname = ""
     private var mBackgroundPingTimerMSec: Long = 3 * 60 * 60 * 1000 // 3 hours, in milliseconds
     private var mShortTimerBackgroundPingMSec: Long = 3 * 60 * 1000 // 3 minutes, in milliseconds
-    private val mMetricsTimer: CountDownTimer = object : CountDownTimer(
-        if (isUsingShortTimerSessionPing) mShortTimerBackgroundPingMSec else mBackgroundPingTimerMSec,
-        if (isUsingShortTimerSessionPing) mShortTimerBackgroundPingMSec / 4 else mBackgroundPingTimerMSec / 4,
-    ) {
-        override fun onTick(millisUntilFinished: Long) {}
+
+    // `isUsingShortTimerSessionPing` is not reliable until mConfig has been set, so it cannot be set upon
+    // class initialization (VPN-6629). And this cannot be a lazy var, as that caused a crash (PR #8555)
+    // Thus, the interval ticks are for the debug timer mode (but `isUsingShortTimerSessionPing` determines
+    // if a ping is actually sent), and countdown finishes are for typical sending times.
+    private val mMetricsTimer: CountDownTimer = object : CountDownTimer(mBackgroundPingTimerMSec, mShortTimerBackgroundPingMSec) {
+        override fun onTick(millisUntilFinished: Long) {
+            // We want to skip the first onTick, which is called as the timer is started.
+            // (The Start ping is sent then, so there is no need for a Timer ping.)
+            var wasTimerJustStarted = (millisUntilFinished == mBackgroundPingTimerMSec)
+            if (!wasTimerJustStarted && isUsingShortTimerSessionPing && shouldRecordTimerAndEndMetrics) {
+                Log.i(tag, "Sending daemon_timer ping (on short timer debug schedule)")
+                Pings.daemonsession.submit(
+                    Pings.daemonsessionReasonCodes.daemonTimer,
+                )
+            }
+        }
         override fun onFinish() {
             Log.i(tag, "Sending daemon_timer ping")
             if (shouldRecordTimerAndEndMetrics) {
