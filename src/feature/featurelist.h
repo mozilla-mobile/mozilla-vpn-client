@@ -241,10 +241,11 @@ FEATURE(localProxy,    // Feature ID
         byPlatform({
             .windows = true,
             .gnu_linux = true,
-        }),                          // Can be flipped on
-        FeatureCallback_true,        // Can be flipped off
-        QStringList("splitTunnel"),  // feature dependencies
-        FeatureCallback_inStaging)
+        }),                    // Can be flipped on
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        byPlatform({           // default value
+                    .windows = true}))
 
 FEATURE(webExtension,    // Feature ID
         "webExtension",  // Feature name
