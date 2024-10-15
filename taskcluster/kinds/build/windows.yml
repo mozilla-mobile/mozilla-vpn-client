@@ -12,13 +12,16 @@ task-defaults:
     worker-type: b-win2022
     fetches:
         fetch:
-            - win-dev-env
             - win-sentry-cli
             - win-conda
             - wireguard-nt
         toolchain:
             - cargo-vendor
-            - conda-windows-x86_64
+        conda-pack:
+            - artifact: conda-windows.tar.gz
+              dest: conda-windows
+    dependencies:
+        conda-pack: toolchain-windows-conda-pack
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
