@@ -8,6 +8,7 @@
 
 #include <QDBusConnection>
 #include <QDBusInterface>
+#include <QMetaType>
 #include <QScopeGuard>
 #include <QtDBus/QtDBus>
 
@@ -70,7 +71,7 @@ void AppTracker::userCreated(uint userid, const QString& xdgRuntimePath) {
       new QDBusInterface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
                          DBUS_SYSTEMD_MANAGER, connection, this);
   QVariant qv = m_systemdInterface->property("ControlGroup");
-  if (!m_cgroupMount.isEmpty() && qv.type() == QVariant::String) {
+  if (!m_cgroupMount.isEmpty() && qv.typeId() == QMetaType::QString) {
     QString userCgroupPath = m_cgroupMount + qv.toString();
     logger.debug() << "Monitoring Control Groups v2 at:" << userCgroupPath;
 
