@@ -107,6 +107,7 @@ cmake --build ${TASK_HOME}/build --target pkg
 
 print Y "Exporting the build artifacts..."
 mkdir -p tmp || die
+cp ${TASK_HOME}/build/translations/generated/mozillavpn_el.ts ${TASK_HOME}/artifacts/mozillavpn_el.ts
 
 
 print Y "Extracting the Symbols..."
