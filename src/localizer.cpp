@@ -687,6 +687,11 @@ QString Localizer::getTranslationCode() {
 // static
 QString Localizer::getCapitalizedStringFromI18n(const QString& id) {
   QString str = I18nStrings::instance()->t(I18nStrings::getString(id));
+  if (id.contains("alm")) {
+    logger.error() << "TESTING: id - " << id << "str " << str
+                   << "I18nStrings::getString(id) "
+                   << I18nStrings::getString(id);
+  }
   return toUpper(QLocale(getTranslationCode()), str);
 }
 
