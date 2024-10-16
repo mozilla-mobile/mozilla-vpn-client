@@ -688,7 +688,7 @@ QString Localizer::getTranslationCode() {
 QString Localizer::getCapitalizedStringFromI18n(const QString& id) {
   QString str = I18nStrings::instance()->t(I18nStrings::getString(id));
   if (id.contains("alm")) {
-    logger.error() << "TESTING: id - " << id << "str " << str
+    logger.error() << "TESTING2: id - " << id << "str " << str
                    << "I18nStrings::getString(id) "
                    << I18nStrings::getString(id);
   }

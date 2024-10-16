@@ -59,6 +59,8 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
             ${ASSETS_DIRECTORY}/strings.yaml
             ${ASSETS_DIRECTORY}/extras/extras.xliff
             ${MVPN_SCRIPT_DIR}/utils/generate_strings.py
+        # NEED WORLDS BEST COMMENT HERE
+        COMMAND sed -i -- 's/servers\.Malmö/servers\.Malm/g' ${ASSETS_DIRECTORY}/extras/extras.xliff
         COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_strings.py
             -o ${GENERATED_DIR}
             ${ASSETS_DIRECTORY}/strings.yaml
@@ -97,6 +99,8 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
                 ${GENERATED_DIR}/i18nstrings_p.cpp
                 ${TRANSLATIONS_DIRECTORY}/${LOCALE}/extras.xliff
             COMMAND ${QT_LUPDATE_EXECUTABLE} -target-language ${LOCALE} ${GENERATED_DIR}/i18nstrings_p.cpp -ts ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
+            # NEED WORLDS BEST COMMENT HERE
+            COMMAND sed -i -- 's/servers\.Malmö/servers\.Malm/g' "${TRANSLATIONS_DIRECTORY}/${LOCALE}/extras.xliff"
             COMMAND ${QT_LCONVERT_EXECUTABLE} -verbose -o ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
                             -if ts -i ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts ${INCLUDE_UNTRANSLATED}
                             -if xlf -i ${TRANSLATIONS_DIRECTORY}/${LOCALE}/mozillavpn.xliff -i ${TRANSLATIONS_DIRECTORY}/${LOCALE}/extras.xliff
