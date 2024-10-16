@@ -59,7 +59,9 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
             ${ASSETS_DIRECTORY}/strings.yaml
             ${ASSETS_DIRECTORY}/extras/extras.xliff
             ${MVPN_SCRIPT_DIR}/utils/generate_strings.py
-        # NEED WORLDS BEST COMMENT HERE
+        # Next line fixes VPN-6649 - Malmö is the only city with a special character. The translation build scripts should
+        # handle this fine, and it built perfectly on a developer's machine. However on TaskCluster it built differently,
+        # leading to this bug. Adding this `sed` command here and below fixes it.
         COMMAND sed -i -- 's/servers\.Malmö/servers\.Malm/g' ${ASSETS_DIRECTORY}/extras/extras.xliff
         COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/generate_strings.py
             -o ${GENERATED_DIR}
@@ -99,7 +101,7 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
                 ${GENERATED_DIR}/i18nstrings_p.cpp
                 ${TRANSLATIONS_DIRECTORY}/${LOCALE}/extras.xliff
             COMMAND ${QT_LUPDATE_EXECUTABLE} -target-language ${LOCALE} ${GENERATED_DIR}/i18nstrings_p.cpp -ts ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
-            # NEED WORLDS BEST COMMENT HERE
+            # Next line fixes VPN-6649 - See comment above. Adding `sed` command here and above fixes bug.
             COMMAND sed -i -- 's/servers\.Malmö/servers\.Malm/g' "${TRANSLATIONS_DIRECTORY}/${LOCALE}/extras.xliff"
             COMMAND ${QT_LCONVERT_EXECUTABLE} -verbose -o ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
                             -if ts -i ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts ${INCLUDE_UNTRANSLATED}

@@ -21,7 +21,6 @@ task-defaults:
         max-run-time: 3600
     release-artifacts:
         - MozillaVPN.tar.gz
-        - mozillavpn_el.ts
     run:
         using: run-task
         use-caches: false

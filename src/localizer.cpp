@@ -659,12 +659,6 @@ QString Localizer::getTranslatedCityName(const QString& cityName) const {
 
   auto value = getCapitalizedStringFromI18n(i18nCityId);
 
-  if (cityName.contains("alm")) {
-    logger.error() << "TESTING: cityName - " << cityName << "parsedCityName "
-                   << parsedCityName << "i18nCityId " << i18nCityId << " value "
-                   << value;
-  }
-
   // The server list is ever changing, so it is plausible that a translation
   // doesn't exist yet for a given server.
   if (value.isEmpty()) {
@@ -687,11 +681,6 @@ QString Localizer::getTranslationCode() {
 // static
 QString Localizer::getCapitalizedStringFromI18n(const QString& id) {
   QString str = I18nStrings::instance()->t(I18nStrings::getString(id));
-  if (id.contains("alm")) {
-    logger.error() << "TESTING2: id - " << id << "str " << str
-                   << "I18nStrings::getString(id) "
-                   << I18nStrings::getString(id);
-  }
   return toUpper(QLocale(getTranslationCode()), str);
 }
 
