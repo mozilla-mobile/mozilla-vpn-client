@@ -204,7 +204,25 @@ std::unique_ptr<WindowsSplitTunnel> WindowsSplitTunnel::create(
   ;
   if (driverFile == INVALID_HANDLE_VALUE) {
     WindowsUtils::windowsLog("Failed to open Driver: ");
-    return nullptr;
+    // Only once, if the opening did not work. Try to reboot it. #
+    logger.info()
+        << "Failed to open driver, attempting only once to reboot driver";
+    if (!driver_manager->stopService()) {
+      logger.error() << "Unable stop driver";
+      return nullptr;
+    };
+    logger.info() << "Stopped driver, starting it again.";
+    if (!driver_manager->startService()) {
+      logger.error() << "Unable start driver";
+      return nullptr;
+    };
+    logger.info() << "Opening again.";
+    driverFile = CreateFileW(DRIVER_SYMLINK, GENERIC_READ | GENERIC_WRITE, 0,
+                             nullptr, OPEN_EXISTING, 0, nullptr);
+    if (driverFile == INVALID_HANDLE_VALUE) {
+      logger.error() << "Opening Failed again, sorry!";
+      return nullptr;
+    }
   }
   if (!initDriver(driverFile)) {
     logger.error() << "Failed to init driver";
@@ -259,12 +277,12 @@ WindowsSplitTunnel::~WindowsSplitTunnel() {
   uninstallDriver();
 }
 
-void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
+bool WindowsSplitTunnel::excludeApps(const QStringList& appPaths) {
   auto state = getState();
   if (state != STATE_READY && state != STATE_RUNNING) {
     logger.warning() << "Driver is not in the right State to set Rules"
                      << state;
-    return;
+    return false;
   }
 
   logger.debug() << "Pushing new Ruleset for Split-Tunnel " << state;
@@ -278,12 +296,13 @@ void WindowsSplitTunnel::setRules(const QStringList& appPaths) {
     auto err = GetLastError();
     WindowsUtils::windowsLog("Set Config Failed:");
     logger.error() << "Failed to set Config err code " << err;
-    return;
+    return false;
   }
-  logger.debug() << "New Configuration applied: " << getState();
+  logger.debug() << "New Configuration applied: " << stateString();
+  return true;
 }
 
-void WindowsSplitTunnel::start(int inetAdapterIndex) {
+bool WindowsSplitTunnel::start(int inetAdapterIndex) {
   // To Start we need to send 2 things:
   // Network info (what is vpn what is network)
   logger.debug() << "Starting SplitTunnel";
@@ -296,7 +315,7 @@ void WindowsSplitTunnel::start(int inetAdapterIndex) {
                               0, &bytesReturned, nullptr);
     if (!ok) {
       logger.error() << "Driver init failed";
-      return;
+      return false;
     }
   }
 
@@ -309,16 +328,16 @@ void WindowsSplitTunnel::start(int inetAdapterIndex) {
                               nullptr);
     if (!ok) {
       logger.error() << "Failed to set Process Config";
-      return;
+      return false;
     }
-    logger.debug() << "Set Process Config ok || new State:" << getState();
+    logger.debug() << "Set Process Config ok || new State:" << stateString();
   }
 
   if (getState() == STATE_INITIALIZED) {
     logger.warning() << "Driver is still not ready after process list send";
-    return;
+    return false;
   }
-  logger.debug() << "Driver is  ready || new State:" << getState();
+  logger.debug() << "Driver is  ready || new State:" << stateString();
 
   auto config = generateIPConfiguration(inetAdapterIndex);
   auto ok = DeviceIoControl(m_driver, IOCTL_REGISTER_IP_ADDRESSES, &config[0],
@@ -326,9 +345,10 @@ void WindowsSplitTunnel::start(int inetAdapterIndex) {
                             nullptr);
   if (!ok) {
     logger.error() << "Failed to set Network Config";
-    return;
+    return false;
   }
-  logger.debug() << "New Network Config Applied || new State:" << getState();
+  logger.debug() << "New Network Config Applied || new State:" << stateString();
+  return true;
 }
 
 void WindowsSplitTunnel::stop() {
@@ -670,4 +690,26 @@ bool WindowsSplitTunnel::detectConflict() {
   err = GetLastError();
   CloseServiceHandle(servicehandle);
   return err == ERROR_SERVICE_DOES_NOT_EXIST;
+}
+
+bool WindowsSplitTunnel::isRunning() { return getState() == STATE_RUNNING; }
+
+QString WindowsSplitTunnel::stateString() {
+  switch (getState()) {
+    case STATE_UNKNOWN:
+      return "STATE_UNKNOWN";
+    case STATE_NONE:
+      return "STATE_NONE";
+    case STATE_STARTED:
+      return "STATE_STARTED";
+    case STATE_INITIALIZED:
+      return "STATE_INITIALIZED";
+    case STATE_READY:
+      return "STATE_READY";
+    case STATE_RUNNING:
+      return "STATE_RUNNING";
+    case STATE_ZOMBIE:
+      return "STATE_ZOMBIE";
+      break;
+  }
 }

@@ -46,12 +46,15 @@ class WindowsSplitTunnel final {
 
   // void excludeApps(const QStringList& paths);
   // Excludes an Application from the VPN
-  void setRules(const QStringList& appPaths);
+  bool excludeApps(const QStringList& appPaths);
 
   // Fetches and Pushed needed info to move to engaged mode
-  void start(int inetAdapterIndex);
+  bool start(int inetAdapterIndex);
   // Deletes Rules and puts the driver into passive mode
   void stop();
+
+  // Returns true if the split-tunnel driver is now up and running.
+  bool isRunning();
 
   static bool detectConflict();
 
@@ -77,6 +80,7 @@ class WindowsSplitTunnel final {
 
   HANDLE m_driver = INVALID_HANDLE_VALUE;
   DRIVER_STATE getState();
+  QString stateString();
 
   // Generates a Configuration for Each APP
   std::vector<uint8_t> generateAppConfiguration(const QStringList& appPaths);

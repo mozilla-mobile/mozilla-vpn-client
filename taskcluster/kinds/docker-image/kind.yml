@@ -57,13 +57,13 @@ tasks:
         definition: linux-dpkg-build
         args:
             DOCKER_BASE_IMAGE: ubuntu:noble
-    linux-build-fedora-fc37:
-        symbol: I(linux-fedora-fc37)
+    linux-build-fedora-fc39:
+        symbol: I(linux-fedora-fc39)
         definition: linux-rpm-build
         args:
-            DOCKER_BASE_IMAGE: fedora:37
-    linux-build-fedora-fc38:
-        symbol: I(linux-fedora-fc38)
+            DOCKER_BASE_IMAGE: fedora:39
+    linux-build-fedora-fc40:
+        symbol: I(linux-fedora-fc40)
         definition: linux-rpm-build
         args:
-            DOCKER_BASE_IMAGE: fedora:38
+            DOCKER_BASE_IMAGE: fedora:40

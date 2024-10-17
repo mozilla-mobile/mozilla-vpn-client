@@ -15,6 +15,7 @@
 #include <windows.h>
 
 #include <QApplication>
+#include <QDir>
 #include <QFileInfo>
 #include <QHostAddress>
 #include <QNetworkInterface>
@@ -186,6 +187,8 @@ bool WindowsFirewall::enableInterface(int vpnAdapterIndex) {
   FW_OK(allowHyperVTraffic(MED_WEIGHT, "Allow Hyper-V Traffic"));
   FW_OK(allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT,
                                 "Allow all for Mozilla VPN.exe"));
+  FW_OK(allowTrafficForAppOnAll(getProxyPath(), MAX_WEIGHT,
+                                "Allow all for socksproxy.exe"));
   FW_OK(blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS"));
   FW_OK(
       allowLoopbackTraffic(MED_WEIGHT, "Allow Loopback traffic on device %1"));
@@ -350,6 +353,8 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
     WindowsUtils::windowsLog("FwpmGetAppIdFromFileName0 failure");
     return false;
   }
+  auto guard = qScopeGuard([appID]() { FwpmFreeMemory0((void**)&appID); });
+
   // Condition: Request must come from the .exe
   FWPM_FILTER_CONDITION0 conds;
   conds.fieldKey = FWPM_CONDITION_ALE_APP_ID;
@@ -370,21 +375,29 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
                                                        // only blockable by veto
   // Build and add the Filters
   // #1 Permit outbound IPv4 traffic.
-  {
-    QString desc("Permit (out) IPv4 Traffic of: " + appName);
-    filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
-    if (!enableFilter(&filter, title, desc)) {
-      return false;
-    }
+  filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
+  if (!enableFilter(&filter, title, "Permit out IPv4 Traffic of: " + appName)) {
+    return false;
   }
+
   // #2 Permit inbound IPv4 traffic.
-  {
-    QString desc("Permit (in) IPv4 Traffic of: " + appName);
-    filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
-    if (!enableFilter(&filter, title, desc)) {
-      return false;
-    }
+  filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
+  if (!enableFilter(&filter, title, "Permit in IPv4 Traffic of: " + appName)) {
+    return false;
   }
+
+  // #3 Permit outbound IPv6 traffic.
+  filter.layerKey = FWPM_LAYER_ALE_AUTH_CONNECT_V6;
+  if (!enableFilter(&filter, title, "Permit out IPv6 Traffic of: " + appName)) {
+    return false;
+  }
+
+  // #4 Permit inbound IPv6 traffic.
+  filter.layerKey = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V6;
+  if (!enableFilter(&filter, title, "Permit in IPv6 Traffic of: " + appName)) {
+    return false;
+  }
+
   return true;
 }
 
@@ -804,6 +817,15 @@ QString WindowsFirewall::getCurrentPath() {
   }
 
   return QString::fromLocal8Bit(buffer);
+}
+
+QString WindowsFirewall::getProxyPath() {
+  QString execPath = getCurrentPath();
+  if (execPath.isEmpty()) {
+    return "";
+  }
+
+  return QFileInfo(execPath).dir().absoluteFilePath("socksproxy.exe");
 }
 
 void WindowsFirewall::importAddress(const QHostAddress& addr,

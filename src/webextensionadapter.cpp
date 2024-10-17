@@ -207,6 +207,8 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
 
 QJsonObject WebExtensionAdapter::serializeFeaturelist() {
   auto out = QJsonObject();
+  out["webExtension"] =
+      Feature::get(Feature::Feature_webExtension)->isSupported();
   out["localProxy"] = Feature::get(Feature::Feature_localProxy)->isSupported();
   return out;
 }

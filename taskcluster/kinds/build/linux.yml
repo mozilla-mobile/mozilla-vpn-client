@@ -55,24 +55,24 @@ linux/noble:
         name: linux-noble
         type: build
 
-linux/fedora-fc37:
-    description: "Linux Build (Fedora/37)"
+linux/fedora-fc39:
+    description: "Linux Build (Fedora/39)"
     treeherder:
-        platform: linux/fedora-fc37
+        platform: linux/fedora-fc39
     worker:
-        docker-image: {in-tree: linux-build-fedora-fc37}
+        docker-image: {in-tree: linux-build-fedora-fc39}
     add-index-routes:
-        name: linux-fedora-fc37
+        name: linux-fedora-fc39
         type: build
 
-linux/fedora-fc38:
-    description: "Linux Build (Fedora/38)"
+linux/fedora-fc40:
+    description: "Linux Build (Fedora/40)"
     treeherder:
-        platform: linux/fedora-fc38
+        platform: linux/fedora-fc40
     worker:
-        docker-image: {in-tree: linux-build-fedora-fc38}
+        docker-image: {in-tree: linux-build-fedora-fc40}
     add-index-routes:
-        name: linux-fedora-fc38
+        name: linux-fedora-fc40
         type: build
 
 linux64/release-deb:

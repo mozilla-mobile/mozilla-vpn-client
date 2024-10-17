@@ -7,15 +7,15 @@
 #include <QtDBus/QtDBus>
 
 #include "constants.h"
-#include "cryptosettings.h"
 #include "logger.h"
+#include "xdgcryptosettings.h"
 
 // No extra QT includes after this line!
 #undef Q_SIGNALS
 #include <libsecret/secret.h>
 
 namespace {
-Logger logger("CryptoSettings");
+Logger logger("LinuxCryptoSettings");
 }  // namespace
 
 static const SecretSchema* cryptosettings_get_schema(void) {
@@ -28,9 +28,17 @@ static const SecretSchema* cryptosettings_get_schema(void) {
   return &cryptosettings_schema;
 }
 
-LinuxCryptoSettings::LinuxCryptoSettings() {
-  m_keyVersion = CryptoSettings::NoEncryption;
-
+/* The XDG Secrets portal is the preferred way to retrieve secrets from
+ * the desktop session, and we should use that whenever possible. However,
+ * we keep the LinuxCryptoSettings class around to allow users to migrate
+ * from the older libsecrets implementation to the XDG Portal.
+ *
+ * This class wraps the XdgCryptoSettings implementation, but provides a
+ * fallback to fetch a key from libsecret when attempting to decrypt a file
+ * using the EncryptionChachaPolyV1 format. For all other cases, we just call
+ * through to the XDG implementation.
+ */
+LinuxCryptoSettings::LinuxCryptoSettings() : XdgCryptoSettings() {
   // Check if "org.freedesktop.secrets" has been taken on the session D-Bus.
   QDBusConnection bus = QDBusConnection::sessionBus();
   QDBusMessage hasOwnerCall = QDBusMessage::createMethodCall(
@@ -46,108 +54,55 @@ LinuxCryptoSettings::LinuxCryptoSettings() {
     return;
   }
 
-  // Check if "org.freedesktop.Accounts" "AutomaticLoginUsers" is empty.
-  QDBusInterface iface("org.freedesktop.Accounts", "/org/freedesktop/Accounts",
-                       "org.freedesktop.DBus.Properties",
-                       QDBusConnection::systemBus());
+  /* Try to lookup the encryption key. This can fail for a variety of reasons.
+   * It's also not reliable, which is why we want to move users onto the XDG
+   * Secrets portal for managing their encrypted settings.
+   */
+  GError* err = nullptr;
+  auto schema = cryptosettings_get_schema();
+  gchar* password = secret_password_lookup_sync(schema, nullptr, &err, nullptr);
+  if (err != nullptr) {
+    logger.info() << "Error while fetching legacy key:" << err->message;
+    g_error_free(err);
+    return;
+  } else if (password != nullptr) {
+    // We successfully retrieved a key from libsecret.
+    logger.info() << "Legacy encryption key found";
+    m_legacyKey = QByteArray::fromBase64(QByteArray(password, -1));
+    secret_password_free(password);
+  }
+}
 
-  QDBusMessage autoLoginReply =
-      iface.call("Get", "org.freedesktop.Accounts", "AutomaticLoginUsers");
-  if (autoLoginReply.type() != QDBusMessage::ReplyMessage) {
-    logger.info() << "Encrypted settings with libsecrets is not supported "
-                     "(incompatible reply)";
+void LinuxCryptoSettings::clearLegacyKey() {
+  if (m_legacyKey.isEmpty()) {
     return;
   }
+  logger.debug() << "Removing legacy keys from the keychain";
+  m_legacyKey.clear();
 
-  QVariant v = autoLoginReply.arguments().first();
-  QDBusArgument arg = v.value<QDBusVariant>().variant().value<QDBusArgument>();
-
-  QStringList users;
-  arg.beginArray();
-  while (!arg.atEnd()) {
-    QString user;
-    arg >> user;
-    users << user;
+  GError* error = nullptr;
+  auto schema = cryptosettings_get_schema();
+  secret_password_clear_sync(schema, nullptr, &error, nullptr);
+  if (error != nullptr) {
+    logger.error() << "Key reset failed:" << error->message;
+    g_error_free(error);
   }
-  arg.endArray();
-
-  if (!users.isEmpty()) {
-    logger.info() << "Encrypted settings with libsecrets is not supported "
-                     "with auto-login";
-    return;
-  }
-
-  // Otherwise - if we passed all the checks then we can use crypto settings.
-  m_keyVersion = CryptoSettings::EncryptionChachaPolyV1;
 }
 
 void LinuxCryptoSettings::resetKey() {
-  logger.debug() << "Reset the key in the keychain";
-
-  GError* error = nullptr;
-  gboolean ok = secret_password_clear_sync(cryptosettings_get_schema(), nullptr,
-                                           &error, nullptr);
-  if (!ok) {
-    Q_ASSERT(error);
-    logger.error() << "Key reset failed:" << error->message;
-    g_error_free(error);
-
-    // Fallback to unencrypted settings.
-    m_keyVersion = CryptoSettings::NoEncryption;
-  }
-
-  m_key.clear();
+  clearLegacyKey();
+  XdgCryptoSettings::resetKey();
 }
 
-QByteArray LinuxCryptoSettings::getKey(const QByteArray& metadata) {
-  Q_UNUSED(metadata);
-
-  if (m_keyVersion == CryptoSettings::NoEncryption) {
-    logger.error() << "libsecrets is not supported";
-    return QByteArray();
+QByteArray LinuxCryptoSettings::getKey(Version version,
+                                       const QByteArray& metadata) {
+  if (version == EncryptionChachaPolyV1) {
+    // A legacy key is being requested - get it from the libsecrets API.
+    return m_legacyKey;
+  } else {
+    // Otherwise, use the XDG secrets portal for all new files and keys.
+    // Clear the legacy key once an attempt has been made to write a new file.
+    clearLegacyKey();
+    return XdgCryptoSettings::getKey(version, metadata);
   }
-
-  if (m_key.isEmpty()) {
-    // Try to lookup the encryption key.
-    GError* error = nullptr;
-    gchar* password = secret_password_lookup_sync(cryptosettings_get_schema(),
-                                                  nullptr, &error, nullptr);
-    if (error != nullptr) {
-      logger.error() << "Key lookup failed:" << error->message;
-      g_error_free(error);
-      error = nullptr;
-      // fall-through to try creating the password anyways
-    }
-
-    if (password != nullptr) {
-      QString b64key(password);
-      m_key = QByteArray::fromBase64(b64key.toUtf8());
-      secret_password_free(password);
-    } else {
-      logger.debug() << "Key not found. Let's create it.";
-      m_key = generateRandomBytes(CRYPTO_SETTINGS_KEY_SIZE);
-
-      QString b64key(m_key.toBase64());
-      gboolean ok = secret_password_store_sync(
-          cryptosettings_get_schema(), SECRET_COLLECTION_DEFAULT,
-          Constants::LINUX_CRYPTO_SETTINGS_DESC, qPrintable(b64key), nullptr,
-          &error, nullptr);
-      if (!ok) {
-        Q_ASSERT(error);
-        logger.error() << "Key storage failed:" << error->message;
-        g_error_free(error);
-
-        // Fallback to unencrypted settings.
-        m_keyVersion = CryptoSettings::NoEncryption;
-        m_key.clear();
-        return QByteArray();
-      }
-    }
-  }
-
-  return m_key;
-}
-
-CryptoSettings::Version LinuxCryptoSettings::getSupportedVersion() {
-  return m_keyVersion;
 }

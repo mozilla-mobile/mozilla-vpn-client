@@ -186,7 +186,7 @@ bool CryptoSettings::readEncryptedChachaPolyFile(Version fileVersion,
     return false;
   }
 
-  QByteArray key = getKey(metadata);
+  QByteArray key = getKey(fileVersion, metadata);
   if (key.isEmpty()) {
     logger.error() << "Something went wrong reading the key";
     return false;
@@ -228,13 +228,13 @@ bool CryptoSettings::readEncryptedChachaPolyFile(Version fileVersion,
 bool CryptoSettings::writeFile(QIODevice& device,
                                const QSettings::SettingsMap& map) {
   logger.debug() << "Writing the settings file";
-  CryptoSettings::Version version = NoEncryption;
 
-  if (s_instance) {
-    version = s_instance->getSupportedVersion();
+  // Without a CryptoSettings we can only write plaintext settings.
+  if (s_instance == nullptr) {
+    return writeJsonFile(device, map);
   }
 
-  switch (version) {
+  switch (s_instance->getPreferredVersion()) {
     case NoEncryption:
       return writeJsonFile(device, map);
     case EncryptionChachaPolyV1:
@@ -299,7 +299,8 @@ bool CryptoSettings::writeEncryptedChachaPolyFile(
   QByteArray nonce(NONCE_SIZE, 0x00);
   memcpy(nonce.data(), &m_lastNonce, sizeof(m_lastNonce));
 
-  QByteArray key = getKey(QByteArray());
+  Version fileVersion = getPreferredVersion();
+  QByteArray key = getKey(fileVersion, QByteArray());
   if (key.isEmpty()) {
     logger.error() << "Something went wrong reading the key";
     return false;
@@ -310,24 +311,29 @@ bool CryptoSettings::writeEncryptedChachaPolyFile(
   }
 
   QByteArray header;
-  QByteArray metadata = getMetaData();
-  if (metadata.isEmpty()) {
+  if (fileVersion == CryptoSettings::EncryptionChachaPolyV1) {
     // Encrypted V1 Header: Just the version.
-    header.append(1, CryptoSettings::EncryptionChachaPolyV1);
-  } else if (metadata.length() <= UINT16_MAX) {
+    header.append(1, fileVersion);
+  } else if (fileVersion == CryptoSettings::EncryptionChachaPolyV2) {
+    QByteArray metadata = getMetaData();
+    if (metadata.length() > UINT16_MAX) {
+      logger.error() << "Failed to write encrypted file header: too long";
+      return false;
+    }
+
     // Encrypted V2 Header:
     // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     // | Version | Reserved  | Metadata Length | Metadata  |
     // |  8-bit  |   8-bit   |     16-bit      | variable  |
     // +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
     header.reserve(ENCRYPTED_V2_HEADER_SIZE + metadata.length());
-    header.append(1, CryptoSettings::EncryptionChachaPolyV2);
+    header.append(1, fileVersion);
     header.append(1, 0);
     header.append(1, metadata.length() & 0xff);
     header.append(1, (metadata.length() >> 8) & 0xff);
     header.append(metadata);
   } else {
-    logger.error() << "Failed to write encrypted file header: too long";
+    logger.error() << "Unsupported encrypted file version:" << header[0];
     return false;
   }
 

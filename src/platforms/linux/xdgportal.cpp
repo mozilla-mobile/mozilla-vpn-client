@@ -14,6 +14,7 @@
 #  include <qpa/qplatformintegration.h>
 #else
 #  include <QGuiApplication>
+#  include <QWindow>
 #endif
 
 #include "leakdetector.h"

@@ -31,6 +31,16 @@ MZViewBase {
 
         spacing: MZTheme.theme.windowMargin
 
+        MZLinkRow {
+            objectName: "androidStartAtBootLink"
+
+            accessibleName: _startAtBootTitle
+            title: _startAtBootTitle
+            subLabelText: MZI18n.SettingsStartAtBootSubtitle
+            visible: Qt.platform.os === "android"
+            onClicked: MZUrlOpener.openUrlLabel("sumoAlwaysOnAndroid")
+        }
+
         MZToggleRow {
             objectName: "startAtBootToogle"
 

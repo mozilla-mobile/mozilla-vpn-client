@@ -21,28 +21,15 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
         with:
-          path: src
-          sparse-checkout: |
-            linux/flatpak/
-            Cargo.lock
-
-      - name: Checkout tools
-        uses: actions/checkout@v4
-        with:
-          repository: flatpak/flatpak-builder-tools
-          path: tools
+          sparse-checkout: linux/flatpak/
 
       - name: Install pip tools
         shell: bash
-        run: pip install requirements-parser PyYAML toml aiohttp yq
-
-      - name: Update Cargo dependencies
-        shell: bash
-        run: src/linux/flatpak/flatpak-update-crates.sh src/Cargo.lock
+        run: pip install PyYAML yq
 
       - name: Update git reference
         shell: bash
-        working-directory: src/linux/flatpak
+        working-directory: linux/flatpak
         run: |
           python -m yq -yi 'del(.modules[-1].sources[0].branch)' org.mozilla.vpn.yml
           python -m yq -yi ".modules[-1].sources[0].url = \"https://github.com/${{ github.repository }}\"" org.mozilla.vpn.yml
@@ -51,7 +38,7 @@ jobs:
 
       - name: Add Appstream metainfo
         shell: bash
-        working-directory: src/linux/flatpak
+        working-directory: linux/flatpak
         run: |
           curl -sSL -o org.mozilla.vpn.releases.xml \
             https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml
@@ -61,7 +48,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: mozillavpn-manifest
-          path: src/linux/flatpak
+          path: linux/flatpak
 
   linter:
     name: "Linters"
@@ -114,3 +101,45 @@ jobs:
           bundle: mozillavpn.flatpak
           manifest-path: manifest/org.mozilla.vpn.yml
           cache-key: flatpak-builder-${{ github.sha }}
+
+  dependabot-cargo:
+    name: "Update Crates"
+    runs-on: ubuntu-latest
+    if: ${{ startsWith(github.head_ref, 'dependabot/cargo/') && github.event_name == 'pull_request' }}
+    steps:
+      - name: Checkout sources
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+          token: ${{ secrets.DEPENDABOT_TOKEN }}
+
+      - name: Install pip tools
+        shell: bash
+        run: pip install requirements-parser PyYAML toml aiohttp
+
+      # Do not continue if there are changes to the flatpak directory.
+      - name: Inspect pull request
+        id: inspect
+        shell: bash
+        run: |
+          git fetch origin "${{ github.base_ref }}" --depth=1
+          echo -n "flatpak-changes=" >> $GITHUB_OUTPUT
+          git diff --name-only --relative=linux/flatpak "origin/${{ github.base_ref }}" | wc -l >> $GITHUB_OUTPUT
+
+      - name: Update flatpak rust crates
+        shell: bash
+        if: ${{ steps.inspect.outputs.flatpak-changes == 0 }}
+        run: ./linux/flatpak/flatpak-update-crates.sh ./Cargo.lock
+
+      - name: Commit the changes
+        shell: bash
+        if: ${{ steps.inspect.outputs.flatpak-changes == 0 }}
+        run: |
+          if git diff --name-only | grep -q '^linux/flatpak/flatpak-vpn-crates.json'; then
+            git add linux/flatpak/flatpak-vpn-crates.json
+            git config user.name "${GITHUB_ACTOR}"
+            git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+            git commit -m "[dependabot skip] Update linux/flatpak/flatpak-vpn-crates.json"
+            git format-patch --stdout HEAD~1
+            git push
+          fi

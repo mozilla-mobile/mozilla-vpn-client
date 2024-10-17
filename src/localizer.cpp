@@ -50,18 +50,32 @@ QString toUpper(const QLocale& locale, QString input) {
   return input.replace(0, 1, locale.toUpper(QString(input[0])));
 }
 
-QString toPascalCase(const QString& s) {
+QString changeCasing(const QString& s, bool shouldLowerCase) {
   QStringList words = s.split("_");
 
   for (int i = 0; i < words.size(); i++) {
     QString word = words.at(i);
     if (!word.isEmpty()) {
-      words[i] = word.at(0).toUpper() + word.mid(1);
+      if (shouldLowerCase) {
+        words[i] = word.at(0).toUpper() + word.mid(1).toLower();
+      } else {
+        words[i] = word.at(0).toUpper() + word.mid(1);
+      }
     }
   }
 
   return words.join("");
 }
+
+// toPascalCase will capitalize the first letter of a word, and make
+// all other letters in the word lowercase.
+// Examples: McAllen -> Mcallen, en_FS -> EnFs, sample_thing -> SampleThing
+QString toPascalCase(const QString& s) { return changeCasing(s, true); }
+
+// toLanguageId will capitalize the first letter of a word, and keep
+// all other letters in the word the same case as the input.
+// Examples: McAllen -> McAllen, en_FS -> EnFS, sample_thing -> SampleThing
+QString toLanguageId(const QString& s) { return changeCasing(s, false); }
 
 }  // namespace
 
@@ -74,6 +88,14 @@ QList<QPair<QString, QString>> Localizer::parseBCP47Languages(
     QStringList parts = language.split('-');
     if (parts.length() == 1) {
       codes.append(QPair<QString, QString>{parts[0], QString()});
+      continue;
+    }
+
+    // Chinese is often reported as `zh-Hant-HK`, and we want the middle
+    // section.
+    QString script = parts[1];
+    if (script == "Hans" || script == "Hant") {
+      codes.append(QPair<QString, QString>{parts[0], script});
       continue;
     }
 
@@ -96,11 +118,23 @@ QList<QPair<QString, QString>> Localizer::parseIOSLanguages(
   QList<QPair<QString, QString>> codes;
 
   for (const QString& language : languages) {
-    // By documentation, the language code should be in the format
-    // <language>-<script>_<country>. And we don't care about the script.
+    // The language code comes in the format <language>-<country> or
+    // <language>-<script>-<country>.
+    // For an iOS device set to these 6 languages: Chinese Traditional (Macao),
+    // Chinese Traditional, Chinese Simplified, English, Mexican Spanish,
+    // Spanish
+    // ...we get these language codes:
+    // [zh-Hant-MO,zh-Hant-US,zh-Hans-US,en-US,es-MX,es-US]
+    // iOS shows the 2 part versions for nearly all languages, and shows the
+    // 3 part version only when there is a script - like for Chinese variants.
+    // Thus, we can pull the second chunk of the locale string in all cases to
+    // get the translations flow required by our app. That second chunk gives
+    // the country for all languages except Chinese, where it gives the script -
+    // and in both these situations, this is what we want (script for Chinese,
+    // country for all others).
     QString countryCode;
 
-    QStringList parts = language.split('_');
+    QStringList parts = language.split('-');
     if (parts.length() > 1) {
       countryCode = parts[1];
     }
@@ -125,8 +159,27 @@ QString Localizer::systemLanguageCode() const {
 #endif
 
   for (const QPair<QString, QString>& language : uiLanguages) {
-    QString selectedLanguage =
-        findLanguageCode(language.first, language.second);
+    QString languagePart = language.first;
+    QString localePart = language.second;
+
+    // iOS reports Chinese as "zh-Hans" and "zh-Hant". Android reports
+    // them as "zh-CN" and "zh-Hans". However the app uses "zh-CN" and
+    // "zh-TW". We need to manually adjust these. More info:
+    // https://stackoverflow.com/questions/4892372/language-codes-for-simplified-chinese-and-traditional-chinese
+    // (For country-specific variants, it reports it as "zh-Hant-MO", etc. Since
+    // the app only looks at the strings before the 1st and 2nd dashes, we
+    // ignore the country - which is what we want to do, as we don't have
+    // translations for Chinese beyond simplified and traditional.)
+    if (languagePart == "zh") {
+      if (localePart == "Hans") {
+        localePart = "CN";
+      }
+      if (localePart == "Hant") {
+        localePart = "TW";
+      }
+    }
+
+    QString selectedLanguage = findLanguageCode(languagePart, localePart);
     if (!selectedLanguage.isEmpty()) {
       return selectedLanguage;
     }
@@ -451,7 +504,7 @@ int Localizer::rowCount(const QModelIndex&) const {
 }
 
 QString Localizer::localizedLanguageName(const QString& languageCode) const {
-  QString i18nLangId = QString("Languages%1").arg(toPascalCase(languageCode));
+  QString i18nLangId = QString("Languages%1").arg(toLanguageId(languageCode));
   QString value = getCapitalizedStringFromI18n(i18nLangId);
 
   // Value should never be empty, because the ultimate fallback locale is "en"
@@ -595,11 +648,12 @@ QString Localizer::getTranslatedCityName(const QString& cityName) const {
   // Malmö -> ServersMalm, São Paulo, SP -> ServersSoPaulo, Berlin, BE ->
   // ServersBerlin
 
-  QRegularExpression acceptedChars("[^a-zA-Z]");
+  QRegularExpression acceptedChars("[^a-zA-Z ]");
   QString parsedCityName =
-      cityName.split(u',')[0]
-          .replace(" ", "")             // Remove state suffix
-          .replace(acceptedChars, "");  // Remove special characters
+      cityName
+          .split(u',')[0]              // Remove state suffix
+          .replace(acceptedChars, "")  // Remove special characters
+          .replace(" ", "_");          // Prepare for toPascalCase
 
   QString i18nCityId = QString("Servers%1").arg(toPascalCase(parsedCityName));
 

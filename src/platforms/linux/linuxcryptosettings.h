@@ -6,20 +6,22 @@
 #define LINUXCRYPTOSETTINGS_H
 
 #include "cryptosettings.h"
+#include "xdgcryptosettings.h"
 
-class LinuxCryptoSettings final : public CryptoSettings {
+class LinuxCryptoSettings final : public XdgCryptoSettings {
  public:
   LinuxCryptoSettings();
   virtual ~LinuxCryptoSettings() = default;
 
   void resetKey() override;
-  QByteArray getKey(const QByteArray& metadata) override;
-  CryptoSettings::Version getSupportedVersion() override;
+  QByteArray getKey(CryptoSettings::Version version,
+                    const QByteArray& metadata) override;
 
  private:
-  CryptoSettings::Version m_keyVersion = CryptoSettings::NoEncryption;
-  bool m_initialized = false;
-  QByteArray m_key;
+  void clearLegacyKey();
+
+  // Holds a legeacy encryption key, if we could find one.
+  QByteArray m_legacyKey;
 };
 
 #endif  // LINUXCRYPTOSETTINGS_H

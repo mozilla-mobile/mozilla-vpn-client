@@ -49,6 +49,8 @@ QList<ErrorTypeData> s_errorData{
 
     ErrorTypeData(ErrorHandler::ControllerError, true,
                   []() { return ErrorHandler::ControllerErrorAlert; }),
+    ErrorTypeData(ErrorHandler::SplitTunnelError, true,
+                  []() { return ErrorHandler::SplitTunnelErrorAlert; }),
 
     ErrorTypeData(ErrorHandler::RemoteServiceError, true,
                   []() { return ErrorHandler::RemoteServiceErrorAlert; }),

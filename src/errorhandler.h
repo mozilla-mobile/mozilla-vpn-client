@@ -23,6 +23,7 @@ class ErrorHandler final : public QObject {
   enum ErrorType {
     NoError,
     ConnectionFailureError,
+    SplitTunnelError,
     NoConnectionError,
     DependentConnectionError,
     AuthenticationError,
@@ -42,6 +43,7 @@ class ErrorHandler final : public QObject {
     LogoutAlert,
     NoConnectionAlert,
     ControllerErrorAlert,
+    SplitTunnelErrorAlert,
     RemoteServiceErrorAlert,
     SubscriptionFailureAlert,
     GeoIpRestrictionAlert,

@@ -4,10 +4,13 @@
 
 #include "localsocketcontroller.h"
 
+#include <stdint.h>
+
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 
+#include "daemon/daemonerrors.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -297,7 +300,35 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "backendFailure") {
-    REPORTERROR(ErrorHandler::ControllerError, "controller");
+    if (!obj.contains("errorCode")) {
+      // report a generic error if we dont know what it is.
+      REPORTERROR(ErrorHandler::ControllerError, "controller");
+      return;
+    }
+    auto errorCode = static_cast<uint8_t>(obj["errorCode"].toInt());
+    if (errorCode >= (uint8_t)DaemonError::DAEMON_ERROR_MAX) {
+      // Also report a generic error if the code is invalid.
+      REPORTERROR(ErrorHandler::ControllerError, "controller");
+      return;
+    }
+    switch (static_cast<DaemonError>(errorCode)) {
+      case DaemonError::ERROR_NONE:
+        [[fallthrough]];
+      case DaemonError::ERROR_FATAL:
+        REPORTERROR(ErrorHandler::ControllerError, "controller");
+        break;
+      case DaemonError::ERROR_SPLIT_TUNNEL_INIT_FAILURE:
+        [[fallthrough]];
+      case DaemonError::ERROR_SPLIT_TUNNEL_START_FAILURE:
+        [[fallthrough]];
+      case DaemonError::ERROR_SPLIT_TUNNEL_EXCLUDE_FAILURE:
+        REPORTERROR(ErrorHandler::SplitTunnelError, "controller");
+        break;
+      case DaemonError::DAEMON_ERROR_MAX:
+        // We should not get here.
+        Q_ASSERT(false);
+        break;
+    }
     return;
   }
 

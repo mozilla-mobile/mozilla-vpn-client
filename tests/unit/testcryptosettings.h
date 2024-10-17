@@ -38,7 +38,7 @@ class TestCryptoSettings final : public TestHelper {
   void readFailsWithMacError();
 
   // Tests for the encrypted v2 format.
-  void writeV1andReadV2();
+  void writeV1readV2upgrade();
   void writeV2WithMetaData();
   void readFailsWithMetaDataError();
 };
