@@ -78,6 +78,7 @@ class ConnectionHealth final : public QObject {
   QTimer m_settlingTimer;
   QTimer m_noSignalTimer;
   QTimer m_healthCheckTimer;
+  QTimer m_metricsTimer;
 
   PingHelper m_pingHelper;
 

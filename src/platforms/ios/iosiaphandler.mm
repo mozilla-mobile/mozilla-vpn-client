@@ -410,7 +410,8 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids) {
 }
 
 // Called directly when using StoreKit2
-void IOSIAPHandler::processCompletedTransactions(const QStringList& ids, const QString transactionIdentifier) {
+void IOSIAPHandler::processCompletedTransactions(const QStringList& ids,
+                                                 const QString transactionIdentifier) {
   logger.debug() << "process completed transactions";
 
   if (m_subscriptionState != eActive) {

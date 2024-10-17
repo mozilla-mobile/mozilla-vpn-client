@@ -135,8 +135,8 @@ public class IOSControllerImpl: NSObject {
        // the connection status immediately when connected, we alter the iOS16
        // connectivity state and we break the VPN tunnel (intermittently). With
        // a timer this does not happen.
-        _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) {_ in
-            self.monitorConnection()
+        _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
+            self?.monitorConnection()
         }
     }
 
@@ -155,8 +155,8 @@ public class IOSControllerImpl: NSObject {
                 }
             }
 
-            _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { _ in
-                self.monitorConnection()
+            _ = Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
+                self?.monitorConnection()
             }
         }
     }
