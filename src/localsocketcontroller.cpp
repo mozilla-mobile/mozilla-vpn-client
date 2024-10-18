@@ -9,6 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QMetaType>
 
 #include "daemon/daemonerrors.h"
 #include "errorhandler.h"
@@ -380,7 +381,7 @@ void LocalSocketController::clearTimeout(const QString& responseType) {
   // here to add such a mechanism would risk a compatibility issue.
   for (QTimer* t : m_responseTimeouts) {
     QVariant timerResponseType = t->property("responseType");
-    if (timerResponseType.type() != QVariant::String) {
+    if (timerResponseType.typeId() != QMetaType::QString) {
       continue;
     }
     if (timerResponseType.toString() != responseType) {

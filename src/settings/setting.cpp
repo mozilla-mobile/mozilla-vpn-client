@@ -4,6 +4,8 @@
 
 #include "settings/setting.h"
 
+#include <QMetaType>
+
 #include "leakdetector.h"
 #include "settingsmanager.h"
 
@@ -70,9 +72,9 @@ QString Setting::log() const {
     logLine.append(QString("%1 -> ").arg(m_key));
     QVariant value = get();
     switch (value.typeId()) {
-      case QVariant::List:
+      case QMetaType::QVariantList:
         [[fallthrough]];
-      case QVariant::StringList:
+      case QMetaType::QStringList:
         logLine.append(QString("[%1]").arg(value.toStringList().join(",")));
         break;
       default:

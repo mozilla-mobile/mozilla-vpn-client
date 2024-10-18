@@ -84,7 +84,7 @@ QList<QQuickItem*> ItemPicker::pickItem(QMouseEvent* event, QQuickItem* item) {
       continue;
     }
 
-    QPointF gpos = child->mapFromGlobal(event->globalPos());
+    QPointF gpos = child->mapFromGlobal(event->globalPosition());
     if (!child->contains(gpos)) {
       continue;
     }
@@ -99,7 +99,7 @@ QList<QQuickItem*> ItemPicker::pickItem(QMouseEvent* event, QQuickItem* item) {
         continue;
       }
 
-      QPointF gpos = child->mapFromGlobal(event->globalPos());
+      QPointF gpos = child->mapFromGlobal(event->globalPosition());
       if (!child->contains(gpos)) {
         continue;
       }
@@ -114,14 +114,14 @@ QList<QQuickItem*> ItemPicker::pickItem(QMouseEvent* event, QQuickItem* item) {
 QList<QQuickItem*> ItemPicker::pickItem(QTouchEvent* event, QQuickItem* item) {
   QList<QQuickItem*> list;
 
-  if (event->touchPoints().length() != 1) {
+  if (event->pointCount() != 1) {
     return list;
   }
 
   list.append(item);
 
-  QTouchEvent::TouchPoint point = event->touchPoints()[0];
-  QPointF pos = point.pos();
+  QTouchEvent::TouchPoint point = event->point(0);
+  QPointF pos = point.position();
 
   for (QQuickItem* child : item->childItems()) {
     if (!child->isVisible() || !child->isEnabled()) {
