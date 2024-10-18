@@ -15,12 +15,11 @@ RowLayout {
     Layout.leftMargin: MZTheme.theme.windowMargin
     property alias title: label.text
     property alias subLabelText: subLabel.text
-    property var accessibleName: ""
 
     signal clicked()
 
     spacing: 16
-    Accessible.name: accessibleName
+    Accessible.name: title
 
     ColumnLayout {
         Layout.fillWidth: true
@@ -66,6 +65,7 @@ RowLayout {
         Layout.preferredHeight: 50
         Layout.preferredWidth: 50
         buttonColorScheme: MZTheme.theme.clickableRowBlue
+        accessibleName: title
         MZIcon {
             source: "qrc:/nebula/resources/externalLink.svg"
             anchors.centerIn: parent
