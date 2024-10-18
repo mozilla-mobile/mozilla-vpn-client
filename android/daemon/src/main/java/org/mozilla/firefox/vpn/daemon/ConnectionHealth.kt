@@ -36,8 +36,8 @@ class ConnectionHealth(service: VPNService) {
     private var lastHealthStatus = ConnectionStability.Stable
     private var connectionHealthTimerId: GleanTimerId? = null
 
-    private val SERVER_SWITCH_COOLDOWN_TIME = 15 // 15 minutes
-    private var nextPossibleServerSwitch = LocalDateTime.now().plusMinutes(SERVER_SWITCH_COOLDOWN_TIME)
+    private val SERVER_SWITCH_COOLDOWN_MINUTES: Long = 15
+    private var nextPossibleServerSwitch = LocalDateTime.now().plusMinutes(SERVER_SWITCH_COOLDOWN_MINUTES)
 
     var mActive = false
     var mVPNNetwork: Network? = null
@@ -246,7 +246,7 @@ class ConnectionHealth(service: VPNService) {
             if (fallbackServerIsReachable) {
                 recordMetrics(ConnectionStability.Unstable)
 
-                if (nextPossibleServerSwitch < LocalDateTime.now()) {
+                if (LocalDateTime.now() < nextPossibleServerSwitch) {
                     Log.i(TAG, "Want to switch servers, but it has not been enough time since last server switch")
                     taskDone()
                     return@Runnable
@@ -257,7 +257,7 @@ class ConnectionHealth(service: VPNService) {
                 mService.mainLooper.run {
                     // Silent server switch to a different server in same geo
                     Session.daemonSilentServerSwitch.record()
-                    nextPossibleServerSwitch = LocalDateTime.now().plusMinutes(SERVER_SWITCH_COOLDOWN_TIME)
+                    nextPossibleServerSwitch = LocalDateTime.now().plusMinutes(SERVER_SWITCH_COOLDOWN_MINUTES)
                     mService.reconnect(true)
                 }
                 mResetUsed = true
