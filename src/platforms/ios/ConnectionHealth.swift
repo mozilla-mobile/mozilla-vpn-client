@@ -30,7 +30,7 @@ class ConnectionHealth {
     private let toleranceTime = 1.0 // 1 seconds
     private var timer: Timer?
     private var nextPossibleServerSwitch = Date()
-    private let serverSwitchCooldownMinutes: TimeInterval = 60*5 // 5 minutes
+    private let serverSwitchCooldownMinutes: TimeInterval = 60*15 // 15 minutes
 
     private var lastHealthStatus: ConnectionStability = .pending
     private var connectionHealthTimerId: GleanTimerId? = nil
