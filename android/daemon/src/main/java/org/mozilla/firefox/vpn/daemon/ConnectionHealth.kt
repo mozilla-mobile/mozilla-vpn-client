@@ -12,6 +12,7 @@ import android.net.NetworkRequest
 import android.os.Build
 import android.os.CountDownTimer
 import mozilla.telemetry.glean.GleanTimerId
+import java.time.LocalDateTime
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
 import java.util.concurrent.ExecutorService
@@ -34,6 +35,9 @@ class ConnectionHealth(service: VPNService) {
     private var mPanicStateReached = false
     private var lastHealthStatus = ConnectionStability.Stable
     private var connectionHealthTimerId: GleanTimerId? = null
+
+    private val SERVER_SWITCH_COOLDOWN_TIME = 15 // 15 minutes
+    private var nextPossibleServerSwitch = LocalDateTime.now().plusMinutes(SERVER_SWITCH_COOLDOWN_TIME)
 
     var mActive = false
     var mVPNNetwork: Network? = null
@@ -242,11 +246,18 @@ class ConnectionHealth(service: VPNService) {
             if (fallbackServerIsReachable) {
                 recordMetrics(ConnectionStability.Unstable)
 
+                if (nextPossibleServerSwitch < LocalDateTime.now()) {
+                    Log.i(TAG, "Want to switch servers, but it has not been enough time since last server switch")
+                    taskDone()
+                    return@Runnable
+                }
+
                 Log.i(TAG, "Switch to fallback VPN server")
                 // We the server is online but the connection broke up, let's rest it
                 mService.mainLooper.run {
-                    // Silent server switch to the same server
+                    // Silent server switch to a different server in same geo
                     Session.daemonSilentServerSwitch.record()
+                    nextPossibleServerSwitch = LocalDateTime.now().plusMinutes(SERVER_SWITCH_COOLDOWN_TIME)
                     mService.reconnect(true)
                 }
                 mResetUsed = true
