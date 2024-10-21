@@ -13,6 +13,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
 
     private var originalStartTime: Date?
 
+    private var currentServerConfig = 0
+
     private lazy var adapter: WireGuardAdapter = {
         return WireGuardAdapter(with: self) { [self] logLevel, message in
             switch logLevel {
@@ -243,7 +245,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
     }
 
     func silentServerSwitch() {
-        if let fallbackServerConfig = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["fallbackConfig"] as? String), !fallbackServerConfig.isEmpty {
+        if let fallbackServerConfig = nextValidServerConfig() {
             self.logger.info(message: "Sending silent server switch in Network Extension")
             GleanMetrics.Session.daemonSilentServerSwitch.record(GleanMetrics.Session.DaemonSilentServerSwitchExtra(wasServerAvailable: true))
             updateServerConfig(with: fallbackServerConfig)
@@ -252,5 +254,25 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
             logger.info(message: "Silent server switch called, but no fallbackConfig available")
             GleanMetrics.Session.daemonSilentServerSwitch.record(GleanMetrics.Session.DaemonSilentServerSwitchExtra(wasServerAvailable: false))
         }
+    }
+
+    private func nextValidServerConfig() -> String? {
+        let startConfig = currentServerConfig
+        var nextConfig = startConfig
+        let additionalBackupServers = 3 // kept in sync w/ serverdata.cpp
+        let maxNumberOfServers = 1 + additionalBackupServers // main server + backup servers
+
+        // Return the next valid config. If there is only one server config (the current one), return it to reconnect to that sole
+        // available server.
+        // This should never hit the `while` condition (which returns `nil`), but an unexpected config could allow for it. To be
+        // defensive against a potential inifinite loop, we set up the failsafe of the `while` check.
+        repeat {
+            nextConfig = (nextConfig + 1) % maxNumberOfServers
+            if let nextServerConfig = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["config\(nextConfig)"] as? String), !nextServerConfig.isEmpty {
+                currentServerConfig = nextConfig
+                return nextServerConfig
+            }
+        } while (nextConfig != startConfig)
+      return nil
     }
 }
