@@ -592,7 +592,7 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
 QList<IPAddress> Controller::getExtensionProxyAddressRanges(
     const Server& exitServer) {
   auto const dns = DNSHelper::getDNSDetails(exitServer.ipv4Gateway());
-  if (dns.dnsType == "Custom") {
+  if (dns.dnsType == "Custom" || dns.dnsType == "Default") {
     return {IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32),
             IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128),
             IPAddress(QHostAddress{MULLVAD_PROXY_RANGE},
