@@ -152,10 +152,22 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
                                     port:config.m_serverPort];
   [serverData addObject:mainServer];
 
+  // Select the best DNS - if user is using a special privacy or user-specified DNS, use that.
+  // Otherwise, use the gateway for this server.
+  NSString* mainServerDns = config.m_dnsServer.toNSString();
+  NSString* mainServerGateway = config.m_serverIpv4Gateway.toNSString();
+  BOOL isUsingNormalDns = [mainServerDns isEqualToString:mainServerGateway];
+
   const QList<Server> fallbackServers = mainServerData.backupServers(config.m_serverPublicKey);
   for (const Server& fallbackServer : fallbackServers) {
+    NSString* dnsServer;
+    if (isUsingNormalDns) {
+      dnsServer = fallbackServer.ipv4Gateway().toNSString();
+    } else {
+      dnsServer = mainServerDns;
+    }
     VPNServerData* backupServerData =
-        [[VPNServerData alloc] initWithDns:fallbackServer.ipv4Gateway().toNSString()
+        [[VPNServerData alloc] initWithDns:dnsServer
                                ipv6Gateway:fallbackServer.ipv6Gateway().toNSString()
                                  publicKey:fallbackServer.publicKey().toNSString()
                                 ipv4AddrIn:fallbackServer.ipv4AddrIn().toNSString()

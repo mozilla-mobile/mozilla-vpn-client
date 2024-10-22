@@ -257,20 +257,14 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
     }
 
     private func nextValidServerConfig() -> String? {
-        let startConfig = currentServerConfig
-        let additionalBackupServers = 3 // kept in sync w/ serverdata.cpp
-        let maxNumberOfServers = 1 + additionalBackupServers // main server + backup servers
-
         // Return the next valid config. If there is only one server config (the current one), return it to reconnect to that sole
         // available server.
-        // This should never hit the `while` condition (which returns `nil`), but an unexpected config could allow for it. To be
-        // defensive against a potential inifinite loop, we set up the failsafe of the `while` check.
-        repeat {
-            currentServerConfig = (currentServerConfig + 1) % maxNumberOfServers
-            if let nextServerConfigData = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["config\(currentServerConfig)"] as? String), !nextServerConfigData.isEmpty {
-                return nextServerConfigData
-            }
-        } while (nextConfig != startConfig)
-      return nil
+        guard let providerConfig = (protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration, let serverConfigs = providerConfig["configs"] as? [String] else {
+            logger.error(message: "No protocol config found")
+            return nil
+        }
+        let numberOfServers = serverConfigs.count
+        currentServerConfig = (currentServerConfig + 1) % numberOfServers
+        return serverConfigs[currentServerConfig]
     }
 }

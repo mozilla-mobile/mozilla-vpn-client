@@ -298,7 +298,7 @@ void ServerData::setExitServerPublicKey(const QString& publicKey) {
 const QList<Server> ServerData::backupServers(
     const QString& currentPublicKey) const {
   const QList<Server> serverList = exitServers();
-  const int ADDITIONAL_BACKUP_SERVERS = 3;  // kept in sync w/ iostunnel.swift
+  const int ADDITIONAL_BACKUP_SERVERS = 3;
   QList<Server> backupServers;
   foreach (auto item, serverList) {
     if (item.publicKey() != currentPublicKey) {

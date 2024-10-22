@@ -205,10 +205,7 @@ public class IOSControllerImpl: NSObject {
             customConfig["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
             customConfig["gleanDebugTag"] = gleanDebugTag
             customConfig["installationId"] = installationId
-
-            for i in 0..<configs.count {
-                customConfig["config\(i)"] = configs[i].asWgQuickConfig()
-            }
+            customConfig["configs"] = configs.map({ $0.asWgQuickConfig() })
             proto?.providerConfiguration = customConfig
 
             tunnel.protocolConfiguration = proto
