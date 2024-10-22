@@ -258,7 +258,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
 
     private func nextValidServerConfig() -> String? {
         let startConfig = currentServerConfig
-        var nextConfig = startConfig
         let additionalBackupServers = 3 // kept in sync w/ serverdata.cpp
         let maxNumberOfServers = 1 + additionalBackupServers // main server + backup servers
 
@@ -267,10 +266,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
         // This should never hit the `while` condition (which returns `nil`), but an unexpected config could allow for it. To be
         // defensive against a potential inifinite loop, we set up the failsafe of the `while` check.
         repeat {
-            nextConfig = (nextConfig + 1) % maxNumberOfServers
-            if let nextServerConfig = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["config\(nextConfig)"] as? String), !nextServerConfig.isEmpty {
-                currentServerConfig = nextConfig
-                return nextServerConfig
+            currentServerConfig = (currentServerConfig + 1) % maxNumberOfServers
+            if let nextServerConfigData = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["config\(currentServerConfig)"] as? String), !nextServerConfigData.isEmpty {
+                return nextServerConfigData
             }
         } while (nextConfig != startConfig)
       return nil

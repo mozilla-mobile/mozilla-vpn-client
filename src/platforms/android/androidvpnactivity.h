@@ -46,6 +46,8 @@ enum ServiceAction {
   ACTION_CLEAR_STORAGE = 17,
   // Broadcast a change in telemetry preferences
   ACTION_SET_GLEAN_UPLOAD_ENABLED = 18,
+  // Daemon-based silent server switch
+  ACTION_SILENT_SERVER_SWITCH = 20,
 
 };
 typedef enum ServiceAction ServiceAction;

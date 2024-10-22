@@ -167,6 +167,9 @@ class VPNServiceBinder(service: VPNService) : CoreBinder() {
                 mService.mNotificationHandler.onNotificationPermissionPromptFired()
                 return true
             }
+            ACTIONS.silentServerSwitch -> {
+                this.mService.reconnect(true)
+            }
             IBinder.LAST_CALL_TRANSACTION -> {
                 Log.e(tag, "The OS Requested to shut down the VPN")
                 this.mService.turnOff()

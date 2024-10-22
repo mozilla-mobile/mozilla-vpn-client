@@ -267,9 +267,9 @@ MZViewBase {
 
         MZButton {
             id: unstableNetworkExtension
-            visible: Qt.platform.os === "ios"
+            visible: Qt.platform.os === "ios" || Qt.platform.os === "android"
 
-            text: "iOS daemon: Silent server switch"
+            text: "Silent server switch (from daemon)"
             onClicked: {
                 VPNController.forceDaemonSilentServerSwitch();
             }

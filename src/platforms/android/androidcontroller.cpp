@@ -152,16 +152,7 @@ void AndroidController::activate(const InterfaceConfig& config,
   QJsonObject jKeys;
   jKeys["privateKey"] = config.m_privateKey;
 
-  QJsonObject jServer;
   logger.info() << "Server" << logger.sensitive(config.m_serverPublicKey);
-  jServer["ipv4AddrIn"] = config.m_serverIpv4AddrIn;
-  jServer["ipv4Gateway"] = config.m_serverIpv4Gateway;
-  jServer["ipv6AddrIn"] = config.m_serverIpv6AddrIn;
-  jServer["ipv6Gateway"] = config.m_serverIpv6Gateway;
-
-  jServer["publicKey"] = config.m_serverPublicKey;
-  jServer["port"] = (double)config.m_serverPort;
-
   // This could be done better with VpnService.Builder.excludeRoute()
   // but that requires API level 33 (Android 13).
   const auto lanRoutes = Controller::getExcludedIPAddressRanges();
@@ -187,33 +178,43 @@ void AndroidController::activate(const InterfaceConfig& config,
     excludedApps.append(QJsonValue(appID));
   }
 
-  // Find a Server as Fallback in the Same Location in case
+  QJsonObject jMainServer;
+  jMainServer["ipv4AddrIn"] = config.m_serverIpv4AddrIn;
+  jMainServer["ipv4Gateway"] = config.m_serverIpv4Gateway;
+  jMainServer["ipv6AddrIn"] = config.m_serverIpv6AddrIn;
+  jMainServer["ipv6Gateway"] = config.m_serverIpv6Gateway;
+  jMainServer["publicKey"] = config.m_serverPublicKey;
+  jMainServer["port"] = (double)config.m_serverPort;
+
+  // Find a fallback servers in the same location in case
   // the original one becomes unstable / unavailable
   auto vpn = MozillaVPN::instance();
-  Server fallbackServer =
-      vpn->controller()->currentServer().backupServer(config.m_serverPublicKey);
-  QJsonObject jFallbackServer;
-  if (fallbackServer.initialized()) {
+  QList<Server> fallbackServers =
+      vpn->controller()->currentServer().backupServers(
+          config.m_serverPublicKey);
+  QJsonArray jServers;
+
+  jServers.append(jMainServer);
+  foreach (auto fallbackServer, fallbackServers) {
+    QJsonObject jFallbackServer;
     jFallbackServer["ipv4AddrIn"] = fallbackServer.ipv4AddrIn();
     jFallbackServer["ipv4Gateway"] = fallbackServer.ipv4Gateway();
     jFallbackServer["ipv6AddrIn"] = fallbackServer.ipv6AddrIn();
     jFallbackServer["ipv6Gateway"] = fallbackServer.ipv6Gateway();
-
     jFallbackServer["publicKey"] = fallbackServer.publicKey();
     jFallbackServer["port"] = (double)fallbackServer.choosePort();
+    jServers.append(jFallbackServer);
   }
 
   QJsonObject args;
   args["device"] = jDevice;
   args["keys"] = jKeys;
-  args["server"] = jServer;
+  args["servers"] = jServers;
   args["reason"] = (int)reason;
   args["allowedIPs"] = jAllowedIPs;
   args["excludedApps"] = excludedApps;
   args["dns"] = config.m_dnsServer;
-  if (fallbackServer.initialized()) {
-    args["serverFallback"] = jFallbackServer;
-  }
+
   // Build the "canned" Notification messages
   // They will be used in case this config will be re-enabled
   // to show the appropriate notification messages
@@ -297,5 +298,11 @@ void AndroidController::getBackendLogs(
 void AndroidController::cleanupBackendLogs() {
   logger.debug() << "cleanup logs";
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_REQUEST_CLEANUP_LOG,
+                                    QString());
+}
+
+void AndroidController::forceDaemonSilentServerSwitch() {
+  logger.debug() << "requesting silent server switch from controller";
+  AndroidVPNActivity::sendToService(ServiceAction::ACTION_SILENT_SERVER_SWITCH,
                                     QString());
 }
