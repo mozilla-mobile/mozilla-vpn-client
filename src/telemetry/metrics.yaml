@@ -676,6 +676,68 @@ session:
         type: boolean
 
 connection_health:
+  data_transferred_tx:
+    type: custom_distribution
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      The amount of data sent through the VPN tunnel.
+
+      This metric is accumulated periodically on a 3hr interval
+      while the VPN is turned on.
+
+      This metric is not collected on iOS.
+
+      > **Note**: This metric is recorded on the vpnsession ping for
+      > desktop platforms and on the daemonsession ping for mobile platforms.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/VPN-6285
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9318#pullrequestreview-1977421644
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    range_min: 1
+    range_max: 100000000000 # 100GB
+    bucket_count: 10
+    unit: bytes
+    histogram_type: exponential
+
+  data_transferred_rx:
+    type: custom_distribution
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    description: |
+      The amount of data received through the VPN tunnel.
+
+      This metric is accumulated periodically on a 3hr interval
+      while the VPN is turned on.
+
+      This metric is not collected on iOS.
+
+      > **Note**: This metric is recorded on the vpnsession ping for
+      > desktop platforms and on the daemonsession ping for mobile platforms.
+    bugs:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/VPN-6285
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9318#pullrequestreview-1977421644
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    range_min: 1
+    range_max: 100000000000 # 100GB
+    bucket_count: 10
+    unit: bytes
+    histogram_type: exponential
+
   changed_to_no_signal:
     type: event
     lifetime: ping

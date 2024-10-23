@@ -131,6 +131,26 @@ void Telemetry::initialize() {
           mozilla::glean::session::session_id.generateAndSet();
         }
       });
+
+#ifndef MZ_MOBILE
+  connect(controller, &Controller::recordDataTransferTelemetry, this,
+          [controller]() {
+            // On mobile, these metrics are recorded in the daemon process.
+            Q_ASSERT(controller);
+
+            controller->getStatus([](const QString& serverIpv4Gateway,
+                                     const QString& deviceIpv4Address,
+                                     uint64_t txBytes, uint64_t rxBytes) {
+              Q_UNUSED(serverIpv4Gateway);
+              Q_UNUSED(deviceIpv4Address);
+
+              mozilla::glean::connection_health::data_transferred_tx
+                  .accumulate_single_sample(txBytes);
+              mozilla::glean::connection_health::data_transferred_rx
+                  .accumulate_single_sample(rxBytes);
+            });
+          });
+#endif
 }
 
 void Telemetry::connectionStabilityEvent() {
