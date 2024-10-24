@@ -207,7 +207,7 @@ int CommandUI::run(QStringList& tokens) {
     EventListener eventListener;
 #endif
 
-#ifdef MZ_DEBUG
+#ifdef false
     // This enables the qt-creator qml debugger on debug builds.:
     // Go to QtCreator: Debug->Start Debugging-> Attach to QML port
     // Port is 1234.
