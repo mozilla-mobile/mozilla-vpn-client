@@ -22,15 +22,11 @@ Flickable {
     boundsBehavior: Flickable.StopAtBounds
     opacity: 0
 
-    onFlickContentHeightChanged: {
-        recalculateContentHeight()
-    }
-
-    onHeightChanged: {
-        recalculateContentHeight()
-    }
-
     Component.onCompleted: {
+        recalculateContentHeight()
+        this.onHeightChanged.connect(recalculateContentHeight)
+        this.onFlickContentHeightChanged.connect(recalculateContentHeight)
+    
         opacity = 1;
         if (Qt.platform.os === "windows") {
             maximumFlickVelocity = 700;

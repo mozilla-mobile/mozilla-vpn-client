@@ -52,7 +52,7 @@ nebula/nebula_autogen/
 nebula/libnebula.a
 src/mozillavpn_autogen/
 /build-*/
-/build/
+/build*/
 dummybuild
 
 # Node (for functional tests)

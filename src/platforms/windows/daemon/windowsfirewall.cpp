@@ -22,6 +22,7 @@
 #include <QObject>
 #include <QScopeGuard>
 #include <QtEndian>
+#include <utility>
 
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -320,7 +321,7 @@ bool WindowsFirewall::disableKillSwitch() {
     FwpmFilterDeleteById0(m_sessionHandle, filterID);
   }
 
-  for (const auto& filterID : qAsConst(m_activeRules)) {
+  for (const auto& filterID : std::as_const(m_activeRules)) {
     FwpmFilterDeleteById0(m_sessionHandle, filterID);
   }
 

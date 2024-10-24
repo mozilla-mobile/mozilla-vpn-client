@@ -18,6 +18,7 @@ if(WIN32)
     target_sources(socksproxy PRIVATE
         windowsbypass.cpp
         windowsbypass.h)
+    target_link_libraries(socksproxy PRIVATE Iphlpapi.lib)
 
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/socksproxy.exe
