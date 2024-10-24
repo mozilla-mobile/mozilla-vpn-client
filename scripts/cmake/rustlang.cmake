@@ -141,7 +141,7 @@ function(build_rust_archives)
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build -v --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
         )
 
         ## Outputs for the debug build
@@ -151,7 +151,7 @@ function(build_rust_archives)
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build -v --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
         )
 
         ## Reset our policy changes
