@@ -291,7 +291,7 @@ class VPNService : android.net.VpnService() {
             throw Error("no json config provided")
         }
         Log.sensitive(tag, json.toString())
-        val jServer: JSONObject =  getServerConfig(json, useFallbackServer)
+        val jServer: JSONObject = getServerConfig(json, useFallbackServer)
         val wireguard_conf = buildWireguardConfig(jServer, json)
         val wgConfig: String = wireguard_conf.toWgUserspaceString()
         if (wgConfig.isEmpty()) {

@@ -11,7 +11,6 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.CountDownTimer
-import java.time.LocalDateTime
 import mozilla.telemetry.glean.GleanTimerId
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
