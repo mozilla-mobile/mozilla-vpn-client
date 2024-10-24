@@ -146,7 +146,7 @@ Item {
         }
 
         Rectangle {
-            color: "#FFFFFF"
+            color: MZTheme.colors.white
             opacity: 0.8
             radius: 3
             height: 4
@@ -160,7 +160,7 @@ Item {
             //: Message displayed to the user when the connection is unstable or
             //: missing, asking them to check their connection.
             text: qsTrId("vpn.connectionStability.checkConnection")
-            color: "#FFFFFF"
+            color: MZTheme.colors.white
             opacity: 0.8
             Layout.alignment: Qt.AlignCenter
             onPaintedWidthChanged: stability.setColumns()

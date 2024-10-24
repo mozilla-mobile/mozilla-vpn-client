@@ -65,7 +65,7 @@ ToolTip {
             anchors.fill: glowClippingPath
             glowRadius: 2
             spread: 0.5
-            color: "#0C0C0D"
+            color: MZTheme.colors.grey60
             cornerRadius: glowClippingPath.radius + glowRadius
             opacity: 0.1
             z: -2

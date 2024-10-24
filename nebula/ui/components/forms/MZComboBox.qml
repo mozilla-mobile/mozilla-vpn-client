@@ -120,7 +120,7 @@ ComboBox {
                 anchors.fill: shadowMask
                 transparentBorder: true
                 radius: 7.5
-                color: "#0C0C0D"
+                color: MZTheme.colors.grey60
                 z: -1
                 opacity: .1
                 cached: true

@@ -54,7 +54,7 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: "#9E9E9E"
+                color: MZTheme.colors.grey30
                 border.color: MZTheme.theme.white
             }
 
@@ -74,7 +74,7 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: "#9E9E9E"
+                color: MZTheme.colors.grey30
                 border.color: MZTheme.theme.white
             }
 
@@ -96,7 +96,7 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: "#9E9E9E"
+                color: MZTheme.colors.grey30
                 border.color: MZTheme.theme.white
             }
 
@@ -115,12 +115,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: "#998DB2"
+                color: MZTheme.theme.dullGreen
             }
 
             PropertyChanges {
                 target: toggle
-                color: "#387E8A"
+                color: MZTheme.theme.dullPurple
                 border.color: MZTheme.theme.ink
             }
 
@@ -138,12 +138,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: connectionRetryOverX ? "#FFFFFF" : "#998DB2"
+                color: connectionRetryOverX ? MZTheme.theme.white : MZTheme.theme.dullGreen
             }
 
             PropertyChanges {
                 target: toggle
-                color: "#387E8A"
+                color: MZTheme.theme.dullPurple
                 border.color: MZTheme.theme.ink
             }
 
@@ -165,7 +165,7 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: "#3FE1B0"
+                color: MZTheme.colors.green50
                 border.color: MZTheme.theme.ink
             }
 
@@ -186,7 +186,7 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: "#3FE1B0"
+                color: MZTheme.colors.green50
                 border.color: MZTheme.theme.ink
             }
 
@@ -206,7 +206,7 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: "#CECECE"
+                color: MZTheme.colors.grey20
                 border.color: MZTheme.theme.white
             }
 
@@ -223,12 +223,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: "#998DB2"
+                color: MZTheme.theme.dullGreen
             }
 
             PropertyChanges {
                 target: toggle
-                color: "#387E8A"
+                color: MZTheme.theme.dullPurple
                 border.color: MZTheme.theme.ink
             }
 
@@ -288,7 +288,7 @@ MZButtonBase {
     Rectangle {
         id: hoverPressHandler
 
-        color: "#C2C2C2"
+        color: MZTheme.colors.grey20
         state: toggle.state
         opacity: {
             if (state === uiState.stateHovered)

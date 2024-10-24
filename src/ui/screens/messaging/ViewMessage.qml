@@ -34,7 +34,7 @@ MZViewBase {
 
             MZBoldLabel {
                 text: qsTrId("MozillaVPN")
-                color: "#000000"
+                color: MZTheme.colors.black
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
