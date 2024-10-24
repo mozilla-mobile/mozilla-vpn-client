@@ -30,6 +30,8 @@ class AndroidController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
+  void forceDaemonSilentServerSwitch() override;
+
  private:
   bool m_init = false;
   QString m_deviceName;

@@ -19,6 +19,7 @@ open class CoreBinder : Binder() {
         const val clearStorage = 17
         const val setGleanUploadEnabled = 18
         const val notificationPermissionFired = 19
+        const val silentServerSwitch = 20
     }
 
     /** The codes we Are Using in case of [dispatchEvent] */
