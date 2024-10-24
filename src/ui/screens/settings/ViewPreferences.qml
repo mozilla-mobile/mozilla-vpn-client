@@ -34,7 +34,6 @@ MZViewBase {
         MZLinkRow {
             objectName: "androidStartAtBootLink"
 
-            accessibleName: _startAtBootTitle
             title: _startAtBootTitle
             subLabelText: MZI18n.SettingsStartAtBootSubtitle
             visible: Qt.platform.os === "android"
