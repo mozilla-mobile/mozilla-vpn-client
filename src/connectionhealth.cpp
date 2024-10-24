@@ -16,6 +16,7 @@
 #include "logger.h"
 #include "models/server.h"
 #include "mozillavpn.h"
+#include "settingsholder.h"
 
 namespace {
 Logger logger("ConnectionHealth");
@@ -44,6 +45,23 @@ constexpr const char* PING_WELL_KNOWN_ANYCAST_DNS = "194.242.2.2";
 
 ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
   MZ_COUNT_CTOR(ConnectionHealth);
+
+// On mobile, these metrics are recorded in the daemon process.
+#ifndef MZ_MOBILE
+  m_metricsTimer.setSingleShot(false);
+
+  if (SettingsHolder::instance()->shortTimerSessionPing()) {
+    m_metricsTimer.setInterval(
+        std::chrono::duration_cast<std::chrono::minutes>(3min));
+  } else {
+    m_metricsTimer.setInterval(
+        std::chrono::duration_cast<std::chrono::hours>(3h));
+  }
+  connect(&m_metricsTimer, &QTimer::timeout, this, []() {
+    emit MozillaVPN::instance()->controller()->recordDataTransferTelemetry();
+  });
+  m_metricsTimer.start();
+#endif
 
   m_noSignalTimer.setSingleShot(true);
 

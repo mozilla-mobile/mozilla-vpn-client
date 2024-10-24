@@ -591,10 +591,19 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
 // static
 QList<IPAddress> Controller::getExtensionProxyAddressRanges(
     const Server& exitServer) {
+  auto const dns = DNSHelper::getDNSDetails(exitServer.ipv4Gateway());
+  if (dns.dnsType == "Default" || dns.dnsType == "Custom") {
+    return {IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32),
+            IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128),
+            IPAddress(QHostAddress{MULLVAD_PROXY_RANGE},
+                      MULLVAD_PROXY_RANGE_LENGTH)};
+  }
   return {
       IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32),
       IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128),
-      IPAddress(QHostAddress{MULLVAD_PROXY_RANGE}, MULLVAD_PROXY_RANGE_LENGTH)};
+      IPAddress(QHostAddress{MULLVAD_PROXY_RANGE}, MULLVAD_PROXY_RANGE_LENGTH),
+      IPAddress(QHostAddress(dns.ipAddress), 32),
+  };
 }
 
 void Controller::activateNext() {
@@ -866,12 +875,6 @@ void Controller::getStatus(
                      uint64_t rxBytes)>
       callback = std::move(a_callback);
 
-  if (m_state != StateOn && m_state != StateConfirming &&
-      m_state != StateOnPartial) {
-    callback(QString(), QString(), 0, 0);
-    return;
-  }
-
   bool requestStatus = m_getStatusCallbacks.isEmpty();
 
   m_getStatusCallbacks.append(std::move(callback));
@@ -1114,6 +1117,8 @@ bool Controller::deactivate(ActivationPrincipal user) {
       m_state == StateConfirming || m_state == StateConnecting) {
     setState(StateDisconnecting);
   }
+
+  emit recordDataTransferTelemetry();
 
   m_pingCanary.stop();
   m_handshakeTimer.stop();

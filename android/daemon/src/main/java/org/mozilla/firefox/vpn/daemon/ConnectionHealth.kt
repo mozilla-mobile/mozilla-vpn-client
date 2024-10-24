@@ -15,6 +15,7 @@ import java.time.LocalDateTime
 import mozilla.telemetry.glean.GleanTimerId
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
+import java.time.LocalDateTime
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
@@ -254,7 +255,7 @@ class ConnectionHealth(service: VPNService) {
                 }
 
                 Log.i(TAG, "Switch to fallback VPN server")
-                // We the server is online but the connection broke up, let's rest it
+                // The server is online but the connection broke up, let's reconnect to a new server.
                 mService.mainLooper.run {
                     // Silent server switch to a different server in same geo
                     Session.daemonSilentServerSwitch.record()

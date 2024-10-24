@@ -287,7 +287,7 @@ static QList<InspectorCommand> s_commands{
           Q_ASSERT(property.isValid());
 
           QVariant value = QVariant::fromValue(arguments[3]);
-          if (!value.canConvert(property.type())) {
+          if (!value.canConvert(property.metaType())) {
             obj["error"] = "Property value is invalid";
             return obj;
           }
@@ -349,7 +349,7 @@ static QList<InspectorCommand> s_commands{
           Q_ASSERT(property.isValid());
 
           QVariant value = QVariant::fromValue(arguments[4]);
-          if (!value.canConvert(property.type())) {
+          if (!value.canConvert(property.metaType())) {
             obj["error"] = "Property value is invalid";
             return obj;
           }
@@ -500,13 +500,13 @@ static QList<InspectorCommand> s_commands{
           Q_ASSERT(property.isValid());
 
           QVariant value = QVariant::fromValue(arguments[2]);
-          if (value.canConvert(property.type())) {
+          if (value.canConvert(property.metaType())) {
             property.write(settingsHolder, value);
             return obj;
           }
 
           obj["error"] = QString("Property %1 has a non-supported type: %2")
-                             .arg(arguments[1], property.type());
+                             .arg(arguments[1], property.typeName());
           return obj;
         }},
 
@@ -546,7 +546,7 @@ static QList<InspectorCommand> s_commands{
           }
 
           obj["error"] = QString("Property %1 has a non-supported type: %2")
-                             .arg(arguments[1], property.type());
+                             .arg(arguments[1], property.typeName());
           return obj;
         }},
 

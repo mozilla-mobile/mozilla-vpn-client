@@ -7,6 +7,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMetaType>
 
 #include "constants.h"
 #include "helper.h"
@@ -1632,9 +1633,9 @@ void TestModels::serverCountryModelFromJson() {
         QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
 
         QFETCH(QVariant, cities);
-        Q_ASSERT(cities.typeId() == QVariant::List);
+        Q_ASSERT(cities.typeId() == QMetaType::QVariantList);
         QVariant cityData = m.data(index, ServerCountryModel::CitiesRole);
-        QCOMPARE(cityData.typeId(), QVariant::List);
+        QCOMPARE(cityData.typeId(), QMetaType::QVariantList);
         QCOMPARE(cities.toList().length(), cityData.toList().length());
         for (int i = 0; i < cities.toList().length(); i++) {
           QVERIFY(cityData.toList().at(0).canConvert<ServerCity*>());
@@ -1687,7 +1688,7 @@ void TestModels::serverCountryModelFromJson() {
 
         QFETCH(QVariant, cities);
         QVariant cityData = m.data(index, ServerCountryModel::CitiesRole);
-        QCOMPARE(cityData.typeId(), QVariant::List);
+        QCOMPARE(cityData.typeId(), QMetaType::QVariantList);
         QCOMPARE(cities.toList().length(), cityData.toList().length());
         for (int i = 0; i < cities.toList().length(); i++) {
           QVERIFY(cityData.toList().at(0).canConvert<ServerCity*>());

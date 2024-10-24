@@ -118,6 +118,10 @@ color.pink20 = '#FF8AC5';
 color.pink10 = '#FFB4DB';
 color.pink5 = '#FFDEF0';
 
+// Dull colors
+color.dullPurple = '#387E8A';
+color.dullGreen = '#998DB2';
+
 /**
  * Helper functions
  */

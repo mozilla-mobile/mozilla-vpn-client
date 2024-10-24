@@ -53,10 +53,10 @@ Rectangle {
         id: style
         readonly property string darkCloseIcon: "qrc:/nebula/resources/close-dark.svg"
         readonly property string whiteCloseIcon: "qrc:/nebula/resources/close-white.svg"
-        property var alertColor: "black";
-        property var alertHoverColor: "gray";
-        property var alertClickColor: "white";
-        property var fontColor: "yellow"
+        property var alertColor: MZTheme.colors.black
+        property var alertHoverColor: MZTheme.colors.grey30
+        property var alertClickColor: MZTheme.colors.white
+        property var fontColor: MZTheme.colors.yellow10
         property var fontSize: 13
         property var lineHeight: 21
         property var borderRadius: 4
@@ -88,7 +88,7 @@ Rectangle {
                 alertColor: MZTheme.theme.blue
                 alertHoverColor: MZTheme.theme.blueHovered
                 alertClickColor: MZTheme.theme.bluePressed
-                fontColor: "#FFFFFF"
+                fontcolor: MZTheme.colors.white
                 closeIcon: whiteCloseIcon
             }
         },
@@ -121,7 +121,7 @@ Rectangle {
                 alertColor: MZTheme.theme.red
                 alertHoverColor: MZTheme.theme.redHovered
                 alertClickColor: MZTheme.theme.redPressed
-                fontColor: "#FFFFFF"
+                fontcolor: MZTheme.colors.white
                 closeIcon: whiteCloseIcon
             }
         },
@@ -163,7 +163,7 @@ Rectangle {
         horizontalOffset: 1
         verticalOffset: 1
         radius: 5.5
-        color: "#0C0C0D"
+        color: MZTheme.colors.grey60
    }
 
     MZButtonBase {

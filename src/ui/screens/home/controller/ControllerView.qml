@@ -67,7 +67,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "#FFFFFF"
+                color: MZTheme.colors.white
             }
 
             PropertyChanges {
@@ -108,7 +108,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "#FFFFFF"
+                color: MZTheme.colors.white
             }
 
             PropertyChanges {
@@ -154,14 +154,14 @@ Item {
                 target: logoTitle
                 //% "Connecting…"
                 text: qsTrId("vpn.controller.connectingState")
-                color: "#FFFFFF"
+                color: MZTheme.colors.white
             }
 
             PropertyChanges {
                 target: logoSubtitle
                 //% "Masking connection and location"
                 text: qsTrId("vpn.controller.activating")
-                color: "#FFFFFF"
+                color: MZTheme.colors.white
                 opacity: 0.8
                 visible: true
             }
@@ -194,7 +194,7 @@ Item {
             PropertyChanges {
                 target: logoTitle
                 text: qsTrId("vpn.controller.connectingState")
-                color: "#FFFFFF"
+                color: MZTheme.colors.white
             }
 
             PropertyChanges {
@@ -203,7 +203,7 @@ Item {
                           //% "Attempting to confirm connection"
                           qsTrId("vpn.controller.attemptingToConfirm") :
                           qsTrId("vpn.controller.activating")
-                color: "#FFFFFF"
+                color: MZTheme.colors.white
                 opacity: 0.8
                 visible: true
             }
@@ -238,7 +238,7 @@ Item {
                 target: logoTitle
                 //% "VPN is on"
                 text: qsTrId("vpn.controller.activated")
-                color: "#FFFFFF"
+                color: MZTheme.colors.white
             }
 
             PropertyChanges {
@@ -264,7 +264,7 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: "#FFFFFF"
+                color: MZTheme.colors.white
             }
 
             PropertyChanges {
@@ -311,7 +311,7 @@ Item {
                 target: logoTitle
                 //% "Switching…"
                 text: qsTrId("vpn.controller.switching")
-                color: "#FFFFFF"
+                color: MZTheme.colors.white
             }
 
             PropertyChanges {
@@ -319,7 +319,7 @@ Item {
                 //% "From %1 to %2"
                 //: Switches from location 1 to location 2
                 text: qsTrId("vpn.controller.switchingDetail").arg(VPNCurrentServer.localizedPreviousExitCityName).arg(VPNCurrentServer.localizedExitCityName)
-                color: "#FFFFFF"
+                color: MZTheme.colors.white
                 opacity: 0.8
                 visible: true
             }
