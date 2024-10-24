@@ -4,8 +4,8 @@
 
 qt_add_executable(socksproxy 
     main.cpp
-    verboselogger.cpp
-    verboselogger.h
+    sockslogger.cpp
+    sockslogger.h
 )
 
 target_link_libraries(socksproxy PUBLIC 
@@ -15,9 +15,12 @@ target_link_libraries(socksproxy PUBLIC
 )
 
 if(WIN32)
+    target_compile_definitions(socksproxy PRIVATE PROXY_OS_WIN)
     target_sources(socksproxy PRIVATE
         windowsbypass.cpp
-        windowsbypass.h)
+        windowsbypass.h
+        winsvcthread.cpp
+        winsvcthread.h)
 
     install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/socksproxy.exe
