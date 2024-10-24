@@ -4,8 +4,11 @@
 
 FROM ubuntu:22.04
 
+VOLUME /builds/worker/checkouts
+VOLUME /builds/worker/.cache
+
 # Add worker user
-RUN mkdir /builds && \
+RUN mkdir -p /builds && \
     useradd -d /builds/worker -s /bin/bash -m worker && \
     chown worker:worker /builds/worker && \
     mkdir /builds/worker/artifacts && \
@@ -53,9 +56,6 @@ RUN locale-gen "$LANG"
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \
     PATH="/builds/worker/.local/bin:$PATH"
-
-VOLUME /builds/worker/checkouts
-VOLUME /builds/worker/.cache
 
 # The build will be run as worker, which has no access
 # thus we should prep the folders
