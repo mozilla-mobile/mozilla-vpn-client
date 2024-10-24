@@ -93,7 +93,7 @@ MZViewBase {
 
                             text: "Use these features for more protection. They may cause issues on some sites, so you can turn them off anytime in settings."
                             horizontalAlignment: Text.AlignLeft
-                            color: "#6D6D6E"
+                            color: MZTheme.colors.grey40
                         }
 
                         MZCheckBoxRow {

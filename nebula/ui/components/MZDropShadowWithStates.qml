@@ -13,7 +13,7 @@ MZDropShadow {
     horizontalOffset: 1
     verticalOffset: 1
     radius: 5.5
-    color: "#0C0C0D"
+    color: MZTheme.colors.grey60
     opacity: .1
     state: VPNController.state
 

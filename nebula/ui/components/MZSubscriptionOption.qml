@@ -32,7 +32,7 @@ RadioDelegate {
             anchors.fill: bg
             glowRadius: radioDelegate.checked ? 8 : 1
             spread: radioDelegate.checked ? 0.1 : 0
-            color: "#4D0C0C0D"
+            color: MZTheme.colors.grey30
             cornerRadius: rect.radius + glowRadius
         }
 

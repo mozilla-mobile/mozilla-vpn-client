@@ -134,7 +134,7 @@ MZViewBase {
             Layout.topMargin: MZTheme.theme.windowMargin / 2
             Layout.leftMargin: MZTheme.theme.windowMargin * 3
             Layout.rightMargin: MZTheme.theme.windowMargin
-            color: "#E7E7E7"
+            color: MZTheme.colors.grey10
         }
 
         Repeater {

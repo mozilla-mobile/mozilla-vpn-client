@@ -96,7 +96,7 @@ MZViewBase {
 
                 Layout.preferredHeight: 1
                 Layout.fillWidth: true
-                color: "#0C0C0D0A"
+                color: MZTheme.colors.grey10
             }
         }
 
