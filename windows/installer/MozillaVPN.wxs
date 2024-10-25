@@ -113,6 +113,13 @@
       </Component>
     </ComponentGroup>
 
+    <!--
+      Merge modules
+    -->
+    <DirectoryRef Id="MozillaVPNFolder">
+      <Merge Id="VCRedistModule" SourceFile="Microsoft_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
+    </DirectoryRef>
+
     <DirectoryRef Id="MozillaVPNFolder">
       <Component Id="RegistryEntries" Guid="71d1c1ef-2133-4cbf-954d-7f1e0e24dace">
         <RegistryKey Root="HKLM" Key="Software\Mozilla\NativeMessagingHosts\mozillavpn">
@@ -144,6 +151,9 @@
     -->
     <Feature Id="MozillaVPNFeature" Title="Mozilla VPN" Level="1">
       <ComponentGroupRef Id="MozillaVPNComponents" />
+    </Feature>
+    <Feature Id="VCRedistFeature" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+      <MergeRef Id="VCRedistModule" />
     </Feature>
     <Feature Id="MozillaVPNRegistryEntries" Title="Native Messaging Registry Entries" Level="1">
       <ComponentRef Id="RegistryEntries" />
