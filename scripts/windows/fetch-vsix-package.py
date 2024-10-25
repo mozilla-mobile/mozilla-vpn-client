@@ -54,7 +54,7 @@ def unpack_vsix(fileobj, output):
         for x in manifest["files"]:
             # Select only the filenames in the Contents directory.
             filename = x["fileName"].lstrip('/')
-            prefix, path = filename.split(os.sep, maxsplit=1)
+            prefix, path = filename.split('/', maxsplit=1)
             if prefix != 'Contents':
                 continue
 
