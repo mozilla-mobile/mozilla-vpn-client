@@ -15,10 +15,9 @@
 #include "socks5.h"
 #include "sockslogger.h"
 
-#ifdef __linux__
+#if defined(PROXY_OS_LINUX)
 #  include "linuxbypass.h"
-#endif
-#if defined(PROXY_OS_WIN)
+#elif defined(PROXY_OS_WIN)
 #  include "windowsbypass.h"
 #  include "winsvcthread.h"
 #endif
@@ -177,7 +176,7 @@ int main(int argc, char** argv) {
   QObject::connect(socks5, &Socks5::incomingConnection, logger,
                    &SocksLogger::incomingConnection);
 
-#ifdef __linux__
+#if defined(PROXY_OS_LINUX)
   new LinuxBypass(socks5);
 #elif defined(PROXY_OS_WIN)
   new WindowsBypass(socks5);

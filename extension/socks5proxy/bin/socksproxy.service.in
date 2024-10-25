@@ -1,0 +1,10 @@
+[Unit]
+Description=MozillaVPN SOCKS Proxy service
+
+[Service]
+Type=simple
+Restart=on-failure
+ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/socksproxy --unix /var/run/mozillavpn.proxy
+
+[Install]
+WantedBy=multi-user.target
