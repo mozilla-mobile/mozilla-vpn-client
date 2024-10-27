@@ -207,23 +207,6 @@ int CommandUI::run(QStringList& tokens) {
     EventListener eventListener;
 #endif
 
-#ifdef MZ_DEBUG
-    // This enables the qt-creator qml debugger on debug builds.:
-    // Go to QtCreator: Debug->Start Debugging-> Attach to QML port
-    // Port is 1234.
-    // Note: Qt creator only will use localhost:port so tunnel any external
-    // device to there i.e on android $adb forward tcp:1234 tcp:1234
-
-    // We need to create the qmldebug server before the engine is created.
-    QQmlDebuggingEnabler enabler;
-    bool ok = enabler.startTcpDebugServer(
-        1234, QQmlDebuggingEnabler::StartMode::DoNotWaitForClient, "0.0.0.0");
-    if (ok) {
-      logger.debug() << "Started QML Debugging server on 0.0.0.0:1234";
-    } else {
-      logger.error() << "Failed to start QML Debugging";
-    }
-#endif
 #ifdef MZ_ANDROID
     // https://bugreports.qt.io/browse/QTBUG-82617
     // Currently there is a crash happening on exit with Huawei devices.
