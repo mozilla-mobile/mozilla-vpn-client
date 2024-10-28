@@ -105,7 +105,10 @@ jobs:
   dependabot-cargo:
     name: "Update Crates"
     runs-on: ubuntu-latest
-    if: ${{ startsWith(github.head_ref, 'dependabot/cargo/') && github.event_name == 'pull_request' }}
+    if: |
+      startsWith(github.head_ref, 'dependabot/cargo/') &&
+      github.actor ==  'dependabot[bot]' &&
+      github.event_name == 'pull_request'
     steps:
       - name: Checkout sources
         uses: actions/checkout@v4
