@@ -72,8 +72,6 @@ else()
     target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/ui/qt6winhack.qrc)
 endif()
 
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
-
 # Use Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
 target_sources(mozillavpn PRIVATE
@@ -95,7 +93,16 @@ set(WINDEPLOYQT_FLAGS "--verbose 1 --no-translations --compiler-runtime --dir . 
 install(CODE "execute_process(COMMAND \"${QT_WINDEPLOY_EXECUTABLE}\" \"$<TARGET_FILE:mozillavpn>\" ${WINDEPLOYQT_FLAGS} WORKING_DIRECTORY \${CMAKE_INSTALL_PREFIX})")
 
 # Use the merge module that comes with our version of Visual Studio
-cmake_path(CONVERT "$ENV{VCToolsRedistDir}" TO_CMAKE_PATH_LIST VC_TOOLS_REDIST_PATH)
+if(DEFINED ENV{VCToolsRedistDir})
+    cmake_path(CONVERT "$ENV{VCToolsRedistDir}" TO_CMAKE_PATH_LIST VC_TOOLS_REDIST_PATH)
+elseif(DEFINED XWIN_PREFIX)
+    set(VC_TOOLS_REDIST_PATH ${XWIN_PREFIX}/VC/Redist/MSVC/v${MSVC_TOOLSET_VERSION})
+else()
+    # Last-ditch effort, let's try using vshwere.
+    execute_process(COMMAND vswhere -property installationPath OUTPUT_VARIABLE RAW_VS_INSTALL_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
+    cmake_path(CONVERT "${RAW_VS_INSTALL_PATH}" TO_CMAKE_PATH_LIST VS_INSTALL_PATH)
+    set(VC_TOOLS_REDIST_PATH ${VS_INSTALL_PATH}/VC/Redist/MSVC/v${MSVC_TOOLSET_VERSION})
+endif()
 install(FILES ${VC_TOOLS_REDIST_PATH}/MergeModules/Microsoft_VC${MSVC_TOOLSET_VERSION}_CRT_x64.msm
     DESTINATION . RENAME Microsoft_CRT_x64.msm)
 

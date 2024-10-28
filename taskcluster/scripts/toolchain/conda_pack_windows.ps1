@@ -33,17 +33,9 @@ Import-Module "$Env:_CONDA_ROOT\shell\condabin\Conda.psm1" -ArgumentList $CondaM
 $env:PATH ="$CONDA_DIR;$FETCHES_PATH;$QTPATH;$env:PATH"
 
 ## Conda is now ready - let's enable the env
-conda env create --force -f $REPO_ROOT_PATH/env.yml -n VPN
-
-conda info --envs
-
-conda activate VPN
-. "$REPO_ROOT_PATH\scripts\windows\conda_setup_win_sdk.ps1" # <- This download's all sdk things we need :3 
-. "$REPO_ROOT_PATH\scripts\windows\conda_install_extras.ps1" # <- Downloads gcc. 
-conda deactivate
-conda activate VPN
-
-conda install conda-pack
+conda env create --force -f $REPO_ROOT_PATH/env-windows.yml -n VPN
+conda run -n VPN conda info
+conda run -n VPN powershell -file "$REPO_ROOT_PATH\scripts\windows\conda-setup-xwin-sdk.ps1"
 
 New-Item -ItemType Directory $TASK_WORKDIR\public\build
-conda-pack --name VPN -o $TASK_WORKDIR\public\build\conda-windows.tar.gz
+conda run -n VPN conda-pack --name VPN -o $TASK_WORKDIR\public\build\conda-windows.tar.gz

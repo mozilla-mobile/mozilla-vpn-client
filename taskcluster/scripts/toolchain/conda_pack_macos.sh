@@ -29,7 +29,7 @@ pip config debug
 echo "Installing provided conda env..."
 conda env create -f ${VCS_PATH}/env.yml
 conda activate VPN
-${VCS_PATH}/scripts/macos/conda_install_extras.sh  
+${VCS_PATH}/scripts/macos/conda_install_extras.sh
 conda info
 conda deactivate
 
