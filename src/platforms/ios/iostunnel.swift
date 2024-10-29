@@ -13,6 +13,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
 
     private var originalStartTime: Date?
 
+    private var currentServerConfig = 0
+
     private lazy var adapter: WireGuardAdapter = {
         return WireGuardAdapter(with: self) { [self] logLevel, message in
             switch logLevel {
@@ -243,7 +245,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
     }
 
     func silentServerSwitch() {
-        if let fallbackServerConfig = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["fallbackConfig"] as? String), !fallbackServerConfig.isEmpty {
+        if let fallbackServerConfig = nextValidServerConfig() {
             self.logger.info(message: "Sending silent server switch in Network Extension")
             GleanMetrics.Session.daemonSilentServerSwitch.record(GleanMetrics.Session.DaemonSilentServerSwitchExtra(wasServerAvailable: true))
             updateServerConfig(with: fallbackServerConfig)
@@ -252,5 +254,18 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
             logger.info(message: "Silent server switch called, but no fallbackConfig available")
             GleanMetrics.Session.daemonSilentServerSwitch.record(GleanMetrics.Session.DaemonSilentServerSwitchExtra(wasServerAvailable: false))
         }
+    }
+
+    private func nextValidServerConfig() -> String? {
+        // Return the next valid config. If there is only one server config (the current one), return it to reconnect to that sole
+        // available server.
+        guard let providerConfig = (protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration, let serverConfigs = providerConfig["configs"] as? [String] else {
+            logger.error(message: "No protocol config found")
+            return nil
+        }
+        // Potential future work: Use server weights when selecting next server here and in iOS.
+        let numberOfServers = serverConfigs.count
+        currentServerConfig = (currentServerConfig + 1) % numberOfServers
+        return serverConfigs[currentServerConfig]
     }
 }

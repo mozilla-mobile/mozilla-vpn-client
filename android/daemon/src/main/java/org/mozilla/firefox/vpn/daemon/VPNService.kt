@@ -41,6 +41,8 @@ class VPNService : android.net.VpnService() {
     private val mBackgroundPingTimerMSec: Long = 3 * 60 * 60 * 1000 // 3 hours, in milliseconds
     private val mShortTimerBackgroundPingMSec: Long = 3 * 60 * 1000 // 3 minutes, in milliseconds
 
+    private var currentServerConfig = 0
+
     // `isUsingShortTimerSessionPing` is not reliable until mConfig has been set, so it cannot be set upon
     // class initialization (VPN-6629). And this cannot be a lazy var, as that caused a crash (PR #8555)
     // Thus, the interval ticks are for the debug timer mode (but `isUsingShortTimerSessionPing` determines
@@ -289,7 +291,8 @@ class VPNService : android.net.VpnService() {
             throw Error("no json config provided")
         }
         Log.sensitive(tag, json.toString())
-        val wireguard_conf = buildWireguardConfig(json, useFallbackServer)
+        val jServer: JSONObject = getNextServerConfig(json, useFallbackServer)
+        val wireguard_conf = buildWireguardConfig(jServer, json)
         val wgConfig: String = wireguard_conf.toWgUserspaceString()
         if (wgConfig.isEmpty()) {
             throw Error("WG_Userspace config is empty, can't continue")
@@ -347,27 +350,23 @@ class VPNService : android.net.VpnService() {
         // Go foreground
         CannedNotification(mConfig)?.let { mNotificationHandler.show(it) }
 
-        if (useFallbackServer) {
-            mConnectionHealth.start(
-                json.getJSONObject("serverFallback").getString("ipv4AddrIn"),
-                json.getJSONObject("serverFallback").getString("ipv4Gateway"),
-                json.getJSONObject("serverFallback").getString("ipv4Gateway"),
-                json.getJSONObject("server").getString("ipv4AddrIn"),
-                shouldRecordStartTelemetry,
-            )
-        } else {
-            var fallbackIpv4 = ""
-            if (json.has("serverFallback")) {
-                fallbackIpv4 = json.getJSONObject("serverFallback").getString("ipv4AddrIn")
+        // Select a fallback IP address to use for connection health checks. If not on first server,
+        // use the first server. If on first server and another server exists, use the second server.
+        var fallbackIpv4 = ""
+        if (currentServerConfig == 0) {
+            if (json.getJSONArray("servers").length() >= 2) {
+                fallbackIpv4 = json.getJSONArray("servers").getJSONObject(1).getString("ipv4AddrIn")
             }
-            mConnectionHealth.start(
-                json.getJSONObject("server").getString("ipv4AddrIn"),
-                json.getJSONObject("server").getString("ipv4Gateway"),
-                json.getString("dns"),
-                fallbackIpv4,
-                shouldRecordStartTelemetry,
-            )
+        } else {
+            fallbackIpv4 = json.getJSONArray("servers").getJSONObject(0).getString("ipv4AddrIn")
         }
+        mConnectionHealth.start(
+            jServer.getString("ipv4AddrIn"),
+            jServer.getString("ipv4Gateway"),
+            json.getString("dns"),
+            fallbackIpv4,
+            shouldRecordStartTelemetry,
+        )
 
         // For `isGleanDebugTagActive` and `isSuperDooperMetricsActive` to work,
         // this must be after the mConfig is set to the latest data.
@@ -537,14 +536,8 @@ class VPNService : android.net.VpnService() {
      * Create a Wireguard [Config] from a [json] string - The [json] will be created in
      * AndroidController.cpp
      */
-    private fun buildWireguardConfig(obj: JSONObject, useFallbackServer: Boolean = false): Config {
+    private fun buildWireguardConfig(jServer: JSONObject, obj: JSONObject): Config {
         val confBuilder = Config.Builder()
-        val jServer: JSONObject =
-            if (useFallbackServer) {
-                obj.getJSONObject("serverFallback")
-            } else {
-                obj.getJSONObject("server")
-            }
 
         val peerBuilder = Peer.Builder()
         val ep =
@@ -574,11 +567,19 @@ class VPNService : android.net.VpnService() {
         ifaceBuilder.parsePrivateKey(privateKey)
         ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv4Address")))
         ifaceBuilder.addAddress(InetNetwork.parse(jDevice.getString("ipv6Address")))
-        ifaceBuilder.addDnsServer(InetNetwork.parse(obj.getString("dns")).address)
-        if (useFallbackServer) {
-            // In case we have to use the fallback, add the default dns as fallback as well.
-            ifaceBuilder.addDnsServer(InetNetwork.parse(jServer.getString("ipv4Gateway")).address)
+
+        // Select the best DNS - if user is using a special privacy or user-specified DNS, use that.
+        // Otherwise, use the gateway for this server.
+        val mainGatewayAddress = obj.getJSONArray("servers").getJSONObject(0).getString("ipv4AddrIn")
+        val mainDnsAddress = obj.getString("dns")
+        val isSpecialDNS = mainGatewayAddress != mainDnsAddress
+        val dnsAddress = if (isSpecialDNS) {
+            mainDnsAddress
+        } else {
+            jServer.getString("ipv4Gateway")
         }
+        ifaceBuilder.addDnsServer(InetNetwork.parse(dnsAddress).address)
+
         val jExcludedApplication = obj.getJSONArray("excludedApps")
         (0 until jExcludedApplication.length()).toList().forEach {
             val appName = jExcludedApplication.get(it).toString()
@@ -586,6 +587,17 @@ class VPNService : android.net.VpnService() {
         }
         confBuilder.setInterface(ifaceBuilder.build())
         return confBuilder.build()
+    }
+
+    private fun getNextServerConfig(obj: JSONObject, useFallbackServer: Boolean): JSONObject {
+        if (!useFallbackServer) {
+            currentServerConfig = 0
+        } else {
+            // Potential future work: Use server weights when selecting next server here and in iOS.
+            val numServers = obj.getJSONArray("servers").length()
+            currentServerConfig = (currentServerConfig + 1) % numServers
+        }
+        return obj.getJSONArray("servers").getJSONObject(currentServerConfig)
     }
 
     fun setGleanUploadEnabled(uploadEnabled: Boolean) {

@@ -203,7 +203,8 @@ class ConnectionHealth(service: VPNService) {
 
             // Step 2: Are both the VPN-Gateway and the DNS reachable? (i.e is internet working?)
             val canReachGateway = vpnNetwork.getByName(gateway).isReachable(PING_TIMEOUT)
-            val canReachDNS = vpnNetwork.getByName(dns).isReachable(PING_TIMEOUT)
+            // For DNS, we check both the main DNS (gateway) and the specific value (which could be user-input DNS or privacy DNS, or may be gateway)
+            val canReachDNS = vpnNetwork.getByName(dns).isReachable(PING_TIMEOUT) || vpnNetwork.getByName(endpoint).isReachable(PING_TIMEOUT)
             if (canReachGateway && canReachDNS) {
                 recordMetrics(ConnectionStability.Stable)
 

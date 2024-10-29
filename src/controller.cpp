@@ -1132,16 +1132,16 @@ bool Controller::deactivate(ActivationPrincipal user) {
 }
 
 void Controller::forceDaemonSilentServerSwitch() {
-#ifdef MZ_IOS
+#ifdef MZ_MOBILE
   if (m_impl) {
-    logger.debug() << "Sending server switch message to iOS Network Extension";
+    logger.debug() << "Sending server switch message to mobile daemon";
     m_impl->forceDaemonSilentServerSwitch();
   } else {
-    logger.error() << "No server switch message sent to iOS Network Extension "
+    logger.error() << "No server switch message sent to mobile daemon "
                       "- no controller found";
   }
 #else
-  logger.debug() << "Server switch debug feature only available for iOS. Not "
-                    "sending message.";
+  logger.debug() << "Server switch debug feature only available for iOS "
+                    "and Android. Not sending message.";
 #endif
 }

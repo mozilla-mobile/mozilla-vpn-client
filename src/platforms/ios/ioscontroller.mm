@@ -141,17 +141,8 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  ServerData serverData = MozillaVPN::instance()->controller()->currentServer();
-  const Server fallbackServer = serverData.backupServer(config.m_serverPublicKey);
-  VPNServerData* fallbackServerData = nullptr;
-  if (fallbackServer.initialized()) {
-    fallbackServerData =
-        [[VPNServerData alloc] initWithDns:fallbackServer.ipv4Gateway().toNSString()
-                               ipv6Gateway:fallbackServer.ipv6Gateway().toNSString()
-                                 publicKey:fallbackServer.publicKey().toNSString()
-                                ipv4AddrIn:fallbackServer.ipv4AddrIn().toNSString()
-                                      port:fallbackServer.choosePort()];
-  }
+  ServerData mainServerData = MozillaVPN::instance()->controller()->currentServer();
+  NSMutableArray<VPNServerData*>* serverData = [[NSMutableArray<VPNServerData*> alloc] init];
 
   VPNServerData* mainServer =
       [[VPNServerData alloc] initWithDns:config.m_dnsServer.toNSString()
@@ -159,9 +150,32 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
                                publicKey:config.m_serverPublicKey.toNSString()
                               ipv4AddrIn:config.m_serverIpv4AddrIn.toNSString()
                                     port:config.m_serverPort];
+  [serverData addObject:mainServer];
 
-  [impl connectWithServerData:mainServer
-      fallbackServer:fallbackServerData
+  // Select the best DNS - if user is using a special privacy or user-specified DNS, use that.
+  // Otherwise, use the gateway for this server.
+  NSString* mainServerDns = config.m_dnsServer.toNSString();
+  NSString* mainServerGateway = config.m_serverIpv4Gateway.toNSString();
+  BOOL isUsingNormalDns = [mainServerDns isEqualToString:mainServerGateway];
+
+  const QList<Server> fallbackServers = mainServerData.backupServers(config.m_serverPublicKey);
+  for (const Server& fallbackServer : fallbackServers) {
+    NSString* dnsServer;
+    if (isUsingNormalDns) {
+      dnsServer = fallbackServer.ipv4Gateway().toNSString();
+    } else {
+      dnsServer = mainServerDns;
+    }
+    VPNServerData* backupServerData =
+        [[VPNServerData alloc] initWithDns:dnsServer
+                               ipv6Gateway:fallbackServer.ipv6Gateway().toNSString()
+                                 publicKey:fallbackServer.publicKey().toNSString()
+                                ipv4AddrIn:fallbackServer.ipv4AddrIn().toNSString()
+                                      port:fallbackServer.choosePort()];
+    [serverData addObject:backupServerData];
+  }
+
+  [impl connectWithServerData:serverData
       excludeLocalNetworks:settingsHolder->localNetworkAccess()
       allowedIPAddressRanges:allowedIPAddressRangesNS
       reason:reason

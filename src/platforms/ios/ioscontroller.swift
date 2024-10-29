@@ -161,27 +161,36 @@ public class IOSControllerImpl: NSObject {
         }
     }
 
-    @objc func connect(serverData: VPNServerData, fallbackServer: VPNServerData?, excludeLocalNetworks: Bool, allowedIPAddressRanges: [VPNIPAddressRange], reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+    @objc func connect(serverData: [VPNServerData], excludeLocalNetworks: Bool, allowedIPAddressRanges: [VPNIPAddressRange], reason: Int,
+            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String,
+            disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
+            vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
 
         TunnelManager.withTunnel { tunnel in
             // Let's remove the previous config if it exists.
             (tunnel.protocolConfiguration as? NETunnelProviderProtocol)?.destroyConfigurationReference()
+            let configs: [TunnelConfiguration] = serverData.map({createConfig(for: $0, allowedIPAddressRanges: allowedIPAddressRanges)})
 
-            let config = createConfig(for: serverData, allowedIPAddressRanges: allowedIPAddressRanges)
-            let fallbackConfig: TunnelConfiguration?
-            if let fallbackServer = fallbackServer {
-                fallbackConfig = createConfig(for: fallbackServer, allowedIPAddressRanges: allowedIPAddressRanges)
-            } else {
-                fallbackConfig = nil
+            guard let serverName = serverData.first?.serverWithPort else {
+              IOSControllerImpl.logger.error(message: "No VPN server data found")
+              disconnectOnErrorCallback()
+              return
             }
-
-            return self.configureTunnel(config: config, reason: reason, serverName: serverData.serverWithPort, fallbackConfig: fallbackConfig, excludeLocalNetworks: excludeLocalNetworks, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
+            return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, excludeLocalNetworks: excludeLocalNetworks, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
         }
     }
 
-    func configureTunnel(config: TunnelConfiguration, reason: Int, serverName: String, fallbackConfig: TunnelConfiguration?, excludeLocalNetworks: Bool, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+    func configureTunnel(configs: [TunnelConfiguration], reason: Int, serverName: String, excludeLocalNetworks: Bool,
+            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String,
+            disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
+            vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         TunnelManager.withTunnel { tunnel in
+            guard let config = configs.first else {
+              IOSControllerImpl.logger.error(message: "No VPN config found")
+              disconnectOnErrorCallback()
+              return
+            }
             let proto = NETunnelProviderProtocol(tunnelConfiguration: config)
             proto!.providerBundleIdentifier = TunnelManager.vpnBundleId
             proto!.disconnectOnSleep = false
@@ -202,8 +211,7 @@ public class IOSControllerImpl: NSObject {
             customConfig["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
             customConfig["gleanDebugTag"] = gleanDebugTag
             customConfig["installationId"] = installationId
-
-            customConfig["fallbackConfig"] = fallbackConfig?.asWgQuickConfig() ?? ""
+            customConfig["configs"] = configs.map({ $0.asWgQuickConfig() })
             proto?.providerConfiguration = customConfig
 
             tunnel.protocolConfiguration = proto
