@@ -484,6 +484,10 @@ bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
     logger.debug() << "Ipv4 Conversation error" << WSAGetLastError();
     return false;
   }
+  if (ipv6.empty()) {
+    std::memset(out_ipv6, 0x00, sizeof(IN6_ADDR));
+    return true;
+  }
   if (InetPtonW(AF_INET6, ipv6.c_str(), out_ipv6) != 1) {
     logger.debug() << "Ipv6 Conversation error" << WSAGetLastError();
     return false;
