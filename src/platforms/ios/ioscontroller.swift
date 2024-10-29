@@ -161,7 +161,10 @@ public class IOSControllerImpl: NSObject {
         }
     }
 
-    @objc func connect(serverData: [VPNServerData], excludeLocalNetworks: Bool, allowedIPAddressRanges: [VPNIPAddressRange], reason: Int, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+    @objc func connect(serverData: [VPNServerData], excludeLocalNetworks: Bool, allowedIPAddressRanges: [VPNIPAddressRange], reason: Int,
+            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String,
+            disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
+            vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
 
         TunnelManager.withTunnel { tunnel in
@@ -178,7 +181,10 @@ public class IOSControllerImpl: NSObject {
         }
     }
 
-    func configureTunnel(configs: [TunnelConfiguration], reason: Int, serverName: String, excludeLocalNetworks: Bool, gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void, vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+    func configureTunnel(configs: [TunnelConfiguration], reason: Int, serverName: String, excludeLocalNetworks: Bool,
+            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String,
+            disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
+            vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         TunnelManager.withTunnel { tunnel in
             guard let config = configs.first else {
               IOSControllerImpl.logger.error(message: "No VPN config found")
