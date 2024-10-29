@@ -71,7 +71,7 @@ RUN apt-get -y install -t bullseye-backports cmake
 
 ## Install Rust
 RUN mkdir -p /tmp/rust
-RUN curl https://static.rust-lang.org/dist/rust-1.69.0-x86_64-unknown-linux-gnu.tar.gz  -o /tmp/rust/rust-static.tar.gz
+RUN curl https://static.rust-lang.org/dist/rust-1.75.0-x86_64-unknown-linux-gnu.tar.gz -o /tmp/rust/rust-static.tar.gz
 RUN tar -C /tmp/rust -xf /tmp/rust/rust-static.tar.gz
 RUN $(find /tmp/rust -name 'install.sh')
 RUN rm -rf /tmp/rust
