@@ -263,6 +263,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
             logger.error(message: "No protocol config found")
             return nil
         }
+        // Potential future work: Use server weights when selecting next server here and in iOS.
         let numberOfServers = serverConfigs.count
         currentServerConfig = (currentServerConfig + 1) % numberOfServers
         return serverConfigs[currentServerConfig]

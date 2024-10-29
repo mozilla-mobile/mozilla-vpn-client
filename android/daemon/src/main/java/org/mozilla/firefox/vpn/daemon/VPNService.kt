@@ -291,7 +291,7 @@ class VPNService : android.net.VpnService() {
             throw Error("no json config provided")
         }
         Log.sensitive(tag, json.toString())
-        val jServer: JSONObject = getServerConfig(json, useFallbackServer)
+        val jServer: JSONObject = getNextServerConfig(json, useFallbackServer)
         val wireguard_conf = buildWireguardConfig(jServer, json)
         val wgConfig: String = wireguard_conf.toWgUserspaceString()
         if (wgConfig.isEmpty()) {
@@ -589,10 +589,11 @@ class VPNService : android.net.VpnService() {
         return confBuilder.build()
     }
 
-    private fun getServerConfig(obj: JSONObject, useFallbackServer: Boolean): JSONObject {
+    private fun getNextServerConfig(obj: JSONObject, useFallbackServer: Boolean): JSONObject {
         if (!useFallbackServer) {
             currentServerConfig = 0
         } else {
+            // Potential future work: Use server weights when selecting next server here and in iOS.
             val numServers = obj.getJSONArray("servers").length()
             currentServerConfig = (currentServerConfig + 1) % numServers
         }
