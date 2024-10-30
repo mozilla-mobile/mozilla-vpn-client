@@ -190,7 +190,7 @@ bool WindowsFirewall::enableInterface(int vpnAdapterIndex) {
                                 "Allow all for Mozilla VPN.exe"));
   FW_OK(allowTrafficForAppOnAll(getProxyPath(), MAX_WEIGHT,
                                 "Allow all for socksproxy.exe"));
-  //FW_OK(blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS"));
+  FW_OK(blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS"));
   FW_OK(
       allowLoopbackTraffic(MED_WEIGHT, "Allow Loopback traffic on device %1"));
 
