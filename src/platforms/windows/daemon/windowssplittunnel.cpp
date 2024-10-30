@@ -5,7 +5,6 @@
 #include "windowssplittunnel.h"
 
 #include <qassert.h>
-#include <ranges>
 
 #include <memory>
 
@@ -468,7 +467,6 @@ bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
   QNetworkInterface target =
       QNetworkInterface::interfaceFromIndex(adapterIndex);
   logger.debug() << "Getting adapter info for:" << target.humanReadableName();
-  auto addresses = target.addressEntries();
   auto get = [&target](QAbstractSocket::NetworkLayerProtocol protocol) {
     for (auto address : target.addressEntries()) {
       if (address.ip().protocol() != protocol) {
