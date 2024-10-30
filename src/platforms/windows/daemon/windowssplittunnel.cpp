@@ -469,23 +469,13 @@ bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
       QNetworkInterface::interfaceFromIndex(adapterIndex);
   logger.debug() << "Getting adapter info for:" << target.humanReadableName();
   auto addresses = target.addressEntries();
-  auto isProtocol = [](QAbstractSocket::NetworkLayerProtocol protocol){
-    return [protocol](QNetworkAddressEntry a){
-      return a.ip().protocol() == protocol;
-    };
-  };
-  auto isLocal = [](QNetworkAddressEntry a){return a.ip().isLinkLocal();};
-  auto asString = [](QNetworkAddressEntry a){ a.ip().toString().toStdWString()};
-
   auto get = [&target](QAbstractSocket::NetworkLayerProtocol protocol) {
     for (auto address : target.addressEntries()) {
       if (address.ip().protocol() != protocol) {
         continue;
       }
-      if(address.isTemporary()){
-        continue;
-      }
       if(address.ip().isLinkLocal()){
+        logger.debug() << "Dropping Link local" << target.humanReadableName() << "-> " << address.ip().toString();
         continue;
       }
       logger.debug() << "Selecting" << target.humanReadableName() << "-> " << address.ip().toString();
@@ -493,11 +483,8 @@ bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
     }
     return std::wstring{};
   };
-  auto ipv4 = addresses | std::views::filter(isProtocol(QAbstractSocket::IPv4Protocol)) | std::views::transform(asString);
-  auto ipv6 = addresses 
-                | std::views::filter(isProtocol(QAbstractSocket::IPv4Protocol))
-                | std::views::filter(isLocal)
-                | std::views::transform(asString);
+  auto ipv4 = get(QAbstractSocket::IPv4Protocol);
+  auto ipv6 = get(QAbstractSocket::IPv6Protocol);
   if (InetPtonW(AF_INET, ipv4.c_str(), out_ipv4) != 1) {
     logger.debug() << "Ipv4 Conversation error" << WSAGetLastError();
     return false;
