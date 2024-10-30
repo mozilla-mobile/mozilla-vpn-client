@@ -20,16 +20,17 @@ task-defaults:
             build-type:
                 - linux64/release-deb
         set-name: null
-    worker-type: beetmover-apt
     worker:
         product: vpn
         max-run-time: 1800
 
 tasks:
     promote-linux64-deb:
+        worker-type: beetmover-apt-stage
         attributes:
             shipping-phase: promote-client
 
     ship-linux64-deb:
+        worker-type: beetmover-apt
         attributes:
             shipping-phase: ship-client
