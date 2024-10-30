@@ -10,5 +10,8 @@ install:
 	install -d $(DESTDIR)/etc/apt/preferences.d
 	install -m 644 mozilla-vpn.pref $(DESTDIR)/etc/apt/preferences.d/
 
-.PHONY: build install
+deb:
+	dpkg-buildpackage -b -us -uc
+
+.PHONY: build install deb
 

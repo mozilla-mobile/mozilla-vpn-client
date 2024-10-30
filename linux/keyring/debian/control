@@ -2,7 +2,7 @@ Source: mozilla-vpn-keyring
 Section: misc
 Priority: important
 Maintainer: Mozilla VPN Team <vpn@mozilla.com>
-Build-Depends: debhelper-compat (= 13)
+Build-Depends: debhelper-compat (= 12)
 Standards-Version: 4.6.0
 Homepage: https://vpn.mozilla.org/
 #Vcs-Git: https://github.com/mozilla-mobile/mozilla-vpn-client.git
