@@ -9,8 +9,6 @@
     "translationsreport:build": "cd ./tools/translationsreport/app && npm run build",
     "inspector:start": "npm run start -w ./tools/inspector/",
     "inspector:build": "npm run build -w ./tools/inspector/",
-    "docs:serve": "npm install && npm run start -w tools/mozillavpn.dev",
-    "docs:build": "npm install && npm run build -w tools/mozillavpn.dev"
   },
   "devDependencies": {
     "appium-adb": "^9.14.4",
@@ -27,7 +25,6 @@
   },
   "workspaces":[
     "tools/translationsreport/app",
-    "tools/mozillavpn.dev",
     "tools/inspector"
   ]
 }
