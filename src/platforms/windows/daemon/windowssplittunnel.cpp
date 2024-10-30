@@ -5,6 +5,7 @@
 #include "windowssplittunnel.h"
 
 #include <qassert.h>
+#include <ranges>
 
 #include <memory>
 
@@ -467,19 +468,36 @@ bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
   QNetworkInterface target =
       QNetworkInterface::interfaceFromIndex(adapterIndex);
   logger.debug() << "Getting adapter info for:" << target.humanReadableName();
+  auto addresses = target.addressEntries();
+  auto isProtocol = [](QAbstractSocket::NetworkLayerProtocol protocol){
+    return [protocol](QNetworkAddressEntry a){
+      return a.ip().protocol() == protocol;
+    };
+  };
+  auto isLocal = [](QNetworkAddressEntry a){return a.ip().isLinkLocal();};
+  auto asString = [](QNetworkAddressEntry a){ a.ip().toString().toStdWString()};
 
   auto get = [&target](QAbstractSocket::NetworkLayerProtocol protocol) {
     for (auto address : target.addressEntries()) {
       if (address.ip().protocol() != protocol) {
         continue;
       }
+      if(address.isTemporary()){
+        continue;
+      }
+      if(address.ip().isLinkLocal()){
+        continue;
+      }
+      logger.debug() << "Selecting" << target.humanReadableName() << "-> " << address.ip().toString();
       return address.ip().toString().toStdWString();
     }
     return std::wstring{};
   };
-  auto ipv4 = get(QAbstractSocket::IPv4Protocol);
-  auto ipv6 = get(QAbstractSocket::IPv6Protocol);
-
+  auto ipv4 = addresses | std::views::filter(isProtocol(QAbstractSocket::IPv4Protocol)) | std::views::transform(asString);
+  auto ipv6 = addresses 
+                | std::views::filter(isProtocol(QAbstractSocket::IPv4Protocol))
+                | std::views::filter(isLocal)
+                | std::views::transform(asString);
   if (InetPtonW(AF_INET, ipv4.c_str(), out_ipv4) != 1) {
     logger.debug() << "Ipv4 Conversation error" << WSAGetLastError();
     return false;
@@ -489,7 +507,8 @@ bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
     return true;
   }
   if (InetPtonW(AF_INET6, ipv6.c_str(), out_ipv6) != 1) {
-    logger.debug() << "Ipv6 Conversation error" << WSAGetLastError();
+
+    logger.debug() << "Ipv6 Conversation error" << QString::fromStdWString(ipv6);
     return false;
   }
   return true;
@@ -716,4 +735,5 @@ QString WindowsSplitTunnel::stateString() {
       return "STATE_ZOMBIE";
       break;
   }
+  return {};
 }
