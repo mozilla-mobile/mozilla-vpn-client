@@ -1,0 +1,3 @@
+etc/apt/preferences.d/mozilla-vpn.pref
+etc/apt/sources.list.d/mozilla-apt-repo.list
+usr/share/keyrings/mozilla-apt-keyring.gpg

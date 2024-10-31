@@ -1,0 +1,2 @@
+etc/apt/sources.list.d/mozilla-stage-repo.list
+usr/share/keyrings/mozilla-stage-keyring.gpg

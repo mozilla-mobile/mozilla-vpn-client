@@ -1,0 +1,2 @@
+deb [signed-by=/usr/share/keyrings/mozilla-stage-keyring.gpg] https://repository.stage.productdelivery.nonprod.webservices.mozgcp.net/apt mozilla main
+
