@@ -716,4 +716,5 @@ QString WindowsSplitTunnel::stateString() {
       return "STATE_ZOMBIE";
       break;
   }
+  return {};
 }
