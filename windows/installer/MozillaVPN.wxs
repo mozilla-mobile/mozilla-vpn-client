@@ -131,6 +131,8 @@
           ThirdFailureActionType="none"
           ResetPeriodInDays="1"
           RestartServiceDelayInSeconds="5" />
+
+        <ServiceControl Id="StartProxy" Start="install" Stop="both" Remove="both" Name="MozillaVPNProxy" Wait="yes" />
       </Component>
     </ComponentGroup>
 
