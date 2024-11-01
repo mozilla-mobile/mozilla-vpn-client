@@ -8,9 +8,9 @@
 #include <fwpmu.h>
 #include <iptypes.h>
 
-#include <QString>
 #include <QScopeGuard>
 #include <QSettings>
+#include <QString>
 #include <QUuid>
 
 #include "winutils.h"
@@ -33,12 +33,13 @@ WinFwPolicy::WinFwPolicy(QObject* parent) : QObject(parent) {
   DWORD result = FwpmEngineOpen0(nullptr, RPC_C_AUTHN_WINNT, nullptr, &session,
                                  &m_fwEngineHandle);
   if (result != ERROR_SUCCESS) {
-    qDebug() << "Failed to open firewall engine:" << WinUtils::win32strerror(result);
+    qDebug() << "Failed to open firewall engine:"
+             << WinUtils::win32strerror(result);
     m_fwEngineHandle = nullptr;
     return;
   }
 
-  auto subscribe = [](void *ctx, const FWPM_SUBLAYER_CHANGE0* change) {
+  auto subscribe = [](void* ctx, const FWPM_SUBLAYER_CHANGE0* change) {
     reinterpret_cast<WinFwPolicy*>(ctx)->setupKillswitch(change);
   };
 
@@ -49,8 +50,8 @@ WinFwPolicy::WinFwPolicy(QObject* parent) : QObject(parent) {
   fwsub.enumTemplate = &fwmatch;
   fwsub.flags = FWPM_SUBSCRIPTION_FLAG_NOTIFY_ON_ADD;
   fwsub.sessionKey = session.sessionKey;
-  result = FwpmSubLayerSubscribeChanges0(m_fwEngineHandle, &fwsub,
-                                         subscribe, this, &m_fwChangeHandle);
+  result = FwpmSubLayerSubscribeChanges0(m_fwEngineHandle, &fwsub, subscribe,
+                                         this, &m_fwChangeHandle);
   if (result != ERROR_SUCCESS) {
     qDebug() << "Failed to create firewall subscription:"
              << WinUtils::win32strerror(result);
@@ -261,7 +262,7 @@ void WinFwPolicy::restrictProxyPort(quint16 port) {
     // Strip unnecessary quotations by removing an equal number of leading and
     // trailing quotation marks.
     QString command = value.toString();
-    while((command.front() == '"') && (command.back() == '"')) {
+    while ((command.front() == '"') && (command.back() == '"')) {
       command = command.mid(1, command.size() - 2);
     }
     qDebug() << "Permitting browser traffic for:" << name;

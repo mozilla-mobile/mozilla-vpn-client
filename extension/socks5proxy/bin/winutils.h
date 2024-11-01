@@ -8,7 +8,7 @@
 #include <QString>
 
 namespace WinUtils {
-  QString win32strerror(unsigned long code);
+QString win32strerror(unsigned long code);
 }
 
 #endif  // WINUTILS_H

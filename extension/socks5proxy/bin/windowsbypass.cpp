@@ -175,7 +175,8 @@ void WindowsBypass::refreshAddresses() {
   MIB_UNICASTIPADDRESS_TABLE* table;
   DWORD result = GetUnicastIpAddressTable(AF_UNSPEC, &table);
   if (result != NO_ERROR) {
-    qWarning() << "GetUnicastIpAddressTable() failed:" << WinUtils::win32strerror(result);
+    qWarning() << "GetUnicastIpAddressTable() failed:"
+               << WinUtils::win32strerror(result);
     return;
   }
   auto guard = qScopeGuard([table]() { FreeMibTable(table); });
@@ -344,7 +345,8 @@ void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2>& table,
   MIB_IPFORWARD_TABLE2* mib;
   DWORD result = GetIpForwardTable2(family, &mib);
   if (result != NO_ERROR) {
-    qWarning() << "GetIpForwardTable2() failed:" << WinUtils::win32strerror(result);
+    qWarning() << "GetIpForwardTable2() failed:"
+               << WinUtils::win32strerror(result);
     return;
   }
   auto mibGuard = qScopeGuard([mib] { FreeMibTable(mib); });
