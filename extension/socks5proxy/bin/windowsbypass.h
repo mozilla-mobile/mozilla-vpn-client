@@ -15,7 +15,6 @@ class QAbstractSocket;
 class QHostAddress;
 
 struct _MIB_IPFORWARD_ROW2;
-struct FWPM_SUBLAYER_CHANGE0_;
 
 class WindowsBypass final : public QObject {
   Q_OBJECT
@@ -25,13 +24,9 @@ class WindowsBypass final : public QObject {
   ~WindowsBypass();
 
  private:
-  static QString win32strerror(unsigned long code);
   quint64 getVpnLuid() const;
   void updateTable(QVector<struct _MIB_IPFORWARD_ROW2>& table, int family);
   const struct _MIB_IPFORWARD_ROW2* lookupRoute(const QHostAddress& dest) const;
-  static void setupFirewall(void* context,
-                            const struct FWPM_SUBLAYER_CHANGE0_* change);
-  void restrictProxyPort(quint16 port);
 
  private slots:
   void outgoingConnection(QAbstractSocket* s, const QHostAddress& dest);
@@ -43,8 +38,6 @@ class WindowsBypass final : public QObject {
   void* m_addrChangeHandle = nullptr;
   void* m_netChangeHandle = nullptr;
   void* m_routeChangeHandle = nullptr;
-  void* m_fwEngineHandle = nullptr;
-  void* m_fwChangeHandle = nullptr;
 
   struct InterfaceData {
     unsigned long metric;

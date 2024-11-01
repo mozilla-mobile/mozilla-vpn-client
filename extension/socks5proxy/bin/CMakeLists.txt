@@ -19,8 +19,12 @@ if(WIN32)
     target_sources(socksproxy PRIVATE
         windowsbypass.cpp
         windowsbypass.h
+        winfwpolicy.cpp
+        winfwpolicy.h
         winsvcthread.cpp
-        winsvcthread.h)
+        winsvcthread.h
+        winutils.cpp
+        winutils.h)
     target_link_libraries(socksproxy PRIVATE Iphlpapi.lib)
 
     install(FILES
