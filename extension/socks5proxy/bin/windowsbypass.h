@@ -31,6 +31,7 @@ class WindowsBypass final : public QObject {
   const struct _MIB_IPFORWARD_ROW2* lookupRoute(const QHostAddress& dest) const;
   static void setupFirewall(void* context,
                             const struct FWPM_SUBLAYER_CHANGE0_* change);
+  void restrictProxyPort(quint16 port);
 
  private slots:
   void outgoingConnection(QAbstractSocket* s, const QHostAddress& dest);
