@@ -18,7 +18,7 @@ Item {
     Rectangle {
         id: fallBackBackground
         // This is a fallback for MZRadialGradient
-        color: MZTheme.theme.onBoardingGradient.end
+        color: MZTheme.colors.onBoardingGradient.end
         height: Screen.height
         width: Screen.width
 
@@ -33,15 +33,15 @@ Item {
 
         gradient: Gradient {
             GradientStop {
-                color: MZTheme.theme.onBoardingGradient.start
+                color: MZTheme.colors.onBoardingGradient.start
                 position: 0.0
             }
             GradientStop {
-                color: MZTheme.theme.onBoardingGradient.middle
+                color: MZTheme.colors.onBoardingGradient.middle
                 position: 0.2
             }
             GradientStop {
-                color: MZTheme.theme.onBoardingGradient.end
+                color: MZTheme.colors.onBoardingGradient.end
                 position: 0.5
             }
         }
@@ -331,7 +331,7 @@ Item {
 
                     delegate: Rectangle {
                         id: circle
-                        color: index === swipeView.currentIndex ? MZTheme.theme.blue : MZTheme.theme.greyPressed
+                        color: index === swipeView.currentIndex ? MZTheme.colors.blue : MZTheme.colors.greyPressed
                         height: 6
                         width: 6
                         radius: 6
@@ -364,7 +364,7 @@ Item {
                     objectName: "alreadyASubscriberLink"
                     labelText: MZI18n.MobileOnboardingAlreadyASubscriber
                     Layout.alignment: Qt.AlignHCenter
-                    linkColor: MZTheme.theme.whiteButton
+                    linkColor: MZTheme.colors.whiteButton
                     width: undefined
                     onClicked: {
                         Glean.interaction.alreadyASubscriberSelected.record({

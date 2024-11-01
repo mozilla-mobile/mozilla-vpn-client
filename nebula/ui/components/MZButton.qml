@@ -9,7 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 
 MZButtonBase {
-    property var colorScheme: MZTheme.theme.blueButton
+    property var colorScheme: MZTheme.colors.blueButton
     property int fontSize: MZTheme.theme.fontSize
     property alias label: label
 
@@ -50,7 +50,7 @@ MZButtonBase {
     contentItem: Label {
         id: label
 
-        color: MZTheme.theme.white
+        color: MZTheme.colors.white
         text: button.text
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter

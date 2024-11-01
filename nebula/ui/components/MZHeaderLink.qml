@@ -15,6 +15,6 @@ MZLinkButton {
         rightMargin: MZTheme.theme.listSpacing * 1.5
     }
     horizontalPadding: MZTheme.theme.listSpacing * 0.5
-    linkColor: isLightTheme ? MZTheme.theme.blueButton : MZTheme.theme.whiteButton
+    linkColor: isLightTheme ? MZTheme.colors.blueButton : MZTheme.colors.whiteButton
     width: contentItem.implicitWidth + leftPadding + rightPadding
 }

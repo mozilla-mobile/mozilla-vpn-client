@@ -30,7 +30,7 @@ MZIconButton {
     height: MZTheme.theme.navBarIconSize
 
     backgroundRadius: height / 2
-    buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
+    buttonColorScheme: MZTheme.colors.iconButtonDarkBackground
     uiStatesVisible: !checked
 
     Rectangle {
@@ -39,7 +39,7 @@ MZIconButton {
         visible: checked
         radius: parent.height / 2
         opacity: .2
-        color: MZTheme.theme.white
+        color: MZTheme.colors.white
     }
 
     Image {

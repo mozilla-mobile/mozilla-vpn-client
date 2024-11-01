@@ -20,7 +20,7 @@ Rectangle {
 
     implicitHeight: MZTheme.theme.rowHeight
     activeFocusOnTab: true
-    color: MZTheme.theme.input.highlight
+    color: MZTheme.colors.input.highlight
     radius: 24
 
     onFocusChanged: if(focus) options.itemAt(selectedIndex).focus = true
@@ -56,7 +56,7 @@ Rectangle {
         }
 
         implicitWidth: (parent.width - 8) / model.count
-        color: MZTheme.theme.white
+        color: MZTheme.colors.white
         radius: parent.radius
 
         Behavior on anchors.leftMargin {
@@ -68,7 +68,7 @@ Rectangle {
         Rectangle {
             id: focusOutline
 
-            color: MZTheme.theme.blueButton.focusOutline
+            color: MZTheme.colors.blueButton.focusOutline
             anchors.fill: parent
             anchors.margins: -3
             radius: parent.radius + anchors.margins
@@ -165,7 +165,7 @@ Rectangle {
                             case MZTheme.theme.uiState.statePressed:
                                 return MZTheme.colors.purple70
                             case MZTheme.theme.uiState.stateHovered:
-                                return MZTheme.theme.fontColorDark
+                                return MZTheme.colors.fontColorDark
                             default:
                                 return MZTheme.colors.grey40
                             }

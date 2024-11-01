@@ -122,6 +122,8 @@ color.pink5 = '#FFDEF0';
 color.dullPurple = '#387E8A';
 color.dullGreen = '#998DB2';
 
+color.transparent = '#00000000';
+
 /**
  * Helper functions
  */
@@ -138,6 +140,55 @@ const addTransparency = (hexColor, percent) => {
 
   return `#${hexAlphaValue}${hexValue}`;
 };
+
+// TODO: BELOW HERE SHOULD NOT HAVE ANY HEX CODES
+// Derived
+
+color.bgColor = color.grey5;
+color.bgColor30 = '#4DF9F9FA';
+color.bgColor80 = '#CCF9F9FA';
+color.bgColorTransparent = '#00F9F9FA';
+
+color.blue = color.blue50;
+color.blueHovered = color.blue60;
+color.bluePressed = color.blue70;
+color.blueDisabled = '#a3c0f3';
+color.blueFocusOutline = '#4d0a84ff';
+color.blueFocusBorder = '#0a84ff';
+
+color.divider = '#0C0C0D0A'
+color.green = color.green50;
+color.grey = '#CACACA';
+color.greyHovered = '#E6E6E6';
+color.greyPressed = '#C2C2C2';
+color.greyDisabled = '#D8D8D8';
+color.ink = color.purple90;
+color.orange = color.yellow50;
+color.orangeHovered = '#E27F2E';
+color.orangeFocus = '#4DE27F2E';
+color.orangePressed = color.yellow70;
+color.red = color.red60;
+color.redHovered = color.red70;
+color.redPressed = color.red80;
+color.redDisabled = color.red10;
+color.redfocusOutline = '#66C50042';
+color.redBadgeText = color.red80;
+color.greenBadgeText = color.green90;
+color.greenBadgeBackground = color.green5;
+color.orangeBadgeText = color.yellow90;
+color.orangeBadgeBackground = color.orange10;
+color.blueBadgeText = color.blue90;
+color.blueBadgeBackground = '#660060DF'
+
+color.overlayBackground = '#4D000000';
+
+color.checkBoxWarning = color.yellow70;
+
+color.fontColor = color.grey40;
+color.fontColorDark = color.grey50;
+
+color.darkFocusBorder = color.fontColor;
+color.lightFocusBorder = '#d5d3e0';
 
 /**
  * Main palette
@@ -309,6 +360,208 @@ color.input = {
     placeholder: color.grey20,
     text: color.grey20,
   },
+};
+
+color.onBoardingGradient = {
+  start: '#472C87',
+  middle: '#301962',
+  end: '#1D0942',
+};
+
+color.blueButton = {
+  defaultColor: color.blue,
+  buttonHovered: color.blueHovered,
+  buttonPressed: color.bluePressed,
+  buttonDisabled: color.blueDisabled,
+  focusBgColor: color.blue,
+  focusOutline: color.blueFocusOutline,
+  focusBorder: color.blueFocusBorder,
+};
+
+color.wasmOptionBtn = {
+  defaultColor: '#00eeeeee',
+  buttonHovered: '#330a84ff',
+  buttonPressed: '#4d0a84ff',
+  buttonDisabled: color.blueDisabled,
+  focusBgColor: color.blue,
+  focusOutline: color.blueFocusOutline,
+  focusBorder: color.blueFocusBorder,
+};
+
+color.warningAlertFocusBorders = {
+  focusOutline: color.orangeFocus,
+  focusBorder: color.orangePressed,
+};
+
+color.clickableRowBlue = {
+  defaultColor: color.bgColor,
+  buttonHovered: '#D4E2F6',
+  buttonPressed: '#AECBF2',
+  focusOutline: color.bgColorTransparent,
+  focusBorder: color.blueFocusBorder,
+};
+
+color.clickableRowPurple = {
+  defaultColor: color.bgColorTransparent,
+  buttonHovered: color.purple5,
+  buttonPressed: color.purple10,
+  focusOutline: color.bgColorTransparent,
+  focusBorder: color.purple70,
+};
+
+color.iconButtonLightBackground = {
+  defaultColor: color.bgColorTransparent,
+  buttonHovered: color.greyHovered,
+  buttonPressed: color.greyPressed,
+  buttonDisabled: color.transparent,
+  focusOutline: color.bgColorTransparent,
+  focusBorder: color.darkFocusBorder,
+};
+
+color.iconButtonDarkBackground = {
+  defaultColor: '#00321C64',
+  buttonHovered: '#5b4983',
+  buttonPressed: '#8477a2',
+  buttonDisabled: '#00321C64',
+  focusOutline: '#005b4983',
+  focusBorder: color.lightFocusBorder,
+};
+
+color.linkButton = {
+  defaultColor: color.bgColorTransparent,
+  buttonHovered: color.bgColorTransparent,
+  buttonPressed: color.bgColorTransparent,
+  buttonDisabled: color.bgColorTransparent,
+  focusOutline: color.bgColorTransparent,
+  focusBorder: color.bgColorTransparent,
+};
+
+color.whiteButton = {
+  defaultColor: color.white,
+  buttonHovered: color.greyHovered,
+  buttonPressed: color.greyPressed,
+  focusOutline: color.greyHovered,
+  focusBorder: color.greyPressed,
+};
+
+color.greyButton = {
+  defaultColor: color.grey20,
+  buttonHovered: color.greyHovered,
+  buttonPressed: color.greyPressed,
+  buttonDisabled: color.greyDisabled,
+  focusOutline: color.greyHovered,
+  focusBorder: color.greyPressed,
+};
+
+color.redButton = {
+  defaultColor: color.red,
+  buttonHovered: color.redHovered,
+  buttonPressed: color.redPressed,
+  buttonDisabled: color.redDisabled,
+  focusOutline: color.redDisabled,
+  focusBorder: color.redHovered,
+};
+
+color.redLinkButton = {
+  defaultColor: color.redHovered,
+  buttonHovered: color.redPressed,
+  buttonPressed: color.redPressed,
+  buttonDisabled: color.redDisabled,
+  focusOutline: color.redfocusOutline,
+  focusBorder: color.redPressed,
+};
+
+color.removeDeviceBtn = {
+  defaultColor: color.bgColorTransparent,
+  buttonHovered: color.red5,
+  buttonPressed: color.red10,
+  buttonDisabled: color.bgColorTransparent,
+  focusOutline: color.bgColorTransparent,
+  focusBorder: color.red,
+};
+
+color.vpnToggleConnected = {
+  defaultColor: color.green,
+  buttonHovered: color.green60,
+  buttonPressed: '#1CC5A0',
+  focusOutline: color.bgColor30,
+  focusBorder: color.lightFocusBorder,
+};
+
+color.vpnToggleDisconnected = {
+  defaultColor: color.grey30,
+  buttonHovered: color.fontColor,
+  buttonPressed: color.fontColorDark,
+  buttonDisabled: color.grey,
+  focusOutline: 'transparent',
+  focusBorder: color.darkFocusBorder,
+};
+
+color.card = {
+  defaultColor: color.white,
+  buttonHovered: color.greyHovered,
+  buttonPressed: color.greyPressed,
+  buttonDisabled: color.bgColorTransparent,
+  focusOutline: color.bgColorTransparent,
+  focusBorder: color.darkFocusBorder,
+};
+
+color.greenAlert = {
+  defaultColor: color.green50,
+  buttonHovered: color.green60,
+  buttonPressed: '#1CC5A0',
+  focusOutline: '#333FE1B0',
+  focusBorder: '#1CC5A0',
+};
+
+color.greyLink = {
+  defaultColor: '#B30C0C0D',
+  buttonHovered: '#CC0C0C0D',
+  buttonPressed: '#FF0C0C0D',
+  focusOutline: '#FF0C0C0D',
+  focusBorder: color.black
+};
+
+color.input = {
+  backgroundColor: color.white,
+  borderColor: color.grey30,
+  highlight: color.grey10,
+  defaultColor: color.white,
+  buttonHovered: color.blueHovered,
+  buttonPressed: color.bluePressed,
+  buttonDisabled: color.blueDisabled,
+  focusBgColor: color.blue,
+  focusOutline: color.blueFocusOutline,
+  focusBorder: color.blueFocusBorder,
+};
+
+color.greenBadge = {
+  textColor: color.greenBadgeText,
+  backgroundColor: color.greenBadgeBackground
+};
+
+color.redBadge = {
+  textColor: color.redBadgeText,
+  backgroundColor: color.redDisabled
+};
+
+color.orangeBadge = {
+  textColor: color.orangeBadgeText,
+  backgroundColor: color.orangeBadgeBackground
+};
+
+color.blueBadge = {
+  textColor: color.blueBadgeText,
+  backgroundColor: color.blueBadgeBackground
+};
+
+color.purpleStepProgressBarDelegate = {
+  defaultColor: color.purple70,
+  buttonHovered: color.purple70,
+  buttonPressed: color.purple80,
+  buttonDisabled: color.grey30,
+  focusOutline: color.bgColorTransparent,
+  focusBorder: color.bgColorTransparent,
 };
 
 color;

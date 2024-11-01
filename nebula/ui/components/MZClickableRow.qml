@@ -12,7 +12,7 @@ MZButtonBase {
 
     property bool rowShouldBeDisabled: false
     property string accessibleName: ""
-    property var backgroundColor: MZTheme.theme.iconButtonLightBackground
+    property var backgroundColor: MZTheme.colors.iconButtonLightBackground
 
     property var handleMouseClick: function() { mainRow.clicked(); }
     property bool canGrowVertical: false
@@ -47,8 +47,8 @@ MZButtonBase {
         anchors.top: mainRow.top
         radius: MZTheme.theme.cornerRadius
         border.width: MZTheme.theme.focusBorderWidth
-        border.color: MZTheme.theme.transparent
-        color: MZTheme.theme.transparent
+        border.color: MZTheme.colors.transparent
+        color: MZTheme.colors.transparent
         opacity: rowVisualStates.state === MZTheme.theme.uiState.stateFocused
             ? 1
             : 0

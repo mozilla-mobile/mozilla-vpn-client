@@ -32,7 +32,7 @@ RowLayout {
             Layout.fillWidth: true
 
             text: labelText
-            color: MZTheme.theme.fontColorDark
+            color: MZTheme.colors.fontColorDark
             horizontalAlignment: Text.AlignLeft
             visible: !!text.length
         }

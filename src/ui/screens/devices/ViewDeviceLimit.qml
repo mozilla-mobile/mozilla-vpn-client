@@ -85,7 +85,7 @@ MZViewBase {
 
             labelText: MZI18n.GlobalSignOut
             fontName: MZTheme.theme.fontBoldFamily
-            linkColor: MZTheme.theme.redLinkButton
+            linkColor: MZTheme.colors.redLinkButton
             onClicked: VPN.logout();
         }
     }

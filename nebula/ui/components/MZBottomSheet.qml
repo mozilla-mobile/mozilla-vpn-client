@@ -68,7 +68,7 @@ Loader {
         background: Rectangle {
 
             radius: 8
-            color: MZTheme.theme.bgColor
+            color: MZTheme.colors.bgColor
 
             Rectangle {
                 color: parent.color
@@ -79,7 +79,7 @@ Loader {
         }
 
         Overlay.modal: Rectangle {
-            color: MZTheme.theme.overlayBackground
+            color: MZTheme.colors.overlayBackground
         }
     }
 }

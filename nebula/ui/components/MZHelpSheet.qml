@@ -214,7 +214,7 @@ MZBottomSheet {
 
                                     text: loader.composerBlock.text
                                     font.pixelSize: MZTheme.theme.fontSizeSmall
-                                    color: MZTheme.theme.fontColor
+                                    color: MZTheme.colors.fontColor
                                     lineHeight: 21
                                     horizontalAlignment: Text.AlignLeft
                                 }

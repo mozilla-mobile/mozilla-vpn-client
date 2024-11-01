@@ -9,5 +9,5 @@ import Mozilla.Shared 1.0
 MZLinkButton  {
     fontSize: MZTheme.theme.fontSizeSmallest
     Layout.preferredHeight: 18
-    linkColor: MZTheme.theme.greyLink
+    linkColor: MZTheme.colors.greyLink
 }

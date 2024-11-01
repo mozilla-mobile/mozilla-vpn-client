@@ -103,7 +103,7 @@ MZFlickable {
             Layout.preferredWidth: col.width - MZTheme.theme.vSpacing * 2
 
             Rectangle {
-                color: MZTheme.theme.transparent
+                color: MZTheme.colors.transparent
                 height: MZTheme.theme.rowHeight * 2
                 Layout.preferredWidth: 100
                 Layout.alignment: Qt.AlignHCenter

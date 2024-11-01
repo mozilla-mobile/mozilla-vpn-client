@@ -123,7 +123,7 @@ StackView {
                     Layout.preferredHeight: MZTheme.theme.rowHeight
 
                     Rectangle {
-                        color: MZTheme.theme.transparent
+                        color: MZTheme.colors.transparent
                         Layout.preferredHeight: MZTheme.theme.vSpacing
                         Layout.preferredWidth: MZTheme.theme.vSpacing
                         Layout.leftMargin: 12

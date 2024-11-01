@@ -75,7 +75,7 @@ Window {
     maximumHeight: fullscreenRequired() ? Screen.height : MZTheme.theme.desktopAppHeight;
 
     title: MZI18n.ProductName
-    color: MZTheme.theme.bgColor
+    color: MZTheme.colors.bgColor
     onClosing: close => {
         console.log("Closing request handling");
 
@@ -123,7 +123,7 @@ Window {
     Rectangle {
         id: iosSafeAreaTopMargin
 
-        color: MZTheme.theme.transparent
+        color: MZTheme.colors.transparent
         height: safeAreaHeightByDevice();
         width: window.width
         anchors.top: parent.top

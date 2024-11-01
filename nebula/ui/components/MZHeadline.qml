@@ -12,7 +12,7 @@ Text {
     horizontalAlignment: Text.AlignHCenter
     verticalAlignment: Text.AlignVCenter
     wrapMode: Text.WordWrap
-    color: MZTheme.theme.fontColorDark
+    color: MZTheme.colors.fontColorDark
     font.family: MZTheme.theme.fontFamily
     font.pixelSize: MZTheme.theme.fontSizeLarge
     lineHeightMode: Text.FixedHeight

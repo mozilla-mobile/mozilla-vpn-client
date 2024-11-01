@@ -17,7 +17,7 @@ Rectangle {
     height: MZTheme.theme.navBarHeight
     width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
     radius: height / 2
-    color: MZTheme.theme.ink
+    color: MZTheme.colors.ink
 
     anchors {
         horizontalCenter: parent.horizontalCenter
@@ -44,11 +44,11 @@ Rectangle {
 
     Rectangle {
         id: outline
-        color: MZTheme.theme.ink
+        color: MZTheme.colors.ink
         radius: parent.radius
         anchors.fill: parent
         border.width: 0
-        border.color: MZTheme.theme.ink
+        border.color: MZTheme.colors.ink
     }
 
     RowLayout {

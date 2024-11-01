@@ -44,7 +44,7 @@ RowLayout {
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             Layout.fillWidth: true
             text: labelText
-            color: MZTheme.theme.fontColorDark
+            color: MZTheme.colors.fontColorDark
             horizontalAlignment: Text.AlignLeft
             visible: !!labelText.length
 

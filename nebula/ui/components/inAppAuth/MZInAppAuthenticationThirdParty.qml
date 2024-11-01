@@ -57,7 +57,7 @@ MZFlickable {
             spacing:  MZTheme.theme.windowMargin
 
             Rectangle {
-                color: MZTheme.theme.transparent
+                color: MZTheme.colors.transparent
                 Layout.preferredHeight: MZTheme.theme.rowHeight * 2
                 Layout.preferredWidth: 117
                 Layout.alignment: Qt.AlignHCenter

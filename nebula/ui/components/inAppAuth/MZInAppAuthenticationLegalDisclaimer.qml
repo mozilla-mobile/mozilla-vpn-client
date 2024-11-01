@@ -15,12 +15,12 @@ ColumnLayout {
         text: MZI18n.InAppAuthTermsOfServiceAndPrivacyDisclaimer
         font.family: MZTheme.theme.fontInterFamily
         font.pixelSize: MZTheme.theme.fontSizeSmall
-        color: MZTheme.theme.fontColor
+        color: MZTheme.colors.fontColor
         Layout.fillWidth: true
         Layout.maximumWidth: MZTheme.theme.maxTextWidth
         wrapMode: Text.WrapAtWordBoundaryOrAnywhere
         horizontalAlignment: Text.AlignHCenter
-        linkColor: MZTheme.theme.fontColorDark
+        linkColor: MZTheme.colors.fontColorDark
         lineHeightMode: Text.FixedHeight
         lineHeight: MZTheme.theme.labelLineHeight
         onLinkActivated: {

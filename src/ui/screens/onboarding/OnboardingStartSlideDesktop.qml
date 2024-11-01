@@ -43,7 +43,7 @@ ColumnLayout {
 
         text: MZI18n.OnboardingStartSlideBody2
         horizontalAlignment: Text.AlignLeft
-        color: MZTheme.theme.fontColor
+        color: MZTheme.colors.fontColor
     }
 
     RowLayout {

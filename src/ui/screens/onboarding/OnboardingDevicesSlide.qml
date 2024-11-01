@@ -40,7 +40,7 @@ ColumnLayout {
 
         text: MZUiUtils.isMobile() ? MZI18n.OnboardingDevicesSlideBodyMobile : MZI18n.OnboardingDevicesSlideBody2
         horizontalAlignment: Text.AlignLeft
-        color: MZTheme.theme.fontColor
+        color: MZTheme.colors.fontColor
     }
 
     RowLayout {
@@ -141,7 +141,7 @@ ColumnLayout {
 
         //Google play store QR code
         Rectangle {
-            color: MZTheme.theme.white
+            color: MZTheme.colors.white
 
             Layout.preferredHeight: qrcodeStack.qrcodeSize
             Layout.preferredWidth: qrcodeStack.qrcodeSize
@@ -178,7 +178,7 @@ ColumnLayout {
 
         //Apple app store QR code
         Rectangle {
-            color: MZTheme.theme.white
+            color: MZTheme.colors.white
 
             Layout.preferredHeight: qrcodeStack.qrcodeSize
             Layout.preferredWidth: qrcodeStack.qrcodeSize

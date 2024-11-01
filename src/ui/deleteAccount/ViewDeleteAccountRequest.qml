@@ -54,10 +54,10 @@ MZInAppAuthenticationBase {
         spacing: MZTheme.theme.vSpacingSmall
         MZTextBlock {
             objectName: "accountDeletionLabel"
-            color: MZTheme.theme.fontColor
+            color: MZTheme.colors.fontColor
             horizontalAlignment: Text.AlignLeft
             text: MZI18n.DeleteAccountSubheadline2
-                .arg("<b style='color:" + MZTheme.theme.fontColorDark + ";'>"
+                .arg("<b style='color:" + MZTheme.colors.fontColorDark + ";'>"
                     + MZAuthInApp.emailAddress + "</b>")
             textFormat: Text.RichText
             font.pixelSize: MZTheme.theme.fontSize
@@ -90,7 +90,7 @@ MZInAppAuthenticationBase {
             Layout.fillWidth: true
             objectName: "deleteAccountForRealButton"
 
-            colorScheme: MZTheme.theme.redButton
+            colorScheme: MZTheme.colors.redButton
             enabled: viewDeleteAccount.allowAccountDeletion
             // Delete account
             text: MZI18n.DeleteAccountButtonLabel

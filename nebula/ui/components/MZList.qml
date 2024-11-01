@@ -36,7 +36,7 @@ ListView {
         anchors.rightMargin: Qt.platform.os === "osx" ? 2 : 0
 
         background: Rectangle {
-            color: MZTheme.theme.transparent
+            color: MZTheme.colors.transparent
             anchors.fill: parent
         }
 

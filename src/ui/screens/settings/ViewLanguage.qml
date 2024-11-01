@@ -112,7 +112,7 @@ MZViewBase {
                 Layout.leftMargin: 18.5
                 Layout.rightMargin: 18.5
 
-                color: MZTheme.theme.input.highlight
+                color: MZTheme.colors.input.highlight
             }
         }
 

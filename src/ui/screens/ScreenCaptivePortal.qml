@@ -68,7 +68,7 @@ MZFlickable {
         MZSubtitle {
             id: subTextBlock
 
-            color: MZTheme.theme.fontColor
+            color: MZTheme.colors.fontColor
             font.pixelSize: MZTheme.theme.fontSizeSmall
             font.family: MZTheme.theme.fontBoldFamily
             width: openPortalButton.width

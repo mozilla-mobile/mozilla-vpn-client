@@ -52,7 +52,7 @@ MZClickableRow {
             Layout.preferredWidth: MZTheme.theme.rowHeight
             Layout.preferredHeight: MZTheme.theme.rowHeight
             Layout.alignment: Qt.AlignVCenter
-            color: MZTheme.theme.transparent
+            color: MZTheme.colors.transparent
 
             MZAvatar {
                 id: avatar
@@ -95,7 +95,7 @@ MZClickableRow {
             Layout.preferredHeight: MZTheme.theme.rowHeight
             Layout.preferredWidth: MZTheme.theme.rowHeight
             visible: _iconSource !== ""
-            color: MZTheme.theme.transparent
+            color: MZTheme.colors.transparent
 
             MZIcon {
                 id: icon
@@ -108,7 +108,7 @@ MZClickableRow {
             MZButtonLoader {
                 id: loader
 
-                color: MZTheme.theme.transparent
+                color: MZTheme.colors.transparent
                 iconUrl: "qrc:/nebula/resources/spinner.svg"
                 state: _loaderVisible ? "active" : "inactive"
             }

@@ -76,7 +76,7 @@ Popup {
         id: popupBackground
 
         anchors.fill: parent
-        color: MZTheme.theme.bgColor
+        color: MZTheme.colors.bgColor
         radius: 8
 
         Rectangle {
@@ -125,7 +125,7 @@ Popup {
     Overlay.modal: Rectangle {
         id: overlayBackground
 
-        color: MZTheme.theme.overlayBackground
+        color: MZTheme.colors.overlayBackground
 
         Behavior on opacity {
             NumberAnimation {

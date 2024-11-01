@@ -13,8 +13,8 @@ MZButtonBase {
 
     property string labelText
     property variant fontName: MZTheme.theme.fontInterFamily
-    property var baseColor: MZTheme.theme.linkButton
-    property var linkColor: MZTheme.theme.blueButton
+    property var baseColor: MZTheme.colors.linkButton
+    property var linkColor: MZTheme.colors.blueButton
     property var fontSize: MZTheme.theme.fontSize
     property real textAlignment: Text.AlignHCenter
     property Component iconComponent
@@ -111,7 +111,7 @@ MZButtonBase {
 
     background: Rectangle {
         id: backgroundRect
-        color: MZTheme.theme.transparent
+        color: MZTheme.colors.transparent
     }
 
     contentItem: RowLayout {

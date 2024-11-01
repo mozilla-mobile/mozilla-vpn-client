@@ -56,7 +56,7 @@ CheckBox {
 
             PropertyChanges {
                 target: checkBoxIndicator
-                border.color: checkBox.checked || checkBox.activeFocus ? MZTheme.theme.blue : MZTheme.theme.fontColor
+                border.color: checkBox.checked || checkBox.activeFocus ? MZTheme.colors.blue : MZTheme.colors.fontColor
             }
 
         },
@@ -65,7 +65,7 @@ CheckBox {
 
             PropertyChanges {
                 target: checkBoxIndicator
-                border.color: checkBox.checked ? MZTheme.theme.bluePressed : MZTheme.theme.fontColorDark
+                border.color: checkBox.checked ? MZTheme.colors.bluePressed : MZTheme.colors.fontColorDark
             }
         },
         State {
@@ -73,7 +73,7 @@ CheckBox {
 
             PropertyChanges {
                 target: checkBoxIndicator
-                border.color: if(checkBox.enabled) checkBox.checked || checkBox.activeFocus ? MZTheme.theme.blueHovered : MZTheme.theme.fontColorDark
+                border.color: if(checkBox.enabled) checkBox.checked || checkBox.activeFocus ? MZTheme.colors.blueHovered : MZTheme.colors.fontColorDark
             }
 
         }
@@ -103,8 +103,8 @@ CheckBox {
 
         height: MZTheme.theme.checkBoxHeightWidth
         width: MZTheme.theme.checkBoxHeightWidth
-        color: MZTheme.theme.bgColor
-        border.color: checkBox.checked ? MZTheme.theme.blue : MZTheme.theme.fontColor
+        color: MZTheme.colors.bgColor
+        border.color: checkBox.checked ? MZTheme.colors.blue : MZTheme.colors.fontColor
         border.width: 2
         radius: MZTheme.theme.cornerRadius
         antialiasing: true
@@ -114,7 +114,7 @@ CheckBox {
             visible: true
             anchors.margins: -3
             focusedComponent: checkBox
-            focusColorScheme: MZTheme.theme.blueButton
+            focusColorScheme: MZTheme.colors.blueButton
         }
 
         Behavior on border.color {

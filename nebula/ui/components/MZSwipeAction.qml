@@ -36,8 +36,8 @@ Rectangle {
     Rectangle {
         anchors.fill: parent
         visible: parent.activeFocus
-        color: MZTheme.theme.transparent
+        color: MZTheme.colors.transparent
         border.width: MZTheme.theme.focusBorderWidth
-        border.color: MZTheme.theme.darkFocusBorder
+        border.color: MZTheme.colors.darkFocusBorder
     }
 }

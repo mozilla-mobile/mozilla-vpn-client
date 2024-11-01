@@ -66,7 +66,7 @@ ComboBox {
         contentItem: Rectangle {
             anchors.fill: parent
             height: comboDelegate.height
-            color: hovered || combo.highlightedIndex === index ? MZTheme.theme.input.highlight : MZTheme.theme.input.backgroundColor
+            color: hovered || combo.highlightedIndex === index ? MZTheme.colors.input.highlight : MZTheme.colors.input.backgroundColor
 
             Behavior on color {
                 ColorAnimation {
@@ -82,7 +82,7 @@ ComboBox {
                 anchors.leftMargin: MZTheme.theme.windowMargin / 2
                 width:  parent.width - MZTheme.theme.windowMargin * 2
                 verticalAlignment: Text.AlignVCenter
-                color: hovered || combo.highlightedIndex === index ? MZTheme.theme.blue : MZTheme.theme.fontColor
+                color: hovered || combo.highlightedIndex === index ? MZTheme.colors.blue : MZTheme.colors.fontColor
 
                 Behavior on color {
                     ColorAnimation {
@@ -130,7 +130,7 @@ ComboBox {
                 anchors.fill: parent
                 anchors.bottomMargin: -4
                 anchors.topMargin: anchors.bottomMargin
-                border.color: MZTheme.theme.transparent
+                border.color: MZTheme.colors.transparent
             }
         }
 

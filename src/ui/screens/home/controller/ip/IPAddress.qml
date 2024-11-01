@@ -20,7 +20,7 @@ RowLayout {
     MZBoldInterLabel {
         id: ipVersion
 
-        color: MZTheme.theme.white
+        color: MZTheme.colors.white
         font.pixelSize: MZTheme.theme.fontSizeSmall
         lineHeight: MZTheme.theme.labelLineHeight * 1.25
         verticalAlignment: Text.AlignVCenter

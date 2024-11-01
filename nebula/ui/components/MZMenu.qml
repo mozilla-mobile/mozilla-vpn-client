@@ -34,7 +34,7 @@ Item {
 
     Rectangle {
         id: menuBackground
-        color: MZTheme.theme.bgColor
+        color: MZTheme.colors.bgColor
         anchors.fill: parent
     }
 

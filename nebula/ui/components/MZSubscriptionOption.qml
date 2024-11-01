@@ -25,7 +25,7 @@ RadioDelegate {
 
     background: Rectangle {
         id: bg
-        color: MZTheme.theme.white
+        color: MZTheme.colors.white
         radius: MZTheme.theme.cornerRadius
 
         MZRectangularGlow {
@@ -39,7 +39,7 @@ RadioDelegate {
         Rectangle {
             id: rect
             anchors.fill: parent
-            color: MZTheme.theme.white
+            color: MZTheme.colors.white
             radius: parent.radius
             clip: true
         }
@@ -56,7 +56,7 @@ RadioDelegate {
                 left: parent.left
                 top: parent.top
             }
-            color: radioDelegate.checked ? MZTheme.theme.purple60 : MZTheme.theme.white
+            color: radioDelegate.checked ? MZTheme.colors.purple60 : MZTheme.colors.white
             opacity: radioDelegate.checked ? 1 : 0
             radius: MZTheme.theme.cornerRadius
             width: MZTheme.theme.windowMargin
@@ -67,7 +67,7 @@ RadioDelegate {
                     right: parent.right
                     top: parent.top
                 }
-                color: MZTheme.theme.white
+                color: MZTheme.colors.white
                 width: MZTheme.theme.listSpacing * 0.5
             }
 
@@ -81,8 +81,8 @@ RadioDelegate {
         // Purple border when product is selected or focused
         Rectangle {
             anchors.fill: parent
-            border.color: (radioDelegate.checked || radioDelegate.focus) ? MZTheme.theme.purple60 : MZTheme.theme.white
-            color: MZTheme.theme.transparent
+            border.color: (radioDelegate.checked || radioDelegate.focus) ? MZTheme.colors.purple60 : MZTheme.colors.white
+            color: MZTheme.colors.transparent
             radius: MZTheme.theme.cornerRadius
 
             Behavior on border.color {
@@ -218,7 +218,7 @@ RadioDelegate {
             MZInterLabel {
                 text: MZI18n.PurchasePercentSaved.arg(productSavings)
 
-                color: MZTheme.theme.purple60
+                color: MZTheme.colors.purple60
                 font.family: MZTheme.theme.fontBoldFamily
                 horizontalAlignment: Qt.AlignRight
                 lineHeight: MZTheme.theme.labelLineHeight * 0.9

@@ -30,7 +30,7 @@ Item {
         anchors.bottomMargin: anchors.topMargin
         anchors.leftMargin: -MZTheme.theme.windowMargin
         anchors.rightMargin: anchors.leftMargin
-        color: MZTheme.theme.white
+        color: MZTheme.colors.white
         radius: 4
     }
 
@@ -50,7 +50,7 @@ Item {
                 id: label
                 Layout.alignment: Qt.AlignLeft
                 Layout.fillWidth: true
-                color: MZTheme.theme.fontColorDark
+                color: MZTheme.colors.fontColorDark
                 horizontalAlignment: Text.AlignLeft
             }
 

@@ -21,7 +21,7 @@ Rectangle {
         Error
     }
 
-    color: MZTheme.theme.white
+    color: MZTheme.colors.white
     radius: 8
     property int cardType: MZInformationCard.CardType.Error
 
@@ -42,7 +42,7 @@ Rectangle {
         id: dropShadowSource
         anchors.fill: card
 
-        color: MZTheme.theme.white
+        color: MZTheme.colors.white
         radius: card.radius
     }
 
@@ -73,7 +73,7 @@ Rectangle {
         }
 
         width: 8
-        color: MZTheme.theme.white
+        color: MZTheme.colors.white
     }
 
     function getStripColor() {

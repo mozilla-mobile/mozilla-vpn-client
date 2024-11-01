@@ -70,13 +70,13 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? MZTheme.theme.bluePressed : MZTheme.theme.greyPressed
+                color: radioControl.checked ? MZTheme.colors.bluePressed : MZTheme.colors.greyPressed
                 scale: 0.55
             }
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked ? MZTheme.theme.bluePressed : MZTheme.theme.fontColorDark
+                border.color: radioControl.checked ? MZTheme.colors.bluePressed : MZTheme.colors.fontColorDark
             }
 
         },
@@ -86,13 +86,13 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? MZTheme.theme.blue : MZTheme.theme.bgColor
+                color: radioControl.checked ? MZTheme.colors.blue : MZTheme.colors.bgColor
                 scale: 0.6
             }
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked || radioControl.activeFocus ? MZTheme.theme.blue : MZTheme.theme.fontColor
+                border.color: radioControl.checked || radioControl.activeFocus ? MZTheme.colors.blue : MZTheme.colors.fontColor
             }
 
         },
@@ -101,13 +101,13 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? MZTheme.theme.bluePressed : MZTheme.theme.greyHovered
+                color: radioControl.checked ? MZTheme.colors.bluePressed : MZTheme.colors.greyHovered
                 scale: 0.6
             }
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked ? MZTheme.theme.bluePressed : MZTheme.theme.fontColor
+                border.color: radioControl.checked ? MZTheme.colors.bluePressed : MZTheme.colors.fontColor
             }
 
         },
@@ -117,13 +117,13 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: MZTheme.theme.bgColor
+                color: MZTheme.colors.bgColor
                 scale: 0.6
             }
 
             PropertyChanges {
                 target: radioButton
-                border.color: MZTheme.theme.greyButton.defaultColor
+                border.color: MZTheme.colors.greyButton.defaultColor
             }
 
         }
@@ -144,7 +144,7 @@ RadioDelegate {
     }
 
     background: Rectangle {
-        color: MZTheme.theme.transparent
+        color: MZTheme.colors.transparent
     }
 
     MZMouseArea {
@@ -164,7 +164,7 @@ RadioDelegate {
         implicitHeight: 20
         radius: implicitWidth * 0.5
         border.width: MZTheme.theme.focusBorderWidth
-        color: MZTheme.theme.bgColor
+        color: MZTheme.colors.bgColor
         antialiasing: true
         smooth: true
         onActiveFocusChanged: if (activeFocus) parent.forceActiveFocus()

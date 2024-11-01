@@ -63,7 +63,7 @@ Item {
             leftPadding: MZTheme.theme.windowMargin
             rightPadding: MZTheme.theme.windowMargin
             selectByMouse: true
-            selectionColor: MZTheme.theme.input.highlight
+            selectionColor: MZTheme.colors.input.highlight
             textFormat: Text.PlainText
             topPadding: MZTheme.theme.windowMargin
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
@@ -152,7 +152,7 @@ Item {
             right: parent.right
             rightMargin: MZTheme.theme.listSpacing
         }
-        color: MZTheme.theme.fontColor
+        color: MZTheme.colors.fontColor
         font.pixelSize: MZTheme.theme.fontSizeSmall
         text: textArea.length + " / " + textArea.maxCharacterCount
         Accessible.ignored: !visible

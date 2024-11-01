@@ -8,7 +8,7 @@ import Mozilla.Shared 1.0
 
 Rectangle {
     property variant focusedComponent
-    property var focusColorScheme: MZTheme.theme.blueButton
+    property var focusColorScheme: MZTheme.colors.blueButton
     property real setMargins: -3
 
     color: focusColorScheme.focusOutline

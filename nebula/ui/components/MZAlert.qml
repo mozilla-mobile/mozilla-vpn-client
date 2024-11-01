@@ -80,14 +80,14 @@ Rectangle {
             name: stateNames.info
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: MZTheme.theme.blueButton
+                colorScheme: MZTheme.colors.blueButton
             }
 
             PropertyChanges {
                 target: style;
-                alertColor: MZTheme.theme.blue
-                alertHoverColor: MZTheme.theme.blueHovered
-                alertClickColor: MZTheme.theme.bluePressed
+                alertColor: MZTheme.colors.blue
+                alertHoverColor: MZTheme.colors.blueHovered
+                alertClickColor: MZTheme.colors.bluePressed
                 fontcolor: MZTheme.colors.white
                 closeIcon: whiteCloseIcon
             }
@@ -96,15 +96,15 @@ Rectangle {
             name: stateNames.success
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: MZTheme.theme.greenAlert
+                colorScheme: MZTheme.colors.greenAlert
             }
 
             PropertyChanges {
                 target: style;
-                alertColor: MZTheme.theme.greenAlert.defaultColor
-                alertHoverColor: MZTheme.theme.greenAlert.buttonHovered
-                alertClickColor: MZTheme.theme.greenAlert.buttonPressed
-                fontColor: MZTheme.theme.fontColorDark
+                alertColor: MZTheme.colors.greenAlert.defaultColor
+                alertHoverColor: MZTheme.colors.greenAlert.buttonHovered
+                alertClickColor: MZTheme.colors.greenAlert.buttonPressed
+                fontColor: MZTheme.colors.fontColorDark
                 closeIcon: darkCloseIcon
             }
         },
@@ -113,14 +113,14 @@ Rectangle {
 
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: MZTheme.theme.redButton
+                colorScheme: MZTheme.colors.redButton
             }
 
             PropertyChanges {
                 target: style;
-                alertColor: MZTheme.theme.red
-                alertHoverColor: MZTheme.theme.redHovered
-                alertClickColor: MZTheme.theme.redPressed
+                alertColor: MZTheme.colors.red
+                alertHoverColor: MZTheme.colors.redHovered
+                alertClickColor: MZTheme.colors.redPressed
                 fontcolor: MZTheme.colors.white
                 closeIcon: whiteCloseIcon
             }
@@ -134,10 +134,10 @@ Rectangle {
 
             PropertyChanges {
                 target: style
-                alertColor: MZTheme.theme.orange
-                alertHoverColor: MZTheme.theme.orangeHovered
-                alertClickColor: MZTheme.theme.orangePressed
-                fontColor: MZTheme.theme.fontColorDark
+                alertColor: MZTheme.colors.orange
+                alertHoverColor: MZTheme.colors.orangeHovered
+                alertClickColor: MZTheme.colors.orangePressed
+                fontColor: MZTheme.colors.fontColorDark
                 closeIcon: darkCloseIcon
             }
         }
@@ -183,7 +183,7 @@ Rectangle {
         Rectangle {
             id: labelWrapper
             height: label.paintedHeight + MZTheme.theme.windowMargin
-            color: MZTheme.theme.transparent
+            color: MZTheme.colors.transparent
             anchors.left: alertAction.left
             width: alertAction.width - MZTheme.theme.rowHeight
             anchors.verticalCenter: parent.verticalCenter
@@ -306,16 +306,16 @@ Rectangle {
         id: focusIndicators
         anchors.fill: closeButton.activeFocus ? closeButton : alertAction
         anchors.margins: -3
-        border.color: colorScheme ? colorScheme.focusOutline : MZTheme.theme.transparent
+        border.color: colorScheme ? colorScheme.focusOutline : MZTheme.colors.transparent
         border.width: 3
         visible: closeButton.activeFocus || alertAction.activeFocus
-        color: MZTheme.theme.transparent
+        color: MZTheme.colors.transparent
         radius: MZTheme.theme.cornerRadius + (anchors.margins * -1)
 
         Rectangle {
-            color: MZTheme.theme.transparent
+            color: MZTheme.colors.transparent
             border.width: 2
-            border.color: parent.colorScheme ? parent.colorScheme.focusBorder : MZTheme.theme.transparent
+            border.color: parent.colorScheme ? parent.colorScheme.focusBorder : MZTheme.colors.transparent
             radius: MZTheme.theme.cornerRadius
             anchors.fill: parent
             anchors.margins: 3

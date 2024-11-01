@@ -31,7 +31,7 @@ SwipeDelegate {
     Accessible.ignored: !visible
 
     background: Rectangle {
-        color: MZTheme.theme.bgColor
+        color: MZTheme.colors.bgColor
     }
 
     onReleased: {
@@ -77,7 +77,7 @@ SwipeDelegate {
     contentItem: Item {
         id: swipeDelegateContentItem
 
-        property var backgroundColor: MZTheme.theme.iconButtonLightBackground
+        property var backgroundColor: MZTheme.colors.iconButtonLightBackground
 
         width: parent.width
         height: parent.height
@@ -137,7 +137,7 @@ SwipeDelegate {
             anchors.fill: parent
 
             visible: swipeDelegate.activeFocus
-            color: MZTheme.theme.transparent
+            color: MZTheme.colors.transparent
             border.width: MZTheme.theme.focusBorderWidth
             border.color: swipeDelegateContentItem.backgroundColor.focusBorder
         }

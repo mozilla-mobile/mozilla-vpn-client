@@ -234,7 +234,7 @@ ColumnLayout {
                     Layout.maximumHeight: MZTheme.theme.windowMargin * 2
                     Layout.maximumWidth: MZTheme.theme.windowMargin * 2
                     Layout.alignment: Qt.AlignVCenter
-                    color: MZTheme.theme.transparent
+                    color: MZTheme.colors.transparent
 
                     Image {
                         height: MZTheme.theme.windowMargin * 2
@@ -257,7 +257,7 @@ ColumnLayout {
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     Layout.fillWidth: true
                     text: appName
-                    color: MZTheme.theme.fontColorDark
+                    color: MZTheme.colors.fontColorDark
                     horizontalAlignment: Text.AlignLeft
 
                     MZMouseArea {

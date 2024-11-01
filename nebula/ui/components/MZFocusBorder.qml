@@ -10,7 +10,7 @@ Rectangle {
 
     id: focusInnerBorder
 
-    color: MZTheme.theme.transparent
+    color: MZTheme.colors.transparent
     anchors.fill: parent
     radius: parent.radius
     border.width: MZTheme.theme.focusBorderWidth

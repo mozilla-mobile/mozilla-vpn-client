@@ -23,7 +23,7 @@ MZButtonBase {
     }
 
     MZUIStates {
-        colorScheme: MZTheme.theme.card
+        colorScheme: MZTheme.colors.card
         radius: parent.radius
     }
 

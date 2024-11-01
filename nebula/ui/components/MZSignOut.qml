@@ -21,9 +21,9 @@ MZFooterLink {
     function getLinkColor() {
         switch (colorStrength) {
         case MZSignOut.ColorStrength.Standard:
-            return MZTheme.theme.redLinkButton
+            return MZTheme.colors.redLinkButton
         case MZSignOut.ColorStrength.Soft:
-            return MZTheme.theme.blueButton
+            return MZTheme.colors.blueButton
         default:
             return console.error("Unable to create view for footer link of type: " + colorStrength)
         }
