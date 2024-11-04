@@ -21,7 +21,7 @@ MZFlickable {
     flickContentHeight: headerLink.implicitHeight + col.implicitHeight + col.anchors.topMargin
 
     Rectangle {
-        color: MZTheme.theme.bgColor
+        color: MZTheme.colors.bgColor
         anchors.fill: parent
     }
 
@@ -78,7 +78,7 @@ MZFlickable {
             Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
 
             text: MZI18n.PurchaseWebMessage
-                .arg("<b style='color:" + MZTheme.theme.fontColorDark + ";'>"
+                .arg("<b style='color:" + MZTheme.colors.fontColorDark + ";'>"
                 + VPNUser.email + "</b>")
             font.pixelSize: MZTheme.theme.fontSize
             horizontalAlignment: Text.AlignHCenter
@@ -215,7 +215,7 @@ MZFlickable {
                 height: 4
                 radius: 2
                 opacity: .8
-                color: MZTheme.theme.greyLink.defaultColor
+                color: MZTheme.colors.greyLink.defaultColor
             }
 
             MZGreyLink {

@@ -33,7 +33,7 @@ MZViewBase {
             accessibleName: MZI18n.GetHelpHelpCenter
             title: MZI18n.GetHelpHelpCenter
             iconSource: "qrc:/nebula/resources/externalLink.svg"
-            backgroundColor: MZTheme.theme.clickableRowBlue
+            backgroundColor: MZTheme.colors.clickableRowBlue
             width: parent.width - MZTheme.theme.windowMargin
             onClicked: MZUrlOpener.openUrlLabel("sumo")
         }
@@ -45,7 +45,7 @@ MZViewBase {
             title: MZI18n.InAppSupportWorkflowSupportNavLinkText
             iconSource: "qrc:/nebula/resources/chevron.svg"
             iconMirror: MZLocalizer.isRightToLeft
-            backgroundColor: MZTheme.theme.iconButtonLightBackground
+            backgroundColor: MZTheme.colors.iconButtonLightBackground
             width: parent.width - MZTheme.theme.windowMargin
             onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/contactUs/ViewContactUsForm.qml");
         }
@@ -57,7 +57,7 @@ MZViewBase {
             title: MZI18n.GetHelpViewLogs
             iconSource: MZFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
             iconMirror: !MZFeatureList.get("shareLogs").isSupported && MZLocalizer.isRightToLeft
-            backgroundColor: MZFeatureList.get("shareLogs").isSupported ?MZTheme.theme.clickableRowBlue : MZTheme.theme.iconButtonLightBackground
+            backgroundColor: MZFeatureList.get("shareLogs").isSupported ?MZTheme.colors.clickableRowBlue : MZTheme.colors.iconButtonLightBackground
             width: parent.width - MZTheme.theme.windowMargin
             onClicked: MZLog.requestViewLogs()
         }
@@ -68,7 +68,7 @@ MZViewBase {
             title: MZI18n.ResetSettingsResetLabel
             iconSource: "qrc:/nebula/resources/chevron.svg"
             iconMirror: MZLocalizer.isRightToLeft
-            backgroundColor: MZTheme.theme.iconButtonLightBackground
+            backgroundColor: MZTheme.colors.iconButtonLightBackground
             visible: MZFeatureList.get("factoryReset").isSupported
 
             onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewReset.qml");

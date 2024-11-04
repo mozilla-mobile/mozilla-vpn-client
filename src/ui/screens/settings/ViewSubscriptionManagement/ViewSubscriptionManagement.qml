@@ -58,7 +58,7 @@ MZViewBase {
 
 
             MZMetropolisLabel {
-                color: MZTheme.theme.fontColorDark
+                color: MZTheme.colors.fontColorDark
                 horizontalAlignment: Text.AlignLeft
                 font.family: MZTheme.theme.fontBoldFamily
                 text: MZI18n.SubscriptionManagementSummaryHeadline
@@ -80,7 +80,7 @@ MZViewBase {
             }
 
             MZMetropolisLabel {
-                color: MZTheme.theme.fontColorDark
+                color: MZTheme.colors.fontColorDark
                 horizontalAlignment: Text.AlignLeft
                 font.family: MZTheme.theme.fontBoldFamily
                 text: MZI18n.SubscriptionManagementPaymentHeadline
@@ -115,7 +115,7 @@ MZViewBase {
                 objectName: "accountDeletionButton"
                 fontName: MZTheme.theme.fontBoldFamily
                 labelText: MZI18n.DeleteAccountButtonLabel
-                linkColor: MZTheme.theme.redLinkButton
+                linkColor: MZTheme.colors.redLinkButton
                 visible: MZFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {

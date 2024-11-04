@@ -14,7 +14,7 @@ MZClickableRow {
     property alias imageLeftSrc: icon.source
     property alias imageRightSrc: imageRight.source
     property alias imageRightMirror: imageRight.mirror
-    property string fontColor: MZTheme.theme.fontColorDark
+    property string fontColor: MZTheme.colors.fontColorDark
     property bool _loaderVisible: false
 
     accessibleName: settingTitle
@@ -39,7 +39,7 @@ MZClickableRow {
             Layout.preferredHeight: MZTheme.theme.rowHeight
             Layout.preferredWidth: icon.width
             Layout.alignment: Qt.AlignTop
-            color: MZTheme.theme.transparent
+            color: MZTheme.colors.transparent
 
             MZIcon {
                 id: icon
@@ -66,7 +66,7 @@ MZClickableRow {
             Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
             Layout.preferredHeight: MZTheme.theme.rowHeight
             Layout.preferredWidth: MZTheme.theme.rowHeight
-            color: MZTheme.theme.transparent
+            color: MZTheme.colors.transparent
 
             MZIcon {
                 id: imageRight
@@ -78,7 +78,7 @@ MZClickableRow {
             MZButtonLoader {
                 id: loader
 
-                color: MZTheme.theme.transparent
+                color: MZTheme.colors.transparent
                 iconUrl: "qrc:/nebula/resources/spinner.svg"
                 state: _loaderVisible ? "active" : "inactive"
             }

@@ -61,7 +61,7 @@ Item {
 
         width: parent.width
         height: 1
-        color: MZTheme.theme.divider
+        color: MZTheme.colors.divider
         Layout.alignment: Qt.AlignRight
         anchors.bottom: copyClearWrapper.top
     }
@@ -69,7 +69,7 @@ Item {
     Rectangle {
         id: copyClearWrapper
 
-        color: MZTheme.theme.bgColor
+        color: MZTheme.colors.bgColor
         height: MZTheme.theme.rowHeight * 1.5
         anchors.bottom: parent.bottom
         width: logs.width
@@ -91,7 +91,7 @@ Item {
             Rectangle {
                 Layout.preferredHeight: parent.height
                 Layout.preferredWidth: 1
-                color: MZTheme.theme.divider
+                color: MZTheme.colors.divider
                 Layout.alignment: Qt.AlignRight
             }
 

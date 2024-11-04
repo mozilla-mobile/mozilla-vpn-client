@@ -100,7 +100,7 @@ ColumnLayout {
             y: passwordInput.y - height - 4
             width: passwordInput.width - MZTheme.theme.vSpacing
             height: passwordConditions.implicitHeight + padding * 2
-            background: Rectangle { color: MZTheme.theme.transparent }
+            background: Rectangle { color: MZTheme.colors.transparent }
 
             Rectangle {
                 id: bg
@@ -113,7 +113,7 @@ ColumnLayout {
                     anchors.fill: glowVector
                     glowRadius: 4
                     spread: .3
-                    color: MZTheme.theme.divider
+                    color: MZTheme.colors.divider
                     cornerRadius: glowVector.radius + glowRadius
                     z: -2
                 }

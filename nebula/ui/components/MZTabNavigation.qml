@@ -43,7 +43,7 @@ Item {
         visible: stack.children.length > 1
         contentHeight: stack.children.length === 1 ? 0 : MZTheme.theme.menuHeight
         background: Rectangle {
-            color: MZTheme.theme.transparent
+            color: MZTheme.colors.transparent
         }
 
         Repeater {
@@ -63,7 +63,7 @@ Item {
                 onClicked: handleTabClick(btn)
 
                 background: Rectangle {
-                    color: MZTheme.theme.transparent
+                    color: MZTheme.colors.transparent
 
                     Rectangle {
                         height: 2

@@ -48,7 +48,7 @@ ViewFullScreen {
             Layout.fillWidth: true
 
             text: MZI18n.ResetSettingsBody1
-            color: MZTheme.theme.fontColor
+            color: MZTheme.colors.fontColor
             horizontalAlignment: Text.AlignLeft
         }
 
@@ -58,7 +58,7 @@ ViewFullScreen {
 
             text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.HelpSheetsPrivacyTitle)
             textFormat: Text.RichText
-            color: MZTheme.theme.fontColor
+            color: MZTheme.colors.fontColor
             horizontalAlignment: Text.AlignLeft
 
             Accessible.name: MZI18n.HelpSheetsPrivacyTitle
@@ -70,7 +70,7 @@ ViewFullScreen {
 
             text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.SettingsAppExclusionTitle)
             textFormat: Text.RichText
-            color: MZTheme.theme.fontColor
+            color: MZTheme.colors.fontColor
             horizontalAlignment: Text.AlignLeft
             visible: MZFeatureList.get("splitTunnel").isSupported
 
@@ -83,7 +83,7 @@ ViewFullScreen {
 
             text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.MultiHopFeatureMultiHopConnectionsHeader)
             textFormat: Text.RichText
-            color: MZTheme.theme.fontColor
+            color: MZTheme.colors.fontColor
             horizontalAlignment: Text.AlignLeft
 
             Accessible.name: MZI18n.MultiHopFeatureMultiHopConnectionsHeader
@@ -95,7 +95,7 @@ ViewFullScreen {
 
             text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.ResetSettingsListItemPreferences)
             textFormat: Text.RichText
-            color: MZTheme.theme.fontColor
+            color: MZTheme.colors.fontColor
             horizontalAlignment: Text.AlignLeft
 
             Accessible.name: MZI18n.ResetSettingsListItemPreferences
@@ -106,7 +106,7 @@ ViewFullScreen {
             Layout.fillWidth: true
 
             text: MZI18n.ResetSettingsBody2
-            color: MZTheme.theme.fontColor
+            color: MZTheme.colors.fontColor
             horizontalAlignment: Text.AlignLeft
         }
     }
@@ -120,7 +120,7 @@ ViewFullScreen {
 
             Layout.fillWidth: true
 
-            colorScheme: MZTheme.theme.redButton
+            colorScheme: MZTheme.colors.redButton
             text: MZI18n.ResetSettingsResetButtonLabel
 
             onClicked: confirmResetPopupLoader.active = true
@@ -164,7 +164,7 @@ ViewFullScreen {
                     Layout.fillWidth: true
 
                     text: MZI18n.ResetSettingsConfirmResetModalResetButtonLabel
-                    colorScheme: MZTheme.theme.redButton
+                    colorScheme: MZTheme.colors.redButton
 
                     onClicked: {
                         Glean.interaction.resetVpnSelected.record({

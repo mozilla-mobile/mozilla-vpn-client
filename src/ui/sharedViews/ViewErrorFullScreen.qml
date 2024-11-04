@@ -69,7 +69,7 @@ MZFlickable {
                 Layout.preferredHeight: 48
                 Layout.preferredWidth: 48
                 Layout.alignment: Qt.AlignHCenter;
-                color: MZTheme.theme.red
+                color: MZTheme.colors.red
                 radius: height / 2
 
                 Image {

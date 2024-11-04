@@ -61,7 +61,7 @@ RoundButton {
     }
 
     background: Rectangle {
-        color: MZTheme.theme.transparent
+        color: MZTheme.colors.transparent
     }
 
 }

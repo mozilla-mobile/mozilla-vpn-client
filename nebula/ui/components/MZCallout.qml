@@ -22,7 +22,7 @@ RowLayout {
     Rectangle {
         Layout.preferredHeight: MZTheme.theme.iconSize * 1.5
         Layout.preferredWidth: MZTheme.theme.iconSize * 1.5
-        color: MZTheme.theme.transparent
+        color: MZTheme.colors.transparent
 
         MZIcon {
             id: img
@@ -35,7 +35,7 @@ RowLayout {
 
     MZTextBlock {
         id: callout
-        color: MZTheme.theme.fontColorDark
+        color: MZTheme.colors.fontColorDark
         Layout.fillWidth: true
         font.pixelSize: MZTheme.theme.fontSize
         verticalAlignment: Text.AlignVCenter

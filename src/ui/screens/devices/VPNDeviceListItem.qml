@@ -109,7 +109,7 @@ MZSwipeDelegate {
             objectName: "swipeActionDelete"
 
             activeFocusOnTab: swipeDelegate.isSwipeOpen
-            bgColor: MZTheme.theme.redHovered
+            bgColor: MZTheme.colors.redHovered
             content: Image {
                 anchors.centerIn: parent
                 source: "qrc:/nebula/resources/delete-white.svg"

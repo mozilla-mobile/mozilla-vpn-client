@@ -23,7 +23,7 @@ MZButtonBase {
     Accessible.name: buttonText
 
     MZUIStates {
-        colorScheme: MZTheme.theme.iconButtonLightBackground
+        colorScheme: MZTheme.colors.iconButtonLightBackground
         radius: 0
     }
 
@@ -48,7 +48,7 @@ MZButtonBase {
 
             Text {
                 text: buttonText
-                color: MZTheme.theme.fontColor
+                color: MZTheme.colors.fontColor
                 font.pixelSize: 11
                 verticalAlignment: Text.AlignVCenter
                 horizontalAlignment: Text.AlignHCenter

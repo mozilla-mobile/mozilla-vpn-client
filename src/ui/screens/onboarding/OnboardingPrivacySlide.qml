@@ -40,7 +40,7 @@ ColumnLayout {
 
         text: MZI18n.OnboardingPrivacySlideBody
         horizontalAlignment: Text.AlignLeft
-        color: MZTheme.theme.fontColor
+        color: MZTheme.colors.fontColor
     }
 
     PrivacyFeaturesList {

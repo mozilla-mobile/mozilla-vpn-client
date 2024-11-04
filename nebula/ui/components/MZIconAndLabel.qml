@@ -12,7 +12,7 @@ RowLayout {
     id: iconAndLabel
     property alias icon: icon.source
     property alias title: title.text
-    property string fontColor: MZTheme.theme.fontColorDark
+    property string fontColor: MZTheme.colors.fontColorDark
     property bool showIndicator: false
 
     Layout.alignment: Qt.AlignLeft

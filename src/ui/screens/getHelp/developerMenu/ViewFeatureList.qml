@@ -35,7 +35,7 @@ MZViewBase {
 
                         MZLightLabel {
                             text: feature.name
-                            color: MZTheme.theme.fontColorDark
+                            color: MZTheme.colors.fontColorDark
                         }
 
                         MZTextBlock {
@@ -47,7 +47,7 @@ MZViewBase {
                     Rectangle {
                         Layout.preferredHeight: 1
                         Layout.fillWidth: true
-                        color: MZTheme.theme.transparent
+                        color: MZTheme.colors.transparent
                     }
 
                     MZSettingsToggle {

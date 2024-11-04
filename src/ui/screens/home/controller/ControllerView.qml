@@ -43,7 +43,7 @@ Item {
         id: boxBackground
 
         property var maximumBoxHeight: window.safeContentHeight - MZTheme.theme.windowMargin * 2 - (window.fullscreenRequired() ? box.y + MZTheme.theme.windowMargin : 0);
-        color: MZTheme.theme.transparent
+        color: MZTheme.colors.transparent
 
         radius: MZTheme.theme.cornerRadius * 2
         antialiasing: true
@@ -74,14 +74,14 @@ Item {
                 target: logoTitle
                 //% "VPN is off"
                 text: qsTrId("vpn.controller.deactivated")
-                color: MZTheme.theme.fontColorDark
+                color: MZTheme.colors.fontColorDark
             }
 
             PropertyChanges {
                 target: logoSubtitle
                 //% "Turn on to protect your privacy"
                 text: qsTrId("vpn.controller.activationSloagan")
-                color: MZTheme.theme.fontColor
+                color: MZTheme.colors.fontColor
                 visible: true
             }
 
@@ -114,13 +114,13 @@ Item {
             PropertyChanges {
                 target: logoTitle
                 text: qsTrId("vpn.controller.deactivated")
-                color: MZTheme.theme.fontColorDark
+                color: MZTheme.colors.fontColorDark
             }
 
             PropertyChanges {
                 target: logoSubtitle
                 text: qsTrId("vpn.controller.activationSloagan")
-                color: MZTheme.theme.fontColor
+                color: MZTheme.colors.fontColor
                 opacity: 1
                 visible: true
             }
@@ -271,14 +271,14 @@ Item {
                 target: logoTitle
                 //% "Disconnecting…"
                 text: qsTrId("vpn.controller.disconnecting")
-                color: MZTheme.theme.fontColorDark
+                color: MZTheme.colors.fontColorDark
             }
 
             PropertyChanges {
                 target: logoSubtitle
                 //% "Unmasking connection and location"
                 text: qsTrId("vpn.controller.deactivating")
-                color: MZTheme.theme.fontColor
+                color: MZTheme.colors.fontColor
                 opacity: 1
                 visible: true
             }
@@ -424,7 +424,7 @@ Item {
             ? connectionInfoCloseText
             : MZI18n.ConnectionInfoConnectionInformation
         Accessible.ignored: !enabled || !visible
-        buttonColorScheme: MZTheme.theme.iconButtonDarkBackground
+        buttonColorScheme: MZTheme.colors.iconButtonDarkBackground
         enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
         opacity: visible ? 1 : 0
         visible: VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateSilentSwitching
@@ -541,7 +541,7 @@ Item {
             id: connectedStateDescription
             objectName: "secureAndPrivateSubtitle"
 
-            color: MZTheme.theme.white
+            color: MZTheme.colors.white
             lineHeight: MZTheme.theme.controllerInterLineHeight
             Accessible.ignored: ipInfoPanel.isOpen || !visible
 

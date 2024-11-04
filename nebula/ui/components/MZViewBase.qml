@@ -29,7 +29,7 @@ Item {
 
    Rectangle {
        anchors.fill: root
-       color: MZTheme.theme.bgColor
+       color: MZTheme.colors.bgColor
    }
 
     MZFlickable {

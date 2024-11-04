@@ -10,8 +10,8 @@ Item {
     id: pill
 
     property string text: ""
-    property string background: MZTheme.theme.bgColor
-    property string color: MZTheme.theme.fontColorDark
+    property string background: MZTheme.colors.bgColor
+    property string color: MZTheme.colors.fontColorDark
 
     height: label.implicitHeight
     width: label.implicitWidth + label.font.pixelSize * 1.5

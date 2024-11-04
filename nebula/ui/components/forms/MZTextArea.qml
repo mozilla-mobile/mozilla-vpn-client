@@ -54,7 +54,7 @@ Item {
             }
             bottomPadding: MZTheme.theme.windowMargin
             clip: true
-            color: MZTheme.colors.input.default.text
+            color: MZTheme.colors.inputState.default.text
             cursorDelegate: MZCursorDelegate {}
             enabled: root.enabled
             font.family: MZTheme.theme.fontInterFamily
@@ -63,7 +63,7 @@ Item {
             leftPadding: MZTheme.theme.windowMargin
             rightPadding: MZTheme.theme.windowMargin
             selectByMouse: true
-            selectionColor: MZTheme.theme.input.highlight
+            selectionColor: MZTheme.colors.input.highlight
             textFormat: Text.PlainText
             topPadding: MZTheme.theme.windowMargin
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere
@@ -103,8 +103,8 @@ Item {
                     topMargin: MZTheme.theme.windowMargin
                 }
                 color: textAreaStates.state === "emptyHovered"
-                    ? MZTheme.colors.input.hover.placeholder
-                    : MZTheme.colors.input.default.placeholder
+                    ? MZTheme.colors.inputState.hover.placeholder
+                    : MZTheme.colors.inputState.default.placeholder
                 visible: textArea.text.length < 1
 
                 PropertyAnimation on opacity {
@@ -152,7 +152,7 @@ Item {
             right: parent.right
             rightMargin: MZTheme.theme.listSpacing
         }
-        color: MZTheme.theme.fontColor
+        color: MZTheme.colors.fontColor
         font.pixelSize: MZTheme.theme.fontSizeSmall
         text: textArea.length + " / " + textArea.maxCharacterCount
         Accessible.ignored: !visible

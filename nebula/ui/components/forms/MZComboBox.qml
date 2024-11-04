@@ -66,7 +66,7 @@ ComboBox {
         contentItem: Rectangle {
             anchors.fill: parent
             height: comboDelegate.height
-            color: hovered || combo.highlightedIndex === index ? MZTheme.theme.input.highlight : MZTheme.theme.input.backgroundColor
+            color: hovered || combo.highlightedIndex === index ? MZTheme.colors.input.highlight : MZTheme.colors.input.backgroundColor
 
             Behavior on color {
                 ColorAnimation {
@@ -82,7 +82,7 @@ ComboBox {
                 anchors.leftMargin: MZTheme.theme.windowMargin / 2
                 width:  parent.width - MZTheme.theme.windowMargin * 2
                 verticalAlignment: Text.AlignVCenter
-                color: hovered || combo.highlightedIndex === index ? MZTheme.theme.blue : MZTheme.theme.fontColor
+                color: hovered || combo.highlightedIndex === index ? MZTheme.colors.blue : MZTheme.colors.fontColor
 
                 Behavior on color {
                     ColorAnimation {
@@ -130,7 +130,7 @@ ComboBox {
                 anchors.fill: parent
                 anchors.bottomMargin: -4
                 anchors.topMargin: anchors.bottomMargin
-                border.color: MZTheme.theme.transparent
+                border.color: MZTheme.colors.transparent
             }
         }
 
@@ -151,12 +151,12 @@ ComboBox {
 
             PropertyChanges {
                 target: combo.contentItem
-                color: MZTheme.colors.input.focus.text
+                color: MZTheme.colors.inputState.focus.text
             }
 
             PropertyChanges {
                 target: combo.background
-                border.color: MZTheme.colors.input.focus.border
+                border.color: MZTheme.colors.inputState.focus.border
                 border.width: 2
             }
         },
@@ -168,12 +168,12 @@ ComboBox {
 
             PropertyChanges {
                 target: combo.contentItem
-                color: MZTheme.colors.input.default.placeholder
+                color: MZTheme.colors.inputState.default.placeholder
             }
 
             PropertyChanges {
                 target: combo.background
-                border.color: MZTheme.colors.input.default.border
+                border.color: MZTheme.colors.inputState.default.border
                 border.width: 1
             }
         },
@@ -185,12 +185,12 @@ ComboBox {
 
             PropertyChanges {
                 target: combo.contentItem
-                color: MZTheme.colors.input.hover.text
+                color: MZTheme.colors.inputState.hover.text
             }
 
             PropertyChanges {
                 target: combo.background
-                border.color: MZTheme.colors.input.hover.border
+                border.color: MZTheme.colors.inputState.hover.border
                 border.width: 1
             }
         },
@@ -200,12 +200,12 @@ ComboBox {
 
             PropertyChanges {
                 target: combo.contentItem
-                color: MZTheme.colors.input.default.text
+                color: MZTheme.colors.inputState.default.text
             }
 
             PropertyChanges {
                 target: combo.background
-                border.color: MZTheme.colors.input.default.border
+                border.color: MZTheme.colors.inputState.default.border
                 border.width: 1
             }
         }

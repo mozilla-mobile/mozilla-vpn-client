@@ -111,27 +111,27 @@ MZViewBase {
 
                         property var warningBadge: {
                             'badgeText': MZI18n.InAppMessagingWarningBadge,
-                            'badgeTheme': MZTheme.theme.orangeBadge
+                            'badgeTheme': MZTheme.colors.orangeBadge
                         };
                         property var criticalBadge: {
                             'badgeText': MZI18n.InAppMessagingCriticalBadge,
-                            'badgeTheme': MZTheme.theme.redBadge
+                            'badgeTheme': MZTheme.colors.redBadge
                         };
                         property var newUpdateBadge: {
                             'badgeText': MZI18n.InAppMessagingNewUpdateBadge,
-                            'badgeTheme': MZTheme.theme.greenBadge
+                            'badgeTheme': MZTheme.colors.greenBadge
                         };
                         property var whatsNewBadge: {
                             'badgeText': MZI18n.InAppMessagingWhatsNewBadge,
-                            'badgeTheme': MZTheme.theme.blueBadge
+                            'badgeTheme': MZTheme.colors.blueBadge
                         };
                         property var surveyBadge: {
                             'badgeText': MZI18n.InAppMessagingSurveyBadge,
-                            'badgeTheme': MZTheme.theme.blueBadge
+                            'badgeTheme': MZTheme.colors.blueBadge
                         };
                         property var subscriptionBadge: {
                             'badgeText': MZI18n.InAppMessagingSubscriptionBadge,
-                            'badgeTheme': MZTheme.theme.blueBadge
+                            'badgeTheme': MZTheme.colors.blueBadge
                         };
                     }
                 }
@@ -144,7 +144,7 @@ MZViewBase {
                 Layout.alignment: Qt.AlignRight
 
                 text: message.formattedDate
-                color: MZTheme.theme.fontColor
+                color: MZTheme.colors.fontColor
                 font.pixelSize: MZTheme.theme.fontSizeSmall
                 lineHeight: 21
                 horizontalAlignment: Text.AlignRight
@@ -178,7 +178,7 @@ MZViewBase {
 
                 text: message.subtitle
                 font.pixelSize: MZTheme.theme.fontSizeSmall
-                color: MZTheme.theme.fontColor
+                color: MZTheme.colors.fontColor
                 horizontalAlignment: Text.AlignLeft
             }
 

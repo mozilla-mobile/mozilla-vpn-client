@@ -11,7 +11,7 @@ import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 CheckBox {
     id: vpnSettingsToggle
 
-    property var toggleColor: MZTheme.theme.vpnToggleConnected
+    property var toggleColor: MZTheme.colors.vpnToggleConnected
     property var uiState: MZTheme.theme.uiState
     property alias forceFocus: vpnSettingsToggle.focus
     property string accessibleName
@@ -35,7 +35,7 @@ CheckBox {
 
             PropertyChanges {
                 target: vpnSettingsToggle
-                toggleColor: MZTheme.theme.vpnToggleConnected
+                toggleColor: MZTheme.colors.vpnToggleConnected
             }
 
             PropertyChanges {
@@ -50,7 +50,7 @@ CheckBox {
 
             PropertyChanges {
                 target: vpnSettingsToggle
-                toggleColor: MZTheme.theme.vpnToggleDisconnected
+                toggleColor: MZTheme.colors.vpnToggleDisconnected
 
             }
 
@@ -76,7 +76,7 @@ CheckBox {
 
         anchors.fill: hoverPressHandler
         border.color: toggleColor.focusBorder
-        color: MZTheme.theme.transparent
+        color: MZTheme.colors.transparent
         anchors.margins: -1
         radius: 50
         opacity: vpnSettingsToggle.activeFocus ? 1: 0
@@ -88,7 +88,7 @@ CheckBox {
         height: 18
         width: 18
         radius: 9
-        color: MZTheme.theme.white
+        color: MZTheme.colors.white
         z: 1
         anchors.verticalCenter: vpnSettingsToggle.verticalCenter
     }
@@ -165,7 +165,7 @@ CheckBox {
         id: uiPlaceholder /* Binding loop hack-around */
         height: 24
         width: 45
-        color: MZTheme.theme.transparent
+        color: MZTheme.colors.transparent
     }
 
     indicator:  MZUIStates {
@@ -175,6 +175,6 @@ CheckBox {
         colorScheme: toggleColor
         radius: height / 2
         showFocusRings: false
-        startingState: checked ? MZTheme.theme.vpnToggleConnected.defaultColor : MZTheme.theme.vpnToggleDisconnected.defaultColor
+        startingState: checked ? MZTheme.colors.vpnToggleConnected.defaultColor : MZTheme.colors.vpnToggleDisconnected.defaultColor
     }
 }

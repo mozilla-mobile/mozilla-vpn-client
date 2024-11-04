@@ -12,7 +12,7 @@ Text {
     font.pixelSize: MZTheme.theme.fontSize
     font.family: MZTheme.theme.fontInterFamily
     wrapMode: Text.Wrap
-    color: MZTheme.theme.fontColor
+    color: MZTheme.colors.fontColor
     lineHeightMode: Text.FixedHeight
     lineHeight: MZTheme.theme.labelLineHeight
     Accessible.role: Accessible.StaticText

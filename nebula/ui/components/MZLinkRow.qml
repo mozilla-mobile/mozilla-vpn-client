@@ -31,7 +31,7 @@ RowLayout {
             id: label
             Layout.fillWidth: true
             text: ""
-            color: MZTheme.theme.fontColorDark
+            color: MZTheme.colors.fontColorDark
             horizontalAlignment: Text.AlignLeft
             visible: !!text.length
             Layout.topMargin: 10
@@ -64,7 +64,7 @@ RowLayout {
         Layout.alignment: Qt.AlignTop
         Layout.preferredHeight: 50
         Layout.preferredWidth: 50
-        buttonColorScheme: MZTheme.theme.clickableRowBlue
+        buttonColorScheme: MZTheme.colors.clickableRowBlue
         accessibleName: title
         MZIcon {
             source: "qrc:/nebula/resources/externalLink.svg"

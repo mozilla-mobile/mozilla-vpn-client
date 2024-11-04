@@ -16,13 +16,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: MZTheme.colors.input.disabled.text
-                placeholderTextColor: MZTheme.colors.input.disabled.placeholder
+                color: MZTheme.colors.inputState.disabled.text
+                placeholderTextColor: MZTheme.colors.inputState.disabled.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: MZTheme.colors.input.disabled.border
+                border.color: MZTheme.colors.inputState.disabled.border
                 border.width: 1
             }
         },
@@ -36,13 +36,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: MZTheme.colors.input.default.text
-                placeholderTextColor: MZTheme.colors.input.default.placeholder
+                color: MZTheme.colors.inputState.default.text
+                placeholderTextColor: MZTheme.colors.inputState.default.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: MZTheme.colors.input.default.border
+                border.color: MZTheme.colors.inputState.default.border
                 border.width: 1
             }
         },
@@ -55,13 +55,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: MZTheme.colors.input.hover.text
-                placeholderTextColor: MZTheme.colors.input.hover.placeholder
+                color: MZTheme.colors.inputState.hover.text
+                placeholderTextColor: MZTheme.colors.inputState.hover.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: MZTheme.colors.input.hover.border
+                border.color: MZTheme.colors.inputState.hover.border
                 border.width: 1
             }
         },
@@ -71,13 +71,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: MZTheme.colors.input.focus.text
-                placeholderTextColor: MZTheme.colors.input.focus.placeholder
+                color: MZTheme.colors.inputState.focus.text
+                placeholderTextColor: MZTheme.colors.inputState.focus.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: MZTheme.colors.input.focus.border
+                border.color: MZTheme.colors.inputState.focus.border
                 border.width: 2
             }
         },
@@ -87,13 +87,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: MZTheme.colors.input.default.text
-                placeholderTextColor: MZTheme.colors.input.default.placeholder
+                color: MZTheme.colors.inputState.default.text
+                placeholderTextColor: MZTheme.colors.inputState.default.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: MZTheme.colors.input.default.border
+                border.color: MZTheme.colors.inputState.default.border
                 border.width: 1
             }
         },
@@ -103,13 +103,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: MZTheme.colors.input.error.text
-                placeholderTextColor: MZTheme.colors.input.error.placeholder
+                color: MZTheme.colors.inputState.error.text
+                placeholderTextColor: MZTheme.colors.inputState.error.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: MZTheme.colors.input.error.border
+                border.color: MZTheme.colors.inputState.error.border
                 border.width: 2
             }
         },
@@ -119,13 +119,13 @@ Item {
 
             PropertyChanges {
                 target: itemToTarget
-                color: MZTheme.colors.input.error.text
-                placeholderTextColor: MZTheme.colors.input.error.placeholder
+                color: MZTheme.colors.inputState.error.text
+                placeholderTextColor: MZTheme.colors.inputState.error.placeholder
             }
 
             PropertyChanges {
                 target: itemToTarget.background
-                border.color: MZTheme.colors.input.error.border
+                border.color: MZTheme.colors.inputState.error.border
                 border.width: 1
             }
         }

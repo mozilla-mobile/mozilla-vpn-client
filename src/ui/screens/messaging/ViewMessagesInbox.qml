@@ -127,7 +127,7 @@ MZViewBase {
 
             text: MZI18n.InAppMessagingEmptyStateDescription
             visible: vpnFlickable.isEmptyState
-            color: MZTheme.theme.fontColor
+            color: MZTheme.colors.fontColor
         }
 
         Rectangle {
@@ -216,7 +216,7 @@ MZViewBase {
                         id: deleteSwipeAction
 
                         activeFocusOnTab: swipeDelegate.isSwipeOpen
-                        bgColor: MZTheme.theme.redHovered
+                        bgColor: MZTheme.colors.redHovered
                         content: Image {
                             anchors.centerIn: parent
                             source: "qrc:/nebula/resources/delete-white.svg"
@@ -274,7 +274,7 @@ MZViewBase {
 
                                 opacity: addon && addon.isRead ? 0 : 1
                                 radius: Layout.preferredHeight / 2
-                                color: MZTheme.theme.blue
+                                color: MZTheme.colors.blue
                             }
 
                             MZBoldInterLabel {
@@ -293,7 +293,7 @@ MZViewBase {
                                 text: swipeDelegate.formattedDate
                                 font.pixelSize: MZTheme.theme.fontSizeSmall
                                 lineHeight: 21
-                                color: MZTheme.theme.fontColor
+                                color: MZTheme.colors.fontColor
                                 horizontalAlignment: Text.AlignRight
                             }
                         }
@@ -306,7 +306,7 @@ MZViewBase {
                             text: swipeDelegate.subtitle
                             font.pixelSize: MZTheme.theme.fontSizeSmall
                             lineHeight: 21
-                            color: MZTheme.theme.fontColor
+                            color: MZTheme.colors.fontColor
                             horizontalAlignment: Text.AlignLeft
                             elide: Text.ElideRight
                             maximumLineCount: 1

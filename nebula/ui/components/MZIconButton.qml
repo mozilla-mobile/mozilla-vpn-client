@@ -11,7 +11,7 @@ MZButtonBase {
     id: iconButton
     property bool skipEnsureVisible: false
     property var accessibleName
-    property var buttonColorScheme: MZTheme.theme.iconButtonLightBackground
+    property var buttonColorScheme: MZTheme.colors.iconButtonLightBackground
     property alias mouseArea: mouseArea
     property alias backgroundRadius: uiStates.radius
     property alias uiStatesVisible: uiStates.visible

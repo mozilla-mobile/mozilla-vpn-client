@@ -102,7 +102,7 @@ MZFlickable {
         id: alertWrapperBackground
 
         anchors.fill: alertWrapper
-        color: MZTheme.theme.white
+        color: MZTheme.colors.white
         radius: 8
         anchors.topMargin: -MZTheme.theme.windowMargin
         anchors.bottomMargin: -MZTheme.theme.windowMargin
@@ -138,7 +138,7 @@ MZFlickable {
 
                 font.family: MZTheme.theme.fontInterFamily
                 font.pixelSize: MZTheme.theme.fontSizeSmall
-                color: MZTheme.theme.fontColorDark
+                color: MZTheme.colors.fontColorDark
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
                 //% "Your connection will not be secure while you update."
@@ -160,7 +160,7 @@ MZFlickable {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: MZTheme.theme.windowMargin / 2
-            color: MZTheme.theme.transparent
+            color: MZTheme.colors.transparent
         }
 
         MZButton {
@@ -196,7 +196,7 @@ MZFlickable {
         Rectangle {
             Layout.fillWidth: true
             Layout.preferredHeight: MZTheme.theme.windowMargin * 2
-            color: MZTheme.theme.transparent
+            color: MZTheme.colors.transparent
         }
 
     }

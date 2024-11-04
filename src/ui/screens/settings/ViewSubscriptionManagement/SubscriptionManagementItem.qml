@@ -120,7 +120,7 @@ ColumnLayout {
             id: rowText
             objectName: _objectName + "-valueText"
 
-            color: MZTheme.theme.fontColorDark
+            color: MZTheme.colors.fontColorDark
             horizontalAlignment: Text.AlignRight
             font.pixelSize: MZTheme.theme.fontSizeSmall
             text: valueText

@@ -191,7 +191,7 @@ MZViewBase {
                 title: "Open Inspector"
                 accessibleName: "Open Inspector"
                 iconSource:  "qrc:/nebula/resources/externalLink.svg"
-                backgroundColor: MZTheme.theme.clickableRowBlue
+                backgroundColor: MZTheme.colors.clickableRowBlue
                 onClicked: {
                     MZUrlOpener.openUrlLabel("inspector");
                 }

@@ -7,6 +7,6 @@ import QtQuick 2.0
 import Mozilla.Shared 1.0
 
 Rectangle {
-    color: MZTheme.theme.transparent
+    color: MZTheme.colors.transparent
     width: parent.width
 }

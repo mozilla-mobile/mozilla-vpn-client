@@ -14,7 +14,7 @@ Rectangle {
 
     anchors.fill: parent
     antialiasing: true
-    border.color: MZTheme.colors.input.default.border
+    border.color: MZTheme.colors.inputState.default.border
     radius: MZTheme.theme.cornerRadius
 
     Behavior on border.color {
@@ -29,9 +29,9 @@ Rectangle {
         anchors.fill: parent
         anchors.margins: border.width * -1
         antialiasing: true
-        border.color: itemToFocus && itemToFocus.hasError ? MZTheme.colors.input.error.highlight : MZTheme.colors.input.focus.highlight
+        border.color: itemToFocus && itemToFocus.hasError ? MZTheme.colors.inputState.error.highlight : MZTheme.colors.inputState.focus.highlight
         border.width: 4
-        color: MZTheme.theme.transparent
+        color: MZTheme.colors.transparent
         opacity: itemToFocus && itemToFocus.activeFocus && itemToFocus.showInteractionStates ? 1 : 0
         radius: parent.radius + anchors.margins * -1
         z: -1

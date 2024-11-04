@@ -11,7 +11,7 @@ Text {
     font.family: MZTheme.theme.fontInterSemiBoldFamily
     lineHeightMode: Text.FixedHeight
     lineHeight: MZTheme.theme.controllerInterLineHeight
-    color: MZTheme.theme.fontColorDark
+    color: MZTheme.colors.fontColorDark
     wrapMode: Text.Wrap
     horizontalAlignment: Qt.AlignLeft
 

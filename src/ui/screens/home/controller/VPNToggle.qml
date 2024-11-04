@@ -55,12 +55,12 @@ MZButtonBase {
             PropertyChanges {
                 target: toggle
                 color: MZTheme.colors.grey30
-                border.color: MZTheme.theme.white
+                border.color: MZTheme.colors.white
             }
 
             PropertyChanges {
                 target: toggleButton
-                toggleColor: MZTheme.theme.vpnToggleDisconnected
+                toggleColor: MZTheme.colors.vpnToggleDisconnected
             }
 
         },
@@ -75,14 +75,14 @@ MZButtonBase {
             PropertyChanges {
                 target: toggle
                 color: MZTheme.colors.grey30
-                border.color: MZTheme.theme.white
+                border.color: MZTheme.colors.white
             }
 
             PropertyChanges {
                 target: toggleButton
                 //% "Turn VPN on"
                 toolTipTitle: qsTrId("vpn.toggle.on")
-                toggleColor: MZTheme.theme.vpnToggleDisconnected
+                toggleColor: MZTheme.colors.vpnToggleDisconnected
             }
 
         },
@@ -97,14 +97,14 @@ MZButtonBase {
             PropertyChanges {
                 target: toggle
                 color: MZTheme.colors.grey30
-                border.color: MZTheme.theme.white
+                border.color: MZTheme.colors.white
             }
 
             PropertyChanges {
                 target: toggleButton
                 //% "Turn VPN on"
                 toolTipTitle: qsTrId("vpn.toggle.on")
-                toggleColor: MZTheme.theme.vpnToggleDisconnected
+                toggleColor: MZTheme.colors.vpnToggleDisconnected
             }
         },
 
@@ -115,20 +115,20 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: MZTheme.theme.dullGreen
+                color: MZTheme.colors.dullGreen
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.theme.dullPurple
-                border.color: MZTheme.theme.ink
+                color: MZTheme.colors.dullPurple
+                border.color: MZTheme.colors.ink
             }
 
             PropertyChanges {
                 target: toggleButton
                 //% "Turn VPN off"
                 toolTipTitle: qsTrId("vpn.toggle.off")
-                toggleColor: MZTheme.theme.vpnToggleConnected
+                toggleColor: MZTheme.colors.vpnToggleConnected
             }
 
         },
@@ -138,20 +138,20 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: connectionRetryOverX ? MZTheme.theme.white : MZTheme.theme.dullGreen
+                color: connectionRetryOverX ? MZTheme.colors.white : MZTheme.colors.dullGreen
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.theme.dullPurple
-                border.color: MZTheme.theme.ink
+                color: MZTheme.colors.dullPurple
+                border.color: MZTheme.colors.ink
             }
 
             PropertyChanges {
                 target: toggleButton
                 //% "Turn VPN off"
                 toolTipTitle: qsTrId("vpn.toggle.off")
-                toggleColor: MZTheme.theme.vpnToggleConnected
+                toggleColor: MZTheme.colors.vpnToggleConnected
             }
 
         },
@@ -166,13 +166,13 @@ MZButtonBase {
             PropertyChanges {
                 target: toggle
                 color: MZTheme.colors.green50
-                border.color: MZTheme.theme.ink
+                border.color: MZTheme.colors.ink
             }
 
             PropertyChanges {
                 target: toggleButton
                 toolTipTitle: qsTrId("vpn.toggle.off")
-                toggleColor: MZTheme.theme.vpnToggleConnected
+                toggleColor: MZTheme.colors.vpnToggleConnected
             }
         },
 
@@ -187,13 +187,13 @@ MZButtonBase {
             PropertyChanges {
                 target: toggle
                 color: MZTheme.colors.green50
-                border.color: MZTheme.theme.ink
+                border.color: MZTheme.colors.ink
             }
 
             PropertyChanges {
                 target: toggleButton
                 toolTipTitle: qsTrId("vpn.toggle.off")
-                toggleColor: MZTheme.theme.vpnToggleConnected
+                toggleColor: MZTheme.colors.vpnToggleConnected
             }
         },
         State {
@@ -207,13 +207,13 @@ MZButtonBase {
             PropertyChanges {
                 target: toggle
                 color: MZTheme.colors.grey20
-                border.color: MZTheme.theme.white
+                border.color: MZTheme.colors.white
             }
 
             PropertyChanges {
                 target: toggleButton
                 toolTipTitle: qsTrId("vpn.toggle.on")
-                toggleColor: MZTheme.theme.vpnToggleDisconnected
+                toggleColor: MZTheme.colors.vpnToggleDisconnected
             }
 
         },
@@ -229,12 +229,12 @@ MZButtonBase {
             PropertyChanges {
                 target: toggle
                 color: MZTheme.theme.dullPurple
-                border.color: MZTheme.theme.ink
+                border.color: MZTheme.colors.ink
             }
 
             PropertyChanges {
                 target: toggleButton
-                toggleColor: MZTheme.theme.vpnToggleConnected
+                toggleColor: MZTheme.colors.vpnToggleConnected
             }
 
         }
@@ -266,7 +266,7 @@ MZButtonBase {
         anchors.margins: -4
         radius: height / 2
         border.color: toggleColor.focusBorder
-        color: MZTheme.theme.transparent
+        color: MZTheme.colors.transparent
         opacity: toggleButton.activeFocus && (VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateOnPartial || VPNController.state === VPNController.StateSilentSwitching || VPNController.state === VPNController.StateOff) ? 1 : 0
 
         MZFocusOutline {
@@ -277,7 +277,7 @@ MZButtonBase {
             setMargins: -6
             radius: height / 2
             border.width: 7
-            color: MZTheme.theme.transparent
+            color: MZTheme.colors.transparent
             border.color: toggleColor.focusOutline
             opacity: 0.25
         }

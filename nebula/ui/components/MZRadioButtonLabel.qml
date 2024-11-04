@@ -11,6 +11,6 @@ import Mozilla.Shared 1.0
 Label {
     font.family: MZTheme.theme.fontInterFamily
     font.pixelSize: MZTheme.theme.fontSize
-    color: MZTheme.theme.fontColorDark
+    color: MZTheme.colors.fontColorDark
     Accessible.ignored: !visible
 }

@@ -14,7 +14,7 @@ Rectangle {
     anchors.margins: -1
     radius: MZTheme.theme.cornerRadius
     opacity: 0
-    color: MZTheme.theme.transparent
+    color: MZTheme.colors.transparent
 
     state: "inactive"
 

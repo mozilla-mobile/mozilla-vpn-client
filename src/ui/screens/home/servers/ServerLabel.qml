@@ -15,7 +15,7 @@ import compat 0.1
 RowLayout {
     property var serversList
     property bool narrowStyle: true
-    property string fontColor: MZTheme.theme.fontColor
+    property string fontColor: MZTheme.colors.fontColor
     id: root
 
     Flow {

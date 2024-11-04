@@ -78,7 +78,7 @@ Item {
                 }
                 PropertyChanges {
                     target: stabilityLabel
-                    color: MZTheme.theme.orange
+                    color: MZTheme.colors.orange
                 }
                 PropertyChanges {
                     target: warningIcon
@@ -95,7 +95,7 @@ Item {
                 }
                 PropertyChanges {
                     target: stabilityLabel
-                    color: MZTheme.theme.red
+                    color: MZTheme.colors.red
                 }
                 PropertyChanges {
                     target: warningIcon
@@ -116,7 +116,7 @@ Item {
             Rectangle {
                 height: 16
                 width: MZTheme.theme.iconSizeSmall
-                color: MZTheme.theme.transparent
+                color: MZTheme.colors.transparent
 
                 Image {
                     id: warningIcon

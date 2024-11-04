@@ -13,7 +13,7 @@ Rectangle {
 
     property bool showVPNOnIcon: false
 
-    color: MZTheme.theme.transparent
+    color: MZTheme.colors.transparent
     opacity: 1
     state: VPNController.state
     states: [

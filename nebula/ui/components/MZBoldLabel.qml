@@ -11,7 +11,7 @@ import Mozilla.Shared 1.0
 Label {
     font.pixelSize: MZTheme.theme.fontSize
     font.family: MZTheme.theme.fontBoldFamily
-    color: MZTheme.theme.fontColorDark
+    color: MZTheme.colors.fontColorDark
     horizontalAlignment: Qt.AlignLeft
 
     Accessible.role: Accessible.StaticText

@@ -29,7 +29,7 @@ RowLayout {
     Text {
         id: passwordConditionDescription
 
-        color: MZTheme.theme.fontColor
+        color: MZTheme.colors.fontColor
         font.family: MZTheme.theme.fontInterFamily
         font.pixelSize: MZTheme.theme.fontSizeSmall
         Layout.fillWidth: true

@@ -13,7 +13,7 @@ MZClickableRow {
     property string iconSource:  "qrc:/nebula/resources/externalLink.svg"
     property alias iconMirror: icon.mirror
 
-    backgroundColor: MZTheme.theme.clickableRowBlue
+    backgroundColor: MZTheme.colors.clickableRowBlue
 
     RowLayout {
         anchors.fill: parent

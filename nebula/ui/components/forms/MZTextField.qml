@@ -30,7 +30,7 @@ TextField {
         id: textFieldBackground
     }
     bottomPadding: MZTheme.theme.windowMargin / 2
-    color: MZTheme.colors.input.default.text
+    color: MZTheme.colors.inputState.default.text
     cursorDelegate: MZCursorDelegate {}
     echoMode: TextInput.Normal
     font.family: MZTheme.theme.fontInterFamily

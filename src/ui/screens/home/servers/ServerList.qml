@@ -198,7 +198,7 @@ FocusScope {
                                 Layout.preferredWidth: parent.width
                                 Layout.maximumWidth: parent.width
 
-                                color: MZTheme.theme.fontColor
+                                color: MZTheme.colors.fontColor
                                 horizontalAlignment: Text.AlignLeft
                                 // TODO: Replace placeholder strings and generate
                                 // values that will be set instead of `%1`
@@ -261,7 +261,7 @@ FocusScope {
                                     id: recommendedServerLabel
 
                                     Layout.leftMargin: MZTheme.theme.listSpacing * 0.5
-                                    fontColor: MZTheme.theme.fontColorDark
+                                    fontColor: MZTheme.colors.fontColorDark
                                     narrowStyle: false
                                     serversList: [{
                                             countryCode: city.country,

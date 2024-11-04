@@ -13,7 +13,7 @@ Rectangle {
     property variant itemToFocus: parent
     property variant itemToAnchor: parent
     property var borderWidth: MZTheme.theme.focusBorderWidth
-    property var colorScheme: MZTheme.theme.linkButton
+    property var colorScheme: MZTheme.colors.linkButton
     property real setMargins: -2
     property bool showFocusRings: true
     property var startingState: colorScheme.defaultColor
@@ -22,7 +22,7 @@ Rectangle {
 
     anchors.fill: itemToAnchor
     antialiasing: true
-    color: MZTheme.theme.transparent
+    color: MZTheme.colors.transparent
     radius: MZTheme.theme.cornerRadius
     z: -1
     states: [
@@ -60,7 +60,7 @@ Rectangle {
 
             PropertyChanges {
                 target: buttonBackground
-                color: 'buttonDisabled' in colorScheme ? colorScheme.buttonDisabled : colorScheme.defaultColor
+                color: colorScheme.buttonDisabled ? colorScheme.buttonDisabled : colorScheme.defaultColor
                 opacity: 1
             }
 

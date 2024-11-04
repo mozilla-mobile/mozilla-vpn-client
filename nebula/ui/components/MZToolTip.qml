@@ -48,7 +48,7 @@ ToolTip {
         id: toolTipText
 
         text: toolTip.text
-        color: MZTheme.theme.fontColorDark
+        color: MZTheme.colors.fontColorDark
         z: 1
         wrapMode: Text.WordWrap
         Accessible.ignored: !visible
@@ -58,7 +58,7 @@ ToolTip {
         id: glowClippingPath
 
         radius: 4
-        color: MZTheme.theme.bgColor
+        color: MZTheme.colors.bgColor
         z: -1
 
         MZRectangularGlow {
