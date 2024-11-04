@@ -940,7 +940,6 @@ bool Controller::switchServers(const ServerData& serverData) {
   return true;
 }
 
-
 QString Controller::currentServerString() const {
   return QString("%1-%2-%3-%4")
       .arg(m_serverData.exitCountryCode(), m_serverData.exitCityName(),
