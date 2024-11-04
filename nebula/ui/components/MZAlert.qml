@@ -88,7 +88,7 @@ Rectangle {
                 alertColor: MZTheme.colors.blue
                 alertHoverColor: MZTheme.colors.blueHovered
                 alertClickColor: MZTheme.colors.bluePressed
-                fontcolor: MZTheme.colors.white
+                fontColor: MZTheme.colors.white
                 closeIcon: whiteCloseIcon
             }
         },
@@ -121,7 +121,7 @@ Rectangle {
                 alertColor: MZTheme.colors.red
                 alertHoverColor: MZTheme.colors.redHovered
                 alertClickColor: MZTheme.colors.redPressed
-                fontcolor: MZTheme.colors.white
+                fontColor: MZTheme.colors.white
                 closeIcon: whiteCloseIcon
             }
         },

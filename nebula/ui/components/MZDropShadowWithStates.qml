@@ -4,6 +4,7 @@
 
 import QtQuick 2.0
 import Mozilla.VPN 1.0
+import Mozilla.Shared 1.0
 
 import compat 0.1
 
