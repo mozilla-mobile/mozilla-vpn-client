@@ -65,7 +65,6 @@ class Controller : public QObject, public LogSerializer {
   void captivePortalPresent();
   void captivePortalGone();
   bool switchServers(const ServerData& serverData);
-  void backendFailure();
   void updateRequired();
   void deleteOSTunnelConfig();
   void startHandshakeTimer();
@@ -148,7 +147,6 @@ class Controller : public QObject, public LogSerializer {
   void recordDataTransferTelemetry();
   void readyToQuit();
   void readyToUpdate();
-  void readyToBackendFailure();
   void readyToServerUnavailable(bool pingReceived);
   void activationBlockedForCaptivePortal();
   void isDeviceConnectedChanged();
@@ -191,7 +189,6 @@ class Controller : public QObject, public LogSerializer {
     Quit,
     Update,
     Disconnect,
-    BackendFailure,
   };
 
   NextStep m_nextStep = None;

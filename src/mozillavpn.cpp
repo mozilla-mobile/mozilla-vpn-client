@@ -166,13 +166,6 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
 
   connect(&m_private->m_controller, &Controller::readyToUpdate, this,
           [this]() { setState(StateUpdateRequired); });
-
-  connect(&m_private->m_controller, &Controller::readyToBackendFailure, this,
-          [this]() {
-            TaskScheduler::deleteTasks();
-            setState(StateBackendFailure);
-          });
-
   connect(&m_private->m_controller, &Controller::readyToServerUnavailable, this,
           [](bool pingReceived) {
             NotificationHandler::instance()->serverUnavailableNotification(
@@ -920,6 +913,10 @@ void MozillaVPN::activate() {
 void MozillaVPN::deactivate(bool block) {
   logger.debug() << "VPN tunnel deactivation";
 
+  if()
+
+
+
   TaskScheduler::deleteTasks();
   Task* task = new TaskControllerAction(TaskControllerAction::eDeactivate);
   if (block) {
@@ -1148,7 +1145,8 @@ void MozillaVPN::heartbeatCompleted(bool success) {
   // for the user to do and it may not affect the connectivity at all so it is
   // not necessary to take additional actions.
   if (!success && state() == StateAuthenticating) {
-    m_private->m_controller.backendFailure();
+    TaskScheduler::deleteTasks();
+    setState(StateBackendFailure);
     return;
   }
 
