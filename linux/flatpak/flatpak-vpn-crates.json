@@ -1900,14 +1900,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/reqwest/reqwest-0.12.8.crate",
-        "sha256": "f713147fbe92361e52392c73b8c9e48c04c6625bce969ef54dc901e58e042a7b",
-        "dest": "cargo/vendor/reqwest-0.12.8"
+        "url": "https://static.crates.io/crates/reqwest/reqwest-0.12.9.crate",
+        "sha256": "a77c62af46e79de0a562e1a9849205ffcb7fc1238876e9bd743357570e04046f",
+        "dest": "cargo/vendor/reqwest-0.12.9"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"f713147fbe92361e52392c73b8c9e48c04c6625bce969ef54dc901e58e042a7b\", \"files\": {}}",
-        "dest": "cargo/vendor/reqwest-0.12.8",
+        "contents": "{\"package\": \"a77c62af46e79de0a562e1a9849205ffcb7fc1238876e9bd743357570e04046f\", \"files\": {}}",
+        "dest": "cargo/vendor/reqwest-0.12.9",
         "dest-filename": ".cargo-checksum.json"
     },
     {
