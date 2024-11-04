@@ -164,7 +164,7 @@ color.greyPressed = '#C2C2C2';
 color.greyDisabled = '#D8D8D8';
 color.ink = color.purple90;
 color.orange = color.yellow50;
-color.orangeHovered = '#E27F2E';
+color.orangeHovered = color.yellow60;
 color.orangeFocus = '#4DE27F2E';
 color.orangePressed = color.yellow70;
 color.red = color.red60;
@@ -483,7 +483,7 @@ color.removeDeviceBtn = {
 color.vpnToggleConnected = {
   defaultColor: color.green,
   buttonHovered: color.green60,
-  buttonPressed: '#1CC5A0',
+  buttonPressed: color.green70,
   focusOutline: color.bgColor30,
   focusBorder: color.lightFocusBorder,
 };
@@ -509,9 +509,9 @@ color.card = {
 color.greenAlert = {
   defaultColor: color.green50,
   buttonHovered: color.green60,
-  buttonPressed: '#1CC5A0',
+  buttonPressed: color.green70,
   focusOutline: '#333FE1B0',
-  focusBorder: '#1CC5A0',
+  focusBorder: color.green70,
 };
 
 color.greyLink = {
