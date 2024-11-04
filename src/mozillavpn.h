@@ -46,7 +46,7 @@ class MozillaVPN final : public App {
  public:
   enum CustomState {
     StateDeviceLimit = StateCustom + 1,
-    StateBackendFailure,
+    StateHeartbeatFailure,
     StateUpdateRequired,
   };
   Q_ENUM(CustomState);
@@ -54,7 +54,7 @@ class MozillaVPN final : public App {
   enum CustomScreen {
     ScreenAuthenticating = Navigator::ScreenCustom + 1,
     ScreenAuthenticationInApp,
-    ScreenBackendFailure,
+    ScreenHeartbeatFailure,
     ScreenBillingNotAvailable,
     ScreenCaptivePortal,
     ScreenCrashReporting,

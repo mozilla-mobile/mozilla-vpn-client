@@ -913,10 +913,6 @@ void MozillaVPN::activate() {
 void MozillaVPN::deactivate(bool block) {
   logger.debug() << "VPN tunnel deactivation";
 
-  if()
-
-
-
   TaskScheduler::deleteTasks();
   Task* task = new TaskControllerAction(TaskControllerAction::eDeactivate);
   if (block) {
@@ -1146,11 +1142,11 @@ void MozillaVPN::heartbeatCompleted(bool success) {
   // not necessary to take additional actions.
   if (!success && state() == StateAuthenticating) {
     TaskScheduler::deleteTasks();
-    setState(StateBackendFailure);
+    setState(StateHeartbeatFailure);
     return;
   }
 
-  if (state() != StateBackendFailure) {
+  if (state() != StateHeartbeatFailure) {
     return;
   }
 
@@ -1445,9 +1441,10 @@ void MozillaVPN::registerNavigatorScreens() {
       });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenBackendFailure, Navigator::LoadPolicy::LoadTemporarily,
+      MozillaVPN::ScreenHeartbeatFailure,
+      Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenBackendFailure.qml",
-      QVector<int>{MozillaVPN::StateBackendFailure},
+      QVector<int>{MozillaVPN::StateHeartbeatFailure},
       [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
 
   Navigator::registerScreen(
@@ -1878,14 +1875,6 @@ void MozillaVPN::registerInspectorCommands() {
         AddonManager::instance()->fetch();
         return QJsonObject();
       });
-
-  InspectorHandler::registerCommand(
-      "force_backend_failure", "Force a backend failure", 0,
-      [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()->controller()->backendFailure();
-        return QJsonObject();
-      });
-
   InspectorHandler::registerCommand(
       "force_captive_portal_check", "Force a captive portal check", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
