@@ -151,12 +151,12 @@ ComboBox {
 
             PropertyChanges {
                 target: combo.contentItem
-                color: MZTheme.colors.input.focus.text
+                color: MZTheme.colors.inputState.focus.text
             }
 
             PropertyChanges {
                 target: combo.background
-                border.color: MZTheme.colors.input.focus.border
+                border.color: MZTheme.colors.inputState.focus.border
                 border.width: 2
             }
         },
@@ -168,12 +168,12 @@ ComboBox {
 
             PropertyChanges {
                 target: combo.contentItem
-                color: MZTheme.colors.input.default.placeholder
+                color: MZTheme.colors.inputState.default.placeholder
             }
 
             PropertyChanges {
                 target: combo.background
-                border.color: MZTheme.colors.input.default.border
+                border.color: MZTheme.colors.inputState.default.border
                 border.width: 1
             }
         },
@@ -185,12 +185,12 @@ ComboBox {
 
             PropertyChanges {
                 target: combo.contentItem
-                color: MZTheme.colors.input.hover.text
+                color: MZTheme.colors.inputState.hover.text
             }
 
             PropertyChanges {
                 target: combo.background
-                border.color: MZTheme.colors.input.hover.border
+                border.color: MZTheme.colors.inputState.hover.border
                 border.width: 1
             }
         },
@@ -200,12 +200,12 @@ ComboBox {
 
             PropertyChanges {
                 target: combo.contentItem
-                color: MZTheme.colors.input.default.text
+                color: MZTheme.colors.inputState.default.text
             }
 
             PropertyChanges {
                 target: combo.background
-                border.color: MZTheme.colors.input.default.border
+                border.color: MZTheme.colors.inputState.default.border
                 border.width: 1
             }
         }

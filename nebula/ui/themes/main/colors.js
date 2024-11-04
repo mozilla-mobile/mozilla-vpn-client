@@ -201,17 +201,14 @@ color.light = color.grey5;
 /**
  * Functional
  */
-color.blue = color.blue50;
 color.blueActive = color.blue70;
 color.blueHover = color.blue60;
 color.blueFocus = addTransparency(color.blue, 0.4);
 
-color.green = color.green50;
 color.greenActive = color.green70;
 color.greenHover = color.green60;
 color.greenFocus = color.green20;
 
-color.red = color.red50;
 color.redActive = color.red70;
 color.redHover = color.red60;
 color.redFocus = color.red10;
@@ -236,7 +233,7 @@ color.success = {
 };
 
 color.error = {
-  default: color.red,
+  default: color.red50,
   active: color.redActive,
   hover: color.redHover,
   focus: color.redFocus,
@@ -327,7 +324,7 @@ color.gradientGreen = {
 /**
  * Inputs
  */
-color.input = {
+color.inputState = {
   default: {
     background: color.white,
     border: color.grey30,
