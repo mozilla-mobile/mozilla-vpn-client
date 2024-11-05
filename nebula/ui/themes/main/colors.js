@@ -38,6 +38,7 @@ color.grey50 = '#3D3D3D';
 color.grey40 = '#6D6D6E';
 color.grey30 = '#9E9E9E';
 color.grey20 = '#CECECF';
+color.grey15 = '#D8D8D8';
 color.grey10 = '#E7E7E7';
 color.grey5 = '#F9F9FA';
 color.white = '#FFFFFF';
@@ -118,9 +119,21 @@ color.pink20 = '#FF8AC5';
 color.pink10 = '#FFB4DB';
 color.pink5 = '#FFDEF0';
 
-// Dull colors
-color.dullPurple = '#387E8A';
-color.dullGreen = '#998DB2';
+// additional colors
+color.dullGreen = '#387E8A';
+color.dullPurple = '#998DB2';
+color.washedPurple = '#5B4983';
+color.washedBlue = '#D4E2F6';
+color.washedLightBlue = '#AECBF2';
+color.strongBlue = '#0A84FF';
+
+color.customGradientColorPurple = '#9D62FC';
+color.customGradientColorPink = '#FD3296';
+color.customGradientColorBlue = '#5B6DF8';
+
+color.onboardingGradientStart = '#472C87';
+color.onboardingGradientMiddle = '#301962';
+color.onboardingGradientEnd = '#1D0942';
 
 color.transparent = '#00000000';
 
@@ -138,49 +151,50 @@ const addTransparency = (hexColor, percent) => {
   const hexValue = hexColor.substring(1);
   const hexAlphaValue = percentToHex(percent);
 
+  // Despite typical web usage being #{colorHex}{alphaHex}, Qt uses
+  // #{alphaHex}{colorHex}: https://doc.qt.io/qt-6/qcolor.html#fromString
   return `#${hexAlphaValue}${hexValue}`;
 };
 
-// TODO: BELOW HERE SHOULD NOT HAVE ANY HEX CODES
 // Derived
 
 color.bgColor = color.grey5;
-color.bgColor30 = '#4DF9F9FA';
-color.bgColor80 = '#CCF9F9FA';
-color.bgColorTransparent = '#00F9F9FA';
+color.bgColor30 = addTransparency(color.grey5, 0.3);
+color.bgColor80 = addTransparency(color.grey5, 0.3);
+color.bgColorTransparent = addTransparency(color.grey5, 0.0);
 
 color.blue = color.blue50;
 color.blueHovered = color.blue60;
 color.bluePressed = color.blue70;
-color.blueDisabled = '#a3c0f3';
-color.blueFocusOutline = '#4d0a84ff';
-color.blueFocusBorder = '#0a84ff';
+color.blueDisabled = color.washedLightBlue;
+color.blueFocusOutline = addTransparency(color.strongBlue, 0.3);
+color.blueFocusBorder = color.strongBlue;
 
-color.divider = '#0C0C0D0A'
+color.divider = addTransparency(color.grey60, 0.04);
 color.green = color.green50;
-color.grey = '#CACACA';
-color.greyHovered = '#E6E6E6';
-color.greyPressed = '#C2C2C2';
-color.greyDisabled = '#D8D8D8';
+color.grey = color.grey20;
+color.greyHovered = color.grey10;
+color.greyPressed = color.grey20;
+color.greyDisabled = color.grey15;
 color.ink = color.purple90;
 color.orange = color.yellow50;
 color.orangeHovered = color.yellow60;
-color.orangeFocus = '#4DE27F2E';
+color.orangeFocus = addTransparency(color.yellow60, 0.3);
 color.orangePressed = color.yellow70;
 color.red = color.red60;
 color.redHovered = color.red70;
 color.redPressed = color.red80;
 color.redDisabled = color.red10;
-color.redfocusOutline = '#66C50042';
+color.redfocusOutline = addTransparency(color.red70, 0.4);
 color.redBadgeText = color.red80;
 color.greenBadgeText = color.green90;
 color.greenBadgeBackground = color.green5;
 color.orangeBadgeText = color.yellow90;
 color.orangeBadgeBackground = color.orange10;
 color.blueBadgeText = color.blue90;
-color.blueBadgeBackground = '#660060DF'
+color.blueBadgeBackground = addTransparency(color.blue50, 0.4);
 
-color.overlayBackground = '#4D000000';
+color.overlayBackground = addTransparency(color.black, 0.0);
 
 color.checkBoxWarning = color.yellow70;
 
@@ -188,7 +202,7 @@ color.fontColor = color.grey40;
 color.fontColorDark = color.grey50;
 
 color.darkFocusBorder = color.fontColor;
-color.lightFocusBorder = '#d5d3e0';
+color.lightFocusBorder = color.grey15;
 
 /**
  * Main palette
@@ -249,9 +263,6 @@ color.warning = {
 /**
  * Gradients
  */
-color.customGradientColorPurple = '#9D62FC';
-color.customGradientColorPink = '#FD3296';
-color.customGradientColorBlue = '#5B6DF8';
 
 // Pink gradient
 color.gradientPink = {
@@ -360,9 +371,9 @@ color.inputState = {
 };
 
 color.onBoardingGradient = {
-  start: '#472C87',
-  middle: '#301962',
-  end: '#1D0942',
+  start: color.onboardingGradientStart,
+  middle: color.onboardingGradientMiddle,
+  end: color.onboardingGradientEnd,
 };
 
 color.blueButton = {
@@ -376,9 +387,9 @@ color.blueButton = {
 };
 
 color.wasmOptionBtn = {
-  defaultColor: '#00eeeeee',
-  buttonHovered: '#330a84ff',
-  buttonPressed: '#4d0a84ff',
+  defaultColor: color.transparent,
+  buttonHovered: addTransparency(color.strongBlue, 0.2),
+  buttonPressed: addTransparency(color.strongBlue, 0.3),
   buttonDisabled: color.blueDisabled,
   focusBgColor: color.blue,
   focusOutline: color.blueFocusOutline,
@@ -392,8 +403,8 @@ color.warningAlertFocusBorders = {
 
 color.clickableRowBlue = {
   defaultColor: color.bgColor,
-  buttonHovered: '#D4E2F6',
-  buttonPressed: '#AECBF2',
+  buttonHovered: color.washedBlue,
+  buttonPressed: color.washedLightBlue,
   focusOutline: color.bgColorTransparent,
   focusBorder: color.blueFocusBorder,
 };
@@ -416,11 +427,11 @@ color.iconButtonLightBackground = {
 };
 
 color.iconButtonDarkBackground = {
-  defaultColor: '#00321C64',
-  buttonHovered: '#5b4983',
-  buttonPressed: '#8477a2',
-  buttonDisabled: '#00321C64',
-  focusOutline: '#005b4983',
+  defaultColor: addTransparency(color.purple90, 0.0),
+  buttonHovered: color.washedPurple,
+  buttonPressed: color.dullPurple,
+  buttonDisabled: addTransparency(color.purple90, 0.0),
+  focusOutline: color.transparent,
   focusBorder: color.lightFocusBorder,
 };
 
@@ -490,7 +501,7 @@ color.vpnToggleDisconnected = {
   buttonHovered: color.fontColor,
   buttonPressed: color.fontColorDark,
   buttonDisabled: color.grey,
-  focusOutline: 'transparent',
+  focusOutline: color.transparent,
   focusBorder: color.darkFocusBorder,
 };
 
@@ -507,15 +518,15 @@ color.greenAlert = {
   defaultColor: color.green50,
   buttonHovered: color.green60,
   buttonPressed: color.green70,
-  focusOutline: '#333FE1B0',
+  focusOutline: addTransparency(color.green50, 0.2),
   focusBorder: color.green70,
 };
 
 color.greyLink = {
-  defaultColor: '#B30C0C0D',
-  buttonHovered: '#CC0C0C0D',
-  buttonPressed: '#FF0C0C0D',
-  focusOutline: '#FF0C0C0D',
+  defaultColor: addTransparency(color.grey60, 0.7),
+  buttonHovered: addTransparency(color.grey60, 0.8),
+  buttonPressed: color.grey60,
+  focusOutline: color.grey60,
   focusBorder: color.black
 };
 
