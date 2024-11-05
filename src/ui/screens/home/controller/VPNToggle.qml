@@ -115,12 +115,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: MZTheme.colors.dullGreen
+                color: MZTheme.colors.dullPurple
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.dullPurple
+                color: MZTheme.colors.dullGreen
                 border.color: MZTheme.colors.ink
             }
 
@@ -138,12 +138,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: connectionRetryOverX ? MZTheme.colors.white : MZTheme.colors.dullGreen
+                color: connectionRetryOverX ? MZTheme.colors.white : MZTheme.colors.dullPurple
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.dullPurple
+                color: MZTheme.colors.dullGreen
                 border.color: MZTheme.colors.ink
             }
 
@@ -223,12 +223,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: MZTheme.theme.dullGreen
+                color: MZTheme.colors.dullPurple
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.theme.dullPurple
+                color: MZTheme.colors.dullGreen
                 border.color: MZTheme.colors.ink
             }
 
