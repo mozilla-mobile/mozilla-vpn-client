@@ -1,9 +1,0 @@
-#!/bin/sh
-set -e
-
-action="$1"
-if [ "$action" = "configure" ]; then
-    setcap cap_net_raw+ep /usr/bin/mozillavpn
-fi
-
-#DEBHELPER#
