@@ -127,10 +127,6 @@ color.washedBlue = '#D4E2F6';
 color.washedLightBlue = '#AECBF2';
 color.strongBlue = '#0A84FF';
 
-color.customGradientColorPurple = '#9D62FC';
-color.customGradientColorPink = '#FD3296';
-color.customGradientColorBlue = '#5B6DF8';
-
 color.onboardingGradientStart = '#472C87';
 color.onboardingGradientMiddle = '#301962';
 color.onboardingGradientEnd = '#1D0942';
@@ -147,6 +143,10 @@ const percentToHex = percent => {
   return hexAlphaValue.toUpperCase();
 };
 
+// Not all #00xxxxx colors are identical. While they look identical
+// on screen, in transitions or with opacity changes they may look different.
+// Changing all `addTransparency(color.[anything], 0.0)` to color.transparency
+// will cause UI bugs.
 const addTransparency = (hexColor, percent) => {
   const hexValue = hexColor.substring(1);
   const hexAlphaValue = percentToHex(percent);
@@ -160,7 +160,6 @@ const addTransparency = (hexColor, percent) => {
 
 color.bgColor = color.grey5;
 color.bgColor30 = addTransparency(color.grey5, 0.3);
-color.bgColor80 = addTransparency(color.grey5, 0.3);
 color.bgColorTransparent = addTransparency(color.grey5, 0.0);
 
 color.blue = color.blue50;
@@ -172,7 +171,6 @@ color.blueFocusBorder = color.strongBlue;
 
 color.divider = addTransparency(color.grey60, 0.04);
 color.green = color.green50;
-color.grey = color.grey20;
 color.greyHovered = color.grey10;
 color.greyPressed = color.grey20;
 color.greyDisabled = color.grey15;
@@ -196,8 +194,6 @@ color.blueBadgeBackground = addTransparency(color.blue50, 0.4);
 
 color.overlayBackground = addTransparency(color.black, 0.0);
 
-color.checkBoxWarning = color.yellow70;
-
 color.fontColor = color.grey40;
 color.fontColorDark = color.grey50;
 
@@ -208,9 +204,6 @@ color.lightFocusBorder = color.grey15;
  * Main palette
  */
 color.primary = color.purple90;
-color.secondary = color.green50;
-color.dark = color.grey60;
-color.light = color.grey5;
 
 /**
  * Functional
@@ -234,102 +227,21 @@ color.yellowFocus = color.orange10;
 
 color.informational = {
   default: color.blue,
-  active: color.blueActive,
-  hover: color.blueHover,
   focus: color.blueFocus,
 };
 
 color.success = {
-  default: color.green,
-  active: color.greenActive,
-  hover: color.greenHover,
-  focus: color.greenFocus,
+  default: color.green
 };
 
 color.error = {
   default: color.red50,
-  active: color.redActive,
-  hover: color.redHover,
   focus: color.redFocus,
 };
 
 color.warning = {
   default: color.yellow,
   active: color.yellowActive,
-  hover: color.yellowHover,
-  focus: color.yellowFocus,
-};
-
-/**
- * Gradients
- */
-
-// Pink gradient
-color.gradientPink = {
-  type: 'radial',
-  stops: [
-    {
-      position: 0.0,
-      color: color.customGradientColorPurple,
-    },
-    {
-      position: 0.0,
-      color: color.customGradientColorPink,
-    },
-  ],
-};
-
-// Blue gradient
-color.gradientBlue = {
-  type: 'radial',
-  stops: [
-    {
-      position: 0.0,
-      color: color.violet50,
-    },
-    {
-      position: 0.371,
-      color: color.purple50,
-    },
-    {
-      position: 0.614,
-      color: color.customGradientColorBlue,
-    },
-    {
-      position: 1.0,
-      color: color.blue40,
-    },
-  ],
-};
-
-// Orange gradient
-color.gradientOrange = {
-  type: 'radial',
-  stops: [
-    {
-      position: 0.0,
-      color: color.red60,
-    },
-    {
-      position: 1.0,
-      color: color.yellow50,
-    },
-  ],
-};
-
-// Green gradient
-color.gradientGreen = {
-  type: 'radial',
-  stops: [
-    {
-      position: 0.0,
-      color: color.blue50,
-    },
-    {
-      position: 1.0,
-      color: color.green50,
-    },
-  ],
 };
 
 /**
@@ -337,33 +249,28 @@ color.gradientGreen = {
  */
 color.inputState = {
   default: {
-    background: color.white,
     border: color.grey30,
     placeholder: color.grey40,
     text: color.grey50,
   },
   hover: {
-    background: color.white,
     border: color.grey40,
     placeholder: color.grey50,
     text: color.grey50,
   },
   focus: {
-    background: color.white,
     border: color.informational.default,
     highlight: color.informational.focus,
     placeholder: color.grey40,
     text: color.grey50,
   },
   error: {
-    background: color.white,
     border: color.error.default,
     highlight: color.error.focus,
     placeholder: color.grey40,
     text: color.grey50,
   },
   disabled: {
-    background: color.white,
     border: color.grey20,
     placeholder: color.grey20,
     text: color.grey20,
@@ -386,35 +293,12 @@ color.blueButton = {
   focusBorder: color.blueFocusBorder,
 };
 
-color.wasmOptionBtn = {
-  defaultColor: color.transparent,
-  buttonHovered: addTransparency(color.strongBlue, 0.2),
-  buttonPressed: addTransparency(color.strongBlue, 0.3),
-  buttonDisabled: color.blueDisabled,
-  focusBgColor: color.blue,
-  focusOutline: color.blueFocusOutline,
-  focusBorder: color.blueFocusBorder,
-};
-
-color.warningAlertFocusBorders = {
-  focusOutline: color.orangeFocus,
-  focusBorder: color.orangePressed,
-};
-
 color.clickableRowBlue = {
   defaultColor: color.bgColor,
   buttonHovered: color.washedBlue,
   buttonPressed: color.washedLightBlue,
   focusOutline: color.bgColorTransparent,
   focusBorder: color.blueFocusBorder,
-};
-
-color.clickableRowPurple = {
-  defaultColor: color.bgColorTransparent,
-  buttonHovered: color.purple5,
-  buttonPressed: color.purple10,
-  focusOutline: color.bgColorTransparent,
-  focusBorder: color.purple70,
 };
 
 color.iconButtonLightBackground = {
@@ -454,11 +338,6 @@ color.whiteButton = {
 
 color.greyButton = {
   defaultColor: color.grey20,
-  buttonHovered: color.greyHovered,
-  buttonPressed: color.greyPressed,
-  buttonDisabled: color.greyDisabled,
-  focusOutline: color.greyHovered,
-  focusBorder: color.greyPressed,
 };
 
 color.redButton = {
@@ -477,15 +356,6 @@ color.redLinkButton = {
   buttonDisabled: color.redDisabled,
   focusOutline: color.redfocusOutline,
   focusBorder: color.redPressed,
-};
-
-color.removeDeviceBtn = {
-  defaultColor: color.bgColorTransparent,
-  buttonHovered: color.red5,
-  buttonPressed: color.red10,
-  buttonDisabled: color.bgColorTransparent,
-  focusOutline: color.bgColorTransparent,
-  focusBorder: color.red,
 };
 
 color.vpnToggleConnected = {
@@ -532,15 +402,7 @@ color.greyLink = {
 
 color.input = {
   backgroundColor: color.white,
-  borderColor: color.grey30,
   highlight: color.grey10,
-  defaultColor: color.white,
-  buttonHovered: color.blueHovered,
-  buttonPressed: color.bluePressed,
-  buttonDisabled: color.blueDisabled,
-  focusBgColor: color.blue,
-  focusOutline: color.blueFocusOutline,
-  focusBorder: color.blueFocusBorder,
 };
 
 color.greenBadge = {
