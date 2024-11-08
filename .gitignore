@@ -15,9 +15,7 @@ mozillavpn_wg
 mozillavpn.qmltypes
 mozillavpn_metatypes.json
 mozillavpn_qmltyperegistrations.cpp
-balrog/balrog-api.a
-balrog/balrog-api.h
-balrog/vendor/
+
 qrc_qml.cpp
 .qmake.stash
 dbus_adaptor.*
