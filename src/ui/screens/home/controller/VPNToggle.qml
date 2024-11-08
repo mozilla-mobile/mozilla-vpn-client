@@ -121,7 +121,7 @@ MZButtonBase {
             PropertyChanges {
                 target: toggle
                 color: MZTheme.colors.dullGreen
-                border.color: MZTheme.colors.ink
+                border.color: MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -144,7 +144,7 @@ MZButtonBase {
             PropertyChanges {
                 target: toggle
                 color: MZTheme.colors.dullGreen
-                border.color: MZTheme.colors.ink
+                border.color: MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -166,7 +166,7 @@ MZButtonBase {
             PropertyChanges {
                 target: toggle
                 color: MZTheme.colors.green50
-                border.color: MZTheme.colors.ink
+                border.color: MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -187,7 +187,7 @@ MZButtonBase {
             PropertyChanges {
                 target: toggle
                 color: MZTheme.colors.green50
-                border.color: MZTheme.colors.ink
+                border.color: MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -229,7 +229,7 @@ MZButtonBase {
             PropertyChanges {
                 target: toggle
                 color: MZTheme.colors.dullGreen
-                border.color: MZTheme.colors.ink
+                border.color: MZTheme.colors.primary
             }
 
             PropertyChanges {

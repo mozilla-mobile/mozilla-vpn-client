@@ -5,6 +5,10 @@
 const color = {};
 
 /**
+ * Part 1: Basic colors
+ * Should NOT be used directly in code.
+ * (One exception: color.transparent can be used in code.)
+ *
  * Primary palette
  */
 // Purple
@@ -156,74 +160,147 @@ const addTransparency = (hexColor, percent) => {
   return `#${hexAlphaValue}${hexValue}`;
 };
 
-// Derived
-
-color.bgColor = color.grey5;
-color.bgColor30 = addTransparency(color.grey5, 0.3);
-color.bgColorTransparent = addTransparency(color.grey5, 0.0);
-
+/**
+ * Part 2: Functional colors
+ * Should NOT be used directly in code
+ */
 color.blue = color.blue50;
+color.blueFocus = addTransparency(color.blue, 0.4);
 color.blueHovered = color.blue60;
 color.bluePressed = color.blue70;
-color.blueDisabled = color.washedLightBlue;
-color.blueFocusOutline = addTransparency(color.strongBlue, 0.3);
 color.blueFocusBorder = color.strongBlue;
-
-color.divider = addTransparency(color.grey60, 0.04);
-color.green = color.green50;
-color.greyHovered = color.grey10;
-color.greyPressed = color.grey20;
-color.greyDisabled = color.grey15;
-color.ink = color.purple90;
-color.orange = color.yellow50;
-color.orangeHovered = color.yellow60;
-color.orangeFocus = addTransparency(color.yellow60, 0.3);
-color.orangePressed = color.yellow70;
-color.red = color.red60;
-color.redHovered = color.red70;
-color.redPressed = color.red80;
-color.redDisabled = color.red10;
-color.redfocusOutline = addTransparency(color.red70, 0.4);
-color.redBadgeText = color.red80;
-color.greenBadgeText = color.green90;
-color.greenBadgeBackground = color.green5;
-color.orangeBadgeText = color.yellow90;
-color.orangeBadgeBackground = color.orange10;
 color.blueBadgeText = color.blue90;
 color.blueBadgeBackground = addTransparency(color.blue50, 0.4);
 
-color.overlayBackground = addTransparency(color.black, 0.0);
-
-color.fontColor = color.grey40;
-color.fontColorDark = color.grey50;
-
-color.darkFocusBorder = color.fontColor;
-color.lightFocusBorder = color.grey15;
-
-/**
- * Main palette
- */
-color.primary = color.purple90;
-
-/**
- * Functional
- */
-color.blueActive = color.blue70;
-color.blueHover = color.blue60;
-color.blueFocus = addTransparency(color.blue, 0.4);
-
+color.green = color.green50;
 color.greenActive = color.green70;
 color.greenHover = color.green60;
 color.greenFocus = color.green20;
 
-color.redActive = color.red70;
-color.redHover = color.red60;
+color.red = color.red60;
+color.redHovered = color.red70;
+color.redPressed = color.red80;
+color.redDisabled = color.red10;
+color.redFocusOutline = addTransparency(color.red70, 0.4);
 color.redFocus = color.red10;
 
 color.yellow = color.yellow50;
 color.yellowActive = color.yellow70;
 color.yellowHover = color.yellow60;
 color.yellowFocus = color.orange10;
+
+color.orange = color.yellow50;
+color.orangeHovered = color.yellow60;
+color.orangeFocus = addTransparency(color.yellow60, 0.3);
+color.orangePressed = color.yellow70;
+
+color.greyHovered = color.grey10;
+color.greyPressed = color.grey20;
+color.greyDisabled = color.grey15;
+
+color.blueButton = {
+  defaultColor: color.blue,
+  buttonHovered: color.blueHovered,
+  buttonPressed: color.bluePressed,
+  buttonDisabled: color.washedLightBlue,
+  focusBgColor: color.blue,
+  focusOutline: addTransparency(color.strongBlue, 0.3),
+  focusBorder: color.blueFocusBorder,
+};
+
+color.clickableRowBlue = {
+  defaultColor: color.grey5,
+  buttonHovered: color.washedBlue,
+  buttonPressed: color.washedLightBlue,
+  focusOutline: addTransparency(color.grey5, 0.0),
+  focusBorder: color.blueFocusBorder,
+};
+
+color.whiteButton = {
+  defaultColor: color.white,
+  buttonHovered: color.greyHovered,
+  buttonPressed: color.greyPressed,
+  focusOutline: color.greyHovered,
+  focusBorder: color.greyPressed,
+};
+
+color.greyButton = {
+  defaultColor: color.grey20,
+};
+
+color.redButton = {
+  defaultColor: color.red,
+  buttonHovered: color.redHovered,
+  buttonPressed: color.redPressed,
+  buttonDisabled: color.redDisabled,
+  focusOutline: color.redDisabled,
+  focusBorder: color.redHovered,
+};
+
+color.redLinkButton = {
+  defaultColor: color.redHovered,
+  buttonHovered: color.redPressed,
+  buttonPressed: color.redPressed,
+  buttonDisabled: color.redDisabled,
+  focusOutline: color.redFocusOutline,
+  focusBorder: color.redPressed,
+};
+
+color.greenAlert = {
+  defaultColor: color.green50,
+  buttonHovered: color.green60,
+  buttonPressed: color.green70,
+  focusOutline: addTransparency(color.green50, 0.2),
+  focusBorder: color.green70,
+};
+
+color.greyLink = {
+  defaultColor: addTransparency(color.grey60, 0.7),
+  buttonHovered: addTransparency(color.grey60, 0.8),
+  buttonPressed: color.grey60,
+  focusOutline: color.grey60,
+  focusBorder: color.black
+};
+
+color.greenBadge = {
+  textColor: color.green90,
+  backgroundColor: color.green5
+};
+
+color.redBadge = {
+  textColor: color.red80,
+  backgroundColor: color.redDisabled
+};
+
+color.orangeBadge = {
+  textColor: color.yellow90,
+  backgroundColor: color.orange10
+};
+
+color.blueBadge = {
+  textColor: color.blueBadgeText,
+  backgroundColor: color.blueBadgeBackground
+};
+
+/**
+ * Part 3: Theme colors
+ * Named colors in this section should only be set to colors in part 1 or 2.
+ *
+ * These named colors in this section SHOULD be used in code - and should be
+ * the ONLY colors used in code.
+ *
+ * One exception: color.transparent can be used in code.
+ */
+color.primary = color.purple90;
+color.bgColor = color.grey5;
+color.bgColorTransparent = addTransparency(color.bgColor, 0.0);
+color.divider = addTransparency(color.grey60, 0.04);
+color.overlayBackground = addTransparency(color.black, 0.0);
+color.fontColor = color.grey40;
+color.fontColorDark = color.grey50;
+
+color.darkFocusBorder = color.grey40;
+color.lightFocusBorder = color.grey15;
 
 color.informational = {
   default: color.blue,
@@ -244,9 +321,6 @@ color.warning = {
   active: color.yellowActive,
 };
 
-/**
- * Inputs
- */
 color.inputState = {
   default: {
     border: color.grey30,
@@ -283,24 +357,6 @@ color.onBoardingGradient = {
   end: color.onboardingGradientEnd,
 };
 
-color.blueButton = {
-  defaultColor: color.blue,
-  buttonHovered: color.blueHovered,
-  buttonPressed: color.bluePressed,
-  buttonDisabled: color.blueDisabled,
-  focusBgColor: color.blue,
-  focusOutline: color.blueFocusOutline,
-  focusBorder: color.blueFocusBorder,
-};
-
-color.clickableRowBlue = {
-  defaultColor: color.bgColor,
-  buttonHovered: color.washedBlue,
-  buttonPressed: color.washedLightBlue,
-  focusOutline: color.bgColorTransparent,
-  focusBorder: color.blueFocusBorder,
-};
-
 color.iconButtonLightBackground = {
   defaultColor: color.bgColorTransparent,
   buttonHovered: color.greyHovered,
@@ -328,41 +384,11 @@ color.linkButton = {
   focusBorder: color.bgColorTransparent,
 };
 
-color.whiteButton = {
-  defaultColor: color.white,
-  buttonHovered: color.greyHovered,
-  buttonPressed: color.greyPressed,
-  focusOutline: color.greyHovered,
-  focusBorder: color.greyPressed,
-};
-
-color.greyButton = {
-  defaultColor: color.grey20,
-};
-
-color.redButton = {
-  defaultColor: color.red,
-  buttonHovered: color.redHovered,
-  buttonPressed: color.redPressed,
-  buttonDisabled: color.redDisabled,
-  focusOutline: color.redDisabled,
-  focusBorder: color.redHovered,
-};
-
-color.redLinkButton = {
-  defaultColor: color.redHovered,
-  buttonHovered: color.redPressed,
-  buttonPressed: color.redPressed,
-  buttonDisabled: color.redDisabled,
-  focusOutline: color.redfocusOutline,
-  focusBorder: color.redPressed,
-};
-
 color.vpnToggleConnected = {
   defaultColor: color.green,
   buttonHovered: color.green60,
   buttonPressed: color.green70,
-  focusOutline: color.bgColor30,
+  focusOutline: addTransparency(color.bgColor, 0.3),
   focusBorder: color.lightFocusBorder,
 };
 
@@ -375,6 +401,11 @@ color.vpnToggleDisconnected = {
   focusBorder: color.darkFocusBorder,
 };
 
+color.input = {
+  backgroundColor: color.white,
+  highlight: color.grey10,
+};
+
 color.card = {
   defaultColor: color.white,
   buttonHovered: color.greyHovered,
@@ -384,48 +415,7 @@ color.card = {
   focusBorder: color.darkFocusBorder,
 };
 
-color.greenAlert = {
-  defaultColor: color.green50,
-  buttonHovered: color.green60,
-  buttonPressed: color.green70,
-  focusOutline: addTransparency(color.green50, 0.2),
-  focusBorder: color.green70,
-};
-
-color.greyLink = {
-  defaultColor: addTransparency(color.grey60, 0.7),
-  buttonHovered: addTransparency(color.grey60, 0.8),
-  buttonPressed: color.grey60,
-  focusOutline: color.grey60,
-  focusBorder: color.black
-};
-
-color.input = {
-  backgroundColor: color.white,
-  highlight: color.grey10,
-};
-
-color.greenBadge = {
-  textColor: color.greenBadgeText,
-  backgroundColor: color.greenBadgeBackground
-};
-
-color.redBadge = {
-  textColor: color.redBadgeText,
-  backgroundColor: color.redDisabled
-};
-
-color.orangeBadge = {
-  textColor: color.orangeBadgeText,
-  backgroundColor: color.orangeBadgeBackground
-};
-
-color.blueBadge = {
-  textColor: color.blueBadgeText,
-  backgroundColor: color.blueBadgeBackground
-};
-
-color.purpleStepProgressBarDelegate = {
+color.stepProgressBarDelegate = {
   defaultColor: color.purple70,
   buttonHovered: color.purple70,
   buttonPressed: color.purple80,

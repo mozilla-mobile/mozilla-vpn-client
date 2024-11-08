@@ -104,7 +104,7 @@ Column {
         MZUIStates {
             setMargins: -4
             radius: parent.radius
-            colorScheme: MZTheme.colors.purpleStepProgressBarDelegate
+            colorScheme: MZTheme.colors.stepProgressBarDelegate
             startingState: delegate.currentState === MZStepProgressBarDelegate.State.Active ? colorScheme.defaultColor : colorScheme.buttonDisabled
             showFocusRings: false
         }
