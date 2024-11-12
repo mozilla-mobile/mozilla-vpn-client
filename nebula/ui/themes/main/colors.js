@@ -294,7 +294,8 @@ color.normalLevelAccent = color.blue50;
 color.normalLevelBackground = addTransparency(color.blue50, 0.4);
 
 // Button colors
-color.buttonColor = color.blue; // also used for check boxes, and in a few other spots
+color.buttonColor = color.blue;
+// buttonColor also used for check boxes, and in a few other spots
 color.buttonSelectedHovered = color.blueHovered;
 color.buttonSelectedPressed = color.bluePressed;
 color.radioButtonDisabledHovered = color.greyHovered;
