@@ -66,7 +66,7 @@ Item {
                 implicitWidth: parent.width
 
                 Rectangle {
-                    color: MZTheme.colors.buttonColor
+                    color: MZTheme.colors.normalButton.defaultColor
                     height: parent.height
                     width: animationProgress.visualPosition * parent.width
                 }

@@ -133,9 +133,9 @@ color.washedBlue = '#D4E2F6';
 color.washedLightBlue = '#AECBF2';
 color.strongBlue = '#0A84FF';
 
-color.onboardingGradientStart = '#472C87';
-color.onboardingGradientMiddle = '#301962';
-color.onboardingGradientEnd = '#1D0942';
+color.lighterOnboardingPurple = '#472C87';
+color.mediumOnboardingPurple = '#301962';
+color.darkerOnboardingPurple = '#1D0942';
 
 color.transparent = '#00000000';
 
@@ -173,26 +173,11 @@ color.bluePressed = color.blue70;
 color.blueFocusBorder = color.strongBlue;
 
 color.green = color.green50;
-color.greenActive = color.green70;
-color.greenHover = color.green60;
-color.greenFocus = color.green20;
-
 color.red = color.red60;
-color.redHovered = color.red70;
-color.redPressed = color.red80;
-color.redFocus = color.red10;
-
-color.yellow = color.yellow50;
-color.yellowActive = color.yellow70;
-
 color.orange = color.yellow50;
-color.orangeHovered = color.yellow60;
-color.orangeFocus = addTransparency(color.yellow60, 0.3);
-color.orangePressed = color.yellow70;
 
 color.greyHovered = color.grey10;
 color.greyPressed = color.grey20;
-color.greyDisabled = color.grey15;
 
 color.blueButton = {
   defaultColor: color.blue,
@@ -222,18 +207,18 @@ color.redButton = {
 };
 
 color.greenAlert = {
-  defaultColor: color.green50,
+  defaultColor: color.green,
   buttonHovered: color.green60,
   buttonPressed: color.green70,
-  focusOutline: addTransparency(color.green50, 0.2),
+  focusOutline: addTransparency(color.green, 0.2),
   focusBorder: color.green70,
 };
 
 color.orangeAlert = {
-  buttonHovered: color.orangeHovered,
-  buttonPressed: color.orangePressed,
-  focusOutline: color.orangeFocus,
-  focusBorder: color.orangePressed,
+  buttonHovered: color.yellow60,
+  buttonPressed: color.yellow70,
+  focusOutline: addTransparency(color.yellow60, 0.3),
+  focusBorder: color.yellow70,
 };
 
 color.greyLink = {
@@ -277,27 +262,24 @@ color.divider = color.grey10;
 color.dropShadow = color.grey60;
 color.darkFocusBorder = color.grey40;
 color.lightFocusBorder = color.grey15;
+color.inputHighlight = color.grey10;
 
 // Success/Failure/Warning/Normal levels
 color.successMain = color.green90;
-color.successAccent = color.green50;
+color.successAccent = color.green;
 color.successBackground = color.green5;
 color.errorMain = color.red80;
-color.errorAccent = color.red60;
+color.errorAccent = color.red;
 color.errorAccentLight = color.red50;
 color.errorBackground = color.red10;
 color.warningMain = color.yellow90;
-color.warningAccent = color.yellow50;
+color.warningAccent = color.orange;
 color.warningBackground = color.orange10;
 color.normalLevelMain = color.blue90;
-color.normalLevelAccent = color.blue50;
-color.normalLevelBackground = addTransparency(color.blue50, 0.4);
+color.normalLevelAccent = color.blue;
+color.normalLevelBackground = addTransparency(color.blue, 0.4);
 
 // Button colors
-color.buttonColor = color.blue;
-// buttonColor also used for check boxes, and in a few other spots
-color.buttonSelectedHovered = color.blueHovered;
-color.buttonSelectedPressed = color.bluePressed;
 color.radioButtonDisabledHovered = color.greyHovered;
 color.radioButtonDisabledPressed = color.greyPressed;
 color.disabledButtonColor = color.grey20;
@@ -319,9 +301,9 @@ color.clickableRow = color.clickableRowBlue;
 color.textLink = color.greyLink;
 
 color.onBoardingGradient = {
-  start: color.onboardingGradientStart,
-  middle: color.onboardingGradientMiddle,
-  end: color.onboardingGradientEnd,
+  start: color.lighterOnboardingPurple,
+  middle: color.mediumOnboardingPurple,
+  end: color.darkerOnboardingPurple,
 };
 
 color.vpnToggleConnected = {
@@ -339,11 +321,6 @@ color.vpnToggleDisconnected = {
   buttonDisabled: color.disabledButtonColor,
   focusOutline: color.transparent,
   focusBorder: color.darkFocusBorder,
-};
-
-color.input = {
-  backgroundColor: color.white,
-  highlight: color.grey10,
 };
 
 color.card = {
@@ -420,8 +397,8 @@ color.inputState = {
     text: color.fontColorDark,
   },
   focus: {
-    border: color.buttonColor,
-    highlight: addTransparency(color.buttonColor, 0.4),
+    border: color.normalButton.defaultColor,
+    highlight: addTransparency(color.normalButton.defaultColor, 0.4),
     placeholder: color.fontColor,
     text: color.fontColorDark,
   },

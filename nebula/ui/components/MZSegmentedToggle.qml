@@ -20,7 +20,7 @@ Rectangle {
 
     implicitHeight: MZTheme.theme.rowHeight
     activeFocusOnTab: true
-    color: MZTheme.colors.input.highlight
+    color: MZTheme.colors.inputHighlight
     radius: 24
 
     onFocusChanged: if(focus) options.itemAt(selectedIndex).focus = true

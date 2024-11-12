@@ -56,7 +56,7 @@ CheckBox {
 
             PropertyChanges {
                 target: checkBoxIndicator
-                border.color: checkBox.checked || checkBox.activeFocus ? MZTheme.colors.buttonColor : MZTheme.colors.fontColor
+                border.color: checkBox.checked || checkBox.activeFocus ? MZTheme.colors.normalButton.defaultColor : MZTheme.colors.fontColor
             }
 
         },
@@ -65,7 +65,7 @@ CheckBox {
 
             PropertyChanges {
                 target: checkBoxIndicator
-                border.color: checkBox.checked ? MZTheme.colors.buttonSelectedPressed : MZTheme.colors.fontColorDark
+                border.color: checkBox.checked ? MZTheme.colors.normalButton.buttonPressed : MZTheme.colors.fontColorDark
             }
         },
         State {
@@ -73,7 +73,7 @@ CheckBox {
 
             PropertyChanges {
                 target: checkBoxIndicator
-                border.color: if(checkBox.enabled) checkBox.checked || checkBox.activeFocus ? MZTheme.colors.buttonSelectedHovered : MZTheme.colors.fontColorDark
+                border.color: if(checkBox.enabled) checkBox.checked || checkBox.activeFocus ? MZTheme.colors.normalButton.buttonHovered : MZTheme.colors.fontColorDark
             }
 
         }
@@ -104,7 +104,7 @@ CheckBox {
         height: MZTheme.theme.checkBoxHeightWidth
         width: MZTheme.theme.checkBoxHeightWidth
         color: MZTheme.colors.bgColor
-        border.color: checkBox.checked ? MZTheme.colors.buttonColor : MZTheme.colors.fontColor
+        border.color: checkBox.checked ? MZTheme.colors.normalButton.defaultColor : MZTheme.colors.fontColor
         border.width: 2
         radius: MZTheme.theme.cornerRadius
         antialiasing: true

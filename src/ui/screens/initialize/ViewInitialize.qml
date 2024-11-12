@@ -331,7 +331,7 @@ Item {
 
                     delegate: Rectangle {
                         id: circle
-                        color: index === swipeView.currentIndex ? MZTheme.colors.buttonColor : MZTheme.colors.disabledButtonColor
+                        color: index === swipeView.currentIndex ? MZTheme.colors.normalButton.defaultColor : MZTheme.colors.disabledButtonColor
                         height: 6
                         width: 6
                         radius: 6
