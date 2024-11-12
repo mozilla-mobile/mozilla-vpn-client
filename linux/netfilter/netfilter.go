@@ -642,7 +642,7 @@ func NetfilterCreateTables() int32 {
 		Table:    mozvpn_ctx.table,
 		Type:     nftables.ChainTypeFilter,
 		Hooknum:  nftables.ChainHookPrerouting,
-		Priority: nftables.ChainPriorityRaw,
+		Priority: nftables.ChainPriorityMangle,
 	})
 
 	dropPolicy := nftables.ChainPolicyDrop

@@ -26,12 +26,3 @@ if(SYSTEMCTL_EXECUTABLE)
         COMMAND ${SYSTEMCTL_EXECUTABLE} restart mozillavpn
     )
 endif()
-
-# If we can, run setcap on the installed VPN binary.
-find_program(SETCAP_EXECUTABLE setcap)
-if(SETCAP_EXECUTABLE)
-    execute_process(
-        COMMAND ${SETCAP_EXECUTABLE} cap_net_raw+ep ${CMAKE_INSTALL_PREFIX}/bin/mozillavpn
-    )
-endif()
-
