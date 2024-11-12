@@ -50,7 +50,7 @@ Flickable {
         }
 
         contentItem: Rectangle {
-            color: MZTheme.colors.grey40
+            color: MZTheme.colors.darkFocusBorder
             width: scrollBar.scrollBarWidth
             implicitWidth: scrollBar.scrollBarWidth
             radius: scrollBar.scrollBarWidth

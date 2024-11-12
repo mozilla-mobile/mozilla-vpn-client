@@ -15,7 +15,6 @@ MZCheckBox 0.1 MZCheckBox.qml
 MZCheckBoxRow 0.1 MZCheckBoxRow.qml
 MZChevron 0.1 MZChevron.qml
 MZClickableRow 0.1 MZClickableRow.qml
-MZCollapsibleCard 0.1 MZCollapsibleCard.qml
 MZComposerView 0.1 MZComposerView.qml
 MZDropShadowWithStates 0.1 MZDropShadowWithStates.qml
 MZExternalLinkListItem 0.1 MZExternalLinkListItem.qml

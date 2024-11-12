@@ -9,5 +9,5 @@ import components 0.1
 MZLinkButton {
     labelText: MZI18n.InAppSupportWorkflowSupportSecondaryActionText // "Cancel"
     fontName: MZTheme.theme.fontBoldFamily
-    linkColor: MZTheme.colors.redLinkButton
+    linkColor: MZTheme.colors.destructiveButton
 }

@@ -215,7 +215,7 @@ MZFlickable {
                 height: 4
                 radius: 2
                 opacity: .8
-                color: MZTheme.colors.greyLink.defaultColor
+                color: MZTheme.colors.textLink.defaultColor
             }
 
             MZGreyLink {

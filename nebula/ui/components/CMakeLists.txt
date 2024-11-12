@@ -24,7 +24,6 @@ qt_add_qml_module(components
          MZCheckBoxRow.qml
          MZChevron.qml
          MZClickableRow.qml
-         MZCollapsibleCard.qml
          MZComposerView.qml
          MZDropShadowWithStates.qml
          MZExternalLinkListItem.qml
@@ -69,7 +68,6 @@ qt_add_qml_module(components
          MZTabNavigation.qml
          MZTextBlock.qml
          MZTimer.qml
-         MZToggleCard.qml
          MZToolTip.qml
          MZUIStates.qml
          MZVerticalSpacer.qml

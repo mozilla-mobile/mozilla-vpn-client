@@ -227,7 +227,7 @@ FocusScope {
                                 MZColorOverlay {
                                     anchors.fill: parent
 
-                                    color: MZTheme.colors.blue
+                                    color: MZTheme.colors.buttonColor
                                     source: refreshIcon
                                 }
                             }

@@ -14,7 +14,7 @@ MZButtonBase {
     property string labelText
     property variant fontName: MZTheme.theme.fontInterFamily
     property var baseColor: MZTheme.colors.linkButton
-    property var linkColor: MZTheme.colors.blueButton
+    property var linkColor: MZTheme.colors.normalButton;
     property var fontSize: MZTheme.theme.fontSize
     property real textAlignment: Text.AlignHCenter
     property Component iconComponent

@@ -31,7 +31,7 @@ Item {
         anchors.bottom: bar.bottom
         anchors.left: parent.left
         anchors.right: parent.right
-        color: MZTheme.colors.grey10
+        color: MZTheme.colors.divider
         height: 1
         visible: stack.children.length > 1
     }
@@ -70,7 +70,7 @@ Item {
                         anchors.left: parent.left
                         anchors.right: parent.right
                         anchors.bottom: parent.bottom
-                        color: MZTheme.colors.purple70
+                        color: MZTheme.colors.primaryBrighter
                         opacity: btn.checked ? 1 : 0
                         Behavior on opacity {
                             PropertyAnimation {
@@ -85,7 +85,7 @@ Item {
                     elide: Qt.ElideRight
                     horizontalAlignment: Text.AlignHCenter
                     verticalAlignment: Text.AlignVCenter
-                    color: btn.checked ? MZTheme.colors.purple70 : btn.hovered || btn.activeFocus ? MZTheme.colors.grey50 : MZTheme.colors.grey40
+                    color: btn.checked ? MZTheme.colors.primaryBrighter : btn.hovered || btn.activeFocus ? MZTheme.colors.fontColorDark : MZTheme.colors.fontColor
                     // Accessibility provided by btn's Accessible properties
                     Accessible.ignored: true
 
@@ -103,7 +103,7 @@ Item {
         objectName: "activeTabIndicator"
         width: (bar.visible && bar.currentItem) ? bar.currentItem.width : 0
         height: 2
-        color: MZTheme.colors.purple70
+        color: MZTheme.colors.primaryBrighter
         anchors.bottom: bar.bottom
         x: (currentTab && currentTab.x && currentTab.ListView.view) ? currentTab.x - currentTab.ListView.view.originX : 0
         visible: stack.children.length > 1

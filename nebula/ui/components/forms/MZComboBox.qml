@@ -82,7 +82,7 @@ ComboBox {
                 anchors.leftMargin: MZTheme.theme.windowMargin / 2
                 width:  parent.width - MZTheme.theme.windowMargin * 2
                 verticalAlignment: Text.AlignVCenter
-                color: hovered || combo.highlightedIndex === index ? MZTheme.colors.blue : MZTheme.colors.fontColor
+                color: hovered || combo.highlightedIndex === index ? MZTheme.colors.buttonColor : MZTheme.colors.fontColor
 
                 Behavior on color {
                     ColorAnimation {
@@ -120,7 +120,7 @@ ComboBox {
                 anchors.fill: shadowMask
                 transparentBorder: true
                 radius: 7.5
-                color: MZTheme.colors.grey60
+                color: MZTheme.colors.dropShadow
                 z: -1
                 opacity: .1
                 cached: true

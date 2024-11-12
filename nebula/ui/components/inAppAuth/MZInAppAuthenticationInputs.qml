@@ -106,7 +106,7 @@ ColumnLayout {
                 id: bg
                 anchors.fill: passwordConditions
                 anchors.margins: MZTheme.theme.windowMargin * -1
-                color: MZTheme.colors.white
+                color: MZTheme.colors.bgColorStronger
                 radius: MZTheme.theme.cornerRadius
 
                 MZRectangularGlow {

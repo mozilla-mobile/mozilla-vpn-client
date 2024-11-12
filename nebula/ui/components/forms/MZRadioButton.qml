@@ -67,13 +67,13 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? MZTheme.colors.bluePressed : MZTheme.colors.greyPressed
+                color: radioControl.checked ? MZTheme.colors.buttonSelectedPressed : MZTheme.colors.radioButtonDisabledPressed
                 scale: 0.55
             }
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked? MZTheme.colors.bluePressed : MZTheme.colors.fontColorDark
+                border.color: radioControl.checked? MZTheme.colors.buttonSelectedPressed : MZTheme.colors.fontColorDark
             }
 
         },
@@ -82,13 +82,13 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? MZTheme.colors.blue : MZTheme.colors.bgColor
+                color: radioControl.checked ? MZTheme.colors.buttonColor : MZTheme.colors.bgColor
                 scale: 0.6
             }
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked || radioControl.activeFocus ? MZTheme.colors.blue : MZTheme.colors.fontColor
+                border.color: radioControl.checked || radioControl.activeFocus ? MZTheme.colors.buttonColor : MZTheme.colors.fontColor
             }
 
         },
@@ -97,13 +97,13 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? MZTheme.colors.bluePressed : MZTheme.colors.greyHovered
+                color: radioControl.checked ? MZTheme.colors.buttonSelectedPressed : MZTheme.colors.radioButtonDisabledHovered
                 scale: 0.6
             }
 
             PropertyChanges {
                 target: radioButton
-                border.color: radioControl.checked ? MZTheme.colors.bluePressed : MZTheme.colors.fontColor
+                border.color: radioControl.checked ? MZTheme.colors.buttonSelectedPressed : MZTheme.colors.fontColor
             }
 
         }

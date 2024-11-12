@@ -33,7 +33,7 @@ Rectangle {
         opacity: 0.6
         spread: 0
         radius: 6
-        color: MZTheme.colors.grey60
+        color: MZTheme.colors.dropShadow
         cached: true
     }
 

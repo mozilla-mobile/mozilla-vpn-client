@@ -142,7 +142,7 @@ MZBottomSheet {
                     Layout.preferredHeight: MZTheme.theme.dividerHeight
                     Layout.fillWidth: true
 
-                    color: MZTheme.colors.grey10
+                    color: MZTheme.colors.divider
                 }
             }
 

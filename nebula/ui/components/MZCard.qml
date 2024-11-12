@@ -16,7 +16,7 @@ MZButtonBase {
         horizontalOffset: 0
         verticalOffset: 1
         radius: 8
-        color: MZTheme.colors.grey60
+        color: MZTheme.colors.dropShadow
         opacity: .1
         transparentBorder: true
         cached: true

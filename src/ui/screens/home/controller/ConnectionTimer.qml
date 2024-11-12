@@ -36,7 +36,7 @@ RowLayout {
         Text {
             id: digit
 
-            color: MZTheme.colors.white
+            color: MZTheme.colors.fontColorInverted
             horizontalAlignment: Text.AlignHCenter
             font.letterSpacing: 0
             font.pixelSize: MZTheme.theme.fontSize

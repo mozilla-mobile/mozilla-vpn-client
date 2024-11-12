@@ -115,7 +115,7 @@ MZViewBase {
                 objectName: "accountDeletionButton"
                 fontName: MZTheme.theme.fontBoldFamily
                 labelText: MZI18n.DeleteAccountButtonLabel
-                linkColor: MZTheme.colors.redLinkButton
+                linkColor: MZTheme.colors.destructiveButton
                 visible: MZFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {

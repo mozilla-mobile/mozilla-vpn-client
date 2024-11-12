@@ -135,7 +135,7 @@ MZViewBase {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
 
-            color: MZTheme.colors.grey10
+            color: MZTheme.colors.divider
             visible: !vpnFlickable.isEmptyState
         }
 
@@ -216,7 +216,7 @@ MZViewBase {
                         id: deleteSwipeAction
 
                         activeFocusOnTab: swipeDelegate.isSwipeOpen
-                        bgColor: MZTheme.colors.redHovered
+                        bgColor: MZTheme.colors.destructiveButton.defaultColor
                         content: Image {
                             anchors.centerIn: parent
                             source: "qrc:/nebula/resources/delete-white.svg"
@@ -274,7 +274,7 @@ MZViewBase {
 
                                 opacity: addon && addon.isRead ? 0 : 1
                                 radius: Layout.preferredHeight / 2
-                                color: MZTheme.colors.blue
+                                color: MZTheme.colors.normalLevelAccent
                             }
 
                             MZBoldInterLabel {
@@ -332,7 +332,7 @@ MZViewBase {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 1
 
-                    color: MZTheme.colors.grey10
+                    color: MZTheme.colors.divider
                 }
             }
         }

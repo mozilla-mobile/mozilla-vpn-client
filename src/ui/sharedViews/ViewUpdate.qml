@@ -102,7 +102,7 @@ MZFlickable {
         id: alertWrapperBackground
 
         anchors.fill: alertWrapper
-        color: MZTheme.colors.white
+        color: MZTheme.colors.card.defaultColor
         radius: 8
         anchors.topMargin: -MZTheme.theme.windowMargin
         anchors.bottomMargin: -MZTheme.theme.windowMargin

@@ -141,7 +141,7 @@ StackView {
                     MZTextBlock {
                         id: message
                         text: MZI18n.MultiHopFeatureMultiHopInfoText
-                        color: MZTheme.colors.grey40
+                        color: MZTheme.colors.fontColor
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
                         Layout.topMargin: 4

@@ -33,7 +33,7 @@ MZViewBase {
             accessibleName: MZI18n.GetHelpHelpCenter
             title: MZI18n.GetHelpHelpCenter
             iconSource: "qrc:/nebula/resources/externalLink.svg"
-            backgroundColor: MZTheme.colors.clickableRowBlue
+            backgroundColor: MZTheme.colors.clickableRow
             width: parent.width - MZTheme.theme.windowMargin
             onClicked: MZUrlOpener.openUrlLabel("sumo")
         }
@@ -57,7 +57,7 @@ MZViewBase {
             title: MZI18n.GetHelpViewLogs
             iconSource: MZFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
             iconMirror: !MZFeatureList.get("shareLogs").isSupported && MZLocalizer.isRightToLeft
-            backgroundColor: MZFeatureList.get("shareLogs").isSupported ?MZTheme.colors.clickableRowBlue : MZTheme.colors.iconButtonLightBackground
+            backgroundColor: MZFeatureList.get("shareLogs").isSupported ?MZTheme.colors.clickableRow : MZTheme.colors.iconButtonLightBackground
             width: parent.width - MZTheme.theme.windowMargin
             onClicked: MZLog.requestViewLogs()
         }

@@ -34,7 +34,7 @@ MZViewBase {
 
             MZBoldLabel {
                 text: qsTrId("MozillaVPN")
-                color: MZTheme.colors.black
+                color: MZTheme.colors.fontTitleColor
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 elide: Text.ElideRight
@@ -111,27 +111,33 @@ MZViewBase {
 
                         property var warningBadge: {
                             'badgeText': MZI18n.InAppMessagingWarningBadge,
-                            'badgeTheme': MZTheme.colors.orangeBadge
+                            'badgeTextColor': MZTheme.colors.warningMain,
+                            'badgeBackgroundColor': MZTheme.colors.warningBackground
                         };
                         property var criticalBadge: {
                             'badgeText': MZI18n.InAppMessagingCriticalBadge,
-                            'badgeTheme': MZTheme.colors.redBadge
+                            'badgeTextColor': MZTheme.colors.errorMain,
+                            'badgeBackgroundColor': MZTheme.colors.errorBackground
                         };
                         property var newUpdateBadge: {
                             'badgeText': MZI18n.InAppMessagingNewUpdateBadge,
-                            'badgeTheme': MZTheme.colors.greenBadge
+                            'badgeTextColor': MZTheme.colors.successMain,
+                            'badgeBackgroundColor': MZTheme.colors.successBackground
                         };
                         property var whatsNewBadge: {
                             'badgeText': MZI18n.InAppMessagingWhatsNewBadge,
-                            'badgeTheme': MZTheme.colors.blueBadge
+                            'badgeTextColor': MZTheme.colors.normalLevelMain,
+                            'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
                         };
                         property var surveyBadge: {
                             'badgeText': MZI18n.InAppMessagingSurveyBadge,
-                            'badgeTheme': MZTheme.colors.blueBadge
+                            'badgeTextColor': MZTheme.colors.normalLevelMain,
+                            'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
                         };
                         property var subscriptionBadge: {
                             'badgeText': MZI18n.InAppMessagingSubscriptionBadge,
-                            'badgeTheme': MZTheme.colors.blueBadge
+                            'badgeTextColor': MZTheme.colors.normalLevelMain,
+                            'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
                         };
                     }
                 }

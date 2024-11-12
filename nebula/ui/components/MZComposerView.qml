@@ -128,7 +128,7 @@ ColumnLayout {
 
                     implicitHeight: MZTheme.theme.rowHeight
                     text: loader.composerBlock.text
-                    colorScheme: loader.composerBlock.style === MZComposerBlockButton.Primary ? MZTheme.colors.blueButton : MZTheme.colors.redButton
+                    colorScheme: loader.composerBlock.style === MZComposerBlockButton.Primary ?  MZTheme.colors.normalButton : MZTheme.colors.destructiveButton
 
                     onClicked: loader.composerBlock.click()
                 }
