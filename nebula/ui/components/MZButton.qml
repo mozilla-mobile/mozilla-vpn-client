@@ -9,7 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 
 MZButtonBase {
-    property var colorScheme: MZTheme.colors.normalButton;
+    property var colorScheme: MZTheme.colors.normalButton
     property int fontSize: MZTheme.theme.fontSize
     property alias label: label
 

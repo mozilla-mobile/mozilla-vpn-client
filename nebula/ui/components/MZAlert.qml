@@ -80,7 +80,7 @@ Rectangle {
             name: stateNames.info
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: MZTheme.colors.normalButton;
+                colorScheme: MZTheme.colors.normalButton
             }
 
             PropertyChanges {

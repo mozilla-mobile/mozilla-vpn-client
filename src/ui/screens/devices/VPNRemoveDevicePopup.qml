@@ -40,7 +40,7 @@ MZSimplePopup {
         },
         MZCancelButton {
             Layout.alignment: Qt.AlignHCenter
-            linkColor: MZTheme.colors.normalButton;
+            linkColor: MZTheme.colors.normalButton
             fontName: MZTheme.theme.fontInterFamily
             onClicked: {
                 popup.close();

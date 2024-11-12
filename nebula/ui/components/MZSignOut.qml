@@ -23,7 +23,7 @@ MZFooterLink {
         case MZSignOut.ColorStrength.Standard:
             return MZTheme.colors.destructiveButton
         case MZSignOut.ColorStrength.Soft:
-            return MZTheme.colors.normalButton;
+            return MZTheme.colors.normalButton
         default:
             return console.error("Unable to create view for footer link of type: " + colorStrength)
         }

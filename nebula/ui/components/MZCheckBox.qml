@@ -114,7 +114,7 @@ CheckBox {
             visible: true
             anchors.margins: -3
             focusedComponent: checkBox
-            focusColorScheme: MZTheme.colors.normalButton;
+            focusColorScheme: MZTheme.colors.normalButton
         }
 
         Behavior on border.color {
