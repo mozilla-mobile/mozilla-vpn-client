@@ -84,8 +84,6 @@
         <File Source="WdfCoinstaller01011.dll" />
         <File Source="mozillavpn.json" />
         <File Source="mozillavpnnp.exe" />
-        <File Source="socksproxy.exe" />
-
 
         <!-- Broker Service -->
         <ServiceInstall
@@ -110,6 +108,31 @@
 
         <!-- Remove Tunnel Service, if running -->
         <ServiceControl Id="MozillaVPNService" Remove="both" Name="WireGuardTunnel$MozillaVPN" Stop="both" Wait="yes" />
+      </Component>
+
+      <!-- Proxy Service -->
+      <Component Directory="MozillaVPNFolder" Id="MozillaVPNProxy" Guid="CCD12CD3-A91F-452A-B51B-187B70F1A941">
+        <File Source="socksproxy.exe" />
+
+        <ServiceInstall
+          Type="ownProcess"
+          Name="MozillaVPNProxy"
+          DisplayName="Mozilla VPN (proxy)"
+          Description="Provides host network connectivity as a SOCKS proxy."
+          Start="auto"
+          Arguments="-p 8123 -s"
+          ErrorControl="normal"
+          Vital="yes" />
+
+        <util:ServiceConfig
+          ServiceName="MozillaVPNProxy"
+          FirstFailureActionType="restart"
+          SecondFailureActionType="restart"
+          ThirdFailureActionType="none"
+          ResetPeriodInDays="1"
+          RestartServiceDelayInSeconds="5" />
+
+        <ServiceControl Id="StartProxy" Start="install" Stop="both" Remove="both" Name="MozillaVPNProxy" Wait="yes" />
       </Component>
     </ComponentGroup>
 

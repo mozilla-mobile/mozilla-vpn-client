@@ -24,7 +24,6 @@ class WindowsBypass final : public QObject {
   ~WindowsBypass();
 
  private:
-  static QString win32strerror(unsigned long code);
   quint64 getVpnLuid() const;
   void updateTable(QVector<struct _MIB_IPFORWARD_ROW2>& table, int family);
   const struct _MIB_IPFORWARD_ROW2* lookupRoute(const QHostAddress& dest) const;
