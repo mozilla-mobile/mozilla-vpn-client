@@ -44,13 +44,11 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     pkg_check_modules(SYSTEMD systemd)
     if("${SYSTEMD_FOUND}" EQUAL 1)
         pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
-    else()
-        set(SYSTEMD_UNIT_DIR /lib/systemd/system)
+        configure_file(${CMAKE_CURRENT_SOURCE_DIR}/socksproxy.service.in
+            ${CMAKE_CURRENT_BINARY_DIR}/socksproxy.service)
+        install(FILES ${CMAKE_CURRENT_BINARY_DIR}/socksproxy.service
+            DESTINATION ${SYSTEMD_UNIT_DIR})
     endif()
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/socksproxy.service.in
-        ${CMAKE_CURRENT_BINARY_DIR}/socksproxy.service)
-    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/socksproxy.service
-        DESTINATION ${SYSTEMD_UNIT_DIR})
 
     install(TARGETS socksproxy)
 else()
