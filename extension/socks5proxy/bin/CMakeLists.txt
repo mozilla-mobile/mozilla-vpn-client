@@ -40,10 +40,14 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     pkg_check_modules(LIBCAP REQUIRED IMPORTED_TARGET libcap)
     target_link_libraries(socksproxy PRIVATE PkgConfig::LIBCAP)
 
-    # Install a Systemd service to run the proxy.
+    # Install a Systemd service to run the proxy, if supported.
     pkg_check_modules(SYSTEMD systemd)
     if("${SYSTEMD_FOUND}" EQUAL 1)
         pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
+    elseif(NOT DEFINED ENV{container})
+        set(SYSTEMD_UNIT_DIR /lib/systemd/system)
+    endif()
+    if(SYSTEMD_UNIT_DIR)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/socksproxy.service.in
             ${CMAKE_CURRENT_BINARY_DIR}/socksproxy.service)
         install(FILES ${CMAKE_CURRENT_BINARY_DIR}/socksproxy.service
