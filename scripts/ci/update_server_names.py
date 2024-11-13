@@ -61,15 +61,11 @@ if __name__ == "__main__":
     string_map = countries
     for city in cities:
         # Remove state suffix, capitalize each work, remove spaces.
-        baseId = city.split(",")[0].strip().title().replace(" ", "")
+        id = city.split(",")[0].strip().title().replace(" ", "")
         # Remove special characters like the `ö` in `Malmö`
-        allowedIdChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"
-        simpleId = ""
-        for char in baseId:
-            if char in allowedIdChars:
-                simpleId = simpleId + char
+        id = re.sub(r'[^a-zA-Z]+', '', id)
         # Add it to the map
-        string_map[simpleId] = city
+        string_map[id] = city
 
     ###
     # 2. Fetch the list of servers in extras.xliff
