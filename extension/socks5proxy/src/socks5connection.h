@@ -37,6 +37,7 @@ class Socks5Connection final : public QObject {
     ClientConnectionRequest,
     ClientConnectionAddress,
     Proxy,
+    Closed,
   };
 
   enum Socks5Replies : uint8_t {
@@ -75,9 +76,13 @@ class Socks5Connection final : public QObject {
   const QString& clientName() const { return m_clientName; }
 
   const QHostAddress& destAddress() const { return m_destAddress; }
-  const QStringList& dnsLookupStack() const { return m_dnsLookupStack; }
+  const QStringList& hostLookupStack() const { return m_hostLookupStack; }
 
   const Socks5State& state() const { return m_state; }
+
+  quint64 sendHighWaterMark() const { return m_sendHighWaterMark; }
+  quint64 recvHighWaterMark() const { return m_recvHighWaterMark; }
+  const QString& errorString() const { return m_errorString; }
 
  signals:
   void setupOutSocket(QAbstractSocket* socket, const QHostAddress& dest);
@@ -86,6 +91,7 @@ class Socks5Connection final : public QObject {
 
  private:
   void setState(Socks5State state);
+  void setError(Socks5Replies reply, const QString& errorString);
   void configureOutSocket(quint16 port);
   void dnsResolutionFinished(quint16 port);
   void readyRead();
@@ -94,6 +100,7 @@ class Socks5Connection final : public QObject {
   static QString localClientName(QLocalSocket* s);
 
   Socks5State m_state = ClientGreeting;
+  QString m_errorString;
 
   uint8_t m_authNumber = 0;
   QIODevice* m_inSocket = nullptr;
@@ -106,7 +113,10 @@ class Socks5Connection final : public QObject {
   QHostAddress m_destAddress;
 
   int m_dnsLookupAttempts = 0;
-  QStringList m_dnsLookupStack;
+  QStringList m_hostLookupStack;
+
+  quint64 m_sendHighWaterMark = 0;
+  quint64 m_recvHighWaterMark = 0;
 };
 
 #endif  // Socks5Connection_H
