@@ -24,6 +24,10 @@ class WindowsDaemon final : public Daemon {
 
   void prepareActivation(const InterfaceConfig& config) override;
 
+ signals:
+  void vpnActivated();
+  void vpnDeactivated();
+
  protected:
   bool run(Op op, const InterfaceConfig& config) override;
   WireguardUtils* wgutils() const override { return m_wgutils.get(); }
