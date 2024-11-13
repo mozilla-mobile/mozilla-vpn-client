@@ -97,7 +97,8 @@ WinFwPolicy::~WinFwPolicy() {
   }
 }
 
-void WinFwPolicy::fwpmSublayerChanged(uint changeType, const QUuid& subLayerKey) {
+void WinFwPolicy::fwpmSublayerChanged(uint changeType,
+                                      const QUuid& subLayerKey) {
   // Ignore everything except sublayer creation.
   if (changeType != FWPM_CHANGE_ADD) {
     return;
