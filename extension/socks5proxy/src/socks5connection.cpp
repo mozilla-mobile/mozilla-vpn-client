@@ -89,6 +89,15 @@ Socks5Connection::Socks5Connection(QTcpSocket* socket)
   connect(socket, &QTcpSocket::disconnected, this,
           [this]() { setState(Closed); });
 
+  connect(socket, &QTcpSocket::errorOccurred, this,
+          [this](QAbstractSocket::SocketError error) {
+            if (error == QAbstractSocket::RemoteHostClosedError) {
+              setState(Closed);
+            } else {
+              setError(ErrorGeneral, m_inSocket->errorString());
+            }
+          });
+
   socket->setReadBufferSize(MAX_CONNECTION_BUFFER);
 
   m_socksPort = socket->localPort();
@@ -99,6 +108,15 @@ Socks5Connection::Socks5Connection(QLocalSocket* socket)
     : Socks5Connection(static_cast<QIODevice*>(socket)) {
   connect(socket, &QLocalSocket::disconnected, this,
           [this]() { setState(Closed); });
+
+  connect(socket, &QLocalSocket::errorOccurred, this,
+          [this](QLocalSocket::LocalSocketError error) {
+            if (error == QLocalSocket::PeerClosedError) {
+              setState(Closed);
+            } else {
+              setError(ErrorGeneral, m_inSocket->errorString());
+            }
+          });
 
   socket->setReadBufferSize(MAX_CONNECTION_BUFFER);
 
