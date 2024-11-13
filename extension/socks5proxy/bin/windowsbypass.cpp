@@ -15,11 +15,9 @@
 #include <QHostAddress>
 #include <QScopeGuard>
 #include <QSettings>
-#include <QTcpServer>
 #include <QUuid>
 
 #include "socks5.h"
-#include "winfwpolicy.h"
 #include "winutils.h"
 
 // Fixed GUID of the Wireguard NT driver.
@@ -77,15 +75,6 @@ WindowsBypass::WindowsBypass(Socks5* proxy) : QObject(proxy) {
                                &m_addrChangeHandle);
   NotifyRouteChange2(AF_UNSPEC, routeChangeCallback, this, true,
                      &m_routeChangeHandle);
-
-  // Create a handler to enforce the firewall policy.
-  WinFwPolicy* fw = new WinFwPolicy(this);
-
-  // If listening on a local TCP port, permit access only by web browsers.
-  QTcpServer* tcpServer = qobject_cast<QTcpServer*>(proxy->parent());
-  if ((tcpServer != nullptr) && tcpServer->serverAddress().isLoopback()) {
-    fw->restrictProxyPort(tcpServer->serverPort());
-  }
 }
 
 WindowsBypass::~WindowsBypass() {

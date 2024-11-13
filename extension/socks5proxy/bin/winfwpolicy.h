@@ -6,20 +6,24 @@
 #define WINFWPOLICY_H
 
 #include <QObject>
+#include <QUuid>
 
-struct FWPM_SUBLAYER_CHANGE0_;
+class Socks5;
 
 class WinFwPolicy final : public QObject {
   Q_OBJECT
 
  public:
-  WinFwPolicy(QObject* parent = nullptr);
+  static WinFwPolicy* create(Socks5* proxy);
   ~WinFwPolicy();
 
-  void restrictProxyPort(quint16 port);
+  bool isValid() const { return m_fwEngineHandle != nullptr; }
 
  private:
-  void setupKillswitch(const struct FWPM_SUBLAYER_CHANGE0_* change);
+  WinFwPolicy(QObject* parent = nullptr);
+
+  void restrictProxyPort(quint16 port);
+  void fwpmSublayerChanged(uint changeType, const QUuid& subLayerKey);
 
  private:
   void* m_fwEngineHandle = nullptr;

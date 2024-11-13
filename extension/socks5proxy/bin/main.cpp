@@ -19,6 +19,7 @@
 #  include "linuxbypass.h"
 #elif defined(PROXY_OS_WIN)
 #  include "windowsbypass.h"
+#  include "winfwpolicy.h"
 #  include "winsvcthread.h"
 #endif
 
@@ -180,6 +181,7 @@ int main(int argc, char** argv) {
   new LinuxBypass(socks5);
 #elif defined(PROXY_OS_WIN)
   new WindowsBypass(socks5);
+  WinFwPolicy::create(socks5);
 #endif
 
   return app.exec();

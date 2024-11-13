@@ -11,8 +11,10 @@
 #include <QScopeGuard>
 #include <QSettings>
 #include <QString>
+#include <QTcpServer>
 #include <QUuid>
 
+#include "socks5.h"
 #include "winutils.h"
 
 #pragma comment(lib, "Fwpuclnt")
@@ -24,6 +26,22 @@ constexpr const QUuid KILLSWITCH_FW_GUID(0xc78056ff, 0x2bc1, 0x4211, 0xaa, 0xdd,
 // Fixed GUID of our own firewall sublayer
 constexpr const QUuid LOCALPROXY_FW_GUID(0x0555706c, 0x4468, 0x4ec6, 0xb4, 47,
                                          0x20, 0xe7, 0x4a, 0x10, 0x06, 0xe7);
+
+WinFwPolicy* WinFwPolicy::create(Socks5* proxy) {
+  WinFwPolicy* fwPolicy = new WinFwPolicy(proxy);
+  if (!fwPolicy->isValid()) {
+    delete fwPolicy;
+    return nullptr;
+  }
+
+  // If listening on a local TCP port, permit access only by web browsers.
+  QTcpServer* tcpServer = qobject_cast<QTcpServer*>(proxy->parent());
+  if ((tcpServer != nullptr) && tcpServer->serverAddress().isLoopback()) {
+    fwPolicy->restrictProxyPort(tcpServer->serverPort());
+  }
+
+  return fwPolicy;
+}
 
 WinFwPolicy::WinFwPolicy(QObject* parent) : QObject(parent) {
   // Create the firewall engine handle
@@ -40,7 +58,8 @@ WinFwPolicy::WinFwPolicy(QObject* parent) : QObject(parent) {
   }
 
   auto subscribe = [](void* ctx, const FWPM_SUBLAYER_CHANGE0* change) {
-    reinterpret_cast<WinFwPolicy*>(ctx)->setupKillswitch(change);
+    auto fw = reinterpret_cast<WinFwPolicy*>(ctx);
+    fw->fwpmSublayerChanged(change->changeType, change->subLayerKey);
   };
 
   // Watch for changes to the firewall
@@ -55,6 +74,8 @@ WinFwPolicy::WinFwPolicy(QObject* parent) : QObject(parent) {
   if (result != ERROR_SUCCESS) {
     qDebug() << "Failed to create firewall subscription:"
              << WinUtils::win32strerror(result);
+    FwpmEngineClose0(m_fwEngineHandle);
+    m_fwEngineHandle = nullptr;
     return;
   }
 
@@ -62,10 +83,7 @@ WinFwPolicy::WinFwPolicy(QObject* parent) : QObject(parent) {
   FWPM_SUBLAYER0* fwlayer;
   result = FwpmSubLayerGetByKey0(m_fwEngineHandle, &fwguid, &fwlayer);
   if (result == ERROR_SUCCESS) {
-    FWPM_SUBLAYER_CHANGE0 change;
-    change.changeType = FWPM_CHANGE_ADD;
-    change.subLayerKey = KILLSWITCH_FW_GUID;
-    setupKillswitch(&change);
+    fwpmSublayerChanged(FWPM_CHANGE_ADD, KILLSWITCH_FW_GUID);
     FwpmFreeMemory0((void**)&fwlayer);
   }
 }
@@ -79,12 +97,12 @@ WinFwPolicy::~WinFwPolicy() {
   }
 }
 
-void WinFwPolicy::setupKillswitch(const FWPM_SUBLAYER_CHANGE0* change) {
+void WinFwPolicy::fwpmSublayerChanged(uint changeType, const QUuid& subLayerKey) {
   // Ignore everything except sublayer creation.
-  if (change->changeType != FWPM_CHANGE_ADD) {
+  if (changeType != FWPM_CHANGE_ADD) {
     return;
   }
-  if (change->subLayerKey != KILLSWITCH_FW_GUID) {
+  if (subLayerKey != KILLSWITCH_FW_GUID) {
     return;
   }
 
