@@ -95,6 +95,7 @@ class Socks5Connection final : public QObject {
   void configureOutSocket(quint16 port);
   void dnsResolutionFinished(quint16 port);
   void readyRead();
+  void bytesWritten(qint64 bytes);
 
   // Implemented by platform-specific code in socks5local_<platform>.cpp
   static QString localClientName(QLocalSocket* s);

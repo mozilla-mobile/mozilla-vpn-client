@@ -290,10 +290,6 @@ void Socks5Connection::readyRead() {
       if (queued > m_sendHighWaterMark) {
         m_sendHighWaterMark = queued;
       }
-
-      if (bytes) {
-        emit dataSentReceived(bytes, 0);
-      }
     } break;
 
     default:
@@ -301,6 +297,11 @@ void Socks5Connection::readyRead() {
       break;
   }
 }
+
+void Socks5Connection::bytesWritten(qint64 bytes) {
+
+}
+
 
 // TODO: VPN-6513 make sure we cannot drop bytes even under pressure.
 qint64 Socks5Connection::proxy(QIODevice* a, QIODevice* b) {
@@ -422,6 +423,13 @@ void Socks5Connection::configureOutSocket(quint16 port) {
     readyRead();
   });
 
+  connect(m_outSocket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
+    emit dataSentReceived(0, bytes);
+  });
+  connect(m_inSocket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
+    emit dataSentReceived(bytes, 0);
+  });
+
   connect(m_outSocket, &QTcpSocket::readyRead, this, [this]() {
     qint64 bytes = proxy(m_outSocket, m_inSocket);
 
@@ -429,10 +437,6 @@ void Socks5Connection::configureOutSocket(quint16 port) {
     qint64 queued = m_inSocket->bytesToWrite();
     if (queued > m_recvHighWaterMark) {
       m_recvHighWaterMark = queued;
-    }
-
-    if (bytes > 0) {
-      emit dataSentReceived(0, bytes);
     }
   });
 
