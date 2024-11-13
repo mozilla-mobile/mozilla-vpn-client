@@ -18,6 +18,8 @@
 
 constexpr const int MAX_DNS_LOOKUP_ATTEMPTS = 5;
 
+constexpr const int MAX_CONNECTION_BUFFER = 16 * 1024;
+
 namespace {
 
 #ifdef Q_OS_WIN
@@ -87,6 +89,8 @@ Socks5Connection::Socks5Connection(QTcpSocket* socket)
   connect(socket, &QTcpSocket::disconnected, this,
           [this]() { setState(Closed); });
 
+  socket->setReadBufferSize(MAX_CONNECTION_BUFFER);
+
   m_socksPort = socket->localPort();
   m_clientName = socket->peerAddress().toString();
 }
@@ -95,6 +99,8 @@ Socks5Connection::Socks5Connection(QLocalSocket* socket)
     : Socks5Connection(static_cast<QIODevice*>(socket)) {
   connect(socket, &QLocalSocket::disconnected, this,
           [this]() { setState(Closed); });
+
+  socket->setReadBufferSize(MAX_CONNECTION_BUFFER);
 
   // TODO: Some magic may be required here to resolve the entity of which client
   // tried to connect. Some breadcrumbs:
@@ -282,15 +288,9 @@ void Socks5Connection::readyRead() {
 
     break;
 
-    case Proxy: {
-      qint64 bytes = proxy(m_inSocket, m_outSocket);
-
-      // Update incoming high watermark.
-      qint64 queued = m_outSocket->bytesToWrite();
-      if (queued > m_sendHighWaterMark) {
-        m_sendHighWaterMark = queued;
-      }
-    } break;
+    case Proxy:
+      proxy(m_inSocket, m_outSocket, m_sendHighWaterMark);
+      break;
 
     default:
       Q_ASSERT(false);
@@ -298,36 +298,36 @@ void Socks5Connection::readyRead() {
   }
 }
 
-void Socks5Connection::bytesWritten(qint64 bytes) {
+void Socks5Connection::proxy(QIODevice* from, QIODevice* to, quint64 &watermark) {
+  Q_ASSERT(from && to);
 
-}
-
-
-// TODO: VPN-6513 make sure we cannot drop bytes even under pressure.
-qint64 Socks5Connection::proxy(QIODevice* a, QIODevice* b) {
-  Q_ASSERT(a && b);
-
-  qint64 bytes = 0;
-  char buffer[4096];
-  while (a->bytesAvailable()) {
-    qint64 val =
-        a->read(buffer, qMin(a->bytesAvailable(), (qint64)sizeof(buffer)));
-    if (val <= 0) {
-      return -1;
-    }
-    qint64 sent = b->write(buffer, val);
-    if (sent < 0) {
-      qDebug() << "Write failed:" << b->errorString();
-    }
-    if (sent != val) {
-      qDebug() << "Truncated write. Sent" << sent << "of" << val;
-      return -1;
+  for (;;) {
+    qint64 available = from->bytesAvailable();
+    if (available <= 0) {
+      break;
     }
 
-    bytes += val;
+    qint64 capacity = MAX_CONNECTION_BUFFER - to->bytesToWrite();
+    if (capacity <= 0) {
+      break;
+    }
+
+    QByteArray data = from->read(qMin(available, capacity));
+    if (data.length() == 0) {
+      break;
+    }
+    qint64 sent = to->write(data);
+    if (sent != data.length()) {
+      qDebug() << "Truncated write. Sent" << sent << "of" << data.length();
+      break;
+    }
   }
 
-  return bytes;
+  // Update buffer high watermark.
+  qint64 queued = to->bytesToWrite();
+  if (queued > watermark) {
+    watermark = queued;
+  }
 }
 
 void Socks5Connection::dnsResolutionFinished(quint16 port) {
@@ -425,19 +425,15 @@ void Socks5Connection::configureOutSocket(quint16 port) {
 
   connect(m_outSocket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
     emit dataSentReceived(0, bytes);
+    proxy(m_inSocket, m_outSocket, m_sendHighWaterMark);
   });
   connect(m_inSocket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
     emit dataSentReceived(bytes, 0);
+    proxy(m_outSocket, m_inSocket, m_recvHighWaterMark);
   });
 
   connect(m_outSocket, &QTcpSocket::readyRead, this, [this]() {
-    qint64 bytes = proxy(m_outSocket, m_inSocket);
-
-    // Update incoming high watermark.
-    qint64 queued = m_inSocket->bytesToWrite();
-    if (queued > m_recvHighWaterMark) {
-      m_recvHighWaterMark = queued;
-    }
+    proxy(m_outSocket, m_inSocket, m_recvHighWaterMark);
   });
 
   connect(m_outSocket, &QTcpSocket::disconnected, this,

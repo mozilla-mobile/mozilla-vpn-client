@@ -25,11 +25,11 @@ class Socks5Connection final : public QObject {
   /**
    * @brief Copies incoming bytes to another QIODevice
    *
-   * @param rx- the source device
-   * @param tx- the output device
-   * @return qint64 - The Bytes Written, -1 on error.
+   * @param from- the source device
+   * @param to- the output device
+   * @param watermark- reference to the buffer high watermark
    */
-  static qint64 proxy(QIODevice* rx, QIODevice* tx);
+  static void proxy(QIODevice* rx, QIODevice* tx, quint64& watermark);
 
   enum Socks5State {
     ClientGreeting,
