@@ -150,11 +150,10 @@ MZBottomSheet {
                 id: flickable
 
                 readonly property int maxheight: bottomSheet.maxSheetHeight - headerLayout.implicitHeight - headerLayout.Layout.topMargin
+                flickContentHeight: layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin
 
                 Layout.fillWidth: true
-                Layout.preferredHeight: Math.min(layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin, maxheight)
-
-                flickContentHeight: layout.implicitHeight + layout.anchors.topMargin + layout.anchors.bottomMargin
+                implicitHeight: Math.min(flickContentHeight, maxheight)
 
                 addNavbarHeightOffset: false
 

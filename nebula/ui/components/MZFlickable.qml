@@ -11,7 +11,7 @@ import Mozilla.VPN 1.0
 Flickable {
     id: vpnFlickable
 
-    property var flickContentHeight
+    property var flickContentHeight: 0
     property bool contentExceedsHeight: height < contentHeight
     property bool hideScollBarOnStackTransition: false
     property bool addNavbarHeightOffset: navbar.visible
