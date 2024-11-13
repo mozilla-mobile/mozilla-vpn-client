@@ -16,7 +16,7 @@ Write-Output("Installing in $conda_folder")
 $OLD_PWD = $PWD # Backup that to go back once we done. 
 Set-Location $conda_folder 
 
-$TASKCLUSTER_LINK = "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-win.latest/artifacts/public%2Fbuild%2Fqt6_win.zip"
+$TASKCLUSTER_LINK = "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public%2Fbuild%2Fqt6_win.zip"
 
 $ProgressPreference = 'SilentlyContinue'
 Set-Location $conda_folder 
