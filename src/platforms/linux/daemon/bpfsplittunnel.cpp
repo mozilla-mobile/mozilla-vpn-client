@@ -17,7 +17,7 @@
 #include "logger.h"
 
 namespace {
-Logger logger("BpfSetMark");
+Logger logger("BpfSplitTunnel");
 }  // namespace
 
 BpfSplitTunnel::BpfSplitTunnel(QObject* parent) : QObject(parent) {
@@ -35,7 +35,10 @@ BpfSplitTunnel::BpfSplitTunnel(QObject* parent) : QObject(parent) {
 
 BpfSplitTunnel::~BpfSplitTunnel() {
   MZ_COUNT_DTOR(BpfSplitTunnel);
-  detachAll();
+  if (m_program >= 0) {
+    detachAll();
+    close(m_program);
+  }
   logger.debug() << "BpfSplitTunnel destroyed";
 }
 
@@ -113,7 +116,7 @@ void BpfSplitTunnel::detachCgroup(const QString& cgroup) {
 
   int ret = bpf_prog_detach2(m_program, cgfd, BPF_CGROUP_INET_SOCK_CREATE);
   if (ret < 0) {
-    logger.warning() << "Failed to attach eBPF:" << strerror(errno);
+    logger.warning() << "Failed to detach eBPF:" << strerror(errno);
   }
 
   // Remove this cgroup from the active set.
@@ -137,10 +140,10 @@ void BpfSplitTunnel::detachAll() {
     }
 
     // Detach it.
-    int ret = bpf_prog_detach2(m_program, cgfd, BPF_CGROUP_INET_SOCK_CREATE);
-    if (ret < 0) {
-      logger.warning() << "Failed to attach eBPF:" << strerror(errno);
+    if (bpf_prog_detach2(m_program, cgfd, BPF_CGROUP_INET_SOCK_CREATE) < 0) {
+      logger.warning() << "Failed to detach eBPF:" << strerror(errno);
     }
+    close(cgfd);
   }
 
   // There should be no remaining cgroups attached to our program.
