@@ -21,11 +21,6 @@ class LinuxFirewall final : public QObject {
   bool markInbound(const QString& serverIpv4AddrIn);
   bool clearInbound(const QString& serverIpv4AddrIn);
 
-  bool markCgroupV1(uint32_t cgroup);
-  bool markCgroupV2(const QString& cgroup);
-  bool clearCgroupV2(const QString& cgroup);
-  bool clearAllCgroupsV2();
-
  private:
   bool m_isUp = false;
 };

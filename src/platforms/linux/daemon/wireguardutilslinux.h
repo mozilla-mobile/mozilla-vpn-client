@@ -33,10 +33,6 @@ class WireguardUtilsLinux final : public WireguardUtils {
   bool deleteRoutePrefix(const IPAddress& prefix) override;
   bool excludeLocalNetworks(const QList<IPAddress>& lanAddressRanges) override;
 
-  void excludeCgroup(const QString& cgroup);
-  void resetCgroup(const QString& cgroup);
-  void resetAllCgroups();
-
  private:
   QStringList currentInterfaces();
   bool setPeerEndpoint(struct sockaddr* sa, const QString& address, int port);
@@ -49,18 +45,12 @@ class WireguardUtilsLinux final : public WireguardUtils {
 
   void nlsockHandleNewlink(struct nlmsghdr* nlmsg);
   void nlsockHandleDellink(struct nlmsghdr* nlmsg);
-  static bool setupCgroupClass(const QString& path, unsigned long classid);
-  static bool moveCgroupProcs(const QString& src, const QString& dest);
   static bool buildAllowedIp(struct wg_allowedip*, const IPAddress& prefix);
 
   int m_nlsock = -1;
   int m_nlseq = 0;
   char m_nlrecvbuf[32768];
   QSocketNotifier* m_notifier = nullptr;
-
-  int m_cgroupVersion = 0;
-  QString m_cgroupNetClass;
-  QString m_cgroupUnified;
 
   LinuxFirewall m_firewall;
 
