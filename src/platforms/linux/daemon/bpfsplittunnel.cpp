@@ -4,16 +4,16 @@
 
 #include "bpfsplittunnel.h"
 
-#include <linux/bpf.h>
-#include <linux/filter.h>
 #include <bpf/bpf.h>
 #include <fcntl.h>
+#include <linux/bpf.h>
+#include <linux/filter.h>
 #include <unistd.h>
 
 #include <QScopeGuard>
 
-#include "leakdetector.h"
 #include "../linuxdependencies.h"
+#include "leakdetector.h"
 #include "logger.h"
 
 namespace {
@@ -51,23 +51,23 @@ int BpfSplitTunnel::loadProgram() {
   //   return
   short int offset = offsetof(struct bpf_sock, mark);
   struct bpf_insn program[] = {
-    { BPF_ALU64 | BPF_MOV | BPF_K, BPF_REG_2, 0, 0, 0xca6c},
-    { BPF_STX | BPF_W | BPF_MEM, BPF_REG_1, BPF_REG_2, offset, 0},
-    { BPF_ALU64 | BPF_MOV | BPF_K, BPF_REG_0, 0, 0, 1},
-    { BPF_JMP | BPF_EXIT, 0, 0, 0, 0},
+      { BPF_ALU64 | BPF_MOV | BPF_K, BPF_REG_2, 0, 0, 0xca6c},
+      { BPF_STX | BPF_W | BPF_MEM, BPF_REG_1, BPF_REG_2, offset, 0},
+      { BPF_ALU64 | BPF_MOV | BPF_K, BPF_REG_0, 0, 0, 1},
+      { BPF_JMP | BPF_EXIT, 0, 0, 0, 0},
   };
   size_t count = sizeof(program) / sizeof(struct bpf_insn);
 
-  char *bpf_log_buf = (char *)malloc(BPF_LOG_BUF_SIZE);
+  char* bpf_log_buf = (char *)malloc(BPF_LOG_BUF_SIZE);
   auto guard = qScopeGuard([bpf_log_buf]() { free(bpf_log_buf); });
-  LIBBPF_OPTS(bpf_prog_load_opts, opts,
-    .log_size = BPF_LOG_BUF_SIZE,
-    .log_buf = bpf_log_buf,
-  );
+  struct bpf_prog_load_opts opts;
+  memset(&opts, 0, sizeof(opts));
+  opts.log_size = BPF_LOG_BUF_SIZE;
+  opts.log_buf = bpf_log_buf;
 
   // Load the program and return and the program file desciptor.
-  int ret = bpf_prog_load(BPF_PROG_TYPE_CGROUP_SOCK, nullptr,
-                          "Dual MPL/GPL", program, count, &opts);
+  int ret = bpf_prog_load(BPF_PROG_TYPE_CGROUP_SOCK, nullptr, "Dual MPL/GPL",
+                          program, count, &opts);
   if (ret < 0) {
     logger.debug() << "BPF load failed:" << strerror(errno);
     logger.debug() << "BPF logs:" << bpf_log_buf;
