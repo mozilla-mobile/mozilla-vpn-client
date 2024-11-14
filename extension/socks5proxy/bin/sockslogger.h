@@ -54,7 +54,7 @@ class SocksLogger final : public QObject {
   ~SocksLogger();
 
   static QString bytesToString(qint64 value);
-  static QDebug& printEventStack(QDebug &msg, Socks5Connection* conn);
+  static QDebug& printEventStack(QDebug& msg, Socks5Connection* conn);
   void printStatus();
 
   const QString& logfile() const { return m_logFileName; }

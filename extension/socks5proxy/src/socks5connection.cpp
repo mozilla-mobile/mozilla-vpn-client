@@ -347,7 +347,8 @@ void Socks5Connection::bytesWritten(qint64 bytes) {
   proxy(m_inSocket, m_outSocket, m_recvHighWaterMark);
 }
 
-void Socks5Connection::proxy(QIODevice* from, QIODevice* to, quint64 &watermark) {
+void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
+                             quint64 &watermark) {
   Q_ASSERT(from && to);
 
   for (;;) {
@@ -477,9 +478,8 @@ void Socks5Connection::configureOutSocket(quint16 port) {
     proxy(m_inSocket, m_outSocket, m_sendHighWaterMark);
   });
 
-  connect(m_outSocket, &QTcpSocket::readyRead, this, [this]() {
-    proxy(m_outSocket, m_inSocket, m_recvHighWaterMark);
-  });
+  connect(m_outSocket, &QTcpSocket::readyRead, this,
+          [this]() { proxy(m_outSocket, m_inSocket, m_recvHighWaterMark); });
 
   connect(m_outSocket, &QTcpSocket::disconnected, this,
           [this]() { setState(Closed); });

@@ -70,17 +70,17 @@ void TestSocks5Connection::proxyFlowControl() {
   constexpr const int FIRST_FRAGMENT_SIZE = 1234;
   constexpr const int PROXY_MAX_BUFFER_SIZE = 16 * 1024;
 
-  // We'll need a TCP socket to limit flow control.
+  // We'll need to use a TCP to test out flow control. So create a TCP server.
   QTcpServer server;
   QCOMPARE(server.listen(QHostAddress::LocalHost), true);
 
-  // Create a tcp socket.
+  // Create a TCP socket and connect to the server.
   QTcpSocket sendSocket;
   sendSocket.connectToHost(QHostAddress::LocalHost, server.serverPort());
 
   // There should be a socket we can now accept.
   QCOMPARE(server.waitForNewConnection(500), true);
-  QTcpSocket *recvSocket = server.nextPendingConnection();
+  QTcpSocket* recvSocket = server.nextPendingConnection();
   recvSocket->setParent(&server);
   QVERIFY(recvSocket != nullptr);
 
@@ -88,7 +88,7 @@ void TestSocks5Connection::proxyFlowControl() {
   QCOMPARE(sendSocket.waitForConnected(500), true);
   QCOMPARE(sendSocket.state(), QAbstractSocket::ConnectedState);
 
-  // Prepare 32kB of data to send through the socket.
+  // Prepare a small fragment of data to send through the socket.
   QByteArray firstData(FIRST_FRAGMENT_SIZE, 'Q');
   QBuffer firstBuffer(&firstData);
   firstBuffer.open(QIODevice::ReadOnly);
@@ -104,6 +104,12 @@ void TestSocks5Connection::proxyFlowControl() {
   QByteArray hugeData(PROXY_MAX_BUFFER_SIZE, 'Z');
   QBuffer hugeBuffer(&hugeData);
   hugeBuffer.open(QIODevice::ReadOnly);
+  Socks5Connection::proxy(&hugeBuffer, &sendSocket, watermark);
+  QCOMPARE(watermark, PROXY_MAX_BUFFER_SIZE);
+  QCOMPARE(hugeBuffer.pos(), PROXY_MAX_BUFFER_SIZE - FIRST_FRAGMENT_SIZE);
+  QCOMPARE(sendSocket.bytesToWrite(), PROXY_MAX_BUFFER_SIZE);
+
+  // Trying to send again should have no effect.
   Socks5Connection::proxy(&hugeBuffer, &sendSocket, watermark);
   QCOMPARE(watermark, PROXY_MAX_BUFFER_SIZE);
   QCOMPARE(hugeBuffer.pos(), PROXY_MAX_BUFFER_SIZE - FIRST_FRAGMENT_SIZE);

@@ -120,7 +120,7 @@ void SocksLogger::dataSentReceived(qint64 sent, qint64 received) {
   m_rx_bytes.addSample(received);
 }
 
-QDebug& SocksLogger::printEventStack(QDebug &msg, Socks5Connection* conn) {
+QDebug& SocksLogger::printEventStack(QDebug& msg, Socks5Connection* conn) {
   bool first = true;
   for (const QString& hostname : conn->hostLookupStack()) {
     if (!first) {
