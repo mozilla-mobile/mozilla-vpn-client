@@ -11,6 +11,14 @@ class WindowsServiceManager;
 
 namespace Intervention {
 
+/**
+ * @brief Intervention for Intel Killer Network.
+ *
+ * Intels Killer network services silently breaks
+ * the extensionproxy and the split-tunnel driver.
+ *
+ * This class currenlty only detects if a system will be affected.
+ */
 class KillerNetwork : public QObject {
   Q_OBJECT
  public:
@@ -26,17 +34,6 @@ class KillerNetwork : public QObject {
    * @return const QString&
    */
   static const QString id;
-
-  // Create a new Intervention.
-  KillerNetwork(WindowsDaemon* parent);
-
- private:
-  // EventCallbacks for windowsDaemon
-  void onVpnActivation();
-  void onVpnDeactivation();
-  std::unique_ptr<WindowsServiceManager> m_svm;
-
-  bool m_interfered = false;
 };
 
 };  // namespace Intervention

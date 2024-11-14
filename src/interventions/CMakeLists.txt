@@ -3,10 +3,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 if(WIN32)
-target_sources(mozillavpn PRIVATE
-    killernetwork.h
-    killernetwork.cpp
-)
-
+    target_sources(mozillavpn PRIVATE
+        killernetwork.h
+        killernetwork.cpp
+    )
 endif()
 

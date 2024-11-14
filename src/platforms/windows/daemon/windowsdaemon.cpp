@@ -18,7 +18,6 @@
 
 #include "daemon/daemonerrors.h"
 #include "dnsutilswindows.h"
-#include "interventions/killernetwork.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/daemon/windowsfirewall.h"
@@ -34,10 +33,6 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
   MZ_COUNT_CTOR(WindowsDaemon);
   m_firewallManager = WindowsFirewall::create(this);
   Q_ASSERT(m_firewallManager != nullptr);
-
-  if (Intervention::KillerNetwork::systemAffected()) {
-    new Intervention::KillerNetwork(this);
-  }
 
   m_wgutils = WireguardUtilsWindows::create(m_firewallManager, this);
   m_dnsutils = new DnsUtilsWindows(this);

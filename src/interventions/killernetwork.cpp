@@ -8,8 +8,6 @@
 
 #include <QObject>
 
-#include "daemon/daemon.h"
-#include "platforms/windows/daemon/windowsdaemon.h"
 #include "platforms/windows/windowsservicemanager.h"
 
 namespace Intervention {
@@ -18,36 +16,11 @@ const QString KillerNetwork::id = "intel.killernetwork";
 
 bool KillerNetwork::systemAffected() {
   std::unique_ptr<WindowsServiceManager> svm =
-      WindowsServiceManager::open("TODONETWORKSERVER");
-  return svm == nullptr;
-}
-
-KillerNetwork::KillerNetwork(WindowsDaemon* aParent) : QObject(aParent) {
-  if (!systemAffected()) {
-    deleteLater();
-    return;
+      WindowsServiceManager::open("Killer Network Service");
+  if (svm == nullptr) {
+    return false;
   }
-  m_svm = WindowsServiceManager::open("TODONETWORKSERVER");
-  if (!m_svm) {
-    deleteLater();
-    return;
-  }
-  connect(aParent, &Daemon::connected, this, &KillerNetwork::onVpnActivation);
-  connect(aParent, &Daemon::disconnected, this,
-          &KillerNetwork::onVpnDeactivation);
-}
-
-void KillerNetwork::onVpnActivation() {
-  if (m_svm->stopService()) {
-    m_interfered = true;
-  }
-}
-void KillerNetwork::onVpnDeactivation() {
-  if (!m_interfered) {
-    return;
-  }
-  m_svm->startService();
-  m_interfered = false;
+  return svm->isRunning();
 }
 
 }  // namespace Intervention
