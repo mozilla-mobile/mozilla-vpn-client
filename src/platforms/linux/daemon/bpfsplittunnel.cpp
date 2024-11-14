@@ -35,6 +35,7 @@ BpfSplitTunnel::BpfSplitTunnel(QObject* parent) : QObject(parent) {
 
 BpfSplitTunnel::~BpfSplitTunnel() {
   MZ_COUNT_DTOR(BpfSplitTunnel);
+  detachAll();
   logger.debug() << "BpfSplitTunnel destroyed";
 }
 
@@ -76,7 +77,7 @@ void BpfSplitTunnel::attachCgroup(const QString& cgroup) {
   if (m_cgroupMount.isEmpty() || (m_program < 0)) {
     return;
   }
-  QString path = m_cgroupMount + '/' + cgroup;
+  QString path = QDir::cleanPath(m_cgroupMount + '/' + cgroup);
   logger.debug() << "Attach BPF to:" << path;
 
   int cgfd = open(path.toLocal8Bit().data(), O_DIRECTORY | O_RDONLY);
@@ -89,7 +90,11 @@ void BpfSplitTunnel::attachCgroup(const QString& cgroup) {
   int ret = bpf_prog_attach(m_program, cgfd, BPF_CGROUP_INET_SOCK_CREATE, 0);
   if (ret < 0) {
     logger.warning() << "Failed to attach eBPF:" << strerror(errno);
+    return;
   }
+
+  // Keep track of the active cgroups.
+  m_activeCgroups[cgroup] = path;
 }
 
 // Detach the BPF traffic marking program from the desired control group.
@@ -97,7 +102,7 @@ void BpfSplitTunnel::detachCgroup(const QString& cgroup) {
   if (m_cgroupMount.isEmpty() || (m_program < 0)) {
     return;
   }
-  QString path = m_cgroupMount + '/' + cgroup;
+  QString path = QDir::cleanPath(m_cgroupMount + '/' + cgroup);
   logger.debug() << "Dropping BPF from:" << path;
 
   int cgfd = open(path.toLocal8Bit().data(), O_DIRECTORY | O_RDONLY);
@@ -110,9 +115,34 @@ void BpfSplitTunnel::detachCgroup(const QString& cgroup) {
   if (ret < 0) {
     logger.warning() << "Failed to attach eBPF:" << strerror(errno);
   }
+
+  // Remove this cgroup from the active set.
+  m_activeCgroups.remove(cgroup);
 }
 
 // Detach the BPF traffic marking program from all control groups.
 void BpfSplitTunnel::detachAll() {
-  // TODO: Implement Me!
+  if (m_cgroupMount.isEmpty() || (m_program < 0)) {
+    return;
+  }
+
+  // Remove all attached eBPF programs.
+  for (const QString& path : m_activeCgroups) {
+    int cgfd = open(path.toLocal8Bit().data(), O_DIRECTORY | O_RDONLY);
+    if (cgfd < 0) {
+      if (errno != ENOENT) {
+        logger.warning() << "Failed to open cgroup:" << strerror(errno);
+      }
+      continue;
+    }
+
+    // Detach it.
+    int ret = bpf_prog_detach2(m_program, cgfd, BPF_CGROUP_INET_SOCK_CREATE);
+    if (ret < 0) {
+      logger.warning() << "Failed to attach eBPF:" << strerror(errno);
+    }
+  }
+
+  // There should be no remaining cgroups attached to our program.
+  m_activeCgroups.clear();
 }

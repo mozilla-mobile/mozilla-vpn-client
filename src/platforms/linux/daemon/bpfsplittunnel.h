@@ -5,8 +5,9 @@
 #ifndef BPFSPLITTUNNEL_H
 #define BPFSPLITTUNNEL_H
 
-#include <QObject>
 #include <QDir>
+#include <QHash>
+#include <QObject>
 
 class BpfSplitTunnel final : public QObject {
   Q_OBJECT
@@ -27,6 +28,8 @@ class BpfSplitTunnel final : public QObject {
  private:
   int m_program = -1;
   QString m_cgroupMount;
+
+  QHash<QString,QString> m_activeCgroups;
 };
 
 #endif  // BPFSPLITTUNNEL_H

@@ -239,7 +239,6 @@ void DBusService::appLaunched(const QString& cgroup,
   m_excludedCgroups[cgroup] = state;
   if (state == Excluded) {
     m_bpfSplitTunnel->attachCgroup(cgroup);
-    //m_wgutils->excludeCgroup(cgroup);
   }
 }
 
@@ -249,7 +248,7 @@ void DBusService::appTerminated(const QString& cgroup,
 
   // Remove any firewall rules applied to this control group.
   if (m_excludedCgroups.remove(cgroup)) {
-    //m_wgutils->resetCgroup(cgroup);
+    m_bpfSplitTunnel->detachCgroup(cgroup);
   }
 }
 
@@ -262,7 +261,6 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
     for (const QString& cgroup :
          m_appTracker->findByDesktopFileId(desktopFileId)) {
       m_bpfSplitTunnel->detachCgroup(cgroup);
-      //m_wgutils->resetCgroup(cgroup);
     }
     return;
   }
@@ -273,14 +271,10 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
        m_appTracker->findByDesktopFileId(desktopFileId)) {
     if (m_excludedCgroups.contains(cgroup)) {
       m_bpfSplitTunnel->detachCgroup(cgroup);
-      //m_wgutils->resetCgroup(cgroup);
     }
     m_excludedCgroups[cgroup] = state;
     if (state == Excluded) {
       m_bpfSplitTunnel->attachCgroup(cgroup);
-      // Excluded control groups are given special netfilter rules to direct
-      // their traffic outside of the VPN tunnel.
-      //m_wgutils->excludeCgroup(cgroup);
     }
   }
 }
@@ -288,7 +282,7 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
 /* Clear the firewall and return all applications to the active state */
 void DBusService::clearAppStates() {
   logger.debug() << "Clearing excluded app list";
-  //m_wgutils->resetAllCgroups();
+  m_bpfSplitTunnel->detachAll();
   m_excludedCgroups.clear();
   m_excludedApps.clear();
 }
