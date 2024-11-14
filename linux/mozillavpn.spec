@@ -17,6 +17,7 @@ Requires:  wireguard-tools
 
 BuildRequires: cargo >= 1.75
 BuildRequires: golang >= 1.18
+BuildRequires: libbpf-devel
 BuildRequires: libcap-devel
 BuildRequires: libsecret-devel
 BuildRequires: openssl-devel
