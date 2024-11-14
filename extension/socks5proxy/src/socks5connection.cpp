@@ -348,7 +348,7 @@ void Socks5Connection::bytesWritten(qint64 bytes) {
 }
 
 void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
-                             quint64 &watermark) {
+                             quint64& watermark) {
   Q_ASSERT(from && to);
 
   for (;;) {
