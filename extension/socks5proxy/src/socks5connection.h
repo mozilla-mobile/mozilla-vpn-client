@@ -118,6 +118,7 @@ class Socks5Connection final : public QObject {
 
   quint64 m_sendHighWaterMark = 0;
   quint64 m_recvHighWaterMark = 0;
+  quint64 m_recvIgnoreBytes = 0;
 };
 
 #endif  // Socks5Connection_H

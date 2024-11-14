@@ -81,6 +81,10 @@ Socks5Connection::Socks5Connection(QIODevice* socket)
     : QObject(socket), m_inSocket(socket) {
   connect(m_inSocket, &QIODevice::readyRead, this,
           &Socks5Connection::readyRead);
+
+  connect(m_inSocket, &QIODevice::bytesWritten, this,
+          &Socks5Connection::bytesWritten);
+
   readyRead();
 }
 
@@ -157,6 +161,13 @@ void Socks5Connection::setError(Socks5Replies reason,
 void Socks5Connection::setState(Socks5State newstate) {
   m_state = newstate;
   emit stateChanged();
+
+  // If the new state is Proxy, keep track of how many bytes are yet to be
+  // written to finish the negotiation. We should suppress the statistics
+  // signals for such traffic.
+  if (m_state == Proxy) {
+    m_recvIgnoreBytes = m_inSocket->bytesToWrite();
+  }
 
   // If the state is closing. Shutdown the sockets.
   if (m_state == Closed) {
@@ -316,6 +327,26 @@ void Socks5Connection::readyRead() {
   }
 }
 
+void Socks5Connection::bytesWritten(qint64 bytes) {
+  // Ignore this signal outside of the proxy state.
+  if (m_state != Proxy) {
+    return;
+  }
+
+  // Ignore this signal if it's just reporting a negotiation packet.
+  if (m_recvIgnoreBytes >= bytes) {
+    m_recvIgnoreBytes -= bytes;
+    return;
+  } else if (m_recvIgnoreBytes > 0) {
+    bytes -= m_recvIgnoreBytes;
+    m_recvIgnoreBytes = 0;
+  }
+
+  // Drive statistics and proxy data.
+  emit dataSentReceived(0, bytes);
+  proxy(m_inSocket, m_outSocket, m_recvHighWaterMark);
+}
+
 void Socks5Connection::proxy(QIODevice* from, QIODevice* to, quint64 &watermark) {
   Q_ASSERT(from && to);
 
@@ -430,7 +461,6 @@ void Socks5Connection::configureOutSocket(quint16 port) {
   m_outSocket->connectToHost(m_destAddress, port);
 
   connect(m_outSocket, &QTcpSocket::connected, this, [this]() {
-    setState(Proxy);
     ServerResponsePacket packet(createServerResponsePacket(0x00, m_socksPort));
     if (m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket)) !=
         sizeof(ServerResponsePacket)) {
@@ -438,16 +468,13 @@ void Socks5Connection::configureOutSocket(quint16 port) {
       return;
     }
 
+    setState(Proxy);
     readyRead();
   });
 
   connect(m_outSocket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
     emit dataSentReceived(bytes, 0);
     proxy(m_inSocket, m_outSocket, m_sendHighWaterMark);
-  });
-  connect(m_inSocket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
-    emit dataSentReceived(0, bytes);
-    proxy(m_outSocket, m_inSocket, m_recvHighWaterMark);
   });
 
   connect(m_outSocket, &QTcpSocket::readyRead, this, [this]() {
