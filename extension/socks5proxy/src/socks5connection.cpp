@@ -442,11 +442,11 @@ void Socks5Connection::configureOutSocket(quint16 port) {
   });
 
   connect(m_outSocket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
-    emit dataSentReceived(0, bytes);
+    emit dataSentReceived(bytes, 0);
     proxy(m_inSocket, m_outSocket, m_sendHighWaterMark);
   });
   connect(m_inSocket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
-    emit dataSentReceived(bytes, 0);
+    emit dataSentReceived(0, bytes);
     proxy(m_outSocket, m_inSocket, m_recvHighWaterMark);
   });
 
