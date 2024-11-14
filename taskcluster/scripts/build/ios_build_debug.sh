@@ -25,7 +25,6 @@ export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 export PYTHONIOENCODING="UTF-8"
 
-
 print Y "Installing conda"
 # We need to call bash with a login shell, so that conda is intitialized
 source $TASK_WORKDIR/fetches/bin/activate
@@ -45,6 +44,7 @@ if [ -d ${TASK_HOME}/build ]; then
 fi
 mkdir ${TASK_HOME}/build
 
+unset SDKROOT
 env
 whereis qt-cmake
 cat $TASK_WORKDIR/fetches/bin/qt-cmake
