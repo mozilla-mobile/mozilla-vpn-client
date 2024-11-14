@@ -24,17 +24,14 @@
         "content": [
           {
             "id": "l_1",
-            "type": "text",
             "content": "vpn.tryFirefoxExtension.bullet1"
           },
           {
             "id": "l_2",
-            "type": "text",
             "content": "vpn.tryFirefoxExtension.bullet2"
           },
           {
             "id": "l_3",
-            "type": "text",
             "content": "vpn.tryFirefoxExtension.bullet3"
           }
         ]
