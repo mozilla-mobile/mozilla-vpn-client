@@ -18,6 +18,8 @@
 
 constexpr const int MAX_DNS_LOOKUP_ATTEMPTS = 5;
 
+constexpr const int MAX_CONNECTION_BUFFER = 16 * 1024;
+
 namespace {
 
 #ifdef Q_OS_WIN
@@ -79,12 +81,28 @@ Socks5Connection::Socks5Connection(QIODevice* socket)
     : QObject(socket), m_inSocket(socket) {
   connect(m_inSocket, &QIODevice::readyRead, this,
           &Socks5Connection::readyRead);
+
+  connect(m_inSocket, &QIODevice::bytesWritten, this,
+          &Socks5Connection::bytesWritten);
+
   readyRead();
 }
 
 Socks5Connection::Socks5Connection(QTcpSocket* socket)
     : Socks5Connection(static_cast<QIODevice*>(socket)) {
-  connect(socket, &QTcpSocket::disconnected, this, &QObject::deleteLater);
+  connect(socket, &QTcpSocket::disconnected, this,
+          [this]() { setState(Closed); });
+
+  connect(socket, &QTcpSocket::errorOccurred, this,
+          [this](QAbstractSocket::SocketError error) {
+            if (error == QAbstractSocket::RemoteHostClosedError) {
+              setState(Closed);
+            } else {
+              setError(ErrorGeneral, m_inSocket->errorString());
+            }
+          });
+
+  socket->setReadBufferSize(MAX_CONNECTION_BUFFER);
 
   m_socksPort = socket->localPort();
   m_clientName = socket->peerAddress().toString();
@@ -92,7 +110,19 @@ Socks5Connection::Socks5Connection(QTcpSocket* socket)
 
 Socks5Connection::Socks5Connection(QLocalSocket* socket)
     : Socks5Connection(static_cast<QIODevice*>(socket)) {
-  connect(socket, &QLocalSocket::disconnected, this, &QObject::deleteLater);
+  connect(socket, &QLocalSocket::disconnected, this,
+          [this]() { setState(Closed); });
+
+  connect(socket, &QLocalSocket::errorOccurred, this,
+          [this](QLocalSocket::LocalSocketError error) {
+            if (error == QLocalSocket::PeerClosedError) {
+              setState(Closed);
+            } else {
+              setError(ErrorGeneral, m_inSocket->errorString());
+            }
+          });
+
+  socket->setReadBufferSize(MAX_CONNECTION_BUFFER);
 
   // TODO: Some magic may be required here to resolve the entity of which client
   // tried to connect. Some breadcrumbs:
@@ -106,9 +136,49 @@ Socks5Connection::Socks5Connection(QLocalSocket* socket)
   m_clientName = localClientName(socket);
 }
 
+void Socks5Connection::setError(Socks5Replies reason,
+                                const QString& errorString) {
+  // A Server response message is only sent in certain states.
+  switch (m_state) {
+    case ClientGreeting:
+      [[fallthrough]];
+    case ClientConnectionRequest:
+      [[fallthrough]];
+    case ClientConnectionAddress: {
+      ServerResponsePacket packet(createServerResponsePacket(reason));
+      m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
+      break;
+    }
+
+    default:
+      break;
+  }
+
+  m_errorString = errorString;
+  setState(Closed);
+}
+
 void Socks5Connection::setState(Socks5State newstate) {
   m_state = newstate;
   emit stateChanged();
+
+  // If the new state is Proxy, keep track of how many bytes are yet to be
+  // written to finish the negotiation. We should suppress the statistics
+  // signals for such traffic.
+  if (m_state == Proxy) {
+    m_recvIgnoreBytes = m_inSocket->bytesToWrite();
+  }
+
+  // If the state is closing. Shutdown the sockets.
+  if (m_state == Closed) {
+    m_inSocket->close();
+    if (m_outSocket != nullptr) {
+      m_outSocket->close();
+    }
+
+    // Request self-destruction
+    deleteLater();
+  }
 }
 
 void Socks5Connection::readyRead() {
@@ -118,12 +188,12 @@ void Socks5Connection::readyRead() {
       if (!packet) {
         return;
       }
-      if (packet.value().version != 0x5) {
+      uint8_t version = packet.value().version;
+      if (version != 0x5) {
         // We only currently want to support socks5.
         // as otherwise we could not support udp or auth.
-        ServerResponsePacket packet(createServerResponsePacket(ErrorGeneral));
-        m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
-        m_inSocket->close();
+        auto msg = QString("SOCKS version %1 not supported").arg(version);
+        setError(ErrorGeneral, msg);
         return;
       }
       m_authNumber = packet.value().nauth;
@@ -138,7 +208,7 @@ void Socks5Connection::readyRead() {
 
       char buffer[INT8_MAX];
       if (m_inSocket->read(buffer, m_authNumber) != m_authNumber) {
-        m_inSocket->close();
+        setError(ErrorGeneral, m_inSocket->errorString());
         return;
       }
 
@@ -148,7 +218,7 @@ void Socks5Connection::readyRead() {
 
       if (m_inSocket->write((const char*)&packet, sizeof(ServerChoicePacket)) !=
           sizeof(ServerChoicePacket)) {
-        m_inSocket->close();
+        setError(ErrorGeneral, m_inSocket->errorString());
         return;
       }
 
@@ -162,16 +232,11 @@ void Socks5Connection::readyRead() {
         return;
       }
       if (packet.value().version != 0x5 || packet.value().rsv != 0x00) {
-        ServerResponsePacket packet(createServerResponsePacket(ErrorGeneral));
-        m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
-        m_inSocket->close();
+        setError(ErrorGeneral, "Malformed connection request");
         return;
       }
       if (packet.value().cmd != 0x01u /* connection */) {
-        ServerResponsePacket packet(
-            createServerResponsePacket(ErrorCommandNotSupported));
-        m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
-        m_inSocket->close();
+        setError(ErrorCommandNotSupported, "Command not supported");
         return;
       }
       m_addressType = packet.value().atype;
@@ -200,25 +265,25 @@ void Socks5Connection::readyRead() {
 
         uint8_t length;
         if (m_inSocket->read((char*)&length, 1) != 1) {
-          m_inSocket->close();
+          setError(ErrorGeneral, m_inSocket->errorString());
           return;
         }
 
         char buffer[UINT8_MAX];
         if (m_inSocket->read(buffer, length) != length) {
-          m_inSocket->close();
+          setError(ErrorGeneral, m_inSocket->errorString());
           return;
         }
 
         uint16_t port;
         if (m_inSocket->read((char*)&port, sizeof(port)) != sizeof(port)) {
-          m_inSocket->close();
+          setError(ErrorGeneral, m_inSocket->errorString());
           return;
         }
 
         // Todo VPN-6510: Let's resolve the Host with the local device DNS
         QString hostname = QString::fromUtf8(buffer, length);
-        m_dnsLookupStack.append(hostname);
+        m_hostLookupStack.append(hostname);
 
         // Start a DNS lookup to handle this request.
         m_dnsLookupAttempts = MAX_DNS_LOOKUP_ATTEMPTS;
@@ -245,22 +310,16 @@ void Socks5Connection::readyRead() {
       }
 
       else {
-        ServerResponsePacket packet(
-            createServerResponsePacket(ErrorAddressNotSupported));
-        m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
-        m_inSocket->close();
+        setError(ErrorAddressNotSupported, "Address type not supported");
         return;
       }
     }
 
     break;
 
-    case Proxy: {
-      qint64 bytes = proxy(m_inSocket, m_outSocket);
-      if (bytes) {
-        emit dataSentReceived(bytes, 0);
-      }
-    } break;
+    case Proxy:
+      proxy(m_inSocket, m_outSocket, m_sendHighWaterMark);
+      break;
 
     default:
       Q_ASSERT(false);
@@ -268,23 +327,57 @@ void Socks5Connection::readyRead() {
   }
 }
 
-// TODO: VPN-6513 make sure we cannot drop bytes even under pressure.
-qint64 Socks5Connection::proxy(QIODevice* a, QIODevice* b) {
-  Q_ASSERT(a && b);
-
-  qint64 bytes = 0;
-  char buffer[4096];
-  while (a->bytesAvailable()) {
-    qint64 val =
-        a->read(buffer, qMin(a->bytesAvailable(), (qint64)sizeof(buffer)));
-    if (val <= 0 || b->write(buffer, val) != val) {
-      return -1;
-    }
-
-    bytes += val;
+void Socks5Connection::bytesWritten(qint64 bytes) {
+  // Ignore this signal outside of the proxy state.
+  if (m_state != Proxy) {
+    return;
   }
 
-  return bytes;
+  // Ignore this signal if it's just reporting a negotiation packet.
+  if (m_recvIgnoreBytes >= bytes) {
+    m_recvIgnoreBytes -= bytes;
+    return;
+  } else if (m_recvIgnoreBytes > 0) {
+    bytes -= m_recvIgnoreBytes;
+    m_recvIgnoreBytes = 0;
+  }
+
+  // Drive statistics and proxy data.
+  emit dataSentReceived(0, bytes);
+  proxy(m_inSocket, m_outSocket, m_recvHighWaterMark);
+}
+
+void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
+                             quint64& watermark) {
+  Q_ASSERT(from && to);
+
+  for (;;) {
+    qint64 available = from->bytesAvailable();
+    if (available <= 0) {
+      break;
+    }
+
+    qint64 capacity = MAX_CONNECTION_BUFFER - to->bytesToWrite();
+    if (capacity <= 0) {
+      break;
+    }
+
+    QByteArray data = from->read(qMin(available, capacity));
+    if (data.length() == 0) {
+      break;
+    }
+    qint64 sent = to->write(data);
+    if (sent != data.length()) {
+      qDebug() << "Truncated write. Sent" << sent << "of" << data.length();
+      break;
+    }
+  }
+
+  // Update buffer high watermark.
+  qint64 queued = to->bytesToWrite();
+  if (queued > watermark) {
+    watermark = queued;
+  }
 }
 
 void Socks5Connection::dnsResolutionFinished(quint16 port) {
@@ -299,11 +392,7 @@ void Socks5Connection::dnsResolutionFinished(quint16 port) {
   });
 
   if (lookup->error() != QDnsLookup::NoError) {
-    qDebug() << "Received error:" << lookup->errorString();
-    ServerResponsePacket packet(
-        createServerResponsePacket(ErrorHostUnreachable));
-    m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
-    m_inSocket->close();
+    setError(ErrorHostUnreachable, lookup->errorString());
     return;
   }
 
@@ -320,10 +409,7 @@ void Socks5Connection::dnsResolutionFinished(quint16 port) {
   // resolution and report the host as unreachable. This safeguards us from
   // recursive DNS loops and other unresolvable situations.
   if (m_dnsLookupAttempts <= 0) {
-    ServerResponsePacket packet(
-        createServerResponsePacket(ErrorHostUnreachable));
-    m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
-    m_inSocket->close();
+    setError(ErrorHostUnreachable, "Maximum DNS attempts exhausted");
     return;
   }
 
@@ -331,7 +417,7 @@ void Socks5Connection::dnsResolutionFinished(quint16 port) {
   auto cnameRecords = lookup->canonicalNameRecords();
   if (cnameRecords.length() > 0) {
     QString target = cnameRecords.first().value();
-    m_dnsLookupStack.append(target);
+    m_hostLookupStack.append(target);
     lookup->setName(target);
     lookup->setType(QDnsLookup::ANY);
     lookup->lookup();
@@ -350,10 +436,7 @@ void Socks5Connection::dnsResolutionFinished(quint16 port) {
     //
     // We can also receive more than one service record and we are expected
     // to load balance/fallback amongst them.
-    ServerResponsePacket packet(
-        createServerResponsePacket(ErrorHostUnreachable));
-    m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
-    m_inSocket->close();
+    setError(ErrorHostUnreachable, "SRV records not supported");
     return;
   }
 
@@ -367,13 +450,12 @@ void Socks5Connection::dnsResolutionFinished(quint16 port) {
   }
 
   // Otherwise, no such host was found.
-  ServerResponsePacket packet(createServerResponsePacket(ErrorHostUnreachable));
-  m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
-  m_inSocket->close();
+  setError(ErrorHostUnreachable, "DNS hostname not found");
 }
 
 void Socks5Connection::configureOutSocket(quint16 port) {
   Q_ASSERT(!m_destAddress.isNull());
+  m_hostLookupStack.append(m_destAddress.toString());
   m_outSocket = new QTcpSocket(this);
   emit setupOutSocket(m_outSocket, m_destAddress);
 
@@ -383,7 +465,7 @@ void Socks5Connection::configureOutSocket(quint16 port) {
     ServerResponsePacket packet(createServerResponsePacket(0x00, m_socksPort));
     if (m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket)) !=
         sizeof(ServerResponsePacket)) {
-      m_inSocket->close();
+      setError(ErrorGeneral, m_inSocket->errorString());
       return;
     }
 
@@ -391,27 +473,24 @@ void Socks5Connection::configureOutSocket(quint16 port) {
     readyRead();
   });
 
-  connect(m_outSocket, &QTcpSocket::readyRead, this, [this]() {
-    qint64 bytes = proxy(m_outSocket, m_inSocket);
-    if (bytes > 0) {
-      emit dataSentReceived(0, bytes);
-    } else if (bytes < 0) {
-      // We hit an error. close.
-      m_inSocket->close();
-    }
+  connect(m_outSocket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
+    emit dataSentReceived(bytes, 0);
+    proxy(m_inSocket, m_outSocket, m_sendHighWaterMark);
   });
 
+  connect(m_outSocket, &QTcpSocket::readyRead, this,
+          [this]() { proxy(m_outSocket, m_inSocket, m_recvHighWaterMark); });
+
   connect(m_outSocket, &QTcpSocket::disconnected, this,
-          [this]() { m_inSocket->close(); });
+          [this]() { setState(Closed); });
 
   connect(m_outSocket, &QTcpSocket::errorOccurred, this,
           [this](QAbstractSocket::SocketError error) {
-            if (m_state != Proxy) {
-              ServerResponsePacket packet(
-                  createServerResponsePacket(socketErrorToSocks5Rep(error)));
-              m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
+            if (error == QAbstractSocket::RemoteHostClosedError) {
+              setState(Closed);
+            } else {
+              setError(ErrorGeneral, m_outSocket->errorString());
             }
-            m_inSocket->close();
           });
 }
 

@@ -120,14 +120,35 @@ void SocksLogger::dataSentReceived(qint64 sent, qint64 received) {
   m_rx_bytes.addSample(received);
 }
 
+QDebug& SocksLogger::printEventStack(QDebug& msg, Socks5Connection* conn) {
+  bool first = true;
+  for (const QString& hostname : conn->hostLookupStack()) {
+    if (!first) {
+      msg << "->";
+    }
+    first = false;
+    msg << hostname;
+  }
+  return msg;
+}
+
 void SocksLogger::connectionStateChanged() {
   Socks5Connection* conn = qobject_cast<Socks5Connection*>(QObject::sender());
   if (conn->state() == Socks5Connection::Proxy) {
     auto msg = qDebug() << "Connecting" << conn->clientName() << "to";
-    for (const QString& hostname : conn->dnsLookupStack()) {
-      msg << hostname << "->";
+    printEventStack(msg, conn);
+  }
+  if (conn->state() == Socks5Connection::Closed) {
+    if (!conn->errorString().isEmpty()) {
+      // Failed connection
+      auto msg = qDebug() << "Failed";
+      printEventStack(msg, conn) << "->" << conn->errorString();
+    } else {
+      // Successful connection
+      auto msg = qDebug() << "Closed";
+      printEventStack(msg, conn) << "txbuf" << conn->sendHighWaterMark()
+                                 << "rxbuf" << conn->recvHighWaterMark();
     }
-    msg << conn->destAddress().toString();
   }
 }
 
