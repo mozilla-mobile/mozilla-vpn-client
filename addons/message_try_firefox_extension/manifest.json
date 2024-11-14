@@ -1,0 +1,63 @@
+{
+  "api_version": "0.1",
+  "id": "message_try_firefox_extension",
+  "name": "Try the Firefox extension",
+  "type": "message",
+  "conditions": {
+    "min_client_version": "2.25.1",
+    "enabled_features": ["webExtension"],
+    "trigger_time": 1209600,
+    "platforms": ["windows"]
+  },
+  "message": {
+    "date": 1733157651,
+    "usesSharedStrings": true,
+    "shortVersion": "N/A",
+    "id": "message_try_firefox_extension.24",
+    "title": "vpn.tryFirefoxExtension.title",
+    "subtitle": "vpn.tryFirefoxExtension.subtitle",
+    "badge": "new_update",
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "ulist",
+        "content": [
+          {
+            "id": "l_1",
+            "type": "text",
+            "content": "vpn.tryFirefoxExtension.bullet1"
+          },
+          {
+            "id": "l_2",
+            "type": "text",
+            "content": "vpn.tryFirefoxExtension.bullet2"
+          },
+          {
+            "id": "l_3",
+            "type": "text",
+            "content": "vpn.tryFirefoxExtension.bullet3"
+          }
+        ]
+      },
+      {
+        "id": "c_2",
+        "type": "text",
+        "content": "vpn.tryFirefoxExtension.finalLine"
+      },
+      {
+        "id": "c_3",
+        "type": "button",
+        "style": "primary",
+        "content": "vpn.tryFirefoxExtension.getExtension",
+        "javascript": "getExtension.js"
+      },
+      {
+        "id": "c_4",
+        "type": "button",
+        "style": "link",
+        "content": "vpn.tryFirefoxExtension.downloadFirefox",
+        "javascript": "downloadFirefox.js"
+      }
+    ]
+  }
+}

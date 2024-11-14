@@ -33,7 +33,7 @@
 #
 # String can contain just one specific type of argument, the short version number.
 # Add '%1' where the version should go. This will get replaced with the addons message's
-# 'shortVersion' (from manifeste.json), for instance '2.24'
+# 'shortVersion' (from manifest.json), for instance '2.24'
 #
 #
 # Strings that are no longer needed should be removed from this file.
@@ -60,14 +60,29 @@ commonStrings:
   getHelpButton:
     value: Get help
     comment: Button label
-  # tester:
-  #   value: shouldn't show up in translation file
-  #   comment: Label for `Get help` button
 
-# 224updateMessage:
-#   somethingSpecificJustToThisMessage:
-#     value: This is just an example
-#     comment: Use this as as template for strings that we expect to only use in one message.
-
-# These sample commented out translations can be used in testing, to ensure this is working as expected. Feel free to remove in
-# the near future, when this file has more translations.
+tryFirefoxExtension:
+  title:
+    value: Try the Firefox extension
+    comment: Title for message
+  subtitle:
+    value: Personalize your VPN protections to meet your web browsing needs.
+    comment: Subtitle for message
+  bullet1:
+    value: Turn off VPN for specific websites
+    comment: First bullet point
+  bullet2:
+    value: Set different locations for different websites, to see the web as you prefer
+    comment: Second bullet point
+  bullet3:
+    value: Keep protection for Firefox on, even when the Mozilla VPN app is off
+    comment: Third bullet point
+  finalLine:
+    value: Not using Firefox to browse? Give it a try.
+    comment: Final 'call to action' line of message
+  getExtension:
+    value: Get the extension
+    comment: Button label
+  downloadFirefox:
+    value: Download Firefox
+    comment: Button label

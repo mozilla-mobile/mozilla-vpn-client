@@ -97,7 +97,10 @@ def retrieve_strings_blocks(blocks, filename, strings, prefix, shared_strings):
 
         block_id = block["id"]
         legacy_block_string_id = f"{prefix}.block.{block_id}"
-        block_string_id = legacy_block_string_id if not shared_strings else block["content"]
+        if block["type"] in ["olist", "ulist"]:
+            block_string_id = legacy_block_string_id
+        else:
+            block_string_id = legacy_block_string_id if not shared_strings else block["content"]
         block_default_comment = comment_types.get(block["type"], "")
         if block_string_id in strings:
             exit(f"Duplicate block enum {block_string_id} when parsing {filename}")
@@ -128,7 +131,8 @@ def retrieve_strings_blocks(blocks, filename, strings, prefix, shared_strings):
                 )
 
             subblock_id = subblock["id"]
-            subblock_string_id = f"{prefix}.block.{block_id}.{subblock_id}" if not shared_strings else subblock["content"]
+            legacy_subblock_string_id = f"{prefix}.block.{block_id}.{subblock_id}"
+            subblock_string_id = legacy_subblock_string_id if not shared_strings else subblock["content"]
             if subblock_string_id in strings:
                 exit(
                     f"Duplicate sub-block enum {subblock_string_id} when parsing {filename}"
@@ -138,7 +142,8 @@ def retrieve_strings_blocks(blocks, filename, strings, prefix, shared_strings):
                 translation_obj = find_translation_object(shared_strings, subblock_string_id)
                 strings[subblock_string_id] = {
                     "value": translation_obj['value'][0],
-                    "comments": translation_comment(translation_obj)
+                    "comments": translation_comment(translation_obj),
+                    "legacy_id": legacy_subblock_string_id
                 }
             else:
                 strings[subblock_string_id] = {

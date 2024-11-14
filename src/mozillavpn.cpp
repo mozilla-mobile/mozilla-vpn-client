@@ -1282,6 +1282,15 @@ void MozillaVPN::registerUrlOpenerLabels() {
             : settingsHolder->captivePortalIpv4Addresses().first());
   });
 
+  uo->registerUrlLabel("downloadExtension", []() -> QString {
+    // TODO: This link MUST be updated with a link to our extension
+    return "https://addons.mozilla.org/en-US/firefox/";
+  });
+
+  uo->registerUrlLabel("downloadFirefoxWindows", []() -> QString {
+    return "https://www.mozilla.org/firefox/windows/";
+  });
+
   uo->registerUrlLabel("inspector", []() -> QString {
     return "https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/";
   });
