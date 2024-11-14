@@ -16,7 +16,7 @@
 #include <QtDBus/QtDBus>
 
 #include "apptracker.h"
-#include "bpfsetmark.h"
+#include "bpfsplittunnel.h"
 #include "dbus_adaptor.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -48,7 +48,7 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
   connect(m_appTracker, SIGNAL(appTerminated(QString, QString)), this,
           SLOT(appTerminated(QString, QString)));
 
-  m_bpfSetMark = new BpfSetMark(this);
+  m_bpfSplitTunnel = new BpfSplitTunnel(this);
 
   // Setup to track user login sessions.
   QDBusConnection bus = QDBusConnection::systemBus();
@@ -238,7 +238,7 @@ void DBusService::appLaunched(const QString& cgroup,
   // Apply firewall rules to this control group.
   m_excludedCgroups[cgroup] = state;
   if (state == Excluded) {
-    m_bpfSetMark->attachCgroup(cgroup);
+    m_bpfSplitTunnel->attachCgroup(cgroup);
     //m_wgutils->excludeCgroup(cgroup);
   }
 }
@@ -261,7 +261,7 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
     m_excludedApps.remove(desktopFileId);
     for (const QString& cgroup :
          m_appTracker->findByDesktopFileId(desktopFileId)) {
-      m_bpfSetMark->detachCgroup(cgroup);
+      m_bpfSplitTunnel->detachCgroup(cgroup);
       //m_wgutils->resetCgroup(cgroup);
     }
     return;
@@ -272,12 +272,12 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
   for (const QString& cgroup :
        m_appTracker->findByDesktopFileId(desktopFileId)) {
     if (m_excludedCgroups.contains(cgroup)) {
-      m_bpfSetMark->detachCgroup(cgroup);
+      m_bpfSplitTunnel->detachCgroup(cgroup);
       //m_wgutils->resetCgroup(cgroup);
     }
     m_excludedCgroups[cgroup] = state;
     if (state == Excluded) {
-      m_bpfSetMark->attachCgroup(cgroup);
+      m_bpfSplitTunnel->attachCgroup(cgroup);
       // Excluded control groups are given special netfilter rules to direct
       // their traffic outside of the VPN tunnel.
       //m_wgutils->excludeCgroup(cgroup);

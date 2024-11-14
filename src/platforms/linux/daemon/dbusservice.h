@@ -14,7 +14,7 @@
 #include "wireguardutilslinux.h"
 
 class AppTracker;
-class BpfSetMark;
+class BpfSplitTunnel;
 class DbusAdaptor;
 
 class DBusService final : public Daemon, protected QDBusContext {
@@ -72,7 +72,7 @@ class DBusService final : public Daemon, protected QDBusContext {
   DnsUtilsLinux* m_dnsutils = nullptr;
 
   AppTracker* m_appTracker = nullptr;
-  BpfSetMark* m_bpfSetMark = nullptr;
+  BpfSplitTunnel* m_bpfSplitTunnel = nullptr;
   QHash<QString, AppState> m_excludedApps;
   QHash<QString, AppState> m_excludedCgroups;
 

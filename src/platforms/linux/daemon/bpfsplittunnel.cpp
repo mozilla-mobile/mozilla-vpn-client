@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "bpfsetmark.h"
+#include "bpfsplittunnel.h"
 
 #include <linux/bpf.h>
 #include <linux/filter.h>
@@ -20,9 +20,9 @@ namespace {
 Logger logger("BpfSetMark");
 }  // namespace
 
-BpfSetMark::BpfSetMark(QObject* parent) : QObject(parent) {
-  MZ_COUNT_CTOR(BpfSetMark);
-  logger.debug() << "BpfSetMark created";
+BpfSplitTunnel::BpfSplitTunnel(QObject* parent) : QObject(parent) {
+  MZ_COUNT_CTOR(BpfSplitTunnel);
+  logger.debug() << "BpfSplitTunnel created";
 
   m_cgroupMount = LinuxDependencies::findCgroup2Path();
   if (m_cgroupMount.isEmpty()) {
@@ -33,13 +33,13 @@ BpfSetMark::BpfSetMark(QObject* parent) : QObject(parent) {
   m_program = loadProgram();
 }
 
-BpfSetMark::~BpfSetMark() {
-  MZ_COUNT_DTOR(BpfSetMark);
-  logger.debug() << "BpfSetMark destroyed";
+BpfSplitTunnel::~BpfSplitTunnel() {
+  MZ_COUNT_DTOR(BpfSplitTunnel);
+  logger.debug() << "BpfSplitTunnel destroyed";
 }
 
 // Load the BPF traffic marking program
-int BpfSetMark::loadProgram() {
+int BpfSplitTunnel::loadProgram() {
   // Basic BPF program to set the firewall mark:
   //   r2 = fwmark
   //   sock->mark = r2
@@ -72,7 +72,7 @@ int BpfSetMark::loadProgram() {
 }
 
 // Attach the BPF traffic marking program to the desired control group.
-void BpfSetMark::attachCgroup(const QString& cgroup) {
+void BpfSplitTunnel::attachCgroup(const QString& cgroup) {
   if (m_cgroupMount.isEmpty() || (m_program < 0)) {
     return;
   }
@@ -93,7 +93,7 @@ void BpfSetMark::attachCgroup(const QString& cgroup) {
 }
 
 // Detach the BPF traffic marking program from the desired control group.
-void BpfSetMark::detachCgroup(const QString& cgroup) {
+void BpfSplitTunnel::detachCgroup(const QString& cgroup) {
   if (m_cgroupMount.isEmpty() || (m_program < 0)) {
     return;
   }
@@ -113,6 +113,6 @@ void BpfSetMark::detachCgroup(const QString& cgroup) {
 }
 
 // Detach the BPF traffic marking program from all control groups.
-void BpfSetMark::detachAll() {
+void BpfSplitTunnel::detachAll() {
   // TODO: Implement Me!
 }

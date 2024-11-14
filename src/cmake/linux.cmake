@@ -69,8 +69,8 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.h
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/bpfsetmark.cpp
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/bpfsetmark.h
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/bpfsplittunnel.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/bpfsplittunnel.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbusservice.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbusservice.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbustypeslinux.h

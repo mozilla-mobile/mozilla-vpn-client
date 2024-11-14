@@ -2,19 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef BPFSETMARK_H
-#define BPFSETMARK_H
+#ifndef BPFSPLITTUNNEL_H
+#define BPFSPLITTUNNEL_H
 
 #include <QObject>
 #include <QDir>
 
-class BpfSetMark final : public QObject {
+class BpfSplitTunnel final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(BpfSetMark)
+  Q_DISABLE_COPY_MOVE(BpfSplitTunnel)
 
  public:
-  explicit BpfSetMark(QObject* parent = nullptr);
-  ~BpfSetMark();
+  explicit BpfSplitTunnel(QObject* parent = nullptr);
+  ~BpfSplitTunnel();
 
  public:
   void attachCgroup(const QString& cgroup);
@@ -29,4 +29,4 @@ class BpfSetMark final : public QObject {
   QString m_cgroupMount;
 };
 
-#endif  // BPFSETMARK_H
+#endif  // BPFSPLITTUNNEL_H
