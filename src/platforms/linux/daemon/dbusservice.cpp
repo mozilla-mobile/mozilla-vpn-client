@@ -15,6 +15,8 @@
 #include <QScopeGuard>
 #include <QtDBus/QtDBus>
 
+#include "apptracker.h"
+#include "bpfsetmark.h"
 #include "dbus_adaptor.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -45,6 +47,8 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
           SLOT(appLaunched(QString, QString)));
   connect(m_appTracker, SIGNAL(appTerminated(QString, QString)), this,
           SLOT(appTerminated(QString, QString)));
+
+  m_bpfSetMark = new BpfSetMark(this);
 
   // Setup to track user login sessions.
   QDBusConnection bus = QDBusConnection::systemBus();
@@ -234,7 +238,8 @@ void DBusService::appLaunched(const QString& cgroup,
   // Apply firewall rules to this control group.
   m_excludedCgroups[cgroup] = state;
   if (state == Excluded) {
-    m_wgutils->excludeCgroup(cgroup);
+    m_bpfSetMark->attachCgroup(cgroup);
+    //m_wgutils->excludeCgroup(cgroup);
   }
 }
 
@@ -244,7 +249,7 @@ void DBusService::appTerminated(const QString& cgroup,
 
   // Remove any firewall rules applied to this control group.
   if (m_excludedCgroups.remove(cgroup)) {
-    m_wgutils->resetCgroup(cgroup);
+    //m_wgutils->resetCgroup(cgroup);
   }
 }
 
@@ -256,7 +261,8 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
     m_excludedApps.remove(desktopFileId);
     for (const QString& cgroup :
          m_appTracker->findByDesktopFileId(desktopFileId)) {
-      m_wgutils->resetCgroup(cgroup);
+      m_bpfSetMark->detachCgroup(cgroup);
+      //m_wgutils->resetCgroup(cgroup);
     }
     return;
   }
@@ -266,13 +272,15 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
   for (const QString& cgroup :
        m_appTracker->findByDesktopFileId(desktopFileId)) {
     if (m_excludedCgroups.contains(cgroup)) {
-      m_wgutils->resetCgroup(cgroup);
+      m_bpfSetMark->detachCgroup(cgroup);
+      //m_wgutils->resetCgroup(cgroup);
     }
     m_excludedCgroups[cgroup] = state;
     if (state == Excluded) {
+      m_bpfSetMark->attachCgroup(cgroup);
       // Excluded control groups are given special netfilter rules to direct
       // their traffic outside of the VPN tunnel.
-      m_wgutils->excludeCgroup(cgroup);
+      //m_wgutils->excludeCgroup(cgroup);
     }
   }
 }
@@ -280,7 +288,7 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
 /* Clear the firewall and return all applications to the active state */
 void DBusService::clearAppStates() {
   logger.debug() << "Clearing excluded app list";
-  m_wgutils->resetAllCgroups();
+  //m_wgutils->resetAllCgroups();
   m_excludedCgroups.clear();
   m_excludedApps.clear();
 }

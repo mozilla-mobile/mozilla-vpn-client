@@ -8,12 +8,13 @@
 #include <QDBusContext>
 #include <QHash>
 
-#include "apptracker.h"
 #include "daemon/daemon.h"
 #include "dnsutilslinux.h"
 #include "iputilslinux.h"
 #include "wireguardutilslinux.h"
 
+class AppTracker;
+class BpfSetMark;
 class DbusAdaptor;
 
 class DBusService final : public Daemon, protected QDBusContext {
@@ -71,6 +72,7 @@ class DBusService final : public Daemon, protected QDBusContext {
   DnsUtilsLinux* m_dnsutils = nullptr;
 
   AppTracker* m_appTracker = nullptr;
+  BpfSetMark* m_bpfSetMark = nullptr;
   QHash<QString, AppState> m_excludedApps;
   QHash<QString, AppState> m_excludedCgroups;
 

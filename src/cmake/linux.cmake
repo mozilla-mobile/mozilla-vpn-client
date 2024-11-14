@@ -43,14 +43,15 @@ endif()
 if(NOT BUILD_FLATPAK)
     # Link to libcap and libsecret
     find_package(PkgConfig REQUIRED)
+    pkg_check_modules(LIBBPF REQUIRED IMPORTED_TARGET libbpf)
     pkg_check_modules(LIBCAP REQUIRED IMPORTED_TARGET libcap)
     pkg_check_modules(LIBSECRET REQUIRED IMPORTED_TARGET libsecret-1)
     if (QT_FEATURE_static)
-        target_link_libraries(mozillavpn PRIVATE ${LIBCAP_STATIC_LIBRARIES} ${LIBSECRET_STATIC_LIBRARIES})
-        target_include_directories(mozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS} ${LIBSECRET_STATIC_INCLUDE_DIRS})
-        target_compile_options(mozillavpn PRIVATE ${LIBCAP_STATIC_CFLAGS} ${LIBSECRET_STATIC_CFLAGS})
+        target_link_libraries(mozillavpn PRIVATE ${LIBBPF_STATIC_LIBRARIES} ${LIBCAP_STATIC_LIBRARIES} ${LIBSECRET_STATIC_LIBRARIES})
+        target_include_directories(mozillavpn PRIVATE ${LIBBPF_STATIC_INCLUDE_DIRS} ${LIBCAP_STATIC_INCLUDE_DIRS} ${LIBSECRET_STATIC_INCLUDE_DIRS})
+        target_compile_options(mozillavpn PRIVATE ${LIBBPF_STATIC_CFLAGS} ${LIBCAP_STATIC_CFLAGS} ${LIBSECRET_STATIC_CFLAGS})
     else()
-        target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP PkgConfig::LIBSECRET)
+        target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP PkgConfig::LIBSECRET PkgConfig::LIBBPF)
     endif()
 
     target_sources(mozillavpn PRIVATE
@@ -68,6 +69,8 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.h
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/bpfsetmark.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/bpfsetmark.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbusservice.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbusservice.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbustypeslinux.h
