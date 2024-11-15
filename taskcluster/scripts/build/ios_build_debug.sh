@@ -25,7 +25,6 @@ export LC_ALL=en_US.utf-8
 export LANG=en_US.utf-8
 export PYTHONIOENCODING="UTF-8"
 
-
 print Y "Installing conda"
 # We need to call bash with a login shell, so that conda is intitialized
 source $TASK_WORKDIR/fetches/bin/activate
@@ -45,11 +44,11 @@ if [ -d ${TASK_HOME}/build ]; then
 fi
 mkdir ${TASK_HOME}/build
 
-env
-whereis qt-cmake
-cat $TASK_WORKDIR/fetches/bin/qt-cmake
+# Clear the SDKROOT and rely on CMake to figure it out. Otherwise, if this
+# is set to the host SDK it will break the iOS toolchain detection.
+unset SDKROOT
 
-qt-cmake -S . -B ${TASK_HOME}/build \
+$TASK_WORKDIR/fetches/bin/qt-cmake -S . -B ${TASK_HOME}/build \
   -DCMAKE_OSX_ARCHITECTURES="arm64" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY="" \
   -DCMAKE_XCODE_ATTRIBUTE_CODE_SIGNING_REQUIRED="NO" \
