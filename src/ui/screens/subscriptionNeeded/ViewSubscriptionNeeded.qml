@@ -194,7 +194,7 @@ MZFlickable {
                 Layout.fillWidth: true
             }
 
-            MZGreyLink {
+            MZTextLink {
                 objectName: "vpnSubscriptionNeededTermsOfService"
 
                 Layout.fillWidth: true
@@ -218,7 +218,7 @@ MZFlickable {
                 color: MZTheme.colors.textLink.defaultColor
             }
 
-            MZGreyLink {
+            MZTextLink {
                 objectName: "vpnSubscriptionNeededPrivacyNotice"
 
                 Layout.fillWidth: true

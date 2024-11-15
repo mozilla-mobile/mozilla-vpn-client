@@ -31,7 +31,7 @@ qt_add_qml_module(components
          MZFocusBorder.qml
          MZFocusOutline.qml
          MZFooterLink.qml
-         MZGreyLink.qml
+         MZTextLink.qml
          MZHeaderLink.qml
          MZHeadline.qml
          MZHelpSheet.qml

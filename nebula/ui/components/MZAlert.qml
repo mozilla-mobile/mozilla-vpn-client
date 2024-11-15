@@ -55,7 +55,7 @@ Rectangle {
         readonly property string whiteCloseIcon: "qrc:/nebula/resources/close-white.svg"
         property var alertColor: MZTheme.colors.normalLevelAccent
         property var alertHoverColor: MZTheme.colors.normalButton.buttonHovered
-        property var alertClickColor: MZTheme.colors.normalButton.alertClickColor
+        property var alertClickColor: MZTheme.colors.normalButton.buttonPressed
         property var fontColor: MZTheme.colors.fontColorInverted
         property var fontSize: 13
         property var lineHeight: 21
