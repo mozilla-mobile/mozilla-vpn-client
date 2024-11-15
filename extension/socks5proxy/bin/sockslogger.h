@@ -2,14 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef VERBOSELOGGER_H
-#define VERBOSELOGGER_H
+#ifndef SOCKSLOGGER_H
+#define SOCKSLOGGER_H
 
+#include <QMutex>
 #include <QObject>
 #include <QString>
 #include <QTimer>
 #include <QVector>
 
+class QDir;
+class QFile;
 class Socks5;
 class Socks5Connection;
 
@@ -43,18 +46,28 @@ class BoxcarAverage final {
   QVector<qint64> m_data;
 };
 
-class VerboseLogger final : public QObject {
+class SocksLogger final : public QObject {
   Q_OBJECT
 
  public:
-  explicit VerboseLogger(Socks5* proxy);
-  ~VerboseLogger() = default;
+  explicit SocksLogger(QObject* parent = nullptr);
+  ~SocksLogger();
 
   static QString bytesToString(qint64 value);
-
+  static QDebug& printEventStack(QDebug& msg, Socks5Connection* conn);
   void printStatus();
 
+  const QString& logfile() const { return m_logFileName; }
+  void setLogfile(const QString& filename);
+  void setVerbose(bool enabled);
+
+ public slots:
+  void incomingConnection(Socks5Connection* conn);
+
  private:
+  static bool makeLogDir(const QDir& dir);
+  void logfileHandler(QtMsgType type, const QMessageLogContext& ctx,
+                      const QString& msg);
   static void logHandler(QtMsgType type, const QMessageLogContext& ctx,
                          const QString& msg);
   void dataSentReceived(qint64 sent, qint64 received);
@@ -62,19 +75,25 @@ class VerboseLogger final : public QObject {
   void tick();
 
  private:
-  Socks5* m_socks = nullptr;
+  static SocksLogger* s_instance;
+
+  bool m_verbose = false;
+  QString m_logFileName;
+  QMutex m_logFileMutex;
+  QFile* m_logFileDevice = nullptr;
 
   struct Event {
     QString m_newConnection;
     qint64 m_when;
   };
   QList<Event> m_events;
+  qsizetype m_numConnections = 0;
 
   QTimer m_timer;
-  static QString s_lastStatus;
+  QString m_lastStatus;
 
   BoxcarAverage m_rx_bytes;
   BoxcarAverage m_tx_bytes;
 };
 
-#endif  // VERBOSELOGGER_H
+#endif  // SOCKSLOGGER_H

@@ -5,16 +5,20 @@
 #include "windowsbypass.h"
 
 #include <WS2tcpip.h>
+#include <fwpmu.h>
 #include <netioapi.h>
 #include <windows.h>
 #include <winsock2.h>
 
 #include <QAbstractSocket>
+#include <QFileInfo>
 #include <QHostAddress>
 #include <QScopeGuard>
+#include <QSettings>
 #include <QUuid>
 
 #include "socks5.h"
+#include "winutils.h"
 
 // Fixed GUID of the Wireguard NT driver.
 constexpr const QUuid WIREGUARD_NT_GUID(0xf64063ab, 0xbfee, 0x4881, 0xbf, 0x79,
@@ -144,17 +148,6 @@ void WindowsBypass::outgoingConnection(QAbstractSocket* s,
 }
 
 // static
-QString WindowsBypass::win32strerror(unsigned long code) {
-  LPWSTR buffer = nullptr;
-  DWORD flags = FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
-                FORMAT_MESSAGE_IGNORE_INSERTS;
-  DWORD size = FormatMessageW(flags, nullptr, code,
-                              MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT),
-                              (LPWSTR)&buffer, 0, nullptr);
-  QString result = QString::fromWCharArray(buffer, size);
-  LocalFree(buffer);
-  return result;
-}
 
 quint64 WindowsBypass::getVpnLuid() const {
   // Get the LUID of the wireguard interface, if it's up.
@@ -171,7 +164,8 @@ void WindowsBypass::refreshAddresses() {
   MIB_UNICASTIPADDRESS_TABLE* table;
   DWORD result = GetUnicastIpAddressTable(AF_UNSPEC, &table);
   if (result != NO_ERROR) {
-    qWarning() << "GetUnicastIpAddressTable() failed:" << win32strerror(result);
+    qWarning() << "GetUnicastIpAddressTable() failed:"
+               << WinUtils::win32strerror(result);
     return;
   }
   auto guard = qScopeGuard([table]() { FreeMibTable(table); });
@@ -340,7 +334,8 @@ void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2>& table,
   MIB_IPFORWARD_TABLE2* mib;
   DWORD result = GetIpForwardTable2(family, &mib);
   if (result != NO_ERROR) {
-    qWarning() << "GetIpForwardTable2() failed:" << win32strerror(result);
+    qWarning() << "GetIpForwardTable2() failed:"
+               << WinUtils::win32strerror(result);
     return;
   }
   auto mibGuard = qScopeGuard([mib] { FreeMibTable(mib); });

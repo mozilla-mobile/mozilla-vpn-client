@@ -4,20 +4,23 @@
 
 #include <QCommandLineParser>
 #include <QCoreApplication>
+#include <QDir>
 #include <QLocalServer>
 #include <QRandomGenerator>
+#include <QStandardPaths>
 #include <QString>
 #include <QTcpServer>
 #include <QTimer>
 
 #include "socks5.h"
-#include "verboselogger.h"
+#include "sockslogger.h"
 
-#ifdef __linux__
+#if defined(PROXY_OS_LINUX)
 #  include "linuxbypass.h"
-#endif
-#if defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#elif defined(PROXY_OS_WIN)
 #  include "windowsbypass.h"
+#  include "winfwpolicy.h"
+#  include "winsvcthread.h"
 #endif
 
 struct CliOptions {
@@ -27,6 +30,10 @@ struct CliOptions {
   QString username = {};
   QString password = {};
   bool verbose = false;
+  bool logfile = false;
+#if defined(PROXY_OS_WIN)
+  bool service = false;
+#endif
 };
 
 static CliOptions parseArgs(const QCoreApplication& app) {
@@ -48,11 +55,25 @@ static CliOptions parseArgs(const QCoreApplication& app) {
   QCommandLineOption passOption({"P", "password"}, "The password", "password");
   parser.addOption(passOption);
 
-  QCommandLineOption localOption({"l", "local"}, "Local socket name", "name");
+#if defined(PROXY_OS_WIN)
+  QCommandLineOption localOption({"n", "pipe"}, "SOCKS proxy over named pipe",
+                                 "name");
+#else
+  QCommandLineOption localOption({"n", "unix"},
+                                 "SOCKS proxy over UNIX domain socket", "path");
+#endif
   parser.addOption(localOption);
+
+  QCommandLineOption logfileOption({"l", "logfile"}, "Save logs to file");
+  parser.addOption(logfileOption);
 
   QCommandLineOption verboseOption({"v", "verbose"}, "Verbose");
   parser.addOption(verboseOption);
+
+#if defined(PROXY_OS_WIN)
+  QCommandLineOption serviceOption({"s", "service"}, "Windows service mode");
+  parser.addOption(serviceOption);
+#endif
   parser.process(app);
 
   CliOptions out = {};
@@ -77,9 +98,19 @@ static CliOptions parseArgs(const QCoreApplication& app) {
   if (parser.isSet(localOption)) {
     out.localSocketName = parser.value(localOption);
   }
+  if (parser.isSet(logfileOption)) {
+    out.logfile = true;
+  }
   if (parser.isSet(verboseOption)) {
     out.verbose = true;
   }
+#if defined(PROXY_OS_WIN)
+  if (parser.isSet(serviceOption)) {
+    out.service = true;
+    // Enforce logging when started as a service.
+    out.logfile = true;
+  }
+#endif
   return out;
 };
 
@@ -95,10 +126,29 @@ int main(int argc, char** argv) {
     return 1;
   }
 
+  auto* logger = new SocksLogger(&app);
+  logger->setVerbose(config.verbose);
+  if (config.logfile) {
+    auto location = QStandardPaths::AppLocalDataLocation;
+    QDir logdir(QStandardPaths::writableLocation(location));
+    logger->setLogfile(logdir.filePath("socksproxy.log"));
+  }
+
+#if defined(PROXY_OS_WIN)
+  if (config.service) {
+    WinSvcThread* svc = new WinSvcThread("Mozilla VPN Proxy");
+    svc->start();
+  }
+#endif
+
   Socks5* socks5;
   if (!config.localSocketName.isEmpty()) {
-    QLocalServer* server = new QLocalServer();
+    QLocalServer* server = new QLocalServer(&app);
+    QObject::connect(&app, &QCoreApplication::aboutToQuit, server,
+                     &QLocalServer::close);
+
     socks5 = new Socks5(server);
+    server->setSocketOptions(QLocalServer::WorldAccessOption);
     if (server->listen(config.localSocketName)) {
       qDebug() << "Starting on local socket" << server->fullServerName();
     } else if ((server->serverError() == QAbstractSocket::AddressInUseError) &&
@@ -112,24 +162,26 @@ int main(int argc, char** argv) {
       return 1;
     }
   } else {
-    QTcpServer* server = new QTcpServer();
+    QTcpServer* server = new QTcpServer(&app);
+    QObject::connect(&app, &QCoreApplication::aboutToQuit, server,
+                     &QTcpServer::close);
+
     socks5 = new Socks5(server);
     if (server->listen(config.addr, config.port)) {
-      qDebug() << "Starting on port" << config.port;
+      qDebug() << "Starting on port" << server->serverPort();
     } else {
       qWarning() << "Unable to listen to the proxy port" << config.port;
       return 1;
     }
   }
+  QObject::connect(socks5, &Socks5::incomingConnection, logger,
+                   &SocksLogger::incomingConnection);
 
-  if (config.verbose) {
-    new VerboseLogger(socks5);
-  }
-
-#ifdef __linux__
+#if defined(PROXY_OS_LINUX)
   new LinuxBypass(socks5);
-#elif defined(WIN32) || defined(_WIN32) || defined(__WIN32__) || defined(__NT__)
+#elif defined(PROXY_OS_WIN)
   new WindowsBypass(socks5);
+  WinFwPolicy::create(socks5);
 #endif
 
   return app.exec();

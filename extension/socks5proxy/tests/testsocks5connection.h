@@ -14,4 +14,5 @@ class TestSocks5Connection final : public QObject {
   void proxyEmpty();
   void proxy();
   void proxyClosed();
+  void proxyFlowControl();
 };

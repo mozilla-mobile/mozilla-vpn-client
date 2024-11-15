@@ -62,6 +62,9 @@ if __name__ == "__main__":
     for city in cities:
         # Remove state suffix, capitalize each work, remove spaces.
         id = city.split(",")[0].strip().title().replace(" ", "")
+        # Remove special characters like the `ö` in `Malmö`
+        id = re.sub(r'[^a-zA-Z]+', '', id)
+        # Add it to the map
         string_map[id] = city
 
     ###
