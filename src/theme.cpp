@@ -6,6 +6,7 @@
 
 #include <QDir>
 #include <QJSEngine>
+#include <QJSValueIterator>
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -68,57 +69,63 @@ void Theme::parseTheme(QJSEngine* engine, const QString& themeName) {
   QString path(":/nebula/themes/");
   path.append(themeName);
 
-  QJSValue themeValue;
+  QJSValue sizingValue;
   QJSValue colorsValue;
 
   {
     QString resource = path;
-    resource.append("/theme.js");
+    resource.append("/sizing.js");
     QFile file(ResourceLoader::instance()->loadFile(resource));
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
-      logger.error() << "Failed to open the theme.js for the" << themeName
+      logger.error() << "Failed to open the sizing.js for the" << themeName
                      << "theme";
       return;
     }
 
-    themeValue = engine->evaluate(file.readAll());
-    if (themeValue.isError()) {
-      logger.error() << "Exception processing the theme.js:"
-                     << themeValue.toString();
+    sizingValue = engine->evaluate(file.readAll());
+    if (sizingValue.isError()) {
+      logger.error() << "Exception processing the sizing.js:"
+                     << sizingValue.toString();
       return;
     }
 
-    if (!themeValue.isObject()) {
-      logger.error() << "Theme.js must expose an object";
+    if (!sizingValue.isObject()) {
+      logger.error() << "sizing.js must expose an object";
       return;
     }
   }
 
-  {
+  QByteArray completeColorFileBytes = QByteArray();
+  // The files in this next line need to be in the specific order so that they
+  // create a working JS object when appended.
+  QList<QString> colorFiles = {"/colors.js", "/theme.js", "/theme-derived.js"};
+  for (QString colorFile : colorFiles) {
     QString resource = path;
-    resource.append("/colors.js");
+    resource.append(colorFile);
     QFile file(resource);
     if (!file.open(QFile::ReadOnly | QFile::Text)) {
-      logger.error() << "Failed to open the color.js for the" << themeName
+      logger.error() << "Failed to open " << colorFile << "for the" << themeName
                      << "theme";
       return;
     }
+    QByteArray colorFileBytes = file.readAll();
+    completeColorFileBytes.append(colorFileBytes);
+  }
 
-    colorsValue = engine->evaluate(file.readAll());
-    if (colorsValue.isError()) {
-      logger.error() << "Exception processing the color.js:"
-                     << colorsValue.toString();
-      return;
-    }
+  colorsValue = engine->evaluate(completeColorFileBytes);
+  if (colorsValue.isError()) {
+    logger.error() << "Exception processing the colors:"
+                   << colorsValue.toString();
+    return;
+  }
 
-    if (!colorsValue.isObject()) {
-      logger.error() << "Color.js must expose an object";
-      return;
-    }
+  if (!colorsValue.isObject()) {
+    logger.error() << "The combined 3 color files must expose an object";
+    return;
   }
 
   ThemeData* data = new ThemeData();
-  data->theme = themeValue;
+  data->theme = sizingValue;
   data->colors = colorsValue;
   m_themes.insert(themeName, data);
 }
