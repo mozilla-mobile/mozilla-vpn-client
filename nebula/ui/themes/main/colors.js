@@ -7,6 +7,29 @@
 const color = {};
 
 /**
+ * Part 0: Helper functions
+ */
+const percentToHex = percent => {
+  const int8Bit = Math.round(percent * 255);
+  const hexAlphaValue = int8Bit.toString(16).padStart(2, '0');
+
+  return hexAlphaValue.toUpperCase();
+};
+
+// Not all #00xxxxx colors are identical. While they look identical
+// on screen, in transitions or with opacity changes they may look different.
+// Changing all `addTransparency(color.[anything], 0.0)` to color.transparency
+// will cause UI bugs.
+const addTransparency = (hexColor, percent) => {
+  const hexValue = hexColor.substring(1);
+  const hexAlphaValue = percentToHex(percent);
+
+  // Despite typical web usage being #{colorHex}{alphaHex}, Qt uses
+  // #{alphaHex}{colorHex}: https://doc.qt.io/qt-6/qcolor.html#fromString
+  return `#${hexAlphaValue}${hexValue}`;
+};
+
+/**
  * Part 1: Basic colors
  * Should NOT be used directly in code, and colors should not be modified.
  * (Can add to this section if really, truly needed.)
@@ -140,29 +163,6 @@ color.mediumOnboardingPurple = '#301962';
 color.darkerOnboardingPurple = '#1D0942';
 
 color.transparent = '#00000000';
-
-/**
- * Helper functions
- */
-const percentToHex = percent => {
-  const int8Bit = Math.round(percent * 255);
-  const hexAlphaValue = int8Bit.toString(16).padStart(2, '0');
-
-  return hexAlphaValue.toUpperCase();
-};
-
-// Not all #00xxxxx colors are identical. While they look identical
-// on screen, in transitions or with opacity changes they may look different.
-// Changing all `addTransparency(color.[anything], 0.0)` to color.transparency
-// will cause UI bugs.
-const addTransparency = (hexColor, percent) => {
-  const hexValue = hexColor.substring(1);
-  const hexAlphaValue = percentToHex(percent);
-
-  // Despite typical web usage being #{colorHex}{alphaHex}, Qt uses
-  // #{alphaHex}{colorHex}: https://doc.qt.io/qt-6/qcolor.html#fromString
-  return `#${hexAlphaValue}${hexValue}`;
-};
 
 /**
  * Part 2: Functional colors
