@@ -4,7 +4,6 @@
 
 #include "webextensionadapter.h"
 
-#include <QFileInfo>
 #include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -31,6 +30,10 @@
 
 #if defined(MZ_WINDOWS)
 #  include "platforms/windows/windowsutils.h"
+#endif
+
+#if defined(MZ_LINUX) && !defined(MZ_FLATPAK)
+#  include <QFileInfo>
 #endif
 
 #ifdef MZ_WINDOWS
