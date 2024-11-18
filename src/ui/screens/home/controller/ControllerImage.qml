@@ -26,7 +26,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.success.default
+                color: MZTheme.colors.successAccent
             }
             PropertyChanges {
                 target: insetIcon
@@ -44,7 +44,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.success.default
+                color: MZTheme.colors.successAccent
             }
             PropertyChanges {
                 target: insetIcon
@@ -64,7 +64,7 @@ Rectangle {
 
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.error.default
+                color: MZTheme.colors.errorAccentLight
             }
             PropertyChanges {
                 target: insetIcon
@@ -82,7 +82,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.success.default
+                color: MZTheme.colors.successAccent
             }
             PropertyChanges {
                 target: switchingIcon
@@ -97,7 +97,7 @@ Rectangle {
             name: VPNController.StateOff
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.error.default
+                color: MZTheme.colors.errorAccentLight
             }
             PropertyChanges {
                 target: insetIcon
@@ -109,7 +109,7 @@ Rectangle {
             name: VPNController.StateOnPartial
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.error.default
+                color: MZTheme.colors.errorAccentLight
             }
             PropertyChanges {
                 target: insetIcon
@@ -128,7 +128,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.success.default
+                color: MZTheme.colors.successAccent
             }
             PropertyChanges {
                 target: insetIcon
@@ -144,7 +144,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.success.default
+                color: MZTheme.colors.successAccent
             }
             PropertyChanges {
                 target: insetIcon
@@ -307,17 +307,17 @@ Rectangle {
             }
             switch(VPNConnectionHealth.stability) {
                 case(VPNConnectionHealth.NoSignal):
-                    insetCircle.color = MZTheme.colors.error.default;
+                    insetCircle.color = MZTheme.colors.errorAccentLight;
                     insetIcon.source = "qrc:/ui/resources/shield-off.svg";
                     break;
             
                 case(VPNConnectionHealth.Stable):
-                    insetCircle.color = MZTheme.colors.success.default;
+                    insetCircle.color = MZTheme.colors.successAccent;
                     insetIcon.source = "qrc:/ui/resources/shield-on.svg";
                     break;
             
                 case(VPNConnectionHealth.Unstable):
-                    insetCircle.color = MZTheme.colors.warning.default;
+                    insetCircle.color = MZTheme.colors.warningAccent;
                     break;
             
             }

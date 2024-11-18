@@ -19,7 +19,7 @@ import Mozilla.Shared 1.0
               anchors.left: parent.left
               anchors.right: parent.right
               height: 20
-              color: MZTheme.colors.green90
+              color: MZTheme.colors.successMain
 
           }
       }

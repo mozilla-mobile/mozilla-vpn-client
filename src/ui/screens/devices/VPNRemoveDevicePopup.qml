@@ -30,8 +30,8 @@ MZSimplePopup {
             objectName: "confirmRemoveDeviceButton"
 
             buttonText: MZI18n.DevicesRemovePopupPrimaryButtonLabel
-            buttonTextColor: MZTheme.colors.white
-            colorScheme: MZTheme.colors.redButton
+            buttonTextColor: MZTheme.colors.fontColorInverted
+            colorScheme: MZTheme.colors.destructiveButton
             onClicked: {
                 VPN.removeDeviceFromPublicKey(popup.devicePublicKey);
                 popup.close();
@@ -40,7 +40,7 @@ MZSimplePopup {
         },
         MZCancelButton {
             Layout.alignment: Qt.AlignHCenter
-            linkColor: MZTheme.colors.blueButton
+            linkColor: MZTheme.colors.normalButton
             fontName: MZTheme.theme.fontInterFamily
             onClicked: {
                 popup.close();

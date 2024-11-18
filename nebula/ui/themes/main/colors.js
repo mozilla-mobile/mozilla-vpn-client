@@ -5,6 +5,12 @@
 const color = {};
 
 /**
+ * Part 1: Basic colors
+ * Should NOT be used directly in code, and colors should not be modified.
+ * (Can add to this section if really, truly needed.)
+ *
+ * One exception: color.transparent can be used in code.
+ *
  * Primary palette
  */
 // Purple
@@ -42,7 +48,6 @@ color.grey15 = '#D8D8D8';
 color.grey10 = '#E7E7E7';
 color.grey5 = '#F9F9FA';
 color.white = '#FFFFFF';
-color.white80 = '#CCFFFFFF';
 
 /**
  * Secondary palette
@@ -98,6 +103,7 @@ color.yellow5 = '#FFFFCC';
 // Red
 color.red90 = '#440306';
 color.red80 = '#810220';
+color.red75 = '#A3012B';
 color.red70 = '#C50042';
 color.red60 = '#E22850';
 color.red50 = '#FF4F5E';
@@ -127,9 +133,9 @@ color.washedBlue = '#D4E2F6';
 color.washedLightBlue = '#AECBF2';
 color.strongBlue = '#0A84FF';
 
-color.onboardingGradientStart = '#472C87';
-color.onboardingGradientMiddle = '#301962';
-color.onboardingGradientEnd = '#1D0942';
+color.lighterOnboardingPurple = '#472C87';
+color.mediumOnboardingPurple = '#301962';
+color.darkerOnboardingPurple = '#1D0942';
 
 color.transparent = '#00000000';
 
@@ -156,213 +162,155 @@ const addTransparency = (hexColor, percent) => {
   return `#${hexAlphaValue}${hexValue}`;
 };
 
-// Derived
-
-color.bgColor = color.grey5;
-color.bgColor30 = addTransparency(color.grey5, 0.3);
-color.bgColorTransparent = addTransparency(color.grey5, 0.0);
-
+/**
+ * Part 2: Functional colors
+ * Should NOT be used directly in code, and colors should not be modified.
+ * (Can add to this section if really, truly needed.)
+ */
 color.blue = color.blue50;
 color.blueHovered = color.blue60;
 color.bluePressed = color.blue70;
-color.blueDisabled = color.washedLightBlue;
-color.blueFocusOutline = addTransparency(color.strongBlue, 0.3);
 color.blueFocusBorder = color.strongBlue;
 
-color.divider = addTransparency(color.grey60, 0.04);
 color.green = color.green50;
+color.red = color.red60;
+color.orange = color.yellow50;
+
 color.greyHovered = color.grey10;
 color.greyPressed = color.grey20;
-color.greyDisabled = color.grey15;
-color.ink = color.purple90;
-color.orange = color.yellow50;
-color.orangeHovered = color.yellow60;
-color.orangeFocus = addTransparency(color.yellow60, 0.3);
-color.orangePressed = color.yellow70;
-color.red = color.red60;
-color.redHovered = color.red70;
-color.redPressed = color.red80;
-color.redDisabled = color.red10;
-color.redfocusOutline = addTransparency(color.red70, 0.4);
-color.redBadgeText = color.red80;
-color.greenBadgeText = color.green90;
-color.greenBadgeBackground = color.green5;
-color.orangeBadgeText = color.yellow90;
-color.orangeBadgeBackground = color.orange10;
-color.blueBadgeText = color.blue90;
-color.blueBadgeBackground = addTransparency(color.blue50, 0.4);
-
-color.overlayBackground = addTransparency(color.black, 0.0);
-
-color.fontColor = color.grey40;
-color.fontColorDark = color.grey50;
-
-color.darkFocusBorder = color.fontColor;
-color.lightFocusBorder = color.grey15;
-
-/**
- * Main palette
- */
-color.primary = color.purple90;
-
-/**
- * Functional
- */
-color.blueActive = color.blue70;
-color.blueHover = color.blue60;
-color.blueFocus = addTransparency(color.blue, 0.4);
-
-color.greenActive = color.green70;
-color.greenHover = color.green60;
-color.greenFocus = color.green20;
-
-color.redActive = color.red70;
-color.redHover = color.red60;
-color.redFocus = color.red10;
-
-color.yellow = color.yellow50;
-color.yellowActive = color.yellow70;
-color.yellowHover = color.yellow60;
-color.yellowFocus = color.orange10;
-
-color.informational = {
-  default: color.blue,
-  focus: color.blueFocus,
-};
-
-color.success = {
-  default: color.green
-};
-
-color.error = {
-  default: color.red50,
-  focus: color.redFocus,
-};
-
-color.warning = {
-  default: color.yellow,
-  active: color.yellowActive,
-};
-
-/**
- * Inputs
- */
-color.inputState = {
-  default: {
-    border: color.grey30,
-    placeholder: color.grey40,
-    text: color.grey50,
-  },
-  hover: {
-    border: color.grey40,
-    placeholder: color.grey50,
-    text: color.grey50,
-  },
-  focus: {
-    border: color.informational.default,
-    highlight: color.informational.focus,
-    placeholder: color.grey40,
-    text: color.grey50,
-  },
-  error: {
-    border: color.error.default,
-    highlight: color.error.focus,
-    placeholder: color.grey40,
-    text: color.grey50,
-  },
-  disabled: {
-    border: color.grey20,
-    placeholder: color.grey20,
-    text: color.grey20,
-  },
-};
-
-color.onBoardingGradient = {
-  start: color.onboardingGradientStart,
-  middle: color.onboardingGradientMiddle,
-  end: color.onboardingGradientEnd,
-};
 
 color.blueButton = {
   defaultColor: color.blue,
   buttonHovered: color.blueHovered,
   buttonPressed: color.bluePressed,
-  buttonDisabled: color.blueDisabled,
+  buttonDisabled: color.washedLightBlue,
   focusBgColor: color.blue,
-  focusOutline: color.blueFocusOutline,
+  focusOutline: addTransparency(color.blueFocusBorder, 0.3),
   focusBorder: color.blueFocusBorder,
 };
 
 color.clickableRowBlue = {
-  defaultColor: color.bgColor,
+  defaultColor: color.grey5,
   buttonHovered: color.washedBlue,
   buttonPressed: color.washedLightBlue,
-  focusOutline: color.bgColorTransparent,
+  focusOutline: addTransparency(color.grey5, 0.0),
   focusBorder: color.blueFocusBorder,
 };
 
-color.iconButtonLightBackground = {
-  defaultColor: color.bgColorTransparent,
-  buttonHovered: color.greyHovered,
-  buttonPressed: color.greyPressed,
-  buttonDisabled: color.transparent,
-  focusOutline: color.bgColorTransparent,
-  focusBorder: color.darkFocusBorder,
-};
-
-color.iconButtonDarkBackground = {
-  defaultColor: addTransparency(color.purple90, 0.0),
-  buttonHovered: color.washedPurple,
-  buttonPressed: color.dullPurple,
-  buttonDisabled: addTransparency(color.purple90, 0.0),
-  focusOutline: color.transparent,
-  focusBorder: color.lightFocusBorder,
-};
-
-color.linkButton = {
-  defaultColor: color.bgColorTransparent,
-  buttonHovered: color.bgColorTransparent,
-  buttonPressed: color.bgColorTransparent,
-  buttonDisabled: color.bgColorTransparent,
-  focusOutline: color.bgColorTransparent,
-  focusBorder: color.bgColorTransparent,
-};
-
-color.whiteButton = {
-  defaultColor: color.white,
-  buttonHovered: color.greyHovered,
-  buttonPressed: color.greyPressed,
-  focusOutline: color.greyHovered,
-  focusBorder: color.greyPressed,
-};
-
-color.greyButton = {
-  defaultColor: color.grey20,
-};
-
 color.redButton = {
-  defaultColor: color.red,
-  buttonHovered: color.redHovered,
-  buttonPressed: color.redPressed,
-  buttonDisabled: color.redDisabled,
-  focusOutline: color.redDisabled,
-  focusBorder: color.redHovered,
+  defaultColor: color.red70,
+  buttonHovered: color.red75,
+  buttonPressed: color.red80,
+  buttonDisabled: color.red10,
+  focusOutline: addTransparency(color.red70, 0.4),
+  focusBorder: color.red70,
 };
 
-color.redLinkButton = {
-  defaultColor: color.redHovered,
-  buttonHovered: color.redPressed,
-  buttonPressed: color.redPressed,
-  buttonDisabled: color.redDisabled,
-  focusOutline: color.redfocusOutline,
-  focusBorder: color.redPressed,
+color.greenAlert = {
+  defaultColor: color.green,
+  buttonHovered: color.green60,
+  buttonPressed: color.green70,
+  focusOutline: addTransparency(color.green, 0.2),
+  focusBorder: color.green70,
+};
+
+color.orangeAlert = {
+  buttonHovered: color.yellow60,
+  buttonPressed: color.yellow70,
+  focusOutline: addTransparency(color.yellow60, 0.3),
+  focusBorder: color.yellow70,
+};
+
+color.greyLink = {
+  defaultColor: addTransparency(color.grey60, 0.7),
+  buttonHovered: addTransparency(color.grey60, 0.8),
+  buttonPressed: color.grey60,
+  focusOutline: color.grey60,
+  focusBorder: color.black
+};
+
+/**
+ * Part 3: Theme colors
+ * Named colors in this section should only be set to colors in part 1 or 2.
+ *
+ * The named colors in this section and section 4 SHOULD be used in code -
+ * and should be the ONLY colors used in code. (One exception: color.transparent
+ * can be used in code.)
+ */
+// Primary
+color.primary = color.purple90;
+color.primaryBrighter = color.purple70;
+color.primaryHovered = color.washedPurple;
+color.primaryPressed = color.dullPurple;
+
+// Backgrounds
+color.bgColor = color.grey5;
+color.bgColorTransparent = addTransparency(color.bgColor, 0.0);
+color.bgColorStronger = color.white;
+color.overlayBackground = addTransparency(color.black, 0.0);
+
+// Fonts
+color.fontColor = color.grey40;
+color.fontColorDark = color.grey50;
+color.fontColorWarning = color.yellow70;
+color.fontColorInverted = color.white;
+color.fontColorInvertedMuted = color.grey20;
+color.fontTitleColor = color.black;
+
+// Dividers and borders
+color.divider = color.grey10;
+color.dropShadow = color.grey60;
+color.darkFocusBorder = color.grey40;
+color.lightFocusBorder = color.grey15;
+color.inputHighlight = color.grey10;
+
+// Success/Failure/Warning/Normal levels
+color.successMain = color.green90;
+color.successAccent = color.green;
+color.successBackground = color.green5;
+color.errorMain = color.red80;
+color.errorAccent = color.red;
+color.errorAccentLight = color.red50;
+color.errorBackground = color.red10;
+color.warningMain = color.yellow90;
+color.warningAccent = color.orange;
+color.warningBackground = color.orange10;
+color.normalLevelMain = color.blue90;
+color.normalLevelAccent = color.blue;
+color.normalLevelBackground = addTransparency(color.blue, 0.4);
+
+// Button colors
+color.radioButtonDisabledHovered = color.greyHovered;
+color.radioButtonDisabledPressed = color.greyPressed;
+color.disabledButtonColor = color.grey20;
+
+// Step progress bar (several other colors for bar based on primary color)
+color.stepProgressBarHighlight = color.purple10;
+color.stepProgressBarIncomplete = color.grey30;
+
+// Toggle
+color.activatingToggle = color.dullPurple;
+color.activatingToggleBackground = color.dullGreen;
+
+// Objects (these aren't colors, these are objects of colors)
+color.destructiveButton = color.redButton;
+color.normalButton = color.blueButton;
+color.successAlert = color.greenAlert;
+color.warningAlert = color.orangeAlert;
+color.clickableRow = color.clickableRowBlue;
+color.textLink = color.greyLink;
+
+color.onBoardingGradient = {
+  start: color.lighterOnboardingPurple,
+  middle: color.mediumOnboardingPurple,
+  end: color.darkerOnboardingPurple,
 };
 
 color.vpnToggleConnected = {
   defaultColor: color.green,
   buttonHovered: color.green60,
   buttonPressed: color.green70,
-  focusOutline: color.bgColor30,
+  focusOutline: addTransparency(color.bgColor, 0.3),
   focusBorder: color.lightFocusBorder,
 };
 
@@ -370,7 +318,7 @@ color.vpnToggleDisconnected = {
   defaultColor: color.grey30,
   buttonHovered: color.fontColor,
   buttonPressed: color.fontColorDark,
-  buttonDisabled: color.grey,
+  buttonDisabled: color.disabledButtonColor,
   focusOutline: color.transparent,
   focusBorder: color.darkFocusBorder,
 };
@@ -384,54 +332,87 @@ color.card = {
   focusBorder: color.darkFocusBorder,
 };
 
-color.greenAlert = {
-  defaultColor: color.green50,
-  buttonHovered: color.green60,
-  buttonPressed: color.green70,
-  focusOutline: addTransparency(color.green50, 0.2),
-  focusBorder: color.green70,
-};
+/**
+ * Part 4: Derived theme colors
+ * Color objects that dervive from colors set in part 3.
+ *
+ * The named colors in this section and section 3 SHOULD be used in code -
+ * and should be the ONLY colors used in code. (One exception: color.transparent
+ * can be used in code.)
+ */
 
-color.greyLink = {
-  defaultColor: addTransparency(color.grey60, 0.7),
-  buttonHovered: addTransparency(color.grey60, 0.8),
-  buttonPressed: color.grey60,
-  focusOutline: color.grey60,
-  focusBorder: color.black
-};
-
-color.input = {
-  backgroundColor: color.white,
-  highlight: color.grey10,
-};
-
-color.greenBadge = {
-  textColor: color.greenBadgeText,
-  backgroundColor: color.greenBadgeBackground
-};
-
-color.redBadge = {
-  textColor: color.redBadgeText,
-  backgroundColor: color.redDisabled
-};
-
-color.orangeBadge = {
-  textColor: color.orangeBadgeText,
-  backgroundColor: color.orangeBadgeBackground
-};
-
-color.blueBadge = {
-  textColor: color.blueBadgeText,
-  backgroundColor: color.blueBadgeBackground
-};
-
-color.purpleStepProgressBarDelegate = {
-  defaultColor: color.purple70,
-  buttonHovered: color.purple70,
-  buttonPressed: color.purple80,
-  buttonDisabled: color.grey30,
+color.stepProgressBarDelegate = {
+  defaultColor: color.primaryBrighter,
+  buttonHovered: color.primaryBrighter,
+  buttonPressed: color.primaryPressed,
+  buttonDisabled: color.stepProgressBarIncomplete,
   focusOutline: color.bgColorTransparent,
   focusBorder: color.bgColorTransparent,
+};
+
+color.invertedButton = {
+  defaultColor: color.fontColorInverted,
+  buttonHovered: color.radioButtonDisabledHovered,
+  buttonPressed: color.radioButtonDisabledPressed,
+  focusOutline: color.radioButtonDisabledHovered,
+  focusBorder: color.radioButtonDisabledPressed,
+};
+
+color.linkButton = {
+  defaultColor: color.bgColorTransparent,
+  buttonHovered: color.bgColorTransparent,
+  buttonPressed: color.bgColorTransparent,
+  buttonDisabled: color.bgColorTransparent,
+  focusOutline: color.bgColorTransparent,
+  focusBorder: color.bgColorTransparent,
+};
+
+color.iconButtonLightBackground = {
+  defaultColor: color.bgColorTransparent,
+  buttonHovered: color.radioButtonDisabledHovered,
+  buttonPressed: color.radioButtonDisabledPressed,
+  buttonDisabled: color.transparent,
+  focusOutline: color.bgColorTransparent,
+  focusBorder: color.darkFocusBorder,
+};
+
+color.iconButtonDarkBackground = {
+  defaultColor: addTransparency(color.primary, 0.0),
+  buttonHovered: color.primaryHovered,
+  buttonPressed: color.primaryPressed,
+  buttonDisabled: addTransparency(color.primary, 0.0),
+  focusOutline: color.transparent,
+  focusBorder: color.lightFocusBorder,
+};
+
+color.inputState = {
+  default: {
+    border: color.darkFocusBorder,
+    placeholder: color.fontColor,
+    text: color.fontColorDark,
+  },
+  hover: {
+    border: color.darkFocusBorder,
+    placeholder: color.fontColorDark,
+    text: color.fontColorDark,
+  },
+  focus: {
+    border: color.normalButton.defaultColor,
+    highlight: addTransparency(color.normalButton.defaultColor, 0.4),
+    placeholder: color.fontColor,
+    text: color.fontColorDark,
+  },
+  error: {
+    border: color.errorAccentLight,
+    highlight: color.errorBackground,
+    placeholder: color.fontColor,
+    text: color.fontColorDark,
+  },
+  disabled: {
+    border: color.disabledButtonColor,
+    placeholder: color.disabledButtonColor,
+    text: color.disabledButtonColor,
+  },
 };
 
 color;

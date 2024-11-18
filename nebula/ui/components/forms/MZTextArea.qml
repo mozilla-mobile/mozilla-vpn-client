@@ -63,7 +63,7 @@ Item {
             leftPadding: MZTheme.theme.windowMargin
             rightPadding: MZTheme.theme.windowMargin
             selectByMouse: true
-            selectionColor: MZTheme.colors.input.highlight
+            selectionColor: MZTheme.colors.inputHighlight
             textFormat: Text.PlainText
             topPadding: MZTheme.theme.windowMargin
             wrapMode: Text.WrapAtWordBoundaryOrAnywhere

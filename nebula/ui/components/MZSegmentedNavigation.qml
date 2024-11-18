@@ -42,7 +42,7 @@ ColumnLayout {
         Layout.fillWidth: true
 
         Layout.preferredHeight: 1
-        color: MZTheme.colors.grey10
+        color: MZTheme.colors.divider
         visible: stack.children.length > 1
     }
 

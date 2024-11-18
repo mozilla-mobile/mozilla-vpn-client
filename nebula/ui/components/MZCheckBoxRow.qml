@@ -84,7 +84,7 @@ RowLayout {
             Layout.topMargin: MZTheme.theme.windowMargin
             Layout.preferredHeight: 1
             Layout.fillWidth: true
-            color: MZTheme.colors.grey10
+            color: MZTheme.colors.divider
             visible: showDivider
         }
 

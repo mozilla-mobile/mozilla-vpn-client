@@ -114,7 +114,7 @@ Item {
     }
 
     Rectangle {
-        color: MZTheme.colors.grey10
+        color: MZTheme.colors.divider
         anchors.bottom: parent.bottom
         width: parent.width
         height: 1

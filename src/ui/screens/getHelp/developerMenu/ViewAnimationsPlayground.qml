@@ -30,7 +30,7 @@ Item {
         id: animationContainer
 
         anchors.top: menu.bottom
-        color: MZTheme.colors.grey50
+        color: MZTheme.colors.fontColorDark
         height: parent.width * 0.6
         width: parent.width
 
@@ -53,7 +53,7 @@ Item {
             text: "No animation selected"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            color: MZTheme.colors.white
+            color: MZTheme.colors.fontColorInverted
             visible: animationSelect.currentIndex < 0
         }
 
@@ -66,7 +66,7 @@ Item {
                 implicitWidth: parent.width
 
                 Rectangle {
-                    color: MZTheme.colors.informational.default
+                    color: MZTheme.colors.normalButton.defaultColor
                     height: parent.height
                     width: animationProgress.visualPosition * parent.width
                 }

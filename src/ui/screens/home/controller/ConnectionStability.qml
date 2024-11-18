@@ -78,7 +78,7 @@ Item {
                 }
                 PropertyChanges {
                     target: stabilityLabel
-                    color: MZTheme.colors.orange
+                    color: MZTheme.colors.warningAccent
                 }
                 PropertyChanges {
                     target: warningIcon
@@ -95,7 +95,7 @@ Item {
                 }
                 PropertyChanges {
                     target: stabilityLabel
-                    color: MZTheme.colors.red
+                    color: MZTheme.colors.errorAccent
                 }
                 PropertyChanges {
                     target: warningIcon
@@ -146,7 +146,7 @@ Item {
         }
 
         Rectangle {
-            color: MZTheme.colors.white
+            color: MZTheme.colors.fontColorInverted
             opacity: 0.8
             radius: 3
             height: 4
@@ -160,7 +160,7 @@ Item {
             //: Message displayed to the user when the connection is unstable or
             //: missing, asking them to check their connection.
             text: qsTrId("vpn.connectionStability.checkConnection")
-            color: MZTheme.colors.white
+            color: MZTheme.colors.fontColorInverted
             opacity: 0.8
             Layout.alignment: Qt.AlignCenter
             onPaintedWidthChanged: stability.setColumns()

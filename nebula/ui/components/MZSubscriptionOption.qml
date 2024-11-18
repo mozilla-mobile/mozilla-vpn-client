@@ -25,21 +25,21 @@ RadioDelegate {
 
     background: Rectangle {
         id: bg
-        color: MZTheme.colors.white
+        color: MZTheme.colors.bgColorStronger
         radius: MZTheme.theme.cornerRadius
 
         MZRectangularGlow {
             anchors.fill: bg
             glowRadius: radioDelegate.checked ? 8 : 1
             spread: radioDelegate.checked ? 0.1 : 0
-            color: MZTheme.colors.grey30
+            color: MZTheme.colors.dropShadow
             cornerRadius: rect.radius + glowRadius
         }
 
         Rectangle {
             id: rect
             anchors.fill: parent
-            color: MZTheme.colors.white
+            color: MZTheme.colors.bgColorStronger
             radius: parent.radius
             clip: true
         }
@@ -56,7 +56,7 @@ RadioDelegate {
                 left: parent.left
                 top: parent.top
             }
-            color: radioDelegate.checked ? MZTheme.colors.purple60 : MZTheme.colors.white
+            color: radioDelegate.checked ? MZTheme.colors.primaryBrighter : MZTheme.colors.bgColorStronger
             opacity: radioDelegate.checked ? 1 : 0
             radius: MZTheme.theme.cornerRadius
             width: MZTheme.theme.windowMargin
@@ -67,7 +67,7 @@ RadioDelegate {
                     right: parent.right
                     top: parent.top
                 }
-                color: MZTheme.colors.white
+                color: MZTheme.colors.bgColorStronger
                 width: MZTheme.theme.listSpacing * 0.5
             }
 
@@ -81,7 +81,7 @@ RadioDelegate {
         // Purple border when product is selected or focused
         Rectangle {
             anchors.fill: parent
-            border.color: (radioDelegate.checked || radioDelegate.focus) ? MZTheme.colors.purple60 : MZTheme.colors.white
+            border.color: (radioDelegate.checked || radioDelegate.focus) ? MZTheme.colors.primaryBrighter : MZTheme.colors.bgColorStronger
             color: MZTheme.colors.transparent
             radius: MZTheme.theme.cornerRadius
 
@@ -174,7 +174,7 @@ RadioDelegate {
 
                 //hardcoding to 7 because the chip's text below is currently hardcoded for 7-day trials specifically
                 visible: col.trialDays === 7
-                color: MZTheme.colors.green5
+                color: MZTheme.colors.successBackground
 
                 Text {
                     id: labelFreeTrial
@@ -188,7 +188,7 @@ RadioDelegate {
                     verticalAlignment: Text.AlignVCenter
                     lineHeight: MZTheme.theme.controllerInterLineHeight
                     lineHeightMode: Text.FixedHeight
-                    color: MZTheme.colors.green90
+                    color: MZTheme.colors.successMain
                     font.pixelSize: MZTheme.theme.fontSizeSmallest
                     font.family: MZTheme.theme.fontInterSemiBoldFamily
                     Accessible.ignored: !visible
@@ -218,7 +218,7 @@ RadioDelegate {
             MZInterLabel {
                 text: MZI18n.PurchasePercentSaved.arg(productSavings)
 
-                color: MZTheme.colors.purple60
+                color: MZTheme.colors.primaryBrighter
                 font.family: MZTheme.theme.fontBoldFamily
                 horizontalAlignment: Qt.AlignRight
                 lineHeight: MZTheme.theme.labelLineHeight * 0.9

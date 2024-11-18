@@ -9,7 +9,7 @@ import Mozilla.Shared 1.0
 Rectangle {
     id: root
 
-    //A type is a JS object containing the badgeText and badgeTheme (background color and text color)
+    //A type is a JS object containing the badgeText and badgeBackgroundColor and badgeTextColor
     property var badgeType
 
     //Alternatively to setting the badgeType, you can set it's properties manually
@@ -19,7 +19,7 @@ Rectangle {
 
     property alias badgeLabel: badgeLabel
 
-    color: badgeType.badgeTheme.backgroundColor
+    color: badgeType.badgeBackgroundColor
     height: badgeLabel.height
     width: badgeLabel.width
     radius: 4
@@ -29,7 +29,7 @@ Rectangle {
         id: badgeLabel
 
         text: badgeType.badgeText
-        color: badgeType.badgeTheme.textColor
+        color: badgeType.badgeTextColor
         verticalAlignment: Text.AlignVCenter
         topPadding: MZTheme.theme.badgeVerticalPadding
         leftPadding: MZTheme.theme.badgeHorizontalPadding

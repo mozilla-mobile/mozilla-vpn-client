@@ -285,7 +285,7 @@ Item {
                     id: panelTitle
                     objectName: "panelTitle"
 
-                    color: MZTheme.colors.white
+                    color: MZTheme.colors.fontColorInverted
                     width: undefined
                     Layout.fillWidth: true
                 }
@@ -293,7 +293,7 @@ Item {
                 MZSubtitle {
                     id: panelDescription
                     objectName: "panelDescription"
-                    color: MZTheme.colors.grey20
+                    color: MZTheme.colors.fontColorInvertedMuted
                     width: undefined
                     Layout.fillWidth: true
                 }
@@ -313,7 +313,7 @@ Item {
 
                 MZInterLabel {
                     text: MZI18n.FreeTrialsStartYourFreeTrial
-                    color: MZTheme.colors.white80
+                    color: MZTheme.colors.fontColorInvertedMuted
                     font.family: MZTheme.theme.fontInterSemiBoldFamily
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
@@ -331,7 +331,7 @@ Item {
 
                     delegate: Rectangle {
                         id: circle
-                        color: index === swipeView.currentIndex ? MZTheme.colors.blue : MZTheme.colors.greyPressed
+                        color: index === swipeView.currentIndex ? MZTheme.colors.normalButton.defaultColor : MZTheme.colors.disabledButtonColor
                         height: 6
                         width: 6
                         radius: 6
@@ -364,7 +364,7 @@ Item {
                     objectName: "alreadyASubscriberLink"
                     labelText: MZI18n.MobileOnboardingAlreadyASubscriber
                     Layout.alignment: Qt.AlignHCenter
-                    linkColor: MZTheme.colors.whiteButton
+                    linkColor: MZTheme.colors.invertedButton
                     width: undefined
                     onClicked: {
                         Glean.interaction.alreadyASubscriberSelected.record({

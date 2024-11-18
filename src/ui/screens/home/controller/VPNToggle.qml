@@ -54,8 +54,8 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.grey30
-                border.color: MZTheme.colors.white
+                color: MZTheme.colors.vpnToggleDisconnected.defaultColor
+                border.color: MZTheme.colors.bgColorStronger
             }
 
             PropertyChanges {
@@ -74,8 +74,8 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.grey30
-                border.color: MZTheme.colors.white
+                color: MZTheme.colors.vpnToggleDisconnected.defaultColor
+                border.color: MZTheme.colors.bgColorStronger
             }
 
             PropertyChanges {
@@ -96,8 +96,8 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.grey30
-                border.color: MZTheme.colors.white
+                color: MZTheme.colors.vpnToggleDisconnected.defaultColor
+                border.color: MZTheme.colors.bgColorStronger
             }
 
             PropertyChanges {
@@ -115,13 +115,13 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: MZTheme.colors.dullPurple
+                color: MZTheme.colors.activatingToggle
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.dullGreen
-                border.color: MZTheme.colors.ink
+                color: MZTheme.colors.activatingToggleBackground
+                border.color: MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -138,13 +138,13 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: connectionRetryOverX ? MZTheme.colors.white : MZTheme.colors.dullPurple
+                color: connectionRetryOverX ? MZTheme.colors.bgColorStronger : MZTheme.colors.activatingToggle
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.dullGreen
-                border.color: MZTheme.colors.ink
+                color: MZTheme.colors.activatingToggleBackground
+                border.color: MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -165,8 +165,8 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.green50
-                border.color: MZTheme.colors.ink
+                color: MZTheme.colors.vpnToggleConnected.defaultColor
+                border.color: MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -186,8 +186,8 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.green50
-                border.color: MZTheme.colors.ink
+                color: MZTheme.colors.vpnToggleConnected.defaultColor
+                border.color: MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -206,8 +206,8 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.grey20
-                border.color: MZTheme.colors.white
+                color: MZTheme.colors.vpnToggleDisconnected.buttonDisabled
+                border.color: MZTheme.colors.bgColorStronger
             }
 
             PropertyChanges {
@@ -223,13 +223,13 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: MZTheme.colors.dullPurple
+                color: MZTheme.colors.activatingToggle
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.dullGreen
-                border.color: MZTheme.colors.ink
+                color: MZTheme.colors.activatingToggleBackground
+                border.color: MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -288,7 +288,7 @@ MZButtonBase {
     Rectangle {
         id: hoverPressHandler
 
-        color: MZTheme.colors.grey20
+        color: MZTheme.colors.vpnToggleDisconnected.buttonDisabled
         state: toggle.state
         opacity: {
             if (state === uiState.stateHovered)

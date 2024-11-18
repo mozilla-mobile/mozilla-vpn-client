@@ -17,7 +17,7 @@ Rectangle {
     height: MZTheme.theme.navBarHeight
     width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
     radius: height / 2
-    color: MZTheme.colors.ink
+    color: MZTheme.colors.primary
 
     anchors {
         horizontalCenter: parent.horizontalCenter
@@ -33,7 +33,7 @@ Rectangle {
         opacity: 0.6
         spread: 0
         radius: 6
-        color: MZTheme.colors.grey60
+        color: MZTheme.colors.dropShadow
         cached: true
     }
 
@@ -44,11 +44,11 @@ Rectangle {
 
     Rectangle {
         id: outline
-        color: MZTheme.colors.ink
+        color: MZTheme.colors.primary
         radius: parent.radius
         anchors.fill: parent
         border.width: 0
-        border.color: MZTheme.colors.ink
+        border.color: MZTheme.colors.primary
     }
 
     RowLayout {
