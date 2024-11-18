@@ -6,7 +6,6 @@
 
 #include <QDir>
 #include <QJSEngine>
-#include <QJSValueIterator>
 
 #include "leakdetector.h"
 #include "logger.h"
