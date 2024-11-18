@@ -14,10 +14,10 @@ namespace Intervention {
 /**
  * @brief Intervention for Intel Killer Network.
  *
- * Intels Killer network services silently breaks
- * the extensionproxy and the split-tunnel driver.
+ * Intel's Killer Network services silently breaks
+ * the extension proxy and the split-tunnel driver.
  *
- * This class currenlty only detects if a system will be affected.
+ * This class currently only detects if a system will be affected.
  */
 class KillerNetwork : public QObject {
   Q_OBJECT
