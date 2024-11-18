@@ -166,13 +166,6 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
 
   connect(&m_private->m_controller, &Controller::readyToUpdate, this,
           [this]() { setState(StateUpdateRequired); });
-
-  connect(&m_private->m_controller, &Controller::readyToBackendFailure, this,
-          [this]() {
-            TaskScheduler::deleteTasks();
-            setState(StateBackendFailure);
-          });
-
   connect(&m_private->m_controller, &Controller::readyToServerUnavailable, this,
           [](bool pingReceived) {
             NotificationHandler::instance()->serverUnavailableNotification(
@@ -1148,11 +1141,12 @@ void MozillaVPN::heartbeatCompleted(bool success) {
   // for the user to do and it may not affect the connectivity at all so it is
   // not necessary to take additional actions.
   if (!success && state() == StateAuthenticating) {
-    m_private->m_controller.backendFailure();
+    TaskScheduler::deleteTasks();
+    setState(StateHeartbeatFailure);
     return;
   }
 
-  if (state() != StateBackendFailure) {
+  if (state() != StateHeartbeatFailure) {
     return;
   }
 
@@ -1447,9 +1441,10 @@ void MozillaVPN::registerNavigatorScreens() {
       });
 
   Navigator::registerScreen(
-      MozillaVPN::ScreenBackendFailure, Navigator::LoadPolicy::LoadTemporarily,
+      MozillaVPN::ScreenHeartbeatFailure,
+      Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenBackendFailure.qml",
-      QVector<int>{MozillaVPN::StateBackendFailure},
+      QVector<int>{MozillaVPN::StateHeartbeatFailure},
       [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
 
   Navigator::registerScreen(
@@ -1880,14 +1875,6 @@ void MozillaVPN::registerInspectorCommands() {
         AddonManager::instance()->fetch();
         return QJsonObject();
       });
-
-  InspectorHandler::registerCommand(
-      "force_backend_failure", "Force a backend failure", 0,
-      [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()->controller()->backendFailure();
-        return QJsonObject();
-      });
-
   InspectorHandler::registerCommand(
       "force_captive_portal_check", "Force a captive portal check", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {

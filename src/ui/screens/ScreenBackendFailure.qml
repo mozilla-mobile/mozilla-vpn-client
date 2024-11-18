@@ -9,6 +9,12 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
+/**
+* This screen is an error that should be triggered
+* whenever we have a hearbeatfailure. 
+* Note: we did not rename the file as that would nuke 
+* translations at this point in time. 
+**/
 MZStackView {
     id: stackview
 

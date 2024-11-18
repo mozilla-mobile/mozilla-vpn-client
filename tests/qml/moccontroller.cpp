@@ -70,8 +70,6 @@ void Controller::getStatus(
 
 void Controller::quit() {}
 
-void Controller::backendFailure() {}
-
 void Controller::captivePortalPresent() {}
 
 void Controller::captivePortalGone() {}
