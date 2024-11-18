@@ -9,7 +9,7 @@ qt_add_qml_module(themes
     RESOURCE_PREFIX /nebula
     RESOURCES
         main/sizing.js
-        main/colors.js
+        colors.js
         main/theme.js
-        main/theme-derived.js
+        theme-derived.js
 )

@@ -96,9 +96,10 @@ void Theme::parseTheme(QJSEngine* engine, const QString& themeName) {
   }
 
   QByteArray completeColorFileBytes = QByteArray();
-  // The files in this next line need to be in the specific order so that they
+  // The files in the next line must be in the specific order so that they
   // create a working JS object when appended.
-  QList<QString> colorFiles = {"/colors.js", "/theme.js", "/theme-derived.js"};
+  QList<QString> colorFiles = {"/../colors.js", "/theme.js",
+                               "/../theme-derived.js"};
   for (QString colorFile : colorFiles) {
     QString resource = path;
     resource.append(colorFile);
