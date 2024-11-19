@@ -54,6 +54,18 @@ jobs:
           restore-keys: |
             ccache-${{ runner.os }}-${{ runner.arch }}-sha-${{ github.event.pull_request.base.sha }}
 
+      - name: Setup cargo package cache
+        id: cargo-vendor
+        uses: actions/cache@v4
+        with:
+          path: 3rdparty/cargo-vendor
+          key: cargo-vendor-${{ runner.os }}-${{ hashFiles('Cargo.lock') }}
+
+      - name: Download cargo packages
+        if: steps.cargo-vendor.outputs.cache-hit != 'true'
+        shell: bash
+        run: cargo vendor --manifest-path Cargo.toml 3rdparty/cargo-vendor > 3rdparty/cargo-vendor/config.toml
+
       - name: Install build dependencies
         run: |
           ./scripts/macos/conda_install_extras.sh
@@ -67,6 +79,9 @@ jobs:
 
       - name: Compile test client
         run: |
+          mkdir -p .cargo
+          cp 3rdparty/cargo-vendor/config.toml .cargo/config.toml
+
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache \
