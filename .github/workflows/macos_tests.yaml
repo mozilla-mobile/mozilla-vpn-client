@@ -64,7 +64,9 @@ jobs:
       - name: Download cargo packages
         if: steps.cargo-vendor.outputs.cache-hit != 'true'
         shell: bash
-        run: cargo vendor --manifest-path Cargo.toml 3rdparty/cargo-vendor > 3rdparty/cargo-vendor/config.toml
+        run: |
+          mkdir -p 3rdparty/cargo-vendor
+          cargo vendor --manifest-path Cargo.toml 3rdparty/cargo-vendor > 3rdparty/cargo-vendor/config.toml
 
       - name: Install build dependencies
         run: |
