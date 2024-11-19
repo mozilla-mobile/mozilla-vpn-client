@@ -11,6 +11,7 @@ struct dnsData {
   QString ipAddress;
   QString dnsType;
 };
+
 class DNSHelper final {
  public:
   static QString getDNS(const QString& fallbackAddress);
