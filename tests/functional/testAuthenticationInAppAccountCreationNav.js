@@ -69,7 +69,9 @@ describe('User authentication', function() {
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForMozillaProperty(
+          'Mozilla.Shared', 'MZAuthInApp', 'state', 'StateSignUp');
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
 
       await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp
                                          .AUTH_SIGNUP_GET_HELP_LINK.visible());
