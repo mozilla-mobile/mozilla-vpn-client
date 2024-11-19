@@ -29,11 +29,32 @@ jobs:
         with:
           submodules: "recursive"
 
+      - name: Get Datestamp
+        id: get-date
+        shell: bash
+        run: echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
+
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
-          environment-file: env.yml
           activate-environment: vpn
+      
+      - name: Setup conda cache
+        id: conda-cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CONDA }}/envs
+          key: conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('env.yml', 'requirements.txt') }}
+
+      - name: Setup conda env
+        if: steps.conda-cache.outputs.cache-hit != 'true'
+        run: conda env update -n vpn -f env.yml
+
+      - name: Setup compiler cache
+        uses: actions/cache@v4
+        with:
+          path: .ccache
+          key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}
 
       - name: Install build dependencies
         run: |
@@ -46,15 +67,12 @@ jobs:
           wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
           unzip -a -d ${{ github.workspace }} qt6_mac.zip
 
-      - name: Setup compiler cache
-        if: github.event_name == 'pull_request'
-        uses: actions/cache@v4
-        with:
-          path: .ccache
-          key: ${{ runner.os }}-ccache-${{ github.event.pull_request.base.sha }}
-
       - name: Compile test client
         run: |
+          echo "DEBUG: Where is the compiler cache?"
+          ccache -p
+          echo ""
+
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache \
