@@ -40,7 +40,7 @@ describe('User authentication', function() {
       // Step 1: main -> start -> main
       await vpn.waitForInitialView();
       await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_START_BACK_BUTTON.visible());
       await vpn.waitForInitialView();
@@ -53,7 +53,7 @@ describe('User authentication', function() {
           queries.screenAuthenticationInApp.AUTH_START_GET_HELP_LINK.visible());
       await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
 
@@ -69,13 +69,15 @@ describe('User authentication', function() {
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForMozillaProperty(
+          'Mozilla.Shared', 'MZAuthInApp', 'state', 'StateSignUp');
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
 
       await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp
                                          .AUTH_SIGNUP_GET_HELP_LINK.visible());
       await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_SIGNUP_BACK_BUTTON.visible());
 
@@ -97,12 +99,15 @@ describe('User authentication', function() {
       await vpn.waitForQueryAndClick(
           queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
               .enabled());
+      await vpn.waitForMozillaProperty(
+          'Mozilla.Shared', 'MZAuthInApp', 'state', 'StateSignIn');
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
 
       await vpn.waitForQueryAndClick(queries.screenAuthenticationInApp
                                          .AUTH_SIGNIN_GET_HELP_LINK.visible());
       await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_SIGNIN_BACK_BUTTON.visible());
 
@@ -145,7 +150,7 @@ describe('User authentication', function() {
               .visible());
       await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
 
       // Step 8: email verification -> start
       await vpn.waitForQueryAndClick(
@@ -185,7 +190,7 @@ describe('User authentication', function() {
           queries.screenAuthenticationInApp.AUTH_TOTP_GET_HELP_LINK.visible());
       await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
       await vpn.waitForQuery(
           queries.screenAuthenticationInApp.AUTH_TOTP_CANCEL_BUTTON.visible());
 
@@ -229,7 +234,7 @@ describe('User authentication', function() {
               .visible());
       await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
       await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+      await vpn.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
       await vpn.waitForQuery(queries.screenAuthenticationInApp
                                  .AUTH_UNBLOCKCODE_BACK_BUTTON.visible());
 
