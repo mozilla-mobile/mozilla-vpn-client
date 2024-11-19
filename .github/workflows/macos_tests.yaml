@@ -53,8 +53,14 @@ jobs:
       - name: Setup compiler cache
         uses: actions/cache@v4
         with:
-          path: .ccache
-          key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}
+          path: ${{ env.HOME }}/Library/Caches/ccache
+          key: |
+            github.event_name == 'pull_request' &&
+            ccache-${{ runner.os }}-${{ runner.arch }}-pull-${{ github.event.pull_request.number ||
+            ccache-${{ runner.os }}-${{ runner.arch }}-sha-${{ github.sha }}
+          restore-keys: |
+            github.event_name == 'pull_request' &&
+            ccache-${{ runner.os }}-${{ runner.arch }}-sha-${{ github.event.pull_request.base.sha }}
 
       - name: Install build dependencies
         run: |
@@ -69,10 +75,6 @@ jobs:
 
       - name: Compile test client
         run: |
-          echo "DEBUG: Where is the compiler cache?"
-          ccache -p
-          echo ""
-
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache \
