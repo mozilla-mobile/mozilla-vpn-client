@@ -89,7 +89,6 @@ class AuthenticationInApp final : public QObject {
   };
   Q_ENUM(ErrorType);
 
-
  public:
   static AuthenticationInApp* instance();
 
