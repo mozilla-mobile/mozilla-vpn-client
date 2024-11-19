@@ -34,6 +34,12 @@ jobs:
         shell: bash
         run: echo "today=$(/bin/date -u '+%Y%m%d')" >> $GITHUB_OUTPUT
 
+      - name: Setup conda package cache
+        uses: actions/cache@v4
+        with:
+          path: ~/conda_pkgs_dir
+          key: condapkg-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('env.yml') }}
+
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
