@@ -86,7 +86,19 @@ if len(all_themes) == 0:
     exit(f"No themes found")
 
 ###
-# 1. Explict colors should not be used in theme-derived.js or any theme's theme.js file.
+# 1. All theme's `theme.js` should have the same colors
+file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + "/theme.js", all_themes))
+baseline_colors = colorsDefinedInFile(file_paths[0])
+for file_path in file_paths:
+    colors_in_file = colorsDefinedInFile(file_path)
+    if len(colors_in_file) != len(baseline_colors):
+        exit(f"Themes should define identical list of colors, but have different count of colors")
+    for color in colors_in_file:
+        if color not in baseline_colors:
+            exit(f"Color {color} is not in all themes but found in {file_path}")
+
+###
+# 2. Explict colors should not be used in theme-derived.js or any theme's theme.js file.
 
 file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + "/theme.js", all_themes))
 file_paths.append(args.themeDirectory[0] + "/theme-derived.js")
@@ -94,7 +106,7 @@ for file_path in file_paths:
     checkForHexColor(file_path)
 
 ###
-# 2. All colors in QML files should come from theme.js or theme-derived.js. 
+# 3. All colors in QML files should come from theme.js or theme-derived.js.
 #    (For objects - like `iconButtonDarkBackground` - only the overall object name is checked.)
 
 # A. Get list of colors that should be used
