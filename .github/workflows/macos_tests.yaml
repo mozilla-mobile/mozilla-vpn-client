@@ -54,12 +54,8 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ${{ env.HOME }}/Library/Caches/ccache
-          key: |
-            github.event_name == 'pull_request' &&
-            ccache-${{ runner.os }}-${{ runner.arch }}-pull-${{ github.event.pull_request.number ||
-            ccache-${{ runner.os }}-${{ runner.arch }}-sha-${{ github.sha }}
+          key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.event_name == 'pull_request' && 'pull' || 'sha' }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
           restore-keys: |
-            github.event_name == 'pull_request' &&
             ccache-${{ runner.os }}-${{ runner.arch }}-sha-${{ github.event.pull_request.base.sha }}
 
       - name: Install build dependencies
