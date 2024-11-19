@@ -37,23 +37,13 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
+          environment-file: "env.yml"
           activate-environment: vpn
-      
-      - name: Setup conda cache
-        id: conda-cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.CONDA }}/envs
-          key: conda-${{ runner.os }}-${{ runner.arch }}-${{ steps.get-date.outputs.today }}-${{ hashFiles('env.yml', 'requirements.txt') }}
-
-      - name: Setup conda env
-        if: steps.conda-cache.outputs.cache-hit != 'true'
-        run: conda env update -n vpn -f env.yml
 
       - name: Setup compiler cache
         uses: actions/cache@v4
         with:
-          path: ${{ env.HOME }}/Library/Caches/ccache
+          path: /Users/runner/Library/Caches/ccache
           key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.event_name == 'pull_request' && 'pull' || 'sha' }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
           restore-keys: |
             ccache-${{ runner.os }}-${{ runner.arch }}-sha-${{ github.event.pull_request.base.sha }}
