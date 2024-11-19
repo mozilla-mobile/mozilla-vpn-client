@@ -65,6 +65,10 @@ jobs:
         run: |
           scripts/ci/check_lang_names.py
 
+      - name: Check for proper color usage
+        run: |
+          scripts/ci/check_colors.py nebula/ui/themes/
+
   ktlint:
     name: Run ktLint
     runs-on: ubuntu-latest
