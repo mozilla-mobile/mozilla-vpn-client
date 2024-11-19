@@ -27,7 +27,7 @@ jobs:
           submodules: "recursive"
       - run: |
           sudo apt-get update
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control) ccache
 
       - uses: actions/setup-python@v5
         with:
@@ -35,11 +35,20 @@ jobs:
           cache: "pip"
       - run: pip install -r requirements.txt
 
+      - name: Setup compiler cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.ccache
+          key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.event_name == 'pull_request' && 'pull' || 'sha' }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
+          restore-keys: |
+            ccache-${{ runner.os }}-${{ runner.arch }}-sha-${{ github.event.pull_request.base.sha }}
+
       - name: Compile test client
         shell: bash
         run: |
           mkdir -p build/cmake
-          cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo
+          cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
           cmake --build build/cmake
           cp ./build/cmake/src/mozillavpn build/
 
