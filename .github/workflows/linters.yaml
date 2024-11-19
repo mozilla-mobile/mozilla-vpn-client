@@ -12,7 +12,7 @@ on:
 
 jobs:
   linter:
-    name: Run Main Linters (clang, l10n, etc.)
+    name: Run Main Linters (clang, l10n, colors, etc.)
     runs-on: ubuntu-22.04
     steps:
       - name: Clone repository
