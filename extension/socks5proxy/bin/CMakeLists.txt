@@ -14,6 +14,13 @@ target_link_libraries(socksproxy PUBLIC
     libSocks5proxy
 )
 
+# If Qt is statically linked to OpenSSL, we need to link to it manually.
+if(QT_FEATURE_static AND QT_FEATURE_openssl AND QT_FEATURE_openssl_linked)
+    set(OPENSSL_USE_STATIC_LIBS TRUE)
+    find_package(OpenSSL REQUIRED)
+    target_link_libraries(mozillavpn PRIVATE ${OPENSSL_SSL_LIBRARY} ${OPENSSL_CRYPTO_LIBRARY})
+endif()
+
 if(WIN32)
     target_compile_definitions(socksproxy PRIVATE PROXY_OS_WIN)
     target_sources(socksproxy PRIVATE
