@@ -12,7 +12,6 @@
 #include <QMetaEnum>
 #include <QTcpSocket>
 #include <QWindow>
-#include <functional>
 
 #include "connectionhealth.h"
 #include "controller.h"
