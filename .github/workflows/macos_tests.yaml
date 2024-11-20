@@ -15,6 +15,41 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build_test_adons:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Setup addons cache
+        id: addons-cache
+        uses: actions/cache@v4
+        with:
+          path: build-addons/
+          key: test-addons-${{ hashFiles('addons/', 'test/functional/addons/') }}
+
+      - name: Install build dependencies
+        if: steps.addons-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          git submodule init
+          git submodule update 3rdparty/i18n
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -b linux/debian/control)
+
+      - name: Build test addons dependencies
+        if: steps.addons-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p build-addons/
+          cmake -S $(pwd)/tests/functional/addons -B build-addons/
+          cmake --build build-addons/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-addons-${{ github.sha }}
+          path: build-addons/
+
   build_test_app:
     name: Build Test Client
     runs-on: macos-latest
@@ -63,13 +98,6 @@ jobs:
           cmake --build build/cmake
           cp -r ./build/cmake/src/Mozilla\ VPN.app/ build/Mozilla\ VPN.app
 
-      - name: Compile test addons
-        run: |
-          mkdir -p build/addons
-          cmake -S $(pwd)/tests/functional/addons -B build/addons \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
-          cmake --build build/addons
-
       - uses: actions/upload-artifact@v4
         with:
           name: test-client-${{ github.sha }}
@@ -95,6 +123,7 @@ jobs:
     name: Functional tests
     needs:
       - build_test_app
+      - build_test_addons
     runs-on: macos-latest
     timeout-minutes: 45
     strategy:
@@ -109,6 +138,11 @@ jobs:
         with:
           name: test-client-${{ github.sha }}
           path: build/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-addons-${{ github.sha }}
+          path: build/addons/
 
       - uses: actions/setup-python@v5
         env:
