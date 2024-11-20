@@ -6,6 +6,7 @@
 
 #include <Windows.h>
 #include <errhandlingapi.h>
+#include <winsvc.h>
 
 #include <QSettings>
 #include <QSysInfo>
@@ -52,4 +53,31 @@ QString WindowsUtils::windowsVersion() {
 // static
 void WindowsUtils::forceCrash() {
   RaiseException(0x0000DEAD, EXCEPTION_NONCONTINUABLE, 0, NULL);
+}
+
+// static
+bool WindowsUtils::getServiceStatus(const QString& name) {
+  auto scmRights = SC_MANAGER_CONNECT | SC_MANAGER_ENUMERATE_SERVICE |
+                   SC_MANAGER_QUERY_LOCK_STATUS | SERVICE_QUERY_STATUS;
+  auto scm = OpenSCManager(nullptr, nullptr, scmRights);
+  auto guard = qScopeGuard([manager]() {  CloseServiceHandle(scm); });
+  DWORD err = GetLastError();
+  if (err != NO_ERROR) {
+    logger.error() << " OpenSCManager failed: " << getErrorMessage(err);
+    return false;
+  }
+
+  auto service = OpenService(scm, (LPCWSTR)name.utf16(), SERVICE_QUERY_STATUS);
+  err = GetLastError()
+  if (err != NO_ERROR) {
+    logger.error() << " OpenService failed: " << getErrorMessage(err);
+    return false;
+  }
+
+  SERVICE_STATUS status;
+  if (!QueryServiceStatus(service, &status)) {
+    logger.error() << " QueryServiceStatus failed: " << getErrorMessage();
+    return false;
+  }
+  return (status.dwCurrentState == SERVICE_RUNNING);
 }

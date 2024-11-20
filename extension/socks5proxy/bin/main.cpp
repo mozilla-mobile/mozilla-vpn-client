@@ -161,6 +161,11 @@ int main(int argc, char** argv) {
       qWarning() << "Listen failed:" << server->errorString();
       return 1;
     }
+
+    // Remove the socket on termination
+    QObject::connect(socks5, &QObject::destroyed, [config]() {
+      QLocalServer::removeServer(config.localSocketName);
+    });
   } else {
     QTcpServer* server = new QTcpServer(&app);
     QObject::connect(&app, &QCoreApplication::aboutToQuit, server,
