@@ -15,7 +15,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  wasmQt6:
+  build_test_addons:
+    name: Build Test Addons
+    uses: ./.github/workflows/build_addons.yaml
+    with:
+      test-addons-name: test-addons-${{ github.sha }}
+
+  build_test_app:
     name: Wasm Qt6
     runs-on: ubuntu-20.04
     outputs:
@@ -62,17 +68,9 @@ jobs:
           cmake --build build/cmake -j4
           cp -r build/cmake/wasm_build build/wasm_build
 
-      - name: Compile test addons
-        shell: bash
-        run: |
-          mkdir -p build/addons
-          cmake -S $(pwd)/tests/functional/addons -B build/addons \
-            -DCMAKE_PREFIX_PATH=/opt/$QTVERSION/gcc_64/lib/cmake
-          cmake --build build/addons
-
       - uses: actions/upload-artifact@v4
         with:
-          name: WebAssembly Build Qt6
+          name: test-wasm-${{ github.sha }}
           path: |
             build/
             !build/cmake/
@@ -96,7 +94,8 @@ jobs:
   functionaltests:
     name: Functional tests
     needs:
-      - wasmQt6
+      - build_test_app
+      - build_test_addons
     runs-on: ubuntu-20.04
     timeout-minutes: 45
     strategy:
@@ -112,8 +111,13 @@ jobs:
 
       - uses: actions/download-artifact@v4
         with:
-          name: WebAssembly Build Qt6
+          name: test-wasm-${{ github.sha }}
           path: build/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-addons-${{ github.sha }}
+          path: build/addons/
 
       - uses: actions/setup-python@v5
         with:
