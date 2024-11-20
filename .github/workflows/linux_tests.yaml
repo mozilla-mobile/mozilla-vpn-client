@@ -16,39 +16,10 @@ concurrency:
 
 jobs:
   build_test_addons:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-
-      - name: Setup addons cache
-        id: addons-cache
-        uses: actions/cache@v4
-        with:
-          path: build-addons/
-          key: test-addons-${{ hashFiles('addons/', 'test/functional/addons/') }}
-
-      - name: Install build dependencies
-        if: steps.addons-cache.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          git submodule init
-          git submodule update 3rdparty/i18n
-          sudo apt-get update
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -b linux/debian/control)
-
-      - name: Build test addons dependencies
-        if: steps.addons-cache.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          mkdir -p build-addons/
-          cmake -S $(pwd)/tests/functional/addons -B build-addons/
-          cmake --build build-addons/
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: test-addons-${{ github.sha }}
-          path: build-addons/
+    name: Build Test Addons
+    uses: ./.github/workflows/build_addons.yaml
+    with:
+      test-addons-name: test-addons-${{ github.sha }}
 
   build_test_app:
     name: Build Test Client
@@ -64,9 +35,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control) ccache
 
-          echo "DEBUG: ccache configuration"
-          ccache -p
-
       - uses: actions/setup-python@v5
         with:
           python-version: "3.9"
@@ -76,7 +44,7 @@ jobs:
       - name: Setup compiler cache
         uses: actions/cache@v4
         with:
-          path: ~/.ccache
+          path: ~/.cache/ccache
           key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.event_name == 'pull_request' && 'pull' || 'sha' }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.sha }}
           restore-keys: |
             ccache-${{ runner.os }}-${{ runner.arch }}-sha-${{ github.event.pull_request.base.sha }}
