@@ -13,24 +13,24 @@
  * can be used in code.)
  */
 // Primary
-color.primary = color.purple90;
-color.primaryBrighter = color.purple70;
-color.primaryHovered = color.washedPurple;
-color.primaryPressed = color.dullPurple;
+color.primary = color.dullPurple;
+color.primaryBrighter = color.washedPurple;
+color.primaryHovered = color.purple90;
+color.primaryPressed = color.purple90;
 
 // Backgrounds
-color.bgColor = color.grey5;
+color.bgColor = color.grey60;
 color.bgColorTransparent = addTransparency(color.bgColor, 0.0);
-color.bgColorStronger = color.white;
-color.overlayBackground = addTransparency(color.black, 0.0);
+color.bgColorStronger = color.black;
+color.overlayBackground = addTransparency(color.white, 0.0);
 
 // Fonts
 color.fontColor = color.grey40;
-color.fontColorDark = color.grey50;
+color.fontColorDark = color.grey30;
 color.fontColorWarning = color.yellow70;
-color.fontColorInverted = color.white;
+color.fontColorInverted = color.black;
 color.fontColorInvertedMuted = color.grey20;
-color.fontTitleColor = color.black;
+color.fontTitleColor = color.white;
 
 // Dividers and borders
 color.divider = color.grey10;
