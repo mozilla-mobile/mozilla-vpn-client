@@ -7,8 +7,6 @@ import argparse
 import os
 import re
 
-# import xml.etree.ElementTree as etree
-
 HEX_COLOR_REGEX = r"#[0-9a-fA-F]{6}"
 COLOR_DEF_REGEX = r"color\..* ="
 COLOR_USE_REGEX = r"MZTheme\.colors\.[0-9A-Za-z]+"
