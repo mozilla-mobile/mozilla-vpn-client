@@ -318,6 +318,7 @@ constexpr const char* MACOS_DAEMON_VAR_PATH =
     "/var/run/mozillavpn/daemon.socket";
 
 constexpr const char* SOCKSPROXY_UNIX_PATH = "/var/run/mozillavpn.proxy";
+constexpr const char* SOCKSPROXY_SERVICE_NAME = "MozillaVPNProxy";
 
 };  // namespace Constants
 

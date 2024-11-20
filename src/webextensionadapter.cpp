@@ -30,6 +30,10 @@
 #include "taskscheduler.h"
 #include "webextensionadapter.h"
 
+#if defined(MZ_WINDOWS)
+#  include "platforms/windows/windowsutils.h"
+#endif
+
 namespace {
 
 // See https://en.cppreference.com/w/cpp/utility/variant/visit
@@ -187,9 +191,10 @@ QJsonObject WebExtensionAdapter::serializeFeaturelist() {
   out["localProxy"] = QFileInfo::exists(Constants::SOCKSPROXY_UNIX_PATH);
 #elif defined(MZ_WINDOWS)
   // TODO: Need to check if the service is running.
-  out["localProxy"] = true
+  out["localProxy"] =
+      WindowsUtils::getServiceStatus(Constants::SOCKSPROXY_SERVICE_NAME);
 #else
-  out["localProxy"] = false
+  out["localProxy"] = false;
 #endif
 
   return out;

@@ -60,17 +60,15 @@ bool WindowsUtils::getServiceStatus(const QString& name) {
   auto scmRights = SC_MANAGER_CONNECT | SC_MANAGER_ENUMERATE_SERVICE |
                    SC_MANAGER_QUERY_LOCK_STATUS | SERVICE_QUERY_STATUS;
   auto scm = OpenSCManager(nullptr, nullptr, scmRights);
-  auto guard = qScopeGuard([manager]() {  CloseServiceHandle(scm); });
-  DWORD err = GetLastError();
-  if (err != NO_ERROR) {
-    logger.error() << " OpenSCManager failed: " << getErrorMessage(err);
+  auto guard = qScopeGuard([scm]() { CloseServiceHandle(scm); });
+  if (scm == nullptr) {
+    logger.error() << " OpenSCManager failed: " << getErrorMessage();
     return false;
   }
 
   auto service = OpenService(scm, (LPCWSTR)name.utf16(), SERVICE_QUERY_STATUS);
-  err = GetLastError()
-  if (err != NO_ERROR) {
-    logger.error() << " OpenService failed: " << getErrorMessage(err);
+  if (service == nullptr) {
+    logger.error() << " OpenService failed: " << getErrorMessage();
     return false;
   }
 
