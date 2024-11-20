@@ -84,7 +84,7 @@ if len(all_themes) == 0:
     exit(f"No themes found")
 
 ###
-# 1. All theme's `theme.js` should have the same colors
+# 1. All theme's `theme.js` should define the same named colors (though with different values)
 file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + "/theme.js", all_themes))
 baseline_colors = colorsDefinedInFile(file_paths[0])
 for file_path in file_paths:
