@@ -15,7 +15,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build_test_adons:
+  build_test_addons:
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
