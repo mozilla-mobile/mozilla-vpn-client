@@ -184,7 +184,7 @@ QJsonObject WebExtensionAdapter::serializeFeaturelist() {
 
   // Detect the localProxy feature by checking the running services.
 #if defined(MZ_LINUX) && !defined(MZ_FLATPAK)
-  out["localProxy"] = QFileInfo::exists("/var/run/mozillavpn.proxy");
+  out["localProxy"] = QFileInfo::exists(Constants::SOCKSPROXY_UNIX_PATH);
 #elif defined(MZ_WINDOWS)
   // TODO: Need to check if the service is running.
   out["localProxy"] = true
