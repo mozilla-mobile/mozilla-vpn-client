@@ -51,7 +51,7 @@ color.iconButtonDarkBackground = {
   buttonHovered: color.primaryHovered,
   buttonPressed: color.primaryPressed,
   buttonDisabled: addTransparency(color.primary, 0.0),
-  focusOutline: color.transparent,
+  focusOutline: addTransparency(color.primaryHovered, 0.0),
   focusBorder: color.lightFocusBorder,
 };
 
