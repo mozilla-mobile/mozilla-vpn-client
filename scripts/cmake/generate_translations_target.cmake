@@ -45,7 +45,7 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
         ${GENERATED_DIR}/i18nstrings_p.cpp
         ${GENERATED_DIR}/i18nstrings.h
         ${GENERATED_DIR}/translations.qrc
-        ${CMAKE_SOURCE_DIR}/translations/i18nstrings.cpp
+        ${CMAKE_SOURCE_DIR}/src/translations/i18nstrings.cpp
     )
 
     if(NOT QT_FEATURE_zstd)
