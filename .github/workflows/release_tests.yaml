@@ -40,6 +40,37 @@ jobs:
           echo macos=$(jq -r 'select(.label == "signing-macos/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
           echo windows=$(jq -r 'select(.label == "signing-windows/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
 
+  test-addons:
+    name: Build Test Addons
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+      - run: |
+          git submodule update --init 3rdparty/i18n
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -b linux/debian/control)
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+
+      - name: Compile test addons
+        shell: bash
+        run: |
+          mkdir -p build-addons
+          cmake -S $(pwd)/tests/functional/addons -B build-addons
+          cmake --build build-addons
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-addons-${{ github.sha }}
+          path: build-addons/
+
   linux-artifacts:
     runs-on: ubuntu-latest
     needs:
@@ -77,6 +108,7 @@ jobs:
   linux-tests:
     needs:
       - linux-artifacts
+      - test-addons
     timeout-minutes: 45
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
@@ -95,9 +127,17 @@ jobs:
           name: test-linux-${{ github.sha }}
           path: build/
 
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-addons-${{ github.sha }}
+          path: build/addons/
+
       - name: Install VPN Client
         shell: bash
-        run: sudo apt install ./build/mozillavpn.deb
+        run: |
+          sudo apt-get update
+          sudo apt install ./build/mozillavpn.deb
+          sudo apt-get install --no-upgrade firefox xvfb-run
 
       - uses: actions/setup-python@v5
         with:
@@ -113,6 +153,13 @@ jobs:
 
       - name: Running ${{ matrix.test.name }} Tests
         shell: bash
+        env:
+          TZ: Europe/London
+          HEADLESS: yes
+          MVPN_BIN: ./build/mozillavpn
+          MVPN_ADDONS_PATH: ${{ github.workspace }}/build/addons
         run: |
-          echo "TODO: Implement Me!"
-          ls -al build/
+          export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+          export MVPN_BIN=$(which mozillavpn)
+          mkdir -p $ARTIFACT_DIR
+          xvfb-run -a npm run functionalTest --  --retries 3 ${{matrix.test.path}}
