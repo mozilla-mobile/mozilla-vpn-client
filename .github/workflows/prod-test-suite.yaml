@@ -167,7 +167,8 @@ jobs:
         shell: powershell
         run: |
           Get-ChildItem -Path ${{ github.workspace }}\build
-          Get-ItemProperty -Path /l*!\${{ inputs.artifact-name }} | Get-Member -MemberType property
+          Get-ItemProperty -Path ${{ github.workspace }}\build\${{ inputs.artifact-name }} | Get-Member -MemberType property
+          New-Item -Path . -Name "msiexec.log" -ItemType "file"
 
           $pmsi = Start-Process "msiexec" "/i ${{ github.workspace }}\build\${{ inputs.artifact-name }} /qn /l*! msiexec.log" -NoNewWindow -PassThru
           $plog = Start-Process "powershell" "Get-Content -Path msiexec.log -Wait" -NoNewWindow -PassThru
