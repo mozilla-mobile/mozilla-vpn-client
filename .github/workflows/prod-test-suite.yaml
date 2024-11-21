@@ -167,4 +167,4 @@ jobs:
           MVPN_ADDONS_PATH: ${{ github.workspace }}/build/addons/
         run: |
           export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
-          npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
+          ${{ runner.os == 'Linux' && 'xvfb-run -a' }} npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
