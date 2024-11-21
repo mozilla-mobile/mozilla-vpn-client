@@ -156,6 +156,7 @@ jobs:
               tail -f msiexec.log &
               msiexec /i "${{ github.workspace }}\build\${{ inputs.artifact-name }}" /qn '/l*!' msiexec.log
               echo "MVPN_BIN=C:\\Program Files\\Mozilla\\Mozilla VPN\\Mozilla VPN.exe" >> $GITHUB_ENV
+              ;;
 
             *)
               echo "Unsupported installation file type: ${{ inputs.artifact-name }}"
