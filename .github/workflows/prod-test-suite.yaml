@@ -141,6 +141,7 @@ jobs:
         shell: bash
         run: |
           for FILENAME in $(ls ./build/); do
+            echo "Installing $(pwd)/build/${FILENAME}"
             case "$FILENAME" in
               *.deb)
                 sudo apt install ./build/${FILENAME}
@@ -153,9 +154,10 @@ jobs:
                 ;;
               
               *.msi)
-                msiexec /lv msiexec.log /i ./build/${FILENAME}
+                touch msiexec.log
+                tail -f msiexec.log &
+                msiexec /lv msiexec.log /qn /i ./build/${FILENAME}
                 echo "MVPN_BIN=/c/Program Files/Mozilla/Mozilla VPN/Mozilla VPN.exe" >> $GITHUB_ENV
-                cat msiexec.log
             esac
           done
 
@@ -167,4 +169,4 @@ jobs:
           MVPN_ADDONS_PATH: ${{ github.workspace }}/build/addons/
         run: |
           export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
-          ${{ runner.os == 'Linux' && 'xvfb-run -a' }} npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
+          ${{ runner.os == 'Linux' && 'xvfb-run -a' || '' }} npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
