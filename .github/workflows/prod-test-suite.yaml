@@ -166,7 +166,7 @@ jobs:
         if: ${{ runner.os == 'Windows' }}
         shell: powershell
         run: |
-          $pmsi = Start-Process "msiexec" "/i ${{ github.workspace }}/build/${{ inputs.archive-name }} /qn /*! msiexec.log" -NoNewWindow -PassThru
+          $pmsi = Start-Process "msiexec" "/i ${{ github.workspace }}/build/${{ inputs.artifact-name }} /qn /*! msiexec.log" -NoNewWindow -PassThru
           $plog = Start-Process "powershell" "Get-Content -Path msiexec.log -Wait" -NoNewWindow -PassThru
           $pmsi.WaitForExit()
           $plog.Kill()
