@@ -138,6 +138,7 @@ jobs:
       - run: npm install
 
       - name: Install VPN client
+        if: ${{ runner.os != 'Windows' }}
         shell: bash
         run: |
           case ${{ inputs.artifact-name }} in
@@ -150,26 +151,30 @@ jobs:
               sudo installer -pkg ${{ github.workspace }}/build/${{ inputs.artifact-name }} -target /
               echo "MVPN_BIN=/Applications/Mozilla VPN.app/Contents/MacOS/Mozilla VPN" >> $GITHUB_ENV
               ;;
-            
-            *.msi)
-              touch msiexec.log
-              tail -f msiexec.log &
-              msiexec /i "${{ github.workspace }}\build\${{ inputs.artifact-name }}" /qn '/l*!' msiexec.log
-              echo "MVPN_BIN=C:\\Program Files\\Mozilla\\Mozilla VPN\\Mozilla VPN.exe" >> $GITHUB_ENV
-              ;;
 
             *)
               echo "Unsupported installation file type: ${{ inputs.artifact-name }}"
               exit 1
               ;;
           esac
+          echo "MVPN_ADDONS_PATH=${{ github.workspace }}/build/addons" >> $GITHUB_ENV
+
+      - name: Install VPN client
+        if: ${{ runner.os == 'Windows' }}
+        shell: powershell
+        run: |
+          New-Item -Path . -Name "msiexec.log" -ItemType "file"
+          $pmsi = Start-Process "msiexec" "/i ${{ github.workspace }}\build\${{ inputs.artifact-name }} /qn /l*! msiexec.log" -NoNewWindow -PassThru
+          $plog = Start-Process "powershell" "Get-Content -Path msiexec.log -Wait" -NoNewWindow -PassThru
+          $pmsi.WaitForExit()
+          $plog.Kill()
+
+          Add-Content -Path $env:GITHUB_ENV -Value "MVPN_BIN=C:\Program Files\Mozilla\Mozilla VPN\Mozilla VPN.exe"
+          Add-Content -Path $env:GITHUB_ENV -Value "MVPN_ADDONS_PATH=${{ github.workspace }}\build\addons"
 
       - name: Running ${{ matrix.test.name }} Tests
         shell: bash
         env:
           TZ: Europe/London
           HEADLESS: yes
-          MVPN_ADDONS_PATH: ${{ github.workspace }}/build/addons/
-        run: |
-          export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
-          ${{ runner.os == 'Linux' && 'xvfb-run -a' || '' }} npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
+        run: ${{ runner.os == 'Linux' && 'xvfb-run -a' || '' }} npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
