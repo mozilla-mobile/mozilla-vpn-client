@@ -1,0 +1,114 @@
+name: Release Tests
+on:
+  push:
+    branches:
+      - main
+      - "releases/**"
+  # TODO: Remove this - this is a bit too heavy to run on PR.
+  pull_request:
+    branches:
+      - main
+      - "releases/**"
+
+jobs:
+  resolve-taskgraph:
+    name: Resolve Taskgraph
+    runs-on: ubuntu-latest
+    outputs:
+      linux: ${{ steps.artifacts.outputs.linux }}
+      macos: ${{ steps.artifacts.outputs.macos }}
+      windows: ${{ steps.artifacts.outputs.windows }}
+    steps:
+      - name: Fetch taskgraph
+        shell: bash
+        env:
+          TASKGRAPH_INDEX_API: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task
+          ## TODO: Looking up tasks by sha only works on push to main
+          #TASKGRAPH_INDEX: mozillavpn.v2.mozilla-vpn-client.branch.main.revision.${{ github.sha }}.taskgraph.decision
+          TASKGRAPH_INDEX: mozillavpn.v2.mozilla-vpn-client.branch.main.latest.taskgraph.decision
+        run: |
+          curl -v -sSL --retry 5 --retry-all-errors --retry-max-time 180 --fail \
+            ${TASKGRAPH_INDEX_API}/${TASKGRAPH_INDEX}/artifacts/public%2Ftask-graph.json | jq 'to_entries | .[].value' > task-graph.json
+          echo "Found Tasks:"
+          jq -r '.task_id' task-graph.json
+
+      - name: Parse taskgraph
+        id: artifacts
+        shell: bash
+        run: |
+          echo linux=$(jq -r 'select(.label == "build-linux64/release-deb").task_id' task-graph.json) >> $GITHUB_OUTPUT
+          echo macos=$(jq -r 'select(.label == "signing-macos/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
+          echo windows=$(jq -r 'select(.label == "signing-windows/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
+
+  linux-artifacts:
+    runs-on: ubuntu-latest
+    needs:
+      - resolve-taskgraph
+    outputs:
+      tests: ${{ steps.testgen.outputs.tests }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+      
+      - name: Wait for taskcluster job
+        shell: bash
+        run: ./.github/scripts/await-taskcluster-status.py -t 3600 ${{ needs.resolve-taskgraph.outputs.linux }}
+
+      - name: Download build artifact
+        shell: bash
+        env:
+          TASKGRAPH_QUEUE_API: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task
+        run: |
+          curl -sSL -o mozillavpn.deb ${ TASKGRAPH_QUEUE_API }/${{ needs.resolve-taskgraph.outputs.linux }}/runs/0/artifacts/public%2Fbuild%2Fmozillavpn.deb
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-linux-${{ github.sha }}
+          path: mozillavpn.deb
+
+      - name: Generate tasklist
+        id: testgen
+        run: |
+          echo -n "tests=" >> $GITHUB_OUTPUT
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c >> $GITHUB_OUTPUT
+
+  linux-tests:
+    needs:
+      - linux-artifacts
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
+      matrix:
+        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
+        test: ${{ fromJson(needs.linux-artifacts.outputs.tests) }}
+
+    runs-on: ${{ matrix.os }}
+    name: Release tests (${{ matrix.os }})
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-linux-${{ github.sha }}
+          path: build/
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+      - run: npm install
+
+      - name: Running ${{ matrix.test.name }} Tests
+        shell: bash
+        run: |
+          echo "TODO: Implement Me!"
+          ls -al build/
