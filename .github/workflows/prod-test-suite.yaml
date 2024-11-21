@@ -146,6 +146,11 @@ jobs:
                 sudo installer -pkg ${{ github.workspace }}/build/${FILENAME} -target /
                 echo "MVPN_BIN=/Applications/Mozilla VPN.app/Contents/MacOS/Mozilla VPN" >> $GITHUB_ENV
                 ;;
+              
+              *.msi)
+                msiexec /lv msiexec.log /i ${{ github.workspace }}/build/${FILENAME}
+                echo "MVPN_BIN=/c/Program Files/Mozilla/Mozilla VPN/Mozilla VPN.exe" >> $GITHUB_ENV
+                cat msiexec.log
             esac
           done
 

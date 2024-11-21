@@ -186,3 +186,15 @@ jobs:
         macos-12
         macos-13
         macos-14
+
+  windows-tests:
+    name: Windows Tests
+    needs:
+      - resolve-taskgraph
+    uses: ./.github/workflows/prod-test-suite.yaml
+    with:
+      task-id: ${{ needs.resolve-taskgraph.outputs.windows }}
+      artifact-name: MozillaVPN.msi
+      runs-on: |
+        windows-2019
+        windows-2022
