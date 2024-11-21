@@ -26,6 +26,7 @@ jobs:
     outputs:
       tests: ${{ steps.enumerate.outputs.tests }}
       runners: ${{ steps.enumerate.outputs.runners }}
+      uniqueid: ${{ steps.enumerate.outputs.uniqueid }}
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -38,6 +39,18 @@ jobs:
         with:
           path: build-addons/
           key: cache-addons-${{ hashFiles('addons/', 'test/functional/addons/') }}
+          enableCrossOsArchive: true
+
+      - name: Enumerate tests and runners
+        id: enumerate
+        run: |
+          echo -n "tests=" >> $GITHUB_OUTPUT
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c >> $GITHUB_OUTPUT
+
+          echo -n "runners=" >> $GITHUB_OUTPUT
+          echo "${{ inputs.runs-on }}" | jq --raw-input -c '[., inputs] | map(select(length > 0))' >> $GITHUB_OUTPUT
 
       - name: Install build dependencies
         if: steps.addons-cache.outputs.cache-hit != 'true'
@@ -56,22 +69,6 @@ jobs:
           cmake -S $(pwd)/tests/functional/addons -B build-addons/
           cmake --build build-addons/
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: test-addons
-          path: build-addons/
-    
-      - name: Enumerate tests and runners
-        id: enumerate
-        run: |
-          echo -n "tests=" >> $GITHUB_OUTPUT
-          for test in $(find tests/functional -name 'test*.js' | sort); do
-            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
-          done | jq -s -c >> $GITHUB_OUTPUT
-
-          echo -n "runners=" >> $GITHUB_OUTPUT
-          echo "${{ inputs.runs-on }}" | jq --raw-input -c '[., inputs] | map(select(length > 0))' >> $GITHUB_OUTPUT
-
       - name: Wait for taskcluster job
         id: taskgraph
         shell: bash
@@ -89,7 +86,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: test-artifact
+          name: test-artifact-${{ github.workflow }}
           path: ${{ inputs.artifact-name }}
 
   run-tests:
@@ -110,15 +107,20 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
 
-      - uses: actions/download-artifact@v4
+      - name: Checkout addons cache
+        id: addons-cache
+        uses: actions/cache@v4
         with:
-          name: test-artifact
-          path: build/
+          path: build-addons/
+          key: cache-addons-${{ hashFiles('addons/', 'test/functional/addons/') }}
+          enableCrossOsArchive: true
+          lookup-only: true
+          fail-on-cache-miss: true
 
       - uses: actions/download-artifact@v4
         with:
-          name: test-addons
-          path: build/addons/
+          name: test-artifact-${{ github.workflow }}
+          path: build/
 
       - uses: actions/setup-python@v5
         with:
@@ -159,7 +161,7 @@ jobs:
         env:
           TZ: Europe/London
           HEADLESS: yes
-          MVPN_ADDONS_PATH: ${{ github.workspace }}/build/addons
+          MVPN_ADDONS_PATH: ./build-addons/
         run: |
           export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
           npm run functionalTest --  --retries 3 ${{ matrix.test.path }}

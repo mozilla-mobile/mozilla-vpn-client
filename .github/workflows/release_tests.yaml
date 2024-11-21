@@ -40,139 +40,17 @@ jobs:
           echo macos=$(jq -r 'select(.label == "signing-macos/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
           echo windows=$(jq -r 'select(.label == "signing-windows/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
 
-  test-addons:
-    name: Build Test Addons
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-
-      - name: Setup addons cache
-        id: addons-cache
-        uses: actions/cache@v4
-        with:
-          path: build-addons/
-          key: test-addons-${{ hashFiles('addons/', 'test/functional/addons/') }}
-
-      - name: Install dependencies
-        if: steps.addons-cache.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          git submodule update --init 3rdparty/i18n
-          sudo apt-get update
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -b linux/debian/control)
-
-      - uses: actions/setup-python@v5
-        if: steps.addons-cache.outputs.cache-hit != 'true'
-        with:
-          python-version: "3.9"
-          cache: "pip"
-      - run: pip install -r requirements.txt
-
-      - name: Compile test addons
-        if: steps.addons-cache.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          mkdir -p build-addons
-          cmake -S $(pwd)/tests/functional/addons -B build-addons
-          cmake --build build-addons
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: test-addons-${{ github.sha }}
-          path: build-addons/
-
-  linux-artifacts:
-    runs-on: ubuntu-latest
-    needs:
-      - resolve-taskgraph
-    outputs:
-      tests: ${{ steps.testgen.outputs.tests }}
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-      
-      - name: Wait for taskcluster job
-        shell: bash
-        run: ./.github/scripts/await-taskcluster-status.py -t 3600 ${{ needs.resolve-taskgraph.outputs.linux }}
-
-      - name: Download build artifact
-        shell: bash
-        env:
-          TASKGRAPH_QUEUE_API: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task
-        run: |
-          curl -sSL -o mozillavpn.deb ${TASKGRAPH_QUEUE_API}/${{ needs.resolve-taskgraph.outputs.linux }}/runs/0/artifacts/public%2Fbuild%2Fmozillavpn.deb
-
-      - uses: actions/upload-artifact@v4
-        with:
-          name: test-linux-${{ github.sha }}
-          path: mozillavpn.deb
-
-      - name: Generate tasklist
-        id: testgen
-        run: |
-          echo -n "tests=" >> $GITHUB_OUTPUT
-          for test in $(find tests/functional -name 'test*.js' | sort); do
-            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
-          done | jq -s -c >> $GITHUB_OUTPUT
-
   linux-tests:
     needs:
-      - linux-artifacts
-      - test-addons
-    timeout-minutes: 45
-    strategy:
-      fail-fast: false # Don't cancel other jobs if a test fails
-      matrix:
-        os: [ubuntu-20.04, ubuntu-22.04, ubuntu-24.04]
-        test: ${{ fromJson(needs.linux-artifacts.outputs.tests) }}
-
-    runs-on: ${{ matrix.os }}
-    name: Test ${{ matrix.test.name }} (${{ matrix.os }})
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: test-linux-${{ github.sha }}
-          path: build/
-
-      - uses: actions/download-artifact@v4
-        with:
-          name: test-addons-${{ github.sha }}
-          path: build/addons/
-
-      - name: Install VPN Client
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt install ./build/mozillavpn.deb
-          sudo apt install --no-upgrade firefox xvfb -y
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.9"
-          cache: "pip"
-      - run: pip install -r requirements.txt
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: 18
-          cache: "npm"
-      - run: npm install
-
-      - name: Running ${{ matrix.test.name }} Tests
-        shell: bash
-        env:
-          TZ: Europe/London
-          HEADLESS: yes
-          MVPN_BIN: ./build/mozillavpn
-          MVPN_ADDONS_PATH: ${{ github.workspace }}/build/addons
-        run: |
-          export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
-          export MVPN_BIN=$(which mozillavpn)
-          xvfb-run -a npm run functionalTest --  --retries 3 ${{matrix.test.path}}
+      - resolve-taskgraph
+    uses: ./.github/workflows/prod-test-suite.yaml
+    with:
+      task-id: ${{ needs.resolve-taskgraph.outputs.linux }}
+      artifact-name: mozillavpn.deb
+      runs-on: |
+        ubuntu-20.04
+        ubuntu-22.04
+        ubuntu-24.04
 
   macos-tests:
     name: MacOS Tests
