@@ -137,7 +137,8 @@ jobs:
           cache: "npm"
       - run: npm install
 
-      - name: Install VPN Client
+      - name: Install VPN client
+        if: ${{ runner.os != 'Windows' }}
         shell: bash
         run: |
           for FILENAME in $(ls ./build/); do
@@ -160,6 +161,15 @@ jobs:
                 echo "MVPN_BIN=/c/Program Files/Mozilla/Mozilla VPN/Mozilla VPN.exe" >> $GITHUB_ENV
             esac
           done
+      
+      - name: Install VPN client
+        if: ${{ runner.os == 'Windows' }}
+        shell: powershell
+        run: |
+          $pmsi = Start-Process "msiexec" "/i ${{ github.workspace }}/build/${{ inputs.archive-name }} /qn /*! msiexec.log" -NoNewWindow -PassThru
+          $plog = Start-Process "powershell" "Get-Content -Path msiexec.log -Wait" -NoNewWindow -PassThru
+          $pmsi.WaitForExit()
+          $plog.Kill()
 
       - name: Running ${{ matrix.test.name }} Tests
         shell: bash
