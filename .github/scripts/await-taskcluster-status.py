@@ -32,15 +32,19 @@ if __name__ == "__main__":
     while time.monotonic() < expiration:
         try:
             js = get_job_status(args.taskid, args.api)
-            if len(js) > 0:
-                state = js[0]["status"]["state"]
-            else:
-                state = "not found"
+            if len(js) == 0:
+                raise Exception("not found")
+            status = js[0]["status"]
         except Exception as e:
-            state = e
+            status = {
+                "taskId": args.taskid,
+                "state": str(e),
+                "runs": [],
+            }
         
-        if state == 'completed':
-            print(f"Task {args.taskid} - {state} - exiting")
+        if status["state"] == 'completed':
+            print(f'Task {args.taskid} - {status["state"]} - exiting', file=sys.stderr)
+            print(f'{json.dumps(status, indent=3)}')
             sys.exit(0)
 
         # Wait and try again        
@@ -48,7 +52,7 @@ if __name__ == "__main__":
         if maxsleep > args.interval:
             maxsleep = args.interval
 
-        print(f"Task {args.taskid} - {state} - retrying in {maxsleep}")
+        print(f'Task {args.taskid} - {status["state"]} - retrying in {maxsleep}', file=sys.stderr)
         time.sleep(maxsleep)
 
     # Otherwise a timeout occurred.

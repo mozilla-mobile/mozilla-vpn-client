@@ -59,7 +59,7 @@ jobs:
         env:
           TASKGRAPH_QUEUE_API: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task
         run: |
-          curl -sSL -o mozillavpn.deb ${ TASKGRAPH_QUEUE_API }/${{ needs.resolve-taskgraph.outputs.linux }}/runs/0/artifacts/public%2Fbuild%2Fmozillavpn.deb
+          curl -sSL -o mozillavpn.deb ${TASKGRAPH_QUEUE_API}/${{ needs.resolve-taskgraph.outputs.linux }}/runs/0/artifacts/public%2Fbuild%2Fmozillavpn.deb
 
       - uses: actions/upload-artifact@v4
         with:
@@ -94,6 +94,10 @@ jobs:
         with:
           name: test-linux-${{ github.sha }}
           path: build/
+
+      - name: Install VPN Client
+        shell: bash
+        run: sudo apt install ./build/mozillavpn.deb
 
       - uses: actions/setup-python@v5
         with:
