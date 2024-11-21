@@ -1,4 +1,4 @@
-name: Linters (clang, l10n)
+name: Linters (clang, l10n, colors)
 on:
   # Triggers the workflow on pull request events but only for the main branch
   pull_request:

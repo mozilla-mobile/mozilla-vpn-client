@@ -22,7 +22,7 @@ color.primaryPressed = color.dullPurple;
 color.bgColor = color.grey5;
 color.bgColorTransparent = addTransparency(color.bgColor, 0.0);
 color.bgColorStronger = color.white;
-color.overlayBackground = addTransparency(color.black, 0.0);
+color.overlayBackground = addTransparency(color.black, 0.3);
 
 // Fonts
 color.fontColor = color.grey40;
