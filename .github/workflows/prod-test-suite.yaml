@@ -1,0 +1,158 @@
+# A reusable workflow to build addons
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: 'Name of the compiled artifact to download and test'
+        required: true
+        type: string
+      ref:
+        description: 'The branch, tag or SHA of functional tests to checkout.'
+        default: ${{ github.ref }}
+        type: string
+      runs-on:
+        description: 'The type of machine to run the job on.'
+        default: 'ubuntu-latest'
+        type: string
+      task-id:
+        description: 'Taskcluster task to fetch artifacts from'
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build Test Artifacts
+    runs-on: ubuntu-latest
+    outputs:
+      tests: ${{ steps.enumerate.outputs.tests }}
+      runners: ${{ steps.enumerate.outputs.runners }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup addons cache
+        id: addons-cache
+        uses: actions/cache@v4
+        with:
+          path: build-addons/
+          key: cache-addons-${{ hashFiles('addons/', 'test/functional/addons/') }}
+
+      - name: Install build dependencies
+        if: steps.addons-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          git submodule init
+          git submodule update 3rdparty/i18n
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -b linux/debian/control)
+
+      - name: Build test addons
+        if: steps.addons-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p build-addons/
+          cmake -S $(pwd)/tests/functional/addons -B build-addons/
+          cmake --build build-addons/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-addons
+          path: build-addons/
+    
+      - name: Enumerate tests and runners
+        id: enumerate
+        run: |
+          echo -n "tests=" >> $GITHUB_OUTPUT
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c >> $GITHUB_OUTPUT
+
+          echo -n "runners=" >> $GITHUB_OUTPUT
+          echo "${{ inputs.runs-on }}" | jq --raw-input -c '[., inputs] | map(select(length > 0))' >> $GITHUB_OUTPUT
+
+      - name: Wait for taskcluster job
+        shell: bash
+        run: |
+          pip install requests
+          ./.github/scripts/await-taskcluster-status.py -t 3600 ${{ inputs.task-id }}
+
+      - name: Download build artifact
+        shell: bash
+        env:
+          TASKGRAPH_QUEUE_API: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task
+        run: |
+          curl -sSL -o ${{ inputs.artifact-name }} ${TASKGRAPH_QUEUE_API}/${{ inputs.task-id }}/runs/0/artifacts/public%2Fbuild%2F${{ inputs.artifact-name }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: test-artifact
+          path: ${{ inputs.artifact-name }}
+
+  run-tests:
+    needs:
+      - build
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
+      matrix:
+        runner: ${{ fromJson(needs.build.outputs.runners) }}
+        test: ${{ fromJson(needs.build.outputs.tests) }}
+
+    runs-on: ${{ matrix.runner }}
+    name: Test ${{ matrix.test.name }} (${{ matrix.runner }})
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-artifact
+          path: build/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-addons
+          path: build/addons/
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+      - run: npm install
+
+      - name: Install VPN Client
+        shell: bash
+        run: |
+          for FILENAME in $(ls ${{ github.workspace }}/build/); do
+            case "$FILENAME" in
+              *.deb)
+                sudo apt install ${{ github.workspace }}/${FILENAME}
+                echo "MVPN_BIN=$(which mozillavpn)" >> $GITHUB_ENV
+                ;;
+
+              *.pkg)
+                sudo installer -pkg ${{ github.workspace }}/build/${FILENAME} -target /
+                echo "MVPN_BIN=/Applications/Mozilla VPN.app/Contents/MacOS/Mozilla VPN" >> $GITHUB_ENV
+                ;;
+            esac
+          done
+
+      - name: Running ${{ matrix.test.name }} Tests
+        shell: bash
+        env:
+          TZ: Europe/London
+          HEADLESS: yes
+          MVPN_ADDONS_PATH: ${{ github.workspace }}/build/addons
+        run: |
+          export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
+          npm run functionalTest --  --retries 3 ${{matrix.test.path}}
