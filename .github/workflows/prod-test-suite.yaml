@@ -73,17 +73,19 @@ jobs:
           echo "${{ inputs.runs-on }}" | jq --raw-input -c '[., inputs] | map(select(length > 0))' >> $GITHUB_OUTPUT
 
       - name: Wait for taskcluster job
+        id: taskgraph
         shell: bash
         run: |
           pip install requests
-          ./.github/scripts/await-taskcluster-status.py -t 3600 ${{ inputs.task-id }}
+          ./.github/scripts/await-taskcluster-status.py -t 3600 ${{ inputs.task-id }} | tee task-status.json
+          echo run-id=$(jq '.runs[] | select(.state == "completed").runId' task-status.json) >> $GITHUB_OUTPUT
 
       - name: Download build artifact
         shell: bash
         env:
-          TASKGRAPH_QUEUE_API: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task
-        run: |
-          curl -sSL -o ${{ inputs.artifact-name }} ${TASKGRAPH_QUEUE_API}/${{ inputs.task-id }}/runs/0/artifacts/public%2Fbuild%2F${{ inputs.artifact-name }}
+          TASKGRAPH_TASK_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ inputs.task-id }}
+          TASKGRAPH_ARTIFACT: public%2Fbuild%2F${{ inputs.artifact-name }}
+        run: curl -sSL -o ${{ inputs.artifact-name }} ${TASKGRAPH_TASK_URL}/runs/${{ steps.taskgraph.outputs.run-id }}/artifacts/${TASKGRAPH_ARTIFACT}
 
       - uses: actions/upload-artifact@v4
         with:
@@ -155,4 +157,4 @@ jobs:
           MVPN_ADDONS_PATH: ${{ github.workspace }}/build/addons
         run: |
           export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
-          npm run functionalTest --  --retries 3 ${{matrix.test.path}}
+          npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
