@@ -22,6 +22,8 @@
 
 #define SETTING_INT(getter, ...) SETTING(int, toInt, getter, __VA_ARGS__)
 
+#define SETTING_UINT(getter, ...) SETTING(uint32_t, toUInt, getter, __VA_ARGS__)
+
 #define SETTING_INT64(getter, ...) \
   SETTING(qint64, toLongLong, getter, __VA_ARGS__)
 
@@ -783,3 +785,23 @@ SETTING_BOOL(addonApiSetting,        // getter
              false                   // sensitive (do not log)
 )
 #endif
+
+SETTING_UINT(extensionTelemetryFlags,        // getter
+             setExtensionTelemetryFlags,     // setter
+             removeExtensionTelemetryFlags,  // remover
+             hasExtensionTelemetryFlags,     // has
+             "extensionTelemetryFlags",      // key
+             0,                              // default value
+             false,                          // remove when reset
+             true  // sensitive (contains interaction info)
+)
+
+SETTING_BOOL(extensionTelemetryEnabled,        // getter
+             setExtensionTelemetryEnabled,     // setter
+             removeExtensionTelemetryEnabled,  // remover
+             hasExtensionTelemetryEnabled,     // has
+             "extensionTelemetryEnabled",      // key
+             false,                            // default value
+             true,                             // remove when reset
+             false                             // sensitive (do not log)
+)

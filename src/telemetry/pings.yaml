@@ -82,7 +82,7 @@ extensionsession:
     This ping will record start/end datestamp,
     session-based metrics, etc.
   include_client_id: true
-  send_if_empty: false
+  send_if_empty: true
   bugs:
     - https://mozilla-hub.atlassian.net/browse/VPN-6714
   data_reviews:
@@ -93,5 +93,5 @@ extensionsession:
   reasons:
     extension_start: >
       Sent right after a session start metric is recorded.
-    extension_end: >
+    extension_stop: >
       Sent after as session ending metric is recorded.
