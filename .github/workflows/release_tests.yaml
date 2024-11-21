@@ -47,7 +47,15 @@ jobs:
       - name: Clone repository
         uses: actions/checkout@v4
 
+      - name: Setup addons cache
+        id: addons-cache
+        uses: actions/cache@v4
+        with:
+          path: build-addons/
+          key: test-addons-${{ hashFiles('addons/', 'test/functional/addons/') }}
+
       - name: Install dependencies
+        if: steps.addons-cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
           git submodule update --init 3rdparty/i18n
@@ -55,12 +63,14 @@ jobs:
           sudo apt-get install -y $(./scripts/linux/getdeps.py -b linux/debian/control)
 
       - uses: actions/setup-python@v5
+        if: steps.addons-cache.outputs.cache-hit != 'true'
         with:
           python-version: "3.9"
           cache: "pip"
       - run: pip install -r requirements.txt
 
       - name: Compile test addons
+        if: steps.addons-cache.outputs.cache-hit != 'true'
         shell: bash
         run: |
           mkdir -p build-addons
@@ -138,7 +148,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt install ./build/mozillavpn.deb
-          sudo apt-get install --no-upgrade firefox xvfb-run
+          sudo apt install --no-upgrade firefox xvfb -y
 
       - uses: actions/setup-python@v5
         with:
