@@ -172,5 +172,4 @@ jobs:
         run: |
           export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
           export MVPN_BIN=$(which mozillavpn)
-          mkdir -p $ARTIFACT_DIR
           xvfb-run -a npm run functionalTest --  --retries 3 ${{matrix.test.path}}
