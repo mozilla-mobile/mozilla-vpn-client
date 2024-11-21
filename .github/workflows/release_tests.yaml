@@ -38,7 +38,7 @@ jobs:
         run: |
           echo linux=$(jq -r 'select(.label == "build-linux64/release-deb").task_id' task-graph.json) >> $GITHUB_OUTPUT
           echo macos=$(jq -r 'select(.label == "signing-macos/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
-          echo windows=$(jq -r 'select(.label == "signing-windows/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
+          echo windows=$(jq -r 'select(.label == "repackage-msi").task_id' task-graph.json) >> $GITHUB_OUTPUT
 
   linux-tests:
     needs:
@@ -46,6 +46,7 @@ jobs:
     uses: ./.github/workflows/prod-test-suite.yaml
     with:
       task-id: ${{ needs.resolve-taskgraph.outputs.linux }}
+      group-name: linux
       artifact-name: mozillavpn.deb
       runs-on: |
         ubuntu-20.04
@@ -59,6 +60,7 @@ jobs:
     uses: ./.github/workflows/prod-test-suite.yaml
     with:
       task-id: ${{ needs.resolve-taskgraph.outputs.macos }}
+      group-name: macos
       artifact-name: MozillaVPN.pkg
       runs-on: |
         macos-12
@@ -72,6 +74,7 @@ jobs:
     uses: ./.github/workflows/prod-test-suite.yaml
     with:
       task-id: ${{ needs.resolve-taskgraph.outputs.windows }}
+      group-name: windows
       artifact-name: MozillaVPN.msi
       runs-on: |
         windows-2019

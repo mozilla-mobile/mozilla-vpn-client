@@ -3,7 +3,7 @@ on:
   workflow_call:
     inputs:
       artifact-name:
-        description: 'Name of the compiled artifact to download and test'
+        description: 'Name of the taskcluster artifact to download and test'
         required: true
         type: string
       ref:
@@ -13,6 +13,10 @@ on:
       runs-on:
         description: 'The type of machine to run the job on.'
         default: 'ubuntu-latest'
+        type: string
+      group-name:
+        description: 'Group name for intermediate test artifacts'
+        default: 'test'
         type: string
       task-id:
         description: 'Taskcluster task to fetch artifacts from'
@@ -39,7 +43,6 @@ jobs:
         with:
           path: build-addons/
           key: cache-addons-${{ hashFiles('addons/', 'test/functional/addons/') }}
-          enableCrossOsArchive: true
 
       - name: Enumerate tests and runners
         id: enumerate
@@ -69,6 +72,11 @@ jobs:
           cmake -S $(pwd)/tests/functional/addons -B build-addons/
           cmake --build build-addons/
 
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.group-name }}-addons
+          path: build-addons/
+
       - name: Wait for taskcluster job
         id: taskgraph
         shell: bash
@@ -86,7 +94,7 @@ jobs:
 
       - uses: actions/upload-artifact@v4
         with:
-          name: test-artifact-${{ github.workflow }}
+          name: ${{ inputs.group-name }}-artifact-${{ inputs.artifact-name }}
           path: ${{ inputs.artifact-name }}
 
   run-tests:
@@ -107,20 +115,15 @@ jobs:
         with:
           ref: ${{ inputs.ref }}
 
-      - name: Checkout addons cache
-        id: addons-cache
-        uses: actions/cache@v4
+      - uses: actions/download-artifact@v4
         with:
-          path: build-addons/
-          key: cache-addons-${{ hashFiles('addons/', 'test/functional/addons/') }}
-          enableCrossOsArchive: true
-          lookup-only: true
-          fail-on-cache-miss: true
+          name: ${{ inputs.group-name }}-artifact-${{ inputs.artifact-name }}
+          path: build/
 
       - uses: actions/download-artifact@v4
         with:
-          name: test-artifact-${{ github.workflow }}
-          path: build/
+          name: ${{ inputs.group-name }}-addons
+          path: build/addons/
 
       - uses: actions/setup-python@v5
         with:
@@ -137,20 +140,20 @@ jobs:
       - name: Install VPN Client
         shell: bash
         run: |
-          for FILENAME in $(ls ${{ github.workspace }}/build/); do
+          for FILENAME in $(ls ./build/); do
             case "$FILENAME" in
               *.deb)
-                sudo apt install ${{ github.workspace }}/${FILENAME}
+                sudo apt install ./build/${FILENAME}
                 echo "MVPN_BIN=$(which mozillavpn)" >> $GITHUB_ENV
                 ;;
 
               *.pkg)
-                sudo installer -pkg ${{ github.workspace }}/build/${FILENAME} -target /
+                sudo installer -pkg ./build/${FILENAME} -target /
                 echo "MVPN_BIN=/Applications/Mozilla VPN.app/Contents/MacOS/Mozilla VPN" >> $GITHUB_ENV
                 ;;
               
               *.msi)
-                msiexec /lv msiexec.log /i ${{ github.workspace }}/build/${FILENAME}
+                msiexec /lv msiexec.log /i ./build/${FILENAME}
                 echo "MVPN_BIN=/c/Program Files/Mozilla/Mozilla VPN/Mozilla VPN.exe" >> $GITHUB_ENV
                 cat msiexec.log
             esac
@@ -161,7 +164,7 @@ jobs:
         env:
           TZ: Europe/London
           HEADLESS: yes
-          MVPN_ADDONS_PATH: ./build-addons/
+          MVPN_ADDONS_PATH: ${{ github.workspace }}/build/addons/
         run: |
           export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
           npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
