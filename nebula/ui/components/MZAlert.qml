@@ -129,7 +129,7 @@ Rectangle {
             name: stateNames.warning
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: MZTheme.theme.warningAlert
+                colorScheme: MZTheme.colors.warningAlert
             }
 
             PropertyChanges {
