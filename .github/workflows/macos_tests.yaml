@@ -15,6 +15,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  build_test_addons:
+    name: Build Test Addons
+    uses: ./.github/workflows/build_addons.yaml
+    with:
+      test-addons-name: test-addons-${{ github.sha }}
+
   build_test_app:
     name: Build Test Client
     runs-on: macos-latest
@@ -32,8 +38,16 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
-          environment-file: env.yml
+          environment-file: "env.yml"
           activate-environment: vpn
+
+      - name: Setup compiler cache
+        uses: actions/cache@v4
+        with:
+          path: ~/Library/Caches/ccache
+          key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+          lookup-only: github.event_name == 'pull_request'
+          restore-keys: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
 
       - name: Install build dependencies
         run: |
@@ -50,16 +64,10 @@ jobs:
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache \
             -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
           cmake --build build/cmake
           cp -r ./build/cmake/src/Mozilla\ VPN.app/ build/Mozilla\ VPN.app
-
-      - name: Compile test addons
-        run: |
-          mkdir -p build/addons
-          cmake -S $(pwd)/tests/functional/addons -B build/addons \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
-          cmake --build build/addons
 
       - uses: actions/upload-artifact@v4
         with:
@@ -86,6 +94,7 @@ jobs:
     name: Functional tests
     needs:
       - build_test_app
+      - build_test_addons
     runs-on: macos-latest
     timeout-minutes: 45
     strategy:
@@ -100,6 +109,11 @@ jobs:
         with:
           name: test-client-${{ github.sha }}
           path: build/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: test-addons-${{ github.sha }}
+          path: build/addons/
 
       - uses: actions/setup-python@v5
         env:
