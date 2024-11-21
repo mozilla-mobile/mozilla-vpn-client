@@ -138,42 +138,30 @@ jobs:
       - run: npm install
 
       - name: Install VPN client
-        if: ${{ runner.os != 'Windows' }}
         shell: bash
         run: |
-          for FILENAME in $(ls ./build/); do
-            echo "Installing $(pwd)/build/${FILENAME}"
-            case "$FILENAME" in
-              *.deb)
-                sudo apt install ./build/${FILENAME}
-                echo "MVPN_BIN=$(which mozillavpn)" >> $GITHUB_ENV
-                ;;
+          case ${{ inputs.artifact-name }} in
+            *.deb)
+              sudo apt install ${{ github.workspace }}/build/${{ inputs.artifact-name }}
+              echo "MVPN_BIN=$(which mozillavpn)" >> $GITHUB_ENV
+              ;;
 
-              *.pkg)
-                sudo installer -pkg ./build/${FILENAME} -target /
-                echo "MVPN_BIN=/Applications/Mozilla VPN.app/Contents/MacOS/Mozilla VPN" >> $GITHUB_ENV
-                ;;
-              
-              *.msi)
-                touch msiexec.log
-                tail -f msiexec.log &
-                msiexec /lv msiexec.log /qn /i ./build/${FILENAME}
-                echo "MVPN_BIN=/c/Program Files/Mozilla/Mozilla VPN/Mozilla VPN.exe" >> $GITHUB_ENV
-            esac
-          done
-      
-      - name: Install VPN client
-        if: ${{ runner.os == 'Windows' }}
-        shell: powershell
-        run: |
-          Get-ChildItem -Path ${{ github.workspace }}\build
-          Get-ItemProperty -Path ${{ github.workspace }}\build\${{ inputs.artifact-name }} | Get-Member -MemberType property
-          New-Item -Path . -Name "msiexec.log" -ItemType "file"
+            *.pkg)
+              sudo installer -pkg ${{ github.workspace }}/build/${{ inputs.artifact-name }} -target /
+              echo "MVPN_BIN=/Applications/Mozilla VPN.app/Contents/MacOS/Mozilla VPN" >> $GITHUB_ENV
+              ;;
+            
+            *.msi)
+              touch msiexec.log
+              tail -f msiexec.log &
+              msiexec /i "${{ github.workspace }}\build\${{ inputs.artifact-name }}" /qn '/l*!' msiexec.log
+              echo "MVPN_BIN=C:\\Program Files\\Mozilla\\Mozilla VPN\\Mozilla VPN.exe" >> $GITHUB_ENV
 
-          $pmsi = Start-Process "msiexec" "/i ${{ github.workspace }}\build\${{ inputs.artifact-name }} /qn /l*! msiexec.log" -NoNewWindow -PassThru
-          $plog = Start-Process "powershell" "Get-Content -Path msiexec.log -Wait" -NoNewWindow -PassThru
-          $pmsi.WaitForExit()
-          $plog.Kill()
+            *)
+              echo "Unsupported installation file type: ${{ inputs.artifact-name }}"
+              exit 1
+              ;;
+          esac
 
       - name: Running ${{ matrix.test.name }} Tests
         shell: bash
