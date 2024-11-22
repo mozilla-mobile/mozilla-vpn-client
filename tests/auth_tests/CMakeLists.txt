@@ -87,19 +87,20 @@ target_sources(app_auth_tests PRIVATE
 )
 
 ## Add the tests to be run, one for each test class.
-get_target_property(UTEST_SOURCES app_auth_tests SOURCES)
-list(FILTER UTEST_SOURCES INCLUDE REGEX "test.*.h$")
-foreach(filename ${UTEST_SOURCES})
+get_target_property(AUTH_TEST_SOURCES app_auth_tests SOURCES)
+list(FILTER AUTH_TEST_SOURCES INCLUDE REGEX "test.*.h$")
+foreach(filename ${AUTH_TEST_SOURCES})
     execute_process(
-        OUTPUT_VARIABLE UTEST_CLASS_LIST
+        OUTPUT_VARIABLE AUTH_TEST_CLASS_LIST
         OUTPUT_STRIP_TRAILING_WHITESPACE
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_SOURCE_DIR}/scripts/tests/list_test_classes.py -p QObject ${filename}
     )
 
-    foreach(UTEST_CLASS ${UTEST_CLASS_LIST})
-        add_test(NAME ${UTEST_CLASS} COMMAND app_auth_tests ${UTEST_CLASS})
-        set_property(TEST ${UTEST_CLASS} PROPERTY ENVIRONMENT LANG="en" LANGUAGE="en")
+    foreach(AUTH_TEST_CLASS ${AUTH_TEST_CLASS_LIST})
+        add_test(NAME ${AUTH_TEST_CLASS} COMMAND app_auth_tests ${AUTH_TEST_CLASS})
+        set_property(TEST ${AUTH_TEST_CLASS} PROPERTY LABELS auth)
+        set_property(TEST ${AUTH_TEST_CLASS} PROPERTY ENVIRONMENT LANG="en" LANGUAGE="en")
     endforeach()
 endforeach()
 

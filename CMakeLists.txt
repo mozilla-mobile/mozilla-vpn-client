@@ -175,6 +175,9 @@ if(NOT CMAKE_CROSSCOMPILING)
 
         # E2E Tests
         add_subdirectory(tests/auth_tests EXCLUDE_FROM_ALL)
+
+        # Functional Tests
+        add_subdirectory(tests/functional)
     endif()
 endif()
 

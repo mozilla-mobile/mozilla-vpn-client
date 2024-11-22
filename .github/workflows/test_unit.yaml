@@ -43,22 +43,15 @@ jobs:
 
       - name: Running native messaging tests
         shell: bash
-        working-directory: ./build/tests/nativemessaging
-        run: |
-          ctest --output-on-failure
+        run: ctest -L nativemessaging --test-dir $(pwd)/build --output-on-failure
 
       - name: Running QML tests
         shell: bash
-        working-directory: ./build/tests/qml
-        run: |
-          ctest --output-on-failure
+        run: ctest -L qml --test-dir $(pwd)/build --output-on-failure
 
       - name: Running unit tests
         shell: bash
-        working-directory: ./build/tests
-        run: |
-          ctest --test-dir unit --output-on-failure
-          ctest --test-dir unit_tests --output-on-failure
+        run: ctest -L unit --test-dir $(pwd)/build --output-on-failure
 
   macos-unit-tests:
     runs-on: macos-latest
@@ -100,20 +93,14 @@ jobs:
           cmake --build $(pwd)/build --target build_tests
 
       - name: Running native messaging tests
-        working-directory: ./build/tests/nativemessaging
-        run: |
-          ctest --output-on-failure
+        run: ctest -L nativemessaging --test-dir $(pwd)/build --output-on-failure
 
       - name: Running QML tests
-        working-directory: ./build/tests/qml
-        run: |
-          ctest --output-on-failure
+        working-directory: ./build
+        run: ctest -L qml --test-dir $(pwd)/build --output-on-failure
 
       - name: Running unit tests
-        working-directory: ./build/tests
-        run: |
-          ctest --test-dir unit --output-on-failure
-          ctest --test-dir unit_tests --output-on-failure
+        run: ctest -L unit --test-dir $(pwd)/build --output-on-failure
 
   windows-unit-tests:
     name: Run Unit tests on Windows
@@ -167,22 +154,16 @@ jobs:
 
       - name: Running native messaging tests
         shell: bash
-        working-directory: ./build/tests/nativemessaging
-        run: |
-          ctest --output-on-failure
+        run: ctest -L nativemessaging --test-dir ./build --output-on-failure
 
       - name: Running QML tests
         shell: bash
         working-directory: ./build/tests/qml
-        run: |
-          ctest --output-on-failure
+        run: ctest -L qml --test-dir ./build --output-on-failure
 
       - name: Running unit tests
         shell: bash
-        working-directory: ./build/tests
-        run: |
-          ctest --test-dir unit --output-on-failure
-          ctest --test-dir unit_tests --output-on-failure
+        run: ctest -L unit --test-dir ./build --output-on-failure
 
   rust-unit-tests:
     strategy:
