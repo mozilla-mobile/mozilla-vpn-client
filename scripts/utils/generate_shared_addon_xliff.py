@@ -28,6 +28,16 @@ def prune_lists_to_strings(data):
             sys.exit("Unexpected input")
     return data
 
+def use_proper_id(data):
+    return_data = {}
+    for value in data.values():
+        string_id = value["string_id"]
+        return_data[string_id] = {
+            "value": value["value"],
+            "comments": value["comments"]
+        }
+    return return_data
+
 # Make sure we have all the required things
 # Lookup our required tools for addon generation.
 
@@ -59,6 +69,8 @@ print("Preparing the addons shared string file")
 print("First, pull in the strings from the YAML file")
 translation_strings = parseYAMLTranslationStrings(args.infile)
 translation_strings = prune_lists_to_strings(translation_strings)
+# parseYAMLTranslationStrings gives a different ID than we want to use
+translation_strings = use_proper_id(translation_strings)
 
 print("Then, write the strings to a .ts file")
 tmp_path = tempfile.mkdtemp()

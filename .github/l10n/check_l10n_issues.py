@@ -8,10 +8,120 @@ from glob import glob
 import xml.etree.ElementTree as etree
 import json
 import os
+import subprocess
 import sys
+import tempfile
 
 script_folder = os.path.abspath(os.path.dirname(__file__))
 vpn_root_folder = os.path.realpath(os.path.join(script_folder, os.pardir, os.pardir))
+
+def fileContentsAsJSON(filepath):
+    try:
+        with open(filepath, 'r') as file:
+            content = json.load(file)
+
+            if not content:
+                print(f"No content found in: {filepath}")
+                sys.exit(1)
+            return content
+    except FileNotFoundError:
+        print(f"File not found: {filepath}")
+        sys.exit(1)
+    except Exception as e:
+        print(f"An error occurred while loading {filepath}: {e}")
+        sys.exit(1)
+
+# Check if it uses shared strings. If so, pull the value for “title”, “subtitle”, then look within "blocks"
+def getSharedStringsInManifest(mainifest_contents):
+    shared_string_ids = []
+    # If it includes the key “message” and if within "message", there is a “usesSharedStrings” key that is true...
+    if "message" in manifest_contents and "usesSharedStrings" in manifest_contents["message"] and manifest_contents["message"]["usesSharedStrings"]:
+        #...collect all the string IDs
+        if "title" in manifest_contents["message"]:
+            shared_string_ids.append(manifest_contents["message"]["title"])
+        else:
+            print(f"No title found for: {addon}")
+            sys.exit(1)
+        if "subtitle" in manifest_contents["message"]:
+            # It is acceptable if there is no subtitle (but title is required)
+            shared_string_ids.append(manifest_contents["message"]["subtitle"])
+        if not "blocks" in manifest_contents["message"]:
+            print(f"No blocks found for: {addon}")
+            sys.exit(1)
+        for block in manifest_contents["message"]["blocks"]:
+            if not "content" in block:
+                print(f"No content found in {addon} for {block}")
+                sys.exit(1)
+            if isinstance(block["content"], str):
+                shared_string_ids.append(block["content"])
+            elif isinstance(block["content"], list):
+                # This is the contents of a bulleted or ordered list; go one layer deeper.
+                for list_item in block["content"]:
+                    if isinstance(list_item["content"], str):
+                        shared_string_ids.append(list_item["content"])
+                    else:
+                        print(f"No content found in {addon} for {list_item}")
+                        sys.exit(1)
+            else:
+                print(f"Content found in {addon} was unknown type for {block}")
+                sys.exit(1)
+    return shared_string_ids
+
+### 1. Check Addons' shared strings - all string IDs should be present in the translation file. ###
+# Find list of all addon folders
+addon_path = os.path.join(vpn_root_folder, "addons")
+try:
+    addon_list = [item for item in os.listdir(addon_path) if os.path.isdir(os.path.join(addon_path, item))]
+except FileNotFoundError:
+    print(f"Path not found: {addon_path}")
+    sys.exit(1)
+except Exception as e:
+    print(f"An error occurred when finding all addons: {e}")
+    sys.exit(1)
+
+if len(addon_list) == 0:
+    print(f"No themes found")
+    sys.exit(1)
+
+shared_string_ids = []
+
+# For each, open the manifest file and pull out the shared strings
+for addon in addon_list:
+    manifest_path = os.path.join(addon_path, addon, "manifest.json")
+    manifest_contents = fileContentsAsJSON(manifest_path)
+    shared_string_ids = shared_string_ids + getSharedStringsInManifest(manifest_contents)
+
+# Create temporary translation file
+tmp_path = tempfile.mkdtemp()
+shared_addon_strings = os.path.join(addon_path, "strings.yaml")
+shared_addons_tmp_file = os.path.join(tmp_path, "strings.xliff")
+generate_addon_python_file = os.path.join(vpn_root_folder, "scripts", "utils", "generate_shared_addon_xliff.py")
+p = subprocess.run(['python', generate_addon_python_file, '-i', shared_addon_strings, '-o', shared_addons_tmp_file])
+
+# Check that the shared strings are present in the translation file
+if not os.path.isfile(shared_addons_tmp_file):
+    print(f"Unable to find {shared_addons_tmp_file}")
+    sys.exit(1)
+try:
+    with open(shared_addons_tmp_file, 'r') as file:
+        shared_string_content = file.read()
+        if not shared_string_content:
+            print(f"No content found in: {shared_addons_tmp_file}")
+            sys.exit(1)
+except FileNotFoundError:
+    print(f"File not found: {shared_addons_tmp_file}")
+    sys.exit(1)
+except Exception as e:
+    print(f"An error occurred while loading {shared_addons_tmp_file}: {e}")
+    sys.exit(1)
+
+for shared_string_id in shared_string_ids:
+    string_id_unit = "<trans-unit id=\"" + shared_string_id + "\">"
+    if string_id_unit not in shared_string_content:
+        print(f"{string_id_unit} not found in shared string file")
+        sys.exit(1)
+
+### 2. Check all strings for overall issues. ###
 
 # Paths are relative to the root folder
 paths = [
