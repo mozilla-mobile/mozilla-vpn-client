@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <QJSONObject>
+#include <QJsonObject>
 #include <QString>
 #include <QVariant>
 #include <optional>

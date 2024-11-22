@@ -10,6 +10,9 @@ use glean::{ClientInfoMetrics, Configuration};
 
 use ffi::helpers::FallibleToString;
 use metrics::__generated_pings::register_pings;
+use once_cell::sync::Lazy;
+use std::sync::Mutex;
+use std::sync::Arc;
 use uploader::VPNPingUploader;
 use logger::Logger;
 
@@ -22,6 +25,9 @@ mod uploader;
 mod logger;
 
 const GLEAN_APPLICATION_ID: &str = "mozillavpn";
+
+static GLOBAL_PING_FILTER_LIST : Lazy<Arc<Mutex<Vec<String>>>> = Lazy::new(|| Arc::new(Mutex::new(Vec::new())));
+
 
 #[no_mangle]
 pub extern "C" fn glean_register_log_handler(message_handler: extern fn(i32, *mut c_char)) {
@@ -44,7 +50,7 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
         // Default is "https://incoming.telemetry.mozilla.org"
         server_endpoint: None,
         // Use the Glean provided one once https://bugzilla.mozilla.org/show_bug.cgi?id=1675468 is resolved
-        uploader: Some(Box::new(VPNPingUploader::new())),
+        uploader: Some(Box::new(VPNPingUploader::new(GLOBAL_PING_FILTER_LIST.clone()))),
         // Whether Glean should schedule “metrics” pings for you
         use_core_mps: true,
         trim_data_to_registered_pings: false,
@@ -129,4 +135,15 @@ pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: 
     };
 
     glean::test_reset_glean(cfg, client_info, true);
+}
+
+#[no_mangle]
+pub extern "C" fn glean_push_ping_filter(ping_name: FfiStr) {
+    let mut list = GLOBAL_PING_FILTER_LIST.lock().unwrap();
+    list.push(ping_name.into_string());
+}
+#[no_mangle]
+pub extern "C" fn glean_clear_ping_filter() {
+    let mut list = GLOBAL_PING_FILTER_LIST.lock().unwrap();
+    list.clear();
 }
