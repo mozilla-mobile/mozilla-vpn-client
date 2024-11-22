@@ -98,7 +98,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: test-addons-${{ github.sha }}
-          path: build-addons/
+          path: build-${{ runner.os }}/tests/functional/addons
 
       - name: Install test dependecies
         run: |
@@ -125,8 +125,7 @@ jobs:
           TZ: Europe/London
           HEADLESS: yes
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
-        run: |
-          ctest -R test${{matrix.test.name}} --test-dir build-${{ runner.os }} --verbose
+        run: ctest -R test${{matrix.test.name}} --test-dir build-${{ runner.os }} --verbose
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v4
