@@ -82,6 +82,7 @@ linux64/release-deb:
     fetches:
         toolchain:
             - qt-linux
+    worker-type: b-linux-large
     worker:
         docker-image: {in-tree: linux-qt6-build}
     add-index-routes:
