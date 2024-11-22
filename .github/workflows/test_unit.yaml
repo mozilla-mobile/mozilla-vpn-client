@@ -96,7 +96,6 @@ jobs:
         run: ctest -L nativemessaging --test-dir $(pwd)/build --output-on-failure
 
       - name: Running QML tests
-        working-directory: ./build
         run: ctest -L qml --test-dir $(pwd)/build --output-on-failure
 
       - name: Running unit tests
