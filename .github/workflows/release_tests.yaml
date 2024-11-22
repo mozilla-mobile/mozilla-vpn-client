@@ -77,8 +77,13 @@ jobs:
         shell: bash
         run: |
           echo linux=$(jq -r 'select(.label == "build-linux64/release-deb").task_id' task-graph.json) >> $GITHUB_OUTPUT
-          echo macos=$(jq -r 'select(.label == "signing-macos/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
-          echo windows=$(jq -r 'select(.label == "repackage-msi").task_id' task-graph.json) >> $GITHUB_OUTPUT
+          if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
+            echo macos=$(jq -r 'select(.label == "build-macos/pr").task_id' task-graph.json) >> $GITHUB_OUTPUT
+            echo windows=$(jq -r 'select(.label == "build-windows/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
+          else
+            echo macos=$(jq -r 'select(.label == "signing-macos/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
+            echo windows=$(jq -r 'select(.label == "repackage-msi").task_id' task-graph.json) >> $GITHUB_OUTPUT
+          fi 
 
   linux-tests:
     needs:
