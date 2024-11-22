@@ -151,6 +151,12 @@ jobs:
               sudo installer -pkg ${{ github.workspace }}/build/${{ inputs.artifact-name }} -target /
               echo "MVPN_BIN=/Applications/Mozilla VPN.app/Contents/MacOS/Mozilla VPN" >> $GITHUB_ENV
               ;;
+            
+            *.tar.gz)
+              tar -C ${{ github.workspace }}/build -xzvf ${{ inputs.artifact-name }} --strip-components=1
+              ls -al ${{ github.workspace }}/build
+              echo MVPN_BIN="${{ github.workspace }}/build/Mozilla VPN.app/Contents/MacOS/Mozilla VPN" >> $GITHUB_ENV
+              ;;
 
             *)
               echo "Unsupported installation file type: ${{ inputs.artifact-name }}"

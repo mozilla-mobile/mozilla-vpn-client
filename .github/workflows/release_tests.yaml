@@ -106,7 +106,7 @@ jobs:
     with:
       task-id: ${{ needs.resolve-taskgraph.outputs.macos }}
       group-name: macos
-      artifact-name: MozillaVPN.pkg
+      artifact-name: ${{ github.event_name == 'pull_request' && 'MozillaVPN.tar.gz' || 'MozillaVPN.pkg' }}
       runs-on: |
         macos-12
         macos-13
