@@ -26,7 +26,7 @@ jobs:
     env:
       TASKCLUSTER_SUITE_NAME: firefoxci-taskcluster
       TASKGRAPH_TASK_API: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/
-      CHECK_SUITE_GITREF: ${{ github.event == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+      CHECK_SUITE_GITREF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Wait for ${{ env.TASKCLUSTER_SUITE_NAME }}
         id: decision-task
