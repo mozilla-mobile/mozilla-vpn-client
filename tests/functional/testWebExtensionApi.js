@@ -21,6 +21,10 @@ describe('WebExtension API', function() {
   this.timeout(60000);
   this.ctx.authenticationNeeded = true;
 
+  beforeEach(async () => {
+    await vpn.flipFeatureOn('webExtension');
+  });
+
   it('A Webextension can query the Status of the VPN', async () => {
     const sock = await connectExtension();
     const messagePipe = getMessageStream(sock);
