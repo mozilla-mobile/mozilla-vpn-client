@@ -11,14 +11,6 @@ project(addons VERSION 1.0.0 LANGUAGES CXX
 find_program(PYTHON_EXECUTABLE NAMES python3 python)
 find_package(Qt6 REQUIRED COMPONENTS Core Qml)
 
-## In case new shared strings were added to ./addons/strings.yaml, run the generation script so actual strings are shown
-add_custom_command(
-                OUTPUT ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/i18n/en/addons/strings.xliff
-                DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/strings.yaml
-                COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/../scripts/utils/generate_shared_addon_xliff.py
-                            -i ${CMAKE_CURRENT_SOURCE_DIR}/strings.yaml
-                            -o ${CMAKE_CURRENT_SOURCE_DIR}/../3rdparty/i18n/en/addons/strings.xliff)
-
 ## Create the addons target.
 include(${CMAKE_CURRENT_SOURCE_DIR}/../scripts/cmake/addons.cmake)
 add_addon_target(addons
