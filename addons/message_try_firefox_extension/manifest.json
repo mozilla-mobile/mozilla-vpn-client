@@ -12,7 +12,7 @@
   "message": {
     "date": 1733157651,
     "usesSharedStrings": true,
-    "shortVersion": "N/A",
+    "shortVersion": "",
     "id": "message_try_firefox_extension.24",
     "title": "vpn.tryFirefoxExtension.title",
     "subtitle": "vpn.tryFirefoxExtension.subtitle",

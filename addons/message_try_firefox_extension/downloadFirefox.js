@@ -1,3 +1,3 @@
 ((api) => {
-  api.urlOpener.openUrlLabel('downloadFirefoxWindows');
+  api.urlOpener.openUrlLabel('downloadFirefox');
 });

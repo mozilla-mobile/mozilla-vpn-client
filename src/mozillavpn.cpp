@@ -1287,8 +1287,8 @@ void MozillaVPN::registerUrlOpenerLabels() {
     return "https://addons.mozilla.org/en-US/firefox/";
   });
 
-  uo->registerUrlLabel("downloadFirefoxWindows", []() -> QString {
-    return "https://www.mozilla.org/firefox/windows/";
+  uo->registerUrlLabel("downloadFirefox", []() -> QString {
+    return "https://www.mozilla.org/firefox/new/";
   });
 
   uo->registerUrlLabel("inspector", []() -> QString {
