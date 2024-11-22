@@ -25,7 +25,7 @@ jobs:
       windows: ${{ steps.artifacts.outputs.windows }}
     env:
       TASKCLUSTER_SUITE_NAME: firefoxci-taskcluster
-      TASKGRAPH_TASK_API: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/
+      TASKGRAPH_TASK_API: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task
       CHECK_SUITE_GITREF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
     steps:
       - name: Wait for ${{ env.TASKCLUSTER_SUITE_NAME }}
@@ -66,7 +66,7 @@ jobs:
         shell: bash
         run: |
           curl -v -sSL --retry 5 --retry-all-errors --retry-max-time 180 --fail -o raw-task-graph.json \
-            ${TASKGRAPH_TASK_API}/${{ needs.decision-task.outputs.taskid }}/runs/0/artifacts/public%2Ftask-graph.json
+            ${TASKGRAPH_TASK_API}/${{ steps.decision-task.outputs.taskid }}/runs/0/artifacts/public%2Ftask-graph.json
 
           echo "Found Tasks:"
           jq 'to_entries | .[].value' raw-task-graph.json > task-graph.json
