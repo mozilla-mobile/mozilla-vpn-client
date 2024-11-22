@@ -33,7 +33,7 @@
 #
 # String can contain just one specific type of argument, the short version number.
 # Add '%1' where the version should go. This will get replaced with the addons message's
-# 'shortVersion' (from manifeste.json), for instance '2.24'
+# 'shortVersion' (from manifest.json), for instance '2.24'
 #
 #
 # Strings that are no longer needed should be removed from this file.
