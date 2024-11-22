@@ -11,13 +11,20 @@ ifneq (ok,$(shell dpkg --compare-versions $(GOLANG_NATIVE_VERSION) ge 2:1.18 && 
 	export PATH := $(GODIR)/bin:$(PATH)
 endif
 
+# Check Qt features.
+QT_INSTALL_HEADERS := $(shell qmake -query QT_INSTALL_HEADERS)
+qtfeatures = $(shell printf "#include <QtCore/qconfig.h>\n%s" $(1) | gcc -I $(QT_INSTALL_HEADERS) -E - | grep -v '^#' | tr -d '[:space:]')
+ifeq (1,$(call qtfeatures,QT_FEATURE_static && QT_FEATURE_openssl && QT_FEATURE_openssl_linked))
+	OPENSSL_BUILD_ARGS := -DOPENSSL_USE_STATIC_LIBS
+endif
+
 CMAKE_BUILD_DIR := build-$(DEB_HOST_MULTIARCH)
 
 %:
 	dh $@ --with=systemd --buildsystem=cmake+ninja --builddirectory=$(CMAKE_BUILD_DIR) --warn-missing
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DWEBEXT_INSTALL_LIBDIR=/lib -DBUILD_ID=$(DEB_VERSION) -DBUILD_TESTS=OFF
+	dh_auto_configure -- -DWEBEXT_INSTALL_LIBDIR=/lib -DBUILD_ID=$(DEB_VERSION) -DBUILD_TESTS=OFF ${OPENSSL_BUILD_ARGS}
 
 override_dh_auto_test:
 
