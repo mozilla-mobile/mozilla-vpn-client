@@ -172,6 +172,8 @@ jobs:
           Add-Content -Path $env:GITHUB_ENV -Value "MVPN_BIN=C:\Program Files\Mozilla\Mozilla VPN\Mozilla VPN.exe"
           Add-Content -Path $env:GITHUB_ENV -Value "MVPN_ADDONS_PATH=${{ github.workspace }}\build\addons"
 
+          taskkill /f /fi "USERNAME eq $env:username" /im "Mozilla VPN.exe"
+
       - name: Running ${{ matrix.test.name }} Tests
         shell: bash
         env:
