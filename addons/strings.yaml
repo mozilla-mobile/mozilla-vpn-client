@@ -51,6 +51,9 @@ commonStrings:
   generalUpdateContent:
     value: This update includes minor bug fixes, UI adjustments and other performance improvements.
     comment: Default update notes
+  generalUpdateBulletIntro:
+    value: "This update includes minor bug fixes, UI adjustments and other performance improvements, including:"
+    comment: Default update text before several bullet points with specific updates
   updateButton:
     value: Update now
     comment: Button label
@@ -60,6 +63,23 @@ commonStrings:
   getHelpButton:
     value: Get help
     comment: Button label
+  whatsNewTitle:
+    value: You’ve updated to Mozilla VPN %1
+    comment: Title for What's New message. %1 is replaced by the version number, such as 2.25
+  latestVersionSubtitle:
+    value: You’re using the latest version of Mozilla VPN.
+    comment: Subtitle for default What's New message
+  whatsNewClosing:
+    value: Thank you for installing the latest version!
+    comment: Closing for default What's New message
+
+225updateMessage:
+  bullet1:
+    value: On iOS, enhanced stability and reliability for VPN connections.
+    comment: First bullet point with a specific update in 2.25
+  bullet2:
+    value: On Android, added step-by-step instructions to enable VPN connection on startup.
+    comment: Second bullet point with a specific update in 2.25
   # tester:
   #   value: shouldn't show up in translation file
   #   comment: Label for `Get help` button
