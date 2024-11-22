@@ -37,10 +37,6 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
 
-#if defined MZ_PROXY_ENABLED
-#  include "proxycontroller.h"
-#endif
-
 #if defined(MZ_FLATPAK)
 #  include "platforms/linux/networkmanagercontroller.h"
 #elif defined(MZ_LINUX)

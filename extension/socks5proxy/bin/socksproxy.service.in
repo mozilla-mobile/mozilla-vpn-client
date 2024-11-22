@@ -5,6 +5,7 @@ Description=MozillaVPN SOCKS Proxy service
 Type=simple
 Restart=on-failure
 ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/socksproxy --unix /var/run/mozillavpn.proxy
+ExecStopPost=rm -f /var/run/mozillavpn.proxy
 
 [Install]
 WantedBy=multi-user.target

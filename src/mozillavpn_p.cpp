@@ -66,9 +66,3 @@ SupportCategoryModel* MozillaVPN::supportCategoryModel() const {
 Telemetry* MozillaVPN::telemetry() const { return &m_private->m_telemetry; }
 
 User* MozillaVPN::user() const { return &m_private->m_user; }
-
-#if defined MZ_PROXY_ENABLED
-ProxyController* MozillaVPN::proxyController() const {
-  return &m_private->m_proxyController;
-}
-#endif

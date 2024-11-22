@@ -236,16 +236,6 @@ FEATURE(webPurchase,           // Feature ID
             .gnu_linux = true,
         }))
 
-FEATURE(localProxy,    // Feature ID
-        "LocalProxy",  // Feature name
-        byPlatform({
-            .windows = true,
-            .gnu_linux = true,
-        }),                          // Can be flipped on
-        FeatureCallback_true,        // Can be flipped off
-        QStringList("splitTunnel"),  // feature dependencies
-        FeatureCallback_inStaging)
-
 FEATURE(webExtension,    // Feature ID
         "webExtension",  // Feature name
         byPlatform({     // Can be flipped on
