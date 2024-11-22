@@ -37,7 +37,14 @@ async function startAndConnect() {
     vpnProcessTerminatePromise = null;
   }
 
-  vpnProcess = spawn(app, ['ui', '--testing']);
+  // If we are on Linux and `HEADLESS` has been set, launch with xvfb-run to
+  // allocate a virtual framebuffer for the app to render into.
+  if (('HEADLESS' in process.env) && (process.platform == 'linux')) {
+    vpnProcess = spawn('xvbf-run', ['-a', app, 'ui', '--testing'])
+  } else {
+    vpnProcess = spawn(app, ['ui', '--testing']);
+  }
+
   stdErr += 'VPN Process ID: ' + vpnProcess.pid;
   vpnProcess.stderr.on('data', (data) => {
     stdErr += data;

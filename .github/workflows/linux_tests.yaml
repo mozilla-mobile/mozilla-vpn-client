@@ -141,7 +141,7 @@ jobs:
         run: |
           export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
           mkdir -p $ARTIFACT_DIR
-          xvfb-run -a npm run functionalTest --  --retries 3 ${{matrix.test.path}}
+          npm run functionalTest --  --retries 3 ${{matrix.test.path}}
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v4
