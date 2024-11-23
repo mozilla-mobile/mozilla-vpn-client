@@ -13,7 +13,7 @@ endif
 
 # Check Qt features.
 QT_INSTALL_HEADERS := $(shell pkg-config --variable=includedir Qt6Core || qmake6 -query QT_INSTALL_HEADERS || true)
-qtfeature = $(shell test -d "$(QT_INSTALL_HEADERS)" && printf "#include <QtCore/qconfig.h>\n%s" "$(1)" | gcc -I "$(QT_INSTALL_HEADERS)" -E - | grep -e '^[^#\s]')
+qtfeature = $(shell test -d "$(QT_INSTALL_HEADERS)" && echo "$(1)" | gcc -I "$(QT_INSTALL_HEADERS)" -include QtCore/qconfig.h -E - | grep -e '^[^#\s]')
 ifeq (1,$(call qtfeature,QT_FEATURE_static))
 ifeq (1,$(call qtfeature,QT_FEATURE_openssl_linked))
 	OPENSSL_BUILD_ARGS := -DOPENSSL_USE_STATIC_LIBS=ON
