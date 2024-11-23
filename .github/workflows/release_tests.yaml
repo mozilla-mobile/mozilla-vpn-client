@@ -62,6 +62,11 @@ jobs:
             fi
           done
 
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/
+
       - name: Fetch taskgraph
         uses: ./.github/actions/taskcluster-artifact
         with:
