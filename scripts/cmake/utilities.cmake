@@ -250,7 +250,7 @@ function(mz_add_test_target TARGET_NAME)
     )
 
     if(DEFINED MZ_ADD_TEST_LABELS)
-        set_tests_properties(${FTEST_NAME} PROPERTIES LABELS ${MZ_ADD_TEST_LABELS})
+        set_tests_properties(${TARGET_NAME} PROPERTIES LABELS ${MZ_ADD_TEST_LABELS})
     endif()
 
     add_dependencies(build_tests ${TARGET_NAME})
