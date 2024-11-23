@@ -71,7 +71,7 @@ jobs:
         uses: ./.github/actions/taskcluster-artifact
         with:
           taskid: ${{ steps.decision-task.outputs.taskid }}
-          artifact-name: task-graph.json
+          artifact: public/task-graph.json
 
       - name: Parse taskgraph
         id: artifacts

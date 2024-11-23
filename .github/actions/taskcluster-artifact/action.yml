@@ -5,8 +5,8 @@ inputs:
     description: 'Taskcluster task identifier to fetch artifacts from'
     required: true
     type: string
-  artifact-name:
-    description: "Artifact name to download from the task"
+  artifact:
+    description: "Artifact to download from the task"
     required: true
     type: string
   path:
@@ -29,7 +29,6 @@ runs:
       shell: bash
       env:
         TASKGRAPH_TASK_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ inputs.taskid }}
-        TASKGRAPH_ARTIFACT: public%2Fbuild%2F${{ inputs.artifact-name }}
       run: |
-        curl -sSL -o ${{ inputs.path }}/${{ inputs.artifact-name }} \
-          ${TASKGRAPH_TASK_URL}/runs/${{ steps.taskgraph.outputs.run-id }}/artifacts/${TASKGRAPH_ARTIFACT}
+        curl -sSL -o ${{ inputs.path }}/$(basename ${{ inputs.artifact }}) \
+          ${TASKGRAPH_TASK_URL}/runs/${{ steps.taskgraph.outputs.run-id }}/artifacts/${{ inputs.artifact }}

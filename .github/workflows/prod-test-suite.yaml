@@ -81,7 +81,7 @@ jobs:
         uses: ./.github/actions/taskcluster-artifact
         with:
           taskid: ${{ inputs.task-id }}
-          artifact-name: ${{ inputs.artifact-name }}
+          artifact: public/build/${{ inputs.artifact-name }}
 
       - uses: actions/upload-artifact@v4
         with:
