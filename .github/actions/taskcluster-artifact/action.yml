@@ -16,9 +16,6 @@ inputs:
 
 runs:
   using: "composite"
-  env:
-    TASKGRAPH_TASK_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ inputs.taskid }}
-    TASKGRAPH_ARTIFACT: public%2Fbuild%2F${{ inputs.artifact-name }}
   steps:
     - name: Wait for taskcluster job
       id: taskgraph
@@ -30,6 +27,9 @@ runs:
 
     - name: Download build artifact
       shell: bash
+      env:
+        TASKGRAPH_TASK_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ inputs.taskid }}
+        TASKGRAPH_ARTIFACT: public%2Fbuild%2F${{ inputs.artifact-name }}
       run: |
         curl -sSL -o ${{ inputs.path }}/${{ inputs.artifact-name }} \
           ${TASKGRAPH_TASK_URL}/runs/${{ steps.taskgraph.outputs.run-id }}/artifacts/${TASKGRAPH_ARTIFACT}
