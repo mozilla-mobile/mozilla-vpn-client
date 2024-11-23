@@ -12,10 +12,12 @@ ifneq (ok,$(shell dpkg --compare-versions $(GOLANG_NATIVE_VERSION) ge 2:1.18 && 
 endif
 
 # Check Qt features.
-QT_INSTALL_HEADERS := $(shell qmake -query QT_INSTALL_HEADERS)
-qtfeatures = $(shell printf "#include <QtCore/qconfig.h>\n%s" $(1) | gcc -I $(QT_INSTALL_HEADERS) -E - | grep -v '^#' | tr -d '[:space:]')
-ifeq (1,$(call qtfeatures,QT_FEATURE_static && QT_FEATURE_openssl && QT_FEATURE_openssl_linked))
+QT_INSTALL_HEADERS := $(shell qmake6 -query QT_INSTALL_HEADERS)
+qtfeature = $(shell printf "#include <QtCore/qconfig.h>\n%s" "$(1)" | gcc -I $(QT_INSTALL_HEADERS) -E - | grep -v '^#' | tr -d '[:space:]')
+ifeq (1,$(call qtfeature,QT_FEATURE_static))
+ifeq (1,$(call qtfeature,QT_FEATURE_openssl_linked))
 	OPENSSL_BUILD_ARGS := -DOPENSSL_USE_STATIC_LIBS
+endif
 endif
 
 CMAKE_BUILD_DIR := build-$(DEB_HOST_MULTIARCH)
