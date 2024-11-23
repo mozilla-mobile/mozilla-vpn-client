@@ -22,7 +22,7 @@ runs:
       shell: bash
       run: |
         pip install requests
-        ${{ github.action_path }}/await-taskcluster-status.py -t 3600 ${{ inputs.task-id }} | tee ${{ runner.temp }}/taskcluster-job-status.json
+        ${{ github.action_path }}/await-taskcluster-status.py -t 3600 ${{ inputs.taskid }} | tee ${{ runner.temp }}/taskcluster-job-status.json
         echo run-id=$(jq '.runs[] | select(.state == "completed").runId' ${{ runner.temp }}/taskcluster-job-status.json) >> $GITHUB_OUTPUT
 
     - name: Download build artifact
