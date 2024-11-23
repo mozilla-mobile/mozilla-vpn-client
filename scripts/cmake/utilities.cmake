@@ -232,7 +232,7 @@ function(mz_add_test_target TARGET_NAME)
         MZ_ADD_TEST # prefix
         "" # options
         "" # single-value args
-        "TEST_COMMAND;PARENT_TARGET;SOURCES;DEPENDENCIES" # multi-value args
+        "TEST_COMMAND;PARENT_TARGET;SOURCES;DEPENDENCIES;LABELS" # multi-value args
         ${ARGN})
 
     # Test targets are executable targets.
@@ -248,6 +248,10 @@ function(mz_add_test_target TARGET_NAME)
         NAME ${TARGET_NAME}
         COMMAND ${TARGET_NAME}
     )
+
+    if(DEFINED MZ_ADD_TEST_LABELS)
+        set_tests_properties(${FTEST_NAME} PROPERTIES LABELS ${MZ_ADD_TEST_LABELS})
+    endif()
 
     add_dependencies(build_tests ${TARGET_NAME})
     target_link_libraries(${TARGET_NAME} PRIVATE Qt6::Test)

@@ -8,6 +8,8 @@ mz_add_test_target(testSocks5connection
         testsocks5connection.h
     DEPENDENCIES
         libSocks5proxy
+    LABELS
+        unit
 )
 
 mz_add_test_target(testSocks5
@@ -16,6 +18,8 @@ mz_add_test_target(testSocks5
         testsocks5.h
     DEPENDENCIES
         libSocks5proxy
+    LABELS
+        unit
 )
 
 # For testing named pipe support, add a little wrapper tool to run curl through
