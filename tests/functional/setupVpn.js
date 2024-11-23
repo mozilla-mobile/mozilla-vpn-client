@@ -37,14 +37,14 @@ async function startAndConnect() {
     vpnProcessTerminatePromise = null;
   }
 
-  // If we are on Linux and `HEADLESS` has been set, launch with xvfb-run to
-  // allocate a virtual framebuffer for the app to render into.
+  // If we are on Linux and `HEADLESS` has been set, launch the client using
+  // an offscreen display buffer.
+  let vpnEnv = process.env
   if (('HEADLESS' in process.env) && (process.platform == 'linux')) {
-    vpnProcess = spawn('xvfb-run', ['-a', app, 'ui', '--testing'])
-  } else {
-    vpnProcess = spawn(app, ['ui', '--testing']);
+    vpnEnv['QT_QPA_PLATFORM'] = 'offscreen'
   }
 
+  vpnProcess = spawn(app, ['ui', '--testing'], env=vpnEnv);
   stdErr += 'VPN Process ID: ' + vpnProcess.pid;
   vpnProcess.stderr.on('data', (data) => {
     stdErr += data;
