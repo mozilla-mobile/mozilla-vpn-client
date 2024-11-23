@@ -153,7 +153,7 @@ jobs:
               ;;
             
             *.tar.gz)
-              tar -C ${{ github.workspace }}/build -xzvf ${{ inputs.artifact-name }} --strip-components=1
+              tar -xzvf ${{ github.workspace }}/build/${{ inputs.artifact-name }} -xzvf -C ${{ github.workspace }}/build --strip-components=1
               ls -al ${{ github.workspace }}/build
               echo MVPN_BIN="${{ github.workspace }}/build/Mozilla VPN.app/Contents/MacOS/Mozilla VPN" >> $GITHUB_ENV
               ;;
