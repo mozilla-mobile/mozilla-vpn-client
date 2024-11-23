@@ -35,7 +35,7 @@ jobs:
         run: |
           CHECK_RUNS_URL=""
           while true; do
-            curl -v -sSL -o check-suites.json \
+            curl -sSL -o check-suites.json \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer ${{ github.token }}" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -49,7 +49,7 @@ jobs:
           done
 
           while true; do
-            curl -v -sSL -o check-runs.json \
+            curl -sSL -o check-runs.json \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer ${{ github.token }}" \
               -H "X-GitHub-Api-Version: 2022-11-28" \
@@ -65,10 +65,10 @@ jobs:
       - name: Fetch taskgraph
         shell: bash
         run: |
-          curl -v -sSL --retry 5 --retry-all-errors --retry-max-time 180 --fail -o raw-task-graph.json \
+          ./.github/scripts/await-taskcluster-status.py -t 180 ${{ steps.decision-task.outputs.taskid }}
+          curl -sSL -o raw-task-graph.json \
             ${TASKGRAPH_TASK_API}/${{ steps.decision-task.outputs.taskid }}/runs/0/artifacts/public%2Ftask-graph.json
 
-          echo "Found Tasks:"
           jq 'to_entries | .[].value' raw-task-graph.json > task-graph.json
           jq -r '.task_id' task-graph.json
 
