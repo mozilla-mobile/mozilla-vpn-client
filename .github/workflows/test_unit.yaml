@@ -157,7 +157,6 @@ jobs:
 
       - name: Running QML tests
         shell: bash
-        working-directory: ./build/tests/qml
         run: ctest -L qml --test-dir ./build --output-on-failure
 
       - name: Running unit tests
