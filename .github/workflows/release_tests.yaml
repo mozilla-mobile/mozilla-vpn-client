@@ -63,27 +63,25 @@ jobs:
           done
 
       - name: Fetch taskgraph
-        shell: bash
-        run: |
-          ./.github/scripts/await-taskcluster-status.py -t 180 ${{ steps.decision-task.outputs.taskid }}
-          curl -sSL -o raw-task-graph.json \
-            ${TASKGRAPH_TASK_API}/${{ steps.decision-task.outputs.taskid }}/runs/0/artifacts/public%2Ftask-graph.json
-
-          jq 'to_entries | .[].value' raw-task-graph.json > task-graph.json
-          jq -r '.task_id' task-graph.json
+        uses: ./.github/actions/taskcluster-artifact
+        with:
+          taskid: ${{ steps.decision-task.outputs.taskid }}
+          artifact-name: task-graph.json
 
       - name: Parse taskgraph
         id: artifacts
         shell: bash
         run: |
-          echo linux=$(jq -r 'select(.label == "build-linux64/release-deb").task_id' task-graph.json) >> $GITHUB_OUTPUT
+          jq -r '.[] | .task_id + " -> " + .label' task-graph.json
+
+          echo linux=$(jq -r '.[] | select(.label == "build-linux64/release-deb").task_id' parsed-tasks.json) >> $GITHUB_OUTPUT
           if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
-            echo macos=$(jq -r 'select(.label == "build-macos/pr").task_id' task-graph.json) >> $GITHUB_OUTPUT
-            echo windows=$(jq -r 'select(.label == "build-windows/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
+            echo macos=$(jq -r '.[] | select(.label == "build-macos/pr").task_id' parsed-tasks.json) >> $GITHUB_OUTPUT
+            echo windows=$(jq -r '.[] | select(.label == "build-windows/opt").task_id' parsed-tasks.json) >> $GITHUB_OUTPUT
           else
-            echo macos=$(jq -r 'select(.label == "signing-macos/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
-            echo windows=$(jq -r 'select(.label == "repackage-msi").task_id' task-graph.json) >> $GITHUB_OUTPUT
-          fi 
+            echo macos=$(jq -r '.[] | select(.label == "signing-macos/opt").task_id' parsed-tasks.json) >> $GITHUB_OUTPUT
+            echo windows=$(jq -r '.[] | select(.label == "repackage-msi").task_id' parsed-tasks.json) >> $GITHUB_OUTPUT
+          fi
 
   linux-tests:
     needs:

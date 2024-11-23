@@ -77,20 +77,11 @@ jobs:
           name: ${{ inputs.group-name }}-addons
           path: build-addons/
 
-      - name: Wait for taskcluster job
-        id: taskgraph
-        shell: bash
-        run: |
-          pip install requests
-          ./.github/scripts/await-taskcluster-status.py -t 3600 ${{ inputs.task-id }} | tee task-status.json
-          echo run-id=$(jq '.runs[] | select(.state == "completed").runId' task-status.json) >> $GITHUB_OUTPUT
-
-      - name: Download build artifact
-        shell: bash
-        env:
-          TASKGRAPH_TASK_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ inputs.task-id }}
-          TASKGRAPH_ARTIFACT: public%2Fbuild%2F${{ inputs.artifact-name }}
-        run: curl -sSL -o ${{ inputs.artifact-name }} ${TASKGRAPH_TASK_URL}/runs/${{ steps.taskgraph.outputs.run-id }}/artifacts/${TASKGRAPH_ARTIFACT}
+      - name: Fetch taskgraph artifact
+        uses: ./.github/actions/taskcluster-artifact
+        with:
+          taskid: ${{ inputs.task-id }}
+          artifact-name: ${{ inputs.artifact-name }}
 
       - uses: actions/upload-artifact@v4
         with:
