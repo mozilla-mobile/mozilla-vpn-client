@@ -54,8 +54,9 @@ QString SettingsManager::getOrganizationName() {
 #ifdef UNIT_TEST
 // static
 void SettingsManager::testCleanup() {
-  Q_ASSERT(s_instance);
-  delete s_instance;
+  if (s_instance) {
+    delete s_instance;
+  }
 }
 #endif
 
