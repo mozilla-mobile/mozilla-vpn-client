@@ -461,7 +461,7 @@ with open(args.source, "r", encoding="utf-8") as file:
         print("Create localization file...")
         os.mkdir(os.path.join(tmp_path, "i18n"))
         template_ts_file = os.path.join(args.dest, f"{manifest['id']}.ts")
-        write_en_language(template_ts_file, strings)
+        write_en_language(template_ts_file, strings, True)
 
         # This will be probably replaced by the en locale if it exists
         en_ts_file = os.path.join(tmp_path, "i18n", "locale_en.ts")

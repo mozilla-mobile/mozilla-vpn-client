@@ -35,7 +35,7 @@ def fileContentsAsJSON(filepath):
 def getSharedStringsInManifest(mainifest_contents):
     shared_string_ids = []
     # If it includes the key “message” and if within "message", there is a “usesSharedStrings” key that is true...
-    if "message" in manifest_contents and "usesSharedStrings" in manifest_contents["message"] and manifest_contents["message"]["usesSharedStrings"]:
+    if manifest_contents.get("message", {}).get("usesSharedStrings", False):
         #...collect all the string IDs
         if "title" in manifest_contents["message"]:
             shared_string_ids.append(manifest_contents["message"]["title"])
@@ -80,7 +80,7 @@ except Exception as e:
     sys.exit(1)
 
 if len(addon_list) == 0:
-    print(f"No themes found")
+    print(f"No addons found")
     sys.exit(1)
 
 shared_string_ids = []
