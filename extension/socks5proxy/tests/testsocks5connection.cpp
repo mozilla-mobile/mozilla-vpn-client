@@ -123,7 +123,7 @@ void TestSocks5Connection::proxyFlowControl() {
   // On the receiving end of the socket we should be able to read one
   // buffer's worth of data.
   QByteArray result;
-  while(recvSocket->waitForReadyRead(500)) {
+  while (recvSocket->waitForReadyRead(500)) {
     result.append(recvSocket->readAll());
   }
   QCOMPARE(result.length(), PROXY_MAX_BUFFER_SIZE);
