@@ -176,6 +176,7 @@ foreach(filename ${UTEST_SOURCES})
 
     foreach(UTEST_CLASS ${UTEST_CLASS_LIST})
         add_test(NAME ${UTEST_CLASS} COMMAND app_unit_tests ${UNIT_TEST_ARGS} ${UTEST_CLASS})
+        set_property(TEST ${UTEST_CLASS} PROPERTY LABELS unit)
         set_property(TEST ${UTEST_CLASS} PROPERTY ENVIRONMENT LANG="en" LANGUAGE="en")
     endforeach()
 endforeach()
