@@ -89,6 +89,7 @@ jobs:
           fi
 
   linux-tests:
+    name: Linux Tests
     needs:
       - resolve-taskgraph
     uses: ./.github/workflows/prod-test-suite.yaml

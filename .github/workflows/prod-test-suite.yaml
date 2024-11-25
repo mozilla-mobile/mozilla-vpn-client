@@ -176,4 +176,4 @@ jobs:
         env:
           TZ: Europe/London
           HEADLESS: yes
-        run: ${{ runner.os == 'Linux' && 'xvfb-run -a' || '' }} npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
+        run: npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
