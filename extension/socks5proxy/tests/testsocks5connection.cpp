@@ -123,7 +123,8 @@ void TestSocks5Connection::proxyFlowControl() {
   // On the receiving end of the socket we should be able to read one
   // buffer's worth of data.
   QCOMPARE(recvSocket->waitForReadyRead(500), true);
-  QCOMPARE(recvSocket->bytesAvailable(), PROXY_MAX_BUFFER_SIZE);
+  QByteArray result = recvSocket->read(PROXY_MAX_BUFFER_SIZE * 2);
+  QCOMPARE(result.length(), PROXY_MAX_BUFFER_SIZE);
 
   // And we should now be able to send the last fragment of unwritten data.
   watermark = 0;
