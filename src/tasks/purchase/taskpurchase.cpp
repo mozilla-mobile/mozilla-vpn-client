@@ -22,11 +22,9 @@ Logger logger("TaskPurchase");
 
 #ifdef MZ_IOS
 // static
-TaskPurchase* TaskPurchase::createForIOS(const QString& receipt,
-                                         bool isOlderOS) {
+TaskPurchase* TaskPurchase::createForIOS(const QString& originalTransactionId) {
   TaskPurchase* task = new TaskPurchase(IOS);
-  task->m_iOSData = receipt;
-  task->m_isOlderOS = isOlderOS;
+  task->m_iOSOriginalTransactionId = originalTransactionId;
   return task;
 }
 #endif
@@ -61,11 +59,7 @@ void TaskPurchase::run() {
 #ifdef MZ_IOS
   // APIv2 returns 200, APIv1 returns 201
   int expectedStatusCode;
-  if (m_isOlderOS) {
-    expectedStatusCode = 201;
-  } else {
-    expectedStatusCode = 200;
-  }
+  expectedStatusCode = 200;
 #endif
   NetworkRequest* request = new NetworkRequest(this,
 #ifdef MZ_IOS
@@ -81,14 +75,8 @@ void TaskPurchase::run() {
     case IOS:
       Constants::ApiEndpoint endpoint;
       QJsonObject body;
-      if (m_isOlderOS) {
-        endpoint = Constants::PurchasesIOS;
-        body = QJsonObject{{"receipt", m_iOSData},
-                           {"appId", QString::fromNSString(IOSUtils::appId())}};
-      } else {
-        endpoint = Constants::PurchasesIOSv2;
-        body = QJsonObject{{"originalTransactionId", m_iOSData}};
-      }
+      endpoint = Constants::PurchasesIOSv2;
+      body = QJsonObject{{"originalTransactionId", m_iOSOriginalTransactionId}};
       request->post(Constants::apiUrl(endpoint), body);
       break;
 #endif

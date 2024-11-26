@@ -1,7 +1,6 @@
 import Foundation
 import StoreKit
 
-@available(iOS 15, *)
 @objc class InAppPurchaseHandler: NSObject {
   private static let logger = IOSLoggerImpl(tag: "InAppPurchaseHandler")
 
@@ -15,10 +14,10 @@ import StoreKit
   private var productList: [Product] = []
 
   var transactionUpdates: Task<Void, Never>? = nil
-  var errorCallback: (() -> Void)
+  var errorCallback: ((Bool) -> Void)
   var successCallback: ((NSString, NSString) -> Void)
 
-  @objc init(errorCallback: @escaping (() -> Void), successCallback: @escaping ((NSString, NSString) -> Void)) {
+  @objc init(errorCallback: @escaping ((Bool) -> Void), successCallback: @escaping ((NSString, NSString) -> Void)) {
     self.errorCallback = errorCallback
     self.successCallback = successCallback
     super.init()
@@ -85,7 +84,7 @@ import StoreKit
   @objc func startSubscription(for productIdentifier: String) async {
     guard let product = productList.first(where: {$0.id == productIdentifier}) else {
       InAppPurchaseHandler.logger.error(message: "Could not find a product with ID \(productIdentifier)")
-      errorCallback()
+      errorCallback(false)
       assertionFailure()
       return
     }
@@ -95,7 +94,7 @@ import StoreKit
       await handlePurchaseResult(purchaseResult)
     } catch {
       InAppPurchaseHandler.logger.error(message: "Error purchasing product: \(error.localizedDescription)")
-      errorCallback()
+      errorCallback(false)
       assertionFailure()
     }
   }
@@ -111,17 +110,17 @@ import StoreKit
         await transaction.finish()
       case .unverified(_, let verificationError):
         InAppPurchaseHandler.logger.info(message: "StoreKit subscription returned success, but unverified: \(verificationError.localizedDescription)")
-        errorCallback()
+        errorCallback(false)
       }
     case .pending:
       InAppPurchaseHandler.logger.info(message: "StoreKit subscription returned pending")
       // do not call error nor success - wait for further updates via `Transaction.updates`
     case .userCancelled:
       InAppPurchaseHandler.logger.info(message: "StoreKit subscription returned userCancelled")
-      errorCallback()
+      errorCallback(false)
     @unknown default:
       InAppPurchaseHandler.logger.error(message: "purchaseResult using a new enum")
-      errorCallback()
+      errorCallback(false)
     }
   }
 
@@ -142,7 +141,7 @@ import StoreKit
     }
     if !didFindVerifiedTransaction {
       InAppPurchaseHandler.logger.info(message: "Found no verified transactions")
-      errorCallback()
+      errorCallback(true)
     }
   }
 
@@ -188,18 +187,18 @@ import StoreKit
 
     if let _ = transaction.revocationDate {
       InAppPurchaseHandler.logger.info(message: "Transaction was revoked")
-      errorCallback()
+      errorCallback(false)
     } else if let expirationDate = transaction.expirationDate,
         expirationDate < Date() {
       // Expirations handled by server
       InAppPurchaseHandler.logger.info(message: "Transaction has expired")
-      errorCallback()
+      errorCallback(false)
         return
     } else if transaction.isUpgraded {
         // Do nothing, there is an active transaction
         // for a higher level of service.
       InAppPurchaseHandler.logger.info(message: "Transaction was upgraded")
-      errorCallback()
+      errorCallback(false)
         return
     } else {
       InAppPurchaseHandler.logger.info(message: "New successful transaction returned")

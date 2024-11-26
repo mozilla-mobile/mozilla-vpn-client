@@ -17,13 +17,6 @@ class IOSIAPHandler final : public PurchaseIAPHandler {
   ~IOSIAPHandler();
   void nativeRegisterProducts() override;
 
- public slots:
-  void productRegistered(void* product);
-  void processCompletedTransactions(const QStringList& ids);
-  void processCompletedTransactions(const QStringList& ids,
-                                    const QString transactionIdentifier);
-  void noSubscriptionFoundError();
-
  protected:
   void nativeStartSubscription(ProductsHandler::Product* product) override;
   void nativeRestoreSubscription() override;
