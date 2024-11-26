@@ -34,7 +34,10 @@ function(add_addon_target NAME)
 
     # Scan for addon manifests if a source directory was provided.
     if(ADDON_SOURCE_DIR)
-        file(GLOB_RECURSE SCANNED_MANIFEST_FILES CONFIGURE_DEPENDS ${ADDON_SOURCE_DIR}/manifest.json)
+        file(GLOB_RECURSE SCANNED_MANIFEST_FILES
+            CONFIGURE_DEPENDS
+            ${ADDON_SOURCE_DIR}/*/manifest.json)
+
         foreach(FILENAME ${SCANNED_MANIFEST_FILES})
             if(${FILENAME} MATCHES "generated")
                 continue()
@@ -52,8 +55,8 @@ function(add_addon_target NAME)
     # Add commands to build the addons
     foreach(MANIFEST_FILE ${ADDON_SOURCES})
         # Parse the manifest to get the addon ID.
-        execute_process(OUTPUT_VARIABLE ADDON_ID OUTPUT_STRIP_TRAILING_WHITESPACE
-            COMMAND ${PYTHON_EXECUTABLE} -c "import json; print(json.load(open('${MANIFEST_FILE}', encoding='utf-8'))['id'])")
+        file(READ ${MANIFEST_FILE} MANIFEST_JSON)
+        string(JSON ADDON_ID GET "${MANIFEST_JSON}" "id")
 
         if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles"))
             ## Depfiles are great, but they only work for some generators.
