@@ -27,7 +27,6 @@ class IOSIAPHandler final : public PurchaseIAPHandler {
 
  private:
   void* m_delegate = nullptr;
-  InAppPurchaseHandler* swiftIAPHandler = nullptr;
 };
 
 #endif  // IOSIAPHANDLER_H

@@ -25,6 +25,7 @@ constexpr const uint32_t GUARDIAN_ERROR_RECEIPT_IN_USE = 145;
 
 namespace {
 Logger logger("IOSIAPHandler");
+InAppPurchaseHandler* swiftIAPHandler = nullptr;
 }  // namespace
 
 IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
