@@ -49,6 +49,9 @@ tasks:
         description: "Debian repackage for beta release"
         # disable for testing
         # run-on-tasks-for: [github-push, github-release]
+        fetches:
+            build:
+                - artifact: mozillavpn.deb
         dependencies:
             build: build-linux64/release-deb
         attributes:
