@@ -66,7 +66,7 @@ void IOSIAPHandler::nativeRegisterProducts() {
   }
 
   logger.debug() << "Registering" << [productIdentifiers count] << "products using StoreKit2 API.";
-  [(InAppPurchaseHandler*)swiftIAPHandler getProductsWith:productIdentifiers
+  [swiftIAPHandler getProductsWith:productIdentifiers
       productRegistrationCallback:^(NSString* productIdentifier, NSString* currencyCode,
                                     NSString* totalPrice, NSString* monthlyPrice,
                                     double monthlyPriceNumber, NSInteger freeTrialDays) {
@@ -107,13 +107,13 @@ void IOSIAPHandler::nativeRegisterProducts() {
 void IOSIAPHandler::nativeStartSubscription(ProductsHandler::Product* product) {
   logger.debug() << "Using StoreKit2 APIs";
   NSString* productId = product->m_name.toNSString();
-  [(InAppPurchaseHandler*)swiftIAPHandler startSubscriptionFor:productId
-                                             completionHandler:^{
-                                             }];
+  [swiftIAPHandler startSubscriptionFor:productId
+                      completionHandler:^{
+                      }];
 }
 
 void IOSIAPHandler::nativeRestoreSubscription() {
-  [(InAppPurchaseHandler*)swiftIAPHandler restoreSubscriptionsWithCompletionHandler:^{
+  [swiftIAPHandler restoreSubscriptionsWithCompletionHandler:^{
   }];
 }
 
@@ -125,7 +125,7 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids,
     logger.warning() << "Completing transaction out of subscription process!";
   }
 
-  TaskPurchase* purchase = TaskPurchase::createForIOS(transactionIdentifier, false);
+  TaskPurchase* purchase = TaskPurchase::createForIOS(transactionIdentifier);
 
   Q_ASSERT(purchase);
 
@@ -185,33 +185,4 @@ void IOSIAPHandler::processCompletedTransactions(const QStringList& ids,
   });
 
   TaskScheduler::scheduleTask(purchase);
-}
-
-int IOSIAPHandler::discountToDays(void* aDiscount) {
-  SKProductDiscount* discount = static_cast<SKProductDiscount*>(aDiscount);
-  if (discount == nullptr) {
-    return 0;
-  }
-  if (discount.paymentMode != SKProductDiscountPaymentMode::SKProductDiscountPaymentModeFreeTrial) {
-    return 0;
-  }
-  // Is it a week / day / month
-  auto discountPeriodUnit = discount.subscriptionPeriod.unit;
-  // How many units (i.e 3 days) per period
-  auto periodUnits = (int)discount.subscriptionPeriod.numberOfUnits;
-  // How many period's are we getting
-  auto discountAmount = (int)discount.numberOfPeriods;
-  switch (discountPeriodUnit) {
-    case SKProductPeriodUnitDay:
-      return discountAmount * periodUnits;
-    case SKProductPeriodUnitWeek:
-      return 7 * discountAmount * periodUnits;
-    case SKProductPeriodUnitMonth:
-      return 30 * discountAmount * periodUnits;
-    default:
-      Q_UNREACHABLE();
-      return 0;
-  }
-  Q_UNREACHABLE();
-  return 0;
 }

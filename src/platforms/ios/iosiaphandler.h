@@ -17,19 +17,17 @@ class IOSIAPHandler final : public PurchaseIAPHandler {
   ~IOSIAPHandler();
   void nativeRegisterProducts() override;
 
+ public slots:
+  void processCompletedTransactions(const QStringList& ids,
+                                    const QString transactionIdentifier);
+
  protected:
   void nativeStartSubscription(ProductsHandler::Product* product) override;
   void nativeRestoreSubscription() override;
 
  private:
   void* m_delegate = nullptr;
-  int discountToDays(void* discount);
-  // This is a void (and cast to InAppPurchaseHandler as needed) as the
-  // InAppPurchaseHandler needs to store Product, which is only available in iOS
-  // 15+. So the entire class must be marked as only available in iOS 15. But we
-  // can't mark this variable as only available in iOS 15+ here. Hence, we have
-  // this variable as a `void`, and cast it to InAppPurchaseHandler as needed.
-  void* swiftIAPHandler = nullptr;
+  InAppPurchaseHandler* swiftIAPHandler = nullptr;
 };
 
 #endif  // IOSIAPHANDLER_H
