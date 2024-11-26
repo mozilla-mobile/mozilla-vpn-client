@@ -79,7 +79,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         endif()
 
         if("x86_64" IN_LIST CMAKE_OSX_ARCHITECTURES)
-            list(APPEND RUST_ARCH x86_64-apple-ios x86_64-apple-ios-sim)
+            list(APPEND RUST_ARCH x86_64-apple-ios)
         endif()
 
         # If no architecure is defined, just do all of them.
