@@ -76,3 +76,32 @@ tasks:
                 ./taskcluster/scripts/build/dpkg-repack.py ${MOZ_FETCHES_DIR}/mozillavpn.deb \
                     --set provides=mozillavpn --set replaces=mozillavpn --set package=mozillavpn-beta \
                     -o /builds/worker/artifacts/mozillavpn-beta.deb
+
+    deb-release:
+        description: "Debian repackage for public release"
+        # disable for testing
+        # run-on-tasks-for: [github-push, github-release]
+        dependencies:
+            build: build-linux64/release-deb
+        attributes:
+            build-type: linux64/release-deb
+        worker-type: b-linux
+        worker:
+            docker-image: {in-tree: build}
+            max-run-time: 3600
+            chain-of-trust: true
+        release-artifacts:
+            - mozillavpn.deb
+        treeherder:
+            symbol: rpk(deb-release)
+            kind: build
+            tier: 1
+            platform: linux/x86_64
+        run:
+            using: run-task
+            use-caches: true
+            cwd: '{checkout}'
+            command: >-
+                ./taskcluster/scripts/build/dpkg-repack.py ${MOZ_FETCHES_DIR}/mozillavpn.deb \
+                    --set provides=mozillavpn --set version=$(cat version.txt) \
+                    -o /builds/worker/artifacts/mozillavpn.deb
