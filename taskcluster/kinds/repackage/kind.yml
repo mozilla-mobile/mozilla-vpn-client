@@ -47,7 +47,8 @@ tasks:
 
     deb-beta:
         description: "Debian repackage for beta release"
-        run-on-tasks-for: [github-push, github-release]
+        # disable for testing
+        # run-on-tasks-for: [github-push, github-release]
         dependencies:
             build: build-linux64/release-deb
         attributes:
