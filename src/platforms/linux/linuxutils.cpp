@@ -16,9 +16,8 @@
 #ifndef MZ_FLATPAK
 #  include "dbusclient.h"
 #endif
-#include "logger.h"
-
 #include "dbustypes.h"
+#include "logger.h"
 
 namespace {
 Logger logger("LinuxUtils");
@@ -161,7 +160,7 @@ void LinuxUtils::setupAppScope(const QString& appId) {
     if (!segment.endsWith(".scope")) {
       continue;
     }
-    QStringList cgScopeSplit = segment.first(segment.size()-5).split('-');
+    QStringList cgScopeSplit = segment.first(segment.size() - 5).split('-');
     if (cgScopeSplit[0] != "app") {
       continue;
     }
@@ -193,21 +192,11 @@ void LinuxUtils::setupAppScope(const QString& appId) {
 
   QDBusInterface iface("org.freedesktop.systemd1", "/org/freedesktop/systemd1",
                        "org.freedesktop.systemd1.Manager");
-  QDBusMessage msg = iface.call("StartTransientUnit", newScope, "fail",
-                                QVariant::fromValue(properties), QVariant::fromValue(aux));
+  QDBusMessage msg =
+      iface.call("StartTransientUnit", newScope, "fail",
+                 QVariant::fromValue(properties), QVariant::fromValue(aux));
   if (msg.type() == QDBusMessage::ErrorMessage) {
-    logger.warning() << "Failed to create transient unit:" << msg.errorMessage();
+    logger.warning() << "Failed to create scope:" << msg.errorMessage();
     return;
   }
-  if (msg.type() != QDBusMessage::ReplyMessage) {
-    logger.warning() << "Unexpected message type:" << msg.type();
-    return;
-  }
-  QList<QVariant> results = msg.arguments();
-  if (results.isEmpty()) {
-    logger.warning() << "Empty response";
-    return;
-  }
-  QDBusObjectPath path = results.first().value<QDBusObjectPath>();
-  logger.info() << "Created app scope:" << path.path();
 }

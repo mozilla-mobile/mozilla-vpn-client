@@ -8,12 +8,12 @@
 #include <QObject>
 
 namespace LinuxUtils {
-  QString findCgroupPath(const QString& type);
-  QString findCgroup2Path();
-  QString gnomeShellVersion();
-  QString kdeFrameworkVersion();
-  QString desktopFileId(const QString& path);
-  void setupAppScope(const QString& appid);
+QString findCgroupPath(const QString& type);
+QString findCgroup2Path();
+QString gnomeShellVersion();
+QString kdeFrameworkVersion();
+QString desktopFileId(const QString& path);
+void setupAppScope(const QString& appid);
 }
 
 #endif  // LINUXUTILS_H

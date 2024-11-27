@@ -147,12 +147,13 @@ Q_DECLARE_METATYPE(UserDataList);
 
 class SystemdUnitProp {
  public:
-  SystemdUnitProp() {};
-  SystemdUnitProp(const QString& n, const QVariant &v) : name(n), value(v) {};
+  SystemdUnitProp(){};
+  SystemdUnitProp(const QString& n, const QVariant &v) : name(n), value(v){};
   QString name;
   QVariant value;
 
-  friend QDBusArgument& operator<<(QDBusArgument& args, const SystemdUnitProp& data) {
+  friend QDBusArgument& operator<<(QDBusArgument& args,
+                                   const SystemdUnitProp& data) {
     args.beginStructure();
     args << data.name << QDBusVariant(data.value);
     args.endStructure();
@@ -175,7 +176,8 @@ class SystemdUnitAux {
   QString name;
   QList<SystemdUnitProp> prop;
 
-  friend QDBusArgument& operator<<(QDBusArgument& args, const SystemdUnitAux& data) {
+  friend QDBusArgument& operator<<(QDBusArgument& args,
+                                   const SystemdUnitAux& data) {
     args.beginStructure();
     args << data.name << data.prop;
     args.endStructure();
