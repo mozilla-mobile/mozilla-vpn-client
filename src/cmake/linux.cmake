@@ -11,12 +11,11 @@ target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
 target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/backendlogsobserver.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/backendlogsobserver.h
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbustypes.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxappimageprovider.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxappimageprovider.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxapplistprovider.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxapplistprovider.h
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxdependencies.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxdependencies.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxnetworkwatcher.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxnetworkwatcher.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxnetworkwatcherworker.cpp
@@ -25,6 +24,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxpingsender.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxsystemtraynotificationhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxsystemtraynotificationhandler.h
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxutils.cpp
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxutils.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.cpp
@@ -70,7 +71,6 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbusservice.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbusservice.h
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbustypeslinux.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dnsutilslinux.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dnsutilslinux.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/iputilslinux.cpp

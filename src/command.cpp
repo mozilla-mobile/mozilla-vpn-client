@@ -41,6 +41,10 @@
 #  include "platforms/macos/macosutils.h"
 #endif
 
+#ifdef MZ_LINUX
+#  include "platforms/linux/linuxutils.h"
+#endif
+
 #include <QApplication>
 #include <QIcon>
 #include <QTextStream>
@@ -100,6 +104,10 @@ bool Command::loadModels() {
 int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
+#ifdef MZ_LINUX
+  LinuxUtils::setupAppScope(Constants::LINUX_APP_ID);
+#endif
+
   SettingsHolder settingsHolder;
 
   if (settingsHolder.stagingServer()) {
@@ -123,6 +131,10 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
 
 int Command::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
+
+#ifdef MZ_LINUX
+  LinuxUtils::setupAppScope(Constants::LINUX_APP_ID);
+#endif
 
   SettingsHolder settingsHolder;
 
@@ -154,6 +166,10 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 
 int Command::runQmlApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
+
+#ifdef MZ_LINUX
+  LinuxUtils::setupAppScope(Constants::LINUX_APP_ID);
+#endif
 
   SettingsHolder settingsHolder;
 

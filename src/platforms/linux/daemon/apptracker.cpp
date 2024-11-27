@@ -12,8 +12,8 @@
 #include <QScopeGuard>
 #include <QtDBus/QtDBus>
 
-#include "../linuxdependencies.h"
-#include "dbustypeslinux.h"
+#include "platforms/linux/linuxutils.h"
+#include "platforms/linux/dbustypes.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -34,7 +34,7 @@ AppTracker::AppTracker(QObject* parent) : QObject(parent) {
   logger.debug() << "AppTracker created.";
 
   /* Monitor for changes to the user's application control groups. */
-  m_cgroupMount = LinuxDependencies::findCgroup2Path();
+  m_cgroupMount = LinuxUtils::findCgroup2Path();
 }
 
 AppTracker::~AppTracker() {
@@ -208,7 +208,7 @@ QString AppTracker::findDesktopFileId(const QString& cgroup) {
                            this);
   QString source = interface.property("SourcePath").toString();
   if (!source.isEmpty() && source.endsWith(".desktop")) {
-    return LinuxDependencies::desktopFileId(source);
+    return LinuxUtils::desktopFileId(source);
   }
 
   // Otherwise, we don't know the desktop ID for this control group.

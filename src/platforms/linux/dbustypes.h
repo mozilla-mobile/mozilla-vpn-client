@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef DBUSTYPESLINUX_H
-#define DBUSTYPESLINUX_H
+#ifndef DBUSTYPES_H
+#define DBUSTYPES_H
 
 #include <sys/socket.h>
 
@@ -145,6 +145,52 @@ typedef QList<UserData> UserDataList;
 Q_DECLARE_METATYPE(UserData);
 Q_DECLARE_METATYPE(UserDataList);
 
+class SystemdUnitProp {
+ public:
+  SystemdUnitProp() {};
+  SystemdUnitProp(const QString& n, const QVariant &v) : name(n), value(v) {};
+  QString name;
+  QVariant value;
+
+  friend QDBusArgument& operator<<(QDBusArgument& args, const SystemdUnitProp& data) {
+    args.beginStructure();
+    args << data.name << QDBusVariant(data.value);
+    args.endStructure();
+    return args;
+  }
+  friend const QDBusArgument& operator>>(const QDBusArgument& args,
+                                         SystemdUnitProp& data) {
+    QDBusVariant dv;
+    args.beginStructure();
+    args >> data.name >> dv;
+    args.endStructure();
+    data.value = dv.variant();
+    return args;
+  }
+};
+Q_DECLARE_METATYPE(SystemdUnitProp);
+
+class SystemdUnitAux {
+ public:
+  QString name;
+  QList<SystemdUnitProp> prop;
+
+  friend QDBusArgument& operator<<(QDBusArgument& args, const SystemdUnitAux& data) {
+    args.beginStructure();
+    args << data.name << data.prop;
+    args.endStructure();
+    return args;
+  }
+  friend const QDBusArgument& operator>>(const QDBusArgument& args,
+                                         SystemdUnitAux& data) {
+    args.beginStructure();
+    args >> data.name >> data.prop;
+    args.endStructure();
+    return args;
+  }
+};
+Q_DECLARE_METATYPE(SystemdUnitAux);
+
 class DnsMetatypeRegistrationProxy {
  public:
   DnsMetatypeRegistrationProxy() {
@@ -164,6 +210,10 @@ class DnsMetatypeRegistrationProxy {
     qDBusRegisterMetaType<UserData>();
     qRegisterMetaType<UserDataList>();
     qDBusRegisterMetaType<UserDataList>();
+    qRegisterMetaType<SystemdUnitProp>();
+    qDBusRegisterMetaType<SystemdUnitProp>();
+    qRegisterMetaType<SystemdUnitAux>();
+    qDBusRegisterMetaType<SystemdUnitAux>();
   }
 };
 
