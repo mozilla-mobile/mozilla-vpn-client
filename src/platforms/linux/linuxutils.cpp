@@ -12,6 +12,7 @@
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QProcess>
+#include <QProcessEnvironment>
 #include <QThread>
 #include <QtDBus/QtDBus>
 
@@ -162,6 +163,12 @@ static QString decodeSystemdEscape(const QString& str) {
 }
 
 void LinuxUtils::setupAppScope(const QString& appId) {
+  // If we're in a sandbox environment, then it should already be setup.
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (pe.contains("container")) {
+    return;
+  }
+
   uint ownPid = (uint)getpid();
   QDBusInterface sdManager("org.freedesktop.systemd1",
                            "/org/freedesktop/systemd1",
