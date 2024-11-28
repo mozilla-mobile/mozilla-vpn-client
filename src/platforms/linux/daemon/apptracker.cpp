@@ -14,8 +14,8 @@
 
 #include "leakdetector.h"
 #include "logger.h"
-#include "platforms/linux/linuxutils.h"
 #include "platforms/linux/dbustypes.h"
+#include "platforms/linux/linuxutils.h"
 
 constexpr const char* GTK_DESKTOP_APP_SERVICE = "org.gtk.gio.DesktopAppInfo";
 constexpr const char* GTK_DESKTOP_APP_PATH = "/org/gtk/gio/DesktopAppInfo";
