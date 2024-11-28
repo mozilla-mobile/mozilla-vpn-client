@@ -169,12 +169,14 @@ class SystemdUnitProp {
     return args;
   }
 };
+typedef QList<SystemdUnitProp> SystemdUnitPropList;
 Q_DECLARE_METATYPE(SystemdUnitProp);
+Q_DECLARE_METATYPE(SystemdUnitPropList);
 
 class SystemdUnitAux {
  public:
   QString name;
-  QList<SystemdUnitProp> prop;
+  SystemdUnitPropList prop;
 
   friend QDBusArgument& operator<<(QDBusArgument& args,
                                    const SystemdUnitAux& data) {
@@ -191,11 +193,13 @@ class SystemdUnitAux {
     return args;
   }
 };
+typedef QList<SystemdUnitAux> SystemdUnitAuxList;
 Q_DECLARE_METATYPE(SystemdUnitAux);
+Q_DECLARE_METATYPE(SystemdUnitAuxList);
 
-class DnsMetatypeRegistrationProxy {
+class DBusMetatypeRegistrationProxy {
  public:
-  DnsMetatypeRegistrationProxy() {
+  DBusMetatypeRegistrationProxy() {
     qRegisterMetaType<DnsResolver>();
     qDBusRegisterMetaType<DnsResolver>();
     qRegisterMetaType<DnsResolverList>();
@@ -214,8 +218,12 @@ class DnsMetatypeRegistrationProxy {
     qDBusRegisterMetaType<UserDataList>();
     qRegisterMetaType<SystemdUnitProp>();
     qDBusRegisterMetaType<SystemdUnitProp>();
+    qRegisterMetaType<SystemdUnitPropList>();
+    qDBusRegisterMetaType<SystemdUnitPropList>();
     qRegisterMetaType<SystemdUnitAux>();
     qDBusRegisterMetaType<SystemdUnitAux>();
+    qRegisterMetaType<SystemdUnitAuxList>();
+    qDBusRegisterMetaType<SystemdUnitAuxList>();
   }
 };
 

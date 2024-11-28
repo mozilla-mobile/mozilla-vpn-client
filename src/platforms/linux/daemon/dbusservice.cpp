@@ -382,14 +382,3 @@ bool DBusService::isCallerAuthorized() {
   }
   return (flag == CAP_SET);
 }
-
-// Workaround for QTBUG-108822 by manually registering QDBusObjectPath with the
-// D-Bus meta-type system, otherwise we are unable to connect to some signals.
-#if QT_VERSION < 0x060403
-class QtbugRegistrationProxy {
- public:
-  QtbugRegistrationProxy() { qDBusRegisterMetaType<QDBusObjectPath>(); }
-};
-
-static QtbugRegistrationProxy s_qtbugRegistrationProxy;
-#endif

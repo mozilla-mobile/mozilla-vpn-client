@@ -208,5 +208,3 @@ void DnsUtilsLinux::dnsDomainsReceived(QDBusPendingCallWatcher* call) {
   setLinkDomains(m_ifindex, newlist);
   delete call;
 }
-
-static DnsMetatypeRegistrationProxy s_dnsMetatypeProxy;
