@@ -4,6 +4,8 @@
 
 #include "xdgportal.h"
 
+#include <unistd.h>
+
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QProcessEnvironment>
