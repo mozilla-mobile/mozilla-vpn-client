@@ -6,6 +6,7 @@
 
 #include <QDBusConnection>
 #include <QDBusInterface>
+#include <QProcessEnvironment>
 #include <QRandomGenerator>
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
@@ -17,6 +18,7 @@
 #  include <QWindow>
 #endif
 
+#include "dbustypes.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
@@ -107,4 +109,132 @@ QString XdgPortal::parentWindow() {
 
   // Otherwise, we don't support this windowing system.
   return QString("");
+}
+
+// Decode systemd escape characters in the unit names.
+static QString decodeSystemdEscape(const QString& str) {
+  static const QRegularExpression re("(_[0-9A-Fa-f][0-9A-Fa-f])");
+
+  QString result = str;
+  qsizetype offset = 0;
+  while (offset < result.length()) {
+    // Search for the next unicode escape sequence.
+    QRegularExpressionMatch match = re.match(result, offset);
+    if (!match.hasMatch()) {
+      break;
+    }
+
+    bool okay;
+    qsizetype start = match.capturedStart(0);
+    QChar code = match.captured(0).mid(1).toUShort(&okay, 16);
+    if (okay && (code != 0)) {
+      // Replace the matched escape sequence with the decoded character.
+      result.replace(start, match.capturedLength(0), QString(code));
+      offset = start + 1;
+    } else {
+      // If we failed to decode the character, skip passed the matched string.
+      offset = match.capturedEnd(0);
+    }
+  }
+
+  return result;
+}
+
+void XdgPortal::setupAppScope(const QString& appId) {
+  // If we're in a sandbox environment, then it should already be setup.
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (pe.contains("container")) {
+    return;
+  }
+
+  uint ownPid = (uint)getpid();
+  QDBusInterface sdManager("org.freedesktop.systemd1",
+                           "/org/freedesktop/systemd1",
+                           "org.freedesktop.systemd1.Manager");
+
+  QDBusMessage getunit = sdManager.call("GetUnitByPID", ownPid);
+  if (getunit.type() == QDBusMessage::ErrorMessage) {
+    logger.warning() << "Failed to get scope:" << getunit.errorMessage();
+    return;
+  }
+  QList<QVariant> result = getunit.arguments();
+  if ((getunit.type() != QDBusMessage::ReplyMessage) || result.isEmpty()) {
+    logger.warning() << "Bad reply for current scope:";
+    return;
+  }
+
+  // Fetch the names of the unit to figure out the appid.
+  QDBusObjectPath unitPath = result.first().value<QDBusObjectPath>();
+  QDBusInterface ownUnit("org.freedesktop.systemd1", unitPath.path(),
+                         "org.freedesktop.systemd1.Unit");
+  QStringList unitNames = ownUnit.property("Names").toStringList();
+
+  // Use the D-Bus object path as a fallback if there are no names.
+  unitNames.append(decodeSystemdEscape(unitPath.path().split('/').last()));
+
+  // Check to see if we have a valid application scope.
+  QString unitAppId;
+  for (const QString& name : unitNames) {
+    if (!name.endsWith(".scope")) {
+      continue;
+    }
+    QStringList scopeSplit = name.first(name.size() - 6).split('-');
+    if (scopeSplit[0] != "app") {
+      continue;
+    }
+
+    // Remove the last element of the scope if it's a number.
+    bool isDigit = false;
+    scopeSplit.last().toULong(&isDigit);
+    if (isDigit) {
+      scopeSplit.removeLast();
+    }
+
+    // The appId should be the last remaining element of the scope.
+    // If we found an appId then we have no work to do.
+    logger.info() << "Launched as app" << scopeSplit.last();
+    return;
+  }
+
+  // Request a new scope from systemd via D-Bus
+  QString newScopeName =
+      QString("app-%1-%2.scope").arg(appId, QString::number(getpid()));
+  SystemdUnitPropList properties;
+  SystemdUnitAuxList aux;
+  QList<uint> pidlist({ownPid});
+  properties.append(SystemdUnitProp("PIDs", QVariant::fromValue(pidlist)));
+
+  logger.debug() << "Creating scope:" << newScopeName;
+  QDBusMessage msg =
+      sdManager.call("StartTransientUnit", newScopeName, "fail",
+                     QVariant::fromValue(properties), QVariant::fromValue(aux));
+  if (msg.type() == QDBusMessage::ErrorMessage) {
+    logger.warning() << "Failed to create scope:" << msg.errorMessage();
+    return;
+  }
+  QDBusObjectPath jobPath = result.first().value<QDBusObjectPath>();
+  if ((msg.type() != QDBusMessage::ReplyMessage) || jobPath.path().isEmpty()) {
+    logger.warning() << "Bad reply for create scope";
+    return;
+  }
+
+  // And now for the gross part. StartTransientUnit() returns a systemd job that
+  // will create our scope for us, and move us into it. But we have to wait for
+  // that job to finish before we can proceed. However, we can't do this async
+  // because we don't have a QCoreApplication setup yet. The only way I can
+  // think to do this is by polling systemd until the job is no longer running.
+  QDBusInterface jobInterface("org.freedesktop.systemd1", jobPath.path(),
+                              "org.freedesktop.systemd1.Job");
+  while (jobInterface.isValid()) {
+    QString state = jobInterface.property("State").toString();
+    if (state.isEmpty()) {
+      logger.debug() << "Job is done exiting...";
+      break;
+    } else if ((state != "waiting") && (state != "running")) {
+      logger.debug() << "Job is" << state << "exiting...";
+      break;
+    }
+    logger.debug() << "Job is" << state << "waiting...";
+    QThread::currentThread()->wait(100);
+  }
 }

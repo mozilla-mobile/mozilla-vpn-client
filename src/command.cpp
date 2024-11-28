@@ -42,7 +42,7 @@
 #endif
 
 #ifdef MZ_LINUX
-#  include "platforms/linux/linuxutils.h"
+#  include "platforms/linux/xdgportal.h"
 #endif
 
 #include <QApplication>
@@ -105,7 +105,7 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
 #ifdef MZ_LINUX
-  LinuxUtils::setupAppScope(Constants::LINUX_APP_ID);
+  XdgPortal::setupAppScope(Constants::LINUX_APP_ID);
 #endif
 
   SettingsHolder settingsHolder;
@@ -133,7 +133,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
 #ifdef MZ_LINUX
-  LinuxUtils::setupAppScope(Constants::LINUX_APP_ID);
+  XdgPortal::setupAppScope(Constants::LINUX_APP_ID);
 #endif
 
   SettingsHolder settingsHolder;
@@ -168,7 +168,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
 #ifdef MZ_LINUX
-  LinuxUtils::setupAppScope(Constants::LINUX_APP_ID);
+  XdgPortal::setupAppScope(Constants::LINUX_APP_ID);
 #endif
 
   SettingsHolder settingsHolder;

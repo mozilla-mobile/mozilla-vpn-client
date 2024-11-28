@@ -13,7 +13,6 @@ QString findCgroup2Path();
 QString gnomeShellVersion();
 QString kdeFrameworkVersion();
 QString desktopFileId(const QString& path);
-void setupAppScope(const QString& appid);
-}
+}  // namespace LinuxUtils
 
 #endif  // LINUXUTILS_H
