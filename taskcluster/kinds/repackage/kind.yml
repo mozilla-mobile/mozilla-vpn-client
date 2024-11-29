@@ -107,4 +107,4 @@ tasks:
             command: >-
                 ./taskcluster/scripts/build/dpkg-repack.py ${MOZ_FETCHES_DIR}/mozillavpn.deb \
                     --set provides=mozillavpn --set version=$(cat version.txt) \
-                    -o /builds/worker/artifacts/mozillavpn.deb
+                    -o /builds/worker/artifacts/mozillavpn-$(cat version.txt).deb
