@@ -13,7 +13,7 @@ transforms = TransformSequence()
 def append_version(config, tasks):
     # Get the version number from version.txt
     cwd = os.path.dirname(os.path.realpath(__file__))
-    with open(cwd, '..', '..', 'version.txt', 'r') as fp:
+    with open(os.path.join(cwd, '..', '..', 'version.txt'), 'r') as fp:
         version = fp.readline().strip()
 
     for task in tasks:
