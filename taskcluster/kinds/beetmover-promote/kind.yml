@@ -88,5 +88,6 @@ tasks:
         run-on-tasks-for: [action]
         # The linux64-deb release-artifacts are dynamically generated in the beetmover transform
         release-artifacts: []
+        dependencies: []
         attributes:
             build-type: linux64/release-deb
