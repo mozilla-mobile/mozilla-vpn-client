@@ -17,12 +17,16 @@ def append_version(config, tasks):
         version = fp.readline().strip()
 
     for task in tasks:
+        print(f"DEBUG: append_version on {task['name']}")
         if task["name"] not in ("repackage-deb-release", "beetmover-ship-linux64-deb", "beetmover-apt-ship-linux64-deb"):
             yield task
             continue
 
         # Get the release artifacts and append -<version> to their filenames.
+        print(f"DEBUG: task keys: {task.keys()}")
         for artifact in task["attributes"]["release-artifacts"]:  
+            print(f"DEBUG: release-artifact {artifact['name']}")
+            print(f"DEBUG: release-artifact {artifact['path']}")
             if "name" in artifact:
                 root, ext = os.path.splitext(artifact["name"])
                 artifact["name"] = root + "-" + version + ext
