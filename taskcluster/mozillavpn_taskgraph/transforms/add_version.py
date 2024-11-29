@@ -15,10 +15,14 @@ def append_version(config, tasks):
     cwd = os.path.dirname(os.path.realpath(__file__))
     with open(os.path.join(cwd, '..', '..', '..', 'version.txt'), 'r') as fp:
         version = fp.readline().strip()
+    
+    # If this is a beetmover promotion job, change the version to "beta" instead.
+    if config.kind == "beetmover-promote":
+        version = "beta"
 
     for task in tasks:
         print(f"DEBUG: append_version on {task['name']}")
-        if task["name"] not in ("repackage-deb-release", "beetmover-ship-linux64-deb", "beetmover-apt-ship-linux64-deb"):
+        if task["name"] not in ("deb-release", "linux64-deb"):
             yield task
             continue
 
