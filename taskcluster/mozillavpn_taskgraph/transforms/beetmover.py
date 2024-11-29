@@ -68,7 +68,7 @@ def add_addons_release_artifacts(config, tasks):
         yield task
 
 @transforms.add
-def add_linux_release_artifacts(config, tasks):
+def add_linux_repackage_dependency(config, tasks):
     short_phase = config.kind[len("beetmover-") :]
 
     for task in tasks:
@@ -81,22 +81,8 @@ def add_linux_release_artifacts(config, tasks):
 
         if short_phase == "ship":
             task["dependencies"]["repackage"] = "repackage-deb-release"
-            task["attributes"]["release-artifacts"].append(
-                    {
-                        "type": "file",
-                        "name": f"public/build/mozillavpn.deb",
-                        "path": f"/builds/worker/artifacts/mozillavpn.deb",
-                    }
-            )
         else:
             task["dependencies"]["repackage"] = "repackage-deb-beta"
-            task["attributes"]["release-artifacts"].append(
-                    {
-                        "type": "file",
-                        "name": f"public/build/mozillavpn-beta.deb",
-                        "path": f"/builds/worker/artifacts/mozillavpn-beta.deb",
-                    }
-            )
 
         yield task
 
