@@ -27,14 +27,10 @@ task-defaults:
 tasks:
     promote-linux64-deb:
         worker-type: beetmover-apt
-        dependencies:
-            repackage: repackage-deb-beta
         attributes:
             shipping-phase: promote-client
 
     ship-linux64-deb:
         worker-type: beetmover-apt
-        dependencies:
-            repackage: repackage-deb-release
         attributes:
             shipping-phase: ship-client
