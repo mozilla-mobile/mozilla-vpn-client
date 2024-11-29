@@ -67,6 +67,38 @@ def add_addons_release_artifacts(config, tasks):
                 )
         yield task
 
+@transforms.add
+def add_linux_release_artifacts(config, tasks):
+    short_phase = config.kind[len("beetmover-") :]
+
+    for task in tasks:
+        if task["attributes"]["build-type"] != "linux64/release-deb":
+            yield task
+            continue
+        if task["name"] != "linux64-deb":
+            yield task
+            continue
+
+        if short_phase == "ship":
+            task["dependencies"]["repackage"] = "repackage-deb-release"
+            task["attributes"]["release-artifacts"].append(
+                    {
+                        "type": "file",
+                        "name": f"public/build/mozillavpn.deb",
+                        "path": f"/builds/worker/artifacts/mozillavpn.deb",
+                    }
+            )
+        else:
+            task["dependencies"]["repackage"] = "repackage-deb-beta"
+            task["attributes"]["release-artifacts"].append(
+                    {
+                        "type": "file",
+                        "name": f"public/build/mozillavpn-beta.deb",
+                        "path": f"/builds/worker/artifacts/mozillavpn-beta.deb",
+                    }
+            )
+
+        yield task
 
 @transforms.add
 def add_beetmover_worker_config(config, tasks):
@@ -105,12 +137,12 @@ def add_beetmover_worker_config(config, tasks):
 
         upstream_artifacts = []
         for dep in task["dependencies"]:
-            if dep not in ("build", "mac-notarization", "repackage-signing", "signing"):
+            if dep not in ("build", "mac-notarization", "repackage", "repackage-signing", "signing"):
                 continue
             upstream_artifacts.append(
                 {
                     "taskId": {"task-reference": f"<{dep}>"},
-                    "taskType": dep if dep == "build" else "scriptworker",
+                    "taskType": dep if (dep == "build" or dep == "repackage") else "scriptworker",
                     "paths": [
                         release_artifact["name"]
                         for release_artifact in task["attributes"]["release-artifacts"]

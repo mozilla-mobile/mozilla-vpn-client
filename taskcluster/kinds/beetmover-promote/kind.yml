@@ -15,6 +15,7 @@ kind-dependencies:
     - build
     - signing
     - mac-notarization
+    - repackage
     - repackage-signing
 
 task-defaults:
@@ -85,8 +86,7 @@ tasks:
             build-type: addons/opt
     linux64-deb:
         run-on-tasks-for: [action]
-        release-artifacts: [mozillavpn.deb]
-        dependencies:
-            build: build-linux64/release-deb
+        # The linux64-deb release-artifacts are dynamically generated in the beetmover transform
+        release-artifacts: []
         attributes:
             build-type: linux64/release-deb

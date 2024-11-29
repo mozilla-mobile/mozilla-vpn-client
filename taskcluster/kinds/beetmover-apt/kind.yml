@@ -27,7 +27,6 @@ task-defaults:
 tasks:
     promote-linux64-deb:
         worker-type: beetmover-apt
-        release-artifacts: [mozillavpn-beta.deb]
         dependencies:
             repackage: repackage-deb-beta
         attributes:
@@ -35,7 +34,6 @@ tasks:
 
     ship-linux64-deb:
         worker-type: beetmover-apt
-        release-artifacts: [mozillavpn.deb]
         dependencies:
             repackage: repackage-deb-release
         attributes:
