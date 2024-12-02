@@ -19,7 +19,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: build-addons/
-          key: test-addons-${{ hashFiles('addons/', 'test/functional/addons/') }}
+          key: test-addons-${{ hashFiles('addons/**', 'test/functional/addons/**', 'scripts/addons/*.py', 'scripts/cmake/addons.cmake') }}
 
       - name: Install build dependencies
         if: steps.addons-cache.outputs.cache-hit != 'true'
