@@ -152,7 +152,13 @@ If you want to implement new add-ons, you need to follow these steps:
 
 1. Create a manifest in a separate folder in the `addons` directory of the mozilla VPN repository.
 2. Read and follow the documentation for the add-on type you want to implement.
-3. If new shared strings were added, process them so that strings are shown in the addon: `python ./scripts/utils/generate_shared_addon_xliff.py -i ./addons/strings.yaml -o ./3rdparty/i18n/en/addons/strings.xliff` (This step is not necessary, strictly speaking. This script is what will be run as new strings are ingested into l10n repo, and once the new strings have done a round trip to the l10n repo and then back to the client repo, the string will show up in the addon as expected. Manually running this script as part of the build process prevents the brand new addon from showing "vpn.newStringCategory.newString" until this round trip happens.)
+3. If new shared strings were added, process them so that strings are shown in the addon:
+`python ./scripts/utils/generate_shared_addon_xliff.py -i ./addons/strings.yaml -o ./3rdparty/i18n/en/addons/strings.xliff`
+(This step is not necessary, strictly speaking. This script is what will be run as new
+strings are ingested into l10n repo, and once the new strings have done a round trip to
+the l10n repo and then back to the client repo, the string will show up in the addon as
+expected. Manually running this script as part of the build process prevents the brand
+new addon from showing "vpn.newStringCategory.newString" until this round trip happens.)
 4. Build the CMake project in the `addons` directory.
 
 ```
