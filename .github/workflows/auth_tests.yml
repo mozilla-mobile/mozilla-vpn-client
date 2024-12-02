@@ -36,9 +36,7 @@ jobs:
 
       - name: Running tests
         shell: bash
-        working-directory: ./build/tests/auth_tests
-        run: |
-          ctest --output-on-failure
+        run: ctest -L auth --output-on-failure
 
   macos-unit-tests:
     runs-on: macos-latest
@@ -78,9 +76,7 @@ jobs:
           cmake --build build/cmake --target app_auth_tests
 
       - name: Running tests
-        working-directory: ./build/cmake/tests/auth_tests
-        run: |
-          ctest --output-on-failure
+        run: ctest -L auth --output-on-failure
 
   windows-unit-tests:
     name: Run auth tests on Windows
@@ -118,6 +114,4 @@ jobs:
 
       - name: Running tests
         shell: bash
-        working-directory: ./build/tests/auth_tests
-        run: |
-          ctest --output-on-failure
+        run: ctest -L auth --output-on-failure

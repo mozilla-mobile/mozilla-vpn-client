@@ -4,6 +4,7 @@
 
 #include "webextensionadapter.h"
 
+#include <QFileInfo>
 #include <QHostAddress>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -23,14 +24,15 @@
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
-#if defined MZ_PROXY_ENABLED
-#  include "proxycontroller.h"
-#endif
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "taskscheduler.h"
 #include "webextensionadapter.h"
+
+#if defined(MZ_WINDOWS)
+#  include "platforms/windows/windowsutils.h"
+#endif
 
 namespace {
 
@@ -65,9 +67,6 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
           &WebExtensionAdapter::writeState);
   connect(vpn->connectionHealth(), &ConnectionHealth::stabilityChanged, this,
           &WebExtensionAdapter::writeState);
-
-  mProxyStateChanged = vpn->proxyController()->stateBindable().subscribe(
-      [this]() { serializeStatus(); });
 
   m_commands = QList<RequestType>({
       RequestType{"activate",
@@ -178,29 +177,6 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
   }
   obj["vpn"] = asString(vpn->controller()->state());
   obj["connectionHealth"] = asString(vpn->connectionHealth()->stability());
-#if defined MZ_PROXY_ENABLED
-  {
-    auto* proxyController = vpn->proxyController();
-    QJsonObject p;
-    std::visit(match{
-                   [&p](ProxyController::Stopped s) {
-                     p["available"] = false;
-                     p["url"] = "";
-                   },
-                   [&p](ProxyController::Started s) {
-                     p["available"] = true;
-                     p["url"] = s.url.toString();
-                   },
-               },
-               proxyController->state());
-    obj["localProxy"] = p;
-  }
-#else
-  QJsonObject p;
-  p["available"] = false;
-  p["url"] = "";
-  obj["localProxy"] = p;
-#endif
 
   return obj;
 }
@@ -209,7 +185,18 @@ QJsonObject WebExtensionAdapter::serializeFeaturelist() {
   auto out = QJsonObject();
   out["webExtension"] =
       Feature::get(Feature::Feature_webExtension)->isSupported();
-  out["localProxy"] = Feature::get(Feature::Feature_localProxy)->isSupported();
+
+  // Detect the localProxy feature by checking the running services.
+#if defined(MZ_LINUX) && !defined(MZ_FLATPAK)
+  out["localProxy"] = QFileInfo::exists(Constants::SOCKSPROXY_UNIX_PATH);
+#elif defined(MZ_WINDOWS)
+  // TODO: Need to check if the service is running.
+  out["localProxy"] =
+      WindowsUtils::getServiceStatus(Constants::SOCKSPROXY_SERVICE_NAME);
+#else
+  out["localProxy"] = false;
+#endif
+
   return out;
 }
 
