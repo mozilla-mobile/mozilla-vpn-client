@@ -4,8 +4,9 @@
   "name": "Try the Firefox extension",
   "type": "message",
   "conditions": {
-    "min_client_version": "3.25.1",
+    "min_client_version": "2.25.0",
     "trigger_time": 1209600,
+    "env": "staging",
     "platforms": ["windows"]
   },
   "message": {
