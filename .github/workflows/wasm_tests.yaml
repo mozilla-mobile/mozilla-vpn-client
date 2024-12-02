@@ -25,7 +25,7 @@ jobs:
     name: Wasm Qt6
     runs-on: ubuntu-20.04
     outputs:
-      matrix: ${{ steps.testGen.outputs.tests }}
+      matrix: ${{ steps.enumerate.outputs.tests }}
     env:
       QTVERSION: 6.2.4
 
@@ -76,7 +76,7 @@ jobs:
             !build/cmake/
 
       - name: Generate tasklist
-        id: testGen
+        id: enumerate
         shell: bash
         run: |
           echo -n "tests=" >> $GITHUB_OUTPUT
@@ -87,7 +87,7 @@ jobs:
       - name: Check tests
         shell: bash
         env:
-          TEST_LIST: ${{ steps.testGen.outputs.tests }}
+          TEST_LIST: ${{ steps.enumerate.outputs.tests }}
         run: |
           echo $TEST_LIST | jq
 
@@ -101,7 +101,7 @@ jobs:
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
       matrix:
-        test: ${{ fromJson(needs.wasmQt6.outputs.matrix) }}
+        test: ${{ fromJson(needs.build_test_app.outputs.matrix) }}
     env:
       QTVERSION: 6.2.4
 
