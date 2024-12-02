@@ -36,6 +36,14 @@
       "type": "boolean",
       "description": "Determines whether we trigger a system notification. Default: true"
     },
+    "usesSharedStrings": {
+      "type": "boolean",
+      "description": "Determines whether we use the new shared strings.yaml file. Default: false"
+    },
+    "shortVersion": {
+      "type": "string",
+      "description": "Version number, short form. Ex: `2.24`"
+    },
     "blocks": {
       "type": "array",
       "description": "The list of text blocks",
