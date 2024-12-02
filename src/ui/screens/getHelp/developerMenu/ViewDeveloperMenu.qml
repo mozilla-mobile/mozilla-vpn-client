@@ -134,7 +134,7 @@ MZViewBase {
             Layout.topMargin: MZTheme.theme.windowMargin / 2
             Layout.leftMargin: MZTheme.theme.windowMargin * 3
             Layout.rightMargin: MZTheme.theme.windowMargin
-            color: MZTheme.colors.grey10
+            color: MZTheme.colors.divider
         }
 
         Repeater {
@@ -191,7 +191,7 @@ MZViewBase {
                 title: "Open Inspector"
                 accessibleName: "Open Inspector"
                 iconSource:  "qrc:/nebula/resources/externalLink.svg"
-                backgroundColor: MZTheme.colors.clickableRowBlue
+                backgroundColor: MZTheme.colors.clickableRow
                 onClicked: {
                     MZUrlOpener.openUrlLabel("inspector");
                 }

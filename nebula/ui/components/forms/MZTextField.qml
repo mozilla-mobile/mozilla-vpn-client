@@ -37,7 +37,7 @@ TextField {
     font.pixelSize: MZTheme.theme.fontSizeSmall
     inputMethodHints: Qt.ImhNoPredictiveText | Qt.ImhSensitiveData
     leftPadding: MZTheme.theme.windowMargin
-    placeholderTextColor: MZTheme.colors.grey40
+    placeholderTextColor: MZTheme.colors.fontColor
     rightPadding: MZTheme.theme.windowMargin
     selectByMouse: true
     topPadding: MZTheme.theme.windowMargin / 2

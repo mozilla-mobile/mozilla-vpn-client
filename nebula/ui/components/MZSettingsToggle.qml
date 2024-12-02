@@ -88,7 +88,7 @@ CheckBox {
         height: 18
         width: 18
         radius: 9
-        color: MZTheme.colors.white
+        color: MZTheme.colors.bgColorStronger
         z: 1
         anchors.verticalCenter: vpnSettingsToggle.verticalCenter
     }
@@ -104,7 +104,7 @@ CheckBox {
     Rectangle {
         id: hoverPressHandler
 
-        color: MZTheme.colors.grey20
+        color: MZTheme.colors.lightFocusBorder
         opacity: 0
         z: -1
         anchors.fill: uiPlaceholder

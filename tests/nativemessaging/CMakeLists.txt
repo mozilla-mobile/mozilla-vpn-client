@@ -32,3 +32,4 @@ target_sources(nativemessaging_tests PRIVATE
 
 add_dependencies(nativemessaging_tests mozillavpnnp)
 add_test(NAME nativemessaging_tests COMMAND nativemessaging_tests $<TARGET_FILE:mozillavpnnp>)
+set_property(TEST nativemessaging_tests PROPERTY LABELS nativemessaging)

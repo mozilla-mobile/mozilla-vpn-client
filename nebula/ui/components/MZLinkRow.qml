@@ -55,7 +55,7 @@ RowLayout {
             Layout.fillWidth: true
             Layout.preferredHeight: 1
 
-            color: MZTheme.colors.grey10
+            color: MZTheme.colors.divider
         }
     }
 
@@ -64,7 +64,7 @@ RowLayout {
         Layout.alignment: Qt.AlignTop
         Layout.preferredHeight: 50
         Layout.preferredWidth: 50
-        buttonColorScheme: MZTheme.colors.clickableRowBlue
+        buttonColorScheme: MZTheme.colors.clickableRow
         accessibleName: title
         MZIcon {
             source: "qrc:/nebula/resources/externalLink.svg"

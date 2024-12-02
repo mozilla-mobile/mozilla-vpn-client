@@ -112,7 +112,7 @@ ColumnLayout {
         Layout.preferredWidth: parent.width - MZTheme.theme.windowMargin * 2
         Layout.preferredHeight: 1
         Layout.alignment: Qt.AlignHCenter
-        color: MZTheme.colors.grey10
+        color: MZTheme.colors.divider
         visible: !root.recentConnectionsModel.isEmpty
     }
 

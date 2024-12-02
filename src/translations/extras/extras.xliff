@@ -384,9 +384,6 @@
       <trans-unit id="servers.Gothenburg" xml:space="preserve">
         <source>Gothenburg</source>
       </trans-unit>
-      <trans-unit id="servers.Malmö" xml:space="preserve">
-        <source>Malmö</source>
-      </trans-unit>
       <trans-unit id="servers.Stockholm" xml:space="preserve">
         <source>Stockholm</source>
       </trans-unit>
@@ -530,6 +527,15 @@
       </trans-unit>
       <trans-unit id="servers.Nicosia" xml:space="preserve">
         <source>Nicosia</source>
+      </trans-unit>
+      <trans-unit id="servers.Malm" xml:space="preserve">
+        <source>Malmö</source>
+      </trans-unit>
+      <trans-unit id="servers.ng" xml:space="preserve">
+        <source>Nigeria</source>
+      </trans-unit>
+      <trans-unit id="servers.Lagos" xml:space="preserve">
+        <source>Lagos</source>
       </trans-unit>
     </body>
   </file>

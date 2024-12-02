@@ -28,13 +28,13 @@ Item {
         height: 4
 
         z: parent.z - 1
-        color: MZTheme.colors.grey30
+        color: MZTheme.colors.stepProgressBarIncomplete
 
         Rectangle {
             implicitHeight: parent.height
             implicitWidth: (delegateLayout.spacing * progressBar.activeIndex) + (MZTheme.theme.progressBarDelegateHeightWidth * activeIndex )
 
-            color: MZTheme.colors.purple10
+            color: MZTheme.colors.stepProgressBarHighlight
 
             Behavior on implicitWidth {
                 NumberAnimation {

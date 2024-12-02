@@ -21,6 +21,10 @@ describe('WebExtension API', function() {
   this.timeout(60000);
   this.ctx.authenticationNeeded = true;
 
+  beforeEach(async () => {
+    await vpn.flipFeatureOn('webExtension');
+  });
+
   it('A Webextension can query the Status of the VPN', async () => {
     const sock = await connectExtension();
     const messagePipe = getMessageStream(sock);
@@ -95,13 +99,12 @@ describe('WebExtension API', function() {
   it('A Webextension can get a Subset of the Featurelist', async () => {
     const sock = await connectExtension();
     const messagePipe = getMessageStream(sock);
-    const isProxyEnabled = await vpn.isFeatureEnabled('localProxy');
-
 
     const response = readResponseOfType('featurelist', messagePipe);
     sentToClient(new ExtensionMessage('featurelist'), sock);
     const msg = await response;
-    assert(msg.featurelist.localProxy === isProxyEnabled);
+    assert(msg.featurelist.webExtension === true);
+    assert(msg.featurelist.hasOwnProperty('localProxy'));
 
     sock.destroy();
   });

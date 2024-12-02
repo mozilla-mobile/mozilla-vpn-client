@@ -141,7 +141,7 @@ ColumnLayout {
 
         //Google play store QR code
         Rectangle {
-            color: MZTheme.colors.white
+            color: MZTheme.colors.bgColorStronger
 
             Layout.preferredHeight: qrcodeStack.qrcodeSize
             Layout.preferredWidth: qrcodeStack.qrcodeSize
@@ -154,7 +154,7 @@ ColumnLayout {
 
                 verticalOffset: 1
                 horizontalOffset: 1
-                color: MZTheme.colors.grey60
+                color: MZTheme.colors.dropShadow
                 opacity: .1
                 transparentBorder: true
                 cached: true
@@ -178,7 +178,7 @@ ColumnLayout {
 
         //Apple app store QR code
         Rectangle {
-            color: MZTheme.colors.white
+            color: MZTheme.colors.bgColorStronger
 
             Layout.preferredHeight: qrcodeStack.qrcodeSize
             Layout.preferredWidth: qrcodeStack.qrcodeSize
@@ -191,7 +191,7 @@ ColumnLayout {
 
                 verticalOffset: 1
                 horizontalOffset: 1
-                color: MZTheme.colors.grey60
+                color: MZTheme.colors.dropShadow
                 opacity: .1
                 transparentBorder: true
                 cached: true

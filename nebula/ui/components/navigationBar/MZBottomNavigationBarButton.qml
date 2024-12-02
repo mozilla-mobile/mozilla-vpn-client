@@ -39,7 +39,7 @@ MZIconButton {
         visible: checked
         radius: parent.height / 2
         opacity: .2
-        color: MZTheme.colors.white
+        color: MZTheme.colors.bgColorStronger
     }
 
     Image {

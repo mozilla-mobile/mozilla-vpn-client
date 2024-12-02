@@ -57,7 +57,7 @@ Column {
 
             z: parent.z - 1
             radius: implicitWidth / 2
-            color: MZTheme.colors.purple10
+            color: MZTheme.colors.stepProgressBarHighlight
 
             implicitHeight: button.activeFocus || button.state === MZTheme.theme.uiState.stateHovered || button.state === MZTheme.theme.uiState.statePressed || delegate.currentState === MZStepProgressBarDelegate.State.Active ? parent.implicitHeight + 8 : 0
             implicitWidth: button.activeFocus || button.state === MZTheme.theme.uiState.stateHovered || button.state === MZTheme.theme.uiState.statePressed || delegate.currentState === MZStepProgressBarDelegate.State.Active ? parent.implicitWidth + 8 : 0
@@ -96,7 +96,7 @@ Column {
             MZColorOverlay {
                 anchors.fill: parent
 
-                color: delegate.currentState === MZStepProgressBarDelegate.State.Complete ? MZTheme.colors.green : MZTheme.colors.white
+                color: delegate.currentState === MZStepProgressBarDelegate.State.Complete ? MZTheme.colors.successAccent : MZTheme.colors.bgColorStronger
                 source: icon
             }
         }
@@ -104,7 +104,7 @@ Column {
         MZUIStates {
             setMargins: -4
             radius: parent.radius
-            colorScheme: MZTheme.colors.purpleStepProgressBarDelegate
+            colorScheme: MZTheme.colors.stepProgressBarDelegate
             startingState: delegate.currentState === MZStepProgressBarDelegate.State.Active ? colorScheme.defaultColor : colorScheme.buttonDisabled
             showFocusRings: false
         }
@@ -125,7 +125,7 @@ Column {
         font.pixelSize: MZTheme.theme.fontSizeSmallest
         lineHeightMode: Text.FixedHeight
         lineHeight: MZTheme.theme.controllerInterLineHeight
-        color: delegate.currentState !== MZStepProgressBarDelegate.State.Incomplete ? MZTheme.colors.purple70 : MZTheme.colors.fontColorDark
+        color: delegate.currentState !== MZStepProgressBarDelegate.State.Incomplete ? MZTheme.colors.primaryBrighter : MZTheme.colors.fontColorDark
 
         Accessible.ignored: true
     }

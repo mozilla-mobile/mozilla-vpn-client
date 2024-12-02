@@ -30,7 +30,7 @@ Rectangle {
         width: parent.width
 
         MZBoldLabel {
-            color: MZTheme.colors.white
+            color: MZTheme.colors.fontColorInverted
             text: MZI18n.ConnectionInfoMetricsTitle
             wrapMode: Text.WordWrap
 
@@ -48,7 +48,7 @@ Rectangle {
         }
 
         Rectangle {
-            color: MZTheme.colors.white
+            color: MZTheme.colors.fontColorInverted
             height: 1
             opacity: 0.2
             visible: ipv4Address.visible
@@ -65,7 +65,7 @@ Rectangle {
         }
 
         Rectangle {
-            color: MZTheme.colors.white
+            color: MZTheme.colors.fontColorInverted
             height: 1
             opacity: 0.2
             visible: ipv6Address.visible

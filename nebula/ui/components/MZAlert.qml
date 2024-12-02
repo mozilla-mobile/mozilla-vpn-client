@@ -53,10 +53,10 @@ Rectangle {
         id: style
         readonly property string darkCloseIcon: "qrc:/nebula/resources/close-dark.svg"
         readonly property string whiteCloseIcon: "qrc:/nebula/resources/close-white.svg"
-        property var alertColor: MZTheme.colors.black
-        property var alertHoverColor: MZTheme.colors.grey30
-        property var alertClickColor: MZTheme.colors.white
-        property var fontColor: MZTheme.colors.yellow10
+        property var alertColor: MZTheme.colors.normalLevelAccent
+        property var alertHoverColor: MZTheme.colors.normalButton.buttonHovered
+        property var alertClickColor: MZTheme.colors.normalButton.buttonPressed
+        property var fontColor: MZTheme.colors.fontColorInverted
         property var fontSize: 13
         property var lineHeight: 21
         property var borderRadius: 4
@@ -80,15 +80,15 @@ Rectangle {
             name: stateNames.info
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: MZTheme.colors.blueButton
+                colorScheme: MZTheme.colors.normalButton
             }
 
             PropertyChanges {
                 target: style;
-                alertColor: MZTheme.colors.blue
-                alertHoverColor: MZTheme.colors.blueHovered
-                alertClickColor: MZTheme.colors.bluePressed
-                fontColor: MZTheme.colors.white
+                alertColor: MZTheme.colors.normalLevelAccent
+                alertHoverColor: MZTheme.colors.normalButton.buttonHovered
+                alertClickColor: MZTheme.colors.normalButton.buttonPressed
+                fontColor: MZTheme.colors.fontColorInverted
                 closeIcon: whiteCloseIcon
             }
         },
@@ -96,14 +96,14 @@ Rectangle {
             name: stateNames.success
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: MZTheme.colors.greenAlert
+                colorScheme: MZTheme.colors.successAlert
             }
 
             PropertyChanges {
                 target: style;
-                alertColor: MZTheme.colors.greenAlert.defaultColor
-                alertHoverColor: MZTheme.colors.greenAlert.buttonHovered
-                alertClickColor: MZTheme.colors.greenAlert.buttonPressed
+                alertColor: MZTheme.colors.successAccent
+                alertHoverColor: MZTheme.colors.successAlert.buttonHovered
+                alertClickColor: MZTheme.colors.successAlert.buttonPressed
                 fontColor: MZTheme.colors.fontColorDark
                 closeIcon: darkCloseIcon
             }
@@ -113,15 +113,15 @@ Rectangle {
 
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: MZTheme.colors.redButton
+                colorScheme: MZTheme.colors.destructiveButton
             }
 
             PropertyChanges {
                 target: style;
-                alertColor: MZTheme.colors.red
-                alertHoverColor: MZTheme.colors.redHovered
-                alertClickColor: MZTheme.colors.redPressed
-                fontColor: MZTheme.colors.white
+                alertColor: MZTheme.colors.errorAccent
+                alertHoverColor: MZTheme.colors.destructiveButton.buttonHovered
+                alertClickColor: MZTheme.colors.destructiveButton.buttonPressed
+                fontColor: MZTheme.colors.fontColorInverted
                 closeIcon: whiteCloseIcon
             }
         },
@@ -129,14 +129,14 @@ Rectangle {
             name: stateNames.warning
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: MZTheme.theme.warningAlertfocusIndicators
+                colorScheme: MZTheme.colors.warningAlert
             }
 
             PropertyChanges {
                 target: style
-                alertColor: MZTheme.colors.orange
-                alertHoverColor: MZTheme.colors.orangeHovered
-                alertClickColor: MZTheme.colors.orangePressed
+                alertColor: MZTheme.colors.warningAccent
+                alertHoverColor: MZTheme.colors.warningAlert.buttonHovered
+                alertClickColor: MZTheme.colors.warningAlert.buttonPressed
                 fontColor: MZTheme.colors.fontColorDark
                 closeIcon: darkCloseIcon
             }
@@ -163,7 +163,7 @@ Rectangle {
         horizontalOffset: 1
         verticalOffset: 1
         radius: 5.5
-        color: MZTheme.colors.grey60
+        color: MZTheme.colors.dropShadow
    }
 
     MZButtonBase {

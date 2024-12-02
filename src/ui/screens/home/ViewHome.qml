@@ -72,7 +72,7 @@ MZFlickable {
             MZBoldLabel {
                 //% "Mozilla VPN"
                 text: qsTrId("MozillaVPN")
-                color: MZTheme.colors.black
+                color: MZTheme.colors.fontTitleColor
                 Layout.alignment: Qt.AlignVCenter
             }
         }

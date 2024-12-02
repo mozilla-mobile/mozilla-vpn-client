@@ -143,11 +143,11 @@ ColumnLayout {
                     VPNSubscriptionData.status === VPNSubscriptionData.Active
 
                 color: isActive
-                    ? MZTheme.colors.green90
-                    : MZTheme.colors.red70
+                    ? MZTheme.colors.successMain
+                    : MZTheme.colors.errorMain
                 background: isActive
-                    ? MZTheme.colors.green5
-                    : MZTheme.colors.red5
+                    ? MZTheme.colors.successBackground
+                    : MZTheme.colors.errorBackground
                 text: valueText
 
                 anchors {
@@ -168,7 +168,7 @@ ColumnLayout {
         Layout.bottomMargin: MZTheme.theme.windowMargin
 
         MZBoldInterLabel {
-            color: MZTheme.colors.purple70
+            color: MZTheme.colors.primaryBrighter
             font.pixelSize: MZTheme.theme.fontSizeSmall
             text: MZI18n.SubscriptionManagementUpgradeToAnnual // "Save 50%..."
             wrapMode: Text.WordWrap
@@ -200,7 +200,7 @@ ColumnLayout {
     Rectangle {
         id: divider
 
-        color: MZTheme.colors.grey10
+        color: MZTheme.colors.divider
 
         Layout.fillWidth: true
         Layout.leftMargin: 0

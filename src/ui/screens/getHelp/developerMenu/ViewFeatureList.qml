@@ -68,7 +68,7 @@ MZViewBase {
                     Layout.alignment: Qt.AlignBottom
                     Layout.fillWidth: true
                     Layout.preferredHeight: 1
-                    color: MZTheme.colors.grey10
+                    color: MZTheme.colors.divider
                     visible: index < rep.count - 1
                 }
             }

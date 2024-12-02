@@ -48,7 +48,7 @@ RowLayout {
     Rectangle {
         id: indicator
         visible: iconAndLabel.showIndicator
-        color: MZTheme.colors.error.default
+        color: MZTheme.colors.errorAccentLight
 
         radius: Layout.preferredWidth / 2
         Layout.preferredWidth: MZTheme.theme.iconSize / 2

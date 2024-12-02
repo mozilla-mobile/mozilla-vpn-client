@@ -21,7 +21,7 @@ Rectangle {
         Error
     }
 
-    color: MZTheme.colors.white
+    color: MZTheme.colors.bgColorStronger
     radius: 8
     property int cardType: MZInformationCard.CardType.Error
 
@@ -32,7 +32,7 @@ Rectangle {
         horizontalOffset: 1
         verticalOffset: 1
         radius: 8
-        color: MZTheme.colors.grey60
+        color: MZTheme.colors.dropShadow
         opacity: .15
         transparentBorder: true
         cached: true
@@ -42,7 +42,7 @@ Rectangle {
         id: dropShadowSource
         anchors.fill: card
 
-        color: MZTheme.colors.white
+        color: MZTheme.colors.bgColorStronger
         radius: card.radius
     }
 
@@ -73,19 +73,19 @@ Rectangle {
         }
 
         width: 8
-        color: MZTheme.colors.white
+        color: MZTheme.colors.bgColorStronger
     }
 
     function getStripColor() {
         switch (cardType) {
         case MZInformationCard.CardType.Info:
-            return MZTheme.colors.blue50
+            return MZTheme.colors.normalLevelAccent
         case MZInformationCard.CardType.Success:
-            return MZTheme.colors.green50
+            return MZTheme.colors.successAccent
         case MZInformationCard.CardType.Warning:
-            return MZTheme.colors.yellow50
+            return MZTheme.colors.warningAccent
         case MZInformationCard.CardType.Error:
-            return MZTheme.colors.red60
+            return MZTheme.colors.errorAccent
         default:
             return console.error("Unable to create view for info card of type: " + cardType)
         }

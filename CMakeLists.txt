@@ -160,7 +160,7 @@ add_subdirectory(qtglean)
 add_subdirectory(src)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
-add_subdirectory(translations)
+add_subdirectory(src/translations)
 add_subdirectory(addons)
 
 if(NOT CMAKE_CROSSCOMPILING)
@@ -175,6 +175,9 @@ if(NOT CMAKE_CROSSCOMPILING)
 
         # E2E Tests
         add_subdirectory(tests/auth_tests EXCLUDE_FROM_ALL)
+
+        # Functional Tests
+        add_subdirectory(tests/functional)
     endif()
 endif()
 

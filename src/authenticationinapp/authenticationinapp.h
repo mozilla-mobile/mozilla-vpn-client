@@ -20,6 +20,7 @@ class AuthenticationInApp final : public QObject {
   Q_PROPERTY(QString emailAddress READ emailAddress NOTIFY emailAddressChanged);
   Q_PROPERTY(QStringList attachedClients READ attachedClients NOTIFY
                  attachedClientsChanged);
+  Q_PROPERTY(State state READ state NOTIFY stateChanged)
 
  public:
   enum State {
@@ -87,9 +88,6 @@ class AuthenticationInApp final : public QObject {
     ErrorUnknownAccount,
   };
   Q_ENUM(ErrorType);
-
- private:
-  Q_PROPERTY(State state READ state NOTIFY stateChanged)
 
  public:
   static AuthenticationInApp* instance();

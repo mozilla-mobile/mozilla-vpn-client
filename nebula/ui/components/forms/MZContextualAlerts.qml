@@ -22,14 +22,14 @@ ColumnLayout {
         DelegateChoice {
             roleValue: "warning"
             delegate: MZContextualAlert {
-                fontColor: MZTheme.colors.warning.active
+                fontColor: MZTheme.colors.fontColorWarning
                 iconSrc: "qrc:/nebula/resources/warning-dark-orange.svg"
             }
         }
         DelegateChoice {
             roleValue: "error"
             delegate: MZContextualAlert {
-                fontColor: MZTheme.colors.error.default
+                fontColor: MZTheme.colors.errorAccentLight
                 iconSrc: "qrc:/nebula/resources/warning.svg"
             }
         }

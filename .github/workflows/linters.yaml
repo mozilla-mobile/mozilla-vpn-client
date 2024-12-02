@@ -1,4 +1,4 @@
-name: Linters (clang, l10n)
+name: Linters (clang, l10n, colors)
 on:
   # Triggers the workflow on pull request events but only for the main branch
   pull_request:
@@ -12,7 +12,7 @@ on:
 
 jobs:
   linter:
-    name: Run Main Linters (clang, l10n, etc.)
+    name: Run Main Linters (clang, l10n, colors, etc.)
     runs-on: ubuntu-22.04
     steps:
       - name: Clone repository
@@ -64,6 +64,10 @@ jobs:
       - name: Check for missing language names in extras.xliff
         run: |
           scripts/ci/check_lang_names.py
+
+      - name: Check for proper color usage
+        run: |
+          scripts/ci/check_colors.py nebula/ui/themes/
 
   ktlint:
     name: Run ktLint

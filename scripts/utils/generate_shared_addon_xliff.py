@@ -63,7 +63,7 @@ translation_strings = prune_lists_to_strings(translation_strings)
 print("Then, write the strings to a .ts file")
 tmp_path = tempfile.mkdtemp()
 ts_file = os.path.join(tmp_path, "sharedAddonsStrings.ts")
-write_en_language(ts_file, translation_strings)
+write_en_language(ts_file, translation_strings, False)
 
 print("Finally, convert the ts file into an xliff file")
 os.system(f"{lconvert} -if ts -i {ts_file} -of xlf -o {args.outfile}")

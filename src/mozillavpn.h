@@ -35,9 +35,6 @@ class SubscriptionData;
 class SupportCategoryModel;
 class Telemetry;
 class User;
-#if defined MZ_PROXY_ENABLED
-class ProxyController;
-#endif
 
 class MozillaVPN final : public App {
   Q_OBJECT
@@ -46,7 +43,7 @@ class MozillaVPN final : public App {
  public:
   enum CustomState {
     StateDeviceLimit = StateCustom + 1,
-    StateBackendFailure,
+    StateHeartbeatFailure,
     StateUpdateRequired,
   };
   Q_ENUM(CustomState);
@@ -54,7 +51,7 @@ class MozillaVPN final : public App {
   enum CustomScreen {
     ScreenAuthenticating = Navigator::ScreenCustom + 1,
     ScreenAuthenticationInApp,
-    ScreenBackendFailure,
+    ScreenHeartbeatFailure,
     ScreenBillingNotAvailable,
     ScreenCaptivePortal,
     ScreenCrashReporting,
@@ -145,9 +142,6 @@ class MozillaVPN final : public App {
   SubscriptionData* subscriptionData() const;
   Telemetry* telemetry() const;
   User* user() const;
-#if defined MZ_PROXY_ENABLED
-  ProxyController* proxyController() const;
-#endif
 
   // Called at the end of the authentication flow. We can continue adding the
   // device if it doesn't exist yet, or we can go to OFF state.

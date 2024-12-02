@@ -112,7 +112,7 @@ Item {
             height: 1
             width: parent.width
             anchors.bottom: parent.bottom
-            color: MZTheme.colors.grey10
+            color: MZTheme.colors.divider
         }
 
     }

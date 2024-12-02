@@ -37,10 +37,6 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
 
-#if defined MZ_PROXY_ENABLED
-#  include "proxycontroller.h"
-#endif
-
 #if defined(MZ_FLATPAK)
 #  include "platforms/linux/networkmanagercontroller.h"
 #elif defined(MZ_LINUX)
@@ -817,12 +813,6 @@ bool Controller::processNextStep() {
     emit readyToUpdate();
     return true;
   }
-
-  if (nextStep == BackendFailure) {
-    emit readyToBackendFailure();
-    return true;
-  }
-
   return false;
 }
 
@@ -944,24 +934,6 @@ bool Controller::switchServers(const ServerData& serverData) {
   deactivate();
 
   return true;
-}
-
-void Controller::backendFailure() {
-  logger.error() << "backend failure";
-
-  if (m_state == StateInitializing || m_state == StateOff) {
-    emit readyToBackendFailure();
-    return;
-  }
-
-  m_nextStep = BackendFailure;
-
-  if (m_state == StateOn || m_state == StateOnPartial ||
-      m_state == StateSwitching || m_state == StateSilentSwitching ||
-      m_state == StateConnecting || m_state == StateConfirming) {
-    deactivate();
-    return;
-  }
 }
 
 QString Controller::currentServerString() const {
