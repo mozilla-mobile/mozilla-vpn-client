@@ -40,6 +40,12 @@ if(Qt6_VERSION VERSION_GREATER_EQUAL 6.5.0)
     target_link_libraries(mozillavpn PRIVATE Qt6::GuiPrivate)
 endif()
 
+# If we are building statically link to the qoffscreen platform plugin to
+# support offscreen rendering via the QT_QPA_PLATFORM=offscreen variable.
+if(QT_FEATURE_static)
+    target_link_libraries(mozillavpn PRIVATE Qt6::QOffscreenIntegrationPlugin)
+endif()
+
 if(NOT BUILD_FLATPAK)
     # Link to libcap and libsecret
     find_package(PkgConfig REQUIRED)
