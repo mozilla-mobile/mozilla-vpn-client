@@ -11,13 +11,13 @@ project(testing_addons VERSION 1.0.0 LANGUAGES CXX
 find_program(PYTHON_EXECUTABLE NAMES python3 python)
 find_package(Qt6 REQUIRED COMPONENTS Core Qml)
 
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/addons.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/../../../scripts/cmake/addons.cmake)
 
 # Build the production addons.
 add_addon_target(prod_addon
-    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/prod
-    SOURCE_DIR ${CMAKE_SOURCE_DIR}/addons
-    I18N_DIR ${CMAKE_SOURCE_DIR}/3rdparty/i18n
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/prod/
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../addons/
+    I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rdparty/i18n
 )
 set_target_properties(prod_addon PROPERTIES EXCLUDE_FROM_ALL FALSE)
 
