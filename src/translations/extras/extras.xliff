@@ -531,6 +531,12 @@
       <trans-unit id="servers.Malm" xml:space="preserve">
         <source>Malmö</source>
       </trans-unit>
+      <trans-unit id="servers.ng" xml:space="preserve">
+        <source>Nigeria</source>
+      </trans-unit>
+      <trans-unit id="servers.Lagos" xml:space="preserve">
+        <source>Lagos</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
