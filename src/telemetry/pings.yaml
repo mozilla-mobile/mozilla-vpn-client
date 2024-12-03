@@ -73,8 +73,6 @@ daemonsession:
       (Android only) Sent every three hours during an active VPN session.
     daemon_end: >
       Sent after as session ending metric is recorded.
-
-
 extensionsession:
   description: |
     Only on desktop. 
