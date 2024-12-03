@@ -60,19 +60,8 @@ auto constexpr count(QuantityMetric* metric) {
 // For flags, we will flip the flag-bit in the settings to true.
 // We will also record this to glean.
 // Flags will always be sent with the next ping
-template <uint8_t bit>  // The bit in the bitfield to denote
 auto consteval flag(BooleanMetric* metric) {
-  static_assert(bit < 32u,
-                "The Bitfield is a u32, cannout assign a bigger bitfield");
   return [metric](QVariant) {
-    auto settings = SettingsHolder::instance();
-    uint32_t currentBitFlags = settings->extensionTelemetryFlags();
-    // Flip the bit
-    uint32_t newFlags = currentBitFlags | (1 << bit);
-    if (currentBitFlags != newFlags) {
-      // Avoid disk io.
-      settings->setExtensionTelemetryFlags(currentBitFlags);
-    }
     metric->set(true);
   };
 }
@@ -84,15 +73,15 @@ const auto map = QMap<QString, std::function<void(QVariant)>>{
      event(&extension::fx_protection_mode_changed)},
     {"main_screen", event(&extension::main_screen)},
     {"error_screen", event(&mozilla::glean::extension::error_screen)},
-    {"has_completed_onboarding", flag<0>(&extension::has_completed_onboarding)},
+    {"has_completed_onboarding", flag(&extension::has_completed_onboarding)},
     {"used_feature_diable_firefox_protection",
-     flag<1>(&extension::used_feature_diable_firefox_protection)},
+     flag(&extension::used_feature_diable_firefox_protection)},
     {"used_feature_settings_page",
-     flag<2>(&extension::used_feature_settings_page)},
+     flag(&extension::used_feature_settings_page)},
     {"used_feature_page_action_revoke_exclude",
-     flag<3>(&extension::used_feature_page_action_revoke_exclude)},
+     flag(&extension::used_feature_page_action_revoke_exclude)},
     {"used_feature_page_action_revoke_geopref",
-     flag<4>(&extension::used_feature_page_action_revoke_geopref)},
+     flag(&extension::used_feature_page_action_revoke_geopref)},
     {"count_excluded", count(&extension::count_excluded)},
     {"count_geoprefed", count(&extension::count_geoprefed)},
 };
@@ -106,27 +95,7 @@ bool recordTelemetry(const TelemetryInfo& info) {
   handler(info.args);
   return true;
 }
-
-void recordAllFlags() {
-  auto settings = SettingsHolder::instance();
-  const uint32_t currentBitFlags = settings->extensionTelemetryFlags();
-  auto readFlag = [currentBitFlags](BooleanMetric* metric, uint8_t bit) {
-    // Check if the specified bit is set
-    bool isBitSet = (currentBitFlags & (1 << bit)) != 0;
-    // Set the metric value based on the bit's state
-    metric->set(isBitSet);
-  };
-  using namespace mozilla::glean;
-  readFlag(&extension::has_completed_onboarding, 0);
-  readFlag(&extension::used_feature_diable_firefox_protection, 1);
-  readFlag(&extension::used_feature_settings_page, 2);
-  readFlag(&extension::used_feature_page_action_revoke_exclude, 3);
-  readFlag(&extension::used_feature_page_action_revoke_geopref, 4);
-}
-
 void startSession() {
-  // Read the current bitflags to the ping before we submit it.
-  recordAllFlags();
   mozilla::glean_pings::Extensionsession.submit("extension_start");
 }
 void stopSession() {

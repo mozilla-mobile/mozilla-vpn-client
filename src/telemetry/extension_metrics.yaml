@@ -109,6 +109,7 @@ extension:
           type: string
     used_feature_diable_firefox_protection:
       type: boolean
+      lifetime: user
       description: >
         True if the user has disabled the VPN for firefox
       bugs:
@@ -122,8 +123,9 @@ extension:
         - vpn-telemetry@mozilla.com
       send_in_pings:
         - extensionsession
-      expires: 2025-06-30
+      expires: never
     used_feature_settings_page:
+      lifetime: user
       type: boolean
       description: >
         True if the user has opened the internal settings page. 
@@ -138,9 +140,10 @@ extension:
         - vpn-telemetry@mozilla.com
       send_in_pings:
         - extensionsession
-      expires: 2025-06-30
+      expires: never
     used_feature_page_action_revoke_exclude:
       type: boolean
+      lifetime: user
       description: >
         True if the user has removed a Website Exclusion from the Page action
       bugs:
@@ -154,9 +157,10 @@ extension:
         - vpn-telemetry@mozilla.com
       send_in_pings:
         - extensionsession
-      expires: 2025-06-30
+      expires: never
     used_feature_page_action_revoke_geopref:
       type: boolean
+      lifetime: user
       description: >
         True if the user has removed a Website GeoPrefrence from the Page action
       bugs:
@@ -170,9 +174,10 @@ extension:
         - vpn-telemetry@mozilla.com
       send_in_pings:
         - extensionsession
-      expires: 2025-06-30
+      expires: never
     has_completed_onboarding:
       type: boolean
+      lifetime: user
       description: >
         True if the user has completed onboarding.
       bugs:
@@ -186,7 +191,7 @@ extension:
         - vpn-telemetry@mozilla.com
       send_in_pings:
         - extensionsession
-      expires: 2025-06-30
+      expires: never
     count_excluded:
       type: quantity
       unit: websites
