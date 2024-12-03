@@ -33,7 +33,7 @@ jobs:
 
       - name: Generate updated .ts files and check for l10n errors
         run: |
-          ./scripts/utils/generate_ts.sh
+          ./scripts/utils/generate_ts.sh -a
           python .github/l10n/check_l10n_issues.py
 
       - name: Check for QRC errors

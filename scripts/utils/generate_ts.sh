@@ -9,6 +9,22 @@
 print N "This script generates 'ts' files for the Mozilla VPN app."
 print N ""
 
+# When the `-a`/`--all` flag is present, .ts files are created
+# for every addon.
+# Without an argument of `-a` or `--all`, .ts files will NOT
+# be created for addons that use the shared strings file.
+KEEP_ALL_TS_FILES=0
+# Parse Script arguments
+while [[ $# -gt 0 ]]; do
+  key="$1"
+  case $key in
+        (-a | --all)
+        KEEP_ALL_TS_FILES=1
+        shift
+        ;;
+    esac
+done
+
 cd $(dirname $0)/../.. || die
 
 printn Y "Branch name: "
@@ -115,17 +131,16 @@ done
 # When creating translation files for l10n repo, remove any addon-specific files that use
 # shared strings, as they are translated via `strings.yaml`, which is set up for translation in
 # `build.py` (which like the addon ts files, is created above when addon's cmake calls `build.py`)"
-if [ true ]; then
+if [ $KEEP_ALL_TS_FILES == 0 ]; then
   print Y "Checking for .ts files using shared strings"
   for ts_file in ./addon_ts/*
   do
     if grep vpn.commonString $ts_file > /dev/null; then
-      print Y "Deleting file because found shared strings: $ts_file"
+      print G "Deleting file because found shared strings: $ts_file"
       rm $ts_file
     fi
   done
 fi
-# DO AWFUL HACKY THINGS HERE AND LOG THE HECK OUT OF IT
 
 if [ "$BRANCHNAME" ]; then
   printn Y "Go back to the initial branch... "

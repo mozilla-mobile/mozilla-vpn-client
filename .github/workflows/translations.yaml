@@ -40,7 +40,7 @@ jobs:
 
       - name: Generating translations
         run: |
-          ./scripts/utils/generate_ts.sh
+          ./scripts/utils/generate_ts.sh -a
 
       - name: Uploading
         uses: actions/upload-artifact@v4
