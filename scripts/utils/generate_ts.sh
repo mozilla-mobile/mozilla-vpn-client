@@ -12,8 +12,7 @@ print N ""
 cd $(dirname $0)/../.. || die
 
 printn Y "Branch name: "
-BRANCHNAME="$(git symbolic-ref HEAD 2>/dev/null)"
-BRANCHNAME=${BRANCHNAME##refs/heads/}
+BRANCHNAME="$(git rev-parse --abbrev-ref HEAD 2>/dev/null)"
 print G "$BRANCHNAME"
 
 printn Y "Caching the dep scripts... "
