@@ -67,15 +67,15 @@ auto consteval flag(BooleanMetric* metric) {
 }
 using namespace mozilla::glean;
 const auto map = QMap<QString, std::function<void(QVariant)>>{
-    {"fx_protection_disenabled", event(&extension::fx_protection_disenabled)},
+    {"fx_protetion_disabled", event(&extension::fx_protetion_disabled)},
     {"fx_protection_enabled", event(&extension::fx_protection_enabled)},
     {"fx_protection_mode_changed",
      event(&extension::fx_protection_mode_changed)},
     {"main_screen", event(&extension::main_screen)},
     {"error_screen", event(&mozilla::glean::extension::error_screen)},
     {"has_completed_onboarding", flag(&extension::has_completed_onboarding)},
-    {"used_feature_diable_firefox_protection",
-     flag(&extension::used_feature_diable_firefox_protection)},
+    {"used_feature_disable_firefox_protection",
+     flag(&extension::used_feature_disable_firefox_protection)},
     {"used_feature_settings_page",
      flag(&extension::used_feature_settings_page)},
     {"used_feature_page_action_revoke_exclude",
