@@ -140,3 +140,16 @@ set_source_files_properties(
 target_sources(networkextension PRIVATE
     ${CMAKE_BINARY_DIR}/src/generated/VPNMetrics.swift
 )
+
+# The IOSGlean framework is built under the src directory, so we'll need to
+# explicitly add it to the framework search paths. However, this gets messy
+# in Xcode because the actual path is somewhat somewhat buried in
+# subdirectories.
+if(XCODE)
+    # Xcode is a multi-config generator, so technically we need to do this for
+    # each supported config too.
+    foreach(CONFIG ${CMAKE_CONFIGURATION_TYPES})
+        set_target_properties(networkextension PROPERTIES
+            "XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS[variant=${CONFIG}]" "${CMAKE_BINARY_DIR}/src/${CONFIG}$(EFFECTIVE_PLATFORM_NAME)")
+    endforeach()
+endif()
