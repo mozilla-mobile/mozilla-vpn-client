@@ -5,8 +5,6 @@
 ---
 $schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
 
-# "impression" category events, are events where the user has just moved on to page X
-# Events under this category are recorded when a new screen is loaded
 extension:
     main_screen:
       type: event
@@ -26,6 +24,7 @@ extension:
         - sstreich@mozilla.com
         - vpn-telemetry@mozilla.com
       expires: 2025-06-30
+
     error_screen:
       type: event
       lifetime: ping
@@ -68,7 +67,8 @@ extension:
         - sstreich@mozilla.com
         - vpn-telemetry@mozilla.com
       expires: 2025-06-30
-    fx_protection_disenabled:
+
+    fx_protetion_disabled:
       type: event
       lifetime: ping
       send_in_pings:
@@ -85,6 +85,7 @@ extension:
         - sstreich@mozilla.com
         - vpn-telemetry@mozilla.com
       expires: 2025-06-30
+
     fx_protection_mode_changed:
       type: event
       lifetime: ping
@@ -107,7 +108,8 @@ extension:
           description: |
             Full,PartialOn,PartialOff,Off,
           type: string
-    used_feature_diable_firefox_protection:
+
+    used_feature_disable_firefox_protection:
       type: boolean
       lifetime: user
       description: >
@@ -124,6 +126,7 @@ extension:
       send_in_pings:
         - extensionsession
       expires: never
+
     used_feature_settings_page:
       lifetime: user
       type: boolean
@@ -141,6 +144,7 @@ extension:
       send_in_pings:
         - extensionsession
       expires: never
+
     used_feature_page_action_revoke_exclude:
       type: boolean
       lifetime: user
@@ -158,6 +162,7 @@ extension:
       send_in_pings:
         - extensionsession
       expires: never
+
     used_feature_page_action_revoke_geopref:
       type: boolean
       lifetime: user
@@ -175,6 +180,7 @@ extension:
       send_in_pings:
         - extensionsession
       expires: never
+
     has_completed_onboarding:
       type: boolean
       lifetime: user
@@ -192,6 +198,7 @@ extension:
       send_in_pings:
         - extensionsession
       expires: never
+
     count_excluded:
       type: quantity
       unit: websites
@@ -209,6 +216,7 @@ extension:
       send_in_pings:
         - extensionsession
       expires: 2025-06-30
+
     count_geoprefed:
       type: quantity
       unit: websites
