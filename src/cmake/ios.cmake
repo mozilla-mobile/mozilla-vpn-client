@@ -29,7 +29,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosgleanbridge.h
 )
 
-
 ## Install the Network Extension into the bundle.
 add_dependencies(mozillavpn networkextension)
 
@@ -74,6 +73,10 @@ set_target_properties(mozillavpn PROPERTIES
     # Do not strip debug symbols on copy
     XCODE_ATTRIBUTE_COPY_PHASE_STRIP "NO"
     XCODE_ATTRIBUTE_STRIP_INSTALLED_PRODUCT "NO"
+    # Do not build with debug dylibs - it breaks the Qt/ios entrypoint.
+    # This can be fixed by rolling out own entrypoint and invoking
+    # UIApplicationMain() ourselves.
+    XCODE_ATTRIBUTE_ENABLE_DEBUG_DYLIB "NO"
 )
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 
