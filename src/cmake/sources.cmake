@@ -241,6 +241,8 @@ if(NOT CMAKE_CROSSCOMPILING)
     target_sources(mozillavpn-sources INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/webextensionadapter.h
         ${CMAKE_CURRENT_SOURCE_DIR}/webextensionadapter.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/webextensiontelemetry.h
+        ${CMAKE_CURRENT_SOURCE_DIR}/webextensiontelemetry.cpp
     )
     target_compile_definitions(mozillavpn-sources INTERFACE MVPN_WEBEXTENSION)
 endif()
