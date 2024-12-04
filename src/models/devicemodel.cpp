@@ -78,7 +78,7 @@ bool sortCallback(const Device& a, const Device& b) {
 }  // anonymous namespace
 
 // Check if the current device exists, and if so move it to to the front.
-void  DeviceModel::moveCurrentDevice(const Keys* keys) {
+void DeviceModel::moveCurrentDevice(const Keys* keys) {
   for (qsizetype index = 0; index < m_devices.length(); index++) {
     if (m_devices.at(index).isCurrentDevice(keys)) {
       m_devices.move(index, 0);
