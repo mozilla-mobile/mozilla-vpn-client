@@ -135,9 +135,16 @@ if [ $KEEP_ALL_TS_FILES == 0 ]; then
   print Y "Checking for .ts files using shared strings"
   for ts_file in ./addon_ts/*
   do
-    if grep vpn.commonString $ts_file > /dev/null; then
-      print G "Deleting file because found shared strings: $ts_file"
-      rm $ts_file
+    # Use the addon name from the .ts file to build a path to the manifest
+    manifest_file="./addons/$(basename $ts_file .ts)/manifest.json"
+    if [[ -f $manifest_file ]]; then
+      uses_shared_strings=$(jq '.message.usesSharedStrings // false' < $manifest_file)
+      if [[ "$uses_shared_strings" == "true" ]]; then
+        print G "Deleting file because the addon uses shared strings: $ts_file"
+        rm $ts_file
+      fi
+    else
+      die "Manifest file not found: $manifest_file"
     fi
   done
 fi
