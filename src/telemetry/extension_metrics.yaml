@@ -50,6 +50,7 @@ extension:
               subscription_needed, signin_needed, split_tunneled
           type: string
       expires: 2025-06-30
+
     fx_protection_enabled:
       type: event
       lifetime: ping
@@ -68,7 +69,7 @@ extension:
         - vpn-telemetry@mozilla.com
       expires: 2025-06-30
 
-    fx_protetion_disabled:
+    fx_protection_disabled:
       type: event
       lifetime: ping
       send_in_pings:

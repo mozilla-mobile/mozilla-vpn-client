@@ -16,7 +16,7 @@ class MZGlean final : public QObject {
  private:
   explicit MZGlean(QObject* parent);
 
-  static void upadateUploadEnabled();
+  static void updateUploadEnabled();
 
   /**
    * @brief Broadcast to the mobile VPN daemon instances of Glean,

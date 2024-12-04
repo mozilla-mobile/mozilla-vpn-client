@@ -80,13 +80,13 @@ void MZGlean::initialize(const QString& channel) {
       connect(SettingsHolder::instance(), &SettingsHolder::gleanEnabledChanged,
               s_instance, []() {
                 updatePingFilter();
-                upadateUploadEnabled();
+                updateUploadEnabled();
               });
       connect(SettingsHolder::instance(),
               &SettingsHolder::extensionTelemetryEnabledChanged, s_instance,
               []() {
                 updatePingFilter();
-                upadateUploadEnabled();
+                updateUploadEnabled();
               });
     }
 
@@ -142,7 +142,7 @@ void MZGlean::initialize(const QString& channel) {
 }
 
 // static
-void MZGlean::upadateUploadEnabled() {
+void MZGlean::updateUploadEnabled() {
   auto const settings = SettingsHolder::instance();
   auto const clientTelemetryEnabled = settings->gleanEnabled();
   auto const extensionTelemetryEnabled = settings->extensionTelemetryEnabled();

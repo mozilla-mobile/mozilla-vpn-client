@@ -61,13 +61,11 @@ auto constexpr count(QuantityMetric* metric) {
 // We will also record this to glean.
 // Flags will always be sent with the next ping
 auto consteval flag(BooleanMetric* metric) {
-  return [metric](QVariant) {
-    metric->set(true);
-  };
+  return [metric](QVariant) { metric->set(true); };
 }
 using namespace mozilla::glean;
 const auto map = QMap<QString, std::function<void(QVariant)>>{
-    {"fx_protetion_disabled", event(&extension::fx_protetion_disabled)},
+    {"fx_protection_disabled", event(&extension::fx_protection_disabled)},
     {"fx_protection_enabled", event(&extension::fx_protection_enabled)},
     {"fx_protection_mode_changed",
      event(&extension::fx_protection_mode_changed)},
