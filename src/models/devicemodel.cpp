@@ -71,19 +71,20 @@ bool DeviceModel::fromSettings(const Keys* keys) {
 
 namespace {
 
-bool sortCallback(const Device& a, const Device& b, const Keys* keys) {
-  if (a.isCurrentDevice(keys)) {
-    return true;
-  }
-
-  if (b.isCurrentDevice(keys)) {
-    return false;
-  }
-
+bool sortCallback(const Device& a, const Device& b) {
   return a.createdAt() > b.createdAt();
 }
 
 }  // anonymous namespace
+
+// Check if the current device exists, and if so move it to to the front.
+void  DeviceModel::moveCurrentDevice(const Keys* keys) {
+  for (qsizetype index = 0; index < m_devices.length(); index++) {
+    if (m_devices.at(index).isCurrentDevice(keys)) {
+      m_devices.move(index, 0);
+    }
+  }
+}
 
 bool DeviceModel::fromJsonInternal(const Keys* keys, const QByteArray& json) {
   beginResetModel();
@@ -132,9 +133,8 @@ bool DeviceModel::fromJsonInternal(const Keys* keys, const QByteArray& json) {
     }
   }
 
-  std::sort(m_devices.begin(), m_devices.end(),
-            std::bind(sortCallback, std::placeholders::_1,
-                      std::placeholders::_2, keys));
+  std::sort(m_devices.begin(), m_devices.end(), sortCallback);
+  moveCurrentDevice(keys);
 
   endResetModel();
   emit changed();
@@ -207,9 +207,8 @@ void DeviceModel::stopDeviceRemovalFromPublicKey(const QString& publicKey,
 
       m_devices.append(*i);
 
-      std::sort(m_devices.begin(), m_devices.end(),
-                std::bind(sortCallback, std::placeholders::_1,
-                          std::placeholders::_2, keys));
+      std::sort(m_devices.begin(), m_devices.end(), sortCallback);
+      moveCurrentDevice(keys);
 
       m_removedDevices.erase(i);
 
