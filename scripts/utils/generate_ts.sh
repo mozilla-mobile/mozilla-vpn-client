@@ -86,6 +86,28 @@ cmake --build build-addons/
 mkdir -p addon_ts || die
 cp build-addons/*.ts addon_ts
 
+# When creating translation files for l10n repo, remove any addon-specific files that use
+# shared strings, as they are translated via `strings.yaml`, which is set up for translation in
+# `build.py` (which like the addon ts files, is created above when addon's cmake calls `build.py`)"
+if [ $KEEP_ALL_TS_FILES == 0 ]; then
+  print Y "Checking for .ts files using shared strings"
+  for ts_file in ./addon_ts/*
+  do
+    # Use the addon name from the .ts file to build a path to the manifest
+    manifest_file="./addons/$(basename $ts_file .ts)/manifest.json"
+    if [[ -f $manifest_file ]]; then
+      uses_shared_strings=$(jq '.message.usesSharedStrings // false' < $manifest_file)
+      if [[ "$uses_shared_strings" == "true" ]]; then
+        print G "Deleting file because the addon uses shared strings: $ts_file"
+        rm $ts_file
+      fi
+    else
+      die "Manifest file not found: $manifest_file"
+    fi
+  done
+fi
+
+# Now that we have the base files set, make sure to include strings from all release branches
 for branch in $(git branch -r | grep origin/releases); do
   echo "Checking out to branch $branch"
   git checkout $branch || die
