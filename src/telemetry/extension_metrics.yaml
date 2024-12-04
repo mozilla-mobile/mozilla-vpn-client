@@ -1,0 +1,237 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+---
+$schema: moz://mozilla.org/schemas/glean/metrics/2-0-0
+
+extension:
+    main_screen:
+      type: event
+      lifetime: ping
+      send_in_pings:
+        - extensionsession
+      description: |
+        The user has just moved on to the main screen
+        i.e. the screen with the VPN toggle button.
+      bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-6714
+      data_reviews:
+        - TBD
+      data_sensitivity:
+        - interaction
+      notification_emails:
+        - sstreich@mozilla.com
+        - vpn-telemetry@mozilla.com
+      expires: 2025-06-30
+
+    error_screen:
+      type: event
+      lifetime: ping
+      send_in_pings:
+        - extensionsession
+      description: |
+        The user has just moved on to the main screen
+        i.e. the screen with the VPN toggle button.
+      bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-6714
+      data_reviews:
+        - TBD
+      data_sensitivity:
+        - interaction
+      notification_emails:
+        - sstreich@mozilla.com
+        - vpn-telemetry@mozilla.com
+      extra_keys:
+        error:
+          description: |
+            The Type of Error: 
+              client_too_old, client_not_opened, unsupported_platform, install_needed
+              subscription_needed, signin_needed, split_tunneled
+          type: string
+      expires: 2025-06-30
+
+    fx_protection_enabled:
+      type: event
+      lifetime: ping
+      send_in_pings:
+        - extensionsession
+      description: |
+        The user has toggled the Fx Protection On
+      bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-6714
+      data_reviews:
+        - TBD
+      data_sensitivity:
+        - interaction
+      notification_emails:
+        - sstreich@mozilla.com
+        - vpn-telemetry@mozilla.com
+      expires: 2025-06-30
+
+    fx_protection_disabled:
+      type: event
+      lifetime: ping
+      send_in_pings:
+        - extensionsession
+      description: |
+        The user has toggled the Fx Protection Off
+      bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-6714
+      data_reviews:
+        - TBD
+      data_sensitivity:
+        - interaction
+      notification_emails:
+        - sstreich@mozilla.com
+        - vpn-telemetry@mozilla.com
+      expires: 2025-06-30
+
+    fx_protection_mode_changed:
+      type: event
+      lifetime: ping
+      send_in_pings:
+        - extensionsession
+      description: |
+        The Protection Mode Changed
+      bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-6714
+      data_reviews:
+        - TBD
+      data_sensitivity:
+        - interaction
+      notification_emails:
+        - sstreich@mozilla.com
+        - vpn-telemetry@mozilla.com
+      expires: 2025-06-30
+      extra_keys:
+        message_state:
+          description: |
+            Full,PartialOn,PartialOff,Off,
+          type: string
+
+    used_feature_disable_firefox_protection:
+      type: boolean
+      lifetime: user
+      description: >
+        True if the user has disabled the VPN for firefox
+      bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-6714
+      data_reviews:
+        - TBD
+      data_sensitivity:
+        - interaction
+      notification_emails:
+        - sstreich@mozilla.com
+        - vpn-telemetry@mozilla.com
+      send_in_pings:
+        - extensionsession
+      expires: never
+
+    used_feature_settings_page:
+      lifetime: user
+      type: boolean
+      description: >
+        True if the user has opened the internal settings page. 
+      bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-6714
+      data_reviews:
+        - TBD
+      data_sensitivity:
+        - interaction
+      notification_emails:
+        - sstreich@mozilla.com
+        - vpn-telemetry@mozilla.com
+      send_in_pings:
+        - extensionsession
+      expires: never
+
+    used_feature_page_action_revoke_exclude:
+      type: boolean
+      lifetime: user
+      description: >
+        True if the user has removed a Website Exclusion from the Page action
+      bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-6714
+      data_reviews:
+        - TBD
+      data_sensitivity:
+        - interaction
+      notification_emails:
+        - sstreich@mozilla.com
+        - vpn-telemetry@mozilla.com
+      send_in_pings:
+        - extensionsession
+      expires: never
+
+    used_feature_page_action_revoke_geopref:
+      type: boolean
+      lifetime: user
+      description: >
+        True if the user has removed a Website GeoPrefrence from the Page action
+      bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-6714
+      data_reviews:
+        - TBD
+      data_sensitivity:
+        - interaction
+      notification_emails:
+        - sstreich@mozilla.com
+        - vpn-telemetry@mozilla.com
+      send_in_pings:
+        - extensionsession
+      expires: never
+
+    has_completed_onboarding:
+      type: boolean
+      lifetime: user
+      description: >
+        True if the user has completed onboarding.
+      bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-6714
+      data_reviews:
+        - TBD
+      data_sensitivity:
+        - interaction
+      notification_emails:
+        - sstreich@mozilla.com
+        - vpn-telemetry@mozilla.com
+      send_in_pings:
+        - extensionsession
+      expires: never
+
+    count_excluded:
+      type: quantity
+      unit: websites
+      description: >
+        The amount of websites excluded from the VPN 
+      bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-6714
+      data_reviews:
+        - TBD
+      data_sensitivity:
+        - interaction
+      notification_emails:
+        - sstreich@mozilla.com
+        - vpn-telemetry@mozilla.com
+      send_in_pings:
+        - extensionsession
+      expires: 2025-06-30
+
+    count_geoprefed:
+      type: quantity
+      unit: websites
+      description: >
+        The amount of Websites with a GeoPrefrence.
+      bugs:
+        - https://mozilla-hub.atlassian.net/browse/VPN-6714
+      data_reviews:
+        - TBD
+      data_sensitivity:
+        - interaction
+      notification_emails:
+        - sstreich@mozilla.com
+        - vpn-telemetry@mozilla.com
+      send_in_pings:
+        - extensionsession
+      expires: 2025-06-30

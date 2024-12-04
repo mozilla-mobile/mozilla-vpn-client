@@ -12,7 +12,6 @@
 #include <QMetaEnum>
 #include <QTcpSocket>
 #include <QWindow>
-#include <functional>
 
 #include "connectionhealth.h"
 #include "controller.h"
@@ -28,14 +27,13 @@
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "taskscheduler.h"
-#include "webextensionadapter.h"
+#include "webextensiontelemetry.h"
 
 #if defined(MZ_WINDOWS)
 #  include "platforms/windows/windowsutils.h"
 #endif
 
 namespace {
-
 // See https://en.cppreference.com/w/cpp/utility/variant/visit
 template <class... Ts>
 struct match : Ts... {
@@ -136,6 +134,24 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
                     QJsonObject obj;
                     obj["status"] = serializeStatus();
                     return obj;
+                  }},
+      RequestType{"telemetry",
+                  [](const QJsonObject& data) {
+                    auto info = WebextensionTelemetry::fromJson(data);
+                    if (info.has_value()) {
+                      WebextensionTelemetry::recordTelemetry(info.value());
+                    }
+                    return QJsonObject{};
+                  }},
+      RequestType{"session_start",
+                  [](const QJsonObject& data) {
+                    WebextensionTelemetry::startSession();
+                    return QJsonObject{};
+                  }},
+      RequestType{"session_stop",
+                  [](const QJsonObject& data) {
+                    WebextensionTelemetry::stopSession();
+                    return QJsonObject{};
                   }},
   });
 }
