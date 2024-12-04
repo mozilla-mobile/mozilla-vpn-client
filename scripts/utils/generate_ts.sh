@@ -113,8 +113,27 @@ for branch in $(git branch -r | grep origin/releases); do
   cmake --build build-addons-$branch/
   ts_files="build-addons-$branch/*.ts"
 
+  print Y "Finalizing addon strings from $branch..."
   for f in $ts_files
   do
+    # When creating translation files for l10n repo, remove any addon-specific files that use
+    # shared strings, as they are translated via `strings.yaml`, which is set up for translation in
+    # `build.py` (which like the addon ts files, is created above when addon's cmake calls `build.py`)"
+    if [ $KEEP_ALL_TS_FILES == 0 ]; then
+      # Use the addon name from the .ts file to build a path to the manifest
+      manifest_file="./addons/$(basename $f .ts)/manifest.json"
+      if [[ -f $manifest_file ]]; then
+        uses_shared_strings=$(jq '.message.usesSharedStrings // false' < $manifest_file)
+        if [[ "$uses_shared_strings" == "true" ]]; then
+          print G "Deleting file because the addon uses shared strings: $f"
+          rm $f
+          continue
+        fi
+      else
+        die "Manifest file not found: $manifest_file"
+      fi
+    fi
+
     ts_name=$(basename "$f")
     if [ -f "addon_ts/${ts_name}" ]; then
       print Y "File ${ts_name} exists, updating with branch strings..."
@@ -127,27 +146,6 @@ for branch in $(git branch -r | grep origin/releases); do
     rm $f || die
   done
 done
-
-# When creating translation files for l10n repo, remove any addon-specific files that use
-# shared strings, as they are translated via `strings.yaml`, which is set up for translation in
-# `build.py` (which like the addon ts files, is created above when addon's cmake calls `build.py`)"
-if [ $KEEP_ALL_TS_FILES == 0 ]; then
-  print Y "Checking for .ts files using shared strings"
-  for ts_file in ./addon_ts/*
-  do
-    # Use the addon name from the .ts file to build a path to the manifest
-    manifest_file="./addons/$(basename $ts_file .ts)/manifest.json"
-    if [[ -f $manifest_file ]]; then
-      uses_shared_strings=$(jq '.message.usesSharedStrings // false' < $manifest_file)
-      if [[ "$uses_shared_strings" == "true" ]]; then
-        print G "Deleting file because the addon uses shared strings: $ts_file"
-        rm $ts_file
-      fi
-    else
-      die "Manifest file not found: $manifest_file"
-    fi
-  done
-fi
 
 if [ "$BRANCHNAME" ]; then
   printn Y "Go back to the initial branch... "
