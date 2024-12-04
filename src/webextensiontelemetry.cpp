@@ -60,7 +60,7 @@ auto constexpr count(QuantityMetric* metric) {
 // For flags, we will flip the flag-bit in the settings to true.
 // We will also record this to glean.
 // Flags will always be sent with the next ping
-auto consteval flag(BooleanMetric* metric) {
+auto constexpr flag(BooleanMetric* metric) {
   return [metric](QVariant) { metric->set(true); };
 }
 using namespace mozilla::glean;
