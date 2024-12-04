@@ -165,15 +165,11 @@ int CommandUI::run(QStringList& tokens) {
       qputenv("MVPN_CONTROL_SOCKET", daemon->socketPath().toLocal8Bit());
     }
 #ifdef MZ_IOS
-    else {
-      QString simDeviceName = QString(qgetenv("SIMULATOR_DEVICE_NAME"));
-      if (!simDeviceName.isEmpty()) {
-        // The network extension doesn't actually start when running in the
-        // simulator - use a mocked daemon instead.
-        logger.debug() << "Mocking daemon for:" << simDeviceName;
-        MockDaemon* daemon = new MockDaemon(qApp);
-        qputenv("MVPN_CONTROL_SOCKET", daemon->socketPath().toLocal8Bit());
-      }
+    else if (!qEnvironmentVariable("SIMULATOR_DEVICE_NAME").isEmpty()) {
+      // If we are running in the iOS device simulator, the network extension
+      // is not supported in this environment - use a mocked daemon instead.
+      MockDaemon* daemon = new MockDaemon(qApp);
+      qputenv("MVPN_CONTROL_SOCKET", daemon->socketPath().toLocal8Bit());
     }
 #endif
 
