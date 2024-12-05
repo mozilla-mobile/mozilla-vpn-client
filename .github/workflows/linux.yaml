@@ -60,7 +60,7 @@ jobs:
       - name: Install Build Dependencies
         run: |
           dnf -y update
-          dnf -y install rpmdevtools 'dnf-command(builddep)'
+          dnf -y install gdb rpmdevtools 'dnf-command(builddep)'
           dnf -y builddep mozillavpn.spec
 
       - name: Building package
