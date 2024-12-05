@@ -377,7 +377,7 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   // we need to make sure this is the right decision.
   wgnt_conf.peer.Endpoint.si_family = AF_INET;
   wgnt_conf.peer.Endpoint.Ipv4.sin_family = AF_INET;
-  wgnt_conf.peer.Endpoint.Ipv4.sin_port = config.m_serverPort;
+  wgnt_conf.peer.Endpoint.Ipv4.sin_port = htons(config.m_serverPort);
 
   if (!inet_pton(AF_INET, qPrintable(config.m_serverIpv4AddrIn),
                  &wgnt_conf.peer.Endpoint.Ipv4.sin_addr)) {
@@ -410,7 +410,9 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   // Exclude the server address, except for multihop exit servers.
   if (m_routeMonitor && (config.m_hopType != InterfaceConfig::MultiHopExit)) {
     m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-    m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+    if (!config.m_serverIpv6AddrIn.isEmpty()) {
+      m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+    }
   }
   return true;
 }
