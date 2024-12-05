@@ -34,6 +34,7 @@ class XdgPortal : public QObject {
   const QString& replyPath() const { return m_replyPath; }
   void setReplyPath(const QString& path);
   static uint getVersion(const QString& interface);
+  static void setupAppScope(const QString& appid);
 
  signals:
   void xdgResponse(uint, QVariantMap);

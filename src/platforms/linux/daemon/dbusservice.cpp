@@ -19,7 +19,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "platforms/linux/linuxdependencies.h"
+#include "platforms/linux/linuxutils.h"
 
 namespace {
 Logger logger("DBusService");
@@ -139,7 +139,7 @@ bool DBusService::activate(const QString& jsonConfig) {
   if (obj.contains("vpnDisabledApps")) {
     QJsonArray disabledApps = obj["vpnDisabledApps"].toArray();
     for (const QJsonValue& app : disabledApps) {
-      setAppState(LinuxDependencies::desktopFileId(app.toString()), Excluded);
+      setAppState(LinuxUtils::desktopFileId(app.toString()), Excluded);
     }
   }
 
@@ -382,14 +382,3 @@ bool DBusService::isCallerAuthorized() {
   }
   return (flag == CAP_SET);
 }
-
-// Workaround for QTBUG-108822 by manually registering QDBusObjectPath with the
-// D-Bus meta-type system, otherwise we are unable to connect to some signals.
-#if QT_VERSION < 0x060403
-class QtbugRegistrationProxy {
- public:
-  QtbugRegistrationProxy() { qDBusRegisterMetaType<QDBusObjectPath>(); }
-};
-
-static QtbugRegistrationProxy s_qtbugRegistrationProxy;
-#endif

@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef DBUSTYPESLINUX_H
-#define DBUSTYPESLINUX_H
+#ifndef DBUSTYPES_H
+#define DBUSTYPES_H
 
 #include <sys/socket.h>
 
@@ -145,9 +145,61 @@ typedef QList<UserData> UserDataList;
 Q_DECLARE_METATYPE(UserData);
 Q_DECLARE_METATYPE(UserDataList);
 
-class DnsMetatypeRegistrationProxy {
+class SystemdUnitProp {
  public:
-  DnsMetatypeRegistrationProxy() {
+  SystemdUnitProp(){};
+  SystemdUnitProp(const QString& n, const QVariant& v) : name(n), value(v){};
+  QString name;
+  QVariant value;
+
+  friend QDBusArgument& operator<<(QDBusArgument& args,
+                                   const SystemdUnitProp& data) {
+    args.beginStructure();
+    args << data.name << QDBusVariant(data.value);
+    args.endStructure();
+    return args;
+  }
+  friend const QDBusArgument& operator>>(const QDBusArgument& args,
+                                         SystemdUnitProp& data) {
+    QDBusVariant dv;
+    args.beginStructure();
+    args >> data.name >> dv;
+    args.endStructure();
+    data.value = dv.variant();
+    return args;
+  }
+};
+typedef QList<SystemdUnitProp> SystemdUnitPropList;
+Q_DECLARE_METATYPE(SystemdUnitProp);
+Q_DECLARE_METATYPE(SystemdUnitPropList);
+
+class SystemdUnitAux {
+ public:
+  QString name;
+  SystemdUnitPropList prop;
+
+  friend QDBusArgument& operator<<(QDBusArgument& args,
+                                   const SystemdUnitAux& data) {
+    args.beginStructure();
+    args << data.name << data.prop;
+    args.endStructure();
+    return args;
+  }
+  friend const QDBusArgument& operator>>(const QDBusArgument& args,
+                                         SystemdUnitAux& data) {
+    args.beginStructure();
+    args >> data.name >> data.prop;
+    args.endStructure();
+    return args;
+  }
+};
+typedef QList<SystemdUnitAux> SystemdUnitAuxList;
+Q_DECLARE_METATYPE(SystemdUnitAux);
+Q_DECLARE_METATYPE(SystemdUnitAuxList);
+
+class DBusMetatypeRegistrationProxy {
+ public:
+  DBusMetatypeRegistrationProxy() {
     qRegisterMetaType<DnsResolver>();
     qDBusRegisterMetaType<DnsResolver>();
     qRegisterMetaType<DnsResolverList>();
@@ -164,6 +216,14 @@ class DnsMetatypeRegistrationProxy {
     qDBusRegisterMetaType<UserData>();
     qRegisterMetaType<UserDataList>();
     qDBusRegisterMetaType<UserDataList>();
+    qRegisterMetaType<SystemdUnitProp>();
+    qDBusRegisterMetaType<SystemdUnitProp>();
+    qRegisterMetaType<SystemdUnitPropList>();
+    qDBusRegisterMetaType<SystemdUnitPropList>();
+    qRegisterMetaType<SystemdUnitAux>();
+    qDBusRegisterMetaType<SystemdUnitAux>();
+    qRegisterMetaType<SystemdUnitAuxList>();
+    qDBusRegisterMetaType<SystemdUnitAuxList>();
   }
 };
 

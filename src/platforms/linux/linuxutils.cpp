@@ -2,28 +2,29 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "linuxdependencies.h"
+#include "linuxutils.h"
 
 #include <mntent.h>
 
+#include <QDBusInterface>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageBox>
 #include <QProcess>
+#include <QProcessEnvironment>
+#include <QThread>
 #include <QtDBus/QtDBus>
 
-#ifndef MZ_FLATPAK
-#  include "dbusclient.h"
-#endif
+#include "dbustypes.h"
 #include "logger.h"
 
 namespace {
-Logger logger("LinuxDependencies");
+Logger logger("LinuxUtils");
 }  // namespace
 
 // static
-QString LinuxDependencies::findCgroupPath(const QString& type) {
+QString LinuxUtils::findCgroupPath(const QString& type) {
   struct mntent entry;
   char buf[PATH_MAX];
 
@@ -47,7 +48,7 @@ QString LinuxDependencies::findCgroupPath(const QString& type) {
 }
 
 // static
-QString LinuxDependencies::findCgroup2Path() {
+QString LinuxUtils::findCgroup2Path() {
   struct mntent entry;
   char buf[PATH_MAX];
 
@@ -68,7 +69,7 @@ QString LinuxDependencies::findCgroup2Path() {
 }
 
 // static
-QString LinuxDependencies::gnomeShellVersion() {
+QString LinuxUtils::gnomeShellVersion() {
   QDBusInterface iface("org.gnome.Shell", "/org/gnome/Shell",
                        "org.gnome.Shell");
   if (!iface.isValid()) {
@@ -83,7 +84,7 @@ QString LinuxDependencies::gnomeShellVersion() {
 }
 
 // static
-QString LinuxDependencies::kdeFrameworkVersion() {
+QString LinuxUtils::kdeFrameworkVersion() {
   QProcess proc;
   proc.start("kf5-config", QStringList{"--version"}, QIODeviceBase::ReadOnly);
   if (!proc.waitForFinished()) {
@@ -101,7 +102,7 @@ QString LinuxDependencies::kdeFrameworkVersion() {
 }
 
 // static
-QString LinuxDependencies::desktopFileId(const QString& path) {
+QString LinuxUtils::desktopFileId(const QString& path) {
   // Given the path to a .desktop file, return its Desktop File ID as per
   // the freedesktop.org's Desktop Entry Spec. See:
   // https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html#desktop-file-id
@@ -129,3 +130,17 @@ QString LinuxDependencies::desktopFileId(const QString& path) {
   // Convert it.
   return path.mid(index).replace('/', '-');
 }
+
+// Workaround for QTBUG-108822 by manually registering QDBusObjectPath with the
+// D-Bus meta-type system, otherwise we are unable to connect to some signals.
+#if QT_VERSION < 0x060403
+class QtbugRegistrationProxy {
+ public:
+  QtbugRegistrationProxy() { qDBusRegisterMetaType<QDBusObjectPath>(); }
+};
+
+static QtbugRegistrationProxy s_qtbugRegistrationProxy;
+#endif
+
+// Ensure that the D-Bus custom types are registered.
+static DBusMetatypeRegistrationProxy s_dbusMetatypeProxy;
