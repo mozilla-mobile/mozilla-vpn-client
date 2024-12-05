@@ -17,7 +17,7 @@ extension:
       bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-6714
       data_reviews:
-        - TBD
+        - https://bugzilla.mozilla.org/show_bug.cgi?id=1933768
       data_sensitivity:
         - interaction
       notification_emails:
@@ -36,7 +36,7 @@ extension:
       bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-6714
       data_reviews:
-        - TBD
+        - https://bugzilla.mozilla.org/show_bug.cgi?id=1933768
       data_sensitivity:
         - interaction
       notification_emails:
@@ -61,7 +61,7 @@ extension:
       bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-6714
       data_reviews:
-        - TBD
+        - https://bugzilla.mozilla.org/show_bug.cgi?id=1933768
       data_sensitivity:
         - interaction
       notification_emails:
@@ -79,7 +79,7 @@ extension:
       bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-6714
       data_reviews:
-        - TBD
+        - https://bugzilla.mozilla.org/show_bug.cgi?id=1933768
       data_sensitivity:
         - interaction
       notification_emails:
@@ -97,7 +97,7 @@ extension:
       bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-6714
       data_reviews:
-        - TBD
+        - https://bugzilla.mozilla.org/show_bug.cgi?id=1933768
       data_sensitivity:
         - interaction
       notification_emails:
@@ -118,7 +118,7 @@ extension:
       bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-6714
       data_reviews:
-        - TBD
+        - https://bugzilla.mozilla.org/show_bug.cgi?id=1933768
       data_sensitivity:
         - interaction
       notification_emails:
@@ -136,7 +136,7 @@ extension:
       bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-6714
       data_reviews:
-        - TBD
+        - https://bugzilla.mozilla.org/show_bug.cgi?id=1933768
       data_sensitivity:
         - interaction
       notification_emails:
@@ -154,7 +154,7 @@ extension:
       bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-6714
       data_reviews:
-        - TBD
+        - https://bugzilla.mozilla.org/show_bug.cgi?id=1933768
       data_sensitivity:
         - interaction
       notification_emails:
@@ -172,7 +172,7 @@ extension:
       bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-6714
       data_reviews:
-        - TBD
+        - https://bugzilla.mozilla.org/show_bug.cgi?id=1933768
       data_sensitivity:
         - interaction
       notification_emails:
@@ -190,7 +190,7 @@ extension:
       bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-6714
       data_reviews:
-        - TBD
+        - https://bugzilla.mozilla.org/show_bug.cgi?id=1933768
       data_sensitivity:
         - interaction
       notification_emails:
@@ -208,7 +208,7 @@ extension:
       bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-6714
       data_reviews:
-        - TBD
+        - https://bugzilla.mozilla.org/show_bug.cgi?id=1933768
       data_sensitivity:
         - interaction
       notification_emails:
@@ -226,7 +226,7 @@ extension:
       bugs:
         - https://mozilla-hub.atlassian.net/browse/VPN-6714
       data_reviews:
-        - TBD
+        - https://bugzilla.mozilla.org/show_bug.cgi?id=1933768
       data_sensitivity:
         - interaction
       notification_emails:
