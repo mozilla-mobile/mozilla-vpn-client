@@ -44,15 +44,6 @@ extern "C" {
 constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
 constexpr uint32_t WG_ROUTE_TABLE = 0xca6c;
 
-/* Traffic classifiers can be used to mark packets which should be either
- * excluded from the VPN tunnel, or blocked entirely. The values of these
- * classifiers aren't important so long as they are unique.
- */
-constexpr const char* VPN_EXCLUDE_CGROUP = "/mozvpn.exclude";
-constexpr const char* VPN_BLOCK_CGROUP = "/mozvpn.block";
-constexpr uint32_t VPN_EXCLUDE_CLASS_ID = 0x00110011;
-constexpr uint32_t VPN_BLOCK_CLASS_ID = 0x00220022;
-
 static void nlmsg_append_attr(struct nlmsghdr* nlmsg, size_t maxlen,
                               int attrtype, const void* attrdata,
                               size_t attrlen);
@@ -93,30 +84,6 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
   m_notifier = new QSocketNotifier(m_nlsock, QSocketNotifier::Read, this);
   connect(m_notifier, &QSocketNotifier::activated, this,
           &WireguardUtilsLinux::nlsockReady);
-
-  // Most kernels cannot simultaneously support traffic classification with
-  // both the net_cls (v1) and unified (v2) cgroups simultaneously. If both
-  // are present, the net_cls traffic classifiers take priority.
-  //
-  // In this situation, you will likely see this kernel log warning:
-  //   cgroup: disabling cgroup2 socket matching due to net_prio or net_cls
-  //   activation
-  m_cgroupNetClass = LinuxDependencies::findCgroupPath("net_cls");
-  m_cgroupUnified = LinuxDependencies::findCgroup2Path();
-  if (!m_cgroupNetClass.isNull()) {
-    if (setupCgroupClass(m_cgroupNetClass + VPN_EXCLUDE_CGROUP,
-                         VPN_EXCLUDE_CLASS_ID)) {
-      logger.info() << "Setup split tunneling with net_cls cgroups (v1)";
-      m_cgroupVersion = 1;
-    }
-  }
-  // Otherwise, try to use unified cgroups (v2)
-  else if ((m_cgroupVersion == 0) && !m_cgroupUnified.isNull()) {
-    logger.info() << "Setup split tunneling with unified cgroups (v2)";
-    m_cgroupVersion = 2;
-  } else {
-    logger.warning() << "Unable to setup split tunneling: no supported cgroups";
-  }
 
   logger.debug() << "WireguardUtilsLinux created.";
 }
@@ -179,9 +146,6 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
   // Configure firewall rules
   if (!m_firewall.up(WG_INTERFACE, WG_FIREWALL_MARK,
                      config.m_deviceIpv6Address)) {
-    return false;
-  }
-  if (m_cgroupVersion == 1 && !m_firewall.markCgroupV1(VPN_EXCLUDE_CLASS_ID)) {
     return false;
   }
 
@@ -701,90 +665,6 @@ void WireguardUtilsLinux::nlsockHandleDellink(struct nlmsghdr* nlmsg) {
   m_ifflags = 0;
   logger.debug() << "RTM_DELLINK flags:"
                  << "0x" + QString::number(msg->ifi_flags, 16);
-}
-
-// static
-bool WireguardUtilsLinux::setupCgroupClass(const QString& path,
-                                           unsigned long classid) {
-  logger.debug() << "Creating control group:" << path;
-  int flags = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
-  int err = mkdir(qPrintable(path), flags);
-  if ((err < 0) && (errno != EEXIST)) {
-    logger.error() << "Failed to create" << path + ":" << strerror(errno);
-    return false;
-  }
-
-  QString netClassPath = path + "/net_cls.classid";
-  FILE* fp = fopen(qPrintable(netClassPath), "w");
-  if (!fp) {
-    logger.error() << "Failed to set classid:" << strerror(errno);
-    return false;
-  }
-  fprintf(fp, "%lu", classid);
-  fclose(fp);
-  return true;
-}
-
-// static
-bool WireguardUtilsLinux::moveCgroupProcs(const QString& src,
-                                          const QString& dest) {
-  QFile srcProcs(src + "/cgroup.procs");
-  FILE* fp = fopen(qPrintable(dest + "/cgroup.procs"), "w");
-  if (!fp) {
-    return false;
-  }
-  auto guard = qScopeGuard([&] { fclose(fp); });
-
-  if (!srcProcs.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    return false;
-  }
-  while (true) {
-    QString line = QString::fromLocal8Bit(srcProcs.readLine());
-    if (line.isEmpty()) {
-      break;
-    }
-    fputs(qPrintable(line), fp);
-    fflush(fp);
-  }
-  srcProcs.close();
-  return true;
-}
-
-void WireguardUtilsLinux::excludeCgroup(const QString& cgroup) {
-  logger.info() << "Excluding traffic from" << cgroup;
-  if (m_cgroupVersion == 1) {
-    // Add all PIDs from the unified cgroup to the net_cls exclusion cgroup.
-    moveCgroupProcs(m_cgroupUnified + cgroup,
-                    m_cgroupNetClass + VPN_EXCLUDE_CGROUP);
-  } else if (m_cgroupVersion == 2) {
-    m_firewall.markCgroupV2(cgroup);
-  } else {
-    Q_ASSERT(m_cgroupVersion == 0);
-  }
-}
-
-void WireguardUtilsLinux::resetCgroup(const QString& cgroup) {
-  logger.info() << "Permitting traffic from" << cgroup;
-  if (m_cgroupVersion == 1) {
-    // Add all PIDs from the unified cgroup to the net_cls default cgroup.
-    moveCgroupProcs(m_cgroupUnified + cgroup, m_cgroupNetClass);
-  } else if (m_cgroupVersion == 2) {
-    m_firewall.clearCgroupV2(cgroup);
-  } else {
-    Q_ASSERT(m_cgroupVersion == 0);
-  }
-}
-
-void WireguardUtilsLinux::resetAllCgroups() {
-  logger.info() << "Permitting traffic from all cgroups";
-  if (m_cgroupVersion == 1) {
-    // Add all PIDs from the net_cls exclusion cgroup to the default cgroup.
-    moveCgroupProcs(m_cgroupNetClass + VPN_EXCLUDE_CGROUP, m_cgroupNetClass);
-  } else if (m_cgroupVersion == 2) {
-    m_firewall.clearAllCgroupsV2();
-  } else {
-    Q_ASSERT(m_cgroupVersion == 0);
-  }
 }
 
 // static
