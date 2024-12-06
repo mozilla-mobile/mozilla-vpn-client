@@ -4,7 +4,9 @@
 
 #include "collator.h"
 
-#include "localizer.h"
+#if defined(MZ_WASM)
+#  include "localizer.h"
+#endif
 
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"

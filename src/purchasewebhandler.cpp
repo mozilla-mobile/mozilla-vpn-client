@@ -5,7 +5,6 @@
 #include "purchasewebhandler.h"
 
 #include "authenticationlistener.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

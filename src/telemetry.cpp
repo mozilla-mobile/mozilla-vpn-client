@@ -5,8 +5,6 @@
 #include "telemetry.h"
 
 #include "apppermission.h"
-#include "connectionhealth.h"
-#include "constants.h"
 #include "controller.h"
 #include "dnshelper.h"
 #include "feature/feature.h"
@@ -15,8 +13,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "networkwatcher.h"
-#include "purchasehandler.h"
 #include "settingsholder.h"
 
 #if defined(MZ_ANDROID)
