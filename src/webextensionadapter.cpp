@@ -4,6 +4,8 @@
 
 #include "webextensionadapter.h"
 
+#include <qjsonobject.h>
+
 #include <QFileInfo>
 #include <QHostAddress>
 #include <QJsonArray>
@@ -153,6 +155,13 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
                     WebextensionTelemetry::stopSession();
                     return QJsonObject{};
                   }},
+      RequestType{"settings",
+                  [this](const QJsonObject& data) {
+                    if (data["settings"].isObject()) {
+                      applySettings(data["settings"].toObject());
+                    }
+                    return QJsonObject{{"settings", serializeSettings()}};
+                  }},
   });
 }
 
@@ -272,4 +281,18 @@ void WebExtensionAdapter::serializeServerCountry(ServerCountryModel* model,
   }
 
   obj["countries"] = countries;
+}
+
+QJsonObject WebExtensionAdapter::serializeSettings() {
+  auto const settings = SettingsHolder::instance();
+  return {{"extensionTelemetryEnabled", settings->extensionTelemetryEnabled()}};
+}
+
+void WebExtensionAdapter::applySettings(const QJsonObject& data) {
+  auto const settings = SettingsHolder::instance();
+
+  auto enabled = data["extensionTelemetryEnabled"];
+  if (enabled.isBool()) {
+    settings->setExtensionTelemetryEnabled(enabled.toBool());
+  }
 }
