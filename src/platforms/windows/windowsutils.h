@@ -7,6 +7,9 @@
 
 #include <QString>
 
+class QWindow;
+class QImage;
+
 class WindowsUtils final {
  public:
   static QString getErrorMessage();
@@ -20,6 +23,17 @@ class WindowsUtils final {
 
   // Force an application crash for testing
   static void forceCrash();
+
+  static void setTitleBarIcon(QWindow* window, const QImage& icon);
+  static void setDockIcon(QWindow* window, const QImage& icon);
+  static void forceWindowRedraw(QWindow* w);
+  /**
+   *
+   * @brief Set the Color for the titlebar, the color of the current theme
+   * will be used. This only has impact on windows.
+   *
+   */
+  static void updateTitleBarColor(QWindow* window, bool darkMode);
 };
 
 #endif  // WINDOWSUTILS_H
