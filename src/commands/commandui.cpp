@@ -322,13 +322,13 @@ int CommandUI::run(QStringList& tokens) {
     }
 #ifdef MZ_WINDOWS
     auto const updateWindowDecoration = [&engineHolder]() {
-      Theme::instance()->setStatusBarTextColor(
-          Theme::instance()->isThemeDark() ? Theme::StatusBarTextColorDark
-                                           : Theme::StatusBarTextColorLight);
-      WindowsUtils::setDockIcon(engineHolder.window(),
-                                QImage(":/ui/resources/logo-dock.png"));
-      WindowsUtils::setTitleBarIcon(engineHolder.window(),
+      auto const window = engineHolder.window();
+      WindowsUtils::updateTitleBarColor(window,
+                                        Theme::instance()->isThemeDark());
+      WindowsUtils::setDockIcon(window, QImage(":/ui/resources/logo-dock.png"));
+      WindowsUtils::setTitleBarIcon(window,
                                     Theme::instance()->getTitleBarIcon());
+      WindowsUtils::forceWindowRedraw(window)
     };
     QObject::connect(Theme::instance(), &Theme::changed,
                      updateWindowDecoration);
