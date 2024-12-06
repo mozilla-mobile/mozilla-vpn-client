@@ -9,7 +9,7 @@
 #include <QObject>
 #include <QVariant>
 
-// Used in the ettingslist.h
+// Used in the settingslist.h
 #include "constants.h"        // IWYU pragma: keep
 #include "feature/feature.h"  // IWYU pragma: keep
 #include "settings/setting.h"
