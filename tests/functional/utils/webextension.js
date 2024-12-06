@@ -4,13 +4,15 @@ const {Buffer} = require('node:buffer');
 
 const SERVER_PORT = 8754;
 
+class ExtensionMessage{
+  t= ""
+}
 
-function ExtensionMessage(aT) {
-  if (!aT) {
-    this.t = 'help'
-    return;
+function makeMessage(aT, extra) {
+  return {
+    ...extra, 
+    t: aT
   }
-  this.t = aT
 };
 
 /**
