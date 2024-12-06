@@ -7,6 +7,9 @@
 
 #include <QString>
 
+class QWindow;
+class QImage;
+
 class WindowsUtils final {
  public:
   static QString getErrorMessage();
@@ -20,6 +23,9 @@ class WindowsUtils final {
 
   // Force an application crash for testing
   static void forceCrash();
+
+  static void setTitleBarIcon(QWindow* window, const QImage& icon);
+  static void setDockIcon(QWindow* window, const QImage& icon);
 };
 
 #endif  // WINDOWSUTILS_H

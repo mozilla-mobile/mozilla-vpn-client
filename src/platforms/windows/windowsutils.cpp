@@ -8,8 +8,10 @@
 #include <errhandlingapi.h>
 #include <winsvc.h>
 
+#include <QImage>
 #include <QSettings>
 #include <QSysInfo>
+#include <QWindow>
 
 #include "logger.h"
 
@@ -78,4 +80,19 @@ bool WindowsUtils::getServiceStatus(const QString& name) {
     return false;
   }
   return (status.dwCurrentState == SERVICE_RUNNING);
+}
+
+void WindowsUtils::setTitleBarIcon(QWindow* window, const QImage& icon) {
+  auto const windowHandle = (HWND)window->winId();
+  HICON hIcon = icon.toHICON();
+  SendMessage(windowHandle, WM_SETICON, ICON_SMALL, (LPARAM)hIcon);
+  ShowWindow(windowHandle, SW_MINIMIZE);
+  ShowWindow(windowHandle, SW_RESTORE);
+}
+void WindowsUtils::setDockIcon(QWindow* window, const QImage& icon) {
+  auto const windowHandle = (HWND)window->winId();
+  HICON hIcon = icon.toHICON();
+  SendMessage(windowHandle, WM_SETICON, ICON_BIG, (LPARAM)hIcon);
+  ShowWindow(windowHandle, SW_MINIMIZE);
+  ShowWindow(windowHandle, SW_RESTORE);
 }

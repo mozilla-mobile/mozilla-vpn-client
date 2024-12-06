@@ -28,6 +28,40 @@ namespace {
 Logger logger("Theme");
 }
 
+#ifdef MZ_WINDOWS
+// constexpr to Help do color things in compile time.
+namespace ColorUtils {
+constexpr uint8_t hexToByte(char c) {
+  if (c >= '0' && c <= '9') return c - '0';
+  if (c >= 'A' && c <= 'F') return c - 'A' + 10;
+  if (c >= 'a' && c <= 'f') return c - 'a' + 10;
+  throw std::invalid_argument("Invalid hex character");
+}
+
+constexpr uint8_t parseHexByte(const char* hex) {
+  return (hexToByte(hex[0]) << 4) | hexToByte(hex[1]);
+}
+/**
+ * @brief converts a hex RGBA to AGBR represented as DWORD
+ * Binary format is 0x00BBGGRR
+ */
+consteval uint32_t toCOLORREF(const char* color) {
+  // Ensure it's a valid format
+  if (color[0] != '#' || color[7] != '\0') {
+    throw std::invalid_argument("Invalid color format. Expected '#RRGGBB'.");
+  }
+
+  // Extract and convert R, G, B
+  uint8_t r = parseHexByte(&color[1]);
+  uint8_t g = parseHexByte(&color[3]);
+  uint8_t b = parseHexByte(&color[5]);
+
+  // Construct and return the COLORREF value in 0x00BBGGRR format
+  return (b << 16) | (g << 8) | r;
+}
+}  // namespace ColorUtils
+#endif
+
 Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
   MZ_COUNT_CTOR(Theme);
 
@@ -193,8 +227,36 @@ Qt::ColorScheme Theme::currentSystemTheme() {
   return currentColorScheme;
 }
 #endif
+#ifdef MZ_WINDOWS
+#  include <dwmapi.h>
+
+#  include <QWindow>
+#  pragma comment(lib, "dwmapi.lib")
+#endif
 
 void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
+#ifdef MZ_WINDOWS
+  if (!QmlEngineHolder::instance()->hasWindow()) {
+    return;
+  }
+  // ITS -> ABGR <- format
+
+  QmlEngineHolder::instance()->window();
+  auto const windowHandle =
+      (HWND)QmlEngineHolder::instance()->window()->winId();
+  using namespace ColorUtils;
+  const COLORREF hexColor = color == StatusBarTextColorLight
+                                ? toCOLORREF("#F9F9FA")
+                                : toCOLORREF("#0C0C0D");
+
+  // COLORREF DARK_COLOR = 0x00505050;
+  BOOL SET_CAPTION_COLOR = SUCCEEDED(DwmSetWindowAttribute(
+      windowHandle, DWMWINDOWATTRIBUTE::DWMWA_CAPTION_COLOR, &hexColor,
+      sizeof(hexColor)));
+  Q_ASSERT(SET_CAPTION_COLOR);
+  ShowWindow(windowHandle, SW_MINIMIZE);
+  ShowWindow(windowHandle, SW_RESTORE);
+#endif
 #ifdef MZ_IOS
   IOSCommons::setStatusBarTextColor(color);
 #endif
@@ -208,4 +270,41 @@ bool Theme::usesDarkModeAssets() const {
   // This value should always be available
   Q_ASSERT(false);
   return true;
+}
+
+#include <QPainter>
+#include <QSvgRenderer>
+
+QImage Theme::getTitleBarIcon() {
+  bool isDarkmode = isThemeDark();
+  QString svgPath = ":/ui/resources/logo.svg";
+
+  QImage image(32, 32, QImage::Format_ARGB32);
+  image.fill(Qt::transparent);  // Ensure transparency
+
+  // Load the SVG
+  QSvgRenderer svgRenderer(svgPath);
+  if (!svgRenderer.isValid()) {
+    qWarning() << "Failed to load SVG: " << svgPath;
+    return QImage();
+  }
+
+  // Paint the SVG onto the QImage
+  QPainter painter(&image);
+  svgRenderer.render(&painter, QRectF(0, 0, 32, 32));
+  painter.end();
+
+  // Invert the pixels if in dark mode
+  if (isDarkmode) {
+    for (int y = 0; y < image.height(); ++y) {
+      QRgb* scanLine = reinterpret_cast<QRgb*>(image.scanLine(y));
+      for (int x = 0; x < image.width(); ++x) {
+        QRgb pixel = scanLine[x];
+        // Invert RGB but keep the alpha channel
+        scanLine[x] = qRgba(255 - qRed(pixel), 255 - qGreen(pixel),
+                            255 - qBlue(pixel), qAlpha(pixel));
+      }
+    }
+  }
+  return image;
 }

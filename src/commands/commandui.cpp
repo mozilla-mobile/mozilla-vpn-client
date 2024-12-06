@@ -9,6 +9,7 @@
 
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QWindow>
 
 #include "accessiblenotification.h"
 #include "addons/manager/addonmanager.h"
@@ -64,6 +65,8 @@
 
 #  include "eventlistener.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
+#  include "platforms/windows/windowsutils.h"
+#  include "theme.h"
 #endif
 
 #ifdef MZ_WASM
@@ -317,6 +320,20 @@ int CommandUI::run(QStringList& tokens) {
       logger.error() << "Failed to load " << url.toString();
       return -1;
     }
+#ifdef MZ_WINDOWS
+    auto const updateWindowDecoration = [&engineHolder]() {
+      Theme::instance()->setStatusBarTextColor(
+          Theme::instance()->isThemeDark() ? Theme::StatusBarTextColorDark
+                                           : Theme::StatusBarTextColorLight);
+      WindowsUtils::setDockIcon(engineHolder.window(),
+                                QImage(":/ui/resources/logo-dock.png"));
+      WindowsUtils::setTitleBarIcon(engineHolder.window(),
+                                    Theme::instance()->getTitleBarIcon());
+    };
+    QObject::connect(Theme::instance(), &Theme::changed,
+                     updateWindowDecoration);
+    updateWindowDecoration();
+#endif
 
     NotificationHandler* notificationHandler =
         NotificationHandler::create(&engineHolder);
