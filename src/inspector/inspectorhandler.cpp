@@ -38,8 +38,6 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "models/subscriptiondata.h"
-#include "mozillavpn.h"
 #include "mzglean.h"
 #include "networkmanager.h"
 #include "qmlengineholder.h"

@@ -12,7 +12,6 @@
 
 #include "app.h"
 #include "authenticationlistener.h"
-#include "errorhandler.h"
 #include "frontend/navigator.h"
 
 struct MozillaVPNPrivate;

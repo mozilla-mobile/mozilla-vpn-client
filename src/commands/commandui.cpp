@@ -13,44 +13,26 @@
 #include "accessiblenotification.h"
 #include "addons/manager/addonmanager.h"
 #include "apppermission.h"
-#include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
-#include "connectionhealth.h"
 #include "constants.h"
 #include "controller.h"
 #include "daemon/mock/mockdaemon.h"
-#include "feature/feature.h"
 #include "fontloader.h"
-#include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "glean/mzglean.h"
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
-#include "ipaddresslookup.h"
 #include "keyregenerator.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "models/devicemodel.h"
-#include "models/recentconnections.h"
-#include "models/recommendedlocationmodel.h"
 #include "models/servercountrymodel.h"
-#include "models/subscriptiondata.h"
-#include "models/supportcategorymodel.h"
-#include "models/user.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
 #include "notificationhandler.h"
-#include "productshandler.h"
-#include "profileflow.h"
-#include "purchasehandler.h"
 #include "qmlengineholder.h"
-#include "releasemonitor.h"
-#include "serverlatency.h"
 #include "settingsholder.h"
 #include "telemetry.h"
 #include "temporarydir.h"
-#include "update/updater.h"
 
 #ifdef MZ_DEBUG
 #  include <QQmlDebuggingEnabler>
@@ -80,10 +62,7 @@
 #ifdef MZ_WINDOWS
 #  include <windows.h>
 
-#  include <iostream>
-
 #  include "eventlistener.h"
-#  include "platforms/windows/windowsappimageprovider.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #endif
 
