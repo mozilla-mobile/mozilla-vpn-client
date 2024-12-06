@@ -328,7 +328,7 @@ int CommandUI::run(QStringList& tokens) {
       WindowsUtils::setDockIcon(window, QImage(":/ui/resources/logo-dock.png"));
       WindowsUtils::setTitleBarIcon(window,
                                     Theme::instance()->getTitleBarIcon());
-      WindowsUtils::forceWindowRedraw(window)
+      WindowsUtils::forceWindowRedraw(window);
     };
     QObject::connect(Theme::instance(), &Theme::changed,
                      updateWindowDecoration);
