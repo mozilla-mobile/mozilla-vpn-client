@@ -477,8 +477,10 @@ void Controller::activateInternal(
     entryConfig.m_hopType = InterfaceConfig::MultiHopEntry;
     entryConfig.m_allowedIPAddressRanges.append(
         IPAddress(exitServer.ipv4AddrIn()));
-    entryConfig.m_allowedIPAddressRanges.append(
-        IPAddress(exitServer.ipv6AddrIn()));
+    if (!exitServer.ipv6AddrIn().isEmpty()) {
+      entryConfig.m_allowedIPAddressRanges.append(
+          IPAddress(exitServer.ipv6AddrIn()));
+    }
 
     // If requested, force the use of port 53/DNS.
     if (dnsPort == ForceDNSPort) {
@@ -574,8 +576,10 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   // Allow access to the internal gateway addresses.
   logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
   list.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
-  logger.debug() << "Allow the IPv6 gateway:" << exitServer.ipv6Gateway();
-  list.append(IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128));
+  if (!exitServer.ipv6Gateway().isEmpty()) {
+    logger.debug() << "Allow the IPv6 gateway:" << exitServer.ipv6Gateway();
+    list.append(IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128));
+  }
 
   // Ensure that the Mullvad proxy services are always allowed.
   list.append(
@@ -587,19 +591,20 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
 // static
 QList<IPAddress> Controller::getExtensionProxyAddressRanges(
     const Server& exitServer) {
-  auto const dns = DNSHelper::getDNSDetails(exitServer.ipv4Gateway());
-  if (dns.dnsType == "Default" || dns.dnsType == "Custom") {
-    return {IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32),
-            IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128),
-            IPAddress(QHostAddress{MULLVAD_PROXY_RANGE},
-                      MULLVAD_PROXY_RANGE_LENGTH)};
-  }
-  return {
-      IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32),
-      IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128),
-      IPAddress(QHostAddress{MULLVAD_PROXY_RANGE}, MULLVAD_PROXY_RANGE_LENGTH),
-      IPAddress(QHostAddress(dns.ipAddress), 32),
+  QList<IPAddress> ranges = {
+    IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32),
+    IPAddress(QHostAddress{MULLVAD_PROXY_RANGE}, MULLVAD_PROXY_RANGE_LENGTH)
   };
+  if (!exitServer.ipv6Gateway().isEmpty()) {
+    ranges.append(IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128));
+  }
+
+  auto const dns = DNSHelper::getDNSDetails(exitServer.ipv4Gateway());
+  if (dns.dnsType != "Default" && dns.dnsType != "Custom") {
+    ranges.append(IPAddress(QHostAddress(dns.ipAddress), 32));
+  }
+
+  return ranges;
 }
 
 void Controller::activateNext() {
