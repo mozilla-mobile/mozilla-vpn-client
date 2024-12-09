@@ -592,9 +592,8 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
 QList<IPAddress> Controller::getExtensionProxyAddressRanges(
     const Server& exitServer) {
   QList<IPAddress> ranges = {
-    IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32),
-    IPAddress(QHostAddress{MULLVAD_PROXY_RANGE}, MULLVAD_PROXY_RANGE_LENGTH)
-  };
+      IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32),
+      IPAddress(QHostAddress{MULLVAD_PROXY_RANGE}, MULLVAD_PROXY_RANGE_LENGTH)};
   if (!exitServer.ipv6Gateway().isEmpty()) {
     ranges.append(IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128));
   }
