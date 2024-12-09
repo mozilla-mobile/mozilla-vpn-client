@@ -14,7 +14,7 @@
     "appium-adb": "^12.7.0",
     "body-parser": "^1.20.2",
     "chokidar": "^4.0.1",
-    "command-line-args": "^5.2.1",
+    "command-line-args": "^6.0.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.5",
     "express": "^4.21.2",
