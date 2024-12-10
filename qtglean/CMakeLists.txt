@@ -75,7 +75,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     if(IOS)
         set(RUST_ARCH "")
         if("arm64" IN_LIST CMAKE_OSX_ARCHITECTURES)
-            list(APPEND RUST_ARCH aarch64-apple-ios)
+            list(APPEND RUST_ARCH aarch64-apple-ios aarch64-apple-ios-sim)
         endif()
 
         if("x86_64" IN_LIST CMAKE_OSX_ARCHITECTURES)
@@ -84,7 +84,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
         # If no architecure is defined, just do all of them.
         if (RUST_ARCH STREQUAL "")
-            set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
+            set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios x86_64-apple-ios-sim aarch64-apple-ios-sim)
         endif()
 
         # On iOS we will build a dynamic lib,
