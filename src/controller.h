@@ -10,18 +10,15 @@
 #include <QObject>
 #include <QTimer>
 
-#include "controller.h"
 #include "interfaceconfig.h"
 #include "ipaddress.h"
 #include "loghandler.h"
 #include "models/server.h"
 #include "models/serverdata.h"
-#include "mozillavpn.h"
 #include "pinghelper.h"
 
 class Controller;
 class ControllerImpl;
-class MozillaVPN;
 
 class Controller : public QObject, public LogSerializer {
   Q_OBJECT

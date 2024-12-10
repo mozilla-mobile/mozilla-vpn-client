@@ -13,7 +13,6 @@
 #include "logger.h"
 #include "mozillavpn.h"
 #include "networkwatcherimpl.h"
-#include "platforms/dummy/dummynetworkwatcher.h"
 #include "settingsholder.h"
 
 #ifdef MZ_WINDOWS
@@ -37,6 +36,10 @@
 
 #ifdef MZ_IOS
 #  include "platforms/ios/iosnetworkwatcher.h"
+#endif
+
+#ifdef UNIT_TEST
+#  include "platforms/dummy/dummynetworkwatcher.h"
 #endif
 
 // How often we notify the same unsecured network
@@ -67,7 +70,7 @@ void NetworkWatcher::initialize() {
   m_impl = new AndroidNetworkWatcher(this);
 #elif defined(MZ_IOS)
   m_impl = new IOSNetworkWatcher(this);
-#else
+#elif defined(UNIT_TEST)
   m_impl = new DummyNetworkWatcher(this);
 #endif
 

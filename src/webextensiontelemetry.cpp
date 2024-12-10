@@ -15,7 +15,6 @@
 #include "glean/generated/pings.h"
 #include "glean/quantity.h"
 #include "logger.h"
-#include "settingsholder.h"
 
 namespace {
 Logger logger("WebExtensionTelemetry");

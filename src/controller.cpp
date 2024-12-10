@@ -8,8 +8,6 @@
 #include <QNetworkInformation>
 
 #include "app.h"
-#include "apppermission.h"
-#include "captiveportal/captiveportal.h"
 #include "constants.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
@@ -34,7 +32,6 @@
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/function/taskfunction.h"
-#include "tasks/heartbeat/taskheartbeat.h"
 #include "taskscheduler.h"
 
 #if defined(MZ_FLATPAK)

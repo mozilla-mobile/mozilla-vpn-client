@@ -11,7 +11,6 @@
 
 #include "constants.h"
 #include "controller.h"
-#include "frontend/navigator.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
