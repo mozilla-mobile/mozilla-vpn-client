@@ -11,23 +11,9 @@ updates:
 #      interval: "monthly"
 #    labels:
 #      - "dependencies"
-  # Windows Wireguard-Go
-  - package-ecosystem: "gomod"
-    directory: "/windows/tunnel"
-    schedule:
-      interval: "weekly"
-    labels:
-      - "dependencies"
   # Android Wireguard-Go
   - package-ecosystem: "gomod"
     directory: "/android/daemon/tunnel/libwg-go"
-    schedule:
-      interval: "weekly"
-    labels:
-      - "dependencies"
-  # Balrog Updater
-  - package-ecosystem: "gomod"
-    directory: "/balrog"
     schedule:
       interval: "weekly"
     labels:
@@ -68,17 +54,8 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
-  # Inspector
-  #- package-ecosystem: "npm"
-  #  directory: "/tools/inspector"
-  #  schedule:
-  #    interval: "weekly"
-  #  labels:
-  #    - "dependencies"
-  # Language Localizer
-  #- package-ecosystem: "npm"
-  #  directory: "/tools/languagelocalizer"
-  #  schedule:
-  #    interval: "monthly"
-  #  labels:
-  #    - "dependencies"
+    groups:
+      # NPM Dependencies are so unlikely to break things, let's group them into a weekly PR.
+      npm: 
+        patterns:
+          - "*"
