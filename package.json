@@ -16,7 +16,7 @@
     "chokidar": "^4.0.1",
     "command-line-args": "^6.0.1",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.5",
+    "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "jsonschema": "^1.4.1",
     "mocha": "^10.4.0",
