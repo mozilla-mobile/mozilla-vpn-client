@@ -119,6 +119,12 @@ QString Controller::useLocalSocketPath() const {
   }
 #elif defined(MZ_WINDOWS)
   return Constants::WINDOWS_DAEMON_PATH;
+#elif defined(MZ_IOS)
+  // The IOS simulator also uses a mocked daemon.
+  bool isSimDevice = !qEnvironmentVariable("SIMULATOR_DEVICE_NAME").isEmpty();
+  if (isSimDevice && !path.isEmpty()) {
+    return path;
+  }
 #endif
 
   // Otherwise, we will need some other controller.
