@@ -74,6 +74,7 @@ class DeviceModel final : public QAbstractListModel, public LogSerializer {
  private:
   [[nodiscard]] bool fromJsonInternal(const Keys* keys, const QByteArray& json);
 
+  void moveCurrentDevice(const Keys* keys);
   bool removeRows(int row, int count,
                   const QModelIndex& parent = QModelIndex()) override;
 
