@@ -39,7 +39,9 @@ RUN apt-get -y install build-essential \
 
 ## Install Qt6/X11 build dependencies
 ## From: https://doc.qt.io/qt-6/linux-requirements.html
-RUN apt-get -y install libfontconfig1-dev \
+RUN apt-get -y install libatspi2.0-dev \
+                       libdbus-1-dev \
+                       libfontconfig1-dev \
                        libfreetype6-dev \
                        libssl-dev \
                        libx11-dev \
