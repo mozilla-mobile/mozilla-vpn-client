@@ -69,9 +69,7 @@ bool Server::fromJson(const QJsonObject& obj) {
   // If this object comes from the IOS migration, the ipv6_addr_in is missing.
 
   QJsonValue ipv6Gateway = obj.value("ipv6_gateway");
-  if (!ipv6Gateway.isString()) {
-    return false;
-  }
+  // If the server doesn't support IPv6, then ipv6_gateway will be missing.
 
   QJsonValue publicKey = obj.value("public_key");
   if (!publicKey.isString()) {
