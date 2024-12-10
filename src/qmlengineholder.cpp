@@ -17,7 +17,6 @@
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
-#include "glean/mzglean.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "loghandler.h"

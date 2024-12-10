@@ -16,7 +16,6 @@
 
 #include "constants.h"
 #include "glean/generated/metrics.h"
-#include "glean/mzglean.h"
 #include "i18nlanguagenames.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"

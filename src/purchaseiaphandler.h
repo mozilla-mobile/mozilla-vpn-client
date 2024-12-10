@@ -7,6 +7,7 @@
 
 #include <QObject>
 
+#include "productshandler.h"
 #include "purchasehandler.h"
 
 class PurchaseIAPHandler : public PurchaseHandler {

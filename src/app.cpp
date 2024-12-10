@@ -8,7 +8,9 @@
 
 #include "leakdetector.h"
 #include "logger.h"
-#include "settings/settingsmanager.h"
+#if QT_VERSION < QT_VERSION_CHECK(6, 2, 4)
+#  include "settings/settingsmanager.h"
+#endif
 #include "settingsholder.h"
 #include "taskscheduler.h"
 

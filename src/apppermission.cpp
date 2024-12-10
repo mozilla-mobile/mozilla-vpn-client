@@ -12,7 +12,6 @@
 #include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "platforms/dummy/dummyapplistprovider.h"
 #include "settingsholder.h"
 
