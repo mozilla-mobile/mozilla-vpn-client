@@ -100,6 +100,9 @@
 
 #include <QApplication>
 
+#if defined(MZ_LINUX) && (QT_FEATURE_static > 0)
+Q_IMPORT_PLUGIN(QOffscreenIntegrationPlugin);
+#endif
 Q_IMPORT_QML_PLUGIN(Mozilla_VPNPlugin);
 
 namespace {
