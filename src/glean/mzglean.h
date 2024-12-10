@@ -16,7 +16,7 @@ class MZGlean final : public QObject {
  private:
   explicit MZGlean(QObject* parent);
 
-  static void setUploadEnabled(bool isTelemetryEnabled);
+  static void updateUploadEnabled();
 
   /**
    * @brief Broadcast to the mobile VPN daemon instances of Glean,
@@ -24,7 +24,9 @@ class MZGlean final : public QObject {
    *
    * @param isTelemetryEnabled The new upload enabled state.
    */
-  static void broadcastUploadEnabledChange(bool isTelemetryEnabled);
+  static void broadcastClientUploadEnabledChange(bool isTelemetryEnabled);
+
+  static void updatePingFilter();
 
  public:
   ~MZGlean();

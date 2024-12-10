@@ -11,6 +11,7 @@ const {
   connectExtension,
   getMessageStream,
   ExtensionMessage,
+  makeMessage,
   readResponseOfType
 } = require('./utils/webextension.js');
 
@@ -29,7 +30,7 @@ describe('WebExtension API', function() {
     const sock = await connectExtension();
     const messagePipe = getMessageStream(sock);
     const statusPromise = readResponseOfType('status', messagePipe);
-    sentToClient(new ExtensionMessage('status'), sock);
+    sentToClient(makeMessage('status'), sock);
     const msg = await statusPromise
     assert(msg.status.version, `A Version is sent in msg: ${JSON.stringify(msg)}` )
     assert(msg.status.connectionHealth, `The current Connection Health status is sent in msg: ${JSON.stringify(msg)}` )
@@ -38,10 +39,10 @@ describe('WebExtension API', function() {
   it('A Webextension can activate the VPN', async () => {
     const sock = await connectExtension();
     const messagePipe = getMessageStream(sock);
-    sentToClient(new ExtensionMessage('activate'), sock);
+    sentToClient(makeMessage('activate'), sock);
 
     await vpn.waitForCondition(async () => {
-      sentToClient(new ExtensionMessage('status'), sock);
+      sentToClient(makeMessage('status'), sock);
       const msg = await readResponseOfType('status', messagePipe);
       return msg.status.vpn === 'StateOnPartial';
     });
@@ -53,16 +54,16 @@ describe('WebExtension API', function() {
   it('A Webextension can deactivate the VPN if it Self Activated', async () => {
     const sock = await connectExtension();
     const messagePipe = getMessageStream(sock);
-    sentToClient(new ExtensionMessage('activate'), sock);
+    sentToClient(makeMessage('activate'), sock);
     await readResponseOfType('activate', messagePipe);
     await vpn.waitForCondition(async () => {
-      sentToClient(new ExtensionMessage('status'), sock);
+      sentToClient(makeMessage('status'), sock);
       const msg = await readResponseOfType('status', messagePipe);
       return msg.status.vpn === 'StateOnPartial';
     });
-    sentToClient(new ExtensionMessage('deactivate'), sock);
+    sentToClient(makeMessage('deactivate'), sock);
     await vpn.waitForCondition(async () => {
-      sentToClient(new ExtensionMessage('status'), sock);
+      sentToClient(makeMessage('status'), sock);
       const msg = await readResponseOfType('status', messagePipe);
       return msg.status.vpn === 'StateOff';
     });
@@ -81,15 +82,15 @@ describe('WebExtension API', function() {
        const messagePipe = getMessageStream(sock);
 
        await vpn.waitForCondition(async () => {
-         sentToClient(new ExtensionMessage('status'), sock);
+         sentToClient(makeMessage('status'), sock);
          const msg = await readResponseOfType('status', messagePipe);
          return msg.status.vpn === 'StateOn';
        }, 500, 'VPN should report StateOn');
-       sentToClient(new ExtensionMessage('deactivate'), sock);
+       sentToClient(makeMessage('deactivate'), sock);
        await vpn.wait(200);
 
        await vpn.waitForCondition(async () => {
-         sentToClient(new ExtensionMessage('status'), sock);
+         sentToClient(makeMessage('status'), sock);
          const msg = await readResponseOfType('status', messagePipe);
          return msg.status.vpn === 'StateOn';
        }, 500, 'VPN should still report StateOn');
@@ -101,7 +102,7 @@ describe('WebExtension API', function() {
     const messagePipe = getMessageStream(sock);
 
     const response = readResponseOfType('featurelist', messagePipe);
-    sentToClient(new ExtensionMessage('featurelist'), sock);
+    sentToClient(makeMessage('featurelist'), sock);
     const msg = await response;
     assert(msg.featurelist.webExtension === true);
     assert(msg.featurelist.hasOwnProperty('localProxy'));
@@ -115,6 +116,27 @@ describe('WebExtension API', function() {
     await vpn.forceConnectionStabilityStatus("unstable");
     const msg = await statusPromise
     assert(msg.status.connectionHealth == "Unstable", "The extension was notified of the instability: "+ msg.status.connectionHealth)
+    sock.destroy();
+  });
+
+  it('A Webextension can read settings', async () => {
+    const sock = await connectExtension();
+    const messagePipe = getMessageStream(sock);
+    const settingsPromise = readResponseOfType('settings', messagePipe);
+    sentToClient(makeMessage('settings'), sock);
+    const msg = await settingsPromise
+    assert(Object.keys(msg.settings).length != 0, "The Extension was sent setting values");
+    sock.destroy();
+  });
+  it('A Webextension can write settings', async () => {
+    const sock = await connectExtension();
+    const messagePipe = getMessageStream(sock);
+    const settingsPromise = readResponseOfType('settings', messagePipe);
+    sentToClient(makeMessage('settings', {
+      settings: {"extensionTelemetryEnabled":true}
+    }), sock);
+    const msg = await settingsPromise
+    assert(msg.settings.extensionTelemetryEnabled, "The Extension was able to set the TelemetrySetting");
     sock.destroy();
   });
 });

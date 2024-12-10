@@ -31,6 +31,17 @@ MZViewBase {
                 VPN.gleanSetLogPings(!MZSettings.gleanLogPings)
             }
         }
+        MZCheckBoxRow {
+            Layout.fillWidth: true
+            Layout.rightMargin: MZTheme.theme.windowMargin
+            labelText: "Glean Enable Extension Telemetry"
+            subLabelText: "Enables / Disables Glean Telemetry for the extension"
+            isChecked: MZSettings.extensionTelemetryEnabled
+            showDivider: false
+            onClicked: {
+                MZSettings.extensionTelemetryEnabled = !MZSettings.extensionTelemetryEnabled
+            }
+        }
 
         MZCheckBoxRow {
             id: checkBoxRowGleanDebugTag
@@ -106,6 +117,10 @@ MZViewBase {
             id: submitSessionPing
             text: "Submit the 'vpnsession' ping"
             onClicked: GleanPings.Vpnsession.submit()
+        }
+        MZButton {
+            text: "Submit the 'extensionsession' ping"
+            onClicked: GleanPings.Extensionsession.submit()
         }
     }
 }

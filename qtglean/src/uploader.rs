@@ -5,22 +5,41 @@
 use glean::net::{PingUploader, UploadResult, PingUploadRequest};
 use reqwest::blocking::Client;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
+use std::sync::Mutex;
+use std::sync::Arc;
 
 #[derive(Debug)]
 pub struct VPNPingUploader {
     client: Client,
+    forbidden_ping_list: Arc<Mutex<Vec<String>>>,
 }
 
 impl VPNPingUploader {
-    pub fn new() -> VPNPingUploader {
+    pub fn new(forbidden_pings :Arc<Mutex<Vec<String>>> ) -> VPNPingUploader {
         VPNPingUploader {
             client: Client::new(),
+            forbidden_ping_list: forbidden_pings
         }
+    }
+
+    fn allowed_to_send(&self, req: &PingUploadRequest)->bool{
+        let data = self.forbidden_ping_list.lock().unwrap();
+        // Emtpy list -> allow everything 
+        if data.is_empty(){
+            return true; 
+        }
+        // Otherwise the ping_name MUST NOT be in the list.
+        return data.iter().all(|e| e != &req.ping_name);
     }
 }
 
 impl PingUploader for VPNPingUploader {
     fn upload(&self, upload_request: PingUploadRequest) -> UploadResult {
+        if !self.allowed_to_send(&upload_request){
+            // If we're not allowed to send, "fake" a 200 response, 
+            // so the data is dropped and not retried later. 
+            return UploadResult::http_status(200); 
+        }
         let mut parsed_headers = HeaderMap::new();
         for (name, value) in upload_request.headers {
             if let (Ok(parsed_name), Ok(parsed_value)) = (

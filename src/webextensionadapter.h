@@ -29,6 +29,10 @@ class WebExtensionAdapter : public WebExtension::BaseAdapter {
   QJsonObject serializeStatus();
   QJsonObject serializeFeaturelist();
   void serializeServerCountry(ServerCountryModel* model, QJsonObject& obj);
+
+  QJsonObject serializeSettings();
+  void applySettings(const QJsonObject& data);
+
   QPropertyObserver mProxyStateChanged;
 };
 
