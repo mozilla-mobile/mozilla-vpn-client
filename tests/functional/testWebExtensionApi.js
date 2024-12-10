@@ -11,6 +11,7 @@ const {
   connectExtension,
   getMessageStream,
   ExtensionMessage,
+  makeMessage,
   readResponseOfType
 } = require('./utils/webextension.js');
 

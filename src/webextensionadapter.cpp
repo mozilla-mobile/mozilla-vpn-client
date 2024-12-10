@@ -41,23 +41,23 @@
 #  include "interventions/killernetwork.h"
 #endif
 
-    namespace {
-  // See https://en.cppreference.com/w/cpp/utility/variant/visit
-  template <class... Ts>
-  struct match : Ts... {
-    using Ts::operator()...;
-  };
-  template <class... Ts>
-  match(Ts...) -> match<Ts...>;
+namespace {
+// See https://en.cppreference.com/w/cpp/utility/variant/visit
+template <class... Ts>
+struct match : Ts... {
+  using Ts::operator()...;
+};
+template <class... Ts>
+match(Ts...) -> match<Ts...>;
 
-  template <typename T>
-  const char* asString(T qEnumValue) {
-    const QMetaObject* meta = qt_getEnumMetaObject(qEnumValue);
-    int index = meta->indexOfEnumerator(qt_getEnumName(qEnumValue));
-    return meta->enumerator(index).valueToKey(qEnumValue);
-  };
+template <typename T>
+const char* asString(T qEnumValue) {
+  const QMetaObject* meta = qt_getEnumMetaObject(qEnumValue);
+  int index = meta->indexOfEnumerator(qt_getEnumName(qEnumValue));
+  return meta->enumerator(index).valueToKey(qEnumValue);
+};
 
-  Logger logger("WebExtensionAdapter");
+Logger logger("WebExtensionAdapter");
 }  // namespace
 
 WebExtensionAdapter::WebExtensionAdapter(QObject* parent)

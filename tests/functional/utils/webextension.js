@@ -100,5 +100,6 @@ module.exports = {
   sentToClient,
   connectExtension,
   ExtensionMessage,
-  readResponseOfType
+  readResponseOfType,
+  makeMessage,
 }
