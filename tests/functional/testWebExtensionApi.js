@@ -132,7 +132,9 @@ describe('WebExtension API', function() {
     const sock = await connectExtension();
     const messagePipe = getMessageStream(sock);
     const settingsPromise = readResponseOfType('settings', messagePipe);
-    sentToClient(makeMessage('settings', {"extensionTelemetryEnabled":true}), sock);
+    sentToClient(makeMessage('settings', {
+      settings: {"extensionTelemetryEnabled":true}
+    }), sock);
     const msg = await settingsPromise
     assert(msg.settings.extensionTelemetryEnabled, "The Extension was able to set the TelemetrySetting");
     sock.destroy();
