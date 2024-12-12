@@ -56,4 +56,5 @@ Once Xcode has opened the project, select the `mozillavpn` target and start the 
 
 Tips:
 * If you can't see a simulator target in the Xcode interface, look at Product -> Destination -> Destination Architectures -> Show Both
-* Due to lack of low level networking support, it is not possible to turn on the VPN from the iOS simulator in Xcode.
+* Simulator builds can only be run on Rosetta versions of simulators. Simulator builds use the mocked VPN controller.
+* When switching between building for Simulator and building for a device, the build folder must be completely removed.
