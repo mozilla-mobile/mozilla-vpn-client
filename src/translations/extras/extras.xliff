@@ -119,6 +119,9 @@
       <trans-unit id="languages.sv_SE" xml:space="preserve">
         <source>Swedish</source>
       </trans-unit>
+      <trans-unit id="languages.th" xml:space="preserve">
+        <source>Thai</source>
+      </trans-unit>
       <trans-unit id="languages.tr" xml:space="preserve">
         <source>Turkish</source>
       </trans-unit>
