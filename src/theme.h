@@ -46,7 +46,9 @@ class Theme final : public QAbstractListModel {
 
   QVariant data(const QModelIndex& index, int role) const override;
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   Qt::ColorScheme currentSystemTheme();
+#endif
 
   enum StatusBarTextColor {
     StatusBarTextColorLight,

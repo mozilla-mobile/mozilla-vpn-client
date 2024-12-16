@@ -5,9 +5,11 @@
 #include "theme.h"
 
 #include <QDir>
-#include <QGuiApplication>
 #include <QJSEngine>
-#include <QStyleHints>
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#  include <QGuiApplication>
+#  include <QStyleHints>
+#endif
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -183,12 +185,14 @@ QVariant Theme::data(const QModelIndex& index, int role) const {
   }
 }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
 Qt::ColorScheme Theme::currentSystemTheme() {
   QStyleHints* styleHints = QGuiApplication::styleHints();
   Qt::ColorScheme currentColorScheme = styleHints->colorScheme();
   logger.debug() << "Current system theme: " << currentColorScheme;
   return currentColorScheme;
 }
+#endif
 
 void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
 #ifdef MZ_IOS
