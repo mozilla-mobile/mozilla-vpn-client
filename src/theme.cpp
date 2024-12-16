@@ -5,7 +5,9 @@
 #include "theme.h"
 
 #include <QDir>
+#include <QGuiApplication>
 #include <QJSEngine>
+#include <QStyleHints>
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -179,6 +181,13 @@ QVariant Theme::data(const QModelIndex& index, int role) const {
     default:
       return QVariant();
   }
+}
+
+Qt::ColorScheme Theme::currentSystemTheme() {
+  QStyleHints* styleHints = QGuiApplication::styleHints();
+  Qt::ColorScheme currentColorScheme = styleHints->colorScheme();
+  logger.debug() << "Current system theme: " << currentColorScheme;
+  return currentColorScheme;
 }
 
 void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
