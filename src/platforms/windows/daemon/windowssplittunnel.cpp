@@ -471,19 +471,22 @@ bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
   QNetworkInterface target =
       QNetworkInterface::interfaceFromIndex(adapterIndex);
   logger.debug() << "Getting adapter info for:" << target.humanReadableName();
-
   auto get = [&target](QAbstractSocket::NetworkLayerProtocol protocol) {
     for (auto address : target.addressEntries()) {
       if (address.ip().protocol() != protocol) {
         continue;
       }
+      if(address.ip().isLinkLocal()){
+        logger.debug() << "Dropping Link local" << target.humanReadableName() << "-> " << address.ip().toString();
+        continue;
+      }
+      logger.debug() << "Selecting" << target.humanReadableName() << "-> " << address.ip().toString();
       return address.ip().toString().toStdWString();
     }
     return std::wstring{};
   };
   auto ipv4 = get(QAbstractSocket::IPv4Protocol);
   auto ipv6 = get(QAbstractSocket::IPv6Protocol);
-
   if (InetPtonW(AF_INET, ipv4.c_str(), out_ipv4) != 1) {
     logger.debug() << "Ipv4 Conversation error" << WSAGetLastError();
     return false;
@@ -493,7 +496,8 @@ bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
     return true;
   }
   if (InetPtonW(AF_INET6, ipv6.c_str(), out_ipv6) != 1) {
-    logger.debug() << "Ipv6 Conversation error" << WSAGetLastError();
+
+    logger.debug() << "Ipv6 Conversation error" << QString::fromStdWString(ipv6);
     return false;
   }
   return true;
