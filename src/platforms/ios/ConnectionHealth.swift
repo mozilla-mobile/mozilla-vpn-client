@@ -72,10 +72,10 @@ class ConnectionHealth {
         }
 
         logger.info(message: "Creating PingAnalyzer")
-        let _ = PingAnalyzer(pingAddress: pingAddress) { (connectivity) in
+        let _ = PingAnalyzer(pingAddress: pingAddress) { (connectivity, error) in
             guard let connectivity = connectivity else {
                 self.logger.error(message: "PingAnalyzer returned error")
-                GleanMetrics.ConnectionHealth.pingAnalyzerError.record()
+                GleanMetrics.ConnectionHealth.pingAnalyzerError.record(PingAnalyzerErrorExtra(errorMessage: error.localizedDescription))
                 return
             }
 
