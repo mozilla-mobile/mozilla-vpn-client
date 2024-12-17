@@ -5,7 +5,7 @@ import xml.etree.ElementTree as ET
 def write_en_language(filename, strings, key_as_id):
     ts = ET.Element("TS")
     ts.set("version", "2.1")
-    ts.set("language", "en")
+    ts.set("language", "en-US")
 
     context = ET.SubElement(ts, "context")
     ET.SubElement(context, "name")
