@@ -1050,10 +1050,15 @@ connection_health:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-6406
     data_reviews:
-      - TBA
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9593#issuecomment-2159109154
     data_sensitivity:
       - technical
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2024-12-31
+    expires: 2025-06-30
+    extra_keys:
+      error_message:
+        description: |
+          Error type
+        type: string
