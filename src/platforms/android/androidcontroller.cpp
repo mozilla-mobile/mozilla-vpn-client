@@ -100,8 +100,7 @@ AndroidController::AndroidController() {
       Qt::QueuedConnection);
   connect(
       activity, &AndroidVPNActivity::eventOnboardingCompleted, this,
-      [this]() { emit disconnected(); },
-      Qt::QueuedConnection);
+      [this]() { emit disconnected(); }, Qt::QueuedConnection);
   connect(
       activity, &AndroidVPNActivity::eventVpnConfigPermissionResponse, this,
       [](bool granted) {

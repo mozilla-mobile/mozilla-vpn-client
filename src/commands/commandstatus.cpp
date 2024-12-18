@@ -158,6 +158,10 @@ int CommandStatus::run(QStringList& tokens) {
       case Controller::StateSwitching:
         stream << "switching";
         break;
+
+      case Controller::State::StateOnboarding:
+        stream << "onboarding";
+        break;
     }
 
     stream << Qt::endl;
