@@ -10,6 +10,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QMetaType>
+#include <QMetaEnum>
 
 #include "daemon/daemonerrors.h"
 #include "errorhandler.h"
