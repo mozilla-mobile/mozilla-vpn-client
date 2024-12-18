@@ -38,6 +38,7 @@ class Controller : public QObject, public LogSerializer {
     StateDisconnecting,
     StateSilentSwitching,
     StateSwitching,
+    StateOnboarding,
   };
   Q_ENUM(State)
 
@@ -45,7 +46,10 @@ class Controller : public QObject, public LogSerializer {
     ReasonNone = 0,
     ReasonSwitching,
     ReasonConfirming,
+    ReasonOnboarding,
   };
+  Q_ENUM(Reason)
+
   /**
    * @brief Who asked the Connection
    * to be Initiated? A Webextension
