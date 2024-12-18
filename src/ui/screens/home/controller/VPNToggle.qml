@@ -237,6 +237,26 @@ MZButtonBase {
                 toggleColor: MZTheme.colors.vpnToggleConnected
             }
 
+        },
+        State {
+            name: VPNController.StateOnboarding
+
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 4
+            }
+
+            PropertyChanges {
+                target: toggle
+                color: MZTheme.colors.vpnToggleDisconnected.defaultColor
+                border.color: MZTheme.colors.bgColorStronger
+            }
+
+            PropertyChanges {
+                target: toggleButton
+                toggleColor: MZTheme.colors.vpnToggleDisconnected
+            }
+
         }
     ]
     transitions: [

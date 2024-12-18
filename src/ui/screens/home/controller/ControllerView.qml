@@ -63,7 +63,8 @@ Item {
     states: [
         State {
             name: "stateInitializing"
-            when: VPNController.state === VPNController.StateInitializing
+            when: VPNController.state === VPNController.StateInitializing ||
+                  VPNController.state === VPNController.StateOnboarding
 
             PropertyChanges {
                 target: boxBackground
