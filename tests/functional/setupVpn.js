@@ -197,18 +197,25 @@ exports.mochaHooks = {
     // then this can fail and cause the tests to hang.
     // Logging the error lets us clean-up and move on.
     try {
+      console.log('DEBUG A:', this.currentTest.title);
       await vpn.hardReset();
+      console.log('DEBUG B:', this.currentTest.title);
       await vpn.quit();
+      console.log('DEBUG C:', this.currentTest.title);
     } catch (error) {
       console.error(error);
     }
+    console.log('DEBUG E:', this.currentTest.title);
     vpn.disconnect();
+    console.log('DEBUG F:', this.currentTest.title);
 
     vpnProcess.stdin.pause();
     vpnProcess.kill();
 
+    console.log('DEBUG G:', this.currentTest.title);
     if (vpnProcessTerminatePromise) {
       await vpnProcessTerminatePromise;
     }
+    console.log('DEBUG Done:', this.currentTest.title);
   },
 }

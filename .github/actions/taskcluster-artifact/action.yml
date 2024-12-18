@@ -1,0 +1,34 @@
+name: Download taskcluster artifact
+descrion: Download artifacts from a Taskcluster task
+inputs:
+  taskid:
+    description: 'Taskcluster task identifier to fetch artifacts from'
+    required: true
+    type: string
+  artifact:
+    description: "Artifact to download from the task"
+    required: true
+    type: string
+  path:
+    description: Location to save the artifact
+    default: ${{ github.workspace }}
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Wait for taskcluster job
+      id: taskgraph
+      shell: bash
+      run: |
+        pip install requests
+        ${{ github.action_path }}/await-taskcluster-status.py -t 3600 ${{ inputs.taskid }} | tee ${{ runner.temp }}/taskcluster-job-status.json
+        echo run-id=$(jq '.runs[] | select(.state == "completed").runId' ${{ runner.temp }}/taskcluster-job-status.json) >> $GITHUB_OUTPUT
+
+    - name: Download build artifact
+      shell: bash
+      env:
+        TASKGRAPH_TASK_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ inputs.taskid }}
+      run: |
+        curl -sSL -o ${{ inputs.path }}/$(basename ${{ inputs.artifact }}) \
+          ${TASKGRAPH_TASK_URL}/runs/${{ steps.taskgraph.outputs.run-id }}/artifacts/${{ inputs.artifact }}
