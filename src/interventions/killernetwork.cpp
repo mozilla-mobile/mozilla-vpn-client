@@ -6,31 +6,16 @@
 
 #include <qobject.h>
 
-<<<<<<< HEAD
-#include <QObject>
-
-#include "platforms/windows/windowsservicemanager.h"
-=======
 #include "platforms/windows/windowsutils.h"
->>>>>>> 9578cbf61 (Format)
 
 namespace Intervention {
 
 const QString KillerNetwork::id = "intel.killernetwork";
 
 bool KillerNetwork::systemAffected() {
-<<<<<<< HEAD
-  std::unique_ptr<WindowsServiceManager> svm =
-      WindowsServiceManager::open("Killer Network Service");
-  if (svm == nullptr) {
-    return false;
-  }
-  return svm->isRunning();
-=======
   const bool isKillerInstalledAndRunning =
       WindowsUtils::getServiceStatus("Killer Network Service");
   return isKillerInstalledAndRunning;
->>>>>>> 9578cbf61 (Format)
 }
 
 }  // namespace Intervention
