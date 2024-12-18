@@ -50,7 +50,11 @@ LocalSocketController::LocalSocketController(const QString& path)
   connect(m_socket, &QLocalSocket::connected, this,
           &LocalSocketController::daemonConnected);
   connect(m_socket, &QLocalSocket::disconnected, this,
-          [&] { errorOccurred(QLocalSocket::PeerClosedError); });
+          [&] {
+            if (m_daemonState != eInitializing) {
+              errorOccurred(QLocalSocket::PeerClosedError);
+            }
+          });
   connect(m_socket, &QLocalSocket::errorOccurred, this,
           &LocalSocketController::errorOccurred);
   connect(m_socket, &QLocalSocket::readyRead, this,
