@@ -187,12 +187,9 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
         }
       }
       onboardingCompletedCallback:^() {
-        BOOL isOnboarding = MozillaVPN::instance()->state() == App::StateOnboarding;
-        if (isOnboarding) {
+        if (reason == Controller::ReasonOnboarding) {
           logger.debug() << "Onboarding completed";
-          MozillaVPN::instance()->onboardingCompleted();
-        } else {
-          logger.debug() << "Not onboarding";
+          emit disconnected();
         }
       }
       vpnConfigPermissionResponseCallback:^(BOOL granted) {

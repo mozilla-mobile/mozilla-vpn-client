@@ -100,13 +100,7 @@ AndroidController::AndroidController() {
       Qt::QueuedConnection);
   connect(
       activity, &AndroidVPNActivity::eventOnboardingCompleted, this,
-      [this]() {
-        auto vpn = MozillaVPN::instance();
-        if (vpn->state() == App::StateOnboarding) {
-          vpn->onboardingCompleted();
-          emit disconnected();
-        }
-      },
+      [this]() { emit disconnected(); },
       Qt::QueuedConnection);
   connect(
       activity, &AndroidVPNActivity::eventVpnConfigPermissionResponse, this,
@@ -251,8 +245,7 @@ void AndroidController::activate(const InterfaceConfig& config,
   args["isUsingShortTimerSessionPing"] =
       settingsHolder->shortTimerSessionPing();
 
-  args["isOnboarding"] =
-      MozillaVPN::instance()->state() == App::StateOnboarding;
+  args["isOnboarding"] = reason == Controller::ReasonOnboarding;
 
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE,
