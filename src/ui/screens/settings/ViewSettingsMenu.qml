@@ -166,9 +166,52 @@ MZViewBase {
                 }
                 VPNProfileFlow.reset();
             }
+
+            if (VPNProfileFlow.state == VPNProfileFlow.StateNeedsWebReauthentication) {
+              reauthPopup.open();
+            }
         }
     }
     Component.onCompleted: {
         Glean.impression.settingsScreen.record({screen:telemetryScreenId});
+    }
+
+    MZSimplePopup {
+        id: reauthPopup
+
+        anchors.centerIn: Overlay.overlay
+        imageSrc: "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
+        imageSize: Qt.size(80, 80)
+        title: MZI18n.SettingsReauthTitle
+        description: MZI18n.SettingsReauthDescription
+        buttons: [
+            MZButton {
+                id: reauthButton
+                text: MZI18n.SettingsReauthButton
+                Layout.fillWidth: true
+                onClicked: {
+                  VPNProfileFlow.reauthenticateViaWeb();
+                  loader.state = "active";
+                  reauthButton.enabled = false;
+                }
+
+                Rectangle {
+                  width: MZTheme.theme.rowHeight
+                  height: MZTheme.theme.rowHeight
+                  anchors.right: parent.right
+                  color: MZTheme.colors.transparent
+
+                  MZButtonLoader {
+                    id: loader
+                    color: MZTheme.colors.transparent
+                    iconUrl: "qrc:/nebula/resources/spinner.svg"
+                  }
+               }
+            }
+        ]
+
+        onClosed: {
+          VPNProfileFlow.reset();
+        }
     }
 }
