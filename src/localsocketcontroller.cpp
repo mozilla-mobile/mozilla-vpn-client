@@ -9,6 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QMetaEnum>
 #include <QMetaType>
 
 #include "daemon/daemonerrors.h"
@@ -128,10 +129,14 @@ void LocalSocketController::daemonConnected() {
 
 void LocalSocketController::activate(const InterfaceConfig& config,
                                      Controller::Reason reason) {
-  Q_UNUSED(reason);
-
   QJsonObject json = config.toJson();
   json.insert("type", "activate");
+
+  if (reason != Controller::ReasonNone) {
+    QMetaEnum metaEnum = QMetaEnum::fromType<Controller::Reason>();
+    QString reasonString = metaEnum.valueToKey(reason);
+    json.insert("reason", reasonString.toLower().mid(6));
+  }
 
   write(json);
 }

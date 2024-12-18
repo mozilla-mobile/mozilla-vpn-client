@@ -72,6 +72,10 @@ Controller::Reason stateToReason(Controller::State state) {
     return Controller::ReasonConfirming;
   }
 
+  if (state == Controller::StateOnboarding) {
+    return Controller::ReasonOnboarding;
+  }
+
   return Controller::ReasonNone;
 }
 }  // namespace
@@ -335,6 +339,8 @@ qint64 Controller::connectionTimestamp() const {
     case Controller::State::StateInitializing:
       [[fallthrough]];
     case Controller::State::StateOff:
+      [[fallthrough]];
+    case Controller::State::StateOnboarding:
       return 0;
     case Controller::State::StateOn:
       [[fallthrough]];
@@ -634,7 +640,7 @@ void Controller::activateNext() {
     return;
   }
 
-  if (m_state != StateSilentSwitching) {
+  if ((m_state != StateSilentSwitching) && (m_state != StateOnboarding)) {
     // Move to the StateConfirming if we are awaiting any connection handshakes
     setState(StateConfirming);
   }
@@ -780,6 +786,12 @@ void Controller::disconnected() {
   clearRetryCounter();
 
   NextStep nextStep = m_nextStep;
+
+  // Mobile onboarding is completed when we receive the disconnected signal.
+  if (m_state == StateOnboarding) {
+    logger.debug() << "Onboarding completed";
+    MozillaVPN::instance()->onboardingCompleted();
+  }
 
   if (processNextStep()) {
     setState(StateOff);
@@ -980,6 +992,16 @@ bool Controller::activate(const ServerData& serverData,
       return true;
     }
 
+    // If we are in the onboarding state, this connection is being made just
+    // to establish system permissions. We don't actually want to connect to
+    // a server.
+    if (App::instance()->state() == App::StateOnboarding) {
+      setState(StateOnboarding);
+      clearRetryCounter();
+      activateInternal(DoNotForceDNSPort, RandomizeServerSelection, ClientUser);
+      return true;
+    }
+
     if (Feature::get(Feature::Feature_checkConnectivityOnActivation)
             ->isSupported()) {
       // Ensure that the device is connected to the Internet.
@@ -1014,11 +1036,8 @@ bool Controller::activate(const ServerData& serverData,
 
               // Check if the error propagation has changed the Mozilla VPN
               // state. Continue only if the user is still authenticated and
-              // subscribed. We can ignore this during onboarding because we are
-              // not actually turning the VPN on (only asking for VPN system
-              // config permissions)
-              if (App::instance()->state() != App::StateMain &&
-                  App::instance()->state() != App::StateOnboarding) {
+              // subscribed.
+              if (App::instance()->state() != App::StateMain) {
                 return;
               }
 
