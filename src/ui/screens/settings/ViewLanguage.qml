@@ -157,7 +157,7 @@ MZViewBase {
                     Layout.leftMargin: MZTheme.theme.windowMargin
                     Layout.rightMargin: MZTheme.theme.windowMargin
 
-                    radioButtonLabelText: "Taking out text" //nativeLanguageName
+                    radioButtonLabelText: nativeLanguageName // "Taking out text" 
                     checked: false // MZSettings.languageCode === code
                     activeFocusOnTab: true
                     onClicked: {
