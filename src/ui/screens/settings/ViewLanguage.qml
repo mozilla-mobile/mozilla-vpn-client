@@ -157,25 +157,25 @@ MZViewBase {
                     Layout.leftMargin: MZTheme.theme.windowMargin
                     Layout.rightMargin: MZTheme.theme.windowMargin
 
-                    radioButtonLabelText: nativeLanguageName
-                    checked: MZSettings.languageCode === code
+                    radioButtonLabelText: "Taking out text" //nativeLanguageName
+                    checked: false // MZSettings.languageCode === code
                     activeFocusOnTab: true
                     onClicked: {
                         MZSettings.languageCode = code;
                     }
 
-                    Keys.onDownPressed: if(repeater.itemAt(index + 1)) repeater.itemAt(index + 1).pushFocusToRadio()
-                    Keys.onUpPressed: {
-                        if(repeater.itemAt(index - 1)) repeater.itemAt(index - 1).pushFocusToRadio()
-                        else systemLanguageRadioButton.forceActiveFocus()
-                    }
+                    // Keys.onDownPressed: if(repeater.itemAt(index + 1)) repeater.itemAt(index + 1).pushFocusToRadio()
+                    // Keys.onUpPressed: {
+                    //     if(repeater.itemAt(index - 1)) repeater.itemAt(index - 1).pushFocusToRadio()
+                    //     else systemLanguageRadioButton.forceActiveFocus()
+                    // }
 
                     //% "%1 %2"
                     //: This string is read by accessibility tools.
                     //: %1 is the language name, %2 is the localized language name.
-                    accessibleName: qsTrId("vpn.settings.languageAccessibleName")
-                    .arg(nativeLanguageName)
-                    .arg(localizedLanguageName)
+                    // accessibleName: qsTrId("vpn.settings.languageAccessibleName")
+                    // .arg(nativeLanguageName)
+                    // .arg(localizedLanguageName)
                 }
 
                 MZTextBlock {
@@ -184,7 +184,7 @@ MZViewBase {
                     Layout.rightMargin: MZTheme.theme.windowMargin
                     Layout.fillWidth: true
 
-                    text: localizedLanguageName
+                    text: "Taking out text" //localizedLanguageName
                 }
             }
         }
