@@ -134,8 +134,11 @@ MZViewBase {
                 imageRightSrc: "qrc:/nebula/resources/chevron.svg"
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
+                    console.log("Opening language settings")
                     Glean.interaction.languageSelected.record({screen:telemetryScreenId})
+                    console.log("Telemetry recorded")
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewLanguage.qml")
+                    console.log("Screen pushed")
                 }
                 visible: MZLocalizer.hasLanguages
             }

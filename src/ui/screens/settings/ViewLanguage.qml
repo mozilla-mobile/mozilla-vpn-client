@@ -15,12 +15,17 @@ MZViewBase {
     objectName: "settingsLanguagesView"
     readonly property string telemetryScreenId : "language"
 
-    Component.onCompleted: Glean.impression.languageScreen.record({screen:telemetryScreenId})
+    Component.onCompleted: {
+      console.log("Completed loading ViewLanguage");
+      Glean.impression.languageScreen.record({screen:telemetryScreenId});
+      console.log("And recorded telemetry");
+    }
 
     //% "Language"
     _menuTitle :  qsTrId("vpn.settings.language")
 
     function centerSelectedLanguage() {
+        console.log("Centering selected language")
         for (let idx = 0; idx < repeater.count; idx++) {
             const langItem = repeater.itemAt(idx);
             if (langItem.isSelectedLanguage) {
@@ -86,6 +91,7 @@ MZViewBase {
                 checked: MZSettings.languageCode === ""
                 activeFocusOnTab: true
                 onClicked: {
+                    console.log("Radio button clicked")
                     MZSettings.languageCode = ""
                 }
 
@@ -121,7 +127,10 @@ MZViewBase {
 
             model: searchBar.getProxyModel()
 
-            Component.onCompleted: vpnFlickable.centerSelectedLanguage()
+            Component.onCompleted: {
+              console.log("Completed loading repeater");
+              vpnFlickable.centerSelectedLanguage();
+            }
 
             delegate: ColumnLayout {
                 id: del
@@ -130,6 +139,7 @@ MZViewBase {
                 property bool isSelectedLanguage: delRadio.checked
 
                 function pushFocusToRadio() {
+                    console.log("Pushing focus to radio");
                     delRadio.forceActiveFocus();
                 }
 
