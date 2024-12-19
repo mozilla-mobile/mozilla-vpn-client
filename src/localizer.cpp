@@ -273,6 +273,9 @@ void Localizer::loadLanguagesFromI18n() {
       locale = QLocale::system();
     }
 
+    if (code == "en-US") {
+      code = "en";
+    }
     Language language{code, codeParts[0],
                       codeParts.length() > 1 ? codeParts[1] : QString(),
                       nativeLanguageName(locale, code),

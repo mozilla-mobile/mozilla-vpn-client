@@ -151,31 +151,31 @@ MZViewBase {
 
                 MZRadioDelegate {
                     id: delRadio
-                    objectName: "language-" + code
+                    objectName: "language-" + code // can I do something here to change the code if needed from en-US
 
                     Layout.fillWidth: true
                     Layout.leftMargin: MZTheme.theme.windowMargin
                     Layout.rightMargin: MZTheme.theme.windowMargin
 
                     radioButtonLabelText: nativeLanguageName // "Taking out text" 
-                    checked: false // MZSettings.languageCode === code
+                    checked:  MZSettings.languageCode === code // false //
                     activeFocusOnTab: true
                     onClicked: {
                         MZSettings.languageCode = code;
                     }
 
-                    // Keys.onDownPressed: if(repeater.itemAt(index + 1)) repeater.itemAt(index + 1).pushFocusToRadio()
-                    // Keys.onUpPressed: {
-                    //     if(repeater.itemAt(index - 1)) repeater.itemAt(index - 1).pushFocusToRadio()
-                    //     else systemLanguageRadioButton.forceActiveFocus()
-                    // }
+                    Keys.onDownPressed: if(repeater.itemAt(index + 1)) repeater.itemAt(index + 1).pushFocusToRadio()
+                    Keys.onUpPressed: {
+                        if(repeater.itemAt(index - 1)) repeater.itemAt(index - 1).pushFocusToRadio()
+                        else systemLanguageRadioButton.forceActiveFocus()
+                    }
 
                     //% "%1 %2"
                     //: This string is read by accessibility tools.
                     //: %1 is the language name, %2 is the localized language name.
-                    // accessibleName: qsTrId("vpn.settings.languageAccessibleName")
-                    // .arg(nativeLanguageName)
-                    // .arg(localizedLanguageName)
+                    accessibleName: qsTrId("vpn.settings.languageAccessibleName")
+                    .arg(nativeLanguageName)
+                    .arg(localizedLanguageName)
                 }
 
                 MZTextBlock {
