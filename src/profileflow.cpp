@@ -92,9 +92,16 @@ void ProfileFlow::reauthenticateViaWeb() {
   TaskAuthenticate* taskAuthenticate =
       new TaskAuthenticate(AuthenticationListener::AuthenticationInBrowser);
   connect(taskAuthenticate, &TaskAuthenticate::authenticationAborted, this,
-          &ProfileFlow::reset);
+          [this]() {
+            logger.debug() << "Authentication failed";
+            setState(StateError);
+            ProfileFlow::reset();
+          });
   connect(taskAuthenticate, &TaskAuthenticate::authenticationCompleted, this,
-          &ProfileFlow::start);  // retry
+          [this]() {
+            logger.debug() << "Authentication succeeded, restarting profile flow";
+            ProfileFlow::start();
+          });
 
   TaskScheduler::scheduleTask(taskAuthenticate);
 }

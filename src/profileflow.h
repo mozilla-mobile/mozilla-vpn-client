@@ -28,7 +28,6 @@ class ProfileFlow final : public QObject {
     StateLoading,
     StateAuthenticationNeeded,
     StateNeedsWebReauthentication,
-    StateAuthenticatingViaWeb,
     StateReady,
     StateError,
   };

@@ -142,6 +142,7 @@ MZViewBase {
                 VPNProfileFlow.state === VPNProfileFlow.StateReady
                 && stackview.currentItem.objectName !== "subscriptionManagmentView"
             ) {
+                reauthPopup.close();
                 return stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
             }
             // Only push the profile view if it’s not already in the stack
@@ -149,6 +150,7 @@ MZViewBase {
                 VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
                 && stackview.currentItem.objectName !== "reauthenticationFlow"
             ) {
+                reauthPopup.close();
                 return stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml", {
                     _onClose: () => {
                         VPNProfileFlow.reset();
@@ -161,6 +163,7 @@ MZViewBase {
             // to the main settings view.
             const hasError = VPNProfileFlow.state === VPNProfileFlow.StateError;
             if (hasError) {
+                reauthPopup.close();
                 if (stackview.currentItem.objectName === "reauthenticationFlow") {
                   stackview.pop(null, StackView.Immediate);
                 }
@@ -187,7 +190,7 @@ MZViewBase {
         buttons: [
             MZButton {
                 id: reauthButton
-                text: MZI18n.SettingsReauthButton
+                text: MZI18n.InAppAuthContinueToSignIn
                 Layout.fillWidth: true
                 onClicked: {
                   VPNProfileFlow.reauthenticateViaWeb();

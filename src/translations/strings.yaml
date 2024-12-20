@@ -348,9 +348,8 @@ settings:
   appExclusionClearAllApps:
     value: Clear all
     comment: Button label to clear all apps from the exclusions list
-  reauthTitle: Reauthentication required
-  reauthDescription: A one-time reauthentication is required to continue to Account information, due to improvements in the security of Mozilla VPN. You will complete signing in on Mozilla's website. 
-  reauthButton: Reauthenticate
+  reauthTitle: Sign In Again
+  reauthDescription: For your security, please sign in again to access your account information. You'll complete this process on Mozilla's website. 
 
 localNetworkAccess:
   labelTitle: Exclude local network traffic
