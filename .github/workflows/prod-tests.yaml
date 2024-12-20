@@ -1,0 +1,130 @@
+name: Release Tests
+on:
+  push:
+    branches:
+      - main
+      - "releases/**"
+  # TODO: Remove this - this is a bit too heavy to run on PR.
+  pull_request:
+    branches:
+      - main
+      - "releases/**"
+
+# Restrict tests to the most recent commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  resolve-taskgraph:
+    name: Resolve Taskgraph
+    runs-on: ubuntu-latest
+    outputs:
+      linux: ${{ steps.artifacts.outputs.linux }}
+      macos: ${{ steps.artifacts.outputs.macos }}
+      windows: ${{ steps.artifacts.outputs.windows }}
+    env:
+      TASKCLUSTER_SUITE_NAME: firefoxci-taskcluster
+      TASKGRAPH_TASK_API: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task
+      CHECK_SUITE_GITREF: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+    steps:
+      - name: Wait for ${{ env.TASKCLUSTER_SUITE_NAME }}
+        id: decision-task
+        timeout-minutes: 2
+        shell: bash
+        run: |
+          CHECK_RUNS_URL=""
+          while true; do
+            curl -sSL -o check-suites.json \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ github.token }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              ${{ github.api_url }}/repos/${{ github.repository }}/commits/${CHECK_SUITE_GITREF}/check-suites
+            
+            CHECK_RUNS_URL=$(jq -r ".check_suites[] | select(.app.slug == \"${TASKCLUSTER_SUITE_NAME}\").check_runs_url" check-suites.json)
+            if [ -n "${CHECK_RUNS_URL}" ]; then
+              break
+            fi
+            sleep 10
+          done
+
+          while true; do
+            curl -sSL -o check-runs.json \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ github.token }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              ${CHECK_RUNS_URL}
+
+            DECISION_TASK_ID=$(jq -r '.check_runs[] | select(.name | startswith("Decision Task")).external_id' check-runs.json)
+            if [ -n "${CHECK_RUNS_URL}" ]; then
+              echo "taskid=${DECISION_TASK_ID}" >> $GITHUB_OUTPUT
+              exit 0
+            fi
+          done
+
+      - name: Checkout project
+        uses: actions/checkout@v4
+        with:
+          sparse-checkout: .github/
+
+      - name: Fetch taskgraph
+        uses: ./.github/actions/taskcluster-artifact
+        with:
+          taskid: ${{ steps.decision-task.outputs.taskid }}
+          artifact: public/task-graph.json
+
+      - name: Parse taskgraph
+        id: artifacts
+        shell: bash
+        run: |
+          jq -r '.[] | .task_id + " -> " + .label' task-graph.json
+
+          echo linux=$(jq -r '.[] | select(.label == "build-linux64/release-deb").task_id' task-graph.json) >> $GITHUB_OUTPUT
+          if [ "${GITHUB_EVENT_NAME}" == "pull_request" ]; then
+            echo macos=$(jq -r '.[] | select(.label == "build-macos/pr").task_id' task-graph.json) >> $GITHUB_OUTPUT
+            echo windows=$(jq -r '.[] | select(.label == "build-windows/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
+          else
+            echo macos=$(jq -r '.[] | select(.label == "signing-macos/opt").task_id' task-graph.json) >> $GITHUB_OUTPUT
+            echo windows=$(jq -r '.[] | select(.label == "repackage-msi").task_id' task-graph.json) >> $GITHUB_OUTPUT
+          fi
+
+  linux-tests:
+    name: Linux Tests
+    needs:
+      - resolve-taskgraph
+    uses: ./.github/workflows/prod-test-suite.yaml
+    with:
+      task-id: ${{ needs.resolve-taskgraph.outputs.linux }}
+      group-name: linux
+      artifact-name: mozillavpn.deb
+      runs-on: |
+        ubuntu-20.04
+        ubuntu-22.04
+        ubuntu-24.04
+
+  macos-tests:
+    name: MacOS Tests
+    needs:
+      - resolve-taskgraph
+    uses: ./.github/workflows/prod-test-suite.yaml
+    with:
+      task-id: ${{ needs.resolve-taskgraph.outputs.macos }}
+      group-name: macos
+      artifact-name: ${{ github.event_name == 'pull_request' && 'MozillaVPN.tar.gz' || 'MozillaVPN.pkg' }}
+      runs-on: |
+        macos-12
+        macos-13
+        macos-14
+
+  windows-tests:
+    name: Windows Tests
+    needs:
+      - resolve-taskgraph
+    uses: ./.github/workflows/prod-test-suite.yaml
+    with:
+      task-id: ${{ needs.resolve-taskgraph.outputs.windows }}
+      group-name: windows
+      artifact-name: MozillaVPN.msi
+      runs-on: |
+        windows-2019
+        windows-2022
