@@ -18,30 +18,6 @@ Install extra conda packages
 
     ./scripts/macos/conda_install_extras.sh
 
-Your Xcode install comes with a copy of the MacOS-SDK.
-We need to tell the conda environment where to find it.
-
-Find the sdk path
-
-    xcrun --sdk macosx --show-sdk-path
-
-If xcrun didn't work, default paths where you probably find your SDK:
- * Default Xcode-command-line tool path: `/Library/Developer/CommandLineTools/SDKs/MacOSX.<VersionNumber>.sdk`
- * Default Xcode.app path: `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`
-
-Add it to the conda env
-
-    conda env config vars set SDKROOT=$SDK_PATH
-
-Reactivate your conda env
-
-    conda activate vpn
-
-You can view your set variables
-
-    conda env config vars list
-
-The variable config step only needs to be done once.
 When you next want to start building the VPN, all you need to do is activate your conda environment (`conda activate vpn`).
 
 ## Get Qt

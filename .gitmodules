@@ -4,7 +4,7 @@
 	shallow = true
 [submodule "3rdparty/wireguard-apple"]
 	path = 3rdparty/wireguard-apple
-	url = https://github.com/WireGuard/wireguard-apple
+	url = https://github.com/mozilla/wireguard-apple.git
 	shallow = true
 [submodule "3rdparty/openSSL"]
 	path = 3rdparty/openSSL
