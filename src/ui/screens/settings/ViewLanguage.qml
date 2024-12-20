@@ -15,12 +15,17 @@ MZViewBase {
     objectName: "settingsLanguagesView"
     readonly property string telemetryScreenId : "language"
 
-    Component.onCompleted: Glean.impression.languageScreen.record({screen:telemetryScreenId})
+    Component.onCompleted: {
+      console.log("Completed loading ViewLanguage");
+      Glean.impression.languageScreen.record({screen:telemetryScreenId});
+      console.log("And recorded telemetry");
+    }
 
     //% "Language"
     _menuTitle :  qsTrId("vpn.settings.language")
 
     function centerSelectedLanguage() {
+        console.log("Centering selected language")
         for (let idx = 0; idx < repeater.count; idx++) {
             const langItem = repeater.itemAt(idx);
             if (langItem.isSelectedLanguage) {
@@ -86,6 +91,7 @@ MZViewBase {
                 checked: MZSettings.languageCode === ""
                 activeFocusOnTab: true
                 onClicked: {
+                    console.log("Radio button clicked")
                     MZSettings.languageCode = ""
                 }
 
@@ -121,7 +127,10 @@ MZViewBase {
 
             model: searchBar.getProxyModel()
 
-            Component.onCompleted: vpnFlickable.centerSelectedLanguage()
+            Component.onCompleted: {
+              console.log("Completed loading repeater");
+              vpnFlickable.centerSelectedLanguage();
+            }
 
             delegate: ColumnLayout {
                 id: del
@@ -130,6 +139,7 @@ MZViewBase {
                 property bool isSelectedLanguage: delRadio.checked
 
                 function pushFocusToRadio() {
+                    console.log("Pushing focus to radio");
                     delRadio.forceActiveFocus();
                 }
 
@@ -141,14 +151,14 @@ MZViewBase {
 
                 MZRadioDelegate {
                     id: delRadio
-                    objectName: "language-" + code
+                    objectName: "language-" + code // can I do something here to change the code if needed from en-US
 
                     Layout.fillWidth: true
                     Layout.leftMargin: MZTheme.theme.windowMargin
                     Layout.rightMargin: MZTheme.theme.windowMargin
 
-                    radioButtonLabelText: nativeLanguageName
-                    checked: MZSettings.languageCode === code
+                    radioButtonLabelText: nativeLanguageName // "Taking out text" 
+                    checked:  MZSettings.languageCode === code // false //
                     activeFocusOnTab: true
                     onClicked: {
                         MZSettings.languageCode = code;
@@ -174,7 +184,7 @@ MZViewBase {
                     Layout.rightMargin: MZTheme.theme.windowMargin
                     Layout.fillWidth: true
 
-                    text: localizedLanguageName
+                    text: "Taking out text" //localizedLanguageName
                 }
             }
         }
