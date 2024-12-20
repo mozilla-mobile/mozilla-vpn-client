@@ -97,11 +97,12 @@ void ProfileFlow::reauthenticateViaWeb() {
             setState(StateError);
             ProfileFlow::reset();
           });
-  connect(taskAuthenticate, &TaskAuthenticate::authenticationCompleted, this,
-          [this]() {
-            logger.debug() << "Authentication succeeded, restarting profile flow";
-            ProfileFlow::start();
-          });
+  connect(
+      taskAuthenticate, &TaskAuthenticate::authenticationCompleted, this,
+      [this]() {
+        logger.debug() << "Authentication succeeded, restarting profile flow";
+        ProfileFlow::start();
+      });
 
   TaskScheduler::scheduleTask(taskAuthenticate);
 }
