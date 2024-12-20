@@ -789,7 +789,7 @@ SETTING_BOOL(extensionTelemetryEnabled,        // getter
              removeExtensionTelemetryEnabled,  // remover
              hasExtensionTelemetryEnabled,     // has
              "extensionTelemetryEnabled",      // key
-             false,                            // default value
+             true,                             // default value
              true,                             // remove when reset
              false                             // sensitive (do not log)
 )
