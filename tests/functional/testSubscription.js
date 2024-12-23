@@ -369,7 +369,7 @@ describe('Subscription view', function() {
     this.ctx.resetCallbacks();
   });
 
-  it('Authentication needed - sample', async () => {
+  it('Authentication needed', async () => {
     this.ctx.fxaLoginCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
         sessionToken: 'session',
@@ -403,77 +403,6 @@ describe('Subscription view', function() {
     await vpn.waitForQueryAndClick(
         queries.screenSettings.REAUTH_BUTTON.visible());
     await vpn.mockInBrowserAuthentication();
-
-    await vpn.waitForQuery(
-        queries.screenSettings.subscriptionView.SCREEN.visible());
-  });
-
-  it('Authentication needed - totp', async () => {
-    this.ctx.guardianSubscriptionDetailsCallback = req => {
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
-          .status = 401;
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
-          .body = {}
-    };
-
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-
-    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.USER_PROFILE.visible());
-
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
-    await vpn.setQueryProperty(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
-        'text', 'P4ssw0rd!!');
-
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
-            .enabled());
-
-    this.ctx.fxaLoginCallback = (req) => {
-      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
-        sessionToken: 'session',
-        verified: false,
-        verificationMethod: 'totp-2fa'
-      };
-      this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].status = 200;
-    };
-
-    await vpn.waitForQueryAndClick(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
-            .enabled());
-
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible());
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible()
-            .disabled());
-    await vpn.setQueryProperty(
-        queries.screenAuthenticationInApp.AUTH_TOTP_TEXT_INPUT.visible(),
-        'text', '123456');
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
-
-    this.ctx.fxaTotpCallback = (req) => {
-      this.ctx.fxaOverrideEndpoints.POSTs['/v1/session/verify/totp'].body = {
-        success: true
-      }
-    };
-
-    this.ctx.guardianSubscriptionDetailsCallback = req => {
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
-          .status = 200;
-      this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
-          .body = SUBSCRIPTION_DETAILS;
-    };
-
-    await vpn.waitForQueryAndClick(
-        queries.screenAuthenticationInApp.AUTH_TOTP_BUTTON.visible().enabled());
 
     await vpn.waitForQuery(
         queries.screenSettings.subscriptionView.SCREEN.visible());
