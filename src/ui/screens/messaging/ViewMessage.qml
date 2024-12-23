@@ -103,6 +103,8 @@ MZViewBase {
                             return badgeInfo.surveyBadge
                         case MZAddonMessage.Subscription:
                             return badgeInfo.subscriptionBadge
+                        case MZAddonMessage.Extension:
+                            return badgeInfo.subscriptionBadge
                         }
                     }
 
@@ -135,6 +137,11 @@ MZViewBase {
                             'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
                         };
                         property var subscriptionBadge: {
+                            'badgeText': MZI18n.InAppMessagingSubscriptionBadge,
+                            'badgeTextColor': MZTheme.colors.normalLevelMain,
+                            'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
+                        };
+                        property var extensionBadge: {
                             'badgeText': MZI18n.InAppMessagingSubscriptionBadge,
                             'badgeTextColor': MZTheme.colors.normalLevelMain,
                             'badgeBackgroundColor': MZTheme.colors.normalLevelBackground

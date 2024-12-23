@@ -15,7 +15,7 @@
     "id": "message_try_firefox_extension.24",
     "title": "vpn.tryFirefoxExtension.title",
     "subtitle": "vpn.tryFirefoxExtension.subtitle",
-    "badge": "new_update",
+    "badge": "extension",
     "blocks": [
       {
         "id": "c_1",
