@@ -8,7 +8,7 @@ asn1-rs = { version = "0.6.2", features=["datetime"] }
 oid-registry = "0.7"
 data-encoding = "2.6.0"
 ffi-support = "0.4.4"
-thiserror = "2.0.7"
+thiserror = "2.0.9"
 hex = "0.4"
 ring = "0.17.8"
 x509-parser = { version = "0.16.0", features = ["verify", "validate"] }
