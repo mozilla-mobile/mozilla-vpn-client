@@ -394,25 +394,15 @@ describe('Subscription view', function() {
 
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
-    await vpn.setQueryProperty(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
-        'text', 'P4ssw0rd!!');
-    await vpn.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
-            .enabled());
-
     this.ctx.guardianSubscriptionDetailsCallback = req => {
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
           .status = 200;
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
           .body = SUBSCRIPTION_DETAILS;
     };
-
     await vpn.waitForQueryAndClick(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
-            .enabled());
+        queries.screenSettings.REAUTH_BUTTON.visible());
+    await vpn.mockInBrowserAuthentication();
 
     await vpn.waitForQuery(
         queries.screenSettings.subscriptionView.SCREEN.visible());

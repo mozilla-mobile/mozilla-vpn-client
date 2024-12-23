@@ -190,6 +190,7 @@ MZViewBase {
         buttons: [
             MZButton {
                 id: reauthButton
+                objectName: "reauthButton"
                 text: MZI18n.InAppAuthContinueToSignIn
                 Layout.fillWidth: true
                 onClicked: {
