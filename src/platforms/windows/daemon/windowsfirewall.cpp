@@ -110,7 +110,7 @@ bool WindowsFirewall::initSublayer() {
   logger.debug() << "Opening the filter engine";
   result = FwpmEngineOpen0(NULL, RPC_C_AUTHN_WINNT, NULL, &session, &wfp);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmEngineOpen0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmEngineOpen0 failed:" << QString::number(result, 16);
     return false;
   }
   auto cleanup = qScopeGuard([&] { FwpmEngineClose0(wfp); });
@@ -128,8 +128,8 @@ bool WindowsFirewall::initSublayer() {
   // Step 1: Start Transaction
   result = FwpmTransactionBegin(wfp, NULL);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
-                   << result;
+    logger.error() << "FwpmTransactionBegin0 failed:"
+                   << QString::number(result, 16);
     return false;
   }
 
@@ -144,14 +144,14 @@ bool WindowsFirewall::initSublayer() {
 
   result = FwpmSubLayerAdd0(wfp, &subLayer, NULL);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmSubLayerAdd0 failed. Return value:.\n" << result;
+    logger.error() << "FwpmSubLayerAdd0 failed:" << QString::number(result, 16);
     return false;
   }
   // Step 4: Commit!
   result = FwpmTransactionCommit0(wfp);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
-                   << result;
+    logger.error() << "FwpmTransactionCommit0 failed:"
+                   << QString::number(result, 16);
     return false;
   }
   logger.debug() << "Initialised Sublayer";
@@ -161,24 +161,24 @@ bool WindowsFirewall::initSublayer() {
 bool WindowsFirewall::enableInterface(int vpnAdapterIndex) {
 // Checks if the FW_Rule was enabled succesfully,
 // disables the whole killswitch and returns false if not.
-#define FW_OK(rule)                                                       \
-  {                                                                       \
-    auto result = FwpmTransactionBegin(m_sessionHandle, NULL);            \
-    if (result != ERROR_SUCCESS) {                                        \
-      disableKillSwitch();                                                \
-      return false;                                                       \
-    }                                                                     \
-    if (!rule) {                                                          \
-      FwpmTransactionAbort0(m_sessionHandle);                             \
-      disableKillSwitch();                                                \
-      return false;                                                       \
-    }                                                                     \
-    result = FwpmTransactionCommit0(m_sessionHandle);                     \
-    if (result != ERROR_SUCCESS) {                                        \
-      logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n" \
-                     << result;                                           \
-      return false;                                                       \
-    }                                                                     \
+#define FW_OK(rule)                                             \
+  {                                                             \
+    auto result = FwpmTransactionBegin(m_sessionHandle, NULL);  \
+    if (result != ERROR_SUCCESS) {                              \
+      disableKillSwitch();                                      \
+      return false;                                             \
+    }                                                           \
+    if (!rule) {                                                \
+      FwpmTransactionAbort0(m_sessionHandle);                   \
+      disableKillSwitch();                                      \
+      return false;                                             \
+    }                                                           \
+    result = FwpmTransactionCommit0(m_sessionHandle);           \
+    if (result != ERROR_SUCCESS) {                              \
+      logger.error() << "FwpmTransactionCommit0 failed:"        \
+                     << QString::number(result, 16);            \
+      return false;                                             \
+    }                                                           \
   }
 
   logger.info() << "Enabling firewall Using Adapter:" << vpnAdapterIndex;
@@ -221,7 +221,8 @@ bool WindowsFirewall::enableLanBypass(const QList<IPAddress>& ranges) {
 
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed with error:" << result;
+    logger.error() << "FwpmTransactionCommit0 failed:"
+                   << QString::number(result, 16);
     return false;
   }
 
@@ -267,7 +268,8 @@ bool WindowsFirewall::enablePeerTraffic(const InterfaceConfig& config) {
 
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed with error:" << result;
+    logger.error() << "FwpmTransactionCommit0 failed:"
+                   << QString::number(result, 16);
     return false;
   }
 
@@ -283,8 +285,8 @@ bool WindowsFirewall::disablePeerTraffic(const QString& pubkey) {
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
-                   << result;
+    logger.error() << "FwpmTransactionBegin0 failed:"
+                   << QString::number(result, 16);
     return false;
   }
 
@@ -297,8 +299,8 @@ bool WindowsFirewall::disablePeerTraffic(const QString& pubkey) {
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
-                   << result;
+    logger.error() << "FwpmTransactionCommit0 failed:"
+                   << QString::number(result, 16);
     return false;
   }
   return true;
@@ -312,8 +314,8 @@ bool WindowsFirewall::disableKillSwitch() {
     }
   });
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionBegin0 failed. Return value:.\n"
-                   << result;
+    logger.error() << "FwpmTransactionBegin0 failed:"
+                   << QString::number(result, 16);
     return false;
   }
 
@@ -328,8 +330,8 @@ bool WindowsFirewall::disableKillSwitch() {
   // Commit!
   result = FwpmTransactionCommit0(m_sessionHandle);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmTransactionCommit0 failed. Return value:.\n"
-                   << result;
+    logger.error() << "FwpmTransactionCommit0 failed:"
+                   << QString::number(result, 16);
     return false;
   }
   m_peerRules.clear();
@@ -351,7 +353,8 @@ bool WindowsFirewall::allowTrafficForAppOnAll(const QString& exePath,
   FWP_BYTE_BLOB* appID = NULL;
   result = FwpmGetAppIdFromFileName0(appPath, &appID);
   if (result != ERROR_SUCCESS) {
-    WindowsUtils::windowsLog("FwpmGetAppIdFromFileName0 failure");
+    logger.warning() << "FwpmGetAppIdFromFileName0 failed:"
+                     << QString::number(result, 16);
     return false;
   }
   auto guard = qScopeGuard([appID]() { FwpmFreeMemory0((void**)&appID); });
@@ -918,11 +921,12 @@ bool WindowsFirewall::enableFilter(FWPM_FILTER0* filter, const QString& title,
   filter->displayData.description = (PWSTR)desc.c_str();
   auto result = FwpmFilterAdd0(m_sessionHandle, filter, NULL, &filterID);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "Failed to enable filter: " << title << " "
+    logger.error() << "Failed to enable filter:" << title << " "
                    << description;
+    logger.error() << "Error:" << QString::number(result, 16);
     return false;
   }
-  logger.info() << "Filter added: " << title << ":" << description;
+  logger.info() << "Filter added:" << title << ":" << description;
   if (peer.isEmpty()) {
     m_activeRules.append(filterID);
   } else {
