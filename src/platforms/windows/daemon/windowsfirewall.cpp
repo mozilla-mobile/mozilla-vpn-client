@@ -159,44 +159,51 @@ bool WindowsFirewall::initSublayer() {
 }
 
 bool WindowsFirewall::enableInterface(int vpnAdapterIndex) {
-// Checks if the FW_Rule was enabled succesfully,
-// disables the whole killswitch and returns false if not.
-#define FW_OK(rule)                                             \
-  {                                                             \
-    auto result = FwpmTransactionBegin(m_sessionHandle, NULL);  \
-    if (result != ERROR_SUCCESS) {                              \
-      disableKillSwitch();                                      \
-      return false;                                             \
-    }                                                           \
-    if (!rule) {                                                \
-      FwpmTransactionAbort0(m_sessionHandle);                   \
-      disableKillSwitch();                                      \
-      return false;                                             \
-    }                                                           \
-    result = FwpmTransactionCommit0(m_sessionHandle);           \
-    if (result != ERROR_SUCCESS) {                              \
-      logger.error() << "FwpmTransactionCommit0 failed:"        \
-                     << QString::number(result, 16);            \
-      return false;                                             \
-    }                                                           \
+  logger.info() << "Enabling firewall Using Adapter:" << vpnAdapterIndex;
+  DWORD result = FwpmTransactionBegin(m_sessionHandle, NULL);
+  if (result != ERROR_SUCCESS) {
+    logger.error() << "FwpmTransactionBegin0 failed:"
+                   << QString::number(result, 16);
+    disableKillSwitch();
+    return false;
+  }
+  auto guard = qScopeGuard([&] { FwpmTransactionAbort0(m_sessionHandle); });
+
+  QString msg = "Allow usage of VPN Adapter";
+  if (!allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT, msg)) {
+    return false;
+  }
+  if (!allowDHCPTraffic(MED_WEIGHT, "Allow DHCP Traffic")) {
+    return false;
+  }
+  if (!allowHyperVTraffic(MED_WEIGHT, "Allow Hyper-V Traffic")) {
+    return false;
+  }
+  msg = "Allow all for Mozilla VPN.exe";
+  if (!allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT, msg)) {
+    return false;
+  }
+  msg = "Allow all for socksproxy.exe";
+  if (!allowTrafficForAppOnAll(getProxyPath(), MAX_WEIGHT, msg)) {
+    return false;
+  }
+  if (!blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS")) {
+    return false;
+  }
+  msg = "Allow Loopback traffic on device %1";
+  if (!allowLoopbackTraffic(MED_WEIGHT, msg)) {
+    return false;
   }
 
-  logger.info() << "Enabling firewall Using Adapter:" << vpnAdapterIndex;
-  FW_OK(allowTrafficOfAdapter(vpnAdapterIndex, MED_WEIGHT,
-                              "Allow usage of VPN Adapter"));
-  FW_OK(allowDHCPTraffic(MED_WEIGHT, "Allow DHCP Traffic"));
-  FW_OK(allowHyperVTraffic(MED_WEIGHT, "Allow Hyper-V Traffic"));
-  FW_OK(allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT,
-                                "Allow all for Mozilla VPN.exe"));
-  FW_OK(allowTrafficForAppOnAll(getProxyPath(), MAX_WEIGHT,
-                                "Allow all for socksproxy.exe"));
-  FW_OK(blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS"));
-  FW_OK(
-      allowLoopbackTraffic(MED_WEIGHT, "Allow Loopback traffic on device %1"));
-
+  // Commit the transaction.
+  result = FwpmTransactionCommit0(m_sessionHandle);
+  if (result != ERROR_SUCCESS) {
+    logger.warning() << "Killswitch failed:" << QString::number(result, 16);
+    return false;
+  }
+  guard.dismiss();
   logger.debug() << "Killswitch on! Rules:" << m_activeRules.length();
   return true;
-#undef FW_OK
 }
 
 // Allow unprotected traffic sent to the following local address ranges.
