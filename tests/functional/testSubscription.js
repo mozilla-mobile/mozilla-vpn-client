@@ -400,9 +400,9 @@ describe('Subscription view', function() {
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
           .body = SUBSCRIPTION_DETAILS;
     };
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.REAUTH_BUTTON.visible());
     if (!this.ctx.wasm) {
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.REAUTH_BUTTON.visible());
       await vpn.mockInBrowserAuthentication();
     }
 
