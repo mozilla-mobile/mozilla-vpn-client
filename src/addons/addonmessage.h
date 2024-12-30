@@ -42,7 +42,8 @@ class AddonMessage final : public Addon {
     NewUpdate,
     WhatsNew,
     Survey,
-    Subscription
+    Subscription,
+    Extension
   };
   Q_ENUM(Badge)
 

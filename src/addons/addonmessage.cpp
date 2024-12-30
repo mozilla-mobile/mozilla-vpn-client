@@ -241,6 +241,8 @@ void AddonMessage::setBadge(const QString& badge) {
     m_badge = Survey;
   } else if (badge == "subscription") {
     m_badge = Subscription;
+  } else if (badge == "extension") {
+    m_badge = Extension;
   } else {
     logger.error() << "Unsupported badge type" << badge;
   }
