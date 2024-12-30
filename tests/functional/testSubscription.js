@@ -370,6 +370,10 @@ describe('Subscription view', function() {
   });
 
   it('Authentication needed', async () => {
+    // With moving to in browser auth, this test no longer makes sense for WASM
+    if (this.ctx.wasm) {
+      return;
+    }
     this.ctx.fxaLoginCallback = (req) => {
       this.ctx.fxaOverrideEndpoints.POSTs['/v1/account/login'].body = {
         sessionToken: 'session',
@@ -400,11 +404,9 @@ describe('Subscription view', function() {
       this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
           .body = SUBSCRIPTION_DETAILS;
     };
-    if (!this.ctx.wasm) {
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.REAUTH_BUTTON.visible());
-      await vpn.mockInBrowserAuthentication();
-    }
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.REAUTH_BUTTON.visible());
+    await vpn.mockInBrowserAuthentication();
 
     await vpn.waitForQuery(
         queries.screenSettings.subscriptionView.SCREEN.visible());
