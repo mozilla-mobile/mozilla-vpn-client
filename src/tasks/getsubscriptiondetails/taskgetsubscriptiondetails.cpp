@@ -128,12 +128,14 @@ void TaskGetSubscriptionDetails::initAuthentication() {
   Q_ASSERT(!m_authenticationInAppSession);
 
   // If transitioning from in-app auth to web-based auth, bounce to web-based
+#ifndef MZ_WASM
   if (!Feature::get(Feature::Feature_inAppAuthentication)->isSupported()) {
     logger.info() << "Starting web-based re-authentication.";
     emit mustTransitionAuthToWeb();
     emit completed();
     return;
   }
+#endif
 
   emit needsAuthentication();
 
