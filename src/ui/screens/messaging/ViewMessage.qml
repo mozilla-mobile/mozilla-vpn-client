@@ -104,7 +104,7 @@ MZViewBase {
                         case MZAddonMessage.Subscription:
                             return badgeInfo.subscriptionBadge
                         case MZAddonMessage.Extension:
-                            return badgeInfo.subscriptionBadge
+                            return badgeInfo.extensionBadge
                         }
                     }
 
@@ -142,7 +142,7 @@ MZViewBase {
                             'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
                         };
                         property var extensionBadge: {
-                            'badgeText': MZI18n.InAppMessagingSubscriptionBadge,
+                            'badgeText': MZI18n.InAppMessagingExtensionBadge,
                             'badgeTextColor': MZTheme.colors.normalLevelMain,
                             'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
                         };
