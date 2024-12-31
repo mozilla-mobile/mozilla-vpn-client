@@ -17,6 +17,24 @@ MZViewBase {
         Layout.fillWidth: true
 
         MZSettingsItem {
+            settingTitle: "Image playground"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+            imageRightMirror: MZLocalizer.isRightToLeft
+            onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewImagesPlayground.qml")
+            Layout.leftMargin: MZTheme.theme.windowMargin / 2
+            Layout.rightMargin: MZTheme.theme.windowMargin / 2
+        }
+
+        MZSettingsItem {
+            settingTitle: "Animations playground"
+            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+            imageRightMirror: MZLocalizer.isRightToLeft
+            onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewAnimationsPlayground.qml")
+            Layout.leftMargin: MZTheme.theme.windowMargin / 2
+            Layout.rightMargin: MZTheme.theme.windowMargin / 2
+        }
+
+        MZSettingsItem {
             settingTitle: "MZStepNavigation"
             imageRightSrc: "qrc:/nebula/resources/chevron.svg"
             imageRightMirror: MZLocalizer.isRightToLeft

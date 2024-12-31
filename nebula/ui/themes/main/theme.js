@@ -2,6 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+// This is to determine whether to show the dark mode version of images or not.
+color.useDarkAssets = false;
+
 /**
  * Part 3: Theme colors
  * Named colors in this section should only be set to colors in part 1 or 2.

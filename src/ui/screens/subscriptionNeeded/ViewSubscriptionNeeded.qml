@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZFlickable {
     id: vpnFlickable
@@ -122,7 +123,7 @@ MZFlickable {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
 
-                    source: "qrc:/nebula/resources/spinner.svg"
+                    source: MZAssetLookup.getImageSource("Spinner")
 
                     ParallelAnimation {
                         id: startSpinning

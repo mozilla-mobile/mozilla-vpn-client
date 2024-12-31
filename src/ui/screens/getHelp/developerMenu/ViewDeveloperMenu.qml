@@ -150,10 +150,6 @@ MZViewBase {
                     viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewThemeList.qml"
                 }
                 ListElement {
-                    title: "Animations playground"
-                    viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewAnimationsPlayground.qml"
-                }
-                ListElement {
                     title: "UI Testing"
                     viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewUiTesting.qml"
                 }
