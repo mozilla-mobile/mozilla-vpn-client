@@ -8,9 +8,9 @@ appdirs==1.4.4 \
     --hash=sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41 \
     --hash=sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128
     # via glean-parser
-aqtinstall==3.1.18 \
-    --hash=sha256:016dcf85dd01df2523e705dffe1c92334f3e2e2a3206a4cac0ae12ea67e7e9e2 \
-    --hash=sha256:39c796d46d4754eedbc6b690ed778a7a567a8cd51d37585e3830f3f724d0293c
+aqtinstall==3.1.21 \
+    --hash=sha256:d6fbcf4ede59b9dafe9fbbc868a63cf4531d85797376a696a47d7dbf4e44e5a9 \
+    --hash=sha256:f31a88c93f87afa619676c1ade7d48a1f49cdb3e5680eaee4d3b679102bf9f19
     # via -r requirements.in
 attrs==23.1.0 \
     --hash=sha256:1f28b4522cdc2fb4256ac1a020c78acf9cba2c6b461ccd2c126f3aa8e8335d04 \
@@ -404,9 +404,9 @@ psutil==5.9.6 \
     --hash=sha256:fb8a697f11b0f5994550555fcfe3e69799e5b060c8ecf9e2f75c69302cc35c0d \
     --hash=sha256:ff18b8d1a784b810df0b0fff3bcb50ab941c3b8e2c8de5726f9c71c601c611aa
     # via py7zr
-py7zr==0.20.7 \
-    --hash=sha256:55aa587fb4586c920437f5d6e6595f228beddb321bfee3f5146bb15c2e8e74d5 \
-    --hash=sha256:f9838c1d648037deab8127f6aa11c4844848ea76266f23c62e4d13612458f6d4
+py7zr==0.22.0 \
+    --hash=sha256:993b951b313500697d71113da2681386589b7b74f12e48ba13cc12beca79d078 \
+    --hash=sha256:c6c7aea5913535184003b73938490f9a4d8418598e533f9ca991d3b8e45a139e
     # via aqtinstall
 pybcj==1.0.2 \
     --hash=sha256:1079ca63ff8da5c936b76863690e0bd2489e8d4e0a3a340e032095dae805dd91 \
