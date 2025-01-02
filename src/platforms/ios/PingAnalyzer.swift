@@ -27,7 +27,7 @@ class PingAnalyzer {
     private let pingLossUnstableThreshold: Double = 0.65 // 13 of 20 pings
     private let pingLossNoSignalThreshold: Double = 1.0 // all pings
 
-    private let callback: (ConnectionHealth.ConnectionStability?) -> Void
+    private let callback: (ConnectionHealth.ConnectionStability?, Error?) -> Void
 
     init(pingAddress: String, callback: @escaping (ConnectionHealth.ConnectionStability?) -> Void) {
         self.callback = callback
