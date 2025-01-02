@@ -27,9 +27,9 @@ class PingAnalyzer {
     private let pingLossUnstableThreshold: Double = 0.65 // 13 of 20 pings
     private let pingLossNoSignalThreshold: Double = 1.0 // all pings
 
-    private let callback: (ConnectionHealth.ConnectionStability?) -> Void
+    private let callback: (ConnectionHealth.ConnectionStability?, Error?) -> Void
 
-    init(pingAddress: String, callback: @escaping (ConnectionHealth.ConnectionStability?) -> Void) {
+    init(pingAddress: String, callback: @escaping (ConnectionHealth.ConnectionStability?, Error?) -> Void) {
         self.callback = callback
 
         do {
@@ -55,7 +55,7 @@ class PingAnalyzer {
             timer = Timer.scheduledTimer(timeInterval: TimeInterval(checkTime), target: self, selector: #selector(calculateStability), userInfo: nil, repeats: false)
         } catch {
             logger.error(message: "Error when sending pings: \(error)")
-            callback(nil)
+            callback(nil, error)
         }
     }
 
@@ -68,11 +68,11 @@ class PingAnalyzer {
 
         // If any pings take too long to return or
         if (packetLossPercent >= pingLossNoSignalThreshold) {
-            callback(.noSignal)
+            callback(.noSignal, nil)
         } else if (packetLossPercent >= pingLossUnstableThreshold) {
-            callback(.unstable)
+            callback(.unstable, nil)
         } else {
-            callback(.stable)
+            callback(.stable, nil)
         }
     }
 }
