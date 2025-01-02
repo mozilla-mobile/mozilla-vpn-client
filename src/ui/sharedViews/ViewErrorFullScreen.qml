@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZFlickable {
     id: vpnFlickable
@@ -73,7 +74,7 @@ MZFlickable {
                 radius: height / 2
 
                 Image {
-                    source: "qrc:/ui/resources/warning-white.svg"
+                    source: MZAssetLookup.getImageSource("WarningWhite")
                     antialiasing: true
                     sourceSize.height: 20
                     sourceSize.width: 20

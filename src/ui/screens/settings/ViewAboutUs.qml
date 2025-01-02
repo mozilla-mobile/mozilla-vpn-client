@@ -10,6 +10,7 @@ import QtQuick.Window 2.1
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     objectName: "viewAboutUs"
@@ -84,7 +85,7 @@ MZViewBase {
                     }
                     Image {
                         objectName: "copyVersionNumberIcon"
-                        source: "qrc:/nebula/resources/copy.svg"
+                        source: MZAssetLookup.getImageSource("CopyTextColor")
                         fillMode: Image.PreserveAspectFit
                         Layout.rightMargin: copyVersionNumber.marginOffset
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
@@ -141,7 +142,7 @@ MZViewBase {
                        stackview.push(openView)
                    }
                }
-               iconSource: openUrl ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
+               iconSource: openUrl ? "qrc:/nebula/resources/externalLink.svg" : MZAssetLookup.getImageSource("Chevron")
                iconMirror: !openUrl && MZLocalizer.isRightToLeft
                anchors.left: undefined
                anchors.right: undefined

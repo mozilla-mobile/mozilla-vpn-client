@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     id: vpnFlickable
@@ -43,7 +44,7 @@ MZViewBase {
 
             accessibleName: MZI18n.InAppSupportWorkflowSupportNavLinkText
             title: MZI18n.InAppSupportWorkflowSupportNavLinkText
-            iconSource: "qrc:/nebula/resources/chevron.svg"
+            iconSource: MZAssetLookup.getImageSource("Chevron")
             iconMirror: MZLocalizer.isRightToLeft
             backgroundColor: MZTheme.colors.iconButtonLightBackground
             width: parent.width - MZTheme.theme.windowMargin
@@ -55,7 +56,7 @@ MZViewBase {
 
             accessibleName: MZI18n.GetHelpViewLogs
             title: MZI18n.GetHelpViewLogs
-            iconSource: MZFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
+            iconSource: MZFeatureList.get("shareLogs").isSupported ? "qrc:/nebula/resources/externalLink.svg" : MZAssetLookup.getImageSource("Chevron")
             iconMirror: !MZFeatureList.get("shareLogs").isSupported && MZLocalizer.isRightToLeft
             backgroundColor: MZFeatureList.get("shareLogs").isSupported ?MZTheme.colors.clickableRow : MZTheme.colors.iconButtonLightBackground
             width: parent.width - MZTheme.theme.windowMargin
@@ -66,7 +67,7 @@ MZViewBase {
             objectName: "resetVpn"
 
             title: MZI18n.ResetSettingsResetLabel
-            iconSource: "qrc:/nebula/resources/chevron.svg"
+            iconSource: MZAssetLookup.getImageSource("Chevron")
             iconMirror: MZLocalizer.isRightToLeft
             backgroundColor: MZTheme.colors.iconButtonLightBackground
             visible: MZFeatureList.get("factoryReset").isSupported
@@ -85,7 +86,7 @@ MZViewBase {
 
             settingTitle: MZI18n.GetHelpDeveloperOptions
             imageLeftSrc: "qrc:/ui/resources/developer.svg"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+            imageRightSrc: MZAssetLookup.getImageSource("Chevron")
             imageRightMirror: MZLocalizer.isRightToLeft
             visible: MZSettings.developerUnlock
             onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewDeveloperMenu.qml")

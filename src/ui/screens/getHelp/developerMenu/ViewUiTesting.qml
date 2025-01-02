@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     _menuTitle: "UI Testing"
@@ -18,7 +19,7 @@ MZViewBase {
 
         MZSettingsItem {
             settingTitle: "Image playground"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+            imageRightSrc: MZAssetLookup.getImageSource("Chevron")
             imageRightMirror: MZLocalizer.isRightToLeft
             onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewImagesPlayground.qml")
             Layout.leftMargin: MZTheme.theme.windowMargin / 2
@@ -27,7 +28,7 @@ MZViewBase {
 
         MZSettingsItem {
             settingTitle: "Animations playground"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+            imageRightSrc: MZAssetLookup.getImageSource("Chevron")
             imageRightMirror: MZLocalizer.isRightToLeft
             onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewAnimationsPlayground.qml")
             Layout.leftMargin: MZTheme.theme.windowMargin / 2
@@ -36,7 +37,7 @@ MZViewBase {
 
         MZSettingsItem {
             settingTitle: "MZStepNavigation"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+            imageRightSrc: MZAssetLookup.getImageSource("Chevron")
             imageRightMirror: MZLocalizer.isRightToLeft
             onClicked: getHelpStackView.push(stepNavComponent)
             Layout.leftMargin: MZTheme.theme.windowMargin / 2

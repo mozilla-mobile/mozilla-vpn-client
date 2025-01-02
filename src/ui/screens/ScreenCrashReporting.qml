@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZFlickable {
     id: vpnFlickable
@@ -30,7 +31,7 @@ MZFlickable {
 
         Image {
             id: mainIcon
-            source: "qrc:/ui/resources/warning-crash.svg"
+            source: MZAssetLookup.getImageSource("CrashWarning")
 
             Layout.fillWidth: true
             Layout.topMargin: isMobile ? parent.height * 0.20 : parent.height * 0.12

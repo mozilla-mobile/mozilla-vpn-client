@@ -10,6 +10,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     objectName: "developerScreen"
@@ -161,8 +162,8 @@ MZViewBase {
 
             delegate: MZSettingsItem {
                settingTitle:  title
-               imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
-               imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+               imageLeftSrc: MZAssetLookup.getImageSource("QuestionDarker")
+               imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                imageRightMirror: MZLocalizer.isRightToLeft
                onClicked: getHelpStackView.push(viewQrc)
                Layout.leftMargin: MZTheme.theme.windowMargin / 2

@@ -9,6 +9,7 @@ import QtQuick.Window 2.12
 import Mozilla.Shared 1.0
 import compat 0.1
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Rectangle {
     property alias _infoContent: infoContent.data
@@ -94,13 +95,13 @@ Rectangle {
     function getIconImage() {
         switch (cardType) {
         case MZInformationCard.CardType.Info:
-            return "qrc:/nebula/resources/info.svg"
+            return MZAssetLookup.getImageSource("InfoIcon")
         case MZInformationCard.CardType.Success:
-            return "qrc:/nebula/resources/success.svg"
+            return MZAssetLookup.getImageSource("SuccessIcon")
         case MZInformationCard.CardType.Warning:
-            return "qrc:/nebula/resources/warning-gray.svg"
+            return MZAssetLookup.getImageSource("WarningIcon")
         case MZInformationCard.CardType.Error:
-            return "qrc:/nebula/resources/warning-gray.svg"
+            return MZAssetLookup.getImageSource("WarningIcon")
         default:
             return console.error("Unable to create view for info card of type: " + cardType)
         }
