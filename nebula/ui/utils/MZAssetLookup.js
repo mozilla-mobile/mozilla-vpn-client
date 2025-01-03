@@ -103,6 +103,10 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/avatar.svg',
     filenameDark: 'qrc:/nebula/resources/avatar.svg'
   },
+  'AvatarProfile': {
+    filenameLight: 'qrc:/nebula/resources/avatar-default.png',
+    filenameDark: 'qrc:/nebula/resources/avatar-default.png'
+  },
   'AvatarDeleteAccount': {
     filenameLight: 'qrc:/nebula/resources/avatar-delete-account.svg',
     filenameDark: 'qrc:/nebula/resources/avatar-delete-account.svg'
@@ -362,6 +366,14 @@ var imageLookup = {
   'PlatformAndroidInactive': {
     filenameLight: 'qrc:/ui/resources/android.svg',
     filenameDark: 'qrc:/ui/resources/android.svg'
+  },
+  'PlayStoreQRCode': {
+    filenameLight: 'qrc:/ui/resources/qrcodes/play-store-qrcode.png',
+    filenameDark: 'qrc:/ui/resources/qrcodes/play-store-qrcode.png'
+  },
+  'AppStoreQRCode': {
+    filenameLight: 'qrc:/ui/resources/qrcodes/app-store-qrcode.png',
+    filenameDark: 'qrc:/ui/resources/qrcodes/app-store-qrcode.png'
   },
   'PaymentAmex': {
     filenameLight: 'qrc:/ui/resources/payment/amex.svg',

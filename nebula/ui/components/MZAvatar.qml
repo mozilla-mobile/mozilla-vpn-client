@@ -5,6 +5,7 @@
 import QtQuick 2.0
 
 import compat 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
     id: logoRoot
@@ -31,7 +32,7 @@ Item {
         anchors.fill: parent
         fillMode: Image.PreserveAspectFit
         smooth: true
-        source: "qrc:/nebula/resources/avatar-default.png"
+        source: MZAssetLookup.getImageSource("AvatarProfile")
         sourceSize.height: avatarSourceSize
         sourceSize.width: avatarSourceSize
         visible: avatar.status !== Image.Ready

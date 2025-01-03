@@ -173,7 +173,7 @@ ColumnLayout {
                 width: qrcodeStack.qrcodeSize
 
                 //QR coded generated via Adobe Express
-                source: "qrc:/ui/resources/qrcodes/play-store-qrcode.png"
+                source: MZAssetLookup.getImageSource("PlayStoreQRCode")
                 fillMode: Image.PreserveAspectFit
 
                 Accessible.role: Accessible.Graphic
@@ -210,7 +210,7 @@ ColumnLayout {
                 width: qrcodeStack.qrcodeSize
 
                 //QR coded generated via Adobe Express
-                source: "qrc:/ui/resources/qrcodes/app-store-qrcode.png"
+                source: MZAssetLookup.getImageSource("AppStoreQRCode")
                 fillMode: Image.PreserveAspectFit
 
                 Accessible.role: Accessible.Graphic
