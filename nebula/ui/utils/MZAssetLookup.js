@@ -1,7 +1,27 @@
 var imageLookup = {
   'Chevron': {
     filenameLight: 'qrc:/nebula/resources/chevron.svg',
-    filenameDark: 'qrc:/nebula/resources/chevron.svg'
+    filenameDark: 'qrc:/nebula/resources/lock.svg'
+  },
+  'ExternalLink': {
+    filenameLight: 'qrc:/nebula/resources/externalLink.svg',
+    filenameDark: 'qrc:/nebula/resources/lock.svg'
+  },
+  'Back': {
+    filenameLight: 'qrc:/nebula/resources/back.svg',
+    filenameDark: 'qrc:/nebula/resources/back.svg'
+  },
+  'CloseDark': {
+    filenameLight: 'qrc:/nebula/resources/close-dark.svg',
+    filenameDark: 'qrc:/nebula/resources/close-dark.svg'
+  },
+  'CloseDarker': {
+    filenameLight: 'qrc:/nebula/resources/close-darker.svg',
+    filenameDark: 'qrc:/nebula/resources/close-darker.svg'
+  },
+  'CloseWhite': {
+    filenameLight: 'qrc:/nebula/resources/close-white.svg',
+    filenameDark: 'qrc:/nebula/resources/close-white.svg'
   },
   'Question': {
     filenameLight: 'qrc:/nebula/resources/question.svg',
@@ -14,6 +34,22 @@ var imageLookup = {
   'Spinner': {
     filenameLight: 'qrc:/nebula/resources/spinner.svg',
     filenameDark: 'qrc:/nebula/resources/lock.svg'
+  },
+  'Logo': {
+    filenameLight: 'qrc:/ui/resources/logo.svg',
+    filenameDark: 'qrc:/ui/resources/logo.svg'
+  },
+  'LogoConnecting': {
+    filenameLight: 'qrc:/ui/resources/logo-connecting.svg',
+    filenameDark: 'qrc:/ui/resources/logo-connecting.svg'
+  },
+  'PrivacyMask': {
+    filenameLight: 'qrc:/ui/resources/logo-dns-privacy.svg',
+    filenameDark: 'qrc:/ui/resources/logo-dns-privacy.svg'
+  },
+  'IconPrivacyMask': {
+    filenameLight: 'qrc:/ui/resources/settings/privacy.svg',
+    filenameDark: 'qrc:/ui/resources/settings/privacy.svg'
   },
   'InfoIcon': {
     filenameLight: 'qrc:/nebula/resources/info.svg',
@@ -47,6 +83,18 @@ var imageLookup = {
     filenameLight: 'qrc:/ui/resources/globe-warning.svg',
     filenameDark: 'qrc:/ui/resources/globe-warning.svg'
   },
+  'GlobeColorful': {
+    filenameLight: 'qrc:/ui/resources/logo-dns-settings.svg',
+    filenameDark: 'qrc:/ui/resources/logo-dns-settings.svg'
+  },
+  'ShieldOn': {
+    filenameLight: 'qrc:/ui/resources/shield-on.svg',
+    filenameDark: 'qrc:/ui/resources/shield-on.svg'
+  },
+  'ShieldOff': {
+    filenameLight: 'qrc:/ui/resources/shield-off.svg',
+    filenameDark: 'qrc:/ui/resources/shield-off.svg'
+  },
   'CrashWarning': {
     filenameLight: 'qrc:/ui/resources/warning-crash.svg',
     filenameDark: 'qrc:/ui/resources/warning-crash.svg'
@@ -70,11 +118,16 @@ var imageLookup = {
   'Paste': {
     filenameLight: 'qrc:/nebula/resources/paste.svg',
     filenameDark: 'qrc:/nebula/resources/paste.svg'
+  },
+  'DisclaimerShield': {
+    filenameLight: 'qrc:/nebula/resources/shield-green50.svg',
+    filenameDark: 'qrc:/nebula/resources/shield-green50.svg'
   }
 }
 
 function getImageSource(imageName) {
-  const imageData = imageLookup[imageName] if (imageData === undefined) {
+  const imageData = imageLookup[imageName];
+  if (imageData === undefined) {
     console.error('Unable to find image data for: ' + imageName)
     return
   }

@@ -89,7 +89,7 @@ MZViewBase {
                     },
                     ColumnLayout {
                         property string labelText: "OnboardingProgressBarMorePrivacy"
-                        property string iconSource: "qrc:/ui/resources/settings/privacy.svg"
+                        property string iconSource: MZAssetLookup.getImageSource("IconPrivacyMask")
 
                         spacing: 0
 

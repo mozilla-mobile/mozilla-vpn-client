@@ -187,7 +187,7 @@ MZViewBase {
                 objectName: "openInspector"
                 title: "Open Inspector"
                 accessibleName: "Open Inspector"
-                iconSource:  "qrc:/nebula/resources/externalLink.svg"
+                iconSource:  MZAssetLookup.getImageSource("ExternalLink")
                 backgroundColor: MZTheme.colors.clickableRow
                 onClicked: {
                     MZUrlOpener.openUrlLabel("inspector");

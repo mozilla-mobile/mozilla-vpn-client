@@ -112,7 +112,7 @@ MZViewBase {
 
             anchors.centerIn: Overlay.overlay
             closeButtonObjectName: "privacyOverwritePopupPopupCloseButton"
-            imageSrc: "qrc:/ui/resources/logo-dns-settings.svg"
+            imageSrc: MZAssetLookup.getImageSource("GlobeColorful")
             imageSize: Qt.size(80, 80)
             title: MZI18n.DnsOverwriteDialogTitleDNS
             description: MZI18n.DnsOverwriteDialogBodyDNS

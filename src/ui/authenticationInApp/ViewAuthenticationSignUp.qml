@@ -10,7 +10,7 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 import components.inAppAuth 0.1
-
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZInAppAuthenticationBase {
     id: authSignUp
@@ -18,7 +18,7 @@ MZInAppAuthenticationBase {
 
     _changeEmailLinkVisible: true
     _telemetryScreenId: "create_password"
-    _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
+    _menuButtonImageSource: MZAssetLookup.getImageSource("Back")
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
         Glean.interaction.backSelected.record({

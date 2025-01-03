@@ -51,7 +51,7 @@ MZStepNavigation {
             id: privacySlide
 
             property string labelText: "OnboardingProgressBarMorePrivacy"
-            property string iconSource: "qrc:/ui/resources/settings/privacy.svg"
+            property string iconSource: MZAssetLookup.getImageSource("IconPrivacyMask")
             property string objectName: "privacy"
 
             onNextClicked: stepNav.next()

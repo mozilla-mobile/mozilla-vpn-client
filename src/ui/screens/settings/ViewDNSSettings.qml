@@ -313,7 +313,7 @@ MZViewBase {
 
             anchors.centerIn: Overlay.overlay
             closeButtonObjectName: "dnsOverwritePopupPopupCloseButton"
-            imageSrc: "qrc:/ui/resources/logo-dns-privacy.svg"
+            imageSrc: MZAssetLookup.getImageSource("PrivacyMask")
             imageSize: Qt.size(80, 80)
             title: MZI18n.DnsOverwriteDialogTitlePrivacy
             description: MZI18n.DnsOverwriteDialogBodyPrivacy

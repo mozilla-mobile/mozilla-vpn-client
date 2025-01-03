@@ -54,7 +54,7 @@ MZViewBase {
             MZSettingsItem {
                 objectName: "privacySettings"
                 settingTitle: MZI18n.SettingsPrivacySettings
-                imageLeftSrc: "qrc:/ui/resources/settings/privacy.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconPrivacyMask")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {

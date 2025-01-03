@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import components 0.1
 import Mozilla.Shared 1.0
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 //SUMMARY: MZHelpSheet is a component derived from MZBottomSheet that opens a drawer from the bottom of the screen who's content
 //is always laid out in a consistnet way by passing in a model with the correct schema, and sizes to fit the content it contains
@@ -131,7 +132,7 @@ MZBottomSheet {
                             sourceSize.height: MZTheme.theme.iconSize
                             sourceSize.width: MZTheme.theme.iconSize
 
-                            source: "qrc:/nebula/resources/close-dark.svg"
+                            source: MZAssetLookup.getImageSource("CloseDark")
                             fillMode: Image.PreserveAspectFit
                         }
                     }

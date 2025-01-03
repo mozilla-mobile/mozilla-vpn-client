@@ -142,7 +142,7 @@ MZViewBase {
                        stackview.push(openView)
                    }
                }
-               iconSource: openUrl ? "qrc:/nebula/resources/externalLink.svg" : MZAssetLookup.getImageSource("Chevron")
+               iconSource: openUrl ? MZAssetLookup.getImageSource("ExternalLink") : MZAssetLookup.getImageSource("Chevron")
                iconMirror: !openUrl && MZLocalizer.isRightToLeft
                anchors.left: undefined
                anchors.right: undefined

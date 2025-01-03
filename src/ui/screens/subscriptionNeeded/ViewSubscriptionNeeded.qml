@@ -57,7 +57,7 @@ MZFlickable {
             Layout.topMargin: isMobile ? MZTheme.theme.vSpacing : window.height * 0.2
             Layout.alignment: Qt.AlignHCenter
 
-            source: "qrc:/ui/resources/logo-connecting.svg"
+            source: MZAssetLookup.getImageSource("LogoConnecting")
             smooth: true
             antialiasing: true
         }

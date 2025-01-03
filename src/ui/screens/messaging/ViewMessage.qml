@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     id: root
@@ -26,7 +27,7 @@ MZViewBase {
 
             MZIcon {
                 id: logo
-                source: "qrc:/ui/resources/logo.svg"
+                source: MZAssetLookup.getImageSource("Logo")
                 sourceSize.height: 20
                 sourceSize.width: 20
                 antialiasing: true

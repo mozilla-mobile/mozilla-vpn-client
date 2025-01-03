@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.15
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
     Rectangle {
@@ -31,7 +32,7 @@ Item {
             Layout.fillWidth: true
             
             _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
-            _menuIconButtonSource: getHelpStackView.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
+            _menuIconButtonSource: getHelpStackView.depth === 1 ? MZAssetLookup.getImageSource("CloseDark") : MZAssetLookup.getImageSource("Back")
             _menuIconButtonMirror: getHelpStackView.depth !== 1 && MZLocalizer.isRightToLeft
             titleClicked: () => {
                             if (unlockCounter >= 5) {

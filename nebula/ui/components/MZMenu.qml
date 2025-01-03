@@ -5,6 +5,7 @@
 import QtQuick 2.5
 
 import Mozilla.Shared 1.0
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
     id: menuBar
@@ -14,7 +15,7 @@ Item {
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
-    property string _menuIconButtonSource: "qrc:/nebula/resources/back.svg"
+    property string _menuIconButtonSource: MZAssetLookup.getImageSource("Back")
     property alias _menuIconButtonMirror: menuIcon.mirror
     property alias _iconButtonAccessibleName: iconButton.accessibleName
     property var _menuOnBackClicked: () => {}

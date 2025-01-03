@@ -9,6 +9,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.inAppAuth 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZInAppAuthenticationBase {
     id: authStart
@@ -22,12 +23,12 @@ MZInAppAuthenticationBase {
 
         VPN.cancelAuthentication();
     }
-    _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
+    _menuButtonImageSource: MZAssetLookup.getImageSource("Back")
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonAccessibleName:  MZI18n.GlobalGoBack
     _headlineText: "Mozilla VPN"
     _subtitleText: MZI18n.InAppAuthEnterEmailAddressDescription
-    _imgSource: "qrc:/ui/resources/logo.svg"
+    _imgSource: MZAssetLookup.getImageSource("Logo")
     _inputLabel: MZI18n.InAppAuthEmailInputPlaceholder
 
     _inputs: MZInAppAuthenticationInputs {
@@ -44,7 +45,7 @@ MZInAppAuthenticationBase {
     _disclaimers: RowLayout {
         spacing: MZTheme.theme.vSpacing / 2
         MZIcon {
-            source: "qrc:/nebula/resources/shield-green50.svg"
+            source: MZAssetLookup.getImageSource("DisclaimerShield")
             Layout.alignment: Qt.AlignLeft | Qt.AlignTop
         }
 
