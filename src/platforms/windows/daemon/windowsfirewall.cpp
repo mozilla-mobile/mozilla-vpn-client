@@ -928,8 +928,7 @@ bool WindowsFirewall::enableFilter(FWPM_FILTER0* filter, const QString& title,
   filter->displayData.description = (PWSTR)desc.c_str();
   auto result = FwpmFilterAdd0(m_sessionHandle, filter, NULL, &filterID);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "Failed to enable filter:" << title << " "
-                   << description;
+    logger.error() << "Failed to enable filter:" << title << ":" << description;
     logger.error() << "Error:" << QString::number(result, 16);
     return false;
   }
