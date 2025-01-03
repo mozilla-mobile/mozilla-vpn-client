@@ -80,7 +80,7 @@ void ProfileFlow::start() {
   });
 
   connect(task, &TaskGetSubscriptionDetails::mustTransitionAuthToWeb, this,
-          [this]() { setState(StateNeedsWebReauthentication); });
+          [this]() { setState(StateAuthenticationNeeded); });
 
   TaskScheduler::scheduleTask(task);
   m_currentTask = task;

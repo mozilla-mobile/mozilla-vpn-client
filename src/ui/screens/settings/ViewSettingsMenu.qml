@@ -146,10 +146,10 @@ MZViewBase {
                 return stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
             }
             // Only push the profile view if it’s not already in the stack
-            if (
-                VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded
-                && stackview.currentItem.objectName !== "reauthenticationFlow"
-            ) {
+            if (VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded) {
+              if (!MZFeatureList.get("inAppAuthentication").isSupported) {
+                reauthPopup.open();
+              } else if (stackview.currentItem.objectName !== "reauthenticationFlow") {
                 reauthPopup.close();
                 return stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml", {
                     _onClose: () => {
@@ -157,6 +157,7 @@ MZViewBase {
                         stackview.pop(null, StackView.Immediate);
                     }
                 });
+              }
             }
 
             // An error occurred during the profile flow. Let’s reset and return
@@ -168,10 +169,6 @@ MZViewBase {
                   stackview.pop(null, StackView.Immediate);
                 }
                 VPNProfileFlow.reset();
-            }
-
-            if (VPNProfileFlow.state == VPNProfileFlow.StateNeedsWebReauthentication) {
-              reauthPopup.open();
             }
         }
     }
