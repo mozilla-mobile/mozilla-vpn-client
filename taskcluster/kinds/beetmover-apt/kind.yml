@@ -26,7 +26,7 @@ task-defaults:
 
 tasks:
     promote-linux64-deb:
-        worker-type: beetmover-apt-stage
+        worker-type: beetmover-apt
         attributes:
             shipping-phase: promote-client
 
