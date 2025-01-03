@@ -86,7 +86,7 @@ MZBottomSheet {
                         Image {
                             anchors.centerIn: parent
 
-                            source: "qrc:/nebula/resources/tip-filled.svg"
+                            source: MZAssetLookup.getImageSource("LightbulbFilled")
                             sourceSize.width: MZTheme.theme.iconSize * 1.5
 
                             mirror: MZLocalizer.isRightToLeft

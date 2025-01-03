@@ -452,7 +452,7 @@ Item {
             anchors.centerIn: ipInfoToggleButton
             source: ipInfoPanel.isOpen
                 ? MZAssetLookup.getImageSource("CloseWhite")
-                : "qrc:/ui/resources/connection-info.svg"
+                : MZAssetLookup.getImageSource("InfoIcon")
             sourceSize {
                 height: iconSize
                 width: iconSize

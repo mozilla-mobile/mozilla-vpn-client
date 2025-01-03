@@ -43,7 +43,7 @@ MZInAppAuthenticationBase {
     ]
 
     _changeEmailLinkVisible: true
-    _menuButtonImageSource: MZAssetLookup.getImageSource("Back")
+    _menuButtonImageSource: MZAssetLookup.getImageSource("ArrowBack")
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
         if (isReauthFlow) {

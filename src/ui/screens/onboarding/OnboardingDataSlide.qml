@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.15
 import Mozilla.Shared 1.0
 import components 0.1
 import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 ColumnLayout {
     id: root
@@ -72,7 +73,7 @@ ColumnLayout {
     Image {
         Layout.alignment: Qt.AlignHCenter
 
-        source: "qrc:/ui/resources/data-collection.svg"
+        source: MZAssetLookup.getImageSource("LockWithArrow")
         sourceSize: MZUiUtils.isLargePhone() ? Qt.size(209,144) : Qt.size(151,104)
     }
 

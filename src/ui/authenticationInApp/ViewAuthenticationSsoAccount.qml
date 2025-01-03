@@ -9,13 +9,14 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.inAppAuth 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZInAppAuthenticationThirdParty {
     id: authSsoAccount
     objectName: "authSsoAccount"
 
     _telemetryScreenId: "authentication_sso_account"
-    _imgSource: "qrc:/ui/resources/create-password.svg"
+    _imgSource: MZAssetLookup.getImageSource("CreatePassword")
     _headlineText: MZI18n.InAppAuthSsoInstructionHeader
 
     _description: ColumnLayout {

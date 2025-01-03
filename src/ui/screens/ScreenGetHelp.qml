@@ -32,7 +32,7 @@ Item {
             Layout.fillWidth: true
             
             _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
-            _menuIconButtonSource: getHelpStackView.depth === 1 ? MZAssetLookup.getImageSource("CloseDark") : MZAssetLookup.getImageSource("Back")
+            _menuIconButtonSource: getHelpStackView.depth === 1 ? MZAssetLookup.getImageSource("CloseDark") : MZAssetLookup.getImageSource("ArrowBack")
             _menuIconButtonMirror: getHelpStackView.depth !== 1 && MZLocalizer.isRightToLeft
             titleClicked: () => {
                             if (unlockCounter >= 5) {

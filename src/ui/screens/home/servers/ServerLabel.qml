@@ -10,7 +10,7 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 import compat 0.1
-
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 RowLayout {
     property var serversList
@@ -74,7 +74,7 @@ RowLayout {
                 MZIcon {
                     id: arrowIcon
 
-                    source: "qrc:/nebula/resources/arrow-forward.svg"
+                    source: MZAssetLookup.getImageSource("ArrowForward")
                     sourceSize.height: MZTheme.theme.iconSize
                     sourceSize.width: MZTheme.theme.iconSize
                     Layout.leftMargin: MZTheme.theme.listSpacing

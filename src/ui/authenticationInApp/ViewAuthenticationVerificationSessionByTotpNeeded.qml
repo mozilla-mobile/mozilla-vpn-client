@@ -35,7 +35,7 @@ MZInAppAuthenticationBase {
     _menuButtonAccessibleName: MZI18n.GlobalClose
     _headlineText: MZI18n.InAppAuthSecurityCodeTitle
     _subtitleText: MZI18n.InAppAuthSecurityCodeSubtitle
-    _imgSource: "qrc:/nebula/resources/verification-code.svg"
+    _imgSource: MZAssetLookup.getImageSource("VerificationCode")
     _inputLabel: MZI18n.InAppAuthSecurityCodeLabel
     _backButtonVisible: false
 

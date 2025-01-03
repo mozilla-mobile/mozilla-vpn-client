@@ -18,7 +18,7 @@ MZInAppAuthenticationBase {
 
     _changeEmailLinkVisible: true
     _telemetryScreenId: "create_password"
-    _menuButtonImageSource: MZAssetLookup.getImageSource("Back")
+    _menuButtonImageSource: MZAssetLookup.getImageSource("ArrowBack")
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
         Glean.interaction.backSelected.record({

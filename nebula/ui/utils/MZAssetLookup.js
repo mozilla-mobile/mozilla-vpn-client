@@ -7,9 +7,41 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/externalLink.svg',
     filenameDark: 'qrc:/nebula/resources/lock.svg'
   },
-  'Back': {
+  'ExternalLinkGrayscale': {
+    filenameLight: 'qrc:/nebula/resources/open-in-new.svg',
+    filenameDark: 'qrc:/nebula/resources/lock.svg'
+  },
+  'ArrowBack': {
     filenameLight: 'qrc:/nebula/resources/back.svg',
     filenameDark: 'qrc:/nebula/resources/back.svg'
+  },
+  'ArrowForward': {
+    filenameLight: 'qrc:/nebula/resources/arrow-forward.svg',
+    filenameDark: 'qrc:/nebula/resources/arrow-forward.svg'
+  },
+  'ArrowToggle': {
+    filenameLight: 'qrc:/nebula/resources/arrow-toggle.svg',
+    filenameDark: 'qrc:/nebula/resources/lock.svg'
+  },
+  'Plus': {
+    filenameLight: 'qrc:/nebula/resources/plus.svg',
+    filenameDark: 'qrc:/nebula/resources/plus.svg'
+  },
+  'CheckmarkNormalColor': {
+    filenameLight: 'qrc:/nebula/resources/checkmark-blue50.svg',
+    filenameDark: 'qrc:/nebula/resources/checkmark-blue50.svg'
+  },
+  'CheckmarkSuccessColor': {
+    filenameLight: 'qrc:/nebula/resources/checkmark-green.svg',
+    filenameDark: 'qrc:/nebula/resources/checkmark-green.svg'
+  },
+  'CheckmarkSuccessColorMuted': {
+    filenameLight: 'qrc:/nebula/resources/check-green70.svg',
+    filenameDark: 'qrc:/nebula/resources/check-green70.svg'
+  },
+  'XErrorColor': {
+    filenameLight: 'qrc:/nebula/resources/x-red50.svg',
+    filenameDark: 'qrc:/nebula/resources/x-red50.svg'
   },
   'CloseDark': {
     filenameLight: 'qrc:/nebula/resources/close-dark.svg',
@@ -30,6 +62,10 @@ var imageLookup = {
   'QuestionDarker': {
     filenameLight: 'qrc:/ui/resources/settings/questionMark.svg',
     filenameDark: 'qrc:/ui/resources/settings/questionMark.svg'
+  },
+  'SearchMagnifyingGlass': {
+    filenameLight: 'qrc:/nebula/resources/search.svg',
+    filenameDark: 'qrc:/nebula/resources/lock.svg'
   },
   'Spinner': {
     filenameLight: 'qrc:/nebula/resources/spinner.svg',
@@ -75,6 +111,14 @@ var imageLookup = {
     filenameLight: 'qrc:/ui/resources/settings/privacy.svg',
     filenameDark: 'qrc:/ui/resources/settings/privacy.svg'
   },
+  'IconLock': {
+    filenameLight: 'qrc:/nebula/resources/lock.svg',
+    filenameDark: 'qrc:/nebula/resources/lock.svg'
+  },
+  'IconPowerButton': {
+    filenameLight: 'qrc:/nebula/resources/startup.svg',
+    filenameDark: 'qrc:/nebula/resources/startup.svg'
+  },
   'InfoIcon': {
     filenameLight: 'qrc:/nebula/resources/info.svg',
     filenameDark: 'qrc:/nebula/resources/info.svg'
@@ -110,6 +154,14 @@ var imageLookup = {
   'GlobeColorful': {
     filenameLight: 'qrc:/ui/resources/logo-dns-settings.svg',
     filenameDark: 'qrc:/ui/resources/logo-dns-settings.svg'
+  },
+  'InfoIcon': {
+    filenameLight: 'qrc:/ui/resources/connection-info.svg',
+    filenameDark: 'qrc:/ui/resources/connection-info.svg'
+  },
+  'InfoIconDark': {
+    filenameLight: 'qrc:/ui/resources/connection-info-dark.svg',
+    filenameDark: 'qrc:/ui/resources/connection-info-dark.svg'
   },
   'ShieldOn': {
     filenameLight: 'qrc:/ui/resources/shield-on.svg',
@@ -155,9 +207,33 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/delete-white.svg',
     filenameDark: 'qrc:/nebula/resources/delete-white.svg'
   },
+  'LightbulbFilled': {
+    filenameLight: 'qrc:/nebula/resources/tip-filled.svg',
+    filenameDark: 'qrc:/nebula/resources/tip-filled.svg'
+  },
   'DisclaimerShield': {
     filenameLight: 'qrc:/nebula/resources/shield-green50.svg',
     filenameDark: 'qrc:/nebula/resources/shield-green50.svg'
+  },
+  'ButtonLoader': {
+    filenameLight: 'qrc:/nebula/resources/buttonLoader.svg',
+    filenameDark: 'qrc:/nebula/resources/buttonLoader.svg'
+  },
+  'CreatePassword': {
+    filenameLight: 'qrc:/ui/resources/create-password.svg',
+    filenameDark: 'qrc:/ui/resources/create-password.svg'
+  },
+  'CheckEmail': {
+    filenameLight: 'qrc:/ui/resources/check-email.svg',
+    filenameDark: 'qrc:/ui/resources/check-email.svg'
+  },
+  'VerificationCode': {
+    filenameLight: 'qrc:/nebula/resources/verification-code.svg',
+    filenameDark: 'qrc:/nebula/resources/verification-code.svg'
+  },
+  'LockWithArrow': {
+    filenameLight: 'qrc:/ui/resources/data-collection.svg',
+    filenameDark: 'qrc:/ui/resources/data-collection.svg'
   }
 }
 

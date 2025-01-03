@@ -15,7 +15,7 @@ Item {
     property bool accessibleIgnored: false
     property bool btnDisabled: false
     property alias forceFocus: iconButton.focus
-    property string _menuIconButtonSource: MZAssetLookup.getImageSource("Back")
+    property string _menuIconButtonSource: MZAssetLookup.getImageSource("ArrowBack")
     property alias _menuIconButtonMirror: menuIcon.mirror
     property alias _iconButtonAccessibleName: iconButton.accessibleName
     property var _menuOnBackClicked: () => {}

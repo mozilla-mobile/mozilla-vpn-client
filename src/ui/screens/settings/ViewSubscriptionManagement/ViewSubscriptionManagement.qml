@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     id: vpnFlickable
@@ -38,7 +39,7 @@ MZViewBase {
 
             _objNameBase: "subscriptionUserProfile"
 
-            _iconSource: "qrc:/nebula/resources/open-in-new.svg"
+            _iconSource: MZAssetLookup.getImageSource("ExternalLinkGrayscale")
             _buttonOnClicked: () => {
                 Glean.interaction.editSelected.record({
                     screen: vpnFlickable.telemetryScreenId,

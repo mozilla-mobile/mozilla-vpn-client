@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZFlickable {
     id: vpnFlickable
@@ -127,7 +128,7 @@ MZFlickable {
             spacing: 16
 
             Image {
-                source: "qrc:/ui/resources/connection-info-dark.svg"
+                source: MZAssetLookup.getImageSource("InfoIconDark")
                 sourceSize.width: 20
                 sourceSize.height: 20
                 antialiasing: true

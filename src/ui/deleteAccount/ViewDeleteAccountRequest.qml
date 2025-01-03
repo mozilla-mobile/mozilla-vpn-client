@@ -42,7 +42,7 @@ MZInAppAuthenticationBase {
     _changeEmailLinkVisible: false
     _disclaimersVisible: false
     _menuButtonAccessibleName: MZI18n.GlobalGoBack
-    _menuButtonImageSource: MZAssetLookup.getImageSource("Back")
+    _menuButtonImageSource: MZAssetLookup.getImageSource("ArrowBack")
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
         cancelAuthenticationFlow();

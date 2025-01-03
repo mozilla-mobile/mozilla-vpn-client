@@ -42,7 +42,7 @@ MZStepNavigation {
             id: dataSlide
 
             property string labelText: "OnboardingProgressBarDataUse"
-            property string iconSource: "qrc:/nebula/resources/lock.svg"
+            property string iconSource: MZAssetLookup.getImageSource("IconLock")
             property string objectName: "data"
 
             onNextClicked: stepNav.next()
@@ -72,7 +72,7 @@ MZStepNavigation {
             id: startSlide
 
             property string labelText: MZUiUtils.isMobile() ? "OnboardingProgressBarConnect" : "OnboardingProgressBarStartup"
-            property string iconSource: "qrc:/nebula/resources/startup.svg"
+            property string iconSource: MZAssetLookup.getImageSource("IconPowerButton")
             property string objectName: "start"
 
             sourceComponent: MZUiUtils.isMobile() ? startSlideMobile : startSlideDesktop

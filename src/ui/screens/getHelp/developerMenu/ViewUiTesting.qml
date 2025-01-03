@@ -62,7 +62,7 @@ MZViewBase {
                 views: [
                     ColumnLayout {
                         property string labelText: "OnboardingProgressBarDataUse"
-                        property string iconSource: "qrc:/nebula/resources/lock.svg"
+                        property string iconSource: MZAssetLookup.getImageSource("IconLock")
 
                         spacing: 24
 
@@ -220,7 +220,7 @@ MZViewBase {
                     },
                     ColumnLayout {
                         property string labelText: "OnboardingProgressBarGetStarted2"
-                        property string iconSource: "qrc:/nebula/resources/startup.svg"
+                        property string iconSource: MZAssetLookup.getImageSource("IconPowerButton")
 
                         spacing: 24
 

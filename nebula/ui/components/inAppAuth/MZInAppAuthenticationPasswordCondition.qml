@@ -21,7 +21,7 @@ RowLayout {
         Layout.alignment: Qt.AlignTop
         MZIcon {
             id: icon
-            source: root._passwordConditionIsSatisfied ? "qrc:/nebula/resources/check-green70.svg" : "qrc:/nebula/resources/x-red50.svg"
+            source: root._passwordConditionIsSatisfied ? MZAssetLookup.getImageSource("CheckmarkSuccessColorMuted") : MZAssetLookup.getImageSource("XErrorColor")
             anchors.fill: parent
         }
     }

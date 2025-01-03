@@ -33,7 +33,7 @@ Item {
             Layout.preferredWidth: parent.width
             Layout.preferredHeight: MZTheme.theme.menuHeight
 
-            _menuIconButtonSource: stackview.depth === 1 ? MZAssetLookup.getImageSource("CloseDark") : MZAssetLookup.getImageSource("Back")
+            _menuIconButtonSource: stackview.depth === 1 ? MZAssetLookup.getImageSource("CloseDark") : MZAssetLookup.getImageSource("ArrowBack")
             _menuIconButtonMirror:  stackview.depth !== 1 && MZLocalizer.isRightToLeft
             _iconButtonAccessibleName: stackview.depth === 1 ? MZI18n.GlobalClose : MZI18n.GlobalGoBack
             _menuOnBackClicked: () => maybeRequestPreviousScreen()

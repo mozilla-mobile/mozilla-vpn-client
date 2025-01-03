@@ -11,6 +11,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components.forms 0.1
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 // AppPermissionsList displays the list of installed applications, allowing users to exclude applications from VPN tunneling
 // (split tunneling). It uses a ListView (MZList) for better performance, because that control supports lazy loading of list items.
@@ -365,7 +366,7 @@ ColumnLayout {
                     visible: Qt.platform.os === "windows"
                     iconComponent: Component {
                         MZIcon {
-                            source: "qrc:/nebula/resources/plus.svg"
+                            source: MZAssetLookup.getImageSource("Plus")
                             sourceSize.height: MZTheme.theme.iconSizeSmall
                             sourceSize.width: MZTheme.theme.iconSizeSmall
                             anchors.bottom: parent.bottom

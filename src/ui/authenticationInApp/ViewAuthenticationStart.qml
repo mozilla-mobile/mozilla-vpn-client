@@ -23,7 +23,7 @@ MZInAppAuthenticationBase {
 
         VPN.cancelAuthentication();
     }
-    _menuButtonImageSource: MZAssetLookup.getImageSource("Back")
+    _menuButtonImageSource: MZAssetLookup.getImageSource("ArrowBack")
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonAccessibleName:  MZI18n.GlobalGoBack
     _headlineText: "Mozilla VPN"

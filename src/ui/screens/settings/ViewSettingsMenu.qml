@@ -39,7 +39,7 @@ MZViewBase {
                 imageLeftSrc: MZAssetLookup.getImageSource("IconAvatar")
                 imageRightSrc: subscriptionManagementEnabled
                     ? MZAssetLookup.getImageSource("Chevron")
-                    : "qrc:/nebula/resources/open-in-new.svg"
+                    : MZAssetLookup.getImageSource("ExternalLinkGrayscale")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.accountSelected.record({screen:telemetryScreenId})
