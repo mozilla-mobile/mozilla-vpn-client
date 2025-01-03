@@ -30,10 +30,12 @@ jobs:
       - name: Update git reference
         shell: bash
         working-directory: linux/flatpak
+        env:
+          HEAD_COMMIT_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
         run: |
           python -m yq -yi 'del(.modules[-1].sources[0].branch)' org.mozilla.vpn.yml
           python -m yq -yi ".modules[-1].sources[0].url = \"https://github.com/${{ github.repository }}\"" org.mozilla.vpn.yml
-          python -m yq -yi ".modules[-1].sources[0].commit = \"${{ github.sha }}\"" org.mozilla.vpn.yml
+          python -m yq -yi ".modules[-1].sources[0].commit = \"${HEAD_COMMIT_SHA}\"" org.mozilla.vpn.yml
           cat org.mozilla.vpn.yml
 
       - name: Add Appstream metainfo
