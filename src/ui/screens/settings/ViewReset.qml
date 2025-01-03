@@ -11,6 +11,7 @@ import Mozilla.Shared 1.0
 import components 0.1
 import compat 0.1
 import "qrc:/qt/qml/Mozilla/VPN/sharedViews"
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 ViewFullScreen {
     id: root
@@ -33,7 +34,7 @@ ViewFullScreen {
             sourceSize.height: 80
             sourceSize.width: 80
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/ui/resources/reset.svg"
+            source: MZAssetLookup.getImageSource("Reset")
         }
 
         MZHeadline {
@@ -152,7 +153,7 @@ ViewFullScreen {
             anchors.centerIn: Overlay.overlay
 
             closeButtonObjectName: "confirmResetPopupCloseButton"
-            imageSrc: "qrc:/ui/resources/confirm-reset.svg"
+            imageSrc: MZAssetLookup.getImageSource("ResetWithWarning")
             imageSize: Qt.size(80, 80)
             title: MZI18n.ResetSettingsConfirmResetModalTitle
             description: MZI18n.ResetSettingsConfirmResetModalBody

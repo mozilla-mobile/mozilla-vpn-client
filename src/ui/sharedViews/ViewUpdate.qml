@@ -26,7 +26,7 @@ MZFlickable {
                 logoTitle: qsTrId("vpn.updates.updateRecomended")
                 //% "Please update the app before you continue to use the VPN"
                 logoSubtitle: qsTrId("vpn.updates.updateRecomended.description")
-                logo: "qrc:/ui/resources/updateRecommended.svg"
+                logo: MZAssetLookup.getImageSource("LockWithDownloadArrow")
             }
 
             PropertyChanges {
@@ -51,7 +51,7 @@ MZFlickable {
                 logoTitle: qsTrId("vpn.updates.updateRequired")
                 //% "We detected and fixed a serious bug. You must update your app."
                 logoSubtitle: qsTrId("vpn.updates.updateRequire.reason")
-                logo: "qrc:/ui/resources/updateRequired.svg"
+                logo: MZAssetLookup.getImageSource("LockWithWarning")
             }
 
             PropertyChanges {

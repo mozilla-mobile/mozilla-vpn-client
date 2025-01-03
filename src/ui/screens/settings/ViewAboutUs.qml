@@ -179,7 +179,7 @@ MZViewBase {
                     verticalCenter: parent.verticalCenter
                 }
                 fillMode: Image.PreserveAspectFit
-                source: "qrc:/nebula/resources/refresh.svg"
+                source: MZAssetLookup.getImageSource("RefreshArrows")
                 sourceSize.height: MZTheme.theme.iconSize * 1.5
                 sourceSize.width: MZTheme.theme.iconSize * 1.5
                 visible: true
@@ -216,14 +216,14 @@ MZViewBase {
 
             if (updateAvailable) {
                 updateButtonImageAnimation.stop();
-                updatePopup.imageSrc = "qrc:/nebula/resources/updateStatusUpdateAvailable.svg";
+                updatePopup.imageSrc = MZAssetLookup.getImageSource("RefreshArrowsWithWarning");
                 updatePopup.imageSize = Qt.size(80, 80)
                 updatePopup.title = MZI18n.UpdateButtonTitleOnUpdate
                 updatePopup.description = MZI18n.UpdateButtonDescriptionOnUpdate
                 updatePopup.buttonText = MZI18n.UpdateButtonActionOnUpdate
             } else {
                 updateButtonImageAnimation.stop();
-                updatePopup.imageSrc = "qrc:/nebula/resources/updateStatusUpToDate.svg";
+                updatePopup.imageSrc = MZAssetLookup.getImageSource("RefreshArrowsWithCheckmark");;
                 updatePopup.imageSize = Qt.size(80, 80)
                 updatePopup.title = MZI18n.UpdateButtonTitleNoUpdate
                 updatePopup.description = MZI18n.UpdateButtonDescriptionNoUpdate2
@@ -240,7 +240,7 @@ MZViewBase {
         property bool updateAvailable
 
         anchors.centerIn: Overlay.overlay
-        imageSrc: "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
+        imageSrc: MZAssetLookup.getImageSource("RefreshArrowsWithWarning")
         imageSize: Qt.size(80, 80)
         title: MZI18n.UpdateButtonTitleOnUpdate
         description: MZI18n.UpdateButtonDescriptionOnUpdate

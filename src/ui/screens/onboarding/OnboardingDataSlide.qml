@@ -73,7 +73,7 @@ ColumnLayout {
     Image {
         Layout.alignment: Qt.AlignHCenter
 
-        source: MZAssetLookup.getImageSource("LockWithArrow")
+        source: MZAssetLookup.getImageSource("LockWithDownloadArrowLarge")
         sourceSize: MZUiUtils.isLargePhone() ? Qt.size(209,144) : Qt.size(151,104)
     }
 

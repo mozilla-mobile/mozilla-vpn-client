@@ -23,6 +23,18 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/arrow-toggle.svg',
     filenameDark: 'qrc:/nebula/resources/lock.svg'
   },
+  'RefreshArrows': {
+    filenameLight: 'qrc:/nebula/resources/refresh.svg',
+    filenameDark: 'qrc:/nebula/resources/lock.svg'
+  },
+  'RefreshArrowsWithCheckmark': {
+    filenameLight: 'qrc:/nebula/resources/updateStatusUpToDate.svg',
+    filenameDark: 'qrc:/nebula/resources/updateStatusUpToDate.svg'
+  },
+  'RefreshArrowsWithWarning': {
+    filenameLight: 'qrc:/nebula/resources/updateStatusUpdateAvailable.svg',
+    filenameDark: 'qrc:/nebula/resources/updateStatusUpdateAvailable.svg'
+  },
   'Plus': {
     filenameLight: 'qrc:/nebula/resources/plus.svg',
     filenameDark: 'qrc:/nebula/resources/plus.svg'
@@ -79,6 +91,10 @@ var imageLookup = {
     filenameLight: 'qrc:/ui/resources/logo-connecting.svg',
     filenameDark: 'qrc:/ui/resources/logo-connecting.svg'
   },
+  'LogoWithChainLink': {
+    filenameLight: 'qrc:/ui/resources/link.svg',
+    filenameDark: 'qrc:/ui/resources/link.svg'
+  },
   'Avatar': {
     filenameLight: 'qrc:/nebula/resources/avatar.svg',
     filenameDark: 'qrc:/nebula/resources/avatar.svg'
@@ -102,6 +118,10 @@ var imageLookup = {
   'IconDevices': {
     filenameLight: 'qrc:/ui/resources/devices.svg',
     filenameDark: 'qrc:/ui/resources/devices.svg'
+  },
+  'IconWrench': {
+    filenameLight: 'qrc:/ui/resources/developer.svg',
+    filenameDark: 'qrc:/ui/resources/developer.svg'
   },
   'PrivacyMask': {
     filenameLight: 'qrc:/ui/resources/logo-dns-privacy.svg',
@@ -151,6 +171,10 @@ var imageLookup = {
     filenameLight: 'qrc:/ui/resources/globe-warning.svg',
     filenameDark: 'qrc:/ui/resources/globe-warning.svg'
   },
+  'GlobeNoConnection': {
+    filenameLight: 'qrc:/ui/resources/server-unavailable.svg',
+    filenameDark: 'qrc:/ui/resources/server-unavailable.svg'
+  },
   'GlobeColorful': {
     filenameLight: 'qrc:/ui/resources/logo-dns-settings.svg',
     filenameDark: 'qrc:/ui/resources/logo-dns-settings.svg'
@@ -162,6 +186,14 @@ var imageLookup = {
   'InfoIconDark': {
     filenameLight: 'qrc:/ui/resources/connection-info-dark.svg',
     filenameDark: 'qrc:/ui/resources/connection-info-dark.svg'
+  },
+  'Reset': {
+    filenameLight: 'qrc:/ui/resources/reset.svg',
+    filenameDark: 'qrc:/ui/resources/reset.svg'
+  },
+  'ResetWithWarning': {
+    filenameLight: 'qrc:/ui/resources/confirm-reset.svg',
+    filenameDark: 'qrc:/ui/resources/confirm-reset.svg'
   },
   'ShieldOn': {
     filenameLight: 'qrc:/ui/resources/shield-on.svg',
@@ -207,6 +239,22 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/delete-white.svg',
     filenameDark: 'qrc:/nebula/resources/delete-white.svg'
   },
+  'ConnectionStrong': {
+    filenameLight: 'qrc:/ui/resources/server-latency-strong.svg',
+    filenameDark: 'qrc:/ui/resources/server-latency-strong.svg'
+  },
+  'ConnectionModerate': {
+    filenameLight: 'qrc:/ui/resources/server-latency-moderate.svg',
+    filenameDark: 'qrc:/ui/resources/server-latency-moderate.svg'
+  },
+  'ConnectionWeak': {
+    filenameLight: 'qrc:/ui/resources/server-latency-weak.svg',
+    filenameDark: 'qrc:/ui/resources/server-latency-weak.svg'
+  },
+  'ConnectionUnknown': {
+    filenameLight: 'qrc:/ui/resources/server-latency-unavailable.svg',
+    filenameDark: 'qrc:/ui/resources/server-latency-unavailable.svg'
+  },
   'LightbulbFilled': {
     filenameLight: 'qrc:/nebula/resources/tip-filled.svg',
     filenameDark: 'qrc:/nebula/resources/tip-filled.svg'
@@ -231,9 +279,29 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/verification-code.svg',
     filenameDark: 'qrc:/nebula/resources/verification-code.svg'
   },
-  'LockWithArrow': {
+  'LockWithDownloadArrowLarge': {
     filenameLight: 'qrc:/ui/resources/data-collection.svg',
     filenameDark: 'qrc:/ui/resources/data-collection.svg'
+  },
+  'LockWithDownloadArrow': {
+    filenameLight: 'qrc:/ui/resources/updateRecommended.svg',
+    filenameDark: 'qrc:/ui/resources/updateRecommended.svg'
+  },
+  'LockWithWarning': {
+    filenameLight: 'qrc:/ui/resources/updateRequired.svg',
+    filenameDark: 'qrc:/ui/resources/updateRequired.svg'
+  },
+  'HeartWithCheckmark': {
+    filenameLight: 'qrc:/ui/resources/heart-check.svg',
+    filenameDark: 'qrc:/ui/resources/heart-check.svg'
+  },
+  'RocketShipWithCheckmark': {
+    filenameLight: 'qrc:/ui/resources/launch.svg',
+    filenameDark: 'qrc:/ui/resources/launch.svg'
+  },
+  'EmptyMessages': {
+    filenameLight: 'qrc:/ui/resources/messages-empty.svg',
+    filenameDark: 'qrc:/ui/resources/messages-empty.svg'
   }
 }
 

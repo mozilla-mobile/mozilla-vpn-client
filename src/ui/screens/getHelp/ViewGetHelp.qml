@@ -85,7 +85,7 @@ MZViewBase {
             anchors.horizontalCenter: parent.horizontalCenter
 
             settingTitle: MZI18n.GetHelpDeveloperOptions
-            imageLeftSrc: "qrc:/ui/resources/developer.svg"
+            imageLeftSrc: MZAssetLookup.getImageSource("IconWrench")
             imageRightSrc: MZAssetLookup.getImageSource("Chevron")
             imageRightMirror: MZLocalizer.isRightToLeft
             visible: MZSettings.developerUnlock

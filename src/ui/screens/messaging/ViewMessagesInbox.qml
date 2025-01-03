@@ -10,6 +10,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     id: vpnFlickable
@@ -102,7 +103,7 @@ MZViewBase {
             Layout.topMargin: MZTheme.theme.vSpacingSmall * 2
             Layout.alignment: Qt.AlignHCenter
 
-            source: "qrc:/ui/resources/messages-empty.svg"
+            source: MZAssetLookup.getImageSource("EmptyMessages")
             sourceSize.width: 184
             sourceSize.height: 184
             visible: vpnFlickable.isEmptyState
