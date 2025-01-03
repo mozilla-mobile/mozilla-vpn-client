@@ -113,7 +113,7 @@ MZViewBase {
                 objectName: "settingsNotifications"
 
                 settingTitle: _notificationsTitle
-                imageLeftSrc: "qrc:/ui/resources/settings/notifications.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconBell")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
@@ -131,7 +131,7 @@ MZViewBase {
                 objectName: "settingsLanguages"
 
                 settingTitle: _languageTitle
-                imageLeftSrc: "qrc:/ui/resources/settings/language.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconLanguages")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
@@ -145,7 +145,7 @@ MZViewBase {
                 objectName: "dnsSettings"
 
                 settingTitle: MZI18n.SettingsDnsSettings
-                imageLeftSrc: "qrc:/ui/resources/settings/dnssettings.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconGlobe")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {

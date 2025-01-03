@@ -66,7 +66,7 @@ MZViewBase {
             MZSettingsItem {
                 objectName: "appExclusionSettings"
                 settingTitle: MZI18n.SettingsAppExclusionTitle
-                imageLeftSrc: "qrc:/ui/resources/settings/apppermissions.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconPermissions")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
@@ -94,7 +94,7 @@ MZViewBase {
                 id: preferencesSetting
                 objectName: "settingsPreferences"
                 settingTitle: MZI18n.SettingsPreferencesSettings
-                imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconWrenchDarker")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
@@ -123,7 +123,7 @@ MZViewBase {
             MZSettingsItem {
                 objectName: "settingsAboutUs"
                 settingTitle: MZI18n.AboutUsTitle
-                imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("InfoIconDarker")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {

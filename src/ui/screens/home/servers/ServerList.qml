@@ -120,7 +120,7 @@ FocusScope {
                         Layout.preferredWidth: 184
 
                         fillMode: Image.PreserveAspectFit
-                        source: "qrc:/ui/resources/globe.svg"
+                        source: MZAssetLookup.getImageSource("EmptyServerList")
                     }
 
                     MZTextBlock {
@@ -185,7 +185,7 @@ FocusScope {
                             spacing: MZTheme.theme.listSpacing
 
                             MZIcon {
-                                source: "qrc:/nebula/resources/clock.svg"
+                                source: MZAssetLookup.getImageSource("IconReset")
 
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                                 Layout.topMargin: MZTheme.theme.listSpacing

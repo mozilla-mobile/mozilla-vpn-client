@@ -27,6 +27,10 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/refresh.svg',
     filenameDark: 'qrc:/nebula/resources/lock.svg'
   },
+  'RefreshArrowsForShield': {
+    filenameLight: 'qrc:/ui/resources/switching.svg',
+    filenameDark: 'qrc:/ui/resources/switching.svg'
+  },
   'RefreshArrowsWithCheckmark': {
     filenameLight: 'qrc:/nebula/resources/updateStatusUpToDate.svg',
     filenameDark: 'qrc:/nebula/resources/updateStatusUpToDate.svg'
@@ -123,6 +127,14 @@ var imageLookup = {
     filenameLight: 'qrc:/ui/resources/developer.svg',
     filenameDark: 'qrc:/ui/resources/developer.svg'
   },
+  'IconWrenchDarker': {
+    filenameLight: 'qrc:/ui/resources/settings/preferences.svg',
+    filenameDark: 'qrc:/ui/resources/settings/preferences.svg'
+  },
+  'IconPermissions': {
+    filenameLight: 'qrc:/ui/resources/settings/apppermissions.svg',
+    filenameDark: 'qrc:/ui/resources/settings/apppermissions.svg'
+  },
   'PrivacyMask': {
     filenameLight: 'qrc:/ui/resources/logo-dns-privacy.svg',
     filenameDark: 'qrc:/ui/resources/logo-dns-privacy.svg'
@@ -139,9 +151,17 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/startup.svg',
     filenameDark: 'qrc:/nebula/resources/startup.svg'
   },
-  'InfoIcon': {
-    filenameLight: 'qrc:/nebula/resources/info.svg',
-    filenameDark: 'qrc:/nebula/resources/info.svg'
+  'IconGlobe': {
+    filenameLight: 'qrc:/ui/resources/settings/dnssettings.svg',
+    filenameDark: 'qrc:/ui/resources/settings/dnssettings.svg'
+  },
+  'IconLanguages': {
+    filenameLight: 'qrc:/ui/resources/settings/language.svg',
+    filenameDark: 'qrc:/ui/resources/settings/language.svg'
+  },
+  'IconBell': {
+    filenameLight: 'qrc:/ui/resources/settings/notifications.svg',
+    filenameDark: 'qrc:/ui/resources/settings/notifications.svg'
   },
   'SuccessIcon': {
     filenameLight: 'qrc:/nebula/resources/success.svg',
@@ -179,13 +199,33 @@ var imageLookup = {
     filenameLight: 'qrc:/ui/resources/logo-dns-settings.svg',
     filenameDark: 'qrc:/ui/resources/logo-dns-settings.svg'
   },
+  'GlobeOnWithInsetSpace': {
+    filenameLight: 'qrc:/ui/resources/main-img-vpn-on.svg',
+    filenameDark: 'qrc:/ui/resources/main-img-vpn-on.svg'
+  },
+  'GlobeOffWithInsetSpace': {
+    filenameLight: 'qrc:/ui/resources/main-img-vpn-off.svg',
+    filenameDark: 'qrc:/ui/resources/main-img-vpn-off.svg'
+  },
   'InfoIcon': {
     filenameLight: 'qrc:/ui/resources/connection-info.svg',
     filenameDark: 'qrc:/ui/resources/connection-info.svg'
   },
+  'InfoIconThinner': {
+    filenameLight: 'qrc:/nebula/resources/info.svg',
+    filenameDark: 'qrc:/nebula/resources/info.svg'
+  },
   'InfoIconDark': {
     filenameLight: 'qrc:/ui/resources/connection-info-dark.svg',
     filenameDark: 'qrc:/ui/resources/connection-info-dark.svg'
+  },
+  'InfoIconDarker': {
+    filenameLight: 'qrc:/ui/resources/settings/aboutUs.svg',
+    filenameDark: 'qrc:/ui/resources/settings/aboutUs.svg'
+  },
+  'IconReset': {
+    filenameLight: 'qrc:/nebula/resources/clock.svg',
+    filenameDark: 'qrc:/nebula/resources/clock.svg'
   },
   'Reset': {
     filenameLight: 'qrc:/ui/resources/reset.svg',
@@ -302,6 +342,70 @@ var imageLookup = {
   'EmptyMessages': {
     filenameLight: 'qrc:/ui/resources/messages-empty.svg',
     filenameDark: 'qrc:/ui/resources/messages-empty.svg'
+  },
+  'EmptyServerList': {
+    filenameLight: 'qrc:/ui/resources/globe.svg',
+    filenameDark: 'qrc:/ui/resources/globe.svg'
+  },
+  'PlatformAppleActive': {
+    filenameLight: 'qrc:/ui/resources/apple-active.svg',
+    filenameDark: 'qrc:/ui/resources/apple-active.svg'
+  },
+  'PlatformAppleInactive': {
+    filenameLight: 'qrc:/ui/resources/apple.svg',
+    filenameDark: 'qrc:/ui/resources/apple.svg'
+  },
+  'PlatformAndroidActive': {
+    filenameLight: 'qrc:/ui/resources/android-active.svg',
+    filenameDark: 'qrc:/ui/resources/android-active.svg'
+  },
+  'PlatformAndroidInactive': {
+    filenameLight: 'qrc:/ui/resources/android.svg',
+    filenameDark: 'qrc:/ui/resources/android.svg'
+  },
+  'PaymentAmex': {
+    filenameLight: 'qrc:/ui/resources/payment/amex.svg',
+    filenameDark: 'qrc:/ui/resources/payment/amex.svg'
+  },
+  'PaymentDiners': {
+    filenameLight: 'qrc:/ui/resources/payment/diners.svg',
+    filenameDark: 'qrc:/ui/resources/payment/diners.svg'
+  },
+  'PaymentDiscover': {
+    filenameLight: 'qrc:/ui/resources/payment/discover.svg',
+    filenameDark: 'qrc:/ui/resources/payment/discover.svg'
+  },
+  'PaymentJcb': {
+    filenameLight: 'qrc:/ui/resources/payment/jcb.svg',
+    filenameDark: 'qrc:/ui/resources/payment/jcb.svg'
+  },
+  'PaymentApple': {
+    filenameLight: 'qrc:/ui/resources/payment/apple.svg',
+    filenameDark: 'qrc:/ui/resources/payment/apple.svg'
+  },
+  'PaymentGoogle': {
+    filenameLight: 'qrc:/ui/resources/payment/android.svg',
+    filenameDark: 'qrc:/ui/resources/payment/android.svg'
+  },
+  'PaymentMastercard': {
+    filenameLight: 'qrc:/ui/resources/payment/mastercard.svg',
+    filenameDark: 'qrc:/ui/resources/payment/mastercard.svg'
+  },
+  'PaymentPayPal': {
+    filenameLight: 'qrc:/ui/resources/payment/paypal.svg',
+    filenameDark: 'qrc:/ui/resources/payment/paypal.svg'
+  },
+  'PaymentUnionPay': {
+    filenameLight: 'qrc:/ui/resources/payment/unionpay.svg',
+    filenameDark: 'qrc:/ui/resources/payment/unionpay.svg'
+  },
+  'PaymentVisa': {
+    filenameLight: 'qrc:/ui/resources/payment/visa.svg',
+    filenameDark: 'qrc:/ui/resources/payment/visa.svg'
+  },
+  'PaymentUnbranded': {
+    filenameLight: 'qrc:/ui/resources/payment/unbranded.svg',
+    filenameDark: 'qrc:/ui/resources/payment/unbranded.svg'
   }
 }
 

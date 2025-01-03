@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 RowLayout {
     id: root
@@ -39,57 +40,57 @@ RowLayout {
         switch(paymentMethod) {
             case "amex":
                 return {
-                    icon: "qrc:/ui/resources/payment/amex.svg",
+                    icon: MZAssetLookup.getImageSource("PaymentAmex"),
                     name: MZI18n.PaymentMethodsAmex
                 };
             case "diners":
                 return {
-                    icon: "qrc:/ui/resources/payment/diners.svg",
+                    icon: MZAssetLookup.getImageSource("PaymentDiners"),
                     name: MZI18n.PaymentMethodsDiners
                 };
             case "discover":
                 return {
-                    icon: "qrc:/ui/resources/payment/discover.svg",
+                    icon: MZAssetLookup.getImageSource("PaymentDiscover"),
                     name: MZI18n.PaymentMethodsDiscover
                 };
             case "jcb":
                 return {
-                    icon: "qrc:/ui/resources/payment/jcb.svg",
+                    icon: MZAssetLookup.getImageSource("PaymentJcb"),
                     name: MZI18n.PaymentMethodsJcb
                 };
             case "iap_apple":
                 return {
-                    icon: "qrc:/ui/resources/payment/apple.svg",
+                    icon: MZAssetLookup.getImageSource("PaymentApple"),
                     name: MZI18n.PaymentMethodsIapApple
                 };
             case "iap_google":
                 return {
-                    icon: "qrc:/ui/resources/payment/android.svg",
+                    icon: MZAssetLookup.getImageSource("PaymentGoogle"),
                     name: MZI18n.PaymentMethodsIapGoogle
                 };
             case "mastercard":
                 return {
-                    icon: "qrc:/ui/resources/payment/mastercard.svg",
+                    icon: MZAssetLookup.getImageSource("PaymentMastercard"),
                     name: MZI18n.PaymentMethodsMastercard
                 };
             case "paypal":
                 return {
-                    icon: "qrc:/ui/resources/payment/paypal.svg",
+                    icon: MZAssetLookup.getImageSource("PaymentPayPal"),
                     name: MZI18n.PaymentMethodsPaypal
                 };
             case "unionpay":
                 return {
-                    icon: "qrc:/ui/resources/payment/unionpay.svg",
+                    icon: MZAssetLookup.getImageSource("PaymentUnionPay"),
                     name: MZI18n.PaymentMethodsUnionpay
                 };
             case "visa":
                 return {
-                    icon: "qrc:/ui/resources/payment/visa.svg",
+                    icon: MZAssetLookup.getImageSource("PaymentVisa"),
                     name: MZI18n.PaymentMethodsVisa
                 };
             default:
                 return {
-                    icon: "qrc:/ui/resources/payment/unbranded.svg",
+                    icon: MZAssetLookup.getImageSource("PaymentUnbranded"),
                     name: ""
                 };
         }

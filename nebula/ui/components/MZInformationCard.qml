@@ -95,7 +95,7 @@ Rectangle {
     function getIconImage() {
         switch (cardType) {
         case MZInformationCard.CardType.Info:
-            return MZAssetLookup.getImageSource("InfoIcon")
+            return MZAssetLookup.getImageSource("InfoIconThinner")
         case MZInformationCard.CardType.Success:
             return MZAssetLookup.getImageSource("SuccessIcon")
         case MZInformationCard.CardType.Warning:

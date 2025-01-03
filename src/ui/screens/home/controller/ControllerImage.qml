@@ -352,7 +352,7 @@ Rectangle {
             anchors.centerIn: insetCircle
             sourceSize.height: 32
             sourceSize.width: 32
-            source: "qrc:/ui/resources/switching.svg"
+            source: MZAssetLookup.getImageSource("RefreshArrowsForShield")
             opacity: 0
              PropertyAnimation {
                  id: spin
@@ -369,7 +369,7 @@ Rectangle {
 
     Image {
         id: globe
-        source: logo.showVPNOnIcon ? "qrc:/ui/resources/main-img-vpn-on.svg" : "qrc:/ui/resources/main-img-vpn-off.svg"
+        source: logo.showVPNOnIcon ? MZAssetLookup.getImageSource("GlobeOnWithInsetSpace") : MZAssetLookup.getImageSource("GlobeOffWithInsetSpace")
         sourceSize.height: logo.height
         sourceSize.width: logo.width
         visible: true
