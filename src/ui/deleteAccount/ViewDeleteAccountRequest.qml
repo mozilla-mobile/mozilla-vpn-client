@@ -48,7 +48,7 @@ MZInAppAuthenticationBase {
         cancelAuthenticationFlow();
     }
     _headlineText: MZI18n.DeleteAccountHeadline2
-    _imgSource: "qrc:/nebula/resources/avatar-delete-account.svg"
+    _imgSource: MZAssetLookup.getImageSource("AvatarDeleteAccount")
 
     _inputs: ColumnLayout {
         objectName: "accountDeletionLayout"

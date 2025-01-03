@@ -62,7 +62,7 @@ MZInAppAuthenticationBase {
     _menuButtonAccessibleName: MZI18n.GlobalGoBack
     _headlineText: MZAuthInApp.emailAddress
     _subtitleText: MZI18n.InAppAuthSignInSubtitle2
-    _imgSource: "qrc:/nebula/resources/avatar.svg"
+    _imgSource: MZAssetLookup.getImageSource("Avatar")
     _inputLabel: MZI18n.InAppAuthPasswordInputLabel
 
     _inputs: MZInAppAuthenticationInputs {

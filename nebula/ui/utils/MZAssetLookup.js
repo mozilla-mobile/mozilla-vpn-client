@@ -43,6 +43,30 @@ var imageLookup = {
     filenameLight: 'qrc:/ui/resources/logo-connecting.svg',
     filenameDark: 'qrc:/ui/resources/logo-connecting.svg'
   },
+  'Avatar': {
+    filenameLight: 'qrc:/nebula/resources/avatar.svg',
+    filenameDark: 'qrc:/nebula/resources/avatar.svg'
+  },
+  'AvatarDeleteAccount': {
+    filenameLight: 'qrc:/nebula/resources/avatar-delete-account.svg',
+    filenameDark: 'qrc:/nebula/resources/avatar-delete-account.svg'
+  },
+  'IconAvatar': {
+    filenameLight: 'qrc:/nebula/resources/avatar-grayscale.svg',
+    filenameDark: 'qrc:/nebula/resources/avatar-grayscale.svg'
+  },
+  'DevicesLimit': {
+    filenameLight: 'qrc:/ui/resources/devicesLimit.svg',
+    filenameDark: 'qrc:/ui/resources/devicesLimit.svg'
+  },
+  'DevicesRemove': {
+    filenameLight: 'qrc:/ui/resources/devicesRemove.svg',
+    filenameDark: 'qrc:/ui/resources/devicesRemove.svg'
+  },
+  'IconDevices': {
+    filenameLight: 'qrc:/ui/resources/devices.svg',
+    filenameDark: 'qrc:/ui/resources/devices.svg'
+  },
   'PrivacyMask': {
     filenameLight: 'qrc:/ui/resources/logo-dns-privacy.svg',
     filenameDark: 'qrc:/ui/resources/logo-dns-privacy.svg'
@@ -118,6 +142,18 @@ var imageLookup = {
   'Paste': {
     filenameLight: 'qrc:/nebula/resources/paste.svg',
     filenameDark: 'qrc:/nebula/resources/paste.svg'
+  },
+  'TrashCanRed': {
+    filenameLight: 'qrc:/nebula/resources/delete.svg',
+    filenameDark: 'qrc:/nebula/resources/delete.svg'
+  },
+  'TrashCanGray': {
+    filenameLight: 'qrc:/nebula/resources/delete-gray.svg',
+    filenameDark: 'qrc:/nebula/resources/delete-gray.svg'
+  },
+  'TrashCanWhite': {
+    filenameLight: 'qrc:/nebula/resources/delete-white.svg',
+    filenameDark: 'qrc:/nebula/resources/delete-white.svg'
   },
   'DisclaimerShield': {
     filenameLight: 'qrc:/nebula/resources/shield-green50.svg',

@@ -58,7 +58,7 @@ MZViewBase {
                 id: icon
 
                 anchors.centerIn: parent
-                source: "qrc:/nebula/resources/delete-gray.svg"
+                source: MZAssetLookup.getImageSource("TrashCanGray")
             }
 
             onClicked: {

@@ -98,7 +98,7 @@ Item {
 
             MZLogsButton {
                 buttonText: MZI18n.GlobalClear
-                iconSource: "qrc:/nebula/resources/delete.svg"
+                iconSource: MZAssetLookup.getImageSource("TrashCanRed")
                 onClicked: {
                     MZLog.flushLogs();
                     logText.text = "";

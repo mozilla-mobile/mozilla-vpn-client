@@ -219,7 +219,7 @@ MZViewBase {
                         bgColor: MZTheme.colors.destructiveButton.defaultColor
                         content: Image {
                             anchors.centerIn: parent
-                            source: "qrc:/nebula/resources/delete-white.svg"
+                            source: MZAssetLookup.getImageSource("TrashCanWhite")
                         }
                         Accessible.name: MZI18n.InAppMessagingDeleteMessage
 

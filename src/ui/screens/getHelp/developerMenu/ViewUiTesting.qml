@@ -185,7 +185,7 @@ MZViewBase {
                     },
                     ColumnLayout {
                         property string labelText: "OnboardingProgressBarAddDevices"
-                        property string iconSource: "qrc:/ui/resources/devices.svg"
+                        property string iconSource: MZAssetLookup.getImageSource("IconDevices")
 
                         spacing: 24
 

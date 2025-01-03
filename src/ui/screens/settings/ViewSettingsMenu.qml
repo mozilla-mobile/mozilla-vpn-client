@@ -36,7 +36,7 @@ MZViewBase {
                 property bool subscriptionManagementEnabled: MZFeatureList.get("subscriptionManagement").isSupported
                 objectName: "settingsUserProfile"
                 settingTitle: MZI18n.SubscriptionManagementSectionTitle
-                imageLeftSrc: "qrc:/nebula/resources/avatar-grayscale.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconAvatar")
                 imageRightSrc: subscriptionManagementEnabled
                     ? MZAssetLookup.getImageSource("Chevron")
                     : "qrc:/nebula/resources/open-in-new.svg"
@@ -81,7 +81,7 @@ MZViewBase {
 
                 //% "Devices"
                 settingTitle: MZI18n.DevicesSectionTitle
-                imageLeftSrc: "qrc:/ui/resources/devices.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconDevices")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
