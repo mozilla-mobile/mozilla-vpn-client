@@ -280,6 +280,7 @@ const screenSettings = {
   STACKVIEW: new QmlQueryComposer('//settings-stackView'),
   APP_PREFERENCES: new QmlQueryComposer('//settingsPreferences'),
   USER_PROFILE: new QmlQueryComposer('//settingsUserProfile'),
+  REAUTH_BUTTON: new QmlQueryComposer('//reauthButton'),
 
   privacyView: {
     VIEW: new QmlQueryComposer('//privacySettingsView'),

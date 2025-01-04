@@ -348,6 +348,8 @@ settings:
   appExclusionClearAllApps:
     value: Clear all
     comment: Button label to clear all apps from the exclusions list
+  reauthTitle: Sign In Again
+  reauthDescription: For your security, please sign in again to access your account information. You’ll complete this process on Mozilla’s website.
 
 localNetworkAccess:
   labelTitle: Exclude local network traffic

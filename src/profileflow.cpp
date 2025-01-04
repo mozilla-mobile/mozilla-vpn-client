@@ -10,6 +10,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "taskscheduler.h"
 
@@ -78,8 +79,32 @@ void ProfileFlow::start() {
     }
   });
 
+  connect(task, &TaskGetSubscriptionDetails::mustTransitionAuthToWeb, this,
+          [this]() { setState(StateAuthenticationNeeded); });
+
   TaskScheduler::scheduleTask(task);
   m_currentTask = task;
+}
+
+void ProfileFlow::reauthenticateViaWeb() {
+  // We need the user to login on the browser (rather than the client),
+  // then we'll try getting the profile again.
+  TaskAuthenticate* taskAuthenticate =
+      new TaskAuthenticate(AuthenticationListener::AuthenticationInBrowser);
+  connect(taskAuthenticate, &TaskAuthenticate::authenticationAborted, this,
+          [this]() {
+            logger.debug() << "Authentication failed";
+            setState(StateError);
+            ProfileFlow::reset();
+          });
+  connect(
+      taskAuthenticate, &TaskAuthenticate::authenticationCompleted, this,
+      [this]() {
+        logger.debug() << "Authentication succeeded, restarting profile flow";
+        ProfileFlow::start();
+      });
+
+  TaskScheduler::scheduleTask(taskAuthenticate);
 }
 
 void ProfileFlow::reset() {

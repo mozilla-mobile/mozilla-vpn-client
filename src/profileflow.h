@@ -20,6 +20,7 @@ class ProfileFlow final : public QObject {
   ~ProfileFlow();
 
   Q_INVOKABLE void start();
+  Q_INVOKABLE void reauthenticateViaWeb();
   Q_INVOKABLE void reset();
 
   enum State {
