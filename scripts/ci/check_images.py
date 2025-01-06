@@ -7,7 +7,7 @@ import argparse
 import os
 import re
 
-# This file checks to make sure all images in QML use the style that allows for different assets for dark mode and light mode.
+# This file checks to make sure all images in QML use the style that allows for different assets for dark mode and light mode. More information available in `assets.md`.
 
 IMAGE_REGEX = r"qrc.*(svg)|(png)"
 IMAGE_DEF_REGEX = r"'.*': \{"
