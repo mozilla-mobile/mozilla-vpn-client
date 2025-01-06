@@ -67,27 +67,22 @@ ColumnLayout {
             id: deviceTypeToggle
             objectName: "deviceTypeToggle"
 
-            property var androidActive: MZAssetLookup.getImageSource("PlatformAndroidActive")
-            property var androidInactive: MZAssetLookup.getImageSource("PlatformAndroidInactive")
-            property var appleActive: MZAssetLookup.getImageSource("PlatformAppleActive")
-            property var appleInactive: MZAssetLookup.getImageSource("PlatformAppleInactive")
-
             Layout.preferredWidth: 108
 
             model: ListModel {
                 ListElement {
-                    segmentIconPath: "qrc:/ui/resources/android.svg" // androidInactive
+                    segmentIconPath: "PlatformAndroidInactive"
                     //Android icon is too detailed for how small we are presenting it here (24x24) causing it to appear poorly/grainy when behind a ColorOverlay
-                    //so we use an alternate svg with the color built in
-                    selectedSegmentIconPath: "qrc:/ui/resources/android-active.svg" // androidActive
+                    //so we use an alternate image with the color built in
+                    selectedSegmentIconPath: "PlatformAndroidActive"
                     segmentLabelStringId: "OnboardingDevicesSlideDeviceTypeAndroid"
                     segmentButtonId: "tabAndroid"
                 }
                 ListElement {
-                    segmentIconPath: "qrc:/ui/resources/apple.svg" // appleInactive
+                    segmentIconPath: "PlatformAppleInactive"
                     //When ColorOverlay is applied to the apple icon, it "thickens" a little bit which is a somewhat jarring when the transition from unselected -> selected happens
-                    //so we use an alternate svg with the color built in
-                    selectedSegmentIconPath: "qrc:/ui/resources/apple-active.svg" // appleActive
+                    //so we use an alternate image with the color built in
+                    selectedSegmentIconPath: "PlatformAppleActive"
                     segmentLabelStringId: "OnboardingDevicesSlideDeviceTypeApple"
                     segmentButtonId: "tabApple"
                 }

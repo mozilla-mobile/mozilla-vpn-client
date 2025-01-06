@@ -60,7 +60,7 @@ Item {
 
             ListElement {
                 animationSpeed: 1.5
-                animationSrc: ":/ui/resources/animations/vpnlogo-drop_animation.json" //MZAssetLookup.getAnimationSource("Onboarding1")
+                animationSrc: "Onboarding1"
                 loopAnimation: false
                 titleStringId: "MobileOnboardingPanelOneTitle"
                 subtitleStringId: "MobileOnboardingPanelOneSubtitle"
@@ -68,7 +68,7 @@ Item {
             }
             ListElement {
                 animationSpeed: 1
-                animationSrc: ":/ui/resources/animations/globe_animation.json" //MZAssetLookup.getAnimationSource("Onboarding2")
+                animationSrc: "Onboarding2"
                 loopAnimation: true
                 titleStringId: "OnboardingPanelTwoTitle"
                 subtitleStringId: "OnboardingPanelTwoSubtitle"
@@ -76,7 +76,7 @@ Item {
             }
             ListElement {
                 animationSpeed: 1
-                animationSrc: ":/ui/resources/animations/vpnactive_animation.json" //MZAssetLookup.getAnimationSource("Onboarding3")
+                animationSrc: "Onboarding3"
                 loopAnimation: true
                 titleStringId: "OnboardingPanelThreeTitle"
                 subtitleStringId: "OnboardingPanelThreeSubtitle"
@@ -84,7 +84,7 @@ Item {
             }
             ListElement {
                 animationSpeed: 1
-                animationSrc: ":/ui/resources/animations/lock_animation.json" //MZAssetLookup.getAnimationSource("Onboarding4")
+                animationSrc: "Onboarding4"
                 loopAnimation: true
                 titleStringId: "OnboardingPanelFourTitle"
                 subtitleStringId: "OnboardingPanelFourSubtitle"
@@ -135,7 +135,7 @@ Item {
                             height: currentPanelValues._animationHeight + (swipeView._isFirstSlide ? swipeView._topMargin : 0)
                             loop: loopAnimation
                             opacity: panelAnimation.imageOpacityValue
-                            source: animationSrc
+                            source: MZAssetLookup.getAnimationSource(animationSrc)
                             transform: Scale {
                                 origin.x: panelAnimation.width / 2
                                 origin.y: panelAnimation.height / 2
