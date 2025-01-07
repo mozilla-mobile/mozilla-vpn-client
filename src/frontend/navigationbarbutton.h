@@ -18,12 +18,15 @@ class NavigationBarButton final : public QObject {
   Q_PROPERTY(bool checked READ checked WRITE setChecked NOTIFY sourceChanged);
 
  public:
-  NavigationBarButton(QObject* parent, const QString& objectName,
-                      const QString& navAccessibleName, int screen,
-                      const QString& sourceUnchecked,
-                      const QString& sourceChecked,
-                      const QString& sourceUncheckedNotification = QString(),
-                      const QString& sourceCheckedNotification = QString());
+  NavigationBarButton(
+      QObject* parent, const QString& objectName,
+      const QString& navAccessibleName, int screen,
+      const QString& sourceUnchecked, const QString& sourceChecked,
+      const QString& sourceUncheckedDark, const QString& sourceCheckedDark,
+      const QString& sourceUncheckedNotification = QString(),
+      const QString& sourceCheckedNotification = QString(),
+      const QString& sourceUncheckedNotificationDark = QString(),
+      const QString& sourceCheckedNotificationDark = QString());
   ~NavigationBarButton();
 
   const QString& source() const;
@@ -32,6 +35,7 @@ class NavigationBarButton final : public QObject {
   void setChecked(bool checked);
 
   void setHasNotification(bool hasNotification);
+  void updateButton();
 
   int screen() const { return m_screen; }
 
@@ -43,8 +47,12 @@ class NavigationBarButton final : public QObject {
   const QString m_navAccessibleName;
   const QString m_sourceUnchecked;
   const QString m_sourceChecked;
+  const QString m_sourceUncheckedDark;
+  const QString m_sourceCheckedDark;
   const QString m_sourceUncheckedNotification;
   const QString m_sourceCheckedNotification;
+  const QString m_sourceUncheckedNotificationDark;
+  const QString m_sourceCheckedNotificationDark;
   const int m_screen;
 
   bool m_checked = false;

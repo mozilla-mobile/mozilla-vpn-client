@@ -6,6 +6,8 @@ Within each theme's `theme.js` file, there is a line that controls which set of 
 
 **The only assets that do not have both dark and light versions are country flags.** The flag assets referenced in `ServerLabel.qml`, `ServerCountry.qml`, and `SystemTrayNotificationHandler.cpp` are expected to explicitly use assts.
 
+**`MozillaVPN::registerNavigationBarButtons' sets up the SVGs for the bar button items. For reasons lost to time, this is done in C++, not QML.** The C++ `NavigationBarButton` class takes assets for both light and dark modes, and chooses the proper one when the theme changes.
+
 ### Adding a new asset
 1. Add the asset to the repository.
 2. Add the asset in `nebula/ui/resources/CMakeLists.txt` or `src/ui/resources.qrc`, depending on which folder the asset was placed in.
