@@ -181,7 +181,7 @@ MZViewBase {
         id: reauthPopup
 
         anchors.centerIn: Overlay.overlay
-        imageSrc: "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
+        imageSrc: MZAssetLookup.getImageSource("RefreshArrowsWithWarning")
         imageSize: Qt.size(80, 80)
         title: MZI18n.SettingsReauthTitle
         description: MZI18n.SettingsReauthDescription
@@ -206,7 +206,7 @@ MZViewBase {
                   MZButtonLoader {
                     id: loader
                     color: MZTheme.colors.transparent
-                    iconUrl: "qrc:/nebula/resources/spinner.svg"
+                    iconUrl: MZAssetLookup.getImageSource("Spinner")
                   }
                }
             }
