@@ -4,7 +4,7 @@ To support theming, there are two different versions of all assets (images and a
 
 Within each theme's `theme.js` file, there is a line that controls which set of assets should be used: `color.useDarkAssets = false;` (or `= true`, depending on what is most appropriate). And in the QML code, instead of explicitly setting image assets, code is run to utilize the appropriate asset: `MZAssetLookup.getImageSource("ButtonLoader")`.
 
-**The only assets that do not have both dark and light versions are country flags.** The flag assets referenced in `ServerLabel.qml`, `ServerCountry.qml`, and `SystemTrayNotificationHandler.cpp` are expected to explicitly use assts.
+**The only assets that do not have both dark and light versions are country flags.** The flag assets referenced in `ServerLabel.qml`, `ServerCountry.qml`, and `SystemTrayNotificationHandler.cpp` are expected to explicitly use assets.
 
 **`MozillaVPN::registerNavigationBarButtons' sets up the SVGs for the bar button items. For reasons lost to time, this is done in C++, not QML.** The C++ `NavigationBarButton` class takes assets for both light and dark modes, and chooses the proper one when the theme changes.
 
