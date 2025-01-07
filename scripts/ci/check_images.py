@@ -6,6 +6,7 @@
 import argparse
 import os
 import re
+import sys
 
 # This file checks to make sure all images in QML use the style that allows for different assets for dark mode and light mode. More information available in `assets.md`.
 
@@ -18,12 +19,15 @@ def fileContents(filepath):
         with open(filepath, 'r') as file:
             content = file.read()
             if not content:
-                exit(f"No content found in: {filepath}")        
+                print(f"No content found in: {filepath}")
+                sys.exit(1)
             return content
     except FileNotFoundError:
-        exit(f"File not found: {filepath}")
+        print(f"File not found: {filepath}")
+        sys.exit(1)
     except Exception as e:
-        exit(f"An error occurred while loading {filepath}: {e}")
+        print(f"An error occurred while loading {filepath}: {e}")
+        sys.exit(1)
 
 def checkForExplicitImages(filepath):
     # print("Checking for explicit images in " + filepath)
@@ -38,14 +42,16 @@ def checkForExplicitImages(filepath):
         return
     
     if image_list:
-        exit(f"Explict image found in: {filepath}")
+        print(f"Explict image found in: {filepath}")
+        sys.exit(1)
 
 def imagesDefinedInFile(filepath):
     # print("Loading images defined in " + filepath)
     content = fileContents(filepath)
     image_list = re.findall(IMAGE_DEF_REGEX, content)
     if not image_list:
-        exit(f"No images found in: {filepath}")
+        print(f"No images found in: {filepath}")
+        sys.exit(1)
     # Just keep the image name
     image_list = list(map(lambda x: x.split("'")[1], image_list))
     return image_list
@@ -67,12 +73,15 @@ def getQmlFiles(directory):
                 if file.endswith(".qml"):
                     qml_files.append(os.path.join(root, file))
         if not qml_files:
-            exit(f"No QML files found in: {directory}")
+            print(f"No QML files found in: {directory}")
+            sys.exit(1)
         return qml_files
     except FileNotFoundError:
-        exit(f"Directory not found: {directory}")
+        print(f"Directory not found: {directory}")
+        sys.exit(1)
     except Exception as e:
-        exit(f"An error occurred when getting QML files in {directory}: {e}")
+        print(f"An error occurred when getting QML files in {directory}: {e}")
+        sys.exit(1)
 
 ###
 # 0. Prepare items needed for tests
@@ -96,7 +105,8 @@ for direc in qml_directories:
 ###
 # 1. All images in MZAssetLookup.js must have a distinct name - no duplicates
 if len(image_list) is not len(set(image_list)):
-  exit(f"MZAssetLookup.imageLookup contains at least one name used multiple times")
+  print(f"MZAssetLookup.imageLookup contains at least one name used multiple times")
+  sys.exit(1)
 else:
   print("No duplicate image names found!")
 
@@ -111,6 +121,7 @@ for qml_file_path in all_qml_files:
     # confirm the image names are all on the approved list
     for image in images_used:
         if image not in image_list:
-            exit(f"Unexpected image {image} found in {qml_file_path}")
+            print(f"Unexpected image {image} found in {qml_file_path}")
+            sys.exit(1)
 
 print("All QML files used images properly.")
