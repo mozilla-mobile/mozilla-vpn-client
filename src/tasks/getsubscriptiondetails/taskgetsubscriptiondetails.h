@@ -31,6 +31,7 @@ class TaskGetSubscriptionDetails final : public Task {
  signals:
   void operationCompleted(bool status);
   void needsAuthentication();
+  void mustTransitionAuthToWeb();
 
  private:
   void initAuthentication();

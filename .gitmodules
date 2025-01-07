@@ -6,10 +6,6 @@
 	path = 3rdparty/wireguard-apple
 	url = https://github.com/mozilla/wireguard-apple.git
 	shallow = true
-[submodule "3rdparty/openSSL"]
-	path = 3rdparty/openSSL
-	url = https://github.com/KDAB/android_openssl
-	shallow = true
 [submodule "3rdparty/wireguard-go"]
 	path = 3rdparty/wireguard-go
 	url = https://github.com/WireGuard/wireguard-go
