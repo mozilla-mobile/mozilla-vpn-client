@@ -13,6 +13,7 @@
 #include "authenticationlistener.h"
 #include "constants.h"
 #include "errorhandler.h"
+#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
@@ -52,6 +53,14 @@ void TaskAuthenticate::run() {
             logger.debug() << "Authentication completed with code:"
                            << logger.sensitive(pkceCodeSuccess);
 
+            if (m_authenticationType ==
+                AuthenticationListener::AuthenticationInBrowser) {
+              mozilla::glean::web_authentication::successful.record(
+                  mozilla::glean::web_authentication::SuccessfulExtra{
+                      ._uuid = metricUuid.toString(QUuid::WithoutBraces),
+                  });
+            }
+
             NetworkRequest* request = new NetworkRequest(this, 200);
             request->post(
                 AuthenticationListener::createLoginVerifyUrl(),
@@ -76,6 +85,13 @@ void TaskAuthenticate::run() {
 
   connect(m_authenticationListener, &AuthenticationListener::failed, this,
           [this](ErrorHandler::ErrorType error) {
+            if (m_authenticationType ==
+                AuthenticationListener::AuthenticationInBrowser) {
+              mozilla::glean::web_authentication::failed.record(
+                  mozilla::glean::web_authentication::FailedExtra{
+                      ._uuid = metricUuid.toString(QUuid::WithoutBraces),
+                  });
+            }
             REPORTERROR(error, name());
             m_authenticationListener->aboutToFinish();
           });
@@ -86,6 +102,13 @@ void TaskAuthenticate::run() {
             m_authenticationListener->aboutToFinish();
           });
 
+  metricUuid = QUuid::createUuid();
+  if (m_authenticationType == AuthenticationListener::AuthenticationInBrowser) {
+    mozilla::glean::web_authentication::started.record(
+        mozilla::glean::web_authentication::StartedExtra{
+            ._uuid = metricUuid.toString(QUuid::WithoutBraces),
+        });
+  }
   m_authenticationListener->start(this, pkceCodeChallenge,
                                   CODE_CHALLENGE_METHOD,
                                   SettingsHolder::instance()->userEmail());
