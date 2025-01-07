@@ -31,10 +31,10 @@ def checkForExplicitImages(filepath):
     image_list = re.findall(IMAGE_REGEX, content)
     
     # We expect 2 failing RegExs in ServerLabel due to country flags
-    if "ServerLabel.qml" in filepath and len(image_list) is 2:
+    if "ServerLabel.qml" in filepath and len(image_list) == 2:
         return
     # We expect 1 failing RegExs in ServerCountry due to country flags
-    if "ServerCountry.qml" in filepath and len(image_list) is 1:
+    if "ServerCountry.qml" in filepath and len(image_list) == 1:
         return
     
     if image_list:
