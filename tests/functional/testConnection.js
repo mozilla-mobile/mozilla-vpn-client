@@ -84,13 +84,26 @@ describe('Connectivity', function() {
       return await vpn.getQueryProperty(
                  queries.screenHome.CONTROLLER_TITLE, 'text') == 'VPN is on';
     });
+
+    // Leave the VPN connected for 10 seconds to accumulate transfer statistics
+    // and then deactivate.
+    await vpn.wait(10 * 1000);
     await vpn.deactivate();
 
     // No test for disconnecting because often it's too fast to be tracked.
-
     await vpn.waitForCondition(async () => {
       return await vpn.getQueryProperty(
                  queries.screenHome.CONTROLLER_TITLE, 'text') === 'VPN is off';
+    });
+
+    // Fetch the data transfer telemetry.
+    await vpn.waitForCondition(async () => {
+      let rx = await vpn.gleanTestGetValue("connectionHealth", "dataTransferredRx", "");
+      return rx.sum > 0;
+    });
+    await vpn.waitForCondition(async () => {
+      let tx = await vpn.gleanTestGetValue("connectionHealth", "dataTransferredTx", "");
+      return tx.sum > 0;
     });
 
     assert.equal(
