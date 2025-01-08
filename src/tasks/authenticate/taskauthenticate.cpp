@@ -57,7 +57,7 @@ void TaskAuthenticate::run() {
                 AuthenticationListener::AuthenticationInBrowser) {
               mozilla::glean::web_authentication::successful.record(
                   mozilla::glean::web_authentication::SuccessfulExtra{
-                      ._uuid = metricUuid.toString(QUuid::WithoutBraces),
+                      ._uuid = m_metricUuid.toString(QUuid::WithoutBraces),
                   });
             }
 
@@ -89,7 +89,7 @@ void TaskAuthenticate::run() {
                 AuthenticationListener::AuthenticationInBrowser) {
               mozilla::glean::web_authentication::failed.record(
                   mozilla::glean::web_authentication::FailedExtra{
-                      ._uuid = metricUuid.toString(QUuid::WithoutBraces),
+                      ._uuid = m_metricUuid.toString(QUuid::WithoutBraces),
                   });
             }
             REPORTERROR(error, name());
@@ -102,11 +102,11 @@ void TaskAuthenticate::run() {
             m_authenticationListener->aboutToFinish();
           });
 
-  metricUuid = QUuid::createUuid();
+  m_metricUuid = QUuid::createUuid();
   if (m_authenticationType == AuthenticationListener::AuthenticationInBrowser) {
     mozilla::glean::web_authentication::started.record(
         mozilla::glean::web_authentication::StartedExtra{
-            ._uuid = metricUuid.toString(QUuid::WithoutBraces),
+            ._uuid = m_metricUuid.toString(QUuid::WithoutBraces),
         });
   }
   m_authenticationListener->start(this, pkceCodeChallenge,
