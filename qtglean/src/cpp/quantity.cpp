@@ -28,7 +28,8 @@ int32_t QuantityMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 
 QJsonValue QuantityMetric::testGetValue(const QString& pingName) const {
 #ifndef __wasm__
-  return QJsonValue(glean_quantity_test_get_value(m_id, pingName.toUtf8()));
+  qint64 value = glean_quantity_test_get_value(m_id, pingName.toUtf8());
+  return QJsonValue(value);
 #endif
   return QJsonValue(0);
 }
