@@ -13,7 +13,7 @@ class BaseMetric : public QObject {
   Q_DISABLE_COPY_MOVE(BaseMetric)
 
  public:
-  explicit BaseMetric(int aId) : m_id(aId) {};
+  explicit BaseMetric(int aId) : m_id(aId){};
 
   // Test  only functions
   virtual QJsonValue testGetValue(const QString& pingName = "") const = 0;
