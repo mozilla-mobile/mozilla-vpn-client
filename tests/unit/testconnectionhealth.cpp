@@ -201,8 +201,7 @@ void TestConnectionHealth::metricsTestCount(int expectedStablePeriods,
   QCOMPARE(noSignalCount.toInt(), expectedNoSignalPeriods);
 }
 
-// .count is always returning 0, so using this function for now.
-// Change after https://mozilla-hub.atlassian.net/browse/VPN-6186
+// Count the number of timing distribution samples that were recorded.
 int TestConnectionHealth::getTimingDistCount(const QJsonValue& metric) {
   QJsonObject values = metric["values"].toObject();
   int count = 0;
