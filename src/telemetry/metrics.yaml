@@ -1074,7 +1074,7 @@ web_authentication:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-6323
     data_reviews:
-      - DO NOT MERGE WITHOUT ADDING HERE
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/10171#pullrequestreview-2537047062
     data_sensitivity:
       - interaction
     notification_emails:
@@ -1096,7 +1096,7 @@ web_authentication:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-6323
     data_reviews:
-      - DO NOT MERGE WITHOUT ADDING HERE
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/10171#pullrequestreview-2537047062
     data_sensitivity:
       - interaction
     notification_emails:
@@ -1118,7 +1118,7 @@ web_authentication:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-6323
     data_reviews:
-      - DO NOT MERGE WITHOUT ADDING HERE
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/10171#pullrequestreview-2537047062
     data_sensitivity:
       - interaction
     notification_emails:
