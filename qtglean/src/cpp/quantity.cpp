@@ -5,12 +5,13 @@
 #include "glean/quantity.h"
 
 #include <QDebug>
+#include <QJsonValue>
 
 #ifndef __wasm__
 #  include "qtglean.h"
 #endif
 
-QuantityMetric::QuantityMetric(int id) : m_id(id) {}
+QuantityMetric::QuantityMetric(int id) : BaseMetric(id) {}
 
 void QuantityMetric::set(int value) const {
 #ifndef __wasm__
@@ -25,9 +26,9 @@ int32_t QuantityMetric::testGetNumRecordedErrors(ErrorType errorType) const {
   return 0;
 }
 
-int64_t QuantityMetric::testGetValue(const QString& pingName) const {
+QJsonValue QuantityMetric::testGetValue(const QString& pingName) const {
 #ifndef __wasm__
-  return glean_quantity_test_get_value(m_id, pingName.toUtf8());
+  return QJsonValue(glean_quantity_test_get_value(m_id, pingName.toUtf8()));
 #endif
-  return 0;
+  return QJsonValue(0);
 }

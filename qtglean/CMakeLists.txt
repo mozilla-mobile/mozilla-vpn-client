@@ -12,6 +12,7 @@ execute_process(
 
 ## Add a static library for the Glean C++ code.
 add_library(qtglean STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/basemetric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/boolean.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/datetime.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/quantity.h

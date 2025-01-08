@@ -67,60 +67,6 @@ InspectorItemPicker* s_itemPicker = nullptr;
 
 std::function<void(InspectorHandler* inspectorHandler)> s_constructorCallback;
 InspectorHotreloader* s_hotreloader = nullptr;
-
-QJsonObject gleanMetricToResult(const QVariant& metric, const QString& pingName) {
-  QJsonObject obj;
-
-  // Encode the results by metric type.
-  if (metric.canConvert<EventMetric*>()) {
-    EventMetric* event = metric.value<EventMetric*>();
-    QJsonArray results;
-    for (const QJsonObject& value : event->testGetValue(pingName)) {
-      results.append(value);
-    }
-    obj["value"] = results;
-    return obj;
-  }
-  if (metric.canConvert<BooleanMetric*>()) {
-    BooleanMetric* bval = metric.value<BooleanMetric*>();
-    obj["value"] = QJsonValue(bval->testGetValue(pingName));
-    return obj;
-  }
-  if (metric.canConvert<CounterMetric*>()) {
-    CounterMetric* counter = metric.value<CounterMetric*>();
-    obj["value"] = QJsonValue(counter->testGetValue(pingName));
-    return obj;
-  }
-  if (metric.canConvert<DatetimeMetric*>()) {
-    DatetimeMetric* dt = metric.value<DatetimeMetric*>();
-    obj["value"] = QJsonValue(dt->testGetValueAsString(pingName));
-    return obj;
-  }
-  if (metric.canConvert<QuantityMetric*>()) {
-    QuantityMetric* quantity = metric.value<QuantityMetric*>();
-    obj["value"] = QJsonValue(quantity->testGetValue(pingName));
-    return obj;
-  }
-  if (metric.canConvert<StringMetric*>()) {
-    StringMetric* str = metric.value<StringMetric*>();
-    obj["value"] = QJsonValue(str->testGetValue(pingName));
-    return obj;
-  }
-  if (metric.canConvert<UuidMetric*>()) {
-    UuidMetric* uuid = metric.value<UuidMetric*>();
-    obj["value"] = QJsonValue(uuid->testGetValue(pingName));
-    return obj;
-  }
-  // TODO: Distribution metrics.
-
-  // Otherwise, we don't support this metric type.
-  QString className = "unknown";
-  if (metric.canConvert<QObject*>()) {
-    className = metric.value<QObject*>()->metaObject()->className();
-  }
-  obj["error"] = QString("not a supported metric type (%1)").arg(className);
-  return obj;
-}
 }  // namespace
 
 struct InspectorSettingCommand {
@@ -725,25 +671,35 @@ static QList<InspectorCommand> s_commands{
         "glean_test_get_value", "Get value of a Glean metric", 3,
         [](InspectorHandler*, const QList<QByteArray>& arguments) {
           QString ping = QString(arguments[3]);
+          QJsonObject obj;
 
           QObject* instance = __DONOTUSE__GleanMetrics::instance();
           QVariant qvCategory = instance->property(arguments[1].constData());
           QObject* category = qvCategory.value<QObject*>();
           if (category == nullptr) {
-            QJsonObject obj;
             obj["error"] = QString(arguments[1]) + "is not a valid category";
             return obj;
           }
 
           QVariant metric = category->property(arguments[2].constData());
           if (!metric.isValid()) {
-            QJsonObject obj;
             obj["error"] = QString(arguments[2]) + "is not a valid metric";
             return obj;
           }
-    
-          return gleanMetricToResult(metric, ping);
 
+          if (metric.canConvert<BaseMetric*>()) {
+            BaseMetric* baseMetric = metric.value<BaseMetric*>();
+            obj["value"] = baseMetric->testGetValue(ping);
+            return obj;
+          }
+
+          QString className = "unknown";
+          if (metric.canConvert<QObject*>()) {
+            className = metric.value<QObject*>()->metaObject()->className();
+          }
+          obj["error"] =
+              QString("not a supported metric type (%1)").arg(className);
+          return obj;
         }},
 
     InspectorCommand{"glean_test_reset", "Resets Glean for testing", 0,

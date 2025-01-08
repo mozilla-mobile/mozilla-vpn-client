@@ -5,12 +5,13 @@
 #include "glean/datetime.h"
 
 #include <QDebug>
+#include <QJsonValue>
 
 #ifndef __wasm__
 #  include "qtglean.h"
 #endif
 
-DatetimeMetric::DatetimeMetric(int id) : m_id(id) {}
+DatetimeMetric::DatetimeMetric(int id) : BaseMetric(id) {}
 
 void DatetimeMetric::set() const {
 #ifndef __wasm__
@@ -25,14 +26,10 @@ int32_t DatetimeMetric::testGetNumRecordedErrors(ErrorType errorType) const {
   return 0;
 }
 
-QString DatetimeMetric::testGetValueAsString(const QString& pingName) const {
+QJsonValue DatetimeMetric::testGetValue(const QString& pingName) const {
 #ifndef __wasm__
-  return glean_datetime_test_get_value_as_string(m_id, pingName.toUtf8());
+  auto value = glean_datetime_test_get_value_as_string(m_id, pingName.toUtf8());
+  return QJsonValue(value);
 #endif
-  return "";
-}
-
-QDateTime DatetimeMetric::testGetValue(const QString& pingName) const {
-  return QDateTime::fromString(testGetValueAsString(pingName),
-                               Qt::ISODateWithMs);
+  return QJsonValue("");
 }
