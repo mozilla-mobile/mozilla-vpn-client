@@ -663,7 +663,7 @@ session:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-6406
     data_reviews:
-      - TBA
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9593#issuecomment-2159109154
     data_sensitivity:
       - technical
     notification_emails:
@@ -839,7 +839,7 @@ connection_health:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-6406
     data_reviews:
-      - TBA
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9593#issuecomment-2159109154
     data_sensitivity:
       - technical
     notification_emails:
@@ -945,7 +945,7 @@ connection_health:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-6406
     data_reviews:
-      - TBA
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9593#issuecomment-2159109154
     data_sensitivity:
       - technical
     notification_emails:
@@ -1032,7 +1032,7 @@ connection_health:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-6406
     data_reviews:
-      - TBA
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9593#issuecomment-2159109154
     data_sensitivity:
       - technical
     notification_emails:
@@ -1061,4 +1061,71 @@ connection_health:
       error_message:
         description: |
           Error type
+        type: string
+
+web_authentication:
+  started:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Web authentication was started.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6323
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/10171#pullrequestreview-2537047062
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2026-06-30
+    extra_keys:
+      uuid:
+        description: UUID to match starting events to ending ones
+        type: string
+
+  successful:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Web authentication was successfully completed.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6323
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/10171#pullrequestreview-2537047062
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2026-06-30
+    extra_keys:
+      uuid:
+        description: UUID to match ending event to starting one
+        type: string
+
+  failed:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      Web authentication was unsuccessfully completed.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-6323
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/10171#pullrequestreview-2537047062
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2026-06-30
+    extra_keys:
+      uuid:
+        description: UUID to match ending event to starting one
         type: string

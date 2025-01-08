@@ -5,6 +5,8 @@
 #ifndef TASKAUTHENTICATE_H
 #define TASKAUTHENTICATE_H
 
+#include <QUuid>
+
 #include "authenticationlistener.h"
 #include "task.h"
 
@@ -32,6 +34,7 @@ class TaskAuthenticate final : public Task {
   AuthenticationListener* m_authenticationListener = nullptr;
   AuthenticationListener::AuthenticationType m_authenticationType =
       AuthenticationListener::AuthenticationInBrowser;
+  QUuid m_metricUuid = QUuid::createUuid();
 };
 
 #endif  // TASKAUTHENTICATE_H
