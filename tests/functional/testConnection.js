@@ -96,15 +96,18 @@ describe('Connectivity', function() {
                  queries.screenHome.CONTROLLER_TITLE, 'text') === 'VPN is off';
     });
 
-    // Fetch the data transfer telemetry.
-    await vpn.waitForCondition(async () => {
-      let rx = await vpn.gleanTestGetValue("connectionHealth", "dataTransferredRx", "");
-      return rx.sum > 0;
-    });
-    await vpn.waitForCondition(async () => {
-      let tx = await vpn.gleanTestGetValue("connectionHealth", "dataTransferredTx", "");
-      return tx.sum > 0;
-    });
+    // Telemetry doesn't work in WASM
+    if (!this.ctx.wasm) {
+      // Fetch the data transfer telemetry.
+      await vpn.waitForCondition(async () => {
+        let rx = await vpn.gleanTestGetValue("connectionHealth", "dataTransferredRx", "");
+        return rx.sum > 0;
+      });
+      await vpn.waitForCondition(async () => {
+        let tx = await vpn.gleanTestGetValue("connectionHealth", "dataTransferredTx", "");
+        return tx.sum > 0;
+      });
+    }
 
     assert.equal(
         await vpn.getQueryProperty(
