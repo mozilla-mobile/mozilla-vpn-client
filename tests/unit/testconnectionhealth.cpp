@@ -139,17 +139,15 @@ void TestConnectionHealth::metricsTestTimespan(int expectedStablePeriods,
   // test the 3 timespans
   // Expect one timespan for each period except the current one.
   QCOMPARE(
-      getTimingDistCountFromValues(
-          mozilla::glean::connection_health::stable_time.testGetValue().values),
+      getTimingDistCount(
+          mozilla::glean::connection_health::stable_time.testGetValue()),
       expectedStablePeriods);
-  QCOMPARE(getTimingDistCountFromValues(
-               mozilla::glean::connection_health::unstable_time.testGetValue()
-                   .values),
-           expectedUnstablePeriods);
-  QCOMPARE(getTimingDistCountFromValues(
-               mozilla::glean::connection_health::no_signal_time.testGetValue()
-                   .values),
-           expectedNoSignalPeriods);
+  QCOMPARE(getTimingDistCount(
+          mozilla::glean::connection_health::unstable_time.testGetValue()),
+      expectedUnstablePeriods);
+  QCOMPARE(getTimingDistCount(
+          mozilla::glean::connection_health::no_signal_time.testGetValue()),
+      expectedNoSignalPeriods);
 }
 
 void TestConnectionHealth::metricsTestErrorAndChange(
@@ -176,9 +174,12 @@ void TestConnectionHealth::metricsTestErrorAndChange(
       mozilla::glean::connection_health::changed_to_unstable.testGetValue();
   auto changeToNoSignalEvents =
       mozilla::glean::connection_health::changed_to_no_signal.testGetValue();
-  QCOMPARE(changeToStableEvents.length(), expectedStablePeriods);
-  QCOMPARE(changeToUnstableEvents.length(), expectedUnstablePeriods);
-  QCOMPARE(changeToNoSignalEvents.length(), expectedNoSignalPeriods);
+  QCOMPARE(changeToStableEvents.isArray(), true);
+  QCOMPARE(changeToStableEvents.toArray().count(), expectedStablePeriods);
+  QCOMPARE(changeToUnstableEvents.isArray(), true);
+  QCOMPARE(changeToUnstableEvents.toArray().count(), expectedUnstablePeriods);
+  QCOMPARE(changeToNoSignalEvents.isArray(), true);
+  QCOMPARE(changeToNoSignalEvents.toArray().count(), expectedNoSignalPeriods);
 }
 
 void TestConnectionHealth::metricsTestCount(int expectedStablePeriods,
@@ -186,23 +187,33 @@ void TestConnectionHealth::metricsTestCount(int expectedStablePeriods,
                                             int expectedNoSignalPeriods) {
   // test the 3 counters
   // Expect a non-zero counter if there has been at least one period.
-  QCOMPARE(mozilla::glean::connection_health::stable_count.testGetValue() > 0,
-           expectedStablePeriods > 0);
-  QCOMPARE(mozilla::glean::connection_health::unstable_count.testGetValue() > 0,
-           expectedUnstablePeriods > 0);
-  QCOMPARE(
-      mozilla::glean::connection_health::no_signal_count.testGetValue() > 0,
-      expectedNoSignalPeriods > 0);
+  auto stableCount =
+      mozilla::glean::connection_health::stable_count.testGetValue();
+  auto unstableCount = 
+      mozilla::glean::connection_health::unstable_count.testGetValue();
+  auto noSignalCount =
+      mozilla::glean::connection_health::no_signal_count.testGetValue();
+  QCOMPARE(stableCount.isDouble(), true);
+  QCOMPARE(stableCount.toInt(), expectedStablePeriods);
+  QCOMPARE(unstableCount.isDouble(), true);
+  QCOMPARE(unstableCount.toInt(), expectedUnstablePeriods);
+  QCOMPARE(noSignalCount.isDouble(), true);
+  QCOMPARE(noSignalCount.toInt(), expectedNoSignalPeriods);
 }
 
 // .count is always returning 0, so using this function for now.
 // Change after https://mozilla-hub.atlassian.net/browse/VPN-6186
-int TestConnectionHealth::getTimingDistCountFromValues(QHash<int, int> values) {
+int TestConnectionHealth::getTimingDistCount(const QJsonValue& metric) {
+  QJsonObject values = metric["values"].toObject();
   int count = 0;
   for (auto i = values.constBegin(); i != values.constEnd(); ++i) {
-    count += i.value();
+    bool okay = false;
+    qlonglong key = i.key().toLongLong(&okay, 10);
+    if (!okay) {
+      continue;
+    }
+    count += i.value().toInt();
   }
-
   return count;
 }
 
