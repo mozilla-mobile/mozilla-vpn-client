@@ -138,14 +138,14 @@ void TestConnectionHealth::metricsTestTimespan(int expectedStablePeriods,
                                                int expectedNoSignalPeriods) {
   // test the 3 timespans
   // Expect one timespan for each period except the current one.
+  QCOMPARE(getTimingDistCount(
+               mozilla::glean::connection_health::stable_time.testGetValue()),
+           expectedStablePeriods);
+  QCOMPARE(getTimingDistCount(
+               mozilla::glean::connection_health::unstable_time.testGetValue()),
+           expectedUnstablePeriods);
   QCOMPARE(
       getTimingDistCount(
-          mozilla::glean::connection_health::stable_time.testGetValue()),
-      expectedStablePeriods);
-  QCOMPARE(getTimingDistCount(
-          mozilla::glean::connection_health::unstable_time.testGetValue()),
-      expectedUnstablePeriods);
-  QCOMPARE(getTimingDistCount(
           mozilla::glean::connection_health::no_signal_time.testGetValue()),
       expectedNoSignalPeriods);
 }
@@ -189,7 +189,7 @@ void TestConnectionHealth::metricsTestCount(int expectedStablePeriods,
   // Expect a non-zero counter if there has been at least one period.
   auto stableCount =
       mozilla::glean::connection_health::stable_count.testGetValue();
-  auto unstableCount = 
+  auto unstableCount =
       mozilla::glean::connection_health::unstable_count.testGetValue();
   auto noSignalCount =
       mozilla::glean::connection_health::no_signal_count.testGetValue();

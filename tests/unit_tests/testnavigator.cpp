@@ -118,7 +118,8 @@ void TestNavigator::testNavbarButtonTelemetry() {
   // Verify number of events and event extras after test
   QCOMPARE(homeSelectedEvents.count(), expectedHomeSelectedEventsCount);
 
-  auto homeSelectedEventsExtras = homeSelectedEvents[0][QString("extra")].toObject();
+  auto homeSelectedEventsExtras =
+      homeSelectedEvents[0][QString("extra")].toObject();
 
   QCOMPARE(homeSelectedEventsExtras["screen"].toString(), telemetryScreenId);
 
@@ -138,8 +139,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
   auto messagesSelectedEvents =
       mozilla::glean::interaction::messages_selected.testGetValue().toArray();
 
-  QCOMPARE(messagesSelectedEvents.count(),
-           expectedMessagesSelectedEventsCount);
+  QCOMPARE(messagesSelectedEvents.count(), expectedMessagesSelectedEventsCount);
 
   // Click the navbar messages button
   Navigator::instance()->requestScreenFromBottomBar(
@@ -150,8 +150,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
       mozilla::glean::interaction::messages_selected.testGetValue().toArray();
 
   // Verify number of events and event extras after test
-  QCOMPARE(messagesSelectedEvents.count(),
-           expectedMessagesSelectedEventsCount);
+  QCOMPARE(messagesSelectedEvents.count(), expectedMessagesSelectedEventsCount);
 
   auto messagesSelectedEventsExtras =
       messagesSelectedEvents[0][QString("extra")].toObject();
@@ -178,8 +177,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
   auto settingsSelectedEvents =
       mozilla::glean::interaction::settings_selected.testGetValue().toArray();
 
-  QCOMPARE(settingsSelectedEvents.count(),
-           expectedSettingsSelectedEventsCount);
+  QCOMPARE(settingsSelectedEvents.count(), expectedSettingsSelectedEventsCount);
 
   // Click the navbar settings button
   Navigator::instance()->requestScreenFromBottomBar(MozillaVPN::ScreenSettings);
@@ -189,8 +187,7 @@ void TestNavigator::testNavbarButtonTelemetry() {
       mozilla::glean::interaction::settings_selected.testGetValue().toArray();
 
   // Verify number of events and event extras after test
-  QCOMPARE(settingsSelectedEvents.count(),
-           expectedSettingsSelectedEventsCount);
+  QCOMPARE(settingsSelectedEvents.count(), expectedSettingsSelectedEventsCount);
 
   auto settingsSelectedEventsExtras =
       settingsSelectedEvents[0][QString("extra")].toObject();
