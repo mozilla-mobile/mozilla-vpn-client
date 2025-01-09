@@ -5,6 +5,7 @@
 #ifndef METRICTYPES_H
 #define METRICTYPES_H
 
+#include "basemetric.h"
 #include "boolean.h"
 #include "counter.h"
 #include "customdistribution.h"

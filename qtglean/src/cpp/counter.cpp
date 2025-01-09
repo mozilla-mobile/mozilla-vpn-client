@@ -5,12 +5,13 @@
 #include "glean/counter.h"
 
 #include <QDebug>
+#include <QJsonValue>
 
 #ifndef __wasm__
 #  include "qtglean.h"
 #endif
 
-CounterMetric::CounterMetric(int id) : m_id(id) {}
+CounterMetric::CounterMetric(int id) : BaseMetric(id) {}
 
 void CounterMetric::add(int amount) const {
 #ifndef __wasm__
@@ -29,11 +30,11 @@ int32_t CounterMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 #endif
 }
 
-int32_t CounterMetric::testGetValue(const QString& pingName) const {
+QJsonValue CounterMetric::testGetValue(const QString& pingName) const {
 #ifndef __wasm__
-  return glean_counter_test_get_value(m_id, pingName.toUtf8());
+  return QJsonValue(glean_counter_test_get_value(m_id, pingName.toUtf8()));
 #else
   Q_UNUSED(pingName);
-  return 0;
+  return QJsonValue(0);
 #endif
 }

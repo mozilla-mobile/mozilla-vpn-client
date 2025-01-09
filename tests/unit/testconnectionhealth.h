@@ -40,7 +40,7 @@ class TestConnectionHealth final : public TestHelper {
 
  private:
   SettingsHolder* m_settingsHolder = nullptr;
-  int getTimingDistCountFromValues(QHash<int, int> values);
+  int getTimingDistCount(const QJsonValue& metric);
   void metricsTestErrorAndChange(int expectedStablePeriods,
                                  int expectedUnstablePeriods,
                                  int expectedNoSignalPeriods);

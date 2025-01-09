@@ -5,12 +5,13 @@
 #include "glean/boolean.h"
 
 #include <QDebug>
+#include <QJsonValue>
 
 #ifndef __wasm__
 #  include "qtglean.h"
 #endif
 
-BooleanMetric::BooleanMetric(int id) : m_id(id) {}
+BooleanMetric::BooleanMetric(int id) : BaseMetric(id) {}
 
 void BooleanMetric::set(bool value) const {
 #ifndef __wasm__
@@ -25,9 +26,9 @@ int32_t BooleanMetric::testGetNumRecordedErrors(ErrorType errorType) const {
   return 0;
 }
 
-bool BooleanMetric::testGetValue(const QString& pingName) const {
+QJsonValue BooleanMetric::testGetValue(const QString& pingName) const {
 #ifndef __wasm__
-  return glean_boolean_test_get_value(m_id, pingName.toUtf8());
+  return QJsonValue(glean_boolean_test_get_value(m_id, pingName.toUtf8()));
 #endif
-  return false;
+  return QJsonValue(false);
 }

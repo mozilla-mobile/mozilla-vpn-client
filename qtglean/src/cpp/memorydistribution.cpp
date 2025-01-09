@@ -22,7 +22,7 @@
 // stayed in so that this work is not lost, in the event we want to use
 // this data type in the future.
 
-MemoryDistributionMetric::MemoryDistributionMetric(int id) : m_id(id) {}
+MemoryDistributionMetric::MemoryDistributionMetric(int id) : BaseMetric(id) {}
 
 void MemoryDistributionMetric::accumulate(qint64 sample) const {
 #ifndef __wasm__
@@ -43,26 +43,15 @@ int32_t MemoryDistributionMetric::testGetNumRecordedErrors(
 #endif
 }
 
-DistributionData MemoryDistributionMetric::testGetValue(
+QJsonValue MemoryDistributionMetric::testGetValue(
     const QString& pingName) const {
 #ifndef __wasm__
   auto value = QJsonDocument::fromJson(
       glean_memory_distribution_test_get_value(m_id, pingName.toUtf8()));
 
-  DistributionData result;
-  if (!value.isEmpty()) {
-    result.sum = value["sum"].toInt();
-    result.count = value["count"].toInt();
-
-    QJsonObject values = value["values"].toObject();
-    foreach (const QString& key, values.keys()) {
-      result.values.insert(key.toInt(), values.take(key).toInt());
-    }
-  }
-
-  return result;
+  return QJsonValue(value.object());
 #else
   Q_UNUSED(pingName);
-  return DistributionData();
+  return QJsonValue(QJsonObject());
 #endif
 }

@@ -8,7 +8,7 @@
 #include <QHash>
 #include <QObject>
 
-#include "distributiondata.h"
+#include "basemetric.h"
 #include "errortype.h"
 
 // !!!IMPORTANT!!!
@@ -20,7 +20,7 @@
 // stayed in so that this work is not lost, in the event we want to use
 // this data type in the future.
 
-class MemoryDistributionMetric final : public QObject {
+class MemoryDistributionMetric final : public BaseMetric {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(MemoryDistributionMetric)
 
@@ -30,12 +30,8 @@ class MemoryDistributionMetric final : public QObject {
   Q_INVOKABLE void accumulate(qint64 sample) const;
 
   // Test  only functions
-
-  Q_INVOKABLE DistributionData testGetValue(const QString& pingName = "") const;
-  Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
-
- private:
-  const int m_id;
+  virtual QJsonValue testGetValue(const QString& pingName = "") const;
+  virtual int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 };
 
 #endif  // MEMORY_DISTRIBUTION_H

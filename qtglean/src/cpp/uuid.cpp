@@ -5,12 +5,13 @@
 #include "glean/uuid.h"
 
 #include <QDebug>
+#include <QJsonValue>
 
 #ifndef __wasm__
 #  include "qtglean.h"
 #endif
 
-UuidMetric::UuidMetric(int id) : m_id(id) {}
+UuidMetric::UuidMetric(int id) : BaseMetric(id) {}
 
 void UuidMetric::set(const QString& uuid) const {
 #ifndef __wasm__
@@ -32,9 +33,9 @@ int32_t UuidMetric::testGetNumRecordedErrors(ErrorType errorType) const {
   return 0;
 }
 
-QString UuidMetric::testGetValue(const QString& pingName) const {
+QJsonValue UuidMetric::testGetValue(const QString& pingName) const {
 #ifndef __wasm__
-  return glean_uuid_test_get_value(m_id, pingName.toUtf8());
+  return QJsonValue(glean_uuid_test_get_value(m_id, pingName.toUtf8()));
 #endif
-  return "";
+  return QJsonValue("");
 }

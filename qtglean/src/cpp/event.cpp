@@ -14,7 +14,7 @@
 #include <QPair>
 
 EventMetric::EventMetric(int id, EventMetricExtraParser* parser)
-    : m_id(id), m_parser(parser) {}
+    : BaseMetric(id), m_parser(parser) {}
 
 void EventMetric::record() const {
 #ifndef __wasm__
@@ -98,21 +98,14 @@ int32_t EventMetric::testGetNumRecordedErrors(ErrorType errorType) const {
 #endif
 }
 
-QList<QJsonObject> EventMetric::testGetValue(const QString& pingName) const {
+QJsonValue EventMetric::testGetValue(const QString& pingName) const {
 #ifndef __wasm__
-  auto value = glean_event_test_get_value(m_id, pingName.toUtf8());
-  auto recordedEvents = QJsonDocument::fromJson(value).array();
-  QList<QJsonObject> result;
-  if (!recordedEvents.isEmpty()) {
-    for (const QJsonValue& recordedEvent : recordedEvents) {
-      Q_ASSERT(recordedEvent.isObject());
-      result.append(recordedEvent.toObject());
-    }
-  }
+  auto value = QJsonDocument::fromJson(
+      glean_event_test_get_value(m_id, pingName.toUtf8()));
 
-  return result;
+  return QJsonValue(value.array());
 #else
   Q_UNUSED(pingName);
-  return QList<QJsonObject>();
+  return QJsonValue(QJsonArray());
 #endif
 }

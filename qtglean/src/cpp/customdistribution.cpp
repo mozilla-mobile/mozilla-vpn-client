@@ -13,7 +13,7 @@
 #include <QObject>
 #include <QPair>
 
-CustomDistributionMetric::CustomDistributionMetric(int id) : m_id(id) {}
+CustomDistributionMetric::CustomDistributionMetric(int id) : BaseMetric(id) {}
 
 void CustomDistributionMetric::accumulate_single_sample(qint64 sample) const {
 #ifndef __wasm__
@@ -34,26 +34,15 @@ int32_t CustomDistributionMetric::testGetNumRecordedErrors(
 #endif
 }
 
-DistributionData CustomDistributionMetric::testGetValue(
+QJsonValue CustomDistributionMetric::testGetValue(
     const QString& pingName) const {
 #ifndef __wasm__
   auto value = QJsonDocument::fromJson(
       glean_custom_distribution_test_get_value(m_id, pingName.toUtf8()));
 
-  DistributionData result;
-  if (!value.isEmpty()) {
-    result.sum = value["sum"].toInt();
-    result.count = value["count"].toInt();
-
-    QJsonObject values = value["values"].toObject();
-    foreach (const QString& key, values.keys()) {
-      result.values.insert(key.toInt(), values.take(key).toInt());
-    }
-  }
-
-  return result;
+  return QJsonValue(value.object());
 #else
   Q_UNUSED(pingName);
-  return DistributionData();
+  return QJsonValue(QJsonObject());
 #endif
 }
