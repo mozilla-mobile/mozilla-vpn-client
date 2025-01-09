@@ -8,23 +8,24 @@ target_sources(shared-sources INTERFACE
 )
 
 # Include the Adjust SDK
-if(BUILD_ADJUST_SDK_TOKEN)
-    target_compile_definitions(mozillavpn PUBLIC MZ_ADJUST)
-    target_sources(shared-sources INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustfiltering.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustfiltering.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjusthandler.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjusthandler.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustproxy.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustproxy.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustproxyconnection.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustproxyconnection.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustproxypackagehandler.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjusttasksubmission.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjusttasksubmission.h
-        ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosadjusthelper.mm
-        ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosadjusthelper.h
-    )
-    target_link_libraries(shared-sources INTERFACE adjust)
-endif()
+# Disabling Adjust per VPN-6581
+# if(BUILD_ADJUST_SDK_TOKEN)
+#     target_compile_definitions(mozillavpn PUBLIC MZ_ADJUST)
+#     target_sources(shared-sources INTERFACE
+#         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustfiltering.cpp
+#         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustfiltering.h
+#         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjusthandler.cpp
+#         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjusthandler.h
+#         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustproxy.cpp
+#         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustproxy.h
+#         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustproxyconnection.cpp
+#         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustproxyconnection.h
+#         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
+#         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjustproxypackagehandler.h
+#         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjusttasksubmission.cpp
+#         ${CMAKE_CURRENT_SOURCE_DIR}/adjust/adjusttasksubmission.h
+#         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosadjusthelper.mm
+#         ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosadjusthelper.h
+#     )
+#     target_link_libraries(shared-sources INTERFACE adjust)
+# endif()
