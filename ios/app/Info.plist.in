@@ -45,8 +45,6 @@
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array/>
-	<key>UIUserInterfaceStyle</key>
-	<string>Light</string>
 	<key>com.wireguard.ios.app_group_id</key>
 	<string>group.org.mozilla.ios.Guardian</string>
 	<key>ADJUST_SDK_TOKEN</key>
