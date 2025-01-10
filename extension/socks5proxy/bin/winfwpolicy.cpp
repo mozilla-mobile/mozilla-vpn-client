@@ -284,7 +284,7 @@ void WinFwPolicy::restrictProxyPort(quint16 port) {
     while ((command.front() == '"') && (command.back() == '"')) {
       command = command.mid(1, command.size() - 2);
     }
-    qDebug() << "Permitting browser traffic for:" << name;
+    qDebug() << "Permitting browser traffic for:" << name << "at " << command;
 
     // Build the final condition to match the application ID.
     FWP_BYTE_BLOB* appID = NULL;
