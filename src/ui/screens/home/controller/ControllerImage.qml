@@ -137,6 +137,24 @@ Rectangle {
             }
         },
         State {
+            name: VPNController.StateOnboarding
+
+            PropertyChanges {
+                target: logo
+                showVPNOnIcon: false
+                opacity: 0.55
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: MZTheme.colors.successAccent
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: "qrc:/ui/resources/shield-off.svg"
+                opacity: 1
+            }
+        },
+        State {
             name: VPNController.StateOn
             PropertyChanges {
                 target: logo

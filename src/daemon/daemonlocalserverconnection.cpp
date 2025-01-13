@@ -122,6 +122,17 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
       return;
     }
 
+    // If this connection is being made for onboading. Don't actually connect,
+    // just emit a disconnected signal to confirm.
+    QString reason = obj.value("reason").toString();
+    if (!reason.isEmpty()) {
+      logger.error() << "Connection reason:" << reason;
+    }
+    if (reason == "onboarding") {
+      emit disconnected();
+      return;
+    }
+
     if (!m_daemon->activate(config)) {
       logger.error() << "Failed to activate the interface";
       emit disconnected();
