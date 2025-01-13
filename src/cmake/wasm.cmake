@@ -20,6 +20,9 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.h
 )
+set_target_properties(mozillavpn PROPERTIES
+  LINK_FLAGS "-gseparate-dwarf=mozillavpn.debug.wasm")
+
 
 set(WASM_FINAL_DIR ${CMAKE_BINARY_DIR}/wasm_build)
 add_custom_command(
@@ -28,6 +31,7 @@ add_custom_command(
      COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/wasm ${WASM_FINAL_DIR}
      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/src/mozillavpn.js ${WASM_FINAL_DIR}/mozillavpn.js
      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/src/mozillavpn.wasm ${WASM_FINAL_DIR}/mozillavpn.wasm
+     COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/src/mozillavpn.debug.wasm ${WASM_FINAL_DIR}/mozillavpn.debug.wasm
      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_BINARY_DIR}/src/qtloader.js ${WASM_FINAL_DIR}/qtloader.js
      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/tests/functional/servers/fxa_endpoints.js ${WASM_FINAL_DIR}/fxa_endpoints.js
      COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_SOURCE_DIR}/tests/functional/servers/guardian_endpoints.js ${WASM_FINAL_DIR}/guardian_endpoints.js
