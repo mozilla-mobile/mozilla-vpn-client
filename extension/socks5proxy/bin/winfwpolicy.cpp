@@ -37,7 +37,7 @@ WinFwPolicy* WinFwPolicy::create(Socks5* proxy) {
   // If listening on a local TCP port, permit access only by web browsers.
   QTcpServer* tcpServer = qobject_cast<QTcpServer*>(proxy->parent());
   if ((tcpServer != nullptr) && tcpServer->serverAddress().isLoopback()) {
-    fwPolicy->restrictProxyPort(tcpServer->serverPort());
+    // fwPolicy->restrictProxyPort(tcpServer->serverPort());
   }
 
   return fwPolicy;
