@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZSwipeDelegate {
     id: swipeDelegate
@@ -67,7 +68,7 @@ MZSwipeDelegate {
             MZIcon {
                 Layout.alignment: Qt.AlignTop | Qt.AlignLeft
 
-                source: "qrc:/ui/resources/devices.svg"
+                source: MZAssetLookup.getImageSource("IconDevices")
                 fillMode: Image.PreserveAspectFit
             }
 
@@ -112,7 +113,7 @@ MZSwipeDelegate {
             bgColor: MZTheme.colors.destructiveButton.defaultColor
             content: Image {
                 anchors.centerIn: parent
-                source: "qrc:/nebula/resources/delete-white.svg"
+                source: MZAssetLookup.getImageSource("TrashCanWhite")
             }
 
             SwipeDelegate.onClicked: removeItem(name, publicKey)

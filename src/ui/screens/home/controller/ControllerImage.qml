@@ -7,6 +7,7 @@ import QtQuick 2.5
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Rectangle {
     id: logo
@@ -30,7 +31,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/ui/resources/shield-on.svg"
+                source: MZAssetLookup.getImageSource("ShieldOn")
                 opacity: 1
             }
         },
@@ -48,7 +49,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/ui/resources/shield-on.svg"
+                source: MZAssetLookup.getImageSource("ShieldOn")
                 opacity: 1
             }
 
@@ -68,7 +69,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/ui/resources/shield-off.svg"
+                source: MZAssetLookup.getImageSource("ShieldOff")
                 opacity: 1
             }
         },
@@ -101,7 +102,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/ui/resources/shield-off.svg"
+                source: MZAssetLookup.getImageSource("ShieldOff")
                 opacity: 1
             }
         },
@@ -113,7 +114,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/ui/resources/shield-off.svg"
+                source: MZAssetLookup.getImageSource("ShieldOff")
                 opacity: 1
             }
 
@@ -132,7 +133,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/ui/resources/shield-off.svg"
+                source: MZAssetLookup.getImageSource("ShieldOff")
                 opacity: 1
             }
         },
@@ -148,7 +149,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: "qrc:/ui/resources/shield-on.svg"
+                source: MZAssetLookup.getImageSource("ShieldOn")
                 opacity: 1
             }
         }
@@ -308,12 +309,12 @@ Rectangle {
             switch(VPNConnectionHealth.stability) {
                 case(VPNConnectionHealth.NoSignal):
                     insetCircle.color = MZTheme.colors.errorAccentLight;
-                    insetIcon.source = "qrc:/ui/resources/shield-off.svg";
+                    insetIcon.source = MZAssetLookup.getImageSource("ShieldOff");
                     break;
             
                 case(VPNConnectionHealth.Stable):
                     insetCircle.color = MZTheme.colors.successAccent;
-                    insetIcon.source = "qrc:/ui/resources/shield-on.svg";
+                    insetIcon.source = MZAssetLookup.getImageSource("ShieldOn");
                     break;
             
                 case(VPNConnectionHealth.Unstable):
@@ -351,7 +352,7 @@ Rectangle {
             anchors.centerIn: insetCircle
             sourceSize.height: 32
             sourceSize.width: 32
-            source: "qrc:/ui/resources/switching.svg"
+            source: MZAssetLookup.getImageSource("RefreshArrowsForShield")
             opacity: 0
              PropertyAnimation {
                  id: spin
@@ -368,7 +369,7 @@ Rectangle {
 
     Image {
         id: globe
-        source: logo.showVPNOnIcon ? "qrc:/ui/resources/main-img-vpn-on.svg" : "qrc:/ui/resources/main-img-vpn-off.svg"
+        source: logo.showVPNOnIcon ? MZAssetLookup.getImageSource("GlobeOnWithInsetSpace") : MZAssetLookup.getImageSource("GlobeOffWithInsetSpace")
         sourceSize.height: logo.height
         sourceSize.width: logo.width
         visible: true

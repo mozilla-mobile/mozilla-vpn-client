@@ -5,9 +5,10 @@
 import QtQuick 2.5
 
 import Mozilla.Shared 1.0
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Rectangle {
-    property string iconUrl: "qrc:/nebula/resources/buttonLoader.svg"
+    property string iconUrl: MZAssetLookup.getImageSource("ButtonLoader")
 
     id: loader
     anchors.fill: parent

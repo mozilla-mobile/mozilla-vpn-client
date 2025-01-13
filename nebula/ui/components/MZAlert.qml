@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import compat 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Rectangle {
     id: alertBox
@@ -51,8 +52,8 @@ Rectangle {
     // Private Properties, will be changed depnding on alertType
     QtObject {
         id: style
-        readonly property string darkCloseIcon: "qrc:/nebula/resources/close-dark.svg"
-        readonly property string whiteCloseIcon: "qrc:/nebula/resources/close-white.svg"
+        readonly property string darkCloseIcon: MZAssetLookup.getImageSource("CloseDark")
+        readonly property string whiteCloseIcon: MZAssetLookup.getImageSource("CloseWhite")
         property var alertColor: MZTheme.colors.normalLevelAccent
         property var alertHoverColor: MZTheme.colors.normalButton.buttonHovered
         property var alertClickColor: MZTheme.colors.normalButton.buttonPressed

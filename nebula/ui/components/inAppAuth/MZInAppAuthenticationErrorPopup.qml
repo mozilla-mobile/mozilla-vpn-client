@@ -8,12 +8,13 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZSimplePopup {
     id: authError
 
     anchors.centerIn: Overlay.overlay
-    imageSrc: "qrc:/ui/resources/updateRequired.svg"
+    imageSrc: MZAssetLookup.getImageSource("LockWithWarning")
     imageSize: Qt.size(80, 80)
     title: MZI18n.InAppAuthSignInFailedPopupTitle
     description: ""

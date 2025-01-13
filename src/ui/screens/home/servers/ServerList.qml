@@ -11,6 +11,7 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 import compat 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 FocusScope {
     id: focusScope
@@ -119,7 +120,7 @@ FocusScope {
                         Layout.preferredWidth: 184
 
                         fillMode: Image.PreserveAspectFit
-                        source: "qrc:/ui/resources/globe.svg"
+                        source: MZAssetLookup.getImageSource("EmptyServerList")
                     }
 
                     MZTextBlock {
@@ -184,7 +185,7 @@ FocusScope {
                             spacing: MZTheme.theme.listSpacing
 
                             MZIcon {
-                                source: "qrc:/nebula/resources/clock.svg"
+                                source: MZAssetLookup.getImageSource("IconReset")
 
                                 Layout.alignment: Qt.AlignLeft | Qt.AlignTop
                                 Layout.topMargin: MZTheme.theme.listSpacing
@@ -219,7 +220,7 @@ FocusScope {
 
                                 MZIcon {
                                     id: refreshIcon
-                                    source: "qrc:/nebula/resources/refresh.svg"
+                                    source: MZAssetLookup.getImageSource("RefreshArrows")
                                     sourceSize.height: parent.height
                                     sourceSize.width: parent.width
                                 }

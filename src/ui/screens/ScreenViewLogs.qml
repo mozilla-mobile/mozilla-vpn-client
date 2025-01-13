@@ -10,6 +10,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
     id: logs
@@ -81,7 +82,7 @@ Item {
 
             MZLogsButton {
                 buttonText: MZI18n.GlobalCopy
-                iconSource: "qrc:/ui/resources/copy.svg"
+                iconSource: MZAssetLookup.getImageSource("CopyLinkColor")
                 onClicked: {
                     MZUtils.storeInClipboard(logText.text);
                     buttonText = MZI18n.GlobalCopied
@@ -97,7 +98,7 @@ Item {
 
             MZLogsButton {
                 buttonText: MZI18n.GlobalClear
-                iconSource: "qrc:/nebula/resources/delete.svg"
+                iconSource: MZAssetLookup.getImageSource("TrashCanRed")
                 onClicked: {
                     MZLog.flushLogs();
                     logText.text = "";

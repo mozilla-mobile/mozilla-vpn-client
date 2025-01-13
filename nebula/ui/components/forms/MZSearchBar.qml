@@ -9,6 +9,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 FocusScope {
     property var _filterProxyCallback: () => {}
@@ -68,7 +69,7 @@ FocusScope {
                     leftMargin: MZTheme.theme.hSpacing
                     verticalCenter: parent.verticalCenter
                 }
-                source: "qrc:/nebula/resources/search.svg"
+                source: MZAssetLookup.getImageSource("SearchMagnifyingGlass")
                 sourceSize.height: MZTheme.theme.windowMargin
                 sourceSize.width: MZTheme.theme.windowMargin
                 opacity: parent.focus ? 1 : 0.8

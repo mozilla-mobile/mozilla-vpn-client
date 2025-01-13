@@ -7,6 +7,7 @@ import QtQuick 2.5
 import Mozilla.Shared 1.0
 import components 0.1
 import components.forms 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZTextField {
     property bool charactersMasked: true
@@ -45,8 +46,8 @@ MZTextField {
             anchors.centerIn: showHidePasswordButton
             fillMode: Image.PreserveAspectFit
             source: passwordInput.charactersMasked
-              ? "qrc:/nebula/resources/eye-hidden.svg"
-              : "qrc:/nebula/resources/eye-visible.svg"
+              ? MZAssetLookup.getImageSource("EyeHidden")
+              : MZAssetLookup.getImageSource("EyeVisible")
             sourceSize.height: MZTheme.theme.iconSize * 1.5
             sourceSize.width: MZTheme.theme.iconSize * 1.5
         }

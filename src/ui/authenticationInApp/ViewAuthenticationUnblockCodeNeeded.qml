@@ -10,13 +10,14 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 import components.inAppAuth 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZInAppAuthenticationBase {
     id: authUnblockCodeNeeded
     objectName: "authUnblockCodeNeeded"
 
     _telemetryScreenId: "enter_unblock_code"
-    _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
+    _menuButtonImageSource: MZAssetLookup.getImageSource("CloseDark")
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
             // No telemetry.
@@ -34,7 +35,7 @@ MZInAppAuthenticationBase {
     _menuButtonAccessibleName: MZI18n.GlobalClose
     _headlineText: MZI18n.InAppAuthVerificationCodeTitle
     _subtitleText: MZI18n.InAppAuthEmailVerificationDescription
-    _imgSource: "qrc:/nebula/resources/verification-code.svg"
+    _imgSource: MZAssetLookup.getImageSource("VerificationCode")
 
     _inputs: MZInAppAuthenticationInputs {
         _viewObjectName: authUnblockCodeNeeded.objectName

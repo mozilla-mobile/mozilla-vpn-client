@@ -9,6 +9,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.inAppAuth 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZInAppAuthenticationBase {
     id: authVerificationSessionByTotpNeeded
@@ -16,7 +17,7 @@ MZInAppAuthenticationBase {
 
     _telemetryScreenId: "enter_security_code"
 
-    _menuButtonImageSource: "qrc:/nebula/resources/close-dark.svg"
+    _menuButtonImageSource: MZAssetLookup.getImageSource("CloseDark")
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
             // No telemetry.
@@ -34,7 +35,7 @@ MZInAppAuthenticationBase {
     _menuButtonAccessibleName: MZI18n.GlobalClose
     _headlineText: MZI18n.InAppAuthSecurityCodeTitle
     _subtitleText: MZI18n.InAppAuthSecurityCodeSubtitle
-    _imgSource: "qrc:/nebula/resources/verification-code.svg"
+    _imgSource: MZAssetLookup.getImageSource("VerificationCode")
     _inputLabel: MZI18n.InAppAuthSecurityCodeLabel
     _backButtonVisible: false
 

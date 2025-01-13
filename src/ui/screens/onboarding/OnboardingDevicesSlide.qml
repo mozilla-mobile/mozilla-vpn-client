@@ -9,6 +9,7 @@ import Mozilla.Shared 1.0
 import components 0.1
 import compat 0.1
 import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 ColumnLayout {
     id: root
@@ -70,18 +71,18 @@ ColumnLayout {
 
             model: ListModel {
                 ListElement {
-                    segmentIconPath: "qrc:/ui/resources/android.svg"
+                    segmentIconPath: "PlatformAndroidInactive"
                     //Android icon is too detailed for how small we are presenting it here (24x24) causing it to appear poorly/grainy when behind a ColorOverlay
-                    //so we use an alternate svg with the color built in
-                    selectedSegmentIconPath: "qrc:/ui/resources/android-active.svg"
+                    //so we use an alternate image with the color built in
+                    selectedSegmentIconPath: "PlatformAndroidActive"
                     segmentLabelStringId: "OnboardingDevicesSlideDeviceTypeAndroid"
                     segmentButtonId: "tabAndroid"
                 }
                 ListElement {
-                    segmentIconPath: "qrc:/ui/resources/apple.svg"
+                    segmentIconPath: "PlatformAppleInactive"
                     //When ColorOverlay is applied to the apple icon, it "thickens" a little bit which is a somewhat jarring when the transition from unselected -> selected happens
-                    //so we use an alternate svg with the color built in
-                    selectedSegmentIconPath: "qrc:/ui/resources/apple-active.svg"
+                    //so we use an alternate image with the color built in
+                    selectedSegmentIconPath: "PlatformAppleActive"
                     segmentLabelStringId: "OnboardingDevicesSlideDeviceTypeApple"
                     segmentButtonId: "tabApple"
                 }
@@ -167,7 +168,7 @@ ColumnLayout {
                 width: qrcodeStack.qrcodeSize
 
                 //QR coded generated via Adobe Express
-                source: "qrc:/ui/resources/qrcodes/play-store-qrcode.png"
+                source: MZAssetLookup.getImageSource("PlayStoreQRCode")
                 fillMode: Image.PreserveAspectFit
 
                 Accessible.role: Accessible.Graphic
@@ -204,7 +205,7 @@ ColumnLayout {
                 width: qrcodeStack.qrcodeSize
 
                 //QR coded generated via Adobe Express
-                source: "qrc:/ui/resources/qrcodes/app-store-qrcode.png"
+                source: MZAssetLookup.getImageSource("AppStoreQRCode")
                 fillMode: Image.PreserveAspectFit
 
                 Accessible.role: Accessible.Graphic

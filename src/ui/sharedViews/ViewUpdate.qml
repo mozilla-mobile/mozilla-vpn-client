@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZFlickable {
     id: vpnFlickable
@@ -25,7 +26,7 @@ MZFlickable {
                 logoTitle: qsTrId("vpn.updates.updateRecomended")
                 //% "Please update the app before you continue to use the VPN"
                 logoSubtitle: qsTrId("vpn.updates.updateRecomended.description")
-                logo: "qrc:/ui/resources/updateRecommended.svg"
+                logo: MZAssetLookup.getImageSource("LockWithDownloadArrow")
             }
 
             PropertyChanges {
@@ -50,7 +51,7 @@ MZFlickable {
                 logoTitle: qsTrId("vpn.updates.updateRequired")
                 //% "We detected and fixed a serious bug. You must update your app."
                 logoSubtitle: qsTrId("vpn.updates.updateRequire.reason")
-                logo: "qrc:/ui/resources/updateRequired.svg"
+                logo: MZAssetLookup.getImageSource("LockWithWarning")
             }
 
             PropertyChanges {
@@ -127,7 +128,7 @@ MZFlickable {
             spacing: 16
 
             Image {
-                source: "qrc:/ui/resources/connection-info-dark.svg"
+                source: MZAssetLookup.getImageSource("InfoIconDark")
                 sourceSize.width: 20
                 sourceSize.height: 20
                 antialiasing: true

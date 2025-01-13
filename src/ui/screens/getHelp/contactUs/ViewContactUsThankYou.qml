@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import components 0.1
 import components.forms 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 ColumnLayout {
     id: base
@@ -27,7 +28,7 @@ ColumnLayout {
         Layout.preferredWidth: width
         Layout.alignment: Qt.AlignHCenter
 
-        logo: "qrc:/ui/resources/heart-check.svg"
+        logo: MZAssetLookup.getImageSource("HeartWithCheckmark")
         logoTitle: MZI18n.InAppSupportWorkflowSupportResponseHeader
         logoSubtitle: MZI18n.InAppSupportWorkflowSupportResponseBody.arg(base._emailAddress)
     }

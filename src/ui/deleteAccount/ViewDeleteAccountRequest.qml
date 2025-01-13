@@ -9,6 +9,7 @@ import Mozilla.Shared 1.0
 import components 0.1
 import components.forms 0.1
 import components.inAppAuth 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZInAppAuthenticationBase {
     id: viewDeleteAccount
@@ -41,13 +42,13 @@ MZInAppAuthenticationBase {
     _changeEmailLinkVisible: false
     _disclaimersVisible: false
     _menuButtonAccessibleName: MZI18n.GlobalGoBack
-    _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
+    _menuButtonImageSource: MZAssetLookup.getImageSource("ArrowBack")
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
         cancelAuthenticationFlow();
     }
     _headlineText: MZI18n.DeleteAccountHeadline2
-    _imgSource: "qrc:/nebula/resources/avatar-delete-account.svg"
+    _imgSource: MZAssetLookup.getImageSource("AvatarDeleteAccount")
 
     _inputs: ColumnLayout {
         objectName: "accountDeletionLayout"

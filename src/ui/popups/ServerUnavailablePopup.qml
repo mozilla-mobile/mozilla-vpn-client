@@ -9,13 +9,14 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import compat 0.1
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZSimplePopup {
     id: root
     property bool receivedPing: false;
 
     anchors.centerIn: parent
-    imageSrc: "qrc:/ui/resources/server-unavailable.svg"
+    imageSrc: MZAssetLookup.getImageSource("GlobeNoConnection")
     imageSize: Qt.size(80, 80)
     title: MZI18n.ServerUnavailableModalHeaderText
     // In case the handshake failed but the ping succeeded - use the Firewall Error Message

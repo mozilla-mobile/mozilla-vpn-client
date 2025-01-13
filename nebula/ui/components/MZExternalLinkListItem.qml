@@ -6,11 +6,12 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 // MZExternalLinkListItem
 MZClickableRow {
     property alias title: title.text
-    property string iconSource:  "qrc:/nebula/resources/externalLink.svg"
+    property string iconSource: MZAssetLookup.getImageSource("ExternalLink")
     property alias iconMirror: icon.mirror
 
     backgroundColor: MZTheme.colors.clickableRow

@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZFlickable {
     id: vpnFlickable
@@ -57,7 +58,7 @@ MZFlickable {
             anchors.horizontalCenter: undefined
             Layout.topMargin: isMobile ? parent.height * 0.20 : parent.height * 0.12
 
-            logo: "qrc:/ui/resources/globe-warning.svg"
+            logo: MZAssetLookup.getImageSource("GlobeWarning")
             logoSize: 80
             logoSubtitle: MZI18n.CaptivePortalAlertHeader
             logoTitle: MZI18n.CaptivePortalAlertTitle

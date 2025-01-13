@@ -9,6 +9,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
     id: box
@@ -450,8 +451,8 @@ Item {
 
             anchors.centerIn: ipInfoToggleButton
             source: ipInfoPanel.isOpen
-                ? "qrc:/nebula/resources/close-white.svg"
-                : "qrc:/ui/resources/connection-info.svg"
+                ? MZAssetLookup.getImageSource("CloseWhite")
+                : MZAssetLookup.getImageSource("InfoIcon")
             sourceSize {
                 height: iconSize
                 width: iconSize

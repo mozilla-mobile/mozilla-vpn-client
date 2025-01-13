@@ -7,6 +7,7 @@ import QtQuick.Controls 2.14
 
 import Mozilla.Shared 1.0
 import compat 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Popup {
     id: popup
@@ -57,7 +58,7 @@ Popup {
             anchors.centerIn: closeButton
 
             fillMode: Image.PreserveAspectFit
-            source: "qrc:/nebula/resources/close-darker.svg"
+            source: MZAssetLookup.getImageSource("CloseDarker")
             sourceSize.height: MZTheme.theme.iconSize
             sourceSize.width: MZTheme.theme.iconSize
         }

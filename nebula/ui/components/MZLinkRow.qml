@@ -6,7 +6,7 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0        
-        
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
         
 RowLayout {
     id: linkRow
@@ -67,7 +67,7 @@ RowLayout {
         buttonColorScheme: MZTheme.colors.clickableRow
         accessibleName: title
         MZIcon {
-            source: "qrc:/nebula/resources/externalLink.svg"
+            source: MZAssetLookup.getImageSource("ExternalLink")
             anchors.centerIn: parent
         }
         onClicked: linkRow.clicked()

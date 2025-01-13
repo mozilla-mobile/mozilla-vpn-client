@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 CheckBox {
     property var uiState: MZTheme.theme.uiState
@@ -81,7 +82,7 @@ CheckBox {
 
     MZIcon {
         id: checkmarkIcon
-        source: "qrc:/nebula/resources/checkmark-blue50.svg"
+        source: MZAssetLookup.getImageSource("CheckmarkNormalColor")
         sourceSize.width: MZTheme.theme.checkmarkHeightWidth
         sourceSize.height: MZTheme.theme.checkmarkHeightWidth
         anchors.centerIn: parent

@@ -5,10 +5,11 @@
 import QtQuick 2.5
 
 import Mozilla.Shared 1.0
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 // MZChevron
 Image {
-    source: "qrc:/nebula/resources/chevron.svg"
+    source: MZAssetLookup.getImageSource("Chevron")
     mirror: MZLocalizer.isRightToLeft
     sourceSize.height: 24
     sourceSize.width: 24

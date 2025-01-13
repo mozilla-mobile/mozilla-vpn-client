@@ -3,9 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.0
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 ShaderEffect {
-    property string shaderSrc: "qrc:/nebula/resources/shaders/baked/animatedRings.frag.qsb"
+    property string shaderSrc: MZAssetLookup.getAnimationSource("RingsShader")
 
     fragmentShader: shaderSrc
 }

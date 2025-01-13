@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.15
 import Mozilla.Shared 1.0
 
 import compat 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Column {
     id: delegate
@@ -90,7 +91,7 @@ Column {
             MZIcon {
                 id: icon
 
-                source: delegate.currentState === MZStepProgressBarDelegate.State.Complete ? "qrc:/nebula/resources/checkmark-green.svg" : delegate.iconSource
+                source: delegate.currentState === MZStepProgressBarDelegate.State.Complete ? MZAssetLookup.getImageSource("CheckmarkSuccessColor") : delegate.iconSource
             }
 
             MZColorOverlay {

@@ -7,6 +7,7 @@ import QtQuick 2.5
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
     id: root
@@ -36,7 +37,7 @@ Item {
         anchors.verticalCenter: root.verticalCenter
         sourceSize.height: 80
         fillMode: Image.PreserveAspectFit
-        source: "qrc:/nebula/resources/spinner.svg"
+        source: MZAssetLookup.getImageSource("Spinner")
 
         ParallelAnimation {
             id: startSpinning

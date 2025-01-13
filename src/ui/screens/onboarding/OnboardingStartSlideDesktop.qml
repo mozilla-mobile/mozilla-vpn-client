@@ -9,6 +9,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 ColumnLayout {
     id: root
@@ -93,7 +94,7 @@ ColumnLayout {
         Layout.alignment: Qt.AlignHCenter
 
         sourceSize: MZUiUtils.isLargePhone() ? Qt.size(209,144) : Qt.size(151,104)
-        source: "qrc:/ui/resources/launch.svg"
+        source: MZAssetLookup.getImageSource("RocketShipWithCheckmark")
     }
 
     Item {
