@@ -23,11 +23,11 @@ jobs:
 
   build_test_app:
     name: Wasm Qt6
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.enumerate.outputs.tests }}
     env:
-      QTVERSION: 6.2.4
+      QTVERSION: 6.6.3
 
     steps:
       - name: Clone repository
@@ -44,9 +44,9 @@ jobs:
       - name: Install Qt6
         shell: bash
         run: |
-          # qt6.2.4 for wasm needs the desktop linux installation
-          python -m aqt install-qt -O /opt linux desktop $QTVERSION
-          python -m aqt install-qt -O /opt linux desktop $QTVERSION wasm_32 -m qtcharts qtwebsockets qt5compat
+          # Qt for wasm needs the desktop linux installation
+          python -m aqt install-qt -O /opt linux desktop $QTVERSION gcc_64 -m qtshadertools
+          python -m aqt install-qt -O /opt linux desktop $QTVERSION wasm_singlethread -m qtcharts qtwebsockets qt5compat qtshadertools
 
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v14
@@ -54,14 +54,15 @@ jobs:
           # Emscripten does not guarantee ABI compatibility, we should use the
           # same version used to build Qt. See:
           # https://doc.qt.io/qt-6/wasm.html#installing-emscripten
-          version: 2.0.14
+          version: 3.1.37
 
       - name: Compile test client
         shell: bash
         run: |
-          export PATH=/opt/$QTVERSION/wasm_32/bin:/opt/$QTVERSION/gcc_64/bin:$PATH
+          export PATH=/opt/$QTVERSION/wasm_singlethread/bin:/opt/$QTVERSION/gcc_64/bin:$PATH
           mkdir -p build/cmake
-          /opt/$QTVERSION/wasm_32/bin/qt-cmake -S $(pwd) -B build/cmake -DCMAKE_BUILD_TYPE=Release \
+          /opt/$QTVERSION/wasm_singlethread/bin/qt-cmake -S $(pwd) -B build/cmake -GNinja \
+            -DCMAKE_BUILD_TYPE=Release \
             -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake \
             -DQT_HOST_PATH=/opt/$QTVERSION/gcc_64 \
             -DBUILD_TESTS=OFF
@@ -96,14 +97,12 @@ jobs:
     needs:
       - build_test_app
       - build_test_addons
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
       matrix:
         test: ${{ fromJson(needs.build_test_app.outputs.matrix) }}
-    env:
-      QTVERSION: 6.2.4
 
     steps:
       - name: Clone repository

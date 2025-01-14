@@ -3,33 +3,35 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!--Set visual viewport size for mobile devices to the device size,
+        witch results in a scale of 1 and a 1:1 mapping between CSS pixels
+        and Qt device independent pixels. -->
+    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=0"/>
+
     <title>Mozilla VPN - WebAssembly Viewer</title>
     <link href="//fonts.cdnfonts.com/css/metropolis-2" rel="stylesheet">
     <link rel="stylesheet" href="main.css">
+    <style>
+      /* Make the html body cover the entire (visual) viewport with no scroll bars. */
+      html, body { padding: 0; margin: 0; overflow: hidden; height: 100% }
+      #screen { width: 100%; height: 100%; }
+    </style>
     <link rel="icon" type="image/png" href="favicon.ico">
   </head>
-  <body onload="init()" class="wasm-loading">
-    <header>
-      <svg class="Mozilla-VPN-logo logo" width="80" height="80" viewBox="0 0 80 80" fill="#20123a" xmlns="http://www.w3.org/2000/svg">
-        <path fill-rule="evenodd" clip-rule="evenodd" d="M40 9C36.6863 9 34 11.6863 34 15C34 18.3137 36.6863 21 40 21C43.3137 21 46 18.3137 46 15C46 11.6863 43.3137 9 40 9ZM26 15C26 7.26801 32.268 1 40 1C47.732 1 54 7.26801 54 15C54 22.732 47.732 29 40 29C37.589 29 35.3203 28.3905 33.3396 27.3172L27.3172 33.3396C27.7718 34.1784 28.1431 35.0689 28.4202 36H51.5798C53.3009 30.217 58.658 26 65 26C72.732 26 79 32.268 79 40C79 47.732 72.732 54 65 54C62.589 54 60.3203 53.3905 58.3396 52.3172L52.3172 58.3396C53.3905 60.3203 54 62.589 54 65C54 72.732 47.732 79 40 79C32.268 79 26 72.732 26 65C26 57.268 32.268 51 40 51C42.411 51 44.6797 51.6095 46.6604 52.6827L52.6827 46.6604C52.2282 45.8215 51.8568 44.9311 51.5798 44H28.4202C26.6992 49.783 21.342 54 15 54C7.26801 54 1 47.732 1 40C1 32.268 7.26801 26 15 26C17.411 26 19.6797 26.6095 21.6604 27.6827L27.6827 21.6604C26.6095 19.6797 26 17.411 26 15ZM34 65C34 61.6863 36.6863 59 40 59C43.3137 59 46 61.6863 46 65C46 68.3137 43.3137 71 40 71C36.6863 71 34 68.3137 34 65ZM15 34C11.6863 34 9 36.6863 9 40C9 43.3137 11.6863 46 15 46C18.3137 46 21 43.3137 21 40C21 36.6863 18.3137 34 15 34ZM59 40C59 36.6863 61.6863 34 65 34C68.3137 34 71 36.6863 71 40C71 43.3137 68.3137 46 65 46C61.6863 46 59 43.3137 59 40Z" fill="black"/>
-      </svg>
-      <h1>Mozilla VPN - <span class="web-viewer">WebAssembly Viewer</span></h1>
-    </header>
-    <main class="container">
-      <div class="row">
-        <div class="col-sm qml-content">
-          <p class="loading-error-message">Trouble loading content</p>
-          <img src="img/loader.svg" class="loader" alt="loading icon" />
-          <div class="canvas-bg">
-            <canvas id="qmlcanvas" oncontextmenu="event.preventDefault()" contenteditable="false" tabindex="-1"></canvas>
-          </div>
-        </div>
-      </div>
+  <body onload="init()">
+    <figure style="overflow:visible;" id="qtspinner">
+      <center style="margin-top:1.5em; line-height:150%">
+        <svg class="Mozilla-VPN-logo logo" width="80" height="80" viewBox="0 0 80 80" fill="#20123a" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M40 9C36.6863 9 34 11.6863 34 15C34 18.3137 36.6863 21 40 21C43.3137 21 46 18.3137 46 15C46 11.6863 43.3137 9 40 9ZM26 15C26 7.26801 32.268 1 40 1C47.732 1 54 7.26801 54 15C54 22.732 47.732 29 40 29C37.589 29 35.3203 28.3905 33.3396 27.3172L27.3172 33.3396C27.7718 34.1784 28.1431 35.0689 28.4202 36H51.5798C53.3009 30.217 58.658 26 65 26C72.732 26 79 32.268 79 40C79 47.732 72.732 54 65 54C62.589 54 60.3203 53.3905 58.3396 52.3172L52.3172 58.3396C53.3905 60.3203 54 62.589 54 65C54 72.732 47.732 79 40 79C32.268 79 26 72.732 26 65C26 57.268 32.268 51 40 51C42.411 51 44.6797 51.6095 46.6604 52.6827L52.6827 46.6604C52.2282 45.8215 51.8568 44.9311 51.5798 44H28.4202C26.6992 49.783 21.342 54 15 54C7.26801 54 1 47.732 1 40C1 32.268 7.26801 26 15 26C17.411 26 19.6797 26.6095 21.6604 27.6827L27.6827 21.6604C26.6095 19.6797 26 17.411 26 15ZM34 65C34 61.6863 36.6863 59 40 59C43.3137 59 46 61.6863 46 65C46 68.3137 43.3137 71 40 71C36.6863 71 34 68.3137 34 65ZM15 34C11.6863 34 9 36.6863 9 40C9 43.3137 11.6863 46 15 46C18.3137 46 21 43.3137 21 40C21 36.6863 18.3137 34 15 34ZM59 40C59 36.6863 61.6863 34 65 34C68.3137 34 71 36.6863 71 40C71 43.3137 68.3137 46 65 46C61.6863 46 59 43.3137 59 40Z" fill="black"/>
+        </svg>
+        <strong>Mozilla VPN - WebAssembly Viewer</strong>
+        <div id="qtstatus"></div>
+        <noscript>JavaScript is disabled. Please enable JavaScript to use this application.</noscript>
+      </center>
+    </figure>
+    <div id="screen"></div>
 
-      <div id="qtstatus"></div>
-
-    </main>
     <footer>
       <a class="icon-link" href="https://www.github.com/mozilla-mobile/mozilla-vpn-client" target="_blank" rel="noopener noreferrer">
         Mozilla
@@ -39,55 +41,65 @@
         <svg class="GitHub-logo logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38.96 38"><path fill="#20123a" d="M19.48 0a19.49 19.49 0 0 0-6.16 38c1 .18 1.33-.43 1.33-.94v-3.32c-5.44 1.15-6.59-2.64-6.59-2.64a5.14 5.14 0 0 0-2.16-2.85c-1.77-1.21.13-1.18.13-1.18a4.1 4.1 0 0 1 3 2 4.16 4.16 0 0 0 5.67 1.62 4.18 4.18 0 0 1 1.23-2.61c-4.32-.49-8.87-2.16-8.87-9.63a7.51 7.51 0 0 1 2-5.22 7 7 0 0 1 .19-5.16s1.63-.52 5.35 2a18.37 18.37 0 0 1 9.76 0c3.72-2.52 5.35-2 5.35-2a7 7 0 0 1 .19 5.16 7.51 7.51 0 0 1 2 5.22c0 7.49-4.56 9.13-8.9 9.62a4.64 4.64 0 0 1 1.32 3.6v5.35c0 .64.35 1.12 1.34.93A19.48 19.48 0 0 0 19.48 0z"/></svg>
       </a>
     </footer>
+
+    <script type="text/javascript">
+        async function init()
+        {
+            const spinner = document.querySelector('#qtspinner');
+            const screen = document.querySelector('#screen');
+            const status = document.querySelector('#qtstatus');
+
+            const u = new URL(location);
+
+            const showUi = (ui) => {
+                [spinner, screen].forEach(element => element.style.display = 'none');
+                if (screen === ui)
+                    screen.style.position = 'default';
+                ui.style.display = 'block';
+            }
+
+            try {
+                showUi(spinner);
+                status.innerHTML = 'Loading...';
+
+                instance = await qtLoad({
+                    qt: {
+                        onLoaded: () => showUi(screen),
+                        onExit: exitData =>
+                        {
+                            status.innerHTML = 'Application exit';
+                            status.innerHTML +=
+                                exitData.code !== undefined ? ` with code ${exitData.code}` : '';
+                            status.innerHTML +=
+                                exitData.text !== undefined ? ` (${exitData.text})` : '';
+                            showUi(spinner);
+                        },
+                        entryFunction: window.createQtAppInstance,
+                        containerElements: [screen],
+                        environment: {
+                            MVPN_API_BASE_URL: u.searchParams.get('guardian'),
+                            MZ_FXA_API_BASE_URL: u.searchParams.get('fxa'),
+                            MZ_ADDON_URL: u.searchParams.get('addon'),
+                            MVPN_SKIP_ADDON_SIGNATURE: '1',
+                            MZ_CAPTIVE_PORTAL_URL: u.searchParams.get('captivePortal'),
+                        }
+                    }
+                });
+            } catch (e) {
+                console.error(e);
+                console.error(e.stack);
+            }
+        }
+    </script>
+    <script src="mozillavpn.js"></script>
     <script type="text/javascript" src="qtloader.js"></script>
-    <script>
-function init() {
-    const qmlcanvas = document.querySelector('#qmlcanvas');
-    const status = document.querySelector('#qtstatus');
-    const bodyClassList = document.body.classList;
-
-    const u = new URL(location);
-
-    const qtLoader = QtLoader({
-      canvasElements: [qmlcanvas],
-      showLoader: function(loaderStatus) {
-        status.textContent = loaderStatus + '...';
-      },
-      showError: function(errorText) {
-        bodyClassList.remove('wasm-loading');
-        status.textContent = errorText;
-        bodyClassList.add('wasm-loading-error');
-      },
-      showExit: function() {
-        status.textContent = 'Application exit';
-        if (qtLoader.exitCode !== undefined)
-          status.textContent += ' with code ' + qtLoader.exitCode;
-        if (qtLoader.exitText !== undefined)
-          status.textContent += ' (' + qtLoader.exitText + ')';
-      },
-      showCanvas: function() {
-        bodyClassList.remove('wasm-loading');
-        bodyClassList.add('wasm-loaded');
-        status.textContent = '';
-      },
-
-      environment: {
-        MVPN_API_BASE_URL: u.searchParams.get('guardian'),
-        MZ_FXA_API_BASE_URL: u.searchParams.get('fxa'),
-        MZ_ADDON_URL: u.searchParams.get('addon'),
-        MVPN_SKIP_ADDON_SIGNATURE: '1',
-        MZ_CAPTIVE_PORTAL_URL: u.searchParams.get('captivePortal'),
-      }
-    });
-    qtLoader.loadEmscriptenModule('mozillavpn');
-}
-
+    <script type="text/javascript">
 function mzNetworkRequest(id, method, url, body) {
   // Special case for capitve-portal because the firefox URL captive-portal
   // detector does not support cors.
   if (url.endsWith("/success.txt")) {
     setTimeout(() => {
-            Module.mzNetworkResponse(id, JSON.stringify({status: 200, body: btoa('success')})); }, 200);
+            instance.mzNetworkResponse(id, JSON.stringify({status: 200, body: btoa('success')})); }, 200);
     return;
   }
 
@@ -98,14 +110,14 @@ function mzNetworkRequest(id, method, url, body) {
      'Content-Type': 'application/json'
     };
   };
-  fetch(url, options).then(async resp => Module.mzNetworkResponse(id, JSON.stringify({
+  fetch(url, options).then(async resp => instance.mzNetworkResponse(id, JSON.stringify({
             status: resp.status,
             body: btoa(String.fromCharCode.apply(
                 null, new Uint8Array(await resp.arrayBuffer())))
           })))
           .catch(() => {
             console.error('Unable to fetch content for URL', url);
-            Module.mzNetworkResponse(
+            instance.mzNetworkResponse(
                 id, JSON.stringify({status: 0, body: ''}));
           });
 }
