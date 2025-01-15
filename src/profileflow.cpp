@@ -101,6 +101,7 @@ void ProfileFlow::reauthenticateViaWeb() {
       taskAuthenticate, &TaskAuthenticate::authenticationCompleted, this,
       [this]() {
         logger.debug() << "Authentication succeeded, restarting profile flow";
+        m_forceReauthFlow = false;
         ProfileFlow::start();
       });
 
