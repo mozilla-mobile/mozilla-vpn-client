@@ -67,35 +67,6 @@ InspectorItemPicker* s_itemPicker = nullptr;
 
 std::function<void(InspectorHandler* inspectorHandler)> s_constructorCallback;
 InspectorHotreloader* s_hotreloader = nullptr;
-
-QJsonValue qjsValueToQJsonValue(const QJSValue& qjsValue) {
-  if (qjsValue.isUndefined() || qjsValue.isNull()) {
-    return QJsonValue(QJsonValue::Undefined);
-  } else if (qjsValue.isBool()) {
-    return QJsonValue(qjsValue.toBool());
-  } else if (qjsValue.isNumber()) {
-    return QJsonValue(qjsValue.toNumber());
-  } else if (qjsValue.isString()) {
-    return QJsonValue(qjsValue.toString());
-  } else if (qjsValue.isArray()) {
-    QJsonArray jsonArray;
-    quint32 length = qjsValue.property("length").toUInt();
-    for (quint32 i = 0; i < length; ++i) {
-      jsonArray.append(qjsValueToQJsonValue(qjsValue.property(i)));
-    }
-    return QJsonValue(jsonArray);
-  } else if (qjsValue.isObject()) {
-    QJsonObject jsonObject;
-    QJSValueIterator it(qjsValue);
-    while (it.hasNext()) {
-      it.next();
-      jsonObject.insert(it.name(), qjsValueToQJsonValue(it.value()));
-    }
-    return QJsonValue(jsonObject);
-  }
-  // Handle other types as needed
-  return QJsonValue(QJsonValue::Undefined);
-}
 }  // namespace
 
 struct InspectorSettingCommand {
@@ -699,31 +670,35 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{
         "glean_test_get_value", "Get value of a Glean metric", 3,
         [](InspectorHandler*, const QList<QByteArray>& arguments) {
-          QString metricCategory = QString(arguments[1]);
-          QString metricName = QString(arguments[2]);
           QString ping = QString(arguments[3]);
-
-          // Hack: let's run the code on the QML side,
-          // because I (Bea) could not figure out a nice way
-          // to access C++ namespaces and namespace properties
-          // with runtime strings.
-          QJSEngine* engine = QmlEngineHolder::instance()->engine();
-          QJSValue function = QmlEngineHolder::instance()->engine()->evaluate(
-              QString("(Glean) => Glean.%1.%2.testGetValue(\"%3\")")
-                  .arg(metricCategory)
-                  .arg(metricName)
-                  .arg(ping));
-
-          QJSValue result = function.call(QJSValueList{
-              engine->toScriptValue(__DONOTUSE__GleanMetrics::instance())});
-
           QJsonObject obj;
-          if (result.isError()) {
-            obj["error"] = result.toString();
-          } else {
-            obj["value"] = qjsValueToQJsonValue(result);
+
+          QObject* instance = __DONOTUSE__GleanMetrics::instance();
+          QVariant qvCategory = instance->property(arguments[1].constData());
+          QObject* category = qvCategory.value<QObject*>();
+          if (category == nullptr) {
+            obj["error"] = QString(arguments[1]) + "is not a valid category";
+            return obj;
           }
 
+          QVariant metric = category->property(arguments[2].constData());
+          if (!metric.isValid()) {
+            obj["error"] = QString(arguments[2]) + "is not a valid metric";
+            return obj;
+          }
+
+          if (metric.canConvert<BaseMetric*>()) {
+            BaseMetric* baseMetric = metric.value<BaseMetric*>();
+            obj["value"] = baseMetric->testGetValue(ping);
+            return obj;
+          }
+
+          QString className = "unknown";
+          if (metric.canConvert<QObject*>()) {
+            className = metric.value<QObject*>()->metaObject()->className();
+          }
+          obj["error"] =
+              QString("not a supported metric type (%1)").arg(className);
           return obj;
         }},
 

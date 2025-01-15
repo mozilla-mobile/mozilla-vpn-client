@@ -5,12 +5,13 @@
 #include "glean/string.h"
 
 #include <QDebug>
+#include <QJsonValue>
 
 #ifndef __wasm__
 #  include "qtglean.h"
 #endif
 
-StringMetric::StringMetric(int id) : m_id(id) {}
+StringMetric::StringMetric(int id) : BaseMetric(id) {}
 
 void StringMetric::set(QString value) const {
 #ifndef __wasm__
@@ -25,9 +26,9 @@ int32_t StringMetric::testGetNumRecordedErrors(ErrorType errorType) const {
   return 0;
 }
 
-QString StringMetric::testGetValue(const QString& pingName) const {
+QJsonValue StringMetric::testGetValue(const QString& pingName) const {
 #ifndef __wasm__
-  return glean_string_test_get_value(m_id, pingName.toUtf8());
+  return QJsonValue(glean_string_test_get_value(m_id, pingName.toUtf8()));
 #endif
-  return "";
+  return QJsonValue("");
 }

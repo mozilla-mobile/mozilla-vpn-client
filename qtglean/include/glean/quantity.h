@@ -7,9 +7,10 @@
 
 #include <QObject>
 
+#include "basemetric.h"
 #include "errortype.h"
 
-class QuantityMetric final : public QObject {
+class QuantityMetric final : public BaseMetric {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(QuantityMetric)
 
@@ -19,12 +20,8 @@ class QuantityMetric final : public QObject {
   Q_INVOKABLE void set(int value = 0) const;
 
   // Test  only functions
-
-  Q_INVOKABLE int64_t testGetValue(const QString& pingName = "") const;
-  Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
-
- private:
-  const int m_id;
+  virtual QJsonValue testGetValue(const QString& pingName = "") const;
+  virtual int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 };
 
 #endif  // QUANTITY_H

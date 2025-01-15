@@ -141,6 +141,7 @@ Item {
                 if (currentIndex >= 0) {
                     root.selectedImageSourceLight = imageItems.get(currentIndex).lightFile;
                     root.selectedImageSourceDark = imageItems.get(currentIndex).darkFile;
+
                 }
             }
 

@@ -6,9 +6,10 @@
 #define BOOLEAN_H
 #include <QObject>
 
+#include "basemetric.h"
 #include "errortype.h"
 
-class BooleanMetric final : public QObject {
+class BooleanMetric final : public BaseMetric {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(BooleanMetric)
 
@@ -18,11 +19,8 @@ class BooleanMetric final : public QObject {
   Q_INVOKABLE void set(bool value = true) const;
 
   // Test  only functions
-  Q_INVOKABLE bool testGetValue(const QString& pingName = "") const;
-  Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
-
- private:
-  const int m_id;
+  virtual QJsonValue testGetValue(const QString& pingName = "") const;
+  virtual int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 };
 
 #endif  // BOOLEAN_H

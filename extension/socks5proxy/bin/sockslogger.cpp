@@ -211,8 +211,9 @@ void SocksLogger::logfileHandler(QtMsgType type, const QMessageLogContext& ctx,
                                  const QString& msg) {
   QMutexLocker lock(&m_logFileMutex);
   if (m_logFileDevice) {
-    // Write the line into the logfile.
-    m_logFileDevice->write(msg.toUtf8() + '\n');
+    QDateTime now = QDateTime::currentDateTime();
+    QString line = now.toString("[dd.MM.yyyy hh:mm:ss.zzz] ") + msg + '\n';
+    m_logFileDevice->write(line.toUtf8());
     m_logFileDevice->flush();
   }
 }

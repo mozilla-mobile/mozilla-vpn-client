@@ -1,0 +1,9 @@
+#!/bin/sh
+action="$1"
+if [ "$action" = "configure" ]; then
+  # Remove the legacy XDG autostart start-on-boot configuration
+  rm -f /etc/xdg/autostart/mozillavpn-startup.desktop
+  rm -f /etc/xdg/autostart/org.mozilla.vpn-startup.desktop
+fi
+
+#DEBHELPER#

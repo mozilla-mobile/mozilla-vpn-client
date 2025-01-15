@@ -9,6 +9,7 @@
 #include <QJsonObject>
 #include <QObject>
 
+#include "basemetric.h"
 #include "errortype.h"
 
 struct FfiExtra {
@@ -54,7 +55,7 @@ struct EventMetricExtraParser {
   }
 };
 
-class EventMetric final : public QObject {
+class EventMetric final : public BaseMetric {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(EventMetric)
 
@@ -70,13 +71,11 @@ class EventMetric final : public QObject {
 
   void record(const EventMetricExtra& extras);
 
-  Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
-
-  Q_INVOKABLE QList<QJsonObject> testGetValue(
-      const QString& pingName = "") const;
+  // Test  only functions
+  virtual QJsonValue testGetValue(const QString& pingName = "") const;
+  virtual int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 
  private:
-  const int m_id;
   EventMetricExtraParser* m_parser;
 };
 

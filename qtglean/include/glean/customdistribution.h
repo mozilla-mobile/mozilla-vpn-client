@@ -8,10 +8,10 @@
 #include <QHash>
 #include <QObject>
 
-#include "distributiondata.h"
+#include "basemetric.h"
 #include "errortype.h"
 
-class CustomDistributionMetric final : public QObject {
+class CustomDistributionMetric final : public BaseMetric {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(CustomDistributionMetric)
 
@@ -21,12 +21,8 @@ class CustomDistributionMetric final : public QObject {
   Q_INVOKABLE void accumulate_single_sample(qint64 sample) const;
 
   // Test  only functions
-
-  Q_INVOKABLE DistributionData testGetValue(const QString& pingName = "") const;
-  Q_INVOKABLE int32_t testGetNumRecordedErrors(ErrorType errorType) const;
-
- private:
-  const int m_id;
+  virtual QJsonValue testGetValue(const QString& pingName = "") const;
+  virtual int32_t testGetNumRecordedErrors(ErrorType errorType) const;
 };
 
 #endif  // CUSTOM_DISTRIBUTION_H

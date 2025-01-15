@@ -12,6 +12,7 @@ execute_process(
 
 ## Add a static library for the Glean C++ code.
 add_library(qtglean STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/basemetric.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/boolean.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/datetime.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/quantity.h
@@ -20,7 +21,6 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/customdistribution.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/event.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/ping.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/distributiondata.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/timingdistribution.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/memorydistribution.h
     ${CMAKE_CURRENT_SOURCE_DIR}/include/glean/uuid.h
