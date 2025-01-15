@@ -80,8 +80,8 @@ Item {
             RowLayout {
               spacing: 25
               Rectangle {
-                height: 150
-                width: 150
+                Layout.preferredHeight: 150
+                Layout.preferredWidth: 150
                 color: MZTheme.colors.fontColor
                 visible: imageSelect.currentIndex >= 0
                 Image {
@@ -93,11 +93,11 @@ Item {
               }
               
               Rectangle {
-                height: 150
-                width: 150
+                Layout.preferredHeight: 150
+                Layout.preferredWidth: 150
                 color: MZTheme.colors.fontColor
                 visible: imageSelect.currentIndex >= 0
-              Image {
+                Image {
                   source: selectedImageSourceDark
                   sourceSize.height: 150
                   sourceSize.width: 150
