@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZFlickable {
     id: vpnFlickable
@@ -56,7 +57,7 @@ MZFlickable {
             Layout.topMargin: isMobile ? MZTheme.theme.vSpacing : window.height * 0.2
             Layout.alignment: Qt.AlignHCenter
 
-            source: "qrc:/ui/resources/logo-connecting.svg"
+            source: MZAssetLookup.getImageSource("LogoConnecting")
             smooth: true
             antialiasing: true
         }
@@ -122,7 +123,7 @@ MZFlickable {
                     Layout.fillWidth: true
                     Layout.alignment: Qt.AlignHCenter
 
-                    source: "qrc:/nebula/resources/spinner.svg"
+                    source: MZAssetLookup.getImageSource("Spinner")
 
                     ParallelAnimation {
                         id: startSpinning

@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
 import compat 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 // MZSegmentedToggle
 Rectangle {
@@ -183,7 +184,7 @@ Rectangle {
                     id: iconLabel
 
                     MZIcon {
-                        source: index === root.selectedIndex ? selectedSegmentIconPath : segmentIconPath
+                        source: MZAssetLookup.getImageSource(index === root.selectedIndex ? selectedSegmentIconPath : segmentIconPath)
                     }
                 }
 

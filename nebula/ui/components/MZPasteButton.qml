@@ -5,6 +5,7 @@
 import QtQuick 2.5
 
 import Mozilla.Shared 1.0
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZIconButton {
     accessibleName: MZI18n.GlobalPaste
@@ -12,7 +13,7 @@ MZIconButton {
     Image {
         anchors.centerIn: parent
         fillMode: Image.PreserveAspectFit
-        source: "qrc:/nebula/resources/paste.svg"
+        source: MZAssetLookup.getImageSource("Paste")
         sourceSize.height: MZTheme.theme.iconSize * 1.5
         sourceSize.width: MZTheme.theme.iconSize * 1.5
     }

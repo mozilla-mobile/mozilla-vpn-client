@@ -9,4 +9,5 @@ qt_add_qml_module(utils
     RESOURCE_PREFIX /nebula
     RESOURCES
         MZUiUtils.js
+        MZAssetLookup.js
 )

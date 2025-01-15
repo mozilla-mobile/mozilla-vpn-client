@@ -9,6 +9,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.inAppAuth 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZInAppAuthenticationBase {
     id: authSignIn
@@ -42,7 +43,7 @@ MZInAppAuthenticationBase {
     ]
 
     _changeEmailLinkVisible: true
-    _menuButtonImageSource: "qrc:/nebula/resources/back.svg"
+    _menuButtonImageSource: MZAssetLookup.getImageSource("ArrowBack")
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
@@ -61,7 +62,7 @@ MZInAppAuthenticationBase {
     _menuButtonAccessibleName: MZI18n.GlobalGoBack
     _headlineText: MZAuthInApp.emailAddress
     _subtitleText: MZI18n.InAppAuthSignInSubtitle2
-    _imgSource: "qrc:/nebula/resources/avatar.svg"
+    _imgSource: MZAssetLookup.getImageSource("Avatar")
     _inputLabel: MZI18n.InAppAuthPasswordInputLabel
 
     _inputs: MZInAppAuthenticationInputs {

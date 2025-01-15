@@ -10,6 +10,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import compat 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
     property int safeAreaHeight: window.safeContentHeight
@@ -59,7 +60,7 @@ Item {
 
             ListElement {
                 animationSpeed: 1.5
-                animationSrc: ":/ui/resources/animations/vpnlogo-drop_animation.json"
+                animationSrc: "Onboarding1"
                 loopAnimation: false
                 titleStringId: "MobileOnboardingPanelOneTitle"
                 subtitleStringId: "MobileOnboardingPanelOneSubtitle"
@@ -67,7 +68,7 @@ Item {
             }
             ListElement {
                 animationSpeed: 1
-                animationSrc: ":/ui/resources/animations/globe_animation.json"
+                animationSrc: "Onboarding2"
                 loopAnimation: true
                 titleStringId: "OnboardingPanelTwoTitle"
                 subtitleStringId: "OnboardingPanelTwoSubtitle"
@@ -75,7 +76,7 @@ Item {
             }
             ListElement {
                 animationSpeed: 1
-                animationSrc: ":/ui/resources/animations/vpnactive_animation.json"
+                animationSrc: "Onboarding3"
                 loopAnimation: true
                 titleStringId: "OnboardingPanelThreeTitle"
                 subtitleStringId: "OnboardingPanelThreeSubtitle"
@@ -83,7 +84,7 @@ Item {
             }
             ListElement {
                 animationSpeed: 1
-                animationSrc: ":/ui/resources/animations/lock_animation.json"
+                animationSrc: "Onboarding4"
                 loopAnimation: true
                 titleStringId: "OnboardingPanelFourTitle"
                 subtitleStringId: "OnboardingPanelFourSubtitle"
@@ -134,7 +135,7 @@ Item {
                             height: currentPanelValues._animationHeight + (swipeView._isFirstSlide ? swipeView._topMargin : 0)
                             loop: loopAnimation
                             opacity: panelAnimation.imageOpacityValue
-                            source: animationSrc
+                            source: MZAssetLookup.getAnimationSource(animationSrc)
                             transform: Scale {
                                 origin.x: panelAnimation.width / 2
                                 origin.y: panelAnimation.height / 2

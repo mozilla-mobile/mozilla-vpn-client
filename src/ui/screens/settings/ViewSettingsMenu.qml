@@ -9,6 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     id: vpnFlickable
@@ -35,10 +36,10 @@ MZViewBase {
                 property bool subscriptionManagementEnabled: MZFeatureList.get("subscriptionManagement").isSupported
                 objectName: "settingsUserProfile"
                 settingTitle: MZI18n.SubscriptionManagementSectionTitle
-                imageLeftSrc: "qrc:/nebula/resources/avatar-grayscale.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconAvatar")
                 imageRightSrc: subscriptionManagementEnabled
-                    ? "qrc:/nebula/resources/chevron.svg"
-                    : "qrc:/nebula/resources/open-in-new.svg"
+                    ? MZAssetLookup.getImageSource("Chevron")
+                    : MZAssetLookup.getImageSource("ExternalLinkGrayscale")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.accountSelected.record({screen:telemetryScreenId})
@@ -53,8 +54,8 @@ MZViewBase {
             MZSettingsItem {
                 objectName: "privacySettings"
                 settingTitle: MZI18n.SettingsPrivacySettings
-                imageLeftSrc: "qrc:/ui/resources/settings/privacy.svg"
-                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconPrivacyMask")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.privacyFeaturesSelected.record({screen:telemetryScreenId})
@@ -65,8 +66,8 @@ MZViewBase {
             MZSettingsItem {
                 objectName: "appExclusionSettings"
                 settingTitle: MZI18n.SettingsAppExclusionTitle
-                imageLeftSrc: "qrc:/ui/resources/settings/apppermissions.svg"
-                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconPermissions")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.appExclusionsSelected.record({screen:telemetryScreenId});
@@ -80,8 +81,8 @@ MZViewBase {
 
                 //% "Devices"
                 settingTitle: MZI18n.DevicesSectionTitle
-                imageLeftSrc: "qrc:/ui/resources/devices.svg"
-                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconDevices")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.myDevicesSelected.record({screen:telemetryScreenId})
@@ -93,8 +94,8 @@ MZViewBase {
                 id: preferencesSetting
                 objectName: "settingsPreferences"
                 settingTitle: MZI18n.SettingsPreferencesSettings
-                imageLeftSrc: "qrc:/ui/resources/settings/preferences.svg"
-                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconWrenchDarker")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.appPreferencesSelected.record({screen:telemetryScreenId})
@@ -110,8 +111,8 @@ MZViewBase {
             MZSettingsItem {
                 objectName: "settingsGetHelp"
                 settingTitle: MZI18n.GetHelpLinkText
-                imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
-                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("QuestionDarker")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.getHelpSelected.record({screen:telemetryScreenId})
@@ -122,8 +123,8 @@ MZViewBase {
             MZSettingsItem {
                 objectName: "settingsAboutUs"
                 settingTitle: MZI18n.AboutUsTitle
-                imageLeftSrc: "qrc:/ui/resources/settings/aboutUs.svg"
-                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("InfoIconDarker")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.aboutUsSelected.record({screen:telemetryScreenId})
@@ -180,7 +181,7 @@ MZViewBase {
         id: reauthPopup
 
         anchors.centerIn: Overlay.overlay
-        imageSrc: "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
+        imageSrc: MZAssetLookup.getImageSource("RefreshArrowsWithWarning")
         imageSize: Qt.size(80, 80)
         title: MZI18n.SettingsReauthTitle
         description: MZI18n.SettingsReauthDescription
@@ -205,7 +206,7 @@ MZViewBase {
                   MZButtonLoader {
                     id: loader
                     color: MZTheme.colors.transparent
-                    iconUrl: "qrc:/nebula/resources/spinner.svg"
+                    iconUrl: MZAssetLookup.getImageSource("Spinner")
                   }
                }
             }

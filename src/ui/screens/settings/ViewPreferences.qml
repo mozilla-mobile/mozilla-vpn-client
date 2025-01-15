@@ -10,6 +10,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     id: vpnFlickable
@@ -112,8 +113,8 @@ MZViewBase {
                 objectName: "settingsNotifications"
 
                 settingTitle: _notificationsTitle
-                imageLeftSrc: "qrc:/ui/resources/settings/notifications.svg"
-                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconBell")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.notificationsSelected.record({screen:telemetryScreenId})
@@ -130,8 +131,8 @@ MZViewBase {
                 objectName: "settingsLanguages"
 
                 settingTitle: _languageTitle
-                imageLeftSrc: "qrc:/ui/resources/settings/language.svg"
-                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconLanguages")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.languageSelected.record({screen:telemetryScreenId})
@@ -144,8 +145,8 @@ MZViewBase {
                 objectName: "dnsSettings"
 
                 settingTitle: MZI18n.SettingsDnsSettings
-                imageLeftSrc: "qrc:/ui/resources/settings/dnssettings.svg"
-                imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+                imageLeftSrc: MZAssetLookup.getImageSource("IconGlobe")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                     Glean.interaction.dnsSettingsSelected.record({screen:telemetryScreenId})

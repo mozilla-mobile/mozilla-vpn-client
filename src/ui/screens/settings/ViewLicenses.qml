@@ -8,7 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import components 0.1
-
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     _menuTitle: MZI18n.AboutUsLicenses
@@ -35,7 +35,7 @@ MZViewBase {
             MZExternalLinkListItem {
                 accessibleName: licenseTitle
                 title: licenseTitle
-                iconSource: "qrc:/nebula/resources/chevron.svg"
+                iconSource: MZAssetLookup.getImageSource("Chevron")
                 iconMirror: MZLocalizer.isRightToLeft
                 onClicked: stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewLicense.qml", { _menuTitle: licenseTitle, licenseContent })
             }

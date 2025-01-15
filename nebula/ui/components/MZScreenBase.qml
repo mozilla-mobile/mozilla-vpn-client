@@ -7,6 +7,7 @@ import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
     id: root
@@ -32,7 +33,7 @@ Item {
             Layout.preferredWidth: parent.width
             Layout.preferredHeight: MZTheme.theme.menuHeight
 
-            _menuIconButtonSource: stackview.depth === 1 ? "qrc:/nebula/resources/close-dark.svg" : "qrc:/nebula/resources/back.svg"
+            _menuIconButtonSource: stackview.depth === 1 ? MZAssetLookup.getImageSource("CloseDark") : MZAssetLookup.getImageSource("ArrowBack")
             _menuIconButtonMirror:  stackview.depth !== 1 && MZLocalizer.isRightToLeft
             _iconButtonAccessibleName: stackview.depth === 1 ? MZI18n.GlobalClose : MZI18n.GlobalGoBack
             _menuOnBackClicked: () => maybeRequestPreviousScreen()

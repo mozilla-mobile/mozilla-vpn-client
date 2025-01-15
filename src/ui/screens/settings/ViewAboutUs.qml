@@ -10,6 +10,7 @@ import QtQuick.Window 2.1
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     objectName: "viewAboutUs"
@@ -84,7 +85,7 @@ MZViewBase {
                     }
                     Image {
                         objectName: "copyVersionNumberIcon"
-                        source: "qrc:/nebula/resources/copy.svg"
+                        source: MZAssetLookup.getImageSource("CopyTextColor")
                         fillMode: Image.PreserveAspectFit
                         Layout.rightMargin: copyVersionNumber.marginOffset
                         Layout.alignment: Qt.AlignVCenter | Qt.AlignRight
@@ -141,7 +142,7 @@ MZViewBase {
                        stackview.push(openView)
                    }
                }
-               iconSource: openUrl ? "qrc:/nebula/resources/externalLink.svg" : "qrc:/nebula/resources/chevron.svg"
+               iconSource: openUrl ? MZAssetLookup.getImageSource("ExternalLink") : MZAssetLookup.getImageSource("Chevron")
                iconMirror: !openUrl && MZLocalizer.isRightToLeft
                anchors.left: undefined
                anchors.right: undefined
@@ -178,7 +179,7 @@ MZViewBase {
                     verticalCenter: parent.verticalCenter
                 }
                 fillMode: Image.PreserveAspectFit
-                source: "qrc:/nebula/resources/refresh.svg"
+                source: MZAssetLookup.getImageSource("RefreshArrows")
                 sourceSize.height: MZTheme.theme.iconSize * 1.5
                 sourceSize.width: MZTheme.theme.iconSize * 1.5
                 visible: true
@@ -215,14 +216,14 @@ MZViewBase {
 
             if (updateAvailable) {
                 updateButtonImageAnimation.stop();
-                updatePopup.imageSrc = "qrc:/nebula/resources/updateStatusUpdateAvailable.svg";
+                updatePopup.imageSrc = MZAssetLookup.getImageSource("RefreshArrowsWithWarning");
                 updatePopup.imageSize = Qt.size(80, 80)
                 updatePopup.title = MZI18n.UpdateButtonTitleOnUpdate
                 updatePopup.description = MZI18n.UpdateButtonDescriptionOnUpdate
                 updatePopup.buttonText = MZI18n.UpdateButtonActionOnUpdate
             } else {
                 updateButtonImageAnimation.stop();
-                updatePopup.imageSrc = "qrc:/nebula/resources/updateStatusUpToDate.svg";
+                updatePopup.imageSrc = MZAssetLookup.getImageSource("RefreshArrowsWithCheckmark");;
                 updatePopup.imageSize = Qt.size(80, 80)
                 updatePopup.title = MZI18n.UpdateButtonTitleNoUpdate
                 updatePopup.description = MZI18n.UpdateButtonDescriptionNoUpdate2
@@ -239,7 +240,7 @@ MZViewBase {
         property bool updateAvailable
 
         anchors.centerIn: Overlay.overlay
-        imageSrc: "qrc:/nebula/resources/updateStatusUpdateAvailable.svg"
+        imageSrc: MZAssetLookup.getImageSource("RefreshArrowsWithWarning")
         imageSize: Qt.size(80, 80)
         title: MZI18n.UpdateButtonTitleOnUpdate
         description: MZI18n.UpdateButtonDescriptionOnUpdate

@@ -10,6 +10,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import compat 0.1
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZSimplePopup {
     id: popup
@@ -21,7 +22,7 @@ MZSimplePopup {
     anchors.centerIn: Overlay.overlay
     topPadding: 24
     showCloseButton: false
-    imageSrc: "qrc:/ui/resources/devicesRemove.svg"
+    imageSrc: MZAssetLookup.getImageSource("DevicesRemove")
     imageSize: Qt.size(116, 80)
     title: MZI18n.DevicesRemovePopupTitle
     description: MZI18n.DevicesRemovePopupDescription.arg(popup.deviceName)

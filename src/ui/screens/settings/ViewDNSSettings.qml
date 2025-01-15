@@ -10,6 +10,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     id: root
@@ -40,7 +41,7 @@ MZViewBase {
                 Image {
                     anchors.centerIn: parent
 
-                    source: "qrc:/nebula/resources/question.svg"
+                    source: MZAssetLookup.getImageSource("Question")
                     fillMode: Image.PreserveAspectFit
                 }
             }
@@ -312,7 +313,7 @@ MZViewBase {
 
             anchors.centerIn: Overlay.overlay
             closeButtonObjectName: "dnsOverwritePopupPopupCloseButton"
-            imageSrc: "qrc:/ui/resources/logo-dns-privacy.svg"
+            imageSrc: MZAssetLookup.getImageSource("PrivacyMask")
             imageSize: Qt.size(80, 80)
             title: MZI18n.DnsOverwriteDialogTitlePrivacy
             description: MZI18n.DnsOverwriteDialogBodyPrivacy

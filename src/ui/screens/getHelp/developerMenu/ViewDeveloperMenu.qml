@@ -10,6 +10,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     objectName: "developerScreen"
@@ -150,10 +151,6 @@ MZViewBase {
                     viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewThemeList.qml"
                 }
                 ListElement {
-                    title: "Animations playground"
-                    viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewAnimationsPlayground.qml"
-                }
-                ListElement {
                     title: "UI Testing"
                     viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewUiTesting.qml"
                 }
@@ -165,8 +162,8 @@ MZViewBase {
 
             delegate: MZSettingsItem {
                settingTitle:  title
-               imageLeftSrc: "qrc:/ui/resources/settings/questionMark.svg"
-               imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+               imageLeftSrc: MZAssetLookup.getImageSource("QuestionDarker")
+               imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                imageRightMirror: MZLocalizer.isRightToLeft
                onClicked: getHelpStackView.push(viewQrc)
                Layout.leftMargin: MZTheme.theme.windowMargin / 2
@@ -190,7 +187,7 @@ MZViewBase {
                 objectName: "openInspector"
                 title: "Open Inspector"
                 accessibleName: "Open Inspector"
-                iconSource:  "qrc:/nebula/resources/externalLink.svg"
+                iconSource:  MZAssetLookup.getImageSource("ExternalLink")
                 backgroundColor: MZTheme.colors.clickableRow
                 onClicked: {
                     MZUrlOpener.openUrlLabel("inspector");

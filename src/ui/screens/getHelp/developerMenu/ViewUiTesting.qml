@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     _menuTitle: "UI Testing"
@@ -17,8 +18,26 @@ MZViewBase {
         Layout.fillWidth: true
 
         MZSettingsItem {
+            settingTitle: "Image playground"
+            imageRightSrc: MZAssetLookup.getImageSource("Chevron")
+            imageRightMirror: MZLocalizer.isRightToLeft
+            onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewImagesPlayground.qml")
+            Layout.leftMargin: MZTheme.theme.windowMargin / 2
+            Layout.rightMargin: MZTheme.theme.windowMargin / 2
+        }
+
+        MZSettingsItem {
+            settingTitle: "Animations playground"
+            imageRightSrc: MZAssetLookup.getImageSource("Chevron")
+            imageRightMirror: MZLocalizer.isRightToLeft
+            onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewAnimationsPlayground.qml")
+            Layout.leftMargin: MZTheme.theme.windowMargin / 2
+            Layout.rightMargin: MZTheme.theme.windowMargin / 2
+        }
+
+        MZSettingsItem {
             settingTitle: "MZStepNavigation"
-            imageRightSrc: "qrc:/nebula/resources/chevron.svg"
+            imageRightSrc: MZAssetLookup.getImageSource("Chevron")
             imageRightMirror: MZLocalizer.isRightToLeft
             onClicked: getHelpStackView.push(stepNavComponent)
             Layout.leftMargin: MZTheme.theme.windowMargin / 2
@@ -43,7 +62,7 @@ MZViewBase {
                 views: [
                     ColumnLayout {
                         property string labelText: "OnboardingProgressBarDataUse"
-                        property string iconSource: "qrc:/nebula/resources/lock.svg"
+                        property string iconSource: MZAssetLookup.getImageSource("IconLock")
 
                         spacing: 24
 
@@ -70,7 +89,7 @@ MZViewBase {
                     },
                     ColumnLayout {
                         property string labelText: "OnboardingProgressBarMorePrivacy"
-                        property string iconSource: "qrc:/ui/resources/settings/privacy.svg"
+                        property string iconSource: MZAssetLookup.getImageSource("IconPrivacyMask")
 
                         spacing: 0
 
@@ -166,7 +185,7 @@ MZViewBase {
                     },
                     ColumnLayout {
                         property string labelText: "OnboardingProgressBarAddDevices"
-                        property string iconSource: "qrc:/ui/resources/devices.svg"
+                        property string iconSource: MZAssetLookup.getImageSource("IconDevices")
 
                         spacing: 24
 
@@ -201,7 +220,7 @@ MZViewBase {
                     },
                     ColumnLayout {
                         property string labelText: "OnboardingProgressBarGetStarted2"
-                        property string iconSource: "qrc:/nebula/resources/startup.svg"
+                        property string iconSource: MZAssetLookup.getImageSource("IconPowerButton")
 
                         spacing: 24
 

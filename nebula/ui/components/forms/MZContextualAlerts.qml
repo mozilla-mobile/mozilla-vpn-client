@@ -8,6 +8,7 @@ import Qt.labs.qmlmodels 1.0
 
 import Mozilla.Shared 1.0
 import components.forms 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 ColumnLayout {
     id: messagesContainer
@@ -23,14 +24,14 @@ ColumnLayout {
             roleValue: "warning"
             delegate: MZContextualAlert {
                 fontColor: MZTheme.colors.fontColorWarning
-                iconSrc: "qrc:/nebula/resources/warning-dark-orange.svg"
+                iconSrc: MZAssetLookup.getImageSource("WarningDarkOrange")
             }
         }
         DelegateChoice {
             roleValue: "error"
             delegate: MZContextualAlert {
                 fontColor: MZTheme.colors.errorAccentLight
-                iconSrc: "qrc:/nebula/resources/warning.svg"
+                iconSrc: MZAssetLookup.getImageSource("WarningRed")
             }
         }
     }

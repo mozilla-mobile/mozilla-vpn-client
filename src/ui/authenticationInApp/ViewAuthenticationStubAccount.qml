@@ -9,13 +9,14 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.inAppAuth 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZInAppAuthenticationThirdParty {
     id: authStubAccount
     objectName: "authStubAccount"
 
     _telemetryScreenId: "authentication_stub_account"
-    _imgSource: "qrc:/ui/resources/check-email.svg"
+    _imgSource: MZAssetLookup.getImageSource("CheckEmail")
     _headlineText: MZI18n.InAppAuthStubAccountVerificationHeader
 
     _description: ColumnLayout {

@@ -69,6 +69,10 @@ jobs:
         run: |
           scripts/ci/check_colors.py nebula/ui/themes/
 
+      - name: Check for proper image usage
+        run: |
+          scripts/ci/check_images.py
+
   ktlint:
     name: Run ktLint
     runs-on: ubuntu-latest

@@ -10,6 +10,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZStepNavigation {
     id: stepNav
@@ -42,7 +43,7 @@ MZStepNavigation {
             id: dataSlide
 
             property string labelText: "OnboardingProgressBarDataUse"
-            property string iconSource: "qrc:/nebula/resources/lock.svg"
+            property string iconSource: MZAssetLookup.getImageSource("IconLock")
             property string objectName: "data"
 
             onNextClicked: stepNav.next()
@@ -51,7 +52,7 @@ MZStepNavigation {
             id: privacySlide
 
             property string labelText: "OnboardingProgressBarMorePrivacy"
-            property string iconSource: "qrc:/ui/resources/settings/privacy.svg"
+            property string iconSource: MZAssetLookup.getImageSource("IconPrivacyMask")
             property string objectName: "privacy"
 
             onNextClicked: stepNav.next()
@@ -61,7 +62,7 @@ MZStepNavigation {
             id: devicesSlide
 
             property string labelText: "OnboardingProgressBarAddDevices"
-            property string iconSource: "qrc:/ui/resources/devices.svg"
+            property string iconSource: MZAssetLookup.getImageSource("IconDevices")
             property string objectName: "devices"
 
             onNextClicked: stepNav.next()
@@ -72,7 +73,7 @@ MZStepNavigation {
             id: startSlide
 
             property string labelText: MZUiUtils.isMobile() ? "OnboardingProgressBarConnect" : "OnboardingProgressBarStartup"
-            property string iconSource: "qrc:/nebula/resources/startup.svg"
+            property string iconSource: MZAssetLookup.getImageSource("IconPowerButton")
             property string objectName: "start"
 
             sourceComponent: MZUiUtils.isMobile() ? startSlideMobile : startSlideDesktop

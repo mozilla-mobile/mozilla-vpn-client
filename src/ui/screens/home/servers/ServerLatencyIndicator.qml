@@ -7,7 +7,7 @@ import QtQuick 2.5
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
-
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZIcon {
     property int score: VPNServerLatency.NoData
@@ -36,7 +36,7 @@ MZIcon {
                 score === VPNServerLatency.Excellent)
             PropertyChanges {
                 target: latencyIndicator
-                source: "qrc:/ui/resources/server-latency-strong.svg"
+                source: MZAssetLookup.getImageSource("ConnectionStrong")
                 visible: true
             }
         },
@@ -46,7 +46,7 @@ MZIcon {
             when: (score === VPNServerLatency.Moderate)
             PropertyChanges {
                 target: latencyIndicator
-                source: "qrc:/ui/resources/server-latency-moderate.svg"
+                source: MZAssetLookup.getImageSource("ConnectionModerate")
                 visible: true
             }
         },
@@ -56,7 +56,7 @@ MZIcon {
             when: (score === VPNServerLatency.Poor)
             PropertyChanges {
                 target: latencyIndicator
-                source: "qrc:/ui/resources/server-latency-weak.svg"
+                source: MZAssetLookup.getImageSource("ConnectionWeak")
                 visible: true
             }
         },
@@ -66,7 +66,7 @@ MZIcon {
             when: score === VPNServerLatency.Unavailable
             PropertyChanges {
                 target: latencyIndicator
-                source: "qrc:/ui/resources/server-latency-unavailable.svg"
+                source: MZAssetLookup.getImageSource("ConnectionUnknown")
                 visible: true
             }
         },

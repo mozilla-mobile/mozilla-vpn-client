@@ -199,3 +199,13 @@ void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
   IOSCommons::setStatusBarTextColor(color);
 #endif
 }
+
+bool Theme::usesDarkModeAssets() const {
+  if (readColors().hasProperty("useDarkAssets") &&
+      readColors().property("useDarkAssets").isBool()) {
+    return readColors().property("useDarkAssets").toBool();
+  }
+  // This value should always be available
+  Q_ASSERT(false);
+  return true;
+}
