@@ -62,12 +62,45 @@ do
         LANGUAGE_CODE="it-IT"
     elif [ "$ORIGINAL_LANGUAGE_CODE" == "nl" ]; then
         LANGUAGE_CODE="nl-NL"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "cs" ]; then
+        LANGUAGE_CODE="cs-CZ"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "da" ]; then
+        LANGUAGE_CODE="da-DK"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "el" ]; then
+        LANGUAGE_CODE="el-GR"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "fi" ]; then
+        LANGUAGE_CODE="fi-FI"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "hu" ]; then
+        LANGUAGE_CODE="hu-HU"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "id" ]; then
+        LANGUAGE_CODE="id"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "ko" ]; then
+        LANGUAGE_CODE="ko-KR"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "pt_BR" ]; then
+        LANGUAGE_CODE="pt-BR"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "pt_PT" ]; then
+        LANGUAGE_CODE="pt-PT"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "sk" ]; then
+        LANGUAGE_CODE="sk"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "sl" ]; then
+        LANGUAGE_CODE="sl"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "sv_SE" ]; then
+        LANGUAGE_CODE="sv-SE"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "tr" ]; then
+        LANGUAGE_CODE="tr-TR"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "uk" ]; then
+        LANGUAGE_CODE="uk"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "vi" ]; then
+        LANGUAGE_CODE="vi"
+    elif [ "$ORIGINAL_LANGUAGE_CODE" == "zh_TW" ]; then
+        LANGUAGE_CODE="zh-TW"
     else
         # Play stores don't ask for the other languages.
         continue;
     fi
 
     # Must do this as a for loop rather than a `contains` with multiple clauses to get the proper ordering.
+    MISSING_TRANSLATION=false
     TRANSLATED_TEXT=""
     if [ "$LANGUAGE_CODE" == "en-US" ]; then
         for BLOCK_ID in "${BLOCK_IDS[@]}"
@@ -87,11 +120,16 @@ do
           if [[ ($BLOCK_ID == *"bullet"* || $BLOCK_ID == *"Bullet"*) && $BLOCK_ID != *"generalUpdateBulletIntro"* ]]; then
             TRANSLATED_TEXT+="- "
           fi
-          TRANSLATED_TEXT+=$(xmlstarlet sel \
+          POTENTIAL_TRANSLATION=$(xmlstarlet sel \
                   -N x="urn:oasis:names:tc:xliff:document:1.2" \
                   -t -m "/x:xliff/x:file/x:body/x:trans-unit[$BLOCK_ID]" \
                   -v "concat(x:target, '\n')" -n \
                   "$XLIFF_FILE")
+          if [[ "$POTENTIAL_TRANSLATION" == "\n" ]]; then
+              MISSING_TRANSLATION=true
+          else
+              TRANSLATED_TEXT+=$POTENTIAL_TRANSLATION
+          fi
         done
     fi
 
@@ -100,7 +138,7 @@ do
     TRANSLATED_TEXT="${TRANSLATED_TEXT:0:$TRANSLATED_TEXT_LENGTH-2}"
 
     # Check if the output is not empty
-    if [ -n "$TRANSLATED_TEXT" ]; then
+    if [ $MISSING_TRANSLATION == false ]; then
         if [ "$LANGUAGE_CODE" == "es-ES" ]; then
             ES_FOUND=true
             echo "✅ Release note translations found for: $LANGUAGE_CODE (using $ORIGINAL_LANGUAGE_CODE)"
@@ -112,7 +150,7 @@ do
         echo -e $TRANSLATED_TEXT >> $RELEASE_NOTES_FILE
         echo "</$LANGUAGE_CODE>" >> $RELEASE_NOTES_FILE
     else
-        echo "❌ No release note translations found for: $LANGUAGE_CODE ($ORIGINAL_LANGUAGE_CODE)"
+        echo "❌ Release note translations missing for: $LANGUAGE_CODE ($ORIGINAL_LANGUAGE_CODE)"
     fi
 done
 
