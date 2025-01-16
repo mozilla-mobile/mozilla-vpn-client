@@ -18,6 +18,7 @@ Item {
     property int totalAnimationFrames: 0
     property double currentAnimationFrame: 0
     property string selectedAnimationSource
+    property var selectedColor: MZTheme.colors.fontColorDark
 
     MZMenu {
         id: menu
@@ -30,7 +31,7 @@ Item {
         id: animationContainer
 
         anchors.top: menu.bottom
-        color: MZTheme.colors.fontColorDark
+        color: selectedColor
         height: parent.width * 0.6
         width: parent.width
 
@@ -122,6 +123,50 @@ Item {
 
             Component.onCompleted: {
                 setCurrentAnimationSource()
+            }
+
+            Layout.fillWidth: true
+        }
+
+        MZComboBox {
+            id: colorSelect
+
+            currentIndex: 0
+            // // Do not translate this string!
+            // placeholderText: "Select a animation"
+            model: ListModel {
+                id: colorItems
+
+                ListElement {
+                    name: "Gray"
+                    value: "gray"
+                }
+                ListElement {
+                    name: "Black"
+                    value: "black"
+                }
+                ListElement {
+                    name: "White"
+                    value: "white"
+                }
+                ListElement {
+                    name: "Green"
+                    value: "green"
+                }
+            }
+
+            function setCurrentColor() {
+                if (currentIndex >= 0) {
+                    root.selectedColor = colorItems.get(currentIndex).value;
+                }
+            }
+
+            onCurrentIndexChanged: () => {
+                setCurrentColor()
+            }
+
+            Component.onCompleted: {
+                setCurrentColor()
             }
 
             Layout.fillWidth: true

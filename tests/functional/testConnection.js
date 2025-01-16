@@ -100,11 +100,13 @@ describe('Connectivity', function() {
     if (!this.ctx.wasm) {
       // Fetch the data transfer telemetry.
       await vpn.waitForCondition(async () => {
-        let rx = await vpn.gleanTestGetValue("connectionHealth", "dataTransferredRx", "");
+        let rx = await vpn.gleanTestGetValue(
+            'connectionHealth', 'dataTransferredRx', '');
         return rx.sum > 0;
       });
       await vpn.waitForCondition(async () => {
-        let tx = await vpn.gleanTestGetValue("connectionHealth", "dataTransferredTx", "");
+        let tx = await vpn.gleanTestGetValue(
+            'connectionHealth', 'dataTransferredTx', '');
         return tx.sum > 0;
       });
     }

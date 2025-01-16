@@ -15,6 +15,8 @@ import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
     id: root
+    property string selectedImageSourceLight
+    property string selectedImageSourceDark
 
     MZMenu {
         id: menu
@@ -23,99 +25,128 @@ Item {
         _menuOnBackClicked: () => getHelpStackView.pop()
     }
 
+    Rectangle {
+        id: imageContainer
+
+        anchors.top: menu.bottom
+        color: MZTheme.colors.bgColor
+        height: 375
+        width: parent.width
+
+        MZInterLabel {
+            // Do not translate this string!
+            text: "No image selected"
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.verticalCenter: parent.verticalCenter
+            color: MZTheme.colors.fontColor
+            visible: imageSelect.currentIndex < 0
+        }
+        
+        ColumnLayout {
+          spacing: 10
+          anchors.centerIn: parent
+          RowLayout {
+              spacing: 50
+              // anchors.centerIn: parent
+              Text {
+                text: "Asset for light themes"
+                color: MZTheme.colors.fontColor
+                visible: imageSelect.currentIndex >= 0
+              }
+
+              Text {
+                text: "Asset for dark themes"
+                color: MZTheme.colors.fontColor
+                visible: imageSelect.currentIndex >= 0
+              }
+          }
+          RowLayout {
+              spacing: 25
+              Image {
+                  source: selectedImageSourceLight
+                  sourceSize.height: 150
+                  sourceSize.width: 150
+                  fillMode: Image.PreserveAspectFit
+              }
+
+              Image {
+                  source: selectedImageSourceDark
+                  sourceSize.height: 150
+                  sourceSize.width: 150
+                  fillMode: Image.PreserveAspectFit
+              }
+          }
+          
+            RowLayout {
+              spacing: 25
+              Rectangle {
+                Layout.preferredHeight: 150
+                Layout.preferredWidth: 150
+                color: MZTheme.colors.fontColor
+                visible: imageSelect.currentIndex >= 0
+                Image {
+                    source: selectedImageSourceLight
+                    sourceSize.height: 150
+                    sourceSize.width: 150
+                    fillMode: Image.PreserveAspectFit
+                }
+              }
+              
+              Rectangle {
+                Layout.preferredHeight: 150
+                Layout.preferredWidth: 150
+                color: MZTheme.colors.fontColor
+                visible: imageSelect.currentIndex >= 0
+                Image {
+                  source: selectedImageSourceDark
+                  sourceSize.height: 150
+                  sourceSize.width: 150
+                  fillMode: Image.PreserveAspectFit
+              }
+              }
+            }
+        }
+        
+    }
+
     ColumnLayout {
         anchors.horizontalCenter: parent.horizontalCenter
-        anchors.top: animationContainer.bottom
+        anchors.top: imageContainer.bottom
         anchors.topMargin: MZTheme.theme.listSpacing * 3
         spacing: MZTheme.theme.listSpacing * 2
         width: parent.width - MZTheme.theme.windowMargin * 2
 
         MZComboBox {
-            id: animationSelect
+            id: imageSelect
 
             currentIndex: -1
             // Do not translate this string!
             placeholderText: "Select an image"
-
             model: ListModel {
-              Repeater {
-        model: MZAssetLookup.imageLookup
-        ListElement { 
-          name: "blah"
-          value: "blah2"
-           }
-    }
-              // Component.onCompleted: {
-              //     for (var i = 0; i < MZAssetLookup.imageLookup.length; i++) {
-              //         ListElement {
-              //           name: "HEYYY"
-              //           value: ":/ui/resources/animations/vpnlogo-drop_animation.json"
-              //         }
-              //         // append(MZAssetLookup.imageLookup[i]);
-              //     }
-              // }
+                id: imageItems
             }
 
-            // delegate: Delegate {
-            //     width: parent.width
-            //     contentItem: Text {
-            //         text: "Hey"//model.key
-            //     }
-            // }
+            Component.onCompleted: {
+                Object.keys(MZAssetLookup.imageLookup).forEach(function(imageRecord) {
+                  imageItems.append({
+                    name: imageRecord,
+                    lightFile: MZAssetLookup.imageLookup[imageRecord].filenameLight,
+                    darkFile: MZAssetLookup.imageLookup[imageRecord].filenameDark
+                  });
+                });
+                setCurrentImageSource()
+            }
 
-            // delegate: Delegate {
-            //     width: parent.width
-            //     contentItem: ListElement {
-            //         name: model.key
-            //         value: model
-            //     }
-            // }
-
-            // model: ListModel {
-            //   Repeater {
-            //   model: 
-            //   delegate: ListElement {
-            //         id: delegate
-            //         required property string key
-            //         name: modelData.key
-            //         // value: modelData
-            //     }
-            // }
-            // }
-
-            // model: ListModel {
-            //     id: imageItems
-
-            //     ListElement {
-            //         name: "VPN Logo (drop)"
-            //         value: ":/ui/resources/animations/vpnlogo-drop_animation.json"
-            //     }
-            //     ListElement {
-            //         name: "Lock"
-            //         value: ":/ui/resources/animations/lock_animation.json"
-            //     }
-            //     ListElement {
-            //         name: "Globe"
-            //         value: ":/ui/resources/animations/globe_animation.json"
-            //     }
-            //     ListElement {
-            //         name: "VPN Active"
-            //         value: ":/ui/resources/animations/vpnactive_animation.json"
-            //     }
-            // }
-
-            function setCurrentAnimationSource() {
+            function setCurrentImageSource() {
                 if (currentIndex >= 0) {
-                    root.selectedAnimationSource = animationItems.get(currentIndex).value;
+                    root.selectedImageSourceLight = imageItems.get(currentIndex).lightFile;
+                    root.selectedImageSourceDark = imageItems.get(currentIndex).darkFile;
+
                 }
             }
 
             onCurrentIndexChanged: () => {
-                setCurrentAnimationSource()
-            }
-
-            Component.onCompleted: {
-                setCurrentAnimationSource()
+                setCurrentImageSource()
             }
 
             Layout.fillWidth: true

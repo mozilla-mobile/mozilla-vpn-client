@@ -126,14 +126,16 @@ describe('Navigation bar', async function() {
       assert.equal(await navigationBarVisible(), 'true');
     });
 
-    it("Time to main screen is recorded", async () => {
+    it('Time to main screen is recorded', async () => {
       // Telemetry doesn't work in WASM
       if (this.ctx.wasm) {
         return;
       }
 
-      // Check that the time to the main screen was greater than 1ms but less than a full second.
-      let timing = await vpn.gleanTestGetValue("performance", "timeToMainScreen", "");
+      // Check that the time to the main screen was greater than 1ms but less
+      // than a full second.
+      let timing =
+          await vpn.gleanTestGetValue('performance', 'timeToMainScreen', '');
       assert(timing.sum > 1000000);
       assert(timing.sum < 1000000000);
     })
