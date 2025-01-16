@@ -23,7 +23,7 @@
      let cmd = obj.get_key_value("t").ok_or("Missing obj.t")?;
  
      match cmd.1.as_str().ok_or("T is not a string")? {
-         "bridge_pong" =>{
+         "bridge_ping" =>{
              crate::io::write_output(std::io::stdout(),&json!({"status": "bridge_pong"}))
                  .expect("Unable to Write to STDOUT?");
              return Ok(true);
