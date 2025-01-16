@@ -6,6 +6,7 @@
 
 #include <QFileInfo>
 #include <QNetworkInformation>
+#include <QFuture>
 
 #include "app.h"
 #include "constants.h"
@@ -244,25 +245,6 @@ void Controller::timerTimeout() {
 #endif
 }
 
-void Controller::quit() {
-  logger.debug() << "Quitting";
-
-  if (m_state == StateInitializing || m_state == StateOff) {
-    m_nextStep = Quit;
-    emit readyToQuit();
-    return;
-  }
-
-  m_nextStep = Quit;
-
-  if (m_state == StateOn || m_state == StateOnPartial ||
-      m_state == StateSwitching || m_state == StateSilentSwitching ||
-      m_state == StateConnecting) {
-    deactivate();
-    return;
-  }
-}
-
 void Controller::forceDaemonCrash() {
   if (m_impl) {
     m_impl->forceDaemonCrash();
@@ -290,7 +272,7 @@ void Controller::handshakeTimeout() {
   vpn->serverLatency()->setCooldown(
       hop.m_serverPublicKey, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
 
-  if (m_nextStep == Quit || m_nextStep == Disconnect || m_nextStep == Update) {
+  if (m_nextStep == Disconnect || m_nextStep == Update) {
     deactivate();
     return;
   }
@@ -750,7 +732,7 @@ void Controller::connected(const QString& pubkey) {
                       "collecting telemetry.";
   }
 
-  if (m_nextStep == Quit || m_nextStep == Disconnect || m_nextStep == Update) {
+  if (m_nextStep == Disconnect || m_nextStep == Update) {
     deactivate();
     return;
   }
@@ -804,11 +786,6 @@ void Controller::disconnected() {
 bool Controller::processNextStep() {
   NextStep nextStep = m_nextStep;
   m_nextStep = None;
-
-  if (nextStep == Quit) {
-    emit readyToQuit();
-    return true;
-  }
 
   if (nextStep == Update) {
     emit readyToUpdate();
@@ -1058,21 +1035,21 @@ bool Controller::activate(const ServerData& serverData,
   return true;
 }
 
-bool Controller::deactivate(ActivationPrincipal user) {
+QFuture<bool> Controller::deactivate(ActivationPrincipal user) {
   logger.debug() << "Deactivation" << m_state;
   if (m_initiator > user) {
     // i.e the Firefox Extension cannot deativate the
     // vpn if we are in full device protection.
     logger.warning()
         << "ActivationPrincipal does not have permission allowed to deactivate";
-    return false;
+    return QtFuture::makeReadyValueFuture(false);
   }
 
   if (m_state != StateOn && m_state != StateOnPartial &&
       m_state != StateSwitching && m_state != StateSilentSwitching &&
       m_state != StateConfirming && m_state != StateConnecting) {
     logger.warning() << "Already disconnected";
-    return false;
+    return QtFuture::makeReadyValueFuture(true);
   }
 
   // In the event user switches from one network to a different network with a
@@ -1100,8 +1077,12 @@ bool Controller::deactivate(ActivationPrincipal user) {
   clearRetryCounter();
 
   Q_ASSERT(m_impl);
+  auto impl_deactivated = QtFuture::connect(m_impl.get(),&ControllerImpl::disconnected);
   m_impl->deactivate(stateToReason(m_state));
-  return true;
+  return impl_deactivated.then(
+    [](){
+      return true;
+    });
 }
 
 void Controller::forceDaemonSilentServerSwitch() {

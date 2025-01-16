@@ -66,9 +66,7 @@ class App : public QObject {
   static bool isUserAuthenticated() { return instance()->userAuthenticated(); };
 
   static QByteArray authorizationHeader();
-
-  void quit();
-
+  
  signals:
   void userAuthenticationMaybeChanged();
   void stateChanged();

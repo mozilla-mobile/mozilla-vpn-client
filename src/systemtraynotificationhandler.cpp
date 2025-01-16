@@ -92,7 +92,7 @@ void SystemTrayNotificationHandler::createStatusMenu() {
   m_menu->addSeparator();
 
   m_quitAction = m_menu->addAction(
-      "", []() { MozillaVPN::instance()->controller()->quit(); });
+      "", []() { MozillaVPN::instance()->quit(); });
 }
 
 void SystemTrayNotificationHandler::setStatusMenu() {

@@ -9,6 +9,7 @@
 #include <QList>
 #include <QObject>
 #include <QTimer>
+#include <QFuture>
 
 #include "interfaceconfig.h"
 #include "ipaddress.h"
@@ -101,9 +102,14 @@ class Controller : public QObject, public LogSerializer {
   bool activate(
       const ServerData& serverData, ActivationPrincipal = ClientUser,
       ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
-  bool deactivate(ActivationPrincipal = ClientUser);
+  /*
+  * Attempts to deactivate the VPN. 
+  * returns a resolved QFuture with value = false  if deactivation is not possible.
+  * returns a resolved QFuture with value = true if already deactivated.
+  * returns a QFuture that will resolve when deactivation is completed.
+  */
+  QFuture<bool> deactivate(ActivationPrincipal = ClientUser);
 
-  Q_INVOKABLE void quit();
   Q_INVOKABLE void forceDaemonCrash();
   Q_INVOKABLE void forceDaemonSilentServerSwitch();
 
@@ -142,7 +148,6 @@ class Controller : public QObject, public LogSerializer {
   void recordConnectionStartTelemetry();
   void recordConnectionEndTelemetry();
   void recordDataTransferTelemetry();
-  void readyToQuit();
   void readyToUpdate();
   void readyToServerUnavailable(bool pingReceived);
   void activationBlockedForCaptivePortal();
@@ -183,7 +188,6 @@ class Controller : public QObject, public LogSerializer {
  private:
   enum NextStep {
     None,
-    Quit,
     Update,
     Disconnect,
   };

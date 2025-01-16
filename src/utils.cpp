@@ -33,8 +33,7 @@ Utils* Utils::instance() {
 
 void Utils::exitForUnrecoverableError(const QString& reason) {
   Q_ASSERT(!reason.isEmpty());
-  logger.error() << "Unrecoverable error detected: " << reason;
-  App::instance()->quit();
+  qFatal() << "Unrecoverable error detected: " << reason;
 }
 
 // static

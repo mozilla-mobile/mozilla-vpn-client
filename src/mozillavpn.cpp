@@ -817,7 +817,7 @@ void MozillaVPN::mainWindowLoaded() {
 #endif
 #ifdef SENTRY_ENABLED
   SentryAdapter::instance()->init();
-  QObject::connect(controller(), &Controller::readyToQuit,
+  QObject::connect(qApp, &QApplication::aboutToQuit,
                    SentryAdapter::instance(), &SentryAdapter::onBeforeShutdown);
 #endif
 }
@@ -893,6 +893,25 @@ void MozillaVPN::requestAbout() {
 
   QmlEngineHolder::instance()->showWindow();
   emit aboutNeeded();
+}
+
+// Q_INVOKABLE
+void MozillaVPN::quit(){
+  // We need to wait for the controller to shutdown.
+  // Then we can continue. 
+  auto const future = m_private->m_controller.deactivate().then([](bool ok){
+    logger.debug() << "quit";
+    TaskScheduler::forceDeleteTasks();
+    #if QT_VERSION < QT_VERSION_CHECK(6, 2, 4)
+      // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a
+      // quick exit. See: https://bugreports.qt.io/browse/QTBUG-100687
+      // it is unknown when exactly this was fixed but aparently 6.2.4 is fine.
+      SettingsManager::instance()->sync();
+      exit(0);
+    #endif
+    qApp->quit();
+  });
+
 }
 
 void MozillaVPN::activate() {
@@ -1204,7 +1223,7 @@ void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
   hardReset();
   // Deactivate VPN and quit
-  controller()->quit();
+  quit();
 }
 
 void MozillaVPN::requestDeleteAccount() {
@@ -2072,7 +2091,7 @@ void MozillaVPN::registerInspectorCommands() {
   InspectorHandler::registerCommand(
       "quit", "Quit the app", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()->controller()->quit();
+        MozillaVPN::instance()->quit();
         return QJsonObject();
       });
 

@@ -162,6 +162,8 @@ class MozillaVPN final : public App {
 
   Q_INVOKABLE void logout();
 
+  Q_INVOKABLE void quit();
+
   bool startMinimized() const { return m_startMinimized; }
 
   void setStartMinimized(bool startMinimized) {
@@ -258,9 +260,6 @@ class MozillaVPN final : public App {
   void sendGleanPings();
   void setGleanSourceTags(const QStringList& tags);
   void logSubscriptionCompleted();
-
-  void aboutToQuit();
-
   void ticketCreationAnswer(bool successful);
 
  private:

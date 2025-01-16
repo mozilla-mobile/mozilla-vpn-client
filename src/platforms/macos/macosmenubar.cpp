@@ -56,7 +56,7 @@ void MacOSMenuBar::initialize() {
 
   // Do not use qtTrId here!
   QAction* quit =
-      fileMenu->addAction("quit", vpn->controller(), &Controller::quit);
+      fileMenu->addAction("quit", vpn, &MozillaVPN::quit);
   quit->setMenuRole(QAction::QuitRole);
 
   // Do not use qtTrId here!

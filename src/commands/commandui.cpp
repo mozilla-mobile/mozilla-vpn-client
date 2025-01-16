@@ -246,7 +246,7 @@ int CommandUI::run(QStringList& tokens) {
     // Signal handling for a proper shutdown.
     SignalHandler sh;
     QObject::connect(&sh, &SignalHandler::quitRequested,
-                     []() { MozillaVPN::instance()->controller()->quit(); });
+                     []() { MozillaVPN::instance()->quit(); });
 #endif
 
     // Font loader
@@ -297,18 +297,17 @@ int CommandUI::run(QStringList& tokens) {
       // and submit all enqueued pings (including the one we
       // just sent).
       MZGlean::shutdown();
-
-      emit MozillaVPN::instance()->aboutToQuit();
     });
 #endif
 
     QObject::connect(
         qApp, &QGuiApplication::commitDataRequest, &vpn,
-        []() { MozillaVPN::instance()->deactivate(true); },
+        [&vpn]() { 
+          if(vpn.controller()->state() != Controller::StateOff){
+            MozillaVPN::instance()->deactivate(true);
+          }
+         },
         Qt::DirectConnection);
-
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
-                     &App::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
     const QUrl url(QStringLiteral("qrc:/qt/qml/Mozilla/VPN/main.qml"));
@@ -365,7 +364,7 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_WEBEXTENSION
     WebExtension::Server extensionServer(new WebExtensionAdapter(qApp));
-    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+    QObject::connect(qApp, &QApplication::aboutToQuit,
                      &extensionServer, &WebExtension::Server::close);
 #endif
 
