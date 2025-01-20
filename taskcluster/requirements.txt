@@ -303,9 +303,9 @@ slugid==2.0.0 \
     --hash=sha256:a950d98b72691178bdd4d6c52743c4a2aa039207cf7a97d71060a111ff9ba297 \
     --hash=sha256:aec8b0e01c4ad32e38e12d609eab3ec912fd129aaf6b2ded0199b56a5f8fd67c
     # via taskcluster-taskgraph
-taskcluster-taskgraph==12.1.0 \
-    --hash=sha256:222ba9f729e6d970de8c177251e3a5f29010332d7cc6ca8967fd8c8b73fa2c1b \
-    --hash=sha256:c37b0ff65ab6ae3ae322bf1ecd4d3453db01b37f22164d9a33ab77e634a34d9a
+taskcluster-taskgraph==12.2.0 \
+    --hash=sha256:594cbfe1afd823b547d4ae9bfbb7700f43e03c856d6a02717764eb9bbb537f5f \
+    --hash=sha256:b62d10e4d7deba9721a0d0d3766825cdcb6a8ea0f3e7fcb7d718931647709d20
     # via
     #   -r requirements.in
     #   mozilla-taskgraph
