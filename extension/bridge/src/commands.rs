@@ -28,6 +28,12 @@
                  .expect("Unable to Write to STDOUT?");
              return Ok(true);
          }
+         "start" =>{
+            let out = launcher::start_vpn();
+            crate::io::write_output(std::io::stdout(),&out)
+                .expect("Unable to Write to STDOUT?");
+            return Ok(true);
+        }
          _ =>{
              // We did not handle this.
              return Ok(false);
@@ -35,3 +41,37 @@
      }
  }
  
+
+#[cfg(target_os = "windows")]
+mod launcher {
+    const CLIENT_PATH: &str = "C:\\Program Files\\Mozilla\\Mozilla VPN\\Mozilla VPN.exe";
+
+    use std::os::windows::process::CommandExt;
+    use std::process::Command;
+
+    use serde_json::json;
+
+    const CREATE_NEW_PROCESS_GROUP: u32 = 0x200; // CREATE_NEW_PROCESS_GROUP
+    const DETACHED_PROCESS: u32 = 0x00000008;    // DETACHED_PROCESS
+
+    pub fn start_vpn() -> serde_json::Value{
+        let result = Command::new(CLIENT_PATH)
+            .args(["-foreground"])
+            .creation_flags(CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS)
+            .spawn();
+
+        match result {
+            Ok(_) => json!("{status:'requested_start'}"),
+            Err(_) => json!("{error:'start_failed'}"),
+        }
+    }
+
+
+}
+
+#[cfg(not(target_os = "windows"))]
+mod launcher {
+    pub fn start_vpn() -> serde_json::Value{
+        json!("{error:'start_unsupported!'}")
+    }
+}
