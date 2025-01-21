@@ -9,7 +9,7 @@
       <p style="margin: 5px;">@MACOSINSTALLER_CONCLUSION_MESSAGE1_V2@</p>
     <br />
     <p style="margin: 5px;">@MACOSINSTALLER_CONCLUSION_MESSAGE2@
-    <a rel="noopener noreferrer" href="https://support.mozilla.org/products/firefox-private-network-vpn?utm_source=mozilla-vpn&utm_medium=mozilla-vpn-installer&utm_campaign=mac-installer" style="color: #0a84ff;">@MACOSINSTALLER_CONCLUSION_MESSAGE3@</a>
+    <a rel="noopener noreferrer" href="https://support.mozilla.org/products/firefox-private-network-vpn?utm_source=mozilla-vpn&utm_medium=mozilla-vpn-installer&utm_campaign=mac-installer" style="color: #0a84ff;">@MACOSINSTALLER_CONCLUSION_MESSAGE31@</a>
     </p>
   </body>
 </html>
