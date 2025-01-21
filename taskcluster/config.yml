@@ -138,7 +138,6 @@ release-promotion:
         - docker-image
         - fetch
         - toolchain
-        - toolchain-openssl
 
 scriptworker:
     scope-prefix: project:mozillavpn:releng
