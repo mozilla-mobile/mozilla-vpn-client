@@ -9,6 +9,8 @@ qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
 mz_target_handle_warnings(mozillavpn)
 
+find_package(Qt6 REQUIRED COMPONENTS Svg)
+
 target_link_libraries(mozillavpn PRIVATE
     Qt6::Quick
     Qt6::Test

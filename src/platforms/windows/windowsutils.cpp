@@ -15,7 +15,6 @@
 #include <QSysInfo>
 #include <QWindow>
 
-#include "platforms/windows/daemon/wireguardutilswindows.h"
 #pragma comment(lib, "dwmapi.lib")
 
 #include "logger.h"

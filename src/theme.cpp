@@ -24,7 +24,6 @@
 #include <QCoreApplication>
 #include <QPainter>
 #include <QQmlEngine>
-#include <QSvgRenderer>
 
 namespace {
 Logger logger("Theme");
