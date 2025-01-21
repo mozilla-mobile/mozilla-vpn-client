@@ -40,6 +40,7 @@ target_link_libraries(app_unit_tests PRIVATE
     Qt6::WebSockets
     Qt6::Widgets
     Qt6::Network
+    Qt6::Svg
 )
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
