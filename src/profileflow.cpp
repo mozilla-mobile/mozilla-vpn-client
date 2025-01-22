@@ -116,6 +116,11 @@ void ProfileFlow::reset() {
     Q_ASSERT(vpn);
     vpn->cancelReauthentication();
 
+    // Clear out TaskAuthenticate if present. (Without this next line,
+    // TaskAuthentication hangs around forever and can affect future auth
+    // checks.)
+    TaskScheduler::deleteTasks();
+
     m_currentTask = nullptr;
     setState(StateInitial);
   }
