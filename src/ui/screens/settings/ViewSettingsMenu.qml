@@ -211,6 +211,11 @@ MZViewBase {
             }
         ]
 
+        onOpened: {
+          loader.state = "inactive";
+          reauthButton.enabled = true;
+        }
+
         onClosed: {
           VPNProfileFlow.reset();
         }
