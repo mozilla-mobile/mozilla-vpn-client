@@ -26,17 +26,17 @@
          "bridge_ping" =>{
              crate::io::write_output(std::io::stdout(),&json!({"status": "bridge_pong"}))
                  .expect("Unable to Write to STDOUT?");
-             return Ok(true);
+             Ok(true)
          }
          "start" =>{
             let out = launcher::start_vpn();
             crate::io::write_output(std::io::stdout(),&out)
                 .expect("Unable to Write to STDOUT?");
-            return Ok(true);
+            Ok(true)
         }
          _ =>{
              // We did not handle this.
-             return Ok(false);
+             Ok(false)
          }
      }
  }
