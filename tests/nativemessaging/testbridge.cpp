@@ -4,17 +4,17 @@
 
 #include "testbridge.h"
 
-#include "helperserver.h"
 #include <QJSONDocument>
+
+#include "helperserver.h"
 
 void TestBridge::bridge_ping() {
   QVERIFY(s_nativeMessagingProcess);
 
-  
   // A simple ping/pong.
   QVERIFY(write(R"({"t": "bridge_ping"})"));
   auto const json = QJsonDocument::fromJson(readIgnoringStatus());
-  QCOMPARE(json["status"].toString(),"bridge_pong");
+  QCOMPARE(json["status"].toString(), "bridge_pong");
 }
 
 void TestBridge::app_ping_failure() {
