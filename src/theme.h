@@ -7,6 +7,7 @@
 
 #include <QAbstractListModel>
 #include <QHash>
+#include <QIcon>
 #include <QJSValue>
 
 class QJSEngine;
@@ -34,6 +35,11 @@ class Theme final : public QAbstractListModel {
   const QJSValue& readColors() const;
 
   const QString& currentTheme() const { return m_currentTheme; }
+
+  // Todo: Add a thing for themes to define, if they are using dark or light
+  // resources.
+  bool isThemeDark() { return m_currentTheme != "main"; }
+
   void setCurrentTheme(const QString& themeName);
 
   void initialize(QJSEngine* engine);
@@ -58,6 +64,8 @@ class Theme final : public QAbstractListModel {
   Q_INVOKABLE void setStatusBarTextColor(Theme::StatusBarTextColor color);
 
   bool usesDarkModeAssets() const;
+  // Returns an Icon matching the current colorscheme
+  QImage getTitleBarIcon();
 
  private:
   void parseTheme(QJSEngine* engine, const QString& themeName);

@@ -22,6 +22,7 @@
 #endif
 
 #include <QCoreApplication>
+#include <QPainter>
 #include <QQmlEngine>
 
 namespace {
@@ -193,6 +194,12 @@ Qt::ColorScheme Theme::currentSystemTheme() {
   return currentColorScheme;
 }
 #endif
+#ifdef MZ_WINDOWS
+#  include <dwmapi.h>
+
+#  include <QWindow>
+#  pragma comment(lib, "dwmapi.lib")
+#endif
 
 void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
 #ifdef MZ_IOS
@@ -208,4 +215,41 @@ bool Theme::usesDarkModeAssets() const {
   // This value should always be available
   Q_ASSERT(false);
   return true;
+}
+
+#include <QPainter>
+#include <QSvgRenderer>
+
+QImage Theme::getTitleBarIcon() {
+  bool isDarkmode = isThemeDark();
+  QString svgPath = ":/ui/resources/logo.svg";
+
+  QImage image(32, 32, QImage::Format_ARGB32);
+  image.fill(Qt::transparent);  // Ensure transparency
+
+  // Load the SVG
+  QSvgRenderer svgRenderer(svgPath);
+  if (!svgRenderer.isValid()) {
+    qWarning() << "Failed to load SVG: " << svgPath;
+    return QImage();
+  }
+
+  // Paint the SVG onto the QImage
+  QPainter painter(&image);
+  svgRenderer.render(&painter, QRectF(0, 0, 32, 32));
+  painter.end();
+
+  // Invert the pixels if in dark mode
+  if (isDarkmode) {
+    for (int y = 0; y < image.height(); ++y) {
+      QRgb* scanLine = reinterpret_cast<QRgb*>(image.scanLine(y));
+      for (int x = 0; x < image.width(); ++x) {
+        QRgb pixel = scanLine[x];
+        // Invert RGB but keep the alpha channel
+        scanLine[x] = qRgba(255 - qRed(pixel), 255 - qGreen(pixel),
+                            255 - qBlue(pixel), qAlpha(pixel));
+      }
+    }
+  }
+  return image;
 }

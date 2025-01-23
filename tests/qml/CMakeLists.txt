@@ -29,6 +29,7 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::Qml
     Qt6::Quick
     Qt6::QuickTest
+    Qt6::Svg
 )
 
 target_link_libraries(qml_tests PRIVATE qtglean lottie nebula translations)

@@ -32,6 +32,7 @@ target_link_libraries(unit_tests PRIVATE
     Qt6::Gui
     Qt6::Qml
     Qt6::Quick
+    Qt6::Svg
 )
 
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
