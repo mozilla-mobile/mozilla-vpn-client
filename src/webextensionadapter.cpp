@@ -4,6 +4,8 @@
 
 #include "webextensionadapter.h"
 
+#include <qjsonarray.h>
+
 #include <QFileInfo>
 #include <QHostAddress>
 #include <QJsonArray>
@@ -58,6 +60,15 @@ const char* asString(T qEnumValue) {
 };
 
 Logger logger("WebExtensionAdapter");
+
+QJsonArray getDisabledApps() {
+  QJsonArray apps;
+  for (const QString& app : SettingsHolder::instance()->vpnDisabledApps()) {
+    apps.append(app);
+  }
+  return apps;
+}
+
 }  // namespace
 
 WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
@@ -73,6 +84,13 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
           &WebExtensionAdapter::writeState);
   connect(vpn->connectionHealth(), &ConnectionHealth::stabilityChanged, this,
           &WebExtensionAdapter::writeState);
+  connect(SettingsHolder::instance(), &SettingsHolder::vpnDisabledAppsChanged,
+          [this]() {
+            QJsonObject obj;
+            obj["t"] = "disabled_apps";
+            obj["disabled_apps"] = getDisabledApps();
+            emit onMessage(obj);
+          });
 
   m_commands = QList<RequestType>({
       RequestType{"activate",
@@ -120,14 +138,8 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
                   }},
       RequestType{"disabled_apps",
                   [](const QJsonObject&) {
-                    QJsonArray apps;
-                    for (const QString& app :
-                         SettingsHolder::instance()->vpnDisabledApps()) {
-                      apps.append(app);
-                    }
-
                     QJsonObject obj;
-                    obj["disabled_apps"] = apps;
+                    obj["disabled_apps"] = getDisabledApps();
                     return obj;
                   }},
       RequestType{"featurelist",
