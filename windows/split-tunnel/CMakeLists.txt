@@ -1,24 +1,37 @@
 # This Source Code Form is subject to the terms of the Mozilla Public
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
-set(COMMIT_SHA 375cfc52255ec3beb15cc0713988ea995cb7582e)
-set(BASE_URI https://github.com/mullvad/mullvadvpn-app-binaries/raw/${COMMIT_SHA}/x86_64-pc-windows-msvc/split-tunnel/win10/)
+set(COMMIT_SHA 1225ed24c739f044a6c2dc12e4fb308a2aaac1cf)
+set(BASE_URI https://github.com/mullvad/mullvadvpn-app-binaries/raw/${COMMIT_SHA}/${WINDOWS_TARGET_TRIPLET}/split-tunnel/)
 
-# Download the prebuilt binaries from Mullvad
-file(DOWNLOAD ${BASE_URI}/mullvad-split-tunnel.cat ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.cat
-    EXPECTED_HASH SHA256=385C90BE86B6C934344C6D2647887182B41D7E37803DC5EABE7E0805F6210317)
-file(DOWNLOAD ${BASE_URI}/mullvad-split-tunnel.inf ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.inf
-    EXPECTED_HASH SHA256=A9500015B0C93C96D6859E942CF76B6B637653F46ADDEE11BB07AF0C1EA6E879)
-file(DOWNLOAD ${BASE_URI}/mullvad-split-tunnel.sys ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.sys
-    EXPECTED_HASH SHA256=8BDC9FC6AA1203E444A2D6E3A564CF8DD8F7EC9DB850F0095B9D33E16B96AFF5)
-file(DOWNLOAD ${BASE_URI}/WdfCoinstaller01011.dll ${CMAKE_CURRENT_BINARY_DIR}/WdfCoinstaller01011.dll
-    EXPECTED_HASH SHA256=B2CE2291D10834E132EC1A349B726822E8C943B47AF968E9DE592ED7AE1CFA36)
+ # Download the prebuilt binaries from Mullvad
+if(${WINDOWS_TARGET_TRIPLET} STREQUAL "aarch64-pc-windows-msvc")
+
+    file(DOWNLOAD ${BASE_URI}/mullvad-split-tunnel.cat ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.cat
+        EXPECTED_HASH SHA256=6B302941A93441D7522FFD9571431123A073395258D21B3890D1C839F5A2F4BD)
+    file(DOWNLOAD ${BASE_URI}/mullvad-split-tunnel.inf ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.inf
+        EXPECTED_HASH SHA256=8A0B893A785CF07C303B55C62014B40333D946552824B91445F483412ECB23D0)
+    file(DOWNLOAD ${BASE_URI}/mullvad-split-tunnel.sys ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.sys
+        EXPECTED_HASH SHA256=86A2485D2D9D12477F773FB91A134E77BC6B8F686CA50CAEB704878D524BB717)
+
+elseif(${WINDOWS_TARGET_TRIPLET} STREQUAL "x86_64-pc-windows-msvc")
+
+    file(DOWNLOAD ${BASE_URI}/mullvad-split-tunnel.cat ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.cat
+    EXPECTED_HASH SHA256=3630068C6BE6C832C16FF5C4C5F6B31D8940320EE6BC1D7463E1FF295F3ABD6B)
+    file(DOWNLOAD ${BASE_URI}/mullvad-split-tunnel.inf ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.inf
+    EXPECTED_HASH SHA256=CC439CE33CA156C3DF85E17C0551BED07437EEDBDA32913A2DDC0E8B584B61D8)
+    file(DOWNLOAD ${BASE_URI}/mullvad-split-tunnel.sys ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.sys
+    EXPECTED_HASH SHA256=08D14A289EB9A071194E30A82AFF5A936DCA7EF8827FC6986075EDDF1A6CB8FA)
+else()  
+    message(FATAL "Unexcpeted WINDOWS_TARGET_TRIPLET -> No Split Tunnel driver files for $WINDOWS_TARGET_TRIPLET")
+endif()
+
+
 
 # Install the prebuilt binaries
 install(FILES
     ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.cat
     ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.inf
     ${CMAKE_CURRENT_BINARY_DIR}/mullvad-split-tunnel.sys
-    ${CMAKE_CURRENT_BINARY_DIR}/WdfCoinstaller01011.dll
     DESTINATION .
 )

@@ -34,7 +34,7 @@ class LottieStatus final : public QObject {
 
   void updateAndNotify(bool playing, double currentTime, int totalTime) {
     update(playing, currentTime, totalTime);
-    emit changed(m_playing, m_currentTime, m_totalTime, m_error, m_errorString);
+    emit changed();
   }
 
   void updateAndNotify(bool playing) {
@@ -49,12 +49,11 @@ class LottieStatus final : public QObject {
     m_totalTime = 0;
     m_error = true;
     m_errorString = errorString;
-    emit changed(m_playing, m_currentTime, m_totalTime, m_error, m_errorString);
+    emit changed();
   }
 
  signals:
-  void changed(bool playing, double currentTime, int totalTime, bool error,
-               const QString& errorString);
+  void changed();
 
  private:
   bool m_playing = false;

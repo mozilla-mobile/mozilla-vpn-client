@@ -30,6 +30,11 @@
 #  include "sentry/sentryadapter.h"
 #endif
 
+#ifdef MZ_WINDOWS
+#  include <windows.h>
+#  include <winuser.h>
+#endif
+
 namespace {
 QmlEngineHolder* s_instance = nullptr;
 }  // namespace

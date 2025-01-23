@@ -21,6 +21,16 @@ elseif( CMAKE_ANDROID_ARCH STREQUAL "arm" )
     set( _SUPPORTED -1)
 endif()
 
+if(WIN32)
+    # TODO: Breakpad needs to be updated, in it's seh handler it 
+    # tries to get values for registers that don't exist on arm :) 
+    
+    if(WINDOWS_TARGET_TRIPLET STREQUAL "aarch64-pc-windows-msvc")
+        set( _SUPPORTED -1)
+    endif()
+endif()
+
+
 if( ${_SUPPORTED} GREATER -1 )
     message("Building sentry for ${CMAKE_SYSTEM_NAME}")
     target_compile_definitions(shared-sources INTERFACE SENTRY_ENABLED)
