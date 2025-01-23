@@ -71,6 +71,7 @@ mod launcher {
 
 #[cfg(not(target_os = "windows"))]
 mod launcher {
+    use serde_json::json;
     pub fn start_vpn() -> serde_json::Value{
         json!("{error:'start_unsupported!'}")
     }
