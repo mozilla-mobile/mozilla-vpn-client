@@ -4,7 +4,7 @@
 
 #include "testbridge.h"
 
-#include <QJSONDocument>
+#include <QJsonDocument>
 
 #include "helperserver.h"
 
