@@ -4,8 +4,6 @@
 
 #include "webextensionadapter.h"
 
-#include <qjsonarray.h>
-
 #include <QFileInfo>
 #include <QHostAddress>
 #include <QJsonArray>
