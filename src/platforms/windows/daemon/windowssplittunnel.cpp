@@ -4,6 +4,12 @@
 
 #include "windowssplittunnel.h"
 
+#include <WS2tcpip.h>
+#include <iphlpapi.h>
+#include <windows.h>
+#include <winsock2.h>
+#include <ws2ipdef.h>
+
 #include <qassert.h>
 
 #include <memory>
@@ -24,6 +30,7 @@
 #include <QFileInfo>
 #include <QNetworkInterface>
 #include <QScopeGuard>
+#include <QtEndian>
 
 #pragma region
 
@@ -341,7 +348,7 @@ bool WindowsSplitTunnel::start(int inetAdapterIndex) {
 
   auto config = generateIPConfiguration(inetAdapterIndex);
   if (config.empty()) {
-    logger.error() << "Failed to set Network Config";
+    logger.error() << "Failed to generate Network Config";
     return false;
   }
   auto ok = DeviceIoControl(m_driver, IOCTL_REGISTER_IP_ADDRESSES, &config[0],
@@ -468,33 +475,84 @@ std::vector<std::byte> WindowsSplitTunnel::generateIPConfiguration(
 }
 bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
                                     IN6_ADDR* out_ipv6) {
-  QNetworkInterface target =
-      QNetworkInterface::interfaceFromIndex(adapterIndex);
-  logger.debug() << "Getting adapter info for:" << target.humanReadableName();
+  MIB_UNICASTIPADDRESS_TABLE* table;
+  DWORD result = GetUnicastIpAddressTable(AF_UNSPEC, &table);
+  if (result != NO_ERROR) {
+    logger.warning() << "GetUnicastIpAddressTable() failed:"
+                     << WindowsUtils::getErrorMessage(result);
+    return false;
+  }
+  auto guard = qScopeGuard([table]() { FreeMibTable(table); });
 
-  auto get = [&target](QAbstractSocket::NetworkLayerProtocol protocol) {
-    for (auto address : target.addressEntries()) {
-      if (address.ip().protocol() != protocol) {
+  logger.debug() << "Examining addresses for interface:" << adapterIndex;
+
+  // Find the best unicast addresses on this interface.
+  const MIB_UNICASTIPADDRESS_ROW* bestIpv4 = nullptr;
+  const MIB_UNICASTIPADDRESS_ROW* bestIpv6 = nullptr;
+  for (ULONG i = 0; i < table->NumEntries; i++) {
+    const MIB_UNICASTIPADDRESS_ROW* row = &table->Table[i];
+    if (row->InterfaceIndex != adapterIndex) {
+      continue;
+    }
+    if (row->SkipAsSource) {
+      continue;
+    }
+
+    if (row->Address.si_family == AF_INET) {
+      // Check IPv4 addresses
+      quint32 rawAddr = row->Address.Ipv4.sin_addr.s_addr;
+      QHostAddress addr(qFromBigEndian<quint32>(rawAddr));
+      logger.debug() << "Examining IPv4 address:" << addr.toString();
+      if (!addr.isGlobal()) {
+        logger.debug() << "Yeeting IPv4 address:" << addr.toString();
         continue;
       }
-      return address.ip().toString().toStdWString();
+      // Prefer the address with the highest DAD state.
+      if ((bestIpv4 != nullptr) && (bestIpv4->DadState >= row->DadState)) {
+        logger.debug() << "Yeeting DadState" << row->DadState;
+        continue;
+      }
+      bestIpv4 = row;
     }
-    return std::wstring{};
-  };
-  auto ipv4 = get(QAbstractSocket::IPv4Protocol);
-  auto ipv6 = get(QAbstractSocket::IPv6Protocol);
+    else if (row->Address.si_family == AF_INET6) {
+      QHostAddress addr(row->Address.Ipv6.sin6_addr.s6_addr);
+      logger.debug() << "Examining IPv6 address:" << addr.toString();
+      // Check IPv6 addresses
+      if (!addr.isGlobal()) {
+        logger.debug() << "Yeeting IPv6 non-global:" << addr.toString();
+        continue;
+      }
 
-  if (InetPtonW(AF_INET, ipv4.c_str(), out_ipv4) != 1) {
-    logger.debug() << "Ipv4 Conversation error" << WSAGetLastError();
+      if (!bestIpv6) {
+        bestIpv6 = row;
+        continue;
+      }
+      QHostAddress other(bestIpv6->Address.Ipv6.sin6_addr.s6_addr);
+
+      // Ignore site-local addresses if a global address is already known.
+      if (addr.isUniqueLocalUnicast() && !other.isUniqueLocalUnicast()) {
+        continue;
+      }
+      // Prefer the address with the highest DAD state.
+      if ((bestIpv6 != nullptr) && (bestIpv6->DadState >= row->DadState)) {
+        continue;
+      }
+      bestIpv6 = row;
+    }
+  }
+
+  // An IPv4 address is required for split tunnelling.
+  if (bestIpv4) {
+    out_ipv4->s_addr = bestIpv4->Address.Ipv4.sin_addr.s_addr;
+  } else {
     return false;
   }
-  if (ipv6.empty()) {
+
+  // Output the IPv6 address, if any.
+  if (bestIpv6) {
+    std::memcpy(out_ipv6, &bestIpv6->Address.Ipv6.sin6_addr, sizeof(IN6_ADDR));
+  } else {
     std::memset(out_ipv6, 0x00, sizeof(IN6_ADDR));
-    return true;
-  }
-  if (InetPtonW(AF_INET6, ipv6.c_str(), out_ipv6) != 1) {
-    logger.debug() << "Ipv6 Conversation error" << WSAGetLastError();
-    return false;
   }
   return true;
 }
