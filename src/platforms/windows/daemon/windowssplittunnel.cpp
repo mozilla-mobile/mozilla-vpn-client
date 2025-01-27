@@ -10,8 +10,6 @@
 #include <winsock2.h>
 #include <ws2ipdef.h>
 
-#include <qassert.h>
-
 #include <memory>
 
 #include "../windowscommons.h"
@@ -23,7 +21,6 @@
 #include "windowsfirewall.h"
 
 #define PSAPI_VERSION 2
-#include <Windows.h>
 #include <psapi.h>
 
 #include <QCoreApplication>
@@ -513,8 +510,7 @@ bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
         continue;
       }
       bestIpv4 = row;
-    }
-    else if (row->Address.si_family == AF_INET6) {
+    } else if (row->Address.si_family == AF_INET6) {
       QHostAddress addr(row->Address.Ipv6.sin6_addr.s6_addr);
       logger.debug() << "Examining IPv6 address:" << addr.toString();
       // Check IPv6 addresses
