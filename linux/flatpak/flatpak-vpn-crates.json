@@ -223,6 +223,19 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/asn1-rs/asn1-rs-0.7.0.crate",
+        "sha256": "607495ec7113b178fbba7a6166a27f99e774359ef4823adbefd756b5b81d7970",
+        "dest": "cargo/vendor/asn1-rs-0.7.0"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"607495ec7113b178fbba7a6166a27f99e774359ef4823adbefd756b5b81d7970\", \"files\": {}}",
+        "dest": "cargo/vendor/asn1-rs-0.7.0",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
         "url": "https://static.crates.io/crates/asn1-rs-derive/asn1-rs-derive-0.5.0.crate",
         "sha256": "7378575ff571966e99a744addeff0bff98b8ada0dedf1956d59e634db95eaac1",
         "dest": "cargo/vendor/asn1-rs-derive-0.5.0"
@@ -231,6 +244,19 @@
         "type": "inline",
         "contents": "{\"package\": \"7378575ff571966e99a744addeff0bff98b8ada0dedf1956d59e634db95eaac1\", \"files\": {}}",
         "dest": "cargo/vendor/asn1-rs-derive-0.5.0",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/asn1-rs-derive/asn1-rs-derive-0.6.0.crate",
+        "sha256": "3109e49b1e4909e9db6515a30c633684d68cdeaa252f215214cb4fa1a5bfee2c",
+        "dest": "cargo/vendor/asn1-rs-derive-0.6.0"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"3109e49b1e4909e9db6515a30c633684d68cdeaa252f215214cb4fa1a5bfee2c\", \"files\": {}}",
+        "dest": "cargo/vendor/asn1-rs-derive-0.6.0",
         "dest-filename": ".cargo-checksum.json"
     },
     {
@@ -1596,6 +1622,19 @@
         "type": "inline",
         "contents": "{\"package\": \"a8d8034d9489cdaf79228eb9f6a3b8d7bb32ba00d6645ebd48eef4077ceb5bd9\", \"files\": {}}",
         "dest": "cargo/vendor/oid-registry-0.7.1",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/oid-registry/oid-registry-0.8.0.crate",
+        "sha256": "264c56d1492c13e769662197fb6b94e0a52abe52d27efac374615799a4bf453d",
+        "dest": "cargo/vendor/oid-registry-0.8.0"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"264c56d1492c13e769662197fb6b94e0a52abe52d27efac374615799a4bf453d\", \"files\": {}}",
+        "dest": "cargo/vendor/oid-registry-0.8.0",
         "dest-filename": ".cargo-checksum.json"
     },
     {
