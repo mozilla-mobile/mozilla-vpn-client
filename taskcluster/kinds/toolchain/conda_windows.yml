@@ -28,6 +28,9 @@ windows-conda-pack-base:
         fetches:
             fetch:
                 - win-conda
+        treeherder:
+            symbol: TL(conda-base)
+            platform: windows/x86_64
         run:
             script: conda_pack_win_base.ps1
             resources:
