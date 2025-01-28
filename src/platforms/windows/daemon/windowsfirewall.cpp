@@ -183,10 +183,6 @@ bool WindowsFirewall::enableInterface(int vpnAdapterIndex) {
   if (!allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT, msg)) {
     return false;
   }
-  msg = "Allow all for socksproxy.exe";
-  if (!allowTrafficForAppOnAll(getProxyPath(), MAX_WEIGHT, msg)) {
-    return false;
-  }
   if (!blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS")) {
     return false;
   }
@@ -828,15 +824,6 @@ QString WindowsFirewall::getCurrentPath() {
   }
 
   return QString::fromLocal8Bit(buffer);
-}
-
-QString WindowsFirewall::getProxyPath() {
-  QString execPath = getCurrentPath();
-  if (execPath.isEmpty()) {
-    return "";
-  }
-
-  return QFileInfo(execPath).dir().absoluteFilePath("socksproxy.exe");
 }
 
 void WindowsFirewall::importAddress(const QHostAddress& addr,

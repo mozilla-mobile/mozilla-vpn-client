@@ -51,7 +51,8 @@ WindowsDaemon::~WindowsDaemon() {
 
 void WindowsDaemon::prepareActivation(const InterfaceConfig& config) {
   // Before creating the interface we need to check which adapter
-  // routes to the server endpoint
+  // routes to the server endpoint. This will be selected as the outgoing
+  // interface for split-tunnelled traffic.
   auto serveraddr = QHostAddress(config.m_serverIpv4AddrIn);
   m_inetAdapterIndex = WindowsCommons::AdapterIndexTo(serveraddr);
 }

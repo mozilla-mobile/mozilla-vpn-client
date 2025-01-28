@@ -115,18 +115,15 @@ QString WindowsCommons::getTunnelLogFilePath() {
 int WindowsCommons::AdapterIndexTo(const QHostAddress& dst) {
   logger.debug() << "Getting Current Internet Adapter that routes to"
                  << logger.sensitive(dst.toString());
-  quint32_be ipBigEndian;
-  quint32 ip = dst.toIPv4Address();
-  qToBigEndian(ip, &ipBigEndian);
-  _MIB_IPFORWARDROW routeInfo;
-  auto result = GetBestRoute(ipBigEndian, 0, &routeInfo);
+  quint32 ipv4be = qToBigEndian<quint32>(dst.toIPv4Address());
+  DWORD index = 0;
+  DWORD result = GetBestInterface(ipv4be, &index);
   if (result != NO_ERROR) {
+    WindowsUtils::windowsLog("Interface lookup failed");
     return -1;
   }
-  auto adapter =
-      QNetworkInterface::interfaceFromIndex(routeInfo.dwForwardIfIndex);
-  logger.debug() << "Internet Adapter:" << adapter.name();
-  return routeInfo.dwForwardIfIndex;
+  logger.debug() << "Internet Adapter:" << index;
+  return index;
 }
 
 // static
