@@ -1,0 +1,20 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+bundle-msvc:
+    description: "MSVC Bundle"
+    worker-type: b-linux
+    worker:
+        env:
+            FOO: bar    # Bug: taskcluster fails if there is no env key?
+        max-run-time: 3600
+        docker-image: {in-tree: build}
+    treeherder:
+        symbol: TL(msvc)
+    run:
+        script: msvc_download.sh
+        resources:
+            - Cargo.lock
+        toolchain-alias: bundle-msvc
+        toolchain-artifact: public/build/msvc.tar.xz

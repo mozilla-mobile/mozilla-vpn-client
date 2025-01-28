@@ -1,0 +1,9 @@
+name: win-base
+channels:
+  - conda-forge
+dependencies:
+  - python=3.9
+  - pip=22.3.1
+  - cmake=3.26.3
+  - ninja=1.11.0
+  - conda-pack=0.8.0
