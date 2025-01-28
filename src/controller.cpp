@@ -782,12 +782,13 @@ void Controller::disconnected() {
 
   if (nextStep == None &&
       (m_state == StateSilentSwitching || m_state == StateSwitching)) {
-    // If we are only silently switching, keep the iniator
+    // If we are only switching, keep the iniator
     // Else move the iniator to Client User
     // as the extension cannot switch servers.
-    auto target_iniator = m_state == StateSilentSwitching
-                              ? m_initiator
-                              : ActivationPrincipal::ClientUser;
+    auto target_iniator =
+        (m_state == StateSilentSwitching || m_state == StateSwitching)
+            ? m_initiator
+            : ActivationPrincipal::ClientUser;
     activate(m_nextServerData, target_iniator, m_nextServerSelectionPolicy);
     return;
   }
