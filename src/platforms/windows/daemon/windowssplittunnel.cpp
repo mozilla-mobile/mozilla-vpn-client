@@ -481,8 +481,6 @@ bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
   }
   auto guard = qScopeGuard([table]() { FreeMibTable(table); });
 
-  logger.debug() << "Examining addresses for interface:" << adapterIndex;
-
   // Find the best unicast addresses on this interface.
   const MIB_UNICASTIPADDRESS_ROW* bestIpv4 = nullptr;
   const MIB_UNICASTIPADDRESS_ROW* bestIpv6 = nullptr;
@@ -499,23 +497,18 @@ bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
       // Check IPv4 addresses
       quint32 rawAddr = row->Address.Ipv4.sin_addr.s_addr;
       QHostAddress addr(qFromBigEndian<quint32>(rawAddr));
-      logger.debug() << "Examining IPv4 address:" << addr.toString();
       if (!addr.isGlobal()) {
-        logger.debug() << "Yeeting IPv4 address:" << addr.toString();
         continue;
       }
       // Prefer the address with the highest DAD state.
       if ((bestIpv4 != nullptr) && (bestIpv4->DadState >= row->DadState)) {
-        logger.debug() << "Yeeting DadState" << row->DadState;
         continue;
       }
       bestIpv4 = row;
     } else if (row->Address.si_family == AF_INET6) {
       QHostAddress addr(row->Address.Ipv6.sin6_addr.s6_addr);
-      logger.debug() << "Examining IPv6 address:" << addr.toString();
       // Check IPv6 addresses
       if (!addr.isGlobal()) {
-        logger.debug() << "Yeeting IPv6 non-global:" << addr.toString();
         continue;
       }
 
