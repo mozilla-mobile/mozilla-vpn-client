@@ -199,6 +199,7 @@ class Controller : public QObject, public LogSerializer {
                         ServerSelectionPolicy serverSelectionPolicy,
                         ActivationPrincipal);
 
+  void startTimerIfInactive();
   void clearConnectedTime();
   void clearRetryCounter();
   void activateNext();
