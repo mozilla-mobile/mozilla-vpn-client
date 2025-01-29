@@ -119,7 +119,8 @@ int WindowsCommons::AdapterIndexTo(const QHostAddress& dst) {
   DWORD index = 0;
   DWORD result = GetBestInterface(ipv4be, &index);
   if (result != NO_ERROR) {
-    WindowsUtils::windowsLog("Interface lookup failed");
+    logger.warning() << "Interface lookup failed:"
+                     << WindowsUtils::getErrorMessage(result);
     return -1;
   }
   logger.debug() << "Internet Adapter:" << index;
