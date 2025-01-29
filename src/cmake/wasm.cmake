@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+list(APPEND QT_WASM_EXTRA_EXPORTED_METHODS ENV)
+
 target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.h
