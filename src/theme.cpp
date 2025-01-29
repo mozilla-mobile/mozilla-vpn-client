@@ -37,6 +37,12 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
             m_themes.clear();
             initialize(QmlEngineHolder::instance()->engine());
           });
+
+  connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this,
+          []() {
+            // In VPN-6178, add code here to update the theme when the system
+            // theme changes (if the user has "system theme" selected).
+          });
 }
 
 Theme::~Theme() { MZ_COUNT_DTOR(Theme); }
