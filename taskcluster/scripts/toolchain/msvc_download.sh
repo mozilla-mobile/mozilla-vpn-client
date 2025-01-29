@@ -4,7 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-python taskcluster/scripts/vsdownload.py --accept-license --dest msvc \
+python3 taskcluster/scripts/vsdownload.py --accept-license --dest msvc \
 Microsoft.VisualStudio.Component.VC.Redist.14.Latest \
 Microsoft.VisualCpp.Tools.HostX64.TargetARM64 \
 Microsoft.VisualCpp.Tools.HostX64.TargetX64 \
