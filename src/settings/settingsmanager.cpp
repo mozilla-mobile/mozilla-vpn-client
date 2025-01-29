@@ -12,7 +12,7 @@
 #include <QStandardPaths>
 
 #ifndef MZ_WASM
-# include "cryptosettings.h"
+#  include "cryptosettings.h"
 #endif
 #include "leakdetector.h"
 #include "logger.h"
