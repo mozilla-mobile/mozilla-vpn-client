@@ -112,8 +112,6 @@ bool Daemon::activate(const InterfaceConfig& config) {
     return false;
   }
 
-  prepareActivation(config);
-
   // Bring up the wireguard interface if not already done.
   if (!wgutils()->interfaceExists()) {
     // Create the interface.
