@@ -52,12 +52,12 @@ qt-windows-aarch64-6.6:
         script: compile_qt_6.ps1
         resources:
             - taskcluster/scripts/toolchain/configure_qt.ps1
-        toolchain-alias: qt-windows-x86_64-6.6
+        toolchain-alias: qt-windows-aarch64-6.6
         toolchain-artifact: public/build/qt6_win.zip
     treeherder:
         symbol: TL(qt-win-6.6)
         platform: windows/aarch64
-    worker-type: b-win2022
+    worker-type: b-win11-2024h2-arm64
 
 
 qt-ios:
