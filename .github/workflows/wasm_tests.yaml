@@ -61,6 +61,7 @@ jobs:
         run: |
           export PATH=/opt/$QTVERSION/wasm_singlethread/bin:/opt/$QTVERSION/gcc_64/bin:$PATH
           mkdir -p build/cmake
+          chmod +x /opt/$QTVERSION/wasm_singlethread/bin/qt-cmake
           /opt/$QTVERSION/wasm_singlethread/bin/qt-cmake -S $(pwd) -B build/cmake -GNinja \
             -DCMAKE_BUILD_TYPE=Release \
             -DQT_HOST_PATH_CMAKE_DIR=/opt/$QTVERSION/gcc_64/lib/cmake \
