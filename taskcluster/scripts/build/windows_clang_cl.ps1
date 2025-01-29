@@ -2,9 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-$REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
-$TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
-$FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
+. "$PSScriptRoot/../common/helpers.ps1"
+
+
 $QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/"
 
 # Prep Env:
@@ -17,33 +17,11 @@ Set-Location -Path $TASK_WORKDIR
 # doesn't handle recursive submodules, so we'll need to do it ourselves.
 git -C "$REPO_ROOT_PATH" submodule update --init --recursive
 
-# Setup Openssl Import
-$SSL_PATH = "$FETCHES_PATH/QT_OUT/SSL"
-if (Test-Path -Path $SSL_PATH) {
-    $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
-    $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
-}
-
 
 ## Use vendored rust crates, if present
-if (Test-Path -Path "$FETCHES_PATH\cargo-vendor") {
-    $CARGO_VENDOR_PATH = "$FETCHES_PATH/cargo-vendor" -replace @('\\', '/')
-    New-Item -Path "$REPO_ROOT_PATH\.cargo" -ItemType "directory" -Force
-@"
-[source.vendored-sources]
-directory = "$CARGO_VENDOR_PATH"
-
-[source.crates-io]
-replace-with = "vendored-sources"
-"@ | Out-File -Encoding utf8 $REPO_ROOT_PATH\.cargo\config.toml
-}
-
+Add-CargoVendor
 ## Install MiniConda 
-New-Item -ItemType Directory -Force -Path "$TASK_WORKDIR/miniconda"
-$MINICONDA_DIR =resolve-path "$TASK_WORKDIR/miniconda"
-Start-Process -NoNewWindow "$FETCHES_PATH\miniconda_installer.exe" -Wait -ArgumentList @('/S',"/D=$MINICONDA_DIR")
-. $MINICONDA_DIR\shell\condabin\conda-hook.ps1
-
+Install-MiniConda 
 ## Unpack and activate the conda environment.
 $CONDA_DIR = resolve-path "$FETCHES_PATH\conda-windows"
 Start-Process -NoNewWindow "$CONDA_DIR\Scripts\conda-unpack.exe" -Wait

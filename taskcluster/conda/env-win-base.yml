@@ -7,3 +7,4 @@ dependencies:
   - cmake=3.26.3
   - ninja=1.11.0
   - conda-pack=0.8.0
+  - vswhere
