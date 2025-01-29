@@ -141,5 +141,5 @@ fn get_parent_pid() -> u32 {
 
 #[cfg(any(target_os = "macos", target_os = "linux"))]
 fn get_parent_pid() -> u32 {
-    return os::unix::process::parent_id;
+    return std::os::unix::process::parent_id();
 }
