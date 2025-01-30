@@ -49,7 +49,7 @@ qt-windows-aarch64-6.6:
             - bundle-msvc
             - conda-windows-base-x86_64
     run:
-        script: compile_qt_6.ps1
+        script: compile_qt_fancy.ps1
         resources:
             - taskcluster/scripts/toolchain/configure_qt.ps1
         toolchain-alias: qt-windows-aarch64-6.6
