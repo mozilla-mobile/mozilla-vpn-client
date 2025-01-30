@@ -136,8 +136,9 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
-  async forceServerUnavailable() {
-    const json = await this._writeCommand('force_server_unavailable');
+  async forceServerUnavailable(countryCode, cityCode) {
+    const json = await this._writeCommand(
+        'force_server_unavailable ' + countryCode + ' ' + cityCode);
     assert(
         json.type === 'force_server_unavailable' && !('error' in json),
         `Command failed: ${json.error}`);
@@ -259,6 +260,37 @@ module.exports = {
       await this.waitForQuery(cityId.visible());
       await this.scrollToQuery(view, cityId);
     }
+  },
+
+  async selectNewServer(servers, currentCountryCode) {
+    let currentCountry = '';
+    for (let server of servers) {
+      if (server.code === currentCountryCode) {
+        currentCountry = server.localizedName;
+        break;
+      }
+    }
+
+    assert(currentCountry != '');
+
+    await this.waitForQuery(queries.screenHome.STACKVIEW.ready());
+
+    let server;
+    while (true) {
+      server = servers[Math.floor(Math.random() * servers.length)];
+      if (server.code != currentCountryCode) break;
+    }
+
+    const countryId =
+        queries.screenHome.serverListView.generateCountryId(server.code);
+    let city = server.cities[Math.floor(Math.random() * server.cities.length)];
+    const cityId =
+        queries.screenHome.serverListView.generateCityId(countryId, city.name);
+    await this.waitForQuery(queries.screenHome.STACKVIEW.ready());
+    await this.waitForQueryAndClick(
+        queries.screenHome.serverListView.ALL_SERVERS_TAB.visible());
+    await this.navServerList(countryId, cityId);
+    await this.waitForQueryAndClick(cityId.visible());
   },
 
   async getMozillaProperty(namespace, id, property) {

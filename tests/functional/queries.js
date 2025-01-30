@@ -90,6 +90,8 @@ const screenHome = {
   SERVER_LIST_BUTTON_LABEL:
       new QmlQueryComposer('//serverListButton-label-label'),
   SERVER_LIST_BUTTON: new QmlQueryComposer('//serverListButton-btn'),
+  SERVER_UNAVAILABLE_POPUP_BUTTON:
+      new QmlQueryComposer('//serverUnavailablePopup-button'),
   STACKVIEW: new QmlQueryComposer('//screenHome-stackView'),
 
   serverListView: {

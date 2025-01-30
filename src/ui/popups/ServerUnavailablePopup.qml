@@ -24,6 +24,7 @@ MZSimplePopup {
     buttons: [
         MZButton {
             text: MZI18n.ServerUnavailableModalButtonLabel
+            objectName: "serverUnavailablePopup-button"
             Layout.fillWidth: true
             onClicked: {
                 MZNavigator.requestScreen(VPN.ScreenHome)
