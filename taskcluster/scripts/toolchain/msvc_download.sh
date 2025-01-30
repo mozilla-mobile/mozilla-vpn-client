@@ -17,8 +17,7 @@ python3 $VCS_PATH/taskcluster/scripts/vsdownload.py \
 find msvc -type f -name "vctip.exe" -exec rm -f {} \;
 
 # Update the "enter dev shell" script to init with host ARM64 and target ARM64
-sed -e 's/*TARGET_ARCH*/arm64/g'  \
-    -e 's/*HOST_ARCH*/arm64/g' \
-      $VCS_PATH/taskcluster/scripts/fetch/enter_dev_shell.ps1.in > msvc/enter_dev_shell.ps1
+sed -e 's/*TARGET_ARCH/arm64/g' -e 's/*HOST_ARCH/arm64/g' 
+      $VCS_PATH/taskcluster/scripts/toolchain/enter_dev_shell.ps1.in > msvc/enter_dev_shell.ps1
 
 tar -cJf $UPLOAD_DIR/msvc.tar.xz msvc/
