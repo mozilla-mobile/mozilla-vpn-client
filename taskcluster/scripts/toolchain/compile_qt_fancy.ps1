@@ -8,7 +8,7 @@ $ErrorActionPreference = "Stop"
 # Unpack Conda-Base
 Install-MiniConda
 ls $FETCHES_PATH
-$CONDA_DIR = resolve-path "$FETCHES_PATH\conda-windows"
+$CONDA_DIR = resolve-path "$FETCHES_PATH\"
 Start-Process -NoNewWindow "$CONDA_DIR\Scripts\conda-unpack.exe" -Wait
 conda activate $CONDA_DIR
 conda info
