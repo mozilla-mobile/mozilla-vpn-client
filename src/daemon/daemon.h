@@ -36,10 +36,6 @@ class Daemon : public QObject {
   virtual bool deactivate(bool emitSignals = true);
   virtual QJsonObject getStatus();
 
-  // Callback before any Activating measure is done
-  virtual void prepareActivation(const InterfaceConfig& config){
-      Q_UNUSED(config)};
-
   QString logs();
   void cleanLogs();
 

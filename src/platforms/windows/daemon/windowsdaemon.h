@@ -22,8 +22,6 @@ class WindowsDaemon final : public Daemon {
   WindowsDaemon();
   ~WindowsDaemon();
 
-  void prepareActivation(const InterfaceConfig& config) override;
-
  protected:
   bool run(Op op, const InterfaceConfig& config) override;
   WireguardUtils* wgutils() const override { return m_wgutils.get(); }
@@ -37,8 +35,6 @@ class WindowsDaemon final : public Daemon {
     Active,
     Inactive,
   };
-
-  int m_inetAdapterIndex = -1;
 
   std::unique_ptr<WireguardUtilsWindows> m_wgutils;
   DnsUtilsWindows* m_dnsutils = nullptr;
