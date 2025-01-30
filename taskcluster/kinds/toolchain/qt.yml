@@ -45,6 +45,8 @@ qt-windows-x86_64-6.6:
 qt-windows-aarch64-6.6:
     description: "Windows QT compile Task"
     fetches:
+        fetch:
+            - win-conda
         toolchain:
             - bundle-msvc
             - conda-windows-base-x86_64

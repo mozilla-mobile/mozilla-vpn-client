@@ -4,9 +4,10 @@
 
 . "$PSScriptRoot/../common/helpers.ps1"
 
+$ErrorActionPreference = "Stop"
 # Unpack Conda-Base
 Install-MiniConda
-$CONDA_DIR = resolve-path "$FETCHES_PATH\conda-win-base"
+$CONDA_DIR = resolve-path "$FETCHES_PATH\win-base"
 Start-Process -NoNewWindow "$CONDA_DIR\Scripts\conda-unpack.exe" -Wait
 conda activate $CONDA_DIR
 conda info
