@@ -4,6 +4,24 @@
 
 . "$PSScriptRoot/../common/helpers.ps1"
 
+# Unpack Conda-Base
+Install-MiniConda
+$CONDA_DIR = resolve-path "$FETCHES_PATH\conda-win-base"
+Start-Process -NoNewWindow "$CONDA_DIR\Scripts\conda-unpack.exe" -Wait
+conda activate $CONDA_DIR
+conda info
+
+vswhere
+
+. "$FETCHES_PATH/msvc/enter_dev_shell.ps1" -arch arm64
+
+
+
+
+Get-ChildItem env:
+# Enter the DEV Shell
+
+
 
 
 $BIN_PATH = "$REPO_ROOT_PATH/bin"
@@ -21,25 +39,7 @@ if($?){
     Write-Output "Failed to download : $QT_URI"
     exit 1
 }
-
 unzip -o -qq qt-everywhere-src-$QT_VERSION.zip
-unzip -o -qq open_ssl_win.zip # See toolchain/qt.yml for why
-
-# Unpack Conda-Base
-Install-MiniConda
-$CONDA_DIR = resolve-path "$FETCHES_PATH\conda-win-base"
-Start-Process -NoNewWindow "$CONDA_DIR\Scripts\conda-unpack.exe" -Wait
-conda activate $CONDA_DIR
-conda info
-
-vswhere
-
-
-
-
-Get-ChildItem env:
-# Enter the DEV Shell
-. "$FETCHES_PATH/msvc/enter_dev_shell.ps1" -arch arm64
 
 if(!(Test-Path $BIN_PATH)){
   New-Item -Path $BIN_PATH -ItemType "directory"
