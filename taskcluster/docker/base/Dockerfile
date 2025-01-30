@@ -45,6 +45,7 @@ RUN apt-get update -qq \
                           rpm \
                           libglib2.0-0 \
                           ccache \
+                          msitools \
     && apt-get clean
 
 RUN pip install --upgrade pip
