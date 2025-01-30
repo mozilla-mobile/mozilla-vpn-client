@@ -13,17 +13,13 @@ $W10_SDK_PATH = resolve-path "$PSScriptRoot\Windows Kits\10"
 $W10_SDK_VERSION = "10.0.19041.0"
 $MSVC_VERSION = "14.42.34433"
 
-param (
-    [string]$ARCH = "x64"
-)
+$ARCH = *TARGET_ARCH*
+$HOST_ARCH = *HOST_ARCH*
 
 $missingPaths = @()
 
 function AddPaths {
-    param (
-        [string[]]$Paths
-        
-    )
+    $Paths = $args[0]
 
     $result = ""
     foreach ($path in $Paths) {
@@ -43,20 +39,16 @@ $INCLUDE_ADDS =   `
     "$W10_SDK_PATH\include\$W10_SDK_VERSION\um",`
     "$W10_SDK_PATH\include\$W10_SDK_VERSION\winrt",`
     "$W10_SDK_PATH\include\$W10_SDK_VERSION\cppwinrt",`
-    "$VS_STUDIO_LOCATION\DIA SDK\include",`
-    "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\ATLMFC\include",`
     "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\include"
 
-$ENV:INCLUDE = AddPaths -Paths $INCLUDE_ADDS
+$ENV:INCLUDE = AddPaths $INCLUDE_ADDS
 
 $LIB_ADDS = `
     "$W10_SDK_PATH\lib\$W10_SDK_VERSION\ucrt\$ARCH",`
     "$W10_SDK_PATH\lib\$W10_SDK_VERSION\um\$ARCH",`
-    "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\ATLMFC\lib\$ARCH",`
-    "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\lib\$ARCH",`
-    "$VS_STUDIO_LOCATION\DIA SDK\lib\amd64"
+    "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\lib\$ARCH"
 
-$ENV:LIB=AddPaths -Paths $LIB_ADDS
+$ENV:LIB=AddPaths $LIB_ADDS
 
 $LIBPATH_ADDS =  `
     "$W10_SDK_PATH\UnionMetadata\$W10_SDK_VERSION",`
@@ -64,17 +56,17 @@ $LIBPATH_ADDS =  `
     "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\ATLMFC\lib\$ARCH",`
     "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\lib\$ARCH"
 
-$ENV:LIBPATH=AddPaths -Paths $LIBPATH_ADDS
+$ENV:LIBPATH=AddPaths $LIBPATH_ADDS
 
 $PATH_ADDS = `
-    "$VS_STUDIO_LOCATION\DIA SDK\bin\amd64",`
+    "$VS_STUDIO_LOCATION\DIA SDK\bin\$HOST_ARCH",`
     "$W10_SDK_PATH\bin\$W10_SDK_VERSION\$ARCH",`
     "$W10_SDK_PATH\bin\$ARCH",`
-    "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\bin\Hostx64\$ARCH",`
-    "$VS_STUDIO_LOCATION\MSBuild\Current\Bin\amd64"
+    "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\bin\Host$HOST_ARCH\$ARCH",`
+    "$VS_STUDIO_LOCATION\MSBuild\Current\Bin\$HOST_ARCH"
 
 # Do not overwrite the existing PATH; append to it instead
-$ENV:PATH = $ENV:PATH+";"+ (AddPaths -Paths $PATH_ADDS)
+$ENV:PATH = $ENV:PATH+";"+ (AddPaths $PATH_ADDS)
 
 $ENV:UCRTVersion = $W10_SDK_VERSION
 $ENV:WindowsSDKLibVersion = $W10_SDK_VERSION
