@@ -16,6 +16,6 @@ bundle-msvc:
         script: msvc_download.sh
         resources:
             - taskcluster/scripts/vsdownload.py
-            - taskcluster/scripts/fetch/enter_dev_shell.ps1
+            - taskcluster/scripts/toolchain/enter_dev_shell.ps1.in
         toolchain-alias: bundle-msvc
         toolchain-artifact: public/build/msvc.tar.xz
