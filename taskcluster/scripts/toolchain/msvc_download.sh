@@ -13,7 +13,7 @@ python3 $VCS_PATH/taskcluster/scripts/vsdownload.py \
     --accept-license \
     --dest msvc
 
-# Remove vctip.exe it no need to send build telemetry to ms :) 
+# Remove vctip.exe it no need to send build telemetry to ms :)
 find msvc -type f -name "vctip.exe" -exec rm -f {} \;
 
 # Update the "enter dev shell" script to init with host ARM64 and target ARM64
