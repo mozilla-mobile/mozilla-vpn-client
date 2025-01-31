@@ -108,7 +108,10 @@ class VPNService : android.net.VpnService() {
         set(value: Int) {
             field = value
             if (value > -1) {
-                mConnectionTime = System.currentTimeMillis()
+                if (!isAppChangingServers) {
+                    // Don't reset the timer on a server switch
+                    mConnectionTime = System.currentTimeMillis()
+                }
                 Log.i(tag, "Dispatch Daemon State -> connected")
                 mBinder.dispatchEvent(
                     CoreBinder.EVENTS.connected,
