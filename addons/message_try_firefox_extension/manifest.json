@@ -5,7 +5,6 @@
   "type": "message",
   "conditions": {
     "min_client_version": "2.25.0",
-    "env": "staging",
     "platforms": ["windows"]
   },
   "message": {
