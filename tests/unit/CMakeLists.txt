@@ -37,8 +37,16 @@ target_link_libraries(unit_tests PRIVATE
 
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
 target_compile_definitions(unit_tests PRIVATE MZ_DEBUG)
+target_compile_definitions(unit_tests PRIVATE MZ_ADJUST)
 
-target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations)
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/generate_translations_target.cmake)
+generate_translations_target(translations-unit-tests
+    ${CMAKE_SOURCE_DIR}/tests/unit/translations
+    ${CMAKE_SOURCE_DIR}/tests/unit/translations/i18n
+)
+
+
+target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations translations-unit-tests)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
@@ -307,7 +315,34 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/utils.h
     ${MZ_SOURCE_DIR}/versionutils.cpp
     ${MZ_SOURCE_DIR}/versionutils.h
+    ${MZ_SOURCE_DIR}/mozillavpn.h
+    ${MZ_SOURCE_DIR}/sentry/sentrysniffer.h
+    ${MZ_SOURCE_DIR}/sentry/sentrysniffer.cpp
+    ${MZ_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
+    ${MZ_SOURCE_DIR}/daemon/daemonaccesscontrol.h
+    ${MZ_SOURCE_DIR}/ui/composer/composer.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composer.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblock.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblock.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockbutton.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockorderedlist.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktext.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblocktitle.h
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.cpp
+    ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.h
 )
+if(NOT BUILD_ADJUST_SDK_TOKEN)
+    target_sources(unit_tests PRIVATE
+        ${MZ_SOURCE_DIR}/adjust/adjustfiltering.cpp
+        ${MZ_SOURCE_DIR}/adjust/adjustfiltering.h
+        ${MZ_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
+        ${MZ_SOURCE_DIR}/adjust/adjustproxypackagehandler.h
+    )
+endif()
 
 # VPN Client UI resources
 target_sources(unit_tests PRIVATE
@@ -321,29 +356,12 @@ target_sources(unit_tests PRIVATE
     mocmozillavpn.cpp
     mocsystemtraynotificationhandler.cpp
     helper.h
-    testaddon.cpp
-    testaddon.h
-    testconnectionhealth.cpp
-    testconnectionhealth.h
-    testcommandlineparser.cpp
-    testcommandlineparser.h
-    testcryptosettings.cpp
-    testcryptosettings.h
-    testdnshelper.cpp
-    testdnshelper.h
-    testipaddresslookup.cpp
-    testipaddresslookup.h
-    testipfinder.cpp
-    testipfinder.h
-    testmodels.cpp
-    testmodels.h
-    testreleasemonitor.cpp
-    testreleasemonitor.h
-    testserverlatency.cpp
-    testserverlatency.h
-    teststatusicon.cpp
-    teststatusicon.h
 )
+
+
+# Auto add all Test files to the target
+file(GLOB TEST_SOURCES "${CMAKE_CURRENT_SOURCE_DIR}/test*.cpp" "${CMAKE_CURRENT_SOURCE_DIR}/test*.h")
+target_sources(unit_tests PRIVATE ${TEST_SOURCES})
 
 # Generate the version header
 configure_file(${MZ_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
@@ -351,6 +369,9 @@ configure_file(${MZ_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version
 # Unit test mock resources
 target_sources(unit_tests PRIVATE
     addons/addons.qrc
+    qml/qml.qrc
+    themes/themes.qrc
+    resourceloader/resourceloader.qrc
 )
 
 ## Add the tests to be run, one for each test class.

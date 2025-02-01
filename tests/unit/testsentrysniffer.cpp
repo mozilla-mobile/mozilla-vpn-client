@@ -2,16 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "testtasksentry.h"
+#include "testsentrysniffer.h"
 
 #include <QTextStream>
 
 #include "helper.h"
-#include "tasks/sentry/tasksentry.h"
+#include "sentry/sentrysniffer.h"
 
 void TestTaskSentry::testParse_data() {
   QTest::addColumn<QByteArray>("input");
-  QTest::addColumn<TaskSentry::ContentType>("output");
+  QTest::addColumn<SentrySniffer::ContentType>("output");
   {
     QByteArray envelope;
     QTextStream writer(&envelope);
@@ -21,7 +21,7 @@ void TestTaskSentry::testParse_data() {
     writer << "{\"type\":\"attachment\"}" << Qt::endl;
     writer << "MMMMM" << Qt::endl;
     QTest::addRow("detectFatalErrors")
-        << envelope << TaskSentry::ContentType::CrashReport;
+        << envelope << SentrySniffer::ContentType::CrashReport;
   }
   {
     QByteArray envelope;
@@ -31,7 +31,7 @@ void TestTaskSentry::testParse_data() {
            << Qt::endl;
     writer << "MMMMM" << Qt::endl;
     QTest::addRow("detectAttachmentMinidump")
-        << envelope << TaskSentry::ContentType::CrashReport;
+        << envelope << SentrySniffer::ContentType::CrashReport;
   }
   {
     // Have a normal attachment but that contains a dump
@@ -41,7 +41,7 @@ void TestTaskSentry::testParse_data() {
     writer << "{\"type\":\"attachment\",\"length\":12}" << Qt::endl;
     writer << "MDMP" << Qt::endl;
     QTest::addRow("sniffMinidump")
-        << envelope << TaskSentry::ContentType::CrashReport;
+        << envelope << SentrySniffer::ContentType::CrashReport;
   }
   {
     QByteArray envelope;
@@ -52,7 +52,7 @@ void TestTaskSentry::testParse_data() {
     writer << "{\"type\":\"attachment\",\"length\":12}" << Qt::endl;
     writer << "HELLO WORLD" << Qt::endl;
     QTest::addRow("detectMinidump")
-        << envelope << TaskSentry::ContentType::CrashReport;
+        << envelope << SentrySniffer::ContentType::CrashReport;
   }
   {  // if the Level is == error that is not a crash.
     QByteArray envelope;
@@ -63,7 +63,7 @@ void TestTaskSentry::testParse_data() {
     writer << "{\"type\":\"attachment\"}" << Qt::endl;
     writer << "MMMMM" << Qt::endl;
     QTest::addRow("levelErrorIsFine")
-        << envelope << TaskSentry::ContentType::Ping;
+        << envelope << SentrySniffer::ContentType::Ping;
   }
 
   {
@@ -73,12 +73,12 @@ void TestTaskSentry::testParse_data() {
     writer << "HELLo" << Qt::endl;
 
     QTest::addRow("envelopeWithJustAnAttachment")
-        << envelope << TaskSentry::ContentType::Unknown;
+        << envelope << SentrySniffer::ContentType::Unknown;
   }
   {  // Envelope with that"s empty
     QByteArray envelope;
     QTest::addRow("emptyEnvelope")
-        << envelope << TaskSentry::ContentType::Unknown;
+        << envelope << SentrySniffer::ContentType::Unknown;
   }
 
   {
@@ -88,7 +88,7 @@ void TestTaskSentry::testParse_data() {
     writer << "{}" << Qt::endl;
     writer << Qt::endl;
     QTest::addRow("emptyHeaderEnvelope")
-        << envelope << TaskSentry::ContentType::Ping;
+        << envelope << SentrySniffer::ContentType::Ping;
   }
 
   {  // Envelope with an valid header and attach gment in wrong order.
@@ -100,7 +100,7 @@ void TestTaskSentry::testParse_data() {
               "plain\",\"filename\":\"hello.txt\"}"
            << Qt::endl;
     QTest::addRow("wrongOrderEnvelope")
-        << envelope << TaskSentry::ContentType::Unknown;
+        << envelope << SentrySniffer::ContentType::Unknown;
   }
 
   {  // Envelope with 2 empty attachments:
@@ -112,7 +112,7 @@ void TestTaskSentry::testParse_data() {
     writer << "{\"type\":\"attachment\",\"length\":0}" << Qt::endl;
     writer << Qt::endl;
     QTest::addRow("valid2EmptyAttachments")
-        << envelope << TaskSentry::ContentType::Ping;
+        << envelope << SentrySniffer::ContentType::Ping;
   }
 
   {  // Envelope with 2 Items, last newline omitted:
@@ -131,7 +131,7 @@ void TestTaskSentry::testParse_data() {
         << Qt::endl;
     writer << "{\"message\":\"hello world\",\"level\":\"error\"}";
     QTest::addRow("validWithAttachments")
-        << envelope << TaskSentry::ContentType::Ping;
+        << envelope << SentrySniffer::ContentType::Ping;
   }
   {  // Item with implicit length, terminated by newline:
     QByteArray envelope;
@@ -140,7 +140,7 @@ void TestTaskSentry::testParse_data() {
     writer << "{\"type\":\"attachment\"}" << Qt::endl;
     writer << "\xef\xbb\xbfHello\r\n\n";
     QTest::addRow("validImplicitLength")
-        << envelope << TaskSentry::ContentType::Ping;
+        << envelope << SentrySniffer::ContentType::Ping;
   }
 
   {  // Envelope without headers, implicit length,
@@ -154,14 +154,14 @@ void TestTaskSentry::testParse_data() {
            "\"2020-02-07T14:16:00Z\",\"attrs\":{\"release\":\"sentry-test@1.0."
            "0\"}}";
     QTest::addRow("noHeaderButSession")
-        << envelope << TaskSentry::ContentType::Ping;
+        << envelope << SentrySniffer::ContentType::Ping;
   }
 }
 
 void TestTaskSentry::testParse() {
   QFETCH(QByteArray, input);
-  QFETCH(TaskSentry::ContentType, output);
-  QCOMPARE(TaskSentry(input).parseEnvelope(), output);
+  QFETCH(SentrySniffer::ContentType, output);
+  QCOMPARE(SentrySniffer::parseEnvelope(input).type, output);
 }
 
 static TestTaskSentry s_TestTaskSentry;

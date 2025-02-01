@@ -59,7 +59,7 @@ void TestCommandLineParser::basic() {
   char** argv = (char**)malloc(sizeof(char*) * argc);
 
   for (int i = 0; i < args.length(); ++i) {
-    argv[i] = strdup(args[i].toLocal8Bit().data());
+    argv[i] = _strdup(args[i].toLocal8Bit().data());
   }
 
   QFETCH(int, result);

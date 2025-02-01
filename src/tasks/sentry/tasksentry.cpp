@@ -9,11 +9,11 @@
 #include <QJsonValue>
 #include <QStringList>
 
-#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
 #include "sentry/sentryadapter.h"
+#include "sentry/sentrysniffer.h"
 #include "settingsholder.h"
 
 namespace {
@@ -31,18 +31,20 @@ TaskSentry::~TaskSentry() { MZ_COUNT_DTOR(TaskSentry); }
 
 void TaskSentry::run() {
   // If it's unknown, try to parse it.
-  if (m_Type == ContentType::Unknown) {
-    m_Type = parseEnvelope();
+  if (m_Type == SentrySniffer::ContentType::Unknown) {
+    auto const res = SentrySniffer::parseEnvelope(m_envelope);
+    m_Type = res.type;
+    m_eventID = res.id.value_or(QString());
   }
   // If it's still unknown, parsing failed. abort.
-  if (m_Type == ContentType::Unknown) {
+  if (m_Type == SentrySniffer::ContentType::Unknown) {
     logger.info() << "Dropping Sentry-Ping:Unknown";
     logger.info() << m_envelope;
     emit completed();
     return;
   }
 
-  if (m_Type == ContentType::Ping) {
+  if (m_Type == SentrySniffer::ContentType::Ping) {
     // This is not a crash report, but a ping
     if (SettingsHolder::instance()->gleanEnabled()) {
       // In case telemetry is enabled, send the request
@@ -55,7 +57,7 @@ void TaskSentry::run() {
     }
     return;
   }
-  Q_ASSERT(m_Type == ContentType::CrashReport);
+  Q_ASSERT(m_Type == SentrySniffer::ContentType::CrashReport);
 
   // This is a crash report - Make sure we have consent, or ask the user for it
   auto consent = SentryAdapter::instance()->hasCrashUploadConsent();
@@ -119,85 +121,4 @@ void TaskSentry::sendRequest() {
 
             emit completed();
           });
-}
-
-TaskSentry::ContentType TaskSentry::parseEnvelope() {
-  auto envelope = QString::fromUtf8(m_envelope);
-
-  // The Sentry Envelope is a basic format
-  // It is a series of JSON objects splited by lines.
-  QStringList objects = envelope.split("\n");
-  if (objects.empty()) {
-    // This really should not happen.
-    return ContentType::Unknown;
-  }
-  // The fist line is always the header:
-  // a json object, containing the DSN and an event ID
-  auto header = QJsonDocument::fromJson(objects.at(0).toUtf8());
-  if (!header.isObject()) {
-    return ContentType::Unknown;
-  }
-
-  // Each Line here is a json object.
-  // Usually in the form of
-  // { headerObject type } \n
-  // { {bodyObject} || raw bytes} \n
-
-  foreach (auto content, objects) {
-    auto doc = QJsonDocument::fromJson(content.toUtf8());
-    if (!doc.isObject()) {
-      // This might be an attachment body.
-      // Sniff for minidump bytes, otherwise this is
-      // fine :)
-      if (content.startsWith("MDMP")) {
-        return ContentType::CrashReport;
-      }
-      // This is an attachment, fine to skip
-      continue;
-    }
-    // The only thing right now, we don't want to send
-    // crash-data, so we will only check for that.
-    QJsonObject obj = doc.object();
-    if (obj.contains("event_id")) {
-      m_eventID = obj["event_id"].toString();
-    }
-    if (isCrashReportHeader(obj)) {
-      return ContentType::CrashReport;
-    }
-  }
-  return ContentType::Ping;
-}
-
-// static
-bool TaskSentry::isCrashReportHeader(const QJsonObject& obj) {
-  // Check 1: Test if this might be a dump attachment
-  if (obj.contains("type")) {
-    auto type = obj["type"].toString();
-    // It's type minidump:
-    if (type == "minidump") {
-      return true;
-    }
-    if (type == "attachment") {
-      // It's an attachment to an event.
-      // If it's not a generic one
-      // it needs to set 'attachment_type'
-      if (!obj.contains("attachment_type")) {
-        // This is a generic one
-        return false;
-      }
-      auto type = obj["attachment_type"].toString();
-      if (type == "event.minidump" || type == "event.applecrashreport") {
-        // The attachment is a dump.
-        return true;
-      }
-    }
-    return false;
-  }
-  // Check 2: Check if this is a report for a crash
-  if (obj.contains("level")) {
-    // We might not send a minidump but still report a crash here :)
-    auto level = obj["level"].toString();
-    return level == "fatal";
-  }
-  return false;
 }
