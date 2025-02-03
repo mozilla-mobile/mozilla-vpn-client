@@ -13,8 +13,8 @@ $W10_SDK_PATH = resolve-path "$PSScriptRoot\Windows Kits\10"
 $W10_SDK_VERSION = "10.0.19041.0"
 $MSVC_VERSION = "14.42.34433"
 
-$ARCH = *TARGET_ARCH
-$HOST_ARCH = *HOST_ARCH
+$ARCH = "*TARGET_ARCH"
+$HOST_ARCH = "*HOST_ARCH"
 
 $missingPaths = @()
 

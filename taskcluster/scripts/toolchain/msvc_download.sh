@@ -30,5 +30,5 @@ sed -e 's/*TARGET_ARCH/arm64/g' -e 's/*HOST_ARCH/arm64/g' \
       $VCS_PATH/taskcluster/scripts/toolchain/enter_dev_shell.ps1.in > msvc/enter_dev_shell.ps1
 echo "Patched enter_dev_shell"
 echo "Starting Compression"
-tar --checkpoint-action=echo="#%u: %T" -cJf $UPLOAD_DIR/msvc.tar.xz msvc/
+tar -cJf $UPLOAD_DIR/msvc.tar.xz msvc/
 echo "Done Compression"
