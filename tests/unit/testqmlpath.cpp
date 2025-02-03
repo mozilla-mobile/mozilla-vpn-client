@@ -161,7 +161,7 @@ void TestQmlPath::evaluate_data() {
 }
 
 void TestQmlPath::evaluate() {
-  QQmlApplicationEngine engine("qrc:a.qml");
+  QQmlApplicationEngine engine(":/qmlTest/a.qml");
 
   QFETCH(QString, input);
   QmlPath qmlPath(input);

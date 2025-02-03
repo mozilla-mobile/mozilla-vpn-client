@@ -39,14 +39,7 @@ target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
 target_compile_definitions(unit_tests PRIVATE MZ_DEBUG)
 target_compile_definitions(unit_tests PRIVATE MZ_ADJUST)
 
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/generate_translations_target.cmake)
-generate_translations_target(translations-unit-tests
-    ${CMAKE_SOURCE_DIR}/tests/unit/translations
-    ${CMAKE_SOURCE_DIR}/tests/unit/translations/i18n
-)
-
-
-target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations translations-unit-tests)
+target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
@@ -372,6 +365,7 @@ target_sources(unit_tests PRIVATE
     qml/qml.qrc
     themes/themes.qrc
     resourceloader/resourceloader.qrc
+    translations/extras/extras.qrc
     ${MZ_SOURCE_DIR}/resources/license.qrc
 )
 

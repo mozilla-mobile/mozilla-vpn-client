@@ -1,5 +1,5 @@
 <RCC>
-    <qresource>
+    <qresource prefix="/qmlTest">
         <file>a.qml</file>
         <file>components/FooBar.qml</file>
     </qresource>
