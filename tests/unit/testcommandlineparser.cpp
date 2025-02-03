@@ -4,6 +4,8 @@
 
 #include "testcommandlineparser.h"
 
+#include <string.h>
+
 #include "command.h"
 #include "commandlineparser.h"
 
@@ -58,6 +60,11 @@ void TestCommandLineParser::basic() {
   int argc = args.length();
   char** argv = (char**)malloc(sizeof(char*) * argc);
 
+#ifndef _MSC_VER
+#  define _strdup strdup
+  // strdup is depricated with msvc? and we shall use
+  // _strdup. So let's define that for the other compilers too.
+#endif
   for (int i = 0; i < args.length(); ++i) {
     argv[i] = _strdup(args[i].toLocal8Bit().data());
   }
