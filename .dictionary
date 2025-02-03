@@ -4,6 +4,7 @@ APIs
 Adblock
 AdjustSdk
 Affero
+Balrog
 Bodymovin
 CHACHA
 CLI
@@ -86,6 +87,7 @@ TOTP
 TP
 TaskGetFeatureList
 UniFFI
+VersionAPI
 VpnService
 VPN's
 WebAssembly
@@ -115,6 +117,7 @@ att
 auth
 backend
 backgrounded
+balrog
 bea's
 bool
 boolean
