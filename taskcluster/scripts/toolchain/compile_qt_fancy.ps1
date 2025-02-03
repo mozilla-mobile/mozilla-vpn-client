@@ -13,48 +13,27 @@ Start-Process -NoNewWindow "$CONDA_DIR\Scripts\conda-unpack.exe" -Wait
 conda activate $CONDA_DIR
 conda info
 
-vswhere
-
-. "$FETCHES_PATH/msvc/enter_dev_shell.ps1" -arch arm64
-
-
-
-
-Get-ChildItem env:
 # Enter the DEV Shell
+. "$FETCHES_PATH/msvc/enter_dev_shell.ps1" -arch arm64
+Get-ChildItem env:
 
+# Clone QT Code
+git clone --branch $env:QT_VERSION --depth 1 --single-branch git://code.qt.io/qt/qt5.git qt
+Set-Location qt 
+git submodule init qt5compat qtactiveqt qtbase qtdeclarative qtimageformats qtlanguageserver qtnetworkauth qtrepotools qtwebsockets qtshadertools qttools qtsvg
+git submodule update --depth 1 --recursive
 
+# Note: QtTools has more submoudles!
+git submodule update --init --recursive --depth 1 --shallow-submodules qttools
 
-
-$BIN_PATH = "$REPO_ROOT_PATH/bin"
-$QT_VERSION = $env:QT_VERSION
-$QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
-
-$QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
-
-Set-Location $FETCHES_PATH
-Write-Output "Downloading : $QT_URI"
-Invoke-WebRequest -Uri $QT_URI -OutFile qt-everywhere-src-$QT_VERSION.zip
-if($?){
-    Write-Output "Downloaded : $QT_URI"
-}else{
-    Write-Output "Failed to download : $QT_URI"
-    exit 1
-}
-unzip -o -qq qt-everywhere-src-$QT_VERSION.zip
-
+# Setup Output Dirs
 if(!(Test-Path $BIN_PATH)){
   New-Item -Path $BIN_PATH -ItemType "directory"
 }
 if(!(Test-Path $REPO_ROOT_PATH/QT_OUT)){
   New-Item -Path $REPO_ROOT_PATH/QT_OUT -ItemType "directory"
 }
-
 $BUILD_PREFIX = (resolve-path "$REPO_ROOT_PATH/QT_OUT").toString()
-
-# Enter QT source directory
-Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
-
 
 $ErrorActionPreference = "Stop"
   # For newer qt versions, let's trim what we dont need.
@@ -62,82 +41,26 @@ $ErrorActionPreference = "Stop"
   # For detailed feature flags, run the configuration, then check the CMakeLists.txt
   # Variables with FEATURE_XYZ can be switched off using -no-feature
   # Whole folders can be skipped using -skip <folder>
-./configure.bat `
-  -static  `
-  -opensource  `
-  -debug-and-release `
-  -confirm-license  `
-  -silent  `
-  -make libs  `
-  -nomake tests  `
-  -nomake examples  `
-  -no-feature-dynamicgl `
-  -no-feature-sql-odbc `
-  -no-feature-pixeltool `
-  -no-feature-qdbus `
-  -no-feature-qtattributionsscanner `
-  -no-feature-qtdiag `
-  -no-feature-qtplugininfo `
-  -no-feature-pixeltool `
-  -no-feature-distancefieldgenerator `
-  -no-feature-designer `
-  -no-feature-assistant `
-  -no-feature-sql-sqlite `
-  -no-feature-sql `
-  -no-feature-textodfwriter `
-  -no-feature-networklistmanager `
-  -no-feature-dbus `
-  -skip qtgraphs `
-  -skip qt3d  `
-  -skip qtdoc `
-  -skip qtgrpc `
-  -skip qtconnectivity `
-  -skip qtquickeffectmaker `
-  -skip qtwebengine  `
-  -skip qtlocation `
-  -skip qtserialport  `
-  -skip qtsensors  `
-  -skip qtgamepad  `
-  -skip qtandroidextras  `
-  -skip qtquick3dphysics `
-  -skip qtactiveqt  `
-  -skip qtcoap  `
-  -skip qtgrpc  `
-  -skip qtremoteobjects  `
-  -skip qtlottie  `
-  -skip qtmqtt  `
-  -skip qtopcua  `
-  -skip qtpositioning  `
-  -skip qtquick3d  `
-  -skip qtscxml  `
-  -skip qtserialbus  `
-  -skip qtserialport  `
-  -skip qtspeech  `
-  -skip qtwayland  `
-  -skip qtvirtualkeyboard  `
-  -skip qtweb `
-  -feature-imageformat_png  `
-  -qt-libpng  `
-  -qt-zlib  `
-  -prefix $BUILD_PREFIX `
 
-
-
-
-
+cmake -S . -B build `
+    -DFEATURE_relocatable=ON `
+    -DFEATURE_developer_build=OFF `
+    -DQT_FEATURE_assistant=OFF `
+    -DQT_FEATURE_designer=OFF `
+    -DQT_FEATURE_qtdiag=OFF `
+    -DQT_FEATURE_debug_and_release=ON `
+    -DBUILD_SHARED_LIBS=OFF `
+    -DQT_BUILD_TESTS=OFF `
 
  cmake --build . --parallel
 
- cmake --install . --config Debug
- cmake --install . --config Release
-
+ cmake --install . --config Debug --prefix $BUILD_PREFIX
+ cmake --install . --config Release --prefix $BUILD_PREFIX
 
 Set-Location $REPO_ROOT_PATH
 Copy-Item -Path taskcluster/scripts/toolchain/configure_qt.ps1 -Destination QT_OUT/
 
-if (Test-Path -Path $SSL_PATH) {
-  Copy-Item -Path $SSL_PATH -Recurse -Destination QT_OUT/
-}
+
 
 New-Item -ItemType Directory -Path "$TASK_WORKDIR/public/build" -Force
 zip -r "$TASK_WORKDIR/public/build/qt6_win.zip" QT_OUT
