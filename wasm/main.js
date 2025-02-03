@@ -7,38 +7,48 @@ class MVPNWasm {
     this._guardianOverrideEndpoints = {};
 
     this._fxaOverrideEndpoints = {};
+
+    this.instance = null;
   }
 
-  init() {
-    const qmlcanvas = document.querySelector('#qmlcanvas');
-    const controlcanvas = document.querySelector('#controlcanvas');
+  async init() {
+    const spinner = document.querySelector('#qtspinner');
+    const screen = document.querySelector('#screen');
     const status = document.querySelector('#qtstatus');
+    const controlcanvas = document.querySelector('#controlcanvas');
     const bodyClassList = document.body.classList;
 
-    const qtLoader = QtLoader({
-      canvasElements: [controlcanvas, qmlcanvas],
-      showLoader: function(loaderStatus) {
-        status.textContent = loaderStatus + '...';
-      },
-      showError: function(errorText) {
-        bodyClassList.remove('wasm-loading');
-        status.textContent = errorText;
-        bodyClassList.add('wasm-loading-error');
-      },
-      showExit: function() {
-        status.textContent = 'Application exit';
-        if (qtLoader.exitCode !== undefined)
-          status.textContent += ' with code ' + qtLoader.exitCode;
-        if (qtLoader.exitText !== undefined)
-          status.textContent += ' (' + qtLoader.exitText + ')';
-      },
-      showCanvas: function() {
-        bodyClassList.remove('wasm-loading');
-        bodyClassList.add('wasm-loaded');
-        status.textContent = '';
-      },
-    });
-    qtLoader.loadEmscriptenModule('mozillavpn');
+    const showUi = (ui) => {
+      [spinner, screen].forEach(element => element.style.display = 'none');
+      if (screen === ui)
+        screen.style.position = 'default';
+      ui.style.display = 'block';
+    }
+
+    try {
+      showUi(spinner);
+      status.innerHTML = 'Loading...';
+
+      this.instance = await qtLoad({
+        qt: {
+          onLoaded: () => showUi(screen),
+          onExit: exitData =>
+          {
+            status.innerHTML = 'Application exit';
+            status.innerHTML +=
+              exitData.code !== undefined ? ` with code ${exitData.code}` : '';
+            status.innerHTML +=
+              exitData.text !== undefined ? ` (${exitData.text})` : '';
+            showUi(spinner);
+          },
+          entryFunction: window.createQtAppInstance,
+          containerElements: [screen],
+        }
+      });
+    } catch (e) {
+      console.error(e);
+      console.error(e.stack);
+    }
 
     const preset = document.querySelector('#preset');
     for (let p of MVPNPresets) {
@@ -73,7 +83,7 @@ class MVPNWasm {
         url == 'https://archive.mozilla.org/pub/vpn/speedtest/50m.data') {
       // 50mb of data is too much to be handled in the browser.
       setTimeout(
-          () => Module.mzNetworkResponse(id, JSON.stringify({
+          () => this.instance.mzNetworkResponse(id, JSON.stringify({
             status: 200,
             body: btoa(String.fromCharCode.apply(null, new Uint8Array(1024)))
           })),
@@ -83,14 +93,14 @@ class MVPNWasm {
 
     if (!obj) {
       fetch(url)
-          .then(async resp => Module.mzNetworkResponse(id, JSON.stringify({
+          .then(async resp => this.instance.mzNetworkResponse(id, JSON.stringify({
             status: resp.status,
             body: btoa(String.fromCharCode.apply(
                 null, new Uint8Array(await resp.arrayBuffer())))
           })))
           .catch(() => {
             console.error('Unable to fetch content for URL', url);
-            Module.mzNetworkResponse(id, JSON.stringify({status: 0, body: ''}));
+            this.instance.mzNetworkResponse(id, JSON.stringify({status: 0, body: ''}));
           });
       return;
     }
@@ -106,7 +116,7 @@ class MVPNWasm {
     }
 
     setTimeout(() => {
-      Module.mzNetworkResponse(
+      this.instance.mzNetworkResponse(
           id,
           JSON.stringify(
               {status: obj.status, body: btoa(JSON.stringify(obj.body))}));

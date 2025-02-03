@@ -12,11 +12,6 @@
     <title>Mozilla VPN - WebAssembly Viewer</title>
     <link href="//fonts.cdnfonts.com/css/metropolis-2" rel="stylesheet">
     <link rel="stylesheet" href="main.css">
-    <style>
-      /* Make the html body cover the entire (visual) viewport with no scroll bars. */
-      html, body { padding: 0; margin: 0; overflow: hidden; height: 100% }
-      #screen { margin: auto; width: 360px; height: 640px; outline-style: solid; }
-    </style>
     <link rel="icon" type="image/png" href="favicon.ico">
   </head>
   <body onload="init()">
@@ -30,7 +25,11 @@
         <noscript>JavaScript is disabled. Please enable JavaScript to use this application.</noscript>
       </center>
     </figure>
-    <div id="screen"></div>
+    <center>
+      <div class="canvas-bg">
+        <div id="screen"></div>
+      </div>
+    </center>
 
     <footer>
       <a class="icon-link" href="https://www.github.com/mozilla-mobile/mozilla-vpn-client" target="_blank" rel="noopener noreferrer">
