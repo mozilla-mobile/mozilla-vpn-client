@@ -11,6 +11,7 @@ python3 $VCS_PATH/taskcluster/scripts/vsdownload.py \
     --only-host yes \
     --sdk-version 10.0.19041  \
     --accept-license \
+    --ignore UAPSDKAddOn-x86.msi \
     --dest msvc \
         Microsoft.VisualStudio.Product.BuildTools \
         Microsoft.VisualStudio.Component.VC.CoreBuildTools \
