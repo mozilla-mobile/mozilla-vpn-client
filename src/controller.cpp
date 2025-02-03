@@ -1048,7 +1048,9 @@ bool Controller::activate(const ServerData& serverData,
   // https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9639, and caused
   // a bug on iOS where server switches stopped working. See more details in
   // VPN-6495.
-#ifndef MZ_IOS
+  // On Android, we need to skip this so that the client knows it is a
+  // server switch when appropriate.
+#ifndef MZ_MOBILE
   if (initiator != ExtensionUser) {
     setState(StateConnecting);
   }
