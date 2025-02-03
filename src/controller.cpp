@@ -527,7 +527,7 @@ void Controller::activateInternal(
 }
 
 void Controller::startTimerIfInactive() {
-  if (m_connectedTimeInUTC == QDateTime()) {
+  if (!m_connectedTimeInUTC.isValid()) {
     m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
   }
 }
