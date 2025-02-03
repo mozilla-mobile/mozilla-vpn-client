@@ -372,6 +372,7 @@ target_sources(unit_tests PRIVATE
     qml/qml.qrc
     themes/themes.qrc
     resourceloader/resourceloader.qrc
+    ${MZ_SOURCE_DIR}/resources/license.qrc
 )
 
 ## Add the tests to be run, one for each test class.
