@@ -38,13 +38,16 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
             initialize(QmlEngineHolder::instance()->engine());
           });
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-  connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this,
-          []() {
-            // In VPN-6178, add code here to update the theme when the system
-            // theme changes (if the user has "system theme" selected).
-          });
-#endif
+  // In VPN-6178, uncomment these next few lines and add code.
+  // #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+  //   connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged,
+  //   this,
+  //           []() {
+  // Code gets added here. Code must update the theme when the system
+  // theme changes (if the user has "system theme" selected for their VPN
+  // theme).
+  //           });
+  // #endif
 }
 
 Theme::~Theme() { MZ_COUNT_DTOR(Theme); }
