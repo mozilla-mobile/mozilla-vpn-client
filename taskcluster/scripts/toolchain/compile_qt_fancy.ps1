@@ -27,9 +27,6 @@ git submodule update --depth 1 --recursive
 git submodule update --init --recursive --depth 1 --shallow-submodules qttools
 
 # Setup Output Dirs
-if(!(Test-Path $BIN_PATH)){
-  New-Item -Path $BIN_PATH -ItemType "directory"
-}
 if(!(Test-Path $REPO_ROOT_PATH/QT_OUT)){
   New-Item -Path $REPO_ROOT_PATH/QT_OUT -ItemType "directory"
 }
