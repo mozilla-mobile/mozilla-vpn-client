@@ -782,12 +782,13 @@ void Controller::disconnected() {
 
   if (nextStep == None &&
       (m_state == StateSilentSwitching || m_state == StateSwitching)) {
-    // If we are only silently switching, keep the iniator
+    // If we are only switching, keep the iniator
     // Else move the iniator to Client User
     // as the extension cannot switch servers.
-    auto target_iniator = m_state == StateSilentSwitching
-                              ? m_initiator
-                              : ActivationPrincipal::ClientUser;
+    auto target_iniator =
+        (m_state == StateSilentSwitching || m_state == StateSwitching)
+            ? m_initiator
+            : ActivationPrincipal::ClientUser;
     activate(m_nextServerData, target_iniator, m_nextServerSelectionPolicy);
     return;
   }
@@ -1047,7 +1048,9 @@ bool Controller::activate(const ServerData& serverData,
   // https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9639, and caused
   // a bug on iOS where server switches stopped working. See more details in
   // VPN-6495.
-#ifndef MZ_IOS
+  // On Android, we need to skip this so that the client knows it is a
+  // server switch when appropriate.
+#ifndef MZ_MOBILE
   if (initiator != ExtensionUser) {
     setState(StateConnecting);
   }

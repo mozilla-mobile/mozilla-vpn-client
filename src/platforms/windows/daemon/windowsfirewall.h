@@ -71,7 +71,6 @@ class WindowsFirewall final : public QObject {
 
   // Utils
   QString getCurrentPath();
-  QString getProxyPath();
   void importAddress(const QHostAddress& addr, OUT FWP_VALUE0_& value,
                      OUT QByteArray* v6DataBuffer);
   void importAddress(const QHostAddress& addr, OUT FWP_CONDITION_VALUE0_& value,

@@ -8,9 +8,9 @@ appdirs==1.4.4 \
     --hash=sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41 \
     --hash=sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128
     # via glean-parser
-aqtinstall==3.1.21 \
-    --hash=sha256:d6fbcf4ede59b9dafe9fbbc868a63cf4531d85797376a696a47d7dbf4e44e5a9 \
-    --hash=sha256:f31a88c93f87afa619676c1ade7d48a1f49cdb3e5680eaee4d3b679102bf9f19
+aqtinstall==3.2.0 \
+    --hash=sha256:860b2fb20556229d2142ee38d2a6c96e32eecab267fbe3b13be50b9a3a1f3cba \
+    --hash=sha256:e012c6b30fb1ef4aff7105cdfc0624753f3de9fd4e38da42c634e74a911d0d5b
     # via -r requirements.in
 attrs==23.1.0 \
     --hash=sha256:1f28b4522cdc2fb4256ac1a020c78acf9cba2c6b461ccd2c126f3aa8e8335d04 \
@@ -375,8 +375,8 @@ oathtool==2.3.2 \
     --hash=sha256:f115a2b82b0892589b4bc78e6a25b02996656f0a79fa3be6531ba1bfdc503b1d \
     --hash=sha256:f902f0cf99f8860d39b26cb52d4cde04604ec79d41118b29a4c68248ac3cdc5a
     # via -r requirements.in
-patch==1.16 \
-    --hash=sha256:c62073f356cff054c8ac24496f1a3d7cfa137835c31e9af39a9f5292fd75bd9f
+patch-ng==1.18.1 \
+    --hash=sha256:52fd46ee46f6c8667692682c1fd7134edc65a2d2d084ebec1d295a6087fc0291
     # via aqtinstall
 path==16.7.1 \
     --hash=sha256:2b477f5887033f3cbea1cfd8553ee6a6a498eb2540a19f4aa082822aadcea30a \
