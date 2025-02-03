@@ -44,7 +44,11 @@ App* App::instance() {
 
 // static
 bool TestHelper::networkRequestGeneric(NetworkRequest* request) {
-  Q_ASSERT(!TestHelper::networkConfig.isEmpty());
+  if (TestHelper::networkConfig.isEmpty()) {
+    emit request->requestFailed(QNetworkReply::NetworkError::HostNotFoundError,
+                                "");
+    return true;
+  }
   TestHelper::NetworkConfig nc = TestHelper::networkConfig.takeFirst();
 
   QTimer::singleShot(0, request, [request, nc]() {
