@@ -8,7 +8,7 @@ bundle-msvc:
     worker:
         env:
             FOO: bar    # Bug: taskcluster fails if there is no env key?
-        max-run-time: 3600
+        max-run-time: 14400
         docker-image: {in-tree: build}
     treeherder:
         symbol: TL(msvc)
