@@ -11,7 +11,11 @@ python3 $VCS_PATH/taskcluster/scripts/vsdownload.py \
     --only-host yes \
     --sdk-version 10.0.19041  \
     --accept-license \
-    --dest msvc
+    --dest msvc \
+        Microsoft.VisualStudio.Product.BuildTools \
+        Microsoft.VisualStudio.Component.VC.CoreBuildTools \
+        Microsoft.VisualStudio.Component.VC.Redist.14.Latest \
+        Microsoft.VisualStudio.Component.VC.Tools.ARM64
 
 # Remove vctip.exe it no need to send build telemetry to ms :)
 find msvc -type f -name "vctip.exe" -exec rm -f {} \;
