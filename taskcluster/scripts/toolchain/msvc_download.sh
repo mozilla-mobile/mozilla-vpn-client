@@ -26,7 +26,7 @@ echo "Downloading DONE"
 find msvc -type f -name "vctip.exe" -exec rm -f {} \;
 echo "Removed vctip"
 # Update the "enter dev shell" script to init with host ARM64 and target ARM64
-sed -e 's/*TARGET_ARCH/arm64/g' -e 's/*HOST_ARCH/arm64/g' 
+sed -e 's/*TARGET_ARCH/arm64/g' -e 's/*HOST_ARCH/arm64/g' \
       $VCS_PATH/taskcluster/scripts/toolchain/enter_dev_shell.ps1.in > msvc/enter_dev_shell.ps1
 echo "Patched enter_dev_shell"
 echo "Starting Compression"
