@@ -20,11 +20,15 @@ python3 $VCS_PATH/taskcluster/scripts/vsdownload.py \
         Microsoft.VisualStudio.Component.VC.Redist.14.Latest \
         Microsoft.VisualStudio.Component.VC.Tools.ARM64
 
+echo "Downloading DONE"
+
 # Remove vctip.exe it no need to send build telemetry to ms :)
 find msvc -type f -name "vctip.exe" -exec rm -f {} \;
-
+echo "Removed vctip"
 # Update the "enter dev shell" script to init with host ARM64 and target ARM64
 sed -e 's/*TARGET_ARCH/arm64/g' -e 's/*HOST_ARCH/arm64/g' 
       $VCS_PATH/taskcluster/scripts/toolchain/enter_dev_shell.ps1.in > msvc/enter_dev_shell.ps1
-
-tar -cJf $UPLOAD_DIR/msvc.tar.xz msvc/
+echo "Patched enter_dev_shell"
+echo "Starting Compression"
+tar --checkpoint-action=echo="#%u: %T" -cJf $UPLOAD_DIR/msvc.tar.xz msvc/
+echo "Done Compression"
