@@ -11,9 +11,7 @@
 #include <QTimer>
 
 #include "interfaceconfig.h"
-#include "ipaddress.h"
 #include "loghandler.h"
-#include "models/server.h"
 #include "models/serverdata.h"
 #include "pinghelper.h"
 
@@ -169,8 +167,6 @@ class Controller : public QObject, public LogSerializer {
   };
   static IPAddressList getExcludedIPAddressRanges();
   static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
-  static QList<IPAddress> getExtensionProxyAddressRanges(
-      const Server& exitServer);
 
   enum ServerCoolDownPolicyForSilentSwitch {
     eServerCoolDownNeeded,

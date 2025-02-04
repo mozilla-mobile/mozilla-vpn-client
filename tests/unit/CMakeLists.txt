@@ -53,6 +53,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/constants.cpp
     ${MZ_SOURCE_DIR}/constants.h
     ${MZ_SOURCE_DIR}/controller.h
+    ${MZ_SOURCE_DIR}/controller_p.h
+    ${MZ_SOURCE_DIR}/controller_p.cpp
     ${MZ_SOURCE_DIR}/dnshelper.cpp
     ${MZ_SOURCE_DIR}/dnshelper.h
     ${MZ_SOURCE_DIR}/dnspingsender.cpp
@@ -248,6 +250,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/qmlpath.h
     ${MZ_SOURCE_DIR}/resourceloader.cpp
     ${MZ_SOURCE_DIR}/resourceloader.h
+    ${MZ_SOURCE_DIR}/rfc/rfc1112.cpp
+    ${MZ_SOURCE_DIR}/rfc/rfc1112.h
     ${MZ_SOURCE_DIR}/rfc/rfc1918.cpp
     ${MZ_SOURCE_DIR}/rfc/rfc1918.h
     ${MZ_SOURCE_DIR}/rfc/rfc4193.cpp
@@ -325,6 +329,8 @@ target_sources(unit_tests PRIVATE
     testaddon.h
     testconnectionhealth.cpp
     testconnectionhealth.h
+    testcontroller_p.cpp
+    testcontroller_p.h
     testcommandlineparser.cpp
     testcommandlineparser.h
     testcryptosettings.cpp

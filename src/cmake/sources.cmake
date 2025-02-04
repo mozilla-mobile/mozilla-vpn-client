@@ -77,6 +77,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/controller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/controllerimpl.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/controllerimpl.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/controller_p.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/controller_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp

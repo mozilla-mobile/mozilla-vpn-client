@@ -4,11 +4,14 @@
 
 #include "controller.h"
 
+#include <qhostaddress.h>
+
 #include <QFileInfo>
 #include <QNetworkInformation>
 
 #include "app.h"
 #include "constants.h"
+#include "controller_p.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
 #include "feature/feature.h"
@@ -46,12 +49,6 @@
 #  include "platforms/wasm/wasmcontroller.h"
 #endif
 
-// The Mullvad proxy services are located at internal IPv4 addresses in the
-// 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
-// private address range.
-constexpr const char* MULLVAD_PROXY_RANGE = "10.124.0.0";
-constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
-
 namespace {
 Logger logger("Controller");
 
@@ -75,6 +72,8 @@ Controller::Reason stateToReason(Controller::State state) {
   return Controller::ReasonNone;
 }
 }  // namespace
+
+using namespace ControllerPrivate;
 
 Controller::Controller() {
   MZ_COUNT_CTOR(Controller);
@@ -589,24 +588,6 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
       IPAddress(QHostAddress(MULLVAD_PROXY_RANGE), MULLVAD_PROXY_RANGE_LENGTH));
 
   return list;
-}
-
-// static
-QList<IPAddress> Controller::getExtensionProxyAddressRanges(
-    const Server& exitServer) {
-  QList<IPAddress> ranges = {
-      IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32),
-      IPAddress(QHostAddress{MULLVAD_PROXY_RANGE}, MULLVAD_PROXY_RANGE_LENGTH)};
-  if (!exitServer.ipv6Gateway().isEmpty()) {
-    ranges.append(IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128));
-  }
-
-  auto const dns = DNSHelper::getDNSDetails(exitServer.ipv4Gateway());
-  if (dns.dnsType != "Default" && dns.dnsType != "Custom") {
-    ranges.append(IPAddress(QHostAddress(dns.ipAddress), 32));
-  }
-
-  return ranges;
 }
 
 void Controller::activateNext() {
