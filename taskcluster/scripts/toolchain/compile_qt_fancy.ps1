@@ -40,9 +40,8 @@ $ErrorActionPreference = "Stop"
   # Whole folders can be skipped using -skip <folder>
 
 cmake -S . -B build `
-    -GNinja `
+    -GNinja`
     -DFEATURE_relocatable=ON `
-    -DFEATURE_optimize_full=ON `
     -DQT_FEATURE_debug_and_release=ON `
     -DQT_BUILD_TESTS=OFF `
     -DFEATURE_developer_build=OFF `
@@ -54,8 +53,8 @@ cmake -S . -B build `
 
  cmake --build build --parallel
 
- cmake --install build --config Debug --prefix $BUILD_PREFIX
- cmake --install build --config Release --prefix $BUILD_PREFIX
+ cmake --install build --prefix $BUILD_PREFIX
+
 
 Set-Location $REPO_ROOT_PATH
 Copy-Item -Path taskcluster/scripts/toolchain/configure_qt.ps1 -Destination QT_OUT/
