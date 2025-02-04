@@ -40,7 +40,7 @@ $ErrorActionPreference = "Stop"
   # Whole folders can be skipped using -skip <folder>
 
 cmake -S . -B build `
-    -GNinja`
+    -GNinja `
     -DFEATURE_relocatable=ON `
     -DFEATURE_optimize_full=ON `
     -DQT_FEATURE_debug_and_release=ON `
