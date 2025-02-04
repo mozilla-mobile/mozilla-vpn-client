@@ -40,7 +40,7 @@ $ErrorActionPreference = "Stop"
   # Whole folders can be skipped using -skip <folder>
 
 cmake -S . -B build `
-    -DCMAKE_UNITY_BUILD=ON `
+    -GNinja`
     -DFEATURE_relocatable=ON `
     -DFEATURE_optimize_full=ON `
     -DQT_FEATURE_debug_and_release=ON `
@@ -66,14 +66,9 @@ New-Item -ItemType Directory -Path "$TASK_WORKDIR/public/build" -Force
 zip -r "$TASK_WORKDIR/public/build/qt6_win.zip" QT_OUT
 
 
-Write-Output "Build complete, zip created:"
+Write-Output "Build complete, zip created: $TASK_WORKDIR/public/build/qt6_win.zip"
 
 # mspdbsrv might be stil running after the build, so we need to kill it
 Stop-Process -Name "mspdbsrv.exe" -Force -ErrorAction SilentlyContinue
 Stop-Process -Name "mspdbsrv" -Force -ErrorAction SilentlyContinue
-
-
-Write-Output "Open Processes:"
-
-wmic process get description,executablepath
 
