@@ -49,6 +49,7 @@ cmake -S . -B build `
     -DFEATURE_assistant=OFF `
     -DFEATURE_designer=OFF `
     -DFEATURE_qtdiag=OFF `
+    -DFEARTURE_androiddeployqt=OFF `
     -DFEATURE_sql=OFF 
 
  cmake --build build --parallel
