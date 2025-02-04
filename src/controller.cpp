@@ -526,6 +526,12 @@ void Controller::activateInternal(
   activateNext();
 }
 
+void Controller::startTimerIfInactive() {
+  if (!m_connectedTimeInUTC.isValid()) {
+    m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
+  }
+}
+
 void Controller::clearConnectedTime() {
   if (!isSwitchingServer) {
     m_connectedTimeInUTC = QDateTime();
@@ -922,6 +928,13 @@ bool Controller::switchServers(const ServerData& serverData) {
     logger.debug() << "Server data changed but we are off";
     return false;
   }
+
+  // This next line fixes VPN-6706. Without this, the connection clock will
+  // never have started when the server switch comes after the "server
+  // unavailable" modal is shown. In that case, the server switch will have come
+  // before the initial server was fully connected, and thus before the timer
+  // was ever started. Hence, we start the timer here before we continue.
+  startTimerIfInactive();
 
   isSwitchingServer = true;
   m_nextServerData = serverData;

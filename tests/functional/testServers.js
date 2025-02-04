@@ -132,48 +132,35 @@ describe('Server', function() {
               'connectionTimeForFunctionalTest'),
           '00:00:00');
 
-      let currentCountry = '';
-      for (let server of servers) {
-        if (server.code === currentCountryCode) {
-          currentCountry = server.localizedName;
-          break;
-        }
-      }
-
-      assert(currentCountry != '');
-
       assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
       assert.strictEqual(
-          vpn.lastNotification().message,
-          `Connected through ${currentCity}`);
+          vpn.lastNotification().message, `Connected through ${currentCity}`);
 
       await vpn.waitForQueryAndClick(
           queries.screenHome.SERVER_LIST_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
-      await vpn.waitForQueryAndClick(queries.screenHome.serverListView.ALL_SERVERS_TAB.visible());
 
-      let server;
-      while (true) {
-        server = servers[Math.floor(Math.random() * servers.length)];
-        if (server.code != currentCountryCode) break;
-      }
-
-      const countryId =
-          queries.screenHome.serverListView.generateCountryId(server.code);
-      let city = server.cities[Math.floor(Math.random() * server.cities.length)];
-      const cityId =
-          queries.screenHome.serverListView.generateCityId(countryId, city.name);
-      await vpn.navServerList(countryId, cityId);
-
-      await vpn.waitForQueryAndClick(cityId.visible());
+      await vpn.selectNewServer(servers, currentCountryCode);
       await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
 
-      const previousCountry = currentCountry;
       const previousCity = currentCity;
 
-      currentCountryCode = server.code;
-      currentCountry = server.localizedName;
-      currentCity = city.localizedName;
+      // Get updated curent city
+      servers = await vpn.servers();
+      currentCountryCode = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNCurrentServer', 'exitCountryCode');
+      currentCity = await vpn.getMozillaProperty(
+          'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName');
+
+      for (let server of servers) {
+        if (currentCountryCode === server.code) {
+          for (let city of server.cities) {
+            if (city.name == currentCity) {
+              currentCity = city.localizedName;
+              break;
+            }
+          }
+        }
+      }
 
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
@@ -202,6 +189,41 @@ describe('Server', function() {
       assert.strictEqual(
           vpn.lastNotification().message,
           `Switched from ${previousCity} to ${currentCity}`);
+    });
+
+    it('Server switching after server unavailable', async () => {
+      await vpn.waitForQueryAndClick(
+          queries.screenHome.serverListView.BACK_BUTTON.visible());
+
+      await vpn.forceServerUnavailable('at', 'vie');
+      await vpn.activate();
+
+      // click the button
+      await vpn.waitForQueryAndClick(
+          queries.screenHome.SERVER_UNAVAILABLE_POPUP_BUTTON.visible());
+
+      await vpn.selectNewServer(servers, currentCountryCode);
+
+      await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+      await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+
+      await vpn.waitForCondition(async () => {
+        let connectingMsg = await vpn.getQueryProperty(
+            queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
+        return connectingMsg === 'Switching…' || connectingMsg === 'VPN is on';
+      });
+
+      await vpn.waitForCondition(async () => {
+        return await vpn.getQueryProperty(
+                   queries.screenHome.CONTROLLER_TITLE.visible(), 'text') ===
+            'VPN is on';
+      });
+
+      assert.notEqual(
+          await vpn.getQueryProperty(
+              queries.screenHome.CONNECTION_TIMER,
+              'connectionTimeForFunctionalTest'),
+          '00:00:00');
     });
 
     it('ensuring search message appears appropriately', async () => {
@@ -258,7 +280,7 @@ describe('Server', function() {
 
   describe('checking location screen telemetry', function () {
     // No Glean on WASM.
-    if(vpn.runningOnWasm()) {
+    if (vpn.runningOnWasm()) {
       return;
     }
 
@@ -369,5 +391,4 @@ describe('Server', function() {
   });
 
   // TODO: server list disabled when reached the device limit
-
 });
