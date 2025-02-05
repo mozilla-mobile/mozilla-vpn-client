@@ -552,6 +552,9 @@
       <trans-unit id="servers.KualaLumpur" xml:space="preserve">
         <source>Kuala Lumpur</source>
       </trans-unit>
+      <trans-unit id="servers.WashingtonDc" xml:space="preserve">
+        <source>Washington DC</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
