@@ -138,6 +138,7 @@ find_package(Qt6 COMPONENTS
     Xml
     Svg
 )
+include("scripts/cmake/check_qt_breakage.cmake")
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
    NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android")
