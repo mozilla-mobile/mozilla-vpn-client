@@ -4,11 +4,9 @@
 
 #include "testcontroller_p.h"
 
-#include <qhostaddress.h>
-#include <qjsonarray.h>
-#include <qjsonobject.h>
-#include <qtestcase.h>
-#include <qtpreprocessorsupport.h>
+#include <QHostAddress>
+#include <QJsonArray>
+#include <QJsonObject>
 
 #include "controller_p.h"
 #include "dnshelper.h"

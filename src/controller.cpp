@@ -4,8 +4,6 @@
 
 #include "controller.h"
 
-#include <qhostaddress.h>
-
 #include <QFileInfo>
 #include <QNetworkInformation>
 
