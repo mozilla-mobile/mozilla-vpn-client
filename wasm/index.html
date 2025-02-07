@@ -3,10 +3,15 @@
   <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+
+    <!--Set visual viewport size for mobile devices to the device size,
+        witch results in a scale of 1 and a 1:1 mapping between CSS pixels
+        and Qt device independent pixels. -->
+    <meta name="viewport" content="width=device-width, height=device-height, user-scalable=0"/>
+
     <title>Mozilla VPN - WebAssembly Viewer</title>
     <link href="//fonts.cdnfonts.com/css/metropolis-2" rel="stylesheet">
-    <link rel="stylesheet" href="main.css"> 
+    <link rel="stylesheet" href="main.css">
     <link rel="icon" type="image/png" href="favicon.ico">
   </head>
   <body onload="mvpnWasm.init()" class="wasm-loading">
@@ -20,9 +25,13 @@
       <div class="row">
         <div class="col-sm qml-content">
           <p class="loading-error-message">Trouble loading content</p>
-          <img src="img/loader.svg" class="loader" alt="loading icon" />
+          <figure style="overflow:visible;" id="qtspinner">
+            <center style="margin-top:1.5em; line-height:150%">
+              <img src="img/loader.svg" class="loader" alt="loading icon" />
+            </center>
+          </figure>
           <div class="canvas-bg">
-            <canvas id="qmlcanvas" oncontextmenu="event.preventDefault()" contenteditable="false" tabindex="-1"></canvas>
+            <div id="screen"></div>
           </div>
         </div>
         <div class="col-sm controller-content">
@@ -48,6 +57,7 @@
       </div>
 
       <div id="qtstatus"></div>
+      <noscript>JavaScript is disabled. Please enable JavaScript to use this application.</noscript>
 
     </main>
     <footer>
@@ -60,6 +70,7 @@ Mozilla VPN is licensed under Mozilla Public License 2.0 - Noto fonts are licens
         <svg class="GitHub-logo logo" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 38.96 38"><path fill="#20123a" d="M19.48 0a19.49 19.49 0 0 0-6.16 38c1 .18 1.33-.43 1.33-.94v-3.32c-5.44 1.15-6.59-2.64-6.59-2.64a5.14 5.14 0 0 0-2.16-2.85c-1.77-1.21.13-1.18.13-1.18a4.1 4.1 0 0 1 3 2 4.16 4.16 0 0 0 5.67 1.62 4.18 4.18 0 0 1 1.23-2.61c-4.32-.49-8.87-2.16-8.87-9.63a7.51 7.51 0 0 1 2-5.22 7 7 0 0 1 .19-5.16s1.63-.52 5.35 2a18.37 18.37 0 0 1 9.76 0c3.72-2.52 5.35-2 5.35-2a7 7 0 0 1 .19 5.16 7.51 7.51 0 0 1 2 5.22c0 7.49-4.56 9.13-8.9 9.62a4.64 4.64 0 0 1 1.32 3.6v5.35c0 .64.35 1.12 1.34.93A19.48 19.48 0 0 0 19.48 0z"/></svg>
       </a>
     </footer>
+    <script src="mozillavpn.js"></script>
     <script type="text/javascript" src="fxa_endpoints.js"></script>
     <script type="text/javascript" src="guardian_endpoints.js"></script>
     <script type="text/javascript" src="controller.js"></script>

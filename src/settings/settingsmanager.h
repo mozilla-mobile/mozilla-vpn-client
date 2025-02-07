@@ -150,6 +150,7 @@ class SettingsManager final : public QObject, public LogSerializer {
   void registerSetting(Setting* setting);
 
   static QString getOrganizationName();
+  static QSettings::Format getFormat();
 
  private:
   // A map of _all_ Setting objects created during a run of the Mozilla VPN

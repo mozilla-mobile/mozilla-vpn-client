@@ -126,7 +126,7 @@ class Controller {
   _writeCommand(cmd) {
     return new Promise(resolve => {
       this._waitReadCallback = resolve;
-      Module.inspectorCommand(cmd);
+      mvpnWasm.instance.inspectorCommand(cmd);
     });
   }
 
@@ -169,7 +169,7 @@ function inspectorMessage(obj) {
                  'NotoSansTC-Regular.otf']) {
       fetch(font)
           .then(r => r.arrayBuffer())
-          .then(content => Module.mzLoadFont(font, content));
+          .then(content => mvpnWasm.instance.mzLoadFont(font, content));
     }
   }
 

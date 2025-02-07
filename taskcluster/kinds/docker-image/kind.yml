@@ -36,7 +36,7 @@ tasks:
         parent: base
         symbol: I(wasm)
         args:
-            QT_VERSION: 6.2.4
+            QT_VERSION: 6.6.3
     linux-qt6-build:
         parent: base
         symbol: I(linux-qt6-build)

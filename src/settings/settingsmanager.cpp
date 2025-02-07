@@ -11,7 +11,9 @@
 #include <QSettings>
 #include <QStandardPaths>
 
-#include "cryptosettings.h"
+#ifndef MZ_WASM
+#  include "cryptosettings.h"
+#endif
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -51,6 +53,15 @@ QString SettingsManager::getOrganizationName() {
   return name;
 }
 
+// static
+QSettings::Format SettingsManager::getFormat() {
+#ifndef MZ_WASM
+  return CryptoSettings::format();
+#else
+  return QSettings::NativeFormat;
+#endif
+}
+
 #ifdef UNIT_TEST
 // static
 void SettingsManager::testCleanup() {
@@ -62,8 +73,8 @@ void SettingsManager::testCleanup() {
 
 SettingsManager::SettingsManager(QObject* parent)
     : QObject(parent),
-      m_settings(CryptoSettings::format(), QSettings::UserScope,
-                 getOrganizationName(), SETTINGS_APP_NAME),
+      m_settings(getFormat(), QSettings::UserScope, getOrganizationName(),
+                 SETTINGS_APP_NAME),
       m_settingsConnector(this, &m_settings) {
   MZ_COUNT_CTOR(SettingsManager);
 

@@ -655,11 +655,6 @@ describe('Settings', function() {
 
 
   it('Checking the languages settings', async () => {
-    if (this.ctx.wasm) {
-        // That page is currently broken see: VPN-6798
-        return;
-    }
-
     await vpn.setSetting('languageCode', '');
 
     await vpn.waitForQueryAndClick(
