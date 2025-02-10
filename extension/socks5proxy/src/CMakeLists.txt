@@ -14,11 +14,16 @@ target_sources(libSocks5proxy PRIVATE
 )
 
 if(WIN32)
-    target_sources(libSocks5proxy PRIVATE socks5local_windows.cpp)
+    target_sources(libSocks5proxy PRIVATE 
+        socks5local_windows.cpp
+        dnsserverlookup_windows.cpp
+        winutils.cpp
+        winutils.h
+    )
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_sources(libSocks5proxy PRIVATE socks5local_linux.cpp)
+    target_sources(libSocks5proxy PRIVATE socks5local_linux.cpp dnsserverlookup_default.cpp)
 else()
-    target_sources(libSocks5proxy PRIVATE socks5local_default.cpp)
+    target_sources(libSocks5proxy PRIVATE socks5local_default.cpp dnsserverlookup_default.cpp)
 endif()
 
 target_include_directories(libSocks5proxy PUBLIC
