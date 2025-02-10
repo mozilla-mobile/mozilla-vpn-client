@@ -24,7 +24,7 @@
 #endif
 
 struct CliOptions {
-  uint16_t port = 0;
+  uint16_t port = 8080;
   QHostAddress addr = QHostAddress::LocalHost;
   QString localSocketName;
   QString username = {};
@@ -131,7 +131,7 @@ int main(int argc, char** argv) {
   if (config.logfile) {
     auto location = QStandardPaths::AppLocalDataLocation;
     QDir logdir(QStandardPaths::writableLocation(location));
-    logger->setLogfile(logdir.filePath("socksproxy.log"));
+    logger->setLogfile("C:\\Users\\basti\\Desktop\\proxy.txt");
   }
 
 #if defined(PROXY_OS_WIN)
