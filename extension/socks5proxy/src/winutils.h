@@ -9,6 +9,7 @@
 
 namespace WinUtils {
 QString win32strerror(unsigned long code);
+quint64 getVpnLuid() ;
 }
 
 #endif  // WINUTILS_H

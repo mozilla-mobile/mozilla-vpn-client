@@ -20,10 +20,6 @@
 #include "socks5.h"
 #include "winutils.h"
 
-// Fixed GUID of the Wireguard NT driver.
-constexpr const QUuid WIREGUARD_NT_GUID(0xf64063ab, 0xbfee, 0x4881, 0xbf, 0x79,
-                                        0x36, 0x6e, 0x4c, 0xc7, 0xba, 0x75);
-
 // Called by the kernel on network interface changes.
 // Runs in some unknown thread, so invoke a Qt signal to do the real work.
 static void netChangeCallback(PVOID context, PMIB_IPINTERFACE_ROW row,
@@ -147,18 +143,6 @@ void WindowsBypass::outgoingConnection(QAbstractSocket* s,
   }
 }
 
-// static
-
-quint64 WindowsBypass::getVpnLuid() const {
-  // Get the LUID of the wireguard interface, if it's up.
-  NET_LUID luid;
-  GUID vpnInterfaceGuid = WIREGUARD_NT_GUID;
-  if (ConvertInterfaceGuidToLuid(&vpnInterfaceGuid, &luid) != NO_ERROR) {
-    return 0;
-  }
-  return luid.Value;
-}
-
 void WindowsBypass::refreshAddresses() {
   // Get the unicast address table.
   MIB_UNICASTIPADDRESS_TABLE* table;
@@ -172,7 +156,7 @@ void WindowsBypass::refreshAddresses() {
 
   // Populate entries.
   QHash<quint64, InterfaceData> data;
-  const quint64 vpnInterfaceLuid = getVpnLuid();
+  const quint64 vpnInterfaceLuid = WinUtils::getVpnLuid();
   for (ULONG i = 0; i < table->NumEntries; i++) {
     const MIB_UNICASTIPADDRESS_ROW* row = &table->Table[i];
     if (row->SkipAsSource) {
@@ -341,7 +325,7 @@ void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2>& table,
   auto mibGuard = qScopeGuard([mib] { FreeMibTable(mib); });
 
   // First pass: iterate over the table and estimate the size to allocate.
-  const quint64 vpnInterfaceLuid = getVpnLuid();
+  const quint64 vpnInterfaceLuid = WinUtils::getVpnLuid();
   ULONG tableSize = 0;
   for (ULONG i = 0; i < mib->NumEntries; i++) {
     if (mib->Table[i].InterfaceLuid.Value != vpnInterfaceLuid) {
