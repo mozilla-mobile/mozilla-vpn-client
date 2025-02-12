@@ -6,6 +6,8 @@
 
  use std::error::Error;
  use serde_json::{Value, json};
+ use sysinfo;
+
  
  /**
   * Handles commands that are sent from
@@ -32,6 +34,28 @@
             let out = launcher::start_vpn();
             crate::io::write_output(std::io::stdout(),&out)
                 .expect("Unable to Write to STDOUT?");
+            Ok(true)
+        }
+        "proc_info" => {
+            let parent_pid = get_parent_pid();
+            let s = sysinfo::System::new_all();
+
+            if let Some(parent_process) = s.process(sysinfo::Pid::from_u32(parent_pid)) {
+                let parent_info = json!({
+                    "b":"proc_info",
+                    "pid": parent_process.pid().as_u32(),
+                    "exe": parent_process.exe()
+                });
+                crate::io::write_output(std::io::stdout(), &parent_info)
+                    .expect("Unable to Write to STDOUT?");
+            } else {
+                crate::io::write_output(
+                    std::io::stdout(),
+                    &json!({"error": "Parent process not found"}),
+                )
+                .expect("Unable to Write to STDOUT?");
+            }
+
             Ok(true)
         }
          _ =>{
@@ -75,4 +99,47 @@ mod launcher {
     pub fn start_vpn() -> serde_json::Value{
         json!("{error:'start_unsupported!'}")
     }
+}
+
+
+
+#[cfg(target_os = "windows")]
+fn get_parent_pid() -> u32 {
+    use std::mem;
+    use windows::Win32::Foundation::{CloseHandle, HANDLE};
+    use windows::Win32::System::Diagnostics::ToolHelp::{
+        CreateToolhelp32Snapshot, Process32First, Process32Next, PROCESSENTRY32,
+        TH32CS_SNAPPROCESS,
+    };
+
+    let mut ppid: u32 = 0;
+    let pid = std::process::id();
+
+    unsafe {
+        let snapshot = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0)
+            .expect("Failed to create snapshot");
+        let snapshot_handle = HANDLE(snapshot.0);
+
+        let mut entry = PROCESSENTRY32 {
+            dwSize: mem::size_of::<PROCESSENTRY32>() as u32,
+            ..Default::default()
+        };
+
+        if Process32First(snapshot_handle, &mut entry).is_ok() {
+            while Process32Next(snapshot_handle, &mut entry).is_ok() {
+                if entry.th32ProcessID == pid {
+                    ppid = entry.th32ParentProcessID;
+                    break;
+                }
+            }
+        }
+
+        let _ = CloseHandle(snapshot_handle);
+    }
+    ppid
+}
+
+#[cfg(any(target_os = "macos", target_os = "linux"))]
+fn get_parent_pid() -> u32 {
+    return std::os::unix::process::parent_id();
 }
