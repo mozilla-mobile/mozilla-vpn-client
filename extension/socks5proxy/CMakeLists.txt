@@ -3,12 +3,33 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # No need to compile this for mobile/web
-if(NOT CMAKE_CROSSCOMPILING)
-    add_subdirectory(src)
-    add_subdirectory(bin)
-    add_subdirectory(tests)
-
-    target_compile_definitions(shared-sources INTERFACE MZ_PROXY_ENABLED)
+if(CMAKE_CROSSCOMPILING)
+    return()
 endif()
+
+include(ExternalProject)
+ExternalProject_Add(c-ares
+    SOURCE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/c-ares
+        GIT_SUBMODULES 3rdparty/c-ares
+        GIT_SUBMODULES_RECURSE true
+        CMAKE_ARGS
+            -DCMAKE_BUILD_TYPE=${CMAKE_BUILD_TYPE}
+            -DCMAKE_C_COMPILER=${CMAKE_C_COMPILER}
+            -DCARES_STATIC=ON
+            -DCARES_SHARED=OFF
+            -DCARES_SHARED=OFF
+            -DCARES_BUILD_TESTS=OFF
+            -DCARES_BUILD_CONTAINER_TESTS=OFF
+            -DCARES_BUILD_TOOLS=OFF
+            -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/external
+)
+
+
+add_subdirectory(src)
+add_subdirectory(bin)
+add_subdirectory(tests)
+
+target_compile_definitions(shared-sources INTERFACE MZ_PROXY_ENABLED)
+
 
 
