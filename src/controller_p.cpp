@@ -4,16 +4,13 @@
 
 #include "controller_p.h"
 
-#include <qassert.h>
-#include <qhostaddress.h>
+#include <QHostAddress>
 
 #include "dnshelper.h"
 #include "ipaddress.h"
 #include "models/server.h"
-#include "rfc/rfc1112.h"
 #include "rfc/rfc1918.h"
 #include "rfc/rfc4193.h"
-#include "rfc/rfc4291.h"
 
 namespace ControllerPrivate {
 
