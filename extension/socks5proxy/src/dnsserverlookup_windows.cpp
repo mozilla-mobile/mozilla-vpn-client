@@ -23,7 +23,7 @@
 #include <string>
 
 // clang-format on
-#define CARES_STATICLIB 1
+
 #include <ares.h>
 
 #include <QHostAddress>
@@ -40,6 +40,24 @@ auto currentServer = std::make_unique<ares_addr_node>();
 /* Callback that is called when DNS query is finished */
 static void addrinfo_cb(void* arg, int status, int timeouts,
                         struct ares_addrinfo* result) {
+  switch (status) {
+    case ARES_ENOTIMP:
+      qDebug() << "The ares library does not know how to find addresses of "
+                  "type family. ";
+    case ARES_ENOTFOUND:
+      qDebug() << " The name was not found.";
+    case ARES_ENOMEM:
+      qDebug() << "Memory was exhausted.";
+    case ARES_ESERVICE:
+      qDebug() << "The textual service name provided could not be dereferenced "
+                  "into a port. ";
+    case ARES_EDESTRUCTION:
+      qDebug() << "The name service channel channel is being destroyed; the "
+                  "query will not be completed. ";
+      return;
+  }
+
+  Q_ASSERT(status == ARES_SUCCESS);
   // This should be our Socks5Connection
   auto ctx = static_cast<QObject*>(arg);
   auto guard = qScopeGuard([&]() { ares_freeaddrinfo(result); });
@@ -79,7 +97,6 @@ void init() {
 }  // namespace ARES
 
 namespace DNSServerLookup {
-
 /**
  * In order to get a Non VPN NameServer this func does:
  * Iterate over all adapters and then it's attached DNS-Servers.
@@ -88,6 +105,10 @@ namespace DNSServerLookup {
  */
 
 std::optional<QHostAddress> getLocalDNSName() {
+  static QHostAddress localAddr = {};
+  if (!localAddr.isNull()) {
+    return localAddr;
+  }
   std::vector<std::byte> buffer(15000);
 
   u_long neededSize = buffer.size();
@@ -157,6 +178,7 @@ std::optional<QHostAddress> getLocalDNSName() {
   if (selectedDNS.isNull()) {
     return {};
   }
+  localAddr = selectedDNS;
   return selectedDNS;
 }
 

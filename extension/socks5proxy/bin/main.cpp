@@ -189,5 +189,7 @@ int main(int argc, char** argv) {
   WinFwPolicy::create(socks5);
 #endif
 
+  QObject::connect(qApp, &QCoreApplication::aboutToQuit,
+                   []() { qInfo() << "Shutting down"; });
   return app.exec();
 }
