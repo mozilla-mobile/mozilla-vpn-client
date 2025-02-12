@@ -4,7 +4,17 @@
 
 qt_add_library(libSocks5proxy STATIC)
 set_target_properties(libSocks5proxy PROPERTIES FOLDER "Libs")
-target_link_libraries(libSocks5proxy PUBLIC Qt6::Core Qt6::Network)
+target_link_libraries(libSocks5proxy PUBLIC 
+    Qt6::Core 
+    Qt6::Network)
+
+add_dependencies(libSocks5proxy c-ares)
+
+target_include_directories(libSocks5proxy PUBLIC ${CMAKE_BINARY_DIR}/external/include)
+target_link_directories( libSocks5proxy PUBLIC ${CMAKE_BINARY_DIR}/external/lib)
+
+
+
 
 target_sources(libSocks5proxy PRIVATE
     socks5.h
@@ -20,6 +30,7 @@ if(WIN32)
         winutils.cpp
         winutils.h
     )
+    target_link_libraries(libSocks5proxy PUBLIC cares.lib)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     target_sources(libSocks5proxy PRIVATE socks5local_linux.cpp dnsserverlookup_default.cpp)
 else()

@@ -32,3 +32,6 @@
 	url = https://github.com/mozilla-l10n/mozilla-vpn-client-l10n.git
 	branch = main
 	shallow = true
+[submodule "3rdparty/c-ares"]
+	path = 3rdparty/c-ares
+	url = https://github.com/c-ares/c-ares
