@@ -11,7 +11,9 @@
 #include <QTimer>
 
 #include "interfaceconfig.h"
+#include "ipaddress.h"
 #include "loghandler.h"
+#include "models/server.h"
 #include "models/serverdata.h"
 #include "pinghelper.h"
 
