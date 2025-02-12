@@ -1601,14 +1601,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/once_cell/once_cell-1.20.2.crate",
-        "sha256": "1261fe7e33c73b354eab43b1273a57c8f967d0391e80353e51f764ac02cf6775",
-        "dest": "cargo/vendor/once_cell-1.20.2"
+        "url": "https://static.crates.io/crates/once_cell/once_cell-1.20.3.crate",
+        "sha256": "945462a4b81e43c4e3ba96bd7b49d834c6f61198356aa858733bc4acf3cbe62e",
+        "dest": "cargo/vendor/once_cell-1.20.3"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"1261fe7e33c73b354eab43b1273a57c8f967d0391e80353e51f764ac02cf6775\", \"files\": {}}",
-        "dest": "cargo/vendor/once_cell-1.20.2",
+        "contents": "{\"package\": \"945462a4b81e43c4e3ba96bd7b49d834c6f61198356aa858733bc4acf3cbe62e\", \"files\": {}}",
+        "dest": "cargo/vendor/once_cell-1.20.3",
         "dest-filename": ".cargo-checksum.json"
     },
     {
