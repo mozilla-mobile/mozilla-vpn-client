@@ -5,11 +5,14 @@
 #ifndef Socks5Connection_H
 #define Socks5Connection_H
 
+#include <qhostaddress.h>
+
 #include <QByteArray>
 #include <QIODevice>
 #include <QLocalSocket>
 #include <QObject>
 #include <QTcpSocket>
+#include <cstdint>
 
 class Socks5Connection final : public QObject {
   Q_OBJECT
@@ -90,6 +93,9 @@ class Socks5Connection final : public QObject {
   void dataSentReceived(qint64 sent, qint64 received);
   void stateChanged();
 
+ private slots:
+  void onHostnameResolved(QHostAddress addr);
+
  private:
   void setState(Socks5State state);
   void setError(Socks5Replies reply, const QString& errorString);
@@ -109,6 +115,7 @@ class Socks5Connection final : public QObject {
 
   QString m_clientName;
   uint16_t m_socksPort = 0;
+  uint16_t m_destPort = 0;
 
   uint8_t m_addressType = 0;
   QHostAddress m_destAddress;

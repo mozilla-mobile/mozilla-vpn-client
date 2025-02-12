@@ -8,6 +8,8 @@
 #include <qexception.h>
 #include <qhostaddress.h>
 
+#include <cstdio>
+
 #include "dnsserverlookup.h"
 #include "socks5.h"
 
@@ -286,23 +288,24 @@ void Socks5Connection::readyRead() {
 
         QString hostname = QString::fromUtf8(buffer, length);
         m_hostLookupStack.append(hostname);
-        auto query =
-            DNSServerLookup::resolve(hostname,
-                                     DNSServerLookup::getLocalDNSName())
-                .then(this,
-                      [this, port, hostname](QHostAddress resolved) {
-                        qDebug() << "Resolved -> " << hostname
-                                 << "To: " << resolved.toString();
-                        m_destAddress = resolved;
-                        Q_ASSERT(!resolved.isNull());
-                        configureOutSocket(htons(port));
-                      })
-                .onFailed([this](const DNSServerLookup::DnsFetchException& e) {
-                  setError(ErrorHostUnreachable, e.msg());
-                })
-                .onFailed([this](const QException& e) {
-                  setError(ErrorHostUnreachable, "Unknown Error");
-                });
+        m_destPort = htons(port);
+        DNSServerLookup::resolve(hostname, DNSServerLookup::getLocalDNSName(),
+                                 this);
+        /*    .then(this,
+                  [this, port, hostname](QHostAddress resolved) {
+                    qDebug() << "Resolved -> " << hostname
+                             << "To: " << resolved.toString();
+                    m_destAddress = resolved;
+                    Q_ASSERT(!resolved.isNull());
+                    configureOutSocket(htons(port));
+                  })
+            .onFailed([this](const DNSServerLookup::DnsFetchException& e) {
+              setError(ErrorHostUnreachable, e.msg());
+            })
+            .onFailed([this](const QException& e) {
+              setError(ErrorHostUnreachable, "Unknown Error");
+            });
+      */
       }
 
       else if (m_addressType == 0x04 /* Ipv6 */) {
@@ -358,6 +361,16 @@ void Socks5Connection::bytesWritten(qint64 bytes) {
   proxy(m_inSocket, m_outSocket, m_recvHighWaterMark);
 }
 
+void Socks5Connection::onHostnameResolved(QHostAddress resolved) {
+  if (m_outSocket != nullptr) {
+    // We might get multiple ip results.
+    return;
+  }
+  m_destAddress = resolved;
+  Q_ASSERT(!resolved.isNull());
+  configureOutSocket(m_destPort);
+}
+
 void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
                              quint64& watermark) {
   Q_ASSERT(from && to);
@@ -393,6 +406,9 @@ void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
 
 void Socks5Connection::configureOutSocket(quint16 port) {
   Q_ASSERT(!m_destAddress.isNull());
+
+  std::printf("%s", m_destAddress.toString().toStdString().c_str());
+
   m_hostLookupStack.append(m_destAddress.toString());
   m_outSocket = new QTcpSocket(this);
   emit setupOutSocket(m_outSocket, m_destAddress);
