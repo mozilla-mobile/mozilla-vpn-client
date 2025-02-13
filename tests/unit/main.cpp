@@ -13,6 +13,17 @@
 #include "networkrequest.h"
 #include "settingsholder.h"
 
+#ifdef _WIN32
+#  include <windows.h>
+
+#  include <chrono>
+#  include <thread>
+#else
+#  include <unistd.h>
+
+#  include <cstdio>
+#endif
+
 QVector<TestHelper::NetworkConfig> TestHelper::networkConfig;
 Controller::State TestHelper::controllerState = Controller::StateInitializing;
 QVector<QObject*> TestHelper::testList;
@@ -27,6 +38,58 @@ QObject* TestHelper::findTest(const QString& name) {
   }
 
   return nullptr;
+}
+
+void maybeWaitForDebugger(int argc, char* argv[]) {
+  bool debuggerFlag = false;
+  for (int i = 1; i < argc; ++i) {
+    if (std::string(argv[i]) == "--debugger") {
+      debuggerFlag = true;
+      break;
+    }
+  }
+  if (!debuggerFlag) {
+    // Not asked to wait for a debugger; just return.
+    return;
+  }
+#ifdef _WIN32
+  DWORD pid = GetCurrentProcessId();
+#else
+  pid_t pid = getpid();
+#endif
+  qDebug() << "PID: " << pid << " - waiting for debugger to attach...\n";
+
+#ifdef _WIN32
+  // Use Win32 API to detect debugger
+  while (!IsDebuggerPresent()) {
+    // Sleep 1 second before checking again
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+  qDebug() << "Debugger attached. Continuing...\n";
+
+  return;
+#else
+  // TODO: Check if that also works on macos
+  while (true) {
+    QFile file("/proc/self/status");
+    auto closeFile = qScopeGuard([&]() { file.close(); });
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+      return;
+    }
+    while (!file.atEnd()) {
+      QString line = file.readLine();
+      if (line.startsWith("TracerPid:")) {
+        QString pidStr = line.mid(QString("TracerPid:").length()).trimmed();
+        if (pidStr.toInt() != 0) {
+          qDebug() << "Debugger attached. Continuing...\n";
+          return;
+        }
+      }
+    }
+    std::this_thread::sleep_for(std::chrono::seconds(1));
+  }
+#endif
 }
 
 TestHelper::TestHelper() { testList.append(this); }
@@ -64,6 +127,7 @@ bool TestHelper::networkRequestGeneric(NetworkRequest* request) {
 }
 
 int main(int argc, char* argv[]) {
+  maybeWaitForDebugger(argc, argv);
 #ifdef MZ_DEBUG
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);

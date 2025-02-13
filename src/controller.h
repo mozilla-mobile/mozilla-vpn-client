@@ -169,8 +169,6 @@ class Controller : public QObject, public LogSerializer {
   };
   static IPAddressList getExcludedIPAddressRanges();
   static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
-  static QList<IPAddress> getExtensionProxyAddressRanges(
-      const Server& exitServer);
 
   enum ServerCoolDownPolicyForSilentSwitch {
     eServerCoolDownNeeded,
