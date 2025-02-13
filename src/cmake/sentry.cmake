@@ -33,6 +33,8 @@ if( ${_SUPPORTED} GREATER -1 )
     target_sources(shared-sources INTERFACE
         sentry/sentryadapter.cpp
         sentry/sentryadapter.h
+        sentry/sentrysniffer.cpp
+        sentry/sentrysniffer.h
         tasks/sentry/tasksentry.cpp
         tasks/sentry/tasksentry.h
         tasks/sentryconfig/tasksentryconfig.cpp

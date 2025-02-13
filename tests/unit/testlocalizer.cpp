@@ -196,17 +196,17 @@ void TestLocalizer::completeness_data() {
 
   {
     CompletenessList a;
-    QTest::addRow("empty") << ":/i18n/completeness_empty.txt" << a;
+    QTest::addRow("empty") << ":/i18nTest/completeness_empty.txt" << a;
   }
 
   {
     CompletenessList a;
-    QTest::addRow("invalid") << ":/i18n/completeness_invalid.txt" << a;
+    QTest::addRow("invalid") << ":/i18nTest/completeness_invalid.txt" << a;
   }
 
   {
     CompletenessList a{{"tlh", 0.8}, {"foo", 0}, {"bar", 1}};
-    QTest::addRow("ok") << ":/i18n/completeness_ok.txt" << a;
+    QTest::addRow("ok") << ":/i18nTest/completeness_ok.txt" << a;
   }
 }
 

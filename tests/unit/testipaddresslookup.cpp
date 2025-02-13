@@ -83,4 +83,4 @@ void TestIpAddressLookup::checkIpAddressSucceess() {
   loop.exec();
 }
 
-static TestIpAddressLookup s_testIpAddressLookup;
+// static TestIpAddressLookup s_testIpAddressLookup;

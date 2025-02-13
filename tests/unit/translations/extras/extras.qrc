@@ -1,0 +1,9 @@
+<RCC>
+    <qresource prefix="/i18nTest">
+        <file alias="completeness_empty.txt">completeness_empty.txt</file>
+        <file alias="completeness_invalid.txt">completeness_invalid.txt</file>
+        <file alias="completeness_ok.txt">completeness_ok.txt</file>
+        <file alias="extras.xliff">extras.xliff</file>
+        <file alias="translations_fallback.json">translations_fallback.json</file>
+    </qresource>
+</RCC>

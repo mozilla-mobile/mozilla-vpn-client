@@ -56,6 +56,8 @@ class NotificationHandler : public QObject {
 
   virtual void retranslate() {}
 
+  void maybeAddonNotification(Addon* addon);
+
 #ifdef MZ_WASM
   virtual QMenu* contextMenu() { return nullptr; }
 #endif
@@ -80,7 +82,6 @@ class NotificationHandler : public QObject {
                               const QString& message, int timerMsec);
 
   void addonCreated(Addon* addon);
-  void maybeAddonNotification(Addon* addon);
 
  protected:
   Message m_lastMessage = None;
