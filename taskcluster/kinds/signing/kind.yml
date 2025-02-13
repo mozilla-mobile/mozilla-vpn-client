@@ -38,7 +38,7 @@ tasks:
             by-build-type:
                 android.*: gcp_prod_autograph_apk
                 macos.*: macapp
-                windows/opt: gcp_prod_autograph_authenticode_202404
+                windows/opt: gcp_prod_autograph_authenticode_202412
                 addons/opt: gcp_prod_autograph_rsa
         treeherder:
             job-symbol:
