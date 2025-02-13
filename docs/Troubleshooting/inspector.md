@@ -39,4 +39,4 @@ Troubleshooting iOS connections:
 - There have been reports of having difficulty connecting to iOS using Firefox Nightly. If Nightly is not working, try using the release version of Firefox.
 - You may need to attempt a connection to the iOS client shortly after launching the app. If you pause for a while between launching the app and attempting the connection, it may not work.
 - You may need to quit and re-launch Firefox after changing the config setting. (Not confident about this.)
-- If the iOS device's screen goes to sleep, iOS may kill the websocket connection.
+- If the iOS device's screen goes to sleep, iOS may kill the WebSocket connection.
