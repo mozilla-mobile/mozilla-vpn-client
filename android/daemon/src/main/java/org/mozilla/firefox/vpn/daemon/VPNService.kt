@@ -54,6 +54,7 @@ class VPNService : android.net.VpnService() {
             var wasTimerJustStarted = (millisUntilFinished == mBackgroundPingTimerMSec)
             if (!wasTimerJustStarted && isUsingShortTimerSessionPing && shouldRecordTimerAndEndMetrics) {
                 Log.i(tag, "Sending daemon_timer ping (on short timer debug schedule)")
+                recordDataTransferMetrics()
                 Pings.daemonsession.submit(
                     Pings.daemonsessionReasonCodes.daemonTimer,
                 )
