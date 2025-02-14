@@ -21,6 +21,7 @@ DNS
 DevOps
 Docusaurus
 FFI
+Fi
 FeatureList
 Figma
 FreeDesktop
@@ -91,7 +92,9 @@ VersionAPI
 VpnService
 VPN's
 WebAssembly
+WebSocket
 WebSockets
+Wi
 WiX
 WikiData
 Wintun
@@ -274,6 +277,7 @@ vpn
 vscode
 wasm
 webservice
+websocket
 wgconf
 wgutils
 wifi
