@@ -1,0 +1,179 @@
+# A reusable workflow to build addons
+on:
+  workflow_call:
+    inputs:
+      artifact-name:
+        description: 'Name of the taskcluster artifact to download and test'
+        required: true
+        type: string
+      ref:
+        description: 'The branch, tag or SHA of functional tests to checkout.'
+        default: ${{ github.ref }}
+        type: string
+      runs-on:
+        description: 'The type of machine to run the job on.'
+        default: 'ubuntu-latest'
+        type: string
+      group-name:
+        description: 'Group name for intermediate test artifacts'
+        default: 'test'
+        type: string
+      task-id:
+        description: 'Taskcluster task to fetch artifacts from'
+        required: true
+        type: string
+
+jobs:
+  build:
+    name: Build Test Artifacts
+    runs-on: ubuntu-latest
+    outputs:
+      tests: ${{ steps.enumerate.outputs.tests }}
+      runners: ${{ steps.enumerate.outputs.runners }}
+      uniqueid: ${{ steps.enumerate.outputs.uniqueid }}
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - name: Setup addons cache
+        id: addons-cache
+        uses: actions/cache@v4
+        with:
+          path: build-addons/
+          key: cache-addons-${{ hashFiles('addons/', 'test/functional/addons/') }}
+
+      - name: Enumerate tests and runners
+        id: enumerate
+        run: |
+          echo -n "tests=" >> $GITHUB_OUTPUT
+          for test in $(find tests/functional -name 'test*.js' | sort); do
+            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+          done | jq -s -c >> $GITHUB_OUTPUT
+
+          echo -n "runners=" >> $GITHUB_OUTPUT
+          echo "${{ inputs.runs-on }}" | jq --raw-input -c '[., inputs] | map(select(length > 0))' >> $GITHUB_OUTPUT
+
+      - name: Install build dependencies
+        if: steps.addons-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          git submodule init
+          git submodule update 3rdparty/i18n
+          sudo apt-get update
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -b linux/debian/control)
+
+      - name: Build test addons
+        if: steps.addons-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          mkdir -p build-addons/
+          cmake -S $(pwd)/tests/functional/addons -B build-addons/
+          cmake --build build-addons/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.group-name }}-addons
+          path: build-addons/
+
+      - name: Fetch taskgraph artifact
+        uses: ./.github/actions/taskcluster-artifact
+        with:
+          taskid: ${{ inputs.task-id }}
+          artifact: public/build/${{ inputs.artifact-name }}
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ inputs.group-name }}-artifact-${{ inputs.artifact-name }}
+          path: ${{ inputs.artifact-name }}
+
+  run-tests:
+    needs:
+      - build
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false # Don't cancel other jobs if a test fails
+      matrix:
+        runner: ${{ fromJson(needs.build.outputs.runners) }}
+        test: ${{ fromJson(needs.build.outputs.tests) }}
+
+    runs-on: ${{ matrix.runner }}
+    name: Test ${{ matrix.test.name }} (${{ matrix.runner }})
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.group-name }}-artifact-${{ inputs.artifact-name }}
+          path: build/
+
+      - uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.group-name }}-addons
+          path: build/addons/
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 18
+          cache: "npm"
+      - run: npm install
+
+      - name: Install VPN client
+        if: ${{ runner.os != 'Windows' }}
+        shell: bash
+        run: |
+          case ${{ inputs.artifact-name }} in
+            *.deb)
+              sudo apt install ${{ github.workspace }}/build/${{ inputs.artifact-name }}
+              echo "MVPN_BIN=$(which mozillavpn)" >> $GITHUB_ENV
+              ;;
+
+            *.pkg)
+              sudo installer -pkg ${{ github.workspace }}/build/${{ inputs.artifact-name }} -target /
+              echo "MVPN_BIN=/Applications/Mozilla VPN.app/Contents/MacOS/Mozilla VPN" >> $GITHUB_ENV
+              ;;
+            
+            *.tar.gz)
+              tar -xzvf ${{ github.workspace }}/build/${{ inputs.artifact-name }} -C ${{ github.workspace }}/build --strip-components=1
+              ls -al ${{ github.workspace }}/build
+              echo MVPN_BIN="${{ github.workspace }}/build/Mozilla VPN.app/Contents/MacOS/Mozilla VPN" >> $GITHUB_ENV
+              ;;
+
+            *)
+              echo "Unsupported installation file type: ${{ inputs.artifact-name }}"
+              exit 1
+              ;;
+          esac
+          echo "MVPN_ADDONS_PATH=${{ github.workspace }}/build/addons" >> $GITHUB_ENV
+
+      - name: Install VPN client
+        if: ${{ runner.os == 'Windows' }}
+        shell: powershell
+        run: |
+          New-Item -Path . -Name "msiexec.log" -ItemType "file"
+          $pmsi = Start-Process "msiexec" "/i ${{ github.workspace }}\build\${{ inputs.artifact-name }} /qn /l*! msiexec.log" -NoNewWindow -PassThru
+          $plog = Start-Process "powershell" "Get-Content -Path msiexec.log -Wait" -NoNewWindow -PassThru
+          $pmsi.WaitForExit()
+          $plog.Kill()
+
+          Add-Content -Path $env:GITHUB_ENV -Value "MVPN_BIN=C:\Program Files\Mozilla\Mozilla VPN\Mozilla VPN.exe"
+          Add-Content -Path $env:GITHUB_ENV -Value "MVPN_ADDONS_PATH=${{ github.workspace }}\build\addons"
+
+          taskkill /f /fi "USERNAME eq $env:username" /im "Mozilla VPN.exe"
+
+      - name: Running ${{ matrix.test.name }} Tests
+        shell: bash
+        env:
+          TZ: Europe/London
+          HEADLESS: yes
+        run: npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
