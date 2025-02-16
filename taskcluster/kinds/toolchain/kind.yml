@@ -23,8 +23,9 @@ task-defaults:
         tier: 1
 
 tasks-from:
-    - qt.yml
     - conda_android.yml
     - conda_windows.yml
     - conda_osx.yml
     - cargo.yml
+    - msvc.yml
+    - qt.yml
