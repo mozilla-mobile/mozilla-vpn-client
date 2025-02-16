@@ -146,6 +146,14 @@ int CommandUI::run(QStringList& tokens) {
       MockDaemon* daemon = new MockDaemon(qApp);
       qputenv("MVPN_CONTROL_SOCKET", daemon->socketPath().toLocal8Bit());
     }
+#ifdef MZ_IOS
+    else if (!qEnvironmentVariable("SIMULATOR_DEVICE_NAME").isEmpty()) {
+      // If we are running in the iOS device simulator, the network extension
+      // is not supported in this environment - use a mocked daemon instead.
+      MockDaemon* daemon = new MockDaemon(qApp);
+      qputenv("MVPN_CONTROL_SOCKET", daemon->socketPath().toLocal8Bit());
+    }
+#endif
 
     MozillaVPN vpn;
     logger.info() << "MozillaVPN" << Constants::versionString();

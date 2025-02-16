@@ -28,6 +28,15 @@ MockDaemon::MockDaemon(const QString& name, QObject* parent)
 
   logger.debug() << "Mock daemon created";
 
+#ifdef MZ_IOS
+  // We have to go out of our way to keep the path length under sizeof(sun_path)
+  // for iOS because the QDir::tempPath() used by QLocalServer winds up being
+  // way too long.
+  if (!m_socketName.startsWith('/')) {
+    m_socketName.prepend("/tmp/");
+  }
+#endif
+
 #ifndef MZ_WASM
   m_server.setSocketOptions(QLocalServer::UserAccessOption);
   if (!m_server.listen(m_socketName)) {
