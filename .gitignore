@@ -24,6 +24,7 @@ mozillavpn-daemon
 *_plugin_import.cpp
 src/netfilter.[ah]
 linux/netfilter/vendor/
+*.qmlls.ini
 .qm
 .tmp
 .env

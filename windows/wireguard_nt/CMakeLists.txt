@@ -20,10 +20,22 @@ endif()
 
 include_directories(${CM_WIREGUARD_FOLDER}/include)
 
-install(FILES
-    ${CM_WIREGUARD_FOLDER}/bin/${CMAKE_SYSTEM_PROCESSOR}/wireguard.dll
-    DESTINATION .
-)
+if(${WINDOWS_TARGET_TRIPLET} STREQUAL "aarch64-pc-windows-msvc")
+    install(FILES
+        ${CM_WIREGUARD_FOLDER}/bin/arm64/wireguard.dll
+        DESTINATION .
+    )
+elseif(${WINDOWS_TARGET_TRIPLET} STREQUAL "x86_64-pc-windows-msvc")
+    install(FILES
+        ${CM_WIREGUARD_FOLDER}/bin/amd64/wireguard.dll
+        DESTINATION .
+    )
+else()  
+    message(FATAL "Unexcpeted WINDOWS_TARGET_TRIPLET -> No Split Tunnel driver files for $WINDOWS_TARGET_TRIPLET")
+endif()
+
+
+
 
 target_include_directories(mozillavpn PUBLIC ${CM_WIREGUARD_FOLDER}/include)
 target_include_directories(shared-sources INTERFACE ${CM_WIREGUARD_FOLDER}/include)
