@@ -14,15 +14,17 @@
 #include <QTcpSocket>
 #include <cstdint>
 
+#include "dnsresolver.h"
+
 class Socks5Connection final : public QObject {
   Q_OBJECT
 
  private:
-  explicit Socks5Connection(QIODevice* socket);
+  explicit Socks5Connection(QIODevice* socket, DNSResolver* dns);
 
  public:
-  explicit Socks5Connection(QTcpSocket* socket);
-  explicit Socks5Connection(QLocalSocket* socket);
+  explicit Socks5Connection(QTcpSocket* socket, DNSResolver* dns);
+  explicit Socks5Connection(QLocalSocket* socket, DNSResolver* dns);
   ~Socks5Connection() = default;
 
   /**
@@ -95,6 +97,7 @@ class Socks5Connection final : public QObject {
 
  private slots:
   void onHostnameResolved(QHostAddress addr);
+  void onHostnameNotFound();
 
  private:
   void setState(Socks5State state);
@@ -105,6 +108,8 @@ class Socks5Connection final : public QObject {
 
   // Implemented by platform-specific code in socks5local_<platform>.cpp
   static QString localClientName(QLocalSocket* s);
+
+  DNSResolver* m_dns = nullptr;
 
   Socks5State m_state = ClientGreeting;
   QString m_errorString;

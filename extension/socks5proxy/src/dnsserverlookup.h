@@ -7,6 +7,4 @@
 namespace DNSServerLookup {
 std::optional<QHostAddress> getLocalDNSName();
 
-void resolve(const QString& hostname, std::optional<QHostAddress> nameServer,
-             QObject* parent);
 }  // namespace DNSServerLookup

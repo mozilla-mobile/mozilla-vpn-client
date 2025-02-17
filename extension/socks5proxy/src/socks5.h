@@ -7,6 +7,7 @@
 
 #include <QObject>
 
+#include "dnsresolver.h"
 #include "socks5connection.h"
 
 class QAbstractSocket;
@@ -34,6 +35,7 @@ class Socks5 final : public QObject {
   void clientDismissed();
   template <typename T>
   void newConnection(T* server);
+  DNSResolver m_dns{};
 
   uint16_t m_clientCount = 0;
   bool m_shuttingDown = false;
