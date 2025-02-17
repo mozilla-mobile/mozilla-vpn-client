@@ -6,25 +6,20 @@
 
 // Note: the include order is important!
 // clang-format off
-#include <qassert.h>
-#include <qhostaddress.h>
-#include <qlogging.h>
-#include <qobject.h>
-#include <qscopeguard.h>
 #include <winerror.h>
 #include <winsock2.h>
 #include <iphlpapi.h>
 #include <windows.h>
 #include <ws2tcpip.h>
 #include <windns.h>
-#include <optional>
 #include <ip2string.h>
-#include <optional>
-#include <string>
-
 // clang-format on
 
 #include <QHostAddress>
+#include <QObject>
+#include <QScopeGuard>
+#include <optional>
+#include <string>
 
 #include "winutils.h"
 

@@ -5,14 +5,11 @@
 #ifndef Socks5Connection_H
 #define Socks5Connection_H
 
-#include <qhostaddress.h>
-
 #include <QByteArray>
 #include <QIODevice>
 #include <QLocalSocket>
 #include <QObject>
 #include <QTcpSocket>
-#include <cstdint>
 
 #include "dnsresolver.h"
 
