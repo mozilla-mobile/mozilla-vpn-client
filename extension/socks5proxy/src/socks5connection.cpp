@@ -82,19 +82,19 @@ ServerResponsePacket createServerResponsePacket(uint8_t rep,
 
 }  // namespace
 
-Socks5Connection::Socks5Connection(QIODevice* socket)
+Socks5Connection::Socks5Connection(QIODevice* socket, DNSResolver* dns)
     : QObject(socket), m_inSocket(socket) {
   connect(m_inSocket, &QIODevice::readyRead, this,
           &Socks5Connection::readyRead);
 
   connect(m_inSocket, &QIODevice::bytesWritten, this,
           &Socks5Connection::bytesWritten);
-
+  m_dns = dns;
   readyRead();
 }
 
-Socks5Connection::Socks5Connection(QTcpSocket* socket)
-    : Socks5Connection(static_cast<QIODevice*>(socket)) {
+Socks5Connection::Socks5Connection(QTcpSocket* socket, DNSResolver* dns)
+    : Socks5Connection(static_cast<QIODevice*>(socket), dns) {
   connect(socket, &QTcpSocket::disconnected, this,
           [this]() { setState(Closed); });
 
@@ -113,8 +113,8 @@ Socks5Connection::Socks5Connection(QTcpSocket* socket)
   m_clientName = socket->peerAddress().toString();
 }
 
-Socks5Connection::Socks5Connection(QLocalSocket* socket)
-    : Socks5Connection(static_cast<QIODevice*>(socket)) {
+Socks5Connection::Socks5Connection(QLocalSocket* socket, DNSResolver* dns)
+    : Socks5Connection(static_cast<QIODevice*>(socket), dns) {
   connect(socket, &QLocalSocket::disconnected, this,
           [this]() { setState(Closed); });
 
@@ -289,23 +289,11 @@ void Socks5Connection::readyRead() {
         QString hostname = QString::fromUtf8(buffer, length);
         m_hostLookupStack.append(hostname);
         m_destPort = htons(port);
-        DNSServerLookup::resolve(hostname, DNSServerLookup::getLocalDNSName(),
-                                 this);
-        /*    .then(this,
-                  [this, port, hostname](QHostAddress resolved) {
-                    qDebug() << "Resolved -> " << hostname
-                             << "To: " << resolved.toString();
-                    m_destAddress = resolved;
-                    Q_ASSERT(!resolved.isNull());
-                    configureOutSocket(htons(port));
-                  })
-            .onFailed([this](const DNSServerLookup::DnsFetchException& e) {
-              setError(ErrorHostUnreachable, e.msg());
-            })
-            .onFailed([this](const QException& e) {
-              setError(ErrorHostUnreachable, "Unknown Error");
-            });
-      */
+        if (!m_dns) {
+          setError(ErrorGeneral, m_inSocket->errorString());
+          return;
+        }
+        m_dns->resolveAsync(hostname, DNSServerLookup::getLocalDNSName(), this);
       }
 
       else if (m_addressType == 0x04 /* Ipv6 */) {
@@ -446,6 +434,10 @@ void Socks5Connection::configureOutSocket(quint16 port) {
               setError(ErrorGeneral, m_outSocket->errorString());
             }
           });
+}
+
+void Socks5Connection::onHostnameNotFound() {
+  setError(ErrorHostUnreachable, "Failed to Resolve DNS Query");
 }
 
 Socks5Connection::Socks5Replies Socks5Connection::socketErrorToSocks5Rep(
