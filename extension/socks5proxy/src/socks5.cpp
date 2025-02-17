@@ -37,7 +37,7 @@ void Socks5::newConnection(T* server) {
       socket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
     }
 
-    auto const con = new Socks5Connection(socket);
+    auto const con = new Socks5Connection(socket, &m_dns);
     connect(con, &QObject::destroyed, this, [this, server]() {
       clientDismissed();
       newConnection(server);

@@ -24,6 +24,8 @@ target_sources(libSocks5proxy PRIVATE
     socks5.cpp
     socks5connection.cpp
     socks5connection.h
+    dnsresolver.h
+    dnsresolver.cpp
 )
 
 if(WIN32)
