@@ -4,12 +4,6 @@
 
 #include "socks5connection.h"
 
-#include <qassert.h>
-#include <qexception.h>
-#include <qhostaddress.h>
-
-#include <cstdio>
-
 #include "dnsserverlookup.h"
 #include "socks5.h"
 
@@ -394,9 +388,6 @@ void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
 
 void Socks5Connection::configureOutSocket(quint16 port) {
   Q_ASSERT(!m_destAddress.isNull());
-
-  std::printf("%s", m_destAddress.toString().toStdString().c_str());
-
   m_hostLookupStack.append(m_destAddress.toString());
   m_outSocket = new QTcpSocket(this);
   emit setupOutSocket(m_outSocket, m_destAddress);
