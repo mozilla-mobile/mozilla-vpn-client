@@ -80,7 +80,7 @@ mod launcher {
 
     pub fn start_vpn() -> serde_json::Value{
         let result = Command::new(CLIENT_PATH)
-            .args(["-foreground"])
+            .args(["ui"])
             .creation_flags(CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS)
             .spawn();
 
