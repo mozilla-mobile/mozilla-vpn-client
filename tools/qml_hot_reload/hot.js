@@ -40,7 +40,9 @@
   if (options.adb === true) {
     await forwardADBPorts();
   }
-  const websocket = new WebSocket(ws_url);
+  const websocket = new WebSocket(ws_url, {
+    origin: "https://mozilla-mobile.github.io"
+  });
   console.log(`Connecting to Client at ${ws_url}`);
 
   websocket.on("open", function () {

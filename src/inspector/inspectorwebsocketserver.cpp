@@ -5,7 +5,11 @@
 #include "inspectorwebsocketserver.h"
 
 #include <QHostAddress>
+#include <QStringView>
 #include <QWebSocket>
+#include <QWebSocketCorsAuthenticator>
+#include <algorithm>
+#include <array>
 
 #include "inspectorwebsocketconnection.h"
 #include "leakdetector.h"
@@ -13,7 +17,11 @@
 
 namespace {
 Logger logger("InspectorWebSocketServer");
-}
+
+static constexpr std::array<QStringView, 1> ALLOWED_ORIGINS = {
+    u"https://mozilla-mobile.github.io"};
+
+}  // namespace
 
 constexpr int INSPECT_PORT = 8765;
 
@@ -27,6 +35,19 @@ InspectorWebSocketServer::InspectorWebSocketServer(QObject* parent)
     logger.error() << "Failed to listen on port" << INSPECT_PORT;
     return;
   }
+  connect(this, &QWebSocketServer::originAuthenticationRequired,
+          [](QWebSocketCorsAuthenticator* authMgr) {
+            auto ok = std::ranges::any_of(
+                ALLOWED_ORIGINS,
+                [requestOrigin = authMgr->origin()](QStringView allowedOrigin) {
+                  return requestOrigin == allowedOrigin;
+                });
+            if (!ok) {
+              logger.error() << "Rejecting Websocket Connection from: "
+                             << authMgr->origin();
+            }
+            authMgr->setAllowed(ok);
+          });
 
   connect(this, &InspectorWebSocketServer::newConnection, this,
           &InspectorWebSocketServer::newConnectionReceived);
