@@ -24,7 +24,7 @@
     "websocket": "^1.0.35"
   },
   "engines": {
-    "node": "22.13.*"
+    "node": "22.12.*"
   },
   "workspaces":[
     "tools/translationsreport/app",
