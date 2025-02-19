@@ -23,6 +23,9 @@
     "selenium-webdriver": "^4.27.0",
     "websocket": "^1.0.35"
   },
+  "engines": {
+    "node": "22.14.*"
+  },
   "workspaces":[
     "tools/translationsreport/app",
     "tools/inspector"
