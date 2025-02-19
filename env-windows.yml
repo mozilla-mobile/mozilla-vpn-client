@@ -9,7 +9,7 @@ dependencies:
   - llvmdev=16.0.6
   - lld=16.0.6
   - python=3.9
-  - nodejs=22.14.*
+  - nodejs=22.13.0
   - pip=22.3.1
   - rust=1.75
   - compiler-rt
