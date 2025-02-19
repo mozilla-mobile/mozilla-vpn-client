@@ -16,8 +16,8 @@ target_sources(shared-sources INTERFACE
 
 if(${MZ_PLATFORM_NAME} STREQUAL "wasm")
     target_sources(shared-sources INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasminspector.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasminspector.h
+        wasminspector.cpp
+        wasminspector.h
     )
     else()
     target_sources(shared-sources INTERFACE
