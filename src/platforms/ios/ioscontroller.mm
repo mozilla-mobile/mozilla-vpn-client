@@ -206,8 +206,11 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
         Controller* controller = MozillaVPN::instance()->controller();
         controller->startHandshakeTimer();
 
-        granted ? mozilla::glean::outcome::onboarding_ntwrk_perm_granted.record()
-                : mozilla::glean::outcome::onboarding_ntwrk_perm_denied.record();
+        BOOL isOnboarding = MozillaVPN::instance()->state() == App::StateOnboarding;
+        if (isOnboarding) {
+          granted ? mozilla::glean::outcome::onboarding_ntwrk_perm_granted.record()
+                  : mozilla::glean::outcome::onboarding_ntwrk_perm_denied.record();
+        }
       }];
 }
 
