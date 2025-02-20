@@ -30,6 +30,7 @@ FocusScope {
         }
 
         segmentedNav[currentServer.whichHop] = [countryCode, cityName, localizedCityName];
+        menu.title = qsTrId("vpn.servers.selectLocation");
         multiHopStackView.pop();
     }
 
