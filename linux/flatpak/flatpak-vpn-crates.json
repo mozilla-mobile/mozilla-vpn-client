@@ -1627,14 +1627,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/oid-registry/oid-registry-0.8.0.crate",
-        "sha256": "264c56d1492c13e769662197fb6b94e0a52abe52d27efac374615799a4bf453d",
-        "dest": "cargo/vendor/oid-registry-0.8.0"
+        "url": "https://static.crates.io/crates/oid-registry/oid-registry-0.8.1.crate",
+        "sha256": "12f40cff3dde1b6087cc5d5f5d4d65712f34016a03ed60e9c08dcc392736b5b7",
+        "dest": "cargo/vendor/oid-registry-0.8.1"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"264c56d1492c13e769662197fb6b94e0a52abe52d27efac374615799a4bf453d\", \"files\": {}}",
-        "dest": "cargo/vendor/oid-registry-0.8.0",
+        "contents": "{\"package\": \"12f40cff3dde1b6087cc5d5f5d4d65712f34016a03ed60e9c08dcc392736b5b7\", \"files\": {}}",
+        "dest": "cargo/vendor/oid-registry-0.8.1",
         "dest-filename": ".cargo-checksum.json"
     },
     {
