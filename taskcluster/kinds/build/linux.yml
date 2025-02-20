@@ -55,6 +55,16 @@ linux/noble:
         name: linux-noble
         type: build
 
+linux/oracular:
+    description: "Linux Build (Ubuntu/Oracular)"
+    treeherder:
+        platform: linux/oracular
+    worker:
+        docker-image: {in-tree: linux-build-oracular}
+    add-index-routes:
+        name: linux-oracular
+        type: build
+
 linux/fedora-fc39:
     description: "Linux Build (Fedora/39)"
     treeherder:
