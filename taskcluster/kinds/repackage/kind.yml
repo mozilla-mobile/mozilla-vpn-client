@@ -6,11 +6,13 @@ loader: taskgraph.loader.transform:loader
 
 transforms:
     - mozilla_taskgraph.transforms.scriptworker.release_artifacts:transforms
+    - mozillavpn_taskgraph.transforms.add_version:transforms
     - taskgraph.transforms.run:transforms
     - taskgraph.transforms.task:transforms
 
 kind-dependencies:
     - signing
+    - build
 
 tasks:
     msi:
@@ -43,3 +45,67 @@ tasks:
             kind: build
             tier: 1
             platform: windows/x86_64
+
+    deb-beta:
+        description: "Debian repackage for beta release"
+        # disable for testing
+        # run-on-tasks-for: [github-push, github-release]
+        fetches:
+            build:
+                - artifact: mozillavpn.deb
+        dependencies:
+            build: build-linux64/release-deb
+        attributes:
+            build-type: linux64/release-deb
+        worker-type: b-linux
+        worker:
+            docker-image: {in-tree: build}
+            max-run-time: 3600
+            chain-of-trust: true
+        release-artifacts:
+            - mozillavpn-beta.deb
+        treeherder:
+            symbol: rpk(deb-beta)
+            kind: build
+            tier: 1
+            platform: linux/x86_64
+        run:
+            using: run-task
+            use-caches: true
+            cwd: '{checkout}'
+            command: >-
+                ./taskcluster/scripts/build/dpkg-repack.py ${MOZ_FETCHES_DIR}/mozillavpn.deb \
+                    --set provides=mozillavpn --set replaces=mozillavpn --set package=mozillavpn-beta \
+                    -o /builds/worker/artifacts/mozillavpn-beta.deb
+
+    deb-release:
+        description: "Debian repackage for public release"
+        # disable for testing
+        # run-on-tasks-for: [github-push, github-release]
+        fetches:
+            build:
+                - artifact: mozillavpn.deb
+        dependencies:
+            build: build-linux64/release-deb
+        attributes:
+            build-type: linux64/release-deb
+        worker-type: b-linux
+        worker:
+            docker-image: {in-tree: build}
+            max-run-time: 3600
+            chain-of-trust: true
+        release-artifacts:
+            - mozillavpn.deb
+        treeherder:
+            symbol: rpk(deb-release)
+            kind: build
+            tier: 1
+            platform: linux/x86_64
+        run:
+            using: run-task
+            use-caches: true
+            cwd: '{checkout}'
+            command: >-
+                ./taskcluster/scripts/build/dpkg-repack.py ${MOZ_FETCHES_DIR}/mozillavpn.deb \
+                    --set provides=mozillavpn --set version=$(cat version.txt) \
+                    -o /builds/worker/artifacts/mozillavpn-$(cat version.txt).deb
