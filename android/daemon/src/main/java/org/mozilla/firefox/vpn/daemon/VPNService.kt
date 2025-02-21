@@ -51,10 +51,9 @@ class VPNService : android.net.VpnService() {
         override fun onTick(millisUntilFinished: Long) {
             // We want to skip the first onTick, which is called as the timer is started.
             // (The Start ping is sent then, so there is no need for a Timer ping.)
-            var wasTimerJustStarted = (millisUntilFinished == mBackgroundPingTimerMSec)
-            if (!wasTimerJustStarted && isUsingShortTimerSessionPing && shouldRecordTimerAndEndMetrics) {
+            var wasTimerJustStarted = (millisUntilFinished >= (mBackgroundPingTimerMSec - 1000))
+            if (!wasTimerJustStarted && isUsingShortTimerSessionPing && isSuperDooperMetricsActive) {
                 Log.i(tag, "Sending daemon_timer ping (on short timer debug schedule)")
-                recordDataTransferMetrics()
                 Pings.daemonsession.submit(
                     Pings.daemonsessionReasonCodes.daemonTimer,
                 )
@@ -62,8 +61,7 @@ class VPNService : android.net.VpnService() {
         }
         override fun onFinish() {
             Log.i(tag, "Sending daemon_timer ping")
-            if (shouldRecordTimerAndEndMetrics) {
-                recordDataTransferMetrics()
+            if (isSuperDooperMetricsActive) {
                 Pings.daemonsession.submit(
                     Pings.daemonsessionReasonCodes.daemonTimer,
                 )
@@ -83,11 +81,6 @@ class VPNService : android.net.VpnService() {
         get() {
             // could be user choosing new server or silent switching
             return (this.mConfig?.optInt("reason") ?: 0) == 1
-        }
-
-    private val shouldRecordTimerAndEndMetrics: Boolean
-        get() {
-            return isSuperDooperMetricsActive && !isAppChangingServers
         }
 
     private val isUsingShortTimerSessionPing: Boolean
@@ -326,6 +319,12 @@ class VPNService : android.net.VpnService() {
             // now.
             if (currentTunnelHandle != -1) {
                 Log.i(tag, "Currently have a connection, close old handle")
+                // Record data transfer metrics, as we're switching servers/configs and this data will get reset
+                // Data metrics must be recorded prior to wgTurnOff, or we can't get data from the config
+                if (isSuperDooperMetricsActive) {
+                  recordDataTransferMetrics()
+                }
+
                 wgTurnOff(currentTunnelHandle)
             }
             currentTunnelHandle = wgTurnOn("mvpn0", tun.detachFd(), wgConfig)
@@ -339,12 +338,14 @@ class VPNService : android.net.VpnService() {
         protect(wgGetSocketV6(currentTunnelHandle))
 
         mConfig = json
-        // shouldRecordStartTelemetry must be calculated after mConfig is set (on prior line)
         // We don't want to record start metrics in several situations:
-        // - If Super Dooper feature is not active. (Covered by shouldRecordTimerAndEndMetrics)
-        // - If this is an app-caused server switch. (Covered by shouldRecordTimerAndEndMetrics)
-        // - If this is a daemon-caused server switch. (Covered by isDaemonChangingServers)
-        val shouldRecordStartTelemetry = shouldRecordTimerAndEndMetrics && !isDaemonChangingServers
+        // - If Super Dooper feature is not active.
+        // - If this is an app-caused server switch.
+        // - If this is a daemon-caused server switch.
+        // This must be calculated after mConfig is set (on line above)
+        val isChangingServers = isDaemonChangingServers || isAppChangingServers
+        val shouldSkipStartTelemetry = !isSuperDooperMetricsActive || isChangingServers
+        Log.i(tag, "Is changing server: " + shouldSkipStartTelemetry)
 
         // Store the config in case the service gets
         // asked boot vpn from the OS
@@ -364,13 +365,17 @@ class VPNService : android.net.VpnService() {
         } else {
             fallbackIpv4 = json.getJSONArray("servers").getJSONObject(0).getString("ipv4AddrIn")
         }
-        mConnectionHealth.start(
-            jServer.getString("ipv4AddrIn"),
-            jServer.getString("ipv4Gateway"),
-            json.getString("dns"),
-            fallbackIpv4,
-            shouldRecordStartTelemetry,
-        )
+
+        // If changing server, connection health is still running
+        if (!isChangingServers) {
+          mConnectionHealth.start(
+              jServer.getString("ipv4AddrIn"),
+              jServer.getString("ipv4Gateway"),
+              json.getString("dns"),
+              fallbackIpv4,
+              isSuperDooperMetricsActive,
+          )
+        }
 
         // For `isGleanDebugTagActive` and `isSuperDooperMetricsActive` to work,
         // this must be after the mConfig is set to the latest data.
@@ -379,7 +384,8 @@ class VPNService : android.net.VpnService() {
             Log.i(tag, "Setting Glean debug tag for daemon.")
             Glean.setDebugViewTag(gleanTag)
         }
-        if (shouldRecordStartTelemetry) {
+        if (!shouldSkipStartTelemetry) {
+            Log.v(tag, "Recording start telmetry")
             val installationIdString = json.getString("installationId")
             installationIdString?.let {
                 try {
@@ -402,7 +408,10 @@ class VPNService : android.net.VpnService() {
             Pings.daemonsession.submit(
                 Pings.daemonsessionReasonCodes.daemonStart,
             )
+        } else {
+          Log.v(tag, "Skipping recording of start telemetry")
         }
+        mMetricsTimer.cancel() // if this is a server switch, time is already running and must be reset
         mMetricsTimer.start()
     }
 
@@ -456,8 +465,10 @@ class VPNService : android.net.VpnService() {
 
     fun turnOff() {
         Log.v(tag, "Try to disable tunnel")
-        if (shouldRecordTimerAndEndMetrics) {
-            // Data metrics must be recorded prior to wgTurnOff, or we can't get data from the cocnfig
+        // turnOff is not called when switching locations, doing a silent server switch from app, or doing a silent server switch from daemon... 
+        // Thus we always want to record end-of-session metrics here, and send the ping below.
+        if (isSuperDooperMetricsActive) {
+            // Data metrics must be recorded prior to wgTurnOff, or we can't get data from the config
             recordDataTransferMetrics()
         }
 
@@ -472,7 +483,8 @@ class VPNService : android.net.VpnService() {
         // Clear the notification message, so the content
         // is not "disconnected" in case we connect from a non-client.
         CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
-        if (shouldRecordTimerAndEndMetrics) {
+        if (isSuperDooperMetricsActive) {
+            Log.v(tag, "Sending ending metrics")
             Session.daemonSessionEnd.set()
             Pings.daemonsession.submit(
                 Pings.daemonsessionReasonCodes.daemonEnd,
@@ -484,6 +496,8 @@ class VPNService : android.net.VpnService() {
             // "flush" reason, which should contain this UUID and no other
             // metrics.
             Session.daemonSessionId.generateAndSet()
+        } else {
+          Log.v(tag, "Skipping ending metrics")
         }
         mMetricsTimer.cancel()
     }
@@ -649,6 +663,7 @@ class VPNService : android.net.VpnService() {
     }
 
     private fun recordDataTransferMetrics() {
+        Log.v(tag, "Recording data metrics")
         val rxBytes = getConfigValue("rx_bytes")?.toLong()
         val txBytes = getConfigValue("tx_bytes")?.toLong()
         if (rxBytes != null && txBytes != null) {
