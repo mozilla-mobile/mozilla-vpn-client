@@ -5,6 +5,7 @@
 #pragma once
 
 #include <QHostAddress>
+#include <mutex>
 
 struct ares_channeldata;
 class ares_addrinfo;
