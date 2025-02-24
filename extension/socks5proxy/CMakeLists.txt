@@ -21,9 +21,10 @@ ExternalProject_Add(c-ares
             -DCARES_BUILD_TESTS=OFF
             -DCARES_BUILD_CONTAINER_TESTS=OFF
             -DCARES_BUILD_TOOLS=OFF
+            -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE}
             -DCMAKE_INSTALL_PREFIX=${CMAKE_BINARY_DIR}/external
+            
 )
-
 
 add_subdirectory(src)
 add_subdirectory(bin)

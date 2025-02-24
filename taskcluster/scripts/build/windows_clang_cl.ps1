@@ -57,6 +57,7 @@ $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 # Do the generic build
 cmake -S $REPO_ROOT_PATH -B $BUILD_DIR -GNinja `
         -DCMAKE_BUILD_TYPE=Release `
+        -DCMAKE_TOOLCHAIN_FILE="scripts/windows/conda-toolchain.cmake" `
         -DWIREGUARD_FOLDER="$FETCHES_PATH\wireguard-nt" `
         -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake" `
         -DBUILD_TESTS=OFF
