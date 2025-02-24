@@ -322,7 +322,7 @@ class VPNService : android.net.VpnService() {
                 // Record data transfer metrics, as we're switching servers/configs and this data will get reset
                 // Data metrics must be recorded prior to wgTurnOff, or we can't get data from the config
                 if (isSuperDooperMetricsActive) {
-                  recordDataTransferMetrics()
+                    recordDataTransferMetrics()
                 }
 
                 wgTurnOff(currentTunnelHandle)
@@ -368,13 +368,13 @@ class VPNService : android.net.VpnService() {
 
         // If changing server, connection health is still running
         if (!isChangingServers) {
-          mConnectionHealth.start(
-              jServer.getString("ipv4AddrIn"),
-              jServer.getString("ipv4Gateway"),
-              json.getString("dns"),
-              fallbackIpv4,
-              isSuperDooperMetricsActive,
-          )
+            mConnectionHealth.start(
+                jServer.getString("ipv4AddrIn"),
+                jServer.getString("ipv4Gateway"),
+                json.getString("dns"),
+                fallbackIpv4,
+                isSuperDooperMetricsActive,
+            )
         }
 
         // For `isGleanDebugTagActive` and `isSuperDooperMetricsActive` to work,
@@ -409,7 +409,7 @@ class VPNService : android.net.VpnService() {
                 Pings.daemonsessionReasonCodes.daemonStart,
             )
         } else {
-          Log.v(tag, "Skipping recording of start telemetry")
+            Log.v(tag, "Skipping recording of start telemetry")
         }
         mMetricsTimer.cancel() // if this is a server switch, time is already running and must be reset
         mMetricsTimer.start()
@@ -465,7 +465,7 @@ class VPNService : android.net.VpnService() {
 
     fun turnOff() {
         Log.v(tag, "Try to disable tunnel")
-        // turnOff is not called when switching locations, doing a silent server switch from app, or doing a silent server switch from daemon... 
+        // turnOff is not called when switching locations, doing a silent server switch from app, or doing a silent server switch from daemon...
         // Thus we always want to record end-of-session metrics here, and send the ping below.
         if (isSuperDooperMetricsActive) {
             // Data metrics must be recorded prior to wgTurnOff, or we can't get data from the config
@@ -497,7 +497,7 @@ class VPNService : android.net.VpnService() {
             // metrics.
             Session.daemonSessionId.generateAndSet()
         } else {
-          Log.v(tag, "Skipping ending metrics")
+            Log.v(tag, "Skipping ending metrics")
         }
         mMetricsTimer.cancel()
     }
