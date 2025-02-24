@@ -37,16 +37,14 @@ InspectorWebSocketServer::InspectorWebSocketServer(QObject* parent)
   }
   connect(this, &QWebSocketServer::originAuthenticationRequired,
           [](QWebSocketCorsAuthenticator* authMgr) {
-            auto ok = std::ranges::any_of(
-                ALLOWED_ORIGINS,
-                [requestOrigin = authMgr->origin()](QStringView allowedOrigin) {
-                  return requestOrigin == allowedOrigin;
-                });
-            if (!ok) {
-              logger.error() << "Rejecting Websocket Connection from: "
-                             << authMgr->origin();
+            auto const origin = authMgr->origin();
+            for (uint i = 0; i < ALLOWED_ORIGINS.size(); i++) {
+              if (ALLOWED_ORIGINS.at(i) == origin) {
+                authMgr->allowed();
+              }
             }
-            authMgr->setAllowed(ok);
+            logger.error() << "Rejecting Websocket Connection from: " << origin;
+            authMgr->setAllowed(false);
           });
 
   connect(this, &InspectorWebSocketServer::newConnection, this,

@@ -656,7 +656,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"force_rtl", "Force RTL layout", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
                        Localizer::instance()->forceRTL();
-                       emit SettingsHolder::instance() -> languageCodeChanged();
+                       emit SettingsHolder::instance()->languageCodeChanged();
                        return QJsonObject();
                      }},
 
