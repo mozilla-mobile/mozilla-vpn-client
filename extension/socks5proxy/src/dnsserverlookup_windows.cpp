@@ -66,6 +66,11 @@ std::optional<QHostAddress> getLocalDNSName() {
       // Don't consider the Mozilla VPN DNS Server.
       continue;
     }
+    if (netAdapter->OperStatus != IfOperStatusUp) {
+      // Don't consider adapters that are not in an operating status.
+      continue;
+    }
+
     qDebug() << "Checking Adapter: "
              << QString::fromStdWString(netAdapter->FriendlyName) << " "
              << netAdapter->Ipv4Metric << "/" << netAdapter->Ipv6Metric;
