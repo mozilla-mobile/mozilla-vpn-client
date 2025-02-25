@@ -121,6 +121,14 @@ void SocksLogger::dataSentReceived(qint64 sent, qint64 received) {
 }
 
 QDebug& SocksLogger::printEventStack(QDebug& msg, Socks5Connection* conn) {
+  bool first = true;
+  for (const QString& hostname : conn->hostLookupStack()) {
+    if (!first) {
+      msg << "->";
+    }
+    first = false;
+    msg << hostname;
+  }
   return msg;
 }
 
