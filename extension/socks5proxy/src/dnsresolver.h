@@ -4,16 +4,20 @@
 
 #pragma once
 
+#include <QGlobalStatic>
 #include <QHostAddress>
 #include <mutex>
 
 struct ares_channeldata;
 class ares_addrinfo;
 class Socks5Connection;
+
 class DNSResolver {
  public:
   DNSResolver();
   ~DNSResolver();
+
+  static DNSResolver* instance();
 
   /**
    * @brief Queues up a DNS Query to get Resolved.
@@ -24,15 +28,16 @@ class DNSResolver {
    * Socks5Connection::onHostnameResolved(QHostAddress) when done.
    */
   void resolveAsync(const QString& hostname,
-                    std::optional<QHostAddress> nameServer,
                     Socks5Connection* parent);
 
+  void setNameserver(const QHostAddress& addr);
+
  private:
-  static void initAres();
   static void addressInfoCallback(void* arg, int status, int timeouts,
                                   struct ares_addrinfo* result);
   void shutdownAres();
 
-  static std::once_flag mflag_init;
   ares_channeldata* mChannel = nullptr;
+
+  QHostAddress m_nameserver;
 };

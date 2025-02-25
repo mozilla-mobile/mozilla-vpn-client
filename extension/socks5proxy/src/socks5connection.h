@@ -11,17 +11,15 @@
 #include <QObject>
 #include <QTcpSocket>
 
-#include "dnsresolver.h"
-
 class Socks5Connection final : public QObject {
   Q_OBJECT
 
  private:
-  explicit Socks5Connection(QIODevice* socket, DNSResolver* dns);
+  explicit Socks5Connection(QIODevice* socket);
 
  public:
-  explicit Socks5Connection(QTcpSocket* socket, DNSResolver* dns);
-  explicit Socks5Connection(QLocalSocket* socket, DNSResolver* dns);
+  explicit Socks5Connection(QTcpSocket* socket);
+  explicit Socks5Connection(QLocalSocket* socket);
   ~Socks5Connection() = default;
 
   /**
@@ -105,8 +103,6 @@ class Socks5Connection final : public QObject {
 
   // Implemented by platform-specific code in socks5local_<platform>.cpp
   static QString localClientName(QLocalSocket* s);
-
-  DNSResolver* m_dns = nullptr;
 
   Socks5State m_state = ClientGreeting;
   QString m_errorString;
