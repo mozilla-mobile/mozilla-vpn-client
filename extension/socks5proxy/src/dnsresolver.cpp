@@ -8,8 +8,20 @@
 
 #include "socks5connection.h"
 
+Q_GLOBAL_STATIC(DNSResolver, dnsResolver);
+DNSResolver* DNSResolver::instance() {
+  return dnsResolver;
+}
+
 DNSResolver::DNSResolver() {
-  std::call_once(mflag_init, &DNSResolver::initAres);
+  static int s_ares_init = false;
+  if (!s_ares_init) {
+    ares_library_init(ARES_LIB_INIT_ALL);
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit,
+                     []() { ares_library_cleanup(); });
+    s_ares_init = true;
+  }
+
   struct ares_options options;
   int optmask = 0;
   memset(&options, 0, sizeof(options));
@@ -19,17 +31,8 @@ DNSResolver::DNSResolver() {
     printf("c-ares initialization issue\n");
   }
 }
-std::once_flag DNSResolver::mflag_init = {};
 
 DNSResolver::~DNSResolver() { ares_destroy(mChannel); }
-
-void DNSResolver::initAres() {
-  ares_library_init(ARES_LIB_INIT_ALL);
-
-  // Cleanup on Shutdown
-  QObject::connect(qApp, &QCoreApplication::aboutToQuit,
-                   []() { ares_library_cleanup(); });
-}
 
 /* Callback that is called when DNS query is finished */
 void DNSResolver::addressInfoCallback(void* arg, int status, int timeouts,
@@ -78,13 +81,13 @@ void DNSResolver::addressInfoCallback(void* arg, int status, int timeouts,
 }
 
 void DNSResolver::resolveAsync(const QString& hostname,
-                               std::optional<QHostAddress> nameServer,
                                Socks5Connection* parent) {
-  if (nameServer.has_value()) {
-    auto server_str = nameServer->toString().toStdString();
-    auto res = ares_set_servers_csv(mChannel, server_str.c_str());
-    Q_ASSERT(res == ARES_SUCCESS);
+  if (!m_nameserver.isNull()) {
+    auto serverString = m_nameserver.toString().toLocal8Bit();
+    int result = ares_set_servers_csv(mChannel, serverString.constData());
+    Q_ASSERT(result == ARES_SUCCESS);
   }
+
   auto name = hostname.toStdString();
   struct ares_addrinfo_hints hints;
   memset(&hints, 0, sizeof(hints));
@@ -92,4 +95,8 @@ void DNSResolver::resolveAsync(const QString& hostname,
   hints.ai_flags = ARES_AI_CANONNAME;
   ares_getaddrinfo(mChannel, name.c_str(), NULL, &hints, &addressInfoCallback,
                    parent);
+}
+
+void DNSResolver::setNameserver(const QHostAddress& addr) {
+  m_nameserver = addr;
 }
