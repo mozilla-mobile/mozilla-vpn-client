@@ -26,6 +26,7 @@ class WindowsBypass final : public QObject {
  private:
   quint64 getVpnLuid() const;
   void updateTable(QVector<struct _MIB_IPFORWARD_ROW2>& table, int family);
+  void updateNameserver();
   const struct _MIB_IPFORWARD_ROW2* lookupRoute(const QHostAddress& dest) const;
 
  private slots:
@@ -40,9 +41,11 @@ class WindowsBypass final : public QObject {
   void* m_routeChangeHandle = nullptr;
 
   struct InterfaceData {
-    unsigned long metric;
+    unsigned long ipv4metric;
+    unsigned long ipv6metric;
     QHostAddress ipv4addr;
     QHostAddress ipv6addr;
+    QHostAddress dnsAddr;
   };
 
   QHash<quint64, InterfaceData> m_interfaceData;
