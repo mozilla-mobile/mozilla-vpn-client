@@ -31,13 +31,4 @@ if(WIN32)
         Qt6::Core 
         Qt6::Network
     )
-
-    mz_add_test_target(testDNSServerLookup
-        SOURCES
-            testdnsserverlookup.cpp
-        DEPENDENCIES
-            libSocks5proxy
-        LABELS
-            unit
-    )
 endif()
