@@ -23,7 +23,6 @@ color.primaryPressed = color.purple90;
 
 // Backgrounds
 color.bgColor = color.grey60;
-color.bgColorTransparent = addTransparency(color.bgColor, 0.0);
 color.bgColorStronger = color.black;
 color.overlayBackground = addTransparency(color.white, 0.3);
 
@@ -44,23 +43,23 @@ color.inputHighlight = color.grey10;
 
 // Success/Failure/Warning/Normal levels
 color.successMain = color.green90;
-color.successAccent = color.green;
+color.successAccent = color.green50;
 color.successBackground = color.green5;
 color.errorMain = color.red80;
-color.errorAccent = color.red;
+color.errorAccent = color.red60;
 color.errorAccentLight = color.red50;
 color.errorBackground = color.red10;
 color.warningMain = color.yellow90;
-color.warningAccent = color.orange;
+color.warningAccent = color.yellow50;
 color.warningBackground = color.orange10;
 color.normalLevelMain = color.blue90;
-color.normalLevelAccent = color.blue;
-color.normalLevelBackground = addTransparency(color.blue, 0.4);
+color.normalLevelAccent = color.blue50;
+color.normalLevelBackground = addTransparency(color.blue50, 0.4);
 
-// Button colors
-color.radioButtonDisabledHovered = color.greyHovered;
-color.radioButtonDisabledPressed = color.greyPressed;
+// Disabled button colors
 color.disabledButtonColor = color.grey20;
+color.disabledButtonHovered = color.grey10;
+color.disabledButtonPressed = color.grey20;
 
 // Step progress bar (several other colors for bar based on primary color)
 color.stepProgressBarHighlight = color.purple10;
@@ -85,7 +84,7 @@ color.onBoardingGradient = {
 };
 
 color.vpnToggleConnected = {
-  defaultColor: color.green,
+  defaultColor: color.green50,
   buttonHovered: color.green60,
   buttonPressed: color.green70,
   focusOutline: addTransparency(color.bgColor, 0.3),
@@ -98,14 +97,5 @@ color.vpnToggleDisconnected = {
   buttonPressed: color.fontColorDark,
   buttonDisabled: color.disabledButtonColor,
   focusOutline: color.transparent,
-  focusBorder: color.darkFocusBorder,
-};
-
-color.card = {
-  defaultColor: color.white,
-  buttonHovered: color.greyHovered,
-  buttonPressed: color.greyPressed,
-  buttonDisabled: color.bgColorTransparent,
-  focusOutline: color.bgColorTransparent,
   focusBorder: color.darkFocusBorder,
 };

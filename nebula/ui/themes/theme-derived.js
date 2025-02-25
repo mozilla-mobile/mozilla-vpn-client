@@ -11,6 +11,8 @@
  * can be used in code.)
  */
 
+color.bgColorTransparent = addTransparency(color.bgColor, 0.0);
+
 color.stepProgressBarDelegate = {
   defaultColor: color.primaryBrighter,
   buttonHovered: color.primaryBrighter,
@@ -22,10 +24,10 @@ color.stepProgressBarDelegate = {
 
 color.invertedButton = {
   defaultColor: color.fontColorInverted,
-  buttonHovered: color.radioButtonDisabledHovered,
-  buttonPressed: color.radioButtonDisabledPressed,
-  focusOutline: color.radioButtonDisabledHovered,
-  focusBorder: color.radioButtonDisabledPressed,
+  buttonHovered: color.disabledButtonHovered,
+  buttonPressed: color.disabledButtonPressed,
+  focusOutline: color.disabledButtonHovered,
+  focusBorder: color.disabledButtonPressed,
 };
 
 color.linkButton = {
@@ -39,8 +41,8 @@ color.linkButton = {
 
 color.iconButtonLightBackground = {
   defaultColor: color.bgColorTransparent,
-  buttonHovered: color.radioButtonDisabledHovered,
-  buttonPressed: color.radioButtonDisabledPressed,
+  buttonHovered: color.disabledButtonHovered,
+  buttonPressed: color.disabledButtonPressed,
   buttonDisabled: color.transparent,
   focusOutline: color.bgColorTransparent,
   focusBorder: color.darkFocusBorder,
@@ -53,6 +55,15 @@ color.iconButtonDarkBackground = {
   buttonDisabled: addTransparency(color.primary, 0.0),
   focusOutline: addTransparency(color.primaryHovered, 0.0),
   focusBorder: color.lightFocusBorder,
+};
+
+color.card = {
+  defaultColor: color.bgColorStronger,
+  buttonHovered: color.disabledButtonHovered,
+  buttonPressed: color.disabledButtonPressed,
+  buttonDisabled: color.bgColorTransparent,
+  focusOutline: color.bgColorTransparent,
+  focusBorder: color.darkFocusBorder,
 };
 
 color.inputState = {

@@ -166,30 +166,20 @@ color.darkerOnboardingPurple = '#1D0942';
 color.transparent = '#00000000';
 
 /**
- * Part 2: Functional colors
+ * Part 2: Color objects
+ * Uses the colors defined above.
  * Should NOT be used directly in code, and colors should not be modified.
  * (Can add to this section if really, truly needed.)
  */
-color.blue = color.blue50;
-color.blueHovered = color.blue60;
-color.bluePressed = color.blue70;
-color.blueFocusBorder = color.strongBlue;
-
-color.green = color.green50;
-color.red = color.red60;
-color.orange = color.yellow50;
-
-color.greyHovered = color.grey10;
-color.greyPressed = color.grey20;
 
 color.blueButton = {
-  defaultColor: color.blue,
-  buttonHovered: color.blueHovered,
-  buttonPressed: color.bluePressed,
+  defaultColor: color.blue50,
+  buttonHovered: color.blue60,
+  buttonPressed: color.blue70,
   buttonDisabled: color.washedLightBlue,
-  focusBgColor: color.blue,
-  focusOutline: addTransparency(color.blueFocusBorder, 0.3),
-  focusBorder: color.blueFocusBorder,
+  focusBgColor: color.blue50,
+  focusOutline: addTransparency(color.strongBlue, 0.3),
+  focusBorder: color.strongBlue,
 };
 
 color.clickableRowBlue = {
@@ -197,7 +187,7 @@ color.clickableRowBlue = {
   buttonHovered: color.washedBlue,
   buttonPressed: color.washedLightBlue,
   focusOutline: addTransparency(color.grey5, 0.0),
-  focusBorder: color.blueFocusBorder,
+  focusBorder: color.strongBlue,
 };
 
 color.redButton = {
@@ -210,10 +200,10 @@ color.redButton = {
 };
 
 color.greenAlert = {
-  defaultColor: color.green,
+  defaultColor: color.green50,
   buttonHovered: color.green60,
   buttonPressed: color.green70,
-  focusOutline: addTransparency(color.green, 0.2),
+  focusOutline: addTransparency(color.green50, 0.2),
   focusBorder: color.green70,
 };
 
