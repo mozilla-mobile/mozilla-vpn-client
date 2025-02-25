@@ -306,6 +306,7 @@ void WindowsBypass::updateNameserver() {
     dnsNameserver = data.dnsAddr;
   }
   qDebug() << "Setting nameserver:" << dnsNameserver.toString();
+  DNSResolver::instance()->setNameserver(dnsNameserver);
 }
 
 // In this function, we basically try our best to re-implement the Windows
