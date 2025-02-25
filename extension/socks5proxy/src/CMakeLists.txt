@@ -14,10 +14,6 @@ target_compile_definitions(libSocks5proxy PRIVATE CARES_STATICLIB)
 target_include_directories(libSocks5proxy PUBLIC ${CMAKE_BINARY_DIR}/external/include)
 target_link_directories( libSocks5proxy PUBLIC ${CMAKE_BINARY_DIR}/external/lib)
 
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-   target_compile_definitions(libSocks5proxy PUBLIC QT_NO_DEBUG_OUTPUT)
-endif()
-
 
 target_sources(libSocks5proxy PRIVATE
     socks5.h
