@@ -66,6 +66,7 @@ color.green5 = '#E3FFF3';
 color.black = '#000000';
 color.grey60 = '#0C0C0D';
 color.grey50 = '#3D3D3D';
+color.grey45 = '#42414D';
 color.grey40 = '#6D6D6E';
 color.grey30 = '#9E9E9E';
 color.grey20 = '#CECECF';
