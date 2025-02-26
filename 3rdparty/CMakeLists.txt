@@ -22,7 +22,7 @@ set(CARES_SHARED OFF CACHE BOOL "Disable shared c-ares" FORCE)
 set(CARES_BUILD_TESTS OFF CACHE BOOL "Disable c-ares tests" FORCE)
 set(CARES_BUILD_CONTAINER_TESTS OFF CACHE BOOL "Disable c-ares container tests" FORCE)
 set(CARES_BUILD_TOOLS OFF CACHE BOOL "Disable c-ares tools" FORCE)
-
+set(CARES_INSTALL OFF CACHE BOOL "Disable c-ares global install" FORCE)
 
 
 FetchContent_MakeAvailable(libcares)
