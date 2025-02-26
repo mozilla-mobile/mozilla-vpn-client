@@ -9,11 +9,9 @@ target_link_libraries(libSocks5proxy PUBLIC
     Qt6::Network)
 
 add_dependencies(libSocks5proxy c-ares)
+target_link_libraries(libSocks5proxy PRIVATE c-ares)
 
 target_compile_definitions(libSocks5proxy PRIVATE CARES_STATICLIB)
-target_include_directories(libSocks5proxy PUBLIC ${CMAKE_BINARY_DIR}/external/include)
-target_link_directories( libSocks5proxy PUBLIC ${CMAKE_BINARY_DIR}/external/lib)
-
 
 target_sources(libSocks5proxy PRIVATE
     socks5.h
@@ -31,12 +29,9 @@ if(WIN32)
         winutils.cpp
         winutils.h
     )
-    target_link_libraries(libSocks5proxy PUBLIC cares.lib)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_link_libraries(libSocks5proxy PUBLIC cares.a)
     target_sources(libSocks5proxy PRIVATE socks5local_linux.cpp dnsserverlookup_default.cpp)
 else()
-    target_link_libraries(libSocks5proxy PUBLIC cares.a)
     target_sources(libSocks5proxy PRIVATE socks5local_default.cpp dnsserverlookup_default.cpp)
 endif()
 
