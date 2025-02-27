@@ -19,7 +19,6 @@ qt_add_qml_module(components
          MZButton.qml
          MZCallout.qml
          MZCancelButton.qml
-         MZCard.qml
          MZCheckBox.qml
          MZCheckBoxRow.qml
          MZChevron.qml
