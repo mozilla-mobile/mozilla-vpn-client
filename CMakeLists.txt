@@ -116,6 +116,8 @@ if(MSVC)
 elseif(CMAKE_CXX_COMPILER_ID MATCHES "Clang$")
     include(src/cmake/clang.cmake)
 endif()
+# Add External dependencies
+add_subdirectory(3rdparty)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
