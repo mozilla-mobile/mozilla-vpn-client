@@ -40,8 +40,11 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     set(MZ_PLATFORM_NAME "wasm")
 endif()
 
+
+
 include(cmake/shared-sources.cmake)
 include(cmake/sources.cmake)
+add_subdirectory(inspector)
 
 target_link_libraries(mozillavpn PRIVATE
     shared-sources

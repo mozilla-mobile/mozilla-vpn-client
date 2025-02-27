@@ -48,7 +48,7 @@
 #include "utils.h"
 
 #ifdef MZ_WASM
-#  include "platforms/wasm/wasminspector.h"
+#  include "wasminspector.h"
 #else
 #  include <QCoreApplication>
 

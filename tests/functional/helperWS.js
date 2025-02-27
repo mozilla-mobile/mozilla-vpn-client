@@ -9,7 +9,7 @@ let client;
 module.exports = {
   async connect(options, onopen, onclose, onmessage) {
     return await new Promise(resolve => {
-      client = new websocket(`ws://${options.hostname}:8765/`, '');
+      client = new websocket(`ws://${options.hostname}:8765/`, '', 'https://mozilla-mobile.github.io');
 
       client.onopen = async () => {
         await onopen();
