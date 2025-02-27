@@ -23,7 +23,6 @@ color.primaryPressed = color.purple90;
 
 // Backgrounds
 color.bgColor = color.grey60;
-color.bgColorTransparent = addTransparency(color.bgColor, 0.0);
 color.bgColorStronger = color.black;
 color.overlayBackground = addTransparency(color.white, 0.3);
 
@@ -58,8 +57,8 @@ color.normalLevelAccent = color.blue;
 color.normalLevelBackground = addTransparency(color.blue, 0.4);
 
 // Button colors
-color.radioButtonDisabledHovered = color.greyHovered;
-color.radioButtonDisabledPressed = color.greyPressed;
+color.disabledButtonHovered = color.greyHovered;
+color.disabledButtonPressed = color.greyPressed;
 color.disabledButtonColor = color.grey20;
 
 // Step progress bar (several other colors for bar based on primary color)
@@ -98,14 +97,5 @@ color.vpnToggleDisconnected = {
   buttonPressed: color.fontColorDark,
   buttonDisabled: color.disabledButtonColor,
   focusOutline: color.transparent,
-  focusBorder: color.darkFocusBorder,
-};
-
-color.card = {
-  defaultColor: color.white,
-  buttonHovered: color.greyHovered,
-  buttonPressed: color.greyPressed,
-  buttonDisabled: color.bgColorTransparent,
-  focusOutline: color.bgColorTransparent,
   focusBorder: color.darkFocusBorder,
 };
