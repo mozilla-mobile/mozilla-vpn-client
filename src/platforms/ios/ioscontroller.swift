@@ -249,7 +249,7 @@ public class IOSControllerImpl: NSObject {
                     IOSControllerImpl.logger.info(message: "Loading the tunnel succeeded")
 
                     do {
-                        if (reason == 1 /* ReasonSwitching */) {
+                        if (reason == 1 /* ReasonSwitching */ && TunnelManager.session?.status == .connected) {
                             let settings = config.asWgQuickConfig()
                             let message = TunnelMessage.configurationSwitch(settings)
                             IOSControllerImpl.logger.info(message: "Sending new message \(message)")
