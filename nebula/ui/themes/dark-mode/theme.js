@@ -16,23 +16,23 @@ color.useDarkAssets = true;
  * can be used in code.)
  */
 // Primary
-color.primary = color.dullPurple;
-color.primaryBrighter = color.washedPurple;
-color.primaryHovered = color.purple90;
-color.primaryPressed = color.purple90;
+color.primary = color.purple90;  // set
+color.primaryBrighter = color.purple70;
+color.primaryHovered = color.washedPurple;  // set
+color.primaryPressed = color.dullPurple;
 
 // Backgrounds
-color.bgColor = color.grey60;
-color.bgColorStronger = color.black;
-color.overlayBackground = addTransparency(color.white, 0.3);
+color.bgColor = color.grey45;  // maybe set
+color.bgColorStronger = color.white;
+color.overlayBackground = addTransparency(color.black, 0.3);
 
 // Fonts
-color.fontColor = color.grey40;
-color.fontColorDark = color.grey30;
+color.fontColor = color.grey5;     // done
+color.fontColorDark = color.grey5  // done;
 color.fontColorWarning = color.yellow70;
-color.fontColorInverted = color.black;
-color.fontColorInvertedMuted = color.grey20;
-color.fontTitleColor = color.white;
+color.fontColorInverted = color.grey5;       // done
+color.fontColorInvertedMuted = color.grey5;  // done
+color.fontTitleColor = color.black;
 
 // Dividers and borders
 color.divider = color.grey10;
@@ -46,8 +46,8 @@ color.successMain = color.green90;
 color.successAccent = color.green50;
 color.successBackground = color.green5;
 color.errorMain = color.red80;
-color.errorAccent = color.red60;
-color.errorAccentLight = color.red50;
+color.errorAccent = color.red50;        // set
+color.errorAccentLight = color.grey30;  // set
 color.errorBackground = color.red10;
 color.warningMain = color.yellow90;
 color.warningAccent = color.yellow50;
@@ -84,7 +84,7 @@ color.onBoardingGradient = {
 };
 
 color.vpnToggleConnected = {
-  defaultColor: color.green50,
+  defaultColor: color.blue20,  // set
   buttonHovered: color.green60,
   buttonPressed: color.green70,
   focusOutline: addTransparency(color.bgColor, 0.3),
@@ -92,7 +92,7 @@ color.vpnToggleConnected = {
 };
 
 color.vpnToggleDisconnected = {
-  defaultColor: color.grey30,
+  defaultColor: color.grey30,  // set
   buttonHovered: color.fontColor,
   buttonPressed: color.fontColorDark,
   buttonDisabled: color.disabledButtonColor,
