@@ -31,7 +31,6 @@ On desktop, use `ws://localhost:8765`.
     3. Note the iOS device's IP address. (Settings app -> Wi-Fi -> ⓘ by network name. See "IP Address" in "IPv4 Address" section)
 3. On the desktop computer, go to the [inspector page](
 https://mozilla-mobile.github.io/mozilla-vpn-client/inspector/).
-On desktop, use `ws://localhost:8765`.
 4. On the iOS device, hard quit the Mozilla VPN app (if it is running), and relaunch the app from a cold start. (The actual VPN connection should remain off.)
 5. On the Desktop computer, put `ws://[IP addresss]:8765` (example: `ws://192.168.1.131:8765`) in the `Inspector Address` field, click the blue `->` button, and wait for the connection.
 
