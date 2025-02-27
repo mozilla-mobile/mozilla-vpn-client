@@ -344,7 +344,7 @@ void Socks5Connection::bytesWritten(qint64 bytes) {
 
   // Drive statistics and proxy data.
   emit dataSentReceived(0, bytes);
-  proxy(m_inSocket, m_outSocket, m_recvHighWaterMark);
+  proxy(m_outSocket, m_inSocket, m_recvHighWaterMark);
 }
 
 void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
