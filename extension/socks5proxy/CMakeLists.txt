@@ -7,11 +7,6 @@ if(CMAKE_CROSSCOMPILING)
     return()
 endif()
 
-if(CMAKE_OSX_ARCHITECTURES)
-    STRING(REPLACE ";" "$<SEMICOLON>" C_ARES_OSX_ARCH_LISTSAFE "${CMAKE_OSX_ARCHITECTURES}")
-    LIST(APPEND SENTRY_ARGS -DCMAKE_OSX_ARCHITECTURES:STRING=${C_ARES_OSX_ARCH_LISTSAFE})
-endif()
-
 add_subdirectory(src)
 add_subdirectory(bin)
 add_subdirectory(tests)
