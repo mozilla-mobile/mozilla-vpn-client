@@ -10,8 +10,6 @@ fi
 ## In our .env we ship a lot of stuff that we do not need
 ## Let's remove that. 
 
-## Saves 1gb - Go is handled by gradle. 
-conda remove go --offline -y
 ## Also saves 1gb
 conda remove rust-std-aarch64-apple-darwin rust-std-x86_64-apple-darwin rust-std-aarch64-apple-ios rust-std-x86_64-apple-ios --offline -y
 ## Saves another 1gb
