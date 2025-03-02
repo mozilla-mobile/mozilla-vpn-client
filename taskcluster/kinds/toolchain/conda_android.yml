@@ -19,10 +19,10 @@ task-defaults:
         resources:
             - scripts/android/conda_setup_qt.sh
             - scripts/android/conda_setup_sdk.sh
-            - scripts/android/conda_trim.sh
+            - scripts/android/conda_setup_extras.sh
             - android_sdk.txt
             - requirements.txt
-            - env.yml
+            - env-android.yml
         toolchain-alias: "filled-by-transform: conda.py"
         toolchain-artifact: public/build/conda-android.tar.gz
 
