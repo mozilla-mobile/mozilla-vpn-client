@@ -40,13 +40,38 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 
+// Custom task to generate the AAR from your Go module using gomobile
+task buildTunnelGo(type: Exec) {
+    // Set workingDir to the tunnel folder where your Go module resides.
+    workingDir "$projectDir/tunnel"
+    // Command to bind your Go package to Android.
+    // Adjust the command-line arguments as needed.
+    commandLine 'gomobile', 'bind', '-target=android', '-androidapi=24', '-o', "$projectDir/libs/tunnel.aar", '.'
+}
+
+// Ensure the Go AAR is built before the preBuild step
+preBuild.dependsOn buildTunnelGo
+
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
-    implementation project(path: ':daemon')
+    implementation project(path: ':qtglean')
+    implementation project(path: ':common')
     implementation project(path: ':qtBindings')
-    implementation project(path: ':vpnClient')
 
     coreLibraryDesugaring SharedDependencies.com_android_tools_desugar_jdk_libs
+
+    implementation 'com.android.support:appcompat-v7:28.0.0'
+    implementation SharedDependencies.androidx_core
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
+    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
+    implementation "com.android.installreferrer:installreferrer:2.2"
+    implementation "com.android.billingclient:billing:7.0.0"
+    implementation "com.google.android.gms:play-services-ads-identifier:17.0.1"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1"
+
+
 }
 
 android {
@@ -62,11 +87,17 @@ android {
         main {
             java.srcDirs = ['src', 'java']
             aidl.srcDirs = ['src', 'aidl']
-
             manifest.srcFile 'AndroidManifest.xml'
+
             renderscript.srcDirs = ['src']
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs','build/ssl']
+
+
+            kotlin.srcDirs = [
+                "${System.getProperty('user.dir')}/../../clienttelemetry",
+            ]
+        
         }
         debug{
             try {
@@ -146,6 +177,13 @@ android {
         versionCode  System.getenv("VERSIONCODE")? System.getenv("VERSIONCODE")?.toInteger() : 99999
         versionName  System.getenv("SHORTVERSION") ? System.getenv("SHORTVERSION"): ""
 
+        buildConfigField "int", "VERSION_CODE", System.getenv("VERSIONCODE") ?: "99999"
+        buildConfigField "String", "VERSION_NAME", '"' + (System.getenv("SHORTVERSION") ?: "") + '"'
+        buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
+        buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
+        buildConfigField  "String", "ADJUST_SDK_TOKEN" ,  '"' + (project.properties["adjusttoken"] ?: "no_token_found") +  '"'
+
+
     }
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -197,7 +235,7 @@ task ktlint(type: JavaExec, group: "verification") {
     description = "Check Kotlin code style."
     classpath = configurations.ktlint
     main = "com.pinterest.ktlint.Main"
-    args "src/**/*.kt", "!**/build/**/*.kt", "buildSrc/**/*.kt",  "daemon/**/*.kt",  "**/*.kts"
+    args "src/**/*.kt", "!**/build/**/*.kt", "buildSrc/**/*.kt",  "**/*.kts"
 }
 
 
@@ -205,5 +243,5 @@ task ktlintFormat(type: JavaExec, group: "formatting") {
     description = "Fix Kotlin code style deviations."
     classpath = configurations.ktlint
     main = "com.pinterest.ktlint.Main"
-    args "-F", "src/**/*.kt", "!**/build/**/*.kt", "buildSrc/**/*.kt",  "daemon/**/*.kt", "**/*.kts", "**/*.kt"
+    args "-F", "src/**/*.kt", "!**/build/**/*.kt", "buildSrc/**/*.kt", "**/*.kts", "**/*.kt"
 }

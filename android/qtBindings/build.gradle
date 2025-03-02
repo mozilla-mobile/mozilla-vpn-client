@@ -13,7 +13,7 @@ plugins {
 // code completeion and such in their favorite ide
 
 dependencies {
-    implementation fileTree(dir: '../libs', include: ['*.jar', '*.aar'])
+    implementation fileTree(dir: '../libs', include: ['*.jar'])
 }
 
 

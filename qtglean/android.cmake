@@ -15,13 +15,8 @@ execute_process(
             -o ${CMAKE_CURRENT_BINARY_DIR}/../glean/generated  -s "glean_namespace=mozilla.telemetry.glean" -s "namespace=mozilla.telemetry.glean.GleanMetrics" --allow-reserved
             ${GLEAN_VENDORED_PATH}/glean-core/metrics.yaml ${GLEAN_VENDORED_PATH}/glean-core/pings.yaml
     COMMAND ${PYTHON_EXECUTABLE} -m glean_parser translate -f kotlin
-        -o ${CMAKE_CURRENT_BINARY_DIR}/../clienttelemetry -s "glean_namespace=mozilla.telemetry.glean" -s "namespace=org.mozilla.firefox.vpn.qt.GleanMetrics"
+        -o ${CMAKE_CURRENT_BINARY_DIR}/../clienttelemetry -s "glean_namespace=mozilla.telemetry.glean" -s "namespace=org.mozilla.firefox.vpn.Glean"
             ${CMAKE_SOURCE_DIR}/src/telemetry/pings.yaml
             ${CMAKE_SOURCE_DIR}/src/telemetry/metrics.yaml
-    # Yes, this is exactly the same as above. But notice that namespace is different.
-    COMMAND ${PYTHON_EXECUTABLE} -m glean_parser translate -f kotlin
-            -o ${CMAKE_CURRENT_BINARY_DIR}/../daemontelemetry -s "glean_namespace=mozilla.telemetry.glean" -s "namespace=org.mozilla.firefox.vpn.daemon.GleanMetrics"
-                ${CMAKE_SOURCE_DIR}/src/telemetry/pings.yaml
-                ${CMAKE_SOURCE_DIR}/src/telemetry/metrics.yaml
     COMMAND_ERROR_IS_FATAL ANY
 )
