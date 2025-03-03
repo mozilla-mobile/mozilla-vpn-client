@@ -4,9 +4,18 @@
 
 #include "winutils.h"
 
+#include <WS2tcpip.h>
+#include <fwpmu.h>
+#include <netioapi.h>
 #include <windows.h>
+#include <winsock2.h>
 
 #include <QString>
+#include <QUuid>
+
+// Fixed GUID of the Wireguard NT driver.
+constexpr const QUuid WIREGUARD_NT_GUID(0xf64063ab, 0xbfee, 0x4881, 0xbf, 0x79,
+                                        0x36, 0x6e, 0x4c, 0xc7, 0xba, 0x75);
 
 QString WinUtils::win32strerror(unsigned long code) {
   LPWSTR buffer = nullptr;
@@ -18,4 +27,14 @@ QString WinUtils::win32strerror(unsigned long code) {
   QString result = QString::fromWCharArray(buffer, size);
   LocalFree(buffer);
   return result;
+}
+
+quint64 WinUtils::getVpnLuid() {
+  // Get the LUID of the wireguard interface, if it's up.
+  NET_LUID luid;
+  GUID vpnInterfaceGuid = WIREGUARD_NT_GUID;
+  if (ConvertInterfaceGuidToLuid(&vpnInterfaceGuid, &luid) != NO_ERROR) {
+    return 0;
+  }
+  return luid.Value;
 }
