@@ -23,12 +23,10 @@ class DNSResolver {
    * @brief Queues up a DNS Query to get Resolved.
    *
    * @param hostname - The requested Hostname
-   * @param nameServer - Optional sets the DNS server
    * @param parent - The Socks5Connection to notify. Will call
    * Socks5Connection::onHostnameResolved(QHostAddress) when done.
    */
-  void resolveAsync(const QString& hostname,
-                    Socks5Connection* parent);
+  void resolveAsync(const QString& hostname, Socks5Connection* parent);
 
   void setNameserver(const QHostAddress& addr);
 

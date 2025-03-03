@@ -6,8 +6,8 @@
 
 #include <WS2tcpip.h>
 #include <fwpmu.h>
-#include <netioapi.h>
 #include <iphlpapi.h>
+#include <netioapi.h>
 #include <windows.h>
 #include <winsock2.h>
 
@@ -287,7 +287,8 @@ void WindowsBypass::updateNameserver() {
   // Update the preferred DNS server.
   QHostAddress dnsNameserver;
   ULONG dnsMetric = ULONG_MAX;
-  for (auto i = m_interfaceData.constBegin(); i != m_interfaceData.constEnd(); i++) {
+  for (auto i = m_interfaceData.constBegin(); i != m_interfaceData.constEnd();
+       i++) {
     auto data = i.value();
     if (data.dnsAddr.isNull()) {
       continue;

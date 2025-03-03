@@ -9,9 +9,7 @@
 #include "socks5connection.h"
 
 Q_GLOBAL_STATIC(DNSResolver, dnsResolver);
-DNSResolver* DNSResolver::instance() {
-  return dnsResolver;
-}
+DNSResolver* DNSResolver::instance() { return dnsResolver; }
 
 DNSResolver::DNSResolver() {
   static int s_ares_init = false;

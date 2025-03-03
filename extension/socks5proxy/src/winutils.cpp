@@ -14,10 +14,9 @@
 #include <QString>
 #include <QUuid>
 
-
 // Fixed GUID of the Wireguard NT driver.
 constexpr const QUuid WIREGUARD_NT_GUID(0xf64063ab, 0xbfee, 0x4881, 0xbf, 0x79,
-  0x36, 0x6e, 0x4c, 0xc7, 0xba, 0x75);
+                                        0x36, 0x6e, 0x4c, 0xc7, 0xba, 0x75);
 
 
 QString WinUtils::win32strerror(unsigned long code) {
@@ -31,7 +30,6 @@ QString WinUtils::win32strerror(unsigned long code) {
   LocalFree(buffer);
   return result;
 }
-
 
 quint64 WinUtils::getVpnLuid() {
   // Get the LUID of the wireguard interface, if it's up.
