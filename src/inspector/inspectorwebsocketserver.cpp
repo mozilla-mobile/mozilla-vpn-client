@@ -37,7 +37,6 @@ InspectorWebSocketServer::InspectorWebSocketServer(QObject* parent)
   }
   connect(this, &QWebSocketServer::originAuthenticationRequired,
           [](QWebSocketCorsAuthenticator* authMgr) {
-            logger.error() <<  authMgr->origin();
             auto const origin = authMgr->origin();
             for (uint i = 0; i < ALLOWED_ORIGINS.size(); i++) {
               if (ALLOWED_ORIGINS.at(i) == origin) {
