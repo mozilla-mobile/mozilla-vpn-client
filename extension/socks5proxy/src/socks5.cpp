@@ -32,6 +32,10 @@ void Socks5::newConnection(T* server) {
     if (!socket) {
       return;
     }
+    if constexpr (std::is_same_v<T, QTcpSocket>) {
+      socket->setSocketOption(QAbstractSocket::LowDelayOption, 1);
+      socket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
+    }
 
     auto const con = new Socks5Connection(socket);
     connect(con, &QObject::destroyed, this, [this, server]() {

@@ -344,7 +344,7 @@ void Socks5Connection::bytesWritten(qint64 bytes) {
 
   // Drive statistics and proxy data.
   emit dataSentReceived(0, bytes);
-  proxy(m_inSocket, m_outSocket, m_recvHighWaterMark);
+  proxy(m_outSocket, m_inSocket, m_recvHighWaterMark);
 }
 
 void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
@@ -458,7 +458,7 @@ void Socks5Connection::configureOutSocket(quint16 port) {
   m_hostLookupStack.append(m_destAddress.toString());
   m_outSocket = new QTcpSocket(this);
   emit setupOutSocket(m_outSocket, m_destAddress);
-
+  m_outSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
   m_outSocket->connectToHost(m_destAddress, port);
 
   connect(m_outSocket, &QTcpSocket::connected, this, [this]() {
