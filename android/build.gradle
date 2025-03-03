@@ -40,12 +40,12 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply plugin: 'kotlinx-serialization'
 
-// Custom task to generate the AAR from your Go module using gomobile
+// Builds the /tunnel go module 
+// Produces an .aar file containing the libs 
+// and Java glue Code to call it.
 task buildTunnelGo(type: Exec) {
-    // Set workingDir to the tunnel folder where your Go module resides.
+
     workingDir "$projectDir/tunnel"
-    // Command to bind your Go package to Android.
-    // Adjust the command-line arguments as needed.
     commandLine 'gomobile', 'bind', '-target=android', '-androidapi=24', '-o', "$projectDir/libs/tunnel.aar", '.'
 }
 
