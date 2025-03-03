@@ -4,7 +4,6 @@
 
 #include "winutils.h"
 
-
 #include <WS2tcpip.h>
 #include <fwpmu.h>
 #include <netioapi.h>
@@ -17,7 +16,6 @@
 // Fixed GUID of the Wireguard NT driver.
 constexpr const QUuid WIREGUARD_NT_GUID(0xf64063ab, 0xbfee, 0x4881, 0xbf, 0x79,
                                         0x36, 0x6e, 0x4c, 0xc7, 0xba, 0x75);
-
 
 QString WinUtils::win32strerror(unsigned long code) {
   LPWSTR buffer = nullptr;
