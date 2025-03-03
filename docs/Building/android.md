@@ -8,7 +8,7 @@ this can break building for other platforms, it's advised to do those steps
 in a separate environment. 
 
 ```bash 
-$ conda env create -f env.yml -n vpn-android
+$ conda env create -f env-android.yml -n vpn-android
 $ conda activate vpn-android
 ```
 
@@ -38,6 +38,8 @@ Now install the Android-SDK dependencies and QT via:
 $ ./scripts/android/conda_setup_sdk.sh
 # Setup the Conda env to fetch and use QT
 $ ./scripts/android/conda_setup_qt.sh
+# Setup gobind
+$ ./scripts/android/conda_setup_extras.sh
 $ conda deactivate
 $ conda activate vpn-android
 ```
