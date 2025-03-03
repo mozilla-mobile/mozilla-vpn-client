@@ -4,6 +4,7 @@
 
 #include "socks5connection.h"
 
+#include "dnsresolver.h"
 #include "socks5.h"
 
 #ifdef Q_OS_WIN
@@ -15,8 +16,6 @@
 
 #include <QDnsLookup>
 #include <QHostAddress>
-
-constexpr const int MAX_DNS_LOOKUP_ATTEMPTS = 5;
 
 constexpr const int MAX_CONNECTION_BUFFER = 16 * 1024;
 
@@ -84,7 +83,6 @@ Socks5Connection::Socks5Connection(QIODevice* socket)
 
   connect(m_inSocket, &QIODevice::bytesWritten, this,
           &Socks5Connection::bytesWritten);
-
   readyRead();
 }
 
@@ -281,17 +279,10 @@ void Socks5Connection::readyRead() {
           return;
         }
 
-        // Todo VPN-6510: Let's resolve the Host with the local device DNS
         QString hostname = QString::fromUtf8(buffer, length);
         m_hostLookupStack.append(hostname);
-
-        // Start a DNS lookup to handle this request.
-        m_dnsLookupAttempts = MAX_DNS_LOOKUP_ATTEMPTS;
-        QDnsLookup* lookup = new QDnsLookup(QDnsLookup::ANY, hostname, this);
-        connect(lookup, &QDnsLookup::finished, this,
-                [this, port]() { dnsResolutionFinished(htons(port)); });
-
-        lookup->lookup();
+        m_destPort = htons(port);
+        DNSResolver::instance()->resolveAsync(hostname, this);
       }
 
       else if (m_addressType == 0x04 /* Ipv6 */) {
@@ -347,6 +338,16 @@ void Socks5Connection::bytesWritten(qint64 bytes) {
   proxy(m_outSocket, m_inSocket, m_recvHighWaterMark);
 }
 
+void Socks5Connection::onHostnameResolved(QHostAddress resolved) {
+  if (m_outSocket != nullptr) {
+    // We might get multiple ip results.
+    return;
+  }
+  m_destAddress = resolved;
+  Q_ASSERT(!resolved.isNull());
+  configureOutSocket(m_destPort);
+}
+
 void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
                              quint64& watermark) {
   Q_ASSERT(from && to);
@@ -378,79 +379,6 @@ void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
   if (queued > watermark) {
     watermark = queued;
   }
-}
-
-void Socks5Connection::dnsResolutionFinished(quint16 port) {
-  QDnsLookup* lookup = qobject_cast<QDnsLookup*>(QObject::sender());
-
-  // Garbage collect the lookup when we're finished.
-  m_dnsLookupAttempts--;
-  auto guard = qScopeGuard([lookup]() {
-    if (lookup->isFinished()) {
-      lookup->deleteLater();
-    }
-  });
-
-  if (lookup->error() != QDnsLookup::NoError) {
-    setError(ErrorHostUnreachable, lookup->errorString());
-    return;
-  }
-
-  // If we get a hostname record. Then DNS resolution has succeeded. and
-  // we can proceed to the outbound socket setup.
-  auto hostRecords = lookup->hostAddressRecords();
-  if (hostRecords.length() > 0) {
-    m_destAddress = hostRecords.first().value();
-    configureOutSocket(port);
-    return;
-  }
-
-  // If we have exhausted the DNS lookup attempts, then give up on DNS
-  // resolution and report the host as unreachable. This safeguards us from
-  // recursive DNS loops and other unresolvable situations.
-  if (m_dnsLookupAttempts <= 0) {
-    setError(ErrorHostUnreachable, "Maximum DNS attempts exhausted");
-    return;
-  }
-
-  // If we got a canonical name record, restart the lookup using the CNAME.
-  auto cnameRecords = lookup->canonicalNameRecords();
-  if (cnameRecords.length() > 0) {
-    QString target = cnameRecords.first().value();
-    m_hostLookupStack.append(target);
-    lookup->setName(target);
-    lookup->setType(QDnsLookup::ANY);
-    lookup->lookup();
-    return;
-  }
-
-  // Service records are not supported.
-  auto serviceRecords = lookup->serviceRecords();
-  if (serviceRecords.length() > 0) {
-    // TODO: Not supported.
-    //
-    // In theory we can restart the DNS lookup with the target name, but
-    // the port may have changed too and that is stored somewhere in the
-    // signal binding. Service records aren't used a whole lot out in the
-    // wild either.
-    //
-    // We can also receive more than one service record and we are expected
-    // to load balance/fallback amongst them.
-    setError(ErrorHostUnreachable, "SRV records not supported");
-    return;
-  }
-
-  // If we get this far, the request didn't fail, but we also didn't get any
-  // records that we could make sense of. Fallback to an explicit IPv4 (A) query
-  // if this originated from an ANY query.
-  if (lookup->type() == QDnsLookup::ANY) {
-    lookup->setType(QDnsLookup::A);
-    lookup->lookup();
-    return;
-  }
-
-  // Otherwise, no such host was found.
-  setError(ErrorHostUnreachable, "DNS hostname not found");
 }
 
 void Socks5Connection::configureOutSocket(quint16 port) {
@@ -492,6 +420,10 @@ void Socks5Connection::configureOutSocket(quint16 port) {
               setError(ErrorGeneral, m_outSocket->errorString());
             }
           });
+}
+
+void Socks5Connection::onHostnameNotFound() {
+  setError(ErrorHostUnreachable, "Failed to Resolve DNS Query");
 }
 
 Socks5Connection::Socks5Replies Socks5Connection::socketErrorToSocks5Rep(
