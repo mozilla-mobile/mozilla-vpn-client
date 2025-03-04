@@ -8,10 +8,8 @@
   const commandLineArgs = require("command-line-args");
 
   const optionDefinitions = [
-    { name: "remote", alias: "r", type: Boolean, defaultValue: false },
     { name: "adb", alias: "a", type: Boolean, defaultValue: false },
   ];
-  const http_port = 8888;
   const options = commandLineArgs(optionDefinitions);
 
   console.log(options);
@@ -26,7 +24,6 @@
       throw new Error("No device found to forward to!");
     }
     await adb.forwardPort("8765", "8765");
-    await adb.reversePort(http_port, http_port);
   }
 
   const http = require("http");
@@ -50,8 +47,11 @@
     console.log(
         `Controls: \n r \t \t - Force Reload the whole window \n control+c \t - exit`);
 
+    console.log(`Watching: ${currentPath}`);
+
     const watcher = chokidar.watch(".", {
-      ignored: /(^|[\/\\])\../,
+      ignored: (path, stats) => stats?.isFile() && !path.endsWith('.qml'), // only watch QML files
+      //ignored: /(^|[\/\\])\../,
       persistent: true,
       ignoreInitial: true,
       awaitWriteFinish: { stabilityThreshold: 200, pollInterval: 100 },
@@ -61,9 +61,6 @@
         if (path.endsWith(".qml")) {
           const relPath = path.replace(/\\/g, "/");
           let url = `file://${currentPath}/${relPath}`;
-          if (options.remote) {
-            url = `http://0.0.0.0:${http_port}/${relPath}`;
-          }
           console.log(`Announcing ${url}`);
           websocket.send(`live_reload ${url}`);
         }
@@ -105,24 +102,4 @@
       console.log('Requesting App Reload')
     }
   });
-
-  if (options.remote) {
-    const server = http.createServer(function (req, res) {
-      console.log(`(Server) /t Requests for ${req.url}`);
-
-      console.log(req.rawHeaders);
-      try {
-        const url = req.url === "/" ? "/index.html" : req.url;
-        const filePath = "." + url;
-        const stream = fs.createReadStream(filePath);
-        stream.pipe(res);
-      } catch (error) {
-        console.log(error);
-        res.end();
-      }
-    });
-    server.listen(http_port, function () {
-      console.log("HTTP server serving hot qml at 0.0.0.0:" + http_port);
-    });
-  }
 })();
