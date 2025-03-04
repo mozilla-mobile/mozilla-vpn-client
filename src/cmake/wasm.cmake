@@ -15,8 +15,6 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmwindowcontroller.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmiaphandler.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmiaphandler.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasminspector.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasminspector.h
      ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.h
      ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.cpp
