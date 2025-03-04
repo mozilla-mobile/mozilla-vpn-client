@@ -2,6 +2,8 @@
 #include "dnsresolver.h"
 
 #include <ares.h>
+#include <qforeach.h>
+#include <qhostaddress.h>
 
 #include <QCoreApplication>
 #include <QObject>
@@ -80,12 +82,6 @@ void DNSResolver::addressInfoCallback(void* arg, int status, int timeouts,
 
 void DNSResolver::resolveAsync(const QString& hostname,
                                Socks5Connection* parent) {
-  if (!m_nameserver.isNull()) {
-    auto serverString = m_nameserver.toString().toLocal8Bit();
-    int result = ares_set_servers_csv(mChannel, serverString.constData());
-    Q_ASSERT(result == ARES_SUCCESS);
-  }
-
   auto name = hostname.toStdString();
   struct ares_addrinfo_hints hints;
   memset(&hints, 0, sizeof(hints));
@@ -95,6 +91,18 @@ void DNSResolver::resolveAsync(const QString& hostname,
                    parent);
 }
 
-void DNSResolver::setNameserver(const QHostAddress& addr) {
-  m_nameserver = addr;
+void DNSResolver::setNameserver(const QList<QHostAddress>& dnsList) {
+  QString buffer{};
+
+  foreach (const QHostAddress& dns, dnsList) {
+    if (dns.isNull()) {
+      continue;
+    }
+    buffer.append(dns.toString());
+    buffer.append(",");
+  }
+  auto serverString = buffer.toLocal8Bit();
+  qDebug() << "Setting nameservers:" << serverString;
+  int result = ares_set_servers_csv(mChannel, serverString.constData());
+  Q_ASSERT(result == ARES_SUCCESS);
 }

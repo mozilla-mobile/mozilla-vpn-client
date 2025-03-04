@@ -45,7 +45,7 @@ class WindowsBypass final : public QObject {
     unsigned long ipv6metric;
     QHostAddress ipv4addr;
     QHostAddress ipv6addr;
-    QHostAddress dnsAddr;
+    QList<QHostAddress> dnsAddr;
   };
 
   QHash<quint64, InterfaceData> m_interfaceData;

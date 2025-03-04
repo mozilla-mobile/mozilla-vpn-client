@@ -8,6 +8,9 @@
 #include <fwpmu.h>
 #include <iphlpapi.h>
 #include <netioapi.h>
+#include <qforeach.h>
+#include <qhostaddress.h>
+#include <qttypetraits.h>
 #include <windows.h>
 #include <winsock2.h>
 
@@ -17,6 +20,7 @@
 #include <QScopeGuard>
 #include <QSettings>
 #include <QUuid>
+#include <algorithm>
 
 #include "socks5.h"
 #include "winutils.h"
@@ -241,11 +245,14 @@ void WindowsBypass::refreshAddresses() {
       continue;
     }
 
-    // FIXME: Only using the first DNS server for now.
-    struct sockaddr* sa = i->FirstDnsServerAddress->Address.lpSockaddr;
-    data[i->Luid.Value].dnsAddr.setAddress(sa);
-    qDebug() << "Using" << data[i->Luid.Value].dnsAddr.toString()
-             << "for DNS server";
+    data[i->Luid.Value].dnsAddr.clear();
+    for (auto dns = i->FirstDnsServerAddress; dns != nullptr; dns = dns->Next) {
+      struct sockaddr* sa = dns->Address.lpSockaddr;
+      QHostAddress addr{sa};
+      data[i->Luid.Value].dnsAddr.append(addr);
+      qDebug() << "Adding" << addr.toString() << "as DNS server for "
+               << i->Luid.Value;
+    }
   }
 
   // Swap the updated table into use.
@@ -285,29 +292,29 @@ void WindowsBypass::interfaceChanged(quint64 luid) {
 
 void WindowsBypass::updateNameserver() {
   // Update the preferred DNS server.
-  QHostAddress dnsNameserver;
-  ULONG dnsMetric = ULONG_MAX;
-  for (auto i = m_interfaceData.constBegin(); i != m_interfaceData.constEnd();
-       i++) {
-    auto data = i.value();
-    if (data.dnsAddr.isNull()) {
-      continue;
-    }
-    if (data.dnsAddr.protocol() == QAbstractSocket::IPv6Protocol) {
-      if (data.ipv6metric >= dnsMetric) {
-        continue;
+  struct keyed {
+    QHostAddress addr;
+    ulong metric;
+  };
+  QList<keyed> dnsNameservers;
+  for (const auto& interfaceData : qAsConst(m_interfaceData)) {
+    for (const auto& dnsAddr : qAsConst(interfaceData.dnsAddr)) {
+      if (dnsAddr.protocol() == QAbstractSocket::IPv6Protocol) {
+        dnsNameservers.append({dnsAddr, interfaceData.ipv6metric});
+      } else {
+        dnsNameservers.append({dnsAddr, interfaceData.ipv4metric});
       }
-      dnsMetric = data.ipv6metric;
-    } else {
-      if (data.ipv4metric >= dnsMetric) {
-        continue;
-      }
-      dnsMetric = data.ipv4metric;
     }
-    dnsNameserver = data.dnsAddr;
   }
-  qDebug() << "Setting nameserver:" << dnsNameserver.toString();
-  DNSResolver::instance()->setNameserver(dnsNameserver);
+  // Sort the nameservers by it's metric smallest first
+  std::ranges::sort(dnsNameservers,
+                    [](auto a, auto b) { return a.metric < b.metric; });
+  QList<QHostAddress> selectedNameServers(dnsNameservers.length());
+  for (const auto& sortedDNSServer : qAsConst(dnsNameservers)) {
+    selectedNameServers.append(sortedDNSServer.addr);
+  }
+
+  DNSResolver::instance()->setNameserver(selectedNameServers);
 }
 
 // In this function, we basically try our best to re-implement the Windows
