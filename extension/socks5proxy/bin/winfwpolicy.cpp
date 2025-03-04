@@ -184,6 +184,9 @@ void WinFwPolicy::fwpmSublayerChanged(uint changeType,
 }
 
 void WinFwPolicy::restrictProxyPort(quint16 port) {
+#ifdef MZ_DEBUG
+  return;
+#endif
   // Start a transaction so that the firewall changes can be made atomically.
   FwpmTransactionBegin0(m_fwEngineHandle, 0);
   auto txnGuard =
