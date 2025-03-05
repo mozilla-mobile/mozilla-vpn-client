@@ -7,4 +7,4 @@ build-tools;33.0.0
 cmake;3.10.2.4988404
 emulator
 platform-tools
-ndk;23.1.7779620
+ndk;25.1.8937393

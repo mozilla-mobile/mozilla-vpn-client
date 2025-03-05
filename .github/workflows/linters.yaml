@@ -97,13 +97,9 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: vpn
-          environment-file: env.yml
-      - name: Setup Android SDK
-        run: |
-          conda info
-          ./scripts/android/conda_setup_sdk.sh
+          environment-file: env-android.yml
       - name: Run ktlint
         working-directory: android
         run: |
           conda info
-          REPOSITORY_ROOT=$(pwd)/.. ./gradlew ktlint
+          ktlint **/*.kt

@@ -6,6 +6,10 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 -->
 <manifest package="org.mozilla.firefox.vpn" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="-- %%INSERT_VERSION_NAME%% --" android:versionCode="-- %%INSERT_VERSION_CODE%% --" android:installLocation="auto">
 
+
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
+   
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
@@ -75,6 +79,23 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
                 <action android:name="android.service.quicksettings.action.QS_TILE" />
             </intent-filter>
         </service>
+        <service android:name=".daemon.VPNService"
+            android:permission="android.permission.BIND_VPN_SERVICE"
+            android:foregroundServiceType="systemExempted"
+            android:process=":Daemon"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.net.VpnService"/>
+            </intent-filter>
+        </service>
+        <receiver android:name=".BootReceiver"
+            android:exported="true">
+            <intent-filter
+                android:priority="2147483647">
+                <!-- Wow this is a horrible hack to ge up the priority-->
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
