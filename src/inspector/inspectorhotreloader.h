@@ -22,7 +22,7 @@ class InspectorHotreloader : public QQmlAbstractUrlInterceptor {
    * Will redirect all requests that match path.filename
    * to that URL
    *
-   * supported schemes: qrc://, file://, http://
+   * supported schemes: qrc://, file://
    *
    * @param path - The Replacement Path
    */
@@ -34,15 +34,6 @@ class InspectorHotreloader : public QQmlAbstractUrlInterceptor {
   void resetAllFiles();
 
   /**
-   * @brief Announces a qml replacement path is available
-   * Will download a file, store it in a temp directory and
-   * redirect all matching files to that.
-   *
-   * @param path - The Replacement Path
-   */
-  void fetchAndAnnounce(const QUrl& path);
-
-  /**
    * @brief Closes and re-opens the QML window
    * forcing a refresh of all components.
    *
@@ -52,7 +43,6 @@ class InspectorHotreloader : public QQmlAbstractUrlInterceptor {
  private:
   QQmlEngine* m_target = nullptr;
   QMap<QString, QUrl> m_announced_files;
-  QString m_qml_folder;
 };
 
 #endif  // MOZILLA_VPN_INSPECTORHOTRELOADER_H
