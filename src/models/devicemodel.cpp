@@ -294,10 +294,10 @@ void DeviceModel::logSerialize(QIODevice* device) {
   out << "Machine arch -> " << QSysInfo::currentCpuArchitecture() << Qt::endl;
   out << "OS -> " << QSysInfo::productType() << Qt::endl;
 #ifdef MZ_WINDOWS
-  out << "OS Version -> " << WindowsUtils::windowsVersion() << Qt::endl;
-#else
-  out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
+  out << "OS Version (Reg) -> " << WindowsUtils::windowsVersion() << Qt::endl;
 #endif
+  out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
+
 #ifdef MZ_ANDROID
   out << "SDK Version -> " << AndroidCommons::getSDKVersion() << Qt::endl;
   out << "Manufacturer -> " << AndroidCommons::GetManufacturer() << Qt::endl;
