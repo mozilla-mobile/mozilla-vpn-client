@@ -8,9 +8,6 @@
 #include <fwpmu.h>
 #include <iphlpapi.h>
 #include <netioapi.h>
-#include <qforeach.h>
-#include <qhostaddress.h>
-#include <qttypetraits.h>
 #include <windows.h>
 #include <winsock2.h>
 
