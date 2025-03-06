@@ -2,8 +2,7 @@
 #include "dnsresolver.h"
 
 #include <ares.h>
-#include <qforeach.h>
-#include <qhostaddress.h>
+#include <qttypetraits.h>
 
 #include <QCoreApplication>
 #include <QObject>
@@ -94,7 +93,7 @@ void DNSResolver::resolveAsync(const QString& hostname,
 void DNSResolver::setNameserver(const QList<QHostAddress>& dnsList) {
   QString buffer{};
 
-  foreach (const QHostAddress& dns, dnsList) {
+  foreach (const QHostAddress& dns, qAsConst(dnsList)) {
     if (dns.isNull()) {
       continue;
     }
