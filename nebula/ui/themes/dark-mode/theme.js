@@ -23,7 +23,7 @@ color.primaryPressed = color.dullPurple;    // set
 
 // Backgrounds
 color.bgColor = color.grey45;  // set
-color.bgColorStronger = color.white;
+color.bgColorStronger = color.brightSlate;          // set
 color.overlay = addTransparency(color.black, 0.3);  // done
 
 // Fonts
