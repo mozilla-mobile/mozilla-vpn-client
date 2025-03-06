@@ -18,6 +18,7 @@
 #include <QSettings>
 #include <QUuid>
 #include <algorithm>
+#include <ranges>
 
 #include "socks5.h"
 #include "winutils.h"
