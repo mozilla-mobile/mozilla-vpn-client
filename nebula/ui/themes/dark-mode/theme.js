@@ -17,67 +17,107 @@ color.useDarkAssets = true;
  */
 // Primary
 color.primary = color.purple90;  // set
-color.primaryBrighter = color.purple70;
+color.primaryBrighter = color.blue20;       // set
 color.primaryHovered = color.washedPurple;  // set
-color.primaryPressed = color.dullPurple;
+color.primaryPressed = color.dullPurple;    // set
 
 // Backgrounds
-color.bgColor = color.grey45;  // maybe set
+color.bgColor = color.grey45;  // set
 color.bgColorStronger = color.white;
-color.overlayBackground = addTransparency(color.black, 0.3);
+color.overlay = addTransparency(color.black, 0.3);  // done
 
 // Fonts
-color.fontColor = color.grey5;     // done
-color.fontColorDark = color.grey5  // done;
-color.fontColorWarning = color.yellow70;
-color.fontColorInverted = color.grey5;       // done
-color.fontColorInvertedMuted = color.grey5;  // done
-color.fontTitleColor = color.black;
+color.fontColor = color.grey3;                                     // done
+color.fontColorDark = color.grey3;                                 // done
+color.fontColorWarning = color.yellow50;                           // set
+color.fontColorInverted = color.grey3;                             // done
+color.fontColorInvertedMuted = addTransparency(color.grey3, 0.8);  // done
+color.fontTitleColor = color.grey3;                                // done
 
 // Dividers and borders
-color.divider = color.grey10;
-color.dropShadow = color.grey60;
-color.darkFocusBorder = color.grey40;
-color.lightFocusBorder = color.grey15;
-color.inputHighlight = color.grey10;
+color.divider = addTransparency(color.grey3, 0.2);           // done
+color.dropShadow = color.grey60;                             // done
+color.darkFocusBorder = addTransparency(color.grey3, 0.2);   // done
+color.lightFocusBorder = addTransparency(color.grey3, 0.2);  // done
+color.inputHighlight = color.brightSlate;                    // set
 
 // Success/Failure/Warning/Normal levels
-color.successMain = color.green90;
-color.successAccent = color.green50;
-color.successBackground = color.green5;
-color.errorMain = color.red80;
-color.errorAccent = color.red50;        // set
+color.successMain = color.green90;        // set
+color.successAccent = color.green80;      // set
+color.successBackground = color.green70;  // set
+color.errorMain = color.red80;            // set
+color.errorAccent = color.red70;          // set
 color.errorAccentLight = color.grey30;  // set
-color.errorBackground = color.red10;
-color.warningMain = color.yellow90;
-color.warningAccent = color.yellow50;
-color.warningBackground = color.orange10;
-color.normalLevelMain = color.blue90;
-color.normalLevelAccent = color.blue50;
-color.normalLevelBackground = addTransparency(color.blue50, 0.4);
+color.errorBackground = color.red10;    // set
+color.warningMain = color.yellow70;     // set
+color.warningAccent = color.yellow50;   // set
+color.warningBackground = color.orange10;                          // set
+color.normalLevelMain = color.blue90;                              // set
+color.normalLevelAccent = color.blue50;                            // set
+color.normalLevelBackground = addTransparency(color.blue90, 0.4);  // set
 
 // Disabled button colors
-color.disabledButtonColor = color.grey20;
-color.disabledButtonHovered = color.grey10;
-color.disabledButtonPressed = color.grey20;
+color.disabledButtonColor =
+    addTransparency(color.blue20, 0.6);  // HOW DOES THIS LOOK WITH TRANSPARENCY
+color.disabledButtonHovered = addTransparency(color.white, 0.1);  // SET
+color.disabledButtonPressed = addTransparency(color.white, 0.2);  // SET
 
 // Step progress bar (several other colors for bar based on primary color)
-color.stepProgressBarHighlight = color.purple10;
-color.stepProgressBarIncomplete = color.grey30;
+color.stepProgressBarHighlight = color.purple20;      // SET
+color.stepProgressBarIncomplete = color.brightSlate;  // set
 
 // Toggle
-color.activatingToggle = color.dullPurple;
-color.activatingToggleBackground = color.dullGreen;
+color.connectingToggle = color.dullPurple;        // SET
+color.connectingToggleBackground = color.grey30;  // SET
 
 // Objects (these aren't colors, these are objects of colors)
-color.destructiveButton = color.redButton;
-color.normalButton = color.blueButton;
-color.successAlert = color.greenAlert;
-color.warningAlert = color.orangeAlert;
-color.clickableRow = color.clickableRowBlue;
-color.textLink = color.greyLink;
+color.destructiveButton = {
+  defaultColor: color.red80,  // SET
+  buttonHovered: color.red75,
+  buttonPressed: color.red80,
+  buttonDisabled: color.red10,
+  focusOutline: addTransparency(color.red70, 0.4),
+  focusBorder: color.red70,
+};
+color.normalButton = {
+  defaultColor: color.blue20,  // SET
+  buttonHovered: color.blue60,
+  buttonPressed: color.blue70,
+  buttonDisabled: color.washedLightBlue,
+  focusBgColor: color.blue50,
+  focusOutline: addTransparency(color.strongBlue, 0.3),
+  focusBorder: color.strongBlue,
+};
+color.successAlert = {
+  defaultColor: color.green80,  // SET
+  buttonHovered: color.green60,
+  buttonPressed: color.green70,
+  focusOutline: addTransparency(color.green50, 0.2),
+  focusBorder: color.green70,
+};
+color.warningAlert = {
+  buttonHovered: color.yellow70,  // SET
+  buttonPressed: color.yellow70,
+  focusOutline: addTransparency(color.yellow60, 0.3),
+  focusBorder: color.yellow70,
+};
+color.clickableRow = {
+  defaultColor: addTransparency(color.white, 0.1),  // SET
+  buttonHovered: color.washedBlue,
+  buttonPressed: color.washedLightBlue,
+  focusOutline: addTransparency(color.grey5, 0.0),
+  focusBorder: color.strongBlue,
+};
+color.textLink = {
+  defaultColor: color.blue20,  // SET
+  buttonHovered: addTransparency(color.grey60, 0.8),
+  buttonPressed: color.grey60,
+  focusOutline: color.grey60,
+  focusBorder: color.black
+};
 
 color.onBoardingGradient = {
+  // set
   start: color.lighterOnboardingPurple,
   middle: color.mediumOnboardingPurple,
   end: color.darkerOnboardingPurple,

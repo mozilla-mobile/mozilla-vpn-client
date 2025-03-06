@@ -73,6 +73,7 @@ color.grey20 = '#CECECF';
 color.grey15 = '#D8D8D8';
 color.grey10 = '#E7E7E7';
 color.grey5 = '#F9F9FA';
+color.grey3 = '#FBFBFE';
 color.white = '#FFFFFF';
 
 /**
@@ -158,6 +159,7 @@ color.washedPurple = '#5B4983';
 color.washedBlue = '#D4E2F6';
 color.washedLightBlue = '#AECBF2';
 color.strongBlue = '#0A84FF';
+color.brightSlate = '#2B2A33';
 
 color.lighterOnboardingPurple = '#472C87';
 color.mediumOnboardingPurple = '#301962';

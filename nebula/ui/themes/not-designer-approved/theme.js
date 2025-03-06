@@ -24,7 +24,7 @@ color.primaryPressed = color.purple90;
 // Backgrounds
 color.bgColor = color.grey60;
 color.bgColorStronger = color.black;
-color.overlayBackground = addTransparency(color.white, 0.3);
+color.overlay = addTransparency(color.white, 0.3);
 
 // Fonts
 color.fontColor = color.grey40;
@@ -66,8 +66,8 @@ color.stepProgressBarHighlight = color.purple10;
 color.stepProgressBarIncomplete = color.grey30;
 
 // Toggle
-color.activatingToggle = color.dullPurple;
-color.activatingToggleBackground = color.dullGreen;
+color.connectingToggle = color.dullPurple;
+color.connectingToggleBackground = color.dullGreen;
 
 // Objects (these aren't colors, these are objects of colors)
 color.destructiveButton = color.redButton;
