@@ -305,8 +305,8 @@ void WindowsBypass::updateNameserver() {
     }
   }
   // Sort the nameservers by it's metric smallest first
-  std::ranges::sort(dnsNameservers,
-                    [](auto a, auto b) { return a.metric < b.metric; });
+  std::sort(dnsNameservers.begin(), dnsNameservers.end(),
+            [](auto a, auto b) { return a.metric < b.metric; });
   QList<QHostAddress> selectedNameServers(dnsNameservers.length());
   for (const auto& sortedDNSServer : qAsConst(dnsNameservers)) {
     selectedNameServers.append(sortedDNSServer.addr);
