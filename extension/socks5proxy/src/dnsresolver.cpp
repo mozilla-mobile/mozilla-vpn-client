@@ -2,7 +2,6 @@
 #include "dnsresolver.h"
 
 #include <ares.h>
-#include <qttypetraits.h>
 
 #include <QCoreApplication>
 #include <QObject>
