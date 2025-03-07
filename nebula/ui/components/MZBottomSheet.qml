@@ -79,7 +79,7 @@ Loader {
         }
 
         Overlay.modal: Rectangle {
-            color: MZTheme.colors.overlayBackground
+            color: MZTheme.colors.overlay
         }
     }
 }

@@ -41,7 +41,7 @@ ListView {
         }
 
         contentItem: Rectangle {
-            color: MZTheme.colors.darkFocusBorder
+            color: MZTheme.colors.focusBorder
             width: scrollBar.scrollBarWidth
             implicitWidth: scrollBar.scrollBarWidth
             radius: scrollBar.scrollBarWidth

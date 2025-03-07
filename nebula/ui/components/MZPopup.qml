@@ -126,7 +126,7 @@ Popup {
     Overlay.modal: Rectangle {
         id: overlayBackground
 
-        color: MZTheme.colors.overlayBackground
+        color: MZTheme.colors.overlay
 
         Behavior on opacity {
             NumberAnimation {
