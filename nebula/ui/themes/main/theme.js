@@ -37,8 +37,7 @@ color.fontTitleColor = color.black;
 // Dividers and borders
 color.divider = color.grey10;
 color.dropShadow = color.grey60;
-color.darkFocusBorder = color.grey40;
-color.lightFocusBorder = color.grey15;
+color.focusBorder = color.grey40;
 color.inputHighlight = color.grey10;
 
 // Success/Failure/Warning/Normal levels
@@ -88,7 +87,7 @@ color.vpnToggleConnected = {
   buttonHovered: color.green60,
   buttonPressed: color.green70,
   focusOutline: addTransparency(color.bgColor, 0.3),
-  focusBorder: color.lightFocusBorder,
+  focusBorder: color.focusBorder,
 };
 
 color.vpnToggleDisconnected = {
@@ -97,5 +96,5 @@ color.vpnToggleDisconnected = {
   buttonPressed: color.fontColorDark,
   buttonDisabled: color.disabledButtonColor,
   focusOutline: color.transparent,
-  focusBorder: color.darkFocusBorder,
+  focusBorder: color.focusBorder,
 };

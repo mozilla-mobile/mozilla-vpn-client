@@ -45,7 +45,7 @@ color.iconButtonLightBackground = {
   buttonPressed: color.disabledButtonPressed,
   buttonDisabled: color.transparent,
   focusOutline: color.bgColorTransparent,
-  focusBorder: color.darkFocusBorder,
+  focusBorder: color.focusBorder,
 };
 
 color.iconButtonDarkBackground = {
@@ -54,7 +54,7 @@ color.iconButtonDarkBackground = {
   buttonPressed: color.primaryPressed,
   buttonDisabled: addTransparency(color.primary, 0.0),
   focusOutline: addTransparency(color.primaryHovered, 0.0),
-  focusBorder: color.lightFocusBorder,
+  focusBorder: color.focusBorder,
 };
 
 color.card = {
@@ -63,17 +63,17 @@ color.card = {
   buttonPressed: color.disabledButtonPressed,
   buttonDisabled: color.bgColorTransparent,
   focusOutline: color.bgColorTransparent,
-  focusBorder: color.darkFocusBorder,
+  focusBorder: color.focusBorder,
 };
 
 color.inputState = {
   default: {
-    border: color.darkFocusBorder,
+    border: color.focusBorder,
     placeholder: color.fontColor,
     text: color.fontColorDark,
   },
   hover: {
-    border: color.darkFocusBorder,
+    border: color.focusBorder,
     placeholder: color.fontColorDark,
     text: color.fontColorDark,
   },
