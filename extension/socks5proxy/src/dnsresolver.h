@@ -28,7 +28,7 @@ class DNSResolver {
    */
   void resolveAsync(const QString& hostname, Socks5Connection* parent);
 
-  void setNameserver(const QHostAddress& addr);
+  void setNameserver(const QList<QHostAddress>& addr);
 
  private:
   static void addressInfoCallback(void* arg, int status, int timeouts,
@@ -36,6 +36,4 @@ class DNSResolver {
   void shutdownAres();
 
   ares_channeldata* mChannel = nullptr;
-
-  QHostAddress m_nameserver;
 };
