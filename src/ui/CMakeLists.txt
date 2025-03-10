@@ -33,6 +33,7 @@ qt_add_qml_module(mozillavpn-ui
         screens/getHelp/contactUs/ViewContactUsForm.qml
         screens/getHelp/contactUs/ViewContactUsThankYou.qml
         screens/getHelp/developerMenu/ViewAnimationsPlayground.qml
+        screens/getHelp/developerMenu/ViewColorObjects.qml
         screens/getHelp/developerMenu/ViewImagesPlayground.qml
         screens/getHelp/developerMenu/ViewDeveloperMenu.qml
         screens/getHelp/developerMenu/ViewFeatureList.qml
