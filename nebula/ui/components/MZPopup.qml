@@ -92,7 +92,7 @@ Popup {
 
             anchors.fill: popUpShadowSource
             cached: true
-            color: "black"
+            color: MZTheme.colors.dropShadow
             opacity: 0.2
             radius: 16
             source: popUpShadowSource

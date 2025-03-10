@@ -70,7 +70,7 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? MZTheme.colors.normalButton.buttonPressed : MZTheme.colors.radioButtonDisabledPressed
+                color: radioControl.checked ? MZTheme.colors.normalButton.buttonPressed : MZTheme.colors.disabledButtonPressed
                 scale: 0.55
             }
 
@@ -101,7 +101,7 @@ RadioDelegate {
 
             PropertyChanges {
                 target: radioButtonInsetCircle
-                color: radioControl.checked ? MZTheme.colors.normalButton.buttonPressed : MZTheme.colors.radioButtonDisabledHovered
+                color: radioControl.checked ? MZTheme.colors.normalButton.buttonPressed : MZTheme.colors.disabledButtonHovered
                 scale: 0.6
             }
 

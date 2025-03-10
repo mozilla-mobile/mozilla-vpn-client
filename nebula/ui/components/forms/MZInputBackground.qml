@@ -16,6 +16,7 @@ Rectangle {
     antialiasing: true
     border.color: MZTheme.colors.inputState.default.border
     radius: MZTheme.theme.cornerRadius
+    color: MZTheme.colors.bgColor
 
     Behavior on border.color {
         ColorAnimation {
