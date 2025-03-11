@@ -17,8 +17,6 @@
 #include <QScopeGuard>
 #include <QSettings>
 #include <QUuid>
-#include <algorithm>
-#include <ranges>
 
 #include "socks5.h"
 #include "winutils.h"
@@ -222,37 +220,6 @@ void WindowsBypass::refreshAddresses() {
     }
   }
 
-  // Fetch the DNS resolvers too.
-  QByteArray gaaBuffer(4096, 0);
-  ULONG gaaBufferSize = gaaBuffer.size();
-  auto adapterAddrs = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(gaaBuffer.data());
-  result = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr,
-                                adapterAddrs, &gaaBufferSize);
-  if (result == ERROR_BUFFER_OVERFLOW) {
-    gaaBuffer.resize(gaaBufferSize);
-    adapterAddrs = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(gaaBuffer.data());
-    result = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr,
-                                  adapterAddrs, &gaaBufferSize);
-  }
-  for (auto i = adapterAddrs; result == NO_ERROR && i != nullptr; i = i->Next) {
-    // Ignore DNS servers on interfaces without routable addresses.
-    if (!data.contains(i->Luid.Value)) {
-      continue;
-    }
-    if (i->FirstDnsServerAddress == nullptr) {
-      continue;
-    }
-
-    data[i->Luid.Value].dnsAddr.clear();
-    for (auto dns = i->FirstDnsServerAddress; dns != nullptr; dns = dns->Next) {
-      struct sockaddr* sa = dns->Address.lpSockaddr;
-      QHostAddress addr{sa};
-      data[i->Luid.Value].dnsAddr.append(addr);
-      qDebug() << "Adding" << addr.toString() << "as DNS server for "
-               << i->Luid.Value;
-    }
-  }
-
   // Swap the updated table into use.
   m_interfaceData.swap(data);
   updateNameserver();
@@ -295,15 +262,44 @@ void WindowsBypass::updateNameserver() {
     ulong metric;
   };
   QList<keyed> dnsNameservers;
-  for (const auto& interfaceData : qAsConst(m_interfaceData)) {
-    for (const auto& dnsAddr : qAsConst(interfaceData.dnsAddr)) {
-      if (dnsAddr.protocol() == QAbstractSocket::IPv6Protocol) {
-        dnsNameservers.append({dnsAddr, interfaceData.ipv6metric});
+
+  // Fetch the DNS resolvers too.
+  QByteArray gaaBuffer(4096, 0);
+  ULONG gaaBufferSize = gaaBuffer.size();
+  auto adapterAddrs = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(gaaBuffer.data());
+  DWORD result = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX,
+                                      nullptr, adapterAddrs, &gaaBufferSize);
+  if (result == ERROR_BUFFER_OVERFLOW) {
+    gaaBuffer.resize(gaaBufferSize);
+    adapterAddrs = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(gaaBuffer.data());
+    result = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr,
+                                  adapterAddrs, &gaaBufferSize);
+  }
+  for (auto i = adapterAddrs; result == NO_ERROR && i != nullptr; i = i->Next) {
+    // Ignore DNS servers on interfaces without routable addresses.
+    if (!m_interfaceData.contains(i->Luid.Value)) {
+      continue;
+    }
+    if (i->FirstDnsServerAddress == nullptr) {
+      continue;
+    }
+
+    for (auto dns = i->FirstDnsServerAddress; dns != nullptr; dns = dns->Next) {
+      struct sockaddr* sa = dns->Address.lpSockaddr;
+      QHostAddress addr{sa};
+      if (sa->sa_family == AF_INET) {
+        dnsNameservers.append({addr, m_interfaceData[i->Luid.Value].ipv4metric});
       } else {
-        dnsNameservers.append({dnsAddr, interfaceData.ipv4metric});
+        if (addr.isLinkLocal()) {
+          addr.setScopeId(QString::number(i->Ipv6IfIndex));
+        }
+        dnsNameservers.append({addr, m_interfaceData[i->Luid.Value].ipv6metric});
       }
+      qDebug() << "Adding" << addr.toString() << "as DNS server for "
+               << i->Luid.Value;
     }
   }
+
   // Sort the nameservers by it's metric smallest first
   std::sort(dnsNameservers.begin(), dnsNameservers.end(),
             [](auto a, auto b) { return a.metric < b.metric; });
