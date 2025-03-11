@@ -100,12 +100,12 @@ void DNSResolver::resolveAsync(const QString& hostname, QObject* parent) {
   m_requests.insert(parent, hostname);
   m_requestLock.unlock();
 
-  auto callback =
-      [](void *arg, int status, int timeouts, struct ares_addrinfo *results) {
-        QObject* ctx = static_cast<QObject*>(arg);
-        auto instance = DNSResolver::instance();
-        instance->addressInfoCallback(ctx, status, timeouts, results);
-      };
+  auto callback = [](void* arg, int status, int timeouts,
+                     struct ares_addrinfo* results) {
+    QObject* ctx = static_cast<QObject*>(arg);
+    auto instance = DNSResolver::instance();
+    instance->addressInfoCallback(ctx, status, timeouts, results);
+  };
 
   auto name = hostname.toStdString();
   struct ares_addrinfo_hints hints;

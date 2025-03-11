@@ -42,7 +42,7 @@ class DNSResolver : public QObject {
                            struct ares_addrinfo* result);
   void shutdownAres();
 
-  QHash<QObject*,QString> m_requests;
+  QHash<QObject*, QString> m_requests;
   QMutex m_requestLock;
 
   ares_channeldata* mChannel = nullptr;

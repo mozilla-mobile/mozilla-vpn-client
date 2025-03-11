@@ -256,14 +256,14 @@ void WindowsBypass::interfaceChanged(quint64 luid) {
 }
 
 void WindowsBypass::updateNameserver() {
-  // Update the preferred DNS server.
+  // A list of DNS servers and their interface metrics.
   struct keyed {
     QHostAddress addr;
     ulong metric;
   };
-  QList<keyed> dnsNameservers;
+  QList<keyed> nameservers;
 
-  // Fetch the DNS resolvers too.
+  // Fetch the DNS resolvers.
   QByteArray gaaBuffer(4096, 0);
   ULONG gaaBufferSize = gaaBuffer.size();
   auto adapterAddrs = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(gaaBuffer.data());
@@ -280,20 +280,17 @@ void WindowsBypass::updateNameserver() {
     if (!m_interfaceData.contains(i->Luid.Value)) {
       continue;
     }
-    if (i->FirstDnsServerAddress == nullptr) {
-      continue;
-    }
 
     for (auto dns = i->FirstDnsServerAddress; dns != nullptr; dns = dns->Next) {
       struct sockaddr* sa = dns->Address.lpSockaddr;
       QHostAddress addr{sa};
       if (sa->sa_family == AF_INET) {
-        dnsNameservers.append({addr, m_interfaceData[i->Luid.Value].ipv4metric});
+        nameservers.append({addr, m_interfaceData[i->Luid.Value].ipv4metric});
       } else {
         if (addr.isLinkLocal()) {
           addr.setScopeId(QString::number(i->Ipv6IfIndex));
         }
-        dnsNameservers.append({addr, m_interfaceData[i->Luid.Value].ipv6metric});
+        nameservers.append({addr, m_interfaceData[i->Luid.Value].ipv6metric});
       }
       qDebug() << "Adding" << addr.toString() << "as DNS server for "
                << i->Luid.Value;
@@ -301,11 +298,11 @@ void WindowsBypass::updateNameserver() {
   }
 
   // Sort the nameservers by it's metric smallest first
-  std::sort(dnsNameservers.begin(), dnsNameservers.end(),
+  std::sort(nameservers.begin(), nameservers.end(),
             [](auto a, auto b) { return a.metric < b.metric; });
-  QList<QHostAddress> selectedNameServers(dnsNameservers.length());
-  for (const auto& sortedDNSServer : qAsConst(dnsNameservers)) {
-    selectedNameServers.append(sortedDNSServer.addr);
+  QList<QHostAddress> selectedNameServers(nameservers.length());
+  for (const auto& ns : qAsConst(nameservers)) {
+    selectedNameServers.append(ns.addr);
   }
 
   DNSResolver::instance()->setNameserver(selectedNameServers);
