@@ -220,34 +220,6 @@ void WindowsBypass::refreshAddresses() {
     }
   }
 
-  // Fetch the DNS resolvers too.
-  QByteArray gaaBuffer(4096, 0);
-  ULONG gaaBufferSize = gaaBuffer.size();
-  auto adapterAddrs = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(gaaBuffer.data());
-  result = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr,
-                                adapterAddrs, &gaaBufferSize);
-  if (result == ERROR_BUFFER_OVERFLOW) {
-    gaaBuffer.resize(gaaBufferSize);
-    adapterAddrs = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(gaaBuffer.data());
-    result = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr,
-                                  adapterAddrs, &gaaBufferSize);
-  }
-  for (auto i = adapterAddrs; result == NO_ERROR && i != nullptr; i = i->Next) {
-    // Ignore DNS servers on interfaces without routable addresses.
-    if (!data.contains(i->Luid.Value)) {
-      continue;
-    }
-    if (i->FirstDnsServerAddress == nullptr) {
-      continue;
-    }
-
-    // FIXME: Only using the first DNS server for now.
-    struct sockaddr* sa = i->FirstDnsServerAddress->Address.lpSockaddr;
-    data[i->Luid.Value].dnsAddr.setAddress(sa);
-    qDebug() << "Using" << data[i->Luid.Value].dnsAddr.toString()
-             << "for DNS server";
-  }
-
   // Swap the updated table into use.
   m_interfaceData.swap(data);
   updateNameserver();
@@ -284,30 +256,56 @@ void WindowsBypass::interfaceChanged(quint64 luid) {
 }
 
 void WindowsBypass::updateNameserver() {
-  // Update the preferred DNS server.
-  QHostAddress dnsNameserver;
-  ULONG dnsMetric = ULONG_MAX;
-  for (auto i = m_interfaceData.constBegin(); i != m_interfaceData.constEnd();
-       i++) {
-    auto data = i.value();
-    if (data.dnsAddr.isNull()) {
+  // A list of DNS servers and their interface metrics.
+  struct keyed {
+    QHostAddress addr;
+    ulong metric;
+  };
+  QList<keyed> nameservers;
+
+  // Fetch the DNS resolvers.
+  QByteArray gaaBuffer(4096, 0);
+  ULONG gaaBufferSize = gaaBuffer.size();
+  auto adapterAddrs = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(gaaBuffer.data());
+  DWORD result = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX,
+                                      nullptr, adapterAddrs, &gaaBufferSize);
+  if (result == ERROR_BUFFER_OVERFLOW) {
+    gaaBuffer.resize(gaaBufferSize);
+    adapterAddrs = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(gaaBuffer.data());
+    result = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr,
+                                  adapterAddrs, &gaaBufferSize);
+  }
+  for (auto i = adapterAddrs; result == NO_ERROR && i != nullptr; i = i->Next) {
+    // Ignore DNS servers on interfaces without routable addresses.
+    if (!m_interfaceData.contains(i->Luid.Value)) {
       continue;
     }
-    if (data.dnsAddr.protocol() == QAbstractSocket::IPv6Protocol) {
-      if (data.ipv6metric >= dnsMetric) {
-        continue;
+
+    for (auto dns = i->FirstDnsServerAddress; dns != nullptr; dns = dns->Next) {
+      struct sockaddr* sa = dns->Address.lpSockaddr;
+      QHostAddress addr{sa};
+      if (sa->sa_family == AF_INET) {
+        nameservers.append({addr, m_interfaceData[i->Luid.Value].ipv4metric});
+      } else {
+        if (addr.isLinkLocal()) {
+          addr.setScopeId(QString::number(i->Ipv6IfIndex));
+        }
+        nameservers.append({addr, m_interfaceData[i->Luid.Value].ipv6metric});
       }
-      dnsMetric = data.ipv6metric;
-    } else {
-      if (data.ipv4metric >= dnsMetric) {
-        continue;
-      }
-      dnsMetric = data.ipv4metric;
+      qDebug() << "Adding" << addr.toString() << "as DNS server for "
+               << i->Luid.Value;
     }
-    dnsNameserver = data.dnsAddr;
   }
-  qDebug() << "Setting nameserver:" << dnsNameserver.toString();
-  DNSResolver::instance()->setNameserver(dnsNameserver);
+
+  // Sort the nameservers by it's metric smallest first
+  std::sort(nameservers.begin(), nameservers.end(),
+            [](auto a, auto b) { return a.metric < b.metric; });
+  QList<QHostAddress> selectedNameServers(nameservers.length());
+  for (const auto& ns : qAsConst(nameservers)) {
+    selectedNameServers.append(ns.addr);
+  }
+
+  DNSResolver::instance()->setNameserver(selectedNameServers);
 }
 
 // In this function, we basically try our best to re-implement the Windows

@@ -5,14 +5,18 @@
 #pragma once
 
 #include <QGlobalStatic>
+#include <QHash>
 #include <QHostAddress>
-#include <mutex>
+#include <QMutex>
+#include <QObject>
 
 struct ares_channeldata;
 class ares_addrinfo;
 class Socks5Connection;
 
-class DNSResolver {
+class DNSResolver : public QObject {
+  Q_OBJECT
+
  public:
   DNSResolver();
   ~DNSResolver();
@@ -23,19 +27,23 @@ class DNSResolver {
    * @brief Queues up a DNS Query to get Resolved.
    *
    * @param hostname - The requested Hostname
-   * @param parent - The Socks5Connection to notify. Will call
-   * Socks5Connection::onHostnameResolved(QHostAddress) when done.
+   * @param parent - The QObject to notify. Will call the
+   * onHostnameResolved(QHostAddress) method when done.
    */
-  void resolveAsync(const QString& hostname, Socks5Connection* parent);
+  void resolveAsync(const QString& hostname, QObject* parent);
 
-  void setNameserver(const QHostAddress& addr);
+  void setNameserver(const QList<QHostAddress>& addr);
+
+ private slots:
+  void requestDestroyed();
 
  private:
-  static void addressInfoCallback(void* arg, int status, int timeouts,
-                                  struct ares_addrinfo* result);
+  void addressInfoCallback(QObject* ctx, int status, int timeouts,
+                           struct ares_addrinfo* result);
   void shutdownAres();
 
-  ares_channeldata* mChannel = nullptr;
+  QHash<QObject*, QString> m_requests;
+  QMutex m_requestLock;
 
-  QHostAddress m_nameserver;
+  ares_channeldata* mChannel = nullptr;
 };
