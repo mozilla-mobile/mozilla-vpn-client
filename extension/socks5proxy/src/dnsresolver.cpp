@@ -4,6 +4,7 @@
 #include <ares.h>
 
 #include <QCoreApplication>
+#include <QMutexLocker>
 #include <QObject>
 
 #include "socks5connection.h"
@@ -33,10 +34,15 @@ DNSResolver::DNSResolver() {
 DNSResolver::~DNSResolver() { ares_destroy(mChannel); }
 
 /* Callback that is called when DNS query is finished */
-void DNSResolver::addressInfoCallback(void* arg, int status, int timeouts,
+void DNSResolver::addressInfoCallback(QObject* ctx, int status, int timeouts,
                                       struct ares_addrinfo* result) {
+  QMutexLocker locker(&m_requestLock);
+  if (!m_requests.contains(ctx)) {
+    qDebug() << "Connection destroyed before resolution completed";
+    return;
+  }
+
   // This should be our Socks5Connection
-  auto ctx = static_cast<QObject*>(arg);
   switch (status) {
     case ARES_ENOTIMP:
       qDebug() << "The ares library does not know how to find addresses of "
@@ -45,7 +51,7 @@ void DNSResolver::addressInfoCallback(void* arg, int status, int timeouts,
                                 Qt::QueuedConnection);
       return;
     case ARES_ENOTFOUND:
-      qDebug() << " The name was not found.";
+      qDebug() << "The name was not found.";
       QMetaObject::invokeMethod(ctx, "onHostnameNotFound",
                                 Qt::QueuedConnection);
       return;
@@ -78,15 +84,35 @@ void DNSResolver::addressInfoCallback(void* arg, int status, int timeouts,
   }
 }
 
-void DNSResolver::resolveAsync(const QString& hostname,
-                               Socks5Connection* parent) {
+void DNSResolver::requestDestroyed() {
+  QMutexLocker locker(&m_requestLock);
+  m_requests.remove(QObject::sender());
+}
+
+void DNSResolver::resolveAsync(const QString& hostname, QObject* parent) {
+  // Store the requesting connections in a hash map.
+  // This allows us to detect when connections are destroyed, and prevents
+  // use-after-free bugs if the resolution completes after the connection
+  // is freed.
+  QObject::connect(parent, &QObject::destroyed, this,
+                   &DNSResolver::requestDestroyed);
+  m_requestLock.lock();
+  m_requests.insert(parent, hostname);
+  m_requestLock.unlock();
+
+  auto callback =
+      [](void *arg, int status, int timeouts, struct ares_addrinfo *results) {
+        QObject* ctx = static_cast<QObject*>(arg);
+        auto instance = DNSResolver::instance();
+        instance->addressInfoCallback(ctx, status, timeouts, results);
+      };
+
   auto name = hostname.toStdString();
   struct ares_addrinfo_hints hints;
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_UNSPEC;
   hints.ai_flags = ARES_AI_CANONNAME;
-  ares_getaddrinfo(mChannel, name.c_str(), NULL, &hints, &addressInfoCallback,
-                   parent);
+  ares_getaddrinfo(mChannel, name.c_str(), NULL, &hints, callback, parent);
 }
 
 void DNSResolver::setNameserver(const QList<QHostAddress>& dnsList) {
