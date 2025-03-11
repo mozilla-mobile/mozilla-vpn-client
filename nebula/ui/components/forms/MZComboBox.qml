@@ -112,7 +112,6 @@ ComboBox {
                 id: shadowMask
                 anchors.fill: bg
                 visible: false
-                color: "black"
                 radius: MZTheme.theme.cornerRadius
             }
 
