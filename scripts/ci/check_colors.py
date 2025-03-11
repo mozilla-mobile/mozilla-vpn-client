@@ -8,6 +8,7 @@ import os
 import re
 
 HEX_COLOR_REGEX = r"#[0-9a-fA-F]{6}"
+NAMED_COLOR_REGEX = r"color: [\'|\"].*[\'|\"]"
 COLOR_DEF_REGEX = r"color\..* ="
 COLOR_USE_REGEX = r"MZTheme\.colors\.[0-9A-Za-z]+"
 
@@ -23,12 +24,15 @@ def fileContents(filepath):
     except Exception as e:
         exit(f"An error occurred while loading {filepath}: {e}")
 
-def checkForHexColor(filepath):
+def checkForHexAndNamedColors(filepath):
     # print("Checking for hex colors in " + filepath)
     content = fileContents(filepath)
     hex_color_list = re.findall(HEX_COLOR_REGEX, content)
     if hex_color_list:
         exit(f"Unexpected hex color found in: {filepath}")
+    named_color_list = re.findall(NAMED_COLOR_REGEX, content)
+    if named_color_list:
+        exit(f"Unexpected named color found in: {filepath}")
 
 def colorsDefinedInFile(filepath):
     print("Loading colors defined in " + filepath)
@@ -101,7 +105,7 @@ for file_path in file_paths:
 file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + "/theme.js", all_themes))
 file_paths.append(args.themeDirectory[0] + "/theme-derived.js")
 for file_path in file_paths:
-    checkForHexColor(file_path)
+    checkForHexAndNamedColors(file_path)
 
 ###
 # 3. All colors in QML files should come from theme.js or theme-derived.js.
@@ -129,7 +133,7 @@ for direc in qml_directories:
 # C. Check that QML files do not include explict colors, and only use intended colors
 for qml_file_path in all_qml_files:
     # check for explict colors
-    checkForHexColor(qml_file_path)
+    checkForHexAndNamedColors(qml_file_path)
 
     # get color names from QML file - everything MZTheme.color
     colors_used = colorsUsedInFile(qml_file_path)

@@ -6,6 +6,7 @@
 
 #include <WS2tcpip.h>
 #include <fwpmu.h>
+#include <iphlpapi.h>
 #include <netioapi.h>
 #include <windows.h>
 #include <winsock2.h>
@@ -19,10 +20,6 @@
 
 #include "socks5.h"
 #include "winutils.h"
-
-// Fixed GUID of the Wireguard NT driver.
-constexpr const QUuid WIREGUARD_NT_GUID(0xf64063ab, 0xbfee, 0x4881, 0xbf, 0x79,
-                                        0x36, 0x6e, 0x4c, 0xc7, 0xba, 0x75);
 
 // Called by the kernel on network interface changes.
 // Runs in some unknown thread, so invoke a Qt signal to do the real work.
@@ -147,18 +144,6 @@ void WindowsBypass::outgoingConnection(QAbstractSocket* s,
   }
 }
 
-// static
-
-quint64 WindowsBypass::getVpnLuid() const {
-  // Get the LUID of the wireguard interface, if it's up.
-  NET_LUID luid;
-  GUID vpnInterfaceGuid = WIREGUARD_NT_GUID;
-  if (ConvertInterfaceGuidToLuid(&vpnInterfaceGuid, &luid) != NO_ERROR) {
-    return 0;
-  }
-  return luid.Value;
-}
-
 void WindowsBypass::refreshAddresses() {
   // Get the unicast address table.
   MIB_UNICASTIPADDRESS_TABLE* table;
@@ -172,7 +157,7 @@ void WindowsBypass::refreshAddresses() {
 
   // Populate entries.
   QHash<quint64, InterfaceData> data;
-  const quint64 vpnInterfaceLuid = getVpnLuid();
+  const quint64 vpnInterfaceLuid = WinUtils::getVpnLuid();
   for (ULONG i = 0; i < table->NumEntries; i++) {
     const MIB_UNICASTIPADDRESS_ROW* row = &table->Table[i];
     if (row->SkipAsSource) {
@@ -215,19 +200,57 @@ void WindowsBypass::refreshAddresses() {
     }
   }
 
-  // Fetch the interface metrics too.
+  // Fetch the interface metrics.
   for (auto i = data.begin(); i != data.end(); i++) {
     MIB_IPINTERFACE_ROW row = {0};
+    row.Family = AF_INET;
     row.InterfaceLuid.Value = i.key();
     if (GetIpInterfaceEntry(&row) == NO_ERROR) {
-      i->metric = row.Metric;
+      i->ipv4metric = row.Metric;
     } else {
-      i->metric = ULONG_MAX;
+      i->ipv4metric = ULONG_MAX;
     }
+
+    row.Family = AF_INET6;
+    row.InterfaceLuid.Value = i.key();
+    if (GetIpInterfaceEntry(&row) == NO_ERROR) {
+      i->ipv6metric = row.Metric;
+    } else {
+      i->ipv6metric = ULONG_MAX;
+    }
+  }
+
+  // Fetch the DNS resolvers too.
+  QByteArray gaaBuffer(4096, 0);
+  ULONG gaaBufferSize = gaaBuffer.size();
+  auto adapterAddrs = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(gaaBuffer.data());
+  result = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr,
+                                adapterAddrs, &gaaBufferSize);
+  if (result == ERROR_BUFFER_OVERFLOW) {
+    gaaBuffer.resize(gaaBufferSize);
+    adapterAddrs = reinterpret_cast<PIP_ADAPTER_ADDRESSES>(gaaBuffer.data());
+    result = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr,
+                                  adapterAddrs, &gaaBufferSize);
+  }
+  for (auto i = adapterAddrs; result == NO_ERROR && i != nullptr; i = i->Next) {
+    // Ignore DNS servers on interfaces without routable addresses.
+    if (!data.contains(i->Luid.Value)) {
+      continue;
+    }
+    if (i->FirstDnsServerAddress == nullptr) {
+      continue;
+    }
+
+    // FIXME: Only using the first DNS server for now.
+    struct sockaddr* sa = i->FirstDnsServerAddress->Address.lpSockaddr;
+    data[i->Luid.Value].dnsAddr.setAddress(sa);
+    qDebug() << "Using" << data[i->Luid.Value].dnsAddr.toString()
+             << "for DNS server";
   }
 
   // Swap the updated table into use.
   m_interfaceData.swap(data);
+  updateNameserver();
 }
 
 void WindowsBypass::interfaceChanged(quint64 luid) {
@@ -239,14 +262,52 @@ void WindowsBypass::interfaceChanged(quint64 luid) {
     return;
   }
 
-  // Update the interface metric.
+  // Update the interface metrics.
   MIB_IPINTERFACE_ROW row = {0};
+  row.Family = AF_INET;
   row.InterfaceLuid.Value = luid;
   if (GetIpInterfaceEntry(&row) == NO_ERROR) {
-    i->metric = row.Metric;
+    i->ipv4metric = row.Metric;
   } else {
-    i->metric = ULONG_MAX;
+    i->ipv4metric = ULONG_MAX;
   }
+
+  row.Family = AF_INET6;
+  row.InterfaceLuid.Value = luid;
+  if (GetIpInterfaceEntry(&row) == NO_ERROR) {
+    i->ipv6metric = row.Metric;
+  } else {
+    i->ipv6metric = ULONG_MAX;
+  }
+
+  updateNameserver();
+}
+
+void WindowsBypass::updateNameserver() {
+  // Update the preferred DNS server.
+  QHostAddress dnsNameserver;
+  ULONG dnsMetric = ULONG_MAX;
+  for (auto i = m_interfaceData.constBegin(); i != m_interfaceData.constEnd();
+       i++) {
+    auto data = i.value();
+    if (data.dnsAddr.isNull()) {
+      continue;
+    }
+    if (data.dnsAddr.protocol() == QAbstractSocket::IPv6Protocol) {
+      if (data.ipv6metric >= dnsMetric) {
+        continue;
+      }
+      dnsMetric = data.ipv6metric;
+    } else {
+      if (data.ipv4metric >= dnsMetric) {
+        continue;
+      }
+      dnsMetric = data.ipv4metric;
+    }
+    dnsNameserver = data.dnsAddr;
+  }
+  qDebug() << "Setting nameserver:" << dnsNameserver.toString();
+  DNSResolver::instance()->setNameserver(dnsNameserver);
 }
 
 // In this function, we basically try our best to re-implement the Windows
@@ -295,18 +356,20 @@ const MIB_IPFORWARD_ROW2* WindowsBypass::lookupRoute(
 
     // Ensure this route has a valid source address.
     auto ifData = m_interfaceData.value(row.InterfaceLuid.Value);
+    ULONG rowMetric = row.Metric;
     if (family == AF_INET) {
       if (ifData.ipv4addr.isNull()) {
         continue;
       }
+      rowMetric += ifData.ipv4metric;
     } else {
       if (ifData.ipv6addr.isNull()) {
         continue;
       }
+      rowMetric += ifData.ipv6metric;
     }
 
     // Choose the route with the best metric in case of a tie.
-    ULONG rowMetric = row.Metric + ifData.metric;
     if (Q_UNLIKELY(rowMetric < row.Metric)) {
       rowMetric = ULONG_MAX;  // check for saturation arithmetic.
     }
@@ -341,7 +404,7 @@ void WindowsBypass::updateTable(QVector<MIB_IPFORWARD_ROW2>& table,
   auto mibGuard = qScopeGuard([mib] { FreeMibTable(mib); });
 
   // First pass: iterate over the table and estimate the size to allocate.
-  const quint64 vpnInterfaceLuid = getVpnLuid();
+  const quint64 vpnInterfaceLuid = WinUtils::getVpnLuid();
   ULONG tableSize = 0;
   for (ULONG i = 0; i < mib->NumEntries; i++) {
     if (mib->Table[i].InterfaceLuid.Value != vpnInterfaceLuid) {

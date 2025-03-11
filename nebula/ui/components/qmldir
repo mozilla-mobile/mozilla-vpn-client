@@ -10,7 +10,6 @@ MZButtonBase 0.1 MZButtonBase.qml
 MZButtonLoader 0.1 MZButtonLoader.qml
 MZCallout 0.1 MZCallout.qml
 MZCancelButton 0.1 MZCancelButton.qml
-MZCard 0.1 MZCard.qml
 MZCheckBox 0.1 MZCheckBox.qml
 MZCheckBoxRow 0.1 MZCheckBoxRow.qml
 MZChevron 0.1 MZChevron.qml

@@ -230,6 +230,7 @@ MZViewBase {
             text: "Reinstate messages"
             onClicked: {
                 MZAddonManager.reinstateMessages()
+                restartRequired.isVisible = true
             }
         }
 

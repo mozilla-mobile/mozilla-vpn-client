@@ -7,6 +7,7 @@
 
 #include <QObject>
 
+#include "dnsresolver.h"
 #include "socks5connection.h"
 
 class QAbstractSocket;
