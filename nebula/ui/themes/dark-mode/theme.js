@@ -37,7 +37,10 @@ color.fontTitleColor = color.grey3;                                // done
 // Dividers and borders
 color.divider = addTransparency(color.grey3, 0.2);           // done
 color.dropShadow = color.grey60;                             // done
-color.focusBorder = addTransparency(color.grey3, 0.2);       // done
+color.scrollBar = color.grey40;
+color.focusBorder = addTransparency(
+    color.grey3, 0.2);  // done  // used for keyboard navigation highlighting
+                        // for settings toggles and swipe actions
 color.inputHighlight = color.brightSlate;                    // set
 
 // Success/Failure/Warning/Normal levels
@@ -83,7 +86,6 @@ color.normalButton = {
   buttonHovered: color.blue60,
   buttonPressed: color.blue70,
   buttonDisabled: color.washedLightBlue,
-  focusBgColor: color.blue50,
   focusOutline: addTransparency(color.strongBlue, 0.3),
   focusBorder: color.strongBlue,
 };

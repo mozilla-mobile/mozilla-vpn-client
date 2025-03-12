@@ -179,7 +179,6 @@ color.blueButton = {
   buttonHovered: color.blue60,
   buttonPressed: color.blue70,
   buttonDisabled: color.washedLightBlue,
-  focusBgColor: color.blue50,
   focusOutline: addTransparency(color.strongBlue, 0.3),
   focusBorder: color.strongBlue,
 };

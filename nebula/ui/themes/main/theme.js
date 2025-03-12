@@ -37,7 +37,9 @@ color.fontTitleColor = color.black;
 // Dividers and borders
 color.divider = color.grey10;
 color.dropShadow = color.grey60;
-color.focusBorder = color.grey40;
+color.scrollBar = color.grey40;
+color.focusBorder = color.grey40;  // used for keyboard navigation highlighting
+                                   // for settings toggles and swipe actions
 color.inputHighlight = color.grey10;
 
 // Success/Failure/Warning/Normal levels
