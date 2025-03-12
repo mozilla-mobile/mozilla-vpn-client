@@ -10,7 +10,7 @@ if (('updateTime' in api.settings)) {
 // Macos v2.16.0 requires a web-based update.
 if (api.env.platform === 'macos' && api.env.versionString === '2.16.0') {
   api.addon.setTitle(
-      'message.message_update_v2.25.block.extra_1',
+      'message.message_update_v2.26.block.extra_1',
       'Download the new Mozilla VPN');
   api.addon.composer.remove('c_3');
   return;
@@ -51,6 +51,6 @@ if (versionCompare([2, 13, 0], version) >= 0 ||
 api.addon.composer.remove('c_3');
 
 api.addon.setTitle(
-    'message.message_update_v2.25.block.extra_1',
+    'message.message_update_v2.26.block.extra_1',
     'Download the new Mozilla VPN');
 })
