@@ -113,8 +113,6 @@ color.textLink = {
   defaultColor: color.blue20,  // SET
   buttonHovered: addTransparency(color.grey60, 0.8),
   buttonPressed: color.grey60,
-  focusOutline: color.grey60,
-  focusBorder: color.black
 };
 
 color.onBoardingGradient = {

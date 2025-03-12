@@ -219,6 +219,4 @@ color.greyLink = {
   defaultColor: addTransparency(color.grey60, 0.7),
   buttonHovered: addTransparency(color.grey60, 0.8),
   buttonPressed: color.grey60,
-  focusOutline: color.grey60,
-  focusBorder: color.black
 };
