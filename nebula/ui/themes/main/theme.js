@@ -24,7 +24,7 @@ color.primaryPressed = color.dullPurple;
 // Backgrounds
 color.bgColor = color.grey5;
 color.bgColorStronger = color.white;
-color.overlayBackground = addTransparency(color.black, 0.3);
+color.overlay = addTransparency(color.black, 0.3);
 
 // Fonts
 color.fontColor = color.grey40;
@@ -37,41 +37,42 @@ color.fontTitleColor = color.black;
 // Dividers and borders
 color.divider = color.grey10;
 color.dropShadow = color.grey60;
-color.darkFocusBorder = color.grey40;
-color.lightFocusBorder = color.grey15;
+color.scrollBar = color.grey40;
+color.focusBorder = color.grey40;  // used for keyboard navigation highlighting
+                                   // for settings toggles and swipe actions
 color.inputHighlight = color.grey10;
 
 // Success/Failure/Warning/Normal levels
 color.successMain = color.green90;
-color.successAccent = color.green;
+color.successAccent = color.green50;
 color.successBackground = color.green5;
 color.errorMain = color.red80;
-color.errorAccent = color.red;
+color.errorAccent = color.red60;
 color.errorAccentLight = color.red50;
 color.errorBackground = color.red10;
 color.warningMain = color.yellow90;
-color.warningAccent = color.orange;
+color.warningAccent = color.yellow50;
 color.warningBackground = color.orange10;
+color.normalButtonDefault = color.blue50;
 color.normalLevelMain = color.blue90;
-color.normalLevelAccent = color.blue;
-color.normalLevelBackground = addTransparency(color.blue, 0.4);
+color.normalLevelAccent = color.blue50;
+color.normalLevelBackground = addTransparency(color.blue50, 0.4);
 
-// Button colors
-color.disabledButtonHovered = color.greyHovered;
-color.disabledButtonPressed = color.greyPressed;
+// Disabled button colors
 color.disabledButtonColor = color.grey20;
+color.disabledButtonHovered = color.grey10;
+color.disabledButtonPressed = color.grey20;
 
 // Step progress bar (several other colors for bar based on primary color)
 color.stepProgressBarHighlight = color.purple10;
 color.stepProgressBarIncomplete = color.grey30;
 
 // Toggle
-color.activatingToggle = color.dullPurple;
-color.activatingToggleBackground = color.dullGreen;
+color.connectingToggle = color.dullPurple;
+color.connectingToggleBackground = color.dullGreen;
 
 // Objects (these aren't colors, these are objects of colors)
 color.destructiveButton = color.redButton;
-color.normalButton = color.blueButton;
 color.successAlert = color.greenAlert;
 color.warningAlert = color.orangeAlert;
 color.clickableRow = color.clickableRowBlue;
@@ -84,11 +85,11 @@ color.onBoardingGradient = {
 };
 
 color.vpnToggleConnected = {
-  defaultColor: color.green,
+  defaultColor: color.green50,
   buttonHovered: color.green60,
   buttonPressed: color.green70,
   focusOutline: addTransparency(color.bgColor, 0.3),
-  focusBorder: color.lightFocusBorder,
+  focusBorder: color.focusBorder,
 };
 
 color.vpnToggleDisconnected = {
@@ -97,5 +98,5 @@ color.vpnToggleDisconnected = {
   buttonPressed: color.fontColorDark,
   buttonDisabled: color.disabledButtonColor,
   focusOutline: color.transparent,
-  focusBorder: color.darkFocusBorder,
+  focusBorder: color.focusBorder,
 };
