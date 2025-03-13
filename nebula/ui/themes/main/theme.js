@@ -53,6 +53,7 @@ color.errorBackground = color.red10;
 color.warningMain = color.yellow90;
 color.warningAccent = color.yellow50;
 color.warningBackground = color.orange10;
+color.normalButtonDefault = color.blue50;
 color.normalLevelMain = color.blue90;
 color.normalLevelAccent = color.blue50;
 color.normalLevelBackground = addTransparency(color.blue50, 0.4);
@@ -72,7 +73,6 @@ color.connectingToggleBackground = color.dullGreen;
 
 // Objects (these aren't colors, these are objects of colors)
 color.destructiveButton = color.redButton;
-color.normalButton = color.blueButton;
 color.successAlert = color.greenAlert;
 color.warningAlert = color.orangeAlert;
 color.clickableRow = color.clickableRowBlue;

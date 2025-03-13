@@ -54,6 +54,7 @@ color.errorBackground = color.red10;    // set
 color.warningMain = color.yellow70;     // set
 color.warningAccent = color.yellow50;   // set
 color.warningBackground = color.orange10;                          // set
+color.normalButtonDefault = color.blue20;                          // SET
 color.normalLevelMain = color.blue90;                              // set
 color.normalLevelAccent = color.blue50;                            // set
 color.normalLevelBackground = addTransparency(color.blue90, 0.4);  // set
@@ -81,14 +82,7 @@ color.destructiveButton = {
   focusOutline: addTransparency(color.red70, 0.4),
   focusBorder: color.red70,
 };
-color.normalButton = {
-  defaultColor: color.blue20,  // SET
-  buttonHovered: color.blue60,
-  buttonPressed: color.blue70,
-  buttonDisabled: color.washedLightBlue,
-  focusOutline: addTransparency(color.strongBlue, 0.3),
-  focusBorder: color.strongBlue,
-};
+
 color.successAlert = {
   defaultColor: color.green80,  // SET
   buttonHovered: color.green60,

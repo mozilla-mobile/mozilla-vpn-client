@@ -13,6 +13,15 @@
 
 color.bgColorTransparent = addTransparency(color.bgColor, 0.0);
 
+color.normalButton = {
+  defaultColor: color.normalButtonDefault,
+  buttonHovered: mixColors(color.normalButtonDefault, color.white, 0.5),
+  buttonPressed: mixColors(color.normalButtonDefault, color.white, 0.65),
+  buttonDisabled: mixColors(color.normalButtonDefault, color.black, 0.3),
+  focusOutline: addTransparency(color.strongBlue, 0.3),  // NEED THIS
+  focusBorder: color.strongBlue,                         // NEED THIS
+};
+
 color.stepProgressBarDelegate = {
   defaultColor: color.primaryBrighter,
   buttonHovered: color.primaryBrighter,

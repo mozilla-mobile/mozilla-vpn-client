@@ -16,6 +16,12 @@ const percentToHex = percent => {
   return hexAlphaValue.toUpperCase();
 };
 
+const hexToPercent = hex => {
+  const hexString = `0x${hex}`;
+  const asNumber = Number(hexString);
+  return asNumber / 255;
+};
+
 // Not all #00xxxxx colors are identical. While they look identical
 // on screen, in transitions or with opacity changes they may look different.
 // Changing all `addTransparency(color.[anything], 0.0)` to color.transparency
@@ -27,6 +33,36 @@ const addTransparency = (hexColor, percent) => {
   // Despite typical web usage being #{colorHex}{alphaHex}, Qt uses
   // #{alphaHex}{colorHex}: https://doc.qt.io/qt-6/qcolor.html#fromString
   return `#${hexAlphaValue}${hexValue}`;
+};
+
+// Neither color can include transparency
+const mixColors = (hexColor1, hexColor2, percentForSecond) => {
+  var returnString = '#';
+  for (var index = 1; index < 7; index = index + 2) {
+    const hexColorSnippet1 = hexColor1.substring(index, index + 2);
+    const hexColorSnippet2 = hexColor2.substring(index, index + 2);
+    const percentColor1 = hexToPercent(hexColorSnippet1);
+    const percentColor2 = hexToPercent(hexColorSnippet2);
+    const smallerColor = Math.min(percentColor1, percentColor2);
+    const largerColor = Math.max(percentColor1, percentColor2);
+
+    // take difference between colors
+    const colorDifference = largerColor - smallerColor;
+
+    // get % for the larger
+    const percentForLarger =
+        (percentColor2 == largerColor ? percentForSecond :
+                                        1 - percentForSecond);
+
+    // multiply % by colorDifference, add it to the smaller
+    const finalPercent = smallerColor + (colorDifference * percentForLarger);
+
+    // add it to return string
+    const finalAsString = percentToHex(finalPercent);
+
+    returnString = returnString.concat(finalAsString);
+  }
+  return returnString;
 };
 
 /**
@@ -173,15 +209,6 @@ color.transparent = '#00000000';
  * Should NOT be used directly in code, and colors should not be modified.
  * (Can add to this section if really, truly needed.)
  */
-
-color.blueButton = {
-  defaultColor: color.blue50,
-  buttonHovered: color.blue60,
-  buttonPressed: color.blue70,
-  buttonDisabled: color.washedLightBlue,
-  focusOutline: addTransparency(color.strongBlue, 0.3),
-  focusBorder: color.strongBlue,
-};
 
 color.clickableRowBlue = {
   defaultColor: color.grey5,
