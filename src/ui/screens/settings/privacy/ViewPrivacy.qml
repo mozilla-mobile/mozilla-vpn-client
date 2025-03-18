@@ -120,6 +120,7 @@ MZViewBase {
                 MZButton {
                     objectName: "privacyOverwritePopupDiscoverNowButton"
                     text: MZI18n.DnsOverwriteDialogPrimaryButton
+                    buttonTextColor: MZTheme.colors.normalButtonFont
                     Layout.fillWidth: true
                     onClicked: {
                         MZSettings.dnsProviderFlags = privacyOverwriteLoader.dnsProviderValue;

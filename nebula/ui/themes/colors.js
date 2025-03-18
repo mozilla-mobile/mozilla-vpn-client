@@ -101,6 +101,7 @@ color.green5 = '#E3FFF3';
 // Grey
 color.black = '#000000';
 color.grey60 = '#0C0C0D';
+color.grey55 = '#15151A';
 color.grey50 = '#3D3D3D';
 color.grey45 = '#42414D';
 color.grey40 = '#6D6D6E';
@@ -192,9 +193,6 @@ color.pink5 = '#FFDEF0';
 color.dullGreen = '#387E8A';
 color.dullPurple = '#998DB2';
 color.washedPurple = '#5B4983';
-color.washedBlue = '#D4E2F6';
-color.washedLightBlue = '#AECBF2';
-color.strongBlue = '#0A84FF';
 color.brightSlate = '#2B2A33';
 
 color.lighterOnboardingPurple = '#472C87';
@@ -210,13 +208,6 @@ color.transparent = '#00000000';
  * (Can add to this section if really, truly needed.)
  */
 
-color.clickableRowBlue = {
-  defaultColor: color.grey5,
-  buttonHovered: color.washedBlue,
-  buttonPressed: color.washedLightBlue,
-  focusOutline: addTransparency(color.grey5, 0.0),
-  focusBorder: color.strongBlue,
-};
 
 color.redButton = {
   defaultColor: color.red70,

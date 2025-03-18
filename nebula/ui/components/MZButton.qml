@@ -12,6 +12,7 @@ MZButtonBase {
     property var colorScheme: MZTheme.colors.normalButton
     property int fontSize: MZTheme.theme.fontSize
     property alias label: label
+    property alias buttonTextColor: label.color
 
     id: button
 

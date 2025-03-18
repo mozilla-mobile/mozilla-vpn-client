@@ -103,6 +103,7 @@ MZViewBase {
             MZButton {
                 objectName: "manageSubscriptionButton"
                 id: manageSubscriptionButton
+                buttonTextColor: MZTheme.colors.normalButtonFont
 
                 onClicked: handleManageAccountClicked()
                 text: MZI18n.SubscriptionManagementManageSubscriptionButton

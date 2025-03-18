@@ -28,36 +28,37 @@ color.overlay = addTransparency(color.black, 0.3);  // done
 
 // Fonts
 color.fontColor = color.grey3;                                     // done
-color.fontColorDark = color.grey3;                                 // done
+color.fontColorDark = color.white;                                 // done
 color.fontColorWarning = color.yellow50;                           // set
-color.fontColorInverted = color.grey3;                             // done
+color.fontColorInverted = color.white;                             // done
 color.fontColorInvertedMuted = addTransparency(color.grey3, 0.8);  // done
 color.fontTitleColor = color.grey3;                                // done
+color.normalButtonFont = color.grey55;
 
 // Dividers and borders
 color.divider = addTransparency(color.grey3, 0.2);           // done
 color.dropShadow = color.grey60;                             // done
 color.scrollBar = color.grey40;
-color.focusBorder = addTransparency(
-    color.grey3, 0.2);  // done  // used for keyboard navigation highlighting
-                        // for settings toggles and swipe actions
+color.focusBorder =
+    color.grey40;  // done  // used for keyboard navigation highlighting
+                   // for settings toggles and swipe actions
 color.inputHighlight = color.brightSlate;                    // set
 
 // Success/Failure/Warning/Normal levels
-color.successMain = color.green90;        // set
+color.normalButtonDefault = color.blue20;    // SET
+color.normalLevelMain = color.blue30;        // set
+color.normalLevelAccent = color.blue50;      // set
+color.normalLevelBackground = color.blue90;  // set
+color.successMain = color.green40;           // set
 color.successAccent = color.green80;      // set
-color.successBackground = color.green70;  // set
+color.successBackground = color.green90;  // set
 color.errorMain = color.red80;            // set
 color.errorAccent = color.red70;          // set
-color.errorAccentLight = color.grey30;  // set
-color.errorBackground = color.red10;    // set
+color.errorAccentLight = color.red30;     // set
+color.errorBackground = color.red50;      // set
 color.warningMain = color.yellow70;     // set
 color.warningAccent = color.yellow50;   // set
-color.warningBackground = color.orange10;                          // set
-color.normalButtonDefault = color.blue20;                          // SET
-color.normalLevelMain = color.blue90;                              // set
-color.normalLevelAccent = color.blue50;                            // set
-color.normalLevelBackground = addTransparency(color.blue90, 0.4);  // set
+color.warningBackground = color.orange60;  // set
 
 // Disabled button colors
 color.disabledButtonColor =
@@ -69,9 +70,18 @@ color.disabledButtonPressed = addTransparency(color.white, 0.2);  // SET
 color.stepProgressBarHighlight = color.purple20;      // SET
 color.stepProgressBarIncomplete = color.brightSlate;  // set
 
+color.vpnToggleConnected = {
+  defaultColor: color.blue20,  // set
+  buttonHovered: color.green60,
+  buttonPressed: color.green70,
+  focusOutline: addTransparency(color.bgColor, 0.3),
+  focusBorder: color.focusBorder,
+};
+
 // Toggle
 color.connectingToggle = color.dullPurple;        // SET
-color.connectingToggleBackground = color.grey30;  // SET
+color.connectingToggleBackground = mixColors(
+    color.vpnToggleConnected.defaultColor, color.primary, 0.4);  // SET
 
 // Objects (these aren't colors, these are objects of colors)
 color.destructiveButton = {
@@ -91,22 +101,16 @@ color.successAlert = {
   focusBorder: color.green70,
 };
 color.warningAlert = {
-  buttonHovered: color.yellow70,  // SET
+  buttonHovered: color.yellow50,  // SET
   buttonPressed: color.yellow70,
   focusOutline: addTransparency(color.yellow60, 0.3),
   focusBorder: color.yellow70,
 };
-color.clickableRow = {
-  defaultColor: addTransparency(color.white, 0.1),  // SET
-  buttonHovered: color.washedBlue,
-  buttonPressed: color.washedLightBlue,
-  focusOutline: addTransparency(color.grey5, 0.0),
-  focusBorder: color.strongBlue,
-};
 color.textLink = {
-  defaultColor: color.blue20,  // SET
-  buttonHovered: addTransparency(color.grey60, 0.8),
-  buttonPressed: color.grey60,
+  defaultColor: color.blue20,                         // SET
+  buttonHovered: addTransparency(color.grey60, 0.8),  //  50% white
+  buttonPressed: color.grey60,                        // 65% white
+  // buttonDisabled: 30% black
 };
 
 color.onBoardingGradient = {
@@ -114,14 +118,6 @@ color.onBoardingGradient = {
   start: color.lighterOnboardingPurple,
   middle: color.mediumOnboardingPurple,
   end: color.darkerOnboardingPurple,
-};
-
-color.vpnToggleConnected = {
-  defaultColor: color.blue20,  // set
-  buttonHovered: color.green60,
-  buttonPressed: color.green70,
-  focusOutline: addTransparency(color.bgColor, 0.3),
-  focusBorder: color.focusBorder,
 };
 
 color.vpnToggleDisconnected = {

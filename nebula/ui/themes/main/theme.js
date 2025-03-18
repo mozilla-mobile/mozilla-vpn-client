@@ -33,6 +33,7 @@ color.fontColorWarning = color.yellow70;
 color.fontColorInverted = color.white;
 color.fontColorInvertedMuted = color.grey20;
 color.fontTitleColor = color.black;
+color.normalButtonFont = color.white;
 
 // Dividers and borders
 color.divider = color.grey10;
@@ -43,6 +44,10 @@ color.focusBorder = color.grey40;  // used for keyboard navigation highlighting
 color.inputHighlight = color.grey10;
 
 // Success/Failure/Warning/Normal levels
+color.normalButtonDefault = color.blue50;
+color.normalLevelMain = color.blue90;
+color.normalLevelAccent = color.blue50;
+color.normalLevelBackground = addTransparency(color.blue50, 0.4);
 color.successMain = color.green90;
 color.successAccent = color.green50;
 color.successBackground = color.green5;
@@ -53,10 +58,6 @@ color.errorBackground = color.red10;
 color.warningMain = color.yellow90;
 color.warningAccent = color.yellow50;
 color.warningBackground = color.orange10;
-color.normalButtonDefault = color.blue50;
-color.normalLevelMain = color.blue90;
-color.normalLevelAccent = color.blue50;
-color.normalLevelBackground = addTransparency(color.blue50, 0.4);
 
 // Disabled button colors
 color.disabledButtonColor = color.grey20;
@@ -75,7 +76,6 @@ color.connectingToggleBackground = color.dullGreen;
 color.destructiveButton = color.redButton;
 color.successAlert = color.greenAlert;
 color.warningAlert = color.orangeAlert;
-color.clickableRow = color.clickableRowBlue;
 color.textLink = color.greyLink;
 
 color.onBoardingGradient = {
