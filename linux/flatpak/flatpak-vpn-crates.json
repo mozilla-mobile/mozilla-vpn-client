@@ -1939,14 +1939,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/ring/ring-0.17.13.crate",
-        "sha256": "70ac5d832aa16abd7d1def883a8545280c20a60f523a370aa3a9617c2b8550ee",
-        "dest": "cargo/vendor/ring-0.17.13"
+        "url": "https://static.crates.io/crates/ring/ring-0.17.14.crate",
+        "sha256": "a4689e6c2294d81e88dc6261c768b63bc4fcdb852be6d1352498b114f61383b7",
+        "dest": "cargo/vendor/ring-0.17.14"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"70ac5d832aa16abd7d1def883a8545280c20a60f523a370aa3a9617c2b8550ee\", \"files\": {}}",
-        "dest": "cargo/vendor/ring-0.17.13",
+        "contents": "{\"package\": \"a4689e6c2294d81e88dc6261c768b63bc4fcdb852be6d1352498b114f61383b7\", \"files\": {}}",
+        "dest": "cargo/vendor/ring-0.17.14",
         "dest-filename": ".cargo-checksum.json"
     },
     {
