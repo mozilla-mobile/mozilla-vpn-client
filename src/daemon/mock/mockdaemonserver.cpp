@@ -47,7 +47,7 @@ int MockDaemonServer::run(QStringList& tokens) {
 #ifdef MZ_WINDOWS
     path = Constants::WINDOWS_DAEMON_PATH;
 #else
-    path = Constants::MACOS_DAEMON_TMP_PATH;
+    path = Constants::MACOS_DAEMON_PATH;
 #endif
   }
 

@@ -108,12 +108,7 @@ QString Controller::useLocalSocketPath() const {
 #endif
 
 #if defined(MZ_MACOS)
-  // MacOS had a path change, so check both /tmp/ and /var/.
-  if (QFileInfo::exists(Constants::MACOS_DAEMON_VAR_PATH)) {
-    return Constants::MACOS_DAEMON_VAR_PATH;
-  } else {
-    return Constants::MACOS_DAEMON_TMP_PATH;
-  }
+  return Constants::MACOS_DAEMON_PATH;
 #elif defined(MZ_WINDOWS)
   return Constants::WINDOWS_DAEMON_PATH;
 #endif
