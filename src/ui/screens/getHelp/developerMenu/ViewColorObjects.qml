@@ -144,7 +144,7 @@ MZViewBase {
               badgeLabel.width: badgeLabel.implicitWidth
               badgeType: {
                       'badgeText': "Error badge",
-                      'badgeTextColor': MZTheme.colors.errorMain,
+                      'badgeTextColor': MZTheme.colors.errorText,
                       'badgeBackgroundColor': MZTheme.colors.errorBackground
                   };
           }
@@ -153,7 +153,7 @@ MZViewBase {
               badgeLabel.width: badgeLabel.implicitWidth
               badgeType: {
                       'badgeText': "Warning badge",
-                      'badgeTextColor': MZTheme.colors.warningMain,
+                      'badgeTextColor': MZTheme.colors.warningText,
                       'badgeBackgroundColor': MZTheme.colors.warningBackground
                   };
           }
@@ -162,7 +162,7 @@ MZViewBase {
               badgeLabel.width: badgeLabel.implicitWidth
               badgeType: {
                       'badgeText': "Success badge",
-                      'badgeTextColor': MZTheme.colors.successMain,
+                      'badgeTextColor': MZTheme.colors.successText,
                       'badgeBackgroundColor': MZTheme.colors.successBackground
                   };
           }
@@ -171,7 +171,7 @@ MZViewBase {
               badgeLabel.width: badgeLabel.implicitWidth
               badgeType: {
                       'badgeText': "Normal badge",
-                      'badgeTextColor': MZTheme.colors.normalLevelMain,
+                      'badgeTextColor': MZTheme.colors.normalLevelText,
                       'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
                   };
           }

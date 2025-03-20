@@ -49,18 +49,20 @@ color.normalButtonDefault = color.blue50;
 color.destructiveButtonDefault = color.red70;
 
 // Success/Failure/Warning/Normal levels
-color.normalLevelMain = color.blue90;
 color.normalLevelAccent = color.blue50;
-color.normalLevelBackground = addTransparency(color.blue50, 0.4);
-color.successMain = color.green90;
 color.successAccent = color.green50;
-color.successBackground = color.green5;
-color.errorMain = color.red80;
 color.errorAccent = color.red60;
 color.errorAccentLight = color.red50;
-color.errorBackground = color.red10;
-color.warningMain = color.yellow90;
 color.warningAccent = color.yellow50;
+
+// Badges
+color.normalLevelText = color.blue90;
+color.normalLevelBackground = addTransparency(color.blue50, 0.4);
+color.successText = color.green90;
+color.successBackground = color.green5;
+color.errorText = color.red80;
+color.errorBackground = color.red10;
+color.warningText = color.yellow90;
 color.warningBackground = color.orange10;
 
 // Disabled button colors

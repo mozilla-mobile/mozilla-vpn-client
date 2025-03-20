@@ -25,6 +25,17 @@ color.normalButton = {
   focusBorder: color.normalButtonDefault,
 };
 
+color.infoAlert = {
+  defaultColor: color.normalLevelAccent,
+  buttonHovered: mixColors(color.normalLevelAccent, color.grey5, 0.35),
+  buttonPressed: mixColors(color.normalLevelAccent, color.grey5, 0.5),
+  buttonDisabled: mixColors(
+      color.normalLevelAccent, color.black,
+      0.3),  // use black here in all cases
+  focusOutline: addTransparency(color.normalLevelAccent, 0.5),
+  focusBorder: color.normalLevelAccent,
+};
+
 color.clickableRow = {
   defaultColor: color.bgColor,
   buttonHovered: mixColors(color.normalButtonDefault, color.bgColor, 0.85),

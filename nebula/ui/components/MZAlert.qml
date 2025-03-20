@@ -86,9 +86,9 @@ Rectangle {
 
             PropertyChanges {
                 target: style;
-                alertColor: MZTheme.colors.normalLevelAccent
-                alertHoverColor: MZTheme.colors.normalButton.buttonHovered
-                alertClickColor: MZTheme.colors.normalButton.buttonPressed
+                alertColor: MZTheme.colors.infoAlert.defaultColor
+                alertHoverColor: MZTheme.colors.infoAlert.buttonHovered
+                alertClickColor: MZTheme.colors.infoAlert.buttonPressed
                 fontColor: MZTheme.colors.fontColorInverted
                 closeIcon: whiteCloseIcon
             }
