@@ -34,6 +34,7 @@ color.fontColorInverted = color.white;
 color.fontColorInvertedMuted = color.grey20;
 color.fontTitleColor = color.black;
 color.normalButtonFont = color.white;
+color.destructiveButtonFont = color.white;
 
 // Dividers and borders
 color.divider = color.grey10;
@@ -43,8 +44,11 @@ color.focusBorder = color.grey40;  // used for keyboard navigation highlighting
                                    // for settings toggles and swipe actions
 color.inputHighlight = color.grey10;
 
-// Success/Failure/Warning/Normal levels
+// Buttons are built off these base colors
 color.normalButtonDefault = color.blue50;
+color.destructiveButtonDefault = color.red70;
+
+// Success/Failure/Warning/Normal levels
 color.normalLevelMain = color.blue90;
 color.normalLevelAccent = color.blue50;
 color.normalLevelBackground = addTransparency(color.blue50, 0.4);
@@ -73,7 +77,15 @@ color.connectingToggle = color.dullPurple;
 color.connectingToggleBackground = color.dullGreen;
 
 // Objects (these aren't colors, these are objects of colors)
-color.destructiveButton = color.redButton;
+color.destructiveButton = {
+  defaultColor: color.destructiveButtonDefault,
+  buttonHovered: color.red75,
+  buttonPressed: color.red80,
+  buttonDisabled: color.red10,
+  focusOutline: addTransparency(color.destructiveButtonDefault, 0.4),
+  focusBorder: color.destructiveButtonDefault,
+};
+
 color.successAlert = color.greenAlert;
 color.warningAlert = color.orangeAlert;
 color.textLink = color.greyLink;

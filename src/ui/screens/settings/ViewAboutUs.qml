@@ -168,6 +168,7 @@ MZViewBase {
                 VPNReleaseMonitor.runSoon();
             }
             text: MZI18n.UpdateButtonCheckForUpdateButtonText
+            buttonTextColor: MZTheme.colors.normalButtonFont
             Image {
                 id:updateButtonImage
                 anchors {

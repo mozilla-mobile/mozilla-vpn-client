@@ -92,6 +92,7 @@ MZInAppAuthenticationBase {
             objectName: "deleteAccountForRealButton"
 
             colorScheme: MZTheme.colors.destructiveButton
+            buttonTextColor: MZTheme.colors.destructiveButtonFont
             enabled: viewDeleteAccount.allowAccountDeletion
             // Delete account
             text: MZI18n.DeleteAccountButtonLabel

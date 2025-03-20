@@ -208,16 +208,6 @@ color.transparent = '#00000000';
  * (Can add to this section if really, truly needed.)
  */
 
-
-color.redButton = {
-  defaultColor: color.red70,
-  buttonHovered: color.red75,
-  buttonPressed: color.red80,
-  buttonDisabled: color.red10,
-  focusOutline: addTransparency(color.red70, 0.4),
-  focusBorder: color.red70,
-};
-
 color.greenAlert = {
   defaultColor: color.green50,
   buttonHovered: color.green60,

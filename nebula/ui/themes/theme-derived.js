@@ -13,6 +13,7 @@
 
 color.bgColorTransparent = addTransparency(color.bgColor, 0.0);
 
+// pressed/disabled goes darker on light theme, goes lighter on dark theme
 color.normalButton = {
   defaultColor: color.normalButtonDefault,
   buttonHovered: mixColors(color.normalButtonDefault, color.bgColor, 0.35),
