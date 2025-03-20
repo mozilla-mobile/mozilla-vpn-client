@@ -22,7 +22,7 @@ color.normalButton = {
       color.normalButtonDefault, color.black,
       0.3),  // use black here in all cases
   focusOutline: addTransparency(color.normalButtonDefault, 0.5),
-  focusBorder: color.focusBorder,
+  focusBorder: color.normalButtonDefault,
 };
 
 color.clickableRow = {

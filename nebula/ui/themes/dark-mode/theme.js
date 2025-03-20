@@ -34,7 +34,7 @@ color.fontColorWarning = color.yellow50;
 color.fontColorInverted = color.white;
 color.fontColorInvertedMuted = addTransparency(
     color.grey3,
-    0.8);  // how does this work w/ transparency - make sure it works okay
+    0.8);  // NEED update to not use transparency
 color.fontTitleColor = color.grey3;
 color.normalButtonFont = color.grey55;
 color.destructiveButtonFont = color.grey55;
@@ -42,7 +42,7 @@ color.destructiveButtonFont = color.grey55;
 // Dividers and borders
 color.divider = addTransparency(
     color.grey3,
-    0.2);  // how does this work w/ transparency - make sure it works okay
+    0.2);  // NEED update to not use transparency
 color.dropShadow = color.grey60;
 color.scrollBar = color.grey40;
 color.focusBorder = color.grey40;  // used for keyboard navigation highlighting
@@ -58,22 +58,20 @@ color.normalLevelMain = color.blue30;
 color.normalLevelAccent = color.blue50;
 color.normalLevelBackground = color.blue90;
 color.successMain = color.green40;
-color.successAccent = color.green80;
+color.successAccent = color.green90;
 color.successBackground = color.green90;
 color.errorMain = color.red80;
-color.errorAccent = color.red70;
+color.errorAccent = color.red80;
 color.errorAccentLight = color.red30;
 color.errorBackground = color.red50;
 color.warningMain = color.yellow70;
-color.warningAccent = color.yellow50;
+color.warningAccent = color.yellow70;
 color.warningBackground = color.orange60;
 
 // Disabled button colors
-color.disabledButtonColor = addTransparency(
-    color.blue20,
-    0.6);  // how does this work w/ transparency - make sure it works okay
-color.disabledButtonHovered = addTransparency(color.white, 0.1);
-color.disabledButtonPressed = addTransparency(color.white, 0.2);
+color.disabledButtonColor = color.grey30;
+color.disabledButtonHovered = color.grey40;
+color.disabledButtonPressed = color.grey30;
 
 // Step progress bar (several other colors for bar based on primary color)
 color.stepProgressBarHighlight = color.purple20;
@@ -81,10 +79,10 @@ color.stepProgressBarIncomplete = color.brightSlate;
 
 color.vpnToggleConnected = {
   defaultColor: color.blue20,
-  buttonHovered: color.green60,                       // NEED THIS
-  buttonPressed: color.green70,                       // NEED THIS
-  focusOutline: addTransparency(color.bgColor, 0.3),  // NEED THIS
-  focusBorder: color.focusBorder,                     // NEED THIS
+  buttonHovered: mixColors(color.blue20, color.black, 0.2),
+  buttonPressed: mixColors(color.blue20, color.black, 0.3),
+  focusOutline: addTransparency(color.bgColor, 0.4),
+  focusBorder: color.focusBorder,
 };
 
 // Toggle
@@ -104,22 +102,32 @@ color.destructiveButton = {
 
 color.successAlert = {
   defaultColor: color.green80,
-  buttonHovered: color.green60,                       // NEED THIS
-  buttonPressed: color.green70,                       // NEED THIS
-  focusOutline: addTransparency(color.green50, 0.2),  // NEED THIS
-  focusBorder: color.green70,                         // NEED THIS
+  buttonHovered: mixColors(
+      color.green80, color.white, 0.5),  // NEED confirmation - matt draft
+  buttonPressed: mixColors(
+      color.green80, color.white, 0.65),  // NEED confirmation - matt draft
+  focusOutline:
+      addTransparency(color.green80, 0.4),  // NEED confirmation - matt draft
+  focusBorder:
+      color.green80,  // or main button color? // NEED confirmation - matt draft
 };
 color.warningAlert = {
-  buttonHovered: color.yellow50,
-  buttonPressed: color.yellow70,                       // NEED THIS
-  focusOutline: addTransparency(color.yellow60, 0.3),  // NEED THIS
-  focusBorder: color.yellow70,                         // NEED THIS
+  buttonHovered: mixColors(
+      color.yellow70, color.white, 0.5),  // NEED confirmation - matt draft
+  buttonPressed: mixColors(
+      color.yellow70, color.white, 0.65),  // NEED confirmation - matt draft
+  focusOutline:
+      addTransparency(color.yellow70, 0.4),  // NEED confirmation - matt draft
+  focusBorder:
+      color
+          .yellow70,  // or main button color? // NEED confirmation - matt draft
 };
+
 color.textLink = {
-  defaultColor: color.blue20,
-  buttonHovered: addTransparency(color.grey60, 0.8),  //  SET THIS TO 50% white
-  buttonPressed: color.grey60,                        // SET THIS TO 65% white
-  // buttonDisabled: 30% black
+  defaultColor: color.normalButtonDefault,
+  buttonHovered: mixColors(color.normalButtonDefault, color.bgColor, 0.5),
+  buttonPressed: mixColors(color.normalButtonDefault, color.bgColor, 0.65),
+  buttonDisabled: mixColors(color.normalButtonDefault, color.black, 0.3),
 };
 
 color.onBoardingGradient = {
@@ -130,9 +138,9 @@ color.onBoardingGradient = {
 
 color.vpnToggleDisconnected = {
   defaultColor: color.grey30,
-  buttonHovered: color.fontColor,             // NEED THIS
-  buttonPressed: color.fontColorDark,         // NEED THIS
-  buttonDisabled: color.disabledButtonColor,  // NEED THIS
-  focusOutline: color.transparent,            // NEED THIS
-  focusBorder: color.focusBorder,             // NEED THIS
+  buttonHovered: mixColors(color.grey30, color.black, 0.2),
+  buttonPressed: mixColors(color.grey30, color.black, 0.3),
+  buttonDisabled: mixColors(color.grey30, color.black, 0.3),
+  focusOutline: color.transparent,
+  focusBorder: color.focusBorder,
 };
