@@ -194,6 +194,8 @@ color.dullGreen = '#387E8A';
 color.dullPurple = '#998DB2';
 color.washedPurple = '#5B4983';
 color.brightSlate = '#2B2A33';
+color.greyWithContrast = '#BABAC0';
+color.middlingGrey = '#686771';
 
 color.lighterOnboardingPurple = '#472C87';
 color.mediumOnboardingPurple = '#301962';

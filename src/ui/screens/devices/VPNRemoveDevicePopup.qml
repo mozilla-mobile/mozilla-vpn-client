@@ -31,7 +31,6 @@ MZSimplePopup {
             objectName: "confirmRemoveDeviceButton"
 
             buttonText: MZI18n.DevicesRemovePopupPrimaryButtonLabel
-            buttonTextColor: MZTheme.colors.destructiveButtonFont
             colorScheme: MZTheme.colors.destructiveButton
             onClicked: {
                 VPN.removeDeviceFromPublicKey(popup.devicePublicKey);

@@ -23,6 +23,7 @@ color.normalButton = {
       0.3),  // use black here in all cases
   focusOutline: addTransparency(color.normalButtonDefault, 0.5),
   focusBorder: color.normalButtonDefault,
+  fontColor: color.normalButtonFont,
 };
 
 color.infoAlert = {

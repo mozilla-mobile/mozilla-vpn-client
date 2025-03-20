@@ -122,7 +122,6 @@ ViewFullScreen {
             Layout.fillWidth: true
 
             colorScheme: MZTheme.colors.destructiveButton
-            buttonTextColor: MZTheme.colors.destructiveButtonFont
             text: MZI18n.ResetSettingsResetButtonLabel
 
             onClicked: confirmResetPopupLoader.active = true
@@ -167,7 +166,6 @@ ViewFullScreen {
 
                     text: MZI18n.ResetSettingsConfirmResetModalResetButtonLabel
                     colorScheme: MZTheme.colors.destructiveButton
-                    buttonTextColor: MZTheme.colors.destructiveButtonFont
 
                     onClicked: {
                         Glean.interaction.resetVpnSelected.record({

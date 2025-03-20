@@ -32,17 +32,13 @@ color.fontColor = color.grey3;
 color.fontColorDark = color.white;
 color.fontColorWarning = color.yellow50;
 color.fontColorInverted = color.white;
-color.fontColorInvertedMuted = addTransparency(
-    color.grey3,
-    0.8);  // NEED update to not use transparency
+color.fontColorInvertedMuted = color.greyWithContrast;
 color.fontTitleColor = color.grey3;
 color.normalButtonFont = color.grey55;
 color.destructiveButtonFont = color.grey55;
 
 // Dividers and borders
-color.divider = addTransparency(
-    color.grey3,
-    0.2);  // NEED update to not use transparency
+color.divider = color.middlingGrey;
 color.dropShadow = color.grey60;
 color.scrollBar = color.grey40;
 color.focusBorder = color.grey40;  // used for keyboard navigation highlighting
@@ -51,7 +47,7 @@ color.inputHighlight = color.brightSlate;
 
 // Buttons are built off these base colors
 color.normalButtonDefault = color.blue20;
-color.destructiveButtonDefault = color.red50;
+color.destructiveButtonDefault = color.red40;
 
 // Success/Failure/Warning/Normal levels
 color.normalLevelAccent = color.blue50;
@@ -100,6 +96,7 @@ color.destructiveButton = {
   buttonDisabled: mixColors(color.destructiveButtonDefault, color.black, 0.3),
   focusOutline: addTransparency(color.normalButtonDefault, 0.4),
   focusBorder: color.normalButtonDefault,
+  fontColor: color.destructiveButtonFont,
 };
 
 color.successAlert = {

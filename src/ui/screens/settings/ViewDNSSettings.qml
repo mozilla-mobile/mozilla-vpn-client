@@ -321,7 +321,6 @@ MZViewBase {
                 MZButton {
                     objectName: "dnsOverwritePopupDiscoverNowButton"
                     text: MZI18n.DnsOverwriteDialogPrimaryButton
-                    buttonTextColor: MZTheme.colors.normalButtonFont
                     Layout.fillWidth: true
                     onClicked: {
                         root.privacyDialogNeeded = false;

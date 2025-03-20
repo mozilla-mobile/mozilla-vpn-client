@@ -86,6 +86,7 @@ color.destructiveButton = {
   buttonDisabled: color.red10,
   focusOutline: addTransparency(color.destructiveButtonDefault, 0.4),
   focusBorder: color.destructiveButtonDefault,
+  fontColor: color.destructiveButtonFont,
 };
 
 color.successAlert = color.greenAlert;
