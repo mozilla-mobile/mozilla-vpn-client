@@ -114,14 +114,14 @@ Rectangle {
 
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: MZTheme.colors.destructiveButton
+                colorScheme: MZTheme.colors.errorAlert
             }
 
             PropertyChanges {
                 target: style;
                 alertColor: MZTheme.colors.errorAccent
-                alertHoverColor: MZTheme.colors.destructiveButton.buttonHovered
-                alertClickColor: MZTheme.colors.destructiveButton.buttonPressed
+                alertHoverColor: MZTheme.colors.errorAlert.buttonHovered
+                alertClickColor: MZTheme.colors.errorAlert.buttonPressed
                 fontColor: MZTheme.colors.fontColorInverted
                 closeIcon: whiteCloseIcon
             }

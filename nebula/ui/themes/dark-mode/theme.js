@@ -102,9 +102,9 @@ color.destructiveButton = {
 color.successAlert = {
   defaultColor: color.green80,
   buttonHovered: mixColors(
-      color.green80, color.white, 0.5),  // NEED confirmation - matt draft
+      color.green80, color.black, 0.3),  // NEED confirmation - matt draft
   buttonPressed: mixColors(
-      color.green80, color.white, 0.65),  // NEED confirmation - matt draft
+      color.green80, color.black, 0.5),  // NEED confirmation - matt draft
   focusOutline:
       addTransparency(color.green80, 0.4),  // NEED confirmation - matt draft
   focusBorder:
@@ -112,9 +112,9 @@ color.successAlert = {
 };
 color.warningAlert = {
   buttonHovered: mixColors(
-      color.yellow70, color.white, 0.5),  // NEED confirmation - matt draft
+      color.yellow70, color.black, 0.3),  // NEED confirmation - matt draft
   buttonPressed: mixColors(
-      color.yellow70, color.white, 0.65),  // NEED confirmation - matt draft
+      color.yellow70, color.black, 0.5),  // NEED confirmation - matt draft
   focusOutline:
       addTransparency(color.yellow70, 0.4),  // NEED confirmation - matt draft
   focusBorder:

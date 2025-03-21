@@ -28,13 +28,24 @@ color.normalButton = {
 
 color.infoAlert = {
   defaultColor: color.normalLevelAccent,
-  buttonHovered: mixColors(color.normalLevelAccent, color.grey5, 0.35),
-  buttonPressed: mixColors(color.normalLevelAccent, color.grey5, 0.5),
+  buttonHovered: mixColors(color.normalLevelAccent, color.black, 0.35),
+  buttonPressed: mixColors(color.normalLevelAccent, color.black, 0.5),
   buttonDisabled: mixColors(
       color.normalLevelAccent, color.black,
       0.3),  // use black here in all cases
   focusOutline: addTransparency(color.normalLevelAccent, 0.5),
   focusBorder: color.normalLevelAccent,
+};
+
+color.errorAlert = {
+  defaultColor: color.errorAccent,
+  buttonHovered: mixColors(color.errorAccent, color.black, 0.35),
+  buttonPressed: mixColors(color.errorAccent, color.black, 0.5),
+  buttonDisabled: mixColors(
+      color.errorAccent, color.black,
+      0.3),  // use black here in all cases
+  focusOutline: addTransparency(color.errorAccent, 0.5),
+  focusBorder: color.errorAccent,
 };
 
 color.clickableRow = {
