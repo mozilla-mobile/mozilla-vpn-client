@@ -39,6 +39,8 @@
 #  include "platforms/linux/networkmanagercontroller.h"
 #elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
+#elif defined(MZ_MACOS)
+#  include "platforms/macos/macoscontroller.h"
 #elif defined(MZ_IOS)
 #  include "platforms/ios/ioscontroller.h"
 #elif defined(MZ_ANDROID)
@@ -107,9 +109,7 @@ QString Controller::useLocalSocketPath() const {
   }
 #endif
 
-#if defined(MZ_MACOS)
-  return Constants::MACOS_DAEMON_PATH;
-#elif defined(MZ_WINDOWS)
+#if defined(MZ_WINDOWS)
   return Constants::WINDOWS_DAEMON_PATH;
 #endif
 
@@ -141,6 +141,8 @@ void Controller::initialize() {
     m_impl.reset(new NetworkManagerController());
 #elif defined(MZ_LINUX)
     m_impl.reset(new LinuxController());
+#elif defined(MZ_MACOS)
+    m_impl.reset(new MacOSController());
 #elif defined(MZ_IOS)
     m_impl.reset(new IOSController());
 #elif defined(MZ_ANDROID)
