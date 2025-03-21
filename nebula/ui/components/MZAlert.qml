@@ -86,9 +86,9 @@ Rectangle {
 
             PropertyChanges {
                 target: style;
-                alertColor: MZTheme.colors.normalLevelAccent
-                alertHoverColor: MZTheme.colors.normalButton.buttonHovered
-                alertClickColor: MZTheme.colors.normalButton.buttonPressed
+                alertColor: MZTheme.colors.infoAlert.defaultColor
+                alertHoverColor: MZTheme.colors.infoAlert.buttonHovered
+                alertClickColor: MZTheme.colors.infoAlert.buttonPressed
                 fontColor: MZTheme.colors.fontColorInverted
                 closeIcon: whiteCloseIcon
             }
@@ -114,14 +114,14 @@ Rectangle {
 
             PropertyChanges {
                 target: focusIndicators
-                colorScheme: MZTheme.colors.destructiveButton
+                colorScheme: MZTheme.colors.errorAlert
             }
 
             PropertyChanges {
                 target: style;
                 alertColor: MZTheme.colors.errorAccent
-                alertHoverColor: MZTheme.colors.destructiveButton.buttonHovered
-                alertClickColor: MZTheme.colors.destructiveButton.buttonPressed
+                alertHoverColor: MZTheme.colors.errorAlert.buttonHovered
+                alertClickColor: MZTheme.colors.errorAlert.buttonPressed
                 fontColor: MZTheme.colors.fontColorInverted
                 closeIcon: whiteCloseIcon
             }
