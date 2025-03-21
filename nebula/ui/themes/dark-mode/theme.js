@@ -6,7 +6,7 @@
 color.useDarkAssets = true;
 
 /**
- * Part 3: Theme colors
+ * Part 2: Theme colors
  * Named colors in this section should only be set to colors in part 1 or 2.
  * This file should be duplicated for additional themes, and is the only file
  * that needs to be duplicated.

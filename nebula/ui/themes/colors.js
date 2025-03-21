@@ -202,31 +202,3 @@ color.mediumOnboardingPurple = '#301962';
 color.darkerOnboardingPurple = '#1D0942';
 
 color.transparent = '#00000000';
-
-/**
- * Part 2: Color objects
- * Uses the colors defined above.
- * Should NOT be used directly in code, and colors should not be modified.
- * (Can add to this section if really, truly needed.)
- */
-
-color.greenAlert = {
-  defaultColor: color.green50,
-  buttonHovered: color.green60,
-  buttonPressed: color.green70,
-  focusOutline: addTransparency(color.green50, 0.2),
-  focusBorder: color.green70,
-};
-
-color.orangeAlert = {
-  buttonHovered: color.yellow60,
-  buttonPressed: color.yellow70,
-  focusOutline: addTransparency(color.yellow60, 0.3),
-  focusBorder: color.yellow70,
-};
-
-color.greyLink = {
-  defaultColor: addTransparency(color.grey60, 0.7),
-  buttonHovered: addTransparency(color.grey60, 0.8),
-  buttonPressed: color.grey60,
-};

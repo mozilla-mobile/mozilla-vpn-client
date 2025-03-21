@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 /**
- * Part 4: Derived theme colors
+ * Part 3: Derived theme colors
  * Color objects that dervive from colors set in part 3.
  *
  * The named colors in this section and section 3 SHOULD be used in code -

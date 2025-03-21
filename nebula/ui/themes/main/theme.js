@@ -6,7 +6,7 @@
 color.useDarkAssets = false;
 
 /**
- * Part 3: Theme colors
+ * Part 2: Theme colors
  * Named colors in this section should only be set to colors in part 1 or 2.
  * This file should be duplicated for additional themes, and is the only file
  * that needs to be duplicated.
@@ -89,9 +89,26 @@ color.destructiveButton = {
   fontColor: color.destructiveButtonFont,
 };
 
-color.successAlert = color.greenAlert;
-color.warningAlert = color.orangeAlert;
-color.textLink = color.greyLink;
+color.successAlert = {
+  defaultColor: color.green50,
+  buttonHovered: color.green60,
+  buttonPressed: color.green70,
+  focusOutline: addTransparency(color.green50, 0.2),
+  focusBorder: color.green70,
+};
+
+color.warningAlert = {
+  buttonHovered: color.yellow60,
+  buttonPressed: color.yellow70,
+  focusOutline: addTransparency(color.yellow60, 0.3),
+  focusBorder: color.yellow70,
+};
+
+color.textLink = {
+  defaultColor: addTransparency(color.grey60, 0.7),
+  buttonHovered: addTransparency(color.grey60, 0.8),
+  buttonPressed: color.grey60,
+};
 
 color.onBoardingGradient = {
   start: color.lighterOnboardingPurple,
