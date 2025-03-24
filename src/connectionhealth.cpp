@@ -175,7 +175,8 @@ void ConnectionHealth::connectionStateChanged() {
   Controller::State state = MozillaVPN::instance()->controller()->state();
   logger.debug() << "Connection state changed to" << state;
 
-  if (state != Controller::StateInitializing) {
+  if ((state != Controller::StateInitializing) &&
+      (state != Controller::StatePermissionRequired)) {
     startUnsettledPeriod();
   }
 

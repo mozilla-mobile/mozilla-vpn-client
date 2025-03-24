@@ -27,6 +27,7 @@ class Controller : public QObject, public LogSerializer {
  public:
   enum State {
     StateInitializing,
+    StatePermissionRequired,
     StateOff,
     StateConnecting,
     StateConfirming,
@@ -133,6 +134,7 @@ class Controller : public QObject, public LogSerializer {
                      uint64_t rxBytes);
   void implInitialized(bool status, bool connected,
                        const QDateTime& connectionDate);
+  void implPermRequired();
 
  signals:
   void stateChanged();

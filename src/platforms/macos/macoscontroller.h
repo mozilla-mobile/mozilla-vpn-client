@@ -21,6 +21,7 @@ class MacOSController final : public LocalSocketController {
 
  private:
   void* m_smAppService = nullptr;
+  int m_smAppStatus;
   QTimer m_regTimer;
 };
 

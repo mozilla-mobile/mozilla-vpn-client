@@ -18,9 +18,14 @@ Logger logger("MacOSController");
 constexpr const int SERVICE_REG_POLL_INTERVAL_MSEC = 1000;
 
 MacOSController::MacOSController() :
-   LocalSocketController(Constants::MACOS_DAEMON_PATH) {}
+   LocalSocketController(Constants::MACOS_DAEMON_PATH) {
+  m_smAppStatus = SMAppServiceStatusNotRegistered;
+}
 
 void MacOSController::initialize(const Device* device, const Keys* keys) {
+  Q_UNUSED(device);
+  Q_UNUSED(keys);
+
   NSString* appId = MacOSUtils::appId();
   Q_ASSERT(appId);
 
@@ -42,12 +47,15 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
   connect(&m_regTimer, &QTimer::timeout, this,
           &MacOSController::checkServiceStatus);
   m_regTimer.start(SERVICE_REG_POLL_INTERVAL_MSEC);
-
-  LocalSocketController::initialize(device, keys);
 }
 
 void MacOSController::checkServiceStatus(void) {
   SMAppService* daemon = static_cast<SMAppService*>(m_smAppService);
+  SMAppServiceStatus status = [daemon status];
+  if (status == m_smAppStatus) {
+    return;
+  }
+
   switch ([daemon status]) {
     case SMAppServiceStatusNotRegistered:
       logger.debug() << "Mozilla VPN daemon not registered.";
@@ -55,10 +63,17 @@ void MacOSController::checkServiceStatus(void) {
 
     case SMAppServiceStatusEnabled:
       logger.debug() << "Mozilla VPN daemon enabled.";
+
+      // We can continue with initialization.
+      // NOTE: It just so happens that the LocalSocketController doesnt use the
+      // device or keys, so it's safe to pass null here.
+      m_regTimer.stop();
+      LocalSocketController::initialize(nullptr, nullptr);
       break;
 
     case SMAppServiceStatusRequiresApproval:
       logger.debug() << "Mozilla VPN daemon requires approval.";
+      emit permissionRequired();
       break;
 
     case SMAppServiceStatusNotFound:

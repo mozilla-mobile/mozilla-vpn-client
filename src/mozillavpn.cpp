@@ -1084,6 +1084,7 @@ void MozillaVPN::update() {
   // so it's not necessary to disable the VPN to perform an upgrade.
 #ifndef MZ_WINDOWS
   if (m_private->m_controller.state() != Controller::StateOff &&
+      m_private->m_controller.state() != Controller::StatePermissionRequired &&
       m_private->m_controller.state() != Controller::StateInitializing) {
     deactivate();
     return;
@@ -1243,7 +1244,9 @@ void MozillaVPN::scheduleRefreshDataTasks() {
   // https://mozilla-hub.atlassian.net/browse/VPN-3726 for more information.
   if (!m_private->m_location.initialized()) {
     Controller::State st = m_private->m_controller.state();
-    if (st == Controller::StateOff || st == Controller::StateInitializing) {
+    if (st == Controller::StateOff ||
+        st == Controller::StatePermissionRequired ||
+        st == Controller::StateInitializing) {
       TaskScheduler::scheduleTask(
           new TaskGetLocation(ErrorHandler::PropagateError));
     }

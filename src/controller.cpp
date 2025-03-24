@@ -161,6 +161,8 @@ void Controller::initialize() {
           &Controller::disconnected);
   connect(m_impl.get(), &ControllerImpl::initialized, this,
           &Controller::implInitialized);
+  connect(m_impl.get(), &ControllerImpl::permissionRequired, this,
+          &Controller::implPermRequired);
   connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
           &Controller::statusUpdated);
   connect(this, &Controller::stateChanged, this,
@@ -182,6 +184,11 @@ void Controller::initialize() {
 
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
+}
+
+void Controller::implPermRequired() {
+  logger.debug() << "Initialization blocked: permission required";
+  setState(StatePermissionRequired);
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
@@ -241,7 +248,8 @@ void Controller::timerTimeout() {
 void Controller::quit() {
   logger.debug() << "Quitting";
 
-  if (m_state == StateInitializing || m_state == StateOff) {
+  if (m_state == StateInitializing || m_state == StatePermissionRequired ||
+      m_state == StateOff) {
     m_nextStep = Quit;
     emit readyToQuit();
     return;
@@ -321,6 +329,8 @@ qint64 Controller::connectionTimestamp() const {
     case Controller::State::StateDisconnecting:
       [[fallthrough]];
     case Controller::State::StateInitializing:
+      [[fallthrough]];
+    case Controller::State::StatePermissionRequired:
       [[fallthrough]];
     case Controller::State::StateOff:
       return 0;
