@@ -12,6 +12,8 @@ import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
+
 MZViewBase {
     id: root
 
@@ -87,9 +89,6 @@ MZViewBase {
           }
 
           Rectangle {
-              id: divider
-
-              Layout.topMargin: dividerTopMargin
               Layout.fillWidth: true
               Layout.preferredHeight: 10
 
@@ -126,9 +125,6 @@ MZViewBase {
           }
 
           Rectangle {
-              id: divider2
-
-              Layout.topMargin: dividerTopMargin
               Layout.fillWidth: true
               Layout.preferredHeight: 10
 
@@ -175,7 +171,78 @@ MZViewBase {
                       'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
                   };
           }
+
+          Rectangle {
+              Layout.fillWidth: true
+              Layout.preferredHeight: 10
+
+              color: MZTheme.colors.divider
+          }
+
+          MZIcon {
+            source: MZAssetLookup.getImageSource("PaymentAmex")
+            sourceSize.height: MZTheme.theme.iconSizeSmall * 1.5
+            sourceSize.width: MZTheme.theme.iconSizeSmall * 1.5
+          }
+
+          MZIcon {
+            source: MZAssetLookup.getImageSource("PaymentDiners")
+            sourceSize.height: MZTheme.theme.iconSizeSmall * 1.5
+            sourceSize.width: MZTheme.theme.iconSizeSmall * 1.5
+          }
+
+          MZIcon {
+            source: MZAssetLookup.getImageSource("PaymentDiscover")
+            sourceSize.height: MZTheme.theme.iconSizeSmall * 1.5
+            sourceSize.width: MZTheme.theme.iconSizeSmall * 1.5
+          }
+
+          MZIcon {
+            source: MZAssetLookup.getImageSource("PaymentJcb")
+            sourceSize.height: MZTheme.theme.iconSizeSmall * 1.5
+            sourceSize.width: MZTheme.theme.iconSizeSmall * 1.5
+          }
+
+          MZIcon {
+            source: MZAssetLookup.getImageSource("PaymentApple")
+            sourceSize.height: MZTheme.theme.iconSizeSmall * 1.5
+            sourceSize.width: MZTheme.theme.iconSizeSmall * 1.5
+          }
+
+          MZIcon {
+            source: MZAssetLookup.getImageSource("PaymentGoogle")
+            sourceSize.height: MZTheme.theme.iconSizeSmall * 1.5
+            sourceSize.width: MZTheme.theme.iconSizeSmall * 1.5
+          }
+
+          MZIcon {
+            source: MZAssetLookup.getImageSource("PaymentMastercard")
+            sourceSize.height: MZTheme.theme.iconSizeSmall * 1.5
+            sourceSize.width: MZTheme.theme.iconSizeSmall * 1.5
+          }
+
+          MZIcon {
+            source: MZAssetLookup.getImageSource("PaymentPayPal")
+            sourceSize.height: MZTheme.theme.iconSizeSmall * 1.5
+            sourceSize.width: MZTheme.theme.iconSizeSmall * 1.5
+          }
+
+          MZIcon {
+            source: MZAssetLookup.getImageSource("PaymentUnionPay")
+            sourceSize.height: MZTheme.theme.iconSizeSmall * 1.5
+            sourceSize.width: MZTheme.theme.iconSizeSmall * 1.5
+          }
+
+          MZIcon {
+            source: MZAssetLookup.getImageSource("PaymentVisa")
+            sourceSize.height: MZTheme.theme.iconSizeSmall * 1.5
+            sourceSize.width: MZTheme.theme.iconSizeSmall * 1.5
+          }
+
+          MZIcon {
+            source: MZAssetLookup.getImageSource("PaymentUnbranded")
+            sourceSize.height: MZTheme.theme.iconSizeSmall * 1.5
+            sourceSize.width: MZTheme.theme.iconSizeSmall * 1.5
+          }
       }
-
-
 }
