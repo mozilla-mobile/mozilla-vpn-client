@@ -72,7 +72,7 @@ var imageLookup =
         filenameLight: 'qrc:/nebula/resources/question.svg',
         filenameDark: 'qrc:/nebula/resources/lock.svg'
       },
-      'QuestionDarker': {
+      'MenuIconQuestion': {
         filenameLight: 'qrc:/ui/resources/settings/questionMark.svg',
         filenameDark: 'qrc:/ui/resources/settings/questionMark.svg'
       },

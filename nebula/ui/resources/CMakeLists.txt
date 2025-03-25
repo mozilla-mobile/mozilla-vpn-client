@@ -24,7 +24,6 @@ qt_add_qml_module(resources
         chevron-right-dark.svg
         chevron.svg
         clock.svg
-        close-darker.svg
         close-dark.svg
         close-white.svg
         delete.svg
