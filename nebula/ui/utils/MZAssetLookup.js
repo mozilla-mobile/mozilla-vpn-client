@@ -64,10 +64,6 @@ var imageLookup =
         filenameLight: 'qrc:/nebula/resources/close-dark.svg',
         filenameDark: 'qrc:/nebula/resources/close-dark.svg'
       },
-      'CloseDarker': {
-        filenameLight: 'qrc:/nebula/resources/close-darker.svg',
-        filenameDark: 'qrc:/nebula/resources/close-darker.svg'
-      },
       'CloseWhite': {
         filenameLight: 'qrc:/nebula/resources/close-white.svg',
         filenameDark: 'qrc:/nebula/resources/close-white.svg'

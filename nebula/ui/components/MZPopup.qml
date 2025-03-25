@@ -58,7 +58,7 @@ Popup {
             anchors.centerIn: closeButton
 
             fillMode: Image.PreserveAspectFit
-            source: MZAssetLookup.getImageSource("CloseDarker")
+            source: MZAssetLookup.getImageSource("CloseDark")
             sourceSize.height: MZTheme.theme.iconSize
             sourceSize.width: MZTheme.theme.iconSize
         }
