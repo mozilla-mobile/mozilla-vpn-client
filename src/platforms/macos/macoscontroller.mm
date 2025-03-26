@@ -15,24 +15,55 @@ namespace {
 Logger logger("MacOSController");
 }  // namespace
 
+// Obj-C helper object to hold the service.
+@interface MacOSDaemonDelegate : NSObject
+@property(assign) SMAppService* service;
+@end
+
+@implementation MacOSDaemonDelegate {
+  MacOSController* m_controller;
+}
+
+- (id)initWithObjectAndPlist:(MacOSController*)controller
+                   plistName:(NSString*)name{
+  self = [super init];
+  if (self) {
+    self.service = [SMAppService daemonServiceWithPlistName:name];
+  }
+  return self;
+}
+
+- (void)dealloc {
+  [super dealloc];
+}
+
+@end
+
 constexpr const int SERVICE_REG_POLL_INTERVAL_MSEC = 1000;
 
 MacOSController::MacOSController() :
    LocalSocketController(Constants::MACOS_DAEMON_PATH) {
+
+  // Create the daemon delegate object.
+  NSString* appId = MacOSUtils::appId();
+  Q_ASSERT(appId);
+  NSString* plistName =
+    QString("%1.daemon.plist").arg(QString::fromNSString(appId)).toNSString();
+
+  m_delegate = [[MacOSDaemonDelegate alloc] initWithObjectAndPlist:this
+                                                         plistName:plistName];
+
   m_smAppStatus = SMAppServiceStatusNotFound;
+}
+
+MacOSController::~MacOSController() {
+  MacOSDaemonDelegate* delegate = static_cast<MacOSDaemonDelegate*>(m_delegate);
+  [delegate dealloc];
 }
 
 void MacOSController::initialize(const Device* device, const Keys* keys) {
   Q_UNUSED(device);
   Q_UNUSED(keys);
-
-  NSString* appId = MacOSUtils::appId();
-  Q_ASSERT(appId);
-
-  NSString* daemonPlistName =
-    QString("%1.daemon.plist").arg(QString::fromNSString(appId)).toNSString();
-  SMAppService* daemon = [SMAppService daemonServiceWithPlistName:daemonPlistName];
-  m_smAppService = daemon;
 
   // Poll for the service status to determine if it's been registered
   // successfully and check when the daemon should be running.
@@ -45,8 +76,8 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
 }
 
 void MacOSController::checkServiceStatus(void) {
-  SMAppService* daemon = static_cast<SMAppService*>(m_smAppService);
-  SMAppServiceStatus status = [daemon status];
+  MacOSDaemonDelegate* delegate = static_cast<MacOSDaemonDelegate*>(m_delegate);
+  SMAppServiceStatus status = [delegate.service status];
   if (status == m_smAppStatus) {
     return;
   }
@@ -55,7 +86,7 @@ void MacOSController::checkServiceStatus(void) {
   NSError* error = nil;
   switch (status) {
     case SMAppServiceStatusNotRegistered:
-      if (![daemon registerAndReturnError: & error]) {
+      if (![delegate.service registerAndReturnError: & error]) {
         logger.error() << "Failed to register Mozilla VPN daemon: "
                       << QString::fromNSString(error.localizedDescription);
       } else {

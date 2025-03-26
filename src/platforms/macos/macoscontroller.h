@@ -13,6 +13,7 @@ class MacOSController final : public LocalSocketController {
 
  public:
   MacOSController();
+  ~MacOSController();
 
   void initialize(const Device* device, const Keys* keys) override;
 
@@ -20,7 +21,7 @@ class MacOSController final : public LocalSocketController {
   void checkServiceStatus();
 
  private:
-  void* m_smAppService = nullptr;
+  void* m_delegate = nullptr;
   int m_smAppStatus;
   QTimer m_regTimer;
 };
