@@ -8,12 +8,15 @@ qt_add_qml_module(resources
     STATIC
     RESOURCE_PREFIX /nebula
     RESOURCES
-        ArrowBack-dark.svg
         arrow-back-white.svg
         arrow-forward.svg
         arrow-forward-white.svg
         arrow-toggle.svg
+        ArrowBack-dark.svg
+        ArrowForward-dark.svg
+        ArrowToggle-dark.svg
         avatar.svg
+        Avatar-dark.svg
         avatar-default.png
         avatar-delete-account.svg
         avatar-grayscale.svg

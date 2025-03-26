@@ -18,11 +18,11 @@ var imageLookup =
       },
       'ArrowForward': {
         filenameLight: 'qrc:/nebula/resources/arrow-forward.svg',
-        filenameDark: 'qrc:/nebula/resources/arrow-forward.svg'
+        filenameDark: 'qrc:/nebula/resources/ArrowForward-dark.svg'
       },
       'ArrowToggle': {
         filenameLight: 'qrc:/nebula/resources/arrow-toggle.svg',
-        filenameDark: 'qrc:/nebula/resources/lock.svg'
+        filenameDark: 'qrc:/nebula/resources/ArrowToggle-dark.svg'
       },
       'RefreshArrows': {
         filenameLight: 'qrc:/nebula/resources/refresh.svg',
@@ -98,7 +98,7 @@ var imageLookup =
       },
       'Avatar': {
         filenameLight: 'qrc:/nebula/resources/avatar.svg',
-        filenameDark: 'qrc:/nebula/resources/avatar.svg'
+        filenameDark: 'qrc:/nebula/resources/Avatar-dark.svg'
       },
       'AvatarProfile': {
         filenameLight: 'qrc:/nebula/resources/avatar-default.png',
