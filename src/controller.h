@@ -67,6 +67,7 @@ class Controller : public QObject, public LogSerializer {
   void deleteOSTunnelConfig();
   void startHandshakeTimer();
   bool isDeviceConnected() const { return m_isDeviceConnected; }
+  bool isInitialized() const;
 
   const ServerData& currentServer() const { return m_serverData; }
 

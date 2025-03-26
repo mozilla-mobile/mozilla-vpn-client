@@ -79,6 +79,7 @@ qt_add_qml_module(mozillavpn-ui
         screens/ScreenMessaging.qml
         screens/ScreenNoSubscriptionFoundError.qml
         screens/ScreenOnboarding.qml
+        screens/ScreenPermissionRequired.qml
         screens/ScreenSettings.qml
         screens/ScreenSubscriptionBlocked.qml
         screens/ScreenSubscriptionGenericError.qml

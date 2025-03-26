@@ -191,6 +191,10 @@ void Controller::implPermRequired() {
   setState(StatePermissionRequired);
 }
 
+bool Controller::isInitialized() const {
+  return m_state != StateInitializing && m_state != StatePermissionRequired;
+}
+
 void Controller::implInitialized(bool status, bool a_connected,
                                  const QDateTime& connectionDate) {
   logger.debug() << "Connection Manager initialized with status:" << status

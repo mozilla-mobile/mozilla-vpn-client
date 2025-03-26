@@ -44,6 +44,7 @@ class MozillaVPN final : public App {
     StateDeviceLimit = StateCustom + 1,
     StateHeartbeatFailure,
     StateUpdateRequired,
+    StatePermissionRequired,
   };
   Q_ENUM(CustomState);
 
@@ -75,6 +76,7 @@ class MozillaVPN final : public App {
     ScreenViewLogs,
     ScreenRemovingDevice,
     ScreenOnboarding,
+    ScreenPermissionRequired,
   };
   Q_ENUM(CustomScreen);
 
