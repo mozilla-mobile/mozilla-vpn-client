@@ -14,7 +14,7 @@ var imageLookup =
       },
       'ArrowBack': {
         filenameLight: 'qrc:/nebula/resources/back.svg',
-        filenameDark: 'qrc:/nebula/resources/back.svg'
+        filenameDark: 'qrc:/nebula/resources/ArrowBack-dark.svg'
       },
       'ArrowForward': {
         filenameLight: 'qrc:/nebula/resources/arrow-forward.svg',
@@ -106,7 +106,7 @@ var imageLookup =
       },
       'AvatarDeleteAccount': {
         filenameLight: 'qrc:/nebula/resources/avatar-delete-account.svg',
-        filenameDark: 'qrc:/nebula/resources/avatar-delete-account.svg'
+        filenameDark: 'qrc:/nebula/resources/AvatarDeleteAccount-dark.png'
       },
       'IconAvatar': {
         filenameLight: 'qrc:/nebula/resources/avatar-grayscale.svg',
@@ -174,7 +174,7 @@ var imageLookup =
       },
       'WarningRed': {
         filenameLight: 'qrc:/nebula/resources/warning.svg',
-        filenameDark: 'qrc:/nebula/resources/warning.svg'
+        filenameDark: 'qrc:/nebula/resources/WarningIconRed-dark.svg'
       },
       'WarningOrange': {
         filenameLight: 'qrc:/nebula/resources/warning-orange.svg',

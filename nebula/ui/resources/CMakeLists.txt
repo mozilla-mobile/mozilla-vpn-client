@@ -8,6 +8,7 @@ qt_add_qml_module(resources
     STATIC
     RESOURCE_PREFIX /nebula
     RESOURCES
+        ArrowBack-dark.svg
         arrow-back-white.svg
         arrow-forward.svg
         arrow-forward-white.svg
@@ -16,6 +17,7 @@ qt_add_qml_module(resources
         avatar-default.png
         avatar-delete-account.svg
         avatar-grayscale.svg
+        AvatarDeleteAccount-dark.png
         back-dark.svg
         back.svg
         buttonLoader.svg
@@ -55,18 +57,24 @@ qt_add_qml_module(resources
         warning-orange.svg
         warning-gray.svg
         warning.svg
+        WarningIconRed-dark.svg
         x-red50.svg
         check-green70.svg
         shield-green50.svg
         checkmark-blue50.svg
         navbar/home.svg
         navbar/home-selected.svg
+        navbar/home-selected-dark.svg
         navbar/messages.svg
         navbar/messages-selected.svg
+        navbar/messages-selected-dark.svg
         navbar/settings.svg
         navbar/settings-selected.svg
+        navbar/settings-selected-dark.svg
         navbar/messages-notification-selected.svg
+        navbar/messages-notification-selected-dark.svg
         navbar/messages-notification.svg
+        navbar/messages-notification-dark.svg
         copy.svg
         paste.svg
         info.svg
