@@ -19,7 +19,7 @@ constexpr const int SERVICE_REG_POLL_INTERVAL_MSEC = 1000;
 
 MacOSController::MacOSController() :
    LocalSocketController(Constants::MACOS_DAEMON_PATH) {
-  m_smAppStatus = SMAppServiceStatusNotRegistered;
+  m_smAppStatus = SMAppServiceStatusNotFound;
 }
 
 void MacOSController::initialize(const Device* device, const Keys* keys) {
@@ -29,16 +29,9 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
   NSString* appId = MacOSUtils::appId();
   Q_ASSERT(appId);
 
-  NSError* error = nil;
   NSString* daemonPlistName =
     QString("%1.daemon.plist").arg(QString::fromNSString(appId)).toNSString();
   SMAppService* daemon = [SMAppService daemonServiceWithPlistName:daemonPlistName];
-  if (![daemon registerAndReturnError: & error]) {
-    logger.error() << "Failed to register Mozilla VPN daemon: "
-                   << QString::fromNSString(error.localizedDescription);
-  } else {
-    logger.debug() << "Mozilla VPN daemon registered successfully.";
-  }
   m_smAppService = daemon;
 
   // Poll for the service status to determine if it's been registered
@@ -47,6 +40,8 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
   connect(&m_regTimer, &QTimer::timeout, this,
           &MacOSController::checkServiceStatus);
   m_regTimer.start(SERVICE_REG_POLL_INTERVAL_MSEC);
+
+  checkServiceStatus();
 }
 
 void MacOSController::checkServiceStatus(void) {
@@ -55,10 +50,17 @@ void MacOSController::checkServiceStatus(void) {
   if (status == m_smAppStatus) {
     return;
   }
+  m_smAppStatus = status;
 
-  switch ([daemon status]) {
+  NSError* error = nil;
+  switch (status) {
     case SMAppServiceStatusNotRegistered:
-      logger.debug() << "Mozilla VPN daemon not registered.";
+      if (![daemon registerAndReturnError: & error]) {
+        logger.error() << "Failed to register Mozilla VPN daemon: "
+                      << QString::fromNSString(error.localizedDescription);
+      } else {
+        logger.debug() << "Mozilla VPN daemon registered successfully.";
+      }
       break;
 
     case SMAppServiceStatusEnabled:
