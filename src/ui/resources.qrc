@@ -330,6 +330,7 @@
         <file>resources/logo.ico</file>
         <file>resources/logo.svg</file>
         <file>resources/logo-dark.svg</file>
+        <file>resources/macos-allow-in-background.svg</file>
         <file>resources/magic-purple.svg</file>
         <file>resources/main-img-vpn-off.svg</file>
         <file>resources/main-img-vpn-on.svg</file>

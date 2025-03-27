@@ -32,7 +32,7 @@ MZFlickable {
         anchors.leftMargin: MZTheme.theme.windowMargin
         anchors.rightMargin: MZTheme.theme.windowMargin
         anchors.bottomMargin: navbar.visible ? MZTheme.theme.navBarHeightWithMargins : 34
-        spacing: 0
+        spacing: MZTheme.theme.vSpacingSmall
 
         MZHeadline {
             id: headline
@@ -44,86 +44,54 @@ MZFlickable {
             Layout.topMargin: headerLink.height + vpnFlickable.height * (window.fullscreenRequired() ? 0.20 :  0.08)
         }
 
-        ColumnLayout {
-            Layout.topMargin: MZTheme.theme.vSpacing
-            Layout.alignment: Qt.AlignHCenter
-            spacing: 0
-
-            Rectangle {
-                id: warningIconWrapper
-
-                Layout.preferredHeight: 48
-                Layout.preferredWidth: 48
-                Layout.alignment: Qt.AlignHCenter;
-                color: MZTheme.colors.errorAccent
-                radius: height / 2
-
-                Image {
-                    source: MZAssetLookup.getImageSource("WarningWhite")
-                    antialiasing: true
-                    sourceSize.height: 20
-                    sourceSize.width: 20
-                    anchors.centerIn: parent
-                }
-            }
-
-            ColumnLayout {
-                Layout.topMargin: MZTheme.theme.vSpacing
-                Layout.alignment: Qt.AlignHCenter
-
-                spacing: 0
-
-                MZInterLabel {
-                    Layout.topMargin: 8
-                    Layout.fillWidth: true
-
-                    text: MZI18n.PermissionMacosBody
-                    color: MZTheme.colors.fontColor
-                    horizontalAlignment: Text.AlignLeft
-                }
-
-                MZInterLabel {
-                    Layout.topMargin: 8
-                    Layout.fillWidth: true
-
-                    text: "<ol style='margin-left: -20px;'><li>%1</li><li>%2</li><ol>".arg(MZI18n.PermissionMacosStep1).arg(MZI18n.PermissionMacosStep2)
-                    color: MZTheme.colors.fontColor
-                    horizontalAlignment: Text.AlignLeft
-                }
-            }
-        }
-
-        Item {
-            Layout.fillHeight: window.fullscreenRequired()
+        Image {
+            source: "qrc:/ui/resources/macos-allow-in-background.svg"
+            fillMode: Image.PreserveAspectFit
         }
 
         ColumnLayout {
-            Layout.fillWidth: true
-            Layout.preferredWidth: parent.width
+            //Layout.topMargin: MZTheme.theme.vSpacing
             Layout.alignment: Qt.AlignHCenter
+            spacing: MZTheme.theme.listSpacing
 
-            spacing: MZTheme.theme.vSpacingSmall
+            MZInterLabel {
+                Layout.topMargin: 8
+                Layout.fillWidth: true
 
-            MZButton {
-                id: primaryButton
-
-                objectName: primaryButtonObjectName
-                text: MZI18n.PermissionMacosOpenSettingsButtonLabel
-                Layout.preferredHeight: MZTheme.theme.rowHeight
-                loaderVisible: false
-                onClicked: primaryButtonOnClick()
+                text: MZI18n.PermissionMacosBody
+                color: MZTheme.colors.fontColor
+                horizontalAlignment: Text.AlignLeft
             }
 
-            MZSignOut {
-                id: signOff
+            MZInterLabel {
+                Layout.topMargin: 8
+                Layout.fillWidth: true
 
-                Layout.preferredHeight: MZTheme.theme.rowHeight
-                Layout.alignment: Qt.AlignHCenter
-                anchors.horizontalCenter: undefined
-                anchors.bottom: undefined
-                anchors.bottomMargin: undefined
-                height: undefined
+                text: "<ol style='margin-left: -20px;'><li>%1</li><li>%2</li><ol>".arg(MZI18n.PermissionMacosStep1).arg(MZI18n.PermissionMacosStep2)
+                color: MZTheme.colors.fontColor
+                horizontalAlignment: Text.AlignLeft
             }
+        }
+
+        MZButton {
+            id: primaryButton
+
+            objectName: primaryButtonObjectName
+            text: MZI18n.PermissionMacosOpenSettingsButtonLabel
+            Layout.preferredHeight: MZTheme.theme.rowHeight
+            loaderVisible: false
+            onClicked: primaryButtonOnClick()
+        }
+
+        MZSignOut {
+            id: signOff
+
+            Layout.preferredHeight: MZTheme.theme.rowHeight
+            Layout.alignment: Qt.AlignHCenter
+            anchors.horizontalCenter: undefined
+            anchors.bottom: undefined
+            anchors.bottomMargin: undefined
+            height: undefined
         }
 
         Item {
