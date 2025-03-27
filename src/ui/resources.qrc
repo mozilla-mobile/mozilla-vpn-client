@@ -341,6 +341,7 @@
         <file>resources/shield-off.svg</file>
         <file>resources/shield-on.svg</file>
         <file>resources/switching.svg</file>
+        <file>resources/switching-dark.svg</file>
         <file>resources/tip.svg</file>
         <file>resources/updateRecommended.svg</file>
         <file>resources/updateRequired.svg</file>

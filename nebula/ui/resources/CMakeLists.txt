@@ -10,11 +10,11 @@ qt_add_qml_module(resources
     RESOURCES
         arrow-back-white.svg
         arrow-forward.svg
+        arrow-forward-dark.svg
         arrow-forward-white.svg
         arrow-toggle.svg
+        arrow-toggle-dark.svg
         ArrowBack-dark.svg
-        ArrowForward-dark.svg
-        ArrowToggle-dark.svg
         avatar.svg
         Avatar-dark.svg
         avatar-default.png
@@ -28,6 +28,7 @@ qt_add_qml_module(resources
         checkmark-green.svg
         chevron-right-dark.svg
         chevron.svg
+        chevron-dark.svg
         clock.svg
         close-dark.svg
         close-white.svg
@@ -37,6 +38,7 @@ qt_add_qml_module(resources
         down.svg
         dropdown-closed.svg
         externalLink.svg
+        externalLink-dark.svg
         eye-hidden.svg
         eye-visible.svg
         fonts/InterUI.otf
@@ -44,8 +46,12 @@ qt_add_qml_module(resources
         fonts/Metropolis.otf
         fonts/Metropolis-SemiBold.otf
         open-in-new.svg
+        open-in-new-dark.svg
         plus.svg
+        plus-dark.svg
         refresh.svg
+        refresh-dark.svg
+        RefreshArrowsWithCheckMark-dark.png
         search.svg
         settings.svg
         settings-white.svg

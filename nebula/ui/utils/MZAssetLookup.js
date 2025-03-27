@@ -2,15 +2,15 @@ var imageLookup =
     {
       'Chevron': {
         filenameLight: 'qrc:/nebula/resources/chevron.svg',
-        filenameDark: 'qrc:/nebula/resources/lock.svg'
+        filenameDark: 'qrc:/nebula/resources/chevron-dark.svg'
       },
       'ExternalLink': {
         filenameLight: 'qrc:/nebula/resources/externalLink.svg',
-        filenameDark: 'qrc:/nebula/resources/lock.svg'
+        filenameDark: 'qrc:/nebula/resources/externalLink-dark.svg'
       },
       'ExternalLinkGrayscale': {
         filenameLight: 'qrc:/nebula/resources/open-in-new.svg',
-        filenameDark: 'qrc:/nebula/resources/lock.svg'
+        filenameDark: 'qrc:/nebula/resources/open-in-new-dark.svg'
       },
       'ArrowBack': {
         filenameLight: 'qrc:/nebula/resources/back.svg',
@@ -18,23 +18,23 @@ var imageLookup =
       },
       'ArrowForward': {
         filenameLight: 'qrc:/nebula/resources/arrow-forward.svg',
-        filenameDark: 'qrc:/nebula/resources/ArrowForward-dark.svg'
+        filenameDark: 'qrc:/nebula/resources/arrow-forward-dark.svg'
       },
       'ArrowToggle': {
         filenameLight: 'qrc:/nebula/resources/arrow-toggle.svg',
-        filenameDark: 'qrc:/nebula/resources/ArrowToggle-dark.svg'
+        filenameDark: 'qrc:/nebula/resources/arrow-toggle-dark.svg'
       },
       'RefreshArrows': {
         filenameLight: 'qrc:/nebula/resources/refresh.svg',
-        filenameDark: 'qrc:/nebula/resources/lock.svg'
+        filenameDark: 'qrc:/nebula/resources/refresh-dark.svg'
       },
       'RefreshArrowsForShield': {
         filenameLight: 'qrc:/ui/resources/switching.svg',
-        filenameDark: 'qrc:/ui/resources/switching.svg'
+        filenameDark: 'qrc:/ui/resources/switching-dark.svg'
       },
       'RefreshArrowsWithCheckmark': {
         filenameLight: 'qrc:/nebula/resources/updateStatusUpToDate.svg',
-        filenameDark: 'qrc:/nebula/resources/updateStatusUpToDate.svg'
+        filenameDark: 'qrc:/nebula/resources/RefreshArrowsWithCheckMark-dark.png'
       },
       'RefreshArrowsWithWarning': {
         filenameLight: 'qrc:/nebula/resources/updateStatusUpdateAvailable.svg',
@@ -42,7 +42,7 @@ var imageLookup =
       },
       'Plus': {
         filenameLight: 'qrc:/nebula/resources/plus.svg',
-        filenameDark: 'qrc:/nebula/resources/plus.svg'
+        filenameDark: 'qrc:/nebula/resources/plus-dark.svg'
       },
       'CheckmarkNormalColor': {
         filenameLight: 'qrc:/nebula/resources/checkmark-blue50.svg',
