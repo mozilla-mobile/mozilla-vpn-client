@@ -113,6 +113,7 @@ qt_add_qml_module(mozillavpn-ui
         screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml
         screens/subscriptionNeeded/ViewSubscriptionNeeded.qml
         sharedViews/ViewErrorFullScreen.qml
+        sharedViews/ViewPermissionRequiredOSX.qml
         sharedViews/ViewUpdate.qml
         sharedViews/ViewFullScreen.qml
     SOURCES

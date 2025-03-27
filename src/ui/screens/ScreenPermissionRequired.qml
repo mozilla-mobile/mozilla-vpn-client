@@ -9,39 +9,18 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-/**
-* This screen is an error that should be triggered
-* whenever we have a hearbeatfailure. 
-* Note: we did not rename the file as that would nuke 
-* translations at this point in time. 
-**/
-MZStackView {
+MZScreenBase {
     id: stackview
+    objectName: "screenPermissionRequired"
 
-    function handleButtonClick() {
-        VPN.triggerHeartbeat();
-    }
+    _menuIconVisibility: false
 
-    Component.onCompleted: {
-        MZNavigator.addStackView(VPN.ScreenBackendFailure, stackview)
-
-        stackview.push(
-            "qrc:/qt/qml/Mozilla/VPN/sharedViews/ViewErrorFullScreen.qml", {
-                //% "Something went wrong…"
-                headlineText: qsTrId("vpn.errors.somethingWentWrong"),
-
-                //% "Unable to establish a connection at this time. We’re working hard to resolve the issue. Please try again shortly."
-                errorMessage: qsTrId("vpn.errors.unableToEstablishConnection"),
-
-                //% "Try Again"
-                primaryButtonText: qsTrId("vpn.errors.tryAgain"),
-
-                primaryButtonObjectName: "heartbeatTryButton",
-                primaryButtonOnClick: stackview.handleButtonClick,
-                secondaryButtonIsSignOff: false,
-                getHelpLinkVisible: true,
-                statusLinkVisible: true
-            }
-        );
+    Component.onCompleted: () => {
+        MZNavigator.addStackView(VPN.ScreenDeviceLimit, getStack())
+        if(Qt.platform.os === "osx"){
+            getStack().push("qrc:/qt/qml/Mozilla/VPN/sharedViews/ViewPermissionRequiredOSX.qml")
+            return;
+        }
+        // TODO: What to display otherwise?
     }
 }
