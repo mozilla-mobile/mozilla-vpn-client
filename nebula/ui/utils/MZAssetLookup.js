@@ -46,7 +46,7 @@ var imageLookup =
       },
       'CheckmarkNormalColor': {
         filenameLight: 'qrc:/nebula/resources/checkmark-blue50.svg',
-        filenameDark: 'qrc:/nebula/resources/checkmark-blue50.svg'
+        filenameDark: 'qrc:/nebula/resources/checkmark-dark.svg'
       },
       'CheckmarkSuccessColor': {
         filenameLight: 'qrc:/nebula/resources/checkmark-green.svg',
@@ -62,7 +62,7 @@ var imageLookup =
       },
       'CloseDark': {
         filenameLight: 'qrc:/nebula/resources/close-dark.svg',
-        filenameDark: 'qrc:/nebula/resources/close-dark.svg'
+        filenameDark: 'qrc:/nebula/resources/close-dark-darkmode.svg'
       },
       'CloseWhite': {
         filenameLight: 'qrc:/nebula/resources/close-white.svg',
@@ -70,7 +70,7 @@ var imageLookup =
       },
       'Question': {
         filenameLight: 'qrc:/nebula/resources/question.svg',
-        filenameDark: 'qrc:/nebula/resources/lock.svg'
+        filenameDark: 'qrc:/nebula/resources/question-dark.svg'
       },
       'MenuIconQuestion': {
         filenameLight: 'qrc:/ui/resources/settings/questionMark.svg',

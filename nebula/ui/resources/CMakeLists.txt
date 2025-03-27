@@ -31,6 +31,7 @@ qt_add_qml_module(resources
         chevron-dark.svg
         clock.svg
         close-dark.svg
+        close-dark-darkmode.svg
         close-white.svg
         delete.svg
         delete-white.svg
@@ -71,6 +72,7 @@ qt_add_qml_module(resources
         check-green70.svg
         shield-green50.svg
         checkmark-blue50.svg
+        checkmark-dark.svg
         navbar/home.svg
         navbar/home-selected.svg
         navbar/home-selected-dark.svg
@@ -91,6 +93,7 @@ qt_add_qml_module(resources
         lock.svg
         startup.svg
         question.svg
+        question-dark.svg
         tip-filled.svg
 
 )
