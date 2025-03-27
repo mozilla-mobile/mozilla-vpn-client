@@ -82,3 +82,6 @@ if ($missingPaths.Count -gt 0) {
 }
 
 Write-Host "Registered Windows SDK: $W10_SDK_VERSION"
+$ENV:CC = get-command cl.exe
+$ENV:CXX = get-command cl.exe
+
