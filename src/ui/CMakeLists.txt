@@ -176,3 +176,6 @@ target_include_directories(mozillavpn-uiplugin PUBLIC
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     target_sources(mozillavpn-ui PRIVATE singletons/VPNAndroidUtils.h)
 endif()
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    target_sources(mozillavpn-ui PRIVATE singletons/VPNMacOSUtils.h)
+endif()

@@ -8,8 +8,17 @@
 #include <QObject>
 #include <QString>
 
-class MacOSUtils final {
+class MacOSUtils final : public QObject {
+  Q_OBJECT
+  Q_DISABLE_COPY_MOVE(MacOSUtils)
+  
  public:
+  MacOSUtils(QObject* parent = nullptr) : QObject(parent) {};
+
+  static MacOSUtils* instance();
+
+  Q_INVOKABLE void openSystemSettingsLoginItems();
+
   static NSString* appId();
 
   static QString computerName();

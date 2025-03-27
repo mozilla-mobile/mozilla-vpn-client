@@ -80,7 +80,7 @@ MZFlickable {
             text: MZI18n.PermissionMacosOpenSettingsButtonLabel
             Layout.preferredHeight: MZTheme.theme.rowHeight
             loaderVisible: false
-            onClicked: primaryButtonOnClick()
+            onClicked: VPNMacOSUtils.openSystemSettingsLoginItems()
         }
 
         MZSignOut {

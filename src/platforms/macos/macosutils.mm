@@ -6,6 +6,8 @@
 #include "logger.h"
 #include "qmlengineholder.h"
 
+#include <QGlobalStatic>
+
 #include <objc/message.h>
 #include <objc/objc.h>
 
@@ -15,6 +17,9 @@
 namespace {
 Logger logger("MacOSUtils");
 }
+
+Q_GLOBAL_STATIC(MacOSUtils, macosUtils);
+MacOSUtils* MacOSUtils::instance() { return macosUtils; }
 
 // static
 NSString* MacOSUtils::appId() {
@@ -26,6 +31,10 @@ NSString* MacOSUtils::appId() {
   }
 
   return appId;
+}
+
+void MacOSUtils::openSystemSettingsLoginItems() {
+  [SMAppService openSystemSettingsLoginItems];
 }
 
 // static
