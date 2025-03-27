@@ -49,13 +49,9 @@ cmake -S . -B build `
     -DFEATURE_assistant=OFF `
     -DFEATURE_designer=OFF `
     -DFEATURE_qtdiag=OFF `
-    -DFEARTURE_androiddeployqt=OFF `
     -DFEATURE_sql=OFF 
 
  cmake --build build --parallel
-
-# This does not get build by default but cmake --install will expect it.
- cmake --build build --target androiddeployqt
 
  cmake --install build --prefix $BUILD_PREFIX
 
