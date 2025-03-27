@@ -29,6 +29,11 @@ echo "Removed vctip"
 sed -e 's/*TARGET_ARCH/arm64/g' -e 's/*HOST_ARCH/arm64/g' \
       $VCS_PATH/taskcluster/scripts/toolchain/enter_dev_shell.ps1.in > msvc/enter_dev_shell.ps1
 echo "Patched enter_dev_shell"
+
+echo "Following binaries in msvc"
+find msvc -type f -name "*.exe" -print
+
 echo "Starting Compression"
+ls msvc
 tar -cJf $UPLOAD_DIR/msvc.tar.xz msvc/
 echo "Done Compression"
