@@ -29,7 +29,8 @@ color.overlay = addTransparency(color.black, 0.3);
 // Fonts
 color.fontColor = color.grey40;
 color.fontColorDark = color.grey50;
-color.fontColorWarning = color.yellow70;
+color.fontColorWarningForConnectionBox = color.yellow50;
+color.fontColorWarningForBackground = color.yellow70;
 color.fontColorInverted = color.white;
 color.fontColorInvertedMuted = color.grey20;
 color.fontTitleColor = color.black;
