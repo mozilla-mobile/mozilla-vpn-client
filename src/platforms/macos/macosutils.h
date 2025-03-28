@@ -11,9 +11,9 @@
 class MacOSUtils final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(MacOSUtils)
-  
+
  public:
-  MacOSUtils(QObject* parent = nullptr) : QObject(parent) {};
+  MacOSUtils(QObject* parent = nullptr) : QObject(parent){};
 
   static MacOSUtils* instance();
 
