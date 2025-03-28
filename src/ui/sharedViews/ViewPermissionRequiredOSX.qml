@@ -14,9 +14,9 @@ MZFlickable {
     id: vpnFlickable
 
     property var primaryButtonObjectName
-    property var primaryButtonOnClick
 
-    flickContentHeight: col.height
+    width: parent.width
+    flickContentHeight: headerLink.implicitHeight + col.implicitHeight + col.anchors.topMargin
 
     MZHeaderLink {
         id: headerLink
@@ -28,30 +28,38 @@ MZFlickable {
 
     ColumnLayout {
         id: col
-        anchors.fill: parent
-        anchors.leftMargin: MZTheme.theme.windowMargin
-        anchors.rightMargin: MZTheme.theme.windowMargin
-        anchors.bottomMargin: navbar.visible ? MZTheme.theme.navBarHeightWithMargins : 34
+
+        anchors.top: headerLink.bottom
+        anchors.left: parent.left
+        anchors.right: parent.right
         spacing: MZTheme.theme.vSpacingSmall
+
+        Image {
+            Layout.topMargin: MZTheme.theme.contentTopMarginDesktop
+            Layout.alignment: Qt.AlignHCenter
+
+            source: "qrc:/ui/resources/macos-allow-in-background.svg"
+            fillMode: Image.PreserveAspectFit
+        }
 
         MZHeadline {
             id: headline
 
             text: MZI18n.PermissionMacosTitle
-            Layout.preferredHeight: paintedHeight
-            Layout.preferredWidth: col.width - (MZTheme.theme.windowMargin * 2)
-            Layout.maximumWidth: 500
-            Layout.topMargin: headerLink.height + vpnFlickable.height * (window.fullscreenRequired() ? 0.20 :  0.08)
-        }
+            horizontalAlignment: Text.AlignLeft
 
-        Image {
-            source: "qrc:/ui/resources/macos-allow-in-background.svg"
-            fillMode: Image.PreserveAspectFit
+            Layout.fillWidth: true
+            Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+            Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
         }
 
         ColumnLayout {
-            //Layout.topMargin: MZTheme.theme.vSpacing
-            Layout.alignment: Qt.AlignHCenter
+            id: textbox
+
+            Layout.fillWidth: true
+            Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
+            Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
+            
             spacing: MZTheme.theme.listSpacing
 
             MZInterLabel {
@@ -73,6 +81,10 @@ MZFlickable {
             }
         }
 
+        Item {
+            Layout.fillHeight: !window.fullscreenRequired()
+        }
+
         MZButton {
             id: primaryButton
 
@@ -92,10 +104,6 @@ MZFlickable {
             anchors.bottom: undefined
             anchors.bottomMargin: undefined
             height: undefined
-        }
-
-        Item {
-            Layout.fillHeight: !window.fullscreenRequired()
         }
     }
 }
