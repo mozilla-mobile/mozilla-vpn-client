@@ -315,7 +315,7 @@ var imageLookup =
       },
       'CheckEmail': {
         filenameLight: 'qrc:/ui/resources/check-email.svg',
-        filenameDark: 'qrc:/ui/resources/check-email.svg'
+        filenameDark: 'qrc:/ui/resources/check-email-dark.svg'
       },
       'VerificationCode': {
         filenameLight: 'qrc:/nebula/resources/verification-code.svg',
@@ -331,15 +331,15 @@ var imageLookup =
       },
       'LockWithWarning': {
         filenameLight: 'qrc:/ui/resources/updateRequired.svg',
-        filenameDark: 'qrc:/ui/resources/updateRequired.svg'
+        filenameDark: 'qrc:/ui/resources/updateRequired-dark.svg'
       },
       'HeartWithCheckmark': {
         filenameLight: 'qrc:/ui/resources/heart-check.svg',
-        filenameDark: 'qrc:/ui/resources/heart-check.svg'
+        filenameDark: 'qrc:/ui/resources/heart-check-dark.svg'
       },
       'RocketShipWithCheckmark': {
         filenameLight: 'qrc:/ui/resources/launch.svg',
-        filenameDark: 'qrc:/ui/resources/launch.svg'
+        filenameDark: 'qrc:/ui/resources/launch-dark.svg'
       },
       'EmptyMessages': {
         filenameLight: 'qrc:/ui/resources/messages-empty.svg',
@@ -351,19 +351,19 @@ var imageLookup =
       },
       'PlatformAppleActive': {
         filenameLight: 'qrc:/ui/resources/apple-active.svg',
-        filenameDark: 'qrc:/ui/resources/apple-active.svg'
+        filenameDark: 'qrc:/ui/resources/apple-active-dark.svg'
       },
       'PlatformAppleInactive': {
         filenameLight: 'qrc:/ui/resources/apple.svg',
-        filenameDark: 'qrc:/ui/resources/apple.svg'
+        filenameDark: 'qrc:/ui/resources/apple-dark.svg'
       },
       'PlatformAndroidActive': {
         filenameLight: 'qrc:/ui/resources/android-active.svg',
-        filenameDark: 'qrc:/ui/resources/android-active.svg'
+        filenameDark: 'qrc:/ui/resources/android-active-dark.svg'
       },
       'PlatformAndroidInactive': {
         filenameLight: 'qrc:/ui/resources/android.svg',
-        filenameDark: 'qrc:/ui/resources/android.svg'
+        filenameDark: 'qrc:/ui/resources/android-dark.svg'
       },
       'PlayStoreQRCode': {
         filenameLight: 'qrc:/ui/resources/qrcodes/play-store-qrcode.png',
@@ -391,11 +391,11 @@ var imageLookup =
       },
       'PaymentApple': {
         filenameLight: 'qrc:/ui/resources/payment/apple.svg',
-        filenameDark: 'qrc:/ui/resources/payment/apple.svg'
+        filenameDark: 'qrc:/ui/resources/payment/apple-dark.svg'
       },
       'PaymentGoogle': {
         filenameLight: 'qrc:/ui/resources/payment/android.svg',
-        filenameDark: 'qrc:/ui/resources/payment/android.svg'
+        filenameDark: 'qrc:/ui/resources/payment/android-dark.svg'
       },
       'PaymentMastercard': {
         filenameLight: 'qrc:/ui/resources/payment/mastercard.svg',

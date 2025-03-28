@@ -1,13 +1,17 @@
 <RCC>
     <qresource prefix="/ui">
         <file>resources/android-active.svg</file>
+        <file>resources/android-active-dark.svg</file>
         <file>resources/android.svg</file>
+        <file>resources/android-dark.svg</file>
         <file>resources/animations/globe_animation.json</file>
         <file>resources/animations/lock_animation.json</file>
         <file>resources/animations/vpnactive_animation.json</file>
         <file>resources/animations/vpnlogo-drop_animation.json</file>
         <file>resources/apple-active.svg</file>
+        <file>resources/apple-active-dark.svg</file>
         <file>resources/apple.svg</file>
+        <file>resources/apple-dark.svg</file>
         <file>resources/check-email.svg</file>
         <file>resources/check-email-dark.svg</file>
         <file>resources/connection-info.svg</file>
@@ -286,7 +290,9 @@
         <file>resources/globe-warning.svg</file>
         <file>resources/globe-warning-dark.svg</file>
         <file>resources/heart-check.svg</file>
+        <file>resources/heart-check-dark.svg</file>
         <file>resources/launch.svg</file>
+        <file>resources/launch-dark.svg</file>
         <file>resources/link.svg</file>
         <file>resources/logo-animated1.png</file>
         <file>resources/logo-animated-mask1.png</file>
@@ -319,7 +325,9 @@
         <file>resources/onboarding/onboarding4.svg</file>
         <file>resources/payment/amex.svg</file>
         <file>resources/payment/android.svg</file>
+        <file>resources/payment/android-dark.svg</file>
         <file>resources/payment/apple.svg</file>
+        <file>resources/payment/apple-dark.svg</file>
         <file>resources/payment/diners.svg</file>
         <file>resources/payment/discover.svg</file>
         <file>resources/payment/jcb.svg</file>
@@ -365,6 +373,7 @@
         <file>resources/tip.svg</file>
         <file>resources/updateRecommended.svg</file>
         <file>resources/updateRequired.svg</file>
+        <file>resources/updateRequired-dark.svg</file>
         <file>resources/warning-white.svg</file>
         <file>resources/warning-crash.svg</file>
         <file>resources/warning-crash-dark.svg</file>
