@@ -1926,14 +1926,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/reqwest/reqwest-0.12.14.crate",
-        "sha256": "989e327e510263980e231de548a33e63d34962d29ae61b467389a1a09627a254",
-        "dest": "cargo/vendor/reqwest-0.12.14"
+        "url": "https://static.crates.io/crates/reqwest/reqwest-0.12.15.crate",
+        "sha256": "d19c46a6fdd48bc4dab94b6103fccc55d34c67cc0ad04653aad4ea2a07cd7bbb",
+        "dest": "cargo/vendor/reqwest-0.12.15"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"989e327e510263980e231de548a33e63d34962d29ae61b467389a1a09627a254\", \"files\": {}}",
-        "dest": "cargo/vendor/reqwest-0.12.14",
+        "contents": "{\"package\": \"d19c46a6fdd48bc4dab94b6103fccc55d34c67cc0ad04653aad4ea2a07cd7bbb\", \"files\": {}}",
+        "dest": "cargo/vendor/reqwest-0.12.15",
         "dest-filename": ".cargo-checksum.json"
     },
     {
