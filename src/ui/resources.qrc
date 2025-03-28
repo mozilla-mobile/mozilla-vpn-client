@@ -9,13 +9,18 @@
         <file>resources/apple-active.svg</file>
         <file>resources/apple.svg</file>
         <file>resources/check-email.svg</file>
+        <file>resources/check-email-dark.svg</file>
         <file>resources/connection-info.svg</file>
         <file>resources/connection-info-dark.svg</file>
+        <file>resources/connection-info-smaller-dark.svg</file>
         <file>resources/copy.svg</file>
+        <file>resources/copy-dark.svg</file>
         <file>resources/create-password.svg</file>
         <file>resources/data-collection.svg</file>
         <file>resources/devices.svg</file>
+        <file>resources/devices-dark.svg</file>
         <file>resources/devicesLimit.svg</file>
+        <file>resources/DevicesLimit-dark.png</file>
         <file>resources/devicesRemove.svg</file>
         <file>resources/developer.svg</file>
         <file>resources/flags/AC.png</file>
@@ -279,6 +284,7 @@
         <file>resources/flags/ZW.png</file>
         <file>resources/globe.svg</file>
         <file>resources/globe-warning.svg</file>
+        <file>resources/globe-warning-dark.svg</file>
         <file>resources/heart-check.svg</file>
         <file>resources/launch.svg</file>
         <file>resources/link.svg</file>
@@ -302,6 +308,7 @@
         <file>resources/logo-sparkles.svg</file>
         <file>resources/logo.ico</file>
         <file>resources/logo.svg</file>
+        <file>resources/logo-dark.svg</file>
         <file>resources/magic-purple.svg</file>
         <file>resources/main-img-vpn-off.svg</file>
         <file>resources/main-img-vpn-on.svg</file>
@@ -325,19 +332,32 @@
         <file>resources/qrcodes/play-store-qrcode.png</file>
         <file>resources/quick-access.svg</file>
         <file>resources/settings/aboutUs.svg</file>
+        <file>resources/settings/aboutUs-dark.svg</file>
         <file>resources/settings/apppermissions.svg</file>
         <file>resources/settings/dnssettings.svg</file>
+        <file>resources/settings/dnssettings-dark.svg</file>
         <file>resources/settings/getHelp.svg</file>
+        <file>resources/settings/IconPermissions-dark.svg</file>
         <file>resources/settings/language.svg</file>
+        <file>resources/settings/language-dark.svg</file>
         <file>resources/settings/notifications.svg</file>
+        <file>resources/settings/notifications-dark.svg</file>
         <file>resources/settings/preferences.svg</file>
+        <file>resources/settings/preferences-dark.svg</file>
         <file>resources/settings/privacy.svg</file>
+        <file>resources/settings/privacy-dark.svg</file>
         <file>resources/settings/questionMark.svg</file>
+        <file>resources/settings/questionMark-dark.svg</file>
         <file>resources/server-latency-strong.svg</file>
+        <file>resources/server-latency-strong-dark.svg</file>
         <file>resources/server-latency-moderate.svg</file>
+        <file>resources/server-latency-moderate-dark.svg</file>
         <file>resources/server-latency-weak.svg</file>
+        <file>resources/server-latency-weak-dark.svg</file>
         <file>resources/server-latency-unavailable.svg</file>
+        <file>resources/server-latency-unavailable-dark.svg</file>
         <file>resources/server-unavailable.svg</file>
+        <file>resources/server-unavailable-dark.svg</file>
         <file>resources/shield-off.svg</file>
         <file>resources/shield-on.svg</file>
         <file>resources/switching.svg</file>
@@ -347,7 +367,9 @@
         <file>resources/updateRequired.svg</file>
         <file>resources/warning-white.svg</file>
         <file>resources/warning-crash.svg</file>
+        <file>resources/warning-crash-dark.svg</file>
         <file>resources/reset.svg</file>
         <file>resources/confirm-reset.svg</file>
+        <file>resources/confirm-reset-dark.svg</file>
     </qresource>
 </RCC>

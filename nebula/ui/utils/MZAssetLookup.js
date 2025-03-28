@@ -34,7 +34,8 @@ var imageLookup =
       },
       'RefreshArrowsWithCheckmark': {
         filenameLight: 'qrc:/nebula/resources/updateStatusUpToDate.svg',
-        filenameDark: 'qrc:/nebula/resources/RefreshArrowsWithCheckMark-dark.png'
+        filenameDark:
+            'qrc:/nebula/resources/RefreshArrowsWithCheckMark-dark.png'
       },
       'RefreshArrowsWithWarning': {
         filenameLight: 'qrc:/nebula/resources/updateStatusUpdateAvailable.svg',
@@ -74,19 +75,19 @@ var imageLookup =
       },
       'MenuIconQuestion': {
         filenameLight: 'qrc:/ui/resources/settings/questionMark.svg',
-        filenameDark: 'qrc:/ui/resources/settings/questionMark.svg'
+        filenameDark: 'qrc:/ui/resources/settings/questionMark-dark.svg'
       },
       'SearchMagnifyingGlass': {
         filenameLight: 'qrc:/nebula/resources/search.svg',
-        filenameDark: 'qrc:/nebula/resources/lock.svg'
+        filenameDark: 'qrc:/nebula/resources/search-dark.svg'
       },
       'Spinner': {
         filenameLight: 'qrc:/nebula/resources/spinner.svg',
-        filenameDark: 'qrc:/nebula/resources/lock.svg'
+        filenameDark: 'qrc:/nebula/resources/spinner.svg'
       },
       'Logo': {
         filenameLight: 'qrc:/ui/resources/logo.svg',
-        filenameDark: 'qrc:/ui/resources/logo.svg'
+        filenameDark: 'qrc:/ui/resources/logo-dark.svg'
       },
       'LogoConnecting': {
         filenameLight: 'qrc:/ui/resources/logo-connecting.svg',
@@ -110,31 +111,31 @@ var imageLookup =
       },
       'IconAvatar': {
         filenameLight: 'qrc:/nebula/resources/avatar-grayscale.svg',
-        filenameDark: 'qrc:/nebula/resources/avatar-grayscale.svg'
+        filenameDark: 'qrc:/nebula/resources/avatar-grayscale-dark.svg'
       },
       'DevicesLimit': {
         filenameLight: 'qrc:/ui/resources/devicesLimit.svg',
-        filenameDark: 'qrc:/ui/resources/devicesLimit.svg'
+        filenameDark: 'qrc:/ui/resources/DevicesLimit-dark.png'
       },
       'DevicesRemove': {
         filenameLight: 'qrc:/ui/resources/devicesRemove.svg',
-        filenameDark: 'qrc:/ui/resources/devicesRemove.svg'
+        filenameDark: 'qrc:/ui/resources/DevicesLimit-dark.png'
       },
       'IconDevices': {
         filenameLight: 'qrc:/ui/resources/devices.svg',
-        filenameDark: 'qrc:/ui/resources/devices.svg'
+        filenameDark: 'qrc:/ui/resources/devices-dark.svg'
       },
       'IconWrench': {
         filenameLight: 'qrc:/ui/resources/developer.svg',
-        filenameDark: 'qrc:/ui/resources/developer.svg'
+        filenameDark: 'qrc:/ui/resources/settings/preferences-dark.svg'
       },
       'IconWrenchDarker': {
         filenameLight: 'qrc:/ui/resources/settings/preferences.svg',
-        filenameDark: 'qrc:/ui/resources/settings/preferences.svg'
+        filenameDark: 'qrc:/ui/resources/settings/preferences-dark.svg'
       },
       'IconPermissions': {
         filenameLight: 'qrc:/ui/resources/settings/apppermissions.svg',
-        filenameDark: 'qrc:/ui/resources/settings/apppermissions.svg'
+        filenameDark: 'qrc:/ui/resources/settings/IconPermissions-dark.svg'
       },
       'PrivacyMask': {
         filenameLight: 'qrc:/ui/resources/logo-dns-privacy.svg',
@@ -142,7 +143,7 @@ var imageLookup =
       },
       'IconPrivacyMask': {
         filenameLight: 'qrc:/ui/resources/settings/privacy.svg',
-        filenameDark: 'qrc:/ui/resources/settings/privacy.svg'
+        filenameDark: 'qrc:/ui/resources/settings/privacy-dark.svg'
       },
       'IconLock': {
         filenameLight: 'qrc:/nebula/resources/lock.svg',
@@ -154,23 +155,23 @@ var imageLookup =
       },
       'IconGlobe': {
         filenameLight: 'qrc:/ui/resources/settings/dnssettings.svg',
-        filenameDark: 'qrc:/ui/resources/settings/dnssettings.svg'
+        filenameDark: 'qrc:/ui/resources/settings/dnssettings-dark.svg'
       },
       'IconLanguages': {
         filenameLight: 'qrc:/ui/resources/settings/language.svg',
-        filenameDark: 'qrc:/ui/resources/settings/language.svg'
+        filenameDark: 'qrc:/ui/resources/settings/language-dark.svg'
       },
       'IconBell': {
         filenameLight: 'qrc:/ui/resources/settings/notifications.svg',
-        filenameDark: 'qrc:/ui/resources/settings/notifications.svg'
+        filenameDark: 'qrc:/ui/resources/settings/notifications-dark.svg'
       },
       'SuccessIcon': {
         filenameLight: 'qrc:/nebula/resources/success.svg',
-        filenameDark: 'qrc:/nebula/resources/success.svg'
+        filenameDark: 'qrc:/nebula/resources/success-dark.svg'
       },
       'WarningIcon': {
         filenameLight: 'qrc:/nebula/resources/warning-gray.svg',
-        filenameDark: 'qrc:/nebula/resources/warning-gray.svg'
+        filenameDark: 'qrc:/nebula/resources/warning-gray-dark.svg'
       },
       'WarningRed': {
         filenameLight: 'qrc:/nebula/resources/warning.svg',
@@ -182,7 +183,7 @@ var imageLookup =
       },
       'WarningDarkOrange': {
         filenameLight: 'qrc:/nebula/resources/warning-dark-orange.svg',
-        filenameDark: 'qrc:/nebula/resources/warning-dark-orange.svg'
+        filenameDark: 'qrc:/nebula/resources/warning-dark-orange-dark.svg'
       },
       'WarningWhite': {
         filenameLight: 'qrc:/ui/resources/warning-white.svg',
@@ -190,11 +191,11 @@ var imageLookup =
       },
       'GlobeWarning': {
         filenameLight: 'qrc:/ui/resources/globe-warning.svg',
-        filenameDark: 'qrc:/ui/resources/globe-warning.svg'
+        filenameDark: 'qrc:/ui/resources/globe-warning-dark.svg'
       },
       'GlobeNoConnection': {
         filenameLight: 'qrc:/ui/resources/server-unavailable.svg',
-        filenameDark: 'qrc:/ui/resources/server-unavailable.svg'
+        filenameDark: 'qrc:/ui/resources/server-unavailable-dark.svg'
       },
       'GlobeColorful': {
         filenameLight: 'qrc:/ui/resources/logo-dns-settings.svg',
@@ -214,19 +215,19 @@ var imageLookup =
       },
       'InfoIconThinner': {
         filenameLight: 'qrc:/nebula/resources/info.svg',
-        filenameDark: 'qrc:/nebula/resources/info.svg'
+        filenameDark: 'qrc:/ui/resources/settings/aboutUs-dark.svg'
       },
       'InfoIconDark': {
         filenameLight: 'qrc:/ui/resources/connection-info-dark.svg',
-        filenameDark: 'qrc:/ui/resources/connection-info-dark.svg'
+        filenameDark: 'qrc:/ui/resources/connection-info-smaller-dark.svg'
       },
       'InfoIconDarker': {
         filenameLight: 'qrc:/ui/resources/settings/aboutUs.svg',
-        filenameDark: 'qrc:/ui/resources/settings/aboutUs.svg'
+        filenameDark: 'qrc:/ui/resources/settings/aboutUs-dark.svg'
       },
       'IconReset': {
         filenameLight: 'qrc:/nebula/resources/clock.svg',
-        filenameDark: 'qrc:/nebula/resources/clock.svg'
+        filenameDark: 'qrc:/nebula/resources/clock-dark.svg'
       },
       'Reset': {
         filenameLight: 'qrc:/ui/resources/reset.svg',
@@ -234,7 +235,7 @@ var imageLookup =
       },
       'ResetWithWarning': {
         filenameLight: 'qrc:/ui/resources/confirm-reset.svg',
-        filenameDark: 'qrc:/ui/resources/confirm-reset.svg'
+        filenameDark: 'qrc:/ui/resources/confirm-reset-dark.svg'
       },
       'ShieldOn': {
         filenameLight: 'qrc:/ui/resources/shield-on.svg',
@@ -246,35 +247,35 @@ var imageLookup =
       },
       'CrashWarning': {
         filenameLight: 'qrc:/ui/resources/warning-crash.svg',
-        filenameDark: 'qrc:/ui/resources/warning-crash.svg'
+        filenameDark: 'qrc:/ui/resources/warning-crash-dark.svg'
       },
       'EyeVisible': {
         filenameLight: 'qrc:/nebula/resources/eye-visible.svg',
-        filenameDark: 'qrc:/nebula/resources/eye-visible.svg'
+        filenameDark: 'qrc:/nebula/resources/eye-visible-dark.svg'
       },
       'EyeHidden': {
         filenameLight: 'qrc:/nebula/resources/eye-hidden.svg',
-        filenameDark: 'qrc:/nebula/resources/eye-hidden.svg'
+        filenameDark: 'qrc:/nebula/resources/eye-hidden-dark.svg'
       },
       'CopyTextColor': {
         filenameLight: 'qrc:/nebula/resources/copy.svg',
-        filenameDark: 'qrc:/nebula/resources/copy.svg'
+        filenameDark: 'qrc:/nebula/resources/copy-dark.svg'
       },
       'CopyLinkColor': {
         filenameLight: 'qrc:/ui/resources/copy.svg',
-        filenameDark: 'qrc:/ui/resources/copy.svg'
+        filenameDark: 'qrc:/ui/resources/copy-dark.svg'
       },
       'Paste': {
         filenameLight: 'qrc:/nebula/resources/paste.svg',
-        filenameDark: 'qrc:/nebula/resources/paste.svg'
+        filenameDark: 'qrc:/nebula/resources/paste-dark.svg'
       },
       'TrashCanRed': {
         filenameLight: 'qrc:/nebula/resources/delete.svg',
-        filenameDark: 'qrc:/nebula/resources/delete.svg'
+        filenameDark: 'qrc:/nebula/resources/delete-dark.svg'
       },
       'TrashCanGray': {
         filenameLight: 'qrc:/nebula/resources/delete-gray.svg',
-        filenameDark: 'qrc:/nebula/resources/delete-gray.svg'
+        filenameDark: 'qrc:/nebula/resources/delete-gray-dark.svg'
       },
       'TrashCanWhite': {
         filenameLight: 'qrc:/nebula/resources/delete-white.svg',
@@ -282,23 +283,23 @@ var imageLookup =
       },
       'ConnectionStrong': {
         filenameLight: 'qrc:/ui/resources/server-latency-strong.svg',
-        filenameDark: 'qrc:/ui/resources/server-latency-strong.svg'
+        filenameDark: 'qrc:/ui/resources/server-latency-strong-dark.svg'
       },
       'ConnectionModerate': {
         filenameLight: 'qrc:/ui/resources/server-latency-moderate.svg',
-        filenameDark: 'qrc:/ui/resources/server-latency-moderate.svg'
+        filenameDark: 'qrc:/ui/resources/server-latency-moderate-dark.svg'
       },
       'ConnectionWeak': {
         filenameLight: 'qrc:/ui/resources/server-latency-weak.svg',
-        filenameDark: 'qrc:/ui/resources/server-latency-weak.svg'
+        filenameDark: 'qrc:/ui/resources/server-latency-weak-dark.svg'
       },
       'ConnectionUnknown': {
         filenameLight: 'qrc:/ui/resources/server-latency-unavailable.svg',
-        filenameDark: 'qrc:/ui/resources/server-latency-unavailable.svg'
+        filenameDark: 'qrc:/ui/resources/server-latency-unavailable-dark.svg'
       },
       'LightbulbFilled': {
         filenameLight: 'qrc:/nebula/resources/tip-filled.svg',
-        filenameDark: 'qrc:/nebula/resources/tip-filled.svg'
+        filenameDark: 'qrc:/nebula/resources/tip-filled-dark.svg'
       },
       'DisclaimerShield': {
         filenameLight: 'qrc:/nebula/resources/shield-green50.svg',
@@ -306,7 +307,7 @@ var imageLookup =
       },
       'ButtonLoader': {
         filenameLight: 'qrc:/nebula/resources/buttonLoader.svg',
-        filenameDark: 'qrc:/nebula/resources/buttonLoader.svg'
+        filenameDark: 'qrc:/nebula/resources/buttonLoader-dark.svg'
       },
       'CreatePassword': {
         filenameLight: 'qrc:/ui/resources/create-password.svg',

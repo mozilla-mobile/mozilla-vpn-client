@@ -20,28 +20,35 @@ qt_add_qml_module(resources
         avatar-default.png
         avatar-delete-account.svg
         avatar-grayscale.svg
+        avatar-grayscale-dark.svg
         AvatarDeleteAccount-dark.png
         back-dark.svg
         back.svg
         buttonLoader.svg
+        buttonLoader-dark.svg
         checkmark.svg
         checkmark-green.svg
         chevron-right-dark.svg
         chevron.svg
         chevron-dark.svg
         clock.svg
+        clock-dark.svg
         close-dark.svg
         close-dark-darkmode.svg
         close-white.svg
         delete.svg
+        delete-dark.svg
         delete-white.svg
         delete-gray.svg
+        delete-gray-dark.svg
         down.svg
         dropdown-closed.svg
         externalLink.svg
         externalLink-dark.svg
         eye-hidden.svg
+        eye-hidden-dark.svg
         eye-visible.svg
+        eye-visible-dark.svg
         fonts/InterUI.otf
         fonts/InterSemiBold.otf
         fonts/Metropolis.otf
@@ -54,6 +61,7 @@ qt_add_qml_module(resources
         refresh-dark.svg
         RefreshArrowsWithCheckMark-dark.png
         search.svg
+        search-dark.svg
         settings.svg
         settings-white.svg
         shaders/baked/animatedRings.frag.qsb
@@ -64,8 +72,10 @@ qt_add_qml_module(resources
         updateStatusUpToDate.svg
         verification-code.svg
         warning-dark-orange.svg
+        warning-dark-orange-dark.svg
         warning-orange.svg
         warning-gray.svg
+        warning-gray-dark.svg
         warning.svg
         WarningIconRed-dark.svg
         x-red50.svg
@@ -87,13 +97,17 @@ qt_add_qml_module(resources
         navbar/messages-notification.svg
         navbar/messages-notification-dark.svg
         copy.svg
+        copy-dark.svg
         paste.svg
+        paste-dark.svg
         info.svg
         success.svg
+        success-dark.svg
         lock.svg
         startup.svg
         question.svg
         question-dark.svg
         tip-filled.svg
+        tip-filled-dark.svg
 
 )
