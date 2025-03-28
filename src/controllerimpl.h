@@ -91,6 +91,11 @@ class ControllerImpl : public QObject {
   void initialized(bool status, bool connected,
                    const QDateTime& connectionDate);
 
+  // This signal is emitted when the controller is unable to initialize due to
+  // a missing permission. The user may need to perform an action in their
+  // system settings to enable the VPN backend.
+  void permissionRequired();
+
   // These 2 signals can be dispatched at any time.
   void connected(const QString& pubkey,
                  const QDateTime& connectionTimestamp = QDateTime());

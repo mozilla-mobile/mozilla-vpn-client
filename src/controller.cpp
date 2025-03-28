@@ -39,6 +39,8 @@
 #  include "platforms/linux/networkmanagercontroller.h"
 #elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
+#elif defined(MZ_MACOS)
+#  include "platforms/macos/macoscontroller.h"
 #elif defined(MZ_IOS)
 #  include "platforms/ios/ioscontroller.h"
 #elif defined(MZ_ANDROID)
@@ -107,14 +109,7 @@ QString Controller::useLocalSocketPath() const {
   }
 #endif
 
-#if defined(MZ_MACOS)
-  // MacOS had a path change, so check both /tmp/ and /var/.
-  if (QFileInfo::exists(Constants::MACOS_DAEMON_VAR_PATH)) {
-    return Constants::MACOS_DAEMON_VAR_PATH;
-  } else {
-    return Constants::MACOS_DAEMON_TMP_PATH;
-  }
-#elif defined(MZ_WINDOWS)
+#if defined(MZ_WINDOWS)
   return Constants::WINDOWS_DAEMON_PATH;
 #endif
 
@@ -146,6 +141,8 @@ void Controller::initialize() {
     m_impl.reset(new NetworkManagerController());
 #elif defined(MZ_LINUX)
     m_impl.reset(new LinuxController());
+#elif defined(MZ_MACOS)
+    m_impl.reset(new MacOSController());
 #elif defined(MZ_IOS)
     m_impl.reset(new IOSController());
 #elif defined(MZ_ANDROID)
@@ -164,6 +161,8 @@ void Controller::initialize() {
           &Controller::disconnected);
   connect(m_impl.get(), &ControllerImpl::initialized, this,
           &Controller::implInitialized);
+  connect(m_impl.get(), &ControllerImpl::permissionRequired, this,
+          &Controller::implPermRequired);
   connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
           &Controller::statusUpdated);
   connect(this, &Controller::stateChanged, this,
@@ -185,6 +184,15 @@ void Controller::initialize() {
 
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
+}
+
+void Controller::implPermRequired() {
+  logger.debug() << "Initialization blocked: permission required";
+  setState(StatePermissionRequired);
+}
+
+bool Controller::isInitialized() const {
+  return m_state != StateInitializing && m_state != StatePermissionRequired;
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
@@ -244,7 +252,8 @@ void Controller::timerTimeout() {
 void Controller::quit() {
   logger.debug() << "Quitting";
 
-  if (m_state == StateInitializing || m_state == StateOff) {
+  if (m_state == StateInitializing || m_state == StatePermissionRequired ||
+      m_state == StateOff) {
     m_nextStep = Quit;
     emit readyToQuit();
     return;
@@ -324,6 +333,8 @@ qint64 Controller::connectionTimestamp() const {
     case Controller::State::StateDisconnecting:
       [[fallthrough]];
     case Controller::State::StateInitializing:
+      [[fallthrough]];
+    case Controller::State::StatePermissionRequired:
       [[fallthrough]];
     case Controller::State::StateOff:
       return 0;

@@ -27,6 +27,7 @@ class Controller : public QObject, public LogSerializer {
  public:
   enum State {
     StateInitializing,
+    StatePermissionRequired,
     StateOff,
     StateConnecting,
     StateConfirming,
@@ -66,6 +67,7 @@ class Controller : public QObject, public LogSerializer {
   void deleteOSTunnelConfig();
   void startHandshakeTimer();
   bool isDeviceConnected() const { return m_isDeviceConnected; }
+  bool isInitialized() const;
 
   const ServerData& currentServer() const { return m_serverData; }
 
@@ -133,6 +135,7 @@ class Controller : public QObject, public LogSerializer {
                      uint64_t rxBytes);
   void implInitialized(bool status, bool connected,
                        const QDateTime& connectionDate);
+  void implPermRequired();
 
  signals:
   void stateChanged();
