@@ -244,5 +244,22 @@ MZViewBase {
             sourceSize.height: MZTheme.theme.iconSizeSmall * 1.5
             sourceSize.width: MZTheme.theme.iconSizeSmall * 1.5
           }
+
+          Rectangle {
+              Layout.fillWidth: true
+              Layout.preferredHeight: 10
+
+              color: MZTheme.colors.divider
+          }
+
+          MZButton {
+              anchors.left: parent.left
+              anchors.right: parent.right
+
+              implicitHeight: MZTheme.theme.rowHeight
+              text: "Activate `ButtonLoader`"
+
+              onClicked: { loaderVisible = true }
+          }
       }
 }
