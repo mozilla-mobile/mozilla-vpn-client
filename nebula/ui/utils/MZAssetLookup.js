@@ -91,7 +91,7 @@ var imageLookup =
       },
       'LogoConnecting': {
         filenameLight: 'qrc:/ui/resources/logo-connecting.svg',
-        filenameDark: 'qrc:/ui/resources/logo-connecting.svg'
+        filenameDark: 'qrc:/ui/resources/logo-connecting-dark.svg'
       },
       'LogoWithChainLink': {
         filenameLight: 'qrc:/ui/resources/link.svg',
