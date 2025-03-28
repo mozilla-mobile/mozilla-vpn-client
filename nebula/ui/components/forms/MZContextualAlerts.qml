@@ -23,7 +23,7 @@ ColumnLayout {
         DelegateChoice {
             roleValue: "warning"
             delegate: MZContextualAlert {
-                fontColor: MZTheme.colors.fontColorWarning
+                fontColor: MZTheme.colors.fontColorWarningForBackground
                 iconSrc: MZAssetLookup.getImageSource("WarningDarkOrange")
             }
         }

@@ -29,7 +29,7 @@ def fileContents(filepath):
         print(f"An error occurred while loading {filepath}: {e}")
         sys.exit(1)
 
-def checkForExplicitImages(filepath):
+def checkForExplicitImageNames(filepath):
     # print("Checking for explicit images in " + filepath)
     content = fileContents(filepath)
     image_list = re.findall(IMAGE_REGEX, content)
@@ -114,7 +114,7 @@ else:
 # 2. Check that QML files do not include explicit images, and only use intended images
 for qml_file_path in all_qml_files:
     # check for explict images - .svg and .png should not appear in code
-    checkForExplicitImages(qml_file_path)
+    checkForExplicitImageNames(qml_file_path)
 
     # get image names from QML file
     images_used = imagesUsedInFile(qml_file_path)

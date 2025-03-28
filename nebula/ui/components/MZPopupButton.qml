@@ -11,8 +11,8 @@ MZButtonBase {
     id: button
 
     property alias buttonText: buttonText.text
-    property alias buttonTextColor: buttonText.color
-    property var colorScheme: MZTheme.colors.normalButton
+    property var buttonType: "normal"
+    property var colorScheme: buttonType == "normal" ? MZTheme.colors.normalButton : MZTheme.colors.destructiveButton
     property var uiState:MZTheme.theme.uiState
     property bool isCancelBtn
 

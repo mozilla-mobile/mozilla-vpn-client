@@ -275,7 +275,7 @@ MZViewBase {
 
                                 opacity: addon && addon.isRead ? 0 : 1
                                 radius: Layout.preferredHeight / 2
-                                color: MZTheme.colors.normalLevelAccent
+                                color: MZTheme.colors.normalButton.defaultColor
                             }
 
                             MZBoldInterLabel {

@@ -111,7 +111,7 @@ MZViewBase {
             MZSettingsItem {
                 objectName: "settingsGetHelp"
                 settingTitle: MZI18n.GetHelpLinkText
-                imageLeftSrc: MZAssetLookup.getImageSource("QuestionDarker")
+                imageLeftSrc: MZAssetLookup.getImageSource("MenuIconQuestion")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {

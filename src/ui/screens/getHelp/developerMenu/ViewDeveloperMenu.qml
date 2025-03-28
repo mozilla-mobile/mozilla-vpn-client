@@ -162,7 +162,7 @@ MZViewBase {
 
             delegate: MZSettingsItem {
                settingTitle:  title
-               imageLeftSrc: MZAssetLookup.getImageSource("QuestionDarker")
+               imageLeftSrc: MZAssetLookup.getImageSource("MenuIconQuestion")
                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                imageRightMirror: MZLocalizer.isRightToLeft
                onClicked: getHelpStackView.push(viewQrc)
