@@ -1113,8 +1113,8 @@ void MozillaVPN::controllerStateChanged() {
   if (state() == StateMain &&
       controllerState == Controller::StatePermissionRequired) {
     setState(StatePermissionRequired);
-  } if (state() == StatePermissionRequired &&
-        controllerState == Controller::StateOff) {
+  } else if (state() == StatePermissionRequired &&
+             controllerState == Controller::StateOff) {
     setState(StateMain);
   }
 
