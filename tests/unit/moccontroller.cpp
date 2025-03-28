@@ -16,6 +16,8 @@ void Controller::initialize() {}
 
 void Controller::implInitialized(bool, bool, const QDateTime&) {}
 
+void Controller::implPermRequired() {}
+
 bool Controller::activate(const ServerData&, ActivationPrincipal user,
                           ServerSelectionPolicy) {
   return false;
