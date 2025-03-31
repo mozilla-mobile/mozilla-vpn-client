@@ -12,9 +12,14 @@ MZButtonBase {
 
     property alias buttonText: buttonText.text
     property var buttonType: "normal"
-    property var colorScheme: buttonType == "normal" ? MZTheme.colors.normalButton : MZTheme.colors.destructiveButton
     property var uiState:MZTheme.theme.uiState
     property bool isCancelBtn
+
+    // Private property, will be changed depnding on buttonType
+    QtObject {
+        id: style
+        property var colorScheme: buttonType == "normal" ? MZTheme.colors.normalButton : MZTheme.colors.destructiveButton
+    }
 
     enabled: popup.visible
     Layout.fillWidth: true
@@ -27,7 +32,7 @@ MZButtonBase {
 
     MZUIStates {
         borderWidth: 1
-        colorScheme: parent.colorScheme
+        colorScheme: style.colorScheme
     }
 
     MZMouseArea {
@@ -37,6 +42,7 @@ MZButtonBase {
     contentItem: MZInterLabel {
         id: buttonText
 
+        color: style.colorScheme.fontColor
         font.family: isCancelBtn ? MZTheme.theme.fontInterFamily : MZTheme.theme.fontBoldFamily
         lineHeight: 15
         horizontalAlignment: Text.AlignHCenter
