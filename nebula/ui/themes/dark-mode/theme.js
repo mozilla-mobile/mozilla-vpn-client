@@ -28,7 +28,7 @@ color.bgColorStronger = color.brightSlate;
 color.overlay = addTransparency(color.black, 0.4);
 
 // Fonts
-color.fontColor = color.grey3;
+color.fontColor = mixColors(color.grey3, color.bgColor, 0.2);
 color.fontColorDark = color.white;
 color.fontColorWarningForConnectionBox = color.yellow50;
 color.fontColorWarningForBackground = color.yellow50;
