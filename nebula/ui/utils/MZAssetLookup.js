@@ -342,12 +342,12 @@ var imageLookup =
         filenameDark: 'qrc:/ui/resources/launch-dark.svg'
       },
       'EmptyMessages': {
-        filenameLight: 'qrc:/ui/resources/messages-empty.svg',
-        filenameDark: 'qrc:/ui/resources/messages-empty.svg'
+        filenameLight: 'qrc:/ui/resources/EmptyMessages - LM.svg',
+        filenameDark: 'qrc:/ui/resources/EmptyMessages - DM.svg'
       },
       'EmptyServerList': {
-        filenameLight: 'qrc:/ui/resources/globe.svg',
-        filenameDark: 'qrc:/ui/resources/globe.svg'
+        filenameLight: 'qrc:/ui/resources/EmptyServerList - LM.svg',
+        filenameDark: 'qrc:/ui/resources/EmptyServerList - DM.svg'
       },
       'PlatformAppleActive': {
         filenameLight: 'qrc:/ui/resources/apple-active.svg',
@@ -414,8 +414,8 @@ var imageLookup =
         filenameDark: 'qrc:/ui/resources/payment/visa.svg'
       },
       'PaymentUnbranded': {
-        filenameLight: 'qrc:/ui/resources/payment/unbranded.svg',
-        filenameDark: 'qrc:/ui/resources/payment/unbranded.svg'
+        filenameLight: 'qrc:/ui/resources/payment/PaymentUnbranded_LM.svg',
+        filenameDark: 'qrc:/ui/resources/payment/PaymentUnbranded_DM.svg'
       }
     }
 

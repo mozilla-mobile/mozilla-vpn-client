@@ -27,6 +27,10 @@
         <file>resources/DevicesLimit-dark.png</file>
         <file>resources/devicesRemove.svg</file>
         <file>resources/developer.svg</file>
+        <file>resources/EmptyMessages - DM.svg</file>
+        <file>resources/EmptyMessages - LM.svg</file>
+        <file>resources/EmptyServerList - DM.svg</file>
+        <file>resources/EmptyServerList - LM.svg</file>
         <file>resources/flags/AC.png</file>
         <file>resources/flags/AD.png</file>
         <file>resources/flags/AE.png</file>
@@ -286,7 +290,6 @@
         <file>resources/flags/ZA.png</file>
         <file>resources/flags/ZM.png</file>
         <file>resources/flags/ZW.png</file>
-        <file>resources/globe.svg</file>
         <file>resources/globe-warning.svg</file>
         <file>resources/globe-warning-dark.svg</file>
         <file>resources/heart-check.svg</file>
@@ -319,7 +322,6 @@
         <file>resources/magic-purple.svg</file>
         <file>resources/main-img-vpn-off.svg</file>
         <file>resources/main-img-vpn-on.svg</file>
-        <file>resources/messages-empty.svg</file>
         <file>resources/onboarding/onboarding1.svg</file>
         <file>resources/onboarding/onboarding2.svg</file>
         <file>resources/onboarding/onboarding3.svg</file>
@@ -334,7 +336,8 @@
         <file>resources/payment/jcb.svg</file>
         <file>resources/payment/mastercard.svg</file>
         <file>resources/payment/paypal.svg</file>
-        <file>resources/payment/unbranded.svg</file>
+        <file>resources/payment/PaymentUnbranded_DM.svg</file>
+        <file>resources/payment/PaymentUnbranded_LM.svg</file>
         <file>resources/payment/unionpay.svg</file>
         <file>resources/payment/visa.svg</file>
         <file>resources/qrcodes/app-store-qrcode.png</file>
