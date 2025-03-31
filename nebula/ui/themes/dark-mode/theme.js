@@ -69,7 +69,7 @@ color.warningBackground = color.orange80;
 
 // Disabled button colors
 color.disabledButtonColor = color.grey30;
-color.disabledButtonHovered = color.grey40;
+color.disabledButtonHovered = mixColors(color.bgColor, color.white, 0.2);
 color.disabledButtonPressed = color.grey30;
 
 // Step progress bar (several other colors for bar based on primary color)
