@@ -57,8 +57,9 @@ cmake --build build --parallel --target help
  cmake --build build --parallel
 # Pile of shame: Those things are installed as not optional
 # but not compiled by the all darget
- cmake --build build --parallel --target androiddeployqt
- cmake --build build --parallel --target windeployqt
+cmake --build build --parallel --target host_tools  # The one to save us?
+cmake --build build --parallel --target androiddeployqt 
+cmake --build build --parallel --target windeployqt
  
 
  cmake --install build --prefix $BUILD_PREFIX
