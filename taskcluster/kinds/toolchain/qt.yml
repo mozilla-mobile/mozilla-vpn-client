@@ -60,6 +60,9 @@ qt-windows-aarch64-6.6:
         symbol: TL(qt-win-6.6)
         platform: windows/aarch64
     worker-type: b-win11-2024h2-arm64
+    worker:
+        env:
+            QT_ARCH: "arm64"
 
 
 qt-ios:
