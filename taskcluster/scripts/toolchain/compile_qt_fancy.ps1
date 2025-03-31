@@ -14,7 +14,7 @@ conda activate $CONDA_DIR
 conda info
 
 # Enter the DEV Shell
-. "$FETCHES_PATH/msvc/enter_dev_shell.ps1" -arch arm64
+. "$FETCHES_PATH/msvc/enter_dev_shell.ps1" -arch $ENV:QT_ARCH
 Get-ChildItem env:
 
 # Clone QT Code
