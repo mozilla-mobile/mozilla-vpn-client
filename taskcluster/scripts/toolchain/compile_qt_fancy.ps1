@@ -52,6 +52,8 @@ cmake -S . -B build `
     -DFEATURE_sql=OFF 
 
  cmake --build build --parallel
+ cmake --build build --parallel --target androiddeployqt
+ 
 
  cmake --install build --prefix $BUILD_PREFIX
 
