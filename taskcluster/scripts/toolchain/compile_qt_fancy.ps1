@@ -51,8 +51,14 @@ cmake -S . -B build `
     -DFEATURE_qtdiag=OFF `
     -DFEATURE_sql=OFF 
 
+# Is there a better way?
+cmake --build build --parallel --target help
+
  cmake --build build --parallel
+# Pile of shame: Those things are installed as not optional
+# but not compiled by the all darget
  cmake --build build --parallel --target androiddeployqt
+ cmake --build build --parallel --target windeployqt
  
 
  cmake --install build --prefix $BUILD_PREFIX
