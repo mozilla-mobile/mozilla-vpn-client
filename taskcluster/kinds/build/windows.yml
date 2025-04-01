@@ -45,6 +45,18 @@ windows/opt:
         toolchain:
             - qt-windows-x86_64-6.6
     description: "Windows Build"
-    treeherder:
-        symbol: B
 
+
+windows/aarch64:
+    fetches:
+        toolchain:
+            - qt-windows-aarch64-6.6
+            - bundle-msvc
+    description: "Windows Build"
+    treeherder:
+        platform: windows/aarch64
+    run:
+        command: taskcluster/scripts/build/windows_msvc.ps1
+    worker:
+        env:
+            MSVC_ARCH: "arm64"
