@@ -57,8 +57,8 @@ color.clickableRow = {
 };
 
 color.stepProgressBarDelegate = {
-  defaultColor: color.primaryBrighter,
-  buttonHovered: color.primaryBrighter,
+  defaultColor: color.stepProgressBarComplete,
+  buttonHovered: color.stepProgressBarComplete,
   buttonPressed: color.primaryPressed,
   buttonDisabled: color.stepProgressBarIncomplete,
   focusOutline: color.bgColorTransparent,

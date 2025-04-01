@@ -72,9 +72,13 @@ color.disabledButtonColor = color.grey30;
 color.disabledButtonHovered = mixColors(color.bgColor, color.white, 0.2);
 color.disabledButtonPressed = color.grey30;
 
-// Step progress bar (several other colors for bar based on primary color)
+// Step progress bar
 color.stepProgressBarHighlight = color.purple20;
 color.stepProgressBarIncomplete = color.brightSlate;
+color.stepProgressBarComplete = color.purple60;
+color.stepProgressBarCompleteText = color.purple20;
+color.stepProgressIconIncomplete = mixColors(color.bgColor, color.white, 0.8);
+color.stepProgressIconComplete = mixColors(color.bgColor, color.white, 0.8);
 
 color.vpnToggleConnected = {
   defaultColor: color.blue20,

@@ -71,9 +71,13 @@ color.disabledButtonColor = color.grey20;
 color.disabledButtonHovered = color.grey10;
 color.disabledButtonPressed = color.grey20;
 
-// Step progress bar (several other colors for bar based on primary color)
+// Step progress bar
 color.stepProgressBarHighlight = color.purple10;
 color.stepProgressBarIncomplete = color.grey30;
+color.stepProgressBarComplete = color.primaryBrighter;
+color.stepProgressBarCompleteText = color.primaryBrighter;
+color.stepProgressIconIncomplete = color.white;
+color.stepProgressIconComplete = color.successAccent;
 
 // Toggle
 color.connectingToggle = color.dullPurple;
