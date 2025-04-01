@@ -94,8 +94,8 @@ var imageLookup =
         filenameDark: 'qrc:/ui/resources/logo-connecting-dark.svg'
       },
       'LogoWithChainLink': {
-        filenameLight: 'qrc:/ui/resources/link.svg',
-        filenameDark: 'qrc:/ui/resources/link.svg'
+        filenameLight: 'qrc:/ui/resources/LogoWithChainLink.svg',
+        filenameDark: 'qrc:/ui/resources/LogoWithChainLink.svg'
       },
       'Avatar': {
         filenameLight: 'qrc:/nebula/resources/avatar.svg',
