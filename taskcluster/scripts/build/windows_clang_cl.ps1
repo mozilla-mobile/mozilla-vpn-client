@@ -38,6 +38,7 @@ cmake -S $REPO_ROOT_PATH -B $BUILD_DIR -GNinja `
         -DCMAKE_TOOLCHAIN_FILE="scripts/windows/conda-toolchain.cmake" `
         -DWIREGUARD_FOLDER="$FETCHES_PATH\wireguard-nt" `
         -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake" `
+        -DCMAKE_TOOLCHAIN_FILE=scripts/windows/conda-toolchain.cmake `
         -DBUILD_TESTS=OFF
 
 cmake --build $BUILD_DIR
