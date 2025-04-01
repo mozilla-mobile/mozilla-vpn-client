@@ -53,7 +53,7 @@ MacOSController::MacOSController() :
   m_delegate = [[MacOSDaemonDelegate alloc] initWithObjectAndPlist:this
                                                          plistName:plistName];
 
-  m_smAppStatus = SMAppServiceStatusNotFound;
+  m_smAppStatus = -1;
 }
 
 MacOSController::~MacOSController() {
@@ -86,6 +86,9 @@ void MacOSController::checkServiceStatus(void) {
   NSError* error = nil;
   switch (status) {
     case SMAppServiceStatusNotRegistered:
+      logger.debug() << "Mozilla VPN daemon not found.";
+      [[fallthrough]];
+    case SMAppServiceStatusNotFound:
       if (![delegate.service registerAndReturnError: & error]) {
         logger.error() << "Failed to register Mozilla VPN daemon: "
                       << QString::fromNSString(error.localizedDescription);
@@ -107,10 +110,6 @@ void MacOSController::checkServiceStatus(void) {
     case SMAppServiceStatusRequiresApproval:
       logger.debug() << "Mozilla VPN daemon requires approval.";
       emit permissionRequired();
-      break;
-
-    case SMAppServiceStatusNotFound:
-      logger.debug() << "Mozilla VPN daemon not found.";
       break;
   }
 }
