@@ -9,7 +9,6 @@ task-defaults:
         kind: build
         tier: 1
         platform: windows/x86_64
-    worker-type: b-win2022
     fetches:
         fetch:
             - win-sentry-cli
@@ -41,6 +40,7 @@ task-defaults:
         command: taskcluster/scripts/build/windows_clang_cl.ps1
 
 windows/opt:
+    worker-type: b-win2022
     fetches:
         toolchain:
             - qt-windows-x86_64-6.6
@@ -48,6 +48,7 @@ windows/opt:
 
 
 windows/aarch64:
+    worker-type: b-win11-2024h2-arm64
     fetches:
         toolchain:
             - qt-windows-aarch64-6.6
