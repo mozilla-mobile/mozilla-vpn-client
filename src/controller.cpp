@@ -192,7 +192,7 @@ void Controller::implPermRequired() {
 }
 
 bool Controller::isInitialized() const {
-  return m_state != StateInitializing && m_state != StatePermissionRequired;
+  return m_state <= StateOff;
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
@@ -903,7 +903,7 @@ void Controller::captivePortalPresent() {
 }
 
 void Controller::serverDataChanged() {
-  if (m_state == StateOff) {
+  if (m_state <= StateOff) {
     logger.debug() << "Server data changed but we are off";
     return;
   }
@@ -914,7 +914,7 @@ void Controller::serverDataChanged() {
 }
 
 bool Controller::switchServers(const ServerData& serverData) {
-  if (m_state == StateOff) {
+  if (m_state <= StateOff) {
     logger.debug() << "Server data changed but we are off";
     return false;
   }
@@ -1074,9 +1074,7 @@ bool Controller::deactivate(ActivationPrincipal user) {
     return false;
   }
 
-  if (m_state != StateOn && m_state != StateOnPartial &&
-      m_state != StateSwitching && m_state != StateSilentSwitching &&
-      m_state != StateConfirming && m_state != StateConnecting) {
+  if (m_state <= StateOff) {
     logger.warning() << "Already disconnected";
     return false;
   }

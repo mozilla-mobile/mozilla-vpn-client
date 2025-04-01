@@ -25,17 +25,18 @@ class Controller : public QObject, public LogSerializer {
   Q_DISABLE_COPY_MOVE(Controller)
 
  public:
+  // Note - these states are ordered from least to most active.
   enum State {
-    StateInitializing,
+    StateInitializing = 0,
     StatePermissionRequired,
     StateOff,
+    StateDisconnecting,
     StateConnecting,
     StateConfirming,
-    StateOn,
-    StateOnPartial,
-    StateDisconnecting,
-    StateSilentSwitching,
     StateSwitching,
+    StateSilentSwitching,
+    StateOnPartial,
+    StateOn,
   };
   Q_ENUM(State)
 
