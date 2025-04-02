@@ -35,7 +35,7 @@ var imageLookup =
       'RefreshArrowsWithCheckmark': {
         filenameLight: 'qrc:/nebula/resources/updateStatusUpToDate.svg',
         filenameDark:
-            'qrc:/nebula/resources/RefreshArrowsWithCheckMark-dark.png'
+            'qrc:/nebula/resources/RefreshArrowsWithCheckMark-dark.svg'
       },
       'RefreshArrowsWithWarning': {
         filenameLight: 'qrc:/nebula/resources/updateStatusUpdateAvailable.svg',
@@ -107,7 +107,7 @@ var imageLookup =
       },
       'AvatarDeleteAccount': {
         filenameLight: 'qrc:/nebula/resources/avatar-delete-account.svg',
-        filenameDark: 'qrc:/nebula/resources/AvatarDeleteAccount-dark.png'
+        filenameDark: 'qrc:/nebula/resources/AvatarDeleteAccount-dark.svg'
       },
       'IconAvatar': {
         filenameLight: 'qrc:/nebula/resources/avatar-grayscale.svg',
@@ -115,11 +115,11 @@ var imageLookup =
       },
       'DevicesLimit': {
         filenameLight: 'qrc:/ui/resources/devicesLimit.svg',
-        filenameDark: 'qrc:/ui/resources/DevicesLimit-dark.png'
+        filenameDark: 'qrc:/ui/resources/DevicesLimit - dark.svg'
       },
       'DevicesRemove': {
         filenameLight: 'qrc:/ui/resources/devicesRemove.svg',
-        filenameDark: 'qrc:/ui/resources/DevicesLimit-dark.png'
+        filenameDark: 'qrc:/ui/resources/DevicesRemove-dark.svg'
       },
       'IconDevices': {
         filenameLight: 'qrc:/ui/resources/devices.svg',

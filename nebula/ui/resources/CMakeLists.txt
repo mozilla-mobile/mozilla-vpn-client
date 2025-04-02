@@ -21,7 +21,7 @@ qt_add_qml_module(resources
         avatar-delete-account.svg
         avatar-grayscale.svg
         avatar-grayscale-dark.svg
-        AvatarDeleteAccount-dark.png
+        AvatarDeleteAccount-dark.svg
         back-dark.svg
         back.svg
         buttonLoader.svg
@@ -59,7 +59,7 @@ qt_add_qml_module(resources
         plus-dark.svg
         refresh.svg
         refresh-dark.svg
-        RefreshArrowsWithCheckMark-dark.png
+        RefreshArrowsWithCheckMark-dark.svg
         search.svg
         search-dark.svg
         settings.svg
