@@ -235,6 +235,16 @@ MZViewBase {
         }
 
         MZButton {
+            id: resetOnboarding
+
+            text: "View onboarding at next launch"
+            onClicked: {
+                MZSettings.onboardingCompleted = false
+                restartRequired.isVisible = true
+            }
+        }
+
+        MZButton {
             id: crashApp
             property int clickNeeded: 5
 
