@@ -3,7 +3,6 @@
         <file>resources/android-active.svg</file>
         <file>resources/android-active-dark.svg</file>
         <file>resources/android.svg</file>
-        <file>resources/android-dark.svg</file>
         <file>resources/animations/globe_animation.json</file>
         <file>resources/animations/lock_animation.json</file>
         <file>resources/animations/vpnactive_animation.json</file>
@@ -11,7 +10,6 @@
         <file>resources/apple-active.svg</file>
         <file>resources/apple-active-dark.svg</file>
         <file>resources/apple.svg</file>
-        <file>resources/apple-dark.svg</file>
         <file>resources/check-email.svg</file>
         <file>resources/check-email-dark.svg</file>
         <file>resources/connection-info.svg</file>

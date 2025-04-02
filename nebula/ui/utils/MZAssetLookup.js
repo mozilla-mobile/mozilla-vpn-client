@@ -355,7 +355,7 @@ var imageLookup =
       },
       'PlatformAppleInactive': {
         filenameLight: 'qrc:/ui/resources/apple.svg',
-        filenameDark: 'qrc:/ui/resources/apple-dark.svg'
+        filenameDark: 'qrc:/ui/resources/apple.svg'
       },
       'PlatformAndroidActive': {
         filenameLight: 'qrc:/ui/resources/android-active.svg',
@@ -363,7 +363,7 @@ var imageLookup =
       },
       'PlatformAndroidInactive': {
         filenameLight: 'qrc:/ui/resources/android.svg',
-        filenameDark: 'qrc:/ui/resources/android-dark.svg'
+        filenameDark: 'qrc:/ui/resources/android.svg'
       },
       'PlayStoreQRCode': {
         filenameLight: 'qrc:/ui/resources/qrcodes/play-store-qrcode.png',
