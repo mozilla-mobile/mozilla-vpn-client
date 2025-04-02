@@ -83,6 +83,7 @@ Popup {
         Rectangle {
             id: popUpShadowSource
             anchors.fill: popupBackground
+            visible: false
             radius: popupBackground.radius
             z: -1
         }
