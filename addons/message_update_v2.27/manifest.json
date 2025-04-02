@@ -1,21 +1,20 @@
 {
   "api_version": "0.1",
-  "id": "message_update_v2.26",
-  "name": "Update to Mozilla VPN 2.26",
+  "id": "message_update_v2.27",
+  "name": "Update to Mozilla VPN 2.27",
   "type": "message",
   "conditions": {
-    "max_client_version": "2.25.9",
-    "platforms": ["windows", "macos", "linux", "android", "ios"],
+    "max_client_version": "2.26.9",
     "javascript": "osCheck.js"
   },
   "javascript": {
     "enable": "enable.js"
   },
   "message": {
-    "date": 1742398200,
+    "date": 1744732800,
     "usesSharedStrings": true,
-    "shortVersion": "2.26",
-    "id": "message_update_v2.26",
+    "shortVersion": "2.27",
+    "id": "message_update_v2.27",
     "title": "vpn.commonStrings.updateTitle",
     "subtitle": "vpn.commonStrings.subtitle",
     "badge": "new_update",
@@ -23,7 +22,17 @@
       {
         "id": "c_1",
         "type": "text",
-        "content": "vpn.commonStrings.generalUpdateContent"
+        "content": "vpn.commonStrings.generalUpdateBulletIntro"
+      },
+      {
+        "id": "c_2",
+        "type": "ulist",
+        "content": [
+          {
+            "id": "l_1",
+            "content": "vpn.227updateMessage.bullet1"
+          }
+        ]
       },
       {
         "id": "c_3",

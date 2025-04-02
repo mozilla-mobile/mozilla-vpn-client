@@ -81,6 +81,11 @@ commonStrings:
     value: On Android, added step-by-step instructions to enable VPN connection on startup.
     comment: Second bullet point with a specific update in 2.25
 
+227updateMessage:
+  bullet1:
+    value: Dark mode - enjoy a sleek new look that's easy on the eyes, day or night.
+    comment: First bullet point with a specific update in 2.27
+
 tryFirefoxExtension:
   title:
     value: Try the Firefox extension
