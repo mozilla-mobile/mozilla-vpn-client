@@ -320,6 +320,9 @@ systray:
 settings:
   privacySettings: Privacy features
   appExclusionTitle: Excluded apps
+  appearance:
+    value: Appearance
+    comment: Appearance refers to the app theming (dark mode / light mode)
   dnsSettings: DNS settings
   preferencesSettings: Preferences
   shareTechnicalDataDescription: Help improve Mozilla VPN by sharing crash reports, diagnostics, and product usage data.
@@ -350,6 +353,16 @@ settings:
     comment: Button label to clear all apps from the exclusions list
   reauthTitle: Sign In Again
   reauthDescription: For your security, please sign in again to access your account information. You’ll complete this process on Mozilla’s website.
+  appearanceAutomatic:
+    value: Automatic
+    comment: Automatic switching for dark mode/light mode, based on the system’s setting
+  appearanceAutomaticDescription: Follow your system’s appearance
+  appearanceLight:
+    value: Light
+    comment: Light as in "light mode theme"
+  appearanceDark:
+    value: Dark
+    comment: Dark as in "dark mode theme"
 
 localNetworkAccess:
   labelTitle: Exclude local network traffic
