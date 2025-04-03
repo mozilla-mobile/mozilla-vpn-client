@@ -58,7 +58,7 @@ Popup {
             anchors.centerIn: closeButton
 
             fillMode: Image.PreserveAspectFit
-            source: MZAssetLookup.getImageSource("CloseDarker")
+            source: MZAssetLookup.getImageSource("CloseDark")
             sourceSize.height: MZTheme.theme.iconSize
             sourceSize.width: MZTheme.theme.iconSize
         }
@@ -83,6 +83,7 @@ Popup {
         Rectangle {
             id: popUpShadowSource
             anchors.fill: popupBackground
+            visible: false
             radius: popupBackground.radius
             z: -1
         }
@@ -126,7 +127,7 @@ Popup {
     Overlay.modal: Rectangle {
         id: overlayBackground
 
-        color: MZTheme.colors.overlayBackground
+        color: MZTheme.colors.overlay
 
         Behavior on opacity {
             NumberAnimation {

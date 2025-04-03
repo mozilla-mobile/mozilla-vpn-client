@@ -27,7 +27,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAccent
+                color: MZTheme.colors.successAlert.defaultColor
             }
             PropertyChanges {
                 target: insetIcon
@@ -45,7 +45,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAccent
+                color: MZTheme.colors.successAlert.defaultColor
             }
             PropertyChanges {
                 target: insetIcon
@@ -83,7 +83,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAccent
+                color: MZTheme.colors.successAlert.defaultColor
             }
             PropertyChanges {
                 target: switchingIcon
@@ -129,7 +129,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAccent
+                color: MZTheme.colors.successAlert.defaultColor
             }
             PropertyChanges {
                 target: insetIcon
@@ -145,7 +145,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAccent
+                color: MZTheme.colors.successAlert.defaultColor
             }
             PropertyChanges {
                 target: insetIcon
@@ -313,7 +313,7 @@ Rectangle {
                     break;
             
                 case(VPNConnectionHealth.Stable):
-                    insetCircle.color = MZTheme.colors.successAccent;
+                    insetCircle.color = MZTheme.colors.successAlert.defaultColor;
                     insetIcon.source = MZAssetLookup.getImageSource("ShieldOn");
                     break;
             

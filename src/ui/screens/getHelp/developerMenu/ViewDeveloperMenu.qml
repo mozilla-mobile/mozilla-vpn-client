@@ -162,7 +162,7 @@ MZViewBase {
 
             delegate: MZSettingsItem {
                settingTitle:  title
-               imageLeftSrc: MZAssetLookup.getImageSource("QuestionDarker")
+               imageLeftSrc: MZAssetLookup.getImageSource("MenuIconQuestion")
                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                imageRightMirror: MZLocalizer.isRightToLeft
                onClicked: getHelpStackView.push(viewQrc)
@@ -230,6 +230,16 @@ MZViewBase {
             text: "Reinstate messages"
             onClicked: {
                 MZAddonManager.reinstateMessages()
+                restartRequired.isVisible = true
+            }
+        }
+
+        MZButton {
+            id: resetOnboarding
+
+            text: "View onboarding at next launch"
+            onClicked: {
+                MZSettings.onboardingCompleted = false
                 restartRequired.isVisible = true
             }
         }

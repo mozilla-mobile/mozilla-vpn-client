@@ -124,13 +124,6 @@ SwipeDelegate {
                     duration: 200
                 }
             }
-
-            Behavior on color {
-                ColorAnimation {
-                    target: messageBackground
-                    duration: 200
-                }
-            }
         }
 
         Rectangle {

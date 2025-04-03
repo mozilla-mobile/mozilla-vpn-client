@@ -114,37 +114,37 @@ MZViewBase {
 
                         property var warningBadge: {
                             'badgeText': MZI18n.InAppMessagingWarningBadge,
-                            'badgeTextColor': MZTheme.colors.warningMain,
+                            'badgeTextColor': MZTheme.colors.warningText,
                             'badgeBackgroundColor': MZTheme.colors.warningBackground
                         };
                         property var criticalBadge: {
                             'badgeText': MZI18n.InAppMessagingCriticalBadge,
-                            'badgeTextColor': MZTheme.colors.errorMain,
+                            'badgeTextColor': MZTheme.colors.errorText,
                             'badgeBackgroundColor': MZTheme.colors.errorBackground
                         };
                         property var newUpdateBadge: {
                             'badgeText': MZI18n.InAppMessagingNewUpdateBadge,
-                            'badgeTextColor': MZTheme.colors.successMain,
+                            'badgeTextColor': MZTheme.colors.successText,
                             'badgeBackgroundColor': MZTheme.colors.successBackground
                         };
                         property var whatsNewBadge: {
                             'badgeText': MZI18n.InAppMessagingWhatsNewBadge,
-                            'badgeTextColor': MZTheme.colors.normalLevelMain,
+                            'badgeTextColor': MZTheme.colors.normalLevelText,
                             'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
                         };
                         property var surveyBadge: {
                             'badgeText': MZI18n.InAppMessagingSurveyBadge,
-                            'badgeTextColor': MZTheme.colors.normalLevelMain,
+                            'badgeTextColor': MZTheme.colors.normalLevelText,
                             'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
                         };
                         property var subscriptionBadge: {
                             'badgeText': MZI18n.InAppMessagingSubscriptionBadge,
-                            'badgeTextColor': MZTheme.colors.normalLevelMain,
+                            'badgeTextColor': MZTheme.colors.normalLevelText,
                             'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
                         };
                         property var extensionBadge: {
                             'badgeText': MZI18n.InAppMessagingExtensionBadge,
-                            'badgeTextColor': MZTheme.colors.normalLevelMain,
+                            'badgeTextColor': MZTheme.colors.normalLevelText,
                             'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
                         };
                     }

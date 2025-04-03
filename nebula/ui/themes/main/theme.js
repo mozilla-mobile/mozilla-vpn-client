@@ -6,7 +6,7 @@
 color.useDarkAssets = false;
 
 /**
- * Part 3: Theme colors
+ * Part 2: Theme colors
  * Named colors in this section should only be set to colors in part 1 or 2.
  * This file should be duplicated for additional themes, and is the only file
  * that needs to be duplicated.
@@ -24,58 +24,96 @@ color.primaryPressed = color.dullPurple;
 // Backgrounds
 color.bgColor = color.grey5;
 color.bgColorStronger = color.white;
-color.overlayBackground = addTransparency(color.black, 0.3);
+color.overlay = addTransparency(color.black, 0.3);
 
 // Fonts
 color.fontColor = color.grey40;
 color.fontColorDark = color.grey50;
-color.fontColorWarning = color.yellow70;
+color.fontColorWarningForConnectionBox = color.yellow50;
+color.fontColorWarningForBackground = color.yellow70;
 color.fontColorInverted = color.white;
 color.fontColorInvertedMuted = color.grey20;
 color.fontTitleColor = color.black;
+color.normalButtonFont = color.white;
+color.destructiveButtonFont = color.white;
 
 // Dividers and borders
 color.divider = color.grey10;
 color.dropShadow = color.grey60;
-color.darkFocusBorder = color.grey40;
-color.lightFocusBorder = color.grey15;
+color.scrollBar = color.grey40;
+color.focusBorder = color.grey40;  // used for keyboard navigation highlighting
+                                   // for settings toggles and swipe actions
 color.inputHighlight = color.grey10;
 
+// Buttons are built off these base colors
+color.normalButtonDefault = color.blue50;
+color.destructiveButtonDefault = color.red70;
+
 // Success/Failure/Warning/Normal levels
-color.successMain = color.green90;
-color.successAccent = color.green;
-color.successBackground = color.green5;
-color.errorMain = color.red80;
-color.errorAccent = color.red;
+color.normalLevelAccent = color.blue50;
+color.successAccent = color.green50;
+color.errorAccent = color.red60;
 color.errorAccentLight = color.red50;
+color.warningAccent = color.yellow50;
+
+// Badges
+color.normalLevelText = color.blue90;
+color.normalLevelBackground = addTransparency(color.blue50, 0.4);
+color.successText = color.green90;
+color.successBackground = color.green5;
+color.errorText = color.red80;
 color.errorBackground = color.red10;
-color.warningMain = color.yellow90;
-color.warningAccent = color.orange;
+color.warningText = color.yellow90;
 color.warningBackground = color.orange10;
-color.normalLevelMain = color.blue90;
-color.normalLevelAccent = color.blue;
-color.normalLevelBackground = addTransparency(color.blue, 0.4);
 
-// Button colors
-color.disabledButtonHovered = color.greyHovered;
-color.disabledButtonPressed = color.greyPressed;
+// Disabled button colors
 color.disabledButtonColor = color.grey20;
+color.disabledButtonHovered = color.grey10;
+color.disabledButtonPressed = color.grey20;
 
-// Step progress bar (several other colors for bar based on primary color)
+// Step progress bar
 color.stepProgressBarHighlight = color.purple10;
 color.stepProgressBarIncomplete = color.grey30;
+color.stepProgressBarComplete = color.primaryBrighter;
+color.stepProgressBarCompleteText = color.primaryBrighter;
+color.stepProgressIconIncomplete = color.white;
+color.stepProgressIconComplete = color.successAccent;
 
 // Toggle
-color.activatingToggle = color.dullPurple;
-color.activatingToggleBackground = color.dullGreen;
+color.connectingToggle = color.dullPurple;
+color.connectingToggleBackground = color.dullGreen;
 
 // Objects (these aren't colors, these are objects of colors)
-color.destructiveButton = color.redButton;
-color.normalButton = color.blueButton;
-color.successAlert = color.greenAlert;
-color.warningAlert = color.orangeAlert;
-color.clickableRow = color.clickableRowBlue;
-color.textLink = color.greyLink;
+color.destructiveButton = {
+  defaultColor: color.destructiveButtonDefault,
+  buttonHovered: color.red75,
+  buttonPressed: color.red80,
+  buttonDisabled: color.red10,
+  focusOutline: addTransparency(color.destructiveButtonDefault, 0.4),
+  focusBorder: color.destructiveButtonDefault,
+  fontColor: color.destructiveButtonFont,
+};
+
+color.successAlert = {
+  defaultColor: color.green50,
+  buttonHovered: color.green60,
+  buttonPressed: color.green70,
+  focusOutline: addTransparency(color.green50, 0.2),
+  focusBorder: color.green70,
+};
+
+color.warningAlert = {
+  buttonHovered: color.yellow60,
+  buttonPressed: color.yellow70,
+  focusOutline: addTransparency(color.yellow60, 0.3),
+  focusBorder: color.yellow70,
+};
+
+color.textLink = {
+  defaultColor: addTransparency(color.grey60, 0.7),
+  buttonHovered: addTransparency(color.grey60, 0.8),
+  buttonPressed: color.grey60,
+};
 
 color.onBoardingGradient = {
   start: color.lighterOnboardingPurple,
@@ -84,11 +122,11 @@ color.onBoardingGradient = {
 };
 
 color.vpnToggleConnected = {
-  defaultColor: color.green,
+  defaultColor: color.green50,
   buttonHovered: color.green60,
   buttonPressed: color.green70,
   focusOutline: addTransparency(color.bgColor, 0.3),
-  focusBorder: color.lightFocusBorder,
+  focusBorder: color.focusBorder,
 };
 
 color.vpnToggleDisconnected = {
@@ -97,5 +135,5 @@ color.vpnToggleDisconnected = {
   buttonPressed: color.fontColorDark,
   buttonDisabled: color.disabledButtonColor,
   focusOutline: color.transparent,
-  focusBorder: color.darkFocusBorder,
+  focusBorder: color.focusBorder,
 };
