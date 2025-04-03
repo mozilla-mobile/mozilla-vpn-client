@@ -132,6 +132,10 @@ int CommandStatus::run(QStringList& tokens) {
         stream << "initializing";
         break;
 
+      case Controller::StatePermissionRequired:
+        stream << "permission-required";
+        break;
+
       case Controller::StateOff:
         stream << "off";
         break;

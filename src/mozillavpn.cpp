@@ -410,6 +410,12 @@ void MozillaVPN::maybeStateMain() {
   // feature. We can do it in background when the main view is shown.
   maybeRegenerateDeviceKey();
 
+  auto controllerState = m_private->m_controller.state();
+  if (controllerState == Controller::State::StatePermissionRequired) {
+    setState(StatePermissionRequired);
+    return;
+  }
+
   if (state() != StateUpdateRequired) {
     // All users who get to StateMain (home screen) should never see onboarding
     // in the future
@@ -1084,6 +1090,7 @@ void MozillaVPN::update() {
   // so it's not necessary to disable the VPN to perform an upgrade.
 #ifndef MZ_WINDOWS
   if (m_private->m_controller.state() != Controller::StateOff &&
+      m_private->m_controller.state() != Controller::StatePermissionRequired &&
       m_private->m_controller.state() != Controller::StateInitializing) {
     deactivate();
     return;
@@ -1100,8 +1107,18 @@ void MozillaVPN::setUpdating(bool updating) {
 
 void MozillaVPN::controllerStateChanged() {
   logger.debug() << "Controller state changed";
+  auto controllerState = m_private->m_controller.state();
 
-  if (!m_controllerInitialized) {
+  // Handle transtions to and from the permission required state.
+  if (state() == StateMain &&
+      controllerState == Controller::StatePermissionRequired) {
+    setState(StatePermissionRequired);
+  } else if (state() == StatePermissionRequired &&
+             controllerState == Controller::StateOff) {
+    setState(StateMain);
+  }
+
+  if (!m_controllerInitialized && m_private->m_controller.isInitialized()) {
     m_controllerInitialized = true;
 
     if (SettingsHolder::instance()->startAtBoot()) {
@@ -1110,7 +1127,7 @@ void MozillaVPN::controllerStateChanged() {
     }
   }
 
-  if (m_updating && m_private->m_controller.state() == Controller::StateOff) {
+  if (m_updating && controllerState == Controller::StateOff) {
     update();
   }
   NetworkManager::instance()->clearCache();
@@ -1243,7 +1260,9 @@ void MozillaVPN::scheduleRefreshDataTasks() {
   // https://mozilla-hub.atlassian.net/browse/VPN-3726 for more information.
   if (!m_private->m_location.initialized()) {
     Controller::State st = m_private->m_controller.state();
-    if (st == Controller::StateOff || st == Controller::StateInitializing) {
+    if (st == Controller::StateOff ||
+        st == Controller::StatePermissionRequired ||
+        st == Controller::StateInitializing) {
       TaskScheduler::scheduleTask(
           new TaskGetLocation(ErrorHandler::PropagateError));
     }
@@ -1434,6 +1453,13 @@ void MozillaVPN::registerNavigatorScreens() {
       Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenBackendFailure.qml",
       QVector<int>{MozillaVPN::StateHeartbeatFailure},
+      [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
+
+  Navigator::registerScreen(
+      MozillaVPN::ScreenPermissionRequired,
+      Navigator::LoadPolicy::LoadTemporarily,
+      "qrc:/qt/qml/Mozilla/VPN/screens/ScreenPermissionRequired.qml",
+      QVector<int>{MozillaVPN::StatePermissionRequired},
       [](int*) -> int8_t { return 0; }, []() -> bool { return false; });
 
   Navigator::registerScreen(
