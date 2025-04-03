@@ -37,16 +37,14 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
             initialize(QmlEngineHolder::instance()->engine());
           });
 
-  // In VPN-6178, uncomment these next few lines and add code.
-  // #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-  //   connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged,
-  //   this,
-  //           []() {
-  // Code gets added here. Code must update the theme when the system
-  // theme changes (if the user has "system theme" selected for their VPN
-  // theme).
-  //           });
-  // #endif
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+  connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this,
+          [this]() {
+            if (SettingsHolder::instance()->usingSystemTheme()) {
+              setToSystemTheme();
+            }
+          });
+#endif
 }
 
 Theme::~Theme() { MZ_COUNT_DTOR(Theme); }
@@ -148,6 +146,7 @@ void Theme::parseTheme(QJSEngine* engine, const QString& themeName) {
 }
 
 void Theme::setCurrentTheme(const QString& themeName) {
+  logger.error() << "Setting theme to" << themeName;
   loadTheme(themeName);
   SettingsHolder::instance()->setTheme(themeName);
 }
@@ -156,8 +155,31 @@ void Theme::setUsingSystemTheme(const bool usingSystemTheme) {
   SettingsHolder::instance()->setUsingSystemTheme(usingSystemTheme);
 
   if (usingSystemTheme) {
-    // if current system theme != current theme, then set the current theme
-    loadTheme("main");
+    setToSystemTheme();
+  }
+}
+
+void Theme::setToSystemTheme() {
+  // Translate the system theme to our theme names
+  QString themeImpliedBySystemTheme;
+  if (currentSystemTheme() != Qt::ColorScheme::Dark) {
+    themeImpliedBySystemTheme = "main";
+  } else {
+    themeImpliedBySystemTheme = "not-designer-approved";
+  }
+
+  logger.debug() << "Using system theme. Associated VPN theme is"
+                 << themeImpliedBySystemTheme;
+
+  // Only reset the theme if needed
+  if (themeImpliedBySystemTheme != m_currentTheme) {
+    setCurrentTheme(themeImpliedBySystemTheme);
+  } else {
+    // Without this next line, there is a bug when moving from `light mode` to
+    // `automatic` when system is in light mode (or `dark mode` to `automatic`
+    // when system is in dark mode). In these situations, the radio button does
+    // not update appropriately without this emit.
+    emit changed();
   }
 }
 

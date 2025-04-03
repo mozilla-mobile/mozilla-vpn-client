@@ -79,6 +79,7 @@ class Theme final : public QAbstractListModel {
  private:
   void parseTheme(QJSEngine* engine, const QString& themeName);
   bool loadTheme(const QString& themeName);
+  void setToSystemTheme();
 
  signals:
   void changed();
