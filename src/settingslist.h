@@ -559,14 +559,22 @@ SETTING_STRING(theme,          // getter
                false           // sensitive (do not log)
 )
 
-SETTING_BOOL(usingSystemTheme,          // getter
-             setUsingSystemTheme,       // setter
-             removeUsingSystemTheme,    // remover
-             hasUsingSystemTheme,       // has
-             "theme/usingSystemTheme",  // key
-             true,                      // default value
-             true,                      // remove when reset
-             false                      // sensitive (do not log)
+// Below Qt 6.5, this option won't be available.
+// Without this, the Apperance screen will
+// initially show no radio button selected.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#  define USING_SYSTEM_THEME_DEFAULT_VALUE true
+#else
+#  define USING_SYSTEM_THEME_DEFAULT_VALUE false
+#endif
+SETTING_BOOL(usingSystemTheme,                  // getter
+             setUsingSystemTheme,               // setter
+             removeUsingSystemTheme,            // remover
+             hasUsingSystemTheme,               // has
+             "theme/usingSystemTheme",          // key
+             USING_SYSTEM_THEME_DEFAULT_VALUE,  // default value
+             true,                              // remove when reset
+             false                              // sensitive (do not log)
 )
 
 SETTING_STRING(token,        // getter
