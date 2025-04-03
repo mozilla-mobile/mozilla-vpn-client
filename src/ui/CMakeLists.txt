@@ -95,6 +95,7 @@ qt_add_qml_module(mozillavpn-ui
         screens/settings/appPermissions/ViewAppPermissions.qml
         screens/settings/appPermissions/AppPermissionsList.qml
         screens/settings/ViewAboutUs.qml
+        screens/settings/ViewAppearance.qml
         screens/settings/ViewDNSSettings.qml
         screens/settings/ViewLanguage.qml
         screens/settings/ViewLicense.qml

@@ -153,6 +153,19 @@ MZViewBase {
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewDNSSettings.qml")
                 }
             }
+
+            MZSettingsItem {
+                objectName: "appearance"
+
+                settingTitle: MZI18n.SettingsAppearance
+                imageLeftSrc: MZAssetLookup.getImageSource("IconPaintbrush")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
+                imageRightMirror: MZLocalizer.isRightToLeft
+                onClicked: {
+                    stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewAppearance.qml")
+                }
+                visible: MZFeatureList.get("themeSelection").isSupported
+            }
         }
     }
 }

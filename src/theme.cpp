@@ -15,7 +15,6 @@
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "resourceloader.h"
-#include "settingsholder.h"
 
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"
@@ -70,6 +69,8 @@ void Theme::initialize(QJSEngine* engine) {
   for (const QString& file : files) {
     parseTheme(engine, file);
   }
+
+  setUsingSystemTheme(SettingsHolder::instance()->usingSystemTheme());
 
   if (!loadTheme(SettingsHolder::instance()->theme())) {
     logger.error() << "Failed to load the theme"
@@ -149,6 +150,15 @@ void Theme::parseTheme(QJSEngine* engine, const QString& themeName) {
 void Theme::setCurrentTheme(const QString& themeName) {
   loadTheme(themeName);
   SettingsHolder::instance()->setTheme(themeName);
+}
+
+void Theme::setUsingSystemTheme(const bool usingSystemTheme) {
+  SettingsHolder::instance()->setUsingSystemTheme(usingSystemTheme);
+
+  if (usingSystemTheme) {
+    // if current system theme != current theme, then set the current theme
+    loadTheme("main");
+  }
 }
 
 bool Theme::loadTheme(const QString& themeName) {

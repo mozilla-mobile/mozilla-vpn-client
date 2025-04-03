@@ -559,6 +559,16 @@ SETTING_STRING(theme,          // getter
                false           // sensitive (do not log)
 )
 
+SETTING_BOOL(usingSystemTheme,          // getter
+             setUsingSystemTheme,       // setter
+             removeUsingSystemTheme,    // remover
+             hasUsingSystemTheme,       // has
+             "theme/usingSystemTheme",  // key
+             true,                      // default value
+             true,                      // remove when reset
+             false                      // sensitive (do not log)
+)
+
 SETTING_STRING(token,        // getter
                setToken,     // setter
                removeToken,  // remover
