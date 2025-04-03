@@ -190,4 +190,15 @@ bool FeatureCallback_proxyCanTurnOn() {
 #endif
 }
 
+bool FeatureCallback_themeSelection() {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+  // This will get updated when we're ready to activate it for users.
+  return false;
+#else
+  // The API we're using isn't available below Qt 6.5, so this feature will not
+  // be released for these users.
+  return false;
+#endif
+}
+
 #endif  // FEATURELISTCALLBACK_H
