@@ -160,7 +160,12 @@ void Theme::setUsingSystemTheme(const bool usingSystemTheme) {
 }
 
 void Theme::setToSystemTheme() {
-  // Translate the system theme to our theme names
+  if (!Feature::get(Feature::Feature_themeSelection)->isSupported()) {
+    logger.debug()
+        << "Not setting to system theme because feature is not supported.";
+    return;
+  }
+
   QString themeImpliedBySystemTheme;
   if (currentSystemTheme() != Qt::ColorScheme::Dark) {
     themeImpliedBySystemTheme = "main";
