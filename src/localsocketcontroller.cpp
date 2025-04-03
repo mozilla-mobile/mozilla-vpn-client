@@ -9,6 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QMetaEnum>
 #include <QMetaType>
 
 #include "daemon/daemonerrors.h"
@@ -49,8 +50,11 @@ LocalSocketController::LocalSocketController(const QString& path)
   m_socket = new QLocalSocket(this);
   connect(m_socket, &QLocalSocket::connected, this,
           &LocalSocketController::daemonConnected);
-  connect(m_socket, &QLocalSocket::disconnected, this,
-          [&] { errorOccurred(QLocalSocket::PeerClosedError); });
+  connect(m_socket, &QLocalSocket::disconnected, this, [&] {
+    if (m_daemonState != eInitializing) {
+      errorOccurred(QLocalSocket::PeerClosedError);
+    }
+  });
   connect(m_socket, &QLocalSocket::errorOccurred, this,
           &LocalSocketController::errorOccurred);
   connect(m_socket, &QLocalSocket::readyRead, this,
@@ -124,10 +128,14 @@ void LocalSocketController::daemonConnected() {
 
 void LocalSocketController::activate(const InterfaceConfig& config,
                                      Controller::Reason reason) {
-  Q_UNUSED(reason);
-
   QJsonObject json = config.toJson();
   json.insert("type", "activate");
+
+  if (reason != Controller::ReasonNone) {
+    QMetaEnum metaEnum = QMetaEnum::fromType<Controller::Reason>();
+    QString reasonString = metaEnum.valueToKey(reason);
+    json.insert("reason", reasonString.toLower().mid(6));
+  }
 
   write(json);
 }
