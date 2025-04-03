@@ -35,8 +35,8 @@ MZFlickable {
         spacing: MZTheme.theme.vSpacingSmall
 
         Image {
-            Layout.topMargin: MZTheme.theme.contentTopMarginDesktop
             Layout.alignment: Qt.AlignHCenter
+            Layout.topMargin: MZTheme.theme.contentTopMarginDesktop
 
             source: "qrc:/ui/resources/macos-allow-in-background.svg"
             fillMode: Image.PreserveAspectFit
@@ -75,7 +75,7 @@ MZFlickable {
                 Layout.topMargin: 8
                 Layout.fillWidth: true
 
-                text: "<ol style='margin-left: -20px;'><li>%1</li><li>%2</li><ol>".arg(MZI18n.PermissionMacosStep1).arg(MZI18n.PermissionMacosStep2)
+                text: MZI18n.PermissionMacosInstructions
                 color: MZTheme.colors.fontColor
                 horizontalAlignment: Text.AlignLeft
             }
