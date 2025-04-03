@@ -32,6 +32,7 @@ MZViewBase {
         RowLayout {
             spacing: MZTheme.theme.windowMargin
             Layout.rightMargin: MZTheme.theme.windowMargin / 2
+            visible: MZFeatureList.get("themeSelectionIncludesAutomatic").isSupported
 
             MZRadioButton {
                 objectName: "automatic"

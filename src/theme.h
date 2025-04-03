@@ -79,7 +79,9 @@ class Theme final : public QAbstractListModel {
  private:
   void parseTheme(QJSEngine* engine, const QString& themeName);
   bool loadTheme(const QString& themeName);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   void setToSystemTheme();
+#endif
 
  signals:
   void changed();

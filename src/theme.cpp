@@ -159,8 +159,8 @@ void Theme::setUsingSystemTheme(const bool usingSystemTheme) {
   }
 }
 
-void Theme::setToSystemTheme() {
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+void Theme::setToSystemTheme() {
   if (!Feature::get(Feature::Feature_themeSelection)->isSupported()) {
     logger.debug()
         << "Not setting to system theme because feature is not supported.";
@@ -187,8 +187,8 @@ void Theme::setToSystemTheme() {
     // not update appropriately without this emit.
     emit changed();
   }
-#endif
 }
+#endif
 
 bool Theme::loadTheme(const QString& themeName) {
   if (!m_themes.contains(themeName)) return false;
