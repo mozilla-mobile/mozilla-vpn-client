@@ -41,6 +41,9 @@ include(scripts/cmake/clang_tidy.cmake)
 
 ## Some workarounds for platform build quirks
 if(WIN32)
+    include(src/cmake/windows_target_detection.cmake)
+
+
     ## CMake also has trouble finding OpenSSL libraries on Windows, and may
     ## need some help.
     if(EXISTS "C:/MozillaVPNBuild/SSL" AND NOT DEFINED OPENSSL_ROOT_DIR)
