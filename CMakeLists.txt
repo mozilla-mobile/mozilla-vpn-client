@@ -16,9 +16,6 @@ if(NOT (IS_MULTI_CONFIG OR DEFINED CMAKE_BUILD_TYPE))
     set(CMAKE_BUILD_TYPE "Debug" CACHE STRING "default build type" FORCE)
     message("Setting build type ${CMAKE_BUILD_TYPE}")
 endif()
-if(WIN32 AND DEFINED ENV{CONDA_PREFIX})
-    include(scripts/windows/conda-toolchain.cmake)
-endif()
 
 file(STRINGS "${CMAKE_CURRENT_LIST_DIR}/version.txt" APP_VERSION)
 message(APP_VERSION=${APP_VERSION})
@@ -42,6 +39,7 @@ include(scripts/cmake/clang_tidy.cmake)
 
 ## Some workarounds for platform build quirks
 if(WIN32)
+    include(src/cmake/windows_target_detection.cmake)
     ## CMake v3.20 has problems with race conditions in dependency generation.
     ## See: https://gitlab.kitware.com/cmake/cmake/-/issues/22014
     if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_EQUAL 3.20)

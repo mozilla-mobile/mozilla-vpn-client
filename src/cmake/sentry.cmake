@@ -21,6 +21,17 @@ elseif( CMAKE_ANDROID_ARCH STREQUAL "arm" )
     set( _SUPPORTED -1)
 endif()
 
+
+if(WIN32)
+    # TODO: Breakpad needs to be updated, in it's seh handler it 
+    # tries to get values for registers that don't exist on arm :) 
+
+    if(WINDOWS_TARGET_TRIPLET STREQUAL "aarch64-pc-windows-msvc")
+        set( _SUPPORTED -1)
+    endif()
+endif()
+
+
 if( ${_SUPPORTED} GREATER -1 )
     message("Building sentry for ${CMAKE_SYSTEM_NAME}")
     target_compile_definitions(shared-sources INTERFACE SENTRY_ENABLED)
@@ -70,9 +81,6 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE dbghelp.lib)
         target_link_libraries(shared-sources INTERFACE version.lib)
         SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad)
-        if(DEFINED ENV{CONDA_PREFIX})
-            LIST(APPEND SENTRY_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/scripts/windows/conda-toolchain.cmake)
-        endif()
     endif()
 
     if(ANDROID)

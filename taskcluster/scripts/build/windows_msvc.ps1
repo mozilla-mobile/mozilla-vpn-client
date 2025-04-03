@@ -28,6 +28,11 @@ Start-Process -NoNewWindow "$CONDA_DIR\Scripts\conda-unpack.exe" -Wait
 conda activate $CONDA_DIR
 conda info
 
+# Enter the DEV Shell
+. "$FETCHES_PATH/msvc/enter_dev_shell.ps1" -arch $ENV:MSVC_ARCH
+
+
+
 # Okay We are ready to build!
 mkdir $TASK_WORKDIR/cmake_build
 $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
@@ -35,10 +40,9 @@ $BUILD_DIR =resolve-path "$TASK_WORKDIR/cmake_build"
 # Do the generic build
 cmake -S $REPO_ROOT_PATH -B $BUILD_DIR -GNinja `
         -DCMAKE_BUILD_TYPE=Release `
-        -DCMAKE_TOOLCHAIN_FILE="scripts/windows/conda-toolchain.cmake" `
+        -DPYTHON_EXECUTABLE="$ENV:CONDA_PREFIX\python.exe" `
         -DWIREGUARD_FOLDER="$FETCHES_PATH\wireguard-nt" `
         -DCMAKE_PREFIX_PATH="$QTPATH/lib/cmake" `
-        -DCMAKE_TOOLCHAIN_FILE=scripts/windows/conda-toolchain.cmake `
         -DBUILD_TESTS=OFF
 
 cmake --build $BUILD_DIR
@@ -61,16 +65,3 @@ Get-ChildItem -Path $TASK_WORKDIR/artifacts
 Get-command python
 python  $REPO_ROOT_PATH/taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
 $env:SENTRY_AUTH_TOKEN=$(Get-Content sentry_debug_file_upload_key)
-# Are we logged in?
-sentry-cli-Windows-x86_64.exe info
-
-# This will ask sentry to scan all files in there and upload
-# missing debug info, for symbolification
-
-sentry-cli-Windows-x86_64.exe debug-files check "$BUILD_DIR\src\Mozilla VPN.pdb"
-Get-ChildItem $TASK_WORKDIR/unsigned/
-if ($env:MOZ_SCM_LEVEL -eq "3") {
-    sentry-cli-Windows-x86_64.exe debug-files upload --org mozilla -p vpn-client --include-sources $BUILD_DIR
-} else{
-    sentry-cli-Windows-x86_64.exe --log-level info debug-files upload --org mozilla -p vpn-client --include-sources --no-upload $BUILD_DIR
-}
