@@ -33,17 +33,17 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@parcel/compressor-raw": "^2.13.3",
+    "@parcel/compressor-raw": "^2.14.4",
     "json-schema": ">=0.4.0",
     "lit": "^3.2.1",
-    "parcel": "^2.13.3",
+    "parcel": "^2.14.4",
     "xterm": "^5.1.0",
     "xterm-addon-fit": "^0.8.0"
   },
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "^8.19.1",
-    "@typescript-eslint/parser": "^8.19.1",
-    "eslint": "^9.18.0",
+    "@typescript-eslint/eslint-plugin": "^8.28.0",
+    "@typescript-eslint/parser": "^8.28.0",
+    "eslint": "^9.23.0",
     "eslint-config-standard": "^17.1.0",
     "eslint-plugin-import": "^2.31.0",
     "eslint-plugin-node": "^11.1.0",
