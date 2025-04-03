@@ -154,9 +154,11 @@ void Theme::setCurrentTheme(const QString& themeName) {
 void Theme::setUsingSystemTheme(const bool usingSystemTheme) {
   SettingsHolder::instance()->setUsingSystemTheme(usingSystemTheme);
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   if (usingSystemTheme) {
     setToSystemTheme();
   }
+#endif
 }
 
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
