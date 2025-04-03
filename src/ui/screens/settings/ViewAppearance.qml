@@ -10,8 +10,6 @@ import Mozilla.Shared 1.0
 import components 0.1
 import components.forms 0.1
 
-// CHECK ALL THESE ^^^^
-
 MZViewBase {
     id: root
     objectName: "AppearanceView"
