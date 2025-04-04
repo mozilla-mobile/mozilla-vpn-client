@@ -98,10 +98,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.h
     ${CMAKE_SOURCE_DIR}/src/glean/mzglean.h
     ${CMAKE_SOURCE_DIR}/src/glean/mzglean.cpp
-    ${CMAKE_SOURCE_DIR}/src/hawkauth.cpp
-    ${CMAKE_SOURCE_DIR}/src/hawkauth.h
-    ${CMAKE_SOURCE_DIR}/src/hkdf.cpp
-    ${CMAKE_SOURCE_DIR}/src/hkdf.h
     ${CMAKE_SOURCE_DIR}/src/itempicker.cpp
     ${CMAKE_SOURCE_DIR}/src/itempicker.h
     ${CMAKE_SOURCE_DIR}/src/localizer.cpp
