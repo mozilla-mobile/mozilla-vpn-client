@@ -3,6 +3,10 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 add_library(mzutils STATIC
+    chacha20poly1305.cpp
+    chacha20poly1305.h
+    curve25519.cpp
+    curve25519.h
     interfaceconfig.cpp
     interfaceconfig.h
     ipaddress.cpp
@@ -14,6 +18,10 @@ add_library(mzutils STATIC
     loghandler.cpp
     loghandler.h
     loglevel.h
+    hacl-star/Hacl_Chacha20.c
+    hacl-star/Hacl_Chacha20Poly1305_32.c
+    hacl-star/Hacl_Curve25519_51.c
+    hacl-star/Hacl_Poly1305_32.c
 )
 
 # Signal handling for unix platforms
@@ -24,8 +32,14 @@ if(UNIX)
      )
 endif()
 
-target_include_directories(mzutils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(mzutils PUBLIC Qt6::Core Qt6::Network)
+
+target_include_directories(mzutils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(mzutils PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin
+    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal
+)
 
 target_compile_definitions(mzutils PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 target_compile_definitions(mzutils PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")

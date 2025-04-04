@@ -10,7 +10,7 @@
 #include <QJsonValue>
 #include <QRandomGenerator>
 
-#include "hacl-star/Hacl_Chacha20Poly1305_32.h"
+#include "chacha20poly1305.h"
 #include "logger.h"
 
 #if defined(UNIT_TEST)
@@ -196,13 +196,10 @@ bool CryptoSettings::readEncryptedChachaPolyFile(Version fileVersion,
     return false;
   }
 
-  QByteArray content(ciphertext.length(), 0x00);
-  uint32_t result = Hacl_Chacha20Poly1305_32_aead_decrypt(
-      (uint8_t*)key.data(), (uint8_t*)nonce.data(),
-      static_cast<uint32_t>(header.length()), (uint8_t*)header.data(),
-      static_cast<uint32_t>(ciphertext.length()), (uint8_t*)content.data(),
-      (uint8_t*)ciphertext.data(), (uint8_t*)mac.data());
-  if (result != 0) {
+  Chacha20Poly1305 cipher(key);
+  QByteArray content = cipher.decrypt(nonce, header, ciphertext, mac);
+  if (content.isNull()) {
+    logger.error() << "Settings decryption failed";
     return false;
   }
 
@@ -337,14 +334,9 @@ bool CryptoSettings::writeEncryptedChachaPolyFile(
     return false;
   }
 
-  QByteArray ciphertext(content.length(), 0x00);
-  QByteArray mac(MAC_SIZE, 0x00);
-
-  Hacl_Chacha20Poly1305_32_aead_encrypt(
-      (uint8_t*)key.data(), (uint8_t*)nonce.data(),
-      static_cast<uint32_t>(header.length()), (uint8_t*)header.data(),
-      static_cast<uint32_t>(content.length()), (uint8_t*)content.data(),
-      (uint8_t*)ciphertext.data(), (uint8_t*)mac.data());
+  Chacha20Poly1305 cipher(key);
+  QByteArray mac;
+  QByteArray ciphertext = cipher.encrypt(nonce, header, content, mac);
 
   if (device.write(header) != header.length()) {
     logger.error() << "Failed to write the header";
