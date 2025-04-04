@@ -42,6 +42,7 @@ include(scripts/cmake/clang_tidy.cmake)
 
 ## Some workarounds for platform build quirks
 if(WIN32)
+    include(src/cmake/windows_target.cmake)
     ## CMake v3.20 has problems with race conditions in dependency generation.
     ## See: https://gitlab.kitware.com/cmake/cmake/-/issues/22014
     if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_EQUAL 3.20)
