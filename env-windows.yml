@@ -11,7 +11,7 @@ dependencies:
   - python=3.9
   - nodejs=18.16.*
   - pip=22.3.1
-  - rust=1.75
+  - rust=1.82.0
   - compiler-rt
   - cmake=3.26.3
   - ninja=1.11.0
