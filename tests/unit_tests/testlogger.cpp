@@ -50,8 +50,8 @@ void TestLogger::logTruncation() {
 
   // Disable stderr for this test, it's going to be a *lot*
   // turn it back on when we're done too.
-  LogHandler::setStderr(false);
-  auto guard = qScopeGuard([&] { LogHandler::setStderr(true); });
+  LogHandler::instance()->setStderr(false);
+  auto guard = qScopeGuard([&] { LogHandler::instance()->setStderr(true); });
 
   // Write a megabyte log data.
   const QString example = "All work and no play makes Jack a dull boy";

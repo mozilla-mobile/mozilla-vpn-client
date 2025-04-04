@@ -54,6 +54,7 @@ endif()
 
 target_link_libraries(app_auth_tests PRIVATE
     qtglean
+    mzutils
     shared-sources
     translations
 )

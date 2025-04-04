@@ -103,8 +103,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/extrastrings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/imageproviderfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/imageproviderfactory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ipaddresslookup.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ipaddresslookup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/keyregenerator.cpp
