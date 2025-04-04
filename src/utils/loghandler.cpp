@@ -4,41 +4,26 @@
 
 #include "loghandler.h"
 
+#include <QCoreApplication>
 #include <QDate>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QMessageLogContext>
 #include <QProcessEnvironment>
+#include <QRegularExpression>
 #include <QScopeGuard>
 #include <QStandardPaths>
 #include <QString>
 #include <QTextStream>
-#include <QUrl>
 
-#include "constants.h"
-#include "feature/feature.h"
 #include "logger.h"
-#include "urlopener.h"
-
-#ifdef MZ_ANDROID
-#  include <android/log.h>
-
-#  include "platforms/android/androidcommons.h"
-#endif
-
-#ifdef MZ_IOS
-#  include "platforms/ios/ioscommons.h"
-#  include "platforms/ios/ioslogger.h"
-#endif
 
 constexpr qint64 LOG_MAX_FILE_SIZE = 204800;
 
 namespace {
-QMutex s_mutex;
 QString s_location =
     QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-LogHandler* s_instance = nullptr;
 
 LogLevel qtTypeToLogLevel(QtMsgType type) {
   switch (type) {
@@ -106,45 +91,34 @@ class LogSerializeHelper final {
 
 }  // namespace
 
+Q_GLOBAL_STATIC(LogHandler, logHandler);
+LogHandler* LogHandler::instance() { return logHandler; }
+
 // static
-LogHandler* LogHandler::instance() {
-  QMutexLocker<QMutex> lock(&s_mutex);
-  return maybeCreate(lock);
+QString LogHandler::logFileName() {
+  QString appName = qApp->applicationName().toLower();
+  QString simplified = appName.remove(QRegularExpression("[^a-z]"));
+  return QString("%1.log").arg(simplified);
 }
 
 // static
 void LogHandler::messageQTHandler(QtMsgType type,
                                   const QMessageLogContext& context,
                                   const QString& message) {
-  QMutexLocker<QMutex> lock(&s_mutex);
-  maybeCreate(lock)->addLog(Log(qtTypeToLogLevel(type), context.file,
-                                context.function, context.line, message),
-                            lock);
+  logHandler->addLog(Log(qtTypeToLogLevel(type), context.file, context.function,
+                         context.line, message));
 }
 
 // static
 void LogHandler::messageHandler(LogLevel logLevel, const QString& className,
                                 const QString& message) {
-  QMutexLocker<QMutex> lock(&s_mutex);
-  maybeCreate(lock)->addLog(Log(logLevel, className, message), lock);
+  logHandler->addLog(Log(logLevel, className, message));
 }
 
 // static
 void LogHandler::rustMessageHandler(int32_t logLevel, char* message) {
-  QMutexLocker<QMutex> lock(&s_mutex);
-
-  maybeCreate(lock)->addLog(
-      Log(static_cast<LogLevel>(logLevel), "Rust", QString::fromUtf8(message)),
-      lock);
-}
-
-// static
-LogHandler* LogHandler::maybeCreate(const QMutexLocker<QMutex>& proofOfLock) {
-  if (!s_instance) {
-    s_instance = new LogHandler(proofOfLock);
-  }
-
-  return s_instance;
+  logHandler->addLog(Log(static_cast<LogLevel>(logLevel), "Rust",
+                         QString::fromUtf8(message)));
 }
 
 // static
@@ -208,22 +182,26 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
   out << Qt::endl;
 }
 
-// static
 void LogHandler::setStderr(bool enabled) {
-  QMutexLocker<QMutex> lock(&s_mutex);
-  maybeCreate(lock)->m_stderrEnabled = enabled;
+  QMutexLocker<QMutex> lock(&m_mutex);
+  m_stderrEnabled = enabled;
 }
 
-LogHandler::LogHandler(const QMutexLocker<QMutex>& proofOfLock) {
-  Q_UNUSED(proofOfLock);
+LogHandler::LogHandler() : QObject(nullptr) {
+  QMutexLocker<QMutex> lock(&m_mutex);
 
 #if defined(MZ_DEBUG)
   m_stderrEnabled = true;
 #endif
 
   if (!s_location.isEmpty()) {
-    openLogFile(proofOfLock);
+    openLogFile(lock);
   }
+}
+
+void LogHandler::addLog(const Log& log) {
+  QMutexLocker<QMutex> lock(&m_mutex);
+  return addLog(log, lock);
 }
 
 void LogHandler::addLog(const Log& log,
@@ -278,16 +256,15 @@ void LogHandler::addLog(const Log& log,
 #endif
 }
 
-// static
 void LogHandler::writeLogs(QTextStream& out) {
-  QMutexLocker<QMutex> lock(&s_mutex);
+  QMutexLocker<QMutex> lock(&m_mutex);
 
-  if (!s_instance || !s_instance->m_logFile) {
+  if (!logHandler->m_logFile) {
     return;
   }
 
-  QString logFileName = s_instance->m_logFile->fileName();
-  s_instance->closeLogFile(lock);
+  QString logFileName = logHandler->m_logFile->fileName();
+  logHandler->closeLogFile(lock);
 
   {
     QFile file(logFileName);
@@ -298,38 +275,35 @@ void LogHandler::writeLogs(QTextStream& out) {
     out << file.readAll();
   }
 
-  s_instance->openLogFile(lock);
+  logHandler->openLogFile(lock);
 }
 
-// static
 void LogHandler::cleanupLogs() {
-  QMutexLocker<QMutex> lock(&s_mutex);
+  QMutexLocker<QMutex> lock(&m_mutex);
   cleanupLogFile(lock);
 }
 
-// static
 void LogHandler::cleanupLogFile(const QMutexLocker<QMutex>& proofOfLock) {
-  if (!s_instance || !s_instance->m_logFile) {
+  if (!logHandler->m_logFile) {
     return;
   }
 
-  QString logFileName = s_instance->m_logFile->fileName();
-  s_instance->closeLogFile(proofOfLock);
+  QString logFileName = logHandler->m_logFile->fileName();
+  logHandler->closeLogFile(proofOfLock);
 
   {
     QFile file(logFileName);
     file.remove();
   }
 
-  s_instance->openLogFile(proofOfLock);
+  logHandler->openLogFile(proofOfLock);
 }
 
-// static
 void LogHandler::setLocation(const QString& path) {
-  QMutexLocker<QMutex> lock(&s_mutex);
+  QMutexLocker<QMutex> lock(&m_mutex);
   s_location = path;
 
-  if (s_instance && s_instance->m_logFile) {
+  if (logHandler->m_logFile) {
     cleanupLogFile(lock);
   }
 }
@@ -385,10 +359,10 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
     }
   }
 
-  QString logFileName = appDataLocation.filePath(Constants::LOG_FILE_NAME);
-  truncateLogFile(proofOfLock, logFileName);
+  QString logFilePath = appDataLocation.filePath(logFileName());
+  truncateLogFile(proofOfLock, logFilePath);
 
-  m_logFile = new QFile(logFileName);
+  m_logFile = new QFile(logFilePath);
   if (!m_logFile->open(QIODevice::WriteOnly | QIODevice::Append |
                        QIODevice::Text)) {
     delete m_logFile;
@@ -399,7 +373,7 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   m_output = new QTextStream(m_logFile);
 
 #ifdef MZ_DEBUG
-  addLog(Log(Debug, "LogHandler", QString("Log file: %1").arg(logFileName)),
+  addLog(Log(Debug, "LogHandler", QString("Log file: %1").arg(logFilePath)),
          proofOfLock);
 #endif
 }
@@ -414,56 +388,6 @@ void LogHandler::closeLogFile(const QMutexLocker<QMutex>& proofOfLock) {
     delete m_logFile;
     m_logFile = nullptr;
   }
-}
-
-bool LogHandler::viewLogs() {
-  logger.debug() << "View logs";
-
-  if (!Feature::get(Feature::Feature_shareLogs)->isSupported()) {
-    logger.error() << "ViewLogs Called on unsupported OS or version!";
-    return false;
-  }
-
-#if defined(MZ_ANDROID) || defined(MZ_IOS)
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
-  bool ok = true;
-  serializeLogs(out, [buffer, out
-#  if defined(MZ_ANDROID)
-                      ,
-                      &ok
-#  endif
-  ]() {
-    Q_ASSERT(out);
-    Q_ASSERT(buffer);
-
-#  if defined(MZ_ANDROID)
-    ok = AndroidCommons::shareText(*buffer);
-#  else
-    IOSCommons::shareLogs(*buffer);
-#  endif
-
-    delete out;
-    delete buffer;
-  });
-  return ok;
-#endif
-
-  if (writeAndShowLogs(QStandardPaths::DesktopLocation) ||
-      writeAndShowLogs(QStandardPaths::HomeLocation) ||
-      writeAndShowLogs(QStandardPaths::TempLocation)) {
-    flushLogs();
-    return true;
-  }
-
-  logger.warning()
-      << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
-  return false;
-}
-
-void LogHandler::requestViewLogs() {
-  logger.debug() << "View log requested";
-  emit viewLogsNeeded();
 }
 
 void LogHandler::retrieveLogs() {
@@ -513,7 +437,7 @@ bool LogHandler::writeLogsToLocation(
   QString filename;
   QDate now = QDate::currentDate();
 
-  QFileInfo logFileInfo(Constants::LOG_FILE_NAME);
+  QFileInfo logFileInfo(logFileName());
 
   QTextStream(&filename) << logFileInfo.baseName() << "-" << now.year() << "-"
                          << now.month() << "-" << now.day() << "."
@@ -562,13 +486,6 @@ bool LogHandler::writeLogsToLocation(
   });
 
   return true;
-}
-
-bool LogHandler::writeAndShowLogs(QStandardPaths::StandardLocation location) {
-  return writeLogsToLocation(location, [](const QString& filename) {
-    logger.debug() << "Opening the logFile somehow.";
-    UrlOpener::instance()->openUrl(QUrl::fromLocalFile(filename));
-  });
 }
 
 void LogHandler::flushLogs() {

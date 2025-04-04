@@ -18,7 +18,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "macosdaemon.h"
-#include "mozillavpn.h"
 #include "signalhandler.h"
 
 namespace {

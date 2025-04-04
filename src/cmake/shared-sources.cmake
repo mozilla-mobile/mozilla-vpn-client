@@ -108,20 +108,12 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/hawkauth.h
     ${CMAKE_SOURCE_DIR}/src/hkdf.cpp
     ${CMAKE_SOURCE_DIR}/src/hkdf.h
-    ${CMAKE_SOURCE_DIR}/src/ipaddress.cpp
-    ${CMAKE_SOURCE_DIR}/src/ipaddress.h
     ${CMAKE_SOURCE_DIR}/src/itempicker.cpp
     ${CMAKE_SOURCE_DIR}/src/itempicker.h
-    ${CMAKE_SOURCE_DIR}/src/leakdetector.cpp
-    ${CMAKE_SOURCE_DIR}/src/leakdetector.h
     ${CMAKE_SOURCE_DIR}/src/localizer.cpp
     ${CMAKE_SOURCE_DIR}/src/localizer.h
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.cpp
     ${CMAKE_SOURCE_DIR}/src/logoutobserver.h
-    ${CMAKE_SOURCE_DIR}/src/logger.cpp
-    ${CMAKE_SOURCE_DIR}/src/logger.h
-    ${CMAKE_SOURCE_DIR}/src/loghandler.cpp
-    ${CMAKE_SOURCE_DIR}/src/loghandler.h
     ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.cpp
     ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.h
     ${CMAKE_SOURCE_DIR}/src/models/apierror.cpp
@@ -197,14 +189,6 @@ target_sources(shared-sources INTERFACE
 if(NOT QT_FEATURE_zstd)
     set_property(SOURCE  ${CMAKE_SOURCE_DIR}/src/resources/license.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
     set_property(SOURCE  ${CMAKE_SOURCE_DIR}/src/resources/resources.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
-endif()
-
-# Signal handling for unix platforms
-if(UNIX)
-     target_sources(shared-sources INTERFACE
-        ${CMAKE_SOURCE_DIR}/src/signalhandler.cpp
-        ${CMAKE_SOURCE_DIR}/src/signalhandler.h
-     )
 endif()
 
 # Sources for desktop platforms.

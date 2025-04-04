@@ -379,7 +379,7 @@ QString Daemon::logs() {
 
   {
     QTextStream out(&output);
-    LogHandler::writeLogs(out);
+    LogHandler::instance()->writeLogs(out);
   }
 
   return output;

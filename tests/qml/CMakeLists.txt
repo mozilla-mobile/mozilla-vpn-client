@@ -32,7 +32,7 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::Svg
 )
 
-target_link_libraries(qml_tests PRIVATE qtglean lottie nebula translations)
+target_link_libraries(qml_tests PRIVATE qtglean lottie mzutils nebula translations)
 
 target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
@@ -172,18 +172,10 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/inspector/inspectorwebsocketserver.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorutils.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorutils.h
-    ${MZ_SOURCE_DIR}/ipaddress.cpp
-    ${MZ_SOURCE_DIR}/ipaddress.h
     ${MZ_SOURCE_DIR}/itempicker.cpp
     ${MZ_SOURCE_DIR}/itempicker.h
-    ${MZ_SOURCE_DIR}/leakdetector.cpp
-    ${MZ_SOURCE_DIR}/leakdetector.h
     ${MZ_SOURCE_DIR}/localizer.cpp
     ${MZ_SOURCE_DIR}/localizer.h
-    ${MZ_SOURCE_DIR}/logger.cpp
-    ${MZ_SOURCE_DIR}/logger.h
-    ${MZ_SOURCE_DIR}/loghandler.cpp
-    ${MZ_SOURCE_DIR}/loghandler.h
     ${MZ_SOURCE_DIR}/feature/featuremodel.cpp
     ${MZ_SOURCE_DIR}/feature/featuremodel.h
     ${MZ_SOURCE_DIR}/models/licensemodel.cpp

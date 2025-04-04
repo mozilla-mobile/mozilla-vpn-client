@@ -28,6 +28,9 @@ class LogHandler final : public QObject {
   Q_DISABLE_COPY_MOVE(LogHandler)
 
  public:
+  LogHandler();
+  static LogHandler* instance();
+
   struct Log {
     Log() = default;
 
@@ -58,12 +61,8 @@ class LogHandler final : public QObject {
     bool m_fromQT = false;
   };
 
-  Q_INVOKABLE bool viewLogs();
   Q_INVOKABLE void retrieveLogs();
   Q_INVOKABLE void flushLogs();
-  Q_INVOKABLE void requestViewLogs();
-
-  static LogHandler* instance();
 
   static void messageQTHandler(QtMsgType type,
                                const QMessageLogContext& context,
@@ -76,16 +75,22 @@ class LogHandler final : public QObject {
 
   static void prettyOutput(QTextStream& out, const LogHandler::Log& log);
 
-  static void writeLogs(QTextStream& out);
+  void writeLogs(QTextStream& out);
 
-  static void cleanupLogs();
+  void cleanupLogs();
 
-  static void setLocation(const QString& path);
+  void setLocation(const QString& path);
 
-  static void setStderr(bool enabled = true);
+  void setStderr(bool enabled = true);
+
+  static QString logFileName();
 
   void serializeLogs(QTextStream* out,
                      std::function<void()>&& finalizeCallback);
+
+  bool writeLogsToLocation(
+      QStandardPaths::StandardLocation location,
+      std::function<void(const QString& filename)>&& a_callback);
 
   void registerLogSerializer(LogSerializer* logSerializer);
   void unregisterLogSerializer(LogSerializer* logSerializer);
@@ -97,26 +102,19 @@ class LogHandler final : public QObject {
   void cleanupLogsNeeded();
 
  private:
-  explicit LogHandler(const QMutexLocker<QMutex>& proofOfLock);
-
-  static LogHandler* maybeCreate(const QMutexLocker<QMutex>& proofOfLock);
-
+  void addLog(const Log& log);
   void addLog(const Log& log, const QMutexLocker<QMutex>& proofOfLock);
 
   void openLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
   void closeLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
-  static void cleanupLogFile(const QMutexLocker<QMutex>& proofOfLock);
+  void cleanupLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
-  static void truncateLogFile(const QMutexLocker<QMutex>& proofOfLock,
+  void truncateLogFile(const QMutexLocker<QMutex>& proofOfLock,
                               const QString& filename);
 
-  bool writeAndShowLogs(QStandardPaths::StandardLocation location);
-
-  bool writeLogsToLocation(
-      QStandardPaths::StandardLocation location,
-      std::function<void(const QString& filename)>&& a_callback);
+  QMutex m_mutex;
 
   bool m_stderrEnabled = false;
 

@@ -59,6 +59,7 @@ generate_translations_target(translations-unit-tests
 target_link_libraries(app_unit_tests PRIVATE
     qtglean
     shared-sources
+    mzutils
     translations-unit-tests
 )
 

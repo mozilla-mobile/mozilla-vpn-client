@@ -12,14 +12,21 @@
 #include "urlopener.h"
 
 #ifdef MZ_ANDROID
+#  include <android/log.h>
+
 #  include "platforms/android/androidcommons.h"
 #endif
 #ifdef MZ_WINDOWS
 #  include "platforms/windows/windowsutils.h"
 #endif
+#ifdef MZ_IOS
+#  include "platforms/ios/ioscommons.h"
+#  include "platforms/ios/ioslogger.h"
+#endif
 
 #include <QApplication>
 #include <QClipboard>
+#include <QUrl>
 
 namespace {
 Logger logger("Utils");
@@ -63,3 +70,63 @@ void Utils::launchPlayStore() {
   AndroidCommons::launchPlayStore();
 }
 #endif
+
+bool Utils::viewLogs() {
+  logger.debug() << "View logs";
+
+  if (!Feature::get(Feature::Feature_shareLogs)->isSupported()) {
+    logger.error() << "ViewLogs Called on unsupported OS or version!";
+    return false;
+  }
+
+  LogHandler* instance = LogHandler::instance();
+
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
+  QString* buffer = new QString();
+  QTextStream* out = new QTextStream(buffer);
+  bool ok = true;
+  instance->serializeLogs(out, [buffer, out
+#  if defined(MZ_ANDROID)
+                          ,
+                          &ok
+#  endif
+  ]() {
+    Q_ASSERT(out);
+    Q_ASSERT(buffer);
+
+#  if defined(MZ_ANDROID)
+    ok = AndroidCommons::shareText(*buffer);
+#  else
+    IOSCommons::shareLogs(*buffer);
+#  endif
+
+    delete out;
+    delete buffer;
+  });
+  return ok;
+#endif
+
+  if (writeAndShowLogs(QStandardPaths::DesktopLocation) ||
+      writeAndShowLogs(QStandardPaths::HomeLocation) ||
+      writeAndShowLogs(QStandardPaths::TempLocation)) {
+    instance->flushLogs();
+    return true;
+  }
+
+  logger.warning()
+      << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
+  return false;
+}
+
+void Utils::requestViewLogs() {
+  logger.debug() << "View log requested";
+  emit viewLogsNeeded();
+}
+
+bool Utils::writeAndShowLogs(QStandardPaths::StandardLocation location) {
+  LogHandler* instance = LogHandler::instance();
+  return instance->writeLogsToLocation(location, [](const QString& filename) {
+    logger.debug() << "Opening the logFile somehow.";
+    UrlOpener::instance()->openUrl(QUrl::fromLocalFile(filename));
+  });
+}

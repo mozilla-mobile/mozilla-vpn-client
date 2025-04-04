@@ -112,7 +112,7 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
 
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
-    LogHandler::setStderr(true);
+    LogHandler::instance()->setStderr(true);
   }
 
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
@@ -140,7 +140,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
-    LogHandler::setStderr(true);
+    LogHandler::instance()->setStderr(true);
   }
 
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
@@ -175,7 +175,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
-    LogHandler::setStderr(true);
+    LogHandler::instance()->setStderr(true);
   }
 
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
