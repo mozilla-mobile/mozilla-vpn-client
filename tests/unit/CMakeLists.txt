@@ -233,16 +233,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/qmlpath.h
     ${MZ_SOURCE_DIR}/resourceloader.cpp
     ${MZ_SOURCE_DIR}/resourceloader.h
-    ${MZ_SOURCE_DIR}/rfc/rfc1112.cpp
-    ${MZ_SOURCE_DIR}/rfc/rfc1112.h
-    ${MZ_SOURCE_DIR}/rfc/rfc1918.cpp
-    ${MZ_SOURCE_DIR}/rfc/rfc1918.h
-    ${MZ_SOURCE_DIR}/rfc/rfc4193.cpp
-    ${MZ_SOURCE_DIR}/rfc/rfc4193.h
-    ${MZ_SOURCE_DIR}/rfc/rfc4291.cpp
-    ${MZ_SOURCE_DIR}/rfc/rfc4291.h
-    ${MZ_SOURCE_DIR}/rfc/rfc5735.cpp
-    ${MZ_SOURCE_DIR}/rfc/rfc5735.h
     ${MZ_SOURCE_DIR}/settings/settinggroup.cpp
     ${MZ_SOURCE_DIR}/settings/settinggroup.h
     ${MZ_SOURCE_DIR}/settings/settingsmanager.cpp
