@@ -7,6 +7,10 @@ add_library(mzutils STATIC
     chacha20poly1305.h
     curve25519.cpp
     curve25519.h
+    hawkauth.cpp
+    hawkauth.h
+    hkdf.cpp
+    hkdf.h
     interfaceconfig.cpp
     interfaceconfig.h
     ipaddress.cpp
