@@ -76,8 +76,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/collator.h
     ${CMAKE_SOURCE_DIR}/src/cryptosettings.cpp
     ${CMAKE_SOURCE_DIR}/src/cryptosettings.h
-    ${CMAKE_SOURCE_DIR}/src/curve25519.cpp
-    ${CMAKE_SOURCE_DIR}/src/curve25519.h
     ${CMAKE_SOURCE_DIR}/src/env.cpp
     ${CMAKE_SOURCE_DIR}/src/env.h
     ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
@@ -100,10 +98,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.h
     ${CMAKE_SOURCE_DIR}/src/glean/mzglean.h
     ${CMAKE_SOURCE_DIR}/src/glean/mzglean.cpp
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Chacha20.c
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Chacha20Poly1305_32.c
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Curve25519_51.c
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Poly1305_32.c
     ${CMAKE_SOURCE_DIR}/src/hawkauth.cpp
     ${CMAKE_SOURCE_DIR}/src/hawkauth.h
     ${CMAKE_SOURCE_DIR}/src/hkdf.cpp
