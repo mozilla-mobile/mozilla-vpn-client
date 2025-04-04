@@ -124,16 +124,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/qmlpath.h
     ${CMAKE_SOURCE_DIR}/src/resourceloader.cpp
     ${CMAKE_SOURCE_DIR}/src/resourceloader.h
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc1112.cpp
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc1112.h
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc1918.cpp
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc1918.h
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc4193.cpp
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc4193.h
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc4291.cpp
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc4291.h
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.cpp
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.h
     ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.cpp
     ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.h
     ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.cpp

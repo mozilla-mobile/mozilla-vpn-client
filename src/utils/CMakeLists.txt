@@ -22,6 +22,16 @@ add_library(mzutils STATIC
     hacl-star/Hacl_Chacha20Poly1305_32.c
     hacl-star/Hacl_Curve25519_51.c
     hacl-star/Hacl_Poly1305_32.c
+    rfc/rfc1112.cpp
+    rfc/rfc1112.h
+    rfc/rfc1918.cpp
+    rfc/rfc1918.h
+    rfc/rfc4193.cpp
+    rfc/rfc4193.h
+    rfc/rfc4291.cpp
+    rfc/rfc4291.h
+    rfc/rfc5735.cpp
+    rfc/rfc5735.h
 )
 
 # Signal handling for unix platforms
