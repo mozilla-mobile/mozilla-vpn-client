@@ -73,34 +73,6 @@ bool Command::userAuthenticated() {
   return true;
 }
 
-bool Command::loadModels() {
-  MozillaVPN* vpn = MozillaVPN::instance();
-
-  // First the keys!
-  if (!vpn->keys()->fromSettings()) {
-    QTextStream stream(stdout);
-    stream << "No cache available" << Qt::endl;
-    return false;
-  }
-
-  vpn->serverData()->initialize();
-
-  if (!vpn->deviceModel()->fromSettings(vpn->keys()) ||
-      !vpn->serverCountryModel()->fromSettings() ||
-      !vpn->user()->fromSettings() || !vpn->serverData()->fromSettings() ||
-      !vpn->modelsInitialized()) {
-    QTextStream stream(stdout);
-    stream << "No cache available" << Qt::endl;
-    return false;
-  }
-
-  if (!vpn->captivePortal()->fromSettings()) {
-    // We do not care about these settings.
-  }
-
-  return true;
-}
-
 int Command::runCommandLineApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 

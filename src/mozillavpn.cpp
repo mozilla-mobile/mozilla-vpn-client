@@ -864,6 +864,30 @@ void MozillaVPN::stopSchedulingPeriodicOperations() {
   m_periodicOperationsTimer.stop();
 }
 
+bool MozillaVPN::loadModels() {
+  // First the keys!
+  if (!m_private->m_keys.fromSettings()) {
+    return false;
+  }
+
+  m_private->m_serverData.initialize();
+
+  if (!m_private->m_deviceModel.fromSettings(&m_private->m_keys) ||
+      !m_private->m_serverCountryModel.fromSettings() ||
+      !m_private->m_user.fromSettings() ||
+      !m_private->m_serverData.fromSettings() ||
+      !modelsInitialized()) {
+    return false;
+  }
+
+  if (!m_private->m_captivePortal.fromSettings()) {
+    // We do not care about these settings.
+  }
+
+  return true;
+}
+
+
 bool MozillaVPN::modelsInitialized() const {
   logger.debug() << "Checking model initialization";
   if (!m_private->m_user.initialized()) {

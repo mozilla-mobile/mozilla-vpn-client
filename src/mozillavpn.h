@@ -174,6 +174,7 @@ class MozillaVPN final : public App {
 
   Q_INVOKABLE void reset(bool forceInitialState);
 
+  bool loadModels();
   bool modelsInitialized() const;
 
   bool updating() const { return m_updating; }

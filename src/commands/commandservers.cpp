@@ -66,7 +66,9 @@ int CommandServers::run(QStringList& tokens) {
       QEventLoop loop;
       QObject::connect(&task, &Task::completed, &task, [&] { loop.exit(); });
       loop.exec();
-    } else if (!loadModels()) {
+    } else if (!vpn.loadModels()) {
+      QTextStream stream(stdout);
+      stream << "No cache available" << Qt::endl;
       return 0;
     }
 

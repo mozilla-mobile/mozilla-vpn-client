@@ -29,8 +29,6 @@ class Command : public QObject {
  protected:
   bool userAuthenticated();
 
-  bool loadModels();
-
   int runCommandLineApp(std::function<int()>&& callback);
 
   int runGuiApp(std::function<int()>&& callback);

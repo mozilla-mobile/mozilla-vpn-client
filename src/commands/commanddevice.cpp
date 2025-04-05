@@ -36,7 +36,9 @@ int CommandDevice::run(QStringList& tokens) {
     }
 
     MozillaVPN vpn;
-    if (!loadModels()) {
+    if (!vpn.loadModels()) {
+      QTextStream stream(stdout);
+      stream << "No cache available" << Qt::endl;
       return 1;
     }
 

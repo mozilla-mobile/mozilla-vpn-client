@@ -62,7 +62,9 @@ int CommandStatus::run(QStringList& tokens) {
     QTextStream stream(stdout);
     stream << "User status: authenticated" << Qt::endl;
 
-    if (!loadModels()) {
+    if (!vpn.loadModels()) {
+      QTextStream stream(stdout);
+      stream << "No cache available" << Qt::endl;
       return 1;
     }
 
