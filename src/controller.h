@@ -172,7 +172,6 @@ class Controller : public QObject, public LogSerializer {
       return list;
     }
   };
-  static IPAddressList getExcludedIPAddressRanges();
   static QList<IPAddress> getAllowedIPAddressRanges(const Server& server);
 
   enum ServerCoolDownPolicyForSilentSwitch {

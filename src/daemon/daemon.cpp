@@ -131,7 +131,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
     }
 
     // Configure LAN exclusion policies
-    auto lanAddressRanges = Controller::getExcludedIPAddressRanges().flatten();
+    auto lanAddressRanges = IPAddress::lanAddressRanges();
     if (!wgutils()->excludeLocalNetworks(lanAddressRanges)) {
       logger.error() << "LAN exclusion failed.";
       return false;
