@@ -542,29 +542,6 @@ void Controller::clearConnectedTime() {
 }
 
 // static
-Controller::IPAddressList Controller::getExcludedIPAddressRanges() {
-  QList<IPAddress> excludeIPv4s;
-  QList<IPAddress> excludeIPv6s;
-
-  // filtering out the RFC1918 local area network
-  logger.debug() << "Filtering out the local area networks (rfc 1918)";
-  excludeIPv4s.append(RFC1918::ipv4());
-
-  logger.debug() << "Filtering out the local area networks";
-  excludeIPv6s.append(RFC4193::ipv6());
-  excludeIPv6s.append(RFC4291::ipv6LinkLocalAddressBlock());
-
-  logger.debug() << "Filtering out multicast addresses";
-  excludeIPv4s.append(RFC1112::ipv4MulticastAddressBlock());
-  excludeIPv6s.append(RFC4291::ipv6MulticastAddressBlock());
-
-  return IPAddressList{
-      .v6 = excludeIPv6s,
-      .v4 = excludeIPv4s,
-  };
-}
-
-// static
 QList<IPAddress> Controller::getAllowedIPAddressRanges(
     const Server& exitServer) {
   logger.debug() << "Computing the allowed IP addresses";

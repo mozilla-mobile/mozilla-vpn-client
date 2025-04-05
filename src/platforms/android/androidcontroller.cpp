@@ -155,19 +155,14 @@ void AndroidController::activate(const InterfaceConfig& config,
   logger.info() << "Server" << logger.sensitive(config.m_serverPublicKey);
   // This could be done better with VpnService.Builder.excludeRoute()
   // but that requires API level 33 (Android 13).
-  const auto lanRoutes = Controller::getExcludedIPAddressRanges();
+  const auto lanRoutes = IPAddress::lanAddressRanges();
   QJsonArray jAllowedIPs;
   foreach (auto item, config.m_allowedIPAddressRanges) {
     if (item.prefixLength() > 0) {
       jAllowedIPs.append(QJsonValue(item.toString()));
-    } else if (item.type() == QAbstractSocket::IPv4Protocol) {
+    } else {
       QList<IPAddress> list = {item};
-      foreach (auto prefix, IPAddress::excludeAddresses(list, lanRoutes.v4)) {
-        jAllowedIPs.append(QJsonValue(prefix.toString()));
-      }
-    } else if (item.type() == QAbstractSocket::IPv6Protocol) {
-      QList<IPAddress> list = {item};
-      foreach (auto prefix, IPAddress::excludeAddresses(list, lanRoutes.v6)) {
+      foreach (auto prefix, IPAddress::excludeAddresses(list, lanRoutes)) {
         jAllowedIPs.append(QJsonValue(prefix.toString()));
       }
     }

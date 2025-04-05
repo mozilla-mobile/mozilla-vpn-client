@@ -98,8 +98,7 @@ bool LinuxFirewall::up(const QString& ifname, uint32_t fwmark,
     return false;
   }
 
-  for (const IPAddress& prefix :
-       Controller::getExcludedIPAddressRanges().flatten()) {
+  for (const IPAddress& prefix : IPAddress::lanAddressRanges()) {
     MAKE_GO_STRING(goPrefix, prefix.toString());
     if (NetfilterAllowPrefix(goPrefix) != 0) {
       return false;

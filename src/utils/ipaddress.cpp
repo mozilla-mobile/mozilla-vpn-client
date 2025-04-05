@@ -7,6 +7,10 @@
 #include <QtMath>
 
 #include "leakdetector.h"
+#include "rfc/rfc1112.h"
+#include "rfc/rfc1918.h"
+#include "rfc/rfc4193.h"
+#include "rfc/rfc4291.h"
 
 IPAddress::IPAddress() { MZ_COUNT_CTOR(IPAddress); }
 
@@ -283,4 +287,20 @@ QList<IPAddress> IPAddress::excludeAddresses(const IPAddress& ip) const {
   }
 
   return result;
+}
+
+// static
+QList<IPAddress> IPAddress::lanAddressRanges() {
+  QList<IPAddress> ranges;
+
+  // filtering out the RFC1918 local area network
+  ranges.append(RFC1918::ipv4());
+
+  ranges.append(RFC4193::ipv6());
+  ranges.append(RFC4291::ipv6LinkLocalAddressBlock());
+
+  ranges.append(RFC1112::ipv4MulticastAddressBlock());
+  ranges.append(RFC4291::ipv6MulticastAddressBlock());
+
+  return ranges;
 }
