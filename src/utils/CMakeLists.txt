@@ -22,6 +22,8 @@ add_library(mzutils STATIC
     loghandler.cpp
     loghandler.h
     loglevel.h
+    versionutils.cpp
+    versionutils.h
     hacl-star/Hacl_Chacha20.c
     hacl-star/Hacl_Chacha20Poly1305_32.c
     hacl-star/Hacl_Curve25519_51.c
