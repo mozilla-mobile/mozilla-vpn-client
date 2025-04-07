@@ -14,7 +14,7 @@ var imageLookup =
       },
       'ArrowBack': {
         filenameLight: 'qrc:/nebula/resources/back.svg',
-        filenameDark: 'qrc:/nebula/resources/ArrowBack-dark.svg'
+        filenameDark: 'qrc:/nebula/resources/arrowBack-dark.svg'
       },
       'ArrowForward': {
         filenameLight: 'qrc:/nebula/resources/arrow-forward.svg',
@@ -35,7 +35,7 @@ var imageLookup =
       'RefreshArrowsWithCheckmark': {
         filenameLight: 'qrc:/nebula/resources/updateStatusUpToDate.svg',
         filenameDark:
-            'qrc:/nebula/resources/RefreshArrowsWithCheckMark-dark.svg'
+            'qrc:/nebula/resources/refreshArrowsWithCheckMark-dark.svg'
       },
       'RefreshArrowsWithWarning': {
         filenameLight: 'qrc:/nebula/resources/updateStatusUpdateAvailable.svg',
@@ -94,12 +94,12 @@ var imageLookup =
         filenameDark: 'qrc:/ui/resources/logo-connecting-dark.svg'
       },
       'LogoWithChainLink': {
-        filenameLight: 'qrc:/ui/resources/LogoWithChainLink.svg',
-        filenameDark: 'qrc:/ui/resources/LogoWithChainLink.svg'
+        filenameLight: 'qrc:/ui/resources/logoWithChainLink.svg',
+        filenameDark: 'qrc:/ui/resources/logoWithChainLink.svg'
       },
       'Avatar': {
         filenameLight: 'qrc:/nebula/resources/avatar.svg',
-        filenameDark: 'qrc:/nebula/resources/Avatar-dark.svg'
+        filenameDark: 'qrc:/nebula/resources/avatar-dark.svg'
       },
       'AvatarProfile': {
         filenameLight: 'qrc:/nebula/resources/avatar-default.png',
@@ -107,7 +107,7 @@ var imageLookup =
       },
       'AvatarDeleteAccount': {
         filenameLight: 'qrc:/nebula/resources/avatar-delete-account.svg',
-        filenameDark: 'qrc:/nebula/resources/AvatarDeleteAccount-dark.svg'
+        filenameDark: 'qrc:/nebula/resources/avatarDeleteAccount-dark.svg'
       },
       'IconAvatar': {
         filenameLight: 'qrc:/nebula/resources/avatar-grayscale.svg',
@@ -115,11 +115,11 @@ var imageLookup =
       },
       'DevicesLimit': {
         filenameLight: 'qrc:/ui/resources/devicesLimit.svg',
-        filenameDark: 'qrc:/ui/resources/DevicesLimit - dark.svg'
+        filenameDark: 'qrc:/ui/resources/devicesLimit-dark.svg'
       },
       'DevicesRemove': {
         filenameLight: 'qrc:/ui/resources/devicesRemove.svg',
-        filenameDark: 'qrc:/ui/resources/DevicesRemove-dark.svg'
+        filenameDark: 'qrc:/ui/resources/devicesRemove-dark.svg'
       },
       'IconDevices': {
         filenameLight: 'qrc:/ui/resources/devices.svg',
@@ -135,7 +135,7 @@ var imageLookup =
       },
       'IconPermissions': {
         filenameLight: 'qrc:/ui/resources/settings/apppermissions.svg',
-        filenameDark: 'qrc:/ui/resources/settings/IconPermissions-dark.svg'
+        filenameDark: 'qrc:/ui/resources/settings/iconPermissions-dark.svg'
       },
       'PrivacyMask': {
         filenameLight: 'qrc:/ui/resources/logo-dns-privacy.svg',
@@ -175,7 +175,7 @@ var imageLookup =
       },
       'WarningRed': {
         filenameLight: 'qrc:/nebula/resources/warning.svg',
-        filenameDark: 'qrc:/nebula/resources/WarningIconRed-dark.svg'
+        filenameDark: 'qrc:/nebula/resources/warningIconRed-dark.svg'
       },
       'WarningOrange': {
         filenameLight: 'qrc:/nebula/resources/warning-orange.svg',
@@ -342,12 +342,12 @@ var imageLookup =
         filenameDark: 'qrc:/ui/resources/launch-dark.svg'
       },
       'EmptyMessages': {
-        filenameLight: 'qrc:/ui/resources/EmptyMessages - LM.svg',
-        filenameDark: 'qrc:/ui/resources/EmptyMessages - DM.svg'
+        filenameLight: 'qrc:/ui/resources/emptyMessages-LM.svg',
+        filenameDark: 'qrc:/ui/resources/emptyMessages-DM.svg'
       },
       'EmptyServerList': {
-        filenameLight: 'qrc:/ui/resources/EmptyServerList - LM.svg',
-        filenameDark: 'qrc:/ui/resources/EmptyServerList - DM.svg'
+        filenameLight: 'qrc:/ui/resources/emptyServerList-LM.svg',
+        filenameDark: 'qrc:/ui/resources/emptyServerList-DM.svg'
       },
       'PlatformAppleActive': {
         filenameLight: 'qrc:/ui/resources/apple-active.svg',
@@ -414,8 +414,8 @@ var imageLookup =
         filenameDark: 'qrc:/ui/resources/payment/visa.svg'
       },
       'PaymentUnbranded': {
-        filenameLight: 'qrc:/ui/resources/payment/PaymentUnbranded_LM.svg',
-        filenameDark: 'qrc:/ui/resources/payment/PaymentUnbranded_DM.svg'
+        filenameLight: 'qrc:/ui/resources/payment/paymentUnbranded_LM.svg',
+        filenameDark: 'qrc:/ui/resources/payment/paymentUnbranded_DM.svg'
       }
     }
 

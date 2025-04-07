@@ -14,14 +14,14 @@ qt_add_qml_module(resources
         arrow-forward-white.svg
         arrow-toggle.svg
         arrow-toggle-dark.svg
-        ArrowBack-dark.svg
+        arrowBack-dark.svg
         avatar.svg
-        Avatar-dark.svg
+        avatar-dark.svg
         avatar-default.png
         avatar-delete-account.svg
         avatar-grayscale.svg
         avatar-grayscale-dark.svg
-        AvatarDeleteAccount-dark.svg
+        avatarDeleteAccount-dark.svg
         back-dark.svg
         back.svg
         buttonLoader.svg
@@ -59,7 +59,7 @@ qt_add_qml_module(resources
         plus-dark.svg
         refresh.svg
         refresh-dark.svg
-        RefreshArrowsWithCheckMark-dark.svg
+        refreshArrowsWithCheckMark-dark.svg
         search.svg
         search-dark.svg
         settings.svg
@@ -77,7 +77,7 @@ qt_add_qml_module(resources
         warning-gray.svg
         warning-gray-dark.svg
         warning.svg
-        WarningIconRed-dark.svg
+        warningIconRed-dark.svg
         x-red50.svg
         check-green70.svg
         shield-green50.svg

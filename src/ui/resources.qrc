@@ -22,14 +22,14 @@
         <file>resources/devices.svg</file>
         <file>resources/devices-dark.svg</file>
         <file>resources/devicesLimit.svg</file>
-        <file>resources/DevicesLimit - dark.svg</file>
+        <file>resources/devicesLimit-dark.svg</file>
         <file>resources/devicesRemove.svg</file>
-        <file>resources/DevicesRemove-dark.svg</file>
+        <file>resources/devicesRemove-dark.svg</file>
         <file>resources/developer.svg</file>
-        <file>resources/EmptyMessages - DM.svg</file>
-        <file>resources/EmptyMessages - LM.svg</file>
-        <file>resources/EmptyServerList - DM.svg</file>
-        <file>resources/EmptyServerList - LM.svg</file>
+        <file>resources/emptyMessages-DM.svg</file>
+        <file>resources/emptyMessages-LM.svg</file>
+        <file>resources/emptyServerList-DM.svg</file>
+        <file>resources/emptyServerList-LM.svg</file>
         <file>resources/flags/AC.png</file>
         <file>resources/flags/AD.png</file>
         <file>resources/flags/AE.png</file>
@@ -295,7 +295,7 @@
         <file>resources/heart-check-dark.svg</file>
         <file>resources/launch.svg</file>
         <file>resources/launch-dark.svg</file>
-        <file>resources/LogoWithChainLink.svg</file>
+        <file>resources/logoWithChainLink.svg</file>
         <file>resources/logo-animated1.png</file>
         <file>resources/logo-animated-mask1.png</file>
         <file>resources/logo-animated2.png</file>
@@ -335,8 +335,8 @@
         <file>resources/payment/jcb.svg</file>
         <file>resources/payment/mastercard.svg</file>
         <file>resources/payment/paypal.svg</file>
-        <file>resources/payment/PaymentUnbranded_DM.svg</file>
-        <file>resources/payment/PaymentUnbranded_LM.svg</file>
+        <file>resources/payment/paymentUnbranded_DM.svg</file>
+        <file>resources/payment/paymentUnbranded_LM.svg</file>
         <file>resources/payment/unionpay.svg</file>
         <file>resources/payment/visa.svg</file>
         <file>resources/qrcodes/app-store-qrcode.png</file>
@@ -348,7 +348,7 @@
         <file>resources/settings/dnssettings.svg</file>
         <file>resources/settings/dnssettings-dark.svg</file>
         <file>resources/settings/getHelp.svg</file>
-        <file>resources/settings/IconPermissions-dark.svg</file>
+        <file>resources/settings/iconPermissions-dark.svg</file>
         <file>resources/settings/language.svg</file>
         <file>resources/settings/language-dark.svg</file>
         <file>resources/settings/notifications.svg</file>
