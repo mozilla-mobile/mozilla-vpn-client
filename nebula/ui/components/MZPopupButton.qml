@@ -11,14 +11,14 @@ MZButtonBase {
     id: button
 
     property alias buttonText: buttonText.text
-    property var buttonType: "normal"
+    property var buttonType: MZButton.ButtonType.Normal
     property var uiState:MZTheme.theme.uiState
     property bool isCancelBtn
 
-    // Private property, will be changed depnding on buttonType
+    // Private property, will be changed depending on buttonType
     QtObject {
         id: style
-        property var colorScheme: buttonType == "normal" ? MZTheme.colors.normalButton : MZTheme.colors.destructiveButton
+        property var colorScheme: (buttonType === MZButton.ButtonType.Normal) ? MZTheme.colors.normalButton : MZTheme.colors.destructiveButton
     }
 
     enabled: popup.visible

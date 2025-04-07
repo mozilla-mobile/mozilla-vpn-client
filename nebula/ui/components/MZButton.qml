@@ -9,24 +9,22 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 
 MZButtonBase {
-    // Possible Button Types
-    QtObject {
-        id: buttonNames
-        readonly property string normal: "normal"
-        readonly property string destructive: "destructive"
+    enum ButtonType {
+        Normal,
+        Destructive
     }
 
-    property string buttonType: buttonNames.normal
+    property var buttonType: MZButton.ButtonType.Normal
 
     property int fontSize: MZTheme.theme.fontSize
     property alias label: label
 
     id: button
 
-    // Private property, will be changed depnding on buttonType
+    // Private property, will be changed depending on buttonType
     QtObject {
         id: style
-        property var colorScheme: buttonType == buttonNames.normal ? MZTheme.colors.normalButton : MZTheme.colors.destructiveButton
+        property var colorScheme: (buttonType === MZButton.ButtonType.Normal) ? MZTheme.colors.normalButton : MZTheme.colors.destructiveButton
     }
     height: MZTheme.theme.rowHeight
     width: Math.min(parent.width * 0.83, MZTheme.theme.maxHorizontalContentWidth)

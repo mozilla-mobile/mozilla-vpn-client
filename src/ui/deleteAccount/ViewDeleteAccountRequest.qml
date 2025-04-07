@@ -91,7 +91,7 @@ MZInAppAuthenticationBase {
             Layout.fillWidth: true
             objectName: "deleteAccountForRealButton"
 
-            buttonType: "destructive"
+            buttonType: MZButton.ButtonType.destructive
             enabled: viewDeleteAccount.allowAccountDeletion
             // Delete account
             text: MZI18n.DeleteAccountButtonLabel

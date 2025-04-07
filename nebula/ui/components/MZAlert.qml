@@ -49,7 +49,7 @@ Rectangle {
             showAlert.start();
         }
     }
-    // Private Properties, will be changed depnding on alertType
+    // Private Properties, will be changed depending on alertType
     QtObject {
         id: style
         readonly property string darkCloseIcon: MZAssetLookup.getImageSource("CloseDark")
