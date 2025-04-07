@@ -103,11 +103,11 @@ MZViewBase {
     function isChecked(buttonId) {
       switch (buttonId) {
         case "automatic":
-            return MZTheme.usingSystemTheme
+            return MZSettings.usingSystemTheme
         case "dark":
-            return MZTheme.currentTheme == "not-designer-approved" && !MZTheme.usingSystemTheme
+            return MZTheme.currentTheme == "not-designer-approved" && !MZSettings.usingSystemTheme
         case "light":
-            return MZTheme.currentTheme == "main" && !MZTheme.usingSystemTheme
+            return MZTheme.currentTheme == "main" && !MZSettings.usingSystemTheme
         default:
             console.error("Unable to find radio button type: " + buttonId)
             return false
@@ -117,7 +117,7 @@ MZViewBase {
     function wasClicked(buttonId) {
       switch (buttonId) {
         case "automatic":
-            MZTheme.usingSystemTheme = true
+            MZTheme.setUsingSystemTheme(true)
             return
         case "dark":
             setTheme("not-designer-approved")
@@ -139,7 +139,7 @@ MZViewBase {
     }
 
     function setTheme(newTheme) {
-        MZTheme.usingSystemTheme = false
+        MZTheme.setUsingSystemTheme(false)
         MZTheme.currentTheme = newTheme
     }
 }

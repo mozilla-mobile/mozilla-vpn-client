@@ -22,8 +22,6 @@ class Theme final : public QAbstractListModel {
   Q_PROPERTY(QJSValue colors READ readColors NOTIFY changed)
   Q_PROPERTY(QString currentTheme READ currentTheme WRITE setCurrentTheme NOTIFY
                  changed)
-  Q_PROPERTY(bool usingSystemTheme READ usingSystemTheme WRITE
-                 setUsingSystemTheme NOTIFY changed)
 
  public:
   explicit Theme(QObject* parent);
@@ -39,9 +37,6 @@ class Theme final : public QAbstractListModel {
   const QJSValue& readColors() const;
 
   const QString& currentTheme() const { return m_currentTheme; }
-  const bool usingSystemTheme() const {
-    return SettingsHolder::instance()->usingSystemTheme();
-  }
 
   // Todo: Add a thing for themes to define, if they are using dark or light
   // resources. `useDarkAssets` is available, add this to ThemeData and connect.
@@ -49,7 +44,7 @@ class Theme final : public QAbstractListModel {
 
   void setCurrentTheme(const QString& themeName);
 
-  void setUsingSystemTheme(const bool usingSystemTheme);
+  Q_INVOKABLE void setUsingSystemTheme(const bool usingSystemTheme);
 
   void initialize(QJSEngine* engine);
 
