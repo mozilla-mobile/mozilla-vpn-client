@@ -29,128 +29,113 @@ MZViewBase {
             id: radioButtonGroup
         }
 
-        RowLayout {
-            spacing: MZTheme.theme.windowMargin
-            Layout.rightMargin: MZTheme.theme.windowMargin / 2
-            visible: MZFeatureList.get("themeSelectionIncludesAutomatic").isSupported
+        Repeater {
+            model: ListModel {
+                id: appearanceMenu
 
-            MZRadioButton {
-                objectName: "automatic"
+                ListElement {
+                    textName: "SettingsAppearanceAutomatic"
+                    radioButtonName: "automatic"
+                    radioButtonId: "automaticRadioButton"
+                }
 
-                id: automaticRadioButton
-                Layout.preferredWidth: MZTheme.theme.vSpacing
-                Layout.preferredHeight: MZTheme.theme.rowHeight
-                Layout.alignment: Qt.AlignTop
-                checked: MZTheme.usingSystemTheme
-                ButtonGroup.group: radioButtonGroup
-                accessibleName: MZI18n.SettingsAppearanceAutomatic
-                onClicked: MZTheme.usingSystemTheme = true
+                ListElement {
+                    textName: "SettingsAppearanceLight"
+                    radioButtonName: "light"
+                    radioButtonId: "lightRadioButton"
+                }
+
+                ListElement {
+                    textName: "SettingsAppearanceDark"
+                    radioButtonName: "dark"
+                    radioButtonId: "darkRadioButton"
+                }
             }
 
-            ColumnLayout {
-                spacing: 4
+            delegate: RowLayout {
+                spacing: MZTheme.theme.windowMargin
+                Layout.rightMargin: MZTheme.theme.windowMargin / 2
+                visible: isVisible(radioButtonName)
 
-                MZInterLabel {
-                    Layout.fillWidth: true
+                MZRadioButton {
+                    objectName: radioButtonName
 
-                    text: MZI18n.SettingsAppearanceAutomatic
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignLeft
+                    id: radioButtonId
+                    Layout.preferredWidth: MZTheme.theme.vSpacing
+                    Layout.alignment: Qt.AlignTop
+                    checked: isChecked(radioButtonName)
+                    ButtonGroup.group: radioButtonGroup
+                    accessibleName: MZI18n[textName]
+                    onClicked: wasClicked(radioButtonName)
+                }
 
-                    MZMouseArea {
-                        anchors.fill: parent
+                ColumnLayout {
+                    spacing: 4
+                    Layout.alignment: Qt.AlignTop
 
-                        enabled: automaticRadioButton.enabled
-                        width: Math.min(parent.implicitWidth, parent.width)
-                        propagateClickToParent: false
-                        onClicked: MZTheme.usingSystemTheme = true
+                    MZInterLabel {
+                        Layout.fillWidth: true
+
+                        text: MZI18n[textName]
+                        wrapMode: Text.WordWrap
+                        horizontalAlignment: Text.AlignLeft
+
+                        MZMouseArea {
+                            anchors.fill: parent
+
+                            enabled: radioButtonId.enabled
+                            width: Math.min(parent.implicitWidth, parent.width)
+                            propagateClickToParent: false
+                            onClicked: wasClicked(radioButtonName)
+                        }
                     }
-                }
 
-                MZTextBlock {
-                    text: MZI18n.SettingsAppearanceAutomaticDescription
-                    Layout.fillWidth: true
-                }
-            }
-        }
-
-        RowLayout {
-            spacing: MZTheme.theme.windowMargin
-            Layout.rightMargin: MZTheme.theme.windowMargin / 2
-
-            MZRadioButton {
-                objectName: "light"
-
-                id: lightRadioButton
-                Layout.preferredWidth: MZTheme.theme.vSpacing
-                Layout.alignment: Qt.AlignTop
-                checked: MZTheme.currentTheme == "main" && !MZTheme.usingSystemTheme
-                ButtonGroup.group: radioButtonGroup
-                accessibleName: MZI18n.SettingsAppearanceLight
-                onClicked: setTheme("main")
-            }   
-
-            ColumnLayout {
-                spacing: 4
-                Layout.alignment: Qt.AlignTop
-
-                MZInterLabel {
-                    Layout.fillWidth: true
-
-                    text: MZI18n.SettingsAppearanceLight
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignLeft
-
-                    MZMouseArea {
-                        anchors.fill: parent
-
-                        enabled: lightRadioButton.enabled
-                        width: Math.min(parent.implicitWidth, parent.width)
-                        propagateClickToParent: false
-                        onClicked: setTheme("main")
+                    MZTextBlock {
+                        text: MZI18n.SettingsAppearanceAutomaticDescription
+                        Layout.fillWidth: true
+                        visible: radioButtonName === "automatic"
                     }
                 }
             }
         }
+    }
 
-        RowLayout {
-            spacing: MZTheme.theme.windowMargin
-            Layout.rightMargin: MZTheme.theme.windowMargin / 2
-
-            MZRadioButton {
-                objectName: "dark"
-
-                id: darkRadioButton
-                Layout.preferredWidth: MZTheme.theme.vSpacing
-                Layout.alignment: Qt.AlignTop
-                checked: MZTheme.currentTheme == "not-designer-approved" && !MZTheme.usingSystemTheme
-                ButtonGroup.group: radioButtonGroup
-                accessibleName: MZI18n.SettingsAppearanceDark
-                onClicked: setTheme("not-designer-approved")
-            }
-
-            ColumnLayout {
-                spacing: 4
-                Layout.alignment: Qt.AlignTop
-
-                MZInterLabel {
-                    Layout.fillWidth: true
-
-                    text: MZI18n.SettingsAppearanceDark
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignLeft
-
-                    MZMouseArea {
-                        anchors.fill: parent
-
-                        enabled: darkRadioButton.enabled
-                        width: Math.min(parent.implicitWidth, parent.width)
-                        propagateClickToParent: false
-                        onClicked: setTheme("not-designer-approved")
-                    }
-                }
-            }
+    function isChecked(buttonId) {
+      switch (buttonId) {
+        case "automatic":
+            return MZTheme.usingSystemTheme
+        case "dark":
+            return MZTheme.currentTheme == "not-designer-approved" && !MZTheme.usingSystemTheme
+        case "light":
+            return MZTheme.currentTheme == "main" && !MZTheme.usingSystemTheme
+        default:
+            console.error("Unable to find radio button type: " + buttonId)
+            return false
         }
+    }
+
+    function wasClicked(buttonId) {
+      switch (buttonId) {
+        case "automatic":
+            MZTheme.usingSystemTheme = true
+            return
+        case "dark":
+            setTheme("not-designer-approved")
+            return
+        case "light":
+            setTheme("main")
+            return
+        default:
+            console.error("Unable to find radio button type: " + buttonId)
+        }
+    }
+
+    function isVisible(buttonId) {
+      if (buttonId === "automatic") {
+        return MZFeatureList.get("themeSelectionIncludesAutomatic").isSupported
+      }
+
+      return true
     }
 
     function setTheme(newTheme) {
