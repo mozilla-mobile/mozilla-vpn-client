@@ -31,6 +31,7 @@ void TestThemes::loadTheme() {
 
   SettingsHolder settingsHolder;
   if (!theme.isEmpty()) {
+    settingsHolder.setUsingSystemTheme(false);
     settingsHolder.setTheme(theme);
   }
 

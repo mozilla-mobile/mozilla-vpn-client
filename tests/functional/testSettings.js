@@ -756,6 +756,90 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
   });
 
+  it('Checking the appearance settings', async () => {
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.APP_PREFERENCES.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.APPEARANCE.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    // At first, automatic should be checked
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.AUTOMATIC_RADIO_BUTTON.visible()
+                               .checked());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.LIGHT_RADIO_BUTTON.visible()
+                               .unchecked());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.DARK_RADIO_BUTTON.visible()
+                               .unchecked());
+
+    assert.equal((await vpn.getSetting('usingSystemTheme')), true);
+
+    // Click dark, then confirm
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.appearanceView
+            .DARK_RADIO_BUTTON.visible());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.AUTOMATIC_RADIO_BUTTON.visible()
+                               .unchecked());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.LIGHT_RADIO_BUTTON.visible()
+                               .unchecked());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.DARK_RADIO_BUTTON.visible()
+                               .checked());
+
+    assert.equal((await vpn.getSetting('usingSystemTheme')), false);
+    assert.equal((await vpn.getSetting('theme')), 'dark-mode');
+
+    // Click light, then confirm
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.appearanceView
+            .LIGHT_RADIO_BUTTON.visible());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.AUTOMATIC_RADIO_BUTTON.visible()
+                               .unchecked());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.LIGHT_RADIO_BUTTON.visible()
+                               .checked());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.DARK_RADIO_BUTTON.visible()
+                               .unchecked());
+
+    assert.equal((await vpn.getSetting('usingSystemTheme')), false);
+    assert.equal((await vpn.getSetting('theme')), 'main');
+
+    // Click automatic, then confirm
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.appearanceView
+            .AUTOMATIC_RADIO_BUTTON.visible());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.AUTOMATIC_RADIO_BUTTON.visible()
+                               .checked());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.LIGHT_RADIO_BUTTON.visible()
+                               .unchecked());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.DARK_RADIO_BUTTON.visible()
+                               .unchecked());
+
+    assert.equal((await vpn.getSetting('usingSystemTheme')), true);
+  });
+
   // TODO: app-permission
 
   it('Checking the about us', async () => {

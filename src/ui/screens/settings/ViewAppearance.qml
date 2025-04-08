@@ -12,7 +12,7 @@ import components.forms 0.1
 
 MZViewBase {
     id: root
-    objectName: "AppearanceView"
+    objectName: "settingsAppearanceView"
 
     _menuTitle: MZI18n.SettingsAppearance
 
@@ -35,19 +35,19 @@ MZViewBase {
 
                 ListElement {
                     textName: "SettingsAppearanceAutomatic"
-                    radioButtonName: "automatic"
+                    radioButtonName: "automaticAppearanceRadioButton"
                     radioButtonId: "automaticRadioButton"
                 }
 
                 ListElement {
                     textName: "SettingsAppearanceLight"
-                    radioButtonName: "light"
+                    radioButtonName: "lightAppearanceRadioButton"
                     radioButtonId: "lightRadioButton"
                 }
 
                 ListElement {
                     textName: "SettingsAppearanceDark"
-                    radioButtonName: "dark"
+                    radioButtonName: "darkAppearanceRadioButton"
                     radioButtonId: "darkRadioButton"
                 }
             }
@@ -102,11 +102,11 @@ MZViewBase {
 
     function isChecked(buttonId) {
       switch (buttonId) {
-        case "automatic":
+        case "automaticAppearanceRadioButton":
             return MZSettings.usingSystemTheme
-        case "dark":
+        case "darkAppearanceRadioButton":
             return MZTheme.currentTheme == "dark-mode" && !MZSettings.usingSystemTheme
-        case "light":
+        case "lightAppearanceRadioButton":
             return MZTheme.currentTheme == "main" && !MZSettings.usingSystemTheme
         default:
             console.error("Unable to find radio button type: " + buttonId)
@@ -116,13 +116,13 @@ MZViewBase {
 
     function wasClicked(buttonId) {
       switch (buttonId) {
-        case "automatic":
+        case "automaticAppearanceRadioButton":
             MZTheme.setUsingSystemTheme(true)
             return
-        case "dark":
+        case "darkAppearanceRadioButton":
             setTheme("dark-mode")
             return
-        case "light":
+        case "lightAppearanceRadioButton":
             setTheme("main")
             return
         default:
@@ -131,7 +131,7 @@ MZViewBase {
     }
 
     function isVisible(buttonId) {
-      if (buttonId === "automatic") {
+      if (buttonId === "automaticAppearanceRadioButton") {
         return MZFeatureList.get("themeSelectionIncludesAutomatic").isSupported
       }
 
