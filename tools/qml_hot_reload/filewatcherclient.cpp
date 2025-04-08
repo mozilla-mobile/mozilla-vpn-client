@@ -12,8 +12,7 @@
 #include <QTimer>
 
 #ifndef PROJECT_SOURCE_DIR
-    #define PROJECT_SOURCE_DIR ""
-    #warning "PROJECT_SOURCE_DIR was not defined by CMake. Watching current working directory instead."
+    #error "PROJECT_SOURCE_DIR was not defined by CMake."
 #endif
 
 FileWatcherClient::FileWatcherClient(QCoreApplication* app, QObject *parent)
