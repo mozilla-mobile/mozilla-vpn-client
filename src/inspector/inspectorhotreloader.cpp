@@ -12,7 +12,6 @@
 #include <QWindow>
 
 #include "frontend/navigator.h"
-#include "frontend/navigatorreloader.h"
 #include "logger.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"
