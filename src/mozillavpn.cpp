@@ -2317,7 +2317,6 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   Localizer localizer;
-  SimpleNetworkManager snm;
 
 #ifdef MZ_MACOS
   MacOSUtils::patchNSStatusBarSetImageForBigSur();
