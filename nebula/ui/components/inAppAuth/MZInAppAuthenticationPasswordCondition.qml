@@ -20,6 +20,7 @@ RowLayout {
         Layout.preferredHeight: MZTheme.theme.iconSize * 1.25
         Layout.preferredWidth: MZTheme.theme.iconSize * 1.25
         Layout.alignment: Qt.AlignTop
+        color: MZTheme.colors.bgColorStronger
         MZIcon {
             id: icon
             source: root._passwordConditionIsSatisfied ? MZAssetLookup.getImageSource("CheckmarkSuccessColorMuted") : MZAssetLookup.getImageSource("XErrorColor")

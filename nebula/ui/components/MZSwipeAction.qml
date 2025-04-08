@@ -38,6 +38,6 @@ Rectangle {
         visible: parent.activeFocus
         color: MZTheme.colors.transparent
         border.width: MZTheme.theme.focusBorderWidth
-        border.color: MZTheme.colors.darkFocusBorder
+        border.color: MZTheme.colors.focusBorder
     }
 }

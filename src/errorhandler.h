@@ -50,6 +50,8 @@ class ErrorHandler final : public QObject {
     UnrecoverableErrorAlert,
     AuthCodeSentAlert,
     CopiedToClipboardConfirmationAlert,
+    SampleWarningAlert,
+    SampleInfoAlert
   };
   Q_ENUM(AlertType)
 

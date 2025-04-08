@@ -1739,26 +1739,26 @@ void MozillaVPN::registerNavigationBarButtons() {
       "qrc:/nebula/resources/navbar/home.svg",
       "qrc:/nebula/resources/navbar/home-selected.svg",
       "qrc:/nebula/resources/navbar/home.svg",
-      "qrc:/nebula/resources/navbar/home-selected.svg"));
+      "qrc:/nebula/resources/navbar/home-selected-dark.svg"));
 
   NavigationBarButton* messageIcon = new NavigationBarButton(
       nbm, "navButton-messages", "NavBarMessagesTab",
       MozillaVPN::ScreenMessaging, "qrc:/nebula/resources/navbar/messages.svg",
       "qrc:/nebula/resources/navbar/messages-selected.svg",
-      "qrc:/nebula/resources/navbar/home.svg",
-      "qrc:/nebula/resources/navbar/home-selected.svg",
+      "qrc:/nebula/resources/navbar/messages.svg",
+      "qrc:/nebula/resources/navbar/messages-selected-dark.svg",
       "qrc:/nebula/resources/navbar/messages-notification.svg",
       "qrc:/nebula/resources/navbar/messages-notification-selected.svg",
-      "qrc:/nebula/resources/navbar/home.svg",
-      "qrc:/nebula/resources/navbar/home-selected.svg");
+      "qrc:/nebula/resources/navbar/messages-notification-dark.svg",
+      "qrc:/nebula/resources/navbar/messages-notification-selected-dark.svg");
   nbm->appendButton(messageIcon);
 
   nbm->appendButton(new NavigationBarButton(
       nbm, "navButton-settings", "NavBarSettingsTab",
       MozillaVPN::ScreenSettings, "qrc:/nebula/resources/navbar/settings.svg",
       "qrc:/nebula/resources/navbar/settings-selected.svg",
-      "qrc:/nebula/resources/navbar/home.svg",
-      "qrc:/nebula/resources/navbar/home-selected.svg"));
+      "qrc:/nebula/resources/navbar/settings.svg",
+      "qrc:/nebula/resources/navbar/settings-selected-dark.svg"));
 
   // A group of settings containing all the addon message settings.
   SettingGroup* messageSettingGroup =

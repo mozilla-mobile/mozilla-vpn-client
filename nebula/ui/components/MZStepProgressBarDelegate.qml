@@ -97,7 +97,7 @@ Column {
             MZColorOverlay {
                 anchors.fill: parent
 
-                color: delegate.currentState === MZStepProgressBarDelegate.State.Complete ? MZTheme.colors.successAccent : MZTheme.colors.bgColorStronger
+                color: delegate.currentState === MZStepProgressBarDelegate.State.Complete ? MZTheme.colors.stepProgressIconComplete : MZTheme.colors.stepProgressIconIncomplete
                 source: icon
             }
         }
@@ -126,7 +126,7 @@ Column {
         font.pixelSize: MZTheme.theme.fontSizeSmallest
         lineHeightMode: Text.FixedHeight
         lineHeight: MZTheme.theme.controllerInterLineHeight
-        color: delegate.currentState !== MZStepProgressBarDelegate.State.Incomplete ? MZTheme.colors.primaryBrighter : MZTheme.colors.fontColorDark
+        color: delegate.currentState !== MZStepProgressBarDelegate.State.Incomplete ? MZTheme.colors.stepProgressBarCompleteText : MZTheme.colors.fontColorDark
 
         Accessible.ignored: true
     }
