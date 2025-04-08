@@ -15,7 +15,6 @@
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "resourceloader.h"
-#include "settingsholder.h"
 
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"
@@ -38,16 +37,14 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
             initialize(QmlEngineHolder::instance()->engine());
           });
 
-  // In VPN-6178, uncomment these next few lines and add code.
-  // #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-  //   connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged,
-  //   this,
-  //           []() {
-  // Code gets added here. Code must update the theme when the system
-  // theme changes (if the user has "system theme" selected for their VPN
-  // theme).
-  //           });
-  // #endif
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+  connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this,
+          [this]() {
+            if (SettingsHolder::instance()->usingSystemTheme()) {
+              setToSystemTheme();
+            }
+          });
+#endif
 }
 
 Theme::~Theme() { MZ_COUNT_DTOR(Theme); }
@@ -70,6 +67,8 @@ void Theme::initialize(QJSEngine* engine) {
   for (const QString& file : files) {
     parseTheme(engine, file);
   }
+
+  setUsingSystemTheme(SettingsHolder::instance()->usingSystemTheme());
 
   if (!loadTheme(SettingsHolder::instance()->theme())) {
     logger.error() << "Failed to load the theme"
@@ -147,9 +146,51 @@ void Theme::parseTheme(QJSEngine* engine, const QString& themeName) {
 }
 
 void Theme::setCurrentTheme(const QString& themeName) {
+  logger.error() << "Setting theme to" << themeName;
   loadTheme(themeName);
   SettingsHolder::instance()->setTheme(themeName);
 }
+
+void Theme::setUsingSystemTheme(const bool usingSystemTheme) {
+  SettingsHolder::instance()->setUsingSystemTheme(usingSystemTheme);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+  if (usingSystemTheme) {
+    setToSystemTheme();
+  }
+#endif
+}
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+void Theme::setToSystemTheme() {
+  if (!Feature::get(Feature::Feature_themeSelection)->isSupported()) {
+    logger.debug()
+        << "Not setting to system theme because feature is not supported.";
+    return;
+  }
+
+  QString themeImpliedBySystemTheme;
+  if (currentSystemTheme() != Qt::ColorScheme::Dark) {
+    themeImpliedBySystemTheme = "main";
+  } else {
+    themeImpliedBySystemTheme = "dark-mode";
+  }
+
+  logger.debug() << "Using system theme. Associated VPN theme is"
+                 << themeImpliedBySystemTheme;
+
+  // Only reset the theme if needed
+  if (themeImpliedBySystemTheme != m_currentTheme) {
+    setCurrentTheme(themeImpliedBySystemTheme);
+  } else {
+    // Without this next line, there is a bug when moving from `light mode` to
+    // `automatic` when system is in light mode (or `dark mode` to `automatic`
+    // when system is in dark mode). In these situations, the radio button does
+    // not update appropriately without this emit.
+    emit changed();
+  }
+}
+#endif
 
 bool Theme::loadTheme(const QString& themeName) {
   if (!m_themes.contains(themeName)) return false;

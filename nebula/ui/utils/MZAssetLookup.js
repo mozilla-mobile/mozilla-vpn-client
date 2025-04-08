@@ -157,6 +157,10 @@ var imageLookup =
         filenameLight: 'qrc:/ui/resources/settings/dnssettings.svg',
         filenameDark: 'qrc:/ui/resources/settings/dnssettings-dark.svg'
       },
+      'IconPaintbrush': {
+        filenameLight: 'qrc:/ui/resources/settings/appearance.svg',
+        filenameDark: 'qrc:/ui/resources/settings/appearance-dark.svg'
+      },
       'IconLanguages': {
         filenameLight: 'qrc:/ui/resources/settings/language.svg',
         filenameDark: 'qrc:/ui/resources/settings/language-dark.svg'

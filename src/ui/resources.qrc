@@ -344,6 +344,8 @@
         <file>resources/quick-access.svg</file>
         <file>resources/settings/aboutUs.svg</file>
         <file>resources/settings/aboutUs-dark.svg</file>
+        <file>resources/settings/appearance.svg</file>
+        <file>resources/settings/appearance-dark.svg</file>
         <file>resources/settings/apppermissions.svg</file>
         <file>resources/settings/dnssettings.svg</file>
         <file>resources/settings/dnssettings-dark.svg</file>

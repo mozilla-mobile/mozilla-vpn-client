@@ -10,6 +10,8 @@
 #include <QIcon>
 #include <QJSValue>
 
+#include "settingsholder.h"
+
 class QJSEngine;
 
 class Theme final : public QAbstractListModel {
@@ -37,10 +39,12 @@ class Theme final : public QAbstractListModel {
   const QString& currentTheme() const { return m_currentTheme; }
 
   // Todo: Add a thing for themes to define, if they are using dark or light
-  // resources.
+  // resources. `useDarkAssets` is available, add this to ThemeData and connect.
   bool isThemeDark() { return m_currentTheme != "main"; }
 
   void setCurrentTheme(const QString& themeName);
+
+  Q_INVOKABLE void setUsingSystemTheme(const bool usingSystemTheme);
 
   void initialize(QJSEngine* engine);
 
@@ -70,6 +74,9 @@ class Theme final : public QAbstractListModel {
  private:
   void parseTheme(QJSEngine* engine, const QString& themeName);
   bool loadTheme(const QString& themeName);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+  void setToSystemTheme();
+#endif
 
  signals:
   void changed();

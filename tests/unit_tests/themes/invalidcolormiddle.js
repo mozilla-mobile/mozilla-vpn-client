@@ -1,1 +1,1 @@
-notcolor.primary = notcolor.red;
+notcolor.primary = notcolor.red50;

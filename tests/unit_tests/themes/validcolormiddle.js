@@ -1,1 +1,1 @@
-color.primary = color.red;
+color.primary = color.red50;
