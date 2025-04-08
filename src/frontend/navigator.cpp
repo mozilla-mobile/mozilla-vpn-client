@@ -300,7 +300,7 @@ void Navigator::loadScreen(int screen, LoadPolicy loadPolicy,
                            LoadingFlags loadingFlags) {
   logger.debug() << "Loading screen" << component->url().toString();
 
-  if (screen == m_currentScreen) {
+  if (screen == m_currentScreen && loadingFlags != ForceReloadAll) {
     logger.debug()
         << "Attempted to load the currently loaded screen. Ignoring.";
     return;

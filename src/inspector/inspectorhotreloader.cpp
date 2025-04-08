@@ -25,7 +25,6 @@ Logger logger("QMLHotReload");
 InspectorHotreloader::InspectorHotreloader(QQmlEngine* target)
     : m_target(target) {
   m_target->addUrlInterceptor(this);
-  new NavigatorReloader(qApp);
 }
 
 QUrl InspectorHotreloader::intercept(
