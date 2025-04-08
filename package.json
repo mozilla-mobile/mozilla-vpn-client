@@ -22,6 +22,6 @@
     "websocket": "^1.0.35"
   },
   "workspaces":[
-    "tools/translationsreport/app",
+    "tools/translationsreport/app"
   ]
 }
