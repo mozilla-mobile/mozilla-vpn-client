@@ -222,7 +222,7 @@ FEATURE(themeSelection,        // Feature ID
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        FeatureCallback_false)
+        FeatureCallback_true)
 
 FEATURE(themeSelectionIncludesAutomatic,  // Feature ID
         "Theme option of 'automatic'",    // Feature name
