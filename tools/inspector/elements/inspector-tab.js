@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
  
 import { html, css, LitElement } from 'lit'
-import { CommandObserver } from '../inspector/CommandObserver'
+import { CommandObserver } from '../inspector/CommandObserver.js'
 
 export class InspectorTab extends LitElement {
   static properties = {
