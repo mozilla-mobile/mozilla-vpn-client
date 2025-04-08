@@ -13,7 +13,7 @@
 
 class QJsonObject;
 
-class LocalSocketController final : public ControllerImpl {
+class LocalSocketController : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(LocalSocketController)
 
  public:
