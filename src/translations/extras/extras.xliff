@@ -56,6 +56,9 @@
       <trans-unit id="languages.fr" xml:space="preserve">
         <source>French</source>
       </trans-unit>
+      <trans-unit id="languages.fur" xml:space="preserve">
+        <source>Friulian</source>
+      </trans-unit>
       <trans-unit id="languages.fy_NL" xml:space="preserve">
         <source>Western Frisian</source>
       </trans-unit>

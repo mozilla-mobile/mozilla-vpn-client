@@ -12,6 +12,6 @@ qt_add_qml_module(themes
         theme-derived.js
         main/theme.js
         main/sizing.js
-        not-designer-approved/theme.js
-        not-designer-approved/sizing.js
+        dark-mode/theme.js
+        dark-mode/sizing.js
 )

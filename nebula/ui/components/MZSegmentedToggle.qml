@@ -57,7 +57,7 @@ Rectangle {
         }
 
         implicitWidth: (parent.width - 8) / model.count
-        color: MZTheme.colors.bgColorStronger
+        color: MZTheme.colors.bgColor
         radius: parent.radius
 
         Behavior on anchors.leftMargin {
