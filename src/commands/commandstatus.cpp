@@ -27,7 +27,7 @@ CommandStatus::~CommandStatus() { MZ_COUNT_DTOR(CommandStatus); }
 
 int CommandStatus::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
-  return runCommandLineApp([&]() {
+  return MozillaVPN::runCommandLineApp([&]() {
     QString appName = tokens[0];
 
     CommandLineParser::Option hOption = CommandLineParser::helpOption();
@@ -55,8 +55,10 @@ int CommandStatus::run(QStringList& tokens) {
 
     MozillaVPN vpn;
 
-    if (!userAuthenticated()) {
-      return 0;
+    if (!vpn.userAuthenticated()) {
+      QTextStream stream(stdout);
+      stream << "User status: not authenticated" << Qt::endl;
+      return 1;
     }
 
     QTextStream stream(stdout);

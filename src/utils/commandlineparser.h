@@ -28,7 +28,7 @@ class CommandLineParser final : QObject {
     bool m_set = false;
   };
 
-  [[nodiscard]] int parse(int argc, char* argv[]);
+  [[nodiscard]] int parse(int argc, char* argv[], const QString& defaultCmd);
 
   [[nodiscard]] int parse(QStringList& tokens, QList<Option*>& options,
                           bool hasCommands);

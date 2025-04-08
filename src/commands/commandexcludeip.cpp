@@ -25,7 +25,7 @@ CommandExcludeIP::~CommandExcludeIP() { MZ_COUNT_DTOR(CommandExcludeIP); }
 
 int CommandExcludeIP::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
-  return runCommandLineApp([&]() {
+  return MozillaVPN::runCommandLineApp([&]() {
     QStringList commandList{"list", "add", "remove"};
 
     qsizetype command = -1;
@@ -51,11 +51,13 @@ int CommandExcludeIP::run(QStringList& tokens) {
       return 1;
     }
 
-    if (!userAuthenticated()) {
+    MozillaVPN vpn;
+    if (!vpn.userAuthenticated()) {
+      QTextStream stream(stdout);
+      stream << "User status: not authenticated" << Qt::endl;
       return 1;
     }
 
-    MozillaVPN vpn;
     if (!vpn.loadModels()) {
       QTextStream stream(stdout);
       stream << "No cache available" << Qt::endl;

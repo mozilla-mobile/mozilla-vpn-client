@@ -2,9 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include <QCoreApplication>
+
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "stdio.h"
+#include "version.h"
+
 #ifdef MZ_WINDOWS
 
 #  include <windows.h>
@@ -31,6 +35,10 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
   }
 #endif
 
+  QCoreApplication::setApplicationName("Mozilla VPN");
+  QCoreApplication::setOrganizationName("Mozilla");
+  QCoreApplication::setApplicationVersion(APP_VERSION);
+
   CommandLineParser clp;
-  return clp.parse(argc, argv);
+  return clp.parse(argc, argv, "ui");
 }

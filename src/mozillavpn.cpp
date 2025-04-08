@@ -9,6 +9,7 @@
 #include "addons/manager/addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
+#include "commandlineparser.h"
 #include "constants.h"
 #include "controller.h"
 #include "dnshelper.h"
@@ -42,6 +43,7 @@
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 #include "settingswatcher.h"
+#include "simplenetworkmanager.h"
 #include "subscriptionmonitor.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
@@ -80,6 +82,10 @@
 
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"
+#endif
+
+#ifdef MZ_MACOS
+#  include "platforms/macos/macosutils.h"
 #endif
 
 #include <QApplication>
@@ -2257,3 +2263,68 @@ void MozillaVPN::gleanSetDebugViewTag(QString tag) {
 }
 
 void MozillaVPN::gleanSetLogPings(bool flag) { MZGlean::setLogPings(flag); }
+
+// static
+int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
+  std::function<int()> callback = std::move(a_callback);
+
+#ifdef MZ_LINUX
+  XdgPortal::setupAppScope(Constants::LINUX_APP_ID);
+#endif
+
+  SettingsHolder settingsHolder;
+
+  if (settingsHolder.stagingServer()) {
+    Constants::setStaging();
+    LogHandler::instance()->setStderr(true);
+  }
+
+  MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
+  qInstallMessageHandler(LogHandler::messageQTHandler);
+
+  logger.info() << "MozillaVPN" << Constants::versionString();
+  logger.info() << "User-Agent:" << NetworkManager::userAgent();
+
+  QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
+
+  Localizer localizer;
+  SimpleNetworkManager snm;
+
+  return callback();
+}
+
+// static
+int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
+  std::function<int()> callback = std::move(a_callback);
+
+#ifdef MZ_LINUX
+  XdgPortal::setupAppScope(Constants::LINUX_APP_ID);
+#endif
+
+  SettingsHolder settingsHolder;
+
+  if (settingsHolder.stagingServer()) {
+    Constants::setStaging();
+    LogHandler::instance()->setStderr(true);
+  }
+
+  MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
+  qInstallMessageHandler(LogHandler::messageQTHandler);
+
+  logger.info() << "MozillaVPN" << Constants::versionString();
+  logger.info() << "User-Agent:" << NetworkManager::userAgent();
+
+  QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
+
+  Localizer localizer;
+  SimpleNetworkManager snm;
+
+#ifdef MZ_MACOS
+  MacOSUtils::patchNSStatusBarSetImageForBigSur();
+#endif
+
+  QIcon icon(Constants::LOGO_URL);
+  app.setWindowIcon(icon);
+
+  return callback();
+}

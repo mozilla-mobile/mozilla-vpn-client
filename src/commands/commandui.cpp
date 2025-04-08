@@ -133,7 +133,26 @@ int CommandUI::run(QStringList& tokens) {
     LogHandler::instance()->setStderr(true);
   }
 
-  return runQmlApp([&]() {
+#ifdef MZ_WINDOWS
+  SetProcessDPIAware();
+  if (WindowsCommons::requireSoftwareRendering()) {
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
+  }
+#endif
+
+#ifdef MZ_ANDROID
+  QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
+      Qt::HighDpiScaleFactorRoundingPolicy::Round);
+
+  if (AndroidUtils::isChromeOSContext()) {
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
+  }
+#endif
+
+  // Ensure that external styling hints are disabled.
+  qunsetenv("QT_STYLE_OVERRIDE");
+
+  return MozillaVPN::runGuiApp([&]() {
     Telemetry::startTimeToFirstScreenTimer();
 
     if (testingOption.m_set) {

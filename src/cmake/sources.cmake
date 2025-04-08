@@ -40,10 +40,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportalrequest.h
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportalrequesttask.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/captiveportal/captiveportalrequesttask.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/command.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/command.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/commandlineparser.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/commandlineparser.h
     ${CMAKE_CURRENT_SOURCE_DIR}/commands/commandactivate.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/commands/commandactivate.h
     ${CMAKE_CURRENT_SOURCE_DIR}/commands/commanddeactivate.cpp

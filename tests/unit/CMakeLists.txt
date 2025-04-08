@@ -43,10 +43,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/captiveportal/captiveportal.h
     ${MZ_SOURCE_DIR}/connectionhealth.cpp
     ${MZ_SOURCE_DIR}/connectionhealth.h
-    ${MZ_SOURCE_DIR}/command.cpp
-    ${MZ_SOURCE_DIR}/command.h
-    ${MZ_SOURCE_DIR}/commandlineparser.cpp
-    ${MZ_SOURCE_DIR}/commandlineparser.h
     ${MZ_SOURCE_DIR}/constants.cpp
     ${MZ_SOURCE_DIR}/constants.h
     ${MZ_SOURCE_DIR}/controller.h
@@ -317,9 +313,6 @@ target_sources(unit_tests PRIVATE
     teststatusicon.cpp
     teststatusicon.h
 )
-
-# Generate the version header
-configure_file(${MZ_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 # Unit test mock resources
 target_sources(unit_tests PRIVATE

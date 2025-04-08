@@ -5,6 +5,10 @@
 add_library(mzutils STATIC
     chacha20poly1305.cpp
     chacha20poly1305.h
+    command.cpp
+    command.h
+    commandlineparser.cpp
+    commandlineparser.h
     curve25519.cpp
     curve25519.h
     hawkauth.cpp
@@ -40,6 +44,10 @@ add_library(mzutils STATIC
     rfc/rfc5735.h
 )
 
+# Generated version header file
+configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+target_sources(mzutils PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
+
 # Signal handling for unix platforms
 if(UNIX)
      target_sources(mzutils PRIVATE
@@ -50,7 +58,7 @@ endif()
 
 target_link_libraries(mzutils PUBLIC Qt6::Core Qt6::Network)
 
-target_include_directories(mzutils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(mzutils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR})
 target_include_directories(mzutils PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star
     ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin

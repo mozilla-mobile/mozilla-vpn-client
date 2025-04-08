@@ -18,6 +18,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "signalhandler.h"
+#include "version.h"
 
 MacOSDnsManager::MacOSDnsManager(QObject* parent)
     : Command(parent, "macosdnsmanager",
@@ -40,7 +41,7 @@ int MacOSDnsManager::run(QStringList& tokens) {
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN DNS Manager");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion(APP_VERSION);
   QTextStream stream(stderr);
 
   if (tokens.length() <= 1) {

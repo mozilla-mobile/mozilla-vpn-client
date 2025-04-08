@@ -27,7 +27,7 @@ class CommandLinuxDaemon final : public Command {
     Q_ASSERT(!tokens.isEmpty());
     LogHandler::setLocation("/var/log");
 
-    return runCommandLineApp([&]() {
+    return MozillaVPN::runCommandLineApp([&]() {
       DBusService* dbus = new DBusService(qApp);
       DbusAdaptor* adaptor = new DbusAdaptor(dbus);
       dbus->setAdaptor(adaptor);

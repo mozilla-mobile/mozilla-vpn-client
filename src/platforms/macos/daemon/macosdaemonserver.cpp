@@ -19,6 +19,7 @@
 #include "logger.h"
 #include "macosdaemon.h"
 #include "signalhandler.h"
+#include "version.h"
 
 namespace {
 Logger logger("MacOSDaemonServer");
@@ -38,7 +39,7 @@ int MacOSDaemonServer::run(QStringList& tokens) {
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN Daemon");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion(APP_VERSION);
 
   if (tokens.length() > 1) {
     QList<CommandLineParser::Option*> options;

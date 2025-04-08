@@ -193,6 +193,9 @@ class MozillaVPN final : public App {
   static QString appVersionForUpdate();
   static bool mockFreeTrial();
 
+  static int runCommandLineApp(std::function<int()>&& callback);
+  static int runGuiApp(std::function<int()>&& callback);
+
  private:
   void hardReset();
   void maybeStateMain();

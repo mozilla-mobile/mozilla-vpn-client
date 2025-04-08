@@ -65,7 +65,7 @@ void TestCommandLineParser::basic() {
   QFETCH(int, result);
 
   CommandLineParser clp;
-  QCOMPARE(clp.parse(argc, argv), result);
+  QCOMPARE(clp.parse(argc, argv, "ui"), result);
   QCOMPARE(clp.argc(), argc);
   QCOMPARE(clp.argv(), argv);
 
