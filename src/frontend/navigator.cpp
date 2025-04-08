@@ -233,9 +233,6 @@ void Navigator::requestScreen(int requestedScreen,
                               Navigator::LoadingFlags loadingFlags) {
   logger.debug() << "Screen request:" << requestedScreen;
 
-  if (!m_reloaders.isEmpty() && loadingFlags == NoFlags) {
-    loadingFlags = ForceReload;
-  }
 
   QList<ScreenData*> screens = computeScreens(&requestedScreen);
   Q_ASSERT(!screens.isEmpty());
@@ -306,9 +303,6 @@ void Navigator::loadScreen(int screen, LoadPolicy loadPolicy,
     return;
   }
 
-  if (!m_reloaders.isEmpty() && loadingFlags == NoFlags) {
-    loadingFlags = ForceReload;
-  }
 
   if (m_screenHistory.isEmpty() || screen != m_currentScreen) {
     m_screenHistory.append(screen);
@@ -450,16 +444,6 @@ bool Navigator::eventHandled() {
 #else
 #  error Unsupported platform
 #endif
-}
-
-void Navigator::registerReloader(NavigatorReloader* reloader) {
-  Q_ASSERT(!m_reloaders.contains(reloader));
-  m_reloaders.append(reloader);
-}
-
-void Navigator::unregisterReloader(NavigatorReloader* reloader) {
-  Q_ASSERT(m_reloaders.contains(reloader));
-  m_reloaders.removeOne(reloader);
 }
 
 // static
