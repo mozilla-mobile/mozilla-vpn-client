@@ -105,7 +105,7 @@ MZViewBase {
         case "automatic":
             return MZSettings.usingSystemTheme
         case "dark":
-            return MZTheme.currentTheme == "not-designer-approved" && !MZSettings.usingSystemTheme
+            return MZTheme.currentTheme == "dark-mode" && !MZSettings.usingSystemTheme
         case "light":
             return MZTheme.currentTheme == "main" && !MZSettings.usingSystemTheme
         default:
@@ -120,7 +120,7 @@ MZViewBase {
             MZTheme.setUsingSystemTheme(true)
             return
         case "dark":
-            setTheme("not-designer-approved")
+            setTheme("dark-mode")
             return
         case "light":
             setTheme("main")

@@ -173,7 +173,7 @@ void Theme::setToSystemTheme() {
   if (currentSystemTheme() != Qt::ColorScheme::Dark) {
     themeImpliedBySystemTheme = "main";
   } else {
-    themeImpliedBySystemTheme = "not-designer-approved";
+    themeImpliedBySystemTheme = "dark-mode";
   }
 
   logger.debug() << "Using system theme. Associated VPN theme is"
