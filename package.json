@@ -5,8 +5,6 @@
     "functionalTestWasm": "WASM=true mocha --require ./tests/functional/setupWasm.js --timeout 30000",
     "wasm:dev": "node tests/functional/wasm.js",
     "qml-reload": "node ./tools/qml_hot_reload/hot.js",
-    "inspector:start": "npm run start -w ./tools/inspector/",
-    "inspector:build": "npm run build -w ./tools/inspector/"
   },
   "devDependencies": {
     "appium-adb": "^12.11.0",
@@ -20,8 +18,5 @@
     "mocha": "^11.0.1",
     "selenium-webdriver": "^4.27.0",
     "websocket": "^1.0.35"
-  },
-  "workspaces":[
-    "tools/inspector"
-  ]
+  }
 }
