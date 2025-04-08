@@ -6,7 +6,7 @@ import { html, css, LitElement } from 'lit'
 import '../elements/pill-toggle.js'
 import '../elements/record-button.js';
 
-import { LogsObserver } from '../inspector/LogsObserver'
+import { LogsObserver } from '../inspector/LogsObserver.js'
 
 export class ViewLogs extends LitElement {
   static styles = css`

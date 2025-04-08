@@ -4,7 +4,7 @@
 
 import {html, css, LitElement} from 'lit'
 
-import {LogsObserver} from '../inspector/LogsObserver'
+import {LogsObserver} from '../inspector/LogsObserver.js'
 
 export class RecordButton extends LitElement {
   static styles = css`
