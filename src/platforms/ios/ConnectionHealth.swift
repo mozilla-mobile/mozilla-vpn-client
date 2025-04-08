@@ -33,7 +33,6 @@ class ConnectionHealth {
     private let serverSwitchCooldownMinutes: TimeInterval = 60*15 // 15 minutes
 
     private var lastHealthStatus: ConnectionStability = .pending
-    private var connectionHealthTimerId: GleanTimerId? = nil
 
     private var pingAddress: String?
 
@@ -41,7 +40,6 @@ class ConnectionHealth {
         self.logger.info(message: "Starting ConnectionHealth with \(pingAddress)")
         self.pingAddress = pingAddress
         startTimer()
-        startTimingDistributionMetric(for: lastHealthStatus)
     }
 
     func startTimer() {
@@ -56,7 +54,6 @@ class ConnectionHealth {
 
     func stop() {
         self.logger.info(message: "Stopping ConnectionHealth timer")
-        stopTimingDistributionMetric(for: lastHealthStatus)
         guard let confirmedTimer = timer else {
             logger.error(message: "No timer found when stopping ConnectionHealth")
             return
@@ -74,8 +71,7 @@ class ConnectionHealth {
         logger.info(message: "Creating PingAnalyzer")
         let _ = PingAnalyzer(pingAddress: pingAddress) { (connectivity, error) in
             guard let connectivity = connectivity else {
-                self.logger.error(message: "PingAnalyzer returned error")
-              GleanMetrics.ConnectionHealth.pingAnalyzerError.record(GleanMetrics.ConnectionHealth.PingAnalyzerErrorExtra(errorMessage: error?.localizedDescription ?? "no error"))
+                self.logger.error(message: "PingAnalyzer returned error: " + error?.localizedDescription ?? "no error returned")
                 return
             }
 
@@ -103,48 +99,5 @@ class ConnectionHealth {
         case .noSignal: GleanMetrics.ConnectionHealth.noSignalCount.add()
         case .pending: GleanMetrics.ConnectionHealth.pendingCount.add()
         }
-
-        if (lastHealthStatus == stability) {
-            return
-        }
-
-        logger.info(message: "Health status changed.")
-
-        switch stability {
-        case .stable: GleanMetrics.ConnectionHealth.changedToStable.record()
-        case .unstable: GleanMetrics.ConnectionHealth.changedToUnstable.record()
-        case .noSignal: GleanMetrics.ConnectionHealth.changedToNoSignal.record()
-        case .pending: GleanMetrics.ConnectionHealth.changedToPending.record()
-        }
-
-        stopTimingDistributionMetric(for: lastHealthStatus)
-        startTimingDistributionMetric(for: stability)
-    }
-
-    private func startTimingDistributionMetric(for stability: ConnectionStability) {
-        switch stability {
-        case .stable: connectionHealthTimerId = GleanMetrics.ConnectionHealth.stableTime.start()
-        case .unstable: connectionHealthTimerId = GleanMetrics.ConnectionHealth.unstableTime.start()
-        case .noSignal: connectionHealthTimerId = GleanMetrics.ConnectionHealth.noSignalTime.start()
-        case .pending: connectionHealthTimerId = GleanMetrics.ConnectionHealth.pendingTime.start()
-        }
-    }
-
-    private func stopTimingDistributionMetric(for stability: ConnectionStability) {
-        guard let connectionHealthTimerId = connectionHealthTimerId else {
-            logger.error(message: "No active health timer for \(stability)")
-            return
-        }
-
-        switch stability {
-        case .stable: GleanMetrics.ConnectionHealth.stableTime.stopAndAccumulate(connectionHealthTimerId)
-        case .unstable: GleanMetrics.ConnectionHealth.unstableTime.stopAndAccumulate(connectionHealthTimerId)
-        case .noSignal: GleanMetrics.ConnectionHealth.noSignalTime.stopAndAccumulate(connectionHealthTimerId)
-        case .pending: GleanMetrics.ConnectionHealth.pendingTime.stopAndAccumulate(connectionHealthTimerId)
-        }
-
-        // Set to nil to defensively ensure there is no future erroenous attempt to turn it off
-        self.connectionHealthTimerId = nil
-
     }
 }

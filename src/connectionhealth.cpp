@@ -91,8 +91,6 @@ void ConnectionHealth::stop() {
 
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
-
-  stopTimingDistributionMetric(m_stability);
 }
 
 void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
@@ -117,7 +115,6 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
 
   m_dnsPingSender.stop();
   m_dnsPingTimer.stop();
-  startTimingDistributionMetric(m_stability);
 }
 
 void ConnectionHealth::startIdle() {
@@ -139,8 +136,6 @@ void ConnectionHealth::startIdle() {
     m_dnsPingSender.sendPing(QHostAddress(PING_WELL_KNOWN_ANYCAST_DNS),
                              m_dnsPingSequence);
   }
-
-  stopTimingDistributionMetric(m_stability);
 }
 
 void ConnectionHealth::setStability(ConnectionStability stability) {
@@ -159,7 +154,7 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
   if (state == Controller::StateOn || state == Controller::StateSwitching ||
       state == Controller::StateSilentSwitching ||
       state == Controller::StateOnPartial) {
-    recordMetrics(m_stability, stability);
+    recordMetrics(stability);
   }
 
   if (state != Controller::StateOnPartial && stability == Unstable) {
@@ -310,50 +305,8 @@ void ConnectionHealth::overwriteStabilityForInspector(
   emit stabilityChanged();
 }
 
-void ConnectionHealth::startTimingDistributionMetric(
-    ConnectionStability stability) {
-#ifndef MZ_MOBILE
+void ConnectionHealth::recordMetrics(ConnectionStability stability) {
   switch (stability) {
-    case ConnectionHealth::Unstable:
-      m_metricsTimerId =
-          mozilla::glean::connection_health::unstable_time.start();
-      break;
-    case ConnectionHealth::NoSignal:
-      m_metricsTimerId =
-          mozilla::glean::connection_health::no_signal_time.start();
-      break;
-    default:
-      m_metricsTimerId = mozilla::glean::connection_health::stable_time.start();
-  }
-#endif
-}
-
-void ConnectionHealth::stopTimingDistributionMetric(
-    ConnectionStability stability) {
-#ifndef MZ_MOBILE
-  if (m_metricsTimerId == -1) {
-    logger.info() << "No active health timer for state" << stability;
-    return;
-  }
-  switch (stability) {
-    case ConnectionHealth::Unstable:
-      mozilla::glean::connection_health::unstable_time.stopAndAccumulate(
-          m_metricsTimerId);
-      break;
-    case ConnectionHealth::NoSignal:
-      mozilla::glean::connection_health::no_signal_time.stopAndAccumulate(
-          m_metricsTimerId);
-      break;
-    default:
-      mozilla::glean::connection_health::stable_time.stopAndAccumulate(
-          m_metricsTimerId);
-  }
-#endif
-}
-
-void ConnectionHealth::recordMetrics(ConnectionStability oldStability,
-                                     ConnectionStability newStability) {
-  switch (newStability) {
     case ConnectionHealth::Unstable:
       mozilla::glean::connection_health::unstable_count.add();
       break;
@@ -362,26 +315,5 @@ void ConnectionHealth::recordMetrics(ConnectionStability oldStability,
       break;
     default:
       mozilla::glean::connection_health::stable_count.add();
-  }
-
-  if (oldStability == newStability) {
-    return;
-  }
-
-  logger.info() << "Recording telemetry for stability change from"
-                << oldStability << "to" << newStability;
-
-  stopTimingDistributionMetric(oldStability);
-  startTimingDistributionMetric(newStability);
-
-  switch (newStability) {
-    case ConnectionHealth::Unstable:
-      mozilla::glean::connection_health::changed_to_unstable.record();
-      break;
-    case ConnectionHealth::NoSignal:
-      mozilla::glean::connection_health::changed_to_no_signal.record();
-      break;
-    default:
-      mozilla::glean::connection_health::changed_to_stable.record();
   }
 }
