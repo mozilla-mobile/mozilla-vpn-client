@@ -8,13 +8,9 @@
 #include <QObject>
 #include <QFileSystemWatcher>
 #include <QWebSocket>
-#include <QTimer>
-#include <QHash>
 #include <QString>
 #include <QUrl>
 #include <QDir>
-#include <QElapsedTimer>
-#include <QSet> // Keep QSet
 
 class QCoreApplication;
 class QSocketNotifier;
@@ -36,7 +32,6 @@ private slots:
     void onFileChanged(const QString &path);
     void aboutToQuit();
 
-
 private:
     void announceChange(const QString& path);
 
@@ -45,19 +40,5 @@ private:
     QWebSocket m_webSocket;
     QUrl m_wsUrl;
     QString m_origin;
-    QString m_watchRootPath; // Renamed for clarity - the root defined by CMake
-    QDir m_watchRootDir;   // Renamed for clarity
-    bool m_adbMode = false;
-    bool m_isConnected = false;
-
-    QHash<QString, QTimer*> m_debounceTimers;
-    static const int DEBOUNCE_THRESHOLD_MS = 200;
-
-    QSocketNotifier* m_stdinNotifier = nullptr;
-
-    // Keep track of watched files/dirs using canonical paths
-    QSet<QString> m_watchedFiles;
-    QSet<QString> m_watchedDirs;
-
-    // Removed: m_targetMode, m_targetQmlFiles, loadQmlFileList, watchSpecificFiles
+    QString m_watchRootPath;
 };
