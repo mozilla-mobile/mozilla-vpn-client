@@ -9,6 +9,14 @@ set_target_properties(daemon PROPERTIES
     XCODE_GENERATE_SCHEME TRUE
 )
 
+# Embed the daemon property lists.
+configure_file(${CMAKE_SOURCE_DIR}/macos/app/daemon-info.plist.in daemon-info.plist)
+configure_file(${CMAKE_SOURCE_DIR}/macos/app/daemon-launchd.plist.in daemon-launchd.plist)
+target_link_options(daemon PRIVATE
+    LINKER:-sectcreate,__TEXT,__info_plist,${CMAKE_CURRENT_BINARY_DIR}/daemon-info.plist
+    LINKER:-sectcreate,__TEXT,__launchd_plist,${CMAKE_CURRENT_BINARY_DIR}/daemon-launchd.plist
+)
+
 mz_target_handle_warnings(daemon)
 
 find_library(FW_FOUNDATION Foundation)
