@@ -4,6 +4,11 @@
 
 qt_add_executable(daemon MANUAL_FINALIZATION)
 
+set_target_properties(daemon PROPERTIES
+    OUTPUT_NAME "${BUILD_OSX_APP_IDENTIFIER}.daemon"
+    XCODE_GENERATE_SCHEME TRUE
+)
+
 mz_target_handle_warnings(daemon)
 
 find_library(FW_FOUNDATION Foundation)

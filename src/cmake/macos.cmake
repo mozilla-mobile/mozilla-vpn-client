@@ -147,6 +147,13 @@ osx_bundle_files(mozillavpn
     DESTINATION Resources/utils
 )
 
+# Install the daemon into the bundle.
+add_dependencies(mozillavpn daemon)
+osx_bundle_files(mozillavpn
+    FILES $<TARGET_FILE:daemon>
+    DESTINATION Library/LaunchServices
+)
+
 # Install the native messaging extensions into the bundle.
 add_dependencies(mozillavpn mozillavpnnp)
 osx_bundle_files(mozillavpn FILES
