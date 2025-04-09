@@ -71,7 +71,7 @@ class ConnectionHealth {
         logger.info(message: "Creating PingAnalyzer")
         let _ = PingAnalyzer(pingAddress: pingAddress) { (connectivity, error) in
             guard let connectivity = connectivity else {
-                self.logger.error(message: "PingAnalyzer returned error: " + error?.localizedDescription ?? "no error returned")
+                self.logger.error(message: "PingAnalyzer returned error: " + (error?.localizedDescription ?? "no error returned"))
                 return
             }
 
