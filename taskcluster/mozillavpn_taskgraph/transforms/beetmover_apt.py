@@ -43,6 +43,11 @@ def get_gcs_sources(dependent_task):
 
 @transforms.add
 def beetmover_apt(config, tasks):
+    is_production = (
+        config.params["level"] == "3" and config.params["tasks_for"] == "action"
+    )
+    bucket = "release" if is_production else "dep"
+
     for task in tasks:
         dep = get_primary_dependency(config, task)
         assert dep
@@ -51,11 +56,6 @@ def beetmover_apt(config, tasks):
             # We do have nothing to ship, skip this task
             continue
         task["worker"]["gcs-sources"] = gcs_sources
-
-        if task["attributes"]["shipping-phase"] == "ship-client":
-            bucket = "release"
-        else:
-            bucket = "dep"
 
         scope_prefix = config.graph_config["scriptworker"]["scope-prefix"]
         task["scopes"] = [
