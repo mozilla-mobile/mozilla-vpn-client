@@ -1,9 +1,9 @@
-import {Client, DEFAULT_URL} from './client'
-import {CommandObserver} from './CommandObserver'
-import {GenericDispatcher} from './genericdispatcher'
-import {LogsObserver} from './LogsObserver'
-import {NetworkObserver} from './NetworkObserver'
-import {UIObserver} from './UiObserver'
+import {Client, DEFAULT_URL} from './client.js'
+import {CommandObserver} from './CommandObserver.js'
+import {GenericDispatcher} from './genericdispatcher.js'
+import {LogsObserver} from './LogsObserver.js'
+import {NetworkObserver} from './NetworkObserver.js'
+import {UIObserver} from './UiObserver.js'
 
 export {
     Client,

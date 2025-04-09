@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { html, css, LitElement } from 'lit'
-import { Client,DEFAULT_URL } from '../inspector/client'
+import { Client,DEFAULT_URL } from '../inspector/client.js'
 
 const STATE_CONNECTING = "connecting";
 const STATE_CONNECTED = "connected";

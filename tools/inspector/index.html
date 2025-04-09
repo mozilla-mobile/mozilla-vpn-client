@@ -4,9 +4,16 @@
         <title>Mozilla VPN Inspector</title>
         <style>
             @import url("app.css");
-            @import url("../../node_modules/xterm/css/xterm.css");     
         </style>        
     </head>
+    <script type="importmap">
+        {
+          "imports": {
+            "lit": "https://cdn.jsdelivr.net/gh/lit/dist@3.1.1/all/lit-all.min.js"
+          }
+        }
+    </script>
+
     <body>
         <connection-killswitch></connection-killswitch>
         <tab-navigation target="main">
