@@ -738,115 +738,6 @@ connection_health:
     unit: bytes
     histogram_type: exponential
 
-  changed_to_no_signal:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - vpnsession
-      - daemonsession
-    description: |
-      The connection status changed to no signal.
-
-      This event is recorded in both main application and daemon.
-      The logic and cadence of health checks for each of these
-      is not the same.
-
-      A no signal event happens when the connection is showing issues,
-      and a silent switch will not address the issue. Or when the connection
-      is showing issues and there have been previous silent switches which
-      did not address the issue.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-      - https://mozilla-hub.atlassian.net/browse/VPN-5860
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2025-04-15
-
-  changed_to_unstable:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - vpnsession
-      - daemonsession
-    description: |
-      The connection status changed to unstable.
-
-      This event is recorded in both main application and daemon.
-      The logic and cadence of health checks for each of these
-      is not the same.
-
-      An unstable event happens when the connection is showing issues,
-      but silent switches may still address the issue.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-      - https://mozilla-hub.atlassian.net/browse/VPN-5860
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2025-04-15
-
-  changed_to_stable:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - vpnsession
-      - daemonsession
-    description: |
-      The connection status changed to stable.
-
-      This event is recorded in both main application and daemon.
-      The logic and cadence of health checks for each of these
-      is not the same.
-
-      Stable status is when the app is not in a no signal or unstable
-      connection state.
-    bugs:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123
-      - https://mozilla-hub.atlassian.net/browse/VPN-5860
-    data_reviews:
-      - https://bugzilla.mozilla.org/show_bug.cgi?id=1711123#c1
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2025-04-15
-
-  changed_to_pending:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - daemonsession
-    description: |
-      (iOS only) The connection status changed to pending.
-
-      This event is recorded in daemon.
-
-      Pending status is when the app is first started or when there is
-      no internet.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-6406
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9593#issuecomment-2159109154
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2025-04-15
-
   no_signal_count:
     type: counter
     lifetime: ping
@@ -872,7 +763,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2025-04-15
+    expires: never
 
   unstable_count:
     type: counter
@@ -899,7 +790,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2025-04-15
+    expires: never
 
   stable_count:
     type: counter
@@ -926,7 +817,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2025-04-15
+    expires: never
 
   pending_count:
     type: counter
@@ -951,117 +842,7 @@ connection_health:
     notification_emails:
       - mcleinman@mozilla.com
       - vpn-telemetry@mozilla.com
-    expires: 2025-04-15
-
-  no_signal_time:
-    type: timing_distribution
-    lifetime: ping
-    send_in_pings:
-      - vpnsession
-      - daemonsession
-    description: |
-      Time spent in no signal state.
-
-      Only collected on desktop for vpnsession, as mobile apps
-      frequently are relaunched during VPN sessions. It is
-      collected in daemonsession for mobile clients.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-5860
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2025-04-15
-
-  unstable_time:
-    type: timing_distribution
-    lifetime: ping
-    send_in_pings:
-      - vpnsession
-      - daemonsession
-    description: |
-      Time spent in unstable state.
-
-      Only collected on desktop for vpnsession, as mobile apps
-      frequently are relaunched during VPN sessions. It is
-      collected in daemonsession for mobile clients.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-5860
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2025-04-15
-
-  stable_time:
-    type: timing_distribution
-    lifetime: ping
-    send_in_pings:
-      - vpnsession
-      - daemonsession
-    description: |
-      Time spent in stable state.
-
-      Only collected on desktop for vpnsession, as mobile apps
-      frequently are relaunched during VPN sessions. It is
-      collected in daemonsession for mobile clients.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-5860
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9057#pullrequestreview-1868746289
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2025-04-15
-
-  pending_time:
-    type: timing_distribution
-    lifetime: ping
-    send_in_pings:
-      - daemonsession
-    description: |
-      (iOS only) Time spent in pending state.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-6406
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9593#issuecomment-2159109154
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2025-04-15
-
-  ping_analyzer_error:
-    type: event
-    lifetime: ping
-    send_in_pings:
-      - daemonsession
-    description: |
-      The iOS PingAnalyzer returned an error.
-    bugs:
-      - https://mozilla-hub.atlassian.net/browse/VPN-6406
-    data_reviews:
-      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9593#issuecomment-2159109154
-    data_sensitivity:
-      - technical
-    notification_emails:
-      - mcleinman@mozilla.com
-      - vpn-telemetry@mozilla.com
-    expires: 2025-06-30
-    extra_keys:
-      error_message:
-        description: |
-          Error type
-        type: string
+    expires: never
 
 web_authentication:
   started:

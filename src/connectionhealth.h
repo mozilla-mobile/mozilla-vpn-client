@@ -92,14 +92,7 @@ class ConnectionHealth final : public QObject {
   QString m_currentGateway;
   QString m_deviceAddress;
 
-#ifndef MZ_MOBILE
-  qint64 m_metricsTimerId = -1;
-#endif
-
-  void startTimingDistributionMetric(ConnectionStability stability);
-  void stopTimingDistributionMetric(ConnectionStability stability);
-  void recordMetrics(ConnectionStability oldStability,
-                     ConnectionStability newStability);
+  void recordMetrics(ConnectionStability stability);
 
 #ifdef UNIT_TEST
   friend class TestConnectionHealth;

@@ -92,16 +92,12 @@ void TestConnectionHealth::testTelemetry() {
   ConnectionHealth connectionHealth;
 
   // Nothing recorded at start.
-  metricsTestErrorAndChange(0, 0, 0);
   metricsTestCount(0, 0, 0);
-  metricsTestTimespan(0, 0, 0);
 
   // Shouldn't do anything if controller state isn't on.
   connectionHealth.startActive("", "");
   connectionHealth.stop();
-  metricsTestErrorAndChange(0, 0, 0);
   metricsTestCount(0, 0, 0);
-  metricsTestTimespan(0, 0, 0);
 
   // Activate controller, which allows recording
   TestHelper::controllerState = Controller::StateOn;
@@ -109,77 +105,20 @@ void TestConnectionHealth::testTelemetry() {
   // Currently unstable connection
   connectionHealth.setStability(ConnectionHealth::Unstable);
   connectionHealth.startActive("", "");
-  metricsTestErrorAndChange(0, 1, 0);
   metricsTestCount(0, 1, 0);
-  metricsTestTimespan(0, 0, 0);
 
   // Connections changes to stable
   connectionHealth.setStability(ConnectionHealth::ConnectionStability::Stable);
-  metricsTestErrorAndChange(1, 1, 0);
   metricsTestCount(1, 1, 0);
-  metricsTestTimespan(0, 1, 0);
 
   // Connections changes to no signal
   connectionHealth.setStability(
       ConnectionHealth::ConnectionStability::NoSignal);
-  metricsTestErrorAndChange(1, 1, 1);
   metricsTestCount(1, 1, 1);
-  metricsTestTimespan(1, 1, 0);
 
   // Stops (stopping resets status to stable)
   connectionHealth.stop();
-  metricsTestErrorAndChange(1, 1, 1);
   metricsTestCount(1, 1, 1);
-  metricsTestTimespan(1, 1, 1);
-}
-
-void TestConnectionHealth::metricsTestTimespan(int expectedStablePeriods,
-                                               int expectedUnstablePeriods,
-                                               int expectedNoSignalPeriods) {
-  // test the 3 timespans
-  // Expect one timespan for each period except the current one.
-  QCOMPARE(getTimingDistCount(
-               mozilla::glean::connection_health::stable_time.testGetValue()),
-           expectedStablePeriods);
-  QCOMPARE(getTimingDistCount(
-               mozilla::glean::connection_health::unstable_time.testGetValue()),
-           expectedUnstablePeriods);
-  QCOMPARE(
-      getTimingDistCount(
-          mozilla::glean::connection_health::no_signal_time.testGetValue()),
-      expectedNoSignalPeriods);
-}
-
-void TestConnectionHealth::metricsTestErrorAndChange(
-    int expectedStablePeriods, int expectedUnstablePeriods,
-    int expectedNoSignalPeriods) {
-  // test for no errors
-  QCOMPARE(
-      mozilla::glean::connection_health::stable_time.testGetNumRecordedErrors(
-          ErrorType::InvalidState),
-      0);
-  QCOMPARE(
-      mozilla::glean::connection_health::unstable_time.testGetNumRecordedErrors(
-          ErrorType::InvalidState),
-      0);
-  QCOMPARE(mozilla::glean::connection_health::no_signal_time
-               .testGetNumRecordedErrors(ErrorType::InvalidState),
-           0);
-
-  // test the 3 events
-  // Expect a "change to" event for each period
-  auto changeToStableEvents =
-      mozilla::glean::connection_health::changed_to_stable.testGetValue();
-  auto changeToUnstableEvents =
-      mozilla::glean::connection_health::changed_to_unstable.testGetValue();
-  auto changeToNoSignalEvents =
-      mozilla::glean::connection_health::changed_to_no_signal.testGetValue();
-  QCOMPARE(changeToStableEvents.isArray(), true);
-  QCOMPARE(changeToStableEvents.toArray().count(), expectedStablePeriods);
-  QCOMPARE(changeToUnstableEvents.isArray(), true);
-  QCOMPARE(changeToUnstableEvents.toArray().count(), expectedUnstablePeriods);
-  QCOMPARE(changeToNoSignalEvents.isArray(), true);
-  QCOMPARE(changeToNoSignalEvents.toArray().count(), expectedNoSignalPeriods);
 }
 
 void TestConnectionHealth::metricsTestCount(int expectedStablePeriods,
@@ -199,21 +138,6 @@ void TestConnectionHealth::metricsTestCount(int expectedStablePeriods,
   QCOMPARE(unstableCount.toInt(), expectedUnstablePeriods);
   QCOMPARE(noSignalCount.isDouble(), true);
   QCOMPARE(noSignalCount.toInt(), expectedNoSignalPeriods);
-}
-
-// Count the number of timing distribution samples that were recorded.
-int TestConnectionHealth::getTimingDistCount(const QJsonValue& metric) {
-  QJsonObject values = metric["values"].toObject();
-  int count = 0;
-  for (auto i = values.constBegin(); i != values.constEnd(); ++i) {
-    bool okay = false;
-    qlonglong key = i.key().toLongLong(&okay, 10);
-    if (!okay) {
-      continue;
-    }
-    count += i.value().toInt();
-  }
-  return count;
 }
 
 static TestConnectionHealth s_testConnectionHealth;
