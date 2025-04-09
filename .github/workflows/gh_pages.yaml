@@ -8,7 +8,6 @@ on:
   pull_request:
     paths:
       - "tools/logviewer/**"
-      - "tools/translationsreport/**"
       - "tools/inspector/**"
       - "tools/wasm_chrome/**"
       - "tools/addonstats/**"
@@ -99,30 +98,6 @@ jobs:
           name: Inspector Build
           path: tools/inspector/dist/app
 
-  translationsreport:
-    name: Add Translations Report
-    runs-on: ubuntu-latest
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-
-      - uses: actions/setup-node@v4
-        with:
-          node-version: "16"
-
-      - name: Building
-        shell: bash
-        run: |
-          cd tools/translationsreport/app
-          npm install
-          npm run build
-
-      - name: Uploading
-        uses: actions/upload-artifact@v4
-        with:
-          name: Translations Report
-          path: tools/translationsreport/app/build
-
   addons:
     runs-on: ubuntu-22.04
     steps:
@@ -175,7 +150,6 @@ jobs:
       [
         wasm_chrome,
         inspector,
-        translationsreport,
         addons,
         logviewer,
         addonstats,
@@ -213,12 +187,6 @@ jobs:
         with:
           name: Inspector Build
           path: _site/inspector
-
-      - name: Download the Translations Report artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: Translations Report
-          path: _site/translationsreport
 
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
