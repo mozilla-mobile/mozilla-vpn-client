@@ -229,7 +229,15 @@ FEATURE(themeSelectionIncludesAutomatic,  // Feature ID
         FeatureCallback_false,            // Can be flipped on
         FeatureCallback_false,            // Can be flipped off
         QStringList(),                    // feature dependencies
-        FeatureCallback_themeSelectionIncludesAutomatic)
+// The API we're using isn't available below Qt 6.5, so this feature will not
+// be released for these users.
+// (Can't do this as a custom FeatureCallback because they're constant
+// expressinos, and function calls aren't allowed in constant expressions.)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+        FeatureCallback_true)
+#else
+        FeatureCallback_false)
+#endif
 
 FEATURE(unsecuredNetworkNotification,      // Feature ID
         "Unsecured network notification",  // Feature name
