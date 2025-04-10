@@ -233,7 +233,9 @@ void Navigator::requestScreen(int requestedScreen,
                               Navigator::LoadingFlags loadingFlags) {
   logger.debug() << "Screen request:" << requestedScreen;
 
-
+  if (loadingFlags == NoFlags) {
+    loadingFlags = ForceReload;
+  }
   QList<ScreenData*> screens = computeScreens(&requestedScreen);
   Q_ASSERT(!screens.isEmpty());
 
@@ -303,6 +305,9 @@ void Navigator::loadScreen(int screen, LoadPolicy loadPolicy,
     return;
   }
 
+  if (loadingFlags == NoFlags) {
+    loadingFlags = ForceReload;
+  }
 
   if (m_screenHistory.isEmpty() || screen != m_currentScreen) {
     m_screenHistory.append(screen);
