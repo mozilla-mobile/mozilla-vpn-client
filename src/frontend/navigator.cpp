@@ -233,10 +233,9 @@ void Navigator::requestScreen(int requestedScreen,
                               Navigator::LoadingFlags loadingFlags) {
   logger.debug() << "Screen request:" << requestedScreen;
 
-  if (!m_reloaders.isEmpty() && loadingFlags == NoFlags) {
+  if (loadingFlags == NoFlags) {
     loadingFlags = ForceReload;
   }
-
   QList<ScreenData*> screens = computeScreens(&requestedScreen);
   Q_ASSERT(!screens.isEmpty());
 
@@ -300,13 +299,13 @@ void Navigator::loadScreen(int screen, LoadPolicy loadPolicy,
                            LoadingFlags loadingFlags) {
   logger.debug() << "Loading screen" << component->url().toString();
 
-  if (screen == m_currentScreen) {
+  if (screen == m_currentScreen && loadingFlags != ForceReloadAll) {
     logger.debug()
         << "Attempted to load the currently loaded screen. Ignoring.";
     return;
   }
 
-  if (!m_reloaders.isEmpty() && loadingFlags == NoFlags) {
+  if (loadingFlags == NoFlags) {
     loadingFlags = ForceReload;
   }
 
@@ -450,16 +449,6 @@ bool Navigator::eventHandled() {
 #else
 #  error Unsupported platform
 #endif
-}
-
-void Navigator::registerReloader(NavigatorReloader* reloader) {
-  Q_ASSERT(!m_reloaders.contains(reloader));
-  m_reloaders.append(reloader);
-}
-
-void Navigator::unregisterReloader(NavigatorReloader* reloader) {
-  Q_ASSERT(m_reloaders.contains(reloader));
-  m_reloaders.removeOne(reloader);
 }
 
 // static

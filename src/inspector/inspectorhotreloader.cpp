@@ -12,7 +12,6 @@
 #include <QWindow>
 
 #include "frontend/navigator.h"
-#include "frontend/navigatorreloader.h"
 #include "logger.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"
@@ -25,7 +24,6 @@ Logger logger("QMLHotReload");
 InspectorHotreloader::InspectorHotreloader(QQmlEngine* target)
     : m_target(target) {
   m_target->addUrlInterceptor(this);
-  new NavigatorReloader(qApp);
 }
 
 QUrl InspectorHotreloader::intercept(
