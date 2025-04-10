@@ -93,7 +93,7 @@ MZViewBase {
                     MZTextBlock {
                         text: MZI18n.SettingsAppearanceAutomaticDescription
                         Layout.fillWidth: true
-                        visible: radioButtonName === "automatic"
+                        visible: radioButtonName === "automaticAppearanceRadioButton"
                     }
                 }
             }
