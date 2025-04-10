@@ -18,7 +18,9 @@ class Theme final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Theme)
 
-  Q_PROPERTY(QJSValue theme READ readTheme NOTIFY changed)
+  // sizingChanged isn't currently used, by QML constantly spams warnings if
+  // there is no NOTIFY for `theme`
+  Q_PROPERTY(QJSValue theme READ readTheme NOTIFY sizingChanged)
   Q_PROPERTY(QJSValue colors READ readColors NOTIFY changed)
   Q_PROPERTY(QString currentTheme READ currentTheme WRITE setCurrentTheme NOTIFY
                  changed)
@@ -34,7 +36,7 @@ class Theme final : public QAbstractListModel {
   };
 
   const QJSValue& readTheme() const;
-  const QJSValue& readColors() const;
+  const QJSValue readColors() const;
 
   const QString& currentTheme() const { return m_currentTheme; }
 
@@ -72,23 +74,21 @@ class Theme final : public QAbstractListModel {
   QImage getTitleBarIcon();
 
  private:
-  void parseTheme(QJSEngine* engine, const QString& themeName);
+  void parseTheme(QJSEngine* engine, const QString& themeFilename);
   bool loadTheme(const QString& themeName);
+  void parseSizing(QJSEngine* engine);
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   void setToSystemTheme();
 #endif
 
  signals:
   void changed();
+  void sizingChanged();
 
  private:
-  struct ThemeData {
-    QJSValue theme;
-    QJSValue colors;
-  };
-
-  QHash<QString, ThemeData*> m_themes;
+  QHash<QString, QJSValue> m_themes;
   QString m_currentTheme;
+  QJSValue m_sizing;
 };
 
 #endif  // THEME_H
