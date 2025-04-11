@@ -20,7 +20,8 @@ namespace {
 Logger logger("XdgStartAtBootWatcher");
 }
 
-XdgStartAtBootWatcher::XdgStartAtBootWatcher() : XdgPortal() {
+XdgStartAtBootWatcher::XdgStartAtBootWatcher()
+    : XdgPortal(XDG_PORTAL_BACKGROUND) {
   MZ_COUNT_CTOR(XdgStartAtBootWatcher);
 
   logger.debug() << "StartAtBoot watcher";
