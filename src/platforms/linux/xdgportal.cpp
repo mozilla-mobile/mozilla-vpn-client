@@ -29,7 +29,8 @@ namespace {
 Logger logger("XdgPortal");
 }
 
-XdgPortal::XdgPortal(QObject* parent) : QObject(parent) {
+XdgPortal::XdgPortal(const QString& iface, QObject* parent)
+    : QObject(parent), m_portal(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, iface) {
   MZ_COUNT_CTOR(XdgPortal);
 
   // Generate a unique token
@@ -47,10 +48,8 @@ XdgPortal::XdgPortal(QObject* parent) : QObject(parent) {
 
 XdgPortal::~XdgPortal() { MZ_COUNT_DTOR(XdgPortal); }
 
-// static
-uint XdgPortal::getVersion(const QString& interface) {
-  QDBusInterface portal(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, interface);
-  QVariant qv = portal.property("version");
+uint XdgPortal::getVersion() {
+  QVariant qv = m_portal.property("version");
   if (qv.typeId() == QMetaType::UInt) {
     return qv.toUInt();
   }

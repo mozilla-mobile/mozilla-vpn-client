@@ -562,7 +562,9 @@ SETTING_STRING(theme,          // getter
 // Below Qt 6.5, this option won't be available.
 // Without this, the Apperance screen will
 // initially show no radio button selected.
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#if defined(MZ_LINUX)
+#  define USING_SYSTEM_THEME_DEFAULT_VALUE true
+#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
 #  define USING_SYSTEM_THEME_DEFAULT_VALUE true
 #else
 #  define USING_SYSTEM_THEME_DEFAULT_VALUE false

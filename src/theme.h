@@ -13,6 +13,7 @@
 #include "settingsholder.h"
 
 class QJSEngine;
+class XdgAppearance;
 
 class Theme final : public QAbstractListModel {
   Q_OBJECT
@@ -58,9 +59,7 @@ class Theme final : public QAbstractListModel {
 
   QVariant data(const QModelIndex& index, int role) const override;
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-  Qt::ColorScheme currentSystemTheme();
-#endif
+  QString currentSystemTheme();
 
   enum StatusBarTextColor {
     StatusBarTextColorLight,
@@ -77,9 +76,7 @@ class Theme final : public QAbstractListModel {
   void parseTheme(QJSEngine* engine, const QString& themeFilename);
   bool loadTheme(const QString& themeName);
   void parseSizing(QJSEngine* engine);
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   void setToSystemTheme();
-#endif
 
  signals:
   void changed();
@@ -89,6 +86,10 @@ class Theme final : public QAbstractListModel {
   QHash<QString, QJSValue> m_themes;
   QString m_currentTheme;
   QJSValue m_sizing;
+
+#if defined(MZ_LINUX)
+  XdgAppearance* m_xdg = nullptr;
+#endif
 };
 
 #endif  // THEME_H
