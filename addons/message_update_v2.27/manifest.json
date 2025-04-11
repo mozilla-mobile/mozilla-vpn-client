@@ -22,17 +22,7 @@
       {
         "id": "c_1",
         "type": "text",
-        "content": "vpn.commonStrings.generalUpdateBulletIntro"
-      },
-      {
-        "id": "c_2",
-        "type": "ulist",
-        "content": [
-          {
-            "id": "l_1",
-            "content": "vpn.227updateMessage.bullet1"
-          }
-        ]
+        "content": "vpn.commonStrings.generalUpdateContent"
       },
       {
         "id": "c_3",
