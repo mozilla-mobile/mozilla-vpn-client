@@ -67,7 +67,7 @@ jobs:
 
       - name: Check for proper color usage
         run: |
-          scripts/ci/check_colors.py nebula/ui/themes/
+          scripts/ci/check_colors.py nebula/ui/themes/color-themes
 
       - name: Check for proper image usage
         run: |
