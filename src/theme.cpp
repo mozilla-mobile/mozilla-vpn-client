@@ -20,7 +20,7 @@
 #  include "platforms/ios/ioscommons.h"
 #endif
 
-#ifdef MZ_LINUX
+#if defined(MZ_LINUX) && !defined(UNIT_TEST)
 #  include "platforms/linux/xdgappearance.h"
 #endif
 
@@ -41,12 +41,12 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
             initialize(QmlEngineHolder::instance()->engine());
           });
 
-#ifdef MZ_LINUX
+#if defined(MZ_LINUX) && !defined(UNIT_TEST)
   m_xdg = new XdgAppearance(this);
   connect(m_xdg, &XdgAppearance::colorSchemeChanged, this, [this]() {
     if (SettingsHolder::instance()->usingSystemTheme()) {
       setToSystemTheme();
-     }
+    }
   });
 #elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this,
@@ -245,7 +245,7 @@ QVariant Theme::data(const QModelIndex& index, int role) const {
 }
 
 QString Theme::currentSystemTheme() {
-#ifdef MZ_LINUX
+#if defined(MZ_LINUX) && !defined(UNIT_TEST)
   if (m_xdg->colorScheme() != 1) {
     return "main";
   } else {
@@ -258,6 +258,9 @@ QString Theme::currentSystemTheme() {
   } else {
     return "dark-mode";
   }
+#else
+  // Otherwise, we have no way to detect the system theme.
+  return "main";
 #endif
 }
 
