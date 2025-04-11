@@ -222,14 +222,14 @@ FEATURE(themeSelection,        // Feature ID
         FeatureCallback_true,  // Can be flipped on
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
-        FeatureCallback_true)
+        FeatureCallback_false)
 
 FEATURE(themeSelectionIncludesAutomatic,  // Feature ID
         "Theme option of 'automatic'",    // Feature name
         FeatureCallback_false,            // Can be flipped on
         FeatureCallback_false,            // Can be flipped off
         QStringList(),                    // feature dependencies
-        FeatureCallback_themeSelectionIncludesAutomatic)
+        FeatureCallback_false)
 
 FEATURE(unsecuredNetworkNotification,      // Feature ID
         "Unsecured network notification",  // Feature name
