@@ -4,10 +4,10 @@
 
 #include "xdgappearance.h"
 
+#include <QDBusReply>
+
 #include "leakdetector.h"
 #include "logger.h"
-
-#include <QDBusReply>
 
 constexpr const char* XDG_NAMESPACE_APPEARANCE = "org.freedesktop.appearance";
 
@@ -23,9 +23,7 @@ XdgAppearance::XdgAppearance(QObject* parent)
           this, SLOT(xdgSettingChanged(QString, QString, QDBusVariant)));
 }
 
-XdgAppearance::~XdgAppearance() {
-  MZ_COUNT_DTOR(XdgAppearance);
-}
+XdgAppearance::~XdgAppearance() { MZ_COUNT_DTOR(XdgAppearance); }
 
 uint XdgAppearance::colorScheme() { return readValueUint("color-scheme"); }
 
@@ -54,7 +52,7 @@ void XdgAppearance::xdgSettingChanged(const QString& ns, const QString& key,
     return;
   }
   QVariant qv = value.variant();
-  logger.debug() << "Appearance changed" <<key << "->" << qv.toString();
+  logger.debug() << "Appearance changed:" << key << "->" << qv.toString();
   if (key == "color-scheme") {
     emit colorSchemeChanged();
   } else if (key == "accent-color") {

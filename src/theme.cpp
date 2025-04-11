@@ -43,12 +43,11 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
 
 #ifdef MZ_LINUX
   m_xdg = new XdgAppearance(this);
-  connect(m_xdg, &XdgAppearance::colorSchemeChanged, this,
-          [this]() {
-            if (SettingsHolder::instance()->usingSystemTheme()) {
-              setToSystemTheme();
-            }
-          });
+  connect(m_xdg, &XdgAppearance::colorSchemeChanged, this, [this]() {
+    if (SettingsHolder::instance()->usingSystemTheme()) {
+      setToSystemTheme();
+     }
+  });
 #elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this,
           [this]() {
