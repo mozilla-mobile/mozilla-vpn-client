@@ -8,10 +8,9 @@ qt_add_qml_module(themes
     STATIC
     RESOURCE_PREFIX /nebula
     RESOURCES
+        sizing.js
         colors.js
         theme-derived.js
-        main/theme.js
-        main/sizing.js
-        dark-mode/theme.js
-        dark-mode/sizing.js
+        color-themes/main.js
+        color-themes/dark-mode.js
 )

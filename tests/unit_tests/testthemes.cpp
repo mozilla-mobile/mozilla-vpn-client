@@ -19,9 +19,7 @@ void TestThemes::loadTheme_data() {
   QTest::addRow(DEFAULT_THEME) << DEFAULT_THEME << DEFAULT_THEME;
   QTest::addRow("foobar") << "foobar"
                           << "foobar";
-  QTest::addRow("invalid_theme") << "invalid_theme" << DEFAULT_THEME;
   QTest::addRow("invalid_colors") << "invalid_colors" << DEFAULT_THEME;
-  QTest::addRow("error_theme") << "error_theme" << DEFAULT_THEME;
   QTest::addRow("error_colors") << "error_colors" << DEFAULT_THEME;
 }
 
