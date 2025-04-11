@@ -11,51 +11,67 @@ updates:
 #      interval: "monthly"
 #    labels:
 #      - "dependencies"
-  # Android Wireguard-Go
+# Android Wireguard-Go
   - package-ecosystem: "gomod"
     directory: "/android/daemon/tunnel/libwg-go"
     schedule:
       interval: "weekly"
     labels:
       - "dependencies"
-  # Android JVM Dependencies 
+    open-pull-requests-limit: 0 # Only Scan for Security Vulns
+# Android JVM Dependencies 
   - package-ecosystem: "gradle"
     directory: "/android/"
     schedule:
       interval: "weekly"
     labels:
       - "dependencies"
-  # Rust dependencies
+    open-pull-requests-limit: 0 # Only Scan for Security Vulns
+# Rust dependencies
   - package-ecosystem: "cargo"
     directory: "/"
     schedule:
       interval: "weekly"
     labels:
       - "dependencies"
-  # Addon signature
+    groups:
+      cargo: 
+        patterns:
+          - "*"
+# Taskcluster 
   - package-ecosystem: "pip"
     directory: "/taskcluster"
     schedule:
       interval: "weekly"
     labels:
       - "dependencies"
-  # Python build deps
+    groups:
+      taskcluster-pip: 
+        patterns:
+          - "*"
+# Python build deps
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "monthly"
     labels:
       - "dependencies"
+    groups:
+      build-tools-pip: 
+        patterns:
+          - "*"
     # We should not update glean-parser unless we are updating the glean submodule.
     ignore:
       - dependency-name: "glean-parser"
-  # Functional Tests etc
+# Functional Tests, tooling etc
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
       interval: "weekly"
+    labels:
+      - "dependencies"
     groups:
       # NPM Dependencies are so unlikely to break things, let's group them into a weekly PR.
-      npm: 
+      dev-npm: 
         patterns:
           - "*"
