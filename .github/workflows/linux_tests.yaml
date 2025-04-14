@@ -49,6 +49,12 @@ jobs:
           lookup-only: github.event_name == 'pull_request'
           restore-keys: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
 
+      # Set up CodeQL
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: 'cpp'
+
       - name: Compile test client
         shell: bash
         run: |
@@ -56,6 +62,9 @@ jobs:
           cmake -S $(pwd) -B build-${{ runner.os }} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
           cmake --build build-${{ runner.os }} --target mozillavpn
+      # Run CodeQL analysis
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
 
       - uses: actions/upload-artifact@v4
         with:
