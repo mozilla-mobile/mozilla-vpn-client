@@ -613,14 +613,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/data-encoding/data-encoding-2.8.0.crate",
-        "sha256": "575f75dfd25738df5b91b8e43e14d44bda14637a58fae779fd2b064f8bf3e010",
-        "dest": "cargo/vendor/data-encoding-2.8.0"
+        "url": "https://static.crates.io/crates/data-encoding/data-encoding-2.9.0.crate",
+        "sha256": "2a2330da5de22e8a3cb63252ce2abb30116bf5265e89c0e01bc17015ce30a476",
+        "dest": "cargo/vendor/data-encoding-2.9.0"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"575f75dfd25738df5b91b8e43e14d44bda14637a58fae779fd2b064f8bf3e010\", \"files\": {}}",
-        "dest": "cargo/vendor/data-encoding-2.8.0",
+        "contents": "{\"package\": \"2a2330da5de22e8a3cb63252ce2abb30116bf5265e89c0e01bc17015ce30a476\", \"files\": {}}",
+        "dest": "cargo/vendor/data-encoding-2.9.0",
         "dest-filename": ".cargo-checksum.json"
     },
     {
