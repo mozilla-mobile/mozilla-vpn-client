@@ -3,7 +3,6 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <QCoreApplication>
-#include <csignal>
 
 #include "filewatcherclient.h"
 
