@@ -21,7 +21,7 @@ class MacOSController final : public LocalSocketController {
   void checkServiceStatus();
 
  private:
-  void* m_delegate = nullptr;
+  void* m_service = nullptr;
   int m_smAppStatus;
   QTimer m_regTimer;
 };

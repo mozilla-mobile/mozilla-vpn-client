@@ -34,7 +34,9 @@ NSString* MacOSUtils::appId() {
 }
 
 void MacOSUtils::openSystemSettingsLoginItems() {
-  [SMAppService openSystemSettingsLoginItems];
+  if (@available(macOS 13, *)) {
+    [SMAppService openSystemSettingsLoginItems];
+  }
 }
 
 // static
@@ -50,23 +52,34 @@ void MacOSUtils::enableLoginItem(bool startAtBoot) {
   NSString* appId = MacOSUtils::appId();
   Q_ASSERT(appId);
 
-  // Use register() or unregister() based on the startAtBoot flag
-  NSError* error = nil;
+  NSString* loginItemAppId =
+    QString("%1.login-item").arg(QString::fromNSString(appId)).toNSString();
 
-  if (startAtBoot) {
-    if (![[SMAppService mainAppService] registerAndReturnError: & error]) {
-      logger.error() << "Failed to register Mozilla VPN LoginItem: "
-                     << QString::fromNSString(error.localizedDescription);
+
+  // For macOS 13 and beyond, register() and unregister() methods
+  // are used for managing login items since SMLoginItemSetEnabled() is deprecated.
+  // For versions prior to macOS 13, SMLoginItemSetEnabled() is used.
+  if (@available(macOS 13, *)) {
+    // Use register() or unregister() based on the startAtBoot flag
+    NSError* error = nil;
+
+    if (startAtBoot) {
+      if (![[SMAppService mainAppService] registerAndReturnError: & error]) {
+        logger.error() << "Failed to register Mozilla VPN LoginItem: " << error.localizedDescription;
+      } else {
+        logger.debug() << "Mozilla VPN LoginItem registered successfully.";
+      }
     } else {
-      logger.debug() << "Mozilla VPN LoginItem registered successfully.";
+      if (![[SMAppService mainAppService] unregisterAndReturnError: & error]) {
+        logger.error() << "Failed to unregister Mozilla VPN LoginItem: " << error.localizedDescription;
+      } else {
+        logger.debug() << "LoginItem unregistered successfully.";
+      }
     }
   } else {
-    if (![[SMAppService mainAppService] unregisterAndReturnError: & error]) {
-      logger.error() << "Failed to unregister Mozilla VPN LoginItem: "
-                   << QString::fromNSString(error.localizedDescription);
-    } else {
-      logger.debug() << "LoginItem unregistered successfully.";
-    }
+    CFStringRef cfs = (__bridge CFStringRef) loginItemAppId;
+    Boolean ok = SMLoginItemSetEnabled(cfs, startAtBoot ? YES : NO);
+    logger.debug() << "Result: " << ok;
   }
 }
 
