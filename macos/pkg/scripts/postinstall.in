@@ -9,11 +9,24 @@ set -eu
 APP_DIR="$2/Mozilla VPN.app"
 LOG_DIR=/var/log/mozillavpn
 
+OSX_MAJOR_VER=$(sw_vers -productVersion | cut -d. -f1)
+
 CODESIGN_APP_IDENTIFIER="@BUILD_OSX_APP_IDENTIFIER@"
 CODESIGN_TEAM_IDENTIFIER="@BUILD_VPN_DEVELOPMENT_TEAM@"
-CODESIGN_CERT_SUBJECT="Developer ID Application: Mozilla Corporation (${CODESIGN_TEAM_IDENTIFIER})"
 
 DAEMON_PLIST_PATH="/Library/LaunchDaemons/${CODESIGN_APP_IDENTIFIER}.daemon.plist"
+DAEMON_HELPER_TOOL="/Library/PrivilegedHelperTools/${CODESIGN_APP_IDENTIFIER}.daemon"
+
+## These OIDs check that the app bundle was signed with a valid
+# Developer ID Application certificate issued by Apple.
+APPLE_OID_EXT_APP_CODESIGNING="1.2.840.113635.100.6.1.13"
+APPLE_OID_EXT_CA_INTERMEDIATE="1.2.840.113635.100.6.2.6"
+
+# For local development, use this instead
+#   Apple developer program: 1.2.840.113635.6.1.12
+#   Apple WWDR intermediate: 1.2.840.113635.6.2.1
+#APPLE_OID_EXT_APP_CODESIGNING="1.2.840.113635.100.6.1.12"
+#APPLE_OID_EXT_CA_INTERMEDIATE="1.2.840.113635.100.6.2.1"
 
 mkdir -p $LOG_DIR
 exec 2>&1 > $LOG_DIR/postinstall.log
@@ -35,9 +48,10 @@ if [ -n "$(find "$APP_DIR" -type l)" ]; then
 fi
 
 echo "Validate application codesign..."
-CODESIGN_REQS="anchor apple generic"
+CODESIGN_REQS="anchor apple generic and identifier ${CODESIGN_APP_IDENTIFIER}"
+CODESIGN_REQS+=" and certificate 1[field.${APPLE_OID_EXT_CA_INTERMEDIATE}] /* exists */"
+CODESIGN_REQS+=" and certificate leaf[field.${APPLE_OID_EXT_APP_CODESIGNING}] /* exists */"
 CODESIGN_REQS+=" and certificate leaf[subject.OU] = \"${CODESIGN_TEAM_IDENTIFIER}\""
-CODESIGN_REQS+=" and certificate leaf[subject.CN] = \"${CODESIGN_CERT_SUBJECT}\""
 if ! codesign -v --verbose=4 -R="${CODESIGN_REQS}" "$APP_DIR"; then
   echo "Codesign failed! Aborting."
   rm -rf "$APP_DIR"
@@ -53,36 +67,35 @@ if [ -f "$DAEMON_PLIST_PATH" ]; then
   launchctl unload -w $DAEMON_PLIST_PATH
 fi
 
-echo "Loading the Daemon at $DAEMON_PLIST_PATH"
-cat << EOF > $DAEMON_PLIST_PATH
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-        <dict>
-                <key>Label</key>
-                <string>${CODESIGN_APP_IDENTIFIER}.daemon</string>
-                <key>ProgramArguments</key>
-                <array>
-                        <string>${APP_DIR}/Contents/MacOS/Mozilla VPN</string>
-                        <string>macosdaemon</string>
-                </array>
-                <key>UserName</key>
-                <string>root</string>
-                <key>RunAtLoad</key>
-                <true/>
-                <key>KeepAlive</key>
-                <true/>
-                <key>SoftResourceLimits</key>
-                <dict>
-                        <key>NumberOfFiles</key>
-                        <integer>1024</integer>
-                </dict>
-                <key>StandardErrorPath</key>
-                <string>$LOG_DIR/stderr.log</string>
-        </dict>
-</plist>
+# For legacy MacOS versions - a privileged helper tool is required to run
+# the daemon. This isn't necessary for MacOS 13 and later, which makes use
+# of the SMAppService interface.
+if [ ${OSX_MAJOR_VER} -lt 13 ]; then
+  echo "Installing privileged helper tool"
+  touch $DAEMON_HELPER_TOOL
+  chown root:wheel $DAEMON_HELPER_TOOL
+  chmod 744 $DAEMON_HELPER_TOOL
+  cat << EOF > $DAEMON_HELPER_TOOL
+#!/usr/bin/env bash
+CODESIGN_REQS="anchor apple generic and identifier ${CODESIGN_APP_IDENTIFIER}"
+CODESIGN_REQS+=" and certificate 1[field.${APPLE_OID_EXT_CA_INTERMEDIATE}] /* exists */"
+CODESIGN_REQS+=" and certificate leaf[field.${APPLE_OID_EXT_APP_CODESIGNING}] /* exists */"
+CODESIGN_REQS+=" and certificate leaf[subject.OU] = \"${CODESIGN_TEAM_IDENTIFIER}\""
+if ! codesign -v --verbose=4 -R="\${CODESIGN_REQS}" "${APP_DIR}"; then
+  echo "Codesign failed! Aborting."
+  exit 1
+fi
+
+"${APP_DIR}/Contents/MacOS/Mozilla VPN" \$@
 EOF
-launchctl load -w $DAEMON_PLIST_PATH
+  chmod u-w $DAEMON_HELPER_TOOL
+
+  # Modify the SMAppService plist for use as a legacy daemon.
+  echo "Loading the Daemon at $DAEMON_PLIST_PATH"
+  plutil -replace ProgramArguments.0 -string $DAEMON_HELPER_TOOL -o $DAEMON_PLIST_PATH \
+    "${APP_DIR}/Contents/Library/LaunchDaemons/${CODESIGN_APP_IDENTIFIER}.daemon.plist"
+  launchctl load -w $DAEMON_PLIST_PATH
+fi
 
 if [ -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" ]; then
   echo "Install the firefox native messaging manifest"
