@@ -9,16 +9,16 @@
     "inspector:build": "npm run build -w ./tools/inspector/"
   },
   "devDependencies": {
-    "appium-adb": "^12.11.0",
-    "body-parser": "^1.20.2",
+    "appium-adb": "^12.12.1",
+    "body-parser": "^2.2.0",
     "chokidar": "^4.0.3",
     "command-line-args": "^6.0.1",
     "cors": "^2.8.5",
-    "dotenv": "^16.4.7",
-    "express": "^4.21.2",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
     "jsonschema": "^1.5.0",
-    "mocha": "^11.0.1",
-    "selenium-webdriver": "^4.27.0",
+    "mocha": "^11.1.0",
+    "selenium-webdriver": "^4.31.0",
     "websocket": "^1.0.35"
   },
   "workspaces":[
