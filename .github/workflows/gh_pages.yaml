@@ -75,28 +75,11 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
-
-      - name: Cache conda Packages
-        uses: actions/cache@v4
-        with:
-          path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-packages
-      - uses: conda-incubator/setup-miniconda@v3
-        with:
-          activate-environment: vpn
-          environment-file: env.yml
-
-      - name: Building
-        shell: bash
-        run: |
-          npm install
-          npm run inspector:build
-
       - name: Uploading
         uses: actions/upload-artifact@v4
         with:
           name: Inspector Build
-          path: tools/inspector/dist/app
+          path: tools/inspector/
 
   addons:
     runs-on: ubuntu-22.04

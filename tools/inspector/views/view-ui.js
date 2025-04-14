@@ -3,9 +3,9 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import { html, css, LitElement } from 'lit'
-import { UIObserver } from '../inspector/UiObserver'
-import '../elements/pill-toggle'
-import '../elements/live-view'
+import { UIObserver } from '../inspector/UiObserver.js'
+import '../elements/pill-toggle.js'
+import '../elements/live-view.js'
 
 export class ViewUi extends LitElement {
   static styles = css`

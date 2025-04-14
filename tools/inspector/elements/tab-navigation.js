@@ -4,7 +4,7 @@
  
 import { html, css, LitElement } from 'lit'
 import './inspector-tab.js'
-import { loadView } from '../views/loader'
+import { loadView } from '../views/loader.js'
 
 export class TabNavigation extends LitElement {
   static styles = css`
