@@ -95,7 +95,6 @@ class Navigator final : public QObject {
   QQmlComponent* m_currentComponent = nullptr;
 
   QList<int> m_screenHistory;
-
 };
 
 #endif  // NAVIGATOR_H
