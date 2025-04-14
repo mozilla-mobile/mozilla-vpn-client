@@ -395,6 +395,24 @@ impression:
       - gela@mozilla.com
     expires: 2025-06-30
     extra_keys: *impression_extra_keys
+  firefox_extension_screen:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+        User has opened the Firefox extension info screen
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/FXVPN-286
+    data_reviews:
+      - DO NOT MERGE WITHOUT ADDING THIS HERE
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - vpn-telemetry@mozilla.com
+      - mcleinman@mozilla.com
+    expires: 2025-09-30
+    extra_keys: *impression_extra_keys
   language_screen:
     type: event
     lifetime: ping

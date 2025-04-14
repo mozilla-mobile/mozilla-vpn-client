@@ -77,6 +77,19 @@ MZViewBase {
             }
 
             MZSettingsItem {
+                objectName: "firefoxExtensionInfo"
+                settingTitle: MZI18n.SettingsFirefoxExtensionInfo
+                imageLeftSrc: MZAssetLookup.getImageSource("IconPuzzlePiece")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
+                imageRightMirror: MZLocalizer.isRightToLeft
+                onClicked: {
+                    Glean.interaction.firefoxExtensionSelected.record({screen:telemetryScreenId});
+                    stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewFirefoxExtensionInfo.qml")
+                }
+                visible: Qt.platform.os === "windows"
+            }
+
+            MZSettingsItem {
                 objectName: "settingsDevice"
 
                 //% "Devices"

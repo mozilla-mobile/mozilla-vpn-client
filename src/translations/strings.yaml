@@ -324,6 +324,14 @@ settings:
     value: Appearance
     comment: Appearance refers to the app theming (dark mode / light mode)
   dnsSettings: DNS settings
+  firefoxExtensionInfo: Firefox extension
+  firefoxExtensionIntro: Get more precise control over how your VPN works when you’re browsing, with the Firefox extension.
+  firefoxExtensionFirstParagraphHead: Turn off VPN for specific websites.
+  firefoxExtensionFirstParagraphMain: No more toggling your VPN on and off when you need a site to work. Plus, your preference for the website is saved so you don’t have to adjust it each time.
+  firefoxExtensionSecondParagraphHead: Choose different locations for different websites.
+  firefoxExtensionSecondParagraphMain: Browse one site as if you're in New York and another as if you’re in Paris — all in the same Firefox session.
+  firefoxExtensionMainButton: Get the extension
+  firefoxExtensionFirefoxButton: Download Firefox
   preferencesSettings: Preferences
   shareTechnicalDataDescription: Help improve Mozilla VPN by sharing crash reports, diagnostics, and product usage data.
   startAtBootTitle:

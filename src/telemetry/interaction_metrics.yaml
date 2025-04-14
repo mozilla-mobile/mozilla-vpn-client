@@ -955,6 +955,61 @@ interaction:
       - gela@mozilla.com
     expires: 2025-06-30
     extra_keys: *interaction_extra_keys
+  firefox_extension_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the button that opens
+      the Firefox extension info
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/FXVPN-286
+    data_reviews:
+      - ADD THIS IN HERE BEFORE MERIGN
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2025-09-30
+    extra_keys: *interaction_extra_keys
+  get_the_extension_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the "get extension" button
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/FXVPN-286
+    data_reviews:
+      - ADD THIS IN HERE BEFORE MERIGN
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2025-09-30
+    extra_keys: *interaction_extra_keys
+  download_firefox_selected:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The user has clicked the "download Firefox" button
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/FXVPN-286
+    data_reviews:
+      - ADD THIS IN HERE BEFORE MERIGN
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2025-09-30
+    extra_keys: *interaction_extra_keys
   app_exclusions_selected:
     type: event
     lifetime: ping
