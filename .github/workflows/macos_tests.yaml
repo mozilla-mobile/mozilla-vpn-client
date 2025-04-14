@@ -60,6 +60,12 @@ jobs:
           wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
           unzip -a -d ${{ github.workspace }} qt6_mac.zip
 
+      # Set up CodeQL
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v3
+        with:
+          languages: 'cpp'
+
       - name: Compile test client
         run: |
           mkdir -p build/cmake
@@ -68,6 +74,10 @@ jobs:
             -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
           cmake --build build/cmake
           cp -r ./build/cmake/src/Mozilla\ VPN.app/ build/Mozilla\ VPN.app
+
+      # Run CodeQL analysis
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
 
       - uses: actions/upload-artifact@v4
         with:
