@@ -86,13 +86,13 @@ if ! codesign -v --verbose=4 -R="\${CODESIGN_REQS}" "${APP_DIR}"; then
   exit 1
 fi
 
-"${APP_DIR}/Contents/MacOS/Mozilla VPN" \$@
+"${APP_DIR}/Contents/MacOS/Mozilla VPN" "macosdaemon"
 EOF
   chmod u-w $DAEMON_HELPER_TOOL
 
   # Modify the SMAppService plist for use as a legacy daemon.
   echo "Loading the Daemon at $DAEMON_PLIST_PATH"
-  plutil -replace ProgramArguments.0 -string $DAEMON_HELPER_TOOL -o $DAEMON_PLIST_PATH \
+  plutil -replace ProgramArguments -json "[\"$DAEMON_HELPER_TOOL\"]" -o $DAEMON_PLIST_PATH \
     "${APP_DIR}/Contents/Library/LaunchDaemons/${CODESIGN_APP_IDENTIFIER}.daemon.plist"
   launchctl load -w $DAEMON_PLIST_PATH
 fi
