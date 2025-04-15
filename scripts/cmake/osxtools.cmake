@@ -154,3 +154,70 @@ function(osx_codesign_target TARGET)
         endforeach()
     endif()
 endfunction()
+
+function(osx_embed_provision_profile TARGET)
+    ## Xcode should perform manage this for us.
+    if(XCODE)
+        return()
+    endif()
+
+    # Enumerate the provioning profiles managed by Xcode
+    set(XCODE_PROVISION_PROFILES_DIR "$ENV{HOME}/Library/Developer/Xcode/UserData/Provisioning\ Profiles")
+    execute_process(
+        OUTPUT_VARIABLE XCODE_PROVISION_PROFILES_RAW
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        COMMAND find ${XCODE_PROVISION_PROFILES_DIR} -type f -name "*.provisionprofile"
+    )
+    string(REGEX MATCHALL "[^\n\r]+" XCODE_PROVISION_PROFILES ${XCODE_PROVISION_PROFILES_RAW})
+
+    # Find the profile which matches our team identifier and has the most recent creation date.
+    set(BEST_TIMESTAMP 0)
+    set(BEST_PROFILE "")
+    foreach(FILENAME ${XCODE_PROVISION_PROFILES})
+        # Compare the file creation dates.
+        # TODO: Technically, we should look at the CreationDate field in the profile's plist.
+        file(TIMESTAMP ${FILENAME} FILE_TIMESTAMP "%s" UTC)
+        if(FILE_TIMESTAMP LESS BEST_TIMESTAMP)
+            continue()
+        endif()
+
+        # Check if this provision profile can be used by our development team.
+        set(TEAM_IDENTIFIER_INDEX 0)
+        while(TRUE)
+            execute_process(
+                OUTPUT_VARIABLE TEAM_IDENTIFIER
+                OUTPUT_STRIP_TRAILING_WHITESPACE
+                RESULT_VARIABLE PLUTIL_RETURN_CODE
+                COMMAND security cms -D -i ${FILENAME}
+                COMMAND plutil -extract TeamIdentifier.${TEAM_IDENTIFIER_INDEX} raw -
+            )
+            if(NOT PLUTIL_RETURN_CODE EQUAL 0)
+                break()
+            endif()
+            if(TEAM_IDENTIFIER STREQUAL CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM)
+                set(BEST_TIMESTAMP ${FILE_TIMESTAMP})
+                set(BEST_PROFILE ${FILENAME})
+                break()
+            endif()
+            math(EXPR TEAM_IDENTIFIER_INDEX "${TEAM_IDENTIFIER_INDEX}+1")
+        endwhile()
+    endforeach()
+
+    # If a provisioning profile was found - embed it into the bundle
+    if(BEST_PROFILE)
+        # For diagnostic assistance, print the provisioning profile name.
+        execute_process(
+            OUTPUT_VARIABLE PROFILE_NAME
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            COMMAND security cms -D -i ${BEST_PROFILE}
+            COMMAND plutil -extract Name raw -
+        )
+        message("Using provisioning profile: ${PROFILE_NAME}")
+
+        add_custom_command(TARGET ${TARGET} POST_BUILD
+            COMMAND_EXPAND_LISTS
+            COMMAND ${COMMENT_ECHO_COMMAND} "Bundling embedded.provisionprofile"
+            COMMAND ${CMAKE_COMMAND} -E copy ${BEST_PROFILE} $<TARGET_BUNDLE_CONTENT_DIR:${TARGET}>/embedded.provisionprofile
+        )
+    endif()
+endfunction()

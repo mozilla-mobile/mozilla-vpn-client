@@ -189,4 +189,5 @@ add_custom_command(TARGET mozillavpn POST_BUILD
 osx_bundle_assetcatalog(mozillavpn CATALOG ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets)
 
 # Perform codesigning.
+osx_embed_provision_profile(mozillavpn)
 osx_codesign_target(mozillavpn FORCE)
