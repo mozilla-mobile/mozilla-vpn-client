@@ -966,7 +966,7 @@ interaction:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/FXVPN-286
     data_reviews:
-      - ADD THIS IN HERE BEFORE MERIGN
+      - ADD THIS IN HERE BEFORE MERGING
     data_sensitivity:
       - interaction
     notification_emails:
@@ -984,7 +984,7 @@ interaction:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/FXVPN-286
     data_reviews:
-      - ADD THIS IN HERE BEFORE MERIGN
+      - ADD THIS IN HERE BEFORE MERGING
     data_sensitivity:
       - interaction
     notification_emails:
@@ -1002,7 +1002,7 @@ interaction:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/FXVPN-286
     data_reviews:
-      - ADD THIS IN HERE BEFORE MERIGN
+      - ADD THIS IN HERE BEFORE MERGING
     data_sensitivity:
       - interaction
     notification_emails:
