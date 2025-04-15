@@ -437,12 +437,12 @@ var localizedImageLookup =
           es: 'qrc:/ui/resources/extension-spanish.svg'
         },
         filenameDark: {
-          en: 'qrc:/ui/resources/extension.svg',
-          fr: 'qrc:/ui/resources/extension-french.svg',
-          it: 'qrc:/ui/resources/extension-italian.svg',
-          de: 'qrc:/ui/resources/extension-german.svg',
-          nl: 'qrc:/ui/resources/extension-dutch.svg',
-          es: 'qrc:/ui/resources/extension-spanish.svg'
+          en: 'qrc:/ui/resources/extension-dark.svg',
+          fr: 'qrc:/ui/resources/extension-french-dark.svg',
+          it: 'qrc:/ui/resources/extension-italian-dark.svg',
+          de: 'qrc:/ui/resources/extension-german-dark.svg',
+          nl: 'qrc:/ui/resources/extension-dutch-dark.svg',
+          es: 'qrc:/ui/resources/extension-spanish-dark.svg'
         }
       }
     }
