@@ -20,6 +20,10 @@
 #  include "platforms/ios/ioscommons.h"
 #endif
 
+#if defined(MZ_LINUX) && !defined(UNIT_TEST)
+#  include "platforms/linux/xdgappearance.h"
+#endif
+
 #include <QCoreApplication>
 #include <QPainter>
 #include <QQmlEngine>
@@ -37,7 +41,14 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
             initialize(QmlEngineHolder::instance()->engine());
           });
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#if defined(MZ_LINUX) && !defined(UNIT_TEST)
+  m_xdg = new XdgAppearance(this);
+  connect(m_xdg, &XdgAppearance::colorSchemeChanged, this, [this]() {
+    if (SettingsHolder::instance()->usingSystemTheme()) {
+      setToSystemTheme();
+    }
+  });
+#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this,
           [this]() {
             if (SettingsHolder::instance()->usingSystemTheme()) {
@@ -164,28 +175,20 @@ void Theme::setCurrentTheme(const QString& themeName) {
 void Theme::setUsingSystemTheme(const bool usingSystemTheme) {
   SettingsHolder::instance()->setUsingSystemTheme(usingSystemTheme);
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   if (usingSystemTheme) {
     setToSystemTheme();
   }
-#endif
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
 void Theme::setToSystemTheme() {
-  if (!Feature::get(Feature::Feature_themeSelection)->isSupported()) {
+  if (!Feature::get(Feature::Feature_themeSelection)->isSupported() ||
+      !Feature::get(Feature::Feature_themeSelectionIncludesAutomatic)) {
     logger.debug()
         << "Not setting to system theme because feature is not supported.";
     return;
   }
 
-  QString themeImpliedBySystemTheme;
-  if (currentSystemTheme() != Qt::ColorScheme::Dark) {
-    themeImpliedBySystemTheme = "main";
-  } else {
-    themeImpliedBySystemTheme = "dark-mode";
-  }
-
+  QString themeImpliedBySystemTheme = currentSystemTheme();
   logger.debug() << "Using system theme. Associated VPN theme is"
                  << themeImpliedBySystemTheme;
 
@@ -200,7 +203,6 @@ void Theme::setToSystemTheme() {
     emit changed();
   }
 }
-#endif
 
 bool Theme::loadTheme(const QString& themeName) {
   if (!m_themes.contains(themeName)) return false;
@@ -243,14 +245,26 @@ QVariant Theme::data(const QModelIndex& index, int role) const {
   }
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-Qt::ColorScheme Theme::currentSystemTheme() {
+QString Theme::currentSystemTheme() {
+#if defined(MZ_LINUX) && !defined(UNIT_TEST)
+  if (m_xdg->colorScheme() != 1) {
+    return "main";
+  } else {
+    return "dark-mode";
+  }
+#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   QStyleHints* styleHints = QGuiApplication::styleHints();
-  Qt::ColorScheme currentColorScheme = styleHints->colorScheme();
-  logger.debug() << "Current system theme: " << currentColorScheme;
-  return currentColorScheme;
-}
+  if (styleHints->colorScheme() != Qt::ColorScheme::Dark) {
+    return "main";
+  } else {
+    return "dark-mode";
+  }
+#else
+  // Otherwise, we have no way to detect the system theme.
+  return "main";
 #endif
+}
+
 #ifdef MZ_WINDOWS
 #  include <dwmapi.h>
 
