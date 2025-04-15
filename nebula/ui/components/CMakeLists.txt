@@ -47,7 +47,6 @@ qt_add_qml_module(components
          MZLogsButton.qml
          MZMenu.qml
          MZMetropolisLabel.qml
-         MZMobileStatusBarModifier.qml
          MZMouseArea.qml
          MZPanel.qml
          MZPaymentMethod.qml

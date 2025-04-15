@@ -62,13 +62,6 @@ class Theme final : public QAbstractListModel {
   Qt::ColorScheme currentSystemTheme();
 #endif
 
-  enum StatusBarTextColor {
-    StatusBarTextColorLight,
-    StatusBarTextColorDark,
-  };
-  Q_ENUM(StatusBarTextColor)
-  Q_INVOKABLE void setStatusBarTextColor(Theme::StatusBarTextColor color);
-
   bool usesDarkModeAssets() const;
   // Returns an Icon matching the current colorscheme
   QImage getTitleBarIcon();

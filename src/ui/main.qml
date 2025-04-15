@@ -116,10 +116,6 @@ Window {
         }
     }
 
-    MZMobileStatusBarModifier {
-        id: statusBarModifier
-    }
-
     Rectangle {
         id: iosSafeAreaTopMargin
 

@@ -258,12 +258,6 @@ Qt::ColorScheme Theme::currentSystemTheme() {
 #  pragma comment(lib, "dwmapi.lib")
 #endif
 
-void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
-#ifdef MZ_IOS
-  IOSCommons::setStatusBarTextColor(color);
-#endif
-}
-
 bool Theme::usesDarkModeAssets() const {
   if (readColors().hasProperty("useDarkAssets") &&
       readColors().property("useDarkAssets").isBool()) {

@@ -399,16 +399,6 @@ Item {
             }
         }
 
-        Component.onCompleted: {
-            statusBarModifier.statusBarTextColor = MZTheme.StatusBarTextColorLight;
-        }
-
-        MZMobileStatusBarModifier {
-            id: statusBarModifier
-            statusBarTextColor: MZTheme.StatusBarTextColorLight
-
-        }
-
         Component.onDestruction: {
             statusBarModifier.resetDefaults();
         }

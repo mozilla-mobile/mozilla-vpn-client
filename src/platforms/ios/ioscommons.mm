@@ -51,11 +51,11 @@ QStringList IOSCommons::systemLanguageCodes() {
 @property(nonatomic, assign) UIStatusBarStyle preferredStatusBarStyle;
 @end
 
-void IOSCommons::setStatusBarTextColor(Theme::StatusBarTextColor color) {
+void IOSCommons::setStatusBarTextColor(bool isLight) {
   StatusBarModifierViewController* rootViewController =
       static_cast<StatusBarModifierViewController*>(
           [[UIApplication sharedApplication].windows[0] rootViewController]);
-  if (color == Theme::StatusBarTextColorLight) {
+  if (isLight) {
     rootViewController.preferredStatusBarStyle = UIStatusBarStyleLightContent;
   } else {
     rootViewController.preferredStatusBarStyle = UIStatusBarStyleDarkContent;
@@ -70,7 +70,7 @@ void IOSCommons::statusBarUpdateHack() {
   if (@available(iOS 17, *)) {
     // No need to update status bar color, as works as expected on iOS 17+.
   } else {
-    setStatusBarTextColor(Theme::StatusBarTextColorLight);
+    setStatusBarTextColor(true);
   }
 }
 
