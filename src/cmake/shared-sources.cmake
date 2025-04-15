@@ -96,6 +96,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/frontend/navigationbarbutton.h
     ${CMAKE_SOURCE_DIR}/src/frontend/navigationbarmodel.cpp
     ${CMAKE_SOURCE_DIR}/src/frontend/navigationbarmodel.h
+    ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.cpp
+    ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.h
     ${CMAKE_SOURCE_DIR}/src/glean/mzglean.h
     ${CMAKE_SOURCE_DIR}/src/glean/mzglean.cpp
     ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Chacha20.c

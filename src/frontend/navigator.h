@@ -8,6 +8,7 @@
 #include <QObject>
 #include <QQmlComponent>
 
+class NavigatorReloader;
 class QQuickItem;
 
 class Navigator final : public QObject {
@@ -69,6 +70,9 @@ class Navigator final : public QObject {
    */
   void reloadCurrentScreen();
 
+  void registerReloader(NavigatorReloader* reloader);
+  void unregisterReloader(NavigatorReloader* reloader);
+
   static void registerScreen(int screenId, LoadPolicy loadPolicy,
                              const QString& qmlComponentUrl,
                              const QVector<int>& requiresAppState,
@@ -95,6 +99,8 @@ class Navigator final : public QObject {
   QQmlComponent* m_currentComponent = nullptr;
 
   QList<int> m_screenHistory;
+
+  QList<NavigatorReloader*> m_reloaders;
 };
 
 #endif  // NAVIGATOR_H
