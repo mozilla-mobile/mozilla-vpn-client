@@ -110,54 +110,60 @@ function(osx_codesign_target TARGET)
     if(XCODE)
         return()
     endif()
-
-    if(CODE_SIGN_IDENTITY)
-        cmake_parse_arguments(CODESIGN
-            "FORCE"
-            ""
-            "OPTIONS;FILES"
-            ${ARGN})
-
-        set(CODESIGN_ARGS --timestamp -s "${CODE_SIGN_IDENTITY}")
-        if(CODESIGN_FORCE)
-            list(APPEND CODESIGN_ARGS -f)
-        endif()
-        if(CODESIGN_OPTIONS)
-            list(JOIN CODESIGN_OPTIONS , CODESIGN_OPTIONS_JOINED)
-            list(APPEND CODESIGN_ARGS "--option=${CODESIGN_OPTIONS_JOINED}")
-        endif()
-
-        ## Process the entitlements as though Xcode has done variable expansion.
-        ## This only supports the PRODUCT_BUNDLE_IDENTIFIER and DEVELOPMENT_TEAM
-        ## for now.
-        get_target_property(CODESIGN_ENTITLEMENTS ${TARGET} XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS)
-        if(CODESIGN_ENTITLEMENTS)
-            add_custom_command(TARGET ${TARGET} POST_BUILD
-                COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py ${CODESIGN_ENTITLEMENTS}
-                    -k PRODUCT_BUNDLE_IDENTIFIER=$<TARGET_PROPERTY:${TARGET},XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER>
-                    -k DEVELOPMENT_TEAM=${CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM}
-                    -o ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_codesign.entitlements
-            )
-            list(APPEND CODESIGN_ARGS --entitlements ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_codesign.entitlements)
-        endif()
-
-        ## If no files were specified, sign the target itself.
-        if(NOT CODESIGN_FILES)
-            set(CODESIGN_FILES $<TARGET_FILE:${TARGET}>)
-        endif()
-
-        foreach(FILE ${CODESIGN_FILES})
-            add_custom_command(TARGET ${TARGET} POST_BUILD VERBATIM
-                COMMAND ${COMMENT_ECHO_COMMAND} "Signing ${TARGET}: ${FILE}"
-                COMMAND ${CODESIGN_BIN} ${CODESIGN_ARGS} ${FILE}
-            )
-        endforeach()
+    ## Not required unless we are configured for codesigning.
+    if(NOT CODE_SIGN_IDENTITY)
+        return()
     endif()
+
+    cmake_parse_arguments(CODESIGN
+        "FORCE"
+        ""
+        "OPTIONS;FILES"
+        ${ARGN})
+
+    set(CODESIGN_ARGS --timestamp -s "${CODE_SIGN_IDENTITY}")
+    if(CODESIGN_FORCE)
+        list(APPEND CODESIGN_ARGS -f)
+    endif()
+    if(CODESIGN_OPTIONS)
+        list(JOIN CODESIGN_OPTIONS , CODESIGN_OPTIONS_JOINED)
+        list(APPEND CODESIGN_ARGS "--option=${CODESIGN_OPTIONS_JOINED}")
+    endif()
+
+    ## Process the entitlements as though Xcode has done variable expansion.
+    ## This only supports the PRODUCT_BUNDLE_IDENTIFIER and DEVELOPMENT_TEAM
+    ## for now.
+    get_target_property(CODESIGN_ENTITLEMENTS ${TARGET} XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS)
+    if(CODESIGN_ENTITLEMENTS)
+        add_custom_command(TARGET ${TARGET} POST_BUILD
+            COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py ${CODESIGN_ENTITLEMENTS}
+                -k PRODUCT_BUNDLE_IDENTIFIER=$<TARGET_PROPERTY:${TARGET},XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER>
+                -k DEVELOPMENT_TEAM=${CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM}
+                -o ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_codesign.entitlements
+        )
+        list(APPEND CODESIGN_ARGS --entitlements ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_codesign.entitlements)
+    endif()
+
+    ## If no files were specified, sign the target itself.
+    if(NOT CODESIGN_FILES)
+        set(CODESIGN_FILES $<TARGET_FILE:${TARGET}>)
+    endif()
+
+    foreach(FILE ${CODESIGN_FILES})
+        add_custom_command(TARGET ${TARGET} POST_BUILD VERBATIM
+            COMMAND ${COMMENT_ECHO_COMMAND} "Signing ${TARGET}: ${FILE}"
+            COMMAND ${CODESIGN_BIN} ${CODESIGN_ARGS} ${FILE}
+        )
+    endforeach()
 endfunction()
 
 function(osx_embed_provision_profile TARGET)
     ## Xcode should perform manage this for us.
     if(XCODE)
+        return()
+    endif()
+    ## Not required unless we are configured for codesigning.
+    if(NOT CODE_SIGN_IDENTITY)
         return()
     endif()
 
