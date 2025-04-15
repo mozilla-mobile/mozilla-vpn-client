@@ -191,9 +191,7 @@ void Controller::implPermRequired() {
   setState(StatePermissionRequired);
 }
 
-bool Controller::isInitialized() const {
-  return m_state <= StateOff;
-}
+bool Controller::isInitialized() const { return m_state >= StateOff; }
 
 void Controller::implInitialized(bool status, bool a_connected,
                                  const QDateTime& connectionDate) {
