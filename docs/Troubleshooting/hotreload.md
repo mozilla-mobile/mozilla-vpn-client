@@ -9,14 +9,11 @@ https://user-images.githubusercontent.com/9611612/222613103-edca265c-f489-4762-a
 
 ## Usage (Desktop): 
 - Have MozillaVPN open and in Dev Mode. 
-- run `npm run qml-reload` or `node /tools/qml_reload/hot.js`
+- Compile the hotreloader: 
+- cmake --build <your build directory> --target hotreloader
+- run <your build directory>/tools/tools/qml_hot_reload/hotreloader
 - Edit any qml file. 
 
 You can exit using `CMD+C` - any changes will be reset. 
 
-## Usage (Android)
-- Have MozillaVPN open and in Dev Mode. 
-- Have the Device connected via ADB
-- run `node /tools/qml_reload/hot.js --remote --adb`
-- Edit any qml file. 
 
