@@ -10,9 +10,10 @@ https://user-images.githubusercontent.com/9611612/222613103-edca265c-f489-4762-a
 ## Usage (Desktop): 
 - Have MozillaVPN open and in Dev Mode. 
 - Compile the hotreloader: 
-- cmake --build <your build dir> --target hotreloader
-- run <your build dir>/tools/tools/qml_hot_reload/hotreloader
+- cmake --build <your build directory> --target hotreloader
+- run <your build directory>/tools/tools/qml_hot_reload/hotreloader
 - Edit any qml file. 
 
 You can exit using `CMD+C` - any changes will be reset. 
+
 
