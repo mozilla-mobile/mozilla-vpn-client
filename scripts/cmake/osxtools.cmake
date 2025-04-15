@@ -135,7 +135,7 @@ function(osx_codesign_target TARGET)
             add_custom_command(TARGET ${TARGET} POST_BUILD
                 COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py ${CODESIGN_ENTITLEMENTS}
                     -k PRODUCT_BUNDLE_IDENTIFIER=$<TARGET_PROPERTY:${TARGET},XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER>
-                    -k DEVELOPMENT_TEAM=$<TARGET_PROPERTY:${TARGET},XCODE_ATTRIBUTE_DEVELOPMENT_TEAM>
+                    -k DEVELOPMENT_TEAM=${CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM}
                     -o ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_codesign.entitlements
             )
             list(APPEND CODESIGN_ARGS --entitlements ${CMAKE_CURRENT_BINARY_DIR}/${TARGET}_codesign.entitlements)
