@@ -18,7 +18,11 @@ QtObject {
     }
 
     function resetDefaults() {
+      if (MZTheme.isThemeDark()) {
+        statusBarTextColor = MZTheme.StatusBarTextColorLight;
+      } else {
         statusBarTextColor = MZTheme.StatusBarTextColorDark;
+      }
     }
 
     Component.onCompleted: applyChanges()

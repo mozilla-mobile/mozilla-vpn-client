@@ -43,7 +43,7 @@ class Theme final : public QAbstractListModel {
 
   // Todo: Add a thing for themes to define, if they are using dark or light
   // resources. `useDarkAssets` is available, add this to ThemeData and connect.
-  bool isThemeDark() { return m_currentTheme != "main"; }
+  Q_INVOKABLE bool isThemeDark() { return m_currentTheme != "main"; }
 
   void setCurrentTheme(const QString& themeName);
 
