@@ -14,6 +14,9 @@ qt_add_executable(webext-bridge
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     target_sources(webext-bridge PRIVATE webexthandler_linux.cpp)
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    enable_language(OBJC)
+    target_sources(webext-bridge PRIVATE webexthandler_macos.mm)
 endif()
 
 target_link_libraries(webext-bridge PUBLIC Qt6::Core Qt6::Network)

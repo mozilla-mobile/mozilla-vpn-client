@@ -29,6 +29,8 @@ void WebExtHandler::proc_info(const QByteArray& msg) {
 }
 
 void WebExtHandler::start(const QByteArray& msg) {
+  Q_UNUSED(msg);
+
   QProcess proc;
   proc.setStandardInputFile(QProcess::nullDevice());
   proc.setStandardOutputFile(QProcess::nullDevice());
