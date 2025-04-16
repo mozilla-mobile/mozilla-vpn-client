@@ -48,7 +48,7 @@ class Localizer final : public QAbstractListModel {
 
   // This returns the language code from the settings, and, if it's null, it
   // returns the system language code.
-  QString languageCodeOrSystem() const;
+  Q_INVOKABLE QString languageCodeOrSystem() const;
 
   QStringList languages() const;
 

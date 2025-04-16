@@ -30,6 +30,18 @@
         <file>resources/emptyMessages-LM.svg</file>
         <file>resources/emptyServerList-DM.svg</file>
         <file>resources/emptyServerList-LM.svg</file>
+        <file>resources/extension.svg</file>
+        <file>resources/extension-dark.svg</file>
+        <file>resources/extension-dutch.svg</file>
+        <file>resources/extension-dutch-dark.svg</file>
+        <file>resources/extension-french.svg</file>
+        <file>resources/extension-french-dark.svg</file>
+        <file>resources/extension-german.svg</file>
+        <file>resources/extension-german-dark.svg</file>
+        <file>resources/extension-italian.svg</file>
+        <file>resources/extension-italian-dark.svg</file>
+        <file>resources/extension-spanish.svg</file>
+        <file>resources/extension-spanish-dark.svg</file>
         <file>resources/flags/AC.png</file>
         <file>resources/flags/AD.png</file>
         <file>resources/flags/AE.png</file>
@@ -349,6 +361,8 @@
         <file>resources/settings/apppermissions.svg</file>
         <file>resources/settings/dnssettings.svg</file>
         <file>resources/settings/dnssettings-dark.svg</file>
+        <file>resources/settings/extension-icon.svg</file>
+        <file>resources/settings/extension-icon-dark.svg</file>
         <file>resources/settings/getHelp.svg</file>
         <file>resources/settings/iconPermissions-dark.svg</file>
         <file>resources/settings/language.svg</file>
