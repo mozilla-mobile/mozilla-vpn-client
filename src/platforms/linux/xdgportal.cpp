@@ -11,7 +11,11 @@
 #include <QProcessEnvironment>
 #include <QRandomGenerator>
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+#  include <private/qdesktopunixservices_p.h>
+#  include <private/qguiapplication_p.h>
+#  include <qpa/qplatformintegration.h>
+#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
 #  include <private/qgenericunixservices_p.h>
 #  include <private/qguiapplication_p.h>
 #  include <qpa/qplatformintegration.h>
@@ -94,8 +98,13 @@ QString XdgPortal::parentWindow() {
   if (!holder->hasWindow()) {
     return QString("");
   }
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+  QDesktopUnixServices* services = dynamic_cast<QDesktopUnixServices*>(
+      QGuiApplicationPrivate::platformIntegration()->services());
+  if (services != nullptr) {
+    return services->portalWindowIdentifier(holder->window());
+  }
+#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   QGenericUnixServices* services = dynamic_cast<QGenericUnixServices*>(
       QGuiApplicationPrivate::platformIntegration()->services());
   if (services != nullptr) {
