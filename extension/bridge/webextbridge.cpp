@@ -1,0 +1,79 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "webextbridge.h"
+
+#include <QHostAddress>
+
+constexpr const int BRIDGE_RETRY_DELAY = 500;
+
+WebExtBridge::WebExtBridge(quint16 port, QObject* parent)
+    : m_port(port), QObject(parent) {
+
+  connect(&m_socket, &QAbstractSocket::stateChanged, this,
+          &WebExtBridge::stateChanged);
+
+  connect(&m_socket, &QAbstractSocket::errorOccurred, this,
+          &WebExtBridge::errorOccurred);
+
+  connect(&m_socket, &QIODevice::bytesWritten, this,
+          &WebExtBridge::tryPushData);
+
+  connect(&m_retryTimer, &QTimer::timeout, this,
+          &WebExtBridge::retryConnection);
+
+  // Immediately try to establish a connection.
+  retryConnection();
+}
+
+void WebExtBridge::stateChanged(QAbstractSocket::SocketState state) {
+  //qDebug() << "Web extension socket state:" << state;
+  if (state == QAbstractSocket::ConnectedState) {
+    Q_ASSERT(m_reader == nullptr);
+    m_reader = new WebExtReader(&m_socket, this);
+    connect(m_reader, &WebExtReader::messageReceived, this,
+            [&](const QByteArray& data) { emit messageReceived(data); });
+
+    emit connected();
+  } else if (m_reader != nullptr) {
+    delete m_reader;
+    m_reader = nullptr;
+    emit disconnected();
+  }
+
+  // If the state is now unconnected - try again after a short delay.
+  if (state == QAbstractSocket::UnconnectedState) {
+    m_retryTimer.setSingleShot(true);
+    m_retryTimer.start(BRIDGE_RETRY_DELAY);
+  }
+}
+
+void WebExtBridge::errorOccurred(QAbstractSocket::SocketError socketError) {
+  //qDebug() << "Web extension socket error:" << m_socket.errorString();
+}
+
+void WebExtBridge::retryConnection() {
+  // Abort and try to reconnect.
+  if (m_socket.state() != QAbstractSocket::UnconnectedState) {
+    m_socket.abort();
+  }
+  m_socket.connectToHost(QHostAddress(QHostAddress::LocalHost), m_port);
+}
+
+void WebExtBridge::sendMessage(const QByteArray& message) {
+  quint32 length = message.length();
+  m_buffer.append(reinterpret_cast<char*>(&length), sizeof(quint32));
+  m_buffer.append(message);
+  tryPushData();
+}
+
+void WebExtBridge::tryPushData() {
+  if (m_buffer.isEmpty()) {
+    return;
+  }
+  qint64 len = m_socket.write(m_buffer);
+  if (len > 0) {
+    m_buffer = m_buffer.sliced(len);
+  }
+}
