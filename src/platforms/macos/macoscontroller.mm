@@ -77,11 +77,18 @@ void MacOSController::checkServiceStatus(void) {
         logger.debug() << "Mozilla VPN daemon not found.";
         [[fallthrough]];
       case SMAppServiceStatusNotFound:
-        if (![service registerAndReturnError: & error]) {
-          logger.error() << "Failed to register Mozilla VPN daemon: "
-                        << QString::fromNSString(error.localizedDescription);
-        } else {
+        if ([service registerAndReturnError: & error]) {
           logger.debug() << "Mozilla VPN daemon registered successfully.";
+          break;
+        }
+        logger.error() << "Failed to register Mozilla VPN daemon: "
+                       << QString::fromNSString(error.localizedDescription);
+        if (error.code == kSMErrorInvalidSignature) {
+          // If the build is unsigned, continue anyways and hope for the best.
+          // This is to mitigate developer pain by allowing the VPN to make use
+          // of a pre-existing daemon.
+          m_regTimer.stop();
+          LocalSocketController::initialize(nullptr, nullptr);
         }
         break;
 
