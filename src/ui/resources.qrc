@@ -330,7 +330,6 @@
         <file>resources/logo.ico</file>
         <file>resources/logo.svg</file>
         <file>resources/logo-dark.svg</file>
-        <file>resources/macos-allow-in-background.svg</file>
         <file>resources/magic-purple.svg</file>
         <file>resources/main-img-vpn-off.svg</file>
         <file>resources/main-img-vpn-on.svg</file>
@@ -352,6 +351,18 @@
         <file>resources/payment/paymentUnbranded_LM.svg</file>
         <file>resources/payment/unionpay.svg</file>
         <file>resources/payment/visa.svg</file>
+        <file>resources/permissions/macos-background-dark-de.svg</file>
+        <file>resources/permissions/macos-background-dark-en.svg</file>
+        <file>resources/permissions/macos-background-dark-es.svg</file>
+        <file>resources/permissions/macos-background-dark-fr.svg</file>
+        <file>resources/permissions/macos-background-dark-it.svg</file>
+        <file>resources/permissions/macos-background-dark-nl.svg</file>
+        <file>resources/permissions/macos-background-light-de.svg</file>
+        <file>resources/permissions/macos-background-light-en.svg</file>
+        <file>resources/permissions/macos-background-light-es.svg</file>
+        <file>resources/permissions/macos-background-light-fr.svg</file>
+        <file>resources/permissions/macos-background-light-it.svg</file>
+        <file>resources/permissions/macos-background-light-nl.svg</file>
         <file>resources/qrcodes/app-store-qrcode.png</file>
         <file>resources/qrcodes/play-store-qrcode.png</file>
         <file>resources/quick-access.svg</file>

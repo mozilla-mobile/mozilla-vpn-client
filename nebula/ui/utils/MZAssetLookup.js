@@ -444,6 +444,24 @@ var localizedImageLookup =
           nl: 'qrc:/ui/resources/extension-dutch-dark.svg',
           es: 'qrc:/ui/resources/extension-spanish-dark.svg'
         }
+      },
+      'MacosPermissionBackground': {
+        filenameLight: {
+          de: 'qrc:/ui/resources/permissions/macos-background-light-de.svg',
+          en: 'qrc:/ui/resources/permissions/macos-background-light-en.svg',
+          es: 'qrc:/ui/resources/permissions/macos-background-light-es.svg',
+          fr: 'qrc:/ui/resources/permissions/macos-background-light-fr.svg',
+          it: 'qrc:/ui/resources/permissions/macos-background-light-it.svg',
+          nl: 'qrc:/ui/resources/permissions/macos-background-light-nl.svg'
+        },
+        filenameDark: {
+          de: 'qrc:/ui/resources/permissions/macos-background-dark-de.svg',
+          en: 'qrc:/ui/resources/permissions/macos-background-dark-en.svg',
+          es: 'qrc:/ui/resources/permissions/macos-background-dark-es.svg',
+          fr: 'qrc:/ui/resources/permissions/macos-background-dark-fr.svg',
+          it: 'qrc:/ui/resources/permissions/macos-background-dark-it.svg',
+          nl: 'qrc:/ui/resources/permissions/macos-background-dark-nl.svg'
+        }
       }
     }
 

@@ -38,7 +38,7 @@ MZFlickable {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: MZTheme.theme.contentTopMarginDesktop
 
-            source: "qrc:/ui/resources/macos-allow-in-background.svg"
+            source: MZAssetLookup.getLocalizedImageSource("MacosPermissionBackground")
             fillMode: Image.PreserveAspectFit
         }
 
