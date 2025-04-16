@@ -405,7 +405,7 @@ impression:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/FXVPN-286
     data_reviews:
-      - DO NOT MERGE WITHOUT ADDING THIS HERE
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/10413#pullrequestreview-2772248108
     data_sensitivity:
       - interaction
     notification_emails:
