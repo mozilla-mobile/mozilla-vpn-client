@@ -201,7 +201,7 @@ MZViewBase {
 
             messages: [
                 {
-                    type: "warning",
+                    type: MZContextualAlert.AlertType.Warning,
                     message: MZI18n.SettingsDevRestartRequired,
                     visible: isVisible
                 }

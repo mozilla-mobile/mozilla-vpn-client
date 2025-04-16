@@ -274,7 +274,7 @@ MZViewBase {
 
                     messages: [
                         {
-                            type: "error",
+                            type: MZContextualAlert.AlertType.Error,
                             message: ipInput.error,
                             visible: ipInput.valueInvalid && ipInput.visible
                         }

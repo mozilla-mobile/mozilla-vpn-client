@@ -7,13 +7,25 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
+
 
 RowLayout {
     id: messageItem
 
-    property string iconSrc
-    property string fontColor
+    enum AlertType {
+        Warning,
+        Error
+    }
+    property var messageString: ""
+    property var alertType: MZContextualAlert.AlertType.Warning
 
+    property string iconSrc: (alertType == MZContextualAlert.AlertType.Warning) 
+                                ? MZAssetLookup.getImageSource("WarningDarkOrange") :
+                                  MZAssetLookup.getImageSource("WarningRed")
+    property string fontColor: (alertType == MZContextualAlert.AlertType.Warning) ? 
+                                  MZTheme.colors.fontColorWarningForBackground :
+                                  MZTheme.colors.errorAccentLight
     Layout.preferredWidth: parent.width
     Layout.fillWidth: true
     spacing: 0
@@ -82,7 +94,7 @@ RowLayout {
         Accessible.role: Accessible.StaticText
 
         color: fontColor
-        text: modelData.message
+        text: messageString
         wrapMode: Text.WordWrap
         width: undefined
         Layout.fillWidth: true
