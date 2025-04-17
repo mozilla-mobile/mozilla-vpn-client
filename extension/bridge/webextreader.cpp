@@ -5,42 +5,24 @@
 #include "webextreader.h"
 
 #include <QIODevice>
-#include <QFileDevice>
-#ifdef Q_OS_WIN
-# include <QWinEventNotifier>
-#else
-# include <QSocketNotifier>
-#endif
 
 WebExtReader::WebExtReader(QIODevice* d, QObject* parent) : QObject(parent) {
   m_device = d;
-
-  QFileDevice* fdev = qobject_cast<QFileDevice*>(d);
-  if (fdev == nullptr) {
-    m_connection = connect(m_device, &QIODevice::readyRead, this,
-                           &WebExtReader::readyRead);
-  } else {
-#ifdef Q_OS_WIN
-    m_connection = connect(new QWinEventNotifier(fdev->handle(), this),
-                           &QWinEventNotifier::activated, this,
-                           &WebExtReader::readyRead);
-#else
-    auto n = new QSocketNotifier(fdev->handle(), QSocketNotifier::Read, this);
-    m_connection = connect(n, &QSocketNotifier::activated, this,
-                           &WebExtReader::readyRead);
-#endif
-  }
 }
 
 void WebExtReader::readyRead() {
   while (!m_device->atEnd()) {
-    // We are waiting on the message length.
     if (m_length == 0) {
       m_device->startTransaction();
-      qint64 rx = m_device->read(reinterpret_cast<char*>(&m_length), sizeof(quint32));
+      char msgLength[sizeof(uint32_t)];
+      qint64 rx = m_device->read(msgLength, sizeof(msgLength));
       if (rx < sizeof(quint32)) {
         m_device->rollbackTransaction();
         return;
+      }
+      m_length = *reinterpret_cast<uint32_t*>(msgLength);
+      if (m_length == 0) {
+        continue;
       }
       m_buffer.reserve(m_length);
       m_device->commitTransaction();

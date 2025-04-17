@@ -41,6 +41,8 @@ void WebExtBridge::stateChanged(QAbstractSocket::SocketState state) {
   if (state == QAbstractSocket::ConnectedState) {
     Q_ASSERT(m_reader == nullptr);
     m_reader = new WebExtReader(&m_socket, this);
+    connect(&m_socket, &QAbstractSocket::readyRead, m_reader,
+            &WebExtReader::readyRead);
     connect(m_reader, &WebExtReader::messageReceived, this,
             [&](const QByteArray& data) { emit messageReceived(data); });
 
