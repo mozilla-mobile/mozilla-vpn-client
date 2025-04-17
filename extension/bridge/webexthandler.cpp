@@ -10,42 +10,16 @@
 #include <QJsonObject>
 #include <QMetaObject>
 
-#ifdef Q_OS_WIN
-# include <QWinEventNotifier>
-#else
-# include <QSocketNotifier>
-#endif
-
 WebExtHandler::WebExtHandler(QFileDevice* d, QObject* parent) : QObject(parent) {
   m_output = d;
+  m_worker = new WebExtWorker(this);
 
-  // Read messages from stdin and deliver them to the handler.
-  QFile* input = new QFile(this);
-  input->open(stdin, QIODevice::ReadOnly);
+  connect(m_worker, SIGNAL(messageReceived(QByteArray)), this,
+          SLOT(handleMessage(QByteArray)));
+  connect(m_worker, &WebExtWorker::eofReceived, this,
+          [&]() { emit eofReceived(); });
 
-  m_reader = new WebExtReader(input);
-  connect(m_reader, &WebExtReader::messageReceived, this,
-          &WebExtHandler::handleMessage);
-  connect(m_reader, &WebExtReader::eofReceived, this,
-          [this]() { emit eofReceived(); });
-
-  // The readyRead signal doesn't really work for stdin.
-#ifdef Q_OS_WIN
-  connect(new QWinEventNotifier(input->handle(), m_reader),
-          &QWinEventNotifier::activated, m_reader, &WebExtReader::readyRead);
-#else
-  connect(new QSocketNotifier(input->handle(), QSocketNotifier::Read, m_reader),
-          &QSocketNotifier::activated, m_reader, &WebExtReader::readyRead);
-#endif
-
-  // Reading from standard input is prone to all kinds of janky threading
-  // issues. It's much cleaner to just give the reader its own thread.
-  m_reader->moveToThread(&m_thread);
-  m_thread.start();
-}
-
-WebExtHandler::~WebExtHandler() {
-  m_thread.terminate();
+  m_worker->start();
 }
 
 void WebExtHandler::writeMsgStdout(const QByteArray& msg) {
@@ -83,4 +57,20 @@ void WebExtHandler::handleMessage(const QByteArray& msg) {
 
 void WebExtHandler::bridge_ping(const QByteArray& msg) {
   writeJsonStdout(QJsonObject({{"status", "bridge_pong"}}));
+}
+
+void WebExtWorker::run() {
+  QFile input;
+  input.open(stdin, QIODevice::ReadOnly);
+
+  WebExtReader reader(&input);
+  connect(&reader, &WebExtReader::messageReceived, this,
+          [&](const QByteArray& msg) { emit messageReceived(msg); });
+
+  // The loop.
+  while (!input.atEnd()) {
+    reader.readyRead();
+  }
+
+  emit eofReceived();
 }

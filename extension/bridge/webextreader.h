@@ -20,13 +20,11 @@ class WebExtReader : public QObject {
 
  signals:
   void messageReceived(const QByteArray& message);
-  void eofReceived();
 
  private:
   QIODevice* m_device;
   QByteArray m_buffer;
   quint32 m_length = 0;
-  QMetaObject::Connection m_connection;
 };
 
 #endif  // WEBEXTREADER_H
