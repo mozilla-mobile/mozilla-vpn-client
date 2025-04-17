@@ -32,7 +32,6 @@ class WebExtHandler final : public QObject {
 
  private:
   QFileDevice* m_output;
-  QDataStream m_stream;
 };
 
 #endif  // COMMAND_H
