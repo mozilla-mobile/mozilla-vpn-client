@@ -23,6 +23,15 @@ WebExtBridge::WebExtBridge(quint16 port, QObject* parent)
   connect(&m_retryTimer, &QTimer::timeout, this,
           &WebExtBridge::retryConnection);
 
+  // Upon disconnection - attempt to retry after a short delay.
+  m_retryTimer.setSingleShot(true);
+  connect(&m_socket, &QAbstractSocket::stateChanged, &m_retryTimer,
+          [this](QAbstractSocket::SocketState state) {
+            if (state == QAbstractSocket::UnconnectedState) {
+              m_retryTimer.start(BRIDGE_RETRY_DELAY);
+            }
+          });
+
   // Immediately try to establish a connection.
   retryConnection();
 }
@@ -40,12 +49,6 @@ void WebExtBridge::stateChanged(QAbstractSocket::SocketState state) {
     delete m_reader;
     m_reader = nullptr;
     emit disconnected();
-  }
-
-  // If the state is now unconnected - try again after a short delay.
-  if (state == QAbstractSocket::UnconnectedState) {
-    m_retryTimer.setSingleShot(true);
-    m_retryTimer.start(BRIDGE_RETRY_DELAY);
   }
 }
 
