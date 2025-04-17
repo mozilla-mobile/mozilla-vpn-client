@@ -20,3 +20,5 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 endif()
 
 target_link_libraries(webext-bridge PUBLIC Qt6::Core Qt6::Network)
+
+add_subdirectory(tests)
