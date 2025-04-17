@@ -8,7 +8,8 @@ class TestIllegalNoop final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void setup();
+  // Empty init to prevent launching a valid app.
+  void init() {};
 
   // No operations here. We test that the app fails to start with no params
   void no_params();
