@@ -42,8 +42,4 @@ void WebExtReader::readyRead() {
     m_buffer.clear();
     m_length = 0;
   }
-
-  // If we get here, then there is no more data to be read.
-  disconnect(m_connection);
-  emit eofReceived();
 }

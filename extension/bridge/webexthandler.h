@@ -15,12 +15,26 @@ class QByteArray;
 class QJsonObject;
 class WebExtReader;
 
+// Helper class to read web-extension commands from stdin.
+class WebExtWorker final : public QThread {
+  Q_OBJECT
+
+ public:
+  WebExtWorker(QObject* parent = nullptr) : QThread(parent) {};
+
+ signals:
+  void messageReceived(const QByteArray& msg);
+  void eofReceived();
+
+ protected:
+  void run() override;
+};
+
 class WebExtHandler final : public QObject {
   Q_OBJECT
 
  public:
   WebExtHandler(QFileDevice* d, QObject* parent = nullptr);
-  ~WebExtHandler();
 
   // The methods we can handle locally are exposed as meta-methods.
   Q_INVOKABLE void bridge_ping(const QByteArray& msg);
@@ -34,12 +48,12 @@ class WebExtHandler final : public QObject {
   void unhandledMessage(const QByteArray& msg);
   void eofReceived();
 
- private:
+ private slots:
   void handleMessage(const QByteArray& msg);
 
-  QThread m_thread;
+ private:
+  WebExtWorker* m_worker;
   QFileDevice* m_output;
-  WebExtReader* m_reader;
 };
 
 #endif  // COMMAND_H
