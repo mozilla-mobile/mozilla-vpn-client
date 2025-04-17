@@ -10,6 +10,8 @@ class TestBridge final : public TestHelper {
  private slots:
   void bridge_ping();
 
+  void proc_info();
+
   void app_ping_failure();
   void app_ping_success();
 
