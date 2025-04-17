@@ -25,12 +25,6 @@ void WebExtHandler::writeJsonStdout(const QJsonObject& obj) {
   writeMsgStdout(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
-void WebExtHandler::writeStatus(const QString& status) {
-  QJsonObject obj;
-  obj["status"] = status;
-  writeJsonStdout(obj);
-}
-
 void WebExtHandler::handleMessage(const QByteArray& msg) {
   // Parse the message type.
   QJsonParseError err;
@@ -54,5 +48,5 @@ void WebExtHandler::handleMessage(const QByteArray& msg) {
 }
 
 void WebExtHandler::bridge_ping(const QByteArray& msg) {
-  writeStatus("bridge_pong");
+  writeJsonStdout(QJsonObject({{"status", "bridge_pong"}}));
 }

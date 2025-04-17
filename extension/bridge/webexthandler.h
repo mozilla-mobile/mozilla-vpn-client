@@ -25,7 +25,6 @@ class WebExtHandler final : public QObject {
   void handleMessage(const QByteArray& msg);
   void writeMsgStdout(const QByteArray& msg);
   void writeJsonStdout(const QJsonObject& msg);
-  void writeStatus(const QString& status);
 
  signals:
   void unhandledMessage(const QByteArray& msg);

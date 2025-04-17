@@ -64,11 +64,16 @@ void WebExtBridge::retryConnection() {
   m_socket.connectToHost(QHostAddress(QHostAddress::LocalHost), m_port);
 }
 
-void WebExtBridge::sendMessage(const QByteArray& message) {
+bool WebExtBridge::sendMessage(const QByteArray& message) {
+  if (m_socket.state() != QAbstractSocket::ConnectedState) {
+    return false;
+  }
+
   quint32 length = message.length();
   m_buffer.append(reinterpret_cast<char*>(&length), sizeof(quint32));
   m_buffer.append(message);
   tryPushData();
+  return true;
 }
 
 void WebExtBridge::tryPushData() {
