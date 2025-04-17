@@ -10,6 +10,8 @@
 #include <QJsonObject>
 #include <QMetaObject>
 
+#include "webextreader.h"
+
 WebExtHandler::WebExtHandler(QFileDevice* d, QObject* parent) : QObject(parent) {
   m_output = d;
   m_worker = new WebExtWorker(this);
