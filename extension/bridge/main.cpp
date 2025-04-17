@@ -12,7 +12,6 @@
 
 #include "webextbridge.h"
 #include "webexthandler.h"
-#include "webextreader.h"
 
 const QStringList ALLOW_LISTED_WEBEXTENSIONS = {
     "@testpilot-containers",
@@ -66,7 +65,6 @@ int main(int argc, char** argv) {
   QStringList args = parser.positionalArguments();
   if (args.length() != 2) { 
     qWarning() << "Expected 2 arguments got:" << args.length();
-    parser.showHelp();
     return 1;
   }
   const QString extId = args.last();
@@ -79,6 +77,8 @@ int main(int argc, char** argv) {
   QFile stdoutFile;
   stdoutFile.open(stdout, QIODeviceBase::WriteOnly);
   WebExtHandler handler(&stdoutFile);
+  QObject::connect(&handler, &WebExtHandler::eofReceived, &app,
+                   &QCoreApplication::quit);
 
   // Create a webextension bridge to the VPN client.
   WebExtBridge bridge(portNum);
@@ -97,15 +97,6 @@ int main(int argc, char** argv) {
   QObject::connect(&bridge, &WebExtBridge::disconnected, &handler, [&]() {
     handler.writeJsonStdout(QJsonObject({{"error", "vpn-client-down"}}));
   });
-
-  // Read messages from stdin and deliver them to the handler.
-  QFile stdinFile;
-  stdinFile.open(stdin, QIODevice::ReadOnly);
-  WebExtReader stdinReader(&stdinFile);
-  QObject::connect(&stdinReader, &WebExtReader::messageReceived, &handler,
-                   &WebExtHandler::handleMessage);
-  QObject::connect(&stdinReader, &WebExtReader::eofReceived, &app,
-                   &QCoreApplication::quit);
 
   // Run the web extension bridge.
   QObject::connect(qApp, &QCoreApplication::aboutToQuit,

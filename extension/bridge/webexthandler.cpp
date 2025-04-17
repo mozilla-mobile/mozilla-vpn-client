@@ -10,8 +10,42 @@
 #include <QJsonObject>
 #include <QMetaObject>
 
+#ifdef Q_OS_WIN
+# include <QWinEventNotifier>
+#else
+# include <QSocketNotifier>
+#endif
+
 WebExtHandler::WebExtHandler(QFileDevice* d, QObject* parent) : QObject(parent) {
   m_output = d;
+
+  // Read messages from stdin and deliver them to the handler.
+  QFile* input = new QFile(this);
+  input->open(stdin, QIODevice::ReadOnly);
+
+  m_reader = new WebExtReader(input);
+  connect(m_reader, &WebExtReader::messageReceived, this,
+          &WebExtHandler::handleMessage);
+  connect(m_reader, &WebExtReader::eofReceived, this,
+          [this]() { emit eofReceived(); });
+
+  // The readyRead signal doesn't really work for stdin.
+#ifdef Q_OS_WIN
+  connect(new QWinEventNotifier(input->handle(), m_reader),
+          &QWinEventNotifier::activated, m_reader, &WebExtReader::readyRead);
+#else
+  connect(new QSocketNotifier(input->handle(), QSocketNotifier::Read, m_reader),
+          &QSocketNotifier::activated, m_reader, &WebExtReader::readyRead);
+#endif
+
+  // Reading from standard input is prone to all kinds of janky threading
+  // issues. It's much cleaner to just give the reader its own thread.
+  m_reader->moveToThread(&m_thread);
+  m_thread.start();
+}
+
+WebExtHandler::~WebExtHandler() {
+  m_thread.terminate();
 }
 
 void WebExtHandler::writeMsgStdout(const QByteArray& msg) {
