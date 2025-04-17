@@ -17,20 +17,23 @@ WebExtReader::WebExtReader(QIODevice* d, QObject* parent) : QObject(parent) {
 
   QFileDevice* fdev = qobject_cast<QFileDevice*>(d);
   if (fdev == nullptr) {
-    connect(m_device, &QIODevice::readyRead, this, &WebExtReader::readyRead);
+    m_connection = connect(m_device, &QIODevice::readyRead, this,
+                           &WebExtReader::readyRead);
   } else {
 #ifdef Q_OS_WIN
-    connect(new QWinEventNotifier(fdev->handle(), this),
-            &QWinEventNotifier::activated, this, &WebExtReader::readyRead);
+    m_connection = connect(new QWinEventNotifier(fdev->handle(), this),
+                           &QWinEventNotifier::activated, this,
+                           &WebExtReader::readyRead);
 #else
-    connect(new QSocketNotifier(fdev->handle(), QSocketNotifier::Read, this),
-            &QSocketNotifier::activated, this, &WebExtReader::readyRead);
+    auto n = new QSocketNotifier(fdev->handle(), QSocketNotifier::Read, this);
+    m_connection = connect(n, &QSocketNotifier::activated, this,
+                           &WebExtReader::readyRead);
 #endif
   }
 }
 
 void WebExtReader::readyRead() {
-  while (true) {
+  while (!m_device->atEnd()) {
     // We are waiting on the message length.
     if (m_length == 0) {
       m_device->startTransaction();
@@ -54,11 +57,11 @@ void WebExtReader::readyRead() {
 
     // If the buffer is full, emit the message and reset.
     emit messageReceived(m_buffer);
-    reset();
+    m_buffer.clear();
+    m_length = 0;
   }
-}
 
-void WebExtReader::reset() {
-  m_buffer.clear();
-  m_length = 0;
+  // If we get here, then there is no more data to be read.
+  disconnect(m_connection);
+  emit eofReceived();
 }

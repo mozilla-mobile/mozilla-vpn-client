@@ -46,7 +46,7 @@ int main(int argc, char** argv) {
   QObject::connect(&bridge, &WebExtBridge::messageReceived, &handler,
                    &WebExtHandler::writeMsgStdout);
   QObject::connect(&handler, &WebExtHandler::unhandledMessage, &bridge,
-                  &WebExtBridge::sendMessage);
+                   &WebExtBridge::sendMessage);
   QObject::connect(&bridge, &WebExtBridge::connected, &handler, [&]() {
     handler.writeStatus("vpn-client-up");
   });
@@ -60,6 +60,8 @@ int main(int argc, char** argv) {
   WebExtReader stdinReader(&stdinFile);
   QObject::connect(&stdinReader, &WebExtReader::messageReceived, &handler,
                    &WebExtHandler::handleMessage);
+  QObject::connect(&stdinReader, &WebExtReader::eofReceived, &app,
+                   &QCoreApplication::quit);
 
   // Run the web extension bridge.
   QObject::connect(qApp, &QCoreApplication::aboutToQuit,
