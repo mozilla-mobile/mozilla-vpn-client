@@ -85,12 +85,17 @@ int main(int argc, char** argv) {
   QObject::connect(&bridge, &WebExtBridge::messageReceived, &handler,
                    &WebExtHandler::writeMsgStdout);
   QObject::connect(&handler, &WebExtHandler::unhandledMessage, &bridge,
-                   &WebExtBridge::sendMessage);
+                   [&](const QByteArray msg) {
+                     if (!bridge.sendMessage(msg)) {
+                       QJsonObject obj({{"error", "vpn-client-down"}});
+                       handler.writeJsonStdout(obj);
+                     }
+                    });
   QObject::connect(&bridge, &WebExtBridge::connected, &handler, [&]() {
-    handler.writeStatus("vpn-client-up");
+    handler.writeJsonStdout(QJsonObject({{"status", "vpn-client-up"}}));
   });
   QObject::connect(&bridge, &WebExtBridge::disconnected, &handler, [&]() {
-    handler.writeStatus("vpn-client-down");
+    handler.writeJsonStdout(QJsonObject({{"error", "vpn-client-down"}}));
   });
 
   // Read messages from stdin and deliver them to the handler.
