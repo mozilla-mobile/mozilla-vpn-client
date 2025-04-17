@@ -17,6 +17,20 @@ void TestBridge::bridge_ping() {
   QCOMPARE(json["status"].toString(), "bridge_pong");
 }
 
+void TestBridge::proc_info() {
+  QVERIFY(s_nativeMessagingProcess);
+
+  qint64 selfpid = QCoreApplication::applicationPid();
+  QString selfexe = QCoreApplication::applicationFilePath();
+
+  // The proc_info command should get the parent process details, which
+  // should be this test binary.
+  QVERIFY(write(R"({"t": "proc_info"})"));
+  auto const json = QJsonDocument::fromJson(readIgnoringStatus());
+  QCOMPARE(json["pid"].toInteger(), selfpid);
+  QCOMPARE(json["exe"].toString(), selfexe);
+}
+
 void TestBridge::app_ping_failure() {
   QVERIFY(s_nativeMessagingProcess);
 
