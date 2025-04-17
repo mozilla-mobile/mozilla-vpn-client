@@ -12,13 +12,12 @@
 
 WebExtHandler::WebExtHandler(QFileDevice* d, QObject* parent) : QObject(parent) {
   m_output = d;
-  m_stream.setByteOrder(QDataStream::LittleEndian);
-  m_stream.setDevice(m_output);
 }
 
 void WebExtHandler::writeMsgStdout(const QByteArray& msg) {
-  m_stream << static_cast<quint32>(msg.length());
-  m_stream << msg;
+  quint32 length = msg.length();
+  m_output->write(reinterpret_cast<const char*>(&length), sizeof(length));
+  m_output->write(msg);
   m_output->flush();
 }
 
@@ -33,23 +32,21 @@ void WebExtHandler::writeStatus(const QString& status) {
 }
 
 void WebExtHandler::handleMessage(const QByteArray& msg) {
-  QJsonDocument doc = QJsonDocument::fromJson(msg);
-  if (!doc.isObject()) {
-    qWarning() << "JSON command failed to parse";
-    return;
-  }
-  QJsonObject obj = doc.object();
-  if (!obj.contains("t")) {
-    qWarning() << "JSON command missing type";
+  // Parse the message type.
+  QJsonParseError err;
+  QJsonDocument doc = QJsonDocument::fromJson(msg, &err);
+  const QJsonValue msgType = doc["t"];
+  if (!msgType.isString()) {
+    emit unhandledMessage(msg);
     return;
   }
 
-  QString msgType = obj.value("t").toString();
-  QByteArray signature = QString("%1(QByteArray)").arg(msgType).toLocal8Bit();
+  QString name = msgType.toString();
+  QByteArray signature = QString("%1(QByteArray)").arg(name).toLocal8Bit();
   int index = this->metaObject()->indexOfMethod(signature.constData());
   if (index >= 0) {
     // This command can be handled locally.
-    QMetaObject::invokeMethod(this, msgType.toLocal8Bit().constData(), msg);
+    QMetaObject::invokeMethod(this, name.toLocal8Bit().constData(), msg);
   } else {
     // Otherwise - we cannot handle this message.
     emit unhandledMessage(msg);
