@@ -5,108 +5,96 @@
 #include "helper.h"
 
 QVector<QObject*> TestHelper::s_testList;
-QProcess* TestHelper::s_nativeMessagingProcess = nullptr;
 char* TestHelper::s_app = nullptr;
-int TestHelper::s_last_exit_code = 0;
 
-TestHelper::TestHelper() { s_testList.append(this); }
+TestHelper::TestHelper() {
+  s_testList.append(this);
+
+  m_nativeMessagingProcess.setReadChannel(QProcess::StandardOutput);
+  connect(&m_nativeMessagingProcess, &QProcess::readyReadStandardError, [&]() {
+    qDebug() << "[mozillavpnnp - stderr]"
+             << m_nativeMessagingProcess.readAllStandardError();
+  });
+}
+
+void TestHelper::init() {
+  QStringList args;
+  args.append("/some/url/to/manifest.json");
+  args.append("@testpilot-containers");
+
+  runNativeMessaging(args);
+}
+
+void TestHelper::cleanup() {
+  killNativeMessaging();
+}
 
 // static
-void TestHelper::runNativeMessaging(const char* app, QStringList arguments) {
-  Q_ASSERT(s_nativeMessagingProcess == nullptr);
-
-  s_nativeMessagingProcess = new QProcess();
-  s_nativeMessagingProcess->setReadChannel(QProcess::StandardOutput);
-  s_last_exit_code = 0;
-
-  connect(s_nativeMessagingProcess, &QProcess::readyReadStandardError, []() {
-    qDebug() << "[mozillavpnnp - stderr]"
-             << s_nativeMessagingProcess->readAllStandardError();
-  });
-  connect(s_nativeMessagingProcess, &QProcess::finished,
-          [&](int exitCode) { s_last_exit_code = exitCode; });
-  s_nativeMessagingProcess->start(app, arguments,
-                                  QProcess::Unbuffered | QProcess::ReadWrite);
-  if (!s_nativeMessagingProcess->waitForStarted()) {
+void TestHelper::runNativeMessaging(QStringList arguments) {
+  m_nativeMessagingProcess.start(s_app, arguments,
+                                 QProcess::Unbuffered | QProcess::ReadWrite);
+  if (!m_nativeMessagingProcess.waitForStarted()) {
     qFatal("Failed to start the naive messaging process");
   }
 }
 
 // static
 void TestHelper::killNativeMessaging() {
-  if (s_nativeMessagingProcess == nullptr) {
+  if (m_nativeMessagingProcess.state() != QProcess::Running) {
     return;
   }
-  Q_ASSERT(s_nativeMessagingProcess);
-
-  s_nativeMessagingProcess->closeWriteChannel();
-  s_nativeMessagingProcess->closeReadChannel(QProcess::StandardOutput);
-  s_nativeMessagingProcess->closeReadChannel(QProcess::StandardError);
+  m_nativeMessagingProcess.closeWriteChannel();
+  m_nativeMessagingProcess.closeReadChannel(QProcess::StandardOutput);
+  m_nativeMessagingProcess.closeReadChannel(QProcess::StandardError);
 
 #ifdef Q_OS_WIN
   // See https://doc.qt.io/qt-6/qprocess.html#terminate
-  s_nativeMessagingProcess->kill();
+  m_nativeMessagingProcess.kill();
 #else
-  s_nativeMessagingProcess->terminate();
+  m_nativeMessagingProcess.terminate();
 #endif
 
-  if (!s_nativeMessagingProcess->waitForFinished()) {
+  if (!m_nativeMessagingProcess.waitForFinished()) {
     qFatal("Failed to kill the native messaging process");
   }
-
-  s_nativeMessagingProcess->deleteLater();
-  s_nativeMessagingProcess = nullptr;
 }
 
 int TestHelper::runTests(char* app) {
   int failures = 0;
   s_app = app;
   for (QObject* obj : TestHelper::s_testList) {
-    QStringList args;
-    args.append("/some/url/to/manifest.json");
-    // A valid extension id.
-    args.append("@testpilot-containers");
-
-    runNativeMessaging(app, args);
-
     int result = QTest::qExec(obj);
     if (result != 0) {
       ++failures;
     }
-
-    killNativeMessaging();
   }
 
   return failures;
 }
 
 bool TestHelper::write(const QByteArray& data) {
-  Q_ASSERT(s_nativeMessagingProcess);
-
   uint32_t length = (uint32_t)data.length();
   char* rawLength = reinterpret_cast<char*>(&length);
 
-  return s_nativeMessagingProcess->write(rawLength, sizeof(uint32_t)) ==
+  return m_nativeMessagingProcess.write(rawLength, sizeof(uint32_t)) ==
              sizeof(uint32_t) &&
-         s_nativeMessagingProcess->write(data.constData(), length) == length &&
-         s_nativeMessagingProcess->waitForBytesWritten();
+         m_nativeMessagingProcess.write(data.constData(), length) == length &&
+         m_nativeMessagingProcess.waitForBytesWritten();
 }
 
 QByteArray TestHelper::read() {
-  Q_ASSERT(s_nativeMessagingProcess);
-
-  while (!s_nativeMessagingProcess->bytesAvailable()) {
-    s_nativeMessagingProcess->waitForReadyRead();
+  while (!m_nativeMessagingProcess.bytesAvailable()) {
+    m_nativeMessagingProcess.waitForReadyRead();
   }
 
   char rawLength[sizeof(uint32_t)];
-  if (s_nativeMessagingProcess->read(rawLength, sizeof(uint32_t)) !=
+  if (m_nativeMessagingProcess.read(rawLength, sizeof(uint32_t)) !=
       sizeof(uint32_t)) {
     return QByteArray();
   }
 
   uint32_t length = *reinterpret_cast<uint32_t*>(rawLength);
-  return s_nativeMessagingProcess->read(length);
+  return m_nativeMessagingProcess.read(length);
 }
 
 QByteArray TestHelper::readIgnoringStatus() {

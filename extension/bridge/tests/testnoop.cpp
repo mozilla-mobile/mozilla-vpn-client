@@ -6,7 +6,7 @@
 
 void TestNoop::noop() {
   // No operations here. We test that the app starts and stops.
-  QVERIFY(s_nativeMessagingProcess);
+  QCOMPARE(m_nativeMessagingProcess.state(), QProcess::Running);
 }
 
 static TestNoop s_testNoop;
