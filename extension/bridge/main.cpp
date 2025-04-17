@@ -20,10 +20,17 @@ const QStringList ALLOW_LISTED_WEBEXTENSIONS = {
 
 constexpr const quint16 VPN_WEBEXTENSION_PORT = 8754;
 
+// Some macro magic to generate a version string.
+#define XSTRINGIFY(x) STRINGIFY(x)
+#define STRINGIFY(x) #x
+constexpr const char* VPN_PROJECT_VERSION = XSTRINGIFY(CMAKE_PROJECT_VERSION);
+#undef STRINGIFY
+#undef XSTRINGIFY
+
 int main(int argc, char** argv) {
   QCoreApplication app(argc, argv);
   QCoreApplication::setApplicationName("mozillavpn-webext-bridge");
-  QCoreApplication::setApplicationVersion("0.1");
+  QCoreApplication::setApplicationVersion(VPN_PROJECT_VERSION);
 
   // Prepare to parse the command line arguments.
   QCommandLineParser parser;

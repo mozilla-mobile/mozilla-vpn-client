@@ -19,6 +19,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     target_sources(webext-bridge PRIVATE webexthandler_macos.mm)
 endif()
 
+target_compile_definitions(webext-bridge PRIVATE CMAKE_PROJECT_VERSION=${CMAKE_PROJECT_VERSION})
 target_link_libraries(webext-bridge PUBLIC Qt6::Core Qt6::Network)
 
 add_subdirectory(tests)
