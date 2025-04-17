@@ -22,7 +22,7 @@ class WebExtBridge final : public QObject {
  
   bool isConnected() const { return m_reader != nullptr; }
 
-  void sendMessage(const QByteArray& message);
+  bool sendMessage(const QByteArray& message);
 
  signals:
   void connected();
