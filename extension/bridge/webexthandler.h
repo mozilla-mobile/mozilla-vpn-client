@@ -5,30 +5,13 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
-#include "webextreader.h"
-
 #include <QFileDevice>
 #include <QObject>
 #include <QThread>
 
 class QByteArray;
 class QJsonObject;
-class WebExtReader;
-
-// Helper class to read web-extension commands from stdin.
-class WebExtWorker final : public QThread {
-  Q_OBJECT
-
- public:
-  WebExtWorker(QObject* parent = nullptr) : QThread(parent) {};
-
- signals:
-  void messageReceived(const QByteArray& msg);
-  void eofReceived();
-
- protected:
-  void run() override;
-};
+class WebExtWorker;
 
 class WebExtHandler final : public QObject {
   Q_OBJECT
@@ -54,6 +37,21 @@ class WebExtHandler final : public QObject {
  private:
   WebExtWorker* m_worker;
   QFileDevice* m_output;
+};
+
+// Helper class to read web-extension commands from stdin.
+class WebExtWorker final : public QThread {
+  Q_OBJECT
+
+ public:
+  WebExtWorker(QObject* parent = nullptr) : QThread(parent) {};
+
+ signals:
+  void messageReceived(const QByteArray& msg);
+  void eofReceived();
+
+ protected:
+  void run() override;
 };
 
 #endif  // COMMAND_H
