@@ -197,6 +197,7 @@ describe('Server', function() {
 
       await vpn.forceServerUnavailable('at', 'vie');
       await vpn.activate();
+      await vpn.setSetting('recommendedServerSelected', 'false');
 
       // click the button
       await vpn.waitForQueryAndClick(
