@@ -169,7 +169,14 @@ exports.mochaHooks = {
       console.log('Attempting reset');
       await vpn.hardReset();
       console.log('Attempting quit');
-      await vpn.quit();
+      await Promise.race([
+        vpn.quit(),
+        new Promise(
+            (_, reject) => setTimeout(
+                () =>
+                    reject(new Error('vpn.quit() timed out after 15 seconds')),
+                15000)),
+      ]);
     } catch (error) {
       console.error(error);
     }
