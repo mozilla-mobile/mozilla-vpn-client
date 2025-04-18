@@ -91,7 +91,7 @@ describe('Unsecured network alert', function() {
   describe('Tests during activation / deactivation phase', function() {
     this.ctx.authenticationNeeded = true;
 
-    it.only('Clicking the notification activates the VPN', async () => {
+    it('Clicking the notification activates the VPN', async () => {
       await vpn.forceUnsecuredNetworkAlert();
       await vpn.wait();
       assert.equal(
