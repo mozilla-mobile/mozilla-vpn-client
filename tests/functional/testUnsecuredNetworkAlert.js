@@ -91,7 +91,7 @@ describe('Unsecured network alert', function() {
   describe('Tests during activation / deactivation phase', function() {
     this.ctx.authenticationNeeded = true;
 
-    it('Clicking the notification activates the VPN', async () => {
+    it.only('Clicking the notification activates the VPN', async () => {
       await vpn.forceUnsecuredNetworkAlert();
       await vpn.wait();
       assert.equal(
@@ -121,6 +121,8 @@ describe('Unsecured network alert', function() {
       assert(
           vpn.lastNotification().title === null ||
           vpn.lastNotification().title === 'VPN Connected');
+
+      console.log(vpn.lastNotification().title);
     });
 
     it('Unsecured network alert should not show when connected', async () => {

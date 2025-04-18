@@ -169,14 +169,21 @@ exports.mochaHooks = {
       console.log('Attempting reset');
       await vpn.hardReset();
       console.log('Attempting quit');
-      await Promise.race([
-        vpn.quit(),
-        new Promise(
-            (_, reject) => setTimeout(
-                () =>
-                    reject(new Error('vpn.quit() timed out after 15 seconds')),
-                15000)),
-      ]);
+      // If it doesn't quit within 15 seconds, then throw.
+      // There was an issue where the entire `afterEach` was
+      // timing out, so the throw/catch wasn't being activated
+      // and instead the entire test was failing.
+      await vpn.quit();
+      // await Promise.race([
+      //   new Promise(
+      //       (_, reject) => setTimeout(
+      //           () =>
+      //               reject(new Error('vpn.quit() timed out after 15
+      //               seconds')),
+      //           15000)),
+      //           // however, doing this just messes up the next test that is
+      //           run
+      // ]);
     } catch (error) {
       console.error(error);
     }
