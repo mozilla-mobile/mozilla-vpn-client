@@ -167,6 +167,7 @@ exports.mochaHooks = {
   },
 
   async afterEach() {
+    console.log('After each in setupVPN');
     // Collect errors on failure
     if (!this.currentTest.state || this.currentTest.state === 'failed') {
       // Print error logs
@@ -190,6 +191,7 @@ exports.mochaHooks = {
         fs.writeFileSync(`${dir}/${filename}.png`, buffer);
       }
     }
+    console.log('SetupVPN: No errors');
     // Reset error logs
     stdErr = '';
     // Close VPN app
@@ -197,18 +199,25 @@ exports.mochaHooks = {
     // then this can fail and cause the tests to hang.
     // Logging the error lets us clean-up and move on.
     try {
+      console.log('SetupVPN: Attempting reset');
       await vpn.hardReset();
+      console.log('SetupVPN: Attempting quit');
       await vpn.quit();
     } catch (error) {
       console.error(error);
     }
+    console.log('SetupVPN: Attempting disconnect');
     vpn.disconnect();
 
+    console.log('SetupVPN: Pausing');
     vpnProcess.stdin.pause();
+    console.log('SetupVPN: Killing');
     vpnProcess.kill();
 
     if (vpnProcessTerminatePromise) {
+      console.log('SetupVPN: Wawaing promise return');
       await vpnProcessTerminatePromise;
     }
+    console.log('SetupVPN: Completed');
   },
 }
