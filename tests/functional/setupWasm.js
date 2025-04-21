@@ -169,6 +169,9 @@ exports.mochaHooks = {
       console.log('Attempting reset');
       await vpn.hardReset();
       console.log('Attempting quit');
+      const currentState =
+          await vpn.getMozillaProperty('Mozilla.VPN', 'VPNController', 'state');
+      console.log('current state ' + currentState);
       // If it doesn't quit within 15 seconds, then throw.
       // There was an issue where the entire `afterEach` was
       // timing out, so the throw/catch wasn't being activated
