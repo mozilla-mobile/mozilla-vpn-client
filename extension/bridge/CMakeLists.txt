@@ -17,6 +17,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     enable_language(OBJC)
     target_sources(webext-bridge PRIVATE webexthandler_macos.mm)
+
+    find_library(FW_APPKIT AppKit)
+    target_link_libraries(webext-bridge PRIVATE ${FW_APPKIT})
 endif()
 
 target_compile_definitions(webext-bridge PRIVATE CMAKE_PROJECT_VERSION=${CMAKE_PROJECT_VERSION})
