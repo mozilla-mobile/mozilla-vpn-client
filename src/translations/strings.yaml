@@ -1052,12 +1052,12 @@ resetSettings:
 permissionMacos:
   title:
     value: Allow VPN to run in background
-    comment: Title of the screen directing MacOS users to permit the VPN to run in background
+    comment: Title of the screen directing macOS users to allow the VPN to run in background
   body:
     value: To use Mozilla VPN, please allow it to run in the background.
     comment: Paragraph requesting the user to allow the VPN to run in the background.
   instructions:
-    value: In order to do this, please click the button below to open the <i>Login Items</i> of your <i>System Preferences</i>, and enable <i>Allow in the background</i> toggle for Mozilla VPN.
+    value: In order to do this, please click the button below to open the <i>Login Items</i> of your <i>System Preferences</i>, and enable <i>Allow in the background</i> for Mozilla VPN.
     comment: Paragraph explaining how to enable the VPN to run in the background.
   openSettingsButtonLabel:
     value: Open Login Items
