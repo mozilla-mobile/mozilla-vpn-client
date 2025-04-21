@@ -122,7 +122,7 @@ describe('Unsecured network alert', function() {
           vpn.lastNotification().title === null ||
           vpn.lastNotification().title === 'VPN Connected');
 
-      console.log(vpn.lastNotification().title);
+      // console.log(vpn.lastNotification().title);
     });
 
     it('Unsecured network alert should not show when connected', async () => {

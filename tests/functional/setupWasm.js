@@ -151,7 +151,7 @@ exports.mochaHooks = {
   },
 
   async afterEach() {
-    console.log('After each setupWASM starting');
+    // console.log('After each setupWASM starting');
     if (!this.currentTest.state || this.currentTest.state === 'failed') {
       // Print error logs
       console.log('::group::Error Logs');
@@ -159,14 +159,14 @@ exports.mochaHooks = {
       console.log('::endgroup');
     }
 
-    console.log('Did not fail');
+    // console.log('Did not fail');
 
     // Close VPN app
     // If something's gone really wrong with the test,
     // then this can fail and cause the tests to hang.
     // Logging the error lets us clean-up and move on.
     try {
-      console.log('Attempting reset');
+      // console.log('Attempting reset');
       await vpn.hardReset();
       console.log('Attempting quit');
       const currentState =
