@@ -191,8 +191,6 @@ void Controller::implPermRequired() {
   setState(StatePermissionRequired);
 }
 
-bool Controller::isInitialized() const { return m_state >= StateOff; }
-
 void Controller::implInitialized(bool status, bool a_connected,
                                  const QDateTime& connectionDate) {
   logger.debug() << "Connection Manager initialized with status:" << status
@@ -250,8 +248,7 @@ void Controller::timerTimeout() {
 void Controller::quit() {
   logger.debug() << "Quitting";
 
-  if (m_state == StateInitializing || m_state == StatePermissionRequired ||
-      m_state == StateOff) {
+  if (!isActive()) {
     m_nextStep = Quit;
     emit readyToQuit();
     return;
@@ -363,7 +360,7 @@ void Controller::serverUnavailable() {
 void Controller::updateRequired() {
   logger.warning() << "Update required";
 
-  if (m_state == StateOff) {
+  if (!isActive()) {
     emit readyToUpdate();
     return;
   }
@@ -901,7 +898,7 @@ void Controller::captivePortalPresent() {
 }
 
 void Controller::serverDataChanged() {
-  if (m_state <= StateOff) {
+  if (!isActive()) {
     logger.debug() << "Server data changed but we are off";
     return;
   }
@@ -912,7 +909,7 @@ void Controller::serverDataChanged() {
 }
 
 bool Controller::switchServers(const ServerData& serverData) {
-  if (m_state <= StateOff) {
+  if (!isActive()) {
     logger.debug() << "Server data changed but we are off";
     return false;
   }
@@ -1072,7 +1069,7 @@ bool Controller::deactivate(ActivationPrincipal user) {
     return false;
   }
 
-  if (m_state <= StateOff) {
+  if (!isActive()) {
     logger.warning() << "Already disconnected";
     return false;
   }

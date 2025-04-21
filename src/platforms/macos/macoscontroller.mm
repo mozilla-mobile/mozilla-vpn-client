@@ -96,8 +96,8 @@ void MacOSController::checkServiceStatus(void) {
         logger.debug() << "Mozilla VPN daemon enabled.";
 
         // We can continue with initialization.
-        // NOTE: It just so happens that the LocalSocketController doesnt use the
-        // device or keys, so it's safe to pass null here.
+        // NOTE: It just so happens that the LocalSocketController doesn't use
+        // the device or keys, so it's safe to pass null here.
         m_regTimer.stop();
         LocalSocketController::initialize(nullptr, nullptr);
         break;
