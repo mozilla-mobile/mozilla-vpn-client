@@ -166,12 +166,19 @@ exports.mochaHooks = {
     // then this can fail and cause the tests to hang.
     // Logging the error lets us clean-up and move on.
     try {
-      // console.log('Attempting reset');
-      await vpn.hardReset();
-      // console.log('Attempting quit');
+      await this.wait(10 * 1000);
+      // await vpn.deactivate();
       const currentState =
           await vpn.getMozillaProperty('Mozilla.VPN', 'VPNController', 'state');
       console.log('current state ' + currentState);
+      // if (currentState == StateOn) {
+      // DEACTIVAGE HERE
+      // await this.wait(10 * 1000);
+      // await vpn.deactivate();
+      // }
+      // console.log('Attempting reset');
+      await vpn.hardReset();
+      // console.log('Attempting quit');
       // If it doesn't quit within 15 seconds, then throw.
       // There was an issue where the entire `afterEach` was
       // timing out, so the throw/catch wasn't being activated
