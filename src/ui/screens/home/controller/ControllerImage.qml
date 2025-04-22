@@ -117,11 +117,27 @@ Rectangle {
                 source: MZAssetLookup.getImageSource("ShieldOff")
                 opacity: 1
             }
-
         },
         State {
             name: VPNController.StateInitializing
 
+            PropertyChanges {
+                target: logo
+                showVPNOnIcon: false
+                opacity: 0.55
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: MZTheme.colors.successAlert.defaultColor
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: MZAssetLookup.getImageSource("ShieldOff")
+                opacity: 1
+            }
+        },
+        State {
+            name: VPNController.StatePermissionRequired
             PropertyChanges {
                 target: logo
                 showVPNOnIcon: false

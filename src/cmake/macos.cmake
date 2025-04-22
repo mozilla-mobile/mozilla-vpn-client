@@ -52,6 +52,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscontroller.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscontroller.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.cpp
@@ -150,6 +152,16 @@ osx_bundle_files(mozillavpn FILES
     $<TARGET_FILE:mozillavpnnp>
     ${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json
     DESTINATION Resources/utils
+)
+
+# Install the daemon plist into the bundle.
+configure_file(
+    ${CMAKE_SOURCE_DIR}/macos/app/daemon.plist.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.daemon.plist
+)
+osx_bundle_files(mozillavpn FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.daemon.plist
+    DESTINATION Library/LaunchDaemons
 )
 
 # Install the lproj translation files into the bundle.

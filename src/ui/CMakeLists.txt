@@ -79,6 +79,7 @@ qt_add_qml_module(mozillavpn-ui
         screens/ScreenMessaging.qml
         screens/ScreenNoSubscriptionFoundError.qml
         screens/ScreenOnboarding.qml
+        screens/ScreenPermissionRequired.qml
         screens/ScreenSettings.qml
         screens/ScreenSubscriptionBlocked.qml
         screens/ScreenSubscriptionGenericError.qml
@@ -112,6 +113,7 @@ qt_add_qml_module(mozillavpn-ui
         screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml
         screens/subscriptionNeeded/ViewSubscriptionNeeded.qml
         sharedViews/ViewErrorFullScreen.qml
+        sharedViews/ViewPermissionRequiredOSX.qml
         sharedViews/ViewUpdate.qml
         sharedViews/ViewFullScreen.qml
     SOURCES
@@ -173,4 +175,7 @@ target_include_directories(mozillavpn-uiplugin PUBLIC
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     target_sources(mozillavpn-ui PRIVATE singletons/VPNAndroidUtils.h)
+endif()
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    target_sources(mozillavpn-ui PRIVATE singletons/VPNMacOSUtils.h)
 endif()
