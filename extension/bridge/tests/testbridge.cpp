@@ -24,7 +24,7 @@ void TestBridge::proc_info() {
   QVERIFY(write(R"({"t": "proc_info"})"));
   auto const json = QJsonDocument::fromJson(readIgnoringStatus());
   QCOMPARE(json["pid"].toInteger(), selfpid);
-  QCOMPARE(json["exe"].toString(), selfexe);
+  QCOMPARE(json["exe"].toString(), QDir::toNativeSeparators(selfexe));
 }
 
 void TestBridge::app_ping_failure() {

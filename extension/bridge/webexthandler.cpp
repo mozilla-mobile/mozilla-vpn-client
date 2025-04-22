@@ -5,10 +5,11 @@
 #include "webexthandler.h"
 
 #include <QByteArray>
-#include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMetaObject>
+
+#include <stdio.h>
 
 #include "webextreader.h"
 
@@ -62,16 +63,34 @@ void WebExtHandler::bridge_ping(const QByteArray& msg) {
 }
 
 void WebExtWorker::run() {
-  QFile input;
-  input.open(stdin, QIODevice::ReadOnly);
+  quint32 offset = 0;
+  QByteArray buffer;
 
-  WebExtReader reader(&input);
-  connect(&reader, &WebExtReader::messageReceived, this,
-          [&](const QByteArray& msg) { emit messageReceived(msg); });
+  while (!feof(stdin)) {
+    // Read the message length and allocate the buffer.
+    if (buffer.isEmpty()) {
+      quint32 length;
+      if (!fread(&length, sizeof(length), 1, stdin)) {
+        continue;
+      }
+      buffer.resize(length);
+      offset = 0;
+    }
 
-  // The loop.
-  while (!input.atEnd()) {
-    reader.readyRead();
+    // Read the message data into the buffer.
+    quint32 maxsz = buffer.length() - offset;
+    size_t rx = fread(buffer.data() + offset, 1, maxsz, stdin);
+    Q_ASSERT(rx <= maxsz);
+    offset += rx;
+    if (offset < buffer.length()) {
+      // We need more data.
+      continue;
+    }
+
+    // Message has been received.
+    emit messageReceived(buffer);
+    buffer.clear();
+    offset = 0;
   }
 
   emit eofReceived();
