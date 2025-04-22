@@ -38,7 +38,12 @@ void WebExtHandler::start(const QByteArray& msg) {
   proc.setProgram("gtk-launch");
   proc.setArguments(QStringList() << "org.mozilla.vpn");
 
+  QJsonObject obj;
   if (!proc.startDetached()) {
     qWarning() << "Failed to launch vpn client:" << proc.error();
+    obj["error"] = "start_failed";
+  } else {
+    obj["status"] = "requested_start";
   }
+  writeJsonStdout(obj);
 }
