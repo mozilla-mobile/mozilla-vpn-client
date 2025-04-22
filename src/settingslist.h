@@ -651,16 +651,20 @@ SETTING_BOOL(userSubscriptionNeeded,        // getter
 )
 
 #ifdef MZ_ANDROID
-
-SETTING_STRINGLIST(vpnDisabledApps,        // getter
-                   setVpnDisabledApps,     // setter
-                   removeVpnDisabledApps,  // remover
-                   hasVpnDisabledApps,     // has
-                   "vpnDisabledApps",      // key
-                   QStringList{            // Android Auto
-                               "com.google.android.projection.gearhead"},
-                   false,  // remove when reset
-                   false   // sensitive (do not log)
+// If a system app, may also need to add to PackageManagerHelper.kt's
+// ALLOWLISTED_APPS before it is visible in Excluded Apps screen
+SETTING_STRINGLIST(
+    vpnDisabledApps,        // getter
+    setVpnDisabledApps,     // setter
+    removeVpnDisabledApps,  // remover
+    hasVpnDisabledApps,     // has
+    "vpnDisabledApps",      // key
+    QStringList({
+        "com.google.android.projection.gearhead",  // Android Auto
+        "com.google.android.apps.tycho"            // Google Fi
+    }),
+    false,  // remove when reset
+    false   // sensitive (do not log)
 )
 
 #else
