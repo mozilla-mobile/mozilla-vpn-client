@@ -12,7 +12,9 @@ qt_add_executable(webext-bridge
     webextreader.h
 )
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+if(WIN32)
+    target_sources(webext-bridge PRIVATE webexthandler_windows.cpp)
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     target_sources(webext-bridge PRIVATE webexthandler_linux.cpp)
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     enable_language(OBJC)
