@@ -168,7 +168,7 @@ exports.mochaHooks = {
     try {
       // console.log('Attempting reset');
       await vpn.hardReset();
-      console.log('Attempting quit');
+      // console.log('Attempting quit');
       const currentState =
           await vpn.getMozillaProperty('Mozilla.VPN', 'VPNController', 'state');
       console.log('current state ' + currentState);
