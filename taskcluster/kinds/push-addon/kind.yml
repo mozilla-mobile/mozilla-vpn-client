@@ -41,6 +41,6 @@ tasks:
                   path: /builds/worker/artifacts
         run:
             using: run-task
-            use-caches: true
+            use-caches: [checkout, pip]
             cwd: '{checkout}'
             command: ./taskcluster/scripts/push-addons/deploy.sh

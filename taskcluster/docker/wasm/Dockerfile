@@ -10,6 +10,7 @@ MAINTAINER Sebastian Streich <sstreich@mozilla.com>
 ARG QT_VERSION=6.6.3
 
 VOLUME /builds/worker/checkouts
+VOLUME /builds/worker/.task-cache/pip
 
 ENV CURL='curl --location --retry 5' \
     LANG='en_US.UTF-8' \

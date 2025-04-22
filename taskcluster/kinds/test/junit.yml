@@ -19,7 +19,7 @@ android-junit:
             - conda-android-arm64-6.6.3
     run:
         using: run-task
-        use-caches: true
+        use-caches: [checkout, cargo]
         cwd: '{checkout}'
         command: >-
           git submodule update --init --recursive;

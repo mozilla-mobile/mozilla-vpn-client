@@ -21,7 +21,7 @@ run_commands_schema = Schema(
         Optional("pre-commands"): [[str]],
         Required("commands"): [[taskref_or_string]],
         Required("workdir"): str,
-        Optional("use-caches"): bool,
+        Optional("use-caches"): [str],
         Optional("secrets"): [secret_schema],
     }
 )

@@ -14,7 +14,7 @@ task-defaults:
     worker-type: b-macos
     run:
         script: conda_pack_ios.sh
-        use-caches: false
+        use-caches: []
         resources:
             - requirements.txt
             - env.yml

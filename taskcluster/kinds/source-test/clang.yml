@@ -11,7 +11,7 @@ task-defaults:
         tier: 2
     run:
       using: run-task
-      use-caches: true
+      use-caches: [checkout]
       cwd: '{checkout}'
     worker:
         max-run-time: 3600
@@ -87,7 +87,7 @@ clang-tidy-macos:
             - qt-macos-6.6
     run:
         using: run-task
-        use-caches: false
+        use-caches: []
         cwd: '{checkout}'
         command: >-
           export TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" ) &&
@@ -105,6 +105,3 @@ clang-tidy-macos:
           cmake --build ${TASK_HOME}/build --target clang_tidy_report &&
           rm -rf ${TASK_HOME}/build
 
-
-
-        

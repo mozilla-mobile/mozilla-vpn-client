@@ -16,7 +16,7 @@ qt-macos-6.6:
             - qt-source-tarball
             - miniconda-osx
     run:
-        use-caches: false
+        use-caches: []
         script: compile_qt_6_mac.sh
         resources:
             - scripts/utils/qt6_compile.sh

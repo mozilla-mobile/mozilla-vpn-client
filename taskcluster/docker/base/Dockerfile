@@ -5,7 +5,8 @@
 FROM ubuntu:22.04
 
 VOLUME /builds/worker/checkouts
-VOLUME /builds/worker/.cache
+VOLUME /builds/worker/.task-cache/pip
+VOLUME /builds/worker/.task-cache/cargo
 
 # Add worker user
 RUN mkdir -p /builds && \

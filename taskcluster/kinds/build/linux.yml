@@ -22,7 +22,7 @@ task-defaults:
               path: /builds/worker/artifacts
     run:
         using: run-task
-        use-caches: true
+        use-caches: [checkout, pip]
         command: /builds/worker/builder.sh
 
 linux/focal:
