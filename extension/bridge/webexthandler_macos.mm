@@ -42,6 +42,7 @@ void WebExtHandler::start(const QByteArray& msg) {
   NSURL* url = [ws URLForApplicationWithBundleIdentifier:bundleId];
   if (url == nil) {
     qWarning() << "Mozilla VPN application not found";
+    writeJsonStdout(QJsonObject({{"error", "start_failed"}}));
     return;
   }
 
@@ -49,9 +50,14 @@ void WebExtHandler::start(const QByteArray& msg) {
   [ws openApplicationAtURL:url
              configuration:[NSWorkspaceOpenConfiguration configuration]
          completionHandler:^(NSRunningApplication* app, NSError* error) {
+           QJsonObject obj;
            if (error) {
              QString desc = QString::fromNSString(error.localizedDescription);
              qWarning() << "Mozilla VPN launch failed:" << desc;
+             obj["error"] = "start_failed";
+           } else {
+             obj["status"] = "requested_start";
            }
+           writeJsonStdout(obj);
          }];
 }
