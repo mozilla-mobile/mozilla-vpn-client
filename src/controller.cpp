@@ -254,7 +254,7 @@ void Controller::quit() {
 
   if (m_state == StateOn || m_state == StateOnPartial ||
       m_state == StateSwitching || m_state == StateSilentSwitching ||
-      m_state == StateConnecting) {
+      m_state == StateConnecting || m_state == StateConfirming) {
     deactivate();
     return;
   }
