@@ -16,7 +16,7 @@ MZScreenBase {
     _menuIconVisibility: false
 
     Component.onCompleted: () => {
-        MZNavigator.addStackView(VPN.ScreenDeviceLimit, getStack())
+        MZNavigator.addStackView(VPN.ScreenPermissionRequired, getStack())
         if(Qt.platform.os === "osx"){
             getStack().push("qrc:/qt/qml/Mozilla/VPN/sharedViews/ViewPermissionRequiredOSX.qml")
             return;
