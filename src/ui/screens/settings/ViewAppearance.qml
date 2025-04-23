@@ -57,6 +57,15 @@ MZViewBase {
                 Layout.rightMargin: MZTheme.theme.windowMargin / 2
                 visible: isVisible(radioButtonName)
 
+                MZMouseArea {
+                    anchors.fill: parent
+
+                    enabled: radioButtonId.enabled
+                    width: Math.min(parent.implicitWidth, parent.width)
+                    propagateClickToParent: false
+                    onClicked: wasClicked(radioButtonName)
+                }
+
                 MZRadioButton {
                     objectName: radioButtonName
 
@@ -79,15 +88,6 @@ MZViewBase {
                         text: MZI18n[textName]
                         wrapMode: Text.WordWrap
                         horizontalAlignment: Text.AlignLeft
-
-                        MZMouseArea {
-                            anchors.fill: parent
-
-                            enabled: radioButtonId.enabled
-                            width: Math.min(parent.implicitWidth, parent.width)
-                            propagateClickToParent: false
-                            onClicked: wasClicked(radioButtonName)
-                        }
                     }
 
                     MZTextBlock {
