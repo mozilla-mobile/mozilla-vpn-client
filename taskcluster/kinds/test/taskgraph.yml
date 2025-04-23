@@ -16,7 +16,7 @@ taskgraph-definition:
         tier: 1
     run:
         using: run-task
-        use-caches: true
+        use-caches: [checkout, pip]
         cwd: '{checkout}'
         command: >-
           pip3 install -r taskcluster/requirements.txt &&
