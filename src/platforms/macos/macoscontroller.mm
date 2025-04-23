@@ -19,25 +19,13 @@ constexpr const int SERVICE_REG_POLL_INTERVAL_MSEC = 1000;
 
 MacOSController::MacOSController() :
    LocalSocketController(Constants::MACOS_DAEMON_PATH) {
-
-  if (@available(macOS 13, *)) {
-    // Create the daemon delegate object.
-    NSString* appId = MacOSUtils::appId();
-    Q_ASSERT(appId);
-    NSString* plistName =
-      QString("%1.daemon.plist").arg(QString::fromNSString(appId)).toNSString();
-
-    m_service = [SMAppService daemonServiceWithPlistName:plistName];
-  }
-
   m_smAppStatus = -1;
 }
 
-MacOSController::~MacOSController() {
-  if (@available(macOS 13, *)) {
-    SMAppService* service = static_cast<SMAppService*>(m_service);
-    [service dealloc];
-  }
+QString MacOSController::plistName() const {
+  NSString* appId = MacOSUtils::appId();
+  Q_ASSERT(appId);
+  return QString("%1.daemon.plist").arg(QString::fromNSString(appId));
 }
 
 void MacOSController::initialize(const Device* device, const Keys* keys) {
@@ -64,7 +52,9 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
 
 void MacOSController::checkServiceStatus(void) {
   if (@available(macOS 13, *)) {
-    SMAppService* service = static_cast<SMAppService*>(m_service);
+    // Create the daemon delegate object.
+    SMAppService* service =
+        [SMAppService daemonServiceWithPlistName:plistName().toNSString()];
     SMAppServiceStatus status = [service status];
     if (status == m_smAppStatus) {
       return;
