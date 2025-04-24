@@ -229,7 +229,7 @@ int DNSResolver::aresSocket(int domain, int type, int proto) {
   return sd;
 }
 
-int DNSResolver::aresClose(QSocketDescriptor sd) {
+int DNSResolver::aresClose(qintptr sd) {
   QSocketNotifier* n = m_notifiers.take(sd);
   if (n) {
     delete n;
@@ -237,13 +237,14 @@ int DNSResolver::aresClose(QSocketDescriptor sd) {
   return close(sd);
 }
 
-int DNSResolver::aresConnect(QSocketDescriptor sd, const struct sockaddr *sa,
+int DNSResolver::aresConnect(qintptr sd, const struct sockaddr *sa,
                              ares_socklen_t salen, unsigned int flags) {
   Q_UNUSED(flags);
+  emit setupDnsSocket(sd, QHostAddress(sa));
   return ::connect(sd, sa, salen);
 }
 
-int DNSResolver::aresSetsockopt(QSocketDescriptor sd, int opt, const void* val,
+int DNSResolver::aresSetsockopt(qintptr sd, int opt, const void* val,
                                 int vlen) {
   switch (opt) {
     case ARES_SOCKET_OPT_SENDBUF_SIZE:
@@ -257,13 +258,13 @@ int DNSResolver::aresSetsockopt(QSocketDescriptor sd, int opt, const void* val,
   }
 }
 
-int DNSResolver::aresRecvfrom(QSocketDescriptor sd, void* data, size_t len,
+int DNSResolver::aresRecvfrom(qintptr sd, void* data, size_t len,
                               int flags, struct sockaddr* sa,
                               socklen_t* socklen) {
   return recvfrom(sd, data, len, flags, sa, socklen);
 }
 
-int DNSResolver::aresSendto(QSocketDescriptor sd, const void* data, size_t len,
+int DNSResolver::aresSendto(qintptr sd, const void* data, size_t len,
                            int flags, const struct sockaddr* sa,
                            socklen_t socklen) {
   return sendto(sd, data, len, flags, sa, socklen);

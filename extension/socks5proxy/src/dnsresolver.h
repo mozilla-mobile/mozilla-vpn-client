@@ -36,6 +36,9 @@ class DNSResolver : public QObject {
 
   void setNameserver(const QList<QHostAddress>& addr);
 
+ signals:
+  void setupDnsSocket(qintptr sd, const QHostAddress& dest);
+
  private slots:
   void requestDestroyed();
   void socketAcivated(QSocketDescriptor sd, QSocketNotifier::Type type);
@@ -49,13 +52,13 @@ class DNSResolver : public QObject {
 
   // C-Ares Socket callback methods.
   int aresSocket(int domain, int type, int proto);
-  int aresClose(QSocketDescriptor sd);
-  int aresConnect(QSocketDescriptor sd, const struct sockaddr* sa,
-                  socklen_t socklen, unsigned int flags);
-  int aresSetsockopt(QSocketDescriptor sd, int opt, const void* val, int vlen);
-  int aresRecvfrom(QSocketDescriptor sd, void* data, size_t len, int flags,
+  int aresClose(qintptr sd);
+  int aresConnect(qintptr sd, const struct sockaddr* sa, socklen_t socklen,
+                  unsigned int flags);
+  int aresSetsockopt(qintptr sd, int opt, const void* val, int vlen);
+  int aresRecvfrom(qintptr sd, void* data, size_t len, int flags,
                    struct sockaddr* sa, socklen_t* socklen);
-  int aresSendto(QSocketDescriptor sd, const void* data, size_t len, int flags,
+  int aresSendto(qintptr sd, const void* data, size_t len, int flags,
                  const struct sockaddr* sa, socklen_t socklen);
 
   static int aresGetsockname(int sd, struct sockaddr* sa, socklen_t* socklen,
