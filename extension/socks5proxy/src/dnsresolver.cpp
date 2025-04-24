@@ -251,7 +251,11 @@ int DNSResolver::aresClose(qintptr sd) {
   if (n) {
     delete n;
   }
+#ifdef Q_OS_WIN
   return closesocket(sd);
+#else
+  return close(sd);
+#endif
 }
 
 int DNSResolver::aresConnect(qintptr sd, const struct sockaddr* sa,
@@ -298,13 +302,8 @@ unsigned int DNSResolver::aresNametoindex(const char* ifname, void* user_data) {
 
 const char* DNSResolver::aresIndextoname(unsigned int ifindex, char* buf,
                                          size_t len, void* user_data) {
-  Q_UNUSED(user_data);
-  char tmp[IF_NAMESIZE + 1];
-  if (!if_indextoname(ifindex, buf)) {
+  if (len < IF_NAMESIZE) {
     return nullptr;
   }
-  if (strncpy_s(buf, len, tmp, sizeof(tmp)) != 0) {
-    return nullptr;
-  }
-  return buf;
+  return if_indextoname(ifindex, buf);
 }
