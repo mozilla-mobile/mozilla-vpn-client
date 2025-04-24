@@ -19,42 +19,67 @@ constexpr const int SERVICE_REG_POLL_INTERVAL_MSEC = 1000;
 
 MacOSController::MacOSController() :
    LocalSocketController(Constants::MACOS_DAEMON_PATH) {
-
-  if (@available(macOS 13, *)) {
-    // Create the daemon delegate object.
-    NSString* appId = MacOSUtils::appId();
-    Q_ASSERT(appId);
-    NSString* plistName =
-      QString("%1.daemon.plist").arg(QString::fromNSString(appId)).toNSString();
-
-    m_service = [SMAppService daemonServiceWithPlistName:plistName];
-  }
-
   m_smAppStatus = -1;
+
+  m_regTimer.setInterval(SERVICE_REG_POLL_INTERVAL_MSEC);
+  m_regTimer.setSingleShot(false);
+  connect(&m_regTimer, &QTimer::timeout, this,
+          &MacOSController::checkServiceEnabled);
 }
 
-MacOSController::~MacOSController() {
-  if (@available(macOS 13, *)) {
-    SMAppService* service = static_cast<SMAppService*>(m_service);
-    [service dealloc];
-  }
+QString MacOSController::plistName() const {
+  NSString* appId = MacOSUtils::appId();
+  Q_ASSERT(appId);
+  return QString("%1.daemon.plist").arg(QString::fromNSString(appId));
 }
 
 void MacOSController::initialize(const Device* device, const Keys* keys) {
-  Q_UNUSED(device);
-  Q_UNUSED(keys);
-
   // For MacOS 13 and beyond, attempt to register the daemon using the
   // SMAppService interface.
   if (@available(macOS 13, *)) {
-    // Poll for the service status to determine if it's been registered
-    // successfully and check when the daemon should be running.
-    // TODO: Can this be done asynchronously, eg: NSKeyValueObserving?
-    connect(&m_regTimer, &QTimer::timeout, this,
-            &MacOSController::checkServiceStatus);
-    m_regTimer.start(SERVICE_REG_POLL_INTERVAL_MSEC);
+    SMAppService* service =
+        [SMAppService daemonServiceWithPlistName:plistName().toNSString()];
 
-    checkServiceStatus();
+    // Attempt to register the service upon initialization. This should be a
+    // no-op if the service is already registered.
+    NSError* error = nil;
+    if ([service registerAndReturnError: & error]) {
+      logger.debug() << "Mozilla VPN daemon registered successfully.";
+    } else if (error.code == kSMErrorInvalidSignature) {
+      // If the build is unsigned, continue anyways and hope for the best.
+      // This is to mitigate developer pain by allowing the VPN to make use
+      // of a pre-existing daemon from a signed installation.
+      logger.error() << "Unable to register Mozilla VPN daemon:"
+                     << "code signature invalid";
+      return LocalSocketController::initialize(device, keys);
+    } else {
+      // Otherwise, we encountered some other error. Most likely the user
+      // needs to approve the daemon to run. Which will be handled below.
+      logger.error() << "Unable to register Mozilla VPN daemon:"
+                     << QString::fromNSString(error.localizedDescription);
+    }
+
+    // Check the service status for how to proceed.
+    m_smAppStatus = [service status];
+    switch (m_smAppStatus) {
+      case SMAppServiceStatusNotRegistered:
+        logger.debug() << "Mozilla VPN daemon not registered.";
+        break;
+
+      case SMAppServiceStatusNotFound:
+        logger.debug() << "Mozilla VPN daemon not found.";
+        break;
+
+      case SMAppServiceStatusEnabled:
+        logger.debug() << "Mozilla VPN daemon enabled.";
+        return LocalSocketController::initialize(device, keys);
+
+      case SMAppServiceStatusRequiresApproval:
+        logger.debug() << "Mozilla VPN daemon requires approval.";
+        emit permissionRequired();
+        m_regTimer.start();
+        break;
+    }
   } else {
     // Otherwise, for legacy Mac users, they will need to install the daemon
     // some other way. This is normally handled by the installer package.
@@ -62,50 +87,19 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
   }
 }
 
-void MacOSController::checkServiceStatus(void) {
+void MacOSController::checkServiceEnabled(void) {
   if (@available(macOS 13, *)) {
-    SMAppService* service = static_cast<SMAppService*>(m_service);
-    SMAppServiceStatus status = [service status];
-    if (status == m_smAppStatus) {
-      return;
-    }
-    m_smAppStatus = status;
+    // Create the daemon delegate object.
+    SMAppService* service =
+        [SMAppService daemonServiceWithPlistName:plistName().toNSString()];
+    if ([service status] == SMAppServiceStatusEnabled) {
+      logger.debug() << "Mozilla VPN daemon enabled.";
 
-    NSError* error = nil;
-    switch (status) {
-      case SMAppServiceStatusNotRegistered:
-        logger.debug() << "Mozilla VPN daemon not found.";
-        [[fallthrough]];
-      case SMAppServiceStatusNotFound:
-        if ([service registerAndReturnError: & error]) {
-          logger.debug() << "Mozilla VPN daemon registered successfully.";
-          break;
-        }
-        logger.error() << "Failed to register Mozilla VPN daemon: "
-                       << QString::fromNSString(error.localizedDescription);
-        if (error.code == kSMErrorInvalidSignature) {
-          // If the build is unsigned, continue anyways and hope for the best.
-          // This is to mitigate developer pain by allowing the VPN to make use
-          // of a pre-existing daemon.
-          m_regTimer.stop();
-          LocalSocketController::initialize(nullptr, nullptr);
-        }
-        break;
-
-      case SMAppServiceStatusEnabled:
-        logger.debug() << "Mozilla VPN daemon enabled.";
-
-        // We can continue with initialization.
-        // NOTE: It just so happens that the LocalSocketController doesn't use
-        // the device or keys, so it's safe to pass null here.
-        m_regTimer.stop();
-        LocalSocketController::initialize(nullptr, nullptr);
-        break;
-
-      case SMAppServiceStatusRequiresApproval:
-        logger.debug() << "Mozilla VPN daemon requires approval.";
-        emit permissionRequired();
-        break;
+      // We can continue with initialization.
+      // NOTE: It just so happens that the LocalSocketController doesn't use
+      // the device or keys, so it's safe to pass null here.
+      m_regTimer.stop();
+      LocalSocketController::initialize(nullptr, nullptr);
     }
   }
 }
