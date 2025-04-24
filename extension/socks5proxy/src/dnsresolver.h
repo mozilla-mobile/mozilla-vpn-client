@@ -16,6 +16,10 @@ struct ares_channeldata;
 class ares_addrinfo;
 class Socks5Connection;
 
+#ifdef Q_OS_WIN
+# include <ws2tcpip.h>
+#endif
+
 class DNSResolver : public QObject {
   Q_OBJECT
 
@@ -51,7 +55,7 @@ class DNSResolver : public QObject {
   void updateTimeout();
 
   // C-Ares Socket callback methods.
-  int aresSocket(int domain, int type, int proto);
+  qintptr aresSocket(int domain, int type, int proto);
   int aresClose(qintptr sd);
   int aresConnect(qintptr sd, const struct sockaddr* sa, socklen_t socklen,
                   unsigned int flags);
@@ -60,9 +64,8 @@ class DNSResolver : public QObject {
                    struct sockaddr* sa, socklen_t* socklen);
   int aresSendto(qintptr sd, const void* data, size_t len, int flags,
                  const struct sockaddr* sa, socklen_t socklen);
+  int aresGetsockname(qintptr sd, struct sockaddr* sa, socklen_t* socklen);
 
-  static int aresGetsockname(int sd, struct sockaddr* sa, socklen_t* socklen,
-                             void* user_data);
   static unsigned int aresNametoindex(const char* ifname, void* user_data);
   static const char* aresIndextoname(unsigned int ifindex, char* buf,
                                      size_t len, void* user_data);

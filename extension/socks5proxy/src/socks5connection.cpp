@@ -10,6 +10,7 @@
 #ifdef Q_OS_WIN
 #  include <winsock2.h>
 #  include <ws2ipdef.h>
+#  include "winutils.h"
 #else
 #  include <arpa/inet.h>
 #endif
@@ -396,13 +397,18 @@ void Socks5Connection::configureOutSocket(quint16 port) {
   // but the socket descriptor is typically created inside the connectToHost()
   // method. So let's create the socket manually and emit a signal for the
   // platform logic to hook on.
-  int newsock = socket(family, SOCK_STREAM, 0);
-  if (newsock < 0) {
-    QString msg = strerror(errno);
-    qWarning() << "socket() failed:" << msg;
-    setError(ErrorGeneral, msg);
+  qintptr newsock = socket(family, SOCK_STREAM, IPPROTO_TCP);
+#ifdef Q_OS_WIN
+  if (newsock == INVALID_SOCKET) {
+    setError(ErrorGeneral, WinUtils::win32strerror(WSAGetLastError()));
     return;
   }
+#else
+  if (newsock < 0) {
+    setError(ErrorGeneral, strerror(errno));
+    return;
+  }
+#endif
   emit setupOutSocket(newsock, m_destAddress);
 
   m_outSocket = new QTcpSocket(this);
