@@ -124,8 +124,7 @@ void WindowsBypass::outgoingConnection(qintptr sd, const QHostAddress& dest) {
   }
 
   // Bind the socket to force its traffic to use a specific interface.
-  int result =
-      bind(sd, reinterpret_cast<sockaddr*>(&source), sizeof(source));
+  int result = bind(sd, reinterpret_cast<sockaddr*>(&source), sizeof(source));
   if (result != 0) {
     qWarning() << "socket bind failed:" << WSAGetLastError();
   }

@@ -17,7 +17,7 @@ class ares_addrinfo;
 class Socks5Connection;
 
 #ifdef Q_OS_WIN
-# include <ws2tcpip.h>
+#  include <ws2tcpip.h>
 #endif
 
 class DNSResolver : public QObject {

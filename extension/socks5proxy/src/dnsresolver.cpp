@@ -4,12 +4,12 @@
 #include <ares.h>
 
 #ifdef Q_OS_WIN
-# include <netioapi.h>
-# include <winsock2.h>
+#  include <netioapi.h>
+#  include <winsock2.h>
 #else
-# include <fcntl.h>
-# include <net/if.h>
-# include <sys/socket.h>
+#  include <fcntl.h>
+#  include <net/if.h>
+#  include <sys/socket.h>
 #endif
 
 #include <QCoreApplication>
@@ -42,14 +42,14 @@ DNSResolver::DNSResolver() {
   static auto cbClose = [](ares_socket_t sd, void* ctx) -> int {
     return static_cast<DNSResolver*>(ctx)->aresClose(sd);
   };
-  static auto cbConnect = [](ares_socket_t sd, const struct sockaddr *sa,
+  static auto cbConnect = [](ares_socket_t sd, const struct sockaddr* sa,
                              ares_socklen_t socklen, unsigned int flags,
                              void* ctx) -> int {
     return static_cast<DNSResolver*>(ctx)->aresConnect(sd, sa, socklen, flags);
   };
   static auto cbSetsockopt = [](ares_socket_t sd, ares_socket_opt_t opt,
-                                const void *val, ares_socklen_t vlen,
-                                void *ctx) -> int {
+                                const void* val, ares_socklen_t vlen,
+                                void* ctx) -> int {
     DNSResolver* dns = static_cast<DNSResolver*>(ctx);
     return dns->aresSetsockopt(sd, opt, val, vlen);
   };
@@ -73,18 +73,18 @@ DNSResolver::DNSResolver() {
 
   // Register callback methods for the sockets.
   static struct ares_socket_functions_ex s_functions = {
-    .version = 1,
-    .flags = ARES_SOCKFUNC_FLAG_NONBLOCKING,
-    .asocket = cbSocket,
-    .aclose = cbClose,
-    .asetsockopt = cbSetsockopt,
-    .aconnect = cbConnect,
-    .arecvfrom = cbRecvfrom,
-    .asendto = cbSendto,
-    .agetsockname = cbGetsockname,
-    .abind = nullptr,
-    .aif_nametoindex = aresNametoindex,
-    .aif_indextoname = aresIndextoname,
+      .version = 1,
+      .flags = ARES_SOCKFUNC_FLAG_NONBLOCKING,
+      .asocket = cbSocket,
+      .aclose = cbClose,
+      .asetsockopt = cbSetsockopt,
+      .aconnect = cbConnect,
+      .arecvfrom = cbRecvfrom,
+      .asendto = cbSendto,
+      .agetsockname = cbGetsockname,
+      .abind = nullptr,
+      .aif_nametoindex = aresNametoindex,
+      .aif_indextoname = aresIndextoname,
   };
   ares_set_socket_functions_ex(m_channel, &s_functions, this);
 
@@ -180,7 +180,7 @@ void DNSResolver::resolveAsync(const QString& hostname, QObject* parent) {
 void DNSResolver::setNameserver(const QList<QHostAddress>& dnsList) {
   QString buffer{};
 
-  for(const QHostAddress& dns : dnsList) {
+  for (const QHostAddress& dns : dnsList) {
     if (dns.isNull()) {
       continue;
     }
@@ -195,7 +195,7 @@ void DNSResolver::setNameserver(const QList<QHostAddress>& dnsList) {
 
 void DNSResolver::socketAcivated(QSocketDescriptor sd,
                                  QSocketNotifier::Type type) {
-  ares_fd_events_t ev = { .fd = static_cast<ares_socket_t>(sd) };
+  ares_fd_events_t ev = {.fd = static_cast<ares_socket_t>(sd)};
   if (type == QSocketNotifier::Read) {
     ev.events = ARES_FD_EVENT_READ;
   }
@@ -254,7 +254,7 @@ int DNSResolver::aresClose(qintptr sd) {
   return closesocket(sd);
 }
 
-int DNSResolver::aresConnect(qintptr sd, const struct sockaddr *sa,
+int DNSResolver::aresConnect(qintptr sd, const struct sockaddr* sa,
                              ares_socklen_t salen, unsigned int flags) {
   Q_UNUSED(flags);
   emit setupDnsSocket(sd, QHostAddress(sa));
@@ -276,20 +276,18 @@ int DNSResolver::aresSetsockopt(qintptr sd, int opt, const void* val,
   }
 }
 
-int DNSResolver::aresRecvfrom(qintptr sd, void* data, size_t len,
-                              int flags, struct sockaddr* sa,
-                              socklen_t* socklen) {
+int DNSResolver::aresRecvfrom(qintptr sd, void* data, size_t len, int flags,
+                              struct sockaddr* sa, socklen_t* socklen) {
   return recvfrom(sd, static_cast<char*>(data), len, flags, sa, socklen);
 }
 
-int DNSResolver::aresSendto(qintptr sd, const void* data, size_t len,
-                           int flags, const struct sockaddr* sa,
-                           socklen_t socklen) {
+int DNSResolver::aresSendto(qintptr sd, const void* data, size_t len, int flags,
+                            const struct sockaddr* sa, socklen_t socklen) {
   return sendto(sd, static_cast<const char*>(data), len, flags, sa, socklen);
 }
 
 int DNSResolver::aresGetsockname(qintptr sd, struct sockaddr* sa,
-                                 socklen_t *socklen) {
+                                 socklen_t* socklen) {
   return getsockname(sd, sa, socklen);
 }
 
@@ -301,7 +299,7 @@ unsigned int DNSResolver::aresNametoindex(const char* ifname, void* user_data) {
 const char* DNSResolver::aresIndextoname(unsigned int ifindex, char* buf,
                                          size_t len, void* user_data) {
   Q_UNUSED(user_data);
-  char tmp[IF_NAMESIZE+1];
+  char tmp[IF_NAMESIZE + 1];
   if (!if_indextoname(ifindex, buf)) {
     return nullptr;
   }

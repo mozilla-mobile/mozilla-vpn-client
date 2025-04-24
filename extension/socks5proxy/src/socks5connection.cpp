@@ -10,6 +10,7 @@
 #ifdef Q_OS_WIN
 #  include <winsock2.h>
 #  include <ws2ipdef.h>
+
 #  include "winutils.h"
 #else
 #  include <arpa/inet.h>
