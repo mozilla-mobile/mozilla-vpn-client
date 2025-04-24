@@ -18,6 +18,8 @@ class Socks5Connection;
 
 #ifdef Q_OS_WIN
 #  include <ws2tcpip.h>
+#else
+#  include <sys/socket.h>
 #endif
 
 class DNSResolver : public QObject {
