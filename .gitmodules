@@ -35,3 +35,6 @@
 [submodule "3rdparty/c-ares"]
 	path = 3rdparty/c-ares
 	url = https://github.com/c-ares/c-ares
+[submodule "3rdparty/boringtun"]
+	path = 3rdparty/boringtun
+	url = https://github.com/cloudflare/boringtun
