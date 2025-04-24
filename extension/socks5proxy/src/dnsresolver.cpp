@@ -3,6 +3,10 @@
 
 #include <ares.h>
 
+#include <fcntl.h>
+#include <net/if.h>
+#include <sys/socket.h>
+
 #include <QCoreApplication>
 #include <QMutexLocker>
 #include <QObject>
@@ -21,17 +25,62 @@ DNSResolver::DNSResolver() {
     s_ares_init = true;
   }
 
-  struct ares_options options;
-  int optmask = 0;
-  memset(&options, 0, sizeof(options));
-  optmask |= ARES_OPT_EVENT_THREAD;
-  options.evsys = ARES_EVSYS_DEFAULT;
-  if (ares_init_options(&mChannel, &options, optmask) != ARES_SUCCESS) {
+  if (ares_init_options(&m_channel, nullptr, 0) != ARES_SUCCESS) {
     printf("c-ares initialization issue\n");
   }
+
+  // Wrap some callbacks to make them member method calls.
+  static auto cbSocket = [](int domain, int type, int proto, void* ctx) -> int {
+    return static_cast<DNSResolver*>(ctx)->aresSocket(domain, type, proto);
+  };
+  static auto cbClose = [](ares_socket_t sd, void* ctx) -> int {
+    return static_cast<DNSResolver*>(ctx)->aresClose(sd);
+  };
+  static auto cbConnect = [](ares_socket_t sd, const struct sockaddr *sa,
+                             ares_socklen_t socklen, unsigned int flags,
+                             void* ctx) -> int {
+    return static_cast<DNSResolver*>(ctx)->aresConnect(sd, sa, socklen, flags);
+  };
+  static auto cbSetsockopt = [](ares_socket_t sd, ares_socket_opt_t opt,
+                                const void *val, ares_socklen_t vlen,
+                                void *ctx) -> int {
+    return static_cast<DNSResolver*>(ctx)->aresSetsockopt(sd, opt, val, vlen);
+  };
+  static auto cbRecvfrom = [](ares_socket_t sd, void* data, size_t dlen,
+                              int flags, struct sockaddr* sa,
+                              ares_socklen_t* slen, void* ctx) -> ares_ssize_t {
+    DNSResolver* dns = static_cast<DNSResolver*>(ctx);
+    return dns->aresRecvfrom(sd, data, dlen, flags, sa, slen);
+  };
+  static auto cbSendto = [](ares_socket_t sd, const void* data, size_t dlen,
+                            int flags, const struct sockaddr* sa,
+                            ares_socklen_t slen, void* ctx) -> ares_ssize_t {
+    DNSResolver* dns = static_cast<DNSResolver*>(ctx);
+    return dns->aresSendto(sd, data, dlen, flags, sa, slen);
+  };
+
+  // Register callback methods for the sockets.
+  static struct ares_socket_functions_ex s_functions = {
+    .version = 1,
+    .flags = ARES_SOCKFUNC_FLAG_NONBLOCKING,
+    .asocket = cbSocket,
+    .aclose = cbClose,
+    .asetsockopt = cbSetsockopt,
+    .aconnect = cbConnect,
+    .arecvfrom = cbRecvfrom,
+    .asendto = cbSendto,
+    .agetsockname = aresGetsockname,
+    .abind = nullptr,
+    .aif_nametoindex = aresNametoindex,
+    .aif_indextoname = aresIndextoname,
+  };
+  ares_set_socket_functions_ex(m_channel, &s_functions, this);
+
+  m_timer.setSingleShot(true);
+  connect(&m_timer, &QTimer::timeout, this, &DNSResolver::aresTimeout);
 }
 
-DNSResolver::~DNSResolver() { ares_destroy(mChannel); }
+DNSResolver::~DNSResolver() { ares_destroy(m_channel); }
 
 /* Callback that is called when DNS query is finished */
 void DNSResolver::addressInfoCallback(QObject* ctx, int status, int timeouts,
@@ -112,13 +161,14 @@ void DNSResolver::resolveAsync(const QString& hostname, QObject* parent) {
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_UNSPEC;
   hints.ai_flags = ARES_AI_CANONNAME;
-  ares_getaddrinfo(mChannel, name.c_str(), NULL, &hints, callback, parent);
+  ares_getaddrinfo(m_channel, name.c_str(), NULL, &hints, callback, parent);
+  updateTimeout();
 }
 
 void DNSResolver::setNameserver(const QList<QHostAddress>& dnsList) {
   QString buffer{};
 
-  foreach (const QHostAddress& dns, qAsConst(dnsList)) {
+  for(const QHostAddress& dns : dnsList) {
     if (dns.isNull()) {
       continue;
     }
@@ -127,6 +177,115 @@ void DNSResolver::setNameserver(const QList<QHostAddress>& dnsList) {
   }
   auto serverString = buffer.toLocal8Bit();
   qDebug() << "Setting nameservers:" << serverString;
-  int result = ares_set_servers_csv(mChannel, serverString.constData());
+  int result = ares_set_servers_csv(m_channel, serverString.constData());
   Q_ASSERT(result == ARES_SUCCESS);
+}
+
+void DNSResolver::socketAcivated(QSocketDescriptor sd,
+                                 QSocketNotifier::Type type) {
+  ares_fd_events_t ev = { .fd = sd };
+  if (type == QSocketNotifier::Read) {
+    ev.events = ARES_FD_EVENT_READ;
+  }
+  if (type == QSocketNotifier::Write) {
+    ev.events = ARES_FD_EVENT_WRITE;
+  }
+  ares_process_fds(m_channel, &ev, 1, ARES_PROCESS_FLAG_NONE);
+  updateTimeout();
+}
+
+void DNSResolver::updateTimeout() {
+  struct timeval next;
+  struct timeval maxtv = {.tv_sec = 60, .tv_usec = 0};
+  struct timeval* tv = ares_timeout(m_channel, &maxtv, &next);
+  int msec = tv->tv_sec * 1000 + tv->tv_usec / 1000;
+  m_timer.start(qMax(1, msec));
+}
+
+void DNSResolver::aresTimeout() {
+  ares_process_fds(m_channel, nullptr, 0, ARES_PROCESS_FLAG_NONE);
+  updateTimeout();
+}
+
+int DNSResolver::aresSocket(int domain, int type, int proto) {
+  int sd = socket(domain, type, proto);
+  if (sd < 0) {
+    return sd;
+  }
+
+  // Configure the socket for non-blocking operation.
+  int flags = fcntl(sd, F_GETFL, 0);
+  if (flags == -1) {
+    close(sd);
+    return -1;
+  }
+  fcntl(sd, F_SETFL, flags | O_NONBLOCK);
+
+  // Create a socket notifier to drive the socket on reception
+  QSocketNotifier* n = new QSocketNotifier(sd, QSocketNotifier::Read, this);
+  connect(n, &QSocketNotifier::activated, this, &DNSResolver::socketAcivated);
+  m_notifiers[sd] = n;
+
+  return sd;
+}
+
+int DNSResolver::aresClose(QSocketDescriptor sd) {
+  QSocketNotifier* n = m_notifiers.take(sd);
+  if (n) {
+    delete n;
+  }
+  return close(sd);
+}
+
+int DNSResolver::aresConnect(QSocketDescriptor sd, const struct sockaddr *sa,
+                             ares_socklen_t salen, unsigned int flags) {
+  Q_UNUSED(flags);
+  return ::connect(sd, sa, salen);
+}
+
+int DNSResolver::aresSetsockopt(QSocketDescriptor sd, int opt, const void* val,
+                                int vlen) {
+  switch (opt) {
+    case ARES_SOCKET_OPT_SENDBUF_SIZE:
+      return setsockopt(sd, SOL_SOCKET, SO_SNDBUF, val, vlen);
+    case ARES_SOCKET_OPT_RECVBUF_SIZE:
+      return setsockopt(sd, SOL_SOCKET, SO_RCVBUF, val, vlen);
+    default:
+      // Not Implemented.
+      errno = ENOPROTOOPT;
+      return -1;
+  }
+}
+
+int DNSResolver::aresRecvfrom(QSocketDescriptor sd, void* data, size_t len,
+                              int flags, struct sockaddr* sa,
+                              socklen_t* socklen) {
+  return recvfrom(sd, data, len, flags, sa, socklen);
+}
+
+int DNSResolver::aresSendto(QSocketDescriptor sd, const void* data, size_t len,
+                           int flags, const struct sockaddr* sa,
+                           socklen_t socklen) {
+  return sendto(sd, data, len, flags, sa, socklen);
+}
+
+int DNSResolver::aresGetsockname(int sd, struct sockaddr* sa,
+                                 socklen_t *socklen, void* user_data) {
+  Q_UNUSED(user_data);
+  return getsockname(sd, sa, socklen);
+}
+
+unsigned int DNSResolver::aresNametoindex(const char* ifname, void* user_data) {
+  Q_UNUSED(user_data);
+  return if_nametoindex(ifname);
+}
+
+const char* DNSResolver::aresIndextoname(unsigned int ifindex, char* buf,
+                                         size_t len, void* user_data) {
+  Q_UNUSED(user_data);
+  char tmp[IF_NAMESIZE+1];
+  if (!if_indextoname(ifindex, buf)) {
+    return nullptr;
+  }
+  return strncpy(buf, tmp, len);
 }
