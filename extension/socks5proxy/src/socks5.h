@@ -10,7 +10,6 @@
 #include "dnsresolver.h"
 #include "socks5connection.h"
 
-class QAbstractSocket;
 class QHostAddress;
 class QLocalServer;
 class QTcpServer;
@@ -29,7 +28,7 @@ class Socks5 final : public QObject {
  signals:
   void connectionsChanged();
   void incomingConnection(Socks5Connection* connection);
-  void outgoingConnection(QAbstractSocket* socket, const QHostAddress& dest);
+  void outgoingConnection(qintptr sd, const QHostAddress& dest);
 
  private:
   void clientDismissed();

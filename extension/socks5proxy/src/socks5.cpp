@@ -44,8 +44,8 @@ void Socks5::newConnection(T* server) {
     });
 
     connect(con, &Socks5Connection::setupOutSocket, this,
-            [this](QAbstractSocket* s, const QHostAddress& dest) {
-              emit outgoingConnection(s, dest);
+            [this](qintptr sd, const QHostAddress& dest) {
+              emit outgoingConnection(sd, dest);
             });
 
     ++m_clientCount;

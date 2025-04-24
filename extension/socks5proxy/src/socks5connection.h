@@ -86,7 +86,7 @@ class Socks5Connection final : public QObject {
   const QString& errorString() const { return m_errorString; }
 
  signals:
-  void setupOutSocket(QAbstractSocket* socket, const QHostAddress& dest);
+  void setupOutSocket(qintptr sd, const QHostAddress& dest);
   void dataSentReceived(qint64 sent, qint64 received);
   void stateChanged();
 

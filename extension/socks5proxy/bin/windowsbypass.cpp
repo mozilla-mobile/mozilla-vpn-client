@@ -65,6 +65,8 @@ static void routeChangeCallback(PVOID context, PMIB_IPFORWARD_ROW2 row,
 WindowsBypass::WindowsBypass(Socks5* proxy) : QObject(proxy) {
   connect(proxy, &Socks5::outgoingConnection, this,
           &WindowsBypass::outgoingConnection);
+  connect(DNSResolver::instance(), &DNSResolver::setupDnsSocket, this,
+          &WindowsBypass::outgoingConnection);
 
   NotifyIpInterfaceChange(AF_UNSPEC, netChangeCallback, this, false,
                           &m_netChangeHandle);
@@ -80,8 +82,7 @@ WindowsBypass::~WindowsBypass() {
   CancelMibChangeNotify2(m_routeChangeHandle);
 }
 
-void WindowsBypass::outgoingConnection(QAbstractSocket* s,
-                                       const QHostAddress& dest) {
+void WindowsBypass::outgoingConnection(qintptr sd, const QHostAddress& dest) {
   if (!dest.isGlobal() || dest.isUniqueLocalUnicast()) {
     // This destination should not require exclusion.
     return;
@@ -122,25 +123,11 @@ void WindowsBypass::outgoingConnection(QAbstractSocket* s,
     return;
   }
 
-  // Create a new socket for this connection.
-  SOCKET newsock = socket(source.si_family, SOCK_STREAM, IPPROTO_TCP);
-  if (newsock == INVALID_SOCKET) {
-    qWarning() << "socket creation failed:" << WSAGetLastError();
-    return;
-  }
-
-  // Bind it to force its traffic to use a specific interface.
+  // Bind the socket to force its traffic to use a specific interface.
   int result =
-      bind(newsock, reinterpret_cast<sockaddr*>(&source), sizeof(source));
+      bind(sd, reinterpret_cast<sockaddr*>(&source), sizeof(source));
   if (result != 0) {
     qWarning() << "socket bind failed:" << WSAGetLastError();
-    closesocket(newsock);
-    return;
-  }
-
-  // Provide the socket descriptor to this connection.
-  if (!s->setSocketDescriptor(newsock, QAbstractSocket::UnconnectedState)) {
-    qWarning() << "setSocketDescriptor() failed:" << s->errorString();
   }
 }
 

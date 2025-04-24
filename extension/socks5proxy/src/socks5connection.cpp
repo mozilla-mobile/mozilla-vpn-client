@@ -384,8 +384,29 @@ void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
 void Socks5Connection::configureOutSocket(quint16 port) {
   Q_ASSERT(!m_destAddress.isNull());
   m_hostLookupStack.append(m_destAddress.toString());
+
+  int family;
+  if (m_destAddress.protocol() == QAbstractSocket::IPv6Protocol) {
+    family = AF_INET6;
+  } else {
+    family = AF_INET;
+  }
+
+  // The platform layer might want to fiddle with the socket before we connect,
+  // but the socket descriptor is typically created inside the connectToHost()
+  // method. So let's create the socket manually and emit a signal for the
+  // platform logic to hook on.
+  int newsock = socket(family, SOCK_STREAM, 0);
+  if (newsock < 0) {
+    QString msg = strerror(errno);
+    qWarning() << "socket() failed:" << msg;
+    setError(ErrorGeneral, msg);
+    return;
+  }
+  emit setupOutSocket(newsock, m_destAddress);
+
   m_outSocket = new QTcpSocket(this);
-  emit setupOutSocket(m_outSocket, m_destAddress);
+  m_outSocket->setSocketDescriptor(newsock, QAbstractSocket::UnconnectedState);
   m_outSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
   m_outSocket->connectToHost(m_destAddress, port);
 
