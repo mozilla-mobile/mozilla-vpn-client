@@ -5,11 +5,13 @@
 #ifndef WIREGUARDUTILSMACOS_H
 #define WIREGUARDUTILSMACOS_H
 
+#include <QSocketNotifier>
 #include <QObject>
-#include <QProcess>
 
 #include "daemon/wireguardutils.h"
 #include "macosroutemonitor.h"
+
+class WireguardPeerMacos;
 
 class WireguardUtilsMacos final : public WireguardUtils {
   Q_OBJECT
@@ -18,9 +20,7 @@ class WireguardUtilsMacos final : public WireguardUtils {
   WireguardUtilsMacos(QObject* parent);
   ~WireguardUtilsMacos();
 
-  bool interfaceExists() override {
-    return m_tunnel.state() == QProcess::Running;
-  }
+  bool interfaceExists() override { return m_tunfd >= 0; }
   QString interfaceName() override { return m_ifname; }
   bool addInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
@@ -33,22 +33,22 @@ class WireguardUtilsMacos final : public WireguardUtils {
   bool deleteRoutePrefix(const IPAddress& prefix) override;
   bool excludeLocalNetworks(const QList<IPAddress>& lanAddressRanges) override;
 
+ signals:
+  void backendFailure();
+  void tunOutput(const QByteArray& packet);
+
  private slots:
-  void tunnelStdoutReady();
-  void tunnelErrorOccurred(QProcess::ProcessError error);
-  void tunnelFinished(int exitCode, QProcess::ExitStatus exitStatus);
+  void tunActivated(QSocketDescriptor sd, QSocketNotifier::Type type);
 
  private:
-  QString uapiCommand(const QString& command);
-  static int uapiErrno(const QString& command);
-  QString waitForTunnelName(const QString& filename);
-  static QString wireguardGoPath();
-  static bool wireguardGoCodesign(const QProcess& process);
-  static QString wireguardGoRequirements();
+  void tunInput(const QByteArray& packet);
 
+  int m_tunfd = -1;
   QString m_ifname;
-  QProcess m_tunnel;
+  QSocketNotifier* m_tunNotifier = nullptr;
   MacosRouteMonitor* m_rtmonitor = nullptr;
+
+  QHash<QString,WireguardPeerMacos*> m_peers;
 };
 
 #endif  // WIREGUARDUTILSMACOS_H
