@@ -82,17 +82,16 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
     logger.warning() << "utun name loookup failed:" << strerror(errno);
     return false;
   }
-  
-  // Success! Save the tunnel device.
-  logger.info() << "Created interface:" << buf;
-  guard.dismiss();
   m_ifname = QString::fromUtf8(buf);
   m_tunfd = tunfd;
-  
   m_rtmonitor = new MacosRouteMonitor(m_ifname, this);
   m_tunNotifier = new QSocketNotifier(m_tunfd, QSocketNotifier::Read, this);
   connect(m_tunNotifier, &QSocketNotifier::activated, this,
           &WireguardUtilsMacos::tunActivated);
+
+  // Success!
+  logger.info() << "Created tunnel interface:" << m_ifname;
+  guard.dismiss();
   return true;
 }
 
@@ -116,41 +115,45 @@ bool WireguardUtilsMacos::deleteInterface() {
 }
 
 bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
-  // Destroy the old peer, if it exists.
+  // Destroy the old peer if it exists and create the new one.
   WgSessionMacos* peer = m_peers.take(config.m_serverPublicKey);
   if (peer) {
     delete peer;
   }
-  
-  // Create a new peer
   peer = new WgSessionMacos(config, this);
 
-  // Exclude the server address, except for multihop exit servers.
-  if ((config.m_hopType != InterfaceConfig::MultiHopExit) &&
-      (m_rtmonitor != nullptr)) {
-    m_rtmonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-    m_rtmonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
-  }
-
-  // Create a socket to handle outbound packet flows, except for multihop entry.
-  if (config.m_hopType != InterfaceConfig::MultiHopEntry) {
+  // Create a socket to handle outbound packet flows.
+  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
     QUdpSocket* sock = new QUdpSocket(peer);
+    connect(sock, &QIODevice::readyRead, peer, &WgSessionMacos::readyRead);
+    connect(sock, &QUdpSocket::connected, peer, &WgSessionMacos::renegotiate);
     connect(peer, &WgSessionMacos::netOutput, sock,
             [sock](const QByteArray& data) { sock->write(data); });
-    connect(sock, &QIODevice::readyRead, peer, &WgSessionMacos::readyRead);
     sock->connectToHost(config.m_serverIpv4AddrIn, config.m_serverPort);
-  } else {
-    // TODO: For multihop entry peers, we need to wrap the datagram in an IP
-    // header and then re-deliver it to the exit peer.
+    if (m_rtmonitor != nullptr) {
+      m_rtmonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
+      m_rtmonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+    }
+  } else if (m_entryPeer != nullptr) {
+    // Multihop exit peers should send their packets to the entry peer.
+    connect(peer, &WgSessionMacos::mhopOutput, m_entryPeer,
+            &WgSessionMacos::encrypt);
+    connect(m_entryPeer, &WgSessionMacos::decrypted, peer,
+            &WgSessionMacos::mhopInput);
+
+    // Assume the entry hop is already up, and attempt immediate renegotiation.
+    peer->renegotiate();
   }
 
-  // For single-hop and multihop entry peers send and receive packets from
-  // the tunnel device.
-  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
+  // Single-hop and multihop exit peers send and receive packets from the tunnel
+  if (config.m_hopType != InterfaceConfig::MultiHopEntry) {
     connect(peer, &WgSessionMacos::decrypted, this,
             &WireguardUtilsMacos::tunInput);
     connect(this, &WireguardUtilsMacos::tunOutput, peer,
             &WgSessionMacos::encrypt);
+  } else {
+    // Save the entry peer for later.
+    m_entryPeer = peer;
   }
 
   m_peers.insert(config.m_serverPublicKey, peer);
@@ -160,13 +163,15 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
 bool WireguardUtilsMacos::deletePeer(const InterfaceConfig& config) {
   // Destroy the old peer, if it exists.
   WgSessionMacos* peer = m_peers.take(config.m_serverPublicKey);
+  if (peer == m_entryPeer) {
+    m_entryPeer = nullptr;
+  }
   if (peer) {
     delete peer;
   }
 
   // Clear exclustion routes for this peer.
-  if ((config.m_hopType != InterfaceConfig::MultiHopExit) &&
-      (m_rtmonitor != nullptr)) {
+  if (m_rtmonitor && (config.m_hopType != InterfaceConfig::MultiHopExit)) {
     m_rtmonitor->deleteExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
     m_rtmonitor->deleteExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
   }
@@ -177,11 +182,7 @@ bool WireguardUtilsMacos::deletePeer(const InterfaceConfig& config) {
 QList<WireguardUtils::PeerStatus> WireguardUtilsMacos::getPeerStatus() {
   QList<PeerStatus> peerList;
   for (auto i = m_peers.constBegin(); i != m_peers.constEnd(); i++) {
-    PeerStatus st(i.key());
-    st.m_handshake = i.value()->lastHandshake();
-    st.m_rxBytes = i.value()->rxData();
-    st.m_txBytes = i.value()->txData();
-    peerList.append(st);
+    peerList.append(i.value()->status());
   }
   return peerList;
 }
@@ -266,7 +267,7 @@ void WireguardUtilsMacos::tunActivated(QSocketDescriptor sd,
 }
 
 void WireguardUtilsMacos::tunInput(const QByteArray& packet) {
-  // Peek the IP protocol version.
+  // Check the IP protocol version.
   quint32 header = htonl((packet[0] >> 4) >= 6 ? AF_INET6 : AF_INET);
 
   // Write it to the kernel.
