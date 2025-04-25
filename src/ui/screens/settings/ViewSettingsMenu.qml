@@ -107,7 +107,7 @@ MZViewBase {
                 id: preferencesSetting
                 objectName: "settingsPreferences"
                 settingTitle: MZI18n.SettingsPreferencesSettings
-                imageLeftSrc: MZAssetLookup.getImageSource("IconWrenchDarker")
+                imageLeftSrc: MZAssetLookup.getImageSource("IconWrench")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {

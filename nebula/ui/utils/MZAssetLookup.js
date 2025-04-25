@@ -124,10 +124,6 @@ var imageLookup = {
     filenameDark: 'qrc:/ui/resources/devices-dark.svg'
   },
   'IconWrench': {
-    filenameLight: 'qrc:/ui/resources/developer.svg',
-    filenameDark: 'qrc:/ui/resources/settings/preferences-dark.svg'
-  },
-  'IconWrenchDarker': {
     filenameLight: 'qrc:/ui/resources/settings/preferences.svg',
     filenameDark: 'qrc:/ui/resources/settings/preferences-dark.svg'
   },
