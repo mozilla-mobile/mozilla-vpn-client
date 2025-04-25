@@ -181,14 +181,6 @@ ColumnLayout {
                     VPNAppPermissions.flip(appID)
                 }
 
-                MZMouseArea {
-                    anchors.fill: parent
-                    width: parent.implicitWidth
-                    height: parent.implicitHeight
-                    propagateClickToParent: false
-                    onClicked: () => appRow.handleClick()
-                }
-
                 MZCheckBox {
                     id: checkBox
                     objectName: "checkbox"
@@ -268,6 +260,14 @@ ColumnLayout {
                     text: appName
                     color: MZTheme.colors.fontColorDark
                     horizontalAlignment: Text.AlignLeft
+                }
+
+                MZMouseArea {
+                    anchors.fill: parent
+                    width: parent.implicitWidth
+                    height: parent.implicitHeight
+                    propagateClickToParent: false
+                    onClicked: () => appRow.handleClick()
                 }
             }
         }
