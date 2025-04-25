@@ -53,8 +53,8 @@ target_sources(daemon PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wgsession.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wgsession.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wgutilsmacos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wgutilsmacos.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/xpcdaemonserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/xpcdaemonserver.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/xpcdaemonprotocol.h
