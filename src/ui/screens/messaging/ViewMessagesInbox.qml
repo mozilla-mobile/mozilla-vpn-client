@@ -41,6 +41,7 @@ MZViewBase {
     onIsEditingChanged: editModeChanged()
 
     _menuTitle: MZI18n.InAppMessagingMenuTitle
+    _useMargins: false
 
     onVisibleChanged: if (!visible) resetPage()
 
@@ -80,25 +81,6 @@ MZViewBase {
 
         spacing: 0
 
-        MZSearchBar {
-            id: searchBar
-
-            Layout.fillWidth: true
-            Layout.topMargin: MZTheme.theme.listSpacing
-            Layout.leftMargin: MZTheme.theme.windowMargin * 1.5
-            Layout.rightMargin: MZTheme.theme.windowMargin * 1.5
-            enabled: !vpnFlickable.isEmptyState
-            onEnabledChanged: if (!enabled) clearText()
-
-            _searchBarPlaceholderText: MZI18n.InAppMessagingSearchBarPlaceholderText
-            _searchBarHasError: !vpnFlickable.isEmptyState && listView.count === 0
-
-            _filterProxySource: MZAddonManager
-            _filterProxyCallback: obj => obj.addon.type === "message" && obj.addon.containsSearchString(getSearchBarText())
-            _sortProxyCallback: (obj1, obj2) => obj1.addon.date > obj2.addon.date
-            _editCallback: () => { vpnFlickable.isEditing = false }
-        }
-
         Image {
             Layout.topMargin: MZTheme.theme.vSpacingSmall * 2
             Layout.alignment: Qt.AlignHCenter
@@ -129,15 +111,6 @@ MZViewBase {
             text: MZI18n.InAppMessagingEmptyStateDescription
             visible: vpnFlickable.isEmptyState
             color: MZTheme.colors.fontColor
-        }
-
-        Rectangle {
-            Layout.topMargin: MZTheme.theme.vSpacing
-            Layout.fillWidth: true
-            Layout.preferredHeight: 1
-
-            color: MZTheme.colors.divider
-            visible: !vpnFlickable.isEmptyState
         }
 
         ListView {
@@ -175,7 +148,12 @@ MZViewBase {
                 }
             }
 
-            model: searchBar.getProxyModel()
+            model: MZFilterProxyModel {
+              source: MZAddonManager
+              filterCallback: obj => obj.addon.type === "message"
+              sortCallback: (obj1, obj2) => obj1.addon.date > obj2.addon.date
+            }
+
             delegate: ColumnLayout {
                 //See https://bugreports.qt.io/browse/QTBUG-81976
                 width: ListView.view.width
@@ -239,7 +217,7 @@ MZViewBase {
                         function dismissAddon() {
                             addon.dismiss()
                             //Since opening up all (even if there is just 1) visible messages swipes turns on edit mode, make sure to turn it off if there are no more visible messages
-                            if (searchBar.getProxyModel().rowCount() === 0) {
+                            if (model.count === 0) {
                                 vpnFlickable.isEditing = false
                             }
                         }
