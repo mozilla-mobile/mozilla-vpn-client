@@ -58,6 +58,16 @@ target_sources(daemon PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/xpcdaemonprotocol.h
 )
 
+# Build and link boringtun
+add_rust_library(boringtun
+    PACKAGE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/boringtun/boringtun
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    FEATURES ffi-bindings
+    CRATE_NAME boringtun
+)
+target_include_directories(daemon PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/boringtun/boringtun/src)
+target_link_libraries(daemon PRIVATE boringtun)
+
 # Embed the daemon property list.
 configure_file(${CMAKE_SOURCE_DIR}/macos/app/daemon.plist.in daemon.plist)
 if(XCODE)
