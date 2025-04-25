@@ -89,6 +89,16 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/update/balrog.h
 )
 
+# Build and link boringtun
+add_rust_library(boringtun
+    PACKAGE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/boringtun/boringtun
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    FEATURES ffi-bindings
+    CRATE_NAME boringtun
+)
+target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/boringtun/boringtun/src)
+target_link_libraries(mozillavpn PRIVATE boringtun)
+
 # Build the Wireguard Go tunnel
 file(GLOB_RECURSE WIREGUARD_GO_DEPS ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/*.go)
 set(WIREGUARD_GO_ENV
