@@ -49,6 +49,7 @@ class WireguardUtilsMacos final : public WireguardUtils {
   MacosRouteMonitor* m_rtmonitor = nullptr;
 
   QHash<QString,WgSessionMacos*> m_peers;
+  WgSessionMacos* m_entryPeer = nullptr;
 };
 
 #endif  // WIREGUARDUTILSMACOS_H
