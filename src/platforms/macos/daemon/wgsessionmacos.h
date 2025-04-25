@@ -2,23 +2,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef WIREGUARDPEERMACOS_H
-#define WIREGUARDPEERMACOS_H
+#ifndef WGSESSIONMACOS_H
+#define WGSESSIONMACOS_H
 
 #include <QObject>
 #include <QTimer>
 
-struct wireguard_tunnel;
-class InterfaceConfig;
+#include "daemon/interfaceconfig.h"
 
-class WireguardPeerMacos final : public QObject {
+struct wireguard_tunnel;
+
+class WgSessionMacos final : public QObject {
   Q_OBJECT
 
  public:
-  WireguardPeerMacos(const InterfaceConfig& config, QObject* parent = nullptr);
-  ~WireguardPeerMacos();
+ WgSessionMacos(const InterfaceConfig& config, QObject* parent = nullptr);
+  ~WgSessionMacos();
 
-  const QString& pubkey() const { return m_pubkey; }
+  const QString& pubkey() const { return m_config.m_serverPublicKey; }
   qint64 lastHandshake() const;
   qint64 rxData() const;
   qint64 txData() const;
@@ -37,10 +38,10 @@ class WireguardPeerMacos final : public QObject {
   void processResult(int op, const QByteArray& buf);
   void timeout();
 
-  QString m_pubkey;
+  const InterfaceConfig m_config;
   QTimer m_timer;
 
   struct wireguard_tunnel* m_tunnel = nullptr;
 };
 
-#endif  // WIREGUARDPEERMACOS_H
+#endif  // WGSESSIONMACOS_H

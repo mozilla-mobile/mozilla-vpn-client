@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "wireguardpeermacos.h"
+#include "wgsessionmacos.h"
 
 #include <QDateTime>
 #include <QNetworkDatagram>
@@ -18,33 +18,32 @@ extern "C" {
 }
 
 namespace {
-Logger logger("WireguardUtilsMacos");
+Logger logger("WgSessionMacos");
 };  // namespace
 
-WireguardPeerMacos::WireguardPeerMacos(
-    const InterfaceConfig& config, QObject* parent)
-        : QObject(parent), m_pubkey(config.m_serverPublicKey) {
-  MZ_COUNT_CTOR(WireguardPeerMacos);
-  logger.debug() << "WireguardPeerMacos created.";
+WgSessionMacos::WgSessionMacos(const InterfaceConfig& config, QObject* parent)
+    : QObject(parent), m_config(config) {
+  MZ_COUNT_CTOR(WgSessionMacos);
+  logger.debug() << "WgSessionMacos created.";
 
   // Allocate a new tunnel
   m_tunnel = new_tunnel(config.m_privateKey.toUtf8().constData(),
                         config.m_serverPublicKey.toLocal8Bit().constData(),
                         nullptr, WG_KEEPALIVE_PERIOD, 0);
-  connect(&m_timer, &QTimer::timeout, this, &WireguardPeerMacos::timeout);
+  connect(&m_timer, &QTimer::timeout, this, &WgSessionMacos::timeout);
   m_timer.setSingleShot(false);
   m_timer.start(1000);
 }
 
-WireguardPeerMacos::~WireguardPeerMacos() {
-  MZ_COUNT_DTOR(WireguardPeerMacos);
-  logger.debug() << "WireguardPeerMacos destroyed.";
+WgSessionMacos::~WgSessionMacos() {
+  MZ_COUNT_DTOR(WgSessionMacos);
+  logger.debug() << "WgSessionMacos destroyed.";
   if (m_tunnel) {
     tunnel_free(m_tunnel);
   }
 }
 
-void WireguardPeerMacos::processResult(int op, const QByteArray& buf) {
+void WgSessionMacos::processResult(int op, const QByteArray& buf) {
   switch (op) {
     case WIREGUARD_DONE:
       break;
@@ -65,7 +64,7 @@ void WireguardPeerMacos::processResult(int op, const QByteArray& buf) {
   }
 }
 
-void WireguardPeerMacos::timeout() {
+void WgSessionMacos::timeout() {
   QByteArray buffer;
   buffer.resize(1500);
 
@@ -74,7 +73,7 @@ void WireguardPeerMacos::timeout() {
   processResult(result.op, buffer.first(result.size));
 }
 
-void WireguardPeerMacos::encrypt(const QByteArray& data) {
+void WgSessionMacos::encrypt(const QByteArray& data) {
   QByteArray buffer;
   buffer.resize(1500);
 
@@ -85,7 +84,7 @@ void WireguardPeerMacos::encrypt(const QByteArray& data) {
   processResult(result.op, buffer.first(result.size));
 }
 
-void WireguardPeerMacos::netInput(const QByteArray& data) {
+void WgSessionMacos::netInput(const QByteArray& data) {
   QByteArray buffer;
   buffer.resize(1500);
 
@@ -96,7 +95,7 @@ void WireguardPeerMacos::netInput(const QByteArray& data) {
   processResult(result.op, buffer.first(result.size));
 }
 
-void WireguardPeerMacos::readyRead() {
+void WgSessionMacos::readyRead() {
   QUdpSocket* sock = qobject_cast<QUdpSocket*>(QObject::sender());
   if (!sock) {
     return;
@@ -111,7 +110,7 @@ void WireguardPeerMacos::readyRead() {
   }
 }
 
-qint64 WireguardPeerMacos::lastHandshake() const {
+qint64 WgSessionMacos::lastHandshake() const {
   qint64 elapsed = wireguard_stats(m_tunnel).time_since_last_handshake;
   if (elapsed < 0) {
     // No Handshake yet.
@@ -120,10 +119,10 @@ qint64 WireguardPeerMacos::lastHandshake() const {
   return (QDateTime::currentSecsSinceEpoch() - elapsed) * 1000;
 }
 
-qint64 WireguardPeerMacos::rxData() const {
+qint64 WgSessionMacos::rxData() const {
   return wireguard_stats(m_tunnel).rx_bytes;
 }
 
-qint64 WireguardPeerMacos::txData() const {
+qint64 WgSessionMacos::txData() const {
   return wireguard_stats(m_tunnel).tx_bytes;
 }
