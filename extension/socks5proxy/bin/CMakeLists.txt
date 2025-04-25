@@ -14,6 +14,10 @@ target_link_libraries(socksproxy PUBLIC
     libSocks5proxy
 )
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+   target_compile_definitions(socksproxy PRIVATE MZ_DEBUG)
+endif()
+
 if(WIN32)
     target_compile_definitions(socksproxy PRIVATE PROXY_OS_WIN)
     target_sources(socksproxy PRIVATE
@@ -23,8 +27,7 @@ if(WIN32)
         winfwpolicy.h
         winsvcthread.cpp
         winsvcthread.h
-        winutils.cpp
-        winutils.h)
+        )
     target_link_libraries(socksproxy PRIVATE Iphlpapi.lib)
 
     install(FILES

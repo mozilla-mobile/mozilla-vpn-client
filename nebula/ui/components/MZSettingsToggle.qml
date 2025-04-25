@@ -104,7 +104,7 @@ CheckBox {
     Rectangle {
         id: hoverPressHandler
 
-        color: MZTheme.colors.lightFocusBorder
+        color: MZTheme.colors.focusBorder
         opacity: 0
         z: -1
         anchors.fill: uiPlaceholder

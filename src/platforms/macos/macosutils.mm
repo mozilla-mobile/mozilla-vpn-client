@@ -6,6 +6,8 @@
 #include "logger.h"
 #include "qmlengineholder.h"
 
+#include <QGlobalStatic>
+
 #include <objc/message.h>
 #include <objc/objc.h>
 
@@ -15,6 +17,9 @@
 namespace {
 Logger logger("MacOSUtils");
 }
+
+Q_GLOBAL_STATIC(MacOSUtils, macosUtils);
+MacOSUtils* MacOSUtils::instance() { return macosUtils; }
 
 // static
 NSString* MacOSUtils::appId() {
@@ -26,6 +31,12 @@ NSString* MacOSUtils::appId() {
   }
 
   return appId;
+}
+
+void MacOSUtils::openSystemSettingsLoginItems() {
+  if (@available(macOS 13, *)) {
+    [SMAppService openSystemSettingsLoginItems];
+  }
 }
 
 // static
@@ -43,6 +54,7 @@ void MacOSUtils::enableLoginItem(bool startAtBoot) {
 
   NSString* loginItemAppId =
     QString("%1.login-item").arg(QString::fromNSString(appId)).toNSString();
+
 
   // For macOS 13 and beyond, register() and unregister() methods
   // are used for managing login items since SMLoginItemSetEnabled() is deprecated.

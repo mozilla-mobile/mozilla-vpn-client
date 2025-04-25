@@ -79,7 +79,7 @@ Item {
                 }
                 PropertyChanges {
                     target: stabilityLabel
-                    color: MZTheme.colors.warningAccent
+                    color: MZTheme.colors.fontColorWarningForConnectionBox
                 }
                 PropertyChanges {
                     target: warningIcon
@@ -96,7 +96,7 @@ Item {
                 }
                 PropertyChanges {
                     target: stabilityLabel
-                    color: MZTheme.colors.errorAccent
+                    color: MZTheme.colors.errorAccentLight
                 }
                 PropertyChanges {
                     target: warningIcon

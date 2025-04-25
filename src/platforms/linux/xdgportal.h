@@ -5,6 +5,7 @@
 #ifndef XDGPORTAL_H
 #define XDGPORTAL_H
 
+#include <QDBusInterface>
 #include <QObject>
 
 constexpr const char* XDG_PORTAL_SERVICE = "org.freedesktop.portal.Desktop";
@@ -14,6 +15,7 @@ constexpr const char* XDG_PORTAL_BACKGROUND =
     "org.freedesktop.portal.Background";
 constexpr const char* XDG_PORTAL_REQUEST = "org.freedesktop.portal.Request";
 constexpr const char* XDG_PORTAL_SECRET = "org.freedesktop.portal.Secret";
+constexpr const char* XDG_PORTAL_SETTINGS = "org.freedesktop.portal.Settings";
 
 // XDG Portals allow sandboxed applications to interact with the host operating
 // system in a secure way via D-Bus APIs. This class implements some common
@@ -27,13 +29,13 @@ class XdgPortal : public QObject {
   Q_DISABLE_COPY_MOVE(XdgPortal)
 
  public:
-  explicit XdgPortal(QObject* parent = nullptr);
+  explicit XdgPortal(const QString& interface, QObject* parent = nullptr);
   ~XdgPortal();
 
   const QString& token() const { return m_token; }
   const QString& replyPath() const { return m_replyPath; }
   void setReplyPath(const QString& path);
-  static uint getVersion(const QString& interface);
+  uint getVersion();
   static void setupAppScope(const QString& appid);
 
  signals:
@@ -47,6 +49,8 @@ class XdgPortal : public QObject {
 
   QString m_replyPath;
   QString m_token;
+
+  QDBusInterface m_portal;
 };
 
 #endif  // XDGPORTAL_H

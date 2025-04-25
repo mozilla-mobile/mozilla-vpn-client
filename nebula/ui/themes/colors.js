@@ -16,6 +16,12 @@ const percentToHex = percent => {
   return hexAlphaValue.toUpperCase();
 };
 
+const hexToPercent = hex => {
+  const hexString = `0x${hex}`;
+  const asNumber = Number(hexString);
+  return asNumber / 255;
+};
+
 // Not all #00xxxxx colors are identical. While they look identical
 // on screen, in transitions or with opacity changes they may look different.
 // Changing all `addTransparency(color.[anything], 0.0)` to color.transparency
@@ -27,6 +33,36 @@ const addTransparency = (hexColor, percent) => {
   // Despite typical web usage being #{colorHex}{alphaHex}, Qt uses
   // #{alphaHex}{colorHex}: https://doc.qt.io/qt-6/qcolor.html#fromString
   return `#${hexAlphaValue}${hexValue}`;
+};
+
+// Neither color can include transparency
+const mixColors = (hexColor1, hexColor2, percentForSecond) => {
+  var returnString = '#';
+  for (var index = 1; index < 7; index = index + 2) {
+    const hexColorSnippet1 = hexColor1.substring(index, index + 2);
+    const hexColorSnippet2 = hexColor2.substring(index, index + 2);
+    const percentColor1 = hexToPercent(hexColorSnippet1);
+    const percentColor2 = hexToPercent(hexColorSnippet2);
+    const smallerColor = Math.min(percentColor1, percentColor2);
+    const largerColor = Math.max(percentColor1, percentColor2);
+
+    // take difference between colors
+    const colorDifference = largerColor - smallerColor;
+
+    // get % for the larger
+    const percentForLarger =
+        (percentColor2 == largerColor ? percentForSecond :
+                                        1 - percentForSecond);
+
+    // multiply % by colorDifference, add it to the smaller
+    const finalPercent = smallerColor + (colorDifference * percentForLarger);
+
+    // add it to return string
+    const finalAsString = percentToHex(finalPercent);
+
+    returnString = returnString.concat(finalAsString);
+  }
+  return returnString;
 };
 
 /**
@@ -65,13 +101,16 @@ color.green5 = '#E3FFF3';
 // Grey
 color.black = '#000000';
 color.grey60 = '#0C0C0D';
+color.grey55 = '#15151A';
 color.grey50 = '#3D3D3D';
+color.grey45 = '#42414D';
 color.grey40 = '#6D6D6E';
 color.grey30 = '#9E9E9E';
 color.grey20 = '#CECECF';
 color.grey15 = '#D8D8D8';
 color.grey10 = '#E7E7E7';
 color.grey5 = '#F9F9FA';
+color.grey3 = '#FBFBFE';
 color.white = '#FFFFFF';
 
 /**
@@ -154,79 +193,12 @@ color.pink5 = '#FFDEF0';
 color.dullGreen = '#387E8A';
 color.dullPurple = '#998DB2';
 color.washedPurple = '#5B4983';
-color.washedBlue = '#D4E2F6';
-color.washedLightBlue = '#AECBF2';
-color.strongBlue = '#0A84FF';
+color.brightSlate = '#2B2A33';
+color.greyWithContrast = '#BABAC0';
+color.middlingGrey = '#686771';
 
 color.lighterOnboardingPurple = '#472C87';
 color.mediumOnboardingPurple = '#301962';
 color.darkerOnboardingPurple = '#1D0942';
 
 color.transparent = '#00000000';
-
-/**
- * Part 2: Functional colors
- * Should NOT be used directly in code, and colors should not be modified.
- * (Can add to this section if really, truly needed.)
- */
-color.blue = color.blue50;
-color.blueHovered = color.blue60;
-color.bluePressed = color.blue70;
-color.blueFocusBorder = color.strongBlue;
-
-color.green = color.green50;
-color.red = color.red60;
-color.orange = color.yellow50;
-
-color.greyHovered = color.grey10;
-color.greyPressed = color.grey20;
-
-color.blueButton = {
-  defaultColor: color.blue,
-  buttonHovered: color.blueHovered,
-  buttonPressed: color.bluePressed,
-  buttonDisabled: color.washedLightBlue,
-  focusBgColor: color.blue,
-  focusOutline: addTransparency(color.blueFocusBorder, 0.3),
-  focusBorder: color.blueFocusBorder,
-};
-
-color.clickableRowBlue = {
-  defaultColor: color.grey5,
-  buttonHovered: color.washedBlue,
-  buttonPressed: color.washedLightBlue,
-  focusOutline: addTransparency(color.grey5, 0.0),
-  focusBorder: color.blueFocusBorder,
-};
-
-color.redButton = {
-  defaultColor: color.red70,
-  buttonHovered: color.red75,
-  buttonPressed: color.red80,
-  buttonDisabled: color.red10,
-  focusOutline: addTransparency(color.red70, 0.4),
-  focusBorder: color.red70,
-};
-
-color.greenAlert = {
-  defaultColor: color.green,
-  buttonHovered: color.green60,
-  buttonPressed: color.green70,
-  focusOutline: addTransparency(color.green, 0.2),
-  focusBorder: color.green70,
-};
-
-color.orangeAlert = {
-  buttonHovered: color.yellow60,
-  buttonPressed: color.yellow70,
-  focusOutline: addTransparency(color.yellow60, 0.3),
-  focusBorder: color.yellow70,
-};
-
-color.greyLink = {
-  defaultColor: addTransparency(color.grey60, 0.7),
-  buttonHovered: addTransparency(color.grey60, 0.8),
-  buttonPressed: color.grey60,
-  focusOutline: color.grey60,
-  focusBorder: color.black
-};

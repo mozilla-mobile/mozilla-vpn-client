@@ -65,6 +65,25 @@ MZButtonBase {
 
         },
         State {
+            name: VPNController.StatePermissionRequired
+
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 4
+            }
+
+            PropertyChanges {
+                target: toggle
+                color: MZTheme.colors.vpnToggleDisconnected.defaultColor
+                border.color: MZTheme.colors.bgColorStronger
+            }
+
+            PropertyChanges {
+                target: toggleButton
+                toggleColor: MZTheme.colors.vpnToggleDisconnected
+            }
+        },
+        State {
             name: VPNController.StateOff
 
             PropertyChanges {
@@ -115,12 +134,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: MZTheme.colors.activatingToggle
+                color: MZTheme.colors.connectingToggle
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.activatingToggleBackground
+                color: MZTheme.colors.connectingToggleBackground
                 border.color: MZTheme.colors.primary
             }
 
@@ -138,12 +157,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: connectionRetryOverX ? MZTheme.colors.bgColorStronger : MZTheme.colors.activatingToggle
+                color: connectionRetryOverX ? MZTheme.colors.bgColorStronger : MZTheme.colors.connectingToggle
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.activatingToggleBackground
+                color: MZTheme.colors.connectingToggleBackground
                 border.color: MZTheme.colors.primary
             }
 
@@ -223,12 +242,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: MZTheme.colors.activatingToggle
+                color: MZTheme.colors.connectingToggle
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.activatingToggleBackground
+                color: MZTheme.colors.connectingToggleBackground
                 border.color: MZTheme.colors.primary
             }
 

@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+list(APPEND QT_WASM_EXTRA_EXPORTED_METHODS ENV)
+
 target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.h
@@ -13,15 +15,13 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmwindowcontroller.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmiaphandler.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmiaphandler.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasminspector.cpp
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasminspector.h
      ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.h
      ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.h
 )
 set_target_properties(mozillavpn PROPERTIES
-  LINK_FLAGS "-gseparate-dwarf=mozillavpn.debug.wasm")
+  LINK_FLAGS "-gseparate-dwarf=${CMAKE_BINARY_DIR}/src/mozillavpn.debug.wasm")
 
 
 set(WASM_FINAL_DIR ${CMAKE_BINARY_DIR}/wasm_build)

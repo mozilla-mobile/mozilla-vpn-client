@@ -1,7 +1,7 @@
-import {ViewShell} from "./view-shell"
-import {ViewLogs} from "./logs"
-import {ViewNetwork} from "./view-network"
-import {ViewUi} from "./view-ui"
+import {ViewShell} from "./view-shell.js"
+import {ViewLogs} from "./logs.js"
+import {ViewNetwork} from "./view-network.js"
+import {ViewUi} from "./view-ui.js"
 
 export{
     ViewLogs,

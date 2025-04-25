@@ -90,6 +90,8 @@ const screenHome = {
   SERVER_LIST_BUTTON_LABEL:
       new QmlQueryComposer('//serverListButton-label-label'),
   SERVER_LIST_BUTTON: new QmlQueryComposer('//serverListButton-btn'),
+  SERVER_UNAVAILABLE_POPUP_BUTTON:
+      new QmlQueryComposer('//serverUnavailablePopup-button'),
   STACKVIEW: new QmlQueryComposer('//screenHome-stackView'),
 
   serverListView: {
@@ -349,6 +351,7 @@ const screenSettings = {
     START_AT_BOOT_TOGGLE: new QmlQueryComposer('//startAtBootToogle'),
     DATA_COLLECTION_TOGGLE: new QmlQueryComposer('//dataCollectionToggle'),
     LANGUAGE: new QmlQueryComposer('//settingsLanguages'),
+    APPEARANCE: new QmlQueryComposer('//appearance'),
     NOTIFICATIONS: new QmlQueryComposer('//settingsNotifications'),
     DNS_SETTINGS: new QmlQueryComposer('//dnsSettings'),
 
@@ -376,6 +379,13 @@ const screenSettings = {
           new QmlQueryComposer('//dnsHelpSheet-closeButton'),
       HELP_SHEET_LEARN_MORE_BUTTON:
           new QmlQueryComposer('//helpSheetContentLoader/learnMoreLink'),
+    },
+
+    appearanceView: {
+      AUTOMATIC_RADIO_BUTTON:
+          new QmlQueryComposer('//automaticAppearanceRadioButton'),
+      LIGHT_RADIO_BUTTON: new QmlQueryComposer('//lightAppearanceRadioButton'),
+      DARK_RADIO_BUTTON: new QmlQueryComposer('//darkAppearanceRadioButton'),
     },
 
     languageSettingsView: {

@@ -126,8 +126,22 @@ Item {
                 id: imageItems
             }
 
+            function sortNames(nameList) {
+              for (var i = 0; i < nameList.length; i++) {
+                for (var j = 0; j < (nameList.length - i - 1); j++) {
+                  if (nameList[j] > nameList[j+1]) {
+                    const holder = nameList[j]
+                    nameList[j] = nameList[j+1]
+                    nameList[j+1] = holder
+                  }
+                }
+              }
+              return nameList
+            }
+
             Component.onCompleted: {
-                Object.keys(MZAssetLookup.imageLookup).forEach(function(imageRecord) {
+                const sortedImageNames = sortNames(Object.keys(MZAssetLookup.imageLookup))
+                sortedImageNames.forEach(function(imageRecord) {
                   imageItems.append({
                     name: imageRecord,
                     lightFile: MZAssetLookup.imageLookup[imageRecord].filenameLight,

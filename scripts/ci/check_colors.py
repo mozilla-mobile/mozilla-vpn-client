@@ -8,6 +8,7 @@ import os
 import re
 
 HEX_COLOR_REGEX = r"#[0-9a-fA-F]{6}"
+NAMED_COLOR_REGEX = r"color: [\'|\"].*[\'|\"]"
 COLOR_DEF_REGEX = r"color\..* ="
 COLOR_USE_REGEX = r"MZTheme\.colors\.[0-9A-Za-z]+"
 
@@ -23,12 +24,15 @@ def fileContents(filepath):
     except Exception as e:
         exit(f"An error occurred while loading {filepath}: {e}")
 
-def checkForHexColor(filepath):
+def checkForHexAndNamedColors(filepath):
     # print("Checking for hex colors in " + filepath)
     content = fileContents(filepath)
     hex_color_list = re.findall(HEX_COLOR_REGEX, content)
     if hex_color_list:
         exit(f"Unexpected hex color found in: {filepath}")
+    named_color_list = re.findall(NAMED_COLOR_REGEX, content)
+    if named_color_list:
+        exit(f"Unexpected named color found in: {filepath}")
 
 def colorsDefinedInFile(filepath):
     print("Loading colors defined in " + filepath)
@@ -74,7 +78,7 @@ args = parser.parse_args()
 ###
 # 0. Get list of all themes
 try:
-    all_themes = [item for item in os.listdir(args.themeDirectory[0]) if os.path.isdir(os.path.join(args.themeDirectory[0], item))]
+    all_themes = [item.rsplit(".",1)[0] for item in os.listdir(args.themeDirectory[0]) if os.path.isfile(os.path.join(args.themeDirectory[0], item))]
 except FileNotFoundError:
     exit(f"Path not found: {args.themeDirectory[0]}")
 except Exception as e:
@@ -84,8 +88,8 @@ if len(all_themes) == 0:
     exit(f"No themes found")
 
 ###
-# 1. All theme's `theme.js` should define the same named colors (though with different values)
-file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + "/theme.js", all_themes))
+# 1. All theme files should define the same named colors (though with different values)
+file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + ".js", all_themes))
 baseline_colors = colorsDefinedInFile(file_paths[0])
 for file_path in file_paths:
     colors_in_file = colorsDefinedInFile(file_path)
@@ -96,12 +100,12 @@ for file_path in file_paths:
             exit(f"Color {color} is not in all themes but found in {file_path}")
 
 ###
-# 2. Explict colors should not be used in theme-derived.js or any theme's theme.js file.
+# 2. Explict colors should not be used in theme-derived.js or any theme's color file.
 
-file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + "/theme.js", all_themes))
-file_paths.append(args.themeDirectory[0] + "/theme-derived.js")
+file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + ".js", all_themes))
+file_paths.append(os.path.join(args.themeDirectory[0], os.pardir) + "/theme-derived.js")
 for file_path in file_paths:
-    checkForHexColor(file_path)
+    checkForHexAndNamedColors(file_path)
 
 ###
 # 3. All colors in QML files should come from theme.js or theme-derived.js.
@@ -109,8 +113,8 @@ for file_path in file_paths:
 
 # A. Get list of colors that should be used
 #   (Each theme's theme.js file should expose the same color names, so can just check one.)
-color_list_derived = colorsDefinedInFile(args.themeDirectory[0] + "/theme-derived.js")
-color_list_theme = colorsDefinedInFile(args.themeDirectory[0] + "/" + all_themes[0] + "/theme.js")
+color_list_derived = colorsDefinedInFile(os.path.join(args.themeDirectory[0], os.pardir) + "/theme-derived.js")
+color_list_theme = colorsDefinedInFile(args.themeDirectory[0] + "/" + all_themes[0] + ".js")
 # `transparent` is defined in colors.js, but allowed to be used in code per many comments
 color_list = color_list_derived + color_list_theme + ["transparent"]
 
@@ -129,7 +133,7 @@ for direc in qml_directories:
 # C. Check that QML files do not include explict colors, and only use intended colors
 for qml_file_path in all_qml_files:
     # check for explict colors
-    checkForHexColor(qml_file_path)
+    checkForHexAndNamedColors(qml_file_path)
 
     # get color names from QML file - everything MZTheme.color
     colors_used = colorsUsedInFile(qml_file_path)

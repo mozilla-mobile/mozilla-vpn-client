@@ -7,6 +7,8 @@
 
 #include "command.h"
 
+class QDir;
+
 class MacOSDaemonServer final : public Command {
  public:
   explicit MacOSDaemonServer(QObject* parent);
@@ -15,7 +17,7 @@ class MacOSDaemonServer final : public Command {
   int run(QStringList& tokens) override;
 
  private:
-  static QString daemonPath();
+  static bool makeRuntimeDir(const QDir& dir);
 };
 
 #endif  // MACOSDAEMONSERVER_H

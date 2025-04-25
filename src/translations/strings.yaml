@@ -320,7 +320,18 @@ systray:
 settings:
   privacySettings: Privacy features
   appExclusionTitle: Excluded apps
+  appearance:
+    value: Appearance
+    comment: Appearance refers to the app theming (dark mode / light mode)
   dnsSettings: DNS settings
+  firefoxExtensionInfo: Firefox extension
+  firefoxExtensionIntro: Get more precise control over how your VPN works when you’re browsing, with the Firefox extension.
+  firefoxExtensionFirstParagraphHead: Turn off VPN for specific websites.
+  firefoxExtensionFirstParagraphMain: No more toggling your VPN on and off when you need a site to work. Plus, your preference for the website is saved so you don’t have to adjust it each time.
+  firefoxExtensionSecondParagraphHead: Choose different locations for different websites.
+  firefoxExtensionSecondParagraphMain: Browse one site as if you’re in New York and another as if you’re in Paris — all in the same Firefox session.
+  firefoxExtensionMainButton: Get the extension
+  firefoxExtensionFirefoxButton: Download Firefox
   preferencesSettings: Preferences
   shareTechnicalDataDescription: Help improve Mozilla VPN by sharing crash reports, diagnostics, and product usage data.
   startAtBootTitle:
@@ -350,6 +361,16 @@ settings:
     comment: Button label to clear all apps from the exclusions list
   reauthTitle: Sign In Again
   reauthDescription: For your security, please sign in again to access your account information. You’ll complete this process on Mozilla’s website.
+  appearanceAutomatic:
+    value: Automatic
+    comment: Automatic switching for dark mode/light mode, based on the system’s setting
+  appearanceAutomaticDescription: Follow your system’s appearance
+  appearanceLight:
+    value: Light
+    comment: Light as in "light mode theme"
+  appearanceDark:
+    value: Dark
+    comment: Dark as in "dark mode theme"
 
 localNetworkAccess:
   labelTitle: Exclude local network traffic
@@ -1027,6 +1048,20 @@ resetSettings:
   confirmResetModalResetButtonLabel:
     value: Reset and quit
     comment: Label for button that finalizes a restore to factory settings
+
+permissionMacos:
+  title:
+    value: Allow VPN to run in background
+    comment: Title of the screen directing macOS users to allow the VPN to run in background
+  body:
+    value: To use Mozilla VPN, please allow it to run in the background.
+    comment: Paragraph requesting the user to allow the VPN to run in the background.
+  instructions:
+    value: In order to do this, please click the button below to open the <i>Login Items</i> of your <i>System Preferences</i>, and enable <i>Allow in the background</i> for Mozilla VPN.
+    comment: Paragraph explaining how to enable the VPN to run in the background.
+  openSettingsButtonLabel:
+    value: Open Login Items
+    comment: Label for the button that opens the login items settings page
 
 global:
   expand:

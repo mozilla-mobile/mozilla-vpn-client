@@ -123,13 +123,13 @@ exports.endpoints = {
                   'ipv6_addr_in': '::1',
                   'weight': 3,
                   'include_in_country': true,
-                  'public_key': 'public-key',
+                  'public_key': 'public-key1',
                   'port_ranges':
                       [[53, 53], [4000, 33433], [33565, 51820], [52000, 60000]],
                   'ipv4_gateway': '127.0.0.1',
                   'ipv6_gateway': '::1'
                 }],
-                'public_key': 'public-key',
+                'public_key': 'public-key2',
                 'ipv4_gateway': '127.0.0.1',
                 'ipv6_gateway': '::1',
                 'ipv4_addr_in': '127.0.0.1',
@@ -147,7 +147,7 @@ exports.endpoints = {
                     'ipv6_addr_in': '::1',
                     'weight': 100,
                     'include_in_country': true,
-                    'public_key': 'public-key',
+                    'public_key': 'public-key3',
                     'port_ranges': [
                       [53, 53], [4000, 33433], [33565, 51820], [52000, 60000]
                     ],
@@ -155,7 +155,7 @@ exports.endpoints = {
                     'ipv6_gateway': '::1'
                   },
                 ],
-                'public_key': 'public-key',
+                'public_key': 'public-key4',
                 'ipv4_gateway': '127.0.0.1',
                 'ipv6_gateway': '::1',
                 'ipv4_addr_in': '127.0.0.1',
@@ -178,14 +178,14 @@ exports.endpoints = {
                   'ipv6_addr_in': '::1',
                   'weight': 100,
                   'include_in_country': true,
-                  'public_key': 'public-key',
+                  'public_key': 'public-key5',
                   'port_ranges':
                       [[53, 53], [4000, 33433], [33565, 51820], [52000, 60000]],
                   'ipv4_gateway': '127.0.0.1',
                   'ipv6_gateway': '::1'
                 },
               ],
-              'public_key': 'public-key',
+              'public_key': 'public-key6',
               'ipv4_gateway': '127.0.0.1',
               'ipv6_gateway': '::1',
               'ipv4_addr_in': '127.0.0.1',
@@ -207,14 +207,14 @@ exports.endpoints = {
                   'ipv6_addr_in': '::1',
                   'weight': 100,
                   'include_in_country': true,
-                  'public_key': 'public-key',
+                  'public_key': 'public-key7',
                   'port_ranges':
                       [[53, 53], [4000, 33433], [33565, 51820], [52000, 60000]],
                   'ipv4_gateway': '127.0.0.1',
                   'ipv6_gateway': '::1'
                 },
               ],
-              'public_key': 'public-key',
+              'public_key': 'public-key8',
               'ipv4_gateway': '127.0.0.1',
               'ipv6_gateway': '::1',
               'ipv4_addr_in': '127.0.0.1',
@@ -260,10 +260,7 @@ exports.endpoints = {
     '/api/v2/vpn/featurelist': {
       status: 200,
       body: {
-        featuresOverwrite: {
-          'enableUpdateServer': false,
-          'splitTunnel': true
-        },
+        featuresOverwrite: {'enableUpdateServer': false, 'splitTunnel': true},
         experimentalFeatures: {}
       }
     },

@@ -178,7 +178,7 @@ ColumnLayout {
 
             messages: [
                 {
-                    type: "error",
+                    type: MZContextualAlert.AlertType.Error,
                     message: base._inputErrorMessage,
                     visible: activeInput().hasError
                 }

@@ -62,11 +62,15 @@ int MacOSDaemonServer::run(QStringList& tokens) {
     new DaemonLocalServerConnection(&daemon, socket);
   });
 
-  QString path = daemonPath();
-  if (QFileInfo::exists(path)) {
-    QFile::remove(path);
+  QFileInfo path(Constants::MACOS_DAEMON_PATH);
+  if (path.exists()) {
+    QFile::remove(path.canonicalPath());
+  } else if (!makeRuntimeDir(path.dir())) {
+    logger.error() << "Failed to create runtime dir";
+    return 1;
   }
-  if (!server.listen(path)) {
+
+  if (!server.listen(Constants::MACOS_DAEMON_PATH)) {
     logger.error() << "Failed to initialize the server";
     return 1;
   }
@@ -81,30 +85,19 @@ int MacOSDaemonServer::run(QStringList& tokens) {
   return app.exec();
 }
 
-QString MacOSDaemonServer::daemonPath() {
-  QDir dir("/var/run");
-  if (!dir.exists()) {
-    logger.warning() << "/var/run doesn't exist. Fallback /tmp.";
-    return Constants::MACOS_DAEMON_TMP_PATH;
+bool MacOSDaemonServer::makeRuntimeDir(const QDir& dir) {
+  if (dir.exists()) {
+    return true;
   }
 
-  if (dir.exists("mozillavpn")) {
-    logger.debug() << "/var/run/mozillavpn seems to be usable";
-    return Constants::MACOS_DAEMON_VAR_PATH;
+  int ret = mkdir(dir.absolutePath().toLocal8Bit().constData(),
+                  S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
+  if (ret < 0) {
+    logger.warning() << "Failed to create runtime dir:" << strerror(errno);
+    return false;
   }
 
-  if (!dir.mkdir("mozillavpn")) {
-    logger.warning() << "Failed to create /var/run/mozillavpn";
-    return Constants::MACOS_DAEMON_TMP_PATH;
-  }
-
-  if (chmod("/var/run/mozillavpn", S_IRWXU | S_IRWXG | S_IRWXO) < 0) {
-    logger.warning()
-        << "Failed to set the right permissions to /var/run/mozillavpn";
-    return Constants::MACOS_DAEMON_TMP_PATH;
-  }
-
-  return Constants::MACOS_DAEMON_VAR_PATH;
+  return true;
 }
 
 static Command::RegistrationProxy<MacOSDaemonServer> s_commandMacOSDaemon;

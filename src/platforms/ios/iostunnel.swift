@@ -152,6 +152,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
 
             case .invalidState:
                 // Must never happen
+                self.logger.error(message: "Starting tunnel failed with invalidState")
                 fatalError()
             }
         }

@@ -10,13 +10,18 @@
 #include <QIcon>
 #include <QJSValue>
 
+#include "settingsholder.h"
+
 class QJSEngine;
+class XdgAppearance;
 
 class Theme final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Theme)
 
-  Q_PROPERTY(QJSValue theme READ readTheme NOTIFY changed)
+  // sizingChanged isn't currently used, by QML constantly spams warnings if
+  // there is no NOTIFY for `theme`
+  Q_PROPERTY(QJSValue theme READ readTheme NOTIFY sizingChanged)
   Q_PROPERTY(QJSValue colors READ readColors NOTIFY changed)
   Q_PROPERTY(QString currentTheme READ currentTheme WRITE setCurrentTheme NOTIFY
                  changed)
@@ -32,15 +37,17 @@ class Theme final : public QAbstractListModel {
   };
 
   const QJSValue& readTheme() const;
-  const QJSValue& readColors() const;
+  const QJSValue readColors() const;
 
   const QString& currentTheme() const { return m_currentTheme; }
 
   // Todo: Add a thing for themes to define, if they are using dark or light
-  // resources.
-  bool isThemeDark() { return m_currentTheme != "main"; }
+  // resources. `useDarkAssets` is available, add this to ThemeData and connect.
+  Q_INVOKABLE bool isThemeDark() { return m_currentTheme != "main"; }
 
   void setCurrentTheme(const QString& themeName);
+
+  Q_INVOKABLE void setUsingSystemTheme(const bool usingSystemTheme);
 
   void initialize(QJSEngine* engine);
 
@@ -52,9 +59,7 @@ class Theme final : public QAbstractListModel {
 
   QVariant data(const QModelIndex& index, int role) const override;
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-  Qt::ColorScheme currentSystemTheme();
-#endif
+  QString currentSystemTheme();
 
   enum StatusBarTextColor {
     StatusBarTextColorLight,
@@ -68,20 +73,23 @@ class Theme final : public QAbstractListModel {
   QImage getTitleBarIcon();
 
  private:
-  void parseTheme(QJSEngine* engine, const QString& themeName);
+  void parseTheme(QJSEngine* engine, const QString& themeFilename);
   bool loadTheme(const QString& themeName);
+  void parseSizing(QJSEngine* engine);
+  void setToSystemTheme();
 
  signals:
   void changed();
+  void sizingChanged();
 
  private:
-  struct ThemeData {
-    QJSValue theme;
-    QJSValue colors;
-  };
-
-  QHash<QString, ThemeData*> m_themes;
+  QHash<QString, QJSValue> m_themes;
   QString m_currentTheme;
+  QJSValue m_sizing;
+
+#if defined(MZ_LINUX)
+  XdgAppearance* m_xdg = nullptr;
+#endif
 };
 
 #endif  // THEME_H

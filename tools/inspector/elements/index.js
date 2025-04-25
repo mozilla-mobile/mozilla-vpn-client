@@ -1,10 +1,10 @@
-import { ConnectionKillswitch } from './connection-killswitch'
-import { InspectorTab } from './inspector-tab'
-import { LiveView } from './live-view'
-import { PillToggle } from './pill-toggle'
-import { RecordButton } from './record-button'
-import { SimpleGreeting } from './simple-greeting'
-import { TabNavigation } from './tab-navigation'
+import { ConnectionKillswitch } from './connection-killswitch.js'
+import { InspectorTab } from './inspector-tab.js'
+import { LiveView } from './live-view.js'
+import { PillToggle } from './pill-toggle.js'
+import { RecordButton } from './record-button.js'
+import { SimpleGreeting } from './simple-greeting.js'
+import { TabNavigation } from './tab-navigation.js'
 
 console.log("BAAAASTI")
 

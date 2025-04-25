@@ -12,6 +12,7 @@ Text {
     color: MZTheme.colors.fontColor
     font.family: MZTheme.theme.fontInterFamily
     font.pixelSize: MZTheme.theme.fontSizeSmall
+    linkColor: MZTheme.colors.normalButtonDefault
     lineHeightMode: Text.FixedHeight
     lineHeight: 21
     wrapMode: Text.Wrap

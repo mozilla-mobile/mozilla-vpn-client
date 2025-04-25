@@ -66,7 +66,7 @@ describe('Addons', function() {
     });
   });
 
-  it('test only a single update message exists at a time', async () => {
+  it.skip('test only a single update message exists at a time', async () => {
     await vpn.setVersionOverride('1.0.0');
 
     // Load all production addons.

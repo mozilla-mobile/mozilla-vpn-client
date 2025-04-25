@@ -559,6 +559,26 @@ SETTING_STRING(theme,          // getter
                false           // sensitive (do not log)
 )
 
+// This option is only supported for Qt 6.5 or later, with a special fallback
+// for Linux users via the XDG settings portal.
+// Without this, the Apperance screen will initially show no theme selected.
+#if defined(MZ_LINUX)
+#  define USING_SYSTEM_THEME_DEFAULT_VALUE true
+#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#  define USING_SYSTEM_THEME_DEFAULT_VALUE true
+#else
+#  define USING_SYSTEM_THEME_DEFAULT_VALUE false
+#endif
+SETTING_BOOL(usingSystemTheme,                  // getter
+             setUsingSystemTheme,               // setter
+             removeUsingSystemTheme,            // remover
+             hasUsingSystemTheme,               // has
+             "theme/usingSystemTheme",          // key
+             USING_SYSTEM_THEME_DEFAULT_VALUE,  // default value
+             true,                              // remove when reset
+             false                              // sensitive (do not log)
+)
+
 SETTING_STRING(token,        // getter
                setToken,     // setter
                removeToken,  // remover
@@ -631,16 +651,20 @@ SETTING_BOOL(userSubscriptionNeeded,        // getter
 )
 
 #ifdef MZ_ANDROID
-
-SETTING_STRINGLIST(vpnDisabledApps,        // getter
-                   setVpnDisabledApps,     // setter
-                   removeVpnDisabledApps,  // remover
-                   hasVpnDisabledApps,     // has
-                   "vpnDisabledApps",      // key
-                   QStringList{            // Android Auto
-                               "com.google.android.projection.gearhead"},
-                   false,  // remove when reset
-                   false   // sensitive (do not log)
+// If a system app, may also need to add to PackageManagerHelper.kt's
+// ALLOWLISTED_APPS before it is visible in Excluded Apps screen
+SETTING_STRINGLIST(
+    vpnDisabledApps,        // getter
+    setVpnDisabledApps,     // setter
+    removeVpnDisabledApps,  // remover
+    hasVpnDisabledApps,     // has
+    "vpnDisabledApps",      // key
+    QStringList({
+        "com.google.android.projection.gearhead",  // Android Auto
+        "com.google.android.apps.tycho"            // Google Fi
+    }),
+    false,  // remove when reset
+    false   // sensitive (do not log)
 )
 
 #else

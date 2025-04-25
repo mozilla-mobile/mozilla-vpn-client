@@ -52,6 +52,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscontroller.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscontroller.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.cpp
@@ -152,6 +154,16 @@ osx_bundle_files(mozillavpn FILES
     DESTINATION Resources/utils
 )
 
+# Install the daemon plist into the bundle.
+configure_file(
+    ${CMAKE_SOURCE_DIR}/macos/app/daemon.plist.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.daemon.plist
+)
+osx_bundle_files(mozillavpn FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.daemon.plist
+    DESTINATION Library/LaunchDaemons
+)
+
 # Install the lproj translation files into the bundle.
 get_filename_component(I18N_DIR ${CMAKE_SOURCE_DIR}/3rdparty/i18n ABSOLUTE)
 file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)
@@ -189,4 +201,5 @@ add_custom_command(TARGET mozillavpn POST_BUILD
 osx_bundle_assetcatalog(mozillavpn CATALOG ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets)
 
 # Perform codesigning.
+osx_embed_provision_profile(mozillavpn)
 osx_codesign_target(mozillavpn FORCE)

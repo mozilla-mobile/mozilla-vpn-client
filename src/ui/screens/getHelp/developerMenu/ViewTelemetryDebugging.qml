@@ -18,6 +18,25 @@ MZViewBase {
         spacing: MZTheme.theme.windowMargin
         Layout.fillWidth: true
 
+        MZInformationCard {
+          cardType: MZInformationCard.CardType.Info
+          height: textBlocks.height + MZTheme.theme.windowMargin * 2
+          width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
+          Layout.leftMargin: MZTheme.theme.windowMargin
+          Layout.rightMargin: MZTheme.theme.windowMargin
+
+          _infoContent: ColumnLayout {
+              id: textBlocks
+
+              spacing: 0
+              MZTextBlock {
+                  Layout.fillWidth: true
+                  text: "Activating any checkbox on this screen will set the user-facing `share technical data` setting to `true`, as no telemetry will flow if that is `false`."
+                  verticalAlignment: Text.AlignVCenter
+              }
+          }
+        }
+
         MZCheckBoxRow {
             id: checkBoxRowGleanLogPings
 
@@ -29,6 +48,9 @@ MZViewBase {
             showDivider: false
             onClicked: {
                 VPN.gleanSetLogPings(!MZSettings.gleanLogPings)
+                if (MZSettings.gleanLogPings) {
+                  MZSettings.gleanEnabled = true
+                }
             }
         }
         MZCheckBoxRow {
@@ -40,6 +62,9 @@ MZViewBase {
             showDivider: false
             onClicked: {
                 MZSettings.extensionTelemetryEnabled = !MZSettings.extensionTelemetryEnabled
+                if (MZSettings.extensionTelemetryEnabled) {
+                  MZSettings.gleanEnabled = true
+                }
             }
         }
 
@@ -54,6 +79,9 @@ MZViewBase {
             showDivider: false
             onClicked: {
                 MZSettings.gleanDebugTagActive = !MZSettings.gleanDebugTagActive;
+                if (MZSettings.gleanDebugTagActive) {
+                  MZSettings.gleanEnabled = true
+                }
             }
         }
 
@@ -94,6 +122,9 @@ MZViewBase {
             showDivider: false
             onClicked: {
                 MZSettings.shortTimerSessionPing = !MZSettings.shortTimerSessionPing
+                if (MZSettings.shortTimerSessionPing) {
+                  MZSettings.gleanEnabled = true
+                }
             }
         }
 

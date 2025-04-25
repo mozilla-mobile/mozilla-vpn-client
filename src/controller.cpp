@@ -9,6 +9,7 @@
 
 #include "app.h"
 #include "constants.h"
+#include "controller_p.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
 #include "feature/feature.h"
@@ -38,6 +39,8 @@
 #  include "platforms/linux/networkmanagercontroller.h"
 #elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
+#elif defined(MZ_MACOS)
+#  include "platforms/macos/macoscontroller.h"
 #elif defined(MZ_IOS)
 #  include "platforms/ios/ioscontroller.h"
 #elif defined(MZ_ANDROID)
@@ -45,12 +48,6 @@
 #elif defined(MZ_WASM)
 #  include "platforms/wasm/wasmcontroller.h"
 #endif
-
-// The Mullvad proxy services are located at internal IPv4 addresses in the
-// 10.124.0.0/20 address range, which is a subset of the 10.0.0.0/8 Class-A
-// private address range.
-constexpr const char* MULLVAD_PROXY_RANGE = "10.124.0.0";
-constexpr const int MULLVAD_PROXY_RANGE_LENGTH = 20;
 
 namespace {
 Logger logger("Controller");
@@ -75,6 +72,8 @@ Controller::Reason stateToReason(Controller::State state) {
   return Controller::ReasonNone;
 }
 }  // namespace
+
+using namespace ControllerPrivate;
 
 Controller::Controller() {
   MZ_COUNT_CTOR(Controller);
@@ -110,14 +109,7 @@ QString Controller::useLocalSocketPath() const {
   }
 #endif
 
-#if defined(MZ_MACOS)
-  // MacOS had a path change, so check both /tmp/ and /var/.
-  if (QFileInfo::exists(Constants::MACOS_DAEMON_VAR_PATH)) {
-    return Constants::MACOS_DAEMON_VAR_PATH;
-  } else {
-    return Constants::MACOS_DAEMON_TMP_PATH;
-  }
-#elif defined(MZ_WINDOWS)
+#if defined(MZ_WINDOWS)
   return Constants::WINDOWS_DAEMON_PATH;
 #endif
 
@@ -149,6 +141,8 @@ void Controller::initialize() {
     m_impl.reset(new NetworkManagerController());
 #elif defined(MZ_LINUX)
     m_impl.reset(new LinuxController());
+#elif defined(MZ_MACOS)
+    m_impl.reset(new MacOSController());
 #elif defined(MZ_IOS)
     m_impl.reset(new IOSController());
 #elif defined(MZ_ANDROID)
@@ -167,6 +161,8 @@ void Controller::initialize() {
           &Controller::disconnected);
   connect(m_impl.get(), &ControllerImpl::initialized, this,
           &Controller::implInitialized);
+  connect(m_impl.get(), &ControllerImpl::permissionRequired, this,
+          &Controller::implPermRequired);
   connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
           &Controller::statusUpdated);
   connect(this, &Controller::stateChanged, this,
@@ -188,6 +184,11 @@ void Controller::initialize() {
 
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
+}
+
+void Controller::implPermRequired() {
+  logger.debug() << "Initialization blocked: permission required";
+  setState(StatePermissionRequired);
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
@@ -247,7 +248,7 @@ void Controller::timerTimeout() {
 void Controller::quit() {
   logger.debug() << "Quitting";
 
-  if (m_state == StateInitializing || m_state == StateOff) {
+  if (!isActive()) {
     m_nextStep = Quit;
     emit readyToQuit();
     return;
@@ -257,7 +258,7 @@ void Controller::quit() {
 
   if (m_state == StateOn || m_state == StateOnPartial ||
       m_state == StateSwitching || m_state == StateSilentSwitching ||
-      m_state == StateConnecting) {
+      m_state == StateConnecting || m_state == StateConfirming) {
     deactivate();
     return;
   }
@@ -328,6 +329,8 @@ qint64 Controller::connectionTimestamp() const {
       [[fallthrough]];
     case Controller::State::StateInitializing:
       [[fallthrough]];
+    case Controller::State::StatePermissionRequired:
+      [[fallthrough]];
     case Controller::State::StateOff:
       return 0;
     case Controller::State::StateOn:
@@ -357,7 +360,7 @@ void Controller::serverUnavailable() {
 void Controller::updateRequired() {
   logger.warning() << "Update required";
 
-  if (m_state == StateOff) {
+  if (!isActive()) {
     emit readyToUpdate();
     return;
   }
@@ -526,6 +529,12 @@ void Controller::activateInternal(
   activateNext();
 }
 
+void Controller::startTimerIfInactive() {
+  if (!m_connectedTimeInUTC.isValid()) {
+    m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
+  }
+}
+
 void Controller::clearConnectedTime() {
   if (!isSwitchingServer) {
     m_connectedTimeInUTC = QDateTime();
@@ -583,24 +592,6 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
       IPAddress(QHostAddress(MULLVAD_PROXY_RANGE), MULLVAD_PROXY_RANGE_LENGTH));
 
   return list;
-}
-
-// static
-QList<IPAddress> Controller::getExtensionProxyAddressRanges(
-    const Server& exitServer) {
-  QList<IPAddress> ranges = {
-      IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32),
-      IPAddress(QHostAddress{MULLVAD_PROXY_RANGE}, MULLVAD_PROXY_RANGE_LENGTH)};
-  if (!exitServer.ipv6Gateway().isEmpty()) {
-    ranges.append(IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128));
-  }
-
-  auto const dns = DNSHelper::getDNSDetails(exitServer.ipv4Gateway());
-  if (dns.dnsType != "Default" && dns.dnsType != "Custom") {
-    ranges.append(IPAddress(QHostAddress(dns.ipAddress), 32));
-  }
-
-  return ranges;
 }
 
 void Controller::activateNext() {
@@ -907,7 +898,7 @@ void Controller::captivePortalPresent() {
 }
 
 void Controller::serverDataChanged() {
-  if (m_state == StateOff) {
+  if (!isActive()) {
     logger.debug() << "Server data changed but we are off";
     return;
   }
@@ -918,10 +909,17 @@ void Controller::serverDataChanged() {
 }
 
 bool Controller::switchServers(const ServerData& serverData) {
-  if (m_state == StateOff) {
+  if (!isActive()) {
     logger.debug() << "Server data changed but we are off";
     return false;
   }
+
+  // This next line fixes VPN-6706. Without this, the connection clock will
+  // never have started when the server switch comes after the "server
+  // unavailable" modal is shown. In that case, the server switch will have come
+  // before the initial server was fully connected, and thus before the timer
+  // was ever started. Hence, we start the timer here before we continue.
+  startTimerIfInactive();
 
   isSwitchingServer = true;
   m_nextServerData = serverData;
@@ -1048,7 +1046,9 @@ bool Controller::activate(const ServerData& serverData,
   // https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9639, and caused
   // a bug on iOS where server switches stopped working. See more details in
   // VPN-6495.
-#ifndef MZ_IOS
+  // On Android, we need to skip this so that the client knows it is a
+  // server switch when appropriate.
+#ifndef MZ_MOBILE
   if (initiator != ExtensionUser) {
     setState(StateConnecting);
   }
@@ -1069,9 +1069,7 @@ bool Controller::deactivate(ActivationPrincipal user) {
     return false;
   }
 
-  if (m_state != StateOn && m_state != StateOnPartial &&
-      m_state != StateSwitching && m_state != StateSilentSwitching &&
-      m_state != StateConfirming && m_state != StateConnecting) {
+  if (!isActive()) {
     logger.warning() << "Already disconnected";
     return false;
   }

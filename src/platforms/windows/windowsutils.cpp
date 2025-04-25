@@ -141,9 +141,3 @@ void WindowsUtils::updateTitleBarColor(QWindow* window, bool darkMode) {
       sizeof(defaultColor)));
   Q_ASSERT(ok);
 }
-
-void WindowsUtils::forceWindowRedraw(QWindow* w) {
-  auto const windowHandle = (HWND)w->winId();
-  ShowWindow(windowHandle, SW_MINIMIZE);
-  ShowWindow(windowHandle, SW_RESTORE);
-}

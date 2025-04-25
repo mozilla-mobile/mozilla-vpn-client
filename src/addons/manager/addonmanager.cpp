@@ -419,6 +419,7 @@ QJSValue AddonManager::reduce(QJSValue callback, QJSValue initialValue) const {
 
 // Undismisses any dismissed messages and marks all messages as unread
 void AddonManager::reinstateMessages() const {
+  logger.debug() << "Reinstating all messages";
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
@@ -426,7 +427,12 @@ void AddonManager::reinstateMessages() const {
   // It only needs to live for the scope of this function.
   SettingGroup* messageSettingGroup =
       SettingsManager::instance()->createSettingGroup(
-          ADDON_MESSAGE_SETTINGS_GROUP);
+          QString("%1/%2")
+              .arg(Constants::ADDONS_SETTINGS_GROUP)
+              .arg(ADDON_MESSAGE_SETTINGS_GROUP),
+          true,  // remove when reset
+          false  // sensitive setting
+      );
   messageSettingGroup->remove();
 }
 

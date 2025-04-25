@@ -64,7 +64,7 @@ ENV SHELL=/bin/bash \
     PATH="/builds/worker/.local/bin:$PATH"
 
 VOLUME /builds/worker/checkouts
-VOLUME /builds/worker/.cache
+VOLUME /builds/worker/.task-cache/pip
 
 # run-task expects to run as root
 USER root

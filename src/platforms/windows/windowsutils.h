@@ -26,7 +26,6 @@ class WindowsUtils final {
 
   static void setTitleBarIcon(QWindow* window, const QImage& icon);
   static void setDockIcon(QWindow* window, const QImage& icon);
-  static void forceWindowRedraw(QWindow* w);
   /**
    *
    * @brief Set the Color for the titlebar, the color of the current theme

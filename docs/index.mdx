@@ -15,31 +15,6 @@ security, we will always put your privacy first._
 
 See: https://vpn.mozilla.org
 
-export const Grid = ({children}) => (
-  <span
-    style={{
-      display: "grid",
-      gridTemplateColumns: "2fr 1fr",
-      gridColumnGap: "20px",
-    }}>
-    {children}
-  </span>
-);
-export const Preview = ({children}) =>(<iframe
-    src="https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozilla-vpn-client.branch.main.latest.build.wasm/artifacts/public%2Fbuild%2Fembedded.html"
-    style={{
-      width: "390px",
-      height: "670px",
-      border: "15px solid black",
-      borderRadius: "20px",
-      gridColumn: 2,
-      gridRow: 1,
-      gridRowEnd: "auto",
-      gridRowEnd: 1000,
-    }}
-  />
-);
-
 <Grid>
   <div>
   ## Getting Involved

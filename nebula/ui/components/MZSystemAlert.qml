@@ -137,6 +137,24 @@ MZAlert {
                     alertText: MZI18n.GlobalCopied
                     visible: true
                 }
+            },
+            State {
+                name: MZErrorHandler.SampleWarningAlert
+                PropertyChanges {
+                    target: alertBox
+                    alertType: alertTypes.warning
+                    alertText: "Sample warning alert"
+                    visible: true
+                }
+            },
+            State {
+                name: MZErrorHandler.SampleInfoAlert
+                PropertyChanges {
+                    target: alertBox
+                    alertType: alertTypes.info
+                    alertText: "Sample info alert"
+                    visible: true
+                }
             }
         ]
     }

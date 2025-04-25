@@ -15,10 +15,13 @@
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "resourceloader.h"
-#include "settingsholder.h"
 
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"
+#endif
+
+#if defined(MZ_LINUX) && !defined(UNIT_TEST)
+#  include "platforms/linux/xdgappearance.h"
 #endif
 
 #include <QCoreApplication>
@@ -37,6 +40,22 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
             m_themes.clear();
             initialize(QmlEngineHolder::instance()->engine());
           });
+
+#if defined(MZ_LINUX) && !defined(UNIT_TEST)
+  m_xdg = new XdgAppearance(this);
+  connect(m_xdg, &XdgAppearance::colorSchemeChanged, this, [this]() {
+    if (SettingsHolder::instance()->usingSystemTheme()) {
+      setToSystemTheme();
+    }
+  });
+#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+  connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this,
+          [this]() {
+            if (SettingsHolder::instance()->usingSystemTheme()) {
+              setToSystemTheme();
+            }
+          });
+#endif
 }
 
 Theme::~Theme() { MZ_COUNT_DTOR(Theme); }
@@ -53,12 +72,17 @@ Theme* Theme::instance() {
 void Theme::initialize(QJSEngine* engine) {
   m_themes.clear();
 
-  QDir dir(ResourceLoader::instance()->loadDir(":/nebula/themes"));
+  QDir dir(
+      ResourceLoader::instance()->loadDir(":/nebula/themes/color-themes/"));
   QStringList files = dir.entryList();
 
   for (const QString& file : files) {
     parseTheme(engine, file);
   }
+
+  parseSizing(engine);
+
+  setUsingSystemTheme(SettingsHolder::instance()->usingSystemTheme());
 
   if (!loadTheme(SettingsHolder::instance()->theme())) {
     logger.error() << "Failed to load the theme"
@@ -67,42 +91,20 @@ void Theme::initialize(QJSEngine* engine) {
   }
 }
 
-void Theme::parseTheme(QJSEngine* engine, const QString& themeName) {
+void Theme::parseTheme(QJSEngine* engine, const QString& themeFilename) {
+  QString themeName = themeFilename;
+  themeName.chop(3);  // removes `.js`
+
   logger.debug() << "Parse theme" << themeName;
 
-  QString path(":/nebula/themes/");
-  path.append(themeName);
+  QString path(":/nebula/themes/color-themes/");
 
-  QJSValue sizingValue;
   QJSValue colorsValue;
-
-  {
-    QString resource = path;
-    resource.append("/sizing.js");
-    QFile file(ResourceLoader::instance()->loadFile(resource));
-    if (!file.open(QFile::ReadOnly | QFile::Text)) {
-      logger.error() << "Failed to open the sizing.js for the" << themeName
-                     << "theme";
-      return;
-    }
-
-    sizingValue = engine->evaluate(file.readAll());
-    if (sizingValue.isError()) {
-      logger.error() << "Exception processing the sizing.js:"
-                     << sizingValue.toString();
-      return;
-    }
-
-    if (!sizingValue.isObject()) {
-      logger.error() << "sizing.js must expose an object";
-      return;
-    }
-  }
 
   QByteArray completeColorFileBytes = QByteArray();
   // The files in the next line must be in the specific order so that they
   // create a working JS object when appended.
-  QList<QString> colorFiles = {"/../colors.js", "/theme.js",
+  QList<QString> colorFiles = {"/../colors.js", themeFilename,
                                "/../theme-derived.js"};
   for (QString colorFile : colorFiles) {
     QString resource = path;
@@ -129,15 +131,77 @@ void Theme::parseTheme(QJSEngine* engine, const QString& themeName) {
     return;
   }
 
-  ThemeData* data = new ThemeData();
-  data->theme = sizingValue;
-  data->colors = colorsValue;
-  m_themes.insert(themeName, data);
+  m_themes.insert(themeName, colorsValue);
+}
+
+void Theme::parseSizing(QJSEngine* engine) {
+  logger.debug() << "Parse sizing";
+
+  QString path(":/nebula/themes/");
+
+  QJSValue sizingValue;
+
+  {
+    QString resource = path;
+    resource.append("/sizing.js");
+    QFile file(ResourceLoader::instance()->loadFile(resource));
+    if (!file.open(QFile::ReadOnly | QFile::Text)) {
+      logger.error() << "Failed to open the sizing.js file.";
+      return;
+    }
+
+    sizingValue = engine->evaluate(file.readAll());
+    if (sizingValue.isError()) {
+      logger.error() << "Exception processing the sizing.js:"
+                     << sizingValue.toString();
+      return;
+    }
+
+    if (!sizingValue.isObject()) {
+      logger.error() << "sizing.js must expose an object";
+      return;
+    }
+  }
+
+  m_sizing = sizingValue;
 }
 
 void Theme::setCurrentTheme(const QString& themeName) {
+  logger.info() << "Setting theme to" << themeName;
   loadTheme(themeName);
   SettingsHolder::instance()->setTheme(themeName);
+}
+
+void Theme::setUsingSystemTheme(const bool usingSystemTheme) {
+  SettingsHolder::instance()->setUsingSystemTheme(usingSystemTheme);
+
+  if (usingSystemTheme) {
+    setToSystemTheme();
+  }
+}
+
+void Theme::setToSystemTheme() {
+  if (!Feature::get(Feature::Feature_themeSelection)->isSupported() ||
+      !Feature::get(Feature::Feature_themeSelectionIncludesAutomatic)) {
+    logger.debug()
+        << "Not setting to system theme because feature is not supported.";
+    return;
+  }
+
+  QString themeImpliedBySystemTheme = currentSystemTheme();
+  logger.debug() << "Using system theme. Associated VPN theme is"
+                 << themeImpliedBySystemTheme;
+
+  // Only reset the theme if needed
+  if (themeImpliedBySystemTheme != m_currentTheme) {
+    setCurrentTheme(themeImpliedBySystemTheme);
+  } else {
+    // Without this next line, there is a bug when moving from `light mode` to
+    // `automatic` when system is in light mode (or `dark mode` to `automatic`
+    // when system is in dark mode). In these situations, the radio button does
+    // not update appropriately without this emit.
+    emit changed();
+  }
 }
 
 bool Theme::loadTheme(const QString& themeName) {
@@ -147,16 +211,11 @@ bool Theme::loadTheme(const QString& themeName) {
   return true;
 }
 
-const QJSValue& Theme::readTheme() const {
-  Q_ASSERT(m_themes.contains(m_currentTheme));
-  ThemeData* data = m_themes.value(m_currentTheme);
-  return data->theme;
-}
+const QJSValue& Theme::readTheme() const { return m_sizing; }
 
-const QJSValue& Theme::readColors() const {
+const QJSValue Theme::readColors() const {
   Q_ASSERT(m_themes.contains(m_currentTheme));
-  ThemeData* data = m_themes.value(m_currentTheme);
-  return data->colors;
+  return m_themes.value(m_currentTheme);
 }
 
 QHash<int, QByteArray> Theme::roleNames() const {
@@ -186,14 +245,26 @@ QVariant Theme::data(const QModelIndex& index, int role) const {
   }
 }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-Qt::ColorScheme Theme::currentSystemTheme() {
+QString Theme::currentSystemTheme() {
+#if defined(MZ_LINUX) && !defined(UNIT_TEST)
+  if (m_xdg->colorScheme() != 1) {
+    return "main";
+  } else {
+    return "dark-mode";
+  }
+#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
   QStyleHints* styleHints = QGuiApplication::styleHints();
-  Qt::ColorScheme currentColorScheme = styleHints->colorScheme();
-  logger.debug() << "Current system theme: " << currentColorScheme;
-  return currentColorScheme;
-}
+  if (styleHints->colorScheme() != Qt::ColorScheme::Dark) {
+    return "main";
+  } else {
+    return "dark-mode";
+  }
+#else
+  // Otherwise, we have no way to detect the system theme.
+  return "main";
 #endif
+}
+
 #ifdef MZ_WINDOWS
 #  include <dwmapi.h>
 

@@ -4,7 +4,7 @@
  
 import { html, css, classMap, LitElement } from 'lit'
 
-import { NetworkObserver } from '../inspector/NetworkObserver'
+import { NetworkObserver } from '../inspector/NetworkObserver.js'
 
 export class ViewNetwork extends LitElement {
   static styles = css`

@@ -188,7 +188,7 @@ RadioDelegate {
                     verticalAlignment: Text.AlignVCenter
                     lineHeight: MZTheme.theme.controllerInterLineHeight
                     lineHeightMode: Text.FixedHeight
-                    color: MZTheme.colors.successMain
+                    color: MZTheme.colors.successText
                     font.pixelSize: MZTheme.theme.fontSizeSmallest
                     font.family: MZTheme.theme.fontInterSemiBoldFamily
                     Accessible.ignored: !visible

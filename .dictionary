@@ -4,6 +4,7 @@ APIs
 Adblock
 AdjustSdk
 Affero
+Balrog
 Bodymovin
 CHACHA
 CLI
@@ -20,6 +21,7 @@ DNS
 DevOps
 Docusaurus
 FFI
+Fi
 FeatureList
 Figma
 FreeDesktop
@@ -31,6 +33,7 @@ GmbH
 HACL
 HTTPS
 HackerOne
+hotreloader
 Homebrew
 HowTo
 INRIA
@@ -79,6 +82,7 @@ SHA
 Serde
 SettingsHolder
 Speedtest
+Stenberg
 SwiftyPing
 TBD
 TODO
@@ -87,10 +91,13 @@ TOTP
 TP
 TaskGetFeatureList
 UniFFI
+VersionAPI
 VpnService
 VPN's
 WebAssembly
+WebSocket
 WebSockets
+Wi
 WiX
 WikiData
 Wintun
@@ -116,6 +123,7 @@ att
 auth
 backend
 backgrounded
+balrog
 bea's
 bool
 boolean
@@ -126,6 +134,7 @@ cldr
 cloudops
 cmake
 codebase
+codesigning
 colima
 conda
 config
@@ -272,6 +281,7 @@ vpn
 vscode
 wasm
 webservice
+websocket
 wgconf
 wgutils
 wifi

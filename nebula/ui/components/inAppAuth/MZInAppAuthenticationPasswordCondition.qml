@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import components 0.1
 import components.forms 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 RowLayout {
     id: root
@@ -19,6 +20,7 @@ RowLayout {
         Layout.preferredHeight: MZTheme.theme.iconSize * 1.25
         Layout.preferredWidth: MZTheme.theme.iconSize * 1.25
         Layout.alignment: Qt.AlignTop
+        color: MZTheme.colors.bgColorStronger
         MZIcon {
             id: icon
             source: root._passwordConditionIsSatisfied ? MZAssetLookup.getImageSource("CheckmarkSuccessColorMuted") : MZAssetLookup.getImageSource("XErrorColor")

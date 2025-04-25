@@ -92,6 +92,7 @@ object PackageManagerHelper {
 
     private val ALLOWLISTED_APPS = arrayOf(
         "com.google.android.projection.gearhead",
+        "com.google.android.apps.tycho",
     )
 
     internal fun isAllowListed(packageName: ApplicationId): Boolean {
