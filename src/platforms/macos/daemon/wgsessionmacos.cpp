@@ -26,8 +26,8 @@ namespace {
 Logger logger("WgSessionMacos");
 };  // namespace
 
-//constexpr const int WG_SESSION_INIT_HANDSHAKE_DELAY = 100;
 constexpr const int WG_SESSION_TICK_INTERVAL = 1000;
+constexpr const int WG_DEFRAG_TIMEOUT = 3000;
 
 WgSessionMacos::WgSessionMacos(const InterfaceConfig& config, QObject* parent)
     : QObject(parent), m_config(config) {
@@ -98,6 +98,14 @@ void WgSessionMacos::timeout() {
   uint8_t* bufptr = reinterpret_cast<uint8_t*>(buffer.data());
   auto result = wireguard_tick(m_tunnel, bufptr, buffer.length());
   processResult(result.op, buffer.first(result.size));
+
+  // Process defrag timeouts.
+  qint64 now = QDateTime::currentMSecsSinceEpoch();
+  for (quint16 ident : m_defrag.keys()) {
+    if (m_defrag[ident].m_timeout < now) {
+      m_defrag.remove(ident);
+    }
+  }
 }
 
 void WgSessionMacos::renegotiate() {
@@ -255,13 +263,55 @@ void WgSessionMacos::mhopInputV4(const QByteArray& packet) {
   // Validate the header.
   if ((qFromBigEndian(header->source) != m_serverIpv4.toIPv4Address()) ||
       (qFromBigEndian(header->dest) != m_innerIpv4.toIPv4Address()) ||
-      (header->proto != IPPROTO_UDP) || (header->frag != 0x0000) ||
+      (header->proto != IPPROTO_UDP) || (header->ttl == 0) ||
       inetChecksum(header, sizeof(struct ipv4header)) != 0x0000) {
     return;
   }
 
+  // Handle IPv4 defragmentation
+  QByteArray dgram = packet.mid(hlen);
+  if (header->frag & qToBigEndian<quint16>(0x3fff)) {
+    dgram = mhopDefragV4(header, dgram);
+    if (dgram.isEmpty()) {
+      return;
+    }
+  }
+
   // Process the UDP header
-  mhopInputUDP(m_serverIpv4, m_innerIpv4, packet.mid(hlen));
+  mhopInputUDP(m_serverIpv4, m_innerIpv4, dgram);
+}
+
+QByteArray WgSessionMacos::mhopDefragV4(const struct ipv4header* header,
+                                        const QByteArray &dgram) {
+  quint16 flags = qFromBigEndian(header->frag);
+  quint16 ident = qFromBigEndian(header->ident);
+  quint16 offset = (flags & 0x1fff) * 8;
+  bool moreFragments = (flags & (1 << 13)) != 0;
+
+  // Except for the last fragment, every chunk must be 8-byte aligned.
+  if (moreFragments && (dgram.length() % 8)) {
+    return QByteArray();
+  }
+
+  // Get the defrag state, or create a new one.
+  Ipv4DefragState& state = m_defrag[ident];
+  if (offset == 0) {
+    state.m_timeout = QDateTime::currentMSecsSinceEpoch() + WG_DEFRAG_TIMEOUT;
+    state.m_buffer = dgram;
+  } else if (state.m_buffer.length() != offset) {
+    // Fragment arrived out of order.
+    return QByteArray();
+  } else {
+    state.m_buffer.append(dgram);
+  }
+
+  if (moreFragments) {
+    // More fragments are expected.
+    return QByteArray();
+  }
+  QByteArray result(state.m_buffer);
+  m_defrag.remove(ident);
+  return result;
 }
 
 void WgSessionMacos::mhopInputV6(const QByteArray& packet) {
@@ -273,6 +323,7 @@ void WgSessionMacos::mhopInputUDP(
   const quint16* hdr = reinterpret_cast<const quint16*>(dgram.constData());
   if ((dgram.length() < 8) || (hdr[0] != htons(m_serverPort)) ||
       (hdr[1] != htons(m_innerPort)) || (htons(hdr[2]) > dgram.length())) {
+    logger.debug() << "mhop drop udp:" << dgram.toHex();
     return;
   }
 
@@ -281,6 +332,7 @@ void WgSessionMacos::mhopInputUDP(
     // Validate the checksum
     quint16 cksum = udpChecksum(src, dst, htons(hdr[0]), htons(hdr[1]), data);
     if (hdr[3] != cksum) {
+      logger.debug() << "mhop drop cksum:" << dgram.toHex();
       return;
     }
   }
