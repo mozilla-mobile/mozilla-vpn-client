@@ -28,6 +28,7 @@ Logger logger("WgSessionMacos");
 
 constexpr const int WG_SESSION_TICK_INTERVAL = 1000;
 constexpr const int WG_DEFRAG_TIMEOUT = 3000;
+constexpr const int WG_PACKET_OVERHEAD = 32;
 
 WgSessionMacos::WgSessionMacos(const InterfaceConfig& config, QObject* parent)
     : QObject(parent), m_config(config) {
@@ -119,7 +120,7 @@ void WgSessionMacos::renegotiate() {
 
 void WgSessionMacos::encrypt(const QByteArray& data) {
   QByteArray buffer;
-  buffer.resize(1500);
+  buffer.resize(data.length() + WG_PACKET_OVERHEAD);
 
   const uint8_t* dataptr = reinterpret_cast<const uint8_t*>(data.constData());
   uint8_t* bufptr = reinterpret_cast<uint8_t*>(buffer.data());
@@ -130,7 +131,7 @@ void WgSessionMacos::encrypt(const QByteArray& data) {
 
 void WgSessionMacos::netInput(const QByteArray& data) {
   QByteArray buffer;
-  buffer.resize(1500);
+  buffer.resize(data.length());
 
   const uint8_t* dataptr = reinterpret_cast<const uint8_t*>(data.constData());
   uint8_t* bufptr = reinterpret_cast<uint8_t*>(buffer.data());
