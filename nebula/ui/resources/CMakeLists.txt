@@ -8,10 +8,8 @@ qt_add_qml_module(resources
     STATIC
     RESOURCE_PREFIX /nebula
     RESOURCES
-        arrow-back-white.svg
         arrow-forward.svg
         arrow-forward-dark.svg
-        arrow-forward-white.svg
         arrow-toggle.svg
         arrow-toggle-dark.svg
         arrowBack-dark.svg
@@ -22,13 +20,10 @@ qt_add_qml_module(resources
         avatar-grayscale.svg
         avatar-grayscale-dark.svg
         avatarDeleteAccount-dark.svg
-        back-dark.svg
         back.svg
         buttonLoader.svg
         buttonLoader-dark.svg
-        checkmark.svg
         checkmark-green.svg
-        chevron-right-dark.svg
         chevron.svg
         chevron-dark.svg
         clock.svg
@@ -41,8 +36,6 @@ qt_add_qml_module(resources
         delete-white.svg
         delete-gray.svg
         delete-gray-dark.svg
-        down.svg
-        dropdown-closed.svg
         externalLink.svg
         externalLink-dark.svg
         eye-hidden.svg
@@ -62,12 +55,9 @@ qt_add_qml_module(resources
         refreshArrowsWithCheckMark-dark.svg
         search.svg
         search-dark.svg
-        settings.svg
-        settings-white.svg
         shaders/baked/animatedRings.frag.qsb
         shaders/src/animatedRings.frag
         spinner.svg
-        update-lock.svg
         updateStatusUpdateAvailable.svg
         updateStatusUpToDate.svg
         verification-code.svg
