@@ -13,6 +13,7 @@
 #include "daemon/wireguardutils.h"
 
 struct wireguard_tunnel;
+struct ipv4header;
 
 class WgSessionMacos final : public QObject {
   Q_OBJECT
@@ -52,6 +53,9 @@ class WgSessionMacos final : public QObject {
   void mhopInputUDP(const QHostAddress& src, const QHostAddress& dst,
                     const QByteArray& packet);
 
+  QByteArray mhopDefragV4(const struct ipv4header* header,
+                          const QByteArray& packet);
+
   static quint16 inetChecksum(const void* data, size_t len, quint32 seed = 0);
   static quint16 udpChecksum(const QHostAddress& src, const QHostAddress& dst,
                              quint16 sport, quint16 dport,
@@ -71,6 +75,15 @@ class WgSessionMacos final : public QObject {
 
   QTimer m_timer;
 
+  // Support for IPv4 defragmentation
+  struct Ipv4DefragState {
+   public:
+    qint64 m_timeout;
+    QByteArray m_buffer;
+  };
+  QHash<quint16,struct Ipv4DefragState> m_defrag;
+
+  // The boringtun instance
   struct wireguard_tunnel* m_tunnel = nullptr;
 };
 
