@@ -50,10 +50,10 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdnsmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wgsessionmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wgsessionmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wgutilsmacos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wgutilsmacos.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscontroller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscontroller.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.h

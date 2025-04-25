@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "wireguardutilsmacos.h"
+#include "wgutilsmacos.h"
 
 #include <QUdpSocket>
 
@@ -24,21 +24,20 @@
 #include "wireguard_ffi.h"
 
 namespace {
-Logger logger("WireguardUtilsMacos");
+Logger logger("WgUtilsMacos");
 };  // namespace
 
-WireguardUtilsMacos::WireguardUtilsMacos(QObject* parent)
-    : WireguardUtils(parent) {
-  MZ_COUNT_CTOR(WireguardUtilsMacos);
-  logger.debug() << "WireguardUtilsMacos created.";
+WgUtilsMacos::WgUtilsMacos(QObject* parent) : WireguardUtils(parent) {
+  MZ_COUNT_CTOR(WgUtilsMacos);
+  logger.debug() << "WgUtilsMacos created.";
 }
 
-WireguardUtilsMacos::~WireguardUtilsMacos() {
-  MZ_COUNT_DTOR(WireguardUtilsMacos);
-  logger.debug() << "WireguardUtilsMacos destroyed.";
+WgUtilsMacos::~WgUtilsMacos() {
+  MZ_COUNT_DTOR(WgUtilsMacos);
+  logger.debug() << "WgUtilsMacos destroyed.";
 }
 
-bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
+bool WgUtilsMacos::addInterface(const InterfaceConfig& config) {
   Q_UNUSED(config);
   if (m_tunfd > 0) {
     logger.warning() << "Unable to start: tunnel already running";
@@ -87,7 +86,7 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   m_rtmonitor = new MacosRouteMonitor(m_ifname, this);
   m_tunNotifier = new QSocketNotifier(m_tunfd, QSocketNotifier::Read, this);
   connect(m_tunNotifier, &QSocketNotifier::activated, this,
-          &WireguardUtilsMacos::tunActivated);
+          &WgUtilsMacos::tunActivated);
 
   // Success!
   logger.info() << "Created tunnel interface:" << m_ifname;
@@ -95,7 +94,7 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   return true;
 }
 
-bool WireguardUtilsMacos::deleteInterface() {
+bool WgUtilsMacos::deleteInterface() {
   if (m_tunfd >= 0) {
     close(m_tunfd);
     m_ifname.clear();
@@ -114,7 +113,7 @@ bool WireguardUtilsMacos::deleteInterface() {
   return true;
 }
 
-bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
+bool WgUtilsMacos::updatePeer(const InterfaceConfig& config) {
   // Destroy the old peer if it exists and create the new one.
   WgSessionMacos* peer = m_peers.take(config.m_serverPublicKey);
   if (peer) {
@@ -147,10 +146,8 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
 
   // Single-hop and multihop exit peers send and receive packets from the tunnel
   if (config.m_hopType != InterfaceConfig::MultiHopEntry) {
-    connect(peer, &WgSessionMacos::decrypted, this,
-            &WireguardUtilsMacos::tunInput);
-    connect(this, &WireguardUtilsMacos::tunOutput, peer,
-            &WgSessionMacos::encrypt);
+    connect(peer, &WgSessionMacos::decrypted, this, &WgUtilsMacos::tunInput);
+    connect(this, &WgUtilsMacos::tunOutput, peer, &WgSessionMacos::encrypt);
   } else {
     // Save the entry peer for later.
     m_entryPeer = peer;
@@ -160,7 +157,7 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   return true;
 }
 
-bool WireguardUtilsMacos::deletePeer(const InterfaceConfig& config) {
+bool WgUtilsMacos::deletePeer(const InterfaceConfig& config) {
   // Destroy the old peer, if it exists.
   WgSessionMacos* peer = m_peers.take(config.m_serverPublicKey);
   if (peer == m_entryPeer) {
@@ -179,7 +176,7 @@ bool WireguardUtilsMacos::deletePeer(const InterfaceConfig& config) {
   return true;
 }
 
-QList<WireguardUtils::PeerStatus> WireguardUtilsMacos::getPeerStatus() {
+QList<WireguardUtils::PeerStatus> WgUtilsMacos::getPeerStatus() {
   QList<PeerStatus> peerList;
   for (auto i = m_peers.constBegin(); i != m_peers.constEnd(); i++) {
     peerList.append(i.value()->status());
@@ -187,7 +184,7 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsMacos::getPeerStatus() {
   return peerList;
 }
 
-bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix) {
+bool WgUtilsMacos::updateRoutePrefix(const IPAddress& prefix) {
   if (!m_rtmonitor) {
     return false;
   }
@@ -208,7 +205,7 @@ bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix) {
   return false;
 }
 
-bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
+bool WgUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
   if (!m_rtmonitor) {
     return false;
   }
@@ -228,7 +225,7 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
   }
 }
 
-bool WireguardUtilsMacos::excludeLocalNetworks(const QList<IPAddress>& routes) {
+bool WgUtilsMacos::excludeLocalNetworks(const QList<IPAddress>& routes) {
   if (!m_rtmonitor) {
     return false;
   }
@@ -248,8 +245,8 @@ bool WireguardUtilsMacos::excludeLocalNetworks(const QList<IPAddress>& routes) {
   return result;
 }
 
-void WireguardUtilsMacos::tunActivated(QSocketDescriptor sd,
-                                       QSocketNotifier::Type type) {
+void WgUtilsMacos::tunActivated(QSocketDescriptor sd,
+                                QSocketNotifier::Type type) {
   // The tunnel socket is ready for reading.
   QByteArray rxbuf;
   rxbuf.resize(1500 + 4); // TODO: Get the MTU.
@@ -266,7 +263,7 @@ void WireguardUtilsMacos::tunActivated(QSocketDescriptor sd,
   }
 }
 
-void WireguardUtilsMacos::tunInput(const QByteArray& packet) {
+void WgUtilsMacos::tunInput(const QByteArray& packet) {
   // Check the IP protocol version.
   quint32 header = htonl((packet[0] >> 4) >= 6 ? AF_INET6 : AF_INET);
 
