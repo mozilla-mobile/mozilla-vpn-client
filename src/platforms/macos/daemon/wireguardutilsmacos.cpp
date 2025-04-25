@@ -20,7 +20,7 @@
 #include "interfaceconfig.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "wireguardpeermacos.h"
+#include "wgsessionmacos.h"
 #include "wireguard_ffi.h"
 
 namespace {
@@ -117,13 +117,13 @@ bool WireguardUtilsMacos::deleteInterface() {
 
 bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   // Destroy the old peer, if it exists.
-  WireguardPeerMacos* peer = m_peers.take(config.m_serverPublicKey);
+  WgSessionMacos* peer = m_peers.take(config.m_serverPublicKey);
   if (peer) {
     delete peer;
   }
   
   // Create a new peer
-  peer = new WireguardPeerMacos(config, this);
+  peer = new WgSessionMacos(config, this);
 
   // Exclude the server address, except for multihop exit servers.
   if ((config.m_hopType != InterfaceConfig::MultiHopExit) &&
@@ -135,9 +135,9 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   // Create a socket to handle outbound packet flows, except for multihop entry.
   if (config.m_hopType != InterfaceConfig::MultiHopEntry) {
     QUdpSocket* sock = new QUdpSocket(peer);
-    connect(peer, &WireguardPeerMacos::netOutput, sock,
+    connect(peer, &WgSessionMacos::netOutput, sock,
             [sock](const QByteArray& data) { sock->write(data); });
-    connect(sock, &QIODevice::readyRead, peer, &WireguardPeerMacos::readyRead);
+    connect(sock, &QIODevice::readyRead, peer, &WgSessionMacos::readyRead);
     sock->connectToHost(config.m_serverIpv4AddrIn, config.m_serverPort);
   } else {
     // TODO: For multihop entry peers, we need to wrap the datagram in an IP
@@ -147,10 +147,10 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   // For single-hop and multihop entry peers send and receive packets from
   // the tunnel device.
   if (config.m_hopType != InterfaceConfig::MultiHopExit) {
-    connect(peer, &WireguardPeerMacos::decrypted, this,
+    connect(peer, &WgSessionMacos::decrypted, this,
             &WireguardUtilsMacos::tunInput);
     connect(this, &WireguardUtilsMacos::tunOutput, peer,
-            &WireguardPeerMacos::encrypt);
+            &WgSessionMacos::encrypt);
   }
 
   m_peers.insert(config.m_serverPublicKey, peer);
@@ -158,7 +158,11 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
 }
 
 bool WireguardUtilsMacos::deletePeer(const InterfaceConfig& config) {
-  // TODO: Implement Me!
+  // Destroy the old peer, if it exists.
+  WgSessionMacos* peer = m_peers.take(config.m_serverPublicKey);
+  if (peer) {
+    delete peer;
+  }
 
   // Clear exclustion routes for this peer.
   if ((config.m_hopType != InterfaceConfig::MultiHopExit) &&

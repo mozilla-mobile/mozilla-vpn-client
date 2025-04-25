@@ -11,7 +11,7 @@
 #include "daemon/wireguardutils.h"
 #include "macosroutemonitor.h"
 
-class WireguardPeerMacos;
+class WgSessionMacos;
 
 class WireguardUtilsMacos final : public WireguardUtils {
   Q_OBJECT
@@ -48,7 +48,7 @@ class WireguardUtilsMacos final : public WireguardUtils {
   QSocketNotifier* m_tunNotifier = nullptr;
   MacosRouteMonitor* m_rtmonitor = nullptr;
 
-  QHash<QString,WireguardPeerMacos*> m_peers;
+  QHash<QString,WgSessionMacos*> m_peers;
 };
 
 #endif  // WIREGUARDUTILSMACOS_H
