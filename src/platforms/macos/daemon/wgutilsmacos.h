@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef WIREGUARDUTILSMACOS_H
-#define WIREGUARDUTILSMACOS_H
+#ifndef WGUTILSMACOS_H
+#define WGUTILSMACOS_H
 
 #include <QSocketNotifier>
 #include <QObject>
@@ -13,12 +13,12 @@
 
 class WgSessionMacos;
 
-class WireguardUtilsMacos final : public WireguardUtils {
+class WgUtilsMacos final : public WireguardUtils {
   Q_OBJECT
 
  public:
-  WireguardUtilsMacos(QObject* parent);
-  ~WireguardUtilsMacos();
+  WgUtilsMacos(QObject* parent);
+  ~WgUtilsMacos();
 
   bool interfaceExists() override { return m_tunfd >= 0; }
   QString interfaceName() override { return m_ifname; }
@@ -52,4 +52,4 @@ class WireguardUtilsMacos final : public WireguardUtils {
   WgSessionMacos* m_entryPeer = nullptr;
 };
 
-#endif  // WIREGUARDUTILSMACOS_H
+#endif  // WGUTILSMACOS_H
