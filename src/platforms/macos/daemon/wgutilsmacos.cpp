@@ -248,18 +248,41 @@ bool WgUtilsMacos::excludeLocalNetworks(const QList<IPAddress>& routes) {
 void WgUtilsMacos::tunActivated(QSocketDescriptor sd,
                                 QSocketNotifier::Type type) {
   // The tunnel socket is ready for reading.
+  quint32 header = 0;
   QByteArray rxbuf;
-  rxbuf.resize(1500 + 4); // TODO: Get the MTU.
+  rxbuf.resize(1500); // TODO: Get the MTU.
+
+  struct iovec iov[2];
+  iov[0].iov_base = &header;
+  iov[0].iov_len = sizeof(header);
+  iov[1].iov_base = (void*)rxbuf.data();
+  iov[1].iov_len = rxbuf.length();
 
   while (true) {
     // Try to read a packet from the tunnel.
-    int len = read(m_tunfd, rxbuf.data(), rxbuf.length());
+    int len = readv(m_tunfd, iov, sizeof(iov)/sizeof(struct iovec));
     if (len < 0) {
       if (errno == EAGAIN) return;
       logger.debug() << "Tunnel error:" << strerror(errno);
       return;
     }
-    emit tunOutput(rxbuf.mid(4, len - 4));
+    int pktlen = len - sizeof(header);
+    if (pktlen < 0) {
+      continue;
+    }
+
+    // I think there is a small bug in boringtun to do with message padding.
+    // The wireguard protocol states that the encapsulated packet must first be
+    // padded out to a multiple of 16 bytes in length, but boringtun does no
+    // such padding during encryption. So let's do it manually ourself.
+    int tail = pktlen % 16;
+    if (tail) {
+      int padsz = 16 - tail;
+      memset(rxbuf.data() + pktlen, 0, padsz);
+      pktlen += padsz;
+    }
+
+    emit tunOutput(rxbuf.first(pktlen));
   }
 }
 
