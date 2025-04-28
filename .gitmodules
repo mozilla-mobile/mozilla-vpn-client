@@ -34,3 +34,4 @@
 [submodule "3rdparty/boringtun"]
 	path = 3rdparty/boringtun
 	url = https://github.com/cloudflare/boringtun
+	shallow = true
