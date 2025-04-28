@@ -19,7 +19,7 @@ class WgSessionMacos final : public QObject {
   Q_OBJECT
 
  public:
- WgSessionMacos(const InterfaceConfig& config, QObject* parent = nullptr);
+  WgSessionMacos(const InterfaceConfig& config, QObject* parent = nullptr);
   ~WgSessionMacos();
 
   const QString& pubkey() const { return m_config.m_serverPublicKey; }
@@ -81,7 +81,7 @@ class WgSessionMacos final : public QObject {
     qint64 m_timeout;
     QByteArray m_buffer;
   };
-  QHash<quint16,struct Ipv4DefragState> m_defrag;
+  QHash<quint16, struct Ipv4DefragState> m_defrag;
 
   // The boringtun instance
   struct wireguard_tunnel* m_tunnel = nullptr;

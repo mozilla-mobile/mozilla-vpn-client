@@ -4,9 +4,6 @@
 
 #include "wgutilsmacos.h"
 
-#include <QUdpSocket>
-#include <QVariant>
-
 #include <errno.h>
 #include <fcntl.h>
 #include <net/if_utun.h>
@@ -14,10 +11,13 @@
 #include <netinet/in.h>
 #include <sys/ioctl.h>
 #include <sys/kern_control.h>
-#include <sys/sys_domain.h>
 #include <sys/socket.h>
+#include <sys/sys_domain.h>
 #include <sys/uio.h>
 #include <unistd.h>
+
+#include <QUdpSocket>
+#include <QVariant>
 
 #include "interfaceconfig.h"
 #include "leakdetector.h"
@@ -70,7 +70,8 @@ bool WgUtilsMacos::addInterface(const InterfaceConfig& config) {
   addr.ss_sysaddr = AF_SYS_CONTROL;
   addr.sc_id = info.ctl_id;
   addr.sc_unit = 0;
-  err = ::connect(tunfd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr));
+  err =
+      ::connect(tunfd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr));
   if (err < 0) {
     logger.warning() << "kernel utun connect failed:" << strerror(errno);
     return false;
@@ -293,7 +294,7 @@ void WgUtilsMacos::tunActivated(QSocketDescriptor sd,
 
   while (true) {
     // Try to read a packet from the tunnel.
-    int len = readv(m_tunfd, iov, sizeof(iov)/sizeof(struct iovec));
+    int len = readv(m_tunfd, iov, sizeof(iov) / sizeof(struct iovec));
     if (len < 0) {
       if (errno == EAGAIN) return;
       logger.debug() << "Tunnel error:" << strerror(errno);
