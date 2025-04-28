@@ -5,8 +5,8 @@
 #ifndef WGUTILSMACOS_H
 #define WGUTILSMACOS_H
 
-#include <QSocketNotifier>
 #include <QObject>
+#include <QSocketNotifier>
 
 #include "daemon/wireguardutils.h"
 #include "macosroutemonitor.h"
@@ -50,7 +50,7 @@ class WgUtilsMacos final : public WireguardUtils {
   QSocketNotifier* m_tunNotifier = nullptr;
   MacosRouteMonitor* m_rtmonitor = nullptr;
 
-  QHash<QString,WgSessionMacos*> m_peers;
+  QHash<QString, WgSessionMacos*> m_peers;
   WgSessionMacos* m_entryPeer = nullptr;
 };
 
