@@ -26,9 +26,10 @@ namespace {
 Logger logger("WgSessionMacos");
 };  // namespace
 
-constexpr const int WG_SESSION_TICK_INTERVAL = 1000;
-constexpr const int WG_DEFRAG_TIMEOUT = 3000;
+constexpr const int WG_SESSION_TICK_INTERVAL = 100;
+constexpr const int WG_DEFRAG_TIMEOUT = 1000;
 constexpr const int WG_PACKET_OVERHEAD = 32;
+constexpr const int WG_MAX_HANDSHAKE_SIZE = 148;
 
 WgSessionMacos::WgSessionMacos(const InterfaceConfig& config, QObject* parent)
     : QObject(parent), m_config(config) {
@@ -95,7 +96,7 @@ void WgSessionMacos::processResult(int op, const QByteArray& buf) {
 
 void WgSessionMacos::timeout() {
   QByteArray buffer;
-  buffer.resize(1500);
+  buffer.resize(WG_MAX_HANDSHAKE_SIZE);
 
   uint8_t* bufptr = reinterpret_cast<uint8_t*>(buffer.data());
   auto result = wireguard_tick(m_tunnel, bufptr, buffer.length());
@@ -111,34 +112,35 @@ void WgSessionMacos::timeout() {
 }
 
 void WgSessionMacos::renegotiate() {
-  QByteArray buffer;
-  buffer.resize(1500);
+  QByteArray output;
+  output.resize(WG_MAX_HANDSHAKE_SIZE);
 
-  uint8_t* bufptr = reinterpret_cast<uint8_t*>(buffer.data());
-  auto result = wireguard_force_handshake(m_tunnel, bufptr, buffer.length());
-  processResult(result.op, buffer.first(result.size));
+  uint8_t* outptr = reinterpret_cast<uint8_t*>(output.data());
+  auto res = wireguard_force_handshake(m_tunnel, outptr, output.size());
+
+  processResult(res.op, output.first(res.size));
 }
 
-void WgSessionMacos::encrypt(const QByteArray& data) {
-  QByteArray buffer;
-  buffer.resize(data.length() + WG_PACKET_OVERHEAD);
+void WgSessionMacos::encrypt(const QByteArray& pkt) {
+  QByteArray output;
+  output.resize(output.size() + WG_PACKET_OVERHEAD);
 
-  const uint8_t* dataptr = reinterpret_cast<const uint8_t*>(data.constData());
-  uint8_t* bufptr = reinterpret_cast<uint8_t*>(buffer.data());
-  auto result =
-      wireguard_write(m_tunnel, dataptr, data.length(), bufptr, buffer.length());
-  processResult(result.op, buffer.first(result.size));
+  const uint8_t* ptr = reinterpret_cast<const uint8_t*>(pkt.constData());
+  uint8_t* outptr = reinterpret_cast<uint8_t*>(output.data());
+  auto res = wireguard_write(m_tunnel, ptr, pkt.size(), outptr, output.size());
+
+  processResult(res.op, output.first(res.size));
 }
 
-void WgSessionMacos::netInput(const QByteArray& data) {
-  QByteArray buffer;
-  buffer.resize(data.length());
+void WgSessionMacos::netInput(const QByteArray& pkt) {
+  QByteArray output;
+  output.resize(pkt.size());
 
-  const uint8_t* dataptr = reinterpret_cast<const uint8_t*>(data.constData());
-  uint8_t* bufptr = reinterpret_cast<uint8_t*>(buffer.data());
-  auto result = wireguard_read(m_tunnel, dataptr, data.length(), bufptr,
-                               buffer.length());
-  processResult(result.op, buffer.first(result.size));
+  const uint8_t* ptr = reinterpret_cast<const uint8_t*>(pkt.constData());
+  uint8_t* outptr = reinterpret_cast<uint8_t*>(output.data());
+  auto res = wireguard_read(m_tunnel, ptr, pkt.size(), outptr, output.size());
+
+  processResult(res.op, output.first(res.size));
 }
 
 void WgSessionMacos::readyRead() {
