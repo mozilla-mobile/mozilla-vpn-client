@@ -4,19 +4,19 @@
 
 #include "wgsessionmacos.h"
 
-#include <QtEndian>
+#include <netinet/in.h>
+
 #include <QDateTime>
 #include <QMetaMethod>
 #include <QNetworkDatagram>
 #include <QRandomGenerator>
 #include <QUdpSocket>
+#include <QtEndian>
 
+#include "daemon/wireguardutils.h"
 #include "interfaceconfig.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "daemon/wireguardutils.h"
-
-#include <netinet/in.h>
 
 extern "C" {
 #include "wireguard_ffi.h"
@@ -113,7 +113,7 @@ void WgSessionMacos::timeout() {
 void WgSessionMacos::renegotiate() {
   QByteArray buffer;
   buffer.resize(1500);
-  
+
   uint8_t* bufptr = reinterpret_cast<uint8_t*>(buffer.data());
   auto result = wireguard_force_handshake(m_tunnel, bufptr, buffer.length());
   processResult(result.op, buffer.first(result.size));
@@ -125,8 +125,8 @@ void WgSessionMacos::encrypt(const QByteArray& data) {
 
   const uint8_t* dataptr = reinterpret_cast<const uint8_t*>(data.constData());
   uint8_t* bufptr = reinterpret_cast<uint8_t*>(buffer.data());
-  auto result = wireguard_write(m_tunnel, dataptr, data.length(), bufptr,
-                                buffer.length());
+  auto result =
+      wireguard_write(m_tunnel, dataptr, data.length(), bufptr, buffer.length());
   processResult(result.op, buffer.first(result.size));
 }
 
@@ -152,7 +152,7 @@ void WgSessionMacos::readyRead() {
     if (!dgram.isValid()) {
       return;
     }
-    netInput(dgram.data()); 
+    netInput(dgram.data());
   }
 }
 
@@ -169,7 +169,8 @@ WireguardUtils::PeerStatus WgSessionMacos::status() const {
   return result;
 }
 
-quint16 WgSessionMacos::inetChecksum(const void* data, size_t len, quint32 seed) {
+quint16 WgSessionMacos::inetChecksum(const void* data, size_t len,
+                                     quint32 seed) {
   const quint16* ptr = reinterpret_cast<const quint16*>(data);
   quint32 chksum = seed;
   for (const quint16* end = ptr + len / 2; ptr < end; ptr++) {
@@ -182,9 +183,8 @@ quint16 WgSessionMacos::inetChecksum(const void* data, size_t len, quint32 seed)
 }
 
 quint16 WgSessionMacos::udpChecksum(const QHostAddress& source,
-                                    const QHostAddress& dest,
-                                    quint16 sport, quint16 dport,
-                                    const QByteArray& payload) {
+                                    const QHostAddress& dest, quint16 sport,
+                                    quint16 dport, const QByteArray& payload) {
   quint32 src4 = source.toIPv4Address();
   quint32 dst4 = dest.toIPv4Address();
   quint32 seed = 0;
@@ -218,11 +218,10 @@ struct ipv4header {
 };
 
 QByteArray WgSessionMacos::mhopEncapsulate(const QByteArray& packet) {
-  uint16_t udphdr[4] = {
-    qToBigEndian(m_innerPort), qToBigEndian(m_serverPort),
-    qToBigEndian<quint16>(packet.length() + 8),
-    udpChecksum(m_innerIpv4, m_serverIpv4, m_innerPort, m_serverPort, packet)
-  };
+  uint16_t udpcksum =
+      udpChecksum(m_innerIpv4, m_serverIpv4, m_innerPort, m_serverPort, packet);
+  uint16_t udphdr[4] = {qToBigEndian(m_innerPort), qToBigEndian(m_serverPort),
+                        qToBigEndian<quint16>(packet.length() + 8), udpcksum};
 
   quint16 tlen = packet.length() + sizeof(struct ipv4header) + sizeof(udphdr);
   struct ipv4header header = {
@@ -284,7 +283,7 @@ void WgSessionMacos::mhopInputV4(const QByteArray& packet) {
 }
 
 QByteArray WgSessionMacos::mhopDefragV4(const struct ipv4header* header,
-                                        const QByteArray &dgram) {
+                                        const QByteArray& dgram) {
   quint16 flags = qFromBigEndian(header->frag);
   quint16 ident = qFromBigEndian(header->ident);
   quint16 offset = (flags & 0x1fff) * 8;
@@ -320,8 +319,9 @@ void WgSessionMacos::mhopInputV6(const QByteArray& packet) {
   // TODO: Implement Me!
 }
 
-void WgSessionMacos::mhopInputUDP(
-    const QHostAddress& src, const QHostAddress& dst, const QByteArray& dgram) {
+void WgSessionMacos::mhopInputUDP(const QHostAddress& src,
+                                  const QHostAddress& dst,
+                                  const QByteArray& dgram) {
   const quint16* hdr = reinterpret_cast<const quint16*>(dgram.constData());
   if ((dgram.length() < 8) || (hdr[0] != htons(m_serverPort)) ||
       (hdr[1] != htons(m_innerPort)) || (htons(hdr[2]) > dgram.length())) {
