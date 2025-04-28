@@ -85,6 +85,7 @@ MZViewBase {
                     MZInterLabel {
                         Layout.fillWidth: true
 
+                        color: MZTheme.colors.fontColorDark
                         text: MZI18n[textName]
                         wrapMode: Text.WordWrap
                         horizontalAlignment: Text.AlignLeft

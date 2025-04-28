@@ -38,7 +38,6 @@ Item {
             text: "No image selected"
             anchors.horizontalCenter: parent.horizontalCenter
             anchors.verticalCenter: parent.verticalCenter
-            color: MZTheme.colors.fontColor
             visible: imageSelect.currentIndex < 0
         }
         

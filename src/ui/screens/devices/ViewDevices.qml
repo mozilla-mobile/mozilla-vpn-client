@@ -56,7 +56,6 @@ MZViewBase {
                 Layout.maximumWidth: vpnFlickable.width - parent.Layout.leftMargin - parent.Layout.rightMargin - parent.spacing - helpIconButtonLoader.implicitWidth
 
                 horizontalAlignment: Text.AlignLeft
-                color: MZTheme.colors.fontColor
                 text: MZI18n.DevicesCountLabel.arg(VPNDeviceModel.activeDevices).arg(VPNUser.maxDevices)
             }
 

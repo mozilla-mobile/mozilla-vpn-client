@@ -67,7 +67,6 @@ MZFlickable {
                 Layout.fillWidth: true
 
                 text: MZI18n.PermissionMacosBody
-                color: MZTheme.colors.fontColor
                 horizontalAlignment: Text.AlignLeft
             }
 
@@ -76,7 +75,6 @@ MZFlickable {
                 Layout.fillWidth: true
 
                 text: MZI18n.PermissionMacosInstructions
-                color: MZTheme.colors.fontColor
                 horizontalAlignment: Text.AlignLeft
             }
         }

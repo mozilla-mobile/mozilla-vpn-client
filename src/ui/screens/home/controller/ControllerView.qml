@@ -523,6 +523,7 @@ Item {
             id: logoSubtitle
             objectName: "controllerSubTitle"
 
+            color: MZTheme.colors.fontColorDark
             lineHeight: MZTheme.theme.controllerInterLineHeight
             width: parent.width - MZTheme.theme.windowMargin
             anchors.horizontalCenter: parent.horizontalCenter

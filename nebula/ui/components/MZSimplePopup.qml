@@ -48,8 +48,6 @@ MZPopup {
 
             Layout.topMargin: MZTheme.theme.vSpacingSmall / 2
             Layout.fillWidth: true
-
-            color: MZTheme.colors.fontColor
         }
 
         ColumnLayout {

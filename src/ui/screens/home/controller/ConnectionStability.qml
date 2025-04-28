@@ -138,6 +138,7 @@ Item {
                                                         "vpn.connectionStability.noSignal")
 
                 id: stabilityLabel
+                color: MZTheme.colors.fontColorDark
                 lineHeight: MZTheme.theme.controllerInterLineHeight
                 onPaintedWidthChanged: stability.setColumns()
                 text: VPNConnectionHealth.stability

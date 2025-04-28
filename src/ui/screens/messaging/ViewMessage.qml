@@ -158,7 +158,6 @@ MZViewBase {
                 Layout.alignment: Qt.AlignRight
 
                 text: message.formattedDate
-                color: MZTheme.colors.fontColor
                 font.pixelSize: MZTheme.theme.fontSizeSmall
                 lineHeight: 21
                 horizontalAlignment: Text.AlignRight
@@ -192,7 +191,6 @@ MZViewBase {
 
                 text: message.subtitle
                 font.pixelSize: MZTheme.theme.fontSizeSmall
-                color: MZTheme.colors.fontColor
                 horizontalAlignment: Text.AlignLeft
             }
 

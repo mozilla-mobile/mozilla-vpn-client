@@ -34,6 +34,7 @@ MZViewBase {
         }
 
         MZInterLabel {
+            color: MZTheme.colors.fontColorDark
             text: MZI18n.SettingsFirefoxExtensionIntro
             horizontalAlignment: Text.AlignLeft
             Layout.preferredWidth: parent.width
@@ -52,6 +53,7 @@ MZViewBase {
           }
 
           MZInterLabel {
+            color: MZTheme.colors.fontColorDark
             text: MZI18n.SettingsFirefoxExtensionFirstParagraphMain
             horizontalAlignment: Text.AlignLeft
             Layout.preferredWidth: parent.width
@@ -71,6 +73,7 @@ MZViewBase {
           }
 
           MZInterLabel {
+            color: MZTheme.colors.fontColorDark
             text: MZI18n.SettingsFirefoxExtensionSecondParagraphMain
             horizontalAlignment: Text.AlignLeft
             Layout.preferredWidth: parent.width
