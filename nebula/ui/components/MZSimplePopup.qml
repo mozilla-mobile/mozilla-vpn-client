@@ -37,7 +37,6 @@ MZPopup {
             Layout.topMargin: MZTheme.theme.vSpacingSmall
             Layout.fillWidth: true
 
-            color: MZTheme.colors.fontColorDark
             font.pixelSize: MZTheme.theme.fontSizeLarge
             lineHeight: MZTheme.theme.vSpacingSmall * 2
 
