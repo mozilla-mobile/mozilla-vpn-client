@@ -5,11 +5,13 @@
 #include "wgutilsmacos.h"
 
 #include <QUdpSocket>
+#include <QVariant>
 
 #include <errno.h>
 #include <fcntl.h>
 #include <net/if_utun.h>
 #include <net/route.h>
+#include <netinet/in.h>
 #include <sys/ioctl.h>
 #include <sys/kern_control.h>
 #include <sys/sys_domain.h>
@@ -26,6 +28,9 @@
 namespace {
 Logger logger("WgUtilsMacos");
 };  // namespace
+
+constexpr uint32_t WG_MTU_OVERHEAD = 80;
+constexpr uint32_t IPV6_MIN_MTU = 1280;
 
 WgUtilsMacos::WgUtilsMacos(QObject* parent) : WireguardUtils(parent) {
   MZ_COUNT_CTOR(WgUtilsMacos);
@@ -75,21 +80,48 @@ bool WgUtilsMacos::addInterface(const InterfaceConfig& config) {
   fcntl(tunfd, F_SETFL, fcntl(tunfd, F_GETFL) | O_NONBLOCK);
 
   // Get the tunnel device's name.
-  char buf[IF_NAMESIZE+1];
-  socklen_t bufsz = sizeof(buf);
-  if (getsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, buf, &bufsz) < 0) {
+  struct ifreq ifr;
+  socklen_t ifnamesize = sizeof(ifr.ifr_name);
+  err = getsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifr.ifr_name,
+                   &ifnamesize);
+  if (err < 0) {
     logger.warning() << "utun name loookup failed:" << strerror(errno);
     return false;
   }
-  m_ifname = QString::fromUtf8(buf);
+
+  // Set a base MTU, it will get updated later.
+  ifr.ifr_mtu = IPV6_MIN_MTU;
+  if (ioctl(tunfd, SIOCSIFMTU, &ifr) != 0) {
+    logger.error() << "Failed to set MTU:" << strerror(errno);
+    return false;
+  }
+
+  // Bring the device up.
+  err = ioctl(tunfd, SIOCGIFFLAGS, &ifr);
+  if (err != 0) {
+    logger.error() << "Failed to get interface flags:" << strerror(errno);
+    return false;
+  }
+  ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
+  err = ioctl(tunfd, SIOCSIFFLAGS, &ifr);
+  if (err != 0) {
+    logger.error() << "Failed to set device up:" << strerror(errno);
+    return false;
+  }
+
+  // The interface was successfully created.
+  logger.info() << "Created tunnel interface:" << ifr.ifr_name;
+  m_ifname = QString::fromUtf8(ifr.ifr_name);
   m_tunfd = tunfd;
+  m_tunmtu = IPV6_MIN_MTU;
   m_rtmonitor = new MacosRouteMonitor(m_ifname, this);
   m_tunNotifier = new QSocketNotifier(m_tunfd, QSocketNotifier::Read, this);
   connect(m_tunNotifier, &QSocketNotifier::activated, this,
           &WgUtilsMacos::tunActivated);
+  connect(m_rtmonitor, &MacosRouteMonitor::defaultRouteUpdated, this,
+          &WgUtilsMacos::mtuUpdate);
 
-  // Success!
-  logger.info() << "Created tunnel interface:" << m_ifname;
+  // We can dismiss the cleanup guard.
   guard.dismiss();
   return true;
 }
@@ -99,6 +131,7 @@ bool WgUtilsMacos::deleteInterface() {
     close(m_tunfd);
     m_ifname.clear();
     m_tunfd = -1;
+    m_tunmtu = 0;
   }
 
   if (m_rtmonitor) {
@@ -250,13 +283,13 @@ void WgUtilsMacos::tunActivated(QSocketDescriptor sd,
   // The tunnel socket is ready for reading.
   quint32 header = 0;
   QByteArray rxbuf;
-  rxbuf.resize(1500); // TODO: Get the MTU.
+  rxbuf.resize(m_tunmtu + 16);
 
   struct iovec iov[2];
   iov[0].iov_base = &header;
   iov[0].iov_len = sizeof(header);
   iov[1].iov_base = (void*)rxbuf.data();
-  iov[1].iov_len = rxbuf.length();
+  iov[1].iov_len = m_tunmtu;
 
   while (true) {
     // Try to read a packet from the tunnel.
@@ -267,7 +300,7 @@ void WgUtilsMacos::tunActivated(QSocketDescriptor sd,
       return;
     }
     int pktlen = len - sizeof(header);
-    if (pktlen < 0) {
+    if ((pktlen < 0) || (pktlen > m_tunmtu)) {
       continue;
     }
 
@@ -297,4 +330,33 @@ void WgUtilsMacos::tunInput(const QByteArray& packet) {
   iov[1].iov_base = (void*)packet.constData();
   iov[1].iov_len = packet.length();
   writev(m_tunfd, iov, 2);
+}
+
+void WgUtilsMacos::mtuUpdate(int proto, const QHostAddress& gateway,
+                             int ifindex, int mtu) {
+  // TODO: Support IPv6 servers.
+  if (proto != QAbstractSocket::IPv4Protocol) {
+    return;
+  }
+  if (gateway.isNull()) {
+    return;
+  }
+
+  // Update the tunnel device's MTU
+  struct ifreq ifr;
+  ifr.ifr_mtu = mtu - WG_MTU_OVERHEAD;
+  if (m_entryPeer) {
+    ifr.ifr_mtu -= WG_MTU_OVERHEAD;
+  }
+  if (ifr.ifr_mtu < IPV6_MIN_MTU) {
+    ifr.ifr_mtu = IPV6_MIN_MTU;
+  }
+
+  logger.info() << "Updating MTU to" << ifr.ifr_mtu;
+  strncpy(ifr.ifr_name, qPrintable(m_ifname), IFNAMSIZ);
+  if (ioctl(m_tunfd, SIOCSIFMTU, &ifr) != 0) {
+    logger.error() << "Failed to set MTU:" << strerror(errno);
+  } else {
+    m_tunmtu = ifr.ifr_mtu;
+  }
 }

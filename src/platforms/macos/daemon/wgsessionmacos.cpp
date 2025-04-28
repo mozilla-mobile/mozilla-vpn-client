@@ -36,9 +36,10 @@ WgSessionMacos::WgSessionMacos(const InterfaceConfig& config, QObject* parent)
   logger.debug() << "WgSessionMacos created.";
 
   // Allocate a new tunnel
+  quint32 index = QRandomGenerator::system()->bounded(1 << 24);
   m_tunnel = new_tunnel(config.m_privateKey.toUtf8().constData(),
                         config.m_serverPublicKey.toLocal8Bit().constData(),
-                        nullptr, WG_KEEPALIVE_PERIOD, 0);
+                        nullptr, WG_KEEPALIVE_PERIOD, index);
   connect(&m_timer, &QTimer::timeout, this, &WgSessionMacos::timeout);
   m_timer.setSingleShot(false);
   m_timer.start(WG_SESSION_TICK_INTERVAL);
