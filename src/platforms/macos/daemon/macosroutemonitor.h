@@ -43,6 +43,9 @@ class MacosRouteMonitor final : public QObject {
                             const void* sa);
   static QList<QByteArray> parseAddrList(const QByteArray& data);
 
+ signals:
+  void defaultRouteUpdated(int protocol, QHostAddress& gateway, int idindex, int mtu);
+
  private slots:
   void rtsockReady();
 
