@@ -42,8 +42,10 @@ class WgUtilsMacos final : public WireguardUtils {
 
  private:
   void tunInput(const QByteArray& packet);
+  void mtuUpdate(int proto, const QHostAddress& gateway, int ifindex, int mtu);
 
   int m_tunfd = -1;
+  int m_tunmtu = 0;
   QString m_ifname;
   QSocketNotifier* m_tunNotifier = nullptr;
   MacosRouteMonitor* m_rtmonitor = nullptr;

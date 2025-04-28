@@ -20,9 +20,6 @@
 #include "logger.h"
 #include "macosdaemon.h"
 
-constexpr uint32_t ETH_MTU = 1500;
-constexpr uint32_t WG_MTU_OVERHEAD = 80;
-
 namespace {
 Logger logger("IPUtilsMacos");
 }
@@ -42,43 +39,8 @@ bool IPUtilsMacos::addInterfaceIPs(const InterfaceConfig& config) {
 }
 
 bool IPUtilsMacos::setMTUAndUp(const InterfaceConfig& config) {
+  // Not implemented - this is handled by WgUtilsMacos
   Q_UNUSED(config);
-  QString ifname = MacOSDaemon::instance()->m_wgutils->interfaceName();
-  struct ifreq ifr;
-
-  // Create socket file descriptor to perform the ioctl operations on
-  int sockfd = socket(AF_INET, SOCK_DGRAM, IPPROTO_IP);
-  if (sockfd < 0) {
-    logger.error() << "Failed to create ioctl socket.";
-    return false;
-  }
-  auto guard = qScopeGuard([&] { close(sockfd); });
-
-  // MTU
-  strncpy(ifr.ifr_name, qPrintable(ifname), IFNAMSIZ);
-  ifr.ifr_mtu = ETH_MTU - WG_MTU_OVERHEAD;
-  int ret = ioctl(sockfd, SIOCSIFMTU, &ifr);
-  if (ret) {
-    logger.error() << "Failed to set MTU:" << strerror(errno);
-    return false;
-  }
-
-  // Get the interface flags
-  strncpy(ifr.ifr_name, qPrintable(ifname), IFNAMSIZ);
-  ret = ioctl(sockfd, SIOCGIFFLAGS, &ifr);
-  if (ret) {
-    logger.error() << "Failed to get interface flags:" << strerror(errno);
-    return false;
-  }
-
-  // Up
-  ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
-  ret = ioctl(sockfd, SIOCSIFFLAGS, &ifr);
-  if (ret) {
-    logger.error() << "Failed to set device up:" << strerror(errno);
-    return false;
-  }
-
   return true;
 }
 
