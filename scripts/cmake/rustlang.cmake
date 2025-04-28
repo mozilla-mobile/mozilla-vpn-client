@@ -219,7 +219,7 @@ function(add_rust_library TARGET_NAME)
         endif()
 
         ## For build Apple shared binaries, the install path needs to be relative to the runpath.
-        list(APPEND RUST_BUILD_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}")
+        list(APPEND RUST_TARGET_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}")
     endif()
 
     if(${RUST_TARGET_SHARED})
