@@ -80,6 +80,27 @@ color.stepProgressIconIncomplete = color.white;
 color.stepProgressIconComplete = color.successAccent;
 
 // Toggle
+color.vpnToggleConnected = {
+  defaultColor: color.green50,
+  buttonHovered: color.green60,
+  buttonPressed: color.green70,
+  focusOutline: addTransparency(color.bgColor, 0.3),
+  focusBorder: color.focusBorder,
+};
+
+color.vpnToggleDisconnected = {
+  defaultColor: color.grey30,
+  buttonHovered: color.fontColor,
+  buttonPressed: color.fontColorDark,
+  buttonDisabled: color.disabledButtonColor,
+  focusOutline: color.transparent,
+  focusBorder: color.focusBorder,
+};
+
+color.vpnToggleDisconnectedBorder = color.transparent;
+
+color.connectedToggle = color.white;
+color.disconnectedToggle = color.white;
 color.connectingToggle = color.dullPurple;
 color.connectingToggleBackground = color.dullGreen;
 
@@ -119,21 +140,4 @@ color.onBoardingGradient = {
   start: color.lighterOnboardingPurple,
   middle: color.mediumOnboardingPurple,
   end: color.darkerOnboardingPurple,
-};
-
-color.vpnToggleConnected = {
-  defaultColor: color.green50,
-  buttonHovered: color.green60,
-  buttonPressed: color.green70,
-  focusOutline: addTransparency(color.bgColor, 0.3),
-  focusBorder: color.focusBorder,
-};
-
-color.vpnToggleDisconnected = {
-  defaultColor: color.grey30,
-  buttonHovered: color.fontColor,
-  buttonPressed: color.fontColorDark,
-  buttonDisabled: color.disabledButtonColor,
-  focusOutline: color.transparent,
-  focusBorder: color.focusBorder,
 };
