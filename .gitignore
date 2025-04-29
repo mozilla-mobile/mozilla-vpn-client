@@ -32,7 +32,8 @@ linux/netfilter/vendor/
 __pycache__
 lottie.mjs
 qml_lint_result.txt
-release_notes.txt
+.qmlls.ini
+release_notes.txts
 
 # Translation pipeline
 addon_ts/
