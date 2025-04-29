@@ -33,7 +33,7 @@ __pycache__
 lottie.mjs
 qml_lint_result.txt
 .qmlls.ini
-release_notes.txts
+release_notes.txt
 
 # Translation pipeline
 addon_ts/
