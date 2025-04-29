@@ -31,7 +31,13 @@
              Ok(true)
          }
          "start" =>{
-            let out = launcher::start_vpn();
+            let mut minimized = false;
+            if obj.contains_key("minimized") {
+                let val = obj.get_key_value("minimized").ok_or("Null minimized");
+                minimized = val?.1.as_bool().unwrap_or(false);
+            }
+
+            let out = launcher::start_vpn(minimized);
             crate::io::write_output(std::io::stdout(),&out)
                 .expect("Unable to Write to STDOUT?");
             Ok(true)
@@ -78,9 +84,14 @@ mod launcher {
     const CREATE_NEW_PROCESS_GROUP: u32 = 0x200; // CREATE_NEW_PROCESS_GROUP
     const DETACHED_PROCESS: u32 = 0x00000008;    // DETACHED_PROCESS
 
-    pub fn start_vpn() -> serde_json::Value{
+    pub fn start_vpn(minimized: bool) -> serde_json::Value{
+        let mut args: Vec<&str>= vec!["ui"];
+        if minimized{
+            args.push("--minimized");
+        }
+
         let result = Command::new(CLIENT_PATH)
-            .args(["ui"])
+            .args(args)
             .creation_flags(CREATE_NEW_PROCESS_GROUP | DETACHED_PROCESS)
             .spawn();
 
@@ -96,7 +107,7 @@ mod launcher {
 #[cfg(not(target_os = "windows"))]
 mod launcher {
     use serde_json::json;
-    pub fn start_vpn() -> serde_json::Value{
+    pub fn start_vpn(_minimized: bool) -> serde_json::Value{
         json!("{error:'start_unsupported!'}")
     }
 }
