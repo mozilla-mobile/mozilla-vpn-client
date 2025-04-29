@@ -30,7 +30,7 @@ class WindowsBypass final : public QObject {
   const struct _MIB_IPFORWARD_ROW2* lookupRoute(const QHostAddress& dest) const;
 
  private slots:
-  void outgoingConnection(QAbstractSocket* s, const QHostAddress& dest);
+  void outgoingConnection(qintptr sd, const QHostAddress& dest);
   void interfaceChanged(quint64 luid);
   void refreshRoutes(int family);
   void refreshAddresses();

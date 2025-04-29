@@ -19,7 +19,7 @@ class LinuxBypass final : public QObject {
   ~LinuxBypass() = default;
 
  private slots:
-  void outgoingConnection(QAbstractSocket* s, const QHostAddress& dest);
+  void outgoingConnection(qintptr sd, const QHostAddress& dest);
 };
 
 #endif  // LINUXBYPASS_H

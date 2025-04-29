@@ -38,31 +38,16 @@ LinuxBypass::LinuxBypass(Socks5* proxy) : QObject(proxy) {
   // If we get this far - we can perform split tunneling.
   connect(proxy, &Socks5::outgoingConnection, this,
           &LinuxBypass::outgoingConnection);
+  connect(DNSResolver::instance(), &DNSResolver::setupDnsSocket, this,
+          &LinuxBypass::outgoingConnection);
 }
 
-void LinuxBypass::outgoingConnection(QAbstractSocket* s,
-                                     const QHostAddress& dest) {
+void LinuxBypass::outgoingConnection(qintptr sd, const QHostAddress& dest) {
   constexpr const int vpn_firewall_mark = 51820;
-  int af = AF_INET;
 
-  if (dest.protocol() == QAbstractSocket::IPv6Protocol) {
-    af = AF_INET6;
-  }
-
-  // Create a socket and set its firewall mark.
-  int newsock = socket(af, SOCK_STREAM, 0);
-  if (newsock < 0) {
-    qWarning() << "socket() failed:" << strerror(errno);
-    return;
-  }
-
-  int err = setsockopt(newsock, SOL_SOCKET, SO_MARK, &vpn_firewall_mark,
+  int err = setsockopt(sd, SOL_SOCKET, SO_MARK, &vpn_firewall_mark,
                        sizeof(vpn_firewall_mark));
   if (err != 0) {
     qWarning() << "setsockopt(SO_MARK) failed:" << strerror(errno);
-    close(newsock);
-  } else if (!s->setSocketDescriptor(newsock,
-                                     QAbstractSocket::UnconnectedState)) {
-    qWarning() << "setSocketDescriptor() failed:" << s->errorString();
   }
 }
