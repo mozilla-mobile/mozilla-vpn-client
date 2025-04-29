@@ -80,6 +80,7 @@ color.stepProgressBarCompleteText = color.purple20;
 color.stepProgressIconIncomplete = mixColors(color.bgColor, color.white, 0.8);
 color.stepProgressIconComplete = mixColors(color.bgColor, color.white, 0.8);
 
+// Toggle
 color.vpnToggleConnected = {
   defaultColor: color.blue20,
   buttonHovered: mixColors(color.blue20, color.black, 0.2),
@@ -88,7 +89,19 @@ color.vpnToggleConnected = {
   focusBorder: color.focusBorder,
 };
 
-// Toggle
+color.vpnToggleDisconnected = {
+  defaultColor: color.grey30,
+  buttonHovered: mixColors(color.grey30, color.black, 0.2),
+  buttonPressed: mixColors(color.grey30, color.black, 0.3),
+  buttonDisabled: mixColors(color.grey30, color.white, 0.3),
+  focusOutline: mixColors(color.grey30, color.white, 0.3),
+  focusBorder: color.focusBorder,
+};
+
+color.vpnToggleDisconnectedBorder = color.grey30;
+
+color.connectedToggle = color.grey50;
+color.disconnectedToggle = color.grey30;
 color.connectingToggle = color.dullPurple;
 color.connectingToggleBackground =
     mixColors(color.vpnToggleConnected.defaultColor, color.primary, 0.4);
@@ -106,25 +119,16 @@ color.destructiveButton = {
 
 color.successAlert = {
   defaultColor: color.green80,
-  buttonHovered: mixColors(
-      color.green80, color.black, 0.3),  // NEED confirmation - matt draft
-  buttonPressed: mixColors(
-      color.green80, color.black, 0.5),  // NEED confirmation - matt draft
-  focusOutline:
-      addTransparency(color.green80, 0.4),  // NEED confirmation - matt draft
-  focusBorder:
-      color.green80,  // or main button color? // NEED confirmation - matt draft
+  buttonHovered: mixColors(color.green80, color.black, 0.3),
+  buttonPressed: mixColors(color.green80, color.black, 0.5),
+  focusOutline: addTransparency(color.green80, 0.4),
+  focusBorder: color.green80,
 };
 color.warningAlert = {
-  buttonHovered: mixColors(
-      color.yellow70, color.black, 0.3),  // NEED confirmation - matt draft
-  buttonPressed: mixColors(
-      color.yellow70, color.black, 0.5),  // NEED confirmation - matt draft
-  focusOutline:
-      addTransparency(color.yellow70, 0.4),  // NEED confirmation - matt draft
-  focusBorder:
-      color
-          .yellow70,  // or main button color? // NEED confirmation - matt draft
+  buttonHovered: mixColors(color.yellow70, color.black, 0.3),
+  buttonPressed: mixColors(color.yellow70, color.black, 0.5),
+  focusOutline: addTransparency(color.yellow70, 0.4),
+  focusBorder: color.yellow70,
 };
 
 color.textLink = {
@@ -138,13 +142,4 @@ color.onBoardingGradient = {
   start: color.lighterOnboardingPurple,
   middle: color.mediumOnboardingPurple,
   end: color.darkerOnboardingPurple,
-};
-
-color.vpnToggleDisconnected = {
-  defaultColor: color.grey30,
-  buttonHovered: mixColors(color.grey30, color.black, 0.2),
-  buttonPressed: mixColors(color.grey30, color.black, 0.3),
-  buttonDisabled: mixColors(color.grey30, color.black, 0.3),
-  focusOutline: color.transparent,
-  focusBorder: color.focusBorder,
 };

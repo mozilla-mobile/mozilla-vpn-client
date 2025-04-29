@@ -13,6 +13,18 @@
 
 color.bgColorTransparent = addTransparency(color.bgColor, 0.0);
 
+color.vpnToggleDisconnectedMainSwitch = {
+  defaultColor:
+      (color.vpnToggleDisconnectedBorder === color.transparent ?
+           color.vpnToggleDisconnected.defaultColor :
+           color.bgColorStronger),
+  buttonHovered: color.vpnToggleDisconnected.buttonHovered,
+  buttonPressed: color.vpnToggleDisconnected.buttonPressed,
+  buttonDisabled: color.vpnToggleDisconnected.buttonDisabled,
+  focusOutline: color.vpnToggleDisconnected.focusOutline,
+  focusBorder: color.vpnToggleDisconnected.focusBorder,
+};
+
 // pressed/disabled goes darker on light theme, goes lighter on dark theme
 color.normalButton = {
   defaultColor: color.normalButtonDefault,

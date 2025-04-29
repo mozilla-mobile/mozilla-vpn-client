@@ -19,6 +19,7 @@ RowLayout {
         id: label
         objectName: "paymentLabel"
 
+        color: MZTheme.colors.fontColorDark
         horizontalAlignment: Text.AlignLeft
         font.pixelSize: MZTheme.theme.fontSizeSmall
         text: selectedPaymentMethod.name

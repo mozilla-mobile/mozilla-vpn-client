@@ -7,19 +7,50 @@ import QtQuick 2.0
 import Mozilla.Shared 1.0
 
 Rectangle {
+    enum BadgeType {
+        Success,
+        Normal,
+        Warning,
+        Error
+    }
+
     id: root
 
-    //A type is a JS object containing the badgeText and badgeBackgroundColor and badgeTextColor
-    property var badgeType
+    // Private property, will be changed depending on badgeType
+    QtObject {
+        id: style
+        property var backgroundColor: {
+          switch (root.badgeType) {
+            case MZBadge.BadgeType.Success:
+              return MZTheme.colors.successBackground
+            case MZBadge.BadgeType.Normal:
+              return MZTheme.colors.normalLevelBackground
+            case MZBadge.BadgeType.Warning:
+              return MZTheme.colors.warningBackground
+            case MZBadge.BadgeType.Error:
+              return MZTheme.colors.errorBackground
+          }
+        }
 
-    //Alternatively to setting the badgeType, you can set it's properties manually
-    property alias backgroundColor: root.color
+        property var textColor: {
+          switch (root.badgeType) {
+            case MZBadge.BadgeType.Success:
+              return MZTheme.colors.successText
+            case MZBadge.BadgeType.Normal:
+              return MZTheme.colors.normalLevelText
+            case MZBadge.BadgeType.Warning:
+              return MZTheme.colors.warningText
+            case MZBadge.BadgeType.Error:
+              return MZTheme.colors.errorText
+          }
+        }
+    }
+
+    property var badgeType: MZBadge.BadgeType.Normal
     property alias text: badgeLabel.text
-    property alias textColor: badgeLabel.color
-
     property alias badgeLabel: badgeLabel
 
-    color: badgeType.badgeBackgroundColor
+    color: style.backgroundColor
     height: badgeLabel.height
     width: badgeLabel.width
     radius: 4
@@ -29,7 +60,7 @@ Rectangle {
         id: badgeLabel
 
         text: badgeType.badgeText
-        color: badgeType.badgeTextColor
+        color: style.textColor
         verticalAlignment: Text.AlignVCenter
         topPadding: MZTheme.theme.badgeVerticalPadding
         leftPadding: MZTheme.theme.badgeHorizontalPadding

@@ -200,7 +200,6 @@ FocusScope {
                                 Layout.preferredWidth: parent.width
                                 Layout.maximumWidth: parent.width
 
-                                color: MZTheme.colors.fontColor
                                 horizontalAlignment: Text.AlignLeft
                                 // TODO: Replace placeholder strings and generate
                                 // values that will be set instead of `%1`

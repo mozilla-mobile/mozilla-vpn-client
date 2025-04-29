@@ -15,7 +15,7 @@ Text {
     lineHeightMode: Text.FixedHeight
     lineHeight: MZTheme.theme.labelLineHeight
     wrapMode: Text.Wrap
-    color: MZTheme.colors.fontColorDark
+    color: MZTheme.colors.fontColor
 
     Accessible.role: Accessible.StaticText
     Accessible.name: text
