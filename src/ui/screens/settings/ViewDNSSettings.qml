@@ -143,15 +143,6 @@ MZViewBase {
             spacing: MZTheme.theme.windowMargin
             Layout.rightMargin: MZTheme.theme.windowMargin / 2
 
-            MZMouseArea {
-                anchors.fill: parent
-
-                enabled: gatewayRadioButton.enabled
-                width: Math.min(parent.implicitWidth, parent.width)
-                propagateClickToParent: false
-                onClicked: applyFrontendChanges(MZSettings.Gateway);
-            }
-
             MZRadioButton {
                 objectName: "dnsStandard"
 
@@ -182,20 +173,20 @@ MZViewBase {
                     Layout.fillWidth: true
                 }
             }
+
+            MZMouseArea {
+                anchors.fill: parent
+
+                enabled: gatewayRadioButton.enabled
+                width: Math.min(parent.implicitWidth, parent.width)
+                propagateClickToParent: false
+                onClicked: applyFrontendChanges(MZSettings.Gateway);
+            }
         }
 
         RowLayout {
             Layout.fillWidth: true
             spacing: MZTheme.theme.windowMargin
-
-            MZMouseArea {
-                anchors.fill: parent
-
-                enabled: customRadioButton.enabled
-                width: Math.min(parent.implicitWidth, parent.width)
-                propagateClickToParent: false
-                onClicked: applyFrontendChanges(MZSettings.Custom);
-            }
 
             MZRadioButton {
                 objectName: "dnsCustom"
@@ -282,6 +273,15 @@ MZViewBase {
                         }
                     ]
                 }
+            }
+
+            MZMouseArea {
+                anchors.fill: parent
+
+                enabled: customRadioButton.enabled
+                width: Math.min(parent.implicitWidth, parent.width)
+                propagateClickToParent: false
+                onClicked: applyFrontendChanges(MZSettings.Custom);
             }
         }
     }

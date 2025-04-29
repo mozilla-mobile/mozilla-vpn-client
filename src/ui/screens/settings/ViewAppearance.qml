@@ -57,15 +57,6 @@ MZViewBase {
                 Layout.rightMargin: MZTheme.theme.windowMargin / 2
                 visible: isVisible(radioButtonName)
 
-                MZMouseArea {
-                    anchors.fill: parent
-
-                    enabled: radioButtonId.enabled
-                    width: Math.min(parent.implicitWidth, parent.width)
-                    propagateClickToParent: false
-                    onClicked: wasClicked(radioButtonName)
-                }
-
                 MZRadioButton {
                     objectName: radioButtonName
 
@@ -96,6 +87,15 @@ MZViewBase {
                         Layout.fillWidth: true
                         visible: radioButtonName === "automaticAppearanceRadioButton"
                     }
+                }
+
+                MZMouseArea {
+                    anchors.fill: parent
+
+                    enabled: radioButtonId.enabled
+                    width: Math.min(parent.implicitWidth, parent.width)
+                    propagateClickToParent: false
+                    onClicked: wasClicked(radioButtonName)
                 }
             }
         }
