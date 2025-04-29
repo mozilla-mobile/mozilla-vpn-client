@@ -136,7 +136,7 @@ MZViewBase {
             MZSettingsItem {
                 objectName: "settingsAboutUs"
                 settingTitle: MZI18n.AboutUsTitle
-                imageLeftSrc: MZAssetLookup.getImageSource("InfoIconDarker")
+                imageLeftSrc: MZAssetLookup.getImageSource("InfoIcon")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {

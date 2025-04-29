@@ -211,19 +211,11 @@ var imageLookup = {
     filenameLight: 'qrc:/ui/resources/main-img-vpn-off.svg',
     filenameDark: 'qrc:/ui/resources/main-img-vpn-off.svg'
   },
-  'InfoIcon': {
+  'InfoIconControllerPanel': {
     filenameLight: 'qrc:/ui/resources/connection-info.svg',
     filenameDark: 'qrc:/ui/resources/connection-info.svg'
   },
-  'InfoIconThinner': {
-    filenameLight: 'qrc:/nebula/resources/info.svg',
-    filenameDark: 'qrc:/ui/resources/settings/aboutUs-dark.svg'
-  },
-  'InfoIconDark': {
-    filenameLight: 'qrc:/ui/resources/connection-info-dark.svg',
-    filenameDark: 'qrc:/ui/resources/connection-info-smaller-dark.svg'
-  },
-  'InfoIconDarker': {
+  'InfoIcon': {
     filenameLight: 'qrc:/ui/resources/settings/aboutUs.svg',
     filenameDark: 'qrc:/ui/resources/settings/aboutUs-dark.svg'
   },

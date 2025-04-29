@@ -128,9 +128,9 @@ MZFlickable {
             spacing: 16
 
             Image {
-                source: MZAssetLookup.getImageSource("InfoIconDark")
-                sourceSize.width: 20
-                sourceSize.height: 20
+                source: MZAssetLookup.getImageSource("InfoIcon")
+                sourceSize.width: 28
+                sourceSize.height: 28
                 antialiasing: true
             }
 

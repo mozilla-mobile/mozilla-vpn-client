@@ -90,7 +90,6 @@ qt_add_qml_module(resources
         copy-dark.svg
         paste.svg
         paste-dark.svg
-        info.svg
         success.svg
         success-dark.svg
         lock.svg
