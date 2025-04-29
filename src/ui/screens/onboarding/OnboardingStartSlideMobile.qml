@@ -40,7 +40,6 @@ ColumnLayout {
 
         text: MZI18n.OnboardingStartSlideMobileBody
         horizontalAlignment: Text.AlignLeft
-        color: MZTheme.colors.fontColor
     }
 
     Item {

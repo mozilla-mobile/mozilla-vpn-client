@@ -59,7 +59,6 @@ MZViewBase {
 
 
             MZMetropolisLabel {
-                color: MZTheme.colors.fontColorDark
                 horizontalAlignment: Text.AlignLeft
                 font.family: MZTheme.theme.fontBoldFamily
                 text: MZI18n.SubscriptionManagementSummaryHeadline
@@ -81,7 +80,6 @@ MZViewBase {
             }
 
             MZMetropolisLabel {
-                color: MZTheme.colors.fontColorDark
                 horizontalAlignment: Text.AlignLeft
                 font.family: MZTheme.theme.fontBoldFamily
                 text: MZI18n.SubscriptionManagementPaymentHeadline

@@ -104,6 +104,7 @@ ColumnLayout {
             visible: !paymentMethod.visible
             text: labelText
             wrapMode: Text.WordWrap
+            color: MZTheme.colors.fontColorDark
 
             Layout.alignment: Qt.AlignLeft
         }

@@ -110,7 +110,6 @@ MZViewBase {
 
             text: MZI18n.InAppMessagingEmptyStateDescription
             visible: vpnFlickable.isEmptyState
-            color: MZTheme.colors.fontColor
         }
 
         ListView {
@@ -272,7 +271,6 @@ MZViewBase {
                                 text: swipeDelegate.formattedDate
                                 font.pixelSize: MZTheme.theme.fontSizeSmall
                                 lineHeight: 21
-                                color: MZTheme.colors.fontColor
                                 horizontalAlignment: Text.AlignRight
                             }
                         }
@@ -285,7 +283,6 @@ MZViewBase {
                             text: swipeDelegate.subtitle
                             font.pixelSize: MZTheme.theme.fontSizeSmall
                             lineHeight: 21
-                            color: MZTheme.colors.fontColor
                             horizontalAlignment: Text.AlignLeft
                             elide: Text.ElideRight
                             maximumLineCount: 1

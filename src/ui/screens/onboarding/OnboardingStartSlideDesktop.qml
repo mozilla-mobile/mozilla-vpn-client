@@ -44,7 +44,6 @@ ColumnLayout {
 
         text: MZI18n.OnboardingStartSlideBody2
         horizontalAlignment: Text.AlignLeft
-        color: MZTheme.colors.fontColor
     }
 
     RowLayout {

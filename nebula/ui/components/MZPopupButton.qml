@@ -42,7 +42,6 @@ MZButtonBase {
     contentItem: MZInterLabel {
         id: buttonText
 
-        color: style.colorScheme.fontColor
         font.family: isCancelBtn ? MZTheme.theme.fontInterFamily : MZTheme.theme.fontBoldFamily
         lineHeight: 15
         horizontalAlignment: Text.AlignHCenter

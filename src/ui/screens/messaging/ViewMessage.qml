@@ -93,60 +93,39 @@ MZViewBase {
                     badgeType: {
                         switch(message.badge) {
                         case MZAddonMessage.Warning:
-                            return badgeInfo.warningBadge
+                            return MZBadge.BadgeType.Warning
                         case MZAddonMessage.Critical:
-                            return badgeInfo.criticalBadge
+                            return MZBadge.BadgeType.Error
                         case MZAddonMessage.NewUpdate:
-                            return badgeInfo.newUpdateBadge
+                            return MZBadge.BadgeType.Success
                         case MZAddonMessage.WhatsNew:
-                            return badgeInfo.whatsNewBadge
+                            return MZBadge.BadgeType.Normal
                         case MZAddonMessage.Survey:
-                            return badgeInfo.surveyBadge
+                            return MZBadge.BadgeType.Normal
                         case MZAddonMessage.Subscription:
-                            return badgeInfo.subscriptionBadge
+                            return MZBadge.BadgeType.Normal
                         case MZAddonMessage.Extension:
-                            return badgeInfo.extensionBadge
+                            return MZBadge.BadgeType.Normal
                         }
                     }
 
-                    QtObject {
-                        id: badgeInfo
-
-                        property var warningBadge: {
-                            'badgeText': MZI18n.InAppMessagingWarningBadge,
-                            'badgeTextColor': MZTheme.colors.warningText,
-                            'badgeBackgroundColor': MZTheme.colors.warningBackground
-                        };
-                        property var criticalBadge: {
-                            'badgeText': MZI18n.InAppMessagingCriticalBadge,
-                            'badgeTextColor': MZTheme.colors.errorText,
-                            'badgeBackgroundColor': MZTheme.colors.errorBackground
-                        };
-                        property var newUpdateBadge: {
-                            'badgeText': MZI18n.InAppMessagingNewUpdateBadge,
-                            'badgeTextColor': MZTheme.colors.successText,
-                            'badgeBackgroundColor': MZTheme.colors.successBackground
-                        };
-                        property var whatsNewBadge: {
-                            'badgeText': MZI18n.InAppMessagingWhatsNewBadge,
-                            'badgeTextColor': MZTheme.colors.normalLevelText,
-                            'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
-                        };
-                        property var surveyBadge: {
-                            'badgeText': MZI18n.InAppMessagingSurveyBadge,
-                            'badgeTextColor': MZTheme.colors.normalLevelText,
-                            'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
-                        };
-                        property var subscriptionBadge: {
-                            'badgeText': MZI18n.InAppMessagingSubscriptionBadge,
-                            'badgeTextColor': MZTheme.colors.normalLevelText,
-                            'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
-                        };
-                        property var extensionBadge: {
-                            'badgeText': MZI18n.InAppMessagingExtensionBadge,
-                            'badgeTextColor': MZTheme.colors.normalLevelText,
-                            'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
-                        };
+                    text: {
+                        switch(message.badge) {
+                        case MZAddonMessage.Warning:
+                            return MZI18n.InAppMessagingWarningBadge
+                        case MZAddonMessage.Critical:
+                            return MZI18n.InAppMessagingCriticalBadge
+                        case MZAddonMessage.NewUpdate:
+                            return MZI18n.InAppMessagingNewUpdateBadge
+                        case MZAddonMessage.WhatsNew:
+                            return MZI18n.InAppMessagingWhatsNewBadge
+                        case MZAddonMessage.Survey:
+                            return MZI18n.InAppMessagingSurveyBadge
+                        case MZAddonMessage.Subscription:
+                            return MZI18n.InAppMessagingSubscriptionBadge
+                        case MZAddonMessage.Extension:
+                            return MZI18n.InAppMessagingExtensionBadge
+                        }
                     }
                 }
             }
@@ -158,7 +137,6 @@ MZViewBase {
                 Layout.alignment: Qt.AlignRight
 
                 text: message.formattedDate
-                color: MZTheme.colors.fontColor
                 font.pixelSize: MZTheme.theme.fontSizeSmall
                 lineHeight: 21
                 horizontalAlignment: Text.AlignRight
@@ -192,7 +170,6 @@ MZViewBase {
 
                 text: message.subtitle
                 font.pixelSize: MZTheme.theme.fontSizeSmall
-                color: MZTheme.colors.fontColor
                 horizontalAlignment: Text.AlignLeft
             }
 

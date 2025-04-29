@@ -138,38 +138,26 @@ MZViewBase {
 
           MZBadge {
               badgeLabel.width: badgeLabel.implicitWidth
-              badgeType: {
-                      'badgeText': "Error badge",
-                      'badgeTextColor': MZTheme.colors.errorText,
-                      'badgeBackgroundColor': MZTheme.colors.errorBackground
-                  };
+              text: "Error badge"
+              badgeType: MZBadge.BadgeType.Error
           }
 
           MZBadge {
               badgeLabel.width: badgeLabel.implicitWidth
-              badgeType: {
-                      'badgeText': "Warning badge",
-                      'badgeTextColor': MZTheme.colors.warningText,
-                      'badgeBackgroundColor': MZTheme.colors.warningBackground
-                  };
+              text: "Warning badge"
+              badgeType: MZBadge.BadgeType.Warning
           }
 
           MZBadge {
               badgeLabel.width: badgeLabel.implicitWidth
-              badgeType: {
-                      'badgeText': "Success badge",
-                      'badgeTextColor': MZTheme.colors.successText,
-                      'badgeBackgroundColor': MZTheme.colors.successBackground
-                  };
+              text: "Success badge"
+              badgeType: MZBadge.BadgeType.Success
           }
 
           MZBadge {
               badgeLabel.width: badgeLabel.implicitWidth
-              badgeType: {
-                      'badgeText': "Normal badge",
-                      'badgeTextColor': MZTheme.colors.normalLevelText,
-                      'badgeBackgroundColor': MZTheme.colors.normalLevelBackground
-                  };
+              text: "Normal badge"
+              badgeType: MZBadge.BadgeType.Normal
           }
 
           Rectangle {

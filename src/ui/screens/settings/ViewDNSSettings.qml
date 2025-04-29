@@ -171,6 +171,7 @@ MZViewBase {
                 MZInterLabel {
                     Layout.fillWidth: true
 
+                    color: MZTheme.colors.fontColorDark
                     text: MZI18n.SettingsDnsSettingsStandardDNSTitle
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignLeft
@@ -216,6 +217,7 @@ MZViewBase {
                 MZInterLabel {
                     Layout.fillWidth: true
 
+                    color: MZTheme.colors.fontColorDark
                     text: MZI18n.SettingsDnsSettingsCustomDNSTitle
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignLeft
