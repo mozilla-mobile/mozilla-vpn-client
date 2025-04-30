@@ -33,7 +33,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
             android:configChanges="orientation|uiMode|screenLayout|screenSize|smallestScreenSize|layoutDirection|locale|fontScale|keyboard|keyboardHidden|navigation|mcc|mnc|density"
             android:name="org.mozilla.firefox.vpn.qt.VPNActivity"
             android:label="Mozilla VPN"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.Splash"
             android:windowSoftInputMode="adjustPan"
             android:exported="true"
