@@ -59,12 +59,15 @@ if ! codesign -v --verbose=4 -R="${CODESIGN_REQS}" "$APP_DIR"; then
 fi
 echo "Codesign successful!"
 
+# Unload the daemon
 UPDATING=
-if [ -f "$DAEMON_PLIST_PATH" ]; then
+if launchctl bootout system/${CODESIGN_APP_IDENTIFIER}.daemon 2>/dev/null; then
+  echo "Update detected"
   UPDATING=1
-  # Load the daemon
-  echo "Update detected - Unloading the Daemon"
-  launchctl unload -w $DAEMON_PLIST_PATH
+fi
+if [ -f "$DAEMON_PLIST_PATH" ]; then
+  echo "Removing legacy daemon plist"
+  rm -f ${DAEMON_PLIST_PATH}
 fi
 
 # For legacy MacOS versions - a privileged helper tool is required to run
