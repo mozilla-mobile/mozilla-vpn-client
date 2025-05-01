@@ -33,6 +33,9 @@ class Logger {
     Log& operator<<(const QJsonObject& t);
     Log& operator<<(QTextStreamFunction t);
     Log& operator<<(const void* t);
+#ifdef Q_OS_APPLE
+    Log& operator<<(const NSString* t);
+#endif
 
     // Q_ENUM
     template <typename T>
