@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "logger.h"
 #include "macosutils.h"
+#include "xpcdaemonprotocol.h"
 
 #import <Cocoa/Cocoa.h>
 #import <ServiceManagement/ServiceManagement.h>
