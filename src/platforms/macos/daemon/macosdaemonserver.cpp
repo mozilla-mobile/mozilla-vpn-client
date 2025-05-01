@@ -21,6 +21,7 @@
 #include "macosdaemon.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
+#include "xpcdaemonserver.h"
 
 namespace {
 Logger logger("MacOSDaemonServer");
@@ -75,6 +76,9 @@ int MacOSDaemonServer::run(QStringList& tokens) {
     logger.error() << "Failed to initialize the server";
     return 1;
   }
+
+  // Create an XPC service too.
+  new XpcDaemonServer(&daemon);
 
   // Signal handling for a proper shutdown.
   SignalHandler sh;
