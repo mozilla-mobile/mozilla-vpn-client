@@ -55,6 +55,16 @@ Daemon* Daemon::instance() {
   return s_daemon;
 }
 
+bool Daemon::activate(const QString& json) {
+  QJsonDocument jsDocument = QJsonDocument::fromJson(json.toUtf8());
+  InterfaceConfig ifConfig;
+
+  if (!Daemon::parseConfig(jsDocument.object(), ifConfig)) {
+    return false;
+  }
+  return activate(ifConfig);
+}
+
 bool Daemon::activate(const InterfaceConfig& config) {
   Q_ASSERT(wgutils() != nullptr);
 

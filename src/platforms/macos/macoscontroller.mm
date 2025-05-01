@@ -5,6 +5,8 @@
 #include "macoscontroller.h"
 
 #include <QFile>
+#include <QJsonDocument>
+#include <QJsonObject>
 
 #include "constants.h"
 #include "logger.h"
@@ -20,12 +22,39 @@ Logger logger("MacOSController");
 
 constexpr const int SERVICE_REG_POLL_INTERVAL_MSEC = 1000;
 
+// A delegate object used to receive async events from the daemon.
+@interface XpcClientDelegate : NSObject<XpcClientProtocol>
+@property ControllerImpl* parent;
+- (id)initWithObject:(ControllerImpl*)controller;
+@end
+
 MacOSController::MacOSController() :
    LocalSocketController(Constants::MACOS_DAEMON_PATH) {
 
   m_regTimer.setSingleShot(true);
   connect(&m_regTimer, &QTimer::timeout, this,
           &MacOSController::registerService);
+
+  // Create an XPC connection
+  QString daemonId = MacOSUtils::appId() + ".daemon";
+  XpcClientDelegate* delegate = [XpcClientDelegate alloc];
+  NSXPCConnection* conn = [NSXPCConnection alloc];
+  [conn initWithMachServiceName:daemonId.toNSString()
+                        options:NSXPCConnectionPrivileged];
+  conn.exportedObject = [delegate initWithObject:this];
+  conn.exportedInterface =
+      [NSXPCInterface interfaceWithProtocol:@protocol(XpcClientProtocol)];
+  conn.remoteObjectInterface =
+      [NSXPCInterface interfaceWithProtocol:@protocol(XpcDaemonProtocol)];
+
+  // Activate the connection and retain it as a member of this object.
+  [conn activate];
+  [conn retain];
+  m_connection = conn;
+}
+
+MacOSController::~MacOSController() {
+  [static_cast<NSXPCConnection*>(m_connection) release];
 }
 
 NSString* MacOSController::plist() const {
@@ -120,6 +149,19 @@ void MacOSController::registerService(void) {
   }
 }
 
+void MacOSController::activate(const InterfaceConfig& config,
+                               Controller::Reason reason) {
+  QString json = QString::fromUtf8(QJsonDocument(config.toJson()).toJson());
+  auto conn = static_cast<NSXPCConnection*>(m_connection);
+  NSObject<XpcDaemonProtocol>* obj = [conn remoteObjectProxy];
+  [obj activate:json.toNSString()];
+}
+
+void MacOSController::deactivate(Controller::Reason reason) {
+  auto conn = static_cast<NSXPCConnection*>(m_connection);
+  [[conn remoteObjectProxy] deactivate];
+}
+
 void MacOSController::getBackendLogs(QIODevice* device) {
   // If the daemon is connected - use the LocalSocketController to fetch logs.
   if (m_daemonState == eReady) {
@@ -136,3 +178,21 @@ void MacOSController::getBackendLogs(QIODevice* device) {
   device->write(logData);
   device->close();
 }
+
+// A delegate object used to receive async events from the daemon.
+@implementation XpcClientDelegate
+- (id)initWithObject:(ControllerImpl*)controller {
+  self = [super init];
+  self.parent = controller;
+  return self;
+}
+
+- (void)connected:(NSString*)pubkey {
+  logger.debug() << "connected:" << pubkey;
+}
+
+- (void)disconnected {
+  logger.debug() << "disconnected";
+}
+
+@end

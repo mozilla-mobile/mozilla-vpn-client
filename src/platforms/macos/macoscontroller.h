@@ -13,8 +13,14 @@ class MacOSController final : public LocalSocketController {
 
  public:
   MacOSController();
+  ~MacOSController();
 
   void initialize(const Device* device, const Keys* keys) override;
+
+  void activate(const InterfaceConfig& config,
+                Controller::Reason reason) override;
+
+  void deactivate(Controller::Reason reason) override;;
 
   void getBackendLogs(QIODevice* device) override;
 
@@ -26,6 +32,9 @@ class MacOSController final : public LocalSocketController {
 
   bool m_permissionRequired = false;
   QTimer m_regTimer;
+
+  // NSXPCConnection to the daemon.
+  void* m_connection = nullptr;
 };
 
 #endif  // MACOSCONTROLLER_H
