@@ -4,6 +4,9 @@
 
 #include "xpcdaemonserver.h"
 
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/macos/macosutils.h"
@@ -14,6 +17,9 @@ Logger logger("XpcDaemonServer");
 }  // namespace
 
 @interface XpcDaemonDelegate : NSObject<NSXPCListenerDelegate, XpcDaemonProtocol>
+@property Daemon* daemon;
+- (id)initWithObject:(Daemon*)controller;
+
 - (BOOL)         listener:(NSXPCListener *) listener
 shouldAcceptNewConnection:(NSXPCConnection *) newConnection;
 
@@ -28,11 +34,11 @@ XpcDaemonServer::XpcDaemonServer(Daemon* daemon) : QObject(daemon) {
   QString daemonId = MacOSUtils::appId() + ".daemon";
   logger.debug() << "XpcDaemonServer created:" << daemonId;
 
-  XpcDaemonDelegate* delegate = [XpcDaemonDelegate new];
+  XpcDaemonDelegate* delegate = [XpcDaemonDelegate alloc];
 
   NSXPCListener* listener =
       [[NSXPCListener alloc] initWithMachServiceName:daemonId.toNSString()];
-  listener.delegate = delegate;
+  listener.delegate = [delegate initWithObject:daemon];
   [listener retain];
   [listener resume];
 
@@ -47,22 +53,30 @@ XpcDaemonServer::~XpcDaemonServer() {
 }
 
 @implementation XpcDaemonDelegate
+- (id)initWithObject:(Daemon*)daemon {
+  self = [super init];
+  self.daemon = daemon;
+  return self;
+}
+
 - (BOOL)         listener:(NSXPCListener *) listener
 shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
   logger.debug() << "XpcDaemonServer new connection";
   newConnection.exportedObject = listener.delegate;
   newConnection.exportedInterface =
       [NSXPCInterface interfaceWithProtocol:@protocol(XpcDaemonProtocol)];
+  newConnection.remoteObjectInterface =
+      [NSXPCInterface interfaceWithProtocol:@protocol(XpcClientProtocol)];
   [newConnection resume];
   return true;
 }
 
 - (void)activate:(NSString*) config {
-  logger.debug() << "activate";
+  QMetaObject::invokeMethod(self.daemon, "activate", QString::fromNSString(config));
 }
 
 - (void)deactivate {
-  logger.debug() << "deactivate";
+  QMetaObject::invokeMethod(self.daemon, "deactivate");
 }
 
 @end
