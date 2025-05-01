@@ -9,6 +9,7 @@
 #include "constants.h"
 #include "logger.h"
 #include "macosutils.h"
+#include "xpcdaemonprotocol.h"
 
 #import <Cocoa/Cocoa.h>
 #import <ServiceManagement/ServiceManagement.h>
@@ -30,9 +31,7 @@ MacOSController::MacOSController() :
 }
 
 QString MacOSController::plistName() const {
-  NSString* appId = MacOSUtils::appId();
-  Q_ASSERT(appId);
-  return QString("%1.daemon.plist").arg(QString::fromNSString(appId));
+  return MacOSUtils::appId() + ".daemon.plist";
 }
 
 void MacOSController::initialize(const Device* device, const Keys* keys) {
