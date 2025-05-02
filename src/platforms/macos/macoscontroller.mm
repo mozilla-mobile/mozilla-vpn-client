@@ -147,6 +147,11 @@ void MacOSController::deactivate(Controller::Reason reason) {
   [[conn remoteObjectProxy] deactivate];
 }
 
+void MacOSController::checkStatus() {
+  auto conn = static_cast<NSXPCConnection*>(m_connection);
+  [[conn remoteObjectProxy] getStatus];
+}
+
 void MacOSController::getBackendLogs(
     std::function<void(const QString&)>&& callback) {
   // If the daemon is connected - use the LocalSocketController to fetch logs.
@@ -173,11 +178,25 @@ void MacOSController::getBackendLogs(
 }
 
 - (void)connected:(NSString*)pubkey {
-  logger.debug() << "connected:" << pubkey;
+  //QMetaObject::invokeMethod(self.parent, "connected",
+  //                          Q_ARG(QString, QString::fromNSString(pubkey)));
 }
 
 - (void)disconnected {
-  logger.debug() << "disconnected";
+  //QMetaObject::invokeMethod(self.parent, "disconnected");
+}
+
+- (void)status:(NSString*)status {
+  QByteArray jsBlob = QString::fromNSString(status).toUtf8();
+  QJsonObject obj = QJsonDocument::fromJson(jsBlob).object();
+
+  QString serverIpv4Gateway = obj.value("serverIpv4Gateway").toString();
+  QString deviceIpv4Address = obj.value("deviceIpv4Address").toString();
+  QMetaObject::invokeMethod(self.parent, "statusUpdated",
+                            Q_ARG(QString, serverIpv4Gateway),
+                            Q_ARG(QString, deviceIpv4Address),
+                            Q_ARG(quint64, obj.value("txBytes").toInteger()),
+                            Q_ARG(quint64, obj.value("rxBytes").toInteger()));
 }
 
 @end

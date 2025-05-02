@@ -102,6 +102,14 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
   QMetaObject::invokeMethod(self.daemon, "deactivate");
 }
 
+- (void)getStatus {
+  QMetaObject::invokeMethod(self.daemon, [self]{
+    QJsonObject obj = self.daemon->getStatus();
+    QString js = QString(QJsonDocument(obj).toJson());
+    self.bridge->invokeClient(@selector(status:), js);
+  });
+}
+
 @end
 
 XpcDaemonSession::XpcDaemonSession(Daemon* daemon, void* connection)
@@ -116,27 +124,40 @@ XpcDaemonSession::XpcDaemonSession(Daemon* daemon, void* connection)
   setParent(daemon);
 }
 
-void XpcDaemonSession::connected(const QString& pubkey) {
+// It's not entirely clear if the ObjC runtime will handle thread-safety when
+// invoking methods on the remoteObjectProxy for us. So this wrapper will take
+// a method to be invoked (with an optional argument) and schedule it for
+// execution on the XPC thread with scheduleSendBarrierBlock.
+//
+// This also counts the number of method calls waiting on the connection to
+// detect if the client has stopped processing messages, in which case we might
+// need to abandon the connection in order to prevent memory leaks.
+void XpcDaemonSession::invokeClient(SEL selector, const QString& arg) {
   NSXPCConnection* conn = static_cast<NSXPCConnection*>(m_connection);
   if (m_backlog.fetchAndAddOrdered(1) > 32) {
     [conn invalidate];
-  } else {
-    NSString* nsPubKey = pubkey.toNSString();
+    return;
+  }
+
+  if (arg.isNull()) {
     [conn scheduleSendBarrierBlock:^{
-      [[conn remoteObjectProxy] connected:nsPubKey];
+      [[conn remoteObjectProxy] performSelector: selector];
+      m_backlog.fetchAndSubOrdered(1);
+    }];
+  } else {
+    NSString* nsArg = arg.toNSString();
+    [conn scheduleSendBarrierBlock:^{
+      [[conn remoteObjectProxy] performSelector: selector
+                                     withObject: nsArg];
       m_backlog.fetchAndSubOrdered(1);
     }];
   }
 }
 
+void XpcDaemonSession::connected(const QString& pubkey) {
+  invokeClient(@selector(connected:), pubkey);
+}
+
 void XpcDaemonSession::disconnected() {
-  NSXPCConnection* conn = static_cast<NSXPCConnection*>(m_connection);
-  if (m_backlog.fetchAndAddOrdered(1) > 32) {
-    [conn invalidate];
-  } else {
-    [conn scheduleSendBarrierBlock:^{
-      [[conn remoteObjectProxy] disconnected];
-      m_backlog.fetchAndSubOrdered(1);
-    }];
-  }
+  invokeClient(@selector(disconnected));
 }

@@ -8,6 +8,8 @@
 #include <QObject>
 #include <QAtomicInt>
 
+#include <objc/objc-runtime.h>
+
 #include "daemon/daemon.h"
 
 class XpcDaemonServer final : public QObject {
@@ -27,6 +29,8 @@ class XpcDaemonSession final : public QObject {
 
  public:
   XpcDaemonSession(Daemon* daemon, void* connection);
+
+  void invokeClient(SEL selector, const QString& arg = QString());
 
  public slots:
   void connected(const QString& pubkey);

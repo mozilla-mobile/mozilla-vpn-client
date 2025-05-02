@@ -10,11 +10,13 @@
 @protocol XpcDaemonProtocol
 - (void) activate: (NSString*)config;
 - (void) deactivate;
+- (void) getStatus;
 @end
 
 @protocol XpcClientProtocol
 - (void) connected: (NSString*)pubkey;
 - (void) disconnected;
+- (void) status: (NSString*)status;
 @end
 
 #endif  // XPCDAEMONPROTOCOL_H
