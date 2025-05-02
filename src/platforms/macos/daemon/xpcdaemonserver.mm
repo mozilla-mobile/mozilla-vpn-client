@@ -16,14 +16,17 @@ namespace {
 Logger logger("XpcDaemonServer");
 }  // namespace
 
-@interface XpcDaemonDelegate : NSObject<NSXPCListenerDelegate, XpcDaemonProtocol>
-
+@interface XpcDaemonDelegate : NSObject<NSXPCListenerDelegate>
 @property Daemon* daemon;
 - (id)initWithObject:(Daemon*)daemon;
+@end
 
-- (void) activate:(NSString*) config;
-- (void) deactivate;
+@interface XpcSessionDelegate : NSObject<XpcDaemonProtocol>
+@property Daemon* daemon;
+@property XpcDaemonSession* bridge;
 
+- (id)initWithObject:(Daemon*)daemon
+       andConnection:(NSXPCConnection*)conn;
 @end
 
 XpcDaemonServer::XpcDaemonServer(Daemon* daemon) : QObject(daemon) {
@@ -61,21 +64,34 @@ XpcDaemonServer::~XpcDaemonServer() {
 shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
   logger.debug() << "new connection";
 
-  newConnection.exportedObject = listener.delegate;
+  XpcSessionDelegate* delegate = [XpcSessionDelegate alloc];
+  newConnection.exportedObject = [delegate initWithObject:self.daemon
+                                            andConnection:newConnection];
   newConnection.exportedInterface =
       [NSXPCInterface interfaceWithProtocol:@protocol(XpcDaemonProtocol)];
   newConnection.remoteObjectInterface =
       [NSXPCInterface interfaceWithProtocol:@protocol(XpcClientProtocol)];
-
-  // Create a connection bridge for the reverse direction.
-  auto bridge = new XpcSessionBridge(self.daemon, newConnection);
   newConnection.invalidationHandler = ^{
     logger.debug() << "closed connection";
-    bridge->deleteLater();
   };
 
   [newConnection resume];
   return true;
+}
+@end
+
+@implementation XpcSessionDelegate
+- (id)initWithObject:(Daemon*)daemon
+       andConnection:(NSXPCConnection*)conn {
+  self = [super init];
+  self.daemon = daemon;
+  self.bridge = new XpcDaemonSession(daemon, conn);
+  return self;
+}
+
+- (void)dealloc {
+  self.bridge->deleteLater();
+  [super dealloc];
 }
 
 - (void)activate:(NSString*) config {
@@ -88,10 +104,10 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
 
 @end
 
-XpcSessionBridge::XpcSessionBridge(Daemon* daemon, void* connection)
+XpcDaemonSession::XpcDaemonSession(Daemon* daemon, void* connection)
     : QObject(nullptr), m_connection(connection) {
-  connect(daemon, &Daemon::connected, this, &XpcSessionBridge::connected);
-  connect(daemon, &Daemon::disconnected, this, &XpcSessionBridge::disconnected);
+  connect(daemon, &Daemon::connected, this, &XpcDaemonSession::connected);
+  connect(daemon, &Daemon::disconnected, this, &XpcDaemonSession::disconnected);
 
   // Move this object to the same thread as the daemon, and make it our parent.
   // The XPC connection runs in its own thread, so it lacks a Qt event loop to
@@ -100,12 +116,27 @@ XpcSessionBridge::XpcSessionBridge(Daemon* daemon, void* connection)
   setParent(daemon);
 }
 
-void XpcSessionBridge::connected(const QString& pubkey) {
+void XpcDaemonSession::connected(const QString& pubkey) {
   NSXPCConnection* conn = static_cast<NSXPCConnection*>(m_connection);
-  [[conn remoteObjectProxy] connected:pubkey.toNSString()];
+  if (m_backlog.fetchAndAddOrdered(1) > 32) {
+    [conn invalidate];
+  } else {
+    NSString* nsPubKey = pubkey.toNSString();
+    [conn scheduleSendBarrierBlock:^{
+      [[conn remoteObjectProxy] connected:nsPubKey];
+      m_backlog.fetchAndSubOrdered(1);
+    }];
+  }
 }
 
-void XpcSessionBridge::disconnected() {
+void XpcDaemonSession::disconnected() {
   NSXPCConnection* conn = static_cast<NSXPCConnection*>(m_connection);
-  [[conn remoteObjectProxy] disconnected];
+  if (m_backlog.fetchAndAddOrdered(1) > 32) {
+    [conn invalidate];
+  } else {
+    [conn scheduleSendBarrierBlock:^{
+      [[conn remoteObjectProxy] disconnected];
+      m_backlog.fetchAndSubOrdered(1);
+    }];
+  }
 }

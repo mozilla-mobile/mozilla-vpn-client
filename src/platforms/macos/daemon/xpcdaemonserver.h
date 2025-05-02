@@ -6,6 +6,7 @@
 #define XPCDAEMONSERVER_H
 
 #include <QObject>
+#include <QAtomicInt>
 
 #include "daemon/daemon.h"
 
@@ -21,17 +22,18 @@ class XpcDaemonServer final : public QObject {
 };
 
 // And a little helper to manage async responses.
-class XpcSessionBridge final : public QObject {
+class XpcDaemonSession final : public QObject {
   Q_OBJECT
 
  public:
-  XpcSessionBridge(Daemon* daemon, void* connection);
+  XpcDaemonSession(Daemon* daemon, void* connection);
 
  public slots:
   void connected(const QString& pubkey);
   void disconnected();
 
  private:
+  QAtomicInt m_backlog;
   void* m_connection = nullptr;
 };
 
