@@ -10,6 +10,7 @@
 @protocol XpcDaemonProtocol
 - (void) activate: (NSString*)config;
 - (void) deactivate;
+- (void) getStatus:(void (^)(NSString*))reply;
 @end
 
 @protocol XpcClientProtocol

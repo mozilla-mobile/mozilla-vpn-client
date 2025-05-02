@@ -162,6 +162,14 @@ void MacOSController::deactivate(Controller::Reason reason) {
   [[conn remoteObjectProxy] deactivate];
 }
 
+void MacOSController::checkStatus() {
+  [remoteObject() getStatus:^(NSString* status){
+    QByteArray jsBlob = QString::fromNSString(status).toUtf8();
+    QJsonObject obj = QJsonDocument::fromJson(jsBlob).object();
+    emitStatusFromJson(obj);
+  }];
+}
+
 void MacOSController::getBackendLogs(QIODevice* device) {
   // If the daemon is connected - use the LocalSocketController to fetch logs.
   if (m_daemonState == eReady) {
