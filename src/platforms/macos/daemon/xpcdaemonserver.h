@@ -5,6 +5,9 @@
 #ifndef XPCDAEMONSERVER_H
 #define XPCDAEMONSERVER_H
 
+#include <objc/objc-runtime.h>
+
+#include <QAtomicInt>
 #include <QObject>
 
 #include "daemon/daemon.h"
@@ -17,8 +20,26 @@ class XpcDaemonServer final : public QObject {
   ~XpcDaemonServer();
 
  private:
-  QThread* m_thread = nullptr;
   void* m_listener = nullptr;
+};
+
+// And a little helper to manage async responses.
+class XpcDaemonSession final : public QObject {
+  Q_OBJECT
+
+ public:
+  XpcDaemonSession(Daemon* daemon, void* connection);
+
+ public slots:
+  void connected(const QString& pubkey);
+  void disconnected();
+
+ private:
+  void invokeClient(SEL selector);
+  template<typename T> void invokeClient(SEL selector, T arg);
+
+  QAtomicInt m_backlog;
+  void* m_connection = nullptr;
 };
 
 #endif  // XPCDAEMONSERVER_H
