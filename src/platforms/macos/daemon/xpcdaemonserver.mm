@@ -98,6 +98,21 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
   QMetaObject::invokeMethod(self.daemon, "deactivate");
 }
 
+- (void)getStatus:(void (^)(NSString *))reply {
+  NSString* result = nullptr;
+  NSCondition* cond = [NSCondition new];
+
+  [cond lock];
+  QMetaObject::invokeMethod(self.daemon, [&]{
+    QByteArray jsBlob = QJsonDocument(self.daemon->getStatus()).toJson();
+    result = [NSString stringWithUTF8String:jsBlob.constData()];
+    [cond signal];
+  });
+
+  [cond wait];
+  reply(result);
+}
+
 @end
 
 XpcDaemonSession::XpcDaemonSession(Daemon* daemon, void* connection)

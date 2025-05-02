@@ -22,6 +22,8 @@ class MacOSController final : public LocalSocketController {
 
   void deactivate(Controller::Reason reason) override;;
 
+  void checkStatus() override;
+
   void getBackendLogs(QIODevice* device) override;
 
  private slots:
