@@ -494,11 +494,3 @@ void NetworkManagerController::checkStatus() {
   logger.info() << "Status:" << deviceAddress << txBytes << rxBytes;
   emit statusUpdated(m_serverIpv4Gateway, deviceAddress, txBytes, rxBytes);
 }
-
-void NetworkManagerController::getBackendLogs(
-    std::function<void(const QString&)>&& a_callback) {
-  std::function<void(const QString&)> callback = std::move(a_callback);
-  callback("Backend logs are not supported with NetworkManger");
-}
-
-void NetworkManagerController::cleanupBackendLogs() {}

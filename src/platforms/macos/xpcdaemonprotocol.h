@@ -11,6 +11,7 @@
 - (void) activate: (NSString*)config;
 - (void) deactivate;
 - (void) getStatus;
+- (void) getBackendLogs: (void (^)(NSString *))reply;
 @end
 
 @protocol XpcClientProtocol

@@ -152,21 +152,25 @@ void MacOSController::checkStatus() {
   [[conn remoteObjectProxy] getStatus];
 }
 
-void MacOSController::getBackendLogs(
-    std::function<void(const QString&)>&& callback) {
-  // If the daemon is connected - use the LocalSocketController to fetch logs.
-  if (m_daemonState == eReady) {
-    LocalSocketController::getBackendLogs(std::move(callback));
-    return;
-  }
+void MacOSController::getBackendLogs(QObject* receiver, const char* method) {
+  logger.debug() << "Fetching logs";
+  auto conn = static_cast<NSXPCConnection*>(m_connection);
+  NSObject<XpcDaemonProtocol>* remote =
+      [conn remoteObjectProxyWithErrorHandler:^(NSError*error){
+    // Otherwise, try our best to scrape the logs directly off disk.
+    QString logData = "Failed to open backend logs";
+    QFile logfile("/var/log/mozillavpn/mozillavpn.log");
+    if (logfile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
+      logData = logfile.readAll();
+    }
+    QMetaObject::invokeMethod(receiver, method, logData);
+  }];
 
-  // Otherwise, try our best to scrape the logs directly off disk.
-  QFile logfile("/var/log/mozillavpn/mozillavpn.log");
-  if (!logfile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
-    callback(QString("Failed to open backend logs"));
-  } else {
-    callback(logfile.readAll());
-  }
+  [remote getBackendLogs:^(NSString* logs){
+    logger.debug() << "Got logs, length:" << logs.length;
+    QMetaObject::invokeMethod(receiver, method,
+                              Q_ARG(QString, QString::fromNSString(logs)));
+  }];
 }
 
 // A delegate object used to receive async events from the daemon.

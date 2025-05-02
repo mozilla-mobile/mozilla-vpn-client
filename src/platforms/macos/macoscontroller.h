@@ -26,6 +26,8 @@ class MacOSController final : public LocalSocketController {
 
   virtual void checkStatus() override;
 
+  virtual void getBackendLogs(QObject* receiver, const char* method) override;
+
  private slots:
   void checkServiceEnabled();
 

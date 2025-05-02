@@ -29,7 +29,7 @@ class LocalSocketController : public ControllerImpl {
 
   void checkStatus() override;
 
-  void getBackendLogs(std::function<void(const QString&)>&& callback) override;
+  void getBackendLogs(QObject* receiver, const char* method) override;
 
   void cleanupBackendLogs() override;
 
@@ -80,7 +80,8 @@ class LocalSocketController : public ControllerImpl {
 
   QByteArray m_buffer;
 
-  std::function<void(const QString&)> m_logCallback = nullptr;
+  QObject* m_logReceiver = nullptr;
+  const char* m_logMethod = nullptr;
 
   QTimer m_initializingTimer;
   uint32_t m_initializingInterval = 0;

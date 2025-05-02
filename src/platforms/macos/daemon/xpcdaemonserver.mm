@@ -110,6 +110,12 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
   });
 }
 
+- (void) getBackendLogs: (void (^)(NSString *))reply {
+  QMetaObject::invokeMethod(self.daemon, [&](){
+    reply(self.daemon->logs().toNSString());
+  });
+}
+
 @end
 
 XpcDaemonSession::XpcDaemonSession(Daemon* daemon, void* connection)

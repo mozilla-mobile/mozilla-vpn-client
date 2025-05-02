@@ -138,6 +138,7 @@ class Controller : public QObject, public LogSerializer {
   void implInitialized(bool status, bool connected,
                        const QDateTime& connectionDate);
   void implPermRequired();
+  void handleBackendLogs(const QString& logs);
 
  signals:
   void stateChanged();
@@ -259,6 +260,8 @@ class Controller : public QObject, public LogSerializer {
                            uint64_t rxBytes)>>
       m_getStatusCallbacks;
 
+  // Log Callbacks - for now.
+  std::function<void(const QString& name, const QString&)> m_logCallback;
 };  // namespace Controller
 
 #endif  // CONTROLLER_H

@@ -172,14 +172,21 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
   emitStatusFromJson(obj);
 }
 
-void LinuxController::getBackendLogs(
-    std::function<void(const QString&)>&& a_callback) {
-  std::function<void(const QString&)> callback = std::move(a_callback);
-
+void LinuxController::getBackendLogs(QObject* receiver, const char* method) {
   QDBusPendingCallWatcher* watcher = m_dbus->getLogs();
-  connect(watcher, &QDBusPendingCallWatcher::finished,
-          new BackendLogsObserver(this, std::move(callback)),
-          &BackendLogsObserver::completed);
+  connect(watcher, &QDBusPendingCallWatcher::finished, receiver,
+          [receiver, method](QDBusPendingCallWatcher* watcher){
+            QDBusPendingReply<QString> reply = *watcher;
+            QString status;
+            if (reply.isError()) {
+              logger.error() << "Error received from the DBus service";
+              status = "Failed to retrieve logs from the linuxdaemon.";
+            } else {
+              status = reply.argumentAt<0>();
+            }
+            QMetaObject::invokeMethod(receiver, method, Q_ARG(QString, status));
+            watcher->deleteLater();
+          });
 }
 
 void LinuxController::cleanupBackendLogs() { m_dbus->cleanupLogs(); }

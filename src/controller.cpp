@@ -832,13 +832,19 @@ void Controller::serializeLogs(
       std::move(a_callback);
 
   if (!m_impl) {
-    callback("Mozilla VPN backend logs", QString());
+    a_callback("Mozilla VPN backend logs", QString());
     return;
   }
 
-  m_impl->getBackendLogs([callback](const QString& logs) {
-    callback("Mozilla VPN backend logs", logs);
-  });
+  m_logCallback = std::move(a_callback);
+  m_impl->getBackendLogs(this, "handleBackendLogs");
+}
+
+void Controller::handleBackendLogs(const QString& logs) {
+  if (m_logCallback) {
+    m_logCallback("Mozilla VPN backend logs", logs);
+    m_logCallback = nullptr;
+  }
 }
 
 void Controller::cleanupBackendLogs() {
