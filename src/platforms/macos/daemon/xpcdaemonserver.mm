@@ -17,11 +17,9 @@ Logger logger("XpcDaemonServer");
 }  // namespace
 
 @interface XpcDaemonDelegate : NSObject<NSXPCListenerDelegate, XpcDaemonProtocol>
-@property Daemon* daemon;
-- (id)initWithObject:(Daemon*)controller;
 
-- (BOOL)         listener:(NSXPCListener *) listener
-shouldAcceptNewConnection:(NSXPCConnection *) newConnection;
+@property Daemon* daemon;
+- (id)initWithObject:(Daemon*)daemon;
 
 - (void) activate:(NSString*) config;
 - (void) deactivate;
@@ -61,12 +59,21 @@ XpcDaemonServer::~XpcDaemonServer() {
 
 - (BOOL)         listener:(NSXPCListener *) listener
 shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
-  logger.debug() << "XpcDaemonServer new connection";
+  logger.debug() << "new connection";
+
   newConnection.exportedObject = listener.delegate;
   newConnection.exportedInterface =
       [NSXPCInterface interfaceWithProtocol:@protocol(XpcDaemonProtocol)];
   newConnection.remoteObjectInterface =
       [NSXPCInterface interfaceWithProtocol:@protocol(XpcClientProtocol)];
+
+  // Create a connection bridge for the reverse direction.
+  auto bridge = new XpcSessionBridge(self.daemon, newConnection);
+  newConnection.invalidationHandler = ^{
+    logger.debug() << "closed connection";
+    bridge->deleteLater();
+  };
+
   [newConnection resume];
   return true;
 }
@@ -80,3 +87,25 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
 }
 
 @end
+
+XpcSessionBridge::XpcSessionBridge(Daemon* daemon, void* connection)
+    : QObject(nullptr), m_connection(connection) {
+  connect(daemon, &Daemon::connected, this, &XpcSessionBridge::connected);
+  connect(daemon, &Daemon::disconnected, this, &XpcSessionBridge::disconnected);
+
+  // Move this object to the same thread as the daemon, and make it our parent.
+  // The XPC connection runs in its own thread, so it lacks a Qt event loop to
+  // process signals.
+  moveToThread(daemon->thread());
+  setParent(daemon);
+}
+
+void XpcSessionBridge::connected(const QString& pubkey) {
+  NSXPCConnection* conn = static_cast<NSXPCConnection*>(m_connection);
+  [[conn remoteObjectProxy] connected:pubkey.toNSString()];
+}
+
+void XpcSessionBridge::disconnected() {
+  NSXPCConnection* conn = static_cast<NSXPCConnection*>(m_connection);
+  [[conn remoteObjectProxy] disconnected];
+}

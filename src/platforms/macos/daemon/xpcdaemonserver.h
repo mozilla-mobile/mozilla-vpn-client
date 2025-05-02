@@ -17,8 +17,22 @@ class XpcDaemonServer final : public QObject {
   ~XpcDaemonServer();
 
  private:
-  QThread* m_thread = nullptr;
   void* m_listener = nullptr;
+};
+
+// And a little helper to manage async responses.
+class XpcSessionBridge final : public QObject {
+  Q_OBJECT
+
+ public:
+  XpcSessionBridge(Daemon* daemon, void* connection);
+
+ public slots:
+  void connected(const QString& pubkey);
+  void disconnected();
+
+ private:
+  void* m_connection = nullptr;
 };
 
 #endif  // XPCDAEMONSERVER_H
