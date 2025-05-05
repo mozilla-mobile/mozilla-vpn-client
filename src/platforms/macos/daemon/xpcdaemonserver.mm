@@ -37,14 +37,34 @@ XpcDaemonServer::XpcDaemonServer(Daemon* daemon) : QObject(daemon) {
   QString daemonId = MacOSUtils::appId() + ".daemon";
   logger.debug() << "XpcDaemonServer created:" << daemonId;
 
-  XpcDaemonDelegate* delegate = [XpcDaemonDelegate alloc];
-
   NSXPCListener* listener =
       [[NSXPCListener alloc] initWithMachServiceName:daemonId.toNSString()];
-  listener.delegate = [delegate initWithObject:daemon];
+  listener.delegate = [[XpcDaemonDelegate alloc] initWithObject:daemon];
+
+  // Connections to the daemon require codesigning
+  // TODO: It would be nice if we could turn this off for developers somehow.
+  if (@available(macOS 13, *)) {
+    constexpr const char* oidExtAppleCodesign =
+        "(certificate leaf[field.1.2.840.113635.100.6.1.13] or" \
+        " certificate leaf[field.1.2.840.113635.100.6.1.12])";
+    constexpr const char* oidExtAppleCaIntermediate =
+        "(certificate 1[field.1.2.840.113635.100.6.2.6] or" \
+        " certificate 1[field.1.2.840.113635.100.6.2.1])";
+    QString devTeamIdentifier = getTeamIdentifier();
+    QString devTeamSubject =
+        QString("certificate leaf[subject.OU] = \"%1\"").arg(devTeamIdentifier);
+
+    QStringList xpcCodesignList;
+    xpcCodesignList.append("anchor apple generic");
+    xpcCodesignList.append(devTeamSubject);
+    xpcCodesignList.append(oidExtAppleCodesign);
+    xpcCodesignList.append(oidExtAppleCaIntermediate);
+    QString xpcCodesignReq = xpcCodesignList.join(" and ");
+    [listener setConnectionCodeSigningRequirement:xpcCodesignReq.toNSString()];
+  }
+
   [listener retain];
   [listener resume];
-
   m_listener = listener;
 }
 
@@ -53,6 +73,31 @@ XpcDaemonServer::~XpcDaemonServer() {
   NSXPCListener* listener = static_cast<NSXPCListener*>(m_listener);
   logger.debug() << "XpcDaemonServer destroyed.";
   [listener release];
+}
+
+QString XpcDaemonServer::getTeamIdentifier() {
+  SecTaskRef task = SecTaskCreateFromSelf(kCFAllocatorSystemDefault);
+  if (!task) {
+    return QString();
+  }
+
+  CFErrorRef error = nullptr;
+  CFStringRef cfTeamId = CFSTR("com.apple.developer.team-identifier");
+  CFTypeRef result = SecTaskCopyValueForEntitlement(task, cfTeamId, &error);
+  if (error != nullptr) {
+    logger.warning() << "Failed to determine team identifier";
+    CFRelease(error);
+    return nil;
+  }
+  auto guard = qScopeGuard([&]() {
+    CFRelease(task);
+    CFRelease(result);
+  });
+
+  if (CFGetTypeID(result) == CFStringGetTypeID()) {
+    return QString::fromNSString(static_cast<NSString*>(result));
+  }
+  return QString();
 }
 
 @implementation XpcDaemonDelegate
