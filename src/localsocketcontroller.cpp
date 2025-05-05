@@ -119,9 +119,7 @@ void LocalSocketController::initializeInternal() {
 void LocalSocketController::daemonConnected() {
   logger.debug() << "Daemon connected";
   Q_ASSERT(m_daemonState == eInitializing);
-
-  // HACK: Temporary hack until MacOSController can become its own class.
-  LocalSocketController::checkStatus();
+  checkStatus();
 }
 
 void LocalSocketController::activate(const InterfaceConfig& config,
