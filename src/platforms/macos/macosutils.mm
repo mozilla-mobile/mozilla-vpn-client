@@ -22,7 +22,7 @@ Q_GLOBAL_STATIC(MacOSUtils, macosUtils);
 MacOSUtils* MacOSUtils::instance() { return macosUtils; }
 
 // static
-QString MacOSUtils::appId() {
+QString MacOSUtils::appId(const QString& suffix) {
   NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
   if (!appId) {
     // Fallback. When an unsigned/un-notarized app is executed in
@@ -30,7 +30,7 @@ QString MacOSUtils::appId() {
     appId = @"org.mozilla.macos.FirefoxVPN";
   }
 
-  return QString::fromNSString(appId);
+  return QString::fromNSString(appId) + suffix;
 }
 
 void MacOSUtils::openSystemSettingsLoginItems() {

@@ -6,9 +6,12 @@
 #define MACOSCONTROLLER_H
 
 #include "controllerimpl.h"
-#include "localsocketcontroller.h"
 
-class MacOSController final : public LocalSocketController {
+#ifdef __OBJC__
+#  include "xpcdaemonprotocol.h"
+#endif
+
+class MacOSController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(MacOSController)
 
  public:
@@ -29,13 +32,23 @@ class MacOSController final : public LocalSocketController {
   void cleanupBackendLogs() override;
 
  private slots:
+  void upgradeService();
   void registerService();
+  void connectService();
 
  private:
   NSString* plist() const;
+  NSString* machServiceName() const;
 
+ private:
+  QString plistName() const;
+#ifdef __OBJC__
+  NSObject<XpcDaemonProtocol>* remoteObject();
+#endif
+
+  QTimer m_registerTimer;
+  QTimer m_connectTimer;
   bool m_permissionRequired = false;
-  QTimer m_regTimer;
 
   // NSXPCConnection to the daemon.
   void* m_connection = nullptr;
