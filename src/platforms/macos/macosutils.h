@@ -19,7 +19,7 @@ class MacOSUtils final : public QObject {
 
   Q_INVOKABLE void openSystemSettingsLoginItems();
 
-  static QString appId();
+  static QString appId(const QString& suffix = QString());
 
   static QString computerName();
 

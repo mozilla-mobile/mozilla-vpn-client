@@ -11,6 +11,7 @@
 #include "logger.h"
 #include "platforms/macos/macosutils.h"
 #include "platforms/macos/xpcdaemonprotocol.h"
+#include "version.h"
 
 constexpr const int XPC_SESSION_MAX_BACKLOG = 32;
 
@@ -96,6 +97,10 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
 
 - (void)deactivate {
   QMetaObject::invokeMethod(self.daemon, "deactivate");
+}
+
+- (void)getVersion: (void (^)(NSString *))reply {
+  reply([NSString stringWithUTF8String:APP_VERSION]);
 }
 
 - (void)getStatus:(void (^)(NSString *))reply {
