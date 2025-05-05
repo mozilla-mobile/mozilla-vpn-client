@@ -7,11 +7,14 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QVersionNumber>
 
 #include "constants.h"
+#include "errorhandler.h"
 #include "logger.h"
 #include "macosutils.h"
 #include "xpcdaemonprotocol.h"
+#include "version.h"
 
 #import <Cocoa/Cocoa.h>
 #import <ServiceManagement/ServiceManagement.h>
@@ -28,31 +31,11 @@ constexpr const int SERVICE_REG_POLL_INTERVAL_MSEC = 1000;
 - (id)initWithObject:(ControllerImpl*)controller;
 @end
 
-MacOSController::MacOSController() :
-   LocalSocketController(Constants::MACOS_DAEMON_PATH) {
-  m_smAppStatus = -1;
-
-  m_regTimer.setInterval(SERVICE_REG_POLL_INTERVAL_MSEC);
-  m_regTimer.setSingleShot(false);
-  connect(&m_regTimer, &QTimer::timeout, this,
-          &MacOSController::checkServiceEnabled);
-
-  // Create an XPC connection
-  QString daemonId = MacOSUtils::appId() + ".daemon";
-  XpcClientDelegate* delegate = [XpcClientDelegate alloc];
-  NSXPCConnection* conn = [NSXPCConnection alloc];
-  [conn initWithMachServiceName:daemonId.toNSString()
-                        options:NSXPCConnectionPrivileged];
-  conn.exportedObject = [delegate initWithObject:this];
-  conn.exportedInterface =
-      [NSXPCInterface interfaceWithProtocol:@protocol(XpcClientProtocol)];
-  conn.remoteObjectInterface =
-      [NSXPCInterface interfaceWithProtocol:@protocol(XpcDaemonProtocol)];
-
-  // Activate the connection and retain it as a member of this object.
-  [conn activate];
-  [conn retain];
-  m_connection = conn;
+MacOSController::MacOSController() : ControllerImpl() {
+  m_initTimer.setInterval(SERVICE_REG_POLL_INTERVAL_MSEC);
+  m_initTimer.setSingleShot(false);
+  connect(&m_initTimer, &QTimer::timeout, this,
+          &MacOSController::checkInitialization);
 }
 
 MacOSController::~MacOSController() {
@@ -64,6 +47,36 @@ QString MacOSController::plistName() const {
 }
 
 void MacOSController::initialize(const Device* device, const Keys* keys) {
+  // Setup a temporary connection to check the daemon version.
+  QString daemonId = MacOSUtils::appId() + ".daemon";
+  NSXPCConnection* conn = [NSXPCConnection alloc];
+  [conn initWithMachServiceName:daemonId.toNSString()
+                        options:NSXPCConnectionPrivileged];
+  conn.remoteObjectInterface =
+      [NSXPCInterface interfaceWithProtocol:@protocol(XpcDaemonProtocol)];
+  [conn activate];
+
+  // Create the remote object.
+  NSObject<XpcDaemonProtocol>* remote = nullptr;
+  remote = [conn remoteObjectProxyWithErrorHandler:^(NSError* error){
+    logger.debug() << "Initialize daemon failed:" << error.localizedDescription;
+    QMetaObject::invokeMethod(this, &MacOSController::upgradeInitialization);
+  }];
+
+  // Get the daemon version and decide if an upgrade is needed.
+  [remote getVersion:^(NSString* version){
+    logger.debug() << "Initialize daemon version:" << version;
+    QVersionNumber daemonVersion =
+        QVersionNumber::fromString(QString::fromNSString(version));
+    if (daemonVersion < QVersionNumber::fromString(APP_VERSION)) {
+      QMetaObject::invokeMethod(this, &MacOSController::upgradeInitialization);
+    } else {
+      QMetaObject::invokeMethod(this, &MacOSController::checkInitialization);
+    }
+  }];
+}
+
+void MacOSController::upgradeInitialization() {
   // For MacOS 13 and beyond, attempt to register the daemon using the
   // SMAppService interface.
   if (@available(macOS 13, *)) {
@@ -81,7 +94,8 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
       // of a pre-existing daemon from a signed installation.
       logger.error() << "Unable to register Mozilla VPN daemon:"
                      << "code signature invalid";
-      return LocalSocketController::initialize(device, keys);
+      checkInitialization();
+      return;
     } else {
       // Otherwise, we encountered some other error. Most likely the user
       // needs to approve the daemon to run. Which will be handled below.
@@ -90,8 +104,7 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
     }
 
     // Check the service status for how to proceed.
-    m_smAppStatus = [service status];
-    switch (m_smAppStatus) {
+    switch ([service status]) {
       case SMAppServiceStatusNotRegistered:
         logger.debug() << "Mozilla VPN daemon not registered.";
         break;
@@ -102,54 +115,97 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
 
       case SMAppServiceStatusEnabled:
         logger.debug() << "Mozilla VPN daemon enabled.";
-        return LocalSocketController::initialize(device, keys);
+        checkInitialization();
+        m_initTimer.start();
+        break;
 
       case SMAppServiceStatusRequiresApproval:
         logger.debug() << "Mozilla VPN daemon requires approval.";
         emit permissionRequired();
-        m_regTimer.start();
+        m_initTimer.start();
         break;
     }
   } else {
     // Otherwise, for legacy Mac users, they will need to install the daemon
     // some other way. This is normally handled by the installer package.
-    return LocalSocketController::initialize(device, keys);
+    // TODO: Support daemon upgrades via SMJobBless
+    checkInitialization();
   }
 }
 
-void MacOSController::checkServiceEnabled(void) {
+void MacOSController::checkInitialization(void) {
+  // For daemons started via SMAppService check the daemon status.
   if (@available(macOS 13, *)) {
-    // Create the daemon delegate object.
     SMAppService* service =
         [SMAppService daemonServiceWithPlistName:plistName().toNSString()];
-    if ([service status] == SMAppServiceStatusEnabled) {
-      logger.debug() << "Mozilla VPN daemon enabled.";
-
-      // We can continue with initialization.
-      // NOTE: It just so happens that the LocalSocketController doesn't use
-      // the device or keys, so it's safe to pass null here.
-      m_regTimer.stop();
-      LocalSocketController::initialize(nullptr, nullptr);
+    if ([service status] != SMAppServiceStatusEnabled) {
+      // We continue waiting for the service to start. The user likely needs
+      // to grant the daemon permission to run.
+      return;
     }
   }
+
+  // Create an XPC connection to the daemon.
+  QString daemonId = MacOSUtils::appId() + ".daemon";
+  NSXPCConnection* conn = [NSXPCConnection alloc];
+  [conn initWithMachServiceName:daemonId.toNSString()
+                        options:NSXPCConnectionPrivileged];
+  conn.remoteObjectInterface =
+      [NSXPCInterface interfaceWithProtocol:@protocol(XpcDaemonProtocol)];
+  [conn activate];
+
+  // Make an XPC request to get the status.
+  // We may need to re-activate the connection here.
+  NSObject<XpcDaemonProtocol>* remote = nullptr;
+  remote = [conn remoteObjectProxyWithErrorHandler:^(NSError* error){
+    logger.debug() << "Initialize daemon failed:" << error.localizedDescription;
+  }];
+
+  // Get the status and report the controller as initialized.
+  [remote getStatus:^(NSString* status){
+    // Save the connection in the controller class for further use.
+    [conn retain];
+    m_connection = conn;
+    m_initTimer.stop();
+
+    // Export the client object to receive async events.
+    XpcClientDelegate* delegate = [XpcClientDelegate alloc];
+    conn.exportedObject = [delegate initWithObject:this];
+    conn.exportedInterface =
+        [NSXPCInterface interfaceWithProtocol:@protocol(XpcClientProtocol)];
+
+    // Inform the rest of the application that initialization is complete.
+    QByteArray jsBlob = QString::fromNSString(status).toUtf8();
+    QJsonObject jsObj = QJsonDocument::fromJson(jsBlob).object();
+    emit initialized(true, jsObj.value("connected").toBool(),
+                     QDateTime::fromString(jsObj.value("date").toString()));
+  }];
+}
+
+NSObject<XpcDaemonProtocol>* MacOSController::remoteObject() {
+  NSXPCConnection* conn = static_cast<NSXPCConnection*>(m_connection);
+  return [conn remoteObjectProxyWithErrorHandler:^(NSError* error){
+    REPORTERROR(ErrorHandler::ControllerError, "controller");
+    emit disconnected();
+  }];
 }
 
 void MacOSController::activate(const InterfaceConfig& config,
                                Controller::Reason reason) {
   QString json = QString::fromUtf8(QJsonDocument(config.toJson()).toJson());
-  auto conn = static_cast<NSXPCConnection*>(m_connection);
-  NSObject<XpcDaemonProtocol>* obj = [conn remoteObjectProxy];
-  [obj activate:json.toNSString()];
+  [remoteObject() activate:json.toNSString()];
 }
 
 void MacOSController::deactivate(Controller::Reason reason) {
-  auto conn = static_cast<NSXPCConnection*>(m_connection);
-  [[conn remoteObjectProxy] deactivate];
+  [remoteObject() deactivate];
 }
 
 void MacOSController::checkStatus() {
-  auto conn = static_cast<NSXPCConnection*>(m_connection);
-  [[conn remoteObjectProxy] getStatus];
+  [remoteObject() getStatus:^(NSString* status){
+    QByteArray jsBlob = QString::fromNSString(status).toUtf8();
+    QJsonObject obj = QJsonDocument::fromJson(jsBlob).object();
+    emitStatusFromJson(obj);
+  }];
 }
 
 void MacOSController::getBackendLogs(QObject* receiver, const char* method) {
@@ -173,6 +229,10 @@ void MacOSController::getBackendLogs(QObject* receiver, const char* method) {
   }];
 }
 
+void MacOSController::cleanupBackendLogs() {
+  [remoteObject() cleanupBackendLogs];
+}
+
 // A delegate object used to receive async events from the daemon.
 @implementation XpcClientDelegate
 - (id)initWithObject:(ControllerImpl*)controller {
@@ -182,25 +242,12 @@ void MacOSController::getBackendLogs(QObject* receiver, const char* method) {
 }
 
 - (void)connected:(NSString*)pubkey {
-  //QMetaObject::invokeMethod(self.parent, "connected",
-  //                          Q_ARG(QString, QString::fromNSString(pubkey)));
+  QMetaObject::invokeMethod(self.parent, "connected",
+                            Q_ARG(QString, QString::fromNSString(pubkey)));
 }
 
 - (void)disconnected {
-  //QMetaObject::invokeMethod(self.parent, "disconnected");
-}
-
-- (void)status:(NSString*)status {
-  QByteArray jsBlob = QString::fromNSString(status).toUtf8();
-  QJsonObject obj = QJsonDocument::fromJson(jsBlob).object();
-
-  QString serverIpv4Gateway = obj.value("serverIpv4Gateway").toString();
-  QString deviceIpv4Address = obj.value("deviceIpv4Address").toString();
-  QMetaObject::invokeMethod(self.parent, "statusUpdated",
-                            Q_ARG(QString, serverIpv4Gateway),
-                            Q_ARG(QString, deviceIpv4Address),
-                            Q_ARG(quint64, obj.value("txBytes").toInteger()),
-                            Q_ARG(quint64, obj.value("rxBytes").toInteger()));
+  QMetaObject::invokeMethod(self.parent, "disconnected");
 }
 
 @end

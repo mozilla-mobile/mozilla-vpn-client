@@ -11,6 +11,7 @@
 #include "logger.h"
 #include "platforms/macos/macosutils.h"
 #include "platforms/macos/xpcdaemonprotocol.h"
+#include "version.h"
 
 namespace {
 Logger logger("XpcDaemonServer");
@@ -24,9 +25,7 @@ Logger logger("XpcDaemonServer");
 @interface XpcSessionDelegate : NSObject<XpcDaemonProtocol>
 @property Daemon* daemon;
 @property XpcDaemonSession* bridge;
-
-- (id)initWithObject:(Daemon*)daemon
-       andConnection:(NSXPCConnection*)conn;
+- (id)initWithObject:(Daemon*)daemon;
 @end
 
 XpcDaemonServer::XpcDaemonServer(Daemon* daemon) : QObject(daemon) {
@@ -65,14 +64,16 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
   logger.debug() << "new connection";
 
   XpcSessionDelegate* delegate = [XpcSessionDelegate alloc];
-  newConnection.exportedObject = [delegate initWithObject:self.daemon
-                                            andConnection:newConnection];
+  delegate.bridge = new XpcDaemonSession(self.daemon, newConnection);
+
+  newConnection.exportedObject = [delegate initWithObject:self.daemon];
   newConnection.exportedInterface =
       [NSXPCInterface interfaceWithProtocol:@protocol(XpcDaemonProtocol)];
   newConnection.remoteObjectInterface =
       [NSXPCInterface interfaceWithProtocol:@protocol(XpcClientProtocol)];
   newConnection.invalidationHandler = ^{
     logger.debug() << "closed connection";
+    delegate.bridge->deleteLater();
   };
 
   [newConnection resume];
@@ -81,17 +82,10 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
 @end
 
 @implementation XpcSessionDelegate
-- (id)initWithObject:(Daemon*)daemon
-       andConnection:(NSXPCConnection*)conn {
+- (id)initWithObject:(Daemon*)daemon {
   self = [super init];
   self.daemon = daemon;
-  self.bridge = new XpcDaemonSession(daemon, conn);
   return self;
-}
-
-- (void)dealloc {
-  self.bridge->deleteLater();
-  [super dealloc];
 }
 
 - (void)activate:(NSString*) config {
@@ -102,18 +96,41 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
   QMetaObject::invokeMethod(self.daemon, "deactivate");
 }
 
-- (void)getStatus {
-  QMetaObject::invokeMethod(self.daemon, [self]{
-    QJsonObject obj = self.daemon->getStatus();
-    QString js = QString(QJsonDocument(obj).toJson());
-    self.bridge->invokeClient(@selector(status:), js);
-  });
+- (void)getVersion: (void (^)(NSString *))reply {
+  reply([NSString stringWithUTF8String:APP_VERSION]);
 }
 
-- (void) getBackendLogs: (void (^)(NSString *))reply {
-  QMetaObject::invokeMethod(self.daemon, [&](){
-    reply(self.daemon->logs().toNSString());
+- (void)getStatus: (void (^)(NSString *))reply {
+  NSString* result = nullptr;
+  NSCondition* cond = [NSCondition new];
+
+  [cond lock];
+  QMetaObject::invokeMethod(self.daemon, [&]{
+    QByteArray jsBlob = QJsonDocument(self.daemon->getStatus()).toJson();
+    result = [NSString stringWithUTF8String:jsBlob.constData()];
+    [cond signal];
   });
+
+  [cond wait];
+  reply(result);
+}
+
+- (void)getBackendLogs: (void (^)(NSString *))reply {
+  NSString* result = nullptr;
+  NSCondition* cond = [NSCondition new];
+
+  [cond lock];
+  QMetaObject::invokeMethod(self.daemon, [&]{
+    result = self.daemon->logs().toNSString();
+    [cond signal];
+  });
+
+  [cond wait];
+  reply(result);
+}
+
+- (void)cleanupBackendLogs {
+  QMetaObject::invokeMethod(self.daemon, [&]{ self.daemon->cleanLogs(); });
 }
 
 @end
