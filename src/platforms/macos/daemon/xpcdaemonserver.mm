@@ -17,9 +17,17 @@ namespace {
 Logger logger("XpcDaemonServer");
 }  // namespace
 
+// This property exists, but it's private. Make it available:
+@interface NSXPCConnection(PrivateAuditToken)
+@property (nonatomic, readonly) audit_token_t auditToken;
+@end
+
 @interface XpcDaemonDelegate : NSObject<NSXPCListenerDelegate>
 @property Daemon* daemon;
+@property (copy) NSString* teamIdentifier;
+
 - (id)initWithObject:(Daemon*)daemon;
++ (NSString*)getTeamIdentifier:(SecTaskRef)task;
 @end
 
 @interface XpcSessionDelegate : NSObject<XpcDaemonProtocol>
@@ -34,9 +42,11 @@ XpcDaemonServer::XpcDaemonServer(Daemon* daemon) : QObject(daemon) {
   QString daemonId = MacOSUtils::appId() + ".daemon";
   logger.debug() << "XpcDaemonServer created:" << daemonId;
 
+  XpcDaemonDelegate* delegate =
+      [[XpcDaemonDelegate alloc] initWithObject:daemon];
   NSXPCListener* listener =
       [[NSXPCListener alloc] initWithMachServiceName:daemonId.toNSString()];
-  listener.delegate = [[XpcDaemonDelegate alloc] initWithObject:daemon];
+  listener.delegate = delegate;
 
   // Connections to the daemon require codesigning
   // TODO: It would be nice if we could turn this off for developers somehow.
@@ -47,7 +57,8 @@ XpcDaemonServer::XpcDaemonServer(Daemon* daemon) : QObject(daemon) {
     constexpr const char* oidExtAppleCaIntermediate =
         "(certificate 1[field.1.2.840.113635.100.6.2.6] or" \
         " certificate 1[field.1.2.840.113635.100.6.2.1])";
-    QString devTeamIdentifier = getTeamIdentifier();
+    QString devTeamIdentifier =
+        QString::fromNSString(delegate.teamIdentifier);
     QString devTeamSubject =
         QString("certificate leaf[subject.OU] = \"%1\"").arg(devTeamIdentifier);
 
@@ -72,12 +83,21 @@ XpcDaemonServer::~XpcDaemonServer() {
   [listener release];
 }
 
-QString XpcDaemonServer::getTeamIdentifier() {
-  SecTaskRef task = SecTaskCreateFromSelf(kCFAllocatorSystemDefault);
-  if (!task) {
-    return QString();
+@implementation XpcDaemonDelegate
+- (id)initWithObject:(Daemon*)daemon {
+  self = [super init];
+  self.daemon = daemon;
+
+  SecTaskRef task = SecTaskCreateFromSelf(kCFAllocatorDefault);
+  if (task) {
+    self.teamIdentifier = [XpcDaemonDelegate getTeamIdentifier:task];
+    CFRelease(task);
   }
 
+  return self;
+}
+
++ (NSString*) getTeamIdentifier:(SecTaskRef)task {
   CFErrorRef error = nullptr;
   CFStringRef cfTeamId = CFSTR("com.apple.developer.team-identifier");
   CFTypeRef result = SecTaskCopyValueForEntitlement(task, cfTeamId, &error);
@@ -86,27 +106,41 @@ QString XpcDaemonServer::getTeamIdentifier() {
     CFRelease(error);
     return nil;
   }
-  auto guard = qScopeGuard([&]() {
-    CFRelease(task);
-    CFRelease(result);
-  });
+  auto guard = qScopeGuard([&]() { CFRelease(result); });
 
   if (CFGetTypeID(result) == CFStringGetTypeID()) {
-    return QString::fromNSString(static_cast<NSString*>(result));
+    return static_cast<NSString*>(result);
   }
-  return QString();
-}
-
-@implementation XpcDaemonDelegate
-- (id)initWithObject:(Daemon*)daemon {
-  self = [super init];
-  self.daemon = daemon;
-  return self;
+  CFRelease(result);
+  return nil;
 }
 
 - (BOOL)         listener:(NSXPCListener *) listener
 shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
   logger.debug() << "new connection";
+
+  if (@available(macOS 13, *)) {
+    // Nothing to do here - this is handled by the listener.
+  } else {
+    // For macOS versions prior to 13.0 we must roll our own connection auth
+    // code. This uses the private auditToken property on the NSXPCConnection
+    // and inspects the caller's entitlements for a matching team identifier.
+    //
+    // Sadly there is no public API to get this information, and doing it via
+    // the caller's PID is vulnerable to race conditions.
+    SecTaskRef task = SecTaskCreateWithAuditToken(kCFAllocatorDefault,
+                                                  newConnection.auditToken);
+    if (!task) {
+      logger.debug() << "rejecting connection: unable to locate calling task";
+      return false;
+    }
+    NSString* clientTeamIdentifier = [XpcDaemonDelegate getTeamIdentifier:task];
+    CFRelease(task);
+    if ([clientTeamIdentifier compare:self.teamIdentifier] != NSOrderedSame) {
+      logger.debug() << "rejecting connection:" << clientTeamIdentifier;
+      return false;
+    }
+  }
 
   XpcSessionDelegate* delegate = [XpcSessionDelegate alloc];
   delegate.bridge = new XpcDaemonSession(self.daemon, newConnection);
