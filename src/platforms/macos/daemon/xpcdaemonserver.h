@@ -20,6 +20,8 @@ class XpcDaemonServer final : public QObject {
   ~XpcDaemonServer();
 
  private:
+  static QString getTeamIdentifier();
+
   void* m_listener = nullptr;
 };
 
