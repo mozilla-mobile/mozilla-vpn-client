@@ -31,7 +31,7 @@ jobs:
         shell: bash
         run: |
           mkdir -p build
-          cmake -S . -B $(pwd)/build -GNinja
+          cmake -S . -B $(pwd)/build -GNinja -DBUILD_CRASHREPORTING=OFF
           cmake --build $(pwd)/build --target app_auth_tests
 
       - name: Running tests
