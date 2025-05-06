@@ -31,6 +31,8 @@ class MacOSController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
+  void forceDaemonCrash() override;
+
  private slots:
   void upgradeService();
   void registerService();
