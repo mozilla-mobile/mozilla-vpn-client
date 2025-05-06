@@ -34,6 +34,7 @@ Window {
             return 0;
         }
         switch(window.height * Screen.devicePixelRatio) {
+        // Notch (natch)
         case 1624: // iPhone_XR (Qt Provided Physical Resolution)
         case 1792: // iPhone_XR
 
@@ -44,10 +45,14 @@ Window {
         case 2778: // iPhone_12_Pro_Max
         case 2340: // iPhone_12_mini
             return 34;
-        case 2556: // iPhone_14_Pro
+
+        // Dynamic island
+        case 2556: // iPhone_14_Pro, 15, 15 Pro, 16
+        case 2622: // iPhone 16, 16 Pro
+        case 2796: // iPhone_14_Pro_Max, 15 Plus, 15 Pro Max, 16 Plus
+        case 2868: // iPhone 16 Pro Max
             return 48;
-        case 2796: // iPhone_14_Pro_Max
-            return 48;
+
         default:
             return 20;
         }
