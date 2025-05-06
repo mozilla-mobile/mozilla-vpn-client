@@ -92,3 +92,5 @@ void Controller::serializeLogs(
 void Controller::forceDaemonCrash() {}
 
 void Controller::forceDaemonSilentServerSwitch() {}
+
+void Controller::handleBackendLogs(const QString& logs) {}
