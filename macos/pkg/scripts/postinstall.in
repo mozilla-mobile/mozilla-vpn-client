@@ -29,6 +29,7 @@ APPLE_OID_EXT_CA_INTERMEDIATE="1.2.840.113635.100.6.2.6"
 #APPLE_OID_EXT_CA_INTERMEDIATE="1.2.840.113635.100.6.2.1"
 
 mkdir -p $LOG_DIR
+chmod 755 $LOG_DIR
 exec 2>&1 > $LOG_DIR/postinstall.log
 
 echo "Running postinstall at $(date)"
