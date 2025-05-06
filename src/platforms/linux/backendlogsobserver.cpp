@@ -6,6 +6,7 @@
 
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
+#include <QFile>
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -26,12 +27,19 @@ BackendLogsObserver::~BackendLogsObserver() {
 
 void BackendLogsObserver::completed(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<QString> reply = *call;
-  if (reply.isError()) {
-    logger.error() << "Error received from the DBus service";
-    m_callback("Failed to retrieve logs from the mozillavpn linuxdaemon.");
-    return;
-  }
+  
+  if (!reply.isError()) {
+    QString status = reply.argumentAt<0>();
+    m_callback(status);
+  } else {
+    logger.error() << "Error received from service:" << reply.error().message();
 
-  QString status = reply.argumentAt<0>();
-  m_callback(status);
+    // Otherwise, try our best to scrape the logs directly off disk.
+    QFile logfile("/var/log/mozillavpn.log");
+    if (!logfile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
+      m_callback(QString("Failed to open backend logs"));
+    } else {
+      m_callback(logfile.readAll());
+    }
+  }
 }
