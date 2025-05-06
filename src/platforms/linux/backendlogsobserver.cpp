@@ -27,7 +27,6 @@ BackendLogsObserver::~BackendLogsObserver() {
 
 void BackendLogsObserver::completed(QDBusPendingCallWatcher* call) {
   QDBusPendingReply<QString> reply = *call;
-  
   if (!reply.isError()) {
     QString status = reply.argumentAt<0>();
     m_callback(status);
