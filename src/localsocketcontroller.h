@@ -35,8 +35,6 @@ class LocalSocketController : public ControllerImpl {
 
   bool multihopSupported() override { return true; }
 
-  void forceDaemonCrash() override;
-
  private:
   // For messages that are expected to generate a synchronous response, this
   // defines the default time that we will wait before assuming an error in

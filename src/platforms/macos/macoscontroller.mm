@@ -7,6 +7,7 @@
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QScopeGuard>
 #include <QVersionNumber>
 
 #include "constants.h"
@@ -17,6 +18,8 @@
 #include "version.h"
 
 #import <Cocoa/Cocoa.h>
+#import <Security/Authorization.h>
+#import <Security/AuthorizationTags.h>
 #import <ServiceManagement/ServiceManagement.h>
 
 namespace {
@@ -195,6 +198,11 @@ void MacOSController::connectService(void) {
     conn.exportedObject = [delegate initWithObject:this];
     conn.exportedInterface =
         [NSXPCInterface interfaceWithProtocol:@protocol(XpcClientProtocol)];
+    conn.interruptionHandler = ^{
+      logger.debug() << "daemon connection interrupted";
+      REPORTERROR(ErrorHandler::ControllerError, "controller");
+      emit disconnected();
+    };
 
     // Inform the rest of the application that initialization is complete.
     QByteArray jsBlob = QString::fromNSString(status).toUtf8();
@@ -253,6 +261,59 @@ void MacOSController::getBackendLogs(QIODevice* device) {
 
 void MacOSController::cleanupBackendLogs() {
   [remoteObject() cleanupBackendLogs];
+}
+
+void MacOSController::forceDaemonCrash() {
+  if (m_connection == nullptr) {
+    logger.error() << "Daemon does not seem to be running";
+    return;
+  }
+  pid_t pid = [static_cast<NSXPCConnection*>(m_connection) processIdentifier];
+  if (pid == 0) {
+    logger.error() << "Daemon does not seem to be running";
+    return;
+  }
+
+  // Create an authorization session.
+  AuthorizationRef authRef;
+  AuthorizationFlags authFlags =
+      kAuthorizationFlagDefaults | kAuthorizationFlagInteractionAllowed |
+      kAuthorizationFlagPreAuthorize | kAuthorizationFlagExtendRights;
+  OSStatus status = AuthorizationCreate(nullptr, kAuthorizationEmptyEnvironment,
+                                        authFlags, &authRef);
+  if (status != errAuthorizationSuccess) {
+    logger.error() << "Failed to acquire authorization:" << status;
+    return;
+  }
+  auto authGuard = qScopeGuard(
+      [&] { AuthorizationFree(authRef, kAuthorizationFlagDefaults); });
+
+  // Acquire execution permissions.
+  AuthorizationItem authItems = {kAuthorizationRightExecute, 0, nullptr, 0};
+  AuthorizationRights authRights = {1, &authItems};
+  status = AuthorizationCopyRights(authRef, &authRights, nullptr, authFlags,
+                                   nullptr);
+  if (status != errAuthorizationSuccess) {
+    logger.error() << "Failed to copy authorization rights:" << status;
+    return;
+  }
+
+  // Execute 'kill' to terminate the daemon as though it crashed.
+  logger.warning() << "Sending SIGSEGV to:" << pid;
+  QByteArray pidString = QString::number(pid).toUtf8();
+  char killpath[] = "/bin/kill";
+  char killsignal[] = "-SEGV";
+  char* const killargs[] = {killsignal, pidString.data(), nullptr};
+
+#  pragma clang diagnostic push
+#  pragma clang diagnostic ignored "-Wdeprecated-declarations"
+  status = AuthorizationExecuteWithPrivileges(
+      authRef, killpath, kAuthorizationFlagDefaults, killargs, nullptr);
+#  pragma clang diagnostic pop
+  if (status != errAuthorizationSuccess) {
+    logger.error() << "Failed to copy execute tool:" << status;
+    return;
+  }
 }
 
 // A delegate object used to receive async events from the daemon.
