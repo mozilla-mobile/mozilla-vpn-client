@@ -8,7 +8,7 @@
 #include "controllerimpl.h"
 
 #ifdef __OBJC__
-# include "xpcdaemonprotocol.h"
+#  include "xpcdaemonprotocol.h"
 #endif
 
 class MacOSController final : public ControllerImpl {
@@ -23,9 +23,7 @@ class MacOSController final : public ControllerImpl {
   void activate(const InterfaceConfig& config,
                 Controller::Reason reason) override;
 
-  void deactivate(Controller::Reason reason) override;;
-
-  void getBackendLogs(std::function<void(const QString&)>&& callback) override;
+  void deactivate(Controller::Reason reason) override;
 
   virtual void checkStatus() override;
 

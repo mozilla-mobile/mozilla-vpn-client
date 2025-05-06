@@ -5,10 +5,10 @@
 #ifndef XPCDAEMONSERVER_H
 #define XPCDAEMONSERVER_H
 
-#include <QObject>
-#include <QAtomicInt>
-
 #include <objc/objc-runtime.h>
+
+#include <QAtomicInt>
+#include <QObject>
 
 #include "daemon/daemon.h"
 

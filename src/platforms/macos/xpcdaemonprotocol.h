@@ -8,17 +8,17 @@
 #import <Foundation/Foundation.h>
 
 @protocol XpcDaemonProtocol
-- (void) activate: (NSString*)config;
-- (void) deactivate;
-- (void) getVersion: (void (^)(NSString*))reply;
-- (void) getStatus: (void (^)(NSString*))reply;
-- (void) getBackendLogs: (void (^)(NSString *))reply;
-- (void) cleanupBackendLogs;
+- (void)activate:(NSString*)config;
+- (void)deactivate;
+- (void)getVersion:(void (^)(NSString*))reply;
+- (void)getStatus:(void (^)(NSString*))reply;
+- (void)getBackendLogs:(void (^)(NSString *))reply;
+- (void)cleanupBackendLogs;
 @end
 
 @protocol XpcClientProtocol
-- (void) connected: (NSString*)pubkey;
-- (void) disconnected;
+- (void)connected:(NSString*)pubkey;
+- (void)disconnected;
 @end
 
 #endif  // XPCDAEMONPROTOCOL_H
