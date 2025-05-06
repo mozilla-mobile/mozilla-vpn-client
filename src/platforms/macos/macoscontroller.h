@@ -33,6 +33,8 @@ class MacOSController final : public ControllerImpl {
 
   virtual void cleanupBackendLogs() override;
 
+  virtual void forceDaemonCrash() override;
+
  private slots:
   void checkInitialization();
   void upgradeInitialization();
