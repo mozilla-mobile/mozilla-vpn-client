@@ -275,8 +275,8 @@ void IOSController::checkStatus() {
       }
     }
 
-    logger.debug() << "ServerIpv4Gateway:" << QString::fromNSString(serverIpv4Gateway)
-                   << "DeviceIpv4Address:" << QString::fromNSString(deviceIpv4Address)
+    logger.debug() << "ServerIpv4Gateway:" << serverIpv4Gateway
+                   << "DeviceIpv4Address:" << deviceIpv4Address
                    << "RxBytes:" << rxBytes << "TxBytes:" << txBytes;
     emit statusUpdated(QString::fromNSString(serverIpv4Gateway),
                        QString::fromNSString(deviceIpv4Address), txBytes, rxBytes);

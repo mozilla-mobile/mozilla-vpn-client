@@ -210,7 +210,7 @@ QString MacOSDnsManager::cfParseString(CFTypeRef ref) {
   if (CFGetTypeID(ref) != CFStringGetTypeID()) {
     return QString();
   }
-  return QString::fromNSString(static_cast<NSString*>(ref));
+  return QString::fromNSString(static_cast<const NSString*>(ref));
 }
 
 // static

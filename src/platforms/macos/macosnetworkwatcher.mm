@@ -30,7 +30,7 @@ Logger logger("MacOSNetworkWatcher");
 }
 
 - (void)bssidDidChangeForWiFiInterfaceWithName:(NSString*)interfaceName {
-  logger.debug() << "BSSID changed!" << QString::fromNSString(interfaceName);
+  logger.debug() << "BSSID changed!" << interfaceName;
 
   if (m_watcher) {
     m_watcher->checkInterface();

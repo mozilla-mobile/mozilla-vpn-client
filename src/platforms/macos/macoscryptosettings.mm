@@ -126,8 +126,7 @@ bool MacOSCryptoSettings::checkCodesign() {
   CFStringRef signer = SecTaskCopySigningIdentifier(task, nullptr);
   CFRelease(task);
   if (signer != nullptr) {
-    logger.debug() << "Got signature from:"
-                   << QString::fromNSString(static_cast<NSString*>(signer));
+    logger.debug() << "Got signature from:" << signer;
     CFRelease(signer);
     return true;
   }
@@ -158,8 +157,7 @@ bool MacOSCryptoSettings::checkEntitlement(const QString& name) {
   CFTypeRef result = SecTaskCopyValueForEntitlement(task, cfName, &error);
   if (error != nullptr) {
     CFStringRef desc = CFErrorCopyDescription(error);
-    logger.error() << "Failed to check entitlements:"
-                   << QString::fromNSString(static_cast<NSString*>(desc));
+    logger.error() << "Failed to check entitlements:" << desc;
     CFRelease(desc);
     CFRelease(error);
   }

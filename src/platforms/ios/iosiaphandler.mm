@@ -83,7 +83,7 @@ void IOSIAPHandler::nativeRegisterProducts() {
         productData->m_nonLocalizedMonthlyPrice = monthlyPriceNumber;
         productData->m_currencyCode = QString::fromNSString(currencyCode);
 
-        logger.debug() << "Id:" << QString::fromNSString(productIdentifier);
+        logger.debug() << "Id:" << productIdentifier;
         logger.debug() << "Price:" << productData->m_price;
         logger.debug() << "Monthly price:" << productData->m_monthlyPrice;
       }
