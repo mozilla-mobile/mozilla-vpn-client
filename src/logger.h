@@ -40,8 +40,7 @@ class Logger {
 
     // Q_ENUM
     template <typename T>
-    typename std::enable_if<QtPrivate::IsQEnumHelper<T>::Value, Log&>::type
-    operator<<(T t) {
+    typename std::enable_if<QtPrivate::IsQEnumHelper<T>::Value, Log&>::type operator<<(T t) {
       const QMetaObject* meta = qt_getEnumMetaObject(t);
       const char* name = qt_getEnumName(t);
       addMetaEnum(typename QFlags<T>::Int(t), meta, name);
