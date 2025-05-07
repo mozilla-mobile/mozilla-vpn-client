@@ -210,6 +210,7 @@ if(WIN32)
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_subdirectory(macos/pkg)
+    add_subdirectory(macos/split-tunnel)
 elseif(IOS)
     add_subdirectory(ios/networkextension)
 endif()
