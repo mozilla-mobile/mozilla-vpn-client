@@ -40,6 +40,8 @@ target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/firewallutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/firewallutilsmacos.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemon.cpp

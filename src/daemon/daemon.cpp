@@ -13,19 +13,18 @@
 #include <QTimer>
 
 #include "controller.h"
+#include "dnsutils.h"
+#include "iputils.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "wireguardutils.h"
 
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 constexpr int HANDSHAKE_POLL_MSEC = 250;
 
 namespace {
-
 Logger logger("Daemon");
-
-Daemon* s_daemon = nullptr;
-
 }  // namespace
 
 Daemon::Daemon(QObject* parent) : QObject(parent) {
@@ -33,26 +32,17 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
 
   logger.debug() << "Daemon created";
 
-  Q_ASSERT(s_daemon == nullptr);
-  s_daemon = this;
-
   m_handshakeTimer.setSingleShot(true);
   connect(&m_handshakeTimer, &QTimer::timeout, this, &Daemon::checkHandshake);
 }
 
 Daemon::~Daemon() {
   MZ_COUNT_DTOR(Daemon);
-
   logger.debug() << "Daemon released";
-
-  Q_ASSERT(s_daemon == this);
-  s_daemon = nullptr;
 }
 
-// static
-Daemon* Daemon::instance() {
-  Q_ASSERT(s_daemon);
-  return s_daemon;
+QString Daemon::interfaceName() const {
+  return wgutils()->interfaceName();
 }
 
 bool Daemon::activate(const QString& json) {
@@ -131,11 +121,12 @@ bool Daemon::activate(const InterfaceConfig& config) {
     }
 
     // Bring the interface up.
-    if (supportIPUtils()) {
-      if (!iputils()->addInterfaceIPs(config)) {
+    IPUtils* ipu = iputils();
+    if (ipu) {
+      if (!ipu->addInterfaceIPs(config)) {
         return false;
       }
-      if (!iputils()->setMTUAndUp(config)) {
+      if (!ipu->setMTUAndUp(config)) {
         return false;
       }
     }

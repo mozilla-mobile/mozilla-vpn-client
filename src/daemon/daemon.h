@@ -10,10 +10,12 @@
 
 #include "daemon/daemonerrors.h"
 #include "daemonerrors.h"
-#include "dnsutils.h"
 #include "interfaceconfig.h"
-#include "iputils.h"
-#include "wireguardutils.h"
+
+class DnsUtils;
+class IPUtils;
+class FirewallUtils;
+class WireguardUtils;
 
 class Daemon : public QObject {
   Q_OBJECT
@@ -28,8 +30,6 @@ class Daemon : public QObject {
   explicit Daemon(QObject* parent);
   ~Daemon();
 
-  static Daemon* instance();
-
   static bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
 
   virtual bool activate(const InterfaceConfig& config);
@@ -38,6 +38,7 @@ class Daemon : public QObject {
   QJsonObject getStatus();
   QString logs();
   void cleanLogs();
+  QString interfaceName() const;
 
   Q_INVOKABLE bool activate(const QString& json);
   Q_INVOKABLE bool deactivate() { return deactivate(true); };
@@ -64,9 +65,9 @@ class Daemon : public QObject {
   virtual bool supportServerSwitching(const InterfaceConfig& config) const;
   virtual bool switchServer(const InterfaceConfig& config);
   virtual WireguardUtils* wgutils() const = 0;
-  virtual bool supportIPUtils() const { return false; }
   virtual IPUtils* iputils() { return nullptr; }
   virtual DnsUtils* dnsutils() { return nullptr; }
+  virtual FirewallUtils* fwutils() { return nullptr; }
 
   static bool parseStringList(const QJsonObject& obj, const QString& name,
                               QStringList& list);
