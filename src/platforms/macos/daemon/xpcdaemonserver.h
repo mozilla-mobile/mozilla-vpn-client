@@ -33,6 +33,7 @@ class XpcDaemonSession final : public QObject {
  public slots:
   void connected(const QString& pubkey);
   void disconnected();
+  void backendFailure(DaemonError reason);
 
  private:
   void invokeClient(SEL selector);

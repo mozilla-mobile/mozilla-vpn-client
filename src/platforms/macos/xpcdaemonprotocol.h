@@ -17,8 +17,9 @@
 @end
 
 @protocol XpcClientProtocol
-- (void) connected: (NSString*)pubkey;
+- (void) connected:(NSString*)pubkey;
 - (void) disconnected;
+- (void)backendFailure:(NSUInteger)reason;
 @end
 
 #endif  // XPCDAEMONPROTOCOL_H

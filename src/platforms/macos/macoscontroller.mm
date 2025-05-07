@@ -11,7 +11,6 @@
 #include <QVersionNumber>
 
 #include "constants.h"
-#include "errorhandler.h"
 #include "logger.h"
 #include "macosutils.h"
 #include "xpcdaemonprotocol.h"
@@ -178,7 +177,7 @@ void MacOSController::checkInitialization(void) {
         [NSXPCInterface interfaceWithProtocol:@protocol(XpcClientProtocol)];
     conn.interruptionHandler = ^{
       logger.debug() << "daemon connection interrupted";
-      REPORTERROR(ErrorHandler::ControllerError, "controller");
+      emit backendFailure(Controller::ErrorNone);
       emit disconnected();
     };
 
@@ -193,7 +192,7 @@ void MacOSController::checkInitialization(void) {
 NSObject<XpcDaemonProtocol>* MacOSController::remoteObject() {
   NSXPCConnection* conn = static_cast<NSXPCConnection*>(m_connection);
   return [conn remoteObjectProxyWithErrorHandler:^(NSError* error){
-    REPORTERROR(ErrorHandler::ControllerError, "controller");
+    emit backendFailure(Controller::ErrorNone);
     emit disconnected();
   }];
 }
@@ -309,6 +308,12 @@ void MacOSController::forceDaemonCrash() {
 
 - (void)disconnected {
   QMetaObject::invokeMethod(self.parent, "disconnected");
+}
+
+- (void)backendFailure:(NSUInteger)reason {
+  Controller::ErrorCode errorCode = static_cast<Controller::ErrorCode>(reason);
+  QMetaObject::invokeMethod(self.parent, "backendFailure",
+                            Q_ARG(Controller::ErrorCode, errorCode));
 }
 
 @end

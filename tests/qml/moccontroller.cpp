@@ -87,3 +87,5 @@ void Controller::logSerialize(QIODevice* device) { device->close(); }
 void Controller::forceDaemonCrash() {}
 
 void Controller::forceDaemonSilentServerSwitch() {}
+
+void Controller::handleBackendFailure(ErrorCode code) {}
