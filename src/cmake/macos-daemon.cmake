@@ -30,6 +30,7 @@ target_sources(daemon PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonerrors.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/firewallutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h
@@ -37,6 +38,8 @@ target_sources(daemon PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/firewallutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/firewallutilsmacos.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemonmain.cpp

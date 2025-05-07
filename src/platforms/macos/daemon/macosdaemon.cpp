@@ -15,41 +15,31 @@
 #include <QTextStream>
 #include <QtGlobal>
 
+#include "dnsutilsmacos.h"
+#include "firewallutilsmacos.h"
+#include "iputilsmacos.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "wireguardutilsmacos.h"
 
 namespace {
 Logger logger("MacOSDaemon");
-MacOSDaemon* s_daemon = nullptr;
 }  // namespace
 
 MacOSDaemon::MacOSDaemon(QObject* parent) : Daemon(parent) {
   MZ_COUNT_CTOR(MacOSDaemon);
-
   logger.debug() << "Daemon created";
 
   m_wgutils = new WireguardUtilsMacos(this);
   m_dnsutils = new DnsUtilsMacos(this);
   m_iputils = new IPUtilsMacos(this);
+  m_fwutils = new FirewallUtilsMacos(this);
 
   connect(m_wgutils, &WireguardUtils::backendFailure, this,
           &MacOSDaemon::abortBackendFailure);
-
-  Q_ASSERT(s_daemon == nullptr);
-  s_daemon = this;
 }
 
 MacOSDaemon::~MacOSDaemon() {
   MZ_COUNT_DTOR(MacOSDaemon);
-
   logger.debug() << "Daemon released";
-
-  Q_ASSERT(s_daemon == this);
-  s_daemon = nullptr;
-}
-
-// static
-MacOSDaemon* MacOSDaemon::instance() {
-  Q_ASSERT(s_daemon);
-  return s_daemon;
 }
