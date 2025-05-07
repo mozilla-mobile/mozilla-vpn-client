@@ -41,9 +41,6 @@ class WireguardUtilsWindows final : public WireguardUtils {
   bool deleteRoutePrefix(const IPAddress& prefix) override;
   bool excludeLocalNetworks(const QList<IPAddress>& addresses) override;
 
- signals:
-  void backendFailure();
-
  private:
   WireguardUtilsWindows(QObject* parent, WindowsFirewall* fw,
                         std::unique_ptr<WireGuardAPI> wireguard_api);

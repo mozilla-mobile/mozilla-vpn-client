@@ -13,6 +13,8 @@
 #include "platforms/macos/xpcdaemonprotocol.h"
 #include "version.h"
 
+constexpr const int XPC_SESSION_MAX_BACKLOG = 32;
+
 namespace {
 Logger logger("XpcDaemonServer");
 }  // namespace
@@ -218,6 +220,8 @@ XpcDaemonSession::XpcDaemonSession(Daemon* daemon, void* connection)
     : QObject(nullptr), m_connection(connection) {
   connect(daemon, &Daemon::connected, this, &XpcDaemonSession::connected);
   connect(daemon, &Daemon::disconnected, this, &XpcDaemonSession::disconnected);
+  connect(daemon, &Daemon::backendFailure, this,
+          &XpcDaemonSession::backendFailure);
 
   // Move this object to the same thread as the daemon, and make it our parent.
   // The XPC connection runs in its own thread, so it lacks a Qt event loop to
@@ -228,38 +232,53 @@ XpcDaemonSession::XpcDaemonSession(Daemon* daemon, void* connection)
 
 // It's not entirely clear if the ObjC runtime will handle thread-safety when
 // invoking methods on the remoteObjectProxy for us. So this wrapper will take
-// a method to be invoked (with an optional argument) and schedule it for
-// execution on the XPC thread with scheduleSendBarrierBlock.
+// a method to be invoked and schedule it for execution on the XPC thread with
+// scheduleSendBarrierBlock.
 //
 // This also counts the number of method calls waiting on the connection to
 // detect if the client has stopped processing messages, in which case we might
 // need to abandon the connection in order to prevent memory leaks.
-void XpcDaemonSession::invokeClient(SEL selector, const QString& arg) {
+void XpcDaemonSession::invokeClient(SEL selector) {
   NSXPCConnection* conn = static_cast<NSXPCConnection*>(m_connection);
-  if (m_backlog.fetchAndAddOrdered(1) > 32) {
+  if (m_backlog.fetchAndAddOrdered(1) > XPC_SESSION_MAX_BACKLOG) {
     [conn invalidate];
     return;
   }
 
-  if (arg.isNull()) {
-    [conn scheduleSendBarrierBlock:^{
-      [[conn remoteObjectProxy] performSelector: selector];
-      m_backlog.fetchAndSubOrdered(1);
-    }];
-  } else {
-    NSString* nsArg = arg.toNSString();
-    [conn scheduleSendBarrierBlock:^{
-      [[conn remoteObjectProxy] performSelector: selector
-                                     withObject: nsArg];
-      m_backlog.fetchAndSubOrdered(1);
-    }];
+  [conn scheduleSendBarrierBlock:^{
+    [[conn remoteObjectProxy] performSelector:selector];
+    m_backlog.fetchAndSubOrdered(1);
+  }];
+}
+
+// Same as above - but it can take an argument.
+template <typename T>
+void XpcDaemonSession::invokeClient(SEL selector, T arg) {
+  NSXPCConnection* conn = static_cast<NSXPCConnection*>(m_connection);
+  if (m_backlog.fetchAndAddOrdered(1) > XPC_SESSION_MAX_BACKLOG) {
+    [conn invalidate];
+    return;
   }
+
+  NSObject* remote = [conn remoteObjectProxy];
+  NSMethodSignature* sig = [remote methodSignatureForSelector:selector];
+  NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:sig];
+  [invocation setSelector:selector];
+  [invocation setArgument:&arg atIndex:2];
+  [conn scheduleSendBarrierBlock:^{
+    [invocation invokeWithTarget:remote];
+    m_backlog.fetchAndSubOrdered(1);
+  }];
 }
 
 void XpcDaemonSession::connected(const QString& pubkey) {
-  invokeClient(@selector(connected:), pubkey);
+  invokeClient(@selector(connected:), pubkey.toNSString());
 }
 
 void XpcDaemonSession::disconnected() {
   invokeClient(@selector(disconnected));
+}
+
+void XpcDaemonSession::backendFailure(DaemonError reason) {
+  invokeClient(@selector(backendFailure:), static_cast<NSUInteger>(reason));
 }

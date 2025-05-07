@@ -30,13 +30,15 @@ class XpcDaemonSession final : public QObject {
  public:
   XpcDaemonSession(Daemon* daemon, void* connection);
 
-  void invokeClient(SEL selector, const QString& arg = QString());
-
  public slots:
   void connected(const QString& pubkey);
   void disconnected();
+  void backendFailure(DaemonError reason);
 
  private:
+  void invokeClient(SEL selector);
+  template<typename T> void invokeClient(SEL selector, T arg);
+
   QAtomicInt m_backlog;
   void* m_connection = nullptr;
 };
