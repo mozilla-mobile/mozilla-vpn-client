@@ -4,6 +4,8 @@
 
 #include "macoscontroller.h"
 
+#include <QFile>
+
 #include "constants.h"
 #include "logger.h"
 #include "macosutils.h"
@@ -101,5 +103,22 @@ void MacOSController::checkServiceEnabled(void) {
       m_regTimer.stop();
       LocalSocketController::initialize(nullptr, nullptr);
     }
+  }
+}
+
+void MacOSController::getBackendLogs(
+    std::function<void(const QString&)>&& callback) {
+  // If the daemon is connected - use the LocalSocketController to fetch logs.
+  if (m_daemonState == eReady) {
+    LocalSocketController::getBackendLogs(std::move(callback));
+    return;
+  }
+
+  // Otherwise, try our best to scrape the logs directly off disk.
+  QFile logfile("/var/log/mozillavpn/mozillavpn.log");
+  if (!logfile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
+    callback(QString("Failed to open backend logs"));
+  } else {
+    callback(logfile.readAll());
   }
 }

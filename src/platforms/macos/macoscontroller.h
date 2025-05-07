@@ -16,6 +16,8 @@ class MacOSController final : public LocalSocketController {
 
   void initialize(const Device* device, const Keys* keys) override;
 
+  void getBackendLogs(std::function<void(const QString&)>&& callback) override;
+
  private slots:
   void checkServiceEnabled();
 
