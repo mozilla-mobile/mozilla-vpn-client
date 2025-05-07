@@ -89,4 +89,6 @@ void Controller::forceDaemonCrash() {}
 
 void Controller::forceDaemonSilentServerSwitch() {}
 
+void Controller::handleBackendFailure(ErrorCode code) {}
+
 void Controller::handleBackendLogs(const QString& logs) {}
