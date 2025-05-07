@@ -210,23 +210,7 @@ QString MacOSDnsManager::cfParseString(CFTypeRef ref) {
   if (CFGetTypeID(ref) != CFStringGetTypeID()) {
     return QString();
   }
-
-  CFStringRef stringref = (CFStringRef)ref;
-  CFRange range;
-  range.location = 0;
-  range.length = CFStringGetLength(stringref);
-  if (range.length <= 0) {
-    return QString();
-  }
-
-  UniChar* buf = (UniChar*)malloc(range.length * sizeof(UniChar));
-  if (!buf) {
-    return QString();
-  }
-  auto guard = qScopeGuard([&] { free(buf); });
-
-  CFStringGetCharacters(stringref, range, buf);
-  return QString::fromUtf16(buf, range.length);
+  return QString::fromNSString(static_cast<NSString*>(ref));
 }
 
 // static
