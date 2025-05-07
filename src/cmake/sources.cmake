@@ -77,6 +77,7 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/firewallutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/dnsutilsmock.cpp

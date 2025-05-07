@@ -4,6 +4,7 @@
 
 #include "xpcdaemonserver.h"
 
+#include <QCoreApplication>
 #include <QJsonDocument>
 #include <QJsonObject>
 
