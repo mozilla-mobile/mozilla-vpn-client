@@ -1355,6 +1355,10 @@ void MozillaVPN::registerUrlOpenerLabels() {
   uo->registerUrlLabel("sumoAlwaysOnAndroid", []() -> QString {
     return Constants::SUMO_ALWAYS_ON_ANDROID;
   });
+
+  uo->registerUrlLabel("sumoAllowBackgroundMacos", []() -> QString {
+    return Constants::SUMO_ALLOW_BACKGROUND_MACOS;
+  });
 }
 
 void MozillaVPN::errorHandled() {
