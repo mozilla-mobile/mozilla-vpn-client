@@ -33,13 +33,14 @@ class Daemon : public QObject {
   static bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
 
   virtual bool activate(const InterfaceConfig& config);
+  virtual bool deactivate(bool emitSignals);
 
   QJsonObject getStatus();
   QString logs();
   void cleanLogs();
 
   Q_INVOKABLE bool activate(const QString& json);
-  Q_INVOKABLE bool deactivate(bool emitSignals = true);
+  Q_INVOKABLE bool deactivate() { return deactivate(true); };
 
  signals:
   void connected(const QString& pubkey);
