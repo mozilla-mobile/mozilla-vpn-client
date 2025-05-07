@@ -200,6 +200,14 @@ add_custom_command(TARGET mozillavpn POST_BUILD
         $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/LoginItems/$<TARGET_PROPERTY:loginitem,OUTPUT_NAME>.app/
 )
 
+# Install the split-tunnel system extension into the bundle.
+add_dependencies(mozillavpn split-tunnel)
+add_custom_command(TARGET mozillavpn POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E echo "Bundling $<TARGET_NAME:split-tunnel>"
+    COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:split-tunnel>
+        $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/SystemExtensions/$<TARGET_BUNDLE_DIR_NAME:split-tunnel>
+)
+
 ## Compile and install the asset catalog into the bundle.
 osx_bundle_assetcatalog(mozillavpn CATALOG ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets)
 
