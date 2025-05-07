@@ -29,8 +29,7 @@ class CommandLinuxDaemon final : public Command {
 
     return runCommandLineApp([&]() {
       DBusService* dbus = new DBusService(qApp);
-      DbusAdaptor* adaptor = new DbusAdaptor(dbus);
-      dbus->setAdaptor(adaptor);
+      new DbusAdaptor(dbus);
 
       QDBusConnection connection = QDBusConnection::systemBus();
       logger.debug() << "Connecting to DBus...";
