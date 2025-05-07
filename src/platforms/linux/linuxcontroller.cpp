@@ -180,8 +180,8 @@ void LinuxController::getBackendLogs(QObject* receiver, const char* method) {
             if (!reply.isError()) {
               status = reply.argumentAt<0>();
             } else {
-              status = reply.error.message();
-              logger.error() << "Error received from the DBus service:" << status;
+              status = reply.error().message();
+              logger.error() << "Error received from DBus:" << status;
 
               // Otherwise, try our best to scrape the logs directly off disk.
               QFile logfile("/var/log/mozillavpn.log");
