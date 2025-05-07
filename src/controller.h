@@ -45,6 +45,16 @@ class Controller : public QObject, public LogSerializer {
     ReasonSwitching,
     ReasonConfirming,
   };
+
+  enum ErrorCode {
+    ErrorNone = 0,
+    ErrorFatal = 1,
+    ErrorSplitTunnelInit = 2,
+    ErrorSplitTunnelStart = 3,
+    ErrorSplitTunnelExclude = 4,
+  };
+  Q_ENUM(ErrorCode);
+
   /**
    * @brief Who asked the Connection
    * to be Initiated? A Webextension
@@ -137,6 +147,7 @@ class Controller : public QObject, public LogSerializer {
   void implInitialized(bool status, bool connected,
                        const QDateTime& connectionDate);
   void implPermRequired();
+  void handleBackendFailure(ErrorCode code);
 
  signals:
   void stateChanged();

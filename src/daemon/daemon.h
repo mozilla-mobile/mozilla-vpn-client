@@ -71,6 +71,7 @@ class Daemon : public QObject {
   static bool parseStringList(const QJsonObject& obj, const QString& name,
                               QStringList& list);
 
+  void abortBackendFailure();
   void checkHandshake();
 
   class ConnectionState {

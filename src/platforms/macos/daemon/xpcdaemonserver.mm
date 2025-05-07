@@ -221,6 +221,8 @@ XpcDaemonSession::XpcDaemonSession(Daemon* daemon, void* connection)
     : QObject(nullptr), m_connection(connection) {
   connect(daemon, &Daemon::connected, this, &XpcDaemonSession::connected);
   connect(daemon, &Daemon::disconnected, this, &XpcDaemonSession::disconnected);
+  connect(daemon, &Daemon::backendFailure, this,
+          &XpcDaemonSession::backendFailure);
 
   // Move this object to the same thread as the daemon, and make it our parent.
   // The XPC connection runs in its own thread, so it lacks a Qt event loop to
@@ -272,4 +274,8 @@ void XpcDaemonSession::connected(const QString& pubkey) {
 
 void XpcDaemonSession::disconnected() {
   invokeClient(@selector(disconnected));
+}
+
+void XpcDaemonSession::backendFailure(DaemonError reason) {
+  invokeClient(@selector(backendFailure:), static_cast<NSUInteger>(reason));
 }

@@ -11,8 +11,6 @@
 #include <QJsonValue>
 #include <QMetaType>
 
-#include "daemon/daemonerrors.h"
-#include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -60,7 +58,7 @@ void LocalSocketController::errorOccurred(
   logger.error() << "Error occurred:" << error;
 
   if (m_daemonState != eInitializing) {
-    REPORTERROR(ErrorHandler::ControllerError, "controller");
+    emit backendFailure(Controller::ErrorNone);
     emit disconnected();
   }
 
@@ -287,35 +285,8 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "backendFailure") {
-    if (!obj.contains("errorCode")) {
-      // report a generic error if we dont know what it is.
-      REPORTERROR(ErrorHandler::ControllerError, "controller");
-      return;
-    }
-    auto errorCode = static_cast<uint8_t>(obj["errorCode"].toInt());
-    if (errorCode >= (uint8_t)DaemonError::DAEMON_ERROR_MAX) {
-      // Also report a generic error if the code is invalid.
-      REPORTERROR(ErrorHandler::ControllerError, "controller");
-      return;
-    }
-    switch (static_cast<DaemonError>(errorCode)) {
-      case DaemonError::ERROR_NONE:
-        [[fallthrough]];
-      case DaemonError::ERROR_FATAL:
-        REPORTERROR(ErrorHandler::ControllerError, "controller");
-        break;
-      case DaemonError::ERROR_SPLIT_TUNNEL_INIT_FAILURE:
-        [[fallthrough]];
-      case DaemonError::ERROR_SPLIT_TUNNEL_START_FAILURE:
-        [[fallthrough]];
-      case DaemonError::ERROR_SPLIT_TUNNEL_EXCLUDE_FAILURE:
-        REPORTERROR(ErrorHandler::SplitTunnelError, "controller");
-        break;
-      case DaemonError::DAEMON_ERROR_MAX:
-        // We should not get here.
-        Q_ASSERT(false);
-        break;
-    }
+    int errorCode = obj.value("errorCode").toInt(Controller::ErrorNone);
+    emit backendFailure(static_cast<Controller::ErrorCode>(errorCode));
     return;
   }
 
