@@ -28,16 +28,13 @@ class DBusService final : public Daemon, protected QDBusContext {
   enum AppState { Active, Excluded };
   Q_ENUM(AppState)
 
-  void setAdaptor(DbusAdaptor* adaptor);
-
   using Daemon::activate;
 
+  virtual bool activate(const InterfaceConfig& config) override;
+  virtual bool deactivate(bool emitSignals = true) override;
+
  public slots:
-  bool activate(const QString& jsonConfig);
-
-  bool deactivate(bool emitSignals = true) override;
   QString status();
-
   QString version();
   QString getLogs();
   void cleanupLogs() { cleanLogs(); }
@@ -65,7 +62,6 @@ class DBusService final : public Daemon, protected QDBusContext {
   void userRemoved(uint uid, const QDBusObjectPath& path);
 
  private:
-  DbusAdaptor* m_adaptor = nullptr;
   WireguardUtilsLinux* m_wgutils = nullptr;
   IPUtilsLinux* m_iputils = nullptr;
   DnsUtilsLinux* m_dnsutils = nullptr;
