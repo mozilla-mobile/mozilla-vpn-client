@@ -28,9 +28,6 @@ class WindowsDaemon final : public Daemon {
   DnsUtils* dnsutils() override { return m_dnsutils; }
 
  private:
-  void monitorBackendFailure();
-
- private:
   enum State {
     Active,
     Inactive,

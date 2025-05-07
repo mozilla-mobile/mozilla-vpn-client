@@ -516,3 +516,9 @@ void Daemon::checkHandshake() {
     m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
   }
 }
+
+void Daemon::abortBackendFailure() {
+  logger.warning() << "Backend failure occured - disconnecting";
+  emit backendFailure();
+  deactivate();
+}

@@ -23,7 +23,7 @@ Logger logger("MacOSDaemon");
 MacOSDaemon* s_daemon = nullptr;
 }  // namespace
 
-MacOSDaemon::MacOSDaemon() : Daemon(nullptr) {
+MacOSDaemon::MacOSDaemon(QObject* parent) : Daemon(parent) {
   MZ_COUNT_CTOR(MacOSDaemon);
 
   logger.debug() << "Daemon created";
@@ -31,6 +31,9 @@ MacOSDaemon::MacOSDaemon() : Daemon(nullptr) {
   m_wgutils = new WireguardUtilsMacos(this);
   m_dnsutils = new DnsUtilsMacos(this);
   m_iputils = new IPUtilsMacos(this);
+
+  connect(m_wgutils, &WireguardUtils::backendFailure, this,
+          &MacOSDaemon::abortBackendFailure);
 
   Q_ASSERT(s_daemon == nullptr);
   s_daemon = this;
