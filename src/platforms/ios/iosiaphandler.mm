@@ -34,6 +34,11 @@ IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
   swiftIAPHandler = [[InAppPurchaseHandler alloc]
       initWithErrorCallback:^(bool showNoSubscriptionError) {
         logger.debug() << "Subscription error with StoreKit2.";
+        if (m_subscriptionState != eActive) {
+          logger.warning() << "Transaction erroring out of subscription process!";
+          return;
+        }
+
         QMetaObject::invokeMethod(this, "stopSubscription", Qt::QueuedConnection);
         QMetaObject::invokeMethod(this, "subscriptionCanceled", Qt::QueuedConnection);
 
@@ -42,6 +47,11 @@ IOSIAPHandler::IOSIAPHandler(QObject* parent) : PurchaseIAPHandler(parent) {
         }
       }
       successCallback:^(NSString* productIdentifier, NSString* transactionIdentifier) {
+        if (m_subscriptionState != eActive) {
+          logger.warning() << "Completing transaction out of subscription process!";
+          return;
+        }
+
         if (App::instance()->userAuthenticated()) {
           logger.debug() << "Subscription completed with StoreKit2. Starting validation.";
           QMetaObject::invokeMethod(this, "processCompletedTransactions", Qt::QueuedConnection,
@@ -121,10 +131,6 @@ void IOSIAPHandler::nativeRestoreSubscription() {
 void IOSIAPHandler::processCompletedTransactions(const QStringList& ids,
                                                  const QString transactionIdentifier) {
   logger.debug() << "process completed transactions";
-
-  if (m_subscriptionState != eActive) {
-    logger.warning() << "Completing transaction out of subscription process!";
-  }
 
   TaskPurchase* purchase = TaskPurchase::createForIOS(transactionIdentifier);
 

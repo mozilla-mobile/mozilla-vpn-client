@@ -52,5 +52,10 @@ void PurchaseIAPHandler::startSubscription(const QString& productIdentifier) {
 
 void PurchaseIAPHandler::startRestoreSubscription() {
   logger.debug() << "Starting the restore of the subscription";
+  if (m_subscriptionState != eInactive) {
+    logger.warning() << "No multiple IAP!";
+    return;
+  }
+  m_subscriptionState = eActive;
   nativeRestoreSubscription();
 }

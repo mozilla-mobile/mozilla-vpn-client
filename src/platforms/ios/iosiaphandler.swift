@@ -174,12 +174,12 @@ import StoreKit
     InAppPurchaseHandler.logger.info(message: "Creating transaction listener")
       return Task(priority: .background) {
           for await verificationResult in Transaction.updates {
-              self.handle(updatedTransaction: verificationResult)
+              await self.handle(updatedTransaction: verificationResult)
           }
       }
   }
 
-  private func handle(updatedTransaction verificationResult: VerificationResult<Transaction>) {
+  private func handle(updatedTransaction verificationResult: VerificationResult<Transaction>) async {
     guard case .verified(let transaction) = verificationResult else {
         InAppPurchaseHandler.logger.info(message: "Unverified transaction returend")
         return
@@ -193,17 +193,16 @@ import StoreKit
       // Expirations handled by server
       InAppPurchaseHandler.logger.info(message: "Transaction has expired")
       errorCallback(false)
-        return
     } else if transaction.isUpgraded {
         // Do nothing, there is an active transaction
         // for a higher level of service.
       InAppPurchaseHandler.logger.info(message: "Transaction was upgraded")
       errorCallback(false)
-        return
     } else {
       InAppPurchaseHandler.logger.info(message: "New successful transaction returned")
       let originalTransactionIdentifier: String = "\(transaction.originalID)"
       successCallback(NSString(string: transaction.productID), NSString(string: originalTransactionIdentifier))
+      await transaction.finish()
     }
   }
 }
