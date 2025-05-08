@@ -182,32 +182,14 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
 }
 
 - (void)getStatus: (void (^)(NSString *))reply {
-  NSString* result = nullptr;
-  NSCondition* cond = [NSCondition new];
-
-  [cond lock];
-  QMetaObject::invokeMethod(self.daemon, [&]{
-    QByteArray jsBlob = QJsonDocument(self.daemon->getStatus()).toJson();
-    result = [NSString stringWithUTF8String:jsBlob.constData()];
-    [cond signal];
-  });
-
-  [cond wait];
-  reply(result);
+  QJsonObject result = self.bridge->invokeDaemon(&Daemon::getStatus);
+  QByteArray jsBlob = QJsonDocument(result).toJson();
+  reply([NSString stringWithUTF8String:jsBlob.constData()]);
 }
 
 - (void)getBackendLogs: (void (^)(NSString *))reply {
-  NSString* result = nullptr;
-  NSCondition* cond = [NSCondition new];
-
-  [cond lock];
-  QMetaObject::invokeMethod(self.daemon, [&]{
-    result = self.daemon->logs().toNSString();
-    [cond signal];
-  });
-
-  [cond wait];
-  reply(result);
+  QString result = self.bridge->invokeDaemon(&Daemon::logs);
+  reply(result.toNSString());
 }
 
 - (void)cleanupBackendLogs {
@@ -230,6 +212,20 @@ XpcDaemonSession::XpcDaemonSession(Daemon* daemon, void* connection)
   setParent(daemon);
 }
 
+template<typename T>
+T XpcDaemonSession::invokeDaemon(T (Daemon::*method)(void)) {
+  NSCondition* cond = [NSCondition new];
+  Daemon* daemon = qobject_cast<Daemon*>(parent());
+  T result;
+  [cond lock];
+  QMetaObject::invokeMethod(daemon, [&]{
+    result = (daemon->*method)();
+    [cond signal];
+  });
+  [cond wait];
+  return result;
+}
+
 // It's not entirely clear if the ObjC runtime will handle thread-safety when
 // invoking methods on the remoteObjectProxy for us. So this wrapper will take
 // a method to be invoked and schedule it for execution on the XPC thread with
@@ -245,10 +241,8 @@ void XpcDaemonSession::invokeClient(SEL selector) {
     return;
   }
 
-  [conn scheduleSendBarrierBlock:^{
-    [[conn remoteObjectProxy] performSelector:selector];
-    m_backlog.fetchAndSubOrdered(1);
-  }];
+  [[conn remoteObjectProxy] performSelector:selector];
+  [conn scheduleSendBarrierBlock:^{ m_backlog.fetchAndSubOrdered(1); }];
 }
 
 // Same as above - but it can take an argument.
@@ -265,10 +259,8 @@ void XpcDaemonSession::invokeClient(SEL selector, T arg) {
   NSInvocation* invocation = [NSInvocation invocationWithMethodSignature:sig];
   [invocation setSelector:selector];
   [invocation setArgument:&arg atIndex:2];
-  [conn scheduleSendBarrierBlock:^{
-    [invocation invokeWithTarget:remote];
-    m_backlog.fetchAndSubOrdered(1);
-  }];
+  [invocation invokeWithTarget:remote];
+  [conn scheduleSendBarrierBlock:^{ m_backlog.fetchAndSubOrdered(1); }];
 }
 
 void XpcDaemonSession::connected(const QString& pubkey) {

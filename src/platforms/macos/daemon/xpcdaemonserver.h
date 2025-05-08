@@ -30,6 +30,8 @@ class XpcDaemonSession final : public QObject {
  public:
   XpcDaemonSession(Daemon* daemon, void* connection);
 
+  template<typename T> T invokeDaemon(T (Daemon::*method)(void));
+
  public slots:
   void connected(const QString& pubkey);
   void disconnected();
