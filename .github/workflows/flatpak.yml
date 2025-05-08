@@ -33,7 +33,7 @@ jobs:
         run: |
           python -m yq -yi 'del(.modules[-1].sources[0].branch)' org.mozilla.vpn.yml
           python -m yq -yi ".modules[-1].sources[0].url = \"https://github.com/${{ github.repository }}\"" org.mozilla.vpn.yml
-          python -m yq -yi ".modules[-1].sources[0].commit = \"${{ github.sha }}\"" org.mozilla.vpn.yml
+          python -m yq -yi '.modules[-1].sources[0].branch = "${{ github.head_ref }}"' org.mozilla.vpn.yml
           cat org.mozilla.vpn.yml
 
       - name: Add Appstream metainfo
