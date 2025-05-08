@@ -182,33 +182,15 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
   reply([NSString stringWithUTF8String:APP_VERSION]);
 }
 
-- (void)getStatus:(void (^)(NSString *))reply {
-  NSString* result = nullptr;
-  NSCondition* cond = [NSCondition new];
-
-  [cond lock];
-  QMetaObject::invokeMethod(self.daemon, [&]{
-    QByteArray jsBlob = QJsonDocument(self.daemon->getStatus()).toJson();
-    result = [NSString stringWithUTF8String:jsBlob.constData()];
-    [cond signal];
-  });
-
-  [cond wait];
-  reply(result);
+- (void)getStatus: (void (^)(NSString *))reply {
+  QJsonObject result = self.bridge->invokeDaemon(&Daemon::getStatus);
+  QByteArray jsBlob = QJsonDocument(result).toJson();
+  reply([NSString stringWithUTF8String:jsBlob.constData()]);
 }
 
-- (void) getBackendLogs: (void (^)(NSString *))reply {
-  NSString* result = nullptr;
-  NSCondition* cond = [NSCondition new];
-
-  [cond lock];
-  QMetaObject::invokeMethod(self.daemon, [&](){
-    result = self.daemon->logs().toNSString();
-    [cond signal];
-  });
-
-  [cond wait];
-  reply(result);
+- (void)getBackendLogs: (void (^)(NSString *))reply {
+  QString result = self.bridge->invokeDaemon(&Daemon::logs);
+  reply(result.toNSString());
 }
 
 - (void)cleanupBackendLogs {
@@ -231,10 +213,25 @@ XpcDaemonSession::XpcDaemonSession(Daemon* daemon, void* connection)
   setParent(daemon);
 }
 
+// This wrapper allows us to invoke a method on the daemon class across thread
+// boundaries while safely returning a value.
+template<typename T>
+T XpcDaemonSession::invokeDaemon(T (Daemon::*method)(void)) {
+  NSCondition* cond = [NSCondition new];
+  Daemon* daemon = qobject_cast<Daemon*>(parent());
+  T result;
+  [cond lock];
+  QMetaObject::invokeMethod(daemon, [&]{
+    result = (daemon->*method)();
+    [cond signal];
+  });
+  [cond wait];
+  return result;
+}
+
 // It's not entirely clear if the ObjC runtime will handle thread-safety when
 // invoking methods on the remoteObjectProxy for us. So this wrapper will take
-// a method to be invoked and schedule it for execution on the XPC thread with
-// scheduleSendBarrierBlock.
+// a method to be invoked and schedule it for execution on the XPC thread.
 //
 // This also counts the number of method calls waiting on the connection to
 // detect if the client has stopped processing messages, in which case we might

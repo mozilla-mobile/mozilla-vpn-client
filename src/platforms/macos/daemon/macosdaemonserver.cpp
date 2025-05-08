@@ -36,10 +36,11 @@ MacOSDaemonServer::~MacOSDaemonServer() { MZ_COUNT_DTOR(MacOSDaemonServer); }
 
 int MacOSDaemonServer::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
+  qputenv("QT_EVENT_DISPATCHER_CORE_FOUNDATION", "1");
   setupLogDir();
+
   QString appName = tokens[0];
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
-
   QCoreApplication::setApplicationName("Mozilla VPN Daemon");
   QCoreApplication::setApplicationVersion(Constants::versionString());
 
