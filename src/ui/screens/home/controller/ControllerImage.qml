@@ -128,7 +128,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAlert.defaultColor
+                color: MZTheme.colors.errorAccentLight
             }
             PropertyChanges {
                 target: insetIcon
@@ -145,7 +145,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAlert.defaultColor
+                color: MZTheme.colors.errorAccentLight
             }
             PropertyChanges {
                 target: insetIcon

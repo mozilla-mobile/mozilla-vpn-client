@@ -66,7 +66,7 @@ class LocalSocketController : public ControllerImpl {
              const QString& expectedResponseType = QString(),
              int timeout = CONNECTION_RESPONSE_TIMEOUT_MSEC);
 
- private:
+ protected:
   enum {
     eUnknown,
     eInitializing,
@@ -74,6 +74,7 @@ class LocalSocketController : public ControllerImpl {
     eDisconnected,
   } m_daemonState = eUnknown;
 
+ private:
   const QString m_path;
   QLocalSocket* m_socket = nullptr;
 

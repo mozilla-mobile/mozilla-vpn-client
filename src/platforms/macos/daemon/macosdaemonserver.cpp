@@ -17,6 +17,7 @@
 #include "daemon/daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "loghandler.h"
 #include "macosdaemon.h"
 #include "mozillavpn.h"
 #include "signalhandler.h"
@@ -34,8 +35,8 @@ MacOSDaemonServer::~MacOSDaemonServer() { MZ_COUNT_DTOR(MacOSDaemonServer); }
 
 int MacOSDaemonServer::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
+  setupLogDir();
   QString appName = tokens[0];
-
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN Daemon");
@@ -98,6 +99,23 @@ bool MacOSDaemonServer::makeRuntimeDir(const QDir& dir) {
   }
 
   return true;
+}
+
+void MacOSDaemonServer::setupLogDir() {
+  QDir logdir("/var/log/mozillavpn");
+  QFileDevice::Permissions perms =
+      QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner |
+      QFileDevice::ReadGroup | QFileDevice::ExeGroup | QFileDevice::ReadOther |
+      QFileDevice::ExeOther;
+  if (logdir.exists()) {
+    QFile device(logdir.path());
+    device.setPermissions(perms);
+  } else {
+    QDir parentDir = logdir;
+    parentDir.cdUp();
+    parentDir.mkdir(logdir.dirName(), perms);
+  }
+  LogHandler::setLocation(logdir.path());
 }
 
 static Command::RegistrationProxy<MacOSDaemonServer> s_commandMacOSDaemon;

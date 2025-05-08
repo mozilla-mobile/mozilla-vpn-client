@@ -18,6 +18,7 @@ class MacOSDaemonServer final : public Command {
 
  private:
   static bool makeRuntimeDir(const QDir& dir);
+  static void setupLogDir();
 };
 
 #endif  // MACOSDAEMONSERVER_H
