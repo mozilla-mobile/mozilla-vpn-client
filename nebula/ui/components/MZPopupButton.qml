@@ -43,6 +43,7 @@ MZButtonBase {
         id: buttonText
 
         font.family: isCancelBtn ? MZTheme.theme.fontInterFamily : MZTheme.theme.fontBoldFamily
+        color: style.colorScheme.fontColor
         lineHeight: 15
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
