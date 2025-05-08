@@ -20,18 +20,17 @@ class MacOSController final : public ControllerImpl {
 
   void initialize(const Device* device, const Keys* keys) override;
 
-  void activate(const InterfaceConfig& config,
-                Controller::Reason reason) override;
+  void activate(const InterfaceConfig& config, Controller::Reason reason) override;
 
   void deactivate(Controller::Reason reason) override;
 
-  virtual void checkStatus() override;
+  void checkStatus() override;
 
-  virtual void getBackendLogs(QObject* receiver, const char* method) override;
+  void getBackendLogs(QObject* receiver, const char* method) override;
 
-  virtual void cleanupBackendLogs() override;
+  void cleanupBackendLogs() override;
 
-  virtual void forceDaemonCrash() override;
+  void forceDaemonCrash() override;
 
  private slots:
   void checkInitialization();

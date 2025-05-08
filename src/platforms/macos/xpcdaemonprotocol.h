@@ -12,7 +12,7 @@
 - (void)deactivate;
 - (void)getVersion:(void (^)(NSString*))reply;
 - (void)getStatus:(void (^)(NSString*))reply;
-- (void)getBackendLogs:(void (^)(NSString *))reply;
+- (void)getBackendLogs:(void (^)(NSString*))reply;
 - (void)cleanupBackendLogs;
 @end
 

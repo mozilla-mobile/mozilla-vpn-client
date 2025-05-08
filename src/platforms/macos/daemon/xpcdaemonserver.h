@@ -30,7 +30,8 @@ class XpcDaemonSession final : public QObject {
  public:
   XpcDaemonSession(Daemon* daemon, void* connection);
 
-  template<typename T> T invokeDaemon(T (Daemon::*method)(void));
+  template<typename T>
+  T invokeDaemon(T (Daemon::*method)(void));
 
  public slots:
   void connected(const QString& pubkey);
@@ -39,7 +40,8 @@ class XpcDaemonSession final : public QObject {
 
  private:
   void invokeClient(SEL selector);
-  template<typename T> void invokeClient(SEL selector, T arg);
+  template<typename T>
+  void invokeClient(SEL selector, T arg);
 
   QAtomicInt m_backlog;
   void* m_connection = nullptr;
