@@ -22,6 +22,11 @@ target_link_libraries(daemon PRIVATE ${FW_FOUNDATION} ${FW_NETWORK} ${FW_SECURIT
 target_link_libraries(daemon PRIVATE Qt6::Core Qt6::Network)
 target_link_libraries(daemon PRIVATE mzutils)
 
+find_library(FW_NW_EXTENSION NetworkExtension)
+find_library(FW_SYS_EXTENSION SystemExtensions)
+target_link_libraries(daemon PRIVATE ${FW_NW_EXTENSION})
+target_link_libraries(daemon PRIVATE ${FW_SYS_EXTENSION})
+
 # VPN client include paths
 target_include_directories(daemon PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_definitions(daemon PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
