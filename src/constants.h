@@ -215,6 +215,9 @@ constexpr const char* SUMO_MULTIHOP =
 constexpr const char* SUMO_ALWAYS_ON_ANDROID =
     "https://support.mozilla.org/kb/how-enable-always-vpn-android";
 
+constexpr const char* SUMO_ALLOW_BACKGROUND_MACOS =
+    "https://support.mozilla.org/kb/allow-vpn-run-background-macos";
+
 PRODBETAEXPR(QString, contactSupportUrl, "https://accounts.firefox.com/support",
              "https://accounts.stage.mozaws.net/support")
 
@@ -313,9 +316,7 @@ constexpr const char* LINUX_CRYPTO_SETTINGS_DESC =
 constexpr const char* LINUX_APP_ID = "org.mozilla.vpn";
 
 constexpr const char* WINDOWS_DAEMON_PATH = "\\\\.\\pipe\\mozillavpn";
-constexpr const char* MACOS_DAEMON_TMP_PATH = "/tmp/mozillavpn.socket";
-constexpr const char* MACOS_DAEMON_VAR_PATH =
-    "/var/run/mozillavpn/daemon.socket";
+constexpr const char* MACOS_DAEMON_PATH = "/var/run/mozillavpn/daemon.socket";
 
 constexpr const char* SOCKSPROXY_UNIX_PATH = "/var/run/mozillavpn.proxy";
 constexpr const char* SOCKSPROXY_SERVICE_NAME = "MozillaVPNProxy";

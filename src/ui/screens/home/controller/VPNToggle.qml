@@ -13,7 +13,8 @@ MZButtonBase {
 
     property var connectionRetryOverX: VPNController.connectionRetry > 1
     property var enableDisconnectInConfirming: VPNController.enableDisconnectInConfirming
-    property var toggleColor: {}
+    // Without a default for toggleColor, there is a flicker on dark mode when tapping into the main screen while VPN is disconnected
+    property var toggleColor: (VPNController.isActive() ? MZTheme.colors.vpnToggleConnected : MZTheme.colors.vpnToggleDisconnectedMainSwitch)
     property var toolTipTitle: ""
     Accessible.name: toolTipTitle
 
@@ -50,22 +51,27 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 4
+                color: MZTheme.colors.disconnectedToggle
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.vpnToggleDisconnected.defaultColor
+                color: MZTheme.colors.vpnToggleDisconnectedMainSwitch.defaultColor
                 border.color: MZTheme.colors.bgColorStronger
             }
 
             PropertyChanges {
                 target: toggleButton
-                toggleColor: MZTheme.colors.vpnToggleDisconnected
+                toggleColor: MZTheme.colors.vpnToggleDisconnectedMainSwitch
             }
 
+            PropertyChanges {
+                target: disconnectedOutline
+                opacity: 1
+            }
         },
         State {
-            name: VPNController.StateOff
+            name: VPNController.StatePermissionRequired
 
             PropertyChanges {
                 target: cursor
@@ -74,7 +80,32 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.vpnToggleDisconnected.defaultColor
+                color: MZTheme.colors.vpnToggleDisconnectedMainSwitch.defaultColor
+                border.color: MZTheme.colors.bgColorStronger
+            }
+
+            PropertyChanges {
+                target: toggleButton
+                toggleColor: MZTheme.colors.vpnToggleDisconnectedMainSwitch
+            }
+
+            PropertyChanges {
+                target: disconnectedOutline
+                opacity: 1
+            }
+        },
+        State {
+            name: VPNController.StateOff
+
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 4
+                color: MZTheme.colors.disconnectedToggle
+            }
+
+            PropertyChanges {
+                target: toggle
+                color: MZTheme.colors.vpnToggleDisconnectedMainSwitch.defaultColor
                 border.color: MZTheme.colors.bgColorStronger
             }
 
@@ -82,7 +113,12 @@ MZButtonBase {
                 target: toggleButton
                 //% "Turn VPN on"
                 toolTipTitle: qsTrId("vpn.toggle.on")
-                toggleColor: MZTheme.colors.vpnToggleDisconnected
+                toggleColor: MZTheme.colors.vpnToggleDisconnectedMainSwitch
+            }
+
+            PropertyChanges {
+                target: disconnectedOutline
+                opacity: 1
             }
 
         },
@@ -92,11 +128,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 4
+                color: MZTheme.colors.disconnectedToggle
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.vpnToggleDisconnected.defaultColor
+                color: MZTheme.colors.vpnToggleDisconnectedMainSwitch.defaultColor
                 border.color: MZTheme.colors.bgColorStronger
             }
 
@@ -104,7 +141,12 @@ MZButtonBase {
                 target: toggleButton
                 //% "Turn VPN on"
                 toolTipTitle: qsTrId("vpn.toggle.on")
-                toggleColor: MZTheme.colors.vpnToggleDisconnected
+                toggleColor: MZTheme.colors.vpnToggleDisconnectedMainSwitch
+            }
+
+            PropertyChanges {
+                target: disconnectedOutline
+                opacity: 1
             }
         },
 
@@ -115,12 +157,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: MZTheme.colors.activatingToggle
+                color: MZTheme.colors.connectingToggle
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.activatingToggleBackground
+                color: MZTheme.colors.connectingToggleBackground
                 border.color: MZTheme.colors.primary
             }
 
@@ -129,6 +171,11 @@ MZButtonBase {
                 //% "Turn VPN off"
                 toolTipTitle: qsTrId("vpn.toggle.off")
                 toggleColor: MZTheme.colors.vpnToggleConnected
+            }
+
+            PropertyChanges {
+                target: disconnectedOutline
+                opacity: 0
             }
 
         },
@@ -138,12 +185,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: connectionRetryOverX ? MZTheme.colors.bgColorStronger : MZTheme.colors.activatingToggle
+                color: connectionRetryOverX ? MZTheme.colors.bgColorStronger : MZTheme.colors.connectingToggle
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.activatingToggleBackground
+                color: MZTheme.colors.connectingToggleBackground
                 border.color: MZTheme.colors.primary
             }
 
@@ -154,6 +201,11 @@ MZButtonBase {
                 toggleColor: MZTheme.colors.vpnToggleConnected
             }
 
+            PropertyChanges {
+                target: disconnectedOutline
+                opacity: 0
+            }
+
         },
         State {
             name: VPNController.StateOn
@@ -161,6 +213,7 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
+                color: MZTheme.colors.connectedToggle
             }
 
             PropertyChanges {
@@ -173,6 +226,11 @@ MZButtonBase {
                 target: toggleButton
                 toolTipTitle: qsTrId("vpn.toggle.off")
                 toggleColor: MZTheme.colors.vpnToggleConnected
+            }
+
+            PropertyChanges {
+                target: disconnectedOutline
+                opacity: 0
             }
         },
 
@@ -182,6 +240,7 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
+                color: MZTheme.colors.connectedToggle
             }
 
             PropertyChanges {
@@ -195,6 +254,11 @@ MZButtonBase {
                 toolTipTitle: qsTrId("vpn.toggle.off")
                 toggleColor: MZTheme.colors.vpnToggleConnected
             }
+
+            PropertyChanges {
+                target: disconnectedOutline
+                opacity: 0
+            }
         },
         State {
             name: VPNController.StateDisconnecting
@@ -202,20 +266,25 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 4
+                color: MZTheme.colors.disconnectedToggle
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.vpnToggleDisconnected.buttonDisabled
+                color: MZTheme.colors.vpnToggleDisconnectedMainSwitch.buttonDisabled
                 border.color: MZTheme.colors.bgColorStronger
             }
 
             PropertyChanges {
                 target: toggleButton
                 toolTipTitle: qsTrId("vpn.toggle.on")
-                toggleColor: MZTheme.colors.vpnToggleDisconnected
+                toggleColor: MZTheme.colors.vpnToggleDisconnectedMainSwitch
             }
 
+            PropertyChanges {
+                target: disconnectedOutline
+                opacity: 1
+            }
         },
         State {
             name: VPNController.StateSwitching
@@ -223,12 +292,12 @@ MZButtonBase {
             PropertyChanges {
                 target: cursor
                 anchors.leftMargin: 32
-                color: MZTheme.colors.activatingToggle
+                color: MZTheme.colors.connectingToggle
             }
 
             PropertyChanges {
                 target: toggle
-                color: MZTheme.colors.activatingToggleBackground
+                color: MZTheme.colors.connectingToggleBackground
                 border.color: MZTheme.colors.primary
             }
 
@@ -257,6 +326,18 @@ MZButtonBase {
 
         }
     ]
+
+    // Using MZFocusBorder as the outline for dark mode's disconnected state
+    MZFocusBorder {
+        id: disconnectedOutline
+
+        anchors.fill: toggle
+        anchors.margins: -2
+        radius: height / 2
+        border.color: MZTheme.colors.vpnToggleDisconnectedBorder
+        color: MZTheme.colors.transparent
+        opacity: 1
+    }
 
     // Focus rings
     MZFocusBorder {
@@ -302,7 +383,7 @@ MZButtonBase {
         z: -1
         anchors.fill: toggle
         radius: height / 2
-        anchors.margins: -5
+        anchors.margins: -7
 
         PropertyAnimation on opacity {
             duration: 200
@@ -339,6 +420,7 @@ MZButtonBase {
         }
     }
 
+    // Circle within the toggle
     Rectangle {
         id: cursor
 

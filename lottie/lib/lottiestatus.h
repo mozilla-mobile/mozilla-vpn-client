@@ -53,8 +53,8 @@ class LottieStatus final : public QObject {
   }
 
  signals:
-  void changed(bool playing, double currentTime, int totalTime, bool error,
-               const QString& errorString);
+  void changed(bool playing = false, double currentTime = 0, int totalTime = 0,
+               bool error = false, const QString& errorString = "");
 
  private:
   bool m_playing = false;

@@ -132,9 +132,9 @@ StackView {
 
                         MZIcon {
                             id: warningIcon
-                            source: MZAssetLookup.getImageSource("InfoIconDark")
-                            sourceSize.height: 18
-                            sourceSize.width: 18
+                            source: MZAssetLookup.getImageSource("InfoIcon")
+                            sourceSize.height: 23
+                            sourceSize.width: 23
                             anchors.centerIn: parent
                         }
                     }
@@ -142,7 +142,7 @@ StackView {
                     MZTextBlock {
                         id: message
                         text: MZI18n.MultiHopFeatureMultiHopInfoText
-                        color: MZTheme.colors.fontColor
+                        color: MZTheme.colors.fontColorDark
                         Layout.fillWidth: true
                         Layout.alignment: Qt.AlignTop
                         Layout.topMargin: 4

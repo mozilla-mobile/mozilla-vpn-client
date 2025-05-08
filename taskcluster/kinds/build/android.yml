@@ -16,7 +16,7 @@ task-defaults:
           docker-image: {in-tree: conda-base}
     run:
           using: run-task
-          use-caches: true
+          use-caches: [checkout]
           cwd: '{checkout}'
 # TODO: Re-Enable The next build
 # android-qt-next/debug:

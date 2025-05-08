@@ -190,4 +190,16 @@ bool FeatureCallback_proxyCanTurnOn() {
 #endif
 }
 
+bool FeatureCallback_themeSelectionIncludesAutomatic() {
+#if defined(MZ_LINUX)
+  return true;
+#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+  return true;
+#else
+  // The API we're using isn't available below Qt 6.5, so this feature will not
+  // be released for these users.
+  return false;
+#endif
+}
+
 #endif  // FEATURELISTCALLBACK_H

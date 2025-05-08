@@ -1,211 +1,129 @@
-/* This Source Code Form is subject to the terms of the Mozilla Public
- * License, v. 2.0. If a copy of the MPL was not distributed with this
- * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
-
-import { Terminal } from 'xterm'
-import { FitAddon } from 'xterm-addon-fit'
-import { html, css, LitElement } from 'lit'
-import { Client } from '../inspector/client'
-import { CommandObserver } from '../inspector/CommandObserver'
-
-const RED_ESCAPE = '\x1B[0;31m'
-const NO_COLOR_ESCAPE = '\x1B[0m'
-const NEWLINE = '\r\n'
-
-const baseTheme = {
-  foreground: '#F8F8F8',
-  background: '#2D2E2C',
-  selection: '#5DA5D533',
-  black: '#1E1E1D',
-  brightBlack: '#262625',
-  red: '#CE5C5C',
-  brightRed: '#FF7272',
-  green: '#5BCC5B',
-  brightGreen: '#72FF72',
-  yellow: '#CCCC5B',
-  brightYellow: '#FFFF72',
-  blue: '#5D5DD3',
-  brightBlue: '#7279FF',
-  magenta: '#BC5ED1',
-  brightMagenta: '#E572FF',
-  cyan: '#5DA5D5',
-  brightCyan: '#72F0FF',
-  white: '#F8F8F8',
-  brightWhite: '#FFFFFF'
-}
+/* Updated component fixing initialization issue with Lit lifecycle */
+import { html, css, LitElement } from 'lit';
+import { Client } from '../inspector/client.js';
+import { CommandObserver } from '../inspector/CommandObserver.js';
 
 export class ViewShell extends LitElement {
-  createRenderRoot () {
-    return this
-  }
 
-  connectedCallback () {
-    super.connectedCallback()
-    const terminal = new Terminal({
-      fontFamily: '"Cascadia Code", Menlo, monospace',
-      fontSize: '14',
-      lineHeight: 1,
-      theme: baseTheme,
-      cursorBlink: true,
-      rendererType: 'dom'
-    })
-    const fitAddon = new FitAddon()
-    this.terminal = terminal
-    this.fitAddon = fitAddon
-
-    terminal.loadAddon(fitAddon)
-    // Let Term Match Size
-    window.addEventListener('resize', () => {
-      this.fitAddon.fit()
-    })
-    terminal.open(this.term)
-    fitAddon.fit()
+  firstUpdated() {
+    this.commandList = [];
+    this.lastCommand = '';
 
     Client.connect().then((url) => {
-      this.terminal.writeln(`\n\rConnected to mozillaVPN@${url}`)
-      this.runCommand('help')
-      this.prompt()
-    })
-    Client.onAny((res) => this.processEvents(res))
+      this.appendOutput(`Connected to mozillaVPN@${url}\n`);
+      this.runCommand('help');
+    });
+
+    Client.onAny((res) => this.processEvents(res));
 
     CommandObserver.onAny(() => {
-      this.commandList = CommandObserver.commands
-    })
+      this.commandList = CommandObserver.commands;
+    });
 
-    let command = ''
-    terminal.onData(e => {
-      switch (e) {
-        case '\u0003': // Ctrl+C
-          console.log(terminal.getSelection())
-
-          break
-        case '\r': // Enter
-          this.runCommand(command)
-          command = ''
-          break
-        case '\u007F': // Backspace (DEL)
-          // Do not delete the prompt
-          if (terminal._core.buffer.x > 2) {
-            terminal.write('\b \b')
-            if (command.length > 0) {
-              command = command.substr(0, command.length - 1)
-            }
-          }
-          break
-        default: // Print all other characters for demo
-          if (e >= String.fromCharCode(0x20) && e <= String.fromCharCode(0x7B)) {
-            command += e
-            terminal.write(e)
-          }
+    this.inputBox.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        const command = this.inputBox.value.trim();
+        this.appendOutput(`$ ${command}\n`);
+        this.runCommand(command);
+        this.inputBox.value = '';
       }
-    })
-    terminal.onKey((key, event) => {
-      if (key.key === '\u001b[A') {
-        // UP key ->
-        if (this.lastCommand != '') {
-          command = this.lastCommand
-          this.clearLine()
-          terminal.write(this.lastCommand)
-        }
-        return
-      }
-      if (key.key === '\t') {
-        // Tab Pressed!
-        if (command === '') {
-          // No Command here!
-          terminal.writeln('')
-          terminal.write(this.commandList.join('  '))
-          this.prompt()
-          return
-        }
-        const closestCommands = this.commandList.filter(c => c.startsWith(command))
-        if (closestCommands.length > 1) {
-          terminal.writeln('')
-          terminal.write(closestCommands.join('  '))
-          this.prompt()
-          terminal.write(command)
-        } else if (closestCommands.length == 1) {
-          const newCommand = closestCommands.shift()
-          this.clearLine()
-          terminal.write(newCommand)
-          command = newCommand
-        }
-      }
-    })
+    });
   }
 
-  runCommand (command) {
-    if (command === '') {
-      this.prompt()
-      return
-    }
+  runCommand(command) {
+    if (!command) return;
+
     if (command === 'clear') {
-      this.terminal.write('\u001Bc')
-      this.prompt()
-      return
+      this.outputBox.value = '';
+      return;
     }
-    this.lastCommand = command
-    Client.sendCommand(command)
-    this.prompt()
+
+    this.lastCommand = command;
+    Client.sendCommand(command);
   }
 
-  prompt () {
-    this.terminal.write('\n\r$ ')
+  processEvents(message) {
+    if (['screen_capture', 'log', 'network'].includes(message.type)) return;
+
+    if (message.type === 'help') {
+      message.value = message.value.replaceAll('\t', '\n\t');
+    }
+
+    this.writeResponse(message);
   }
 
-  clearLine () {
-    this.terminal.write('\x1b[2K\r')
-    this.terminal.write('$ ')
+  writeResponse(message) {
+    const { type, value, error } = message;
+    let text = typeof value === 'object' ? JSON.stringify(value) : value;
+
+    if (!text && !error) return;
+
+    let output = `client:(${type})\n`;
+    output += error ? `ERROR: ${error}` : text;
+    output += '\n';
+
+    this.appendOutput(output);
   }
 
-  processEvents (message) {
-    if (['screen_capture', 'log', 'network'].includes(message.type)) {
-      return
-    }
-    if (message.type == 'help') {
-      message.value = message.value.replaceAll('\t', '\n\t')
-    }
-    this.writeResponse(message)
+  appendOutput(text) {
+    this.outputBox.value += text;
+    this.outputBox.scrollTop = this.outputBox.scrollHeight;
   }
 
-  writeResponse (message) {
-    const type = message.type
-    let text = message.value
-    if (typeof text === 'object') {
-      text = JSON.stringify(text)
-    }
-
-    const error = message.error
-    if (!text && !error) {
-      return
-    }
-    this.terminal.write(NEWLINE + `client:(${type})` + NEWLINE)
-
-    if (error) {
-      this.terminal.write(`${NEWLINE}${RED_ESCAPE}${error}${NO_COLOR_ESCAPE}`)
-    } else {
-      this.terminal.write(text.replaceAll('\n', '\r\n'))
-    }
-    this.terminal.write(NEWLINE)
-    this.prompt()
-  }
-
-  render () {
-    return html``
+  render() {
+    return html`
+      <div class="holder">
+        <textarea class="output" rows="20" cols="80" readonly></textarea>
+        <textarea class="input" rows="2" cols="80" placeholder="Enter command..."></textarea>
+      </div>
+    `;
   }
 
   static styles = css`
-  :host{
-    display: none;
+    :root{
+      display: flex;
+    }
+    .holder{
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+
+
+    }
+    .output {
+      width: 100%;
+      height: 90%;
+      resize: none;
+      background: #2D2E2C;
+      color: #F8F8F8;
+      border: none;
+      font-family: monospace;
+      padding: 10px;
+      overflow: auto;
+    }
+
+    .input {
+      width: 100%;
+      height: calc(1.5em +10px);
+      resize: none;
+      background: #1E1E1D;
+      color: #F8F8F8;
+      border: none;
+      font-family: monospace;
+      padding: 10px 10px;
+      line-height: 1.5;
+      box-sizing: border-box;
+    }
+  `;
+
+  get outputBox() {
+    return this.shadowRoot.querySelector('.output');
   }
 
-  .terminal{
-    overflow:hidden;
-  }
-  `
-
-  get term () {
-    return this.parentElement
+  get inputBox() {
+    return this.shadowRoot.querySelector('.input');
   }
 }
-customElements.define('view-shell', ViewShell)
+
+customElements.define('view-shell', ViewShell);

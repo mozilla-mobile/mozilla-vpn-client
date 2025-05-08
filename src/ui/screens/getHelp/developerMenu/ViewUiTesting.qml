@@ -36,6 +36,15 @@ MZViewBase {
         }
 
         MZSettingsItem {
+            settingTitle: "Color objects"
+            imageRightSrc: MZAssetLookup.getImageSource("Chevron")
+            imageRightMirror: MZLocalizer.isRightToLeft
+            onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewColorObjects.qml")
+            Layout.leftMargin: MZTheme.theme.windowMargin / 2
+            Layout.rightMargin: MZTheme.theme.windowMargin / 2
+        }
+
+        MZSettingsItem {
             settingTitle: "MZStepNavigation"
             imageRightSrc: MZAssetLookup.getImageSource("Chevron")
             imageRightMirror: MZLocalizer.isRightToLeft
@@ -112,7 +121,6 @@ MZViewBase {
 
                             text: "Use these features for more protection. They may cause issues on some sites, so you can turn them off anytime in settings."
                             horizontalAlignment: Text.AlignLeft
-                            color: MZTheme.colors.fontColor
                         }
 
                         MZCheckBoxRow {

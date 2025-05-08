@@ -8,73 +8,95 @@ qt_add_qml_module(resources
     STATIC
     RESOURCE_PREFIX /nebula
     RESOURCES
-        arrow-back-white.svg
         arrow-forward.svg
-        arrow-forward-white.svg
+        arrow-forward-dark.svg
         arrow-toggle.svg
+        arrow-toggle-dark.svg
+        arrowBack-dark.svg
         avatar.svg
+        avatar-dark.svg
         avatar-default.png
         avatar-delete-account.svg
         avatar-grayscale.svg
-        back-dark.svg
+        avatar-grayscale-dark.svg
+        avatarDeleteAccount-dark.svg
         back.svg
         buttonLoader.svg
-        checkmark.svg
+        buttonLoader-dark.svg
         checkmark-green.svg
-        chevron-right-dark.svg
         chevron.svg
+        chevron-dark.svg
         clock.svg
-        close-darker.svg
+        clock-dark.svg
         close-dark.svg
+        close-dark-darkmode.svg
         close-white.svg
         delete.svg
+        delete-dark.svg
         delete-white.svg
         delete-gray.svg
-        down.svg
-        dropdown-closed.svg
+        delete-gray-dark.svg
         externalLink.svg
+        externalLink-dark.svg
         eye-hidden.svg
+        eye-hidden-dark.svg
         eye-visible.svg
+        eye-visible-dark.svg
         fonts/InterUI.otf
         fonts/InterSemiBold.otf
         fonts/Metropolis.otf
         fonts/Metropolis-SemiBold.otf
         open-in-new.svg
+        open-in-new-dark.svg
         plus.svg
+        plus-dark.svg
         refresh.svg
+        refresh-dark.svg
+        refreshArrowsWithCheckMark-dark.svg
         search.svg
-        settings.svg
-        settings-white.svg
+        search-dark.svg
         shaders/baked/animatedRings.frag.qsb
         shaders/src/animatedRings.frag
         spinner.svg
-        update-lock.svg
         updateStatusUpdateAvailable.svg
         updateStatusUpToDate.svg
         verification-code.svg
         warning-dark-orange.svg
+        warning-dark-orange-dark.svg
         warning-orange.svg
         warning-gray.svg
+        warning-gray-dark.svg
         warning.svg
+        warningIconRed-dark.svg
         x-red50.svg
         check-green70.svg
         shield-green50.svg
         checkmark-blue50.svg
+        checkmark-dark.svg
         navbar/home.svg
         navbar/home-selected.svg
+        navbar/home-selected-dark.svg
         navbar/messages.svg
         navbar/messages-selected.svg
+        navbar/messages-selected-dark.svg
         navbar/settings.svg
         navbar/settings-selected.svg
+        navbar/settings-selected-dark.svg
         navbar/messages-notification-selected.svg
+        navbar/messages-notification-selected-dark.svg
         navbar/messages-notification.svg
+        navbar/messages-notification-dark.svg
         copy.svg
+        copy-dark.svg
         paste.svg
-        info.svg
+        paste-dark.svg
         success.svg
+        success-dark.svg
         lock.svg
         startup.svg
         question.svg
+        question-dark.svg
         tip-filled.svg
+        tip-filled-dark.svg
 
 )

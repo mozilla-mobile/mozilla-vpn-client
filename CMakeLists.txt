@@ -199,3 +199,6 @@ elseif(IOS)
         add_subdirectory(ios/adjust)
     endif()
 endif()
+
+
+add_subdirectory(tools/qml_hot_reload)

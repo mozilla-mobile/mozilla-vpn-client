@@ -7,7 +7,7 @@ if ! command -v xmlstarlet &> /dev/null; then
 fi
 
 # Check for the correct number of command-line arguments
-if [ "$#" -lt 2 ]; then
+if [ "$#" -lt 1 ]; then
   echo ""
   echo "Usage: $0 stringId1 [stringId2 stringId3 ... stringIdN]"
   echo "The blocks are the ids of the addon blocks we want to extract strings from."

@@ -78,7 +78,7 @@ args = parser.parse_args()
 ###
 # 0. Get list of all themes
 try:
-    all_themes = [item for item in os.listdir(args.themeDirectory[0]) if os.path.isdir(os.path.join(args.themeDirectory[0], item))]
+    all_themes = [item.rsplit(".",1)[0] for item in os.listdir(args.themeDirectory[0]) if os.path.isfile(os.path.join(args.themeDirectory[0], item))]
 except FileNotFoundError:
     exit(f"Path not found: {args.themeDirectory[0]}")
 except Exception as e:
@@ -88,8 +88,8 @@ if len(all_themes) == 0:
     exit(f"No themes found")
 
 ###
-# 1. All theme's `theme.js` should define the same named colors (though with different values)
-file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + "/theme.js", all_themes))
+# 1. All theme files should define the same named colors (though with different values)
+file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + ".js", all_themes))
 baseline_colors = colorsDefinedInFile(file_paths[0])
 for file_path in file_paths:
     colors_in_file = colorsDefinedInFile(file_path)
@@ -100,10 +100,10 @@ for file_path in file_paths:
             exit(f"Color {color} is not in all themes but found in {file_path}")
 
 ###
-# 2. Explict colors should not be used in theme-derived.js or any theme's theme.js file.
+# 2. Explict colors should not be used in theme-derived.js or any theme's color file.
 
-file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + "/theme.js", all_themes))
-file_paths.append(args.themeDirectory[0] + "/theme-derived.js")
+file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + ".js", all_themes))
+file_paths.append(os.path.join(args.themeDirectory[0], os.pardir) + "/theme-derived.js")
 for file_path in file_paths:
     checkForHexAndNamedColors(file_path)
 
@@ -113,8 +113,8 @@ for file_path in file_paths:
 
 # A. Get list of colors that should be used
 #   (Each theme's theme.js file should expose the same color names, so can just check one.)
-color_list_derived = colorsDefinedInFile(args.themeDirectory[0] + "/theme-derived.js")
-color_list_theme = colorsDefinedInFile(args.themeDirectory[0] + "/" + all_themes[0] + "/theme.js")
+color_list_derived = colorsDefinedInFile(os.path.join(args.themeDirectory[0], os.pardir) + "/theme-derived.js")
+color_list_theme = colorsDefinedInFile(args.themeDirectory[0] + "/" + all_themes[0] + ".js")
 # `transparent` is defined in colors.js, but allowed to be used in code per many comments
 color_list = color_list_derived + color_list_theme + ["transparent"]
 

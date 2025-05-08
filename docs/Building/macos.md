@@ -56,41 +56,53 @@ Unzip the folder and remember the location for the configure step.
 
 Make the build directory
 
-    mkdir build-mac
+    mkdir build-macos
 
 Configure
 
-    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=(Qt unzipped path)/macos/lib/cmake/
+    cmake -S . -B build-macos -GNinja -DCMAKE_PREFIX_PATH=(Qt unzipped path)/macos/lib/cmake/
 
 Compile
 
-    cmake --build build-mac -j (number of processes to use e.g. 8)
+    cmake --build build-macos -j (number of processes to use e.g. 8)
 
 # Run
 
 After building, you can run the app with
 
-    open ./build-mac/src/Mozilla\ VPN.app
+    open ./build-macos/src/Mozilla\ VPN.app
 
 However, opening as above will not give you log output and will not let you
 connect to the VPN.
 To overcome this, run two terminals.
 In the first, run
 
-    sudo ./build-mac/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN macosdaemon
+    sudo ./build-macos/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN macosdaemon
 
 In the second, run
 
-    ./build-mac/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN
+    ./build-macos/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN
 
 For most dev tasks (everything except working on the macosdaemon), you can leave the first terminal with the `macosdaemon` running and rebuild your client in the second with your new changes and test them.
+
+## Codesigning
+
+Many features of the Mozilla VPN project depend on having a valid code signature. To determine the codesigning identities available to you, you can use the `security` tool on the command line as follows:
+
+```
+user@example ~ % security find-identity -v -p codesigning                
+  1) AAAABBBBCCCCDDDDEEEEFFFFAAAABBBBCCCCDDDD "Apple Development: Jane Doe (XXXXXXXXXX)"
+     1 valid identities found
+```
+
+Thus, to configure the project to use the above codesigning identity, we can provide the argument `-DCODE_SIGN_IDENTITY=AAAABBBBCCCCDDDDEEEEFFFFAAAABBBBCCCCDDDD`
 
 # Building the installer
 
 Use the `--target pkg` to build the MacOS installer.
 
-This will produce an unsigned installer package at `build-mac/macos/pkg/MozillaVPN-unsigned.pkg`
-and a signed installer at `build-mac/macos/pkg/MozillaVPN-signed.pkg` if a valid installer
+This will produce an unsigned installer package at `build-macos/macos/pkg/MozillaVPN-unsigned.pkg`
+and a signed installer at `build-macos/macos/pkg/MozillaVPN-signed.pkg` if a valid installer
 signing identity was provided in the `INSTALLER_SIGN_IDENTITIY` [variable at configuration time](./index.md).
 
 # Building with Xcode
@@ -121,12 +133,12 @@ This step needs to be repeated each time Xcode updates.
 
 Use the same configure command above and add `-GXcode`:
 
-    cmake -S . -B build-mac -DCMAKE_PREFIX_PATH=(Qt unzipped path)/macos/lib/cmake/ -GXcode
+    cmake -S . -B build-macos -DCMAKE_PREFIX_PATH=(Qt unzipped path)/macos/lib/cmake/ -GXcode
 
-This will generate an Xcode project file at `build-mac/Mozilla VPN.xcodeproj` which can be opened
+This will generate an Xcode project file at `build-macos/Mozilla VPN.xcodeproj` which can be opened
 by Xcode:
 
-    open build-mac/Mozilla\ VPN.xcodeproj
+    open build-macos/Mozilla\ VPN.xcodeproj
 
 Once Xcode has opened the project, select the `mozillavpn` target and start the build.
 

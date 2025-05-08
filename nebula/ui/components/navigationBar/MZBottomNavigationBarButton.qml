@@ -38,8 +38,7 @@ MZIconButton {
         anchors.fill: parent
         visible: checked
         radius: parent.height / 2
-        opacity: .2
-        color: MZTheme.colors.bgColorStronger
+        color: MZTheme.colors.primaryHovered
     }
 
     Image {

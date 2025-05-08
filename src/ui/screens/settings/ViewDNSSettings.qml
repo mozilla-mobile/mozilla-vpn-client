@@ -162,24 +162,25 @@ MZViewBase {
                 MZInterLabel {
                     Layout.fillWidth: true
 
+                    color: MZTheme.colors.fontColorDark
                     text: MZI18n.SettingsDnsSettingsStandardDNSTitle
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignLeft
-
-                    MZMouseArea {
-                        anchors.fill: parent
-
-                        enabled: gatewayRadioButton.enabled
-                        width: Math.min(parent.implicitWidth, parent.width)
-                        propagateClickToParent: false
-                        onClicked: applyFrontendChanges(MZSettings.Gateway);
-                    }
                 }
 
                 MZTextBlock {
                     text: MZI18n.SettingsDnsSettingsStandardDNSBody
                     Layout.fillWidth: true
                 }
+            }
+
+            MZMouseArea {
+                anchors.fill: parent
+
+                enabled: gatewayRadioButton.enabled
+                width: Math.min(parent.implicitWidth, parent.width)
+                propagateClickToParent: false
+                onClicked: applyFrontendChanges(MZSettings.Gateway);
             }
         }
 
@@ -207,18 +208,10 @@ MZViewBase {
                 MZInterLabel {
                     Layout.fillWidth: true
 
+                    color: MZTheme.colors.fontColorDark
                     text: MZI18n.SettingsDnsSettingsCustomDNSTitle
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignLeft
-
-                    MZMouseArea {
-                        anchors.fill: parent
-
-                        enabled: customRadioButton.enabled
-                        width: Math.min(parent.implicitWidth, parent.width)
-                        propagateClickToParent: false
-                        onClicked: applyFrontendChanges(MZSettings.Custom);
-                    }
                 }
                 MZTextBlock {
                     text: MZI18n.SettingsDnsSettingsCustomDNSBody
@@ -274,12 +267,21 @@ MZViewBase {
 
                     messages: [
                         {
-                            type: "error",
+                            type: MZContextualAlert.AlertType.Error,
                             message: ipInput.error,
                             visible: ipInput.valueInvalid && ipInput.visible
                         }
                     ]
                 }
+            }
+
+            MZMouseArea {
+                anchors.fill: parent
+
+                enabled: customRadioButton.enabled
+                width: Math.min(parent.implicitWidth, parent.width)
+                propagateClickToParent: false
+                onClicked: applyFrontendChanges(MZSettings.Custom);
             }
         }
     }

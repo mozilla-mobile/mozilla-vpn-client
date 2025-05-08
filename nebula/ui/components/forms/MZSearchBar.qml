@@ -84,7 +84,7 @@ FocusScope {
 
             messages: [
                 {
-                    type: "error",
+                    type: MZContextualAlert.AlertType.Error,
                     message: MZI18n.ServersViewSearchNoResultsLabel,
                     visible: searchBar.hasError
                 }

@@ -64,7 +64,7 @@ Item {
     states: [
         State {
             name: "stateInitializing"
-            when: VPNController.state === VPNController.StateInitializing
+            when: VPNController.state === VPNController.StateInitializing || VPNController.state === VPNController.StatePermissionRequired
 
             PropertyChanges {
                 target: boxBackground
@@ -452,7 +452,7 @@ Item {
             anchors.centerIn: ipInfoToggleButton
             source: ipInfoPanel.isOpen
                 ? MZAssetLookup.getImageSource("CloseWhite")
-                : MZAssetLookup.getImageSource("InfoIcon")
+                : MZAssetLookup.getImageSource("InfoIconControllerPanel")
             sourceSize {
                 height: iconSize
                 width: iconSize
@@ -523,6 +523,7 @@ Item {
             id: logoSubtitle
             objectName: "controllerSubTitle"
 
+            color: MZTheme.colors.fontColorDark
             lineHeight: MZTheme.theme.controllerInterLineHeight
             width: parent.width - MZTheme.theme.windowMargin
             anchors.horizontalCenter: parent.horizontalCenter

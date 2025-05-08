@@ -94,7 +94,6 @@ ColumnLayout {
 
                     text: loader.composerBlock.text
                     font.pixelSize: MZTheme.theme.fontSizeSmall
-                    color: MZTheme.colors.fontColor
                     horizontalAlignment: Text.AlignLeft
                 }
             }
@@ -112,7 +111,6 @@ ColumnLayout {
                     text: `<${listType} style='margin-left: -24px;-qt-list-indent:1;'>%1</${listType}>`.arg(tagsList.join(""))
                     textFormat: Text.RichText
                     font.pixelSize: MZTheme.theme.fontSizeSmall
-                    color: MZTheme.colors.fontColor
                     horizontalAlignment: Text.AlignLeft
                     Accessible.name: tagsList.join(".\n").replace(repeater.indentTagRegex, "")
                     lineHeight: 20
@@ -128,7 +126,7 @@ ColumnLayout {
 
                     implicitHeight: MZTheme.theme.rowHeight
                     text: loader.composerBlock.text
-                    colorScheme: loader.composerBlock.style === MZComposerBlockButton.Primary ?  MZTheme.colors.normalButton : MZTheme.colors.destructiveButton
+                    buttonType: loader.composerBlock.style === MZComposerBlockButton.Primary ? MZButton.ButtonType.Normal : MZButton.ButtonType.Destructive
 
                     onClicked: loader.composerBlock.click()
                 }

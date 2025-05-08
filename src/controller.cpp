@@ -39,6 +39,8 @@
 #  include "platforms/linux/networkmanagercontroller.h"
 #elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
+#elif defined(MZ_MACOS)
+#  include "platforms/macos/macoscontroller.h"
 #elif defined(MZ_IOS)
 #  include "platforms/ios/ioscontroller.h"
 #elif defined(MZ_ANDROID)
@@ -107,14 +109,7 @@ QString Controller::useLocalSocketPath() const {
   }
 #endif
 
-#if defined(MZ_MACOS)
-  // MacOS had a path change, so check both /tmp/ and /var/.
-  if (QFileInfo::exists(Constants::MACOS_DAEMON_VAR_PATH)) {
-    return Constants::MACOS_DAEMON_VAR_PATH;
-  } else {
-    return Constants::MACOS_DAEMON_TMP_PATH;
-  }
-#elif defined(MZ_WINDOWS)
+#if defined(MZ_WINDOWS)
   return Constants::WINDOWS_DAEMON_PATH;
 #endif
 
@@ -146,6 +141,8 @@ void Controller::initialize() {
     m_impl.reset(new NetworkManagerController());
 #elif defined(MZ_LINUX)
     m_impl.reset(new LinuxController());
+#elif defined(MZ_MACOS)
+    m_impl.reset(new MacOSController());
 #elif defined(MZ_IOS)
     m_impl.reset(new IOSController());
 #elif defined(MZ_ANDROID)
@@ -164,6 +161,8 @@ void Controller::initialize() {
           &Controller::disconnected);
   connect(m_impl.get(), &ControllerImpl::initialized, this,
           &Controller::implInitialized);
+  connect(m_impl.get(), &ControllerImpl::permissionRequired, this,
+          &Controller::implPermRequired);
   connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
           &Controller::statusUpdated);
   connect(this, &Controller::stateChanged, this,
@@ -185,6 +184,11 @@ void Controller::initialize() {
 
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
+}
+
+void Controller::implPermRequired() {
+  logger.debug() << "Initialization blocked: permission required";
+  setState(StatePermissionRequired);
 }
 
 void Controller::implInitialized(bool status, bool a_connected,
@@ -244,7 +248,7 @@ void Controller::timerTimeout() {
 void Controller::quit() {
   logger.debug() << "Quitting";
 
-  if (m_state == StateInitializing || m_state == StateOff) {
+  if (!isActive()) {
     m_nextStep = Quit;
     emit readyToQuit();
     return;
@@ -254,7 +258,7 @@ void Controller::quit() {
 
   if (m_state == StateOn || m_state == StateOnPartial ||
       m_state == StateSwitching || m_state == StateSilentSwitching ||
-      m_state == StateConnecting) {
+      m_state == StateConnecting || m_state == StateConfirming) {
     deactivate();
     return;
   }
@@ -325,6 +329,8 @@ qint64 Controller::connectionTimestamp() const {
       [[fallthrough]];
     case Controller::State::StateInitializing:
       [[fallthrough]];
+    case Controller::State::StatePermissionRequired:
+      [[fallthrough]];
     case Controller::State::StateOff:
       return 0;
     case Controller::State::StateOn:
@@ -354,7 +360,7 @@ void Controller::serverUnavailable() {
 void Controller::updateRequired() {
   logger.warning() << "Update required";
 
-  if (m_state == StateOff) {
+  if (!isActive()) {
     emit readyToUpdate();
     return;
   }
@@ -892,7 +898,7 @@ void Controller::captivePortalPresent() {
 }
 
 void Controller::serverDataChanged() {
-  if (m_state == StateOff) {
+  if (!isActive()) {
     logger.debug() << "Server data changed but we are off";
     return;
   }
@@ -903,7 +909,7 @@ void Controller::serverDataChanged() {
 }
 
 bool Controller::switchServers(const ServerData& serverData) {
-  if (m_state == StateOff) {
+  if (!isActive()) {
     logger.debug() << "Server data changed but we are off";
     return false;
   }
@@ -1063,9 +1069,7 @@ bool Controller::deactivate(ActivationPrincipal user) {
     return false;
   }
 
-  if (m_state != StateOn && m_state != StateOnPartial &&
-      m_state != StateSwitching && m_state != StateSilentSwitching &&
-      m_state != StateConfirming && m_state != StateConnecting) {
+  if (!isActive()) {
     logger.warning() << "Already disconnected";
     return false;
   }

@@ -9,12 +9,23 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 
 MZButtonBase {
-    property var colorScheme: MZTheme.colors.normalButton
+    enum ButtonType {
+        Normal,
+        Destructive
+    }
+
+    property var buttonType: MZButton.ButtonType.Normal
+
     property int fontSize: MZTheme.theme.fontSize
     property alias label: label
 
     id: button
 
+    // Private property, will be changed depending on buttonType
+    QtObject {
+        id: style
+        property var colorScheme: (buttonType === MZButton.ButtonType.Normal) ? MZTheme.colors.normalButton : MZTheme.colors.destructiveButton
+    }
     height: MZTheme.theme.rowHeight
     width: Math.min(parent.width * 0.83, MZTheme.theme.maxHorizontalContentWidth)
 
@@ -34,7 +45,7 @@ MZButtonBase {
     }
 
     MZUIStates {
-        colorScheme: button.colorScheme
+        colorScheme: style.colorScheme
         setMargins: -5
     }
 
@@ -50,7 +61,7 @@ MZButtonBase {
     contentItem: Label {
         id: label
 
-        color: MZTheme.colors.fontColorInverted
+        color: style.colorScheme.fontColor
         text: button.text
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter

@@ -260,14 +260,14 @@ ColumnLayout {
                     text: appName
                     color: MZTheme.colors.fontColorDark
                     horizontalAlignment: Text.AlignLeft
+                }
 
-                    MZMouseArea {
-                        anchors.fill: undefined
-                        width: parent.implicitWidth
-                        height: parent.implicitHeight
-                        propagateClickToParent: false
-                        onClicked: () => appRow.handleClick()
-                    }
+                MZMouseArea {
+                    anchors.fill: parent
+                    width: parent.implicitWidth
+                    height: parent.implicitHeight
+                    propagateClickToParent: false
+                    onClicked: () => appRow.handleClick()
                 }
             }
         }

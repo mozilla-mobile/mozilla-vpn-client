@@ -52,30 +52,32 @@ configure_file(
     @ONLY
 )
 
-## Stage 2: Create the staging directory, and populate it with the app.
+## Stage 2: Create the staging directory and build the component package.
 add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/staging/MozillaVPN.pkg
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/components/MozillaVPN.pkg
     BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/installer.plist
     DEPENDS mozillavpn
     COMMAND ${CMAKE_COMMAND} -E remove_directory -f ${CMAKE_CURRENT_BINARY_DIR}/staging
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/staging
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/components
     COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:mozillavpn>
-       ${CMAKE_CURRENT_BINARY_DIR}/staging/Applications/$<TARGET_PROPERTY:mozillavpn,OUTPUT_NAME>.app/
+       ${CMAKE_CURRENT_BINARY_DIR}/staging/$<TARGET_PROPERTY:mozillavpn,OUTPUT_NAME>.app/
     COMMAND pkgbuild --analyze --root ${CMAKE_CURRENT_BINARY_DIR}/staging ${CMAKE_CURRENT_BINARY_DIR}/installer.plist
     COMMAND plutil -replace 0.BundleIsRelocatable -bool NO ${CMAKE_CURRENT_BINARY_DIR}/installer.plist
-    COMMAND pkgbuild --identifier "$<TARGET_PROPERTY:mozillavpn,MACOSX_BUNDLE_GUI_IDENTIFIER>" --version "2.0"
+    COMMAND pkgbuild --identifier "$<TARGET_PROPERTY:mozillavpn,XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER>" 
+        --version "2.0" --install-location "/Applications"
         --scripts ${CMAKE_CURRENT_BINARY_DIR}/scripts --root ${CMAKE_CURRENT_BINARY_DIR}/staging
         --component-plist ${CMAKE_CURRENT_BINARY_DIR}/installer.plist
-        ${CMAKE_CURRENT_BINARY_DIR}/staging/MozillaVPN.pkg
+        ${CMAKE_CURRENT_BINARY_DIR}/components/MozillaVPN.pkg
 )
 
-## Stage 3: Run productbuild to inject the distribution files.
+## Stage 3: Run productbuild to inject the distribution files and build the installer package.
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN-unsigned.pkg
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/staging/MozillaVPN.pkg pkg_resources
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/components/MozillaVPN.pkg pkg_resources
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMAND productbuild --distribution ${CMAKE_CURRENT_SOURCE_DIR}/Distribution
-        --resources ${CMAKE_CURRENT_BINARY_DIR}/Resources --package-path staging
+        --resources ${CMAKE_CURRENT_BINARY_DIR}/Resources --package-path ${CMAKE_CURRENT_BINARY_DIR}/components
         MozillaVPN-unsigned.pkg
 )
 

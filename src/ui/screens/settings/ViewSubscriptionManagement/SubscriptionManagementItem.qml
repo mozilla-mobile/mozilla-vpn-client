@@ -104,6 +104,7 @@ ColumnLayout {
             visible: !paymentMethod.visible
             text: labelText
             wrapMode: Text.WordWrap
+            color: MZTheme.colors.fontColorDark
 
             Layout.alignment: Qt.AlignLeft
         }
@@ -143,8 +144,8 @@ ColumnLayout {
                     VPNSubscriptionData.status === VPNSubscriptionData.Active
 
                 color: isActive
-                    ? MZTheme.colors.successMain
-                    : MZTheme.colors.errorMain
+                    ? MZTheme.colors.successText
+                    : MZTheme.colors.errorText
                 background: isActive
                     ? MZTheme.colors.successBackground
                     : MZTheme.colors.errorBackground

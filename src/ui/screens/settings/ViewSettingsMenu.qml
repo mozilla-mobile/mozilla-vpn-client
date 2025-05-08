@@ -77,6 +77,19 @@ MZViewBase {
             }
 
             MZSettingsItem {
+                objectName: "firefoxExtensionInfo"
+                settingTitle: MZI18n.SettingsFirefoxExtensionInfo
+                imageLeftSrc: MZAssetLookup.getImageSource("IconPuzzlePiece")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
+                imageRightMirror: MZLocalizer.isRightToLeft
+                onClicked: {
+                    Glean.interaction.firefoxExtensionSelected.record({screen:telemetryScreenId});
+                    stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewFirefoxExtensionInfo.qml")
+                }
+                visible: Qt.platform.os === "windows"
+            }
+
+            MZSettingsItem {
                 objectName: "settingsDevice"
 
                 //% "Devices"
@@ -94,7 +107,7 @@ MZViewBase {
                 id: preferencesSetting
                 objectName: "settingsPreferences"
                 settingTitle: MZI18n.SettingsPreferencesSettings
-                imageLeftSrc: MZAssetLookup.getImageSource("IconWrenchDarker")
+                imageLeftSrc: MZAssetLookup.getImageSource("IconWrench")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
@@ -111,7 +124,7 @@ MZViewBase {
             MZSettingsItem {
                 objectName: "settingsGetHelp"
                 settingTitle: MZI18n.GetHelpLinkText
-                imageLeftSrc: MZAssetLookup.getImageSource("QuestionDarker")
+                imageLeftSrc: MZAssetLookup.getImageSource("MenuIconQuestion")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
@@ -123,7 +136,7 @@ MZViewBase {
             MZSettingsItem {
                 objectName: "settingsAboutUs"
                 settingTitle: MZI18n.AboutUsTitle
-                imageLeftSrc: MZAssetLookup.getImageSource("InfoIconDarker")
+                imageLeftSrc: MZAssetLookup.getImageSource("InfoIcon")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {

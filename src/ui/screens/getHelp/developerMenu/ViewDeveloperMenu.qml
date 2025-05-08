@@ -147,10 +147,6 @@ MZViewBase {
                     viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewFeatureList.qml"
                 }
                 ListElement {
-                    title: "Theme list"
-                    viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewThemeList.qml"
-                }
-                ListElement {
                     title: "UI Testing"
                     viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewUiTesting.qml"
                 }
@@ -162,7 +158,7 @@ MZViewBase {
 
             delegate: MZSettingsItem {
                settingTitle:  title
-               imageLeftSrc: MZAssetLookup.getImageSource("QuestionDarker")
+               imageLeftSrc: MZAssetLookup.getImageSource("MenuIconQuestion")
                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                imageRightMirror: MZLocalizer.isRightToLeft
                onClicked: getHelpStackView.push(viewQrc)
@@ -205,7 +201,7 @@ MZViewBase {
 
             messages: [
                 {
-                    type: "warning",
+                    type: MZContextualAlert.AlertType.Warning,
                     message: MZI18n.SettingsDevRestartRequired,
                     visible: isVisible
                 }
@@ -230,6 +226,16 @@ MZViewBase {
             text: "Reinstate messages"
             onClicked: {
                 MZAddonManager.reinstateMessages()
+                restartRequired.isVisible = true
+            }
+        }
+
+        MZButton {
+            id: resetOnboarding
+
+            text: "View onboarding at next launch"
+            onClicked: {
+                MZSettings.onboardingCompleted = false
                 restartRequired.isVisible = true
             }
         }

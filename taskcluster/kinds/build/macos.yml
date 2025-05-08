@@ -23,7 +23,7 @@ task-defaults:
         - MozillaVPN.tar.gz
     run:
         using: run-task
-        use-caches: false
+        use-caches: []
         cwd: '{checkout}'
         command: ./taskcluster/scripts/build/macos_build.sh
 

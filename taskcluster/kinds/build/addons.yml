@@ -24,6 +24,6 @@ addons-bundle:
         - manifest.json
     run:
         using: run-task
-        use-caches: true
+        use-caches: [checkout]
         cwd: '{checkout}'
         command: ./taskcluster/scripts/addons/build.sh

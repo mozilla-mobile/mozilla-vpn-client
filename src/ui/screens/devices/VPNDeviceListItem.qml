@@ -78,6 +78,7 @@ MZSwipeDelegate {
                 MZInterLabel {
                     Layout.fillWidth: true
 
+                    color: MZTheme.colors.fontColorDark
                     text: name
                     maximumLineCount: 1
                     elide: Text.ElideRight

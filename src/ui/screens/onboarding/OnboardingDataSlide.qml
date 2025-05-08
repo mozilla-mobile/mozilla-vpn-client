@@ -38,7 +38,6 @@ ColumnLayout {
 
         text: MZI18n.OnboardingDataSlideBody2
         horizontalAlignment: Text.AlignLeft
-        color: MZTheme.colors.fontColor
    }
 
     RowLayout {
@@ -105,7 +104,6 @@ ColumnLayout {
         Layout.fillWidth: true
 
         text: MZI18n.OnboardingDataSlideLearnMoreCaption2
-        color: MZTheme.colors.fontColor
    }
 
     MZLinkButton {

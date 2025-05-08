@@ -25,16 +25,18 @@ class Controller : public QObject, public LogSerializer {
   Q_DISABLE_COPY_MOVE(Controller)
 
  public:
+  // Note - these states are ordered from least to most active.
   enum State {
-    StateInitializing,
+    StateInitializing = 0,
+    StatePermissionRequired,
     StateOff,
+    StateDisconnecting,
     StateConnecting,
     StateConfirming,
-    StateOn,
-    StateOnPartial,
-    StateDisconnecting,
-    StateSilentSwitching,
     StateSwitching,
+    StateSilentSwitching,
+    StateOnPartial,
+    StateOn,
   };
   Q_ENUM(State)
 
@@ -66,6 +68,8 @@ class Controller : public QObject, public LogSerializer {
   void deleteOSTunnelConfig();
   void startHandshakeTimer();
   bool isDeviceConnected() const { return m_isDeviceConnected; }
+  bool isInitialized() const { return m_state >= StateOff; }
+  Q_INVOKABLE bool isActive() const { return m_state > StateOff; }
 
   const ServerData& currentServer() const { return m_serverData; }
 
@@ -133,6 +137,7 @@ class Controller : public QObject, public LogSerializer {
                      uint64_t rxBytes);
   void implInitialized(bool status, bool connected,
                        const QDateTime& connectionDate);
+  void implPermRequired();
 
  signals:
   void stateChanged();

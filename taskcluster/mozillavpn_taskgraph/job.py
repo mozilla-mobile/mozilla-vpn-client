@@ -6,7 +6,7 @@ from taskgraph.transforms.run import run_task_using, configure_taskdesc_for_run
 from taskgraph.util.schema import Schema, taskref_or_string
 from voluptuous import Required, Optional
 
-from pipes import quote as shell_quote
+from shlex import quote as shell_quote
 
 secret_schema = {
     Required("name"): str,
@@ -21,7 +21,7 @@ run_commands_schema = Schema(
         Optional("pre-commands"): [[str]],
         Required("commands"): [[taskref_or_string]],
         Required("workdir"): str,
-        Optional("use-caches"): bool,
+        Optional("use-caches"): [str],
         Optional("secrets"): [secret_schema],
     }
 )

@@ -33,11 +33,11 @@ qt_add_qml_module(mozillavpn-ui
         screens/getHelp/contactUs/ViewContactUsForm.qml
         screens/getHelp/contactUs/ViewContactUsThankYou.qml
         screens/getHelp/developerMenu/ViewAnimationsPlayground.qml
+        screens/getHelp/developerMenu/ViewColorObjects.qml
         screens/getHelp/developerMenu/ViewImagesPlayground.qml
         screens/getHelp/developerMenu/ViewDeveloperMenu.qml
         screens/getHelp/developerMenu/ViewFeatureList.qml
         screens/getHelp/developerMenu/ViewTelemetryDebugging.qml
-        screens/getHelp/developerMenu/ViewThemeList.qml
         screens/getHelp/developerMenu/ViewUiTesting.qml
         screens/home/controller/ConnectionStability.qml
         screens/home/controller/ConnectionTimer.qml
@@ -79,6 +79,7 @@ qt_add_qml_module(mozillavpn-ui
         screens/ScreenMessaging.qml
         screens/ScreenNoSubscriptionFoundError.qml
         screens/ScreenOnboarding.qml
+        screens/ScreenPermissionRequired.qml
         screens/ScreenSettings.qml
         screens/ScreenSubscriptionBlocked.qml
         screens/ScreenSubscriptionGenericError.qml
@@ -95,7 +96,9 @@ qt_add_qml_module(mozillavpn-ui
         screens/settings/appPermissions/ViewAppPermissions.qml
         screens/settings/appPermissions/AppPermissionsList.qml
         screens/settings/ViewAboutUs.qml
+        screens/settings/ViewAppearance.qml
         screens/settings/ViewDNSSettings.qml
+        screens/settings/ViewFirefoxExtensionInfo.qml
         screens/settings/ViewLanguage.qml
         screens/settings/ViewLicense.qml
         screens/settings/ViewLicenses.qml
@@ -110,6 +113,7 @@ qt_add_qml_module(mozillavpn-ui
         screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml
         screens/subscriptionNeeded/ViewSubscriptionNeeded.qml
         sharedViews/ViewErrorFullScreen.qml
+        sharedViews/ViewPermissionRequiredOSX.qml
         sharedViews/ViewUpdate.qml
         sharedViews/ViewFullScreen.qml
     SOURCES
@@ -171,4 +175,7 @@ target_include_directories(mozillavpn-uiplugin PUBLIC
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     target_sources(mozillavpn-ui PRIVATE singletons/VPNAndroidUtils.h)
+endif()
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    target_sources(mozillavpn-ui PRIVATE singletons/VPNMacOSUtils.h)
 endif()

@@ -10,3 +10,4 @@ StartupNotify=true
 Encoding=UTF-8
 Categories=Network;Security;
 MimeType=x-scheme-handler/mozilla-vpn
+StartupWMClass=mozillavpn
