@@ -8,3 +8,4 @@ Icon=org.mozilla.vpn
 OnlyShowIn=GNOME;Unity;MATE;
 X-GNOME-AutoRestart=false
 X-GNOME-Autostart-Notify=true
+StartupWMClass=mozillavpn

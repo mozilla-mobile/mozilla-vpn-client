@@ -11,25 +11,15 @@ import components 0.1
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZFlickable {
-    id: vpnFlickable
-
-    property var primaryButtonObjectName
+    id: osxPermissionRequired
 
     width: parent.width
-    flickContentHeight: headerLink.implicitHeight + col.implicitHeight + col.anchors.topMargin
-
-    MZHeaderLink {
-        id: headerLink
-        objectName: "getHelpLink"
-
-        labelText: MZI18n.GetHelpLinkText
-        onClicked: MZNavigator.requestScreen(VPN.ScreenGetHelp)
-    }
+    flickContentHeight: col.implicitHeight + col.anchors.topMargin
 
     ColumnLayout {
         id: col
 
-        anchors.top: headerLink.bottom
+        anchors.top: parent.top
         anchors.left: parent.left
         anchors.right: parent.right
         spacing: MZTheme.theme.vSpacingSmall
@@ -84,13 +74,21 @@ MZFlickable {
         }
 
         MZButton {
-            id: primaryButton
+            id: openSettingsButton
 
-            objectName: primaryButtonObjectName
             text: MZI18n.PermissionMacosOpenSettingsButtonLabel
             Layout.preferredHeight: MZTheme.theme.rowHeight
             loaderVisible: false
             onClicked: VPNMacOSUtils.openSystemSettingsLoginItems()
+        }
+
+        MZLinkButton {
+            id: learnMoreLink
+
+            labelText:  MZI18n.GlobalLearnMore
+            Layout.preferredHeight: MZTheme.theme.rowHeight
+            Layout.alignment: Qt.AlignHCenter
+            onClicked: MZUrlOpener.openUrlLabel("sumoAllowBackgroundMacos")
         }
 
         MZSignOut {
