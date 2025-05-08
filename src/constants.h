@@ -215,6 +215,9 @@ constexpr const char* SUMO_MULTIHOP =
 constexpr const char* SUMO_ALWAYS_ON_ANDROID =
     "https://support.mozilla.org/kb/how-enable-always-vpn-android";
 
+constexpr const char* SUMO_ALLOW_BACKGROUND_MACOS =
+    "https://support.mozilla.org/kb/allow-vpn-run-background-macos";
+
 PRODBETAEXPR(QString, contactSupportUrl, "https://accounts.firefox.com/support",
              "https://accounts.stage.mozaws.net/support")
 
