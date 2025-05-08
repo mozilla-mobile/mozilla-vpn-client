@@ -16,7 +16,11 @@ class FirewallUtilsMacos final : public FirewallUtils {
   FirewallUtilsMacos(Daemon* daemon);
   ~FirewallUtilsMacos();
 
+  bool splitTunnelSupported() const override;
+
+ private:
   Daemon* m_daemon = nullptr;
+  void* m_loader = nullptr;
 };
 
 #endif  // FIREWALLUTILSMACOS_H
