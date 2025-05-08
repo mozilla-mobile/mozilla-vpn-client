@@ -14,18 +14,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-#ifdef MZ_MACOS
-#  include <Security/Authorization.h>
-#  include <Security/AuthorizationTags.h>
-#  include <signal.h>
-#  include <sys/socket.h>
-#  include <sys/un.h>
-#  include <unistd.h>
-
-#  include <QProcess>
-#  include <QScopeGuard>
-#endif
-
 // When the daemon is unreachable, we will retry indefinitely using an
 // exponential backoff algorithm. The interval between retries starts at
 // the initial value, and doubles after each failed connection attempt,
