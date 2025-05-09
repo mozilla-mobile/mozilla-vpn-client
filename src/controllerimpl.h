@@ -70,7 +70,7 @@ class ControllerImpl : public QObject {
   virtual void getBackendLogs(QIODevice* device);
 
   // Cleanup the backend logs.
-  virtual void cleanupBackendLogs() = 0;
+  virtual void cleanupBackendLogs(){};
 
   // Whether the controller supports multihop
   virtual bool multihopSupported() { return false; }

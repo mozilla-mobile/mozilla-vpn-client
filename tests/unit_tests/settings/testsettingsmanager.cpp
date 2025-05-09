@@ -127,6 +127,7 @@ void TestSettingsManager::testLogSerialize() {
 
   // We can do this because logSerialize() happens to be sync for settings.
   QBuffer buffer;
+  buffer.open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
   SettingsManager::instance()->logSerialize(&buffer);
   QVERIFY(!buffer.isOpen());
 

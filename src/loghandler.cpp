@@ -386,13 +386,14 @@ bool LogHandler::viewLogs() {
 #if defined(MZ_ANDROID) || defined(MZ_IOS)
   bool ok = true;
   QBuffer* buffer = new QBuffer();
+  buffer->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
   connect(buffer, &QIODevice::aboutToClose, buffer, &QObject::deleteLater);
 #if defined(MZ_ANDROID)
   connect(buffer, &QIODevice::aboutToClose, this,
-          [&]() { ok = AndroidCommons::shareText(QString(buffer->data)); });
+          [&]() { ok = AndroidCommons::shareText(QString(buffer->data())); });
 #elif defined(MZ_IOS)
   connect(buffer, &QIODevice::aboutToClose, this,
-          [&]() { IOSCommons::shareLogs(QString(buffer->data)); });
+          [&]() { IOSCommons::shareLogs(QString(buffer->data())); });
 #endif
   logSerialize(buffer);
   return ok;
@@ -419,6 +420,7 @@ void LogHandler::retrieveLogs() {
   logger.debug() << "Retrieve logs";
 
   QBuffer* buffer = new QBuffer();
+  buffer->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
   connect(buffer, &QIODevice::aboutToClose, this, [&]() {
     emit logsReady(buffer->data());
     buffer->deleteLater();

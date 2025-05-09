@@ -674,6 +674,7 @@ void MozillaVPN::createSupportTicket(const QString& email,
   logger.debug() << "Create support ticket";
 
   QBuffer* buffer = new QBuffer();
+  buffer->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
   connect(buffer, &QIODevice::aboutToClose, this,
           [buffer, email, subject, issueText, category]() {
             QString logs = QString::fromUtf8(buffer->data());
