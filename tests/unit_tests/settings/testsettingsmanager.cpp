@@ -112,7 +112,7 @@ void TestSettingsManager::testHardReset() {
   QCOMPARE(doNotResetSpy.count(), 1);
 }
 
-void TestSettingsManager::testSerializeLogs() {
+void TestSettingsManager::testLogSerialize() {
   // Register some settings.
   auto oneSetting = SettingsManager::instance()->createOrGetSetting("one");
   auto twoSetting = SettingsManager::instance()->createOrGetSetting("two");
@@ -125,13 +125,12 @@ void TestSettingsManager::testSerializeLogs() {
   twoSetting->set(QVariant(2));
   threeSetting->set(QVariant(3));
 
-  QString report;
-  // We can do this because serializeLogs() is sync.
-  SettingsManager::instance()->serializeLogs(
-      [report = &report](const QString& name, const QString& logs) {
-        *report = logs;
-      });
+  // We can do this because logSerialize() happens to be sync for settings.
+  QBuffer buffer;
+  SettingsManager::instance()->logSerialize(&buffer);
+  QVERIFY(!buffer.isOpen());
 
+  QString report(buffer.data());
   QVERIFY(report.contains("one -> 1"));
   QVERIFY(report.contains("two -> 2"));
   QVERIFY(report.contains("three -> 3"));

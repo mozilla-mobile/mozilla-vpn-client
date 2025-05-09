@@ -48,9 +48,8 @@ class SettingsManager final : public QObject, public LogSerializer {
   static SettingsManager* instance();
 
   // LogSerializer interface
-  void serializeLogs(
-      std::function<void(const QString& name, const QString& logs)>&& callback)
-      override;
+  QString logName() const override { return "Settings"; }
+  void logSerialize(QIODevice* device) override;
 
   /**
    * @brief Returns a registered setting based on their key.

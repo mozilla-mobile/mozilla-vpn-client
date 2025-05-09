@@ -16,7 +16,7 @@ class TestSettingsManager final : public TestHelper {
   void testReset();
   void testHardReset();
 
-  void testSerializeLogs();
+  void testLogSerialize();
 
   void testCreateNewSetting();
   void testCreateNewSettingButSettingAlreadyExists();

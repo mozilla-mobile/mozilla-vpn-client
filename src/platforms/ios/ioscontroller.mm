@@ -285,11 +285,11 @@ void IOSController::checkStatus() {
 
 void IOSController::forceDaemonSilentServerSwitch() { [impl silentServerSwitch]; }
 
-void IOSController::getBackendLogs(std::function<void(const QString&)>&& a_callback) {
-  std::function<void(const QString&)> callback = std::move(a_callback);
-
+void IOSController::getBackendLogs(QIODevice* device) {
   [IOSLoggerImpl getLogsWithCallback:^(NSString* logs) {
-    callback(QString::fromNSString(logs));
+    device->write([logs UTF8String],
+                  [logs lengthOfByesUsingEncoding:NSUTF8StringEncoding]);
+    device->close();
   }];
 }
 

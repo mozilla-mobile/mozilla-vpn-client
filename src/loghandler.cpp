@@ -4,6 +4,7 @@
 
 #include "loghandler.h"
 
+#include <QBuffer>
 #include <QDate>
 #include <QDir>
 #include <QFile>
@@ -62,48 +63,6 @@ Logger logger("LogHandler");
 #ifdef MZ_IOS
 IOSLogger iosLogger("mozillavpn");
 #endif
-
-class LogSerializeHelper final {
- public:
-  LogSerializeHelper(QTextStream* out,
-                     const QList<LogSerializer*>& logSerializers,
-                     std::function<void()>&& callback)
-      : m_out(out),
-        m_logSerializers(logSerializers),
-        m_callback(std::move(callback)) {}
-
-  void run() {
-    if (m_logSerializers.isEmpty()) {
-      m_callback();
-      delete this;
-      return;
-    }
-
-    LogSerializer* logSerializer = m_logSerializers.takeFirst();
-    logSerializer->serializeLogs(
-        [this](const QString& name, const QString& logs) {
-          *m_out << Qt::endl
-                 << Qt::endl
-                 << name << Qt::endl
-                 << QByteArray(name.length(), '=') << Qt::endl
-                 << Qt::endl;
-
-          if (!logs.isEmpty()) {
-            *m_out << logs;
-          } else {
-            *m_out << "No logs.";
-          }
-
-          run();
-        });
-  }
-
- private:
-  QTextStream* m_out;
-  QList<LogSerializer*> m_logSerializers;
-  std::function<void()> m_callback;
-};
-
 }  // namespace
 
 // static
@@ -425,27 +384,17 @@ bool LogHandler::viewLogs() {
   }
 
 #if defined(MZ_ANDROID) || defined(MZ_IOS)
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
   bool ok = true;
-  serializeLogs(out, [buffer, out
-#  if defined(MZ_ANDROID)
-                      ,
-                      &ok
-#  endif
-  ]() {
-    Q_ASSERT(out);
-    Q_ASSERT(buffer);
-
-#  if defined(MZ_ANDROID)
-    ok = AndroidCommons::shareText(*buffer);
-#  else
-    IOSCommons::shareLogs(*buffer);
-#  endif
-
-    delete out;
-    delete buffer;
-  });
+  QBuffer* buffer = new QBuffer();
+  connect(buffer, &QIODevice::aboutToClose, buffer, &QObject::deleteLater);
+#if defined(MZ_ANDROID)
+  connect(buffer, &QIODevice::aboutToClose, this,
+          [&]() { ok = AndroidCommons::shareText(QString(buffer->data)); });
+#elif defined(MZ_IOS)
+  connect(buffer, &QIODevice::aboutToClose, this,
+          [&]() { IOSCommons::shareLogs(QString(buffer->data)); });
+#endif
+  logSerialize(buffer);
   return ok;
 #endif
 
@@ -469,30 +418,24 @@ void LogHandler::requestViewLogs() {
 void LogHandler::retrieveLogs() {
   logger.debug() << "Retrieve logs";
 
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
-
-  serializeLogs(out, [this, buffer, out]() {
-    Q_ASSERT(out);
-    Q_ASSERT(buffer);
-
-    delete out;
-    emit logsReady(*buffer);
-    delete buffer;
+  QBuffer* buffer = new QBuffer();
+  connect(buffer, &QIODevice::aboutToClose, this, [&]() {
+    emit logsReady(buffer->data());
+    buffer->deleteLater();
   });
+  logSerialize(buffer);
 }
 
-void LogHandler::serializeLogs(QTextStream* out,
-                               std::function<void()>&& a_finalizeCallback) {
-  std::function<void()> finalizeCallback = std::move(a_finalizeCallback);
+void LogHandler::logSerialize(QIODevice* device) {
+  QTextStream out(device);
+  out << "MZ logs" << Qt::endl << "=======" << Qt::endl << Qt::endl;
+  LogHandler::writeLogs(out);
 
-  *out << "MZ logs" << Qt::endl << "=======" << Qt::endl << Qt::endl;
-
-  LogHandler::writeLogs(*out);
-
-  LogSerializeHelper* lsh = new LogSerializeHelper(out, m_logSerializers,
-                                                   std::move(finalizeCallback));
-  lsh->run();
+  LogSerializeHelper* lsh = new LogSerializeHelper(device);
+  for (LogSerializer* serializer : m_logSerializers) {
+    lsh->addSerializer(serializer);
+  }
+  lsh->run(device);
 }
 
 bool LogHandler::writeLogsToLocation(
@@ -551,16 +494,9 @@ bool LogHandler::writeLogsToLocation(
     return false;
   }
 
-  QTextStream* out = new QTextStream(file);
-  serializeLogs(out, [callback = std::move(callback), logFile, file, out]() {
-    Q_ASSERT(out);
-    Q_ASSERT(file);
-    delete out;
-    delete file;
-
-    callback(logFile);
-  });
-
+  // Serialize!
+  connect(file, &QIODevice::aboutToClose, this, [callback, logFile]() { callback(logFile); });
+  logSerialize(file);
   return true;
 }
 
@@ -585,4 +521,45 @@ void LogHandler::registerLogSerializer(LogSerializer* logSerializer) {
 void LogHandler::unregisterLogSerializer(LogSerializer* logSerializer) {
   Q_ASSERT(m_logSerializers.contains(logSerializer));
   m_logSerializers.removeOne(logSerializer);
+}
+
+void LogSerializeHelper::addSerializer(LogSerializer* serializer) {
+  // Create a buffer to receive the log data.
+  QBuffer* buffer = new QBuffer(this);
+  m_buffers.append(buffer);
+  buffer->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
+
+  // Write the header to the buffer.
+  QTextStream stream(buffer);
+  QString name = serializer->logName();
+  stream << Qt::endl << Qt::endl << name << Qt::endl;
+  stream << QByteArray(name.length(), '=') << Qt::endl << Qt::endl;
+
+  // Serialize the logs to the buffer
+  serializer->logSerialize(buffer);
+}
+
+void LogSerializeHelper::run(QIODevice* device) {
+  // Serialize buffers until we encounter one that is still open.
+  while (!m_buffers.isEmpty()) {
+    QBuffer* buffer = m_buffers.takeFirst();
+    // If the buffer is closed - write it immediately.
+    if (!buffer->isOpen()) {
+      device->write(buffer->data());
+      buffer->deleteLater();
+      continue;
+    }
+
+    // Otherwise wait for it to finish and try again.
+    connect(buffer, &QIODevice::aboutToClose, this, [this, device, buffer](){
+      device->write(buffer->data());
+      buffer->deleteLater();
+      run(device);
+    });
+    return;
+  }
+
+  // If there are no more buffers - we are done!
+  device->close();
+  deleteLater();
 }

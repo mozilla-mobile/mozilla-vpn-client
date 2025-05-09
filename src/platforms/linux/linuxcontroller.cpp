@@ -172,14 +172,28 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
   emitStatusFromJson(obj);
 }
 
-void LinuxController::getBackendLogs(
-    std::function<void(const QString&)>&& a_callback) {
-  std::function<void(const QString&)> callback = std::move(a_callback);
-
+void LinuxController::getBackendLogs(QIODevice* device) {
   QDBusPendingCallWatcher* watcher = m_dbus->getLogs();
-  connect(watcher, &QDBusPendingCallWatcher::finished,
-          new BackendLogsObserver(this, std::move(callback)),
-          &BackendLogsObserver::completed);
+  connect(watcher, &QDBusPendingCallWatcher::finished, receiver,
+          [receiver, method](QDBusPendingCallWatcher* watcher) {
+            QDBusPendingReply<QString> reply = *watcher;
+            QString status;
+            if (!reply.isError()) {
+              status = reply.argumentAt<0>();
+            } else {
+              status = reply.error().message();
+              logger.error() << "Error received from DBus:" << status;
+
+              // Otherwise, try our best to scrape the logs directly off disk.
+              QFile logfile("/var/log/mozillavpn.log");
+              if (logfile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
+                status = logfile.readAll();
+              }
+            }
+            
+            device->write(status.toUtf8());
+            device->close();
+          });
 }
 
 void LinuxController::cleanupBackendLogs() { m_dbus->cleanupLogs(); }

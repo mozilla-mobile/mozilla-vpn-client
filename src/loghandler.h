@@ -6,24 +6,29 @@
 #define LOGHANDLER_H
 
 #include <QDateTime>
+#include <QList>
 #include <QMutexLocker>
 #include <QObject>
 #include <QStandardPaths>
-#include <QVector>
 
 #include "loglevel.h"
 
+class QBuffer;
 class QFile;
 class QTextStream;
 
 class LogSerializer {
  public:
-  virtual void serializeLogs(
-      std::function<void(const QString& name, const QString& logs)>&&
-          callback) = 0;
+  // The name of this object to report in the encoded log file.
+  virtual QString logName() const {
+    return dynamic_cast<const QObject*>(this)->metaObject()->className();
+  }
+
+  // Output logs to the QIODevice and close when finished.
+  virtual void logSerialize(QIODevice* output) = 0;
 };
 
-class LogHandler final : public QObject {
+class LogHandler final : public QObject, public LogSerializer {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(LogHandler)
 
@@ -84,8 +89,8 @@ class LogHandler final : public QObject {
 
   static void setStderr(bool enabled = true);
 
-  void serializeLogs(QTextStream* out,
-                     std::function<void()>&& finalizeCallback);
+  QString logName() const override { return "MZ Logs"; }
+  void logSerialize(QIODevice* device) override;
 
   void registerLogSerializer(LogSerializer* logSerializer);
   void unregisterLogSerializer(LogSerializer* logSerializer);
@@ -124,6 +129,21 @@ class LogHandler final : public QObject {
   QTextStream* m_output = nullptr;
 
   QList<LogSerializer*> m_logSerializers;
+};
+
+
+class LogSerializeHelper final : public QObject {
+  Q_OBJECT
+
+ public:
+  LogSerializeHelper(QObject* parent = nullptr) : QObject(parent) {};
+
+  void addSerializer(LogSerializer* serializer);
+  void run(QIODevice* device);
+
+ private:
+  int m_waiting;
+  QList<QBuffer*> m_buffers;
 };
 
 #endif  // LOGHANDLER_H
