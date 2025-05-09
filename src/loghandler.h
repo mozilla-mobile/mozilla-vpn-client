@@ -131,12 +131,11 @@ class LogHandler final : public QObject, public LogSerializer {
   QList<LogSerializer*> m_logSerializers;
 };
 
-
 class LogSerializeHelper final : public QObject {
   Q_OBJECT
 
  public:
-  LogSerializeHelper(QObject* parent = nullptr) : QObject(parent) {};
+  LogSerializeHelper(QObject* parent = nullptr) : QObject(parent){};
 
   void addSerializer(LogSerializer* serializer);
   void run(QIODevice* device);

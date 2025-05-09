@@ -388,13 +388,13 @@ bool LogHandler::viewLogs() {
   QBuffer* buffer = new QBuffer();
   buffer->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
   connect(buffer, &QIODevice::aboutToClose, buffer, &QObject::deleteLater);
-#if defined(MZ_ANDROID)
+#  if defined(MZ_ANDROID)
   connect(buffer, &QIODevice::aboutToClose, this,
           [&]() { ok = AndroidCommons::shareText(QString(buffer->data())); });
-#elif defined(MZ_IOS)
+#  elif defined(MZ_IOS)
   connect(buffer, &QIODevice::aboutToClose, this,
           [&]() { IOSCommons::shareLogs(QString(buffer->data())); });
-#endif
+#  endif
   logSerialize(buffer);
   return ok;
 #endif
@@ -497,7 +497,8 @@ bool LogHandler::writeLogsToLocation(
   }
 
   // Serialize!
-  connect(file, &QIODevice::aboutToClose, this, [callback, logFile]() { callback(logFile); });
+  connect(file, &QIODevice::aboutToClose, this,
+          [callback, logFile]() { callback(logFile); });
   logSerialize(file);
   return true;
 }
@@ -553,7 +554,7 @@ void LogSerializeHelper::run(QIODevice* device) {
     }
 
     // Otherwise wait for it to finish and try again.
-    connect(buffer, &QIODevice::aboutToClose, this, [this, device, buffer](){
+    connect(buffer, &QIODevice::aboutToClose, this, [this, device, buffer]() {
       device->write(buffer->data());
       buffer->deleteLater();
       run(device);

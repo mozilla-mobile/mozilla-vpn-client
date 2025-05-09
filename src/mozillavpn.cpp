@@ -681,7 +681,7 @@ void MozillaVPN::createSupportTicket(const QString& email,
             Task* task = new TaskCreateSupportTicket(email, subject, issueText,
                                                      logs, category);
             buffer->deleteLater();
-    
+
             // Support tickets can be created at anytime. Even during "critical"
             // operations such as authentication, account deletion, etc. Those
             // operations are often running in tasks, which would block the

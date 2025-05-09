@@ -189,7 +189,7 @@ void LinuxController::getBackendLogs(QIODevice* device) {
                 status = logfile.readAll();
               }
             }
-            
+
             device->write(status.toUtf8());
             device->close();
           });
