@@ -58,7 +58,7 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
       // Otherwise, we encountered some other error. Most likely the user
       // needs to approve the daemon to run. Which will be handled below.
       logger.error() << "Unable to register Mozilla VPN daemon:"
-                     << QString::fromNSString(error.localizedDescription);
+                     << error.localizedDescription;
     }
 
     // Check the service status for how to proceed.

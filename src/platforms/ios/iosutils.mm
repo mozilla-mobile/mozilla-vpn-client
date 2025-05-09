@@ -45,7 +45,7 @@ QString IOSUtils::IAPReceipt() {
   NSString* path = [receiptURL path];
   Q_ASSERT(path);
 
-  logger.debug() << "Receipt URL:" << QString::fromNSString(path);
+  logger.debug() << "Receipt URL:" << path;
 
   NSFileManager* fileManager = [NSFileManager defaultManager];
   Q_ASSERT(fileManager);
@@ -59,7 +59,7 @@ QString IOSUtils::IAPReceipt() {
 
     NSString* fileOwner = [fileAttributes objectForKey:NSFileOwnerAccountName];
     if (fileOwner) {
-      logger.debug() << "Owner:" << QString::fromNSString(fileOwner);
+      logger.debug() << "Owner:" << fileOwner;
     }
 
     NSDate* fileModDate = [fileAttributes objectForKey:NSFileModificationDate];

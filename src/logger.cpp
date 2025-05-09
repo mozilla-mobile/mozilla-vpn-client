@@ -54,6 +54,17 @@ Logger::Log& Logger::Log::operator<<(QTextStreamFunction t) {
   return *this;
 }
 
+#ifdef Q_OS_APPLE
+Logger::Log& Logger::Log::operator<<(const NSString* t) {
+  m_data->m_ts << QString::fromNSString(t);
+  return *this;
+}
+Logger::Log& Logger::Log::operator<<(CFStringRef t) {
+  m_data->m_ts << QString::fromNSString(reinterpret_cast<const NSString*>(t));
+  return *this;
+}
+#endif
+
 QString Logger::sensitive(const QString& input) {
 #ifdef MZ_DEBUG
   return input;
