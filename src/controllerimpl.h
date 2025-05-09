@@ -65,13 +65,12 @@ class ControllerImpl : public QObject {
   // active.
   virtual void checkStatus() = 0;
 
-  // This method is used to retrieve the logs from the backend service. Use
-  // the callback to report logs when available.
-  virtual void getBackendLogs(
-      std::function<void(const QString& logs)>&& callback) = 0;
+  // This method is used to retrieve the logs from the backend service. The logs
+  // will be sent to the receiver object's method upon reception.
+  virtual void getBackendLogs(QObject* receiver, const char* method);
 
   // Cleanup the backend logs.
-  virtual void cleanupBackendLogs() = 0;
+  virtual void cleanupBackendLogs() {}
 
   // Whether the controller supports multihop
   virtual bool multihopSupported() { return false; }
@@ -109,6 +108,9 @@ class ControllerImpl : public QObject {
   void statusUpdated(const QString& serverIpv4Gateway,
                      const QString& deviceIpv4Address, uint64_t txBytes,
                      uint64_t rxBytes);
+
+  // This signal is emitted when the implementation encounters an error.
+  void backendFailure(Controller::ErrorCode errorCode);
 };
 
 #endif  // CONTROLLERIMPL_H

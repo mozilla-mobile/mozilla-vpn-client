@@ -165,6 +165,8 @@ void Controller::initialize() {
           &Controller::implPermRequired);
   connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
           &Controller::statusUpdated);
+  connect(m_impl.get(), &ControllerImpl::backendFailure, this,
+          &Controller::handleBackendFailure);
   connect(this, &Controller::stateChanged, this,
           &Controller::maybeEnableDisconnectInConfirming);
 
@@ -832,13 +834,41 @@ void Controller::serializeLogs(
       std::move(a_callback);
 
   if (!m_impl) {
-    callback("Mozilla VPN backend logs", QString());
+    a_callback("Mozilla VPN backend logs", QString());
     return;
   }
 
-  m_impl->getBackendLogs([callback](const QString& logs) {
-    callback("Mozilla VPN backend logs", logs);
-  });
+  m_logCallback = std::move(a_callback);
+  m_impl->getBackendLogs(this, "handleBackendLogs");
+}
+
+void Controller::handleBackendLogs(const QString& logs) {
+  if (m_logCallback) {
+    m_logCallback("Mozilla VPN backend logs", logs);
+    m_logCallback = nullptr;
+  }
+}
+
+void Controller::handleBackendFailure(ErrorCode code) {
+  logger.warning() << "backend failure:" << code;
+  switch (code) {
+    case ErrorNone:
+      [[fallthrough]];
+    case ErrorFatal:
+      REPORTERROR(ErrorHandler::ControllerError, "controller");
+      break;
+    case ErrorSplitTunnelInit:
+      [[fallthrough]];
+    case ErrorSplitTunnelStart:
+      [[fallthrough]];
+    case ErrorSplitTunnelExclude:
+      REPORTERROR(ErrorHandler::SplitTunnelError, "controller");
+      break;
+    default:
+      // We should not get here.
+      Q_ASSERT(false);
+      break;
+  }
 }
 
 void Controller::cleanupBackendLogs() {

@@ -33,10 +33,6 @@ class WasmController final : public ControllerImpl {
 
   void checkStatus() override;
 
-  void getBackendLogs(std::function<void(const QString&)>&& callback) override;
-
-  void cleanupBackendLogs() override;
-
  private:
   MockDaemon* m_mock = nullptr;
 };

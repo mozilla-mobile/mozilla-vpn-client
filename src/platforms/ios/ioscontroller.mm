@@ -285,11 +285,10 @@ void IOSController::checkStatus() {
 
 void IOSController::forceDaemonSilentServerSwitch() { [impl silentServerSwitch]; }
 
-void IOSController::getBackendLogs(std::function<void(const QString&)>&& a_callback) {
-  std::function<void(const QString&)> callback = std::move(a_callback);
-
+void IOSController::getBackendLogs(QObject* receiver, const char *method) {
   [IOSLoggerImpl getLogsWithCallback:^(NSString* logs) {
-    callback(QString::fromNSString(logs));
+    QMetaObject::invokeMethod(receiver, method,
+                              Q_ARG(QString, QString::fromNSString(logs)));
   }];
 }
 

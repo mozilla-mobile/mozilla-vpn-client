@@ -29,7 +29,7 @@ class IOSController final : public ControllerImpl {
 
   void forceDaemonSilentServerSwitch() override;
 
-  void getBackendLogs(std::function<void(const QString&)>&& callback) override;
+  void getBackendLogs(QObject* receiver, const char* method) override;
 
   void cleanupBackendLogs() override;
 

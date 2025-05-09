@@ -87,11 +87,6 @@ DnsUtils* DBusService::dnsutils() {
   return m_dnsutils;
 }
 
-void DBusService::setAdaptor(DbusAdaptor* adaptor) {
-  Q_ASSERT(!m_adaptor);
-  m_adaptor = adaptor;
-}
-
 bool DBusService::removeInterfaceIfExists() {
   if (m_wgutils->interfaceExists()) {
     logger.warning() << "Device already exists. Let's remove it.";
@@ -108,25 +103,10 @@ QString DBusService::version() {
   return PROTOCOL_VERSION;
 }
 
-bool DBusService::activate(const QString& jsonConfig) {
+bool DBusService::activate(const InterfaceConfig& config) {
   logger.debug() << "Activate";
-
   if (!isCallerAuthorized()) {
     logger.error() << "Insufficient caller permissions";
-    return false;
-  }
-
-  QJsonDocument json = QJsonDocument::fromJson(jsonConfig.toLocal8Bit());
-  if (!json.isObject()) {
-    logger.error() << "Invalid input";
-    return false;
-  }
-
-  QJsonObject obj = json.object();
-
-  InterfaceConfig config;
-  if (!parseConfig(obj, config)) {
-    logger.error() << "Invalid configuration";
     return false;
   }
 
@@ -136,11 +116,8 @@ bool DBusService::activate(const QString& jsonConfig) {
 
   // (Re)load the split tunnelling configuration.
   clearAppStates();
-  if (obj.contains("vpnDisabledApps")) {
-    QJsonArray disabledApps = obj["vpnDisabledApps"].toArray();
-    for (const QJsonValue& app : disabledApps) {
-      setAppState(LinuxUtils::desktopFileId(app.toString()), Excluded);
-    }
+  for (const QString& app : config.m_vpnDisabledApps) {
+    setAppState(LinuxUtils::desktopFileId(app), Excluded);
   }
 
   return true;

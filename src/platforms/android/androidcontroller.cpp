@@ -281,18 +281,19 @@ void AndroidController::checkStatus() {
                                     QString());
 }
 
-void AndroidController::getBackendLogs(
-    std::function<void(const QString&)>&& a_callback) {
+void AndroidController::getBackendLogs(QObject* receiver, const char* method) {
   QString cacheFolderPath =
       QStandardPaths::writableLocation(QStandardPaths::TempLocation);
   auto cacheFolder = QDir(cacheFolderPath);
   QFile logFile(cacheFolder.absoluteFilePath("mozilla_deamon_logs.txt"));
   if (!logFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    a_callback(QString());
+    QMetaObject::invokeMethod(receiver, method, Q_ARG(QString, ""));
     return;
   }
+
   auto content = logFile.readAll();
-  a_callback(QString::fromUtf8(content));
+  QMetaObject::invokeMethod(receiver, method,
+                            Q_ARG(QString, QString::fromUtf8(content)));
 }
 
 void AndroidController::cleanupBackendLogs() {

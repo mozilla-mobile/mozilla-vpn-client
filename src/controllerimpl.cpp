@@ -41,3 +41,9 @@ void ControllerImpl::emitStatusFromJson(const QJsonObject& obj) {
   emit statusUpdated(serverIpv4Gateway.toString(), deviceIpv4Address.toString(),
                      txBytes.toDouble(), rxBytes.toDouble());
 }
+
+void ControllerImpl::getBackendLogs(QObject* receiver, const char* method) {
+  QString name = metaObject()->className();
+  QString reply = QString("Backend logs are not supported with %1").arg(name);
+  QMetaObject::invokeMethod(receiver, method, Q_ARG(QString, reply));
+}
