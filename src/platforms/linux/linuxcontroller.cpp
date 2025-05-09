@@ -11,7 +11,6 @@
 #include <QProcess>
 #include <QString>
 
-#include "backendlogsobserver.h"
 #include "dbusclient.h"
 #include "errorhandler.h"
 #include "ipaddress.h"
