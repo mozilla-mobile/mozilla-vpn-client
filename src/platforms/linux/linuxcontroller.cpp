@@ -174,8 +174,8 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
 
 void LinuxController::getBackendLogs(QIODevice* device) {
   QDBusPendingCallWatcher* watcher = m_dbus->getLogs();
-  connect(watcher, &QDBusPendingCallWatcher::finished, receiver,
-          [receiver, method](QDBusPendingCallWatcher* watcher) {
+  connect(watcher, &QDBusPendingCallWatcher::finished, device,
+          [device](QDBusPendingCallWatcher* watcher) {
             QDBusPendingReply<QString> reply = *watcher;
             QString status;
             if (!reply.isError()) {
