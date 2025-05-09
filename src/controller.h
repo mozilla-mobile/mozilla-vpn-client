@@ -88,9 +88,8 @@ class Controller : public QObject, public LogSerializer {
   void cleanupBackendLogs();
 
   // LogSerializer interface
-  void serializeLogs(
-      std::function<void(const QString& name, const QString& logs)>&& callback)
-      override;
+  QString logName() const override { return "Mozilla VPN backend logs"; }
+  void logSerialize(QIODevice* device) override;
 
   void getStatus(
       std::function<void(const QString& serverIpv4Gateway,

@@ -41,3 +41,10 @@ void ControllerImpl::emitStatusFromJson(const QJsonObject& obj) {
   emit statusUpdated(serverIpv4Gateway.toString(), deviceIpv4Address.toString(),
                      txBytes.toDouble(), rxBytes.toDouble());
 }
+
+void ControllerImpl::getBackendLogs(QIODevice* device) {
+  QString name = metaObject()->className();
+  QString reply = QString("Backend logs are not supported with %1").arg(name);
+  device->write(reply.toUtf8());
+  device->close();
+}

@@ -56,9 +56,8 @@ class DeviceModel final : public QAbstractListModel, public LogSerializer {
   const Device* deviceFromUniqueId() const;
 
   // LogSerializer interface
-  void serializeLogs(
-      std::function<void(const QString& name, const QString& logs)>&& callback)
-      override;
+  QString logName() const override { return "Device"; }
+  void logSerialize(QIODevice* device) override;
 
   // QAbstractListModel methods
 

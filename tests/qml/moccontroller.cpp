@@ -82,8 +82,7 @@ void MozillaVPN::silentSwitch() {}
 
 QString Controller::currentServerString() const { return QString("42"); }
 
-void Controller::serializeLogs(
-    std::function<void(const QString& name, const QString& logs)>&&) {}
+void Controller::logSerialize(QIODevice* device) { device->close(); }
 
 void Controller::forceDaemonCrash() {}
 

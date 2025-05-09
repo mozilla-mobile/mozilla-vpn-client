@@ -40,11 +40,3 @@ void WasmController::deactivate(Controller::Reason reason) {
 }
 
 void WasmController::checkStatus() { emitStatusFromJson(m_mock->getStatus()); }
-
-void WasmController::getBackendLogs(
-    std::function<void(const QString&)>&& a_callback) {
-  std::function<void(const QString&)> callback = std::move(a_callback);
-  callback(m_mock->logs());
-}
-
-void WasmController::cleanupBackendLogs() { m_mock->cleanLogs(); }

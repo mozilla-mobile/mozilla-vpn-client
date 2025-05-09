@@ -9,8 +9,6 @@ target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
 
 # Linux platform source files
 target_sources(mozillavpn PRIVATE
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/backendlogsobserver.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/backendlogsobserver.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbustypes.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxappimageprovider.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxappimageprovider.h

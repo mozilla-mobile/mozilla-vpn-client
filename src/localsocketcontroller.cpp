@@ -164,26 +164,24 @@ void LocalSocketController::checkStatus() {
   }
 }
 
-void LocalSocketController::getBackendLogs(
-    std::function<void(const QString&)>&& a_callback) {
+void LocalSocketController::getBackendLogs(QIODevice* device) {
   logger.debug() << "Backend logs";
 
-  if (m_logCallback) {
-    m_logCallback("");
-    m_logCallback = nullptr;
+  if (m_logReceiver) {
+    m_logReceiver->close();
+    m_logReceiver = nullptr;
   }
 
   if (m_daemonState != eReady) {
-    std::function<void(const QString&)> callback = a_callback;
-    callback("");
+    device->close();
     return;
   }
-
-  m_logCallback = std::move(a_callback);
 
   QJsonObject json;
   json.insert("type", "logs");
   write(json);
+
+  m_logReceiver = device;
 }
 
 void LocalSocketController::cleanupBackendLogs() {
@@ -335,14 +333,19 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
 
   if (type == "logs") {
     // We don't care if we are not waiting for logs.
-    if (!m_logCallback) {
+    if (!m_logReceiver) {
       return;
     }
 
     QJsonValue logs = obj.value("logs");
-    m_logCallback(logs.isString() ? logs.toString().replace("|", "\n")
-                                  : QString());
-    m_logCallback = nullptr;
+    QString logString;
+    if (logs.isString()) {
+      logString = logs.toString().replace("|", "\n");
+    }
+
+    m_logReceiver->write(logString.toUtf8());
+    m_logReceiver->close();
+    m_logReceiver = nullptr;
     return;
   }
 

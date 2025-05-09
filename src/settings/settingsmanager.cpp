@@ -131,14 +131,8 @@ void SettingsManager::hardReset() {
   }
 }
 
-void SettingsManager::serializeLogs(
-    std::function<void(const QString& name, const QString& logs)>&&
-        a_callback) {
-  std::function<void(const QString& name, const QString& logs)> callback =
-      std::move(a_callback);
-
-  QString buff;
-  QTextStream out(&buff);
+void SettingsManager::logSerialize(QIODevice* device) {
+  QTextStream out(device);
   foreach (Setting* setting, m_registeredSettings.values()) {
     const auto log = setting->log();
     if (!log.isEmpty()) {
@@ -146,7 +140,8 @@ void SettingsManager::serializeLogs(
     }
   }
 
-  callback("Settings", buff);
+  out.flush();
+  device->close();
 }
 
 Setting* SettingsManager::createOrGetSetting(
