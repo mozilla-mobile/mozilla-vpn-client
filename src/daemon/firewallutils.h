@@ -16,7 +16,13 @@ class FirewallUtils : public QObject {
   explicit FirewallUtils(Daemon* daemon) : QObject(daemon){};
   virtual ~FirewallUtils() = default;
 
-  // Returns true if split tunnelling is supported.
+  // Enable and disable the firewall and update peer information.
+  virtual bool enable(const InterfaceConfig& config) = 0;
+  virtual void disable() = 0;
+  virtual bool updatePeer(const InterfaceConfig& config) = 0;
+  virtual void deletePeer(const InterfaceConfig& config) = 0;
+
+  // Additional methods for split tunnelling support.
   virtual bool splitTunnelSupported() const { return false; }
 };
 
