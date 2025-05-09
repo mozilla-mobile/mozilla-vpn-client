@@ -9,6 +9,10 @@
 
 #include "daemon/firewallutils.h"
 
+#ifdef __OBJC__
+#import <NetworkExtension/NetworkExtension.h>
+#endif
+
 class FirewallUtilsMacos final : public FirewallUtils {
   Q_OBJECT
  
@@ -16,11 +20,18 @@ class FirewallUtilsMacos final : public FirewallUtils {
   FirewallUtilsMacos(Daemon* daemon);
   ~FirewallUtilsMacos();
 
+  bool enable(const InterfaceConfig& config) override;
+  void disable() override;
+
+  bool updatePeer(const InterfaceConfig& config) override;
+  void deletePeer(const InterfaceConfig& config) override;
+
   bool splitTunnelSupported() const override;
 
  private:
   Daemon* m_daemon = nullptr;
   void* m_loader = nullptr;
+  void* m_session = nullptr;
 };
 
 #endif  // FIREWALLUTILSMACOS_H
