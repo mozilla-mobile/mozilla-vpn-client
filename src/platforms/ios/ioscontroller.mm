@@ -288,7 +288,7 @@ void IOSController::forceDaemonSilentServerSwitch() { [impl silentServerSwitch];
 void IOSController::getBackendLogs(QIODevice* device) {
   [IOSLoggerImpl getLogsWithCallback:^(NSString* logs) {
     device->write([logs UTF8String],
-                  [logs lengthOfByesUsingEncoding:NSUTF8StringEncoding]);
+                  [logs lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
     device->close();
   }];
 }
