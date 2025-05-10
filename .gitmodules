@@ -6,10 +6,6 @@
 	path = 3rdparty/wireguard-apple
 	url = https://github.com/mozilla/wireguard-apple.git
 	shallow = true
-[submodule "3rdparty/wireguard-go"]
-	path = 3rdparty/wireguard-go
-	url = https://github.com/WireGuard/wireguard-go
-	shallow = true
 [submodule "3rdparty/adjust-ios-sdk"]
 	path = 3rdparty/adjust-ios-sdk
 	url = https://github.com/adjust/ios_sdk.git
@@ -35,3 +31,7 @@
 [submodule "3rdparty/c-ares"]
 	path = 3rdparty/c-ares
 	url = https://github.com/c-ares/c-ares
+[submodule "3rdparty/boringtun"]
+	path = 3rdparty/boringtun
+	url = https://github.com/cloudflare/boringtun
+	shallow = true
