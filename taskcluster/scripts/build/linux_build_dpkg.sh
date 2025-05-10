@@ -102,6 +102,9 @@ mk-build-deps $(pwd)/mozillavpn-source/debian/control
 sudo apt -y install ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb
 rm -f ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_*
 
+# HACK!
+export MAKEFLAGS="--debug=v"
+
 # Build the packages
 (cd mozillavpn-source/ && dpkg-buildpackage --unsigned-source --build=full)
 

@@ -2,14 +2,20 @@
 
 export DH_VERBOSE=1
 
+$(info TRACE A)
+
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
+
+$(info TRACE B)
 
 GOLANG_NATIVE_VERSION := $(shell dpkg-query --showformat='${Version}' --show golang 2>/dev/null || echo 0)
 ifneq (ok,$(shell dpkg --compare-versions $(GOLANG_NATIVE_VERSION) ge 2:1.18 && echo ok))
 	export GODIR := /usr/lib/go-1.18
 	export PATH := $(GODIR)/bin:$(PATH)
 endif
+
+$(info TRACE C)
 
 # Check Qt features.
 QT_INSTALL_HEADERS := $(shell pkg-config --variable=includedir Qt6Core || qmake6 -query QT_INSTALL_HEADERS || true)
@@ -19,6 +25,8 @@ ifeq (1,$(call qtfeature,QT_FEATURE_openssl_linked))
 	OPENSSL_BUILD_ARGS := -DOPENSSL_USE_STATIC_LIBS=ON
 endif
 endif
+
+$(info TRACE D)
 
 CMAKE_BUILD_DIR := build-$(DEB_HOST_MULTIARCH)
 

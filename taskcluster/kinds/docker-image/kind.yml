@@ -57,6 +57,11 @@ tasks:
         definition: linux-dpkg-build
         args:
             DOCKER_BASE_IMAGE: ubuntu:noble
+    linux-build-oracular:
+        symbol: I(linux-oracular)
+        definition: linux-dpkg-build
+        args:
+            DOCKER_BASE_IMAGE: ubuntu:oracular
     linux-build-fedora-fc39:
         symbol: I(linux-fedora-fc39)
         definition: linux-rpm-build
