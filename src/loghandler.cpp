@@ -432,6 +432,7 @@ void LogHandler::logSerialize(QIODevice* device) {
   QTextStream out(device);
   out << "MZ logs" << Qt::endl << "=======" << Qt::endl << Qt::endl;
   LogHandler::writeLogs(out);
+  out.flush();
 
   LogSerializeHelper* lsh = new LogSerializeHelper(device);
   for (LogSerializer* serializer : m_logSerializers) {
@@ -537,6 +538,7 @@ void LogSerializeHelper::addSerializer(LogSerializer* serializer) {
   QString name = serializer->logName();
   stream << Qt::endl << Qt::endl << name << Qt::endl;
   stream << QByteArray(name.length(), '=') << Qt::endl << Qt::endl;
+  stream.flush();
 
   // Serialize the logs to the buffer
   serializer->logSerialize(buffer);
