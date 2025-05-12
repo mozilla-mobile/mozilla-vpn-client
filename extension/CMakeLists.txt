@@ -46,6 +46,7 @@ set_property(TARGET mozillavpnnp PROPERTY
 
 ## Handle installation by platform.
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    include(GNUInstallDirs)
     if(NOT DEFINED WEBEXT_INSTALL_LIBDIR)
         set(WEBEXT_INSTALL_LIBDIR ${CMAKE_INSTALL_FULL_LIBDIR})
     endif()
