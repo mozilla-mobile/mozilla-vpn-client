@@ -26,6 +26,8 @@ class MacOSController final : public LocalSocketController {
 
   void getBackendLogs(QIODevice* device) override;
 
+  void cleanupBackendLogs() override;
+
  private slots:
   void registerService();
 

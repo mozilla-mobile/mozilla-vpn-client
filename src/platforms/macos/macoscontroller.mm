@@ -171,20 +171,28 @@ void MacOSController::checkStatus() {
 }
 
 void MacOSController::getBackendLogs(QIODevice* device) {
-  // If the daemon is connected - use the LocalSocketController to fetch logs.
-  if (m_daemonState == eReady) {
-    LocalSocketController::getBackendLogs(device);
-    return;
-  }
+  auto conn = static_cast<NSXPCConnection*>(m_connection);
+  NSObject<XpcDaemonProtocol>* remote =
+      [conn remoteObjectProxyWithErrorHandler:^(NSError*error){
+    // Otherwise, try our best to scrape the logs directly off disk.
+    QByteArray logData("Failed to open backend logs");
+    QFile logfile("/var/log/mozillavpn/mozillavpn.log");
+    if (logfile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
+      logData = logfile.readAll();
+    }
+    device->write(logData);
+    device->close();
+  }];
 
-  // Otherwise, try our best to scrape the logs directly off disk.
-  QByteArray logData("Failed to open backend logs");
-  QFile logfile("/var/log/mozillavpn/mozillavpn.log");
-  if (logfile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
-    logData = logfile.readAll();
-  }
-  device->write(logData);
-  device->close();
+  [remote getBackendLogs:^(NSString* logs){
+    NSUInteger length = [logs lengthOfBytesUsingEncoding:NSUTF8StringEncoding];
+    device->write(logs.UTF8String, length);
+    device->close();
+  }];
+}
+
+void MacOSController::cleanupBackendLogs() {
+  [remoteObject() cleanupBackendLogs];
 }
 
 // A delegate object used to receive async events from the daemon.

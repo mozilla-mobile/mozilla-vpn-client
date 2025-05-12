@@ -113,6 +113,24 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
   reply(result);
 }
 
+- (void) getBackendLogs: (void (^)(NSString *))reply {
+  NSString* result = nullptr;
+  NSCondition* cond = [NSCondition new];
+
+  [cond lock];
+  QMetaObject::invokeMethod(self.daemon, [&](){
+    result = self.daemon->logs().toNSString();
+    [cond signal];
+  });
+
+  [cond wait];
+  reply(result);
+}
+
+- (void)cleanupBackendLogs {
+  QMetaObject::invokeMethod(self.daemon, [&]{ self.daemon->cleanLogs(); });
+}
+
 @end
 
 XpcDaemonSession::XpcDaemonSession(Daemon* daemon, void* connection)
