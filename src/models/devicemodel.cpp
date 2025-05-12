@@ -286,14 +286,9 @@ bool DeviceModel::hasCurrentDevice(const Keys* keys) const {
   return currentDevice(keys) != nullptr;
 }
 
-void DeviceModel::serializeLogs(
-    std::function<void(const QString& name, const QString& logs)>&&
-        a_callback) {
-  std::function<void(const QString& name, const QString& logs)> callback =
-      std::move(a_callback);
+void DeviceModel::logSerialize(QIODevice* device) {
+  QTextStream out(device);
 
-  QString buffer;
-  QTextStream out(&buffer);
   out << "ABI -> " << QSysInfo::buildAbi() << Qt::endl;
   out << "Machine arch -> " << QSysInfo::currentCpuArchitecture() << Qt::endl;
   out << "OS -> " << QSysInfo::productType() << Qt::endl;
@@ -315,5 +310,6 @@ void DeviceModel::serializeLogs(
       << QSslSocket::sslLibraryVersionNumber() << Qt::endl;
 #endif
 
-  callback("Device", buffer);
+  out.flush();
+  device->close();
 }

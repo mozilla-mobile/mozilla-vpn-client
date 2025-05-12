@@ -26,7 +26,7 @@ class AndroidController final : public ControllerImpl {
 
   void checkStatus() override;
 
-  void getBackendLogs(std::function<void(const QString&)>&& callback) override;
+  void getBackendLogs(QIODevice* device) override;
 
   void cleanupBackendLogs() override;
 

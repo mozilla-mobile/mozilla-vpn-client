@@ -83,6 +83,7 @@
 #endif
 
 #include <QApplication>
+#include <QBuffer>
 #include <QDir>
 #include <QFileInfo>
 #include <QGuiApplication>
@@ -672,29 +673,24 @@ void MozillaVPN::createSupportTicket(const QString& email,
                                      const QString& category) {
   logger.debug() << "Create support ticket";
 
-  QString* buffer = new QString();
-  QTextStream* out = new QTextStream(buffer);
+  QBuffer* buffer = new QBuffer();
+  buffer->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
+  connect(buffer, &QIODevice::aboutToClose, this,
+          [buffer, email, subject, issueText, category]() {
+            QString logs = QString::fromUtf8(buffer->data());
+            Task* task = new TaskCreateSupportTicket(email, subject, issueText,
+                                                     logs, category);
+            buffer->deleteLater();
 
-  LogHandler::instance()->serializeLogs(
-      out, [out, buffer, email, subject, issueText, category] {
-        Q_ASSERT(out);
-        Q_ASSERT(buffer);
-
-        // buffer is getting copied by TaskCreateSupportTicket so we can delete
-        // it afterwards
-        Task* task = new TaskCreateSupportTicket(email, subject, issueText,
-                                                 *buffer, category);
-        delete buffer;
-        delete out;
-
-        // Support tickets can be created at anytime. Even during "critical"
-        // operations such as authentication, account deletion, etc. Those
-        // operations are often running in tasks, which would block the
-        // scheduling of this new support ticket task execution if we used
-        // `TaskScheduler::scheduleTask`. To avoid this, let's run this task
-        // immediately and let's hope it does not fail.
-        TaskScheduler::scheduleTaskNow(task);
-      });
+            // Support tickets can be created at anytime. Even during "critical"
+            // operations such as authentication, account deletion, etc. Those
+            // operations are often running in tasks, which would block the
+            // scheduling of this new support ticket task execution if we used
+            // `TaskScheduler::scheduleTask`. To avoid this, let's run this task
+            // immediately and let's hope it does not fail.
+            TaskScheduler::scheduleTaskNow(task);
+          });
+  LogHandler::instance()->logSerialize(buffer);
 }
 
 void MozillaVPN::accountChecked(const QByteArray& json) {

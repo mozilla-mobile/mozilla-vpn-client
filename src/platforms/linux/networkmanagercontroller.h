@@ -35,10 +35,6 @@ class NetworkManagerController final : public ControllerImpl {
 
   void checkStatus() override;
 
-  void getBackendLogs(std::function<void(const QString&)>&& callback) override;
-
-  void cleanupBackendLogs() override;
-
  private slots:
   void initializeCompleted(void*);
   void peerConfigCompleted(void*);

@@ -825,20 +825,12 @@ bool Controller::silentServerSwitchingSupported() const {
   return m_impl->silentServerSwitchingSupported();
 }
 
-void Controller::serializeLogs(
-    std::function<void(const QString& name, const QString& logs)>&&
-        a_callback) {
-  std::function<void(const QString& name, const QString&)> callback =
-      std::move(a_callback);
-
-  if (!m_impl) {
-    callback("Mozilla VPN backend logs", QString());
-    return;
+void Controller::logSerialize(QIODevice* device) {
+  if (m_impl) {
+    m_impl->getBackendLogs(device);
+  } else {
+    device->close();
   }
-
-  m_impl->getBackendLogs([callback](const QString& logs) {
-    callback("Mozilla VPN backend logs", logs);
-  });
 }
 
 void Controller::cleanupBackendLogs() {

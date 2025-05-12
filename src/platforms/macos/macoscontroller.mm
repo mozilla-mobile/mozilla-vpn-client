@@ -106,19 +106,19 @@ void MacOSController::checkServiceEnabled(void) {
   }
 }
 
-void MacOSController::getBackendLogs(
-    std::function<void(const QString&)>&& callback) {
+void MacOSController::getBackendLogs(QIODevice* device) {
   // If the daemon is connected - use the LocalSocketController to fetch logs.
   if (m_daemonState == eReady) {
-    LocalSocketController::getBackendLogs(std::move(callback));
+    LocalSocketController::getBackendLogs(device);
     return;
   }
-
+  
   // Otherwise, try our best to scrape the logs directly off disk.
+  QByteArray logData("Failed to open backend logs");
   QFile logfile("/var/log/mozillavpn/mozillavpn.log");
-  if (!logfile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
-    callback(QString("Failed to open backend logs"));
-  } else {
-    callback(logfile.readAll());
+  if (logfile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
+    logData = logfile.readAll();
   }
+  device->write(logData);
+  device->close();
 }
