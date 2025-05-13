@@ -5,7 +5,9 @@
 #include "sockslogger.h"
 
 #include <stdio.h>
-#include <unistd.h>
+#ifndef PROXY_OS_WIN
+#  include <unistd.h>
+#endif
 
 #include <QDateTime>
 #include <QDir>
