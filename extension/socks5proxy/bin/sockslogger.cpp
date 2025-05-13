@@ -90,6 +90,11 @@ void SocksLogger::tick() {
 }
 
 void SocksLogger::printStatus() {
+  // Don't print status unless we are writing to an interactive terminal.
+  if (!isatty(fileno(stdout))) {
+    return;
+  }
+
   QString output;
   {
     QTextStream out(&output);
