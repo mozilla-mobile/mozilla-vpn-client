@@ -95,7 +95,7 @@ MZFlickable {
             id: signOff
 
             labelText: MZI18n.GlobalSignOut
-            linkColor: MZTheme.colors.fontColor
+            linkColor: MZTheme.colors.textLink
             Layout.preferredHeight: MZTheme.theme.rowHeight
             Layout.alignment: Qt.AlignHCenter
 
