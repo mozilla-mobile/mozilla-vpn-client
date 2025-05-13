@@ -56,7 +56,7 @@ MZFlickable {
                 Layout.topMargin: 8
                 Layout.fillWidth: true
 
-                text: MZI18n.PermissionMacosBody
+                text: MZI18n.PermissionMacosRequest
                 horizontalAlignment: Text.AlignLeft
             }
 
@@ -64,7 +64,7 @@ MZFlickable {
                 Layout.topMargin: 8
                 Layout.fillWidth: true
 
-                text: MZI18n.PermissionMacosInstructions
+                text: MZI18n.PermissionMacosSteps
                 horizontalAlignment: Text.AlignLeft
             }
         }
@@ -76,30 +76,30 @@ MZFlickable {
         MZButton {
             id: openSettingsButton
 
-            text: MZI18n.PermissionMacosOpenSettingsButtonLabel
+            text: MZI18n.PermissionMacosOpenSystemPreferences
             Layout.preferredHeight: MZTheme.theme.rowHeight
             loaderVisible: false
             onClicked: VPNMacOSUtils.openSystemSettingsLoginItems()
         }
 
         MZLinkButton {
-            id: learnMoreLink
+            id: getHelpLink
 
-            labelText:  MZI18n.GlobalLearnMore
+            labelText:  MZI18n.GetHelpExternalHelpLink
             Layout.preferredHeight: MZTheme.theme.rowHeight
             Layout.alignment: Qt.AlignHCenter
             onClicked: MZUrlOpener.openUrlLabel("sumoAllowBackgroundMacos")
         }
 
-        MZSignOut {
+        MZLinkButton {
             id: signOff
 
+            labelText: MZI18n.GlobalSignOut
+            linkColor: MZTheme.colors.fontColor
             Layout.preferredHeight: MZTheme.theme.rowHeight
             Layout.alignment: Qt.AlignHCenter
-            anchors.horizontalCenter: undefined
-            anchors.bottom: undefined
-            anchors.bottomMargin: undefined
-            height: undefined
+
+            onClicked: () => VPN.logout()
         }
     }
 }
