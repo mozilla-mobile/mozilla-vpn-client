@@ -126,6 +126,10 @@ int main(int argc, char** argv) {
     return 1;
   }
 
+  // QHostAddress isn't registered as a built-in metatype, and sometimes the
+  // moc tool doesn't figure out that we need it.
+  qRegisterMetaType<QHostAddress>();
+
   auto* logger = new SocksLogger(&app);
   logger->setVerbose(config.verbose);
   if (config.logfile) {
