@@ -4,6 +4,9 @@
 
 #include "sockslogger.h"
 
+#include <stdio.h>
+#include <unistd.h>
+
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
