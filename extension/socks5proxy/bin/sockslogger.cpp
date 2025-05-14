@@ -4,6 +4,13 @@
 
 #include "sockslogger.h"
 
+#include <stdio.h>
+#ifndef PROXY_OS_WIN
+#  include <unistd.h>
+#else
+#  include <io.h>
+#endif
+
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
@@ -90,6 +97,17 @@ void SocksLogger::tick() {
 }
 
 void SocksLogger::printStatus() {
+  // Don't print status unless we are writing to an interactive terminal.
+#ifndef PROXY_OS_WIN
+  if (!isatty(fileno(stdout))) {
+    return;
+  }
+#else
+  if (!_isatty(_fileno(stdout))) {
+    return;
+  }
+#endif
+
   QString output;
   {
     QTextStream out(&output);
