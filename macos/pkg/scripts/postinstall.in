@@ -68,6 +68,7 @@ if launchctl bootout system/${CODESIGN_APP_IDENTIFIER}.daemon 2>/dev/null; then
 fi
 if [ -f "$DAEMON_PLIST_PATH" ]; then
   echo "Removing legacy daemon plist"
+  launchctl remove ${CODESIGN_APP_IDENTIFIER}.daemon
   rm -f ${DAEMON_PLIST_PATH}
 fi
 
