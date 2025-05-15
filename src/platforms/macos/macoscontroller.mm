@@ -29,18 +29,17 @@ MacOSController::MacOSController() :
           &MacOSController::checkServiceEnabled);
 }
 
-QString MacOSController::plistName() const {
+NSString* MacOSController::plist() const {
   NSString* appId = MacOSUtils::appId();
   Q_ASSERT(appId);
-  return QString("%1.daemon.plist").arg(QString::fromNSString(appId));
+  return [NSString stringWithFormat:@"%@.service.plist", appId];
 }
 
 void MacOSController::initialize(const Device* device, const Keys* keys) {
   // For MacOS 13 and beyond, attempt to register the daemon using the
   // SMAppService interface.
   if (@available(macOS 13, *)) {
-    SMAppService* service =
-        [SMAppService daemonServiceWithPlistName:plistName().toNSString()];
+    SMAppService* service = [SMAppService daemonServiceWithPlistName:plist()];
 
     // Attempt to register the service upon initialization. This should be a
     // no-op if the service is already registered.
@@ -92,8 +91,7 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
 void MacOSController::checkServiceEnabled(void) {
   if (@available(macOS 13, *)) {
     // Create the daemon delegate object.
-    SMAppService* service =
-        [SMAppService daemonServiceWithPlistName:plistName().toNSString()];
+    SMAppService* service = [SMAppService daemonServiceWithPlistName:plist()];
     if ([service status] == SMAppServiceStatusEnabled) {
       logger.debug() << "Mozilla VPN daemon enabled.";
 

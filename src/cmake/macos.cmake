@@ -154,13 +154,13 @@ osx_bundle_files(mozillavpn FILES
     DESTINATION Resources/utils
 )
 
-# Install the daemon plist into the bundle.
+# Install the background service plist into the bundle.
 configure_file(
-    ${CMAKE_SOURCE_DIR}/macos/app/daemon.plist.in
-    ${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.daemon.plist
+    ${CMAKE_SOURCE_DIR}/macos/app/service.plist.in
+    ${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.service.plist
 )
 osx_bundle_files(mozillavpn FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.daemon.plist
+    ${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.service.plist
     DESTINATION Library/LaunchDaemons
 )
 
