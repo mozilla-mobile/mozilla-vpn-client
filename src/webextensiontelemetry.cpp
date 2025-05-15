@@ -44,7 +44,14 @@ namespace handlers {
 // For Events we want to just record it to glean.
 // It will be send out with the next ping
 auto constexpr event(EventMetric* metric) {
-  return [metric](QVariant) { metric->record(); };
+  return [metric](QVariant args) { 
+    if(args.isValid()){
+      auto const obj = args.toJsonObject();
+      metric->record(obj);
+      return;
+    }
+    metric->record();
+  };
 };
 auto constexpr count(QuantityMetric* metric) {
   return [metric](QVariant args) {
