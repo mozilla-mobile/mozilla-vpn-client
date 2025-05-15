@@ -57,6 +57,11 @@ tasks:
         definition: linux-dpkg-build
         args:
             DOCKER_BASE_IMAGE: ubuntu:noble
+    linux-build-plucky:
+        symbol: I(linux-plucky)
+        definition: linux-dpkg-build
+        args:
+            DOCKER_BASE_IMAGE: ubuntu:plucky
     linux-build-fedora-fc39:
         symbol: I(linux-fedora-fc39)
         definition: linux-rpm-build

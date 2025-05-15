@@ -55,6 +55,16 @@ linux/noble:
         name: linux-noble
         type: build
 
+linux/plucky:
+    description: "Linux Build (Ubuntu/Plucky)"
+    treeherder:
+        platform: linux/plucky
+    worker:
+        docker-image: {in-tree: linux-build-plucky}
+    add-index-routes:
+        name: linux-plucky
+        type: build
+
 linux/fedora-fc39:
     description: "Linux Build (Fedora/39)"
     treeherder:
