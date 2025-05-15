@@ -95,6 +95,23 @@ Rectangle {
             }
         },
         State {
+            name: VPNController.StateSilentSwitching
+
+            PropertyChanges {
+                target: logo
+                showVPNOnIcon: true
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: MZTheme.colors.successAlert.defaultColor
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: MZAssetLookup.getImageSource("ShieldOn")
+                opacity: 1
+            }
+        },
+        State {
             name: VPNController.StateOff
             PropertyChanges {
                 target: insetCircle
