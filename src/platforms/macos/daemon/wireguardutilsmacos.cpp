@@ -33,6 +33,8 @@ WireguardUtilsMacos::WireguardUtilsMacos(QObject* parent)
           SLOT(tunnelStdoutReady()));
   connect(&m_tunnel, SIGNAL(errorOccurred(QProcess::ProcessError)), this,
           SLOT(tunnelErrorOccurred(QProcess::ProcessError)));
+  connect(&m_tunnel, SIGNAL(finished(int, QProcess::ExitStatus)), this,
+          SLOT(tunnelFinished(int, QProcess::ExitStatus)));
 }
 
 WireguardUtilsMacos::~WireguardUtilsMacos() {
@@ -53,6 +55,14 @@ void WireguardUtilsMacos::tunnelStdoutReady() {
 void WireguardUtilsMacos::tunnelErrorOccurred(QProcess::ProcessError error) {
   logger.warning() << "Tunnel process encountered an error:" << error;
   emit backendFailure();
+}
+
+void WireguardUtilsMacos::tunnelFinished(int exitCode,
+                                         QProcess::ExitStatus exitStatus) {
+  if ((exitStatus != QProcess::NormalExit) || (exitCode != 0)) {
+    logger.warning() << "Tunnel process exited with code:" << exitCode;
+    emit backendFailure();
+  }
 }
 
 bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {

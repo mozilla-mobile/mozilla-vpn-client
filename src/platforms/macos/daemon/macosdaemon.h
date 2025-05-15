@@ -14,7 +14,7 @@ class MacOSDaemon final : public Daemon {
   friend class IPUtilsMacos;
 
  public:
-  MacOSDaemon();
+  MacOSDaemon(QObject* parent = nullptr);
   ~MacOSDaemon();
 
   static MacOSDaemon* instance();

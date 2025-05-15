@@ -33,12 +33,10 @@ class WireguardUtilsMacos final : public WireguardUtils {
   bool deleteRoutePrefix(const IPAddress& prefix) override;
   bool excludeLocalNetworks(const QList<IPAddress>& lanAddressRanges) override;
 
- signals:
-  void backendFailure();
-
  private slots:
   void tunnelStdoutReady();
   void tunnelErrorOccurred(QProcess::ProcessError error);
+  void tunnelFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
  private:
   QString uapiCommand(const QString& command);
