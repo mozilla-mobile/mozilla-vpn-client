@@ -25,7 +25,7 @@ class MacOSController final : public LocalSocketController {
  private:
   NSString* plist() const;
 
-  int m_smAppStatus;
+  bool m_launchdUpgradeWorkaround = false;
   QTimer m_regTimer;
 };
 

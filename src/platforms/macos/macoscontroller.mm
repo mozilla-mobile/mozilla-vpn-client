@@ -21,7 +21,6 @@ constexpr const int SERVICE_REG_POLL_INTERVAL_MSEC = 1000;
 
 MacOSController::MacOSController() :
    LocalSocketController(Constants::MACOS_DAEMON_PATH) {
-  m_smAppStatus = -1;
 
   m_regTimer.setInterval(SERVICE_REG_POLL_INTERVAL_MSEC);
   m_regTimer.setSingleShot(false);
@@ -66,6 +65,14 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
   }
 }
 
+static bool needsLaunchdUpgradeWorkaround(NSError* error) {
+  NSString* reason = [error.userInfo objectForKey:@"NSLocalizedFailureReason"];
+  if ((error.code != 1) || (reason == nil)) {
+    return false;
+  }
+  return [reason caseInsensitiveCompare:@"operation not permitted"] == NSOrderedSame;
+}
+
 void MacOSController::registerService(void) {
   if (@available(macOS 13, *)) {
     SMAppService* service = [SMAppService daemonServiceWithPlistName:plist()];
@@ -82,18 +89,26 @@ void MacOSController::registerService(void) {
       logger.error() << "Unable to register Mozilla VPN daemon:"
                      << "code signature invalid";
       return LocalSocketController::initialize(nullptr, nullptr);
-    } else if (error.code == 1) {
+    } else if (needsLaunchdUpgradeWorkaround(error)) {
       // Weird edge case: When upgrading from a launchd-style daemon, the
-      // background task manager gets hung up on the old daemon identifer
-      // needs a kick to update its database.
-      // 
-      // Opening the login item settings is just such a kick so lets
-      // pre-emptively prompt the user to do so if we get a permission denied
-      // error when trying to register the daemon.
+      // background task manager gets hung up on the old daemon identifer and
+      // needs a kick to update its database before we can register.
       //
-      // Annoyingly - this is conveyed as an error code that isn't defined in
+      // Opening the login item settings is just such a kick, so pre-emptively
+      // prompt the user for permission if we get a permission denied error when
+      // trying to register the daemon.
+      //
+      // Annoyingly - this is conveyed with an error code that isn't defined in
       // the SMAppService documentation.
-      emit permissionRequired();
+      if (!m_launchdUpgradeWorkaround) {
+        logger.error() << "Unable to register Mozilla VPN daemon:"
+                       << "launchd workaround needed";
+        m_launchdUpgradeWorkaround = true;
+        emit permissionRequired();
+      }
+      QTimer::singleShot(SERVICE_REG_POLL_INTERVAL_MSEC, this,
+                         &MacOSController::registerService);
+      return;
     } else {
       // Otherwise, we encountered some other error.
       logger.error() << "Unable to register Mozilla VPN daemon:"
@@ -101,13 +116,9 @@ void MacOSController::registerService(void) {
     }
 
     // Check the service status for how to proceed.
-    m_smAppStatus = [service status];
-    switch (m_smAppStatus) {
+    switch ([service status]) {
       case SMAppServiceStatusNotRegistered:
         logger.debug() << "Mozilla VPN daemon not registered.";
-        // In the event of a registration error - try again.
-        QTimer::singleShot(SERVICE_REG_POLL_INTERVAL_MSEC, this,
-                           &MacOSController::registerService);
         break;
 
       case SMAppServiceStatusNotFound:
