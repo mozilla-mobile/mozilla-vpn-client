@@ -48,6 +48,7 @@ endfunction()
 #   CARGO_ENV: Environment variables to pass to cargo
 #   SHARED: Whether or not we are building a shared library. Defaults to "false".
 #   FW_NAME: Standalone dylibs need to be wrapped in a framework for distribtuion. Required when building shared lib for iOS.
+#   EXTRA_ARGS: Additional arguments to pass when building the crate.
 #
 # This function generates commands necessary to build static archives
 # in ${BINARY_DIR}/${ARCH}/debug/ and ${BINARY_DIR}/${ARCH}/release/
@@ -61,7 +62,7 @@ function(build_rust_archives)
     cmake_parse_arguments(RUST_BUILD
         ""
         "ARCH;BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
-        "CARGO_ENV;SHARED;FW_NAME"
+        "CARGO_ENV;SHARED;EXTRA_ARGS"
         ${ARGN})
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
@@ -103,11 +104,6 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_CARGO_ENV MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
     endif()
 
-    ## For build Apple shared binaries, the install path needs to be relative to the runpath.
-    if (RUST_BUILD_SHARED AND APPLE)
-        list(APPEND RUST_BUILD_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_BUILD_FW_NAME}.framework/${RUST_BUILD_FW_NAME}")
-    endif()
-
     if(ANDROID)
         get_filename_component(ANDROID_TOOLCHAIN_ROOT_BIN ${CMAKE_C_COMPILER} DIRECTORY)
 
@@ -141,7 +137,7 @@ function(build_rust_archives)
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR} ${RUST_BUILD_EXTRA_ARGS}
         )
 
         ## Outputs for the debug build
@@ -151,7 +147,7 @@ function(build_rust_archives)
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR} ${RUST_BUILD_EXTRA_ARGS}
         )
 
         ## Reset our policy changes
@@ -169,7 +165,7 @@ function(build_rust_archives)
                 ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/.noexist
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR} ${RUST_BUILD_EXTRA_ARGS}
         )
 
         ## Outputs for the debug build
@@ -179,7 +175,7 @@ function(build_rust_archives)
                 ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/.noexist
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR} ${RUST_BUILD_EXTRA_ARGS}
         )
     endif()
 endfunction()
@@ -198,12 +194,13 @@ endfunction()
 #   DEPENDS: Additional files on which the target depends.
 #   SHARED: Whether or not we are building a shared library. Defaults to "false".
 #   FW_NAME: Standalone dylibs need to be wrapped in a framework for distribtuion. Required when building shared lib for iOS.
+#   FEATURES: Additional features to enable when building the crate.
 #
 function(add_rust_library TARGET_NAME)
     cmake_parse_arguments(RUST_TARGET
         ""
         "BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
-        "ARCH;CARGO_ENV;DEPENDS;SHARED;FW_NAME"
+        "ARCH;CARGO_ENV;DEPENDS;SHARED;FW_NAME;FEATURES"
         ${ARGN})
 
     if(NOT RUST_TARGET_SHARED)
@@ -220,6 +217,9 @@ function(add_rust_library TARGET_NAME)
         if(NOT EXISTS ${FW_INFO_PLIST_FILE_PATH})
             message(FATAL_ERROR "An Info.plist.${RUST_TARGET_FW_NAME} file must exist to support creation of ${FW_NAME} framework.")
         endif()
+
+        ## For build Apple shared binaries, the install path needs to be relative to the runpath.
+        list(APPEND RUST_TARGET_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}")
     endif()
 
     if(${RUST_TARGET_SHARED})
@@ -255,6 +255,12 @@ function(add_rust_library TARGET_NAME)
         endif()
     endif()
 
+    set(RUST_TARGET_EXTRA_ARGS)
+    if(RUST_TARGET_FEATURES)
+        list(JOIN RUST_TARGET_FEATURES "," RUST_TARGET_FEATURES_JOINED)
+        list(APPEND RUST_TARGET_EXTRA_ARGS --features ${RUST_TARGET_FEATURES_JOINED})
+    endif()
+
     get_rust_library_filename(${RUST_TARGET_SHARED} ${RUST_TARGET_CRATE_NAME})
 
     ## Don't trust Xcode to provide us with a usable linker.
@@ -266,7 +272,7 @@ function(add_rust_library TARGET_NAME)
             GROUP_READ GROUP_WRITE GROUP_EXECUTE
             WORLD_READ WORLD_EXECUTE
         )
-        list(APPEND CARGO_ENV RUSTC=${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh)
+        list(APPEND RUST_TARGET_CARGO_ENV RUSTC=${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh)
     endif()
 
     ## Build the rust library file(s)
@@ -276,9 +282,9 @@ function(add_rust_library TARGET_NAME)
             BINARY_DIR ${RUST_TARGET_BINARY_DIR}
             PACKAGE_DIR ${RUST_TARGET_PACKAGE_DIR}
             CRATE_NAME ${RUST_TARGET_CRATE_NAME}
-            CARGO_ENV ${CARGO_ENV}
+            CARGO_ENV ${RUST_TARGET_CARGO_ENV}
             SHARED ${RUST_TARGET_SHARED}
-            FW_NAME ${RUST_TARGET_FW_NAME}
+            EXTRA_ARGS ${RUST_TARGET_EXTRA_ARGS}
         )
 
         if(RUST_TARGET_DEPENDS)
