@@ -24,7 +24,6 @@ class MacOSController final : public LocalSocketController {
  private:
   NSString* plist() const;
 
-  int m_smAppStatus;
   QTimer m_regTimer;
 };
 
