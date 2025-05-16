@@ -166,6 +166,14 @@ function(osx_embed_provision_profile TARGET)
     if(NOT CODE_SIGN_IDENTITY)
         return()
     endif()
+    ## A provisioning profile can be manually specified
+    if(CODE_SIGN_PROFILE)
+        add_custom_command(TARGET ${TARGET} POST_BUILD
+            COMMAND ${COMMENT_ECHO_COMMAND} "Bundling embedded.provisionprofile"
+            COMMAND ${CMAKE_COMMAND} -E copy ${CODE_SIGN_PROFILE} $<TARGET_BUNDLE_CONTENT_DIR:${TARGET}>/embedded.provisionprofile
+        )
+        return()
+    endif()
 
     # Enumerate the provioning profiles managed by Xcode
     set(XCODE_PROVISION_PROFILES_DIR "$ENV{HOME}/Library/Developer/Xcode/UserData/Provisioning\ Profiles")
