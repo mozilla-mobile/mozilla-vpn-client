@@ -22,9 +22,8 @@ class MacOSController final : public LocalSocketController {
   void checkServiceEnabled();
 
  private:
-  QString plistName() const;
+  NSString* plist() const;
 
-  int m_smAppStatus;
   QTimer m_regTimer;
 };
 

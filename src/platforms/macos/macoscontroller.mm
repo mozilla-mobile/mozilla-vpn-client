@@ -21,7 +21,6 @@ constexpr const int SERVICE_REG_POLL_INTERVAL_MSEC = 1000;
 
 MacOSController::MacOSController() :
    LocalSocketController(Constants::MACOS_DAEMON_PATH) {
-  m_smAppStatus = -1;
 
   m_regTimer.setInterval(SERVICE_REG_POLL_INTERVAL_MSEC);
   m_regTimer.setSingleShot(false);
@@ -29,18 +28,17 @@ MacOSController::MacOSController() :
           &MacOSController::checkServiceEnabled);
 }
 
-QString MacOSController::plistName() const {
+NSString* MacOSController::plist() const {
   NSString* appId = MacOSUtils::appId();
   Q_ASSERT(appId);
-  return QString("%1.daemon.plist").arg(QString::fromNSString(appId));
+  return [NSString stringWithFormat:@"%@.service.plist", appId];
 }
 
 void MacOSController::initialize(const Device* device, const Keys* keys) {
   // For MacOS 13 and beyond, attempt to register the daemon using the
   // SMAppService interface.
   if (@available(macOS 13, *)) {
-    SMAppService* service =
-        [SMAppService daemonServiceWithPlistName:plistName().toNSString()];
+    SMAppService* service = [SMAppService daemonServiceWithPlistName:plist()];
 
     // Attempt to register the service upon initialization. This should be a
     // no-op if the service is already registered.
@@ -62,8 +60,7 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
     }
 
     // Check the service status for how to proceed.
-    m_smAppStatus = [service status];
-    switch (m_smAppStatus) {
+    switch ([service status]) {
       case SMAppServiceStatusNotRegistered:
         logger.debug() << "Mozilla VPN daemon not registered.";
         break;
@@ -92,8 +89,7 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
 void MacOSController::checkServiceEnabled(void) {
   if (@available(macOS 13, *)) {
     // Create the daemon delegate object.
-    SMAppService* service =
-        [SMAppService daemonServiceWithPlistName:plistName().toNSString()];
+    SMAppService* service = [SMAppService daemonServiceWithPlistName:plist()];
     if ([service status] == SMAppServiceStatusEnabled) {
       logger.debug() << "Mozilla VPN daemon enabled.";
 
@@ -103,6 +99,9 @@ void MacOSController::checkServiceEnabled(void) {
       m_regTimer.stop();
       LocalSocketController::initialize(nullptr, nullptr);
     }
+  } else {
+    // This method should only ever be called for macOS 13 and newer.
+    Q_UNREACHABLE();
   }
 }
 
@@ -112,7 +111,7 @@ void MacOSController::getBackendLogs(QIODevice* device) {
     LocalSocketController::getBackendLogs(device);
     return;
   }
-  
+
   // Otherwise, try our best to scrape the logs directly off disk.
   QByteArray logData("Failed to open backend logs");
   QFile logfile("/var/log/mozillavpn/mozillavpn.log");
