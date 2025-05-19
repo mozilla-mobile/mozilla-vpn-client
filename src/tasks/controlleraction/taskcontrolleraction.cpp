@@ -42,12 +42,13 @@ void TaskControllerAction::run() {
   Q_ASSERT(controller);
 
   connect(controller, &Controller::stateChanged, this,
-          &TaskControllerAction::stateChanged, Qt::QueuedConnection);
+          &TaskControllerAction::stateChanged);
+
+  // Give the action some time to complete.
+  m_timer.start(TASKCONTROLLER_TIMER_MSEC);
 
   bool expectSignal = false;
-
   m_lastState = controller->state();
-
   switch (m_action) {
     case eActivate:
       expectSignal = controller->activate(m_serverData);
@@ -70,15 +71,10 @@ void TaskControllerAction::run() {
       break;
   }
 
-  // No signal expected. Probably, the VPN is already in the right state. Let's
-  // use the timer to wait 1 cycle only.
+  // If no signal is expected, the VPN is probably already in the right state.
   if (!expectSignal) {
-    m_timer.start(0);
-    return;
+    checkStatus();
   }
-
-  // Fallback 3 seconds.
-  m_timer.start(TASKCONTROLLER_TIMER_MSEC);
 }
 
 void TaskControllerAction::stateChanged() {
