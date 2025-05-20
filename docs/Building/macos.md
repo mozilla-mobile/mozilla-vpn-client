@@ -97,6 +97,14 @@ user@example ~ % security find-identity -v -p codesigning
 
 Thus, to configure the project to use the above codesigning identity, we can provide the argument `-DCODE_SIGN_IDENTITY=AAAABBBBCCCCDDDDEEEEFFFFAAAABBBBCCCCDDDD`
 
+To distribute a signed application for installation on other machines, an
+embedded provisioning profile is also required. The path to the provisioning
+profile can be specified with the argument
+`-DCODE_SIGN_PROFILE=<path/to/embedded.provisionprofile>`.
+When this argument is unset, an attempt will be made to automatically lookup the
+provisioning profile from the `~/Library/Developer/Xcode/UserData/Provisioning\ Profiles`
+directory.
+
 # Building the installer
 
 Use the `--target pkg` to build the MacOS installer.
