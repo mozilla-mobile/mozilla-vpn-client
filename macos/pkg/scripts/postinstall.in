@@ -35,7 +35,7 @@ exec 2>&1 > $LOG_DIR/postinstall.log
 echo "Running postinstall at $(date)"
 echo "Installing Mozilla VPN to ${APP_DIR}"
 
-pkill -x "Mozilla VPN" || echo "Unable to kill GUI, not running?"
+pkill -U "${USER}" -x "Mozilla VPN" || echo "Unable to kill GUI, not running?"
 sleep 1
 
 ## Before MacOS 13, take extra care to prevent tampering with the app.
@@ -62,8 +62,11 @@ echo "Codesign successful!"
 
 # Unload the daemon
 UPDATING=
-if launchctl bootout system/${CODESIGN_APP_IDENTIFIER}.daemon 2>/dev/null; then
-  echo "Update detected"
+if launchctl bootout system/${CODESIGN_APP_IDENTIFIER}.service 2>/dev/null; then
+  echo "Update detected (SMAppService)"
+  UPDATING=1
+elif launchctl bootout system/${CODESIGN_APP_IDENTIFIER}.daemon 2>/dev/null; then
+  echo "Update detected (legacy daemon)"
   UPDATING=1
 fi
 if [ -f "$DAEMON_PLIST_PATH" ]; then
