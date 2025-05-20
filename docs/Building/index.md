@@ -77,6 +77,7 @@ cmake flags:
 * `CMAKE_OSX_ARCHITECTURES`: set to "arm64;x86_64" to build a universal build
 
 other flags:
+* `BUILD_CRASHREPORTING=OFF`: Can be set to skip compilation of sentry-native. Makes sense for non-mozilla builds as without symbols sent to sentry, the reports are less insightful.
 * `BUILD_TESTING=ON`: can be set to build, and execute the unit tests using `CTest`
 * `BUILD_ID=<string>`: sets the build identifier that will be embedded into the project. If
   left unset, this will generate a timestamp when configuring the Makefiles.
