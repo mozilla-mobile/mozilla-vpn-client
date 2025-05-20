@@ -8,6 +8,8 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.pm.ActivityInfo;
+import android.graphics.Insets;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -15,18 +17,28 @@ import android.os.DeadObjectException;
 import android.os.IBinder;
 import android.os.Parcel;
 import android.os.RemoteException;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.WindowMetrics;
+import android.view.WindowInsets;
 import java.nio.charset.StandardCharsets;
 import org.mozilla.firefox.vpn.VPNClientBinder;
 import org.mozilla.firefox.vpn.daemon.VPNService;
+
+
 
 public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+    if (needsOrientationLock()) {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+    } else {
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
+    }
     instance = this;
   }
   private static VPNActivity instance;
@@ -100,6 +112,39 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
     } catch (RemoteException e) {
       e.printStackTrace();
     }
+  }
+
+
+  private boolean needsOrientationLock(){      
+    int windowWidth;
+    int windowHeight;
+    
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        // For Android 11+ use getCurrentWindowMetrics
+        WindowMetrics windowMetrics = getWindowManager().getCurrentWindowMetrics();
+        
+        // This includes insets like status bar, nav bar, etc.
+        Insets insets = windowMetrics.getWindowInsets()
+                .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars());
+                
+        // Get actual usable dimensions
+        windowWidth = windowMetrics.getBounds().width() - insets.left - insets.right;
+        windowHeight = windowMetrics.getBounds().height() - insets.top - insets.bottom;
+    } else {
+        // Fallback for older Android versions
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        windowWidth = displayMetrics.widthPixels;
+        windowHeight = displayMetrics.heightPixels;
+    }
+    
+    // The minimum width needed to display content properly (match QML value)
+    // This should correspond to MZTheme.theme.desktopAppWidth in main.qml
+    float density = getResources().getDisplayMetrics().density;
+    int minRequiredWidth = (int)(360 * density);
+    int minRequiredHeight = (int)(640 * density);
+    // Check if in landscape it would fit
+    return (windowHeight < minRequiredWidth || windowWidth < minRequiredHeight);
   }
 
   IBinder vpnService;
