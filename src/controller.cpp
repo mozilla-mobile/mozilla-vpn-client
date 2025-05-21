@@ -249,16 +249,12 @@ void Controller::quit() {
   logger.debug() << "Quitting";
 
   if (!isActive()) {
-    m_nextStep = Quit;
     emit readyToQuit();
     return;
   }
 
   m_nextStep = Quit;
-
-  if (m_state == StateOn || m_state == StateOnPartial ||
-      m_state == StateSwitching || m_state == StateSilentSwitching ||
-      m_state == StateConnecting || m_state == StateConfirming) {
+  if (m_state > StateDisconnecting) {
     deactivate();
     return;
   }
