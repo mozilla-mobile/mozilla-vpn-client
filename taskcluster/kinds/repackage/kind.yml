@@ -15,7 +15,7 @@ kind-dependencies:
 tasks:
     msi:
         description: repackage mozillavpn msi
-        run-on-tasks-for: [github-push, github-release]
+        run-on-tasks-for: [github-push]
         fetches:
             signing:
                 - artifact: unsigned.zip
