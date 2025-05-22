@@ -132,7 +132,7 @@ constexpr uint32_t toCOLORREF(const char* color) {
 
 void WindowsUtils::updateTitleBarColor(QWindow* window, bool darkMode) {
   // TODO: Fetch that from the theme data.
-  const COLORREF defaultColor = darkMode ? ColorUtils::toCOLORREF("#0C0C0D")
+  const COLORREF defaultColor = darkMode ? ColorUtils::toCOLORREF("#42414d")
                                          : ColorUtils::toCOLORREF("#F9F9FA");
 
   auto const windowHandle = (HWND)window->winId();
