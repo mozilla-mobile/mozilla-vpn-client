@@ -198,10 +198,15 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_CARGO_ENV LD=${ANDROID_TOOLCHAIN_ROOT_BIN}/lld)
     endif()
 
+    # Determine if the current generator supports DEPFILEs
     if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles"))
-        ## If we are building with Ninja, then we can improve build times by
-        # specifying a DEPFILE to let CMake know when the library needs
-        # building and when we can skip it.
+        set(RUST_BUILD_WITH_DEPFILE TRUE)
+    elseif(XCODE AND (CMAKE_VERSION VERSION_GREATER_EQUAL "3.21"))
+        set(RUST_BUILD_WITH_DEPFILE TRUE)
+    else()
+        set(RUST_BUILD_WITH_DEPFILE FALSE)
+    endif()
+    if(RUST_BUILD_WITH_DEPFILE)
         set(RUST_BUILD_DEPENDENCY_FILE
             ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}.d
         )
