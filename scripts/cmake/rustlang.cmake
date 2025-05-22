@@ -109,6 +109,7 @@ endfunction()
 #   BINARY_DIR: Binary directory to output build artifacts to.
 #   PACKAGE_DIR: Source directory where Cargo.toml can be found.
 #   CARGO_ENV: Environment variables to pass to cargo
+#   DEPENDS: Additional dependencies required to build the library.
 #
 # This function generates commands necessary to build static archives
 # in ${BINARY_DIR}/${ARCH}/debug/ and ${BINARY_DIR}/${ARCH}/release/
@@ -122,7 +123,7 @@ function(build_rust_archives)
     cmake_parse_arguments(RUST_BUILD
         ""
         "ARCH;BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
-        "CARGO_ENV"
+        "CARGO_ENV;DEPENDS"
         ${ARGN})
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
@@ -210,6 +211,7 @@ function(build_rust_archives)
         ## Outputs for the release build
         add_custom_command(
             OUTPUT ${RUST_BUILD_RELEASE_OUTPUT_FILES}
+            DEPENDS ${RUST_BUILD_DEPENDS}
             DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_DEPENDENCY_FILE}
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
@@ -220,6 +222,7 @@ function(build_rust_archives)
         ## Outputs for the debug build
         add_custom_command(
             OUTPUT ${RUST_BUILD_DEBUG_OUTPUT_FILES}
+            DEPENDS ${RUST_BUILD_DEPENDS}
             DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_DEPENDENCY_FILE}
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
@@ -239,6 +242,7 @@ function(build_rust_archives)
         add_custom_command(
             OUTPUT ${RUST_BUILD_RELEASE_OUTPUT_FILES}
                 ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/.noexist
+            DEPENDS ${RUST_BUILD_DEPENDS}
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
                     ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
@@ -249,6 +253,7 @@ function(build_rust_archives)
             OUTPUT
                 ${RUST_BUILD_DEBUG_OUTPUT_FILES}
                 ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/.noexist
+            DEPENDS ${RUST_BUILD_DEPENDS}
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
                     ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
@@ -351,18 +356,8 @@ function(add_rust_library TARGET_NAME)
             PACKAGE_DIR ${RUST_TARGET_PACKAGE_DIR}
             CRATE_NAME ${RUST_TARGET_CRATE_NAME}
             CARGO_ENV ${RUST_TARGET_CARGO_ENV}
+            DEPENDS ${RUST_TARGET_DEPENDS}
         )
-
-        if(RUST_TARGET_DEPENDS)
-            add_custom_command(APPEND
-                OUTPUT ${RUST_TARGET_BINARY_DIR}/${ARCH}/release/${RUST_LIBRARY_FILENAME}
-                DEPENDS ${RUST_TARGET_DEPENDS}
-            )
-            add_custom_command(APPEND
-                OUTPUT ${RUST_TARGET_BINARY_DIR}/${ARCH}/debug/${RUST_LIBRARY_FILENAME}
-                DEPENDS ${RUST_TARGET_DEPENDS}
-            )
-        endif()
 
         # Keep track of the expected library artifacts.
         list(APPEND RUST_TARGET_RELEASE_LIBS ${RUST_TARGET_BINARY_DIR}/${ARCH}/release/${RUST_LIBRARY_FILENAME})
