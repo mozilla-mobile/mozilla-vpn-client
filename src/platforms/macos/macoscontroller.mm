@@ -92,6 +92,7 @@ void MacOSController::registerService(void) {
     switch ([service status]) {
       case SMAppServiceStatusNotRegistered:
         logger.debug() << "Mozilla VPN daemon not registered.";
+        m_regTimer.start(SERVICE_REG_POLL_INTERVAL_MSEC);
         break;
 
       case SMAppServiceStatusNotFound:
