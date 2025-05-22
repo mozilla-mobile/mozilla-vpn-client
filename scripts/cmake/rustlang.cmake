@@ -38,16 +38,77 @@ function(get_rust_library_filename SHARED CRATE_NAME)
     endif()
 endfunction()
 
-### Helper function to build Rust static libraries.
+### Helper function to parse a Rust manifest
+#
+# Accepts the following arguments:
+#   PACKAGE_DIR: Source directory where Cargo.toml can be found.
+#   CRATE_TARGET: Which target to parse from the manifest, defaults to the package name.
+#
+# Outputs the following values:
+#   OUTPUT_KINDS: Output variable name to receive a list of target kinds.
+#
+function(parse_rust_manifest)
+    cmake_parse_arguments(RUST_PARSE
+        ""
+        "PACKAGE_DIR;CRATE_TARGET;OUTPUT_KINDS"
+        ""
+        ${ARGN})
+
+    if(NOT RUST_PARSE_PACKAGE_DIR)
+        set(RUST_PARSE_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    # Parse the crate manifest to figure out what we're building.
+    execute_process(
+        WORKING_DIRECTORY ${RUST_PARSE_PACKAGE_DIR}
+        OUTPUT_VARIABLE RUST_PARSE_CRATE_JSON
+        COMMAND ${CARGO_BUILD_TOOL} read-manifest 
+    )
+    string(JSON RUST_PARSE_TARGET_JSON GET ${RUST_PARSE_CRATE_JSON} "targets")
+    string(JSON RUST_PARSE_TARGET_COUNT LENGTH ${RUST_PARSE_TARGET_JSON})
+
+    # If the crate target was not set - use the package name.
+    if(NOT RUST_PARSE_CRATE_TARGET)
+        string(JSON RUST_PARSE_TARGET_JSON GET ${RUST_PARSE_CRATE_JSON} "name")
+    endif()
+
+    # Look for the targets entry in the parsed manifest.
+    set(RUST_PARSE_TARGET_INDEX 0)
+    while(${RUST_PARSE_TARGET_INDEX} LESS ${RUST_PARSE_TARGET_COUNT})
+        string(JSON JSON_TARGET GET ${RUST_PARSE_TARGET_JSON} ${RUST_PARSE_TARGET_INDEX})
+        string(JSON JSON_NAME GET ${JSON_TARGET} "name")
+        if(NOT ${JSON_NAME} STREQUAL ${RUST_PARSE_CRATE_TARGET})
+            math(EXPR RUST_PARSE_TARGET_INDEX "${RUST_PARSE_TARGET_INDEX} + 1")
+            continue()
+        endif()
+
+        # We found the target. Extract the target kind and output it as a CMake list.
+        set(KIND_INDEX 0)
+        set(KIND_LIST)
+        string(JSON KIND_COUNT LENGTH ${JSON_TARGET} "kind")
+        while(${KIND_INDEX} LESS ${KIND_COUNT})
+            string(JSON KIND_TYPE GET ${JSON_TARGET} "kind" ${KIND_INDEX})
+            math(EXPR KIND_INDEX "${KIND_INDEX} + 1")
+            list(APPEND KIND_LIST ${KIND_TYPE})
+        endwhile()
+
+        if(RUST_PARSE_OUTPUT_KINDS)
+            set(${RUST_PARSE_OUTPUT_KINDS} ${KIND_LIST} PARENT_SCOPE)
+        endif()
+        return()
+    endwhile()
+
+    # Otherwise, this target was not found.
+    message(FATAL_ERROR "No such target ${RUST_PARSE_CRATE_TARGET} found in ${RUST_PARSE_PACKAGE_DIR}")
+endfunction()
+
+### Helper function to build a Rust library target
 #
 # Accepts the following arguments:
 #   ARCH: Rust target architecture to build with --target ${ARCH}
 #   BINARY_DIR: Binary directory to output build artifacts to.
-#   PACKAGE_DIR: Soruce directory where Cargo.toml can be found.
-#   LIBRARY_FILE: Filename of the expected library to be built.
+#   PACKAGE_DIR: Source directory where Cargo.toml can be found.
 #   CARGO_ENV: Environment variables to pass to cargo
-#   SHARED: Whether or not we are building a shared library. Defaults to "false".
-#   FW_NAME: Standalone dylibs need to be wrapped in a framework for distribtuion. Required when building shared lib for iOS.
 #
 # This function generates commands necessary to build static archives
 # in ${BINARY_DIR}/${ARCH}/debug/ and ${BINARY_DIR}/${ARCH}/release/
@@ -61,15 +122,12 @@ function(build_rust_archives)
     cmake_parse_arguments(RUST_BUILD
         ""
         "ARCH;BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
-        "CARGO_ENV;SHARED;FW_NAME"
+        "CARGO_ENV"
         ${ARGN})
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
     list(APPEND RUST_BUILD_CARGO_ENV CARGO_HOME=\"${CMAKE_BINARY_DIR}/cargo_home\")
 
-    if(NOT DEFINED RUST_BUILD_SHARED)
-        message(FATAL_ERROR "Mandatory argument SHARED was not found")
-    endif()
     if(NOT RUST_BUILD_CRATE_NAME)
         message(FATAL_ERROR "Mandatory argument CRATE_NAME was not found")
     endif()
@@ -83,9 +141,29 @@ function(build_rust_archives)
         set(RUST_BUILD_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
+    # Parse the crate manifest for the kinds of targets we are building.
+    set(RUST_BUILD_DEBUG_OUTPUT_FILES)
+    set(RUST_BUILD_RELEASE_OUTPUT_FILES)
+    parse_rust_manifest(
+        PACKAGE_DIR ${RUST_BUILD_PACKAGE_DIR}
+        CRATE_TARGET ${RUST_BUILD_CRATE_NAME}
+        OUTPUT_KINDS RUST_BUILD_TARGET_KINDS
+    )
+    foreach(KIND ${RUST_BUILD_TARGET_KINDS})
+        set(TARGET_FILENAME)
+        if(KIND STREQUAL "staticlib")
+            set(TARGET_FILENAME ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX})
+        elseif(KIND STREQUAL "cdylib")
+            set(TARGET_FILENAME ${CMAKE_SHARED_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+        else()
+            continue()
+        endif()
+        list(APPEND RUST_BUILD_DEBUG_OUTPUT_FILES ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${TARGET_FILENAME})
+        list(APPEND RUST_BUILD_RELEASE_OUTPUT_FILES ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${TARGET_FILENAME})
+    endforeach()
+
     ## Some files that we will be building.
     file(MAKE_DIRECTORY ${RUST_BUILD_BINARY_DIR})
-    get_rust_library_filename(${RUST_BUILD_SHARED} ${RUST_BUILD_CRATE_NAME})
 
     ## For iOS simulator targets, ensure that we unset the `SDKROOT` variable as
     ## this will result in broken simulation builds in Xcode. For all other apple
@@ -101,11 +179,6 @@ function(build_rust_archives)
     ## For MacOS platforms, set the OS deployment version.
     if(RUST_BUILD_ARCH MATCHES "-apple-darwin$")
         list(APPEND RUST_BUILD_CARGO_ENV MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
-    endif()
-
-    ## For build Apple shared binaries, the install path needs to be relative to the runpath.
-    if (RUST_BUILD_SHARED AND APPLE)
-        list(APPEND RUST_BUILD_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_BUILD_FW_NAME}.framework/${RUST_BUILD_FW_NAME}")
     endif()
 
     if(ANDROID)
@@ -136,7 +209,7 @@ function(build_rust_archives)
 
         ## Outputs for the release build
         add_custom_command(
-            OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_LIBRARY_FILENAME}
+            OUTPUT ${RUST_BUILD_RELEASE_OUTPUT_FILES}
             DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_DEPENDENCY_FILE}
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
@@ -146,7 +219,7 @@ function(build_rust_archives)
 
         ## Outputs for the debug build
         add_custom_command(
-            OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_LIBRARY_FILENAME}
+            OUTPUT ${RUST_BUILD_DEBUG_OUTPUT_FILES}
             DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_DEPENDENCY_FILE}
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
@@ -164,8 +237,7 @@ function(build_rust_archives)
 
         ## Outputs for the release build
         add_custom_command(
-            OUTPUT
-                ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_LIBRARY_FILENAME}
+            OUTPUT ${RUST_BUILD_RELEASE_OUTPUT_FILES}
                 ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/.noexist
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
@@ -175,7 +247,7 @@ function(build_rust_archives)
         ## Outputs for the debug build
         add_custom_command(
             OUTPUT
-                ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_LIBRARY_FILENAME}
+                ${RUST_BUILD_DEBUG_OUTPUT_FILES}
                 ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/.noexist
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
@@ -220,6 +292,8 @@ function(add_rust_library TARGET_NAME)
         if(NOT EXISTS ${FW_INFO_PLIST_FILE_PATH})
             message(FATAL_ERROR "An Info.plist.${RUST_TARGET_FW_NAME} file must exist to support creation of ${FW_NAME} framework.")
         endif()
+
+        list(APPEND RUST_TARGET_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}")
     endif()
 
     if(${RUST_TARGET_SHARED})
@@ -266,19 +340,17 @@ function(add_rust_library TARGET_NAME)
             GROUP_READ GROUP_WRITE GROUP_EXECUTE
             WORLD_READ WORLD_EXECUTE
         )
-        list(APPEND CARGO_ENV RUSTC=${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh)
+        list(APPEND RUST_TARGET_CARGO_ENV RUSTC=${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh)
     endif()
 
-    ## Build the rust library file(s)
+    ## Build the rust library target(s)
     foreach(ARCH ${RUST_TARGET_ARCH})
         build_rust_archives(
             ARCH ${ARCH}
             BINARY_DIR ${RUST_TARGET_BINARY_DIR}
             PACKAGE_DIR ${RUST_TARGET_PACKAGE_DIR}
             CRATE_NAME ${RUST_TARGET_CRATE_NAME}
-            CARGO_ENV ${CARGO_ENV}
-            SHARED ${RUST_TARGET_SHARED}
-            FW_NAME ${RUST_TARGET_FW_NAME}
+            CARGO_ENV ${RUST_TARGET_CARGO_ENV}
         )
 
         if(RUST_TARGET_DEPENDS)
