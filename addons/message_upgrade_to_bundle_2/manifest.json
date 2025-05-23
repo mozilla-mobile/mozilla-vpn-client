@@ -7,7 +7,8 @@
   "conditions": {
     "min_client_version": "2.28.0",
     "javascript": "conditions.js",
-    "locales_full_match": [ "en" ]
+    "locales_full_match": [ "en" ],
+    "env": "staging"
   },
   "message": {
     "id": "message_upgrade_to_bundle_1",

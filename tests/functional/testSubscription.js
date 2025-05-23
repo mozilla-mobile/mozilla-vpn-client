@@ -646,7 +646,8 @@ describe('Subscription view', function() {
             created: 23677200,
             current_period_end: 2147483647,
             cancel_at_period_end: false,
-            status: 'inactive'
+            status: 'inactive',
+            product_id: 'testId'
           },
           expected: {
             activated: '10/2/70',
@@ -666,7 +667,8 @@ describe('Subscription view', function() {
             created: 23677200,
             current_period_end: 2147483647,
             cancel_at_period_end: true,
-            status: 'inactive'
+            status: 'inactive',
+            product_id: 'testId'
           },
           expected: {
             activated: '10/2/70',
@@ -686,7 +688,8 @@ describe('Subscription view', function() {
             created: 23677200,
             current_period_end: 2147483647,
             cancel_at_period_end: true,
-            status: 'active'
+            status: 'active',
+            product_id: 'testId'
           },
           expected: {
             activated: '10/2/70',
@@ -706,7 +709,8 @@ describe('Subscription view', function() {
             created: 23677200,
             current_period_end: 2147483647,
             cancel_at_period_end: true,
-            status: 'inactive'
+            status: 'inactive',
+            product_id: 'testId'
           },
           expected: {
             activated: '10/2/70',
@@ -726,7 +730,8 @@ describe('Subscription view', function() {
             created: 23677200,
             current_period_end: 2147483647,
             cancel_at_period_end: true,
-            status: 'trailing'
+            status: 'trailing',
+            product_id: 'testId'
           },
           expected: {
             activated: '10/2/70',
@@ -745,6 +750,7 @@ describe('Subscription view', function() {
             _subscription_type: 'iap_apple',
             expiry_time_millis: 2147483647,
             auto_renewing: true,
+            product_id: 'testId'
           },
           expected:
               {cancelled: '1/25/70', label: 'Next billed', status: 'Inactive'}
@@ -758,6 +764,7 @@ describe('Subscription view', function() {
             _subscription_type: 'iap_apple',
             expiry_time_millis: 2147483647,
             auto_renewing: false,
+            product_id: 'testId'
           },
           expected: {cancelled: '1/25/70', label: 'Expires', status: 'Inactive'}
         },
@@ -770,6 +777,7 @@ describe('Subscription view', function() {
             _subscription_type: 'iap_google',
             expiry_time_millis: 2147483647000,
             auto_renewing: true,
+            product_id: 'testId'
           },
           expected:
               {cancelled: '1/19/38', label: 'Next billed', status: 'Active'}
@@ -784,6 +792,7 @@ describe('Subscription view', function() {
             _subscription_type: 'iap_google',
             expiry_time_millis: 2147483647000,
             auto_renewing: false,
+            product_id: 'testId'
           },
           expected: {cancelled: '1/19/38', label: 'Expires', status: 'Active'}
         },
@@ -797,6 +806,7 @@ describe('Subscription view', function() {
             _subscription_type: 'iap_apple',
             expiry_time_millis: 2147483647,
             auto_renewing: true,
+            product_id: 'testId'
           },
           expected:
               {cancelled: '1/25/70', label: 'Next billed', status: 'Inactive'}
@@ -810,6 +820,7 @@ describe('Subscription view', function() {
             _subscription_type: 'iap_google',
             expiry_time_millis: 2147483647,
             auto_renewing: true,
+            product_id: 'testId'
           },
           expected:
               {cancelled: '1/25/70', label: 'Next billed', status: 'Inactive'}
@@ -855,7 +866,8 @@ describe('Subscription view', function() {
             created: 1,
             current_period_end: 2,
             cancel_at_period_end: true,
-            status: 'active'
+            status: 'active',
+            product_id: 'testId'
           },
           expected: {
             activated: '1/1/70',
