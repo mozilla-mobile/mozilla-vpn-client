@@ -140,7 +140,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         FW_NAME ${FW_NAME}
     )
 
-    target_link_libraries(qtglean PRIVATE qtglean_bindings)
+    target_link_libraries(qtglean PUBLIC qtglean_bindings)
 endif()
 
 set(GLEAN_PARSER_VERSION_MIN 5.0)

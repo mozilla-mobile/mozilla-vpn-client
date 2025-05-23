@@ -13,6 +13,7 @@
 #include <QSslCertificate>
 #include <QSslKey>
 
+#include "bindings/signature.h"
 #include "constants.h"
 #include "env.h"
 #include "errorhandler.h"
@@ -25,18 +26,6 @@
 #if defined(MZ_WINDOWS)
 #  include "Windows.h"
 #endif
-
-// Implemented in rust. See the `signature` folder.
-// TODO (VPN-5708): We should really generate this with cbindgen.
-extern "C" {
-bool compute_root_certificate_hash(const char* x5u_ptr, size_t x5u_length,
-                                   char* hash_out_ptr, size_t hash_length);
-
-bool verify_content_signature(const char* x5u_ptr, size_t x5u_length,
-                              const char* msg_ptr, size_t msg_length,
-                              const char* signature, const char* certSubject,
-                              void (*logfn)(const char*));
-}
 
 #if defined(MZ_WINDOWS)
 constexpr const char* BALROG_WINDOWS_BUILD_TARGET = "WINNT_x86_64";
@@ -184,14 +173,15 @@ bool Balrog::checkSignature(Task* task, const QByteArray& x5uData,
   return true;
 }
 
-bool Balrog::validateSignature(const QByteArray& x5uData,
+bool Balrog::validateSignature(const QByteArray& x5u,
                                const QByteArray& updateData,
                                const QByteArray& signatureBlob) {
   // Validate the root certificate hash.
   int hashSize = QCryptographicHash::hashLength(QCryptographicHash::Sha256);
   QByteArray rootHash(hashSize, 0);
-  if (!compute_root_certificate_hash(x5uData.constData(), x5uData.length(),
-                                     rootHash.data(), rootHash.length())) {
+  auto hashptr = reinterpret_cast<unsigned char*>(rootHash.data());
+  auto x5uptr = reinterpret_cast<const unsigned char*>(x5u.constData());
+  if (!compute_root_certificate_hash(x5uptr, x5u.length(), hashptr, hashSize)) {
     logger.error() << "Failed to calculate root certificate hash";
     return false;
   }
@@ -209,10 +199,10 @@ bool Balrog::validateSignature(const QByteArray& x5uData,
   }
 
   // Validate the content signature.
+  auto dataptr = reinterpret_cast<const unsigned char*>(updateData.constData());
   bool verify = verify_content_signature(
-      x5uData.constData(), x5uData.length(), updateData.constData(),
-      updateData.length(), signatureBlob.constData(), BALROG_CERT_SUBJECT_CN,
-      balrogLogger);
+      x5uptr, x5u.length(), dataptr, updateData.length(),
+      signatureBlob.constData(), BALROG_CERT_SUBJECT_CN, balrogLogger);
   if (!verify) {
     logger.error() << "Verification failed";
     return false;

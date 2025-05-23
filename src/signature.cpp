@@ -6,11 +6,11 @@
 
 #include "logger.h"
 
-#ifdef MZ_IOS
+#if defined(MZ_SIGNATURE)
+#  include "bindings/signature.h"
+#elif defined(MZ_IOS)
 #  include "platforms/ios/ioscommons.h"
-#endif
-
-#ifdef MZ_ANDROID
+#elif defined(MZ_ANDROID)
 #  include "platforms/android/androidcommons.h"
 #endif
 
@@ -21,14 +21,6 @@ Logger logger("Signature");
 static void signatureLogger(const char* msg) { logger.debug() << msg; }
 
 }  // namespace
-
-extern "C" {
-// Implemented in rust. See the `signature` folder.
-// TODO (VPN-5708): We should really generate this with cbindgen.
-bool verify_rsa(const char* publicKey, size_t pubKeyLen, const char* message,
-                size_t messageLen, const char* signature, size_t signatureLen,
-                void (*logfn)(const char*));
-};
 #endif
 
 // static
@@ -39,9 +31,11 @@ bool Signature::verify(const QByteArray& publicKey, const QByteArray& content,
   }
 
 #if defined(MZ_SIGNATURE)
-  return verify_rsa(publicKey.constData(), publicKey.length(),
-                    content.constData(), content.length(),
-                    signature.constData(), signature.length(), signatureLogger);
+  auto keyptr = reinterpret_cast<const unsigned char*>(publicKey.constData());
+  auto msgptr = reinterpret_cast<const unsigned char*>(content.constData());
+  auto sigptr = reinterpret_cast<const unsigned char*>(signature.constData());
+  return verify_rsa(keyptr, publicKey.length(), msgptr, content.length(),
+                    sigptr, signature.length(), signatureLogger);
 #elif defined(MZ_IOS)
   return IOSCommons::verifySignature(publicKey, content, signature);
 #elif defined(MZ_ANDROID)

@@ -2,6 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+## The contents of this file should only be processed once.
+include_guard(GLOBAL)
+
 ## Find the absolute path to the rust build tools.
 find_program(CARGO_BUILD_TOOL NAMES cargo REQUIRED)
 find_program(RUSTC_BUILD_TOOL NAMES rustc REQUIRED)
@@ -22,6 +25,21 @@ list(FILTER HAS_CARGO_POOL INCLUDE REGEX "^cargo=")
 if(NOT HAS_CARGO_POOL)
     set_property(GLOBAL APPEND PROPERTY JOB_POOLS cargo=1)
 endif()
+
+## Create a target to build the cbindgen tool.
+## TODO: This should be versioned by the Cargo.lock, if present.
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
+add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/cargo_home/bin/cbindgen
+    COMMENT "Building rust cbindgen tool"
+    JOB_POOL cargo
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME="${CMAKE_BINARY_DIR}/cargo_home"
+            ${CARGO_BUILD_TOOL} install --root ${CMAKE_BINARY_DIR}/cargo_home cbindgen
+)
+set(CBINDGEN_BUILD_TOOL ${CMAKE_BINARY_DIR}/cargo_home/bin/cbindgen
+    CACHE FILEPATH "Path to the cbindgen build tool"
+)
 
 ### Helper function to parse a Rust manifest
 #
@@ -106,7 +124,6 @@ function(build_rust_archives)
         "CARGO_ENV;DEPENDS"
         ${ARGN})
 
-    file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
     list(APPEND RUST_BUILD_CARGO_ENV CARGO_HOME=\"${CMAKE_BINARY_DIR}/cargo_home\")
 
     if(NOT RUST_BUILD_ARCH)
@@ -313,6 +330,25 @@ function(add_rust_library TARGET_NAME)
         )
     endif()
 
+    ## Generate a library header with cbindgen
+    file(MAKE_DIRECTORY ${RUST_TARGET_BINARY_DIR}/include/bindings)
+    set_property(TARGET ${TARGET_NAME} APPEND PROPERTY
+        INTERFACE_INCLUDE_DIRECTORIES ${RUST_TARGET_BINARY_DIR}/include
+    )
+    add_custom_command(
+        OUTPUT ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
+        BYPRODUCTS ${RUST_TARGET_BINARY_DIR}/${RUST_TARGET_LIB_NAME}-bindings.d
+        DEPENDS ${CBINDGEN_BUILD_TOOL}
+        WORKING_DIRECTORY ${RUST_TARGET_PACKAGE_DIR}
+        COMMAND ${CBINDGEN_BUILD_TOOL}
+                    -o ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
+                    --depfile ${RUST_TARGET_BINARY_DIR}/${RUST_TARGET_LIB_NAME}-bindings.d
+    )
+    set_source_files_properties(
+        ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
+        PROPERTIES GENERATED TRUE
+    )
+
     # Guess the target architecture if not set.
     if(NOT RUST_TARGET_ARCH)
         if(CMAKE_CROSSCOMPILING)
@@ -388,8 +424,9 @@ function(add_rust_library TARGET_NAME)
                     \"${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework/Info.plist\"
             )
 
-            add_custom_target(${TARGET_NAME}_builder
-                DEPENDS ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FW_NAME}.framework
+            add_custom_target(${TARGET_NAME}_builder DEPENDS
+                ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
+                ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FW_NAME}.framework
             )
             set_target_properties(${TARGET_NAME} PROPERTIES
                 IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${FW_NAME}.framework/${FW_NAME}
@@ -411,8 +448,9 @@ function(add_rust_library TARGET_NAME)
                             ${RUST_TARGET_DEBUG_LIBS}
             )
 
-            add_custom_target(${TARGET_NAME}_builder
-                DEPENDS ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FILENAME}
+            add_custom_target(${TARGET_NAME}_builder DEPENDS
+                ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
+                ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FILENAME}
             )
             set_target_properties(${TARGET_NAME} PROPERTIES
                 IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FILENAME}
@@ -422,8 +460,9 @@ function(add_rust_library TARGET_NAME)
     else()
         ## For all other platforms, only build the first architecture
         list(GET RUST_TARGET_ARCH 0 RUST_FIRST_ARCH)
-        add_custom_target(${TARGET_NAME}_builder
-            DEPENDS ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FILENAME}
+        add_custom_target(${TARGET_NAME}_builder DEPENDS
+            ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
+            ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FILENAME}
         )
 
         set_target_properties(${TARGET_NAME} PROPERTIES
