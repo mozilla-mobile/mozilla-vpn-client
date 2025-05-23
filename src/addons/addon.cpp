@@ -249,6 +249,24 @@ QList<ConditionCallback> s_conditionCallbacks{
      },
      nullptr},
 
+    {"locales_full_match",
+     [](const QJsonValue&) -> bool {
+       // dynamic condition
+       return true;
+     },
+     [](Addon* addon, const QJsonValue& value) -> AddonConditionWatcher* {
+       QStringList locales;
+       QJsonArray localeArray = value.toArray();
+       for (const QJsonValue& v : localeArray) {
+         locales.append(v.toString().toLower());
+       }
+
+       return AddonConditionWatcherLocales::maybeCreate(
+           addon, locales,
+           AddonConditionWatcherLocales::DoNotCheckMajorLanguageCode);
+     },
+     nullptr},
+
     {"trigger_time",
      [](const QJsonValue&) -> bool {
        // dynamic condition
