@@ -52,6 +52,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/xpcdaemonserver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/xpcdaemonserver.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscontroller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscontroller.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.h
@@ -70,6 +72,7 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosstatusicon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosutils.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosutils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/xpcdaemonprotocol.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosnetworkwatcher.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosnetworkwatcher.h
 )

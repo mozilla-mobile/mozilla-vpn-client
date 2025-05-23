@@ -22,7 +22,7 @@ Q_GLOBAL_STATIC(MacOSUtils, macosUtils);
 MacOSUtils* MacOSUtils::instance() { return macosUtils; }
 
 // static
-NSString* MacOSUtils::appId() {
+QString MacOSUtils::appId(const QString& suffix) {
   NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
   if (!appId) {
     // Fallback. When an unsigned/un-notarized app is executed in
@@ -30,7 +30,7 @@ NSString* MacOSUtils::appId() {
     appId = @"org.mozilla.macos.FirefoxVPN";
   }
 
-  return appId;
+  return QString::fromNSString(appId) + suffix;
 }
 
 void MacOSUtils::openSystemSettingsLoginItems() {
@@ -49,12 +49,7 @@ QString MacOSUtils::computerName() {
 void MacOSUtils::enableLoginItem(bool startAtBoot) {
   logger.debug() << "Enabling login-item";
 
-  NSString* appId = MacOSUtils::appId();
-  Q_ASSERT(appId);
-
-  NSString* loginItemAppId =
-    QString("%1.login-item").arg(QString::fromNSString(appId)).toNSString();
-
+  NSString* loginItemAppId = QString("%1.login-item").arg(appId()).toNSString();
 
   // For macOS 13 and beyond, register() and unregister() methods
   // are used for managing login items since SMLoginItemSetEnabled() is deprecated.
