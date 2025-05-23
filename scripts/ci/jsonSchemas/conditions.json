@@ -21,7 +21,14 @@
     },
     "locales": {
       "type": "array",
-      "description": "List of supported locales",
+      "description": "List of supported locales (must match main language)",
+      "items": {
+        "type": "string"
+      }
+    },
+    "locales_full_match": {
+      "type": "array",
+      "description": "List of supported locales (must match completely)",
       "items": {
         "type": "string"
       }
