@@ -24,7 +24,8 @@ const SUBSCRIPTION_DETAILS = {
     created: 1,
     current_period_end: 2,
     cancel_at_period_end: true,
-    status: 'active'
+    status: 'active',
+    product_id: 'testId'
   },
 };
 
@@ -43,7 +44,8 @@ const SUBSCRIPTION_DETAILS_MONTHLY = {
     created: 1,
     current_period_end: 2,
     cancel_at_period_end: true,
-    status: 'active'
+    status: 'active',
+    product_id: 'testId'
   },
 };
 
