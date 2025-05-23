@@ -2,8 +2,9 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-## Custom target to build the web-extension bridge with Rust/Cargo
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
+## Custom target to build the web-extension bridge with Rust/Cargo
 if(APPLE AND CMAKE_OSX_ARCHITECTURES)
     add_custom_target(cargo_mozillavpnnp_all COMMENT "Build vpnnp for all Architectures")
     # For each requested Arch , create a new target and 
@@ -12,13 +13,14 @@ if(APPLE AND CMAKE_OSX_ARCHITECTURES)
         string(REPLACE "arm64" "aarch64" OSXARCH ${OSXARCH})
         add_custom_target(cargo_mozillavpnnp_${OSXARCH}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bridge
-            COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home 
-                cargo build --release --target-dir "${CMAKE_CURRENT_BINARY_DIR}/bridge"
-                --target "${OSXARCH}-apple-darwin"
+            COMMAND
+                ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home RUSTC=${RUSTC_BUILD_TOOL}
+                ${CARGO_BUILD_TOOL} build --release --target-dir ${CMAKE_CURRENT_BINARY_DIR}/bridge --target ${OSXARCH}-apple-darwin
         )
-        list(APPEND MOZILLAVPNNP_TARGET_OUTPUTS "${CMAKE_CURRENT_BINARY_DIR}/bridge/${OSXARCH}-apple-darwin/release/mozillavpnnp")
+        list(APPEND MOZILLAVPNNP_TARGET_OUTPUTS ${CMAKE_CURRENT_BINARY_DIR}/bridge/${OSXARCH}-apple-darwin/release/mozillavpnnp)
         add_dependencies(cargo_mozillavpnnp_all cargo_mozillavpnnp_${OSXARCH})
     endforeach()
+
     # Create a target that runs after all-arches have been build 
     # Create a far binary using all lipo
     add_custom_target(cargo_mozillavpnnp ALL
@@ -32,8 +34,9 @@ else()
     add_custom_target(cargo_mozillavpnnp ALL
         COMMENT "Building web extension crate"
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bridge
-        COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home
-                cargo build --release --target-dir ${CMAKE_CURRENT_BINARY_DIR}/bridge/target
+        COMMAND
+            ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home RUSTC=${RUSTC_BUILD_TOOL}
+            ${CARGO_BUILD_TOOL} build --release --target-dir ${CMAKE_CURRENT_BINARY_DIR}/bridge/target
     )
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/bridge/target)
 endif()

@@ -19,12 +19,12 @@ class MacOSController final : public LocalSocketController {
   void getBackendLogs(QIODevice* device) override;
 
  private slots:
-  void checkServiceEnabled();
+  void registerService();
 
  private:
-  QString plistName() const;
+  NSString* plist() const;
 
-  int m_smAppStatus;
+  bool m_permissionRequired = false;
   QTimer m_regTimer;
 };
 

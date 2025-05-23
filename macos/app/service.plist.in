@@ -2,8 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
         <dict>
+                <key>AssociatedBundleIdentifiers</key>
+                <string>${BUILD_OSX_APP_IDENTIFIER}</string>
                 <key>Label</key>
-                <string>${BUILD_OSX_APP_IDENTIFIER}.daemon</string>
+                <string>${BUILD_OSX_APP_IDENTIFIER}.service</string>
                 <key>BundleProgram</key>
                 <string>Contents/MacOS/Mozilla VPN</string>
                 <key>ProgramArguments</key>
