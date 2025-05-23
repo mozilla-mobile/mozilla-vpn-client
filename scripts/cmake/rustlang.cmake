@@ -23,21 +23,6 @@ if(NOT HAS_CARGO_POOL)
     set_property(GLOBAL APPEND PROPERTY JOB_POOLS cargo=1)
 endif()
 
-### Helper function to get the rust library filename with extension.
-#
-# Sets the variable "RUST_LIBRARY_FILENAME" with the value.
-function(get_rust_library_filename SHARED CRATE_NAME)
-    if(${SHARED})
-        set(RUST_LIBRARY_FILENAME
-            ${CMAKE_SHARED_LIBRARY_PREFIX}${CRATE_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
-            PARENT_SCOPE)
-    else()
-        set(RUST_LIBRARY_FILENAME
-            ${CMAKE_STATIC_LIBRARY_PREFIX}${CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
-            PARENT_SCOPE)
-    endif()
-endfunction()
-
 ### Helper function to parse a Rust manifest
 #
 # Accepts the following arguments:
@@ -45,12 +30,13 @@ endfunction()
 #   CRATE_TARGET: Which target to parse from the manifest, defaults to the package name.
 #
 # Outputs the following values:
-#   OUTPUT_KINDS: Output variable name to receive a list of target kinds.
+#   OUTPUT_LIB_NAME: Output variable name to receive the library name. 
+#   OUTPUT_LIB_KINDS: Output variable name to receive a list of target kinds.
 #
 function(parse_rust_manifest)
     cmake_parse_arguments(RUST_PARSE
         ""
-        "PACKAGE_DIR;CRATE_TARGET;OUTPUT_KINDS"
+        "PACKAGE_DIR;OUTPUT_LIB_NAME;OUTPUT_LIB_KINDS"
         ""
         ${ARGN})
 
@@ -67,22 +53,14 @@ function(parse_rust_manifest)
     string(JSON RUST_PARSE_TARGET_JSON GET ${RUST_PARSE_CRATE_JSON} "targets")
     string(JSON RUST_PARSE_TARGET_COUNT LENGTH ${RUST_PARSE_TARGET_JSON})
 
-    # If the crate target was not set - use the package name.
-    if(NOT RUST_PARSE_CRATE_TARGET)
-        string(JSON RUST_PARSE_TARGET_JSON GET ${RUST_PARSE_CRATE_JSON} "name")
-    endif()
-
     # Look for the targets entry in the parsed manifest.
     set(RUST_PARSE_TARGET_INDEX 0)
     while(${RUST_PARSE_TARGET_INDEX} LESS ${RUST_PARSE_TARGET_COUNT})
         string(JSON JSON_TARGET GET ${RUST_PARSE_TARGET_JSON} ${RUST_PARSE_TARGET_INDEX})
-        string(JSON JSON_NAME GET ${JSON_TARGET} "name")
-        if(NOT ${JSON_NAME} STREQUAL ${RUST_PARSE_CRATE_TARGET})
-            math(EXPR RUST_PARSE_TARGET_INDEX "${RUST_PARSE_TARGET_INDEX} + 1")
-            continue()
-        endif()
+        string(JSON TARGET_NAME GET ${JSON_TARGET} "name")
+        math(EXPR RUST_PARSE_TARGET_INDEX "${RUST_PARSE_TARGET_INDEX} + 1")
 
-        # We found the target. Extract the target kind and output it as a CMake list.
+        # Parse the target kinds
         set(KIND_INDEX 0)
         set(KIND_LIST)
         string(JSON KIND_COUNT LENGTH ${JSON_TARGET} "kind")
@@ -92,14 +70,16 @@ function(parse_rust_manifest)
             list(APPEND KIND_LIST ${KIND_TYPE})
         endwhile()
 
-        if(RUST_PARSE_OUTPUT_KINDS)
-            set(${RUST_PARSE_OUTPUT_KINDS} ${KIND_LIST} PARENT_SCOPE)
+        # Check if this is the library target - crates can have at most one.
+        if(("staticlib" IN_LIST KIND_LIST) OR ("cdylib" IN_LIST KIND_LIST))
+            if(RUST_PARSE_OUTPUT_LIB_NAME)
+                set(${RUST_PARSE_OUTPUT_LIB_NAME} ${TARGET_NAME} PARENT_SCOPE)
+            endif()
+            if(RUST_PARSE_OUTPUT_LIB_KINDS)
+                set(${RUST_PARSE_OUTPUT_LIB_KINDS} ${KIND_LIST} PARENT_SCOPE)
+            endif()
         endif()
-        return()
     endwhile()
-
-    # Otherwise, this target was not found.
-    message(FATAL_ERROR "No such target ${RUST_PARSE_CRATE_TARGET} found in ${RUST_PARSE_PACKAGE_DIR}")
 endfunction()
 
 ### Helper function to build a Rust library target
@@ -122,16 +102,13 @@ endfunction()
 function(build_rust_archives)
     cmake_parse_arguments(RUST_BUILD
         ""
-        "ARCH;BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
+        "ARCH;BINARY_DIR;PACKAGE_DIR"
         "CARGO_ENV;DEPENDS"
         ${ARGN})
 
     file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
     list(APPEND RUST_BUILD_CARGO_ENV CARGO_HOME=\"${CMAKE_BINARY_DIR}/cargo_home\")
 
-    if(NOT RUST_BUILD_CRATE_NAME)
-        message(FATAL_ERROR "Mandatory argument CRATE_NAME was not found")
-    endif()
     if(NOT RUST_BUILD_ARCH)
         message(FATAL_ERROR "Mandatory argument ARCH was not found")
     endif()
@@ -147,15 +124,15 @@ function(build_rust_archives)
     set(RUST_BUILD_RELEASE_OUTPUT_FILES)
     parse_rust_manifest(
         PACKAGE_DIR ${RUST_BUILD_PACKAGE_DIR}
-        CRATE_TARGET ${RUST_BUILD_CRATE_NAME}
-        OUTPUT_KINDS RUST_BUILD_TARGET_KINDS
+        OUTPUT_LIB_NAME RUST_BUILD_LIB_NAME
+        OUTPUT_LIB_KINDS RUST_BUILD_LIB_KINDS
     )
-    foreach(KIND ${RUST_BUILD_TARGET_KINDS})
+    foreach(KIND ${RUST_BUILD_LIB_KINDS})
         set(TARGET_FILENAME)
         if(KIND STREQUAL "staticlib")
-            set(TARGET_FILENAME ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX})
+            set(TARGET_FILENAME ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX})
         elseif(KIND STREQUAL "cdylib")
-            set(TARGET_FILENAME ${CMAKE_SHARED_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
+            set(TARGET_FILENAME ${CMAKE_SHARED_LIBRARY_PREFIX}${RUST_BUILD_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX})
         else()
             continue()
         endif()
@@ -208,7 +185,7 @@ function(build_rust_archives)
     endif()
     if(RUST_BUILD_WITH_DEPFILE)
         set(RUST_BUILD_DEPENDENCY_FILE
-            ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}.d
+            ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_LIB_NAME}.d
         )
         cmake_policy(PUSH)
         cmake_policy(SET CMP0116 NEW)
@@ -275,7 +252,6 @@ endfunction()
 #   ARCH: Rust target architecture(s) to build with --target ${ARCH}
 #   BINARY_DIR: Binary directory to output build artifacts to.
 #   PACKAGE_DIR: Soruce directory where Cargo.toml can be found.
-#   CRATE_NAME: Name of the staticlib crate we want to build.
 #   CARGO_ENV: Environment variables to pass to cargo.
 #   DEPENDS: Additional files on which the target depends.
 #   SHARED: Whether or not we are building a shared library. Defaults to "false".
@@ -284,7 +260,7 @@ endfunction()
 function(add_rust_library TARGET_NAME)
     cmake_parse_arguments(RUST_TARGET
         ""
-        "BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
+        "BINARY_DIR;PACKAGE_DIR"
         "ARCH;CARGO_ENV;DEPENDS;SHARED;FW_NAME"
         ${ARGN})
 
@@ -312,15 +288,29 @@ function(add_rust_library TARGET_NAME)
         add_library(${TARGET_NAME} STATIC IMPORTED GLOBAL)
     endif()
 
-    if(NOT RUST_TARGET_CRATE_NAME)
-        ## TODO: I would like to pull this from the package manifest.
-        error("Mandatory argument CRATE_NAME was not found")
-    endif()
     if(NOT RUST_TARGET_BINARY_DIR)
         set(RUST_TARGET_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
     endif()
     if(NOT RUST_TARGET_PACKAGE_DIR)
         set(RUST_TARGET_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    ## Parse the crate manifest to determine the library being built.
+    parse_rust_manifest(
+        PACKAGE_DIR ${RUST_TARGET_PACKAGE_DIR}
+        OUTPUT_LIB_NAME RUST_TARGET_LIB_NAME
+    )
+    if(NOT RUST_TARGET_LIB_NAME)
+        message(FATAL_ERROR "No library targets found in ${RUST_TARGET_PACKAGE_DIR}")
+    endif()
+    if(RUST_TARGET_SHARED)
+        set(RUST_TARGET_FILENAME
+            ${CMAKE_SHARED_LIBRARY_PREFIX}${RUST_TARGET_LIB_NAME}${CMAKE_SHARED_LIBRARY_SUFFIX}
+        )
+    else()
+        set(RUST_TARGET_FILENAME
+            ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_TARGET_LIB_NAME}${CMAKE_STATIC_LIBRARY_SUFFIX}
+        )
     endif()
 
     # Guess the target architecture if not set.
@@ -338,8 +328,6 @@ function(add_rust_library TARGET_NAME)
             set(RUST_TARGET_ARCH ${RUSTC_HOST_ARCH})
         endif()
     endif()
-
-    get_rust_library_filename(${RUST_TARGET_SHARED} ${RUST_TARGET_CRATE_NAME})
 
     ## Don't trust Xcode to provide us with a usable linker.
     if(APPLE AND XCODE)
@@ -359,14 +347,13 @@ function(add_rust_library TARGET_NAME)
             ARCH ${ARCH}
             BINARY_DIR ${RUST_TARGET_BINARY_DIR}
             PACKAGE_DIR ${RUST_TARGET_PACKAGE_DIR}
-            CRATE_NAME ${RUST_TARGET_CRATE_NAME}
             CARGO_ENV ${RUST_TARGET_CARGO_ENV}
             DEPENDS ${RUST_TARGET_DEPENDS}
         )
 
         # Keep track of the expected library artifacts.
-        list(APPEND RUST_TARGET_RELEASE_LIBS ${RUST_TARGET_BINARY_DIR}/${ARCH}/release/${RUST_LIBRARY_FILENAME})
-        list(APPEND RUST_TARGET_DEBUG_LIBS ${RUST_TARGET_BINARY_DIR}/${ARCH}/debug/${RUST_LIBRARY_FILENAME})
+        list(APPEND RUST_TARGET_RELEASE_LIBS ${RUST_TARGET_BINARY_DIR}/${ARCH}/release/${RUST_TARGET_FILENAME})
+        list(APPEND RUST_TARGET_DEBUG_LIBS ${RUST_TARGET_BINARY_DIR}/${ARCH}/debug/${RUST_TARGET_FILENAME})
     endforeach()
 
     if(APPLE)
@@ -410,38 +397,38 @@ function(add_rust_library TARGET_NAME)
             )
         else()
             add_custom_command(
-                OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
+                OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FILENAME}
                 DEPENDS ${RUST_TARGET_RELEASE_LIBS}
                 COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/release
-                COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
+                COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FILENAME}
                             ${RUST_TARGET_RELEASE_LIBS}
             )
             add_custom_command(
-                OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
+                OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FILENAME}
                 DEPENDS ${RUST_TARGET_DEBUG_LIBS}
                 COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/debug
-                COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
+                COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FILENAME}
                             ${RUST_TARGET_DEBUG_LIBS}
             )
 
             add_custom_target(${TARGET_NAME}_builder
-                DEPENDS ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_LIBRARY_FILENAME}
+                DEPENDS ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FILENAME}
             )
             set_target_properties(${TARGET_NAME} PROPERTIES
-                IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
-                IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
+                IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FILENAME}
+                IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FILENAME}
             )
         endif()
     else()
         ## For all other platforms, only build the first architecture
         list(GET RUST_TARGET_ARCH 0 RUST_FIRST_ARCH)
         add_custom_target(${TARGET_NAME}_builder
-            DEPENDS ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_LIBRARY_FILENAME}
+            DEPENDS ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FILENAME}
         )
 
         set_target_properties(${TARGET_NAME} PROPERTIES
-            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/release/${RUST_LIBRARY_FILENAME}
-            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/debug/${RUST_LIBRARY_FILENAME}
+            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/release/${RUST_TARGET_FILENAME}
+            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/debug/${RUST_TARGET_FILENAME}
         )
     endif()
     set_target_properties(${TARGET_NAME}_builder PROPERTIES FOLDER "Libs")

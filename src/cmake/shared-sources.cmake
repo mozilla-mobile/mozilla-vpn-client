@@ -223,7 +223,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
     add_rust_library(signature
         PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
         BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
-        CRATE_NAME signature
     )
     target_compile_definitions(shared-sources INTERFACE MZ_SIGNATURE)
     target_link_libraries(shared-sources INTERFACE signature)

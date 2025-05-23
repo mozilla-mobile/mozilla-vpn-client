@@ -132,7 +132,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     add_rust_library(qtglean_bindings
         ARCH ${RUST_ARCH}
         PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
-        CRATE_NAME qtglean
         CARGO_ENV ${CARGO_ENV}
         DEPENDS
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.rs
