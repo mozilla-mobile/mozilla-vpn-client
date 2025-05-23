@@ -118,7 +118,7 @@ upgradeToBundle:
     value: Upgrade
     comment: Text for upgrade button
   title:
-    value: 3 tools, 1 privacy plan – VPN, email masking, and data protection
+    value: 3 tools, 1 privacy plan — VPN, email masking, and data protection
     comment: Title for message
   line1:
     value: For $8.25/month, get our privacy tools in one plan.
