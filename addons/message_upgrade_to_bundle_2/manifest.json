@@ -2,6 +2,7 @@
   "api_version": "0.1",
   "id": "message_upgrade_to_bundle_2",
   "name": "Upgrade to bundle",
+  "translatable": false,
   "type": "message",
   "conditions": {
     "min_client_version": "2.28.0",
@@ -9,46 +10,44 @@
     "locales_full_match": [ "en" ]
   },
   "message": {
-    "usesSharedStrings": true,
-    "shortVersion": "N/A",
-    "id": "message_upgrade_to_bundle_2",
-    "title": "vpn.upgradeToBundle.title",
-    "subtitle": "vpn.upgradeToBundle.line1",
+    "id": "message_upgrade_to_bundle_1",
+    "title": "3 tools, 1 privacy plan — VPN, email masking, and data protection",
+    "subtitle": "For $8.25/month, get our privacy tools in one plan.",
     "badge": "subscription",
     "blocks": [
       {
         "id": "c_2",
         "type": "text",
-        "content": "vpn.upgradeToBundle.bulletIntro"
+        "content": "Plan includes:"
       },
       { "id": "c_3",
         "type": "ulist",
         "content": [
           {
             "id": "l_1",
-            "content": "vpn.upgradeToBundle.bullet1"
+            "content": "VPN for secure, private browsing"
           },
           {
             "id": "l_2",
-            "content": "vpn.upgradeToBundle.bullet2"
+            "content": "Relay’s unlimited email masks to prevent spam and trackers"
           },
           {
             "id": "l_3",
-            "content": "vpn.upgradeToBundle.bullet3"
+            "content": "Monitor’s protection from data brokers who sell your info online"
           }
         ]
       },
       { "id": "c_4",
         "type": "button",
         "style": "primary",
-        "content": "vpn.upgradeToBundle.upgrade",
+        "content": "Upgrade",
         "javascript": "openLink.js"
       },
       {
         "id": "c_5",
         "type": "button",
         "style": "link",
-        "content": "vpn.commonStrings.getHelpButton",
+        "content": "Get help",
         "javascript": "getHelp.js"
       }
     ]
