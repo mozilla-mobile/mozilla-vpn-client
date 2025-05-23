@@ -119,11 +119,11 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     vpnProductIds.append("prod_FiJ42WCzZNRSbS");
   }
 
-  QString productId = subscriptionData["product_id"].toString();
-  if (productId.isEmpty()) {
+  m_productId = subscriptionData["product_id"].toString();
+  if (m_productId.isEmpty()) {
     return false;
   }
-  m_isBundleSubscription = !vpnProductIds.contains(productId);
+  m_isBundleSubscription = !vpnProductIds.contains(m_productId);
 
   // Plan
   logger.debug() << "Parse plan start";

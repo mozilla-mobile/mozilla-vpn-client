@@ -4,7 +4,7 @@ Criteria for addon:
  - Plan purchase source: not IAP
  - Plan renewal cycle: On annual plan
  - Plan type: Not already on a bundle
- - Geo: US-only - handled in manifest.json ("en" is "en-US" in the app)
+ - Geo: US-only - Confirming the currency is USD
  - Client version: Client is at least v2.28 (as some of the APIs used here were
 added in 2.28) - handled in manifest.json
  */
@@ -38,13 +38,18 @@ function isBundleSubscription() {
   return api.subscriptionData.isBundleSubscription
 }
 
+function isUsd() {
+  return api.subscriptionData.planCurrency === 'USD'
+}
+
 function computeCondition() {
   // If subscriptionData is not initialized, then return
   if (api.subscriptionData.createdAt <= 0) {
     return
   }
 
-  if (!isAnnualPlan() || !isWebSubscription() || isBundleSubscription()) {
+  if (!isAnnualPlan() || !isWebSubscription() || isBundleSubscription() ||
+      !isUsd()) {
     return
   }
 
