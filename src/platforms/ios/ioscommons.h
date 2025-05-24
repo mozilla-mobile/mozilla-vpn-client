@@ -18,10 +18,6 @@ class IOSCommons final {
 
   static QStringList systemLanguageCodes();
 
-  static bool verifySignature(const QByteArray& publicKey,
-                              const QByteArray& content,
-                              const QByteArray& signature);
-
   static void shareLogs(const QString& logs);
 };
 

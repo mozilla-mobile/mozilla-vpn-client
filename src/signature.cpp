@@ -8,10 +8,6 @@
 
 #if defined(MZ_SIGNATURE)
 #  include "bindings/signature.h"
-#elif defined(MZ_IOS)
-#  include "platforms/ios/ioscommons.h"
-#elif defined(MZ_ANDROID)
-#  include "platforms/android/androidcommons.h"
 #endif
 
 #ifdef MZ_SIGNATURE
@@ -36,10 +32,6 @@ bool Signature::verify(const QByteArray& publicKey, const QByteArray& content,
   auto sigptr = reinterpret_cast<const unsigned char*>(signature.constData());
   return verify_rsa(keyptr, publicKey.length(), msgptr, content.length(),
                     sigptr, signature.length(), signatureLogger);
-#elif defined(MZ_IOS)
-  return IOSCommons::verifySignature(publicKey, content, signature);
-#elif defined(MZ_ANDROID)
-  return AndroidCommons::verifySignature(publicKey, content, signature);
 #elif defined(MZ_WASM) or defined(UNIT_TEST)
   Q_UNUSED(publicKey);
   Q_UNUSED(content);
