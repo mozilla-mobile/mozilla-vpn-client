@@ -14,7 +14,7 @@ execute_process(OUTPUT_VARIABLE RUSTC_VERSION_RAW COMMAND ${RUSTC_BUILD_TOOL} --
 if(RUSTC_VERSION_RAW MATCHES "host: ([^\n]+)")
     set(RUSTC_HOST_ARCH ${CMAKE_MATCH_1})
 else()
-    error("Failed to find rustc host arch")
+    message(FATAL_ERROR "Failed to find rustc host arch")
 endif()
 
 ## For the Ninja generator, setup a job pool for Cargo targets, which share a
@@ -24,6 +24,20 @@ get_property(HAS_CARGO_POOL GLOBAL PROPERTY JOB_POOLS)
 list(FILTER HAS_CARGO_POOL INCLUDE REGEX "^cargo=")
 if(NOT HAS_CARGO_POOL)
     set_property(GLOBAL APPEND PROPERTY JOB_POOLS cargo=1)
+endif()
+
+## We want to make use of DEPFILE support when building rust crates as it speeds
+## up the build jobs fairly significantly. This is supported by most generators
+## so let's just make extra sure that we are using one.
+if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles"))
+    # Ninja generators support DEPFILEs since CMake 3.7 (3.17 for multi-config).
+    # Makefile generators support DEPFILEs as of CMake 3.20.
+    set(HAS_DEPFILE_SUPPORT TRUE)
+elseif(XCODE OR CMAKE_VS_VERSION_BUILD_NUMBER)
+    # Xcode and Visual Studio 2012 and later support DEPFILEs as of CMake 3.21.
+    set(HAS_DEPFILE_SUPPORT TRUE)
+else()
+    message(FATAL_ERROR "CMake generator is missing DEPFILE support")
 endif()
 
 ## Create a target to build the cbindgen tool.
@@ -192,72 +206,34 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_CARGO_ENV LD=${ANDROID_TOOLCHAIN_ROOT_BIN}/lld)
     endif()
 
-    # Determine if the current generator supports DEPFILEs
-    if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles"))
-        set(RUST_BUILD_WITH_DEPFILE TRUE)
-    elseif(XCODE AND (CMAKE_VERSION VERSION_GREATER_EQUAL "3.21"))
-        set(RUST_BUILD_WITH_DEPFILE TRUE)
-    else()
-        set(RUST_BUILD_WITH_DEPFILE FALSE)
-    endif()
-    if(RUST_BUILD_WITH_DEPFILE)
-        set(RUST_BUILD_DEPENDENCY_FILE
-            ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_LIB_NAME}.d
-        )
-        cmake_policy(PUSH)
-        cmake_policy(SET CMP0116 NEW)
+    cmake_policy(PUSH)
+    cmake_policy(SET CMP0116 NEW)
+    set(RUST_BUILD_DEPENDENCY_FILE ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_LIB_NAME}.d)
 
-        ## Outputs for the release build
-        add_custom_command(
-            OUTPUT ${RUST_BUILD_RELEASE_OUTPUT_FILES}
-            DEPENDS ${RUST_BUILD_DEPENDS}
-            DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_DEPENDENCY_FILE}
-            JOB_POOL cargo
-            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
-            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
-        )
+    ## Outputs for the release build
+    add_custom_command(
+        OUTPUT ${RUST_BUILD_RELEASE_OUTPUT_FILES}
+        DEPENDS ${RUST_BUILD_DEPENDS}
+        DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_DEPENDENCY_FILE}
+        JOB_POOL cargo
+        WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
+        COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
+                ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+    )
 
-        ## Outputs for the debug build
-        add_custom_command(
-            OUTPUT ${RUST_BUILD_DEBUG_OUTPUT_FILES}
-            DEPENDS ${RUST_BUILD_DEPENDS}
-            DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_DEPENDENCY_FILE}
-            JOB_POOL cargo
-            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
-            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
-        )
+    ## Outputs for the debug build
+    add_custom_command(
+        OUTPUT ${RUST_BUILD_DEBUG_OUTPUT_FILES}
+        DEPENDS ${RUST_BUILD_DEPENDS}
+        DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_DEPENDENCY_FILE}
+        JOB_POOL cargo
+        WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
+        COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
+                ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+    )
 
-        ## Reset our policy changes
-        cmake_policy(POP)
-    else()
-        ## For all other generators, set a non-existent output file to force
-        # the command to be invoked on every build. This ensures that the
-        # library stays up todate with the sources, and relies on cargo to
-        # rebuild if necessary.
-
-        ## Outputs for the release build
-        add_custom_command(
-            OUTPUT ${RUST_BUILD_RELEASE_OUTPUT_FILES}
-                ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/.noexist
-            DEPENDS ${RUST_BUILD_DEPENDS}
-            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
-            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
-        )
-
-        ## Outputs for the debug build
-        add_custom_command(
-            OUTPUT
-                ${RUST_BUILD_DEBUG_OUTPUT_FILES}
-                ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/.noexist
-            DEPENDS ${RUST_BUILD_DEPENDS}
-            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
-            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
-        )
-    endif()
+    ## Reset our policy changes
+    cmake_policy(POP)
 endfunction()
 
 ### Helper function to create a linkable target from a Rust package.
@@ -339,6 +315,7 @@ function(add_rust_library TARGET_NAME)
         OUTPUT ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
         BYPRODUCTS ${RUST_TARGET_BINARY_DIR}/${RUST_TARGET_LIB_NAME}-bindings.d
         DEPENDS ${CBINDGEN_BUILD_TOOL}
+        DEPFILE ${RUST_TARGET_BINARY_DIR}/${RUST_TARGET_LIB_NAME}-bindings.d
         WORKING_DIRECTORY ${RUST_TARGET_PACKAGE_DIR}
         COMMAND ${CBINDGEN_BUILD_TOOL}
                     -o ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
