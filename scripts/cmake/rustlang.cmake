@@ -4,10 +4,27 @@
 
 ## The contents of this file should only be processed once.
 include_guard(GLOBAL)
+file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
 
 ## Find the absolute path to the rust build tools.
 find_program(CARGO_BUILD_TOOL NAMES cargo REQUIRED)
-find_program(RUSTC_BUILD_TOOL NAMES rustc REQUIRED)
+
+## Don't trust Xcode to provide us with a usable linker.
+if(APPLE AND XCODE)
+    find_program(RUSTC_BUILD_TOOL_PATH NAMES rustc REQUIRED)
+    file(WRITE ${CMAKE_BINARY_DIR}/cargo_home/rustwrapper.sh "#!/bin/sh\n")
+    file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/rustwrapper.sh "${RUSTC_BUILD_TOOL_PATH} -C linker=/usr/bin/cc \$@\n")
+    file(CHMOD ${CMAKE_BINARY_DIR}/cargo_home/rustwrapper.sh FILE_PERMISSIONS
+        OWNER_READ OWNER_WRITE OWNER_EXECUTE
+        GROUP_READ GROUP_WRITE GROUP_EXECUTE
+        WORLD_READ WORLD_EXECUTE
+    )
+    set(RUSTC_BUILD_TOOL ${CMAKE_BINARY_DIR}/cargo_home/rustwrapper.sh
+        CACHE FILEPATH "Path to the rustc build tool"
+    )
+else()
+    find_program(RUSTC_BUILD_TOOL NAMES rustc REQUIRED)
+endif()
 
 # Figure out Rust's host architecture
 execute_process(OUTPUT_VARIABLE RUSTC_VERSION_RAW COMMAND ${RUSTC_BUILD_TOOL} --version --verbose)
@@ -42,13 +59,12 @@ endif()
 
 ## Create a target to build the cbindgen tool.
 ## TODO: This should be versioned by the Cargo.lock, if present.
-file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
 add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/cargo_home/bin/cbindgen
     COMMENT "Building rust cbindgen tool"
     JOB_POOL cargo
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME="${CMAKE_BINARY_DIR}/cargo_home"
+    COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home RUSTC=${RUSTC_BUILD_TOOL}
             ${CARGO_BUILD_TOOL} install --root ${CMAKE_BINARY_DIR}/cargo_home cbindgen
 )
 set(CBINDGEN_BUILD_TOOL ${CMAKE_BINARY_DIR}/cargo_home/bin/cbindgen
@@ -139,6 +155,7 @@ function(build_rust_archives)
         ${ARGN})
 
     list(APPEND RUST_BUILD_CARGO_ENV CARGO_HOME=\"${CMAKE_BINARY_DIR}/cargo_home\")
+    list(APPEND RUST_BUILD_CARGO_ENV RUSTC=${RUSTC_BUILD_TOOL})
 
     if(NOT RUST_BUILD_ARCH)
         message(FATAL_ERROR "Mandatory argument ARCH was not found")
@@ -328,30 +345,34 @@ function(add_rust_library TARGET_NAME)
 
     # Guess the target architecture if not set.
     if(NOT RUST_TARGET_ARCH)
-        if(CMAKE_CROSSCOMPILING)
-            # TODO: We could write something here for Android and IOS maybe
-            message(FATAL_ERROR "Unable to determine rust target architecture when cross compiling.")
+        if(ANDROID)
+            if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a")
+                set(RUST_TARGET_ARCH "armv7-linux-androideabi")
+            else()
+                set(RUST_TARGET_ARCH "${CMAKE_SYSTEM_PROCESSOR}-linux-android")
+            endif()
+        elseif(IOS)
+            ## TODO: This doesn't work for aarch64 simulators.
+            # See also: https://bugreports.qt.io/browse/QTBUG-101276
+            foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
+                string(REPLACE "arm64" "aarch64" OSXARCH ${OSXARCH})
+                list(APPEND RUST_TARGET_ARCH "${OSXARCH}-apple-ios")
+            endforeach()
+            # Build all architectures if nothing is set.
+            if(NOT RUST_TARGET_ARCH)
+                set(RUST_TARGET_ARCH aarch64-apple-ios x86_64-apple-ios)
+            endif()
         elseif((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND CMAKE_OSX_ARCHITECTURES)
             # Special case for MacOS universal binaries.
             foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
                 string(REPLACE "arm64" "aarch64" OSXARCH ${OSXARCH})
                 list(APPEND RUST_TARGET_ARCH "${OSXARCH}-apple-darwin")
             endforeach()
-        else()
+        elseif(NOT CMAKE_CROSSCOMPILING)
             set(RUST_TARGET_ARCH ${RUSTC_HOST_ARCH})
+        else()
+            message(FATAL_ERROR "Unable to determine rust target architecture.")
         endif()
-    endif()
-
-    ## Don't trust Xcode to provide us with a usable linker.
-    if(APPLE AND XCODE)
-        file(WRITE ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "#!/bin/sh\n")
-        file(APPEND ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh "${RUSTC_BUILD_TOOL} -C linker=/usr/bin/cc \$@\n")
-        file(CHMOD ${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh FILE_PERMISSIONS
-            OWNER_READ OWNER_WRITE OWNER_EXECUTE
-            GROUP_READ GROUP_WRITE GROUP_EXECUTE
-            WORLD_READ WORLD_EXECUTE
-        )
-        list(APPEND RUST_TARGET_CARGO_ENV RUSTC=${CMAKE_CURRENT_BINARY_DIR}/rustwrapper.sh)
     endif()
 
     ## Build the rust library target(s)

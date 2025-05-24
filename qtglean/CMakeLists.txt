@@ -73,38 +73,12 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     set(SHARED 0)
 
     if(IOS)
-        set(RUST_ARCH "")
-        if("arm64" IN_LIST CMAKE_OSX_ARCHITECTURES)
-            list(APPEND RUST_ARCH aarch64-apple-ios)
-        endif()
-
-        if("x86_64" IN_LIST CMAKE_OSX_ARCHITECTURES)
-            list(APPEND RUST_ARCH x86_64-apple-ios)
-        endif()
-
-        # If no architecure is defined, just do all of them.
-        if (RUST_ARCH STREQUAL "")
-            set(RUST_ARCH aarch64-apple-ios x86_64-apple-ios)
-        endif()
-
         # On iOS we will build a dynamic lib,
         # so that it can be linked to both the main app and the network extension.
         set(RUSTFLAGS "-Ctarget-feature=-crt-static")
         set(SHARED 1)
         set(FW_NAME "QtGleanBindings")
     elseif(ANDROID)
-        if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
-            set(RUST_ARCH "aarch64-linux-android")
-        elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a")
-            set(RUST_ARCH "armv7-linux-androideabi")
-        elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
-            set(RUST_ARCH "i686-linux-android")
-        elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
-            set(RUST_ARCH "x86_64-linux-android")
-        else()
-            message(FATAL_ERROR "Attempting to for unsupported architecture '${CMAKE_SYSTEM_PROCESSOR}'")
-        endif()
-
         get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
         get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
         list(APPEND CARGO_ENV
@@ -130,7 +104,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     ## Build the qtglean Rust library
     list(APPEND CARGO_ENV RUSTFLAGS=${RUSTFLAGS})
     add_rust_library(qtglean_bindings
-        ARCH ${RUST_ARCH}
         PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR}
         CARGO_ENV ${CARGO_ENV}
         DEPENDS
