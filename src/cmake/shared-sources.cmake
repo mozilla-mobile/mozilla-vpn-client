@@ -215,9 +215,7 @@ if(NOT CMAKE_CROSSCOMPILING)
        )
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
-   ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
-   ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     # Compile and link the signature library.
     include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
     add_rust_library(signature
