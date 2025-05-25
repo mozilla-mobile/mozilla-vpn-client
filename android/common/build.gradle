@@ -42,8 +42,6 @@ dependencies {
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
-    implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
-
     implementation project(path: ':qtglean')
     implementation project(path: ':qtBindings')
     implementation project(path: ':adjust')

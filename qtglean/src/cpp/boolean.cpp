@@ -8,7 +8,7 @@
 #include <QJsonValue>
 
 #ifndef __wasm__
-#  include "qtglean.h"
+#  include "bindings/qtglean.h"
 #endif
 
 BooleanMetric::BooleanMetric(int id) : BaseMetric(id) {}

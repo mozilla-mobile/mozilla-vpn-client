@@ -4,7 +4,7 @@
 
 #include "glean/ping.h"
 #ifndef __wasm__
-#  include "qtglean.h"
+#  include "bindings/qtglean.h"
 #endif
 
 Ping::Ping(int aId) : m_id(aId) {}

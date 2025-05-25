@@ -18,6 +18,7 @@
 #include "addons/conditionwatchers/addonconditionwatchertimeend.h"
 #include "addons/conditionwatchers/addonconditionwatchertimestart.h"
 #include "addons/conditionwatchers/addonconditionwatchertriggertimesecs.h"
+#include "bindings/qtglean.h"
 #include "feature/feature.h"
 #include "feature/featuremodel.h"
 #include "glean/generated/metrics.h"
@@ -25,7 +26,6 @@
 #include "helper.h"
 #include "localizer.h"
 #include "qmlengineholder.h"
-#include "qtglean.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 

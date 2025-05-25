@@ -46,18 +46,6 @@ int AndroidCommons::getSDKVersion() {
 }
 
 // static
-bool AndroidCommons::verifySignature(const QByteArray& publicKey,
-                                     const QByteArray& content,
-                                     const QByteArray& signature) {
-  QJniEnvironment env;
-  auto out = (bool)QJniObject::callStaticMethod<jboolean>(
-      COMMON_UTILS_CLASS, "verifyContentSignature", "([B[B[B)Z",
-      tojByteArray(publicKey), tojByteArray(content), tojByteArray(signature));
-  logger.info() << "Android Signature Response" << out;
-  return out;
-}
-
-// static
 bool AndroidCommons::shareText(const QString& text) {
   return (bool)QJniObject::callStaticMethod<jboolean>(
       VPN_UTILS_CLASS, "sharePlainText", "(Ljava/lang/String;)Z",
