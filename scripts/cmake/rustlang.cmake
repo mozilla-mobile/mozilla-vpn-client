@@ -67,6 +67,9 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home RUSTC=${RUSTC_BUILD_TOOL}
             ${CARGO_BUILD_TOOL} install --root ${CMAKE_BINARY_DIR}/cargo_home cbindgen
 )
+add_custom_target(cbindgen_builder
+    DEPENDS ${CMAKE_BINARY_DIR}/cargo_home/bin/cbindgen
+)
 set(CBINDGEN_BUILD_TOOL ${CMAKE_BINARY_DIR}/cargo_home/bin/cbindgen
     CACHE FILEPATH "Path to the cbindgen build tool"
 )
@@ -337,7 +340,7 @@ function(add_rust_library TARGET_NAME)
     add_custom_command(
         OUTPUT ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
         BYPRODUCTS ${RUST_TARGET_BINARY_DIR}/${RUST_TARGET_LIB_NAME}-bindings.d
-        DEPENDS ${CBINDGEN_BUILD_TOOL}
+        DEPENDS cbindgen_builder
         DEPFILE ${RUST_TARGET_BINARY_DIR}/${RUST_TARGET_LIB_NAME}-bindings.d
         WORKING_DIRECTORY ${RUST_TARGET_PACKAGE_DIR}
         COMMAND ${CBINDGEN_BUILD_TOOL}
