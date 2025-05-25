@@ -77,7 +77,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         # so that it can be linked to both the main app and the network extension.
         set(RUSTFLAGS "-Ctarget-feature=-crt-static")
         set(SHARED 1)
-        set(FW_NAME "QtGleanBindings")
     elseif(ANDROID)
         get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
         get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
@@ -110,8 +109,17 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.rs
             ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.rs
         SHARED ${SHARED}
-        FW_NAME ${FW_NAME}
     )
+
+    ## For IOS targets - turn the rust library into a framework.
+    if(IOS)
+        set_target_properties(qtglean_bindings PROPERTIES
+            FRAMEWORK TRUE
+            OUTPUT_NAME QtGleanBindings
+            MACOSX_FRAMEWORK_IDENTIFIER ${BUILD_IOS_APP_IDENTIFIER}.QtGleanBindings
+            XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER ${BUILD_IOS_APP_IDENTIFIER}.QtGleanBindings
+        )
+    endif()
 
     target_link_libraries(qtglean PUBLIC qtglean_bindings)
 endif()

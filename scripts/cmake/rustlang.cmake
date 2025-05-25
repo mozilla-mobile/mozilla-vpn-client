@@ -278,25 +278,22 @@ function(add_rust_library TARGET_NAME)
         set(RUST_TARGET_SHARED 0)
     endif()
 
-    if(${RUST_TARGET_SHARED} AND IOS AND NOT RUST_TARGET_FW_NAME)
-        message(FATAL_ERROR "A framework name must be provided when building a shared Rust library for iOS.")
-    endif()
-
-    if(IOS AND RUST_TARGET_FW_NAME)
-        set(FW_INFO_PLIST_FILE_PATH ${CMAKE_SOURCE_DIR}/scripts/cmake/Info.plist.${RUST_TARGET_FW_NAME})
-
-        if(NOT EXISTS ${FW_INFO_PLIST_FILE_PATH})
-            message(FATAL_ERROR "An Info.plist.${RUST_TARGET_FW_NAME} file must exist to support creation of ${FW_NAME} framework.")
-        endif()
-
-        list(APPEND RUST_TARGET_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}")
+    if(IOS AND RUST_TARGET_SHARED)
+        list(APPEND RUST_TARGET_CARGO_ENV
+            "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/$<TARGET_BUNDLE_DIR_NAME:${TARGET_NAME}>/$<TARGET_FILE_NAME:${TARGET_NAME}>"
+        )
     endif()
 
     if(${RUST_TARGET_SHARED})
-        add_library(${TARGET_NAME} SHARED IMPORTED GLOBAL)
+        add_library(${TARGET_NAME} SHARED)
     else()
-        add_library(${TARGET_NAME} STATIC IMPORTED GLOBAL)
+        add_library(${TARGET_NAME} STATIC)
     endif()
+    set_target_properties(${TARGET_NAME} PROPERTIES
+        FOLDER "Libs"
+        AUTOMOC OFF
+        AUTOUIC OFF
+    )
 
     if(NOT RUST_TARGET_BINARY_DIR)
         set(RUST_TARGET_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
@@ -325,9 +322,7 @@ function(add_rust_library TARGET_NAME)
 
     ## Generate a library header with cbindgen
     file(MAKE_DIRECTORY ${RUST_TARGET_BINARY_DIR}/include/bindings)
-    set_property(TARGET ${TARGET_NAME} APPEND PROPERTY
-        INTERFACE_INCLUDE_DIRECTORIES ${RUST_TARGET_BINARY_DIR}/include
-    )
+    target_include_directories(${TARGET_NAME} PUBLIC ${RUST_TARGET_BINARY_DIR}/include)
     add_custom_command(
         OUTPUT ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
         BYPRODUCTS ${RUST_TARGET_BINARY_DIR}/${RUST_TARGET_LIB_NAME}-bindings.d
@@ -341,6 +336,14 @@ function(add_rust_library TARGET_NAME)
     set_source_files_properties(
         ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
         PROPERTIES GENERATED TRUE
+    )
+    configure_file(
+        ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/rustlang-dummylib.cpp.in
+        ${RUST_TARGET_BINARY_DIR}/${RUST_TARGET_LIB_NAME}-dummylib.cpp
+    )
+    target_sources(${TARGET_NAME}
+        PUBLIC ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
+        PRIVATE ${RUST_TARGET_BINARY_DIR}/${RUST_TARGET_LIB_NAME}-dummylib.cpp
     )
 
     # Guess the target architecture if not set.
@@ -390,26 +393,17 @@ function(add_rust_library TARGET_NAME)
         list(APPEND RUST_TARGET_DEBUG_LIBS ${RUST_TARGET_BINARY_DIR}/${ARCH}/debug/${RUST_TARGET_FILENAME})
     endforeach()
 
-    if(IOS AND RUST_TARGET_FW_NAME)
-        # For iOS frameworks merge the release libraries together with lipo
-        # and bundle it together into a .framework directory.
-        add_custom_command(
-            OUTPUT ${RUST_TARGET_BINARY_DIR}/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
-            WORKING_DIRECTORY ${RUST_TARGET_BINARY_DIR}
-            DEPENDS ${RUST_TARGET_RELEASE_LIBS}
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_FW_NAME}.framework
-            COMMAND ${CMAKE_COMMAND} -E copy ${FW_INFO_PLIST_FILE_PATH} ${RUST_TARGET_FW_NAME}.framework/Info.plist
-            COMMAND lipo -create ${RUST_TARGET_RELEASE_LIBS}
-                        -output ${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
+    # Use a POST_BUILD hook to replace the dummy library with the rust library
+    # built by cargo.
+    if(IOS AND XCODE)
+        # Xcode struggles to determine which dependencies need building and will
+        # result in building every config and target of the rust library. To cut
+        # down on build time, only link the release libraries when building for
+        # Xcode.
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND lipo -create -output $<TARGET_FILE:${TARGET_NAME}> ${RUST_TARGET_RELEASE_LIBS}
         )
-
-        add_custom_target(${TARGET_NAME}_builder DEPENDS
-            ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
-            ${RUST_TARGET_BINARY_DIR}/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
-        )
-        set_target_properties(${TARGET_NAME} PROPERTIES
-            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
-        )
+        add_custom_target(${TARGET_NAME}_builder DEPENDS ${RUST_TARGET_RELEASE_LIBS})
     elseif(APPLE)
         # For all other Apple targets, merge the compiled librares together with
         # lipo into a universal library.
@@ -428,25 +422,28 @@ function(add_rust_library TARGET_NAME)
                         ${RUST_TARGET_DEBUG_LIBS}
         )
 
-        add_custom_target(${TARGET_NAME}_builder DEPENDS
-            ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
-            ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FILENAME}
+        ## Replace the dummy library with the rust library.
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+                ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FILENAME}
+                $<TARGET_FILE:${TARGET_NAME}>
         )
-        set_target_properties(${TARGET_NAME} PROPERTIES
-            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FILENAME}
-            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FILENAME}
+        add_custom_target(${TARGET_NAME}_builder DEPENDS
+            ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FILENAME}
         )
     else()
         ## For all other platforms, only build the first architecture
         list(GET RUST_TARGET_ARCH 0 RUST_FIRST_ARCH)
-        add_custom_target(${TARGET_NAME}_builder DEPENDS
-            ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
-            ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FILENAME}
+
+        ## Replace the dummy library with the rust library.
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy
+                ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FILENAME}
+                $<TARGET_FILE:${TARGET_NAME}>
         )
 
-        set_target_properties(${TARGET_NAME} PROPERTIES
-            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/release/${RUST_TARGET_FILENAME}
-            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/debug/${RUST_TARGET_FILENAME}
+        add_custom_target(${TARGET_NAME}_builder DEPENDS
+            ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_TARGET_FILENAME}
         )
     endif()
     set_target_properties(${TARGET_NAME}_builder PROPERTIES FOLDER "Libs")
