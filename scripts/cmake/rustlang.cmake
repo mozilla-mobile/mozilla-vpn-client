@@ -29,7 +29,7 @@ endif()
 # Figure out Rust's host architecture
 execute_process(OUTPUT_VARIABLE RUSTC_VERSION_RAW COMMAND ${RUSTC_BUILD_TOOL} --version --verbose)
 if(RUSTC_VERSION_RAW MATCHES "host: ([^\n]+)")
-    set(RUSTC_HOST_ARCH ${CMAKE_MATCH_1})
+    set(RUSTC_HOST_ARCH ${CMAKE_MATCH_1} CACHE STRING "Rustlang host architecture")
 else()
     message(FATAL_ERROR "Failed to find rustc host arch")
 endif()
