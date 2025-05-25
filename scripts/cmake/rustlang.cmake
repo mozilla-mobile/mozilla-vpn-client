@@ -253,6 +253,23 @@ function(build_rust_archives)
     cmake_policy(POP)
 endfunction()
 
+### Helper function to adjust build rules on the library target
+#
+# This function is run at the end of the directory scope, allowing the caller
+# to specify additional properties on the library target.
+#
+function(__rust_library_finalize TARGET_NAME)
+    get_property(TARGET_FRAMEWORK TARGET ${TARGET_NAME} PROPERTY FRAMEWORK)
+    get_property(TARGET_TYPE TARGET ${TARGET_NAME} PROPERTY TYPE)
+
+    # For Apple frameworks update the rpath
+    if(IOS AND TARGET_FRAMEWORK AND TARGET_TYPE STREQUAL "SHARED_LIBRARY")
+        add_custom_command(TARGET ${TARGET_NAME} POST_BUILD
+            COMMAND install_name_tool -add_rpath @rpath/$<TARGET_BUNDLE_DIR_NAME:${TARGET_NAME}>/$<TARGET_FILE_NAME:${TARGET_NAME}> $<TARGET_FILE:${TARGET_NAME}>
+        )
+    endif()
+endfunction()
+
 ### Helper function to create a linkable target from a Rust package.
 #
 # This function takes one mandatory argument: TARGET_NAME which
@@ -265,23 +282,16 @@ endfunction()
 #   CARGO_ENV: Environment variables to pass to cargo.
 #   DEPENDS: Additional files on which the target depends.
 #   SHARED: Whether or not we are building a shared library. Defaults to "false".
-#   FW_NAME: Standalone dylibs need to be wrapped in a framework for distribtuion. Required when building shared lib for iOS.
 #
 function(add_rust_library TARGET_NAME)
     cmake_parse_arguments(RUST_TARGET
         ""
         "BINARY_DIR;PACKAGE_DIR"
-        "ARCH;CARGO_ENV;DEPENDS;SHARED;FW_NAME"
+        "ARCH;CARGO_ENV;DEPENDS;SHARED"
         ${ARGN})
 
     if(NOT RUST_TARGET_SHARED)
         set(RUST_TARGET_SHARED 0)
-    endif()
-
-    if(IOS AND RUST_TARGET_SHARED)
-        list(APPEND RUST_TARGET_CARGO_ENV
-            "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/$<TARGET_BUNDLE_DIR_NAME:${TARGET_NAME}>/$<TARGET_FILE_NAME:${TARGET_NAME}>"
-        )
     endif()
 
     if(${RUST_TARGET_SHARED})
@@ -294,6 +304,7 @@ function(add_rust_library TARGET_NAME)
         AUTOMOC OFF
         AUTOUIC OFF
     )
+    cmake_language(EVAL CODE "cmake_language(DEFER CALL __rust_library_finalize ${TARGET_NAME})")
 
     if(NOT RUST_TARGET_BINARY_DIR)
         set(RUST_TARGET_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
