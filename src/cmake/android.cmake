@@ -70,7 +70,13 @@ if( ${Qt6_VERSION} VERSION_GREATER_EQUAL 6.4.0)
     APPEND)
 endif()
 
-get_property(QTGLEAN_LIB_DIR TARGET qtglean_bindings PROPERTY BINARY_DIR)
-set_property(TARGET mozillavpn APPEND PROPERTY
-    QT_ANDROID_EXTRA_LIBS ${QTGLEAN_LIB_DIR}/libqtglean_bindings.so
-)
+if(Qt6_VERSION VERSION_GREATER_EQUAL 6.6.0)
+    set_property(TARGET mozillavpn APPEND PROPERTY
+        QT_ANDROID_EXTRA_LIBS $<TARGET_FILE:qtglean_bindings>
+    )
+else()
+    get_property(QTGLEAN_LIB_DIR TARGET qtglean_bindings PROPERTY BINARY_DIR)
+    set_property(TARGET mozillavpn APPEND PROPERTY
+        QT_ANDROID_EXTRA_LIBS ${QTGLEAN_LIB_DIR}/libqtglean_bindings.so
+    )
+endif()
