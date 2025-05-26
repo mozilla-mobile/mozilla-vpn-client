@@ -42,13 +42,13 @@ Logger logger("XpcDaemonServer");
 XpcDaemonServer::XpcDaemonServer(Daemon* daemon) : QObject(daemon) {
   MZ_COUNT_CTOR(XpcDaemonServer);
 
-  QString daemonId = MacOSUtils::appId() + ".daemon";
-  logger.debug() << "XpcDaemonServer created:" << daemonId;
+  NSString* machServiceName = MacOSUtils::appId(".service").toNSString();
+  logger.debug() << "XpcDaemonServer created:" << machServiceName;
 
   XpcDaemonDelegate* delegate =
       [[XpcDaemonDelegate alloc] initWithObject:daemon];
   NSXPCListener* listener =
-      [[NSXPCListener alloc] initWithMachServiceName:daemonId.toNSString()];
+      [[NSXPCListener alloc] initWithMachServiceName:machServiceName];
   listener.delegate = delegate;
 
   // Connections to the daemon require codesigning
