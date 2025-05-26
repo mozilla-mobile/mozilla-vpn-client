@@ -79,12 +79,12 @@ workers:
                     default: mozillavpn-t-signing
         macos-dep-signing:
             provisioner: scriptworker-prov-v1
-            implementation: scriptworker-signing
+            implementation: scriptworker-iscript
             os: macosx
             worker-type: vpn-depsigning-mac-v1
         macos-signing:
             provisioner: scriptworker-prov-v1
-            implementation: scriptworker-signing
+            implementation: scriptworker-iscript
             os: macosx
             worker-type:
                 by-level:
