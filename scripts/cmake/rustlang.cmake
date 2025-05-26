@@ -349,7 +349,9 @@ function(add_rust_library TARGET_NAME)
     )
     set_source_files_properties(
         ${RUST_TARGET_BINARY_DIR}/include/bindings/${RUST_TARGET_LIB_NAME}.h
-        PROPERTIES GENERATED TRUE
+        PROPERTIES
+            GENERATED TRUE
+            SKIP_AUTOGEN TRUE
     )
     configure_file(
         ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/rustlang-dummylib.cpp.in
