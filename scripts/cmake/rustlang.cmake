@@ -462,9 +462,7 @@ function(add_rust_library TARGET_NAME)
     endif()
     set_target_properties(${TARGET_NAME}_builder PROPERTIES FOLDER "Libs")
     if (ANDROID AND RUST_TARGET_SHARED)
-        set_target_properties(${TARGET_NAME} PROPERTIES
-            IMPORTED_NO_SONAME TRUE
-        )
+        set_target_properties(${TARGET_NAME} PROPERTIES NO_SONAME TRUE)
     endif()
 
     add_dependencies(${TARGET_NAME} ${TARGET_NAME}_builder)
