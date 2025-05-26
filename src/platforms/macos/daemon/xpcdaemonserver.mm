@@ -54,6 +54,19 @@ XpcDaemonServer::XpcDaemonServer(Daemon* daemon) : QObject(daemon) {
   // Connections to the daemon require codesigning
   // TODO: It would be nice if we could turn this off for developers somehow.
   if (@available(macOS 13, *)) {
+    // These certificate extension OIDs are described in Apple's technical note
+    // TN3127: Inside Code Signing Requirements, and are used to identify
+    // certificates and authorities used by Apple for codesigning.
+    //
+    // The extension identifiers ending in 6.1.13 and 6.2.6 denote a Developer
+    // ID certificate granted by the apple Developer ID CA. This permits release
+    // software signed by our development team to access this service.
+    //
+    // The extension identifiers ending in 6.1.12 and 6.2.1 denote a macOS
+    // developer certificate granted by the Apple WWDR intermediate CA. This
+    // permits development builds signed by our development team to access this
+    // service.
+    //
     constexpr const char* oidExtAppleCodesign =
         "(certificate leaf[field.1.2.840.113635.100.6.1.13] or" \
         " certificate leaf[field.1.2.840.113635.100.6.1.12])";
