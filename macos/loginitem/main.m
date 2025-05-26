@@ -25,13 +25,6 @@ int main()
            }];
 
     [NSThread sleepForTimeInterval:10];
-  } else {
-    NSString* appId = [NSString stringWithUTF8String:APP_ID];
-
-    [[NSWorkspace sharedWorkspace] launchAppWithBundleIdentifier:appId
-                                                         options:NSWorkspaceLaunchDefault
-                                  additionalEventParamDescriptor:NULL
-                                                launchIdentifier:NULL];
   }
 
   return 0;
