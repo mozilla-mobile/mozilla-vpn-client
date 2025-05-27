@@ -38,18 +38,20 @@ function isBundleSubscription() {
   return api.subscriptionData.isBundleSubscription
 }
 
-function isUsd() {
-  return api.subscriptionData.planCurrency === 'USD'
+function isLocatedInUs() {
+  return api.location.countryCode.toUpperCase() === 'US'
 }
 
 function computeCondition() {
   // If subscriptionData is not initialized, then return
   if (api.subscriptionData.createdAt <= 0) {
+    condition.disable()
     return
   }
 
   if (!isAnnualPlan() || !isWebSubscription() || isBundleSubscription() ||
-      !isUsd()) {
+      !isLocatedInUs()) {
+    condition.disable()
     return
   }
 
