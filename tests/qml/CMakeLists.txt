@@ -192,19 +192,12 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/simplenetworkmanager.h
     ${MZ_SOURCE_DIR}/signature.cpp
     ${MZ_SOURCE_DIR}/signature.h
-    ${MZ_SOURCE_DIR}/task.h
-    ${MZ_SOURCE_DIR}/taskscheduler.cpp
-    ${MZ_SOURCE_DIR}/taskscheduler.h
     ${MZ_SOURCE_DIR}/tasks/addon/taskaddon.cpp
     ${MZ_SOURCE_DIR}/tasks/addon/taskaddon.h
     ${MZ_SOURCE_DIR}/tasks/addonindex/taskaddonindex.cpp
     ${MZ_SOURCE_DIR}/tasks/addonindex/taskaddonindex.h
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.h
-    ${MZ_SOURCE_DIR}/tasks/function/taskfunction.cpp
-    ${MZ_SOURCE_DIR}/tasks/function/taskfunction.h
-    ${MZ_SOURCE_DIR}/tasks/group/taskgroup.cpp
-    ${MZ_SOURCE_DIR}/tasks/group/taskgroup.h
     ${MZ_SOURCE_DIR}/temporarydir.cpp
     ${MZ_SOURCE_DIR}/temporarydir.h
     ${MZ_SOURCE_DIR}/theme.cpp

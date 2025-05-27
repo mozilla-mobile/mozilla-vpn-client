@@ -36,6 +36,13 @@ add_library(mzutils STATIC
     rfc/rfc4291.h
     rfc/rfc5735.cpp
     rfc/rfc5735.h
+    task.h
+    taskfunction.cpp
+    taskfunction.h
+    taskgroup.cpp
+    taskgroup.h
+    taskscheduler.cpp
+    taskscheduler.h
 )
 
 # Signal handling for unix platforms

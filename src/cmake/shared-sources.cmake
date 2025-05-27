@@ -132,9 +132,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/signature.h
     ${CMAKE_SOURCE_DIR}/src/simplenetworkmanager.cpp
     ${CMAKE_SOURCE_DIR}/src/simplenetworkmanager.h
-    ${CMAKE_SOURCE_DIR}/src/task.h
-    ${CMAKE_SOURCE_DIR}/src/taskscheduler.cpp
-    ${CMAKE_SOURCE_DIR}/src/taskscheduler.h
     ${CMAKE_SOURCE_DIR}/src/tasks/addon/taskaddon.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/addon/taskaddon.h
     ${CMAKE_SOURCE_DIR}/src/tasks/addonindex/taskaddonindex.cpp
@@ -143,10 +140,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/taskauthenticate.h
     ${CMAKE_SOURCE_DIR}/src/tasks/deleteaccount/taskdeleteaccount.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/deleteaccount/taskdeleteaccount.h
-    ${CMAKE_SOURCE_DIR}/src/tasks/function/taskfunction.cpp
-    ${CMAKE_SOURCE_DIR}/src/tasks/function/taskfunction.h
-    ${CMAKE_SOURCE_DIR}/src/tasks/group/taskgroup.cpp
-    ${CMAKE_SOURCE_DIR}/src/tasks/group/taskgroup.h
     ${CMAKE_SOURCE_DIR}/src/temporarydir.cpp
     ${CMAKE_SOURCE_DIR}/src/temporarydir.h
     ${CMAKE_SOURCE_DIR}/src/theme.cpp

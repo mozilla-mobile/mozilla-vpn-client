@@ -18,7 +18,7 @@
 #include "networkrequest.h"
 #include "tasks/authenticate/taskauthenticate.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
-#include "tasks/function/taskfunction.h"
+#include "taskfunction.h"
 
 constexpr const char* PASSWORD = "12345678";
 

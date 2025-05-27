@@ -6,8 +6,8 @@
 
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
-#include "tasks/function/taskfunction.h"
-#include "tasks/group/taskgroup.h"
+#include "taskfunction.h"
+#include "taskgroup.h"
 #include "taskscheduler.h"
 
 void TestTasks::function() {
