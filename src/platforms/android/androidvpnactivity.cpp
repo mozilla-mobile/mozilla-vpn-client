@@ -16,7 +16,6 @@
 #include "frontend/navigator.h"
 #include "jni.h"
 #include "logger.h"
-#include "logoutobserver.h"
 #include "mozillavpn.h"
 #include "platforms/android/androidcommons.h"
 #include "settingsholder.h"
@@ -53,10 +52,6 @@ AndroidVPNActivity::AndroidVPNActivity() {
   QObject::connect(SettingsHolder::instance(),
                    &SettingsHolder::startAtBootChanged, this,
                    &AndroidVPNActivity::startAtBootChanged);
-
-  LogoutObserver* lo = new LogoutObserver(this);
-  QObject::connect(lo, &LogoutObserver::ready, this,
-                   &AndroidVPNActivity::onLogout);
 
   QObject::connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this,
                    &AndroidVPNActivity::onAppStateChange);
@@ -174,11 +169,12 @@ void AndroidVPNActivity::startAtBootChanged() {
   sendToService(ServiceAction::ACTION_SET_START_ON_BOOT, doc.toJson());
 }
 
-void AndroidVPNActivity::onLogout() {
-  sendToService(ServiceAction::ACTION_CLEAR_STORAGE);
-}
-
 void AndroidVPNActivity::onAppStateChange() {
+  // Drop service configuration upon logout.
+  if (!App::instance()->userAuthenticated()) {
+    sendToService(ServiceAction::ACTION_CLEAR_STORAGE);
+  }
+
   if (!Constants::inProduction()) {
     // Do not restrict screencap on debug
     return;

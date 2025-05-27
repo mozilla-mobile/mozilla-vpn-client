@@ -102,8 +102,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/itempicker.h
     ${CMAKE_SOURCE_DIR}/src/localizer.cpp
     ${CMAKE_SOURCE_DIR}/src/localizer.h
-    ${CMAKE_SOURCE_DIR}/src/logoutobserver.cpp
-    ${CMAKE_SOURCE_DIR}/src/logoutobserver.h
     ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.cpp
     ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.h
     ${CMAKE_SOURCE_DIR}/src/models/apierror.cpp
