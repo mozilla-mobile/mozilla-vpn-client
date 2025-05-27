@@ -106,21 +106,34 @@ exports.mochaHooks = {
   },
 
   async afterAll() {
+    console.log("afterAll step A");
     guardian.stop();
+    console.log("afterAll step B");
     fxaServer.stop();
+    console.log("afterAll step C");
     addonServer.stop();
+    console.log("afterAll step D");
     captivePortalServer.stop();
+    console.log("afterAll step E");
     wasm.stop();
+    console.log("afterAll step F");
 
     guardian.throwExceptionsIfAny();
+    console.log("afterAll step G");
     fxaServer.throwExceptionsIfAny();
+    console.log("afterAll step H");
     addonServer.throwExceptionsIfAny();
+    console.log("afterAll step I");
     captivePortalServer.throwExceptionsIfAny();
+    console.log("afterAll step J");
 
     await driver.quit();
 
+    console.log("afterAll step K");
     logSocket.destroy();
+    console.log("afterAll step L");
     logServer.close();
+    console.log("afterAll step M");
   },
 
   async beforeEach() {
@@ -157,21 +170,29 @@ exports.mochaHooks = {
       console.log(fs.readFileSync(stdout).toString());
       console.log('::endgroup');
     }
+    console.log("afterEach step A");
 
     // Close VPN app
     // If something's gone really wrong with the test,
     // then this can fail and cause the tests to hang.
     // Logging the error lets us clean-up and move on.
     try {
+      console.log("afterEach step B");
       await vpn.hardReset();
+      console.log("afterEach step C");
       await vpn.quit();
+      console.log("afterEach step D");
     } catch (error) {
       console.error(error);
     }
+    console.log("afterEach step E");
     vpn.disconnect();
     // Give each test 2 seconds to chill!
     // Seems to help with tests that are slow to close vpn app at end.
+    console.log("afterEach step F");
     await vpn.wait();
+    console.log("afterEach step G");
     await vpn.wait();
+    console.log("afterEach step Done");
   },
 }
