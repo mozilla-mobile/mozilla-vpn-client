@@ -9,6 +9,7 @@
 #include <QList>
 #include <QLocale>
 #include <QMap>
+#include <QTranslator>
 
 class QTranslator;
 class SettingsHolder;
@@ -74,9 +75,9 @@ class Localizer final : public QAbstractListModel {
   static QMap<QString, double> loadTranslationCompleteness(
       const QString& fileName);
 
-  QString getTranslatedCountryName(const QString& countryCode,
-                                   const QString& countryName) const;
-  QString getTranslatedCityName(const QString& cityName) const;
+  static QString getTranslatedCountryName(const QString& countryCode,
+                                          const QString& countryName);
+  static QString getTranslatedCityName(const QString& cityName);
 
   Q_INVOKABLE QString formatDate(const QDateTime& nowDateTime,
                                  const QDateTime& messageDateTime,
@@ -132,6 +133,20 @@ class Localizer final : public QAbstractListModel {
 #ifdef UNIT_TEST
   friend class TestLocalizer;
 #endif
+};
+
+// Custom translator class that also handles server localization.
+class VpnTranslator final : public QTranslator {
+  Q_OBJECT
+  friend class Localizer;
+
+ protected:
+  VpnTranslator(QObject* parent = nullptr) : QTranslator(parent) {};
+
+ public:
+  QString translate(const char *context, const char *sourceText,
+                    const char *disambiguation = nullptr,
+                    int n = -1) const override;
 };
 
 #endif  // LOCALIZER_H

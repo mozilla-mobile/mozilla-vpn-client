@@ -40,7 +40,8 @@ class ServerCity final : public QObject {
 
   const QString& country() const { return m_country; }
 
-  const QString localizedName() const;
+  static QString localizedName(const QString& name);
+  const QString localizedName() const { return localizedName(m_name); }
 
   const QString& hashKey() const { return m_hashKey; }
   static QString hashKey(const QString& country, const QString cityName);

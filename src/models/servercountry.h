@@ -25,7 +25,8 @@ class ServerCountry final {
 
   const QString& code() const { return m_code; }
 
-  QString localizedName() const;
+  static QString localizedName(const QString& code, const QString& name);
+  QString localizedName() const { return localizedName(m_code, m_name); }
 
   const QList<QString>& cities() const { return m_cities; }
 

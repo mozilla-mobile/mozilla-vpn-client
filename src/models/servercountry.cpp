@@ -4,6 +4,7 @@
 
 #include "servercountry.h"
 
+#include <QCoreApplication>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -11,7 +12,6 @@
 
 #include "collator.h"
 #include "leakdetector.h"
-#include "localizer.h"
 #include "serverdata.h"
 
 ServerCountry::ServerCountry() { MZ_COUNT_CTOR(ServerCountry); }
@@ -73,16 +73,18 @@ bool ServerCountry::fromJson(const QJsonObject& countryObj) {
   return true;
 }
 
-QString ServerCountry::localizedName() const {
-  return Localizer::instance()->getTranslatedCountryName(m_code, m_name);
+// static
+QString ServerCountry::localizedName(const QString& code, const QString& name) {
+  return QCoreApplication::translate("ServerCountry", qPrintable(code),
+                                     qPrintable(name));
 }
 
 namespace {
 
 bool sortCityCallback(const QString& a, const QString& b, Collator* collator) {
   Q_ASSERT(collator);
-  return collator->compare(Localizer::instance()->getTranslatedCityName(a),
-                           Localizer::instance()->getTranslatedCityName(b)) < 0;
+  return collator->compare(ServerCity::localizedName(a),
+                           ServerCity::localizedName(b)) < 0;
 }
 
 }  // anonymous namespace

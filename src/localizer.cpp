@@ -411,7 +411,7 @@ bool Localizer::loadLanguage(const QString& requestedLocalCode) {
 }
 
 bool Localizer::createTranslator(const QLocale& locale) {
-  QTranslator* translator = new QTranslator(this);
+  QTranslator* translator = new VpnTranslator(this);
   m_translators.append(translator);
   QCoreApplication::installTranslator(translator);
 
@@ -617,8 +617,9 @@ QString Localizer::findLanguageCode(const QString& languageCode,
   return languageCodeWithoutCountry;
 }
 
+// static
 QString Localizer::getTranslatedCountryName(const QString& countryCode,
-                                            const QString& countryName) const {
+                                            const QString& countryName) {
   if (countryCode.isEmpty()) {
     return "";
   }
@@ -637,7 +638,8 @@ QString Localizer::getTranslatedCountryName(const QString& countryCode,
   return value;
 }
 
-QString Localizer::getTranslatedCityName(const QString& cityName) const {
+// static
+QString Localizer::getTranslatedCityName(const QString& cityName) {
   if (cityName.isEmpty()) {
     return "";
   }
@@ -685,3 +687,19 @@ QString Localizer::getCapitalizedStringFromI18n(const QString& id) {
 
 // static
 void Localizer::forceRTL() { s_forceRTL = true; }
+
+
+// Custom translator class that also handles server localization.
+QString VpnTranslator::translate(const char *context, const char *sourceText,
+                                 const char *disambiguation, int n) const {
+  // Handle translation special cases.
+  if (QString("ServerCountry") == context) {
+    return Localizer::getTranslatedCountryName(sourceText, disambiguation);
+  }
+  if (QString("ServerCity") == context) {
+    return Localizer::getTranslatedCityName(sourceText);
+  }
+
+  // Otherwise - do the default thing.
+  return QTranslator::translate(context, sourceText, disambiguation, n);
+};
