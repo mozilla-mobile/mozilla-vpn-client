@@ -10,7 +10,7 @@
 #include <QTextStream>
 
 #include "constants.h"
-#include "keys.h"
+#include "models/keys.h"
 #include "leakdetector.h"
 
 #ifndef QT_NO_SSL

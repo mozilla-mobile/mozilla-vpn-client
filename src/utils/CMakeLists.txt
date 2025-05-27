@@ -28,6 +28,8 @@ add_library(mzutils STATIC
     loglevel.h
     models/apierror.cpp
     models/apierror.h
+    models/keys.cpp
+    models/keys.h
     models/location.cpp
     models/location.h
     rfc/rfc1112.cpp

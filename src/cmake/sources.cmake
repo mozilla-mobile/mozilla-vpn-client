@@ -111,8 +111,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/models/device.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/devicemodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/devicemodel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/keys.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/keys.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/recentconnections.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/recentconnections.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/recommendedlocationmodel.cpp

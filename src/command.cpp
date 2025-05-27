@@ -75,9 +75,10 @@ bool Command::userAuthenticated() {
 
 bool Command::loadModels() {
   MozillaVPN* vpn = MozillaVPN::instance();
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
 
   // First the keys!
-  if (!vpn->keys()->fromSettings()) {
+  if (!vpn->keys()->fromSettings(settingsHolder->privateKey())) {
     QTextStream stream(stdout);
     stream << "No cache available" << Qt::endl;
     return false;

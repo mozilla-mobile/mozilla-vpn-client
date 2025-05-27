@@ -312,7 +312,7 @@ void MozillaVPN::initialize() {
     return;
   }
 
-  if (!m_private->m_keys.fromSettings()) {
+  if (!m_private->m_keys.fromSettings(settingsHolder->privateKey())) {
     logger.error() << "No keys found";
     SettingsManager::instance()->reset();
     return;

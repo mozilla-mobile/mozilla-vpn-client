@@ -26,6 +26,12 @@
 #include "models/user.h"
 #include "settingsholder.h"
 
+// Curve 25519 example keypair from RFC 7748: Section 6.1
+constexpr const char* X25519_ALICE_PRIVATE = "dwdtCnMYpX08FsFyUbJmRd9ML4frwJkqsXf7pR25LCo=";
+constexpr const char* X25519_ALICE_PUBLIC = "hSDwCYkwp1R0i33ctD73Wg2/Og0mOBr066SpjqqbTmo=";
+constexpr const char* X25519_BOB_PRIVATE = "XasIfmJKikt54X+Lg4AO5m87sSkmGLb9HC+LJ/+I4Os=";
+constexpr const char* X25519_BOB_PUBLIC = "3p7bfXt9wbTTW2HC7OQ1Nz+DQ8hbeGdNrfx+FG+IK08=";
+
 // ApiError
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -360,7 +366,7 @@ void TestModels::deviceModelFromJson_data() {
   QJsonObject d;
   d.insert("name", "deviceName");
   d.insert("unique_id", Device::uniqueDeviceId());
-  d.insert("pubkey", "devicePubkey");
+  d.insert("pubkey", X25519_BOB_PUBLIC);
   d.insert("created_at", "2017-07-24T15:46:29");
   d.insert("ipv4_address", "deviceIpv4");
   d.insert("ipv6_address", "deviceIpv6");
@@ -368,14 +374,14 @@ void TestModels::deviceModelFromJson_data() {
   devices.replace(0, d);
   obj.insert("devices", devices);
   QTest::addRow("good") << QJsonDocument(obj).toJson() << true << 1
-                        << QVariant("deviceName") << QVariant("devicePubkey")
+                        << QVariant("deviceName") << QVariant(X25519_BOB_PUBLIC)
                         << QVariant(false)
                         << QVariant(QDateTime::fromString("2017-07-24T15:46:29",
                                                           Qt::ISODate));
 
   d.insert("name", Device::currentDeviceName());
   d.insert("unique_id", "43");
-  d.insert("pubkey", "currentDevicePubkey");
+  d.insert("pubkey", X25519_ALICE_PUBLIC);
   d.insert("created_at", "2017-07-24T15:46:29");
   d.insert("ipv4_address", "deviceIpv4");
   d.insert("ipv6_address", "deviceIpv6");
@@ -385,7 +391,7 @@ void TestModels::deviceModelFromJson_data() {
   QTest::addRow("good - 2 devices")
       << QJsonDocument(obj).toJson() << true << 2
       << QVariant(Device::currentDeviceName())
-      << QVariant("currentDevicePubkey") << QVariant(true)
+      << QVariant(X25519_ALICE_PUBLIC) << QVariant(true)
       << QVariant(QDateTime::fromString("2017-07-24T15:46:29", Qt::ISODate));
 }
 
@@ -396,7 +402,7 @@ void TestModels::deviceModelFromJson() {
   // fromJson
   {
     Keys keys;
-    keys.storeKeys("private", "currentDevicePubkey");
+    keys.storeKeys(X25519_ALICE_PRIVATE, X25519_ALICE_PUBLIC);
 
     DeviceModel dm;
 
@@ -458,7 +464,7 @@ void TestModels::deviceModelFromJson() {
     SettingsHolder::instance()->setDevices(json);
 
     Keys keys;
-    keys.storeKeys("private", "currentDevicePubkey");
+    keys.storeKeys(X25519_ALICE_PRIVATE, X25519_ALICE_PUBLIC);
 
     DeviceModel dm;
     QSignalSpy signalSpy(&dm, &DeviceModel::changed);
@@ -496,7 +502,7 @@ void TestModels::deviceModelFromJson() {
       QCOMPARE(dm.activeDevices(), devices);
 
       Keys keys;
-      keys.storeKeys("private", "currentDevicePubkey");
+      keys.storeKeys(X25519_ALICE_PRIVATE, X25519_ALICE_PUBLIC);
 
       if (devices > 0) {
         QVERIFY(dm.deviceFromPublicKey(devicePublicKey.toString()) != nullptr);
@@ -537,7 +543,7 @@ void TestModels::deviceModelRemoval() {
   obj.insert("devices", devices);
 
   Keys keys;
-  keys.storeKeys("private", "currentDevicePubkey");
+  keys.storeKeys(X25519_ALICE_PRIVATE, X25519_ALICE_PUBLIC);
 
   DeviceModel dm;
   QCOMPARE(dm.fromJson(&keys, QJsonDocument(obj).toJson()), true);
@@ -588,42 +594,22 @@ void TestModels::keysBasic() {
   QCOMPARE(k.privateKey(), "");
   QCOMPARE(k.publicKey(), "");
 
-  // Private and public keys in the settings.
+  // fromSettings should fail on a bogus private key
   {
-    SettingsHolder settingsHolder;
-
-    QCOMPARE(k.fromSettings(), false);
-
-    SettingsHolder::instance()->setPrivateKey("WOW");
-    QCOMPARE(k.fromSettings(), false);
-
-    SettingsHolder::instance()->setPublicKey("WOW2");
-    QCOMPARE(k.fromSettings(), true);
+    QCOMPARE(k.fromSettings(""), false);
+    QCOMPARE(k.fromSettings("WOW"), false);
+    QCOMPARE(k.fromSettings("base64"), false);
   }
 
-  // No public keys, but we can retrieve it from the devices.
+  // fromSettings should compute the corresponding public key.
   {
-    SettingsHolder settingsHolder;
+    QCOMPARE(k.fromSettings(X25519_ALICE_PRIVATE), true);
+    QCOMPARE(k.privateKey(), X25519_ALICE_PRIVATE);
+    QCOMPARE(k.publicKey(), X25519_ALICE_PUBLIC);
 
-    QCOMPARE(k.fromSettings(), false);
-
-    QJsonObject d;
-    d.insert("name", Device::currentDeviceName());
-    d.insert("pubkey", "devicePubkey");
-    d.insert("created_at", "2017-07-24T15:46:29");
-    d.insert("ipv4_address", "deviceIpv4");
-    d.insert("ipv6_address", "deviceIpv6");
-
-    QJsonArray devices;
-    devices.append(d);
-
-    QJsonObject obj;
-    obj.insert("devices", devices);
-
-    SettingsHolder::instance()->setDevices(QJsonDocument(obj).toJson());
-
-    SettingsHolder::instance()->setPrivateKey("WOW");
-    QCOMPARE(k.fromSettings(), true);
+    QCOMPARE(k.fromSettings(X25519_BOB_PRIVATE), true);
+    QCOMPARE(k.privateKey(), X25519_BOB_PRIVATE);
+    QCOMPARE(k.publicKey(), X25519_BOB_PUBLIC);
   }
 }
 

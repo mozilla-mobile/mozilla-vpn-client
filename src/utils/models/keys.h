@@ -15,7 +15,7 @@ class Keys final {
   Keys();
   ~Keys();
 
-  [[nodiscard]] bool fromSettings();
+  [[nodiscard]] bool fromSettings(const QString& privateKey);
 
   bool initialized() const {
     return !m_privateKey.isEmpty() && !m_publicKey.isEmpty();

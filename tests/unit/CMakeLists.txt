@@ -62,8 +62,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/models/device.h
     ${MZ_SOURCE_DIR}/models/devicemodel.cpp
     ${MZ_SOURCE_DIR}/models/devicemodel.h
-    ${MZ_SOURCE_DIR}/models/keys.cpp
-    ${MZ_SOURCE_DIR}/models/keys.h
     ${MZ_SOURCE_DIR}/models/recentconnections.cpp
     ${MZ_SOURCE_DIR}/models/recentconnections.h
     ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.cpp
