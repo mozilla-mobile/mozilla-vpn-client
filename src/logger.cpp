@@ -66,7 +66,7 @@ Logger::Log& Logger::Log::operator<<(CFStringRef t) {
 #endif
 
 QString Logger::sensitive(const QString& input) {
-#ifdef MZ_DEBUG
+#if defined(MZ_DEBUG) || defined(MZ_WASM)
   return input;
 #else
   Q_UNUSED(input);

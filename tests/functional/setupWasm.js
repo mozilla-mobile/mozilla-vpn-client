@@ -133,7 +133,7 @@ exports.mochaHooks = {
     logSocket.destroy();
     console.log("afterAll step L");
     logServer.close();
-    console.log("afterAll step M");
+    console.log("afterAll step Done");
   },
 
   async beforeEach() {
