@@ -19,24 +19,6 @@ Logger logger("IOSCommons");
 }
 
 // static
-int IOSCommons::compareStrings(const QString& a, const QString& b) {
-  NSString* aNS = a.toNSString();
-  NSString* bNS = b.toNSString();
-  NSComparisonResult result = [aNS compare:bNS];
-  switch (result) {
-    case NSOrderedAscending:
-      return -1;
-    case NSOrderedDescending:
-      return 1;
-    case NSOrderedSame:
-      return 0;
-    default:
-      Q_ASSERT(false);
-      return -1;
-  }
-}
-
-// static
 QStringList IOSCommons::systemLanguageCodes() {
   NSArray<NSString*>* languages = [NSLocale preferredLanguages];
 

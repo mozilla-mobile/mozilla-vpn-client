@@ -72,8 +72,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/authenticationinapp/incrementaldecoder.h
     ${CMAKE_SOURCE_DIR}/src/authenticationlistener.cpp
     ${CMAKE_SOURCE_DIR}/src/authenticationlistener.h
-    ${CMAKE_SOURCE_DIR}/src/collator.cpp
-    ${CMAKE_SOURCE_DIR}/src/collator.h
     ${CMAKE_SOURCE_DIR}/src/cryptosettings.cpp
     ${CMAKE_SOURCE_DIR}/src/cryptosettings.h
     ${CMAKE_SOURCE_DIR}/src/env.cpp

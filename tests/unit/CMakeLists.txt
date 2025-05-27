@@ -172,8 +172,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/authenticationinapp/incrementaldecoder.h
     ${MZ_SOURCE_DIR}/authenticationlistener.cpp
     ${MZ_SOURCE_DIR}/authenticationlistener.h
-    ${MZ_SOURCE_DIR}/collator.cpp
-    ${MZ_SOURCE_DIR}/collator.h
     ${MZ_SOURCE_DIR}/cryptosettings.cpp
     ${MZ_SOURCE_DIR}/cryptosettings.h
     ${MZ_SOURCE_DIR}/env.cpp

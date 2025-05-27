@@ -4,15 +4,9 @@
 
 #include "collator.h"
 
-#if defined(MZ_WASM)
-#  include "localizer.h"
-#endif
-
-#ifdef MZ_IOS
-#  include "platforms/ios/ioscommons.h"
-#endif
-
-#if defined(MZ_WASM)
+#if defined(MZ_IOS)
+#  include <CoreFoundation/CoreFoundation.h>
+#elif defined(MZ_WASM)
 #  include <emscripten.h>
 
 EM_JS(int, mzWasmCompareString,
@@ -24,14 +18,25 @@ EM_JS(int, mzWasmCompareString,
 #endif
 
 int Collator::compare(const QString& a, const QString& b) {
+#if defined(MZ_IOS)
   // On iOS, the standard QT package for arm does not link ICU. Let's have our
   // own collator implementation based on NSStrings.
-#if defined(MZ_IOS)
-  return IOSCommons::compareStrings(a, b);
+  auto cfa = reinterpret_cast<CFStringRef>(a.toNSString());
+  auto cfb = reinterpret_cast<CFStringRef>(b.toNSString());
+  CFRelease(cfa);
+  CFRelease(cfb);
+  switch (CFStringCompare(cfa, cfb, kCFCompareLocalized)) {
+    case kCFCompareLessThan:
+      return -1;
+    case kCFCompareGreaterThan:
+      return 1;
+    default:
+      return 0;
+  }
 #elif defined(MZ_WASM)
   // For WASM, we have a similar issue (no ICU). Let's use the JS API to sort
   // strings.
-  QString languageCode = Localizer::instance()->languageCodeOrSystem();
+  QString languageCode = m_collator.locale()->bcp47Name();
   Q_ASSERT(!languageCode.isEmpty());
 
   return mzWasmCompareString(a.toLocal8Bit().constData(),
