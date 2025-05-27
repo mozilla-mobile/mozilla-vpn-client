@@ -69,36 +69,37 @@ QString LinuxUtils::findCgroup2Path() {
 }
 
 // static
-QString LinuxUtils::gnomeShellVersion() {
+QVersionNumber LinuxUtils::gnomeShellVersion() {
   QDBusInterface iface("org.gnome.Shell", "/org/gnome/Shell",
                        "org.gnome.Shell");
   if (!iface.isValid()) {
-    return QString();
+    return QVersionNumber();
   }
 
   QVariant shellVersion = iface.property("ShellVersion");
   if (!shellVersion.isValid()) {
-    return QString();
+    return QVersionNumber();
   }
-  return shellVersion.toString();
+  return QVersionNumber::fromString(shellVersion.toString());
 }
 
 // static
-QString LinuxUtils::kdeFrameworkVersion() {
+QVersionNumber LinuxUtils::kdeFrameworkVersion() {
   QProcess proc;
   proc.start("kf5-config", QStringList{"--version"}, QIODeviceBase::ReadOnly);
   if (!proc.waitForFinished()) {
-    return QString();
+    return QVersionNumber();
   }
 
   QByteArray result = proc.readAllStandardOutput();
   for (const QByteArray& line : result.split('\n')) {
     if (line.startsWith("KDE Frameworks: ")) {
-      return QString::fromUtf8(line.last(line.size() - 16));
+      auto vstr = QString::fromUtf8(line.last(line.size() - 16));
+      return QVersionNumber::fromString(vstr);
     }
   }
 
-  return QString();
+  return QVersionNumber();
 }
 
 // static

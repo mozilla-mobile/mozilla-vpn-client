@@ -62,7 +62,6 @@
 #include "telemetry.h"
 #include "update/updater.h"
 #include "urlopener.h"
-#include "versionutils.h"
 
 #ifdef SENTRY_ENABLED
 #  include "sentry/sentryadapter.h"
@@ -94,6 +93,7 @@
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
+#include <QVersionNumber>
 
 namespace {
 Logger logger("MozillaVPN");
@@ -1176,10 +1176,11 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  if (settingsHolder->hasDeviceKeyVersion() &&
-      VersionUtils::compareVersions(settingsHolder->deviceKeyVersion(),
-                                    "2.5.0") >= 0) {
-    return;
+  if (settingsHolder->hasDeviceKeyVersion()) {
+    auto vers = QVersionNumber::fromString(settingsHolder->deviceKeyVersion());
+    if (vers >= QVersionNumber(2, 5, 0)) {
+      return;
+    }
   }
 
   // We need a new device key only if the user wants to use custom DNS servers.

@@ -157,8 +157,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/urlopener.h
     ${CMAKE_SOURCE_DIR}/src/utils.cpp
     ${CMAKE_SOURCE_DIR}/src/utils.h
-    ${CMAKE_SOURCE_DIR}/src/versionutils.cpp
-    ${CMAKE_SOURCE_DIR}/src/versionutils.h
 )
 
 target_sources(shared-sources INTERFACE
