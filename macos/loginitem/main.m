@@ -6,26 +6,24 @@
 
 int main()
 {
-  if (@available(macOS 10.15, *)) {
-    // When an app is sandboxed, the configuration.arguments array is ignored. Let's use env
-    // variables to pass startup flags.
-    NSDictionary* env = @{@"MVPN_MINIMIZED" : @"1", @"MVPN_STARTATBOOT" : @"1"};
+  // When an app is sandboxed, the configuration.arguments array is ignored. Let's use env
+  // variables to pass startup flags.
+  NSDictionary* env = @{@"MVPN_MINIMIZED" : @"1", @"MVPN_STARTATBOOT" : @"1"};
 
-    NSWorkspaceOpenConfiguration* configuration = [NSWorkspaceOpenConfiguration new];
-    [configuration setEnvironment:env];
+  NSWorkspaceOpenConfiguration* configuration = [NSWorkspaceOpenConfiguration new];
+  [configuration setEnvironment:env];
 
-    [[NSWorkspace sharedWorkspace]
-        openApplicationAtURL:[NSURL fileURLWithPath:@"/Applications/Mozilla VPN.app"]
-               configuration:configuration
-           completionHandler:^(NSRunningApplication* _Nullable app, NSError* _Nullable error) {
-             if (error) {
-               NSLog(@"Failed to run the Mozilla VPN app: %@", error.localizedDescription);
-             }
-             exit(0);
-           }];
+  [[NSWorkspace sharedWorkspace]
+      openApplicationAtURL:[NSURL fileURLWithPath:@"/Applications/Mozilla VPN.app"]
+              configuration:configuration
+          completionHandler:^(NSRunningApplication* _Nullable app, NSError* _Nullable error) {
+            if (error) {
+              NSLog(@"Failed to run the Mozilla VPN app: %@", error.localizedDescription);
+            }
+            exit(0);
+          }];
 
-    [NSThread sleepForTimeInterval:10];
-  }
+  [NSThread sleepForTimeInterval:10];
 
   return 0;
 }
