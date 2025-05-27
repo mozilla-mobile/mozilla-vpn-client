@@ -112,11 +112,9 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
 
   QList<QString> vpnProductIds = {};
   if (Constants::inProduction()) {
-    // Prod ID for VPN-only plan
-    vpnProductIds.append("prod_FvnsFHIfezy3ZI");
+    vpnProductIds.append(Constants::SUBPLAT_PRODUCT_ID_VPN_PRODUCTION);
   } else {
-    // Staging ID for VPN-only plan
-    vpnProductIds.append("prod_FiJ42WCzZNRSbS");
+    vpnProductIds.append(Constants::SUBPLAT_PRODUCT_ID_VPN_STAGING);
   }
 
   m_productId = subscriptionData["product_id"].toString();
