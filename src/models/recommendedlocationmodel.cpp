@@ -8,7 +8,7 @@
 #include <QPointer>
 
 #include "leakdetector.h"
-#include "location.h"
+#include "models/location.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "servercountrymodel.h"

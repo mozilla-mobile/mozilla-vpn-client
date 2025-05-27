@@ -58,16 +58,12 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/dnspingsender.h
     ${MZ_SOURCE_DIR}/ipaddresslookup.cpp
     ${MZ_SOURCE_DIR}/ipaddresslookup.h
-    ${MZ_SOURCE_DIR}/models/apierror.cpp
-    ${MZ_SOURCE_DIR}/models/apierror.h
     ${MZ_SOURCE_DIR}/models/device.cpp
     ${MZ_SOURCE_DIR}/models/device.h
     ${MZ_SOURCE_DIR}/models/devicemodel.cpp
     ${MZ_SOURCE_DIR}/models/devicemodel.h
     ${MZ_SOURCE_DIR}/models/keys.cpp
     ${MZ_SOURCE_DIR}/models/keys.h
-    ${MZ_SOURCE_DIR}/models/location.cpp
-    ${MZ_SOURCE_DIR}/models/location.h
     ${MZ_SOURCE_DIR}/models/recentconnections.cpp
     ${MZ_SOURCE_DIR}/models/recentconnections.h
     ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.cpp

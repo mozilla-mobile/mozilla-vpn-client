@@ -40,10 +40,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/controller.h
     ${MZ_SOURCE_DIR}/dnspingsender.cpp
     ${MZ_SOURCE_DIR}/dnspingsender.h
-    ${MZ_SOURCE_DIR}/models/apierror.cpp
-    ${MZ_SOURCE_DIR}/models/apierror.h
-    ${MZ_SOURCE_DIR}/models/location.cpp
-    ${MZ_SOURCE_DIR}/models/location.h
     ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.cpp
     ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.h
     ${MZ_SOURCE_DIR}/models/server.cpp

@@ -104,8 +104,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/localizer.h
     ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.cpp
     ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.h
-    ${CMAKE_SOURCE_DIR}/src/models/apierror.cpp
-    ${CMAKE_SOURCE_DIR}/src/models/apierror.h
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.cpp
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.h
     ${CMAKE_SOURCE_DIR}/src/networkmanager.cpp

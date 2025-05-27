@@ -7,6 +7,10 @@ add_library(mzutils STATIC
     chacha20poly1305.h
     curve25519.cpp
     curve25519.h
+    hacl-star/Hacl_Chacha20.c
+    hacl-star/Hacl_Chacha20Poly1305_32.c
+    hacl-star/Hacl_Curve25519_51.c
+    hacl-star/Hacl_Poly1305_32.c
     hawkauth.cpp
     hawkauth.h
     hkdf.cpp
@@ -22,10 +26,10 @@ add_library(mzutils STATIC
     loghandler.cpp
     loghandler.h
     loglevel.h
-    hacl-star/Hacl_Chacha20.c
-    hacl-star/Hacl_Chacha20Poly1305_32.c
-    hacl-star/Hacl_Curve25519_51.c
-    hacl-star/Hacl_Poly1305_32.c
+    models/apierror.cpp
+    models/apierror.h
+    models/location.cpp
+    models/location.h
     rfc/rfc1112.cpp
     rfc/rfc1112.h
     rfc/rfc1918.cpp

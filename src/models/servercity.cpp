@@ -12,7 +12,7 @@
 #include "feature/feature.h"
 #include "leakdetector.h"
 #include "localizer.h"
-#include "location.h"
+#include "models/location.h"
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
 #include "serverlatency.h"
