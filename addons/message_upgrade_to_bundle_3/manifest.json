@@ -6,6 +6,7 @@
   "conditions": {
     "min_client_version": "2.28.0",
     "javascript": "conditions.js",
+    "platforms": ["macos", "windows", "linux"],
     "env": "staging"
   },
   "message": {
