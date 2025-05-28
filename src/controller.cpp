@@ -165,6 +165,8 @@ void Controller::initialize() {
           &Controller::implPermRequired);
   connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
           &Controller::statusUpdated);
+  connect(m_impl.get(), &ControllerImpl::backendFailure, this,
+          &Controller::handleBackendFailure);
   connect(this, &Controller::stateChanged, this,
           &Controller::maybeEnableDisconnectInConfirming);
 
@@ -826,6 +828,28 @@ void Controller::logSerialize(QIODevice* device) {
     m_impl->getBackendLogs(device);
   } else {
     device->close();
+  }
+}
+
+void Controller::handleBackendFailure(ErrorCode code) {
+  logger.warning() << "backend failure:" << code;
+  switch (code) {
+    case ErrorNone:
+      [[fallthrough]];
+    case ErrorFatal:
+      REPORTERROR(ErrorHandler::ControllerError, "controller");
+      break;
+    case ErrorSplitTunnelInit:
+      [[fallthrough]];
+    case ErrorSplitTunnelStart:
+      [[fallthrough]];
+    case ErrorSplitTunnelExclude:
+      REPORTERROR(ErrorHandler::SplitTunnelError, "controller");
+      break;
+    default:
+      // We should not get here.
+      Q_ASSERT(false);
+      break;
   }
 }
 

@@ -6,26 +6,53 @@
 #define MACOSCONTROLLER_H
 
 #include "controllerimpl.h"
-#include "localsocketcontroller.h"
 
-class MacOSController final : public LocalSocketController {
+#ifdef __OBJC__
+#  include "xpcdaemonprotocol.h"
+#endif
+
+class MacOSController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(MacOSController)
 
  public:
   MacOSController();
+  ~MacOSController();
 
   void initialize(const Device* device, const Keys* keys) override;
 
+  void activate(const InterfaceConfig& config, Controller::Reason reason) override;
+
+  void deactivate(Controller::Reason reason) override;
+
+  void checkStatus() override;
+
   void getBackendLogs(QIODevice* device) override;
 
+  void cleanupBackendLogs() override;
+
+  void forceDaemonCrash() override;
+
  private slots:
+  void upgradeService();
   void registerService();
+  void connectService();
 
  private:
   NSString* plist() const;
+  NSString* machServiceName() const;
 
+ private:
+  QString plistName() const;
+#ifdef __OBJC__
+  NSObject<XpcDaemonProtocol>* remoteObject();
+#endif
+
+  QTimer m_registerTimer;
+  QTimer m_connectTimer;
   bool m_permissionRequired = false;
-  QTimer m_regTimer;
+
+  // NSXPCConnection to the daemon.
+  void* m_connection = nullptr;
 };
 
 #endif  // MACOSCONTROLLER_H

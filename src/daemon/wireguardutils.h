@@ -44,6 +44,9 @@ class WireguardUtils : public QObject {
   virtual bool updateRoutePrefix(const IPAddress& prefix) = 0;
   virtual bool deleteRoutePrefix(const IPAddress& prefix) = 0;
   virtual bool excludeLocalNetworks(const QList<IPAddress>& addresses) = 0;
+
+ signals:
+  void backendFailure();
 };
 
 #endif  // WIREGUARDUTILS_H

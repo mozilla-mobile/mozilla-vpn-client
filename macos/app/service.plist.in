@@ -13,6 +13,11 @@
                         <string>Mozilla VPN</string>
                         <string>macosdaemon</string>
                 </array>
+                <key>MachServices</key>
+                <dict>
+                        <key>${BUILD_OSX_APP_IDENTIFIER}.service</key>
+                        <true/>
+                </dict>
                 <key>UserName</key>
                 <string>root</string>
                 <key>RunAtLoad</key>
