@@ -90,3 +90,10 @@ tasks:
             build: build-linux64/release-deb
         attributes:
             build-type: linux64/release-deb
+    source-zip:
+        run-on-tasks-for: [action]
+        release-artifacts: [mozillavpn-sources.tar.gz]
+        dependencies:
+            build: build-source/vpn
+        attributes:
+            build-type: source/vpn
