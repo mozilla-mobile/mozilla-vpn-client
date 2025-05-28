@@ -21,10 +21,10 @@
 #endif
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"
-#  include "platforms/ios/ioslogger.h"
 #endif
 
 #include <QApplication>
+#include <QBuffer>
 #include <QClipboard>
 #include <QUrl>
 

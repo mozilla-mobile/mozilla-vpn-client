@@ -18,6 +18,11 @@
 #include <QString>
 #include <QTextStream>
 
+#ifdef MZ_IOS
+#  include <CoreFoundation/CoreFoundation.h>
+#  include <os/log.h>
+#endif
+
 #include "logger.h"
 
 constexpr qint64 LOG_MAX_FILE_SIZE = 204800;
@@ -45,9 +50,6 @@ LogLevel qtTypeToLogLevel(QtMsgType type) {
 
 // Please! Use this `logger` carefully in this file to avoid log loops!
 Logger logger("LogHandler");
-#ifdef MZ_IOS
-IOSLogger iosLogger("mozillavpn");
-#endif
 }  // namespace
 
 Q_GLOBAL_STATIC(LogHandler, logHandler);
@@ -153,6 +155,17 @@ LogHandler::LogHandler() : QObject(nullptr) {
   m_stderrEnabled = true;
 #endif
 
+#if defined(MZ_IOS)
+  CFBundleRef bundle = CFBundleGetMainBundle();
+  QString bundleId;
+  if (bundle) {
+    bundleId = QString::fromNSString((NSString*)CFBundleGetIdentifier(bundle));
+  } else {
+    bundleId = logFileName();
+  }
+  m_ioslog = os_log_create(qPrintable(bundleId), qPrintable(logFileName()));
+#endif
+
   if (!s_location.isEmpty()) {
     openLogFile(lock);
   }
@@ -177,16 +190,17 @@ void LogHandler::addLog(const Log& log,
 
   if (m_stderrEnabled) {
 #if defined(MZ_IOS)
+    QString logstr = QString::fromUtf8(buffer);
     switch (log.m_logLevel) {
       case Error:
       case Warning:
-        IOSLogger::error(buffer);
+        os_log_error(m_ioslog, "%s", qPrintable(logstr));
         break;
       case Info:
-        IOSLogger::info(buffer);
+        os_log_info(m_ioslog, "%s", qPrintable(logstr));
         break;
       default:
-        IOSLogger::debug(buffer);
+        os_log_debug(m_ioslog, "%s", qPrintable(logstr));
         break;
     }
 #else

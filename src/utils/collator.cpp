@@ -21,11 +21,12 @@ int Collator::compare(const QString& a, const QString& b) {
 #if defined(MZ_IOS)
   // On iOS, the standard QT package for arm does not link ICU. Let's have our
   // own collator implementation based on NSStrings.
-  auto cfa = reinterpret_cast<CFStringRef>(a.toNSString());
-  auto cfb = reinterpret_cast<CFStringRef>(b.toNSString());
+  CFStringRef cfa = a.toCFString();
+  CFStringRef cfb = b.toCFString();
+  auto result = CFStringCompare(cfa, cfb, kCFCompareLocalized);
   CFRelease(cfa);
   CFRelease(cfb);
-  switch (CFStringCompare(cfa, cfb, kCFCompareLocalized)) {
+  switch (result) {
     case kCFCompareLessThan:
       return -1;
     case kCFCompareGreaterThan:

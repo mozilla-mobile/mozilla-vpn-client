@@ -11,6 +11,10 @@
 #include <QObject>
 #include <QStandardPaths>
 
+#ifdef MZ_IOS
+#  include <os/log.h>
+#endif
+
 #include "loglevel.h"
 
 class QBuffer;
@@ -123,6 +127,10 @@ class LogHandler final : public QObject, public LogSerializer {
   QMutex m_mutex;
 
   bool m_stderrEnabled = false;
+
+#ifdef MZ_IOS
+  os_log_t m_ioslog;
+#endif
 
   QFile* m_logFile = nullptr;
   QTextStream* m_output = nullptr;
