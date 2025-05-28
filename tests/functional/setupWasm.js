@@ -106,32 +106,20 @@ exports.mochaHooks = {
   },
 
   async afterAll() {
-    console.log("afterAll step A");
     guardian.stop();
-    console.log("afterAll step B");
     fxaServer.stop();
-    console.log("afterAll step C");
     addonServer.stop();
-    console.log("afterAll step D");
     captivePortalServer.stop();
-    console.log("afterAll step E");
     wasm.stop();
-    console.log("afterAll step F");
 
     guardian.throwExceptionsIfAny();
-    console.log("afterAll step G");
     fxaServer.throwExceptionsIfAny();
-    console.log("afterAll step H");
     addonServer.throwExceptionsIfAny();
-    console.log("afterAll step I");
     captivePortalServer.throwExceptionsIfAny();
-    console.log("afterAll step J");
 
     await driver.quit();
 
-    console.log("afterAll step K");
     logSocket.destroy();
-    console.log("afterAll step L");
     logServer.close();
     console.log("afterAll step Done");
   },
