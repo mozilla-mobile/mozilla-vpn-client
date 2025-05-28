@@ -11,7 +11,7 @@
   },
   "message": {
     "usesSharedStrings": true,
-    "shortVersion": "N/A",
+    "shortVersion": "$8.25",
     "id": "message_upgrade_to_bundle_3",
     "title": "vpn.upgradeToBundle.title",
     "subtitle": "vpn.upgradeToBundle.line1",

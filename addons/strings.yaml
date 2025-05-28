@@ -121,8 +121,8 @@ upgradeToBundle:
     value: 3 tools, 1 privacy plan — VPN, email masking, and data protection
     comment: Title for message
   line1:
-    value: For $8.25/month, get our privacy tools in one plan.
-    comment: First line of message. This message is only being shown to users who purchase VPN in USD currency, so please use something explicit like USD$8.25.
+    value: For %1/month, get our privacy tools in one plan.
+    comment: First line of message. The %1 variable is replaced with the price of the bundle.
   bulletIntro:
     value: "Plan includes:"
     comment: Header for bullet list
