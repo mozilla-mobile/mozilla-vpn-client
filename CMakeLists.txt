@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-cmake_minimum_required(VERSION 3.20)
+cmake_minimum_required(VERSION 3.22)
 
 # The source file GENERATED property is visible from all directory scopes when set.
 cmake_policy(SET CMP0118 NEW)
@@ -44,12 +44,6 @@ include(scripts/cmake/clang_tidy.cmake)
 
 ## Some workarounds for platform build quirks
 if(WIN32)
-    ## CMake v3.20 has problems with race conditions in dependency generation.
-    ## See: https://gitlab.kitware.com/cmake/cmake/-/issues/22014
-    if(${CMAKE_MAJOR_VERSION}.${CMAKE_MINOR_VERSION} VERSION_EQUAL 3.20)
-        cmake_policy(SET CMP0116 OLD)
-    endif()
-
     ## CMake also has trouble finding OpenSSL libraries on Windows, and may
     ## need some help.
     if(EXISTS "C:/MozillaVPNBuild/SSL" AND NOT DEFINED OPENSSL_ROOT_DIR)
@@ -153,6 +147,9 @@ endif()
 
 if(QT_KNOWN_POLICY_QTP0001)
     qt_policy(SET QTP0001 NEW)
+endif()
+if(QT_KNOWN_POLICY_QTP0002)
+    qt_policy(SET QTP0002 NEW)
 endif()
 
 message("Using Qt version ${Qt6_VERSION}")

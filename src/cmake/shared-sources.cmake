@@ -215,15 +215,12 @@ if(NOT CMAKE_CROSSCOMPILING)
        )
 endif()
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
-   ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
-   ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     # Compile and link the signature library.
     include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
     add_rust_library(signature
         PACKAGE_DIR ${CMAKE_SOURCE_DIR}/signature
         BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
-        CRATE_NAME signature
     )
     target_compile_definitions(shared-sources INTERFACE MZ_SIGNATURE)
     target_link_libraries(shared-sources INTERFACE signature)
@@ -237,6 +234,7 @@ add_dependencies(shared-sources translations)
 mz_add_clang_tidy(shared-sources)
 if(TARGET shared-sources_clang_tidy_report)
     add_dependencies(shared-sources_clang_tidy_report
+	signature
         translations
         qtglean
     )
