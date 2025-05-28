@@ -493,7 +493,7 @@ void Daemon::checkHandshake() {
     if (connection.m_date.isValid()) {
       continue;
     }
-    logger.debug() << "awaiting" << logger.keys(config.m_serverPublicKey);
+    logger.debug() << "awaiting" << logger.sensitive(config.m_serverPublicKey);
 
     // Check if the handshake has completed.
     for (const WireguardUtils::PeerStatus& status : peers) {
