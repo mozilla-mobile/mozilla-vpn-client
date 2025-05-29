@@ -37,7 +37,6 @@ target_sources(mozillavpn PRIVATE
 )
 
 get_property(OPENSSL_LIBS_DIR GLOBAL PROPERTY OPENSSL_LIBS)
-get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION_${CMAKE_BUILD_TYPE})
 
 # This property flags the build system to copy these
 # shared libraries into the expected Android shared library folder.
@@ -61,7 +60,6 @@ set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
     ${OPENSSL_LIBS_DIR}/libssl.so
     ${OPENSSL_LIBS_DIR}/libcrypto_1_1.so
     ${OPENSSL_LIBS_DIR}/libssl_1_1.so
-    ${QTGLEAN_LIB_LOCATION}
     APPEND)
 
 
@@ -70,4 +68,15 @@ if( ${Qt6_VERSION} VERSION_GREATER_EQUAL 6.4.0)
         ${OPENSSL_LIBS_DIR}/libcrypto_3.so
         ${OPENSSL_LIBS_DIR}/libssl_3.so
     APPEND)
+endif()
+
+if(Qt6_VERSION VERSION_GREATER_EQUAL 6.6.0)
+    set_property(TARGET mozillavpn APPEND PROPERTY
+        QT_ANDROID_EXTRA_LIBS $<TARGET_FILE:qtglean_bindings>
+    )
+else()
+    get_property(QTGLEAN_LIB_DIR TARGET qtglean_bindings PROPERTY BINARY_DIR)
+    set_property(TARGET mozillavpn APPEND PROPERTY
+        QT_ANDROID_EXTRA_LIBS ${QTGLEAN_LIB_DIR}/libqtglean_bindings.so
+    )
 endif()

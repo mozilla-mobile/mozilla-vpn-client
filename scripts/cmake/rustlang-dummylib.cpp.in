@@ -2,13 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef ERROR_TYPE_H
-#define ERROR_TYPE_H
-
-#ifndef __wasm__
-#  include "bindings/qtglean.h"
-#else
-enum ErrorType {};
-#endif
-
-#endif  // ERROR_TYPE_H
+/* This file is a placeholder to generate an empty library which will be
+ * replaced by the rust library in a POST_BUILD step.
+ */
+#include <bindings/@RUST_TARGET_LIB_NAME@.h>

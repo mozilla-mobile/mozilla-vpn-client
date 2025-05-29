@@ -38,8 +38,8 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
   m_dnsutils = new DnsUtilsWindows(this);
   m_splitTunnelManager = WindowsSplitTunnel::create(m_firewallManager);
 
-  connect(m_wgutils.get(), &WireguardUtilsWindows::backendFailure, this,
-          &WindowsDaemon::monitorBackendFailure);
+  connect(m_wgutils.get(), &WireguardUtils::backendFailure, this,
+          &WindowsDaemon::abortBackendFailure);
   connect(this, &WindowsDaemon::activationFailure,
           [this]() { m_firewallManager->disableKillSwitch(); });
 }
@@ -97,11 +97,4 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
   }
   m_splitTunnelManager->stop();
   return true;
-}
-
-void WindowsDaemon::monitorBackendFailure() {
-  logger.warning() << "Tunnel service is down";
-
-  emit backendFailure();
-  deactivate();
 }

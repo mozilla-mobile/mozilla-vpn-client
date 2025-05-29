@@ -5,7 +5,7 @@
 #include "glean/event.h"
 
 #ifndef __wasm__
-#  include "qtglean.h"
+#  include "bindings/qtglean.h"
 #endif
 
 #include <QJsonDocument>

@@ -10,10 +10,8 @@ from voluptuous import Any, Optional, Required
 
 
 @payload_builder(
-    "scriptworker-signing",
+    "scriptworker-iscript",
     schema={
-        # the maximum time to run, in seconds
-        Required("max-run-time"): int,
         Required("signing-type"): str,
         # list of artifact URLs for the artifacts that should be signed
         Required("upstream-artifacts"): [
@@ -31,28 +29,25 @@ from voluptuous import Any, Optional, Required
             }
         ],
         # behavior for mac iscript
-        Optional("mac-behavior"): Any(
+        Required("mac-behavior"): Any(
             "mac_sign_and_pkg_vpn",
         ),
         Optional("entitlementsUrl"): str,
         Optional("loginItemsEntitlementsUrl"): str,
     },
 )
-def build_scriptworker_signing_payload(config, task, task_def):
+def build_scriptworker_iscript_payload(config, task, task_def):
     worker = task["worker"]
 
     task_def["tags"]["worker-implementation"] = "scriptworker"
 
     task_def["payload"] = {
-        "maxRunTime": worker["max-run-time"],
         "upstreamArtifacts": worker["upstream-artifacts"],
     }
-
-    if worker.get("mac-behavior"):
-        task_def["payload"]["behavior"] = worker["mac-behavior"]
-        for attr in ("entitlementsUrl", "loginItemsEntitlementsUrl"):
-            if attr in worker:
-                task_def["payload"][attr] = worker[attr]
+    task_def["payload"]["behavior"] = worker["mac-behavior"]
+    for attr in ("entitlementsUrl", "loginItemsEntitlementsUrl"):
+        if attr in worker:
+            task_def["payload"][attr] = worker[attr]
 
     formats = set()
     for artifacts in worker["upstream-artifacts"]:

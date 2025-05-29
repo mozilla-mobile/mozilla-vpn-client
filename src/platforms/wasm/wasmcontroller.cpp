@@ -5,6 +5,7 @@
 #include "wasmcontroller.h"
 
 #include <QHostAddress>
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QRandomGenerator>
 
@@ -31,12 +32,15 @@ WasmController::~WasmController() { MZ_COUNT_DTOR(WasmController); }
 void WasmController::activate(const InterfaceConfig& config,
                               Controller::Reason reason) {
   Q_UNUSED(reason);
-  m_mock->activate(config);
+  QJsonDocument jsDocument = QJsonDocument(config.toJson());
+  QByteArray jsBlob = jsDocument.toJson(QJsonDocument::Compact);
+  QMetaObject::invokeMethod(m_mock, "activate", Qt::QueuedConnection,
+                            Q_ARG(QString, QString::fromUtf8(jsBlob)));
 }
 
 void WasmController::deactivate(Controller::Reason reason) {
   Q_UNUSED(reason);
-  m_mock->deactivate();
+  QMetaObject::invokeMethod(m_mock, "deactivate", Qt::QueuedConnection);
 }
 
 void WasmController::checkStatus() { emitStatusFromJson(m_mock->getStatus()); }

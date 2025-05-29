@@ -19,10 +19,6 @@ class AndroidCommons final : public QObject {
 
   static QString GetManufacturer();
 
-  static bool verifySignature(const QByteArray& publicKey,
-                              const QByteArray& content,
-                              const QByteArray& signature);
-
   // Creates a "share" intent to Open/Send Plaintext
   static bool shareText(const QString& plainText);
 

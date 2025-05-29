@@ -55,6 +55,16 @@ Daemon* Daemon::instance() {
   return s_daemon;
 }
 
+bool Daemon::activate(const QString& json) {
+  QJsonDocument jsDocument = QJsonDocument::fromJson(json.toUtf8());
+  InterfaceConfig ifConfig;
+
+  if (!Daemon::parseConfig(jsDocument.object(), ifConfig)) {
+    return false;
+  }
+  return activate(ifConfig);
+}
+
 bool Daemon::activate(const InterfaceConfig& config) {
   Q_ASSERT(wgutils() != nullptr);
 
@@ -505,4 +515,10 @@ void Daemon::checkHandshake() {
   if (pendingHandshakes > 0) {
     m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
   }
+}
+
+void Daemon::abortBackendFailure() {
+  logger.warning() << "Backend failure occured - disconnecting";
+  emit backendFailure();
+  deactivate();
 }

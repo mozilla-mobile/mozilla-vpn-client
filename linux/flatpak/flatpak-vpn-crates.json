@@ -418,14 +418,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/cbindgen/cbindgen-0.28.0.crate",
-        "sha256": "eadd868a2ce9ca38de7eeafdcec9c7065ef89b42b32f0839278d55f35c54d1ff",
-        "dest": "cargo/vendor/cbindgen-0.28.0"
+        "url": "https://static.crates.io/crates/cbindgen/cbindgen-0.29.0.crate",
+        "sha256": "975982cdb7ad6a142be15bdf84aea7ec6a9e5d4d797c004d43185b24cfe4e684",
+        "dest": "cargo/vendor/cbindgen-0.29.0"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"eadd868a2ce9ca38de7eeafdcec9c7065ef89b42b32f0839278d55f35c54d1ff\", \"files\": {}}",
-        "dest": "cargo/vendor/cbindgen-0.28.0",
+        "contents": "{\"package\": \"975982cdb7ad6a142be15bdf84aea7ec6a9e5d4d797c004d43185b24cfe4e684\", \"files\": {}}",
+        "dest": "cargo/vendor/cbindgen-0.29.0",
         "dest-filename": ".cargo-checksum.json"
     },
     {
@@ -990,6 +990,19 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
+        "url": "https://static.crates.io/crates/heck/heck-0.5.0.crate",
+        "sha256": "2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea",
+        "dest": "cargo/vendor/heck-0.5.0"
+    },
+    {
+        "type": "inline",
+        "contents": "{\"package\": \"2304e00983f87ffb38b55b444b5e3b60a884b5d30c0fca7d82fe33449bbe55ea\", \"files\": {}}",
+        "dest": "cargo/vendor/heck-0.5.0",
+        "dest-filename": ".cargo-checksum.json"
+    },
+    {
+        "type": "archive",
+        "archive-type": "tar-gzip",
         "url": "https://static.crates.io/crates/hermit-abi/hermit-abi-0.2.6.crate",
         "sha256": "ee512640fe35acbfb4bb779db6f0d80704c2cacfa2e39b601ef3e3f47d1ae4c7",
         "dest": "cargo/vendor/hermit-abi-0.2.6"
@@ -1484,14 +1497,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/mio/mio-1.0.3.crate",
-        "sha256": "2886843bf800fba2e3377cff24abf6379b4c4d5c6681eaf9ea5b0d15090450bd",
-        "dest": "cargo/vendor/mio-1.0.3"
+        "url": "https://static.crates.io/crates/mio/mio-1.0.4.crate",
+        "sha256": "78bed444cc8a2160f01cbcf811ef18cac863ad68ae8ca62092e8db51d51c761c",
+        "dest": "cargo/vendor/mio-1.0.4"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"2886843bf800fba2e3377cff24abf6379b4c4d5c6681eaf9ea5b0d15090450bd\", \"files\": {}}",
-        "dest": "cargo/vendor/mio-1.0.3",
+        "contents": "{\"package\": \"78bed444cc8a2160f01cbcf811ef18cac863ad68ae8ca62092e8db51d51c761c\", \"files\": {}}",
+        "dest": "cargo/vendor/mio-1.0.4",
         "dest-filename": ".cargo-checksum.json"
     },
     {
