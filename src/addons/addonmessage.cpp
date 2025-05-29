@@ -110,6 +110,8 @@ AddonMessage::MessageStatus AddonMessage::loadMessageStatus(const QString& id) {
 }
 
 void AddonMessage::updateMessageStatus(MessageStatus newStatus) {
+  logger.debug() << "Updating message" << id() << "status to" << newStatus
+                 << "from" << m_status;
   if (m_status == newStatus) return;
 
   QMetaEnum statusMetaEnum = QMetaEnum::fromType<MessageStatus>();

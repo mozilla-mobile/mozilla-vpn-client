@@ -110,6 +110,19 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
     return false;
   }
 
+  QList<QString> vpnProductIds = {};
+  if (Constants::inProduction()) {
+    vpnProductIds.append(Constants::SUBPLAT_PRODUCT_ID_VPN_PRODUCTION);
+  } else {
+    vpnProductIds.append(Constants::SUBPLAT_PRODUCT_ID_VPN_STAGING);
+  }
+
+  m_productId = subscriptionData["product_id"].toString();
+  if (m_productId.isEmpty()) {
+    return false;
+  }
+  m_isBundleSubscription = !vpnProductIds.contains(m_productId);
+
   // Plan
   logger.debug() << "Parse plan start";
   QJsonObject planData = obj["plan"].toObject();
