@@ -25,16 +25,6 @@ task-defaults:
         use-caches: [checkout, pip]
         command: /builds/worker/builder.sh
 
-linux/focal:
-    description: "Linux Build (Ubuntu/Focal)"
-    treeherder:
-        platform: linux/focal
-    worker:
-        docker-image: {in-tree: linux-build-focal}
-    add-index-routes:
-        name: linux-focal
-        type: build
-
 linux/jammy:
     description: "Linux Build (Ubuntu/Jammy)"
     treeherder:
