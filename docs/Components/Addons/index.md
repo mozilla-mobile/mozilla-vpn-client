@@ -85,7 +85,6 @@ Add-ons can enable and disable themselves using the `conditions` key in the mani
 | enabled_features | An array of features to be enabled | Array of string | No | No |
 | env | A string to match a particular env: staging, production | String | No | No |
 | locales | An array of locales to be checked (will enable if major part matches) | Array of string | No | Yes |
-| locales_full_match | An array of locales to be checked (will enable only if perfect match) | Array of string | No | Yes |
 | min_client_version | The min client version | String | No | No |
 | max_client_version | The max client version | String | No | No |
 | platforms | An array of platforms to be checked | Array of string | No | No |

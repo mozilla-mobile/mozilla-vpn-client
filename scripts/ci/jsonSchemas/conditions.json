@@ -26,13 +26,6 @@
         "type": "string"
       }
     },
-    "locales_full_match": {
-      "type": "array",
-      "description": "List of supported locales (must match completely)",
-      "items": {
-        "type": "string"
-      }
-    },
     "min_client_version": {
       "type": "string",
       "description": "Enable the addon only if the client version is eq or higher than this valie"
