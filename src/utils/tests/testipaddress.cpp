@@ -4,7 +4,8 @@
 
 #include "testipaddress.h"
 
-#include "helper.h"
+#include <QtTest/QtTest>
+
 #include "ipaddress.h"
 
 void TestIpAddress::ctor() {
@@ -289,4 +290,5 @@ void TestIpAddress::excludeAddresses() {
   QVERIFY(list.join(",") == result);
 }
 
-static TestIpAddress s_testIpAddress;
+extern const QMetaObject unitTestObject = TestIpAddress::staticMetaObject;
+

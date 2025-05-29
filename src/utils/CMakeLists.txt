@@ -72,3 +72,5 @@ target_include_directories(mzutils PRIVATE
 
 target_compile_definitions(mzutils PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 target_compile_definitions(mzutils PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
+
+add_subdirectory(tests)

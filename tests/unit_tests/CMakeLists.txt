@@ -83,14 +83,10 @@ target_sources(app_unit_tests PRIVATE
     testdaemonaccesscontrol.h
     testenv.cpp
     testenv.h
-    testipaddress.cpp
-    testipaddress.h
     testlicense.cpp
     testlicense.h
     testlocalizer.cpp
     testlocalizer.h
-    testlogger.cpp
-    testlogger.h
     testnavigator.cpp
     testnavigator.h
     testnetworkmanager.cpp
@@ -101,8 +97,6 @@ target_sources(app_unit_tests PRIVATE
     testqmlpath.h
     testresourceloader.cpp
     testresourceloader.h
-    testtasks.cpp
-    testtasks.h
     testtasksentry.cpp
     testtasksentry.h
     testtemporarydir.cpp

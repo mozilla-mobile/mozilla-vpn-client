@@ -4,8 +4,8 @@
 
 #include "testtasks.h"
 
-#include "settingsholder.h"
-#include "simplenetworkmanager.h"
+#include <QtTest/QtTest>
+
 #include "taskfunction.h"
 #include "taskgroup.h"
 #include "taskscheduler.h"
@@ -232,4 +232,4 @@ void TestTasks::forceDeleteTasks() {
   QCOMPARE(sequence.at(0), "t3");
 }
 
-static TestTasks s_testTasks;
+extern const QMetaObject unitTestObject = TestTasks::staticMetaObject;

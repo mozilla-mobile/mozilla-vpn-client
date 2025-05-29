@@ -2,10 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "helper.h"
+#include <QObject>
 
-class TestIpAddress final : public TestHelper {
+class TestIpAddress final : public QObject {
   Q_OBJECT
+
+ public:
+  Q_INVOKABLE TestIpAddress(QObject* parent = nullptr) : QObject(parent) {};
 
  private slots:
   void ctor();

@@ -5,8 +5,8 @@
 #include "testlogger.h"
 
 #include <QScopeGuard>
+#include <QtTest/QtTest>
 
-#include "helper.h"
 #include "logger.h"
 #include "loghandler.h"
 
@@ -77,4 +77,4 @@ void TestLogger::logTruncation() {
   QVERIFY(truncatedBuffer.size() < 128 * 1024);
 }
 
-static TestLogger s_testLogger;
+extern const QMetaObject unitTestObject = TestLogger::staticMetaObject;
