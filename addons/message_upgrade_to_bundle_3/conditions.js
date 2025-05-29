@@ -4,9 +4,9 @@ Criteria for addon:
  - Plan purchase source: not IAP
  - Plan renewal cycle: On annual plan
  - Plan type: Not already on a bundle
- - Geo: US-only - Confirming the currency is USD
- - Client version: Client is at least v2.28 (as some of the APIs used here were
-added in 2.28) - handled in manifest.json
+ - Geo: US-only - Confirming via location class
+ - Client version: Client is at least v2.29 (as some of the APIs used here were
+added in 2.29) - handled in manifest.json
  */
 
 (function(api, condition) {
