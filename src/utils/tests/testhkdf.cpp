@@ -59,8 +59,7 @@ void TestHKDF::rfc5869_data() {
   QTest::addRow("Test with SHA-256 and zero-length salt/info")
       << QCryptographicHash::Sha256
       << QByteArray::fromHex("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b")
-      << QByteArray()
-      << QByteArray()
+      << QByteArray() << QByteArray()
       << QByteArray::fromHex(
              "8da4e775a563c18f715f802a063c5a31"
              "b8a11f5c5ee1879ec3454e5f3c738d2d"
@@ -107,8 +106,7 @@ void TestHKDF::rfc5869_data() {
   QTest::addRow("Test with SHA-1 and zero-length salt/info")
       << QCryptographicHash::Sha1
       << QByteArray::fromHex("0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b0b")
-      << QByteArray()
-      << QByteArray()
+      << QByteArray() << QByteArray()
       << QByteArray::fromHex(
              "0ac1af7002b3d761d1e55298da9d0506"
              "b9ae52057220a306e07b6b87e8df21d0"

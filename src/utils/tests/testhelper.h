@@ -33,7 +33,7 @@ class TestRegistration {
 template <typename T>
 class TestHelper : private TestRegistration {
  protected:
-  TestHelper() : TestRegistration(&T::staticMetaObject) {
+  explicit TestHelper() : TestRegistration(&T::staticMetaObject) {
     // Try to coerce the linker to ensure s_registration gets included
     Q_UNUSED(s_registration);
   };

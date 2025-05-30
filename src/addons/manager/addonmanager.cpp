@@ -25,9 +25,9 @@
 #include "logger.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
+#include "taskfunction.h"
 #include "tasks/addon/taskaddon.h"
 #include "tasks/addonindex/taskaddonindex.h"
-#include "taskfunction.h"
 #include "taskscheduler.h"
 
 constexpr const char* MVPN_ENV_SKIP_ADDON_SIGNATURE =
