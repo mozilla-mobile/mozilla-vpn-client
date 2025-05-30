@@ -31,15 +31,17 @@ class TestRegistration {
 
 // Test classes should inherit this to register themselves.
 template <typename T>
-class TestHelper : private TestRegistration {
+class TestHelper {
  protected:
-  explicit TestHelper() : TestRegistration(&T::staticMetaObject) {
-    // Try to coerce the linker to ensure s_registration gets included
-    Q_UNUSED(s_registration);
-  };
+  // Try to coerce the linker to prevent s_registration gets included.
+  explicit TestHelper() { Q_UNUSED(s_registration); };
 
  private:
-  static inline TestHelper<T> s_registration;
+  class TestRegistrationHelper : public TestRegistration {
+   public:
+    TestRegistrationHelper() : TestRegistration(&T::staticMetaObject){};
+  };
+  static inline TestRegistrationHelper s_registration;
 };
 
 #endif  // TESTHELPER_H
