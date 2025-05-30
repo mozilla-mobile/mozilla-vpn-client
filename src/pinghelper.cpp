@@ -12,7 +12,7 @@
 #include "logger.h"
 #include "pingsender.h"
 #include "pingsenderfactory.h"
-#include "platforms/dummy/dummypingsender.h"
+#include "dummypingsender.h"
 
 // Maximum window size for ping statistics.
 constexpr int PING_STATS_WINDOW = 32;

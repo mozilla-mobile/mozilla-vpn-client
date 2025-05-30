@@ -54,8 +54,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/controller_p.cpp
     ${MZ_SOURCE_DIR}/dnshelper.cpp
     ${MZ_SOURCE_DIR}/dnshelper.h
-    ${MZ_SOURCE_DIR}/dnspingsender.cpp
-    ${MZ_SOURCE_DIR}/dnspingsender.h
     ${MZ_SOURCE_DIR}/ipaddresslookup.cpp
     ${MZ_SOURCE_DIR}/ipaddresslookup.h
     ${MZ_SOURCE_DIR}/models/device.cpp
@@ -90,13 +88,10 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/notificationhandler.h
     ${MZ_SOURCE_DIR}/pinghelper.cpp
     ${MZ_SOURCE_DIR}/pinghelper.h
-    ${MZ_SOURCE_DIR}/pingsender.h
     ${MZ_SOURCE_DIR}/pingsenderfactory.cpp
     ${MZ_SOURCE_DIR}/pingsenderfactory.h
     ${MZ_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.cpp
     ${MZ_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
-    ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
-    ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${MZ_SOURCE_DIR}/releasemonitor.cpp
     ${MZ_SOURCE_DIR}/releasemonitor.h
     ${MZ_SOURCE_DIR}/serverlatency.cpp
@@ -116,8 +111,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/tasks/release/taskrelease.h
     ${MZ_SOURCE_DIR}/tasks/servers/taskservers.cpp
     ${MZ_SOURCE_DIR}/tasks/servers/taskservers.h
-    ${MZ_SOURCE_DIR}/tcppingsender.cpp
-    ${MZ_SOURCE_DIR}/tcppingsender.h
     ${MZ_SOURCE_DIR}/update/updater.cpp
     ${MZ_SOURCE_DIR}/update/updater.h
     ${MZ_SOURCE_DIR}/update/versionapi.cpp

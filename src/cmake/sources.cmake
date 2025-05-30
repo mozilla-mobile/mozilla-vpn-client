@@ -95,8 +95,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/wireguardutilsmock.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dnshelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dnshelper.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dnspingsender.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/dnspingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/extrastrings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/imageproviderfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/imageproviderfactory.h
@@ -142,16 +140,12 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/notificationhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pinghelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pinghelper.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pingsender.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pingsenderfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pingsenderfactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummyapplistprovider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummyapplistprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/productshandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/productshandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/profileflow.cpp
@@ -198,8 +192,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/removedevice/taskremovedevice.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskservers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskservers.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/tcppingsender.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tcppingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/telemetry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/telemetry.h
     ${CMAKE_CURRENT_SOURCE_DIR}/update/updater.cpp

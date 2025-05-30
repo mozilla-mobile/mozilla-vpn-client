@@ -34,6 +34,14 @@ add_library(mzutils STATIC
     models/keys.h
     models/location.cpp
     models/location.h
+    pingsender/dnspingsender.cpp
+    pingsender/dnspingsender.h
+    pingsender/dummypingsender.cpp
+    pingsender/dummypingsender.h
+    pingsender/pingsender.cpp
+    pingsender/pingsender.h
+    pingsender/tcppingsender.cpp
+    pingsender/tcppingsender.h
     rfc/rfc1112.cpp
     rfc/rfc1112.h
     rfc/rfc1918.cpp
@@ -63,7 +71,10 @@ endif()
 
 target_link_libraries(mzutils PUBLIC Qt6::Core Qt6::Network)
 
-target_include_directories(mzutils PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_include_directories(mzutils PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/pingsender
+)
 target_include_directories(mzutils PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star
     ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin

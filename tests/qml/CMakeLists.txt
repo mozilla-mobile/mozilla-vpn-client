@@ -38,8 +38,6 @@ target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
 target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/constants.h
     ${MZ_SOURCE_DIR}/controller.h
-    ${MZ_SOURCE_DIR}/dnspingsender.cpp
-    ${MZ_SOURCE_DIR}/dnspingsender.h
     ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.cpp
     ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.h
     ${MZ_SOURCE_DIR}/models/server.cpp
@@ -57,18 +55,12 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/mozillavpn.h
     ${MZ_SOURCE_DIR}/pinghelper.cpp
     ${MZ_SOURCE_DIR}/pinghelper.h
-    ${MZ_SOURCE_DIR}/pingsender.cpp
-    ${MZ_SOURCE_DIR}/pingsender.h
     ${MZ_SOURCE_DIR}/pingsenderfactory.cpp
     ${MZ_SOURCE_DIR}/pingsenderfactory.h
-    ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
-    ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${MZ_SOURCE_DIR}/serverlatency.cpp
     ${MZ_SOURCE_DIR}/serverlatency.h
     ${MZ_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.cpp
     ${MZ_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.h
-    ${MZ_SOURCE_DIR}/tcppingsender.cpp
-    ${MZ_SOURCE_DIR}/tcppingsender.h
     ${MZ_SOURCE_DIR}/update/updater.cpp
     ${MZ_SOURCE_DIR}/update/updater.h
     ${MZ_SOURCE_DIR}/update/versionapi.cpp
