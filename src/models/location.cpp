@@ -84,8 +84,9 @@ bool Location::fromJson(const QByteArray& json) {
   m_ipAddress = ipAddress;
   m_initialized = true;
 
-  logger.debug() << "Location calculated as" << m_cityName << "in"
-                 << m_countryCode << "-" << m_subdivision;
+  logger.debug() << "Location calculated as" << logger.sensitive(m_cityName)
+                 << "in" << m_countryCode << "-"
+                 << logger.sensitive(m_subdivision);
 
   emit changed();
   return true;
