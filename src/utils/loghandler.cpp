@@ -18,7 +18,9 @@
 #include <QString>
 #include <QTextStream>
 
-#ifdef MZ_IOS
+#if defined(MZ_ANDROID)
+#  include <android/log.h>
+#elif defined(MZ_IOS)
 #  include <CoreFoundation/CoreFoundation.h>
 #  include <os/log.h>
 #endif
@@ -55,11 +57,8 @@ Logger logger("LogHandler");
 Q_GLOBAL_STATIC(LogHandler, logHandler);
 LogHandler* LogHandler::instance() { return logHandler; }
 
-// static
 QString LogHandler::logFileName() {
-  QString appName = qApp->applicationName().toLower();
-  QString simplified = appName.remove(QRegularExpression("[^a-z]"));
-  return QString("%1.log").arg(simplified);
+  return m_logShortName + ".log";
 }
 
 // static
@@ -151,6 +150,9 @@ void LogHandler::setStderr(bool enabled) {
 LogHandler::LogHandler() : QObject(nullptr) {
   QMutexLocker<QMutex> lock(&m_mutex);
 
+  QString appName = qApp->applicationName().toLower();
+  m_logShortName = appName.remove(QRegularExpression("[^a-z]"));
+
 #if defined(MZ_DEBUG)
   m_stderrEnabled = true;
 #endif
@@ -161,9 +163,9 @@ LogHandler::LogHandler() : QObject(nullptr) {
   if (bundle) {
     bundleId = QString::fromNSString((NSString*)CFBundleGetIdentifier(bundle));
   } else {
-    bundleId = logFileName();
+    bundleId = m_logShortName;
   }
-  m_ioslog = os_log_create(qPrintable(bundleId), qPrintable(logFileName()));
+  m_ioslog = os_log_create(qPrintable(bundleId), qPrintable(m_logShortName));
 #endif
 
   if (!s_location.isEmpty()) {
@@ -189,7 +191,12 @@ void LogHandler::addLog(const Log& log,
   }
 
   if (m_stderrEnabled) {
-#if defined(MZ_IOS)
+#if defined(MZ_ANDROID)
+    const char* str = buffer.constData();
+    if (str) {
+      __android_log_write(ANDROID_LOG_DEBUG, qPrintable(m_logShortName), str);
+    }
+#elif defined(MZ_IOS)
     QString logstr = QString::fromUtf8(buffer);
     switch (log.m_logLevel) {
       case Error:
@@ -210,23 +217,6 @@ void LogHandler::addLog(const Log& log,
   }
 
   emit logEntryAdded(buffer);
-
-#if defined(MZ_ANDROID)
-#  ifdef MZ_DEBUG
-  const char* str = buffer.constData();
-  if (str) {
-    __android_log_write(ANDROID_LOG_DEBUG, Constants::ANDROID_LOG_NAME, str);
-  }
-#  else
-  if (!Constants::inProduction()) {
-    const char* str = buffer.constData();
-    if (str) {
-      __android_log_write(ANDROID_LOG_DEBUG, Constants::ANDROID_LOG_NAME, str);
-    }
-  }
-#  endif
-
-#endif
 }
 
 void LogHandler::writeLogs(QTextStream& out) {

@@ -93,7 +93,7 @@ class LogHandler final : public QObject, public LogSerializer {
 
   void setStderr(bool enabled = true);
 
-  static QString logFileName();
+  QString logFileName();
 
   QString logName() const override { return "MZ Logs"; }
   void logSerialize(QIODevice* device) override;
@@ -125,6 +125,7 @@ class LogHandler final : public QObject, public LogSerializer {
                               const QString& filename);
 
   QMutex m_mutex;
+  QString m_logShortName;
 
   bool m_stderrEnabled = false;
 
