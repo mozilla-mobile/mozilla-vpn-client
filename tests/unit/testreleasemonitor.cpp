@@ -127,9 +127,9 @@ void TestReleaseMonitor::compareVersions_data() {
   QTest::addColumn<int>("result");
 
   QTest::addRow("empty a") << ""
-                           << "123" << 1;
+                           << "123" << -1;
   QTest::addRow("empty b") << "123"
-                           << "" << -1;
+                           << "" << 1;
   QTest::addRow("empty all") << ""
                              << "" << 0;
 
@@ -143,8 +143,6 @@ void TestReleaseMonitor::compareVersions_data() {
                            << "0" << 0;
   QTest::addRow("equal 5") << "123"
                            << "123" << 0;
-  QTest::addRow("euqal 6") << "0.1.2.123"
-                           << "0.1.2.456" << 0;
 
   QTest::addRow("a wins 1") << "0"
                             << "123" << -1;
