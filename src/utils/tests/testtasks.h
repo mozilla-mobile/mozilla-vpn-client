@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <QObject>
+
 #include "testhelper.h"
 
 class TestTasks final : public QObject, TestHelper<TestTasks> {

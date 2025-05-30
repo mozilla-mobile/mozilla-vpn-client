@@ -18,13 +18,11 @@ QByteArray Chacha20Poly1305::encrypt(const QByteArray& nonce,
   
   QByteArray ciphertext(plaintext.length(), 0x00);
   mac.fill(0x00, MacSize);
-  Hacl_Chacha20Poly1305_32_aead_encrypt((uint8_t*)m_key.constData(),
-                                        (uint8_t*)nonce.constData(),
-                                        aad.length(), (uint8_t*)aad.constData(),
-                                        plaintext.length(),
-                                        (uint8_t*)plaintext.constData(),
-                                        (uint8_t*)ciphertext.data(),
-                                        (uint8_t*)mac.data());
+  Hacl_Chacha20Poly1305_32_aead_encrypt(
+      (uint8_t*)m_key.constData(), (uint8_t*)nonce.constData(), aad.length(),
+      (uint8_t*)aad.constData(), plaintext.length(),
+      (uint8_t*)plaintext.constData(), (uint8_t*)ciphertext.data(),
+      (uint8_t*)mac.data());
   return ciphertext;
 }
 
@@ -37,14 +35,10 @@ QByteArray Chacha20Poly1305::decrypt(const QByteArray& nonce,
 
   QByteArray plaintext(ciphertext.length(), 0x00);
   uint32_t err;
-  err = Hacl_Chacha20Poly1305_32_aead_decrypt((uint8_t*)m_key.constData(),
-                                            (uint8_t*)nonce.constData(),
-                                            aad.length(),
-                                            (uint8_t*)aad.constData(),
-                                            plaintext.length(),
-                                            (uint8_t*)plaintext.data(),
-                                            (uint8_t*)ciphertext.constData(),
-                                            (uint8_t*)mac.constData());
+  err = Hacl_Chacha20Poly1305_32_aead_decrypt(
+      (uint8_t*)m_key.constData(), (uint8_t*)nonce.constData(), aad.length(),
+      (uint8_t*)aad.constData(), plaintext.length(), (uint8_t*)plaintext.data(),
+      (uint8_t*)ciphertext.constData(), (uint8_t*)mac.constData());
   if (err != 0) {
     return QByteArray();
   } else {

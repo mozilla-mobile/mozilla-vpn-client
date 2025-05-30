@@ -27,10 +27,14 @@
 #include "settingsholder.h"
 
 // Curve 25519 example keypair from RFC 7748: Section 6.1
-constexpr const char* X25519_ALICE_PRIVATE = "dwdtCnMYpX08FsFyUbJmRd9ML4frwJkqsXf7pR25LCo=";
-constexpr const char* X25519_ALICE_PUBLIC = "hSDwCYkwp1R0i33ctD73Wg2/Og0mOBr066SpjqqbTmo=";
-constexpr const char* X25519_BOB_PRIVATE = "XasIfmJKikt54X+Lg4AO5m87sSkmGLb9HC+LJ/+I4Os=";
-constexpr const char* X25519_BOB_PUBLIC = "3p7bfXt9wbTTW2HC7OQ1Nz+DQ8hbeGdNrfx+FG+IK08=";
+constexpr const char* X25519_ALICE_PRIVATE =
+    "dwdtCnMYpX08FsFyUbJmRd9ML4frwJkqsXf7pR25LCo=";
+constexpr const char* X25519_ALICE_PUBLIC =
+    "hSDwCYkwp1R0i33ctD73Wg2/Og0mOBr066SpjqqbTmo=";
+constexpr const char* X25519_BOB_PRIVATE =
+    "XasIfmJKikt54X+Lg4AO5m87sSkmGLb9HC+LJ/+I4Os=";
+constexpr const char* X25519_BOB_PUBLIC =
+    "3p7bfXt9wbTTW2HC7OQ1Nz+DQ8hbeGdNrfx+FG+IK08=";
 
 // ApiError
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -390,8 +394,8 @@ void TestModels::deviceModelFromJson_data() {
   obj.insert("devices", devices);
   QTest::addRow("good - 2 devices")
       << QJsonDocument(obj).toJson() << true << 2
-      << QVariant(Device::currentDeviceName())
-      << QVariant(X25519_ALICE_PUBLIC) << QVariant(true)
+      << QVariant(Device::currentDeviceName()) << QVariant(X25519_ALICE_PUBLIC)
+      << QVariant(true)
       << QVariant(QDateTime::fromString("2017-07-24T15:46:29", Qt::ISODate));
 }
 

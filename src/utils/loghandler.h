@@ -122,7 +122,7 @@ class LogHandler final : public QObject, public LogSerializer {
   void cleanupLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
   void truncateLogFile(const QMutexLocker<QMutex>& proofOfLock,
-                              const QString& filename);
+                       const QString& filename);
 
   QMutex m_mutex;
   QString m_logShortName;

@@ -688,10 +688,9 @@ QString Localizer::getCapitalizedStringFromI18n(const QString& id) {
 // static
 void Localizer::forceRTL() { s_forceRTL = true; }
 
-
 // Custom translator class that also handles server localization.
-QString VpnTranslator::translate(const char *context, const char *sourceText,
-                                 const char *disambiguation, int n) const {
+QString VpnTranslator::translate(const char* context, const char* sourceText,
+                                 const char* disambiguation, int n) const {
   // Handle translation special cases.
   if (QString("ServerCountry") == context) {
     return Localizer::getTranslatedCountryName(sourceText, disambiguation);

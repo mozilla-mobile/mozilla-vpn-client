@@ -57,9 +57,7 @@ Logger logger("LogHandler");
 Q_GLOBAL_STATIC(LogHandler, logHandler);
 LogHandler* LogHandler::instance() { return logHandler; }
 
-QString LogHandler::logFileName() {
-  return m_logShortName + ".log";
-}
+QString LogHandler::logFileName() { return m_logShortName + ".log"; }
 
 // static
 void LogHandler::messageQTHandler(QtMsgType type,
@@ -77,8 +75,8 @@ void LogHandler::messageHandler(LogLevel logLevel, const QString& className,
 
 // static
 void LogHandler::rustMessageHandler(int32_t logLevel, char* message) {
-  logHandler->addLog(Log(static_cast<LogLevel>(logLevel), "Rust",
-                         QString::fromUtf8(message)));
+  logHandler->addLog(
+      Log(static_cast<LogLevel>(logLevel), "Rust", QString::fromUtf8(message)));
 }
 
 // static

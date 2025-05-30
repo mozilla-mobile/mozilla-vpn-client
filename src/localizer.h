@@ -141,11 +141,11 @@ class VpnTranslator final : public QTranslator {
   friend class Localizer;
 
  protected:
-  VpnTranslator(QObject* parent = nullptr) : QTranslator(parent) {};
+  VpnTranslator(QObject* parent = nullptr) : QTranslator(parent){};
 
  public:
-  QString translate(const char *context, const char *sourceText,
-                    const char *disambiguation = nullptr,
+  QString translate(const char* context, const char* sourceText,
+                    const char* disambiguation = nullptr,
                     int n = -1) const override;
 };
 
