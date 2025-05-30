@@ -55,3 +55,6 @@ target_sources(split-tunnel PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/main.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/VPNSplitTunnelProvider.mm
 )
+
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
+osx_codesign_target(split-tunnel FORCE)
