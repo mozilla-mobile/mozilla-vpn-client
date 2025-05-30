@@ -10,6 +10,11 @@
 #include <QJsonValue>
 
 #include "leakdetector.h"
+#include "logger.h"
+
+namespace {
+Logger logger("Location");
+}  // namespace
 
 Location::Location() {
   MZ_COUNT_CTOR(Location);
@@ -78,6 +83,9 @@ bool Location::fromJson(const QByteArray& json) {
   m_subdivision = subdivision.toString();
   m_ipAddress = ipAddress;
   m_initialized = true;
+
+  logger.debug() << "Location calculated as" << m_cityName << "in"
+                 << m_countryCode << "-" << m_subdivision;
 
   emit changed();
   return true;
