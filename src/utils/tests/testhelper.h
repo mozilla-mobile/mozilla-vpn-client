@@ -16,17 +16,21 @@ class TestRegistration {
     m_next = s_listhead;
     s_listhead = this;
   }
+
+  // Test list iteration
+  const QMetaObject* metaObject() const { return m_meta; }
+  const TestRegistration* next() const { return m_next; }
+  static const TestRegistration* first() { return s_listhead; }
+
+ private:
   const QMetaObject* m_meta;
   const TestRegistration* m_next;
 
-  static const TestRegistration* list() { return s_listhead; }
-
- private:
   static inline TestRegistration* s_listhead = nullptr;
 };
 
 // Test classes should inherit this to register themselves.
-template<typename T>
+template <typename T>
 class TestHelper : private TestRegistration {
  protected:
   TestHelper() : TestRegistration(&T::staticMetaObject) {

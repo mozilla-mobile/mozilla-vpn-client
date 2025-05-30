@@ -15,7 +15,7 @@ QByteArray Chacha20Poly1305::encrypt(const QByteArray& nonce,
                                      const QByteArray& plaintext,
                                      QByteArray& mac) const {
   Q_ASSERT(nonce.length() == NonceSize);
-  
+
   QByteArray ciphertext(plaintext.length(), 0x00);
   mac.fill(0x00, MacSize);
   Hacl_Chacha20Poly1305_32_aead_encrypt(

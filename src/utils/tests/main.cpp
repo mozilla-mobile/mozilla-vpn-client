@@ -4,7 +4,6 @@
 
 #include <QCoreApplication>
 #include <QObject>
-#include <QVector>
 #include <QtTest/QtTest>
 
 #include "loghandler.h"
@@ -23,12 +22,15 @@ int main(int argc, char* argv[]) {
   // Execute the tests
   int numFails = 0;
   int numTests = 0;
-  for (auto test = TestRegistration::list(); test != nullptr; test = test->m_next) {
-    auto obj = reinterpret_cast<QObject*>(test->m_meta->metaType().create());
+  for (auto test = TestRegistration::first(); test; test = test->next()) {
+    const QMetaObject* meta = test->metaObject();
+    QObject* obj = reinterpret_cast<QObject*>(meta->metaType().create());
+
     numTests++;
     if (QTest::qExec(obj) != 0) {
       numFails++;
     }
+    delete obj;
   }
   return numFails;
 }
