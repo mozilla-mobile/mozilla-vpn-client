@@ -289,6 +289,3 @@ void TestIpAddress::excludeAddresses() {
   qDebug() << list.join(",");
   QVERIFY(list.join(",") == result);
 }
-
-extern const QMetaObject unitTestObject = TestIpAddress::staticMetaObject;
-

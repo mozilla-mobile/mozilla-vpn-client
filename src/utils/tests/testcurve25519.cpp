@@ -33,5 +33,3 @@ void TestCurve25519::rfc7748vectors() {
   QByteArray result = Curve25519::generatePublicKey(inputBase64);
   QCOMPARE(result, expectBase64);
 }
-
-extern const QMetaObject unitTestObject = TestCurve25519::staticMetaObject;

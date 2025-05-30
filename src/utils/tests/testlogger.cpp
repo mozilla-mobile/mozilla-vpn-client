@@ -76,5 +76,3 @@ void TestLogger::logTruncation() {
   QVERIFY(truncatedBuffer.size() > 64 * 1024);
   QVERIFY(truncatedBuffer.size() < 128 * 1024);
 }
-
-extern const QMetaObject unitTestObject = TestLogger::staticMetaObject;

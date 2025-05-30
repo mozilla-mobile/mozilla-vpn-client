@@ -3,15 +3,16 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # The tests
-qt_add_executable(testcurve25519 testcurve25519.cpp testcurve25519.h)
-qt_add_executable(testipaddress testipaddress.cpp testipaddress.h)
-qt_add_executable(testlogger testlogger.cpp testlogger.h)
-qt_add_executable(testtasks testtasks.cpp testtasks.h)
+qt_add_executable(utest-curve25519 testcurve25519.cpp testcurve25519.h)
+qt_add_executable(utest-hkdf testhkdf.cpp testhkdf.h)
+qt_add_executable(utest-ipaddress testipaddress.cpp testipaddress.h)
+qt_add_executable(utest-logger testlogger.cpp testlogger.h)
+qt_add_executable(utest-tasks testtasks.cpp testtasks.h)
 
 get_directory_property(UTEST_ALL_TARGETS BUILDSYSTEM_TARGETS)
 foreach(UTEST_TARGET ${UTEST_ALL_TARGETS})
     # Every test should depend on `main.cpp` as its entry point and should link to the library.
-    target_sources(${UTEST_TARGET} PRIVATE main.cpp)
+    target_sources(${UTEST_TARGET} PRIVATE main.cpp testhelper.h)
     target_link_libraries(${UTEST_TARGET} PRIVATE mzutils Qt6::Test Qt6::Core Qt6::Network)
 
     # Group the tests in the "Tests" folder

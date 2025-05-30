@@ -3,12 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <QObject>
+#include "testhelper.h"
 
-class TestLogger final : public QObject {
+class TestLogger final : public QObject, TestHelper<TestLogger> {
   Q_OBJECT
-
- public:
-  Q_INVOKABLE TestLogger(QObject* parent = nullptr) : QObject(parent) {};
 
  private slots:
   void logger();

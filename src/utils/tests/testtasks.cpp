@@ -231,5 +231,3 @@ void TestTasks::forceDeleteTasks() {
   QCOMPARE(sequence.length(), 1);
   QCOMPARE(sequence.at(0), "t3");
 }
-
-extern const QMetaObject unitTestObject = TestTasks::staticMetaObject;

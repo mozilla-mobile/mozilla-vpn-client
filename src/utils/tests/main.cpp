@@ -8,9 +8,7 @@
 #include <QtTest/QtTest>
 
 #include "loghandler.h"
-
-// The meta-object to be tested
-extern const QMetaObject unitTestObject;
+#include "testhelper.h"
 
 int main(int argc, char* argv[]) {
 #ifdef MZ_DEBUG
@@ -22,7 +20,15 @@ int main(int argc, char* argv[]) {
   LogHandler::instance()->setStderr(true);
   QCoreApplication app(argc, argv);
 
-  // Execute the test
-  QObject* obj = unitTestObject.newInstance();
-  return QTest::qExec(obj);
+  // Execute the tests
+  int numFails = 0;
+  int numTests = 0;
+  for (auto test = TestRegistration::list(); test != nullptr; test = test->m_next) {
+    auto obj = reinterpret_cast<QObject*>(test->m_meta->metaType().create());
+    numTests++;
+    if (QTest::qExec(obj) != 0) {
+      numFails++;
+    }
+  }
+  return numFails;
 }

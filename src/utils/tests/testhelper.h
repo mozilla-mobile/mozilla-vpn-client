@@ -1,0 +1,39 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#ifndef TESTHELPER_H
+#define TESTHELPER_H
+
+#include <QObject>
+
+class TestRegistration {
+ public:
+  TestRegistration(const QMetaObject* meta) {
+    m_meta = meta;
+    m_next = s_listhead;
+    s_listhead = this;
+  }
+  const QMetaObject* m_meta;
+  const TestRegistration* m_next;
+
+  static const TestRegistration* list() { return s_listhead; }
+
+ private:
+  static inline TestRegistration* s_listhead = nullptr;
+};
+
+// Test classes should inherit this to register themselves.
+template<typename T>
+class TestHelper : private TestRegistration {
+ protected:
+  TestHelper() : TestRegistration(&T::staticMetaObject) {
+    // Try to coerce the linker to ensure s_registration gets included
+    Q_UNUSED(s_registration);
+  };
+
+ private:
+  static inline TestHelper<T> s_registration;
+};
+
+#endif  // TESTHELPER_H

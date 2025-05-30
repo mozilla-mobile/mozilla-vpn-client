@@ -3,12 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <QObject>
+#include "testhelper.h"
 
-class TestIpAddress final : public QObject {
+class TestIpAddress final : public QObject, TestHelper<TestIpAddress> {
   Q_OBJECT
-
- public:
-  Q_INVOKABLE TestIpAddress(QObject* parent = nullptr) : QObject(parent) {};
 
  private slots:
   void ctor();

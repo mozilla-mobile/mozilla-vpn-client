@@ -3,12 +3,10 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <QObject>
+#include "testhelper.h"
 
-class TestCurve25519 : public QObject {
+class TestCurve25519 : public QObject, TestHelper<TestCurve25519> {
   Q_OBJECT
-
- public:
-  Q_INVOKABLE TestCurve25519(QObject* parent = nullptr) : QObject(parent) {};
 
  private slots:
   void rfc7748vectors_data();
