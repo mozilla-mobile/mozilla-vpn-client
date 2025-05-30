@@ -11,7 +11,7 @@
 
 class TestRegistration {
  public:
-  TestRegistration(const QMetaObject* meta) {
+  explicit TestRegistration(const QMetaObject* meta) {
     m_meta = meta;
     m_next = s_listhead;
     s_listhead = this;
