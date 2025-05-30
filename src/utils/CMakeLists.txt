@@ -2,6 +2,12 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+#
+# This is a library for common utility classes that can be compiled once
+# and shared between mutliple targets (including tests). Typically the
+# kinds of classes that go into here should have minimal to no dependencies
+# and should not contain application logic.
+#
 add_library(mzutils STATIC
     chacha20poly1305.cpp
     chacha20poly1305.h
@@ -84,4 +90,6 @@ target_include_directories(mzutils PRIVATE
 target_compile_definitions(mzutils PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 target_compile_definitions(mzutils PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 
-add_subdirectory(tests)
+if(NOT CMAKE_CROSSCOMPILING)
+    add_subdirectory(tests)
+endif()
