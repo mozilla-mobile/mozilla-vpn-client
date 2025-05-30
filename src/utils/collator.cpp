@@ -37,7 +37,7 @@ int Collator::compare(const QString& a, const QString& b) {
 #elif defined(MZ_WASM)
   // For WASM, we have a similar issue (no ICU). Let's use the JS API to sort
   // strings.
-  QString languageCode = m_collator.locale()->bcp47Name();
+  QString languageCode = m_collator.locale().bcp47Name();
   Q_ASSERT(!languageCode.isEmpty());
 
   return mzWasmCompareString(a.toLocal8Bit().constData(),
