@@ -5,7 +5,9 @@
 #ifndef TESTHELPER_H
 #define TESTHELPER_H
 
+#include <QByteArray>
 #include <QObject>
+#include <QString>
 
 class TestRegistration {
  public:
@@ -26,6 +28,16 @@ class TestRegistration {
 // Test classes should inherit this to register themselves.
 template<typename T>
 class TestHelper : private TestRegistration {
+ public:
+  // Helpers to convert long hex to byte arrays.
+  QByteArray fromHex(const QString& str) {
+    return QByteArray::fromHex(str.toUtf8());
+  };
+  template<typename... Args>
+  QByteArray fromHex(const QString& str, Args... args) {
+    return fromHex(str) + fromHex(args...);
+  }
+
  protected:
   TestHelper() : TestRegistration(&T::staticMetaObject) {
     // Try to coerce the linker to ensure s_registration gets included

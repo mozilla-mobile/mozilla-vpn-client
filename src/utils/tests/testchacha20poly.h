@@ -5,10 +5,10 @@
 #include <QObject>
 #include "testhelper.h"
 
-class TestHKDF : public QObject, TestHelper<TestHKDF> {
+class TestChaCha20Poly : public QObject, TestHelper<TestChaCha20Poly> {
   Q_OBJECT
 
  private slots:
-  void rfc5869_data();
-  void rfc5869();
+  void rfc7539_data();
+  void rfc7539();
 };
