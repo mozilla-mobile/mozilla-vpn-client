@@ -2,18 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "helper.h"
+#include <QObject>
 
-class TestTasks final : public TestHelper {
+#include "testhelper.h"
+
+class TestCurve25519 : public QObject, TestHelper<TestCurve25519> {
   Q_OBJECT
 
  private slots:
-  void function();
-
-  void deletePolicy();
-  void deletePolicy_group();
-  void deletePolicy_async();
-
-  void deleteTasks();
-  void forceDeleteTasks();
+  void rfc7748vectors_data();
+  void rfc7748vectors();
 };

@@ -6,13 +6,13 @@
 
 #include <QList>
 #include <QScopeGuard>
+#include <QVersionNumber>
 
 #include "constants.h"
 #include "featurelistcallback.h"
 #include "logger.h"
 #include "settings/settinggroup.h"
 #include "settingsholder.h"
-#include "versionutils.h"
 
 namespace {
 Logger logger("Feature");

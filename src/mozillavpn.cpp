@@ -43,6 +43,8 @@
 #include "settingsholder.h"
 #include "settingswatcher.h"
 #include "subscriptionmonitor.h"
+#include "taskfunction.h"
+#include "taskgroup.h"
 #include "tasks/account/taskaccount.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/addonindex/taskaddonindex.h"
@@ -51,10 +53,8 @@
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
 #include "tasks/deleteaccount/taskdeleteaccount.h"
-#include "tasks/function/taskfunction.h"
 #include "tasks/getlocation/taskgetlocation.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
-#include "tasks/group/taskgroup.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/servers/taskservers.h"
@@ -62,7 +62,6 @@
 #include "telemetry.h"
 #include "update/updater.h"
 #include "urlopener.h"
-#include "versionutils.h"
 
 #ifdef SENTRY_ENABLED
 #  include "sentry/sentryadapter.h"
@@ -94,6 +93,7 @@
 #include <QTimer>
 #include <QUrl>
 #include <QUrlQuery>
+#include <QVersionNumber>
 
 namespace {
 Logger logger("MozillaVPN");
@@ -312,7 +312,7 @@ void MozillaVPN::initialize() {
     return;
   }
 
-  if (!m_private->m_keys.fromSettings()) {
+  if (!m_private->m_keys.fromSettings(settingsHolder->privateKey())) {
     logger.error() << "No keys found";
     SettingsManager::instance()->reset();
     return;
@@ -1176,10 +1176,11 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  if (settingsHolder->hasDeviceKeyVersion() &&
-      VersionUtils::compareVersions(settingsHolder->deviceKeyVersion(),
-                                    "2.5.0") >= 0) {
-    return;
+  if (settingsHolder->hasDeviceKeyVersion()) {
+    auto vers = QVersionNumber::fromString(settingsHolder->deviceKeyVersion());
+    if (vers >= QVersionNumber(2, 5, 0)) {
+      return;
+    }
   }
 
   // We need a new device key only if the user wants to use custom DNS servers.

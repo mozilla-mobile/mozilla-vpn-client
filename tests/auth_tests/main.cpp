@@ -45,7 +45,7 @@ int main(int argc, char* argv[]) {
   settingsHolder.setFeaturesFlippedOn(QStringList{
       "inAppAccountCreate", "inAppAuthentication", "accountDeletion"});
 
-  LogHandler::setStderr(true);
+  LogHandler::instance()->setStderr(true);
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
 
   QString nonce = QString::number(QDateTime::currentSecsSinceEpoch());

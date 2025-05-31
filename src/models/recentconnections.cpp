@@ -11,9 +11,9 @@
 
 #include "constants.h"
 #include "leakdetector.h"
-#include "localizer.h"
 #include "logger.h"
 #include "mozillavpn.h"
+#include "servercity.h"
 #include "serverdata.h"
 #include "settingsholder.h"
 
@@ -177,8 +177,7 @@ QVariant RecentConnectionModel::data(const QModelIndex& index, int role) const {
 
     case LocalizedExitCityNameRole: {
       const RecentConnection& rc = m_list.at(id);
-      return QVariant(
-          Localizer::instance()->getTranslatedCityName(rc.m_exitCityName));
+      return QVariant(ServerCity::localizedName(rc.m_exitCityName));
     }
 
     case IsMultiHopRole: {
@@ -195,8 +194,7 @@ QVariant RecentConnectionModel::data(const QModelIndex& index, int role) const {
 
     case LocalizedEntryCityNameRole: {
       const RecentConnection& rc = m_list.at(id);
-      return QVariant(
-          Localizer::instance()->getTranslatedCityName(rc.m_entryCityName));
+      return QVariant(ServerCity::localizedName(rc.m_entryCityName));
     }
 
     default:

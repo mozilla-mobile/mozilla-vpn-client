@@ -25,7 +25,7 @@ class CommandLinuxDaemon final : public Command {
 
   int run(QStringList& tokens) override {
     Q_ASSERT(!tokens.isEmpty());
-    LogHandler::setLocation("/var/log");
+    LogHandler::instance()->setLocation("/var/log");
 
     return runCommandLineApp([&]() {
       DBusService* dbus = new DBusService(qApp);

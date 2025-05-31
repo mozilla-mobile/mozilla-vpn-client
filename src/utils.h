@@ -6,6 +6,7 @@
 #define UTILS_H
 
 #include <QObject>
+#include <QStandardPaths>
 
 class Utils final : public QObject {
   Q_OBJECT
@@ -21,12 +22,16 @@ class Utils final : public QObject {
 
   Q_INVOKABLE static void crashTest();
 
+  Q_INVOKABLE bool viewLogs();
+
 #ifdef MZ_ANDROID
   Q_INVOKABLE void launchPlayStore();
 #endif
 
  private:
   Utils() = default;
+
+  bool writeAndShowLogs(QStandardPaths::StandardLocation location);
 };
 
 #endif  // UTILS_H
