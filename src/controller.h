@@ -45,6 +45,7 @@ class Controller : public QObject, public LogSerializer {
     ReasonSwitching,
     ReasonConfirming,
   };
+  Q_ENUM(Reason)
 
   enum ErrorCode {
     ErrorNone = 0,
