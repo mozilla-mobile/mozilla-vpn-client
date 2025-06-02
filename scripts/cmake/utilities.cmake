@@ -298,6 +298,7 @@ function(mz_generate_link_libraries)
         add_rust_library(${CRATE_NAME}
             PACKAGE_DIR ${RUST_CRATE_PATH}
             BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+            CRATE_NAME ${CRATE_NAME}
         )
 
         list(APPEND LOCAL_LINK_LIBRARIES ${CRATE_NAME})

@@ -21,7 +21,7 @@ target_link_options(mozillavpn PRIVATE "-ObjC")
 ## Install the Glean iOS SDK into the bundle.
 include(${CMAKE_SOURCE_DIR}/qtglean/ios.cmake)
 
-target_link_libraries(mozillavpn PRIVATE iosglean signature)
+target_link_libraries(mozillavpn PRIVATE iosglean)
 target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_BINARY_DIR}/generated/VPNMetrics.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosgleanbridge.swift
@@ -31,6 +31,11 @@ target_sources(mozillavpn PRIVATE
 
 ## Install the Network Extension into the bundle.
 add_dependencies(mozillavpn networkextension)
+
+# We have to manually build the QtGlean bindings framework,
+# so we also have to manually add it.
+get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION)
+get_filename_component(QTGLEAN_FW_LOCATION ${QTGLEAN_LIB_LOCATION} DIRECTORY)
 
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
@@ -61,7 +66,7 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_EMBED_APP_EXTENSIONS_REMOVE_HEADERS_ON_COPY "YES"
     XCODE_EMBED_APP_EXTENSIONS_CODE_SIGN_ON_COPY "YES"
     # Make sure Glean is added as a framework to the final bundle
-    XCODE_EMBED_FRAMEWORKS "qtglean_bindings;iosglean"
+    XCODE_EMBED_FRAMEWORKS "${QTGLEAN_FW_LOCATION};iosglean"
     XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY "YES"
     XCODE_EMBED_FRAMEWORKS_CODE_SIGN_ON_COPY "YES"
     XCODE_ATTRIBUTE_LD_RUNPATH_SEARCH_PATHS "@executable_path/Frameworks"

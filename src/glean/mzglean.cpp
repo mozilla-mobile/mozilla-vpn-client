@@ -12,7 +12,7 @@
 #include "logger.h"
 #include "settingsholder.h"
 #if not(defined(MZ_WASM))
-#  include "bindings/qtglean.h"
+#  include "qtglean.h"
 #endif
 #if defined(MZ_ANDROID)
 #  include "../platforms/android/androidvpnactivity.h"

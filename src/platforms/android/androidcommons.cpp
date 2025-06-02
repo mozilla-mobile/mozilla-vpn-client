@@ -19,6 +19,16 @@ constexpr auto VPN_UTILS_CLASS = "org/mozilla/firefox/vpn/qt/VPNUtils";
 
 namespace {
 Logger logger("AndroidCommons");
+
+// Creates a copy of the passed QByteArray in the JVM and passes back a ref
+jbyteArray tojByteArray(const QByteArray& data) {
+  QJniEnvironment env;
+  jbyteArray out = env->NewByteArray(data.size());
+  env->SetByteArrayRegion(out, 0, data.size(),
+                          reinterpret_cast<const jbyte*>(data.constData()));
+  return out;
+}
+
 }  // namespace
 
 // static
@@ -33,6 +43,18 @@ int AndroidCommons::getSDKVersion() {
   jfieldID sdkIntFieldID = env->GetStaticFieldID(versionClass, "SDK_INT", "I");
   int sdk = env->GetStaticIntField(versionClass, sdkIntFieldID);
   return sdk;
+}
+
+// static
+bool AndroidCommons::verifySignature(const QByteArray& publicKey,
+                                     const QByteArray& content,
+                                     const QByteArray& signature) {
+  QJniEnvironment env;
+  auto out = (bool)QJniObject::callStaticMethod<jboolean>(
+      COMMON_UTILS_CLASS, "verifyContentSignature", "([B[B[B)Z",
+      tojByteArray(publicKey), tojByteArray(content), tojByteArray(signature));
+  logger.info() << "Android Signature Response" << out;
+  return out;
 }
 
 // static
