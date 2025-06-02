@@ -12,13 +12,11 @@
 #include <ws2ipdef.h>
 
 #include <QFileInfo>
-#include <iostream>
 
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowscommons.h"
 #include "platforms/windows/windowsutils.h"
-#include "windowsdaemon.h"
 #include "windowsfirewall.h"
 #include "windowsroutemonitor.h"
 #include "wireguard.h"
@@ -215,6 +213,16 @@ struct WireGuardAPI {
       FreeLibrary(this->dll);
     }
   }
+  WIREGUARD_ADAPTER_HANDLE OpenOrCreateAdapter(const QStringView& name) {
+    auto wireguard_adapter = this->OpenAdapter((const wchar_t*)name.utf16());
+    if (wireguard_adapter != nullptr) {
+      return wireguard_adapter;
+    }
+    wireguard_adapter = this->CreateAdapter((const wchar_t*)name.utf16(),
+                                            L"Mozilla", &ADAPTER_GUID);
+
+    return wireguard_adapter;
+  }
 };
 
 std::unique_ptr<WireguardUtilsWindows> WireguardUtilsWindows::create(
@@ -263,8 +271,9 @@ bool WireguardUtilsWindows::interfaceExists() { return m_adapter != NULL; }
  */
 bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   // Create the Adapter and Cleanup fallbacks in case of failure.
-  WIREGUARD_ADAPTER_HANDLE wireguard_adapter = m_wireguard_api->CreateAdapter(
-      (const wchar_t*)interfaceName().utf16(), L"Mozilla", &ADAPTER_GUID);
+  const auto wireguard_adapter =
+      m_wireguard_api->OpenOrCreateAdapter(interfaceName());
+
   if (wireguard_adapter == NULL) {
     logger.error() << "Failed creating Wireguard Adapter";
     return false;
@@ -421,7 +430,7 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsWindows::getPeerStatus() {
   if (!m_adapter) {
     return {};
   }
-  DWORD bufferSize = 1024;
+  DWORD bufferSize = 2048;
   auto buffer = std::array<uint8_t, 2048>{};
 
   bool ok = m_wireguard_api->GetConfiguration(
