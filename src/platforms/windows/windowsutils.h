@@ -18,6 +18,8 @@ class WindowsUtils final {
 
   static bool getServiceStatus(const QString& name);
 
+  static void lockDownDLLSearchPath();
+
   // Returns the major version of Windows
   static QString windowsVersion();
 

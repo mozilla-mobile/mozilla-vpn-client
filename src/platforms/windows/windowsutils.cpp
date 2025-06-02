@@ -141,3 +141,25 @@ void WindowsUtils::updateTitleBarColor(QWindow* window, bool darkMode) {
       sizeof(defaultColor)));
   Q_ASSERT(ok);
 }
+
+/**
+ * @brief Locks down the DLL search path to mitigate DLL hijacking risks.
+ *
+ * Configures process mitigation policies to prefer system DLLs and disallow
+ * loading DLLs from remote locations. Adjusts the default DLL directories to
+ * further restrict where DLLs can be loaded from.
+ */
+void WindowsUtils::lockDownDLLSearchPath() {
+  // Clear the current dir from the DLL search path
+  SetDllDirectoryA("");
+  // Lock down the DLL search path to the system32 and application directories
+  // as they need admin rights to write to.
+  SetDefaultDllDirectories(LOAD_LIBRARY_SEARCH_SYSTEM32 |
+                           LOAD_LIBRARY_SEARCH_APPLICATION_DIR);
+
+  // Change the load order of DLLs to prefer system32 images
+  PROCESS_MITIGATION_IMAGE_LOAD_POLICY pol = {};
+  pol.PreferSystem32Images = 1;
+
+  SetProcessMitigationPolicy(ProcessImageLoadPolicy, &pol, sizeof(pol));
+}
