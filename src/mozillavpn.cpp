@@ -1208,7 +1208,6 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 
 QFuture<void> MozillaVPN::hardReset() {
   return controller()->deactivateFuture(Controller::ActivationPrincipal::ClientUser)->then([this](){
-      SettingsWatcher::instance()->stop();
       SettingsManager::instance()->hardReset();
       controller()->deleteOSTunnelConfig();
   });
@@ -1216,6 +1215,7 @@ QFuture<void> MozillaVPN::hardReset() {
 
 void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
+  SettingsWatcher::instance()->stop();
   hardReset().then([this](){
     controller()->quit();
   });
