@@ -1094,9 +1094,10 @@ bool Controller::deactivate(ActivationPrincipal user) {
 }
 
 QFuture<void> Controller::deactivateFuture(ActivationPrincipal user) {
-  auto const future = QtFuture::connect(m_impl.get(), &ControllerImpl::disconnected);
-  if(!deactivate(user)){
-    return QtFuture::makeReadyFuture<void>();
+  auto const future =
+      QtFuture::connect(m_impl.get(), &ControllerImpl::disconnected);
+  if (!deactivate(user)) {
+    return QtFuture::makeReadyVoidFuture();
   }
   return future;
 }
