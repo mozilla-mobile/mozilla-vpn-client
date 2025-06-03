@@ -6,7 +6,7 @@
 #define ERROR_TYPE_H
 
 #ifndef __wasm__
-#  include "bindings/qtglean.h"
+#  include "qtglean.h"
 #else
 enum ErrorType {};
 #endif

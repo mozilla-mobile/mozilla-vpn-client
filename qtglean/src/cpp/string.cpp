@@ -8,7 +8,7 @@
 #include <QJsonValue>
 
 #ifndef __wasm__
-#  include "bindings/qtglean.h"
+#  include "qtglean.h"
 #endif
 
 StringMetric::StringMetric(int id) : BaseMetric(id) {}
