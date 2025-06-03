@@ -6,6 +6,8 @@
 #define SETTINGSWATCHER_H
 
 #include <QObject>
+#include <QList>
+#include <QMetaObject>
 
 /**
  * @brief this class watches a few setting properties to see if we need to
@@ -17,19 +19,17 @@ class SettingsWatcher final : public QObject {
 
  public:
   static SettingsWatcher* instance();
-
   ~SettingsWatcher();
+
+  void stop();
 
  private:
   explicit SettingsWatcher(QObject* parent);
-
   void maybeServerSwitch();
-
   void operationCompleted();
 
- private:
-  class TaskSettingsWatcher;
-
+  // Store connections to allow disconnecting
+  QList<QMetaObject::Connection> m_connections;
   bool m_operationRunning = false;
 };
 

@@ -9,6 +9,7 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QTimer>
+#include <QFuture>
 
 #include "app.h"
 #include "authenticationlistener.h"
@@ -198,7 +199,7 @@ class MozillaVPN final : public App {
   static int runGuiApp(std::function<int()>&& a_callback);
 
  private:
-  void hardReset();
+  QFuture<void> hardReset();
   void maybeStateMain();
 
   void startSchedulingPeriodicOperations();

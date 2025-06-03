@@ -26,30 +26,30 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-#define CONNECT(x)                                  \
-  connect(settingsHolder, &SettingsHolder::x, this, \
-          &SettingsWatcher::maybeServerSwitch);
+#define CONNECT(x) \
+  m_connections.append(connect(settingsHolder, &SettingsHolder::x, this, \
+          &SettingsWatcher::maybeServerSwitch));
 
   CONNECT(captivePortalAlertChanged);
   CONNECT(vpnDisabledAppsChanged);
 
 #undef CONNECT
 
-#define DNS_CONNECT(x)                                                  \
-  connect(settingsHolder, &SettingsHolder::x, this, [this]() {          \
-    SettingsHolder* settingsHolder = SettingsHolder::instance();        \
+#define DNS_CONNECT(x) \
+  m_connections.append(connect(settingsHolder, &SettingsHolder::x, this, [this]() { \
+    SettingsHolder* settingsHolder = SettingsHolder::instance(); \
     if (settingsHolder->dnsProviderFlags() != SettingsHolder::Custom || \
-        DNSHelper::validateUserDNS(settingsHolder->userDNS())) {        \
-      maybeServerSwitch();                                              \
-    }                                                                   \
-  });
+        DNSHelper::validateUserDNS(settingsHolder->userDNS())) { \
+      maybeServerSwitch(); \
+    } \
+  }));
 
   DNS_CONNECT(dnsProviderFlagsChanged);
   DNS_CONNECT(userDNSChanged);
 
 #undef DNS_CONNECT
 
-  connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
+  m_connections.append(connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
           [this]() {
             Controller::State state =
                 MozillaVPN::instance()->controller()->state();
@@ -62,7 +62,14 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
               logger.debug() << "Resetting the operation running state";
               m_operationRunning = false;
             }
-          });
+          }));
+}
+
+void SettingsWatcher::stop() {
+  for (const auto& c : m_connections) {
+    disconnect(c);
+  }
+  m_connections.clear();
 }
 
 SettingsWatcher::~SettingsWatcher() { MZ_COUNT_DTOR(SettingsWatcher); }

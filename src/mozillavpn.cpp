@@ -1219,16 +1219,19 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   }));
 }
 
-void MozillaVPN::hardReset() {
-  SettingsManager::instance()->hardReset();
-  controller()->deleteOSTunnelConfig();
+QFuture<void> MozillaVPN::hardReset() {
+  return controller()->deactivateFuture(Controller::ActivationPrincipal::ClientUser)->then([this](){
+      SettingsWatcher::instance()->stop();
+      SettingsManager::instance()->hardReset();
+      controller()->deleteOSTunnelConfig();
+  });
 }
 
 void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
-  hardReset();
-  // Deactivate VPN and quit
-  controller()->quit();
+  hardReset().then([this](){
+    controller()->quit();
+  });
 }
 
 void MozillaVPN::requestDeleteAccount() {
