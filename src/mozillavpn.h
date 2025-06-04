@@ -9,7 +9,6 @@
 #include <QNetworkReply>
 #include <QObject>
 #include <QTimer>
-#include <QFuture>
 
 #include "app.h"
 #include "authenticationlistener.h"
@@ -194,7 +193,7 @@ class MozillaVPN final : public App {
   static bool mockFreeTrial();
 
  private:
-  QFuture<void> hardReset();
+  void hardReset();
   void maybeStateMain();
 
   void startSchedulingPeriodicOperations();
