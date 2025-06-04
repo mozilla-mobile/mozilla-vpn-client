@@ -5,9 +5,9 @@
 #ifndef SETTINGSWATCHER_H
 #define SETTINGSWATCHER_H
 
-#include <QObject>
 #include <QList>
 #include <QMetaObject>
+#include <QObject>
 
 /**
  * @brief this class watches a few setting properties to see if we need to
