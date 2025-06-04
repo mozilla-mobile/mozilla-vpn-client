@@ -4,12 +4,15 @@
 
 #include "commandlineparser.h"
 #include "leakdetector.h"
+#include "platforms/windows/windowsutils.h"
 #include "stdio.h"
 #ifdef MZ_WINDOWS
 
 #  include <windows.h>
 
 #  include <iostream>
+
+#  include "platforms/windows/windowsutils.h"
 
 #endif
 
@@ -29,6 +32,7 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
     std::clog.clear();
     std::cerr.clear();
   }
+  WindowsUtils::lockDownDLLSearchPath();
 #endif
 
   CommandLineParser clp;
