@@ -26,43 +26,44 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-#define CONNECT(x) \
+#define CONNECT(x)                                                       \
   m_connections.append(connect(settingsHolder, &SettingsHolder::x, this, \
-          &SettingsWatcher::maybeServerSwitch));
+                               &SettingsWatcher::maybeServerSwitch));
 
   CONNECT(captivePortalAlertChanged);
   CONNECT(vpnDisabledAppsChanged);
 
 #undef CONNECT
 
-#define DNS_CONNECT(x) \
-  m_connections.append(connect(settingsHolder, &SettingsHolder::x, this, [this]() { \
-    SettingsHolder* settingsHolder = SettingsHolder::instance(); \
-    if (settingsHolder->dnsProviderFlags() != SettingsHolder::Custom || \
-        DNSHelper::validateUserDNS(settingsHolder->userDNS())) { \
-      maybeServerSwitch(); \
-    } \
-  }));
+#define DNS_CONNECT(x)                                                      \
+  m_connections.append(                                                     \
+      connect(settingsHolder, &SettingsHolder::x, this, [this]() {          \
+        SettingsHolder* settingsHolder = SettingsHolder::instance();        \
+        if (settingsHolder->dnsProviderFlags() != SettingsHolder::Custom || \
+            DNSHelper::validateUserDNS(settingsHolder->userDNS())) {        \
+          maybeServerSwitch();                                              \
+        }                                                                   \
+      }));
 
   DNS_CONNECT(dnsProviderFlagsChanged);
   DNS_CONNECT(userDNSChanged);
 
 #undef DNS_CONNECT
 
-  m_connections.append(connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
-          [this]() {
-            Controller::State state =
-                MozillaVPN::instance()->controller()->state();
-            // m_operationRunning is set to true when the Controller is in
-            // StateOn. So, if we see a change, it means that the new settings
-            // values have been taken in consideration. We are ready to
-            // schedule a new TaskControllerAction if needed.
-            if (state != Controller::StateOn && state != Controller::StateOff &&
-                m_operationRunning) {
-              logger.debug() << "Resetting the operation running state";
-              m_operationRunning = false;
-            }
-          }));
+  m_connections.append(connect(
+      MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
+      [this]() {
+        Controller::State state = MozillaVPN::instance()->controller()->state();
+        // m_operationRunning is set to true when the Controller is in
+        // StateOn. So, if we see a change, it means that the new settings
+        // values have been taken in consideration. We are ready to
+        // schedule a new TaskControllerAction if needed.
+        if (state != Controller::StateOn && state != Controller::StateOff &&
+            m_operationRunning) {
+          logger.debug() << "Resetting the operation running state";
+          m_operationRunning = false;
+        }
+      }));
 }
 
 void SettingsWatcher::stop() {
