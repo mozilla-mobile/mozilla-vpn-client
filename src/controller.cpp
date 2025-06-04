@@ -5,7 +5,6 @@
 #include "controller.h"
 
 #include <QFileInfo>
-#include <QFuture>
 #include <QNetworkInformation>
 
 #include "app.h"
@@ -1091,15 +1090,6 @@ bool Controller::deactivate(ActivationPrincipal user) {
   Q_ASSERT(m_impl);
   m_impl->deactivate(stateToReason(m_state));
   return true;
-}
-
-QFuture<void> Controller::deactivateFuture(ActivationPrincipal user) {
-  auto const future =
-      QtFuture::connect(m_impl.get(), &ControllerImpl::disconnected);
-  if (!deactivate(user)) {
-    return QtFuture::makeReadyVoidFuture();
-  }
-  return future;
 }
 
 void Controller::forceDaemonSilentServerSwitch() {

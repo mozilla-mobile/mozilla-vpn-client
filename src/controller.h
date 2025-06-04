@@ -9,9 +9,6 @@
 #include <QList>
 #include <QObject>
 #include <QTimer>
-#include <optional>
-#include <QPromise>
-#include <QFuture>
 
 #include "interfaceconfig.h"
 #include "ipaddress.h"
@@ -48,7 +45,6 @@ class Controller : public QObject, public LogSerializer {
     ReasonSwitching,
     ReasonConfirming,
   };
-  Q_ENUM(Reason)
 
   enum ErrorCode {
     ErrorNone = 0,
@@ -119,8 +115,6 @@ class Controller : public QObject, public LogSerializer {
       const ServerData& serverData, ActivationPrincipal = ClientUser,
       ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
   bool deactivate(ActivationPrincipal = ClientUser);
-  // returns a QPromise<void> that resolves on disconnect
-  QFuture<void> deactivateFuture(ActivationPrincipal user);
 
   Q_INVOKABLE void quit();
   Q_INVOKABLE void forceDaemonCrash();
