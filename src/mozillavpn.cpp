@@ -1219,19 +1219,29 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   }));
 }
 
-QFuture<void> MozillaVPN::hardReset() {
-  return controller()->deactivateFuture(Controller::ActivationPrincipal::ClientUser).then([this](){
-      SettingsManager::instance()->hardReset();
-      controller()->deleteOSTunnelConfig();
+void MozillaVPN::hardReset() {
+  TaskScheduler::deleteTasks();
+  auto const deactivate =
+      new TaskControllerAction(TaskControllerAction::eDeactivate);
+
+  const auto afterDeactivation = new TaskFunction([this]() {
+    SettingsManager::instance()->hardReset();
+    controller()->deleteOSTunnelConfig();
   });
+
+  connect(deactivate, &Task::completed, this, [afterDeactivation]() {
+    TaskScheduler::scheduleTask(afterDeactivation);
+  });
+
+  TaskScheduler::scheduleTask(deactivate);
 }
 
 void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
   SettingsWatcher::instance()->stop();
-  hardReset().then([this](){
-    controller()->quit();
-  });
+  hardReset();
+  TaskScheduler::scheduleTask(
+      new TaskFunction([this]() { controller()->quit(); }));
 }
 
 void MozillaVPN::requestDeleteAccount() {
@@ -2086,7 +2096,7 @@ void MozillaVPN::registerInspectorCommands() {
       "Set Glean Source Tags (supply a comma seperated list)", 1,
       [](InspectorHandler*, const QList<QByteArray>& arguments) {
         QStringList tags = QString(arguments[1]).split(',');
-        emit MozillaVPN::instance()->setGleanSourceTags(tags);
+        emit MozillaVPN::instance() -> setGleanSourceTags(tags);
         return QJsonObject();
       });
 
