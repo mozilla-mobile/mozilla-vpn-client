@@ -5,9 +5,7 @@
   "type": "message",
   "conditions": {
     "min_client_version": "2.29.0",
-    "javascript": "conditions.js",
-    "platforms": ["macos", "windows", "linux"],
-    "env": "staging"
+    "javascript": "conditions.js"
   },
   "message": {
     "usesSharedStrings": true,
