@@ -1216,11 +1216,8 @@ void MozillaVPN::hardReset() {
     controller()->deleteOSTunnelConfig();
   });
 
-  connect(deactivate, &Task::completed, this, [afterDeactivation]() {
-    TaskScheduler::scheduleTask(afterDeactivation);
-  });
-
   TaskScheduler::scheduleTask(deactivate);
+  TaskScheduler::scheduleTask(afterDeactivation);
 }
 
 void MozillaVPN::hardResetAndQuit() {
