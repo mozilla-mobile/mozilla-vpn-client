@@ -17,7 +17,6 @@
 #  include <QProcessEnvironment>
 
 #  include "platforms/linux/linuxutils.h"
-#  include "versionutils.h"
 #endif
 
 // Generic callback functions
@@ -122,21 +121,20 @@ bool FeatureCallback_splitTunnel() {
   }
   QStringList desktop = pe.value("XDG_CURRENT_DESKTOP").split(":");
   if (desktop.contains("GNOME")) {
-    QString shellVersion = LinuxUtils::gnomeShellVersion();
+    QVersionNumber shellVersion = LinuxUtils::gnomeShellVersion();
     if (shellVersion.isNull()) {
       return false;
     }
-    if (VersionUtils::compareVersions(shellVersion, "3.34") < 0) {
+    if (shellVersion < QVersionNumber(3, 34)) {
       return false;
     }
   } else if (desktop.contains("KDE")) {
-    QString kdeVersion = LinuxUtils::kdeFrameworkVersion();
+    QVersionNumber kdeVersion = LinuxUtils::kdeFrameworkVersion();
     if (kdeVersion.isNull()) {
       return false;
     }
-    /* The metadata we need (SourcePath) is only added since kio v5.75
-     */
-    if (VersionUtils::compareVersions(kdeVersion, "5.75") < 0) {
+    /* The metadata we need (SourcePath) is only added since kio v5.75 */
+    if (kdeVersion < QVersionNumber(5, 75)) {
       return false;
     }
   }

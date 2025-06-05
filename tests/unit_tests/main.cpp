@@ -62,7 +62,7 @@ int main(int argc, char* argv[]) {
 
   int failures = 0;
 
-  LogHandler::setStderr(true);
+  LogHandler::instance()->setStderr(true);
 
   // If arguments were passed, then run a subset of tests.
   QStringList args = app.arguments();

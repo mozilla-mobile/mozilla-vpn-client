@@ -15,7 +15,7 @@
 #include "logger.h"
 #include "networkrequest.h"
 #include "qmlengineholder.h"
-#include "tasks/function/taskfunction.h"
+#include "taskfunction.h"
 
 namespace {
 Logger logger("QMLHotReload");

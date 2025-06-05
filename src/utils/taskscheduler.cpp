@@ -16,11 +16,13 @@ Logger logger("TaskScheduler");
 TaskScheduler* s_taskScheduler = nullptr;
 }  // namespace
 
+Q_GLOBAL_STATIC(TaskScheduler, taskScheduler);
+
 // static
 void TaskScheduler::scheduleTask(Task* task) {
   Q_ASSERT(task);
   logger.debug() << "Scheduling task:" << task->name();
-  maybeCreate()->scheduleTaskInternal(task);
+  taskScheduler->scheduleTaskInternal(task);
 }
 
 // static
@@ -34,32 +36,25 @@ void TaskScheduler::scheduleTaskNow(Task* task) {
 
 // static
 void TaskScheduler::deleteTasks() {
-  maybeCreate()->deleteTasksInternal(/* forced */ false);
+  taskScheduler->deleteTasksInternal(/* forced */ false);
 }
 
 // static
 void TaskScheduler::forceDeleteTasks() {
-  maybeCreate()->deleteTasksInternal(/* forced */ true);
+  taskScheduler->deleteTasksInternal(/* forced */ true);
 }
 
 // static
-TaskScheduler* TaskScheduler::maybeCreate() {
-  if (!s_taskScheduler) {
-    s_taskScheduler = new TaskScheduler(qApp);
-  }
-  return s_taskScheduler;
+void TaskScheduler::pause() { taskScheduler->m_paused++; }
+
+// static
+void TaskScheduler::resume() {
+  taskScheduler->m_paused--;
+  taskScheduler->maybeRunTask();
 }
 
-#ifdef UNIT_TEST
 // static
-void TaskScheduler::stop() { maybeCreate()->m_stopped = true; }
-
-// static
-QList<Task*> TaskScheduler::tasks() { return maybeCreate()->m_tasks; }
-
-// static
-void TaskScheduler::reset() { delete s_taskScheduler; }
-#endif
+QList<Task*>& TaskScheduler::tasks() { return taskScheduler->m_tasks; }
 
 TaskScheduler::TaskScheduler(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(TaskScheduler);
@@ -67,8 +62,7 @@ TaskScheduler::TaskScheduler(QObject* parent) : QObject(parent) {
 
 TaskScheduler::~TaskScheduler() {
   MZ_COUNT_DTOR(TaskScheduler);
-  qDeleteAll(s_taskScheduler->m_tasks);
-  s_taskScheduler = nullptr;
+  qDeleteAll(m_tasks);
 }
 
 void TaskScheduler::scheduleTaskInternal(Task* task) {
@@ -83,11 +77,9 @@ void TaskScheduler::maybeRunTask() {
     return;
   }
 
-#ifdef UNIT_TEST
-  if (m_stopped) {
+  if (m_paused > 0) {
     return;
   }
-#endif
 
   m_running_task = m_tasks.takeFirst();
   Q_ASSERT(m_running_task);

@@ -5,8 +5,8 @@
 #include "testlogger.h"
 
 #include <QScopeGuard>
+#include <QtTest/QtTest>
 
-#include "helper.h"
 #include "logger.h"
 #include "loghandler.h"
 
@@ -50,8 +50,8 @@ void TestLogger::logTruncation() {
 
   // Disable stderr for this test, it's going to be a *lot*
   // turn it back on when we're done too.
-  LogHandler::setStderr(false);
-  auto guard = qScopeGuard([&] { LogHandler::setStderr(true); });
+  LogHandler::instance()->setStderr(false);
+  auto guard = qScopeGuard([&] { LogHandler::instance()->setStderr(true); });
 
   // Write a megabyte log data.
   const QString example = "All work and no play makes Jack a dull boy";
@@ -76,5 +76,3 @@ void TestLogger::logTruncation() {
   QVERIFY(truncatedBuffer.size() > 64 * 1024);
   QVERIFY(truncatedBuffer.size() < 128 * 1024);
 }
-
-static TestLogger s_testLogger;

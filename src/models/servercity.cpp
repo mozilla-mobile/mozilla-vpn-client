@@ -4,15 +4,14 @@
 
 #include "servercity.h"
 
+#include <QCoreApplication>
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
 
 #include "constants.h"
-#include "feature/feature.h"
 #include "leakdetector.h"
-#include "localizer.h"
-#include "location.h"
+#include "models/location.h"
 #include "mozillavpn.h"
 #include "servercountrymodel.h"
 #include "serverlatency.h"
@@ -109,8 +108,9 @@ QString ServerCity::hashKey(const QString& country, const QString cityName) {
   return cityName + "," + country;
 }
 
-const QString ServerCity::localizedName() const {
-  return Localizer::instance()->getTranslatedCityName(m_name);
+// static
+QString ServerCity::localizedName(const QString& name) {
+  return QCoreApplication::translate("ServerCity", qPrintable(name));
 }
 
 qint64 ServerCity::latency() const {

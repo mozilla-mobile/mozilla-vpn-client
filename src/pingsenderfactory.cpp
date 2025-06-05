@@ -11,7 +11,7 @@
 #elif defined(MZ_WINDOWS)
 #  include "platforms/windows/windowspingsender.h"
 #elif defined(MZ_WASM) || defined(UNIT_TEST)
-#  include "platforms/dummy/dummypingsender.h"
+#  include "dummypingsender.h"
 #else
 #  error "Unsupported platform"
 #endif

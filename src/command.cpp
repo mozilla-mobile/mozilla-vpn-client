@@ -75,9 +75,10 @@ bool Command::userAuthenticated() {
 
 bool Command::loadModels() {
   MozillaVPN* vpn = MozillaVPN::instance();
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
 
   // First the keys!
-  if (!vpn->keys()->fromSettings()) {
+  if (!vpn->keys()->fromSettings(settingsHolder->privateKey())) {
     QTextStream stream(stdout);
     stream << "No cache available" << Qt::endl;
     return false;
@@ -112,7 +113,7 @@ int Command::runCommandLineApp(std::function<int()>&& a_callback) {
 
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
-    LogHandler::setStderr(true);
+    LogHandler::instance()->setStderr(true);
   }
 
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
@@ -140,7 +141,7 @@ int Command::runGuiApp(std::function<int()>&& a_callback) {
 
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
-    LogHandler::setStderr(true);
+    LogHandler::instance()->setStderr(true);
   }
 
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
@@ -175,7 +176,7 @@ int Command::runQmlApp(std::function<int()>&& a_callback) {
 
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
-    LogHandler::setStderr(true);
+    LogHandler::instance()->setStderr(true);
   }
 
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);

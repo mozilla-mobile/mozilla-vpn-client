@@ -6,12 +6,13 @@
 #define LINUXUTILS_H
 
 #include <QObject>
+#include <QVersionNumber>
 
 namespace LinuxUtils {
 QString findCgroupPath(const QString& type);
 QString findCgroup2Path();
-QString gnomeShellVersion();
-QString kdeFrameworkVersion();
+QVersionNumber gnomeShellVersion();
+QVersionNumber kdeFrameworkVersion();
 QString desktopFileId(const QString& path);
 }  // namespace LinuxUtils
 

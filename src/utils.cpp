@@ -12,14 +12,21 @@
 #include "urlopener.h"
 
 #ifdef MZ_ANDROID
+#  include <android/log.h>
+
 #  include "platforms/android/androidcommons.h"
 #endif
 #ifdef MZ_WINDOWS
 #  include "platforms/windows/windowsutils.h"
 #endif
+#ifdef MZ_IOS
+#  include "platforms/ios/ioscommons.h"
+#endif
 
 #include <QApplication>
+#include <QBuffer>
 #include <QClipboard>
+#include <QUrl>
 
 namespace {
 Logger logger("Utils");
@@ -63,3 +70,47 @@ void Utils::launchPlayStore() {
   AndroidCommons::launchPlayStore();
 }
 #endif
+
+bool Utils::viewLogs() {
+  logger.debug() << "View logs";
+
+  if (!Feature::get(Feature::Feature_shareLogs)->isSupported()) {
+    logger.error() << "ViewLogs Called on unsupported OS or version!";
+    return false;
+  }
+
+#if defined(MZ_ANDROID) || defined(MZ_IOS)
+  bool ok = true;
+  QBuffer* buffer = new QBuffer();
+  buffer->open(QIODevice::WriteOnly | QIODevice::Append | QIODevice::Text);
+  connect(buffer, &QIODevice::aboutToClose, buffer, &QObject::deleteLater);
+#  if defined(MZ_ANDROID)
+  connect(buffer, &QIODevice::aboutToClose, this,
+          [&]() { ok = AndroidCommons::shareText(QString(buffer->data())); });
+#  elif defined(MZ_IOS)
+  connect(buffer, &QIODevice::aboutToClose, this,
+          [&]() { IOSCommons::shareLogs(QString(buffer->data())); });
+#  endif
+  LogHandler::instance()->logSerialize(buffer);
+  return ok;
+#endif
+
+  if (writeAndShowLogs(QStandardPaths::DesktopLocation) ||
+      writeAndShowLogs(QStandardPaths::HomeLocation) ||
+      writeAndShowLogs(QStandardPaths::TempLocation)) {
+    LogHandler::instance()->flushLogs();
+    return true;
+  }
+
+  logger.warning()
+      << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
+  return false;
+}
+
+bool Utils::writeAndShowLogs(QStandardPaths::StandardLocation location) {
+  LogHandler* instance = LogHandler::instance();
+  return instance->writeLogsToLocation(location, [](const QString& filename) {
+    logger.debug() << "Opening the logFile somehow.";
+    UrlOpener::instance()->openUrl(QUrl::fromLocalFile(filename));
+  });
+}

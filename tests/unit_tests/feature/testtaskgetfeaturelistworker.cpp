@@ -16,8 +16,8 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledOnStart() {
   SettingsHolder settingsHolder;
 
   // Stop the TaskScheduler so we can inpect the tasks scheduled.
-  TaskScheduler::stop();
-
+  TaskScheduler::pause();
+  auto guard = qScopeGuard(&TaskScheduler::resume);
   auto initialListOfTasks = TaskScheduler::tasks();
 
   TaskGetFeatureListWorker worker;
@@ -35,15 +35,15 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledOnStart() {
 
   // Remove the TaskScheduler singleton so that state doesn't leak to other
   // tests.
-  TaskScheduler::reset();
+  TaskScheduler::forceDeleteTasks();
 }
 
 void TestTaskGetFeatureListWorker::testTaskIsScheduledPeriodically() {
   SettingsHolder settingsHolder;
 
   // Stop the TaskScheduler so we can inpect the tasks scheduled.
-  TaskScheduler::stop();
-
+  TaskScheduler::pause();
+  auto guard = qScopeGuard(&TaskScheduler::resume);
   auto initialListOfTasks = TaskScheduler::tasks();
 
   TaskGetFeatureListWorker worker;
@@ -80,15 +80,15 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledPeriodically() {
 
   // Remove the TaskScheduler singleton so that state doesn't leak to other
   // tests.
-  TaskScheduler::reset();
+  TaskScheduler::forceDeleteTasks();
 }
 
 void TestTaskGetFeatureListWorker::testTaskIsScheduledOnTokenChange() {
   SettingsHolder settingsHolder;
 
   // Stop the TaskScheduler so we can inpect the tasks scheduled.
-  TaskScheduler::stop();
-
+  TaskScheduler::pause();
+  auto guard = qScopeGuard(&TaskScheduler::resume);
   auto initialListOfTasks = TaskScheduler::tasks();
 
   TaskGetFeatureListWorker worker;
@@ -113,15 +113,15 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledOnTokenChange() {
 
   // Remove the TaskScheduler singleton so that state doesn't leak to other
   // tests.
-  TaskScheduler::reset();
+  TaskScheduler::forceDeleteTasks();
 }
 
 void TestTaskGetFeatureListWorker::testTimerIsStoppedOnDestruction() {
   SettingsHolder settingsHolder;
 
   // Stop the TaskScheduler so we can inpect the tasks scheduled.
-  TaskScheduler::stop();
-
+  TaskScheduler::pause();
+  auto guard = qScopeGuard(&TaskScheduler::resume);
   auto initialListOfTasks = TaskScheduler::tasks();
 
   {
@@ -174,7 +174,7 @@ void TestTaskGetFeatureListWorker::testTimerIsStoppedOnDestruction() {
 
   // Remove the TaskScheduler singleton so that state doesn't leak to other
   // tests.
-  TaskScheduler::reset();
+  TaskScheduler::forceDeleteTasks();
 }
 
 static TestTaskGetFeatureListWorker s_testTaskGetFeatureListWorker;

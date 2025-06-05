@@ -130,7 +130,7 @@ int CommandUI::run(QStringList& tokens) {
   if (testingOption.m_set) {
     QCoreApplication::setOrganizationName("Mozilla Testing");
 
-    LogHandler::setStderr(true);
+    LogHandler::instance()->setStderr(true);
   }
 
   return runQmlApp([&]() {

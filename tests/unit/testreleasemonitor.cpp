@@ -7,13 +7,13 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QVersionNumber>
 
 #include "helper.h"
 #include "releasemonitor.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
 #include "update/versionapi.h"
-#include "versionutils.h"
 
 void TestReleaseMonitor::failure() {
   SettingsHolder settingsHolder;
@@ -127,9 +127,9 @@ void TestReleaseMonitor::compareVersions_data() {
   QTest::addColumn<int>("result");
 
   QTest::addRow("empty a") << ""
-                           << "123" << 1;
+                           << "123" << -1;
   QTest::addRow("empty b") << "123"
-                           << "" << -1;
+                           << "" << 1;
   QTest::addRow("empty all") << ""
                              << "" << 0;
 
@@ -143,8 +143,6 @@ void TestReleaseMonitor::compareVersions_data() {
                            << "0" << 0;
   QTest::addRow("equal 5") << "123"
                            << "123" << 0;
-  QTest::addRow("euqal 6") << "0.1.2.123"
-                           << "0.1.2.456" << 0;
 
   QTest::addRow("a wins 1") << "0"
                             << "123" << -1;
@@ -223,31 +221,17 @@ void TestReleaseMonitor::compareVersions() {
   QFETCH(QString, b);
   QFETCH(int, result);
 
-  QCOMPARE(VersionUtils::compareVersions(a, b), result);
-}
-
-void TestReleaseMonitor::stripMinor_data() {
-  QTest::addColumn<QString>("input");
-  QTest::addColumn<QString>("result");
-
-  QTest::addRow("empty") << ""
-                         << "0.0.0";
-  QTest::addRow("short") << "1"
-                         << "1.0.0";
-  QTest::addRow("medium") << "1.2"
-                          << "1.2.0";
-  QTest::addRow("normal") << "1.2.3"
-                          << "1.2.0";
-  QTest::addRow("big") << "1.2.3.4"
-                       << "1.2.0";
-  QTest::addRow("extra") << "1.2.3~alpha"
-                         << "1.2.0";
-}
-
-void TestReleaseMonitor::stripMinor() {
-  QFETCH(QString, input);
-  QFETCH(QString, result);
-  QCOMPARE(VersionUtils::stripMinor(input), result);
+  QVersionNumber aVersion = QVersionNumber::fromString(a);
+  QVersionNumber bVersion = QVersionNumber::fromString(b);
+  if (result > 0) {
+    QVERIFY(aVersion > bVersion);
+    QVERIFY(aVersion != bVersion);
+  } else if (result < 0) {
+    QVERIFY(!(aVersion > bVersion));
+    QVERIFY(aVersion != bVersion);
+  } else {
+    QVERIFY(aVersion == bVersion);
+  }
 }
 
 static TestReleaseMonitor s_testReleaseMonitor;

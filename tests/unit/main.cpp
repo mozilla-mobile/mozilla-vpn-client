@@ -154,7 +154,7 @@ int main(int argc, char* argv[]) {
       TestHelper::networkRequestPost, TestHelper::networkRequestPostIODevice);
 
   I18nStrings::initialize();
-  LogHandler::setStderr(true);
+  LogHandler::instance()->setStderr(true);
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
 
   // If arguments were passed, then run a subset of tests.
