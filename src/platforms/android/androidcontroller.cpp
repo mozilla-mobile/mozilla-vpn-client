@@ -260,7 +260,7 @@ void AndroidController::activate(const InterfaceConfig& config,
 }
 
 void AndroidController::deactivate(Controller::Reason reason) {
-  logger.debug() << "deactivation";
+  logger.debug() << "deactivation:  " << reason;
 
   if (reason != Controller::ReasonNone) {
     // Just show that we're disconnected
@@ -305,4 +305,8 @@ void AndroidController::forceDaemonSilentServerSwitch() {
   logger.debug() << "requesting silent server switch from controller";
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_SILENT_SERVER_SWITCH,
                                     QString());
+}
+
+void AndroidController::deleteOSTunnelConfig() {
+  AndroidVPNActivity::sendToService(ServiceAction::ACTION_CLEAR_STORAGE, {});
 }

@@ -1207,15 +1207,25 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 }
 
 void MozillaVPN::hardReset() {
-  SettingsManager::instance()->hardReset();
-  controller()->deleteOSTunnelConfig();
+  TaskScheduler::deleteTasks();
+  auto const deactivate =
+      new TaskControllerAction(TaskControllerAction::eDeactivate);
+
+  const auto afterDeactivation = new TaskFunction([this]() {
+    SettingsManager::instance()->hardReset();
+    controller()->deleteOSTunnelConfig();
+  });
+
+  TaskScheduler::scheduleTask(deactivate);
+  TaskScheduler::scheduleTask(afterDeactivation);
 }
 
 void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
+  SettingsWatcher::instance()->stop();
   hardReset();
-  // Deactivate VPN and quit
-  controller()->quit();
+  TaskScheduler::scheduleTask(
+      new TaskFunction([this]() { controller()->quit(); }));
 }
 
 void MozillaVPN::requestDeleteAccount() {
@@ -2076,7 +2086,7 @@ void MozillaVPN::registerInspectorCommands() {
       "Set Glean Source Tags (supply a comma seperated list)", 1,
       [](InspectorHandler*, const QList<QByteArray>& arguments) {
         QStringList tags = QString(arguments[1]).split(',');
-        emit MozillaVPN::instance()->setGleanSourceTags(tags);
+        emit MozillaVPN::instance() -> setGleanSourceTags(tags);
         return QJsonObject();
       });
 
