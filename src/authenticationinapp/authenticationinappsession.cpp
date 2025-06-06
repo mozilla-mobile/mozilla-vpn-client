@@ -602,6 +602,14 @@ void AuthenticationInAppSession::signInOrUpCompleted(
   // Let's store it to delete it at the DTOR.
   m_sessionToken = QByteArray::fromHex(sessionToken.toUtf8());
 
+  // Deleting an account requires a verified session. (A verified account is not good enough.)
+  // Thus, always request a verified session when deleting account.
+  // If verificationMethod is empty, this is the first pass - and we need to bounce out to verify session.
+  if (m_typeAuthentication == TypeAccountDeletion && verificationMethod.isEmpty()) {
+    requestVerifiedSession();
+    return;
+  }
+
   if (!accountVerified) {
     if (verificationMethod == "totp-2fa") {
       AuthenticationInApp::instance()->requestState(
@@ -620,6 +628,34 @@ void AuthenticationInAppSession::signInOrUpCompleted(
   }
 
   finalizeSignInOrUp();
+}
+
+void AuthenticationInAppSession::requestVerifiedSession() {
+  logger.info() << "Requesting verified session";
+  Q_ASSERT(!m_sessionToken.isEmpty());
+
+  QJsonObject obj{
+      {"email", m_emailAddressCaseFix},
+      {"authPW", QString(generateAuthPw().toHex())}
+  };
+
+NetworkRequest* request = fxaHawkPostRequest(
+      m_task, "/v1/session/reauth", m_sessionToken,
+      obj);
+
+  connect(request, &NetworkRequest::requestFailed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
+            logger.error() << "Failed to reauth the session" << error;
+            processRequestFailure(error, data);
+          });
+
+  connect(request, &NetworkRequest::requestCompleted,
+          [this](const QByteArray& data) {
+            logger.debug() << "Session reauthed:" << logger.sensitive(data);
+            resendVerificationSessionCodeEmail();
+            QString verificationMethod = "email-otp"; // FIX ME: THIS SHOULD BE PULLED FROM RESPONSE
+            signInOrUpCompleted(m_sessionToken, false, verificationMethod);
+          });
 }
 
 #ifdef UNIT_TEST

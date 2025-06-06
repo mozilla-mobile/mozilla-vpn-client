@@ -84,6 +84,7 @@ class AuthenticationInAppSession final : public QObject {
   void accountChecked(bool exists, bool hasPassword, bool hasLinkedAccount);
   void signInOrUpCompleted(const QString& sessionToken, bool accountVerified,
                            const QString& verificationMethod);
+  void requestVerifiedSession();
   void unblockCodeNeeded();
   void finalizeSignInOrUp();
 
