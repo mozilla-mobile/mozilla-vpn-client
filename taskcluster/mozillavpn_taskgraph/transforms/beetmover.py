@@ -71,7 +71,7 @@ def add_addons_release_artifacts(config, tasks):
 @transforms.add
 def add_beetmover_worker_config(config, tasks):
     build_id = config.params["moz_build_date"]
-    build_type_os = {
+    build_type_os = { 
         "macos/opt": "mac",
         "windows/opt": "windows",
         "android/x86": "android",
@@ -79,6 +79,7 @@ def add_beetmover_worker_config(config, tasks):
         "android/armv7": "android",
         "android/arm64-v8a": "android",
         "linux64/release-deb": "linux",
+        "source/vpn" : "source",
     }
 
     if config.params["version"]:
