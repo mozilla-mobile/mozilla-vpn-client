@@ -755,93 +755,93 @@ void AuthenticationInAppSession::finalizeSignInOrUp() {
             processRequestFailure(error, data);
           });
 
-  connect(
-      request, &NetworkRequest::requestCompleted, this,
-      [this](const QByteArray& data) {
-        logger.debug() << "Oauth code creation completed:"
-                       << logger.sensitive(data);
+  connect(request, &NetworkRequest::requestCompleted, this,
+          [this](const QByteArray& data) {
+            logger.debug() << "Oauth code creation completed:"
+                           << logger.sensitive(data);
 
-        QJsonDocument json = QJsonDocument::fromJson(data);
-        if (json.isNull()) {
-          emit failed(ErrorHandler::AuthenticationError);
-          return;
-        }
-
-        QJsonObject obj = json.object();
-        QJsonValue code = obj.value("code");
-        if (!code.isString()) {
-          logger.error() << "FxA Authz: code not found";
-          emit failed(ErrorHandler::AuthenticationError);
-          return;
-        }
-        QJsonValue state = obj.value("state");
-        if (!state.isString()) {
-          logger.error() << "FxA Authz: state not found";
-          emit failed(ErrorHandler::AuthenticationError);
-          return;
-        }
-        QJsonValue redirect = obj.value("redirect");
-        if (!redirect.isString()) {
-          logger.error() << "FxA Authz: redirect not found";
-          emit failed(ErrorHandler::AuthenticationError);
-          return;
-        }
-
-        NetworkRequest* request = new NetworkRequest(m_task, 200);
-        request->requestInternal().setAttribute(
-            QNetworkRequest::RedirectPolicyAttribute,
-            QNetworkRequest::NoLessSafeRedirectPolicy);
-        request->get(redirect.toString());
-
-        connect(
-            request, &NetworkRequest::requestFailed, this,
-            [this](QNetworkReply::NetworkError error, const QByteArray& data) {
-              QJsonDocument json = QJsonDocument::fromJson(data);
-              if (!json.isObject()) {
-                emit failed(ErrorHandler::toErrorType(error));
-                return;
-              }
-
-              QJsonObject obj = json.object();
-              QString detail = obj["detail"].toString();
-              if (detail.isEmpty()) {
-                logger.error() << "Invalid JSON: no detail value";
-                emit failed(ErrorHandler::AuthenticationError);
-                return;
-              }
-
-              logger.error() << "Authentication failed:" << detail;
+            QJsonDocument json = QJsonDocument::fromJson(data);
+            if (json.isNull()) {
               emit failed(ErrorHandler::AuthenticationError);
-            });
+              return;
+            }
 
-        connect(request, &NetworkRequest::requestCompleted, this,
-                [this](const QByteArray& data) {
-                  logger.debug() << "Final redirect fetch completed:" << data;
+            QJsonObject obj = json.object();
+            QJsonValue code = obj.value("code");
+            if (!code.isString()) {
+              logger.error() << "FxA Authz: code not found";
+              emit failed(ErrorHandler::AuthenticationError);
+              return;
+            }
+            QJsonValue state = obj.value("state");
+            if (!state.isString()) {
+              logger.error() << "FxA Authz: state not found";
+              emit failed(ErrorHandler::AuthenticationError);
+              return;
+            }
+            QJsonValue redirect = obj.value("redirect");
+            if (!redirect.isString()) {
+              logger.error() << "FxA Authz: redirect not found";
+              emit failed(ErrorHandler::AuthenticationError);
+              return;
+            }
 
-                  QJsonDocument json = QJsonDocument::fromJson(data);
-                  if (json.isNull()) {
-                    emit failed(ErrorHandler::AuthenticationError);
-                    return;
-                  }
+            NetworkRequest* request = new NetworkRequest(m_task, 200);
+            request->requestInternal().setAttribute(
+                QNetworkRequest::RedirectPolicyAttribute,
+                QNetworkRequest::NoLessSafeRedirectPolicy);
+            request->get(redirect.toString());
 
-                  QJsonObject obj = json.object();
-                  QJsonValue code = obj.value("code");
-                  if (!code.isString()) {
-                    logger.error() << "Code not received!";
-                    emit failed(ErrorHandler::AuthenticationError);
-                    return;
-                  }
+            connect(request, &NetworkRequest::requestFailed, this,
+                    [this](QNetworkReply::NetworkError error,
+                           const QByteArray& data) {
+                      QJsonDocument json = QJsonDocument::fromJson(data);
+                      if (!json.isObject()) {
+                        emit failed(ErrorHandler::toErrorType(error));
+                        return;
+                      }
 
-                  // if (shouldRecordAuthenticationFlowTelemetry()) {
-                  //   if (m_sessionType == SignIn) {
-                  //     mozilla::glean::outcome::login_ended.record();
-                  //   } else if (m_sessionType == SignUp) {
-                  //     mozilla::glean::outcome::registration_completed.record();
-                  //   }
-                  // }
-                  emit completed(code.toString());
-                });
-      });
+                      QJsonObject obj = json.object();
+                      QString detail = obj["detail"].toString();
+                      if (detail.isEmpty()) {
+                        logger.error() << "Invalid JSON: no detail value";
+                        emit failed(ErrorHandler::AuthenticationError);
+                        return;
+                      }
+
+                      logger.error() << "Authentication failed:" << detail;
+                      emit failed(ErrorHandler::AuthenticationError);
+                    });
+
+            connect(request, &NetworkRequest::requestCompleted, this,
+                    [this](const QByteArray& data) {
+                      logger.debug()
+                          << "Final redirect fetch completed:" << data;
+
+                      QJsonDocument json = QJsonDocument::fromJson(data);
+                      if (json.isNull()) {
+                        emit failed(ErrorHandler::AuthenticationError);
+                        return;
+                      }
+
+                      QJsonObject obj = json.object();
+                      QJsonValue code = obj.value("code");
+                      if (!code.isString()) {
+                        logger.error() << "Code not received!";
+                        emit failed(ErrorHandler::AuthenticationError);
+                        return;
+                      }
+
+                      // if (shouldRecordAuthenticationFlowTelemetry()) {
+                      //   if (m_sessionType == SignIn) {
+                      //     mozilla::glean::outcome::login_ended.record();
+                      //   } else if (m_sessionType == SignUp) {
+                      //     mozilla::glean::outcome::registration_completed.record();
+                      //   }
+                      // }
+                      emit completed(code.toString());
+                    });
+          });
 }
 
 void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
