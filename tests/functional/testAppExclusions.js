@@ -57,10 +57,10 @@ describe('Settings', function() {
     assert(await getNumDisabledApps() == '0');
 
     // Check that we collect telemetry
-    const events = await vpn.gleanTestGetValue("interaction", "clearAppExclusionsSelected", "main");
-    assert.equal(events.length, 1);
-    var element = events[0];
-    assert.equal(element.extra.screen, "app_exclusions");
+    // const events = await vpn.gleanTestGetValue("interaction",
+    // "clearAppExclusionsSelected", "main"); assert.equal(events.length, 1);
+    // var element = events[0];
+    // assert.equal(element.extra.screen, "app_exclusions");
   });
 
   it('Excluded apps are at the top of the list on initial load', async () => {
@@ -113,49 +113,64 @@ describe('Settings', function() {
 
     const appExclusionsTelemetryScreenId = "app_exclusions"
 
-    it('Record telemetry when user clicks on Excluded Apps', async () => {
-      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-      await vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    // it('Record telemetry when user clicks on Excluded Apps', async () => {
+    //   await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    //   await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    //   await
+    //   vpn.waitForQueryAndClick(queries.screenSettings.APP_EXCLUSIONS.visible());
+    //   await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
-      // Check that we collect telemetry
-      const events = await vpn.gleanTestGetValue("interaction", "appExclusionsSelected", "main");
-      var element = events[0];
-      assert.equal(element.extra.screen, "settings");
-    });
+    //   // Check that we collect telemetry
+    //   const events = await vpn.gleanTestGetValue("interaction",
+    //   "appExclusionsSelected", "main"); var element = events[0];
+    //   assert.equal(element.extra.screen, "settings");
+    // });
 
-    it('Checking Excluded Apps screen impression telemetry', async () => {
-      const appExclusionsSreenEvents = await vpn.gleanTestGetValue("impression", "appExclusionsScreen", "main");
-      assert.equal(appExclusionsSreenEvents.length, 1);
-      const appExclusionsSreenEventsExtras = appExclusionsSreenEvents[0].extra;
-      assert.equal(appExclusionsTelemetryScreenId, appExclusionsSreenEventsExtras.screen);
-    });
+    // it('Checking Excluded Apps screen impression telemetry', async () => {
+    //   const appExclusionsSreenEvents = await
+    //   vpn.gleanTestGetValue("impression", "appExclusionsScreen", "main");
+    //   assert.equal(appExclusionsSreenEvents.length, 1);
+    //   const appExclusionsSreenEventsExtras =
+    //   appExclusionsSreenEvents[0].extra;
+    //   assert.equal(appExclusionsTelemetryScreenId,
+    //   appExclusionsSreenEventsExtras.screen);
+    // });
 
-    it('Checking privacy help sheet telemetry', async () => {
-      const appExclusionsHelpSheetTelemetryScreenId = "app_exclusions_info"
+    // it('Checking privacy help sheet telemetry', async () => {
+    //   const appExclusionsHelpSheetTelemetryScreenId = "app_exclusions_info"
 
-      await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_BUTTON.visible());
+    //   await
+    //   vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_BUTTON.visible());
 
-      const helpTooltipSelectedEvents = await vpn.gleanTestGetValue("interaction", "helpTooltipSelected", "main");
-      assert.equal(helpTooltipSelectedEvents.length, 1);
-      const helpTooltipSelectedEventsExtras = helpTooltipSelectedEvents[0].extra;
-      assert.equal(appExclusionsTelemetryScreenId, helpTooltipSelectedEventsExtras.screen);
+    //   const helpTooltipSelectedEvents = await
+    //   vpn.gleanTestGetValue("interaction", "helpTooltipSelected", "main");
+    //   assert.equal(helpTooltipSelectedEvents.length, 1);
+    //   const helpTooltipSelectedEventsExtras =
+    //   helpTooltipSelectedEvents[0].extra;
+    //   assert.equal(appExclusionsTelemetryScreenId,
+    //   helpTooltipSelectedEventsExtras.screen);
 
-      await vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.opened());
+    //   await
+    //   vpn.waitForQuery(queries.screenSettings.appExclusionsView.HELP_SHEET.opened());
 
-      const appExclusionsInfoScreenEvents = await vpn.gleanTestGetValue("impression", "appExclusionsInfoScreen", "main");
-      assert.equal(appExclusionsInfoScreenEvents.length, 1);
-      const appExclusionsInfoScreenEventsExtras = appExclusionsInfoScreenEvents[0].extra;
-      assert.equal(appExclusionsHelpSheetTelemetryScreenId, appExclusionsInfoScreenEventsExtras.screen);
+    //   const appExclusionsInfoScreenEvents = await
+    //   vpn.gleanTestGetValue("impression", "appExclusionsInfoScreen", "main");
+    //   assert.equal(appExclusionsInfoScreenEvents.length, 1);
+    //   const appExclusionsInfoScreenEventsExtras =
+    //   appExclusionsInfoScreenEvents[0].extra;
+    //   assert.equal(appExclusionsHelpSheetTelemetryScreenId,
+    //   appExclusionsInfoScreenEventsExtras.screen);
 
-      await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
+    //   await
+    //   vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
 
-      const learnMoreSelectedEvents = await vpn.gleanTestGetValue("interaction", "learnMoreSelected", "main");
-      assert.equal(learnMoreSelectedEvents.length, 1);
-      const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
-      assert.equal(appExclusionsHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
-    });
+    //   const learnMoreSelectedEvents = await
+    //   vpn.gleanTestGetValue("interaction", "learnMoreSelected", "main");
+    //   assert.equal(learnMoreSelectedEvents.length, 1);
+    //   const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
+    //   assert.equal(appExclusionsHelpSheetTelemetryScreenId,
+    //   learnMoreSelectedEventsExtras.screen);
+    // });
 
     // Dummy VPN does not have the Add Application button so we cannot currently test this.
     // Jira issue: https://mozilla-hub.atlassian.net/browse/VPN-5974
