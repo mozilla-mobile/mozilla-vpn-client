@@ -15,7 +15,7 @@ MZInAppAuthenticationThirdParty {
     id: authStubAccount
     objectName: "authStubAccount"
 
-    _telemetryScreenId: "authentication_stub_account"
+    // _telemetryScreenId: "authentication_stub_account"
     _imgSource: MZAssetLookup.getImageSource("CheckEmail")
     _headlineText: MZI18n.InAppAuthStubAccountVerificationHeader
 

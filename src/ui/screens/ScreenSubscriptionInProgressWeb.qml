@@ -11,7 +11,7 @@ MZLoader {
     objectName: "subscriptionInProgressWeb"
     headlineText: MZI18n.PurchaseWebInProgress2
 
-    property string telemetryScreenId: "continue_in_browser"
+    // property string telemetryScreenId: "continue_in_browser"
 
     MZCancelButton {
         id: footerLink
@@ -27,9 +27,9 @@ MZLoader {
         }
     }
 
-    Component.onCompleted: {
-        Glean.impression.continueInBrowserScreen.record({
-            screen: telemetryScreenId,
-        });
-    }
+    // Component.onCompleted: {
+    //     Glean.impression.continueInBrowserScreen.record({
+    //         screen: telemetryScreenId,
+    //     });
+    // }
 }

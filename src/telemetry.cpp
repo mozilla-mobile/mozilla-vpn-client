@@ -50,18 +50,18 @@ void Telemetry::initialize() {
   logger.debug() << "Initialize";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  connect(vpn, &MozillaVPN::logSubscriptionCompleted, this,
-          [] { mozilla::glean::outcome::subscription_completed.record(); });
+  // connect(vpn, &MozillaVPN::logSubscriptionCompleted, this,
+  //         [] { mozilla::glean::outcome::subscription_completed.record(); });
 
-  connect(vpn, &MozillaVPN::stateChanged, this, []() {
-    int state = MozillaVPN::instance()->state();
+  // connect(vpn, &MozillaVPN::stateChanged, this, []() {
+  //   int state = MozillaVPN::instance()->state();
 
-    if (state == App::StateOnboarding) {
-      if (!SettingsHolder::instance()->onboardingStarted()) {
-        mozilla::glean::outcome::onboarding_started.record();
-      }
-    }
-  });
+  //   if (state == App::StateOnboarding) {
+  //     if (!SettingsHolder::instance()->onboardingStarted()) {
+  //       mozilla::glean::outcome::onboarding_started.record();
+  //     }
+  //   }
+  // });
 
   Controller* controller = vpn->controller();
   Q_ASSERT(controller);
@@ -80,12 +80,12 @@ void Telemetry::initialize() {
     }
   });
 
-  connect(
-      SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
-      []() {
-        bool currentSetting = SettingsHolder::instance()->startAtBoot();
-        mozilla::glean::settings::connect_on_startup_active.set(currentSetting);
-      });
+  // connect(
+  //     SettingsHolder::instance(), &SettingsHolder::startAtBootChanged, this,
+  //     []() {
+  //       bool currentSetting = SettingsHolder::instance()->startAtBoot();
+  //       mozilla::glean::settings::connect_on_startup_active.set(currentSetting);
+  //     });
 
   connect(
       controller, &Controller::recordConnectionStartTelemetry, this,

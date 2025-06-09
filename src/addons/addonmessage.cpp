@@ -128,11 +128,11 @@ void AddonMessage::updateMessageStatus(MessageStatus newStatus) {
   m_messageSettingGroup->set(ADDON_MESSAGE_SETTINGS_STATUS_KEY,
                              newStatusSetting);
 
-  mozilla::glean::sample::addon_message_state_changed.record(
-      mozilla::glean::sample::AddonMessageStateChangedExtra{
-          ._messageId = id(),
-          ._messageState = newStatusSetting,
-      });
+  // mozilla::glean::sample::addon_message_state_changed.record(
+  //     mozilla::glean::sample::AddonMessageStateChangedExtra{
+  //         ._messageId = id(),
+  //         ._messageState = newStatusSetting,
+  //     });
 }
 
 void AddonMessage::dismiss() {

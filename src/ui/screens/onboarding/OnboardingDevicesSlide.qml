@@ -15,7 +15,7 @@ ColumnLayout {
     id: root
     objectName: "onboardingDevicesSlide"
 
-    property string telemetryScreenId: "install_on_5_devices"
+    // property string telemetryScreenId: "install_on_5_devices"
 
     signal nextClicked()
     signal backClicked()
@@ -87,22 +87,22 @@ ColumnLayout {
                 }
             }
 
-            handleSegmentClick: () => {
-                switch (selectedIndex) {
-                    case 0:
-                        Glean.interaction.showAndroidQrSelected.record({
-                            screen: root.telemetryScreenId,
-                        });
-                        break
-                    case 1:
-                        Glean.interaction.showIosQrSelected.record({
-                            screen: root.telemetryScreenId,
-                        });
-                        break
-                    default:
-                        break
-                }
-            }
+            // handleSegmentClick: () => {
+            //     switch (selectedIndex) {
+            //         case 0:
+            //             Glean.interaction.showAndroidQrSelected.record({
+            //                 screen: root.telemetryScreenId,
+            //             });
+            //             break
+            //         case 1:
+            //             Glean.interaction.showIosQrSelected.record({
+            //                 screen: root.telemetryScreenId,
+            //             });
+            //             break
+            //         default:
+            //             break
+            //     }
+            // }
 
             Component.onCompleted: {
                 switch(Qt.platform.os) {
@@ -230,9 +230,9 @@ ColumnLayout {
         text: MZI18n.GlobalNext
 
         onClicked: {
-            Glean.interaction.continueSelected.record({
-                screen: root.telemetryScreenId,
-            });
+            // Glean.interaction.continueSelected.record({
+            //     screen: root.telemetryScreenId,
+            // });
 
             root.nextClicked()
         }
@@ -252,9 +252,9 @@ ColumnLayout {
         labelText: MZI18n.GlobalGoBack
 
         onClicked: {
-            Glean.interaction.goBackSelected.record({
-                screen: root.telemetryScreenId,
-            });
+            // Glean.interaction.goBackSelected.record({
+            //     screen: root.telemetryScreenId,
+            // });
 
             root.backClicked()
         }

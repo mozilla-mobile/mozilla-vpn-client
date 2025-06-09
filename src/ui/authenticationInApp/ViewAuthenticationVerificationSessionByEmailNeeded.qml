@@ -15,7 +15,7 @@ MZInAppAuthenticationBase {
     id: authSignUp
     objectName: "authVerificationSessionByEmailNeeded"
 
-    _telemetryScreenId: "enter_verification_code"
+    // _telemetryScreenId: "enter_verification_code"
     _headlineText: MZI18n.InAppAuthVerificationCodeTitle
     _subtitleText: MZI18n.InAppAuthEmailVerificationDescription
     _imgSource: MZAssetLookup.getImageSource("VerificationCode")
@@ -23,8 +23,8 @@ MZInAppAuthenticationBase {
 
     _inputs: MZInAppAuthenticationInputs {
         _viewObjectName: authSignUp.objectName
-        _telemetryScreenId: authSignUp._telemetryScreenId
-        _telemetryButtonEventName: "verifySelected"
+        // _telemetryScreenId: authSignUp._telemetryScreenId
+        // _telemetryButtonEventName: "verifySelected"
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateVerificationSessionByEmailNeeded && activeInput().text && activeInput().text.length === MZAuthInApp.sessionEmailCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { MZAuthInApp.verifySessionEmailCode(inputText) }
         _buttonText: MZI18n.InAppAuthVerifySecurityCodeButton
@@ -41,9 +41,9 @@ MZInAppAuthenticationBase {
             labelText: MZI18n.InAppAuthResendCodeLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                Glean.interaction.resendCodeSelected.record({
-                    screen: _telemetryScreenId,
-                });
+                // Glean.interaction.resendCodeSelected.record({
+                //     screen: _telemetryScreenId,
+                // });
 
                 MZAuthInApp.resendVerificationSessionCodeEmail();
                 MZErrorHandler.requestAlert(MZErrorHandler.AuthCodeSentAlert);
@@ -54,9 +54,9 @@ MZInAppAuthenticationBase {
             objectName: authSignUp.objectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                Glean.interaction.cancelSelected.record({
-                    screen: _telemetryScreenId,
-                });
+                // Glean.interaction.cancelSelected.record({
+                //     screen: _telemetryScreenId,
+                // });
 
                 if (isReauthFlow) {
                     cancelAuthenticationFlow();
@@ -67,9 +67,9 @@ MZInAppAuthenticationBase {
         }
     }
 
-    Component.onCompleted: {
-        Glean.impression.enterVerificationCodeScreen.record({
-            screen: _telemetryScreenId,
-        });
-    }
+    // Component.onCompleted: {
+    //     Glean.impression.enterVerificationCodeScreen.record({
+    //         screen: _telemetryScreenId,
+    //     });
+    // }
 }

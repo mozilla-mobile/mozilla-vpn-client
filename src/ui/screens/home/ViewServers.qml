@@ -18,7 +18,7 @@ Item {
     id: root
     objectName: "viewServers"
 
-    property string telemetryScreenId
+    // property string telemetryScreenId
 
     Accessible.name: qsTrId("vpn.servers.selectLocation")
     Accessible.role: Accessible.Pane
@@ -41,9 +41,9 @@ Item {
                     onClicked: {
                         helpSheet.open()
 
-                        Glean.interaction.helpTooltipSelected.record({
-                            screen: root.telemetryScreenId,
-                        });
+                        // Glean.interaction.helpTooltipSelected.record({
+                        //     screen: root.telemetryScreenId,
+                        // });
                     }
 
                     accessibleName: MZI18n.GetHelpLinkText
@@ -155,25 +155,25 @@ Item {
                         }
 
         onSelectedSegmentChanged: {
-            root.telemetryScreenId = segmentedNav.selectedSegment.objectName === "tabSingleHop" ? "location_singlehop" : "location_multihop"
+            // root.telemetryScreenId = segmentedNav.selectedSegment.objectName === "tabSingleHop" ? "location_singlehop" : "location_multihop"
 
-            switch (segmentedNav.selectedSegment.objectName) {
-            case "tabSingleHop":
-                Glean.impression.locationSinglehopScreen.record({
-                    screen: root.telemetryScreenId,
-                });
-                break
-            case "tabMultiHop":
-                Glean.impression.locationMultihopScreen.record({
-                    screen: root.telemetryScreenId,
-                });
-                break
-            default:
-                Glean.impression.locationMultihopScreen.record({
-                    screen: "unexpected",
-                });
-                break
-            }
+            // switch (segmentedNav.selectedSegment.objectName) {
+            // case "tabSingleHop":
+            //     Glean.impression.locationSinglehopScreen.record({
+            //         screen: root.telemetryScreenId,
+            //     });
+            //     break
+            // case "tabMultiHop":
+            //     Glean.impression.locationMultihopScreen.record({
+            //         screen: root.telemetryScreenId,
+            //     });
+            //     break
+            // default:
+            //     Glean.impression.locationMultihopScreen.record({
+            //         screen: "unexpected",
+            //     });
+            //     break
+            // }
         }
 
         ViewMultiHop {
@@ -187,7 +187,7 @@ Item {
         id: helpSheet
         objectName: "serverHelpSheet"
 
-        property string telemetryScreenId: "location_info"
+        // property string telemetryScreenId: "location_info"
 
         title: MZI18n.HelpSheetsLocationTitle
 
@@ -197,17 +197,17 @@ Item {
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsLocationBody2, margin: MZTheme.theme.helpSheetBodySpacing},
             {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "learnMoreLink", action: () => {
                     MZUrlOpener.openUrlLabel("sumoMultihop")
-                    Glean.interaction.learnMoreSelected.record({
-                        screen: telemetryScreenId
-                    });
+                    // Glean.interaction.learnMoreSelected.record({
+                    //     screen: telemetryScreenId
+                    // });
                 }}
         ]
 
-        onOpened: {
-            Glean.impression.locationInfoScreen.record({
-                screen: telemetryScreenId,
-            });
-        }
+        // onOpened: {
+        //     Glean.impression.locationInfoScreen.record({
+        //         screen: telemetryScreenId,
+        //     });
+        // }
     }
 
     Component.onCompleted: {

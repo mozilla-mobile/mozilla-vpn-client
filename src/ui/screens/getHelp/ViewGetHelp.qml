@@ -14,12 +14,12 @@ import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 MZViewBase {
     id: vpnFlickable
 
-    property string telemetryScreenId: "help"
+    // property string telemetryScreenId: "help"
 
     _menuTitle: MZI18n.GetHelpLinkText
     _menuOnBackClicked: () => MZNavigator.requestPreviousScreen()
 
-    Component.onCompleted: Glean.impression.helpScreen.record({screen:telemetryScreenId});
+    // Component.onCompleted: Glean.impression.helpScreen.record({screen:telemetryScreenId});
 
     _viewContentData: Column {
 

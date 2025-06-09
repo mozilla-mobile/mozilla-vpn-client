@@ -15,7 +15,7 @@ MZViewBase {
     id: vpnFlickable
     objectName: "devicesSettingsView"
 
-    readonly property string telemetryScreenId : "my_devices"
+    // readonly property string telemetryScreenId : "my_devices"
     property var isModalDialogOpened: removePopup.visible
     property var wasmView
     property string deviceCountLabelText: ""
@@ -68,9 +68,9 @@ MZViewBase {
                     onClicked: {
                         helpSheet.open()
 
-                        Glean.interaction.helpTooltipSelected.record({
-                            screen: vpnFlickable.telemetryScreenId,
-                        });
+                        // Glean.interaction.helpTooltipSelected.record({
+                        //     screen: vpnFlickable.telemetryScreenId,
+                        // });
                     }
 
                     accessibleName: MZI18n.GetHelpLinkText
@@ -114,7 +114,7 @@ MZViewBase {
         id: helpSheet
         objectName: "devicesHelpSheet"
 
-        property string telemetryScreenId: "my_devices_info"
+        // property string telemetryScreenId: "my_devices_info"
 
         title: MZI18n.HelpSheetsDevicesTitle
 
@@ -124,17 +124,17 @@ MZViewBase {
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDevicesBody2, margin: MZTheme.theme.helpSheetBodySpacing},
             {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "learnMoreLink", action: () => {
                     MZUrlOpener.openUrlLabel("sumoDevices")
-                    Glean.interaction.learnMoreSelected.record({
-                        screen: telemetryScreenId
-                    });
+                    // Glean.interaction.learnMoreSelected.record({
+                    //     screen: telemetryScreenId
+                    // });
                 }}
         ]
 
-        onOpened: {
-            Glean.impression.myDevicesInfoScreen.record({
-                screen: telemetryScreenId,
-            });
-        }
+        // onOpened: {
+        //     Glean.impression.myDevicesInfoScreen.record({
+        //         screen: telemetryScreenId,
+        //     });
+        // }
     }
 
     Connections {
@@ -147,8 +147,8 @@ MZViewBase {
     Component.onCompleted: {
         VPN.refreshDevices()
 
-        Glean.impression.myDevicesScreen.record({
-            screen: telemetryScreenId,
-        });
+        // Glean.impression.myDevicesScreen.record({
+        //     screen: telemetryScreenId,
+        // });
     }
 }

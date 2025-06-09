@@ -15,7 +15,7 @@ MZViewBase {
     id: vpnFlickable
     objectName: "subscriptionManagmentView"
 
-    property string telemetryScreenId: isAnnualUpgradeAvailable() && VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionWeb ? "account_with_change_plan" : "account"
+    // property string telemetryScreenId: isAnnualUpgradeAvailable() && VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionWeb ? "account_with_change_plan" : "account"
 
     Component.onDestruction: () => VPNProfileFlow.reset()
 
@@ -41,9 +41,9 @@ MZViewBase {
 
             _iconSource: MZAssetLookup.getImageSource("ExternalLinkGrayscale")
             _buttonOnClicked: () => {
-                Glean.interaction.editSelected.record({
-                    screen: vpnFlickable.telemetryScreenId,
-                });
+                // Glean.interaction.editSelected.record({
+                //     screen: vpnFlickable.telemetryScreenId,
+                // });
                 MZUrlOpener.openUrlLabel("account");
             }
         }
@@ -74,7 +74,7 @@ MZViewBase {
                     objectName: _objectName
                     Layout.fillWidth: true
                     sourceComponent: SubscriptionManagementItem {
-                        telemetryScreenId: vpnFlickable.telemetryScreenId
+                        // telemetryScreenId: vpnFlickable.telemetryScreenId
                     }
                 }
             }
@@ -138,11 +138,11 @@ MZViewBase {
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
                 Layout.topMargin: MZTheme.theme.vSpacingSmall - parent.spacing
 
-                preLogoutCallback: () => {
-                    Glean.interaction.signOutSelected.record({
-                        screen: vpnFlickable.telemetryScreenId,
-                    });
-                }
+                // preLogoutCallback: () => {
+                    // Glean.interaction.signOutSelected.record({
+                    //     screen: vpnFlickable.telemetryScreenId,
+                    // });
+                // }
             }
         }
     }
@@ -162,9 +162,9 @@ MZViewBase {
                 MZUrlOpener.openUrlLabel("account");
         }
 
-        Glean.interaction.manageSubscriptionSelected.record({
-            screen: vpnFlickable.telemetryScreenId,
-        });
+        // Glean.interaction.manageSubscriptionSelected.record({
+        //     screen: vpnFlickable.telemetryScreenId,
+        // });
     }
 
     function isAnnualUpgradeAvailable() {
@@ -326,8 +326,8 @@ MZViewBase {
     Component.onCompleted: {
         populateListModels();
         MZNavigator.addView(VPN.ScreenSettings, vpnFlickable)
-        Glean.impression.accountScreen.record({
-            screen: telemetryScreenId,
-        });
+        // Glean.impression.accountScreen.record({
+        //     screen: telemetryScreenId,
+        // });
     }
 }

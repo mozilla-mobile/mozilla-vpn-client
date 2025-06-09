@@ -15,7 +15,7 @@ ColumnLayout {
     id: root
     objectName: "onboardingStartSlide"
 
-    property string telemetryScreenId: "connect_on_startup"
+    // property string telemetryScreenId: "connect_on_startup"
     // `startAtBootCheckbox` was added to change the default `startAtBoot` setting to true. We  couldn't simply change the `startAtBoot` default in `settingslist.h`
     // without affecting older VPN clients. See https://github.com/mozilla-mobile/mozilla-vpn-client/pull/9878
     property bool startAtBootCheckbox: true
@@ -68,16 +68,16 @@ ColumnLayout {
             onClicked: {
                 startAtBootCheckbox = !startAtBootCheckbox
 
-                if (startAtBootCheckbox) {
-                    Glean.interaction.connectOnStartupEnabled.record({
-                        screen: root.telemetryScreenId,
-                    });
-                }
-                else {
-                    Glean.interaction.connectOnStartupDisabled.record({
-                        screen: root.telemetryScreenId,
-                    });
-                }
+                // if (startAtBootCheckbox) {
+                //     Glean.interaction.connectOnStartupEnabled.record({
+                //         screen: root.telemetryScreenId,
+                //     });
+                // }
+                // else {
+                //     Glean.interaction.connectOnStartupDisabled.record({
+                //         screen: root.telemetryScreenId,
+                //     });
+                // }
             }
 
             accessibleName: connectOnStartupLabel.text
@@ -114,9 +114,9 @@ ColumnLayout {
         onClicked: {
             MZSettings.startAtBoot = startAtBootCheckbox
 
-            Glean.interaction.getStartedSelected.record({
-                screen: root.telemetryScreenId,
-            });
+            // Glean.interaction.getStartedSelected.record({
+            //     screen: root.telemetryScreenId,
+            // });
 
             VPN.onboardingCompleted();
         }
@@ -136,9 +136,9 @@ ColumnLayout {
         labelText: MZI18n.GlobalGoBack
 
         onClicked: {
-            Glean.interaction.goBackSelected.record({
-                screen: root.telemetryScreenId,
-            });
+            // Glean.interaction.goBackSelected.record({
+            //     screen: root.telemetryScreenId,
+            // });
 
             root.backClicked()
         }

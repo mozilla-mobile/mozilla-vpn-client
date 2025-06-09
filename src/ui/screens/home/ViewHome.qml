@@ -21,11 +21,11 @@ MZFlickable {
     anchors.left: parent.left
     anchors.right: parent.right
 
-    Component.onCompleted: {
-        Glean.impression.mainScreen.record({
-            screen: "main",
-        });
-    }
+    // Component.onCompleted: {
+    //     Glean.impression.mainScreen.record({
+    //         screen: "main",
+    //     });
+    // }
 
     states: [
         State {

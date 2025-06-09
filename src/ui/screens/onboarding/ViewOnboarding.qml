@@ -34,9 +34,9 @@ MZStepNavigation {
 
     currentIndex: MZSettings.onboardingStep
     onCurrentIndexChanged: MZSettings.onboardingStep = currentIndex
-    onProgressBarButtonClicked: (previousIndex, currentIndex) => recordProgressBarButtonInteractionTelemetry(previousIndex, currentIndex)
+    // onProgressBarButtonClicked: (previousIndex, currentIndex) => recordProgressBarButtonInteractionTelemetry(previousIndex, currentIndex)
 
-    Component.onCompleted: recordImpressionTelemetry()
+    // Component.onCompleted: recordImpressionTelemetry()
 
     views: [
         OnboardingDataSlide {
@@ -100,65 +100,67 @@ MZStepNavigation {
 
     Connections {
         target: MZSettings
-        function onOnboardingStepChanged() { recordImpressionTelemetry() }
-    }
-
-    function recordImpressionTelemetry() {
-        switch (MZSettings.onboardingStep) {
-        case ViewOnboarding.Slide.Data:
-            Glean.impression.dataCollectionScreen.record({
-                screen: dataSlide.telemetryScreenId,
-            });
-            break
-        case ViewOnboarding.Slide.Privacy:
-            Glean.impression.getMorePrivacyScreen.record({
-                screen: privacySlide.telemetryScreenId,
-            });
-            break
-        case ViewOnboarding.Slide.Devices:
-            Glean.impression.installOn5DevicesScreen.record({
-                screen: devicesSlide.telemetryScreenId,
-            });
-            break
-        case ViewOnboarding.Slide.Start:
-            if(MZUiUtils.isMobile()) {
-                Glean.impression.networkPermissionsScreen.record({
-                    screen: startSlide.item.telemetryScreenId,
-                });
-            }
-            else {
-                Glean.impression.connectOnStartupScreen.record({
-                    screen: startSlide.item.telemetryScreenId,
-                });
-            }
-            break
-        default:
-            break
+        function onOnboardingStepChanged() {
+          // recordImpressionTelemetry() 
         }
     }
 
-    function recordProgressBarButtonInteractionTelemetry(previousIndex: int, currentIndex) {
-        //Last (Start) slide uses a loader, so if we are clicking a progress bar button from that slide, we need to get the telemetryScreenId from that loaders item
-        const telemetryScreenId = (previousIndex === ViewOnboarding.Slide.Start ? views[previousIndex].item.telemetryScreenId : views[previousIndex].telemetryScreenId)
+    // function recordImpressionTelemetry() {
+    //     switch (MZSettings.onboardingStep) {
+        // case ViewOnboarding.Slide.Data:
+        //     Glean.impression.dataCollectionScreen.record({
+        //         screen: dataSlide.telemetryScreenId,
+        //     });
+        //     break
+        // case ViewOnboarding.Slide.Privacy:
+        //     Glean.impression.getMorePrivacyScreen.record({
+        //         screen: privacySlide.telemetryScreenId,
+        //     });
+        //     break
+        // case ViewOnboarding.Slide.Devices:
+        //     Glean.impression.installOn5DevicesScreen.record({
+        //         screen: devicesSlide.telemetryScreenId,
+        //     });
+        //     break
+        // case ViewOnboarding.Slide.Start:
+            // if(MZUiUtils.isMobile()) {
+            //     Glean.impression.networkPermissionsScreen.record({
+            //         screen: startSlide.item.telemetryScreenId,
+            //     });
+            // }
+            // else {
+            //     Glean.impression.connectOnStartupScreen.record({
+            //         screen: startSlide.item.telemetryScreenId,
+            //     });
+            // }
+            // break
+        // default:
+        //     break
+        // }
+    // }
 
-        switch (currentIndex) {
-        case ViewOnboarding.Slide.Data:
-            Glean.interaction.dataUseSelected.record({
-                screen: telemetryScreenId,
-            });
-            break
-        case ViewOnboarding.Slide.Privacy:
-            Glean.interaction.morePrivacySelected.record({
-                screen: telemetryScreenId,
-            });
-            break
-        case ViewOnboarding.Slide.Devices:
-            Glean.interaction.addDevicesSelected.record({
-                screen: telemetryScreenId,
-            });
-            break
-        default:
-            break
-        }
-    }
+    // function recordProgressBarButtonInteractionTelemetry(previousIndex: int, currentIndex) {
+    //     //Last (Start) slide uses a loader, so if we are clicking a progress bar button from that slide, we need to get the telemetryScreenId from that loaders item
+    //     const telemetryScreenId = (previousIndex === ViewOnboarding.Slide.Start ? views[previousIndex].item.telemetryScreenId : views[previousIndex].telemetryScreenId)
+
+    //     switch (currentIndex) {
+    //     case ViewOnboarding.Slide.Data:
+    //         Glean.interaction.dataUseSelected.record({
+    //             screen: telemetryScreenId,
+    //         });
+    //         break
+    //     case ViewOnboarding.Slide.Privacy:
+    //         Glean.interaction.morePrivacySelected.record({
+    //             screen: telemetryScreenId,
+    //         });
+    //         break
+    //     case ViewOnboarding.Slide.Devices:
+    //         Glean.interaction.addDevicesSelected.record({
+    //             screen: telemetryScreenId,
+    //         });
+    //         break
+    //     default:
+    //         break
+    //     }
+    // }
 }

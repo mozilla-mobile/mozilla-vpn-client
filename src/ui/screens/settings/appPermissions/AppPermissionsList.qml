@@ -26,7 +26,7 @@ ColumnLayout {
     id: appListContainer
     objectName: "appListContainer"
     property string searchBarPlaceholder: ""
-    readonly property string telemetryScreenId : "app_exclusions"
+    // readonly property string telemetryScreenId : "app_exclusions"
     property int availableHeight: 0;
 
     // ListView Header
@@ -125,7 +125,7 @@ ColumnLayout {
                     focus: enabled
 
                     onClicked: {
-                        Glean.interaction.clearAppExclusionsSelected.record({screen:telemetryScreenId});
+                        // Glean.interaction.clearAppExclusionsSelected.record({screen:telemetryScreenId});
                         VPNAppPermissions.protectAll();
                     }
                     enabled: MZSettings.vpnDisabledApps.length > 0
@@ -344,7 +344,7 @@ ColumnLayout {
                     fontName: MZTheme.theme.fontInterSemiBoldFamily
                     focus: true
                     onClicked: {
-                        Glean.interaction.addApplicationSelected.record({screen:telemetryScreenId});
+                        // Glean.interaction.addApplicationSelected.record({screen:telemetryScreenId});
                         VPNAppPermissions.openFilePicker()
                     }
 

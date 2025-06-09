@@ -14,7 +14,7 @@ ColumnLayout {
     id: root
     objectName: "onboardingPrivacySlide"
 
-    property string telemetryScreenId: "get_more_privacy"
+    // property string telemetryScreenId: "get_more_privacy"
 
     signal nextClicked()
     signal backClicked()
@@ -50,7 +50,7 @@ ColumnLayout {
 
         isOnboarding: true
         dividerSpacing: 8
-        telemetryScreenId: root.telemetryScreenId
+        // telemetryScreenId: root.telemetryScreenId
     }
 
     Item {
@@ -69,9 +69,9 @@ ColumnLayout {
         text: MZI18n.GlobalNext
 
         onClicked: {
-            Glean.interaction.continueSelected.record({
-                screen: root.telemetryScreenId,
-            });
+            // Glean.interaction.continueSelected.record({
+            //     screen: root.telemetryScreenId,
+            // });
 
             root.nextClicked()
         }
@@ -91,9 +91,9 @@ ColumnLayout {
         labelText: MZI18n.GlobalGoBack
 
         onClicked: {
-            Glean.interaction.goBackSelected.record({
-                screen: root.telemetryScreenId,
-            });
+            // Glean.interaction.goBackSelected.record({
+            //     screen: root.telemetryScreenId,
+            // });
 
             root.backClicked()
         }

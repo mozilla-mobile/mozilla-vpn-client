@@ -433,15 +433,15 @@ Item {
         onClicked: {
             ipInfoPanel.isOpen = !ipInfoPanel.isOpen;
 
-            if (ipInfoPanel.isOpen) {
-                Glean.interaction.openConnectionInfoSelected.record({
-                    screen: "main",
-                });
-            } else {
-                Glean.interaction.closeSelected.record({
-                    screen: "connection_info",
-                });
-            }
+            // if (ipInfoPanel.isOpen) {
+            //     Glean.interaction.openConnectionInfoSelected.record({
+            //         screen: "main",
+            //     });
+            // } else {
+            //     Glean.interaction.closeSelected.record({
+            //         screen: "connection_info",
+            //     });
+            // }
         }
 
         Image {
@@ -594,12 +594,12 @@ Item {
         visible: opacity > 0
 
         onOpacityChanged: {
-            // We only want to record this event when the opacity has _just_ changed.
-            if (opacity !== previousOpacity && opacity === 1) {
-                Glean.impression.connectionInfoScreen.record({
-                    screen: "connection_info",
-                });
-            }
+            // // We only want to record this event when the opacity has _just_ changed.
+            // if (opacity !== previousOpacity && opacity === 1) {
+            //     Glean.impression.connectionInfoScreen.record({
+            //         screen: "connection_info",
+            //     });
+            // }
 
             previousOpacity = opacity
         }

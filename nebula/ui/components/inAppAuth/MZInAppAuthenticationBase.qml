@@ -31,7 +31,7 @@ MZFlickable {
     property alias _disclaimers: disclaimers.data
     property alias _footerContent: footerContent.data
 
-    property string _telemetryScreenId
+    // property string _telemetryScreenId
 
     id: authBase
     flickContentHeight: col.implicitHeight
@@ -80,9 +80,9 @@ MZFlickable {
                 labelText: MZI18n.GetHelpLinkText
                 horizontalPadding: MZTheme.theme.windowMargin / 2
                 onClicked: {
-                    Glean.interaction.getHelpSelected.record({
-                        screen: _telemetryScreenId,
-                    })
+                    // Glean.interaction.getHelpSelected.record({
+                    //     screen: _telemetryScreenId,
+                    // })
 
                     MZNavigator.requestScreen(VPN.ScreenGetHelp)
                 }
@@ -149,9 +149,9 @@ MZFlickable {
                         labelText: MZI18n.InAppAuthChangeEmailLink
                         visible: _changeEmailLinkVisible
                         onClicked: {
-                            Glean.interaction.changeEmailSelected.record({
-                                screen: _telemetryScreenId,
-                            });
+                            // Glean.interaction.changeEmailSelected.record({
+                            //     screen: _telemetryScreenId,
+                            // });
                             MZAuthInApp.reset()
                         }
                     }

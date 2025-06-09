@@ -17,7 +17,7 @@ MZViewBase {
     id: root
     objectName: "privacySettingsView"
 
-    readonly property string telemetryScreenId : "privacy_features"
+    // readonly property string telemetryScreenId : "privacy_features"
     property Component rightMenuButton: Component {
         Loader {
             active: true
@@ -27,9 +27,9 @@ MZViewBase {
                 onClicked: {
                     helpSheet.open()
 
-                    Glean.interaction.helpTooltipSelected.record({
-                        screen: root.telemetryScreenId,
-                    });
+                    // Glean.interaction.helpTooltipSelected.record({
+                    //     screen: root.telemetryScreenId,
+                    // });
                 }
 
                 accessibleName: MZI18n.GetHelpLinkText
@@ -44,11 +44,11 @@ MZViewBase {
         }
     }
 
-    Component.onCompleted: {
-        Glean.impression.privacyFeaturesScreen.record({
-            screen: telemetryScreenId,
-        });
-    }
+    // Component.onCompleted: {
+    //     Glean.impression.privacyFeaturesScreen.record({
+    //         screen: telemetryScreenId,
+    //     });
+    // }
 
     _menuTitle: MZI18n.SettingsPrivacySettings
 
@@ -146,7 +146,7 @@ MZViewBase {
         id: helpSheet
         objectName: "privacyHelpSheet"
 
-        property string telemetryScreenId: "privacy_features_info"
+        // property string telemetryScreenId: "privacy_features_info"
 
         title: MZI18n.HelpSheetsPrivacyTitle
 
@@ -156,16 +156,16 @@ MZViewBase {
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsPrivacyBody2, margin: MZTheme.theme.helpSheetBodySpacing},
             {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "learnMoreLink", action: () => {
                     MZUrlOpener.openUrlLabel("sumoPrivacy")
-                    Glean.interaction.learnMoreSelected.record({
-                        screen: telemetryScreenId
-                    });
+                    // Glean.interaction.learnMoreSelected.record({
+                    //     screen: telemetryScreenId
+                    // });
                 }}
         ]
 
-        onOpened: {
-            Glean.impression.privacyFeaturesInfoScreen.record({
-                screen: telemetryScreenId,
-            });
-        }
+        // onOpened: {
+        //     Glean.impression.privacyFeaturesInfoScreen.record({
+        //         screen: telemetryScreenId,
+        //     });
+        // }
     }
 }

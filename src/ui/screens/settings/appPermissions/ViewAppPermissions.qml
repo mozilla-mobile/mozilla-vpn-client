@@ -20,7 +20,7 @@ MZViewBase {
     // Turn off top & bottom margins because ListView in AppPermissionsList fills the vertical content area, so additional margins are unecessary
     _useMargins: false
 
-    readonly property string telemetryScreenId : "app_exclusions"
+    // readonly property string telemetryScreenId : "app_exclusions"
 
     //% "Search apps"
     //: Search bar placeholder text
@@ -39,9 +39,9 @@ MZViewBase {
                 onClicked: {
                     helpSheet.open()
 
-                    Glean.interaction.helpTooltipSelected.record({
-                        screen: vpnFlickable.telemetryScreenId,
-                    });
+                    // Glean.interaction.helpTooltipSelected.record({
+                    //     screen: vpnFlickable.telemetryScreenId,
+                    // });
                 }
 
                 accessibleName: MZI18n.GetHelpLinkText
@@ -75,7 +75,7 @@ MZViewBase {
         id: helpSheet
         objectName: "excludedAppsHelpSheet"
 
-        property string telemetryScreenId: "app_exclusions_info"
+        // property string telemetryScreenId: "app_exclusions_info"
 
         title: MZI18n.HelpSheetsExcludedAppsTitle
 
@@ -90,23 +90,23 @@ MZViewBase {
                 }},
             {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetSecondaryButtonSpacing, objectName: "learnMoreLink", action: () => {
                     MZUrlOpener.openUrlLabel("sumoExcludedApps")
-                    Glean.interaction.learnMoreSelected.record({
-                        screen: telemetryScreenId
-                    });
+                    // Glean.interaction.learnMoreSelected.record({
+                    //     screen: telemetryScreenId
+                    // });
                 }}
         ]
 
-        onOpened: {
-            Glean.impression.appExclusionsInfoScreen.record({
-                screen: telemetryScreenId,
-            });
-        }
+        // onOpened: {
+        //     Glean.impression.appExclusionsInfoScreen.record({
+        //         screen: telemetryScreenId,
+        //     });
+        // }
     }
 
     Component.onCompleted: {
         VPNAppPermissions.requestApplist();
-        Glean.impression.appExclusionsScreen.record({
-            screen: telemetryScreenId,
-        });
+        // Glean.impression.appExclusionsScreen.record({
+        //     screen: telemetryScreenId,
+        // });
     }
 }

@@ -15,7 +15,7 @@ MZInAppAuthenticationBase {
     id: authSignIn
     objectName: "authSignIn"
 
-    _telemetryScreenId: "enter_password"
+    // _telemetryScreenId: "enter_password"
 
     states:[
         State {
@@ -52,9 +52,9 @@ MZInAppAuthenticationBase {
 
             cancelAuthenticationFlow();
         } else {
-            Glean.interaction.backSelected.record({
-                screen: authSignIn._telemetryScreenId,
-            });
+            // Glean.interaction.backSelected.record({
+            //     screen: authSignIn._telemetryScreenId,
+            // });
 
             MZAuthInApp.reset();
         }
@@ -69,8 +69,8 @@ MZInAppAuthenticationBase {
         id: authInputs
         _viewObjectName: authSignIn.objectName
 
-        _telemetryScreenId: authSignIn._telemetryScreenId
-        _telemetryButtonEventName: "signInSelected"
+        // _telemetryScreenId: authSignIn._telemetryScreenId
+        // _telemetryButtonEventName: "signInSelected"
 
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateSignIn && !activeInput().hasError
         _buttonOnClicked: (inputText) => {
@@ -89,7 +89,7 @@ MZInAppAuthenticationBase {
         Component.onCompleted: {
             disclaimersLoader.setSource(
                 "qrc:/nebula/components/inAppAuth/MZInAppAuthenticationLegalDisclaimer.qml",
-                { "_telemetryScreenId": authSignIn._telemetryScreenId }
+                { /*"_telemetryScreenId": authSignIn._telemetryScreenId*/ }
             );
         }
     }
@@ -104,9 +104,9 @@ MZInAppAuthenticationBase {
             labelText: MZI18n.InAppAuthForgotPasswordLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                Glean.interaction.forgotYourPasswordSelected.record({
-                    screen: _telemetryScreenId,
-                });
+                // Glean.interaction.forgotYourPasswordSelected.record({
+                //     screen: _telemetryScreenId,
+                // });
 
                 MZUrlOpener.openUrlLabel("forgotPassword")
             }
@@ -116,9 +116,9 @@ MZInAppAuthenticationBase {
             objectName: authSignIn.objectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                Glean.interaction.cancelSelected.record({
-                    screen: _telemetryScreenId,
-                });
+                // Glean.interaction.cancelSelected.record({
+                //     screen: _telemetryScreenId,
+                // });
 
                 if (isReauthFlow) {
                     cancelAuthenticationFlow();
@@ -129,9 +129,9 @@ MZInAppAuthenticationBase {
         }
     }
 
-    Component.onCompleted: {
-        Glean.impression.enterPasswordScreen.record({
-            screen: _telemetryScreenId,
-        });
-    }
+    // Component.onCompleted: {
+    //     Glean.impression.enterPasswordScreen.record({
+    //         screen: _telemetryScreenId,
+    //     });
+    // }
 }

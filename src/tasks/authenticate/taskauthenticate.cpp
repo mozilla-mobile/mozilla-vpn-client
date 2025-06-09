@@ -53,13 +53,13 @@ void TaskAuthenticate::run() {
             logger.debug() << "Authentication completed with code:"
                            << logger.sensitive(pkceCodeSuccess);
 
-            if (m_authenticationType ==
-                AuthenticationListener::AuthenticationInBrowser) {
-              mozilla::glean::web_authentication::successful.record(
-                  mozilla::glean::web_authentication::SuccessfulExtra{
-                      ._uuid = m_metricUuid.toString(QUuid::WithoutBraces),
-                  });
-            }
+            // if (m_authenticationType ==
+            //     AuthenticationListener::AuthenticationInBrowser) {
+            //   mozilla::glean::web_authentication::successful.record(
+            //       mozilla::glean::web_authentication::SuccessfulExtra{
+            //           ._uuid = m_metricUuid.toString(QUuid::WithoutBraces),
+            //       });
+            // }
 
             NetworkRequest* request = new NetworkRequest(this, 200);
             request->post(
@@ -85,13 +85,13 @@ void TaskAuthenticate::run() {
 
   connect(m_authenticationListener, &AuthenticationListener::failed, this,
           [this](ErrorHandler::ErrorType error) {
-            if (m_authenticationType ==
-                AuthenticationListener::AuthenticationInBrowser) {
-              mozilla::glean::web_authentication::failed.record(
-                  mozilla::glean::web_authentication::FailedExtra{
-                      ._uuid = m_metricUuid.toString(QUuid::WithoutBraces),
-                  });
-            }
+            // if (m_authenticationType ==
+            //     AuthenticationListener::AuthenticationInBrowser) {
+            //   mozilla::glean::web_authentication::failed.record(
+            //       mozilla::glean::web_authentication::FailedExtra{
+            //           ._uuid = m_metricUuid.toString(QUuid::WithoutBraces),
+            //       });
+            // }
             REPORTERROR(error, name());
             m_authenticationListener->aboutToFinish();
           });
@@ -103,12 +103,13 @@ void TaskAuthenticate::run() {
           });
 
   m_metricUuid = QUuid::createUuid();
-  if (m_authenticationType == AuthenticationListener::AuthenticationInBrowser) {
-    mozilla::glean::web_authentication::started.record(
-        mozilla::glean::web_authentication::StartedExtra{
-            ._uuid = m_metricUuid.toString(QUuid::WithoutBraces),
-        });
-  }
+  // if (m_authenticationType ==
+  // AuthenticationListener::AuthenticationInBrowser) {
+  //   mozilla::glean::web_authentication::started.record(
+  //       mozilla::glean::web_authentication::StartedExtra{
+  //           ._uuid = m_metricUuid.toString(QUuid::WithoutBraces),
+  //       });
+  // }
   m_authenticationListener->start(this, pkceCodeChallenge,
                                   CODE_CHALLENGE_METHOD,
                                   SettingsHolder::instance()->userEmail());

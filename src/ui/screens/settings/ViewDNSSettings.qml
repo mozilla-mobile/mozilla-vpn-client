@@ -18,7 +18,7 @@ MZViewBase {
 
     _menuTitle: MZI18n.SettingsDnsSettings
 
-    readonly property string telemetryScreenId : "dns_settings"
+    // readonly property string telemetryScreenId : "dns_settings"
     property bool customDNS: false
     property bool privacyDialogNeeded: true
     property bool dnsSelectionChanged: false
@@ -31,9 +31,9 @@ MZViewBase {
                 onClicked: {
                     helpSheet.open()
 
-                    Glean.interaction.helpTooltipSelected.record({
-                        screen: root.telemetryScreenId,
-                    });
+                    // Glean.interaction.helpTooltipSelected.record({
+                    //     screen: root.telemetryScreenId,
+                    // });
                 }
 
                 accessibleName: MZI18n.GetHelpLinkText
@@ -287,9 +287,9 @@ MZViewBase {
     }
 
     Component.onCompleted: {
-        Glean.impression.dnsSettingsScreen.record({
-            screen: telemetryScreenId,
-        });
+        // Glean.impression.dnsSettingsScreen.record({
+        //     screen: telemetryScreenId,
+        // });
         reset();
     }
 
@@ -350,7 +350,7 @@ MZViewBase {
         id: helpSheet
         objectName: "dnsHelpSheet"
 
-        property string telemetryScreenId: "dns_settings_info"
+        // property string telemetryScreenId: "dns_settings_info"
 
         title: MZI18n.HelpSheetsDnsTitle
 
@@ -360,16 +360,16 @@ MZViewBase {
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsDnsBody2, margin: MZTheme.theme.helpSheetBodySpacing},
             {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "learnMoreLink", action: () => {
                     MZUrlOpener.openUrlLabel("sumoDns")
-                    Glean.interaction.learnMoreSelected.record({
-                        screen: telemetryScreenId
-                    });
+                    // Glean.interaction.learnMoreSelected.record({
+                    //     screen: telemetryScreenId
+                    // });
                 }}
         ]
 
-        onOpened: {
-            Glean.impression.dnsSettingsInfoScreen.record({
-                screen: telemetryScreenId,
-            });
-        }
+        // onOpened: {
+        //     Glean.impression.dnsSettingsInfoScreen.record({
+        //         screen: telemetryScreenId,
+        //     });
+        // }
     }
 }

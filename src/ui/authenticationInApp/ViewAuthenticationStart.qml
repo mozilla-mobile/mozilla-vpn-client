@@ -15,11 +15,11 @@ MZInAppAuthenticationBase {
     id: authStart
     objectName: "authStart"
 
-    _telemetryScreenId: "enter_email"
+    // _telemetryScreenId: "enter_email"
     _menuButtonOnClick: () => {
-        Glean.interaction.backSelected.record({
-            screen: _telemetryScreenId,
-        });
+        // Glean.interaction.backSelected.record({
+        //     screen: _telemetryScreenId,
+        // });
 
         VPN.cancelAuthentication();
     }
@@ -33,8 +33,8 @@ MZInAppAuthenticationBase {
 
     _inputs: MZInAppAuthenticationInputs {
         _viewObjectName: authStart.objectName
-        _telemetryScreenId: authStart._telemetryScreenId
-        _telemetryButtonEventName: "continueSelected"
+        // _telemetryScreenId: authStart._telemetryScreenId
+        // _telemetryButtonEventName: "continueSelected"
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateStart && activeInput().text.length !== 0 && !activeInput().hasError && MZAuthInApp.validateEmailAddress(activeInput().text)
         _buttonOnClicked: (inputText) => { MZAuthInApp.checkAccount(inputText); }
         _buttonText: MZI18n.GlobalContinue
@@ -56,9 +56,9 @@ MZInAppAuthenticationBase {
         }
     }
 
-    Component.onCompleted: {
-        Glean.impression.enterEmailScreen.record({
-            screen: _telemetryScreenId,
-        });
-    }
+    // Component.onCompleted: {
+    //     Glean.impression.enterEmailScreen.record({
+    //         screen: _telemetryScreenId,
+    //     });
+    // }
 }

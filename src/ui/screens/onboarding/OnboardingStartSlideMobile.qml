@@ -14,7 +14,7 @@ import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 ColumnLayout {
     id: root
 
-    property string telemetryScreenId: "network_permissions"
+    // property string telemetryScreenId: "network_permissions"
 
     signal nextClicked()
     signal backClicked()
@@ -69,9 +69,9 @@ ColumnLayout {
         text: MZI18n.OnboardingStartSlideAllowButtonLabel
 
         onClicked: {
-            Glean.interaction.approveMozillaVpnSelected.record({
-                screen: root.telemetryScreenId,
-            });
+            // Glean.interaction.approveMozillaVpnSelected.record({
+            //     screen: root.telemetryScreenId,
+            // });
 
             //Not actually activating the VPN, but going through the motions of activating it
             //so we can add the VPN configuration to the system
@@ -92,9 +92,9 @@ ColumnLayout {
         labelText: MZI18n.GlobalGoBack
 
         onClicked: {
-            Glean.interaction.goBackSelected.record({
-                screen: root.telemetryScreenId,
-            });
+            // Glean.interaction.goBackSelected.record({
+            //     screen: root.telemetryScreenId,
+            // });
 
             root.backClicked()
         }

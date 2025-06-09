@@ -269,9 +269,9 @@ void AuthenticationInAppSession::signIn(const QString& unblockCode) {
   logger.debug() << "Sign in";
 
   m_sessionType = SignIn;
-  if (shouldRecordAuthenticationFlowTelemetry()) {
-    mozilla::glean::outcome::login_started.record();
-  }
+  // if (shouldRecordAuthenticationFlowTelemetry()) {
+  //   mozilla::glean::outcome::login_started.record();
+  // }
 
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateSigningIn, this);
@@ -336,12 +336,12 @@ void AuthenticationInAppSession::signInInternal(const QString& unblockCode) {
               }
             }
 
-            if (!unblockCode.isEmpty() &&
-                shouldRecordAuthenticationFlowTelemetry()) {
-              mozilla::glean::outcome::two_fa_verification_failed.record(
-                  mozilla::glean::outcome::TwoFaVerificationFailedExtra{
-                      ._type = "unblock_code"});
-            }
+            // if (!unblockCode.isEmpty() &&
+            //     shouldRecordAuthenticationFlowTelemetry()) {
+            //   mozilla::glean::outcome::two_fa_verification_failed.record(
+            //       mozilla::glean::outcome::TwoFaVerificationFailedExtra{
+            //           ._type = "unblock_code"});
+            // }
 
             logger.error() << "Failed to sign in" << error;
             processRequestFailure(error, data);
@@ -354,12 +354,12 @@ void AuthenticationInAppSession::signInInternal(const QString& unblockCode) {
             QJsonDocument json = QJsonDocument::fromJson(data);
             QJsonObject obj = json.object();
 
-            if (!unblockCode.isEmpty() &&
-                shouldRecordAuthenticationFlowTelemetry()) {
-              mozilla::glean::outcome::two_fa_verification_succeeded.record(
-                  mozilla::glean::outcome::TwoFaVerificationSucceededExtra{
-                      ._type = "unblock_code"});
-            }
+            // if (!unblockCode.isEmpty() &&
+            //     shouldRecordAuthenticationFlowTelemetry()) {
+            //   mozilla::glean::outcome::two_fa_verification_succeeded.record(
+            //       mozilla::glean::outcome::TwoFaVerificationSucceededExtra{
+            //           ._type = "unblock_code"});
+            // }
 
             signInOrUpCompleted(obj["sessionToken"].toString(),
                                 obj["verified"].toBool(),
@@ -371,9 +371,9 @@ void AuthenticationInAppSession::signUp() {
   logger.debug() << "Sign up";
 
   m_sessionType = SignUp;
-  if (shouldRecordAuthenticationFlowTelemetry()) {
-    mozilla::glean::outcome::registration_started.record();
-  }
+  // if (shouldRecordAuthenticationFlowTelemetry()) {
+  //   mozilla::glean::outcome::registration_started.record();
+  // }
 
   AuthenticationInApp::instance()->requestState(
       AuthenticationInApp::StateSigningUp, this);
@@ -485,11 +485,11 @@ void AuthenticationInAppSession::verifySessionEmailCode(const QString& code) {
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to verify the session code" << error;
 
-            if (shouldRecordAuthenticationFlowTelemetry()) {
-              mozilla::glean::outcome::two_fa_verification_failed.record(
-                  mozilla::glean::outcome::TwoFaVerificationFailedExtra{
-                      ._type = "email"});
-            }
+            // if (shouldRecordAuthenticationFlowTelemetry()) {
+            //   mozilla::glean::outcome::two_fa_verification_failed.record(
+            //       mozilla::glean::outcome::TwoFaVerificationFailedExtra{
+            //           ._type = "email"});
+            // }
 
             processRequestFailure(error, data);
           });
@@ -499,11 +499,11 @@ void AuthenticationInAppSession::verifySessionEmailCode(const QString& code) {
             logger.debug() << "Verification completed:"
                            << logger.sensitive(data);
 
-            if (shouldRecordAuthenticationFlowTelemetry()) {
-              mozilla::glean::outcome::two_fa_verification_succeeded.record(
-                  mozilla::glean::outcome::TwoFaVerificationSucceededExtra{
-                      ._type = "email"});
-            }
+            // if (shouldRecordAuthenticationFlowTelemetry()) {
+            //   mozilla::glean::outcome::two_fa_verification_succeeded.record(
+            //       mozilla::glean::outcome::TwoFaVerificationSucceededExtra{
+            //           ._type = "email"});
+            // }
 
             finalizeSignInOrUp();
           });
@@ -545,11 +545,11 @@ void AuthenticationInAppSession::verifySessionTotpCode(const QString& code) {
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to verify the Totp code" << error;
 
-            if (shouldRecordAuthenticationFlowTelemetry()) {
-              mozilla::glean::outcome::two_fa_verification_failed.record(
-                  mozilla::glean::outcome::TwoFaVerificationFailedExtra{
-                      ._type = "totp"});
-            }
+            // if (shouldRecordAuthenticationFlowTelemetry()) {
+            //   mozilla::glean::outcome::two_fa_verification_failed.record(
+            //       mozilla::glean::outcome::TwoFaVerificationFailedExtra{
+            //           ._type = "totp"});
+            // }
 
             processRequestFailure(error, data);
           });
@@ -568,21 +568,21 @@ void AuthenticationInAppSession::verifySessionTotpCode(const QString& code) {
         QJsonObject obj = json.object();
         bool success = obj.value("success").toBool();
         if (success) {
-          if (shouldRecordAuthenticationFlowTelemetry()) {
-            mozilla::glean::outcome::two_fa_verification_succeeded.record(
-                mozilla::glean::outcome::TwoFaVerificationSucceededExtra{
-                    ._type = "totp"});
-          }
+          // if (shouldRecordAuthenticationFlowTelemetry()) {
+          //   mozilla::glean::outcome::two_fa_verification_succeeded.record(
+          //       mozilla::glean::outcome::TwoFaVerificationSucceededExtra{
+          //           ._type = "totp"});
+          // }
 
           finalizeSignInOrUp();
           return;
         }
 
-        if (shouldRecordAuthenticationFlowTelemetry()) {
-          mozilla::glean::outcome::two_fa_verification_failed.record(
-              mozilla::glean::outcome::TwoFaVerificationFailedExtra{
-                  ._type = "totp"});
-        }
+        // if (shouldRecordAuthenticationFlowTelemetry()) {
+        //   mozilla::glean::outcome::two_fa_verification_failed.record(
+        //       mozilla::glean::outcome::TwoFaVerificationFailedExtra{
+        //           ._type = "totp"});
+        // }
 
         AuthenticationInApp* aia = AuthenticationInApp::instance();
         aia->requestState(
@@ -725,7 +725,7 @@ void AuthenticationInAppSession::deleteAccount() {
             emit accountDeleted();
           });
 
-  mozilla::glean::sample::delete_account_clicked.record();
+  // mozilla::glean::sample::delete_account_clicked.record();
 }
 
 void AuthenticationInAppSession::finalizeSignInOrUp() {
@@ -832,13 +832,13 @@ void AuthenticationInAppSession::finalizeSignInOrUp() {
                     return;
                   }
 
-                  if (shouldRecordAuthenticationFlowTelemetry()) {
-                    if (m_sessionType == SignIn) {
-                      mozilla::glean::outcome::login_ended.record();
-                    } else if (m_sessionType == SignUp) {
-                      mozilla::glean::outcome::registration_completed.record();
-                    }
-                  }
+                  // if (shouldRecordAuthenticationFlowTelemetry()) {
+                  //   if (m_sessionType == SignIn) {
+                  //     mozilla::glean::outcome::login_ended.record();
+                  //   } else if (m_sessionType == SignUp) {
+                  //     mozilla::glean::outcome::registration_completed.record();
+                  //   }
+                  // }
                   emit completed(code.toString());
                 });
       });

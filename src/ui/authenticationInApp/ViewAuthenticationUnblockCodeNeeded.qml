@@ -16,7 +16,7 @@ MZInAppAuthenticationBase {
     id: authUnblockCodeNeeded
     objectName: "authUnblockCodeNeeded"
 
-    _telemetryScreenId: "enter_unblock_code"
+    // _telemetryScreenId: "enter_unblock_code"
     _menuButtonImageSource: MZAssetLookup.getImageSource("CloseDark")
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
@@ -25,9 +25,9 @@ MZInAppAuthenticationBase {
 
             cancelAuthenticationFlow();
         } else {
-            Glean.interaction.closeSelected.record({
-                screen: _telemetryScreenId,
-            });
+            // Glean.interaction.closeSelected.record({
+            //     screen: _telemetryScreenId,
+            // });
 
             MZAuthInApp.reset();
         }
@@ -39,8 +39,8 @@ MZInAppAuthenticationBase {
 
     _inputs: MZInAppAuthenticationInputs {
         _viewObjectName: authUnblockCodeNeeded.objectName
-        _telemetryScreenId: authUnblockCodeNeeded._telemetryScreenId
-        _telemetryButtonEventName: "verifySelected"
+        // _telemetryScreenId: authUnblockCodeNeeded._telemetryScreenId
+        // _telemetryButtonEventName: "verifySelected"
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateUnblockCodeNeeded && activeInput().text.length === MZAuthInApp.unblockCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { MZAuthInApp.verifyUnblockCode(inputText) }
         _buttonText: MZI18n.InAppAuthVerifySecurityCodeButton
@@ -57,9 +57,9 @@ MZInAppAuthenticationBase {
             labelText: MZI18n.InAppAuthResendCodeLink
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                 Glean.interaction.resendCodeSelected.record({
-                    screen: _telemetryScreenId,
-                });
+                //  Glean.interaction.resendCodeSelected.record({
+                //     screen: _telemetryScreenId,
+                // });
 
                 MZAuthInApp.resendUnblockCodeEmail();
                 MZErrorHandler.requestAlert(MZErrorHandler.AuthCodeSentAlert);
@@ -70,9 +70,9 @@ MZInAppAuthenticationBase {
             objectName: authUnblockCodeNeeded.objectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                Glean.interaction.cancelSelected.record({
-                    screen: _telemetryScreenId,
-                });
+                // Glean.interaction.cancelSelected.record({
+                //     screen: _telemetryScreenId,
+                // });
 
                 if (isReauthFlow) {
                     cancelAuthenticationFlow();
@@ -83,9 +83,9 @@ MZInAppAuthenticationBase {
         }
     }
 
-    Component.onCompleted: {
-        Glean.impression.enterUnblockCodeScreen.record({
-            screen: _telemetryScreenId,
-        });
-    }
+    // Component.onCompleted: {
+    //     Glean.impression.enterUnblockCodeScreen.record({
+    //         screen: _telemetryScreenId,
+    //     });
+    // }
 }

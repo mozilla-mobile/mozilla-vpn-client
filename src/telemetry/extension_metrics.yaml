@@ -23,7 +23,7 @@ extension:
       notification_emails:
         - sstreich@mozilla.com
         - vpn-telemetry@mozilla.com
-      expires: 2025-06-30
+      expires: 2025-12-30
 
     error_screen:
       type: event
@@ -49,7 +49,7 @@ extension:
               client_too_old, client_not_opened, unsupported_platform, install_needed
               subscription_needed, signin_needed, split_tunneled
           type: string
-      expires: 2025-06-30
+      expires: 2025-12-30
 
     fx_protection_enabled:
       type: event
@@ -67,7 +67,7 @@ extension:
       notification_emails:
         - sstreich@mozilla.com
         - vpn-telemetry@mozilla.com
-      expires: 2025-06-30
+      expires: 2025-12-30
 
     fx_protection_disabled:
       type: event
@@ -85,7 +85,7 @@ extension:
       notification_emails:
         - sstreich@mozilla.com
         - vpn-telemetry@mozilla.com
-      expires: 2025-06-30
+      expires: 2025-12-30
 
     fx_protection_mode_changed:
       type: event
@@ -103,7 +103,7 @@ extension:
       notification_emails:
         - sstreich@mozilla.com
         - vpn-telemetry@mozilla.com
-      expires: 2025-06-30
+      expires: 2025-12-30
       extra_keys:
         message_state:
           description: |
@@ -216,7 +216,7 @@ extension:
         - vpn-telemetry@mozilla.com
       send_in_pings:
         - extensionsession
-      expires: 2025-06-30
+      expires: 2025-12-30
 
     count_geoprefed:
       type: quantity
@@ -234,4 +234,4 @@ extension:
         - vpn-telemetry@mozilla.com
       send_in_pings:
         - extensionsession
-      expires: 2025-06-30
+      expires: 2025-12-30

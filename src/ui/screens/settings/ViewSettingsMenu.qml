@@ -42,7 +42,7 @@ MZViewBase {
                     : MZAssetLookup.getImageSource("ExternalLinkGrayscale")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    Glean.interaction.accountSelected.record({screen:telemetryScreenId})
+                    // Glean.interaction.accountSelected.record({screen:telemetryScreenId})
                     if (subscriptionManagementEnabled) {
                         VPNProfileFlow.start();
                     } else {
@@ -58,7 +58,7 @@ MZViewBase {
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    Glean.interaction.privacyFeaturesSelected.record({screen:telemetryScreenId})
+                    // Glean.interaction.privacyFeaturesSelected.record({screen:telemetryScreenId})
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/privacy/ViewPrivacy.qml")
                 }
             }
@@ -70,7 +70,7 @@ MZViewBase {
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    Glean.interaction.appExclusionsSelected.record({screen:telemetryScreenId});
+                    // Glean.interaction.appExclusionsSelected.record({screen:telemetryScreenId});
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/appPermissions/ViewAppPermissions.qml")
                 }
                 visible: MZFeatureList.get("splitTunnel").isSupported
@@ -98,7 +98,7 @@ MZViewBase {
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    Glean.interaction.myDevicesSelected.record({screen:telemetryScreenId})
+                    // Glean.interaction.myDevicesSelected.record({screen:telemetryScreenId})
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/devices/ViewDevices.qml")
                 }
             }
@@ -111,7 +111,7 @@ MZViewBase {
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    Glean.interaction.appPreferencesSelected.record({screen:telemetryScreenId})
+                    // Glean.interaction.appPreferencesSelected.record({screen:telemetryScreenId})
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewPreferences.qml", {
                                                     _startAtBootTitle: Qt.binding(() => MZI18n.SettingsStartAtBootTitle),
                                                     _languageTitle:  Qt.binding(() => qsTrId("vpn.settings.language")),
@@ -128,7 +128,7 @@ MZViewBase {
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    Glean.interaction.getHelpSelected.record({screen:telemetryScreenId})
+                    // Glean.interaction.getHelpSelected.record({screen:telemetryScreenId})
                     MZNavigator.requestScreen(VPN.ScreenGetHelp);
                 }
             }
@@ -140,7 +140,7 @@ MZViewBase {
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    Glean.interaction.aboutUsSelected.record({screen:telemetryScreenId})
+                    // Glean.interaction.aboutUsSelected.record({screen:telemetryScreenId})
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewAboutUs.qml")
                 }
             }
@@ -186,9 +186,9 @@ MZViewBase {
             }
         }
     }
-    Component.onCompleted: {
-        Glean.impression.settingsScreen.record({screen:telemetryScreenId});
-    }
+    // Component.onCompleted: {
+    //     Glean.impression.settingsScreen.record({screen:telemetryScreenId});
+    // }
 
     MZSimplePopup {
         id: reauthPopup

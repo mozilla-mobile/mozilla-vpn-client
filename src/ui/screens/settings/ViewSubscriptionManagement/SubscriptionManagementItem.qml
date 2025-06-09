@@ -14,7 +14,7 @@ ColumnLayout {
     id: root
     objectName: _objectName + "-parent"
 
-    property string telemetryScreenId
+    // property string telemetryScreenId
 
     spacing: 0
 
@@ -182,9 +182,9 @@ ColumnLayout {
             objectName: _objectName + "-upgradeToAnnualSub-upgradeButton"
             
             onClicked: {
-                Glean.interaction.changePlanSelected.record({
-                    screen: root.telemetryScreenId,
-                });
+                // Glean.interaction.changePlanSelected.record({
+                //     screen: root.telemetryScreenId,
+                // });
                 MZUrlOpener.openUrlLabel("upgradeToAnnualUrl");
             }
             text: MZI18n.SubscriptionManagementUpgradeToAnnualButton// "Change plan"

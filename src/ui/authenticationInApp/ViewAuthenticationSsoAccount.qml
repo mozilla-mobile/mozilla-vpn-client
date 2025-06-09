@@ -15,7 +15,7 @@ MZInAppAuthenticationThirdParty {
     id: authSsoAccount
     objectName: "authSsoAccount"
 
-    _telemetryScreenId: "authentication_sso_account"
+    // _telemetryScreenId: "authentication_sso_account"
     _imgSource: MZAssetLookup.getImageSource("CreatePassword")
     _headlineText: MZI18n.InAppAuthSsoInstructionHeader
 

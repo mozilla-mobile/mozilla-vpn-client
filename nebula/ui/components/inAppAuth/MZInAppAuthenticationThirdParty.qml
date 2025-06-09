@@ -13,7 +13,7 @@ import components.forms 0.1
 MZFlickable {
     id: authThirdParty
 
-    property string _telemetryScreenId
+    // property string _telemetryScreenId
 
     property alias _imgSource: img.source
     property alias _headlineText: headline.text
@@ -44,9 +44,9 @@ MZFlickable {
                 labelText: MZI18n.GetHelpLinkText
                 horizontalPadding: MZTheme.theme.windowMargin / 2
                 onClicked: {
-                    Glean.interaction.getHelpSelected.record({
-                        screen: _telemetryScreenId,
-                    })
+                    // Glean.interaction.getHelpSelected.record({
+                    //     screen: _telemetryScreenId,
+                    // })
 
                     MZNavigator.requestScreen(VPN.ScreenGetHelp)
                 }
