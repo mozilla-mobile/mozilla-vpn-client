@@ -17,14 +17,11 @@ MZViewBase {
     property string _startAtBootTitle: ""
     property string _notificationsTitle: ""
     property string _languageTitle: ""
-    // readonly property string telemetryScreenId : "app_preferences"
-
+    
     property bool vpnIsOff: VPNController.state === VPNController.StateOff
     property bool isIOS: Qt.platform.os === "ios"
 
     objectName: "settingsPreferencesView"
-
-    // Component.onCompleted: Glean.impression.appPreferencesScreen.record({screen:telemetryScreenId})
 
     _viewContentData: ColumnLayout {
         Layout.preferredWidth: parent.width
@@ -55,14 +52,6 @@ MZViewBase {
             dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
             onClicked: {
                 MZSettings.startAtBoot = !MZSettings.startAtBoot
-                // if (MZSettings.startAtBoot)
-                // {
-                //     Glean.interaction.vpnOnStartupEnabled.record({screen:telemetryScreenId})
-                // }
-                // else
-                // {
-                //     Glean.interaction.vpnOnStartupDisabled.record({screen:telemetryScreenId})
-                // }
             }
         }
 
@@ -117,7 +106,6 @@ MZViewBase {
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    // Glean.interaction.notificationsSelected.record({screen:telemetryScreenId})
                     if(Qt.platform.os === "android"){
                         VPNAndroidUtils.openNotificationSettings();
                         return;
@@ -135,7 +123,6 @@ MZViewBase {
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    // Glean.interaction.languageSelected.record({screen:telemetryScreenId})
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewLanguage.qml")
                 }
                 visible: MZLocalizer.hasLanguages
@@ -149,7 +136,6 @@ MZViewBase {
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    // Glean.interaction.dnsSettingsSelected.record({screen:telemetryScreenId})
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewDNSSettings.qml")
                 }
             }

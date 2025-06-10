@@ -830,8 +830,6 @@ void MozillaVPN::onboardingCompleted() {
   logger.debug() << "onboarding completed";
   settingsHolder->setOnboardingCompleted(true);
 
-  // mozilla::glean::outcome::onboarding_completed.record();
-
   // Toggle glean on or off at the end of onboarding, depending on what the
   // user selected
   settingsHolder->setGleanEnabled(
@@ -954,7 +952,6 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
     Q_ASSERT(products->hasProductsRegistered());
   }
 
-  // mozilla::glean::outcome::subscription_started.record();
   PurchaseHandler::instance()->startSubscription(productIdentifier);
 }
 
@@ -992,39 +989,19 @@ void MozillaVPN::billingNotAvailable() {
   // If a subscription isn't needed, billingNotAvailable is
   // a no-op because we don't need the billing client.
   if (m_private->m_user.subscriptionNeeded()) {
-    // mozilla::glean::outcome::subscription_failed.record(
-    //     mozilla::glean::outcome::SubscriptionFailedExtra{
-    //         ._reason = "BillingNotAvailable",
-    //     });
-
     setState(StateBillingNotAvailable);
   }
 }
 
 void MozillaVPN::subscriptionNotValidated() {
-  // mozilla::glean::outcome::subscription_failed.record(
-  //     mozilla::glean::outcome::SubscriptionFailedExtra{
-  //         ._reason = "SubscriptionNotValidated",
-  //     });
-
   setState(StateSubscriptionNotValidated);
 }
 
 void MozillaVPN::subscriptionFailed() {
-  // mozilla::glean::outcome::subscription_failed.record(
-  //     mozilla::glean::outcome::SubscriptionFailedExtra{
-  //         ._reason = "Unknown",
-  //     });
-
   subscriptionFailedInternal(false /* canceled by user */);
 }
 
 void MozillaVPN::subscriptionCanceled() {
-  // mozilla::glean::outcome::subscription_failed.record(
-  //     mozilla::glean::outcome::SubscriptionFailedExtra{
-  //         ._reason = "SubscriptionCancelled",
-  //     });
-
   subscriptionFailedInternal(true /* canceled by user */);
 }
 
@@ -1070,10 +1047,6 @@ void MozillaVPN::alreadySubscribed() {
 
   logger.info() << "Setting state: Subscription Blocked";
 
-  // mozilla::glean::outcome::subscription_failed.record(
-  //     mozilla::glean::outcome::SubscriptionFailedExtra{
-  //         ._reason = "UserAlreadySubscribed",
-  //     });
   setState(StateSubscriptionBlocked);
 }
 
@@ -1367,12 +1340,6 @@ void MozillaVPN::errorHandled() {
 
   // Any error in authenticating state sends to the Initial state.
   if (state() == App::StateAuthenticating) {
-    // if (alert == ErrorHandler::GeoIpRestrictionAlert) {
-    //   mozilla::glean::sample::authentication_failure_by_geo.record();
-    // } else {
-    //   mozilla::glean::sample::authentication_failure.record();
-    // }
-
     reset(true);
     return;
   }

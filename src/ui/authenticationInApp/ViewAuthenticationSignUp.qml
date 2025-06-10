@@ -17,13 +17,9 @@ MZInAppAuthenticationBase {
     objectName: "authSignUp"
 
     _changeEmailLinkVisible: true
-    // _telemetryScreenId: "create_password"
     _menuButtonImageSource: MZAssetLookup.getImageSource("ArrowBack")
     _menuButtonImageMirror: MZLocalizer.isRightToLeft
     _menuButtonOnClick: () => {
-        // Glean.interaction.backSelected.record({
-        //     screen: _telemetryScreenId,
-        // });
         MZAuthInApp.reset();
     }
     _menuButtonAccessibleName: MZI18n.GlobalGoBack
@@ -34,9 +30,6 @@ MZInAppAuthenticationBase {
 
     _inputs: MZInAppAuthenticationInputs {
         _viewObjectName: authSignUp.objectName
-
-        // _telemetryScreenId: authSignUp._telemetryScreenId
-        // _telemetryButtonEventName: "createAccountSelected"
 
         function validatePassword(passwordString) {
             return MZAuthInApp.validatePasswordCommons(passwordString)
@@ -54,9 +47,7 @@ MZInAppAuthenticationBase {
 
     _disclaimers: Column {
         Layout.alignment: Qt.AlignHCenter
-        MZInAppAuthenticationLegalDisclaimer {
-            // _telemetryScreenId: authSignUp._telemetryScreenId
-        }
+        MZInAppAuthenticationLegalDisclaimer {}
     }
 
     _footerContent: Column {
@@ -66,18 +57,8 @@ MZInAppAuthenticationBase {
             objectName: authSignUp.objectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                // Glean.interaction.cancelSelected.record({
-                //     screen: _telemetryScreenId,
-                // });
-
                 VPN.cancelAuthentication()
             }
         }
     }
-
-    // Component.onCompleted: {
-    //     Glean.impression.createPasswordScreen.record({
-    //         screen: _telemetryScreenId,
-    //     });
-    // }
 }

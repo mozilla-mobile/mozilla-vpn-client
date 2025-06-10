@@ -14,8 +14,6 @@ import components.forms 0.1
 ColumnLayout {
     id: base
     property string _viewObjectName: ""
-    // property string _telemetryScreenId
-    // property string _telemetryButtonEventName
     property string _inputPlaceholderText: ""
     property string _inputErrorMessage: ""
     property alias _inputMethodHints: textInput.inputMethodHints
@@ -80,10 +78,6 @@ ColumnLayout {
                 width: MZTheme.theme.rowHeight
                 height: MZTheme.theme.rowHeight
                 onClicked: {
-                    // Glean.interaction.pastePasswordSelected.record({
-                    //     screen: _telemetryScreenId,
-                    // });
-
                    activeInput().paste();
                    activeInput().forceActiveFocus();
                 }
@@ -242,10 +236,6 @@ ColumnLayout {
                         MZAuthInApp.state === MZAuthInApp.StateVerifyingSessionEmailCode ||
                         MZAuthInApp.state === MZAuthInApp.StateVerifyingSessionTotpCode
         onClicked: {
-            // Glean.interaction[_telemetryButtonEventName].record({
-            //     screen: _telemetryScreenId,
-            // });
-
             disableActiveInput();
             _buttonOnClicked(activeInput().text);
         }
@@ -259,40 +249,28 @@ ColumnLayout {
         function onErrorOccurred(e, retryAfter) {
             switch(e) {
             case MZAuthInApp.ErrorIncorrectPassword:
-                // Glean.sample.authenticationError.record({ reason: "IncorrectPassword" });
-
                 base._inputErrorMessage =  MZI18n.InAppAuthInvalidPasswordErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case MZAuthInApp.ErrorInvalidEmailAddress:
-                // Glean.sample.authenticationError.record({ reason: "InvalidEmail" });
-
                 base._inputErrorMessage =  MZI18n.InAppAuthInvalidEmailErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case MZAuthInApp.ErrorInvalidOrExpiredVerificationCode:
-                // Glean.sample.authenticationError.record({ reason: "InvalidOrExpiredVerificationCode" });
-
                 base._inputErrorMessage = MZI18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
 
             case MZAuthInApp.ErrorInvalidTotpCode:
-                // Glean.sample.authenticationError.record({ reason: "InvalidTotpCode" });
-
                 base._inputErrorMessage = MZI18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
 
             case MZAuthInApp.ErrorInvalidUnblockCode:
-                // Glean.sample.authenticationError.record({ reason: "InvalidUnblockCode" });
-
                 base._inputErrorMessage = MZI18n.InAppAuthInvalidCodeErrorMessage;
                 activeInput().forceActiveFocus();
                 break;
             case MZAuthInApp.ErrorConnectionTimeout:
-                // Glean.sample.authenticationError.record({ reason: "Timeout" });
-
                 // In case of a timeout we want to exit here
                 // to skip setting hasError - so the user can retry instantly
                 activeInput().enabled = true;

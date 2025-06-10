@@ -16,8 +16,6 @@ MZViewBase {
 
     _menuTitle: MZI18n.SettingsAppearance
 
-    // readonly property string telemetryScreenId : "appearance_settings"
-    
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin
         Layout.leftMargin: MZTheme.theme.windowMargin

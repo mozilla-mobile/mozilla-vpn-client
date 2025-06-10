@@ -15,8 +15,6 @@ MZViewBase {
     id: vpnFlickable
     objectName: "subscriptionManagmentView"
 
-    // property string telemetryScreenId: isAnnualUpgradeAvailable() && VPNSubscriptionData.type === VPNSubscriptionData.SubscriptionWeb ? "account_with_change_plan" : "account"
-
     Component.onDestruction: () => VPNProfileFlow.reset()
 
     _menuTitle: MZI18n.SubscriptionManagementSectionTitle
@@ -41,9 +39,6 @@ MZViewBase {
 
             _iconSource: MZAssetLookup.getImageSource("ExternalLinkGrayscale")
             _buttonOnClicked: () => {
-                // Glean.interaction.editSelected.record({
-                //     screen: vpnFlickable.telemetryScreenId,
-                // });
                 MZUrlOpener.openUrlLabel("account");
             }
         }
@@ -73,9 +68,7 @@ MZViewBase {
                 delegate: Loader {
                     objectName: _objectName
                     Layout.fillWidth: true
-                    sourceComponent: SubscriptionManagementItem {
-                        // telemetryScreenId: vpnFlickable.telemetryScreenId
-                    }
+                    sourceComponent: SubscriptionManagementItem {}
                 }
             }
 
@@ -137,12 +130,6 @@ MZViewBase {
                 }
                 Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
                 Layout.topMargin: MZTheme.theme.vSpacingSmall - parent.spacing
-
-                // preLogoutCallback: () => {
-                    // Glean.interaction.signOutSelected.record({
-                    //     screen: vpnFlickable.telemetryScreenId,
-                    // });
-                // }
             }
         }
     }
@@ -161,10 +148,6 @@ MZViewBase {
             default:
                 MZUrlOpener.openUrlLabel("account");
         }
-
-        // Glean.interaction.manageSubscriptionSelected.record({
-        //     screen: vpnFlickable.telemetryScreenId,
-        // });
     }
 
     function isAnnualUpgradeAvailable() {
@@ -326,8 +309,5 @@ MZViewBase {
     Component.onCompleted: {
         populateListModels();
         MZNavigator.addView(VPN.ScreenSettings, vpnFlickable)
-        // Glean.impression.accountScreen.record({
-        //     screen: telemetryScreenId,
-        // });
     }
 }

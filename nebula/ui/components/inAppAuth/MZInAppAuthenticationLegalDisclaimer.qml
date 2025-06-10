@@ -9,8 +9,6 @@ import Mozilla.Shared 1.0
 
 ColumnLayout {
     Layout.alignment: Qt.AlignHCenter
-    // property string _telemetryScreenId
-
     Text {
         text: MZI18n.InAppAuthTermsOfServiceAndPrivacyDisclaimer
         font.family: MZTheme.theme.fontInterFamily
@@ -25,16 +23,8 @@ ColumnLayout {
         lineHeight: MZTheme.theme.labelLineHeight
         onLinkActivated: {
             if (link === "terms-of-service") {
-                // Glean.interaction.termsOfServiceSelected.record({
-                //     screen: _telemetryScreenId,
-                // });
-
                 return MZUrlOpener.openUrlLabel("termsOfService");
             }
-
-            // Glean.interaction.privacyNoticeSelected.record({
-            //     screen: _telemetryScreenId,
-            // });
 
             MZUrlOpener.openUrlLabel("privacyNotice");
         }

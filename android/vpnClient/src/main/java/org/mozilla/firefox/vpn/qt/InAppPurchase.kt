@@ -157,7 +157,6 @@ class InAppPurchase private constructor(ctx: Context) :
         val skuDetails = skusWithSkuDetails[productToPurchase]
         if (skuDetails == null) {
             Log.wtf(TAG, "Attempting to purchase a product with no skuDetails")
-            // Sample.iapGNoSkuDetails.record()
             onSubscriptionFailed(
                 Json.encodeToString(
                     BillingResultData(
@@ -176,7 +175,6 @@ class InAppPurchase private constructor(ctx: Context) :
             .build()
         val billingResult = billingClient.launchBillingFlow(activity, billingParams)
         if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-            // Sample.iapGLaunchbillingflowFailed.record()
             onSubscriptionFailed(billingResultToJson(billingResult, "initiatePurchase"))
         }
     }
@@ -220,12 +218,10 @@ class InAppPurchase private constructor(ctx: Context) :
         skuDetailsList: MutableList<SkuDetails>?,
     ) {
         if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-            // Sample.iapGQuerySkuDetailsFailed.record()
             onSkuDetailsFailed(billingResultToJson(billingResult, "onSkuDetailsResponse"))
             return
         }
         if (skuDetailsList == null) {
-            // Sample.iapGQuerySkuDetailsFailed.record()
             onSkuDetailsFailed(
                 Json.encodeToString(
                     BillingResultData(
@@ -256,7 +252,6 @@ class InAppPurchase private constructor(ctx: Context) :
         if (responseCode == BillingClient.BillingResponseCode.OK) {
             processPurchases(purchases)
         } else {
-            // Sample.iapGQuerySkuDetailsFailed.record()
             Log.e(TAG, "onQueryPurchasesReponse got BillingResponseCode $responseCode")
         }
     }
@@ -274,11 +269,6 @@ class InAppPurchase private constructor(ctx: Context) :
                 BillingClient.BillingResponseCode.ITEM_ALREADY_OWNED -> "item-unavailable"
                 else -> "unknown-${billingResult.responseCode}"
             }
-            // Sample.iapGPurchasesUpdatedFailed.record(
-            //     Sample.IapGPurchasesUpdatedFailedExtra(
-            //         reason = reason,
-            //     ),
-            // )
             onSubscriptionFailed(billingResultToJson(billingResult, "onSkuDetailsResponse"))
         }
     }
@@ -318,12 +308,10 @@ class InAppPurchase private constructor(ctx: Context) :
     fun processPurchases(purchases: MutableList<Purchase>?) {
         if (purchases == null) {
             Log.d(TAG, "onPurchasesUpdated: null purchase list")
-            // Sample.iapGPurchasesUpdateIsNull.record()
             return
         }
         for (purchase in purchases) {
             if (purchase.purchaseState != Purchase.PurchaseState.PURCHASED) {
-                // Sample.iapGUnexpectedPurchasestate.record()
                 Log.i(TAG, "Purchase State is unexpectedly not PURCHASED")
             }
             onPurchaseUpdated(purchase.originalJson)
@@ -337,7 +325,6 @@ class InAppPurchase private constructor(ctx: Context) :
         val monthCount = skusWithMonthCount[sku]
         if (monthCount == null) {
             Log.e(TAG, "We did not get a monthCount for sku: $sku")
-            // Sample.iapGSkuWithoutMonth.record()
             return null
         }
         Log.d(TAG, "For sku $sku, we have $priceMicros priceMicros $monthCount months")

@@ -113,10 +113,6 @@ AndroidController::AndroidController() {
       [](bool granted) {
         Controller* controller = MozillaVPN::instance()->controller();
         controller->startHandshakeTimer();
-
-        // granted
-        //     ? mozilla::glean::outcome::onboarding_ntwrk_perm_granted.record()
-        //     : mozilla::glean::outcome::onboarding_ntwrk_perm_denied.record();
       },
       Qt::QueuedConnection);
 }

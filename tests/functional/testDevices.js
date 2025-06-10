@@ -29,60 +29,6 @@ describe('Devices', function() {
       await vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_SHEET_CLOSE_BUTTON.visible());
       await vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.closed());
     });
-
-    // describe('Checking devices screen telemetry', function () {
-    //   // No Glean on WASM.
-    //   if(vpn.runningOnWasm()) {
-    //     return;
-    //   }
-
-    //   const devicesTelemetryScreenId = "my_devices"
-
-    // it('Checking devices screen impression telemetry', async () => {
-    //   const myDevicesScreenEvents = await vpn.waitForGleanValue("impression",
-    //   "myDevicesScreen", "main"); assert.equal(myDevicesScreenEvents.length,
-    //   1); const myDevicesScreenEventsExtras = myDevicesScreenEvents[0].extra;
-    //   assert.equal(devicesTelemetryScreenId,
-    //   myDevicesScreenEventsExtras.screen);
-    // });
-
-    //   it('Checking devices screen help sheet telemetry', async () => {
-    //     const devicesHelpSheetTelemetryScreenId = "my_devices_info"
-
-    //     await
-    //     vpn.waitForQueryAndClick(queries.screenSettings.myDevicesView.HELP_BUTTON.visible());
-
-    //     const helpTooltipSelectedEvents = await
-    //     vpn.waitForGleanValue("interaction", "helpTooltipSelected", "main");
-    //     assert.equal(helpTooltipSelectedEvents.length, 1);
-    //     const helpTooltipSelectedEventsExtras =
-    //     helpTooltipSelectedEvents[0].extra;
-    //     assert.equal(devicesTelemetryScreenId,
-    //     helpTooltipSelectedEventsExtras.screen);
-
-    //     await
-    //     vpn.waitForQuery(queries.screenSettings.myDevicesView.HELP_SHEET.opened());
-
-    //     const myDevicesInfoScreenEvents = await
-    //     vpn.waitForGleanValue("impression", "myDevicesInfoScreen", "main");
-    //     assert.equal(myDevicesInfoScreenEvents.length, 1);
-    //     const myDevicesInfoScreenEventsExtras =
-    //     myDevicesInfoScreenEvents[0].extra;
-    //     assert.equal(devicesHelpSheetTelemetryScreenId,
-    //     myDevicesInfoScreenEventsExtras.screen);
-
-    //     await
-    //     vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
-
-    //     const learnMoreSelectedEvents = await
-    //     vpn.waitForGleanValue("interaction", "learnMoreSelected", "main");
-    //     assert.equal(learnMoreSelectedEvents.length, 1);
-    //     const learnMoreSelectedEventsExtras =
-    //     learnMoreSelectedEvents[0].extra;
-    //     assert.equal(devicesHelpSheetTelemetryScreenId,
-    //     learnMoreSelectedEventsExtras.screen);
-    //   });
-    // });
   });
 
   describe('Device limit', function() {

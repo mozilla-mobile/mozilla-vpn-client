@@ -21,12 +21,6 @@ MZFlickable {
     anchors.left: parent.left
     anchors.right: parent.right
 
-    // Component.onCompleted: {
-    //     Glean.impression.mainScreen.record({
-    //         screen: "main",
-    //     });
-    // }
-
     states: [
         State {
             when: window.fullscreenRequired()

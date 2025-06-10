@@ -12,7 +12,6 @@ ColumnLayout {
     id: root
 
     property bool isOnboarding: false
-    // property string telemetryScreenId
     property int dividerSpacing: MZTheme.theme.toggleRowDividerSpacing
 
 
@@ -71,49 +70,6 @@ ColumnLayout {
 
                 settingClicked(dnsProviderFlags, true)
             }
-
-            // function recordOnboardingTelemetry() {
-            //     switch (modelData.settingValue) {
-                // case MZSettings.BlockAds:
-                    // if (MZSettings.dnsProviderFlags & modelData.settingValue) {
-                    //     Glean.interaction.blockAdsEnabled.record({
-                    //         screen: root.telemetryScreenId,
-                    //     });
-                    // }
-                    // else {
-                    //     Glean.interaction.blockAdsDisabled.record({
-                    //         screen: root.telemetryScreenId,
-                    //     });
-                    // }
-                    // break
-                // case MZSettings.BlockTrackers:
-                //     if (MZSettings.dnsProviderFlags & modelData.settingValue) {
-                //         Glean.interaction.blockTrackersEnabled.record({
-                //             screen: root.telemetryScreenId,
-                //         });
-                //     }
-                //     else {
-                //         Glean.interaction.blockTrackersDisabled.record({
-                //             screen: root.telemetryScreenId,
-                //         });
-                //     }
-                //     break
-                // case MZSettings.BlockMalware:
-                //     if (MZSettings.dnsProviderFlags & modelData.settingValue) {
-                //         Glean.interaction.blockMalwareEnabled.record({
-                //             screen: root.telemetryScreenId,
-                //         });
-                //     }
-                //     else {
-                //         Glean.interaction.blockMalwareDisabled.record({
-                //             screen: root.telemetryScreenId,
-                //         });
-                //     }
-                //     break
-                // default:
-                //     break
-            //     }
-            // }
         }
     }
 }
