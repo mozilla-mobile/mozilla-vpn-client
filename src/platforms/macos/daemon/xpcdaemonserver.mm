@@ -11,7 +11,6 @@
 #include "logger.h"
 #include "platforms/macos/macosutils.h"
 #include "platforms/macos/xpcdaemonprotocol.h"
-#include "version.h"
 
 constexpr const int XPC_SESSION_MAX_BACKLOG = 32;
 
@@ -42,7 +41,7 @@ Logger logger("XpcDaemonServer");
 XpcDaemonServer::XpcDaemonServer(Daemon* daemon) : QObject(daemon) {
   MZ_COUNT_CTOR(XpcDaemonServer);
 
-  NSString* machServiceName = MacOSUtils::appId(".service").toNSString();
+  NSString* machServiceName = [[NSBundle mainBundle] bundleIdentifier];
   logger.debug() << "XpcDaemonServer created:" << machServiceName;
 
   XpcDaemonDelegate* delegate =
@@ -192,7 +191,7 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
 }
 
 - (void)getVersion: (void (^)(NSString *))reply {
-  reply([NSString stringWithUTF8String:APP_VERSION]);
+  reply(QCoreApplication::applicationVersion().toNSString());
 }
 
 - (void)getStatus: (void (^)(NSString *))reply {

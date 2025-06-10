@@ -13,7 +13,6 @@
 #include <QLocalServer>
 
 #include "commandlineparser.h"
-#include "constants.h"
 #include "daemon/daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -25,6 +24,8 @@
 namespace {
 Logger logger("MacOSDaemonServer");
 }
+
+constexpr const char* MACOS_DAEMON_PATH = "/var/run/mozillavpn/daemon.socket";
 
 MacOSDaemonServer::MacOSDaemonServer(QObject* parent)
     : Command(parent, "macosdaemon", "Activate the macos daemon") {
@@ -40,8 +41,6 @@ int MacOSDaemonServer::run(QStringList& tokens) {
 
   QString appName = tokens[0];
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
-  QCoreApplication::setApplicationName("Mozilla VPN Daemon");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   if (tokens.length() > 1) {
     QList<CommandLineParser::Option*> options;
@@ -64,7 +63,7 @@ int MacOSDaemonServer::run(QStringList& tokens) {
     new DaemonLocalServerConnection(&daemon, socket);
   });
 
-  QFileInfo path(Constants::MACOS_DAEMON_PATH);
+  QFileInfo path(MACOS_DAEMON_PATH);
   if (path.exists()) {
     QFile::remove(path.canonicalPath());
   } else if (!makeRuntimeDir(path.dir())) {
@@ -72,7 +71,7 @@ int MacOSDaemonServer::run(QStringList& tokens) {
     return 1;
   }
 
-  if (!server.listen(Constants::MACOS_DAEMON_PATH)) {
+  if (!server.listen(MACOS_DAEMON_PATH)) {
     logger.error() << "Failed to initialize the server";
     return 1;
   }
