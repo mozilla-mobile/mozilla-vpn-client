@@ -24,9 +24,9 @@ CommandSelect::~CommandSelect() { MZ_COUNT_DTOR(CommandSelect); }
 
 int CommandSelect::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
-  return runCommandLineApp([&]() {
+  return MozillaVPN::runCommandLineApp([&]() {
+    QTextStream stream(stdout);
     if ((tokens.length() < 2) || (tokens.length() > 3)) {
-      QTextStream stream(stdout);
       stream << "usage: " << tokens[0] << " <server_hostname> [entry_hostname]"
              << Qt::endl;
       stream << Qt::endl;
@@ -35,16 +35,17 @@ int CommandSelect::run(QStringList& tokens) {
       return 1;
     }
 
-    if (!userAuthenticated()) {
-      return 1;
-    }
 
     MozillaVPN vpn;
-    if (!loadModels()) {
+    if (!vpn.hasToken()) {
+      stream << "User status: not authenticated" << Qt::endl;
+      return 1;
+    }
+    if (!vpn.loadModels()) {
+      stream << "No cache available" << Qt::endl;
       return 1;
     }
 
-    QTextStream stream(stdout);
     QString exitCountryCode;
     QString exitCityName;
     QString entryCountryCode;

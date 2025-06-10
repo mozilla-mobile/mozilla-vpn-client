@@ -25,7 +25,7 @@ CommandServers::~CommandServers() { MZ_COUNT_DTOR(CommandServers); }
 
 int CommandServers::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
-  return runCommandLineApp([&]() {
+  return MozillaVPN::runCommandLineApp([&]() {
     QString appName = tokens[0];
 
     CommandLineParser::Option hOption = CommandLineParser::helpOption();
@@ -53,11 +53,11 @@ int CommandServers::run(QStringList& tokens) {
       return 0;
     }
 
-    if (!userAuthenticated()) {
-      return 1;
-    }
 
     MozillaVPN vpn;
+    if (!vpn.hasToken()) {
+      return 1;
+    }
 
     if (!cacheOption.m_set) {
       TaskServers task(ErrorHandler::PropagateError);
@@ -66,7 +66,9 @@ int CommandServers::run(QStringList& tokens) {
       QEventLoop loop;
       QObject::connect(&task, &Task::completed, &task, [&] { loop.exit(); });
       loop.exec();
-    } else if (!loadModels()) {
+    } else if (!vpn.loadModels()) {
+      QTextStream stream(stdout);
+      stream << "No cache available" << Qt::endl;
       return 0;
     }
 

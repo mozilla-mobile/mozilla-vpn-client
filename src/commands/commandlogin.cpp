@@ -61,14 +61,14 @@ int CommandLogin::run(QStringList& tokens) {
     return 0;
   }
 
-  return runGuiApp([&] {
-    if (SettingsHolder::instance()->hasToken()) {
+  return MozillaVPN::runGuiApp([&] {
+
+    MozillaVPN vpn;
+    if (vpn.hasToken()) {
       QTextStream stream(stdout);
       stream << "User status: already authenticated" << Qt::endl;
       return 1;
     }
-
-    MozillaVPN vpn;
 
     if (!passwordOption.m_set) {
       vpn.authenticateWithType(AuthenticationListener::AuthenticationInBrowser);

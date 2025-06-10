@@ -13,6 +13,10 @@ add_library(mzutils STATIC
     chacha20poly1305.h
     collator.cpp
     collator.h
+    command.cpp
+    command.h
+    commandlineparser.cpp
+    commandlineparser.h
     curve25519.cpp
     curve25519.h
     hacl-star/Hacl_Chacha20.c

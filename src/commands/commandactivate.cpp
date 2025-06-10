@@ -21,19 +21,23 @@ CommandActivate::~CommandActivate() { MZ_COUNT_DTOR(CommandActivate); }
 
 int CommandActivate::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
-  return runCommandLineApp([&]() {
+  return MozillaVPN::runCommandLineApp([&]() {
     if (tokens.length() > 1) {
       QList<CommandLineParser::Option*> options;
       return CommandLineParser::unknownOption(this, tokens[1], tokens[0],
                                               options, false);
     }
 
-    if (!userAuthenticated()) {
-      return 1;
-    }
 
     MozillaVPN vpn;
-    if (!loadModels()) {
+    if (!vpn.hasToken()) {
+      QTextStream stream(stdout);
+      stream << "User status: not authenticated" << Qt::endl;
+      return 1;
+    }
+    if (!vpn.loadModels()) {
+      QTextStream stream(stdout);
+      stream << "No cache available" << Qt::endl;
       return 1;
     }
 

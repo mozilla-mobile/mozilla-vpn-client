@@ -8,10 +8,7 @@
 #include <QTextStream>
 
 #include "command.h"
-#include "constants.h"
 #include "leakdetector.h"
-
-constexpr const char* CLP_DEFAULT_COMMAND = "ui";
 
 namespace {
 int s_argc = 0;
@@ -34,7 +31,8 @@ CommandLineParser::CommandLineParser() { MZ_COUNT_CTOR(CommandLineParser); }
 
 CommandLineParser::~CommandLineParser() { MZ_COUNT_DTOR(CommandLineParser); }
 
-int CommandLineParser::parse(int argc, char* argv[]) {
+int CommandLineParser::parse(int argc, char* argv[],
+                             const QString& defaultCmd) {
   Q_ASSERT(argc >= 1);
 
   s_argc = argc;
@@ -49,10 +47,6 @@ int CommandLineParser::parse(int argc, char* argv[]) {
 #endif
     tokens.append(QString(argv[i]));
   }
-
-  QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setOrganizationName("Mozilla");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
 
   QList<Option*> options;
 
@@ -73,12 +67,13 @@ int CommandLineParser::parse(int argc, char* argv[]) {
 
   if (versionOption.m_set) {
     QTextStream stream(stdout);
-    stream << argv[0] << " " << Constants::versionString() << Qt::endl;
+    stream << QCoreApplication::applicationName() << " "
+           << QCoreApplication::applicationVersion() << Qt::endl;
     return 0;
   }
 
   if (tokens.isEmpty()) {
-    tokens.append(CLP_DEFAULT_COMMAND);
+    tokens.append(defaultCmd);
   }
 
   QVector<Command*> commands = Command::commands(this);

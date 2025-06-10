@@ -28,7 +28,7 @@ CommandWgConf::~CommandWgConf() { MZ_COUNT_DTOR(CommandWgConf); }
 
 int CommandWgConf::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
-  return runCommandLineApp([&]() {
+  return MozillaVPN::runCommandLineApp([&]() {
     Q_ASSERT(!tokens.isEmpty());
     if (tokens.length() > 1) {
       QList<CommandLineParser::Option*> options;
@@ -38,13 +38,14 @@ int CommandWgConf::run(QStringList& tokens) {
 
     MozillaVPN vpn;
     QTextStream stream(stdout);
-
-    if (!userAuthenticated()) {
+    if (!vpn.hasToken()) {
       stream << "User is not authenticated" << Qt::endl;
       return 1;
     }
 
-    if (!loadModels()) {
+    if (!vpn.loadModels()) {
+      QTextStream stream(stdout);
+      stream << "No cache available" << Qt::endl;
       return 1;
     }
 

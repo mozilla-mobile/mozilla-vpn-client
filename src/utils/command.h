@@ -26,17 +26,6 @@ class Command : public QObject {
 
   const QString& description() const { return m_description; }
 
- protected:
-  bool userAuthenticated();
-
-  bool loadModels();
-
-  int runCommandLineApp(std::function<int()>&& callback);
-
-  int runGuiApp(std::function<int()>&& callback);
-
-  int runQmlApp(std::function<int()>&& callback);
-
  private:
   QString m_name;
   QString m_description;
