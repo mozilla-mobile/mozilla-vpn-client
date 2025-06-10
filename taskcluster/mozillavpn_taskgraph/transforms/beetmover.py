@@ -79,6 +79,7 @@ def add_beetmover_worker_config(config, tasks):
         "android/armv7": "android",
         "android/arm64-v8a": "android",
         "linux64/release-deb": "linux",
+        "source/vpn" : "source",
     }
 
     if config.params["version"]:
