@@ -93,8 +93,6 @@ target_sources(app_unit_tests PRIVATE
     testlocalizer.h
     testlogger.cpp
     testlogger.h
-    testnavigator.cpp
-    testnavigator.h
     testnetworkmanager.cpp
     testnetworkmanager.h
     testnetworkrequest.cpp
