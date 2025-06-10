@@ -64,7 +64,6 @@ ColumnLayout {
                 // We are not changing anything interesting for the privacy/dns dialog.
                 if (MZSettings.dnsProviderFlags !== MZSettings.Custom) {
                     MZSettings.dnsProviderFlags = dnsProviderFlags;
-                    // if(root.isOnboarding) recordOnboardingTelemetry()
                     return;
                 }
 

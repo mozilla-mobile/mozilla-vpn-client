@@ -15,7 +15,6 @@
 #include <QTranslator>
 
 #include "constants.h"
-#include "glean/generated/metrics.h"
 #include "i18nlanguagenames.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"

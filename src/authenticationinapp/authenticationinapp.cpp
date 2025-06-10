@@ -10,8 +10,6 @@
 #include <QRegularExpression>
 
 #include "authenticationinappsession.h"
-#include "glean/generated/metrics.h"
-#include "glean/metrictypes.h"
 #include "incrementaldecoder.h"
 #include "leakdetector.h"
 #include "logger.h"

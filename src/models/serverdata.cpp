@@ -7,7 +7,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"

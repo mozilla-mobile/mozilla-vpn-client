@@ -34,9 +34,6 @@ MZStepNavigation {
 
     currentIndex: MZSettings.onboardingStep
     onCurrentIndexChanged: MZSettings.onboardingStep = currentIndex
-    // onProgressBarButtonClicked: (previousIndex, currentIndex) => recordProgressBarButtonInteractionTelemetry(previousIndex, currentIndex)
-
-    // Component.onCompleted: recordImpressionTelemetry()
 
     views: [
         OnboardingDataSlide {
@@ -95,12 +92,6 @@ MZStepNavigation {
         OnboardingStartSlideMobile {
             onNextClicked: stepNav.next()
             onBackClicked: stepNav.back()
-        }
-    }
-
-    Connections {
-        target: MZSettings
-        function onOnboardingStepChanged() {
         }
     }
 }

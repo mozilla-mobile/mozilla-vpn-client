@@ -17,7 +17,6 @@
 #include "controller.h"
 #include "errorhandler.h"
 #include "feature/feature.h"
-#include "glean/generated/metrics.h"
 #include "i18nstrings.h"
 #include "ipaddress.h"
 #include "leakdetector.h"

@@ -17,7 +17,7 @@ MZViewBase {
     property string _startAtBootTitle: ""
     property string _notificationsTitle: ""
     property string _languageTitle: ""
-    
+
     property bool vpnIsOff: VPNController.state === VPNController.StateOff
     property bool isIOS: Qt.platform.os === "ios"
 

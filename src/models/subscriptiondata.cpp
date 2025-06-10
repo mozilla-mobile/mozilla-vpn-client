@@ -12,7 +12,6 @@
 #include <QMetaEnum>
 
 #include "constants.h"
-#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/location.h"

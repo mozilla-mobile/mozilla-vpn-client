@@ -40,7 +40,7 @@ describe('Settings', function() {
        assert(await getNumDisabledApps() == '0');
      });
 
-  it('Clear all button removes all apps from exclusion list and records telemetry', async () => {
+  it('Clear all button removes all apps from exclusion list', async () => {
     if (this.ctx.wasm) {
       // This test cannot run in wasm
       return;
@@ -55,12 +55,6 @@ describe('Settings', function() {
     await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.CLEAR_ALL.visible());
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
     assert(await getNumDisabledApps() == '0');
-
-    // Check that we collect telemetry
-    // const events = await vpn.gleanTestGetValue("interaction",
-    // "clearAppExclusionsSelected", "main"); assert.equal(events.length, 1);
-    // var element = events[0];
-    // assert.equal(element.extra.screen, "app_exclusions");
   });
 
   it('Excluded apps are at the top of the list on initial load', async () => {

@@ -13,7 +13,6 @@
 #include "authenticationlistener.h"
 #include "constants.h"
 #include "errorhandler.h"
-#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
