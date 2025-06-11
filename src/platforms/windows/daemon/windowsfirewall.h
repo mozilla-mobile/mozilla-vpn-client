@@ -48,7 +48,6 @@ class WindowsFirewall final : public QObject {
   static bool initSublayer();
   WindowsFirewall(HANDLE session, QObject* parent);
   HANDLE m_sessionHandle;
-  bool m_init = false;
   QList<uint64_t> m_activeRules;
   QMultiMap<QString, uint64_t> m_peerRules;
 
