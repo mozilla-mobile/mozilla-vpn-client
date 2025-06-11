@@ -87,6 +87,7 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
 
   QDir appPath(QCoreApplication::applicationDirPath());
   appPath.cdUp();
+  appPath.cdUp();
   appPath.cd("Resources");
   appPath.cd("utils");
   QStringList wgArgs = {"-f", "utun"};
