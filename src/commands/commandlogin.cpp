@@ -8,10 +8,8 @@
 #include "authenticationlistener.h"
 #include "commandlineparser.h"
 #include "leakdetector.h"
-#include "localizer.h"
 #include "models/devicemodel.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
 #include "tasks/authenticate/taskauthenticate.h"
 
 #ifdef _WIN32  // Avoid using MZ_WINDOWS here as it conflicts with MZ_DUMMY on

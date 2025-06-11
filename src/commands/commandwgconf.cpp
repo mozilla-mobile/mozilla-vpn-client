@@ -17,7 +17,6 @@
 #include "models/server.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
 
 CommandWgConf::CommandWgConf(QObject* parent)
     : Command(parent, "wgconf", "Generate a wireguard configuration file.") {

@@ -14,8 +14,6 @@
 #include "models/servercountrymodel.h"
 #include "models/user.h"
 #include "mozillavpn.h"
-#include "settingsholder.h"
-#include "simplenetworkmanager.h"
 #include "tasks/account/taskaccount.h"
 
 CommandStatus::CommandStatus(QObject* parent)

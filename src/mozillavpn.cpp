@@ -43,6 +43,7 @@
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 #include "settingswatcher.h"
+#include "simplenetworkmanager.h"
 #include "subscriptionmonitor.h"
 #include "taskfunction.h"
 #include "taskgroup.h"
