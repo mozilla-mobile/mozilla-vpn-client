@@ -6,6 +6,8 @@ qt_add_executable(daemon MANUAL_FINALIZATION)
 
 set_target_properties(daemon PROPERTIES
     OUTPUT_NAME "${BUILD_OSX_APP_IDENTIFIER}.daemon"
+    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}.daemon"
+    XCODE_ATTRIBUTE_MARKETING_VERSION "${CMAKE_PROJECT_VERSION}"
     XCODE_GENERATE_SCHEME TRUE
 )
 
@@ -57,8 +59,16 @@ target_sources(daemon PRIVATE
 
 # Embed the daemon property list.
 configure_file(${CMAKE_SOURCE_DIR}/macos/app/daemon.plist.in daemon.plist)
-target_link_options(daemon PRIVATE
-    LINKER:-sectcreate,__TEXT,__info_plist,${CMAKE_CURRENT_BINARY_DIR}/daemon.plist
-)
+if(XCODE)
+    set_target_properties(daemon PROPERTIES
+        XCODE_ATTRIBUTE_INFOPLIST_FILE ${CMAKE_CURRENT_BINARY_DIR}/daemon.plist
+        XCODE_ATTRIBUTE_CREATE_INFOPLIST_SECTION_IN_BINARY YES
+    )
+else()
+    target_link_options(daemon PRIVATE
+        LINKER:-sectcreate,__TEXT,__info_plist,${CMAKE_CURRENT_BINARY_DIR}/daemon.plist
+    )
+endif()
+osx_codesign_target(daemon)
 
 qt_finalize_target(daemon)

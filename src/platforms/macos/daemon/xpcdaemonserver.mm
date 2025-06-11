@@ -41,7 +41,12 @@ Logger logger("XpcDaemonServer");
 XpcDaemonServer::XpcDaemonServer(Daemon* daemon) : QObject(daemon) {
   MZ_COUNT_CTOR(XpcDaemonServer);
 
-  NSString* machServiceName = [[NSBundle mainBundle] bundleIdentifier];
+  // To get the mach service name, take the bundle identifier and replace
+  // the last segment with 'service'
+  NSString* bundleIdentifer = [[NSBundle mainBundle] bundleIdentifier];
+  QStringList bundleSplit = QString::fromNSString(bundleIdentifer).split('.');
+  bundleSplit.last() = "service";
+  NSString* machServiceName = bundleSplit.join('.').toNSString();
   logger.debug() << "XpcDaemonServer created:" << machServiceName;
 
   XpcDaemonDelegate* delegate =
@@ -103,10 +108,25 @@ XpcDaemonServer::~XpcDaemonServer() {
   self = [super init];
   self.daemon = daemon;
 
-  SecTaskRef task = SecTaskCreateFromSelf(kCFAllocatorDefault);
-  if (task) {
-    self.teamIdentifier = [XpcDaemonDelegate getTeamIdentifier:task];
-    CFRelease(task);
+  SecCodeRef code;
+  OSStatus status = SecCodeCopySelf(kSecCSDefaultFlags, &code);
+  if (status != errSecSuccess) {
+    logger.warning() << "Failed to retrieve code signature";
+    return self;
+  }
+
+  // Get the team identifier used to sign this binary.
+  CFDictionaryRef dict;
+  status = SecCodeCopySigningInformation(code, kSecCSSigningInformation, &dict);
+  if (status != errSecSuccess) {
+    logger.warning() << "Failed to retrieve signing information";
+  } else {
+    const void* team = CFDictionaryGetValue(dict, kSecCodeInfoTeamIdentifier);
+    if (team) {
+      self.teamIdentifier = [NSString stringWithString:(NSString*)team];
+      logger.debug() << "Signing team identifier:" << self.teamIdentifier;
+    }
+    CFRelease(dict);
   }
 
   return self;
