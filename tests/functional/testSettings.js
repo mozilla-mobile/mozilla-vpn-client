@@ -300,8 +300,7 @@ describe('Settings', function() {
     });
 
     it('Checking the DNS settings', async () => {
-      // Checking if the checkboxes are correctly set based on the settings
-      // prop
+      // Checking if the checkboxes are correctly set based on the settings prop
       await vpn.waitForQuery(
           queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
               .visible()
@@ -468,8 +467,7 @@ describe('Settings', function() {
     });
 
     it('Checking the DNS settings reset', async () => {
-      // Checking if the checkboxes are correctly set based on the settings
-      // prop
+      // Checking if the checkboxes are correctly set based on the settings prop
       await vpn.waitForQuery(
           queries.screenSettings.appPreferencesView.dnsSettingsView.STANDARD_DNS
               .visible()
@@ -581,162 +579,130 @@ describe('Settings', function() {
       await vpn.waitForQuery(queries.screenSettings.appPreferencesView
                                  .dnsSettingsView.HELP_SHEET.closed());
     });
+  });
 
-    it('Checking the languages settings', async () => {
-      await vpn.setSetting('languageCode', '');
 
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.APP_PREFERENCES.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+  it('Checking the languages settings', async () => {
+    await vpn.setSetting('languageCode', '');
 
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.appPreferencesView.LANGUAGE.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.APP_PREFERENCES.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.LANGUAGE.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.languageSettingsView
+            .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
+            .checked());
+
+    await vpn.scrollToQuery(
+        queries.screenSettings.appPreferencesView.languageSettingsView.SCREEN,
+        queries.screenSettings.appPreferencesView.languageSettingsView
+            .languageItem('it'));
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.languageSettingsView
+            .languageItemLabel('it'));
+
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.languageSettingsView
+            .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
+            .unchecked());
+
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.APP_PREFERENCES.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.LANGUAGE.visible().prop(
+            'settingTitle', 'Lingua'));
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQuery(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.languageSettingsView
+            .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
+            .unchecked());
+
+    await vpn.scrollToQuery(
+        queries.screenSettings.appPreferencesView.languageSettingsView.SCREEN,
+        queries.screenSettings.appPreferencesView.languageSettingsView
+            .languageItem('en'));
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.languageSettingsView
+            .languageItemLabel('en')
+            .visible());
+
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.APP_PREFERENCES.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.LANGUAGE.visible().prop(
+            'settingTitle', 'Language'));
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.setQueryProperty(
+        queries.screenSettings.appPreferencesView.languageSettingsView.SCREEN,
+        'contentY', 0);
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.languageSettingsView
+            .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
+            .unchecked());
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.languageSettingsView
+            .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
+            .checked());
+
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+  });
+
+  it('Checking the appearance settings', async () => {
+    const isShowingAutomaticOption =
+        await vpn.isFeatureEnabled('themeSelectionIncludesAutomatic');
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.APP_PREFERENCES.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.APPEARANCE.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    // Initially, automatic should be checked (if available, light mode is
+    // default otherwise)
+    if (isShowingAutomaticOption) {
       await vpn.waitForQuery(
-          queries.screenSettings.appPreferencesView.languageSettingsView
-              .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
-              .checked());
-
-      await vpn.scrollToQuery(
-          queries.screenSettings.appPreferencesView.languageSettingsView.SCREEN,
-          queries.screenSettings.appPreferencesView.languageSettingsView
-              .languageItem('it'));
-
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.appPreferencesView.languageSettingsView
-              .languageItemLabel('it'));
-
-      await vpn.waitForQuery(
-          queries.screenSettings.appPreferencesView.languageSettingsView
-              .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
-              .unchecked());
-
-      await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.APP_PREFERENCES.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.appPreferencesView.LANGUAGE.visible().prop(
-              'settingTitle', 'Lingua'));
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQuery(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(
-          queries.screenSettings.appPreferencesView.languageSettingsView
-              .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
-              .unchecked());
-
-      await vpn.scrollToQuery(
-          queries.screenSettings.appPreferencesView.languageSettingsView.SCREEN,
-          queries.screenSettings.appPreferencesView.languageSettingsView
-              .languageItem('en'));
-
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.appPreferencesView.languageSettingsView
-              .languageItemLabel('en')
-              .visible());
-
-      await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.APP_PREFERENCES.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.appPreferencesView.LANGUAGE.visible().prop(
-              'settingTitle', 'Language'));
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.setQueryProperty(
-          queries.screenSettings.appPreferencesView.languageSettingsView.SCREEN,
-          'contentY', 0);
-
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.appPreferencesView.languageSettingsView
-              .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
-              .unchecked());
-      await vpn.waitForQuery(
-          queries.screenSettings.appPreferencesView.languageSettingsView
-              .SYSTEM_LANGUAGE_RADIO_BUTTON.visible()
-              .checked());
-
-      await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-    });
-
-    it('Checking the appearance settings', async () => {
-      const isShowingAutomaticOption =
-          await vpn.isFeatureEnabled('themeSelectionIncludesAutomatic');
-
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.APP_PREFERENCES.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.appPreferencesView.APPEARANCE.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      // Initially, automatic should be checked (if available, light mode is
-      // default otherwise)
-      if (isShowingAutomaticOption) {
-        await vpn.waitForQuery(
-            queries.screenSettings.appPreferencesView.appearanceView
-                .AUTOMATIC_RADIO_BUTTON.visible()
-                .checked());
-
-        await vpn.waitForQuery(queries.screenSettings.appPreferencesView
-                                   .appearanceView.LIGHT_RADIO_BUTTON.visible()
-                                   .unchecked());
-
-        await vpn.waitForQuery(queries.screenSettings.appPreferencesView
-                                   .appearanceView.DARK_RADIO_BUTTON.visible()
-                                   .unchecked());
-
-        assert.equal((await vpn.getSetting('usingSystemTheme')), true);
-      } else {
-        await vpn.waitForQuery(queries.screenSettings.appPreferencesView
-                                   .appearanceView.LIGHT_RADIO_BUTTON.visible()
-                                   .checked());
-
-        await vpn.waitForQuery(queries.screenSettings.appPreferencesView
-                                   .appearanceView.DARK_RADIO_BUTTON.visible()
-                                   .unchecked());
-
-        assert.equal((await vpn.getSetting('theme')), 'main');
-      }
-
-      // Click dark, then confirm
-      await vpn.waitForQueryAndClick(
           queries.screenSettings.appPreferencesView.appearanceView
-              .DARK_RADIO_BUTTON.visible());
-
-      if (isShowingAutomaticOption) {
-        await vpn.waitForQuery(
-            queries.screenSettings.appPreferencesView.appearanceView
-                .AUTOMATIC_RADIO_BUTTON.visible()
-                .unchecked());
-        assert.equal((await vpn.getSetting('usingSystemTheme')), false);
-      }
+              .AUTOMATIC_RADIO_BUTTON.visible()
+              .checked());
 
       await vpn.waitForQuery(queries.screenSettings.appPreferencesView
                                  .appearanceView.LIGHT_RADIO_BUTTON.visible()
@@ -744,23 +710,10 @@ describe('Settings', function() {
 
       await vpn.waitForQuery(queries.screenSettings.appPreferencesView
                                  .appearanceView.DARK_RADIO_BUTTON.visible()
-                                 .checked());
+                                 .unchecked());
 
-      assert.equal((await vpn.getSetting('theme')), 'dark-mode');
-
-      // Click light, then confirm
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.appPreferencesView.appearanceView
-              .LIGHT_RADIO_BUTTON.visible());
-
-      if (isShowingAutomaticOption) {
-        await vpn.waitForQuery(
-            queries.screenSettings.appPreferencesView.appearanceView
-                .AUTOMATIC_RADIO_BUTTON.visible()
-                .unchecked());
-        assert.equal((await vpn.getSetting('usingSystemTheme')), false);
-      }
-
+      assert.equal((await vpn.getSetting('usingSystemTheme')), true);
+    } else {
       await vpn.waitForQuery(queries.screenSettings.appPreferencesView
                                  .appearanceView.LIGHT_RADIO_BUTTON.visible()
                                  .checked());
@@ -770,281 +723,240 @@ describe('Settings', function() {
                                  .unchecked());
 
       assert.equal((await vpn.getSetting('theme')), 'main');
+    }
 
-      // Click automatic, then confirm
-      if (isShowingAutomaticOption) {
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.appPreferencesView.appearanceView
-                .AUTOMATIC_RADIO_BUTTON.visible());
+    // Click dark, then confirm
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.appearanceView
+            .DARK_RADIO_BUTTON.visible());
 
-        await vpn.waitForQuery(
-            queries.screenSettings.appPreferencesView.appearanceView
-                .AUTOMATIC_RADIO_BUTTON.visible()
-                .checked());
-
-        await vpn.waitForQuery(queries.screenSettings.appPreferencesView
-                                   .appearanceView.LIGHT_RADIO_BUTTON.visible()
-                                   .unchecked());
-
-        await vpn.waitForQuery(queries.screenSettings.appPreferencesView
-                                   .appearanceView.DARK_RADIO_BUTTON.visible()
-                                   .unchecked());
-
-        assert.equal((await vpn.getSetting('usingSystemTheme')), true);
-      }
-    });
-
-    // TODO: app-permission
-
-    it('Checking the about us', async () => {
-      await vpn.waitForQuery(queries.screenSettings.ABOUT_US.visible());
-
-      await vpn.scrollToQuery(
-          queries.screenSettings.SCREEN, queries.screenSettings.ABOUT_US);
-
-      await vpn.clickOnQuery(queries.screenSettings.ABOUT_US.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQuery(queries.screenSettings.BACK.visible());
-
-      await vpn.waitForQuery(queries.screenSettings.aboutUsView.SCREEN);
-      await vpn.waitForQuery(queries.screenSettings.aboutUsView.LIST);
-      await vpn.waitForQuery(queries.screenSettings.aboutUsView.TOS.visible());
+    if (isShowingAutomaticOption) {
       await vpn.waitForQuery(
-          queries.screenSettings.aboutUsView.PRIVACY.visible());
+          queries.screenSettings.appPreferencesView.appearanceView
+              .AUTOMATIC_RADIO_BUTTON.visible()
+              .unchecked());
+      assert.equal((await vpn.getSetting('usingSystemTheme')), false);
+    }
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.LIGHT_RADIO_BUTTON.visible()
+                               .unchecked());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.DARK_RADIO_BUTTON.visible()
+                               .checked());
+
+    assert.equal((await vpn.getSetting('theme')), 'dark-mode');
+
+    // Click light, then confirm
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.appPreferencesView.appearanceView
+            .LIGHT_RADIO_BUTTON.visible());
+
+    if (isShowingAutomaticOption) {
       await vpn.waitForQuery(
-          queries.screenSettings.aboutUsView.LICENSE.visible());
+          queries.screenSettings.appPreferencesView.appearanceView
+              .AUTOMATIC_RADIO_BUTTON.visible()
+              .unchecked());
+      assert.equal((await vpn.getSetting('usingSystemTheme')), false);
+    }
 
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.LIGHT_RADIO_BUTTON.visible()
+                               .checked());
+
+    await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                               .appearanceView.DARK_RADIO_BUTTON.visible()
+                               .unchecked());
+
+    assert.equal((await vpn.getSetting('theme')), 'main');
+
+    // Click automatic, then confirm
+    if (isShowingAutomaticOption) {
       await vpn.waitForQueryAndClick(
-          queries.screenSettings.aboutUsView.TOS.visible());
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.endsWith('/r/vpn/terms');
-      });
-
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.aboutUsView.PRIVACY.visible());
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.endsWith('/r/vpn/privacy');
-      });
-
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.aboutUsView.LICENSE.visible());
-
-      await vpn.clickOnQuery(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.clickOnQuery(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-    });
-
-    it('Checking the Help', async () => {
-      await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
-
-      await vpn.scrollToQuery(
-          queries.screenSettings.SCREEN, queries.screenSettings.GET_HELP);
-
-      await vpn.clickOnQuery(queries.screenSettings.GET_HELP.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-
-      await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
-
-      await vpn.waitForQueryAndClick(queries.screenGetHelp.LOGS.visible());
-
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.startsWith('file://') && url.includes('mozillavpn') &&
-            url.endsWith('.log');
-      });
-
-      await vpn.waitForQueryAndClick(
-          queries.screenGetHelp.HELP_CENTER.visible());
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.endsWith('/firefox-private-network-vpn');
-      });
-
-      await vpn.waitForQueryAndClick(
-          queries.screenGetHelp.BACK_BUTTON.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-
-      await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
-    });
-
-    it('Help is opened and closed', async () => {
-      await getToGetHelpView();
-
-      await vpn.waitForQueryAndClick(
-          queries.screenGetHelp.BACK_BUTTON.visible());
-      await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-
-      await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
-    });
-
-    it('Contact us is opened and closed', async () => {
-      await getToGetHelpView();
-      await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT.visible());
-
-      await vpn.waitForQueryAndClick(
-          queries.screenGetHelp.contactSupportView.USER_INFO.visible());
-    });
-
-    it('Checking the preferences settings', async () => {
-      await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
-
-      await vpn.scrollToQuery(
-          queries.screenSettings.SCREEN,
-          queries.screenSettings.APP_PREFERENCES);
-
-      await vpn.clickOnQuery(queries.screenSettings.APP_PREFERENCES.visible());
-
-      await checkSetting(
-          queries.screenSettings.appPreferencesView.START_AT_BOOT_TOGGLE,
-          'startAtBoot');
-
-      await checkSetting(
-          queries.screenSettings.appPreferencesView.DATA_COLLECTION_TOGGLE,
-          'gleanEnabled');
+          queries.screenSettings.appPreferencesView.appearanceView
+              .AUTOMATIC_RADIO_BUTTON.visible());
 
       await vpn.waitForQuery(
-          queries.screenSettings.appPreferencesView.LANGUAGE.visible());
-      await vpn.waitForQuery(
-          queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+          queries.screenSettings.appPreferencesView.appearanceView
+              .AUTOMATIC_RADIO_BUTTON.visible()
+              .checked());
 
-      await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+      await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                                 .appearanceView.LIGHT_RADIO_BUTTON.visible()
+                                 .unchecked());
 
-      await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+      await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                                 .appearanceView.DARK_RADIO_BUTTON.visible()
+                                 .unchecked());
+
+      assert.equal((await vpn.getSetting('usingSystemTheme')), true);
+    }
+  });
+
+  // TODO: app-permission
+
+  it('Checking the about us', async () => {
+    await vpn.waitForQuery(queries.screenSettings.ABOUT_US.visible());
+
+    await vpn.scrollToQuery(
+        queries.screenSettings.SCREEN, queries.screenSettings.ABOUT_US);
+
+    await vpn.clickOnQuery(queries.screenSettings.ABOUT_US.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQuery(queries.screenSettings.BACK.visible());
+
+    await vpn.waitForQuery(queries.screenSettings.aboutUsView.SCREEN);
+    await vpn.waitForQuery(queries.screenSettings.aboutUsView.LIST);
+    await vpn.waitForQuery(queries.screenSettings.aboutUsView.TOS.visible());
+    await vpn.waitForQuery(
+        queries.screenSettings.aboutUsView.PRIVACY.visible());
+    await vpn.waitForQuery(
+        queries.screenSettings.aboutUsView.LICENSE.visible());
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.aboutUsView.TOS.visible());
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+      return url.endsWith('/r/vpn/terms');
     });
 
-    it('Checking the notifications settings', async () => {
-      await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
-
-      await vpn.scrollToQuery(
-          queries.screenSettings.SCREEN,
-          queries.screenSettings.APP_PREFERENCES);
-
-      await vpn.clickOnQuery(queries.screenSettings.APP_PREFERENCES.visible());
-
-      await vpn.waitForQuery(
-          queries.screenSettings.appPreferencesView.NOTIFICATIONS.visible());
-
-      await vpn.scrollToQuery(
-          queries.screenSettings.SCREEN,
-          queries.screenSettings.appPreferencesView.NOTIFICATIONS);
-
-      await vpn.clickOnQuery(
-          queries.screenSettings.appPreferencesView.NOTIFICATIONS.visible());
-
-      await checkSetting(
-          queries.screenSettings.appPreferencesView.notificationView
-              .UNSECURE_NETWORK_ALERT,
-          'unsecuredNetworkAlert');
-      await checkSetting(
-          queries.screenSettings.appPreferencesView.notificationView
-              .SWITCH_SERVER_ALERT,
-          'serverSwitchNotification');
-      await checkSetting(
-          queries.screenSettings.appPreferencesView.notificationView
-              .CONNECTION_CHANGE_ALERT,
-          'connectionChangeNotification');
-      await checkSetting(
-          queries.screenSettings.appPreferencesView.notificationView
-              .SERVER_UNAVAILABLE_ALERT,
-          'serverUnavailableNotification');
-
-      await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
-      await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-      await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.aboutUsView.PRIVACY.visible());
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+      return url.endsWith('/r/vpn/privacy');
     });
 
-    describe('telemetry in the settings menu', function() {
-      this.ctx.authenticationNeeded = true;
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.aboutUsView.LICENSE.visible());
 
-      beforeEach(async () => {
-        await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-      });
+    await vpn.clickOnQuery(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
-      it("record telemetry when user clicks on their account details",
-         async () => {
-           if (this.ctx.wasm) {
-             // This test cannot run in wasm
-             return;
-           }
-           await vpn.waitForQueryAndClick(
-               queries.screenSettings.USER_PROFILE.visible());
-           const events = await vpn.waitForGleanValue(
-               "interaction", "accountSelected", "main");
+    await vpn.clickOnQuery(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
-           assert.equal(events.length, 1);
-           var element = events[0];
-           assert.equal(element.extra.screen, "settings");
-         });
+    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+  });
 
-      it("record telemetry when user clicks on Privacy features", async () => {
-        if (this.ctx.wasm) {
-          // This test cannot run in wasm
-          return;
-        }
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.PRIVACY.visible());
-        const events = await vpn.waitForGleanValue(
-            "interaction", "privacyFeaturesSelected", "main");
+  it('Checking the Help', async () => {
+    await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
 
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "settings");
-      });
+    await vpn.scrollToQuery(
+        queries.screenSettings.SCREEN, queries.screenSettings.GET_HELP);
 
-      it('record telemetry when user clicks on Devices', async () => {
-        if (this.ctx.wasm) {
-          // This test cannot run in wasm
-          return;
-        }
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.MY_DEVICES.visible());
-        const events = await vpn.waitForGleanValue(
-            "interaction", "myDevicesSelected", "main");
+    await vpn.clickOnQuery(queries.screenSettings.GET_HELP.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
 
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "settings");
-      });
+    await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
 
-      it('record telemetry when user clicks on Preferences', async () => {
-        if (this.ctx.wasm) {
-          // This test cannot run in wasm
-          return;
-        }
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.APP_PREFERENCES.visible());
-        const events = await vpn.waitForGleanValue(
-            "interaction", "appPreferencesSelected", "main");
+    await vpn.waitForQueryAndClick(queries.screenGetHelp.LOGS.visible());
 
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "settings");
-      });
-
-      it("record telemetry when user goes to the Settings screen", async () => {
-        if (this.ctx.wasm) {
-          // This test cannot run in wasm
-          return;
-        }
-
-        await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-
-        const settingsScreenEvent =
-            await vpn.waitForGleanValue("impression", "settingsScreen", "main");
-        const settingsScreenEventExtras = settingsScreenEvent[0].extra;
-        assert.strictEqual("settings", settingsScreenEventExtras.screen);
-      });
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+      return url.startsWith('file://') && url.includes('mozillavpn') &&
+          url.endsWith('.log');
     });
+
+    await vpn.waitForQueryAndClick(queries.screenGetHelp.HELP_CENTER.visible());
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+      return url.endsWith('/firefox-private-network-vpn');
+    });
+
+    await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+
+    await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
+  });
+
+  it('Help is opened and closed', async () => {
+    await getToGetHelpView();
+
+    await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+
+    await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
+  });
+
+  it('Contact us is opened and closed', async () => {
+    await getToGetHelpView();
+    await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT.visible());
+
+    await vpn.waitForQueryAndClick(
+        queries.screenGetHelp.contactSupportView.USER_INFO.visible());
+  });
+
+  it('Checking the preferences settings', async () => {
+    await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
+
+    await vpn.scrollToQuery(
+        queries.screenSettings.SCREEN, queries.screenSettings.APP_PREFERENCES);
+
+    await vpn.clickOnQuery(queries.screenSettings.APP_PREFERENCES.visible());
+
+    await checkSetting(
+        queries.screenSettings.appPreferencesView.START_AT_BOOT_TOGGLE,
+        'startAtBoot');
+
+    await checkSetting(
+        queries.screenSettings.appPreferencesView.DATA_COLLECTION_TOGGLE,
+        'gleanEnabled');
+
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.LANGUAGE.visible());
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.DNS_SETTINGS.visible());
+
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+  });
+
+  it('Checking the notifications settings', async () => {
+    await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
+
+    await vpn.scrollToQuery(
+        queries.screenSettings.SCREEN, queries.screenSettings.APP_PREFERENCES);
+
+    await vpn.clickOnQuery(queries.screenSettings.APP_PREFERENCES.visible());
+
+    await vpn.waitForQuery(
+        queries.screenSettings.appPreferencesView.NOTIFICATIONS.visible());
+
+    await vpn.scrollToQuery(
+        queries.screenSettings.SCREEN,
+        queries.screenSettings.appPreferencesView.NOTIFICATIONS);
+
+    await vpn.clickOnQuery(
+        queries.screenSettings.appPreferencesView.NOTIFICATIONS.visible());
+
+    await checkSetting(
+        queries.screenSettings.appPreferencesView.notificationView
+            .UNSECURE_NETWORK_ALERT,
+        'unsecuredNetworkAlert');
+    await checkSetting(
+        queries.screenSettings.appPreferencesView.notificationView
+            .SWITCH_SERVER_ALERT,
+        'serverSwitchNotification');
+    await checkSetting(
+        queries.screenSettings.appPreferencesView.notificationView
+            .CONNECTION_CHANGE_ALERT,
+        'connectionChangeNotification');
+    await checkSetting(
+        queries.screenSettings.appPreferencesView.notificationView
+            .SERVER_UNAVAILABLE_ALERT,
+        'serverUnavailableNotification');
+
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQueryAndClick(queries.screenSettings.BACK.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
+  });
 });
