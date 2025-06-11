@@ -37,7 +37,6 @@ MacOSDaemonServer::~MacOSDaemonServer() { MZ_COUNT_DTOR(MacOSDaemonServer); }
 int MacOSDaemonServer::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
   qputenv("QT_EVENT_DISPATCHER_CORE_FOUNDATION", "1");
-  setupLogDir();
 
   QString appName = tokens[0];
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
@@ -102,23 +101,6 @@ bool MacOSDaemonServer::makeRuntimeDir(const QDir& dir) {
   }
 
   return true;
-}
-
-void MacOSDaemonServer::setupLogDir() {
-  QDir logdir("/var/log/mozillavpn");
-  QFileDevice::Permissions perms =
-      QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner |
-      QFileDevice::ReadGroup | QFileDevice::ExeGroup | QFileDevice::ReadOther |
-      QFileDevice::ExeOther;
-  if (logdir.exists()) {
-    QFile device(logdir.path());
-    device.setPermissions(perms);
-  } else {
-    QDir parentDir = logdir;
-    parentDir.cdUp();
-    parentDir.mkdir(logdir.dirName(), perms);
-  }
-  LogHandler::instance()->setLocation(logdir.path());
 }
 
 static Command::RegistrationProxy<MacOSDaemonServer> s_commandMacOSDaemon;

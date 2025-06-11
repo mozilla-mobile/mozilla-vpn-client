@@ -28,11 +28,9 @@
 #include "logger.h"
 
 constexpr qint64 LOG_MAX_FILE_SIZE = 204800;
+constexpr const char* LOG_FILE_SUFFIX = ".log";
 
 namespace {
-QString s_location =
-    QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
-
 LogLevel qtTypeToLogLevel(QtMsgType type) {
   switch (type) {
     case QtDebugMsg:
@@ -57,7 +55,7 @@ Logger logger("LogHandler");
 Q_GLOBAL_STATIC(LogHandler, logHandler);
 LogHandler* LogHandler::instance() { return logHandler; }
 
-QString LogHandler::logFileName() { return m_logShortName + ".log"; }
+QString LogHandler::s_filename;
 
 // static
 void LogHandler::messageQTHandler(QtMsgType type,
@@ -148,8 +146,8 @@ void LogHandler::setStderr(bool enabled) {
 LogHandler::LogHandler() : QObject(nullptr) {
   QMutexLocker<QMutex> lock(&m_mutex);
 
-  QString appName = qApp->applicationName().toLower();
-  m_logShortName = appName.remove(QRegularExpression("[^a-z]"));
+  QRegularExpression nonAlpha("[^a-z]");
+  m_shortname = qApp->applicationName().toLower().remove(nonAlpha);
 
 #if defined(MZ_DEBUG)
   m_stderrEnabled = true;
@@ -161,14 +159,18 @@ LogHandler::LogHandler() : QObject(nullptr) {
   if (bundle) {
     bundleId = QString::fromNSString((NSString*)CFBundleGetIdentifier(bundle));
   } else {
-    bundleId = m_logShortName;
+    bundleId = m_shortname;
   }
-  m_ioslog = os_log_create(qPrintable(bundleId), qPrintable(m_logShortName));
+  m_ioslog = os_log_create(qPrintable(bundleId), qPrintable(m_shortname));
 #endif
 
-  if (!s_location.isEmpty()) {
-    openLogFile(lock);
+  // If no logfile has been set, derive it automatically from the shortname.
+  if (s_filename.isEmpty()) {
+    QString where =
+        QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    s_filename = QDir(where).filePath(m_shortname + LOG_FILE_SUFFIX);
   }
+  openLogFile(lock);
 }
 
 void LogHandler::addLog(const Log& log) {
@@ -192,7 +194,7 @@ void LogHandler::addLog(const Log& log,
 #if defined(MZ_ANDROID)
     const char* str = buffer.constData();
     if (str) {
-      __android_log_write(ANDROID_LOG_DEBUG, qPrintable(m_logShortName), str);
+      __android_log_write(ANDROID_LOG_DEBUG, qPrintable(m_shortName), str);
     }
 #elif defined(MZ_IOS)
     QString logstr = QString::fromUtf8(buffer);
@@ -260,12 +262,17 @@ void LogHandler::cleanupLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   logHandler->openLogFile(proofOfLock);
 }
 
-void LogHandler::setLocation(const QString& path) {
-  QMutexLocker<QMutex> lock(&m_mutex);
-  s_location = path;
+// static
+void LogHandler::setLogfile(const QString& path) {
+  if (!logHandler.exists()) {
+    s_filename = path;
+    return;
+  }
 
+  QMutexLocker<QMutex> lock(&logHandler->m_mutex);
+  s_filename = path;
   if (logHandler->m_logFile) {
-    cleanupLogFile(lock);
+    logHandler->cleanupLogFile(lock);
   }
 }
 
@@ -308,22 +315,26 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   Q_ASSERT(!m_logFile);
   Q_ASSERT(!m_output);
 
-  QDir appDataLocation(s_location);
+  QDir appDataLocation = QFileInfo(s_filename).dir();
   if (!appDataLocation.exists()) {
-    QDir tmp(s_location);
+    QDir tmp(appDataLocation);
     tmp.cdUp();
     if (!tmp.exists()) {
       return;
     }
-    if (!tmp.mkdir(appDataLocation.dirName())) {
+
+    QFileDevice::Permissions perms =
+        QFileDevice::ReadOwner | QFileDevice::WriteOwner |
+        QFileDevice::ExeOwner | QFileDevice::ReadGroup | QFileDevice::ExeGroup |
+        QFileDevice::ReadOther | QFileDevice::ExeOther;
+    if (!tmp.mkdir(appDataLocation.dirName(), perms)) {
       return;
     }
   }
 
-  QString logFilePath = appDataLocation.filePath(logFileName());
-  truncateLogFile(proofOfLock, logFilePath);
+  truncateLogFile(proofOfLock, s_filename);
 
-  m_logFile = new QFile(logFilePath);
+  m_logFile = new QFile(s_filename);
   if (!m_logFile->open(QIODevice::WriteOnly | QIODevice::Append |
                        QIODevice::Text)) {
     delete m_logFile;
@@ -334,7 +345,7 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   m_output = new QTextStream(m_logFile);
 
 #ifdef MZ_DEBUG
-  addLog(Log(Debug, "LogHandler", QString("Log file: %1").arg(logFilePath)),
+  addLog(Log(Debug, "LogHandler", QString("Log file: %1").arg(s_filename)),
          proofOfLock);
 #endif
 }
@@ -399,11 +410,8 @@ bool LogHandler::writeLogsToLocation(
   QString filename;
   QDate now = QDate::currentDate();
 
-  QFileInfo logFileInfo(logFileName());
-
-  QTextStream(&filename) << logFileInfo.baseName() << "-" << now.year() << "-"
-                         << now.month() << "-" << now.day() << "."
-                         << logFileInfo.completeSuffix();
+  QTextStream(&filename) << m_shortname << "-" << now.year() << "-"
+                         << now.month() << "-" << now.day() << LOG_FILE_SUFFIX;
 
   QDir logDir(QStandardPaths::writableLocation(location));
   QString logFile = logDir.filePath(filename);
@@ -417,9 +425,9 @@ bool LogHandler::writeLogsToLocation(
 
     for (uint32_t i = 1;; ++i) {
       QString filename;
-      QTextStream(&filename) << logFileInfo.baseName() << "-" << now.year()
-                             << "-" << now.month() << "-" << now.day() << "_"
-                             << i << "." << logFileInfo.completeSuffix();
+      QTextStream(&filename) << m_shortname << "-" << now.year() << "-"
+                             << now.month() << "-" << now.day() << "_" << i
+                             << LOG_FILE_SUFFIX;
       logFile = logDir.filePath(filename);
       if (!QFileInfo::exists(logFile)) {
         logger.debug() << "Filename found!" << i;

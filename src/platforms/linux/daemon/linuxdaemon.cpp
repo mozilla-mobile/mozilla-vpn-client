@@ -28,7 +28,7 @@ class CommandLinuxDaemon final : public Command {
 
   int run(QStringList& tokens) override {
     Q_ASSERT(!tokens.isEmpty());
-    LogHandler::instance()->setLocation("/var/log");
+    LogHandler::setLogfile("/var/log/mozillavpn.log");
 
     QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
     DBusService* dbus = new DBusService(&app);

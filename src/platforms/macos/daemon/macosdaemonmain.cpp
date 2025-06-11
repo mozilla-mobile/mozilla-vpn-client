@@ -8,6 +8,7 @@
 
 #include "commandlineparser.h"
 #include "leakdetector.h"
+#include "loghandler.h"
 #include "stdio.h"
 
 constexpr const char* MACOS_DAEMON_DEFAULT_COMMAND = "macosdaemon";
@@ -30,6 +31,7 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
   LeakDetector leakDetector;
   Q_UNUSED(leakDetector);
 #endif
+  LogHandler::setLogfile("/var/log/mozillavpn/mozillavpn.log");
 
   QCoreApplication::setApplicationName("Mozilla VPN Daemon");
   QCoreApplication::setOrganizationName("Mozilla");
