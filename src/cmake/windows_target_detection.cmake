@@ -18,35 +18,11 @@
 # Also let's save that in the way rust expects tartgets
 # so we can just forward this to cargo. 
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC" OR (CMAKE_CXX_COMPILER_ID MATCHES "Clang" AND CMAKE_CXX_SIMULATE_ID STREQUAL "MSVC"))
-    # MSVC/CL specific logic
-    execute_process(
-        COMMAND ${CMAKE_CXX_COMPILER} /?
-        OUTPUT_VARIABLE COMPILER_OUTPUT
-        ERROR_QUIET
-    )
-    string(FIND "${COMPILER_OUTPUT}" "x64" FOUND_X64)
-    string(FIND "${COMPILER_OUTPUT}" "ARM64" FOUND_ARM64)
-    if(FOUND_X64 GREATER -1)
-        set(WINDOWS_TARGET_TRIPLET "x86_64-pc-windows-msvc")
-    elseif(FOUND_ARM64 GREATER -1)
-        set(WINDOWS_TARGET_TRIPLET "aarch64-pc-windows-msvc")
-    else()
-        set(WINDOWS_TARGET_TRIPLET "i686-pc-windows-msvc")
-    endif()
-
-elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU" OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    # Use the `-dumpmachine` option available in GCC/Clang
-    execute_process(
-        COMMAND ${CMAKE_CXX_COMPILER} -dumpmachine
-        OUTPUT_VARIABLE COMPILER_TARGET
-        OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-    set(WINDOWS_TARGET_TRIPLET "${COMPILER_TARGET}")
-
+if(NOT DEFINED WINDOWS_TARGET_TRIPLET)
+    set(WINDOWS_TARGET_TRIPLET "x86_64-pc-windows-msvc")
+    message(STATUS "WINDOWS_TARGET_TRIPLET not defined, defaulting to ${WINDOWS_TARGET_TRIPLET}")
 else()
-    message(WARNING "Unsupported compiler: ${CMAKE_CXX_COMPILER_ID}")
-    set(WINDOWS_TARGET_TRIPLET "unknown")
+    message(STATUS "WINDOWS_TARGET_TRIPLET is already defined as ${WINDOWS_TARGET_TRIPLET}")
 endif()
 
 # Output the Rust target triplet
