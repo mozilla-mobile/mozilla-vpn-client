@@ -31,8 +31,8 @@
 #include "rfc/rfc4291.h"
 #include "serverlatency.h"
 #include "settingsholder.h"
+#include "taskfunction.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
-#include "tasks/function/taskfunction.h"
 #include "taskscheduler.h"
 
 #if defined(MZ_FLATPAK)

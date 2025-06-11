@@ -1926,14 +1926,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/reqwest/reqwest-0.12.18.crate",
-        "sha256": "e98ff6b0dbbe4d5a37318f433d4fc82babd21631f194d370409ceb2e40b2f0b5",
-        "dest": "cargo/vendor/reqwest-0.12.18"
+        "url": "https://static.crates.io/crates/reqwest/reqwest-0.12.19.crate",
+        "sha256": "a2f8e5513d63f2e5b386eb5106dc67eaf3f84e95258e210489136b8b92ad6119",
+        "dest": "cargo/vendor/reqwest-0.12.19"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"e98ff6b0dbbe4d5a37318f433d4fc82babd21631f194d370409ceb2e40b2f0b5\", \"files\": {}}",
-        "dest": "cargo/vendor/reqwest-0.12.18",
+        "contents": "{\"package\": \"a2f8e5513d63f2e5b386eb5106dc67eaf3f84e95258e210489136b8b92ad6119\", \"files\": {}}",
+        "dest": "cargo/vendor/reqwest-0.12.19",
         "dest-filename": ".cargo-checksum.json"
     },
     {
@@ -2368,14 +2368,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/sysinfo/sysinfo-0.35.1.crate",
-        "sha256": "79251336d17c72d9762b8b54be4befe38d2db56fbbc0241396d70f173c39d47a",
-        "dest": "cargo/vendor/sysinfo-0.35.1"
+        "url": "https://static.crates.io/crates/sysinfo/sysinfo-0.35.2.crate",
+        "sha256": "3c3ffa3e4ff2b324a57f7aeb3c349656c7b127c3c189520251a648102a92496e",
+        "dest": "cargo/vendor/sysinfo-0.35.2"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"79251336d17c72d9762b8b54be4befe38d2db56fbbc0241396d70f173c39d47a\", \"files\": {}}",
-        "dest": "cargo/vendor/sysinfo-0.35.1",
+        "contents": "{\"package\": \"3c3ffa3e4ff2b324a57f7aeb3c349656c7b127c3c189520251a648102a92496e\", \"files\": {}}",
+        "dest": "cargo/vendor/sysinfo-0.35.2",
         "dest-filename": ".cargo-checksum.json"
     },
     {

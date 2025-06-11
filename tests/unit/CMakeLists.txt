@@ -9,9 +9,6 @@ include_directories(${CMAKE_BINARY_DIR}/qtglean)
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/addons)
 include_directories(${MZ_SOURCE_DIR}/glean)
-include_directories(${MZ_SOURCE_DIR}/hacl-star)
-include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin)
-include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/tests/unit)
 
@@ -38,7 +35,7 @@ target_link_libraries(unit_tests PRIVATE
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
 target_compile_definitions(unit_tests PRIVATE MZ_DEBUG)
 
-target_link_libraries(unit_tests PRIVATE qtglean lottie nebula translations)
+target_link_libraries(unit_tests PRIVATE qtglean lottie mzutils nebula translations)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
@@ -57,20 +54,12 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/controller_p.cpp
     ${MZ_SOURCE_DIR}/dnshelper.cpp
     ${MZ_SOURCE_DIR}/dnshelper.h
-    ${MZ_SOURCE_DIR}/dnspingsender.cpp
-    ${MZ_SOURCE_DIR}/dnspingsender.h
     ${MZ_SOURCE_DIR}/ipaddresslookup.cpp
     ${MZ_SOURCE_DIR}/ipaddresslookup.h
-    ${MZ_SOURCE_DIR}/models/apierror.cpp
-    ${MZ_SOURCE_DIR}/models/apierror.h
     ${MZ_SOURCE_DIR}/models/device.cpp
     ${MZ_SOURCE_DIR}/models/device.h
     ${MZ_SOURCE_DIR}/models/devicemodel.cpp
     ${MZ_SOURCE_DIR}/models/devicemodel.h
-    ${MZ_SOURCE_DIR}/models/keys.cpp
-    ${MZ_SOURCE_DIR}/models/keys.h
-    ${MZ_SOURCE_DIR}/models/location.cpp
-    ${MZ_SOURCE_DIR}/models/location.h
     ${MZ_SOURCE_DIR}/models/recentconnections.cpp
     ${MZ_SOURCE_DIR}/models/recentconnections.h
     ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.cpp
@@ -99,13 +88,10 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/notificationhandler.h
     ${MZ_SOURCE_DIR}/pinghelper.cpp
     ${MZ_SOURCE_DIR}/pinghelper.h
-    ${MZ_SOURCE_DIR}/pingsender.h
     ${MZ_SOURCE_DIR}/pingsenderfactory.cpp
     ${MZ_SOURCE_DIR}/pingsenderfactory.h
     ${MZ_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.cpp
     ${MZ_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
-    ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
-    ${MZ_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${MZ_SOURCE_DIR}/releasemonitor.cpp
     ${MZ_SOURCE_DIR}/releasemonitor.h
     ${MZ_SOURCE_DIR}/serverlatency.cpp
@@ -125,8 +111,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/tasks/release/taskrelease.h
     ${MZ_SOURCE_DIR}/tasks/servers/taskservers.cpp
     ${MZ_SOURCE_DIR}/tasks/servers/taskservers.h
-    ${MZ_SOURCE_DIR}/tcppingsender.cpp
-    ${MZ_SOURCE_DIR}/tcppingsender.h
     ${MZ_SOURCE_DIR}/update/updater.cpp
     ${MZ_SOURCE_DIR}/update/updater.h
     ${MZ_SOURCE_DIR}/update/versionapi.cpp
@@ -181,12 +165,8 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/authenticationinapp/incrementaldecoder.h
     ${MZ_SOURCE_DIR}/authenticationlistener.cpp
     ${MZ_SOURCE_DIR}/authenticationlistener.h
-    ${MZ_SOURCE_DIR}/collator.cpp
-    ${MZ_SOURCE_DIR}/collator.h
     ${MZ_SOURCE_DIR}/cryptosettings.cpp
     ${MZ_SOURCE_DIR}/cryptosettings.h
-    ${MZ_SOURCE_DIR}/curve25519.cpp
-    ${MZ_SOURCE_DIR}/curve25519.h
     ${MZ_SOURCE_DIR}/env.cpp
     ${MZ_SOURCE_DIR}/env.h
     ${MZ_SOURCE_DIR}/errorhandler.cpp
@@ -203,14 +183,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/frontend/navigatorreloader.h
     ${MZ_SOURCE_DIR}/glean/mzglean.h
     ${MZ_SOURCE_DIR}/glean/mzglean.cpp
-    ${MZ_SOURCE_DIR}/hacl-star/Hacl_Chacha20.c
-    ${MZ_SOURCE_DIR}/hacl-star/Hacl_Chacha20Poly1305_32.c
-    ${MZ_SOURCE_DIR}/hacl-star/Hacl_Curve25519_51.c
-    ${MZ_SOURCE_DIR}/hacl-star/Hacl_Poly1305_32.c
-    ${MZ_SOURCE_DIR}/hawkauth.cpp
-    ${MZ_SOURCE_DIR}/hawkauth.h
-    ${MZ_SOURCE_DIR}/hkdf.cpp
-    ${MZ_SOURCE_DIR}/hkdf.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.h
@@ -223,18 +195,10 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/inspector/inspectorwebsocketserver.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorutils.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorutils.h
-    ${MZ_SOURCE_DIR}/ipaddress.cpp
-    ${MZ_SOURCE_DIR}/ipaddress.h
     ${MZ_SOURCE_DIR}/itempicker.cpp
     ${MZ_SOURCE_DIR}/itempicker.h
-    ${MZ_SOURCE_DIR}/leakdetector.cpp
-    ${MZ_SOURCE_DIR}/leakdetector.h
     ${MZ_SOURCE_DIR}/localizer.cpp
     ${MZ_SOURCE_DIR}/localizer.h
-    ${MZ_SOURCE_DIR}/logger.cpp
-    ${MZ_SOURCE_DIR}/logger.h
-    ${MZ_SOURCE_DIR}/loghandler.cpp
-    ${MZ_SOURCE_DIR}/loghandler.h
     ${MZ_SOURCE_DIR}/feature/featuremodel.cpp
     ${MZ_SOURCE_DIR}/feature/featuremodel.h
     ${MZ_SOURCE_DIR}/models/licensemodel.cpp
@@ -250,16 +214,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/qmlpath.h
     ${MZ_SOURCE_DIR}/resourceloader.cpp
     ${MZ_SOURCE_DIR}/resourceloader.h
-    ${MZ_SOURCE_DIR}/rfc/rfc1112.cpp
-    ${MZ_SOURCE_DIR}/rfc/rfc1112.h
-    ${MZ_SOURCE_DIR}/rfc/rfc1918.cpp
-    ${MZ_SOURCE_DIR}/rfc/rfc1918.h
-    ${MZ_SOURCE_DIR}/rfc/rfc4193.cpp
-    ${MZ_SOURCE_DIR}/rfc/rfc4193.h
-    ${MZ_SOURCE_DIR}/rfc/rfc4291.cpp
-    ${MZ_SOURCE_DIR}/rfc/rfc4291.h
-    ${MZ_SOURCE_DIR}/rfc/rfc5735.cpp
-    ${MZ_SOURCE_DIR}/rfc/rfc5735.h
     ${MZ_SOURCE_DIR}/settings/settinggroup.cpp
     ${MZ_SOURCE_DIR}/settings/settinggroup.h
     ${MZ_SOURCE_DIR}/settings/settingsmanager.cpp
@@ -274,19 +228,12 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/simplenetworkmanager.h
     ${MZ_SOURCE_DIR}/signature.cpp
     ${MZ_SOURCE_DIR}/signature.h
-    ${MZ_SOURCE_DIR}/task.h
-    ${MZ_SOURCE_DIR}/taskscheduler.cpp
-    ${MZ_SOURCE_DIR}/taskscheduler.h
     ${MZ_SOURCE_DIR}/tasks/addon/taskaddon.cpp
     ${MZ_SOURCE_DIR}/tasks/addon/taskaddon.h
     ${MZ_SOURCE_DIR}/tasks/addonindex/taskaddonindex.cpp
     ${MZ_SOURCE_DIR}/tasks/addonindex/taskaddonindex.h
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.h
-    ${MZ_SOURCE_DIR}/tasks/function/taskfunction.cpp
-    ${MZ_SOURCE_DIR}/tasks/function/taskfunction.h
-    ${MZ_SOURCE_DIR}/tasks/group/taskgroup.cpp
-    ${MZ_SOURCE_DIR}/tasks/group/taskgroup.h
     ${MZ_SOURCE_DIR}/temporarydir.cpp
     ${MZ_SOURCE_DIR}/temporarydir.h
     ${MZ_SOURCE_DIR}/theme.cpp
@@ -309,8 +256,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/urlopener.h
     ${MZ_SOURCE_DIR}/utils.cpp
     ${MZ_SOURCE_DIR}/utils.h
-    ${MZ_SOURCE_DIR}/versionutils.cpp
-    ${MZ_SOURCE_DIR}/versionutils.h
 )
 
 # VPN Client UI resources

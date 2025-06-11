@@ -19,7 +19,6 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "macosdaemon.h"
-#include "mozillavpn.h"
 #include "signalhandler.h"
 #include "xpcdaemonserver.h"
 
@@ -120,7 +119,7 @@ void MacOSDaemonServer::setupLogDir() {
     parentDir.cdUp();
     parentDir.mkdir(logdir.dirName(), perms);
   }
-  LogHandler::setLocation(logdir.path());
+  LogHandler::instance()->setLocation(logdir.path());
 }
 
 static Command::RegistrationProxy<MacOSDaemonServer> s_commandMacOSDaemon;

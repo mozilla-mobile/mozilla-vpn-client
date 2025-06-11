@@ -22,9 +22,6 @@ endif()
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/glean)
-include_directories(${MZ_SOURCE_DIR}/hacl-star)
-include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin)
-include_directories(${MZ_SOURCE_DIR}/hacl-star/kremlin/minimal)
 include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/tests/unit_tests)
 
@@ -59,6 +56,7 @@ generate_translations_target(translations-unit-tests
 target_link_libraries(app_unit_tests PRIVATE
     qtglean
     shared-sources
+    mzutils
     translations-unit-tests
 )
 
@@ -85,8 +83,6 @@ target_sources(app_unit_tests PRIVATE
     testdaemonaccesscontrol.h
     testenv.cpp
     testenv.h
-    testipaddress.cpp
-    testipaddress.h
     testlicense.cpp
     testlicense.h
     testlocalizer.cpp
@@ -101,8 +97,6 @@ target_sources(app_unit_tests PRIVATE
     testqmlpath.h
     testresourceloader.cpp
     testresourceloader.h
-    testtasks.cpp
-    testtasks.h
     testtasksentry.cpp
     testtasksentry.h
     testtemporarydir.cpp

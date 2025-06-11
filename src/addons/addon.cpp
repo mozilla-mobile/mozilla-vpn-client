@@ -10,6 +10,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QVersionNumber>
 
 #include "addonapi.h"
 #include "addonmessage.h"
@@ -30,7 +31,6 @@
 #include "qmlengineholder.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
-#include "versionutils.h"
 
 namespace {
 Logger logger("Addon");
@@ -196,13 +196,12 @@ QList<ConditionCallback> s_conditionCallbacks{
 
     {"min_client_version",
      [](const QJsonValue& value) -> bool {
-       QString min = value.toString();
-       QString currentVersion = Constants::versionString();
+       auto minVersion = QVersionNumber::fromString(value.toString());
+       auto appVersion = QVersionNumber::fromString(Constants::versionString());
 
-       if (!min.isEmpty() &&
-           VersionUtils::compareVersions(min, currentVersion) == 1) {
-         logger.info() << "Min version is" << min << " curent"
-                       << currentVersion;
+       if (!minVersion.isNull() && (minVersion > appVersion)) {
+         logger.info() << "Min version is" << minVersion.toString() << "curent"
+                       << appVersion.toString();
          return false;
        }
 
@@ -215,13 +214,12 @@ QList<ConditionCallback> s_conditionCallbacks{
 
     {"max_client_version",
      [](const QJsonValue& value) -> bool {
-       QString max = value.toString();
-       QString currentVersion = Constants::versionString();
+       auto maxVersion = QVersionNumber::fromString(value.toString());
+       auto appVersion = QVersionNumber::fromString(Constants::versionString());
 
-       if (!max.isEmpty() &&
-           VersionUtils::compareVersions(max, currentVersion) == -1) {
-         logger.info() << "Max version is" << max << " curent"
-                       << currentVersion;
+       if (!maxVersion.isNull() && (maxVersion < appVersion)) {
+         logger.info() << "Max version is" << maxVersion.toString() << "curent"
+                       << appVersion.toString();
          return false;
        }
 

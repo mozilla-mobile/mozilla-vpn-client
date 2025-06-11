@@ -72,12 +72,8 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/authenticationinapp/incrementaldecoder.h
     ${CMAKE_SOURCE_DIR}/src/authenticationlistener.cpp
     ${CMAKE_SOURCE_DIR}/src/authenticationlistener.h
-    ${CMAKE_SOURCE_DIR}/src/collator.cpp
-    ${CMAKE_SOURCE_DIR}/src/collator.h
     ${CMAKE_SOURCE_DIR}/src/cryptosettings.cpp
     ${CMAKE_SOURCE_DIR}/src/cryptosettings.h
-    ${CMAKE_SOURCE_DIR}/src/curve25519.cpp
-    ${CMAKE_SOURCE_DIR}/src/curve25519.h
     ${CMAKE_SOURCE_DIR}/src/env.cpp
     ${CMAKE_SOURCE_DIR}/src/env.h
     ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
@@ -100,32 +96,12 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.h
     ${CMAKE_SOURCE_DIR}/src/glean/mzglean.h
     ${CMAKE_SOURCE_DIR}/src/glean/mzglean.cpp
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Chacha20.c
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Chacha20Poly1305_32.c
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Curve25519_51.c
-    ${CMAKE_SOURCE_DIR}/src/hacl-star/Hacl_Poly1305_32.c
-    ${CMAKE_SOURCE_DIR}/src/hawkauth.cpp
-    ${CMAKE_SOURCE_DIR}/src/hawkauth.h
-    ${CMAKE_SOURCE_DIR}/src/hkdf.cpp
-    ${CMAKE_SOURCE_DIR}/src/hkdf.h
-    ${CMAKE_SOURCE_DIR}/src/ipaddress.cpp
-    ${CMAKE_SOURCE_DIR}/src/ipaddress.h
     ${CMAKE_SOURCE_DIR}/src/itempicker.cpp
     ${CMAKE_SOURCE_DIR}/src/itempicker.h
-    ${CMAKE_SOURCE_DIR}/src/leakdetector.cpp
-    ${CMAKE_SOURCE_DIR}/src/leakdetector.h
     ${CMAKE_SOURCE_DIR}/src/localizer.cpp
     ${CMAKE_SOURCE_DIR}/src/localizer.h
-    ${CMAKE_SOURCE_DIR}/src/logoutobserver.cpp
-    ${CMAKE_SOURCE_DIR}/src/logoutobserver.h
-    ${CMAKE_SOURCE_DIR}/src/logger.cpp
-    ${CMAKE_SOURCE_DIR}/src/logger.h
-    ${CMAKE_SOURCE_DIR}/src/loghandler.cpp
-    ${CMAKE_SOURCE_DIR}/src/loghandler.h
     ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.cpp
     ${CMAKE_SOURCE_DIR}/src/feature/featuremodel.h
-    ${CMAKE_SOURCE_DIR}/src/models/apierror.cpp
-    ${CMAKE_SOURCE_DIR}/src/models/apierror.h
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.cpp
     ${CMAKE_SOURCE_DIR}/src/models/licensemodel.h
     ${CMAKE_SOURCE_DIR}/src/networkmanager.cpp
@@ -138,16 +114,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/qmlpath.h
     ${CMAKE_SOURCE_DIR}/src/resourceloader.cpp
     ${CMAKE_SOURCE_DIR}/src/resourceloader.h
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc1112.cpp
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc1112.h
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc1918.cpp
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc1918.h
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc4193.cpp
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc4193.h
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc4291.cpp
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc4291.h
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.cpp
-    ${CMAKE_SOURCE_DIR}/src/rfc/rfc5735.h
     ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.cpp
     ${CMAKE_SOURCE_DIR}/src/settings/settinggroup.h
     ${CMAKE_SOURCE_DIR}/src/settings/settingsmanager.cpp
@@ -162,9 +128,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/signature.h
     ${CMAKE_SOURCE_DIR}/src/simplenetworkmanager.cpp
     ${CMAKE_SOURCE_DIR}/src/simplenetworkmanager.h
-    ${CMAKE_SOURCE_DIR}/src/task.h
-    ${CMAKE_SOURCE_DIR}/src/taskscheduler.cpp
-    ${CMAKE_SOURCE_DIR}/src/taskscheduler.h
     ${CMAKE_SOURCE_DIR}/src/tasks/addon/taskaddon.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/addon/taskaddon.h
     ${CMAKE_SOURCE_DIR}/src/tasks/addonindex/taskaddonindex.cpp
@@ -173,10 +136,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/taskauthenticate.h
     ${CMAKE_SOURCE_DIR}/src/tasks/deleteaccount/taskdeleteaccount.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/deleteaccount/taskdeleteaccount.h
-    ${CMAKE_SOURCE_DIR}/src/tasks/function/taskfunction.cpp
-    ${CMAKE_SOURCE_DIR}/src/tasks/function/taskfunction.h
-    ${CMAKE_SOURCE_DIR}/src/tasks/group/taskgroup.cpp
-    ${CMAKE_SOURCE_DIR}/src/tasks/group/taskgroup.h
     ${CMAKE_SOURCE_DIR}/src/temporarydir.cpp
     ${CMAKE_SOURCE_DIR}/src/temporarydir.h
     ${CMAKE_SOURCE_DIR}/src/theme.cpp
@@ -185,8 +144,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/urlopener.h
     ${CMAKE_SOURCE_DIR}/src/utils.cpp
     ${CMAKE_SOURCE_DIR}/src/utils.h
-    ${CMAKE_SOURCE_DIR}/src/versionutils.cpp
-    ${CMAKE_SOURCE_DIR}/src/versionutils.h
 )
 
 target_sources(shared-sources INTERFACE
@@ -197,14 +154,6 @@ target_sources(shared-sources INTERFACE
 if(NOT QT_FEATURE_zstd)
     set_property(SOURCE  ${CMAKE_SOURCE_DIR}/src/resources/license.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
     set_property(SOURCE  ${CMAKE_SOURCE_DIR}/src/resources/resources.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
-endif()
-
-# Signal handling for unix platforms
-if(UNIX)
-     target_sources(shared-sources INTERFACE
-        ${CMAKE_SOURCE_DIR}/src/signalhandler.cpp
-        ${CMAKE_SOURCE_DIR}/src/signalhandler.h
-     )
 endif()
 
 # Sources for desktop platforms.
