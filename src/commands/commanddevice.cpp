@@ -31,7 +31,6 @@ int CommandDevice::run(QStringList& tokens) {
       return 1;
     }
 
-
     MozillaVPN vpn;
     if (!vpn.hasToken()) {
       QTextStream stream(stdout);

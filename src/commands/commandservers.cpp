@@ -53,7 +53,6 @@ int CommandServers::run(QStringList& tokens) {
       return 0;
     }
 
-
     MozillaVPN vpn;
     if (!vpn.hasToken()) {
       return 1;

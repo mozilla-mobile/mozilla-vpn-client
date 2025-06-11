@@ -6,7 +6,8 @@
 
 #include "testhelper.h"
 
-class TestCommandLineParser : public QObject, TestHelper<TestCommandLineParser> {
+class TestCommandLineParser : public QObject,
+                              TestHelper<TestCommandLineParser> {
   Q_OBJECT
 
  private slots:

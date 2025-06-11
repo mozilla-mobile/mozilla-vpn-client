@@ -212,13 +212,12 @@ int CommandUI::run(QStringList& tokens) {
     }
 #endif
 
-
 #ifdef MZ_WINDOWS
-  // Configure graphics rendering for Windows
-  SetProcessDPIAware();
-  if (WindowsCommons::requireSoftwareRendering()) {
-    QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
-  }
+    // Configure graphics rendering for Windows
+    SetProcessDPIAware();
+    if (WindowsCommons::requireSoftwareRendering()) {
+      QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
+    }
 #endif
 
     // Ensure that external styling hints are disabled.

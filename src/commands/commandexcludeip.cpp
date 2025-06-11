@@ -51,7 +51,6 @@ int CommandExcludeIP::run(QStringList& tokens) {
       return 1;
     }
 
-
     MozillaVPN vpn;
     if (!vpn.hasToken()) {
       stream << "User status: not authenticated" << Qt::endl;

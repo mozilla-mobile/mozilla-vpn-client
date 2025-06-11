@@ -62,7 +62,6 @@ int CommandLogin::run(QStringList& tokens) {
   }
 
   return MozillaVPN::runGuiApp([&] {
-
     MozillaVPN vpn;
     if (vpn.hasToken()) {
       QTextStream stream(stdout);

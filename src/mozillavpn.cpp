@@ -384,8 +384,7 @@ bool MozillaVPN::loadModels() {
   if (!m_private->m_deviceModel.fromSettings(&m_private->m_keys) ||
       !m_private->m_serverCountryModel.fromSettings() ||
       !m_private->m_user.fromSettings() ||
-      !m_private->m_serverData.fromSettings() ||
-      !modelsInitialized()) {
+      !m_private->m_serverData.fromSettings() || !modelsInitialized()) {
     return false;
   }
 
@@ -2308,7 +2307,7 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   Localizer localizer;
-  //SimpleNetworkManager snm;
+  SimpleNetworkManager snm;
 
   return callback();
 }

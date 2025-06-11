@@ -4,11 +4,11 @@
 
 #include "command.h"
 
+#include <QTextStream>
+
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "logger.h"
-
-#include <QTextStream>
 
 namespace {
 Logger logger("Command");
