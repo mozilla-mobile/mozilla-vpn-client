@@ -4,7 +4,8 @@
 
 #include "testipaddress.h"
 
-#include "helper.h"
+#include <QtTest/QtTest>
+
 #include "ipaddress.h"
 
 void TestIpAddress::ctor() {
@@ -288,5 +289,3 @@ void TestIpAddress::excludeAddresses() {
   qDebug() << list.join(",");
   QVERIFY(list.join(",") == result);
 }
-
-static TestIpAddress s_testIpAddress;

@@ -148,7 +148,7 @@ Window {
         target: MZLog
         function onViewLogsNeeded() {
             if (MZFeatureList.get("shareLogs").isSupported)  {
-                if(MZLog.viewLogs()){
+                if(MZUtils.viewLogs()){
                     return;
                 }
             }

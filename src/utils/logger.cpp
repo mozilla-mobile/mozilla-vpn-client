@@ -60,7 +60,7 @@ Logger::Log& Logger::Log::operator<<(const NSString* t) {
   return *this;
 }
 Logger::Log& Logger::Log::operator<<(CFStringRef t) {
-  m_data->m_ts << QString::fromNSString(reinterpret_cast<const NSString*>(t));
+  m_data->m_ts << QString::fromCFString(t);
   return *this;
 }
 #endif

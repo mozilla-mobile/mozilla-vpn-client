@@ -13,9 +13,6 @@ set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/addons
     ${CMAKE_CURRENT_SOURCE_DIR}/composer
-    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star
-    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin
-    ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal
     ${CMAKE_CURRENT_SOURCE_DIR}/glean
     ${CMAKE_CURRENT_BINARY_DIR}
 )
@@ -98,13 +95,9 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/wireguardutilsmock.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dnshelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/dnshelper.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/dnspingsender.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/dnspingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/extrastrings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/imageproviderfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/imageproviderfactory.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ipaddresslookup.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ipaddresslookup.h
     ${CMAKE_CURRENT_SOURCE_DIR}/keyregenerator.cpp
@@ -116,10 +109,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/models/device.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/devicemodel.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/devicemodel.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/keys.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/keys.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/location.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/models/location.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/recentconnections.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/models/recentconnections.h
     ${CMAKE_CURRENT_SOURCE_DIR}/models/recommendedlocationmodel.cpp
@@ -151,16 +140,12 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/notificationhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pinghelper.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pinghelper.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/pingsender.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/pingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/pingsenderfactory.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/pingsenderfactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummyapplistprovider.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummyapplistprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummypingsender.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummypingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/productshandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/productshandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/profileflow.cpp
@@ -207,8 +192,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/removedevice/taskremovedevice.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskservers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskservers.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/tcppingsender.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/tcppingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/telemetry.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/telemetry.h
     ${CMAKE_CURRENT_SOURCE_DIR}/update/updater.cpp

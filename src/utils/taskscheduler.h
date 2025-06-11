@@ -12,7 +12,12 @@ class Task;
 class TaskScheduler final : public QObject {
   Q_OBJECT
 
+  friend class TestTaskGetFeatureListWorker;
+
  public:
+  explicit TaskScheduler(QObject* parent = nullptr);
+  ~TaskScheduler();
+
   static void scheduleTask(Task* task);
   static void deleteTasks();
   static void forceDeleteTasks();
@@ -21,18 +26,12 @@ class TaskScheduler final : public QObject {
   // that the current tasks do not conflict with this one.
   static void scheduleTaskNow(Task* task);
 
-#ifdef UNIT_TEST
-  static void stop();
-  static QList<Task*> tasks();
-  static void reset();
-#endif
+ protected:
+  static void pause();
+  static void resume();
+  static QList<Task*>& tasks();
 
  private:
-  explicit TaskScheduler(QObject* parent);
-  ~TaskScheduler();
-
-  static TaskScheduler* maybeCreate();
-
   void scheduleTaskInternal(Task* task);
   void deleteTasksInternal(bool forced);
 
@@ -44,9 +43,7 @@ class TaskScheduler final : public QObject {
   Task* m_running_task = nullptr;
   QList<Task*> m_tasks;
 
-#ifdef UNIT_TEST
-  bool m_stopped = false;
-#endif
+  int m_paused = false;
 };
 
 #endif  // TASKSCHEDULER_H

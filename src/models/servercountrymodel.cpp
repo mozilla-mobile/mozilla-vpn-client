@@ -13,7 +13,6 @@
 #include "constants.h"
 #include "feature/feature.h"
 #include "leakdetector.h"
-#include "localizer.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "recommendedlocationmodel.h"

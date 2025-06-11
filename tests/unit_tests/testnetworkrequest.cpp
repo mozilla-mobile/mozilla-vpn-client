@@ -7,7 +7,7 @@
 #include "networkrequest.h"
 #include "settingsholder.h"
 #include "simplenetworkmanager.h"
-#include "tasks/function/taskfunction.h"
+#include "taskfunction.h"
 
 void TestNetworkRequest::testSetAuthHeader() {
   SettingsHolder settingsHolder;

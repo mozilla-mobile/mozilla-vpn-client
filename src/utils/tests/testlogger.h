@@ -2,17 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "helper.h"
+#include <QObject>
 
-class TestReleaseMonitor final : public TestHelper {
+#include "testhelper.h"
+
+class TestLogger final : public QObject, TestHelper<TestLogger> {
   Q_OBJECT
 
  private slots:
-  void failure();
+  void logger();
 
-  void success_data();
-  void success();
+  void logHandler();
 
-  void compareVersions_data();
-  void compareVersions();
+  void logTruncation();
 };

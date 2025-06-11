@@ -154,6 +154,7 @@ qt_add_qml_module(mozillavpn-ui
 )
 
 target_link_libraries(mozillavpn-ui PRIVATE
+    mzutils
     Qt6::Quick
     Qt6::Widgets
 )

@@ -7,12 +7,12 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QVersionNumber>
 
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
-#include "versionutils.h"
 
 namespace {
 Logger logger("VersionApi");
@@ -73,49 +73,45 @@ bool VersionApi::processData(const QByteArray& data) {
 
   QJsonObject platformData = platformDataValue.toObject();
 
-  QString latestVersion;
-  QString minimumVersion;
-  QString currentVersion(appVersion());
+  QVersionNumber latestVersion;
+  QVersionNumber minVersion;
+  QVersionNumber currentVersion = QVersionNumber::fromString(appVersion());
 
   QJsonValue latestValue = platformData.value("latest");
   if (!latestValue.isObject()) {
     logger.warning() << "Platform.latest object not available";
   } else {
-    QJsonObject latestData = latestValue.toObject();
-
-    QJsonValue latestVersionValue = latestData.value("version");
+    QJsonValue latestVersionValue = latestValue["version"];
     if (!latestVersionValue.isString()) {
       logger.warning() << "Platform.latest.version string not available";
     } else {
-      latestVersion = latestVersionValue.toString();
+      latestVersion = QVersionNumber::fromString(latestVersionValue.toString());
     }
   }
 
-  QJsonValue minimumValue = platformData.value("minimum");
-  if (!minimumValue.isObject()) {
+  QJsonValue minValue = platformData.value("minimum");
+  if (!minValue.isObject()) {
     logger.warning() << "Platform.minimum object not available";
   } else {
-    QJsonObject minimumData = minimumValue.toObject();
-
-    QJsonValue minimumVersionValue = minimumData.value("version");
-    if (!minimumVersionValue.isString()) {
+    QJsonValue minVersionValue = minValue["version"];
+    if (!minVersionValue.isString()) {
       logger.warning() << "Platform.minimum.version string not available";
     } else {
-      minimumVersion = minimumVersionValue.toString();
+      minVersion = QVersionNumber::fromString(minVersionValue.toString());
     }
   }
 
-  logger.debug() << "Latest version:" << latestVersion;
-  logger.debug() << "Minimum version:" << minimumVersion;
-  logger.debug() << "Current version:" << currentVersion;
+  logger.debug() << "Latest version:" << latestVersion.toString();
+  logger.debug() << "Minimum version:" << minVersion.toString();
+  logger.debug() << "Current version:" << currentVersion.toString();
 
-  if (VersionUtils::compareVersions(currentVersion, minimumVersion) == -1) {
+  if (currentVersion < minVersion) {
     logger.debug() << "update required";
     emit updateRequired();
     return true;
   }
 
-  if (VersionUtils::compareVersions(currentVersion, latestVersion) == -1) {
+  if (currentVersion < latestVersion) {
     logger.debug() << "Update recommended.";
     emit updateRecommended();
   }

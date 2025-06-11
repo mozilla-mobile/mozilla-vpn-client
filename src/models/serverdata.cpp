@@ -185,14 +185,12 @@ QString ServerData::localizedPreviousExitCityName() const {
 
 QString ServerData::localizedEntryCountryName() const {
   Q_ASSERT(m_initialized);
-  return Localizer::instance()->getTranslatedCountryName(m_entryCountryCode,
-                                                         m_entryCountryName);
+  return ServerCountry::localizedName(m_entryCountryCode, m_entryCountryName);
 }
 
 QString ServerData::localizedExitCountryName() const {
   Q_ASSERT(m_initialized);
-  return Localizer::instance()->getTranslatedCountryName(m_exitCountryCode,
-                                                         m_exitCountryName);
+  return ServerCountry::localizedName(m_exitCountryCode, m_exitCountryName);
 }
 
 void ServerData::changeServer(const QString& countryCode,
