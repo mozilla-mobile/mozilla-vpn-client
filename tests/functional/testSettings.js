@@ -62,7 +62,7 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.ABOUT_US.visible());
   });
 
-  describe('Privacy settings tests', function () {
+  describe('Privacy settings tests', function() {
     beforeEach(async () => {
       await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
 
@@ -283,50 +283,9 @@ describe('Settings', function() {
       await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_SHEET_CLOSE_BUTTON.visible());
       await vpn.waitForQuery(queries.screenSettings.privacyView.HELP_SHEET.closed());
     });
-
-    describe('Checking privacy screen telemetry', function () {
-      // No Glean on WASM.
-      if(vpn.runningOnWasm()) {
-        return;
-      }
-
-      const privacyTelemetryScreenId = "privacy_features"
-
-      it('Checking privacy screen impression telemetry', async () => {
-        const privacyFeaturesSreenEvents = await vpn.waitForGleanValue("impression", "privacyFeaturesScreen", "main");
-        assert.equal(privacyFeaturesSreenEvents.length, 1);
-        const privacyFeaturesSreenEventsExtras = privacyFeaturesSreenEvents[0].extra;
-        assert.equal(privacyTelemetryScreenId, privacyFeaturesSreenEventsExtras.screen);
-      });
-
-      it('Checking privacy help sheet telemetry', async () => {
-        const privacyHelpSheetTelemetryScreenId = "privacy_features_info"
-
-        await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_BUTTON.visible());
-
-        const helpTooltipSelectedEvents = await vpn.waitForGleanValue("interaction", "helpTooltipSelected", "main");
-        assert.equal(helpTooltipSelectedEvents.length, 1);
-        const helpTooltipSelectedEventsExtras = helpTooltipSelectedEvents[0].extra;
-        assert.equal(privacyTelemetryScreenId, helpTooltipSelectedEventsExtras.screen);
-
-        await vpn.waitForQuery(queries.screenSettings.privacyView.HELP_SHEET.opened());
-
-        const privacyFeaturesInfoScreenEvents = await vpn.waitForGleanValue("impression", "privacyFeaturesInfoScreen", "main");
-        assert.equal(privacyFeaturesInfoScreenEvents.length, 1);
-        const privacyFeaturesInfoScreenEventsExtras = privacyFeaturesInfoScreenEvents[0].extra;
-        assert.equal(privacyHelpSheetTelemetryScreenId, privacyFeaturesInfoScreenEventsExtras.screen);
-
-        await vpn.waitForQueryAndClick(queries.screenSettings.privacyView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
-
-        const learnMoreSelectedEvents = await vpn.waitForGleanValue("interaction", "learnMoreSelected", "main");
-        assert.equal(learnMoreSelectedEvents.length, 1);
-        const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
-        assert.equal(privacyHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
-      });
-    });
   });
 
-  describe('DNS settings tests', function () {
+  describe('DNS settings tests', function() {
     beforeEach(async () => {
       await vpn.setSetting('userDNS', '');
       await vpn.setSetting('dnsProviderFlags', 0);
@@ -398,7 +357,8 @@ describe('Settings', function() {
           await vpn.getQueryProperty(
               queries.screenSettings.appPreferencesView.dnsSettingsView
                   .INFORMATION_CARD_LOADER,
-              'active'), 'false');
+              'active'),
+          'false');
 
       // Check the click
       await vpn.waitForQueryAndClick(
@@ -467,8 +427,8 @@ describe('Settings', function() {
           queries.screenSettings.appPreferencesView.dnsSettingsView
               .MODAL_SECONDARY_BUTTON.visible());
       await vpn.waitForQuery(
-          queries.screenSettings.appPreferencesView.dnsSettingsView
-              .MODAL_LOADER.prop('active', false));
+          queries.screenSettings.appPreferencesView.dnsSettingsView.MODAL_LOADER
+              .prop('active', false));
 
       await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView
                                          .dnsSettingsView.CUSTOM_DNS.visible());
@@ -477,8 +437,8 @@ describe('Settings', function() {
           queries.screenSettings.appPreferencesView.dnsSettingsView
               .MODAL_CLOSE_BUTTON.visible());
       await vpn.waitForQuery(
-          queries.screenSettings.appPreferencesView.dnsSettingsView
-              .MODAL_LOADER.prop('active', false));
+          queries.screenSettings.appPreferencesView.dnsSettingsView.MODAL_LOADER
+              .prop('active', false));
 
       await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView
                                          .dnsSettingsView.CUSTOM_DNS.visible());
@@ -487,8 +447,8 @@ describe('Settings', function() {
           queries.screenSettings.appPreferencesView.dnsSettingsView
               .MODAL_PRIMARY_BUTTON.visible());
       await vpn.waitForQuery(
-          queries.screenSettings.appPreferencesView.dnsSettingsView
-              .MODAL_LOADER.prop('active', false));
+          queries.screenSettings.appPreferencesView.dnsSettingsView.MODAL_LOADER
+              .prop('active', false));
 
       await vpn.setQueryProperty(
           queries.screenSettings.appPreferencesView.dnsSettingsView
@@ -600,56 +560,24 @@ describe('Settings', function() {
     });
 
     it('Checking the dns help sheet', async () => {
-      await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET.opened());
-      await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_BUTTON
+              .visible());
+      await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                                 .dnsSettingsView.HELP_SHEET.opened());
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.appPreferencesView.dnsSettingsView
+              .HELP_SHEET_LEARN_MORE_BUTTON.visible());
       await vpn.waitForCondition(async () => {
-          const url = await vpn.getLastUrl();
-          return url === 'https://support.mozilla.org/kb/how-do-i-change-my-dns-settings';
+        const url = await vpn.getLastUrl();
+        return url ===
+            'https://support.mozilla.org/kb/how-do-i-change-my-dns-settings';
       });
-      await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_CLOSE_BUTTON.visible());
-      await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET.closed());
-    });
-
-    describe('Checking DNS screen telemetry', function () {
-      // No Glean on WASM.
-      if(vpn.runningOnWasm()) {
-        return;
-      }
-
-      const dnsTelemetryScreenId = "dns_settings"
-
-      it('Checking DNS screen impression telemetry', async () => {
-        const dnsSettingsScreenEvents = await vpn.waitForGleanValue("impression", "dnsSettingsScreen", "main");
-        assert.equal(dnsSettingsScreenEvents.length, 1);
-        const dnsSettingsScreenEventExtras = dnsSettingsScreenEvents[0].extra;
-        assert.equal(dnsTelemetryScreenId, dnsSettingsScreenEventExtras.screen);
-      });
-
-      it('Checking DNS help sheet telemetry', async () => {
-        const dnsHelpSheetTelemetryScreenId = "dns_settings_info"
-
-        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_BUTTON.visible());
-
-        const helpTooltipSelectedEvents = await vpn.waitForGleanValue("interaction", "helpTooltipSelected", "main");
-        assert.equal(helpTooltipSelectedEvents.length, 1);
-        const helpTooltipSelectedEventsExtras = helpTooltipSelectedEvents[0].extra;
-        assert.equal(dnsTelemetryScreenId, helpTooltipSelectedEventsExtras.screen);
-
-        await vpn.waitForQuery(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET.opened());
-
-        const dnsSettingsInfoScreenEvents = await vpn.waitForGleanValue("impression", "dnsSettingsInfoScreen", "main");
-        assert.equal(dnsSettingsInfoScreenEvents.length, 1);
-        const dnsSettingsInfoScreenEventsExtras = dnsSettingsInfoScreenEvents[0].extra;
-        assert.equal(dnsHelpSheetTelemetryScreenId, dnsSettingsInfoScreenEventsExtras.screen);
-
-        await vpn.waitForQueryAndClick(queries.screenSettings.appPreferencesView.dnsSettingsView.HELP_SHEET_LEARN_MORE_BUTTON.visible());
-
-        const learnMoreSelectedEvents = await vpn.waitForGleanValue("interaction", "learnMoreSelected", "main");
-        assert.equal(learnMoreSelectedEvents.length, 1);
-        const learnMoreSelectedEventsExtras = learnMoreSelectedEvents[0].extra;
-        assert.equal(dnsHelpSheetTelemetryScreenId, learnMoreSelectedEventsExtras.screen);
-      });
+      await vpn.waitForQueryAndClick(
+          queries.screenSettings.appPreferencesView.dnsSettingsView
+              .HELP_SHEET_CLOSE_BUTTON.visible());
+      await vpn.waitForQuery(queries.screenSettings.appPreferencesView
+                                 .dnsSettingsView.HELP_SHEET.closed());
     });
   });
 
@@ -953,26 +881,6 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());
   });
 
-  it('Help impression telemetry is recorded', async () => {
-    // This test cannot run in wasm
-    if (this.ctx.wasm) {
-      return;
-    }
-
-    const getHelpTelemetryScreenId =
-        'help'
-
-        await vpn.waitForQueryAndClick(
-            queries.screenSettings.GET_HELP.visible());
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
-
-    const helpScreenEvents =
-        await vpn.waitForGleanValue('impression', 'helpScreen', 'main');
-    assert.equal(helpScreenEvents.length, 1);
-    const helpScreenEventsExtras = helpScreenEvents[0].extra;
-    assert.equal(getHelpTelemetryScreenId, helpScreenEventsExtras.screen);
-  });
-
   it('Contact us is opened and closed', async () => {
     await getToGetHelpView();
     await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT.visible());
@@ -990,7 +898,8 @@ describe('Settings', function() {
     await vpn.clickOnQuery(queries.screenSettings.APP_PREFERENCES.visible());
 
     await checkSetting(
-        queries.screenSettings.appPreferencesView.START_AT_BOOT_TOGGLE, 'startAtBoot');
+        queries.screenSettings.appPreferencesView.START_AT_BOOT_TOGGLE,
+        'startAtBoot');
 
     await checkSetting(
         queries.screenSettings.appPreferencesView.DATA_COLLECTION_TOGGLE,
@@ -1049,82 +958,5 @@ describe('Settings', function() {
     await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
-  });
-
-  describe('telemetry in the settings menu', function () {
-    this.ctx.authenticationNeeded = true;
-
-    beforeEach(async () => {
-      await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    });
-
-    it("record telemetry when user clicks on their account details", async () => {
-        if (this.ctx.wasm) {
-            // This test cannot run in wasm
-            return;
-        }
-        await vpn.waitForQueryAndClick(queries.screenSettings.USER_PROFILE.visible());
-        const events = await vpn.waitForGleanValue("interaction", "accountSelected", "main");
-
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "settings");
-    });
-
-    it("record telemetry when user clicks on Privacy features", async () => {
-        if (this.ctx.wasm) {
-            // This test cannot run in wasm
-            return;
-        }
-        await vpn.waitForQueryAndClick(queries.screenSettings.PRIVACY.visible());
-        const events = await vpn.waitForGleanValue("interaction", "privacyFeaturesSelected", "main");
-
-        assert.equal(events.length, 1);
-        var element = events[0];
-        assert.equal(element.extra.screen, "settings");
-    });
-
-    it('record telemetry when user clicks on Devices', async () => {
-      if (this.ctx.wasm) {
-        // This test cannot run in wasm
-        return;
-      }
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.MY_DEVICES.visible());
-      const events = await vpn.waitForGleanValue(
-          "interaction", "myDevicesSelected", "main");
-
-      assert.equal(events.length, 1);
-      var element = events[0];
-      assert.equal(element.extra.screen, "settings");
-    });
-
-    it('record telemetry when user clicks on Preferences', async () => {
-      if (this.ctx.wasm) {
-        // This test cannot run in wasm
-        return;
-      }
-      await vpn.waitForQueryAndClick(
-          queries.screenSettings.APP_PREFERENCES.visible());
-      const events = await vpn.waitForGleanValue(
-          "interaction", "appPreferencesSelected", "main");
-
-      assert.equal(events.length, 1);
-      var element = events[0];
-      assert.equal(element.extra.screen, "settings");
-    });
-
-    it("record telemetry when user goes to the Settings screen", async () => {
-        if (this.ctx.wasm) {
-            // This test cannot run in wasm
-            return;
-        }
-
-        await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-
-        const settingsScreenEvent = await vpn.waitForGleanValue("impression", "settingsScreen", "main");
-        const settingsScreenEventExtras = settingsScreenEvent[0].extra;
-        assert.strictEqual("settings", settingsScreenEventExtras.screen);
-    });
   });
 });

@@ -10,10 +10,4 @@ MZLoader {
 
     headlineText: MZI18n.InAppAuthPleaseWait
     footerLinkIsVisible: false
-
-    Component.onCompleted: {
-        Glean.impression.confirmingSubscriptionScreen.record({
-            screen: "confirming_subscription",
-        });
-    }
 }

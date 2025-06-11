@@ -17,8 +17,6 @@ MZFlickable {
     property bool wasmView: false
     readonly property bool isMobile: Qt.platform.os === "android" || Qt.platform.os === "ios"
 
-    readonly property string telemetryScreenId: "subscription_needed"
-
     flickContentHeight: headerLink.implicitHeight + col.implicitHeight + col.anchors.topMargin
 
     Rectangle {
@@ -33,10 +31,6 @@ MZFlickable {
 
         labelText: MZI18n.GetHelpLinkText
         onClicked: {
-            Glean.interaction.getHelpSelected.record({
-                screen: vpnFlickable.telemetryScreenId,
-            });
-
             MZNavigator.requestScreen(VPN.ScreenGetHelp)
         }
     }
@@ -174,10 +168,6 @@ MZFlickable {
             Layout.fillWidth: true
 
             onClicked: {
-                Glean.interaction.subscribeNowSelected.record({
-                    screen: vpnFlickable.telemetryScreenId,
-                });
-
                 isMobile
                     ? VPNPurchase.subscribe(subscriptionOptions.checkedButton.productId)
                     : VPNPurchase.subscribe("web");
@@ -203,10 +193,6 @@ MZFlickable {
 
                 labelText: MZI18n.AboutUsTermsOfService
                 onClicked: {
-                    Glean.interaction.termsOfServiceSelected.record({
-                        screen: vpnFlickable.telemetryScreenId,
-                    });
-
                     MZUrlOpener.openUrlLabel("termsOfService")
                 }
             }
@@ -227,10 +213,6 @@ MZFlickable {
 
                 labelText: MZI18n.AboutUsPrivacyNotice
                 onClicked: {
-                    Glean.interaction.privacyNoticeSelected.record({
-                        screen: vpnFlickable.telemetryScreenId,
-                    });
-
                     MZUrlOpener.openUrlLabel("privacyNotice")
                 }
             }
@@ -250,10 +232,6 @@ MZFlickable {
             visible: Qt.platform.os === "ios"
             labelText: MZI18n.RestorePurchaseRestorePurchaseButton
             onClicked: {
-                Glean.interaction.alreadyASubscriberSelected.record({
-                    screen: vpnFlickable.telemetryScreenId,
-                });
-
                 VPNPurchase.restore()
             }
         }
@@ -268,24 +246,12 @@ MZFlickable {
             Layout.topMargin: 8
             Layout.alignment: Qt.AlignHCenter
             Layout.preferredHeight: MZTheme.theme.rowHeight
-
-            preLogoutCallback: () => {
-                Glean.interaction.signOutSelected.record({
-                    screen: vpnFlickable.telemetryScreenId,
-                });
-            }
         }
 
         //Manual padding for views without a navbar - not ideal, but modifying
         //MZFlickable causes a lot of churn, and is a separate issue
         MZVerticalSpacer {
             Layout.preferredHeight: MZTheme.theme.navBarBottomMargin
-        }
-
-        Component.onCompleted: {
-            Glean.impression.subscriptionNeededScreen.record({
-                screen: vpnFlickable.telemetryScreenId,
-            });
         }
     }
 }

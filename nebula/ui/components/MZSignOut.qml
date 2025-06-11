@@ -16,8 +16,6 @@ MZFooterLink {
     linkColor: getLinkColor()
     property int colorStrength: MZSignOut.ColorStrength.Standard
 
-    property var preLogoutCallback: () => {}
-
     function getLinkColor() {
         switch (colorStrength) {
         case MZSignOut.ColorStrength.Standard:
@@ -30,7 +28,6 @@ MZFooterLink {
     }
 
     onClicked: () => {
-        preLogoutCallback();
         VPN.logout();
     }
 }

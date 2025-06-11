@@ -14,8 +14,6 @@ ColumnLayout {
     id: root
     objectName: "onboardingDataSlide"
 
-    property string telemetryScreenId: "data_collection"
-
     signal nextClicked()
 
     spacing: 0
@@ -89,10 +87,6 @@ ColumnLayout {
         Layout.fillWidth: true
         text: MZI18n.GlobalNext
         onClicked: {
-            Glean.interaction.continueSelected.record({
-                screen: root.telemetryScreenId,
-            });
-
             root.nextClicked()
         }
     }
@@ -117,10 +111,6 @@ ColumnLayout {
 
         labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
         onClicked: {
-            Glean.interaction.privacyNoticeSelected.record({
-                screen: root.telemetryScreenId,
-            });
-
             MZUrlOpener.openUrlLabel("privacyNotice")
         }
     }

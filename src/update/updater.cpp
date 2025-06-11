@@ -6,7 +6,6 @@
 
 #include "constants.h"
 #include "feature/feature.h"
-#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"

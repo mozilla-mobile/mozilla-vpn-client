@@ -100,15 +100,10 @@ Item {
             objectName: "swipeView"
             anchors.fill: parent
             currentIndex: 0
-            property string telemetryScreenId: "signup"
 
             Component.onCompleted: {
                 contentItem.maximumFlickVelocity = 5 * MZTheme.theme.maxContentWidth;
                 contentItem.snapMode = ListView.SnapOneItem;
-
-                Glean.impression.signupScreen.record({
-                    screen: telemetryScreenId,
-                });
             }
 
             Repeater {
@@ -245,9 +240,6 @@ Item {
             labelText: MZI18n.GetHelpLinkText
             isLightTheme: false
             onClicked: {
-                Glean.interaction.getHelpSelected.record({
-                    screen: swipeView.telemetryScreenId,
-                });
                 MZNavigator.requestScreen(VPN.ScreenGetHelp);
             }
             anchors {
@@ -353,10 +345,6 @@ Item {
                     Layout.fillWidth: true
                     width: undefined
                     onClicked: {
-                        Glean.interaction.signupSelected.record({
-                            screen: swipeView.telemetryScreenId,
-                        });
-
                         VPN.authenticate();
                     }
                 }
@@ -368,10 +356,6 @@ Item {
                     linkColor: MZTheme.colors.invertedButton
                     width: undefined
                     onClicked: {
-                        Glean.interaction.alreadyASubscriberSelected.record({
-                            screen: swipeView.telemetryScreenId,
-                        });
-
                         VPN.authenticate();
                     }
                 }

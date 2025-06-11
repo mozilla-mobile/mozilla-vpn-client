@@ -21,7 +21,6 @@
 #include "addons/manager/addonmanager.h"
 #include "feature/feature.h"
 #include "feature/featuremodel.h"
-#include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
 #include "helper.h"
 #include "localizer.h"

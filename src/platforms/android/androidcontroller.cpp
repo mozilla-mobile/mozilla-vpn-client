@@ -17,7 +17,6 @@
 #include "controller.h"
 #include "errorhandler.h"
 #include "feature/feature.h"
-#include "glean/generated/metrics.h"
 #include "i18nstrings.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -113,10 +112,6 @@ AndroidController::AndroidController() {
       [](bool granted) {
         Controller* controller = MozillaVPN::instance()->controller();
         controller->startHandshakeTimer();
-
-        granted
-            ? mozilla::glean::outcome::onboarding_ntwrk_perm_granted.record()
-            : mozilla::glean::outcome::onboarding_ntwrk_perm_denied.record();
       },
       Qt::QueuedConnection);
 }

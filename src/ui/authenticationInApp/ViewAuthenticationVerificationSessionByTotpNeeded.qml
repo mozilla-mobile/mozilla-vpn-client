@@ -15,20 +15,11 @@ MZInAppAuthenticationBase {
     id: authVerificationSessionByTotpNeeded
     objectName: "authVerificationSessionByTotpNeeded"
 
-    _telemetryScreenId: "enter_security_code"
-
     _menuButtonImageSource: MZAssetLookup.getImageSource("CloseDark")
     _menuButtonOnClick: () => {
         if (isReauthFlow) {
-            // No telemetry.
-            // Re-auth flow is not contemplated by the telemetry design.
-
             cancelAuthenticationFlow();
         } else {
-            Glean.interaction.cancelSelected.record({
-                screen: _telemetryScreenId,
-            });
-
             MZAuthInApp.reset();
         }
     }
@@ -42,8 +33,6 @@ MZInAppAuthenticationBase {
     _inputs: MZInAppAuthenticationInputs {
         _viewObjectName: authVerificationSessionByTotpNeeded.objectName
 
-        _telemetryScreenId: authVerificationSessionByTotpNeeded._telemetryScreenId
-        _telemetryButtonEventName: "verifySelected"
         _buttonEnabled: MZAuthInApp.state === MZAuthInApp.StateVerificationSessionByTotpNeeded && activeInput().text.length === MZAuthInApp.totpCodeLength && !activeInput().hasError
         _buttonOnClicked: (inputText) => { MZAuthInApp.verifySessionTotpCode(inputText) }
         _buttonText: MZI18n.InAppAuthVerifySecurityCodeButton
@@ -59,10 +48,6 @@ MZInAppAuthenticationBase {
             objectName: authVerificationSessionByTotpNeeded.objectName + "-cancel"
             anchors.horizontalCenter: parent.horizontalCenter
             onClicked: {
-                Glean.interaction.cancelSelected.record({
-                    screen: _telemetryScreenId,
-                });
-
                 if (isReauthFlow) {
                     cancelAuthenticationFlow();
                 } else {
@@ -70,11 +55,5 @@ MZInAppAuthenticationBase {
                 }
             }
         }
-    }
-
-    Component.onCompleted: {
-        Glean.impression.enterSecurityCodeScreen.record({
-            screen: _telemetryScreenId,
-        });
     }
 }

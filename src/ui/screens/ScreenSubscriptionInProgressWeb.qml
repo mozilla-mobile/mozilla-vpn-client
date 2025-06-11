@@ -11,8 +11,6 @@ MZLoader {
     objectName: "subscriptionInProgressWeb"
     headlineText: MZI18n.PurchaseWebInProgress2
 
-    property string telemetryScreenId: "continue_in_browser"
-
     MZCancelButton {
         id: footerLink
         objectName: "cancelFooterLink"
@@ -25,11 +23,5 @@ MZLoader {
         onClicked: {
             VPNPurchase.cancelSubscription();
         }
-    }
-
-    Component.onCompleted: {
-        Glean.impression.continueInBrowserScreen.record({
-            screen: telemetryScreenId,
-        });
     }
 }

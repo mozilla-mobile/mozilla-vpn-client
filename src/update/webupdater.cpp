@@ -4,7 +4,6 @@
 
 #include "webupdater.h"
 
-#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "task.h"

@@ -17,7 +17,6 @@ ViewFullScreen {
     id: root
     objectName: "resetVpnView"
 
-    property string telemetryScreenId: "reset_vpn"
     property string _menuTitle: MZI18n.ResetSettingsResetLabel
     property var _menuOnBackClicked:  () => {
                                           getHelpStackView.pop();
@@ -162,10 +161,6 @@ ViewFullScreen {
                     buttonType: MZButton.ButtonType.destructive
 
                     onClicked: {
-                        Glean.interaction.resetVpnSelected.record({
-                            screen: root.telemetryScreenId,
-                        });
-
                         VPN.hardResetAndQuit()
                     }
                 },

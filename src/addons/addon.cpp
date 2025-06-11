@@ -25,7 +25,6 @@
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "env.h"
 #include "feature/feature.h"
-#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"

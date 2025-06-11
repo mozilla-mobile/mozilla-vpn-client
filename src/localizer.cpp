@@ -15,7 +15,6 @@
 #include <QTranslator>
 
 #include "constants.h"
-#include "glean/generated/metrics.h"
 #include "i18nlanguagenames.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
@@ -375,8 +374,6 @@ void Localizer::settingsChanged() {
   if (!m_code.isEmpty()) {
     settingsHolder->setPreviousLanguageCode(m_code);
   }
-
-  mozilla::glean::settings::using_system_language.set(code.isEmpty());
 
   m_code = code;
 }
