@@ -70,6 +70,7 @@
 #  include <QSGRendererInterface>
 
 #  include "eventlistener.h"
+#  include "platforms/windows/windowscommons.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #  include "platforms/windows/windowsutils.h"
 #  include "theme.h"
