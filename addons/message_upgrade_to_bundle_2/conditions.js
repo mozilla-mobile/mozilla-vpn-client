@@ -4,7 +4,7 @@ Criteria for addon:
  - Plan purchase source: not IAP
  - Plan renewal cycle: On annual plan
  - Plan type: Not already on a bundle
- - Geo: US-only - Confirming via location class
+ - Geo: US-only - Confirming via location class AND payment in USD
  - Client version: Client is at least v2.29 (as some of the APIs used here were
 added in 2.29) - handled in manifest.json
  */
@@ -42,6 +42,10 @@ function isLocatedInUs() {
   return api.location.countryCode.toUpperCase() === 'US'
 }
 
+function isUsd() {
+  return api.subscriptionData.planCurrency === 'USD'
+}
+
 function computeCondition() {
   // If subscriptionData is not initialized, then return
   if (api.subscriptionData.createdAt <= 0) {
@@ -50,7 +54,7 @@ function computeCondition() {
   }
 
   if (!isAnnualPlan() || !isWebSubscription() || isBundleSubscription() ||
-      !isLocatedInUs()) {
+      !isLocatedInUs() || !isUsd()) {
     condition.disable()
     return
   }
