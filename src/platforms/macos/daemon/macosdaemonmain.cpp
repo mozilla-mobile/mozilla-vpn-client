@@ -16,7 +16,7 @@ constexpr const char* MACOS_DAEMON_DEFAULT_COMMAND = "macosdaemon";
 static QString getBundleVersion() {
   CFBundleRef bundle = CFBundleGetMainBundle();
   if (!bundle) {
-    return "1.2.3";
+    return "";
   }
 
   CFStringRef key = QStringLiteral("CFBundleShortVersionString").toCFString();

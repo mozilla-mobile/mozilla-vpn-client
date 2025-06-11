@@ -4,6 +4,11 @@
 
 qt_add_executable(daemon MANUAL_FINALIZATION)
 
+set_target_properties(daemon PROPERTIES
+    OUTPUT_NAME "${BUILD_OSX_APP_IDENTIFIER}.daemon"
+    XCODE_GENERATE_SCHEME TRUE
+)
+
 mz_target_handle_warnings(daemon)
 
 find_library(FW_FOUNDATION Foundation)
@@ -48,6 +53,12 @@ target_sources(daemon PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/xpcdaemonserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/xpcdaemonserver.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/xpcdaemonprotocol.h
+)
+
+# Embed the daemon property list.
+configure_file(${CMAKE_SOURCE_DIR}/macos/app/daemon.plist.in daemon.plist)
+target_link_options(daemon PRIVATE
+    LINKER:-sectcreate,__TEXT,__info_plist,${CMAKE_CURRENT_BINARY_DIR}/daemon.plist
 )
 
 qt_finalize_target(daemon)
