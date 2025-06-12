@@ -9,12 +9,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "constants.h"
 #include "leakdetector.h"
-#include "models/location.h"
-#include "mozillavpn.h"
-#include "servercountrymodel.h"
-#include "serverlatency.h"
 
 ServerCity::ServerCity() { MZ_COUNT_CTOR(ServerCity); }
 
@@ -65,21 +60,19 @@ bool ServerCity::fromJson(const QJsonObject& obj, const QString& country) {
   }
 
   QList<QString> servers;
-  if (!Constants::inProduction() || !name.toString().contains("BETA")) {
-    QJsonArray serversArray = serversValue.toArray();
-    for (const QJsonValue& serverValue : serversArray) {
-      if (!serverValue.isObject()) {
-        return false;
-      }
-
-      QJsonObject serverObj = serverValue.toObject();
-      QJsonValue pubkeyValue = serverObj.value("public_key");
-      if (!pubkeyValue.isString()) {
-        return false;
-      }
-
-      servers.append(pubkeyValue.toString());
+  QJsonArray serversArray = serversValue.toArray();
+  for (const QJsonValue& serverValue : serversArray) {
+    if (!serverValue.isObject()) {
+      return false;
     }
+
+    QJsonObject serverObj = serverValue.toObject();
+    QJsonValue pubkeyValue = serverObj.value("public_key");
+    if (!pubkeyValue.isString()) {
+      return false;
+    }
+
+    servers.append(pubkeyValue.toString());
   }
 
   m_name = name.toString();

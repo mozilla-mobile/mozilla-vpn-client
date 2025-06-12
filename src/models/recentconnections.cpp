@@ -12,8 +12,8 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/servercity.h"
 #include "mozillavpn.h"
-#include "servercity.h"
 #include "serverdata.h"
 #include "settingsholder.h"
 
