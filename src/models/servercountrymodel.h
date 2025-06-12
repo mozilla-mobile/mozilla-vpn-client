@@ -9,7 +9,7 @@
 #include <QByteArray>
 #include <QObject>
 
-#include "servercountry.h"
+#include "models/servercountry.h"
 
 class Location;
 

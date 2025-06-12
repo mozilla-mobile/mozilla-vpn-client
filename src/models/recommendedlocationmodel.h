@@ -10,7 +10,7 @@
 #include <QSet>
 #include <QTimer>
 
-#include "servercity.h"
+#include "models/servercity.h"
 
 class RecommendedLocationModel final : public QAbstractListModel {
   Q_OBJECT

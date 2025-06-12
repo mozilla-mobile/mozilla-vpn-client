@@ -44,6 +44,12 @@ add_library(mzutils STATIC
     models/keys.h
     models/location.cpp
     models/location.h
+    models/server.cpp
+    models/server.h
+    models/servercity.cpp
+    models/servercity.h
+    models/servercountry.cpp
+    models/servercountry.h
     pingsender/dnspingsender.cpp
     pingsender/dnspingsender.h
     pingsender/dummypingsender.cpp
