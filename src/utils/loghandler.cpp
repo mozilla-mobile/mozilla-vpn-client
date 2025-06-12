@@ -194,7 +194,7 @@ void LogHandler::addLog(const Log& log,
 #if defined(MZ_ANDROID)
     const char* str = buffer.constData();
     if (str) {
-      __android_log_write(ANDROID_LOG_DEBUG, qPrintable(m_shortName), str);
+      __android_log_write(ANDROID_LOG_DEBUG, qPrintable(m_shortname), str);
     }
 #elif defined(MZ_IOS)
     QString logstr = QString::fromUtf8(buffer);
@@ -323,11 +323,16 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
       return;
     }
 
+#if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
     QFileDevice::Permissions perms =
         QFileDevice::ReadOwner | QFileDevice::WriteOwner |
         QFileDevice::ExeOwner | QFileDevice::ReadGroup | QFileDevice::ExeGroup |
         QFileDevice::ReadOther | QFileDevice::ExeOther;
-    if (!tmp.mkdir(appDataLocation.dirName(), perms)) {
+    bool okay = tmp.mkdir(appDataLocation.dirName(), perms);
+#else
+    bool okay = tmp.mkdir(appDataLocation.dirName());
+#endif
+    if (!okay) {
       return;
     }
   }
