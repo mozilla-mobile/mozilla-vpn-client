@@ -9,21 +9,27 @@ Apple ID. If you are a Mozilla developer, this is an Apple ID associated with yo
 
 ## Activate conda
 
-    conda env create -f env.yml
-    conda activate vpn
+```
+conda env create -f env.yml
+conda activate vpn
+```
 
 See [here](./index.md#conda) for conda environment instructions.
 
 Install extra conda packages
 
-    ./scripts/macos/conda_install_extras.sh
+```
+./scripts/macos/conda_install_extras.sh
+```
 
 Your Xcode install comes with a copy of the MacOS-SDK.
 We need to tell the conda environment where to find it.
 
 Find the sdk path
 
-    xcrun --sdk macosx --show-sdk-path
+```
+xcrun --sdk macosx --show-sdk-path
+```
 
 If xcrun didn't work, default paths where you probably find your SDK:
  * Default Xcode-command-line tool path: `/Library/Developer/CommandLineTools/SDKs/MacOSX.<VersionNumber>.sdk`
@@ -31,15 +37,21 @@ If xcrun didn't work, default paths where you probably find your SDK:
 
 Add it to the conda env
 
-    conda env config vars set SDKROOT=$SDK_PATH
+```
+conda env config vars set SDKROOT=$SDK_PATH
+```
 
 Reactivate your conda env
 
-    conda activate vpn
+```
+conda activate vpn
+```
 
 You can view your set variables
 
-    conda env config vars list
+```
+conda env config vars list
+```
 
 The variable config step only needs to be done once.
 When you next want to start building the VPN, all you need to do is activate your conda environment (`conda activate vpn`).
@@ -56,34 +68,29 @@ Unzip the folder and remember the location for the configure step.
 
 Make the build directory
 
-    mkdir build-macos
+```
+mkdir build-macos
+```
 
 Configure
 
-    cmake -S . -B build-macos -GNinja -DCMAKE_PREFIX_PATH=(Qt unzipped path)/macos/lib/cmake/
+```
+cmake -S . -B build-macos -GNinja -DCMAKE_PREFIX_PATH=<Qt unzipped path>/macos/lib/cmake/ -DCODE_SIGN_IDENTITY=<signing identity>
+```
 
 Compile
 
-    cmake --build build-macos -j (number of processes to use e.g. 8)
+```
+cmake --build build-macos
+```
 
 # Run
 
 After building, you can run the app with
 
-    open ./build-macos/src/Mozilla\ VPN.app
-
-However, opening as above will not give you log output and will not let you
-connect to the VPN.
-To overcome this, run two terminals.
-In the first, run
-
-    sudo ./build-macos/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN macosdaemon
-
-In the second, run
-
-    ./build-macos/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN
-
-For most dev tasks (everything except working on the macosdaemon), you can leave the first terminal with the `macosdaemon` running and rebuild your client in the second with your new changes and test them.
+```
+open ./build-macos/src/Mozilla\ VPN.app
+```
 
 ## Codesigning
 
@@ -123,32 +130,29 @@ conda environment.
 First find and go to the Xcode `/usr/bin` directory. The `xcrun` step you ran earlier will give you a hint
 where to look. It is usually, `/Applications/Xcode.app/Contents/Developer/usr/bin/`.
 
-    cd /Applications/Xcode.app/Contents/Developer/usr/bin/
+```
+cd /Applications/Xcode.app/Contents/Developer/usr/bin/
+```
 
 Now activate your conda environment
 
-    conda activate vpn
-
-Finally link go and rust
-
-    sudo ln -s $(which go)
-    sudo ln -s $(which cargo)
-    sudo ln -s $(which rustc)
-
-This step needs to be repeated each time Xcode updates.
+```
+conda activate vpn
+```
 
 # Building
 
-Use the same configure command above and add `-GXcode`:
+Use the same configure command above and use `-GXcode` as the CMake generator:
 
-    cmake -S . -B build-macos -DCMAKE_PREFIX_PATH=(Qt unzipped path)/macos/lib/cmake/ -GXcode
+```
+cmake -S . -B build-macos -DCMAKE_PREFIX_PATH=<Qt unzipped path>/macos/lib/cmake/ -GXcode
+```
 
 This will generate an Xcode project file at `build-macos/Mozilla VPN.xcodeproj` which can be opened
 by Xcode:
 
-    open build-macos/Mozilla\ VPN.xcodeproj
+```
+open build-macos/Mozilla\ VPN.xcodeproj
+```
 
 Once Xcode has opened the project, select the `mozillavpn` target and start the build.
-
-If you're building with Xcode and want your built VPN client to connect to the VPN network you'll
-need to install a release copy of the VPN client which you can download from [here](https://www.mozilla.org/products/vpn/download/).
