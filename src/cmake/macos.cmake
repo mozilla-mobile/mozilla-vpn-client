@@ -38,22 +38,6 @@ target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
 
 # MacOS platform source files
 target_sources(mozillavpn PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemon.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemonserver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemonserver.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdnsmanager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdnsmanager.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/xpcdaemonserver.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/xpcdaemonserver.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscontroller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscontroller.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.h
@@ -80,6 +64,7 @@ target_sources(mozillavpn PRIVATE
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
+include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos-daemon.cmake)
 
 # Find the SDK root
 execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
@@ -147,6 +132,13 @@ add_dependencies(mozillavpn build_wireguard_go)
 osx_bundle_files(mozillavpn
     FILES ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
     DESTINATION Resources/utils
+)
+
+# Install the daemon into the bundle.
+add_dependencies(mozillavpn daemon)
+osx_bundle_files(mozillavpn
+    FILES $<TARGET_FILE:daemon>
+    DESTINATION Library/LaunchServices
 )
 
 # Install the native messaging extensions into the bundle.

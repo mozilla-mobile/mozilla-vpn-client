@@ -45,6 +45,8 @@ class IPAddress final {
 
   QAbstractSocket::NetworkLayerProtocol type() const;
 
+  static QList<IPAddress> lanAddressRanges();
+
  private:
   QHostAddress m_address;
   int m_prefixLength;

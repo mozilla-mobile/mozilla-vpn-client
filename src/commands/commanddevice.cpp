@@ -21,7 +21,7 @@ CommandDevice::~CommandDevice() { MZ_COUNT_DTOR(CommandDevice); }
 
 int CommandDevice::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
-  return runCommandLineApp([&]() {
+  return MozillaVPN::runCommandLineApp([&]() {
     if (tokens.length() != 2) {
       QTextStream stream(stdout);
       stream << "usage: " << tokens[0] << " <device_id>" << Qt::endl;
@@ -31,12 +31,15 @@ int CommandDevice::run(QStringList& tokens) {
       return 1;
     }
 
-    if (!userAuthenticated()) {
+    MozillaVPN vpn;
+    if (!vpn.hasToken()) {
+      QTextStream stream(stdout);
+      stream << "User status: not authenticated" << Qt::endl;
       return 1;
     }
-
-    MozillaVPN vpn;
-    if (!loadModels()) {
+    if (!vpn.loadModels()) {
+      QTextStream stream(stdout);
+      stream << "No cache available" << Qt::endl;
       return 1;
     }
 

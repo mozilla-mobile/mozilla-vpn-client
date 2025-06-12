@@ -7,12 +7,7 @@
                 <key>Label</key>
                 <string>${BUILD_OSX_APP_IDENTIFIER}.service</string>
                 <key>BundleProgram</key>
-                <string>Contents/MacOS/Mozilla VPN</string>
-                <key>ProgramArguments</key>
-                <array>
-                        <string>Mozilla VPN</string>
-                        <string>macosdaemon</string>
-                </array>
+                <string>Contents/Library/LaunchServices/${BUILD_OSX_APP_IDENTIFIER}.daemon</string>
                 <key>MachServices</key>
                 <dict>
                         <key>${BUILD_OSX_APP_IDENTIFIER}.service</key>

@@ -9,6 +9,7 @@
 #include "addons/manager/addonmanager.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
+#include "commandlineparser.h"
 #include "constants.h"
 #include "controller.h"
 #include "dnshelper.h"
@@ -42,6 +43,7 @@
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 #include "settingswatcher.h"
+#include "simplenetworkmanager.h"
 #include "subscriptionmonitor.h"
 #include "taskfunction.h"
 #include "taskgroup.h"
@@ -81,11 +83,20 @@
 #  include "platforms/ios/ioscommons.h"
 #endif
 
+#ifdef MZ_MACOS
+#  include "platforms/macos/macosutils.h"
+#endif
+
+#ifdef MZ_LINUX
+#  include "platforms/linux/xdgportal.h"
+#endif
+
 #include <QApplication>
 #include <QBuffer>
 #include <QDir>
 #include <QFileInfo>
 #include <QGuiApplication>
+#include <QIcon>
 #include <QJsonDocument>
 #include <QLocale>
 #include <QQmlApplicationEngine>
@@ -359,6 +370,30 @@ void MozillaVPN::initialize() {
 
   scheduleRefreshDataTasks();
   maybeStateMain();
+}
+
+bool MozillaVPN::loadModels() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+
+  // First the keys!
+  if (!m_private->m_keys.fromSettings(settingsHolder->privateKey())) {
+    return false;
+  }
+
+  m_private->m_serverData.initialize();
+
+  if (!m_private->m_deviceModel.fromSettings(&m_private->m_keys) ||
+      !m_private->m_serverCountryModel.fromSettings() ||
+      !m_private->m_user.fromSettings() ||
+      !m_private->m_serverData.fromSettings() || !modelsInitialized()) {
+    return false;
+  }
+
+  if (!m_private->m_captivePortal.fromSettings()) {
+    // We do not care about these settings.
+  }
+
+  return true;
 }
 
 void MozillaVPN::maybeStateMain() {
@@ -886,6 +921,10 @@ bool MozillaVPN::modelsInitialized() const {
   }
 
   return true;
+}
+
+bool MozillaVPN::hasToken() const {
+  return SettingsHolder::instance()->hasToken();
 }
 
 void MozillaVPN::requestAbout() {
@@ -2211,3 +2250,67 @@ void MozillaVPN::gleanSetDebugViewTag(QString tag) {
 }
 
 void MozillaVPN::gleanSetLogPings(bool flag) { MZGlean::setLogPings(flag); }
+
+// static
+int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
+  std::function<int()> callback = std::move(a_callback);
+
+#ifdef MZ_LINUX
+  XdgPortal::setupAppScope(Constants::LINUX_APP_ID);
+#endif
+
+  SettingsHolder settingsHolder;
+
+  if (settingsHolder.stagingServer()) {
+    Constants::setStaging();
+    LogHandler::instance()->setStderr(true);
+  }
+
+  MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
+  qInstallMessageHandler(LogHandler::messageQTHandler);
+
+  logger.info() << "MozillaVPN" << Constants::versionString();
+  logger.info() << "User-Agent:" << NetworkManager::userAgent();
+
+  QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
+
+  Localizer localizer;
+  SimpleNetworkManager snm;
+
+  return callback();
+}
+
+// static
+int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
+  std::function<int()> callback = std::move(a_callback);
+
+#ifdef MZ_LINUX
+  XdgPortal::setupAppScope(Constants::LINUX_APP_ID);
+#endif
+
+  SettingsHolder settingsHolder;
+
+  if (settingsHolder.stagingServer()) {
+    Constants::setStaging();
+    LogHandler::instance()->setStderr(true);
+  }
+
+  MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
+  qInstallMessageHandler(LogHandler::messageQTHandler);
+
+  logger.info() << "MozillaVPN" << Constants::versionString();
+  logger.info() << "User-Agent:" << NetworkManager::userAgent();
+
+  QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
+
+  Localizer localizer;
+
+#ifdef MZ_MACOS
+  MacOSUtils::patchNSStatusBarSetImageForBigSur();
+#endif
+
+  QIcon icon(Constants::LOGO_URL);
+  app.setWindowIcon(icon);
+
+  return callback();
+}

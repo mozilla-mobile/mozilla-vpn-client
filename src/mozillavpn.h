@@ -174,7 +174,9 @@ class MozillaVPN final : public App {
 
   Q_INVOKABLE void reset(bool forceInitialState);
 
+  bool loadModels();
   bool modelsInitialized() const;
+  bool hasToken() const;
 
   bool updating() const { return m_updating; }
   void setUpdating(bool updating);
@@ -191,6 +193,9 @@ class MozillaVPN final : public App {
 
   static QString appVersionForUpdate();
   static bool mockFreeTrial();
+
+  static int runCommandLineApp(std::function<int()>&& a_callback);
+  static int runGuiApp(std::function<int()>&& a_callback);
 
  private:
   void hardReset();

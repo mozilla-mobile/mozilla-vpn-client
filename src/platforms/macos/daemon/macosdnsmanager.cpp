@@ -15,7 +15,6 @@
 #include <QTextStream>
 
 #include "commandlineparser.h"
-#include "constants.h"
 #include "leakdetector.h"
 #include "signalhandler.h"
 
@@ -40,7 +39,6 @@ int MacOSDnsManager::run(QStringList& tokens) {
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN DNS Manager");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
   QTextStream stream(stderr);
 
   if (tokens.length() <= 1) {

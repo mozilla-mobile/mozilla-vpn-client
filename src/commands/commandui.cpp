@@ -51,6 +51,9 @@
 #endif
 
 #ifdef MZ_ANDROID
+#  include <QQuickWindow>
+#  include <QSGRendererInterface>
+
 #  include "platforms/android/androidcommons.h"
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidvpnactivity.h"
@@ -63,7 +66,11 @@
 #ifdef MZ_WINDOWS
 #  include <windows.h>
 
+#  include <QQuickWindow>
+#  include <QSGRendererInterface>
+
 #  include "eventlistener.h"
+#  include "platforms/windows/windowscommons.h"
 #  include "platforms/windows/windowsstartatbootwatcher.h"
 #  include "platforms/windows/windowsutils.h"
 #  include "theme.h"
@@ -133,7 +140,7 @@ int CommandUI::run(QStringList& tokens) {
     LogHandler::instance()->setStderr(true);
   }
 
-  return runQmlApp([&]() {
+  return MozillaVPN::runGuiApp([&]() {
     Telemetry::startTimeToFirstScreenTimer();
 
     if (testingOption.m_set) {
@@ -148,9 +155,6 @@ int CommandUI::run(QStringList& tokens) {
     }
 
     MozillaVPN vpn;
-    logger.info() << "MozillaVPN" << Constants::versionString();
-    logger.info() << "User-Agent:" << NetworkManager::userAgent();
-
     logger.debug() << "UI starting";
 
     if (startAtBootOption.m_set || qgetenv("MVPN_STARTATBOOT") == "1") {
@@ -200,7 +204,26 @@ int CommandUI::run(QStringList& tokens) {
     if (AndroidCommons::GetManufacturer() == "Huawei") {
       qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
     }
+
+    // Configure graphics rendering for Android
+    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
+        Qt::HighDpiScaleFactorRoundingPolicy::Round);
+    if (AndroidUtils::isChromeOSContext()) {
+      QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
+    }
 #endif
+
+#ifdef MZ_WINDOWS
+    // Configure graphics rendering for Windows
+    SetProcessDPIAware();
+    if (WindowsCommons::requireSoftwareRendering()) {
+      QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
+    }
+#endif
+
+    // Ensure that external styling hints are disabled.
+    qunsetenv("QT_STYLE_OVERRIDE");
+
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QQmlApplicationEngine* engine = new QQmlApplicationEngine();
     QmlEngineHolder engineHolder(engine);

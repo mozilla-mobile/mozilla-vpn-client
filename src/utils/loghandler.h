@@ -18,6 +18,7 @@
 #include "loglevel.h"
 
 class QBuffer;
+class QDir;
 class QFile;
 class QTextStream;
 
@@ -89,12 +90,11 @@ class LogHandler final : public QObject, public LogSerializer {
 
   void cleanupLogs();
 
-  void setLocation(const QString& path);
+  static void setLogfile(const QString& path);
 
   void setStderr(bool enabled = true);
 
-  QString logFileName();
-
+  // Log Serializer methods.
   QString logName() const override { return "MZ Logs"; }
   void logSerialize(QIODevice* device) override;
 
@@ -115,6 +115,8 @@ class LogHandler final : public QObject, public LogSerializer {
   void addLog(const Log& log);
   void addLog(const Log& log, const QMutexLocker<QMutex>& proofOfLock);
 
+  static bool makeLogDir(const QDir& dir);
+
   void openLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
   void closeLogFile(const QMutexLocker<QMutex>& proofOfLock);
@@ -125,7 +127,8 @@ class LogHandler final : public QObject, public LogSerializer {
                        const QString& filename);
 
   QMutex m_mutex;
-  QString m_logShortName;
+  QString m_shortname;
+  static QString s_filename;
 
   bool m_stderrEnabled = false;
 
