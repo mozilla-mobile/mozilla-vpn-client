@@ -10,6 +10,7 @@ qt_add_executable(utest-hkdf testhkdf.cpp testhkdf.h)
 qt_add_executable(utest-ipaddress testipaddress.cpp testipaddress.h)
 qt_add_executable(utest-logger testlogger.cpp testlogger.h)
 qt_add_executable(utest-tasks testtasks.cpp testtasks.h)
+qt_add_executable(utest-servermodels testservermodels.cpp testservermodels.h)
 
 get_directory_property(UTEST_ALL_TARGETS BUILDSYSTEM_TARGETS)
 foreach(UTEST_TARGET ${UTEST_ALL_TARGETS})
