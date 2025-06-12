@@ -37,6 +37,7 @@ class ServerCountryModel final : public QAbstractListModel {
   QStringList pickBest() const;
 
   bool exists(const QString& countryCode, const QString& cityName) const;
+  ServerCity& findCity(const QString& countryCode, const QString& cityName);
   const ServerCity& findCity(const QString& countryCode,
                              const QString& cityName) const;
 

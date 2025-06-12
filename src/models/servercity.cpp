@@ -16,21 +16,11 @@
 #include "servercountrymodel.h"
 #include "serverlatency.h"
 
-// Latency threshold for excellent connections, set intentionally very low.
-constexpr int SCORE_EXCELLENT_LATENCY_THRESHOLD = 30;
-
 ServerCity::ServerCity() { MZ_COUNT_CTOR(ServerCity); }
 
 ServerCity::ServerCity(const ServerCity& other) {
   MZ_COUNT_CTOR(ServerCity);
   *this = other;
-
-  // Changes in the average latency may cause the connection score to change.
-  MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn) {
-    connect(vpn->serverLatency(), &ServerLatency::progressChanged, this,
-            [this] { emit scoreChanged(); });
-  }
 }
 
 ServerCity& ServerCity::operator=(const ServerCity& other) {
@@ -113,74 +103,12 @@ QString ServerCity::localizedName(const QString& name) {
   return QCoreApplication::translate("ServerCity", qPrintable(name));
 }
 
-qint64 ServerCity::latency() const {
-  ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
-  int numLatencySamples = 0;
-  qint64 sumLatencyMsec = 0;
-  for (const QString& pubkey : m_servers) {
-    qint64 rtt = serverLatency->getLatency(pubkey);
-    if (rtt > 0) {
-      sumLatencyMsec += rtt;
-      numLatencySamples++;
-    }
-  }
-
-  if (numLatencySamples == 0) {
-    return 0;
-  }
-  return (sumLatencyMsec + numLatencySamples - 1) / numLatencySamples;
+void ServerCity::setLatency(qint64 msec) {
+  m_latency = msec;
+  emit latencyChanged();
 }
 
-int ServerCity::connectionScore() const {
-  ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
-  QString userCountry = MozillaVPN::instance()->location()->countryCode();
-  int score = serverLatency->baseCityScore(this, userCountry);
-  if (score <= ServerLatency::Unavailable) {
-    return score;
-  }
-
-  // If there is no latency data (zero), then we haven't measured anything yet.
-  qint64 cityLatencyMsec = latency();
-  if (cityLatencyMsec == 0) {
-    return score;
-  }
-
-  // Increase the score if the location has better than average latency.
-  if (cityLatencyMsec < serverLatency->avgLatency()) {
-    score++;
-    // Give the location another point if the latency is *very* fast.
-    if (cityLatencyMsec < SCORE_EXCELLENT_LATENCY_THRESHOLD) {
-      score++;
-    }
-  }
-
-  if (score > ServerLatency::Excellent) {
-    score = ServerLatency::Excellent;
-  }
-  return score;
-}
-
-int ServerCity::multiHopScore(const QString& country,
-                              const QString& cityName) const {
-  ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
-  int score = serverLatency->baseCityScore(this, country);
-  if (score <= ServerLatency::Unavailable) {
-    return score;
-  }
-
-  // Increase the score if the distance between servers is less than 1/8th of
-  // the earth's circumference.
-  const ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
-  const ServerCity& entryCity = scm->findCity(country, cityName);
-  if (!entryCity.initialized()) {
-    return ServerLatency::NoData;
-  }
-  if ((Location::distance(this, &entryCity) < (M_PI / 4))) {
-    score++;
-  }
-
-  if (score > ServerLatency::Excellent) {
-    score = ServerLatency::Excellent;
-  }
-  return score;
+void ServerCity::setConnectionScore(int score) {
+  m_connectionScore = score;
+  emit scoreChanged();
 }

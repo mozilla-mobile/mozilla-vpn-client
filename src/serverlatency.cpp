@@ -24,6 +24,9 @@ constexpr const int SERVER_LATENCY_MAX_RETRIES = 2;
 // Minimum number of redundant servers we expect at a location.
 constexpr int SCORE_SERVER_REDUNDANCY_THRESHOLD = 3;
 
+// Latency threshold for excellent connections, set intentionally very low.
+constexpr int SCORE_EXCELLENT_LATENCY_THRESHOLD = 30;
+
 namespace {
 Logger logger("ServerLatency");
 
@@ -63,6 +66,10 @@ void ServerLatency::initialize() {
   if (feature->isSupported()) {
     m_refreshTimer.start(SERVER_LATENCY_INITIAL);
   }
+
+  m_cooldownTimer.setSingleShot(true);
+  connect(&m_cooldownTimer, &QTimer::timeout, this,
+          &ServerLatency::clearCooldowns);
 
   connect(qApp, &QApplication::applicationStateChanged, this,
           &ServerLatency::applicationStateChanged);
@@ -281,17 +288,9 @@ void ServerLatency::recvPing(quint16 sequence) {
       continue;
     }
 
-    ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
-
     qint64 latency(now - record.timestamp);
     if (latency <= std::numeric_limits<uint>::max()) {
       setLatency(record.publicKey, latency);
-
-      const ServerCity& city =
-          scm->findCity(record.countryCode, record.cityName);
-      if (city.initialized()) {
-        emit city.scoreChanged();
-      }
     }
 
     m_pingReplyList.erase(i);
@@ -315,6 +314,52 @@ void ServerLatency::setLatency(const QString& pubkey, qint64 msec) {
   m_sumLatencyMsec -= m_latency[pubkey];
   m_sumLatencyMsec += msec;
   m_latency[pubkey] = msec;
+
+  updateConnectionScore(pubkey);
+}
+
+void ServerLatency::updateConnectionScore(const QString& pubkey) {
+  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  const Server& server = scm->server(pubkey);
+  ServerCity& city = scm->findCity(server.countryCode(), server.cityName());
+
+  // Update the average latency for this city.
+  int numLatencySamples = 0;
+  qint64 avgLatencyMsec = 0;
+  for (const QString& pubkey : city.servers()) {
+    qint64 rtt = m_latency.value(pubkey);
+    if (rtt > 0) {
+      avgLatencyMsec += rtt;
+      numLatencySamples++;
+    }
+  }
+  if (numLatencySamples >= 0) {
+    avgLatencyMsec += (numLatencySamples - 1);
+    avgLatencyMsec /= numLatencySamples;
+  }
+  city.setLatency(avgLatencyMsec);
+
+  // Calculate the base score based on the user's current location.
+  QString userCountry = MozillaVPN::instance()->location()->countryCode();
+  int score = baseCityScore(&city, userCountry);
+  if ((score <= ServerLatency::Unavailable) || (avgLatencyMsec == 0)) {
+    city.setConnectionScore(score);
+    return;
+  }
+
+  // Increase the score if the location has better than average latency.
+  if (avgLatencyMsec < avgLatency()) {
+    score++;
+    // Give the location another point if the latency is *very* fast.
+    if (avgLatencyMsec < SCORE_EXCELLENT_LATENCY_THRESHOLD) {
+      score++;
+    }
+  }
+
+  if (score > ServerLatency::Excellent) {
+    score = ServerLatency::Excellent;
+  }
+  city.setConnectionScore(score);
 }
 
 double ServerLatency::progress() const {
@@ -333,13 +378,35 @@ void ServerLatency::setCooldown(const QString& publicKey, qint64 timeout) {
     m_cooldown[publicKey] = QDateTime::currentSecsSinceEpoch() + timeout;
   }
 
-  // Emit signals that the connection score may have changed.
-  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
-  const Server& server = scm->server(publicKey);
-  const ServerCity& city =
-      scm->findCity(server.countryCode(), server.cityName());
-  if (city.initialized()) {
-    emit city.scoreChanged();
+  // Update the connection score.
+  updateConnectionScore(publicKey);
+
+  // (Re)schedule the cooldown timer if this would be the next expiration.
+  int next = m_cooldownTimer.remainingTime();
+  if ((next <= 0) || (timeout < next)) {
+    m_cooldownTimer.start(timeout);
+  }
+}
+
+void ServerLatency::clearCooldowns() {
+  qint64 now = QDateTime::currentSecsSinceEpoch();
+  qint64 next = 0;
+  for (const QString& pubkey : m_cooldown.keys()) {
+    qint64 expiration = m_cooldown.value(pubkey);
+    if (expiration > now) {
+      if ((next == 0) || (expiration < next)) {
+        next = expiration;
+      }
+      continue;
+    }
+
+    m_cooldown.remove(pubkey);
+    updateConnectionScore(pubkey);
+  }
+
+  // (Re)schedule the cooldown timer if there are more cooldowns to expire.
+  if (next > now) {
+    m_cooldownTimer.start(next - now);
   }
 }
 
@@ -372,6 +439,42 @@ int ServerLatency::baseCityScore(const ServerCity* city,
 
   if (score > Excellent) {
     score = Excellent;
+  }
+  return score;
+}
+
+int ServerLatency::multiHopScore(const QString& exitCountry,
+                                 const QString& exitCityName,
+                                 const QString& entryCountry,
+                                 const QString& entryCityName) const {
+  const ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  const ServerCity& exitCity = scm->findCity(exitCountry, exitCityName);
+  logger.debug() << "multihop score" << exitCountry << exitCityName << "to"
+                 << entryCountry << entryCityName;
+  if (!exitCity.initialized()) {
+    logger.debug() << "multihop no exit data";
+    return ServerLatency::NoData;
+  }
+
+  int score = baseCityScore(&exitCity, entryCountry);
+  if (score <= ServerLatency::Unavailable) {
+    logger.debug() << "multihop unavailable";
+    return score;
+  }
+
+  // Increase the score if the distance between servers is less than 1/8th of
+  // the earth's circumference.
+  const ServerCity& entryCity = scm->findCity(entryCountry, entryCityName);
+  if (!entryCity.initialized()) {
+    logger.debug() << "mutlihop no entry data";
+    return ServerLatency::NoData;
+  }
+  if ((Location::distance(&exitCity, &entryCity) < (M_PI / 4))) {
+    score++;
+  }
+
+  if (score > ServerLatency::Excellent) {
+    score = ServerLatency::Excellent;
   }
   return score;
 }
