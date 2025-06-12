@@ -18,6 +18,7 @@
 #include "loglevel.h"
 
 class QBuffer;
+class QDir;
 class QFile;
 class QTextStream;
 
@@ -113,6 +114,8 @@ class LogHandler final : public QObject, public LogSerializer {
  private:
   void addLog(const Log& log);
   void addLog(const Log& log, const QMutexLocker<QMutex>& proofOfLock);
+
+  static bool makeLogDir(const QDir& dir);
 
   void openLogFile(const QMutexLocker<QMutex>& proofOfLock);
 

@@ -221,24 +221,17 @@ void LogHandler::addLog(const Log& log,
 
 void LogHandler::writeLogs(QTextStream& out) {
   QMutexLocker<QMutex> lock(&m_mutex);
-
-  if (!logHandler->m_logFile) {
+  if (!m_logFile) {
     return;
   }
 
-  QString logFileName = logHandler->m_logFile->fileName();
-  logHandler->closeLogFile(lock);
+  if (m_logFile->seek(0)) {
+    out << m_logFile->readAll();
 
-  {
-    QFile file(logFileName);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-      return;
-    }
-
-    out << file.readAll();
+    // Re-open the log file after reading.
+    closeLogFile(lock);
+    openLogFile(lock);
   }
-
-  logHandler->openLogFile(lock);
 }
 
 void LogHandler::cleanupLogs() {
@@ -247,19 +240,14 @@ void LogHandler::cleanupLogs() {
 }
 
 void LogHandler::cleanupLogFile(const QMutexLocker<QMutex>& proofOfLock) {
-  if (!logHandler->m_logFile) {
+  if (!m_logFile) {
     return;
   }
+  m_logFile->close();
+  m_logFile->remove();
 
-  QString logFileName = logHandler->m_logFile->fileName();
-  logHandler->closeLogFile(proofOfLock);
-
-  {
-    QFile file(logFileName);
-    file.remove();
-  }
-
-  logHandler->openLogFile(proofOfLock);
+  closeLogFile(proofOfLock);
+  openLogFile(proofOfLock);
 }
 
 // static
@@ -276,7 +264,6 @@ void LogHandler::setLogfile(const QString& path) {
   }
 }
 
-// static
 void LogHandler::truncateLogFile(const QMutexLocker<QMutex>& proofOfLock,
                                  const QString& filename) {
   QFile oldLogFile(filename);
@@ -310,37 +297,44 @@ void LogHandler::truncateLogFile(const QMutexLocker<QMutex>& proofOfLock,
   }
 }
 
+// static
+bool LogHandler::makeLogDir(const QDir& dir) {
+  if (dir.exists()) {
+    return true;
+  }
+
+  // Recursively create the parent.
+  QDir parent(QDir::cleanPath(dir.absoluteFilePath("..")));
+  if (!makeLogDir(parent)) {
+    return false;
+  }
+
+  // Create the log directory.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
+  QFileDevice::Permissions perms =
+      QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner |
+      QFileDevice::ReadGroup | QFileDevice::ExeGroup | QFileDevice::ReadOther |
+      QFileDevice::ExeOther;
+  return parent.mkdir(dir.dirName(), perms);
+#else
+  return parent.mkdir(dir.dirName());
+#endif
+}
+
 void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   Q_UNUSED(proofOfLock);
   Q_ASSERT(!m_logFile);
   Q_ASSERT(!m_output);
 
   QDir appDataLocation = QFileInfo(s_filename).dir();
-  if (!appDataLocation.exists()) {
-    QDir tmp(appDataLocation);
-    tmp.cdUp();
-    if (!tmp.exists()) {
-      return;
-    }
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
-    QFileDevice::Permissions perms =
-        QFileDevice::ReadOwner | QFileDevice::WriteOwner |
-        QFileDevice::ExeOwner | QFileDevice::ReadGroup | QFileDevice::ExeGroup |
-        QFileDevice::ReadOther | QFileDevice::ExeOther;
-    bool okay = tmp.mkdir(appDataLocation.dirName(), perms);
-#else
-    bool okay = tmp.mkdir(appDataLocation.dirName());
-#endif
-    if (!okay) {
-      return;
-    }
+  if (!makeLogDir(appDataLocation)) {
+    return;
   }
 
   truncateLogFile(proofOfLock, s_filename);
 
   m_logFile = new QFile(s_filename);
-  if (!m_logFile->open(QIODevice::WriteOnly | QIODevice::Append |
+  if (!m_logFile->open(QIODevice::ReadWrite | QIODevice::Append |
                        QIODevice::Text)) {
     delete m_logFile;
     m_logFile = nullptr;
