@@ -40,8 +40,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/controller.h
     ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.cpp
     ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.h
-    ${MZ_SOURCE_DIR}/models/servercountrymodel.cpp
-    ${MZ_SOURCE_DIR}/models/servercountrymodel.h
     ${MZ_SOURCE_DIR}/models/serverdata.cpp
     ${MZ_SOURCE_DIR}/models/serverdata.h
     ${MZ_SOURCE_DIR}/models/subscriptiondata.cpp

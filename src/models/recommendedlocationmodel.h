@@ -32,6 +32,8 @@ class RecommendedLocationModel final : public QAbstractListModel {
   static QList<QPointer<ServerCity>> recommendedLocations(
       unsigned int maxResults);
 
+  static const ServerCity* pickBest();
+
   // QAbstractListModel methods
 
   QHash<int, QByteArray> roleNames() const override;
