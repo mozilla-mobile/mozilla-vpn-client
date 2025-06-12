@@ -28,13 +28,9 @@ class ServerCountryModel final : public QAbstractListModel {
   ServerCountryModel();
   ~ServerCountryModel();
 
-  [[nodiscard]] bool fromSettings();
-
   [[nodiscard]] bool fromJson(const QByteArray& data);
 
   bool initialized() const { return !m_rawJson.isEmpty(); }
-
-  QStringList pickBest() const;
 
   bool exists(const QString& countryCode, const QString& cityName) const;
   ServerCity& findCity(const QString& countryCode, const QString& cityName);
@@ -50,8 +46,6 @@ class ServerCountryModel final : public QAbstractListModel {
   const QList<ServerCountry>& countries() const { return m_countries; }
 
   void retranslate();
-  void setCooldownForAllServersInACity(const QString& countryCode,
-                                       const QString& cityCode);
 
   // QAbstractListModel methods
 

@@ -329,7 +329,7 @@ void MozillaVPN::initialize() {
     return;
   }
 
-  if (!m_private->m_serverCountryModel.fromSettings()) {
+  if (!m_private->m_serverCountryModel.fromJson(settingsHolder->servers())) {
     logger.error() << "No server list found";
     SettingsManager::instance()->reset();
     return;
@@ -361,10 +361,10 @@ void MozillaVPN::initialize() {
 
   Q_ASSERT(!m_private->m_serverData.hasServerData());
   if (!m_private->m_serverData.fromSettings()) {
-    QStringList list = m_private->m_serverCountryModel.pickBest();
-    Q_ASSERT(list.length() >= 2);
+    const ServerCity* city = RecommendedLocationModel::pickBest();
+    Q_ASSERT(city);
 
-    m_private->m_serverData.update(list[0], list[1]);
+    m_private->m_serverData.update(city->country(), city->name());
     Q_ASSERT(m_private->m_serverData.hasServerData());
   }
 
@@ -383,7 +383,7 @@ bool MozillaVPN::loadModels() {
   m_private->m_serverData.initialize();
 
   if (!m_private->m_deviceModel.fromSettings(&m_private->m_keys) ||
-      !m_private->m_serverCountryModel.fromSettings() ||
+      !m_private->m_serverCountryModel.fromJson(settingsHolder->servers()) ||
       !m_private->m_user.fromSettings() ||
       !m_private->m_serverData.fromSettings() || !modelsInitialized()) {
     return false;
@@ -673,10 +673,10 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
       !m_private->m_serverCountryModel.exists(
           m_private->m_serverData.exitCountryCode(),
           m_private->m_serverData.exitCityName())) {
-    QStringList list = m_private->m_serverCountryModel.pickBest();
-    Q_ASSERT(list.length() >= 2);
+    const ServerCity* city = RecommendedLocationModel::pickBest();
+    Q_ASSERT(city);
 
-    m_private->m_serverData.update(list[0], list[1]);
+    m_private->m_serverData.update(city->country(), city->name());
     Q_ASSERT(m_private->m_serverData.hasServerData());
   }
 }
@@ -1951,9 +1951,9 @@ void MozillaVPN::registerInspectorCommands() {
         QJsonObject obj;
         if (QString(arguments[1]) != "" && QString(arguments[2]) != "") {
           MozillaVPN::instance()
-              ->serverCountryModel()
-              ->setCooldownForAllServersInACity(QString(arguments[1]),
-                                                QString(arguments[2]));
+              ->serverLatency()
+              ->setCityCooldown(QString(arguments[1]), QString(arguments[2]),
+                                Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
         } else {
           obj["error"] =
               QString("Please provide country and city codes as arguments");

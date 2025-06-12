@@ -11,7 +11,7 @@
 #include "localizer.h"
 #include "logger.h"
 #include "mozillavpn.h"
-#include "servercountrymodel.h"
+#include "models/servercountrymodel.h"
 #include "serverlatency.h"
 #include "settingsholder.h"
 

@@ -1468,22 +1468,20 @@ void TestModels::serverCountryFromJson() {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void TestModels::serverCountryModelBasic() {
-  ServerCountryModel dm;
-  QVERIFY(!dm.initialized());
+  ServerCountryModel scm;
+  QVERIFY(!scm.initialized());
 
-  SettingsHolder settingsHolder;
+  QVERIFY(!scm.fromJson(QByteArray()));
 
-  QVERIFY(!dm.fromSettings());
-
-  QHash<int, QByteArray> rn = dm.roleNames();
+  QHash<int, QByteArray> rn = scm.roleNames();
   QCOMPARE(rn.count(), 4);
   QCOMPARE(rn[ServerCountryModel::NameRole], "name");
   QCOMPARE(rn[ServerCountryModel::LocalizedNameRole], "localizedName");
   QCOMPARE(rn[ServerCountryModel::CodeRole], "code");
   QCOMPARE(rn[ServerCountryModel::CitiesRole], "cities");
 
-  QCOMPARE(dm.rowCount(QModelIndex()), 0);
-  QCOMPARE(dm.data(QModelIndex(), ServerCountryModel::NameRole), QVariant());
+  QCOMPARE(scm.rowCount(QModelIndex()), 0);
+  QCOMPARE(scm.data(QModelIndex(), ServerCountryModel::NameRole), QVariant());
 }
 
 void TestModels::serverCountryModelFromJson_data() {
@@ -1640,59 +1638,6 @@ void TestModels::serverCountryModelFromJson() {
       }
 
       QVERIFY(m.fromJson(json));
-    }
-  }
-
-  // from settings
-  {
-    SettingsHolder settingsHolder;
-    Localizer l;
-
-    SettingsHolder::instance()->setServers(json);
-
-    ServerCountryModel m;
-    QCOMPARE(m.fromSettings(), result);
-
-    if (!result) {
-      QVERIFY(!m.initialized());
-      QCOMPARE(m.rowCount(QModelIndex()), 0);
-    } else {
-      QVERIFY(m.initialized());
-
-      QFETCH(int, countries);
-      QCOMPARE(m.rowCount(QModelIndex()), countries);
-
-      QCOMPARE(m.data(QModelIndex(), ServerCountryModel::NameRole), QVariant());
-      QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CodeRole), QVariant());
-      QCOMPARE(m.data(QModelIndex(), ServerCountryModel::CitiesRole),
-               QVariant());
-
-      if (countries > 0) {
-        QModelIndex index = m.index(0, 0);
-
-        QFETCH(QVariant, name);
-        QCOMPARE(m.data(index, ServerCountryModel::NameRole), name);
-
-        QFETCH(QVariant, code);
-        QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
-
-        QFETCH(QVariant, cities);
-        QVariant cityData = m.data(index, ServerCountryModel::CitiesRole);
-        QCOMPARE(cityData.typeId(), QMetaType::QVariantList);
-        QCOMPARE(cities.toList().length(), cityData.toList().length());
-        for (int i = 0; i < cities.toList().length(); i++) {
-          QVERIFY(cityData.toList().at(0).canConvert<ServerCity*>());
-          ServerCity* cityObj = cityData.toList().at(i).value<ServerCity*>();
-          QStringList cityList = cities.toList().at(i).toStringList();
-          QCOMPARE(cityObj->name(), cityList.at(0));
-          QCOMPARE(cityObj->localizedName(), cityList.at(1));
-        }
-
-        QCOMPARE(m.data(index, ServerCountryModel::CitiesRole + 1), QVariant());
-
-        QCOMPARE(m.countryName(code.toString()), name.toString());
-        QCOMPARE(m.countryName("invalid"), QString());
-      }
     }
   }
 }

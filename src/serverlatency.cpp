@@ -388,6 +388,33 @@ void ServerLatency::setCooldown(const QString& publicKey, qint64 timeout) {
   }
 }
 
+void ServerLatency::setCityCooldown(const QString& country,
+                                    const QString& cityName, qint64 timeout) {
+  logger.debug() << "Set cooldown for all servers for: "
+                 << logger.sensitive(country) << logger.sensitive(cityName);
+
+  ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
+  ServerCity& city = scm->findCity(country, cityName);
+  if (!city.initialized()) {
+    logger.debug() << "no such city";
+    return;
+  }
+
+  qint64 expire = QDateTime::currentSecsSinceEpoch() + timeout;
+  for (const QString& pubkey : city.servers()) {
+    m_cooldown[pubkey] = expire;
+  }
+
+  // With all servers on cooldown, the city score should be unavailable.
+  city.setConnectionScore(Unavailable);
+
+  // (Re)schedule the cooldown timer if this would be the next expiration.
+  int next = m_cooldownTimer.remainingTime();
+  if ((next <= 0) || (timeout < next)) {
+    m_cooldownTimer.start(timeout);
+  }
+}
+
 void ServerLatency::clearCooldowns() {
   qint64 now = QDateTime::currentSecsSinceEpoch();
   qint64 next = 0;
