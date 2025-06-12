@@ -203,6 +203,17 @@ bool ServerCountryModel::exists(const QString& countryCode,
   return m_cities.contains(ServerCity::hashKey(countryCode, cityName));
 }
 
+ServerCity& ServerCountryModel::findCity(const QString& countryCode,
+                                         const QString& cityName) {
+  auto index = m_cities.find(ServerCity::hashKey(countryCode, cityName));
+  if (index == m_cities.end()) {
+    static ServerCity emptycity;
+    return emptycity;
+  }
+
+  return *index;
+}
+
 const ServerCity& ServerCountryModel::findCity(const QString& countryCode,
                                                const QString& cityName) const {
   auto index = m_cities.constFind(ServerCity::hashKey(countryCode, cityName));

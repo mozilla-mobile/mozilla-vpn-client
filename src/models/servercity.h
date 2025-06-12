@@ -22,6 +22,7 @@ class ServerCity final : public QObject {
   Q_PROPERTY(QString localizedName READ localizedName CONSTANT)
   Q_PROPERTY(double latitude READ latitude CONSTANT)
   Q_PROPERTY(double longitude READ longitude CONSTANT)
+  Q_PROPERTY(qint64 latency READ latency NOTIFY latencyChanged)
   Q_PROPERTY(int connectionScore READ connectionScore NOTIFY scoreChanged)
 
  public:
@@ -50,16 +51,16 @@ class ServerCity final : public QObject {
 
   double longitude() const { return m_longitude; }
 
-  int connectionScore() const;
-
-  Q_INVOKABLE int multiHopScore(const QString& country,
-                                const QString& cityName) const;
-
-  qint64 latency() const;
-
   const QList<QString> servers() const { return m_servers; }
 
+  void setLatency(qint64 msec);
+  qint64 latency() const { return m_latency; }
+
+  void setConnectionScore(int score);
+  int connectionScore() const { return m_connectionScore; }
+
  signals:
+  void latencyChanged() const;
   void scoreChanged() const;
 
  private:
@@ -71,6 +72,10 @@ class ServerCity final : public QObject {
   double m_longitude;
 
   QList<QString> m_servers;
+
+  // Settable field for connection scoring.
+  qint64 m_latency = 0;
+  int m_connectionScore = 0;
 };
 
 #endif  // SERVERCITY_H
