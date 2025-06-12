@@ -430,9 +430,9 @@ bool LogHandler::writeLogsToLocation(
 
     for (uint32_t i = 1;; ++i) {
       QString filename;
-      QTextStream(&filename) << m_shortname << "-" << now.year() << "-"
-                             << now.month() << "-" << now.day() << "_" << i
-                             << LOG_FILE_SUFFIX;
+      QTextStream(&filename)
+          << m_shortname << "-" << now.year() << "-" << now.month() << "-"
+          << now.day() << "_" << i << LOG_FILE_SUFFIX;
       logFile = logDir.filePath(filename);
       if (!QFileInfo::exists(logFile)) {
         logger.debug() << "Filename found!" << i;
