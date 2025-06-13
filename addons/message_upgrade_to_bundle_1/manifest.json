@@ -1,0 +1,55 @@
+{
+  "api_version": "0.1",
+  "id": "message_upgrade_to_bundle_1",
+  "name": "Upgrade to bundle",
+  "type": "message",
+  "conditions": {
+    "min_client_version": "2.29.0",
+    "javascript": "conditions.js"
+  },
+  "message": {
+    "usesSharedStrings": true,
+    "shortVersion": "$8.25",
+    "id": "message_upgrade_to_bundle_1",
+    "title": "vpn.upgradeToBundle.title",
+    "subtitle": "vpn.upgradeToBundle.line1",
+    "badge": "subscription",
+    "blocks": [
+      {
+        "id": "c_2",
+        "type": "text",
+        "content": "vpn.upgradeToBundle.bulletIntro"
+      },
+      { "id": "c_3",
+        "type": "ulist",
+        "content": [
+          {
+            "id": "l_1",
+            "content": "vpn.upgradeToBundle.bullet1"
+          },
+          {
+            "id": "l_2",
+            "content": "vpn.upgradeToBundle.bullet2"
+          },
+          {
+            "id": "l_3",
+            "content": "vpn.upgradeToBundle.bullet3"
+          }
+        ]
+      },
+      { "id": "c_4",
+        "type": "button",
+        "style": "primary",
+        "content": "vpn.upgradeToBundle.upgrade",
+        "javascript": "openLink.js"
+      },
+      {
+        "id": "c_5",
+        "type": "button",
+        "style": "link",
+        "content": "vpn.commonStrings.getHelpButton",
+        "javascript": "getHelp.js"
+      }
+    ]
+  }
+}

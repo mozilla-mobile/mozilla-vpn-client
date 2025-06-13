@@ -2202,6 +2202,16 @@ void MozillaVPN::registerAddonApis() {
 
       addonApi->insert("vpn", QVariant::fromValue(value));
     }
+
+    {
+      QObject* obj = MozillaVPN::instance()->location();
+      QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
+
+      QJSValue value = engine->newQObject(obj);
+      value.setPrototype(engine->newQMetaObject(&Location::staticMetaObject));
+
+      addonApi->insert("location", QVariant::fromValue(value));
+    }
   });
 }
 
