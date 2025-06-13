@@ -5,6 +5,8 @@
 #ifndef SETTINGSWATCHER_H
 #define SETTINGSWATCHER_H
 
+#include <QList>
+#include <QMetaObject>
 #include <QObject>
 
 /**
@@ -17,19 +19,17 @@ class SettingsWatcher final : public QObject {
 
  public:
   static SettingsWatcher* instance();
-
   ~SettingsWatcher();
+
+  void stop();
 
  private:
   explicit SettingsWatcher(QObject* parent);
-
   void maybeServerSwitch();
-
   void operationCompleted();
 
- private:
-  class TaskSettingsWatcher;
-
+  // Store connections to allow disconnecting
+  QList<QMetaObject::Connection> m_connections;
   bool m_operationRunning = false;
 };
 

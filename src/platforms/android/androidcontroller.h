@@ -26,6 +26,8 @@ class AndroidController final : public ControllerImpl {
 
   void checkStatus() override;
 
+  void deleteOSTunnelConfig() override;
+
   void getBackendLogs(QIODevice* device) override;
 
   void cleanupBackendLogs() override;
