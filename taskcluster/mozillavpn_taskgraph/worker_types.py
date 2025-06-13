@@ -31,9 +31,20 @@ from voluptuous import Any, Optional, Required
         # behavior for mac iscript
         Required("mac-behavior"): Any(
             "mac_sign_and_pkg_vpn",
+            "mac_sign_and_pkg_hardened",
         ),
         Optional("entitlementsUrl"): str,
         Optional("loginItemsEntitlementsUrl"): str,
+        Optional("hardened-sign-config"): [
+            {
+                Optional("deep"): bool,
+                Optional("runtime"): bool,
+                Optional("force"): bool,
+                Optional("entitlements"): str,
+                Optional("requirements"): str,
+                Required("globs"): [str],
+            }
+        ],
     },
 )
 def build_scriptworker_iscript_payload(config, task, task_def):
@@ -45,7 +56,7 @@ def build_scriptworker_iscript_payload(config, task, task_def):
         "upstreamArtifacts": worker["upstream-artifacts"],
     }
     task_def["payload"]["behavior"] = worker["mac-behavior"]
-    for attr in ("entitlementsUrl", "loginItemsEntitlementsUrl"):
+    for attr in ("entitlementsUrl", "loginItemsEntitlementsUrl", "hardened-sign-config"):
         if attr in worker:
             task_def["payload"][attr] = worker[attr]
 
