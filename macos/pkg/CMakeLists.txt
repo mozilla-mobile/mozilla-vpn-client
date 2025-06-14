@@ -24,48 +24,6 @@ if(NOT DEFINED MACPKG_SOURCE_BUNDLE)
     endif()
 endif()
 
-## Stage 0: Generate the Resources for the installer package.
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources)
-add_custom_target(macpkg_resources
-    COMMENT "Preparing MacOS Installer Resources"
-    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/Resources .
-)
-set_target_properties(macpkg_resources PROPERTIES FOLDER "Installer")
-
-file(GLOB I18N_LOCALES LIST_DIRECTORIES true
-    RELATIVE ${PROJECT_ROOT_DIR}/3rdparty/i18n ${PROJECT_ROOT_DIR}/3rdparty/i18n/*)
-list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
-foreach(LOCALE ${I18N_LOCALES})
-    if(NOT EXISTS ${PROJECT_ROOT_DIR}/3rdparty/i18n/${LOCALE}/mozillavpn.xliff)
-        list(REMOVE_ITEM I18N_LOCALES ${LOCALE})
-        continue()
-    endif()
-    set(XLIFFTOOL ${PROJECT_ROOT_DIR}/scripts/utils/xlifftool.py ${PROJECT_ROOT_DIR}/3rdparty/i18n/${LOCALE}/mozillavpn.xliff)
-    execute_process(
-        RESULT_VARIABLE XLIFF_CHECK_RESULT
-        COMMAND ${XLIFFTOOL} --locale=${LOCALE} --check
-    )
-    if(NOT XLIFF_CHECK_RESULT EQUAL 0)
-        continue()
-    endif()
-
-    add_custom_target(macpkg_resources_${LOCALE}
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources
-        SOURCES
-            ${PROJECT_ROOT_DIR}/3rdparty/i18n/${LOCALE}/mozillavpn.xliff
-            ${CMAKE_CURRENT_SOURCE_DIR}/welcome.html.in
-            ${CMAKE_CURRENT_SOURCE_DIR}/conclusion.html.in
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${LOCALE}.lproj
-        COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/welcome.html.in -o ${LOCALE}.lproj/welcome.html
-        COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/conclusion.html.in -o ${LOCALE}.lproj/conclusion.html
-        COMMAND ${XLIFFTOOL} -g macosinstaller --strip 1 -f macos -o ${LOCALE}.lproj/Localizable.strings
-    )
-    add_dependencies(macpkg_resources macpkg_resources_${LOCALE})
-    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/Resources/${LOCALE}.lproj)
-    set_target_properties(macpkg_resources_${LOCALE} PROPERTIES FOLDER "Installer")
-endforeach()
-
 ## Stage 1: Preprocess the installation scripts.
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
 configure_file(
@@ -119,12 +77,75 @@ add_custom_command(
 ## Stage 3: Run productbuild to inject the distribution files and build the installer package.
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.pkg
-    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/components/MozillaVPN.pkg macpkg_resources
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/components/MozillaVPN.pkg
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     COMMAND productbuild --distribution ${CMAKE_CURRENT_SOURCE_DIR}/Distribution
         --resources ${CMAKE_CURRENT_BINARY_DIR}/Resources --package-path ${CMAKE_CURRENT_BINARY_DIR}/components
         MozillaVPN.pkg
 )
+
+## Stage 4: Add resources to the product build.
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources)
+file(GLOB RESOURCE_FILES RELATIVE ${CMAKE_CURRENT_SOURCE_DIR}/Resources
+    ${CMAKE_CURRENT_SOURCE_DIR}/Resources/*
+)
+foreach(FILENAME ${RESOURCE_FILES})
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Resources/${FILENAME}
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${FILENAME}
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${FILENAME} ${CMAKE_CURRENT_SOURCE_DIR}/Resources
+    )
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.pkg APPEND
+        DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/Resources/${FILENAME}
+    )
+endforeach()
+
+# And the localized resources too.
+file(GLOB I18N_LOCALES LIST_DIRECTORIES true
+    RELATIVE ${PROJECT_ROOT_DIR}/3rdparty/i18n ${PROJECT_ROOT_DIR}/3rdparty/i18n/*)
+list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
+foreach(LOCALE ${I18N_LOCALES})
+    if(NOT EXISTS ${PROJECT_ROOT_DIR}/3rdparty/i18n/${LOCALE}/mozillavpn.xliff)
+        list(REMOVE_ITEM I18N_LOCALES ${LOCALE})
+        continue()
+    endif()
+    set(XLIFFTOOL ${PROJECT_ROOT_DIR}/scripts/utils/xlifftool.py ${PROJECT_ROOT_DIR}/3rdparty/i18n/${LOCALE}/mozillavpn.xliff)
+    execute_process(
+        RESULT_VARIABLE XLIFF_CHECK_RESULT
+        COMMAND ${XLIFFTOOL} --locale=${LOCALE} --check
+    )
+    if(NOT XLIFF_CHECK_RESULT EQUAL 0)
+        continue()
+    endif()
+
+    # Build the localized file
+    add_custom_command(
+        OUTPUT
+            ${CMAKE_CURRENT_BINARY_DIR}/Resources/${LOCALE}.lproj/Localizable.strings
+            ${CMAKE_CURRENT_BINARY_DIR}/Resources/${LOCALE}.lproj/conclusion.html
+            ${CMAKE_CURRENT_BINARY_DIR}/Resources/${LOCALE}.lproj/welcome.html
+        DEPENDS
+            ${PROJECT_ROOT_DIR}/3rdparty/i18n/${LOCALE}/mozillavpn.xliff
+            ${CMAKE_CURRENT_SOURCE_DIR}/conclusion.html.in
+            ${CMAKE_CURRENT_SOURCE_DIR}/welcome.html.in
+        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Resources
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${LOCALE}.lproj
+        COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/welcome.html.in -o ${LOCALE}.lproj/welcome.html
+        COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/conclusion.html.in -o ${LOCALE}.lproj/conclusion.html
+        COMMAND ${XLIFFTOOL} -g macosinstaller --strip 1 -f macos -o ${LOCALE}.lproj/Localizable.strings
+    )
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/Resources/${LOCALE}.lproj)
+
+    # Add as dependencies on the installer package.
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.pkg APPEND
+        DEPENDS
+            ${CMAKE_CURRENT_BINARY_DIR}/Resources/${LOCALE}.lproj/Localizable.strings
+            ${CMAKE_CURRENT_BINARY_DIR}/Resources/${LOCALE}.lproj/conclusion.html
+            ${CMAKE_CURRENT_BINARY_DIR}/Resources/${LOCALE}.lproj/welcome.html
+    )
+endforeach()
 
 # Add a custom target to drive package creation
 add_custom_target(macpkg DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.pkg)
