@@ -333,7 +333,7 @@ void ServerLatency::updateConnectionScore(const QString& pubkey) {
       numLatencySamples++;
     }
   }
-  if (numLatencySamples >= 0) {
+  if (numLatencySamples > 0) {
     avgLatencyMsec += (numLatencySamples - 1);
     avgLatencyMsec /= numLatencySamples;
   }
