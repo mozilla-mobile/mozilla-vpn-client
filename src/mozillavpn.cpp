@@ -1950,10 +1950,9 @@ void MozillaVPN::registerInspectorCommands() {
       2, [](InspectorHandler*, const QList<QByteArray>& arguments) {
         QJsonObject obj;
         if (QString(arguments[1]) != "" && QString(arguments[2]) != "") {
-          MozillaVPN::instance()
-              ->serverLatency()
-              ->setCityCooldown(QString(arguments[1]), QString(arguments[2]),
-                                Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+          MozillaVPN::instance()->serverLatency()->setCityCooldown(
+              QString(arguments[1]), QString(arguments[2]),
+              Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
         } else {
           obj["error"] =
               QString("Please provide country and city codes as arguments");

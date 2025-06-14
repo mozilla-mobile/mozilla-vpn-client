@@ -10,8 +10,8 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
-#include "mozillavpn.h"
 #include "models/servercountrymodel.h"
+#include "mozillavpn.h"
 #include "serverlatency.h"
 #include "settingsholder.h"
 

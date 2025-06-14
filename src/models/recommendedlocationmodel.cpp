@@ -10,8 +10,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/location.h"
-#include "mozillavpn.h"
 #include "models/servercountrymodel.h"
+#include "mozillavpn.h"
 #include "serverlatency.h"
 
 namespace {
