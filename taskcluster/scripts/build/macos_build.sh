@@ -103,7 +103,7 @@ print Y "Building the client..."
 cmake --build ${TASK_HOME}/build
 
 print Y "Building the installer..."
-cmake --build ${TASK_HOME}/build --target pkg
+cmake --build ${TASK_HOME}/build --target macpkg
 
 print Y "Exporting the build artifacts..."
 mkdir -p tmp || die
