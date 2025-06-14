@@ -31,23 +31,7 @@ class TestModels final : public TestHelper {
   void recentConnectionMigration();
   void recentConnectionSaveAndRestore();
 
-  void serverBasic();
-  void serverFromJson_data();
-  void serverFromJson();
-  void serverWeightChooser();
-
-  void serverCityBasic();
-  void serverCityFromJson_data();
-  void serverCityFromJson();
-
-  void serverCountryBasic();
-  void serverCountryFromJson_data();
-  void serverCountryFromJson();
-
-  void serverCountryModelBasic();
-  void serverCountryModelFromJson_data();
-  void serverCountryModelFromJson();
-  void serverCountryModelPick();
+  void recommendedLocationsPick();
 
   void serverDataBasic();
   void serverDataMigrate();
