@@ -1,0 +1,26 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+    description: "Conda Pack the environment"
+    fetches:
+            fetch:
+               - miniconda-osx
+    worker:
+        max-run-time: 14400
+    worker-type: b-linux
+    run:
+        script: conda_pack_osxcross.sh
+        use-caches: []
+        resources:
+            - requirements.txt
+            - env.yml
+            - scripts/macos/conda_install_osxcross.sh
+
+osxcross-conda-pack: 
+    treeherder:
+        symbol: "conda-osxcross"
+    run:
+        toolchain-alias: conda-osxcross
+        toolchain-artifact: public/build/conda-osxcross.tar.gz

@@ -55,6 +55,14 @@ tasks:
             artifact-name: miniconda.sh
             size: 106401416
         fetch-alias: miniconda-osx
+    macosx-sdk:
+        description: MacOSX SDK 15.4
+        fetch:
+            type: static-url
+            url: https://swcdn.apple.com/content/downloads/10/32/082-12052-A_AHPGDY76PT/1a419zaf3vh8o9t3c0usblyr8eystpnsh5/CLTools_macOSNMOS_SDK.pkg
+            sha256: f8b0600aa4ad9b0b0b150fb62691dc561f47bc33ebc40546439f1460a0680913
+            artifact-name: cltools-macosnmos-sdk.pkg
+            size: 58055915
     qt-source-tarball:
         description: Qt 6.6.3 Source Tarball
         fetch:
