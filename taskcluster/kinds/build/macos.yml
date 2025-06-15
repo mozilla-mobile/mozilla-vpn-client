@@ -52,3 +52,21 @@ macos/opt:
     scopes:
         - secrets:get:project/mozillavpn/level-1/sentry
 
+macos/osxcross:
+    description: "Mac Build (osxcross)"
+    treeherder:
+            symbol: BD
+            kind: build
+            tier: 1
+    fetches:
+        toolchain:
+            - cargo-vendor
+            - conda-osxcross
+    worker-type: b-linux
+    worker:
+          docker-image: {in-tree: conda-base}
+    run:
+          using: run-task
+          use-caches: [checkout]
+          cwd: '{checkout}'
+          command: ./taskcluster/scripts/build/macos_build.sh
