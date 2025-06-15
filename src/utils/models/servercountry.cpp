@@ -12,7 +12,6 @@
 
 #include "collator.h"
 #include "leakdetector.h"
-#include "serverdata.h"
 
 ServerCountry::ServerCountry() { MZ_COUNT_CTOR(ServerCountry); }
 
