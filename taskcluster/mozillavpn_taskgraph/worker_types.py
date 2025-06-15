@@ -35,6 +35,12 @@ from voluptuous import Any, Optional, Required
         ),
         Optional("entitlementsUrl"): str,
         Optional("loginItemsEntitlementsUrl"): str,
+        Optional("provisioning-profile-config"): [
+            {
+                Required("profile_name"): str,
+                Required("target_path"): str,
+            }
+        ],
         Optional("hardened-sign-config"): [
             {
                 Optional("deep"): bool,
@@ -56,7 +62,7 @@ def build_scriptworker_iscript_payload(config, task, task_def):
         "upstreamArtifacts": worker["upstream-artifacts"],
     }
     task_def["payload"]["behavior"] = worker["mac-behavior"]
-    for attr in ("entitlementsUrl", "loginItemsEntitlementsUrl", "hardened-sign-config"):
+    for attr in ("entitlementsUrl", "loginItemsEntitlementsUrl", "hardened-sign-config", "provisioning-profile-config"):
         if attr in worker:
             task_def["payload"][attr] = worker[attr]
 
