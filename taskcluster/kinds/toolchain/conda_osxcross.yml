@@ -4,11 +4,11 @@
 ---
 task-defaults:
     description: "Conda Pack the environment"
-    fetches:
-            fetch:
-               - miniconda-osx
     worker:
+        env:
+            FOO: bar    # Bug: taskcluster fails if there is no env key?
         max-run-time: 14400
+        docker-image: {in-tree: conda-base}
     worker-type: b-linux
     run:
         script: conda_pack_osxcross.sh
