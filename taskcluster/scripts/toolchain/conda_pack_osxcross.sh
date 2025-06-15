@@ -8,10 +8,8 @@ PATH=${PATH}:/opt/conda/bin
 
 echo "Installing provided conda env..."
 conda env create -f ${VCS_PATH}/env.yml
-conda activate VPN
-${VCS_PATH}/scripts/macos/conda_install_osxcross.sh
-conda info
-conda deactivate
+conda run -n vpn ${VCS_PATH}/scripts/macos/conda_install_osxcross.sh
+conda run -n vpn conda info
 
 echo "Installing conda-pack..."
 conda install conda-pack -y
