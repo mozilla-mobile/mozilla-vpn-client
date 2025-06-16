@@ -15,6 +15,7 @@ echo "Installing conda-pack..."
 conda install conda-pack -y
 
 echo "Packing conda environment..."
+mkdir -p ${$UPLOAD_DIR}/public/build
 conda-pack -n vpn -o ${UPLOAD_DIR}/public/build/conda-osxcross.tar.gz
 
 echo "Done."
