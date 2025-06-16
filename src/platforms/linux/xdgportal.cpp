@@ -167,14 +167,14 @@ void XdgPortal::setupAppScope(const QString& appId) {
     logger.warning() << "Failed to get scope:" << getunit.errorMessage();
     return;
   }
-  QList<QVariant> result = getunit.arguments();
-  if ((getunit.type() != QDBusMessage::ReplyMessage) || result.isEmpty()) {
+  QList<QVariant> unitResult = getunit.arguments();
+  if ((getunit.type() != QDBusMessage::ReplyMessage) || unitResult.isEmpty()) {
     logger.warning() << "Bad reply for current scope:";
     return;
   }
 
   // Fetch the names of the unit to figure out the appid.
-  QDBusObjectPath unitPath = result.first().value<QDBusObjectPath>();
+  QDBusObjectPath unitPath = unitResult.first().value<QDBusObjectPath>();
   QDBusInterface ownUnit("org.freedesktop.systemd1", unitPath.path(),
                          "org.freedesktop.systemd1.Unit");
   QStringList unitNames = ownUnit.property("Names").toStringList();
@@ -222,7 +222,8 @@ void XdgPortal::setupAppScope(const QString& appId) {
     logger.warning() << "Failed to create scope:" << msg.errorMessage();
     return;
   }
-  QDBusObjectPath jobPath = result.first().value<QDBusObjectPath>();
+  QList<QVariant> jobResult = msg.arguments();
+  QDBusObjectPath jobPath = jobResult.first().value<QDBusObjectPath>();
   if ((msg.type() != QDBusMessage::ReplyMessage) || jobPath.path().isEmpty()) {
     logger.warning() << "Bad reply for create scope";
     return;
