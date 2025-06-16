@@ -19,6 +19,9 @@ task-defaults:
             - scripts/macos/conda_install_osxcross.sh
 
 osxcross-conda-pack: 
+    fetches:
+            fetch:
+               - macosx-sdk
     treeherder:
         symbol: "conda-osxcross"
     run:
