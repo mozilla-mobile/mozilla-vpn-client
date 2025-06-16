@@ -1113,18 +1113,25 @@ void MozillaVPN::controllerStateChanged() {
   }
 
   if (!m_controllerInitialized && m_private->m_controller.isInitialized()) {
+    logger.debug() << "Controller initialized";
     m_controllerInitialized = true;
-
-    if (SettingsHolder::instance()->startAtBoot()) {
-      logger.debug() << "Start on boot";
-      activate();
-    }
+    maybeConnectOnStartup();
   }
 
   if (m_updating && controllerState == Controller::StateOff) {
     update();
   }
   NetworkManager::instance()->clearCache();
+}
+
+void MozillaVPN::maybeConnectOnStartup() {
+  if (m_controllerInitialized && m_locationInitialized) {
+    if (SettingsHolder::instance()->startAtBoot()) {
+      logger.debug()
+          << "Both controller and location initialized. Starting on boot.";
+      activate();
+    }
+  }
 }
 
 void MozillaVPN::heartbeatCompleted(bool success) {
@@ -1254,8 +1261,16 @@ void MozillaVPN::scheduleRefreshDataTasks() {
   // https://mozilla-hub.atlassian.net/browse/VPN-3726 for more information.
   if (!m_private->m_location.initialized() &&
       !m_private->m_controller.isActive()) {
-    TaskScheduler::scheduleTask(
-        new TaskGetLocation(ErrorHandler::PropagateError));
+    TaskGetLocation* locationTask =
+        new TaskGetLocation(ErrorHandler::PropagateError);
+    connect(locationTask, &TaskGetLocation::completed, [this]() {
+      if (!m_locationInitialized) {
+        logger.debug() << "Location initialized";
+        m_locationInitialized = true;
+        maybeConnectOnStartup();
+      }
+    });
+    TaskScheduler::scheduleTask(locationTask);
   }
 
   TaskScheduler::scheduleTask(new TaskGroup(refreshTasks));
