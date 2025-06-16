@@ -227,6 +227,8 @@ class MozillaVPN final : public App {
 
   void controllerStateChanged();
 
+  void maybeConnectOnStartup();
+
   void maybeRegenerateDeviceKey();
 
   bool checkCurrentDevice();
@@ -280,6 +282,7 @@ class MozillaVPN final : public App {
   bool m_startMinimized = false;
   bool m_updating = false;
   bool m_controllerInitialized = false;
+  bool m_locationInitialized = false;
 };
 
 #endif  // MOZILLAVPN_H

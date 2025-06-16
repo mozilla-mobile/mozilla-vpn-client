@@ -20,6 +20,9 @@ api.connectSignal(api.subscriptionData, 'changed', () => computeCondition());
 api.connectSignal(
     api.subscriptionData, 'initialized', () => computeCondition());
 
+// Run on app launch after getting current location
+api.connectSignal(api.location, 'changed', () => computeCondition());
+
 // This is for already-running clients that receive this addon while the client
 // is launched and signed in. (These users may not see a change in
 // subscriptionData for a long time.)
