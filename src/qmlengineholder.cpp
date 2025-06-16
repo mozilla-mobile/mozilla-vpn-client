@@ -39,8 +39,10 @@
 namespace {
 QmlEngineHolder* s_instance = nullptr;
 
-class NMFactory : public QQmlNetworkAccessManagerFactory {
+class NMFactory : public QQmlNetworkAccessManagerFactory, public QObject {
  public:
+  NMFactory(QObject* parent = nullptr)
+      : QQmlNetworkAccessManagerFactory(), QObject(parent) {}
   QNetworkAccessManager* create(QObject* parent) override {
     return NetworkManager::instance()->networkAccessManager();
   }
@@ -54,7 +56,7 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
   Q_ASSERT(engine);
   Q_ASSERT(!s_instance);
   s_instance = this;
-  engine->setNetworkAccessManagerFactory(new NMFactory());
+  engine->setNetworkAccessManagerFactory(new NMFactory(qApp));
 
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "GleanPings",
                                __DONOTUSE__GleanPings::instance());
