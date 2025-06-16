@@ -29,6 +29,7 @@
 #include "logger.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
+#include "networkmanager.h"
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -358,7 +359,7 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
     NotificationHandler* notificationHandler =
-        NotificationHandler::create(&engineHolder);
+        NotificationHandler::create(qApp);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged,
                      notificationHandler,

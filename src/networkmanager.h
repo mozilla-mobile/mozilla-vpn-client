@@ -15,7 +15,7 @@ class NetworkManager : public QObject {
 
  public:
   NetworkManager();
-  virtual ~NetworkManager();
+  ~NetworkManager();
 
   static NetworkManager* instance();
 
@@ -24,7 +24,7 @@ class NetworkManager : public QObject {
   static QByteArray osVersion();
   static QByteArray userAgent();
 
-  virtual QNetworkAccessManager* networkAccessManager() = 0;
+  QNetworkAccessManager* networkAccessManager();
 
   void clearCache();
 
@@ -32,7 +32,7 @@ class NetworkManager : public QObject {
   void decreaseNetworkRequestCount();
 
  protected:
-  virtual void clearCacheInternal() = 0;
+  void clearCacheInternal();
 
  private:
   void localhostRequestsOnlyChanged();
@@ -40,6 +40,7 @@ class NetworkManager : public QObject {
  private:
   uint32_t m_requestCount = 0;
   bool m_clearCacheNeeded = false;
+  QNetworkAccessManager* m_networkManager = nullptr;
 };
 
 #endif  // NETWORKMANAGER_H
