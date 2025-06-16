@@ -28,6 +28,8 @@ NS_QUERYFRAME_TAIL.*$"
 SortIncludes: true
 IndentPPDirectives: AfterHash
 StatementMacros: [MARKUPMAP, ASSERT_TRUE, ASSERT_FALSE, TEST, CHECK]
+StatementAttributeLikeMacros: 
+ - emit
 
 # The Google coding style states:
 # You should do this consistently within a single file, so, when modifying an

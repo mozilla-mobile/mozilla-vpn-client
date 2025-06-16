@@ -1226,9 +1226,13 @@ void MozillaVPN::hardReset() {
 
 void MozillaVPN::hardResetAndQuit() {
   logger.debug() << "Hard reset and quit";
-  hardReset();
-  // Deactivate VPN and quit
-  controller()->quit();
+  SettingsWatcher::instance()->stop();
+  TaskScheduler::deleteTasks();
+  TaskScheduler::scheduleTask(
+      new TaskControllerAction(TaskControllerAction::eDeactivate));
+  TaskScheduler::scheduleTask(new TaskFunction([this]() { hardReset(); }));
+  TaskScheduler::scheduleTask(
+      new TaskFunction([this]() { controller()->quit(); }));
 }
 
 void MozillaVPN::requestDeleteAccount() {
