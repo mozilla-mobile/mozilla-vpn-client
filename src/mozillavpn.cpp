@@ -2087,7 +2087,7 @@ void MozillaVPN::registerInspectorCommands() {
       "Set Glean Source Tags (supply a comma seperated list)", 1,
       [](InspectorHandler*, const QList<QByteArray>& arguments) {
         QStringList tags = QString(arguments[1]).split(',');
-        emit MozillaVPN::instance() -> setGleanSourceTags(tags);
+        emit MozillaVPN::instance()->setGleanSourceTags(tags);
         return QJsonObject();
       });
 
