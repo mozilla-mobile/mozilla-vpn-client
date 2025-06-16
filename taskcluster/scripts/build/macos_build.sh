@@ -102,9 +102,6 @@ cmake -S . -B ${TASK_HOME}/build -GNinja \
 print Y "Building the client..."
 cmake --build ${TASK_HOME}/build
 
-print Y "Building the installer..."
-cmake --build ${TASK_HOME}/build --target macpkg
-
 print Y "Exporting the build artifacts..."
 mkdir -p tmp || die
 
@@ -124,14 +121,8 @@ if [[ "$RELEASE" ]]; then
     sentry-cli debug-files upload --org mozilla -p vpn-client tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
 fi
 
-cp -r ${TASK_HOME}/build/src/Mozilla\ VPN.app tmp || die
-cp -r ${TASK_HOME}/build/macos/pkg/Resources tmp || die
-cp -r ${TASK_HOME}/build/macos/pkg/scripts tmp || die
-cp -r ./macos/pkg/Distribution tmp || die
-
 print Y "Compressing the build artifacts..."
-tar -C tmp -czvf "${TASK_HOME}/artifacts/MozillaVPN.tar.gz" . || die
-rm -rf tmp || die
+tar -C ${TASK_HOME}/build/src/ -czvf ${TASK_HOME}/artifacts/MozillaVPN.tar.gz "Mozilla VPN.app" || die
 rm -rf ${TASK_HOME}/build || die
 
 # Check for unintended writes to the source directory.
