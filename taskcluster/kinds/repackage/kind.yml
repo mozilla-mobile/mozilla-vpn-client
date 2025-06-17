@@ -6,10 +6,12 @@ loader: taskgraph.loader.transform:loader
 
 transforms:
     - mozilla_taskgraph.transforms.scriptworker.release_artifacts:transforms
+    - mozillavpn_taskgraph.transforms.repackage
     - taskgraph.transforms.run:transforms
     - taskgraph.transforms.task:transforms
 
 kind-dependencies:
+    - build
     - fetch
     - signing
 
@@ -47,23 +49,29 @@ tasks:
 
     macpkg:
         description: repackage mozillavpn macpkg
-        run-on-tasks-for: [github-push]
+        run-on-tasks-for: [github-pull-request, github-push]
         fetches:
             fetch:
                - macos-cmake
-            signing:
+            from-dependency: # Updated to match dependencies in repackage.py
                 - artifact: MozillaVPN.tar.gz
                   extract: false
         dependencies:
-            signing: signing-macos/opt
-        if-dependencies: [signing]
+            by-level:
+                "3":
+                    signing: signing-macos/opt
+                default:
+                    build: build-macos/pr
         worker-type: b-macos
         worker:
             chain-of-trust: true
             max-run-time: 3600
         release-artifacts: [MozillaVPN.pkg]
         attributes:
-            build-type: macos/opt
+            build-type:
+                by-level:
+                    "3": macos/opt
+                    default: macos/pr
         run:
             using: run-task
             cwd: '{checkout}'
