@@ -26,6 +26,7 @@ print Y "Configuring the build..."
 mkdir ${TASK_WORKDIR}/build-osxcross
 
 cmake -S . -B ${TASK_WORKDIR}/build-osxcross -GNinja \
+        -DCMAKE_TOOLCHAIN_FILE=scripts/macos/osxcross-toolchain.cmake \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
         -DQT_HOST_PATH=${CONDA_PREFIX} \
         -DQT_HOST_PATH_CMAKE_DIR=${CONDA_PREFIX}/lib/cmake \
