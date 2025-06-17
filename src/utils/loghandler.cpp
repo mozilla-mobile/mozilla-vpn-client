@@ -167,7 +167,7 @@ LogHandler::LogHandler() : QObject(nullptr) {
   // If no logfile has been set, derive it automatically from the shortname.
   if (s_filename.isEmpty()) {
     QString where =
-        QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+        QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation);
     s_filename = QDir(where).filePath(m_shortname + LOG_FILE_SUFFIX);
   }
   openLogFile(lock);
