@@ -23,9 +23,9 @@ EOF
 fi
 
 print Y "Configuring the build..."
-mkdir ${TASK_HOME}/build-osxcross
+mkdir ${TASK_WORKDIR}/build-osxcross
 
-cmake -S . -B ${TASK_HOME}/build-osxcross -GNinja \
+cmake -S . -B ${TASK_WORKDIR}/build-osxcross -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
         -DQT_HOST_PATH=${CONDA_PREFIX} \
         -DQT_HOST_PATH_CMAKE_DIR=${CONDA_PREFIX}/lib/cmake \
@@ -34,4 +34,4 @@ cmake -S . -B ${TASK_HOME}/build-osxcross -GNinja \
         -DBUILD_TESTS=OFF
 
 print Y "Building the client..."
-cmake --build ${TASK_HOME}/build-osxcross
+cmake --build ${TASK_WORKDIR}/build-osxcross
