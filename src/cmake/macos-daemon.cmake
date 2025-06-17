@@ -15,9 +15,10 @@ mz_target_handle_warnings(daemon)
 
 find_library(FW_FOUNDATION Foundation)
 find_library(FW_NETWORK Network)
+find_library(FW_SECURITY Security)
 find_library(FW_SYSTEMCONFIG SystemConfiguration)
 
-target_link_libraries(daemon PRIVATE ${FW_FOUNDATION} ${FW_NETWORK} ${FW_SYSTEMCONFIG})
+target_link_libraries(daemon PRIVATE ${FW_FOUNDATION} ${FW_NETWORK} ${FW_SECURITY} ${FW_SYSTEMCONFIG})
 target_link_libraries(daemon PRIVATE Qt6::Core Qt6::Network)
 target_link_libraries(daemon PRIVATE mzutils)
 
