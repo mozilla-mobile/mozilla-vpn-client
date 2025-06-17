@@ -14,7 +14,6 @@ task-defaults:
     fetches:
         toolchain:
             - cargo-vendor
-            - conda-macos
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
@@ -31,6 +30,7 @@ task-defaults:
 macos/pr:
     fetches:
         toolchain:
+            - conda-macos
             - qt-macos-6.6
     description: "Mac Build"
     treeherder:
@@ -42,6 +42,7 @@ macos/pr:
 macos/opt:
     fetches:
         toolchain:
+            - conda-macos
             - qt-macos-6.6
     description: "Mac Build"
     treeherder:
