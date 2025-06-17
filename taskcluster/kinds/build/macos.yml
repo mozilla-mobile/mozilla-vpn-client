@@ -64,6 +64,7 @@ macos/osxcross:
         toolchain:
             - cargo-vendor
             - conda-osxcross
+            - qt-macos-6.6
     worker-type: b-linux
     worker:
           docker-image: {in-tree: conda-base}
@@ -71,4 +72,4 @@ macos/osxcross:
           using: run-task
           use-caches: [checkout]
           cwd: '{checkout}'
-          command: ./taskcluster/scripts/build/macos_build.sh
+          command: ./taskcluster/scripts/build/macos_osxcross.sh
