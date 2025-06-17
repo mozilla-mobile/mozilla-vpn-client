@@ -241,17 +241,17 @@ function(add_rust_library TARGET_NAME)
 
     # Guess the target architecture if not set.
     if(NOT RUST_TARGET_ARCH)
-        if(CMAKE_CROSSCOMPILING)
-            # TODO: We could write something here for Android and IOS maybe
-            message(FATAL_ERROR "Unable to determine rust target architecture when cross compiling.")
-        elseif((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND CMAKE_OSX_ARCHITECTURES)
+        if((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND CMAKE_OSX_ARCHITECTURES)
             # Special case for MacOS universal binaries.
             foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
                 string(REPLACE "arm64" "aarch64" OSXARCH ${OSXARCH})
                 list(APPEND RUST_TARGET_ARCH "${OSXARCH}-apple-darwin")
             endforeach()
-        else()
+        elseif(NOT CMAKE_CROSSCOMPILING)
             set(RUST_TARGET_ARCH ${RUSTC_HOST_ARCH})
+        else()
+            # TODO: We could write something here for Android and IOS maybe
+            message(FATAL_ERROR "Unable to determine rust target architecture when cross compiling.")
         endif()
     endif()
 
