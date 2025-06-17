@@ -27,6 +27,8 @@ mkdir ${TASK_HOME}/build-osxcross
 
 cmake -S . -B ${TASK_HOME}/build-osxcross -GNinja \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
+        -DQT_HOST_PATH=${CONDA_PREFIX} \
+        -DQT_HOST_PATH_CMAKE_DIR=${CONDA_PREFIX}/lib/cmake \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
         -DBUILD_TESTS=OFF
