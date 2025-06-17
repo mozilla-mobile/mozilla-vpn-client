@@ -24,6 +24,9 @@ cat ${CONDA_VPN_PREFIX}/etc/conda/activate.d/01-macosx-sdkroot.sh
 echo "Installing MacOS toolchain..."
 conda run -n vpn ${VCS_PATH}/scripts/macos/conda_install_osxcross.sh
 
+echo "Installing Qt ${QT_VERSION} host tools..."
+conda install -n vpn -y -c conda-forge qt6-main=${QT_VERSION}
+
 echo "Installing conda-pack..."
 conda install conda-pack -y
 
