@@ -206,8 +206,6 @@ int CommandUI::run(QStringList& tokens) {
     }
 
     // Configure graphics rendering for Android
-    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
-        Qt::HighDpiScaleFactorRoundingPolicy::Round);
     if (AndroidUtils::isChromeOSContext()) {
       QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
     }
