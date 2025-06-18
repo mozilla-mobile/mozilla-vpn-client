@@ -14,6 +14,15 @@ schema.EXCEPTED_SCHEMA_IDENTIFIERS.append(
     )
 )
 
+# Schemas for YAML files should use dashed identifiers by default. If there are
+# components of the schema for which there is a good reason to use another format,
+# exceptions can be added here.
+schema.EXCEPTED_SCHEMA_IDENTIFIERS.extend(
+    [
+        "profile_name",
+        "target_path",
+    ]
+)
 
 RELEASE_PROMOTION_PROJECTS = (
     "https://github.com/mozilla-mobile/mozilla-vpn-client",

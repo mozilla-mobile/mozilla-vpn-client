@@ -55,6 +55,14 @@ tasks:
             artifact-name: miniconda.sh
             size: 106401416
         fetch-alias: miniconda-osx
+    macos-cmake:
+        description: CMake osx-universal v3.26.6
+        fetch:
+            type: static-url
+            url: https://github.com/Kitware/CMake/releases/download/v3.26.6/cmake-3.26.6-macos-universal.tar.gz
+            sha256: 2d7a4e5f48ad23ef962b5b7c602c4b0163dd44e51b6d4c33b336a1d663ab1445
+            artifact-name: cmake-macos-universal.tar.gz
+            size: 75379015
     qt-source-tarball:
         description: Qt 6.6.3 Source Tarball
         fetch:

@@ -83,8 +83,6 @@ other flags:
   left unset, this will generate a timestamp when configuring the Makefiles.
 * `CODE_SIGN_IDENTITY=<Certificate Identity>`: can be set to enable code signing during
 the build process (MacOS / iOS).
-* `INSTALLER_SIGN_IDENTITY=<Certificate Identity>`: can be set to enable signing of the
-installer package (MacOS / iOS).
 * `BUILD_OSX_APP_IDENTIFIER=<App Identifier>`: can be set to change the application bundle
 identifier. This defaults to `org.mozilla.macos.FirefoxVPN` if not set. (MacOS / iOS)
 * `BUILD_VPN_DEVELOPMENT_TEAM=<Development Team ID>`: can be set to change the development
