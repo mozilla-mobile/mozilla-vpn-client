@@ -17,7 +17,7 @@ MZInAppAuthenticationBase {
 
     property var checkboxData: [
         {
-            subLabelText: MZI18n.DeleteAccountOptionDescriptionOne,
+            subLabelText: MZI18n.DeleteAccountOptionDescriptionOneUpdated,
             objectName: "check1",
             isSelected: false
         },

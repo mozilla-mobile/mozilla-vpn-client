@@ -747,8 +747,8 @@ deleteAccount:
   subheadline2:
     value: "Your Mozilla account (%1) is connected to Mozilla products that keep you secure and productive on the web. Please acknowledge that by deleting your account:"
     comment: "%1 is the email address that is associated with the current account"
-  optionDescriptionOne:
-    value: Any paid subscriptions you have will be cancelled (Except Pocket)
+  optionDescriptionOneUpdated:
+    value: Any paid subscriptions you have will be cancelled
     comment: Text that belongs to a checkbox that the user has to check in order before they can delete their account.
   optionDescriptionTwo:
     value: You may lose saved information and features within Mozilla products
