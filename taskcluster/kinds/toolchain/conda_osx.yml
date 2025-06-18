@@ -18,7 +18,6 @@ task-defaults:
         resources:
             - requirements.txt
             - env.yml
-            - scripts/macos/conda_install_extras.sh
             - scripts/macos/conda_setup_qt.sh
 
 

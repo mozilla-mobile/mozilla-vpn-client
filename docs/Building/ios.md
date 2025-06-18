@@ -18,14 +18,6 @@ $ conda activate vpn
 
 See [here](./index.md#conda) for conda environment instructions.
 
-Install extra conda packages
-
-```bash 
-$ conda activate vpn
-$ ./scripts/macos/conda_install_extras.sh
-```
-
-
 ## Get Qt
 
 ```bash 
