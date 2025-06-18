@@ -14,7 +14,6 @@
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "settingsholder.h"
-#include "simplenetworkmanager.h"
 #include "testemailvalidation.h"
 #include "testpasswordvalidation.h"
 #include "testsignupandin.h"
@@ -39,8 +38,6 @@ int main(int argc, char* argv[]) {
   Constants::setStaging();
 
   QCoreApplication a(argc, argv);
-
-  SimpleNetworkManager snm;
 
   settingsHolder.setFeaturesFlippedOn(QStringList{
       "inAppAccountCreate", "inAppAuthentication", "accountDeletion"});

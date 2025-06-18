@@ -6,6 +6,7 @@
 
 #include <QNetworkAccessManager>
 #include <QQmlApplicationEngine>
+#include <QQmlNetworkAccessManagerFactory>
 #include <QWindow>
 
 #include "addons/manager/addonmanager.h"
@@ -21,6 +22,7 @@
 #include "localizer.h"
 #include "loghandler.h"
 #include "models/licensemodel.h"
+#include "networkmanager.h"
 #include "settingsholder.h"
 #include "theme.h"
 #include "urlopener.h"
@@ -36,6 +38,16 @@
 
 namespace {
 QmlEngineHolder* s_instance = nullptr;
+
+class NMFactory : public QQmlNetworkAccessManagerFactory, public QObject {
+ public:
+  NMFactory(QObject* parent = nullptr)
+      : QQmlNetworkAccessManagerFactory(), QObject(parent) {}
+  QNetworkAccessManager* create(QObject* parent) override {
+    return NetworkManager::instance()->networkAccessManager();
+  }
+};
+
 }  // namespace
 
 QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
@@ -44,6 +56,7 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
   Q_ASSERT(engine);
   Q_ASSERT(!s_instance);
   s_instance = this;
+  engine->setNetworkAccessManagerFactory(new NMFactory(qApp));
 
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "GleanPings",
                                __DONOTUSE__GleanPings::instance());
@@ -100,18 +113,6 @@ QmlEngineHolder* QmlEngineHolder::instance() {
 
 // static
 bool QmlEngineHolder::exists() { return !!s_instance; }
-
-QNetworkAccessManager* QmlEngineHolder::networkAccessManager() {
-  return m_engine->networkAccessManager();
-}
-
-void QmlEngineHolder::clearCacheInternal() {
-  QNetworkAccessManager* nam = networkAccessManager();
-  Q_ASSERT(nam);
-
-  nam->clearAccessCache();
-  nam->clearConnectionCache();
-}
 
 QWindow* QmlEngineHolder::window() const {
   QQmlApplicationEngine* engine =

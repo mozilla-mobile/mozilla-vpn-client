@@ -12,12 +12,10 @@
 #include "helper.h"
 #include "releasemonitor.h"
 #include "settingsholder.h"
-#include "simplenetworkmanager.h"
 #include "update/versionapi.h"
 
 void TestReleaseMonitor::failure() {
   SettingsHolder settingsHolder;
-  SimpleNetworkManager snm;
 
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
@@ -107,7 +105,6 @@ void TestReleaseMonitor::success_data() {
 
 void TestReleaseMonitor::success() {
   SettingsHolder settingsHolder;
-  SimpleNetworkManager snm;
 
   ReleaseMonitor rm;
   rm.runSoon();

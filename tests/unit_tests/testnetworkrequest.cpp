@@ -6,12 +6,10 @@
 
 #include "networkrequest.h"
 #include "settingsholder.h"
-#include "simplenetworkmanager.h"
 #include "taskfunction.h"
 
 void TestNetworkRequest::testSetAuthHeader() {
   SettingsHolder settingsHolder;
-  SimpleNetworkManager snm;
 
   TaskFunction task([&]() {});
   NetworkRequest request(&task);

@@ -87,8 +87,6 @@ target_sources(app_unit_tests PRIVATE
     testlicense.h
     testlocalizer.cpp
     testlocalizer.h
-    testnetworkmanager.cpp
-    testnetworkmanager.h
     testnetworkrequest.cpp
     testnetworkrequest.h
     testqmlpath.cpp

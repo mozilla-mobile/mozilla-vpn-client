@@ -9,12 +9,10 @@
 #include "constants.h"
 #include "helper.h"
 #include "settingsholder.h"
-#include "simplenetworkmanager.h"
 #include "tasks/ipfinder/taskipfinder.h"
 
 void TestIpFinder::ipv4AndIpv6() {
   SettingsHolder settingsHolder;
-  SimpleNetworkManager snm;
 
   settingsHolder.setToken("TOKEN!");
 

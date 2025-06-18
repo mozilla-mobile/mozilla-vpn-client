@@ -7,7 +7,6 @@
 #include "feature/taskgetfeaturelist.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
-#include "simplenetworkmanager.h"
 
 namespace {
 std::function<bool(NetworkRequest*)> s_noopDeleteResourceCallback =
@@ -33,7 +32,6 @@ void stubRequestPostHandler(
 void TestTaskGetFeatureList::testSendsAuthedRequestWhenAuthed() {
   // Initialize singletons that are expected to exist.
   SettingsHolder settingsHolder;
-  SimpleNetworkManager simpleNetworkManager;
 
   QNetworkRequest featureListRequest;
   QString featureListRequestBody;
@@ -65,7 +63,6 @@ void TestTaskGetFeatureList::testSendsAuthedRequestWhenAuthed() {
 void TestTaskGetFeatureList::testAddsExperimeterIdToBodyWhenNotAuthed() {
   // Initialize singletons that are expected to exist.
   SettingsHolder settingsHolder;
-  SimpleNetworkManager simpleNetworkManager;
 
   QNetworkRequest featureListRequest;
   QString featureListRequestBody;
@@ -97,7 +94,6 @@ void TestTaskGetFeatureList::testAddsExperimeterIdToBodyWhenNotAuthed() {
 void TestTaskGetFeatureList::testUnauthedExperimenterIdIsOnlySetOnce() {
   // Initialize singletons that are expected to exist.
   SettingsHolder settingsHolder;
-  SimpleNetworkManager simpleNetworkManager;
 
   QNetworkRequest featureListRequest;
   QString featureListRequestBody;

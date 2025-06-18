@@ -50,9 +50,28 @@ NetworkManager::~NetworkManager() {
   s_instance = nullptr;
 }
 
+QNetworkAccessManager* NetworkManager::networkAccessManager() {
+  if (!m_networkManager) {
+    m_networkManager = new QNetworkAccessManager(this);
+  }
+
+  return m_networkManager;
+}
+
+void NetworkManager::clearCacheInternal() {
+  if (!m_networkManager) {
+    return;
+  }
+
+  m_networkManager->clearAccessCache();
+  m_networkManager->clearConnectionCache();
+}
+
 // static
 NetworkManager* NetworkManager::instance() {
-  Q_ASSERT(exists());
+  if (!s_instance) {
+    s_instance = new NetworkManager();
+  }
   return s_instance;
 }
 
