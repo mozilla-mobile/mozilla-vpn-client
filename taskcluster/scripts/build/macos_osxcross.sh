@@ -34,5 +34,10 @@ cmake -S . -B ${TASK_WORKDIR}/build-osxcross -GNinja \
         -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
         -DBUILD_TESTS=OFF
 
+print Y "Inspecting config.toml..."
+cat ${TASK_WORKDIR}/build-osxcross/cargo_home/config.toml
+print Y "Inspecting env..."
+env
+
 print Y "Building the client..."
 cmake --build ${TASK_WORKDIR}/build-osxcross
