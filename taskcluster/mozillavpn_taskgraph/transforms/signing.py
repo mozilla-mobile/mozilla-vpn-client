@@ -107,7 +107,7 @@ def add_hardened_sign_config(config, tasks):
             continue
 
         # Convert paths to file URLs.
-        hardened_sign_config = config.graph_config["mac-signing"]["hardened-sign-config"]
+        hardened_sign_config = config.config["mac-signing"]["hardened-sign-config"]
         for cfg in hardened_sign_config:
             if "entitlements" in cfg:
                 cfg["entitlements"] = config.params.file_url(cfg["entitlements"])

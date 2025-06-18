@@ -44,7 +44,6 @@ def register(graph_config):
     # Import sibling modules, triggering decorators in the process
     _import_modules(
         [
-            "config",
             "job",
             "parameters",
             "target_tasks",
