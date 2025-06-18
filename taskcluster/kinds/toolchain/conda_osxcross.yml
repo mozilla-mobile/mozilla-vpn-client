@@ -16,7 +16,6 @@ task-defaults:
         resources:
             - requirements.txt
             - env.yml
-            - scripts/macos/conda_install_osxcross.sh
 
 osxcross-conda-pack: 
     fetches:
