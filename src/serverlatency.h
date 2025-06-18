@@ -52,12 +52,18 @@ class ServerLatency final : public QObject {
     return m_cooldown.value(pubkey);
   }
   void setCooldown(const QString& pubkey, qint64 timeout);
+  void setCityCooldown(const QString& countryCode, const QString& cityCode,
+                       qint64 timeout);
 
   void initialize();
   void start();
   void stop();
 
   Q_INVOKABLE void refresh();
+  Q_INVOKABLE int multiHopScore(const QString& exitCountry,
+                                const QString& exitCityName,
+                                const QString& entryCountry,
+                                const QString& entryCityName) const;
 
   int baseCityScore(const ServerCity* city, const QString& originCountry) const;
 
@@ -65,6 +71,8 @@ class ServerLatency final : public QObject {
   void progressChanged();
 
  private:
+  void updateConnectionScore(const QString& pubkey);
+  void clearCooldowns();
   void maybeSendPings();
   void clear();
 
@@ -92,6 +100,7 @@ class ServerLatency final : public QObject {
   QTimer m_pingTimeout;
   QTimer m_refreshTimer;
   QTimer m_progressDelayTimer;
+  QTimer m_cooldownTimer;
   bool m_wantRefresh = false;
 
  private slots:

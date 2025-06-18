@@ -6,6 +6,7 @@ import QtQuick 2.5
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
+import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
 import compat 0.1
@@ -247,7 +248,9 @@ MZClickableRow {
                             rightMargin: MZTheme.theme.hSpacing
                             verticalCenter: parent.verticalCenter
                         }
-                        score: useMultiHopScore ? modelData.multiHopScore(segmentedNav.multiHopEntryServer[0], segmentedNav.multiHopEntryServer[1]) : modelData.connectionScore
+                        score: useMultiHopScore ? VPNServerLatency.multiHopScore(del._countryCode, del._cityName,
+                                                                                 segmentedNav.multiHopEntryServer[0],
+                                                                                 segmentedNav.multiHopEntryServer[1]) : modelData.connectionScore
                     }
                 }
             }
