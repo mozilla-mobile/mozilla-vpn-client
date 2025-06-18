@@ -4,6 +4,7 @@
 
 set(CMAKE_SYSTEM_NAME Darwin CACHE STRING "Target operating system name")
 set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "Target operating system process")
+set(CMAKE_SYSTEM_VERSION "20.0.0" CACHE STRING "Target operating system version")
 set(CMAKE_CROSSCOMPILING TRUE CACHE BOOL "Target is cross compiled")
 
 if(NOT CMAKE_OSX_ARCHITECTURES)
@@ -17,9 +18,11 @@ if(NOT CMAKE_OSX_SYSROOT)
     endif()
 endif()
 
-find_program(CMAKE_C_COMPILER arm64-apple-darwin20.0.0-clang)
-find_program(CMAKE_CXX_COMPILER arm64-apple-darwin20.0.0-clang++)
-find_program(CMAKE_LINKER arm64-apple-darwin20.0.0-ld)
+set(OSXCROSS_TOOL_PREFIX "${CMAKE_SYSTEM_PROCESSOR}-apple-darwin${CMAKE_SYSTEM_VERSION}-")
+
+find_program(CMAKE_C_COMPILER ${OSXCROSS_TOOL_PREFIX}clang)
+find_program(CMAKE_CXX_COMPILER ${OSXCROSS_TOOL_PREFIX}clang++)
+find_program(CMAKE_LINKER ${OSXCROSS_TOOL_PREFIX}ld)
 
 # Restrict library and header lookup to the OSX sysroot
 set(CMAKE_FIND_ROOT_PATH ${CMAKE_OSX_SYSROOT})
