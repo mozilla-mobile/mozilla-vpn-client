@@ -16,12 +16,6 @@ conda activate vpn
 
 See [here](./index.md#conda) for conda environment instructions.
 
-Install extra conda packages
-
-```
-./scripts/macos/conda_install_extras.sh
-```
-
 Your Xcode install comes with a copy of the MacOS-SDK.
 We need to tell the conda environment where to find it.
 

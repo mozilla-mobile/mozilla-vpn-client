@@ -36,16 +36,9 @@ conda env config vars set QT_VERSION=${BACKUP_QT_VERSION}
 # Re-enable to apply
 env
 conda deactivate
-conda activate vpn
-./scripts/macos/conda_install_extras.sh
-./scripts/macos/conda_setup_qt.sh
 
-conda deactivate
-conda activate vpn
-echo "INFO"
-conda info 
-env
-echo "INFO"
+conda run -n vpn ./scripts/macos/conda_setup_qt.sh
+conda run -n vpn conda info
 conda install conda-pack -y
 
 mkdir -p ../../public/build
