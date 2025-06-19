@@ -97,7 +97,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: vpn
-          environment-file: env.yml
+          environment-file: env-android.yml
       - name: Setup Android SDK
         run: |
           conda info

@@ -17,7 +17,7 @@ task-defaults:
         use-caches: []
         resources:
             - requirements.txt
-            - env.yml
+            - env-apple.yml
             - scripts/macos/conda_setup_qt.sh
 
 

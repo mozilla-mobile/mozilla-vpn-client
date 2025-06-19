@@ -7,7 +7,7 @@ set -e
 PATH=${PATH}:/opt/conda/bin
 
 echo "Installing provided conda env..."
-conda env create -f ${VCS_PATH}/env.yml
+conda env create -f ${VCS_PATH}/env-apple.yml
 conda run -n vpn conda info
 CONDA_VPN_PREFIX=$(conda env list | awk '{ if($1=="vpn") print $NF }')
 

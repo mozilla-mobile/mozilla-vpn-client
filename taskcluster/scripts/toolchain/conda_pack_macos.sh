@@ -27,7 +27,7 @@ pip config --user set install.no-index 0
 pip config debug
 
 echo "Installing provided conda env..."
-conda env create -f ${VCS_PATH}/env.yml
+conda env create -f ${VCS_PATH}/env-apple.yml
 conda run -n vpn conda info
 
 echo "Installing conda-pack..."
