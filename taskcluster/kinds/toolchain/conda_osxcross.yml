@@ -15,7 +15,7 @@ task-defaults:
         use-caches: []
         resources:
             - requirements.txt
-            - env.yml
+            - env-apple.yml
 
 osxcross-conda-pack: 
     fetches:

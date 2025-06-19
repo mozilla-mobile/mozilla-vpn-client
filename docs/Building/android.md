@@ -8,7 +8,7 @@ this can break building for other platforms, it's advised to do those steps
 in a separate environment. 
 
 ```bash 
-$ conda env create -f env.yml -n vpn-android
+$ conda env create -f env-android.yml -n vpn-android
 $ conda activate vpn-android
 ```
 
@@ -23,7 +23,7 @@ $ conda deactivate
 $ conda activate vpn-android
 ```
 ### Optional: Choosing your QT Version: 
-By default this environment will be setup to use the QT-Version noted in env.yml
+By default this environment will be setup to use the QT-Version noted in env-android.yml
 If you need any other architecture you need to set `QT_VERSION` before continuing.
 ```
 $ conda env config vars set QT_VERSION=1.2.3
