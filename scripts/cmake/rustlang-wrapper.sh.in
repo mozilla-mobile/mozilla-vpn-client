@@ -9,7 +9,7 @@ shift
 find_arg_value() {
   NAME="$1"
   shift
-  while [[ $# -gt 0 ]]; do
+  while [ $# -gt 0 ]; do
     ARG="$1"
     shift
     if [ "$ARG" = "$NAME" ]; then
@@ -21,10 +21,10 @@ find_arg_value() {
 
 # If the target being built matches one of the architectures, set the rustflags.
 TARGET_ARCH=$(find_arg_value "--target" "$@")
+TARGET_FLAGS="@RUST_CONFIG_RUSTFLAGS@"
 for ARCH in @RUST_CONFIG_TARGETS@; do
   if [ "${ARCH}" = "${TARGET_ARCH}" ]; then
-    IFS=';' read -a FLAGS <<< "@RUST_CONFIG_RUSTFLAGS@"
-    ${RUSTC} "${FLAGS[@]}" "$@"
+    ${RUSTC} $(echo "${TARGET_FLAGS}" | sed 's/\([^;]*\);*/"\1" /g') "$@"
     exit $?
   fi
 done
