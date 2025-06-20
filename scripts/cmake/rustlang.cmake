@@ -8,27 +8,7 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
 
 ## Find the absolute path to the rust build tools.
 find_program(CARGO_BUILD_TOOL NAMES cargo REQUIRED)
-if(NOT XCODE)
-    find_program(RUSTC_BUILD_TOOL NAMES rustc REQUIRED)
-else()
-    # When building with Xcode, we wind up in a bit of a tangle with regards to
-    # the linker. Specifically, rustc invokes the linker as "cc" but we need to
-    # get it to use the trampoline binary at /usr/bin/cc instead.
-    #
-    # See: https://github.com/rust-lang/rust/pull/131477 for some explanation.
-    #
-    # For reasons that remain mysterious to me, we seem to be unable to set this
-    # as a target configuration in the config.toml. So lets wrap it instead.
-    find_program(RUSTC_BUILD_TOOL_REAL NAMES rustc REQUIRED)
-    file(WRITE ${CMAKE_BINARY_DIR}/cargo_home/xcode-rustc.sh "#!/bin/sh\n")
-    file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/xcode-rustc.sh "${RUSTC_BUILD_TOOL_REAL} -C linker=/usr/bin/cc \"\$@\"\n")
-    file(CHMOD ${CMAKE_BINARY_DIR}/cargo_home/xcode-rustc.sh FILE_PERMISSIONS
-        OWNER_READ OWNER_WRITE OWNER_EXECUTE
-        GROUP_READ GROUP_WRITE GROUP_EXECUTE
-        WORLD_READ WORLD_EXECUTE
-    )
-    set(RUSTC_BUILD_TOOL ${CMAKE_BINARY_DIR}/cargo_home/xcode-rustc.sh CACHE FILEPATH "Rustlang compiler tool")
-endif()
+find_program(RUSTC_BUILD_TOOL NAMES rustc REQUIRED)
 if(APPLE)
     find_program(LIPO_BUILD_TOOL NAMES
         lipo
@@ -47,11 +27,41 @@ else()
 endif()
 
 ## Create a config.toml to inherit the toolchain.
+function(__rust_append_target_config)
+    cmake_parse_arguments(RUST_CONFIG
+        ""
+        "FILENAME;ARCH;LINKER"
+        "RUSTFLAGS"
+        ${ARGN})
+
+    if(NOT RUST_CONFIG_FILENAME)
+        set(RUST_CONFIG_FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml)
+    endif()
+    if(NOT RUST_CONFIG_ARCH)
+        set(RUST_CONFIG_ARCH ${RUSTC_HOST_ARCH})
+    endif()
+    if(NOT RUST_CONFIG_RUSTFLAGS AND NOT RUST_CONFIG_LINKER)
+        continue()
+    endif()
+
+    file(APPEND ${RUST_CONFIG_FILENAME} "\n[target.${RUST_CONFIG_ARCH}]\n")
+    if(RUST_CONFIG_LINKER)
+        file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml "linker=\"${RUST_CONFIG_LINKER}\"\n")
+    endif()
+
+    if(RUST_CONFIG_RUSTFLAGS)
+        file(APPEND ${RUST_CONFIG_FILENAME} "rustflags = [\n")
+        foreach(FLAG ${RUST_CONFIG_RUSTFLAGS})
+            file(APPEND ${RUST_CONFIG_FILENAME} "   \"${FLAG}\",\n")
+        endforeach()
+        file(APPEND ${RUST_CONFIG_FILENAME} "]\n")
+    endif()
+endfunction()
 function(__rust_build_toolchain_config)
     cmake_parse_arguments(RUST_CONFIG
         ""
         "FILENAME;LINKER"
-        "ARCH"
+        "ARCH;RUSTFLAGS"
         ${ARGN})
 
     if(NOT RUST_CONFIG_FILENAME)
@@ -65,14 +75,16 @@ function(__rust_build_toolchain_config)
         file(APPEND ${RUST_CONFIG_FILENAME} ${RUST_ENV_CONFIG} "\n")
     endforeach()
 
-    # For some special cases set an explicit linker too
-    if(RUST_CONFIG_LINKER)
-        foreach(RUST_CONFIG_ARCH ${RUST_CONFIG_ARCH})
-            file(APPEND ${RUST_CONFIG_FILENAME} "\n[target.${RUST_CONFIG_ARCH}]\n")
-            file(APPEND ${RUST_CONFIG_FILENAME} "linker=\"${RUST_CONFIG_LINKER}\"\n")
-        endforeach()
-    endif()
+    foreach(RUST_CONFIG_ARCH ${RUST_CONFIG_ARCH})
+        __rust_append_target_config(
+            FILENAME ${RUST_CONFIG_FILENAME}
+            ARCH ${RUST_CONFIG_ARCH}
+            LINKER ${RUST_CONFIG_LINKER}
+            RUSTFLAGS ${RUST_CONFIG_RUSTFLAGS}
+        )
+    endforeach()
 endfunction()
+
 if(ANDROID)
     if(CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7-a")
         set(RUSTC_ANDROID_ARCH armv7-linux-androideabi)
@@ -88,11 +100,19 @@ if(ANDROID)
 elseif(IOS)
     __rust_build_toolchain_config(
         FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml
+        LINKER ${CMAKE_LINKER}
+        RUSTFLAGS -Clinker-flavor=ld
         ARCH aarch64-apple-ios x86_64-apple-ios aarch64-apple-ios-sim)
+
+    # Ensure that the host architecture uses /usr/bin/cc for linking.
+    __rust_append_target_config(
+        FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml
+        LINKER /usr/bin/cc
+        ARCH ${RUSTC_HOST_ARCH})
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     __rust_build_toolchain_config(
         FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml
-        LINKER ${CMAKE_C_COMPILER}
+        LINKER ${CMAKE_LINKER}
         ARCH aarch64-apple-darwin x86_64-apple-darwin)
 elseif(MSVC)
     __rust_build_toolchain_config(
@@ -182,7 +202,7 @@ function(build_rust_archives)
             COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-version)
         execute_process(OUTPUT_VARIABLE IOS_SIMULATOR_SDKROOT OUTPUT_STRIP_TRAILING_WHITESPACE
             COMMAND xcrun --sdk iphonesimulator${IOS_SDK_VERSION} --show-sdk-path)
-        list(APPEND RUST_BUILD_CARGO_ENV "SDKROOT=${IOS_SIMULATOR_SDKROOT}")
+        list(APPEND RUST_BUILD_CARGO_ENV SDKROOT=${IOS_SIMULATOR_SDKROOT})
     elseif(APPLE AND CMAKE_OSX_SYSROOT)
         if (IS_DIRECTORY ${CMAKE_OSX_SYSROOT})
             list(APPEND RUST_BUILD_CARGO_ENV "SDKROOT=${CMAKE_OSX_SYSROOT}")
@@ -198,10 +218,10 @@ function(build_rust_archives)
         list(APPEND RUST_BUILD_CARGO_ENV MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET})
     endif()
 
-    if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles"))
-        ## If we are building with Ninja, then we can improve build times by
-        # specifying a DEPFILE to let CMake know when the library needs
-        # building and when we can skip it.
+    if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles") OR XCODE)
+        ## If the generator supports it, we can improve build times by setting
+        # a DEPFILE to let CMake know when the library needs building and when
+        # we can skip it.
         set(RUST_BUILD_DEPENDENCY_FILE
             ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}.d
         )
@@ -368,7 +388,7 @@ function(add_rust_library TARGET_NAME)
             add_custom_command(
                 OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FW_NAME}.framework
                 DEPENDS ${RUST_TARGET_RELEASE_LIBS}
-                COMMAND ${CMAKE_COMMAND} -E make_directory 
+                COMMAND ${CMAKE_COMMAND} -E make_directory
                     \"${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FW_NAME}.framework\"
                 COMMAND ${LIPO_BUILD_TOOL} 
                     -create
@@ -383,7 +403,7 @@ function(add_rust_library TARGET_NAME)
             add_custom_command(
                 OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework
                 DEPENDS ${RUST_TARGET_DEBUG_LIBS}
-                COMMAND ${CMAKE_COMMAND} -E make_directory 
+                COMMAND ${CMAKE_COMMAND} -E make_directory
                     \"${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework\"
                 COMMAND ${LIPO_BUILD_TOOL} 
                     -create
