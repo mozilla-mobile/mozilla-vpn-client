@@ -63,6 +63,7 @@ function(__rust_build_toolchain_config)
     # replaced by conflicing environments or configs, so create a rust wrapper
     # to pass them to rustc for us when one of the target architectures is set.
     if(RUST_CONFIG_RUSTFLAGS)
+        list(JOIN RUST_CONFIG_ARCH " " RUST_CONFIG_TARGETS)
         configure_file(
             ${CMAKE_CURRENT_FUNCTION_LIST_DIR}/rustlang-wrapper.sh.in
             ${CMAKE_BINARY_DIR}/cargo_home/rustc-wrapper.sh
@@ -81,13 +82,14 @@ if(ANDROID)
     if(CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7-a")
         set(RUSTC_ANDROID_ARCH armv7-linux-androideabi)
     else()
-        set(RUSTC_ANDROID_ARCH ${CMAKE_SYSTEM_NAME}-linux-android)
+        set(RUSTC_ANDROID_ARCH ${CMAKE_SYSTEM_PROCESSOR}-linux-android)
     endif()
     set(RUSTC_ANDROID_ARCH ${RUSTC_ANDROID_ARCH} CACHE STRING "Rust target android architecture")
 
+    get_filename_component(ANDROID_TOOLCHAIN_ROOT_BIN ${CMAKE_C_COMPILER} DIRECTORY)
     __rust_build_toolchain_config(
         FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml
-        RUSTFLAGS "-Clinker=${CMAKE_C_COMPILER}"
+        RUSTFLAGS "-Clinker=${ANDROID_TOOLCHAIN_ROOT_BIN}/${RUSTC_ANDROID_ARCH}${ANDROID_NATIVE_API_LEVEL}-clang"
         ARCH ${RUSTC_ANDROID_ARCH})
 elseif(IOS)
     __rust_build_toolchain_config(
@@ -223,7 +225,7 @@ function(build_rust_archives)
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR} -v
         )
 
         ## Outputs for the debug build
@@ -233,7 +235,7 @@ function(build_rust_archives)
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR} -v
         )
 
         ## Reset our policy changes
