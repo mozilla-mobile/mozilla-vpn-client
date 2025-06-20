@@ -21,7 +21,7 @@ find_arg_value() {
 
 # If the target being built matches one of the architectures, set the rustflags.
 TARGET_ARCH=$(find_arg_value "--target" "$@")
-for ARCH in $(echo "@RUST_CONFIG_ARCH@" | tr ";" " "); do
+for ARCH in @RUST_CONFIG_TARGETS@; do
   if [ "${ARCH}" = "${TARGET_ARCH}" ]; then
     IFS=';' read -a FLAGS <<< "@RUST_CONFIG_RUSTFLAGS@"
     ${RUSTC} "${FLAGS[@]}" "$@"
