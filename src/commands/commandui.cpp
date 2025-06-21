@@ -140,6 +140,26 @@ int CommandUI::run(QStringList& tokens) {
     LogHandler::instance()->setStderr(true);
   }
 
+#ifdef MZ_ANDROID
+  // Configure graphics rendering for Android
+  QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
+      Qt::HighDpiScaleFactorRoundingPolicy::Round);
+  if (AndroidUtils::isChromeOSContext()) {
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
+  }
+#endif
+
+#ifdef MZ_WINDOWS
+  // Configure graphics rendering for Windows
+  SetProcessDPIAware();
+  if (WindowsCommons::requireSoftwareRendering()) {
+    QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
+  }
+#endif
+
+  // Ensure that external styling hints are disabled.
+  qunsetenv("QT_STYLE_OVERRIDE");
+
   return MozillaVPN::runGuiApp([&]() {
     Telemetry::startTimeToFirstScreenTimer();
 
@@ -204,25 +224,7 @@ int CommandUI::run(QStringList& tokens) {
     if (AndroidCommons::GetManufacturer() == "Huawei") {
       qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
     }
-
-    // Configure graphics rendering for Android
-    QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
-        Qt::HighDpiScaleFactorRoundingPolicy::Round);
-    if (AndroidUtils::isChromeOSContext()) {
-      QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
-    }
 #endif
-
-#ifdef MZ_WINDOWS
-    // Configure graphics rendering for Windows
-    SetProcessDPIAware();
-    if (WindowsCommons::requireSoftwareRendering()) {
-      QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
-    }
-#endif
-
-    // Ensure that external styling hints are disabled.
-    qunsetenv("QT_STYLE_OVERRIDE");
 
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QQmlApplicationEngine* engine = new QQmlApplicationEngine();
