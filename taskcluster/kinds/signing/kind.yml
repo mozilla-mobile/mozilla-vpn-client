@@ -15,6 +15,31 @@ transforms:
 kind-dependencies:
     - build
 
+mac-signing:
+    hardened-sign-config:
+        - deep: false
+          runtime: true
+          force: true
+          entitlements: taskcluster/scripts/signing/loginItems-entitlements.xml
+          globs:
+            - "/Contents/Library/LoginItems/MozillaVPNLoginItem.app"
+
+        - deep: false
+          runtime: true
+          force: true
+          # These files are signed without entitlements
+          globs:
+            - "/Contents/Library/LaunchServices/org.mozilla.macos.FirefoxVPN.daemon"
+            - "/Contents/Resources/utils/wireguard-go"
+            - "/Contents/Resources/utils/mozillavpnnp"
+
+        - deep: false
+          runtime: true
+          force: true
+          entitlements: taskcluster/scripts/signing/entitlements.xml
+          globs:
+            - "/"  # The .app
+
 tasks:
     build-signing:
         description: sign mozillavpn

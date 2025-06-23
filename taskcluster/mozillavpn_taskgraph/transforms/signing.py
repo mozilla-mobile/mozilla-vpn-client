@@ -97,17 +97,29 @@ def script_url(params, path):
 
 
 @transforms.add
-def set_mac_behavior(config, tasks):
+def add_hardened_sign_config(config, tasks):
     for task in tasks:
+        if "signing" not in config.kind:
+            yield task
+            continue
         if not task["attributes"]["build-type"].startswith("macos"):
             yield task
             continue
 
-        task["worker"]["mac-behavior"] = "mac_sign_and_pkg_vpn"
-        task["worker"]["entitlementsUrl"] = script_url(
-            config.params, "taskcluster/scripts/signing/entitlements.xml"
-        )
-        task["worker"]["loginItemsEntitlementsUrl"] = script_url(
-            config.params, "taskcluster/scripts/signing/loginItems-entitlements.xml"
-        )
+        # Convert paths to file URLs.
+        hardened_sign_config = config.config["mac-signing"]["hardened-sign-config"]
+        for cfg in hardened_sign_config:
+            if "entitlements" in cfg:
+                cfg["entitlements"] = config.params.file_url(cfg["entitlements"])
+
+        # Set the top-level provioning profile.
+        task["worker"]["provisioning-profile-config"] = [
+            {
+                "profile_name": "orgmozillamacosFirefoxVPN.provisionprofile",
+                "target_path": "/Contents/embedded.provisionprofile",
+            },
+        ]
+
+        task["worker"]["hardened-sign-config"] = hardened_sign_config
+        task["worker"]["mac-behavior"] = "mac_sign_and_pkg_hardened"
         yield task
