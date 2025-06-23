@@ -196,6 +196,8 @@ public class IOSControllerImpl: NSObject {
             proto!.disconnectOnSleep = false
             proto!.serverAddress = serverName
 
+            // just hijacking this setting here for testing - this should never be put up for a PR
+            if (!excludeLocalNetworks) {
             if #available(iOS 15.1, *) {
                 IOSControllerImpl.logger.debug(message: "Activating includeAllNetworks")
                 proto!.includeAllNetworks = true
@@ -205,6 +207,7 @@ public class IOSControllerImpl: NSObject {
                     // By default, APNs is excluded from the VPN tunnel on 16.4 and later. We want to include it.
                     proto!.excludeAPNs = false
                 }
+            }
             }
 
             var customConfig = proto?.providerConfiguration ?? [:]
