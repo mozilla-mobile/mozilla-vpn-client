@@ -32,7 +32,7 @@ tasks:
             upstream-artifacts:
                 - taskId:
                       task-reference: <repackage>
-                  taskType: scriptworker
+                  taskType: repackage
                   paths:
                       - public/build/MozillaVPN.pkg
                   formats:
