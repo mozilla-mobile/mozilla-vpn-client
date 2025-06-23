@@ -5,6 +5,9 @@
 set -e
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
+# Ensure all git submodules are checked out
+git submodule update --init --recursive
+
 # We need to call bash with a login shell, so that conda is intitialized
 print Y "Installing conda"
 source ${MOZ_FETCHES_DIR}/bin/activate
