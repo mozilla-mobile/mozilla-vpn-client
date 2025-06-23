@@ -113,7 +113,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 elseif(MSVC)
     __rust_build_toolchain_config(
         FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml
-        ARCH x86_64-pc-windows-msvc)
+        ARCH x86_64-pc-windows-msvc
+        ENV
+            CFLAGS_x86_64-pc-windows-msvc=${CMAKE_C_FLAGS}
+    )
 
     file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml "\n[target.x86_64-pc-windows-msvc]\n")
     file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml "linker=\"${CMAKE_LINKER}\"\n")
