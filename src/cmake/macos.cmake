@@ -109,7 +109,7 @@ if(CMAKE_OSX_ARCHITECTURES)
                 ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
                 ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
             COMMAND ${CMAKE_COMMAND} -E env ${WIREGUARD_GO_ENV} GOARCH=${GOARCH}
-                    ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v
+                    ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v -ldflags='-s -w'
                         -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH}
         )
         list(APPEND WG_GO_ARCH_BUILDS ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH})
@@ -130,7 +130,7 @@ else()
             ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
             ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
         COMMAND ${CMAKE_COMMAND} -E env ${WIREGUARD_GO_ENV}
-                ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v
+                ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v -ldflags='-s -w'
                     -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
     )
 endif()
