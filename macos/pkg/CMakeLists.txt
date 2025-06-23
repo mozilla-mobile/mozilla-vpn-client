@@ -8,7 +8,7 @@ project(mozillavpn-macpkg VERSION 1.0.0
         DESCRIPTION "MacOS Package for the Mozilla VPN"
 )
 
-# Determine the root of the project checkout - we scripts and localization.
+# Determine the root of the project checkout - we need scripts and localization.
 if(NOT CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set(PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
 else()
