@@ -303,19 +303,19 @@ describe('Addons', function() {
     const testCases = [
       [() => Date.now() - 1000 * 60 * 60 * 24 * 13,
              "",
-             false, 
+             false,
              '13 days after subscription created'],
       [() => Date.now() - 1000 * 60 * 60 * 24 * 14,
              "time",
-             true, 
+             true,
              '14 days after subscription created'],
       [() => Date.now() - 1000 * 60 * 60 * 24 * 15,
              "yesterday",
-             true, 
+             true,
              '15 days after subscription created'],
       [() => Date.now() - 1000 * 60 * 60 * 24 * 86,
              "date",
-             true, 
+             true,
              '86 days after subscription created'],
       //Fails by an hour (due to daylight savings time?)
       // [() => Date.now() - 1000 * 60 * 60 * 24 * 87,
@@ -324,7 +324,7 @@ describe('Addons', function() {
       //        '87 days after subscription created'],
       [() => Date.now() - 1000 * 60 * 60 * 24 * 88,
              "yesterday",
-             true, 
+             true,
              '88 days after subscription created'],
     ];
 
@@ -361,6 +361,7 @@ describe('Addons', function() {
 
     testCases.forEach(([createdAtTimestamp, expectedTimeFormat, shouldBeAvailable, testCase]) => {
       it(`message display is correct when subscription started at ${testCase}`, async () => {
+        let startTimestamp = Date.now();
         await vpn.resetAddons('prod');
 
         //Load messages
@@ -374,19 +375,33 @@ describe('Addons', function() {
             await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
 
             //Check timestamp
-            let expectedTimestamp
+            let expectedTimestamp;
             let actualTimestamp = await vpn.getQueryProperty(queries.screenMessaging.messageItem('message_upgrade_to_annual_plan'), 'formattedDate');
-            //Maybe add 14 days to account for the timestamp that starts 14 days into the subscription
-            const addedTime =  Date.now() > Date.now() - (14 * 24 * 60 * 60 * 1000) ? 1000 * 60 * 60 * 24 * 14 : 0;
+            let adjustedTimestamp = undefined;
 
+            // Add 14 days to account for the timestamp that starts 14 days into the subscription
+            const addedTime = 1000 * 60 * 60 * 24 * 14;
+            // Comparing the time can be fraught with race conditions due to
+            // rollover. So compute the timestamp at the start of this test
+            // too. As long as one of them matches, the test is a pass.
+            const adjustTime = addedTime + startTimestamp - Date.now();
             if (expectedTimeFormat === "time") {
               expectedTimestamp = new Date(createdAtTimestamp() + addedTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+              adjustedTimestamp = new Date(createdAtTimestamp() + adjustTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
             }
             else if (expectedTimeFormat === "date") {
               expectedTimestamp = new Date(createdAtTimestamp() + addedTime).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
+              adjustedTimestamp = new Date(createdAtTimestamp() + adjustTime).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
             }
             else if (expectedTimeFormat === "yesterday") {
               expectedTimestamp = "Yesterday";
+            }
+            if (adjustedTimestamp && expectedTimestamp != adjustedTimestamp) {
+              console.log("Timestamp race condition encountered.");
+              console.log("Expect one of %s or %s", expectedTimestamp, adjustedTimestamp);
+              console.log("Actual timestamp: %s", actualTimestamp);
+            } else {
+              adjustedTimestamp = undefined;
             }
 
             /*
@@ -404,12 +419,16 @@ describe('Addons', function() {
 
             */
 
-            assert.equal(
-                actualTimestamp.replace(/\s/g, ''),
-                expectedTimestamp.replace(/\s/g, ''));
+            actualTimestamp = actualTimestamp.replace(/\s/g, '');
+            expectedTimestamp = expectedTimestamp.replace(/\s/g, '');
+            if (adjustedTimestamp) {
+              adjustedTimestamp = adjustedTimestamp.replace(/\s/g, '');
+              assert((actualTimestamp == expectedTimestamp) || (actualTimestamp == adjustedTimestamp));
+            } else {
+              assert.equal(actualTimestamp, expectedTimestamp);
+            }
         }
         assert.equal(shouldBeAvailable, loadedMessages.includes('message_upgrade_to_annual_plan'));
-
       });
     });
   });
