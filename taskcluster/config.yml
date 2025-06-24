@@ -81,15 +81,15 @@ workers:
             provisioner: scriptworker-prov-v1
             implementation: scriptworker-iscript
             os: macosx
-            worker-type: vpn-depsigning-mac-v1
+            worker-type: dep-mozillavpn-signing-mac14m2
         macos-signing:
             provisioner: scriptworker-prov-v1
             implementation: scriptworker-iscript
             os: macosx
             worker-type:
                 by-level:
-                    "3": mozillavpn-3-signing-mac
-                    default: vpn-depsigning-mac-v1
+                    "3": mozillavpn-signing-mac14m2
+                    default: dep-mozillavpn-signing-mac14m2
         push-apk:
             provisioner: scriptworker-k8s
             implementation: scriptworker-pushapk
