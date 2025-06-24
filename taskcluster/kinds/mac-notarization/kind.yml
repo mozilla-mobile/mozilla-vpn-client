@@ -10,7 +10,7 @@ transforms:
     - taskgraph.transforms.task:transforms
 
 kind-dependencies:
-    - repackage
+    - repackage-signing
 
 tasks:
     macos/opt:
@@ -18,9 +18,9 @@ tasks:
         worker-type: signing
         requires-level: 3
         dependencies:
-            repackage: repackage-macpkg
+            repackage-signing: repackage-signing-macsign
         if-dependencies:
-            - repackage
+            - repackage-signing
         treeherder:
             symbol: Bn
             kind: build
@@ -31,8 +31,8 @@ tasks:
             signing-type: "release-apple-notarization"
             upstream-artifacts:
                 - taskId:
-                      task-reference: <repackage>
-                  taskType: repackage
+                      task-reference: <repackage-signing>
+                  taskType: repackage-signing
                   paths:
                       - public/build/MozillaVPN.pkg
                   formats:

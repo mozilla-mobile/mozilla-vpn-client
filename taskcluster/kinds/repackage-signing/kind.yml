@@ -17,7 +17,7 @@ kind-dependencies:
 
 tasks:
     repackage-msi:
-        description: repackage mozillavpn msi
+        description: Sign MSI installer package
         run-on-tasks-for: []
         from-deps:
             with-attributes:
@@ -35,3 +35,20 @@ tasks:
             kind: build
             tier: 1
             platform: windows/x86_64
+
+    repackage-macpkg:
+        description: Sign macOS installer package
+        run-on-tasks-for: []
+        from-deps:
+            with-attributes:
+                build-type:
+                    - macos/opt
+            group-by:
+                attribute: build-type
+            copy-attributes: true
+        signing-format: macapp
+        treeherder:
+            job-symbol: Bs
+            kind: build
+            tier: 1
+            platform: macos/opt
