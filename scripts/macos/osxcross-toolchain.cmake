@@ -24,8 +24,10 @@ set(OSXCROSS_TARGET_TRIPLE "${CMAKE_SYSTEM_PROCESSOR}-apple-darwin${CMAKE_SYSTEM
 # Find the cross-compiler tooling
 find_program(CMAKE_C_COMPILER clang)
 find_program(CMAKE_CXX_COMPILER clang++)
+find_program(CMAKE_AR ${OSXCROSS_TARGET_TRIPLE}-ar)
 find_program(CMAKE_INSTALL_NAME_TOOL ${OSXCROSS_TARGET_TRIPLE}-install_name_tool)
 find_program(CMAKE_LINKER ${OSXCROSS_TARGET_TRIPLE}-ld)
+find_program(CMAKE_RANLIB ${OSXCROSS_TARGET_TRIPLE}-ranlib)
 
 # Restrict library and header lookup to the OSX sysroot
 set(CMAKE_FIND_ROOT_PATH ${CMAKE_OSX_SYSROOT})
