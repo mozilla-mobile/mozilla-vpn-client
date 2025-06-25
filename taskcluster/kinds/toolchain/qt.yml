@@ -105,4 +105,4 @@ qt-tools:
         symbol: TL(qt-tools)
     worker-type: b-linux
     worker:
-        docker-image: {in-tree: build}
+        docker-image: {in-tree: conda-base}

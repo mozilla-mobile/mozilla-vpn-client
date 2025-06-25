@@ -31,8 +31,8 @@ mkdir ${TASK_WORKDIR}/build-osxcross
 cmake -S . -B ${TASK_WORKDIR}/build-osxcross -GNinja \
         -DCMAKE_TOOLCHAIN_FILE=scripts/macos/osxcross-toolchain.cmake \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
-        -DQT_HOST_PATH=${MOZ_FETCHES_DIR}/qt-host-tools/gcc_64/ \
-        -DQT_HOST_PATH_CMAKE_DIR=${MOZ_FETCHES_DIR}/qt-host-tools/gcc_64/lib/cmake \
+        -DQT_HOST_PATH=${MOZ_FETCHES_DIR}/qt-host-tools/ \
+        -DQT_HOST_PATH_CMAKE_DIR=${MOZ_FETCHES_DIR}/qt-host-tools/lib/cmake \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \
         -DCMAKE_OSX_ARCHITECTURES="arm64;x86_64" \
         -DBUILD_TESTS=OFF

@@ -5,10 +5,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 set -e
 
-python3 -m pip install --upgrade pip
 python3 -m pip install -r ${VCS_PATH}/requirements.txt
+python3 -m aqt install-qt -O $(pwd)/qt-install linux desktop ${QT_VERSION} --archives qtbase
 
-aqt install-qt -O $(pwd)/qt-host-tools linux desktop ${QT_VERSION} --archives qtbase
-
+mv $(pwd)/qt-install/${QT_VERSION}/gcc_64 $(pwd)/qt-host-tools
 mkdir -p ${UPLOAD_DIR}
 tar -cJf ${UPLOAD_DIR}/qt-host-tools.tar.xz qt-host-tools/

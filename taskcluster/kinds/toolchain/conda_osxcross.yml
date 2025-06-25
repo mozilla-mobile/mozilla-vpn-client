@@ -6,7 +6,7 @@ task-defaults:
     description: "Conda Pack the environment"
     worker:
         env:
-            QT_VERSION: "6.6.3"
+            FOO: bar    # Bug: taskcluster fails if there is no env key?
         max-run-time: 14400
         docker-image: {in-tree: conda-base}
     worker-type: b-linux
