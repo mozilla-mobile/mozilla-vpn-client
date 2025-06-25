@@ -213,7 +213,9 @@ if(NOT QT_FEATURE_zstd)
 endif()
 
 # Sources for desktop platforms.
-if(NOT CMAKE_CROSSCOMPILING)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
+   ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
+   ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
      target_sources(mozillavpn-sources INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.h
