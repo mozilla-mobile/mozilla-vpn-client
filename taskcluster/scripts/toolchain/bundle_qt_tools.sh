@@ -6,8 +6,10 @@
 set -e
 
 python3 -m pip install -r ${VCS_PATH}/requirements.txt
-python3 -m aqt install-qt -O $(pwd)/qt-install linux desktop ${QT_VERSION} --archives qtbase
+python3 -m aqt install-qt -O $(pwd)/qt-install linux desktop ${QT_VERSION} --archives qtbase qtdeclarative qttools
 
 mv $(pwd)/qt-install/${QT_VERSION}/gcc_64 $(pwd)/qt-host-tools
+find $(pwd)/qt-host-tools/lib -name '*.a' -delete
+
 mkdir -p ${UPLOAD_DIR}
 tar -cJf ${UPLOAD_DIR}/qt-host-tools.tar.xz qt-host-tools/
