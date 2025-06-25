@@ -5,10 +5,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 set -e
 
-# Install the icu-devtools for Qt host tooling.
-sudo apt-get update
-sudo apt-get install icu-devtools
-
 python3 -m pip install -r ${VCS_PATH}/requirements.txt
 python3 -m aqt install-qt -O $(pwd)/qt-install linux desktop ${QT_VERSION} --archives qtbase qtdeclarative qttools
 
@@ -16,7 +12,8 @@ mv $(pwd)/qt-install/${QT_VERSION}/gcc_64 $(pwd)/qt-host-tools
 find $(pwd)/qt-host-tools/lib -name '*.a' -delete
 
 # Copy the libicu libraries into Qt's library path.
-for ICULIB in $(find /usr/lib -type f -name 'libicu*.so.*'); do
+DEB_HOST_MULTIARCH=$(dpkg-architecture -qDEB_HOST_MULTIARCH)
+for ICULIB in $(find /usr/lib/${DEB_HOST_MULTIARCH} -type f -name 'libicu*.so.*'); do
     FILENAME=$(basename ${ICULIB})
     LINKNAME=$(echo ${FILENAME} | awk -F. '{print $1 "." $2 "." $3}')
     cp ${ICULIB} $(pwd)/qt-host-tools/lib/
