@@ -35,9 +35,6 @@ unset SDKROOT
 EOF
 chmod +x ${CONDA_VPN_PREFIX}/etc/conda/deactivate.d/01-macosx-sdkroot.sh
 
-echo "Installing Qt ${QT_VERSION} host tools..."
-conda install -n vpn -y -c conda-forge qt6-main=${QT_VERSION}
-
 echo "Installing conda-pack..."
 conda install conda-pack -y
 
