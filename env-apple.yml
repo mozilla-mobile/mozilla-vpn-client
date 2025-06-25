@@ -22,6 +22,7 @@ dependencies:
   - compiler-rt_osx-arm64
   - cmake=3.26.3
   - ninja=1.11.0
+  - icnsutil=1.1.0
   - pip:
       - -r requirements.txt
       - -r taskcluster/scripts/requirements.txt
