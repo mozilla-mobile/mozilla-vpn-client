@@ -83,7 +83,8 @@ function computeCondition() {
   else if (now >= startTime && now < endTime) {
     // Between start and end time, show message
     api.setTimedCallback(endTime - now, () => computeCondition())
-    api.addon.date = startTime / 1000
+    const ADDON_RELEASE_DATE = 1750696005
+    api.addon.date = Math.max(startTime / 1000, ADDON_RELEASE_DATE);
     condition.enable()
   }
   else {
