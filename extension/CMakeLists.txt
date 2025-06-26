@@ -14,7 +14,7 @@ if(APPLE AND CMAKE_OSX_ARCHITECTURES)
         add_custom_target(cargo_mozillavpnnp_${OSXARCH}
             WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bridge
             COMMAND
-                ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home RUSTC=${RUSTC_BUILD_TOOL}
+                ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home
                 ${CARGO_BUILD_TOOL} build --release --target-dir ${CMAKE_CURRENT_BINARY_DIR}/bridge --target ${OSXARCH}-apple-darwin
         )
         list(APPEND MOZILLAVPNNP_TARGET_OUTPUTS ${CMAKE_CURRENT_BINARY_DIR}/bridge/${OSXARCH}-apple-darwin/release/mozillavpnnp)
@@ -35,7 +35,7 @@ else()
         COMMENT "Building web extension crate"
         WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bridge
         COMMAND
-            ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home RUSTC=${RUSTC_BUILD_TOOL}
+            ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home
             ${CARGO_BUILD_TOOL} build --release --target-dir ${CMAKE_CURRENT_BINARY_DIR}/bridge/target
     )
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/bridge/target)
