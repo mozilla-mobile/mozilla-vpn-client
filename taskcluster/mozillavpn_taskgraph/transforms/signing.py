@@ -99,7 +99,7 @@ def script_url(params, path):
 @transforms.add
 def add_hardened_sign_config(config, tasks):
     for task in tasks:
-        if "signing" not in config.kind:
+        if config.kind != "signing":
             yield task
             continue
         if not task["attributes"]["build-type"].startswith("macos"):

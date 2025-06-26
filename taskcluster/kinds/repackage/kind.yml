@@ -17,7 +17,7 @@ kind-dependencies:
 
 tasks:
     msi:
-        description: repackage mozillavpn msi
+        description: Build MSI installer package
         run-on-tasks-for: [github-push]
         fetches:
             signing:
@@ -48,7 +48,7 @@ tasks:
             platform: windows/x86_64
 
     macpkg:
-        description: repackage mozillavpn macpkg
+        description: Build macOS installer package
         run-on-tasks-for: [github-pull-request, github-push]
         fetches:
             fetch:

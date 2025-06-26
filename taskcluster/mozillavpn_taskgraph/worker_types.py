@@ -32,6 +32,7 @@ from voluptuous import Any, Optional, Required
         Required("mac-behavior"): Any(
             "mac_sign_and_pkg_vpn",
             "mac_sign_and_pkg_hardened",
+            "mac_sign_pkg",
         ),
         Optional("entitlementsUrl"): str,
         Optional("loginItemsEntitlementsUrl"): str,
