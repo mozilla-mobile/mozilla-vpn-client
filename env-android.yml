@@ -11,7 +11,6 @@ dependencies:
   - rust-std-x86_64-linux-android=1.75
   - rust-std-i686-linux-android=1.75
   - rust-std-aarch64-linux-android=1.75
-  - go=1.22
   - cmake=3.26.3
   - ninja=1.11.0
   - conda-forge::openjdk=17

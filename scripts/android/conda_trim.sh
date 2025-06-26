@@ -10,8 +10,6 @@ fi
 ## In our .env we ship a lot of stuff that we do not need
 ## Let's remove that. 
 
-## Saves 1gb - Go is handled by gradle. 
-conda remove go --offline -y
 ## Saves another 1gb
 sdkmanager --uninstall --sdk_root=$ANDROID_HOME emulator
 ## Clean the PKG cache, cleans 7gb ~~
