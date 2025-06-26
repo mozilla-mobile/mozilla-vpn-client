@@ -123,17 +123,3 @@ def add_hardened_sign_config(config, tasks):
         task["worker"]["hardened-sign-config"] = hardened_sign_config
         task["worker"]["mac-behavior"] = "mac_sign_and_pkg_hardened"
         yield task
-
-
-@transforms.add
-def add_repackage_macpkg_behavior(config, tasks):
-    for task in tasks:
-        if config.kind != "repackage-signing":
-            yield task
-            continue
-        if not task["attributes"]["build-type"].startswith("macos"):
-            yield task
-            continue
-
-        task["worker"]["mac-behavior"] = "mac_sign_pkg"
-        yield task

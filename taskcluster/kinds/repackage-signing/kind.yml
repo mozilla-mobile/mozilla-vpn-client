@@ -47,6 +47,8 @@ tasks:
                 attribute: build-type
             copy-attributes: true
         signing-format: macapp
+        worker:
+            mac-behavior: mac_sign_pkg
         treeherder:
             job-symbol: Bs
             kind: build
