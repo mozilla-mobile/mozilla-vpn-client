@@ -104,6 +104,9 @@ jobs:
   windows-unit-tests:
     name: Run Unit tests on Windows
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash -el {0}
 
     steps:
       - name: Clone repository
@@ -133,7 +136,6 @@ jobs:
 
       - name: Download Wireguard NT
         if: steps.cache-wireguard-nt.outputs.cache-hit != 'true'
-        shell: bash
         run: |
           WIREGUARD_NT_URL=$(grep -Eo 'DOWNLOAD[[:space:]].*' windows/wireguard_nt/CMakeLists.txt | awk '{print $2}')
           curl -sSL -o wireguard-nt.zip $WIREGUARD_NT_URL
@@ -150,15 +152,12 @@ jobs:
           cmake --build ./build-win --target build_tests
 
       - name: Running native messaging tests
-        shell: bash
         run: ctest -L nativemessaging --test-dir ./build-win --output-on-failure
 
       - name: Running QML tests
-        shell: bash
         run: ctest -L qml --test-dir ./build-win --output-on-failure
 
       - name: Running unit tests
-        shell: bash
         run: ctest -L unit --test-dir ./build-win --output-on-failure
 
   rust-unit-tests:
