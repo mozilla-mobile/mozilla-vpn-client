@@ -143,11 +143,13 @@ jobs:
 
       - name: Building tests
         run: |
+          conda info
+
           mkdir ./build-win
-          cmake -S . -B ./build-win -GNinja \
+          cmake -S . -B ${{ github.workspace }}/build-win -GNinja \
               -DCMAKE_BUILD_TYPE=Debug \
               -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake" \
-              -DCMAKE_TOOLCHAIN_FILE=scripts\windows\conda-toolchain.cmake \
+              -DCMAKE_TOOLCHAIN_FILE=scripts/windows/conda-toolchain.cmake \
               -DWIREGUARD_FOLDER="3rdparty/wireguard-nt"
           cmake --build ./build-win --target build_tests
 
