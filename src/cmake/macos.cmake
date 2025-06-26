@@ -67,8 +67,14 @@ include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos-daemon.cmake)
 
 # Find the SDK root
-execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
-    COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-path)
+if(IS_DIRECTORY ${CMAKE_OSX_SYSROOT})
+    set(OSX_SDK_PATH ${CMAKE_OSX_SYSROOT})
+elseif(CMAKE_OSX_SYSROOT)
+    execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
+        COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-path)
+else()
+    message(FATAL_ERROR "One of CMAKE_OSX_SYSROOT or ENV{SDKROOT} must be defined")
+endif()
 
 # Enable Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
@@ -87,8 +93,8 @@ set(WIREGUARD_GO_ENV
     GOOS=darwin
     CGO_ENABLED=1
     GO111MODULE=on
-    CGO_CFLAGS='-g -O3 -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}'
-    CGO_LDFLAGS='-g -O3 -mmacosx-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH}'
+    CGO_CFLAGS='-g -O3 -mmacos-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH} -target ${CMAKE_SYSTEM_PROCESSOR}-apple-darwin${CMAKE_SYSTEM_VERSION}'
+    CGO_LDFLAGS='-g -O3 -mmacos-version-min=${CMAKE_OSX_DEPLOYMENT_TARGET} -isysroot ${OSX_SDK_PATH} -target ${CMAKE_SYSTEM_PROCESSOR}-apple-darwin${CMAKE_SYSTEM_VERSION}'
 )
 
 if(CMAKE_OSX_ARCHITECTURES)
@@ -103,7 +109,7 @@ if(CMAKE_OSX_ARCHITECTURES)
                 ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
                 ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
             COMMAND ${CMAKE_COMMAND} -E env ${WIREGUARD_GO_ENV} GOARCH=${GOARCH}
-                    ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v
+                    ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v -ldflags='-s -w'
                         -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH}
         )
         list(APPEND WG_GO_ARCH_BUILDS ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH})
@@ -112,7 +118,7 @@ if(CMAKE_OSX_ARCHITECTURES)
     add_custom_target(build_wireguard_go
         COMMENT "Building wireguard-go"
         DEPENDS ${WG_GO_ARCH_BUILDS}
-        COMMAND lipo -create -output ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go ${WG_GO_ARCH_BUILDS}
+        COMMAND ${LIPO_BUILD_TOOL} -create -output ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go ${WG_GO_ARCH_BUILDS}
     )
 else()
     # This only builds for the host architecture.
@@ -124,7 +130,7 @@ else()
             ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
             ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
         COMMAND ${CMAKE_COMMAND} -E env ${WIREGUARD_GO_ENV}
-                ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v
+                ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v -ldflags='-s -w'
                     -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
     )
 endif()
@@ -192,8 +198,28 @@ add_custom_command(TARGET mozillavpn POST_BUILD
         $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/LoginItems/$<TARGET_PROPERTY:loginitem,OUTPUT_NAME>.app/
 )
 
-## Compile and install the asset catalog into the bundle.
-osx_bundle_assetcatalog(mozillavpn CATALOG ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets)
+## Compile and install the app icons into the bundle.
+file(READ ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/AppIcon.appiconset/Contents.json APPICON_CONTENTS_JSON)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/AppIcon.appiconset/Contents.json)
+string(JSON APPICON_IMAGE_COUNT LENGTH ${APPICON_CONTENTS_JSON} "images")
+set(APPICON_IMAGE_INDEX 0)
+set(APPICON_IMAGE_FILES)
+while(APPICON_IMAGE_INDEX LESS APPICON_IMAGE_COUNT)
+    string(JSON FILENAME GET ${APPICON_CONTENTS_JSON} "images" ${APPICON_IMAGE_INDEX} "filename")
+    list(APPEND APPICON_IMAGE_FILES ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/AppIcon.appiconset/${FILENAME})
+    math(EXPR APPICON_IMAGE_INDEX "${APPICON_IMAGE_INDEX} + 1")
+endwhile()
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
+    DEPENDS ${APPICON_IMAGE_FILES}
+    COMMAND icnsutil c ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns ${APPICON_IMAGE_FILES}
+)
+
+target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns PROPERTIES
+    GENERATED TRUE
+)
+set_property(TARGET mozillavpn APPEND PROPERTY RESOURCE ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns)
 
 # Perform codesigning.
 osx_embed_provision_profile(mozillavpn)

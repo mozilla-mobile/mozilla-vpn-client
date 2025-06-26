@@ -14,7 +14,6 @@ task-defaults:
     fetches:
         toolchain:
             - cargo-vendor
-            - conda-macos
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
@@ -31,6 +30,7 @@ task-defaults:
 macos/pr:
     fetches:
         toolchain:
+            - conda-macos
             - qt-macos-6.6
     description: "Mac Build"
     treeherder:
@@ -42,6 +42,7 @@ macos/pr:
 macos/opt:
     fetches:
         toolchain:
+            - conda-macos
             - qt-macos-6.6
     description: "Mac Build"
     treeherder:
@@ -52,3 +53,25 @@ macos/opt:
     scopes:
         - secrets:get:project/mozillavpn/level-1/sentry
 
+
+macos/osxcross:
+    description: "Mac Build (osxcross)"
+    treeherder:
+            symbol: BD
+            kind: build
+            tier: 1
+            platform: macos/osxcross
+    fetches:
+        toolchain:
+            - cargo-vendor
+            - conda-osxcross
+            - qt-macos-6.6
+            - qt-tools
+    worker-type: b-linux-large
+    worker:
+          docker-image: {in-tree: conda-base}
+    run:
+          using: run-task
+          use-caches: [checkout]
+          cwd: '{checkout}'
+          command: ./taskcluster/scripts/build/macos_osxcross.sh
