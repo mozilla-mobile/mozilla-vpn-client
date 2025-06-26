@@ -32,7 +32,7 @@ tasks:
             upstream-artifacts:
                 - taskId:
                       task-reference: <repackage-signing>
-                  taskType: repackage-signing
+                  taskType: signing
                   paths:
                       - public/build/MozillaVPN.pkg
                   formats:
