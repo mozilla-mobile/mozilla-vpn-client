@@ -28,7 +28,7 @@ Wherever possible, dependencies are managed using [conda](https://docs.conda.io/
 Please install [miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
 Then run:
-* `conda env create -f env.yml`
+* `conda env create -f env-windows.yml`
 * `conda activate vpn`
 
 For windows, see [windows docs](./windows.md#conda)
