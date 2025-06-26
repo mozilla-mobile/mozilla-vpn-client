@@ -12,19 +12,11 @@ Apple ID. If you are a Mozilla developer, this is an Apple ID associated with yo
 ## Activate conda
 
 ```bash 
-$ conda env create -f env.yml -n vpn
+$ conda env create -f env-apple.yml -n vpn
 $ conda activate vpn
 ```
 
 See [here](./index.md#conda) for conda environment instructions.
-
-Install extra conda packages
-
-```bash 
-$ conda activate vpn
-$ ./scripts/macos/conda_install_extras.sh
-```
-
 
 ## Get Qt
 

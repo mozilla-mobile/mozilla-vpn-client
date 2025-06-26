@@ -38,7 +38,7 @@ jobs:
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
-          environment-file: "env.yml"
+          environment-file: "env-apple.yml"
           activate-environment: vpn
 
       - name: Setup compiler cache
@@ -51,7 +51,6 @@ jobs:
 
       - name: Install build dependencies
         run: |
-          ./scripts/macos/conda_install_extras.sh
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           brew install ninja
 
