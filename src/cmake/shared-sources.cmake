@@ -126,8 +126,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/settingsholder.h
     ${CMAKE_SOURCE_DIR}/src/signature.cpp
     ${CMAKE_SOURCE_DIR}/src/signature.h
-    ${CMAKE_SOURCE_DIR}/src/simplenetworkmanager.cpp
-    ${CMAKE_SOURCE_DIR}/src/simplenetworkmanager.h
     ${CMAKE_SOURCE_DIR}/src/tasks/addon/taskaddon.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/addon/taskaddon.h
     ${CMAKE_SOURCE_DIR}/src/tasks/addonindex/taskaddonindex.cpp

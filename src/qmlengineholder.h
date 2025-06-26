@@ -5,16 +5,18 @@
 #ifndef QMLENGINEHOLDER_H
 #define QMLENGINEHOLDER_H
 
-#include "networkmanager.h"
-
 class QQmlEngine;
 class QWindow;
 
-class QmlEngineHolder final : public NetworkManager {
-  Q_DISABLE_COPY_MOVE(QmlEngineHolder)
-
+class QmlEngineHolder {
  public:
   explicit QmlEngineHolder(QQmlEngine* engine);
+
+  QmlEngineHolder(const QmlEngineHolder&) = delete;
+  QmlEngineHolder& operator=(const QmlEngineHolder&) = delete;
+  QmlEngineHolder(QmlEngineHolder&&) = delete;
+  QmlEngineHolder& operator=(QmlEngineHolder&&) = delete;
+
   ~QmlEngineHolder();
 
   static QmlEngineHolder* instance();
@@ -27,15 +29,10 @@ class QmlEngineHolder final : public NetworkManager {
   void replaceEngine(QQmlEngine* engine) { m_engine = engine; }
 #endif
 
-  QNetworkAccessManager* networkAccessManager() override;
-
   QWindow* window() const;
   void showWindow();
   void hideWindow();
   bool hasWindow() const;
-
- protected:
-  void clearCacheInternal() override;
 
  private:
   QQmlEngine* m_engine = nullptr;

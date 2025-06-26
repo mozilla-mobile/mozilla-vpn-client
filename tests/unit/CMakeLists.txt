@@ -220,8 +220,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/settings/setting.h
     ${MZ_SOURCE_DIR}/settingsholder.cpp
     ${MZ_SOURCE_DIR}/settingsholder.h
-    ${MZ_SOURCE_DIR}/simplenetworkmanager.cpp
-    ${MZ_SOURCE_DIR}/simplenetworkmanager.h
     ${MZ_SOURCE_DIR}/signature.cpp
     ${MZ_SOURCE_DIR}/signature.h
     ${MZ_SOURCE_DIR}/tasks/addon/taskaddon.cpp

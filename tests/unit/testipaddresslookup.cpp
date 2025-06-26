@@ -7,11 +7,9 @@
 #include "helper.h"
 #include "ipaddresslookup.h"
 #include "settingsholder.h"
-#include "simplenetworkmanager.h"
 
 void TestIpAddressLookup::checkIpAddressFailure() {
   SettingsHolder settingsHolder;
-  SimpleNetworkManager snm;
 
   settingsHolder.setToken("TOKEN!");
 
@@ -52,7 +50,6 @@ void TestIpAddressLookup::checkIpAddressSucceess_data() {
 
 void TestIpAddressLookup::checkIpAddressSucceess() {
   SettingsHolder settingsHolder;
-  SimpleNetworkManager snm;
 
   settingsHolder.setToken("TOKEN!");
 

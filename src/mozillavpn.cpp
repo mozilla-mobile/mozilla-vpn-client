@@ -43,7 +43,6 @@
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 #include "settingswatcher.h"
-#include "simplenetworkmanager.h"
 #include "subscriptionmonitor.h"
 #include "taskfunction.h"
 #include "taskgroup.h"
@@ -2294,7 +2293,6 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   Localizer localizer;
-  SimpleNetworkManager snm;
 
   return callback();
 }
