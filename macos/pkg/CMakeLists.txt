@@ -24,6 +24,25 @@ if(NOT DEFINED MACPKG_SOURCE_BUNDLE)
     endif()
 endif()
 
+if(NOT BUILD_OSX_APP_IDENTIFIER)
+    if(IS_DIRECTORY ${MACPKG_SOURCE_BUNDLE})
+        execute_process(
+            OUTPUT_VARIABLE BUILD_OSX_APP_IDENTIFIER
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            COMMAND plutil -extract CFBundleIdentifier raw ${MACPKG_SOURCE_BUNDLE}/Contents/Info.plist
+        )
+    else()
+        message(FATAL_ERROR "Unable to determine macOS app bundle identifier")
+    endif()
+endif()
+if(NOT BUILD_VPN_DEVELOPMENT_TEAM)
+    if(CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM)
+        set(BUILD_VPN_DEVELOPMENT_TEAM ${CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM})
+    else()
+        set(BUILD_VPN_DEVELOPMENT_TEAM 43AQ936H96 CACHE STRING "Mozilla VPN Development Team")
+    endif()
+endif()
+
 ## Stage 1: Preprocess the installation scripts.
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/scripts)
 configure_file(
