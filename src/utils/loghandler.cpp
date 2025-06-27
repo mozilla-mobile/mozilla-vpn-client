@@ -482,6 +482,7 @@ void LogSerializeHelper::addSerializer(LogSerializer* serializer) {
 
   // Serialize the logs to the buffer
   serializer->logSerialize(buffer);
+  buffer->close();
 }
 
 void LogSerializeHelper::run(QIODevice* device) {
