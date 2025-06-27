@@ -558,7 +558,8 @@ void TestAddon::message_create() {
     return;
   }
 
-  QCOMPARE(message->property("title").type(), QMetaType::QString);
+  QCOMPARE(message->property("title").metaType(),
+           QMetaType::fromType<QString>());
 }
 
 void TestAddon::message_load_status_data() {

@@ -10,7 +10,7 @@
 #include <QSet>
 #include <QTimer>
 
-#include "servercity.h"
+#include "models/servercity.h"
 
 class RecommendedLocationModel final : public QAbstractListModel {
   Q_OBJECT
@@ -31,6 +31,8 @@ class RecommendedLocationModel final : public QAbstractListModel {
 
   static QList<QPointer<ServerCity>> recommendedLocations(
       unsigned int maxResults);
+
+  static const ServerCity* pickBest();
 
   // QAbstractListModel methods
 

@@ -7,19 +7,11 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QRandomGenerator>
 
 #include "collator.h"
-#include "constants.h"
-#include "feature/feature.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
-#include "recommendedlocationmodel.h"
-#include "servercountry.h"
-#include "serverdata.h"
-#include "serverlatency.h"
-#include "settingsholder.h"
+#include "models/servercountry.h"
 
 namespace {
 Logger logger("ServerCountryModel");
@@ -29,34 +21,19 @@ ServerCountryModel::ServerCountryModel() { MZ_COUNT_CTOR(ServerCountryModel); }
 
 ServerCountryModel::~ServerCountryModel() { MZ_COUNT_DTOR(ServerCountryModel); }
 
-bool ServerCountryModel::fromSettings() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
-  logger.debug() << "Reading the server list from settings";
-
-  const QByteArray json = settingsHolder->servers();
-  if (json.isEmpty() || !fromJsonInternal(json)) {
-    return false;
-  }
-
-  m_rawJson = json;
-  return true;
-}
-
-bool ServerCountryModel::fromJson(const QByteArray& s) {
+bool ServerCountryModel::fromJson(const QByteArray& json) {
   logger.debug() << "Reading from JSON";
 
-  if (!s.isEmpty() && m_rawJson == s) {
+  if (!json.isEmpty() && m_rawJson == json) {
     logger.debug() << "Nothing has changed";
     return true;
   }
 
-  if (!fromJsonInternal(s)) {
+  if (!fromJsonInternal(json)) {
     return false;
   }
 
-  m_rawJson = s;
+  m_rawJson = json;
   emit changed();
   return true;
 }
@@ -185,22 +162,21 @@ QVariant ServerCountryModel::data(const QModelIndex& index, int role) const {
   }
 }
 
-// Select the city that we think is going to perform the best
-QStringList ServerCountryModel::pickBest() const {
-  QList<QPointer<ServerCity>> list =
-      RecommendedLocationModel::recommendedLocations(1);
-  if (list.isEmpty()) {
-    return QStringList();
-  }
-
-  const ServerCity* city = list.first().data();
-  return QStringList({city->country(), city->name()});
-}
-
 bool ServerCountryModel::exists(const QString& countryCode,
                                 const QString& cityName) const {
   logger.debug() << "Check if the server is still valid.";
   return m_cities.contains(ServerCity::hashKey(countryCode, cityName));
+}
+
+ServerCity& ServerCountryModel::findCity(const QString& countryCode,
+                                         const QString& cityName) {
+  auto index = m_cities.find(ServerCity::hashKey(countryCode, cityName));
+  if (index == m_cities.end()) {
+    static ServerCity emptycity;
+    return emptycity;
+  }
+
+  return *index;
 }
 
 const ServerCity& ServerCountryModel::findCity(const QString& countryCode,
@@ -239,22 +215,6 @@ void ServerCountryModel::retranslate() {
   beginResetModel();
   sortCountries();
   endResetModel();
-}
-
-void ServerCountryModel::setCooldownForAllServersInACity(
-    const QString& countryCode, const QString& cityCode) {
-  logger.debug() << "Set cooldown for all servers for: "
-                 << logger.sensitive(countryCode) << logger.sensitive(cityCode);
-
-  for (const ServerCity& city : m_cities) {
-    if (city.code() != cityCode) {
-      continue;
-    }
-    for (const QString& pubkey : city.servers()) {
-      MozillaVPN::instance()->serverLatency()->setCooldown(
-          pubkey, Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-    }
-  }
 }
 
 namespace {

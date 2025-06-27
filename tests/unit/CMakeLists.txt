@@ -60,14 +60,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/models/recentconnections.h
     ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.cpp
     ${MZ_SOURCE_DIR}/models/recommendedlocationmodel.h
-    ${MZ_SOURCE_DIR}/models/server.cpp
-    ${MZ_SOURCE_DIR}/models/server.h
-    ${MZ_SOURCE_DIR}/models/servercity.cpp
-    ${MZ_SOURCE_DIR}/models/servercity.h
-    ${MZ_SOURCE_DIR}/models/servercountry.cpp
-    ${MZ_SOURCE_DIR}/models/servercountry.h
-    ${MZ_SOURCE_DIR}/models/servercountrymodel.cpp
-    ${MZ_SOURCE_DIR}/models/servercountrymodel.h
     ${MZ_SOURCE_DIR}/models/serverdata.cpp
     ${MZ_SOURCE_DIR}/models/serverdata.h
     ${MZ_SOURCE_DIR}/models/subscriptiondata.cpp

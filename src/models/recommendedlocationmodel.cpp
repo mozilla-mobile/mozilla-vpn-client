@@ -10,8 +10,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/location.h"
+#include "models/servercountrymodel.h"
 #include "mozillavpn.h"
-#include "servercountrymodel.h"
 #include "serverlatency.h"
 
 namespace {
@@ -67,6 +67,7 @@ void RecommendedLocationModel::refreshModel() {
   int numLocations = static_cast<int>(m_recommendedCities.length());
   emit dataChanged(createIndex(0, 0), createIndex(numLocations - 1, 0));
 }
+
 // static
 QList<const ServerCity*> RecommendedLocationModel::recommendedLocationsRaw(
     unsigned int maxResults) {
@@ -121,6 +122,16 @@ QList<QPointer<ServerCity>> RecommendedLocationModel::recommendedLocations(
   }
 
   return cityResults;
+}
+
+// static
+const ServerCity* RecommendedLocationModel::pickBest() {
+  auto list = RecommendedLocationModel::recommendedLocations(1);
+  if (list.isEmpty()) {
+    return nullptr;
+  }
+
+  return list.first().data();
 }
 
 QHash<int, QByteArray> RecommendedLocationModel::roleNames() const {
