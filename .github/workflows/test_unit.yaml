@@ -124,7 +124,9 @@ jobs:
         uses: KyleMayes/install-llvm-action@v2
         with:
           version: 20.1.4
-          env: true
+      - run: |
+          echo "CC=${{ env.LLVM_PATH }}/bin/clang-cl.exe" >> $GITHUB_ENV
+          echo "CXX=${{ env.LLVM_PATH }}/bin/clang-cl.exe" >> $GITHUB_ENV
 
       - uses: actions/setup-python@v5
         with:
