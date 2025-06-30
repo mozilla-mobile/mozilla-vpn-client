@@ -31,6 +31,7 @@ xwin --accept-license --manifest-version 16 splat --include-debug-symbols --incl
 
 Write-Output("Downloading Microsoft.VisualStudio.Component.VC.Redist.MSM")
 python "$PSScriptRoot\fetch-vsix-package.py" --manifest-version 16 --output "$conda_folder\xwin" Microsoft.VisualStudio.Component.VC.Redist.MSM
+python "$PSScriptRoot\fetch-vsix-package.py" --manifest-version 16 --output "$conda_folder\xwin" Microsoft.VisualStudio.Component.VC.Redist.14.Latest
 
 Write-Output("Cleaning Up")
 Remove-Item "$conda_folder\xwin-$X_WIN_VERSION-x86_64-pc-windows-msvc" -ErrorAction SilentlyContinue -Force -Recurse
