@@ -192,8 +192,28 @@ add_custom_command(TARGET mozillavpn POST_BUILD
         $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/LoginItems/$<TARGET_PROPERTY:loginitem,OUTPUT_NAME>.app/
 )
 
-## Compile and install the asset catalog into the bundle.
-osx_bundle_assetcatalog(mozillavpn CATALOG ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets)
+## Compile and install the app icons into the bundle.
+file(READ ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/AppIcon.appiconset/Contents.json APPICON_CONTENTS_JSON)
+set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/AppIcon.appiconset/Contents.json)
+string(JSON APPICON_IMAGE_COUNT LENGTH ${APPICON_CONTENTS_JSON} "images")
+set(APPICON_IMAGE_INDEX 0)
+set(APPICON_IMAGE_FILES)
+while(APPICON_IMAGE_INDEX LESS APPICON_IMAGE_COUNT)
+    string(JSON FILENAME GET ${APPICON_CONTENTS_JSON} "images" ${APPICON_IMAGE_INDEX} "filename")
+    list(APPEND APPICON_IMAGE_FILES ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/AppIcon.appiconset/${FILENAME})
+    math(EXPR APPICON_IMAGE_INDEX "${APPICON_IMAGE_INDEX} + 1")
+endwhile()
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
+    DEPENDS ${APPICON_IMAGE_FILES}
+    COMMAND icnsutil c ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns ${APPICON_IMAGE_FILES}
+)
+
+target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns PROPERTIES
+    GENERATED TRUE
+)
+set_property(TARGET mozillavpn APPEND PROPERTY RESOURCE ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns)
 
 # Perform codesigning.
 osx_embed_provision_profile(mozillavpn)
