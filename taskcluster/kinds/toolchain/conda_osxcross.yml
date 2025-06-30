@@ -1,0 +1,28 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+    description: "Conda Pack the environment"
+    worker:
+        env:
+            FOO: bar    # Bug: taskcluster fails if there is no env key?
+        max-run-time: 14400
+        docker-image: {in-tree: conda-base}
+    worker-type: b-linux
+    run:
+        script: conda_pack_osxcross.sh
+        use-caches: []
+        resources:
+            - requirements.txt
+            - env-apple.yml
+
+osxcross-conda-pack: 
+    fetches:
+            fetch:
+               - macosx-sdk
+    treeherder:
+        symbol: "conda-osxcross"
+    run:
+        toolchain-alias: conda-osxcross
+        toolchain-artifact: public/build/conda-osxcross.tar.gz
