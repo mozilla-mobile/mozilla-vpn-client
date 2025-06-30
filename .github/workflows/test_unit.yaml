@@ -116,7 +116,6 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v3
         with:
-          miniconda-version: "latest"
           environment-file: env-windows.yml
           activate-environment: vpn
 
