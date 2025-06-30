@@ -123,7 +123,7 @@ jobs:
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v2
         with:
-          version: 20.1.7
+          version: 20.1.4
           env: true
 
       - uses: actions/setup-python@v5
