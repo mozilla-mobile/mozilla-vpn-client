@@ -103,6 +103,9 @@ jobs:
   windows-unit-tests:
     name: Run Unit tests on Windows
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash -el {0}
 
     steps:
       - name: Clone repository
@@ -111,17 +114,21 @@ jobs:
           submodules: "recursive"
 
       - name: Install Qt
-        shell: pwsh
+        env:
+          QT_WINDOWS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public%2Fbuild%2Fqt6_win.zip
         run: |
-          Invoke-WebRequest -Uri https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -OutFile win.zip
-          Expand-Archive win.zip
-          mv win\QT_OUT "C:\\MozillaVPNBuild"
+          curl -sSL -o 3rdparty/qt6_win.zip ${QT_WINDOWS_URL}
+          unzip -d 3rdparty/ 3rdparty/qt6_win.zip
 
-      - name: Add msvc dev commands to PATH
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v2
+        with:
+          version: 20.1.4
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
+      - name: Setup clang env variables
+        run: |
+          echo "CC=${{ env.LLVM_PATH }}/bin/clang-cl.exe" >> $GITHUB_ENV
+          echo "CXX=${{ env.LLVM_PATH }}/bin/clang-cl.exe" >> $GITHUB_ENV
 
       - uses: actions/setup-python@v5
         with:
@@ -138,7 +145,6 @@ jobs:
 
       - name: Download Wireguard NT
         if: steps.cache-wireguard-nt.outputs.cache-hit != 'true'
-        shell: bash
         run: |
           WIREGUARD_NT_URL=$(grep -Eo 'DOWNLOAD[[:space:]].*' windows/wireguard_nt/CMakeLists.txt | awk '{print $2}')
           curl -sSL -o wireguard-nt.zip $WIREGUARD_NT_URL
@@ -146,21 +152,25 @@ jobs:
 
       - name: Building tests
         run: |
-          mkdir ./build
-          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake" -DWIREGUARD_FOLDER="3rdparty/wireguard-nt"
-          cmake --build ./build --target build_tests
+          mkdir ./build-win
+
+          cmake -S . -B ./build-win -GNinja \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DCMAKE_PREFIX_PATH="$(pwd)/3rdparty/QT_OUT" \
+              -DWIREGUARD_FOLDER="$(pwd)/3rdparty/wireguard-nt"
+          cmake --build ./build-win --target build_tests
 
       - name: Running native messaging tests
         shell: bash
-        run: ctest -L nativemessaging --test-dir ./build --output-on-failure
+        run: ctest -L nativemessaging --test-dir ./build-win --output-on-failure
 
       - name: Running QML tests
         shell: bash
-        run: ctest -L qml --test-dir ./build --output-on-failure
+        run: ctest -L qml --test-dir ./build-win --output-on-failure
 
       - name: Running unit tests
         shell: bash
-        run: ctest -L unit --test-dir ./build --output-on-failure
+        run: ctest -L unit --test-dir ./build-win --output-on-failure
 
   rust-unit-tests:
     strategy:
