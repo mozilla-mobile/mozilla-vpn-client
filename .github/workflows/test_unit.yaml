@@ -116,8 +116,18 @@ jobs:
 
       - uses: conda-incubator/setup-miniconda@v3
         with:
-          environment-file: env-windows.yml
           activate-environment: vpn
+
+      - name: Cache conda environment
+        id: cache-conda-env
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.CONDA }}/envs/vpn
+          key: conda-env-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('env-windows.yml', 'requirements.txt') }}
+
+      - name: Update conda environment
+        if: steps.cache-conda-env.outputs.cache-hit != 'true'
+        run: conda env update -n vpn -f env-windows.yml
 
       - name: Install Qt
         env:
