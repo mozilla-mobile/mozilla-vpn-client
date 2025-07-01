@@ -653,25 +653,6 @@ void AuthenticationInAppSession::startAccountDeletionFlow() {
           });
 }
 
-void AuthenticationInAppSession::deleteAccount() {
-  NetworkRequest* request = fxaHawkPostRequest(
-      m_task, "/v1/account/destroy", m_sessionToken,
-      QJsonObject{{"email", m_emailAddress},
-                  {"authPW", QString(generateAuthPw().toHex())}});
-
-  connect(request, &NetworkRequest::requestFailed, this,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
-            logger.error() << "Failed to delete the account" << error;
-            emit accountDeleted();
-          });
-
-  connect(request, &NetworkRequest::requestCompleted, this,
-          [this](const QByteArray& data) {
-            logger.debug() << "Account deleted" << logger.sensitive(data);
-            emit accountDeleted();
-          });
-}
-
 void AuthenticationInAppSession::finalizeSignInOrUp() {
   Q_ASSERT(!m_sessionToken.isEmpty());
 

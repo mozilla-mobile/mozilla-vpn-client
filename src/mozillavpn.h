@@ -55,7 +55,6 @@ class MozillaVPN final : public App {
     ScreenBillingNotAvailable,
     ScreenCaptivePortal,
     ScreenCrashReporting,
-    ScreenDeleteAccount,
     ScreenDeviceLimit,
     ScreenGetHelp,
     ScreenHome,
@@ -113,7 +112,6 @@ class MozillaVPN final : public App {
                                        const QString& category);
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
   Q_INVOKABLE void hardResetAndQuit();
-  Q_INVOKABLE void requestDeleteAccount();
   Q_INVOKABLE void cancelReauthentication();
   Q_INVOKABLE static void statusBarCheck();
 

@@ -20,8 +20,6 @@ qt_add_qml_module(mozillavpn-ui
         authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml
         authenticationInApp/ViewAuthenticationStubAccount.qml
         authenticationInApp/ViewAuthenticationSsoAccount.qml
-        deleteAccount/ViewDeleteAccount.qml
-        deleteAccount/ViewDeleteAccountRequest.qml
         popups/ServerUnavailablePopup.qml
         screens/authenticationInApp/ViewAuthenticationInApp.qml
         screens/devices/ViewDevices.qml
@@ -92,7 +90,6 @@ qt_add_qml_module(mozillavpn-ui
         screens/ScreenUpdateRecommended.qml
         screens/ScreenUpdateRequired.qml
         screens/ScreenViewLogs.qml
-        screens/ScreenDeleteAccount.qml
         screens/settings/appPermissions/ViewAppPermissions.qml
         screens/settings/appPermissions/AppPermissionsList.qml
         screens/settings/ViewAboutUs.qml

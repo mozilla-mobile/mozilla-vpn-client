@@ -221,6 +221,10 @@ constexpr const char* SUMO_ALLOW_BACKGROUND_MACOS =
 PRODBETAEXPR(QString, contactSupportUrl, "https://accounts.firefox.com/support",
              "https://accounts.stage.mozaws.net/support")
 
+PRODBETAEXPR(QString, deleteAccountUrl,
+             "https://accounts.firefox.com/settings/delete_account",
+             "https://accounts.stage.mozaws.net/settings/delete_account")
+
 PRODBETAEXPR(QString, addonBaseUrl,
              "https://archive.mozilla.org/pub/vpn/addons/releases/latest/",
              Constants::envOrDefault(

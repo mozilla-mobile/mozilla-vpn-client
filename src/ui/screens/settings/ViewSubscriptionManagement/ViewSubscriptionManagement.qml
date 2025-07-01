@@ -111,7 +111,7 @@ MZViewBase {
                 visible: MZFeatureList.get("accountDeletion").isSupported
 
                 onClicked: {
-                    MZNavigator.requestScreen(VPN.ScreenDeleteAccount)
+                    MZUrlOpener.openUrlLabel("deleteAccount");
                 }
 
                 Layout.alignment: Qt.AlignHCenter

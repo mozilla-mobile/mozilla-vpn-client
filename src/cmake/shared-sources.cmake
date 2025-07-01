@@ -132,8 +132,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/tasks/addonindex/taskaddonindex.h
     ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/taskauthenticate.cpp
     ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/taskauthenticate.h
-    ${CMAKE_SOURCE_DIR}/src/tasks/deleteaccount/taskdeleteaccount.cpp
-    ${CMAKE_SOURCE_DIR}/src/tasks/deleteaccount/taskdeleteaccount.h
     ${CMAKE_SOURCE_DIR}/src/temporarydir.cpp
     ${CMAKE_SOURCE_DIR}/src/temporarydir.h
     ${CMAKE_SOURCE_DIR}/src/theme.cpp
