@@ -139,8 +139,6 @@ void MozillaVPN::hardResetAndQuit() {}
 
 void MozillaVPN::hardReset() {}
 
-void MozillaVPN::requestDeleteAccount() {}
-
 void MozillaVPN::cancelReauthentication() {}
 
 bool MozillaVPN::checkCurrentDevice() { return true; }

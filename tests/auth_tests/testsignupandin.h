@@ -28,7 +28,6 @@ class TestSignUpAndIn final : public QObject {
   void signUp();
   void signUpWithError();
   void signIn();
-  void deleteAccount();
 
  private:
   QString fetchSessionCode();
