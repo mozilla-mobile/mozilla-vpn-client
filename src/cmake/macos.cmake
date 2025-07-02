@@ -206,7 +206,7 @@ endwhile()
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns
     DEPENDS ${APPICON_IMAGE_FILES}
-    COMMAND icnsutil c ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns ${APPICON_IMAGE_FILES}
+    COMMAND ${PYTHON_EXECUTABLE} -m icnsutil c ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns ${APPICON_IMAGE_FILES}
 )
 
 target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns)
