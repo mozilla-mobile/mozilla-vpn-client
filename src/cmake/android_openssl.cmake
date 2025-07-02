@@ -67,6 +67,7 @@ if( ${Qt6_VERSION} VERSION_GREATER_EQUAL 6.4.0)
   # so let's use the builds from kdab
   FetchContent_Declare(
     android_openssl
+    DOWNLOAD_EXTRACT_TIMESTAMP true
     GIT_REPOSITORY https://github.com/KDAB/android_openssl.git
     GIT_TAG 0025bbe48f69792f95e02c9289df0fae68c954d6 # Latest commit as of July 2nd, 2025
   )
