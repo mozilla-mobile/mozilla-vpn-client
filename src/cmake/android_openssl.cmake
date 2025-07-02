@@ -61,16 +61,17 @@ add_custom_command(
 # This piece just add's the _3.so libs into the merged folder.
 find_package(Qt6 COMPONENTS Core)
 if( ${Qt6_VERSION} VERSION_GREATER_EQUAL 6.4.0)
-include(FetchContent)
-# Google does not provide openssl v 3.0
-# so let's use the builds from kdab
+  include(FetchContent)
+
+  # Google does not provide openssl v 3.0
+  # so let's use the builds from kdab
   FetchContent_Declare(
     android_openssl
-    DOWNLOAD_EXTRACT_TIMESTAMP true
-    URL      https://github.com/KDAB/android_openssl/archive/refs/heads/master.zip
-    URL_HASH MD5=d2f413cc43f13d169266e7a846eb084a
+    GIT_REPOSITORY https://github.com/KDAB/android_openssl.git
+    GIT_TAG 0025bbe48f69792f95e02c9289df0fae68c954d6 # Latest commit as of July 2nd, 2025
   )
   FetchContent_MakeAvailable(android_openssl)
+
   add_custom_command(
     TARGET ndk_openssl_merged
     COMMAND ${CMAKE_COMMAND} -E copy ${android_openssl_SOURCE_DIR}/ssl_3/${ANDROID_ABI}/libssl_3.so ${_OPENSSL_LIBS}/libssl_3.so
