@@ -128,8 +128,6 @@ void MozillaVPN::hardResetAndQuit() {}
 
 void MozillaVPN::hardReset() {}
 
-void MozillaVPN::requestDeleteAccount() {}
-
 void MozillaVPN::cancelReauthentication() {}
 
 void MozillaVPN::scheduleRefreshDataTasks() {}

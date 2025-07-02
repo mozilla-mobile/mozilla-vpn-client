@@ -18,7 +18,6 @@
 #include "networkrequest.h"
 #include "taskfunction.h"
 #include "tasks/authenticate/taskauthenticate.h"
-#include "tasks/deleteaccount/taskdeleteaccount.h"
 
 constexpr const char* PASSWORD = "12345678";
 
@@ -359,71 +358,6 @@ void TestSignUpAndIn::signInWithError() {
             }
           });
   loop.exec();
-}
-
-void TestSignUpAndIn::deleteAccount() {
-  AuthenticationInApp* aia = AuthenticationInApp::instance();
-  QVERIFY(!!aia);
-  disconnect(aia, nullptr, nullptr, nullptr);
-
-  QCOMPARE(aia->state(), AuthenticationInApp::StateInitializing);
-
-  QString emailAddress(m_emailAccount);
-  emailAddress.append("@restmail.net");
-
-  // Starting the account deletion flow.
-  TaskDeleteAccount task(emailAddress);
-  task.run();
-
-  EventLoop loop;
-  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
-    if (aia->state() == AuthenticationInApp::StateCheckingAccount) {
-      loop.exit();
-    }
-  });
-  loop.exec();
-  disconnect(aia, nullptr, nullptr, nullptr);
-
-  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
-    if (aia->state() == AuthenticationInApp::StateSignIn) {
-      loop.exit();
-    }
-  });
-  loop.exec();
-  disconnect(aia, nullptr, nullptr, nullptr);
-
-  QCOMPARE(aia->state(), AuthenticationInApp::StateSignIn);
-
-  aia->setPassword(PASSWORD);
-
-  // Sign-in
-  aia->signIn();
-  QCOMPARE(aia->state(), AuthenticationInApp::StateSigningIn);
-
-  // The next step can be tricky: totp, or unblocked code, or success
-  if (m_totpCreation) {
-    waitForTotpCodes();
-  }
-
-  connect(aia, &AuthenticationInApp::stateChanged, aia, [&]() {
-    if (aia->state() == AuthenticationInApp::StateUnblockCodeNeeded) {
-      fetchAndSendUnblockCode();
-    } else if (aia->state() ==
-               AuthenticationInApp::StateAccountDeletionRequest) {
-      loop.exit();
-    }
-  });
-
-  loop.exec();
-  disconnect(aia, nullptr, nullptr, nullptr);
-
-  QVERIFY(!aia->attachedClients().isEmpty());
-
-  aia->deleteAccount();
-
-  connect(&task, &Task::completed, &task, [&]() { loop.exit(); });
-  loop.exec();
-  disconnect(aia, nullptr, nullptr, nullptr);
 }
 
 QString TestSignUpAndIn::fetchSessionCode() {

@@ -140,10 +140,6 @@ class AuthenticationInApp final : public QObject {
   // StateVerificationSessionByTotpNeeded state.
   Q_INVOKABLE void verifySessionTotpCode(const QString& code);
 
-  // This can be called at the end of the authentication flow.
-  // We go into StateDeletingAccount.
-  Q_INVOKABLE void deleteAccount();
-
   void registerSession(AuthenticationInAppSession* session);
 
   void requestEmailAddressChange(AuthenticationInAppSession* session);

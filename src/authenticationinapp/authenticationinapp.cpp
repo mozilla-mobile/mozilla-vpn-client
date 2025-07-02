@@ -180,12 +180,6 @@ void AuthenticationInApp::verifySessionTotpCode(const QString& code) {
   m_session->verifySessionTotpCode(code);
 }
 
-void AuthenticationInApp::deleteAccount() {
-  Q_ASSERT(m_state == StateAccountDeletionRequest);
-  Q_ASSERT(m_session);
-  m_session->deleteAccount();
-}
-
 void AuthenticationInApp::requestEmailAddressChange(
     AuthenticationInAppSession* session) {
   Q_ASSERT(session);

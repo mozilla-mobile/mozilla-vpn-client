@@ -256,31 +256,9 @@ code. After that, the authentication is finally completed.
 Implementation-wise, this state does not exist, because, instead of landing
 here, we dismiss the authentication component and we show the main VPN view.
 
-If this authentication flow requires the account deletion, the next step is the
-**Account Deletion Request**.
-
-* Next states: **Account Deletion Request**
+* Next states: none
 * Errors:
     * Authentication failure
-* Available methods: none
-
-### State: Account Deletion Request
-
-If the account deletion is requested, in this state the client asks the user to
-accept a few things. Then the account deletion can proceed.
-
-* Next Step: **Deleting account**
-* Errors: none
-* Available methods:
-    * `MZAuthInApp.deleteAccount()`
-
-### State: Deleting account
-
-This is the final step for the account deletion. After that, you can see an
-error, or a success.
-
-* Next Step: none
-* Errors: none
 * Available methods: none
 
 ### State: fallback in the browser

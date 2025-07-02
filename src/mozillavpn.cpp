@@ -53,7 +53,6 @@
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
-#include "tasks/deleteaccount/taskdeleteaccount.h"
 #include "tasks/getlocation/taskgetlocation.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/heartbeat/taskheartbeat.h"
@@ -1241,17 +1240,6 @@ void MozillaVPN::hardResetAndQuit() {
       new TaskFunction([this]() { controller()->quit(); }));
 }
 
-void MozillaVPN::requestDeleteAccount() {
-  logger.debug() << "delete account";
-  Q_ASSERT(Feature::get(Feature::Feature_accountDeletion)->isSupported());
-
-  TaskDeleteAccount* task = new TaskDeleteAccount(m_private->m_user.email());
-  connect(task, &TaskDeleteAccount::accountDeleted, this,
-          &MozillaVPN::accountDeleted);
-
-  TaskScheduler::scheduleTask(task);
-}
-
 void MozillaVPN::cancelReauthentication() {
   logger.warning() << "Canceling reauthentication";
   AuthenticationInApp::instance()->terminateSession();
@@ -1337,6 +1325,10 @@ void MozillaVPN::registerUrlOpenerLabels() {
 
   uo->registerUrlLabel("contactSupport", []() -> QString {
     return Constants::contactSupportUrl();
+  });
+
+  uo->registerUrlLabel("deleteAccount", []() -> QString {
+    return Constants::deleteAccountUrl();
   });
 
   uo->registerUrlLabel(
@@ -1505,21 +1497,6 @@ void MozillaVPN::registerNavigatorScreens() {
                    : -1;
       },
       []() -> bool { return false; });
-
-  Navigator::registerScreen(
-      MozillaVPN::ScreenDeleteAccount, Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/qt/qml/Mozilla/VPN/screens/ScreenDeleteAccount.qml",
-      QVector<int>{App::StateMain},
-      [](int* requestedScreen) -> int8_t {
-        return (requestedScreen &&
-                *requestedScreen == MozillaVPN::ScreenDeleteAccount)
-                   ? 99
-                   : -1;
-      },
-      []() -> bool {
-        MozillaVPN::instance()->cancelReauthentication();
-        return false;
-      });
 
   Navigator::registerScreen(
       MozillaVPN::ScreenDeviceLimit, Navigator::LoadPolicy::LoadTemporarily,

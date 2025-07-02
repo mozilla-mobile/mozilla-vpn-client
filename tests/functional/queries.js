@@ -469,29 +469,6 @@ const screenMessaging = {
   },
 };
 
-const screenDeleteAccount = {
-  BUTTON: new QmlQueryComposer('//deleteAccountForRealButton'),
-  LABEL: new QmlQueryComposer('//accountDeletionLabel'),
-  SCREEN: new QmlQueryComposer('//viewDeleteAccountRequest'),
-
-  CHECKBOX1: new QmlQueryComposer(
-      '//accountDeletionLayout/accountDeletionCheckbox-check1'),
-  CHECKBOX1_CB: new QmlQueryComposer(
-      '//accountDeletionLayout/accountDeletionCheckbox-check1/checkbox'),
-  CHECKBOX2: new QmlQueryComposer(
-      '//accountDeletionLayout/accountDeletionCheckbox-check2'),
-  CHECKBOX2_CB: new QmlQueryComposer(
-      '//accountDeletionLayout/accountDeletionCheckbox-check2/checkbox'),
-  CHECKBOX3: new QmlQueryComposer(
-      '//accountDeletionLayout/accountDeletionCheckbox-check3'),
-  CHECKBOX3_CB: new QmlQueryComposer(
-      '//accountDeletionLayout/accountDeletionCheckbox-check3/checkbox'),
-  CHECKBOX4: new QmlQueryComposer(
-      '//accountDeletionLayout/accountDeletionCheckbox-check4'),
-  CHECKBOX4_CB: new QmlQueryComposer(
-      '//accountDeletionLayout/accountDeletionCheckbox-check4/checkbox'),
-};
-
 const screenSubscriptionNeeded = {
   SUBSCRIPTION_NEEDED_VIEW: new QmlQueryComposer('//vpnSubscriptionNeededView'),
   SUBSCRIPTION_NEEDED_BUTTON:
@@ -565,7 +542,6 @@ module.exports = {
   screenSettings,
   screenBackendFailure,
   screenMessaging,
-  screenDeleteAccount,
   screenSubscriptionNeeded,
   screenInBrowserSubscriptionLoading,
   screenOnboarding,

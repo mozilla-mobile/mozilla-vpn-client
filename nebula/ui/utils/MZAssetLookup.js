@@ -103,10 +103,6 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/avatar-default.png',
     filenameDark: 'qrc:/nebula/resources/avatar-default.png'
   },
-  'AvatarDeleteAccount': {
-    filenameLight: 'qrc:/nebula/resources/avatar-delete-account.svg',
-    filenameDark: 'qrc:/nebula/resources/avatarDeleteAccount-dark.svg'
-  },
   'IconAvatar': {
     filenameLight: 'qrc:/nebula/resources/avatar-grayscale.svg',
     filenameDark: 'qrc:/nebula/resources/avatar-grayscale-dark.svg'

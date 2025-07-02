@@ -53,7 +53,6 @@ class AuthenticationInAppSession final : public QObject {
   void sendUnblockCodeEmail();
   void verifySessionTotpCode(const QString& code);
   void startAccountDeletionFlow();
-  void deleteAccount();
 
 #ifdef UNIT_TEST
   void enableTotpCreation();
