@@ -13,7 +13,25 @@ else()
 endif()
 
 if(CODE_SIGN_IDENTITY)
-    find_program(CODESIGN_BIN NAMES codesign)
+    # When using a conda environment, there is a codesign tool that gets
+    # included as a dependency and we really do not want to use it for signing.
+    # So strip out the conda environment path when searching for the codesign
+    # tool.
+    string(REPLACE ":" ";" CODESIGN_PATHS $ENV{PATH})
+    if(DEFINED ENV{CONDA_PREFIX})
+        foreach(PATH ${CODESIGN_PATHS})
+            string(FIND ${PATH} $ENV{CONDA_PREFIX} IS_CONDA_PREFIX)
+            if(IS_CONDA_PREFIX EQUAL 0)
+                list(REMOVE_ITEM CODESIGN_PATHS ${PATH})
+            endif()
+        endforeach()
+    endif()
+
+    find_program(CODESIGN_BIN
+        NAMES codesign
+        NO_SYSTEM_ENVIRONMENT_PATH
+        PATHS ${CODESIGN_PATHS}
+    )
     if(NOT CODESIGN_BIN)
         messsage(FATAL_ERROR "Cannot sign code, could not find 'codesign' executable")
     endif()
