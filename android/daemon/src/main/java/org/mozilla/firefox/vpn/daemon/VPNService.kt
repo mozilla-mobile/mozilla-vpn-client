@@ -75,6 +75,11 @@ class VPNService : android.net.VpnService() {
             return this.mConfig?.optBoolean("isSuperDooperFeatureActive", false) ?: false
         }
 
+    private val isServerLocatedInUserCountry: Boolean?
+        get() {
+            return this.mConfig?.optBoolean("serverLocatedInUserCountry", null)
+        }
+
     // Is a VPN connection coming from the app (not daemon) AND
     // is happening because of a server switch?
     private val isAppChangingServers: Boolean
@@ -664,6 +669,9 @@ class VPNService : android.net.VpnService() {
 
     private fun recordDataTransferMetrics() {
         Log.v(tag, "Recording data metrics")
+        if (isServerLocatedInUserCountry != null) {
+          Session.isServerLocatedInUserCountry.set(isServerLocatedInUserCountry)
+        }
         val rxBytes = getConfigValue("rx_bytes")?.toLong()
         val txBytes = getConfigValue("tx_bytes")?.toLong()
         if (rxBytes != null && txBytes != null) {

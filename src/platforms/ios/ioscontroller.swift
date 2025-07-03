@@ -162,7 +162,7 @@ public class IOSControllerImpl: NSObject {
     }
 
     @objc func connect(serverData: [VPNServerData], excludeLocalNetworks: Bool, allowedIPAddressRanges: [VPNIPAddressRange], reason: Int,
-            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String,
+            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isServerLocatedInUserCountry: Bool?,
             disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
             vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
@@ -177,12 +177,12 @@ public class IOSControllerImpl: NSObject {
               disconnectOnErrorCallback()
               return
             }
-            return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, excludeLocalNetworks: excludeLocalNetworks, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
+            return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, excludeLocalNetworks: excludeLocalNetworks, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isServerLocatedInUserCountry: isServerLocatedInUserCountry, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
         }
     }
 
     func configureTunnel(configs: [TunnelConfiguration], reason: Int, serverName: String, excludeLocalNetworks: Bool,
-            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String,
+            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isServerLocatedInUserCountry: Bool?,
             disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
             vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         TunnelManager.withTunnel { tunnel in
@@ -209,6 +209,7 @@ public class IOSControllerImpl: NSObject {
 
             var customConfig = proto?.providerConfiguration ?? [:]
             customConfig["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
+            customConfig["isServerLocatedInUserCountry"] = isServerLocatedInUserCountry
             customConfig["gleanDebugTag"] = gleanDebugTag
             customConfig["installationId"] = installationId
             customConfig["configs"] = configs.map({ $0.asWgQuickConfig() })

@@ -276,6 +276,27 @@ session:
         description: True when the daemon has a saved server to switch to, false otherwise.
         type: boolean
 
+  server_in_same_country:
+    type: boolean
+    lifetime: ping
+    description:
+      True if the VPN server's country is the same as the user's actual country.
+
+      When using multihop, the exit server is used.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-7133
+    data_reviews:
+      - ADD IN ONCE REVIEW IS COMPLETE
+    send_in_pings:
+      - vpnsession
+      - daemonsession
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2026-06-30
+
 connection_health:
   data_transferred_tx:
     type: custom_distribution

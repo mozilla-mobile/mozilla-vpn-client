@@ -75,6 +75,8 @@ class ServerData final : public QObject {
   QString localizedEntryCityName() const;
   QString localizedEntryCountryName() const;
 
+  bool serverLocatedInUserCountry();
+
   const QString& previousExitCountryCode() const {
     return m_previousExitCountryCode;
   }
