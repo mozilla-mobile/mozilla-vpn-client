@@ -23,6 +23,7 @@
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
+#include "models/location.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
