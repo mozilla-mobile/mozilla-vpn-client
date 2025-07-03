@@ -171,6 +171,8 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
             if self.shouldSendTelemetry {
                 if let isServerLocatedInUserCountry = self.isServerLocatedInUserCountry {
                   GleanMetrics.Session.serverInSameCountry.set(isServerLocatedInUserCountry)
+                } else {
+                  self.logger.error(message: "Not setting serverInSameCountry because no local location was found.")
                 }
                 GleanMetrics.Session.daemonSessionEnd.set()
                 GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
