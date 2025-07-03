@@ -162,7 +162,7 @@ public class IOSControllerImpl: NSObject {
     }
 
     @objc func connect(serverData: [VPNServerData], excludeLocalNetworks: Bool, allowedIPAddressRanges: [VPNIPAddressRange], reason: Int,
-            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isServerLocatedInUserCountry: Bool?,
+            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isMissingLocalLocation: Bool, isServerLocatedInUserCountry: Bool,
             disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
             vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
@@ -177,7 +177,7 @@ public class IOSControllerImpl: NSObject {
               disconnectOnErrorCallback()
               return
             }
-            return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, excludeLocalNetworks: excludeLocalNetworks, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isServerLocatedInUserCountry: isServerLocatedInUserCountry, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
+          return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, excludeLocalNetworks: excludeLocalNetworks, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isServerLocatedInUserCountry: !isMissingLocalLocation ? isServerLocatedInUserCountry : nil, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
         }
     }
 

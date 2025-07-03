@@ -12,6 +12,7 @@
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
+#include "models/location.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
@@ -184,11 +185,10 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
                         : @""
       isSuperDooperFeatureActive:Feature::get(Feature::Feature_superDooperMetrics)->isSupported()
       installationId:config.m_installationId.toNSString()
-      isServerLocatedInUserCountry:MozillaVPN::instance()->location()->countryCode().isEmpty()
-                                       ? nullptr
-                                       : MozillaVPN::instance()
-                                             ->serverData()
-                                             ->serverLocatedInUserCountry()
+      isMissingLocalLocation:MozillaVPN::instance()->location()->countryCode().isEmpty()
+      isServerLocatedInUserCountry:MozillaVPN::instance()
+                                       ->serverData()
+                                       ->serverLocatedInUserCountry()
       disconnectOnErrorCallback:^() {
         logger.error() << "IOSSWiftController - disconnecting";
         emit disconnected();

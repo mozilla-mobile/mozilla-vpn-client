@@ -169,7 +169,9 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
             ErrorNotifier.removeLastErrorFile()
             self.connectionHealthMonitor.stop()
             if self.shouldSendTelemetry {
-                GleanMetrics.Session.isServerLocatedInUserCountry.set(isServerLocatedInUserCountry)
+                if let isServerLocatedInUserCountry = self.isServerLocatedInUserCountry {
+                  GleanMetrics.Session.serverInSameCountry.set(isServerLocatedInUserCountry)
+                }
                 GleanMetrics.Session.daemonSessionEnd.set()
                 GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
 
