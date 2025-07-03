@@ -13,7 +13,25 @@ else()
 endif()
 
 if(CODE_SIGN_IDENTITY)
-    find_program(CODESIGN_BIN NAMES codesign)
+    # When using a conda environment, there is a codesign tool that gets
+    # included as a dependency and we really do not want to use it for signing.
+    # So strip out the conda environment path when searching for the codesign
+    # tool.
+    string(REPLACE ":" ";" CODESIGN_PATHS $ENV{PATH})
+    if(DEFINED ENV{CONDA_PREFIX})
+        foreach(PATH ${CODESIGN_PATHS})
+            string(FIND ${PATH} $ENV{CONDA_PREFIX} IS_CONDA_PREFIX)
+            if(IS_CONDA_PREFIX EQUAL 0)
+                list(REMOVE_ITEM CODESIGN_PATHS ${PATH})
+            endif()
+        endforeach()
+    endif()
+
+    find_program(CODESIGN_BIN
+        NAMES codesign
+        NO_SYSTEM_ENVIRONMENT_PATH
+        PATHS ${CODESIGN_PATHS}
+    )
     if(NOT CODESIGN_BIN)
         messsage(FATAL_ERROR "Cannot sign code, could not find 'codesign' executable")
     endif()
@@ -120,39 +138,62 @@ function(osx_embed_provision_profile TARGET)
         OUTPUT_STRIP_TRAILING_WHITESPACE
         COMMAND find ${XCODE_PROVISION_PROFILES_DIR} -type f -name "*.provisionprofile"
     )
-    string(REGEX MATCHALL "[^\n\r]+" XCODE_PROVISION_PROFILES ${XCODE_PROVISION_PROFILES_RAW})
+    string(REGEX MATCHALL "[^\n\r]+" XCODE_PROVISION_PROFILES "${XCODE_PROVISION_PROFILES_RAW}")
+
+    # An inline python script to convert ISO timestamps into UTC seconds.
+    # Note: this constructs a CMake list, which uses semicolons for separators,
+    # which is perfect because the semicolon also serves to separate statements
+    # in python.
+    set(PYTHON_ISOCONVERT_SCRIPT
+        "import sys"
+        "from datetime import datetime"
+        "isotime = sys.stdin.readline().strip()"
+        "print(datetime.strptime(isotime, '%Y-%m-%dT%H:%M:%S%z').timestamp())"
+    )
 
     # Find the profile which matches our team identifier and has the most recent creation date.
     set(BEST_TIMESTAMP 0)
     set(BEST_PROFILE "")
     foreach(FILENAME ${XCODE_PROVISION_PROFILES})
-        # Compare the file creation dates.
-        # TODO: Technically, we should look at the CreationDate field in the profile's plist.
-        file(TIMESTAMP ${FILENAME} FILE_TIMESTAMP "%s" UTC)
+        # Extract the creation date of this profile, we will want to use the
+        # most-recently created profile that matches the application being
+        # signed.
+        execute_process(
+            OUTPUT_VARIABLE FILE_TIMESTAMP
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            RESULT_VARIABLE TIMESTAMP_RETURN_CODE
+            COMMAND security cms -D -i ${FILENAME}
+            COMMAND plutil -extract CreationDate raw -
+            COMMAND ${PYTHON_EXECUTABLE} -c "${PYTHON_ISOCONVERT_SCRIPT}"
+        )
+        if(NOT TIMESTAMP_RETURN_CODE EQUAL 0)
+            continue()
+        endif()
         if(FILE_TIMESTAMP LESS BEST_TIMESTAMP)
             continue()
         endif()
 
-        # Check if this provision profile can be used by our development team.
-        set(TEAM_IDENTIFIER_INDEX 0)
-        while(TRUE)
-            execute_process(
-                OUTPUT_VARIABLE TEAM_IDENTIFIER
-                OUTPUT_STRIP_TRAILING_WHITESPACE
-                RESULT_VARIABLE PLUTIL_RETURN_CODE
-                COMMAND security cms -D -i ${FILENAME}
-                COMMAND plutil -extract TeamIdentifier.${TEAM_IDENTIFIER_INDEX} raw -
-            )
-            if(NOT PLUTIL_RETURN_CODE EQUAL 0)
-                break()
-            endif()
-            if(TEAM_IDENTIFIER STREQUAL CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM)
-                set(BEST_TIMESTAMP ${FILE_TIMESTAMP})
-                set(BEST_PROFILE ${FILENAME})
-                break()
-            endif()
-            math(EXPR TEAM_IDENTIFIER_INDEX "${TEAM_IDENTIFIER_INDEX}+1")
-        endwhile()
+        # Extract the entitlements from the provisioning profile
+        execute_process(
+            OUTPUT_VARIABLE ENTITLEMENTS_JSON
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            RESULT_VARIABLE PLUTIL_RETURN_CODE
+            COMMAND security cms -D -i ${FILENAME}
+            COMMAND plutil -extract Entitlements xml1 -o - -
+            COMMAND plutil -convert json -o - -
+        )
+        if(NOT PLUTIL_RETURN_CODE EQUAL 0)
+            continue()
+        endif()
+
+        # The provisioning profile must grant a com.apple.application-identifier
+        # entitlement matching the team and bundle identifiers being signed.
+        string(JSON PROFILE_APP_IDENTIFIER GET "${ENTITLEMENTS_JSON}" "com.apple.application-identifier")
+        get_target_property(TARGET_APP_IDENTIFIER ${TARGET} XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER)
+        if(PROFILE_APP_IDENTIFIER STREQUAL "${CMAKE_XCODE_ATTRIBUTE_DEVELOPMENT_TEAM}.${TARGET_APP_IDENTIFIER}")
+            set(BEST_TIMESTAMP ${FILE_TIMESTAMP})
+            set(BEST_PROFILE ${FILENAME})
+        endif()
     endforeach()
 
     # If a provisioning profile was found - embed it into the bundle
