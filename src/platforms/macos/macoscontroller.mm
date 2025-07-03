@@ -238,7 +238,13 @@ void MacOSController::checkStatus() {
 }
 
 void MacOSController::getBackendLogs(QIODevice* device) {
-  auto conn = static_cast<NSXPCConnection*>(m_connection);
+  NSXPCConnection* conn = [NSXPCConnection alloc];
+  [conn initWithMachServiceName:machServiceName()
+                        options:NSXPCConnectionPrivileged];
+  conn.remoteObjectInterface =
+      [NSXPCInterface interfaceWithProtocol:@protocol(XpcDaemonProtocol)];
+  [conn activate];
+
   NSObject<XpcDaemonProtocol>* remote =
       [conn remoteObjectProxyWithErrorHandler:^(NSError*error){
     // Otherwise, try our best to scrape the logs directly off disk.
