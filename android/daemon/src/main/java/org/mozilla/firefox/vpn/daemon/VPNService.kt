@@ -78,9 +78,9 @@ class VPNService : android.net.VpnService() {
     private val isServerLocatedInUserCountry: Boolean?
         get() {
             if (this.mConfig?.isNull("serverLocatedInUserCountry") ?: false) {
-              return null
+                return null
             } else {
-              return this.mConfig?.optBoolean("serverLocatedInUserCountry")
+                return this.mConfig?.optBoolean("serverLocatedInUserCountry")
             }
         }
 
@@ -675,7 +675,7 @@ class VPNService : android.net.VpnService() {
         Log.v(tag, "Recording data metrics")
         val isServerInCountry = isServerLocatedInUserCountry // with an open getter, can't directly use isServerLocatedInUserCountry in smart cast
         if (isServerInCountry != null) {
-          Session.serverInSameCountry.set(isServerInCountry)
+            Session.serverInSameCountry.set(isServerInCountry)
         }
         val rxBytes = getConfigValue("rx_bytes")?.toLong()
         val txBytes = getConfigValue("tx_bytes")?.toLong()
