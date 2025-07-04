@@ -7,16 +7,16 @@
   
   <metadata_license>CC0-1.0</metadata_license>
   <project_license>MPL-2.0</project_license>
-  <content_rating type="oars-1.0" />
+  <content_rating type="oars-1.1" />
 
   <developer id="org.mozilla">
     <name>Mozilla Corporation</name>
   </developer>
 
-  <icon type="remote">https://raw.githubusercontent.com/mozilla-mobile/mozilla-vpn-client/refs/heads/main/src/ui/resources/logo-generic.svg</icon>
+  <icon type="local">@CMAKE_INSTALL_FULL_DATADIR@/icons/hicolor/scalable/apps/org.mozilla.vpn.svg</icon>
   <branding>
     <color type="primary" scheme_preference="light">#f9f9fa</color>
-    <color type="primary" scheme_preference="dark">#38383d</color>
+    <color type="primary" scheme_preference="dark">#42414d</color>
   </branding>
 
   <releases type="external" url="https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml" />
