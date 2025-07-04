@@ -18,7 +18,7 @@ DATADIR="/usr/local/share"
 GITREF="refs/heads/main"
 OUTPUT="-"
 
-while [[ $# -gt 0 ]]; do
+while [ $# -gt 0 ]; do
   key="$1"
 
   case $key in

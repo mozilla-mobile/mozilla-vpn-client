@@ -36,7 +36,8 @@ modules:
 
       - type: file
         path: org.mozilla.vpn.releases.xml
-        dest-filename: linux/extra/org.mozilla.vpn.releases.xml.in
+        dest: linux/extra/
+        dest-filename: org.mozilla.vpn.releases.xml.in
 
       # Install vendored Rust crates
       - flatpak-vpn-crates.json
