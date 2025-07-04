@@ -21,6 +21,9 @@ tasks:
             repackage-signing: repackage-signing-macpkg
         if-dependencies:
             - repackage-signing
+        add-index-routes:
+            name: macos
+            type: build
         treeherder:
             symbol: Bn
             kind: build
