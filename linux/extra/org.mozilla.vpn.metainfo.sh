@@ -95,7 +95,7 @@ cat << EOF
 
   <url type="homepage">https://vpn.mozilla.org</url>
   <url type="vcs-browser">https://github.com/mozilla-mobile/mozilla-vpn-client</url>
-  <url type="help">https://support.mozilla.org/en-US/products/firefox-private-network-vpn</url>
+  <url type="help">https://support.mozilla.org/products/firefox-private-network-vpn</url>
 
   <supports>
     <control>pointing</control>
