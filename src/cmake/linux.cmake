@@ -114,13 +114,30 @@ endif()
 include(GNUInstallDirs)
 install(TARGETS mozillavpn)
 
-configure_file(${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.desktop.in
-    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop)
+add_custom_command(
+    DEPENDS ${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.desktop.sh
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
+    COMMAND ${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.desktop.sh -b ${CMAKE_INSTALL_FULL_BINDIR} -o ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
+)
+
+add_custom_command(
+    DEPENDS ${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.metainfo.sh
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.metainfo.xml
+    COMMAND ${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.metainfo.sh -d ${CMAKE_INSTALL_FULL_DATADIR} -o ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.metainfo.xml
+)
+target_sources(mozillavpn PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.metainfo.xml
+)
+set_source_files_properties(
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.metainfo.xml
+    PROPERTIES
+        GENERATED TRUE
+        HEADER_FILE_ONLY TRUE
+)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
-
-configure_file(${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.metainfo.xml.in
-    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.metainfo.xml)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.metainfo.xml
     DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
 
