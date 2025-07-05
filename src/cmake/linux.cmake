@@ -2,7 +2,10 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-option(BUILD_FLATPAK "Build for Flatpak distribution" OFF)
+if("$ENV{container}" STREQUAL "flatpak")
+    set(BUILD_FLATPAK_DEFAULT ON)
+endif()
+option(BUILD_FLATPAK "Build for Flatpak distribution" ${BUILD_FLATPAK_DEFAULT})
 
 find_package(Qt6 REQUIRED COMPONENTS DBus)
 target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
