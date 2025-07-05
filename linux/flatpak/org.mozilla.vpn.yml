@@ -1,6 +1,6 @@
 app-id: org.mozilla.vpn
 runtime: org.kde.Platform
-runtime-version: 6.8
+runtime-version: "6.9"
 sdk: org.kde.Sdk
 sdk-extensions:
   - org.freedesktop.Sdk.Extension.rust-stable
@@ -90,7 +90,7 @@ modules:
     buildsystem: cmake-ninja
     sources:
       - type: git
-        tag: v6.6.3
+        tag: v6.9.0
         url: https://github.com/qt/qt5compat
 
   - name: mozillavpn-appstream
