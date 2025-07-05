@@ -34,6 +34,11 @@ modules:
         url: https://github.com/mozilla-mobile/mozilla-vpn-client
         branch: main
 
+      - type: file
+        path: org.mozilla.vpn.releases.xml
+        dest: linux/extra/
+        dest-filename: org.mozilla.vpn.releases.xml.in
+
       # Install vendored Rust crates
       - flatpak-vpn-crates.json
       - type: shell

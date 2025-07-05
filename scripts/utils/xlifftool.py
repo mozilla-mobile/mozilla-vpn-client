@@ -239,8 +239,12 @@ Output format can take one of the following values:
                 for id in [id for id in xlanguage.keys if id.startswith(trid + '.')]:
                     print(f"{xlanguage.render(id, format=args.format, strip_trid=args.strip)}", file=fout)
 
+        ## Transform from stdin
+        if args.xform == "-":
+            for line in sys.stdin:
+                fout.write(xlanguage.transform(line))
         ## Transform a file
-        if args.xform:
+        elif args.xform:
             with open(args.xform, "r") as fin:
                 for line in fin:
                     fout.write(xlanguage.transform(line))

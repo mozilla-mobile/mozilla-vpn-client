@@ -1,0 +1,7 @@
+<!--
+  This is a placeholder releases file, please download the latest releases from
+  https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml
+-->
+<releases>
+  <release version="@CMAKE_PROJECT_VERSION@" type="snapshot"/>
+</releases>

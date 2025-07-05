@@ -114,10 +114,41 @@ endif()
 include(GNUInstallDirs)
 install(TARGETS mozillavpn)
 
-configure_file(${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.desktop.in
-    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop)
+add_custom_command(
+    DEPENDS ${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.desktop.sh
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
+    COMMAND ${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.desktop.sh -b ${CMAKE_INSTALL_FULL_BINDIR} -o ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
+)
+
+add_custom_command(
+    DEPENDS ${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.metainfo.sh
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.metainfo.xml
+    COMMAND ${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.metainfo.sh -d ${CMAKE_INSTALL_FULL_DATADIR} -o ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.metainfo.xml
+)
+target_sources(mozillavpn PRIVATE
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.metainfo.xml
+)
+set_source_files_properties(
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.metainfo.xml
+    PROPERTIES
+        GENERATED TRUE
+        HEADER_FILE_ONLY TRUE
+)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.desktop
     DESTINATION ${CMAKE_INSTALL_DATADIR}/applications)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.metainfo.xml
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
+
+configure_file(${CMAKE_SOURCE_DIR}/linux/extra/org.mozilla.vpn.releases.xml.in
+    ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.releases.xml)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.releases.xml
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/metainfo)
+
+install(FILES ${CMAKE_CURRENT_SOURCE_DIR}/ui/resources/logo-generic.svg
+    RENAME org.mozilla.vpn.svg
+    DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/scalable/apps)
 
 install(FILES ${CMAKE_SOURCE_DIR}/linux/extra/icons/16x16/org.mozilla.vpn.png
     DESTINATION ${CMAKE_INSTALL_DATADIR}/icons/hicolor/16x16/apps)
