@@ -3,20 +3,20 @@
 SRCDIR=$(cd $(dirname $0)/../.. && pwd)
 XLIFFTOOL=${SRCDIR}/scripts/utils/xlifftool.py
 
+DATADIR="/usr/local/share"
+GITREF=""
+OUTPUT="-"
+
 helpFunction() {
   echo "Usage: $0 [OPTIONS]"
   echo ""
   echo "Build options:"
   echo "  -o, --output FILE      Output metainfo to FILE (default: stdout)"
-  echo "  -d, --datadir DIR      Data directory application for app"
+  echo "  -d, --datadir DIR      Data directory for app (default: ${DATADIR})"
   echo "  -g, --gitref REF       Github ref external URLs"
   echo "  -h, --help             Print this message and exit"
   echo ""
 }
-
-DATADIR="/usr/local/share"
-GITREF="refs/heads/main"
-OUTPUT="-"
 
 while [ $# -gt 0 ]; do
   key="$1"
@@ -47,6 +47,15 @@ while [ $# -gt 0 ]; do
     ;;
   esac
 done
+
+# Determine a sensible gitref if none was provided.
+if [ -z "${GITREF}" ]; then
+  if [ -d "${SRCDIR}/.git" ]; then
+    GITREF="$(git -C ${SRCDIR} rev-parse  HEAD)"
+  else
+    GITREF="refs/heads/main"
+  fi
+fi
 
 if [ "${OUTPUT}" != "-" ]; then
   exec 1>"${OUTPUT}"
@@ -85,7 +94,7 @@ cat << EOF
     <name>Mozilla Corporation</name>
   </developer>
 
-  <icon type="local">${DATADIR}/icons/hicolor/scalable/apps/org.mozilla.vpn.svg</icon>
+  <icon type="remote">https://raw.githubusercontent.com/mozilla-mobile/mozilla-vpn-client/${GITREF}/src/ui/resources/logo-generic.svg</icon>
   <branding>
     <color type="primary" scheme_preference="light">#f9f9fa</color>
     <color type="primary" scheme_preference="dark">#42414d</color>
