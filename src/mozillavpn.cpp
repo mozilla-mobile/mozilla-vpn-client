@@ -475,6 +475,18 @@ void MozillaVPN::maybeStateMain() {
     settingsHolder->setAdjustActivatable(false);
   }
 #endif
+
+  // This next bit covers specific situation: When signing out and signing back
+  // in (without quitting the client), the client should automatically start if
+  // the "start on boot" setting is active. However, the location and the
+  // controller remain activated. Thus, upon sign in we've manually set
+  // m_locationInitilized to false. If it's still false but the location reports
+  // being initialized, the client is in this "logged in after logging out"
+  // state, and we should possibly connect on startup.
+  if (m_private->m_location.initialized() && !m_locationInitialized) {
+    m_locationInitialized = true;
+    maybeConnectOnStartup();
+  }
 }
 
 void MozillaVPN::authenticate() {
@@ -539,6 +551,12 @@ void MozillaVPN::completeAuthentication(const QByteArray& json,
   m_private->m_deviceModel.writeSettings();
 
   SettingsHolder::instance()->setToken(token);
+
+  // This next bit covers specific situation: When signing out and signing back
+  // in (without quitting the client), the client should automatically start if
+  // the "start on boot" setting is active. More details in a comment in
+  // `maybeStateMain`.
+  m_locationInitialized = false;
 
   if (m_private->m_user.subscriptionNeeded()) {
     maybeStateMain();
