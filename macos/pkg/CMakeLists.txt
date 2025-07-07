@@ -112,7 +112,7 @@ foreach(FILENAME ${RESOURCE_FILES})
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Resources/${FILENAME}
         DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${FILENAME}
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${FILENAME} ${CMAKE_CURRENT_SOURCE_DIR}/Resources
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/Resources/${FILENAME} ${CMAKE_CURRENT_BINARY_DIR}/Resources/
     )
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.pkg APPEND
