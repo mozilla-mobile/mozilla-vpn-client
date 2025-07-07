@@ -21,7 +21,11 @@ jobs:
       - name: Checkout sources
         uses: actions/checkout@v4
         with:
-          sparse-checkout: linux/flatpak/
+          sparse-checkout: |
+            3rdparty/
+            scripts/linux/
+            linux/
+            .gitmodules
 
       - name: Install pip tools
         shell: bash
@@ -36,13 +40,14 @@ jobs:
           python -m yq -yi ".modules[-1].sources[0].commit = \"${{ github.ref }}\"" org.mozilla.vpn.yml
           cat org.mozilla.vpn.yml
 
-      - name: Add Appstream metainfo
+      - name: Fetch latest release info
         shell: bash
-        working-directory: linux/flatpak
         run: |
-          curl -sSL -o org.mozilla.vpn.releases.xml \
+          curl -sSL -o linux/flatpak/org.mozilla.vpn.releases.xml \
             https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml
-          python -m yq -yi '.modules += ["mozillavpn-appstream.yaml"]' org.mozilla.vpn.yml
+          
+          git submodule update --depth 1 --init 3rdparty/i18n
+          linux/extra/org.mozilla.vpn.metainfo.sh > linux/flatpak/org.mozilla.vpn.metainfo.xml
 
       - name: Upload manifest
         uses: actions/upload-artifact@v4
@@ -101,6 +106,10 @@ jobs:
           bundle: mozillavpn.flatpak
           manifest-path: manifest/org.mozilla.vpn.yml
           cache-key: flatpak-builder-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
+      
+      - name: Run post-build linters
+        continue-on-error: true
+        run: flatpak-builder-lint builddir flatpak_app
 
   dependabot-cargo:
     name: "Update Crates"
