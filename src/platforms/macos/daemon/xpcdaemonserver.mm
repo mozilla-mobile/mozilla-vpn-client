@@ -226,7 +226,7 @@ shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
 }
 
 - (void)cleanupBackendLogs {
-  QMetaObject::invokeMethod(self.daemon, [&]{ self.daemon->cleanLogs(); });
+  QMetaObject::invokeMethod(self.daemon, "cleanLogs");
 }
 
 @end
