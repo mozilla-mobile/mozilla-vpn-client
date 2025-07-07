@@ -37,10 +37,10 @@ class Daemon : public QObject {
 
   QJsonObject getStatus();
   QString logs();
-  void cleanLogs();
 
   Q_INVOKABLE bool activate(const QString& json);
   Q_INVOKABLE bool deactivate() { return deactivate(true); };
+  Q_INVOKABLE void cleanLogs();
 
  signals:
   void connected(const QString& pubkey);
