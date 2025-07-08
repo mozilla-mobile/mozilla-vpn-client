@@ -23,7 +23,9 @@ jobs:
 
   build_test_app:
     name: Build Test Client
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
+    env:
+      QT_VERSION: 6.6.3
     defaults:
       run:
         shell: bash -el {0}
@@ -45,26 +47,59 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/Library/Caches/ccache
-          key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+          key: ccache-macos-${{ github.sha }}
           lookup-only: github.event_name == 'pull_request'
-          restore-keys: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
-
-      - name: Install build dependencies
-        run: |
-          export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
-          brew install ninja
+          restore-keys: ccache-macos--${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
 
       - name: Install Qt6
         run: |
           wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
-          unzip -a -d ${{ github.workspace }} qt6_mac.zip
+          unzip -a -d ${{ github.workspace }}/3rdparty qt6_mac.zip
+
+      - name: Cache Qt6 host tools
+        id: qt-tools-cache
+        uses: actions/cache@v4
+        with:
+          path: 3rdparty/qt-host-tools
+          key: qt-tools-${{ env.QT_VERSION }}
+
+      - name: Install Qt6 host tools
+        if: steps.qt-tools-cache.outputs.cache-hit != 'true'
+        run: |
+          python3 -m aqt install-qt -O 3rdparty/qt-aqt-install linux desktop ${QT_VERSION} --archives icu qtbase qtdeclarative qttools
+          mv 3rdparty/qt-aqt-install/${QT_VERSION}/gcc_64/ 3rdparty/qt-host-tools
+          rm -rf 3rdparty/qt-aqt-install
+          find 3rdparty/qt-host-tools/lib -name '*.a' -delete
+
+      - name: Cache macOS SDK
+        id: macos-sdk-cache
+        uses: actions/cache@v4
+        with:
+          path: 3rdparty/cltools-macosnmos-sdk.pkg
+          key: macos-sdk-cache
+
+      - name: Download macOS SDK
+        if: steps.macos-sdk-cache.outputs.cache-hit != 'true'
+        env:
+          MACOS_SDK_URL: https://swcdn.apple.com/content/downloads/10/32/082-12052-A_AHPGDY76PT/1a419zaf3vh8o9t3c0usblyr8eystpnsh5/CLTools_macOSNMOS_SDK.pkg
+        run: curl -sSL -o 3rdparty/cltools-macosnmos-sdk.pkg ${MACOS_SDK_URL}
+
+      - name: Install macOS SDK
+        run: |
+          ./scripts/macos/macpkg.py 3rdparty/cltools-macosnmos-sdk.pkg \
+            --prefix Library/Developer/CommandLineTools/SDKs -o 3rdparty/
+          echo "SDKROOT=$(find 3rdparty -name 'SDKSettings.plist' -printf '%h\n')" >> $GITHUB_ENV
 
       - name: Compile test client
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
+            -DCMAKE_PREFIX_PATH=3rdparty/qt_dist/lib/cmake \
+            -DCMAKE_TOOLCHAIN_FILE=$(pwd)/scripts/macos/osxcross-toolchain.cmake \
+            -DCMAKE_OSX_ARCHITECTURES="arm64" \
+            -DQT_HOST_PATH=3rdparty/qt-host-tools \
+            -DQT_HOST_PATH_CMAKE_DIR=3rdparty/qt-host-tools/lib/cmake
           cmake --build build/cmake
           cp -r ./build/cmake/src/Mozilla\ VPN.app/ build/Mozilla\ VPN.app
 
