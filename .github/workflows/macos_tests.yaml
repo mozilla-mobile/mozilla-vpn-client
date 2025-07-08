@@ -55,10 +55,10 @@ jobs:
       - name: Setup compiler cache
         uses: actions/cache@v4
         with:
-          path: ~/Library/Caches/ccache
+          path: ~/.cache/ccache
           key: ccache-macos-${{ github.sha }}
           lookup-only: github.event_name == 'pull_request'
-          restore-keys: ccache-macos--${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
+          restore-keys: ccache-macos-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
 
       - name: Install Qt6
         run: |
