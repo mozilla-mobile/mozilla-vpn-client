@@ -63,6 +63,14 @@ tasks:
             sha256: 2d7a4e5f48ad23ef962b5b7c602c4b0163dd44e51b6d4c33b336a1d663ab1445
             artifact-name: cmake-macos-universal.tar.gz
             size: 75379015
+    macosx-sdk:
+        description: MacOSX SDK 15.4
+        fetch:
+            type: static-url
+            url: https://swcdn.apple.com/content/downloads/10/32/082-12052-A_AHPGDY76PT/1a419zaf3vh8o9t3c0usblyr8eystpnsh5/CLTools_macOSNMOS_SDK.pkg
+            sha256: f8b0600aa4ad9b0b0b150fb62691dc561f47bc33ebc40546439f1460a0680913
+            artifact-name: cltools-macosnmos-sdk.pkg
+            size: 58055915
     qt-source-tarball:
         description: Qt 6.6.3 Source Tarball
         fetch:
