@@ -281,6 +281,7 @@ class MozillaVPN final : public App {
   bool m_updating = false;
   bool m_controllerInitialized = false;
   bool m_locationInitialized = false;
+  bool m_isLoggingIn = false;
 };
 
 #endif  // MOZILLAVPN_H
