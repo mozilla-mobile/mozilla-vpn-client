@@ -5,7 +5,7 @@
 #ifndef MACOSDNSMANAGER_H
 #define MACOSDNSMANAGER_H
 
-#include <systemconfiguration/scdynamicstore.h>
+#include <SystemConfiguration/SCDynamicStore.h>
 
 #include <QMap>
 
