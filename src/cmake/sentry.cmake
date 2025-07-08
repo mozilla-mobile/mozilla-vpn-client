@@ -73,9 +73,6 @@ if( ${_SUPPORTED} GREATER -1 )
         target_link_libraries(shared-sources INTERFACE dbghelp.lib)
         target_link_libraries(shared-sources INTERFACE version.lib)
         SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad)
-        if(DEFINED ENV{CONDA_PREFIX})
-            LIST(APPEND SENTRY_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_SOURCE_DIR}/scripts/windows/conda-toolchain.cmake)
-        endif()
     endif()
 
     if(ANDROID)
@@ -86,7 +83,6 @@ if( ${_SUPPORTED} GREATER -1 )
                         -DCMAKE_SYSTEM_NAME=Android
                         -DANDROID_ABI=${ANDROID_ABI}
                         -DCMAKE_ANDROID_NDK=${ANDROID_NDK_ROOT}
-                        -DCMAKE_TOOLCHAIN_FILE=${ANDROID_NDK_ROOT}/build/cmake/android.toolchain.cmake
                         -DSENTRY_BACKEND=inproc
             )
     
@@ -101,6 +97,9 @@ if( ${_SUPPORTED} GREATER -1 )
         SET(SENTRY_ARGS -DSENTRY_BACKEND=breakpad)
     endif()
     
+    if(CMAKE_TOOLCHAIN_FILE)
+        LIST(APPEND SENTRY_ARGS -DCMAKE_TOOLCHAIN_FILE=${CMAKE_TOOLCHAIN_FILE})
+    endif()
 
     include(ExternalProject)
     ExternalProject_Add(sentry
