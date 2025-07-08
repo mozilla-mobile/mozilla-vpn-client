@@ -37,6 +37,15 @@ jobs:
         with:
           submodules: "recursive"
 
+      - name: Checkout macOS SDK
+        uses: actions/checkout@v4
+        with:
+          repository: alexey-lysiuk/macos-sdk
+          path: 3rdparty/macos-sdk
+          ref: main
+          sparse-checkout: MacOSX15.5.sdk/
+      - run: echo "SDKROOT=$(find ${{ github.workspace }}/3rdparty/macos-sdk -name 'SDKSettings.plist' -printf '%h\n')" >> $GITHUB_ENV
+
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
@@ -70,25 +79,6 @@ jobs:
           mv 3rdparty/qt-aqt-install/${QT_VERSION}/gcc_64/ 3rdparty/qt-host-tools
           rm -rf 3rdparty/qt-aqt-install
           find 3rdparty/qt-host-tools/lib -name '*.a' -delete
-
-      - name: Cache macOS SDK
-        id: macos-sdk-cache
-        uses: actions/cache@v4
-        with:
-          path: 3rdparty/cltools-macosnmos-sdk.pkg
-          key: macos-sdk-cache
-
-      - name: Download macOS SDK
-        if: steps.macos-sdk-cache.outputs.cache-hit != 'true'
-        env:
-          MACOS_SDK_URL: https://swcdn.apple.com/content/downloads/10/32/082-12052-A_AHPGDY76PT/1a419zaf3vh8o9t3c0usblyr8eystpnsh5/CLTools_macOSNMOS_SDK.pkg
-        run: curl -sSL -o 3rdparty/cltools-macosnmos-sdk.pkg ${MACOS_SDK_URL}
-
-      - name: Install macOS SDK
-        run: |
-          ./scripts/macos/macpkg.py 3rdparty/cltools-macosnmos-sdk.pkg \
-            --prefix Library/Developer/CommandLineTools/SDKs -o 3rdparty/
-          echo "SDKROOT=$(find 3rdparty -name 'SDKSettings.plist' -printf '%h\n')" >> $GITHUB_ENV
 
       - name: Compile test client
         run: |
