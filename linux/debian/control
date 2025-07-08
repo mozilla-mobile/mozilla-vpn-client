@@ -41,6 +41,7 @@ Vcs-Git: https://github.com/mozilla-mobile/mozilla-vpn-client
 
 Package: mozillavpn
 Architecture: any
+Recommends: mozillavpn-keyring
 Depends: wireguard (>=1.0.20200319),
          wireguard-tools (>=1.0.20200319),
          libsecret-1-0,
@@ -84,3 +85,10 @@ Depends: wireguard (>=1.0.20200319),
          qt6-qpa-plugins (>=6.2.0~)
 Description: A fast, secure and easy to use VPN. Built by the makers of Firefox.
  Read more on https://vpn.mozilla.org
+
+Package: mozillavpn-keyring
+Architecture: all
+Depends: ${misc:Depends}
+Description: GnuPG archive keys of the Mozilla APT repository
+ Mozilla digitally signs its Release files. This package contains
+ the archive keys and APT configuration used for that.
