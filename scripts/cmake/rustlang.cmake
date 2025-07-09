@@ -73,17 +73,19 @@ function(__rust_build_toolchain_config)
 endfunction()
 
 if(ANDROID)
+    get_filename_component(ANDROID_TOOLCHAIN_ROOT_BIN ${CMAKE_C_COMPILER} DIRECTORY)
     if(CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7-a")
         set(RUSTC_ANDROID_ARCH armv7-linux-androideabi)
+        set(RUSTC_ANDROID_LINKER ${ANDROID_TOOLCHAIN_ROOT_BIN}/armv7a-linux-androideabi${ANDROID_NATIVE_API_LEVEL}-clang)
     else()
         set(RUSTC_ANDROID_ARCH ${CMAKE_SYSTEM_PROCESSOR}-linux-android)
+        set(RUSTC_ANDROID_LINKER ${ANDROID_TOOLCHAIN_ROOT_BIN}/${RUSTC_ANDROID_ARCH}${ANDROID_NATIVE_API_LEVEL}-clang)
     endif()
     set(RUSTC_ANDROID_ARCH ${RUSTC_ANDROID_ARCH} CACHE STRING "Rust target android architecture")
 
-    get_filename_component(ANDROID_TOOLCHAIN_ROOT_BIN ${CMAKE_C_COMPILER} DIRECTORY)
     __rust_build_toolchain_config(
         FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml
-        RUSTFLAGS "-Clinker=${ANDROID_TOOLCHAIN_ROOT_BIN}/${RUSTC_ANDROID_ARCH}${ANDROID_NATIVE_API_LEVEL}-clang"
+        RUSTFLAGS "-Clinker=${RUSTC_ANDROID_LINKER}"
         ARCH ${RUSTC_ANDROID_ARCH})
 elseif(IOS)
     __rust_build_toolchain_config(
