@@ -6,7 +6,7 @@ Building for iOS can only be done on a Mac.
 
 Install Xcode - https://developer.apple.com/xcode/
 
-Before you start this process, open Xcode, go to settings, accounts, and sign in with your
+Before starting, open Xcode, go to settings, accounts, and sign in with your
 Apple ID. If you are a Mozilla developer, this is an Apple ID associated with your LDAP account.
 
 ## Activate conda
