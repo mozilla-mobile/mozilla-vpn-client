@@ -82,10 +82,10 @@ void Theme::initialize(QJSEngine* engine) {
 
   parseSizing(engine);
 
-  setUsingSystemTheme(SettingsHolder::instance()->usingSystemTheme());
+  (SettingsHolder::instance()->usingSystemTheme());
 
   if (!loadTheme(SettingsHolder::instance()->theme())) {
-    logger.error() << "Failed to load the theme"
+    logger.error() << "Failed to load the theme" fffffff
                    << SettingsHolder::instance()->theme();
     loadTheme(DEFAULT_THEME);
   }
