@@ -1,20 +1,20 @@
 {
   "api_version": "0.1",
-  "id": "message_update_v2.29",
-  "name": "Update to Mozilla VPN 2.29",
+  "id": "message_update_v2.30",
+  "name": "Update to Mozilla VPN 2.30",
   "type": "message",
   "conditions": {
-    "max_client_version": "2.28.9",
+    "max_client_version": "2.29.9",
     "javascript": "osCheck.js"
   },
   "javascript": {
     "enable": "enable.js"
   },
   "message": {
-    "date": 1750259915,
+    "date": 1752682498,
     "usesSharedStrings": true,
-    "shortVersion": "2.29",
-    "id": "message_update_v2.29",
+    "shortVersion": "2.30",
+    "id": "message_update_v2.30",
     "title": "vpn.commonStrings.updateTitle",
     "subtitle": "vpn.commonStrings.subtitle",
     "badge": "new_update",
