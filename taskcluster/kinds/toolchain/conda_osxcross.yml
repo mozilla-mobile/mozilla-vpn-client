@@ -25,4 +25,4 @@ osxcross-conda-pack:
         symbol: "conda-osxcross"
     run:
         toolchain-alias: conda-osxcross
-        toolchain-artifact: public/build/conda-osxcross.tar.gz
+        toolchain-artifact: public/build/conda-osxcross.tar.xz

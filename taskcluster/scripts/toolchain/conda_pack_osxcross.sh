@@ -40,6 +40,6 @@ conda install conda-pack -y
 
 echo "Packing conda environment..."
 mkdir -p ${UPLOAD_DIR}
-conda-pack -n vpn -o ${UPLOAD_DIR}/conda-osxcross.tar.gz
+conda-pack -n vpn -j $(nproc) -o ${UPLOAD_DIR}/conda-osxcross.tar.xz
 
 echo "Done."
