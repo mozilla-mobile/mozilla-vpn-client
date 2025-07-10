@@ -286,9 +286,11 @@ const screenSettings = {
 
   privacyView: {
     VIEW: new QmlQueryComposer('//privacySettingsView'),
-    BLOCK_ADS_TOGGLE: new QmlQueryComposer('//blockAds/toggle'),
-    BLOCK_TRACKERS_TOGGLE: new QmlQueryComposer('//blockTrackers/toggle'),
-    BLOCK_MALWARE_TOGGLE: new QmlQueryComposer('//blockMalware/toggle'),
+    BLOCK_ADS_TOGGLE: new QmlQueryComposer('//blockAds/toggleGroup/toggle'),
+    BLOCK_TRACKERS_TOGGLE:
+        new QmlQueryComposer('//blockTrackers/toggleGroup/toggle'),
+    BLOCK_MALWARE_TOGGLE:
+        new QmlQueryComposer('//blockMalware/toggleGroup/toggle'),
 
     INFORMATION_CARD:
         new QmlQueryComposer('//privacySettingsViewInformationCard'),
@@ -495,21 +497,28 @@ const screenOnboarding = {
   ONBOARDING_VIEW: new QmlQueryComposer('//viewOnboarding'),
   STEP_NAV_STACK_VIEW: new QmlQueryComposer('//stepNavStackView'),
   STEP_PROG_BAR_DATA_BUTTON: new QmlQueryComposer('//progressBarRow/data'),
-  STEP_PROG_BAR_PRIVACY_BUTTON: new QmlQueryComposer('//progressBarRow/privacy'),
-  STEP_PROG_BAR_DEVICES_BUTTON: new QmlQueryComposer('//progressBarRow/devices'),
+  STEP_PROG_BAR_PRIVACY_BUTTON:
+      new QmlQueryComposer('//progressBarRow/privacy'),
+  STEP_PROG_BAR_DEVICES_BUTTON:
+      new QmlQueryComposer('//progressBarRow/devices'),
   DATA_SLIDE: new QmlQueryComposer('//onboardingDataSlide'),
   DATA_TOGGLE: new QmlQueryComposer('//dataCollectionToggle'),
   DATA_PRIVACY_LINK: new QmlQueryComposer('//dataPrivacyLink'),
   DATA_NEXT_BUTTON: new QmlQueryComposer('//dataNextButton'),
   PRIVACY_SLIDE: new QmlQueryComposer('//onboardingPrivacySlide'),
   PRIVACY_NEXT_BUTTON: new QmlQueryComposer('//privacyNextButton'),
-  PRIVACY_BLOCK_ADS_TOGGLE: new QmlQueryComposer('//blockAds/toggle'),
-  PRIVACY_BLOCK_TRACKERS_TOGGLE: new QmlQueryComposer('//blockTrackers/toggle'),
-  PRIVACY_BLOCK_MALWARE_TOGGLE: new QmlQueryComposer('//blockMalware/toggle'),
+  PRIVACY_BLOCK_ADS_TOGGLE:
+      new QmlQueryComposer('//blockAds/toggleGroup/toggle'),
+  PRIVACY_BLOCK_TRACKERS_TOGGLE:
+      new QmlQueryComposer('//blockTrackers/toggleGroup/toggle'),
+  PRIVACY_BLOCK_MALWARE_TOGGLE:
+      new QmlQueryComposer('//blockMalware/toggleGroup/toggle'),
   PRIVACY_BACK_BUTTON: new QmlQueryComposer('//privacyBackButton'),
   DEVICES_SLIDE: new QmlQueryComposer('//onboardingDevicesSlide'),
-  DEVICES_TOGGLE_BTN_ANDROID: new QmlQueryComposer('//segmentedToggleBtnLayout/tabAndroid'),
-  DEVICES_TOGGLE_BTN_IOS: new QmlQueryComposer('//segmentedToggleBtnLayout/tabApple'),
+  DEVICES_TOGGLE_BTN_ANDROID:
+      new QmlQueryComposer('//segmentedToggleBtnLayout/tabAndroid'),
+  DEVICES_TOGGLE_BTN_IOS:
+      new QmlQueryComposer('//segmentedToggleBtnLayout/tabApple'),
   DEVICES_DEVICE_TYPE_TOGGLE: new QmlQueryComposer('//deviceTypeToggle'),
   DEVICES_PLAY_STORE_QRCODE: new QmlQueryComposer('//playStoreQrCode'),
   DEVICES_APP_STORE_QRCODE: new QmlQueryComposer('//appStoreQrCode'),

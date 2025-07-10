@@ -74,6 +74,8 @@ RowLayout {
         }
     }
     Item {
+        objectName: "toggleGroup"
+
         Layout.alignment: Qt.AlignTop
         Layout.preferredWidth: toggle.implicitWidth
         Layout.preferredHeight: toggle.implicitHeight
