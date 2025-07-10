@@ -31,7 +31,10 @@ class Utils final : public QObject {
  private:
   Utils() = default;
 
-  bool writeAndShowLogs(QStandardPaths::StandardLocation location);
+  bool writeAndShowLogs(const QString& location);
+  bool writeAndShowLogs(QStandardPaths::StandardLocation location) {
+    return writeAndShowLogs(QStandardPaths::writableLocation(location));
+  }
 };
 
 #endif  // UTILS_H

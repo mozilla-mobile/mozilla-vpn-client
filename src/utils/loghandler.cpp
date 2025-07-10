@@ -392,7 +392,7 @@ void LogHandler::logSerialize(QIODevice* device) {
 }
 
 bool LogHandler::writeLogsToLocation(
-    QStandardPaths::StandardLocation location,
+    const QString& location,
     std::function<void(const QString& filename)>&& a_callback) {
 #ifdef MZ_DEBUG
   logger.debug() << "Trying to save logs in:" << location;
@@ -402,7 +402,7 @@ bool LogHandler::writeLogsToLocation(
 
   std::function<void(const QString& filename)> callback = std::move(a_callback);
 
-  if (!QFileInfo::exists(QStandardPaths::writableLocation(location))) {
+  if (!QFileInfo::exists(location)) {
     return false;
   }
 
@@ -412,7 +412,7 @@ bool LogHandler::writeLogsToLocation(
   QTextStream(&filename) << m_shortname << "-" << now.year() << "-"
                          << now.month() << "-" << now.day() << LOG_FILE_SUFFIX;
 
-  QDir logDir(QStandardPaths::writableLocation(location));
+  QDir logDir(location);
   QString logFile = logDir.filePath(filename);
 
   if (QFileInfo::exists(logFile)) {
