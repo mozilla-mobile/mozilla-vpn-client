@@ -1,7 +1,7 @@
 etc/chromium/native-messaging-hosts/mozillavpn.json
 etc/opt/chrome/native-messaging-hosts/mozillavpn.json
-lib/systemd/system/mozillavpn.service
-lib/systemd/system/socksproxy.service
+${env:SYSTEMD_UNIT_PATH}/mozillavpn.service
+${env:SYSTEMD_UNIT_PATH}/socksproxy.service
 usr/bin/mozillavpn
 usr/bin/socksproxy
 lib/mozillavpn/mozillavpnnp
