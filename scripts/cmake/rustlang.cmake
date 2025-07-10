@@ -90,7 +90,7 @@ if(ANDROID)
 elseif(IOS)
     __rust_build_toolchain_config(
         FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml
-        RUSTFLAGS -Clinker=${CMAKE_LINKER} -Clinker-flavor=ld
+        RUSTFLAGS -Clinker=${CMAKE_C_COMPILER}
         ARCH aarch64-apple-ios x86_64-apple-ios aarch64-apple-ios-sim)
 
     # Ensure that the host architecture uses /usr/bin/cc for linking.
