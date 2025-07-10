@@ -172,20 +172,6 @@ EOF
   fi
 }
 
-## Update the flatpak manifest to use the source tarball.
-build_flatpak_manifest() {
-  # Copy the flatpak manifests
-  cp -r ../linux/flatpak . || die "Failed"
-
-  # Truncate the YAML at the sources, and replace it with the tarball archive
-  sed -e '1,/[[:space:]]\+sources:/!d' ../linux/flatpak/org.mozilla.vpn.yml > flatpak/org.mozilla.vpn.yml
-  cat << EOF >> flatpak/org.mozilla.vpn.yml
-      - type: archive
-        path: ../mozillavpn_$SHORTVERSION.orig.tar.gz
-        sha256: $(sha256sum mozillavpn_$SHORTVERSION.orig.tar.gz | awk '{print $1}')
-EOF
-}
-
 ## Build the DSC and debian tarball.
 build_deb_source() {
   rm -rf $WORKDIR/debian || die "Failed"
@@ -203,9 +189,6 @@ build_rpm_source
 
 print Y "Building Debian sources"
 build_deb_source
-
-print Y "Building Flatpak sources"
-build_flatpak_manifest
 
 print Y "Cleaning up working directory..."
 rm -rf $WORKDIR || die "Failed"
