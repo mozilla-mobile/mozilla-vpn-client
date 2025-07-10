@@ -2,7 +2,7 @@ Source: mozillavpn
 Section: net
 Priority: optional
 Maintainer: mozilla <vpn@mozilla.com>
-Build-Depends: debhelper (>= 11.2),
+Build-Depends: debhelper (>= 13),
                cdbs,
                cmake (>= 3.20~),
                flex,
