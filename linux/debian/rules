@@ -30,9 +30,5 @@ override_dh_installdocs:
 
 override_dh_installinfo:
 
-override_dh_installsystemd:
-	dh_installsystemd $(CMAKE_BUILD_DIR)/src/mozillavpn.service
-	dh_installsystemd $(CMAKE_BUILD_DIR)/extension/socks5proxy/bin/socksproxy.service
-
 override_dh_builddeb:
 	dh_builddeb -- -Zgzip
