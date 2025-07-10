@@ -162,6 +162,8 @@ fallbacks
 featurelist
 featuresOverride
 ffi
+flathub
+flatpak
 frontend
 getters
 gobject
