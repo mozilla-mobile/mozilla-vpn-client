@@ -109,7 +109,7 @@ MZViewBase {
           MZButton {
               id: warningAlert
               text: "Click for sample warning alert"
-              onClicked: MZErrorHandler.requestAlert(MZErrorHandler.SampleWarningAlert)
+              onClicked: MZErrorHandler.requestAlert(MZErrorHandler.VPNMustBeOffWarning)
           }
 
           MZButton {

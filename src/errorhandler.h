@@ -50,7 +50,7 @@ class ErrorHandler final : public QObject {
     UnrecoverableErrorAlert,
     AuthCodeSentAlert,
     CopiedToClipboardConfirmationAlert,
-    SampleWarningAlert,
+    VPNMustBeOffWarning,
     SampleInfoAlert
   };
   Q_ENUM(AlertType)

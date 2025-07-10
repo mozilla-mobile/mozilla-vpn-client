@@ -14,9 +14,13 @@ RowLayout {
     property alias subLabelText: subLabel.text
     property alias checked: toggle.checked
     property alias showDivider: divider.visible
+    property alias linkButtonText: linkButtonBlock.labelText
+    property alias toggleEnabled: toggle.enabled
     property int dividerTopMargin
 
     signal clicked()
+    signal clickedWhileDisabled()
+    signal buttonClicked()
 
     spacing: 16
 
@@ -48,6 +52,17 @@ RowLayout {
             verticalAlignment: Text.AlignVCenter
         }
 
+        MZLinkButton {
+            id: linkButtonBlock
+
+            fontSize: MZTheme.theme.fontSizeSmall
+            visible: !!labelText.length
+            textAlignment: Text.AlignLeft
+            onClicked: toggleRow.buttonClicked()
+            leftPadding: 0
+            topPadding: 3
+        }
+
         Rectangle {
             id: divider
 
@@ -58,15 +73,27 @@ RowLayout {
             color: MZTheme.colors.divider
         }
     }
-
-    MZSettingsToggle {
-        id: toggle
-        objectName: "toggle"
-
+    Item {
         Layout.alignment: Qt.AlignTop
+        Layout.preferredWidth: toggle.implicitWidth
+        Layout.preferredHeight: toggle.implicitHeight
 
-        onClicked: toggleRow.clicked()
+        MZSettingsToggle {
+            id: toggle
+            objectName: "toggle"
+            anchors.fill: parent
+            accessibleName: labelText
+        }
 
-        accessibleName: labelText
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+              if (toggle.enabled == false) {
+                toggleRow.clickedWhileDisabled()
+              } else {
+                toggleRow.clicked()
+              }
+            }
+        }
     }
 }
