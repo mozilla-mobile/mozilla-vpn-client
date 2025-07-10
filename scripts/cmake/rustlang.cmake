@@ -340,7 +340,7 @@ function(add_rust_library TARGET_NAME)
     endif()
 
     ## For build Apple shared binaries, the install path needs to be relative to the runpath.
-    if (RUST_BUILD_SHARED AND APPLE)
+    if (RUST_TARGET_SHARED AND APPLE)
         list(APPEND RUST_TARGET_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}")
     endif()
 
@@ -448,6 +448,7 @@ function(add_rust_library TARGET_NAME)
             IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/debug/${RUST_LIBRARY_FILENAME}
         )
     endif()
+
     set_target_properties(${TARGET_NAME}_builder PROPERTIES FOLDER "Libs")
     if (ANDROID AND RUST_TARGET_SHARED)
         set_target_properties(${TARGET_NAME} PROPERTIES
