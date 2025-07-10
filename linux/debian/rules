@@ -14,7 +14,7 @@ ifeq (1,$(call qtfeature,QT_FEATURE_openssl_linked))
 endif
 endif
 
-export SYSTEMD_UNIT_PATH := $(pkg-config --variable=systemdsystemunitdir systemd | sed 's/^[/]//g')
+export SYSTEMD_UNIT_PATH := $(shell pkg-config --variable=systemdsystemunitdir systemd | sed 's/^[/]//g')
 
 CMAKE_BUILD_DIR := build-$(DEB_HOST_MULTIARCH)
 
