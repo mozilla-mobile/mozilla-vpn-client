@@ -44,7 +44,7 @@ modules:
       - '*'
 
   - flatpak-glean-parser.yaml
-  - shared-modules/intltool/intltool-0.51.json
+  - intltool-0.51.json
 
   - name: libndp
     buildsystem: autotools
@@ -109,32 +109,17 @@ modules:
         tag: v6.9.0
         url: https://github.com/qt/qt5compat
 
-  - name: mozillavpn-appstream
-    buildsystem: simple
-    build-commands:
-      - install -Dm644 org.mozilla.vpn.metainfo.xml "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.metainfo.xml"
-      - install -Dm644 org.mozilla.vpn.releases.xml "${FLATPAK_DEST}/share/metainfo/${FLATPAK_ID}.releases.xml"
-    sources:
-      - type: file
-        path: org.mozilla.vpn.metainfo.xml
-      - type: file
-        path: org.mozilla.vpn.releases.xml
-
   - name: mozillavpn
     buildsystem: cmake-ninja
     config-opts:
       - -DCMAKE_BUILD_TYPE=RelWithDebInfo
       - -DBUILD_FLATPAK=ON
     sources:
-      - type: git
-        url: https://github.com/mozilla-mobile/mozilla-vpn-client
-        tag: v2.29.0
-        x-checker-data:
-          type: json
-          url: https://mozilla.github.io/mozillavpn-product-details/mozillavpn.json
-          tag-query: ("v" + .latest["LINUX"])
-          timestamp-query: .releases[.latest["LINUX"]].date
-          is-main-source: true
+      - type: dir
+        path: ../..
+        skip:
+          - .flatpak-builder
+          - .git
 
       # Install vendored Rust crates
       - flatpak-vpn-crates.json
