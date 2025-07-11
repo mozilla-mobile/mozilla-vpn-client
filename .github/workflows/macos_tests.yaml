@@ -23,7 +23,9 @@ jobs:
 
   build_test_app:
     name: Build Test Client
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
+    env:
+      QT_VERSION: 6.6.3
     defaults:
       run:
         shell: bash -el {0}
@@ -35,6 +37,15 @@ jobs:
         with:
           submodules: "recursive"
 
+      - name: Checkout macOS SDK
+        uses: actions/checkout@v4
+        with:
+          repository: alexey-lysiuk/macos-sdk
+          path: 3rdparty/macos-sdk
+          ref: main
+          sparse-checkout: MacOSX15.5.sdk/
+      - run: echo "SDKROOT=$(find ${{ github.workspace }}/3rdparty/macos-sdk -name 'SDKSettings.plist' -printf '%h\n')" >> $GITHUB_ENV
+
       - uses: conda-incubator/setup-miniconda@v3
         with:
           miniconda-version: "latest"
@@ -44,27 +55,41 @@ jobs:
       - name: Setup compiler cache
         uses: actions/cache@v4
         with:
-          path: ~/Library/Caches/ccache
-          key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
+          path: ~/.cache/ccache
+          key: ccache-macos-${{ github.sha }}
           lookup-only: github.event_name == 'pull_request'
-          restore-keys: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
-
-      - name: Install build dependencies
-        run: |
-          export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
-          brew install ninja
+          restore-keys: ccache-macos-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
 
       - name: Install Qt6
         run: |
           wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
-          unzip -a -d ${{ github.workspace }} qt6_mac.zip
+          unzip -a -d ${{ github.workspace }}/3rdparty qt6_mac.zip
+
+      - name: Cache Qt6 host tools
+        id: qt-tools-cache
+        uses: actions/cache@v4
+        with:
+          path: 3rdparty/qt-host-tools
+          key: qt-tools-${{ env.QT_VERSION }}
+
+      - name: Install Qt6 host tools
+        if: steps.qt-tools-cache.outputs.cache-hit != 'true'
+        run: |
+          python3 -m aqt install-qt -O 3rdparty/qt-aqt-install linux desktop ${QT_VERSION} --archives icu qtbase qtdeclarative qttools
+          mv 3rdparty/qt-aqt-install/${QT_VERSION}/gcc_64/ 3rdparty/qt-host-tools
+          rm -rf 3rdparty/qt-aqt-install
+          find 3rdparty/qt-host-tools/lib -name '*.a' -delete
 
       - name: Compile test client
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
+            -DCMAKE_PREFIX_PATH=3rdparty/qt_dist/lib/cmake \
+            -DCMAKE_TOOLCHAIN_FILE=$(pwd)/scripts/macos/osxcross-toolchain.cmake \
+            -DCMAKE_OSX_ARCHITECTURES="arm64" \
+            -DQT_HOST_PATH=3rdparty/qt-host-tools \
+            -DQT_HOST_PATH_CMAKE_DIR=3rdparty/qt-host-tools/lib/cmake
           cmake --build build/cmake
           cp -r ./build/cmake/src/Mozilla\ VPN.app/ build/Mozilla\ VPN.app
 

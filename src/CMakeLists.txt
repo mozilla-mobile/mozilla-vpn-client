@@ -57,7 +57,9 @@ target_link_libraries(mozillavpn PRIVATE
     qtglean
 )
 
-if(NOT CMAKE_CROSSCOMPILING)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
+   ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
+   ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     add_subdirectory(webextension)
     add_subdirectory(interventions)
     target_link_libraries(mozillavpn PRIVATE mz_webextension)

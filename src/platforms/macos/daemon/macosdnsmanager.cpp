@@ -4,10 +4,8 @@
 
 #include "macosdnsmanager.h"
 
+#include <SystemConfiguration/SystemConfiguration.h>
 #include <sys/event.h>
-#include <systemconfiguration/scdynamicstore.h>
-#include <systemconfiguration/scpreferences.h>
-#include <systemconfiguration/systemconfiguration.h>
 
 #include <QCoreApplication>
 #include <QHostAddress>

@@ -152,17 +152,14 @@ if(NOT QT_FEATURE_zstd)
     set_property(SOURCE  ${CMAKE_SOURCE_DIR}/src/resources/resources.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
 endif()
 
-# Sources for desktop platforms.
-if(NOT CMAKE_CROSSCOMPILING)
-     target_sources(shared-sources INTERFACE
-        ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/desktopauthenticationlistener.cpp
-        ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/desktopauthenticationlistener.h
-       )
-endif()
-
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
    ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
    ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    target_sources(shared-sources INTERFACE
+        ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/desktopauthenticationlistener.cpp
+        ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/desktopauthenticationlistener.h
+    )
+
     # Compile and link the signature library.
     include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
     add_rust_library(signature
