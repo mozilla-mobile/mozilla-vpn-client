@@ -99,7 +99,7 @@ clang-tidy-macos:
           git submodule update --init --recursive && 
 
           cmake -S . -B ${TASK_HOME}/build -GNinja \
-            -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
+            -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt-macos/lib/cmake \
             -DBUILD_TESTS=OFF \
             -DCMAKE_EXPORT_COMPILE_COMMANDS=ON &&
           cmake --build ${TASK_HOME}/build --target clang_tidy_report &&
