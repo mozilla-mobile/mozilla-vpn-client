@@ -8,7 +8,7 @@
 #include <QObject>
 #include <QProcess>
 
-#include "daemon/wireguardutils.h"
+#include "wireguardutils.h"
 #include "macosroutemonitor.h"
 
 class WireguardUtilsMacos final : public WireguardUtils {

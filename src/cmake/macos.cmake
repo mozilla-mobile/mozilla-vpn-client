@@ -64,7 +64,6 @@ target_sources(mozillavpn PRIVATE
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
-include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos-daemon.cmake)
 
 # Find the SDK root
 execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE

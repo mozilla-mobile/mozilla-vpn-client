@@ -5,7 +5,7 @@
 #ifndef MACOSDAEMON_H
 #define MACOSDAEMON_H
 
-#include "daemon/daemon.h"
+#include "daemon.h"
 #include "dnsutilsmacos.h"
 #include "iputilsmacos.h"
 #include "wireguardutilsmacos.h"

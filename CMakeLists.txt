@@ -188,6 +188,7 @@ if(WIN32)
     add_subdirectory(windows/wireguard_nt)
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    add_subdirectory(macos/daemon)
     add_subdirectory(macos/loginitem)
     add_subdirectory(macos/pkg)
 elseif(IOS)

@@ -25,31 +25,33 @@ target_link_libraries(daemon PRIVATE mzutils mzdaemon)
 # VPN client include paths
 target_include_directories(daemon PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_compile_definitions(daemon PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
-target_compile_definitions(daemon PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 
 target_sources(daemon PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemon.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemonmain.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemonserver.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemonserver.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdnsmanager.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdnsmanager.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/xpcdaemonserver.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/xpcdaemonserver.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/xpcdaemonprotocol.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/dnsutilsmacos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/dnsutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/iputilsmacos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/iputilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/macosdaemon.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/macosdaemon.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/macosdaemonmain.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/macosdaemonserver.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/macosdaemonserver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/macosdnsmanager.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/macosdnsmanager.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/macosroutemonitor.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/macosroutemonitor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardutilsmacos.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/xpcdaemonserver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/xpcdaemonserver.mm
 )
 
+# We will need to include the xpcdaemonprotocol header too.
+target_include_directories(daemon PRIVATE ${CMAKE_SOURCE_DIR}/src/platforms/macos)
+target_sources(daemon PRIVATE ${CMAKE_SOURCE_DIR}/src/platforms/macos/xpcdaemonprotocol.h)
+
 # Embed the daemon property list.
-configure_file(${CMAKE_SOURCE_DIR}/macos/app/daemon.plist.in daemon.plist)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in daemon.plist)
 if(XCODE)
     set_target_properties(daemon PROPERTIES
         XCODE_ATTRIBUTE_INFOPLIST_FILE ${CMAKE_CURRENT_BINARY_DIR}/daemon.plist
@@ -60,6 +62,8 @@ else()
         LINKER:-sectcreate,__TEXT,__info_plist,${CMAKE_CURRENT_BINARY_DIR}/daemon.plist
     )
 endif()
+
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 osx_codesign_target(daemon)
 
 qt_finalize_target(daemon)

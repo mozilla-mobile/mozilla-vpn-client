@@ -13,7 +13,7 @@
 #include <QLocalServer>
 
 #include "commandlineparser.h"
-#include "daemon/daemonlocalserverconnection.h"
+#include "daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"

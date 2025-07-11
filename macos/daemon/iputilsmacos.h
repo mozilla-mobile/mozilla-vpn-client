@@ -7,7 +7,7 @@
 
 #include <arpa/inet.h>
 
-#include "daemon/iputils.h"
+#include "iputils.h"
 
 class IPUtilsMacos final : public IPUtils {
  public:

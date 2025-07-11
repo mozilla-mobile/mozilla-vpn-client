@@ -10,7 +10,7 @@
 #include <QAtomicInt>
 #include <QObject>
 
-#include "daemon/daemon.h"
+#include "daemon.h"
 
 class XpcDaemonServer final : public QObject {
   Q_OBJECT
