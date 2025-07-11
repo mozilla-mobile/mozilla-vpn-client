@@ -8,7 +8,7 @@ set -e
 # Ensure all git submodules are checked out
 git submodule update --init --recursive
 
-# We need to call bash with a login shell, so that conda is intitialized
+# We need to call bash with a login shell, so that conda is initialized
 print Y "Installing conda"
 source ${MOZ_FETCHES_DIR}/bin/activate
 conda-unpack
