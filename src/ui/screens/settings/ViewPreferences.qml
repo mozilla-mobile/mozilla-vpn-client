@@ -80,16 +80,19 @@ MZViewBase {
             Layout.leftMargin: MZTheme.theme.windowMargin
             showDivider: false
 
-            labelText: MZI18n.LocalNetworkAccessLabelTitle
-            subLabelText: vpnIsOff ? MZI18n.LocalNetworkAccessSubLabel : MZI18n.LocalNetworkAccessDisabledSubLabel
+            labelText: MZI18n.BypassVPNLabelTitle
+            subLabelText: MZI18n.BypassVPNSubLabel
+            linkButtonText: MZI18n.BypassVPNLearnMoreSentence
             checked: MZSettings.localNetworkAccess
-            enabled: isIOS && vpnIsOff
+            toggleEnabled: isIOS && vpnIsOff
             dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
             onClicked: {
                 if (VPNController.StateOff) {
                     MZSettings.localNetworkAccess = !MZSettings.localNetworkAccess
                 }
             }
+            onClickedWhileDisabled: MZErrorHandler.requestAlert(MZErrorHandler.VPNMustBeOffWarning)
+            onButtonClicked: { MZUrlOpener.openUrl("http://www.toadtaxi.com") }  // UPDATE TO REAL LINK
         }
 
         ColumnLayout {

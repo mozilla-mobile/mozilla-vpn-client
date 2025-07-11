@@ -176,7 +176,7 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
   }
 
   [impl connectWithServerData:serverData
-      excludeLocalNetworks:settingsHolder->localNetworkAccess()
+      permitLocalNetworkFeatures:settingsHolder->localNetworkAccess()
       allowedIPAddressRanges:allowedIPAddressRangesNS
       reason:reason
       gleanDebugTag:settingsHolder->gleanDebugTagActive()
