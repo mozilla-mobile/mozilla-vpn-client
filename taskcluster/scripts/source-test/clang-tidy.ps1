@@ -8,12 +8,12 @@ $TASK_WORKDIR = resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH = resolve-path "$TASK_WORKDIR/fetches"
 $SOURCE_DIR = resolve-path "."
 
-$QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/"
+$QTPATH =resolve-path "$FETCHES_PATH/qt-windows/"
 
 # Prep Env:
 # Switch to the work dir, configure qt
 Set-Location -Path $TASK_WORKDIR
-. "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
+. "$FETCHES_PATH/qt-windows/configure_qt.ps1"
 
 ## Setup the conda environment
 . $SOURCE_DIR/scripts/utils/call_bat.ps1  $FETCHES_PATH/Scripts/activate.bat
