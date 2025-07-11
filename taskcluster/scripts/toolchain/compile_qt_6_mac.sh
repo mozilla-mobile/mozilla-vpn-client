@@ -29,4 +29,4 @@ $VCS_PATH/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR ${TASK_WORKDIR}/qt-macos -
 
 echo "Creating Qt dist artifact"
 mkdir -p ${TASK_WORKDIR}/public/build
-tar -cJf ${TASK_WORKDIR}/public/build/qt6_macos.tar.xz ${TASK_WORKDIR}/qt-macos
+tar -C ${TASK_WORKDIR} -cJf ${TASK_WORKDIR}/public/build/qt6_macos.tar.xz qt-macos
