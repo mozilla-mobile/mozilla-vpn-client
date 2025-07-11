@@ -13,7 +13,7 @@
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
-$NUM_CORES = (Get-CimInstance –ClassName Win32_Processor).NumberOfLogicalProcessors
+$WIN32_PROC = Get-CimInstance –ClassName Win32_Processor
 
 New-Item -ItemType Directory -Force -Path "$TASK_WORKDIR/conda"
 $CONDA_DIR =resolve-path "$TASK_WORKDIR/conda"
@@ -39,4 +39,4 @@ conda run -n VPN conda info
 conda run -n VPN powershell -file "$REPO_ROOT_PATH\scripts\windows\conda-setup-xwin-sdk.ps1"
 
 New-Item -ItemType Directory $TASK_WORKDIR\public\build
-conda run -n VPN conda-pack --name VPN -j $NUM_CORES -o $TASK_WORKDIR\public\build\conda-windows.tar.xz
+conda run -n VPN conda-pack --name VPN -j $WIN32_PROC.NumberOfLogicalProcessors -o $TASK_WORKDIR\public\build\conda-windows.tar.xz
