@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-ARG DOCKER_BASE_IMAGE=ubuntu:20:04
+ARG DOCKER_BASE_IMAGE=ubuntu:jammy
 
 FROM $DOCKER_BASE_IMAGE
 
@@ -17,18 +17,16 @@ ENV CURL='curl --location --retry 5' \
     TERM='dumb'
 
 RUN apt-get update \
-    && apt-get install -y tzdata \
-    && apt-get install -y debhelper \
-                          devscripts \
-                          equivs \
-                          gpg-agent \
-                          locales \
-                          software-properties-common \
-                          sudo \
-    && apt-get clean
-
-ARG QTPPA
-RUN if [ -n "${QTPPA}" ]; then add-apt-repository -y ${QTPPA}; fi
+    && apt-get -y install --no-install-recommends \
+      build-essential \
+      ca-certificates \
+      debhelper \
+      devscripts \
+      equivs \
+      fakeroot \
+      git \
+      locales \
+      sudo
 
 RUN locale-gen "$LANG"
 
@@ -37,6 +35,9 @@ RUN locale-gen "$LANG"
 ADD topsrcdir/linux/debian/control /root/mozillavpn-dpkg-control
 RUN mk-build-deps -i -r  --tool="apt-get --no-install-recommends --yes" \
         /root/mozillavpn-dpkg-control
+
+# Cleanup after package installation
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
@@ -49,7 +50,7 @@ RUN /root/setup-worker.sh
 WORKDIR /builds/worker/
 
 # Grant the worker user the ability to install packages without login
-RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bin/dpkg,/usr/bin/add-apt-repository" > /etc/sudoers.d/worker-packages
+RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bin/dpkg" > /etc/sudoers.d/worker-packages
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Task Setup --------------------------------------------------------------------------------------------------------

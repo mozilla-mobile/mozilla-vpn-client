@@ -44,8 +44,8 @@ conda install conda-pack -y
 mkdir -p ../../public/build
 find ../../public/build/ -mindepth 1 -delete
 
-conda-pack -p envs/vpn -o conda-ios.tar.gz
-mv conda-ios.tar.gz  ../../public/build
+conda-pack -p envs/vpn -j $(sysctl -n hw.logicalcpu) -o conda-ios.tar.xz
+mv conda-ios.tar.xz  ../../public/build
 
 # remove our Pip conf, so the restrictions are back. 
 rm -f ~/.config/pip/pip.conf
