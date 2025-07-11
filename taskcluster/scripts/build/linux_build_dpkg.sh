@@ -70,10 +70,8 @@ if [[ ! -f "$DSCFILE" ]]; then
 fi
 dpkg-source -x ${DSCFILE} $(pwd)/mozillavpn-source/
 DPKG_PACKAGE_SRCNAME=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Source)
-DPKG_PACKAGE_DBGSYM=${DPKG_PACKAGE_SRCNAME}-dbgsym
 DPKG_PACKAGE_BASE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version)
 DPKG_PACKAGE_DIST_VERSION=${DPKG_PACKAGE_BASE_VERSION}-${DIST}1
-DPKG_PACKAGE_BINARY_ARCH=$(dpkg-architecture -q DEB_HOST_ARCH)
 DPKG_PACKAGE_BUILD_ARGS="--unsigned-source"
 
 # Update the changelog to release for the target distribution.
@@ -115,6 +113,9 @@ for FILENAME in ${BUILD_ARTIFACTS}; do
   PACKAGE_EXT=$(echo "${FILENAME}" | grep -o '[^.]*$')
   if [ "$(echo ${FILENAME} | cut -d_ -f2)" != "${DPKG_PACKAGE_DIST_VERSION}" ]; then
     continue
+  fi
+  if echo "${PACKAGE_NAME}" | grep -e "-dbgsym$"; then
+    PACKAGE_EXT="ddeb"
   fi
   cp -v ${FILENAME} /builds/worker/artifacts/${PACKAGE_NAME}.${PACKAGE_EXT}
 done
