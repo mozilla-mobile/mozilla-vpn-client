@@ -17,26 +17,20 @@ ENV CURL='curl --location --retry 5' \
     TERM='dumb'
 
 RUN apt-get update \
-    && apt-get install -y tzdata \
-    && apt-get install -y debhelper \
-                          devscripts \
-                          equivs \
-                          gpg-agent \
-                          locales \
-                          software-properties-common \
-                          sudo \
-    && apt-get clean
-
-ARG QTPPA
-RUN if [ -n "${QTPPA}" ]; then add-apt-repository -y ${QTPPA}; fi
-
-RUN locale-gen "$LANG"
+    && apt-get -y install --no-install-recommends \
+      debhelper \
+      devscripts \
+      equivs \
+      sudo
 
 # Also pull in packages from build-depends as early as possible
 # %include linux/debian/control
 ADD topsrcdir/linux/debian/control /root/mozillavpn-dpkg-control
 RUN mk-build-deps -i -r  --tool="apt-get --no-install-recommends --yes" \
         /root/mozillavpn-dpkg-control
+
+# Cleanup after package installation
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
