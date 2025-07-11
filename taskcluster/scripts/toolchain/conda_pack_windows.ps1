@@ -36,7 +36,7 @@ $env:PATH ="$CONDA_DIR;$FETCHES_PATH;$QTPATH;$env:PATH"
 ## Conda is now ready - let's enable the env
 conda env create --force -f $REPO_ROOT_PATH/env-windows.yml -n VPN
 conda run -n VPN conda info
-conda run -n VPN powershell -file "$REPO_ROOT_PATH\scripts\windows\conda-setup-xwin-sdk.ps1"
+conda run -n VPN powershell -file "$REPO_ROOT_PATH/scripts/windows/conda-setup-xwin-sdk.ps1"
 
 New-Item -ItemType Directory $TASK_WORKDIR\public\build
 conda run -n VPN conda-pack --name VPN -j $WIN32_PROC.NumberOfLogicalProcessors -o $TASK_WORKDIR\public\build\conda-windows.tar.xz
