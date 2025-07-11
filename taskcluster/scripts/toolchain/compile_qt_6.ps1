@@ -166,10 +166,12 @@ if (Test-Path -Path $SSL_PATH) {
   Copy-Item -Path $SSL_PATH -Recurse -Destination qt-windows/
 }
 
-New-Item -ItemType Directory -Path "$TASK_WORKDIR/public/build" -Force
-tar -cJf $TASK_WORKDIR/public/build/qt6_win.tar.xz qt-windows/
+tar -cJf qt6_win.tar.xz qt-windows/
 
-Write-Output "Build complete, zip created:"
+New-Item -ItemType Directory -Path "$TASK_WORKDIR/public/build" -Force
+Move-Item -Path qt6_win.tar.xz -Destination "$TASK_WORKDIR/public/build"
+
+Write-Output "Build complete, tarball created:"
 
 # mspdbsrv might be stil running after the build, so we need to kill it
 Stop-Process -Name "mspdbsrv.exe" -Force -ErrorAction SilentlyContinue
