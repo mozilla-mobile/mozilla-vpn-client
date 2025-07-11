@@ -18,7 +18,7 @@ args = parser.parse_args()
 ## If no control file was provided, assume control.qt6 from the source checkout.
 if args.control is None:
     linuxdir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "../../linux/debian")
-    args.control = os.path.normpath(os.path.join(linuxdir, "control.qt6"))
+    args.control = os.path.normpath(os.path.join(linuxdir, "control"))
 
 ## Figure out which paragraphs to dump.
 if args.all:
@@ -32,6 +32,8 @@ if not (args.build or args.runtime):
 # Parse the control file to dump the package dependencies.
 def dump(depends):
     for dep in depends.split(','):
+        if dep.startswith('$'):
+            continue
         print(dep.split()[0])
 
 for p in Deb822.iter_paragraphs(open(args.control)):

@@ -68,8 +68,8 @@ RUN apt-get -y install libatspi2.0-dev \
                        libxkbcommon-dev \
                        libxkbcommon-x11-dev
 
-## Install CMake from bullseye-backports
-RUN apt-get -y install -t bullseye-backports cmake
+## Install CMake and golang from bullseye-backports
+RUN apt-get -y install -t bullseye-backports cmake golang
 
 ## Install Rust
 RUN mkdir -p /tmp/rust

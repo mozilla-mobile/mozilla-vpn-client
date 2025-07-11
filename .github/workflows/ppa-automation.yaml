@@ -119,32 +119,6 @@ jobs:
 
           exit $JOB_EXIT_CODE
 
-      - name: Push Keyring package to Launchpad PPA
-        shell: bash
-        working-directory: linux
-        if: startsWith(github.ref, 'refs/heads/') && ${{ steps.decision.outputs.submit-changes == 'true' }}
-        env:
-          KEYID: ${{ steps.keys.outputs.keyid }}
-          PPA_TARGET_DISTS: ${{ steps.decision.outputs.releases }}
-          PPA_URL: ${{ steps.decision.outputs.ppa-url }}
-          GNUPGHOME: ${{ runner.temp }}/gnupg-data
-        run: |
-          JOB_EXIT_CODE=0
-          for dist in ${PPA_TARGET_DISTS}; do
-            git checkout -- keyring/debian/changelog
-
-            PACKAGE_SOURCE_NAME=$(dpkg-parsechangelog -l keyring/debian/changelog -S Source)
-            PACKAGE_BASE_VERSION=$(dpkg-parsechangelog -l keyring/debian/changelog -S Version)
-            PACKAGE_DIST_VERSION=${PACKAGE_BASE_VERSION}-${dist}1-build$(date +%Y%m%d%H%M%S)
-
-            dch -c keyring/debian/changelog -v ${PACKAGE_DIST_VERSION} -D ${dist} "Release for ${dist}"
-            (cd keyring && dpkg-buildpackage --build=source --sign-key=$KEYID -sa --no-check-builddeps)
-
-            dput $PPA_URL ${PACKAGE_SOURCE_NAME}_${PACKAGE_DIST_VERSION}_source.changes || JOB_EXIT_CODE=1
-          done
-  
-          exit $JOB_EXIT_CODE
-
       - name: Uploading sources
         uses: actions/upload-artifact@v4
         if: always()
