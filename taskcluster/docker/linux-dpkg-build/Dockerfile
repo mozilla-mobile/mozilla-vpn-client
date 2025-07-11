@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-ARG DOCKER_BASE_IMAGE=ubuntu:22:04
+ARG DOCKER_BASE_IMAGE=ubuntu:jammy
 
 FROM $DOCKER_BASE_IMAGE
 
@@ -18,12 +18,17 @@ ENV CURL='curl --location --retry 5' \
 
 RUN apt-get update \
     && apt-get -y install --no-install-recommends \
+      build-essential \
       ca-certificates \
       debhelper \
       devscripts \
       equivs \
+      fakeroot \
       git \
+      locales \
       sudo
+
+RUN locale-gen "$LANG"
 
 # Also pull in packages from build-depends as early as possible
 # %include linux/debian/control
@@ -45,7 +50,7 @@ RUN /root/setup-worker.sh
 WORKDIR /builds/worker/
 
 # Grant the worker user the ability to install packages without login
-RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bin/dpkg,/usr/bin/add-apt-repository" > /etc/sudoers.d/worker-packages
+RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bin/dpkg" > /etc/sudoers.d/worker-packages
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Task Setup --------------------------------------------------------------------------------------------------------
