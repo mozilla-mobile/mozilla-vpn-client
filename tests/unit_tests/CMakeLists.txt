@@ -79,8 +79,6 @@ target_sources(app_unit_tests PRIVATE
     testcheckedint.h
     testcomposer.cpp
     testcomposer.h
-    testdaemonaccesscontrol.cpp
-    testdaemonaccesscontrol.h
     testenv.cpp
     testenv.h
     testlicense.cpp

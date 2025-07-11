@@ -8,7 +8,7 @@
 #include <QMap>
 #include <QObject>
 
-#include "daemon/wireguardutils.h"
+#include "wireguardutils.h"
 
 class WireguardUtilsMock final : public WireguardUtils {
   Q_OBJECT

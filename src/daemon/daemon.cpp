@@ -12,7 +12,6 @@
 #include <QMetaEnum>
 #include <QTimer>
 
-#include "controller.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"

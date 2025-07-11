@@ -2,13 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "helper.h"
+#include "testhelper.h"
 
-class TestDaemonAccessControl final : public TestHelper {
+class TestDaemonAccessControl : public QObject, TestHelper<TestDaemonAccessControl> {
   Q_OBJECT
 
  private slots:
-  void initTestCase();
   /**
    * * "status" command is allowed for any peer when inactive
    * * "activate" command is allowed for any peer when inactive

@@ -18,7 +18,7 @@ class QLocalSocket;
  * to a "session owner". While a session is ongoing only the owner (or root) is
  * allowed to send commands to the daemon.
  */
-class DaemonAccessControl final {
+class DaemonAccessControl {
  public:
   explicit DaemonAccessControl();
   ~DaemonAccessControl();
@@ -29,15 +29,11 @@ class DaemonAccessControl final {
   bool isCommandAuthorizedForPeer(const QString& command,
                                   const QLocalSocket* socket);
 
-#ifdef UNIT_TEST
-  static inline void setMockPeerId(int peerId) { s_mockPeerId = peerId; }
-#endif
-
  private:
   bool isSessionActive() const;
   bool startSession(const QLocalSocket* socket);
 
-  static int getPeerId(const QLocalSocket* socket);
+  virtual int getPeerId(const QLocalSocket* socket) const;
 
   /**
    * @brief Only the peer that started the session or a peer that has
@@ -51,10 +47,6 @@ class DaemonAccessControl final {
   //
   // A value of -1 means there is currently no ongoing session.
   int m_sessionOwner = -1;
-
-#ifdef UNIT_TEST
-  int static inline s_mockPeerId = -1;
-#endif
 };
 
 #endif  // DAEMONSESSION_H

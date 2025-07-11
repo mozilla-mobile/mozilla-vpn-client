@@ -7,7 +7,7 @@
 #include <QLocalSocket>
 #include <QRandomGenerator>
 
-#include "daemon/daemonlocalserverconnection.h"
+#include "daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 

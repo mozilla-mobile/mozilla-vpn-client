@@ -8,7 +8,6 @@
 #include <QDateTime>
 #include <QTimer>
 
-#include "daemon/daemonerrors.h"
 #include "daemonerrors.h"
 #include "dnsutils.h"
 #include "interfaceconfig.h"

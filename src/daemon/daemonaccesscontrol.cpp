@@ -4,7 +4,7 @@
 
 #include "daemonaccesscontrol.h"
 
-#if defined(MZ_MACOS)
+#ifdef Q_OS_MACOS
 #  include <sys/types.h>
 #  include <unistd.h>
 #endif
@@ -127,13 +127,8 @@ bool DaemonAccessControl::isPeerAuthorized(const QLocalSocket* socket) const {
   return m_sessionOwner == uid;
 }
 
-// static
-int DaemonAccessControl::getPeerId(const QLocalSocket* socket) {
-#ifdef UNIT_TEST
-  return s_mockPeerId;
-#endif
-
-#ifdef MZ_MACOS
+int DaemonAccessControl::getPeerId(const QLocalSocket* socket) const {
+#ifdef Q_OS_MACOS
   Q_ASSERT(socket);
 
   uid_t uid = -1;

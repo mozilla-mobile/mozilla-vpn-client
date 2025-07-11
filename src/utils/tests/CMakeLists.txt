@@ -12,11 +12,19 @@ qt_add_executable(utest-logger testlogger.cpp testlogger.h)
 qt_add_executable(utest-tasks testtasks.cpp testtasks.h)
 qt_add_executable(utest-servermodels testservermodels.cpp testservermodels.h)
 
+# Test entrypoint library
+add_library(mzutils-utest-harness OBJECT main.cpp testhelper.h)
+target_include_directories(mzutils-utest-harness PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_link_libraries(mzutils-utest-harness PUBLIC mzutils Qt6::Test Qt6::Core Qt6::Network)
+
 get_directory_property(UTEST_ALL_TARGETS BUILDSYSTEM_TARGETS)
 foreach(UTEST_TARGET ${UTEST_ALL_TARGETS})
-    # Every test should depend on `main.cpp` as its entry point and should link to the library.
-    target_sources(${UTEST_TARGET} PRIVATE main.cpp testhelper.h)
-    target_link_libraries(${UTEST_TARGET} PRIVATE mzutils Qt6::Test Qt6::Core Qt6::Network)
+    get_target_property(UTEST_TYPE ${UTEST_TARGET} TYPE)
+    if(NOT UTEST_TYPE STREQUAL "EXECUTABLE")
+        continue()
+    endif()
+
+    target_link_libraries(${UTEST_TARGET} PRIVATE mzutils-utest-harness)
 
     # Group the tests in the "Tests" folder
     set_target_properties(${UTEST_TARGET} PROPERTIES
