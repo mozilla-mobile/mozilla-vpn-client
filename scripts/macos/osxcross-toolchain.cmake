@@ -4,7 +4,7 @@
 
 # Specify default system configuration
 set(CMAKE_SYSTEM_NAME Darwin CACHE STRING "Target operating system name")
-set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "Target operating system process")
+set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "Target operating system processor")
 set(CMAKE_SYSTEM_VERSION "20.0.0" CACHE STRING "Target operating system version")
 set(CMAKE_CROSSCOMPILING TRUE CACHE BOOL "Target is cross compiled")
 

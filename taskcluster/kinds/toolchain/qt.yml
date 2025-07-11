@@ -89,3 +89,4 @@ qt-tools:
     worker-type: b-linux
     worker:
         docker-image: {in-tree: conda-base}
+        max-run-time: 900

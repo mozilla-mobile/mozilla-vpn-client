@@ -22,6 +22,8 @@ ARCH_MAP = {
 @transforms.add
 def inflate_task_config(config, tasks):
     for task in tasks:
+        task["worker"].setdefault("env", {})
+
         if not task["name"].startswith("conda-android"):
             yield task
             continue
