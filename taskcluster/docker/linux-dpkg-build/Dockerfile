@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-ARG DOCKER_BASE_IMAGE=ubuntu:20:04
+ARG DOCKER_BASE_IMAGE=ubuntu:22:04
 
 FROM $DOCKER_BASE_IMAGE
 
@@ -18,9 +18,11 @@ ENV CURL='curl --location --retry 5' \
 
 RUN apt-get update \
     && apt-get -y install --no-install-recommends \
+      ca-certificates \
       debhelper \
       devscripts \
       equivs \
+      git \
       sudo
 
 # Also pull in packages from build-depends as early as possible
