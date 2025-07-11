@@ -102,18 +102,3 @@ linux64/next-deb:
         docker-image: {in-tree: linux-qt6-build}
     run:
         command: /builds/worker/builder.sh -s
-
-linux64/keyring-deb:
-    description: "Linux Build (APT Keyring)"
-    treeherder:
-        platform: linux/keyring
-    worker:
-        docker-image: {in-tree: build}
-    add-index-routes:
-        name: linux-keyring
-        type: build
-    run:
-        cwd: '{checkout}'
-        command: >-
-            make -C linux/keyring deb &&
-            cp $(find linux -maxdepth 1 -name 'mozilla-vpn-keyring_*') /builds/worker/artifacts/
