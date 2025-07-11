@@ -24,7 +24,7 @@ task-defaults:
             - requirements.txt
             - env-android.yml
         toolchain-alias: "filled-by-transform: conda.py"
-        toolchain-artifact: public/build/conda-android.tar.gz
+        toolchain-artifact: public/build/conda-android.tar.xz
 
 # Note: for auto inflate to work 
 # Tasks need to follow the naming scheme 

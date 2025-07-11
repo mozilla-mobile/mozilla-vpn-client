@@ -21,4 +21,4 @@ windows-conda-pack:
             resources:
                 - scripts/windows/conda-setup-xwin-sdk.ps1
             toolchain-alias: conda-windows-x86_64
-            toolchain-artifact: public/build/conda-windows.tar.gz
+            toolchain-artifact: public/build/conda-windows.tar.xz
