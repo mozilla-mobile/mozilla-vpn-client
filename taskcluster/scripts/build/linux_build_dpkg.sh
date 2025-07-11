@@ -105,10 +105,16 @@ rm -f ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_*
 # Build the packages
 (cd mozillavpn-source/ && dpkg-buildpackage --unsigned-source --build=full)
 
-# Gather the build artifacts for export
-tar -cvzf /builds/worker/artifacts/mozillavpn-${DIST}.tar.gz $(find . -maxdepth 1 -type f -name 'mozillavpn*' -printf '%f\n')
+# Compress all build artifacts into a tarball
+BUILD_ARTIFACTS=$(find . -maxdepth 1 -type f -name 'mozillavpn*' -printf '%f\n')
+tar -cvzf /builds/worker/artifacts/mozillavpn-${DIST}.tar.gz ${BUILD_ARTIFACTS}
 
-# Gather the binary artifacts for upload.
-shopt -s extglob
-cp ${DPKG_PACKAGE_SRCNAME}_${DPKG_PACKAGE_DIST_VERSION}_${DPKG_PACKAGE_BINARY_ARCH}.deb /builds/worker/artifacts/mozillavpn.deb
-cp ${DPKG_PACKAGE_DBGSYM}_${DPKG_PACKAGE_DIST_VERSION}_${DPKG_PACKAGE_BINARY_ARCH}.@(deb|ddeb) /builds/worker/artifacts/mozillavpn.ddeb
+# Copy individual build artifacts for upload
+for FILENAME in ${BUILD_ARTIFACTS}; do
+  PACKAGE_NAME=$(echo "${FILENAME}" | cut -d_ -f1)
+  PACKAGE_EXT=$(echo "${FILENAME}" | grep -o '[^.]*$')
+  if [ "$(echo ${FILENAME} | cut -d_ -f2)" != "${DPKG_PACKAGE_DIST_VERSION}" ]; then
+    continue
+  fi
+  cp -v ${FILENAME} /builds/worker/artifacts/${PACKAGE_NAME}.${PACKAGE_EXT}
+done
