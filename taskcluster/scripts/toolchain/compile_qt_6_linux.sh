@@ -51,30 +51,30 @@ EOF
 fi
 
 echo "Building $(basename $QT_SOURCE_DIR)"
-mkdir qt_dist
+mkdir qt-linux
 
-$VCS_PATH/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR $(pwd)/qt_dist -b $(pwd)/qt_build
+$VCS_PATH/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR $(pwd)/qt-linux -b $(pwd)/qt_build
 
 echo "Patch Qt configuration"
-cat << EOF > $(pwd)/qt_dist/bin/qt.conf
+cat << EOF > $(pwd)/qt-linux/bin/qt.conf
 [Paths]
 Prefix=..
 EOF
 
-cat << EOF > $(pwd)/qt_dist/libexec/qt.conf
+cat << EOF > $(pwd)/qt-linux/libexec/qt.conf
 [Paths]
 Prefix=..
 EOF
 
 echo "Bundling extra libs"
-for qttool in $(find $(pwd)/qt_dist/bin -executable -type f); do
+for qttool in $(find $(pwd)/qt-linux/bin -executable -type f); do
     ldd $qttool | grep '=>' | awk '{print $3}' >> $(pwd)/qt_build/qtlibdeps.txt
 done
 for qtlibdep in $(sort -u $(pwd)/qt_build/qtlibdeps.txt); do
-    cp -v $qtlibdep $(pwd)/qt_dist/lib/
-    patchelf --set-rpath '$ORIGIN/../lib' $(pwd)/qt_dist/lib/$(basename $qtlibdep) 
+    cp -v $qtlibdep $(pwd)/qt-linux/lib/
+    patchelf --set-rpath '$ORIGIN/../lib' $(pwd)/qt-linux/lib/$(basename $qtlibdep) 
 done
 
 echo "Build Qt- Creating dist artifact"
 echo $UPLOAD_DIR
-tar -cJf $UPLOAD_DIR/qt6_linux.tar.xz qt_dist/
+tar -cJf $UPLOAD_DIR/qt6_linux.tar.xz qt-linux/

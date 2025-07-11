@@ -33,9 +33,9 @@ Remove-Item "qt.zip" -ErrorAction SilentlyContinue
 #
 
 $activate = @"
-`$env:CMAKE_PREFIX_PATH="`$env:CONDA_PREFIX\TaskCluster_QT\QT_OUT\lib\cmake"
-`$env:OPENSSL_ROOT_DIR="`$env:CONDA_PREFIX\TaskCluster_QT\QT_OUT\SSL"
-`$env:QT_HOST_PATH="`$env:CONDA_PREFIX\TaskCluster_QT\QT_OUT\"
+`$env:CMAKE_PREFIX_PATH="`$env:CONDA_PREFIX\TaskCluster_QT\qt-windows\lib\cmake"
+`$env:OPENSSL_ROOT_DIR="`$env:CONDA_PREFIX\TaskCluster_QT\qt-windows\SSL"
+`$env:QT_HOST_PATH="`$env:CONDA_PREFIX\TaskCluster_QT\qt-windows\"
 "@
 Out-File -Encoding utf8 `
          -FilePath  "$conda_folder\etc\conda\activate.d\vpn_qt.ps1"`
