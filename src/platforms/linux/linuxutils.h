@@ -9,11 +9,9 @@
 #include <QVersionNumber>
 
 namespace LinuxUtils {
-QString findCgroupPath(const QString& type);
-QString findCgroup2Path();
+bool hasCgroupMount();
 QVersionNumber gnomeShellVersion();
 QVersionNumber kdeFrameworkVersion();
-QString desktopFileId(const QString& path);
 }  // namespace LinuxUtils
 
 #endif  // LINUXUTILS_H

@@ -10,7 +10,7 @@
 #include <QSocketNotifier>
 #include <QStringList>
 
-#include "daemon/wireguardutils.h"
+#include "wireguardutils.h"
 #include "linuxfirewall.h"
 
 struct nlmsghdr;

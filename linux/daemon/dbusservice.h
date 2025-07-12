@@ -9,7 +9,7 @@
 #include <QHash>
 
 #include "apptracker.h"
-#include "daemon/daemon.h"
+#include "daemon.h"
 #include "dnsutilslinux.h"
 #include "iputilslinux.h"
 #include "wireguardutilslinux.h"
@@ -72,5 +72,30 @@ class DBusService final : public Daemon, protected QDBusContext {
 
   uint m_sessionUid = 0;
 };
+
+/* D-Bus metatype for marshalling the freedesktop login manager data. */
+class UserData {
+ public:
+  QString name;
+  uint userid;
+  QDBusObjectPath path;
+
+  friend QDBusArgument& operator<<(QDBusArgument& args, const UserData& data) {
+    args.beginStructure();
+    args << data.userid << data.name << data.path;
+    args.endStructure();
+    return args;
+  }
+  friend const QDBusArgument& operator>>(const QDBusArgument& args,
+                                         UserData& data) {
+    args.beginStructure();
+    args >> data.userid >> data.name >> data.path;
+    args.endStructure();
+    return args;
+  }
+};
+typedef QList<UserData> UserDataList;
+Q_DECLARE_METATYPE(UserData);
+Q_DECLARE_METATYPE(UserDataList);
 
 #endif  // DBUSSERVICE_H

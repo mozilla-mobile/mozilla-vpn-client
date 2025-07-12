@@ -187,10 +187,14 @@ if(WIN32)
     add_subdirectory(windows/split-tunnel)
     add_subdirectory(windows/wireguard_nt)
 
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux" AND NOT BUILD_FLATPAK)
+    add_subdirectory(linux/daemon)
+
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_subdirectory(macos/daemon)
     add_subdirectory(macos/loginitem)
     add_subdirectory(macos/pkg)
+
 elseif(IOS)
     add_subdirectory(ios/networkextension)
     if(BUILD_ADJUST_SDK_TOKEN)

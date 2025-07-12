@@ -4,6 +4,7 @@
 
 #include "apptracker.h"
 
+#include <mntent.h>
 #include <unistd.h>
 
 #include <QDBusConnection>
@@ -14,8 +15,6 @@
 
 #include "leakdetector.h"
 #include "logger.h"
-#include "platforms/linux/dbustypes.h"
-#include "platforms/linux/linuxutils.h"
 
 constexpr const char* GTK_DESKTOP_APP_SERVICE = "org.gtk.gio.DesktopAppInfo";
 constexpr const char* GTK_DESKTOP_APP_PATH = "/org/gtk/gio/DesktopAppInfo";
@@ -34,7 +33,7 @@ AppTracker::AppTracker(QObject* parent) : QObject(parent) {
   logger.debug() << "AppTracker created.";
 
   /* Monitor for changes to the user's application control groups. */
-  m_cgroupMount = LinuxUtils::findCgroup2Path();
+  m_cgroupMount = findCgroupPath();
 }
 
 AppTracker::~AppTracker() {
@@ -208,7 +207,7 @@ QString AppTracker::findDesktopFileId(const QString& cgroup) {
                            this);
   QString source = interface.property("SourcePath").toString();
   if (!source.isEmpty() && source.endsWith(".desktop")) {
-    return LinuxUtils::desktopFileId(source);
+    return AppTracker::desktopFileId(source);
   }
 
   // Otherwise, we don't know the desktop ID for this control group.
@@ -251,4 +250,66 @@ void AppTracker::cgroupsChanged(const QString& directory) {
       emit appTerminated(scope, desktopFileId);
     }
   }
+}
+
+// static
+QString AppTracker::findCgroupPath(const QString& type) {
+  struct mntent entry;
+  char buf[PATH_MAX];
+
+  const char* cgMountType = "cgroup2";
+  const char* cgMountOpt = nullptr;
+  if (!type.isEmpty() && type != "unified") {
+    cgMountType = "cgroup";
+    cgMountOpt = qPrintable(type);
+  }
+
+
+  FILE* fp = fopen("/etc/mtab", "r");
+  if (fp == NULL) {
+    return QString();
+  }
+
+  while (getmntent_r(fp, &entry, buf, sizeof(buf)) != NULL) {
+    if (strcmp(entry.mnt_type, cgMountType) != 0) {
+      continue;
+    }
+    if (cgMountOpt && hasmntopt(&entry, cgMountOpt)) {
+      fclose(fp);
+      return QString(entry.mnt_dir);
+    }
+  }
+  fclose(fp);
+
+  return QString();
+}
+
+// static
+QString AppTracker::desktopFileId(const QString& path) {
+  // Given the path to a .desktop file, return its Desktop File ID as per
+  // the freedesktop.org's Desktop Entry Spec. See:
+  // https://specifications.freedesktop.org/desktop-entry-spec/desktop-entry-spec-latest.html#desktop-file-id
+  //
+  // To determine the ID of a desktop file, make its full path relative to the
+  // $XDG_DATA_DIRS component in which the desktop file is installed, remove the
+  // "applications/" prefix, and turn '/' into '-'.
+
+  // If the path contains no slashes, assume this conversion is already done.
+  if (!path.contains('/')) {
+    return path;
+  }
+
+  // Find the application dir in the path.
+  const QString dirComponent("/applications/");
+  qsizetype index = path.lastIndexOf(dirComponent);
+  if (index >= 0) {
+    index += dirComponent.length();
+  } else if (index < 0) {
+    // If no applications dir was found, let's just use the filename.
+    index = path.lastIndexOf('/') + 1;
+    Q_ASSERT(index > 0);
+  }
+
+  // Convert it.
+  return path.mid(index).replace('/', '-');
 }

@@ -19,7 +19,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "platforms/linux/linuxutils.h"
 
 namespace {
 Logger logger("DBusService");
@@ -117,7 +116,7 @@ bool DBusService::activate(const InterfaceConfig& config) {
   // (Re)load the split tunnelling configuration.
   clearAppStates();
   for (const QString& app : config.m_vpnDisabledApps) {
-    setAppState(LinuxUtils::desktopFileId(app), Excluded);
+    setAppState(AppTracker::desktopFileId(app), Excluded);
   }
 
   return true;

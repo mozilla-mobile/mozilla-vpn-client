@@ -73,6 +73,9 @@ class AppTracker final : public QObject {
     return m_runningCgroups.keys(desktopFileId);
   }
 
+  static QString findCgroupPath(const QString& type = QString());
+  static QString desktopFileId(const QString& path);
+
  signals:
   void appLaunched(const QString& cgroup, const QString& desktopFileId);
   void appTerminated(const QString& cgroup, const QString& desktopFileId);

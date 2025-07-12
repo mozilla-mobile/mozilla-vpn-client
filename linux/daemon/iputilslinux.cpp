@@ -12,7 +12,7 @@
 #include <QHostAddress>
 #include <QScopeGuard>
 
-#include "daemon/wireguardutils.h"
+#include "wireguardutils.h"
 #include "leakdetector.h"
 #include "logger.h"
 

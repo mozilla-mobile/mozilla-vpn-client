@@ -23,9 +23,9 @@
 #include <chrono>
 #include <thread>
 
+#include "apptracker.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "platforms/linux/linuxutils.h"
 
 // Import wireguard C library for Linux
 #if defined(__cplusplus)
@@ -101,8 +101,8 @@ WireguardUtilsLinux::WireguardUtilsLinux(QObject* parent)
   // In this situation, you will likely see this kernel log warning:
   //   cgroup: disabling cgroup2 socket matching due to net_prio or net_cls
   //   activation
-  m_cgroupNetClass = LinuxUtils::findCgroupPath("net_cls");
-  m_cgroupUnified = LinuxUtils::findCgroup2Path();
+  m_cgroupNetClass = AppTracker::findCgroupPath("net_cls");
+  m_cgroupUnified = AppTracker::findCgroupPath();
   if (!m_cgroupNetClass.isNull()) {
     if (setupCgroupClass(m_cgroupNetClass + VPN_EXCLUDE_CGROUP,
                          VPN_EXCLUDE_CLASS_ID)) {

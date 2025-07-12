@@ -8,8 +8,8 @@
 #include <QDBusInterface>
 #include <QDBusPendingCallWatcher>
 
-#include "daemon/dnsutils.h"
-#include "platforms/linux/dbustypes.h"
+#include "dnsutils.h"
+#include "dnsmetatypes.h"
 
 class DnsUtilsLinux final : public DnsUtils {
   Q_OBJECT

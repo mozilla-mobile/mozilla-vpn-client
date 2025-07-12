@@ -7,7 +7,7 @@ After=modprobe@xt_cgroup.service
 Type=dbus
 BusName=org.mozilla.vpn.dbus
 Restart=on-failure
-ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/mozillavpn linuxdaemon
+ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/mozillavpn-daemon
 
 [Install]
 WantedBy=multi-user.target

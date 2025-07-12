@@ -107,14 +107,12 @@ bool FeatureCallback_splitTunnel() {
   }
   initDone = true;
 
-  /* Control groups v2 must be mounted for app/traffic classification
-   */
-  if (LinuxUtils::findCgroup2Path().isNull()) {
+  /* Control groups must be mounted for app/traffic classification */
+  if (!LinuxUtils::hasCgroupMount()) {
     return false;
   }
 
-  /* Application tracking is only supported on GTK-based desktops
-   */
+  /* Application tracking is only supported on GTK-based desktops */
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   if (!pe.contains("XDG_CURRENT_DESKTOP")) {
     return false;

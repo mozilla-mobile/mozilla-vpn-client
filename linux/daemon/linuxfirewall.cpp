@@ -4,7 +4,7 @@
 
 #include "linuxfirewall.h"
 
-#include "controller.h"
+#include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 

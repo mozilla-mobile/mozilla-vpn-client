@@ -7,7 +7,7 @@
 
 #include <arpa/inet.h>
 
-#include "daemon/iputils.h"
+#include "iputils.h"
 
 class IPUtilsLinux final : public IPUtils {
  public:
