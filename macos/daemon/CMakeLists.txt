@@ -42,13 +42,10 @@ target_sources(daemon PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/macosroutemonitor.h
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardutilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardutilsmacos.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/xpcdaemonprotocol.h
     ${CMAKE_CURRENT_SOURCE_DIR}/xpcdaemonserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/xpcdaemonserver.mm
 )
-
-# We will need to include the xpcdaemonprotocol header too.
-target_include_directories(daemon PRIVATE ${CMAKE_SOURCE_DIR}/src/platforms/macos)
-target_sources(daemon PRIVATE ${CMAKE_SOURCE_DIR}/src/platforms/macos/xpcdaemonprotocol.h)
 
 # Embed the daemon property list.
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in daemon.plist)

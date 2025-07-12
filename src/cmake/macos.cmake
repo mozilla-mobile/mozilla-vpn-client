@@ -56,10 +56,12 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosstatusicon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosutils.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosutils.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/xpcdaemonprotocol.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosnetworkwatcher.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosnetworkwatcher.h
 )
+
+target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR}/macos/daemon)
+target_sources(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR}/macos/daemon/xpcdaemonprotocol.h)
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
