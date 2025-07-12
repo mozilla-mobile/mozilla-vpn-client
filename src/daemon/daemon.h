@@ -27,8 +27,6 @@ class Daemon : public QObject {
   explicit Daemon(QObject* parent);
   ~Daemon();
 
-  static Daemon* instance();
-
   static bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
 
   virtual bool activate(const InterfaceConfig& config);

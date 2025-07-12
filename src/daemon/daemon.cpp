@@ -20,11 +20,7 @@ constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 constexpr int HANDSHAKE_POLL_MSEC = 250;
 
 namespace {
-
 Logger logger("Daemon");
-
-Daemon* s_daemon = nullptr;
-
 }  // namespace
 
 Daemon::Daemon(QObject* parent) : QObject(parent) {
@@ -32,26 +28,13 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
 
   logger.debug() << "Daemon created";
 
-  Q_ASSERT(s_daemon == nullptr);
-  s_daemon = this;
-
   m_handshakeTimer.setSingleShot(true);
   connect(&m_handshakeTimer, &QTimer::timeout, this, &Daemon::checkHandshake);
 }
 
 Daemon::~Daemon() {
   MZ_COUNT_DTOR(Daemon);
-
   logger.debug() << "Daemon released";
-
-  Q_ASSERT(s_daemon == this);
-  s_daemon = nullptr;
-}
-
-// static
-Daemon* Daemon::instance() {
-  Q_ASSERT(s_daemon);
-  return s_daemon;
 }
 
 bool Daemon::activate(const QString& json) {

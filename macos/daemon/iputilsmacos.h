@@ -9,20 +9,23 @@
 
 #include "iputils.h"
 
+class MacOSDaemon;
+
 class IPUtilsMacos final : public IPUtils {
  public:
-  IPUtilsMacos(QObject* parent);
+  IPUtilsMacos(MacOSDaemon* parent);
   ~IPUtilsMacos();
+
   bool addInterfaceIPs(const InterfaceConfig& config) override;
   bool setMTUAndUp(const InterfaceConfig& config) override;
-  void setIfname(const QString& ifname) { m_ifname = ifname; }
 
  private:
+  QString interfaceName() const;
   bool addIP4AddressToDevice(const InterfaceConfig& config);
   bool addIP6AddressToDevice(const InterfaceConfig& config);
 
  private:
-  QString m_ifname;
+  MacOSDaemon* m_daemon = nullptr;
 };
 
 #endif  // IPUTILSMACOS_H

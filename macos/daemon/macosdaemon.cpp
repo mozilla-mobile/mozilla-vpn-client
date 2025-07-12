@@ -20,7 +20,6 @@
 
 namespace {
 Logger logger("MacOSDaemon");
-MacOSDaemon* s_daemon = nullptr;
 }  // namespace
 
 MacOSDaemon::MacOSDaemon(QObject* parent) : Daemon(parent) {
@@ -34,22 +33,9 @@ MacOSDaemon::MacOSDaemon(QObject* parent) : Daemon(parent) {
 
   connect(m_wgutils, &WireguardUtils::backendFailure, this,
           &MacOSDaemon::abortBackendFailure);
-
-  Q_ASSERT(s_daemon == nullptr);
-  s_daemon = this;
 }
 
 MacOSDaemon::~MacOSDaemon() {
   MZ_COUNT_DTOR(MacOSDaemon);
-
   logger.debug() << "Daemon released";
-
-  Q_ASSERT(s_daemon == this);
-  s_daemon = nullptr;
-}
-
-// static
-MacOSDaemon* MacOSDaemon::instance() {
-  Q_ASSERT(s_daemon);
-  return s_daemon;
 }

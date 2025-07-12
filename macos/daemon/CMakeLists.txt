@@ -33,13 +33,13 @@ target_sources(daemon PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/iputilsmacos.h
     ${CMAKE_CURRENT_SOURCE_DIR}/macosdaemon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/macosdaemon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/macosdaemonmain.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/macosdaemonserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/macosdaemonserver.h
     ${CMAKE_CURRENT_SOURCE_DIR}/macosdnsmanager.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/macosdnsmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/macosroutemonitor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/macosroutemonitor.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardutilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardutilsmacos.h
     ${CMAKE_CURRENT_SOURCE_DIR}/xpcdaemonprotocol.h
