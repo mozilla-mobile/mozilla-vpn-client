@@ -39,6 +39,43 @@ sample:
           The line number where the error has been triggered
         type: quantity
 
+settings:
+  using_dark_mode:
+    type: boolean
+    description: |
+      True if the client is displaying dark mode, false if it's displaying
+      light mode. This is recorded whether the mode was manually selected by
+      the user or whether it was used because "use system theme" was true.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-7143
+    data_reviews:
+      - ADD AFTER COMPLETED
+    send_in_pings:
+      - main
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2026-07-30
+
+  is_using_system_theme:
+    type: boolean
+    description: |
+      True if the client is set to use the system theme, false if not.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-7143
+    data_reviews:
+      - ADD AFTER COMPLETED
+    send_in_pings:
+      - main
+    data_sensitivity:
+      - interaction
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: 2026-07-30
+
 performance:
   time_to_main_screen:
     type: timing_distribution
