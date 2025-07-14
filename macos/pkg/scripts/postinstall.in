@@ -97,7 +97,7 @@ if ! codesign -v --verbose=4 -R="\${CODESIGN_REQS}" "${APP_DIR}"; then
   exit 1
 fi
 
-"${APP_DIR}/Contents/Library/LaunchServices/${CODESIGN_APP_IDENTIFIER}.daemon" "$@"
+"${APP_DIR}/Contents/Library/LaunchServices/${CODESIGN_APP_IDENTIFIER}.daemon" "\$@"
 EOF
   chmod u-w $DAEMON_HELPER_TOOL
 
