@@ -16,10 +16,8 @@ endif
 
 export SYSTEMD_UNIT_PATH := $(shell (pkg-config --variable=systemdsystemunitdir systemd || echo "/lib/systemd/system") | sed 's/^[/]//g')
 
-CMAKE_BUILD_DIR := build-$(DEB_HOST_MULTIARCH)
-
 %:
-	dh $@ --buildsystem=cmake+ninja --builddirectory=$(CMAKE_BUILD_DIR) --warn-missing
+	dh $@ --buildsystem=cmake+ninja --builddirectory=build-$(DEB_HOST_MULTIARCH) --warn-missing
 
 override_dh_auto_configure:
 	dh_auto_configure -- -DWEBEXT_INSTALL_LIBDIR=/lib -DBUILD_ID=$(DEB_VERSION) -DBUILD_TESTS=OFF ${OPENSSL_BUILD_ARGS}
