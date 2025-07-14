@@ -139,11 +139,11 @@ MZAlert {
                 }
             },
             State {
-                name: MZErrorHandler.SampleWarningAlert
+                name: MZErrorHandler.VPNMustBeOffWarning
                 PropertyChanges {
                     target: alertBox
                     alertType: alertTypes.warning
-                    alertText: "Sample warning alert"
+                    alertText: MZI18n.BypassVPNVpnMustBeOff
                     visible: true
                 }
             },
