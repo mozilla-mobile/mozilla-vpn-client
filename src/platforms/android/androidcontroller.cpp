@@ -258,17 +258,8 @@ void AndroidController::activate(const InterfaceConfig& config,
                                     doc.toJson(QJsonDocument::Compact));
 }
 
-void AndroidController::deactivate(Controller::Reason reason) {
-  logger.debug() << "deactivation:  " << reason;
-
-  if (reason != Controller::ReasonNone) {
-    // Just show that we're disconnected
-    // we're doing the actual disconnect once
-    // the vpn-service has the new server ready in Action->Activate
-    emit disconnected();
-    logger.warning() << "deactivation skipped for Switching";
-    return;
-  }
+void AndroidController::deactivate() {
+  logger.debug() << "deactivation";
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_DEACTIVATE,
                                     QString());
 }

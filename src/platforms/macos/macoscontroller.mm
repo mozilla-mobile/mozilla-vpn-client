@@ -225,7 +225,7 @@ void MacOSController::activate(const InterfaceConfig& config,
   [remoteObject() activate:json.toNSString()];
 }
 
-void MacOSController::deactivate(Controller::Reason reason) {
+void MacOSController::deactivate() {
   [remoteObject() deactivate];
 }
 

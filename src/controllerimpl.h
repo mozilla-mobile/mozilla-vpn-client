@@ -45,7 +45,7 @@ class ControllerImpl : public QObject {
 
   // This method terminates the VPN tunnel. The VPN client is in
   // "disconnecting" state until the "disconnected" signal is received.
-  virtual void deactivate(Controller::Reason reason) = 0;
+  virtual void deactivate() = 0;
 
   // This method is used to remove the tunnel config from the operating
   // system. This is used upon logging out and resetting, so the
