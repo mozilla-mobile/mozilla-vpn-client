@@ -23,6 +23,7 @@
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
+#include "models/location.h"
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
@@ -231,6 +232,14 @@ void AndroidController::activate(const InterfaceConfig& config,
 
   args["isSuperDooperFeatureActive"] =
       Feature::get(Feature::Feature_superDooperMetrics)->isSupported();
+  QString trueCountryCode = MozillaVPN::instance()->location()->countryCode();
+  if (!trueCountryCode.isEmpty()) {
+    args["serverLocatedInUserCountry"] =
+        MozillaVPN::instance()->serverData()->serverLocatedInUserCountry();
+  } else {
+    logger.warning() << "Not setting `server_in_same_country` in Android "
+                        "payload because country code is blank.";
+  }
   args["installationId"] = config.m_installationId;
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();

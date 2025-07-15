@@ -12,6 +12,7 @@
 #include "glean/generated/pings.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/location.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 
@@ -125,6 +126,18 @@ void Telemetry::initialize() {
               mozilla::glean::connection_health::data_transferred_rx
                   .accumulate_single_sample(rxBytes);
             });
+
+            QString trueCountryCode =
+                MozillaVPN::instance()->location()->countryCode();
+            if (!trueCountryCode.isEmpty()) {
+              mozilla::glean::session::server_in_same_country.set(
+                  MozillaVPN::instance()
+                      ->serverData()
+                      ->serverLocatedInUserCountry());
+            } else {
+              logger.warning() << "Not recording `server_in_same_country` "
+                                  "because country code is blank.";
+            }
           });
 #endif
 }
