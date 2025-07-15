@@ -29,7 +29,7 @@ class WasmController final : public ControllerImpl {
   void activate(const InterfaceConfig& config,
                 Controller::Reason reason) override;
 
-  void deactivate(Controller::Reason reason) override;
+  void deactivate() override;
 
   void checkStatus() override;
 

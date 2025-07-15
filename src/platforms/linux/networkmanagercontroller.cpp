@@ -418,9 +418,7 @@ void NetworkManagerController::stateChanged(uint state, uint reason) {
   }
 }
 
-void NetworkManagerController::deactivate(Controller::Reason reason) {
-  Q_UNUSED(reason);
-
+void NetworkManagerController::deactivate() {
   if (m_connection == nullptr) {
     logger.warning() << "Client already disconnected";
     emit disconnected();

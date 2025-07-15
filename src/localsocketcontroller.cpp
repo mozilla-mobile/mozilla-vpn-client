@@ -118,17 +118,11 @@ void LocalSocketController::activate(const InterfaceConfig& config,
   write(json);
 }
 
-void LocalSocketController::deactivate(Controller::Reason reason) {
+void LocalSocketController::deactivate() {
   logger.debug() << "Deactivating";
 
   if (m_daemonState != eReady) {
     logger.debug() << "No disconnect, controller is not ready";
-    emit disconnected();
-    return;
-  }
-
-  if (reason == Controller::ReasonSwitching) {
-    logger.debug() << "No disconnect for quick server switching";
     emit disconnected();
     return;
   }
