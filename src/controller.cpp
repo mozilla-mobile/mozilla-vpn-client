@@ -645,7 +645,7 @@ bool Controller::silentSwitchServers(
   logger.debug() << "Switching to a different server";
 
   setState(StateSilentSwitching);
-  activateInternal(DoNotForceDNSPort, m_initiator, selectionPolicy);
+  activateInternal(DoNotForceDNSPort, selectionPolicy, m_initiator);
   return true;
 }
 
@@ -745,13 +745,10 @@ void Controller::disconnected() {
   if (nextStep == None &&
       (m_state == StateSilentSwitching || m_state == StateSwitching)) {
     // If we are only switching, keep the iniator
-    // Else move the iniator to Client User
     // as the extension cannot switch servers.
-    auto target_iniator =
-        (m_state == StateSilentSwitching || m_state == StateSwitching)
-            ? m_initiator
-            : ActivationPrincipal::ClientUser;
-    activate(m_nextServerData, target_iniator, m_nextServerSelectionPolicy);
+    m_serverData = m_nextServerData;
+    emit currentServerChanged();
+    activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
     return;
   }
 
@@ -914,10 +911,9 @@ bool Controller::switchServers(const ServerData& serverData) {
   logger.debug() << "Switching to a different server";
 
   setState(StateSwitching);
-  if (m_nextServerData.multihop() != m_serverData.multihop()) {
+  if (serverData.multihop() != m_serverData.multihop()) {
     // We require a full deactivation if switching from singlehop to multihop.
     m_nextServerData = serverData;
-    m_nextServerSelectionPolicy = RandomizeServerSelection;
     deactivate();
     return true;
   }
@@ -925,7 +921,7 @@ bool Controller::switchServers(const ServerData& serverData) {
   // Otherwise proceed directly to activation.
   m_serverData = serverData;
   emit currentServerChanged();
-  activateInternal(DoNotForceDNSPort, m_initiator, RandomizeServerSelection);
+  activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
   return true;
 }
 
