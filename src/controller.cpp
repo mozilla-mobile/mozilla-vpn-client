@@ -620,6 +620,7 @@ bool Controller::silentSwitchServers(
     return false;
   }
 
+  ServerSelectionPolicy selectionPolicy = DoNotRandomizeServerSelection;
   if (serverCoolDownPolicy == eServerCoolDownNeeded) {
     // Set a cooldown timer on the current server.
     QList<Server> servers = m_serverData.exitServers();
@@ -634,13 +635,9 @@ bool Controller::silentSwitchServers(
     MozillaVPN::instance()->serverLatency()->setCooldown(
         m_serverData.exitServerPublicKey(),
         Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+    
+    selectionPolicy = RandomizeServerSelection;
   }
-
-  isSwitchingServer = true;
-  m_nextServerData = m_serverData;
-  m_nextServerSelectionPolicy = serverCoolDownPolicy == eServerCoolDownNeeded
-                                    ? RandomizeServerSelection
-                                    : DoNotRandomizeServerSelection;
 
   clearConnectedTime();
   clearRetryCounter();
@@ -648,8 +645,7 @@ bool Controller::silentSwitchServers(
   logger.debug() << "Switching to a different server";
 
   setState(StateSilentSwitching);
-  deactivate();
-
+  activateInternal(DoNotForceDNSPort, m_initiator, selectionPolicy);
   return true;
 }
 
