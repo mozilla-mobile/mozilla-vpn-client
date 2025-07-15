@@ -377,7 +377,7 @@ function(add_rust_library TARGET_NAME)
                 COMMAND ${CMAKE_COMMAND} -E make_directory unified/release/${RUST_TARGET_FW_NAME}.framework
                 COMMAND ${CMAKE_COMMAND} -E copy ${FW_INFO_PLIST_FILE_PATH} unified/release/${RUST_TARGET_FW_NAME}.framework/Info.plist
                 COMMAND lipo -create ${RUST_TARGET_RELEASE_LIBS} -output unified/release/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
-                COMMAND install_name_tool -add_rpath @rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME} unified/release/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
+                COMMAND install_name_tool -id @rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME} unified/release/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
             )
 
             add_custom_command(
@@ -387,7 +387,7 @@ function(add_rust_library TARGET_NAME)
                 COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework
                 COMMAND ${CMAKE_COMMAND} -E copy ${FW_INFO_PLIST_FILE_PATH} unified/debug/${RUST_TARGET_FW_NAME}.framework/Info.plist
                 COMMAND lipo -create ${RUST_TARGET_DEBUG_LIBS} -output unified/debug/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
-                COMMAND install_name_tool -add_rpath @rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME} unified/debug/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
+                COMMAND install_name_tool -id @rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME} unified/debug/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
             )
 
             add_custom_target(${TARGET_NAME}_builder
