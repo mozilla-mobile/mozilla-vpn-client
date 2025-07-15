@@ -5,12 +5,6 @@ export DH_VERBOSE=1
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
 
-GOLANG_NATIVE_VERSION := $(shell dpkg-query --showformat='${Version}' --show golang 2>/dev/null || echo 0)
-ifneq (ok,$(shell dpkg --compare-versions $(GOLANG_NATIVE_VERSION) ge 2:1.18 && echo ok))
-	export GODIR := /usr/lib/go-1.18
-	export PATH := $(GODIR)/bin:$(PATH)
-endif
-
 # Check Qt features.
 QT_INSTALL_HEADERS := $(shell pkg-config --variable=includedir Qt6Core || qmake6 -query QT_INSTALL_HEADERS || true)
 qtfeature = $(shell test -d "$(QT_INSTALL_HEADERS)" && echo "$(1)" | gcc -I "$(QT_INSTALL_HEADERS)" -include QtCore/qconfig.h -E - | grep -e '^[[:alnum:]_-]')
@@ -20,10 +14,10 @@ ifeq (1,$(call qtfeature,QT_FEATURE_openssl_linked))
 endif
 endif
 
-CMAKE_BUILD_DIR := build-$(DEB_HOST_MULTIARCH)
+export SYSTEMD_UNIT_PATH := $(shell (pkg-config --variable=systemdsystemunitdir systemd || echo "/lib/systemd/system") | sed 's/^[/]//g')
 
 %:
-	dh $@ --with=systemd --buildsystem=cmake+ninja --builddirectory=$(CMAKE_BUILD_DIR) --warn-missing
+	dh $@ --buildsystem=cmake+ninja --builddirectory=build-$(DEB_HOST_MULTIARCH) --warn-missing
 
 override_dh_auto_configure:
 	dh_auto_configure -- -DWEBEXT_INSTALL_LIBDIR=/lib -DBUILD_ID=$(DEB_VERSION) -DBUILD_TESTS=OFF ${OPENSSL_BUILD_ARGS}
@@ -33,18 +27,6 @@ override_dh_auto_test:
 override_dh_installdocs:
 
 override_dh_installinfo:
-
-override_dh_installsystemd:
-	dh_installsystemd $(CMAKE_BUILD_DIR)/src/mozillavpn.service
-	dh_installsystemd $(CMAKE_BUILD_DIR)/extension/socks5proxy/bin/socksproxy.service
-
-override_dh_systemd_start:
-	dh_systemd_start $(CMAKE_BUILD_DIR)/src/mozillavpn.service
-	dh_systemd_start $(CMAKE_BUILD_DIR)/extension/socks5proxy/bin/socksproxy.service
-
-override_dh_systemd_enable:
-	dh_systemd_enable $(CMAKE_BUILD_DIR)/src/mozillavpn.service
-	dh_systemd_enable $(CMAKE_BUILD_DIR)/extension/socks5proxy/bin/socksproxy.service
 
 override_dh_builddeb:
 	dh_builddeb -- -Zgzip

@@ -65,6 +65,7 @@ bool IPUtilsLinux::setMTUAndUp(const InterfaceConfig& config) {
 
   // Up
   ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
+  ifr.ifr_flags &= ~IFF_PROMISC;
   ret = ioctl(sockfd, SIOCSIFFLAGS, &ifr);
   if (ret) {
     logger.error() << "Failed to set device up -- Return code: " << ret;

@@ -55,3 +55,39 @@ Alternatively, you can use two terminals to run the daemon manually and separate
 
     sudo mozillavpn linuxdaemon
     mozillavpn
+
+# Building for Flatpak
+
+The Mozilla VPN client supports building and distribution via flatpak, and is
+available on Flathub at [org.mozilla.vpn](https://flathub.org/apps/org.mozilla.vpn).
+
+The flatpak manifests for the latest stable release can be found at
+[flathub/org.mozilla.vpn](https://github.com/flathub/org.mozilla.vpn), and this
+project also contains a manifest for local development in the `linux/flatpak`
+directory.
+
+To build the flatpak package, start by installing the `org.flatpak.Builder` app:
+
+```
+   flatpak install -y flathub org.flatpak.Builder
+```
+
+Add the Flathub repo user-wide:
+
+```
+   flatpak remote-add --if-not-exists --user flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+```
+
+Then build the project manifest and install it:
+
+```
+   flatpak run org.flatpak.Builder --force-clean --sandbox --user --install --install-deps-from=flathub --ccache build-flatpak linux/flatpak/org.mozilla.vpn.yml
+```
+
+Once installed, the Mozilla VPN client can be run using the `org.mozilla.vpn`
+app identifier:
+
+```
+   flatpak run org.mozilla.vpn
+```
+

@@ -99,7 +99,7 @@ class LogHandler final : public QObject, public LogSerializer {
   void logSerialize(QIODevice* device) override;
 
   bool writeLogsToLocation(
-      QStandardPaths::StandardLocation location,
+      const QString& location,
       std::function<void(const QString& filename)>&& a_callback);
 
   void registerLogSerializer(LogSerializer* logSerializer);
