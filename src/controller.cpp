@@ -911,8 +911,6 @@ bool Controller::switchServers(const ServerData& serverData) {
   startTimerIfInactive();
 
   isSwitchingServer = true;
-  m_nextServerData = serverData;
-  m_nextServerSelectionPolicy = RandomizeServerSelection;
 
   clearConnectedTime();
   clearRetryCounter();
@@ -920,8 +918,18 @@ bool Controller::switchServers(const ServerData& serverData) {
   logger.debug() << "Switching to a different server";
 
   setState(StateSwitching);
-  deactivate();
+  if (m_nextServerData.multihop() != m_serverData.multihop()) {
+    // We require a full deactivation if switching from singlehop to multihop.
+    m_nextServerData = serverData;
+    m_nextServerSelectionPolicy = RandomizeServerSelection;
+    deactivate();
+    return true;
+  }
 
+  // Otherwise proceed directly to activation.
+  m_serverData = serverData;
+  emit currentServerChanged();
+  activateInternal(DoNotForceDNSPort, m_initiator, RandomizeServerSelection);
   return true;
 }
 
@@ -1088,7 +1096,7 @@ bool Controller::deactivate(ActivationPrincipal user) {
   clearRetryCounter();
 
   Q_ASSERT(m_impl);
-  m_impl->deactivate(stateToReason(m_state));
+  m_impl->deactivate();
   return true;
 }
 
