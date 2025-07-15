@@ -38,6 +38,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
         return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isSuperDooperFeatureActive"] as? Bool) ?? false
     }
 
+    private var isServerLocatedInUserCountry: Bool? {
+        return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isServerLocatedInUserCountry"] as? Bool)
+    }
+
     override init() {
         super.init()
 
@@ -165,6 +169,11 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
             ErrorNotifier.removeLastErrorFile()
             self.connectionHealthMonitor.stop()
             if self.shouldSendTelemetry {
+                if let isServerLocatedInUserCountry = self.isServerLocatedInUserCountry {
+                  GleanMetrics.Session.serverInSameCountry.set(isServerLocatedInUserCountry)
+                } else {
+                  self.logger.error(message: "Not setting serverInSameCountry because no local location was found.")
+                }
                 GleanMetrics.Session.daemonSessionEnd.set()
                 GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
 
