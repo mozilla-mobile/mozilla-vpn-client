@@ -261,8 +261,6 @@ class Controller : public QObject, public LogSerializer {
   PingHelper m_pingCanary;
   bool m_pingReceived = false;
 
-  ServerSelectionPolicy m_nextServerSelectionPolicy = RandomizeServerSelection;
-
   QList<std::function<void(const QString& serverIpv4Gateway,
                            const QString& deviceIpv4Address, uint64_t txBytes,
                            uint64_t rxBytes)>>
