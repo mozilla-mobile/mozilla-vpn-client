@@ -64,13 +64,13 @@ tasks:
             artifact-name: cmake-macos-universal.tar.gz
             size: 75379015
     macosx-sdk:
-        description: MacOSX SDK 15.4
+        description: MacOSX SDK 15.3
         fetch:
             type: static-url
-            url: https://swcdn.apple.com/content/downloads/10/32/082-12052-A_AHPGDY76PT/1a419zaf3vh8o9t3c0usblyr8eystpnsh5/CLTools_macOSNMOS_SDK.pkg
-            sha256: f8b0600aa4ad9b0b0b150fb62691dc561f47bc33ebc40546439f1460a0680913
+            url: https://swcdn.apple.com/content/downloads/14/48/052-59890-A_I0F5YGAY0Y/p9n40hio7892gou31o1v031ng6fnm9sb3c/CLTools_macOSNMOS_SDK.pkg
+            sha256: 6f35bd96401f2a07a8ab8f21321f2706a51d2309da7406fb81fbefd16af3c9d0
             artifact-name: cltools-macosnmos-sdk.pkg
-            size: 58055915
+            size: 59320979
     qt-source-tarball:
         description: Qt 6.6.3 Source Tarball
         fetch:
