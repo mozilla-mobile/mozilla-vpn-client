@@ -551,7 +551,7 @@ void Controller::activateNext() {
     return;
   }
 
-  if (m_state != StateSilentSwitching) {
+  if ((m_state != StateSwitching) && (m_state != StateSilentSwitching)) {
     // Move to the StateConfirming if we are awaiting any connection handshakes
     setState(StateConfirming);
   }
@@ -704,11 +704,11 @@ void Controller::disconnected() {
     emit currentServerChanged();
     activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
     return;
-  } else {
-    // If this is not part of a server switch, clear the connection time.
-    m_connectedTimeInUTC = QDateTime();
-    emit timestampChanged();
   }
+
+  // clear the connection time.
+  m_connectedTimeInUTC = QDateTime();
+  emit timestampChanged();
 
   // Need this StateConfirming check to prevent recording telemetry during
   // Android onboarding.
