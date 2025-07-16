@@ -81,8 +81,6 @@ Controller::Controller() {
   m_confirmingTimer.setSingleShot(true);
   m_handshakeTimer.setSingleShot(true);
 
-  connect(&m_durationTimer, &QTimer::timeout, this, &Controller::durationTick);
-
   connect(&m_confirmingTimer, &QTimer::timeout, this, [this]() {
     m_enableDisconnectInConfirming = true;
     emit enableDisconnectInConfirmingChanged();
@@ -218,33 +216,8 @@ void Controller::implInitialized(bool status, bool a_connected,
     m_connectedTimeInUTC = connectionDate.isValid()
                                ? connectionDate.toUTC()
                                : QDateTime::currentDateTimeUtc();
-    emit timeChanged();
-    m_durationTimer.start(CONNECTION_TIME_UPDATE_FREQUENCY);
+    emit timestampChanged();
   }
-}
-
-qint64 Controller::time() const {
-  if (m_connectedTimeInUTC.isValid()) {
-    return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
-  }
-  return 0;
-}
-
-void Controller::durationTick() {
-  Q_ASSERT(m_state == StateOn || m_state == StateOnPartial);
-#ifdef MZ_IOS
-  // When locking an iOS device with an app in the foreground, the app's JS
-  // runtime is stopped pretty quick by the system. For this VPN app, that
-  // caused a crash here when Qt tried to pass this emit off to QML, as QML
-  // is JS and is no longer available. This check is to prevent that crash
-  // when the device is locked.
-  if (QGuiApplication::applicationState() ==
-      Qt::ApplicationState::ApplicationActive) {
-    emit timeChanged();
-  }
-#else
-  emit timeChanged();
-#endif
 }
 
 void Controller::quit() {
@@ -379,7 +352,6 @@ void Controller::activateInternal(
   Q_ASSERT(m_impl);
   m_initiator = initiator;
 
-  m_durationTimer.stop();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
 
@@ -625,7 +597,6 @@ bool Controller::silentSwitchServers(
     selectionPolicy = RandomizeServerSelection;
   }
 
-  m_durationTimer.stop();
   clearRetryCounter();
 
   logger.debug() << "Switching to a different server";
@@ -694,18 +665,16 @@ void Controller::connected(const QString& pubkey) {
     setState(StateOn);
   }
 
-  if (isSwitchingServer == false) {
+  if (!isSwitchingServer) {
+    m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
+    emit timestampChanged();
+
     logger.debug() << "Collecting telemetry for new session.";
     emit recordConnectionStartTelemetry();
   } else {
-    m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
     logger.debug() << "Connection happened due to server switch. Not "
                       "collecting telemetry.";
   }
-
-  // (Re)start the connection timer.
-  emit timeChanged();
-  m_durationTimer.start(CONNECTION_TIME_UPDATE_FREQUENCY);
 
   if (m_nextStep == Quit || m_nextStep == Disconnect || m_nextStep == Update) {
     deactivate();
@@ -717,7 +686,6 @@ void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
 
   m_pingCanary.stop();
-  m_durationTimer.stop();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
   clearRetryCounter();
@@ -740,7 +708,7 @@ void Controller::disconnected() {
   } else {
     // If this is not part of a server switch, clear the connection time.
     m_connectedTimeInUTC = QDateTime();
-    emit timeChanged();
+    emit timestampChanged();
   }
 
   // Need this StateConfirming check to prevent recording telemetry during
@@ -891,7 +859,6 @@ bool Controller::switchServers(const ServerData& serverData) {
 
   setState(StateSwitching);
   clearRetryCounter();
-  m_durationTimer.stop();
 
   if (serverData.multihop() != m_serverData.multihop()) {
     // We require a full deactivation if switching from singlehop to multihop.

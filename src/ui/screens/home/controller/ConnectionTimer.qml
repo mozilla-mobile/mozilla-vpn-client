@@ -13,7 +13,7 @@ RowLayout {
     property real narrowWidth: MZTheme.theme.fontSize * 0.05
     property var narrowCharacters: [" ", "\t", "\n", ":"]
     property bool ignoreForAccessibility: false
-    property var connectionTimeForFunctionalTest: formatTime(VPNController.time)
+    property var connectionTime: formatTime(VPNController.connectionTimestamp)
 
     function formatSingle(value) {
         if (value === 0)
@@ -22,16 +22,26 @@ RowLayout {
         return (value < 10 ? "0" : "") + value;
     }
 
-    function formatTime(time) {
-        var secs = time % 60;
-        time = Math.floor(time / 60);
-        var mins = time % 60;
-        time = Math.floor(time / 60);
-        return formatSingle(time) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
+    function formatTime(timestamp) {
+        var duration = Math.floor((Date.now() - timestamp) / 1000);
+
+        var secs = duration % 60;
+        duration = Math.floor(duration / 60);
+        var mins = duration % 60;
+        duration = Math.floor(duration / 60);
+        return formatSingle(duration) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
     }
 
-    Repeater {
-        model: formatTime(VPNController.time).split("")
+    Timer {
+        interval: 1000;
+        running: VPNController.connectionTimestamp != 0;
+        repeat: true
+
+        onTriggered: connectionTime = formatTime(VPNController.connectionTimestamp)
+    }
+
+    Repeater{
+        model: connectionTime.split("")
 
         Text {
             id: digit
