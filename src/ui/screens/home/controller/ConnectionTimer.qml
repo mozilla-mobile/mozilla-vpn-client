@@ -23,7 +23,10 @@ RowLayout {
     }
 
     function formatTime(timestamp) {
-        var duration = Math.floor((Date.now() - timestamp) / 1000);
+        var duration = 0;
+        if (timestamp > 0) {
+            duration = Math.floor((Date.now() - timestamp) / 1000);
+        }
 
         var secs = duration % 60;
         duration = Math.floor(duration / 60);
