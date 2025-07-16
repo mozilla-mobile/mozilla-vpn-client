@@ -57,7 +57,6 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 using namespace std::chrono_literals;
 constexpr const auto CONFIRMING_TIMOUT = 10s;
 constexpr const auto HANDSHAKE_TIMEOUT = 15s;
-constexpr const auto CONNECTION_TIME_UPDATE_FREQUENCY = 1s;
 
 Controller::Reason stateToReason(Controller::State state) {
   if (state == Controller::StateSwitching ||
