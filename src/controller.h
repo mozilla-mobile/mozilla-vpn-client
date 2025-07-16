@@ -68,7 +68,6 @@ class Controller : public QObject, public LogSerializer {
   Q_ENUM(ActivationPrincipal)
 
  public:
-  qint64 time() const;
   qint64 connectionTimestamp() const;
   void serverUnavailable();
   void captivePortalPresent();
@@ -122,7 +121,8 @@ class Controller : public QObject, public LogSerializer {
 
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
-  Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
+  Q_PROPERTY(qint64 connectionTimestamp READ connectionTimestamp NOTIFY
+                 timestampChanged)
   Q_PROPERTY(
       int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
   Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
@@ -137,7 +137,6 @@ class Controller : public QObject, public LogSerializer {
                  currentServerChanged);
 
  private slots:
-  void durationTick();
   void handshakeTimeout();
   void connected(const QString& pubkey);
   void disconnected();
@@ -151,7 +150,7 @@ class Controller : public QObject, public LogSerializer {
 
  signals:
   void stateChanged();
-  void timeChanged();
+  void timestampChanged();
   void enableDisconnectInConfirmingChanged();
   void connectionRetryChanged();
   void recordConnectionStartTelemetry();
@@ -220,7 +219,6 @@ class Controller : public QObject, public LogSerializer {
   QString useLocalSocketPath() const;
 
  private:
-  QTimer m_durationTimer;
   QTimer m_confirmingTimer;
   QTimer m_handshakeTimer;
 
