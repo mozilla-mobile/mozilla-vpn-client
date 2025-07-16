@@ -137,7 +137,7 @@ class Controller : public QObject, public LogSerializer {
                  currentServerChanged);
 
  private slots:
-  void timerTimeout();
+  void durationTick();
   void handshakeTimeout();
   void connected(const QString& pubkey);
   void disconnected();
@@ -211,20 +211,17 @@ class Controller : public QObject, public LogSerializer {
                         ServerSelectionPolicy serverSelectionPolicy,
                         ActivationPrincipal);
 
-  void startTimerIfInactive();
-  void clearConnectedTime();
   void clearRetryCounter();
   void activateNext();
   void setState(State state);
-  void resetConnectedTime();
   bool processNextStep();
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
   QString useLocalSocketPath() const;
 
  private:
-  QTimer m_timer;
-  QTimer m_connectingTimer;
+  QTimer m_durationTimer;
+  QTimer m_confirmingTimer;
   QTimer m_handshakeTimer;
 
   QDateTime m_connectedTimeInUTC;
@@ -256,7 +253,6 @@ class Controller : public QObject, public LogSerializer {
   // Please, do not use MozillaVPN::serverData() in the controller!
   ServerData m_serverData;
   ServerData m_nextServerData;
-  bool isSwitchingServer;
 
   PingHelper m_pingCanary;
   bool m_pingReceived = false;
