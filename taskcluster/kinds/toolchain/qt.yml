@@ -75,3 +75,18 @@ qt-linux-next:
     worker-type: b-linux-large
     worker:
         docker-image: {in-tree: linux-qt6-build}
+
+qt-tools:
+    description: "Linux QT host tools"
+    run:
+        script: bundle_qt_tools.sh
+        resources:
+            - requirements.txt
+        toolchain-alias: qt-tools
+        toolchain-artifact: public/build/qt-host-tools.tar.xz
+    treeherder:
+        symbol: TL(qt-tools)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: conda-base}
+        max-run-time: 900

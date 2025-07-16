@@ -7,7 +7,7 @@ set -e
 # This script is used in the Android Build Release (universal) build task
 git submodule update --init --recursive
 
-# We need to call bash with a login shell, so that conda is intitialized
+# We need to call bash with a login shell, so that conda is initialized
 source $TASK_WORKDIR/fetches/bin/activate
 conda-unpack
 # conda-pack add's a /activate.d/rust.sh 
