@@ -11,7 +11,9 @@
 #include <QDir>
 #include <QFile>
 #include <QLocalSocket>
+#include <QSysInfo>
 #include <QTimer>
+#include <QVersionNumber>
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -65,6 +67,23 @@ void WireguardUtilsMacos::tunnelFinished(int exitCode,
   }
 }
 
+// static
+QString WireguardUtilsMacos::wireguardGoPath() {
+  QString osVersion = QSysInfo::productVersion();
+  if (QVersionNumber::fromString(osVersion) >= QVersionNumber(13, 0)) {
+    // For macOS 13 and later this can be a relative path to the daemon.
+    QDir appPath(QCoreApplication::applicationDirPath());
+    appPath.cdUp();
+    appPath.cdUp();
+    appPath.cd("Resources");
+    appPath.cd("utils");
+    return appPath.filePath("wireguard-go");
+  } else {
+    // For earlier versions of macOS - this must be a fixed path
+    return "/Applications/Mozilla VPN.app/Contents/Resources/utils/wireguard-go";
+  }
+}
+
 bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   Q_UNUSED(config);
   if (m_tunnel.state() != QProcess::NotRunning) {
@@ -84,14 +103,10 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   pe.insert("LOG_LEVEL", "debug");
 #endif
   m_tunnel.setProcessEnvironment(pe);
+  m_tunnel.setProgram(wireguardGoPath());
+  m_tunnel.setArguments(QStringList() << "-f" << "utun");
 
-  QDir appPath(QCoreApplication::applicationDirPath());
-  appPath.cdUp();
-  appPath.cdUp();
-  appPath.cd("Resources");
-  appPath.cd("utils");
-  QStringList wgArgs = {"-f", "utun"};
-  m_tunnel.start(appPath.filePath("wireguard-go"), wgArgs);
+  m_tunnel.start();
   if (!m_tunnel.waitForStarted(WG_TUN_PROC_TIMEOUT)) {
     logger.error() << "Unable to start tunnel process due to timeout";
     m_tunnel.kill();

@@ -42,6 +42,7 @@ class WireguardUtilsMacos final : public WireguardUtils {
   QString uapiCommand(const QString& command);
   static int uapiErrno(const QString& command);
   QString waitForTunnelName(const QString& filename);
+  static QString wireguardGoPath();
 
   QString m_ifname;
   QProcess m_tunnel;
