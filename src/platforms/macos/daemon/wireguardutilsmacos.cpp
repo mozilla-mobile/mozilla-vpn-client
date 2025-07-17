@@ -4,12 +4,12 @@
 
 #include "wireguardutilsmacos.h"
 
-#include <errno.h>
-#include <net/route.h>
 #include <Security/SecCertificate.h>
 #include <Security/SecRequirement.h>
 #include <Security/SecStaticCode.h>
 #include <Security/SecTask.h>
+#include <errno.h>
+#include <net/route.h>
 
 #include <QByteArray>
 #include <QDir>
@@ -82,10 +82,10 @@ QString WireguardUtilsMacos::wireguardGoPath() {
     appPath.cd("Resources");
     appPath.cd("utils");
     return appPath.filePath("wireguard-go");
-  } else {
-    // For earlier versions of macOS - this must be a fixed path
-    return "/Applications/Mozilla VPN.app/Contents/Resources/utils/wireguard-go";
   }
+
+  // For earlier versions of macOS - this must be a fixed path
+  return "/Applications/Mozilla VPN.app/Contents/Resources/utils/wireguard-go";
 }
 
 // static
@@ -110,7 +110,7 @@ QString WireguardUtilsMacos::wireguardGoRequirements() {
 
   status = SecCodeCopySelf(kSecCSDefaultFlags, &code);
   if (status != errSecSuccess) {
-    return  QString();
+    return QString();
   }
   status = SecCodeCopySigningInformation(code, kSecCSSigningInformation, &dict);
   if (status != errSecSuccess) {
@@ -204,8 +204,8 @@ bool WireguardUtilsMacos::wireguardGoCodesign(const QProcess& process) {
     return false;
   }
   logger.debug() << "Codesign verify code object";
-  status = SecStaticCodeCheckValidityWithErrors(code, kSecCSDefaultFlags, req,
-                                                &err);
+  status =
+      SecStaticCodeCheckValidityWithErrors(code, kSecCSDefaultFlags, req, &err);
   return (status == errSecSuccess);
 }
 
@@ -229,7 +229,7 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
 #endif
   m_tunnel.setProcessEnvironment(pe);
   m_tunnel.setProgram(wireguardGoPath());
-  m_tunnel.setArguments(QStringList() << "-f" << "utun");
+  m_tunnel.setArguments(QStringList({"-f", "utun"}));
   if (!wireguardGoCodesign(m_tunnel)) {
     logger.error() << "Unable to validate tunnel process code signature";
     return false;

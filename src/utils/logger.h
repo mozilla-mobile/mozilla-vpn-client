@@ -13,7 +13,7 @@
 #include "loglevel.h"
 
 #ifdef Q_OS_APPLE
-# include <CoreFoundation/CoreFoundation.h>
+#  include <CoreFoundation/CoreFoundation.h>
 #endif
 
 class QJsonObject;
