@@ -34,7 +34,8 @@ class Controller : public QObject, public LogSerializer {
     // before the controller can finish initialization.
     StatePermissionRequired,
 
-    // The deactivated state of the controller. The VPN is disconnected and idle.
+    // The deactivated state of the controller. The VPN is disconnected and
+    // idle.
     StateOff,
 
     // A request to deactivate the controller is in progress, and is waiting on

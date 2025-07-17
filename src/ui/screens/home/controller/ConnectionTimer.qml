@@ -31,8 +31,8 @@ RowLayout {
         var secs = duration % 60;
         duration = Math.floor(duration / 60);
         var mins = duration % 60;
-        duration = Math.floor(duration / 60);
-        return formatSingle(duration) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
+        var hours = Math.floor(duration / 60);
+        return formatSingle(hours) + ":" + formatSingle(mins) + ":" + formatSingle(secs);
     }
 
     Timer {
@@ -43,7 +43,7 @@ RowLayout {
         onTriggered: connectionTime = formatTime(VPNController.connectionTimestamp)
     }
 
-    Repeater{
+    Repeater {
         model: connectionTime.split("")
 
         Text {
