@@ -27,15 +27,48 @@ class Controller : public QObject, public LogSerializer {
  public:
   // Note - these states are ordered from least to most active.
   enum State {
+    // The initial state of the controller.
     StateInitializing = 0,
+
+    // Initialization is blocked and the user must grant additional permissions
+    // before the controller can finish initialization.
     StatePermissionRequired,
+
+    // The deactivated state of the controller. The VPN is disconnected and idle.
     StateOff,
+
+    // A request to deactivate the controller is in progress, and is waiting on
+    // a disconnected() signal from the ControllerImpl.
     StateDisconnecting,
+
+    // One or more connections have been submitted to the ControllerImpl while
+    // activating the VPN. The controller is waiting for a connected() signal
+    // from the ControllerImpl before proceeding.
     StateConnecting,
+
+    // All connections have been activated, and final connectivity checks are
+    // being performed.
     StateConfirming,
+
+    // A major, user-facing configuration change is being applied, and one or
+    // more connections have been submitted to the ControllerImpl, and the
+    // controller is waiting for a connected() signal from the ControllerImpl
+    // before proceeding. This state is typically used to change locations.
     StateSwitching,
+
+    // A minor configuration change is being applied which should not be visible
+    // to the user. One or more connections have been submitted to the
+    // ControllerImpl and the controller is waiting for a connected() signal
+    // before proceeding. This state is typically used for load-balancing and
+    // failover between servers.
     StateSilentSwitching,
+
+    // The VPN is connected and offers partial connectivity to select network
+    // addresses.
     StateOnPartial,
+
+    // The VPN is connected and is applying full device protection for all
+    // network traffic.
     StateOn,
   };
   Q_ENUM(State)
