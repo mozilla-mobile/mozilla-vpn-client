@@ -220,6 +220,8 @@ describe('Server', function() {
             'VPN is on';
       });
 
+      // Wait at least one second for the timer to tick passed zero.
+      await vpn.wait(1500);
       assert.notEqual(
           await vpn.getQueryProperty(
               queries.screenHome.CONNECTION_TIMER,
