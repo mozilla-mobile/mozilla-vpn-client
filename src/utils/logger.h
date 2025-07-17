@@ -12,6 +12,10 @@
 
 #include "loglevel.h"
 
+#ifdef Q_OS_APPLE
+# include <CoreFoundation/CoreFoundation.h>
+#endif
+
 class QJsonObject;
 
 class Logger {
@@ -36,6 +40,7 @@ class Logger {
 #ifdef Q_OS_APPLE
     Log& operator<<(const NSString* t);
     Log& operator<<(CFStringRef t);
+    Log& operator<<(CFErrorRef t);
 #endif
 
     // Q_ENUM

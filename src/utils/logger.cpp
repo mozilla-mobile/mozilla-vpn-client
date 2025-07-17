@@ -63,6 +63,12 @@ Logger::Log& Logger::Log::operator<<(CFStringRef t) {
   m_data->m_ts << QString::fromCFString(t);
   return *this;
 }
+Logger::Log& Logger::Log::operator<<(CFErrorRef t) {
+  CFStringRef ref = CFErrorCopyDescription(t);
+  m_data->m_ts << QString::fromCFString(ref);
+  CFRelease(ref);
+  return *this;
+}
 #endif
 
 QString Logger::sensitive(const QString& input) {
