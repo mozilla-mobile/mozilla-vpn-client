@@ -6,6 +6,7 @@
 
 #include <errno.h>
 #include <net/route.h>
+#include <Security/SecCertificate.h>
 #include <Security/SecRequirement.h>
 #include <Security/SecStaticCode.h>
 #include <Security/SecTask.h>
@@ -118,10 +119,24 @@ QString WireguardUtilsMacos::wireguardGoRequirements() {
 
   // Build the signing requirements.
   QStringList reqList("anchor apple generic");
-  CFTypeRef value = CFDictionaryGetValue(dict, kSecCodeInfoTeamIdentifier);
+  CFTypeRef value;
+  value = CFDictionaryGetValue(dict, kSecCodeInfoTeamIdentifier);
   if ((value != nullptr) && (CFGetTypeID(value) == CFStringGetTypeID())) {
     QString team = QString::fromCFString(static_cast<CFStringRef>(value));
     reqList << QString("certificate leaf[subject.OU] = \"%1\"").arg(team);
+  }
+
+  value = CFDictionaryGetValue(dict, kSecCodeInfoCertificates);
+  if ((value != nullptr) && (CFGetTypeID(value) == CFArrayGetTypeID()) &&
+      (CFArrayGetCount(static_cast<CFArrayRef>(value)) != 0)) {
+    CFTypeRef leaf = CFArrayGetValueAtIndex(static_cast<CFArrayRef>(value), 0);
+    if ((leaf != nullptr) && (CFGetTypeID(leaf) == SecCertificateGetTypeID())) {
+      CFStringRef name;
+      QString nameReqTemplate = "certificate leaf[subject.CN] = \"%1\"";
+      SecCertificateCopyCommonName((SecCertificateRef)leaf, &name);
+      reqList << nameReqTemplate.arg(QString::fromCFString(name));
+      CFRelease(name);
+    }
   }
 
   requirements = reqList.join(" and ");
