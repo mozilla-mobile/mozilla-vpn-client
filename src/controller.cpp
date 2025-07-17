@@ -689,20 +689,8 @@ void Controller::disconnected() {
   m_activationQueue.clear();
   clearRetryCounter();
 
-  NextStep nextStep = m_nextStep;
-
   if (processNextStep()) {
     setState(StateOff);
-    return;
-  }
-
-  if (nextStep == None &&
-      (m_state == StateSilentSwitching || m_state == StateSwitching)) {
-    // If we are only switching, keep the iniator
-    // as the extension cannot switch servers.
-    m_serverData = m_nextServerData;
-    emit currentServerChanged();
-    activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
     return;
   }
 
@@ -732,6 +720,16 @@ bool Controller::processNextStep() {
     emit readyToUpdate();
     return true;
   }
+
+  if (nextStep == Reconnect) {
+    // If we are only switching, keep the iniator
+    // as the extension cannot switch servers.
+    m_serverData = m_nextServerData;
+    emit currentServerChanged();
+    activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
+    return false;
+  }
+
   return false;
 }
 
@@ -855,13 +853,18 @@ bool Controller::switchServers(const ServerData& serverData) {
   }
 
   logger.debug() << "Switching to a different server";
-
-  setState(StateSwitching);
+  m_nextServerData = serverData;
   clearRetryCounter();
 
+  // Special case - if we switch servers while connecting, then we have yet to
+  // fully establish a connection. We should stay in the connecting state, but
+  // restart the activation as though performing a server switch.
+  if (m_state != StateConnecting) {
+    setState(StateSwitching);
+  }
   if (serverData.multihop() != m_serverData.multihop()) {
     // We require a full deactivation if switching from singlehop to multihop.
-    m_nextServerData = serverData;
+    m_nextStep = Reconnect;
     deactivate();
     return true;
   }

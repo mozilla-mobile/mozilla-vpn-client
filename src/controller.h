@@ -196,6 +196,7 @@ class Controller : public QObject, public LogSerializer {
     None,
     Quit,
     Update,
+    Reconnect,
     Disconnect,
   };
 
