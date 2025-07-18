@@ -4,7 +4,13 @@
 
 #include "wgsessionmacos.h"
 
+#include <net/if_utun.h>
 #include <netinet/in.h>
+#include <netinet/ip6.h>
+#include <sys/ioctl.h>
+#include <sys/sys_domain.h>
+#include <sys/uio.h>
+#include <unistd.h>
 
 #include <QDateTime>
 #include <QMetaMethod>
@@ -53,6 +59,8 @@ WgSessionMacos::WgSessionMacos(const InterfaceConfig& config, QObject* parent)
   m_innerIpv6.setAddress(m_config.m_deviceIpv6Address.section('/', 0, 0));
   m_serverIpv4.setAddress(m_config.m_serverIpv4AddrIn);
   m_serverIpv6.setAddress(m_config.m_serverIpv6AddrIn);
+
+  m_tunmtu = IPV6_MMTU;
 }
 
 WgSessionMacos::~WgSessionMacos() {
@@ -61,11 +69,8 @@ WgSessionMacos::~WgSessionMacos() {
   if (m_tunnel) {
     tunnel_free(m_tunnel);
   }
-}
-
-void WgSessionMacos::connectNotify(const QMetaMethod& signal) {
-  if (signal.name() == "mhopOutput") {
-    m_mhopEnabled = true;
+  if (m_netSocket >= 0) {
+    close(m_netSocket);
   }
 }
 
@@ -75,10 +80,10 @@ void WgSessionMacos::processResult(int op, const QByteArray& buf) {
       break;
 
     case WRITE_TO_NETWORK:
-      emit netOutput(buf);
-      // Encapsulate and emit for multihop, only if someone is listening.
-      if (m_mhopEnabled) {
-        emit mhopOutput(mhopEncapsulate(buf));
+      if (m_config.m_hopType == InterfaceConfig::MultiHopExit) {
+        netWrite(mhopEncapsulate(buf));
+      } else {
+        netWrite(buf);
       }
       break;
 
@@ -87,9 +92,11 @@ void WgSessionMacos::processResult(int op, const QByteArray& buf) {
       break;
 
     case WRITE_TO_TUNNEL_IPV4:
-      [[fallthrough]];
+      tunWrite(buf, AF_INET);
+      break;
+
     case WRITE_TO_TUNNEL_IPV6:
-      emit decrypted(buf);
+      tunWrite(buf, AF_INET6);
       break;
   }
 }
@@ -123,7 +130,7 @@ void WgSessionMacos::renegotiate() {
 
 void WgSessionMacos::encrypt(const QByteArray& pkt) {
   QByteArray output;
-  output.resize(output.size() + WG_PACKET_OVERHEAD);
+  output.resize(pkt.size() + WG_PACKET_OVERHEAD);
 
   const uint8_t* ptr = reinterpret_cast<const uint8_t*>(pkt.constData());
   uint8_t* outptr = reinterpret_cast<uint8_t*>(output.data());
@@ -133,6 +140,7 @@ void WgSessionMacos::encrypt(const QByteArray& pkt) {
 }
 
 void WgSessionMacos::netInput(const QByteArray& pkt) {
+  logger.debug() << "net input:" << QString(pkt.toBase64());
   QByteArray output;
   output.resize(pkt.size());
 
@@ -143,18 +151,12 @@ void WgSessionMacos::netInput(const QByteArray& pkt) {
   processResult(res.op, output.first(res.size));
 }
 
-void WgSessionMacos::readyRead() {
-  QUdpSocket* sock = qobject_cast<QUdpSocket*>(QObject::sender());
-  if (!sock) {
-    return;
-  }
-
-  while (true) {
-    QNetworkDatagram dgram = sock->receiveDatagram();
-    if (!dgram.isValid()) {
-      return;
-    }
-    netInput(dgram.data());
+void WgSessionMacos::mhopInput(const QByteArray& pkt) {
+  quint8 version = (pkt[0] >> 4);
+  if (version == 4) {
+    mhopInputV4(pkt);
+  } else if (version == 6) {
+    mhopInputV6(pkt);
   }
 }
 
@@ -246,15 +248,6 @@ QByteArray WgSessionMacos::mhopEncapsulate(const QByteArray& packet) {
   return result;
 }
 
-void WgSessionMacos::mhopInput(const QByteArray& packet) {
-  quint8 version = (packet[0] >> 4);
-  if (version == 4) {
-    mhopInputV4(packet);
-  } else if (version == 6) {
-    mhopInputV6(packet);
-  }
-}
-
 void WgSessionMacos::mhopInputV4(const QByteArray& packet) {
   // Parse the IPv4 header
   auto header = reinterpret_cast<const struct ipv4header*>(packet.constData());
@@ -342,5 +335,124 @@ void WgSessionMacos::mhopInputUDP(const QHostAddress& src,
   }
 
   // At last - we can handle the payload.
-  netInput(data);
+  tunWrite(data, AF_INET);
+}
+
+void WgSessionMacos::setNetSocket(qintptr sd) {
+  if (m_netSocket >= 0) {
+    close(m_netSocket);
+  }
+
+  m_netSocket = sd;
+  auto notifier = new QSocketNotifier(sd, QSocketNotifier::Read, this);
+  connect(notifier, &QSocketNotifier::activated, this,
+          &WgSessionMacos::netReadyRead);
+
+  renegotiate();
+}
+
+void WgSessionMacos::setTunSocket(qintptr sd) {
+  m_tunSocket = sd;
+  auto notifier = new QSocketNotifier(sd, QSocketNotifier::Read, this);
+  connect(notifier, &QSocketNotifier::activated, this,
+          &WgSessionMacos::tunReadyRead);
+}
+
+void WgSessionMacos::setMtu(int mtu) {
+  if (m_config.m_hopType == InterfaceConfig::MultiHopExit) {
+    mtu -= WG_MTU_OVERHEAD;
+  }
+  if (mtu < IPV6_MMTU) {
+    mtu = IPV6_MMTU;
+  }
+  m_tunmtu = mtu;
+
+  // Set the MTU if it's a utun device.
+  struct ifreq ifr;
+  socklen_t ifnamesize = sizeof(ifr.ifr_name);
+  int err = getsockopt(m_tunSocket, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifr.ifr_name,
+                       &ifnamesize);
+
+  ifr.ifr_mtu = m_tunmtu;
+  if ((err >= 0) && (ioctl(m_tunSocket, SIOCSIFMTU, &ifr) != 0)) {
+    logger.error() << "Failed to set MTU:" << strerror(errno);
+  }
+}
+
+void WgSessionMacos::netReadyRead(QSocketDescriptor sd,
+                                  QSocketNotifier::Type type) {
+  QByteArray rxbuf;
+  rxbuf.resize(m_tunmtu + WG_MTU_OVERHEAD);
+
+  while (true) {
+    // Try to read a packet from the network.
+    int rxlen = recv(m_netSocket, (void*)rxbuf.data(), rxbuf.length(), MSG_DONTWAIT);
+    if (rxlen < 0) {
+      if (errno == EAGAIN) return;
+      logger.debug() << "Recv error:" << strerror(errno);
+      return;
+    }
+  
+    if (m_config.m_hopType == InterfaceConfig::MultiHopExit) {
+      mhopInput(rxbuf.first(rxlen));
+    } else {
+      netInput(rxbuf.first(rxlen));
+    }
+  }
+}
+
+void WgSessionMacos::tunReadyRead(QSocketDescriptor sd,
+                                  QSocketNotifier::Type type) {
+  // The tunnel socket is ready for reading.
+  quint32 header = 0;
+  QByteArray rxbuf;
+  rxbuf.resize(m_tunmtu + 16);
+
+  struct iovec iov[2];
+  iov[0].iov_base = &header;
+  iov[0].iov_len = sizeof(header);
+  iov[1].iov_base = (void*)rxbuf.data();
+  iov[1].iov_len = m_tunmtu;
+
+  while (true) {
+    // Try to read a packet from the tunnel.
+    int len = readv(sd, iov, sizeof(iov) / sizeof(struct iovec));
+    if (len < 0) {
+      if (errno == EAGAIN) return;
+      logger.debug() << "Tunnel error:" << strerror(errno);
+      return;
+    }
+    int pktlen = len - sizeof(header);
+    if ((pktlen < 0) || (pktlen > m_tunmtu)) {
+      continue;
+    }
+
+    // I think there is a small bug in boringtun to do with message padding.
+    // The wireguard protocol states that the encapsulated packet must first be
+    // padded out to a multiple of 16 bytes in length, but boringtun does no
+    // such padding during encryption. So let's do it manually ourself.
+    int tail = pktlen % 16;
+    if (tail) {
+      int padsz = 16 - tail;
+      memset(rxbuf.data() + pktlen, 0, padsz);
+      pktlen += padsz;
+    }
+
+    // Encrypt the packet
+    encrypt(rxbuf.first(pktlen));
+  }
+}
+
+void WgSessionMacos::netWrite(const QByteArray& packet) {
+  send(m_netSocket, packet.constData(), packet.length(), MSG_DONTWAIT);
+}
+
+void WgSessionMacos::tunWrite(const QByteArray& packet, quint32 family) {
+  quint32 header = qToBigEndian<quint32>(family);
+  struct iovec iov[2];
+  iov[0].iov_base = &header;
+  iov[0].iov_len = sizeof(header);
+  iov[1].iov_base = (void*)packet.data();
+  iov[1].iov_len = packet.length();
+  writev(m_tunSocket, iov, 2);
 }

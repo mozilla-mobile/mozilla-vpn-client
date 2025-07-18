@@ -35,23 +35,19 @@ class WgUtilsMacos final : public WireguardUtils {
 
  signals:
   void backendFailure();
-  void tunOutput(const QByteArray& packet);
-
- private slots:
-  void tunActivated(QSocketDescriptor sd, QSocketNotifier::Type type);
 
  private:
-  void tunInput(const QByteArray& packet);
   void mtuUpdate(int proto, const QHostAddress& gateway, int ifindex, int mtu);
 
   int m_tunfd = -1;
-  int m_tunmtu = 0;
   QString m_ifname;
-  QSocketNotifier* m_tunNotifier = nullptr;
   MacosRouteMonitor* m_rtmonitor = nullptr;
 
+  // bridging sockets for multihop
+  int m_mhopEntrySocket = -1;
+  int m_mhopExitSocket = -1;
+
   QHash<QString, WgSessionMacos*> m_peers;
-  WgSessionMacos* m_entryPeer = nullptr;
 };
 
 #endif  // WGUTILSMACOS_H
