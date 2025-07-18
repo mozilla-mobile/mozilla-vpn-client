@@ -13,11 +13,23 @@ task-defaults:
             QT_VERSION: "6.6.3"
     worker-type: b-macos
     run:
+        script: conda_pack_ios.sh
         use-caches: []
         resources:
             - requirements.txt
             - env-apple.yml
             - scripts/macos/conda_setup_qt.sh
+
+
+conda-ios-x86_64-6.6.0:
+        treeherder:
+            symbol: "conda-ios-6.6"
+        worker:
+            env:
+                QT_VERSION: "6.6.0"
+        run:
+            toolchain-alias: conda-ios-6.6.0
+            toolchain-artifact: public/build/conda-ios.tar.gz
 
 conda-macos:
     treeherder:

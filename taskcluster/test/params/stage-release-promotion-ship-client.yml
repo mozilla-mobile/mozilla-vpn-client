@@ -10,6 +10,7 @@ existing_tasks:
   build-android-arm64/debug: FatrFwiXSgqHNKLQbmo2EQ
   build-android-arm64/release: LrM8vfBwToWoyUyEZY75iQ
   build-android-x64/debug: BEdBMoxpRH-leSCwQyokUg
+  build-ios/debug/cmake: SXk_sq61TGmeQAt-aMEOOA
   build-linux/fedora-fc36: a0XHF5AUTqGH6tJ3I-ewqg
   build-linux/fedora-fc37: A5v7lco5SPy7h-8Bu3NS3w
   build-linux/focal: bKHeWPQRR7e0SSnZoctS3g
