@@ -7,6 +7,7 @@
 
 #include <QHostAddress>
 #include <QObject>
+#include <QSocketNotifier>
 #include <QTimer>
 
 #include "interfaceconfig.h"
@@ -26,28 +27,28 @@ class WgSessionMacos final : public QObject {
   WireguardUtils::PeerStatus status() const;
 
   void renegotiate();
-  void encrypt(const QByteArray& data);
-  void netInput(const QByteArray& data);
 
-  // Multihop helpers
-  QByteArray mhopEncapsulate(const QByteArray& packet);
-  void mhopInput(const QByteArray& packet);
+  void setTunSocket(qintptr sd);
+  void setNetSocket(qintptr sd);
+  void setMtu(int mtu);
 
- signals:
-  void netOutput(const QByteArray& data);
-  void mhopOutput(const QByteArray& data);
-  void decrypted(const QByteArray& data);
+  static inline constexpr int WG_MTU_OVERHEAD = 80;
 
- public slots:
-  void readyRead();
-
- protected:
-  void connectNotify(const QMetaMethod& signal) override;
+ private slots:
+  void netReadyRead(QSocketDescriptor sd, QSocketNotifier::Type type);
+  void tunReadyRead(QSocketDescriptor sd, QSocketNotifier::Type type);
 
  private:
-  void processResult(int op, const QByteArray& buf);
+  void encrypt(const QByteArray& data);
   void timeout();
+  void processResult(int op, const QByteArray& buf);
 
+  void netInput(const QByteArray& packet);
+  void netWrite(const QByteArray& packet);
+  void tunWrite(const QByteArray& packet, quint32 family);
+
+  QByteArray mhopEncapsulate(const QByteArray& packet);
+  void mhopInput(const QByteArray& packet);
   void mhopInputV4(const QByteArray& packet);
   void mhopInputV6(const QByteArray& packet);
   void mhopInputUDP(const QHostAddress& src, const QHostAddress& dst,
@@ -64,7 +65,6 @@ class WgSessionMacos final : public QObject {
   const InterfaceConfig m_config;
 
   // Some fields saved for multihop processing.
-  bool m_mhopEnabled = false;
   quint16 m_innerPort;
   quint16 m_serverPort;
   quint8 m_innerTTL;
@@ -85,6 +85,10 @@ class WgSessionMacos final : public QObject {
 
   // The boringtun instance
   struct wireguard_tunnel* m_tunnel = nullptr;
+
+  int m_tunmtu;
+  int m_tunSocket = -1;
+  int m_netSocket = -1;
 };
 
 #endif  // WGSESSIONMACOS_H

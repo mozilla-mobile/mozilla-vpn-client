@@ -9,6 +9,7 @@
 #include <net/if_utun.h>
 #include <net/route.h>
 #include <netinet/in.h>
+#include <netinet/ip6.h>
 #include <sys/ioctl.h>
 #include <sys/kern_control.h>
 #include <sys/socket.h>
@@ -18,6 +19,7 @@
 
 #include <QUdpSocket>
 #include <QVariant>
+#include <QtEndian>
 
 #include "interfaceconfig.h"
 #include "leakdetector.h"
@@ -28,9 +30,6 @@
 namespace {
 Logger logger("WgUtilsMacos");
 };  // namespace
-
-constexpr uint32_t WG_MTU_OVERHEAD = 80;
-constexpr uint32_t IPV6_MIN_MTU = 1280;
 
 WgUtilsMacos::WgUtilsMacos(QObject* parent) : WireguardUtils(parent) {
   MZ_COUNT_CTOR(WgUtilsMacos);
@@ -91,7 +90,7 @@ bool WgUtilsMacos::addInterface(const InterfaceConfig& config) {
   }
 
   // Set a base MTU, it will get updated later.
-  ifr.ifr_mtu = IPV6_MIN_MTU;
+  ifr.ifr_mtu = IPV6_MMTU;
   if (ioctl(tunfd, SIOCSIFMTU, &ifr) != 0) {
     logger.error() << "Failed to set MTU:" << strerror(errno);
     return false;
@@ -110,15 +109,21 @@ bool WgUtilsMacos::addInterface(const InterfaceConfig& config) {
     return false;
   }
 
+  // Create a socketpair to bridge between multihop connections.
+  int sv[2];
+  err = socketpair(AF_UNIX, SOCK_DGRAM, 0, sv);
+  if (err != 0) {
+    logger.error() << "Failed to create multihop bridging sockets:" << strerror(errno);
+    return false;
+  }
+  m_mhopEntrySocket = sv[0];
+  m_mhopExitSocket = sv[1];
+
   // The interface was successfully created.
   logger.info() << "Created tunnel interface:" << ifr.ifr_name;
   m_ifname = QString::fromUtf8(ifr.ifr_name);
   m_tunfd = tunfd;
-  m_tunmtu = IPV6_MIN_MTU;
   m_rtmonitor = new MacosRouteMonitor(m_ifname, this);
-  m_tunNotifier = new QSocketNotifier(m_tunfd, QSocketNotifier::Read, this);
-  connect(m_tunNotifier, &QSocketNotifier::activated, this,
-          &WgUtilsMacos::tunActivated);
   connect(m_rtmonitor, &MacosRouteMonitor::defaultRouteUpdated, this,
           &WgUtilsMacos::mtuUpdate);
 
@@ -132,16 +137,19 @@ bool WgUtilsMacos::deleteInterface() {
     close(m_tunfd);
     m_ifname.clear();
     m_tunfd = -1;
-    m_tunmtu = 0;
+  }
+  if (m_mhopEntrySocket >= 0) {
+    close(m_mhopEntrySocket);
+    m_mhopEntrySocket = -1;
+  }
+  if (m_mhopExitSocket >= 0) {
+    close(m_mhopExitSocket);
+    m_mhopExitSocket = -1;
   }
 
   if (m_rtmonitor) {
     delete m_rtmonitor;
     m_rtmonitor = nullptr;
-  }
-  if (m_tunNotifier) {
-    delete m_tunNotifier;
-    m_tunNotifier = nullptr;
   }
 
   return true;
@@ -157,34 +165,38 @@ bool WgUtilsMacos::updatePeer(const InterfaceConfig& config) {
 
   // Create a socket to handle outbound packet flows.
   if (config.m_hopType != InterfaceConfig::MultiHopExit) {
-    QUdpSocket* sock = new QUdpSocket(peer);
-    connect(sock, &QIODevice::readyRead, peer, &WgSessionMacos::readyRead);
-    connect(sock, &QUdpSocket::connected, peer, &WgSessionMacos::renegotiate);
-    connect(peer, &WgSessionMacos::netOutput, sock,
-            [sock](const QByteArray& data) { sock->write(data); });
-    sock->connectToHost(config.m_serverIpv4AddrIn, config.m_serverPort);
+    int sock = socket(AF_INET, SOCK_DGRAM, 0);
+    if (sock < 0) {
+      logger.warning() << "Socket creation failed:" << strerror(errno);
+      return false;
+    }
+
+    struct sockaddr_in sin;
+    quint32 dst = QHostAddress(config.m_serverIpv4AddrIn).toIPv4Address();
+    sin.sin_family = AF_INET;
+    sin.sin_len = sizeof(sin);
+    sin.sin_port = qToBigEndian<quint16>(config.m_serverPort);
+    sin.sin_addr.s_addr = qToBigEndian<quint32>(dst);
+    if (::connect(sock, (struct sockaddr* )&sin, sizeof(sin)) < 0) {
+      logger.warning() << "Socket connect failed:" << strerror(errno);
+      close(sock);
+      return false;
+    }
+    peer->setNetSocket(sock);
+
     if (m_rtmonitor != nullptr) {
       m_rtmonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
       m_rtmonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
     }
-  } else if (m_entryPeer != nullptr) {
-    // Multihop exit peers should send their packets to the entry peer.
-    connect(peer, &WgSessionMacos::mhopOutput, m_entryPeer,
-            &WgSessionMacos::encrypt);
-    connect(m_entryPeer, &WgSessionMacos::decrypted, peer,
-            &WgSessionMacos::mhopInput);
-
-    // Assume the entry hop is already up, and attempt immediate renegotiation.
-    peer->renegotiate();
+  } else {
+    peer->setNetSocket(dup(m_mhopExitSocket));
   }
 
   // Single-hop and multihop exit peers send and receive packets from the tunnel
   if (config.m_hopType != InterfaceConfig::MultiHopEntry) {
-    connect(peer, &WgSessionMacos::decrypted, this, &WgUtilsMacos::tunInput);
-    connect(this, &WgUtilsMacos::tunOutput, peer, &WgSessionMacos::encrypt);
+    peer->setTunSocket(m_tunfd);
   } else {
-    // Save the entry peer for later.
-    m_entryPeer = peer;
+    peer->setTunSocket(m_mhopEntrySocket);
   }
 
   m_peers.insert(config.m_serverPublicKey, peer);
@@ -194,9 +206,6 @@ bool WgUtilsMacos::updatePeer(const InterfaceConfig& config) {
 bool WgUtilsMacos::deletePeer(const InterfaceConfig& config) {
   // Destroy the old peer, if it exists.
   WgSessionMacos* peer = m_peers.take(config.m_serverPublicKey);
-  if (peer == m_entryPeer) {
-    m_entryPeer = nullptr;
-  }
   if (peer) {
     delete peer;
   }
@@ -279,60 +288,6 @@ bool WgUtilsMacos::excludeLocalNetworks(const QList<IPAddress>& routes) {
   return result;
 }
 
-void WgUtilsMacos::tunActivated(QSocketDescriptor sd,
-                                QSocketNotifier::Type type) {
-  // The tunnel socket is ready for reading.
-  quint32 header = 0;
-  QByteArray rxbuf;
-  rxbuf.resize(m_tunmtu + 16);
-
-  struct iovec iov[2];
-  iov[0].iov_base = &header;
-  iov[0].iov_len = sizeof(header);
-  iov[1].iov_base = (void*)rxbuf.data();
-  iov[1].iov_len = m_tunmtu;
-
-  while (true) {
-    // Try to read a packet from the tunnel.
-    int len = readv(m_tunfd, iov, sizeof(iov) / sizeof(struct iovec));
-    if (len < 0) {
-      if (errno == EAGAIN) return;
-      logger.debug() << "Tunnel error:" << strerror(errno);
-      return;
-    }
-    int pktlen = len - sizeof(header);
-    if ((pktlen < 0) || (pktlen > m_tunmtu)) {
-      continue;
-    }
-
-    // I think there is a small bug in boringtun to do with message padding.
-    // The wireguard protocol states that the encapsulated packet must first be
-    // padded out to a multiple of 16 bytes in length, but boringtun does no
-    // such padding during encryption. So let's do it manually ourself.
-    int tail = pktlen % 16;
-    if (tail) {
-      int padsz = 16 - tail;
-      memset(rxbuf.data() + pktlen, 0, padsz);
-      pktlen += padsz;
-    }
-
-    emit tunOutput(rxbuf.first(pktlen));
-  }
-}
-
-void WgUtilsMacos::tunInput(const QByteArray& packet) {
-  // Check the IP protocol version.
-  quint32 header = htonl((packet[0] >> 4) >= 6 ? AF_INET6 : AF_INET);
-
-  // Write it to the kernel.
-  struct iovec iov[2];
-  iov[0].iov_base = &header;
-  iov[0].iov_len = sizeof(header);
-  iov[1].iov_base = (void*)packet.constData();
-  iov[1].iov_len = packet.length();
-  writev(m_tunfd, iov, 2);
-}
-
 void WgUtilsMacos::mtuUpdate(int proto, const QHostAddress& gateway,
                              int ifindex, int mtu) {
   // TODO: Support IPv6 servers.
@@ -345,19 +300,13 @@ void WgUtilsMacos::mtuUpdate(int proto, const QHostAddress& gateway,
 
   // Update the tunnel device's MTU
   struct ifreq ifr;
-  ifr.ifr_mtu = mtu - WG_MTU_OVERHEAD;
-  if (m_entryPeer) {
-    ifr.ifr_mtu -= WG_MTU_OVERHEAD;
+  ifr.ifr_mtu = mtu - WgSessionMacos::WG_MTU_OVERHEAD;
+  if (ifr.ifr_mtu < IPV6_MMTU) {
+    ifr.ifr_mtu = IPV6_MMTU;
   }
-  if (ifr.ifr_mtu < IPV6_MIN_MTU) {
-    ifr.ifr_mtu = IPV6_MIN_MTU;
-  }
-
   logger.info() << "Updating MTU to" << ifr.ifr_mtu;
-  strncpy(ifr.ifr_name, qPrintable(m_ifname), IFNAMSIZ);
-  if (ioctl(m_tunfd, SIOCSIFMTU, &ifr) != 0) {
-    logger.error() << "Failed to set MTU:" << strerror(errno);
-  } else {
-    m_tunmtu = ifr.ifr_mtu;
+
+  for (WgSessionMacos* peer : m_peers) {
+    peer->setMtu(ifr.ifr_mtu);
   }
 }
