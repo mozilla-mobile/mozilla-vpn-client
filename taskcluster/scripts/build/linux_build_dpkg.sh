@@ -87,7 +87,7 @@ dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${DPKG_PACKAGE_DIST_VERSION}
 
 # For static Qt, strip out the Qt build and runtime dependencies.
 if [[ "$STATICQT" == "Y" ]]; then
-  export PATH=${MOZ_FETCHES_DIR}/qt_dist/bin:${PATH}
+  export PATH=${MOZ_FETCHES_DIR}/qt-linux/bin:${PATH}
   sed -rie '/\s+(qt6-|qml6-|libqt6|qmake)/d' $(pwd)/mozillavpn-source/debian/control
   # Remove the cargo dependency if manually installed
   if which cargo >/dev/null 2>&1; then

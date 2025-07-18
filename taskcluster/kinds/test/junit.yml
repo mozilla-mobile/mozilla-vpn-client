@@ -23,7 +23,7 @@ android-junit:
         cwd: '{checkout}'
         command: >-
           git submodule update --init --recursive;
-          source $TASK_WORKDIR/fetches/bin/activate;
+          source $TASK_WORKDIR/fetches/conda/bin/activate;
           conda-unpack;
           unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER;
           ./scripts/android/cmake.sh -d;

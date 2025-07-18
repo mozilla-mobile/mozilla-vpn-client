@@ -16,7 +16,7 @@ git submodule update --init --recursive
 # aqt-name "x86_64"      -> qmake-name: "x86_64"
 
 # We need to call bash with a login shell, so that conda is initialized
-source $TASK_WORKDIR/fetches/bin/activate
+source $TASK_WORKDIR/fetches/conda/bin/activate
 conda-unpack
 # conda-pack add's a /activate.d/rust.sh 
 # this one set's this variable to a garbage value. 

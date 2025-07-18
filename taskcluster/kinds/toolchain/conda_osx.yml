@@ -25,4 +25,4 @@ conda-macos:
     run:
         script: conda_pack_macos.sh
         toolchain-alias: conda-macos
-        toolchain-artifact: public/build/conda-macos.tar.gz
+        toolchain-artifact: public/build/conda-macos.tar.xz

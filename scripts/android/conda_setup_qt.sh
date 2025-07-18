@@ -27,8 +27,13 @@ if [[ -z "${ANDROID_ARCH}" ]]; then
 fi
 
 export QT_DIR=$CONDA_PREFIX/Qt
+
 # QT_Host Tools
 python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET
+for QT_HOST_DIR in $(find ${QT_DIR} -type d -name "${HOST_FOLDER_NAME}"); do
+    find ${QT_HOST_DIR} -type f -name 'lib*.a' -delete
+done
+
 # QT Android Tools
 if ! python -m aqt install-qt --outputdir $QT_DIR $HOST android ${QT_VERSION} ${ANDROID_ARCH} -m all; then
     echo "Whoops something went wrong. "

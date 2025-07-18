@@ -13,6 +13,7 @@
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
+$WIN32_PROC =Get-CimInstance -ClassName Win32_Processor
 
 New-Item -ItemType Directory -Force -Path "$TASK_WORKDIR/conda"
 $CONDA_DIR =resolve-path "$TASK_WORKDIR/conda"
@@ -33,9 +34,9 @@ Import-Module "$Env:_CONDA_ROOT\shell\condabin\Conda.psm1" -ArgumentList $CondaM
 $env:PATH ="$CONDA_DIR;$FETCHES_PATH;$QTPATH;$env:PATH"
 
 ## Conda is now ready - let's enable the env
-conda env create --force -f $REPO_ROOT_PATH/env-windows.yml -n VPN
+conda env create --force -f $REPO_ROOT_PATH\env-windows.yml -n VPN
 conda run -n VPN conda info
-conda run -n VPN powershell -file "$REPO_ROOT_PATH\scripts\windows\conda-setup-xwin-sdk.ps1"
+conda run -n VPN powershell -file $REPO_ROOT_PATH\scripts\windows\conda-setup-xwin-sdk.ps1
 
 New-Item -ItemType Directory $TASK_WORKDIR\public\build
-conda run -n VPN conda-pack --name VPN -o $TASK_WORKDIR\public\build\conda-windows.tar.gz
+conda run -n VPN conda-pack --name VPN -j $WIN32_PROC.NumberOfLogicalProcessors -o $TASK_WORKDIR\public\build\conda-windows.tar.xz
