@@ -141,7 +141,6 @@ XpcDaemonServer::~XpcDaemonServer() {
     CFRelease(error);
     return nil;
   }
-  auto guard = qScopeGuard([&]() { CFRelease(result); });
 
   if (CFGetTypeID(result) == CFStringGetTypeID()) {
     return static_cast<NSString*>(result);
