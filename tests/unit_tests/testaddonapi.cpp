@@ -207,23 +207,8 @@ void TestAddonApi::settimedcallback() {
   AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
       message, ":/addons_test/api_settimedcallback.js");
   QVERIFY(!!a);
-
-  QTimer timer;
-
-  int timeoutPeriodMsec = 1000;
-
-  timer.setSingleShot(true);
-  timer.start(timeoutPeriodMsec);
-
-  QSignalSpy spy(&timer, &QTimer::timeout);
-
-  // Give the slot time to execute
-  QTest::qWait(timeoutPeriodMsec + 1000);
-
-  QObject::connect(&timer, &QTimer::timeout,
-                   [&]() { QVERIFY(a->conditionApplied()); });
-
-  QCOMPARE(spy.count(), 1);
+  QVERIFY(!a->conditionApplied());
+  QTRY_VERIFY_WITH_TIMEOUT(a->conditionApplied(), 3000);
 }
 
 static TestAddonApi s_testAddonApi;
