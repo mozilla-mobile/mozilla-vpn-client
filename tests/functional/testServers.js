@@ -129,7 +129,7 @@ describe('Server', function() {
       assert.equal(
           await vpn.getQueryProperty(
               queries.screenHome.CONNECTION_TIMER,
-              'connectionTimeForFunctionalTest'),
+              'connectionTime'),
           '00:00:00');
 
       assert.strictEqual(vpn.lastNotification().title, 'VPN Connected');
@@ -182,7 +182,7 @@ describe('Server', function() {
       assert.notEqual(
           await vpn.getQueryProperty(
               queries.screenHome.CONNECTION_TIMER,
-              'connectionTimeForFunctionalTest'),
+              'connectionTime'),
           '00:00:00');
 
       assert.strictEqual(vpn.lastNotification().title, 'VPN Switched Servers');
@@ -220,10 +220,12 @@ describe('Server', function() {
             'VPN is on';
       });
 
+      // Wait at least one second for the timer to tick passed zero.
+      await vpn.wait(1500);
       assert.notEqual(
           await vpn.getQueryProperty(
               queries.screenHome.CONNECTION_TIMER,
-              'connectionTimeForFunctionalTest'),
+              'connectionTime'),
           '00:00:00');
     });
 

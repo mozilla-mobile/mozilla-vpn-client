@@ -57,7 +57,6 @@ constexpr const int CONNECTION_MAX_RETRY = 9;
 using namespace std::chrono_literals;
 constexpr const auto CONFIRMING_TIMOUT = 10s;
 constexpr const auto HANDSHAKE_TIMEOUT = 15s;
-constexpr const auto CONNECTION_TIME_UPDATE_FREQUENCY = 1s;
 
 Controller::Reason stateToReason(Controller::State state) {
   if (state == Controller::StateSwitching ||
@@ -78,12 +77,10 @@ using namespace ControllerPrivate;
 Controller::Controller() {
   MZ_COUNT_CTOR(Controller);
 
-  m_connectingTimer.setSingleShot(true);
+  m_confirmingTimer.setSingleShot(true);
   m_handshakeTimer.setSingleShot(true);
 
-  connect(&m_timer, &QTimer::timeout, this, &Controller::timerTimeout);
-
-  connect(&m_connectingTimer, &QTimer::timeout, this, [this]() {
+  connect(&m_confirmingTimer, &QTimer::timeout, this, [this]() {
     m_enableDisconnectInConfirming = true;
     emit enableDisconnectInConfirmingChanged();
   });
@@ -218,33 +215,8 @@ void Controller::implInitialized(bool status, bool a_connected,
     m_connectedTimeInUTC = connectionDate.isValid()
                                ? connectionDate.toUTC()
                                : QDateTime::currentDateTimeUtc();
-    emit timeChanged();
-    m_timer.start(CONNECTION_TIME_UPDATE_FREQUENCY);
+    emit timestampChanged();
   }
-}
-
-qint64 Controller::time() const {
-  if (m_connectedTimeInUTC.isValid()) {
-    return m_connectedTimeInUTC.secsTo(QDateTime::currentDateTimeUtc());
-  }
-  return 0;
-}
-
-void Controller::timerTimeout() {
-  Q_ASSERT(m_state == StateOn || m_state == StateOnPartial);
-#ifdef MZ_IOS
-  // When locking an iOS device with an app in the foreground, the app's JS
-  // runtime is stopped pretty quick by the system. For this VPN app, that
-  // caused a crash here when Qt tried to pass this emit off to QML, as QML
-  // is JS and is no longer available. This check is to prevent that crash
-  // when the device is locked.
-  if (QGuiApplication::applicationState() ==
-      Qt::ApplicationState::ApplicationActive) {
-    emit timeChanged();
-  }
-#else
-  emit timeChanged();
-#endif
 }
 
 void Controller::quit() {
@@ -379,7 +351,6 @@ void Controller::activateInternal(
   Q_ASSERT(m_impl);
   m_initiator = initiator;
 
-  clearConnectedTime();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
 
@@ -527,20 +498,6 @@ void Controller::activateInternal(
   activateNext();
 }
 
-void Controller::startTimerIfInactive() {
-  if (!m_connectedTimeInUTC.isValid()) {
-    m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
-  }
-}
-
-void Controller::clearConnectedTime() {
-  if (!isSwitchingServer) {
-    m_connectedTimeInUTC = QDateTime();
-    emit timeChanged();
-  }
-  m_timer.stop();
-}
-
 // static
 QList<IPAddress> Controller::getAllowedIPAddressRanges(
     const Server& exitServer) {
@@ -594,7 +551,7 @@ void Controller::activateNext() {
     return;
   }
 
-  if (m_state != StateSilentSwitching) {
+  if ((m_state != StateSwitching) && (m_state != StateSilentSwitching)) {
     // Move to the StateConfirming if we are awaiting any connection handshakes
     setState(StateConfirming);
   }
@@ -620,6 +577,7 @@ bool Controller::silentSwitchServers(
     return false;
   }
 
+  ServerSelectionPolicy selectionPolicy = DoNotRandomizeServerSelection;
   if (serverCoolDownPolicy == eServerCoolDownNeeded) {
     // Set a cooldown timer on the current server.
     QList<Server> servers = m_serverData.exitServers();
@@ -634,22 +592,16 @@ bool Controller::silentSwitchServers(
     MozillaVPN::instance()->serverLatency()->setCooldown(
         m_serverData.exitServerPublicKey(),
         Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+
+    selectionPolicy = RandomizeServerSelection;
   }
 
-  isSwitchingServer = true;
-  m_nextServerData = m_serverData;
-  m_nextServerSelectionPolicy = serverCoolDownPolicy == eServerCoolDownNeeded
-                                    ? RandomizeServerSelection
-                                    : DoNotRandomizeServerSelection;
-
-  clearConnectedTime();
   clearRetryCounter();
 
   logger.debug() << "Switching to a different server";
 
   setState(StateSilentSwitching);
-  deactivate();
-
+  activateInternal(DoNotForceDNSPort, selectionPolicy, m_initiator);
   return true;
 }
 
@@ -685,6 +637,10 @@ void Controller::connected(const QString& pubkey) {
   m_connectionRetry = 0;
   emit connectionRetryChanged();
 
+  bool isSwitchingServer =
+      (m_state == StateSwitching) || (m_state == StateSilentSwitching);
+
+#ifdef MZ_MOBILE
   if (m_state == StateOn || m_state == StateOnPartial) {
     // The only place StateOn is set is in this function, Controller::connected.
     // If this function is called when the state is already StateOn, it is
@@ -698,6 +654,7 @@ void Controller::connected(const QString& pubkey) {
     // new session.
     isSwitchingServer = true;
   }
+#endif
 
   // We have succesfully completed all pending connections.
   logger.debug() << "Connected from state:" << m_state;
@@ -706,9 +663,11 @@ void Controller::connected(const QString& pubkey) {
   } else {
     setState(StateOn);
   }
-  resetConnectedTime();
 
-  if (isSwitchingServer == false) {
+  if (!isSwitchingServer) {
+    m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
+    emit timestampChanged();
+
     logger.debug() << "Collecting telemetry for new session.";
     emit recordConnectionStartTelemetry();
   } else {
@@ -722,42 +681,22 @@ void Controller::connected(const QString& pubkey) {
   }
 }
 
-void Controller::resetConnectedTime() {
-  if (isSwitchingServer == false) {
-    m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
-  }
-  emit timeChanged();
-  m_timer.start(CONNECTION_TIME_UPDATE_FREQUENCY);
-}
-
 void Controller::disconnected() {
   logger.debug() << "Disconnected from state:" << m_state;
 
   m_pingCanary.stop();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
-  clearConnectedTime();
   clearRetryCounter();
-
-  NextStep nextStep = m_nextStep;
 
   if (processNextStep()) {
     setState(StateOff);
     return;
   }
 
-  if (nextStep == None &&
-      (m_state == StateSilentSwitching || m_state == StateSwitching)) {
-    // If we are only switching, keep the iniator
-    // Else move the iniator to Client User
-    // as the extension cannot switch servers.
-    auto target_iniator =
-        (m_state == StateSilentSwitching || m_state == StateSwitching)
-            ? m_initiator
-            : ActivationPrincipal::ClientUser;
-    activate(m_nextServerData, target_iniator, m_nextServerSelectionPolicy);
-    return;
-  }
+  // clear the connection time.
+  m_connectedTimeInUTC = QDateTime();
+  emit timestampChanged();
 
   // Need this StateConfirming check to prevent recording telemetry during
   // Android onboarding.
@@ -781,6 +720,16 @@ bool Controller::processNextStep() {
     emit readyToUpdate();
     return true;
   }
+
+  if (nextStep == Reconnect) {
+    // If we are only switching, keep the iniator
+    // as the extension cannot switch servers.
+    m_serverData = m_nextServerData;
+    emit currentServerChanged();
+    activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
+    return false;
+  }
+
   return false;
 }
 
@@ -788,11 +737,11 @@ void Controller::maybeEnableDisconnectInConfirming() {
   if (m_state == StateConfirming) {
     m_enableDisconnectInConfirming = false;
     emit enableDisconnectInConfirmingChanged();
-    m_connectingTimer.start(CONFIRMING_TIMOUT);
+    m_confirmingTimer.start(CONFIRMING_TIMOUT);
   } else {
     m_enableDisconnectInConfirming = false;
     emit enableDisconnectInConfirmingChanged();
-    m_connectingTimer.stop();
+    m_confirmingTimer.stop();
   }
 }
 
@@ -903,25 +852,27 @@ bool Controller::switchServers(const ServerData& serverData) {
     return false;
   }
 
-  // This next line fixes VPN-6706. Without this, the connection clock will
-  // never have started when the server switch comes after the "server
-  // unavailable" modal is shown. In that case, the server switch will have come
-  // before the initial server was fully connected, and thus before the timer
-  // was ever started. Hence, we start the timer here before we continue.
-  startTimerIfInactive();
-
-  isSwitchingServer = true;
+  logger.debug() << "Switching to a different server";
   m_nextServerData = serverData;
-  m_nextServerSelectionPolicy = RandomizeServerSelection;
-
-  clearConnectedTime();
   clearRetryCounter();
 
-  logger.debug() << "Switching to a different server";
+  // Special case - if we switch servers while connecting, then we have yet to
+  // fully establish a connection. We should stay in the connecting state, but
+  // restart the activation as though performing a server switch.
+  if (m_state != StateConnecting) {
+    setState(StateSwitching);
+  }
+  if (serverData.multihop() != m_serverData.multihop()) {
+    // We require a full deactivation if switching from singlehop to multihop.
+    m_nextStep = Reconnect;
+    deactivate();
+    return true;
+  }
 
-  setState(StateSwitching);
-  deactivate();
-
+  // Otherwise proceed directly to activation.
+  m_serverData = serverData;
+  emit currentServerChanged();
+  activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
   return true;
 }
 
@@ -945,10 +896,6 @@ bool Controller::activate(const ServerData& serverData,
     logger.debug() << "Already connected";
     return false;
   }
-
-  isSwitchingServer = (m_state == Controller::StateSwitching ||
-                       m_state == Controller::StateSilentSwitching);
-  logger.debug() << "Set isSwitchingServer to" << isSwitchingServer;
 
   m_serverData = serverData;
   emit currentServerChanged();
@@ -1084,11 +1031,10 @@ bool Controller::deactivate(ActivationPrincipal user) {
   m_pingCanary.stop();
   m_handshakeTimer.stop();
   m_activationQueue.clear();
-  clearConnectedTime();
   clearRetryCounter();
 
   Q_ASSERT(m_impl);
-  m_impl->deactivate(stateToReason(m_state));
+  m_impl->deactivate();
   return true;
 }
 

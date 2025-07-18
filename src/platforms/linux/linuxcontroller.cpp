@@ -103,14 +103,8 @@ void LinuxController::activate(const InterfaceConfig& config,
   logger.debug() << "LinuxController activated";
 }
 
-void LinuxController::deactivate(Controller::Reason reason) {
+void LinuxController::deactivate() {
   logger.debug() << "LinuxController deactivated";
-
-  if (reason == Controller::ReasonSwitching) {
-    logger.debug() << "No disconnect for quick server switching";
-    emit disconnected();
-    return;
-  }
 
   connect(m_dbus->deactivate(), &QDBusPendingCallWatcher::finished, this,
           &LinuxController::operationCompleted);
