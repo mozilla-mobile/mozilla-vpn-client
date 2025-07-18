@@ -38,7 +38,7 @@ if [ -e ${TASK_WORKDIR}/public/build ]; then
     rm -rf ${TASK_WORKDIR}/public/build
 fi
 mkdir -p ${TASK_WORKDIR}/public/build
-conda-pack -p ${TASK_WORKDIR}/miniconda/envs/vpn -j $(sysctl -n hw.logicalcpu) -o ${TASK_WORKDIR}/public/build/conda-macos.tar.xz
+conda-pack -p ${TASK_WORKDIR}/miniconda/envs/vpn -j $(sysctl -n hw.logicalcpu) --arcroot conda -o ${TASK_WORKDIR}/public/build/conda-macos.tar.xz
 
 echo "Done."
 

@@ -38,7 +38,7 @@ export LANG=en_US.utf-8
 export PYTHONIOENCODING="UTF-8"
 
 print Y "Installing conda"
-source ${TASK_WORKDIR}/fetches/bin/activate
+source ${TASK_WORKDIR}/fetches/conda/bin/activate
 conda-unpack
 
 # Conda Cannot know installed MacOS SDK'S

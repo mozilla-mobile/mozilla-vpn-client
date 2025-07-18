@@ -10,7 +10,7 @@ git submodule update --init --recursive
 
 # We need to call bash with a login shell, so that conda is initialized
 print Y "Installing conda"
-source ${MOZ_FETCHES_DIR}/bin/activate
+source ${MOZ_FETCHES_DIR}/conda/bin/activate
 conda-unpack
 
 # Use vendored crates - if available.
