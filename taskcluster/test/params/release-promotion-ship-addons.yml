@@ -22,6 +22,7 @@ existing_tasks:
   build-docker-image-build: OiiIOA8BQPmzMeqF-_FuBw
   build-docker-image-lint: Kzoqg9mgQQ2DAzfjaQBz-A
   build-docker-image-wasm: fFfeWVUQTY-m1bbJGwhtqw
+  build-ios/debug: cX6WjYQ4RnaNrNhItxYBeA
   build-linux/opt: BEe2AnFPRhSdi1EEaEZvcg
   build-macos/opt: LtezQlIiSluUubmPzb4Q1g
   build-wasm/opt: V3DmBEM3SMKQ7QqU23dFVw
@@ -43,6 +44,7 @@ existing_tasks:
   signing-windows/opt: CoxpMyQgT2OkcQA_3MAHfg
   test-taskgraph-definition: AzkgKc07TFGLeEY2pMgJog
   toolchain-openssl-win: YBVSnsOlS4SCezclXnphag
+  toolchain-qt-ios: Cs-gByGmRXGSKgCjinEMmw
   toolchain-qt-mac: ZXY0C1bQQ82jE3fa2f51xg
   toolchain-qt-win: G1GO1AWXRkiuGFWagSR1xQ
 filters:
