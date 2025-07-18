@@ -253,6 +253,11 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
     return;
   }
 
+  // Emit a signal that the default route has changed.
+  QHostAddress gateway(
+      reinterpret_cast<const struct sockaddr*>(addrlist[1].constData()));
+  emit defaultRouteUpdated(protocol, gateway, ifindex, rtm->rtm_rmx.rmx_mtu);
+
   // Update the exclusion routes with the new default route.
   logger.debug() << "Updating default route via" << ifname
                  << addrToString(addrlist[1]);
