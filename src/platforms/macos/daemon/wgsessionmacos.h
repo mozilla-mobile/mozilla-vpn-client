@@ -9,7 +9,7 @@
 #include <QObject>
 #include <QTimer>
 
-#include "daemon/interfaceconfig.h"
+#include "interfaceconfig.h"
 #include "daemon/wireguardutils.h"
 
 struct wireguard_tunnel;
