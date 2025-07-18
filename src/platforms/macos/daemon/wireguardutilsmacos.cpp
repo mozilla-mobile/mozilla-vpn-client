@@ -4,6 +4,10 @@
 
 #include "wireguardutilsmacos.h"
 
+#include <Security/SecCertificate.h>
+#include <Security/SecRequirement.h>
+#include <Security/SecStaticCode.h>
+#include <Security/SecTask.h>
 #include <errno.h>
 #include <net/route.h>
 
@@ -11,7 +15,9 @@
 #include <QDir>
 #include <QFile>
 #include <QLocalSocket>
+#include <QSysInfo>
 #include <QTimer>
+#include <QVersionNumber>
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -65,6 +71,144 @@ void WireguardUtilsMacos::tunnelFinished(int exitCode,
   }
 }
 
+// static
+QString WireguardUtilsMacos::wireguardGoPath() {
+  QString osVersion = QSysInfo::productVersion();
+  if (QVersionNumber::fromString(osVersion) >= QVersionNumber(13, 0)) {
+    // For macOS 13 and later this can be a relative path to the daemon.
+    QDir appPath(QCoreApplication::applicationDirPath());
+    appPath.cdUp();
+    appPath.cdUp();
+    appPath.cd("Resources");
+    appPath.cd("utils");
+    return appPath.filePath("wireguard-go");
+  }
+
+  // For earlier versions of macOS - this must be a fixed path
+  return "/Applications/Mozilla VPN.app/Contents/Resources/utils/wireguard-go";
+}
+
+// static
+QString WireguardUtilsMacos::wireguardGoRequirements() {
+  static QString requirements;
+  if (!requirements.isEmpty()) {
+    return requirements;
+  }
+
+  OSStatus status = errSecSuccess;
+  SecCodeRef code = nullptr;
+  CFDictionaryRef dict = nullptr;
+  auto guard = qScopeGuard([&]() {
+    if (status != errSecSuccess) {
+      CFStringRef msg = SecCopyErrorMessageString(status, nullptr);
+      logger.warning() << "Requirements failed:" << msg;
+      CFRelease(msg);
+    }
+    CFRelease(code);
+    CFRelease(dict);
+  });
+
+  status = SecCodeCopySelf(kSecCSDefaultFlags, &code);
+  if (status != errSecSuccess) {
+    return QString();
+  }
+  status = SecCodeCopySigningInformation(code, kSecCSSigningInformation, &dict);
+  if (status != errSecSuccess) {
+    return QString();
+  }
+
+  // Build the signing requirements.
+  QStringList reqList("anchor apple generic");
+  CFTypeRef value;
+  value = CFDictionaryGetValue(dict, kSecCodeInfoTeamIdentifier);
+  if ((value != nullptr) && (CFGetTypeID(value) == CFStringGetTypeID())) {
+    QString team = QString::fromCFString(static_cast<CFStringRef>(value));
+    reqList << QString("certificate leaf[subject.OU] = \"%1\"").arg(team);
+  }
+
+  value = CFDictionaryGetValue(dict, kSecCodeInfoCertificates);
+  if ((value != nullptr) && (CFGetTypeID(value) == CFArrayGetTypeID()) &&
+      (CFArrayGetCount(static_cast<CFArrayRef>(value)) != 0)) {
+    CFTypeRef leaf = CFArrayGetValueAtIndex(static_cast<CFArrayRef>(value), 0);
+    if ((leaf != nullptr) && (CFGetTypeID(leaf) == SecCertificateGetTypeID())) {
+      CFStringRef name;
+      QString nameReqTemplate = "certificate leaf[subject.CN] = \"%1\"";
+      SecCertificateCopyCommonName((SecCertificateRef)leaf, &name);
+      reqList << nameReqTemplate.arg(QString::fromCFString(name));
+      CFRelease(name);
+    }
+  }
+
+  requirements = reqList.join(" and ");
+  return requirements;
+}
+
+// static
+bool WireguardUtilsMacos::wireguardGoCodesign(const QProcess& process) {
+  // No need to verify the codesign on macOS >= 13.0 as the daemon is running
+  // as a part of the bundle, so we ought to get codesign verification for free
+  QString osVersion = QSysInfo::productVersion();
+  if (QVersionNumber::fromString(osVersion) >= QVersionNumber(13, 0)) {
+    return true;
+  }
+
+  QString requirements = wireguardGoRequirements();
+  if (requirements.isEmpty()) {
+    // If the daemon is not signed, then we shouldn't expect wireguard-go to be.
+    return true;
+  }
+
+  OSStatus status = errSecSuccess;
+  CFErrorRef err = nullptr;
+  CFURLRef url = nullptr;
+  SecRequirementRef req = nullptr;
+  SecStaticCodeRef code = nullptr;
+  auto guard = qScopeGuard([&]() {
+    if (err != nullptr) {
+      logger.warning() << "Codesign failed:" << err;
+      CFRelease(err);
+    } else if (status != errSecSuccess) {
+      CFStringRef msg = SecCopyErrorMessageString(status, nullptr);
+      logger.warning() << "Codesign failed:" << msg;
+      CFRelease(msg);
+    }
+    CFRelease(url);
+    CFRelease(req);
+    CFRelease(code);
+  });
+
+  // Get the URL to the QProcess's program
+  CFStringRef urlString = process.program().toCFString();
+  url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, urlString,
+                                      kCFURLPOSIXPathStyle, false);
+  CFRelease(urlString);
+  if (!url) {
+    logger.warning() << "Unable to generate URL for" << process.program();
+    return false;
+  }
+  logger.debug() << "Codesign verifying:" << CFURLGetString(url);
+  logger.debug() << "Codesign requirements:" << requirements;
+
+  // Prepare the codesign requirements.
+  CFStringRef reqString = requirements.toCFString();
+  status = SecRequirementCreateWithString(reqString, kSecCSDefaultFlags, &req);
+  CFRelease(reqString);
+  if (status != errSecSuccess) {
+    return false;
+  }
+
+  // Validate the codesign.
+  logger.debug() << "Codesign get code object";
+  status = SecStaticCodeCreateWithPath(url, kSecCSDefaultFlags, &code);
+  if (status != errSecSuccess) {
+    return false;
+  }
+  logger.debug() << "Codesign verify code object";
+  status =
+      SecStaticCodeCheckValidityWithErrors(code, kSecCSDefaultFlags, req, &err);
+  return (status == errSecSuccess);
+}
+
 bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   Q_UNUSED(config);
   if (m_tunnel.state() != QProcess::NotRunning) {
@@ -84,14 +228,14 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   pe.insert("LOG_LEVEL", "debug");
 #endif
   m_tunnel.setProcessEnvironment(pe);
+  m_tunnel.setProgram(wireguardGoPath());
+  m_tunnel.setArguments(QStringList({"-f", "utun"}));
+  if (!wireguardGoCodesign(m_tunnel)) {
+    logger.error() << "Unable to validate tunnel process code signature";
+    return false;
+  }
 
-  QDir appPath(QCoreApplication::applicationDirPath());
-  appPath.cdUp();
-  appPath.cdUp();
-  appPath.cd("Resources");
-  appPath.cd("utils");
-  QStringList wgArgs = {"-f", "utun"};
-  m_tunnel.start(appPath.filePath("wireguard-go"), wgArgs);
+  m_tunnel.start();
   if (!m_tunnel.waitForStarted(WG_TUN_PROC_TIMEOUT)) {
     logger.error() << "Unable to start tunnel process due to timeout";
     m_tunnel.kill();
