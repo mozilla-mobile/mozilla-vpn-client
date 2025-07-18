@@ -208,12 +208,7 @@ void TestAddonApi::settimedcallback() {
       message, ":/addons_test/api_settimedcallback.js");
   QVERIFY(!!a);
   QVERIFY(!a->conditionApplied());
-
-  // Give the slot time to execute
-  int timeoutPeriodMsec = 1000;
-  QTest::qWait(timeoutPeriodMsec + 1000);
-
-  QVERIFY(a->conditionApplied());
+  QTRY_VERIFY_WITH_TIMEOUT(a->conditionApplied(), 3000);
 }
 
 static TestAddonApi s_testAddonApi;
