@@ -41,7 +41,7 @@ clang-tidy-android:
               path: /builds/worker/artifacts/
     run:
       command: >-
-        source $TASK_WORKDIR/fetches/bin/activate &&
+        source $TASK_WORKDIR/fetches/conda/bin/activate &&
         conda-unpack &&
         git submodule update --init --recursive &&
         unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER &&  
@@ -93,7 +93,7 @@ clang-tidy-macos:
           export TASK_HOME=$(dirname "${MOZ_FETCHES_DIR}" ) &&
           rm -rf "${TASK_HOME}/artifacts" &&
           mkdir -p "${TASK_HOME}/artifacts" &&
-          source ${TASK_WORKDIR}/fetches/bin/activate && 
+          source ${TASK_WORKDIR}/fetches/conda/bin/activate && 
           conda-unpack && 
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path) && 
           git submodule update --init --recursive && 
