@@ -9,6 +9,7 @@
 #include <QObject>
 #include <QSocketNotifier>
 #include <QTimer>
+#include <QThreadPool>
 
 #include "interfaceconfig.h"
 #include "daemon/wireguardutils.h"
@@ -36,17 +37,16 @@ class WgSessionMacos final : public QObject {
   void setMtu(int mtu);
 
   static inline constexpr int WG_MTU_OVERHEAD = 80;
+  static inline constexpr int WG_PACKET_OVERHEAD = 32;
 
- private slots:
-  void netReadyRead(QSocketDescriptor sd, QSocketNotifier::Type type);
-  void tunReadyRead(QSocketDescriptor sd, QSocketNotifier::Type type);
+ protected slots:
+  void netReadyRead();
+  void tunReadyRead();
 
  private:
-  void encrypt(const QByteArray& data);
   void timeout();
-  void processResult(int op, const QByteArray& buf);
+  void processResult(int op, const QByteArray& buf) const;
 
-  void netInput(const QByteArray& packet);
   void tunWrite(qintptr fd, const QByteArray& packet,
                 const QByteArray& append = QByteArray()) const;
 
@@ -86,12 +86,17 @@ class WgSessionMacos final : public QObject {
   };
   QHash<quint16, struct Ipv4DefragState> m_defrag;
 
-  // The boringtun instance
-  struct wireguard_tunnel* m_tunnel = nullptr;
-
   int m_tunmtu;
   int m_tunSocket = -1;
   int m_netSocket = -1;
+
+ protected:
+  struct wireguard_tunnel* m_tunnel = nullptr;
+  QThreadPool m_encryptPool;
+  QThreadPool m_decryptPool;
+
+  friend class WgEncryptWorker;
+  friend class WgDecryptWorker;
 };
 
 #endif  // WGSESSIONMACOS_H
