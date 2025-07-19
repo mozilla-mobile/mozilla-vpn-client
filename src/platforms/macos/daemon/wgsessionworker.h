@@ -7,19 +7,24 @@
 
 #include <QByteArray>
 #include <QRunnable>
+#include <QThread>
 
 class WgSessionMacos;
 
-class WgEncryptWorker final : public QRunnable {
+class WgEncryptWorker final : public QThread {
  public:
-  WgEncryptWorker(WgSessionMacos* session, const QByteArray& packet)
-    : QRunnable(), m_session(session), m_packet(packet) {}
+  WgEncryptWorker(WgSessionMacos* session, qintptr socket);
+  ~WgEncryptWorker();
+
+  void setMtu(int mtu) { m_mtu = mtu; }
+  void shutdown();
 
  protected:
   void run() override;
 
   WgSessionMacos* m_session;
-  QByteArray m_packet;
+  QAtomicInt m_mtu;
+  int m_socket;
 };
 
 class WgDecryptWorker final : public QRunnable {
