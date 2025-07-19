@@ -73,12 +73,14 @@ WgSessionMacos::~WgSessionMacos() {
   if (m_netSocket >= 0) {
     close(m_netSocket);
   }
+  if (m_encryptWorker) {
+    m_encryptWorker->shutdown();
+    m_encryptWorker->wait();
+  }
 
   // Shut down the worker pools.
   m_decryptPool.clear();
-  m_encryptPool.clear();
   m_decryptPool.waitForDone();
-  m_encryptPool.waitForDone();
 }
 
 void WgSessionMacos::processResult(int op, const QByteArray& buf) const {
@@ -364,9 +366,11 @@ void WgSessionMacos::setTunSocket(qintptr sd) {
   fcntl(sd, F_SETFL, flags | O_NONBLOCK);
 
   m_tunSocket = sd;
-  auto notifier = new QSocketNotifier(sd, QSocketNotifier::Read, this);
-  connect(notifier, &QSocketNotifier::activated, this,
-          &WgSessionMacos::tunReadyRead);
+
+  // Start the encryption worker.
+  m_encryptWorker = new WgEncryptWorker(this, sd);
+  m_encryptWorker->setMtu(m_tunmtu);
+  m_encryptWorker->start();
 }
 
 void WgSessionMacos::setMtu(int mtu) {
@@ -410,47 +414,6 @@ void WgSessionMacos::netReadyRead() {
       auto worker = new WgDecryptWorker(this, packet);
       m_decryptPool.start(worker);
     }
-  }
-}
-
-void WgSessionMacos::tunReadyRead() {
-  // The tunnel socket is ready for reading.
-  quint32 header = 0;
-  QByteArray rxbuf;
-  rxbuf.resize(m_tunmtu + 16);
-
-  struct iovec iov[2];
-  iov[0].iov_base = &header;
-  iov[0].iov_len = sizeof(header);
-  iov[1].iov_base = (void*)rxbuf.data();
-  iov[1].iov_len = m_tunmtu;
-
-  while (true) {
-    // Try to read a packet from the tunnel.
-    int len = readv(m_tunSocket, iov, sizeof(iov) / sizeof(struct iovec));
-    if (len < 0) {
-      if (errno == EAGAIN) return;
-      logger.debug() << "Tunnel error:" << strerror(errno);
-      return;
-    }
-    int pktlen = len - sizeof(header);
-    if ((pktlen < 0) || (pktlen > m_tunmtu)) {
-      continue;
-    }
-
-    // I think there is a small bug in boringtun to do with message padding.
-    // The wireguard protocol states that the encapsulated packet must first be
-    // padded out to a multiple of 16 bytes in length, but boringtun does no
-    // such padding during encryption. So let's do it manually ourself.
-    int tail = pktlen % 16;
-    if (tail) {
-      int padsz = 16 - tail;
-      memset(rxbuf.data() + pktlen, 0, padsz);
-      pktlen += padsz;
-    }
-
-    auto worker = new WgEncryptWorker(this, rxbuf.first(pktlen));
-    m_encryptPool.start(worker);
   }
 }
 

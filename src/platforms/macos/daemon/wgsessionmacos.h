@@ -18,6 +18,9 @@ struct wireguard_tunnel;
 struct ipv4header;
 struct sockaddr;
 
+class WgEncryptWorker;
+class WgDecryptWorker;
+
 class WgSessionMacos final : public QObject {
   Q_OBJECT
 
@@ -41,7 +44,6 @@ class WgSessionMacos final : public QObject {
 
  protected slots:
   void netReadyRead();
-  void tunReadyRead();
 
  private:
   void timeout();
@@ -92,7 +94,7 @@ class WgSessionMacos final : public QObject {
 
  protected:
   struct wireguard_tunnel* m_tunnel = nullptr;
-  QThreadPool m_encryptPool;
+  WgEncryptWorker* m_encryptWorker = nullptr;
   QThreadPool m_decryptPool;
 
   friend class WgEncryptWorker;
