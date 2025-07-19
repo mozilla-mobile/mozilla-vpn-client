@@ -90,7 +90,8 @@ bool WgUtilsMacos::addInterface(const InterfaceConfig& config) {
   }
 
   // Set a base MTU, it will get updated later.
-  ifr.ifr_mtu = IPV6_MMTU;
+  m_tunmtu = IPV6_MMTU;
+  ifr.ifr_mtu = m_tunmtu;
   if (ioctl(tunfd, SIOCSIFMTU, &ifr) != 0) {
     logger.error() << "Failed to set MTU:" << strerror(errno);
     return false;
@@ -162,6 +163,7 @@ bool WgUtilsMacos::updatePeer(const InterfaceConfig& config) {
     delete peer;
   }
   peer = new WgSessionMacos(config, this);
+  peer->setMtu(m_tunmtu);
 
   // Create a socket to handle outbound packet flows.
   if (config.m_hopType != InterfaceConfig::MultiHopExit) {
@@ -288,10 +290,11 @@ void WgUtilsMacos::mtuUpdate(int proto, const QHostAddress& gateway,
   if (gateway.isNull()) {
     return;
   }
+  m_tunmtu = mtu - WgSessionMacos::WG_MTU_OVERHEAD;
 
   // Update the tunnel device's MTU
   struct ifreq ifr;
-  ifr.ifr_mtu = mtu - WgSessionMacos::WG_MTU_OVERHEAD;
+  ifr.ifr_mtu = m_tunmtu;
   if (ifr.ifr_mtu < IPV6_MMTU) {
     ifr.ifr_mtu = IPV6_MMTU;
   }

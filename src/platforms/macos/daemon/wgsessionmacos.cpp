@@ -74,13 +74,13 @@ WgSessionMacos::~WgSessionMacos() {
     close(m_netSocket);
   }
   if (m_encryptWorker) {
-    m_encryptWorker->shutdown();
+    m_encryptWorker->stop();
     m_encryptWorker->wait();
   }
-
-  // Shut down the worker pools.
-  m_decryptPool.clear();
-  m_decryptPool.waitForDone();
+  if (m_decryptWorker) {
+    m_decryptWorker->stop();
+    m_decryptWorker->wait();
+  }
 }
 
 void WgSessionMacos::processResult(int op, const QByteArray& buf) const {
@@ -135,22 +135,6 @@ void WgSessionMacos::renegotiate() {
   auto res = wireguard_force_handshake(m_tunnel, outptr, output.size());
 
   processResult(res.op, output.first(res.size));
-}
-
-void WgSessionMacos::mhopInput(const QByteArray& data) {
-  //logger.debug() << name() << "mhop:" << QString(data.toBase64());
-  quint32 family;
-  if (data.length() <= sizeof(family)) {
-    return;
-  }
-
-  QByteArray packet = data.mid(sizeof(family));
-  quint8 version = (packet[0] >> 4);
-  if (version == 4) {
-    mhopInputV4(packet);
-  } else if (version == 6) {
-    mhopInputV6(packet);
-  }
 }
 
 WireguardUtils::PeerStatus WgSessionMacos::status() const {
@@ -239,12 +223,30 @@ QByteArray WgSessionMacos::mhopHeader(const QByteArray& packet) const {
   return result;
 }
 
-void WgSessionMacos::mhopInputV4(const QByteArray& packet) {
+QByteArray WgSessionMacos::mhopUnwrap(const QByteArray& packet) {
+  if (packet.length() <= sizeof(quint32)) {
+    return QByteArray();
+  }
+
+  quint32 header = qFromBigEndian<quint32>(packet.constData());
+  if (header == AF_INET) {
+    return mhopInputV4(packet.sliced(sizeof(header)));
+  } else if (header == AF_INET6) {
+    return mhopInputV6(packet.sliced(sizeof(header)));
+  } else {
+    return QByteArray();
+  }
+}
+
+QByteArray WgSessionMacos::mhopInputV4(const QByteArray& packet) {
   // Parse the IPv4 header
   auto header = reinterpret_cast<const struct ipv4header*>(packet.constData());
   quint16 hlen = (header->ihl & 0xF) * 4;
+  if ((header->ihl >> 4) != 4) {
+    return QByteArray();
+  }
   if ((hlen < sizeof(struct ipv4header)) || (hlen > packet.length())) {
-    return;
+    return QByteArray();
   }
 
   // Validate the header.
@@ -252,20 +254,20 @@ void WgSessionMacos::mhopInputV4(const QByteArray& packet) {
       (qFromBigEndian(header->dest) != m_innerIpv4.toIPv4Address()) ||
       (header->proto != IPPROTO_UDP) || (header->ttl == 0) ||
       inetChecksum(header, sizeof(struct ipv4header)) != 0x0000) {
-    return;
+    return QByteArray();
   }
 
   // Handle IPv4 defragmentation
-  QByteArray dgram = packet.mid(hlen);
+  QByteArray dgram = packet.sliced(hlen);
   if (header->frag & qToBigEndian<quint16>(0x3fff)) {
     dgram = mhopDefragV4(header, dgram);
     if (dgram.isEmpty()) {
-      return;
+      return QByteArray();
     }
   }
 
   // Process the UDP header
-  mhopInputUDP(m_serverIpv4, m_innerIpv4, dgram);
+  return mhopInputUDP(m_serverIpv4, m_innerIpv4, dgram);
 }
 
 QByteArray WgSessionMacos::mhopDefragV4(const struct ipv4header* header,
@@ -301,33 +303,32 @@ QByteArray WgSessionMacos::mhopDefragV4(const struct ipv4header* header,
   return result;
 }
 
-void WgSessionMacos::mhopInputV6(const QByteArray& packet) {
+QByteArray WgSessionMacos::mhopInputV6(const QByteArray& packet) {
   // TODO: Implement Me!
+  return QByteArray();
 }
 
-void WgSessionMacos::mhopInputUDP(const QHostAddress& src,
-                                  const QHostAddress& dst,
-                                  const QByteArray& dgram) {
+QByteArray WgSessionMacos::mhopInputUDP(const QHostAddress& src,
+                                        const QHostAddress& dst,
+                                        const QByteArray& dgram) {
   const quint16* hdr = reinterpret_cast<const quint16*>(dgram.constData());
   if ((dgram.length() < 8) || (hdr[0] != htons(m_serverPort)) ||
       (hdr[1] != htons(m_innerPort)) || (htons(hdr[2]) > dgram.length())) {
     logger.debug() << "mhop drop udp:" << dgram.toHex();
-    return;
+    return QByteArray();
   }
 
-  QByteArray data = dgram.mid(8);
+  QByteArray data = dgram.sliced(8);
   if (hdr[3] != 0x0000) {
     // Validate the checksum
     quint16 cksum = udpChecksum(src, dst, htons(hdr[0]), htons(hdr[1]), data);
     if (hdr[3] != cksum) {
       logger.debug() << "mhop drop cksum:" << dgram.toHex();
-      return;
+      return QByteArray();
     }
   }
 
-  // At last - we can handle the payload.
-  auto worker = new WgDecryptWorker(this, data);
-  m_decryptPool.start(worker);
+  return data;
 }
 
 bool WgSessionMacos::start(const struct sockaddr* addr, int len) {
@@ -354,9 +355,15 @@ void WgSessionMacos::start(qintptr sd) {
   fcntl(sd, F_SETFL, flags | O_NONBLOCK);
 
   m_netSocket = sd;
-  auto notifier = new QSocketNotifier(m_netSocket, QSocketNotifier::Read, this);
-  connect(notifier, &QSocketNotifier::activated, this,
-          &WgSessionMacos::netReadyRead);
+
+  // Start the decryption worker.
+  if (m_config.m_hopType == InterfaceConfig::MultiHopExit) {
+    m_decryptWorker = new WgMultihopWorker(this, sd);
+  } else {
+    m_decryptWorker = new WgDecryptWorker(this, sd);
+  }
+  m_decryptWorker->setMtu(m_tunmtu);
+  m_decryptWorker->start();
 
   renegotiate();
 }
@@ -382,6 +389,13 @@ void WgSessionMacos::setMtu(int mtu) {
   }
   m_tunmtu = mtu;
 
+  if (m_encryptWorker) {
+    m_encryptWorker->setMtu(mtu);
+  }
+  if (m_decryptWorker) {
+    m_decryptWorker->setMtu(mtu);
+  }
+
   // Set the MTU if it's a utun device.
   struct ifreq ifr;
   socklen_t ifnamesize = sizeof(ifr.ifr_name);
@@ -391,29 +405,6 @@ void WgSessionMacos::setMtu(int mtu) {
   ifr.ifr_mtu = m_tunmtu;
   if ((err >= 0) && (ioctl(m_tunSocket, SIOCSIFMTU, &ifr) != 0)) {
     logger.error() << "Failed to set MTU:" << strerror(errno);
-  }
-}
-
-void WgSessionMacos::netReadyRead() {
-  QByteArray rxbuf;
-  rxbuf.resize(m_tunmtu + WG_MTU_OVERHEAD);
-
-  while (true) {
-    // Try to read a packet from the network.
-    int rxlen = recv(m_netSocket, (void*)rxbuf.data(), rxbuf.length(), MSG_DONTWAIT);
-    if (rxlen < 0) {
-      if (errno == EAGAIN) return;
-      logger.debug() << "Recv error:" << strerror(errno);
-      return;
-    }
-  
-    QByteArray packet = rxbuf.first(rxlen);
-    if (m_config.m_hopType == InterfaceConfig::MultiHopExit) {
-      mhopInput(packet);
-    } else {
-      auto worker = new WgDecryptWorker(this, packet);
-      m_decryptPool.start(worker);
-    }
   }
 }
 
