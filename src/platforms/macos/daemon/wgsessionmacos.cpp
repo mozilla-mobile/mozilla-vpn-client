@@ -24,6 +24,7 @@
 #include "interfaceconfig.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "wgsessionworker.h"
 
 extern "C" {
 #include "wireguard_ffi.h"
@@ -35,7 +36,6 @@ Logger logger("WgSessionMacos");
 
 constexpr const int WG_SESSION_TICK_INTERVAL = 100;
 constexpr const int WG_DEFRAG_TIMEOUT = 1000;
-constexpr const int WG_PACKET_OVERHEAD = 32;
 constexpr const int WG_MAX_HANDSHAKE_SIZE = 148;
 
 WgSessionMacos::WgSessionMacos(const InterfaceConfig& config, QObject* parent)
@@ -73,9 +73,15 @@ WgSessionMacos::~WgSessionMacos() {
   if (m_netSocket >= 0) {
     close(m_netSocket);
   }
+
+  // Shut down the worker pools.
+  m_decryptPool.clear();
+  m_encryptPool.clear();
+  m_decryptPool.waitForDone();
+  m_encryptPool.waitForDone();
 }
 
-void WgSessionMacos::processResult(int op, const QByteArray& buf) {
+void WgSessionMacos::processResult(int op, const QByteArray& buf) const {
   switch (op) {
     case WIREGUARD_DONE:
       break;
@@ -125,32 +131,6 @@ void WgSessionMacos::renegotiate() {
 
   uint8_t* outptr = reinterpret_cast<uint8_t*>(output.data());
   auto res = wireguard_force_handshake(m_tunnel, outptr, output.size());
-
-  processResult(res.op, output.first(res.size));
-}
-
-void WgSessionMacos::encrypt(const QByteArray& pkt) {
-  //logger.debug() << name() << "encrypt:" << QString(pkt.toBase64());
-
-  QByteArray output;
-  output.resize(pkt.size() + WG_PACKET_OVERHEAD);
-
-  const uint8_t* ptr = reinterpret_cast<const uint8_t*>(pkt.constData());
-  uint8_t* outptr = reinterpret_cast<uint8_t*>(output.data());
-  auto res = wireguard_write(m_tunnel, ptr, pkt.size(), outptr, output.size());
-
-  processResult(res.op, output.first(res.size));
-}
-
-void WgSessionMacos::netInput(const QByteArray& pkt) {
-  //logger.debug() << name() << "input:" << QString(pkt.toBase64());
-
-  QByteArray output;
-  output.resize(pkt.size());
-
-  const uint8_t* ptr = reinterpret_cast<const uint8_t*>(pkt.constData());
-  uint8_t* outptr = reinterpret_cast<uint8_t*>(output.data());
-  auto res = wireguard_read(m_tunnel, ptr, pkt.size(), outptr, output.size());
 
   processResult(res.op, output.first(res.size));
 }
@@ -344,7 +324,8 @@ void WgSessionMacos::mhopInputUDP(const QHostAddress& src,
   }
 
   // At last - we can handle the payload.
-  netInput(data);
+  auto worker = new WgDecryptWorker(this, data);
+  m_decryptPool.start(worker);
 }
 
 bool WgSessionMacos::start(const struct sockaddr* addr, int len) {
@@ -409,8 +390,7 @@ void WgSessionMacos::setMtu(int mtu) {
   }
 }
 
-void WgSessionMacos::netReadyRead(QSocketDescriptor sd,
-                                  QSocketNotifier::Type type) {
+void WgSessionMacos::netReadyRead() {
   QByteArray rxbuf;
   rxbuf.resize(m_tunmtu + WG_MTU_OVERHEAD);
 
@@ -424,17 +404,16 @@ void WgSessionMacos::netReadyRead(QSocketDescriptor sd,
     }
   
     QByteArray packet = rxbuf.first(rxlen);
-    //logger.debug() << name() << "input:" << QString(packet.toBase64());
     if (m_config.m_hopType == InterfaceConfig::MultiHopExit) {
       mhopInput(packet);
     } else {
-      netInput(packet);
+      auto worker = new WgDecryptWorker(this, packet);
+      m_decryptPool.start(worker);
     }
   }
 }
 
-void WgSessionMacos::tunReadyRead(QSocketDescriptor sd,
-                                  QSocketNotifier::Type type) {
+void WgSessionMacos::tunReadyRead() {
   // The tunnel socket is ready for reading.
   quint32 header = 0;
   QByteArray rxbuf;
@@ -448,7 +427,7 @@ void WgSessionMacos::tunReadyRead(QSocketDescriptor sd,
 
   while (true) {
     // Try to read a packet from the tunnel.
-    int len = readv(sd, iov, sizeof(iov) / sizeof(struct iovec));
+    int len = readv(m_tunSocket, iov, sizeof(iov) / sizeof(struct iovec));
     if (len < 0) {
       if (errno == EAGAIN) return;
       logger.debug() << "Tunnel error:" << strerror(errno);
@@ -470,8 +449,8 @@ void WgSessionMacos::tunReadyRead(QSocketDescriptor sd,
       pktlen += padsz;
     }
 
-    // Encrypt the packet
-    encrypt(rxbuf.first(pktlen));
+    auto worker = new WgEncryptWorker(this, rxbuf.first(pktlen));
+    m_encryptPool.start(worker);
   }
 }
 
