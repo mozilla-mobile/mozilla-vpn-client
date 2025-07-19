@@ -15,6 +15,7 @@
 
 struct wireguard_tunnel;
 struct ipv4header;
+struct sockaddr;
 
 class WgSessionMacos final : public QObject {
   Q_OBJECT
@@ -23,13 +24,15 @@ class WgSessionMacos final : public QObject {
   WgSessionMacos(const InterfaceConfig& config, QObject* parent = nullptr);
   ~WgSessionMacos();
 
+  QString name() const { return m_config.m_serverPublicKey.first(8); }
   const QString& pubkey() const { return m_config.m_serverPublicKey; }
   WireguardUtils::PeerStatus status() const;
 
+  bool start(const struct sockaddr* addr, int len);
+  void start(qintptr sd);
   void renegotiate();
 
   void setTunSocket(qintptr sd);
-  void setNetSocket(qintptr sd);
   void setMtu(int mtu);
 
   static inline constexpr int WG_MTU_OVERHEAD = 80;
@@ -44,10 +47,10 @@ class WgSessionMacos final : public QObject {
   void processResult(int op, const QByteArray& buf);
 
   void netInput(const QByteArray& packet);
-  void netWrite(const QByteArray& packet);
-  void tunWrite(const QByteArray& packet, quint32 family);
+  void tunWrite(qintptr fd, const QByteArray& packet,
+                const QByteArray& append = QByteArray()) const;
 
-  QByteArray mhopEncapsulate(const QByteArray& packet);
+  QByteArray mhopHeader(const QByteArray& packet) const;
   void mhopInput(const QByteArray& packet);
   void mhopInputV4(const QByteArray& packet);
   void mhopInputV6(const QByteArray& packet);

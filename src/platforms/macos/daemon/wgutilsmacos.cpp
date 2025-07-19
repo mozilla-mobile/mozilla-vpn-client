@@ -14,7 +14,7 @@
 #include <sys/kern_control.h>
 #include <sys/socket.h>
 #include <sys/sys_domain.h>
-#include <sys/uio.h>
+#include <sys/un.h>
 #include <unistd.h>
 
 #include <QUdpSocket>
@@ -165,31 +165,22 @@ bool WgUtilsMacos::updatePeer(const InterfaceConfig& config) {
 
   // Create a socket to handle outbound packet flows.
   if (config.m_hopType != InterfaceConfig::MultiHopExit) {
-    int sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if (sock < 0) {
-      logger.warning() << "Socket creation failed:" << strerror(errno);
-      return false;
-    }
-
     struct sockaddr_in sin;
     quint32 dst = QHostAddress(config.m_serverIpv4AddrIn).toIPv4Address();
     sin.sin_family = AF_INET;
     sin.sin_len = sizeof(sin);
     sin.sin_port = qToBigEndian<quint16>(config.m_serverPort);
     sin.sin_addr.s_addr = qToBigEndian<quint32>(dst);
-    if (::connect(sock, (struct sockaddr* )&sin, sizeof(sin)) < 0) {
-      logger.warning() << "Socket connect failed:" << strerror(errno);
-      close(sock);
+    if (!peer->start((struct sockaddr*)&sin, sizeof(sin))) {
       return false;
     }
-    peer->setNetSocket(sock);
 
     if (m_rtmonitor != nullptr) {
       m_rtmonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
       m_rtmonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
     }
   } else {
-    peer->setNetSocket(dup(m_mhopExitSocket));
+    peer->start(dup(m_mhopExitSocket));
   }
 
   // Single-hop and multihop exit peers send and receive packets from the tunnel
