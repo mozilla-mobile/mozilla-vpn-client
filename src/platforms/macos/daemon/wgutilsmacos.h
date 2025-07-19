@@ -40,6 +40,7 @@ class WgUtilsMacos final : public WireguardUtils {
   void mtuUpdate(int proto, const QHostAddress& gateway, int ifindex, int mtu);
 
   int m_tunfd = -1;
+  int m_tunmtu;
   QString m_ifname;
   MacosRouteMonitor* m_rtmonitor = nullptr;
 

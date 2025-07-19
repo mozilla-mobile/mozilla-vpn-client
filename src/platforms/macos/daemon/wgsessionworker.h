@@ -11,32 +11,52 @@
 
 class WgSessionMacos;
 
-class WgEncryptWorker final : public QThread {
- public:
-  WgEncryptWorker(WgSessionMacos* session, qintptr socket);
-  ~WgEncryptWorker();
+class WgSessionWorker : public QThread {
+  Q_OBJECT
 
-  void setMtu(int mtu) { m_mtu = mtu; }
-  void shutdown();
+ public:
+  WgSessionWorker(WgSessionMacos* session, qintptr socket);
+  ~WgSessionWorker();
+
+  void setMtu(int mtu);
+  void stop();
 
  protected:
-  void run() override;
+  void run() override = 0;
 
   WgSessionMacos* m_session;
   QAtomicInt m_mtu;
   int m_socket;
 };
 
-class WgDecryptWorker final : public QRunnable {
+class WgEncryptWorker final : public WgSessionWorker {
+  Q_OBJECT
+
  public:
-  WgDecryptWorker(WgSessionMacos* session, const QByteArray& packet)
-    : QRunnable(), m_session(session), m_packet(packet) {}
+  WgEncryptWorker(WgSessionMacos* s, qintptr sd) : WgSessionWorker(s, sd) {}
 
  protected:
   void run() override;
+};
 
-  WgSessionMacos* m_session;
-  QByteArray m_packet;
+class WgDecryptWorker final : public WgSessionWorker {
+  Q_OBJECT
+
+ public:
+  WgDecryptWorker(WgSessionMacos* s, qintptr sd) : WgSessionWorker(s, sd) {}
+
+ protected:
+  void run() override;
+};
+
+class WgMultihopWorker final : public WgSessionWorker {
+  Q_OBJECT
+
+ public:
+  WgMultihopWorker(WgSessionMacos* s, qintptr sd) : WgSessionWorker(s, sd) {}
+
+ protected:
+  void run() override;
 };
 
 #endif  // WGSESSIONWORKER_H

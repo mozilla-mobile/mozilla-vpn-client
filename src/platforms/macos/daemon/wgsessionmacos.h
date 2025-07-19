@@ -18,8 +18,7 @@ struct wireguard_tunnel;
 struct ipv4header;
 struct sockaddr;
 
-class WgEncryptWorker;
-class WgDecryptWorker;
+class WgSessionWorker;
 
 class WgSessionMacos final : public QObject {
   Q_OBJECT
@@ -42,22 +41,22 @@ class WgSessionMacos final : public QObject {
   static inline constexpr int WG_MTU_OVERHEAD = 80;
   static inline constexpr int WG_PACKET_OVERHEAD = 32;
 
- protected slots:
-  void netReadyRead();
+ protected:
+  QByteArray mhopUnwrap(const QByteArray& packet);
+  void processResult(int op, const QByteArray& buf) const;
 
  private:
   void timeout();
-  void processResult(int op, const QByteArray& buf) const;
 
   void tunWrite(qintptr fd, const QByteArray& packet,
                 const QByteArray& append = QByteArray()) const;
 
   QByteArray mhopHeader(const QByteArray& packet) const;
-  void mhopInput(const QByteArray& packet);
-  void mhopInputV4(const QByteArray& packet);
-  void mhopInputV6(const QByteArray& packet);
-  void mhopInputUDP(const QHostAddress& src, const QHostAddress& dst,
-                    const QByteArray& packet);
+
+  QByteArray mhopInputV4(const QByteArray& packet);
+  QByteArray mhopInputV6(const QByteArray& packet);
+  QByteArray mhopInputUDP(const QHostAddress& src, const QHostAddress& dst,
+                          const QByteArray& packet);
 
   QByteArray mhopDefragV4(const struct ipv4header* header,
                           const QByteArray& packet);
@@ -94,11 +93,12 @@ class WgSessionMacos final : public QObject {
 
  protected:
   struct wireguard_tunnel* m_tunnel = nullptr;
-  WgEncryptWorker* m_encryptWorker = nullptr;
-  QThreadPool m_decryptPool;
+  WgSessionWorker* m_encryptWorker = nullptr;
+  WgSessionWorker* m_decryptWorker = nullptr;
 
   friend class WgEncryptWorker;
   friend class WgDecryptWorker;
+  friend class WgMultihopWorker;
 };
 
 #endif  // WGSESSIONMACOS_H

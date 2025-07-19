@@ -23,9 +23,11 @@ namespace {
 Logger logger("WgSessionWorker");
 };  // namespace
 
-WgEncryptWorker::WgEncryptWorker(WgSessionMacos* session, qintptr socket)
+WgSessionWorker::WgSessionWorker(WgSessionMacos* session, qintptr socket)
     : QThread(session), m_session(session) {
   MZ_COUNT_CTOR(WgSessionMacos);
+  logger.debug() << metaObject()->className() << "created.";
+
   m_socket = dup(socket);
   m_mtu = IPV6_MMTU;
 
@@ -33,11 +35,23 @@ WgEncryptWorker::WgEncryptWorker(WgSessionMacos* session, qintptr socket)
   fcntl(m_socket, F_SETFL, flags & ~O_NONBLOCK);
 }
 
-WgEncryptWorker::~WgEncryptWorker() {
+WgSessionWorker::~WgSessionWorker() {
   MZ_COUNT_DTOR(WgSessionMacos);
+  logger.debug() << metaObject()->className() << "destroyed.";
+
   if (m_socket >= 0) {
     close(m_socket);
   }
+}
+
+void WgSessionWorker::setMtu(int mtu) {
+  logger.debug() << "set mtu:" << mtu;
+  m_mtu = mtu;
+}
+
+void WgSessionWorker::stop() {
+  requestInterruption();
+  shutdown(m_socket, SHUT_RD);
 }
 
 void WgEncryptWorker::run() {
@@ -90,18 +104,56 @@ void WgEncryptWorker::run() {
   }
 }
 
-void WgEncryptWorker::shutdown() {
-  requestInterruption();
-  ::shutdown(m_socket, SHUT_RD);
+void WgDecryptWorker::run() {
+  QByteArray dgram;
+  QByteArray decrypt;
+
+  while (!isInterruptionRequested()) {
+    // Resize in case the MTU changed.
+    int mtu = m_mtu.loadAcquire();
+    dgram.resize(mtu + WgSessionMacos::WG_PACKET_OVERHEAD);
+    decrypt.resize(mtu + WgSessionMacos::WG_PACKET_OVERHEAD);
+
+    // Try to read a packet from the network.
+    uint8_t* ptr = reinterpret_cast<uint8_t*>(dgram.data());
+    int len = recv(m_socket, ptr, dgram.length(), 0);
+    if (len < 0) {
+      if (errno == EAGAIN) continue;
+      if (errno == EINTR) continue;
+      logger.debug() << "Recv error:" << strerror(errno);
+      return;
+    }
+
+    uint8_t* dec = reinterpret_cast<uint8_t*>(decrypt.data());
+    auto res = wireguard_read(m_session->m_tunnel, ptr, len, dec, decrypt.size());
+    m_session->processResult(res.op, decrypt.first(res.size));
+  }
 }
 
-void WgDecryptWorker::run() {
-  QByteArray output;
-  output.resize(m_packet.size());
+void WgMultihopWorker::run() {
+  QByteArray dgram;
+  QByteArray decrypt;
 
-  const uint8_t* ptr = reinterpret_cast<const uint8_t*>(m_packet.constData());
-  uint8_t* outptr = reinterpret_cast<uint8_t*>(output.data());
-  auto res = wireguard_read(m_session->m_tunnel, ptr, m_packet.size(), outptr,
-                            output.size());
-  m_session->processResult(res.op, output.first(res.size));
+  while (!isInterruptionRequested()) {
+    // Resize in case the MTU changed.
+    int mtu = m_mtu.loadAcquire();
+    dgram.resize(mtu + WgSessionMacos::WG_PACKET_OVERHEAD);
+    decrypt.resize(mtu + WgSessionMacos::WG_PACKET_OVERHEAD);
+
+    // Try to read a packet from the network.
+    int len = recv(m_socket, (void*)dgram.data(), dgram.length(), 0);
+    if (len < 0) {
+      if (errno == EAGAIN) continue;
+      if (errno == EINTR) continue;
+      logger.debug() << "Recv error:" << strerror(errno);
+      return;
+    }
+
+    QByteArray packet = m_session->mhopUnwrap(dgram.first(len));
+    const uint8_t* ptr = reinterpret_cast<const uint8_t*>(packet.constData());
+    uint8_t* dec = reinterpret_cast<uint8_t*>(decrypt.data());
+    auto res = wireguard_read(m_session->m_tunnel, ptr, packet.size(), dec,
+                              decrypt.size());
+    m_session->processResult(res.op, decrypt.first(res.size));
+  }
 }
