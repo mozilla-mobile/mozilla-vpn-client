@@ -4,6 +4,7 @@
 
 #include "wgsessionmacos.h"
 
+#include <fcntl.h>
 #include <net/if_utun.h>
 #include <netinet/in.h>
 #include <netinet/ip6.h>
@@ -81,9 +82,11 @@ void WgSessionMacos::processResult(int op, const QByteArray& buf) {
 
     case WRITE_TO_NETWORK:
       if (m_config.m_hopType == InterfaceConfig::MultiHopExit) {
-        netWrite(mhopEncapsulate(buf));
+        QByteArray header = mhopHeader(buf);
+        tunWrite(m_netSocket, header, buf);
       } else {
-        netWrite(buf);
+        //logger.debug() << name() << "output:" << QByteArray(buf.toBase64());
+        send(m_netSocket, buf.constData(), buf.length(), MSG_DONTWAIT);
       }
       break;
 
@@ -92,11 +95,9 @@ void WgSessionMacos::processResult(int op, const QByteArray& buf) {
       break;
 
     case WRITE_TO_TUNNEL_IPV4:
-      tunWrite(buf, AF_INET);
-      break;
-
+      [[fallthrough]];
     case WRITE_TO_TUNNEL_IPV6:
-      tunWrite(buf, AF_INET6);
+      tunWrite(m_tunSocket, buf);
       break;
   }
 }
@@ -129,6 +130,8 @@ void WgSessionMacos::renegotiate() {
 }
 
 void WgSessionMacos::encrypt(const QByteArray& pkt) {
+  //logger.debug() << name() << "encrypt:" << QString(pkt.toBase64());
+
   QByteArray output;
   output.resize(pkt.size() + WG_PACKET_OVERHEAD);
 
@@ -140,7 +143,8 @@ void WgSessionMacos::encrypt(const QByteArray& pkt) {
 }
 
 void WgSessionMacos::netInput(const QByteArray& pkt) {
-  logger.debug() << "net input:" << QString(pkt.toBase64());
+  //logger.debug() << name() << "input:" << QString(pkt.toBase64());
+
   QByteArray output;
   output.resize(pkt.size());
 
@@ -151,12 +155,19 @@ void WgSessionMacos::netInput(const QByteArray& pkt) {
   processResult(res.op, output.first(res.size));
 }
 
-void WgSessionMacos::mhopInput(const QByteArray& pkt) {
-  quint8 version = (pkt[0] >> 4);
+void WgSessionMacos::mhopInput(const QByteArray& data) {
+  //logger.debug() << name() << "mhop:" << QString(data.toBase64());
+  quint32 family;
+  if (data.length() <= sizeof(family)) {
+    return;
+  }
+
+  QByteArray packet = data.mid(sizeof(family));
+  quint8 version = (packet[0] >> 4);
   if (version == 4) {
-    mhopInputV4(pkt);
+    mhopInputV4(packet);
   } else if (version == 6) {
-    mhopInputV6(pkt);
+    mhopInputV6(packet);
   }
 }
 
@@ -221,7 +232,7 @@ struct ipv4header {
   quint32 dest;
 };
 
-QByteArray WgSessionMacos::mhopEncapsulate(const QByteArray& packet) {
+QByteArray WgSessionMacos::mhopHeader(const QByteArray& packet) const {
   uint16_t udpcksum =
       udpChecksum(m_innerIpv4, m_serverIpv4, m_innerPort, m_serverPort, packet);
   uint16_t udphdr[4] = {qToBigEndian(m_innerPort), qToBigEndian(m_serverPort),
@@ -233,18 +244,16 @@ QByteArray WgSessionMacos::mhopEncapsulate(const QByteArray& packet) {
       .length = qToBigEndian(tlen),
       .ttl = m_innerTTL,
       .proto = IPPROTO_UDP,
+      .checksum = 0,
       .source = qToBigEndian(m_innerIpv4.toIPv4Address()),
       .dest = qToBigEndian(m_serverIpv4.toIPv4Address()),
   };
-  // Compute the checksums.
   header.checksum = inetChecksum(&header, sizeof(header));
 
-  // Return the encapsulated packet.
   QByteArray result;
-  result.reserve(sizeof(header) + sizeof(udphdr) + packet.length());
-  result.append(reinterpret_cast<char*>(&header), sizeof(header));
-  result.append(reinterpret_cast<char*>(udphdr), sizeof(udphdr));
-  result.append(packet);
+  result.reserve(sizeof(header) + sizeof(udphdr));
+  result.append((const char*)&header, sizeof(header));
+  result.append((const char*)udphdr, sizeof(udphdr));
   return result;
 }
 
@@ -335,16 +344,34 @@ void WgSessionMacos::mhopInputUDP(const QHostAddress& src,
   }
 
   // At last - we can handle the payload.
-  tunWrite(data, AF_INET);
+  netInput(data);
 }
 
-void WgSessionMacos::setNetSocket(qintptr sd) {
-  if (m_netSocket >= 0) {
-    close(m_netSocket);
+bool WgSessionMacos::start(const struct sockaddr* addr, int len) {
+  Q_ASSERT(m_netSocket < 0);
+
+  qintptr sock = socket(addr->sa_family, SOCK_DGRAM, 0);
+  if (sock < 0) {
+    logger.warning() << "Socket creation failed:" << strerror(errno);
+    return false;
   }
 
+  if (::connect(sock, addr, len) < 0) {
+    logger.warning() << "Socket connect failed:" << strerror(errno);
+    close(sock);
+    return false;
+  }
+
+  start(sock);
+  return true;
+}
+
+void WgSessionMacos::start(qintptr sd) {
+  int flags = fcntl(sd, F_GETFL, 0);
+  fcntl(sd, F_SETFL, flags | O_NONBLOCK);
+
   m_netSocket = sd;
-  auto notifier = new QSocketNotifier(sd, QSocketNotifier::Read, this);
+  auto notifier = new QSocketNotifier(m_netSocket, QSocketNotifier::Read, this);
   connect(notifier, &QSocketNotifier::activated, this,
           &WgSessionMacos::netReadyRead);
 
@@ -352,6 +379,9 @@ void WgSessionMacos::setNetSocket(qintptr sd) {
 }
 
 void WgSessionMacos::setTunSocket(qintptr sd) {
+  int flags = fcntl(sd, F_GETFL, 0);
+  fcntl(sd, F_SETFL, flags | O_NONBLOCK);
+
   m_tunSocket = sd;
   auto notifier = new QSocketNotifier(sd, QSocketNotifier::Read, this);
   connect(notifier, &QSocketNotifier::activated, this,
@@ -393,10 +423,12 @@ void WgSessionMacos::netReadyRead(QSocketDescriptor sd,
       return;
     }
   
+    QByteArray packet = rxbuf.first(rxlen);
+    //logger.debug() << name() << "input:" << QString(packet.toBase64());
     if (m_config.m_hopType == InterfaceConfig::MultiHopExit) {
-      mhopInput(rxbuf.first(rxlen));
+      mhopInput(packet);
     } else {
-      netInput(rxbuf.first(rxlen));
+      netInput(packet);
     }
   }
 }
@@ -443,16 +475,22 @@ void WgSessionMacos::tunReadyRead(QSocketDescriptor sd,
   }
 }
 
-void WgSessionMacos::netWrite(const QByteArray& packet) {
-  send(m_netSocket, packet.constData(), packet.length(), MSG_DONTWAIT);
-}
-
-void WgSessionMacos::tunWrite(const QByteArray& packet, quint32 family) {
+void WgSessionMacos::tunWrite(qintptr fd, const QByteArray& packet, const QByteArray& append) const {
+  //logger.debug() << name() << "decrypt:" << QString(packet.toBase64());
+  quint32 family = ((packet.at(0) >> 4) == 4) ? AF_INET : AF_INET6;
   quint32 header = qToBigEndian<quint32>(family);
-  struct iovec iov[2];
+
+  struct iovec iov[3];
+  int count = 2;
   iov[0].iov_base = &header;
   iov[0].iov_len = sizeof(header);
-  iov[1].iov_base = (void*)packet.data();
+  iov[1].iov_base = (void*)packet.constData();
   iov[1].iov_len = packet.length();
-  writev(m_tunSocket, iov, 2);
+  if (!append.isEmpty()) {
+    iov[2].iov_base = (void*)append.constData();
+    iov[2].iov_len = append.length();
+    count++;
+  }
+
+  writev(fd, iov, count);
 }
