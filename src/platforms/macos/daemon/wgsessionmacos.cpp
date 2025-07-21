@@ -84,8 +84,7 @@ void WgSessionMacos::processResult(int op, const QByteArray& buf) const {
 
     case WRITE_TO_NETWORK:
       if (m_config.m_hopType == InterfaceConfig::MultiHopExit) {
-        QByteArray header = mhopHeader(buf);
-        tunWrite(m_netSocket, header, buf);
+        tunWrite(m_netSocket, mhopHeader(buf), buf);
       } else {
         //logger.debug() << name() << "output:" << QByteArray(buf.toBase64());
         send(m_netSocket, buf.constData(), buf.length(), MSG_DONTWAIT);
@@ -137,9 +136,9 @@ WireguardUtils::PeerStatus WgSessionMacos::status() const {
   auto wgStats = wireguard_stats(m_tunnel);
   result.m_rxBytes = wgStats.rx_bytes;
   result.m_txBytes = wgStats.tx_bytes;
-  if (wgStats.time_since_last_handshake > 0) {
-    qint64 elapsed = wgStats.time_since_last_handshake;
-    result.m_handshake = (QDateTime::currentSecsSinceEpoch() - elapsed) * 1000;
+  if (wgStats.time_since_last_handshake >= 0) {
+    qint64 elapsed = wgStats.time_since_last_handshake * 1000;
+    result.m_handshake = QDateTime::currentMSecsSinceEpoch() - elapsed;
   }
   return result;
 }
