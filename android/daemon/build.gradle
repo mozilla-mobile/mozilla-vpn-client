@@ -35,6 +35,7 @@ apply plugin: "org.jetbrains.kotlin.android"
 
 
 android {
+    namespace 'org.mozilla.firefox.vpn.daemon'
     compileSdkVersion Config.compileSdkVersion
     ndkVersion Config.ndkVersion
     defaultConfig {

@@ -50,13 +50,14 @@ dependencies {
 }
 
 android {
+    namespace 'org.mozilla.firefox.vpn'
     ndkVersion Config.ndkVersion
     compileSdkVersion Config.compileSdkVersion
-    buildToolsVersion Config.buildToolsVersion
+    // buildToolsVersion Config.buildToolsVersion
 
-    dexOptions {
-       javaMaxHeapSize "3g"
-    }
+    // dexOptions {
+    //    javaMaxHeapSize "3g"
+    // } // obselete, does nothing
 
     sourceSets {
         main {
@@ -162,6 +163,10 @@ android {
             // Also generate one universal apk that contains all abi's (need this for qmake to pass)
             universalApk true
         }
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 

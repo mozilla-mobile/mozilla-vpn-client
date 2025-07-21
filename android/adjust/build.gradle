@@ -6,6 +6,7 @@
 apply plugin: "com.android.library"
 
 android {
+    namespace 'org.mozilla.firefox.vpn.common.adjust'
     compileSdkVersion Config.compileSdkVersion
     defaultConfig {
         minSdkVersion Config.minSdkVersion
