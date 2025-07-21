@@ -7,9 +7,8 @@
 
 #include <QHostAddress>
 #include <QObject>
-#include <QSocketNotifier>
+#include <QSemaphore>
 #include <QTimer>
-#include <QThreadPool>
 
 #include "interfaceconfig.h"
 #include "daemon/wireguardutils.h"
@@ -47,6 +46,8 @@ class WgSessionMacos final : public QObject {
 
  private:
   void timeout();
+  void startWorker(WgSessionWorker* worker);
+  void stopWorkers();
 
   void tunWrite(qintptr fd, const QByteArray& packet,
                 const QByteArray& append = QByteArray()) const;
@@ -93,8 +94,9 @@ class WgSessionMacos final : public QObject {
 
  protected:
   struct wireguard_tunnel* m_tunnel = nullptr;
-  WgSessionWorker* m_encryptWorker = nullptr;
-  WgSessionWorker* m_decryptWorker = nullptr;
+  QList<WgSessionWorker*> m_workers;
+  QSemaphore m_workerWaitGroup;
+  QAtomicInt m_workerWaitCount = 0;
 
   friend class WgEncryptWorker;
   friend class WgDecryptWorker;

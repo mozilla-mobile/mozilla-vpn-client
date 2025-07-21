@@ -67,19 +67,13 @@ WgSessionMacos::WgSessionMacos(const InterfaceConfig& config, QObject* parent)
 WgSessionMacos::~WgSessionMacos() {
   MZ_COUNT_DTOR(WgSessionMacos);
   logger.debug() << "WgSessionMacos destroyed.";
+  stopWorkers();
+
   if (m_tunnel) {
     tunnel_free(m_tunnel);
   }
   if (m_netSocket >= 0) {
     close(m_netSocket);
-  }
-  if (m_encryptWorker) {
-    m_encryptWorker->stop();
-    m_encryptWorker->wait();
-  }
-  if (m_decryptWorker) {
-    m_decryptWorker->stop();
-    m_decryptWorker->wait();
   }
 }
 
@@ -358,14 +352,49 @@ void WgSessionMacos::start(qintptr sd) {
 
   // Start the decryption worker.
   if (m_config.m_hopType == InterfaceConfig::MultiHopExit) {
-    m_decryptWorker = new WgMultihopWorker(this, sd);
+    startWorker(new WgMultihopWorker(this, sd));
   } else {
-    m_decryptWorker = new WgDecryptWorker(this, sd);
+    startWorker(new WgDecryptWorker(this, sd));
   }
-  m_decryptWorker->setMtu(m_tunmtu);
-  m_decryptWorker->start();
 
   renegotiate();
+}
+
+void WgSessionMacos::startWorker(WgSessionWorker* worker) {
+  logger.info() << "starting " << worker->metaObject()->className();
+
+  connect(worker, &QThread::started, this, [this](){ m_workerWaitCount++; });
+  connect(worker, &QThread::finished, this, [this](){ m_workerWaitGroup.release(); }, Qt::DirectConnection);
+  m_workers.append(worker);
+
+  worker->setMtu(m_tunmtu);
+  worker->start();
+}
+
+void WgSessionMacos::stopWorkers() {
+  constexpr int WORKER_SHUTDOWN_TIMEOUT = 3000;
+  logger.info() << "Stopping" << m_workerWaitCount << "workers";
+
+  // Request all the workers to stop and wait for them to finish.
+  for (WgSessionWorker* worker : m_workers) {
+    worker->stop();
+  }
+  m_workerWaitGroup.tryAcquire(m_workerWaitCount, WORKER_SHUTDOWN_TIMEOUT);
+
+  // Delete the threads.
+  for (WgSessionWorker* worker : m_workers) {
+    if (worker->isRunning()) {
+      logger.warning() << worker->metaObject()->className() << "still running";
+      worker->terminate();
+      worker->wait(WORKER_SHUTDOWN_TIMEOUT);
+    }
+    delete worker;
+  }
+
+  // Reset our state.
+  m_workers.clear();
+  m_workerWaitCount = 0;
+  m_workerWaitGroup.tryAcquire(m_workerWaitGroup.available());
 }
 
 void WgSessionMacos::setTunSocket(qintptr sd) {
@@ -375,9 +404,7 @@ void WgSessionMacos::setTunSocket(qintptr sd) {
   m_tunSocket = sd;
 
   // Start the encryption worker.
-  m_encryptWorker = new WgEncryptWorker(this, sd);
-  m_encryptWorker->setMtu(m_tunmtu);
-  m_encryptWorker->start();
+  startWorker(new WgEncryptWorker(this, sd));
 }
 
 void WgSessionMacos::setMtu(int mtu) {
@@ -389,11 +416,8 @@ void WgSessionMacos::setMtu(int mtu) {
   }
   m_tunmtu = mtu;
 
-  if (m_encryptWorker) {
-    m_encryptWorker->setMtu(mtu);
-  }
-  if (m_decryptWorker) {
-    m_decryptWorker->setMtu(mtu);
+  for (WgSessionWorker* worker : m_workers) {
+    worker->setMtu(mtu);
   }
 
   // Set the MTU if it's a utun device.

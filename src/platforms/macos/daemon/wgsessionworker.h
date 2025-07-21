@@ -10,6 +10,7 @@
 #include <QThread>
 
 class WgSessionMacos;
+struct iovec;
 
 class WgSessionWorker : public QThread {
   Q_OBJECT
@@ -23,10 +24,14 @@ class WgSessionWorker : public QThread {
 
  protected:
   void run() override = 0;
+  void wakeup(int sig) const;
+  int readSocket(struct iovec* iovec, int iovlen);
 
   WgSessionMacos* m_session;
   QAtomicInt m_mtu;
   int m_socket;
+  int m_txWakeup;
+  int m_rxWakeup;
 };
 
 class WgEncryptWorker final : public WgSessionWorker {

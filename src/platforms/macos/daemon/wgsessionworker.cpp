@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <netinet/ip6.h>
 #include <sys/ioctl.h>
+#include <sys/select.h>
 #include <sys/uio.h>
 #include <signal.h>
 #include <unistd.h>
@@ -26,7 +27,12 @@ Logger logger("WgSessionWorker");
 WgSessionWorker::WgSessionWorker(WgSessionMacos* session, qintptr socket)
     : QThread(session), m_session(session) {
   MZ_COUNT_CTOR(WgSessionMacos);
-  logger.debug() << metaObject()->className() << "created.";
+
+  // A wakeup socket to signal shutdown and config changes.
+  int pfd[2];
+  pipe(pfd);
+  m_rxWakeup = pfd[0];
+  m_txWakeup = pfd[1];
 
   m_socket = dup(socket);
   m_mtu = IPV6_MMTU;
@@ -37,21 +43,53 @@ WgSessionWorker::WgSessionWorker(WgSessionMacos* session, qintptr socket)
 
 WgSessionWorker::~WgSessionWorker() {
   MZ_COUNT_DTOR(WgSessionMacos);
-  logger.debug() << metaObject()->className() << "destroyed.";
-
   if (m_socket >= 0) {
     close(m_socket);
   }
+  close(m_rxWakeup);
+  close(m_txWakeup);
 }
 
 void WgSessionWorker::setMtu(int mtu) {
-  logger.debug() << "set mtu:" << mtu;
   m_mtu = mtu;
+  wakeup(SIGHUP);
 }
 
 void WgSessionWorker::stop() {
   requestInterruption();
-  shutdown(m_socket, SHUT_RD);
+  wakeup(SIGINT);
+}
+
+void WgSessionWorker::wakeup(int sig) const {
+  write(m_txWakeup, &sig, sizeof(sig));
+}
+
+int WgSessionWorker::readSocket(struct iovec* iov, int iovlen) {
+  int maxfd = (m_socket > m_rxWakeup) ? m_socket : m_rxWakeup;
+  int err;
+
+  fd_set rfd;
+  FD_ZERO(&rfd);
+  FD_SET(m_rxWakeup, &rfd);
+  FD_SET(m_socket, &rfd);
+  err = select(maxfd + 1, &rfd, nullptr, nullptr, nullptr);
+  if (err < 0) {
+    return -1;
+  }
+
+  // Simulate signal interruption.
+  if (FD_ISSET(m_rxWakeup, &rfd)) {
+    int wakeup;
+    read(m_rxWakeup, &wakeup, sizeof(wakeup));
+    errno = EINTR;
+    return -1;
+  }
+  if (!FD_ISSET(m_socket, &rfd)) {
+    errno = EAGAIN;
+    return -1;
+  }
+
+  return readv(m_socket, iov, iovlen);
 }
 
 void WgEncryptWorker::run() {
@@ -72,7 +110,7 @@ void WgEncryptWorker::run() {
     iov[1].iov_base = (void*)packet.data();
 
     // Try to read a packet from the tunnel.
-    int len = readv(m_socket, iov, sizeof(iov) / sizeof(struct iovec));
+    int len = readSocket(iov, sizeof(iov) / sizeof(struct iovec));
     if (len < 0) {
       if (errno == EAGAIN) continue;
       if (errno == EINTR) continue;
@@ -116,7 +154,14 @@ void WgDecryptWorker::run() {
 
     // Try to read a packet from the network.
     uint8_t* ptr = reinterpret_cast<uint8_t*>(dgram.data());
-    int len = recv(m_socket, ptr, dgram.length(), 0);
+    struct iovec iov = {
+      .iov_base = ptr,
+      .iov_len = static_cast<size_t>(dgram.length()),
+    };
+    int len = readSocket(&iov, 1);
+    if (len == 0) {
+      break;
+    }
     if (len < 0) {
       if (errno == EAGAIN) continue;
       if (errno == EINTR) continue;
@@ -141,7 +186,11 @@ void WgMultihopWorker::run() {
     decrypt.resize(mtu + WgSessionMacos::WG_PACKET_OVERHEAD);
 
     // Try to read a packet from the network.
-    int len = recv(m_socket, (void*)dgram.data(), dgram.length(), 0);
+    struct iovec iov = {
+      .iov_base = (void*)dgram.data(),
+      .iov_len = static_cast<size_t>(dgram.length()),
+    };
+    int len = readSocket(&iov, 1);
     if (len < 0) {
       if (errno == EAGAIN) continue;
       if (errno == EINTR) continue;
