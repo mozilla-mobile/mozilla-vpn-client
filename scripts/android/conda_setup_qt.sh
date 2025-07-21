@@ -6,11 +6,19 @@ if [[ "$CONDA_PREFIX" == "$BASE_PREFIX" ]]; then
     echo "Please run this script inside a non-base conda environment."
     exit 1
 fi
+# Extract major and minor version numbers
+QT_MAJOR=$(echo "$QT_VERSION" | cut -d. -f1)
+QT_MINOR=$(echo "$QT_VERSION" | cut -d. -f2)
 
 if [[ "$(uname)" == "Linux" ]]; then
-    HOST_TARGET="linux desktop ${QT_VERSION} gcc_64"
+    if [[ "$QT_MINOR" -ge 9 ]]; then
+        HOST_TARGET="linux desktop ${QT_VERSION} gcc_64_linux"
+        HOST_FOLDER_NAME="gcc_64_linux"
+    else
+        HOST_TARGET="linux desktop ${QT_VERSION} gcc_64"
+        HOST_FOLDER_NAME="gcc_64"
+    fi
     HOST="linux"
-    HOST_FOLDER_NAME="gcc_64" # Things can't be consistent, can they?
 elif [[ "$(uname)" == "Darwin" ]]; then
     HOST_TARGET="mac desktop ${QT_VERSION}"
     HOST="mac"
