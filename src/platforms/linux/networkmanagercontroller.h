@@ -6,6 +6,7 @@
 #define NETWORKMANAGERCONTROLLER_H
 
 #include <QObject>
+#include <QVersionNumber>
 
 #include "controllerimpl.h"
 
@@ -17,6 +18,7 @@ struct _NMCLient;
 struct _NMRemoteConnection;
 struct _NMSetting;
 class NetworkManagerConnection;
+class QDBusInterface;
 
 class NetworkManagerController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(NetworkManagerController)
@@ -49,7 +51,7 @@ class NetworkManagerController final : public ControllerImpl {
 
  private:
   struct _GCancellable* m_cancellable;
-  struct _NMClient* m_client = nullptr;
+  struct _NMClient* m_libnmclient = nullptr;
   struct _NMSetting* m_wireguard = nullptr;
   struct _NMSetting* m_ipv4config = nullptr;
   struct _NMSetting* m_ipv6config = nullptr;
@@ -58,6 +60,10 @@ class NetworkManagerController final : public ControllerImpl {
   QString m_serverPublicKey;
   QString m_serverIpv4Gateway;
   QString m_tunnelUuid;
+
+  QVersionNumber m_version;
+  QDBusInterface* m_client = nullptr;
+  QDBusInterface* m_settings = nullptr;
 
   NetworkManagerConnection* m_connection = nullptr;
 };
