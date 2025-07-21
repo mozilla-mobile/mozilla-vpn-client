@@ -21,12 +21,12 @@ RUN echo "locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8"
 RUN apt-get update -q
 RUN apt-get -y install tzdata
 RUN apt-get -y install build-essential \
-                       clang \
+                       clang-16 \
                        curl \
                        debhelper \
                        devscripts \
                        equivs \
-                       libclang-dev \
+                       libclang-16-dev \
                        libgl1-mesa-dev \
                        locales \
                        ninja-build \
@@ -110,7 +110,7 @@ ADD topsrcdir/taskcluster/scripts/build/linux_build_dpkg.sh /builds/worker/build
 
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \
-    PATH="/builds/worker/.local/bin:/usr/local/go/bin:$PATH"
+    PATH="/builds/worker/.local/bin:/usr/local/go/bin:/usr/lib/llvm-16/bin:$PATH"
 
 VOLUME /builds/worker/checkouts
 VOLUME /builds/worker/.task-cache/pip
