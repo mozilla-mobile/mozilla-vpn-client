@@ -6,7 +6,6 @@ task-defaults:
     worker:
         env:
             QT_VERSION: "6.6.3"
-            QT_MAJOR: "6.6"
         max-run-time: 14400
 
 qt-macos-6.6:
@@ -24,6 +23,23 @@ qt-macos-6.6:
         toolchain-artifact: public/build/qt6_macos.tar.xz
     treeherder:
         symbol: TL(qt-mac-6.6)
+    worker-type: b-macos
+
+qt-macos-next:
+    description: "macOS Qt compile Task"
+    fetches:
+        fetch:
+            - qt-source-tarball-next
+            - miniconda-osx
+    run:
+        use-caches: []
+        script: compile_qt_6_mac.sh
+        resources:
+            - scripts/utils/qt6_compile.sh
+        toolchain-alias: qt-macos-next
+        toolchain-artifact: public/build/qt6_mac.zip
+    treeherder:
+        symbol: TL(qt-mac-next)
     worker-type: b-macos
 
 qt-windows-x86_64-6.6:
@@ -94,7 +110,7 @@ qt-linux-next:
         docker-image: {in-tree: linux-qt6-build}
 
 qt-tools:
-    description: "Linux QT host tools"
+    description: "Linux Qt host tools"
     run:
         script: bundle_qt_tools.sh
         resources:
@@ -107,3 +123,20 @@ qt-tools:
     worker:
         docker-image: {in-tree: conda-base}
         max-run-time: 900
+
+qt-tools-next:
+    description: "Linux Qt host tools (Qt/next)"
+    run:
+        script: bundle_qt_tools.sh
+        resources:
+            - requirements.txt
+        toolchain-alias: qt-tools-next
+        toolchain-artifact: public/build/qt-host-tools.tar.xz
+    treeherder:
+        symbol: TL(qt-tools-next)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: conda-base}
+        max-run-time: 900
+        env:
+            QT_VERSION: "6.9.1"
