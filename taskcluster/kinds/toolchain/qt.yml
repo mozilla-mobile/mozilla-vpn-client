@@ -42,6 +42,23 @@ qt-windows-x86_64-6.6:
         platform: windows/x86_64
     worker-type: b-win2022
 
+qt-ios:
+    description: "QT ios bundle Task"
+    run:
+        script: bundle_qt_ios.sh
+        resources:
+            - taskcluster/scripts/toolchain/bundle_qt_ios.sh
+        toolchain-alias: qt-ios
+        toolchain-artifact: public/build/qt6_ios.zip
+    treeherder:
+        symbol: TL(qt-ios)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: base}
+        env:
+            QT_VERSION: "6.2.4"
+            QT_MAJOR: "6.2"
+
 qt-linux:
     description: "Linux QT compile Task"
     fetches:
