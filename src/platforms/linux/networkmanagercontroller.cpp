@@ -7,6 +7,7 @@
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QDBusPendingReply>
+#include <QDBusReply>
 #include <QFile>
 #include <QScopeGuard>
 #include <QUuid>
@@ -39,13 +40,10 @@ constexpr const char* WG_INTERFACE_NAME = "wg0";
 constexpr uint16_t WG_KEEPALIVE_PERIOD = 60;
 constexpr uint16_t WG_EXCLUDE_RULE_PRIO = 100;
 
-constexpr const char* DBUS_NM_SERVICE = "org.freedesktop.NetworkManager";
-constexpr const char* DBUS_NM_PATH = "/org/freedesktop/NetworkManager";
-constexpr const char* DBUS_NM_INTERFACE = "org.freedesktop.NetworkManager";
-constexpr const char* DBUS_NM_ACTIVE =
-    "org.freedesktop.NetworkManager.Connection.Active";
-constexpr const char* DBUS_PROPERTY_INTERFACE =
-    "org.freedesktop.DBus.Properties";
+const QString DBUS_NM_SERVICE = QStringLiteral("org.freedesktop.NetworkManager");
+const QString DBUS_NM_PATH = QStringLiteral("/org/freedesktop/NetworkManager");
+const QString DBUS_NM_INTERFACE = QStringLiteral("org.freedesktop.NetworkManager");
+const QString DBUS_PROPERTY_INTERFACE = QStringLiteral("org.freedesktop.DBus.Properties");
 
 namespace {
 Logger logger("NetworkManagerController");
@@ -54,21 +52,27 @@ Logger logger("NetworkManagerController");
 NetworkManagerController::NetworkManagerController() {
   MZ_COUNT_CTOR(NetworkManagerController);
 
+  QDBusConnection bus = QDBusConnection::systemBus();
+  m_client = new QDBusInterface(DBUS_NM_SERVICE, DBUS_NM_PATH,
+                                DBUS_NM_INTERFACE, bus, this);
+  m_settings = new QDBusInterface(DBUS_NM_SERVICE, DBUS_NM_PATH + "/Settings",
+                                  DBUS_NM_INTERFACE + ".Settings", bus, this);
+  
+  QVariant version = m_client->property("Version");
+  m_version = QVersionNumber::fromString(version.toString());
+  logger.info() << "NetworkManager version:" << m_version.toString();
+
   GError* err = nullptr;
-  m_client = nm_client_new(nullptr, &err);
-  if (m_client) {
-    logger.info() << "NetworkManager version:"
-                  << nm_client_get_version(m_client);
-  } else {
+  m_libnmclient = nm_client_new(nullptr, &err);
+  if (!m_libnmclient) {
     logger.error() << "Failed to create NetworkManager client:" << err->message;
     g_error_free(err);
   }
 
   // Watch for property changes
-  QDBusConnection::systemBus().connect(
-      "org.freedesktop.NetworkManager", "/org/freedesktop/NetworkManager",
-      "org.freedesktop.DBus.Properties", "PropertiesChanged", this,
-      SLOT(propertyChanged(QString, QVariantMap, QStringList)));
+  bus.connect(DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_PROPERTY_INTERFACE,
+              "PropertiesChanged", this,
+              SLOT(propertyChanged(QString, QVariantMap, QStringList)));
 
   m_wireguard = nm_setting_wireguard_new();
   m_cancellable = g_cancellable_new();
@@ -105,7 +109,7 @@ NetworkManagerController::~NetworkManagerController() {
   }
   g_object_unref(m_cancellable);
   g_object_unref(m_wireguard);
-  g_object_unref(m_client);
+  g_object_unref(m_libnmclient);
 }
 
 // GAsyncCallback helper function, takes a reference to the async result
@@ -171,22 +175,23 @@ void NetworkManagerController::initialize(const Device* device,
                NM_SETTING_WIREGUARD_IP6_AUTO_DEFAULT_ROUTE, true, NULL);
 
   // Check if the connection already exists.
-  NMRemoteConnection* remote =
-      nm_client_get_connection_by_uuid(m_client, qPrintable(m_tunnelUuid));
-  if (remote) {
+  QDBusReply<QDBusObjectPath> reply = m_settings->call("GetConnectionByUuid",
+                                                       m_tunnelUuid);
+  if (reply.isValid()) {
     logger.info() << "Connection" << m_tunnelUuid << "already exists";
-    m_remote = remote;
+    QString path = reply.value().path();
+    m_remote = nm_client_get_connection_by_path(m_libnmclient, qPrintable(path));
 
     NMSettingIPConfig* ipv4config =
-        nm_connection_get_setting_ip4_config(NM_CONNECTION(remote));
+        nm_connection_get_setting_ip4_config(NM_CONNECTION(m_remote));
     m_ipv4config = nm_setting_duplicate(NM_SETTING(ipv4config));
 
     NMSettingIPConfig* ipv6config =
-        nm_connection_get_setting_ip6_config(NM_CONNECTION(remote));
+        nm_connection_get_setting_ip6_config(NM_CONNECTION(m_remote));
     m_ipv6config = nm_setting_duplicate(NM_SETTING(ipv6config));
 
     // Lookup the active connection handle, or null if the connection is down.
-    const GPtrArray* connections = nm_client_get_active_connections(m_client);
+    const GPtrArray* connections = nm_client_get_active_connections(m_libnmclient);
     for (guint i = 0; i < connections->len; i++) {
       NMActiveConnection* active = NM_ACTIVE_CONNECTION(connections->pdata[i]);
       if (m_tunnelUuid == nm_active_connection_get_uuid(active)) {
@@ -197,6 +202,8 @@ void NetworkManagerController::initialize(const Device* device,
 
     emit initialized(true, m_connection != nullptr, QDateTime());
     return;
+  } else {
+    logger.debug() << "Connection not found:" << reply.error().message();
   }
 
   m_ipv4config = nm_setting_ip4_config_new();
@@ -233,7 +240,7 @@ void NetworkManagerController::initialize(const Device* device,
   // Create the connection
   logger.info() << "Creating connection:" << m_tunnelUuid;
   nm_client_add_connection2(
-      m_client,
+      m_libnmclient,
       nm_connection_to_dbus(wg_connection, NM_CONNECTION_SERIALIZE_ALL),
       NM_SETTINGS_ADD_CONNECTION2_FLAG_IN_MEMORY, nullptr, false, m_cancellable,
       LAMBDA_ASYNC_WRAPPER("initializeCompleted"), this);
@@ -243,7 +250,7 @@ void NetworkManagerController::initializeCompleted(void* result) {
   GError* err = nullptr;
   GVariant* gv;
 
-  m_remote = nm_client_add_connection2_finish(m_client, G_ASYNC_RESULT(result),
+  m_remote = nm_client_add_connection2_finish(m_libnmclient, G_ASYNC_RESULT(result),
                                               &gv, &err);
   if (!m_remote) {
     logger.error() << "connection creation failed:" << err->message;
@@ -354,11 +361,11 @@ void NetworkManagerController::peerConfigCompleted(void* result) {
   } else if (m_connection == nullptr) {
     NMConnection* conn = NM_CONNECTION(m_remote);
     const char* ifname = nm_connection_get_interface_name(conn);
-    NMDevice* device = nm_client_get_device_by_iface(m_client, ifname);
+    NMDevice* device = nm_client_get_device_by_iface(m_libnmclient, ifname);
     logger.debug() << "activating connection:" << ifname;
 
     nm_client_activate_connection_async(
-        m_client, conn, device, nullptr, m_cancellable,
+        m_libnmclient, conn, device, nullptr, m_cancellable,
         LAMBDA_ASYNC_WRAPPER("activateCompleted"), this);
   } else {
     logger.debug() << "device already connected";
@@ -369,7 +376,7 @@ void NetworkManagerController::peerConfigCompleted(void* result) {
 void NetworkManagerController::activateCompleted(void* result) {
   GError* err = nullptr;
   NMActiveConnection* active;
-  active = nm_client_activate_connection_finish(m_client,
+  active = nm_client_activate_connection_finish(m_libnmclient,
                                                 G_ASYNC_RESULT(result), &err);
 
   if (!active) {
@@ -457,7 +464,7 @@ void NetworkManagerController::propertyChanged(QString interface,
         props.value("ActivatingConnection").value<QDBusObjectPath>();
 
     // Is this the tunnel inteface?
-    QDBusInterface conn(DBUS_NM_SERVICE, path.path(), DBUS_NM_ACTIVE,
+    QDBusInterface conn(DBUS_NM_SERVICE, path.path(), DBUS_NM_INTERFACE + ".Active",
                         QDBusConnection::systemBus());
     QString uuid = conn.property("Uuid").toString();
     logger.debug() << "Connection" << uuid << "started";
