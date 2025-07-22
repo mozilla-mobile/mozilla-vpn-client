@@ -18,7 +18,7 @@
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
-#include "networkmanagerconnection.h"
+#include "netmgrconnection.h"
 #include "netmgrtypes.h"
 #include "settingsholder.h"
 
@@ -211,7 +211,7 @@ void NetworkManagerController::activate(const InterfaceConfig& config,
     
     QVariantMap route;
     route.insert("dest", i.address().toString());
-    route.insert("prefix", i.prefixLength());
+    route.insert("prefix", (uint)i.prefixLength());
     route.insert("table", WG_FIREWALL_MARK);
     if (i.address().protocol() == QAbstractSocket::IPv6Protocol) {
       ipv6routes.append(route);
@@ -295,8 +295,8 @@ void NetworkManagerController::setActiveConnection(const QString& path) {
 
   // Start monitoring the new connection for state changes.
   if (!path.isEmpty()) {
-    m_connection = new NetworkManagerConnection(path, this);
-    connect(m_connection, &NetworkManagerConnection::stateChanged, this,
+    m_connection = new NetMgrConnection(path, this);
+    connect(m_connection, &NetMgrConnection::stateChanged, this,
             &NetworkManagerController::stateChanged);
 
     // Invoke the state changed signal with the current state.
@@ -305,14 +305,14 @@ void NetworkManagerController::setActiveConnection(const QString& path) {
 }
 
 void NetworkManagerController::stateChanged(uint state, uint reason) {
-  auto nmstate = (NetworkManagerConnection::NetMgrActiveState)state;
+  auto nmstate = (NetMgrConnection::ActiveState)state;
   logger.debug() << "DBus state changed" << nmstate << reason;
   switch (nmstate) {
-    case NetworkManagerConnection::NM_ACTIVE_CONNECTION_STATE_ACTIVATED:
+    case NetMgrConnection::NM_ACTIVE_CONNECTION_STATE_ACTIVATED:
       emit connected(m_serverPublicKey);
       break;
       
-    case NetworkManagerConnection::NM_ACTIVE_CONNECTION_STATE_DEACTIVATED:
+    case NetMgrConnection::NM_ACTIVE_CONNECTION_STATE_DEACTIVATED:
       emit disconnected();
       break;
     
