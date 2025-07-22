@@ -94,4 +94,35 @@ class NetMgrDataList : public QList<QVariantMap>, public NetMgrType<NetMgrDataLi
 };
 Q_DECLARE_METATYPE(NetMgrDataList);
 
+class NetMgrIpv6List : public QList<Q_IPV6ADDR>, public NetMgrType<NetMgrIpv6List> {
+ public:
+  friend QDBusArgument& operator<<(QDBusArgument& args,
+                                   const NetMgrIpv6List& data) {
+    args.beginArray(QMetaType::QByteArray);
+    for (const auto& entry : data) {
+      args << QByteArray((const char*)&entry, sizeof(Q_IPV6ADDR));
+    }
+    args.endArray();
+    return args;
+  }
+
+  friend const QDBusArgument& operator>>(const QDBusArgument& args,
+                                         NetMgrIpv6List& data) {
+    data.clear();
+    args.beginArray();
+    while (!args.atEnd()) {
+      QByteArray value;
+      args >> value;
+      if ((size_t)value.length() >= sizeof(Q_IPV6ADDR)) {
+        Q_IPV6ADDR addr;
+        memcpy(&addr, value.constData(), sizeof(addr));
+        data.append(addr);
+      }
+    }
+    args.endArray();
+    return args;
+  }
+};
+Q_DECLARE_METATYPE(NetMgrIpv6List);
+
 #endif  // NETMGRTYPES_H

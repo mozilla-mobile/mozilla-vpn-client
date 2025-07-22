@@ -44,6 +44,7 @@ class NetworkManagerController final : public ControllerImpl {
 
  private:
   static QVariantMap wgPeer(const InterfaceConfig& config);
+  static void setDnsConfig(QVariantMap& map, const QHostAddress& server);
   static uint64_t readSysfsFile(const QString& path);
   void setActiveConnection(const QString& path);
   QVariant serializeConfig() const;
