@@ -1,3 +1,7 @@
 (function(api, condition) {
-    api.setTimedCallback(1000, () => condition.enable());
+    api.log("settimedcallback started");
+    api.setTimedCallback(1000, () => {
+        api.log("settimedcallback fired");
+        condition.enable();
+    });
 });

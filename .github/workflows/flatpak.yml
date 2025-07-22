@@ -14,99 +14,31 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  manifest:
-    name: "Generate Manifest"
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout sources
-        uses: actions/checkout@v4
-        with:
-          sparse-checkout: |
-            3rdparty/
-            scripts/linux/
-            linux/
-            .gitmodules
-
-      - name: Install pip tools
-        shell: bash
-        run: pip install PyYAML yq
-
-      - name: Update git reference
-        shell: bash
-        working-directory: linux/flatpak
-        run: |
-          python -m yq -yi 'del(.modules[-1].sources[0].branch)' org.mozilla.vpn.yml
-          python -m yq -yi ".modules[-1].sources[0].url = \"https://github.com/${{ github.repository }}\"" org.mozilla.vpn.yml
-          python -m yq -yi ".modules[-1].sources[0].commit = \"${{ github.ref }}\"" org.mozilla.vpn.yml
-          cat org.mozilla.vpn.yml
-
-      - name: Fetch latest release info
-        shell: bash
-        run: |
-          curl -sSL -o linux/flatpak/org.mozilla.vpn.releases.xml \
-            https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml
-          
-          git submodule update --depth 1 --init 3rdparty/i18n
-          linux/extra/org.mozilla.vpn.metainfo.sh > linux/flatpak/org.mozilla.vpn.metainfo.xml
-
-      - name: Upload manifest
-        uses: actions/upload-artifact@v4
-        with:
-          name: mozillavpn-manifest
-          path: linux/flatpak
-
-  linter:
-    name: "Linters"
-    runs-on: ubuntu-latest
-    needs:
-      - manifest
-    
-    steps:
-      - name: Download manifest
-        uses: actions/download-artifact@v4
-        with:
-          name: mozillavpn-manifest
-          path: manifest/
-      
-      - name: Install Flatpak Linting Tools
-        shell: bash
-        run: |
-          sudo apt-get update
-          sudo apt-get install flatpak flatpak-builder -y
-          flatpak remote-add --user --if-not-exists flathub https://flathub.org/repo/flathub.flatpakrepo
-          flatpak install --user flathub -y org.flatpak.Builder
-
-      - name: Run Manifest Linters
-        shell: bash
-        run: flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest manifest/org.mozilla.vpn.yml
-
-      - name: Run Appstream Linters
-        shell: bash
-        run: flatpak run --command=flatpak-builder-lint org.flatpak.Builder appstream manifest/org.mozilla.vpn.metainfo.xml
-
   build:
     name: "Build"
     runs-on: ubuntu-latest
-    needs:
-      - manifest
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:kde-6.6
       options: --privileged
 
     steps:
-      - name: Download manifest
-        uses: actions/download-artifact@v4
+      - name: Checkout sources
+        uses: actions/checkout@v4
         with:
-          name: mozillavpn-manifest
-          path: manifest/
+          submodules: "recursive"
 
-      - name: Build
+      - name: Run manifest linters
+        continue-on-error: true
+        shell: bash
+        run: flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest linux/flatpak/org.mozilla.vpn.yml
+
+      - name: Build flatpak
         uses: flathub-infra/flatpak-github-actions/flatpak-builder@master
         with:
           bundle: mozillavpn.flatpak
-          manifest-path: manifest/org.mozilla.vpn.yml
+          manifest-path: linux/flatpak/org.mozilla.vpn.yml
           cache-key: flatpak-builder-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
-      
+
       - name: Run post-build linters
         continue-on-error: true
         run: flatpak-builder-lint builddir flatpak_app

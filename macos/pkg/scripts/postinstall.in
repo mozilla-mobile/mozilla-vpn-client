@@ -79,23 +79,8 @@ fi
 # of the SMAppService interface.
 if [ ${OSX_MAJOR_VER} -lt 13 ]; then
   echo "Installing privileged helper tool"
-  touch $DAEMON_HELPER_TOOL
-  chown root:wheel $DAEMON_HELPER_TOOL
-  chmod 744 $DAEMON_HELPER_TOOL
-  cat << EOF > $DAEMON_HELPER_TOOL
-#!/usr/bin/env bash
-CODESIGN_REQS="anchor apple generic and identifier ${CODESIGN_APP_IDENTIFIER}"
-CODESIGN_REQS+=" and certificate 1[field.${APPLE_OID_EXT_CA_INTERMEDIATE}] /* exists */"
-CODESIGN_REQS+=" and certificate leaf[field.${APPLE_OID_EXT_APP_CODESIGNING}] /* exists */"
-CODESIGN_REQS+=" and certificate leaf[subject.OU] = \"${CODESIGN_TEAM_IDENTIFIER}\""
-if ! codesign -v --verbose=4 -R="\${CODESIGN_REQS}" "${APP_DIR}"; then
-  echo "Codesign failed! Aborting."
-  exit 1
-fi
-
-"${APP_DIR}/Contents/Library/LaunchServices/${CODESIGN_APP_IDENTIFIER}.daemon" "$@"
-EOF
-  chmod u-w $DAEMON_HELPER_TOOL
+  install -d -m 755 -o root -g wheel /Library/PrivilegedHelperTools
+  install "${APP_DIR}/Contents/Library/LaunchServices/${CODESIGN_APP_IDENTIFIER}.daemon" /Library/PrivilegedHelperTools
 
   # Modify the SMAppService plist for use as a legacy daemon.
   echo "Loading the Daemon at $DAEMON_PLIST_PATH"

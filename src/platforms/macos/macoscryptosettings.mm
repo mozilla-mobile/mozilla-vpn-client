@@ -156,9 +156,7 @@ bool MacOSCryptoSettings::checkEntitlement(const QString& name) {
   CFErrorRef error = nullptr;
   CFTypeRef result = SecTaskCopyValueForEntitlement(task, cfName, &error);
   if (error != nullptr) {
-    CFStringRef desc = CFErrorCopyDescription(error);
-    logger.error() << "Failed to check entitlements:" << desc;
-    CFRelease(desc);
+    logger.error() << "Failed to check entitlements:" << error;
     CFRelease(error);
   }
   if (result != nullptr) {

@@ -9,6 +9,14 @@ file(MAKE_DIRECTORY ${CMAKE_BINARY_DIR}/cargo_home)
 ## Find the absolute path to the rust build tools.
 find_program(CARGO_BUILD_TOOL NAMES cargo REQUIRED)
 find_program(RUSTC_BUILD_TOOL NAMES rustc REQUIRED)
+if(APPLE)
+    find_program(LIPO_BUILD_TOOL NAMES
+        lipo
+        arm64-apple-darwin${CMAKE_SYSTEM_VERSION}-lipo
+        x86_64-apple-darwin${CMAKE_SYSTEM_VERSION}-lipo
+        REQUIRED
+    )
+endif()
 
 # Figure out Rust's host architecture
 execute_process(OUTPUT_VARIABLE RUSTC_VERSION_RAW COMMAND ${RUSTC_BUILD_TOOL} --version --verbose)
@@ -73,17 +81,19 @@ function(__rust_build_toolchain_config)
 endfunction()
 
 if(ANDROID)
+    get_filename_component(ANDROID_TOOLCHAIN_ROOT_BIN ${CMAKE_C_COMPILER} DIRECTORY)
     if(CMAKE_SYSTEM_PROCESSOR STREQUAL "armv7-a")
         set(RUSTC_ANDROID_ARCH armv7-linux-androideabi)
+        set(RUSTC_ANDROID_LINKER ${ANDROID_TOOLCHAIN_ROOT_BIN}/armv7a-linux-androideabi${ANDROID_NATIVE_API_LEVEL}-clang)
     else()
         set(RUSTC_ANDROID_ARCH ${CMAKE_SYSTEM_PROCESSOR}-linux-android)
+        set(RUSTC_ANDROID_LINKER ${ANDROID_TOOLCHAIN_ROOT_BIN}/${RUSTC_ANDROID_ARCH}${ANDROID_NATIVE_API_LEVEL}-clang)
     endif()
     set(RUSTC_ANDROID_ARCH ${RUSTC_ANDROID_ARCH} CACHE STRING "Rust target android architecture")
 
-    get_filename_component(ANDROID_TOOLCHAIN_ROOT_BIN ${CMAKE_C_COMPILER} DIRECTORY)
     __rust_build_toolchain_config(
         FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml
-        RUSTFLAGS "-Clinker=${ANDROID_TOOLCHAIN_ROOT_BIN}/${RUSTC_ANDROID_ARCH}${ANDROID_NATIVE_API_LEVEL}-clang"
+        RUSTFLAGS "-Clinker=${RUSTC_ANDROID_LINKER}"
         ARCH ${RUSTC_ANDROID_ARCH})
 elseif(IOS)
     __rust_build_toolchain_config(
@@ -323,23 +333,18 @@ function(add_rust_library TARGET_NAME)
 
     # Guess the target architecture if not set.
     if(NOT RUST_TARGET_ARCH)
-        if(CMAKE_CROSSCOMPILING)
-            # TODO: We could write something here for Android and IOS maybe
-            message(FATAL_ERROR "Unable to determine rust target architecture when cross compiling.")
-        elseif((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND CMAKE_OSX_ARCHITECTURES)
+        if((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND CMAKE_OSX_ARCHITECTURES)
             # Special case for MacOS universal binaries.
             foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
                 string(REPLACE "arm64" "aarch64" OSXARCH ${OSXARCH})
                 list(APPEND RUST_TARGET_ARCH "${OSXARCH}-apple-darwin")
             endforeach()
-        else()
+        elseif(NOT CMAKE_CROSSCOMPILING)
             set(RUST_TARGET_ARCH ${RUSTC_HOST_ARCH})
+        else()
+            # TODO: We could write something here for Android and IOS maybe
+            message(FATAL_ERROR "Unable to determine rust target architecture when cross compiling.")
         endif()
-    endif()
-
-    ## For build Apple shared binaries, the install path needs to be relative to the runpath.
-    if (RUST_BUILD_SHARED AND APPLE)
-        list(APPEND RUST_TARGET_CARGO_ENV "RUSTC_LINK_ARG=-Wl,-install_name,@rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}")
     endif()
 
     get_rust_library_filename(${RUST_TARGET_SHARED} ${RUST_TARGET_CRATE_NAME})
@@ -376,31 +381,21 @@ function(add_rust_library TARGET_NAME)
             add_custom_command(
                 OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FW_NAME}.framework
                 DEPENDS ${RUST_TARGET_RELEASE_LIBS}
-                COMMAND ${CMAKE_COMMAND} -E make_directory
-                    \"${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FW_NAME}.framework\"
-                COMMAND lipo 
-                    -create
-                    ${RUST_TARGET_RELEASE_LIBS}
-                    -output
-                    \"${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}\"
-                COMMAND cp -v
-                    \"${FW_INFO_PLIST_FILE_PATH}\"
-                    \"${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_TARGET_FW_NAME}.framework/Info.plist\"
+                WORKING_DIRECTORY ${RUST_TARGET_BINARY_DIR}
+                COMMAND ${CMAKE_COMMAND} -E make_directory unified/release/${RUST_TARGET_FW_NAME}.framework
+                COMMAND ${CMAKE_COMMAND} -E copy ${FW_INFO_PLIST_FILE_PATH} unified/release/${RUST_TARGET_FW_NAME}.framework/Info.plist
+		COMMAND ${LIPO_BUILD_TOOL} -create ${RUST_TARGET_RELEASE_LIBS} -output unified/release/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
+                COMMAND install_name_tool -id @rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME} unified/release/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
             )
 
             add_custom_command(
                 OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework
                 DEPENDS ${RUST_TARGET_DEBUG_LIBS}
-                COMMAND ${CMAKE_COMMAND} -E make_directory
-                    \"${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework\"
-                COMMAND lipo 
-                    -create
-                    ${RUST_TARGET_DEBUG_LIBS}
-                    -output
-                    \"${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}\"
-                COMMAND cp -v
-                    \"${FW_INFO_PLIST_FILE_PATH}\"
-                    \"${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework/Info.plist\"
+                WORKING_DIRECTORY ${RUST_TARGET_BINARY_DIR}
+                COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_TARGET_FW_NAME}.framework
+                COMMAND ${CMAKE_COMMAND} -E copy ${FW_INFO_PLIST_FILE_PATH} unified/debug/${RUST_TARGET_FW_NAME}.framework/Info.plist
+                COMMAND ${LIPO_BUILD_TOOL} -create ${RUST_TARGET_DEBUG_LIBS} -output unified/debug/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
+                COMMAND install_name_tool -id @rpath/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME} unified/debug/${RUST_TARGET_FW_NAME}.framework/${RUST_TARGET_FW_NAME}
             )
 
             add_custom_target(${TARGET_NAME}_builder
@@ -415,14 +410,14 @@ function(add_rust_library TARGET_NAME)
                 OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
                 DEPENDS ${RUST_TARGET_RELEASE_LIBS}
                 COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/release
-                COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
+                COMMAND ${LIPO_BUILD_TOOL} -create -output ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
                             ${RUST_TARGET_RELEASE_LIBS}
             )
             add_custom_command(
                 OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
                 DEPENDS ${RUST_TARGET_DEBUG_LIBS}
                 COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/debug
-                COMMAND lipo -create -output ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
+                COMMAND ${LIPO_BUILD_TOOL} -create -output ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
                             ${RUST_TARGET_DEBUG_LIBS}
             )
 

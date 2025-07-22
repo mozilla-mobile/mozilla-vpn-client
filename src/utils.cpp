@@ -26,6 +26,7 @@
 #include <QApplication>
 #include <QBuffer>
 #include <QClipboard>
+#include <QProcessEnvironment>
 #include <QUrl>
 
 namespace {
@@ -95,22 +96,31 @@ bool Utils::viewLogs() {
   return ok;
 #endif
 
+  auto guard = qScopeGuard([&]() { LogHandler::instance()->flushLogs(); });
+#if defined(MZ_LINUX)
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (pe.contains("XDG_DATA_HOME") &&
+      writeAndShowLogs(pe.value("XDG_DATA_HOME"))) {
+    return true;
+  }
+#endif
+
   if (writeAndShowLogs(QStandardPaths::DesktopLocation) ||
       writeAndShowLogs(QStandardPaths::HomeLocation) ||
       writeAndShowLogs(QStandardPaths::TempLocation)) {
-    LogHandler::instance()->flushLogs();
     return true;
   }
 
+  guard.dismiss();
   logger.warning()
       << "No Desktop, no Home, no Temp folder. Unable to store the log files.";
   return false;
 }
 
-bool Utils::writeAndShowLogs(QStandardPaths::StandardLocation location) {
+bool Utils::writeAndShowLogs(const QString& location) {
   LogHandler* instance = LogHandler::instance();
   return instance->writeLogsToLocation(location, [](const QString& filename) {
-    logger.debug() << "Opening the logFile somehow.";
+    logger.debug() << "Opening the logFile somehow";
     UrlOpener::instance()->openUrl(QUrl::fromLocalFile(filename));
   });
 }

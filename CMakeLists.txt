@@ -163,22 +163,25 @@ add_subdirectory(nebula)
 add_subdirectory(src/translations)
 add_subdirectory(addons)
 
-if(NOT CMAKE_CROSSCOMPILING)
-    # Extra rustlang libraries
+# Build the extension for desktop targets
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
+   ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
+   ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     add_subdirectory(extension)
-    if(BUILD_TESTS)
-        # Unit Tests
-        add_subdirectory(tests/nativemessaging EXCLUDE_FROM_ALL)
-        add_subdirectory(tests/unit EXCLUDE_FROM_ALL)
-        add_subdirectory(tests/qml EXCLUDE_FROM_ALL)
-        add_subdirectory(tests/unit_tests EXCLUDE_FROM_ALL)
+endif()
 
-        # E2E Tests
-        add_subdirectory(tests/auth_tests EXCLUDE_FROM_ALL)
+if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTS)
+    # Unit Tests
+    add_subdirectory(tests/nativemessaging EXCLUDE_FROM_ALL)
+    add_subdirectory(tests/unit EXCLUDE_FROM_ALL)
+    add_subdirectory(tests/qml EXCLUDE_FROM_ALL)
+    add_subdirectory(tests/unit_tests EXCLUDE_FROM_ALL)
 
-        # Functional Tests
-        add_subdirectory(tests/functional)
-    endif()
+    # E2E Tests
+    add_subdirectory(tests/auth_tests EXCLUDE_FROM_ALL)
+
+    # Functional Tests
+    add_subdirectory(tests/functional)
 endif()
 
 # Extra platform targets

@@ -10,6 +10,7 @@
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
+#include "models/location.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "serverlatency.h"
@@ -190,6 +191,11 @@ QString ServerData::localizedEntryCountryName() const {
 QString ServerData::localizedExitCountryName() const {
   Q_ASSERT(m_initialized);
   return ServerCountry::localizedName(m_exitCountryCode, m_exitCountryName);
+}
+
+bool ServerData::serverLocatedInUserCountry() {
+  QString trueCountryCode = MozillaVPN::instance()->location()->countryCode();
+  return trueCountryCode.toUpper() == exitCountryCode().toUpper();
 }
 
 void ServerData::changeServer(const QString& countryCode,
