@@ -96,8 +96,6 @@ void NetworkManagerController::initialize(const Device* device,
   } else {
     ipv4address.insert("prefix", (uint)32);
   }
-  m_ipv4config.insert("dns-priority", 10);
-  m_ipv4config.insert("dns-search", QStringList("."));
   m_ipv4config.insert("method", "manual");
   m_ipv4config.insert("address-data", NetMgrDataList(ipv4address).toVariant());
 
@@ -179,6 +177,27 @@ QVariantMap NetworkManagerController::wgPeer(const InterfaceConfig& config) {
   return peer;
 }
 
+// static
+void NetworkManagerController::setDnsConfig(QVariantMap& map, const QHostAddress& server) {
+  if (server.isNull()) {
+    map.remove("dns");
+    map.remove("dns-priority");
+    map.remove("dns-search");
+  } else if (server.protocol() == QAbstractSocket::IPv6Protocol) {
+    NetMgrIpv6List dnsServers;
+    dnsServers.append(server.toIPv6Address());
+    map.insert("dns", dnsServers.toVariant());
+    map.insert("dns-priority", 10);
+    map.insert("dns-search", QStringList("."));
+  } else {
+    QList<uint> dnsServers;
+    dnsServers.append(qToBigEndian<quint32>(server.toIPv4Address()));
+    map.insert("dns", QVariant::fromValue(dnsServers));
+    map.insert("dns-priority", 10);
+    map.insert("dns-search", QStringList("."));
+  }
+}
+
 QVariant NetworkManagerController::serializeConfig() const {
   NetMgrConfig config;
   config.insert("connection", m_config);
@@ -198,14 +217,10 @@ void NetworkManagerController::initCompleted(const QDBusObjectPath& path,
 
 void NetworkManagerController::activate(const InterfaceConfig& config,
                                         Controller::Reason reason) {
-  
   // Update routes and allowedIpAddreses
-  QStringList peerRoutes;
   NetMgrDataList ipv4routes;
   NetMgrDataList ipv6routes;
   for (const IPAddress& i : config.m_allowedIPAddressRanges) {
-    peerRoutes.append(i.toString());
-    
     QVariantMap route;
     route.insert("dest", i.address().toString());
     route.insert("prefix", (uint)i.prefixLength());
@@ -218,35 +233,25 @@ void NetworkManagerController::activate(const InterfaceConfig& config,
   }
 
   QVariantMap peer = wgPeer(config);
-  peer.insert("allowed-ips", peerRoutes);
   m_ipv4config.insert("route-data", ipv4routes.toVariant());
   m_ipv6config.insert("route-data", ipv6routes.toVariant());
+
+  // Update the DNS server.
+  if ((config.m_dnsServer == config.m_serverIpv4Gateway) ||
+      (config.m_dnsServer == config.m_serverIpv6Gateway)) {
+    setDnsConfig(m_ipv4config, QHostAddress(config.m_serverIpv4Gateway));
+    setDnsConfig(m_ipv6config, QHostAddress(config.m_serverIpv6Gateway));
+  } else if (config.m_dnsServer.contains(':')) {
+    setDnsConfig(m_ipv4config, QHostAddress());
+    setDnsConfig(m_ipv6config, QHostAddress(config.m_dnsServer));
+  } else {
+    setDnsConfig(m_ipv4config, QHostAddress(config.m_dnsServer));
+    setDnsConfig(m_ipv6config, QHostAddress());
+  }
 
   // Keep the server details for later.
   m_serverPublicKey = config.m_serverPublicKey;
   m_serverIpv4Gateway = config.m_serverIpv4Gateway;
-
-#if 0
-  if ((config.m_hopType == InterfaceConfig::SingleHop) ||
-      (config.m_hopType == InterfaceConfig::MultiHopExit)) {
-    // Update DNS when configuring the exit server.
-    NMSettingIPConfig* ipcfg;
-    if (config.m_dnsServer.contains(':')) {
-      ipcfg = NM_SETTING_IP_CONFIG(m_ipv6config);
-    } else {
-      ipcfg = NM_SETTING_IP_CONFIG(m_ipv4config);
-    }
-
-    const char* dnsServerList[] = {qPrintable(config.m_dnsServer), nullptr};
-    const char* dnsSearchList[] = {".", nullptr};
-    g_object_set(ipcfg, NM_SETTING_IP_CONFIG_DNS, dnsServerList,
-                 NM_SETTING_IP_CONFIG_DNS_SEARCH, dnsSearchList,
-                 NM_SETTING_IP_CONFIG_DNS_PRIORITY, 10, NULL);
-
-    // Keep the IPv4 gateway for later.
-    m_serverIpv4Gateway = config.m_serverIpv4Gateway;
-  }
-#endif
 
   // Update the connection settings.
   QList<QVariant> args;
