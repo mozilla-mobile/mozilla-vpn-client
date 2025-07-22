@@ -11,7 +11,7 @@ QT_MAJOR=$(echo "$QT_VERSION" | cut -d. -f1)
 QT_MINOR=$(echo "$QT_VERSION" | cut -d. -f2)
 
 if [[ "$(uname)" == "Linux" ]]; then
-    if [[ "$QT_MAJOR" -ge 9 ]]; then
+    if [[ "$QT_MAJOR" -ge 8 ]]; then
         HOST_TARGET="linux desktop ${QT_VERSION} gcc_64_linux"
         HOST_FOLDER_NAME="gcc_64_linux"
     else
@@ -37,6 +37,7 @@ fi
 export QT_DIR=$CONDA_PREFIX/Qt
 
 # QT_Host Tools
+echo "python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET"
 python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET
 for QT_HOST_DIR in $(find ${QT_DIR} -type d -name "${HOST_FOLDER_NAME}"); do
     find ${QT_HOST_DIR} -type f -name 'lib*.a' -delete
