@@ -105,6 +105,7 @@ else()
     pkg_check_modules(libnm REQUIRED IMPORTED_TARGET libnm)
     target_link_libraries(mozillavpn PRIVATE PkgConfig::libnm)
     target_sources(mozillavpn PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/netmgrtypes.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagerconnection.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagerconnection.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagercontroller.h

@@ -6,19 +6,17 @@
 #define NETWORKMANAGERCONTROLLER_H
 
 #include <QObject>
+#include <QVariant>
 #include <QVersionNumber>
 
 #include "controllerimpl.h"
 
-struct _GAsyncResult;
-struct _GObject;
-struct _GCancellable;
-struct _NMActiveConnection;
 struct _NMCLient;
-struct _NMRemoteConnection;
-struct _NMSetting;
 class NetworkManagerConnection;
+class NetMgrConfig;
 class QDBusInterface;
+class QDBusObjectPath;
+class QDBusError;
 
 class NetworkManagerController final : public ControllerImpl {
   Q_DISABLE_COPY_MOVE(NetworkManagerController)
@@ -38,32 +36,38 @@ class NetworkManagerController final : public ControllerImpl {
   void checkStatus() override;
 
  private slots:
-  void initializeCompleted(void*);
-  void peerConfigCompleted(void*);
-  void activateCompleted(void*);
   void stateChanged(uint state, uint reason);
   void propertyChanged(QString interface, QVariantMap props, QStringList list);
 
+  void initCompleted(const QDBusObjectPath& path, const QVariantMap& results);
+  void peerCompleted(const QVariantMap& results);
+  void activateCompleted(const QDBusObjectPath& path);
+  void dbusError(const QDBusError& error);
+
  private:
+  static QVariantMap wgPeer(const InterfaceConfig& config);
   static uint64_t readSysfsFile(const QString& path);
   void setActiveConnection(const QString& path);
   void setActiveConnection(struct _NMActiveConnection* active);
+  QVariant serializeConfig() const;
 
  private:
-  struct _GCancellable* m_cancellable;
+  QVariantMap m_config;
+  QVariantMap m_ipv4config;
+  QVariantMap m_ipv6config;
+  QVariantMap m_wireguard;
+
   struct _NMClient* m_libnmclient = nullptr;
-  struct _NMSetting* m_wireguard = nullptr;
-  struct _NMSetting* m_ipv4config = nullptr;
-  struct _NMSetting* m_ipv6config = nullptr;
-  struct _NMRemoteConnection* m_remote = nullptr;
 
   QString m_serverPublicKey;
   QString m_serverIpv4Gateway;
+  QString m_deviceIpv4Address;
   QString m_tunnelUuid;
 
   QVersionNumber m_version;
   QDBusInterface* m_client = nullptr;
   QDBusInterface* m_settings = nullptr;
+  QDBusInterface* m_remote = nullptr;
 
   NetworkManagerConnection* m_connection = nullptr;
 };
