@@ -11,8 +11,7 @@
 
 #include "controllerimpl.h"
 
-class NetworkManagerConnection;
-class NetMgrConfig;
+class NetMgrConnection;
 class QDBusInterface;
 class QDBusObjectPath;
 class QDBusError;
@@ -65,7 +64,7 @@ class NetworkManagerController final : public ControllerImpl {
   QDBusInterface* m_settings = nullptr;
   QDBusInterface* m_remote = nullptr;
 
-  NetworkManagerConnection* m_connection = nullptr;
+  NetMgrConnection* m_connection = nullptr;
 };
 
 #endif  // NETWORKMANAGERCONTROLLER_H
