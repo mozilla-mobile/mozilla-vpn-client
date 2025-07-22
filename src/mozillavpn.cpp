@@ -1158,7 +1158,7 @@ void MozillaVPN::maybeConnectOnStartup() {
     m_isLoggingIn = false;
     if (SettingsHolder::instance()->startAtBoot()) {
       logger.debug()
-          << "Both controller and location initialized. Starting on boot.";
+          << "Both controller and location initialized. Starting on boot!!!";
       activate();
     }
   }
