@@ -11,7 +11,6 @@
 
 #include "controllerimpl.h"
 
-struct _NMCLient;
 class NetworkManagerConnection;
 class NetMgrConfig;
 class QDBusInterface;
@@ -48,7 +47,6 @@ class NetworkManagerController final : public ControllerImpl {
   static QVariantMap wgPeer(const InterfaceConfig& config);
   static uint64_t readSysfsFile(const QString& path);
   void setActiveConnection(const QString& path);
-  void setActiveConnection(struct _NMActiveConnection* active);
   QVariant serializeConfig() const;
 
  private:
@@ -56,8 +54,6 @@ class NetworkManagerController final : public ControllerImpl {
   QVariantMap m_ipv4config;
   QVariantMap m_ipv6config;
   QVariantMap m_wireguard;
-
-  struct _NMClient* m_libnmclient = nullptr;
 
   QString m_serverPublicKey;
   QString m_serverIpv4Gateway;

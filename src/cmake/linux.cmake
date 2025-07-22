@@ -101,9 +101,7 @@ else()
     # Linux source files for sandboxed builds
     target_compile_definitions(mozillavpn PRIVATE MZ_FLATPAK)
 
-    # Network Manager controller - experimental
-    pkg_check_modules(libnm REQUIRED IMPORTED_TARGET libnm)
-    target_link_libraries(mozillavpn PRIVATE PkgConfig::libnm)
+    # Network Manager controller
     target_sources(mozillavpn PRIVATE
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/netmgrtypes.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/networkmanagerconnection.h

@@ -20,6 +20,15 @@ class NetworkManagerConnection final : public QObject {
   QString path() const { return m_interface.path(); }
   uint state() const;
 
+  enum NetMgrActiveState {
+    NM_ACTIVE_CONNECTION_STATE_UNKNOWN = 0,
+    NM_ACTIVE_CONNECTION_STATE_ACTIVATING = 1,
+    NM_ACTIVE_CONNECTION_STATE_ACTIVATED = 2,
+    NM_ACTIVE_CONNECTION_STATE_DEACTIVATING = 3,
+    NM_ACTIVE_CONNECTION_STATE_DEACTIVATED = 4,
+  };
+  Q_ENUM(NetMgrActiveState);
+
  signals:
   void stateChanged(uint state, uint reason);
 

@@ -22,22 +22,6 @@
 #include "netmgrtypes.h"
 #include "settingsholder.h"
 
-#if defined(__cplusplus)
-extern "C" {
-#endif
-
-#include <glib.h>
-#include <linux/netlink.h>
-#include <linux/rtnetlink.h>
-
-#undef signals
-#include <NetworkManager.h>
-#define signals Q_SIGNALS
-
-#if defined(__cplusplus)
-};
-#endif
-
 constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
 constexpr const char* WG_INTERFACE_NAME = "wg0";
 constexpr uint16_t WG_KEEPALIVE_PERIOD = 60;
@@ -66,13 +50,6 @@ NetworkManagerController::NetworkManagerController() {
   m_version = QVersionNumber::fromString(version.toString());
   logger.info() << "NetworkManager version:" << m_version.toString();
 
-  GError* err = nullptr;
-  m_libnmclient = nm_client_new(nullptr, &err);
-  if (!m_libnmclient) {
-    logger.error() << "Failed to create NetworkManager client:" << err->message;
-    g_error_free(err);
-  }
-
   // Watch for property changes
   QDBusConnection::systemBus().connect(
       DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_PROPERTY_INTERFACE,
@@ -85,9 +62,7 @@ NetworkManagerController::~NetworkManagerController() {
   logger.debug() << "Destroying NetworkManagerController";
 
   // Clear the active connection, if any.
-  setActiveConnection(nullptr);
-
-  g_object_unref(m_libnmclient);
+  setActiveConnection(QString());
 }
 
 void NetworkManagerController::initialize(const Device* device,
@@ -307,10 +282,6 @@ void NetworkManagerController::activateCompleted(const QDBusObjectPath& path) {
   setActiveConnection(path.path());
 }
 
-void NetworkManagerController::setActiveConnection(NMActiveConnection* active) {
-  setActiveConnection(nm_object_get_path(NM_OBJECT(active)));
-}
-
 void NetworkManagerController::setActiveConnection(const QString& path) {
   // If there is an existing active connection, discard it.
   if (m_connection != nullptr) {
@@ -329,17 +300,24 @@ void NetworkManagerController::setActiveConnection(const QString& path) {
             &NetworkManagerController::stateChanged);
 
     // Invoke the state changed signal with the current state.
-    stateChanged(m_connection->state(), NM_ACTIVE_CONNECTION_STATE_REASON_NONE);
+    stateChanged(m_connection->state(), 0);
   }
 }
 
 void NetworkManagerController::stateChanged(uint state, uint reason) {
-  logger.debug() << "DBus state changed" << state << reason;
-
-  if (state == NM_ACTIVE_CONNECTION_STATE_ACTIVATED) {
-    emit connected(m_serverPublicKey);
-  } else if (state == NM_ACTIVE_CONNECTION_STATE_DEACTIVATED) {
-    emit disconnected();
+  auto nmstate = (NetworkManagerConnection::NetMgrActiveState)state;
+  logger.debug() << "DBus state changed" << nmstate << reason;
+  switch (nmstate) {
+    case NetworkManagerConnection::NM_ACTIVE_CONNECTION_STATE_ACTIVATED:
+      emit connected(m_serverPublicKey);
+      break;
+      
+    case NetworkManagerConnection::NM_ACTIVE_CONNECTION_STATE_DEACTIVATED:
+      emit disconnected();
+      break;
+    
+    default:
+      break;
   }
 }
 
