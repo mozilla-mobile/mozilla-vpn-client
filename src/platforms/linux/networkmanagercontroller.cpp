@@ -232,9 +232,10 @@ void NetworkManagerController::activate(const InterfaceConfig& config,
     }
   }
 
-  QVariantMap peer = wgPeer(config);
+  NetMgrDataList peers(wgPeer(config));
   m_ipv4config.insert("route-data", ipv4routes.toVariant());
   m_ipv6config.insert("route-data", ipv6routes.toVariant());
+  m_wireguard.insert("peers", peers.toVariant());
 
   // Update the DNS server.
   if ((config.m_dnsServer == config.m_serverIpv4Gateway) ||
