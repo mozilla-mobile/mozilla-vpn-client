@@ -92,7 +92,7 @@ MZViewBase {
                 }
             }
             onClickedWhileDisabled: MZErrorHandler.requestAlert(MZErrorHandler.VPNMustBeOffWarning)
-            onButtonClicked: { MZUrlOpener.openUrl("http://www.toadtaxi.com") }  // UPDATE TO REAL LINK
+            onButtonClicked: { MZUrlOpener.openUrl("https://support.mozilla.org/kb/enable-or-disable-local-network-access-ios") }
         }
 
         ColumnLayout {
