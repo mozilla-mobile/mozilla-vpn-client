@@ -6,17 +6,20 @@
 
 #include <QDBusConnection>
 #include <QDBusInterface>
+#include <QDBusObjectPath>
 #include <QDBusPendingReply>
 #include <QDBusReply>
 #include <QFile>
 #include <QScopeGuard>
 #include <QUuid>
 
+#include "dbustypes.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
 #include "networkmanagerconnection.h"
+#include "netmgrtypes.h"
 #include "settingsholder.h"
 
 #if defined(__cplusplus)
@@ -52,11 +55,12 @@ Logger logger("NetworkManagerController");
 NetworkManagerController::NetworkManagerController() {
   MZ_COUNT_CTOR(NetworkManagerController);
 
-  QDBusConnection bus = QDBusConnection::systemBus();
   m_client = new QDBusInterface(DBUS_NM_SERVICE, DBUS_NM_PATH,
-                                DBUS_NM_INTERFACE, bus, this);
+                                DBUS_NM_INTERFACE, QDBusConnection::systemBus(),
+                                this);
   m_settings = new QDBusInterface(DBUS_NM_SERVICE, DBUS_NM_PATH + "/Settings",
-                                  DBUS_NM_INTERFACE + ".Settings", bus, this);
+                                  DBUS_NM_INTERFACE + ".Settings",
+                                  QDBusConnection::systemBus(), this);
   
   QVariant version = m_client->property("Version");
   m_version = QVersionNumber::fromString(version.toString());
@@ -70,92 +74,24 @@ NetworkManagerController::NetworkManagerController() {
   }
 
   // Watch for property changes
-  bus.connect(DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_PROPERTY_INTERFACE,
-              "PropertiesChanged", this,
-              SLOT(propertyChanged(QString, QVariantMap, QStringList)));
-
-  m_wireguard = nm_setting_wireguard_new();
-  m_cancellable = g_cancellable_new();
+  QDBusConnection::systemBus().connect(
+      DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_PROPERTY_INTERFACE,
+      "PropertiesChanged", this,
+      SLOT(propertyChanged(QString, QVariantMap, QStringList)));
 }
 
 NetworkManagerController::~NetworkManagerController() {
   MZ_COUNT_DTOR(NetworkManagerController);
   logger.debug() << "Destroying NetworkManagerController";
-  g_cancellable_cancel(m_cancellable);
 
   // Clear the active connection, if any.
   setActiveConnection(nullptr);
 
-  if (m_remote) {
-    nm_remote_connection_delete_async(
-        m_remote, nullptr,
-        [](GObject* obj, GAsyncResult* res, gpointer data) {
-          Q_UNUSED(obj);
-          GError* err = nullptr;
-          if (!nm_remote_connection_delete_finish(NM_REMOTE_CONNECTION(data),
-                                                  res, &err)) {
-            logger.error() << "Connection deletion failed:" << err->message;
-            g_error_free(err);
-          }
-        },
-        m_remote);
-  }
-
-  if (m_ipv6config != nullptr) {
-    g_object_unref(m_ipv6config);
-  }
-  if (m_ipv4config != nullptr) {
-    g_object_unref(m_ipv4config);
-  }
-  g_object_unref(m_cancellable);
-  g_object_unref(m_wireguard);
   g_object_unref(m_libnmclient);
-}
-
-// GAsyncCallback helper function, takes a reference to the async result
-// and queues it for consumption by the controller class.
-static void asyncResultWrapper(GAsyncResult* result, const char* name) {
-  gpointer user_data = g_async_result_get_user_data(result);
-  NetworkManagerController* controller =
-      static_cast<NetworkManagerController*>(user_data);
-  GAsyncResult* reference = g_object_ref(result);
-  bool invoked = QMetaObject::invokeMethod(
-      controller, name, Qt::QueuedConnection, Q_ARG(void*, reference));
-  if (!invoked) {
-    logger.error() << "Failed to invoke" << name;
-    g_object_unref(reference);
-  }
-}
-
-// A macro to ensure the function signature matches a GAsyncCallback
-#define LAMBDA_ASYNC_WRAPPER(__name__)                    \
-  [](GObject* obj, GAsyncResult* result, gpointer data) { \
-    asyncResultWrapper(result, __name__);                 \
-  }
-
-// Helper function to parse an IP prefix into an NMIPAddress
-static NMIPAddress* parseAddress(const QString& addr) {
-  uint prefix = -1;
-  int slash = addr.indexOf('/');
-  QString base = addr.first(slash);
-
-  if (slash > 0) {
-    prefix = addr.mid(slash + 1).toUInt();
-  }
-
-  if (base.contains(':')) {
-    if (prefix < 0) prefix = 128;
-    return nm_ip_address_new(AF_INET6, qPrintable(base), prefix, nullptr);
-  } else {
-    if (prefix < 0) prefix = 32;
-    return nm_ip_address_new(AF_INET, qPrintable(base), prefix, nullptr);
-  }
 }
 
 void NetworkManagerController::initialize(const Device* device,
                                           const Keys* keys) {
-  NMConnection* wg_connection = nm_simple_connection_new();
-
   // Ensure we use a consistent UUID for the wireguard interface.
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -166,30 +102,16 @@ void NetworkManagerController::initialize(const Device* device,
   }
   m_tunnelUuid = uuid.toString(QUuid::WithoutBraces);
 
-  // Whether the connection exists or not, we will always overwrite
-  // the wireguard settings with our own.
-  g_object_set(m_wireguard, NM_SETTING_WIREGUARD_PRIVATE_KEY,
-               qPrintable(keys->privateKey()), NM_SETTING_WIREGUARD_FWMARK,
-               WG_FIREWALL_MARK, NM_SETTING_WIREGUARD_PEER_ROUTES, false,
-               NM_SETTING_WIREGUARD_IP4_AUTO_DEFAULT_ROUTE, true,
-               NM_SETTING_WIREGUARD_IP6_AUTO_DEFAULT_ROUTE, true, NULL);
-
   // Check if the connection already exists.
   QDBusReply<QDBusObjectPath> reply = m_settings->call("GetConnectionByUuid",
                                                        m_tunnelUuid);
   if (reply.isValid()) {
     logger.info() << "Connection" << m_tunnelUuid << "already exists";
     QString path = reply.value().path();
-    m_remote = nm_client_get_connection_by_path(m_libnmclient, qPrintable(path));
-
-    NMSettingIPConfig* ipv4config =
-        nm_connection_get_setting_ip4_config(NM_CONNECTION(m_remote));
-    m_ipv4config = nm_setting_duplicate(NM_SETTING(ipv4config));
-
-    NMSettingIPConfig* ipv6config =
-        nm_connection_get_setting_ip6_config(NM_CONNECTION(m_remote));
-    m_ipv6config = nm_setting_duplicate(NM_SETTING(ipv6config));
-
+    m_remote = new QDBusInterface(DBUS_NM_SERVICE, reply.value().path(),
+                                  DBUS_NM_INTERFACE + ".Settings.Connection",
+                                  QDBusConnection::systemBus(), this);
+#if 0
     // Lookup the active connection handle, or null if the connection is down.
     const GPtrArray* connections = nm_client_get_active_connections(m_libnmclient);
     for (guint i = 0; i < connections->len; i++) {
@@ -199,6 +121,7 @@ void NetworkManagerController::initialize(const Device* device,
         break;
       }
     }
+#endif
 
     emit initialized(true, m_connection != nullptr, QDateTime());
     return;
@@ -206,118 +129,132 @@ void NetworkManagerController::initialize(const Device* device,
     logger.debug() << "Connection not found:" << reply.error().message();
   }
 
-  m_ipv4config = nm_setting_ip4_config_new();
-  m_ipv6config = nm_setting_ip6_config_new();
+  m_deviceIpv4Address = device->ipv4Address();
 
   // Generic connection settings.
-  NMSetting* scon = nm_setting_connection_new();
-  nm_connection_add_setting(wg_connection, scon);
-  g_object_set(scon, NM_SETTING_CONNECTION_ID, WG_INTERFACE_NAME,
-               NM_SETTING_CONNECTION_TYPE, NM_SETTING_WIREGUARD_SETTING_NAME,
-               NM_SETTING_CONNECTION_UUID, qPrintable(m_tunnelUuid),
-               NM_SETTING_CONNECTION_INTERFACE_NAME, WG_INTERFACE_NAME,
-               NM_SETTING_CONNECTION_AUTOCONNECT, false, NULL);
+  m_config.insert("id", QString(WG_INTERFACE_NAME));
+  m_config.insert("interface-name", QString(WG_INTERFACE_NAME));
+  m_config.insert("type", QString("wireguard"));
+  m_config.insert("uuid", m_tunnelUuid);
+  m_config.insert("autoconnect", false);
+  // TODO: Permissions?
+  // TODO: Timestamp?
 
-  // Address settings
-  g_object_ref(m_ipv4config);
-  g_object_set(m_ipv4config, NM_SETTING_IP_CONFIG_METHOD,
-               NM_SETTING_IP4_CONFIG_METHOD_MANUAL, NULL);
-  nm_connection_add_setting(wg_connection, m_ipv4config);
-  nm_setting_ip_config_add_address(NM_SETTING_IP_CONFIG(m_ipv4config),
-                                   parseAddress(device->ipv4Address()));
 
-  g_object_ref(m_ipv6config);
-  g_object_set(m_ipv6config, NM_SETTING_IP_CONFIG_METHOD,
-               NM_SETTING_IP6_CONFIG_METHOD_MANUAL, NULL);
-  nm_connection_add_setting(wg_connection, m_ipv6config);
-  nm_setting_ip_config_add_address(NM_SETTING_IP_CONFIG(m_ipv6config),
-                                   parseAddress(device->ipv6Address()));
+  QStringList ipv4split = device->ipv4Address().split('/');
+  QVariantMap ipv4address;
+  ipv4address.insert("address", ipv4split.first());
+  if (ipv4split.length() > 1) {
+    ipv4address.insert("prefix", ipv4split[1].toUInt());
+  } else {
+    ipv4address.insert("prefix", (uint)32);
+  }
+  m_ipv4config.insert("dns-priority", 10);
+  m_ipv4config.insert("dns-search", QStringList("."));
+  m_ipv4config.insert("method", "manual");
+  m_ipv4config.insert("address-data", NetMgrDataList(ipv4address).toVariant());
 
-  // Wireguard connection settings.
-  g_object_ref(m_wireguard);
-  nm_connection_add_setting(wg_connection, m_wireguard);
+  QStringList ipv6split = device->ipv6Address().split('/');
+  QVariantMap ipv6address;
+  ipv6address.insert("address", ipv6split.first());
+  if (ipv6split.length() > 1) {
+    ipv6address.insert("prefix", ipv6split[1].toUInt());
+  } else {
+    ipv6address.insert("prefix", (uint)128);
+  }
+  m_ipv6config.insert("method", "manual");
+  m_ipv6config.insert("address-data", NetMgrDataList(ipv6address).toVariant());
+
+  m_wireguard.insert("fwmark", WG_FIREWALL_MARK);
+  m_wireguard.insert("ip4-auto-default-route", 1);
+  m_wireguard.insert("ip6-auto-default-route", 1);
+  m_wireguard.insert("peer-routes", false);
+  m_wireguard.insert("private-key", keys->privateKey());
 
   // Create the connection
   logger.info() << "Creating connection:" << m_tunnelUuid;
-  nm_client_add_connection2(
-      m_libnmclient,
-      nm_connection_to_dbus(wg_connection, NM_CONNECTION_SERIALIZE_ALL),
-      NM_SETTINGS_ADD_CONNECTION2_FLAG_IN_MEMORY, nullptr, false, m_cancellable,
-      LAMBDA_ASYNC_WRAPPER("initializeCompleted"), this);
+  QVariantList args;
+  args << serializeConfig();
+  args << (uint)0x02;
+  args << QVariantMap();
+  bool okay = m_settings->callWithCallback(
+      "AddConnection2", args, this,
+      SLOT(initCompleted(const QDBusObjectPath&, const QVariantMap&)),
+      SLOT(dbusError(const QDBusError&)));
+  if (!okay) {
+    logger.debug() << "AddConnection2 failed";
+  }
 }
 
-void NetworkManagerController::initializeCompleted(void* result) {
-  GError* err = nullptr;
-  GVariant* gv;
+void NetworkManagerController::dbusError(const QDBusError& error) {
+  logger.warning() << "D-Bus message failed:" << error.message();
+  emit backendFailure(Controller::ErrorFatal);
+}
 
-  m_remote = nm_client_add_connection2_finish(m_libnmclient, G_ASYNC_RESULT(result),
-                                              &gv, &err);
-  if (!m_remote) {
-    logger.error() << "connection creation failed:" << err->message;
-    g_error_free(err);
-  } else {
-    logger.debug() << "connection created:"
-                   << nm_connection_get_interface_name(NM_CONNECTION(m_remote));
+// static
+QVariantMap NetworkManagerController::wgPeer(const InterfaceConfig& config) {
+  QStringList ipList;
+  for (const IPAddress& i : config.m_allowedIPAddressRanges) {
+    ipList.append(i.toString());
   }
-  g_object_unref(result);
 
+  QVariantMap peer;
+  QString endpoint = config.m_serverIpv4AddrIn + ":" + QString::number(config.m_serverPort);
+  peer.insert("endpoint", endpoint);
+  peer.insert("persistent-keepalive", WG_KEEPALIVE_PERIOD);
+  peer.insert("public-key", config.m_serverPublicKey);
+  peer.insert("allowed-ips", ipList);
+  return peer;
+}
+
+QVariant NetworkManagerController::serializeConfig() const {
+  NetMgrConfig config;
+  config.insert("connection", m_config);
+  config.insert("ipv4", m_ipv4config);
+  config.insert("ipv6", m_ipv6config);
+  config.insert("wireguard", m_wireguard);
+  return QVariant::fromValue(config);
+}
+
+void NetworkManagerController::initCompleted(const QDBusObjectPath& path,
+                                             const QVariantMap& results) {
+  m_remote = new QDBusInterface(DBUS_NM_SERVICE, path.path(),
+                                DBUS_NM_INTERFACE + ".Service.Connection",
+                                QDBusConnection::systemBus(), this);
   emit initialized(m_remote != nullptr, false, QDateTime());
 }
 
 void NetworkManagerController::activate(const InterfaceConfig& config,
                                         Controller::Reason reason) {
-  NMWireGuardPeer* peer = nm_wireguard_peer_new();
-
-  // Store the server's public key for later.
-  m_serverPublicKey = config.m_serverPublicKey;
-
-  // TODO: Support IPv6 endpoints too?
-  QString endpoint =
-      QString("%1:%2").arg(config.m_serverIpv4AddrIn).arg(config.m_serverPort);
-
-  nm_wireguard_peer_set_endpoint(peer, qPrintable(endpoint), true);
-  nm_wireguard_peer_set_persistent_keepalive(peer, WG_KEEPALIVE_PERIOD);
-  nm_wireguard_peer_set_public_key(peer, qPrintable(config.m_serverPublicKey),
-                                   true);
+  
+  // Update routes and allowedIpAddreses
+  QStringList peerRoutes;
+  NetMgrDataList ipv4routes;
+  NetMgrDataList ipv6routes;
   for (const IPAddress& i : config.m_allowedIPAddressRanges) {
-    int family;
-    NMSettingIPConfig* ipcfg;
+    peerRoutes.append(i.toString());
+    
+    QVariantMap route;
+    route.insert("dest", i.address().toString());
+    route.insert("prefix", i.prefixLength());
+    route.insert("table", WG_FIREWALL_MARK);
     if (i.address().protocol() == QAbstractSocket::IPv6Protocol) {
-      family = AF_INET6;
-      ipcfg = NM_SETTING_IP_CONFIG(m_ipv6config);
+      ipv6routes.append(route);
     } else {
-      family = AF_INET;
-      ipcfg = NM_SETTING_IP_CONFIG(m_ipv4config);
+      ipv4routes.append(route);
     }
-
-    // Add routes manually so we can place them in the wireguard table.
-    NMIPRoute* route;
-    GError* err = nullptr;
-    route = nm_ip_route_new(family, qPrintable(i.address().toString()),
-                            i.prefixLength(), nullptr, -1, &err);
-    if (route == nullptr) {
-      logger.error() << "Failed to create route:" << err->message;
-      g_error_free(err);
-      continue;
-    }
-    nm_ip_route_set_attribute(route, NM_IP_ROUTE_ATTRIBUTE_TABLE,
-                              g_variant_new_uint32(WG_FIREWALL_MARK));
-    nm_setting_ip_config_add_route(ipcfg, route);
-    nm_ip_route_unref(route);
-
-    nm_wireguard_peer_append_allowed_ip(peer, qPrintable(i.toString()), false);
   }
 
-  // Update the wireguard peer configuration.
-  GError* err = nullptr;
-  if (!nm_wireguard_peer_is_valid(peer, true, true, &err)) {
-    logger.error() << "Invalid peer configuration:" << err->message;
-    g_error_free(err);
-  }
-  nm_setting_wireguard_set_peer(NM_SETTING_WIREGUARD(m_wireguard), peer, 0);
-  g_object_ref(m_wireguard);
-  nm_connection_add_setting(NM_CONNECTION(m_remote), m_wireguard);
+  QVariantMap peer = wgPeer(config);
+  peer.insert("allowed-ips", peerRoutes);
+  m_ipv4config.insert("route-data", ipv4routes.toVariant());
+  m_ipv6config.insert("route-data", ipv6routes.toVariant());
 
+  // Keep the server details for later.
+  m_serverPublicKey = config.m_serverPublicKey;
+  m_serverIpv4Gateway = config.m_serverIpv4Gateway;
+
+#if 0
   if ((config.m_hopType == InterfaceConfig::SingleHop) ||
       (config.m_hopType == InterfaceConfig::MultiHopExit)) {
     // Update DNS when configuring the exit server.
@@ -337,56 +274,37 @@ void NetworkManagerController::activate(const InterfaceConfig& config,
     // Keep the IPv4 gateway for later.
     m_serverIpv4Gateway = config.m_serverIpv4Gateway;
   }
-
-  g_object_ref(m_ipv4config);
-  g_object_ref(m_ipv6config);
-  nm_connection_add_setting(NM_CONNECTION(m_remote), m_ipv4config);
-  nm_connection_add_setting(NM_CONNECTION(m_remote), m_ipv6config);
+#endif
 
   // Update the connection settings.
-  nm_remote_connection_commit_changes_async(
-      m_remote, false, m_cancellable,
-      LAMBDA_ASYNC_WRAPPER("peerConfigCompleted"), this);
-}
-
-void NetworkManagerController::peerConfigCompleted(void* result) {
-  GError* err = nullptr;
-  gboolean okay = nm_remote_connection_commit_changes_finish(
-      m_remote, G_ASYNC_RESULT(result), &err);
-  g_object_unref(result);
-
+  QList<QVariant> args;
+  args << serializeConfig();
+  args << (uint)0x02;
+  args << QVariantMap();
+  bool okay = m_remote->callWithCallback("Update2", args, this,
+                                         SLOT(peerCompleted(const QVariantMap&)),
+                                         SLOT(dbusError(const QDBusError&)));
   if (!okay) {
-    logger.error() << "peer configuration failed:" << err->message;
-    g_error_free(err);
-  } else if (m_connection == nullptr) {
-    NMConnection* conn = NM_CONNECTION(m_remote);
-    const char* ifname = nm_connection_get_interface_name(conn);
-    NMDevice* device = nm_client_get_device_by_iface(m_libnmclient, ifname);
-    logger.debug() << "activating connection:" << ifname;
-
-    nm_client_activate_connection_async(
-        m_libnmclient, conn, device, nullptr, m_cancellable,
-        LAMBDA_ASYNC_WRAPPER("activateCompleted"), this);
-  } else {
-    logger.debug() << "device already connected";
-    emit connected(m_serverPublicKey);
+    logger.debug() << "Update2 failed";
   }
 }
 
-void NetworkManagerController::activateCompleted(void* result) {
-  GError* err = nullptr;
-  NMActiveConnection* active;
-  active = nm_client_activate_connection_finish(m_libnmclient,
-                                                G_ASYNC_RESULT(result), &err);
-
-  if (!active) {
-    logger.error() << "peer activation failed:" << err->message;
-    g_error_free(err);
-  } else {
-    setActiveConnection(nm_object_get_path(NM_OBJECT(active)));
+void NetworkManagerController::peerCompleted(const QVariantMap& result) {
+  // activate the vpn
+  QList<QVariant> args;
+  args << QDBusObjectPath(m_remote->path());
+  args << QDBusObjectPath("/");
+  args << QDBusObjectPath("/");
+  bool okay = m_client->callWithCallback("ActivateConnection", args, this,
+                                         SLOT(activateCompleted(const QDBusObjectPath&)),
+                                         SLOT(dbusError(const QDBusError&)));
+  if (!okay) {
+    logger.debug() << "ActivateConnection failed";
   }
+}
 
-  g_object_unref(result);
+void NetworkManagerController::activateCompleted(const QDBusObjectPath& path) {
+  setActiveConnection(path.path());
 }
 
 void NetworkManagerController::setActiveConnection(NMActiveConnection* active) {
@@ -488,16 +406,12 @@ uint64_t NetworkManagerController::readSysfsFile(const QString& path) {
 }
 
 void NetworkManagerController::checkStatus() {
-  NMSettingIPConfig* ipcfg = NM_SETTING_IP_CONFIG(m_ipv4config);
-  NMIPAddress* nmAddress = nm_setting_ip_config_get_address(ipcfg, 0);
-  QString deviceAddress(nm_ip_address_get_address(nmAddress));
-
   QString txPath =
       QString("/sys/class/net/%1/statistics/tx_bytes").arg(WG_INTERFACE_NAME);
   QString rxPath =
       QString("/sys/class/net/%1/statistics/rx_bytes").arg(WG_INTERFACE_NAME);
   uint64_t txBytes = readSysfsFile(txPath);
   uint64_t rxBytes = readSysfsFile(rxPath);
-  logger.info() << "Status:" << deviceAddress << txBytes << rxBytes;
-  emit statusUpdated(m_serverIpv4Gateway, deviceAddress, txBytes, rxBytes);
+  logger.info() << "Status:" << m_deviceIpv4Address << txBytes << rxBytes;
+  emit statusUpdated(m_serverIpv4Gateway, m_deviceIpv4Address, txBytes, rxBytes);
 }
