@@ -11,7 +11,7 @@ QT_MAJOR=$(echo "$QT_VERSION" | cut -d. -f1)
 QT_MINOR=$(echo "$QT_VERSION" | cut -d. -f2)
 
 if [[ "$(uname)" == "Linux" ]]; then
-    if [[ "$QT_MINOR" -ge 9 ]]; then
+    if [[ "$QT_MAJOR" -ge 9 ]]; then
         HOST_TARGET="linux desktop ${QT_VERSION} gcc_64_linux"
         HOST_FOLDER_NAME="gcc_64_linux"
     else
