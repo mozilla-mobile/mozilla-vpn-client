@@ -77,44 +77,16 @@ void NetworkManagerController::initialize(const Device* device,
   }
   m_tunnelUuid = uuid.toString(QUuid::WithoutBraces);
 
-  // Check if the connection already exists.
-  QDBusReply<QDBusObjectPath> reply = m_settings->call("GetConnectionByUuid",
-                                                       m_tunnelUuid);
-  if (reply.isValid()) {
-    logger.info() << "Connection" << m_tunnelUuid << "already exists";
-    QString path = reply.value().path();
-    m_remote = new QDBusInterface(DBUS_NM_SERVICE, reply.value().path(),
-                                  DBUS_NM_INTERFACE + ".Settings.Connection",
-                                  QDBusConnection::systemBus(), this);
-#if 0
-    // Lookup the active connection handle, or null if the connection is down.
-    const GPtrArray* connections = nm_client_get_active_connections(m_libnmclient);
-    for (guint i = 0; i < connections->len; i++) {
-      NMActiveConnection* active = NM_ACTIVE_CONNECTION(connections->pdata[i]);
-      if (m_tunnelUuid == nm_active_connection_get_uuid(active)) {
-        setActiveConnection(nm_object_get_path(NM_OBJECT(active)));
-        break;
-      }
-    }
-#endif
-
-    emit initialized(true, m_connection != nullptr, QDateTime());
-    return;
-  } else {
-    logger.debug() << "Connection not found:" << reply.error().message();
-  }
-
   m_deviceIpv4Address = device->ipv4Address();
 
   // Generic connection settings.
-  m_config.insert("id", QString(WG_INTERFACE_NAME));
+  m_config.insert("id", QCoreApplication::applicationName());
   m_config.insert("interface-name", QString(WG_INTERFACE_NAME));
   m_config.insert("type", QString("wireguard"));
   m_config.insert("uuid", m_tunnelUuid);
   m_config.insert("autoconnect", false);
   // TODO: Permissions?
   // TODO: Timestamp?
-
 
   QStringList ipv4split = device->ipv4Address().split('/');
   QVariantMap ipv4address;
@@ -146,18 +118,43 @@ void NetworkManagerController::initialize(const Device* device,
   m_wireguard.insert("peer-routes", false);
   m_wireguard.insert("private-key", keys->privateKey());
 
-  // Create the connection
-  logger.info() << "Creating connection:" << m_tunnelUuid;
-  QVariantList args;
-  args << serializeConfig();
-  args << (uint)0x02;
-  args << QVariantMap();
-  bool okay = m_settings->callWithCallback(
-      "AddConnection2", args, this,
-      SLOT(initCompleted(const QDBusObjectPath&, const QVariantMap&)),
-      SLOT(dbusError(const QDBusError&)));
-  if (!okay) {
-    logger.debug() << "AddConnection2 failed";
+  // Check if the connection already exists.
+  QDBusReply<QDBusObjectPath> reply = m_settings->call("GetConnectionByUuid",
+                                                       m_tunnelUuid);
+  if (reply.isValid()) {
+    logger.info() << "Connection" << m_tunnelUuid << "already exists";
+    QString path = reply.value().path();
+    m_remote = new QDBusInterface(DBUS_NM_SERVICE, reply.value().path(),
+                                  DBUS_NM_INTERFACE + ".Settings.Connection",
+                                  QDBusConnection::systemBus(), this);
+#if 0
+    // Lookup the active connection handle, or null if the connection is down.
+    const GPtrArray* connections = nm_client_get_active_connections(m_libnmclient);
+    for (guint i = 0; i < connections->len; i++) {
+      NMActiveConnection* active = NM_ACTIVE_CONNECTION(connections->pdata[i]);
+      if (m_tunnelUuid == nm_active_connection_get_uuid(active)) {
+        setActiveConnection(nm_object_get_path(NM_OBJECT(active)));
+        break;
+      }
+    }
+#endif
+
+    emit initialized(true, m_connection != nullptr, QDateTime());
+    return;
+  } else {
+    // Create the connection
+    logger.info() << "Creating connection:" << m_tunnelUuid;
+    QVariantList args;
+    args << serializeConfig();
+    args << (uint)0x02;
+    args << QVariantMap();
+    bool okay = m_settings->callWithCallback(
+        "AddConnection2", args, this,
+        SLOT(initCompleted(const QDBusObjectPath&, const QVariantMap&)),
+        SLOT(dbusError(const QDBusError&)));
+    if (!okay) {
+      logger.debug() << "AddConnection2 failed";
+    }
   }
 }
 
