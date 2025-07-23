@@ -248,7 +248,6 @@ class Controller : public QObject, public LogSerializer {
   void clearRetryCounter();
   void activateNext();
   void setState(State state);
-  bool processNextStep();
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
   QString useLocalSocketPath() const;
