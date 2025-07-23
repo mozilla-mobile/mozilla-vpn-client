@@ -14,7 +14,7 @@
 #include "logger.h"
 #include "macosutils.h"
 #include "xpcdaemonprotocol.h"
-#include "version.h"
+#include "buildinfo.h"
 
 #import <Cocoa/Cocoa.h>
 #import <Security/Authorization.h>
@@ -78,7 +78,7 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
     logger.debug() << "Initialize daemon version:" << version;
     QVersionNumber daemonVersion =
         QVersionNumber::fromString(QString::fromNSString(version));
-    if (daemonVersion < QVersionNumber::fromString(APP_VERSION)) {
+    if (daemonVersion < QVersionNumber::fromString(BuildInfo::version)) {
       QMetaObject::invokeMethod(this, &MacOSController::upgradeService);
     } else {
       QMetaObject::invokeMethod(this, &MacOSController::connectService);

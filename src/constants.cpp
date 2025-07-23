@@ -9,6 +9,7 @@
 #include <QString>
 #include <QtGlobal>
 
+#include "buildinfo.h"
 #include "settingsholder.h"
 #include "version.h"
 
@@ -46,7 +47,7 @@ QString Constants::versionString() {
   if (!s_inProduction && !s_versionOverride.isEmpty()) {
     return s_versionOverride;
   }
-  return QStringLiteral(APP_VERSION);
+  return BuildInfo::version;
 }
 
 QString Constants::buildNumber() { return QStringLiteral(BUILD_ID); }
