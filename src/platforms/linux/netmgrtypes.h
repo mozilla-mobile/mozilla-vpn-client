@@ -5,9 +5,15 @@
 #ifndef NETMGRTYPES_H
 #define NETMGRTYPES_H
 
-#include <QVariant>
+#include <QHostAddress>
 #include <QMap>
 #include <QMetaType>
+#include <QVariant>
+#include <QtDBus>
+
+#define DBUS_NM_SERVICE "org.freedesktop.NetworkManager"
+#define DBUS_NM_PATH "/org/freedesktop/NetworkManager"
+#define DBUS_NM_INTERFACE "org.freedesktop.NetworkManager"
 
 // Metatype registration glue
 template<typename T>
