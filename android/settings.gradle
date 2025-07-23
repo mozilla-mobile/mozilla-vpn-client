@@ -22,6 +22,7 @@ dependencyResolutionManagement {
     }
 }
 
+include ':tunnel'
 include ':qtglean'
 include ':daemon'
 include ':qtBindings'
