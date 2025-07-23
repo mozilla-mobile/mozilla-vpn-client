@@ -29,7 +29,7 @@ conda-ios-x86_64-6.6.0:
                 QT_VERSION: "6.6.0"
         run:
             toolchain-alias: conda-ios-6.6.0
-            toolchain-artifact: public/build/conda-ios.tar.gz
+            toolchain-artifact: public/build/conda-ios.tar.xz
 
 conda-macos:
     treeherder:
@@ -37,4 +37,4 @@ conda-macos:
     run:
         script: conda_pack_macos.sh
         toolchain-alias: conda-macos
-        toolchain-artifact: public/build/conda-macos.tar.gz
+        toolchain-artifact: public/build/conda-macos.tar.xz

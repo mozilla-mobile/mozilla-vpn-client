@@ -42,11 +42,11 @@ Get-ChildItem env:
 if(!(Test-Path $BIN_PATH)){
   New-Item -Path $BIN_PATH -ItemType "directory"
 }
-if(!(Test-Path $REPO_ROOT_PATH/QT_OUT)){
-  New-Item -Path $REPO_ROOT_PATH/QT_OUT -ItemType "directory"
+if(!(Test-Path $REPO_ROOT_PATH/qt-windows)){
+  New-Item -Path $REPO_ROOT_PATH/qt-windows -ItemType "directory"
 }
 
-$BUILD_PREFIX = (resolve-path "$REPO_ROOT_PATH/QT_OUT").toString()
+$BUILD_PREFIX = (resolve-path "$REPO_ROOT_PATH/qt-windows").toString()
 
 # Enter QT source directory
 Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
@@ -160,17 +160,18 @@ if($QT_VERSION_MAJOR -eq "6.2" ){
 
 
 Set-Location $REPO_ROOT_PATH
-Copy-Item -Path taskcluster/scripts/toolchain/configure_qt.ps1 -Destination QT_OUT/
+Copy-Item -Path taskcluster/scripts/toolchain/configure_qt.ps1 -Destination qt-windows/
 
 if (Test-Path -Path $SSL_PATH) {
-  Copy-Item -Path $SSL_PATH -Recurse -Destination QT_OUT/
+  Copy-Item -Path $SSL_PATH -Recurse -Destination qt-windows/
 }
 
+tar -cJf qt6_win.tar.xz qt-windows/
+
 New-Item -ItemType Directory -Path "$TASK_WORKDIR/public/build" -Force
-zip -r "$TASK_WORKDIR/public/build/qt6_win.zip" QT_OUT
+Move-Item -Path qt6_win.tar.xz -Destination "$TASK_WORKDIR/public/build"
 
-
-Write-Output "Build complete, zip created:"
+Write-Output "Build complete, tarball created:"
 
 # mspdbsrv might be stil running after the build, so we need to kill it
 Stop-Process -Name "mspdbsrv.exe" -Force -ErrorAction SilentlyContinue

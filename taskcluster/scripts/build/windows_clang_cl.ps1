@@ -5,12 +5,12 @@
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
-$QTPATH =resolve-path "$FETCHES_PATH/QT_OUT/"
+$QTPATH =resolve-path "$FETCHES_PATH/qt-windows/"
 
 # Prep Env:
 # Switch to the work dir, configure qt
 Set-Location -Path $TASK_WORKDIR
-. "$FETCHES_PATH/QT_OUT/configure_qt.ps1"
+. "$FETCHES_PATH/qt-windows/configure_qt.ps1"
 
 
 # Ensure we are working from a full checkout of all submodules. Taskcluster
@@ -18,7 +18,7 @@ Set-Location -Path $TASK_WORKDIR
 git -C "$REPO_ROOT_PATH" submodule update --init --recursive
 
 # Setup Openssl Import
-$SSL_PATH = "$FETCHES_PATH/QT_OUT/SSL"
+$SSL_PATH = "$FETCHES_PATH/qt-windows/SSL"
 if (Test-Path -Path $SSL_PATH) {
     $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
     $env:OPENSSL_USE_STATIC_LIBS = "TRUE"

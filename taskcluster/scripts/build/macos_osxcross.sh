@@ -10,7 +10,7 @@ git submodule update --init --recursive
 
 # We need to call bash with a login shell, so that conda is initialized
 print Y "Installing conda"
-source ${MOZ_FETCHES_DIR}/bin/activate
+source ${MOZ_FETCHES_DIR}/conda/bin/activate
 conda-unpack
 
 # Use vendored crates - if available.
@@ -30,7 +30,7 @@ mkdir ${TASK_WORKDIR}/build-osxcross
 
 cmake -S . -B ${TASK_WORKDIR}/build-osxcross -GNinja \
         -DCMAKE_TOOLCHAIN_FILE=scripts/macos/osxcross-toolchain.cmake \
-        -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt_dist/lib/cmake \
+        -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt-macos/lib/cmake \
         -DQT_HOST_PATH=${MOZ_FETCHES_DIR}/qt-host-tools/ \
         -DQT_HOST_PATH_CMAKE_DIR=${MOZ_FETCHES_DIR}/qt-host-tools/lib/cmake \
         -DCMAKE_BUILD_TYPE=RelWithDebInfo \

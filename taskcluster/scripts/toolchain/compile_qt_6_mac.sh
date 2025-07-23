@@ -24,9 +24,9 @@ conda install -y -c conda-forge cmake=3.26.3 ninja=1.11.0
 
 QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-src-*' | head -1)
 echo "Building $(basename $QT_SOURCE_DIR)"
-rm -rf ${TASK_WORKDIR}/qt_dist ${TASK_WORKDIR}/qt_build
-$VCS_PATH/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR ${TASK_WORKDIR}/qt_dist -b ${TASK_WORKDIR}/qt_build
+rm -rf ${TASK_WORKDIR}/qt-macos ${TASK_WORKDIR}/qt-build
+$VCS_PATH/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR ${TASK_WORKDIR}/qt-macos -b ${TASK_WORKDIR}/qt-build
 
 echo "Creating Qt dist artifact"
 mkdir -p ${TASK_WORKDIR}/public/build
-(cd ${TASK_WORKDIR} && zip -qr ./public/build/qt6_mac.zip qt_dist/*)
+tar -C ${TASK_WORKDIR} -cJf ${TASK_WORKDIR}/public/build/qt6_macos.tar.xz qt-macos
