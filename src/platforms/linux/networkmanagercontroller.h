@@ -12,6 +12,8 @@
 #include "controllerimpl.h"
 
 class NetMgrConnection;
+class NetMgrDevice;
+class QDateTime;
 class QDBusConnection;
 class QDBusInterface;
 class QDBusObjectPath;
@@ -36,7 +38,6 @@ class NetworkManagerController final : public ControllerImpl {
 
  private slots:
   void stateChanged(uint state, uint reason);
-  void propertyChanged(QString interface, QVariantMap props, QStringList list);
 
   void initCompleted(const QDBusObjectPath& path, const QVariantMap& results);
   void peerCompleted(const QVariantMap& results);
@@ -57,6 +58,8 @@ class NetworkManagerController final : public ControllerImpl {
 
   static QString nmInterface(const QString& name);
 
+  static QDateTime guessTimestamp();
+
  private:
   QVariantMap m_config;
   QVariantMap m_ipv4config;
@@ -74,6 +77,7 @@ class NetworkManagerController final : public ControllerImpl {
   QDBusInterface* m_remote = nullptr;
 
   NetMgrConnection* m_connection = nullptr;
+  NetMgrDevice* m_device = nullptr;
 };
 
 #endif  // NETWORKMANAGERCONTROLLER_H
