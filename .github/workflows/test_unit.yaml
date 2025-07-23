@@ -121,7 +121,7 @@ jobs:
           XZ_UTILS_URL: https://github.com/tukaani-project/xz/releases/download/v5.8.1/xz-5.8.1-windows.zip
         run: |
           Invoke-WebRequest -Uri $Env:XZ_UTILS_URL -OutFile xz-5.8.1-windows.zip
-          Expand-Archive xz-5.8.1-windows-zip
+          Expand-Archive xz-5.8.1-windows.zip
           $Env:Path += ";$(pwd)/xz-5.8.1-windows/bin_x86-64"
 
           Invoke-WebRequest -Uri $Env:QT6_WINDOWS_URL -OutFile qt6_win.tar.xz -Verbose
