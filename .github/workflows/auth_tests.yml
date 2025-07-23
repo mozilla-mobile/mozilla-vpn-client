@@ -92,10 +92,12 @@ jobs:
 
       - name: Install Qt
         shell: pwsh
+        working-directory: 3rdparty
+        env:
+          QT6_WINDOWS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public%2Fbuild%2Fqt6_win.tar.xz
         run: |
-          Invoke-WebRequest -Uri https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -OutFile win.zip
-          Expand-Archive win.zip
-          mv win\QT_OUT "C:\\MozillaVPNBuild"
+          Invoke-WebRequest -Uri $QT6_WINDOWS_URL -OutFile qt6_win.tar.xz
+          tar xf qt6_win.tar.xz
 
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
@@ -111,7 +113,7 @@ jobs:
       - name: Building tests
         run: |
           mkdir ./build
-          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake"
+          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=3rdparty/qt-win
           cmake --build ./build --target app_auth_tests
 
       - name: Running tests

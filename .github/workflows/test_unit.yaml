@@ -115,11 +115,13 @@ jobs:
           submodules: "recursive"
 
       - name: Install Qt
+        shell: pwsh
+        working-directory: 3rdparty
         env:
-          QT_WINDOWS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public%2Fbuild%2Fqt6_win.zip
+          QT6_WINDOWS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public%2Fbuild%2Fqt6_win.tar.xz
         run: |
-          curl -sSL -o 3rdparty/qt6_win.zip ${QT_WINDOWS_URL}
-          unzip -d 3rdparty/ 3rdparty/qt6_win.zip
+          Invoke-WebRequest -Uri $QT6_WINDOWS_URL -OutFile qt6_win.tar.xz
+          tar xf qt6_win.tar.xz
 
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v2
@@ -157,7 +159,7 @@ jobs:
 
           cmake -S . -B ./build-win -GNinja \
               -DCMAKE_BUILD_TYPE=Debug \
-              -DCMAKE_PREFIX_PATH="$(pwd)/3rdparty/QT_OUT" \
+              -DCMAKE_PREFIX_PATH="$(pwd)/3rdparty/qt-win" \
               -DWIREGUARD_FOLDER="$(pwd)/3rdparty/wireguard-nt"
           cmake --build ./build-win --target build_tests
 
