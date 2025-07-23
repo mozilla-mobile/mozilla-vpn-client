@@ -12,6 +12,7 @@
 #include "controllerimpl.h"
 
 class NetMgrConnection;
+class QDBusConnection;
 class QDBusInterface;
 class QDBusObjectPath;
 class QDBusError;
@@ -41,6 +42,11 @@ class NetworkManagerController final : public ControllerImpl {
   void peerCompleted(const QVariantMap& results);
   void activateCompleted(const QDBusObjectPath& path);
   void dbusError(const QDBusError& error);
+  void dbusIgnoreError(const QDBusError& error);
+
+  void deviceAdded(const QDBusObjectPath& path);
+  void deviceRemoved(const QDBusObjectPath& path);
+  void deviceStateChanged(uint state, uint prev, uint reason);
 
  private:
   static QVariantMap wgPeer(const InterfaceConfig& config);
@@ -48,6 +54,8 @@ class NetworkManagerController final : public ControllerImpl {
   static uint64_t readSysfsFile(const QString& path);
   void setActiveConnection(const QString& path);
   QVariant serializeConfig() const;
+
+  static QString nmInterface(const QString& name);
 
  private:
   QVariantMap m_config;
