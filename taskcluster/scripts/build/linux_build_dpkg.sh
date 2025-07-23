@@ -89,9 +89,15 @@ dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${DPKG_PACKAGE_DIST_VERSION}
 if [[ "$STATICQT" == "Y" ]]; then
   export PATH=${MOZ_FETCHES_DIR}/qt-linux/bin:${PATH}
   sed -rie '/\s+(qt6-|qml6-|libqt6|qmake)/d' $(pwd)/mozillavpn-source/debian/control
-  # Remove the cargo dependency if manually installed
+  # Remove the cargo, golang and cmake dependencies if manually installed
   if which cargo >/dev/null 2>&1; then
     sed -rie '/\s+(cargo)/d' $(pwd)/mozillavpn-source/debian/control
+  fi
+  if which cmake >/dev/null 2>&1; then
+    sed -rie '/\s+(cmake)/d' $(pwd)/mozillavpn-source/debian/control
+  fi
+  if which go >/dev/null 2>&1; then
+    sed -rie '/\s+(golang)/d' $(pwd)/mozillavpn-source/debian/control
   fi
 fi
 
