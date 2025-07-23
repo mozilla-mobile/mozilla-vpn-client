@@ -635,7 +635,7 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   settingsHolder->setPublicKey(publicKey);
   m_private->m_keys.storeKeys(privateKey, publicKey);
 
-  settingsHolder->setDeviceKeyVersion(Constants::versionString());
+  settingsHolder->setDeviceKeyVersion(QCoreApplication::applicationVersion());
 
   settingsHolder->setKeyRegenerationTimeSec(QDateTime::currentSecsSinceEpoch());
 }
@@ -2182,7 +2182,7 @@ void MozillaVPN::registerInspectorCommands() {
 // static
 QString MozillaVPN::appVersionForUpdate() {
   if (s_updateVersion.isEmpty()) {
-    return Constants::versionString();
+    return QCoreApplication::applicationVersion();
   }
 
   return s_updateVersion;
@@ -2283,7 +2283,7 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << Constants::versionString();
+  logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
@@ -2311,7 +2311,7 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << Constants::versionString();
+  logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());

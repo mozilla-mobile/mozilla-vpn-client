@@ -5,6 +5,7 @@
 #include <QCoreApplication>
 
 #include "app.h"
+#include "buildinfo.h"
 #include "constants.h"
 #include "helper.h"
 #include "i18nstrings.h"
@@ -45,7 +46,7 @@ int main(int argc, char* argv[]) {
 #endif
   QCoreApplication::setApplicationName("Mozilla VPN Unit Tests");
   QCoreApplication::setOrganizationName("Mozilla Testing");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion(BuildInfo::version);
 
   {
     SettingsHolder settingsHolder;

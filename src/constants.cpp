@@ -16,7 +16,6 @@
 namespace {
 QString s_stagingServerAddress = "";
 bool s_inProduction = true;
-QString s_versionOverride = "";
 }  // namespace
 
 bool Constants::inProduction() { return s_inProduction; }
@@ -37,17 +36,6 @@ void Constants::setStaging() {
     s_stagingServerAddress = SettingsHolder::instance()->stagingServerAddress();
   }
   Q_ASSERT(!s_stagingServerAddress.isEmpty());
-}
-
-void Constants::setVersionOverride(const QString& versionOverride) {
-  s_versionOverride = versionOverride;
-}
-
-QString Constants::versionString() {
-  if (!s_inProduction && !s_versionOverride.isEmpty()) {
-    return s_versionOverride;
-  }
-  return BuildInfo::version;
 }
 
 QString Constants::buildNumber() { return QStringLiteral(BUILD_ID); }
