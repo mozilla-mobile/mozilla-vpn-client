@@ -63,15 +63,18 @@ jobs:
           brew install ninja
 
       - name: Install Qt6
+        working-directory: 3rdparty
+        env:
+          QT6_MACOS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.tar.xz
         run: |
-          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
-          unzip -a -d ${{ github.workspace }} qt6_mac.zip
+          curl -sSL ${QT6_MACOS_URL} -o qt6_mac.tar.xz
+          tar -xf qt6_mac.tar.xz
 
       - name: Compile test client
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
+            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/3rdparty/qt-macos/lib/cmake
           cmake --build build/cmake --target app_auth_tests
 
       - name: Running tests

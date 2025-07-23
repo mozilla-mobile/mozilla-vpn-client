@@ -78,17 +78,18 @@ jobs:
           brew install ninja
 
       - name: Install Qt6
+        working-directory: 3rdparty
+        env:
+          QT6_MACOS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.tar.xz
         run: |
-          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
-          unzip -a mac.zip
-          sudo mv qt_dist /opt
-          cd ..
+          curl -sSL ${QT6_MACOS_URL} -o qt6_mac.tar.xz
+          tar -xf qt6_mac.tar.xz
 
       - name: Building tests
         run: |
           export PATH=/opt/qt_dist/bin:$PATH
           mkdir -p build
-          cmake -S . -B $(pwd)/build -GNinja
+          cmake -S . -B $(pwd)/build -GNinja -DCMAKE_PREFIX_PATH=${{ github.workspace }}/3rdparty/qt-macos
           cmake --build $(pwd)/build --target build_tests
 
       - name: Running native messaging tests
