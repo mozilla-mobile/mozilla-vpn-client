@@ -8,7 +8,7 @@
 #include "daemon/daemon.h"
 #include "dnsutilsmacos.h"
 #include "iputilsmacos.h"
-#include "wireguardutilsmacos.h"
+#include "wgutilsmacos.h"
 
 class MacOSDaemon final : public Daemon {
   friend class IPUtilsMacos;
@@ -26,7 +26,7 @@ class MacOSDaemon final : public Daemon {
   IPUtils* iputils() override { return m_iputils; }
 
  private:
-  WireguardUtilsMacos* m_wgutils = nullptr;
+  WgUtilsMacos* m_wgutils = nullptr;
   DnsUtilsMacos* m_dnsutils = nullptr;
   IPUtilsMacos* m_iputils = nullptr;
 };
