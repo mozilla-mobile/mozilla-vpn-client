@@ -16,7 +16,9 @@ if [[ "$(uname)" == "Linux" ]]; then
     echo $QT_MAJOR
     echo $QT_MINOR
     echo $QT_PATCH
-    if [[ "$QT_MINOR" -ge 8 ]]; then
+    # Ensure QT_MINOR is parsed as a number before comparison
+    QT_MINOR_NUM=$((10#$QT_MINOR))
+    if [[ "$QT_MINOR_NUM" -ge 8 ]]; then
         HOST_TARGET="linux desktop ${QT_VERSION} gcc_64_linux"
         HOST_FOLDER_NAME="gcc_64_linux"
     else
