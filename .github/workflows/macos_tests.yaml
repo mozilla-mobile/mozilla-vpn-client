@@ -60,13 +60,10 @@ jobs:
           lookup-only: github.event_name == 'pull_request'
           restore-keys: ccache-macos-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
 
-      - name: Install Qt6
-        working-directory: 3rdparty
-        env:
-          QT6_MACOS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public/build/qt6_macos.tar.xz
-        run: |
-          curl -sSL ${QT6_MACOS_URL} -o qt6_macos.tar.xz
-          tar -xf qt6_macos.tar.xz
+      - name: Setup Qt for macOS
+        uses: ./.github/actions/qt-setup-taskcluster
+        with:
+          dest: ${{ github.workspace }}/3rdparty
 
       - name: Cache Qt6 host tools
         id: qt-tools-cache

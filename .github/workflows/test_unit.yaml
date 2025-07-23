@@ -77,13 +77,10 @@ jobs:
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           brew install ninja
 
-      - name: Install Qt6
-        working-directory: 3rdparty
-        env:
-          QT6_MACOS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public/build/qt6_macos.tar.xz
-        run: |
-          curl -sSL ${QT6_MACOS_URL} -o qt6_macos.tar.xz
-          tar -xf qt6_macos.tar.xz
+      - name: Setup Qt for macOS
+        uses: ./.github/actions/qt-setup-taskcluster
+        with:
+          dest: ${{ github.workspace }}/3rdparty
 
       - name: Building tests
         run: |
@@ -113,19 +110,10 @@ jobs:
         with:
           submodules: "recursive"
 
-      - name: Install Qt
-        shell: pwsh
-        working-directory: 3rdparty
-        env:
-          QT6_WINDOWS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public/build/qt6_win.tar.xz
-          XZ_UTILS_URL: https://github.com/tukaani-project/xz/releases/download/v5.8.1/xz-5.8.1-windows.zip
-        run: |
-          Invoke-WebRequest -Uri $Env:XZ_UTILS_URL -OutFile xz-5.8.1-windows.zip
-          Expand-Archive xz-5.8.1-windows.zip
-          $Env:Path += ";$(pwd)/xz-5.8.1-windows/bin_x86-64"
-
-          Invoke-WebRequest -Uri $Env:QT6_WINDOWS_URL -OutFile qt6_win.tar.xz -Verbose
-          tar xvf qt6_win.tar.xz
+      - name: Setup Qt for Windows
+        uses: ./.github/actions/qt-setup-taskcluster
+        with:
+          dest: ${{ github.workspace }}/3rdparty
 
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v2

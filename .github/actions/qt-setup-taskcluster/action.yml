@@ -1,0 +1,37 @@
+name: Setup Qt
+description: Setup Qt from Taskcluster artifacts
+inputs:
+  dest:
+    description: 'Destination path'
+    required: true
+    default: ${{ github.workspace }}/3rdparty
+  toolchain-alias:
+    description: 'Taskcluster toolchain alias'
+    required: false
+    default: ${{ runner.os == 'Windows' && 'qt-windows-x86_64-6.6' || 'qt-macos-6.6' }}
+  toolchain-artifact:
+    description: 'Taskcluster toolchain artifact'
+    required: false
+    default: ${{ runner.os == 'Windows' && 'qt6_win.tar.xz' || 'qt6_macos.tar.xz' }}
+runs:
+  using: "composite"
+  steps:
+    - name: Install xzutils for Windows
+      if: ${{ runner.os == 'Windows' }}
+      shell: bash
+      working-directory: ${{ runner.temp }}
+      env:
+        XZ_UTILS_URL: https://github.com/tukaani-project/xz/releases/download/v5.8.1/xz-5.8.1-windows.zip
+      run: |
+        curl -sSL ${XZ_UTILS_URL} -o xz-5.8.1-windows.zip
+        unzip xz-5.8.1-windows.zip
+        echo "${{ runner.temp }}/xz-5.8.1-windows/bin_x86-64" >> $GITHUB_PATH
+
+    - name: Install Qt toolchain
+      working-directory: ${{ inputs.dest }}
+      shell: bash
+      env:
+        QT6_TOOLCHAIN_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.${{ inputs.toolchain-alias }}.latest/artifacts/public/build/${{ inputs.toolchain-artifact }}
+      run: |
+        curl -sSL "$QT6_TOOLCHAIN_URL" -o ${{ inputs.toolchain-artifact }}
+        tar xvf ${{ inputs.toolchain-artifact }}
