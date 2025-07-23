@@ -1,3 +1,4 @@
+platforms;android-35
 platforms;android-33
 platforms;android-31
 build-tools;29.0.2
