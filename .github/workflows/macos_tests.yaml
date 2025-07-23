@@ -63,10 +63,10 @@ jobs:
       - name: Install Qt6
         working-directory: 3rdparty
         env:
-          QT6_MACOS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.tar.xz
+          QT6_MACOS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public/build/qt6_macos.tar.xz
         run: |
-          curl -sSL ${QT6_MACOS_URL} -o qt6_mac.tar.xz
-          tar -xf qt6_mac.tar.xz
+          curl -sSL ${QT6_MACOS_URL} -o qt6_macos.tar.xz
+          tar -xf qt6_macos.tar.xz
 
       - name: Cache Qt6 host tools
         id: qt-tools-cache
