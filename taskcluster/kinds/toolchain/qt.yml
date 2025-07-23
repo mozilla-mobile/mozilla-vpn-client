@@ -37,7 +37,7 @@ qt-macos-next:
         resources:
             - scripts/utils/qt6_compile.sh
         toolchain-alias: qt-macos-next
-        toolchain-artifact: public/build/qt6_mac.zip
+        toolchain-artifact: public/build/qt6_macos.tar.xz
     treeherder:
         symbol: TL(qt-mac-next)
     worker-type: b-macos
