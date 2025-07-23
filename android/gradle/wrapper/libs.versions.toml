@@ -1,0 +1,18 @@
+[versions]
+agp = "8.8.0"
+kotlin = "1.9.24"
+coreKtx = "1.15.0"
+junit = "4.13.2"
+securityCryptoKtx = "1.1.0-alpha06"
+ecurity-identity-credential = "1.0.0-alpha03"
+[libraries]
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+
+androidx-security-crypto-ktx = { group = "androidx.security", name = "security-crypto-ktx", version.ref = "securityCryptoKtx" }
+androidx-security-identity-credential = {group = "androidx.security", name = "security-identity-credential", version.ref = "ecurity-identity-credential"  }
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+android-library = { id = "com.android.library", version.ref = "agp" }
+
