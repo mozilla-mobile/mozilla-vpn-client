@@ -202,11 +202,6 @@ void Controller::implInitialized(bool status, bool a_connected,
     return;
   }
 
-  if (processNextStep()) {
-    setState(StateOff);
-    return;
-  }
-
   setState(a_connected ? StateOn : StateOff);
 
   // If we are connected already at startup time, we can trigger the connection
@@ -689,9 +684,28 @@ void Controller::disconnected() {
   m_activationQueue.clear();
   clearRetryCounter();
 
-  if (processNextStep()) {
-    setState(StateOff);
-    return;
+  // If there are steps to take after disconnection, handle them now.
+  NextStep next = m_nextStep;
+  m_nextStep = None;
+  switch (next) {
+    case Quit:
+      emit readyToQuit();
+      setState(StateOff);
+      return;
+    
+    case Update:
+      emit readyToUpdate();
+      setState(StateOff);
+      return;
+
+    case Reconnect:
+      m_serverData = m_nextServerData;
+      emit currentServerChanged();
+      activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
+      return;
+    
+    default:
+      break;
   }
 
   // clear the connection time.
@@ -705,32 +719,6 @@ void Controller::disconnected() {
   }
   m_initiator = Null;
   setState(StateOff);
-}
-
-bool Controller::processNextStep() {
-  NextStep nextStep = m_nextStep;
-  m_nextStep = None;
-
-  if (nextStep == Quit) {
-    emit readyToQuit();
-    return true;
-  }
-
-  if (nextStep == Update) {
-    emit readyToUpdate();
-    return true;
-  }
-
-  if (nextStep == Reconnect) {
-    // If we are only switching, keep the iniator
-    // as the extension cannot switch servers.
-    m_serverData = m_nextServerData;
-    emit currentServerChanged();
-    activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
-    return false;
-  }
-
-  return false;
 }
 
 void Controller::maybeEnableDisconnectInConfirming() {
