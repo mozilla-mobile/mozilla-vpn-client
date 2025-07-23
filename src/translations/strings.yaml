@@ -372,10 +372,13 @@ settings:
     value: Dark
     comment: Dark as in "dark mode theme"
 
-localNetworkAccess:
-  labelTitle: Exclude local network traffic
-  subLabel: Access Apple CarPlay, AirDrop, AirPlay and local network devices like printers.
-  disabledSubLabel: Access Apple CarPlay, AirDrop, AirPlay and local network devices like printers. The VPN must be off to edit this setting.
+bypassVPN:
+  labelTitle: Bypass VPN for select traffic
+  subLabel:
+    value: Allow RCS/MMS messaging, Apple features like CarPlay and AirDrop, and connections to local devices. May reduce network security.
+    comment: This string should be clear that major features like some messages will break, but at potential the expense of some security.
+  learnMoreSentence: Learn more.
+  vpnMustBeOff: VPN must be off to change this setting
 
 dnsOverwriteDialog:
   titleDNS: Override DNS settings?

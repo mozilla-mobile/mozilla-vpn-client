@@ -161,7 +161,7 @@ public class IOSControllerImpl: NSObject {
         }
     }
 
-    @objc func connect(serverData: [VPNServerData], excludeLocalNetworks: Bool, allowedIPAddressRanges: [VPNIPAddressRange], reason: Int,
+    @objc func connect(serverData: [VPNServerData], permitLocalNetworkFeatures: Bool, allowedIPAddressRanges: [VPNIPAddressRange], reason: Int,
             gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isMissingLocalLocation: Bool, isServerLocatedInUserCountry: Bool,
             disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
             vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
@@ -177,11 +177,11 @@ public class IOSControllerImpl: NSObject {
               disconnectOnErrorCallback()
               return
             }
-          return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, excludeLocalNetworks: excludeLocalNetworks, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isServerLocatedInUserCountry: !isMissingLocalLocation ? isServerLocatedInUserCountry : nil, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
+          return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, permitLocalNetworkFeatures: permitLocalNetworkFeatures, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isServerLocatedInUserCountry: !isMissingLocalLocation ? isServerLocatedInUserCountry : nil, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
         }
     }
 
-    func configureTunnel(configs: [TunnelConfiguration], reason: Int, serverName: String, excludeLocalNetworks: Bool,
+    func configureTunnel(configs: [TunnelConfiguration], reason: Int, serverName: String, permitLocalNetworkFeatures: Bool,
             gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isServerLocatedInUserCountry: Bool?,
             disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
             vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
@@ -196,10 +196,12 @@ public class IOSControllerImpl: NSObject {
             proto!.disconnectOnSleep = false
             proto!.serverAddress = serverName
 
-            if #available(iOS 15.1, *) {
+            // `includeAllNetworks` combined with wireguard-apple, causes a variety of features to fail, including
+            // MMS/RCS messaging, some AirDrop, CarPlay, and more. See VPN-6698 and associated doc for more info.
+            if (!permitLocalNetworkFeatures) {
                 IOSControllerImpl.logger.debug(message: "Activating includeAllNetworks")
                 proto!.includeAllNetworks = true
-                proto!.excludeLocalNetworks = excludeLocalNetworks
+                proto!.excludeLocalNetworks = false
 
                 if #available(iOS 16.4, *) {
                     // By default, APNs is excluded from the VPN tunnel on 16.4 and later. We want to include it.
