@@ -96,8 +96,8 @@ jobs:
         env:
           QT6_WINDOWS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public/build/qt6_win.tar.xz
         run: |
-          Invoke-WebRequest -Uri $Env:QT6_WINDOWS_URL -OutFile qt6_win.tar.xz
-          tar xf qt6_win.tar.xz
+          Invoke-WebRequest -Uri "$Env:QT6_WINDOWS_URL" -OutFile qt6_win.tar.xz -Verbose
+          tar xvf qt6_win.tar.xz
 
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1

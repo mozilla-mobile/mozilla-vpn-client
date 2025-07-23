@@ -87,7 +87,6 @@ jobs:
 
       - name: Building tests
         run: |
-          export PATH=/opt/qt_dist/bin:$PATH
           mkdir -p build
           cmake -S . -B $(pwd)/build -GNinja -DCMAKE_PREFIX_PATH=${{ github.workspace }}/3rdparty/qt-macos
           cmake --build $(pwd)/build --target build_tests
@@ -120,8 +119,8 @@ jobs:
         env:
           QT6_WINDOWS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public/build/qt6_win.tar.xz
         run: |
-          Invoke-WebRequest -Uri $Env:QT6_WINDOWS_URL -OutFile qt6_win.tar.xz
-          tar xf qt6_win.tar.xz
+          Invoke-WebRequest -Uri "$Env:QT6_WINDOWS_URL" -OutFile qt6_win.tar.xz -Verbose
+          tar xvf qt6_win.tar.xz
 
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v2
