@@ -6,12 +6,17 @@ if [[ "$CONDA_PREFIX" == "$BASE_PREFIX" ]]; then
     echo "Please run this script inside a non-base conda environment."
     exit 1
 fi
-# Extract major and minor version numbers
+
+# Extract major, minor, and patch version numbers from QT_VERSION
 QT_MAJOR=$(echo "$QT_VERSION" | cut -d. -f1)
 QT_MINOR=$(echo "$QT_VERSION" | cut -d. -f2)
+QT_PATCH=$(echo "$QT_VERSION" | cut -d. -f3)
 
 if [[ "$(uname)" == "Linux" ]]; then
-    if [[ "$QT_MAJOR" -ge 8 ]]; then
+    echo $QT_MAJOR
+    echo $QT_MINOR
+    echo $QT_PATCH
+    if [[ "$QT_MINOR" -ge 8 ]]; then
         HOST_TARGET="linux desktop ${QT_VERSION} gcc_64_linux"
         HOST_FOLDER_NAME="gcc_64_linux"
     else
