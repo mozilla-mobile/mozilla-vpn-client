@@ -293,14 +293,27 @@ MZViewBase {
 
             MZTextBlock {
                 Layout.fillWidth: true
+                visible: MZEnv.buildCommit.length > 0
 
-                text: "Installation time: " + MZSettings.installationTime
+                text: "Commit: " + MZEnv.buildCommit
             }
 
             MZTextBlock {
                 Layout.fillWidth: true
 
-                text: "Update time: " + MZSettings.updateTime
+                text: "Built: " + MZEnv.buildTime
+            }
+
+            MZTextBlock {
+                Layout.fillWidth: true
+
+                text: "Installed: " + MZSettings.installationTime
+            }
+
+            MZTextBlock {
+                Layout.fillWidth: true
+
+                text: "Updated: " + MZSettings.updateTime
             }
         }
     }

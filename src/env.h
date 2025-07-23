@@ -6,11 +6,13 @@
 #define ENV_H
 
 #include "constants.h"
+#include "buildinfo.h"
 
 #ifdef MZ_WINDOWS
 #  include "platforms/windows/windowsutils.h"
 #endif
 
+#include <QDateTime>
 #include <QObject>
 
 class Env final : public QObject {
@@ -22,6 +24,8 @@ class Env final : public QObject {
   Q_PROPERTY(QString graphicsApi READ graphicsApi CONSTANT)
   Q_PROPERTY(QString versionString READ versionString CONSTANT)
   Q_PROPERTY(QString buildNumber READ buildNumber CONSTANT)
+  Q_PROPERTY(QDateTime buildTime READ buildTime CONSTANT)
+  Q_PROPERTY(QString buildCommit READ buildCommit CONSTANT)
   Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
   Q_PROPERTY(QString architecture READ architecture CONSTANT)
   Q_PROPERTY(QString platform READ platform CONSTANT)
@@ -44,6 +48,10 @@ class Env final : public QObject {
   static bool inProduction() { return Constants::inProduction(); }
   static QString versionString() { return Constants::versionString(); }
   static QString buildNumber() { return Constants::buildNumber(); }
+  static QDateTime buildTime() {
+    return QDateTime::fromSecsSinceEpoch(BuildInfo::timestamp);
+  }
+  static QString buildCommit() { return BuildInfo::commit; }
   static QString osVersion() {
 #ifdef MZ_WINDOWS
     return WindowsUtils::windowsVersion();
