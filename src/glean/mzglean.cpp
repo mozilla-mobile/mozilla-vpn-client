@@ -4,7 +4,6 @@
 
 #include "mzglean.h"
 
-#include "constants.h"
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"

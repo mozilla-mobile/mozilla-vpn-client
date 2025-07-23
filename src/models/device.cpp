@@ -9,7 +9,6 @@
 #include <QJsonValue>
 #include <QTextStream>
 
-#include "constants.h"
 #include "leakdetector.h"
 #include "models/keys.h"
 

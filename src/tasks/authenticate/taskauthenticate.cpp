@@ -11,7 +11,6 @@
 #include <QUrlQuery>
 
 #include "authenticationlistener.h"
-#include "constants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"

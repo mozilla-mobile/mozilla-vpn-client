@@ -10,7 +10,6 @@
 #include <QScopeGuard>
 #include <QVersionNumber>
 
-#include "constants.h"
 #include "logger.h"
 #include "macosutils.h"
 #include "xpcdaemonprotocol.h"
