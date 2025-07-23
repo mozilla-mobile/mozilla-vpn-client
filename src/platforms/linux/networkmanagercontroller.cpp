@@ -42,16 +42,30 @@ NetworkManagerController::NetworkManagerController() {
   m_client = new QDBusInterface(DBUS_NM_SERVICE, DBUS_NM_PATH,
                                 DBUS_NM_INTERFACE, QDBusConnection::systemBus(),
                                 this);
+
   m_settings = new QDBusInterface(DBUS_NM_SERVICE, DBUS_NM_PATH + "/Settings",
-                                  DBUS_NM_INTERFACE + ".Settings",
-                                  QDBusConnection::systemBus(), this);
+                                  nmInterface("Settings"),
+                                  m_client->connection(), this);
   
   QVariant version = m_client->property("Version");
   m_version = QVersionNumber::fromString(version.toString());
   logger.info() << "NetworkManager version:" << m_version.toString();
 
+  // Monitor for changes in the connected devices.
+  connect(m_client, SIGNAL(DeviceAdded(QDBusObjectPath)), this,
+          SLOT(deviceAdded(QDBusObjectPath)));
+  connect(m_client, SIGNAL(DeviceRemoved(QDBusObjectPath)), this,
+          SLOT(deviceRemoved(QDBusObjectPath)));
+
+  // Fetch the device in case it already exists.
+  QVariantList args;
+  args << WG_INTERFACE_NAME;
+  m_client->callWithCallback("GetDeviceByIpIface", args, this,
+                             SLOT(deviceAdded(const QDBusObjectPath&)),
+                             SLOT(dbusIgnoreError(const QDBusError&)));
+
   // Watch for property changes
-  QDBusConnection::systemBus().connect(
+  m_client->connection().connect(
       DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_PROPERTY_INTERFACE,
       "PropertiesChanged", this,
       SLOT(propertyChanged(QString, QVariantMap, QStringList)));
@@ -63,6 +77,11 @@ NetworkManagerController::~NetworkManagerController() {
 
   // Clear the active connection, if any.
   setActiveConnection(QString());
+}
+
+// static
+QString NetworkManagerController::nmInterface(const QString& name) {
+  return DBUS_NM_INTERFACE + "." + name;
 }
 
 void NetworkManagerController::initialize(const Device* device,
@@ -123,22 +142,10 @@ void NetworkManagerController::initialize(const Device* device,
     logger.info() << "Connection" << m_tunnelUuid << "already exists";
     QString path = reply.value().path();
     m_remote = new QDBusInterface(DBUS_NM_SERVICE, reply.value().path(),
-                                  DBUS_NM_INTERFACE + ".Settings.Connection",
-                                  QDBusConnection::systemBus(), this);
-#if 0
-    // Lookup the active connection handle, or null if the connection is down.
-    const GPtrArray* connections = nm_client_get_active_connections(m_libnmclient);
-    for (guint i = 0; i < connections->len; i++) {
-      NMActiveConnection* active = NM_ACTIVE_CONNECTION(connections->pdata[i]);
-      if (m_tunnelUuid == nm_active_connection_get_uuid(active)) {
-        setActiveConnection(nm_object_get_path(NM_OBJECT(active)));
-        break;
-      }
-    }
-#endif
+                                  nmInterface("Settings.Connection"),
+                                  m_client->connection(), this);
 
     emit initialized(true, m_connection != nullptr, QDateTime());
-    return;
   } else {
     // Create the connection
     logger.info() << "Creating connection:" << m_tunnelUuid;
@@ -157,8 +164,12 @@ void NetworkManagerController::initialize(const Device* device,
 }
 
 void NetworkManagerController::dbusError(const QDBusError& error) {
-  logger.warning() << "D-Bus message failed:" << error.message();
+  logger.warning() << "DBus message failed:" << error.message();
   emit backendFailure(Controller::ErrorFatal);
+}
+
+void NetworkManagerController::dbusIgnoreError(const QDBusError& error) {
+  logger.debug() << "DBus message failed:" << error.message();
 }
 
 // static
@@ -210,8 +221,8 @@ QVariant NetworkManagerController::serializeConfig() const {
 void NetworkManagerController::initCompleted(const QDBusObjectPath& path,
                                              const QVariantMap& results) {
   m_remote = new QDBusInterface(DBUS_NM_SERVICE, path.path(),
-                                DBUS_NM_INTERFACE + ".Service.Connection",
-                                QDBusConnection::systemBus(), this);
+                                nmInterface("Service.Connection"),
+                                m_client->connection(), this);
   emit initialized(m_remote != nullptr, false, QDateTime());
 }
 
@@ -282,6 +293,7 @@ void NetworkManagerController::peerCompleted(const QVariantMap& result) {
 }
 
 void NetworkManagerController::activateCompleted(const QDBusObjectPath& path) {
+  logger.info() << "Connection activated:" << path.path();
   setActiveConnection(path.path());
 }
 
@@ -337,7 +349,7 @@ void NetworkManagerController::deactivate(Controller::Reason reason) {
       DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_NM_INTERFACE, "DeactivateConnection");
   call << QDBusObjectPath(m_connection->path());
 
-  QDBusPendingReply<> reply = QDBusConnection::systemBus().asyncCall(call);
+  QDBusPendingReply<> reply = m_client->connection().asyncCall(call);
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
                    [&] { emit disconnected(); });
@@ -363,14 +375,43 @@ void NetworkManagerController::propertyChanged(QString interface,
         props.value("ActivatingConnection").value<QDBusObjectPath>();
 
     // Is this the tunnel inteface?
-    QDBusInterface conn(DBUS_NM_SERVICE, path.path(), DBUS_NM_INTERFACE + ".Active",
-                        QDBusConnection::systemBus());
+    QDBusInterface conn(DBUS_NM_SERVICE, path.path(), nmInterface("Active"),
+                        m_client->connection());
     QString uuid = conn.property("Uuid").toString();
     logger.debug() << "Connection" << uuid << "started";
     if (m_tunnelUuid == uuid) {
       setActiveConnection(path.path());
     }
   }
+}
+
+void NetworkManagerController::deviceAdded(const QDBusObjectPath& devpath) {
+  logger.debug() << "device added:" << devpath.path();
+  
+  // Examine whether this is the wireguard device.
+  QDBusInterface device(DBUS_NM_SERVICE, devpath.path(), nmInterface("Device"),
+                        m_client->connection());
+  QVariant name = device.property("Interface").toString();
+  QVariant driver = device.property("Driver").toString();
+  if (name != WG_INTERFACE_NAME) {
+    return;
+  }
+  if (driver != "wireguard") {
+    return;
+  }
+
+  // Watch it for state changes.
+  m_client->connection().connect(DBUS_NM_SERVICE, devpath.path(),
+                                 nmInterface("Device"), "StateChanged", this,
+                                 SLOT(deviceStateChanged(uint, uint, uint)));
+}
+
+void NetworkManagerController::deviceRemoved(const QDBusObjectPath& path) {
+  logger.debug() << "device removed:" << path.path();
+}
+
+void NetworkManagerController::deviceStateChanged(uint state, uint prev, uint reason) {
+  logger.debug() << "device state changed:" << prev << "->" << state;
 }
 
 // static
