@@ -151,7 +151,7 @@ jobs:
 
           cmake -S . -B ./build-win -GNinja \
               -DCMAKE_BUILD_TYPE=Debug \
-              -DCMAKE_PREFIX_PATH="$(pwd)/3rdparty/qt-win" \
+              -DCMAKE_PREFIX_PATH="$(pwd)/3rdparty/qt-windows" \
               -DWIREGUARD_FOLDER="$(pwd)/3rdparty/wireguard-nt"
           cmake --build ./build-win --target build_tests
 
