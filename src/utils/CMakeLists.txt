@@ -9,6 +9,7 @@
 # and should not contain application logic.
 #
 add_library(mzutils STATIC
+    buildinfo.h
     chacha20poly1305.cpp
     chacha20poly1305.h
     collator.cpp
@@ -78,6 +79,19 @@ add_library(mzutils STATIC
     taskscheduler.cpp
     taskscheduler.h
 )
+
+# Generate build information
+# NOTE: This is done as a custom target to ensure that it runs every build.
+add_custom_target(mzutils-buildinfo
+    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/buildinfo.cpp
+    DEPENDS
+        ${CMAKE_CURRENT_SOURCE_DIR}/buildinfo.cpp.in
+        ${CMAKE_CURRENT_SOURCE_DIR}/buildinfo.cmake
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    COMMAND ${CMAKE_COMMAND} -DCMAKE_PROJECT_VERSION=${CMAKE_PROJECT_VERSION} -P ${CMAKE_CURRENT_SOURCE_DIR}/buildinfo.cmake
+)
+add_dependencies(mzutils mzutils-buildinfo)
+target_sources(mzutils PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/buildinfo.cpp)
 
 # Signal handling for unix platforms
 if(UNIX)
