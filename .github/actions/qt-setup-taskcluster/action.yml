@@ -16,8 +16,25 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Install xzutils for Windows
+    - name: Resolve artifact URL
+      shell: bash
+      env:
+        QT6_INDEX_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.${{ inputs.toolchain-alias }}.latest/artifacts/public/build/${{ inputs.toolchain-artifact }}
+      run: |
+        echo QT6_TOOLCHAIN_URL=$(curl -sS --etag-save "${{ runner.temp }}/qt-artifact-etag.txt" -w "%header{location}" "${QT6_INDEX_URL}" -o /dev/null) >> $GITHUB_ENV
+        echo QT6_TOOLCHAIN_ETAG=$(cat "${{ runner.temp }}/qt-artifact-etag.txt") >> $GITHUB_ENV
+
+    # Tar extraction is painfully slow on Windows, so use a cache instead.
+    - name: Cache Qt for Windows
+      uses: actions/cache@v4
+      id: qt-windows-cache
       if: ${{ runner.os == 'Windows' }}
+      with:
+        path: ${{ inputs.dest }}/qt-windows
+        key: qt-windows-${{ env.QT6_TOOLCHAIN_ETAG }}
+
+    - name: Install xzutils for Windows
+      if: ${{ runner.os == 'Windows' && steps.qt-windows-cache.outputs.cache-hit != 'true' }}
       shell: bash
       working-directory: ${{ runner.temp }}
       env:
@@ -28,10 +45,9 @@ runs:
         echo "${{ runner.temp }}/xz-5.8.1-windows/bin_x86-64" >> $GITHUB_PATH
 
     - name: Install Qt toolchain
+      if: ${{ runner.os != 'Windows' || steps.qt-windows-cache.outputs.cache-hit != 'true' }}
       working-directory: ${{ inputs.dest }}
       shell: bash
-      env:
-        QT6_TOOLCHAIN_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.${{ inputs.toolchain-alias }}.latest/artifacts/public/build/${{ inputs.toolchain-artifact }}
       run: |
         curl -sSL "$QT6_TOOLCHAIN_URL" -o ${{ inputs.toolchain-artifact }}
         tar xvf ${{ inputs.toolchain-artifact }}
