@@ -12,6 +12,7 @@ namespace BuildInfo {
 extern const QString version;
 extern const qint64 timestamp;
 extern const QString commit;
+extern const QString number;
 
 };
 

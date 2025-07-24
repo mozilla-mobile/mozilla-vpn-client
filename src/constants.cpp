@@ -11,7 +11,6 @@
 
 #include "buildinfo.h"
 #include "settingsholder.h"
-#include "version.h"
 
 namespace {
 QString s_stagingServerAddress = "";
@@ -37,8 +36,6 @@ void Constants::setStaging() {
   }
   Q_ASSERT(!s_stagingServerAddress.isEmpty());
 }
-
-QString Constants::buildNumber() { return QStringLiteral(BUILD_ID); }
 
 QString Constants::envOrDefault(const QString& name,
                                 const QString& defaultValue) {

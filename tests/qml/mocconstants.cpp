@@ -23,8 +23,6 @@ QString Constants::apiUrl(ApiEndpoint) { return "something here"; }
 
 void Constants::setStaging() { s_productionMode = false; }
 
-QString Constants::buildNumber() { return QStringLiteral("QMLTest_BuildID"); }
-
 QString Constants::envOrDefault(const QString& name,
                                 const QString& defaultValue) {
   Q_UNUSED(name);

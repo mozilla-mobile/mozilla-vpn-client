@@ -34,4 +34,3 @@ configure_file(
     ${CMAKE_CURRENT_BINARY_DIR}/buildinfo.cpp
     @ONLY
 )
-

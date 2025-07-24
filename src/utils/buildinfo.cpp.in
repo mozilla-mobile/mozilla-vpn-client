@@ -8,3 +8,4 @@
 const QString BuildInfo::version = QStringLiteral("@CMAKE_PROJECT_VERSION@");
 const qint64 BuildInfo::timestamp = @BUILD_TIMESTAMP@;
 const QString BuildInfo::commit = QStringLiteral("@BUILD_COMMIT@");
+const QString BuildInfo::number = QStringLiteral("@BUILD_ID@");

@@ -50,11 +50,11 @@ class Env final : public QObject {
   static QString versionString() {
     return QCoreApplication::applicationVersion();
   }
-  static QString buildNumber() { return Constants::buildNumber(); }
+  static QString buildCommit() { return BuildInfo::commit; }
+  static QString buildNumber() { return BuildInfo::number; }
   static QDateTime buildTime() {
     return QDateTime::fromSecsSinceEpoch(BuildInfo::timestamp);
   }
-  static QString buildCommit() { return BuildInfo::commit; }
   static QString osVersion() {
 #ifdef MZ_WINDOWS
     return WindowsUtils::windowsVersion();
