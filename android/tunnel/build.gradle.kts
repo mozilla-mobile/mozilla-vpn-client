@@ -48,7 +48,7 @@ android {
     namespace = "org.mozilla.firefox.vpn.tunnel"
     
     defaultConfig {
-        minSdk = Config.minSdkVersion
+        minSdk = 24
         targetSdk = Config.targetSdkVersion
     
 
@@ -66,8 +66,8 @@ android {
     }
 
     buildFeatures {
-        aidl = true
-        buildConfig = true
+        aidl = false
+        buildConfig = false
     }
 
     // Ensure .so files in src/main/jniLibs are packaged in the AAR
