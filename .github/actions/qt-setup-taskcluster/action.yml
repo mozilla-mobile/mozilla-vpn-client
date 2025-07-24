@@ -33,6 +33,7 @@ runs:
       with:
         path: ${{ inputs.dest }}/qt-windows
         key: qt-windows-${{ env.QT6_TOOLCHAIN_TASKID }}
+        lookup-only: ${{ github.event_name == 'pull_request' }}
 
     - name: Install xzutils for Windows
       if: ${{ runner.os == 'Windows' && steps.qt-windows-cache.outputs.cache-hit != 'true' }}
@@ -42,7 +43,7 @@ runs:
         XZ_UTILS_URL: https://github.com/tukaani-project/xz/releases/download/v5.8.1/xz-5.8.1-windows.zip
       run: |
         curl -sSL ${XZ_UTILS_URL} -o xz-5.8.1-windows.zip
-        unzip xz-5.8.1-windows.zip
+        unzip -q xz-5.8.1-windows.zip
         echo "${{ runner.temp }}/xz-5.8.1-windows/bin_x86-64" >> $GITHUB_PATH
 
     - name: Install Qt toolchain
@@ -53,4 +54,4 @@ runs:
         QT6_TOOLCHAIN_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ env.QT6_TOOLCHAIN_TASKID }}/artifacts/public/build/${{ inputs.toolchain-artifact }}
       run: |
         curl -sSL "$QT6_TOOLCHAIN_URL" -o ${{ inputs.toolchain-artifact }}
-        tar xvf ${{ inputs.toolchain-artifact }}
+        tar -xf ${{ inputs.toolchain-artifact }}
