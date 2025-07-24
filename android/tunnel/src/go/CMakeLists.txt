@@ -31,7 +31,7 @@ endif()
 set(ANDROID_API_LEVEL 21)
 
 # Path to the NDK toolchain
-set(NDK_TOOLCHAIN "${ANDROID_NDK}/toolchains/llvm/prebuilt/${CMAKE_HOST_SYSTEM_NAME}-x86_64")
+set(NDK_TOOLCHAIN "${ANDROID_NDK}/toolchains/llvm/prebuilt/$<LOWER_CASE:${CMAKE_HOST_SYSTEM_NAME}>-x86_64")
 
 # Set paths explicitly for CGO
 set(CGO_CFLAGS "--sysroot=${NDK_TOOLCHAIN}/sysroot -I${NDK_TOOLCHAIN}/sysroot/usr/include")
