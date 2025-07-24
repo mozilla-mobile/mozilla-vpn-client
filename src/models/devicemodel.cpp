@@ -301,7 +301,8 @@ void DeviceModel::logSerialize(QIODevice* device) {
   out << "SDK Version -> " << AndroidCommons::getSDKVersion() << Qt::endl;
 #endif
 
-  out << "APP Version -> " << QCoreApplication::applicationVersion() << Qt::endl;
+  out << "APP Version -> " << QCoreApplication::applicationVersion()
+      << Qt::endl;
   out << "Build ID -> " << BuildInfo::number << Qt::endl;
   out << "Device ID -> " << Device::uniqueDeviceId() << Qt::endl;
 

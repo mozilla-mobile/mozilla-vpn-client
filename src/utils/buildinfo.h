@@ -14,6 +14,6 @@ extern const qint64 timestamp;
 extern const QString commit;
 extern const QString number;
 
-};
+};  // namespace BuildInfo
 
 #endif  // BUILDINFO_H

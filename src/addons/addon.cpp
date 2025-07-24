@@ -197,7 +197,8 @@ QList<ConditionCallback> s_conditionCallbacks{
     {"min_client_version",
      [](const QJsonValue& value) -> bool {
        auto minVersion = QVersionNumber::fromString(value.toString());
-       auto appVersion = QVersionNumber::fromString(QCoreApplication::applicationVersion());
+       auto appVersion =
+           QVersionNumber::fromString(QCoreApplication::applicationVersion());
 
        if (!minVersion.isNull() && (minVersion > appVersion)) {
          logger.info() << "Min version is" << minVersion.toString() << "curent"
@@ -215,7 +216,8 @@ QList<ConditionCallback> s_conditionCallbacks{
     {"max_client_version",
      [](const QJsonValue& value) -> bool {
        auto maxVersion = QVersionNumber::fromString(value.toString());
-       auto appVersion = QVersionNumber::fromString(QCoreApplication::applicationVersion());
+       auto appVersion =
+           QVersionNumber::fromString(QCoreApplication::applicationVersion());
 
        if (!maxVersion.isNull() && (maxVersion < appVersion)) {
          logger.info() << "Max version is" << maxVersion.toString() << "curent"

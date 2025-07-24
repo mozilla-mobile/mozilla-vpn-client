@@ -4,11 +4,11 @@
 
 #include <QCoreApplication>
 
+#include "buildinfo.h"
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "platforms/windows/windowsutils.h"
 #include "stdio.h"
-#include "buildinfo.h"
 
 #ifdef MZ_WINDOWS
 #  include <windows.h>

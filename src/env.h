@@ -5,8 +5,8 @@
 #ifndef ENV_H
 #define ENV_H
 
-#include "constants.h"
 #include "buildinfo.h"
+#include "constants.h"
 
 #ifdef MZ_WINDOWS
 #  include "platforms/windows/windowsutils.h"
