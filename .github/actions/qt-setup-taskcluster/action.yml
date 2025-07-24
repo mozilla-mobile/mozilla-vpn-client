@@ -9,6 +9,10 @@ inputs:
     description: 'Taskcluster toolchain alias'
     required: false
     default: ${{ runner.os == 'Windows' && 'qt-windows-x86_64-6.6' || 'qt-macos-6.6' }}
+  cache:
+    description: 'Cache Qt toolchain artifacts'
+    required: false
+    default: ${{ runner.os == 'Windows' }}
 runs:
   using: "composite"
   steps:
@@ -27,20 +31,19 @@ runs:
 
         echo "taskid=${TASKID}" >> $GITHUB_OUTPUT
         echo "filename=${NAME}" >> $GITHUB_OUTPUT
-        echo "url=" >> $GITHUB_OUTPUT
 
     # Tar extraction is painfully slow on Windows, so use a cache instead.
-    - name: Cache Qt for Windows
+    - name: Cache Qt toolchain
       uses: actions/cache/restore@v4
-      id: qt-windows-cache
-      if: ${{ runner.os == 'Windows' }}
+      id: qt-toolchain-cache
+      if: ${{ inputs.cache == 'true' }}
       with:
-        path: ${{ inputs.dest }}/qt-windows
-        key: qt-windows-${{ steps.resolve.outputs.taskid }}
+        path: ${{ inputs.dest }}
+        key: qt-toolchain-${{ steps.resolve.outputs.taskid }}
         enableCrossOsArchive: true
 
     - name: Install xzutils for Windows
-      if: ${{ runner.os == 'Windows' && steps.qt-windows-cache.outputs.cache-hit != 'true' }}
+      if: ${{ runner.os == 'Windows' && steps.qt-toolchain-cache.outputs.cache-hit != 'true' }}
       shell: bash
       working-directory: ${{ runner.temp }}
       env:
@@ -51,19 +54,22 @@ runs:
         echo "${{ runner.temp }}/xz-5.8.1-windows/bin_x86-64" >> $GITHUB_PATH
 
     - name: Install Qt toolchain
-      if: ${{ runner.os != 'Windows' || steps.qt-windows-cache.outputs.cache-hit != 'true' }}
+      if: ${{ inputs.cache != 'true' || steps.qt-toolchain-cache.outputs.cache-hit != 'true' }}
+      id: qt-toolchain-install
       working-directory: ${{ inputs.dest }}
       shell: bash
       env:
         QT6_TOOLCHAIN_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts/${{ steps.resolve.outputs.filename }}
       run: |
-        curl -sSL "$QT6_TOOLCHAIN_URL" -o $(basename ${{ steps.resolve.outputs.filename }})
-        tar -xf $(basename ${{ steps.resolve.outputs.filename }})
+        FILENAME=$(basename "${QT6_TOOLCHAIN_URL}")
+        curl -sSL "${QT6_TOOLCHAIN_URL}" -o ${FILENAME}
+        tar -xf ${FILENAME}
+        echo "cache-path=$(tar -tf ${FILENAME} | head -1 | grep -o '^[^/]*')" >> $GITHUB_OUTPUT
 
-    - name: Save Qt for Windows
+    - name: Save Qt toolchain
       uses: actions/cache/save@v4
-      if: ${{ runner.os == 'Windows' }}
+      if: ${{ inputs.cache == 'true' && steps.qt-toolchain-cache.outputs.cache-hit != 'true'}}
       with:
-        path: ${{ inputs.dest }}/qt-windows
-        key: qt-windows-${{ steps.resolve.outputs.taskid }}
+        path: ${{ inputs.dest }}/${{ steps.qt-toolchain-install.outputs.cache-path }}
+        key: qt-toolchain-${{ steps.resolve.outputs.taskid }}
         enableCrossOsArchive: true
