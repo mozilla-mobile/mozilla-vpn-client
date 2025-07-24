@@ -73,7 +73,7 @@ runs:
 
     - name: Save Qt toolchain
       uses: actions/cache/save@v4
-      if: ${{ inputs.cache == 'true' && steps.qt-toolchain-cache.outputs.cache-hit != 'true'}}
+      if: ${{ inputs.cache == 'true' && github.event_name == 'push' && steps.qt-toolchain-cache.outputs.cache-hit != 'true'}}
       with:
         path: ${{ inputs.dest }}/${{ steps.resolve.outputs.cache-path }}
         key: qt-toolchain-${{ steps.resolve.outputs.taskid }}
