@@ -25,8 +25,6 @@ conda-unpack
 unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER
 env
 
-ls /builds/worker/fetches/android_home/ndk/23.1.7779620/toolchains/llvm/prebuilt/Linux-x86_64/bin/
-
 
 ./scripts/android/cmake.sh -d
 
