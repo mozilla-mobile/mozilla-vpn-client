@@ -295,7 +295,26 @@ MZViewBase {
                 Layout.fillWidth: true
                 visible: MZEnv.buildCommit.length > 0
 
-                text: "Commit: " + MZEnv.buildCommit
+                text: "Commit: " + MZEnv.buildCommit.slice(0,7)
+
+                MZIcon {
+                    anchors.right: parent.right
+                    sourceSize.height: MZTheme.theme.iconSize
+                    sourceSize.width: MZTheme.theme.iconSize
+
+                    source: MZAssetLookup.getImageSource("ExternalLinkGrayscale")
+                    fillMode: Image.PreserveAspectFit
+                }
+
+                MZMouseArea {
+                    enabled: parent.visible
+                    anchors.fill: parent
+                    hoverEnabled: enabled
+
+                    onMouseAreaClicked: () => {
+                        MZUrlOpener.openUrl("http://github.com/mozilla-mobile/mozilla-vpn-client/commit/" + MZEnv.buildCommit)
+                    }
+                }
             }
 
             MZTextBlock {
