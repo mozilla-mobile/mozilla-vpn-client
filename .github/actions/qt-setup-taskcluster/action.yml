@@ -63,8 +63,8 @@ runs:
       run: |
         FILENAME=$(basename "${QT6_TOOLCHAIN_URL}")
         curl -sSL "${QT6_TOOLCHAIN_URL}" -o ${FILENAME}
-        tar -xf ${FILENAME}
-        echo "cache-path=$(tar -tf ${FILENAME} | head -1 | grep -o '^[^/]*')" >> $GITHUB_OUTPUT
+        tar -xvf ${FILENAME} > "${{ runner.temp }}/manifest-${FILENAME}"
+        echo "cache-path=$(head -1 "${{ runner.temp }}/manifest-${FILENAME}" | grep -o '^[^/]*')" >> $GITHUB_OUTPUT
 
     - name: Save Qt toolchain
       uses: actions/cache/save@v4
