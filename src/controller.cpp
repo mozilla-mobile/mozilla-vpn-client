@@ -591,9 +591,9 @@ bool Controller::silentSwitchServers(
     selectionPolicy = RandomizeServerSelection;
   }
 
-  clearRetryCounter();
-
   logger.debug() << "Switching to a different server";
+  emit recordDataTransferTelemetry();
+  clearRetryCounter();
 
   setState(StateSilentSwitching);
   activateInternal(DoNotForceDNSPort, selectionPolicy, m_initiator);
@@ -842,6 +842,7 @@ bool Controller::switchServers(const ServerData& serverData) {
 
   logger.debug() << "Switching to a different server";
   m_nextServerData = serverData;
+  emit recordDataTransferTelemetry();
   clearRetryCounter();
 
   // Special case - if we switch servers while connecting, then we have yet to
@@ -1009,12 +1010,10 @@ bool Controller::deactivate(ActivationPrincipal user) {
     m_portalDetected = false;
   }
 
-  if (m_state == StateOn || m_state == StateOnPartial ||
-      m_state == StateConfirming || m_state == StateConnecting) {
+  if (m_state != StateSwitching && m_state != StateSilentSwitching) {
     setState(StateDisconnecting);
+    emit recordDataTransferTelemetry();
   }
-
-  emit recordDataTransferTelemetry();
 
   m_pingCanary.stop();
   m_handshakeTimer.stop();
