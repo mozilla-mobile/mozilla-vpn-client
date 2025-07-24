@@ -103,15 +103,9 @@ if(NOT DEFINED BUILD_ID)
         execute_process(
             OUTPUT_VARIABLE BUILD_ID
             OUTPUT_STRIP_TRAILING_WHITESPACE 
-            COMMAND git -C ${CMAKE_SOURCE_DIR} log --format=%cd --date=format:${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M HEAD~1..HEAD
+            COMMAND git -C ${CMAKE_SOURCE_DIR} log -1 --format=%cd --date=format:${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M HEAD   
         )
-        execute_process(
-            OUTPUT_VARIABLE BUILD_COMMIT
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            COMMAND git -C ${CMAKE_SOURCE_DIR} rev-parse HEAD
-        )
-    endif()
-    if(NOT BUILD_ID)
+    else()
         string(TIMESTAMP BUILD_ID ${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M)
     endif()
     message("Generated BUILD_ID: ${BUILD_ID}")
