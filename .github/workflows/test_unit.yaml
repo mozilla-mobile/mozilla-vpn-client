@@ -26,7 +26,7 @@ jobs:
       - name: Install dependences
         run: |
           sudo apt-get update
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control) ccache
+          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
 
       - uses: actions/setup-python@v5
         with:
@@ -34,32 +34,24 @@ jobs:
           cache: "pip"
       - run: pip install -r requirements.txt
 
-      - name: Setup compiler cache
-        uses: actions/cache/restore@v4
-        if: ${{ github.event_name == 'pull_request' }}
-        with:
-          path: ~/.cache/ccache
-          key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.event.pull_request.base.sha }}
-
       - name: Building tests
         shell: bash
         run: |
-          mkdir -p build-${{ runner.os }}
-          cmake -S $(pwd) -B build-${{ runner.os }} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
-          cmake --build build-${{ runner.os }} --target build_tests
+          mkdir -p build
+          cmake -S $(pwd) -B build -GNinja
+          cmake --build build --target build_tests
 
       - name: Running native messaging tests
         shell: bash
-        run: ctest -L nativemessaging --test-dir build-${{ runner.os }} --output-on-failure
+        run: ctest -L nativemessaging --test-dir build --output-on-failure
 
       - name: Running QML tests
         shell: bash
-        run: ctest -L qml --test-dir build-${{ runner.os }} --output-on-failure
+        run: ctest -L qml --test-dir build --output-on-failure
 
       - name: Running unit tests
         shell: bash
-        run: ctest -L unit --test-dir build-${{ runner.os }} --output-on-failure
+        run: ctest -L unit --test-dir build --output-on-failure
 
   macos-unit-tests:
     runs-on: macos-latest
