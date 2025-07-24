@@ -21,8 +21,15 @@ runs:
       env:
         QT6_INDEX_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.${{ inputs.toolchain-alias }}.latest/artifacts/public/build/${{ inputs.toolchain-artifact }}
       run: |
-        echo QT6_TOOLCHAIN_URL=$(curl -sS --etag-save "${{ runner.temp }}/qt-artifact-etag.txt" -w "%header{location}" "${QT6_INDEX_URL}" -o /dev/null) >> $GITHUB_ENV
-        echo QT6_TOOLCHAIN_ETAG=$(cat "${{ runner.temp }}/qt-artifact-etag.txt") >> $GITHUB_ENV
+        LOCATION=$(curl -sS -w "%header{location}" "${QT6_INDEX_URL}" -o /dev/null)
+        echo "QT6_TOOLCHAIN_URL=${LOCATION}" >> $GITHUB_ENV
+
+        for SEG in $(echo "${LOCATION}" | tr '/' ' '); do
+          if [ "${PSEG}" = "task" ]; then
+            echo "QT6_TOOLCHAIN_TASKID=${SEG}" >> $GITHUB_ENV
+          fi
+          PSEG=${SEG}
+        done
 
     # Tar extraction is painfully slow on Windows, so use a cache instead.
     - name: Cache Qt for Windows
@@ -31,7 +38,7 @@ runs:
       if: ${{ runner.os == 'Windows' }}
       with:
         path: ${{ inputs.dest }}/qt-windows
-        key: qt-windows-${{ env.QT6_TOOLCHAIN_ETAG }}
+        key: qt-windows-${{ env.QT6_TOOLCHAIN_TASKID }}
 
     - name: Install xzutils for Windows
       if: ${{ runner.os == 'Windows' && steps.qt-windows-cache.outputs.cache-hit != 'true' }}
