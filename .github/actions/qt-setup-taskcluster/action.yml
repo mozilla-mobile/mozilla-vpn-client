@@ -58,7 +58,8 @@ runs:
 
     - name: Save Qt for Windows
       uses: actions/cache/save@v4
-      if: ${{ runner.os == 'Windows' && github.event_name == 'pull_request' }}
+      if: ${{ runner.os == 'Windows' }}
       with:
         path: ${{ inputs.dest }}/qt-windows
         key: qt-windows-${{ env.QT6_TOOLCHAIN_TASKID }}
+        enableCrossOsArchive: true
