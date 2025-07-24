@@ -39,13 +39,11 @@ void Controller::connected(const QString& pubkey) { Q_UNUSED(pubkey); }
 
 void Controller::disconnected() {}
 
-void Controller::timerTimeout() {}
-
 bool Controller::processNextStep() { return false; }
 
 void Controller::setState(State) {}
 
-qint64 Controller::time() const { return 42; }
+qint64 Controller::connectionTimestamp() const { return 42; }
 
 void Controller::statusUpdated(const QString&, const QString&, uint64_t,
                                uint64_t) {}

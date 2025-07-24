@@ -38,8 +38,7 @@ void WasmController::activate(const InterfaceConfig& config,
                             Q_ARG(QString, QString::fromUtf8(jsBlob)));
 }
 
-void WasmController::deactivate(Controller::Reason reason) {
-  Q_UNUSED(reason);
+void WasmController::deactivate() {
   QMetaObject::invokeMethod(m_mock, "deactivate", Qt::QueuedConnection);
 }
 
