@@ -8,16 +8,6 @@ buildscript {
     }
     ext{
         groupName = 'org.mozilla.firefox.vpn'
-        try{
-            if (qtAndroidDir) {
-                print("Android Location for wg")
-            }
-
-            WG_TOOLS_DIR= "../../../../../3rdparty/wireguard-tools"
-        } catch (Exception ignored) {
-            // This is checked from <proj>/android/daemon/tunnel
-            WG_TOOLS_DIR= "../../../3rdparty/wireguard-tools"
-        }
     }
 
     dependencies {
@@ -69,12 +59,6 @@ android {
         jvmTarget = '1.8'
     }
 
-    externalNativeBuild {
-        cmake {
-            path 'tunnel/CMakeLists.txt'
-        }
-    }
-
     sourceSets {
         main {
             kotlin.srcDirs = [
@@ -86,26 +70,10 @@ android {
     buildTypes {
         debug {
             minifyEnabled false
-            externalNativeBuild {
-                cmake {
-                    arguments "-DANDROID_PACKAGE_NAME=${groupName}.debug",
-                              "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}",
-                              "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}",
-                              "-DANDROID_MIN_SDK_VERSION=${Config.minSdkVersion}"
-                }
-            }
         }
 
         release {
             minifyEnabled false
-            externalNativeBuild {
-                cmake {
-                    arguments "-DANDROID_PACKAGE_NAME=${groupName}",
-                              "-DGRADLE_USER_HOME=${project.gradle.gradleUserHomeDir}",
-                              "-DCMAKE_WG_TOOLS_DIR=${WG_TOOLS_DIR}",
-                              "-DANDROID_MIN_SDK_VERSION=${Config.minSdkVersion}"
-                }
-            }
         }
     }
 }
@@ -123,4 +91,5 @@ dependencies {
 
     implementation project(path: ':qtglean')
     implementation project(path: ':common')
+    implementation project(path: ':tunnel')
 }

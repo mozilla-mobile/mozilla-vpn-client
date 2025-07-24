@@ -24,6 +24,8 @@ conda-unpack
 # on a "normal" env this is unset - so let's do that too.
 unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER
 env
+
+
 ./scripts/android/cmake.sh -d
 
 # Artifacts should be placed here!
