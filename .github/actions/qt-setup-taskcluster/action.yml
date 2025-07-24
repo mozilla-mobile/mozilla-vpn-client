@@ -32,13 +32,19 @@ runs:
         echo "taskid=${TASKID}" >> $GITHUB_OUTPUT
         echo "filename=${NAME}" >> $GITHUB_OUTPUT
 
-    # Tar extraction is painfully slow on Windows, so use a cache instead.
+        # The cache path depends on the directory path inside the archive.
+        # To find it, lets download the first 4kB of the archive and list its
+        # contents. Lucky for us, tar is streamable so this just kinda works
+        # even though the archive is truncated.
+        curl -sSL -r0-4096 "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${NAME}" -o qt-toolchain-head.tar.xz
+        echo "cache-path=$(tar -tf qt-toolchain-head.tar.xz 2>/dev/null | head -1 | grep -o '^[^/]*')" >> $GITHUB_OUTPUT
+
     - name: Cache Qt toolchain
       uses: actions/cache/restore@v4
       id: qt-toolchain-cache
       if: ${{ inputs.cache == 'true' }}
       with:
-        path: ${{ inputs.dest }}
+        path: ${{ inputs.dest }}/${{ steps.resolve.outputs.cache-path }}
         key: qt-toolchain-${{ steps.resolve.outputs.taskid }}
         enableCrossOsArchive: true
 
@@ -64,12 +70,11 @@ runs:
         FILENAME=$(basename "${QT6_TOOLCHAIN_URL}")
         curl -sSL "${QT6_TOOLCHAIN_URL}" -o ${FILENAME}
         tar -xvf ${FILENAME} > "${{ runner.temp }}/manifest-${FILENAME}"
-        echo "cache-path=$(head -1 "${{ runner.temp }}/manifest-${FILENAME}" | grep -o '^[^/]*')" >> $GITHUB_OUTPUT
 
     - name: Save Qt toolchain
       uses: actions/cache/save@v4
       if: ${{ inputs.cache == 'true' && steps.qt-toolchain-cache.outputs.cache-hit != 'true'}}
       with:
-        path: ${{ inputs.dest }}/${{ steps.qt-toolchain-install.outputs.cache-path }}
+        path: ${{ inputs.dest }}/${{ steps.resolve.outputs.cache-path }}
         key: qt-toolchain-${{ steps.resolve.outputs.taskid }}
         enableCrossOsArchive: true
