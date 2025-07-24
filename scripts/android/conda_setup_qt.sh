@@ -13,9 +13,7 @@ QT_MINOR=$(echo "$QT_VERSION" | cut -d. -f2)
 QT_PATCH=$(echo "$QT_VERSION" | cut -d. -f3)
 
 if [[ "$(uname)" == "Linux" ]]; then
-    echo $QT_MAJOR
-    echo $QT_MINOR
-    echo $QT_PATCH
+    HOST="linux"
     # Ensure QT_MINOR is parsed as a number before comparison
     QT_MINOR_NUM=$((10#$QT_MINOR))
     if [[ "$QT_MINOR_NUM" -ge 8 ]]; then
@@ -25,7 +23,6 @@ if [[ "$(uname)" == "Linux" ]]; then
         HOST_TARGET="linux desktop ${QT_VERSION} gcc_64"
         HOST_FOLDER_NAME="gcc_64"
     fi
-    HOST="linux"
 elif [[ "$(uname)" == "Darwin" ]]; then
     HOST_TARGET="mac desktop ${QT_VERSION}"
     HOST="mac"
@@ -50,6 +47,8 @@ for QT_HOST_DIR in $(find ${QT_DIR} -type d -name "${HOST_FOLDER_NAME}"); do
     find ${QT_HOST_DIR} -type f -name 'lib*.a' -delete
 done
 
+
+echo "python -m aqt install-qt --outputdir $QT_DIR $HOST android ${QT_VERSION} ${ANDROID_ARCH} -m all"
 # QT Android Tools
 if ! python -m aqt install-qt --outputdir $QT_DIR $HOST android ${QT_VERSION} ${ANDROID_ARCH} -m all; then
     echo "Whoops something went wrong. "
