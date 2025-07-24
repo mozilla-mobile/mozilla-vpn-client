@@ -27,13 +27,13 @@ runs:
 
     # Tar extraction is painfully slow on Windows, so use a cache instead.
     - name: Cache Qt for Windows
-      uses: actions/cache@v4
+      uses: actions/cache/restore@v4
       id: qt-windows-cache
       if: ${{ runner.os == 'Windows' }}
       with:
         path: ${{ inputs.dest }}/qt-windows
         key: qt-windows-${{ env.QT6_TOOLCHAIN_TASKID }}
-        lookup-only: ${{ github.event_name == 'pull_request' }}
+        enableCrossOsArchive: true
 
     - name: Install xzutils for Windows
       if: ${{ runner.os == 'Windows' && steps.qt-windows-cache.outputs.cache-hit != 'true' }}
@@ -55,3 +55,10 @@ runs:
       run: |
         curl -sSL "$QT6_TOOLCHAIN_URL" -o ${{ inputs.toolchain-artifact }}
         tar -xf ${{ inputs.toolchain-artifact }}
+
+    - name: Save Qt for Windows
+      uses: actions/cache/save@v4
+      if: ${{ runner.os == 'Windows' && github.event_name == 'pull_request' }}
+      with:
+        path: ${{ inputs.dest }}/qt-windows
+        key: qt-windows-${{ env.QT6_TOOLCHAIN_TASKID }}

@@ -53,12 +53,11 @@ jobs:
           activate-environment: vpn
 
       - name: Setup compiler cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ccache
-          key: ccache-macos-${{ github.sha }}
-          lookup-only: github.event_name == 'pull_request'
-          restore-keys: ccache-macos-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
+          key: ccache-macos-${{ runner.arch }}-${{ github.sha }}
+          restore-keys: ccache-macos-${{ runner.arch }}-${{ github.event.pull_request.base.sha }}
 
       - name: Setup Qt for macOS
         uses: ./.github/actions/qt-setup-taskcluster
@@ -99,6 +98,13 @@ jobs:
           path: |
             build/
             !build/cmake/
+
+      - name: Save compiler cache
+        uses: actions/cache/save@v4
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          path: ~/.cache/ccache
+          key: ccache-macos-${{ runner.arch }}-${{ github.sha }}
 
       - name: Generate tasklist
         id: testGen

@@ -42,12 +42,11 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Setup compiler cache
-        uses: actions/cache@v4
+        uses: actions/cache/restore@v4
         with:
           path: ~/.cache/ccache
           key: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.sha }}
-          lookup-only: github.event_name == 'pull_request'
-          restore-keys: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
+          restore-keys: ccache-${{ runner.os }}-${{ runner.arch }}-${{ github.event.pull_request.base.sha }}
 
       - name: Compile test client
         shell: bash
@@ -65,6 +64,13 @@ jobs:
             build-${{ runner.os }}/*.cmake
             build-${{ runner.os }}/src/mozillavpn
             build-${{ runner.os }}/tests/functional
+
+      - name: Save compiler cache
+        uses: actions/cache/save@v4
+        if: ${{ github.event_name != 'pull_request' }}
+        with:
+          path: ~/.cache/ccache
+          key: ccache-linux-${{ runner.arch }}-${{ github.sha }}
 
       - name: Generate tasklist
         id: enumerate
