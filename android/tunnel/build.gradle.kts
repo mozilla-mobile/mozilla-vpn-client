@@ -1,8 +1,8 @@
 // tunnel/build.gradle.kts
 
-import java.util.Properties
-import java.io.FileInputStream
 import org.gradle.api.Project
+import java.io.FileInputStream
+import java.util.Properties
 
 plugins {
     id("com.android.library")
@@ -16,8 +16,13 @@ fun getGoEnvArgsForNdkBuild(project: Project): Map<String, String> {
     val localProperties = Properties()
     val localPropertiesFile = project.rootProject.file("local.properties")
     if (localPropertiesFile.isFile) {
-        try { FileInputStream(localPropertiesFile).use { localProperties.load(it) } }
-        catch (e: Exception) { project.logger.warn("Could not read local.properties: ${e.message}") }
+        try {
+            FileInputStream(localPropertiesFile).use { localProperties.load(it) }
+        } catch (
+            e: Exception,
+        ) {
+            project.logger.warn("Could not read local.properties: ${e.message}")
+        }
     }
 
     // Only need the Go executable path to pass to Make
@@ -25,13 +30,18 @@ fun getGoEnvArgsForNdkBuild(project: Project): Map<String, String> {
 
     // Determine Go executable path (respecting property > PATH > default 'go')
     val goExeName = "go" + if (System.getProperty("os.name").toLowerCase().contains("windows")) ".exe" else ""
-    val goExePath = if (!goPathProp.isNullOrBlank()) {
-        project.file(goPathProp).resolve(goExeName).takeIf { it.canExecute() }?.absolutePath
-    } else {
-        // Check PATH - Note: This check isn't perfect from Gradle config phase
-        // Rely on Make to find 'go' on PATH if property isn't set/valid
-        null
-    } ?: "go" // Default to 'go' if property invalid or not found on PATH easily
+    val goExePath =
+        if (!goPathProp.isNullOrBlank()) {
+            project
+                .file(goPathProp)
+                .resolve(goExeName)
+                .takeIf { it.canExecute() }
+                ?.absolutePath
+        } else {
+            // Check PATH - Note: This check isn't perfect from Gradle config phase
+            // Rely on Make to find 'go' on PATH if property isn't set/valid
+            null
+        } ?: "go" // Default to 'go' if property invalid or not found on PATH easily
 
     args["GO_EXE"] = goExePath // Pass the resolved path or just 'go'
 
@@ -40,19 +50,17 @@ fun getGoEnvArgsForNdkBuild(project: Project): Map<String, String> {
     return args
 }
 
-
 android {
     compileSdk = Config.compileSdkVersion
     ndkVersion = Config.ndkVersion
-    
+
     namespace = "org.mozilla.firefox.vpn.tunnel"
-    
+
     defaultConfig {
         minSdk = 24
         targetSdk = Config.targetSdkVersion
-    
 
-        externalNativeBuild{
+        externalNativeBuild {
             cmake {
                 targets.add("go_shared_lib")
             }
@@ -96,4 +104,3 @@ android {
 dependencies {
     implementation("androidx.core:core-ktx:1.12.0")
 }
-
