@@ -64,20 +64,11 @@ jobs:
         with:
           dest: ${{ github.workspace }}/3rdparty
 
-      - name: Cache Qt6 host tools
-        id: qt-tools-cache
-        uses: actions/cache@v4
+      - name: Setup Qt host tools
+        uses: ./.github/actions/qt-setup-taskcluster
         with:
-          path: 3rdparty/qt-host-tools
-          key: qt-tools-${{ env.QT_VERSION }}
-
-      - name: Install Qt6 host tools
-        if: steps.qt-tools-cache.outputs.cache-hit != 'true'
-        run: |
-          python3 -m aqt install-qt -O 3rdparty/qt-aqt-install linux desktop ${QT_VERSION} --archives icu qtbase qtdeclarative qttools
-          mv 3rdparty/qt-aqt-install/${QT_VERSION}/gcc_64/ 3rdparty/qt-host-tools
-          rm -rf 3rdparty/qt-aqt-install
-          find 3rdparty/qt-host-tools/lib -name '*.a' -delete
+          dest: ${{ github.workspace }}/3rdparty
+          toolchain-alias: qt-tools
 
       - name: Compile test client
         run: |

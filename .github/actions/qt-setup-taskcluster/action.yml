@@ -9,10 +9,6 @@ inputs:
     description: 'Taskcluster toolchain alias'
     required: false
     default: ${{ runner.os == 'Windows' && 'qt-windows-x86_64-6.6' || 'qt-macos-6.6' }}
-  toolchain-artifact:
-    description: 'Taskcluster toolchain artifact'
-    required: false
-    default: ${{ runner.os == 'Windows' && 'qt6_win.tar.xz' || 'qt6_macos.tar.xz' }}
 runs:
   using: "composite"
   steps:
@@ -23,7 +19,14 @@ runs:
         QT6_TOOLCHAIN_INDEX: mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.${{ inputs.toolchain-alias }}.latest
       run: |
         curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/${QT6_TOOLCHAIN_INDEX}" -o qt-toolchain-task.json
-        echo "QT6_TOOLCHAIN_TASKID=$(jq -r '.taskId' qt-toolchain-task.json)" >> $GITHUB_ENV
+        TASKID=$(jq -r '.taskId' qt-toolchain-task.json)
+
+        curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts" -o qt-toolchain-artifacts.json
+        NAME=$(jq -r '.artifacts[].name | select(endswith(".tar.xz"))' qt-toolchain-artifacts.json)
+
+        echo "QT6_TOOLCHAIN_TASKID=${TASKID}" >> $GITHUB_ENV
+        echo "QT6_TOOLCHAIN_FILE=$(basename ${NAME})" >> $GITHUB_ENV
+        echo "QT6_TOOLCHAIN_URL=https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${NAME}" >> $GITHUB_ENV
 
     # Tar extraction is painfully slow on Windows, so use a cache instead.
     - name: Cache Qt for Windows
@@ -50,11 +53,9 @@ runs:
       if: ${{ runner.os != 'Windows' || steps.qt-windows-cache.outputs.cache-hit != 'true' }}
       working-directory: ${{ inputs.dest }}
       shell: bash
-      env:
-        QT6_TOOLCHAIN_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ env.QT6_TOOLCHAIN_TASKID }}/artifacts/public/build/${{ inputs.toolchain-artifact }}
       run: |
-        curl -sSL "$QT6_TOOLCHAIN_URL" -o ${{ inputs.toolchain-artifact }}
-        tar -xf ${{ inputs.toolchain-artifact }}
+        curl -sSL "$QT6_TOOLCHAIN_URL" -o ${QT6_TOOLCHAIN_FILE}
+        tar -xf ${QT6_TOOLCHAIN_FILE}
 
     - name: Save Qt for Windows
       uses: actions/cache/save@v4
