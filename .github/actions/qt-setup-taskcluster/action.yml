@@ -13,6 +13,7 @@ runs:
   using: "composite"
   steps:
     - name: Resolve artifact task
+      id: resolve
       shell: bash
       working-directory: ${{ runner.temp }}
       env:
@@ -24,9 +25,9 @@ runs:
         curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts" -o qt-toolchain-artifacts.json
         NAME=$(jq -r '.artifacts[].name | select(endswith(".tar.xz"))' qt-toolchain-artifacts.json)
 
-        echo "QT6_TOOLCHAIN_TASKID=${TASKID}" >> $GITHUB_ENV
-        echo "QT6_TOOLCHAIN_FILE=$(basename ${NAME})" >> $GITHUB_ENV
-        echo "QT6_TOOLCHAIN_URL=https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${NAME}" >> $GITHUB_ENV
+        echo "taskid=${TASKID}" >> $GITHUB_OUTPUT
+        echo "filename=${NAME}" >> $GITHUB_OUTPUT
+        echo "url=" >> $GITHUB_OUTPUT
 
     # Tar extraction is painfully slow on Windows, so use a cache instead.
     - name: Cache Qt for Windows
@@ -35,7 +36,7 @@ runs:
       if: ${{ runner.os == 'Windows' }}
       with:
         path: ${{ inputs.dest }}/qt-windows
-        key: qt-windows-${{ env.QT6_TOOLCHAIN_TASKID }}
+        key: qt-windows-${{ steps.resolve.outputs.taskid }}
         enableCrossOsArchive: true
 
     - name: Install xzutils for Windows
@@ -53,14 +54,16 @@ runs:
       if: ${{ runner.os != 'Windows' || steps.qt-windows-cache.outputs.cache-hit != 'true' }}
       working-directory: ${{ inputs.dest }}
       shell: bash
+      env:
+        QT6_TOOLCHAIN_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts/${{ steps.resolve.outputs.filename }}
       run: |
-        curl -sSL "$QT6_TOOLCHAIN_URL" -o ${QT6_TOOLCHAIN_FILE}
-        tar -xf ${QT6_TOOLCHAIN_FILE}
+        curl -sSL "$QT6_TOOLCHAIN_URL" -o $(basename ${{ steps.resolve.outputs.filename }})
+        tar -xf $(basename ${{ steps.resolve.outputs.filename }})
 
     - name: Save Qt for Windows
       uses: actions/cache/save@v4
       if: ${{ runner.os == 'Windows' }}
       with:
         path: ${{ inputs.dest }}/qt-windows
-        key: qt-windows-${{ env.QT6_TOOLCHAIN_TASKID }}
+        key: qt-windows-${{ steps.resolve.outputs.taskid }}
         enableCrossOsArchive: true
