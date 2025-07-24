@@ -16,20 +16,14 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Resolve artifact URL
+    - name: Resolve artifact task
       shell: bash
+      working-directory: ${{ runner.temp }}
       env:
-        QT6_INDEX_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.${{ inputs.toolchain-alias }}.latest/artifacts/public/build/${{ inputs.toolchain-artifact }}
+        QT6_TOOLCHAIN_INDEX: mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.${{ inputs.toolchain-alias }}.latest
       run: |
-        LOCATION=$(curl -sS -w "%header{location}" "${QT6_INDEX_URL}" -o /dev/null)
-        echo "QT6_TOOLCHAIN_URL=${LOCATION}" >> $GITHUB_ENV
-
-        for SEG in $(echo "${LOCATION}" | tr '/' ' '); do
-          if [ "${PSEG}" = "task" ]; then
-            echo "QT6_TOOLCHAIN_TASKID=${SEG}" >> $GITHUB_ENV
-          fi
-          PSEG=${SEG}
-        done
+        curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/${QT6_TOOLCHAIN_INDEX}" -o qt-toolchain-task.json
+        echo "QT6_TOOLCHAIN_TASKID=$(jq -r '.taskId' qt-toolchain-task.json)" >> $GITHUB_ENV
 
     # Tar extraction is painfully slow on Windows, so use a cache instead.
     - name: Cache Qt for Windows
@@ -55,6 +49,8 @@ runs:
       if: ${{ runner.os != 'Windows' || steps.qt-windows-cache.outputs.cache-hit != 'true' }}
       working-directory: ${{ inputs.dest }}
       shell: bash
+      env:
+        QT6_TOOLCHAIN_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ env.QT6_TOOLCHAIN_TASKID }}/artifacts/public/build/${{ inputs.toolchain-artifact }}
       run: |
         curl -sSL "$QT6_TOOLCHAIN_URL" -o ${{ inputs.toolchain-artifact }}
         tar xvf ${{ inputs.toolchain-artifact }}
