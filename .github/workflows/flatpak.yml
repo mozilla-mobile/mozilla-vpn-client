@@ -37,6 +37,7 @@ jobs:
         with:
           bundle: mozillavpn.flatpak
           manifest-path: linux/flatpak/org.mozilla.vpn.yml
+          cache: ${{ github.event_name == 'push' }}
           cache-key: flatpak-builder-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
 
       - name: Run post-build linters
