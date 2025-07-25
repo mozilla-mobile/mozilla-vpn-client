@@ -4,6 +4,23 @@
 
 string(TIMESTAMP BUILD_TIMESTAMP %s)
 
+# Find the cmake cache and load values from it
+while(IS_DIRECTORY ${CMAKE_BINARY_DIR})
+    if(EXISTS ${CMAKE_BINARY_DIR}/CMakeCache.txt)
+        load_cache(${CMAKE_BINARY_DIR} READ_WITH_PREFIX ""
+            CMAKE_PROJECT_VERSION
+            BUILD_ID
+        )
+        break()
+    endif()
+    
+    cmake_path(GET CMAKE_BINARY_DIR PARENT_PATH NEXT_BINARY_DIR)
+    if (CMAKE_BINARY_DIR STREQUAL NEXT_BINARY_DIR)
+        message(FATAL_ERROR "Failed to find CMakeCache.txt")
+    endif()
+    set(CMAKE_BINARY_DIR ${NEXT_BINARY_DIR})
+endwhile()
+
 execute_process(
     WORKING_DIRECTORY ${CMAKE_CURRENT_LIST_DIR}
     RESULT_VARIABLE GIT_ROOT_EXISTS
