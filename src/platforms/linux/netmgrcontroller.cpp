@@ -36,14 +36,13 @@ Logger logger("NetmgrController");
 NetmgrController::NetmgrController() {
   MZ_COUNT_CTOR(NetmgrController);
 
-  m_client = new QDBusInterface(DBUS_NM_SERVICE, DBUS_NM_PATH,
-                                DBUS_NM_INTERFACE, QDBusConnection::systemBus(),
-                                this);
+  m_client =
+      new QDBusInterface(DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_NM_INTERFACE,
+                         QDBusConnection::systemBus(), this);
 
-  m_settings = new QDBusInterface(DBUS_NM_SERVICE,
-                                  QStringLiteral(DBUS_NM_PATH) + "/Settings",
-                                  nmInterface("Settings"),
-                                  m_client->connection(), this);
+  m_settings = new QDBusInterface(
+      DBUS_NM_SERVICE, QStringLiteral(DBUS_NM_PATH) + "/Settings",
+      nmInterface("Settings"), m_client->connection(), this);
   
   QVariant version = m_client->property("Version");
   m_version = QVersionNumber::fromString(version.toString());
@@ -128,7 +127,7 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
   bool okay = m_settings->callWithCallback(
       "AddConnection2", args, this,
       SLOT(initCompleted(const QDBusObjectPath&, const QVariantMap&)),
-      SLOT(dbusInitError(const QDBusError&))); 
+      SLOT(dbusInitError(const QDBusError&)));
   if (!okay) {
     logger.debug() << "AddConnection2 failed";
     emit initialized(false, false, QDateTime());
@@ -182,7 +181,8 @@ QVariantMap NetmgrController::wgPeer(const InterfaceConfig& config) {
   }
 
   QVariantMap peer;
-  QString endpoint = config.m_serverIpv4AddrIn + ":" + QString::number(config.m_serverPort);
+  QString endpoint =
+      config.m_serverIpv4AddrIn + ":" + QString::number(config.m_serverPort);
   peer.insert("endpoint", endpoint);
   peer.insert("persistent-keepalive", WG_KEEPALIVE_PERIOD);
   peer.insert("public-key", config.m_serverPublicKey);
@@ -191,7 +191,8 @@ QVariantMap NetmgrController::wgPeer(const InterfaceConfig& config) {
 }
 
 // static
-void NetmgrController::setDnsConfig(QVariantMap& map, const QHostAddress& server) {
+void NetmgrController::setDnsConfig(QVariantMap& map,
+                                    const QHostAddress& server) {
   if (server.isNull()) {
     map.remove("dns");
     map.remove("dns-priority");
@@ -264,9 +265,9 @@ void NetmgrController::activate(const InterfaceConfig& config,
   args << serializeConfig();
   args << (uint)IN_MEMORY;
   args << QVariantMap();
-  bool okay = m_remote->callWithCallback("Update2", args, this,
-                                         SLOT(peerCompleted(const QVariantMap&)),
-                                         SLOT(dbusBackendError(const QDBusError&)));
+  bool okay = m_remote->callWithCallback(
+      "Update2", args, this, SLOT(peerCompleted(const QVariantMap&)),
+      SLOT(dbusBackendError(const QDBusError&)));
   if (!okay) {
     logger.debug() << "Update2 failed";
   }
@@ -283,9 +284,10 @@ void NetmgrController::peerCompleted(const QVariantMap& results) {
   args << QDBusObjectPath(m_remote->path());
   args << QDBusObjectPath("/");
   args << QDBusObjectPath("/");
-  bool okay = m_client->callWithCallback("ActivateConnection", args, this,
-                                         SLOT(activateCompleted(const QDBusObjectPath&)),
-                                         SLOT(dbusBackendError(const QDBusError&)));
+  bool okay = m_client->callWithCallback(
+      "ActivateConnection", args, this,
+      SLOT(activateCompleted(const QDBusObjectPath&)),
+      SLOT(dbusBackendError(const QDBusError&)));
   if (!okay) {
     logger.debug() << "ActivateConnection failed";
   }
@@ -387,10 +389,10 @@ void NetmgrController::checkStatus() {
       QString("/sys/class/net/%1/statistics/tx_bytes").arg(WG_INTERFACE_NAME);
   QString rxPath =
       QString("/sys/class/net/%1/statistics/rx_bytes").arg(WG_INTERFACE_NAME);
-  uint64_t txBytes = readSysfsFile(txPath);
-  uint64_t rxBytes = readSysfsFile(rxPath);
-  logger.info() << "Status:" << m_deviceIpv4Address << txBytes << rxBytes;
-  emit statusUpdated(m_serverIpv4Gateway, m_deviceIpv4Address, txBytes, rxBytes);
+  uint64_t tx = readSysfsFile(txPath);
+  uint64_t rx = readSysfsFile(rxPath);
+  logger.info() << "Status:" << m_deviceIpv4Address << tx << rx;
+  emit statusUpdated(m_serverIpv4Gateway, m_deviceIpv4Address, tx, rx);
 }
 
 QDateTime NetmgrController::guessUptime() {

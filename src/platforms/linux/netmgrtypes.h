@@ -16,7 +16,7 @@
 #define DBUS_NM_INTERFACE "org.freedesktop.NetworkManager"
 
 // Metatype registration glue
-template<typename T>
+template <typename T>
 class NetmgrType {
  public:
   operator QVariant() const { return toVariant(); }
@@ -39,7 +39,8 @@ class NetmgrType {
   static inline NetmgrTypeRegistration s_registration;
 };
 
-class NetmgrConfig : public QMap<QString,QVariantMap>, public NetmgrType<NetmgrConfig> {
+class NetmgrConfig : public QMap<QString,QVariantMap>,
+                     public NetmgrType<NetmgrConfig> {
  public:
   friend QDBusArgument& operator<<(QDBusArgument& args,
                                    const NetmgrConfig& data) {
