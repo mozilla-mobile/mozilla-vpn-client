@@ -1,0 +1,81 @@
+name: Setup Qt
+description: Setup Qt from Taskcluster artifacts
+inputs:
+  dest:
+    description: 'Destination path'
+    required: true
+    default: ${{ github.workspace }}/3rdparty
+  toolchain-alias:
+    description: 'Taskcluster toolchain alias'
+    required: false
+    default: ${{ runner.os == 'Windows' && 'qt-windows-x86_64-6.6' || 'qt-macos-6.6' }}
+  cache:
+    description: 'Cache Qt toolchain artifacts'
+    required: false
+    default: ${{ runner.os == 'Windows' }}
+  cmake-env:
+    description: 'Add cmake environment variables'
+    required: false
+    default: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: Resolve artifact task
+      id: resolve
+      shell: bash
+      working-directory: ${{ runner.temp }}
+      env:
+        QT6_TOOLCHAIN_INDEX: mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.${{ inputs.toolchain-alias }}.latest
+      run: |
+        curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/${QT6_TOOLCHAIN_INDEX}" -o qt-toolchain-task.json
+        TASKID=$(jq -r '.taskId' qt-toolchain-task.json)
+
+        curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts" -o qt-toolchain-artifacts.json
+        NAME=$(jq -r '.artifacts[].name | select(endswith(".tar.xz"))' qt-toolchain-artifacts.json)
+
+        echo "taskid=${TASKID}" >> $GITHUB_OUTPUT
+        echo "filename=${NAME}" >> $GITHUB_OUTPUT
+
+        # The toolchain path depends on the directory path inside the archive.
+        # To find it, lets download the first 4kB of the archive and list its
+        # contents. Lucky for us, tar is a streamable format so this kinda works
+        # even though the archive is truncated.
+        curl -sSL -r0-4096 "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${NAME}" -o qt-toolchain-head.tar.xz
+        echo "toolchain-path=$(xzcat qt-toolchain-head.tar.xz 2>/dev/null | tar t 2>/dev/null | head -1 | grep -o '^[^/]*')" >> $GITHUB_OUTPUT
+
+    - name: Cache Qt toolchain
+      uses: actions/cache/restore@v4
+      id: qt-toolchain-cache
+      if: ${{ inputs.cache == 'true' }}
+      with:
+        path: ${{ inputs.dest }}/${{ steps.resolve.outputs.toolchain-path }}
+        key: qt-toolchain-${{ steps.resolve.outputs.taskid }}
+        enableCrossOsArchive: true
+
+    - name: Install Qt toolchain
+      if: ${{ inputs.cache != 'true' || steps.qt-toolchain-cache.outputs.cache-hit != 'true' }}
+      id: qt-toolchain-install
+      working-directory: ${{ inputs.dest }}
+      shell: bash
+      env:
+        QT6_TOOLCHAIN_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts/${{ steps.resolve.outputs.filename }}
+      run: |
+        FILENAME=$(basename "${QT6_TOOLCHAIN_URL}")
+        curl -sSL "${QT6_TOOLCHAIN_URL}" -o ${FILENAME}
+        tar -xf ${FILENAME}
+
+    - name: Setup cmake paths
+      if: ${{ inputs.cmake-env == 'true' }}
+      working-directory: ${{ inputs.dest }}
+      shell: bash
+      run: |
+        echo CMAKE_PREFIX_PATH=$(cd ${{ steps.resolve.outputs.toolchain-path }}/lib/cmake && pwd) >> $GITHUB_ENV
+
+    - name: Save Qt toolchain
+      uses: actions/cache/save@v4
+      if: ${{ inputs.cache == 'true' && github.event_name == 'push' && steps.qt-toolchain-cache.outputs.cache-hit != 'true'}}
+      with:
+        path: ${{ inputs.dest }}/${{ steps.resolve.outputs.toolchain-path }}
+        key: qt-toolchain-${{ steps.resolve.outputs.taskid }}
+        enableCrossOsArchive: true

@@ -38,20 +38,20 @@ jobs:
         shell: bash
         run: |
           mkdir -p build
-          cmake -S . -B $(pwd)/build -GNinja
-          cmake --build $(pwd)/build --target build_tests
+          cmake -S $(pwd) -B build -GNinja
+          cmake --build build --target build_tests
 
       - name: Running native messaging tests
         shell: bash
-        run: ctest -L nativemessaging --test-dir $(pwd)/build --output-on-failure
+        run: ctest -L nativemessaging --test-dir build --output-on-failure
 
       - name: Running QML tests
         shell: bash
-        run: ctest -L qml --test-dir $(pwd)/build --output-on-failure
+        run: ctest -L qml --test-dir build --output-on-failure
 
       - name: Running unit tests
         shell: bash
-        run: ctest -L unit --test-dir $(pwd)/build --output-on-failure
+        run: ctest -L unit --test-dir build --output-on-failure
 
   macos-unit-tests:
     runs-on: macos-latest
@@ -77,16 +77,13 @@ jobs:
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           brew install ninja
 
-      - name: Install Qt6
-        run: |
-          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O mac.zip
-          unzip -a mac.zip
-          sudo mv qt_dist /opt
-          cd ..
+      - name: Setup Qt for macOS
+        uses: ./.github/actions/qt-setup-taskcluster
+        with:
+          dest: ${{ github.workspace }}/3rdparty
 
       - name: Building tests
         run: |
-          export PATH=/opt/qt_dist/bin:$PATH
           mkdir -p build
           cmake -S . -B $(pwd)/build -GNinja
           cmake --build $(pwd)/build --target build_tests
@@ -113,12 +110,10 @@ jobs:
         with:
           submodules: "recursive"
 
-      - name: Install Qt
-        env:
-          QT_WINDOWS_URL: https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public%2Fbuild%2Fqt6_win.zip
-        run: |
-          curl -sSL -o 3rdparty/qt6_win.zip ${QT_WINDOWS_URL}
-          unzip -d 3rdparty/ 3rdparty/qt6_win.zip
+      - name: Setup Qt for Windows
+        uses: ./.github/actions/qt-setup-taskcluster
+        with:
+          dest: ${{ github.workspace }}/3rdparty
 
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@v2
@@ -156,7 +151,6 @@ jobs:
 
           cmake -S . -B ./build-win -GNinja \
               -DCMAKE_BUILD_TYPE=Debug \
-              -DCMAKE_PREFIX_PATH="$(pwd)/3rdparty/QT_OUT" \
               -DWIREGUARD_FOLDER="$(pwd)/3rdparty/wireguard-nt"
           cmake --build ./build-win --target build_tests
 

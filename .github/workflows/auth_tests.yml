@@ -57,21 +57,15 @@ jobs:
           environment-file: env-apple.yml
           activate-environment: vpn
 
-      - name: Install build dependencies
-        run: |
-          export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
-          brew install ninja
-
-      - name: Install Qt6
-        run: |
-          wget https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public%2Fbuild%2Fqt6_mac.zip -O qt6_mac.zip
-          unzip -a -d ${{ github.workspace }} qt6_mac.zip
+      - name: Setup Qt for macOS
+        uses: ./.github/actions/qt-setup-taskcluster
+        with:
+          dest: ${{ github.workspace }}/3rdparty
 
       - name: Compile test client
         run: |
           mkdir -p build/cmake
-          cmake -S $(pwd) -B build/cmake -GNinja \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/qt_dist/lib/cmake
+          cmake -S $(pwd) -B build/cmake -GNinja
           cmake --build build/cmake --target app_auth_tests
 
       - name: Running tests
@@ -87,12 +81,10 @@ jobs:
         with:
           submodules: "recursive"
 
-      - name: Install Qt
-        shell: pwsh
-        run: |
-          Invoke-WebRequest -Uri https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public%2Fbuild%2Fqt6_win.zip -OutFile win.zip
-          Expand-Archive win.zip
-          mv win\QT_OUT "C:\\MozillaVPNBuild"
+      - name: Setup Qt for Windows
+        uses: ./.github/actions/qt-setup-taskcluster
+        with:
+          dest: ${{ github.workspace }}/3rdparty
 
       - name: Add msvc dev commands to PATH
         uses: ilammy/msvc-dev-cmd@v1
@@ -108,7 +100,7 @@ jobs:
       - name: Building tests
         run: |
           mkdir ./build
-          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH="C:\MozillaVPNBuild\lib\cmake"
+          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug
           cmake --build ./build --target app_auth_tests
 
       - name: Running tests
