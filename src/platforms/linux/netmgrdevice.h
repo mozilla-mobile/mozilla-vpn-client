@@ -36,9 +36,7 @@ class NetmgrDevice final : public QObject {
 
   QString name() const { return m_interface.property("Interface").toString(); }
   QString driver() const { return m_interface.property("Driver").toString(); }
-  State state() const {
-    return static_cast<State>(m_interface.property("State").toUInt());
-  }
+  State state() const { return static_cast<State>(m_state); };
 
   const QString& activeConnection() const { return m_activeConnection; }
   QString path() const { return m_interface.path(); }
@@ -49,12 +47,14 @@ class NetmgrDevice final : public QObject {
 
  private slots:
   void dbusStateChanged(uint state, uint prev, uint reason);
-  void activeConnectionChanged(const QDBusObjectPath& path);
   void propertyChanged(QString interface, QVariantMap props, QStringList list);
 
  private:
+  void updateActiveConnection(const QDBusObjectPath& path);
+
   QDBusInterface m_interface;
   QString m_activeConnection;
+  uint m_state = State::UNKNOWN;
   QString m_uuid;
 };
 

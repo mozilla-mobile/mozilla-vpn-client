@@ -48,19 +48,6 @@ NetmgrController::NetmgrController() {
   QVariant version = m_client->property("Version");
   m_version = QVersionNumber::fromString(version.toString());
   logger.info() << "NetworkManager version:" << m_version.toString();
-
-  // Monitor for changes in the connected devices.
-  connect(m_client, SIGNAL(DeviceAdded(QDBusObjectPath)), this,
-          SLOT(deviceAdded(QDBusObjectPath)));
-  connect(m_client, SIGNAL(DeviceRemoved(QDBusObjectPath)), this,
-          SLOT(deviceRemoved(QDBusObjectPath)));
-
-  // Fetch the device in case it already exists.
-  QVariantList args;
-  args << WG_INTERFACE_NAME;
-  m_client->callWithCallback("GetDeviceByIpIface", args, this,
-                             SLOT(deviceAdded(const QDBusObjectPath&)),
-                             SLOT(dbusIgnoreError(const QDBusError&)));
 }
 
 NetmgrController::~NetmgrController() {
@@ -124,16 +111,16 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
   m_wireguard.insert("private-key", keys->privateKey());
 
   // Check if the connection already exists.
-  QDBusReply<QDBusObjectPath> reply = m_settings->call("GetConnectionByUuid",
-                                                       m_tunnelUuid);
+  QDBusReply<QDBusObjectPath> reply =
+      m_settings->call("GetConnectionByUuid", m_tunnelUuid);
   if (reply.isValid()) {
     logger.info() << "Connection" << m_tunnelUuid << "already exists";
     initCompleted(reply.value(), QVariantMap());
     return;
   }
-  
+
   // Create the connection
-  logger.info() << "Creating connection:" << m_tunnelUuid;
+  logger.info() << "Adding connection:" << m_tunnelUuid;
   QVariantList args;
   args << serializeConfig();
   args << (uint)IN_MEMORY;
@@ -141,19 +128,50 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
   bool okay = m_settings->callWithCallback(
       "AddConnection2", args, this,
       SLOT(initCompleted(const QDBusObjectPath&, const QVariantMap&)),
-      SLOT(dbusError(const QDBusError&)));
+      SLOT(dbusInitError(const QDBusError&))); 
   if (!okay) {
     logger.debug() << "AddConnection2 failed";
+    emit initialized(false, false, QDateTime());
   }
 }
 
-void NetmgrController::dbusError(const QDBusError& error) {
-  logger.warning() << "DBus message failed:" << error.message();
-  emit backendFailure(Controller::ErrorFatal);
+void NetmgrController::initCompleted(const QDBusObjectPath& path,
+                                     const QVariantMap& results) {
+  logger.debug() << "connection created:" << path.path();
+  m_remote = new QDBusInterface(DBUS_NM_SERVICE, path.path(),
+                                nmInterface("Settings.Connection"),
+                                m_client->connection(), this);
+
+  // Monitor for changes in the connected devices.
+  connect(m_client, SIGNAL(DeviceAdded(QDBusObjectPath)), this,
+          SLOT(deviceAdded(QDBusObjectPath)));
+  connect(m_client, SIGNAL(DeviceRemoved(QDBusObjectPath)), this,
+          SLOT(deviceRemoved(QDBusObjectPath)));
+
+  // Fetch the device in case it already exists.
+  bool isConnected = false;
+  QDBusReply<QDBusObjectPath> reply =
+      m_client->call("GetDeviceByIpIface", WG_INTERFACE_NAME);
+  if (reply.isValid()) {
+    m_device = new NetmgrDevice(reply.value().path(), this);
+    connect(m_device, &NetmgrDevice::stateChanged, this,
+            &NetmgrController::deviceStateChanged);
+
+    isConnected = m_device->state() == NetmgrDevice::ACTIVATED &&
+                  m_device->uuid() == m_tunnelUuid;
+  }
+
+  emit initialized(true, isConnected, guessUptime());
 }
 
-void NetmgrController::dbusIgnoreError(const QDBusError& error) {
-  logger.debug() << "DBus message failed:" << error.message();
+void NetmgrController::dbusInitError(const QDBusError& error) {
+  logger.warning() << "initialization failed:" << error.message();
+  emit initialized(false, false, QDateTime());
+}
+
+void NetmgrController::dbusBackendError(const QDBusError& error) {
+  logger.warning() << "DBus message failed:" << error.message();
+  emit backendFailure(Controller::ErrorFatal);
 }
 
 // static
@@ -202,21 +220,6 @@ QVariant NetmgrController::serializeConfig() const {
   return QVariant::fromValue(config);
 }
 
-void NetmgrController::initCompleted(const QDBusObjectPath& path,
-                                     const QVariantMap& results) {
-  logger.debug() << "init completed:" << path.path();
-  m_remote = new QDBusInterface(DBUS_NM_SERVICE, path.path(),
-                                nmInterface("Settings.Connection"),
-                                m_client->connection(), this);
-
-  // Check if the connection is already up.
-  if (!m_device || (m_device->uuid() != m_tunnelUuid)) {
-    emit initialized(true, false, QDateTime());
-  } else {
-    emit initialized(true, m_device->state() == NetmgrDevice::ACTIVATED, guessTimestamp());
-  }
-}
-
 void NetmgrController::activate(const InterfaceConfig& config,
                                 Controller::Reason reason) {
   // Update routes and allowedIpAddreses
@@ -263,7 +266,7 @@ void NetmgrController::activate(const InterfaceConfig& config,
   args << QVariantMap();
   bool okay = m_remote->callWithCallback("Update2", args, this,
                                          SLOT(peerCompleted(const QVariantMap&)),
-                                         SLOT(dbusError(const QDBusError&)));
+                                         SLOT(dbusBackendError(const QDBusError&)));
   if (!okay) {
     logger.debug() << "Update2 failed";
   }
@@ -282,7 +285,7 @@ void NetmgrController::peerCompleted(const QVariantMap& results) {
   args << QDBusObjectPath("/");
   bool okay = m_client->callWithCallback("ActivateConnection", args, this,
                                          SLOT(activateCompleted(const QDBusObjectPath&)),
-                                         SLOT(dbusError(const QDBusError&)));
+                                         SLOT(dbusBackendError(const QDBusError&)));
   if (!okay) {
     logger.debug() << "ActivateConnection failed";
   }
@@ -390,7 +393,7 @@ void NetmgrController::checkStatus() {
   emit statusUpdated(m_serverIpv4Gateway, m_deviceIpv4Address, txBytes, rxBytes);
 }
 
-QDateTime NetmgrController::guessTimestamp() {
+QDateTime NetmgrController::guessUptime() {
   QString devPath = QString("/sys/class/net/%1").arg(WG_INTERFACE_NAME);
   struct stat st;
   if (lstat(qPrintable(devPath), &st) != 0) {
