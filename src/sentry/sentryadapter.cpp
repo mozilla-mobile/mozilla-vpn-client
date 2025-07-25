@@ -8,7 +8,6 @@
 // This is not found when building tests ... weird.
 #  include <QtQml/private/qqmlengine_p.h>
 #endif
-#include <sentry.h>
 
 #include <QDir>
 #include <QQuickItem>
@@ -24,6 +23,8 @@
 #include "tasks/sentry/tasksentry.h"
 #include "tasks/sentryconfig/tasksentryconfig.h"
 #include "taskscheduler.h"
+
+#include <sentry.h>
 
 namespace {
 SentryAdapter* s_instance = nullptr;
@@ -132,8 +133,9 @@ void SentryAdapter::onLoglineAdded(const QByteArray& line) {
   sentry_add_breadcrumb(crumb);
 }
 
-sentry_value_t SentryAdapter::onCrash(const sentry_ucontext_t* uctx,
-                                      sentry_value_t event, void* closure) {
+union sentry_value_u SentryAdapter::onCrash(const sentry_ucontext_t* uctx,
+                                            union sentry_value_u event,
+                                            void* closure) {
 #ifdef MZ_IOS
   logger.info() << "Sentry ON CRASH:" << uctx->siginfo->si_signo;
 #else
