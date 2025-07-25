@@ -379,7 +379,7 @@ multidict==6.6.3 \
     --hash=sha256:f54cb79d26d0cd420637d184af38f0668558f3c4bbe22ab7ad830e67249f2e0b \
     --hash=sha256:fc9dc435ec8699e7b602b94fe0cd4703e69273a01cbc34409af29e7820f777f1
     # via
-    #   -r scripts/requirements.in
+    #   -r taskcluster/scripts/requirements.in
     #   aiohttp
     #   yarl
 propcache==0.3.1 \
@@ -490,6 +490,19 @@ requests==2.31.0 \
     --hash=sha256:58cd2187c01e70e6e26505bca751777aa9f2ee0b7f4300988b709f44e013003f \
     --hash=sha256:942c5a758f98d790eaed1a29cb6eefc7ffb0d1cf7af05c3d2791656dbd6ad1e1
     # via taskcluster
+sentry-cli==2.50.2 \
+    --hash=sha256:19d63756d6b6653c0a385d543078b05c6a26076961ae834f7b116ce7b4e523d6 \
+    --hash=sha256:20953fdf06fdf03ad3df98a4e65cc4ba5777c96b87fc6479ed6b8097ea371278 \
+    --hash=sha256:32b4e7c959a1645585765834e3ac5fee0ca24e8fd1de5816ab070007a0c2df10 \
+    --hash=sha256:3e22d1cad8c8d3f6f35505fd84c256c6fcc392deea14ac9e51e1fc23bf414bdf \
+    --hash=sha256:601128b2266dd453b03b6822ff5d92363ee2ba9fcd7e1d49069acec2f90e137a \
+    --hash=sha256:62c0a2f1583dbd3e1bba003e98a87ef22c3bc1c32b85de9999cd5c36c07d5a68 \
+    --hash=sha256:775fefee983710238ac9e97b5772404c37149b0f13d133aeb0a9f2253484d94d \
+    --hash=sha256:7e969a708caff23fd1b962179aa29ec9098dd5f232185c6214f8f0bd5d4ad9c7 \
+    --hash=sha256:8f4215915413cece2d598a89c7b8a57e76c865e108bf0fcb334f363ae9657f49 \
+    --hash=sha256:c191e800cb694c22adaadc7e259c17f11634d185917c2447faf318e30f4845b8 \
+    --hash=sha256:cbb19dfb6c96d465859b6eeeb471236ab222999332024060485730d916784168
+    # via -r taskcluster/scripts/requirements.in
 six==1.16.0 \
     --hash=sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926 \
     --hash=sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254
@@ -623,5 +636,5 @@ yarl==1.20.1 \
     --hash=sha256:fe41919b9d899661c5c28a8b4b0acf704510b88f27f0934ac7a7bebdd8938d5e \
     --hash=sha256:ff70f32aa316393eaf8222d518ce9118148eddb8a53073c2403863b41033eed5
     # via
-    #   -r scripts/requirements.in
+    #   -r taskcluster/scripts/requirements.in
     #   aiohttp
