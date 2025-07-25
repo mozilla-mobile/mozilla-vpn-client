@@ -53,17 +53,6 @@ runs:
         key: qt-toolchain-${{ steps.resolve.outputs.taskid }}
         enableCrossOsArchive: true
 
-    - name: Install xzutils for Windows
-      if: ${{ runner.os == 'Windows' && steps.qt-toolchain-cache.outputs.cache-hit != 'true' }}
-      shell: bash
-      working-directory: ${{ runner.temp }}
-      env:
-        XZ_UTILS_URL: https://github.com/tukaani-project/xz/releases/download/v5.8.1/xz-5.8.1-windows.zip
-      run: |
-        curl -sSL ${XZ_UTILS_URL} -o xz-5.8.1-windows.zip
-        unzip -q xz-5.8.1-windows.zip
-        echo "${{ runner.temp }}/xz-5.8.1-windows/bin_x86-64" >> $GITHUB_PATH
-
     - name: Install Qt toolchain
       if: ${{ inputs.cache != 'true' || steps.qt-toolchain-cache.outputs.cache-hit != 'true' }}
       id: qt-toolchain-install
