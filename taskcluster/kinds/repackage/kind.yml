@@ -61,7 +61,7 @@ tasks:
                 "3":
                     signing: signing-macos/opt
                 default:
-                    build: build-macos/pr
+                    build: build-macos/debug
         worker-type: b-macos
         worker:
             chain-of-trust: true
@@ -71,7 +71,7 @@ tasks:
             build-type:
                 by-level:
                     "3": macos/opt
-                    default: macos/pr
+                    default: macos/debug
         run:
             using: run-task
             cwd: '{checkout}'
