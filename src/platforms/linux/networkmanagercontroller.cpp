@@ -20,7 +20,6 @@
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
-#include "netmgrconnection.h"
 #include "netmgrdevice.h"
 #include "netmgrtypes.h"
 #include "settingsholder.h"
@@ -67,9 +66,6 @@ NetworkManagerController::NetworkManagerController() {
 NetworkManagerController::~NetworkManagerController() {
   MZ_COUNT_DTOR(NetworkManagerController);
   logger.debug() << "Destroying NetworkManagerController";
-
-  // Clear the active connection, if any.
-  setActiveConnection(QString());
 }
 
 // static
@@ -109,7 +105,7 @@ void NetworkManagerController::initialize(const Device* device,
     ipv4address.insert("prefix", (uint)32);
   }
   m_ipv4config.insert("method", "manual");
-  m_ipv4config.insert("address-data", NetMgrDataList(ipv4address).toVariant());
+  m_ipv4config.insert("address-data", NetmgrDataList(ipv4address));
 
   QStringList ipv6split = device->ipv6Address().split('/');
   QVariantMap ipv6address;
@@ -120,7 +116,7 @@ void NetworkManagerController::initialize(const Device* device,
     ipv6address.insert("prefix", (uint)128);
   }
   m_ipv6config.insert("method", "manual");
-  m_ipv6config.insert("address-data", NetMgrDataList(ipv6address).toVariant());
+  m_ipv6config.insert("address-data", NetmgrDataList(ipv6address));
 
   m_wireguard.insert("fwmark", WG_FIREWALL_MARK);
   m_wireguard.insert("ip4-auto-default-route", 1);
@@ -133,31 +129,22 @@ void NetworkManagerController::initialize(const Device* device,
                                                        m_tunnelUuid);
   if (reply.isValid()) {
     logger.info() << "Connection" << m_tunnelUuid << "already exists";
-    QString path = reply.value().path();
-    m_remote = new QDBusInterface(DBUS_NM_SERVICE, reply.value().path(),
-                                  nmInterface("Settings.Connection"),
-                                  m_client->connection(), this);
-
-    // Check if the connection is already up.
-    if (!m_device || (m_device->uuid() != m_tunnelUuid)) {
-      emit initialized(true, false, QDateTime());
-    } else {
-      emit initialized(true, m_device->state() == NetMgrDevice::ACTIVATED, guessTimestamp());
-    }
-  } else {
-    // Create the connection
-    logger.info() << "Creating connection:" << m_tunnelUuid;
-    QVariantList args;
-    args << serializeConfig();
-    args << (uint)0x02;
-    args << QVariantMap();
-    bool okay = m_settings->callWithCallback(
-        "AddConnection2", args, this,
-        SLOT(initCompleted(const QDBusObjectPath&, const QVariantMap&)),
-        SLOT(dbusError(const QDBusError&)));
-    if (!okay) {
-      logger.debug() << "AddConnection2 failed";
-    }
+    initCompleted(reply.value(), QVariantMap());
+    return;
+  }
+  
+  // Create the connection
+  logger.info() << "Creating connection:" << m_tunnelUuid;
+  QVariantList args;
+  args << serializeConfig();
+  args << (uint)IN_MEMORY;
+  args << QVariantMap();
+  bool okay = m_settings->callWithCallback(
+      "AddConnection2", args, this,
+      SLOT(initCompleted(const QDBusObjectPath&, const QVariantMap&)),
+      SLOT(dbusError(const QDBusError&)));
+  if (!okay) {
+    logger.debug() << "AddConnection2 failed";
   }
 }
 
@@ -193,9 +180,9 @@ void NetworkManagerController::setDnsConfig(QVariantMap& map, const QHostAddress
     map.remove("dns-priority");
     map.remove("dns-search");
   } else if (server.protocol() == QAbstractSocket::IPv6Protocol) {
-    NetMgrIpv6List dnsServers;
+    NetmgrIpv6List dnsServers;
     dnsServers.append(server.toIPv6Address());
-    map.insert("dns", dnsServers.toVariant());
+    map.insert("dns", dnsServers);
     map.insert("dns-priority", 10);
     map.insert("dns-search", QStringList("."));
   } else {
@@ -208,7 +195,7 @@ void NetworkManagerController::setDnsConfig(QVariantMap& map, const QHostAddress
 }
 
 QVariant NetworkManagerController::serializeConfig() const {
-  NetMgrConfig config;
+  NetmgrConfig config;
   config.insert("connection", m_config);
   config.insert("ipv4", m_ipv4config);
   config.insert("ipv6", m_ipv6config);
@@ -218,17 +205,24 @@ QVariant NetworkManagerController::serializeConfig() const {
 
 void NetworkManagerController::initCompleted(const QDBusObjectPath& path,
                                              const QVariantMap& results) {
+  logger.debug() << "init completed:" << path.path();
   m_remote = new QDBusInterface(DBUS_NM_SERVICE, path.path(),
-                                nmInterface("Service.Connection"),
+                                nmInterface("Settings.Connection"),
                                 m_client->connection(), this);
-  emit initialized(m_remote != nullptr, false, QDateTime());
+
+  // Check if the connection is already up.
+  if (!m_device || (m_device->uuid() != m_tunnelUuid)) {
+    emit initialized(true, false, QDateTime());
+  } else {
+    emit initialized(true, m_device->state() == NetmgrDevice::ACTIVATED, guessTimestamp());
+  }
 }
 
 void NetworkManagerController::activate(const InterfaceConfig& config,
                                         Controller::Reason reason) {
   // Update routes and allowedIpAddreses
-  NetMgrDataList ipv4routes;
-  NetMgrDataList ipv6routes;
+  NetmgrDataList ipv4routes;
+  NetmgrDataList ipv6routes;
   for (const IPAddress& i : config.m_allowedIPAddressRanges) {
     QVariantMap route;
     route.insert("dest", i.address().toString());
@@ -241,10 +235,10 @@ void NetworkManagerController::activate(const InterfaceConfig& config,
     }
   }
 
-  NetMgrDataList peers(wgPeer(config));
-  m_ipv4config.insert("route-data", ipv4routes.toVariant());
-  m_ipv6config.insert("route-data", ipv6routes.toVariant());
-  m_wireguard.insert("peers", peers.toVariant());
+  NetmgrDataList peers(wgPeer(config));
+  m_ipv4config.insert("route-data", ipv4routes);
+  m_ipv6config.insert("route-data", ipv6routes);
+  m_wireguard.insert("peers", peers);
 
   // Update the DNS server.
   if ((config.m_dnsServer == config.m_serverIpv4Gateway) ||
@@ -266,7 +260,7 @@ void NetworkManagerController::activate(const InterfaceConfig& config,
   // Update the connection settings.
   QList<QVariant> args;
   args << serializeConfig();
-  args << (uint)0x02;
+  args << (uint)IN_MEMORY;
   args << QVariantMap();
   bool okay = m_remote->callWithCallback("Update2", args, this,
                                          SLOT(peerCompleted(const QVariantMap&)),
@@ -276,7 +270,12 @@ void NetworkManagerController::activate(const InterfaceConfig& config,
   }
 }
 
-void NetworkManagerController::peerCompleted(const QVariantMap& result) {
+void NetworkManagerController::peerCompleted(const QVariantMap& results) {
+  logger.debug() << "Peer configured";
+  for (auto i = results.constBegin(); i != results.constEnd(); i++) {
+    logger.debug() << "peer result:" << i.key() << "->" << i.value().toString();
+  }
+
   // activate the vpn
   QList<QVariant> args;
   args << QDBusObjectPath(m_remote->path());
@@ -292,52 +291,12 @@ void NetworkManagerController::peerCompleted(const QVariantMap& result) {
 
 void NetworkManagerController::activateCompleted(const QDBusObjectPath& path) {
   logger.info() << "Connection activated:" << path.path();
-  setActiveConnection(path.path());
-}
-
-void NetworkManagerController::setActiveConnection(const QString& path) {
-  // If there is an existing active connection, discard it.
-  if (m_connection != nullptr) {
-    if (m_connection->path() == path) {
-      // No change - do nothing.
-      return;
-    }
-    delete m_connection;
-    m_connection = nullptr;
-  }
-
-  // Start monitoring the new connection for state changes.
-  if (!path.isEmpty()) {
-    m_connection = new NetMgrConnection(path, this);
-    connect(m_connection, &NetMgrConnection::stateChanged, this,
-            &NetworkManagerController::stateChanged);
-
-    // Invoke the state changed signal with the current state.
-    stateChanged(m_connection->state(), 0);
-  }
-}
-
-void NetworkManagerController::stateChanged(uint state, uint reason) {
-  auto nmstate = (NetMgrConnection::ActiveState)state;
-  logger.debug() << "DBus state changed" << nmstate << reason;
-  switch (nmstate) {
-    case NetMgrConnection::NM_ACTIVE_CONNECTION_STATE_ACTIVATED:
-      emit connected(m_serverPublicKey);
-      break;
-      
-    case NetMgrConnection::NM_ACTIVE_CONNECTION_STATE_DEACTIVATED:
-      emit disconnected();
-      break;
-    
-    default:
-      break;
-  }
 }
 
 void NetworkManagerController::deactivate(Controller::Reason reason) {
   Q_UNUSED(reason);
 
-  if (m_connection == nullptr) {
+  if (!m_device || m_device->uuid() != m_tunnelUuid) {
     logger.warning() << "Client already disconnected";
     emit disconnected();
     return;
@@ -345,7 +304,7 @@ void NetworkManagerController::deactivate(Controller::Reason reason) {
 
   QDBusMessage call = QDBusMessage::createMethodCall(
       DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_NM_INTERFACE, "DeactivateConnection");
-  call << QDBusObjectPath(m_connection->path());
+  call << QDBusObjectPath(m_device->activeConnection());
 
   QDBusPendingReply<> reply = m_client->connection().asyncCall(call);
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
@@ -353,13 +312,10 @@ void NetworkManagerController::deactivate(Controller::Reason reason) {
                    [&] { emit disconnected(); });
   QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
                    &QObject::deleteLater);
-
-  delete m_connection;
-  m_connection = nullptr;
 }
 
 void NetworkManagerController::deviceAdded(const QDBusObjectPath& devpath) {
-  NetMgrDevice* device = new NetMgrDevice(devpath.path(), this);
+  NetmgrDevice* device = new NetmgrDevice(devpath.path(), this);
   auto guard = qScopeGuard([device]() { delete device; });
 
   logger.debug() << "device added:" << devpath.path();
@@ -379,9 +335,9 @@ void NetworkManagerController::deviceAdded(const QDBusObjectPath& devpath) {
   guard.dismiss();
 
   // Watch it for state changes.
-  connect(m_device, &NetMgrDevice::stateChanged, this,
+  connect(m_device, &NetmgrDevice::stateChanged, this,
           &NetworkManagerController::deviceStateChanged);
-  deviceStateChanged(m_device->state(), NetMgrDevice::UNKNOWN, 0);
+  deviceStateChanged(m_device->state(), NetmgrDevice::UNKNOWN, 0);
 }
 
 void NetworkManagerController::deviceRemoved(const QDBusObjectPath& path) {
@@ -389,20 +345,24 @@ void NetworkManagerController::deviceRemoved(const QDBusObjectPath& path) {
   if (m_device && m_device->path() == path.path()) {
     delete m_device;
     m_device = nullptr;
+
+    m_connectionPath = "/";
+    emit disconnected();
   }
 }
 
 void NetworkManagerController::deviceStateChanged(uint state, uint prev, uint reason) {
-  auto newstate = static_cast<NetMgrDevice::State>(state);
-  auto prevstate = static_cast<NetMgrDevice::State>(prev);
+  auto newstate = static_cast<NetmgrDevice::State>(state);
+  auto prevstate = static_cast<NetmgrDevice::State>(prev);
   logger.debug() << "device state changed:" << prevstate << "->" << newstate;
 
   if (m_device->uuid() != m_tunnelUuid) {
     return;
   }
-  if (newstate == NetMgrDevice::ACTIVATED) {
+
+  if (newstate == NetmgrDevice::ACTIVATED) {
     emit connected(m_serverPublicKey);
-  } else if (prevstate == NetMgrDevice::ACTIVATED) {
+  } else if (prevstate == NetmgrDevice::ACTIVATED) {
     emit disconnected();
   }
 }

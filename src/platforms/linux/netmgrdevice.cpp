@@ -9,15 +9,15 @@
 #include "netmgrtypes.h"
 
 namespace {
-Logger logger("NetMgrDevice");
+Logger logger("NetmgrDevice");
 }
 
 #define DBUS_NM_DEVICE (DBUS_NM_SERVICE ".Device")
 
-NetMgrDevice::NetMgrDevice(const QString& path, QObject* parent)
+NetmgrDevice::NetmgrDevice(const QString& path, QObject* parent)
     : QObject(parent), m_interface(DBUS_NM_SERVICE, path, DBUS_NM_DEVICE,
                                    QDBusConnection::systemBus()) {
-  MZ_COUNT_CTOR(NetMgrDevice);
+  MZ_COUNT_CTOR(NetmgrDevice);
 
   // Report state changes.
   QDBusConnection::systemBus().connect(
@@ -34,12 +34,13 @@ NetMgrDevice::NetMgrDevice(const QString& path, QObject* parent)
   activeConnectionChanged(qv.value<QDBusObjectPath>());
 }
 
-NetMgrDevice::~NetMgrDevice() {
-  MZ_COUNT_DTOR(NetMgrDevice);
+NetmgrDevice::~NetmgrDevice() {
+  MZ_COUNT_DTOR(NetmgrDevice);
 }
 
-void NetMgrDevice::activeConnectionChanged(const QDBusObjectPath& path) {
-  QDBusInterface conn(DBUS_NM_SERVICE, path.path(),
+void NetmgrDevice::activeConnectionChanged(const QDBusObjectPath& path) {
+  m_activeConnection = path.path();
+  QDBusInterface conn(DBUS_NM_SERVICE, m_activeConnection,
                       QStringLiteral(DBUS_NM_SERVICE) + ".Connection.Active",
                       m_interface.connection());
 
@@ -51,7 +52,7 @@ void NetMgrDevice::activeConnectionChanged(const QDBusObjectPath& path) {
   }
 }
 
-void NetMgrDevice::propertyChanged(QString interface, QVariantMap changes,
+void NetmgrDevice::propertyChanged(QString interface, QVariantMap changes,
                                    QStringList list) {
   Q_UNUSED(list);
   if (interface != DBUS_NM_DEVICE) {
@@ -63,6 +64,6 @@ void NetMgrDevice::propertyChanged(QString interface, QVariantMap changes,
   }
 }
 
-void NetMgrDevice::dbusStateChanged(uint state, uint prev, uint reason) {
+void NetmgrDevice::dbusStateChanged(uint state, uint prev, uint reason) {
   emit stateChanged(state, prev, reason);
 }

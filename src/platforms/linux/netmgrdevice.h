@@ -9,13 +9,13 @@
 #include <QDBusObjectPath>
 #include <QObject>
 
-class NetMgrDevice final : public QObject {
+class NetmgrDevice final : public QObject {
   Q_OBJECT
-  Q_DISABLE_COPY_MOVE(NetMgrDevice)
+  Q_DISABLE_COPY_MOVE(NetmgrDevice)
 
  public:
-  NetMgrDevice(const QString& path, QObject* parent = nullptr);
-  ~NetMgrDevice();
+  NetmgrDevice(const QString& path, QObject* parent = nullptr);
+  ~NetmgrDevice();
 
   enum State {
     UNKNOWN = 0,
@@ -40,8 +40,9 @@ class NetMgrDevice final : public QObject {
     return static_cast<State>(m_interface.property("State").toUInt());
   }
 
+  const QString& activeConnection() const { return m_activeConnection; }
   QString path() const { return m_interface.path(); }
-  QString uuid() const { return m_uuid; }
+  const QString& uuid() const { return m_uuid; }
 
  signals:
   void stateChanged(uint state, uint prev, uint reason);
@@ -53,6 +54,7 @@ class NetMgrDevice final : public QObject {
 
  private:
   QDBusInterface m_interface;
+  QString m_activeConnection;
   QString m_uuid;
 };
 
