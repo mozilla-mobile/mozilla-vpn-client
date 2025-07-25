@@ -30,15 +30,17 @@ NetmgrDevice::NetmgrDevice(const QString& path, QObject* parent)
       "PropertiesChanged", this,
       SLOT(propertyChanged(QString, QVariantMap, QStringList)));
 
+  m_state = m_interface.property("State").toUInt();
+
   QVariant qv = m_interface.property("ActiveConnection");
-  activeConnectionChanged(qv.value<QDBusObjectPath>());
+  updateActiveConnection(qv.value<QDBusObjectPath>());
 }
 
 NetmgrDevice::~NetmgrDevice() {
   MZ_COUNT_DTOR(NetmgrDevice);
 }
 
-void NetmgrDevice::activeConnectionChanged(const QDBusObjectPath& path) {
+void NetmgrDevice::updateActiveConnection(const QDBusObjectPath& path) {
   m_activeConnection = path.path();
   QDBusInterface conn(DBUS_NM_SERVICE, m_activeConnection,
                       QStringLiteral(DBUS_NM_SERVICE) + ".Connection.Active",
@@ -65,5 +67,6 @@ void NetmgrDevice::propertyChanged(QString interface, QVariantMap changes,
 }
 
 void NetmgrDevice::dbusStateChanged(uint state, uint prev, uint reason) {
+  m_state = state;
   emit stateChanged(state, prev, reason);
 }

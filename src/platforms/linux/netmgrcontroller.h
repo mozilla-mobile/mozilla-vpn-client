@@ -50,8 +50,9 @@ class NetmgrController final : public ControllerImpl {
   void initCompleted(const QDBusObjectPath& path, const QVariantMap& results);
   void peerCompleted(const QVariantMap& results);
   void activateCompleted(const QDBusObjectPath& path);
-  void dbusError(const QDBusError& error);
-  void dbusIgnoreError(const QDBusError& error);
+
+  void dbusInitError(const QDBusError& error);
+  void dbusBackendError(const QDBusError& error);
 
   void deviceAdded(const QDBusObjectPath& path);
   void deviceRemoved(const QDBusObjectPath& path);
@@ -66,7 +67,7 @@ class NetmgrController final : public ControllerImpl {
 
   static QString nmInterface(const QString& name);
 
-  static QDateTime guessTimestamp();
+  static QDateTime guessUptime();
 
  private:
   QVariantMap m_config;
