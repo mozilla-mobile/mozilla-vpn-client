@@ -15,8 +15,9 @@ Logger logger("NetmgrDevice");
 #define DBUS_NM_DEVICE (DBUS_NM_SERVICE ".Device")
 
 NetmgrDevice::NetmgrDevice(const QString& path, QObject* parent)
-    : QObject(parent), m_interface(DBUS_NM_SERVICE, path, DBUS_NM_DEVICE,
-                                   QDBusConnection::systemBus()) {
+    : QObject(parent),
+      m_interface(DBUS_NM_SERVICE, path, DBUS_NM_DEVICE,
+                  QDBusConnection::systemBus()) {
   MZ_COUNT_CTOR(NetmgrDevice);
 
   // Report state changes.
@@ -36,9 +37,7 @@ NetmgrDevice::NetmgrDevice(const QString& path, QObject* parent)
   updateActiveConnection(qv.value<QDBusObjectPath>());
 }
 
-NetmgrDevice::~NetmgrDevice() {
-  MZ_COUNT_DTOR(NetmgrDevice);
-}
+NetmgrDevice::~NetmgrDevice() { MZ_COUNT_DTOR(NetmgrDevice); }
 
 void NetmgrDevice::updateActiveConnection(const QDBusObjectPath& path) {
   m_activeConnection = path.path();
@@ -62,7 +61,7 @@ void NetmgrDevice::propertyChanged(QString interface, QVariantMap changes,
   }
   if (changes.contains("ActiveConnection")) {
     QVariant qv = changes.value("ActiveConnection");
-    activeConnectionChanged(qv.value<QDBusObjectPath>());
+    updateActiveConnection(qv.value<QDBusObjectPath>());
   }
 }
 

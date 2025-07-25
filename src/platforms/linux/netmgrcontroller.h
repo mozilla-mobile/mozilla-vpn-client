@@ -34,7 +34,6 @@ class NetmgrController final : public ControllerImpl {
 
   void checkStatus() override;
 
-
   enum Flags {
     TO_DISK = 0x01,
     IN_MEMORY = 0x02,
@@ -84,7 +83,6 @@ class NetmgrController final : public ControllerImpl {
   QDBusInterface* m_client = nullptr;
   QDBusInterface* m_settings = nullptr;
   QDBusInterface* m_remote = nullptr;
-
 
   QString m_connectionPath;
   NetmgrDevice* m_device = nullptr;
