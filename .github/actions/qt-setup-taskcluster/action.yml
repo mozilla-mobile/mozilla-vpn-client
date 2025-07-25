@@ -14,7 +14,7 @@ inputs:
     required: false
     default: ${{ runner.os == 'Windows' }}
   cmake-env:
-    description: 'Add to environment'
+    description: 'Add cmake environment variables'
     required: false
     default: true
 
@@ -39,7 +39,7 @@ runs:
 
         # The toolchain path depends on the directory path inside the archive.
         # To find it, lets download the first 4kB of the archive and list its
-        # contents. Lucky for us, tar is a streamable format this kinda works
+        # contents. Lucky for us, tar is a streamable format so this kinda works
         # even though the archive is truncated.
         curl -sSL -r0-4096 "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${NAME}" -o qt-toolchain-head.tar.xz
         echo "toolchain-path=$(xzcat qt-toolchain-head.tar.xz 2>/dev/null | tar t 2>/dev/null | head -1 | grep -o '^[^/]*')" >> $GITHUB_OUTPUT
