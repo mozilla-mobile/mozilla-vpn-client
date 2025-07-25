@@ -21,6 +21,8 @@ jobs:
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
+        with:
+          submodules: true
 
       - name: Lookup cached crates
         id: rust-cache
