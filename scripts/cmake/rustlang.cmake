@@ -57,6 +57,14 @@ function(__rust_build_toolchain_config)
         endif()
     endforeach()
 
+    # Note: This would need to be set externally on the command line.
+    if(IS_DIRECTORY ${RUST_VENDOR_DIR})
+        file(APPEND ${RUST_CONFIG_FILENAME} [source.vendored-sources]\n)
+        file(APPEND ${RUST_CONFIG_FILENAME} directory=\"${RUST_VENDOR_DIR}\"\n)
+        file(APPEND ${RUST_CONFIG_FILENAME} [source.crates-io]\n)
+        file(APPEND ${RUST_CONFIG_FILENAME} replace-with=\"vendored-sources\"\n\n)
+    endif()
+
     # Encode some build settings too.
     file(APPEND ${RUST_CONFIG_FILENAME} "\n[build]\n")
     file(APPEND ${RUST_CONFIG_FILENAME} "rustc=\"${RUSTC_BUILD_TOOL}\"\n")
@@ -125,6 +133,8 @@ elseif(MSVC)
 
     file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml "\n[target.x86_64-pc-windows-msvc]\n")
     file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml "linker=\"${CMAKE_LINKER}\"\n")
+else()
+    __rust_build_toolchain_config(FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml)
 endif()
 
 ## For the Ninja generator, setup a job pool for Cargo targets, which share a
