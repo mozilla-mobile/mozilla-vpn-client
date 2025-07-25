@@ -143,7 +143,6 @@ mkdir -p $BUILDDIR
   -no-feature-itemmodeltester \
   -no-feature-sql-sqlite \
   -no-feature-sql \
-  -no-feature-dbus \
   -skip qt3d  \
   -skip qtdoc \
   -skip qtgrpc \

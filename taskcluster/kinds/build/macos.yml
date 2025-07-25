@@ -55,7 +55,7 @@ macos/opt:
 
 
 macos/osxcross:
-    description: "Mac Build (osxcross)"
+    description: "macOS Build (osxcross)"
     treeherder:
             symbol: BD
             kind: build
@@ -75,3 +75,27 @@ macos/osxcross:
           use-caches: [checkout]
           cwd: '{checkout}'
           command: ./taskcluster/scripts/build/macos_osxcross.sh
+
+
+macos/next:
+    description: "macOS Build (Next Qt)"
+    treeherder:
+            symbol: BD
+            kind: build
+            tier: 1
+            platform: macos/next
+    fetches:
+        toolchain:
+            - cargo-vendor
+            - conda-osxcross
+            - qt-macos-next
+            - qt-tools-next
+    worker-type: b-linux-large
+    worker:
+          docker-image: {in-tree: conda-base}
+    run:
+          using: run-task
+          use-caches: [checkout]
+          cwd: '{checkout}'
+          command: ./taskcluster/scripts/build/macos_osxcross.sh
+

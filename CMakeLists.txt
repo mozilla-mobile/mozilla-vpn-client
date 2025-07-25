@@ -89,7 +89,7 @@ if(APPLE)
     if(IOS)
         set(CMAKE_OSX_DEPLOYMENT_TARGET 15.0)
     else()
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET 12.0)
     endif()
 endif()
 
@@ -104,8 +104,10 @@ if(NOT DEFINED BUILD_ID)
 endif()
 
 ## Toolchain Setup
-set(CMAKE_CXX_STANDARD 20)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+if(NOT DEFINED CMAKE_CXX_STANDARD)
+    set(CMAKE_CXX_STANDARD 20)
+    set(CMAKE_CXX_STANDARD_REQUIRED ON)
+endif()
 
 find_program(PYTHON_EXECUTABLE NAMES python3 python)
 if(MSVC)

@@ -37,7 +37,7 @@ struct FeatureSupportedPlatforms {
   bool wasm = false;
 };
 
-consteval auto byPlatform(FeatureSupportedPlatforms support) {
+constexpr auto byPlatform(FeatureSupportedPlatforms support) {
   return [support]() constexpr {
 #if defined(MZ_WINDOWS)
     return support.windows;
