@@ -9,13 +9,12 @@
 #include <QString>
 #include <QtGlobal>
 
+#include "buildinfo.h"
 #include "settingsholder.h"
-#include "version.h"
 
 namespace {
 QString s_stagingServerAddress = "";
 bool s_inProduction = true;
-QString s_versionOverride = "";
 }  // namespace
 
 bool Constants::inProduction() { return s_inProduction; }
@@ -37,19 +36,6 @@ void Constants::setStaging() {
   }
   Q_ASSERT(!s_stagingServerAddress.isEmpty());
 }
-
-void Constants::setVersionOverride(const QString& versionOverride) {
-  s_versionOverride = versionOverride;
-}
-
-QString Constants::versionString() {
-  if (!s_inProduction && !s_versionOverride.isEmpty()) {
-    return s_versionOverride;
-  }
-  return QStringLiteral(APP_VERSION);
-}
-
-QString Constants::buildNumber() { return QStringLiteral(BUILD_ID); }
 
 QString Constants::envOrDefault(const QString& name,
                                 const QString& defaultValue) {

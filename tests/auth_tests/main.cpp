@@ -9,6 +9,7 @@
 
 #include "app.h"
 #include "authenticationinapp/authenticationinapp.h"
+#include "buildinfo.h"
 #include "constants.h"
 #include "glean/mzglean.h"
 #include "leakdetector.h"
@@ -32,7 +33,7 @@ int main(int argc, char* argv[]) {
 
   QCoreApplication::setApplicationName("Mozilla VPN Auth Tests");
   QCoreApplication::setOrganizationName("Mozilla Testing");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion(BuildInfo::version);
 
   SettingsHolder settingsHolder;
   Constants::setStaging();

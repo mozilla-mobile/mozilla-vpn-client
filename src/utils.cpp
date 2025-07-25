@@ -5,7 +5,6 @@
 #include "utils.h"
 
 #include "app.h"
-#include "constants.h"
 #include "feature/feature.h"
 #include "logger.h"
 #include "loghandler.h"

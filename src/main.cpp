@@ -4,11 +4,11 @@
 
 #include <QCoreApplication>
 
+#include "buildinfo.h"
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "platforms/windows/windowsutils.h"
 #include "stdio.h"
-#include "version.h"
 
 #ifdef MZ_WINDOWS
 #  include <windows.h>
@@ -41,7 +41,7 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
 
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setOrganizationName("Mozilla");
-  QCoreApplication::setApplicationVersion(APP_VERSION);
+  QCoreApplication::setApplicationVersion(BuildInfo::version);
 
   CommandLineParser clp;
   return clp.parse(argc, argv, CLP_DEFAULT_COMMAND);

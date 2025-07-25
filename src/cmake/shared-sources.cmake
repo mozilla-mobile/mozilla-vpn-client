@@ -7,10 +7,6 @@ add_library(shared-sources INTERFACE)
 
 mz_target_handle_warnings(shared-sources)
 
-# Generated version header file
-configure_file(version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-target_sources(shared-sources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-
 set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/glean

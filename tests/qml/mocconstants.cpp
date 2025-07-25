@@ -17,21 +17,11 @@ const QString& Constants::getStagingServerAddress() {
   return stagingServerAddress;
 }
 
-void Constants::setVersionOverride(const QString& versionOverride) {
-  Q_UNUSED(versionOverride);
-}
-
 QString Constants::apiBaseUrl() { return Constants::API_STAGING_URL; }
 
 QString Constants::apiUrl(ApiEndpoint) { return "something here"; }
 
 void Constants::setStaging() { s_productionMode = false; }
-
-QString Constants::versionString() {
-  return QStringLiteral("QMLTest_AppVersion");
-}
-
-QString Constants::buildNumber() { return QStringLiteral("QMLTest_BuildID"); }
 
 QString Constants::envOrDefault(const QString& name,
                                 const QString& defaultValue) {

@@ -280,9 +280,6 @@ target_sources(unit_tests PRIVATE
     teststatusicon.h
 )
 
-# Generate the version header
-configure_file(${MZ_SOURCE_DIR}/version.h.in ${CMAKE_CURRENT_BINARY_DIR}/version.h)
-
 # Unit test mock resources
 target_sources(unit_tests PRIVATE
     addons/addons.qrc

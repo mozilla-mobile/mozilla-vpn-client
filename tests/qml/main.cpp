@@ -5,6 +5,7 @@
 #include <QCoreApplication>
 #include <QtQuickTest>
 
+#include "buildinfo.h"
 #include "helper.h"
 
 // static
@@ -21,7 +22,7 @@ App* App::instance() {
 int main(int argc, char* argv[]) {
   QCoreApplication::setApplicationName("Mozilla VPN QML Tests");
   QCoreApplication::setOrganizationName("Mozilla Testing");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion(BuildInfo::version);
 
   // In order to be able to call our TestHelper constructor how we want,
   // we do not follow the exact instructions here

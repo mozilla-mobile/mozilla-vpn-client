@@ -9,7 +9,7 @@
 #include <QJsonObject>
 #include <QJsonValue>
 
-#include "constants.h"
+#include "buildinfo.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -301,8 +301,9 @@ void DeviceModel::logSerialize(QIODevice* device) {
   out << "SDK Version -> " << AndroidCommons::getSDKVersion() << Qt::endl;
 #endif
 
-  out << "APP Version -> " << Constants::versionString() << Qt::endl;
-  out << "Build ID -> " << Constants::buildNumber() << Qt::endl;
+  out << "APP Version -> " << QCoreApplication::applicationVersion()
+      << Qt::endl;
+  out << "Build ID -> " << BuildInfo::number << Qt::endl;
   out << "Device ID -> " << Device::uniqueDeviceId() << Qt::endl;
 
 #ifndef QT_NO_SSL

@@ -5,6 +5,8 @@
 #ifndef FEATURELISTCALLBACK_H
 #define FEATURELISTCALLBACK_H
 
+#include "constants.h"
+
 #ifdef MZ_ANDROID
 #  include "platforms/android/androidcommons.h"
 #endif

@@ -10,7 +10,6 @@
 #include <QSettings>
 #include <QtDBus/QtDBus>
 
-#include "constants.h"
 #include "cryptosettings.h"
 #include "hkdf.h"
 #include "logger.h"
