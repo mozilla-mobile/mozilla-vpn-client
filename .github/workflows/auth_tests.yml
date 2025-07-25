@@ -65,8 +65,7 @@ jobs:
       - name: Compile test client
         run: |
           mkdir -p build/cmake
-          cmake -S $(pwd) -B build/cmake -GNinja \
-            -DCMAKE_PREFIX_PATH=${{ github.workspace }}/3rdparty/qt-macos/lib/cmake
+          cmake -S $(pwd) -B build/cmake -GNinja
           cmake --build build/cmake --target app_auth_tests
 
       - name: Running tests
@@ -101,7 +100,7 @@ jobs:
       - name: Building tests
         run: |
           mkdir ./build
-          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug -DCMAKE_PREFIX_PATH=3rdparty/qt-win
+          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug
           cmake --build ./build --target app_auth_tests
 
       - name: Running tests

@@ -85,7 +85,7 @@ jobs:
       - name: Building tests
         run: |
           mkdir -p build
-          cmake -S . -B $(pwd)/build -GNinja -DCMAKE_PREFIX_PATH=${{ github.workspace }}/3rdparty/qt-macos
+          cmake -S . -B $(pwd)/build -GNinja
           cmake --build $(pwd)/build --target build_tests
 
       - name: Running native messaging tests
@@ -151,7 +151,6 @@ jobs:
 
           cmake -S . -B ./build-win -GNinja \
               -DCMAKE_BUILD_TYPE=Debug \
-              -DCMAKE_PREFIX_PATH="$(pwd)/3rdparty/qt-windows" \
               -DWIREGUARD_FOLDER="$(pwd)/3rdparty/wireguard-nt"
           cmake --build ./build-win --target build_tests
 

@@ -69,13 +69,13 @@ jobs:
         with:
           dest: ${{ github.workspace }}/3rdparty
           toolchain-alias: qt-tools
+          cmake-env: false
 
       - name: Compile test client
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache \
-            -DCMAKE_PREFIX_PATH=3rdparty/qt-macos/lib/cmake \
             -DCMAKE_TOOLCHAIN_FILE=$(pwd)/scripts/macos/osxcross-toolchain.cmake \
             -DCMAKE_OSX_ARCHITECTURES="arm64" \
             -DQT_HOST_PATH=3rdparty/qt-host-tools \
