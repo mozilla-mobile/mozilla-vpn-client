@@ -42,7 +42,7 @@ runs:
         # contents. Lucky for us, tar is streamable so this just kinda works
         # even though the archive is truncated.
         curl -sSL -r0-4096 "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${NAME}" -o qt-toolchain-head.tar.xz
-        echo "toolchain-path=$(tar -tf qt-toolchain-head.tar.xz 2>&1 | head -1 | grep -o '^[^/]*')" >> $GITHUB_OUTPUT
+        echo "toolchain-path=$(xzcat qt-toolchain-head.tar.xz 2>/dev/null | tar t | head -1 | grep -o '^[^/]*')" >> $GITHUB_OUTPUT
 
     - name: Cache Qt toolchain
       uses: actions/cache/restore@v4
