@@ -17,31 +17,32 @@
 
 // Metatype registration glue
 template<typename T>
-class NetMgrType {
+class NetmgrType {
  public:
+  operator QVariant() const { return toVariant(); }
   QVariant toVariant() const {
     const T* value = reinterpret_cast<const T*>(this);
     return QVariant::fromValue<T>(*value);
   };
 
  protected:
-  explicit NetMgrType() { Q_UNUSED(s_registration); }
+  explicit NetmgrType() { Q_UNUSED(s_registration); }
 
-  class NetMgrTypeRegistration {
+  class NetmgrTypeRegistration {
    public:
-    NetMgrTypeRegistration() {
+    NetmgrTypeRegistration() {
       Q_UNUSED(s_registration);
       qRegisterMetaType<T>();
       qDBusRegisterMetaType<T>();
     };
   };
-  static inline NetMgrTypeRegistration s_registration;
+  static inline NetmgrTypeRegistration s_registration;
 };
 
-class NetMgrConfig : public QMap<QString,QVariantMap>, public NetMgrType<NetMgrConfig> {
+class NetmgrConfig : public QMap<QString,QVariantMap>, public NetmgrType<NetmgrConfig> {
  public:
   friend QDBusArgument& operator<<(QDBusArgument& args,
-                                   const NetMgrConfig& data) {
+                                   const NetmgrConfig& data) {
     args.beginMap(QMetaType::QString, QMetaType::QVariantMap);
     for (auto i = data.constBegin(); i != data.constEnd(); i++) {
       args.beginMapEntry();
@@ -53,7 +54,7 @@ class NetMgrConfig : public QMap<QString,QVariantMap>, public NetMgrType<NetMgrC
   }
 
   friend const QDBusArgument& operator>>(const QDBusArgument& args,
-                                         NetMgrConfig& data) {
+                                         NetmgrConfig& data) {
     data.clear();
     args.beginMap();
     while (!args.atEnd()) {
@@ -68,15 +69,15 @@ class NetMgrConfig : public QMap<QString,QVariantMap>, public NetMgrType<NetMgrC
     return args;
   }
 };
-Q_DECLARE_METATYPE(NetMgrConfig);
+Q_DECLARE_METATYPE(NetmgrConfig);
 
-class NetMgrDataList : public QList<QVariantMap>, public NetMgrType<NetMgrDataList> {
+class NetmgrDataList : public QList<QVariantMap>, public NetmgrType<NetmgrDataList> {
  public:
-  NetMgrDataList() : QList<QVariantMap>() {};
-  NetMgrDataList(const QVariantMap& data) : QList<QVariantMap>({data}) {};
+  NetmgrDataList() : QList<QVariantMap>() {};
+  NetmgrDataList(const QVariantMap& data) : QList<QVariantMap>({data}) {};
 
   friend QDBusArgument& operator<<(QDBusArgument& args,
-                                   const NetMgrDataList& data) {
+                                   const NetmgrDataList& data) {
     args.beginArray(QMetaType::QVariantMap);
     for (const auto& entry : data) {
       args << entry;
@@ -86,7 +87,7 @@ class NetMgrDataList : public QList<QVariantMap>, public NetMgrType<NetMgrDataLi
   }
 
   friend const QDBusArgument& operator>>(const QDBusArgument& args,
-                                         NetMgrDataList& data) {
+                                         NetmgrDataList& data) {
     data.clear();
     args.beginArray();
     while (!args.atEnd()) {
@@ -98,12 +99,12 @@ class NetMgrDataList : public QList<QVariantMap>, public NetMgrType<NetMgrDataLi
     return args;
   }
 };
-Q_DECLARE_METATYPE(NetMgrDataList);
+Q_DECLARE_METATYPE(NetmgrDataList);
 
-class NetMgrIpv6List : public QList<Q_IPV6ADDR>, public NetMgrType<NetMgrIpv6List> {
+class NetmgrIpv6List : public QList<Q_IPV6ADDR>, public NetmgrType<NetmgrIpv6List> {
  public:
   friend QDBusArgument& operator<<(QDBusArgument& args,
-                                   const NetMgrIpv6List& data) {
+                                   const NetmgrIpv6List& data) {
     args.beginArray(QMetaType::QByteArray);
     for (const auto& entry : data) {
       args << QByteArray((const char*)&entry, sizeof(Q_IPV6ADDR));
@@ -113,7 +114,7 @@ class NetMgrIpv6List : public QList<Q_IPV6ADDR>, public NetMgrType<NetMgrIpv6Lis
   }
 
   friend const QDBusArgument& operator>>(const QDBusArgument& args,
-                                         NetMgrIpv6List& data) {
+                                         NetmgrIpv6List& data) {
     data.clear();
     args.beginArray();
     while (!args.atEnd()) {
@@ -129,6 +130,6 @@ class NetMgrIpv6List : public QList<Q_IPV6ADDR>, public NetMgrType<NetMgrIpv6Lis
     return args;
   }
 };
-Q_DECLARE_METATYPE(NetMgrIpv6List);
+Q_DECLARE_METATYPE(NetmgrIpv6List);
 
 #endif  // NETMGRTYPES_H

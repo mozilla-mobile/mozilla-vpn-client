@@ -5,18 +5,16 @@
 #ifndef NETWORKMANAGERCONTROLLER_H
 #define NETWORKMANAGERCONTROLLER_H
 
+#include <QDBusObjectPath>
 #include <QObject>
 #include <QVariant>
 #include <QVersionNumber>
 
 #include "controllerimpl.h"
 
-class NetMgrConnection;
-class NetMgrDevice;
+class NetmgrDevice;
 class QDateTime;
-class QDBusConnection;
 class QDBusInterface;
-class QDBusObjectPath;
 class QDBusError;
 
 class NetworkManagerController final : public ControllerImpl {
@@ -36,9 +34,19 @@ class NetworkManagerController final : public ControllerImpl {
 
   void checkStatus() override;
 
- private slots:
-  void stateChanged(uint state, uint reason);
 
+  enum Flags {
+    TO_DISK = 0x01,
+    IN_MEMORY = 0x02,
+    IN_MEMORY_DETACHED = 0x04,
+    IN_MEMORY_ONLY = 0x08,
+    VOLATILE = 0x10,
+    BLOCK_AUTOCONNECT = 0x20,
+    NO_REAPPLY = 0x40,
+  };
+  Q_ENUM(Flags);
+
+ private slots:
   void initCompleted(const QDBusObjectPath& path, const QVariantMap& results);
   void peerCompleted(const QVariantMap& results);
   void activateCompleted(const QDBusObjectPath& path);
@@ -76,8 +84,9 @@ class NetworkManagerController final : public ControllerImpl {
   QDBusInterface* m_settings = nullptr;
   QDBusInterface* m_remote = nullptr;
 
-  NetMgrConnection* m_connection = nullptr;
-  NetMgrDevice* m_device = nullptr;
+
+  QString m_connectionPath;
+  NetmgrDevice* m_device = nullptr;
 };
 
 #endif  // NETWORKMANAGERCONTROLLER_H
