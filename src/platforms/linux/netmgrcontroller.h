@@ -17,13 +17,13 @@ class QDateTime;
 class QDBusInterface;
 class QDBusError;
 
-class NetworkManagerController final : public ControllerImpl {
-  Q_DISABLE_COPY_MOVE(NetworkManagerController)
+class NetmgrController final : public ControllerImpl {
+  Q_DISABLE_COPY_MOVE(NetmgrController)
   Q_OBJECT
 
  public:
-  NetworkManagerController();
-  ~NetworkManagerController();
+  NetmgrController();
+  ~NetmgrController();
 
   void initialize(const Device* device, const Keys* keys) override;
 

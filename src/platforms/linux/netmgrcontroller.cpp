@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "networkmanagercontroller.h"
+#include "netmgrcontroller.h"
 
 #include <sys/stat.h>
 
@@ -30,11 +30,11 @@ constexpr uint16_t WG_KEEPALIVE_PERIOD = 60;
 constexpr uint16_t WG_EXCLUDE_RULE_PRIO = 100;
 
 namespace {
-Logger logger("NetworkManagerController");
+Logger logger("NetmgrController");
 }
 
-NetworkManagerController::NetworkManagerController() {
-  MZ_COUNT_CTOR(NetworkManagerController);
+NetmgrController::NetmgrController() {
+  MZ_COUNT_CTOR(NetmgrController);
 
   m_client = new QDBusInterface(DBUS_NM_SERVICE, DBUS_NM_PATH,
                                 DBUS_NM_INTERFACE, QDBusConnection::systemBus(),
@@ -63,18 +63,17 @@ NetworkManagerController::NetworkManagerController() {
                              SLOT(dbusIgnoreError(const QDBusError&)));
 }
 
-NetworkManagerController::~NetworkManagerController() {
-  MZ_COUNT_DTOR(NetworkManagerController);
-  logger.debug() << "Destroying NetworkManagerController";
+NetmgrController::~NetmgrController() {
+  MZ_COUNT_DTOR(NetmgrController);
+  logger.debug() << "Destroying NetmgrController";
 }
 
 // static
-QString NetworkManagerController::nmInterface(const QString& name) {
+QString NetmgrController::nmInterface(const QString& name) {
   return QStringLiteral(DBUS_NM_INTERFACE) + "." + name;
 }
 
-void NetworkManagerController::initialize(const Device* device,
-                                          const Keys* keys) {
+void NetmgrController::initialize(const Device* device, const Keys* keys) {
   // Ensure we use a consistent UUID for the wireguard interface.
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -148,17 +147,17 @@ void NetworkManagerController::initialize(const Device* device,
   }
 }
 
-void NetworkManagerController::dbusError(const QDBusError& error) {
+void NetmgrController::dbusError(const QDBusError& error) {
   logger.warning() << "DBus message failed:" << error.message();
   emit backendFailure(Controller::ErrorFatal);
 }
 
-void NetworkManagerController::dbusIgnoreError(const QDBusError& error) {
+void NetmgrController::dbusIgnoreError(const QDBusError& error) {
   logger.debug() << "DBus message failed:" << error.message();
 }
 
 // static
-QVariantMap NetworkManagerController::wgPeer(const InterfaceConfig& config) {
+QVariantMap NetmgrController::wgPeer(const InterfaceConfig& config) {
   QStringList ipList;
   for (const IPAddress& i : config.m_allowedIPAddressRanges) {
     ipList.append(i.toString());
@@ -174,7 +173,7 @@ QVariantMap NetworkManagerController::wgPeer(const InterfaceConfig& config) {
 }
 
 // static
-void NetworkManagerController::setDnsConfig(QVariantMap& map, const QHostAddress& server) {
+void NetmgrController::setDnsConfig(QVariantMap& map, const QHostAddress& server) {
   if (server.isNull()) {
     map.remove("dns");
     map.remove("dns-priority");
@@ -194,7 +193,7 @@ void NetworkManagerController::setDnsConfig(QVariantMap& map, const QHostAddress
   }
 }
 
-QVariant NetworkManagerController::serializeConfig() const {
+QVariant NetmgrController::serializeConfig() const {
   NetmgrConfig config;
   config.insert("connection", m_config);
   config.insert("ipv4", m_ipv4config);
@@ -203,8 +202,8 @@ QVariant NetworkManagerController::serializeConfig() const {
   return QVariant::fromValue(config);
 }
 
-void NetworkManagerController::initCompleted(const QDBusObjectPath& path,
-                                             const QVariantMap& results) {
+void NetmgrController::initCompleted(const QDBusObjectPath& path,
+                                     const QVariantMap& results) {
   logger.debug() << "init completed:" << path.path();
   m_remote = new QDBusInterface(DBUS_NM_SERVICE, path.path(),
                                 nmInterface("Settings.Connection"),
@@ -218,8 +217,8 @@ void NetworkManagerController::initCompleted(const QDBusObjectPath& path,
   }
 }
 
-void NetworkManagerController::activate(const InterfaceConfig& config,
-                                        Controller::Reason reason) {
+void NetmgrController::activate(const InterfaceConfig& config,
+                                Controller::Reason reason) {
   // Update routes and allowedIpAddreses
   NetmgrDataList ipv4routes;
   NetmgrDataList ipv6routes;
@@ -270,7 +269,7 @@ void NetworkManagerController::activate(const InterfaceConfig& config,
   }
 }
 
-void NetworkManagerController::peerCompleted(const QVariantMap& results) {
+void NetmgrController::peerCompleted(const QVariantMap& results) {
   logger.debug() << "Peer configured";
   for (auto i = results.constBegin(); i != results.constEnd(); i++) {
     logger.debug() << "peer result:" << i.key() << "->" << i.value().toString();
@@ -289,11 +288,11 @@ void NetworkManagerController::peerCompleted(const QVariantMap& results) {
   }
 }
 
-void NetworkManagerController::activateCompleted(const QDBusObjectPath& path) {
+void NetmgrController::activateCompleted(const QDBusObjectPath& path) {
   logger.info() << "Connection activated:" << path.path();
 }
 
-void NetworkManagerController::deactivate(Controller::Reason reason) {
+void NetmgrController::deactivate(Controller::Reason reason) {
   Q_UNUSED(reason);
 
   if (!m_device || m_device->uuid() != m_tunnelUuid) {
@@ -314,7 +313,7 @@ void NetworkManagerController::deactivate(Controller::Reason reason) {
                    &QObject::deleteLater);
 }
 
-void NetworkManagerController::deviceAdded(const QDBusObjectPath& devpath) {
+void NetmgrController::deviceAdded(const QDBusObjectPath& devpath) {
   NetmgrDevice* device = new NetmgrDevice(devpath.path(), this);
   auto guard = qScopeGuard([device]() { delete device; });
 
@@ -336,11 +335,11 @@ void NetworkManagerController::deviceAdded(const QDBusObjectPath& devpath) {
 
   // Watch it for state changes.
   connect(m_device, &NetmgrDevice::stateChanged, this,
-          &NetworkManagerController::deviceStateChanged);
+          &NetmgrController::deviceStateChanged);
   deviceStateChanged(m_device->state(), NetmgrDevice::UNKNOWN, 0);
 }
 
-void NetworkManagerController::deviceRemoved(const QDBusObjectPath& path) {
+void NetmgrController::deviceRemoved(const QDBusObjectPath& path) {
   logger.debug() << "device removed:" << path.path();
   if (m_device && m_device->path() == path.path()) {
     delete m_device;
@@ -351,7 +350,7 @@ void NetworkManagerController::deviceRemoved(const QDBusObjectPath& path) {
   }
 }
 
-void NetworkManagerController::deviceStateChanged(uint state, uint prev, uint reason) {
+void NetmgrController::deviceStateChanged(uint state, uint prev, uint reason) {
   auto newstate = static_cast<NetmgrDevice::State>(state);
   auto prevstate = static_cast<NetmgrDevice::State>(prev);
   logger.debug() << "device state changed:" << prevstate << "->" << newstate;
@@ -368,7 +367,7 @@ void NetworkManagerController::deviceStateChanged(uint state, uint prev, uint re
 }
 
 // static
-uint64_t NetworkManagerController::readSysfsFile(const QString& path) {
+uint64_t NetmgrController::readSysfsFile(const QString& path) {
   QFile file(path);
 
   if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
@@ -380,7 +379,7 @@ uint64_t NetworkManagerController::readSysfsFile(const QString& path) {
   return line.toULongLong();
 }
 
-void NetworkManagerController::checkStatus() {
+void NetmgrController::checkStatus() {
   QString txPath =
       QString("/sys/class/net/%1/statistics/tx_bytes").arg(WG_INTERFACE_NAME);
   QString rxPath =
@@ -391,7 +390,7 @@ void NetworkManagerController::checkStatus() {
   emit statusUpdated(m_serverIpv4Gateway, m_deviceIpv4Address, txBytes, rxBytes);
 }
 
-QDateTime NetworkManagerController::guessTimestamp() {
+QDateTime NetmgrController::guessTimestamp() {
   QString devPath = QString("/sys/class/net/%1").arg(WG_INTERFACE_NAME);
   struct stat st;
   if (lstat(qPrintable(devPath), &st) != 0) {

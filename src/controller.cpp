@@ -36,7 +36,7 @@
 #include "taskscheduler.h"
 
 #if defined(MZ_FLATPAK)
-#  include "platforms/linux/networkmanagercontroller.h"
+#  include "platforms/linux/netmgrcontroller.h"
 #elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
 #elif defined(MZ_MACOS)
@@ -138,7 +138,7 @@ void Controller::initialize() {
   } else {
     // We must use a specialized platform controller
 #if defined(MZ_FLATPAK)
-    m_impl.reset(new NetworkManagerController());
+    m_impl.reset(new NetmgrController());
 #elif defined(MZ_LINUX)
     m_impl.reset(new LinuxController());
 #elif defined(MZ_MACOS)
