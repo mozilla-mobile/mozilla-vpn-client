@@ -48,12 +48,20 @@ jobs:
           key: ccache-linux-${{ runner.arch }}-${{ github.sha }}
           restore-keys: ccache-linux-${{ runner.arch }}-${{ github.event.pull_request.base.sha }}
 
+      - name: Fetch cached rust crates
+        uses: actions/cache/restore@v4
+        with:
+          path: 3rdparty/cargo-vendor
+          key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
+          enableCrossOsArchive: true
+
       - name: Compile test client
         shell: bash
         run: |
           mkdir -p build-${{ runner.os }}
           cmake -S $(pwd) -B build-${{ runner.os }} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
-            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DRUST_VENDOR_DIR=3rdparty/cargo-vendor
           cmake --build build-${{ runner.os }} --target mozillavpn
 
       - uses: actions/upload-artifact@v4
