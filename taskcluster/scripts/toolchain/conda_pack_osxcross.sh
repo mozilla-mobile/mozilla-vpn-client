@@ -35,6 +35,10 @@ unset SDKROOT
 EOF
 chmod +x ${CONDA_VPN_PREFIX}/etc/conda/deactivate.d/01-macosx-sdkroot.sh
 
+# Provide symlinks for some cctools to their standard name.
+CCTOOLS_ARCH_TRIPLE=arm64-apple-darwin20.0.0
+ln -s ${CCTOOLS_ARCH_TRIPLE}-lipo ${CONDA_VPN_PREFIX}/bin/lipo
+
 echo "Installing conda-pack..."
 conda install conda-pack -y
 

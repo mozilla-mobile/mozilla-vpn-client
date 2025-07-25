@@ -44,4 +44,10 @@ print Y "Compressing the build artifacts..."
 mkdir -p ${TASK_WORKDIR}/artifacts/
 tar -C ${TASK_WORKDIR}/build-osxcross/src/ -czvf ${TASK_WORKDIR}/artifacts/MozillaVPN.tar.gz "Mozilla VPN.app" || die
 
+print Y "Generating dSYM bundle"
+CONTENTS_DIR="${TASK_WORKDIR}/build-osxcross/src/Mozilla VPN.app/Contents"
+dsymutil "${CONTENTS_DIR}/MacOS/Mozilla VPN" -o ${TASK_WORKDIR}/MozillaVPN.dSYM
+dsymutil "${CONTENTS_DIR}/Library/LaunchServices/org.mozilla.macos.FirefoxVPN.daemon" -o ${TASK_WORKDIR}/MozillaVPN.dSYM
+tar -C ${TASK_WORKDIR} -cJvf ${TASK_WORKDIR}/artifacts/MozillaVPN.dSYM.tar.xz MozillaVPN.dSYM || die 
+
 print G "Done!"

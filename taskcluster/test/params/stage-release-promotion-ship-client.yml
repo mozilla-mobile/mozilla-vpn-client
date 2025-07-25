@@ -18,7 +18,7 @@ existing_tasks:
   build-linux/kinetic: XBCTT6b9RAm_lZbdVbmoxQ
   build-linux/lunar: fXNvfFAuSBWQnxRGAREmWQ
   build-linux64/release-deb: RYwRkChTTqSP-YsJrzW_ZA
-  build-macos/pr: ZMxnxgT_SImzRMn27DDyXg
+  build-macos/debug: ZMxnxgT_SImzRMn27DDyXg
   build-source/vpn: HjtImOLUQV6dFIoIqUfpcQ
   build-wasm/opt: bSjKBM0qSISH7kQ1UIVJdQ
   build-windows/opt: ajetqRIORX2GnwiKy8bifQ

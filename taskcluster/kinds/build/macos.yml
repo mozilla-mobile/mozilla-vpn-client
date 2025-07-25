@@ -10,7 +10,6 @@ task-defaults:
             tier: 1
             platform: macos/universal
     requires-level: 1
-    worker-type: b-macos
     fetches:
         toolchain:
             - cargo-vendor
@@ -22,45 +21,29 @@ task-defaults:
         - MozillaVPN.tar.gz
     run:
         using: run-task
-        use-caches: []
+        use-caches: [checkout]
         cwd: '{checkout}'
-        command: ./taskcluster/scripts/build/macos_build.sh
-
-
-macos/pr:
-    fetches:
-        toolchain:
-            - conda-macos
-            - qt-macos-6.6
-    description: "Mac Build"
-    treeherder:
-        symbol: BD
-    run:
-        command: ./taskcluster/scripts/build/macos_build.sh -d
+        command: ./taskcluster/scripts/build/macos_osxcross.sh
 
 
 macos/opt:
+    description: "macOS Build (release)"
+    treeherder:
+        symbol: B
+    worker-type: b-macos
+    requires-level: 3
     fetches:
         toolchain:
             - conda-macos
             - qt-macos-6.6
-    description: "Mac Build"
-    treeherder:
-        symbol: B
     run:
         command: ./taskcluster/scripts/build/macos_build.sh -d
-    requires-level: 3 
     scopes:
         - secrets:get:project/mozillavpn/level-1/sentry
 
 
-macos/osxcross:
-    description: "Mac Build (osxcross)"
-    treeherder:
-            symbol: BD
-            kind: build
-            tier: 1
-            platform: macos/osxcross
+macos/debug:
+    description: "macOS Build (debug)"
     fetches:
         toolchain:
             - cargo-vendor
@@ -70,8 +53,3 @@ macos/osxcross:
     worker-type: b-linux-large
     worker:
           docker-image: {in-tree: conda-base}
-    run:
-          using: run-task
-          use-caches: [checkout]
-          cwd: '{checkout}'
-          command: ./taskcluster/scripts/build/macos_osxcross.sh
