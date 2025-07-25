@@ -1,0 +1,68 @@
+name: Rust
+on:
+  push:
+    branches:
+      - main
+      - "releases/**"
+  pull_request:
+    branches:
+      - main
+      - "releases/**"
+
+# Restrict tests to the most recent commit.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  cargo-vendor:
+    name: "Update cached crates"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+        with: 
+          sparse-checkout: Cargo.lock
+
+      - name: Lookup cached crates
+        id: rust-cache
+        uses: actions/cache/restore@v4
+        with:
+          path: 3rdparty/cargo-vendor
+          key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
+          lookup-only: true
+          enableCrossOsArchive: true
+
+      - name: Update cached crates
+        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
+        run: |
+          mkdir -p 3rdparty/cargo-vendor
+          cargo vendor --manifest-path Cargo.toml 3rdparty/cargo-vendor
+
+      - name: Saved cached crates
+        if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
+        uses: actions/cache/save@v4
+        with:
+          path: 3rdparty/cargo-vendor
+          key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
+          enableCrossOsArchive: true
+
+  rust-unit-tests:
+    strategy:
+      matrix:
+        os: [ubuntu-22.04, windows-latest, macos-latest]
+
+    runs-on: ${{ matrix.os }}
+    name: Rust unit tests (${{ matrix.os }})
+    steps:
+      - name: Clone repository
+        uses: actions/checkout@v4
+
+      - name: Fetch glean submodules
+        run: |
+          git submodule update --init 3rdparty/glean
+
+      - name: Signature library tests
+        shell: bash
+        working-directory: ./signature
+        run: cargo test -- --nocapture
