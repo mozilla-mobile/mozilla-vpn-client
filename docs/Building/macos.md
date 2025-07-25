@@ -56,7 +56,7 @@ Get a static build of Qt made built in our CI.
 
 https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public/build/qt6_macos.tar.xz
 
-Unzip the folder and remember the location for the configure step.
+Extract the archive and remember the location for the configure step.
 
 # Build
 
