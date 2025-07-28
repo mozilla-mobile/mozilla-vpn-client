@@ -5,6 +5,7 @@
   "type": "message",
   "conditions": {
     "max_client_version": "2.29.9",
+    "platforms": ["windows", "linux", "ios", "android"],
     "javascript": "osCheck.js"
   },
   "javascript": {
