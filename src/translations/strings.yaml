@@ -376,7 +376,7 @@ bypassVPN:
   labelTitle: Bypass VPN for select traffic
   subLabel:
     value: Allow RCS/MMS messaging, Apple features like CarPlay and AirDrop, and connections to local devices. May reduce network security.
-    comment: This string should be clear that major features like some messages will break, but at potential the expense of some security.
+    comment: Make sure it's clear that this will allow major features (like messaging apps) to function, but potentially at the expense of some security.
   learnMoreSentence: Learn more.
   vpnMustBeOff: VPN must be off to change this setting
 
