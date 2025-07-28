@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.CountDownTimer
 import android.os.IBinder
 import android.system.OsConstants
-import com.wireguard.android.util.SharedLibraryLoader
 import com.wireguard.config.Config
 import com.wireguard.config.InetEndpoint
 import com.wireguard.config.InetNetwork
@@ -26,6 +25,7 @@ import org.mozilla.firefox.qt.common.Prefs
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Pings
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
+import org.mozilla.guardian.tunnel.WireGuardGo
 import java.io.File
 import java.util.*
 
@@ -137,13 +137,13 @@ class VPNService : android.net.VpnService() {
             return
         }
         Log.init(this)
-        SharedLibraryLoader.loadSharedLibrary(this, "wg-go")
-        Log.i(tag, "Initialised Service with Wireguard Version ${wgVersion()}")
+        // No need to load the library here; WireGuardGo does it statically.
+        Log.i(tag, "Initialised Service with Wireguard Version ${WireGuardGo.wgVersion()}")
 
         // Check in with wg, if there is a tunnel.
         // This should be 99% -1, however if the service get's destroyed and the
         // wireguard tunnel lives on, we can recover from here :)
-        currentTunnelHandle = wgGetLatestHandle()
+        currentTunnelHandle = WireGuardGo.wgGetLatestHandle()
         Log.i(tag, "Wireguard reported current tunnel: $currentTunnelHandle")
         mAlreadyInitialised = true
 
@@ -334,17 +334,17 @@ class VPNService : android.net.VpnService() {
                     recordDataTransferMetrics()
                 }
 
-                wgTurnOff(currentTunnelHandle)
+                WireGuardGo.wgTurnOff(currentTunnelHandle)
             }
-            currentTunnelHandle = wgTurnOn("mvpn0", tun.detachFd(), wgConfig)
+            currentTunnelHandle = WireGuardGo.wgTurnOn("mvpn0", tun.detachFd(), wgConfig)
         }
         if (currentTunnelHandle < 0) {
             throw Error("Activation Error Wireguard-Error -> $currentTunnelHandle")
         } else {
             Log.i(tag, "Updated tunnel handle to: " + currentTunnelHandle)
         }
-        protect(wgGetSocketV4(currentTunnelHandle))
-        protect(wgGetSocketV6(currentTunnelHandle))
+        protect(WireGuardGo.wgGetSocketV4(currentTunnelHandle))
+        protect(WireGuardGo.wgGetSocketV6(currentTunnelHandle))
 
         mConfig = json
         // We don't want to record start metrics in several situations:
@@ -481,7 +481,7 @@ class VPNService : android.net.VpnService() {
             recordDataTransferMetrics()
         }
 
-        wgTurnOff(currentTunnelHandle)
+        WireGuardGo.wgTurnOff(currentTunnelHandle)
         currentTunnelHandle = -1
         // If the client is "dead", on a disconnect the
         // message won't be updated to 'you disconnected from X'
@@ -546,7 +546,7 @@ class VPNService : android.net.VpnService() {
         if (!isUp) {
             return null
         }
-        val config = wgGetConfig(currentTunnelHandle) ?: return null
+        val config = WireGuardGo.wgGetConfig(currentTunnelHandle) ?: return null
         val lines = config.split("\n")
         for (line in lines) {
             val parts = line.split("=")
@@ -702,19 +702,5 @@ class VPNService : android.net.VpnService() {
                 },
             )
         }
-
-        @JvmStatic private external fun wgGetConfig(handle: Int): String?
-
-        @JvmStatic private external fun wgGetSocketV4(handle: Int): Int
-
-        @JvmStatic private external fun wgGetSocketV6(handle: Int): Int
-
-        @JvmStatic private external fun wgTurnOff(handle: Int)
-
-        @JvmStatic private external fun wgTurnOn(ifName: String, tunFd: Int, settings: String): Int
-
-        @JvmStatic private external fun wgVersion(): String?
-
-        @JvmStatic private external fun wgGetLatestHandle(): Int
     }
 }
