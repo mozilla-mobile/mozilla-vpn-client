@@ -10,7 +10,6 @@ import android.os.Build
 import android.os.CountDownTimer
 import android.os.IBinder
 import android.system.OsConstants
-import com.wireguard.android.util.SharedLibraryLoader
 import com.wireguard.config.Config
 import com.wireguard.config.InetEndpoint
 import com.wireguard.config.InetNetwork
