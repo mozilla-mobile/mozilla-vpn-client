@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    //namespace 'org.mozilla.firefox.vpn.common'
+    namespace 'org.mozilla.firefox.vpn.common'
     compileSdkVersion Config.compileSdkVersion
 
     defaultConfig {
@@ -32,6 +32,10 @@ android {
     }
     kotlinOptions {
         jvmTarget = '1.8'
+    }
+
+    buildFeatures {
+        buildConfig = true
     }
 }
 
