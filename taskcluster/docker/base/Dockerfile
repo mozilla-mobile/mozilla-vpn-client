@@ -48,7 +48,11 @@ RUN apt-get update -qq \
     && apt-get clean
 
 RUN pip install --upgrade pip
-RUN pip install taskcluster
+
+# Install taskcluster and dependencies
+# %include taskcluster/requirements.txt
+ADD topsrcdir/taskcluster/requirements.txt /root/taskcluster-requirements.txt
+RUN pip install -r /root/taskcluster-requirements.txt
 
 RUN locale-gen "$LANG"
 

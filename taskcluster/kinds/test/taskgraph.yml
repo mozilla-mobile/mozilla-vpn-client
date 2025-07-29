@@ -19,7 +19,6 @@ taskgraph-definition:
         use-caches: [checkout, pip]
         cwd: '{checkout}'
         command: >-
-          pip3 install -r taskcluster/requirements.txt &&
           for param in `ls taskcluster/test/params`; do
               taskgraph full -p taskcluster/test/params/$param
           done &&
