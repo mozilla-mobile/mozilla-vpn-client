@@ -99,7 +99,15 @@ if(ANDROID)
 endif()
 
 if(NOT DEFINED BUILD_ID)
-    string(TIMESTAMP BUILD_ID "${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M")
+    if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/.git)
+        execute_process(
+            OUTPUT_VARIABLE BUILD_ID
+            OUTPUT_STRIP_TRAILING_WHITESPACE 
+            COMMAND git -C ${CMAKE_SOURCE_DIR} log -1 --format=%cd --date=format:${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M HEAD   
+        )
+    else()
+        string(TIMESTAMP BUILD_ID ${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M)
+    endif()
     message("Generated BUILD_ID: ${BUILD_ID}")
 endif()
 
