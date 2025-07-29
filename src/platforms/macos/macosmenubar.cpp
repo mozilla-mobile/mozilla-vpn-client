@@ -20,7 +20,7 @@
 #include <QMenuBar>
 
 namespace {
-Logger logger("MacOSManuBar");
+Logger logger("MacOSMenuBar");
 MacOSMenuBar* s_instance = nullptr;
 }  // namespace
 
