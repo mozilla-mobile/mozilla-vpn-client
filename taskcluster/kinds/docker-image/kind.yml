@@ -32,6 +32,9 @@ tasks:
     lint:
         parent: base
         symbol: I(lint)
+    sentry:
+        parent: base
+        symbol: I(sentry)
     wasm:
         parent: base
         symbol: I(wasm)
