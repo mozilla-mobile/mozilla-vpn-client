@@ -52,4 +52,8 @@ macos/debug:
             - qt-tools
     worker-type: b-linux-large
     worker:
-          docker-image: {in-tree: conda-base}
+        docker-image: {in-tree: conda-base}
+        artifacts:
+            - type: directory
+              name: public/build
+              path: /builds/worker/artifacts
