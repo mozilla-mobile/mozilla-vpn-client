@@ -48,7 +48,16 @@ RUN apt-get update -qq \
     && apt-get clean
 
 RUN pip install --upgrade pip
-RUN pip install taskcluster
+
+# Install taskcluster and dependencies
+# %include taskcluster/requirements.txt
+ADD topsrcdir/taskcluster/requirements.txt /root/taskcluster-requirements.txt
+RUN pip install -r /root/taskcluster-requirements.txt
+
+# Install the get-secret script too.
+# %include taskcluster/scripts/get-secret.py
+ADD topsrcdir/taskcluster/scripts/get-secret.py /builds/worker/.local/bin/get-secret
+RUN chmod +x /builds/worker/.local/bin/get-secret
 
 RUN locale-gen "$LANG"
 
