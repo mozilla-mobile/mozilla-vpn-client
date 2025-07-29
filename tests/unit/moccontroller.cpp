@@ -43,8 +43,6 @@ void Controller::connected(const QString& pubkey) { Q_UNUSED(pubkey); }
 
 void Controller::disconnected() {}
 
-bool Controller::processNextStep() { return false; }
-
 void Controller::setState(State) {}
 
 qint64 Controller::connectionTimestamp() const { return 42; }
