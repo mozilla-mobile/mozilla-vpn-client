@@ -40,10 +40,6 @@ NetmgrController::NetmgrController() {
       new QDBusInterface(DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_NM_INTERFACE,
                          QDBusConnection::systemBus(), this);
 
-  m_settings = new QDBusInterface(
-      DBUS_NM_SERVICE, QStringLiteral(DBUS_NM_PATH) + "/Settings",
-      nmInterface("Settings"), m_client->connection(), this);
-  
   QVariant version = m_client->property("Version");
   m_version = QVersionNumber::fromString(version.toString());
   logger.info() << "NetworkManager version:" << m_version.toString();
@@ -68,7 +64,7 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
     uuid = QUuid::createUuid();
     settingsHolder->setTunnelUuid(uuid.toString(QUuid::WithoutBraces));
   }
-  m_tunnelUuid = uuid.toString(QUuid::WithoutBraces);
+  m_uuid = uuid.toString(QUuid::WithoutBraces);
 
   m_deviceIpv4Address = device->ipv4Address();
 
@@ -76,7 +72,7 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
   m_config.insert("id", QCoreApplication::applicationName());
   m_config.insert("interface-name", QString(WG_INTERFACE_NAME));
   m_config.insert("type", QString("wireguard"));
-  m_config.insert("uuid", m_tunnelUuid);
+  m_config.insert("uuid", m_uuid);
   m_config.insert("autoconnect", false);
   // TODO: Permissions?
   // TODO: Timestamp?
@@ -109,22 +105,25 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
   m_wireguard.insert("peer-routes", false);
   m_wireguard.insert("private-key", keys->privateKey());
 
+  QString path = QStringLiteral(DBUS_NM_PATH) + "/Settings";
+  QDBusInterface iface(DBUS_NM_SERVICE, path, nmInterface("Settings"),
+                       m_client->connection());
+
   // Check if the connection already exists.
-  QDBusReply<QDBusObjectPath> reply =
-      m_settings->call("GetConnectionByUuid", m_tunnelUuid);
+  QDBusReply<QDBusObjectPath> reply = iface.call("GetConnectionByUuid", m_uuid);
   if (reply.isValid()) {
-    logger.info() << "Connection" << m_tunnelUuid << "already exists";
+    logger.info() << "Connection" << m_uuid << "already exists";
     initCompleted(reply.value(), QVariantMap());
     return;
   }
 
   // Create the connection
-  logger.info() << "Adding connection:" << m_tunnelUuid;
+  logger.info() << "Adding connection:" << m_uuid;
   QVariantList args;
   args << serializeConfig();
   args << (uint)IN_MEMORY;
   args << QVariantMap();
-  bool okay = m_settings->callWithCallback(
+  bool okay = iface.callWithCallback(
       "AddConnection2", args, this,
       SLOT(initCompleted(const QDBusObjectPath&, const QVariantMap&)),
       SLOT(dbusInitError(const QDBusError&)));
@@ -157,7 +156,7 @@ void NetmgrController::initCompleted(const QDBusObjectPath& path,
             &NetmgrController::deviceStateChanged);
 
     isConnected = m_device->state() == NetmgrDevice::ACTIVATED &&
-                  m_device->uuid() == m_tunnelUuid;
+                  m_device->uuid() == m_uuid;
   }
 
   emit initialized(true, isConnected, guessUptime());
@@ -300,7 +299,7 @@ void NetmgrController::activateCompleted(const QDBusObjectPath& path) {
 void NetmgrController::deactivate(Controller::Reason reason) {
   Q_UNUSED(reason);
 
-  if (!m_device || m_device->uuid() != m_tunnelUuid) {
+  if (!m_device || m_device->uuid() != m_uuid) {
     logger.warning() << "Client already disconnected";
     emit disconnected();
     return;
@@ -360,7 +359,7 @@ void NetmgrController::deviceStateChanged(uint state, uint prev, uint reason) {
   auto prevstate = static_cast<NetmgrDevice::State>(prev);
   logger.debug() << "device state changed:" << prevstate << "->" << newstate;
 
-  if (m_device->uuid() != m_tunnelUuid) {
+  if (m_device->uuid() != m_uuid) {
     return;
   }
 

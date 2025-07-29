@@ -77,11 +77,10 @@ class NetmgrController final : public ControllerImpl {
   QString m_serverPublicKey;
   QString m_serverIpv4Gateway;
   QString m_deviceIpv4Address;
-  QString m_tunnelUuid;
+  QString m_uuid;
 
   QVersionNumber m_version;
   QDBusInterface* m_client = nullptr;
-  QDBusInterface* m_settings = nullptr;
   QDBusInterface* m_remote = nullptr;
 
   QString m_connectionPath;

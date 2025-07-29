@@ -39,7 +39,7 @@ class NetmgrType {
   static inline NetmgrTypeRegistration s_registration;
 };
 
-class NetmgrConfig : public QMap<QString,QVariantMap>,
+class NetmgrConfig : public QMap<QString, QVariantMap>,
                      public NetmgrType<NetmgrConfig> {
  public:
   friend QDBusArgument& operator<<(QDBusArgument& args,
@@ -72,10 +72,11 @@ class NetmgrConfig : public QMap<QString,QVariantMap>,
 };
 Q_DECLARE_METATYPE(NetmgrConfig);
 
-class NetmgrDataList : public QList<QVariantMap>, public NetmgrType<NetmgrDataList> {
+class NetmgrDataList : public QList<QVariantMap>,
+                       public NetmgrType<NetmgrDataList> {
  public:
-  NetmgrDataList() : QList<QVariantMap>() {};
-  NetmgrDataList(const QVariantMap& data) : QList<QVariantMap>({data}) {};
+  NetmgrDataList() : QList<QVariantMap>(){};
+  NetmgrDataList(const QVariantMap& data) : QList<QVariantMap>({data}){};
 
   friend QDBusArgument& operator<<(QDBusArgument& args,
                                    const NetmgrDataList& data) {
@@ -102,7 +103,8 @@ class NetmgrDataList : public QList<QVariantMap>, public NetmgrType<NetmgrDataLi
 };
 Q_DECLARE_METATYPE(NetmgrDataList);
 
-class NetmgrIpv6List : public QList<Q_IPV6ADDR>, public NetmgrType<NetmgrIpv6List> {
+class NetmgrIpv6List : public QList<Q_IPV6ADDR>,
+                       public NetmgrType<NetmgrIpv6List> {
  public:
   friend QDBusArgument& operator<<(QDBusArgument& args,
                                    const NetmgrIpv6List& data) {
