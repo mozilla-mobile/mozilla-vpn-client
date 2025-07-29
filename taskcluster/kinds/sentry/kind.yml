@@ -1,0 +1,52 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - taskgraph.transforms.run:transforms
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - build
+
+task-defaults:
+    treeherder:
+        symbol: SYM
+        kind: other
+        tier: 1
+    worker-type: b-linux
+    worker:
+        max-run-time: 600
+        docker-image: {in-tree: base}
+    #requires-level: 3 # for testing
+    scopes:
+        - secrets:get:project/mozillavpn/level-1/sentry
+    run:
+        using: run-task
+        checkout: false
+
+tasks:
+    macos:
+        description: Upload sentry symbols for macOS
+        treeherder:
+            #platform: macos/opt
+            platform: macos/debug
+        fetches:
+            build:
+                - artifact: MozillaVPN-dsym.tar.xz
+        dependencies:
+            #build: build-macos/opt
+            build: build-macos/debug
+        run:
+            command: >-
+                echo "Checking & genrating a symbols bundle"
+                find ${MOZ_FETCHES_DIR}/MozillaVPN.dSYM
+                sentry-cli difutil check ${MOZ_FETCHES_DIR}/MozillaVPN.dSYM/Contents/Resources/DWARF/*
+                sentry-cli difutil bundle-sources ${MOZ_FETCHES_DIR}/MozillaVPN.dSYM/Contents/Resources/DWARF/*
+
+                echo "Uploading symbol bundle"
+                get-secret -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
+                sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
+                sentry-cli debug-files upload --org mozilla -p vpn-client {MOZ_FETCHES_DIR}/MozillaVPN.dSYM/Contents/Resources/DWARF/*
