@@ -5,17 +5,12 @@
 #ifndef SENTRYADAPTER_H
 #define SENTRYADAPTER_H
 
-#ifdef SENTRY_ENABLED
-#  include <sentry.h>
-#else
-// Define those types for testing.
-typedef void* sentry_ucontext_t;
-typedef void* sentry_value_t;
-typedef void* sentry_envelope_t;
-#endif
-
 #include <QApplication>
 #include <QObject>
+
+struct sentry_ucontext_s;
+struct sentry_envelope_s;
+union sentry_value_u;
 
 class SentryAdapter final : public QObject {
   Q_OBJECT
@@ -76,8 +71,9 @@ class SentryAdapter final : public QObject {
    * @return either the @param event or null_sentry_value , if the crash event
    * should not be recorded.
    */
-  static sentry_value_t onCrash(const sentry_ucontext_t* uctx,
-                                sentry_value_t event, void* closure);
+  static union sentry_value_u onCrash(const struct sentry_ucontext_s* uctx,
+                                      union sentry_value_u event,
+                                      void* closure);
 
   /**
    * @brief Send's a Sentry Event "envelope" to the Sentry endpoint.
@@ -95,7 +91,8 @@ class SentryAdapter final : public QObject {
    * argument to this function. We are not using that.
    *
    */
-  static void transportEnvelope(sentry_envelope_t* envelope, void* state);
+  static void transportEnvelope(struct sentry_envelope_s* envelope,
+                                void* state);
 
   enum UserConsentResult {
     Pending = -1,   // The User has to be asked

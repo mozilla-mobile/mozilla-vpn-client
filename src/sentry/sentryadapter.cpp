@@ -8,6 +8,7 @@
 // This is not found when building tests ... weird.
 #  include <QtQml/private/qqmlengine_p.h>
 #endif
+
 #include <sentry.h>
 
 #include <QDir>

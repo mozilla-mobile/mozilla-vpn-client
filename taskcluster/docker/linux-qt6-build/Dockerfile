@@ -21,12 +21,12 @@ RUN echo "locales locales/locales_to_be_generated multiselect en_US.UTF-8 UTF-8"
 RUN apt-get update -q
 RUN apt-get -y install tzdata
 RUN apt-get -y install build-essential \
-                       clang \
+                       clang-16 \
                        curl \
                        debhelper \
                        devscripts \
                        equivs \
-                       libclang-dev \
+                       libclang-16-dev \
                        libgl1-mesa-dev \
                        locales \
                        ninja-build \
@@ -66,7 +66,6 @@ RUN apt-get -y install libatspi2.0-dev \
 
 ## Install Rust
 RUN mkdir -p /tmp/rust
-RUN curl https://static.rust-lang.org/dist/rust-1.75.0-x86_64-unknown-linux-gnu.tar.gz -o /tmp/rust/rust-static.tar.gz
 RUN curl -sSL https://static.rust-lang.org/dist/rust-1.75.0-x86_64-unknown-linux-gnu.tar.gz -o /tmp/rust/rust-static.tar.gz
 RUN echo "473978b6f8ff216389f9e89315211c6b683cf95a966196e7914b46e8cf0d74f6 /tmp/rust/rust-static.tar.gz" | sha256sum -c -
 RUN tar -C /tmp/rust -xf /tmp/rust/rust-static.tar.gz
@@ -110,7 +109,7 @@ ADD topsrcdir/taskcluster/scripts/build/linux_build_dpkg.sh /builds/worker/build
 
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \
-    PATH="/builds/worker/.local/bin:/usr/local/go/bin:$PATH"
+    PATH="/builds/worker/.local/bin:/usr/local/go/bin:/usr/lib/llvm-16/bin:$PATH"
 
 VOLUME /builds/worker/checkouts
 VOLUME /builds/worker/.task-cache/pip

@@ -2,14 +2,14 @@ name: vpn
 channels:
   - conda-forge
 dependencies:
-  - clang=18.1.8
-  - clang-tools=18.1.8
-  - clangxx=18.1.8
+  - clang=20.1.8
+  - clang-tools=20.1.8
+  - clangxx=20.1.8
   - ccache=4.10.1
-  - cctools_osx-64=986
-  - cctools_osx-arm64=986
+  - cctools_osx-64=1010.6
+  - cctools_osx-arm64=1010.6
   - python=3.9
-  - nodejs=18.19.*
+  - nodejs=18.*
   - pip=22.3.1
   - rust=1.75
   - rust-std-aarch64-apple-darwin=1.75
