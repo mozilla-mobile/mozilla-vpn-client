@@ -60,15 +60,14 @@ if ! codesign -v --verbose=4 -R="${CODESIGN_REQS}" "$APP_DIR"; then
 fi
 echo "Codesign successful!"
 
-# Unload the daemon
+# Unload any daemons matching our app identifier.
 UPDATING=
-if launchctl bootout system/${CODESIGN_APP_IDENTIFIER}.service 2>/dev/null; then
-  echo "Update detected (SMAppService)"
-  UPDATING=1
-elif launchctl bootout system/${CODESIGN_APP_IDENTIFIER}.daemon 2>/dev/null; then
-  echo "Update detected (legacy daemon)"
-  UPDATING=1
-fi
+for SERVICE in $(launchctl list | awk '{print $3}' | grep "^${CODESIGN_APP_IDENTIFIER}."); do
+  echo "Unloading launchd service: ${SERVICE}"
+  if launchctl bootout system/${SERVICE} 2>/dev/null; then
+    UPDATING=1
+  fi
+done
 if [ -f "$DAEMON_PLIST_PATH" ]; then
   echo "Removing legacy daemon plist"
   rm -f ${DAEMON_PLIST_PATH}
