@@ -12,8 +12,6 @@ mkdir -p .ccache
 # Reqs
 git submodule update --init --depth 1
 
-pip3 install -r requirements.txt
-
 export PATH="$QTPATH/wasm_singlethread/bin:$PATH"
 mkdir build
 $QTPATH/wasm_singlethread/bin/qt-cmake -S . -B build \
