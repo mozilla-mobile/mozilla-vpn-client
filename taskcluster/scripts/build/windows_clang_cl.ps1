@@ -83,7 +83,7 @@ Get-command python
 python  $REPO_ROOT_PATH/taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
 $env:SENTRY_AUTH_TOKEN=$(Get-Content sentry_debug_file_upload_key)
 # Are we logged in?
-python -m sentry-cli info
+sentry-cli info
 
 # This will ask sentry to scan all files in there and upload
 # missing debug info, for symbolification
@@ -91,7 +91,7 @@ python -m sentry-cli info
 python -m sentry-cli debug-files check "$BUILD_DIR\src\Mozilla VPN.pdb"
 Get-ChildItem $TASK_WORKDIR/unsigned/
 if ($env:MOZ_SCM_LEVEL -eq "3") {
-    python -m sentry-cli debug-files upload --org mozilla -p vpn-client --include-sources $BUILD_DIR
+    sentry-cli debug-files upload --org mozilla -p vpn-client --include-sources $BUILD_DIR
 } else{
-    python -m sentry-cli --log-level info debug-files upload --org mozilla -p vpn-client --include-sources --no-upload $BUILD_DIR
+    sentry-cli --log-level info debug-files upload --org mozilla -p vpn-client --include-sources --no-upload $BUILD_DIR
 }
