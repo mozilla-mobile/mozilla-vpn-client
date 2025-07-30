@@ -46,8 +46,15 @@ tar -C ${TASK_WORKDIR}/build-osxcross/src/ -czvf ${TASK_WORKDIR}/artifacts/Mozil
 
 print Y "Generating dSYM bundle"
 CONTENTS_DIR="${TASK_WORKDIR}/build-osxcross/src/Mozilla VPN.app/Contents"
-dsymutil "${CONTENTS_DIR}/MacOS/Mozilla VPN" -o ${TASK_WORKDIR}/MozillaVPN.dSYM
-dsymutil "${CONTENTS_DIR}/Library/LaunchServices/org.mozilla.macos.FirefoxVPN.daemon" -o ${TASK_WORKDIR}/MozillaVPN.dSYM
+find "${TASK_WORKDIR}/build-osxcross/src/Mozilla VPN.app/Contents" -type f -executable | while read EXEFILE; do
+  if dsymutil -s "${EXEFILE}" | grep N_OSO -q; then
+    dsymutil "${EXEFILE}" -o ${TASK_WORKDIR}/MozillaVPN.dSYM
+  fi
+done
+find ${TASK_WORKDIR}/MozillaVPN.dSYM/Contents/Resources/DWARF/ -type f | while read DBGFILE; do
+  sentry-cli difutil check "${DBGFILE}"
+  sentry-cli difutil bundle-sources "${DBGFILE}"
+done
 tar -C ${TASK_WORKDIR} -cJvf ${TASK_WORKDIR}/artifacts/MozillaVPN-dsym.tar.xz MozillaVPN.dSYM || die 
 
 print G "Done!"
