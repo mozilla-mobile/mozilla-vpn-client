@@ -58,7 +58,7 @@ git submodule update --init --recursive || die "Failed to init submodules"
 print G "done."
 
 # Install dependendy got get-secret.py
-python3 -m pip install -r taskcluster/scripts/requirements.txt
+python3 -m pip install -r taskcluster/requirements.txt
 print Y "Fetching tokens..."
 # Only on a release build we have access to those secrects.
 if [[ "$RELEASE" ]]; then
