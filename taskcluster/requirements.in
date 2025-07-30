@@ -3,4 +3,3 @@
 
 mozilla-taskgraph>=3.1
 taskcluster-taskgraph>=14.1.1
-sentry-cli>=2.50.0
