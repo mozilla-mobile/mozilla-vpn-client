@@ -2,25 +2,25 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef WIREGUARDUTILSMACOS_H
-#define WIREGUARDUTILSMACOS_H
+#ifndef WGUTILSMACOS_H
+#define WGUTILSMACOS_H
 
 #include <QObject>
-#include <QProcess>
+#include <QSocketNotifier>
 
 #include "daemon/wireguardutils.h"
 #include "macosroutemonitor.h"
 
-class WireguardUtilsMacos final : public WireguardUtils {
+class WgSessionMacos;
+
+class WgUtilsMacos final : public WireguardUtils {
   Q_OBJECT
 
  public:
-  WireguardUtilsMacos(QObject* parent);
-  ~WireguardUtilsMacos();
+  WgUtilsMacos(QObject* parent);
+  ~WgUtilsMacos();
 
-  bool interfaceExists() override {
-    return m_tunnel.state() == QProcess::Running;
-  }
+  bool interfaceExists() override { return m_tunfd >= 0; }
   QString interfaceName() override { return m_ifname; }
   bool addInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
@@ -33,22 +33,22 @@ class WireguardUtilsMacos final : public WireguardUtils {
   bool deleteRoutePrefix(const IPAddress& prefix) override;
   bool excludeLocalNetworks(const QList<IPAddress>& lanAddressRanges) override;
 
- private slots:
-  void tunnelStdoutReady();
-  void tunnelErrorOccurred(QProcess::ProcessError error);
-  void tunnelFinished(int exitCode, QProcess::ExitStatus exitStatus);
+ signals:
+  void backendFailure();
 
  private:
-  QString uapiCommand(const QString& command);
-  static int uapiErrno(const QString& command);
-  QString waitForTunnelName(const QString& filename);
-  static QString wireguardGoPath();
-  static bool wireguardGoCodesign(const QProcess& process);
-  static QString wireguardGoRequirements();
+  void mtuUpdate(int proto, const QHostAddress& gateway, int ifindex, int mtu);
 
+  int m_tunfd = -1;
+  int m_tunmtu;
   QString m_ifname;
-  QProcess m_tunnel;
   MacosRouteMonitor* m_rtmonitor = nullptr;
+
+  // bridging sockets for multihop
+  int m_mhopEntrySocket = -1;
+  int m_mhopExitSocket = -1;
+
+  QHash<QString, WgSessionMacos*> m_peers;
 };
 
-#endif  // WIREGUARDUTILSMACOS_H
+#endif  // WGUTILSMACOS_H

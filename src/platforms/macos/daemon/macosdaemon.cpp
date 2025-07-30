@@ -28,7 +28,7 @@ MacOSDaemon::MacOSDaemon(QObject* parent) : Daemon(parent) {
 
   logger.debug() << "Daemon created";
 
-  m_wgutils = new WireguardUtilsMacos(this);
+  m_wgutils = new WgUtilsMacos(this);
   m_dnsutils = new DnsUtilsMacos(this);
   m_iputils = new IPUtilsMacos(this);
 
