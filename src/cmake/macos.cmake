@@ -141,7 +141,7 @@ else()
     )
 endif()
 add_dependencies(mozillavpn build_wireguard_go)
-osx_codesign_target(build_wireguard_go FILES ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go)
+osx_codesign_target(build_wireguard_go FILES ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go FORCE)
 osx_bundle_files(mozillavpn
     FILES ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
     DESTINATION Resources/utils
