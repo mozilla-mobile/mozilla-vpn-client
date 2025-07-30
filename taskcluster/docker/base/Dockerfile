@@ -56,8 +56,8 @@ RUN pip install -r /root/taskcluster-requirements.txt
 
 # Install the get-secret script too.
 # %include taskcluster/scripts/get-secret.py
-ADD topsrcdir/taskcluster/scripts/get-secret.py /builds/worker/.local/bin/get-secret
-RUN chmod +x /builds/worker/.local/bin/get-secret
+ADD topsrcdir/taskcluster/scripts/get-secret.py /usr/local/bin/get-secret
+RUN chmod +x /usr/local/bin/get-secret
 
 RUN locale-gen "$LANG"
 
