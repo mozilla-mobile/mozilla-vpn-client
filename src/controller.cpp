@@ -851,7 +851,8 @@ bool Controller::switchServers(const ServerData& serverData) {
   if (m_state != StateConnecting) {
     setState(StateSwitching);
   }
-  if (serverData.multihop() != m_serverData.multihop()) {
+  if (m_impl->multihopSupported() &&
+      (m_nextServerData.multihop() != m_serverData.multihop())) {
     // We require a full deactivation if switching from singlehop to multihop.
     m_nextStep = Reconnect;
     deactivate();
