@@ -40,7 +40,7 @@ jobs:
 
       - name: Running tests
         shell: bash
-        run: ctest -L auth --output-on-failure
+        run: ctest -L auth --test-dir $(pwd)/build --output-on-failure
 
   macos-unit-tests:
     runs-on: macos-latest
@@ -73,7 +73,7 @@ jobs:
           cmake --build build/cmake --target app_auth_tests
 
       - name: Running tests
-        run: ctest -L auth --output-on-failure
+        run: ctest -L auth --test-dir build/cmake --output-on-failure
 
   windows-unit-tests:
     name: Run auth tests on Windows
