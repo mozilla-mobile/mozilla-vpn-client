@@ -5,6 +5,10 @@ on:
     branches:
       - main
       - "releases/**"
+  # For testing... delete before merge
+  pull_request:
+    branches:
+      - main
 
 # Restrict tests to the most recent commit.
 concurrency:
@@ -86,23 +90,45 @@ jobs:
         with:
           dest: ${{ github.workspace }}/3rdparty
 
-      - name: Add msvc dev commands to PATH
-        uses: ilammy/msvc-dev-cmd@v1
+      - name: Install LLVM and Clang
+        uses: KyleMayes/install-llvm-action@v2
+        with:
+          version: 20.1.4
 
-      - name: Add msbuild to PATH
-        uses: microsoft/setup-msbuild@v2
-
-      - name: Install dependencies
-        shell: bash
+      - name: Setup clang env variables
         run: |
-          pip3 install -r requirements.txt
+          echo "CC=${{ env.LLVM_PATH }}/bin/clang-cl.exe" >> $GITHUB_ENV
+          echo "CXX=${{ env.LLVM_PATH }}/bin/clang-cl.exe" >> $GITHUB_ENV
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+          cache: "pip"
+      - run: pip install -r requirements.txt
+
+      - name: Cache Wireguard NT
+        id: cache-wireguard-nt
+        uses: actions/cache@v4
+        with:
+          path: 3rdparty/wireguard-nt
+          key: wireguard-nt-${{ hashFiles('windows/wireguard_nt/CMakeLists.txt') }}
+
+      - name: Download Wireguard NT
+        if: steps.cache-wireguard-nt.outputs.cache-hit != 'true'
+        run: |
+          WIREGUARD_NT_URL=$(grep -Eo 'DOWNLOAD[[:space:]].*' windows/wireguard_nt/CMakeLists.txt | awk '{print $2}')
+          curl -sSL -o wireguard-nt.zip $WIREGUARD_NT_URL
+          unzip -d 3rdparty/ wireguard-nt.zip
 
       - name: Building tests
         run: |
-          mkdir ./build
-          cmake -S . -B ./build -GNinja -DCMAKE_BUILD_TYPE=Debug
-          cmake --build ./build --target app_auth_tests
+          mkdir ./build-win
+
+          cmake -S . -B ./build-win -GNinja \
+              -DCMAKE_BUILD_TYPE=Debug \
+              -DWIREGUARD_FOLDER="$(pwd)/3rdparty/wireguard-nt"
+          cmake --build ./build-win --target app_auth_tests
 
       - name: Running tests
         shell: bash
-        run: ctest -L auth --output-on-failure
+        run: ctest -L auth --test-dir ./build-win --output-on-failure
