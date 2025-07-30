@@ -124,9 +124,7 @@ jobs:
         run: |
           mkdir ./build-win
 
-          cmake -S . -B ./build-win -GNinja \
-              -DCMAKE_BUILD_TYPE=Debug \
-              -DWIREGUARD_FOLDER="$(pwd)/3rdparty/wireguard-nt"
+          cmake -S . -B ./build-win -GNinja -DCMAKE_BUILD_TYPE=Debug -DWIREGUARD_FOLDER="$(pwd)/3rdparty/wireguard-nt"
           cmake --build ./build-win --target app_auth_tests
 
       - name: Running tests
