@@ -85,23 +85,36 @@ jobs:
         uses: actions/checkout@master
         with:
           fetch-depth: 1
-      - name: Cache conda Packages
-        uses: actions/cache@v4
+
+      - name: Cache conda packages
+        id: conda-cache
+        uses: actions/cache/restore@v4
         with:
           path: ~/conda_pkgs_dir
-          key: ${{ runner.os }}-conda-packages
+          key: android-conda-packages-${{ hashFiles('env-android.yml', 'requirements.txt') }}
+
       # Glean is required for the gradle build.
       - name: Fetch glean submodules
         run: |
           git submodule update --init 3rdparty/glean
+
       - uses: conda-incubator/setup-miniconda@v3
         with:
           activate-environment: vpn
           environment-file: env-android.yml
+
       - name: Setup Android SDK
         run: |
           conda info
           ./scripts/android/conda_setup_sdk.sh
+
+      - name: Save conda package cache
+        uses: actions/cache/save@v4
+        if: ${{ github.event_name == 'push' && steps.conda-cache.outputs.cache-hit != 'true' }}
+        with:
+          path: ~/conda_pkgs_dir
+          key: android-conda-packages-${{ hashFiles('env-android.yml', 'requirements.txt') }}
+
       - name: Run ktlint
         working-directory: android
         run: |

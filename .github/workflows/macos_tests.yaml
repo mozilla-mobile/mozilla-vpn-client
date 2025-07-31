@@ -59,6 +59,13 @@ jobs:
           key: ccache-macos-${{ github.sha }}
           restore-keys: ccache-macos-${{ github.event.pull_request.base.sha }}
 
+      - name: Fetch cached rust crates
+        uses: actions/cache/restore@v4
+        with:
+          path: 3rdparty/cargo-vendor
+          key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
+          enableCrossOsArchive: true
+
       - name: Setup Qt for macOS
         uses: ./.github/actions/qt-setup-taskcluster
         with:
@@ -76,6 +83,7 @@ jobs:
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
             -DCMAKE_CXX_COMPILER_LAUNCHER=ccache -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DRUST_VENDOR_DIR=$(pwd)/3rdparty/cargo-vendor \
             -DCMAKE_TOOLCHAIN_FILE=$(pwd)/scripts/macos/osxcross-toolchain.cmake \
             -DCMAKE_OSX_ARCHITECTURES="arm64" \
             -DQT_HOST_PATH=3rdparty/qt-host-tools \
