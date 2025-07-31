@@ -28,4 +28,5 @@ tasks-from:
     - conda_windows.yml
     - conda_osx.yml
     - conda_osxcross.yml
+    - conda_wasm.yml
     - cargo.yml
