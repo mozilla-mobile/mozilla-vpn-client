@@ -26,6 +26,6 @@ cmake --build ${TASK_WORKDIR}/build-wasm
 
 print Y "Compressing the build artifacts..."
 mkdir -p ${TASK_WORKDIR}/artifacts/
-cp -r build-wasm/wasm_build/* ${TASK_WORKDIR}/artifacts/
+cp -r ${TASK_WORKDIR}/build-wasm/wasm_build/* ${TASK_WORKDIR}/artifacts/
 
 print G "Done!"
