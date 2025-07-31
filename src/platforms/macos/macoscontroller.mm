@@ -11,10 +11,11 @@
 #include <QVersionNumber>
 
 #include "constants.h"
+#include "glean/generated/metrics.h"
 #include "logger.h"
 #include "macosutils.h"
-#include "xpcdaemonprotocol.h"
 #include "version.h"
+#include "xpcdaemonprotocol.h"
 
 #import <Cocoa/Cocoa.h>
 #import <Security/Authorization.h>
@@ -179,8 +180,18 @@ void MacOSController::connectService(void) {
   // Make an XPC request to get the status.
   // We may need to re-activate the connection here.
   NSObject<XpcDaemonProtocol>* remote = nullptr;
-  remote = [conn remoteObjectProxyWithErrorHandler:^(NSError* error){
+  remote = [conn remoteObjectProxyWithErrorHandler:^(NSError* error) {
     logger.debug() << "daemon connection failed:" << error.localizedDescription;
+
+    // On a third failure, record Glean telemetry that can be used for alerting.
+    if (m_connectAttempt < 3) {
+      m_connectAttempt = m_connectAttempt + 1;
+      if (m_connectAttempt == 3) {
+        mozilla::glean::performance::DaemonConnectionErrorExtra extras;
+        extras._platform = "macOS";
+        mozilla::glean::performance::daemon_connection_error.record(extras);
+      };
+    }
     QMetaObject::invokeMethod(&m_connectTimer, "start",
                               Q_ARG(int, SERVICE_INIT_POLL_INTERVAL_MSEC));
   }];
