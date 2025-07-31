@@ -69,12 +69,16 @@ macos/osxcross:
             - qt-tools
     worker-type: b-linux-large
     worker:
-          docker-image: {in-tree: conda-base}
+        docker-image: {in-tree: conda-base}
+        artifacts:
+            - type: directory
+              name: public/build
+              path: /builds/worker/artifacts
     run:
-          using: run-task
-          use-caches: [checkout]
-          cwd: '{checkout}'
-          command: ./taskcluster/scripts/build/macos_osxcross.sh
+        using: run-task
+        use-caches: [checkout]
+        cwd: '{checkout}'
+        command: ./taskcluster/scripts/build/macos_osxcross.sh
 
 
 macos/next:
@@ -92,10 +96,13 @@ macos/next:
             - qt-tools-next
     worker-type: b-linux-large
     worker:
-          docker-image: {in-tree: conda-base}
+        docker-image: {in-tree: conda-base}
+        artifacts:
+            - type: directory
+              name: public/build
+              path: /builds/worker/artifacts
     run:
-          using: run-task
-          use-caches: [checkout]
-          cwd: '{checkout}'
-          command: ./taskcluster/scripts/build/macos_osxcross.sh
-
+        using: run-task
+        use-caches: [checkout]
+        cwd: '{checkout}'
+        command: ./taskcluster/scripts/build/macos_osxcross.sh
