@@ -78,6 +78,10 @@ Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/uns
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"
 Get-ChildItem -Path $TASK_WORKDIR/artifacts
 
+# Create debug symbol artifacts
+sentry-cli debug-files check "$BUILD_DIR\src\Mozilla VPN.pdb"
+sentry-cli debug-files bundle-sources -o $ARTIFACTS_PATH "$BUILD_DIR\src\Mozilla VPN.pdb"
+Copy-Item "$BUILD_DIR\src\Mozilla VPN.pdb" -Destination -Destination $ARTIFACTS_PATH
 
 Get-command python
 python  $REPO_ROOT_PATH/taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
@@ -87,8 +91,6 @@ sentry-cli info
 
 # This will ask sentry to scan all files in there and upload
 # missing debug info, for symbolification
-
-python -m sentry-cli debug-files check "$BUILD_DIR\src\Mozilla VPN.pdb"
 Get-ChildItem $TASK_WORKDIR/unsigned/
 if ($env:MOZ_SCM_LEVEL -eq "3") {
     sentry-cli debug-files upload --org mozilla -p vpn-client --include-sources $BUILD_DIR
