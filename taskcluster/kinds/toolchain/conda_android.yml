@@ -20,6 +20,7 @@ task-defaults:
             - scripts/android/conda_setup_qt.sh
             - scripts/android/conda_setup_sdk.sh
             - scripts/android/conda_trim.sh
+            - taskcluster/scripts/requirements.txt
             - android_sdk.txt
             - requirements.txt
             - env-android.yml
