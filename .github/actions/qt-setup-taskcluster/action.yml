@@ -66,11 +66,16 @@ runs:
         tar -xf ${FILENAME}
 
     - name: Setup cmake paths
-      if: ${{ inputs.cmake-env == 'true' }}
-      working-directory: ${{ inputs.dest }}
+      if: ${{ inputs.cmake-env == 'true' && runner.os != 'Windows' }}
+      working-directory: ${{ inputs.dest }}/${{ steps.resolve.outputs.toolchain-path }}
       shell: bash
-      run: |
-        echo CMAKE_PREFIX_PATH=$(cd ${{ steps.resolve.outputs.toolchain-path }}/lib/cmake && pwd) >> $GITHUB_ENV
+      run: echo CMAKE_PREFIX_PATH=$(pwd)/lib/cmake >> $GITHUB_ENV
+
+    - name: Setup cmake paths
+      if: ${{ inputs.cmake-env == 'true' && runner.os == 'Windows' }}
+      working-directory: ${{ inputs.dest }}/${{ steps.resolve.outputs.toolchain-path }}
+      shell: pwsh
+      run: echo "CMAKE_PREFIX_PATH=$(Resolve-Path lib/cmake)" >> $Env:GITHUB_ENV
 
     - name: Save Qt toolchain
       uses: actions/cache/save@v4
