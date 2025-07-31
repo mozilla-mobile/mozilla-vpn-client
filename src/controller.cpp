@@ -692,7 +692,7 @@ void Controller::disconnected() {
       emit readyToQuit();
       setState(StateOff);
       return;
-    
+
     case Update:
       emit readyToUpdate();
       setState(StateOff);
@@ -701,9 +701,10 @@ void Controller::disconnected() {
     case Reconnect:
       m_serverData = m_nextServerData;
       emit currentServerChanged();
-      activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
+      activateInternal(DoNotForceDNSPort, RandomizeServerSelection,
+                       m_initiator);
       return;
-    
+
     default:
       break;
   }
