@@ -14,9 +14,8 @@ source ${MOZ_FETCHES_DIR}/conda/bin/activate
 conda-unpack
 
 print Y "Configuring the build..."
-mkdir -p .ccache
 mkdir ${TASK_WORKDIR}/build-wasm
-${MOZ_FETCHES_DIR}/qt-wasm/bin/qt-cmake -S . -B build-wasm -GNinja \
+${MOZ_FETCHES_DIR}/qt-wasm/bin/qt-cmake -S . -B ${TASK_WORKDIR}/build-wasm -GNinja \
     -DQT_HOST_PATH=${MOZ_FETCHES_DIR}/qt-host-tools/ \
     -DQT_HOST_PATH_CMAKE_DIR=${MOZ_FETCHES_DIR}/qt-host-tools/lib/cmake \
     -DCMAKE_BUILD_TYPE=MinSizeRel \
@@ -28,7 +27,5 @@ cmake --build ${TASK_WORKDIR}/build-wasm
 print Y "Compressing the build artifacts..."
 mkdir -p ${TASK_WORKDIR}/artifacts/
 cp -r build-wasm/wasm_build/* ${TASK_WORKDIR}/artifacts/
-
-ccache -s
 
 print G "Done!"
