@@ -59,7 +59,7 @@ find "${TASK_WORKDIR}/build-osxcross/src/Mozilla VPN.app/Contents" -type f -exec
 done
 find ${TASK_WORKDIR}/MozillaVPN.dSYM/Contents/Resources/DWARF/ -type f | while read DBGFILE; do
   sentry-cli difutil check "${DBGFILE}"
-  sentry-cli difutil bundle-sources "${DBGFILE}"
+  sentry-cli difutil bundle-sources -o ${TASK_WORKDIR}/MozillaVPN.dSYM/Contents/Resources/Sources/ "${DBGFILE}"
 done
 tar -C ${TASK_WORKDIR} -cJvf ${TASK_WORKDIR}/artifacts/MozillaVPN-dsym.tar.xz MozillaVPN.dSYM || die 
 
