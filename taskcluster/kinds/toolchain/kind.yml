@@ -24,9 +24,8 @@ task-defaults:
 
 tasks-from:
     - qt.yml
+    - conda.yml
     - conda_android.yml
     - conda_windows.yml
     - conda_osx.yml
-    - conda_osxcross.yml
-    - conda_wasm.yml
     - cargo.yml
