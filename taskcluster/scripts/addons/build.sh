@@ -9,7 +9,8 @@ set -e
 git submodule update --init --depth 1
 
 mkdir build-addons
-cmake -S $(pwd)/addons -B $TASK_WORKDIR/addons -GNinja
+cmake -S $(pwd)/addons -B ${TASK_WORKDIR}/addons -GNinja \
+    -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt-host-tools/lib/cmake
 cmake --build $TASK_WORKDIR/addons
 
 cd $TASK_WORKDIR
