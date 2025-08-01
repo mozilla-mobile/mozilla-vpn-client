@@ -13,7 +13,7 @@ addons-bundle:
         build-type: addons/opt  # needed by the signing kind
     worker-type: b-linux
     worker:
-        docker-image: {in-tree: wasm}
+        docker-image: {in-tree: build}
         max-run-time: 3600
         chain-of-trust: true
         artifacts:
