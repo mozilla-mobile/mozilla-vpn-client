@@ -87,6 +87,11 @@ commonStrings:
     value: Dark mode — enjoy a sleek new look that’s easy on the eyes, day or night.
     comment: First bullet point with a specific update in 2.27
 
+231updateMessage:
+  bullet1:
+    value: An option, under "Preferences", to enable support for RCS/MMS messaging, Apple features like CarPlay and AirDrop, as well as connections to local devices.
+    comment: First bullet point with a specific update in 2.31 - shown only on iOS
+
 tryFirefoxExtension:
   title:
     value: Try the Firefox extension
