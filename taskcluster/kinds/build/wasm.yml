@@ -12,12 +12,17 @@ wasm/opt:
         platform: web/opt
     worker-type: b-linux
     worker:
-        docker-image: {in-tree: wasm}
+        docker-image: {in-tree: conda-base}
         max-run-time: 3600
         artifacts:
             - type: directory
               name: public/build
               path: /builds/worker/artifacts
+    fetches:
+        toolchain:
+            - conda-wasm
+            - qt-tools
+            - qt-wasm
     run:
         using: run-task
         use-caches: [checkout]

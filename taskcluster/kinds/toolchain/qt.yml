@@ -140,3 +140,19 @@ qt-tools-next:
         max-run-time: 900
         env:
             QT_VERSION: "6.9.1"
+
+qt-wasm:
+    description: "QT wasm bundle task"
+    treeherder:
+        symbol: TL(qt-wasm)
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: base}
+        env:
+            QT_VERSION: "6.6.3"
+    run:
+        script: bundle_qt_wasm.sh
+        resources:
+            - requirements.txt
+        toolchain-alias: qt-wasm
+        toolchain-artifact: public/build/qt-wasm.tar.xz

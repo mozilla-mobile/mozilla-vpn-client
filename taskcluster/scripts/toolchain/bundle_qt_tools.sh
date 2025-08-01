@@ -6,7 +6,7 @@
 set -e
 
 python3 -m pip install -r ${VCS_PATH}/requirements.txt
-python3 -m aqt install-qt -O $(pwd)/qt-install linux desktop ${QT_VERSION} --archives icu qtbase qtdeclarative qttools
+python3 -m aqt install-qt -O $(pwd)/qt-install linux desktop ${QT_VERSION} --archives icu qtbase qtdeclarative qttools --modules qtshadertools
 
 mv $(pwd)/qt-install/${QT_VERSION}/gcc_64 $(pwd)/qt-host-tools
 find $(pwd)/qt-host-tools/lib -name '*.a' -delete

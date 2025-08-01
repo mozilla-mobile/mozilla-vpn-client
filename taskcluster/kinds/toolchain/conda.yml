@@ -3,24 +3,37 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 task-defaults:
-    description: "Conda Pack the environment"
     worker:
         max-run-time: 3600
         docker-image: {in-tree: conda-base}
     worker-type: b-linux
     run:
-        script: conda_pack_osxcross.sh
         use-caches: []
         resources:
             - requirements.txt
-            - env-apple.yml
+            - taskcluster/scripts/requirements.txt
 
-osxcross-conda-pack: 
+conda-osxcross:
+    description: "conda-pack the osxcross environment"
     fetches:
             fetch:
                - macosx-sdk
     treeherder:
-        symbol: "conda-osxcross"
+        symbol: TL(conda-osxcross)
     run:
+        script: conda_pack_osxcross.sh
+        resources:
+            - env-apple.yml
         toolchain-alias: conda-osxcross
         toolchain-artifact: public/build/conda-osxcross.tar.xz
+
+conda-wasm:
+    description: "conda-pack the wasm environment"
+    treeherder:
+        symbol: TL(conda-wasm)
+    run:
+        script: conda_pack_wasm.sh
+        resources:
+            - env-wasm.yml
+        toolchain-alias: conda-wasm
+        toolchain-artifact: public/build/conda-wasm.tar.xz
