@@ -9,8 +9,9 @@ task-defaults:
     worker-type: b-win2022
     run:
         resources:
-            - requirements.txt
             - env-windows.yml
+            - requirements.txt
+            - taskcluster/scripts/requirements.txt
 
 windows-conda-pack: 
         fetches:
