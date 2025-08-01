@@ -85,17 +85,13 @@ RowLayout {
             objectName: "toggle"
             anchors.fill: parent
             accessibleName: labelText
+            onClicked: toggleRow.clicked()
         }
 
         MouseArea {
             anchors.fill: parent
-            onClicked: {
-              if (toggle.enabled == false) {
-                toggleRow.clickedWhileDisabled()
-              } else {
-                toggleRow.clicked()
-              }
-            }
+            enabled: toggle.enabled == false
+            onClicked: toggleRow.clickedWhileDisabled()
         }
     }
 }
