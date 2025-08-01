@@ -32,7 +32,7 @@ tasks:
             build:
                 - artifact: addons.zip
         worker:
-            docker-image: {in-tree: wasm}
+            docker-image: {in-tree: build}
             max-run-time: 3600
             chain-of-trust: true
             artifacts:
