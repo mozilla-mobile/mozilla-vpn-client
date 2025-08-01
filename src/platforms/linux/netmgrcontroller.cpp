@@ -296,9 +296,7 @@ void NetmgrController::activateCompleted(const QDBusObjectPath& path) {
   logger.info() << "Connection activated:" << path.path();
 }
 
-void NetmgrController::deactivate(Controller::Reason reason) {
-  Q_UNUSED(reason);
-
+void NetmgrController::deactivate() {
   if (!m_device || m_device->uuid() != m_uuid) {
     logger.warning() << "Client already disconnected";
     emit disconnected();

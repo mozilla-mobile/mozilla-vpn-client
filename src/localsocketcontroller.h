@@ -25,7 +25,7 @@ class LocalSocketController : public ControllerImpl {
   void activate(const InterfaceConfig& config,
                 Controller::Reason Reason) override;
 
-  void deactivate(Controller::Reason reason) override;
+  void deactivate() override;
 
   void checkStatus() override;
 
