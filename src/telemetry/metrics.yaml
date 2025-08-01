@@ -103,7 +103,7 @@ performance:
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-7200
     data_reviews:
-      - ADD IN AFTER DATAT REVIEW
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/10698#pullrequestreview-3078715399
     data_sensitivity:
       - technical
     notification_emails:
