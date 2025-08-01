@@ -1,0 +1,46 @@
+{
+  "api_version": "0.1",
+  "id": "message_whats_new_v2.31_ios",
+  "name": "What's new message",
+  "type": "message",
+  "conditions": {
+    "min_client_version": "2.31.0",
+    "max_client_version": "2.31.9",
+    "platforms": ["ios"]
+},
+  "javascript": {
+    "enable": "setDate.js"
+  },
+  "message": {
+    "date": 1755705621,
+    "usesSharedStrings": true,
+    "shortVersion": "2.31",
+    "id": "message_whats_new_v2.31_ios",
+    "title": "vpn.commonStrings.whatsNewTitle",
+    "subtitle": "vpn.commonStrings.latestVersionSubtitle",
+    "badge": "whats_new",
+    "notify": false,
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "text",
+        "content": "vpn.commonStrings.generalUpdateBulletIntro"
+      },
+      {
+        "id": "c_2",
+        "type": "ulist",
+        "content": [
+          {
+            "id": "l_1",
+            "content": "vpn.231updateMessage.bullet1"
+          }
+        ]
+      },
+      {
+        "id": "c_3",
+        "type": "text",
+        "content": "vpn.commonStrings.whatsNewClosing"
+      }
+    ]
+  }
+}
