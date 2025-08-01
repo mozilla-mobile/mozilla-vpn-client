@@ -5,6 +5,8 @@
 import components 0.1
 import QtQuick 2.15
 
+import Mozilla.Shared 1.0
+
 MZLoader {
     objectName: "subscriptionInProgressIAP"
 
