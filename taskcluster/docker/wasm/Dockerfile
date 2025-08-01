@@ -11,6 +11,7 @@ ARG QT_VERSION=6.6.3
 
 VOLUME /builds/worker/checkouts
 VOLUME /builds/worker/.task-cache/pip
+VOLUME /builds/worker/.local
 
 ENV CURL='curl --location --retry 5' \
     LANG='en_US.UTF-8' \
