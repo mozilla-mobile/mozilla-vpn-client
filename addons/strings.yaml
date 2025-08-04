@@ -89,7 +89,7 @@ commonStrings:
 
 231updateMessage:
   bullet1:
-    value: An option, under "Preferences", to enable support for RCS/MMS messaging, Apple features like CarPlay and AirDrop, as well as connections to local devices.
+    value: An option, under “Preferences”, to enable support for RCS/MMS messaging, Apple features like CarPlay and AirDrop, as well as connections to local devices.
     comment: First bullet point with a specific update in 2.31 - shown only on iOS
 
 tryFirefoxExtension:
