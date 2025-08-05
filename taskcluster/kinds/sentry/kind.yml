@@ -15,7 +15,6 @@ kind-dependencies:
 tasks:
     macos/opt:
         description: Upload macOS symbols to Sentry
-        #requires-level: 1 # Disable for testing...
         worker-type: b-linux
         worker:
             docker-image: {in-tree: sentry}
@@ -37,6 +36,6 @@ tasks:
             checkout: false
             use-caches: []
             command: /builds/worker/sentry_upload.sh
-        # Disable for testing...
-        #scopes:
-        #    - secrets:get:project/mozillavpn/level-1/sentry
+        requires-level: 3
+        scopes:
+            - secrets:get:project/mozillavpn/level-1/sentry
