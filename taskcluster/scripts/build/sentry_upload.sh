@@ -29,7 +29,7 @@ upload_dsym_bundle() {
 }
 
 # Upload the fetched artifacts to sentry
-find -mindepth 1 -maxdepth 1 ${MOZ_FETCHES_DIR} | while read FILENAME; do
+find ${MOZ_FETCHES_DIR} -mindepth 1 -maxdepth 1 | while read FILENAME; do
     case "${FILENAME}" in
         *.dSYM)
             upload_dsym_bundle ${FILENAME}
