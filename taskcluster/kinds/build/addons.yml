@@ -9,11 +9,14 @@ addons-bundle:
         kind: build
         tier: 1
         platform: addons/all
+    fetches:
+        toolchain: 
+            - qt-tools
     attributes:
         build-type: addons/opt  # needed by the signing kind
     worker-type: b-linux
     worker:
-        docker-image: {in-tree: wasm}
+        docker-image: {in-tree: build}
         max-run-time: 3600
         chain-of-trust: true
         artifacts:
