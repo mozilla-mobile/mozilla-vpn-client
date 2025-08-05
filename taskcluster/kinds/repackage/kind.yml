@@ -78,3 +78,36 @@ tasks:
             kind: build
             tier: 1
             platform: macos/universal
+    
+    macpkg-next:
+        description: Build macOS installer package (next Qt)
+        run-on-tasks-for: [github-pull-request, github-push]
+        fetches:
+            fetch:
+               - macos-cmake
+            from-dependency: # Updated to match dependencies in repackage.py
+                - artifact: MozillaVPN.tar.gz
+                  extract: false
+        dependencies:
+            by-level:
+                "3":
+                    signing: signing-macos/next
+                default:
+                    build: build-macos/next
+        worker-type: b-macos
+        worker:
+            chain-of-trust: true
+            max-run-time: 3600
+        release-artifacts: [MozillaVPN.pkg]
+        attributes:
+            build-type: macos/next
+        run:
+            using: run-task
+            cwd: '{checkout}'
+            command: ./taskcluster/scripts/build/macos_repackage.sh
+        treeherder:
+            symbol: rpk(macpkg)
+            kind: build
+            tier: 1
+            platform: macos/next
+
