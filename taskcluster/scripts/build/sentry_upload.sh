@@ -7,20 +7,13 @@ set -e
 # Only on a release build we have access to those secrects.
 if [ "${MOZ_SCM_LEVEL}" -ge "3" ]; then
     get-secret -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
+    sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)   
 else
-    echo "dummy" > sentry_debug_file_upload_key
+    echo "Sentry upload requires task level 3" >&2
 fi
 
-echo "Listing env..."
-env
-
-echo ""
-echo "Listing ${MOZ_FETCHES_DIR}..."
-ls -al ${MOZ_FETCHES_DIR}
-
 # Auth using the sentry upload key
-sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
-SENTRY_UPLOAD_ARGS=--org mozilla -p vpn-client
+SENTRY_UPLOAD_ARGS="--org mozilla -p vpn-client"
 
 # Upload support for macOS dSYM bundles.
 upload_dsym_bundle() {
