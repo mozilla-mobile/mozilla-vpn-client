@@ -17,3 +17,40 @@ env
 echo ""
 echo "Listing ${MOZ_FETCHES_DIR}..."
 ls -al ${MOZ_FETCHES_DIR}
+
+# Auth using the sentry upload key
+sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
+SENTRY_UPLOAD_ARGS=--org mozilla -p vpn-client
+
+# Upload support for macOS dSYM bundles.
+upload_dsym_bundle() {
+    # Upload symbol files
+    find $1/Contents/Resources/DWARF -type f | while read DBGFILE; do
+        sentry-cli debug-files upload ${SENTRY_UPLOAD_ARGS} "${DBGFILE}"
+    done
+    # Upload source bundles
+    find $1/Contents/Resources/Sources -type f -name '*.src.zip' | while read SRCFILE; do
+        sentry-cli debug-files upload ${SENTRY_UPLOAD_ARGS} --type sourcebundle "${SRCFILE}"
+    done
+}
+
+# Upload the fetched artifacts to sentry
+find -mindepth 1 -maxdepth 1 ${MOZ_FETCHES_DIR} | while read FILENAME; do
+    case "${FILENAME}" in
+        *.dSYM)
+            upload_dsym_bundle ${FILENAME}
+            ;;
+
+        *.pdb)
+            sentry-cli debug-files upload ${SENTRY_UPLOAD_ARGS} ${FILENAME}
+            ;;
+
+        *.src.zip)
+            sentry-cli debug-files upload ${SENTRY_UPLOAD_ARGS} --type sourcebundle ${FILENAME}
+            ;;
+
+        *)
+            echo "Ignoring unsupported file: ${FILENAME}"
+            ;;
+    esac
+done
