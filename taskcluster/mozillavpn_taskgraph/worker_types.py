@@ -50,6 +50,7 @@ from voluptuous import Any, Optional, Required
                 Optional("force"): bool,
                 Optional("entitlements"): str,
                 Optional("requirements"): str,
+                Optional("identifier"): str,
                 Required("globs"): [str],
             }
         ],

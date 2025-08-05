@@ -27,9 +27,14 @@ mac-signing:
         - deep: false
           runtime: true
           force: true
-          # These files are signed without entitlements
+          identifier: org.mozilla.macos.FirefoxVPN
           globs:
             - "/Contents/Library/LaunchServices/org.mozilla.macos.FirefoxVPN.daemon"
+
+        - deep: false
+          runtime: true
+          force: true
+          globs:
             - "/Contents/Resources/utils/wireguard-go"
             - "/Contents/Resources/utils/mozillavpnnp"
 
