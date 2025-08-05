@@ -67,12 +67,6 @@ else
     echo "dummy" > sentry_debug_file_upload_key
 fi
 
-#Install Sentry CLI, if' not already installed from previous run.
-if ! command -v sentry-cli &> /dev/null
-then
-    npm install -g @sentry/cli
-fi
-
 # Use vendored crates - if available.
 if [ -d ${MOZ_FETCHES_DIR}/cargo-vendor ]; then
 mkdir -p .cargo
