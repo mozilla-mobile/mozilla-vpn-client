@@ -70,6 +70,16 @@ else()
         LINKER:-sectcreate,__TEXT,__info_plist,${CMAKE_CURRENT_BINARY_DIR}/daemon.plist
     )
 endif()
-osx_codesign_target(daemon)
+
+# Once upon a time we shipped the application as a monolithic binary, but we
+# have since split it into separate daemon and GUI executables. In order to
+# support users upgrading from one of the monolithic builds, it is important
+# that the daemon be signed with the same identifier as the monolithic build.
+#
+# This ensures that the designated requirements of the daemon are unchanged
+# across the upgrade.
+#
+# See VPN-7191 for more information.
+osx_codesign_target(daemon IDENTIFIER ${BUILD_OSX_APP_IDENTIFIER})
 
 qt_finalize_target(daemon)

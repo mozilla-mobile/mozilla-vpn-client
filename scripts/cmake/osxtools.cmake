@@ -73,13 +73,16 @@ function(osx_codesign_target TARGET)
 
     cmake_parse_arguments(CODESIGN
         "FORCE"
-        ""
+        "IDENTIFIER"
         "OPTIONS;FILES"
         ${ARGN})
 
     set(CODESIGN_ARGS --timestamp -s "${CODE_SIGN_IDENTITY}")
     if(CODESIGN_FORCE)
         list(APPEND CODESIGN_ARGS -f)
+    endif()
+    if(CODESIGN_IDENTIFIER)
+        list(APPEND CODESIGN_ARGS -i ${CODESIGN_IDENTIFIER})
     endif()
     if(CODESIGN_OPTIONS)
         list(JOIN CODESIGN_OPTIONS , CODESIGN_OPTIONS_JOINED)
