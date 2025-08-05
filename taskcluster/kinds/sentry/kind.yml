@@ -27,7 +27,7 @@ tasks:
         run:
             using: run-task
             checkout: false
-            use-caches: [pip]
+            use-caches: []
             command: /builds/worker/sentry_upload.sh
         # Disable for testing...
         #scopes:
