@@ -57,16 +57,6 @@ print Y "Get the submodules..."
 git submodule update --init --recursive || die "Failed to init submodules"
 print G "done."
 
-# Install dependendy got get-secret.py
-python3 -m pip install -r taskcluster/scripts/requirements.txt
-print Y "Fetching tokens..."
-# Only on a release build we have access to those secrects.
-if [[ "$RELEASE" ]]; then
-    ./taskcluster/scripts/get-secret.py -s project/mozillavpn/level-1/sentry -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
-else
-    echo "dummy" > sentry_debug_file_upload_key
-fi
-
 # Use vendored crates - if available.
 if [ -d ${MOZ_FETCHES_DIR}/cargo-vendor ]; then
 mkdir -p .cargo
@@ -97,25 +87,6 @@ print Y "Building the client..."
 cmake --build ${TASK_HOME}/build
 
 print Y "Exporting the build artifacts..."
-mkdir -p tmp || die
-
-
-print Y "Extracting the Symbols..."
-dsymutil ${TASK_HOME}/build/src/Mozilla\ VPN.app/Contents/MacOS/Mozilla\ VPN  -o tmp/MozillaVPN.dsym
-
-
-print Y "Checking & genrating a symbols bundle"
-ls tmp/MozillaVPN.dsym/Contents/Resources/DWARF/
-sentry-cli difutil check tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
-sentry-cli difutil bundle-sources tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
-
-if [[ "$RELEASE" ]]; then
-    print Y "Uploading the Symbols..."
-    sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
-    sentry-cli debug-files upload --org mozilla -p vpn-client tmp/MozillaVPN.dsym/Contents/Resources/DWARF/*
-fi
-
-print Y "Compressing the build artifacts..."
 tar -C ${TASK_HOME}/build/src/ -czvf ${TASK_HOME}/artifacts/MozillaVPN.tar.gz "Mozilla VPN.app" || die
 rm -rf ${TASK_HOME}/build || die
 

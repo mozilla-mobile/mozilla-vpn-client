@@ -38,10 +38,7 @@ macos/native:
         platform: macos/native
     run:
         command: ./taskcluster/scripts/build/macos_build.sh
-    requires-level: 3 
-    scopes:
-        - secrets:get:project/mozillavpn/level-1/sentry
-
+    requires-level: 3
 
 macos/opt:
     description: "macOS Build (release)"
