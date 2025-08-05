@@ -9,6 +9,9 @@ transforms:
     - taskgraph.transforms.run:transforms
     - taskgraph.transforms.task:transforms
 
+kind-dependencies:
+    - build
+
 tasks:
     macos/opt:
         description: Upload macOS symbols to Sentry
@@ -24,6 +27,11 @@ tasks:
             kind: other
             platform: macos/universal
             tier: 1
+        dependencies:
+            build: build-macos/opt
+        fetches:
+            build:
+                - MozillaVPN-dsym.tar.xz
         run:
             using: run-task
             checkout: false
