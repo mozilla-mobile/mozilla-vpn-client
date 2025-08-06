@@ -6,6 +6,7 @@
 loader: taskgraph.loader.transform:loader
 
 transforms:
+    - mozillavpn_taskgraph.transforms.requires_level:transforms
     - taskgraph.transforms.run:transforms
     - taskgraph.transforms.task:transforms
 
