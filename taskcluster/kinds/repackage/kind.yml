@@ -15,6 +15,18 @@ kind-dependencies:
     - fetch
     - signing
 
+task-defaults:
+    run-on-tasks-for: [github-pull-request, github-push]
+    worker:
+        chain-of-trust: true
+        max-run-time: 600
+    treeherder:
+        kind: build
+        tier: 1
+    run:
+        using: run-task
+        cwd: '{checkout}'
+
 tasks:
     msi:
         description: Build MSI installer package
@@ -31,25 +43,18 @@ tasks:
             signing: signing-windows/opt
         if-dependencies: [signing]
         worker-type: b-win2022
-        worker:
-            chain-of-trust: true
-            max-run-time: 3600
         release-artifacts: [MozillaVPN.msi]
         attributes:
             build-type: windows/opt
         run:
-            using: run-task
             cwd: build/src/windows/installer
             command: [cmd.exe, /c, build_prod.cmd]
         treeherder:
             symbol: rpk(msi)
-            kind: build
-            tier: 1
             platform: windows/x86_64
 
     macpkg:
         description: Build macOS installer package
-        run-on-tasks-for: [github-pull-request, github-push]
         fetches:
             fetch:
                - macos-cmake
@@ -63,25 +68,17 @@ tasks:
                 default:
                     build: build-macos/opt
         worker-type: b-macos
-        worker:
-            chain-of-trust: true
-            max-run-time: 3600
         release-artifacts: [MozillaVPN.pkg]
         attributes:
             build-type: macos/opt
         run:
-            using: run-task
-            cwd: '{checkout}'
             command: ./taskcluster/scripts/build/macos_repackage.sh
         treeherder:
             symbol: rpk(macpkg)
-            kind: build
-            tier: 1
             platform: macos/universal
-    
+
     macpkg-next:
         description: Build macOS installer package (next Qt)
-        run-on-tasks-for: [github-pull-request, github-push]
         fetches:
             fetch:
                - macos-cmake
@@ -95,19 +92,11 @@ tasks:
                 default:
                     build: build-macos/next
         worker-type: b-macos
-        worker:
-            chain-of-trust: true
-            max-run-time: 3600
         release-artifacts: [MozillaVPN.pkg]
         attributes:
             build-type: macos/next
         run:
-            using: run-task
-            cwd: '{checkout}'
             command: ./taskcluster/scripts/build/macos_repackage.sh
         treeherder:
             symbol: rpk(macpkg)
-            kind: build
-            tier: 1
             platform: macos/next
-
