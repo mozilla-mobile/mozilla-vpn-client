@@ -30,9 +30,8 @@ task-defaults:
 tasks:
     msi:
         description: Build MSI installer package
-        run-on-tasks-for: [github-push]
         fetches:
-            signing:
+            from-dependency: # Updated to match dependencies in repackage.py
                 - artifact: unsigned.zip
                   # Workers are using an old version of PowerShell that doesn'tcontain the fix in
                   # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/48, and the
@@ -40,8 +39,11 @@ tasks:
                   # newer PowerShell, we'll need to handle extraction ourselves.
                   extract: false
         dependencies:
-            signing: signing-windows/opt
-        if-dependencies: [signing]
+            by-level:
+                "3":
+                    signing: signing-windows/opt
+                default:
+                    build: build-windows/opt
         worker-type: b-win2022
         release-artifacts: [MozillaVPN.msi]
         attributes:
