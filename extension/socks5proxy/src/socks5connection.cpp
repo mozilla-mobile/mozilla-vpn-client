@@ -100,11 +100,6 @@ Socks5Connection::Socks5Connection(QTcpSocket* socket)
               setError(ErrorGeneral, m_inSocket->errorString());
             }
           });
-
-  socket->setReadBufferSize(MAX_CONNECTION_BUFFER);
-
-  m_socksPort = socket->localPort();
-  m_clientName = socket->peerAddress().toString();
 }
 
 Socks5Connection::Socks5Connection(QLocalSocket* socket)
@@ -120,19 +115,6 @@ Socks5Connection::Socks5Connection(QLocalSocket* socket)
               setError(ErrorGeneral, m_inSocket->errorString());
             }
           });
-
-  socket->setReadBufferSize(MAX_CONNECTION_BUFFER);
-
-  // TODO: Some magic may be required here to resolve the entity of which client
-  // tried to connect. Some breadcrumbs:
-  //   - Linux: SO_PEERCRED can get us the cllient PID, from which we can get
-  //            the cgroup name, systemd scope and parse out the application ID.
-  //   - Windows: GetNamedPipeClientProcessId() and GetProcessImageFileNameA()
-  //              can get us the path to the calling executable.
-  //   - MacOS: SecTaskCopySigningIdentifier() can be used to grab information
-  //            about processes and their code signatures. Somewhere in there
-  //            I would expect to find the application ID too.
-  m_clientName = localClientName(socket);
 }
 
 void Socks5Connection::setError(Socks5Replies reason,
@@ -384,7 +366,7 @@ void Socks5Connection::configureOutSocket(quint16 port) {
   m_outSocket->connectToHost(m_destAddress, port);
 
   connect(m_outSocket, &QTcpSocket::connected, this, [this]() {
-    ServerResponsePacket packet(createServerResponsePacket(0x00, m_socksPort));
+    ServerResponsePacket packet(createServerResponsePacket(0x00, m_clientPort));
     if (m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket)) !=
         sizeof(ServerResponsePacket)) {
       setError(ErrorGeneral, m_inSocket->errorString());

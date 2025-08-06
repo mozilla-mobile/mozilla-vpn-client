@@ -60,8 +60,6 @@ class Socks5Connection final : public ProxyConnection {
   template <typename T>
   static std::optional<T> readPacket(QIODevice* connection);
 
-  const QString& clientName() const { return m_clientName; }
-
   const QHostAddress& destAddress() const { return m_destAddress; }
 
   const QStringList& hostLookupStack() const { return m_hostLookupStack; }
@@ -82,20 +80,14 @@ class Socks5Connection final : public ProxyConnection {
   void readyRead();
   void bytesWritten(qint64 bytes);
 
-  // Implemented by platform-specific code in socks5local_<platform>.cpp
-  static QString localClientName(QLocalSocket* s);
-
   Socks5State m_state = ClientGreeting;
 
   uint8_t m_authNumber = 0;
   QIODevice* m_inSocket = nullptr;
   QTcpSocket* m_outSocket = nullptr;
 
-  QString m_clientName;
-  uint16_t m_socksPort = 0;
-  uint16_t m_destPort = 0;
-
   uint8_t m_addressType = 0;
+  uint16_t m_destPort = 0;
   QHostAddress m_destAddress;
   QStringList m_hostLookupStack;
 

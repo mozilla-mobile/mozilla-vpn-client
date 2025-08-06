@@ -24,6 +24,8 @@ class ProxyConnection : public QObject {
   quint64 recvHighWaterMark() const { return m_recvHighWaterMark; }
   const QString& errorString() const { return m_errorString; }
 
+  const QString& clientName() const { return m_clientName; }
+
   static constexpr const int MAX_CONNECTION_BUFFER = 16 * 1024;
 
  signals:
@@ -39,6 +41,12 @@ class ProxyConnection : public QObject {
    * @param watermark- reference to the buffer high watermark
    */
   static void proxy(QIODevice* rx, QIODevice* tx, quint64& watermark);
+
+  // Implemented by platform-specific code in proxylocal_<platform>.cpp
+  static QString localClientName(QLocalSocket* s);
+
+  QString m_clientName;
+  uint16_t m_clientPort = 0;
 
   quint64 m_sendHighWaterMark = 0;
   quint64 m_recvHighWaterMark = 0;

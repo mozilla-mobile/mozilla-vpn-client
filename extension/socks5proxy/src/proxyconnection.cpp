@@ -4,7 +4,25 @@
 
 #include "proxyconnection.h"
 
-ProxyConnection::ProxyConnection(QIODevice* socket) : QObject(socket) {}
+ProxyConnection::ProxyConnection(QIODevice* socket) : QObject(socket) {
+  // Handle TCP/UDP socket setup.
+  QAbstractSocket* netsock = qobject_cast<QAbstractSocket*>(socket);
+  if (netsock) {
+    m_clientPort = netsock->localPort();
+    m_clientName = netsock->peerAddress().toString();
+
+    netsock->setReadBufferSize(MAX_CONNECTION_BUFFER);
+  }
+
+  // Handle UNIX/Local socket setup.
+  QLocalSocket* local = qobject_cast<QLocalSocket*>(socket);
+  if (local) {
+    m_clientPort = 0;
+    m_clientName = localClientName(local);
+
+    local->setReadBufferSize(MAX_CONNECTION_BUFFER);
+  }
+}
 
 void ProxyConnection::proxy(QIODevice* from, QIODevice* to,
                              quint64& watermark) {
