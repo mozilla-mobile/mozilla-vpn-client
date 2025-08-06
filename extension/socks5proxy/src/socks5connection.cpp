@@ -19,7 +19,6 @@
 #include <QDnsLookup>
 #include <QHostAddress>
 
-constexpr const int MAX_CONNECTION_BUFFER = 16 * 1024;
 
 namespace {
 
@@ -79,7 +78,7 @@ ServerResponsePacket createServerResponsePacket(uint8_t rep,
 }  // namespace
 
 Socks5Connection::Socks5Connection(QIODevice* socket)
-    : QObject(socket), m_inSocket(socket) {
+    : ProxyConnection(socket), m_inSocket(socket) {
   connect(m_inSocket, &QIODevice::readyRead, this,
           &Socks5Connection::readyRead);
 
@@ -348,39 +347,6 @@ void Socks5Connection::onHostnameResolved(QHostAddress resolved) {
   m_destAddress = resolved;
   Q_ASSERT(!resolved.isNull());
   configureOutSocket(m_destPort);
-}
-
-void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
-                             quint64& watermark) {
-  Q_ASSERT(from && to);
-
-  for (;;) {
-    qint64 available = from->bytesAvailable();
-    if (available <= 0) {
-      break;
-    }
-
-    qint64 capacity = MAX_CONNECTION_BUFFER - to->bytesToWrite();
-    if (capacity <= 0) {
-      break;
-    }
-
-    QByteArray data = from->read(qMin(available, capacity));
-    if (data.length() == 0) {
-      break;
-    }
-    qint64 sent = to->write(data);
-    if (sent != data.length()) {
-      qDebug() << "Truncated write. Sent" << sent << "of" << data.length();
-      break;
-    }
-  }
-
-  // Update buffer high watermark.
-  qint64 queued = to->bytesToWrite();
-  if (queued > watermark) {
-    watermark = queued;
-  }
 }
 
 void Socks5Connection::configureOutSocket(quint16 port) {

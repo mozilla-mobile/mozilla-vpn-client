@@ -14,12 +14,14 @@ target_link_libraries(libSocks5proxy PRIVATE c-ares)
 target_compile_definitions(libSocks5proxy PRIVATE CARES_STATICLIB)
 
 target_sources(libSocks5proxy PRIVATE
+    dnsresolver.h
+    dnsresolver.cpp
+    proxyconnection.cpp
+    proxyconnection.h
     socks5.h
     socks5.cpp
     socks5connection.cpp
     socks5connection.h
-    dnsresolver.h
-    dnsresolver.cpp
 )
 
 if(WIN32)

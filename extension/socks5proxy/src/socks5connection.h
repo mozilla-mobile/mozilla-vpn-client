@@ -5,13 +5,9 @@
 #ifndef Socks5Connection_H
 #define Socks5Connection_H
 
-#include <QByteArray>
-#include <QIODevice>
-#include <QLocalSocket>
-#include <QObject>
-#include <QTcpSocket>
+#include "proxyconnection.h"
 
-class Socks5Connection final : public QObject {
+class Socks5Connection final : public ProxyConnection {
   Q_OBJECT
 
  private:
@@ -21,15 +17,6 @@ class Socks5Connection final : public QObject {
   explicit Socks5Connection(QTcpSocket* socket);
   explicit Socks5Connection(QLocalSocket* socket);
   ~Socks5Connection() = default;
-
-  /**
-   * @brief Copies incoming bytes to another QIODevice
-   *
-   * @param from- the source device
-   * @param to- the output device
-   * @param watermark- reference to the buffer high watermark
-   */
-  static void proxy(QIODevice* rx, QIODevice* tx, quint64& watermark);
 
   enum Socks5State {
     ClientGreeting,
@@ -81,13 +68,7 @@ class Socks5Connection final : public QObject {
 
   const Socks5State& state() const { return m_state; }
 
-  quint64 sendHighWaterMark() const { return m_sendHighWaterMark; }
-  quint64 recvHighWaterMark() const { return m_recvHighWaterMark; }
-  const QString& errorString() const { return m_errorString; }
-
  signals:
-  void setupOutSocket(qintptr sd, const QHostAddress& dest);
-  void dataSentReceived(qint64 sent, qint64 received);
   void stateChanged();
 
  private slots:
@@ -105,7 +86,6 @@ class Socks5Connection final : public QObject {
   static QString localClientName(QLocalSocket* s);
 
   Socks5State m_state = ClientGreeting;
-  QString m_errorString;
 
   uint8_t m_authNumber = 0;
   QIODevice* m_inSocket = nullptr;
@@ -119,8 +99,6 @@ class Socks5Connection final : public QObject {
   QHostAddress m_destAddress;
   QStringList m_hostLookupStack;
 
-  quint64 m_sendHighWaterMark = 0;
-  quint64 m_recvHighWaterMark = 0;
   quint64 m_recvIgnoreBytes = 0;
 };
 
