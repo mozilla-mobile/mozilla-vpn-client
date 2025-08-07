@@ -4,6 +4,7 @@
 
 #include "httpconnection.h"
 
+#include <QBuffer>
 #include <QRegularExpression>
 #include <QLocalSocket>
 #include <QTcpSocket>
@@ -33,17 +34,26 @@ bool HttpConnection::isProxyType(QIODevice* socket) {
     return false;
   }
 
-  qDebug() << "Got HTTP request:" << match.captured(0);
-  qDebug() << "   method:" << match.captured(1);
-  qDebug() << "   uri:   " << match.captured(2);
-  qDebug() << "   version" << match.captured(3);
   return true;
+}
+
+void HttpConnection::sendResponse(int code, const QString& message,
+                                  const QMap<QString,QString>& headers) {
+  QString status = QString("HTTP/1.1 %1 %2\r\n").arg(code).arg(message);
+  QByteArray response = status.toUtf8();
+
+  for (auto i = headers.cbegin(); i != headers.cend(); i++) {
+    QString header = QString("%1: %2\r\n").arg(i.key()).arg(i.value());
+    response.append(header.toUtf8());
+  }
+  response.append("\r\n");
+
+  m_clientSocket->write(response);
 }
 
 void HttpConnection::setError(int code, const QString& message) {
   if (m_state != Proxy) {
-    QString response = QString("HTTP/1.1 %1 %2\r\n\r\n").arg(code).arg(message);
-    m_clientSocket->write(response.toUtf8());
+    sendResponse(code, message);
   }
 
   m_errorString = message;
@@ -98,19 +108,18 @@ void HttpConnection::doConnect() {
     return;
   }
 
-  QString dest = QUrl::fromPercentEncoding(list[1].toUtf8());
-  QHostAddress addr = QHostAddress(dest);
+  QString dest = QUrl::fromPercentEncoding(list[0].toUtf8());
+  QHostAddress address;
   m_destPort = list[1].toUInt();
-  if (addr.isNull()) {
-    // Perform DNS resolution.
-    m_destHostname = dest;
-    setState(Resolve);
-    DNSResolver::instance()->resolveAsync(m_destHostname, this);
+  if (address.setAddress(dest)) {
+    onHostnameResolved(address);
     return;
   }
 
-  onHostnameResolved(addr);
-
+  // Perform DNS resolution.
+  m_destHostname = dest;
+  setState(Resolve);
+  DNSResolver::instance()->resolveAsync(m_destHostname, this);
 }
 
 void HttpConnection::onHostnameResolved(const QHostAddress& resolved) {
@@ -125,15 +134,23 @@ void HttpConnection::onHostnameResolved(const QHostAddress& resolved) {
   m_destSocket = createDestSocket(m_destAddress, m_destPort);
 
   connect(m_destSocket, &QTcpSocket::connected, this, [this]() {
-    setError(200, "OK");
+    sendResponse(200, "OK");
 
-    // Keep track of how many bytes are yet to be written to finish the
-    // negotiation. We should suppress the statistics signals for such traffic.
-    m_recvIgnoreBytes = m_clientSocket->bytesToWrite();
-  
     setState(Proxy);
     clientReadyRead();
   });
+
+  connect(m_destSocket, &QTcpSocket::disconnected, this,
+          [this]() { setState(Closed); });
+
+  connect(m_destSocket, &QTcpSocket::errorOccurred, this,
+          [this](QAbstractSocket::SocketError error) {
+            if (error == QAbstractSocket::RemoteHostClosedError) {
+              setState(Closed);
+            } else {
+              setError(502, "Bad Gateway");
+            }
+          });
 }
 
 void HttpConnection::onHostnameNotFound() {

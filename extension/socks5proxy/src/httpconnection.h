@@ -29,6 +29,8 @@ class HttpConnection final : public ProxyConnection {
   void onHostnameNotFound();
 
  private:
+  void sendResponse(int code, const QString& message,
+                    const QMap<QString,QString>& hdr = QMap<QString,QString>());
   void setError(int code, const QString& message);
   void doConnect();
 
