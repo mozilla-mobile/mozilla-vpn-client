@@ -79,24 +79,8 @@ ServerResponsePacket createServerResponsePacket(uint8_t rep,
 
 }  // namespace
 
-Socks5Connection::Socks5Connection(QIODevice* socket)
-    : ProxyConnection(socket) {
-  connect(m_clientSocket, &QIODevice::bytesWritten, this,
-          &Socks5Connection::bytesWritten);
-  readyRead();
-}
-
-Socks5Connection::Socks5Connection(QTcpSocket* socket)
-    : Socks5Connection(static_cast<QIODevice*>(socket)) {
-  connect(socket, &QTcpSocket::disconnected, this,
-          [this]() { setState(Closed); });
-}
-
-Socks5Connection::Socks5Connection(QLocalSocket* socket)
-    : Socks5Connection(static_cast<QIODevice*>(socket)) {
-  connect(socket, &QLocalSocket::disconnected, this,
-          [this]() { setState(Closed); });
-}
+Socks5Connection::Socks5Connection(QTcpSocket* s) : ProxyConnection(s) {}
+Socks5Connection::Socks5Connection(QLocalSocket* s) : ProxyConnection(s) {}
 
 void Socks5Connection::setError(Socks5Replies reason,
                                 const QString& errorString) {
@@ -252,32 +236,8 @@ void Socks5Connection::handshakeRead() {
   }
 }
 
-void Socks5Connection::clientProxyRead() {
-  proxy(m_clientSocket, m_outSocket, m_sendHighWaterMark);
-}
-
-void Socks5Connection::bytesWritten(qint64 bytes) {
-  // Ignore this signal outside of the proxy state.
-  if (m_state != Proxy) {
-    return;
-  }
-
-  // Ignore this signal if it's just reporting a negotiation packet.
-  if (m_recvIgnoreBytes >= bytes) {
-    m_recvIgnoreBytes -= bytes;
-    return;
-  } else if (m_recvIgnoreBytes > 0) {
-    bytes -= m_recvIgnoreBytes;
-    m_recvIgnoreBytes = 0;
-  }
-
-  // Drive statistics and proxy data.
-  emit dataSentReceived(0, bytes);
-  proxy(m_outSocket, m_clientSocket, m_recvHighWaterMark);
-}
-
 void Socks5Connection::onHostnameResolved(QHostAddress resolved) {
-  if (m_outSocket != nullptr) {
+  if (m_destSocket != nullptr) {
     // We might get multiple ip results.
     return;
   }
@@ -289,37 +249,13 @@ void Socks5Connection::onHostnameResolved(QHostAddress resolved) {
 void Socks5Connection::configureOutSocket(quint16 port) {
   Q_ASSERT(!m_destAddress.isNull());
 
-  int family;
-  if (m_destAddress.protocol() == QAbstractSocket::IPv6Protocol) {
-    family = AF_INET6;
-  } else {
-    family = AF_INET;
-  }
-
-  // The platform layer might want to fiddle with the socket before we connect,
-  // but the socket descriptor is typically created inside the connectToHost()
-  // method. So let's create the socket manually and emit a signal for the
-  // platform logic to hook on.
-  qintptr newsock = socket(family, SOCK_STREAM, IPPROTO_TCP);
-#ifdef Q_OS_WIN
-  if (newsock == INVALID_SOCKET) {
-    setError(ErrorGeneral, WinUtils::win32strerror(WSAGetLastError()));
+  m_destSocket = createDestSocket(m_destAddress, port);
+  if (!m_destSocket) {
+    setError(ErrorGeneral, m_errorString);
     return;
   }
-#else
-  if (newsock < 0) {
-    setError(ErrorGeneral, strerror(errno));
-    return;
-  }
-#endif
-  emit setupOutSocket(newsock, m_destAddress);
 
-  m_outSocket = new QTcpSocket(this);
-  m_outSocket->setSocketDescriptor(newsock, QAbstractSocket::UnconnectedState);
-  m_outSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
-  m_outSocket->connectToHost(m_destAddress, port);
-
-  connect(m_outSocket, &QTcpSocket::connected, this, [this]() {
+  connect(m_destSocket, &QTcpSocket::connected, this, [this]() {
     ServerResponsePacket packet(createServerResponsePacket(0x00, m_clientPort));
     if (m_clientSocket->write((char*)&packet, sizeof(ServerResponsePacket)) !=
         sizeof(ServerResponsePacket)) {
@@ -327,31 +263,19 @@ void Socks5Connection::configureOutSocket(quint16 port) {
       return;
     }
 
-    // Keep track of how many bytes are yet to be written to finish the
-    // negotiation. We should suppress the statistics signals for such traffic.
-    m_recvIgnoreBytes = m_clientSocket->bytesToWrite();
-  
     setState(Proxy);
-    readyRead();
+    clientReadyRead();
   });
 
-  connect(m_outSocket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
-    emit dataSentReceived(bytes, 0);
-    proxy(m_clientSocket, m_outSocket, m_sendHighWaterMark);
-  });
-
-  connect(m_outSocket, &QTcpSocket::readyRead, this,
-          [this]() { proxy(m_outSocket, m_clientSocket, m_recvHighWaterMark); });
-
-  connect(m_outSocket, &QTcpSocket::disconnected, this,
+  connect(m_destSocket, &QTcpSocket::disconnected, this,
           [this]() { setState(Closed); });
 
-  connect(m_outSocket, &QTcpSocket::errorOccurred, this,
+  connect(m_destSocket, &QTcpSocket::errorOccurred, this,
           [this](QAbstractSocket::SocketError error) {
             if (error == QAbstractSocket::RemoteHostClosedError) {
               setState(Closed);
             } else {
-              setError(ErrorGeneral, m_outSocket->errorString());
+              setError(ErrorGeneral, m_destSocket->errorString());
             }
           });
 }

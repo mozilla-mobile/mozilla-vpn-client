@@ -13,9 +13,6 @@ class QLocalSocket;
 class Socks5Connection final : public ProxyConnection {
   Q_OBJECT
 
- private:
-  explicit Socks5Connection(QIODevice* socket);
-
  public:
   explicit Socks5Connection(QTcpSocket* socket);
   explicit Socks5Connection(QLocalSocket* socket);
@@ -65,7 +62,6 @@ class Socks5Connection final : public ProxyConnection {
   static bool isProxyType(QIODevice* socket);
 
   void handshakeRead() override;
-  void clientProxyRead() override;
 
  private slots:
   void onHostnameResolved(QHostAddress addr);
@@ -74,14 +70,9 @@ class Socks5Connection final : public ProxyConnection {
  private:
   void setError(Socks5Replies reply, const QString& errorString);
   void configureOutSocket(quint16 port);
-  void bytesWritten(qint64 bytes);
 
   uint8_t m_authNumber = 0;
-  QTcpSocket* m_outSocket = nullptr;
-
   uint8_t m_addressType = 0;
-
-  quint64 m_recvIgnoreBytes = 0;
 };
 
 #endif  // Socks5Connection_H

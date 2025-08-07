@@ -11,6 +11,7 @@
 
 class QIODevice;
 class QLocalSocket;
+class QTcpSocket;
 
 class ProxyConnection : public QObject {
   Q_OBJECT
@@ -45,7 +46,8 @@ class ProxyConnection : public QObject {
   // Protocols must implement these methods to read data off the client socket
   // in the Handshake and Proxy states, respectively.
   virtual void handshakeRead() = 0;
-  virtual void clientProxyRead() = 0;
+  virtual void clientProxyRead();
+  virtual void destProxyRead();
 
  signals:
   void setupOutSocket(qintptr sd, const QHostAddress& dest);
@@ -56,6 +58,8 @@ class ProxyConnection : public QObject {
  private:
   template <typename T>
   void clientErrorOccurred(int error);
+
+  void clientBytesWritten(qint64 bytes);
 
  protected:
   /**
@@ -72,18 +76,22 @@ class ProxyConnection : public QObject {
 
   void setState(int state);
 
-  void readyRead();
+  void clientReadyRead();
+
+  QTcpSocket* createDestSocket(const QHostAddress& dest, quint16 port);
 
   QIODevice* m_clientSocket = nullptr;
   QString m_clientName;
   uint16_t m_clientPort = 0;
 
-  uint16_t m_destPort = 0;
+  QAbstractSocket* m_destSocket = nullptr;
+  quint16 m_destPort = 0;
   QHostAddress m_destAddress;
   QString m_destHostname;
 
   quint64 m_sendHighWaterMark = 0;
   quint64 m_recvHighWaterMark = 0;
+  quint64 m_recvIgnoreBytes = 0;
   QString m_errorString;
 
   int m_state = Handshake;

@@ -23,15 +23,23 @@ class HttpConnection final : public ProxyConnection {
   static bool isProxyType(QIODevice* socket);
 
   void handshakeRead() override;
-  void clientProxyRead() override;
+
+ private slots:
+  void onHostnameResolved(const QHostAddress& addr);
+  void onHostnameNotFound();
 
  private:
+  void setError(int code, const QString& message);
+  void doConnect();
+
   // HTTP Request fields.
   QString m_requestLine;
   QString m_requestMethod;
   QString m_requestUri;
   QString m_requestVersion;
   QMap<QString,QString> m_headers;
+
+  static const QRegularExpression m_requestRegex;
 };
 
 #endif  // HTTPCONNECTION_H
