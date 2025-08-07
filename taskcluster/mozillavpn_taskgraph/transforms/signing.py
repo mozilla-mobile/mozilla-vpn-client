@@ -19,6 +19,7 @@ PRODUCTION_SIGNING_BUILD_TYPES = [
     "android-armv7/release",
     "linux/opt",
     "macos/opt",
+    "macos/next", # TODO: This would be a candidate for debug signing, if we supported it.
     "windows/opt",
     "addons/opt",
 ]
