@@ -52,6 +52,7 @@ tasks:
                     - android-arm64/release
                     - android-armv7/release
                     - macos/opt
+                    - macos/next
                     - windows/opt
                     - addons/opt
             copy-attributes: true
@@ -81,5 +82,6 @@ tasks:
                     android-armv7/release: android/armv7
                     linux/opt: linux/opt
                     macos/opt: macos/opt
+                    macos/next: macos/next
                     windows/opt: windows/x86_64
                     addons/opt: addons/opt
