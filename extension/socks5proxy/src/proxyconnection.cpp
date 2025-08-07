@@ -4,6 +4,9 @@
 
 #include "proxyconnection.h"
 
+#include <QLocalSocket>
+#include <QTcpSocket>
+
 ProxyConnection::ProxyConnection(QIODevice* socket) : QObject(socket) {
   // Handle TCP/UDP socket setup.
   QAbstractSocket* netsock = qobject_cast<QAbstractSocket*>(socket);

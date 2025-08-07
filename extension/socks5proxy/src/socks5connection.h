@@ -7,6 +7,9 @@
 
 #include "proxyconnection.h"
 
+class QTcpSocket;
+class QLocalSocket;
+
 class Socks5Connection final : public ProxyConnection {
   Q_OBJECT
 
@@ -60,10 +63,6 @@ class Socks5Connection final : public ProxyConnection {
   template <typename T>
   static std::optional<T> readPacket(QIODevice* connection);
 
-  const QHostAddress& destAddress() const { return m_destAddress; }
-
-  const QStringList& hostLookupStack() const { return m_hostLookupStack; }
-
   const Socks5State& state() const { return m_state; }
 
  signals:
@@ -87,9 +86,6 @@ class Socks5Connection final : public ProxyConnection {
   QTcpSocket* m_outSocket = nullptr;
 
   uint8_t m_addressType = 0;
-  uint16_t m_destPort = 0;
-  QHostAddress m_destAddress;
-  QStringList m_hostLookupStack;
 
   quint64 m_recvIgnoreBytes = 0;
 };

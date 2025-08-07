@@ -6,10 +6,11 @@
 #define PROXYCONNECTION_H
 
 #include <QByteArray>
-#include <QIODevice>
-#include <QLocalSocket>
+#include <QHostAddress>
 #include <QObject>
-#include <QTcpSocket>
+
+class QIODevice;
+class QLocalSocket;
 
 class ProxyConnection : public QObject {
   Q_OBJECT
@@ -25,6 +26,9 @@ class ProxyConnection : public QObject {
   const QString& errorString() const { return m_errorString; }
 
   const QString& clientName() const { return m_clientName; }
+
+  const QHostAddress& destAddress() const { return m_destAddress; }
+  const QString& destHostname() const { return m_destHostname; }
 
   static constexpr const int MAX_CONNECTION_BUFFER = 16 * 1024;
 
@@ -47,6 +51,10 @@ class ProxyConnection : public QObject {
 
   QString m_clientName;
   uint16_t m_clientPort = 0;
+
+  uint16_t m_destPort = 0;
+  QHostAddress m_destAddress;
+  QString m_destHostname;
 
   quint64 m_sendHighWaterMark = 0;
   quint64 m_recvHighWaterMark = 0;

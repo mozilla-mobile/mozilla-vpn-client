@@ -18,7 +18,9 @@
 
 #include <QDnsLookup>
 #include <QHostAddress>
-
+#include <QIODevice>
+#include <QLocalSocket>
+#include <QTcpSocket>
 
 namespace {
 
@@ -262,10 +264,9 @@ void Socks5Connection::readyRead() {
           return;
         }
 
-        QString hostname = QString::fromUtf8(buffer, length);
-        m_hostLookupStack.append(hostname);
+        m_destHostname = QString::fromUtf8(buffer, length);
         m_destPort = htons(port);
-        DNSResolver::instance()->resolveAsync(hostname, this);
+        DNSResolver::instance()->resolveAsync(m_destHostname, this);
       }
 
       else if (m_addressType == 0x04 /* Ipv6 */) {
@@ -333,7 +334,6 @@ void Socks5Connection::onHostnameResolved(QHostAddress resolved) {
 
 void Socks5Connection::configureOutSocket(quint16 port) {
   Q_ASSERT(!m_destAddress.isNull());
-  m_hostLookupStack.append(m_destAddress.toString());
 
   int family;
   if (m_destAddress.protocol() == QAbstractSocket::IPv6Protocol) {
