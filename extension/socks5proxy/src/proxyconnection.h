@@ -32,10 +32,30 @@ class ProxyConnection : public QObject {
 
   static constexpr const int MAX_CONNECTION_BUFFER = 16 * 1024;
 
+  enum ProxyState : int {
+    Closed = -3,
+    Proxy = -2,
+    Resolve = -1,
+    Handshake = 0,
+    // The protocol can define additional states starting from Handshake
+  };
+
+  int state() const { return m_state; }
+
+  // Protocols must implement these methods to read data off the client socket
+  // in the Handshake and Proxy states, respectively.
+  virtual void handshakeRead() = 0;
+  virtual void clientProxyRead() = 0;
+
  signals:
   void setupOutSocket(qintptr sd, const QHostAddress& dest);
   void dataSentReceived(qint64 sent, qint64 received);
   void disconnected();
+  void stateChanged();
+
+ private:
+  template <typename T>
+  void clientErrorOccurred(int error);
 
  protected:
   /**
@@ -50,6 +70,11 @@ class ProxyConnection : public QObject {
   // Implemented by platform-specific code in proxylocal_<platform>.cpp
   static QString localClientName(QLocalSocket* s);
 
+  void setState(int state);
+
+  void readyRead();
+
+  QIODevice* m_clientSocket = nullptr;
   QString m_clientName;
   uint16_t m_clientPort = 0;
 
@@ -60,6 +85,8 @@ class ProxyConnection : public QObject {
   quint64 m_sendHighWaterMark = 0;
   quint64 m_recvHighWaterMark = 0;
   QString m_errorString;
+
+  int m_state = Handshake;
 };
 
 #endif  // PROXYCONNECTION_H

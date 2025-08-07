@@ -80,11 +80,8 @@ ServerResponsePacket createServerResponsePacket(uint8_t rep,
 }  // namespace
 
 Socks5Connection::Socks5Connection(QIODevice* socket)
-    : ProxyConnection(socket), m_inSocket(socket) {
-  connect(m_inSocket, &QIODevice::readyRead, this,
-          &Socks5Connection::readyRead);
-
-  connect(m_inSocket, &QIODevice::bytesWritten, this,
+    : ProxyConnection(socket) {
+  connect(m_clientSocket, &QIODevice::bytesWritten, this,
           &Socks5Connection::bytesWritten);
   readyRead();
 }
@@ -93,30 +90,12 @@ Socks5Connection::Socks5Connection(QTcpSocket* socket)
     : Socks5Connection(static_cast<QIODevice*>(socket)) {
   connect(socket, &QTcpSocket::disconnected, this,
           [this]() { setState(Closed); });
-
-  connect(socket, &QTcpSocket::errorOccurred, this,
-          [this](QAbstractSocket::SocketError error) {
-            if (error == QAbstractSocket::RemoteHostClosedError) {
-              setState(Closed);
-            } else {
-              setError(ErrorGeneral, m_inSocket->errorString());
-            }
-          });
 }
 
 Socks5Connection::Socks5Connection(QLocalSocket* socket)
     : Socks5Connection(static_cast<QIODevice*>(socket)) {
   connect(socket, &QLocalSocket::disconnected, this,
           [this]() { setState(Closed); });
-
-  connect(socket, &QLocalSocket::errorOccurred, this,
-          [this](QLocalSocket::LocalSocketError error) {
-            if (error == QLocalSocket::PeerClosedError) {
-              setState(Closed);
-            } else {
-              setError(ErrorGeneral, m_inSocket->errorString());
-            }
-          });
 }
 
 void Socks5Connection::setError(Socks5Replies reason,
@@ -129,7 +108,7 @@ void Socks5Connection::setError(Socks5Replies reason,
       [[fallthrough]];
     case ClientConnectionAddress: {
       ServerResponsePacket packet(createServerResponsePacket(reason));
-      m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
+      m_clientSocket->write((char*)&packet, sizeof(ServerResponsePacket));
       break;
     }
 
@@ -141,39 +120,10 @@ void Socks5Connection::setError(Socks5Replies reason,
   setState(Closed);
 }
 
-void Socks5Connection::setState(Socks5State newstate) {
-  if (m_state == newstate) {
-    return;
-  }
-
-  m_state = newstate;
-  emit stateChanged();
-
-  // If the new state is Proxy, keep track of how many bytes are yet to be
-  // written to finish the negotiation. We should suppress the statistics
-  // signals for such traffic.
-  if (m_state == Proxy) {
-    m_recvIgnoreBytes = m_inSocket->bytesToWrite();
-  }
-
-  // If the state is closing. Shutdown the sockets.
-  if (m_state == Closed) {
-    emit disconnected();
-  
-    m_inSocket->close();
-    if (m_outSocket != nullptr) {
-      m_outSocket->close();
-    }
-
-    // Request self-destruction
-    deleteLater();
-  }
-}
-
-void Socks5Connection::readyRead() {
+void Socks5Connection::handshakeRead() {
   switch (m_state) {
     case ClientGreeting: {
-      const auto packet = readPacket<ClientGreetingPacket>(m_inSocket);
+      const auto packet = readPacket<ClientGreetingPacket>();
       if (!packet) {
         return;
       }
@@ -191,13 +141,13 @@ void Socks5Connection::readyRead() {
     }
 
     case AuthenticationMethods: {
-      if (m_inSocket->bytesAvailable() < (qint64)m_authNumber) {
+      if (m_clientSocket->bytesAvailable() < (qint64)m_authNumber) {
         return;
       }
 
       char buffer[INT8_MAX];
-      if (m_inSocket->read(buffer, m_authNumber) != m_authNumber) {
-        setError(ErrorGeneral, m_inSocket->errorString());
+      if (m_clientSocket->read(buffer, m_authNumber) != m_authNumber) {
+        setError(ErrorGeneral, m_clientSocket->errorString());
         return;
       }
 
@@ -205,9 +155,9 @@ void Socks5Connection::readyRead() {
       packet.version = 0x5;
       packet.cauth = 0x00;  // TODO: authentication check!
 
-      if (m_inSocket->write((const char*)&packet, sizeof(ServerChoicePacket)) !=
+      if (m_clientSocket->write((const char*)&packet, sizeof(ServerChoicePacket)) !=
           sizeof(ServerChoicePacket)) {
-        setError(ErrorGeneral, m_inSocket->errorString());
+        setError(ErrorGeneral, m_clientSocket->errorString());
         return;
       }
 
@@ -216,7 +166,7 @@ void Socks5Connection::readyRead() {
     }
 
     case ClientConnectionRequest: {
-      auto const packet = readPacket<ClientConnectionRequestPacket>(m_inSocket);
+      auto const packet = readPacket<ClientConnectionRequestPacket>();
       if (!packet) {
         return;
       }
@@ -235,8 +185,7 @@ void Socks5Connection::readyRead() {
 
     case ClientConnectionAddress: {
       if (m_addressType == 0x01 /* Ipv4 */) {
-        auto const packet =
-            readPacket<ClientConnectionAddressIpv4Packet>(m_inSocket);
+        auto const packet = readPacket<ClientConnectionAddressIpv4Packet>();
         if (!packet) {
           return;
         }
@@ -250,23 +199,23 @@ void Socks5Connection::readyRead() {
       }
 
       else if (m_addressType == 0x03 /* Domain name */) {
-        if (m_inSocket->bytesAvailable() == 0) return;
+        if (m_clientSocket->bytesAvailable() == 0) return;
 
         uint8_t length;
-        if (m_inSocket->read((char*)&length, 1) != 1) {
-          setError(ErrorGeneral, m_inSocket->errorString());
+        if (m_clientSocket->read((char*)&length, 1) != 1) {
+          setError(ErrorGeneral, m_clientSocket->errorString());
           return;
         }
 
         char buffer[UINT8_MAX];
-        if (m_inSocket->read(buffer, length) != length) {
-          setError(ErrorGeneral, m_inSocket->errorString());
+        if (m_clientSocket->read(buffer, length) != length) {
+          setError(ErrorGeneral, m_clientSocket->errorString());
           return;
         }
 
         uint16_t port;
-        if (m_inSocket->read((char*)&port, sizeof(port)) != sizeof(port)) {
-          setError(ErrorGeneral, m_inSocket->errorString());
+        if (m_clientSocket->read((char*)&port, sizeof(port)) != sizeof(port)) {
+          setError(ErrorGeneral, m_clientSocket->errorString());
           return;
         }
 
@@ -276,8 +225,7 @@ void Socks5Connection::readyRead() {
       }
 
       else if (m_addressType == 0x04 /* Ipv6 */) {
-        auto const packet =
-            readPacket<ClientConnectionAddressIpv6Packet>(m_inSocket);
+        auto const packet = readPacket<ClientConnectionAddressIpv6Packet>();
         if (!packet) {
           return;
         }
@@ -298,14 +246,14 @@ void Socks5Connection::readyRead() {
 
     break;
 
-    case Proxy:
-      proxy(m_inSocket, m_outSocket, m_sendHighWaterMark);
-      break;
-
     default:
       Q_ASSERT(false);
       break;
   }
+}
+
+void Socks5Connection::clientProxyRead() {
+  proxy(m_clientSocket, m_outSocket, m_sendHighWaterMark);
 }
 
 void Socks5Connection::bytesWritten(qint64 bytes) {
@@ -325,7 +273,7 @@ void Socks5Connection::bytesWritten(qint64 bytes) {
 
   // Drive statistics and proxy data.
   emit dataSentReceived(0, bytes);
-  proxy(m_outSocket, m_inSocket, m_recvHighWaterMark);
+  proxy(m_outSocket, m_clientSocket, m_recvHighWaterMark);
 }
 
 void Socks5Connection::onHostnameResolved(QHostAddress resolved) {
@@ -373,23 +321,27 @@ void Socks5Connection::configureOutSocket(quint16 port) {
 
   connect(m_outSocket, &QTcpSocket::connected, this, [this]() {
     ServerResponsePacket packet(createServerResponsePacket(0x00, m_clientPort));
-    if (m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket)) !=
+    if (m_clientSocket->write((char*)&packet, sizeof(ServerResponsePacket)) !=
         sizeof(ServerResponsePacket)) {
-      setError(ErrorGeneral, m_inSocket->errorString());
+      setError(ErrorGeneral, m_clientSocket->errorString());
       return;
     }
 
+    // Keep track of how many bytes are yet to be written to finish the
+    // negotiation. We should suppress the statistics signals for such traffic.
+    m_recvIgnoreBytes = m_clientSocket->bytesToWrite();
+  
     setState(Proxy);
     readyRead();
   });
 
   connect(m_outSocket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
     emit dataSentReceived(bytes, 0);
-    proxy(m_inSocket, m_outSocket, m_sendHighWaterMark);
+    proxy(m_clientSocket, m_outSocket, m_sendHighWaterMark);
   });
 
   connect(m_outSocket, &QTcpSocket::readyRead, this,
-          [this]() { proxy(m_outSocket, m_inSocket, m_recvHighWaterMark); });
+          [this]() { proxy(m_outSocket, m_clientSocket, m_recvHighWaterMark); });
 
   connect(m_outSocket, &QTcpSocket::disconnected, this,
           [this]() { setState(Closed); });
@@ -425,21 +377,21 @@ Socks5Connection::Socks5Replies Socks5Connection::socketErrorToSocks5Rep(
 }
 
 template <typename T>
-std::optional<T> Socks5Connection::readPacket(QIODevice* connection) {
+std::optional<T> Socks5Connection::readPacket() {
   // There are not enough bytes to read don't touch the connection.
-  if (connection->bytesAvailable() < (qint64)sizeof(T)) {
+  if (m_clientSocket->bytesAvailable() < (qint64)sizeof(T)) {
     return {};
   }
-  connection->startTransaction();
+  m_clientSocket->startTransaction();
   T packet;
-  if (connection->read((char*)&packet, sizeof(T)) != sizeof(T)) {
+  if (m_clientSocket->read((char*)&packet, sizeof(T)) != sizeof(T)) {
     // If we did not read the correct amount of data
     // Abort the transaction and reset the buffer, so the
     // caller can try to read again.
-    connection->rollbackTransaction();
+    m_clientSocket->rollbackTransaction();
     return {};
   }
-  connection->commitTransaction();
+  m_clientSocket->commitTransaction();
   return packet;
 }
 

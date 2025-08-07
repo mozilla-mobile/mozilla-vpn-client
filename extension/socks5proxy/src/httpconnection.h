@@ -21,6 +21,17 @@ class HttpConnection final : public ProxyConnection {
 
   // Peek at the socket and determine if this is a HTTP connection.
   static bool isProxyType(QIODevice* socket);
+
+  void handshakeRead() override;
+  void clientProxyRead() override;
+
+ private:
+  // HTTP Request fields.
+  QString m_requestLine;
+  QString m_requestMethod;
+  QString m_requestUri;
+  QString m_requestVersion;
+  QMap<QString,QString> m_headers;
 };
 
 #endif  // HTTPCONNECTION_H

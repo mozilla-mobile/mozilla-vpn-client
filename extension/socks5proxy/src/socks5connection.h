@@ -21,13 +21,11 @@ class Socks5Connection final : public ProxyConnection {
   explicit Socks5Connection(QLocalSocket* socket);
   ~Socks5Connection() = default;
 
-  enum Socks5State {
-    ClientGreeting,
+  enum Socks5State : int {
+    ClientGreeting = ProxyState::Handshake,
     AuthenticationMethods,
     ClientConnectionRequest,
     ClientConnectionAddress,
-    Proxy,
-    Closed,
   };
 
   enum Socks5Replies : uint8_t {
@@ -61,31 +59,24 @@ class Socks5Connection final : public ProxyConnection {
    * @return std::optional<T> - The read T if enough bytes were written.
    */
   template <typename T>
-  static std::optional<T> readPacket(QIODevice* connection);
-
-  const Socks5State& state() const { return m_state; }
+  std::optional<T> readPacket();
 
   // Peek at the socket and determine if this is a socks connection.
   static bool isProxyType(QIODevice* socket);
 
- signals:
-  void stateChanged();
+  void handshakeRead() override;
+  void clientProxyRead() override;
 
  private slots:
   void onHostnameResolved(QHostAddress addr);
   void onHostnameNotFound();
 
  private:
-  void setState(Socks5State state);
   void setError(Socks5Replies reply, const QString& errorString);
   void configureOutSocket(quint16 port);
-  void readyRead();
   void bytesWritten(qint64 bytes);
 
-  Socks5State m_state = ClientGreeting;
-
   uint8_t m_authNumber = 0;
-  QIODevice* m_inSocket = nullptr;
   QTcpSocket* m_outSocket = nullptr;
 
   uint8_t m_addressType = 0;
