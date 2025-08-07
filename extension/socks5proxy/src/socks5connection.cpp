@@ -264,7 +264,6 @@ void Socks5Connection::configureOutSocket(quint16 port) {
     }
 
     setState(Proxy);
-    clientReadyRead();
   });
 
   connect(m_destSocket, &QTcpSocket::disconnected, this,

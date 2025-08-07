@@ -59,6 +59,7 @@ class ProxyConnection : public QObject {
   template <typename T>
   void clientErrorOccurred(int error);
 
+  void clientReadyRead();
   void clientBytesWritten(qint64 bytes);
 
  protected:
@@ -75,8 +76,6 @@ class ProxyConnection : public QObject {
   static QString localClientName(QLocalSocket* s);
 
   void setState(int state);
-
-  void clientReadyRead();
 
   QTcpSocket* createDestSocket(const QHostAddress& dest, quint16 port);
 

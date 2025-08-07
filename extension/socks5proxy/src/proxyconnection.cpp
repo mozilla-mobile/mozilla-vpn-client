@@ -111,6 +111,9 @@ void ProxyConnection::setState(int newstate) {
     // Keep track of how many bytes are yet to be written to finish the
     // negotiation. We should suppress the statistics signals for such traffic.
     m_recvIgnoreBytes = m_clientSocket->bytesToWrite();
+
+    // Kick the flow control once we are ready to start passing traffic.
+    clientReadyRead();
   }
 
   // If the state is closing. Shutdown the sockets.

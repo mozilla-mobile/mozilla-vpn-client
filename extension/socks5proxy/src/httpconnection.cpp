@@ -137,7 +137,6 @@ void HttpConnection::onHostnameResolved(const QHostAddress& resolved) {
     sendResponse(200, "OK");
 
     setState(Proxy);
-    clientReadyRead();
   });
 
   connect(m_destSocket, &QTcpSocket::disconnected, this,
