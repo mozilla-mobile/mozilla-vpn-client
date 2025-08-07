@@ -36,6 +36,9 @@ class Socks5 final : public QObject {
   template <typename T>
   void newConnection(T* server);
 
+  template <typename T>
+  void tryCreateProxy(T* socket);
+
   uint16_t m_clientCount = 0;
   bool m_shuttingDown = false;
 };

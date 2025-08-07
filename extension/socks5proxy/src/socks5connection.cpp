@@ -442,3 +442,13 @@ std::optional<T> Socks5Connection::readPacket(QIODevice* connection) {
   connection->commitTransaction();
   return packet;
 }
+
+// Peek at the socket and determine if this is a socks connection.
+bool Socks5Connection::isProxyType(QIODevice* socket) {
+  QByteArray data = socket->peek(sizeof(ClientGreetingPacket));
+  if (data.length() < sizeof(ClientGreetingPacket)) {
+    return false;
+  }
+  // This is probably a SOCKS proxy connection if the first byte indicates version 4 or 5.
+  return (data.at(0) == 0x05) || (data.at(0) == 0x04);
+}

@@ -16,6 +16,8 @@ target_compile_definitions(libSocks5proxy PRIVATE CARES_STATICLIB)
 target_sources(libSocks5proxy PRIVATE
     dnsresolver.h
     dnsresolver.cpp
+    httpconnection.cpp
+    httpconnection.h
     proxyconnection.cpp
     proxyconnection.h
     socks5.h

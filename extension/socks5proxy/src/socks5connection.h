@@ -65,6 +65,9 @@ class Socks5Connection final : public ProxyConnection {
 
   const Socks5State& state() const { return m_state; }
 
+  // Peek at the socket and determine if this is a socks connection.
+  static bool isProxyType(QIODevice* socket);
+
  signals:
   void stateChanged();
 
