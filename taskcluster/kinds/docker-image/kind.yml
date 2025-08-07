@@ -61,3 +61,6 @@ tasks:
         definition: linux-rpm-build
         args:
             DOCKER_BASE_IMAGE: fedora:40
+    sentry:
+        parent: base
+        symbol: I(sentry)

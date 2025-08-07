@@ -61,17 +61,14 @@ tasks:
                 "3":
                     signing: signing-macos/opt
                 default:
-                    build: build-macos/pr
+                    build: build-macos/opt
         worker-type: b-macos
         worker:
             chain-of-trust: true
             max-run-time: 3600
         release-artifacts: [MozillaVPN.pkg]
         attributes:
-            build-type:
-                by-level:
-                    "3": macos/opt
-                    default: macos/pr
+            build-type: macos/opt
         run:
             using: run-task
             cwd: '{checkout}'

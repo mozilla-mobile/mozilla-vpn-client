@@ -1,0 +1,42 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - mozillavpn_taskgraph.transforms.requires_level:transforms
+    - taskgraph.transforms.run:transforms
+    - taskgraph.transforms.task:transforms
+
+kind-dependencies:
+    - build
+
+tasks:
+    macos/opt:
+        description: Upload macOS symbols to Sentry
+        worker-type: b-linux
+        worker:
+            docker-image: {in-tree: sentry}
+            taskcluster-proxy: true
+            chain-of-trust: true
+            max-run-time: 3600
+        treeherder:
+            symbol: SYM
+            kind: other
+            platform: macos/universal
+            tier: 1
+        dependencies:
+            build: build-macos/opt
+        fetches:
+            build:
+                - MozillaVPN-dsym.tar.xz
+        run:
+            using: run-task
+            checkout: false
+            use-caches: []
+            command: /builds/worker/sentry_upload.sh
+        requires-level: 3
+        scopes:
+            - secrets:get:project/mozillavpn/level-1/sentry
