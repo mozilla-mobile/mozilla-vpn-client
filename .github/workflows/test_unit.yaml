@@ -165,23 +165,3 @@ jobs:
       - name: Running unit tests
         shell: bash
         run: ctest -L unit --test-dir ./build-win --output-on-failure
-
-  rust-unit-tests:
-    strategy:
-      matrix:
-        os: [ubuntu-22.04, windows-latest, macos-latest]
-
-    runs-on: ${{ matrix.os }}
-    name: Run Unit tests for Rust (${{ matrix.os }})
-    steps:
-      - name: Clone repository
-        uses: actions/checkout@v4
-
-      - name: Fetch glean submodules
-        run: |
-          git submodule update --init 3rdparty/glean
-
-      - name: Signature library tests
-        shell: bash
-        working-directory: ./signature
-        run: cargo test -- --nocapture
