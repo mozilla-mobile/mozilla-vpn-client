@@ -14,9 +14,11 @@
 #include <QDateTime>
 #include <QDir>
 #include <QFile>
+#include <QHostAddress>
 #include <QLoggingCategory>
 
 #include "socks5.h"
+#include "proxyconnection.h"
 
 // 4MB of log data ought to be enough for anyone.
 constexpr const qsizetype LOGFILE_MAX_SIZE = 4 * 1024 * 1024;
@@ -57,11 +59,13 @@ SocksLogger::~SocksLogger() {
   s_instance = nullptr;
 }
 
-void SocksLogger::incomingConnection(Socks5Connection* conn) {
-  connect(conn, &Socks5Connection::dataSentReceived, this,
+void SocksLogger::incomingConnection(ProxyConnection* conn) {
+  connect(conn, &ProxyConnection::dataSentReceived, this,
           &SocksLogger::dataSentReceived);
-  connect(conn, &Socks5Connection::stateChanged, this,
-          &SocksLogger::connectionStateChanged);
+  connect(conn, &ProxyConnection::setupOutSocket, this,
+          &SocksLogger::proxyConnect);
+  connect(conn, &ProxyConnection::disconnected, this,
+          &SocksLogger::proxyDisconnect);
   connect(conn, &QObject::destroyed, this, [this]() { m_numConnections--; });
 
   m_events.append(
@@ -138,35 +142,50 @@ void SocksLogger::dataSentReceived(qint64 sent, qint64 received) {
   m_rx_bytes.addSample(received);
 }
 
-QDebug& SocksLogger::printEventStack(QDebug& msg, Socks5Connection* conn) {
-  bool first = true;
-  for (const QString& hostname : conn->hostLookupStack()) {
-    if (!first) {
+QDebug& SocksLogger::printEventStack(QDebug& msg, ProxyConnection* conn) {
+  QStringList stack;
+  
+  if (!conn->destHostname().isEmpty()) {
+    stack.append(conn->destHostname());
+  }
+  if (!conn->destAddress().isNull()) {
+    stack.append(conn->destAddress().toString());
+  }
+  if (!conn->errorString().isEmpty()) {
+    stack.append(conn->errorString());
+  }
+
+  int count = 0;
+  for (const QString& item : stack) {
+    if (count++) {
       msg << "->";
     }
-    first = false;
-    msg << hostname;
+    msg << item;
   }
+
   return msg;
 }
 
-void SocksLogger::connectionStateChanged() {
-  Socks5Connection* conn = qobject_cast<Socks5Connection*>(QObject::sender());
-  if (conn->state() == Socks5Connection::Proxy) {
-    auto msg = qDebug() << "Connecting" << conn->clientName() << "to";
+void SocksLogger::proxyConnect(qintptr sd, const QHostAddress& dest) {
+  Q_UNUSED(sd);
+  Q_UNUSED(dest);
+
+  ProxyConnection* conn = qobject_cast<ProxyConnection*>(QObject::sender());
+  auto msg = qDebug() << "Connecting" << conn->clientName() << "to";
+  printEventStack(msg, conn);
+}
+
+void SocksLogger::proxyDisconnect() {
+  ProxyConnection* conn = static_cast<ProxyConnection*>(QObject::sender());
+  if (!conn->errorString().isEmpty()) {
+    // Failed connection
+    auto msg = qDebug() << "Failed";
     printEventStack(msg, conn);
-  }
-  if (conn->state() == Socks5Connection::Closed) {
-    if (!conn->errorString().isEmpty()) {
-      // Failed connection
-      auto msg = qDebug() << "Failed";
-      printEventStack(msg, conn) << "->" << conn->errorString();
-    } else {
-      // Successful connection
-      auto msg = qDebug() << "Closed";
-      printEventStack(msg, conn) << "txbuf" << conn->sendHighWaterMark()
-                                 << "rxbuf" << conn->recvHighWaterMark();
-    }
+  } else {
+    // Successful connection
+    auto msg = qDebug() << "Closed";
+    printEventStack(msg, conn) << "txbuf" << conn->sendHighWaterMark()
+                               << "rxbuf" << conn->recvHighWaterMark();
   }
 }
 

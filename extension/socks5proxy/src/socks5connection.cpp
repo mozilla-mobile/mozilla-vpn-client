@@ -142,6 +142,10 @@ void Socks5Connection::setError(Socks5Replies reason,
 }
 
 void Socks5Connection::setState(Socks5State newstate) {
+  if (m_state == newstate) {
+    return;
+  }
+
   m_state = newstate;
   emit stateChanged();
 
@@ -154,6 +158,8 @@ void Socks5Connection::setState(Socks5State newstate) {
 
   // If the state is closing. Shutdown the sockets.
   if (m_state == Closed) {
+    emit disconnected();
+  
     m_inSocket->close();
     if (m_outSocket != nullptr) {
       m_outSocket->close();

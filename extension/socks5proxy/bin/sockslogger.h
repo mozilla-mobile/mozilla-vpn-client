@@ -11,10 +11,11 @@
 #include <QTimer>
 #include <QVector>
 
+class ProxyConnection;
 class QDir;
 class QFile;
+class QHostAddress;
 class Socks5;
-class Socks5Connection;
 
 // Calculates a boxcar average
 class BoxcarAverage final {
@@ -54,7 +55,7 @@ class SocksLogger final : public QObject {
   ~SocksLogger();
 
   static QString bytesToString(qint64 value);
-  static QDebug& printEventStack(QDebug& msg, Socks5Connection* conn);
+  static QDebug& printEventStack(QDebug& msg, ProxyConnection* conn);
   void printStatus();
 
   const QString& logfile() const { return m_logFileName; }
@@ -62,7 +63,7 @@ class SocksLogger final : public QObject {
   void setVerbose(bool enabled);
 
  public slots:
-  void incomingConnection(Socks5Connection* conn);
+  void incomingConnection(ProxyConnection* conn);
 
  private:
   static bool makeLogDir(const QDir& dir);
@@ -71,7 +72,8 @@ class SocksLogger final : public QObject {
   static void logHandler(QtMsgType type, const QMessageLogContext& ctx,
                          const QString& msg);
   void dataSentReceived(qint64 sent, qint64 received);
-  void connectionStateChanged();
+  void proxyDisconnect();
+  void proxyConnect(qintptr sd, const QHostAddress& dest);
   void tick();
 
  private:

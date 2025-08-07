@@ -35,6 +35,7 @@ class ProxyConnection : public QObject {
  signals:
   void setupOutSocket(qintptr sd, const QHostAddress& dest);
   void dataSentReceived(qint64 sent, qint64 received);
+  void disconnected();
 
  protected:
   /**
