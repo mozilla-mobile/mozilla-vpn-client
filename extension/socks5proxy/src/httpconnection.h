@@ -35,10 +35,9 @@ class HttpConnection final : public ProxyConnection {
   void doConnect();
 
   // HTTP Request fields.
-  QString m_requestLine;
-  QString m_requestMethod;
-  QString m_requestUri;
-  QString m_requestVersion;
+  QString m_method;
+  QString m_uri;
+  QString m_version;
   QMap<QString,QString> m_headers;
 
   static const QRegularExpression m_requestRegex;

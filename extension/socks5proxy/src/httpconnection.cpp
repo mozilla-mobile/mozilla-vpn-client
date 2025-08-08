@@ -65,16 +65,16 @@ void HttpConnection::handshakeRead() {
     QString header = m_clientSocket->readLine().trimmed();
 
     // Read the header line.
-    if (m_requestMethod.isEmpty()) {
+    if (m_method.isEmpty()) {
       auto match = m_requestRegex.match(header);
       if (!match.hasMatch() || match.lastCapturedIndex() != 3) {
         setError(400, "Bad Request");
         return;
       }
 
-      m_requestMethod = match.captured(1);
-      m_requestUri = match.captured(2);
-      m_requestVersion = match.captured(3);
+      m_method = match.captured(1);
+      m_uri = match.captured(2);
+      m_version = match.captured(3);
       continue;
     }
 
@@ -91,7 +91,7 @@ void HttpConnection::handshakeRead() {
     }
 
     // Handle the request method.
-    if (m_requestMethod == "CONNECT") {
+    if (m_method == "CONNECT") {
       doConnect();
     } else {
       setError(405, "Method Not Allowed");
@@ -102,7 +102,7 @@ void HttpConnection::handshakeRead() {
 
 void HttpConnection::doConnect() {
   // Split the request URI to separate the port and address.
-  QStringList list = m_requestUri.split(':');
+  QStringList list = m_uri.split(':');
   if (list.length() != 2) {
     setError(400, "Bad Request");
     return;
@@ -129,7 +129,6 @@ void HttpConnection::onHostnameResolved(const QHostAddress& resolved) {
   }
   Q_ASSERT(!resolved.isNull());
 
-  // Otherwise, connect to the destination.
   m_destAddress = resolved;
   m_destSocket = createDestSocket(m_destAddress, m_destPort);
 
