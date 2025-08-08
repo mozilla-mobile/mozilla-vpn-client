@@ -43,8 +43,8 @@ class ProxyConnection : public QObject {
 
   int state() const { return m_state; }
 
-  // Protocols must implement these methods to read data off the client socket
-  // in the Handshake and Proxy states, respectively.
+  // Proxy protocols must implement these methods to read data off the client
+  // socket in the Handshake and Proxy states, respectively.
   virtual void handshakeRead() = 0;
   virtual void clientProxyRead();
   virtual void destProxyRead();

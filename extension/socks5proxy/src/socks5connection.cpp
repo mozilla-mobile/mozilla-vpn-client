@@ -205,6 +205,8 @@ void Socks5Connection::handshakeRead() {
 
         m_destHostname = QString::fromUtf8(buffer, length);
         m_destPort = htons(port);
+        setState(Resolve);
+
         DNSResolver::instance()->resolveAsync(m_destHostname, this);
       }
 
