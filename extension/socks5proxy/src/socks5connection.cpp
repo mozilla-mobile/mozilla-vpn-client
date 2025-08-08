@@ -79,9 +79,6 @@ ServerResponsePacket createServerResponsePacket(uint8_t rep,
 
 }  // namespace
 
-Socks5Connection::Socks5Connection(QTcpSocket* s) : ProxyConnection(s) {}
-Socks5Connection::Socks5Connection(QLocalSocket* s) : ProxyConnection(s) {}
-
 void Socks5Connection::setError(Socks5Replies reason,
                                 const QString& errorString) {
   // A Server response message is only sent in certain states.

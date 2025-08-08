@@ -12,9 +12,6 @@
 
 #include "dnsresolver.h"
 
-HttpConnection::HttpConnection(QTcpSocket* sock) : ProxyConnection(sock) {}
-HttpConnection::HttpConnection(QLocalSocket* sock) : ProxyConnection(sock) {}
-
 const QRegularExpression HttpConnection::m_requestRegex =
     QRegularExpression("^([A-Z-]+)\\s([^\\s]+)*\\sHTTP/([0-9].[0-9])");
 

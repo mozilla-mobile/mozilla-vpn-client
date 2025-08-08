@@ -8,15 +8,12 @@
 #include "proxyconnection.h"
 
 class QIODevice;
-class QLocalSocket;
-class QTcpSocket;
 
 class HttpConnection final : public ProxyConnection {
   Q_OBJECT
 
  public:
-  explicit HttpConnection(QTcpSocket* socket);
-  explicit HttpConnection(QLocalSocket* socket);
+  explicit HttpConnection(QIODevice* socket) : ProxyConnection(socket) {};
   ~HttpConnection() = default;
 
   // Peek at the socket and determine if this is a HTTP connection.

@@ -30,14 +30,16 @@ class Socks5 final : public QObject {
   void incomingConnection(ProxyConnection* connection);
   void outgoingConnection(qintptr sd, const QHostAddress& dest);
 
+ private slots:
+  void discardSocket();
+
  private:
   void clientDismissed();
 
   template <typename T>
   void newConnection(T* server);
 
-  template <typename T>
-  void tryCreateProxy(T* socket);
+  void tryCreateProxy(QIODevice* socket);
 
   uint16_t m_clientCount = 0;
   bool m_shuttingDown = false;

@@ -7,15 +7,11 @@
 
 #include "proxyconnection.h"
 
-class QTcpSocket;
-class QLocalSocket;
-
 class Socks5Connection final : public ProxyConnection {
   Q_OBJECT
 
  public:
-  explicit Socks5Connection(QTcpSocket* socket);
-  explicit Socks5Connection(QLocalSocket* socket);
+  explicit Socks5Connection(QIODevice* socket) : ProxyConnection(socket) {};
   ~Socks5Connection() = default;
 
   enum Socks5State : int {
