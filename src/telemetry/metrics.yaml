@@ -15,7 +15,7 @@ sample:
     send_in_pings:
       - main
     description: |
-      A generic error alet is shown.
+      A generic error alert is shown.
     bugs:
       - https://mozilla-hub.atlassian.net/browse/VPN-3320
     data_reviews:
@@ -92,6 +92,28 @@ performance:
       - vpn-telemetry@mozilla.com
     expires: never
     time_unit: microsecond
+
+  daemon_connection_error:
+    type: event
+    lifetime: ping
+    send_in_pings:
+      - main
+    description: |
+      The client was unable to connect with the daemon.
+    bugs:
+      - https://mozilla-hub.atlassian.net/browse/VPN-7200
+    data_reviews:
+      - https://github.com/mozilla-mobile/mozilla-vpn-client/pull/10698#pullrequestreview-3078715399
+    data_sensitivity:
+      - technical
+    notification_emails:
+      - mcleinman@mozilla.com
+      - vpn-telemetry@mozilla.com
+    expires: never
+    extra_keys:
+      platform:
+        description: Which platform reported the error
+        type: string
 
 session:
   session_start:
