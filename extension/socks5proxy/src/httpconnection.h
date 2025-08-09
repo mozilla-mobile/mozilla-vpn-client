@@ -7,13 +7,16 @@
 
 #include "proxyconnection.h"
 
+#include <QMap>
+#include <QUrl>
+
 class QIODevice;
 
-class HttpConnection final : public ProxyConnection {
+class HttpConnection : public ProxyConnection {
   Q_OBJECT
 
  public:
-  explicit HttpConnection(QIODevice* socket) : ProxyConnection(socket) {};
+  explicit HttpConnection(QIODevice* socket);
   ~HttpConnection() = default;
 
   // Peek at the socket and determine if this is a HTTP connection.
@@ -24,14 +27,16 @@ class HttpConnection final : public ProxyConnection {
  private slots:
   void onHostnameResolved(const QHostAddress& addr);
   void onHostnameNotFound();
+  void onHttpConnect();
 
- private:
+ protected:
   void sendResponse(int code, const QString& message,
                     const QMap<QString,QString>& hdr = QMap<QString,QString>());
   void setError(int code, const QString& message);
-  void doConnect();
+  const QString& header(const QString& name) const;
 
   // HTTP Request fields.
+  QUrl m_baseUrl;
   QString m_method;
   QString m_uri;
   QString m_version;

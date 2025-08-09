@@ -170,8 +170,12 @@ void ProxyConnection::destProxyRead() {
   proxy(m_destSocket, m_clientSocket, m_recvHighWaterMark);
 }
 
-QTcpSocket* ProxyConnection::createDestSocket(const QHostAddress& dest, quint16 port) {
+QAbstractSocket* ProxyConnection::createDestSocketImpl(QAbstractSocket* sock,
+                                                       const QHostAddress& dest,
+                                                       quint16 port) {
   Q_ASSERT(!dest.isNull());
+  Q_ASSERT(sock != nullptr);
+  auto guard = qScopeGuard([sock](){ sock->deleteLater(); });
 
   int family;
   if (dest.protocol() == QAbstractSocket::IPv6Protocol) {
@@ -184,7 +188,12 @@ QTcpSocket* ProxyConnection::createDestSocket(const QHostAddress& dest, quint16 
   // but the socket descriptor is typically created inside the connectToHost()
   // method. So let's create the socket manually and emit a signal for the
   // platform logic to hook on.
-  qintptr newsock = socket(family, SOCK_STREAM, IPPROTO_TCP);
+  qintptr newsock;
+  if (sock->socketType() == QAbstractSocket::UdpSocket) {
+    newsock = socket(family, SOCK_DGRAM, 0);
+  } else {
+    newsock = socket(family, SOCK_STREAM, IPPROTO_TCP);
+  }
 #ifdef Q_OS_WIN
   if (newsock == INVALID_SOCKET) {
     m_errorString = WinUtils::win32strerror(WSAGetLastError());
@@ -198,16 +207,16 @@ QTcpSocket* ProxyConnection::createDestSocket(const QHostAddress& dest, quint16 
 #endif
   emit setupOutSocket(newsock, m_destAddress);
 
-  auto socket = new QTcpSocket(this);
-  socket->setSocketDescriptor(newsock, QAbstractSocket::UnconnectedState);
-  socket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
-  socket->connectToHost(m_destAddress, port);
+  sock->setSocketDescriptor(newsock, QAbstractSocket::UnconnectedState);
+  sock->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
 
-  connect(socket, &QIODevice::readyRead, this, [this]() { destProxyRead(); });
-  connect(socket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
+  connect(sock, &QIODevice::readyRead, this, [this]() { destProxyRead(); });
+  connect(sock, &QIODevice::bytesWritten, this, &ProxyConnection::clientReadyRead,
+          Qt::QueuedConnection);
+  connect(sock, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
     emit dataSentReceived(bytes, 0);
-    clientReadyRead();
   });
 
-  return socket;
+  guard.dismiss();
+  return sock;
 }

@@ -13,6 +13,7 @@
 #endif
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QMutexLocker>
 #include <QObject>
 

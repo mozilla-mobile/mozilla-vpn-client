@@ -10,6 +10,7 @@
 #include <QTcpSocket>
 
 #include "httpconnection.h"
+#include "masqueconnection.h"
 #include "socks5connection.h"
 
 #define MAX_CLIENTS 1024
@@ -56,6 +57,8 @@ void Socks5::tryCreateProxy(QIODevice* socket) {
   ProxyConnection* con = nullptr;
   if (HttpConnection::isProxyType(socket)) {
     con = new HttpConnection(socket);
+  } else if (MasqueConnection::isProxyType(socket)) {
+    con = new MasqueConnection(socket);
   } else if (Socks5Connection::isProxyType(socket)) {
     con = new Socks5Connection(socket);
   } else if (socket->bytesAvailable() > 4096) {

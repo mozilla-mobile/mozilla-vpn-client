@@ -248,7 +248,7 @@ void Socks5Connection::onHostnameResolved(QHostAddress resolved) {
 void Socks5Connection::configureOutSocket(quint16 port) {
   Q_ASSERT(!m_destAddress.isNull());
 
-  m_destSocket = createDestSocket(m_destAddress, port);
+  m_destSocket = createDestSocket<QTcpSocket>(m_destAddress, port);
   if (!m_destSocket) {
     setError(ErrorGeneral, m_errorString);
     return;
@@ -276,6 +276,8 @@ void Socks5Connection::configureOutSocket(quint16 port) {
               setError(ErrorGeneral, m_destSocket->errorString());
             }
           });
+
+  m_destSocket->connectToHost(m_destAddress, port);
 }
 
 void Socks5Connection::onHostnameNotFound() {

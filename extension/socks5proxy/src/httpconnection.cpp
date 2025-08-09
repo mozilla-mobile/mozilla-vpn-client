@@ -15,6 +15,18 @@
 const QRegularExpression HttpConnection::m_requestRegex =
     QRegularExpression("^([A-Z-]+)\\s([^\\s]+)*\\sHTTP/([0-9].[0-9])");
 
+HttpConnection::HttpConnection(QIODevice* socket) : ProxyConnection(socket) {
+  m_baseUrl.setScheme("http");
+
+  QAbstractSocket* netsock = qobject_cast<QAbstractSocket*>(socket);
+  if (netsock) {
+    m_baseUrl.setHost(netsock->localAddress().toString());
+    m_baseUrl.setPort(netsock->localPort());
+  } else {
+    m_baseUrl.setHost("localhost");
+  }
+}
+
 // Peek at the socket and determine if this is a socks connection.
 bool HttpConnection::isProxyType(QIODevice* socket) {
   if (!socket->canReadLine()) {
@@ -31,7 +43,7 @@ bool HttpConnection::isProxyType(QIODevice* socket) {
     return false;
   }
 
-  return true;
+  return match.captured(1) == "CONNECT";
 }
 
 void HttpConnection::sendResponse(int code, const QString& message,
@@ -59,11 +71,11 @@ void HttpConnection::setError(int code, const QString& message) {
 
 void HttpConnection::handshakeRead() {
   while (m_clientSocket->canReadLine()) {
-    QString header = m_clientSocket->readLine().trimmed();
+    QString line = m_clientSocket->readLine().trimmed();
 
     // Read the header line.
     if (m_method.isEmpty()) {
-      auto match = m_requestRegex.match(header);
+      auto match = m_requestRegex.match(line);
       if (!match.hasMatch() || match.lastCapturedIndex() != 3) {
         setError(400, "Bad Request");
         return;
@@ -76,28 +88,54 @@ void HttpConnection::handshakeRead() {
     }
 
     // Read request headers.
-    if (!header.isEmpty()) {
-      qsizetype sep = header.indexOf(':');
-      if ((sep > 0) && (sep+1 < header.length())) {
-        m_headers.insert(header.first(sep), header.sliced(sep+1));
+    if (!line.isEmpty()) {
+      qsizetype sep = line.indexOf(':');
+      if ((sep > 0) && (sep+1 < line.length())) {
+        QString value = line.sliced(sep+1).trimmed();
+        m_headers.insert(line.first(sep).toLower(), value);
         continue;
       } else {
         setError(400, "Bad Request");
         return;
       }
     }
+    QString host = header("Host");
+    if (!host.isEmpty()) {
+      m_baseUrl.setAuthority(host);
+    }
 
-    // Handle the request method.
-    if (m_method == "CONNECT") {
-      doConnect();
-    } else {
+    // Attempt to invoke a meta-method to handle the request.
+    // We convert the method into camel-case, prepend 'onHttp'
+    // and invoke it as a method taking no arguments.
+    bool upper = true;
+    QString name = "onHttp";
+    for (const QChar c : m_method) {
+      if (!c.isLetter()) {
+        upper = true;
+      } else if (upper) {
+        name.append(c.toUpper());
+        upper = false;
+      } else {
+        name.append(c.toLower());
+      }
+    }
+    if (!QMetaObject::invokeMethod(this, qPrintable(name))) {
       setError(405, "Method Not Allowed");
     }
     return;
   }
 }
 
-void HttpConnection::doConnect() {
+const QString& HttpConnection::header(const QString& name) const {
+  auto entry = m_headers.find(name.toLower());
+  if (entry != m_headers.end()) {
+    return entry.value();
+  }
+  static const QString empty;
+  return empty;
+}
+
+void HttpConnection::onHttpConnect() {
   // Split the request URI to separate the port and address.
   QStringList list = m_uri.split(':');
   if (list.length() != 2) {
@@ -127,7 +165,7 @@ void HttpConnection::onHostnameResolved(const QHostAddress& resolved) {
   Q_ASSERT(!resolved.isNull());
 
   m_destAddress = resolved;
-  m_destSocket = createDestSocket(m_destAddress, m_destPort);
+  m_destSocket = createDestSocket<QTcpSocket>(m_destAddress, m_destPort);
 
   connect(m_destSocket, &QTcpSocket::connected, this, [this]() {
     sendResponse(200, "OK");
@@ -146,6 +184,8 @@ void HttpConnection::onHostnameResolved(const QHostAddress& resolved) {
               setError(502, "Bad Gateway");
             }
           });
+
+  m_destSocket->connectToHost(m_destAddress, m_destPort);
 }
 
 void HttpConnection::onHostnameNotFound() {

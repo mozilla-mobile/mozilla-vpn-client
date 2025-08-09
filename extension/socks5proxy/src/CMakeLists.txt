@@ -18,6 +18,8 @@ target_sources(libSocks5proxy PRIVATE
     dnsresolver.cpp
     httpconnection.cpp
     httpconnection.h
+    masqueconnection.cpp
+    masqueconnection.h
     proxyconnection.cpp
     proxyconnection.h
     socks5.h
