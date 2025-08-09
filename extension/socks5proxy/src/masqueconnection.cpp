@@ -22,7 +22,7 @@ bool MasqueConnection::isProxyType(QIODevice* socket) {
 
   // Read one line and then roll it back.
   socket->startTransaction();
-  auto guard = qScopeGuard([socket](){ socket->rollbackTransaction(); });
+  auto guard = qScopeGuard([socket]() { socket->rollbackTransaction(); });
   QString line = QString(socket->readLine());
 
   auto match = m_requestRegex.match(line);
@@ -83,7 +83,7 @@ void MasqueConnection::onHostnameResolved(const QHostAddress& resolved) {
   m_destSocket = createDestSocket<QUdpSocket>(m_destAddress, m_destPort);
 
   connect(m_destSocket, &QUdpSocket::connected, this, [this]() {
-    QMap<QString,QString> values;
+    QMap<QString, QString> values;
     values["Connection"] = "Upgrade";
     values["Upgrade"] = "connect-udp";
     sendResponse(101, "Switching Protocols", values);
@@ -100,7 +100,7 @@ void MasqueConnection::onHostnameResolved(const QHostAddress& resolved) {
 
 bool MasqueConnection::readVarInt(quint64& value) {
   quint8 first;
-  if (!m_clientSocket->peek((char *)&first, 1)) {
+  if (!m_clientSocket->peek((char*)&first, 1)) {
     return false;
   }
   quint8 len = 1 << (first >> 6);
@@ -195,8 +195,9 @@ void MasqueConnection::destProxyRead() {
     putVarInt(MASQUE_CAPSULE_DATAGRAM, capsule);
     putVarInt(data.length(), capsule);
 
-    qsizetype available = MAX_CONNECTION_BUFFER - m_clientSocket->bytesToWrite();
-    if ((data.length()+capsule.length()) > available) {
+    qsizetype available =
+        MAX_CONNECTION_BUFFER - m_clientSocket->bytesToWrite();
+    if ((data.length() + capsule.length()) > available) {
       // Drop the datagram if it would overflow the connection buffer.
       continue;
     }

@@ -136,8 +136,8 @@ void Socks5Connection::handshakeRead() {
       packet.version = 0x5;
       packet.cauth = 0x00;  // TODO: authentication check!
 
-      if (m_clientSocket->write((const char*)&packet, sizeof(ServerChoicePacket)) !=
-          sizeof(ServerChoicePacket)) {
+      if (m_clientSocket->write((const char*)&packet, sizeof(packet)) !=
+          sizeof(packet)) {
         setError(ErrorGeneral, m_clientSocket->errorString());
         return;
       }
@@ -325,6 +325,7 @@ bool Socks5Connection::isProxyType(QIODevice* socket) {
   if (data.length() < sizeof(ClientGreetingPacket)) {
     return false;
   }
-  // This is probably a SOCKS proxy connection if the first byte indicates version 4 or 5.
+  // This is probably a SOCKS proxy connection if the first byte indicates
+  // version 4 or 5.
   return (data.at(0) == 0x05) || (data.at(0) == 0x04);
 }

@@ -119,7 +119,7 @@ void ProxyConnection::setState(int newstate) {
   // If the state is closing. Shutdown the sockets.
   if (m_state == Closed) {
     emit disconnected();
-  
+
     m_clientSocket->close();
     if (m_destSocket != nullptr) {
       m_destSocket->close();
@@ -175,7 +175,7 @@ QAbstractSocket* ProxyConnection::createDestSocketImpl(QAbstractSocket* sock,
                                                        quint16 port) {
   Q_ASSERT(!dest.isNull());
   Q_ASSERT(sock != nullptr);
-  auto guard = qScopeGuard([sock](){ sock->deleteLater(); });
+  auto guard = qScopeGuard([sock]() { sock->deleteLater(); });
 
   int family;
   if (dest.protocol() == QAbstractSocket::IPv6Protocol) {
@@ -211,11 +211,10 @@ QAbstractSocket* ProxyConnection::createDestSocketImpl(QAbstractSocket* sock,
   sock->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
 
   connect(sock, &QIODevice::readyRead, this, [this]() { destProxyRead(); });
-  connect(sock, &QIODevice::bytesWritten, this, &ProxyConnection::clientReadyRead,
-          Qt::QueuedConnection);
-  connect(sock, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
-    emit dataSentReceived(bytes, 0);
-  });
+  connect(sock, &QIODevice::bytesWritten, this,
+          &ProxyConnection::clientReadyRead, Qt::QueuedConnection);
+  connect(sock, &QIODevice::bytesWritten, this,
+          [this](qint64 bytes) { emit dataSentReceived(bytes, 0); });
 
   guard.dismiss();
   return sock;

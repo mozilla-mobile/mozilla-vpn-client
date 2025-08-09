@@ -67,9 +67,9 @@ void Socks5::tryCreateProxy(QIODevice* socket) {
     return;
   } else {
     // Otherwise, wait for more bytes.
-    Qt::ConnectionType ctype = Qt::SingleShotConnection;
-    connect(socket, &QIODevice::readyRead, this,
-            [this, socket](){ tryCreateProxy(socket); }, ctype);
+    connect(
+        socket, &QIODevice::readyRead, this,
+        [this, socket]() { tryCreateProxy(socket); }, Qt::SingleShotConnection);
     return;
   }
 

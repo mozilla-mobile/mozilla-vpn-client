@@ -13,7 +13,7 @@ class MasqueConnection final : public HttpConnection {
   Q_OBJECT
 
  public:
-  explicit MasqueConnection(QIODevice* socket) : HttpConnection(socket) {};
+  explicit MasqueConnection(QIODevice* socket) : HttpConnection(socket){};
   ~MasqueConnection() = default;
 
   // Peek at the socket and determine if this is a MASQUE connection.

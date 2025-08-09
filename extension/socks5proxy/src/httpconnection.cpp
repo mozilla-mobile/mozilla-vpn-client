@@ -5,8 +5,8 @@
 #include "httpconnection.h"
 
 #include <QBuffer>
-#include <QRegularExpression>
 #include <QLocalSocket>
+#include <QRegularExpression>
 #include <QTcpSocket>
 #include <QUrl>
 
@@ -35,7 +35,7 @@ bool HttpConnection::isProxyType(QIODevice* socket) {
 
   // Read one line and then roll it back.
   socket->startTransaction();
-  auto guard = qScopeGuard([socket](){ socket->rollbackTransaction(); });
+  auto guard = qScopeGuard([socket]() { socket->rollbackTransaction(); });
   QString line = QString(socket->readLine());
 
   auto match = m_requestRegex.match(line);
@@ -47,7 +47,7 @@ bool HttpConnection::isProxyType(QIODevice* socket) {
 }
 
 void HttpConnection::sendResponse(int code, const QString& message,
-                                  const QMap<QString,QString>& headers) {
+                                  const QMap<QString, QString>& headers) {
   QString status = QString("HTTP/1.1 %1 %2\r\n").arg(code).arg(message);
   QByteArray response = status.toUtf8();
 
@@ -90,8 +90,8 @@ void HttpConnection::handshakeRead() {
     // Read request headers.
     if (!line.isEmpty()) {
       qsizetype sep = line.indexOf(':');
-      if ((sep > 0) && (sep+1 < line.length())) {
-        QString value = line.sliced(sep+1).trimmed();
+      if ((sep > 0) && (sep + 1 < line.length())) {
+        QString value = line.sliced(sep + 1).trimmed();
         m_headers.insert(line.first(sep).toLower(), value);
         continue;
       } else {
@@ -188,6 +188,4 @@ void HttpConnection::onHostnameResolved(const QHostAddress& resolved) {
   m_destSocket->connectToHost(m_destAddress, m_destPort);
 }
 
-void HttpConnection::onHostnameNotFound() {
-  setError(404, "Not Found");
-}
+void HttpConnection::onHostnameNotFound() { setError(404, "Not Found"); }

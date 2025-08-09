@@ -17,8 +17,8 @@
 #include <QHostAddress>
 #include <QLoggingCategory>
 
-#include "socks5.h"
 #include "proxyconnection.h"
+#include "socks5.h"
 
 // 4MB of log data ought to be enough for anyone.
 constexpr const qsizetype LOGFILE_MAX_SIZE = 4 * 1024 * 1024;
@@ -144,7 +144,7 @@ void SocksLogger::dataSentReceived(qint64 sent, qint64 received) {
 
 QDebug& SocksLogger::printEventStack(QDebug& msg, ProxyConnection* conn) {
   QStringList stack;
-  
+
   if (!conn->destHostname().isEmpty()) {
     stack.append(conn->destHostname());
   }

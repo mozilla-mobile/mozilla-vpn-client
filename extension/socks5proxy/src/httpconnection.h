@@ -5,10 +5,10 @@
 #ifndef HTTPCONNECTION_H
 #define HTTPCONNECTION_H
 
-#include "proxyconnection.h"
-
 #include <QMap>
 #include <QUrl>
+
+#include "proxyconnection.h"
 
 class QIODevice;
 
@@ -30,8 +30,9 @@ class HttpConnection : public ProxyConnection {
   void onHttpConnect();
 
  protected:
-  void sendResponse(int code, const QString& message,
-                    const QMap<QString,QString>& hdr = QMap<QString,QString>());
+  void sendResponse(
+      int code, const QString& message,
+      const QMap<QString, QString>& hdr = QMap<QString, QString>());
   void setError(int code, const QString& message);
   const QString& header(const QString& name) const;
 
@@ -40,7 +41,7 @@ class HttpConnection : public ProxyConnection {
   QString m_method;
   QString m_uri;
   QString m_version;
-  QMap<QString,QString> m_headers;
+  QMap<QString, QString> m_headers;
 
   static const QRegularExpression m_requestRegex;
 };

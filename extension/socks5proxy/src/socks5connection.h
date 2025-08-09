@@ -11,7 +11,7 @@ class Socks5Connection final : public ProxyConnection {
   Q_OBJECT
 
  public:
-  explicit Socks5Connection(QIODevice* socket) : ProxyConnection(socket) {};
+  explicit Socks5Connection(QIODevice* socket) : ProxyConnection(socket){};
   ~Socks5Connection() = default;
 
   enum Socks5State : int {
