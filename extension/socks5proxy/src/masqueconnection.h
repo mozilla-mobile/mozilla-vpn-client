@@ -5,15 +5,15 @@
 #ifndef MASQUECONNECTION_H
 #define MASQUECONNECTION_H
 
-#include "httpconnection.h"
+#include "httpconnectionbase.h"
 
 class QIODevice;
 
-class MasqueConnection final : public HttpConnection {
+class MasqueConnection final : public HttpConnectionBase {
   Q_OBJECT
 
  public:
-  explicit MasqueConnection(QIODevice* socket) : HttpConnection(socket){};
+  explicit MasqueConnection(QIODevice* socket) : HttpConnectionBase(socket){};
   ~MasqueConnection() = default;
 
   // Peek at the socket and determine if this is a MASQUE connection.

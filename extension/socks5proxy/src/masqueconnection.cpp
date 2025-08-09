@@ -5,7 +5,6 @@
 #include "masqueconnection.h"
 
 #include <QNetworkDatagram>
-#include <QRegularExpression>
 #include <QUdpSocket>
 #include <QUrl>
 #include <QtEndian>

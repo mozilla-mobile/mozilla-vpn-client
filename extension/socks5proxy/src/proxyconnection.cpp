@@ -170,9 +170,9 @@ void ProxyConnection::destProxyRead() {
   proxy(m_destSocket, m_clientSocket, m_recvHighWaterMark);
 }
 
-QAbstractSocket* ProxyConnection::createDestSocketImpl(QAbstractSocket* sock,
-                                                       const QHostAddress& dest,
-                                                       quint16 port) {
+QAbstractSocket* ProxyConnection::createDestSocket(QAbstractSocket* sock,
+                                                   const QHostAddress& dest,
+                                                   quint16 port) {
   Q_ASSERT(!dest.isNull());
   Q_ASSERT(sock != nullptr);
   auto guard = qScopeGuard([sock]() { sock->deleteLater(); });

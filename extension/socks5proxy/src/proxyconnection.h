@@ -64,8 +64,8 @@ class ProxyConnection : public QObject {
   void clientBytesWritten(qint64 bytes);
 
   // The implementation for templated createDestSocket
-  QAbstractSocket* createDestSocketImpl(QAbstractSocket* sock,
-                                        const QHostAddress& dest, quint16 port);
+  QAbstractSocket* createDestSocket(QAbstractSocket* sock,
+                                    const QHostAddress& dest, quint16 port);
 
  protected:
   /**
@@ -84,7 +84,7 @@ class ProxyConnection : public QObject {
 
   template <typename T>
   T* createDestSocket(const QHostAddress& dest, quint16 port) {
-    return static_cast<T*>(createDestSocketImpl(new T(this), dest, port));
+    return static_cast<T*>(createDestSocket(new T(this), dest, port));
   }
 
   QIODevice* m_clientSocket = nullptr;
