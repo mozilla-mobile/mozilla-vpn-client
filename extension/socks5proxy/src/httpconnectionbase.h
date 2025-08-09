@@ -6,9 +6,9 @@
 #define HTTPCONNECTIONBASE_H
 
 #include <QMap>
-#include <QRegularExpression>
 #include <QUrl>
 
+#include "httprequest.h"
 #include "proxyconnection.h"
 
 class QIODevice;
@@ -30,16 +30,10 @@ class HttpConnectionBase : public ProxyConnection {
       int code, const QString& message,
       const QMap<QString, QString>& hdr = QMap<QString, QString>());
   void setError(int code, const QString& message);
-  const QString& header(const QString& name) const;
 
   // HTTP Request fields.
   QUrl m_baseUrl;
-  QString m_method;
-  QString m_uri;
-  QString m_version;
-  QMap<QString, QString> m_headers;
-
-  static const QRegularExpression m_requestRegex;
+  HttpRequest m_request;
 };
 
 #endif  // HTTPCONNECTIONBASE_H

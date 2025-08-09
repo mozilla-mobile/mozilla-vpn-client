@@ -17,7 +17,7 @@ class MasqueConnection final : public HttpConnectionBase {
   ~MasqueConnection() = default;
 
   // Peek at the socket and determine if this is a MASQUE connection.
-  static bool isProxyType(QIODevice* socket);
+  static bool isProxyType(const HttpRequest& request);
 
   void clientProxyRead() override;
   void destProxyRead() override;

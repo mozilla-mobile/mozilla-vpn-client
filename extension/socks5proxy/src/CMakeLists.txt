@@ -20,6 +20,8 @@ target_sources(libSocks5proxy PRIVATE
     httpconnection.h
     httpconnectionbase.cpp
     httpconnectionbase.h
+    httprequest.cpp
+    httprequest.h
     masqueconnection.cpp
     masqueconnection.h
     proxyconnection.cpp

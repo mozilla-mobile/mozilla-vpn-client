@@ -8,28 +8,14 @@
 
 #include "dnsresolver.h"
 
-// Peek at the socket and determine if this is a socks connection.
-bool HttpConnection::isProxyType(QIODevice* socket) {
-  if (!socket->canReadLine()) {
-    return false;
-  }
-
-  // Read one line and then roll it back.
-  socket->startTransaction();
-  auto guard = qScopeGuard([socket]() { socket->rollbackTransaction(); });
-  QString line = QString(socket->readLine());
-
-  auto match = m_requestRegex.match(line);
-  if (!match.hasMatch() || match.lastCapturedIndex() != 3) {
-    return false;
-  }
-
-  return match.captured(1) == "CONNECT";
+// Peek at the socket and determine if this is a HTTP connection.
+bool HttpConnection::isProxyType(const HttpRequest& request) {
+  return request.m_method == "CONNECT";
 }
 
 void HttpConnection::onHttpConnect() {
   // Split the request URI to separate the port and address.
-  QStringList list = m_uri.split(':');
+  QStringList list = m_request.m_uri.split(':');
   if (list.length() != 2) {
     setError(400, "Bad Request");
     return;

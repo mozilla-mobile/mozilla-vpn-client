@@ -16,8 +16,8 @@ class HttpConnection final : public HttpConnectionBase {
   explicit HttpConnection(QIODevice* socket) : HttpConnectionBase(socket){};
   ~HttpConnection() = default;
 
-  // Peek at the socket and determine if this is a MASQUE connection.
-  static bool isProxyType(QIODevice* socket);
+  // Peek at the socket and determine if this is a HTTP CONNECT connection.
+  static bool isProxyType(const HttpRequest& request);
 
  private slots:
   void onHostnameResolved(const QHostAddress& addr);

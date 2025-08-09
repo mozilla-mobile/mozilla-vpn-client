@@ -10,6 +10,7 @@
 #include <QTcpSocket>
 
 #include "httpconnection.h"
+#include "httprequest.h"
 #include "masqueconnection.h"
 #include "socks5connection.h"
 
@@ -54,10 +55,11 @@ void Socks5::newConnection(T* server) {
 
 void Socks5::tryCreateProxy(QIODevice* socket) {
   // Inspect the socket to see what kind of protocol its using.
+  HttpRequest req = HttpRequest::peek(socket);
   ProxyConnection* con = nullptr;
-  if (HttpConnection::isProxyType(socket)) {
+  if (HttpConnection::isProxyType(req)) {
     con = new HttpConnection(socket);
-  } else if (MasqueConnection::isProxyType(socket)) {
+  } else if (MasqueConnection::isProxyType(req)) {
     con = new MasqueConnection(socket);
   } else if (Socks5Connection::isProxyType(socket)) {
     con = new Socks5Connection(socket);

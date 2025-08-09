@@ -4,6 +4,7 @@
 
 #include "masqueconnection.h"
 
+#include <QDebug>
 #include <QNetworkDatagram>
 #include <QUdpSocket>
 #include <QUrl>
@@ -14,28 +15,14 @@
 constexpr const uint MASQUE_CAPSULE_DATAGRAM = 0;
 
 // Peek at the socket and determine if this is a MASQUE connection.
-bool MasqueConnection::isProxyType(QIODevice* socket) {
-  if (!socket->canReadLine()) {
-    return false;
-  }
-
-  // Read one line and then roll it back.
-  socket->startTransaction();
-  auto guard = qScopeGuard([socket]() { socket->rollbackTransaction(); });
-  QString line = QString(socket->readLine());
-
-  auto match = m_requestRegex.match(line);
-  if (!match.hasMatch() || match.lastCapturedIndex() != 3) {
-    return false;
-  }
-
-  return (match.captured(1) == "GET") &&
-         match.captured(2).contains(".well-known/masque/udp/");
+bool MasqueConnection::isProxyType(const HttpRequest& request) {
+  return request.m_method == "GET" &&
+         request.m_uri.contains(".well-known/masque/udp/");
 }
 
 void MasqueConnection::onHttpGet() {
   // Resolve the URL and parse the destination from the path.
-  QUrl fullUrl = m_baseUrl.resolved(QUrl(m_uri, QUrl::StrictMode));
+  QUrl fullUrl = m_baseUrl.resolved(QUrl(m_request.m_uri, QUrl::StrictMode));
   QStringList path = fullUrl.path().split('/', Qt::SkipEmptyParts);
 
   // Validate that it matches our template.
@@ -48,11 +35,11 @@ void MasqueConnection::onHttpGet() {
   // RFC9298 Section 3.2:
   // The request shall include a Connection header with value "upgrade"
   // The request shall include an Upgrade header with value "connect-udp"
-  if (header("Connection").compare("Upgrade", Qt::CaseInsensitive) != 0) {
+  if (m_request.header("Connection").compare("Upgrade", Qt::CaseInsensitive) != 0) {
     setError(400, "Bad Request");
     return;
   }
-  if (header("Upgrade").compare("connect-udp", Qt::CaseInsensitive) != 0) {
+  if (m_request.header("Upgrade").compare("connect-udp", Qt::CaseInsensitive) != 0) {
     setError(400, "Bad Request");
     return;
   }

@@ -5,10 +5,8 @@
 #include "httpconnectionbase.h"
 
 #include <QBuffer>
+#include <QRegularExpression>
 #include <QUrl>
-
-const QRegularExpression HttpConnectionBase::m_requestRegex =
-    QRegularExpression("^([A-Z-]+)\\s([^\\s]+)*\\sHTTP/([0-9].[0-9])");
 
 HttpConnectionBase::HttpConnectionBase(QIODevice* s) : ProxyConnection(s) {
   m_baseUrl.setScheme("http");
@@ -50,32 +48,24 @@ void HttpConnectionBase::handshakeRead() {
     QString line = m_clientSocket->readLine().trimmed();
 
     // Read the header line.
-    if (m_method.isEmpty()) {
-      auto match = m_requestRegex.match(line);
-      if (!match.hasMatch() || match.lastCapturedIndex() != 3) {
+    if (!m_request.isValid()) {
+      m_request = HttpRequest(line);
+      if (!m_request.isValid()) {
         setError(400, "Bad Request");
         return;
       }
-
-      m_method = match.captured(1);
-      m_uri = match.captured(2);
-      m_version = match.captured(3);
       continue;
     }
 
     // Read request headers.
     if (!line.isEmpty()) {
-      qsizetype sep = line.indexOf(':');
-      if ((sep > 0) && (sep + 1 < line.length())) {
-        QString value = line.sliced(sep + 1).trimmed();
-        m_headers.insert(line.first(sep).toLower(), value);
-        continue;
-      } else {
+      if (!m_request.addHeader(line)) {
         setError(400, "Bad Request");
         return;
       }
+      continue;
     }
-    QString host = header("Host");
+    QString host = m_request.header("Host");
     if (!host.isEmpty()) {
       m_baseUrl.setAuthority(host);
     }
@@ -85,7 +75,7 @@ void HttpConnectionBase::handshakeRead() {
     // and invoke it as a method taking no arguments.
     bool upper = true;
     QString name = "onHttp";
-    for (const QChar c : m_method) {
+    for (const QChar c : m_request.m_method) {
       if (!c.isLetter()) {
         upper = true;
       } else if (upper) {
@@ -100,15 +90,6 @@ void HttpConnectionBase::handshakeRead() {
     }
     return;
   }
-}
-
-const QString& HttpConnectionBase::header(const QString& name) const {
-  auto entry = m_headers.find(name.toLower());
-  if (entry != m_headers.end()) {
-    return entry.value();
-  }
-  static const QString empty;
-  return empty;
 }
 
 void HttpConnectionBase::onHostnameNotFound() { setError(404, "Not Found"); }
