@@ -11,7 +11,8 @@
 #include <QTimer>
 #include <QVector>
 
-class ProxyConnection;
+#include "proxyconnection.h"
+
 class QDir;
 class QFile;
 class QHostAddress;
