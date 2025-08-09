@@ -10,6 +10,7 @@
 #include <unistd.h>
 
 #include <QAbstractSocket>
+#include <QDebug>
 #include <QHostAddress>
 #include <QScopeGuard>
 

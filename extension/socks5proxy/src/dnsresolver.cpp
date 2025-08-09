@@ -13,6 +13,7 @@
 #endif
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QMutexLocker>
 #include <QObject>
 
@@ -105,6 +106,8 @@ void DNSResolver::addressInfoCallback(QObject* ctx, int status, int timeouts,
 
   // This should be our Socks5Connection
   switch (status) {
+    case ARES_SUCCESS:
+      break;
     case ARES_ENOTIMP:
       qDebug() << "The ares library does not know how to find addresses of "
                   "type family. ";
@@ -126,6 +129,9 @@ void DNSResolver::addressInfoCallback(QObject* ctx, int status, int timeouts,
     case ARES_EDESTRUCTION:
       qDebug() << "The name service channel channel is being destroyed; the "
                   "query will not be completed. ";
+      return;
+    default:
+      qDebug() << "Name resolution error:" << ares_strerror(status);
       return;
   }
 

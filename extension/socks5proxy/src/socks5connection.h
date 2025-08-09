@@ -5,39 +5,20 @@
 #ifndef Socks5Connection_H
 #define Socks5Connection_H
 
-#include <QByteArray>
-#include <QIODevice>
-#include <QLocalSocket>
-#include <QObject>
-#include <QTcpSocket>
+#include "proxyconnection.h"
 
-class Socks5Connection final : public QObject {
+class Socks5Connection final : public ProxyConnection {
   Q_OBJECT
 
- private:
-  explicit Socks5Connection(QIODevice* socket);
-
  public:
-  explicit Socks5Connection(QTcpSocket* socket);
-  explicit Socks5Connection(QLocalSocket* socket);
+  explicit Socks5Connection(QIODevice* socket) : ProxyConnection(socket){};
   ~Socks5Connection() = default;
 
-  /**
-   * @brief Copies incoming bytes to another QIODevice
-   *
-   * @param from- the source device
-   * @param to- the output device
-   * @param watermark- reference to the buffer high watermark
-   */
-  static void proxy(QIODevice* rx, QIODevice* tx, quint64& watermark);
-
-  enum Socks5State {
-    ClientGreeting,
+  enum Socks5State : int {
+    ClientGreeting = ProxyState::Handshake,
     AuthenticationMethods,
     ClientConnectionRequest,
     ClientConnectionAddress,
-    Proxy,
-    Closed,
   };
 
   enum Socks5Replies : uint8_t {
@@ -71,57 +52,25 @@ class Socks5Connection final : public QObject {
    * @return std::optional<T> - The read T if enough bytes were written.
    */
   template <typename T>
-  static std::optional<T> readPacket(QIODevice* connection);
+  std::optional<T> readPacket();
 
-  const QString& clientName() const { return m_clientName; }
+  // Peek at the socket and determine if this is a socks connection.
+  static bool isProxyType(QIODevice* socket);
 
-  const QHostAddress& destAddress() const { return m_destAddress; }
-
-  const QStringList& hostLookupStack() const { return m_hostLookupStack; }
-
-  const Socks5State& state() const { return m_state; }
-
-  quint64 sendHighWaterMark() const { return m_sendHighWaterMark; }
-  quint64 recvHighWaterMark() const { return m_recvHighWaterMark; }
-  const QString& errorString() const { return m_errorString; }
-
- signals:
-  void setupOutSocket(qintptr sd, const QHostAddress& dest);
-  void dataSentReceived(qint64 sent, qint64 received);
-  void stateChanged();
+  void handshakeRead() override;
 
  private slots:
   void onHostnameResolved(QHostAddress addr);
   void onHostnameNotFound();
 
  private:
-  void setState(Socks5State state);
   void setError(Socks5Replies reply, const QString& errorString);
   void configureOutSocket(quint16 port);
-  void readyRead();
-  void bytesWritten(qint64 bytes);
-
-  // Implemented by platform-specific code in socks5local_<platform>.cpp
-  static QString localClientName(QLocalSocket* s);
-
-  Socks5State m_state = ClientGreeting;
-  QString m_errorString;
 
   uint8_t m_authNumber = 0;
-  QIODevice* m_inSocket = nullptr;
-  QTcpSocket* m_outSocket = nullptr;
-
-  QString m_clientName;
-  uint16_t m_socksPort = 0;
-  uint16_t m_destPort = 0;
-
   uint8_t m_addressType = 0;
-  QHostAddress m_destAddress;
-  QStringList m_hostLookupStack;
 
-  quint64 m_sendHighWaterMark = 0;
-  quint64 m_recvHighWaterMark = 0;
-  quint64 m_recvIgnoreBytes = 0;
+  friend class TestSocks5Connection;
 };
 
 #endif  // Socks5Connection_H

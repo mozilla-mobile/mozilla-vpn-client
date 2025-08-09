@@ -8,8 +8,8 @@
 #include <QObject>
 
 #include "dnsresolver.h"
-#include "socks5connection.h"
 
+class ProxyConnection;
 class QHostAddress;
 class QLocalServer;
 class QTcpServer;
@@ -27,13 +27,19 @@ class Socks5 final : public QObject {
 
  signals:
   void connectionsChanged();
-  void incomingConnection(Socks5Connection* connection);
+  void incomingConnection(ProxyConnection* connection);
   void outgoingConnection(qintptr sd, const QHostAddress& dest);
+
+ private slots:
+  void discardSocket();
 
  private:
   void clientDismissed();
+
   template <typename T>
   void newConnection(T* server);
+
+  void tryCreateProxy(QIODevice* socket);
 
   uint16_t m_clientCount = 0;
   bool m_shuttingDown = false;
