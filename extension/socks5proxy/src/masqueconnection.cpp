@@ -35,11 +35,11 @@ void MasqueConnection::onHttpGet() {
   // RFC9298 Section 3.2:
   // The request shall include a Connection header with value "upgrade"
   // The request shall include an Upgrade header with value "connect-udp"
-  if (m_request.header("Connection").compare("Upgrade", Qt::CaseInsensitive) != 0) {
+  if (m_request.header("Connection").compare("Upgrade", Qt::CaseInsensitive)) {
     setError(400, "Bad Request");
     return;
   }
-  if (m_request.header("Upgrade").compare("connect-udp", Qt::CaseInsensitive) != 0) {
+  if (m_request.header("Upgrade").compare("connect-udp", Qt::CaseInsensitive)) {
     setError(400, "Bad Request");
     return;
   }

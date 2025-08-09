@@ -5,8 +5,8 @@
 #ifndef HTTPREQUEST_H
 #define HTTPREQUEST_H
 
-#include <QString>
 #include <QMap>
+#include <QString>
 
 class QIODevice;
 

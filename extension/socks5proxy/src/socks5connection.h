@@ -70,7 +70,7 @@ class Socks5Connection final : public ProxyConnection {
   uint8_t m_authNumber = 0;
   uint8_t m_addressType = 0;
 
-  friend class TestSocks5Connection; 
+  friend class TestSocks5Connection;
 };
 
 #endif  // Socks5Connection_H
