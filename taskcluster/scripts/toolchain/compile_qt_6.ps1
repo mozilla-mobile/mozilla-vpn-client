@@ -6,15 +6,12 @@
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
-$QT_SRC_PATH =resolve-path "$TASK_WORKDIR/fetches/qt-everywhere-src-*"
+$QT_SRC_ARCHIVE =resolve-path "$TASK_WORKDIR/fetches/qt-everywhere-src-*.zip"
 
 $BIN_PATH = "$REPO_ROOT_PATH/bin"
-$QT_VERSION = $QT_SRC_PATH.split("-")[-1]
-$QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
-
-$QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
 
 Set-Location $FETCHES_PATH
+unzip -o -qq $QT_SRC_ARCHIVE
 unzip -o -qq open_ssl_win.zip # See toolchain/qt.yml for why
 
 # Setup Openssl Import
@@ -37,50 +34,18 @@ if(!(Test-Path $REPO_ROOT_PATH/qt-windows)){
   New-Item -Path $REPO_ROOT_PATH/qt-windows -ItemType "directory"
 }
 
-$BUILD_PREFIX = (resolve-path "$REPO_ROOT_PATH/qt-windows").toString()
-
-# Enter QT source directory
-Set-Location $QT_SRC_PATH
-
 $ErrorActionPreference = "Stop"
 
-if($QT_VERSION_MAJOR -eq "6.2" ){
-  # We should not chane the behavior mid release. 
-  ./configure.bat `
-  -static  `
-  -opensource  `
-  -debug-and-release `
-  -no-dbus   `
-  -no-feature-qdbus  `
-  -confirm-license  `
-  -strip  `
-  -silent  `
-  -nomake tests  `
-  -nomake examples  `
-  -make libs  `
-  -no-sql-psql  `
-  -no-sql-odbc   `
-  -qt-sqlite  `
-  -skip qt3d  `
-  -skip webengine  `
-  -skip qtmultimedia  `
-  -skip qtserialport  `
-  -skip qtsensors  `
-  -skip qtgamepad  `
-  -skip qtwebchannel  `
-  -skip qtandroidextras  `
-  -feature-imageformat_png  `
-  -qt-libpng  `
-  -qt-zlib  `
-  -openssl-runtime `
-  -prefix $BUILD_PREFIX `
-} else {
-  # For newer qt versions, let's trim what we dont need.
-  # See for general config: https://github.com/qt/qtbase/blob/dev/config_help.txt
-  # For detailed feature flags, run the configuration, then check the CMakeLists.txt
-  # Variables with FEATURE_XYZ can be switched off using -no-feature
-  # Whole folders can be skipped using -skip <folder>
-  ./configure.bat `
+$BUILD_PREFIX = (resolve-path "$REPO_ROOT_PATH/qt-windows").toString()
+$QT_SRC_PATH = (resolve-path "$TASK_WORKDIR/fetches/qt-everywhere-src-*/configure.bat" | Split-Path -Parent)
+Set-Location $QT_SRC_PATH
+
+# Let's trim what we dont need.
+# See for general config: https://github.com/qt/qtbase/blob/dev/config_help.txt
+# For detailed feature flags, run the configuration, then check the CMakeLists.txt
+# Variables with FEATURE_XYZ can be switched off using -no-feature
+# Whole folders can be skipped using -skip <folder>
+./configure.bat `
   -static  `
   -opensource  `
   -debug-and-release `
@@ -138,15 +103,13 @@ if($QT_VERSION_MAJOR -eq "6.2" ){
   -qt-libpng  `
   -qt-zlib  `
   -prefix $BUILD_PREFIX `
-} 
 
 # Build and install Qt
 cmake --build . --parallel
 cmake --install . --config Debug
 cmake --install . --config Release
 
-Set-Location $REPO_ROOT_PATH
-Copy-Item -Path taskcluster/scripts/toolchain/configure_qt.ps1 -Destination qt-windows/
+Copy-Item -Path $REPO_ROOT_PATH/taskcluster/scripts/toolchain/configure_qt.ps1 -Destination qt-windows/
 
 if (Test-Path -Path $SSL_PATH) {
   Copy-Item -Path $SSL_PATH -Recurse -Destination qt-windows/

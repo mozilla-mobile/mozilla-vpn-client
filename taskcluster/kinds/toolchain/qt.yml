@@ -46,8 +46,10 @@ qt-windows-x86_64-6.6:
     description: "Windows QT compile Task"
     fetches:
         fetch:
-            - qt-source-tarball
-            - win-dev-env
+            - artifact: qt-source-zip
+              extract: false
+            - artifact: win-dev-env
+              extract: true
     run:
         script: compile_qt_6.ps1
         resources:
@@ -63,8 +65,10 @@ qt-windows-x86_64-next:
     description: "Windows QT compile Task"
     fetches:
         fetch:
-            - qt-source-tarball-next
-            - win-dev-env
+            - artifact: qt-source-zip-next
+              extract: false
+            - artifact: win-dev-env
+              extract: true
     run:
         script: compile_qt_6.ps1
         resources:
