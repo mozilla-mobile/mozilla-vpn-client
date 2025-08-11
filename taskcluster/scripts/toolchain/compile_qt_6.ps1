@@ -6,24 +6,15 @@
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
+$QT_SRC_PATH =resolve-path "$TASK_WORKDIR/fetches/qt-everywhere-src-*"
 
 $BIN_PATH = "$REPO_ROOT_PATH/bin"
-$QT_VERSION = $env:QT_VERSION
+$QT_VERSION = $QT_SRC_PATH.split("-")[-1]
 $QT_VERSION_MAJOR = $QT_VERSION.split(".")[0..1] -join(".") # e.g 6.2.3 -> 6.2
 
 $QT_URI = "https://download.qt.io/archive/qt/$QT_VERSION_MAJOR/$QT_VERSION/single/qt-everywhere-src-$QT_VERSION.zip"
 
 Set-Location $FETCHES_PATH
-Write-Output "Downloading : $QT_URI"
-Invoke-WebRequest -Uri $QT_URI -OutFile qt-everywhere-src-$QT_VERSION.zip
-if($?){
-    Write-Output "Downloaded : $QT_URI"
-}else{
-    Write-Output "Failed to download : $QT_URI"
-    exit 1
-}
-
-unzip -o -qq qt-everywhere-src-$QT_VERSION.zip
 unzip -o -qq open_ssl_win.zip # See toolchain/qt.yml for why
 
 # Setup Openssl Import
@@ -49,7 +40,7 @@ if(!(Test-Path $REPO_ROOT_PATH/qt-windows)){
 $BUILD_PREFIX = (resolve-path "$REPO_ROOT_PATH/qt-windows").toString()
 
 # Enter QT source directory
-Set-Location $FETCHES_PATH/qt-everywhere-src-$QT_VERSION
+Set-Location $QT_SRC_PATH
 
 $ErrorActionPreference = "Stop"
 
@@ -149,15 +140,10 @@ if($QT_VERSION_MAJOR -eq "6.2" ){
   -prefix $BUILD_PREFIX `
 } 
 
-
-
-
-
- cmake --build . --parallel
-
- cmake --install . --config Debug
- cmake --install . --config Release
-
+# Build and install Qt
+cmake --build . --parallel
+cmake --install . --config Debug
+cmake --install . --config Release
 
 Set-Location $REPO_ROOT_PATH
 Copy-Item -Path taskcluster/scripts/toolchain/configure_qt.ps1 -Destination qt-windows/
