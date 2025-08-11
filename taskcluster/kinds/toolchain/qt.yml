@@ -46,7 +46,7 @@ qt-windows-x86_64-6.6:
     description: "Windows QT compile Task"
     fetches:
         fetch:
-            - qt-source-tarball
+            - qt-source-zip
             - win-dev-env
     run:
         script: compile_qt_6.ps1
@@ -63,7 +63,7 @@ qt-windows-x86_64-next:
     description: "Windows QT compile Task"
     fetches:
         fetch:
-            - qt-source-tarball-next
+            - qt-source-zip-next
             - win-dev-env
     run:
         script: compile_qt_6.ps1
