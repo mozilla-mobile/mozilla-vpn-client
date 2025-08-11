@@ -34,12 +34,11 @@ if(!(Test-Path $REPO_ROOT_PATH/qt-windows)){
   New-Item -Path $REPO_ROOT_PATH/qt-windows -ItemType "directory"
 }
 
-$BUILD_PREFIX = (resolve-path "$REPO_ROOT_PATH/qt-windows").toString()
-
-# Enter QT source directory
-Set-Location $QT_SRC_PATH
-
 $ErrorActionPreference = "Stop"
+
+$BUILD_PREFIX = (resolve-path "$REPO_ROOT_PATH/qt-windows").toString()
+$QT_SRC_PATH = (resolve-path "$TASK_WORKDIR/fetches/qt-everywhere-src-*/configure.bat" | Split-Path -Parent)
+Set-Location $QT_SRC_PATH
 
 # Let's trim what we dont need.
 # See for general config: https://github.com/qt/qtbase/blob/dev/config_help.txt
@@ -110,8 +109,7 @@ cmake --build . --parallel
 cmake --install . --config Debug
 cmake --install . --config Release
 
-Set-Location $REPO_ROOT_PATH
-Copy-Item -Path taskcluster/scripts/toolchain/configure_qt.ps1 -Destination qt-windows/
+Copy-Item -Path $REPO_ROOT_PATH/taskcluster/scripts/toolchain/configure_qt.ps1 -Destination qt-windows/
 
 if (Test-Path -Path $SSL_PATH) {
   Copy-Item -Path $SSL_PATH -Recurse -Destination qt-windows/
