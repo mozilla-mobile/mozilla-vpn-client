@@ -18,8 +18,9 @@
 
 #include <QDnsLookup>
 #include <QHostAddress>
-
-constexpr const int MAX_CONNECTION_BUFFER = 16 * 1024;
+#include <QIODevice>
+#include <QLocalSocket>
+#include <QTcpSocket>
 
 namespace {
 
@@ -78,64 +79,6 @@ ServerResponsePacket createServerResponsePacket(uint8_t rep,
 
 }  // namespace
 
-Socks5Connection::Socks5Connection(QIODevice* socket)
-    : QObject(socket), m_inSocket(socket) {
-  connect(m_inSocket, &QIODevice::readyRead, this,
-          &Socks5Connection::readyRead);
-
-  connect(m_inSocket, &QIODevice::bytesWritten, this,
-          &Socks5Connection::bytesWritten);
-  readyRead();
-}
-
-Socks5Connection::Socks5Connection(QTcpSocket* socket)
-    : Socks5Connection(static_cast<QIODevice*>(socket)) {
-  connect(socket, &QTcpSocket::disconnected, this,
-          [this]() { setState(Closed); });
-
-  connect(socket, &QTcpSocket::errorOccurred, this,
-          [this](QAbstractSocket::SocketError error) {
-            if (error == QAbstractSocket::RemoteHostClosedError) {
-              setState(Closed);
-            } else {
-              setError(ErrorGeneral, m_inSocket->errorString());
-            }
-          });
-
-  socket->setReadBufferSize(MAX_CONNECTION_BUFFER);
-
-  m_socksPort = socket->localPort();
-  m_clientName = socket->peerAddress().toString();
-}
-
-Socks5Connection::Socks5Connection(QLocalSocket* socket)
-    : Socks5Connection(static_cast<QIODevice*>(socket)) {
-  connect(socket, &QLocalSocket::disconnected, this,
-          [this]() { setState(Closed); });
-
-  connect(socket, &QLocalSocket::errorOccurred, this,
-          [this](QLocalSocket::LocalSocketError error) {
-            if (error == QLocalSocket::PeerClosedError) {
-              setState(Closed);
-            } else {
-              setError(ErrorGeneral, m_inSocket->errorString());
-            }
-          });
-
-  socket->setReadBufferSize(MAX_CONNECTION_BUFFER);
-
-  // TODO: Some magic may be required here to resolve the entity of which client
-  // tried to connect. Some breadcrumbs:
-  //   - Linux: SO_PEERCRED can get us the cllient PID, from which we can get
-  //            the cgroup name, systemd scope and parse out the application ID.
-  //   - Windows: GetNamedPipeClientProcessId() and GetProcessImageFileNameA()
-  //              can get us the path to the calling executable.
-  //   - MacOS: SecTaskCopySigningIdentifier() can be used to grab information
-  //            about processes and their code signatures. Somewhere in there
-  //            I would expect to find the application ID too.
-  m_clientName = localClientName(socket);
-}
-
 void Socks5Connection::setError(Socks5Replies reason,
                                 const QString& errorString) {
   // A Server response message is only sent in certain states.
@@ -146,7 +89,7 @@ void Socks5Connection::setError(Socks5Replies reason,
       [[fallthrough]];
     case ClientConnectionAddress: {
       ServerResponsePacket packet(createServerResponsePacket(reason));
-      m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket));
+      m_clientSocket->write((char*)&packet, sizeof(ServerResponsePacket));
       break;
     }
 
@@ -158,33 +101,10 @@ void Socks5Connection::setError(Socks5Replies reason,
   setState(Closed);
 }
 
-void Socks5Connection::setState(Socks5State newstate) {
-  m_state = newstate;
-  emit stateChanged();
-
-  // If the new state is Proxy, keep track of how many bytes are yet to be
-  // written to finish the negotiation. We should suppress the statistics
-  // signals for such traffic.
-  if (m_state == Proxy) {
-    m_recvIgnoreBytes = m_inSocket->bytesToWrite();
-  }
-
-  // If the state is closing. Shutdown the sockets.
-  if (m_state == Closed) {
-    m_inSocket->close();
-    if (m_outSocket != nullptr) {
-      m_outSocket->close();
-    }
-
-    // Request self-destruction
-    deleteLater();
-  }
-}
-
-void Socks5Connection::readyRead() {
+void Socks5Connection::handshakeRead() {
   switch (m_state) {
     case ClientGreeting: {
-      const auto packet = readPacket<ClientGreetingPacket>(m_inSocket);
+      const auto packet = readPacket<ClientGreetingPacket>();
       if (!packet) {
         return;
       }
@@ -202,13 +122,13 @@ void Socks5Connection::readyRead() {
     }
 
     case AuthenticationMethods: {
-      if (m_inSocket->bytesAvailable() < (qint64)m_authNumber) {
+      if (m_clientSocket->bytesAvailable() < (qint64)m_authNumber) {
         return;
       }
 
       char buffer[INT8_MAX];
-      if (m_inSocket->read(buffer, m_authNumber) != m_authNumber) {
-        setError(ErrorGeneral, m_inSocket->errorString());
+      if (m_clientSocket->read(buffer, m_authNumber) != m_authNumber) {
+        setError(ErrorGeneral, m_clientSocket->errorString());
         return;
       }
 
@@ -216,9 +136,9 @@ void Socks5Connection::readyRead() {
       packet.version = 0x5;
       packet.cauth = 0x00;  // TODO: authentication check!
 
-      if (m_inSocket->write((const char*)&packet, sizeof(ServerChoicePacket)) !=
-          sizeof(ServerChoicePacket)) {
-        setError(ErrorGeneral, m_inSocket->errorString());
+      if (m_clientSocket->write((const char*)&packet, sizeof(packet)) !=
+          sizeof(packet)) {
+        setError(ErrorGeneral, m_clientSocket->errorString());
         return;
       }
 
@@ -227,7 +147,7 @@ void Socks5Connection::readyRead() {
     }
 
     case ClientConnectionRequest: {
-      auto const packet = readPacket<ClientConnectionRequestPacket>(m_inSocket);
+      auto const packet = readPacket<ClientConnectionRequestPacket>();
       if (!packet) {
         return;
       }
@@ -246,8 +166,7 @@ void Socks5Connection::readyRead() {
 
     case ClientConnectionAddress: {
       if (m_addressType == 0x01 /* Ipv4 */) {
-        auto const packet =
-            readPacket<ClientConnectionAddressIpv4Packet>(m_inSocket);
+        auto const packet = readPacket<ClientConnectionAddressIpv4Packet>();
         if (!packet) {
           return;
         }
@@ -261,35 +180,35 @@ void Socks5Connection::readyRead() {
       }
 
       else if (m_addressType == 0x03 /* Domain name */) {
-        if (m_inSocket->bytesAvailable() == 0) return;
+        if (m_clientSocket->bytesAvailable() == 0) return;
 
         uint8_t length;
-        if (m_inSocket->read((char*)&length, 1) != 1) {
-          setError(ErrorGeneral, m_inSocket->errorString());
+        if (m_clientSocket->read((char*)&length, 1) != 1) {
+          setError(ErrorGeneral, m_clientSocket->errorString());
           return;
         }
 
         char buffer[UINT8_MAX];
-        if (m_inSocket->read(buffer, length) != length) {
-          setError(ErrorGeneral, m_inSocket->errorString());
+        if (m_clientSocket->read(buffer, length) != length) {
+          setError(ErrorGeneral, m_clientSocket->errorString());
           return;
         }
 
         uint16_t port;
-        if (m_inSocket->read((char*)&port, sizeof(port)) != sizeof(port)) {
-          setError(ErrorGeneral, m_inSocket->errorString());
+        if (m_clientSocket->read((char*)&port, sizeof(port)) != sizeof(port)) {
+          setError(ErrorGeneral, m_clientSocket->errorString());
           return;
         }
 
-        QString hostname = QString::fromUtf8(buffer, length);
-        m_hostLookupStack.append(hostname);
+        m_destHostname = QString::fromUtf8(buffer, length);
         m_destPort = htons(port);
-        DNSResolver::instance()->resolveAsync(hostname, this);
+        setState(Resolve);
+
+        DNSResolver::instance()->resolveAsync(m_destHostname, this);
       }
 
       else if (m_addressType == 0x04 /* Ipv6 */) {
-        auto const packet =
-            readPacket<ClientConnectionAddressIpv6Packet>(m_inSocket);
+        auto const packet = readPacket<ClientConnectionAddressIpv6Packet>();
         if (!packet) {
           return;
         }
@@ -310,38 +229,14 @@ void Socks5Connection::readyRead() {
 
     break;
 
-    case Proxy:
-      proxy(m_inSocket, m_outSocket, m_sendHighWaterMark);
-      break;
-
     default:
       Q_ASSERT(false);
       break;
   }
 }
 
-void Socks5Connection::bytesWritten(qint64 bytes) {
-  // Ignore this signal outside of the proxy state.
-  if (m_state != Proxy) {
-    return;
-  }
-
-  // Ignore this signal if it's just reporting a negotiation packet.
-  if (m_recvIgnoreBytes >= bytes) {
-    m_recvIgnoreBytes -= bytes;
-    return;
-  } else if (m_recvIgnoreBytes > 0) {
-    bytes -= m_recvIgnoreBytes;
-    m_recvIgnoreBytes = 0;
-  }
-
-  // Drive statistics and proxy data.
-  emit dataSentReceived(0, bytes);
-  proxy(m_outSocket, m_inSocket, m_recvHighWaterMark);
-}
-
 void Socks5Connection::onHostnameResolved(QHostAddress resolved) {
-  if (m_outSocket != nullptr) {
+  if (m_destSocket != nullptr) {
     // We might get multiple ip results.
     return;
   }
@@ -350,104 +245,39 @@ void Socks5Connection::onHostnameResolved(QHostAddress resolved) {
   configureOutSocket(m_destPort);
 }
 
-void Socks5Connection::proxy(QIODevice* from, QIODevice* to,
-                             quint64& watermark) {
-  Q_ASSERT(from && to);
-
-  for (;;) {
-    qint64 available = from->bytesAvailable();
-    if (available <= 0) {
-      break;
-    }
-
-    qint64 capacity = MAX_CONNECTION_BUFFER - to->bytesToWrite();
-    if (capacity <= 0) {
-      break;
-    }
-
-    QByteArray data = from->read(qMin(available, capacity));
-    if (data.length() == 0) {
-      break;
-    }
-    qint64 sent = to->write(data);
-    if (sent != data.length()) {
-      qDebug() << "Truncated write. Sent" << sent << "of" << data.length();
-      break;
-    }
-  }
-
-  // Update buffer high watermark.
-  qint64 queued = to->bytesToWrite();
-  if (queued > watermark) {
-    watermark = queued;
-  }
-}
-
 void Socks5Connection::configureOutSocket(quint16 port) {
   Q_ASSERT(!m_destAddress.isNull());
-  m_hostLookupStack.append(m_destAddress.toString());
 
-  int family;
-  if (m_destAddress.protocol() == QAbstractSocket::IPv6Protocol) {
-    family = AF_INET6;
-  } else {
-    family = AF_INET;
-  }
-
-  // The platform layer might want to fiddle with the socket before we connect,
-  // but the socket descriptor is typically created inside the connectToHost()
-  // method. So let's create the socket manually and emit a signal for the
-  // platform logic to hook on.
-  qintptr newsock = socket(family, SOCK_STREAM, IPPROTO_TCP);
-#ifdef Q_OS_WIN
-  if (newsock == INVALID_SOCKET) {
-    setError(ErrorGeneral, WinUtils::win32strerror(WSAGetLastError()));
+  m_destSocket = createDestSocket<QTcpSocket>(m_destAddress, port);
+  if (!m_destSocket) {
+    setError(ErrorGeneral, m_errorString);
     return;
   }
-#else
-  if (newsock < 0) {
-    setError(ErrorGeneral, strerror(errno));
-    return;
-  }
-#endif
-  emit setupOutSocket(newsock, m_destAddress);
 
-  m_outSocket = new QTcpSocket(this);
-  m_outSocket->setSocketDescriptor(newsock, QAbstractSocket::UnconnectedState);
-  m_outSocket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
-  m_outSocket->connectToHost(m_destAddress, port);
-
-  connect(m_outSocket, &QTcpSocket::connected, this, [this]() {
-    ServerResponsePacket packet(createServerResponsePacket(0x00, m_socksPort));
-    if (m_inSocket->write((char*)&packet, sizeof(ServerResponsePacket)) !=
+  connect(m_destSocket, &QTcpSocket::connected, this, [this]() {
+    ServerResponsePacket packet(createServerResponsePacket(0x00, m_clientPort));
+    if (m_clientSocket->write((char*)&packet, sizeof(ServerResponsePacket)) !=
         sizeof(ServerResponsePacket)) {
-      setError(ErrorGeneral, m_inSocket->errorString());
+      setError(ErrorGeneral, m_clientSocket->errorString());
       return;
     }
 
     setState(Proxy);
-    readyRead();
   });
 
-  connect(m_outSocket, &QIODevice::bytesWritten, this, [this](qint64 bytes) {
-    emit dataSentReceived(bytes, 0);
-    proxy(m_inSocket, m_outSocket, m_sendHighWaterMark);
-  });
-
-  connect(m_outSocket, &QTcpSocket::readyRead, this,
-          [this]() { proxy(m_outSocket, m_inSocket, m_recvHighWaterMark); });
-
-  connect(m_outSocket, &QTcpSocket::disconnected, this,
+  connect(m_destSocket, &QTcpSocket::disconnected, this,
           [this]() { setState(Closed); });
 
-  connect(m_outSocket, &QTcpSocket::errorOccurred, this,
+  connect(m_destSocket, &QTcpSocket::errorOccurred, this,
           [this](QAbstractSocket::SocketError error) {
             if (error == QAbstractSocket::RemoteHostClosedError) {
               setState(Closed);
             } else {
-              setError(ErrorGeneral, m_outSocket->errorString());
+              setError(ErrorGeneral, m_destSocket->errorString());
             }
           });
+
+  m_destSocket->connectToHost(m_destAddress, port);
 }
 
 void Socks5Connection::onHostnameNotFound() {
@@ -471,20 +301,31 @@ Socks5Connection::Socks5Replies Socks5Connection::socketErrorToSocks5Rep(
 }
 
 template <typename T>
-std::optional<T> Socks5Connection::readPacket(QIODevice* connection) {
+std::optional<T> Socks5Connection::readPacket() {
   // There are not enough bytes to read don't touch the connection.
-  if (connection->bytesAvailable() < (qint64)sizeof(T)) {
+  if (m_clientSocket->bytesAvailable() < (qint64)sizeof(T)) {
     return {};
   }
-  connection->startTransaction();
+  m_clientSocket->startTransaction();
   T packet;
-  if (connection->read((char*)&packet, sizeof(T)) != sizeof(T)) {
+  if (m_clientSocket->read((char*)&packet, sizeof(T)) != sizeof(T)) {
     // If we did not read the correct amount of data
     // Abort the transaction and reset the buffer, so the
     // caller can try to read again.
-    connection->rollbackTransaction();
+    m_clientSocket->rollbackTransaction();
     return {};
   }
-  connection->commitTransaction();
+  m_clientSocket->commitTransaction();
   return packet;
+}
+
+// Peek at the socket and determine if this is a socks connection.
+bool Socks5Connection::isProxyType(QIODevice* socket) {
+  QByteArray data = socket->peek(sizeof(ClientGreetingPacket));
+  if (data.length() < sizeof(ClientGreetingPacket)) {
+    return false;
+  }
+  // This is probably a SOCKS proxy connection if the first byte indicates
+  // version 4 or 5.
+  return (data.at(0) == 0x05) || (data.at(0) == 0x04);
 }

@@ -7,7 +7,7 @@
 #include <QFile>
 #include <QLocalSocket>
 
-#include "socks5connection.h"
+#include "proxyconnection.h"
 
 // Read /proc/<pid>/cgroup and parse out the cgroupv2 control group path.
 static QString lookupCgroupForPid(pid_t pid) {
@@ -30,7 +30,7 @@ static QString lookupCgroupForPid(pid_t pid) {
 
 // static
 // Return the systemd scope of the process at the other end of the local socket.
-QString Socks5Connection::localClientName(QLocalSocket* s) {
+QString ProxyConnection::localClientName(QLocalSocket* s) {
   struct ucred peer;
   socklen_t len = sizeof(peer);
   int sd = s->socketDescriptor();

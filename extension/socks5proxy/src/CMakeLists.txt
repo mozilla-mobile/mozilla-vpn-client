@@ -14,24 +14,39 @@ target_link_libraries(libSocks5proxy PRIVATE c-ares)
 target_compile_definitions(libSocks5proxy PRIVATE CARES_STATICLIB)
 
 target_sources(libSocks5proxy PRIVATE
+    dnsresolver.h
+    dnsresolver.cpp
+    httpconnection.cpp
+    httpconnection.h
+    httpconnectionbase.cpp
+    httpconnectionbase.h
+    httprequest.cpp
+    httprequest.h
+    proxyconnection.cpp
+    proxyconnection.h
     socks5.h
     socks5.cpp
     socks5connection.cpp
     socks5connection.h
-    dnsresolver.h
-    dnsresolver.cpp
+)
+
+# MASQUE support is experimental for now, disable it in release builds.
+target_compile_definitions(libSocks5proxy PRIVATE $<$<CONFIG:Debug>:PROXY_MASQUE_ENABLED=1>)
+target_sources(libSocks5proxy PRIVATE
+    $<$<CONFIG:Debug>:masqueconnection.cpp>
+    $<$<CONFIG:Debug>:masqueconnection.h>
 )
 
 if(WIN32)
     target_sources(libSocks5proxy PRIVATE 
-        socks5local_windows.cpp
+        proxylocal_windows.cpp
         winutils.cpp
         winutils.h
     )
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_sources(libSocks5proxy PRIVATE socks5local_linux.cpp)
+    target_sources(libSocks5proxy PRIVATE proxylocal_linux.cpp)
 else()
-    target_sources(libSocks5proxy PRIVATE socks5local_default.cpp)
+    target_sources(libSocks5proxy PRIVATE proxylocal_default.cpp)
 endif()
 
 target_include_directories(libSocks5proxy PUBLIC

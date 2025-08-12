@@ -9,6 +9,9 @@
 #include <QTcpServer>
 #include <QTcpSocket>
 
+#include "httpconnection.h"
+#include "httprequest.h"
+#include "masqueconnection.h"
 #include "socks5connection.h"
 
 #define MAX_CLIENTS 1024
@@ -37,20 +40,70 @@ void Socks5::newConnection(T* server) {
       socket->setSocketOption(QAbstractSocket::KeepAliveOption, 1);
     }
 
-    auto const con = new Socks5Connection(socket);
-    connect(con, &QObject::destroyed, this, [this, server]() {
-      clientDismissed();
-      newConnection(server);
-    });
+    // Destroy this socket if it disconnects before we can figure out what
+    // protocol is being used.
+    QTimer* timer = new QTimer(socket);
+    timer->setObjectName("self-destruct-timer");
+    timer->setSingleShot(true);
+    timer->start(3000);
+    connect(timer, &QTimer::timeout, socket, &QObject::deleteLater);
+    connect(socket, SIGNAL(disconnected()), this, SLOT(discardSocket()));
 
-    connect(con, &Socks5Connection::setupOutSocket, this,
-            [this](qintptr sd, const QHostAddress& dest) {
-              emit outgoingConnection(sd, dest);
-            });
+    tryCreateProxy(socket);
+  }
+}
 
-    ++m_clientCount;
-    emit incomingConnection(con);
-    emit connectionsChanged();
+void Socks5::tryCreateProxy(QIODevice* socket) {
+  // Inspect the socket to see what kind of protocol its using.
+  HttpRequest req = HttpRequest::peek(socket);
+  ProxyConnection* con = nullptr;
+  if (HttpConnection::isProxyType(req)) {
+    con = new HttpConnection(socket);
+#ifdef PROXY_MASQUE_ENABLED
+  } else if (MasqueConnection::isProxyType(req)) {
+    con = new MasqueConnection(socket);
+#endif
+  } else if (Socks5Connection::isProxyType(socket)) {
+    con = new Socks5Connection(socket);
+  } else if (socket->bytesAvailable() > 4096) {
+    // If we haven't figured it out by now, we can give up on this connection.
+    socket->deleteLater();
+    return;
+  } else {
+    // Otherwise, wait for more bytes.
+    connect(
+        socket, &QIODevice::readyRead, this,
+        [this, socket]() { tryCreateProxy(socket); }, Qt::SingleShotConnection);
+    return;
+  }
+
+  // Stop the self-destruct-timer
+  QTimer* timer = socket->findChild<QTimer*>("self-destruct-timer",
+                                             Qt::FindDirectChildrenOnly);
+  if (timer) {
+    timer->stop();
+    timer->deleteLater();
+  }
+
+  connect(con, &QObject::destroyed, this, &Socks5::clientDismissed);
+  connect(con, &Socks5Connection::setupOutSocket, this,
+          [this](qintptr sd, const QHostAddress& dest) {
+            emit outgoingConnection(sd, dest);
+          });
+
+  ++m_clientCount;
+  emit incomingConnection(con);
+  emit connectionsChanged();
+}
+
+// This signal is called to discard a socket before we can determine its type.
+void Socks5::discardSocket() {
+  // Fire the self-destruct-timer immediately.
+  QObject* obj = QObject::sender();
+  QTimer* timer = obj->findChild<QTimer*>("self-destruct-timer",
+                                          Qt::FindDirectChildrenOnly);
+  if (timer) {
+    timer->start(0);
   }
 }
 

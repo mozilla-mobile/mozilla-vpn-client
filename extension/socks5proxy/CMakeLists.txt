@@ -10,8 +10,3 @@ endif()
 add_subdirectory(src)
 add_subdirectory(bin)
 add_subdirectory(tests)
-
-target_compile_definitions(shared-sources INTERFACE MZ_PROXY_ENABLED)
-
-
-

@@ -11,10 +11,10 @@
 #include <QLocalSocket>
 #include <QScopeGuard>
 
-#include "socks5connection.h"
+#include "proxyconnection.h"
 
 // static
-QString Socks5Connection::localClientName(QLocalSocket* s) {
+QString ProxyConnection::localClientName(QLocalSocket* s) {
   // Get the process at the other end of the socket.
   HANDLE pipe = reinterpret_cast<HANDLE>(s->socketDescriptor());
   ULONG pid;

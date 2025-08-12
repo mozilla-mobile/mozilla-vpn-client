@@ -62,12 +62,12 @@ uint16_t rollPort() {
       QRandomGenerator::global()->bounded(49152, 65535));
 };
 
-QFuture<QByteArray> connectTo(uint serverPort, quint16 proxyPort) {
+QFuture<QByteArray> connectTo(uint serverPort, quint16 proxyPort,
+                              QNetworkProxy::ProxyType proxtType) {
   auto prom = std::make_unique<QPromise<QByteArray>>();
   auto out = prom->future();
   auto socket = new QTcpSocket();
-  socket->setProxy(QNetworkProxy{QNetworkProxy::ProxyType::Socks5Proxy,
-                                 "localhost", proxyPort});
+  socket->setProxy(QNetworkProxy{proxtType, "localhost", proxyPort});
   prom->start();
   QObject::connect(socket, &QTcpSocket::readyRead,
                    [prom = std::move(prom), socket]() {
@@ -82,6 +82,13 @@ QFuture<QByteArray> connectTo(uint serverPort, quint16 proxyPort) {
 };
 #pragma endregion
 
+void TestSocks5::proxyTCP_data() {
+  QTest::addColumn<QNetworkProxy::ProxyType>("proxyType");
+
+  QTest::addRow("SOCKS5") << QNetworkProxy::ProxyType::Socks5Proxy;
+  QTest::addRow("HTTP CONNECT") << QNetworkProxy::ProxyType::HttpProxy;
+}
+
 /**
  * Create a TCP Server -  Sending "Hello Moto"
  * to the first incoming connection.
@@ -92,6 +99,8 @@ QFuture<QByteArray> connectTo(uint serverPort, quint16 proxyPort) {
  *
  */
 void TestSocks5::proxyTCP() {
+  QFETCH(QNetworkProxy::ProxyType, proxyType);
+
   auto const proxyPort = rollPort();
   auto const serverPort = rollPort();
   auto const serverHadConnection = makeServer(serverPort);
@@ -102,14 +111,14 @@ void TestSocks5::proxyTCP() {
   proxyServer.listen(QHostAddress::LocalHost, proxyPort);
 
   QFuture<std::tuple<qint64, qint64>> proxyHadData;
-  auto const connectionToServer = connectTo(serverPort, proxyPort);
+  auto const connectionToServer = connectTo(serverPort, proxyPort, proxyType);
 
   QString proxyClientName;
   QObject::connect(
-      &proxy, &Socks5::incomingConnection, [&](Socks5Connection* conn) {
+      &proxy, &Socks5::incomingConnection, [&](ProxyConnection* conn) {
         proxyClientName = conn->clientName();
         proxyHadData =
-            QtFuture::connect(conn, &Socks5Connection::dataSentReceived);
+            QtFuture::connect(conn, &ProxyConnection::dataSentReceived);
       });
 
   while (!connectionToServer.isFinished()) {
