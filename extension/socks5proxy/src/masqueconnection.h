@@ -4,9 +4,9 @@
 
 #ifndef MASQUECONNECTION_H
 #define MASQUECONNECTION_H
-#ifdef PROXY_MASQUE_ENABLED
 
-#include "httpconnectionbase.h"
+#ifdef PROXY_MASQUE_ENABLED
+#  include "httpconnectionbase.h"
 
 class QIODevice;
 
