@@ -17,16 +17,16 @@ Invoke-WebRequest -Uri $VSDOWNLOAD_URL -OutFile "$env:TASK_WORKDIR\vsdownload.py
 $VS_MAJOR_VERSION = 17
 
 # Download the Visual Studio SDK
-New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/vs2022" -Force
-Copy-Item -Path "$PSScriptRoot\enter_dev_shell.ps1" -Destination "$env:TASK_WORKDIR/vs2022"
+New-Item -ItemType Directory -Path "$env:TASK_WORKDIR\vs2022" -Force
+Copy-Item -Path "$PSScriptRoot\enter_dev_shell.ps1" -Destination "$env:TASK_WORKDIR\vs2022"
 python $env:TASK_WORKDIR\vsdownload.py `
     --accept-license `
     --skip-recommended `
     --major $VS_MAJOR_VERSION `
-    --dest "$env:TASK_WORKDIR/vs2022"
+    --dest "$env:TASK_WORKDIR\vs2022"
 
 # Compress the Visual Studio SDK
-New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/public/build" -Force
-Compress-Archive vs2022/ -DestinationPath "$env:TASK_WORKDIR/public/build/visual-studio-2022.zip"
+New-Item -ItemType Directory -Path "$env:TASK_WORKDIR\public\build" -Force
+Compress-Archive -Path "$env:TASK_WORKDIR\vs2022" -DestinationPath "$env:TASK_WORKDIR\public\build\visual-studio-2022.zip"
 
 Write-Output "Build complete, archive created"

@@ -3,13 +3,15 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 Set-Location $env:TASK_WORKDIR
+Get-ChildItem env:
+
 $QT_SRC_ARCHIVE =resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*.zip"
 
 unzip -o -qq -d "$env:MOZ_FETCHES_DIR" $QT_SRC_ARCHIVE
 
-Get-ChildItem env:
-# Enter the DEV Shell
-. "$env:MOZ_FETCHES_DIR/VisualStudio/enter_dev_shell.ps1"
+# Activate the visual studio developer shell.
+$VS_SHELL_HELPER = resolve-path "$env:MOZ_FETCHES_DIR/*/enter_dev_shell.ps1"
+. "$VS_SHELL_HELPER"
 
 $QT_INSTALL_PATH = "$env:TASK_WORKDIR/qt-windows"
 if(!(Test-Path qt-windows)){

@@ -67,8 +67,10 @@ qt-windows-x86_64-next:
         fetch:
             - artifact: qt-source-zip-next
               extract: false
-            - artifact: win-dev-env
-              extract: true
+        vs2022:
+            - artifact: visual-studio-2022.zip
+    dependencies:
+        vs2022: toolchain-vs-2022
     run:
         script: compile_qt_6.ps1
         resources:
