@@ -2,8 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-
-$TASK_WORKDIR =Get-Location
+Set-Location $env:TASK_WORKDIR
 $REPO_ROOT_PATH =resolve-path "$env:VCS_PATH"
 $QT_SRC_ARCHIVE =resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*.zip"
 
@@ -110,8 +109,8 @@ cmake --install . --config Release
 Set-Location $REPO_ROOT_PATH
 tar -cJf qt6_win.tar.xz qt-windows/
 
-New-Item -ItemType Directory -Path "$TASK_WORKDIR/public/build" -Force
-Move-Item -Path qt6_win.tar.xz -Destination "$TASK_WORKDIR/public/build"
+New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/public/build" -Force
+Move-Item -Path qt6_win.tar.xz -Destination "$env:TASK_WORKDIR/public/build"
 
 Write-Output "Build complete, tarball created:"
 
