@@ -2273,6 +2273,8 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
   XdgPortal::setupAppScope(Constants::LINUX_APP_ID);
 #endif
 
+  QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
+
   SettingsHolder settingsHolder;
 
   if (settingsHolder.stagingServer()) {
@@ -2285,8 +2287,6 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
 
   logger.info() << "MozillaVPN" << Constants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
-
-  QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   Localizer localizer;
 
@@ -2301,6 +2301,8 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   XdgPortal::setupAppScope(Constants::LINUX_APP_ID);
 #endif
 
+  QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
+
   SettingsHolder settingsHolder;
 
   if (settingsHolder.stagingServer()) {
@@ -2313,8 +2315,6 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
 
   logger.info() << "MozillaVPN" << Constants::versionString();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
-
-  QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   Localizer localizer;
 
