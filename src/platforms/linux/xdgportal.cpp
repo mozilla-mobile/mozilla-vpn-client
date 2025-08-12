@@ -183,12 +183,13 @@ void XdgPortal::setupAppScope(const QString& appId) {
   // Qt 6.8 introduced a bug where using QDBusConnection::sessionBus() before
   // QCoreApplication is created will silently break D-Bus signal connections.
   // To workaround this, spin up a separate, standalone bus for these steps.
-#if (QT_VERSION < QT_VERSION_CHECK(6, 9, 2)) && (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)) && \
+    (QT_VERSION < QT_VERSION_CHECK(6, 9, 2))
   QString busName = QString("%1-appid-scope-helper").arg(appId);
   QDBusConnection bus =
       QDBusConnection::connectToBus(QDBusConnection::SessionBus, busName);
   auto guard =
-      qScopeGuard([busName](){ QDBusConnection::disconnectFromBus(busName); });
+      qScopeGuard([busName]() { QDBusConnection::disconnectFromBus(busName); });
 #else
   // If the XDG Registry portal exists, use it to advertise our application ID.
   // This is the right tool to use, but it's also very new.
