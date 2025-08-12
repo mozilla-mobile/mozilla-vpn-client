@@ -4,6 +4,7 @@
 
 
 $X_WIN_VERSION = "0.6.5"
+$MSVC_MANIFEST = 17
 
 $conda_env = conda info --json | ConvertFrom-Json
 
@@ -27,10 +28,10 @@ Start-Process -WorkingDirectory "$conda_folder" -Wait tar -ArgumentList @('-xf',
 # Splat the CRT and SDK file to /xwin/crt and /xwin/sdk respectively
 Write-Output("Downloading the windows SDK")
 $env:PATH ="$conda_folder\xwin-$X_WIN_VERSION-x86_64-pc-windows-msvc;$env:PATH"
-xwin --accept-license --manifest-version 16 splat --include-debug-symbols --include-debug-libs --use-winsysroot-style --preserve-ms-arch-notation --disable-symlinks --output "$conda_folder\xwin"
+xwin --accept-license --manifest-version $MSVC_MANIFEST splat --include-debug-symbols --include-debug-libs --use-winsysroot-style --preserve-ms-arch-notation --disable-symlinks --output "$conda_folder\xwin"
 
 Write-Output("Downloading Microsoft.VisualStudio.Component.VC.Redist.MSM")
-python "$PSScriptRoot\fetch-vsix-package.py" --manifest-version 16 --output "$conda_folder\xwin" Microsoft.VisualStudio.Component.VC.Redist.MSM
+python "$PSScriptRoot\fetch-vsix-package.py" --manifest-version $MSVC_MANIFEST --output "$conda_folder\xwin" Microsoft.VisualStudio.Component.VC.Redist.MSM
 
 Write-Output("Cleaning Up")
 Remove-Item "$conda_folder\xwin-$X_WIN_VERSION-x86_64-pc-windows-msvc" -ErrorAction SilentlyContinue -Force -Recurse
