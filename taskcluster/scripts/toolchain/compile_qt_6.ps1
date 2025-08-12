@@ -3,18 +3,28 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 Set-Location $env:TASK_WORKDIR
+Get-ChildItem env:
+
 $QT_SRC_ARCHIVE =resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*.zip"
-
-$CMAKE_PATH = (resolve-path "$env:MOZ_FETCHES_DIR/cmake-*/bin/cmake.exe" | Split-Path -Parent)
-if(Test-Path $CMAKE_PATH){
-  $env:Path = "$CMAKE_PATH;" + $env:Path
-}
-
 unzip -o -qq -d "$env:MOZ_FETCHES_DIR" $QT_SRC_ARCHIVE
 
-Get-ChildItem env:
-# Enter the DEV Shell
-. "$env:MOZ_FETCHES_DIR/VisualStudio/enter_dev_shell.ps1"
+## Unpack and activate the conda environment.
+$CONDA_DIR = "$env:MOZ_FETCHES_DIR\conda-windows"
+if(Test-Path $CONDA_DIR){
+  ## Install MiniConda 
+  New-Item -ItemType Directory -Force -Path "$env:TASK_WORKDIR/miniconda"
+  $MINICONDA_DIR =resolve-path "$env:TASK_WORKDIR/miniconda"
+  Start-Process -NoNewWindow "$env:MOZ_FETCHES_DIR\miniconda_installer.exe" -Wait -ArgumentList @('/S',"/D=$MINICONDA_DIR")
+  . $MINICONDA_DIR\shell\condabin\conda-hook.ps1
+
+  ## Unpack and activate the conda environment.
+  Start-Process -NoNewWindow "$CONDA_DIR\Scripts\conda-unpack.exe" -Wait
+  conda activate $CONDA_DIR
+  conda info
+} else {
+  # Otherwise, enter the DEV Shell
+  . "$env:MOZ_FETCHES_DIR/VisualStudio/enter_dev_shell.ps1"
+}
 
 $QT_INSTALL_PATH = "$env:TASK_WORKDIR/qt-windows"
 if(!(Test-Path qt-windows)){

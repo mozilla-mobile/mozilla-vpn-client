@@ -67,6 +67,7 @@ qt-windows-x86_64-next:
         fetch:
             - artifact: qt-source-zip-next
               extract: false
+            - win-conda
         conda-pack:
             - artifact: conda-windows.tar.xz
               dest: conda-windows
