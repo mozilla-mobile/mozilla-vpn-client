@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 Set-Location $env:TASK_WORKDIR
-$REPO_ROOT_PATH =resolve-path "$env:VCS_PATH"
 $QT_SRC_ARCHIVE =resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*.zip"
 
 $CMAKE_PATH = (resolve-path "$env:MOZ_FETCHES_DIR/cmake-*/bin/cmake.exe" | Split-Path -Parent)
@@ -12,28 +11,28 @@ if(Test-Path $CMAKE_PATH){
 }
 
 unzip -o -qq -d "$env:MOZ_FETCHES_DIR" $QT_SRC_ARCHIVE
-unzip -o -qq -d "$env:MOZ_FETCHES_DIR" open_ssl_win.zip # See toolchain/qt.yml for why
 
 Get-ChildItem env:
 # Enter the DEV Shell
 . "$env:MOZ_FETCHES_DIR/VisualStudio/enter_dev_shell.ps1"
 
-if(!(Test-Path $REPO_ROOT_PATH/qt-windows)){
-  New-Item -Path $REPO_ROOT_PATH/qt-windows -ItemType "directory"
+$QT_INSTALL_PATH = "$env:TASK_WORKDIR/qt-windows"
+if(!(Test-Path qt-windows)){
+  New-Item -Path qt-windows -ItemType "directory"
 }
-Copy-Item -Path "$REPO_ROOT_PATH/taskcluster/scripts/toolchain/configure_qt.ps1" -Destination $REPO_ROOT_PATH/qt-windows/
+Copy-Item -Path "$env:VCS_PATH/taskcluster/scripts/toolchain/configure_qt.ps1" -Destination qt-windows/
 
 # Setup Openssl Import
-$SSL_PATH = "$env:MOZ_FETCHES_DIR/SSL"
+unzip -o -qq -d "$env:TASK_WORKDIR/qt-windows" "$env:MOZ_FETCHES_DIR/open_ssl_win.zip" # See toolchain/qt.yml for why
+$SSL_PATH = "$env:TASK_WORKDIR/qt-windows/SSL"
 if (Test-Path -Path $SSL_PATH) {
   $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
   $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
-  Copy-Item -Path $SSL_PATH -Recurse -Destination qt-windows/
 }
 
 $ErrorActionPreference = "Stop"
 
-$BUILD_PREFIX = (resolve-path "$REPO_ROOT_PATH/qt-windows").toString()
+$BUILD_PREFIX = (resolve-path "$env:TASK_WORKDIR/qt-windows").toString()
 $QT_SRC_PATH = (resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*/configure.bat" | Split-Path -Parent)
 Set-Location $QT_SRC_PATH
 
@@ -106,7 +105,7 @@ cmake --build . --parallel
 cmake --install . --config Debug
 cmake --install . --config Release
 
-Set-Location $REPO_ROOT_PATH
+Set-Location $env:TASK_WORKDIR
 tar -cJf qt6_win.tar.xz qt-windows/
 
 New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/public/build" -Force
