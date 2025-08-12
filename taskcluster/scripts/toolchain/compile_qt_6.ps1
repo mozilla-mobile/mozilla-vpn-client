@@ -3,46 +3,39 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-$REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
-$TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
-$FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
-$QT_SRC_ARCHIVE =resolve-path "$FETCHES_PATH/qt-everywhere-src-*.zip"
+$TASK_WORKDIR =Get-Location
+$REPO_ROOT_PATH =resolve-path "$env:VCS_PATH"
+$QT_SRC_ARCHIVE =resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*.zip"
 
-$CMAKE_PATH = (resolve-path "$FETCHES_PATH/cmake-*/bin/cmake.exe" | Split-Path -Parent)
+$CMAKE_PATH = (resolve-path "$env:MOZ_FETCHES_DIR/cmake-*/bin/cmake.exe" | Split-Path -Parent)
 if(Test-Path $CMAKE_PATH){
   $env:Path = "$CMAKE_PATH;" + $env:Path
 }
 
-$BIN_PATH = "$REPO_ROOT_PATH/bin"
-
-Set-Location $FETCHES_PATH
-unzip -o -qq $QT_SRC_ARCHIVE
-unzip -o -qq open_ssl_win.zip # See toolchain/qt.yml for why
-
-# Setup Openssl Import
-
-# Setup Openssl Import
-$SSL_PATH = "$FETCHES_PATH/SSL"
-if (Test-Path -Path $SSL_PATH) {
-  $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
-  $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
-}
+unzip -o -qq -d "$env:MOZ_FETCHES_DIR" $QT_SRC_ARCHIVE
+unzip -o -qq -d "$env:MOZ_FETCHES_DIR" open_ssl_win.zip # See toolchain/qt.yml for why
 
 Get-ChildItem env:
 # Enter the DEV Shell
-. "$FETCHES_PATH/VisualStudio/enter_dev_shell.ps1"
+. "$env:MOZ_FETCHES_DIR/VisualStudio/enter_dev_shell.ps1"
 
-if(!(Test-Path $BIN_PATH)){
-  New-Item -Path $BIN_PATH -ItemType "directory"
-}
 if(!(Test-Path $REPO_ROOT_PATH/qt-windows)){
   New-Item -Path $REPO_ROOT_PATH/qt-windows -ItemType "directory"
+}
+Copy-Item -Path "$REPO_ROOT_PATH/taskcluster/scripts/toolchain/configure_qt.ps1" -Destination $REPO_ROOT_PATH/qt-windows/
+
+# Setup Openssl Import
+$SSL_PATH = "$env:MOZ_FETCHES_DIR/SSL"
+if (Test-Path -Path $SSL_PATH) {
+  $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
+  $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
+  Copy-Item -Path $SSL_PATH -Recurse -Destination qt-windows/
 }
 
 $ErrorActionPreference = "Stop"
 
 $BUILD_PREFIX = (resolve-path "$REPO_ROOT_PATH/qt-windows").toString()
-$QT_SRC_PATH = (resolve-path "$TASK_WORKDIR/fetches/qt-everywhere-src-*/configure.bat" | Split-Path -Parent)
+$QT_SRC_PATH = (resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*/configure.bat" | Split-Path -Parent)
 Set-Location $QT_SRC_PATH
 
 # Let's trim what we dont need.
@@ -114,12 +107,7 @@ cmake --build . --parallel
 cmake --install . --config Debug
 cmake --install . --config Release
 
-Copy-Item -Path $REPO_ROOT_PATH/taskcluster/scripts/toolchain/configure_qt.ps1 -Destination qt-windows/
-
-if (Test-Path -Path $SSL_PATH) {
-  Copy-Item -Path $SSL_PATH -Recurse -Destination qt-windows/
-}
-
+Set-Location $REPO_ROOT_PATH
 tar -cJf qt6_win.tar.xz qt-windows/
 
 New-Item -ItemType Directory -Path "$TASK_WORKDIR/public/build" -Force
