@@ -136,7 +136,7 @@ static QString readCgroupAppId() {
       // Not a cgroupsv2 path.
       continue;
     }
-    
+
     // Find the last cgroup path segment ending with ".scope"
     QStringList cgroup = line.sliced(3).split("/");
     for (auto i = cgroup.crbegin(); i != cgroup.crend(); i++) {
@@ -179,31 +179,52 @@ void XdgPortal::setupAppScope(const QString& appId) {
     return;
   }
 
-  uint ownPid = (uint)getpid();
-  QDBusInterface sdManager("org.freedesktop.systemd1",
-                           "/org/freedesktop/systemd1",
-                           "org.freedesktop.systemd1.Manager");
+  // !! QTBUG-135928 WORKAROUND !!
+  // Qt 6.8 introduced a bug where using QDBusConnection::sessionBus() before
+  // QCoreApplication is created will silently break D-Bus signal connections.
+  // To workaround this, spin up a separate, standalone bus for these steps.
+#if (QT_VERSION < QT_VERSION_CHECK(6, 9, 2)) && (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0))
+  QString busName = QString("%1-appid-scope-helper").arg(appId);
+  QDBusConnection bus =
+      QDBusConnection::connectToBus(QDBusConnection::SessionBus, busName);
+  auto guard =
+      qScopeGuard([busName](){ QDBusConnection::disconnectFromBus(busName); });
+#else
+  // If the XDG Registry portal exists, use it to advertise our application ID.
+  // This is the right tool to use, but it's also very new.
+  QDBusInterface xdgRegistry(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH,
+                             "org.freedesktop.host.portal.Registry");
+  if (xdgRegistry.property("version").toUInt() >= 1) {
+    QDBusMessage msg = xdgRegistry.call("Register", appId, QVariantMap());
+    if (msg.type() == QDBusMessage::ErrorMessage) {
+      logger.debug() << "Registration failed:" << msg.errorMessage();
+    }
+    return;
+  }
 
-  // Request a new scope from systemd via D-Bus
+  QDBusConnection bus = QDBusConnection::sessionBus();
+#endif
+
+  uint ownPid = (uint)getpid();
   QString newScopeName =
-      QString("app-%1-%2.scope").arg(appId, QString::number(getpid()));
+      QString("app-%1-%2.scope").arg(appId, QString::number(ownPid));
   SystemdUnitPropList properties;
   SystemdUnitAuxList aux;
   QList<uint> pidlist({ownPid});
   properties.append(SystemdUnitProp("PIDs", QVariant::fromValue(pidlist)));
 
   logger.debug() << "Creating scope:" << newScopeName;
-  QDBusMessage msg =
-      sdManager.call("StartTransientUnit", newScopeName, "fail",
-                     QVariant::fromValue(properties), QVariant::fromValue(aux));
-  if (msg.type() == QDBusMessage::ErrorMessage) {
-    logger.warning() << "Failed to create scope:" << msg.errorMessage();
-    return;
-  }
-  QList<QVariant> jobResult = msg.arguments();
-  QDBusObjectPath jobPath = jobResult.first().value<QDBusObjectPath>();
-  if ((msg.type() != QDBusMessage::ReplyMessage) || jobPath.path().isEmpty()) {
-    logger.warning() << "Bad reply for create scope";
+  QDBusMessage msg = QDBusMessage::createMethodCall(
+      "org.freedesktop.systemd1", "/org/freedesktop/systemd1",
+      "org.freedesktop.systemd1.Manager", "StartTransientUnit");
+  msg << newScopeName;
+  msg << "fail";
+  msg << QVariant::fromValue(properties);
+  msg << QVariant::fromValue(aux);
+
+  QDBusMessage reply = bus.call(msg);
+  if (reply.type() == QDBusMessage::ErrorMessage) {
+    logger.warning() << "Failed to create scope:" << reply.errorMessage();
     return;
   }
 
@@ -218,7 +239,7 @@ void XdgPortal::setupAppScope(const QString& appId) {
       QThread::msleep(100);
       continue;
     }
-    logger.debug() << "Scope updated:" << cgAppId;
+    logger.debug() << "App ID updated:" << cgAppId;
     break;
   }
 }
