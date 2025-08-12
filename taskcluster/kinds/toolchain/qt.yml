@@ -67,8 +67,11 @@ qt-windows-x86_64-next:
         fetch:
             - artifact: qt-source-zip-next
               extract: false
-            - win-dev-env
-            - win-cmake
+        conda-pack:
+            - artifact: conda-windows.tar.xz
+              dest: conda-windows
+    dependencies:
+        conda-pack: toolchain-windows-conda-pack
     run:
         script: compile_qt_6.ps1
         resources:
