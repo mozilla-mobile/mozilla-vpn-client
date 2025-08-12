@@ -59,8 +59,10 @@ void Socks5::tryCreateProxy(QIODevice* socket) {
   ProxyConnection* con = nullptr;
   if (HttpConnection::isProxyType(req)) {
     con = new HttpConnection(socket);
+#ifdef PROXY_MASQUE_ENABLED
   } else if (MasqueConnection::isProxyType(req)) {
     con = new MasqueConnection(socket);
+#endif
   } else if (Socks5Connection::isProxyType(socket)) {
     con = new Socks5Connection(socket);
   } else if (socket->bytesAvailable() > 4096) {

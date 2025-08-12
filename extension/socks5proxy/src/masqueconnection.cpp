@@ -4,6 +4,10 @@
 
 #include "masqueconnection.h"
 
+#ifndef PROXY_MASQUE_ENABLED
+#  error "MASQUE proxy protocol is disabled"
+#endif
+
 #include <QDebug>
 #include <QNetworkDatagram>
 #include <QUdpSocket>

@@ -4,6 +4,7 @@
 
 #ifndef MASQUECONNECTION_H
 #define MASQUECONNECTION_H
+#ifdef PROXY_MASQUE_ENABLED
 
 #include "httpconnectionbase.h"
 
@@ -40,4 +41,5 @@ class MasqueConnection final : public HttpConnectionBase {
   bool m_capsuleDrop = false;
 };
 
+#endif  // PROXY_MASQUE_ENABLED
 #endif  // MASQUECONNECTION_H

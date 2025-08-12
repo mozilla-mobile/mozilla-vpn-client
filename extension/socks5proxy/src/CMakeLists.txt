@@ -22,14 +22,19 @@ target_sources(libSocks5proxy PRIVATE
     httpconnectionbase.h
     httprequest.cpp
     httprequest.h
-    masqueconnection.cpp
-    masqueconnection.h
     proxyconnection.cpp
     proxyconnection.h
     socks5.h
     socks5.cpp
     socks5connection.cpp
     socks5connection.h
+)
+
+# MASQUE support is experimental for now, disable it in release builds.
+target_compile_definitions(libSocks5proxy PRIVATE $<$<CONFIG:Debug>:PROXY_MASQUE_ENABLED=1>)
+target_sources(libSocks5proxy PRIVATE
+    $<$<CONFIG:Debug>:masqueconnection.cpp>
+    $<$<CONFIG:Debug>:masqueconnection.h>
 )
 
 if(WIN32)
