@@ -6,7 +6,12 @@
 $REPO_ROOT_PATH =resolve-path "$PSScriptRoot/../../../"
 $TASK_WORKDIR =resolve-path "$REPO_ROOT_PATH/../../"
 $FETCHES_PATH =resolve-path "$TASK_WORKDIR/fetches"
-$QT_SRC_ARCHIVE =resolve-path "$TASK_WORKDIR/fetches/qt-everywhere-src-*.zip"
+$QT_SRC_ARCHIVE =resolve-path "$FETCHES_PATH/qt-everywhere-src-*.zip"
+
+$CMAKE_PATH = (resolve-path "$FETCHES_PATH/cmake-*/bin/cmake.exe" | Split-Path -Parent)
+if(Test-Path $CMAKE_PATH){
+  $env:Path = "$CMAKE_PATH;" + $env:Path
+}
 
 $BIN_PATH = "$REPO_ROOT_PATH/bin"
 

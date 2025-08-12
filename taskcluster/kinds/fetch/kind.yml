@@ -32,6 +32,14 @@ tasks:
             sha256: f242f98378691496851f78beaf466797fb20251ba5092840c794503594d37726
             artifact-name: miniconda_installer.exe
             size: 80281312
+    win-cmake:
+        description: CMake win-x86_64 v3.26.6
+        fetch:
+            type: static-url
+            url: https://github.com/Kitware/CMake/releases/download/v3.26.6/cmake-3.26.6-windows-x86_64.zip
+            sha256: 07b1c4cae3182ca1782a4d9775b5e5d164b475eb010e1dd98ce0c206c38fa73d
+            artifact-name: cmake-windows-x86_64.zip
+            size: 42047980
     wireguard-nt:
         description: Wireguard Driver
         fetch: 

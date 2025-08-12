@@ -67,8 +67,8 @@ qt-windows-x86_64-next:
         fetch:
             - artifact: qt-source-zip-next
               extract: false
-            - artifact: win-dev-env
-              extract: true
+            - win-dev-env
+            - win-cmake
     run:
         script: compile_qt_6.ps1
         resources:
