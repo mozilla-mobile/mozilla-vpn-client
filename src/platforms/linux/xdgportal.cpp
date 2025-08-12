@@ -121,35 +121,6 @@ QString XdgPortal::parentWindow() {
   return QString("");
 }
 
-// Decode systemd escape characters in the unit names.
-static QString decodeSystemdEscape(const QString& str) {
-  static const QRegularExpression re("(_[0-9A-Fa-f][0-9A-Fa-f])");
-
-  QString result = str;
-  qsizetype offset = 0;
-  while (offset < result.length()) {
-    // Search for the next unicode escape sequence.
-    QRegularExpressionMatch match = re.match(result, offset);
-    if (!match.hasMatch()) {
-      break;
-    }
-
-    bool okay;
-    qsizetype start = match.capturedStart(0);
-    QChar code = match.captured(0).mid(1).toUShort(&okay, 16);
-    if (okay && (code != 0)) {
-      // Replace the matched escape sequence with the decoded character.
-      result.replace(start, match.capturedLength(0), QString(code));
-      offset = start + 1;
-    } else {
-      // If we failed to decode the character, skip passed the matched string.
-      offset = match.capturedEnd(0);
-    }
-  }
-
-  return result;
-}
-
 // Get our control group scope by reading /proc/self/cgroup
 static QString readCgroupAppId() {
   QFile cgFile("/proc/self/cgroup");
