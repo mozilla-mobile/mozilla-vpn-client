@@ -50,11 +50,11 @@ MacOSController::~MacOSController() {
 }
 
 NSString* MacOSController::plist() const {
-  return MacOSUtils::appId(".service.plist").toNSString();
+  return MacOSUtils::appId(".xpc-daemon.plist").toNSString();
 }
 
 NSString* MacOSController::machServiceName() const {
-  return MacOSUtils::appId(".service").toNSString();
+  return MacOSUtils::appId(".xpc-daemon").toNSString();
 }
 
 void MacOSController::initialize(const Device* device, const Keys* keys) {
