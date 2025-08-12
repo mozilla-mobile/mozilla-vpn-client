@@ -76,6 +76,7 @@ qt-windows-x86_64-next:
     run:
         script: compile_qt_6.ps1
         resources:
+            - taskcluster/scripts/toolchain/enter_dev_shell.ps1
             - taskcluster/scripts/toolchain/configure_qt.ps1
         toolchain-alias: qt-windows-x86_64-next
         toolchain-artifact: public/build/qt6_win.tar.xz

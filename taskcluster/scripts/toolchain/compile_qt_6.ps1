@@ -21,6 +21,9 @@ if(Test-Path $CONDA_DIR){
   Start-Process -NoNewWindow "$CONDA_DIR\Scripts\conda-unpack.exe" -Wait
   conda activate $CONDA_DIR
   conda info
+
+  # Setup a VS dev shell environment
+  . "$env:VCS_PATH/taskcluster/scripts/toolchain/enter_dev_shell.ps1"
 } else {
   # Otherwise, enter the DEV Shell
   . "$env:MOZ_FETCHES_DIR/VisualStudio/enter_dev_shell.ps1"
