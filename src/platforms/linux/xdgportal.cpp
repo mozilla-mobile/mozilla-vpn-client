@@ -150,6 +150,50 @@ static QString decodeSystemdEscape(const QString& str) {
   return result;
 }
 
+// Get our control group scope by reading /proc/self/cgroup
+static QString readCgroupAppId() {
+  QFile cgFile("/proc/self/cgroup");
+  if (!cgFile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
+    return QString();
+  }
+  while (true) {
+    QString line = cgFile.readLine().trimmed();
+    if (line.isEmpty()) {
+      break;
+    }
+    if (!line.startsWith("0::")) {
+      // Not a cgroupsv2 path.
+      continue;
+    }
+    
+    // Find the last cgroup path segment ending with ".scope"
+    QStringList cgroup = line.sliced(3).split("/");
+    for (auto i = cgroup.crbegin(); i != cgroup.crend(); i++) {
+      if (!i->startsWith("app-") || !i->endsWith(".scope")) {
+        continue;
+      }
+
+      // Parse the scope for the application ID.
+      QStringList scopeSplit = i->chopped(6).split("-");
+
+      // Remove the last element of the scope if it's a number. This likely
+      // holds a PID or some other runtime identifier.
+      bool isDigit = false;
+      scopeSplit.last().toULong(&isDigit);
+      if (isDigit) {
+        scopeSplit.removeLast();
+      }
+
+      // The application ID should be the last token in the scope string.
+      return scopeSplit.last();
+    }
+    break;
+  }
+
+  // We failed to determine the scope.
+  return QString();
+}
+
 void XdgPortal::setupAppScope(const QString& appId) {
   // If we're in a sandbox environment, then it should already be setup.
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
@@ -157,54 +201,17 @@ void XdgPortal::setupAppScope(const QString& appId) {
     return;
   }
 
+  QString cgAppId = readCgroupAppId();
+  if (!cgAppId.isEmpty()) {
+    // If we found an appId then we have no work to do.
+    logger.info() << "Launched as app" << cgAppId;
+    return;
+  }
+
   uint ownPid = (uint)getpid();
   QDBusInterface sdManager("org.freedesktop.systemd1",
                            "/org/freedesktop/systemd1",
                            "org.freedesktop.systemd1.Manager");
-
-  QDBusMessage getunit = sdManager.call("GetUnitByPID", ownPid);
-  if (getunit.type() == QDBusMessage::ErrorMessage) {
-    logger.warning() << "Failed to get scope:" << getunit.errorMessage();
-    return;
-  }
-  QList<QVariant> unitResult = getunit.arguments();
-  if ((getunit.type() != QDBusMessage::ReplyMessage) || unitResult.isEmpty()) {
-    logger.warning() << "Bad reply for current scope:";
-    return;
-  }
-
-  // Fetch the names of the unit to figure out the appid.
-  QDBusObjectPath unitPath = unitResult.first().value<QDBusObjectPath>();
-  QDBusInterface ownUnit("org.freedesktop.systemd1", unitPath.path(),
-                         "org.freedesktop.systemd1.Unit");
-  QStringList unitNames = ownUnit.property("Names").toStringList();
-
-  // Use the D-Bus object path as a fallback if there are no names.
-  unitNames.append(decodeSystemdEscape(unitPath.path().split('/').last()));
-
-  // Check to see if we have a valid application scope.
-  QString unitAppId;
-  for (const QString& name : unitNames) {
-    if (!name.endsWith(".scope")) {
-      continue;
-    }
-    QStringList scopeSplit = name.first(name.size() - 6).split('-');
-    if (scopeSplit[0] != "app") {
-      continue;
-    }
-
-    // Remove the last element of the scope if it's a number.
-    bool isDigit = false;
-    scopeSplit.last().toULong(&isDigit);
-    if (isDigit) {
-      scopeSplit.removeLast();
-    }
-
-    // The appId should be the last remaining element of the scope.
-    // If we found an appId then we have no work to do.
-    logger.info() << "Launched as app" << scopeSplit.last();
-    return;
-  }
 
   // Request a new scope from systemd via D-Bus
   QString newScopeName =
@@ -232,20 +239,15 @@ void XdgPortal::setupAppScope(const QString& appId) {
   // And now for the gross part. StartTransientUnit() returns a systemd job that
   // will create our scope for us, and move us into it. But we have to wait for
   // that job to finish before we can proceed. However, we can't do this async
-  // because we don't have a QCoreApplication setup yet. The only way I can
-  // think to do this is by polling systemd until the job is no longer running.
-  QDBusInterface jobInterface("org.freedesktop.systemd1", jobPath.path(),
-                              "org.freedesktop.systemd1.Job");
-  while (jobInterface.isValid()) {
-    QString state = jobInterface.property("State").toString();
-    if (state.isEmpty()) {
-      logger.debug() << "Job is done exiting...";
-      break;
-    } else if ((state != "waiting") && (state != "running")) {
-      logger.debug() << "Job is" << state << "exiting...";
-      break;
+  // because we don't have a QCoreApplication setup yet. So, instead lets poll
+  // our cgroup until it changes.
+  for (int retries = 0; retries < 15; retries++) {
+    cgAppId = readCgroupAppId();
+    if (cgAppId.isEmpty()) {
+      QThread::msleep(100);
+      continue;
     }
-    logger.debug() << "Job is" << state << "waiting...";
-    QThread::currentThread()->wait(100);
+    logger.debug() << "Scope updated:" << cgAppId;
+    break;
   }
 }
