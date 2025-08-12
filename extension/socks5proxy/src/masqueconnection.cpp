@@ -18,7 +18,7 @@
 
 constexpr const uint MASQUE_CAPSULE_DATAGRAM = 0;
 
-// Peek at the socket and determine if this is a MASQUE connection.
+// Peek at the request and determine if this is a MASQUE connection.
 bool MasqueConnection::isProxyType(const HttpRequest& request) {
   return request.m_method == "GET" &&
          request.m_uri.contains(".well-known/masque/udp/");

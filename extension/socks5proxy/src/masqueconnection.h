@@ -10,6 +10,7 @@
 
 class QIODevice;
 
+// Implements HTTP connect-udp proxying from MASQUE/RFC9298.
 class MasqueConnection final : public HttpConnectionBase {
   Q_OBJECT
 
@@ -17,7 +18,7 @@ class MasqueConnection final : public HttpConnectionBase {
   explicit MasqueConnection(QIODevice* socket) : HttpConnectionBase(socket){};
   ~MasqueConnection() = default;
 
-  // Peek at the socket and determine if this is a MASQUE connection.
+  // Peek at the request and determine if this is a MASQUE connection.
   static bool isProxyType(const HttpRequest& request);
 
   void clientProxyRead() override;

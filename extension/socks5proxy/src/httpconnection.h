@@ -16,7 +16,7 @@ class HttpConnection final : public HttpConnectionBase {
   explicit HttpConnection(QIODevice* socket) : HttpConnectionBase(socket){};
   ~HttpConnection() = default;
 
-  // Peek at the socket and determine if this is a HTTP CONNECT connection.
+  // Peek at the request and determine if this is a HTTP CONNECT proxy.
   static bool isProxyType(const HttpRequest& request);
 
  private slots:

@@ -8,7 +8,7 @@
 
 #include "dnsresolver.h"
 
-// Peek at the socket and determine if this is a HTTP connection.
+// Peek at the request and determine if this is a HTTP CONNECT proxy.
 bool HttpConnection::isProxyType(const HttpRequest& request) {
   return request.m_method == "CONNECT";
 }
