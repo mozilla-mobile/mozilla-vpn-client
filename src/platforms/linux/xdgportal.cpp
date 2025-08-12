@@ -121,6 +121,35 @@ QString XdgPortal::parentWindow() {
   return QString("");
 }
 
+// Decode systemd escape characters in the unit names.
+static QString decodeSystemdEscape(const QString& str) {
+  static const QRegularExpression re("(_[0-9A-Fa-f][0-9A-Fa-f])");
+
+  QString result = str;
+  qsizetype offset = 0;
+  while (offset < result.length()) {
+    // Search for the next unicode escape sequence.
+    QRegularExpressionMatch match = re.match(result, offset);
+    if (!match.hasMatch()) {
+      break;
+    }
+
+    bool okay;
+    qsizetype start = match.capturedStart(0);
+    QChar code = match.captured(0).mid(1).toUShort(&okay, 16);
+    if (okay && (code != 0)) {
+      // Replace the matched escape sequence with the decoded character.
+      result.replace(start, match.capturedLength(0), QString(code));
+      offset = start + 1;
+    } else {
+      // If we failed to decode the character, skip passed the matched string.
+      offset = match.capturedEnd(0);
+    }
+  }
+
+  return result;
+}
+
 // Get our control group scope by reading /proc/self/cgroup
 static QString readCgroupAppId() {
   QFile cgFile("/proc/self/cgroup");
@@ -137,10 +166,15 @@ static QString readCgroupAppId() {
       continue;
     }
 
-    // Find the last cgroup path segment ending with ".scope"
+    // From https://systemd.io/DESKTOP_ENVIRONMENTS/ the format is one of:
+    //   app[-<launcher>]-<ApplicationID>-<RANDOM>.scope
+    //   app[-<launcher>]-<ApplicationID>-<RANDOM>.slice
     QStringList cgroup = line.sliced(3).split("/");
     for (auto i = cgroup.crbegin(); i != cgroup.crend(); i++) {
-      if (!i->startsWith("app-") || !i->endsWith(".scope")) {
+      if (!i->startsWith("app-")) {
+        continue;
+      }
+      if (!i->endsWith(".scope") && !i->endsWith(".slice")) {
         continue;
       }
 
@@ -156,7 +190,7 @@ static QString readCgroupAppId() {
       }
 
       // The application ID should be the last token in the scope string.
-      return scopeSplit.last();
+      return decodeSystemdEscape(scopeSplit.last());
     }
     break;
   }
@@ -206,6 +240,7 @@ void XdgPortal::setupAppScope(const QString& appId) {
   QDBusConnection bus = QDBusConnection::sessionBus();
 #endif
 
+  // Request a new scope from systemd via D-Bus
   uint ownPid = (uint)getpid();
   QString newScopeName =
       QString("app-%1-%2.scope").arg(appId, QString::number(ownPid));
