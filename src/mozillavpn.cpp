@@ -82,6 +82,8 @@
 #endif
 
 #ifdef MZ_MACOS
+#  include <QFileOpenEvent>
+
 #  include "platforms/macos/macosutils.h"
 #endif
 

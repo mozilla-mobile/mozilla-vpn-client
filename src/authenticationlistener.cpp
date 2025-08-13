@@ -10,9 +10,7 @@
 #include "logger.h"
 #include "networkmanager.h"
 
-#if defined(MZ_MACOS)
-#  include "platforms/macos/macosauthenticationlistener.h"
-#elif defined(MZ_WASM)
+#if defined(MZ_WASM)
 #  include "platforms/wasm/wasmauthenticationlistener.h"
 #else
 #  include "tasks/authenticate/desktopauthenticationlistener.h"
@@ -34,8 +32,6 @@ AuthenticationListener* AuthenticationListener::create(
 #if defined(MZ_ANDROID) or defined(MZ_IOS)
       logger.error() << "Something went totally wrong";
       Q_ASSERT(false);
-#elif defined(MZ_MACOS)
-      return new MacosAuthenticationListener(parent);
 #elif defined(MZ_WASM)
       return new WasmAuthenticationListener(parent);
 #else

@@ -10,9 +10,6 @@
 #include <QLocalSocket>
 #include <QRegularExpression>
 #include <QUrl>
-#ifdef MZ_MACOS
-#  include <QEvent>
-#endif
 #ifndef MZ_WINDOWS
 #  include <QStandardPaths>
 #endif
