@@ -61,7 +61,7 @@ QString Device::currentDeviceName() {
         continue;
       }
       QString name = line.first(sep);
-      QString value = line.sliced(sep+1);
+      QString value = line.sliced(sep + 1);
       if (value.startsWith('"') && value.endsWith('"')) {
         value = value.mid(1, value.length() - 2);
       }
