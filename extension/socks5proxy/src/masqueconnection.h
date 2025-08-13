@@ -1,0 +1,46 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#ifndef MASQUECONNECTION_H
+#define MASQUECONNECTION_H
+
+#ifdef PROXY_MASQUE_ENABLED
+#  include "httpconnectionbase.h"
+
+class QIODevice;
+
+// Implements HTTP connect-udp proxying from MASQUE/RFC9298.
+class MasqueConnection final : public HttpConnectionBase {
+  Q_OBJECT
+
+ public:
+  explicit MasqueConnection(QIODevice* socket) : HttpConnectionBase(socket){};
+  ~MasqueConnection() = default;
+
+  // Peek at the request and determine if this is a MASQUE connection.
+  static bool isProxyType(const HttpRequest& request);
+
+  void clientProxyRead() override;
+  void destProxyRead() override;
+
+ private slots:
+  void onHostnameResolved(const QHostAddress& addr);
+  void onHttpGet();
+
+ private:
+  // QUIC variable integer handling.
+  bool readVarInt(quint64& value);
+  static void putVarInt(quint64 value, QByteArray& buffer);
+
+  // RFC 9297 HTTP datagram and capsule protocol handling.
+  void handleCapsule(quint64 type, const QByteArray& data);
+
+  quint64 m_capsuleType = 0;
+  quint64 m_capsuleLength = 0;
+  QByteArray m_capsuleBuffer;
+  bool m_capsuleDrop = false;
+};
+
+#endif  // PROXY_MASQUE_ENABLED
+#endif  // MASQUECONNECTION_H

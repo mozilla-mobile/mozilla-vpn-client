@@ -12,4 +12,5 @@ class TestSocks5 final : public QObject {
 
  private slots:
   void proxyTCP();
+  void proxyTCP_data();
 };

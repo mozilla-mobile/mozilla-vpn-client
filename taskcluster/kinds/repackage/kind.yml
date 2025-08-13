@@ -15,12 +15,23 @@ kind-dependencies:
     - fetch
     - signing
 
+task-defaults:
+    run-on-tasks-for: [github-pull-request, github-push]
+    worker:
+        chain-of-trust: true
+        max-run-time: 600
+    treeherder:
+        kind: build
+        tier: 1
+    run:
+        using: run-task
+        cwd: '{checkout}'
+
 tasks:
     msi:
         description: Build MSI installer package
-        run-on-tasks-for: [github-push]
         fetches:
-            signing:
+            from-dependency: # Updated to match dependencies in repackage.py
                 - artifact: unsigned.zip
                   # Workers are using an old version of PowerShell that doesn'tcontain the fix in
                   # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/48, and the
@@ -28,28 +39,24 @@ tasks:
                   # newer PowerShell, we'll need to handle extraction ourselves.
                   extract: false
         dependencies:
-            signing: signing-windows/opt
-        if-dependencies: [signing]
+            by-level:
+                "3":
+                    signing: signing-windows/opt
+                default:
+                    build: build-windows/opt
         worker-type: b-win2022
-        worker:
-            chain-of-trust: true
-            max-run-time: 3600
         release-artifacts: [MozillaVPN.msi]
         attributes:
             build-type: windows/opt
         run:
-            using: run-task
             cwd: build/src/windows/installer
             command: [cmd.exe, /c, build_prod.cmd]
         treeherder:
             symbol: rpk(msi)
-            kind: build
-            tier: 1
             platform: windows/x86_64
 
     macpkg:
         description: Build macOS installer package
-        run-on-tasks-for: [github-pull-request, github-push]
         fetches:
             fetch:
                - macos-cmake
@@ -61,23 +68,37 @@ tasks:
                 "3":
                     signing: signing-macos/opt
                 default:
-                    build: build-macos/pr
+                    build: build-macos/opt
         worker-type: b-macos
-        worker:
-            chain-of-trust: true
-            max-run-time: 3600
         release-artifacts: [MozillaVPN.pkg]
         attributes:
-            build-type:
-                by-level:
-                    "3": macos/opt
-                    default: macos/pr
+            build-type: macos/opt
         run:
-            using: run-task
-            cwd: '{checkout}'
             command: ./taskcluster/scripts/build/macos_repackage.sh
         treeherder:
             symbol: rpk(macpkg)
-            kind: build
-            tier: 1
             platform: macos/universal
+
+    macpkg-next:
+        description: Build macOS installer package (next Qt)
+        fetches:
+            fetch:
+               - macos-cmake
+            from-dependency: # Updated to match dependencies in repackage.py
+                - artifact: MozillaVPN.tar.gz
+                  extract: false
+        dependencies:
+            by-level:
+                "3":
+                    signing: signing-macos/next
+                default:
+                    build: build-macos/next
+        worker-type: b-macos
+        release-artifacts: [MozillaVPN.pkg]
+        attributes:
+            build-type: macos/next
+        run:
+            command: ./taskcluster/scripts/build/macos_repackage.sh
+        treeherder:
+            symbol: rpk(macpkg)
+            platform: macos/next

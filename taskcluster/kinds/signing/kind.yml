@@ -52,13 +52,14 @@ tasks:
                     - android-arm64/release
                     - android-armv7/release
                     - macos/opt
+                    - macos/next
                     - windows/opt
                     - addons/opt
             copy-attributes: true
         add-index-routes:
             by-build-type:
                 windows/opt: null  # for Windows we want the 'repackage-signing' task
-                macos/opt: null    # for macOS we want the 'mac-notarization' task
+                macos.*: null      # for macOS we want the 'mac-notarization' task
                 default: build
         signing-format:
             by-build-type:
@@ -81,5 +82,6 @@ tasks:
                     android-armv7/release: android/armv7
                     linux/opt: linux/opt
                     macos/opt: macos/opt
+                    macos/next: macos/next
                     windows/opt: windows/x86_64
                     addons/opt: addons/opt

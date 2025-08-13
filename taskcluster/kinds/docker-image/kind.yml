@@ -32,11 +32,6 @@ tasks:
     lint:
         parent: base
         symbol: I(lint)
-    wasm:
-        parent: base
-        symbol: I(wasm)
-        args:
-            QT_VERSION: 6.6.3
     linux-qt6-build:
         parent: base
         symbol: I(linux-qt6-build)
@@ -66,3 +61,6 @@ tasks:
         definition: linux-rpm-build
         args:
             DOCKER_BASE_IMAGE: fedora:40
+    sentry:
+        parent: base
+        symbol: I(sentry)

@@ -42,10 +42,11 @@ XpcDaemonServer::XpcDaemonServer(Daemon* daemon) : QObject(daemon) {
   MZ_COUNT_CTOR(XpcDaemonServer);
 
   // To get the mach service name, take the bundle identifier and replace
-  // the last segment with 'service'
+  // the last segment with 'xpc-daemon'
   NSString* bundleIdentifer = [[NSBundle mainBundle] bundleIdentifier];
   QStringList bundleSplit = QString::fromNSString(bundleIdentifer).split('.');
-  bundleSplit.last() = "service";
+  bundleSplit.last() = "xpc-daemon";
+
   NSString* machServiceName = bundleSplit.join('.').toNSString();
   logger.debug() << "XpcDaemonServer created:" << machServiceName;
 

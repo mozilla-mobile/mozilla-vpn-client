@@ -1,0 +1,16 @@
+name: vpn
+channels:
+  - conda-forge
+dependencies:
+  - emsdk=3.1.38
+  - python=3.9
+  - nodejs=18.16.*
+  - pip=22.3.1
+  - rust=1.82.0
+  - rust-std-wasm32-unknown-emscripten=1.82.0
+  - cmake=3.26.3
+  - ninja=1.11.0
+  - pip:
+      - -r requirements.txt
+variables:
+  QT_VERSION: 6.6.3

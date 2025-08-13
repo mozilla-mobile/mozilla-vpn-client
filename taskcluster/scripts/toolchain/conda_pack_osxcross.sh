@@ -4,7 +4,6 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 set -e
-PATH=${PATH}:/opt/conda/bin
 
 echo "Installing provided conda env..."
 conda env create -f ${VCS_PATH}/env-apple.yml
@@ -34,9 +33,6 @@ cat <<EOF > ${CONDA_VPN_PREFIX}/etc/conda/deactivate.d/01-macosx-sdkroot.sh
 unset SDKROOT
 EOF
 chmod +x ${CONDA_VPN_PREFIX}/etc/conda/deactivate.d/01-macosx-sdkroot.sh
-
-echo "Installing conda-pack..."
-conda install conda-pack -y
 
 echo "Packing conda environment..."
 mkdir -p ${UPLOAD_DIR}

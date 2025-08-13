@@ -27,15 +27,49 @@ class Controller : public QObject, public LogSerializer {
  public:
   // Note - these states are ordered from least to most active.
   enum State {
+    // The initial state of the controller.
     StateInitializing = 0,
+
+    // Initialization is blocked and the user must grant additional permissions
+    // before the controller can finish initialization.
     StatePermissionRequired,
+
+    // The deactivated state of the controller. The VPN is disconnected and
+    // idle.
     StateOff,
+
+    // A request to deactivate the controller is in progress, and is waiting on
+    // a disconnected() signal from the ControllerImpl.
     StateDisconnecting,
+
+    // One or more connections have been submitted to the ControllerImpl while
+    // activating the VPN. The controller is waiting for a connected() signal
+    // from the ControllerImpl before proceeding.
     StateConnecting,
+
+    // All connections have been activated, and final connectivity checks are
+    // being performed.
     StateConfirming,
+
+    // A major, user-facing configuration change is being applied, and one or
+    // more connections have been submitted to the ControllerImpl, and the
+    // controller is waiting for a connected() signal from the ControllerImpl
+    // before proceeding. This state is typically used to change locations.
     StateSwitching,
+
+    // A minor configuration change is being applied which should not be visible
+    // to the user. One or more connections have been submitted to the
+    // ControllerImpl and the controller is waiting for a connected() signal
+    // before proceeding. This state is typically used for load-balancing and
+    // failover between servers.
     StateSilentSwitching,
+
+    // The VPN is connected and offers partial connectivity to select network
+    // addresses.
     StateOnPartial,
+
+    // The VPN is connected and is applying full device protection for all
+    // network traffic.
     StateOn,
   };
   Q_ENUM(State)
@@ -68,7 +102,6 @@ class Controller : public QObject, public LogSerializer {
   Q_ENUM(ActivationPrincipal)
 
  public:
-  qint64 time() const;
   qint64 connectionTimestamp() const;
   void serverUnavailable();
   void captivePortalPresent();
@@ -122,7 +155,8 @@ class Controller : public QObject, public LogSerializer {
 
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
-  Q_PROPERTY(qint64 time READ time NOTIFY timeChanged)
+  Q_PROPERTY(qint64 connectionTimestamp READ connectionTimestamp NOTIFY
+                 timestampChanged)
   Q_PROPERTY(
       int connectionRetry READ connectionRetry NOTIFY connectionRetryChanged);
   Q_PROPERTY(bool enableDisconnectInConfirming READ enableDisconnectInConfirming
@@ -137,7 +171,6 @@ class Controller : public QObject, public LogSerializer {
                  currentServerChanged);
 
  private slots:
-  void timerTimeout();
   void handshakeTimeout();
   void connected(const QString& pubkey);
   void disconnected();
@@ -151,7 +184,7 @@ class Controller : public QObject, public LogSerializer {
 
  signals:
   void stateChanged();
-  void timeChanged();
+  void timestampChanged();
   void enableDisconnectInConfirmingChanged();
   void connectionRetryChanged();
   void recordConnectionStartTelemetry();
@@ -197,6 +230,7 @@ class Controller : public QObject, public LogSerializer {
     None,
     Quit,
     Update,
+    Reconnect,
     Disconnect,
   };
 
@@ -211,20 +245,15 @@ class Controller : public QObject, public LogSerializer {
                         ServerSelectionPolicy serverSelectionPolicy,
                         ActivationPrincipal);
 
-  void startTimerIfInactive();
-  void clearConnectedTime();
   void clearRetryCounter();
   void activateNext();
   void setState(State state);
-  void resetConnectedTime();
-  bool processNextStep();
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
   QString useLocalSocketPath() const;
 
  private:
-  QTimer m_timer;
-  QTimer m_connectingTimer;
+  QTimer m_confirmingTimer;
   QTimer m_handshakeTimer;
 
   QDateTime m_connectedTimeInUTC;
@@ -256,12 +285,9 @@ class Controller : public QObject, public LogSerializer {
   // Please, do not use MozillaVPN::serverData() in the controller!
   ServerData m_serverData;
   ServerData m_nextServerData;
-  bool isSwitchingServer;
 
   PingHelper m_pingCanary;
   bool m_pingReceived = false;
-
-  ServerSelectionPolicy m_nextServerSelectionPolicy = RandomizeServerSelection;
 
   QList<std::function<void(const QString& serverIpv4Gateway,
                            const QString& deviceIpv4Address, uint64_t txBytes,

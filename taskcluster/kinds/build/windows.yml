@@ -12,7 +12,6 @@ task-defaults:
     worker-type: b-win2022
     fetches:
         fetch:
-            - win-sentry-cli
             - win-conda
             - wireguard-nt
         toolchain:

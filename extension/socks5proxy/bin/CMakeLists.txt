@@ -27,7 +27,7 @@ if(WIN32)
         winfwpolicy.h
         winsvcthread.cpp
         winsvcthread.h
-        )
+    )
     target_link_libraries(socksproxy PRIVATE Iphlpapi.lib)
 
     install(FILES

@@ -19,6 +19,7 @@ task-defaults:
             - requirements.txt
             - env-apple.yml
             - scripts/macos/conda_setup_qt.sh
+            - taskcluster/scripts/requirements.txt
 
 
 conda-ios-x86_64-6.6.0:

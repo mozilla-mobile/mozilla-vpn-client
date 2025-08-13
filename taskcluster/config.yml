@@ -13,6 +13,7 @@ treeherder:
         'rpk': 'Re-Package Tasks'
         'BM': 'Beetmover Tasks'
         'T': 'Test Tasks'
+        'SYM': 'Debug Symbol Tasks'
 
 task-priority:
     by-project:

@@ -213,14 +213,8 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
       }];
 }
 
-void IOSController::deactivate(Controller::Reason reason) {
+void IOSController::deactivate() {
   logger.debug() << "IOSController deactivated";
-
-  if (reason != Controller::ReasonNone) {
-    logger.debug() << "We do not need to disable the VPN for switching or connection check.";
-    emit disconnected();
-    return;
-  }
 
   if (!impl) {
     logger.error() << "Controller not correctly initialized";

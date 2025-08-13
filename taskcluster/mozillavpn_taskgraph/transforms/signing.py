@@ -19,6 +19,7 @@ PRODUCTION_SIGNING_BUILD_TYPES = [
     "android-armv7/release",
     "linux/opt",
     "macos/opt",
+    "macos/next", # TODO: This would be a candidate for debug signing, if we supported it.
     "windows/opt",
     "addons/opt",
 ]
@@ -106,9 +107,9 @@ def add_hardened_sign_config(config, tasks):
             yield task
             continue
 
-        # Convert paths to file URLs.
-        hardened_sign_config = config.config["mac-signing"]["hardened-sign-config"]
-        for cfg in hardened_sign_config:
+        # Convert entitlement paths to file URLs.
+        hs_config = [x.copy() for x in config.config["mac-signing"]["hardened-sign-config"]]
+        for cfg in hs_config:
             if "entitlements" in cfg:
                 cfg["entitlements"] = config.params.file_url(cfg["entitlements"])
 
@@ -120,6 +121,6 @@ def add_hardened_sign_config(config, tasks):
             },
         ]
 
-        task["worker"]["hardened-sign-config"] = hardened_sign_config
+        task["worker"]["hardened-sign-config"] = hs_config
         task["worker"]["mac-behavior"] = "mac_sign_hardened"
         yield task
