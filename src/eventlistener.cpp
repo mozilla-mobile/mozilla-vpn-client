@@ -10,13 +10,16 @@
 #include <QLocalSocket>
 #include <QRegularExpression>
 #include <QUrl>
+#ifdef MZ_MACOS
+#  include <QEvent>
+#endif
 #ifndef MZ_WINDOWS
 #  include <QStandardPaths>
 #endif
 
 #include "constants.h"
-#include "frontend/navigator.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "qmlengineholder.h"
 
 #if defined(MZ_WINDOWS)
@@ -81,30 +84,10 @@ void EventListener::socketReadyRead() {
     QmlEngineHolder* engine = QmlEngineHolder::instance();
     engine->showWindow();
   } else if (command == "link") {
-    handleLinkCommand(payload);
+    MozillaVPN::instance()->handleDeepLink(QUrl(payload));
   } else {
     logger.info() << "Unknown UI command:" << command;
   }
-}
-
-void EventListener::handleLinkCommand(const QString& payload) {
-  const QUrl url(payload);
-
-  // We only accept the mozilla-vpn scheme.
-  if (url.scheme() != Constants::DEEP_LINK_SCHEME) {
-    return;
-  }
-
-  // The URL authority determines who handles this.
-  if (url.authority() == "nav") {
-    Navigator::instance()->requestDeepLink(url);
-  } else {
-    logger.info() << "Unknown deep link target:" << url.authority();
-  }
-
-  // Show the window after handling a deep link.
-  QmlEngineHolder* engine = QmlEngineHolder::instance();
-  engine->showWindow();
 }
 
 EventListener::~EventListener() {

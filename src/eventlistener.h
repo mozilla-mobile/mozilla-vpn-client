@@ -8,6 +8,8 @@
 #include <QLocalServer>
 #include <QObject>
 
+class QEvent;
+
 class EventListener final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(EventListener)
@@ -32,9 +34,13 @@ class EventListener final : public QObject {
    */
   static bool sendDeepLink(const QUrl& url);
 
+#if MZ_MACOS
+ protected:
+  bool eventFilter(QObject* obj, QEvent* event) override;
+#endif
+
  private:
   void socketReadyRead();
-  void handleLinkCommand(const QString& payload);
 
   static bool sendCommand(const QString& data);
 
