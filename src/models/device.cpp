@@ -5,6 +5,7 @@
 #include "device.h"
 
 #include <QDateTime>
+#include <QFile>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QTextStream>
@@ -33,27 +34,53 @@
 
 // static
 QString Device::currentDeviceName() {
-  QString deviceName =
-
 #ifdef MZ_IOS
-      IOSUtils::computerName();
+  return IOSUtils::computerName();
 #elif MZ_MACOS
-      // MacOS has a funny way to rename the hostname based on the network
-      // status.
-      MacOSUtils::computerName();
+  // MacOS has a funny way to rename the hostname based on the network status.
+  return MacOSUtils::computerName();
 #elif MZ_ANDROID
-      AndroidUtils::getDeviceName();
+  return AndroidUtils::getDeviceName();
 #elif MZ_WASM
-      "WASM";
-#elif MZ_WINDOWS
-      QSysInfo::machineHostName() + " " + QSysInfo::productType() + " " +
-      WindowsUtils::windowsVersion();
-#else
-      QSysInfo::machineHostName() + " " + QSysInfo::productType() + " " +
-      QSysInfo::productVersion();
+  return "WASM";
 #endif
 
-  return deviceName;
+  // The defaults from QSysInfo are generally good enough.
+  QString osName = QSysInfo::productType();
+  QString osVersion = QSysInfo::productVersion();
+
+#ifdef MZ_LINUX
+  // If containerized and /run/host/os-release exists, use it instead.
+  QFile osHostFile("/run/host/os-release");
+  if (!qgetenv("container").isEmpty() && osHostFile.exists() &&
+      osHostFile.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
+    while (!osHostFile.atEnd()) {
+      QString line = osHostFile.readLine().trimmed();
+      int sep = line.indexOf('=');
+      if (sep < 0) {
+        continue;
+      }
+      QString name = line.first(sep);
+      QString value = line.sliced(sep+1);
+      if (value.front() == '"' && value.back() == '"') {
+        value.removeFirst();
+        value.removeLast();
+      }
+
+      if (name == "ID") {
+        osName = value;
+      }
+      if (name == "VERSION_ID") {
+        osVersion = value;
+      }
+    }
+    osHostFile.close();
+  }
+#elif MZ_WINDOWS
+  osVersion = WindowsUtils::windowsVersion();
+#endif
+
+  return QSysInfo::machineHostName() + " " + osName + " " + osVersion;
 }
 
 QString Device::uniqueDeviceId() {
