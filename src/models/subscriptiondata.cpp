@@ -178,10 +178,30 @@ bool SubscriptionData::fromJsonInternal(const QByteArray& json) {
       return false;
   }
 
+  // Due to limitations on matching planIDs, the currency from Guardian's plan
+  // object may be incorrect. Prefer to use currency code from an actual
+  // receipt, when available.
+  QString bestCurrency;
+  QJsonObject latestInvoice =
+      subscriptionData["latest_invoice_items"].toObject();
+  if (!latestInvoice.isEmpty()) {
+    QJsonArray lineItems = latestInvoice["line_items"].toArray();
+    if (!lineItems.isEmpty() && lineItems.size() >= 1) {
+      QJsonObject firstLine = lineItems.first().toObject();
+      if (!firstLine.isEmpty()) {
+        bestCurrency = firstLine["currency"].toString();
+      }
+    }
+  }
+  if (bestCurrency.isEmpty()) {
+    bestCurrency = planData["currency"].toString();
+    logger.warning() << "Using currency from plan data.";
+  }
+
   // We transform the currency code to uppercase in order to be compliant with
   // ISO 4216. FxA passes the lowercase currency code values without
   // transformation from Stripe.
-  m_planCurrency = planData["currency"].toString().toUpper();
+  m_planCurrency = bestCurrency.toUpper();
   if (m_planCurrency.isEmpty()) {
     return false;
   }
