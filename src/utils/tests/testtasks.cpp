@@ -127,15 +127,20 @@ void TestTasks::deletePolicy_async() {
 
   Task* t1 = new TaskAsync(Task::Deletable);
   TaskScheduler::scheduleTask(t1);
+  QCOMPARE(TaskScheduler::runningTask(), t1);
 
   Task* t2 = new TaskAsync(Task::NonDeletable);
   TaskScheduler::scheduleTask(t2);
+  QCOMPARE(TaskScheduler::runningTask(), t1);
 
   QEventLoop loop;
   connect(t2, &Task::completed, [&]() { loop.exit(); });
 
   TaskScheduler::deleteTasks();
+  QCOMPARE(TaskScheduler::runningTask(), t2);
   loop.exec();
+
+  QCOMPARE(TaskScheduler::runningTask(), nullptr);
 }
 
 void TestTasks::deleteTasks() {
@@ -167,11 +172,14 @@ void TestTasks::deleteTasks() {
 
   Task* t1 = new TaskAsync(Task::Deletable, &sequence, "t1");
   TaskScheduler::scheduleTask(t1);
+  QCOMPARE(TaskScheduler::runningTask(), t1);
 
   Task* t2 = new TaskAsync(Task::NonDeletable, &sequence, "t2");
   TaskScheduler::scheduleTask(t2);
+  QCOMPARE(TaskScheduler::runningTask(), t1);
 
   TaskScheduler::deleteTasks();
+  QCOMPARE(TaskScheduler::runningTask(), t2);
 
   Task* t3 = new TaskAsync(Task::NonDeletable, &sequence, "t3");
 
@@ -181,6 +189,7 @@ void TestTasks::deleteTasks() {
   TaskScheduler::scheduleTask(t3);
   loop.exec();
 
+  QCOMPARE(TaskScheduler::runningTask(), nullptr);
   QCOMPARE(sequence.length(), 2);
   QCOMPARE(sequence.at(0), "t2");
   QCOMPARE(sequence.at(1), "t3");
@@ -215,19 +224,24 @@ void TestTasks::forceDeleteTasks() {
 
   Task* t1 = new TaskAsync(Task::Deletable, &sequence, "t1");
   TaskScheduler::scheduleTask(t1);
+  QCOMPARE(TaskScheduler::runningTask(), t1);
 
   Task* t2 = new TaskAsync(Task::NonDeletable, &sequence, "t2");
   TaskScheduler::scheduleTask(t2);
+  QCOMPARE(TaskScheduler::runningTask(), t1);
 
   TaskScheduler::forceDeleteTasks();
+  QCOMPARE(TaskScheduler::runningTask(), nullptr);
 
   Task* t3 = new TaskAsync(Task::NonDeletable, &sequence, "t3");
 
   QEventLoop loop;
   connect(t3, &Task::completed, [&]() { loop.exit(); });
   TaskScheduler::scheduleTask(t3);
+  QCOMPARE(TaskScheduler::runningTask(), t3);
   loop.exec();
 
+  QCOMPARE(TaskScheduler::runningTask(), nullptr);
   QCOMPARE(sequence.length(), 1);
   QCOMPARE(sequence.at(0), "t3");
 }
