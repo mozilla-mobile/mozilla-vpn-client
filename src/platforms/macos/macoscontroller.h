@@ -49,6 +49,7 @@ class MacOSController final : public ControllerImpl {
 
   QTimer m_registerTimer;
   QTimer m_connectTimer;
+  int m_connectAttempt = 0;
   bool m_permissionRequired = false;
 
   // NSXPCConnection to the daemon.
