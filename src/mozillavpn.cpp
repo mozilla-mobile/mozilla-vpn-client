@@ -2365,7 +2365,11 @@ void MozillaVPN::handleDeepLink(const QUrl& url) {
   if (url.authority() == "nav") {
     Navigator::instance()->requestDeepLink(url);
   } else if (url.authority() == "login") {
-    // TODO: If a TaskAuthenticate is running, send it the deep link.
+    // If TaskAuthenticate is running, send it the deep link.
+    auto task = qobject_cast<TaskAuthenticate*>(TaskScheduler::runningTask());
+    if (task) {
+      task->handleDeepLink(url);
+    }
   } else {
     logger.info() << "Unknown deep link target:" << url.authority();
   }

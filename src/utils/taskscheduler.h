@@ -26,6 +26,8 @@ class TaskScheduler final : public QObject {
   // that the current tasks do not conflict with this one.
   static void scheduleTaskNow(Task* task);
 
+  static Task* runningTask();
+
  protected:
   static void pause();
   static void resume();
