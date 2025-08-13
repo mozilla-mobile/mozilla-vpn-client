@@ -419,12 +419,12 @@ int CommandUI::run(QStringList& tokens) {
     } else {
       vpn.handleDeepLink(url);
     }
-    // Whenever the Client is re-opened with a new url
-    // pass that to the navigator
-    connect(AndroidVPNActivity::instance(), &AndroidVPNActivity::onOpenedWithUrl,
-            &vpn, &MozillaVPN::handleDeepLink);
+    // Whenever the client is re-opened with a new url pass it to the handler.
+    connect(AndroidVPNActivity::instance(),
+            &AndroidVPNActivity::onOpenedWithUrl, &vpn,
+            &MozillaVPN::handleDeepLink);
 #else
-    // If there happen to be navigation URLs, send them to the navigator class.
+    // If there happen to be navigation URLs, handle them.
     for (const QString& value : tokens) {
       QUrl url(value);
       if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {

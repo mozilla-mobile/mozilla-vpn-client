@@ -38,7 +38,7 @@ class TaskAuthenticate final : public Task {
   AuthenticationListener* m_authenticationListener = nullptr;
   AuthenticationListener::AuthenticationType m_authenticationType =
       AuthenticationListener::AuthenticationInBrowser;
-  
+
   QByteArray m_pkceCodeVerifier;
   QUuid m_metricUuid = QUuid::createUuid();
 };
