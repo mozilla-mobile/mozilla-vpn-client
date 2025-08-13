@@ -36,10 +36,18 @@ describe('User authentication in browser', function() {
 
   it('Completes authentication', async () => {
     await vpn.waitForInitialView();
+    await vpn.skipOnboarding();
     await vpn.authenticateInBrowser(this.ctx.wasm);
   });
 
+  it('Completes authentication via deep link', async () => {
+    await vpn.waitForInitialView();
+    await vpn.skipOnboarding();
+    await vpn.authenticateInBrowser(this.ctx.wasm, true);
+  });
+
   it('Completes authentication after logout', async () => {
+    await vpn.skipOnboarding();
     await vpn.authenticateInBrowser(this.ctx.wasm);
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
@@ -58,6 +66,7 @@ describe('User authentication in browser', function() {
     await vpn.waitForQueryAndClick(
         queries.screenSettings.subscriptionView.SIGN_OUT.visible());
     await vpn.waitForInitialView();
+    await vpn.skipOnboarding();
 
     await vpn.authenticateInBrowser(this.ctx.wasm);
   });

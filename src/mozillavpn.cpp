@@ -2186,6 +2186,14 @@ void MozillaVPN::registerInspectorCommands() {
         return QJsonObject();
       });
 #endif
+
+  InspectorHandler::registerCommand(
+      "deeplink", "Send a deep link to the VPN client", 1,
+      [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        QUrl url = QUrl(QString::fromUtf8(arguments[1]));
+        MozillaVPN::instance()->handleDeepLink(url);
+        return QJsonObject();
+      });
 }
 
 // static
