@@ -135,7 +135,8 @@ void XdgNotificationHandler::notifyFinished(const QDBusMessage& msg) {
   }
 }
 
-void XdgNotificationHandler::actionInvoked(const QString& id, const QString& action,
+void XdgNotificationHandler::actionInvoked(const QString& id,
+                                           const QString& action,
                                            const QVariantMap& params) {
   logger.debug() << "ActionInvoked:" << id << action;
   if (id.startsWith(Constants::LINUX_APP_ID) && (action == ACTION_ID)) {

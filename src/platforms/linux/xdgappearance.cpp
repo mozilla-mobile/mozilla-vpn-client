@@ -35,7 +35,8 @@ uint XdgAppearance::readValueUint(const QString& name) {
   QList<QVariant> args;
   args.append(QVariant(XDG_NAMESPACE_APPEARANCE));
   args.append(QVariant(name));
-  QDBusReply<QDBusVariant> reply = callWithArgumentList(QDBus::Block, "Read", args);
+  QDBusReply<QDBusVariant> reply =
+      callWithArgumentList(QDBus::Block, "Read", args);
   if (!reply.isValid()) {
     logger.error() << "Failed to read" << name << reply.error().message();
     return 0;
