@@ -78,13 +78,17 @@ void XdgNotificationHandler::initialize() {
 
 void XdgNotificationHandler::notify(Message type, const QString& title,
                                     const QString& message, int timerMsec) {
+  Q_UNUSED(timerMsec);
+
   QVariantMap notify;
   QVariantMap button;
-
-  notify.insert("title", title);
-  notify.insert("body", message);
-
+  QStringList hint("show-as-new");
   switch (type) {
+    case None:
+      // Treat most connection/disconnection messages as transient.
+      hint.append("transient");
+      break;
+
     case UnsecuredNetwork:
       button.insert("action", ACTION_ID);
       button.insert("label", qtTrId("vpn.toggle.on"));
@@ -107,15 +111,20 @@ void XdgNotificationHandler::notify(Message type, const QString& title,
   if (!button.isEmpty()) {
     notify.insert("buttons", QVariant::fromValue(XdgButtonList(button)));
   }
+  notify.insert("title", title);
+  notify.insert("body", message);
+  notify.insert("display-hint", hint);
 
   m_lastTitle = title;
   m_lastBody = message;
   m_lastMessage = type;
 
+  QString id = Constants::LINUX_APP_ID;
+  id.append(QString(".notify-%1").arg(type));
+
   // Request the notification to be displayed
-  QList<QVariant> args({Constants::LINUX_APP_ID, notify});
-  m_portal->callWithCallback("AddNotification", args, this,
-                             SLOT(notifyFinished(QDBusMessage)));
+  m_portal->callWithCallback("AddNotification", QList<QVariant>({id, notify}),
+                             this, SLOT(notifyFinished(QDBusMessage)));
 }
 
 void XdgNotificationHandler::notifyFinished(const QDBusMessage& msg) {
@@ -129,7 +138,7 @@ void XdgNotificationHandler::notifyFinished(const QDBusMessage& msg) {
 void XdgNotificationHandler::actionInvoked(const QString& id, const QString& action,
                                            const QVariantMap& params) {
   logger.debug() << "ActionInvoked:" << id << action;
-  if ((id == Constants::LINUX_APP_ID) && (action == ACTION_ID)) {
+  if (id.startsWith(Constants::LINUX_APP_ID) && (action == ACTION_ID)) {
     messageClickHandle();
   }
 }
