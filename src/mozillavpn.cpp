@@ -82,6 +82,7 @@
 #endif
 
 #ifdef MZ_MACOS
+#  include <QEvent>
 #  include <QFileOpenEvent>
 
 #  include "platforms/macos/macosutils.h"
@@ -94,7 +95,6 @@
 #include <QApplication>
 #include <QBuffer>
 #include <QDir>
-#include <QEvent>
 #include <QFileInfo>
 #include <QGuiApplication>
 #include <QIcon>
