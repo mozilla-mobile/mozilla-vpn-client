@@ -5,7 +5,7 @@
 #ifndef XDGPORTAL_H
 #define XDGPORTAL_H
 
-#include <QDBusInterface>
+#include <QDBusAbstractInterface>
 #include <QObject>
 
 constexpr const char* XDG_PORTAL_SERVICE = "org.freedesktop.portal.Desktop";
@@ -24,33 +24,30 @@ constexpr const char* XDG_PORTAL_SETTINGS = "org.freedesktop.portal.Settings";
 //
 // See https://flatpak.github.io/xdg-desktop-portal/docs/ for more information.
 //
-class XdgPortal : public QObject {
+class XdgPortal : public QDBusAbstractInterface {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(XdgPortal)
 
  public:
-  explicit XdgPortal(const QString& interface, QObject* parent = nullptr);
+  explicit XdgPortal(const char* interface, QObject* parent = nullptr);
   ~XdgPortal();
 
-  const QString& token() const { return m_token; }
+  uint xdgVersion() const;
+  const QString& xdgToken() const { return m_token; }
   const QString& replyPath() const { return m_replyPath; }
   void setReplyPath(const QString& path);
-  uint getVersion();
   static void setupAppScope(const QString& appid);
 
  signals:
   void xdgResponse(uint, QVariantMap);
 
- private slots:
-  void handleDbusResponse(uint, QVariantMap);
-
  protected:
+  QVariant xdgProperty(const QString& name) const;
   QString parentWindow();
+  void logResponse(uint code, const QVariantMap& map);
 
   QString m_replyPath;
   QString m_token;
-
-  QDBusInterface m_portal;
 };
 
 #endif  // XDGPORTAL_H

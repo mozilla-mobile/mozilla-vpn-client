@@ -19,8 +19,9 @@ XdgAppearance::XdgAppearance(QObject* parent)
     : XdgPortal(XDG_PORTAL_SETTINGS, parent) {
   MZ_COUNT_CTOR(XdgAppearance);
 
-  connect(&m_portal, SIGNAL(SettingChanged(QString, QString, QDBusVariant)),
-          this, SLOT(xdgSettingChanged(QString, QString, QDBusVariant)));
+  connection().connect(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, XDG_PORTAL_SETTINGS,
+                       "SettingChanged", this,
+                       SLOT(xdgSettingChanged(QString, QString, QDBusVariant)));
 }
 
 XdgAppearance::~XdgAppearance() { MZ_COUNT_DTOR(XdgAppearance); }
@@ -35,8 +36,7 @@ uint XdgAppearance::readValueUint(const QString& name) {
   QList<QVariant> args;
   args.append(QVariant(XDG_NAMESPACE_APPEARANCE));
   args.append(QVariant(name));
-  QDBusReply<QDBusVariant> reply =
-      m_portal.callWithArgumentList(QDBus::Block, "Read", args);
+  QDBusReply<QDBusVariant> reply = callWithArgumentList(QDBus::Block, "Read", args);
   if (!reply.isValid()) {
     logger.error() << "Failed to read" << name << reply.error().message();
     return 0;
