@@ -153,5 +153,7 @@ void MozillaVPN::gleanSetLogPings(bool flag) {}
 
 void MozillaVPN::statusBarCheck() {}
 
+void MozillaVPN::handleDeepLink(const QUrl& url) {}
+
 // static
 QString MozillaVPN::appVersionForUpdate() { return "42"; }
