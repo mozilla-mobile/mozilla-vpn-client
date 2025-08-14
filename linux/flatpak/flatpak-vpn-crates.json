@@ -2368,14 +2368,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/sysinfo/sysinfo-0.36.1.crate",
-        "sha256": "252800745060e7b9ffb7b2badbd8b31cfa4aa2e61af879d0a3bf2a317c20217d",
-        "dest": "cargo/vendor/sysinfo-0.36.1"
+        "url": "https://static.crates.io/crates/sysinfo/sysinfo-0.37.0.crate",
+        "sha256": "07cec4dc2d2e357ca1e610cfb07de2fa7a10fc3e9fe89f72545f3d244ea87753",
+        "dest": "cargo/vendor/sysinfo-0.37.0"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"252800745060e7b9ffb7b2badbd8b31cfa4aa2e61af879d0a3bf2a317c20217d\", \"files\": {}}",
-        "dest": "cargo/vendor/sysinfo-0.36.1",
+        "contents": "{\"package\": \"07cec4dc2d2e357ca1e610cfb07de2fa7a10fc3e9fe89f72545f3d244ea87753\", \"files\": {}}",
+        "dest": "cargo/vendor/sysinfo-0.37.0",
         "dest-filename": ".cargo-checksum.json"
     },
     {
