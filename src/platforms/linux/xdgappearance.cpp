@@ -19,9 +19,8 @@ XdgAppearance::XdgAppearance(QObject* parent)
     : XdgPortal(XDG_PORTAL_SETTINGS, parent) {
   MZ_COUNT_CTOR(XdgAppearance);
 
-  connection().connect(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, XDG_PORTAL_SETTINGS,
-                       "SettingChanged", this,
-                       SLOT(xdgSettingChanged(QString, QString, QDBusVariant)));
+  xdgConnect("SettingChanged", this,
+             SLOT(xdgSettingChanged(QString, QString, QDBusVariant)));
 }
 
 XdgAppearance::~XdgAppearance() { MZ_COUNT_DTOR(XdgAppearance); }

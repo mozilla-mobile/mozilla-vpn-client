@@ -8,6 +8,7 @@
 #include <QDBusPendingReply>
 #include <QtDBus>
 
+#include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -71,16 +72,17 @@ void XdgNotificationHandler::initialize() {
   SystemTrayNotificationHandler::initialize();
 
   m_portal = new XdgPortal(XDG_PORTAL_NOTIFICATION, this);
+  m_portal->xdgConnect("ActionInvoked", this,
+                       SLOT(actionInvoked(QString, QString, QVariantMap)));
 }
 
 void XdgNotificationHandler::notify(Message type, const QString& title,
                                     const QString& message, int timerMsec) {
-  QVariantMap args;
+  QVariantMap notify;
   QVariantMap button;
 
-  args.insert("title", title);
-  args.insert("body", message);
-  // TODO: Icon - or do we get this for free via our application ID?
+  notify.insert("title", title);
+  notify.insert("body", message);
 
   switch (type) {
     case UnsecuredNetwork:
@@ -103,17 +105,31 @@ void XdgNotificationHandler::notify(Message type, const QString& title,
       break;
   }
   if (!button.isEmpty()) {
-    args.insert("buttons", QVariant::fromValue(XdgButtonList(button)));
+    notify.insert("buttons", QVariant::fromValue(XdgButtonList(button)));
   }
 
-  // Request the notification to be displayed
-  QDBusPendingReply<> reply = m_portal->asyncCall("AddNotification", "org.mozilla.vpn", args);
-  QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
-  QObject::connect(watcher, &QDBusPendingCallWatcher::finished, this,
-                   [this, title, message] { emit notificationShown(title, message); });
-  QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
-                   &QObject::deleteLater);
-
+  m_lastTitle = title;
+  m_lastBody = message;
   m_lastMessage = type;
+
+  // Request the notification to be displayed
+  QList<QVariant> args({Constants::LINUX_APP_ID, notify});
+  m_portal->callWithCallback("AddNotification", args, this,
+                             SLOT(notifyFinished(QDBusMessage)));
 }
 
+void XdgNotificationHandler::notifyFinished(const QDBusMessage& msg) {
+  if (msg.type() != QDBusMessage::ReplyMessage) {
+    logger.warning() << "notification error:" << msg.errorMessage();
+  } else {
+    emit notificationShown(m_lastTitle, m_lastBody);
+  }
+}
+
+void XdgNotificationHandler::actionInvoked(const QString& id, const QString& action,
+                                           const QVariantMap& params) {
+  logger.debug() << "ActionInvoked:" << id << action;
+  if ((id == Constants::LINUX_APP_ID) && (action == ACTION_ID)) {
+    messageClickHandle();
+  }
+}

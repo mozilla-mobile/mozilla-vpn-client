@@ -38,6 +38,13 @@ class XdgPortal : public QDBusAbstractInterface {
   void setReplyPath(const QString& path);
   static void setupAppScope(const QString& appid);
 
+  // Convenience wrapper for QDBusConnection::connect()
+  template <typename... T>
+  bool xdgConnect(const QString& name, T... args) {
+    return connection().connect(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH,
+                                interface(), name, args...);
+  }
+
  signals:
   void xdgResponse(uint, QVariantMap);
 

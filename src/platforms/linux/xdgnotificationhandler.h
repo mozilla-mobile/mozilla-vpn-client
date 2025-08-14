@@ -23,7 +23,14 @@ class XdgNotificationHandler final : public SystemTrayNotificationHandler {
   void notify(Message type, const QString& title, const QString& message,
               int timerMsec) override;
 
+ private slots:
+  void notifyFinished(const QDBusMessage& msg);
+  void actionInvoked(const QString& id, const QString& action,
+                     const QVariantMap& params);
+
  private:
+  QString m_lastTitle;
+  QString m_lastBody;
   XdgPortal* m_portal = nullptr;
 };
 
