@@ -126,6 +126,12 @@ void MozillaVPN::gleanSetLogPings(bool flag) {}
 
 void MozillaVPN::statusBarCheck() {}
 
+#ifdef MZ_MACOS
+bool MozillaVPN::eventFilter(QObject* obj, QEvent* event) {
+  return QObject::eventFilter(obj, event);
+}
+#endif
+
 void MozillaVPN::handleDeepLink(const QUrl& url) {}
 
 // static
