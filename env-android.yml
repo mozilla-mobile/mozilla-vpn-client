@@ -1,4 +1,4 @@
-name: vpn
+name: vpn-android
 channels:
   - conda-forge
 dependencies:
