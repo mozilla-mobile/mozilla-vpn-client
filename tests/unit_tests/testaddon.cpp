@@ -162,7 +162,7 @@ void TestAddon::conditions_data() {
   QVersionNumber version =
       QVersionNumber::fromString(QCoreApplication::applicationVersion());
   int verMajor = version.majorVersion();
-   // These tests assume a non-zero minor version, so let's be sure that's true.
+  // These tests assume a non-zero minor version, so let's be sure that's true.
   QVERIFY(version.minorVersion() > 0);
   {
     QJsonObject obj;
@@ -190,7 +190,7 @@ void TestAddon::conditions_data() {
   }
   {
     QJsonObject obj;
-    obj["max_client_version"] =  QString("%1.0").arg(verMajor + 1);
+    obj["max_client_version"] = QString("%1.0").arg(verMajor + 1);
     QTest::addRow("max client version ok")
         << obj << true << "" << QVariant("woow");
   }
