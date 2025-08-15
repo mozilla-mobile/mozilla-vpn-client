@@ -11,6 +11,7 @@
 #  include "platforms/windows/windowsutils.h"
 #endif
 
+#include <QCoreApplication>
 #include <QObject>
 
 class Env final : public QObject {
@@ -42,7 +43,9 @@ class Env final : public QObject {
   ~Env() = default;
 
   static bool inProduction() { return Constants::inProduction(); }
-  static QString versionString() { return Constants::versionString(); }
+  static QString versionString() {
+    return QCoreApplication::applicationVersion();
+  }
   static QString buildNumber() { return Constants::buildNumber(); }
   static QString osVersion() {
 #ifdef MZ_WINDOWS

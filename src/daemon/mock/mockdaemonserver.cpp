@@ -11,6 +11,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "mockdaemon.h"
+#include "version.h"
 
 #ifndef Q_OS_WIN
 #  include "signalhandler.h"
@@ -34,7 +35,7 @@ int MockDaemonServer::run(QStringList& tokens) {
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   QCoreApplication::setApplicationName("Mozilla VPN Daemon");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion(APP_VERSION);
 
   if (tokens.length() > 1) {
     QList<CommandLineParser::Option*> options;

@@ -38,17 +38,6 @@ void Constants::setStaging() {
   Q_ASSERT(!s_stagingServerAddress.isEmpty());
 }
 
-void Constants::setVersionOverride(const QString& versionOverride) {
-  s_versionOverride = versionOverride;
-}
-
-QString Constants::versionString() {
-  if (!s_inProduction && !s_versionOverride.isEmpty()) {
-    return s_versionOverride;
-  }
-  return QStringLiteral(APP_VERSION);
-}
-
 QString Constants::buildNumber() { return QStringLiteral(BUILD_ID); }
 
 QString Constants::envOrDefault(const QString& name,

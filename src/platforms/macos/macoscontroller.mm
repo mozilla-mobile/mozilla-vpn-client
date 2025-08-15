@@ -4,6 +4,7 @@
 
 #include "macoscontroller.h"
 
+#include <QCoreApplication>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -77,9 +78,11 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
   // Get the daemon version and decide if an upgrade is needed.
   [remote getVersion:^(NSString* version){
     logger.debug() << "Initialize daemon version:" << version;
+    QVersionNumber clientVersion =
+        QVersionNumber::fromString(QCoreApplication::applicationVersion());
     QVersionNumber daemonVersion =
         QVersionNumber::fromString(QString::fromNSString(version));
-    if (daemonVersion < QVersionNumber::fromString(APP_VERSION)) {
+    if (daemonVersion < clientVersion) {
       QMetaObject::invokeMethod(this, &MacOSController::upgradeService);
     } else {
       QMetaObject::invokeMethod(this, &MacOSController::connectService);

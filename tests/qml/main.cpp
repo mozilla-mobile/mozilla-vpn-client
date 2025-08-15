@@ -21,7 +21,7 @@ App* App::instance() {
 int main(int argc, char* argv[]) {
   QCoreApplication::setApplicationName("Mozilla VPN QML Tests");
   QCoreApplication::setOrganizationName("Mozilla Testing");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion("1.2.3");
 
   // In order to be able to call our TestHelper constructor how we want,
   // we do not follow the exact instructions here
