@@ -18,8 +18,8 @@
 #include "daemon/daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "windowsdaemon.h"
 #include "version.h"
+#include "windowsdaemon.h"
 
 #define SERVICE_NAME (wchar_t*)L"Mozilla  VPN"
 
