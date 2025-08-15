@@ -163,7 +163,7 @@ void TestAddon::conditions_data() {
       QVersionNumber::fromString(QCoreApplication::applicationVersion());
   int verMajor = version.majorVersion();
    // These tests assume a non-zero minor version, so let's be sure that's true.
-  QVERIFY(version.majorVersion() > 0);
+  QVERIFY(version.minorVersion() > 0);
   {
     QJsonObject obj;
     obj["min_client_version"] = QString("%1.0").arg(verMajor);
