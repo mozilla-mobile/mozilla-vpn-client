@@ -10,7 +10,7 @@ unzip -o -qq -d "$env:MOZ_FETCHES_DIR" $QT_SRC_ARCHIVE
 
 ## Unpack and activate the conda environment.
 $CONDA_DIR = "$env:MOZ_FETCHES_DIR\conda-windows"
-if(Test-Path $CONDA_DIR){
+if (Test-Path $CONDA_DIR){
   ## Install MiniConda 
   New-Item -ItemType Directory -Force -Path "$env:TASK_WORKDIR/miniconda"
   $MINICONDA_DIR =resolve-path "$env:TASK_WORKDIR/miniconda"
@@ -24,6 +24,9 @@ if(Test-Path $CONDA_DIR){
 
   # Setup a VS dev shell environment
   . "$env:VCS_PATH/taskcluster/scripts/toolchain/enter_dev_shell.ps1"
+
+  # Set a default toolchain file.
+  $env:CMAKE_TOOLCHAIN_FILE = (resolve-path "$env:VCS_PATH/scripts/windows/conda-toolchain.cmake")
 } else {
   # Otherwise, enter the DEV Shell
   . "$env:MOZ_FETCHES_DIR/VisualStudio/enter_dev_shell.ps1"
