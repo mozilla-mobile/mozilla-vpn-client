@@ -82,6 +82,9 @@
 #endif
 
 #ifdef MZ_MACOS
+#  include <QEvent>
+#  include <QFileOpenEvent>
+
 #  include "platforms/macos/macosutils.h"
 #endif
 
@@ -130,6 +133,10 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
 
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+#ifdef MZ_MACOS
+  qApp->installEventFilter(this);
+#endif
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
@@ -236,6 +243,10 @@ MozillaVPN::~MozillaVPN() {
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
+
+#ifdef MZ_MACOS
+  qApp->removeEventFilter(this);
+#endif
 
   delete m_private;
 }
@@ -2177,6 +2188,14 @@ void MozillaVPN::registerInspectorCommands() {
         return QJsonObject();
       });
 #endif
+
+  InspectorHandler::registerCommand(
+      "deeplink", "Send a deep link to the VPN client", 1,
+      [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        QUrl url = QUrl(QString::fromUtf8(arguments[1]));
+        MozillaVPN::instance()->handleDeepLink(url);
+        return QJsonObject();
+      });
 }
 
 // static
@@ -2326,4 +2345,46 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   app.setWindowIcon(icon);
 
   return callback();
+}
+
+#ifdef MZ_MACOS
+bool MozillaVPN::eventFilter(QObject* obj, QEvent* event) {
+  if (event->type() != QEvent::FileOpen) {
+    return QObject::eventFilter(obj, event);
+  }
+
+  QFileOpenEvent* ev = static_cast<QFileOpenEvent*>(event);
+  QUrl url = ev->url();
+  if (url.scheme() != Constants::DEEP_LINK_SCHEME) {
+    return QObject::eventFilter(obj, event);
+  }
+
+  // The event has been handled.
+  handleDeepLink(url);
+  return false;
+}
+#endif
+
+void MozillaVPN::handleDeepLink(const QUrl& url) {
+  // We only accept the mozilla-vpn scheme.
+  if (url.scheme() != Constants::DEEP_LINK_SCHEME) {
+    return;
+  }
+
+  // The URL authority determines who handles this.
+  if (url.authority() == "nav") {
+    Navigator::instance()->requestDeepLink(url);
+  } else if (url.authority() == "login") {
+    // If TaskAuthenticate is running, send it the deep link.
+    auto task = qobject_cast<TaskAuthenticate*>(TaskScheduler::runningTask());
+    if (task) {
+      task->handleDeepLink(url);
+    }
+  } else {
+    logger.info() << "Unknown deep link target:" << url.authority();
+  }
+
+  // Show the window after handling a deep link.
+  QmlEngineHolder* engine = QmlEngineHolder::instance();
+  engine->showWindow();
 }

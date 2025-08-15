@@ -7,6 +7,7 @@ const {URL} = require('node:url');
 const http = require('http')
 const queries = require('./queries.js');
 const addonServer = require('./servers/addon.js');
+const setup = require('./setupVpn.js');
 
 let client;
 
@@ -422,47 +423,56 @@ module.exports = {
     return new Promise(resolve => setTimeout(resolve, waitTimeInMilliSecs));
   },
 
-  async mockInBrowserAuthentication() {
+  async mockInBrowserAuthentication(useDeepLink) {
     await this.waitForCondition(async () => {
       const url = await this.getLastUrl();
       return url.includes('/api/v2/vpn/login');
     });
     await this.wait();
 
-    // We don't really want to go through the authentication flow because we
-    // are mocking everything. So this next chunk of code manually
-    // makes a call to the DesktopAuthenticationListener to mock
-    // a successful authentication in browser.
-    const url = await this.getLastUrl();
-    const authListenerPort = (new URL(url)).searchParams.get('port');
-    const options = {
-      // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
-      // and hardcoded in guardian's vpnClientPixelImageAuthUrl
-      hostname: '127.0.0.1',
-      port: parseInt(authListenerPort, 10),
-      path: '/?code=the_code',
-      method: 'GET',
-    };
+    if (!useDeepLink) {
+      // We don't really want to go through the authentication flow because we
+      // are mocking everything. So this next chunk of code manually
+      // makes a call to the DesktopAuthenticationListener to mock
+      // a successful authentication in browser.
+      const url = await this.getLastUrl();
+      const authListenerPort = (new URL(url)).searchParams.get('port');
+      const options = {
+        // We hardcode 127.0.0.1 to match listening on QHostAddress:LocalHost
+        // and hardcoded in guardian's vpnClientPixelImageAuthUrl
+        hostname: '127.0.0.1',
+        port: parseInt(authListenerPort, 10),
+        path: '/?code=the_code',
+        method: 'GET',
+      };
 
-    await new Promise(resolve => {
-      const req = http.request(options, res => {});
-      req.on('close', resolve);
-      req.on('error', error => {
-        throw new Error(
-            `Unable to connect to complete the
-            auth. ${error.name}, ${error.message}, ${error.stack}`);
+      await new Promise(resolve => {
+        const req = http.request(options, res => {});
+        req.on('close', resolve);
+        req.on('error', error => {
+          throw new Error(
+              `Unable to connect to complete the
+              auth. ${error.name}, ${error.message}, ${error.stack}`);
+        });
+        req.end();
       });
-      req.end();
-    });
+    } else if (process.platform == 'linux') {
+      // On Windows and Linux, launching the client with the deep-link as an
+      // argument will pass it to the test process using the EventListener.
+      setup.startAndDetach(['ui', 'mozilla-vpn://login/success?code=the_code']);
+    } else {
+      // For other platforms, we need to do this as an inspector command.
+      const link = "mozilla-vpn://login/success?code=the_code";
+      const json = await this._writeCommand(`deeplink ${link}`);
+      assert(
+          !('type' in json) || (json.type === 'deeplink' && !('error' in json)),
+          `Command failed: ${json.error}`);
+    }
   },
 
   // TODO - The expected staging urls are hardcoded, we may want to
   // move these hardcoded urls out if testing in alternate environments.
-  async authenticateInBrowser(wasm, skipOnboarding = true) {
-    if (skipOnboarding) {
-      await this.skipOnboarding();
-    }
-
+  async authenticateInBrowser(wasm, useDeepLink = false) {
     if (await this.isFeatureEnabled('inAppAuthentication')) {
       await this.flipFeatureOff('inAppAuthentication');
     }
@@ -476,7 +486,7 @@ module.exports = {
     await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
     if (!wasm) {
-      await this.mockInBrowserAuthentication();
+      await this.mockInBrowserAuthentication(useDeepLink);
     }
 
     // Wait for VPN client screen to move from spinning wheel to next screen

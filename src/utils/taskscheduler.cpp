@@ -54,6 +54,9 @@ void TaskScheduler::resume() {
 }
 
 // static
+Task* TaskScheduler::runningTask() { return taskScheduler->m_running_task; }
+
+// static
 QList<Task*>& TaskScheduler::tasks() { return taskScheduler->m_tasks; }
 
 TaskScheduler::TaskScheduler(QObject* parent) : QObject(parent) {

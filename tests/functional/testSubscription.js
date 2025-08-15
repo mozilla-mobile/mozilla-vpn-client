@@ -408,7 +408,7 @@ describe('Subscription view', function() {
     };
     await vpn.waitForQueryAndClick(
         queries.screenSettings.REAUTH_BUTTON.visible());
-    await vpn.mockInBrowserAuthentication();
+    await vpn.mockInBrowserAuthentication(true);
 
     await vpn.waitForQuery(
         queries.screenSettings.subscriptionView.SCREEN.visible());

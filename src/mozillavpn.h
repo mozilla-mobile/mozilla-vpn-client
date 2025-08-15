@@ -34,6 +34,8 @@ class SubscriptionData;
 class SupportCategoryModel;
 class Telemetry;
 class User;
+class QEvent;
+class QUrl;
 
 class MozillaVPN final : public App {
   Q_OBJECT
@@ -194,6 +196,13 @@ class MozillaVPN final : public App {
 
   static int runCommandLineApp(std::function<int()>&& a_callback);
   static int runGuiApp(std::function<int()>&& a_callback);
+
+  void handleDeepLink(const QUrl& url);
+
+ protected:
+#if MZ_MACOS
+  bool eventFilter(QObject* obj, QEvent* event);
+#endif
 
  private:
   void hardReset();

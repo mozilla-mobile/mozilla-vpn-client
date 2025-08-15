@@ -2,7 +2,5 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-target_sources(shared-sources INTERFACE
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosauthenticationlistener.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosauthenticationlistener.h
-)
+# Intentionally empty file. There are no macOS specific sources to include
+# here, but a sources.cmake file is required for every platform.

@@ -35,11 +35,9 @@ void TaskAuthenticate::run() {
 
   Q_ASSERT(!m_authenticationListener);
 
-  QByteArray pkceCodeVerifier;
-  QByteArray pkceCodeChallenge;
-  AuthenticationListener::generatePkceCodes(pkceCodeVerifier,
-                                            pkceCodeChallenge);
-  Q_ASSERT(!pkceCodeVerifier.isEmpty() && !pkceCodeChallenge.isEmpty());
+  QByteArray challenge;
+  AuthenticationListener::generatePkceCodes(m_pkceCodeVerifier, challenge);
+  Q_ASSERT(!m_pkceCodeVerifier.isEmpty() && !challenge.isEmpty());
 
   m_authenticationListener =
       AuthenticationListener::create(this, m_authenticationType);
@@ -48,31 +46,7 @@ void TaskAuthenticate::run() {
           this, &Task::completed);
 
   connect(m_authenticationListener, &AuthenticationListener::completed, this,
-          [this, pkceCodeVerifier](const QString& pkceCodeSuccess) {
-            logger.debug() << "Authentication completed with code:"
-                           << logger.sensitive(pkceCodeSuccess);
-
-            NetworkRequest* request = new NetworkRequest(this, 200);
-            request->post(
-                AuthenticationListener::createLoginVerifyUrl(),
-                QJsonObject{{"code", pkceCodeSuccess},
-                            {"code_verifier", QString(pkceCodeVerifier)}});
-
-            connect(
-                request, &NetworkRequest::requestFailed, this,
-                [this](QNetworkReply::NetworkError error, const QByteArray&) {
-                  logger.error()
-                      << "Failed to complete the authentication" << error;
-                  REPORTNETWORKERROR(error, ErrorHandler::PropagateError,
-                                     name());
-                });
-
-            connect(request, &NetworkRequest::requestCompleted, this,
-                    [this](const QByteArray& data) {
-                      logger.debug() << "Authentication completed";
-                      authenticationCompletedInternal(data);
-                    });
-          });
+          &TaskAuthenticate::authenticatePkceSuccess);
 
   connect(m_authenticationListener, &AuthenticationListener::failed, this,
           [this](ErrorHandler::ErrorType error) {
@@ -87,9 +61,28 @@ void TaskAuthenticate::run() {
           });
 
   m_metricUuid = QUuid::createUuid();
-  m_authenticationListener->start(this, pkceCodeChallenge,
-                                  CODE_CHALLENGE_METHOD,
+  m_authenticationListener->start(this, challenge, CODE_CHALLENGE_METHOD,
                                   SettingsHolder::instance()->userEmail());
+}
+
+void TaskAuthenticate::authenticatePkceSuccess(const QString& code) {
+  logger.debug() << "Authentication completed with code:"
+                 << logger.sensitive(code);
+
+  NetworkRequest* request = new NetworkRequest(this, 200);
+  QJsonObject payload;
+  payload.insert("code", code);
+  payload.insert("code_verifier", QString(m_pkceCodeVerifier));
+  request->post(AuthenticationListener::createLoginVerifyUrl(), payload);
+
+  connect(request, &NetworkRequest::requestFailed, this,
+          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+            logger.error() << "Failed to complete the authentication" << error;
+            REPORTNETWORKERROR(error, ErrorHandler::PropagateError, name());
+          });
+
+  connect(request, &NetworkRequest::requestCompleted, this,
+          &TaskAuthenticate::authenticationCompletedInternal);
 }
 
 void TaskAuthenticate::authenticationCompletedInternal(const QByteArray& data) {
@@ -125,4 +118,24 @@ void TaskAuthenticate::authenticationCompletedInternal(const QByteArray& data) {
                                tokenValue.toString());
 
   m_authenticationListener->aboutToFinish();
+}
+
+void TaskAuthenticate::handleDeepLink(const QUrl& url) {
+  if ((url.scheme() != Constants::DEEP_LINK_SCHEME) ||
+      (url.authority() != "login")) {
+    return;
+  }
+
+  if (url.path() != "/success") {
+    logger.warning() << "Received unexpected auth endpoint:" << url.path();
+    return;
+  }
+
+  QUrlQuery query(url.query());
+  if (!query.hasQueryItem("code")) {
+    logger.warning() << "Received OAuth success, but no code was found";
+    return;
+  }
+
+  authenticatePkceSuccess(query.queryItemValue("code"));
 }
