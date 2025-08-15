@@ -61,11 +61,11 @@ int main(int argc, char* argv[]) {
   TestPasswordValidation tpv(nonce);
   failures += QTest::qExec(&tpv);
 
-  TestSignUpAndIn tsuTotp(nonce, "vpn.auth.test.", true /* totp creation */);
-  failures += QTest::qExec(&tsuTotp);
-
   TestSignUpAndIn tsu(nonce, "vpn.auth.test.");
   failures += QTest::qExec(&tsu);
+
+  TestSignUpAndIn tsuTotp(nonce, "vpn.auth.test.totp.", true /* totp creation */);
+  failures += QTest::qExec(&tsuTotp);
 
   TestSignUpAndIn tsuBlocked(nonce, "block.vpn.auth.test.");
   failures += QTest::qExec(&tsuBlocked);
