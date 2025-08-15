@@ -59,5 +59,5 @@ QString Updater::appVersion() {
   if (!Constants::inProduction()) {
     return MozillaVPN::appVersionForUpdate();
   }
-  return Constants::versionString();
+  return QCoreApplication::applicationVersion();
 }

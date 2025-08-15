@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 
   QCoreApplication::setApplicationName("Mozilla VPN Auth Tests");
   QCoreApplication::setOrganizationName("Mozilla Testing");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion("1.2.3");
 
   SettingsHolder settingsHolder;
   Constants::setStaging();
