@@ -64,7 +64,7 @@ int main(int argc, char* argv[]) {
   TestSignUpAndIn tsu(nonce, "vpn.auth.test.");
   failures += QTest::qExec(&tsu);
 
-  TestSignUpAndIn tsuTotp(nonce, "vpn.auth.test.totp.", true /* totp creation */);
+  TestSignUpAndIn tsuTotp(nonce, "vpn.auth.test.totp.", true);
   failures += QTest::qExec(&tsuTotp);
 
   TestSignUpAndIn tsuBlocked(nonce, "block.vpn.auth.test.");

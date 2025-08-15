@@ -768,7 +768,7 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
 
   int errorCode = obj["errno"].toInt();
 
-  // For case 107: Invalid parameter in request body, convert it into a better code.
+  // For case 107: Invalid parameter in request body, map it to a better error.
   if (errorCode == 107) {
     QJsonObject objValidation = obj["validation"].toObject();
     const QJsonArray keyArray = objValidation["keys"].toArray();
@@ -780,7 +780,7 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
     }
 
     if (keys.contains("unblockCode")) {
-      errorCode = 127; // Invalid unblock code
+      errorCode = 127;  // Invalid unblock code
     } else if (keys.contains("email")) {
       // We don't really know why email validation failed, so
       // let's just handle this one here.
@@ -790,7 +790,7 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
           this, AuthenticationInApp::ErrorInvalidEmailAddress);
       return;
     } else if (keys.contains("code")) {
-      errorCode = 152; // Invalid token confirmation code
+      errorCode = 152;  // Invalid token confirmation code
     }
   }
 
@@ -872,8 +872,8 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
       if (aia->state() == AuthenticationInApp::StateVerifyingSessionTotpCode) {
         aia->requestState(
             AuthenticationInApp::StateVerificationSessionByTotpNeeded, this);
-        aia->requestErrorPropagation(
-            this, AuthenticationInApp::ErrorInvalidTotpCode);
+        aia->requestErrorPropagation(this,
+                                     AuthenticationInApp::ErrorInvalidTotpCode);
       } else {
         aia->requestState(
             AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
@@ -903,7 +903,7 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
       [[fallthrough]];
     case 106:  // Invalid JSON in request body
       [[fallthrough]];
-    case 107:   // Invalid parameter in request body
+    case 107:  // Invalid parameter in request body
       [[fallthrough]];
     case 108:  // Missing parameter in request body
       [[fallthrough]];
