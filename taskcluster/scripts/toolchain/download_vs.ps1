@@ -1,0 +1,32 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+if (Test-Path Env:TASK_WORKDIR) {
+    Set-Location "$env:TASK_WORKDIR"
+} else {
+    $env:TASK_WORKDIR = Get-Location
+}
+Get-ChildItem env:
+
+# Fetch vsdownload.py from the msvc-wine repository.
+$MSVC_WIN_COMMIT = "cb78cc0bc91a9e3da69989b76b99d6f44a7d1a69"
+$VSDOWNLOAD_URL = "https://github.com/mstorsjo/msvc-wine/raw/$MSVC_WIN_COMMIT/vsdownload.py"
+Invoke-WebRequest -Uri $VSDOWNLOAD_URL -OutFile "$env:TASK_WORKDIR\vsdownload.py"
+
+$VS_MAJOR_VERSION = 17
+
+# Download the Visual Studio SDK
+New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/vs2022" -Force
+Copy-Item -Path "$PSScriptRoot\enter_dev_shell.ps1" -Destination "$env:TASK_WORKDIR/vs2022"
+python $env:TASK_WORKDIR\vsdownload.py `
+    --accept-license `
+    --skip-recommended `
+    --major $VS_MAJOR_VERSION `
+    --dest "$env:TASK_WORKDIR/vs2022"
+
+# Compress the Visual Studio SDK
+New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/public/build" -Force
+Compress-Archive vs2022/ -DestinationPath "$env:TASK_WORKDIR/public/build/visual-studio-2022.zip"
+
+Write-Output "Build complete, archive created"
