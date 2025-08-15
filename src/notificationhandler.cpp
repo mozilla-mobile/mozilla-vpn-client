@@ -24,7 +24,7 @@
 #endif
 
 #if defined(MZ_LINUX)
-#  include "platforms/linux/linuxsystemtraynotificationhandler.h"
+#  include "platforms/linux/xdgnotificationhandler.h"
 #endif
 
 #if defined(MZ_MACOS)
@@ -60,9 +60,7 @@ NotificationHandler* NotificationHandler::createInternal(QObject* parent) {
 #endif
 
 #if defined(MZ_LINUX)
-  if (LinuxSystemTrayNotificationHandler::requiredCustomImpl()) {
-    return new LinuxSystemTrayNotificationHandler(parent);
-  }
+  return new XdgNotificationHandler(parent);
 #endif
 
 #if defined(MZ_MACOS)

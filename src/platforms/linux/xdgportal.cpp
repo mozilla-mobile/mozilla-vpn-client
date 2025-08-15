@@ -33,8 +33,9 @@ namespace {
 Logger logger("XdgPortal");
 }
 
-XdgPortal::XdgPortal(const QString& iface, QObject* parent)
-    : QObject(parent), m_portal(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, iface) {
+XdgPortal::XdgPortal(const char* interface, QObject* parent)
+    : QDBusAbstractInterface(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, interface,
+                             QDBusConnection::sessionBus(), parent) {
   MZ_COUNT_CTOR(XdgPortal);
 
   // Generate a unique token
@@ -48,12 +49,31 @@ XdgPortal::XdgPortal(const QString& iface, QObject* parent)
   QString sender = bus.baseService().mid(1).replace('.', '_');
   constexpr const char* path = "/org/freedesktop/portal/desktop/request/%1/%2";
   setReplyPath(QString(path).arg(sender).arg(m_token));
+
+#if MZ_DEBUG
+  connect(this, &XdgPortal::xdgResponse, this, &XdgPortal::logResponse);
+#endif
 }
 
 XdgPortal::~XdgPortal() { MZ_COUNT_DTOR(XdgPortal); }
 
-uint XdgPortal::getVersion() {
-  QVariant qv = m_portal.property("version");
+QVariant XdgPortal::xdgProperty(const QString& name) const {
+  QDBusMessage msg =
+      QDBusMessage::createMethodCall(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH,
+                                     "org.freedesktop.DBus.Properties", "Get");
+  msg << interface();
+  msg << name;
+
+  QDBusReply<QDBusVariant> reply = connection().call(msg);
+  if (!reply.isValid()) {
+    logger.debug() << "Read" << name << "failed:" << reply.error().message();
+    return QVariant();
+  }
+  return reply.value().variant();
+}
+
+uint XdgPortal::xdgVersion() const {
+  QVariant qv = xdgProperty("version");
   if (qv.typeId() == QMetaType::UInt) {
     return qv.toUInt();
   }
@@ -65,24 +85,22 @@ void XdgPortal::setReplyPath(const QString& path) {
     return;
   }
 
-  QDBusConnection bus = QDBusConnection::sessionBus();
+  QDBusConnection bus = connection();
   bus.disconnect(XDG_PORTAL_SERVICE, m_replyPath, XDG_PORTAL_REQUEST,
-                 "Response", this, SLOT(handleDbusResponse(uint, QVariantMap)));
+                 "Response", this, SIGNAL(xdgResponse(uint, QVariantMap)));
 
   m_replyPath = path;
   bus.connect(XDG_PORTAL_SERVICE, m_replyPath, XDG_PORTAL_REQUEST, "Response",
-              this, SLOT(handleDbusResponse(uint, QVariantMap)));
+              this, SIGNAL(xdgResponse(uint, QVariantMap)));
 }
 
-void XdgPortal::handleDbusResponse(uint response, QVariantMap results) {
-#ifdef MZ_DEBUG
-  logger.debug() << "Reply received:" << response;
+void XdgPortal::logResponse(uint code, const QVariantMap& results) {
+  const QString& name = metaObject()->className();
+  logger.debug() << name << "response:" << code;
   for (auto i = results.cbegin(); i != results.cend(); i++) {
-    logger.debug() << QString("%1:").arg(i.key()) << i.value().toString();
+    logger.debug() << name << QString("%1:").arg(i.key())
+                   << i.value().toString();
   }
-#endif
-
-  emit xdgResponse(response, results);
 }
 
 // Try to find the window identifier for an XDG desktop portal request.

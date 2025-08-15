@@ -36,14 +36,6 @@ XdgStartAtBootWatcher::~XdgStartAtBootWatcher() {
   MZ_COUNT_DTOR(XdgStartAtBootWatcher);
 }
 
-void XdgStartAtBootWatcher::xdgResponse(uint response, QVariantMap results) {
-  logger.debug() << "StartAtBoot responded:" << response;
-  for (auto i = results.cbegin(); i != results.cend(); i++) {
-    logger.debug() << "StartAtBoot" << QString("%1:").arg(i.key())
-                   << i.value().toString();
-  }
-}
-
 void XdgStartAtBootWatcher::startAtBootChanged() {
   bool startAtBoot = SettingsHolder::instance()->startAtBoot();
 
@@ -55,7 +47,7 @@ void XdgStartAtBootWatcher::startAtBootChanged() {
   options["autostart"] = QVariant(startAtBoot);
   options["background"] = QVariant(true);
   options["commandline"] = QVariant(cmdline);
-  options["handle_token"] = QVariant(token());
+  options["handle_token"] = QVariant(xdgToken());
 
   QDBusMessage call = QDBusMessage::createMethodCall(
       XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, XDG_PORTAL_BACKGROUND,

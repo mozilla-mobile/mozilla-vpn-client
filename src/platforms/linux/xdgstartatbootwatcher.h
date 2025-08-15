@@ -19,9 +19,6 @@ class XdgStartAtBootWatcher final : public XdgPortal {
   explicit XdgStartAtBootWatcher();
   ~XdgStartAtBootWatcher();
 
- private slots:
-  void xdgResponse(uint, QVariantMap);
-
  private:
   void startAtBootChanged();
   void callCompleted(QDBusPendingCallWatcher* call);

@@ -10,7 +10,9 @@
 #include "cryptosettings.h"
 #include "xdgportal.h"
 
-class XdgCryptoSettings : public CryptoSettings, public XdgPortal {
+class XdgCryptoSettings : public XdgPortal, public CryptoSettings {
+  Q_OBJECT
+
  public:
   XdgCryptoSettings();
   virtual ~XdgCryptoSettings() = default;
@@ -22,7 +24,7 @@ class XdgCryptoSettings : public CryptoSettings, public XdgPortal {
   CryptoSettings::Version getPreferredVersion() override { return m_version; };
 
  private slots:
-  void handleResponse(uint code, QVariantMap results);
+  void handleResponse(uint code, const QVariantMap& results);
 
  private:
   QDBusMessage xdgRetrieveSecret(int fd, const QVariantMap& options);
