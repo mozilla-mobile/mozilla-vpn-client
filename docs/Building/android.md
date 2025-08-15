@@ -8,7 +8,7 @@ this can break building for other platforms, it's advised to do those steps
 in a separate environment. 
 
 ```bash 
-$ conda env create -f env-android.yml -n vpn-android
+$ conda env create -f env-android.yml
 $ conda activate vpn-android
 ```
 

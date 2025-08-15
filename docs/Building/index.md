@@ -29,7 +29,7 @@ Please install [miniconda](https://docs.conda.io/en/latest/miniconda.html).
 
 Then run:
 * `conda env create -f env-windows.yml`
-* `conda activate vpn`
+* `conda activate vpn` (for Android, `conda activate vpn-android`)
 
 For windows, see [windows docs](./windows.md#conda)
 
@@ -99,7 +99,7 @@ It's easy for your local build to get messed up. When in doubt do a `git clean` 
 Running `git clean -xfdi .` from the root of the folder provides you an interactive space where you can review everything that's going to be deleted. You may want to exclude `.vscode` or `.env` that you've set-up just the way you like.
 
 ## did you activate your conda environment
-You'll need to run `conda activate vpn` every time you open a new terminal. If you forget and then run cmake the build can get confused / stuck. `git clean`, make sure conda environment is activated, try again.
+You'll need to run `conda activate vpn` (or `vpn-android` for Android) every time you open a new terminal. If you forget and then run cmake the build can get confused / stuck. `git clean`, make sure conda environment is activated, try again.
 
 ## ask for help
 We are on a mission to make building easy. If you've tried the above two steps, don't get stuck ask for help.
