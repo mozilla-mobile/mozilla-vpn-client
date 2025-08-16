@@ -131,15 +131,26 @@ constexpr uint32_t toCOLORREF(const char* color) {
 }  // namespace ColorUtils
 
 void WindowsUtils::updateTitleBarColor(QWindow* window, bool darkMode) {
+  auto const handle = (HWND)window->winId();
+  HRESULT res;
+
   // TODO: Fetch that from the theme data.
   const COLORREF defaultColor = darkMode ? ColorUtils::toCOLORREF("#42414d")
                                          : ColorUtils::toCOLORREF("#F9F9FA");
+  res = DwmSetWindowAttribute(handle, DWMWINDOWATTRIBUTE::DWMWA_CAPTION_COLOR,
+                              &defaultColor, sizeof(defaultColor));
+  if (SUCCEEDED(res)) {
+    return;
+  }
 
-  auto const windowHandle = (HWND)window->winId();
-  auto const ok = SUCCEEDED(DwmSetWindowAttribute(
-      windowHandle, DWMWINDOWATTRIBUTE::DWMWA_CAPTION_COLOR, &defaultColor,
-      sizeof(defaultColor)));
-  Q_ASSERT(ok);
+  // Otherwise, try to set immersive dark mode and hope for the best.
+  BOOL enable = darkMode;
+  DWORD attr = DWMWINDOWATTRIBUTE::DWMWA_USE_IMMERSIVE_DARK_MODE;
+  res = DwmSetWindowAttribute(handle, attr, &enable, sizeof(enable));
+  if (!SUCCEEDED(res)) {
+    // Prior to Windows 11, there was an undocumented attribute that might work.
+    DwmSetWindowAttribute(handle, 19, &enable, sizeof(enable));
+  }
 }
 
 /**
