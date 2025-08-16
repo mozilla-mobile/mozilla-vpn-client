@@ -21,5 +21,6 @@ windows-conda-pack:
             script: conda_pack_windows.ps1
             resources:
                 - scripts/windows/conda-setup-xwin-sdk.ps1
+                - scripts/windows/fetch-vsix-package.py
             toolchain-alias: conda-windows-x86_64
             toolchain-artifact: public/build/conda-windows.tar.xz

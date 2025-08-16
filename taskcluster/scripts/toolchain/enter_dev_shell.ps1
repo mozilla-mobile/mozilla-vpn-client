@@ -6,11 +6,16 @@
 # Is in the VS_bundle used by fetch/vs-dev-env. 
 # Elevates a powershell env to a vs-studio "dev-console" equivalent. 
 
-$VS_STUDIO_LOCATION =resolve-path $PSScriptRoot
-$W10_SDK_PATH =  resolve-path "$PSScriptRoot\SDK"
-$W10_SDK_VERSION = "10.0.19041.0"
-$MSVC_VERSION ="14.30.30705"
-
+# If this is a conda environment, and $env:CONDA_PREFIX\xwin exists, use it.
+if ((Test-Path Env:CONDA_PREFIX) -and (Test-Path "$env:CONDA_PREFIX\xwin")) {
+  $VS_STUDIO_LOCATION = resolve-path "$env:CONDA_PREFIX\xwin"
+  $W10_SDK_PATH = resolve-path "$env:CONDA_PREFIX\xwin\Windows Kits\10"
+} else {
+  $VS_STUDIO_LOCATION =resolve-path $PSScriptRoot
+  $W10_SDK_PATH =  resolve-path "$PSScriptRoot\SDK"
+}
+$W10_SDK_VERSION =(Get-ChildItem -Path "$W10_SDK_PATH\include" | Select-Object -First 1)
+$MSVC_VERSION =(Get-ChildItem -Path "$VS_STUDIO_LOCATION\VC\Tools\MSVC" | Select-Object -First 1)
 
 $INCLUDE_ADDS =   `
                   "$W10_SDK_PATH\include\$W10_SDK_VERSION\ucrt;",`
@@ -33,7 +38,7 @@ $LIB_ADDS = `
     "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\ATLMFC\lib\x64;" ,`
     "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\lib\x64;" ,`
     "$VS_STUDIO_LOCATION\DIA SDK\lib\amd64;"
-    
+
 $ENV:LIB =""
 ForEach-Object -InputObject $LIB_ADDS {
   $ENV:LIB +=$_
