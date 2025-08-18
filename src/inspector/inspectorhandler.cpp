@@ -663,7 +663,7 @@ static QList<InspectorCommand> s_commands{
     InspectorCommand{"set_version_override", "Override the version string", 1,
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QString versionOverride = QString(arguments[1]);
-                       Constants::setVersionOverride(versionOverride);
+                       QCoreApplication::setApplicationVersion(versionOverride);
                        return QJsonObject();
                      }},
 
