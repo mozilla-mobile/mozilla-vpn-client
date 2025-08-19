@@ -7,10 +7,14 @@
 # Elevates a powershell env to a vs-studio "dev-console" equivalent. 
 
 $VS_STUDIO_LOCATION =resolve-path $PSScriptRoot
-$W10_SDK_PATH =  resolve-path "$PSScriptRoot\SDK"
-$W10_SDK_VERSION = "10.0.19041.0"
-$MSVC_VERSION ="14.30.30705"
+$MSVC_VERSION =(Get-ChildItem -Path "$VS_STUDIO_LOCATION\VC\Tools\MSVC" | Select-Object -First 1)
 
+if (Test-Path "$PSScriptRoot\Windows Kits") {
+  $W10_SDK_PATH = resolve-path "$PSScriptRoot\Windows Kits\10"
+} else {
+  $W10_SDK_PATH = resolve-path "$PSScriptRoot\SDK"
+}
+$W10_SDK_VERSION =(Get-ChildItem -Path "$W10_SDK_PATH\include" | Select-Object -First 1)
 
 $INCLUDE_ADDS =   `
                   "$W10_SDK_PATH\include\$W10_SDK_VERSION\ucrt;",`
