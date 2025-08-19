@@ -6,6 +6,7 @@ if (Test-Path Env:TASK_WORKDIR) {
     Set-Location "$env:TASK_WORKDIR"
 } else {
     $env:TASK_WORKDIR = Get-Location
+    $env:VCS_PATH = Resolve-Path "$PSScriptRoot\..\..\.."
 }
 Get-ChildItem env:
 
@@ -16,8 +17,9 @@ Invoke-WebRequest -Uri $VSDOWNLOAD_URL -OutFile "$env:TASK_WORKDIR\vsdownload.py
 
 $MSVC_VERSION = "17.3"
 $VS_EXTRA_PACKAGES = @(
-    'Microsoft.VisualStudio.Component.VC.CMake.Project'
     'Microsoft.VisualStudio.Component.VC.Redist.MSM'
+    'Microsoft.VisualStudio.VC.CMake'
+    'Microsoft.VisualStudio.VC.CMake.Project'
 )
 
 # Download the Visual Studio SDK
@@ -27,8 +29,10 @@ python $env:TASK_WORKDIR\vsdownload.py `
     --accept-license `
     --skip-recommended `
     --msvc-version $MSVC_VERSION `
-    --dest "$env:TASK_WORKDIR\vs2022" `
-   $VS_EXTRA_PACKAGES
+    --dest "$env:TASK_WORKDIR\vs2022"
+
+# Download additional extensions
+python "$env:VCS_PATH\scripts\windows\fetch-vsix-package.py" --manifest-version 17 --output "$env:TASK_WORKDIR\vs2022" $VS_EXTRA_PACKAGES
 
 # Compress the Visual Studio SDK
 New-Item -ItemType Directory -Path "$env:TASK_WORKDIR\public\build" -Force

@@ -49,9 +49,9 @@ def unpack_vsix(fileobj, output):
         # Parse the manifest to see what to unpack.
         with zf.open("manifest.json", 'r') as fp:
             manifest = json.load(fp)
-        
-        # Unpack the desired files from the archive
-        for x in manifest["files"]:
+
+        # Unpack the desired files from the archive, if any.
+        for x in manifest.get("files", {}):
             # Select only the filenames in the Contents directory.
             filename = x["fileName"].lstrip('/')
             prefix, path = filename.split('/', maxsplit=1)
@@ -64,7 +64,7 @@ def unpack_vsix(fileobj, output):
 
             # Extract the file and generate its hash at the same time.
             h = hashlib.sha256()
-            with zf.open(filename, 'r') as infile:
+            with zf.open(filename.replace(' ', '%20'), 'r') as infile:
                 with open(dst, 'wb') as outfile:
                     while True:
                         data = infile.read(65536)
@@ -72,7 +72,7 @@ def unpack_vsix(fileobj, output):
                             break
                         h.update(data)
                         outfile.write(data)
-            
+
             # Validate the checksum
             sha256 = x["sha256"].lower()
             if h.hexdigest().lower() != sha256:
@@ -82,21 +82,22 @@ def download_and_extract(vsman, name, output, done):
     # Skip dependencies we have already downloaded.
     if name in done:
         return
-
-    if name not in vsman:
+    elif name not in vsman:
         raise LookupError(f'No package found for {name}')
+    else:
+        done.append(name)
 
     # Print out what we're about to download.
     pkg = vsman[name]
-    done.append(name)
+    pkgtype = pkg['type']
+    pretty = pkg["id"]
     if "localizedResources" in pkg:
-        print(f'Downloading: {pkg["localizedResources"][0]["title"]}')
-    else:
-        print(f'Downloading: {pkg["id"]}')
+        pretty = pkg["localizedResources"][0]["title"]
 
     # Download and extract the payloads.
-    if "payloads" in pkg:
-        for file in pkg["payloads"]:
+    if pkgtype in ("Vsix"):
+        print(f'Downloading: {pretty}')
+        for file in pkg.get("payloads", []):
             # Download the VSIX file
             with tempfile.TemporaryFile(suffix="-vsix.zip") as archive:
                 r = requests.get(file["url"], stream=True)
@@ -106,11 +107,20 @@ def download_and_extract(vsman, name, output, done):
                 archive.seek(0)
 
                 unpack_vsix(archive, output)
+    elif pkgtype in ("Component", "Group"):
+        print(f'Downloading {pkgtype}: {pretty}')
+    else:
+        print(f'Skipping {pkgtype}: {pretty}')
+        return
 
     # If there are dependencies, fetch them recursively.
     if "dependencies" in pkg:
         for dep in pkg["dependencies"].keys():
-            download_and_extract(vsman, dep, output, done)
+            v = pkg["dependencies"][dep]
+            if isinstance(v, dict):
+                download_and_extract(vsman, v.get('id', dep), output, done)
+            else:
+                download_and_extract(vsman, dep, output, done)
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Fetch and unpack Visual Studio Extensions')
