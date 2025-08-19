@@ -27,6 +27,7 @@ python $env:TASK_WORKDIR\vsdownload.py `
 
 # Compress the Visual Studio SDK
 New-Item -ItemType Directory -Path "$env:TASK_WORKDIR\public\build" -Force
-Compress-Archive -Path "$env:TASK_WORKDIR\vs2022" -DestinationPath "$env:TASK_WORKDIR\public\build\visual-studio-2022.zip"
+#Compress-Archive -Path "$env:TASK_WORKDIR\vs2022" -DestinationPath "$env:TASK_WORKDIR\public\build\visual-studio-2022.zip"
+zip -r -9 "$env:TASK_WORKDIR\public\build\visual-studio-2022.zip" vs2022
 
 Write-Output "Build complete, archive created"
