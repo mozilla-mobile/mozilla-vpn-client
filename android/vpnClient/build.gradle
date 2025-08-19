@@ -26,7 +26,7 @@ plugins {
 }
 
 android {
-    //namespace 'org.mozilla.firefox.vpn'
+    namespace 'org.mozilla.firefox.vpn.qt.Common'
     compileSdkVersion Config.compileSdkVersion
 
     defaultConfig {

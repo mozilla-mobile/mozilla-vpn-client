@@ -4,7 +4,7 @@ This Source Code Form is subject to the terms of the Mozilla Public
 License, v. 2.0. If a copy of the MPL was not distributed with this
 file, You can obtain one at http://mozilla.org/MPL/2.0/.
 -->
-<manifest package="org.mozilla.firefox.vpn" xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="-- %%INSERT_VERSION_NAME%% --" android:versionCode="-- %%INSERT_VERSION_CODE%% --" android:installLocation="auto">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" android:versionName="-- %%INSERT_VERSION_NAME%% --" android:versionCode="-- %%INSERT_VERSION_CODE%% --" android:installLocation="auto">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -25,7 +25,6 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
         android:allowBackup="false"
         android:name="org.mozilla.firefox.qt.common.CoreApplication"
         android:label="Mozilla VPN"
-        android:extractNativeLibs="true"
         android:theme="@style/AppTheme"
         android:icon="@mipmap/vpnicon"
         android:networkSecurityConfig="@xml/network_security_config">

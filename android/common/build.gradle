@@ -8,7 +8,7 @@ plugins {
 }
 
 android {
-    //namespace 'org.mozilla.firefox.vpn.common'
+  
     compileSdkVersion Config.compileSdkVersion
 
     defaultConfig {
@@ -19,6 +19,12 @@ android {
         buildConfigField  "String", "ADJUST_SDK_TOKEN" ,  '"' + (project.properties["adjusttoken"] ?: "no_token_found") +  '"'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+    }
+
+    namespace 'org.mozilla.firefox.vpn.qt.common' // should this be org.mozilla.firefox.qt.common (per old way)? didn't make a difference
+
+    buildFeatures {
+      buildConfig true
     }
 
     buildTypes {

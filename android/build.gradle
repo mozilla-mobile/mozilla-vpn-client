@@ -52,10 +52,17 @@ dependencies {
 android {
     ndkVersion Config.ndkVersion
     compileSdkVersion Config.compileSdkVersion
-    buildToolsVersion Config.buildToolsVersion
 
-    dexOptions {
-       javaMaxHeapSize "3g"
+    namespace 'org.mozilla.firefox.vpn'
+
+    // dexOptions {
+    //    javaMaxHeapSize "3g"
+    // }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
 
     sourceSets {
