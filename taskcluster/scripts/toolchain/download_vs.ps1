@@ -14,7 +14,7 @@ $MSVC_WIN_COMMIT = "cb78cc0bc91a9e3da69989b76b99d6f44a7d1a69"
 $VSDOWNLOAD_URL = "https://github.com/mstorsjo/msvc-wine/raw/$MSVC_WIN_COMMIT/vsdownload.py"
 Invoke-WebRequest -Uri $VSDOWNLOAD_URL -OutFile "$env:TASK_WORKDIR\vsdownload.py"
 
-$VS_MAJOR_VERSION = 17
+$MSVC_VERSION = "17.3"
 
 # Download the Visual Studio SDK
 New-Item -ItemType Directory -Path "$env:TASK_WORKDIR\vs2022" -Force
@@ -22,7 +22,7 @@ Copy-Item -Path "$PSScriptRoot\enter_dev_shell.ps1" -Destination "$env:TASK_WORK
 python $env:TASK_WORKDIR\vsdownload.py `
     --accept-license `
     --skip-recommended `
-    --major $VS_MAJOR_VERSION `
+    --msvc-version $MSVC_VERSION `
     --dest "$env:TASK_WORKDIR\vs2022"
 
 # Compress the Visual Studio SDK
