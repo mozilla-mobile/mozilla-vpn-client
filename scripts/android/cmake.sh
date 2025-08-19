@@ -40,7 +40,6 @@ helpFunction() {
   exit 0
 }
 print N "This script compiles MozillaVPN for Android"
-echo $QTPATH
 
 while [[ $# -gt 0 ]]; do
   key="$1"
@@ -76,6 +75,8 @@ while [[ $# -gt 0 ]]; do
     ;;
   esac
 done
+
+echo $QTPATH
 
 if ! [[ "$QTPATH" ]]; then
   helpFunction

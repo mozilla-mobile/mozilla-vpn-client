@@ -19,6 +19,7 @@ android {
             java.srcDirs = ['src']
         }
     }
+    namespace 'com.adjust'
 
     buildFeatures {
         buildConfig = true

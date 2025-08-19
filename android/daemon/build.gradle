@@ -40,6 +40,8 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    namespace 'org.mozilla.firefox.vpn.daemon'
+
     buildFeatures {
         buildConfig = true
     }

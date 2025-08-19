@@ -134,7 +134,7 @@ set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER "Autogen")
 set_property(GLOBAL PROPERTY AUTOMOC_TARGETS_FOLDER "Autogen")
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "Autogen")
 
-find_package(Qt6 COMPONENTS
+find_package(Qt6 6.9 COMPONENTS
     Core
     Gui
     Network
@@ -158,6 +158,10 @@ endif()
 
 if(QT_KNOWN_POLICY_QTP0001)
     qt_policy(SET QTP0001 NEW)
+endif()
+
+if(QT_KNOWN_POLICY_QTP0004)
+    qt_policy(SET QTP0004 OLD)
 endif()
 
 message("Using Qt version ${Qt6_VERSION}")
