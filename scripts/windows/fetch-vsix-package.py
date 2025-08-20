@@ -12,7 +12,7 @@ import argparse
 import hashlib
 import json
 import os
-import requests
+import urllib.request
 import shutil
 import sys
 import tempfile
@@ -24,24 +24,21 @@ def parse_vsman_packages(js):
 
 def download_pkg_manifest(url):
     # Download the top-level manifest.
-    top_req = requests.get(url)
-    if top_req.status_code != 200:
-        top_req.raise_for_status()
+    with urllib.request.urlopen(url) as channels:
+        channelItems = json.loads(channels.read())["channelItems"]
 
-    # Parse it for the Visual studio package manifest.
-    vsid = "Microsoft.VisualStudio.Manifests.VisualStudio"
-    for item in top_req.json()["channelItems"]:
-        if item["id"] != vsid:
-            continue
-        if len(item["payloads"]) != 1:
-            continue
+        # Parse it for the Visual studio package manifest.
+        vsid = "Microsoft.VisualStudio.Manifests.VisualStudio"
+        for item in channelItems:
+            if item["id"] != vsid:
+                continue
+            if len(item["payloads"]) != 1:
+                continue
 
-        vsman_req = requests.get(item["payloads"][0]["url"])
-        if vsman_req.status_code != 200:
-            vsman_req.raise_for_status()
-        return parse_vsman_packages(vsman_req.json())
+            with urllib.request.urlopen(item["payloads"][0]["url"]) as vsman:
+                return parse_vsman_packages(json.loads(vsman.read()))
 
-    raise LookupError(f"No manifest found for {vsid}")
+        raise LookupError(f"No manifest found for {vsid}")
 
 def unpack_vsix(fileobj, output):
     # Load the VSIX file, it's really just a ZIP archive.
@@ -98,15 +95,12 @@ def download_and_extract(vsman, name, output, done):
     if pkgtype in ("Vsix"):
         print(f'Downloading: {pretty}')
         for file in pkg.get("payloads", []):
-            # Download the VSIX file
+            # Download the VSIX file to disk so that it can be seekable.
             with tempfile.TemporaryFile(suffix="-vsix.zip") as archive:
-                r = requests.get(file["url"], stream=True)
-                if r.status_code != 200:
-                    r.raise_for_status()
-                shutil.copyfileobj(r.raw, archive)
-                archive.seek(0)
-
-                unpack_vsix(archive, output)
+                with urllib.request.urlopen(file["url"]) as r:
+                    shutil.copyfileobj(r, archive)
+                    archive.seek(0)
+                    unpack_vsix(archive, output)
     elif pkgtype in ("Component", "Group"):
         print(f'Downloading {pkgtype}: {pretty}')
     else:
