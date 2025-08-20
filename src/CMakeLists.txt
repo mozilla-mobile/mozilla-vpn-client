@@ -20,6 +20,7 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::WebSockets
     Qt6::Widgets
     Qt6::Svg
+    Qt6::Core
 )
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
@@ -81,4 +82,8 @@ include(cmake/${MZ_PLATFORM_NAME}.cmake)
 
 add_subdirectory(ui)
 target_link_libraries(mozillavpn PRIVATE mozillavpn-uiplugin)
-qt_finalize_target(mozillavpn)
+if (${CMAKE_SYSTEM_NAME} STREQUAL "Android")
+  qt_finalize_executable(mozillavpn)
+else()
+  qt_finalize_target(mozillavpn)
+endif()
