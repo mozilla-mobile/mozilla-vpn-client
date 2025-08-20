@@ -13,9 +13,9 @@ unzip -o -qq -d "$env:TASK_WORKDIR" $QT_SRC_ARCHIVE
 $VS_SHELL_HELPER = resolve-path "$env:MOZ_FETCHES_DIR/*/enter_dev_shell.ps1"
 . "$VS_SHELL_HELPER"
 
-$QT_SRC_PATH = (resolve-path "$env:TASK_WORKDIR/qt-everywhere-src-*/configure.bat" | Split-Path -Parent)
-$QT_BUILD_PATH = "$env:TASK_WORKDIR/qt-build"
-$QT_INSTALL_PATH = "$env:TASK_WORKDIR/qt-windows"
+$QT_CONFIG_SCRIPT = resolve-path "$env:TASK_WORKDIR/qt-everywhere-src-*/configure.bat"
+$QT_BUILD_PATH = "$env:TASK_WORKDIR\qt-build"
+$QT_INSTALL_PATH = "$env:TASK_WORKDIR\qt-windows"
 if(!(Test-Path $QT_INSTALL_PATH)){
   New-Item -Path qt-windows -ItemType "directory"
 }
@@ -39,7 +39,7 @@ $ErrorActionPreference = "Stop"
 # For detailed feature flags, run the configuration, then check the CMakeLists.txt
 # Variables with FEATURE_XYZ can be switched off using -no-feature
 # Whole folders can be skipped using -skip <folder>
-Start-Process -WorkingDirectory "$QT_BUILD_PATH" -NoNewWindow -Wait "$QT_SRC_PATH\configure.bat" -ArgumentList @(
+Start-Process -WorkingDirectory "$QT_BUILD_PATH" -NoNewWindow -PassThru $QT_CONFIG_SCRIPT -ArgumentList @(
   '-static'
   '-opensource'
   '-debug-and-release'
@@ -71,6 +71,7 @@ Start-Process -WorkingDirectory "$QT_BUILD_PATH" -NoNewWindow -Wait "$QT_SRC_PAT
   '-skip qtconnectivity'
   '-skip qtquickeffectmaker'
   '-skip qtwebengine'
+  '-skip qtwebview'
   '-skip qtlocation'
   '-skip qtserialport'
   '-skip qtsensors'
@@ -97,15 +98,29 @@ Start-Process -WorkingDirectory "$QT_BUILD_PATH" -NoNewWindow -Wait "$QT_SRC_PAT
   '-qt-libpng'
   '-qt-zlib'
   "-prefix $QT_INSTALL_PATH"
-)
+) | Wait-Process
 
 # Build and install Qt
-cmake --build $QT_BUILD_PATH --parallel
-cmake --install $QT_BUILD_PATH --config Debug
-cmake --install $QT_BUILD_PATH --config Release
+Write-Output "Starting build: $QT_BUILD_PATH"
+cmake --build $QT_BUILD_PATH --parallel --verbose
+if ($LastExitCode -ne 0) {
+  Exit $LastExitCode
+}
 
-Set-Location $env:TASK_WORKDIR
+cmake --install $QT_BUILD_PATH --config Debug
+if ($LastExitCode -ne 0) {
+  Exit $LastExitCode
+}
+
+cmake --install $QT_BUILD_PATH --config Release
+if ($LastExitCode -ne 0) {
+  Exit $LastExitCode
+}
+
 tar -cJf qt6_win.tar.xz qt-windows/
+if ($LastExitCode -ne 0) {
+  Exit $LastExitCode
+}
 
 New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/public/build" -Force
 Move-Item -Path qt6_win.tar.xz -Destination "$env:TASK_WORKDIR/public/build"
@@ -115,9 +130,3 @@ Write-Output "Build complete, tarball created:"
 # mspdbsrv might be stil running after the build, so we need to kill it
 Stop-Process -Name "mspdbsrv.exe" -Force -ErrorAction SilentlyContinue
 Stop-Process -Name "mspdbsrv" -Force -ErrorAction SilentlyContinue
-
-
-Write-Output "Open Processes:"
-
-wmic process get description,executablepath
-
