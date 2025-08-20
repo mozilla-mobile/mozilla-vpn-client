@@ -55,10 +55,6 @@ android {
 
     namespace 'org.mozilla.firefox.vpn'
 
-    // dexOptions {
-    //    javaMaxHeapSize "3g"
-    // }
-
     packagingOptions {
         jniLibs {
             useLegacyPackaging = true
