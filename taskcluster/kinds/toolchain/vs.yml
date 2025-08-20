@@ -15,6 +15,7 @@ vs-2022:
     run:
         script: download_vs.ps1
         resources:
+            - scripts/windows/fetch-vsix-package.py
             - taskcluster/scripts/toolchain/enter_dev_shell.ps1
         toolchain-alias: vs-2022
         toolchain-artifact: public/build/visual-studio-2022.zip
