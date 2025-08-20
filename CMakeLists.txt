@@ -134,7 +134,7 @@ set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER "Autogen")
 set_property(GLOBAL PROPERTY AUTOMOC_TARGETS_FOLDER "Autogen")
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "Autogen")
 
-find_package(Qt6 6.9 COMPONENTS
+find_package(Qt6 6.9 REQUIRED COMPONENTS
     Core
     Gui
     Network

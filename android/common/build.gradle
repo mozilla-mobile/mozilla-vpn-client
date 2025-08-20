@@ -21,7 +21,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
 
-    namespace 'org.mozilla.firefox.vpn.qt.common' // should this be org.mozilla.firefox.qt.common (per old way)? didn't make a difference
+    namespace 'org.mozilla.firefox.qt.common'
 
     buildFeatures {
       buildConfig true
@@ -41,9 +41,14 @@ android {
     }
 }
 
+repositories {
+  flatDir { dirs("$rootDir/libs") }
+}
+
 dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation project(path: ':qtBindings')
+    compileOnly(files("$rootDir/libs/Qt6Android.jar"))
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
