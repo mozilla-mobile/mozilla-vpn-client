@@ -15,7 +15,7 @@ $MSVC_WIN_COMMIT = "cb78cc0bc91a9e3da69989b76b99d6f44a7d1a69"
 $VSDOWNLOAD_URL = "https://github.com/mstorsjo/msvc-wine/raw/$MSVC_WIN_COMMIT/vsdownload.py"
 Invoke-WebRequest -Uri $VSDOWNLOAD_URL -OutFile "$env:TASK_WORKDIR\vsdownload.py"
 
-$MSVC_VERSION = "17.3"
+$MSVC_VERSION = "17.8"
 $VS_EXTRA_PACKAGES = @(
     'Microsoft.VisualStudio.Component.VC.Redist.MSM'
     'Microsoft.VisualStudio.VC.CMake'
@@ -32,7 +32,7 @@ python $env:TASK_WORKDIR\vsdownload.py `
     --dest "$env:TASK_WORKDIR\vs2022"
 
 # Download additional extensions
-python "$env:VCS_PATH\scripts\windows\fetch-vsix-package.py" --manifest-version 17 --output "$env:TASK_WORKDIR\vs2022" $VS_EXTRA_PACKAGES
+python "$env:VCS_PATH\scripts\windows\fetch-vsix-package.py" --ltsc-version $MSVC_VERSION --output "$env:TASK_WORKDIR\vs2022" $VS_EXTRA_PACKAGES
 
 # Compress the Visual Studio SDK
 New-Item -ItemType Directory -Path "$env:TASK_WORKDIR\public\build" -Force

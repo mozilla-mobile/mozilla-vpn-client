@@ -124,10 +124,16 @@ if __name__ == "__main__":
                         help='Extract VSIX extensions to DIR')
     parser.add_argument('-r', '--manifest-version', metavar='VER', type=int, action='store', default=17,
                         help='Fetch manifest for Visual Studio version VER')
+    parser.add_argument('-l', '--ltsc-version', metavar='VER', type=str, action='store',
+                        help='Fetech LTSC manifest for Visual Studio version VER')
     args = parser.parse_args()
 
     # Fetch the top-level manifest and locate the Visual studio packages
-    vsman = download_pkg_manifest(f"https://aka.ms/vs/{args.manifest_version}/release/channel")
+    if args.ltsc_version is not None:
+        major = args.ltsc_version.split('.')[0]
+        vsman = download_pkg_manifest(f"https://aka.ms/vs/{major}/release.LTSC.{args.ltsc_version}/channel")
+    else:
+        vsman = download_pkg_manifest(f"https://aka.ms/vs/{args.manifest_version}/release/channel")
     done = []
     for name in args.package:
         download_and_extract(vsman, name, args.output, done)
