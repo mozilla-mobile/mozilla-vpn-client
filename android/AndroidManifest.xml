@@ -63,7 +63,7 @@ file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
         </activity>
         <service
-            android:name=".daemon.VPNTileService"
+            android:name="org.mozilla.firefox.vpn.daemon.VPNTileService"
             android:label="@string/product_name"
             android:icon="@drawable/ic_mozvpn_round"
             android:exported="true"

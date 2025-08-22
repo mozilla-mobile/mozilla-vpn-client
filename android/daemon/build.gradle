@@ -42,6 +42,13 @@ android {
 
     namespace 'org.mozilla.firefox.vpn.daemon'
 
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
     buildFeatures {
         buildConfig = true
     }
