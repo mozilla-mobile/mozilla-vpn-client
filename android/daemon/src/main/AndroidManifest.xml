@@ -5,7 +5,7 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SYSTEM_EXEMPTED" />
    
     <application>
-        <service android:name=".VPNService"
+        <service android:name="org.mozilla.firefox.vpn.daemon.VPNService"
             android:permission="android.permission.BIND_VPN_SERVICE"
             android:foregroundServiceType="systemExempted"
             android:process=":Daemon"
@@ -14,7 +14,7 @@
                 <action android:name="android.net.VpnService"/>
             </intent-filter>
         </service>
-        <receiver android:name=".BootReceiver"
+        <receiver android:name="org.mozilla.firefox.vpn.daemon.BootReceiver"
             android:exported="true">
             <intent-filter
                 android:priority="2147483647">
