@@ -202,7 +202,7 @@ QString XdgPortal::parseCgroupAppId(const QString& cgroup) {
   if (dot < 0) {
     QString();
   }
-  QString suffix = cgName.sliced(dot+1);
+  QString suffix = cgName.sliced(dot + 1);
 
   QString appId;
   QStringList cgSplit = cgName.first(dot).split("-");
