@@ -159,3 +159,6 @@ QJSValue FilterProxyModel::dataToJSValue(const QAbstractItemModel* model,
 
   return value;
 }
+
+// Q_INVOKABLE
+void FilterProxyModel::recalculate() { invalidate(); }

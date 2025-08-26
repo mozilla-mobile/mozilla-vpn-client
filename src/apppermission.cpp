@@ -100,6 +100,7 @@ QHash<int, QByteArray> AppPermission::roleNames() const {
   roles[AppNameRole] = "appName";
   roles[AppIdRole] = "appID";
   roles[AppEnabledRole] = "appIsEnabled";
+  roles[AppIsSystemAppRole] = "isSystemApp";
   return roles;
 }
 int AppPermission::rowCount(const QModelIndex&) const {
@@ -116,6 +117,8 @@ QVariant AppPermission::data(const QModelIndex& index, int role) const {
       return app.name;
     case AppIdRole:
       return QVariant(app.id);
+    case AppIsSystemAppRole:
+      return app.isSystemApp;
     case AppEnabledRole:
       if (SettingsHolder::instance()->vpnDisabledApps().isEmpty()) {
         // All are enabled then
@@ -154,15 +157,16 @@ void AppPermission::requestApplist() {
   m_listprovider->getApplicationList();
 }
 
-void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
+void AppPermission::receiveAppList(
+    const QMap<AppListProvider::AppId, AppListProvider::AppListEntry>&
+        applist) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  QMap<QString, QString> applistCopy = applist;
+  auto applistCopy = applist;
   QStringList removedMissingApps;
 
   // Add Missing apps, cleanup ones that we can't find anymore.
-  // If that happens
 
   QStringList missingAppList = settingsHolder->missingApps();
   QMutableStringListIterator iter(missingAppList);
@@ -174,7 +178,7 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
       iter.remove();
       continue;
     }
-    applistCopy.insert(appPath, m_listprovider->getAppName(appPath));
+    applistCopy.insert(appPath, {m_listprovider->getAppName(appPath), false});
   }
 
   if (!removedMissingApps.isEmpty()) {
@@ -201,8 +205,9 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
         // In case the AppID is valid but not in our applist, we need to
         // create an entry
         logger.debug() << "Added missing appid" << blockedAppId;
-        m_applist.append(
-            AppDescription(blockedAppId, applistCopy[blockedAppId]));
+        m_applist.append(AppDescription(blockedAppId,
+                                        applistCopy[blockedAppId].label,
+                                        applistCopy[blockedAppId].isSystemApp));
       }
     }
 
@@ -213,7 +218,8 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
   logger.debug() << "Received new Applist -- Entries: " << applistCopy.size();
   m_applist.clear();
   for (const auto& id : keys) {
-    m_applist.append(AppDescription(id, applistCopy[id]));
+    m_applist.append(
+        AppDescription(id, applistCopy[id].label, applistCopy[id].isSystemApp));
   }
 
   Collator collator;
@@ -222,6 +228,7 @@ void AppPermission::receiveAppList(const QMap<QString, QString>& applist) {
                       std::placeholders::_2, &collator));
 
   endResetModel();
+  emit containsSystemAppsChanged();
 
   // In Case we removed Missing Apps during cleanup,
   // Notify the user
@@ -299,4 +306,13 @@ void AppPermission::openFilePicker() {
                         ->t(I18nStrings::SplittunnelMissingAppAddedOne)
                         .arg(m_listprovider->getAppName(fileNames[0]));
   emit notification("success", message);
+}
+
+bool AppPermission::containsSystemApps() const {
+  for (const auto& app : m_applist) {
+    if (app.isSystemApp) {
+      return true;
+    }
+  }
+  return false;
 }
