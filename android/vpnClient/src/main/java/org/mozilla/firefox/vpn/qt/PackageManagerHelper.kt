@@ -35,10 +35,7 @@ object PackageManagerHelper {
         val browsers = getBrowserIDs(pm)
         val installedPackages = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
         installedPackages.stream().filter {
-            if (isSelf(it)) {
-                // Cannot exclude ourselves
-                return@filter false
-            }
+            return@filter !isSelf(it);
         }.forEach {
             val entry = JSONObject();
             entry.put("name", it.applicationInfo.loadLabel(pm).toString())
