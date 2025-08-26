@@ -139,9 +139,9 @@ QString XdgPortal::parentWindow() {
   return QString("");
 }
 
-// Decode systemd escape characters in the unit names.
+// Decode systemd escape characters in the cgroup names.
 static QString decodeSystemdEscape(const QString& str) {
-  static const QRegularExpression re("(_[0-9A-Fa-f][0-9A-Fa-f])");
+  static const QRegularExpression re("(\\\\x[0-9A-Fa-f][0-9A-Fa-f])");
 
   QString result = str;
   qsizetype offset = 0;
@@ -154,7 +154,7 @@ static QString decodeSystemdEscape(const QString& str) {
 
     bool okay;
     qsizetype start = match.capturedStart(0);
-    QChar code = match.captured(0).mid(1).toUShort(&okay, 16);
+    QChar code = match.captured(0).sliced(2).toUShort(&okay, 16);
     if (okay && (code != 0)) {
       // Replace the matched escape sequence with the decoded character.
       result.replace(start, match.capturedLength(0), QString(code));
