@@ -138,9 +138,8 @@ bool FeatureCallback_splitTunnel() {
       return false;
     }
   }
-  // TODO: These shells need more testing.
-  else if (!desktop.contains("MATE") && !desktop.contains("Unity") &&
-           !desktop.contains("X-Cinnamon")) {
+  // For all other desktop environments, assume split tunneling unsupported.
+  else {
     return false;
   }
   splitTunnelSupported = true;
