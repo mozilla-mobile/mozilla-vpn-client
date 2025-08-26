@@ -16,6 +16,7 @@
 #include "logger.h"
 #include "platforms/linux/dbustypes.h"
 #include "platforms/linux/linuxutils.h"
+#include "platforms/linux/xdgportal.h"
 
 constexpr const char* GTK_DESKTOP_APP_SERVICE = "org.gtk.gio.DesktopAppInfo";
 constexpr const char* GTK_DESKTOP_APP_PATH = "/org/gtk/gio/DesktopAppInfo";
@@ -92,36 +93,6 @@ void AppTracker::userRemoved(uint userid) {
   QDBusConnection::disconnectFromBus("user-" + QString::number(userid));
 }
 
-// static
-// Expand unicode escape sequences.
-QString AppTracker::decodeUnicodeEscape(const QString& str) {
-  static const QRegularExpression re("(\\\\x[0-9A-Fa-f][0-9A-Fa-f])");
-
-  QString result = str;
-  qsizetype offset = 0;
-  while (offset < result.length()) {
-    // Search for the next unicode escape sequence.
-    QRegularExpressionMatch match = re.match(result, offset);
-    if (!match.hasMatch()) {
-      break;
-    }
-
-    bool okay;
-    qsizetype start = match.capturedStart(0);
-    QChar code = match.captured(0).mid(2).toUShort(&okay, 16);
-    if (okay && (code != 0)) {
-      // Replace the matched escape sequence with the decoded character.
-      result.replace(start, match.capturedLength(0), QString(code));
-      offset = start + 1;
-    } else {
-      // If we failed to decode the character, skip passed the matched string.
-      offset = match.capturedEnd(0);
-    }
-  }
-
-  return result;
-}
-
 // The naming convention for snaps follows one of the following formats:
 //   snap.<pkg>.<app>.service - assigned by systemd for services
 //   snap.<pkg>.<app>-<uuid>.scope - transient scope for apps
@@ -163,17 +134,10 @@ QString AppTracker::findDesktopFileId(const QString& cgroup) {
   QString scopeName = QFileInfo(cgroup).fileName();
 
   // Reverse the desktop ID from a cgroup scope and known launcher tools.
-  if (scopeName.startsWith("app-gnome-") ||
-      scopeName.startsWith("app-flatpak-")) {
-    // These take the forms:
-    //   app-gnome-<desktopFileId>-<pid>.scope
-    //   app-flatpak-<desktopFileId>-<pid>.scope
-    //
-    // Some characters (typically hyphens) in the desktop file ID may be encoded
-    // as unicode escape sequences to preseve this formatting.
-    QString raw = scopeName.section('-', 2, 2);
-    if (!raw.isEmpty()) {
-      return QString("%1.desktop").arg(decodeUnicodeEscape(raw));
+  if (scopeName.startsWith("app-")) {
+    QString appId = XdgPortal::parseCgroupAppId(scopeName);
+    if (!appId.isEmpty()) {
+      return appId + ".desktop";
     }
   }
 
@@ -198,8 +162,8 @@ QString AppTracker::findDesktopFileId(const QString& cgroup) {
     return snapDesktopFileId(scopeName);
   }
 
-  // Query the systemd unit for its SourcePath property, which is set to the
-  // desktop file's full path on KDE
+  // Otherwise, query the systemd unit for its SourcePath property, which is set
+  // to the desktop file's full path on KDE.
   QDBusReply<QDBusObjectPath> objPath =
       m_systemdInterface->call("GetUnit", scopeName);
 
@@ -211,7 +175,7 @@ QString AppTracker::findDesktopFileId(const QString& cgroup) {
     return LinuxUtils::desktopFileId(source);
   }
 
-  // Otherwise, we don't know the desktop ID for this control group.
+  // We don't know the desktop ID for this control group.
   return QString();
 }
 
