@@ -15,23 +15,32 @@ class AppPermission final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AppPermission)
 
+  Q_PROPERTY(bool containsSystemApps READ containsSystemApps NOTIFY
+                 containsSystemAppsChanged)
+
  public:
   ~AppPermission();
+
+  bool containsSystemApps() const;
 
   enum AppPermissionRoles {
     AppNameRole,
     AppIdRole,
     AppEnabledRole,
+    AppIsSystemAppRole,
   };
 
   class AppDescription {
    public:
-    AppDescription(const QString& appId, const QString& appName = "") {
+    AppDescription(const QString& appId, const QString& appName = "",
+                   bool isSystem = false) {
       name = appName;
       id = appId;
+      isSystemApp = isSystem;
     };
     QString name;
     QString id;
+    bool isSystemApp;
 
     bool operator<(const AppDescription& other) const {
       return name.compare(other.name, Qt::CaseInsensitive) < 0;
@@ -71,10 +80,12 @@ class AppPermission final : public QAbstractListModel {
   QVariant data(const QModelIndex& index, int role) const override;
  signals:
   void readyChanged();
+  void containsSystemAppsChanged();
   void notification(const QString& type, const QString& message,
                     const QString& actionMessage = "");
  private slots:
-  void receiveAppList(const QMap<QString, QString>& applist);
+  void receiveAppList(const QMap<AppListProvider::AppId,
+                                 AppListProvider::AppListEntry>& applist);
 
  private:
   explicit AppPermission(AppListProvider* provider, QObject* parent = nullptr);

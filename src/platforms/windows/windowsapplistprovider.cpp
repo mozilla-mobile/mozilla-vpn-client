@@ -12,6 +12,7 @@
 #include <QSettings>
 #include <QStandardPaths>
 #include <QString>
+#include <cmath>
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -39,7 +40,7 @@ WindowsAppListProvider::~WindowsAppListProvider() {
  * locations
  */
 void WindowsAppListProvider::getApplicationList() {
-  QMap<QString, QString> appList;
+  QMap<AppId, AppListEntry> appList;
 
   readLinkFiles("C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs",
                 appList);
@@ -81,7 +82,7 @@ bool WindowsAppListProvider::isValidAppId(const QString& appId) {
  * @param out - QMap which valid links should be put into
  */
 void WindowsAppListProvider::readLinkFiles(const QString& path,
-                                           QMap<QString, QString>& out) {
+                                           QMap<AppId, AppListEntry>& out) {
   QFileInfo self(WindowsCommons::getCurrentPath());
   logger.debug() << "Read -> " << path;
   QDirIterator it(path, QStringList() << "*.lnk", QDir::Files,
@@ -106,26 +107,22 @@ void WindowsAppListProvider::readLinkFiles(const QString& path,
                      << target.absoluteFilePath();
       continue;
     }
-    if (target.path().toUpper().startsWith("C:/WINDOWS")) {
-      // 3: Don't include windows links like cmd/ps
-      logger.debug() << "Skip -> " << link.baseName()
-                     << target.absoluteFilePath();
-      continue;
-    }
     if (isUninstaller(target)) {
-      // 4: Don't include obvious uninstallers
+      // 3: Don't include obvious uninstallers
       logger.debug() << "Skip -> " << link.baseName()
                      << target.absoluteFilePath();
       continue;
     }
     if (!WindowsAppImageProvider::hasImage(target.absoluteFilePath())) {
-      // 5: Don't include apps without an icon
+      // 4: Don't include apps without an icon
       logger.debug() << "Skip -> " << link.baseName()
                      << target.absoluteFilePath();
       continue;
     }
     logger.debug() << "Add -> " << link.baseName() << target.absoluteFilePath();
-    out.insert(target.absoluteFilePath(), link.baseName());
+    out.insert(
+        target.absoluteFilePath(),
+        {link.baseName(), target.path().toUpper().startsWith("C:/WINDOWS")});
   }
   logger.debug() << " Added: " << out.count() - oldCount;
 }

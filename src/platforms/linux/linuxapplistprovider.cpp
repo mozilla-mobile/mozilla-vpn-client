@@ -31,7 +31,7 @@ LinuxAppListProvider::~LinuxAppListProvider() {
 }
 
 void LinuxAppListProvider::fetchEntries(const QString& dataDir,
-                                        QMap<QString, QString>& map,
+                                        QMap<AppId, AppListEntry>& map,
                                         const QSet<QString>& desktopEnv) {
   logger.debug() << "Fetch Application list from" << dataDir;
 
@@ -67,14 +67,13 @@ void LinuxAppListProvider::fetchEntries(const QString& dataDir,
       }
     }
 
-    map[fileinfo.absoluteFilePath()] = entry.value("Name").toString();
+    map[fileinfo.absoluteFilePath()] = {entry.value("Name").toString(), false};
   }
 }
 
 void LinuxAppListProvider::getApplicationList() {
   logger.debug() << "Fetch Application list from Linux desktop";
-  QMap<QString, QString> out;
-
+  QMap<AppId, AppListEntry> out;
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   QSet<QString> env;
   if (pe.contains("XDG_CURRENT_DESKTOP")) {
@@ -93,7 +92,7 @@ void LinuxAppListProvider::getApplicationList() {
     fetchEntries(pe.value("HOME") + "/.local/share/applications", out, env);
   }
 
-  QMap<QString, QString> autostart;
+  QMap<AppId, AppListEntry> autostart;
   QString configDirs = pe.value("XDG_CONFIG_DIRS", CONFIG_DIRS_FALLBACK);
   for (const QString& part : configDirs.split(":")) {
     fetchEntries(part.trimmed() + "/autostart", autostart, env);
@@ -107,7 +106,7 @@ void LinuxAppListProvider::getApplicationList() {
 
   for (auto itPathName = autostart.constKeyValueBegin();
        itPathName != autostart.constKeyValueEnd(); ++itPathName) {
-    out[itPathName->first] = itPathName->second + " (autostart)";
+    out[itPathName->first].label = itPathName->second.label + " (autostart)";
   }
 
   emit newAppList(out);
