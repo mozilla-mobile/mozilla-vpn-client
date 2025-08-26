@@ -192,13 +192,6 @@ static QString readCgroupAppId() {
 }
 
 QString XdgPortal::parseCgroupAppId(const QString& cgroup) {
-  // From https://systemd.io/DESKTOP_ENVIRONMENTS/ the format is one of:
-  //   app[-<launcher>]-<ApplicationID>-<RANDOM>.scope
-  //   app[-<launcher>]-<ApplicationID>-<RANDOM>.slice
-  //
-  // Or sometimes:
-  //   app[-<launcher>]-<ApplicationID>-autostart.service
-  //   app[-<launcher>]-<ApplicationID>[@<RANDOM>].service
   QString cgName = cgroup.split("/").last();
   if (!cgName.startsWith("app-")) {
     return QString();
@@ -210,16 +203,24 @@ QString XdgPortal::parseCgroupAppId(const QString& cgroup) {
     QString();
   }
   QString suffix = cgName.sliced(dot+1);
-  QStringList cgSplit = cgName.chopped(dot).split("-");
 
   QString appId;
+  QStringList cgSplit = cgName.first(dot).split("-");
   if (suffix == "service") {
-    // Parse the Application ID if launched via a systemd service.
+    // Systemd services can take the forms:
+    //   app[-<launcher>]-<ApplicationID>-autostart.service (deprecated)
+    //   app[-<launcher>]-<ApplicationID>[@<RANDOM>].service
     if (cgSplit.last() == "autostart") {
       cgSplit.removeLast();
     }
     appId = cgSplit.last().section('@', 0, 0);
   } else if ((suffix == "scope") || (suffix == "slice")) {
+    // Systemd scopes and slices can take the forms:
+    //   app[-<launcher>]-<ApplicationID>-<RANDOM>.scope
+    //   app[-<launcher>]-<ApplicationID>-<RANDOM>.slice
+    if (cgSplit.length() < 3) {
+      return QString();
+    }
     appId = cgSplit.at(cgSplit.length() - 2);
   } else {
     // Otherwise, we don't recognize this systemd cgroup format.
