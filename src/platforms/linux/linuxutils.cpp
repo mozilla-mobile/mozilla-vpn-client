@@ -84,22 +84,18 @@ QVersionNumber LinuxUtils::gnomeShellVersion() {
 }
 
 // static
-QVersionNumber LinuxUtils::kdeFrameworkVersion() {
-  QProcess proc;
-  proc.start("kf5-config", QStringList{"--version"}, QIODeviceBase::ReadOnly);
-  if (!proc.waitForFinished()) {
+QVersionNumber LinuxUtils::kdePlasmaVersion() {
+  QDBusInterface iface("org.kde.plasmashell", "/MainApplication",
+                       "org.qtproject.Qt.QCoreApplication");
+  if (!iface.isValid()) {
     return QVersionNumber();
   }
 
-  QByteArray result = proc.readAllStandardOutput();
-  for (const QByteArray& line : result.split('\n')) {
-    if (line.startsWith("KDE Frameworks: ")) {
-      auto vstr = QString::fromUtf8(line.last(line.size() - 16));
-      return QVersionNumber::fromString(vstr);
-    }
+  QVariant appVersion = iface.property("applicationVersion");
+  if (!appVersion.isValid()) {
+    return QVersionNumber();
   }
-
-  return QVersionNumber();
+  return QVersionNumber::fromString(appVersion.toString());
 }
 
 // static
