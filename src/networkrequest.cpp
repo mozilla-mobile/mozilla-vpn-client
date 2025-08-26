@@ -521,6 +521,7 @@ void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
 
 void NetworkRequest::enableSSLIntervention() {
   if (s_intervention_certs.isEmpty()) {
+    logger.debug() << "Loading intervention certs";
     s_intervention_certs = QSslConfiguration::systemCaCertificates();
     QDirIterator certFolder(":/certs");
     while (certFolder.hasNext()) {
@@ -528,6 +529,7 @@ void NetworkRequest::enableSSLIntervention() {
       if (!f.open(QIODevice::ReadOnly)) {
         continue;
       }
+      logger.debug() << "Loading file:" << f.fileName();
       QSslCertificate cert(&f, QSsl::Pem);
       if (!cert.isNull()) {
         logger.info() << "Imported cert from:" << cert.issuerDisplayName();

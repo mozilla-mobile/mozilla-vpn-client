@@ -340,6 +340,7 @@ int CommandUI::run(QStringList& tokens) {
                      &App::quit, Qt::QueuedConnection);
 
     // Here is the main QML file.
+    logger.debug() << "loading main.qml";
     const QUrl url(QStringLiteral("qrc:/qt/qml/Mozilla/VPN/main.qml"));
     engine->load(url);
     if (!engineHolder.hasWindow()) {
