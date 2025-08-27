@@ -175,6 +175,11 @@ ColumnLayout {
             implicitHeight: appRow.implicitHeight
             implicitWidth: appRow.implicitWidth
 
+            MZMouseArea {
+                    propagateClickToParent: false
+                    onClicked: () => appRow.handleClick()
+            }
+
             RowLayout {
                 id: appRow
 
@@ -268,14 +273,6 @@ ColumnLayout {
                     text: appName
                     color: MZTheme.colors.fontColorDark
                     horizontalAlignment: Text.AlignLeft
-                }
-
-                MZMouseArea {
-                    anchors.fill: parent
-                    width: parent.implicitWidth
-                    height: parent.implicitHeight
-                    propagateClickToParent: false
-                    onClicked: () => appRow.handleClick()
                 }
             }
         }
