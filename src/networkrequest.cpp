@@ -521,8 +521,9 @@ void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
 
 void NetworkRequest::enableSSLIntervention() {
   if (s_intervention_certs.isEmpty()) {
-    logger.debug() << "Loading intervention certs";
+    logger.debug() << "Loading system certs";
     s_intervention_certs = QSslConfiguration::systemCaCertificates();
+    logger.debug() << "Loading intervention certs";
     QDirIterator certFolder(":/certs");
     while (certFolder.hasNext()) {
       QFile f(certFolder.next());
