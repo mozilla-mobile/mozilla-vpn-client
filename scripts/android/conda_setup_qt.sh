@@ -7,10 +7,22 @@ if [[ "$CONDA_PREFIX" == "$BASE_PREFIX" ]]; then
     exit 1
 fi
 
+# Extract major, minor, and patch version numbers from QT_VERSION
+QT_MAJOR=$(echo "$QT_VERSION" | cut -d. -f1)
+QT_MINOR=$(echo "$QT_VERSION" | cut -d. -f2)
+QT_PATCH=$(echo "$QT_VERSION" | cut -d. -f3)
+
 if [[ "$(uname)" == "Linux" ]]; then
-    HOST_TARGET="linux desktop ${QT_VERSION} gcc_64"
     HOST="linux"
-    HOST_FOLDER_NAME="gcc_64" # Things can't be consistent, can they?
+    # Ensure QT_MINOR is parsed as a number before comparison
+    QT_MINOR_NUM=$((10#$QT_MINOR))
+    if [[ "$QT_MINOR_NUM" -ge 8 ]]; then
+        HOST_TARGET="linux desktop ${QT_VERSION} linux_gcc_64"
+        HOST_FOLDER_NAME="gcc_64"
+    else
+        HOST_TARGET="linux desktop ${QT_VERSION} gcc_64"
+        HOST_FOLDER_NAME="gcc_64"
+    fi
 elif [[ "$(uname)" == "Darwin" ]]; then
     HOST_TARGET="mac desktop ${QT_VERSION}"
     HOST="mac"
@@ -29,11 +41,14 @@ fi
 export QT_DIR=$CONDA_PREFIX/Qt
 
 # QT_Host Tools
+echo "python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET"
 python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET
 for QT_HOST_DIR in $(find ${QT_DIR} -type d -name "${HOST_FOLDER_NAME}"); do
     find ${QT_HOST_DIR} -type f -name 'lib*.a' -delete
 done
 
+
+echo "python -m aqt install-qt --outputdir $QT_DIR $HOST android ${QT_VERSION} ${ANDROID_ARCH} -m all"
 # QT Android Tools
 if ! python -m aqt install-qt --outputdir $QT_DIR $HOST android ${QT_VERSION} ${ANDROID_ARCH} -m all; then
     echo "Whoops something went wrong. "
