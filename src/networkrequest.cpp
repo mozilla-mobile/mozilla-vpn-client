@@ -29,10 +29,6 @@ using namespace std::chrono_literals;
 // Timeout for the network requests.
 constexpr auto REQUEST_TIMEOUT = 15s;
 
-#ifndef QT_NO_SSL
-QList<QSslCertificate> s_intervention_certs;
-#endif
-
 std::function<bool(NetworkRequest*)> s_deleteResourceCallback = nullptr;
 std::function<bool(NetworkRequest*)> s_getResourceCallback = nullptr;
 std::function<bool(NetworkRequest*, const QByteArray&)> s_postResourceCallback =
@@ -100,7 +96,7 @@ NetworkRequest::NetworkRequest(Task* parent, int status) : QObject(parent) {
 
   NetworkManager::instance()->increaseNetworkRequestCount();
 
-#ifndef QT_NO_SSL
+#ifdef MZ_WINDOWS
   enableSSLIntervention();
 #endif
 }
@@ -518,19 +514,20 @@ void NetworkRequest::sslErrors(const QList<QSslError>& errors) {
     }
   }
 }
+#endif
 
+#ifdef MZ_WINDOWS
 void NetworkRequest::enableSSLIntervention() {
+  static QList<QSslCertificate> s_intervention_certs;
+
   if (s_intervention_certs.isEmpty()) {
-    logger.debug() << "Loading system certs";
     s_intervention_certs = QSslConfiguration::systemCaCertificates();
-    logger.debug() << "Loading intervention certs";
     QDirIterator certFolder(":/certs");
     while (certFolder.hasNext()) {
       QFile f(certFolder.next());
       if (!f.open(QIODevice::ReadOnly)) {
         continue;
       }
-      logger.debug() << "Loading file:" << f.fileName();
       QSslCertificate cert(&f, QSsl::Pem);
       if (!cert.isNull()) {
         logger.info() << "Imported cert from:" << cert.issuerDisplayName();
@@ -543,6 +540,7 @@ void NetworkRequest::enableSSLIntervention() {
   if (s_intervention_certs.isEmpty()) {
     return;
   }
+
   auto conf = QSslConfiguration::defaultConfiguration();
   conf.addCaCertificates(s_intervention_certs);
   m_request.setSslConfiguration(conf);
