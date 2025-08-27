@@ -21,14 +21,29 @@ class AppListProvider : public QObject {
   // A Stable Identifier for an Application - should not change between
   // invokations.
   typedef QString AppId;
-  struct AppListEntry {
-    // The User Readable Name of the Application
-    QString label;
-    // True if the Application is a System App
-    // in that case it's hidden by default.
+  class AppDescription {
+   public:
+    AppDescription(const QString& appId, const QString& appName = "",
+                   bool isSystem = false) {
+      name = appName;
+      id = appId;
+      isSystemApp = isSystem;
+    };
+    QString name;
+    AppId id;
     bool isSystemApp;
-  };
 
+    bool operator<(const AppDescription& other) const {
+      return name.compare(other.name, Qt::CaseInsensitive) < 0;
+    }
+    bool operator>(const AppDescription& other) const {
+      return name.compare(other.name, Qt::CaseInsensitive) > 0;
+    }
+    bool operator==(const AppDescription& other) const {
+      return id == other.id;
+    }
+    bool operator==(const QString& appId) const { return id == appId; }
+  };
   // Requests a fresh Application List
   // Impl should emit newAppList signal when done.
   virtual void getApplicationList() = 0;
@@ -47,7 +62,7 @@ class AppListProvider : public QObject {
   // QMap key should be the identifier that the controller can
   // use on activation.
   // QMap Value should be a User readable Name of the app
-  void newAppList(const QMap<AppId, AppListEntry>& applist);
+  void newAppList(const QList<AppDescription>& applist);
 };
 
 #endif  // APPLISTPROVIDER_H

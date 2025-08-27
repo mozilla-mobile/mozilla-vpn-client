@@ -16,14 +16,14 @@ DummyAppListProvider::~DummyAppListProvider() {
 }
 
 void DummyAppListProvider::getApplicationList() {
-  QMap<AppId, AppListEntry> appList;
-  appList["com.example.one"] = {"a Example App 1", false};
-  appList["com.example.two"] = {"B Example App 2", false};
-  appList["org.example.one"] = {"c Example App 3", false};
-  appList["org.example.two"] = {"D Example App 4", false};
-  appList["com.example.a"] = {"e Example App 5", true};
-  appList["com.example.b"] = {"F Example App 6", true};
-  appList["org.example.c"] = {"g Example App 7", true};
-  appList["org.example.d"] = {"H Example App 8", true};
+  QList<AppDescription> appList{{"com.example.one", "a Example App 1", false},
+                                {"com.example.two", "B Example App 2", false},
+                                {"org.example.one", "c Example App 3", false},
+                                {"org.example.two", "D Example App 4", false},
+                                {"com.example.a", "e Example App 5", true},
+                                {"com.example.b", "F Example App 6", true},
+                                {"org.example.c", "g Example App 7", true},
+                                {"org.example.d", "H Example App 8", true}};
+
   emit newAppList(appList);
 }

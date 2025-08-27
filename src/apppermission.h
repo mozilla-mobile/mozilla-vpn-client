@@ -30,30 +30,6 @@ class AppPermission final : public QAbstractListModel {
     AppIsSystemAppRole,
   };
 
-  class AppDescription {
-   public:
-    AppDescription(const QString& appId, const QString& appName = "",
-                   bool isSystem = false) {
-      name = appName;
-      id = appId;
-      isSystemApp = isSystem;
-    };
-    QString name;
-    QString id;
-    bool isSystemApp;
-
-    bool operator<(const AppDescription& other) const {
-      return name.compare(other.name, Qt::CaseInsensitive) < 0;
-    }
-    bool operator>(const AppDescription& other) const {
-      return name.compare(other.name, Qt::CaseInsensitive) > 0;
-    }
-    bool operator==(const AppDescription& other) const {
-      return id == other.id;
-    }
-    bool operator==(const QString& appId) const { return id == appId; }
-  };
-
   static AppPermission* instance();
   static void mock();
 
@@ -84,14 +60,16 @@ class AppPermission final : public QAbstractListModel {
   void notification(const QString& type, const QString& message,
                     const QString& actionMessage = "");
  private slots:
-  void receiveAppList(const QMap<AppListProvider::AppId,
-                                 AppListProvider::AppListEntry>& applist);
+  void receiveAppList(const QList<AppListProvider::AppDescription>& applist);
 
  private:
   explicit AppPermission(AppListProvider* provider, QObject* parent = nullptr);
+  struct MissingAppList;
+  MissingAppList retrieveMissingApps(
+      QList<AppListProvider::AppDescription> alreadyFoundApps);
 
   AppListProvider* m_listprovider = nullptr;
-  QList<AppDescription> m_applist;
+  QList<AppListProvider::AppDescription> m_applist;
 };
 
 #endif  // APPPERMISSION_H

@@ -6,6 +6,7 @@
 
 #include <QApplication>
 #include <QVector>
+#include <utility>
 
 #include "applistprovider.h"
 #include "collator.h"
@@ -27,11 +28,11 @@
 #include <QStandardPaths>
 
 namespace {
+using AppDescription = AppListProvider::AppDescription;
 Logger logger("AppPermission");
 AppPermission* s_instance = nullptr;
 
-bool sortApplicationCallback(const AppPermission::AppDescription& a,
-                             const AppPermission::AppDescription& b,
+bool sortApplicationCallback(const AppDescription& a, const AppDescription& b,
                              Collator* collator) {
   Q_ASSERT(collator);
 
@@ -47,6 +48,15 @@ bool sortApplicationCallback(const AppPermission::AppDescription& a,
 }
 
 }  // namespace
+
+struct AppPermission::MissingAppList {
+  // Apps that were not in the current app list
+  // but are valid, so should be added to the list
+  QList<AppListProvider::AppDescription> missedApps;
+  // Apps that were no longer found
+  // should be removed from settings an a notification shown.
+  QStringList appsToRemove;
+};
 
 AppPermission::AppPermission(AppListProvider* provider, QObject* parent)
     : QAbstractListModel(parent) {
@@ -81,7 +91,7 @@ AppPermission* AppPermission::instance() {
 #elif defined(MZ_LINUX)
     s_instance = new AppPermission(new LinuxAppListProvider(qApp));
 #elif defined(MZ_WINDOWS)
-    s_instance = new AppPermission(new WindowsAppListProvider(qApp));
+    s_instance = new AppPermission(new DummyAppListProvider(qApp));
 #else
     s_instance = new AppPermission(new DummyAppListProvider(qApp));
 #endif
@@ -158,70 +168,17 @@ void AppPermission::requestApplist() {
 }
 
 void AppPermission::receiveAppList(
-    const QMap<AppListProvider::AppId, AppListProvider::AppListEntry>&
-        applist) {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
+    const QList<AppListProvider::AppDescription>& applist) {
   auto applistCopy = applist;
-  QStringList removedMissingApps;
 
-  // Add Missing apps, cleanup ones that we can't find anymore.
+  auto missedApps = retrieveMissingApps(applistCopy);
 
-  QStringList missingAppList = settingsHolder->missingApps();
-  QMutableStringListIterator iter(missingAppList);
-  while (iter.hasNext()) {
-    const QString& appPath = iter.next();
-    // Check if the App Still exists, otherwise clean up.
-    if (!m_listprovider->isValidAppId(appPath)) {
-      removedMissingApps.append(m_listprovider->getAppName(appPath));
-      iter.remove();
-      continue;
-    }
-    applistCopy.insert(appPath, {m_listprovider->getAppName(appPath), false});
-  }
-
-  if (!removedMissingApps.isEmpty()) {
-    settingsHolder->setMissingApps(missingAppList);
-  }
-
-  auto keys = applistCopy.keys();
-  if (!m_applist.isEmpty()) {
-    QStringList disabledApps = settingsHolder->vpnDisabledApps();
-    // Check the Disabled-List
-    QMutableStringListIterator iter(disabledApps);
-    while (iter.hasNext()) {
-      const QString& blockedAppId = iter.next();
-
-      if (!m_listprovider->isValidAppId(blockedAppId)) {
-        // In case the AppID is no longer valid we don't need to keep it
-        logger.debug() << "Removed obsolete appid" << blockedAppId;
-        removedMissingApps.append(m_listprovider->getAppName(blockedAppId));
-        iter.remove();
-        continue;
-      }
-
-      if (!keys.contains(blockedAppId)) {
-        // In case the AppID is valid but not in our applist, we need to
-        // create an entry
-        logger.debug() << "Added missing appid" << blockedAppId;
-        m_applist.append(AppDescription(blockedAppId,
-                                        applistCopy[blockedAppId].label,
-                                        applistCopy[blockedAppId].isSystemApp));
-      }
-    }
-
-    settingsHolder->setVpnDisabledApps(disabledApps);
-  }
+  // Add all missed apps to the current app list
+  applistCopy.append(missedApps.missedApps);
 
   beginResetModel();
   logger.debug() << "Received new Applist -- Entries: " << applistCopy.size();
-  m_applist.clear();
-  for (const auto& id : keys) {
-    m_applist.append(
-        AppDescription(id, applistCopy[id].label, applistCopy[id].isSystemApp));
-  }
-
+  m_applist = applistCopy;
   Collator collator;
   std::sort(m_applist.begin(), m_applist.end(),
             std::bind(sortApplicationCallback, std::placeholders::_1,
@@ -232,14 +189,31 @@ void AppPermission::receiveAppList(
 
   // In Case we removed Missing Apps during cleanup,
   // Notify the user
-  if (removedMissingApps.isEmpty()) {
+  if (missedApps.appsToRemove.isEmpty()) {
     return;
   }
+  // Remove the no longer Valid APP id's from the settings
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  auto settings_missedApps = settingsHolder->missingApps();
+  for (const QString& appToRemove : missedApps.appsToRemove) {
+    settings_missedApps.removeAll(appToRemove);
+  }
+  settingsHolder->setMissingApps(std::as_const(settings_missedApps));
+
+  auto settings_splitTunneledApps = settingsHolder->vpnDisabledApps();
+  for (const QString& appToRemove : missedApps.appsToRemove) {
+    settings_splitTunneledApps.removeAll(appToRemove);
+  }
+  settingsHolder->setVpnDisabledApps(settings_splitTunneledApps);
+
+  // Notify the user about the removed apps
   auto strings = I18nStrings::instance();
   QString action = strings->t(I18nStrings::SplittunnelMissingAppActionButton);
 
   QString message = strings->t(I18nStrings::SplittunnelMissingAppMultiple)
-                        .arg(removedMissingApps.count());
+                        .arg(missedApps.appsToRemove.count());
   emit notification("warning", message, action);
 }
 
@@ -315,4 +289,53 @@ bool AppPermission::containsSystemApps() const {
     }
   }
   return false;
+}
+
+/**
+ * @brief Checks the Split-Tunneled Apps from Settings and finds apps that we
+ * failed to look up
+ *
+ * @param alreadyFoundApps - List of all apps currently found
+ * @return Returns 2 Lists:
+ * missedApps -> Apps that are valid but were not in the argument set and should
+ * be added appsToRemove -> Apps that were no longer found and should be removed
+ */
+AppPermission::MissingAppList AppPermission::retrieveMissingApps(
+    QList<AppListProvider::AppDescription> alreadyFoundApps) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Q_ASSERT(settingsHolder);
+
+  MissingAppList out;
+  //
+  QStringList disabledApps = settingsHolder->vpnDisabledApps();
+  QStringList missingApps = settingsHolder->missingApps();
+
+  auto const checkList = [&out, &alreadyFoundApps, this](QStringList list) {
+    for (const auto& appID : list) {
+      // Check if the app is still found
+      if (alreadyFoundApps.contains(appID)) {
+        continue;
+      }
+
+      // Now check if it's valid.
+      if (m_listprovider->isValidAppId(appID)) {
+        AppDescription appDescription{
+            appID,
+            m_listprovider->getAppName(appID),
+        };
+        if (!out.missedApps.contains(appID)) {
+          out.missedApps.append(appDescription);
+        }
+        continue;
+      }
+      if (!out.appsToRemove.contains(appID)) {
+        out.appsToRemove.append(appID);
+      }
+    }
+  };
+
+  checkList(disabledApps);
+  checkList(missingApps);
+
+  return out;
 }
