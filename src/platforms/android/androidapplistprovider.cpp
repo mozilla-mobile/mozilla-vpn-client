@@ -38,12 +38,13 @@ void AndroidAppListProvider::getApplicationList() {
   QJsonObject listObj = appList.object();
   QStringList keys = listObj.keys();
 
-  QMap<AppListProvider::AppId, AppListProvider::AppListEntry> out;
+  QList<AppDescription> out;
   foreach (auto key, keys) {
     // Todo: get for android
     QJsonValue entry = listObj[key];
     auto const obj = entry.toObject();
-    out[key] = {obj["name"].toString(), obj["isSystemApp"].toBool()};
+    out.append(out.size(),
+               {key, obj["name"].toString(), obj["isSystemApp"].toBool()});
   }
 
   emit newAppList(out);

@@ -40,18 +40,17 @@ WindowsAppListProvider::~WindowsAppListProvider() {
  * locations
  */
 void WindowsAppListProvider::getApplicationList() {
-  QMap<AppId, AppListEntry> appList;
+  QList<AppDescription> out;
 
   readLinkFiles("C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs",
-                appList);
+                out);
   readLinkFiles(
       QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) +
           "\\..\\Microsoft\\Windows\\Start Menu\\Programs",
-      appList);
+      out);
   readLinkFiles(
-      QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
-      appList);
-  emit newAppList(appList);
+      QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), out);
+  emit newAppList(out);
 }
 
 void WindowsAppListProvider::addApplication(const QString& appPath) {
@@ -77,12 +76,12 @@ bool WindowsAppListProvider::isValidAppId(const QString& appId) {
          WindowsAppImageProvider::hasImage(appId);
 }
 /**
- * @brief Reads all .lnk's in a Dir, filters them and Puts them into a QMap
+ * @brief Reads all .lnk's in a Dir, filters them and Puts them into a QList
  * @param path - Directory Path to read
- * @param out - QMap which valid links should be put into
+ * @param out - QList which valid links should be put into
  */
 void WindowsAppListProvider::readLinkFiles(const QString& path,
-                                           QMap<AppId, AppListEntry>& out) {
+                                           QList<AppDescription>& out) {
   QFileInfo self(WindowsCommons::getCurrentPath());
   logger.debug() << "Read -> " << path;
   QDirIterator it(path, QStringList() << "*.lnk", QDir::Files,
@@ -119,10 +118,13 @@ void WindowsAppListProvider::readLinkFiles(const QString& path,
                      << target.absoluteFilePath();
       continue;
     }
+    const auto isSystemApp = [](QFileInfo link) {
+      QFileInfo target(link.symLinkTarget());
+      return target.path().toUpper().startsWith("C:/WINDOWS");
+    };
     logger.debug() << "Add -> " << link.baseName() << target.absoluteFilePath();
-    out.insert(
-        target.absoluteFilePath(),
-        {link.baseName(), target.path().toUpper().startsWith("C:/WINDOWS")});
+    out.insert(out.size(), {target.absoluteFilePath(), link.baseName(),
+                            isSystemApp(target)});
   }
   logger.debug() << " Added: " << out.count() - oldCount;
 }
