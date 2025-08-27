@@ -91,7 +91,7 @@ AppPermission* AppPermission::instance() {
 #elif defined(MZ_LINUX)
     s_instance = new AppPermission(new LinuxAppListProvider(qApp));
 #elif defined(MZ_WINDOWS)
-    s_instance = new AppPermission(new DummyAppListProvider(qApp));
+    s_instance = new AppPermission(new WindowsAppListProvider(qApp));
 #else
     s_instance = new AppPermission(new DummyAppListProvider(qApp));
 #endif
