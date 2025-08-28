@@ -12,7 +12,7 @@ namespace LinuxUtils {
 QString findCgroupPath(const QString& type);
 QString findCgroup2Path();
 QVersionNumber gnomeShellVersion();
-QVersionNumber kdeFrameworkVersion();
+QVersionNumber kdePlasmaVersion();
 QString desktopFileId(const QString& path);
 }  // namespace LinuxUtils
 

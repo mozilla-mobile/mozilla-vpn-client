@@ -139,9 +139,9 @@ QString XdgPortal::parentWindow() {
   return QString("");
 }
 
-// Decode systemd escape characters in the unit names.
+// Decode systemd escape characters in the cgroup names.
 static QString decodeSystemdEscape(const QString& str) {
-  static const QRegularExpression re("(_[0-9A-Fa-f][0-9A-Fa-f])");
+  static const QRegularExpression re("(\\\\x[0-9A-Fa-f][0-9A-Fa-f])");
 
   QString result = str;
   qsizetype offset = 0;
@@ -154,7 +154,7 @@ static QString decodeSystemdEscape(const QString& str) {
 
     bool okay;
     qsizetype start = match.capturedStart(0);
-    QChar code = match.captured(0).mid(1).toUShort(&okay, 16);
+    QChar code = match.captured(0).sliced(2).toUShort(&okay, 16);
     if (okay && (code != 0)) {
       // Replace the matched escape sequence with the decoded character.
       result.replace(start, match.capturedLength(0), QString(code));
@@ -184,37 +184,52 @@ static QString readCgroupAppId() {
       continue;
     }
 
-    // From https://systemd.io/DESKTOP_ENVIRONMENTS/ the format is one of:
-    //   app[-<launcher>]-<ApplicationID>-<RANDOM>.scope
-    //   app[-<launcher>]-<ApplicationID>-<RANDOM>.slice
-    QStringList cgroup = line.sliced(3).split("/");
-    for (auto i = cgroup.crbegin(); i != cgroup.crend(); i++) {
-      if (!i->startsWith("app-")) {
-        continue;
-      }
-      if (!i->endsWith(".scope") && !i->endsWith(".slice")) {
-        continue;
-      }
-
-      // Parse the scope for the application ID.
-      QStringList scopeSplit = i->chopped(6).split("-");
-
-      // Remove the last element of the scope if it's a number. This likely
-      // holds a PID or some other runtime identifier.
-      bool isDigit = false;
-      scopeSplit.last().toULong(&isDigit);
-      if (isDigit) {
-        scopeSplit.removeLast();
-      }
-
-      // The application ID should be the last token in the scope string.
-      return decodeSystemdEscape(scopeSplit.last());
-    }
-    break;
+    return XdgPortal::parseCgroupAppId(line.sliced(3));
   }
 
   // We failed to determine the scope.
   return QString();
+}
+
+QString XdgPortal::parseCgroupAppId(const QString& cgroup) {
+  QString cgName = cgroup.split("/").last();
+  if (!cgName.startsWith("app-")) {
+    return QString();
+  }
+
+  // Get the suffix after the final dot.
+  qsizetype dot = cgName.lastIndexOf('.');
+  if (dot < 0) {
+    QString();
+  }
+  QString suffix = cgName.sliced(dot + 1);
+
+  QString appId;
+  QStringList cgSplit = cgName.first(dot).split("-");
+  if (suffix == "service") {
+    // Systemd services can take the forms:
+    //   app[-<launcher>]-<ApplicationID>-autostart.service (deprecated)
+    //   app[-<launcher>]-<ApplicationID>[@<RANDOM>].service
+    if (cgSplit.last() == "autostart") {
+      cgSplit.removeLast();
+    }
+    appId = cgSplit.last().section('@', 0, 0);
+  } else if ((suffix == "scope") || (suffix == "slice")) {
+    // Systemd scopes and slices can take the forms:
+    //   app[-<launcher>]-<ApplicationID>-<RANDOM>.scope
+    //   app[-<launcher>]-<ApplicationID>-<RANDOM>.slice
+    if (cgSplit.length() < 3) {
+      logger.debug() << "Malformed" << suffix << "for:" << cgName;
+      return QString();
+    }
+    appId = cgSplit.at(cgSplit.length() - 2);
+  } else {
+    // Otherwise, we don't recognize this systemd cgroup format.
+    return QString();
+  }
+
+  // The application ID should be the last token in the scope string.
+  return decodeSystemdEscape(appId);
 }
 
 void XdgPortal::setupAppScope(const QString& appId) {
