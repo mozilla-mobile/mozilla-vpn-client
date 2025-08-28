@@ -73,11 +73,13 @@ QVersionNumber LinuxUtils::gnomeShellVersion() {
   QDBusInterface iface("org.gnome.Shell", "/org/gnome/Shell",
                        "org.gnome.Shell");
   if (!iface.isValid()) {
+    logger.debug() << "Unable to read Gnome version";
     return QVersionNumber();
   }
 
   QVariant shellVersion = iface.property("ShellVersion");
   if (!shellVersion.isValid()) {
+    logger.debug() << "Invalid Gnome version string";
     return QVersionNumber();
   }
   return QVersionNumber::fromString(shellVersion.toString());
@@ -88,11 +90,13 @@ QVersionNumber LinuxUtils::kdePlasmaVersion() {
   QDBusInterface iface("org.kde.plasmashell", "/MainApplication",
                        "org.qtproject.Qt.QCoreApplication");
   if (!iface.isValid()) {
+    logger.debug() << "Unable to read KDE version";
     return QVersionNumber();
   }
 
   QVariant appVersion = iface.property("applicationVersion");
   if (!appVersion.isValid()) {
+    logger.debug() << "Invalid KDE version string";
     return QVersionNumber();
   }
   return QVersionNumber::fromString(appVersion.toString());

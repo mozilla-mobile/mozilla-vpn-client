@@ -219,6 +219,7 @@ QString XdgPortal::parseCgroupAppId(const QString& cgroup) {
     //   app[-<launcher>]-<ApplicationID>-<RANDOM>.scope
     //   app[-<launcher>]-<ApplicationID>-<RANDOM>.slice
     if (cgSplit.length() < 3) {
+      logger.debug() << "Malformed" << suffix << "for:" << cgName;
       return QString();
     }
     appId = cgSplit.at(cgSplit.length() - 2);
