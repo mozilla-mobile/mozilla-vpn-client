@@ -124,7 +124,7 @@ qt-tools:
         docker-image: {in-tree: conda-base}
         max-run-time: 900
 
-qt-tools-next:
+qt-tools-6.9.2:
     description: "Linux Qt host tools (Qt/next)"
     run:
         script: bundle_qt_tools.sh
