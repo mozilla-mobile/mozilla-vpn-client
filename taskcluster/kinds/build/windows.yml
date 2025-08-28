@@ -43,7 +43,15 @@ windows/opt:
     fetches:
         toolchain:
             - qt-windows-x86_64-6.6
-    description: "Windows Build"
+    description: "Windows Build (release)"
     treeherder:
         symbol: B
+
+windows/next:
+    fetches:
+        toolchain:
+            - qt-windows-x86_64-next
+    description: "Windows Build (Next Qt)"
+    treeherder:
+        symbol: NEXT
 
