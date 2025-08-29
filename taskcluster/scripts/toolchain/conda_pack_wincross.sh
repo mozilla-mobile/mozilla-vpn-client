@@ -52,6 +52,6 @@ done
 
 echo "Packing conda environment..."
 mkdir -p ${UPLOAD_DIR}
-conda-pack -p ${CONDA_VPN_PREFIX} -j $(nproc) --arcroot conda -o ${UPLOAD_DIR}/conda-wincross.tar.xz
+conda-pack -p ${CONDA_VPN_PREFIX} -j $(nproc) --arcroot conda -o ${UPLOAD_DIR}/conda-windows-cross.tar.xz
 
 echo "Done."

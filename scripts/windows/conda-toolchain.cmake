@@ -14,6 +14,17 @@ if(NOT DEFINED ENV{CONDA_PREFIX})
     return()
 endif()
 
+# Specify default system configuration, if cross compiling
+if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+    set(CMAKE_SYSTEM_NAME Windows CACHE STRING "Target operating system name")
+    set(CMAKE_SYSTEM_PROCESSOR amd64 CACHE STRING "Target operating system processor")
+    set(CMAKE_CROSSCOMPILING TRUE CACHE BOOL "Target is cross compiled")
+
+    set(CMAKE_C_COMPILER_TARGET x86_64-pc-windows-msvc)
+    set(CMAKE_CXX_COMPILER_TARGET x86_64-pc-windows-msvc)
+    set(CMAKE_RC_COMPILER_TARGET x86_64-pc-windows-msvc)
+endif()
+
 # Set the C++ compiler and tools.
 if(NOT CMAKE_C_COMPILER)
     find_program(CMAKE_C_COMPILER NAMES clang-cl REQUIRED DOC "Clang C Compiler (MSVC Compatible)")
@@ -32,12 +43,17 @@ if(NOT PYTHON_EXECUTABLE)
 endif()
 
 if(EXISTS $ENV{CONDA_PREFIX}/xwin)
-    cmake_path(CONVERT "$ENV{CONDA_PREFIX}\\xwin" TO_CMAKE_PATH_LIST XWIN_PREFIX)
+    cmake_path(CONVERT "$ENV{CONDA_PREFIX}/xwin" TO_CMAKE_PATH_LIST XWIN_PREFIX)
 
     set(CMAKE_C_FLAGS_INIT "/winsysroot ${XWIN_PREFIX} -fuse-ld=lld-link")
     set(CMAKE_CXX_FLAGS_INIT "/winsysroot ${XWIN_PREFIX} -fuse-ld=lld-link")
     set(CMAKE_RC_FLAGS_INIT "/winsysroot ${XWIN_PREFIX} -fuse-ld=lld-link")
-    set(CMAKE_LINKER ${CMAKE_CURRENT_LIST_DIR}/xwin-link.bat CACHE FILEPATH "LLD Linker for the Xwin SDK")
+
+    if (CMAKE_CROSSCOMPILING)
+        set(CMAKE_LINKER ${CMAKE_CURRENT_LIST_DIR}/xwin-link.sh CACHE FILEPATH "LLD Linker for the Xwin SDK")
+    else()
+        set(CMAKE_LINKER ${CMAKE_CURRENT_LIST_DIR}/xwin-link.bat CACHE FILEPATH "LLD Linker for the Xwin SDK")
+    endif()
 elseif(NOT CMAKE_LINKER)
     find_program(CMAKE_LINKER NAMES lld-link REQUIRED DOC "LLD Linker (MSVC Compatible)")
 endif()
