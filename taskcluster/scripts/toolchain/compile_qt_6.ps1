@@ -7,7 +7,7 @@ Get-ChildItem env:
 
 # Extract the Qt source tarball.
 $QT_SRC_FILENAME = (resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*.tar.xz" | Split-Path -Leaf)
-Start-Process -WorkingDirectory "$env:MOZ_FETCHES_DIR" -NoNewWindow -Wait "tar" -ArgumentList @('xf', "$QT_SRC_FILENAME")
+Start-Process -WorkingDirectory "$env:MOZ_FETCHES_DIR" -NoNewWindow -Wait "tar" -ArgumentList @('xf', "$QT_SRC_FILENAME", '--exclude=qt-everywhere-src-*/qtwebengine')
 
 # Activate the visual studio developer shell.
 $VS_SHELL_HELPER = resolve-path "$env:MOZ_FETCHES_DIR/*/enter_dev_shell.ps1"
