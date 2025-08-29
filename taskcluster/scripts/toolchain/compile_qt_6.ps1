@@ -5,15 +5,15 @@
 Set-Location $env:TASK_WORKDIR
 Get-ChildItem env:
 
-$QT_SRC_ARCHIVE =resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*.zip"
-
-unzip -o -qq -d "$env:TASK_WORKDIR" $QT_SRC_ARCHIVE
+# Extract the Qt source tarball.
+$QT_SRC_FILENAME = (resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*.tar.xz" | Split-Path -Leaf)
+Start-Process -WorkingDirectory "$env:MOZ_FETCHES_DIR" -NoNewWindow -Wait "tar" -ArgumentList @('xf', "$QT_SRC_FILENAME")
 
 # Activate the visual studio developer shell.
 $VS_SHELL_HELPER = resolve-path "$env:MOZ_FETCHES_DIR/*/enter_dev_shell.ps1"
 . "$VS_SHELL_HELPER"
 
-$QT_CONFIG_SCRIPT = resolve-path "$env:TASK_WORKDIR/qt-everywhere-src-*/configure.bat"
+$QT_CONFIG_SCRIPT = resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*/configure.bat"
 $QT_BUILD_PATH = "$env:TASK_WORKDIR\qt-build"
 $QT_INSTALL_PATH = "$env:TASK_WORKDIR\qt-windows"
 if(!(Test-Path $QT_INSTALL_PATH)){
