@@ -4,6 +4,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 set -e
+cd $TASK_WORKDIR
 
 echo "Installing provided conda env..."
 conda env create -f ${VCS_PATH}/env-windows.yml
@@ -40,15 +41,15 @@ python ${VCS_PATH}/scripts/windows/fetch-vsix-package.py \
     --manifest-version 16 --output ${CONDA_VPN_PREFIX}\xwin Microsoft.VisualStudio.Component.VC.Redist.MSM
 
 # Workaround for https://github.com/Jake-Shadle/xwin/issues/146
-find ${CONDA_PREFIX} -type d -name 'lib' -printf '%h\n' | while read DIRNAME; do
+find ${CONDA_VPN_PREFIX} -type d -name 'lib' -printf '%h\n' | while read DIRNAME; do
     ln -s lib "${DIRNAME}/Lib"
 done
-find ${CONDA_PREFIX} -type d -name 'include' -printf '%h\n' | while read DIRNAME; do
+find ${CONDA_VPN_PREFIX} -type d -name 'include' -printf '%h\n' | while read DIRNAME; do
     ln -s include "${DIRNAME}/Include"
 done
 
 echo "Packing conda environment..."
 mkdir -p ${UPLOAD_DIR}
-conda-pack -n vpn -j $(nproc) --arcroot conda -o ${UPLOAD_DIR}/conda-wincross.tar.xz
+conda-pack -p ${CONDA_VPN_PREFIX} -j $(nproc) --arcroot conda -o ${UPLOAD_DIR}/conda-wincross.tar.xz
 
 echo "Done."
