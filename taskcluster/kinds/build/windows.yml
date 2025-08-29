@@ -35,6 +35,8 @@ windows/opt:
     treeherder:
         symbol: B
     fetches:
+        fetch:
+            - win-conda
         toolchain:
             - conda-windows-x86_64
             - qt-windows-x86_64-6.6
