@@ -223,5 +223,5 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
 elseif(WIN32)
     ## Windows seems to miss some system libraries when importing static OpenSSL
     set_property(TARGET qtglean APPEND PROPERTY
-        INTERFACE_LINK_LIBRARIES crypt32 Secur32 bcrypt ncrypt ntdll)
+        INTERFACE_LINK_LIBRARIES crypt32 secur32 bcrypt ncrypt ntdll)
 endif()
