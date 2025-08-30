@@ -29,7 +29,7 @@ print Y "Configuring the build..."
 mkdir ${TASK_WORKDIR}/build-win
 
 cmake -S ${VCS_PATH} -B ${TASK_WORKDIR}/build-win -GNinja \
-        -DCMAKE_TOOLCHAIN_FILE=${VCS_PATH}/scripts/windows/wincross-toolchain.cmake \
+        -DCMAKE_TOOLCHAIN_FILE=${VCS_PATH}/scripts/windows/conda-toolchain.cmake \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt-windows/lib/cmake \
         -DQT_HOST_PATH=${MOZ_FETCHES_DIR}/qt-host-tools/ \
         -DQT_HOST_PATH_CMAKE_DIR=${MOZ_FETCHES_DIR}/qt-host-tools/lib/cmake \
