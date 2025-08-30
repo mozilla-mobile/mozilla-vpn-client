@@ -38,7 +38,8 @@ echo "Downloading the windows SDK..."
 
 echo "Downloading Microsoft.VisualStudio.Component.VC.Redist.MSM"
 python ${VCS_PATH}/scripts/windows/fetch-vsix-package.py \
-    --manifest-version 16 --output ${CONDA_VPN_PREFIX}\xwin Microsoft.VisualStudio.Component.VC.Redist.MSM
+    --manifest-version 16 --output ${CONDA_VPN_PREFIX}/xwin \
+    Microsoft.VisualStudio.Component.VC.Redist.MSM
 
 # Workaround for https://github.com/Jake-Shadle/xwin/issues/146
 find ${CONDA_VPN_PREFIX} -type d -name 'lib' -printf '%h\n' | while read DIRNAME; do
