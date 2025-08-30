@@ -4,8 +4,8 @@
 
 #include "wireguardutilswindows.h"
 
-#include <Dbghelp.h>
-#include <WS2tcpip.h>
+#include <dbghelp.h>
+#include <ws2tcpip.h>
 #include <iphlpapi.h>
 #include <windows.h>
 #include <winsock2.h>

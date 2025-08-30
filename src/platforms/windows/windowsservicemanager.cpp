@@ -8,7 +8,7 @@
 #include <QTimer>
 
 #include "Windows.h"
-#include "Winsvc.h"
+#include "winsvc.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "platforms/windows/windowsutils.h"

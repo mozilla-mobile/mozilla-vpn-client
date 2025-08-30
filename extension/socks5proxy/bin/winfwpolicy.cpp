@@ -17,7 +17,7 @@
 #include "socks5.h"
 #include "winutils.h"
 
-#pragma comment(lib, "Fwpuclnt")
+#pragma comment(lib, "fwpuclnt")
 
 // Fixed GUID of the VPN Killswitch firewall sublayer
 constexpr const QUuid KILLSWITCH_FW_GUID(0xc78056ff, 0x2bc1, 0x4211, 0xaa, 0xdd,

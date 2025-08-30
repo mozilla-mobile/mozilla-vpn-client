@@ -39,4 +39,4 @@ conda run -n VPN conda info
 conda run -n VPN powershell -file $REPO_ROOT_PATH\scripts\windows\conda-setup-xwin-sdk.ps1
 
 New-Item -ItemType Directory $TASK_WORKDIR\public\build
-conda run -n VPN conda-pack --name VPN -j $WIN32_PROC.NumberOfLogicalProcessors -o $TASK_WORKDIR\public\build\conda-windows.tar.xz
+conda run -n VPN conda-pack --name VPN --arcroot conda -j $WIN32_PROC.NumberOfLogicalProcessors -o $TASK_WORKDIR\public\build\conda-windows.tar.xz

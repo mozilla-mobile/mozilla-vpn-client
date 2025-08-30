@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 task-defaults:
-    description: "Windows Build"
     treeherder:
         symbol: B
         kind: build
@@ -12,15 +11,9 @@ task-defaults:
     worker-type: b-win2022
     fetches:
         fetch:
-            - win-conda
             - wireguard-nt
         toolchain:
             - cargo-vendor
-        conda-pack:
-            - artifact: conda-windows.tar.xz
-              dest: conda-windows
-    dependencies:
-        conda-pack: toolchain-windows-conda-pack
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
@@ -36,14 +29,37 @@ task-defaults:
     run:
         using: run-task
         cwd: '{checkout}'
-        exec-with: powershell
-        command: taskcluster/scripts/build/windows_clang_cl.ps1
 
 windows/opt:
-    fetches:
-        toolchain:
-            - qt-windows-x86_64-6.6
     description: "Windows Build"
     treeherder:
         symbol: B
+    fetches:
+        fetch:
+            - win-conda
+        toolchain:
+            - conda-windows-x86_64
+            - qt-windows-x86_64-6.6
+    run:
+        exec-with: powershell
+        command: taskcluster/scripts/build/windows_clang_cl.ps1
 
+windows/cross:
+    description: "Windows Build (cross compiled)"
+    treeherder:
+        symbol: BD
+        platform: windows/cross
+    fetches:
+        toolchain:
+            - conda-windows-cross
+            - qt-windows-x86_64-6.6
+            - qt-tools
+    worker-type: b-linux-large
+    worker:
+        docker-image: {in-tree: conda-base}
+        artifacts:
+            - type: directory
+              name: public/build
+              path: /builds/worker/artifacts
+    run:
+        command: ./taskcluster/scripts/build/windows_cross.sh

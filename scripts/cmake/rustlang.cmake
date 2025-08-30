@@ -354,6 +354,9 @@ function(add_rust_library TARGET_NAME)
             endforeach()
         elseif(NOT CMAKE_CROSSCOMPILING)
             set(RUST_TARGET_ARCH ${RUSTC_HOST_ARCH})
+        elseif(CMAKE_C_COMPILER_TARGET)
+            # If set, the C compiler triple makes a reasonable guess.
+            set(RUST_TARGET_ARCH ${CMAKE_C_COMPILER_TARGET})
         else()
             # TODO: We could write something here for Android and IOS maybe
             message(FATAL_ERROR "Unable to determine rust target architecture when cross compiling.")
