@@ -15,6 +15,7 @@ set_target_properties(mozillavpn PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION}
     WIN32_EXECUTABLE ON
 )
+target_sources(mozillavpn PRIVATE  ${CMAKE_SOURCE_DIR}/windows/vpn.manifest)
 
 # When used with MSVC, we find that RelWithDebInfo produces rather suboptimal
 # compiler flags. If we want to generate debugging symbols, then we should
