@@ -71,10 +71,6 @@ android {
     }
 }
 
-repositories {
-  flatDir { dirs("$rootDir/libs") }
-}
-
 dependencies {
     implementation 'com.android.support:appcompat-v7:28.0.0'
     implementation project(path: ':daemon')
@@ -93,7 +89,7 @@ dependencies {
     implementation project(path: ":common")
     implementation project(path: ":qtBindings")
 
-    compileOnly(files("$rootDir/libs/Qt6Android.jar"))
+    implementation fileTree(dir: '../libs', include: ['*.jar', '*.aar'])
 
     implementation SharedDependencies.androidx_core
     implementation "com.android.installreferrer:installreferrer:2.2"
