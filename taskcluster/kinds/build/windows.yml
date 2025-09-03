@@ -18,10 +18,6 @@ task-defaults:
         taskcluster-proxy: true
         chain-of-trust: true
         max-run-time: 3600
-        artifacts:
-            - type: file
-              name: public/build/MozillaVPN.msi
-              path: artifacts/MozillaVPN.msi
     release-artifacts:
         - unsigned.zip
     scopes:
@@ -40,6 +36,11 @@ windows/opt:
             - qt-windows-x86_64-6.6
     treeherder:
         symbol: B
+    worker:
+        artifacts:
+            - type: file
+              name: public/build/MozillaVPN.msi
+              path: artifacts/MozillaVPN.msi
     run:
         exec-with: powershell
         command: taskcluster/scripts/build/windows_clang_cl.ps1
@@ -47,27 +48,12 @@ windows/opt:
 windows/next:
     description: "Windows Build (Next Qt)"
     fetches:
-        fetch:
-            - win-conda
-        toolchain:
-            - conda-windows-x86_64
-            - qt-windows-x86_64-next
-    treeherder:
-        symbol: NEXT
-    run:
-        exec-with: powershell
-        command: taskcluster/scripts/build/windows_clang_cl.ps1
-
-windows/cross:
-    description: "Windows Build (cross compiled)"
-    fetches:
         toolchain:
             - conda-windows-cross
-            - qt-windows-x86_64-6.6
-            - qt-tools
+            - qt-windows-x86_64-next
+            - qt-tools-next
     treeherder:
-        symbol: BD
-        platform: windows/cross
+        symbol: NEXT
     worker-type: b-linux
     worker:
         docker-image: {in-tree: conda-base}
