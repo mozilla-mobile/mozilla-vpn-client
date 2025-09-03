@@ -9,7 +9,7 @@ qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
 mz_target_handle_warnings(mozillavpn)
 
-find_package(Qt6 REQUIRED COMPONENTS Svg Core)
+find_package(Qt6 REQUIRED COMPONENTS Svg)
 
 target_link_libraries(mozillavpn PRIVATE
     Qt6::Quick
@@ -17,7 +17,6 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::WebSockets
     Qt6::Widgets
     Qt6::Svg
-    Qt6::Core
 )
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
