@@ -42,6 +42,6 @@ cmake --build ${TASK_WORKDIR}/build-win
 print Y "Compressing the build artifacts..."
 cmake --install ${TASK_WORKDIR}/build-win --prefix ${TASK_WORKDIR}/unsigned
 mkdir -p ${TASK_WORKDIR}/artifacts/
-zip -r ${TASK_WORKDIR}/artifacts/unsigned.zip ${TASK_WORKDIR}/unsigned
+(cd ${TASK_WORKDIR}/unsigned && zip -r ${TASK_WORKDIR}/artifacts/unsigned.zip .)
 
 print G "Done!"
