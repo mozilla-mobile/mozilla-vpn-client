@@ -1,6 +1,7 @@
-personal_ws-1.1 en 275 utf-8
+personal_ws-1.1 en 315 utf-8
 ADRs
 APIs
+ATs
 Adblock
 AdjustSdk
 Affero
@@ -21,8 +22,9 @@ DNS
 DevOps
 Docusaurus
 FFI
-Fi
+FastPass
 FeatureList
+Fi
 Figma
 FreeDesktop
 FxA
@@ -34,7 +36,6 @@ HACL
 HTTPS
 HackerOne
 HackerOne's
-hotreloader
 Homebrew
 HowTo
 INRIA
@@ -58,13 +59,16 @@ Mio
 MozillaVPN
 Mozillians
 Mullvad
-NavigationBarButton
 NDK
 NEPacketTunnelProvider
 NONINFRINGEMENT
+NVDA
+NavigationBarButton
 NotificationsUnsecuredNetworkMessage
 OpenSSL
+Orca
 PeriodicWorkRequest
+Personalization
 QLocale
 QML
 QMLs
@@ -82,6 +86,7 @@ SDKs
 SHA
 Serde
 SettingsHolder
+Spacebar
 Speedtest
 Stenberg
 SwiftyPing
@@ -90,11 +95,15 @@ TODO
 TORTIOUS
 TOTP
 TP
+TalkBack
 TaskGetFeatureList
 UniFFI
-VersionAPI
-VpnService
 VPN's
+Verifier
+VersionAPI
+VoiceOver
+VpnService
+WCAG
 WebAssembly
 WebSocket
 WebSockets
@@ -145,6 +154,7 @@ deeplink
 determing
 dev
 dll
+durations
 embeddable
 emscripten
 entryCity
@@ -170,6 +180,7 @@ gobject
 golang
 gps
 gradle
+hotreloader
 iap
 ici
 idfv
@@ -208,6 +219,7 @@ n'est
 nStrings
 nasm
 neq
+neurodivergence
 nextServerData
 nstrings
 ok
@@ -216,6 +228,8 @@ onboarding
 ons
 os
 perl
+personalization
+personalizations
 plist
 powershell
 ppa
@@ -244,6 +258,7 @@ runtime
 rustup
 sarah's
 scalable
+schemas
 sdk
 sdks
 serverData
@@ -277,6 +292,7 @@ urls
 usesSharedStrings
 utils
 uuid
+viewport
 vm
 vml
 votre

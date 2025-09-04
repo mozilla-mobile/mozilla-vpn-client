@@ -596,7 +596,7 @@ multiple switches, or a joystick to navigate and input text.
   - [Voice
          Access](https://support.google.com/accessibility/android/answer/6151848?hl=en),
          [Eye
-         Contro](https://support.google.com/accessibility/android/answer/11150722?hl=en)l,
+         Control](https://support.google.com/accessibility/android/answer/11150722?hl=en)l,
          [Switch
          Access](https://support.google.com/accessibility/android/answer/6122836?hl=en)
 
