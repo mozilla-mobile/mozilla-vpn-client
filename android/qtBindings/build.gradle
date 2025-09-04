@@ -22,6 +22,9 @@ android {
     defaultConfig {
         minSdkVersion Config.minSdkVersion
     }
+
+    namespace 'org.qtproject.qt.android.bindings'
+
     sourceSets {
         main {
             try {
