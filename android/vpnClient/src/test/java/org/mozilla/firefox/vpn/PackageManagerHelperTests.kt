@@ -14,7 +14,10 @@ import android.content.pm.PackageManager.PERMISSION_DENIED
 import android.content.pm.PackageManager.PERMISSION_GRANTED
 import androidx.test.core.content.pm.ApplicationInfoBuilder
 import androidx.test.core.content.pm.PackageInfoBuilder
+import org.json.JSONObject
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Assert.fail
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.Robolectric
@@ -41,7 +44,32 @@ class PackageManagerHelperTests {
     fun getAllAppNames_returns_a_list() {
         val ctx: Context = Robolectric.buildActivity(Activity::class.java).create().get()
         val apps = PackageManagerHelper.getAllAppNames(ctx)
-        assertEquals("{\"org.mozilla.firefox.vpn.qt.test\":\"org.mozilla.firefox.vpn.qt.test\"}", apps)
+        
+        // Assert: it's a string
+        assertTrue("Result should be a string", apps is String)
+        
+        // Assert: it's JSON
+        val jsonObject = try {
+            JSONObject(apps)
+        } catch (e: Exception) {
+            fail("Result should be valid JSON: ${e.message}")
+            return
+        }
+        
+        // Assert: the root is an object
+        assertTrue("Root should be an object", jsonObject is JSONObject)
+        
+        // Pick the first one
+        val keys = jsonObject.keys()
+        assertTrue("Should have at least one entry", keys.hasNext())
+        val firstKey = keys.next()
+        val firstEntry = jsonObject.getJSONObject(firstKey)
+
+        // It should contain name:String and isSystemApp:boolean
+        assertTrue("Entry should contain 'name' field", firstEntry.has("name"))
+        assertTrue("Entry should contain 'isSystemApp' field", firstEntry.has("isSystemApp"))
+        assertTrue("'name' should be a string", firstEntry.get("name") is String)
+        assertTrue("'isSystemApp' should be a boolean", firstEntry.get("isSystemApp") is Boolean)
     }
 
     /**

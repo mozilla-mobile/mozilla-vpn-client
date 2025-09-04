@@ -39,6 +39,7 @@ class FilterProxyModel : public QSortFilterProxyModel, public QQmlParserStatus {
   void sourceChanged();
 
  public:
+  Q_INVOKABLE void recalculate();
   QJSValue filterCallback() const;
   void setFilterCallback(QJSValue filterCallback);
 

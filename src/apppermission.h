@@ -15,34 +15,19 @@ class AppPermission final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AppPermission)
 
+  Q_PROPERTY(bool containsSystemApps READ containsSystemApps NOTIFY
+                 containsSystemAppsChanged)
+
  public:
   ~AppPermission();
+
+  bool containsSystemApps() const;
 
   enum AppPermissionRoles {
     AppNameRole,
     AppIdRole,
     AppEnabledRole,
-  };
-
-  class AppDescription {
-   public:
-    AppDescription(const QString& appId, const QString& appName = "") {
-      name = appName;
-      id = appId;
-    };
-    QString name;
-    QString id;
-
-    bool operator<(const AppDescription& other) const {
-      return name.compare(other.name, Qt::CaseInsensitive) < 0;
-    }
-    bool operator>(const AppDescription& other) const {
-      return name.compare(other.name, Qt::CaseInsensitive) > 0;
-    }
-    bool operator==(const AppDescription& other) const {
-      return id == other.id;
-    }
-    bool operator==(const QString& appId) const { return id == appId; }
+    AppIsSystemAppRole,
   };
 
   static AppPermission* instance();
@@ -71,16 +56,20 @@ class AppPermission final : public QAbstractListModel {
   QVariant data(const QModelIndex& index, int role) const override;
  signals:
   void readyChanged();
+  void containsSystemAppsChanged();
   void notification(const QString& type, const QString& message,
                     const QString& actionMessage = "");
  private slots:
-  void receiveAppList(const QMap<QString, QString>& applist);
+  void receiveAppList(const QList<AppListProvider::AppDescription>& applist);
 
  private:
   explicit AppPermission(AppListProvider* provider, QObject* parent = nullptr);
+  struct MissingAppList;
+  MissingAppList retrieveMissingApps(
+      QList<AppListProvider::AppDescription> alreadyFoundApps);
 
   AppListProvider* m_listprovider = nullptr;
-  QList<AppDescription> m_applist;
+  QList<AppListProvider::AppDescription> m_applist;
 };
 
 #endif  // APPPERMISSION_H
