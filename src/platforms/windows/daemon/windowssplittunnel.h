@@ -14,10 +14,10 @@
 // clang-format off
 #include <ws2tcpip.h>
 // clang-format on
-#include <Ws2ipdef.h>
 #include <ioapiset.h>
 #include <tlhelp32.h>
 #include <windows.h>
+#include <ws2ipdef.h>
 
 class WindowsFirewall;
 

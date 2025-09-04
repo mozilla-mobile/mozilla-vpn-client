@@ -55,6 +55,29 @@ tasks:
             symbol: rpk(msi)
             platform: windows/x86_64
 
+    msi-next:
+        description: Build MSI installer package (next Qt)
+        fetches:
+            build:
+                - artifact: unsigned.zip
+                  # Workers are using an old version of PowerShell that doesn'tcontain the fix in
+                  # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/48, and the
+                  # `fetch-content` script is not able to properly extract it. Until we can use a
+                  # newer PowerShell, we'll need to handle extraction ourselves.
+                  extract: false
+        dependencies:
+            build: build-windows/next
+        worker-type: b-win2022
+        release-artifacts: [MozillaVPN.msi]
+        attributes:
+            build-type: windows/next
+        run:
+            cwd: build/src/windows/installer
+            command: [cmd.exe, /c, build_prod.cmd]
+        treeherder:
+            symbol: rpk(msi-next)
+            platform: windows/x86_64
+
     macpkg:
         description: Build macOS installer package
         fetches:

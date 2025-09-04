@@ -45,7 +45,7 @@ Start-Process -NoNewWindow "$FETCHES_PATH\miniconda_installer.exe" -Wait -Argume
 . $MINICONDA_DIR\shell\condabin\conda-hook.ps1
 
 ## Unpack and activate the conda environment.
-$CONDA_DIR = resolve-path "$FETCHES_PATH\conda-windows"
+$CONDA_DIR = resolve-path "$FETCHES_PATH\conda"
 Start-Process -NoNewWindow "$CONDA_DIR\Scripts\conda-unpack.exe" -Wait
 conda activate $CONDA_DIR
 conda info
