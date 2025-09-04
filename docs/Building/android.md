@@ -79,9 +79,7 @@ We have a gradle task setup for that.
 
 If you need to work with subscriptions or other play store functionality in the emulator, you will need to sign the apk.
 
-Make sure have an environment variable `AUTOGRAPH_TOKEN` set (ask a fellow dev).
+There formerly was a `sign.sh` script that helped with this. The server it relied no longer exists.
+TaskCluster builds should be signed, and so creating a draft PR should create a signed build that could be used.
 
-Then run
-```
-    ./scripts/android/sign.sh .tmp/src/android-build/build/outputs/apk/release
-```
+If locally created builds must be signed, talk to the Autograph team about setting up a local autograph instance on your machine (and update the documentation)!
