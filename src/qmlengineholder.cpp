@@ -24,6 +24,7 @@
 #include "models/licensemodel.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
+#include "systray/systraymanager.h"
 #include "theme.h"
 #include "urlopener.h"
 #include "utils.h"
@@ -50,7 +51,8 @@ class NMFactory : public QQmlNetworkAccessManagerFactory, public QObject {
 
 }  // namespace
 
-QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
+QmlEngineHolder::QmlEngineHolder(QQmlApplicationEngine* engine)
+    : m_engine(engine) {
   MZ_COUNT_CTOR(QmlEngineHolder);
 
   Q_ASSERT(engine);
@@ -88,6 +90,8 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
                                NavigationBarModel::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSettings",
                                SettingsHolder::instance());
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSysTray",
+                               SysTrayManager::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUrlOpener",
                                UrlOpener::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUtils",

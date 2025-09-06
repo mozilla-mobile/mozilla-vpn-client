@@ -8,7 +8,7 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QJsonObject>
-#include <QQmlEngine>
+#include <QQmlApplicationEngine>
 
 #include "addons/addon.h"
 #include "addons/addonapi.h"
