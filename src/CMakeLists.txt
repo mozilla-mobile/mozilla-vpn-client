@@ -77,6 +77,6 @@ include(cmake/${MZ_PLATFORM_NAME}.cmake)
 
 
 add_subdirectory(ui)
-add_subdirectory(systray)
+
 target_link_libraries(mozillavpn PRIVATE mozillavpn-uiplugin)
 qt_finalize_target(mozillavpn)

@@ -21,7 +21,7 @@ ApplicationWindow {
         anchors.fill: parent
         
         // Center the card in the window
-        SysTrayCard {
+        SystrayCard {
             id: card
             anchors.fill: parent
             anchors.centerIn: parent

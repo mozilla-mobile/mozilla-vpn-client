@@ -33,7 +33,6 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "systray/systraymanager.h"
 #include "telemetry.h"
 #include "temporarydir.h"
 
@@ -435,7 +434,6 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 #endif
-    SysTrayManager::instance()->initialize();
     KeyRegenerator keyRegenerator;
     // Let's go.
     return qApp->exec();

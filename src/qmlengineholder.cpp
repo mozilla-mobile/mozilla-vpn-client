@@ -24,7 +24,6 @@
 #include "models/licensemodel.h"
 #include "networkmanager.h"
 #include "settingsholder.h"
-#include "systray/systraymanager.h"
 #include "theme.h"
 #include "urlopener.h"
 #include "utils.h"
@@ -90,8 +89,6 @@ QmlEngineHolder::QmlEngineHolder(QQmlApplicationEngine* engine)
                                NavigationBarModel::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSettings",
                                SettingsHolder::instance());
-  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZSysTray",
-                               SysTrayManager::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUrlOpener",
                                UrlOpener::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUtils",

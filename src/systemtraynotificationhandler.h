@@ -11,6 +11,7 @@
 
 class QAction;
 class QMenu;
+class SysTrayWindow;
 
 class SystemTrayNotificationHandler : public NotificationHandler {
  public:
@@ -53,6 +54,7 @@ class SystemTrayNotificationHandler : public NotificationHandler {
   QAction* m_separator = nullptr;
   QAction* m_showHideLabel = nullptr;
   QAction* m_quitAction = nullptr;
+  SysTrayWindow* m_systrayWindow;
 };
 
 #endif  // SYSTEMTRAYNOTIFICATIONHANDLER_H
