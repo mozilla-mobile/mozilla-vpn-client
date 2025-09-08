@@ -75,6 +75,31 @@ void SysTrayWindow::setupWindow() {
   logger.debug() << "Window setup complete";
 }
 
+QPoint SysTrayWindow::calculateWindowPosition() {
+  if (!m_window) {
+    logger.warning() << "Cannot calculate position - window is null";
+    return QPoint(100, 100);
+  }
+
+  QScreen* screen = QApplication::primaryScreen();
+  QRect screenGeometry = screen->availableGeometry();
+
+  // Position window in bottom-right corner with some margin
+  int x = screenGeometry.right() - m_window->width() - 20;
+  int y = screenGeometry.bottom() - m_window->height() - 50;
+
+  // Ensure window stays within screen bounds
+  if (x < screenGeometry.left()) {
+    x = screenGeometry.left() + 10;
+  }
+  if (y < screenGeometry.top()) {
+    y = screenGeometry.top() + 10;
+  }
+
+  logger.debug() << "Calculated window position:" << x << "," << y;
+  return QPoint(x, y);
+}
+
 void SysTrayWindow::showWindow() {
   logger.debug() << "Showing window";
 
@@ -90,16 +115,11 @@ void SysTrayWindow::showWindow() {
 
   logger.debug() << "Window is valid, proceeding to show";
 
-  // Position the window at a default location for now
-  // The calling code can handle positioning relative to the actual tray icon
-  QScreen* screen = QApplication::primaryScreen();
-  QRect screenGeometry = screen->availableGeometry();
-
-  int x = screenGeometry.right() - m_window->width() - 20;
-  int y = screenGeometry.bottom() - m_window->height() - 50;
-
-  logger.debug() << "Setting window position to:" << x << "," << y;
-  m_window->setPosition(x, y);
+  // Calculate and set window position
+  QPoint position = calculateWindowPosition();
+  logger.debug() << "Setting window position to:" << position.x() << ","
+                 << position.y();
+  m_window->setPosition(position);
 
   logger.debug() << "Calling window show()";
   m_window->show();

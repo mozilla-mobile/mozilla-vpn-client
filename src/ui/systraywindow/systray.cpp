@@ -2,14 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "systray.h"
-
 #include <QApplication>
 #include <QQmlComponent>
 #include <QQmlContext>
 #include <QScreen>
 
 #include "qmlengineholder.h"
+#include "systraywindow.h"
 #include "utils/leakdetector.h"
 #include "utils/logger.h"
 
@@ -75,6 +74,81 @@ void SysTrayWindow::setupWindow() {
   logger.debug() << "Window setup complete";
 }
 
+QPoint SysTrayWindow::calculateWindowPosition() {
+  if (!m_window) {
+    logger.warning() << "Cannot calculate position - window is null";
+    return QPoint(100, 100);
+  }
+
+  QScreen* screen = QApplication::primaryScreen();
+  QRect screenGeometry = screen->geometry();
+  QRect availableGeometry = screen->availableGeometry();
+
+  logger.debug() << "Screen geometry: (" << screenGeometry.x() << ","
+                 << screenGeometry.y() << " " << screenGeometry.width() << "x"
+                 << screenGeometry.height() << ")";
+  logger.debug() << "Available geometry: (" << availableGeometry.x() << ","
+                 << availableGeometry.y() << " " << availableGeometry.width()
+                 << "x" << availableGeometry.height() << ")";
+
+  int windowWidth = m_window->width();
+  int windowHeight = m_window->height();
+  int x, y;
+
+  // Determine taskbar position by comparing screen and available geometry
+  bool taskbarBottom = availableGeometry.bottom() < screenGeometry.bottom();
+  bool taskbarTop = availableGeometry.top() > screenGeometry.top();
+  bool taskbarLeft = availableGeometry.left() > screenGeometry.left();
+  bool taskbarRight = availableGeometry.right() < screenGeometry.right();
+
+  if (taskbarBottom) {
+    // Taskbar at bottom - position window above it, centered horizontally
+    x = availableGeometry.left() +
+        (availableGeometry.width() - windowWidth) / 2;
+    y = availableGeometry.bottom() - windowHeight - 10;
+    logger.debug() << "Taskbar detected at bottom";
+  } else if (taskbarTop) {
+    // Taskbar at top - position window below it, centered horizontally
+    x = availableGeometry.left() +
+        (availableGeometry.width() - windowWidth) / 2;
+    y = availableGeometry.top() + 10;
+    logger.debug() << "Taskbar detected at top";
+  } else if (taskbarLeft) {
+    // Taskbar at left - position window at bottom-right
+    x = availableGeometry.right() - windowWidth - 10;
+    y = availableGeometry.bottom() - windowHeight - 10;
+    logger.debug() << "Taskbar detected at left";
+  } else if (taskbarRight) {
+    // Taskbar at right - position window at bottom, away from taskbar
+    x = availableGeometry.right() - windowWidth - 10;
+    y = availableGeometry.bottom() - windowHeight - 10;
+    logger.debug() << "Taskbar detected at right";
+  } else {
+    // Default case - bottom center
+    x = availableGeometry.left() +
+        (availableGeometry.width() - windowWidth) / 2;
+    y = availableGeometry.bottom() - windowHeight - 10;
+    logger.debug() << "No taskbar detected, using default position";
+  }
+
+  // Ensure window stays within available area
+  if (x < availableGeometry.left()) {
+    x = availableGeometry.left() + 10;
+  }
+  if (y < availableGeometry.top()) {
+    y = availableGeometry.top() + 10;
+  }
+  if (x + windowWidth > availableGeometry.right()) {
+    x = availableGeometry.right() - windowWidth - 10;
+  }
+  if (y + windowHeight > availableGeometry.bottom()) {
+    y = availableGeometry.bottom() - windowHeight - 10;
+  }
+
+  logger.debug() << "Calculated window position:" << x << "," << y;
+  return QPoint(x, y);
+}
+
 void SysTrayWindow::showWindow() {
   logger.debug() << "Showing window";
 
@@ -90,16 +164,11 @@ void SysTrayWindow::showWindow() {
 
   logger.debug() << "Window is valid, proceeding to show";
 
-  // Position the window at a default location for now
-  // The calling code can handle positioning relative to the actual tray icon
-  QScreen* screen = QApplication::primaryScreen();
-  QRect screenGeometry = screen->availableGeometry();
-
-  int x = screenGeometry.right() - m_window->width() - 20;
-  int y = screenGeometry.bottom() - m_window->height() - 50;
-
-  logger.debug() << "Setting window position to:" << x << "," << y;
-  m_window->setPosition(x, y);
+  // Calculate and set window position
+  QPoint position = calculateWindowPosition();
+  logger.debug() << "Setting window position to:" << position.x() << ","
+                 << position.y();
+  m_window->setPosition(position);
 
   logger.debug() << "Calling window show()";
   m_window->show();

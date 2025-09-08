@@ -6,6 +6,7 @@
 #define SYSTRAYWINDOW_H
 
 #include <QObject>
+#include <QPoint>
 #include <QQuickWindow>
 
 /**
@@ -28,6 +29,7 @@ class SysTrayWindow : public QObject {
 
  private:
   void setupWindow();
+  QPoint calculateWindowPosition();
 
   QQuickWindow* m_window = nullptr;
 };
