@@ -43,8 +43,7 @@ void AndroidAppListProvider::getApplicationList() {
     // Todo: get for android
     QJsonValue entry = listObj[key];
     auto const obj = entry.toObject();
-    out.append(out.size(),
-               {key, obj["name"].toString(), obj["isSystemApp"].toBool()});
+    out.append({key, obj["name"].toString(), obj["isSystemApp"].toBool()});
   }
 
   emit newAppList(out);
