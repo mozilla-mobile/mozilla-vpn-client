@@ -80,6 +80,5 @@ We have a gradle task setup for that.
 If you need to work with subscriptions or other play store functionality in the emulator, you will need to sign the apk.
 
 There formerly was a `sign.sh` script that helped with this. The server it relied no longer exists.
-TaskCluster builds should be signed, and so creating a draft PR should create a signed build that could be used.
 
-If locally created builds must be signed, talk to the Autograph team about setting up a local autograph instance on your machine (and update the documentation)!
+If locally created builds must be signed, talk to the Autograph team about setting up a local autograph instance on your machine. (And update this documentation, please.)
