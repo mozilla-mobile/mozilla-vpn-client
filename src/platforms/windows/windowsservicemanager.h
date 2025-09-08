@@ -9,7 +9,7 @@
 #include <QTimer>
 
 #include "Windows.h"
-#include "Winsvc.h"
+#include "winsvc.h"
 
 /**
  * @brief The WindowsServiceManager provides controll over the a

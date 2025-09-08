@@ -5,7 +5,7 @@
 #ifndef WINDOWSFIREWALL_H
 #define WINDOWSFIREWALL_H
 
-#pragma comment(lib, "Fwpuclnt")
+#pragma comment(lib, "fwpuclnt")
 
 // Note: The windows.h import needs to come before the fwpmu.h import.
 // clang-format off

@@ -29,7 +29,7 @@ if(APPLE AND CMAKE_OSX_ARCHITECTURES)
         COMMAND ${LIPO_BUILD_TOOL} -create -output ${CMAKE_CURRENT_BINARY_DIR}/bridge/target/release/mozillavpnnp ${MOZILLAVPNNP_TARGET_OUTPUTS}
     )
     file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/bridge/target/release/)
-else()
+elseif(NOT CMAKE_CROSSCOMPILING)
     # Single Plattform 
     add_custom_target(cargo_mozillavpnnp ALL
         COMMENT "Building web extension crate"
@@ -37,6 +37,17 @@ else()
         COMMAND
             ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home
             ${CARGO_BUILD_TOOL} build --release --target-dir ${CMAKE_CURRENT_BINARY_DIR}/bridge/target
+    )
+    set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/bridge/target)
+elseif(CMAKE_C_COMPILER_TARGET)
+    add_custom_target(cargo_mozillavpnnp ALL
+        COMMENT "Building web extension crate"
+        WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/bridge
+        COMMAND
+            ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home
+            ${CARGO_BUILD_TOOL} build --release --target-dir ${CMAKE_CURRENT_BINARY_DIR}/bridge --target ${CMAKE_C_COMPILER_TARGET}
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_CURRENT_BINARY_DIR}/bridge/target
+        COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_CURRENT_BINARY_DIR}/bridge/${CMAKE_C_COMPILER_TARGET}/release ${CMAKE_CURRENT_BINARY_DIR}/bridge/target/release
     )
     set_directory_properties(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES ${CMAKE_CURRENT_BINARY_DIR}/bridge/target)
 endif()

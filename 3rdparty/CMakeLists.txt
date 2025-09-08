@@ -3,10 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 # Nothing we need to do here rn.
-if(CMAKE_CROSSCOMPILING)
+if((NOT CMAKE_SYSTEM_NAME STREQUAL "Windows") AND
+   (NOT CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND
+   (NOT CMAKE_SYSTEM_NAME STREQUAL "Linux"))
     return()
 endif()
-
 
 # This Policy will make Cmake respect SET
 # over the OPTIONS of sub

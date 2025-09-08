@@ -8,10 +8,10 @@
 #include <QTimer>
 
 #include "Windows.h"
-#include "Winsvc.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "platforms/windows/windowsutils.h"
+#include "winsvc.h"
 
 namespace {
 Logger logger("WindowsServiceManager");
