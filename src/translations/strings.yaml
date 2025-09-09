@@ -153,7 +153,7 @@ splittunnel:
     comment: Displays inside the information card at the top of the Excluded apps screen when the VPN is on
   btnShowSystemApp: 
     value: Show system apps
-    comment: Label for a checkbox that if checked will show the hidden "system/internal" apps. i.e on Android "Android Auto" is a system app.   
+    comment: Label for a checkbox that, if checked, will show the hidden "system/internal" apps. e.g. "Android Auto" is a system app on Android.
 multiHopFeature:
   singleHopToggleCTA: Single-hop
   multiHopToggleCTA: Multi-hop
