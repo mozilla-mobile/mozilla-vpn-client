@@ -41,8 +41,6 @@ class SettingsHolder final : public QObject {
 
   bool firstExecution() const { return m_firstExecution; }
 
-  bool isSensitiveSetting(const QString& key);
-
   enum DNSProviderFlags {
     Gateway = 0x00,
     Custom = 0x01,
