@@ -113,7 +113,9 @@ void XdgNotificationHandler::notify(Message type, const QString& title,
   }
   notify.insert("title", title);
   notify.insert("body", message);
-  notify.insert("display-hint", hint);
+  if (m_portal->xdgVersion() >= 2) {
+    notify.insert("display-hint", hint);
+  }
 
   m_lastTitle = title;
   m_lastBody = message;

@@ -32,7 +32,7 @@ class XdgPortal : public QDBusAbstractInterface {
   explicit XdgPortal(const char* interface, QObject* parent = nullptr);
   ~XdgPortal();
 
-  uint xdgVersion() const;
+  uint xdgVersion();
   const QString& xdgToken() const { return m_token; }
   const QString& replyPath() const { return m_replyPath; }
   void setReplyPath(const QString& path);
@@ -57,6 +57,9 @@ class XdgPortal : public QDBusAbstractInterface {
 
   QString m_replyPath;
   QString m_token;
+
+ private:
+  int m_version = -1;
 };
 
 #endif  // XDGPORTAL_H
