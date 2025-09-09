@@ -242,11 +242,11 @@ void SystemTrayNotificationHandler::showHideWindow() {
 void SystemTrayNotificationHandler::maybeActivated(
     QSystemTrayIcon::ActivationReason reason) {
   logger.debug() << "Activated";
-  auto flag = Feature::get(Feature::Feature_systrayUI);
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
   if (reason == QSystemTrayIcon::DoubleClick ||
       reason == QSystemTrayIcon::Trigger) {
+    auto flag = Feature::get(Feature::Feature_systrayUI);
     if (flag->isSupported()) {
       m_systrayWindow->showWindow();
       return;
