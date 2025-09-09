@@ -35,6 +35,8 @@ class Setting : public QObject {
    */
   QVariant get() const;
 
+  bool isSensitive() const { return m_sensitiveSetting; }
+
   /**
    * @brief Set a value for this setting.
    *

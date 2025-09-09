@@ -70,3 +70,16 @@ SettingsHolder::~SettingsHolder() {
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
 }
+
+bool SettingsHolder::isSensitiveSetting(const QString& key) {
+#define SETTING(type, toType, getter, setter, remover, has, key, defaultValue, \
+                removeWhenReset, isSensitive)                                  \
+  if (key == QStringLiteral(#key)) {                                           \
+    return isSensitive;                                                        \
+  }
+
+#include "settingslist.h"
+#undef SETTING
+
+  return false;
+}
