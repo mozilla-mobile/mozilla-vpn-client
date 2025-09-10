@@ -223,6 +223,15 @@ static QList<InspectorCommand> s_commands{
             obj["error"] = "Object not found";
             return obj;
           }
+          SettingsHolder* maybeitem = dynamic_cast<SettingsHolder*>(item);
+          if (maybeitem) {
+            auto setting =
+                SettingsManager::instance()->getSetting(arguments[2]);
+            if (setting && setting->isSensitive()) {
+              obj["error"] = "Property is sensitive";
+              return obj;
+            }
+          }
 
           QVariant property = item->property(arguments[2]);
           if (!property.isValid()) {
@@ -279,6 +288,15 @@ static QList<InspectorCommand> s_commands{
           if (!item) {
             obj["error"] = "Object not found";
             return obj;
+          }
+          SettingsHolder* maybeitem = dynamic_cast<SettingsHolder*>(item);
+          if (maybeitem) {
+            auto setting =
+                SettingsManager::instance()->getSetting(arguments[3]);
+            if (setting && setting->isSensitive()) {
+              obj["error"] = "Property is sensitive";
+              return obj;
+            }
           }
 
           QVariant property = item->property(arguments[3]);
