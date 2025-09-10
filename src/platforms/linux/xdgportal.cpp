@@ -72,12 +72,12 @@ QVariant XdgPortal::xdgProperty(const QString& name) const {
   return reply.value().variant();
 }
 
-uint XdgPortal::xdgVersion() const {
-  QVariant qv = xdgProperty("version");
-  if (qv.typeId() == QMetaType::UInt) {
-    return qv.toUInt();
+uint XdgPortal::xdgVersion() {
+  if (m_version < 0) {
+    QVariant qv = xdgProperty("version");
+    m_version = qv.toUInt();
   }
-  return 0;
+  return m_version;
 }
 
 void XdgPortal::setReplyPath(const QString& path) {
