@@ -394,7 +394,7 @@ ColumnLayout {
                             appListContainer.showSystemApps = !appListContainer.showSystemApps
                             showSystemAppsModel.recalculate();
                         }
-             
+                        accessibleName: MZI18n.SplittunnelBtnShowSystemApp
                         checked: appListContainer.showSystemApps
                     }
 
@@ -406,6 +406,7 @@ ColumnLayout {
                         text: MZI18n.SplittunnelBtnShowSystemApp
                         color: MZTheme.colors.fontColorDark
                         horizontalAlignment: Text.AlignLeft
+                        Accessible.ignored: true
                     }
 
                 }
