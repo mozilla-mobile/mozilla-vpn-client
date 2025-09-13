@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.util.Log
 import androidx.work.Configuration
 import com.adjust.sdk.*
+import org.mozilla.firefox.qt.common.BuildConfig
 
 /**
  * CoreApplication - extends QtApplication with callbacks to hook in adjust and
