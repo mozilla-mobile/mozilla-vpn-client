@@ -1,0 +1,23 @@
+name: Release Candidate Automation
+on:
+  push:
+    tags:
+      - "v[0-9.]+-rc[0-9]+"
+
+jobs:
+  trigger:
+    name: Deploy Pages
+    runs-on: ubuntu-latest
+    environment:
+      name: flathub
+    steps:
+      - name: Triger flathub updates
+        env:
+          FLATHUB_TOKEN: ${{ secrets.FLATHUB_TOKEN }}
+          FLATHUB_API_URL: https://api.github.com/repos/flathub/org.mozilla.vpn/actions/workflows/update-check.yml/dispatches
+        run: |
+          curl -sSL -X POST -d '{"ref":"beta"}' \
+             -H "Accept: application/vnd.github+json" \
+             -H "Authorization: Bearer ${FLATHUB_TOKEN}" \
+             -H "X-GitHub-Api-Version: 2022-11-28" \
+             ${FLATHUB_API_URL}
