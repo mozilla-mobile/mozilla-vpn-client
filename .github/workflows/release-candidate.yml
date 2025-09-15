@@ -5,8 +5,8 @@ on:
       - "v[0-9.]+-rc[0-9]+"
 
 jobs:
-  trigger:
-    name: Deploy Pages
+  flathub-beta:
+    name: Trigger Flathub Beta Checker 
     runs-on: ubuntu-latest
     environment:
       name: flathub
