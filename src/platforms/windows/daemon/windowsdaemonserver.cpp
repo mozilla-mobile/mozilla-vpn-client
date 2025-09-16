@@ -91,6 +91,7 @@ int WindowsDaemonServer::run(QStringList& tokens) {
     QLocalSocket* socket = server.nextPendingConnection();
     Q_ASSERT(socket);
 
+#ifndef MZ_DEBUG
     auto check = canConnect(socket);
     if (!check.canConnect) {
       logger.error() << "Rejecting connection:" << check.rejectionReason;
@@ -98,6 +99,7 @@ int WindowsDaemonServer::run(QStringList& tokens) {
       socket->deleteLater();
       return;
     }
+#endif
 
     new DaemonLocalServerConnection(&daemon, socket);
   });
