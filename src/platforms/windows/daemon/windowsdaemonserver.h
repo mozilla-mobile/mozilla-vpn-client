@@ -7,6 +7,7 @@
 
 #include "command.h"
 
+class QLocalSocket;
 class WindowsDaemonServer final : public Command {
   Q_DISABLE_COPY_MOVE(WindowsDaemonServer)
 
@@ -15,6 +16,14 @@ class WindowsDaemonServer final : public Command {
   ~WindowsDaemonServer();
 
   int run(QStringList& tokens) override;
+
+  struct CheckResult {
+    bool canConnect;
+    QString rejectionReason;
+  };
+
+ private:
+  static CheckResult canConnect(QLocalSocket* sock);
 };
 
 #endif  // WINDOWSDAEMONSERVER_H

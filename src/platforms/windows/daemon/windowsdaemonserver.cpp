@@ -10,6 +10,7 @@
 
 #include <QCoreApplication>
 #include <QLocalServer>
+#include <QLocalSocket>
 #include <QThread>
 #include <QTimer>
 
@@ -89,6 +90,15 @@ int WindowsDaemonServer::run(QStringList& tokens) {
 
     QLocalSocket* socket = server.nextPendingConnection();
     Q_ASSERT(socket);
+
+    auto check = canConnect(socket);
+    if (!check.canConnect) {
+      logger.error() << "Rejecting connection:" << check.rejectionReason;
+      socket->disconnectFromServer();
+      socket->deleteLater();
+      return;
+    }
+
     new DaemonLocalServerConnection(&daemon, socket);
   });
   if (!server.listen(Constants::WINDOWS_DAEMON_PATH)) {
@@ -191,6 +201,107 @@ void WINAPI ServiceThread::serviceCtrlHandler(DWORD code) {
   }
 
   SetEvent(s_serviceStopEvent);
+}
+// returns whether the provided file information is valid
+static inline bool isValidFileInfo(const BY_HANDLE_FILE_INFORMATION& fi) {
+  return fi.dwVolumeSerialNumber != 0 || fi.nFileIndexHigh != 0 ||
+         fi.nFileIndexLow != 0;
+}
+// Opens the Current Process and returns its File Informaton
+static BY_HANDLE_FILE_INFORMATION resolveSelf() {
+  BY_HANDLE_FILE_INFORMATION out{};
+  ZeroMemory(&out, sizeof(out));
+
+  DWORD cap = 32768;
+  std::unique_ptr<wchar_t[]> buf(new wchar_t[cap]);
+  DWORD len = ::GetModuleFileNameW(nullptr, buf.get(), cap);
+  if (len == 0 || len >= cap) return out;
+
+  HANDLE hSelf =
+      ::CreateFileW(buf.get(),
+                    0,  // query-only
+                    FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                    nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+  if (!hSelf || hSelf == INVALID_HANDLE_VALUE) return out;
+  auto selfGuard = qScopeGuard([&] { ::CloseHandle(hSelf); });
+
+  if (!::GetFileInformationByHandle(hSelf, &out)) {
+    BY_HANDLE_FILE_INFORMATION empty{};  // ensure zero on failure
+    ZeroMemory(&empty, sizeof(empty));
+    return empty;
+  }
+  return out;
+}
+
+// Returns the File Information of the executable of the provided QLocalSocket
+// client
+static BY_HANDLE_FILE_INFORMATION resolveClient(QLocalSocket* sock) {
+  BY_HANDLE_FILE_INFORMATION out{};
+  ZeroMemory(&out, sizeof(out));
+
+  if (!sock || sock->state() != QLocalSocket::ConnectedState) return out;
+
+  qintptr sd = sock->socketDescriptor();
+  if (sd == -1) return out;
+  HANDLE pipeHandle = reinterpret_cast<HANDLE>(sd);
+
+  ULONG clientPid = 0;
+  if (!::GetNamedPipeClientProcessId(pipeHandle, &clientPid) || clientPid == 0)
+    return out;
+
+  HANDLE hProc =
+      ::OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, FALSE, clientPid);
+  if (!hProc) return out;
+  auto procGuard = qScopeGuard([&] { ::CloseHandle(hProc); });
+
+  DWORD cap = 32768;
+  std::unique_ptr<wchar_t[]> buf(new wchar_t[cap]);
+  DWORD len = cap;
+  if (!::QueryFullProcessImageNameW(hProc, 0, buf.get(), &len)) return out;
+
+  HANDLE clientFile =
+      ::CreateFileW(buf.get(),
+                    0,  // query-only
+                    FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
+                    nullptr, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
+  if (!clientFile || clientFile == INVALID_HANDLE_VALUE) return out;
+  auto clientGuard = qScopeGuard([&] { ::CloseHandle(clientFile); });
+
+  if (!::GetFileInformationByHandle(clientFile, &out)) {
+    BY_HANDLE_FILE_INFORMATION empty{};
+    ZeroMemory(&empty, sizeof(empty));
+    return empty;
+  }
+  return out;
+}
+
+// Given two file informations, returns whether they point to the same file
+static inline bool isSameExecutable(const BY_HANDLE_FILE_INFORMATION& a,
+                                    const BY_HANDLE_FILE_INFORMATION& b) {
+  return a.dwVolumeSerialNumber == b.dwVolumeSerialNumber &&
+         a.nFileIndexHigh == b.nFileIndexHigh &&
+         a.nFileIndexLow == b.nFileIndexLow;
+}
+
+WindowsDaemonServer::CheckResult WindowsDaemonServer::canConnect(
+    QLocalSocket* sock) {
+  if (!sock) return {false, QStringLiteral("Socket pointer is null.")};
+
+  const auto selfInfo = resolveSelf();
+  if (!isValidFileInfo(selfInfo))
+    return {false,
+            QStringLiteral("Failed to resolve current executable identity.")};
+
+  const auto clientInfo = resolveClient(sock);
+  if (!isValidFileInfo(clientInfo))
+    return {false,
+            QStringLiteral("Failed to resolve client executable identity.")};
+
+  if (!isSameExecutable(clientInfo, selfInfo))
+    return {false,
+            QStringLiteral("Caller executable does not match current binary.")};
+
+  return {true, QString()};
 }
 
 static Command::RegistrationProxy<WindowsDaemonServer> s_commandWindowsDaemon;
