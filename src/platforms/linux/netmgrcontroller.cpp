@@ -363,8 +363,6 @@ void NetmgrController::deviceStateChanged(uint state, uint prev, uint reason) {
 
   if (newstate == NetmgrDevice::ACTIVATED) {
     emit connected(m_serverPublicKey);
-  } else if (prevstate == NetmgrDevice::ACTIVATED) {
-    emit disconnected();
   }
 }
 
