@@ -43,6 +43,14 @@ RowLayout {
         onTriggered: connectionTime = formatTime(VPNController.connectionTimestamp)
     }
 
+    Connections {
+        target: VPNController
+
+        function onConnectionTimestampChanged() {
+            connectionTime = formatTime(VPNController.connectionTimestamp)
+        }
+    }
+
     Repeater {
         model: connectionTime.split("")
 
