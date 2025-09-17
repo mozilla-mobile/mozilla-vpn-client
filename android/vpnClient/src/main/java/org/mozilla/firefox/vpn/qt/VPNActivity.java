@@ -27,10 +27,10 @@ import android.view.WindowInsets;
 import java.nio.charset.StandardCharsets;
 import org.mozilla.firefox.vpn.VPNClientBinder;
 import org.mozilla.firefox.vpn.daemon.VPNService;
+import org.qtproject.qt.android.QtActivityBase;
 
 
-
-public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
+public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
