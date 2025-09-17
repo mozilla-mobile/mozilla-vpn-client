@@ -23,7 +23,7 @@ fi
 if [[ "$(uname)" == "Linux" ]]; then
     HOST_TARGET="linux desktop ${QT_VERSION} linux_gcc_64"
     HOST="linux"
-    HOST_FOLDER_NAME="linux_gcc_64" # Things can't be consistent, can they?
+    HOST_FOLDER_NAME="gcc_64" # Things can't be consistent, can they?
 elif [[ "$(uname)" == "Darwin" ]]; then
     HOST_TARGET="mac desktop ${QT_VERSION}"
     HOST="mac"
