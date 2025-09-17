@@ -53,6 +53,9 @@ else
   echo "Skipping sentry stuff"
 fi
 
+# Find and list all .apk files for debugging
+echo "Finding all .apk files in .tmp directory:"
+find .tmp -name "*.apk" -type f -exec ls -la {} \;
 
 # Artifacts should be placed here!
 mkdir -p /builds/worker/artifacts/

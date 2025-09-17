@@ -33,7 +33,17 @@ jbyteArray tojByteArray(const QByteArray& data) {
 
 // static
 QJniObject AndroidCommons::getActivity() {
-  return QNativeInterface::QAndroidApplication::context();
+  // Call the static method to get the instance
+  QJniObject activityInstance = QJniObject::callStaticObjectMethod(
+      "org/mozilla/firefox/vpn/qt/VPNActivity", "getInstance",
+      "()Lorg/mozilla/firefox/vpn/qt/VPNActivity;");
+
+  if (!activityInstance.isValid()) {
+    qWarning("Call to VPNActivity.getInstance() failed or returned null.");
+    return QJniObject();  // Return an invalid QJniObject
+  }
+
+  return activityInstance;
 }
 
 // static

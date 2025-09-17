@@ -27,10 +27,10 @@ import android.view.WindowInsets;
 import java.nio.charset.StandardCharsets;
 import org.mozilla.firefox.vpn.VPNClientBinder;
 import org.mozilla.firefox.vpn.daemon.VPNService;
+import org.qtproject.qt.android.QtActivityBase;
 
 
-
-public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
+public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
   @Override
   public void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
@@ -39,9 +39,13 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
     } else {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
-    instance = this;
   }
   private static VPNActivity instance;
+
+ public VPNActivity() {
+    super();
+    instance = this;
+  }
 
   public static VPNActivity getInstance() {
     return instance;

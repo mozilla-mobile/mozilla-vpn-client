@@ -4,7 +4,6 @@
 
 object Config {
     const val compileSdkVersion = 34
-    const val buildToolsVersion = "30.0.3"
     const val minSdkVersion = 26
     const val targetSdkVersion = 34
     const val ndkVersion = "27.2.12479018"
