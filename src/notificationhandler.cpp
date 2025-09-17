@@ -279,7 +279,7 @@ void NotificationHandler::unsecuredNetworkNotification(
 
   QString title =
       i18nStrings->t(I18nStrings::NotificationsUnsecuredNetworkTitle);
-  
+
   QString message;
   if (networkName.isEmpty()) {
     message = i18nStrings->t(I18nStrings::NotificationsUnsecuredNetworkGeneric);
