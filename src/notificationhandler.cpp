@@ -279,9 +279,14 @@ void NotificationHandler::unsecuredNetworkNotification(
 
   QString title =
       i18nStrings->t(I18nStrings::NotificationsUnsecuredNetworkTitle);
-  QString message =
-      i18nStrings->t(I18nStrings::NotificationsUnsecuredNetworkMessage)
-          .arg(networkName);
+  
+  QString message;
+  if (networkName.isEmpty()) {
+    message = i18nStrings->t(I18nStrings::NotificationsUnsecuredNetworkGeneric);
+  } else {
+    message = i18nStrings->t(I18nStrings::NotificationsUnsecuredNetworkMessage)
+                  .arg(networkName);
+  }
 
   notifyInternal(UnsecuredNetwork, title, message,
                  Constants::UNSECURED_NETWORK_ALERT_MSEC);

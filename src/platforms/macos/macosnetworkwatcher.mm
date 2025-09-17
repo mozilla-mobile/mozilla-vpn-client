@@ -123,11 +123,7 @@ void MacOSNetworkWatcher::checkInterface() {
   if (ssid.isEmpty()) {
     // Note: Starting with macOS 14, retrieving the SSID requires location
     // permissions for the application, which we are unlikely to be granted.
-    // TODO: For most every language, Wi-Fi is a technical term so this kinda
-    // works, but we need a better localization strategy for the case where the
-    // SSID is unknown.
     logger.debug() << "Unable to fetch WiFi SSID";
-    ssid = "Wi-Fi";
   }
 
   emit unsecuredNetwork(ssid, ssid);
