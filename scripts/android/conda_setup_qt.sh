@@ -7,10 +7,23 @@ if [[ "$CONDA_PREFIX" == "$BASE_PREFIX" ]]; then
     exit 1
 fi
 
+# Check QT_VERSION is at least 6.9
+if [[ -z "$QT_VERSION" ]]; then
+    echo "Error: QT_VERSION environment variable is not set."
+    exit 1
+fi
+
+# Extract minor version from QT_VERSION (assuming format Major.minor.patch)
+QT_MINOR=$(echo "$QT_VERSION" | cut -d'.' -f2)
+if [[ "$QT_MINOR" -lt 9 ]]; then
+    echo "Error: Qt versions below 6.9 are no longer supported. Current version: $QT_VERSION"
+    exit 1
+fi
+
 if [[ "$(uname)" == "Linux" ]]; then
-    HOST_TARGET="linux desktop ${QT_VERSION} gcc_64"
+    HOST_TARGET="linux desktop ${QT_VERSION} linux_gcc_64"
     HOST="linux"
-    HOST_FOLDER_NAME="gcc_64" # Things can't be consistent, can they?
+    HOST_FOLDER_NAME="linux_gcc_64" # Things can't be consistent, can they?
 elif [[ "$(uname)" == "Darwin" ]]; then
     HOST_TARGET="mac desktop ${QT_VERSION}"
     HOST="mac"
