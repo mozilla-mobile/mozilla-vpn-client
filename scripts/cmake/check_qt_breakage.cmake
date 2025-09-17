@@ -14,3 +14,13 @@ if( ${Qt6_VERSION} VERSION_EQUAL 6.8.0)
         "****************************************************"
     )
 endif()
+
+
+if( ${Qt6_VERSION} VERSION_LESS_EQUAL 6.8.0 AND ANDROID)
+    message(FATAL_ERROR 
+        "*******************  ERROR  ********************** \n"
+        "Qt 6.9.0 is required to build Mozila VPN for Android \n"
+        "Please consider upgrading to at least Qt 6.9 \n"
+        "****************************************************"
+    )
+endif()
