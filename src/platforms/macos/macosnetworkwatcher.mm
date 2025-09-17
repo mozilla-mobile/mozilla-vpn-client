@@ -100,30 +100,35 @@ void MacOSNetworkWatcher::checkInterface() {
     return;
   }
 
+  logger.debug() << "WiFi interface:" << [interface interfaceName];
   if (![interface powerOn]) {
     logger.debug() << "The interface is off";
     return;
   }
 
-  NSString* ssidNS = [interface ssid];
-  if (!ssidNS) {
+  if ([interface activePHYMode] == kCWPHYModeNone) {
     logger.debug() << "WiFi is not in used";
     return;
   }
 
-  QString ssid = QString::fromNSString(ssidNS);
-  if (ssid.isEmpty()) {
-    logger.debug() << "WiFi doesn't have a valid SSID";
-    return;
-  }
-
   CWSecurity security = [interface security];
-  if (security == kCWSecurityNone || security == kCWSecurityWEP) {
-    logger.debug() << "Unsecured network found!";
-    emit unsecuredNetwork(ssid, ssid);
+  if (security != kCWSecurityNone && security != kCWSecurityWEP) {
+    // WiFi network appears to be reasonably secured.
+    logger.debug() << "Secure WiFi interface";
     return;
   }
+  logger.debug() << "Unsecured network found!";
 
-  logger.debug() << "Secure WiFi interface";
+  QString ssid = QString::fromNSString([interface ssid]);
+  if (ssid.isEmpty()) {
+    // Note: Starting with macOS 14, retrieving the SSID requires location
+    // permissions for the application, which we are unlikely to be granted.
+    // TODO: For most every language, Wi-Fi is a technical term so this kinda
+    // works, but we need a better localization strategy for the case where the
+    // SSID is unknown.
+    logger.debug() << "Unable to fetch WiFi SSID";
+    ssid = "Wi-Fi";
+  }
+
+  emit unsecuredNetwork(ssid, ssid);
 }
-
