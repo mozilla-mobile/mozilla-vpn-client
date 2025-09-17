@@ -16,6 +16,7 @@ MZButtonBase {
     // Without a default for toggleColor, there is a flicker on dark mode when tapping into the main screen while VPN is disconnected
     property var toggleColor: (VPNController.isActive() ? MZTheme.colors.vpnToggleConnected : MZTheme.colors.vpnToggleDisconnectedMainSwitch)
     property var toolTipTitle: ""
+    property real toggleScale: 1.0  // Allow scaling the entire toggle
     Accessible.name: toolTipTitle
 
     function handleClick() {
