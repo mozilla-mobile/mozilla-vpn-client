@@ -126,5 +126,5 @@ void MacOSNetworkWatcher::checkInterface() {
     logger.debug() << "Unable to fetch WiFi SSID";
   }
 
-  emit unsecuredNetwork(ssid, ssid);
+  emit unsecuredNetwork(ssid);
 }
