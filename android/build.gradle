@@ -43,7 +43,6 @@ apply plugin: 'kotlinx-serialization'
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar', '*.aar'])
     implementation project(path: ':daemon')
-    implementation project(path: ':qtBindings')
     implementation project(path: ':vpnClient')
 
     coreLibraryDesugaring SharedDependencies.com_android_tools_desugar_jdk_libs

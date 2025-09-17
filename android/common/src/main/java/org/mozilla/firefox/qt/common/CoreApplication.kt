@@ -6,12 +6,13 @@ import android.util.Log
 import androidx.work.Configuration
 import com.adjust.sdk.*
 import org.mozilla.firefox.qt.common.BuildConfig
+import org.qtproject.qt.android.QtApplicationBase
 
 /**
  * CoreApplication - extends QtApplication with callbacks to hook in adjust and
  * a privacy proxy that minimizes tracking.
  */
-class CoreApplication : org.qtproject.qt.android.bindings.QtApplication(), Configuration.Provider {
+class CoreApplication : org.qtproject.qt.android.QtApplicationBase(), Configuration.Provider {
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             // This is required for Glean to be able to enqueue the PingUploadWorker
