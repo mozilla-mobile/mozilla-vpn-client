@@ -99,21 +99,7 @@ EventListener::~EventListener() {
 #endif
 }
 
-bool EventListener::checkForInstances(const QString& windowName) {
-  logger.debug() << "Checking other instances";
-
-#ifdef MZ_WINDOWS
-  // Let's check if there is a window with the right name.
-  HWND window =
-      FindWindow(nullptr, reinterpret_cast<const wchar_t*>(windowName.utf16()));
-  if (!window) {
-    WindowsUtils::windowsLog("No other instances found");
-    return false;
-  }
-#endif
-
-  // Try to wake the UI and bring it to the foreground.
-  logger.debug() << "Try to communicate with the existing instance";
+bool EventListener::checkForInstances() {
   return sendCommand("show");
 }
 
@@ -129,7 +115,8 @@ bool EventListener::sendCommand(const QString& message) {
   QLocalSocket socket;
   socket.connectToServer(path);
   if (!socket.waitForConnected(1000)) {
-    logger.error() << "Connection failed:" << socket.errorString();
+    QTextStream stream(stderr);
+    stream << "Socket connection failed:" << socket.errorString() << Qt::endl;
     return false;
   }
 

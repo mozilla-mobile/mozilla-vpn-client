@@ -141,6 +141,27 @@ int CommandUI::run(QStringList& tokens) {
     LogHandler::instance()->setStderr(true);
   }
 
+  // If there is another instance, the execution terminates here.
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
+    if (EventListener::checkForInstances()) {
+      QTextStream stream(stderr);
+      stream << "Existing instance found" << Qt::endl;
+
+      // If we are given URL parameters, send them to the UI socket and exit.      
+      for (const QString& value : tokens) {
+        QUrl url(value);
+        if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
+          stream << "Invalid link:" << value << Qt::endl;
+        } else {
+          stream << "Sending link" << Qt::endl;
+          EventListener::sendDeepLink(url);
+        }
+      }
+
+      return 0;
+    }
+#endif
+
 #ifdef MZ_ANDROID
   // Configure graphics rendering for Android
   QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
@@ -193,23 +214,6 @@ int CommandUI::run(QStringList& tokens) {
     }
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
-    // If there is another instance, the execution terminates here.
-    if (EventListener::checkForInstances(
-            I18nStrings::instance()->t(I18nStrings::ProductName))) {
-      // If we are given URL parameters, send them to the UI socket and exit.
-      for (const QString& value : tokens) {
-        QUrl url(value);
-        if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
-          logger.error() << "Invalid link:" << value;
-        } else {
-          EventListener::sendDeepLink(url);
-        }
-      }
-
-      logger.debug() << "Terminating the current process";
-      return 0;
-    }
-
     // This class receives communications from other instances.
     EventListener eventListener;
 #endif
