@@ -143,23 +143,23 @@ int CommandUI::run(QStringList& tokens) {
 
   // If there is another instance, the execution terminates here.
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
-    if (EventListener::checkForInstances()) {
-      QTextStream stream(stderr);
-      stream << "Existing instance found" << Qt::endl;
+  if (EventListener::checkForInstances()) {
+    QTextStream stream(stderr);
+    stream << "Existing instance found" << Qt::endl;
 
-      // If we are given URL parameters, send them to the UI socket and exit.      
-      for (const QString& value : tokens) {
-        QUrl url(value);
-        if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
-          stream << "Invalid link:" << value << Qt::endl;
-        } else {
-          stream << "Sending link" << Qt::endl;
-          EventListener::sendDeepLink(url);
-        }
+    // If we are given URL parameters, send them to the UI socket and exit.      
+    for (const QString& value : tokens) {
+      QUrl url(value);
+      if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
+        stream << "Invalid link:" << value << Qt::endl;
+      } else {
+        stream << "Sending link" << Qt::endl;
+        EventListener::sendDeepLink(url);
       }
-
-      return 0;
     }
+
+    return 0;
+  }
 #endif
 
 #ifdef MZ_ANDROID
