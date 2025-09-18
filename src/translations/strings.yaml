@@ -281,6 +281,7 @@ notifications:
   connectionFailedMessage: Sorry, something went wrong with your VPN connection.
   subscriptionNotFound: Your Mozilla VPN subscription cannot be found. Please open the app to resolve this subscription issue.
   unsecuredNetworkTitle: Unsecured Wi-Fi network detected
+  unsecuredNetworkGeneric: "Wi-Fi network is not secure. Click here to turn on VPN and secure your device."
   unsecuredNetworkMessage:
     value: "%1 is not secure. Click here to turn on VPN and secure your device."
     comment: "%1 is the Wi-Fi network name"

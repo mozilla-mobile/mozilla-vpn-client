@@ -1979,8 +1979,7 @@ void MozillaVPN::registerInspectorCommands() {
   InspectorHandler::registerCommand(
       "force_unsecured_network", "Force an unsecured network detection", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
-                                                                   "Dummy");
+        MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy");
         return QJsonObject();
       });
 

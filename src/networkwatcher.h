@@ -25,7 +25,7 @@ class NetworkWatcher final : public QObject {
   void initialize();
 
   // Public for the Inspector.
-  void unsecuredNetwork(const QString& networkName, const QString& networkId);
+  void unsecuredNetwork(const QString& networkName);
   // Used for the Inspector. simulateOffline = true to mock being disconnected,
   // false to restore.
   void simulateDisconnection(bool simulatedDisconnection);
@@ -46,8 +46,7 @@ class NetworkWatcher final : public QObject {
 
   // Platform-specific implementation.
   NetworkWatcherImpl* m_impl = nullptr;
-
-  QMap<QString, QElapsedTimer> m_networks;
+  QElapsedTimer m_cooldown;
 
   // This is used to connect NotificationHandler lazily.
   bool m_firstNotification = true;
