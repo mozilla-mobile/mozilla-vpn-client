@@ -99,9 +99,7 @@ EventListener::~EventListener() {
 #endif
 }
 
-bool EventListener::checkForInstances() {
-  return sendCommand("show");
-}
+bool EventListener::checkForInstances() { return sendCommand("show"); }
 
 bool EventListener::sendCommand(const QString& message) {
   QString path = pipeFileName();

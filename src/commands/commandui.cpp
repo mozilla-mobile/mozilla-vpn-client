@@ -147,7 +147,7 @@ int CommandUI::run(QStringList& tokens) {
     QTextStream stream(stderr);
     stream << "Existing instance found" << Qt::endl;
 
-    // If we are given URL parameters, send them to the UI socket and exit.      
+    // If we are given URL parameters, send them to the UI socket and exit.
     for (const QString& value : tokens) {
       QUrl url(value);
       if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
