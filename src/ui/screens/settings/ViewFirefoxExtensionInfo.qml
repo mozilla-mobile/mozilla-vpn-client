@@ -90,9 +90,6 @@ MZViewBase {
               Layout.fillWidth: true
               width: undefined
               onClicked: {
-                  Glean.interaction.getTheExtensionSelected.record({
-                      screen: telemetryScreenId,
-                  });
                   MZUrlOpener.openUrl("https://addons.mozilla.org/firefox/addon/mozilla-vpn-extension/?utm_medium=mozilla-vpn-client&utm_source=vpn-settings&utm_campaign=evergreen&utm_content=firefox-extension")
               }
           }
@@ -101,20 +98,11 @@ MZViewBase {
               id: firefoxButton
               labelText: MZI18n.SettingsFirefoxExtensionFirefoxButton
               onClicked: {
-                  Glean.interaction.downloadFirefoxSelected.record({
-                      screen: telemetryScreenId,
-                  });
                   MZUrlOpener.openUrl("https://www.mozilla.org/firefox/?utm_medium=mozilla-vpn-client&utm_source=vpn-settings&utm_campaign=evergreen&utm_content=firefox-extension")
               }
               Layout.alignment: Qt.AlignHCenter
           }
         }
 
-    }
-
-    Component.onCompleted: {
-        Glean.impression.firefoxExtensionScreen.record({
-            screen: telemetryScreenId,
-        });
     }
 }
