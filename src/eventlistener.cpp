@@ -106,7 +106,14 @@ bool EventListener::checkForInstances() {
 bool EventListener::sendCommand(const QString& message) {
   QString path = pipeFileName();
 
-#if !defined(MZ_WINDOWS)
+#ifdef MZ_WINDOWS
+  WIN32_FIND_DATAA findData;
+  HANDLE h = FindFirstFileA(qPrintable(path), &findData);
+  if (h == INVALID_HANDLE_VALUE) {
+    return false;
+  }
+  FindClose(h);
+#else
   if (!QFileInfo::exists(path)) {
     return false;
   }
