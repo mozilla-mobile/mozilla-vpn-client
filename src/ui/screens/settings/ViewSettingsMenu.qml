@@ -80,7 +80,6 @@ MZViewBase {
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    Glean.interaction.firefoxExtensionSelected.record({screen:telemetryScreenId});
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewFirefoxExtensionInfo.qml")
                 }
                 visible: Qt.platform.os === "windows"
