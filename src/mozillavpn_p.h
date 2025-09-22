@@ -21,12 +21,15 @@
 #include "models/user.h"
 #include "networkwatcher.h"
 #include "profileflow.h"
+#include "localizer.h"
 #include "releasemonitor.h"
 #include "serverlatency.h"
 #include "statusicon.h"
 #include "telemetry.h"
+#include "settingsholder.h"
 
 struct MozillaVPNPrivate {
+  SettingsHolder m_settingsHolder;
   CaptivePortal m_captivePortal;
   CaptivePortalDetection m_captivePortalDetection;
   ConnectionHealth m_connectionHealth;
@@ -47,6 +50,7 @@ struct MozillaVPNPrivate {
   Telemetry m_telemetry;
   User m_user;
   TaskGetFeatureListWorker m_taskGetFeatureListWorker;
+  Localizer m_localizer;
 };
 
 #endif  // MOZILLAVPN_PRIVATE_H

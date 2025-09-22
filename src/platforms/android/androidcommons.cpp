@@ -46,6 +46,26 @@ QJniObject AndroidCommons::getActivity() {
   return activityInstance;
 }
 
+void AndroidCommons::forcePublishActivity() {
+  using QAA = QNativeInterface::QAndroidApplication;
+auto fut = QAA::runOnAndroidMainThread([]() -> QVariant {
+    QJniEnvironment env;
+
+    // 1) Get a context
+    QJniObject activity = getActivity();
+
+    // 2) Re-publish to Qt (if available in your Qt build)
+    // Safe no-op if it's already the same:
+  QJniObject::callStaticMethod<void>(
+        "org/qtproject/qt/android/QtNative",
+        "setActivity",
+        "(Landroid/app/Activity;)V",
+        activity.object<jobject>());
+    return true;
+});
+fut.waitForFinished();
+}
+
 // static
 int AndroidCommons::getSDKVersion() {
   QJniEnvironment env;
@@ -130,4 +150,51 @@ void AndroidCommons::launchPlayStore() {
   QJniObject::callStaticMethod<void>(COMMON_UTILS_CLASS, "launchPlayStore",
                                      "(Landroid/app/Activity;)V",
                                      appActivity.object());
+}
+
+
+
+bool AndroidCommons::clearPendingJavaException(const char* where) {
+  QJniEnvironment env;
+  if (!env->ExceptionCheck()){
+    logger.info() << "No pending exception at" << where;
+    return false;
+  }
+  logger.info() << "[JNI] Pending exception at" << where;
+  env->ExceptionDescribe();
+  env->ExceptionClear();
+  return true;
+};
+
+
+// static
+void AndroidCommons::runWhenUiViewConstructible(std::function<void()> fn, int retryMs) {
+  using QAA = QNativeInterface::QAndroidApplication;
+  auto attempt = [fn = std::move(fn), retryMs]() mutable {
+    // Do the probe on the Android UI thread
+    QAA::runOnAndroidMainThread([fn = std::move(fn)]() mutable -> QVariant {
+      if (clearPendingJavaException("gate-entry(UI)")) return false;
+
+      // 1) Need an Activity/Application context
+      QJniObject ctx = QAA::context();
+      if (!ctx.isValid()) return false;
+
+      // 2) Actually try to construct a View with that Context
+      QJniEnvironment env;
+      QJniObject dummyView("android/view/View", "(Landroid/content/Context;)V", ctx.object());
+      if (env->ExceptionCheck()) { env->ExceptionDescribe(); env->ExceptionClear(); return false; }
+
+      if (clearPendingJavaException("gate-exit(UI)")) return false;
+
+      // Success — run the work on the Qt thread
+      QMetaObject::invokeMethod(qApp, [fn = std::move(fn)]() mutable { fn(); }, Qt::QueuedConnection);
+      return true;
+    }).then([retryMs, fn = std::move(fn)](QFuture<QVariant> f) mutable {
+      const bool ok = f.isValid() && f.result().isValid() && f.result().toBool();
+      if (!ok) QTimer::singleShot(retryMs, qApp, [fn = std::move(fn), retryMs]() mutable {
+        AndroidCommons::runWhenUiViewConstructible(std::move(fn), retryMs);
+      });
+    });
+  };
+  QTimer::singleShot(0, qApp, attempt);
 }

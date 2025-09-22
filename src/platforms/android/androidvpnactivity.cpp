@@ -222,3 +222,11 @@ void AndroidVPNActivity::onIntentInternal(JNIEnv* env, jobject thiz) {
   }
   emit s_instance->onOpenedWithUrl(url);
 }
+
+
+bool AndroidVPNActivity::isReady(){
+  QJniEnvironment env;
+  const bool res = QJniObject::callStaticMethod<bool>(
+      CLASSNAME, "isReady", "()Z");
+  return res;
+};

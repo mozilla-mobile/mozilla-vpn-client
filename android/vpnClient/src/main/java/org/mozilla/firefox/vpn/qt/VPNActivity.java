@@ -4,6 +4,7 @@
 
 package org.mozilla.firefox.vpn.qt;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -24,32 +25,62 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 import android.view.WindowInsets;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import org.mozilla.firefox.vpn.VPNClientBinder;
 import org.mozilla.firefox.vpn.daemon.VPNService;
 import org.qtproject.qt.android.QtActivityBase;
 
 
+
 public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
   @Override
   public void onCreate(Bundle savedInstanceState) {
+    Log.d("VPNActivity", "onCreate");
+          Class<?> qtNative = null;
+      try {
+          qtNative = Class.forName("org.qtproject.qt.android.QtNative");
+          Method setActivity = qtNative.getDeclaredMethod("setActivity", Activity.class);
+          setActivity.setAccessible(true);
+          setActivity.invoke(null, this);  // static method → target = n
+      } catch (ClassNotFoundException | IllegalAccessException | InvocationTargetException |
+               NoSuchMethodException e) {
+          throw new RuntimeException(e);
+      }
+
     super.onCreate(savedInstanceState);
+    instance = this;
     if (needsOrientationLock()) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     } else {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
+    ready = true;
   }
   private static VPNActivity instance;
 
  public VPNActivity() {
     super();
-    instance = this;
+    Log.d("VPNActivity", "Constructor");
+  }
+  
+  private static boolean ready = false;
+  public static boolean isReady(){
+    return ready;
   }
 
   public static VPNActivity getInstance() {
+    Log.d("VPNActivity", "getInstance");
+    if(instance != null){
+      Log.d("VPNActivity", "instance exists");
+    } else {
+      Log.d("VPNActivity", "instance is null");
+    }
     return instance;
   }
+
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -73,6 +104,18 @@ public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
 
   @Override
   public Object getSystemService (String name){
+    Log.d("VPNActivity", "getSystemService: " + name);
+     try {
+        Object svc = getApplicationContext().getSystemService(name);
+        if (svc != null) {
+            return svc;
+        }
+    } catch (Throwable t) {
+        // swallow; we'll fall back to super below
+        android.util.Log.w("VPNActivity", "getSystemService(" + name + ") via appCtx failed", t);
+    }
+    // For services that *require* an Activity (e.g. layout inflater tied to this theme),
+    // use the normal path – but this should only happen after super.onCreate has returned.
     return super.getSystemService(name);
   }
 
@@ -266,6 +309,7 @@ public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
     if(bound){
       unbindService(mConnection);
     }
+    ready = false;
     super.onDestroy();
   }
 

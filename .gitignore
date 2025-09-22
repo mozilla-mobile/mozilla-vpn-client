@@ -45,6 +45,7 @@ CMakeUserPresets.json
 cmake_install.cmake
 CMakeCache.txt
 CMakeFiles/
+compile_commands.json
 lottie/lottie_autogen/
 lottie/liblottie.a
 nebula/nebula_autogen/
