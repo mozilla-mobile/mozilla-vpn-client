@@ -12,7 +12,11 @@ class AndroidCommons final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(AndroidCommons)
 
- public:
+public:
+static bool clearPendingJavaException(const char* where);
+  static void runWhenUiViewConstructible(std::function<void()> fn, int retryMs = 50);
+
+  static void forcePublishActivity();
   static QJniObject getActivity();
 
   static int getSDKVersion();
