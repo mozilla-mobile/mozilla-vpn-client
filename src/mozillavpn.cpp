@@ -34,7 +34,6 @@
 #include "mozillavpn_p.h"
 #include "networkmanager.h"
 #include "networkwatcher.h"
-#include "platforms/android/androidcommons.h"
 #include "productshandler.h"
 #include "purchasehandler.h"
 #include "qmlengineholder.h"
@@ -69,7 +68,7 @@
 #endif
 
 #ifdef MZ_ANDROID
-#  include "platforms/android/androidiaphandler.h"
+#  include "platforms/android/androidcommons.h"
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidvpnactivity.h"
 #endif
