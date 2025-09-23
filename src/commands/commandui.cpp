@@ -296,7 +296,7 @@ int CommandUI::run(QStringList& tokens) {
     logger.debug() << "Registered I18nStrings";
 
 #if MZ_IOS && QT_VERSION < 0x060300
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn, &App::quit);
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, &App::quit);
 #else
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, [] {
       // Submit the main ping one last time.
@@ -353,7 +353,7 @@ int CommandUI::run(QStringList& tokens) {
     MacOSMenuBar menuBar;
     menuBar.initialize();
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, &menuBar,
+    QObject::connect(vpn, &MozillaVPN::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
     QObject::connect(vpn.controller(), &Controller::stateChanged, &menuBar,
