@@ -360,7 +360,7 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn, &MozillaVPN::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
-    QObject::connect(vpn.controller(), &Controller::stateChanged, &menuBar,
+    QObject::connect(vpn->controller(), &Controller::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
 #endif
@@ -397,7 +397,7 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_WEBEXTENSION
     WebExtension::Server extensionServer(new WebExtensionAdapter(qApp));
-    QObject::connect(vpn.controller(), &Controller::readyToQuit,
+    QObject::connect(vpn->controller(), &Controller::readyToQuit,
                      &extensionServer, &WebExtension::Server::close);
 #endif
 
