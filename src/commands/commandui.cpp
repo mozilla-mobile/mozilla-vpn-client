@@ -364,6 +364,10 @@ int CommandUI::run(QStringList& tokens) {
                      &MacOSMenuBar::controllerStateChanged);
 
 #endif
+    NotificationHandler* notificationHandler = NotificationHandler::create(qApp);
+    QObject::connect(vpn->controller(), &Controller::stateChanged,notificationHandler,
+                     &NotificationHandler::showNotification);
+
 
     QObject::connect(
         SettingsHolder::instance(), &SettingsHolder::languageCodeChanged, []() {
