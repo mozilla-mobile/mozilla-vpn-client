@@ -2311,7 +2311,12 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
   return callback();
 }
 
-// static
+/**
+* This function instantiates a QMLApplication, MozillaVPN singleton and calles
+* the provided callback.
+* On Android, the callback is called when the Context is available, the Qt Eventloop is running in this case.
+* On other platforms, the callback is called before starting the Qt Eventloop.
+*/
 int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
@@ -2320,10 +2325,9 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
 #endif
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
-  MozillaVPN vpn;
-
   // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
   QQmlApplicationEngine* engine = new QQmlApplicationEngine();
+  MozillaVPN vpn;
   QmlEngineHolder engineHolder(engine);
 
   // TODO pending #3398
