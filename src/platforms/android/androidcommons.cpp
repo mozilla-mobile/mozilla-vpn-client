@@ -48,22 +48,21 @@ QJniObject AndroidCommons::getActivity() {
 
 void AndroidCommons::forcePublishActivity() {
   using QAA = QNativeInterface::QAndroidApplication;
-auto fut = QAA::runOnAndroidMainThread([]() -> QVariant {
+  auto fut = QAA::runOnAndroidMainThread([]() -> QVariant {
     QJniEnvironment env;
-
     // 1) Get a context
     QJniObject activity = getActivity();
 
     // 2) Re-publish to Qt (if available in your Qt build)
     // Safe no-op if it's already the same:
-  QJniObject::callStaticMethod<void>(
-        "org/qtproject/qt/android/QtNative",
-        "setActivity",
-        "(Landroid/app/Activity;)V",
-        activity.object<jobject>());
-    return true;
-});
-fut.waitForFinished();
+    QJniObject::callStaticMethod<void>(
+          "org/qtproject/qt/android/QtNative",
+          "setActivity",
+          "(Landroid/app/Activity;)V",
+          activity.object<jobject>());
+      return true;
+  });
+  fut.waitForFinished();
 }
 
 // static
