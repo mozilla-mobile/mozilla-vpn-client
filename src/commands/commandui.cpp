@@ -164,20 +164,6 @@ int CommandUI::run(QStringList& tokens) {
   return MozillaVPN::runGuiApp([&]() {
     auto const vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
-    using QAA = QNativeInterface::QAndroidApplication;
-
-    // Do the checks on the Android UI thread
-    {
-      QJniEnvironment env;
-      // 1) Do we have a Context?
-      QJniObject androidCTX = QAA::context();
-      if (!androidCTX.isValid()) {
-        logger.debug() << "BASTI Android Context not yet available!!!";
-      } else {
-        logger.debug() << "BASTI Android Context is available!";
-      }
-    }
-
     Telemetry::startTimeToFirstScreenTimer();
 
     if (testingOption.m_set) {
@@ -233,15 +219,13 @@ int CommandUI::run(QStringList& tokens) {
     // Currently there is a crash happening on exit with Huawei devices.
     // Until this is fixed, setting this variable is the "official" workaround.
     // We certainly should look at this once 6.6 is out.
-#  if QT_VERSION >= 0x060990
+#  if QT_VERSION >= 0x061000
 #    error We have forgotten to remove this Huawei hack!
 #  endif
     if (AndroidCommons::GetManufacturer() == "Huawei") {
       qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
     }
 #endif
-    logger.debug() << "Primed Android dirs!";
-
     auto const engineHolder = QmlEngineHolder::instance();
     auto const engine =
         static_cast<QQmlApplicationEngine*>(engineHolder->engine());
@@ -259,7 +243,7 @@ int CommandUI::run(QStringList& tokens) {
     Nebula::Initialize(engine);
 
     // Cleanup previous temporary files.
-    // TemporaryDir::cleanupAll();
+    TemporaryDir::cleanupAll();
 
     vpn->setStartMinimized(minimizedOption.m_set ||
                           (qgetenv("MVPN_MINIMIZED") == "1"));
@@ -334,20 +318,15 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn->controller(), &Controller::readyToQuit, vpn,
                      &App::quit, Qt::QueuedConnection);
 
-    // Here is the main QML file.
-    {
-      QJniEnvironment env;
-      // 1) Do we have a Context?
-      QJniObject androidCTX = QAA::context();
-      if (!androidCTX.isValid()) {
-        logger.debug() << "BASTI Android Context not yet available!!!";
-      } else {
-        logger.debug() << "BASTI Android Context is available!";
-      }
-    }
+    #ifdef MZ_ANDROID
+    // On Android we need to make sure when we load a QML application that the context
+    // is set. Qt ___should___ do this for us, but it seems that in some cases it does not.
+    // So we chant dark JNI magic to make sure the VPNActivity is set as context provider.
     logger.debug() << "Forcing activity publish";
     AndroidCommons::forcePublishActivity();
+    // In case we have a pending exception, clear it before loading main.qml
     AndroidCommons::clearPendingJavaException("before main.qml load");
+    #endif 
     const QUrl url(QStringLiteral("qrc:/qt/qml/Mozilla/VPN/main.qml"));
     logger.debug() << "Loading main QML file:" << url.toString();
     engine->load(url);
