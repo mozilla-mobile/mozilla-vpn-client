@@ -341,7 +341,7 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MZ_WINDOWS
     auto const updateWindowDecoration = [&engineHolder]() {
-      auto const window = engineHolder.window();
+      auto const window = engineHolder->window();
       WindowsUtils::updateTitleBarColor(window,
                                         Theme::instance()->isThemeDark());
       WindowsUtils::setDockIcon(window, QImage(":/ui/resources/logo-dock.png"));
