@@ -239,11 +239,12 @@ void XdgPortal::setupAppScope(const QString& appId) {
     return;
   }
 
-  QString cgAppId = readCgroupAppId();
-  if (!cgAppId.isEmpty()) {
-    // If we found an appId then we have no work to do.
-    logger.info() << "Launched as app" << cgAppId;
+  QString initAppId = readCgroupAppId();
+  if (initAppId == appId) {
+    // We already have the correct application ID.
     return;
+  } else if (!initAppId.isEmpty()) {
+    logger.info() << "Launched as app:" << initAppId;
   }
 
   // !! QTBUG-135928 WORKAROUND !!
@@ -303,12 +304,12 @@ void XdgPortal::setupAppScope(const QString& appId) {
   // because we don't have a QCoreApplication setup yet. So, instead lets poll
   // our cgroup until it changes.
   for (int retries = 0; retries < 15; retries++) {
-    cgAppId = readCgroupAppId();
-    if (cgAppId.isEmpty()) {
+    QString newAppId = readCgroupAppId();
+    if (newAppId.isEmpty() || (newAppId == initAppId)) {
       QThread::msleep(100);
       continue;
     }
-    logger.debug() << "App ID updated:" << cgAppId;
+    logger.debug() << "App ID updated:" << newAppId;
     break;
   }
 }
