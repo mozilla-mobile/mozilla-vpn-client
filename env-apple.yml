@@ -17,7 +17,7 @@ dependencies:
   - rust-std-aarch64-apple-ios=1.75
   - rust-std-x86_64-apple-ios=1.75
   - go=1.22
-  - compiler-rt
+  - compiler-rt=20.1.8
   - compiler-rt_osx-64
   - compiler-rt_osx-arm64
   - cmake=3.26.3
