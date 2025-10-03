@@ -53,6 +53,7 @@
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
+#include "tasks/deleteostunnelconfig/taskdeleteostunnelconfig.h"
 #include "tasks/getlocation/taskgetlocation.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/heartbeat/taskheartbeat.h"
@@ -845,7 +846,7 @@ void MozillaVPN::reset(bool forceInitialState) {
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
-  controller()->deleteOSTunnelConfig();
+  TaskScheduler::scheduleTask(new TaskDeleteOSTunnelConfig());
 
   PurchaseHandler::instance()->stopSubscription();
   if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
@@ -1257,7 +1258,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 
 void MozillaVPN::hardReset() {
   SettingsManager::instance()->hardReset();
-  controller()->deleteOSTunnelConfig();
+  TaskScheduler::scheduleTask(new TaskDeleteOSTunnelConfig());
 }
 
 void MozillaVPN::hardResetAndQuit() {
