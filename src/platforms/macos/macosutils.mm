@@ -40,6 +40,12 @@ void MacOSUtils::openSystemSettingsLoginItems() {
 }
 
 // static
+int MacOSUtils::getMacOSMajorVersion() {
+  NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
+  return version.majorVersion;
+}
+
+// static
 QString MacOSUtils::computerName() {
   NSString* name = [[NSHost currentHost] localizedName];
   return QString::fromNSString(name);
