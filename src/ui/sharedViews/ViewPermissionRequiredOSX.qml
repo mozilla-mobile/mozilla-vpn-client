@@ -28,7 +28,7 @@ MZFlickable {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: MZTheme.theme.contentTopMarginDesktop
 
-            source: MZAssetLookup.getLocalizedImageSource("MacosPermissionBackground")
+            source: VPNMacOSUtils.getMacOSMajorVersion() > 25 ? MZAssetLookup.getLocalizedImageSource("MacosPermissionBackgroundTahoe") : MZAssetLookup.getLocalizedImageSource("MacosPermissionBackground")
             fillMode: Image.PreserveAspectFit
         }
 

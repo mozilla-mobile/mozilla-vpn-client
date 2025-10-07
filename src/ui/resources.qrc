@@ -354,6 +354,18 @@
         <file>resources/permissions/macos-background-light-fr.svg</file>
         <file>resources/permissions/macos-background-light-it.svg</file>
         <file>resources/permissions/macos-background-light-nl.svg</file>
+        <file>resources/permissions/macos-tahoe-background-dark-de.svg</file>
+        <file>resources/permissions/macos-tahoe-background-dark-en.svg</file>
+        <file>resources/permissions/macos-tahoe-background-dark-es.svg</file>
+        <file>resources/permissions/macos-tahoe-background-dark-fr.svg</file>
+        <file>resources/permissions/macos-tahoe-background-dark-it.svg</file>
+        <file>resources/permissions/macos-tahoe-background-dark-nl.svg</file>
+        <file>resources/permissions/macos-tahoe-background-light-de.svg</file>
+        <file>resources/permissions/macos-tahoe-background-light-en.svg</file>
+        <file>resources/permissions/macos-tahoe-background-light-es.svg</file>
+        <file>resources/permissions/macos-tahoe-background-light-fr.svg</file>
+        <file>resources/permissions/macos-tahoe-background-light-it.svg</file>
+        <file>resources/permissions/macos-tahoe-background-light-nl.svg</file>
         <file>resources/qrcodes/app-store-qrcode.png</file>
         <file>resources/qrcodes/play-store-qrcode.png</file>
         <file>resources/settings/aboutUs.svg</file>
