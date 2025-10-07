@@ -1049,8 +1049,14 @@ permissionMacos:
   instructions:
     value: In order to do this, please click the button below to open the <i>Login Items</i> of your <i>System Preferences</i>, and enable <i>Allow in the background</i> for Mozilla VPN.
     comment: Paragraph explaining how to enable the VPN to run in the background.
+  instructionsTahoe:
+    value: In order to do this, please click the button below to open the <i>Login Items & Extensions</i> of your <i>System Preferences</i>, and enable <i>App Background Activity</i> for Mozilla VPN.
+    comment: Paragraph explaining how to enable the VPN to run in the background.
   openSettingsButtonLabel:
     value: Open Login Items
+    comment: Label for the button that opens the login items settings page
+  openSettingsButtonLabelTahoe:
+    value: Open Login Items & Extensions
     comment: Label for the button that opens the login items settings page
 
 global:

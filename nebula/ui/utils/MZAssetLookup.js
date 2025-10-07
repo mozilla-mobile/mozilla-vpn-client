@@ -446,6 +446,24 @@ var localizedImageLookup =
           it: 'qrc:/ui/resources/permissions/macos-background-dark-it.svg',
           nl: 'qrc:/ui/resources/permissions/macos-background-dark-nl.svg'
         }
+      },
+      'MacosPermissionBackgroundTahoe': {
+        filenameLight: {
+          de: 'qrc:/ui/resources/permissions/macos-tahoe-background-light-de.svg',
+          en: 'qrc:/ui/resources/permissions/macos-tahoe-background-light-en.svg',
+          es: 'qrc:/ui/resources/permissions/macos-tahoe-background-light-es.svg',
+          fr: 'qrc:/ui/resources/permissions/macos-tahoe-background-light-fr.svg',
+          it: 'qrc:/ui/resources/permissions/macos-tahoe-background-light-it.svg',
+          nl: 'qrc:/ui/resources/permissions/macos-tahoe-background-light-nl.svg'
+        },
+        filenameDark: {
+          de: 'qrc:/ui/resources/permissions/macos-tahoe-background-dark-de.svg',
+          en: 'qrc:/ui/resources/permissions/macos-tahoe-background-dark-en.svg',
+          es: 'qrc:/ui/resources/permissions/macos-tahoe-background-dark-es.svg',
+          fr: 'qrc:/ui/resources/permissions/macos-tahoe-background-dark-fr.svg',
+          it: 'qrc:/ui/resources/permissions/macos-tahoe-background-dark-it.svg',
+          nl: 'qrc:/ui/resources/permissions/macos-tahoe-background-dark-nl.svg'
+        }
       }
     }
 

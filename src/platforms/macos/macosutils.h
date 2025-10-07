@@ -19,6 +19,8 @@ class MacOSUtils final : public QObject {
 
   Q_INVOKABLE void openSystemSettingsLoginItems();
 
+  Q_INVOKABLE int getMacOSMajorVersion();
+
   static QString appId(const QString& suffix = QString());
 
   static QString computerName();
