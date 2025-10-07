@@ -5,12 +5,12 @@
 #ifndef QMLENGINEHOLDER_H
 #define QMLENGINEHOLDER_H
 
-class QQmlEngine;
+#include <QQmlApplicationEngine>
 class QWindow;
 
 class QmlEngineHolder {
  public:
-  explicit QmlEngineHolder(QQmlEngine* engine);
+  explicit QmlEngineHolder(QQmlApplicationEngine* engine);
 
   QmlEngineHolder(const QmlEngineHolder&) = delete;
   QmlEngineHolder& operator=(const QmlEngineHolder&) = delete;
@@ -23,10 +23,10 @@ class QmlEngineHolder {
 
   static bool exists();
 
-  QQmlEngine* engine() { return m_engine; }
+  QQmlApplicationEngine* engine() { return m_engine; }
 
 #ifdef UNIT_TEST
-  void replaceEngine(QQmlEngine* engine) { m_engine = engine; }
+  void replaceEngine(QQmlApplicationEngine* engine) { m_engine = engine; }
 #endif
 
   QWindow* window() const;
@@ -35,7 +35,7 @@ class QmlEngineHolder {
   bool hasWindow() const;
 
  private:
-  QQmlEngine* m_engine = nullptr;
+  QQmlApplicationEngine* m_engine = nullptr;
 };
 
 #endif  // QMLENGINEHOLDER_H
