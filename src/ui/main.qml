@@ -203,6 +203,24 @@ Window {
                  VPN.state === VPN.StateMain
     }
 
+    Shortcut {
+        sequence: "Ctrl+M"
+        enabled: Qt.platform.os === "osx"
+
+        onActivated: {
+            window.showMinimized();
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+,"
+        enabled: Qt.platform.os === "osx"
+
+        onActivated: {
+            MZNavigator.requestScreen(VPN.ScreenSettings);
+        }
+    }
+
     Connections {
         target: VPNAppPermissions
         function onNotification(type,message,action) {
