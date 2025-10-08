@@ -99,28 +99,19 @@ EventListener::~EventListener() {
 #endif
 }
 
-bool EventListener::checkForInstances(const QString& windowName) {
-  logger.debug() << "Checking other instances";
-
-#ifdef MZ_WINDOWS
-  // Let's check if there is a window with the right name.
-  HWND window =
-      FindWindow(nullptr, reinterpret_cast<const wchar_t*>(windowName.utf16()));
-  if (!window) {
-    WindowsUtils::windowsLog("No other instances found");
-    return false;
-  }
-#endif
-
-  // Try to wake the UI and bring it to the foreground.
-  logger.debug() << "Try to communicate with the existing instance";
-  return sendCommand("show");
-}
+bool EventListener::checkForInstances() { return sendCommand("show"); }
 
 bool EventListener::sendCommand(const QString& message) {
   QString path = pipeFileName();
 
-#if !defined(MZ_WINDOWS)
+#ifdef MZ_WINDOWS
+  WIN32_FIND_DATAA findData;
+  HANDLE h = FindFirstFileA(qPrintable(path), &findData);
+  if (h == INVALID_HANDLE_VALUE) {
+    return false;
+  }
+  FindClose(h);
+#else
   if (!QFileInfo::exists(path)) {
     return false;
   }
@@ -129,7 +120,8 @@ bool EventListener::sendCommand(const QString& message) {
   QLocalSocket socket;
   socket.connectToServer(path);
   if (!socket.waitForConnected(1000)) {
-    logger.error() << "Connection failed:" << socket.errorString();
+    QTextStream stream(stderr);
+    stream << "Socket connection failed:" << socket.errorString() << Qt::endl;
     return false;
   }
 
