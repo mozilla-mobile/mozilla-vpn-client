@@ -41,7 +41,6 @@ Vcs-Git: https://github.com/mozilla-mobile/mozilla-vpn-client
 
 Package: mozillavpn
 Architecture: any
-Recommends: mozillavpn-keyring
 Depends: wireguard (>=1.0.20200319),
          wireguard-tools (>=1.0.20200319),
          libsecret-1-0,
