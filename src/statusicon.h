@@ -44,6 +44,8 @@ class StatusIcon final : public QObject {
   // Animated icon.
   QTimer m_animatedIconTimer;
   uint8_t m_animatedIconIndex = 0;
+
+  QTimer m_animationWatchdog;
 };
 
 #endif  // STATUSICON_H
