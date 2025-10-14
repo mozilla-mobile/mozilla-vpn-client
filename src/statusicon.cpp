@@ -24,6 +24,9 @@ constexpr const QColor ORANGE_COLOR = QColor(255, 164, 54, 255);
 constexpr const QColor RED_COLOR = QColor(226, 40, 80, 255);
 constexpr const QColor INVALID_COLOR = QColor();
 
+using namespace std::chrono_literals;
+constexpr const std::chrono::milliseconds ANIMATION_WATCHDOG_TIMEOUT = 1000ms;
+
 #if defined(MZ_LINUX) || defined(MZ_WINDOWS)
 constexpr const std::array<const char*, 4> ANIMATED_LOGO_STEPS = {
     ":/ui/resources/logo-animated1.png", ":/ui/resources/logo-animated2.png",
@@ -53,6 +56,10 @@ StatusIcon::StatusIcon() {
 
   connect(&m_animatedIconTimer, &QTimer::timeout, this,
           &StatusIcon::animateIcon);
+
+  m_animationWatchdog.setSingleShot(true);
+  connect(&m_animationWatchdog, &QTimer::timeout, this,
+          &StatusIcon::refreshNeeded);
 }
 
 StatusIcon::~StatusIcon() { MZ_COUNT_DTOR(StatusIcon); }
@@ -78,6 +85,7 @@ void StatusIcon::animateIcon() {
   if (m_animatedIconIndex == ANIMATED_LOGO_STEPS.size()) {
     m_animatedIconIndex = 0;
   }
+  m_animationWatchdog.start(ANIMATION_WATCHDOG_TIMEOUT);
   refreshNeeded();
 }
 
