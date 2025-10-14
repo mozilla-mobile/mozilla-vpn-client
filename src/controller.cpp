@@ -240,6 +240,7 @@ void Controller::deleteOSTunnelConfig() {
   if (m_impl) {
     m_impl->deleteOSTunnelConfig();
   }
+  setState(Controller::StateInitializing);
 }
 
 void Controller::startHandshakeTimer() {
