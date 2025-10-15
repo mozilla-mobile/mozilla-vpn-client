@@ -1416,7 +1416,9 @@ void MozillaVPN::errorHandled() {
 
   // Controller errors should trigger a system tray notification.
   if (alert == ErrorHandler::ControllerErrorAlert) {
-    NotificationHandler::instance()->connectionFailureNotification();
+    if (NotificationHandler::instance() != nullptr) {
+      NotificationHandler::instance()->connectionFailureNotification();
+    }
   }
 
   // Any error in authenticating state sends to the Initial state.
