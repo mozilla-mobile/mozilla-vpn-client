@@ -1048,16 +1048,19 @@ permissionMacos:
     comment: Paragraph requesting the user to allow the VPN to run in the background.
   instructions:
     value: In order to do this, please click the button below to open the <i>Login Items</i> of your <i>System Preferences</i>, and enable <i>Allow in the background</i> for Mozilla VPN.
-    comment: Paragraph explaining how to enable the VPN to run in the background.
-  instructionsTahoe:
+    comment: Paragraph explaining how to enable the VPN to run in the background on macOS 14, see https://support.apple.com/guide/mac-help/mtusr003/mac for reference translations of these features on different versions of macOS.
+  instructionsMacOS15:
+    value: In order to do this, please click the button below to open the <i>Login Items & Extensions</i> of your <i>System Preferences</i>, and enable <i>Allow in the background</i> for Mozilla VPN.
+    comment: Paragraph explaining how to enable the VPN to run in the background on macOS 15 and above, see https://support.apple.com/guide/mac-help/mtusr003/mac for reference translations of these features on different versions of macOS.
+  instructionsMacOS26:
     value: In order to do this, please click the button below to open the <i>Login Items & Extensions</i> of your <i>System Preferences</i>, and enable <i>App Background Activity</i> for Mozilla VPN.
-    comment: Paragraph explaining how to enable the VPN to run in the background.
+    comment: Paragraph explaining how to enable the VPN to run in the background on macOS 26 and above, see https://support.apple.com/guide/mac-help/mtusr003/mac for reference translations of these features on different versions of macOS.
   openSettingsButtonLabel:
     value: Open Login Items
-    comment: Label for the button that opens the login items settings page
-  openSettingsButtonLabelTahoe:
+    comment: Label for the button that opens the login items settings page on macOS 14
+  openSettingsButtonLabelMacOS15:
     value: Open Login Items & Extensions
-    comment: Label for the button that opens the login items settings page
+    comment: Label for the button that opens the login items settings page on macOS 15 and above
 
 global:
   expand:
