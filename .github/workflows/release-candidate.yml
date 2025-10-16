@@ -12,12 +12,32 @@ jobs:
       name: flathub
     steps:
       - name: Triger flathub updates
+        id: curl
         env:
           FLATHUB_TOKEN: ${{ secrets.FLATHUB_TOKEN }}
           FLATHUB_API_URL: https://api.github.com/repos/flathub/org.mozilla.vpn/actions/workflows/update-check.yml/dispatches
         run: |
+          response=$( \
           curl -sSL -X POST -d '{"ref":"beta"}' \
              -H "Accept: application/vnd.github+json" \
              -H "Authorization: Bearer ${FLATHUB_TOKEN}" \
              -H "X-GitHub-Api-Version: 2022-11-28" \
-             ${FLATHUB_API_URL}
+             ${FLATHUB_API_URL}); \
+          echo "response=$response" >> $GITHUB_OUTPUT
+
+      - name: Response
+        run: echo ${{ steps.curl.outputs.response }}
+
+    outputs:
+      curl_response: ${{ steps.code.outputs.response }}
+
+  failure-check:
+    needs: flathub-beta
+    if: needs.flathub-beta.outputs.curl_response != 200
+    runs-on: ubuntu-latest
+    steps:
+      - name: fail_job
+        uses: actions/github-script@v3
+        with:
+          script: |
+              core.setFailed('Curl failed')
