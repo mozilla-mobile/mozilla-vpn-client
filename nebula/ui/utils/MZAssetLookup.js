@@ -447,7 +447,7 @@ var localizedImageLookup =
           nl: 'qrc:/ui/resources/permissions/macos-background-dark-nl.svg'
         }
       },
-      'MacosPermissionBackgroundTahoe': {
+      'MacosPermissionBackgroundMacOS26': {
         filenameLight: {
           de: 'qrc:/ui/resources/permissions/macos-tahoe-background-light-de.svg',
           en: 'qrc:/ui/resources/permissions/macos-tahoe-background-light-en.svg',
