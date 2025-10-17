@@ -18,6 +18,13 @@
 #  include "platforms/windows/windowsutils.h"
 #endif
 
+#ifdef MVPN_WEBEXTENSION
+#  include <QFileInfo>
+#  include <QUrl>
+
+#  include "webextension/webextbridge.h"
+#endif
+
 constexpr const char* CLP_DEFAULT_COMMAND = "ui";
 
 Q_DECL_EXPORT int main(int argc, char* argv[]) {
@@ -42,6 +49,18 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setOrganizationName("Mozilla");
   QCoreApplication::setApplicationVersion(APP_VERSION);
+
+#ifdef MVPN_WEBEXTENSION
+  // Special case - if the first argument is a path to a file named
+  // 'manifest.json', or a URL with a scheme of 'chrome-extension'
+  // then launch ourselves as a native messaging bridge.
+  if (argc > 1) {
+    if ((QFileInfo(argv[1]).fileName() == "manifest.json") ||
+        (QUrl(argv[1]).scheme() == "chrome-extension")) {
+      return WebExtBridge::run(argc, argv);
+    }
+  }
+#endif
 
   CommandLineParser clp;
   return clp.parse(argc, argv, CLP_DEFAULT_COMMAND);
