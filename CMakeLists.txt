@@ -192,6 +192,7 @@ if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTS)
 
     # Functional Tests
     add_subdirectory(tests/functional)
+    add_subdirectory(tests/webext)
 endif()
 
 # Extra platform targets

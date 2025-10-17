@@ -24,6 +24,8 @@ class WebExtBridge final : public QObject {
 
   bool sendMessage(const QByteArray& message);
 
+  static int run(int argc,  char* argv[]);
+
  signals:
   void connected();
   void disconnected();

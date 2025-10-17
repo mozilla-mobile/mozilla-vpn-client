@@ -81,4 +81,3 @@ elseif(WIN32)
 endif()
 
 add_subdirectory(socks5proxy)
-add_subdirectory(bridge)
