@@ -260,3 +260,13 @@ FEATURE(webExtension,    // Feature ID
         QStringList(),         // feature dependencies
         byPlatform({           // default value
                     .windows = true}))
+
+FEATURE(systrayUI,    // Feature ID
+        "systrayUI",  // Feature name
+        byPlatform({  // Can be flipped on
+                    .windows = true,
+                    .macos = true,
+                    .gnu_linux = true}),
+        FeatureCallback_true,  // Can be flipped off
+        QStringList(),         // feature dependencies
+        byPlatform({}))
