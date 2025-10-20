@@ -50,8 +50,6 @@ qt_add_qml_module(components
          MZMobileStatusBarModifier.qml
          MZMouseArea.qml
          MZPanel.qml
-         MZPaymentMethod.qml
-         MZPill.qml
          MZPopupButton.qml
          MZPopup.qml
          MZRadioButtonLabel.qml
@@ -61,7 +59,6 @@ qt_add_qml_module(components
          MZSignOut.qml
          MZSimplePopup.qml
          MZStackView.qml
-         MZSubscriptionOption.qml
          MZSubtitle.qml
          MZSystemAlert.qml
          MZTabNavigation.qml

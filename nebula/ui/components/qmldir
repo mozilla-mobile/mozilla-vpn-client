@@ -44,8 +44,6 @@ MZMouseArea 0.1 MZMouseArea.qml
 MZNavigatorLoader 0.1 navigator/navigatorLoader.qml
 MZPanel 0.1 MZPanel.qml
 MZPasteButton 0.1 MZPasteButton.qml
-MZPaymentMethod 0.1 MZPaymentMethod.qml
-MZPill 0.1 MZPill.qml
 MZPopup 0.1 MZPopup.qml
 MZPopupButton 0.1 MZPopupButton.qml
 MZRadioButtonLabel 0.1 MZRadioButtonLabel.qml
@@ -58,7 +56,6 @@ MZSettingsToggle 0.1 MZSettingsToggle.qml
 MZSignOut 0.1 MZSignOut.qml
 MZSimplePopup 0.1 MZSimplePopup.qml
 MZStackView 0.1 MZStackView.qml
-MZSubscriptionOption 0.1 MZSubscriptionOption.qml
 MZSubtitle 0.1 MZSubtitle.qml
 MZSwipeAction 0.1 MZSwipeAction.qml
 MZSwipeDelegate 0.1 MZSwipeDelegate.qml
