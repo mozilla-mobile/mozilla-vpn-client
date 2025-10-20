@@ -13,6 +13,8 @@ mz_add_new_module(
         server.h
         webextbridge.cpp
         webextbridge.h
+        webextcommand.cpp
+        webextcommand.h
         webexthandler.cpp
         webexthandler.h
         webextreader.cpp
@@ -26,6 +28,8 @@ mz_add_new_module(
         tests/testconnection.h
         tests/testserver.cpp
         tests/testserver.h
+    EXTRA_DEPENDENCIES
+        mzutils
     QT_DEPENDENCIES
         Core
         Network

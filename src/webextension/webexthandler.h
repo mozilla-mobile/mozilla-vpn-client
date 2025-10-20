@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef COMMAND_H
-#define COMMAND_H
+#ifndef WEBEXTHANDLER_H
+#define WEBEXTHANDLER_H
 
 #include <QFileDevice>
 #include <QObject>
@@ -54,4 +54,4 @@ class WebExtWorker final : public QThread {
   void run() override;
 };
 
-#endif  // COMMAND_H
+#endif  // WEBEXTHANDLER_H

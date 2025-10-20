@@ -22,7 +22,7 @@
 #  include <QFileInfo>
 #  include <QUrl>
 
-#  include "webextension/webextbridge.h"
+#  include "webextension/webextcommand.h"
 #endif
 
 constexpr const char* CLP_DEFAULT_COMMAND = "ui";
@@ -53,11 +53,19 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
 #ifdef MVPN_WEBEXTENSION
   // Special case - if the first argument is a path to a file named
   // 'manifest.json', or a URL with a scheme of 'chrome-extension'
-  // then launch ourselves as a native messaging bridge.
+  // then launch ourselves as the native messaging bridge.
+  static Command::RegistrationProxy<WebExtCommand> s_commandWebExt;
   if (argc > 1) {
     if ((QFileInfo(argv[1]).fileName() == "manifest.json") ||
         (QUrl(argv[1]).scheme() == "chrome-extension")) {
-      return WebExtBridge::run(argc, argv);
+      char** newargs = (char**)calloc(argc+1, sizeof(char*));
+      newargs[0] = argv[0];
+      newargs[1] = (char*)"webext";
+      for (int i = 1; i < argc; i++) {
+        newargs[i+1] = argv[i];
+      }
+      argc++;
+      argv = newargs;
     }
   }
 #endif
