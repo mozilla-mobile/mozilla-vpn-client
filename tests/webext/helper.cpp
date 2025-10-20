@@ -31,6 +31,9 @@ void TestHelper::cleanup() {
 
 // static
 void TestHelper::runNativeMessaging(QStringList arguments) {
+  arguments.prepend("webext");
+  qDebug() << "run with args:" << arguments;
+
   m_nativeMessagingProcess.start(s_app, arguments,
                                  QProcess::Unbuffered | QProcess::ReadWrite);
   if (!m_nativeMessagingProcess.waitForStarted()) {
