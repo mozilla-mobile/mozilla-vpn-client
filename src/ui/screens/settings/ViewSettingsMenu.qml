@@ -128,6 +128,19 @@ MZViewBase {
                 }
             }
 
+            MZSignOut {
+                id: signOutLink
+
+                objectName: "accountLogout"
+                colorStrength: MZSignOut.ColorStrength.Soft
+                anchors {
+                    horizontalCenter: undefined
+                    bottom: undefined
+                    bottomMargin: undefined
+                }
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+                Layout.topMargin: MZTheme.theme.vSpacingSmall - parent.spacing
+            }
         }
     }
 }
