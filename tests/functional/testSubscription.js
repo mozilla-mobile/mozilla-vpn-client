@@ -385,31 +385,6 @@ describe('Subscription view', function() {
     await vpn.waitForInitialView();
   });
 
-  it('record telemetry when user clicks on Sign out in the Settings screen',
-     async () => {
-       if (this.ctx.wasm) {
-         // This test cannot run in wasm
-         return;
-       }
-
-       await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-       await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-       await vpn.waitForQueryAndClick(
-           queries.screenSettings.USER_PROFILE.visible());
-       await vpn.waitForQuery(
-           queries.screenSettings.subscriptionView.SCREEN.visible());
-       await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-       await vpn.waitForQuery(
-           queries.screenSettings.subscriptionView.SIGN_OUT.visible());
-       await vpn.scrollToQuery(
-           queries.screenSettings.subscriptionView.FLICKABLE,
-           queries.screenSettings.subscriptionView.SIGN_OUT.visible());
-
-       await vpn.waitForQueryAndClick(
-           queries.screenSettings.subscriptionView.SIGN_OUT.visible());
-     });
-
   async function openSubscriptionManagement() {
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());

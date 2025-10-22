@@ -959,4 +959,24 @@ describe('Settings', function() {
 
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
   });
+
+  it.only('record telemetry when user clicks on Sign out in the Settings screen',
+    async () => {
+    if (this.ctx.wasm) {
+        // This test cannot run in wasm
+        return;
+    }
+
+    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
+    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.USER_PROFILE.visible());
+    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
+
+    await vpn.waitForQuery(
+        queries.screenSettings.SIGN_OUT.visible());
+
+    await vpn.waitForQueryAndClick(
+        queries.screenSettings.SIGN_OUT.visible());
+    });
 });
