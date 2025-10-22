@@ -14,7 +14,6 @@
 #include "logger.h"
 #include "loglevel.h"
 #include "mozillavpn.h"
-#include "qmlengineholder.h"
 
 namespace {
 Navigator* s_instance = nullptr;
@@ -41,7 +40,7 @@ struct ScreenData {
   Navigator::LoadPolicy m_loadPolicy;
 
   // The URL of the component.
-  QString m_qmlComponentUrl;
+  QUrl m_qmlComponentUrl;
 
   // The list of acceptable App states. Empty means any state is OK.
   QVector<int> m_requiredState;
@@ -56,9 +55,6 @@ struct ScreenData {
   // function to decide the screen policy. If the function returns false, the
   // app will quit.
   bool (*m_quitBlocked)() = nullptr;
-
-  // The cache of the QML component.
-  QQmlComponent* m_qmlComponent = nullptr;
 
   // List of stack views, or views registered by this screen.
   QList<Layer> m_layers;
@@ -102,17 +98,6 @@ QList<ScreenData*> computeScreens(int* requestedScreen) {
 
   Q_ASSERT(!screens.isEmpty());
   return screens;
-}
-
-void maybeGenerateComponent(Navigator* navigator, ScreenData* screen) {
-  if (!screen->m_qmlComponent) {
-    QQmlComponent* qmlComponent = new QQmlComponent(
-        QmlEngineHolder::instance()->engine(), screen->m_qmlComponentUrl,
-        QQmlComponent::Asynchronous, navigator);
-
-    Q_ASSERT(!qmlComponent->isError());
-    screen->m_qmlComponent = qmlComponent;
-  }
 }
 
 };  // namespace
@@ -159,9 +144,8 @@ void Navigator::computeComponent() {
   }
   Q_ASSERT(topPriorityScreen);
 
-  maybeGenerateComponent(this, topPriorityScreen);
   loadScreen(topPriorityScreen->m_screen, topPriorityScreen->m_loadPolicy,
-             topPriorityScreen->m_qmlComponent, ForceReloadAll);
+             topPriorityScreen->m_qmlComponentUrl, ForceReloadAll);
 }
 
 void Navigator::requestScreenFromBottomBar(
@@ -182,16 +166,14 @@ void Navigator::requestScreen(int requestedScreen,
 
   for (ScreenData* screen : screens) {
     if (screen->m_screen == requestedScreen) {
-      maybeGenerateComponent(this, screen);
-
-      if (screen->m_qmlComponent == m_currentComponent &&
+      if (screen->m_qmlComponentUrl == m_currentLoadUrl &&
           loadingFlags == NoFlags) {
         logger.debug() << "Already in the right screen";
         return;
       }
 
-      loadScreen(screen->m_screen, screen->m_loadPolicy, screen->m_qmlComponent,
-                 loadingFlags);
+      loadScreen(screen->m_screen, screen->m_loadPolicy,
+                 screen->m_qmlComponentUrl, loadingFlags);
       return;
     }
   }
@@ -236,9 +218,8 @@ void Navigator::requestPreviousScreen() {
 }
 
 void Navigator::loadScreen(int screen, LoadPolicy loadPolicy,
-                           QQmlComponent* component,
-                           LoadingFlags loadingFlags) {
-  logger.debug() << "Loading screen" << component->url().toString();
+                           const QUrl& loadUrl, LoadingFlags loadingFlags) {
+  logger.debug() << "Loading screen" << loadUrl.toString();
 
   if (screen == m_currentScreen) {
     logger.debug()
@@ -256,7 +237,7 @@ void Navigator::loadScreen(int screen, LoadPolicy loadPolicy,
   }
 
   m_currentLoadPolicy = loadPolicy;
-  m_currentComponent = component;
+  m_currentLoadUrl = loadUrl;
   m_currentLoadingFlags = loadingFlags;
 
   emit currentComponentChanged();
