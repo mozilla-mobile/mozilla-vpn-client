@@ -59,6 +59,7 @@ qt_add_qml_module(components
          MZSignOut.qml
          MZSimplePopup.qml
          MZStackView.qml
+         MZSubscriptionOption.qml
          MZSubtitle.qml
          MZSystemAlert.qml
          MZTabNavigation.qml

@@ -56,6 +56,7 @@ MZSettingsToggle 0.1 MZSettingsToggle.qml
 MZSignOut 0.1 MZSignOut.qml
 MZSimplePopup 0.1 MZSimplePopup.qml
 MZStackView 0.1 MZStackView.qml
+MZSubscriptionOption 0.1 MZSubscriptionOption.qml
 MZSubtitle 0.1 MZSubtitle.qml
 MZSwipeAction 0.1 MZSwipeAction.qml
 MZSwipeDelegate 0.1 MZSwipeDelegate.qml
