@@ -55,7 +55,7 @@ describe('User authentication in browser', function() {
         queries.screenSettings.USER_PROFILE.visible());
 
     await vpn.waitForQueryAndClick(
-        queries.screenSettings.subscriptionView.SIGN_OUT.visible());
+        queries.screenSettings.SIGN_OUT.visible());
     await vpn.waitForInitialView();
     await vpn.skipOnboarding();
 
