@@ -283,6 +283,7 @@ const screenSettings = {
   APP_PREFERENCES: new QmlQueryComposer('//settingsPreferences'),
   USER_PROFILE: new QmlQueryComposer('//settingsUserProfile'),
   REAUTH_BUTTON: new QmlQueryComposer('//reauthButton'),
+  SIGN_OUT: new QmlQueryComposer('//accountLogout'),
 
   privacyView: {
     VIEW: new QmlQueryComposer('//privacySettingsView'),
@@ -421,39 +422,6 @@ const screenSettings = {
     PRIVACY: new QmlQueryComposer('//aboutUsList/aboutUsList-privacy'),
     SCREEN: new QmlQueryComposer('//viewAboutUs'),
     TOS: new QmlQueryComposer('//aboutUsList/aboutUsList-tos'),
-  },
-
-  subscriptionView: {
-    SIGN_OUT: new QmlQueryComposer('//accountLogout'),
-    ACCOUNT_DELETION: new QmlQueryComposer('//accountDeletionButton'),
-    ANNUAL_UPGRADE: new QmlQueryComposer(
-        '//subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-upgradeToAnnualSub-layout'),
-    ANNUAL_UPGRADE_BUTTON: new QmlQueryComposer(
-        '//subscriptionItem/subscriptionItem-plan/subscriptionItem-plan-parent/subscriptionItem-plan-upgradeToAnnualSub-layout/subscriptionItem-plan-upgradeToAnnualSub-upgradeButton'),
-    PLAN: new QmlQueryComposer('//subscriptionItem-plan-valueText'),
-    SCREEN: new QmlQueryComposer('//subscriptionManagmentView'),
-    FLICKABLE: new QmlQueryComposer('//subscriptionManagmentView-flickable'),
-    STATUS_PILL: new QmlQueryComposer('//subscriptionItem-status-pill'),
-
-    ACTIVATED: new QmlQueryComposer(
-        '//subscriptionItem/subscriptionItem-activated/subscriptionItem-activated-parent/subscriptionItem-activated-container/subscriptionItem-activated-valueText'),
-    CANCELLED: new QmlQueryComposer(
-        '//subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-valueText'),
-    CANCELLED_LABEL: new QmlQueryComposer(
-        '//subscriptionItem/subscriptionItem-cancelled/subscriptionItem-cancelled-parent/subscriptionItem-cancelled-container/subscriptionItem-cancelled-labelText'),
-    BRAND: new QmlQueryComposer(
-        '//subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-valueText'),
-    EXPIRES: new QmlQueryComposer(
-        '//subscriptionItem/subscriptionItem-expires/subscriptionItem-expires-parent/subscriptionItem-expires-container/subscriptionItem-expires-valueText'),
-    PAYMENT_METHOD: new QmlQueryComposer(
-        '//subscriptionItem/subscriptionItem-brand/subscriptionItem-brand-parent/subscriptionItem-brand-container/subscriptionItem-brand-paymentMethod/paymentLabel'),
-    PAYMENT_METHOD_LABEL: new QmlQueryComposer(
-        '//subscriptionItem/subscriptionItem-payment/subscriptionItem-payment-parent/subscriptionItem-payment-container/subscriptionItem-payment-paymentMethod/paymentLabel'),
-
-    SUBSCRIPTION_USER_PROFILE_BUTTON_ACCOUNT:
-        new QmlQueryComposer('//subscriptionUserProfile-manageAccountButton'),
-    SUBSCRIPTION_USER_PROFILE_BUTTON_SUB:
-        new QmlQueryComposer('//manageSubscriptionButton'),
   },
 };
 
