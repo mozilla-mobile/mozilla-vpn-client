@@ -363,50 +363,6 @@ var imageLookup = {
     filenameLight: 'qrc:/ui/resources/qrcodes/app-store-qrcode.png',
     filenameDark: 'qrc:/ui/resources/qrcodes/app-store-qrcode.png'
   },
-  'PaymentAmex': {
-    filenameLight: 'qrc:/ui/resources/payment/amex.svg',
-    filenameDark: 'qrc:/ui/resources/payment/amex.svg'
-  },
-  'PaymentDiners': {
-    filenameLight: 'qrc:/ui/resources/payment/diners.svg',
-    filenameDark: 'qrc:/ui/resources/payment/diners.svg'
-  },
-  'PaymentDiscover': {
-    filenameLight: 'qrc:/ui/resources/payment/discover.svg',
-    filenameDark: 'qrc:/ui/resources/payment/discover.svg'
-  },
-  'PaymentJcb': {
-    filenameLight: 'qrc:/ui/resources/payment/jcb.svg',
-    filenameDark: 'qrc:/ui/resources/payment/jcb.svg'
-  },
-  'PaymentApple': {
-    filenameLight: 'qrc:/ui/resources/payment/apple.svg',
-    filenameDark: 'qrc:/ui/resources/payment/apple-dark.svg'
-  },
-  'PaymentGoogle': {
-    filenameLight: 'qrc:/ui/resources/payment/android.svg',
-    filenameDark: 'qrc:/ui/resources/payment/android-dark.svg'
-  },
-  'PaymentMastercard': {
-    filenameLight: 'qrc:/ui/resources/payment/mastercard.svg',
-    filenameDark: 'qrc:/ui/resources/payment/mastercard.svg'
-  },
-  'PaymentPayPal': {
-    filenameLight: 'qrc:/ui/resources/payment/paypal.svg',
-    filenameDark: 'qrc:/ui/resources/payment/paypal.svg'
-  },
-  'PaymentUnionPay': {
-    filenameLight: 'qrc:/ui/resources/payment/unionpay.svg',
-    filenameDark: 'qrc:/ui/resources/payment/unionpay.svg'
-  },
-  'PaymentVisa': {
-    filenameLight: 'qrc:/ui/resources/payment/visa.svg',
-    filenameDark: 'qrc:/ui/resources/payment/visa.svg'
-  },
-  'PaymentUnbranded': {
-    filenameLight: 'qrc:/ui/resources/payment/paymentUnbranded_LM.svg',
-    filenameDark: 'qrc:/ui/resources/payment/paymentUnbranded_DM.svg'
-  }
 }
 
 var localizedImageLookup =
