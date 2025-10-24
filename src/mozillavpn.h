@@ -24,7 +24,6 @@ class IpAddressLookup;
 class Keys;
 class Location;
 class NetworkWatcher;
-class ProfileFlow;
 class ReleaseMonitor;
 class ServerCountryModel;
 class ServerData;
@@ -135,7 +134,6 @@ class MozillaVPN final : public App {
   Keys* keys() const;
   Location* location() const;
   NetworkWatcher* networkWatcher() const;
-  ProfileFlow* profileFlow() const;
   ReleaseMonitor* releaseMonitor() const;
   ServerCountryModel* serverCountryModel() const;
   ServerLatency* serverLatency() const;

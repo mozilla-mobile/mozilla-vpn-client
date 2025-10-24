@@ -20,7 +20,6 @@
 #include "models/supportcategorymodel.h"
 #include "models/user.h"
 #include "networkwatcher.h"
-#include "profileflow.h"
 #include "releasemonitor.h"
 #include "serverlatency.h"
 #include "statusicon.h"
@@ -43,7 +42,6 @@ struct MozillaVPNPrivate {
   StatusIcon m_statusIcon;
   SubscriptionData m_subscriptionData;
   SupportCategoryModel m_supportCategoryModel;
-  ProfileFlow m_profileFlow;
   Telemetry m_telemetry;
   User m_user;
   TaskGetFeatureListWorker m_taskGetFeatureListWorker;

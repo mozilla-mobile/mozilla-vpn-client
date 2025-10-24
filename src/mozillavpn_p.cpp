@@ -35,10 +35,6 @@ NetworkWatcher* MozillaVPN::networkWatcher() const {
   return &m_private->m_networkWatcher;
 }
 
-ProfileFlow* MozillaVPN::profileFlow() const {
-  return &m_private->m_profileFlow;
-}
-
 ReleaseMonitor* MozillaVPN::releaseMonitor() const {
   return &m_private->m_releaseMonitor;
 }

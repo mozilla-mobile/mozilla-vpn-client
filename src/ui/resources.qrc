@@ -328,20 +328,6 @@
         <file>resources/logo-dark.svg</file>
         <file>resources/main-img-vpn-off.svg</file>
         <file>resources/main-img-vpn-on.svg</file>
-        <file>resources/payment/amex.svg</file>
-        <file>resources/payment/android.svg</file>
-        <file>resources/payment/android-dark.svg</file>
-        <file>resources/payment/apple.svg</file>
-        <file>resources/payment/apple-dark.svg</file>
-        <file>resources/payment/diners.svg</file>
-        <file>resources/payment/discover.svg</file>
-        <file>resources/payment/jcb.svg</file>
-        <file>resources/payment/mastercard.svg</file>
-        <file>resources/payment/paypal.svg</file>
-        <file>resources/payment/paymentUnbranded_DM.svg</file>
-        <file>resources/payment/paymentUnbranded_LM.svg</file>
-        <file>resources/payment/unionpay.svg</file>
-        <file>resources/payment/visa.svg</file>
         <file>resources/permissions/macos-background-dark-de.svg</file>
         <file>resources/permissions/macos-background-dark-en.svg</file>
         <file>resources/permissions/macos-background-dark-es.svg</file>
