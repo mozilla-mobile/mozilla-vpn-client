@@ -35,7 +35,10 @@ set(NDK_TOOLCHAIN "${ANDROID_NDK}/toolchains/llvm/prebuilt/$<LOWER_CASE:${CMAKE_
 
 # Set paths explicitly for CGO
 set(CGO_CFLAGS "--sysroot=${NDK_TOOLCHAIN}/sysroot -I${NDK_TOOLCHAIN}/sysroot/usr/include")
-set(CGO_LDFLAGS "--sysroot=${NDK_TOOLCHAIN}/sysroot -L${NDK_TOOLCHAIN}/sysroot/usr/lib/${GO_TRIPLE}/${ANDROID_API_LEVEL} -llog")
+# set(CGO_LDFLAGS "--sysroot=${NDK_TOOLCHAIN}/sysroot -L${NDK_TOOLCHAIN}/sysroot/usr/lib/${GO_TRIPLE}/${ANDROID_API_LEVEL} -llog")
+set(CGO_LDFLAGS "--sysroot=${NDK_TOOLCHAIN}/sysroot -L${NDK_TOOLCHAIN}/sysroot/usr/lib/${GO_TRIPLE}/${ANDROID_API_LEVEL} -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384 -llog")
+set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384")
+set(CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} -Wl,-z,max-page-size=16384 -Wl,-z,common-page-size=16384")
 
 # Go build environment
 set(GO_ENV
