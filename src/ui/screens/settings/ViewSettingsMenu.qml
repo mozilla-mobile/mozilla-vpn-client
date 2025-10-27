@@ -128,21 +128,6 @@ MZViewBase {
                 }
             }
 
-            MZLinkButton {
-                objectName: "accountDeletionButton"
-                fontName: MZTheme.theme.fontBoldFamily
-                labelText: MZI18n.DeleteAccountButtonLabel
-                linkColor: MZTheme.colors.normalButton
-                visible: MZFeatureList.get("accountDeletion").isSupported
-
-                onClicked: {
-                    MZUrlOpener.openUrlLabel("deleteAccount");
-                }
-
-                Layout.alignment: Qt.AlignHCenter
-                Layout.topMargin: MZTheme.theme.vSpacing
-            }
-
             MZSignOut {
                 id: signOutLink
                 objectName: "accountLogout"
