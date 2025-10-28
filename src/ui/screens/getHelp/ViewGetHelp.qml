@@ -73,6 +73,18 @@ MZViewBase {
             accessibleName: title
         }
 
+        MZExternalLinkListItem {
+            objectName: "deleteAccount"
+            title: MZI18n.DeleteAccountButtonLabel
+            visible: MZFeatureList.get("accountDeletion").isSupported
+
+            onClicked: {
+                MZUrlOpener.openUrlLabel("deleteAccount");
+            }
+
+            accessibleName: title
+        }
+
         MZSettingsItem {
             objectName: "developer"
 

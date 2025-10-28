@@ -44,8 +44,6 @@ MZMouseArea 0.1 MZMouseArea.qml
 MZNavigatorLoader 0.1 navigator/navigatorLoader.qml
 MZPanel 0.1 MZPanel.qml
 MZPasteButton 0.1 MZPasteButton.qml
-MZPaymentMethod 0.1 MZPaymentMethod.qml
-MZPill 0.1 MZPill.qml
 MZPopup 0.1 MZPopup.qml
 MZPopupButton 0.1 MZPopupButton.qml
 MZRadioButtonLabel 0.1 MZRadioButtonLabel.qml

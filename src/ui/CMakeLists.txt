@@ -105,9 +105,6 @@ qt_add_qml_module(mozillavpn-ui
         screens/settings/ViewSettingsMenu.qml
         screens/settings/privacy/ViewPrivacy.qml
         screens/settings/privacy/PrivacyFeaturesList.qml
-        screens/settings/ViewSubscriptionManagement/SubscriptionManagementItem.qml
-        screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml
-        screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml
         screens/subscriptionNeeded/ViewSubscriptionNeeded.qml
         sharedViews/ViewErrorFullScreen.qml
         sharedViews/ViewPermissionRequiredOSX.qml
@@ -137,7 +134,6 @@ qt_add_qml_module(mozillavpn-ui
         singletons/VPNDeviceModel.h
         singletons/VPNIPAddressLookup.h
         singletons/VPNProducts.h
-        singletons/VPNProfileFlow.h
         singletons/VPNPurchase.h
         singletons/VPNRecentConnectionsModel.h
         singletons/VPNRecommendedLocationModel.h

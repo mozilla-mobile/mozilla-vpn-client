@@ -35,7 +35,6 @@
 #include "networkmanager.h"
 #include "networkwatcher.h"
 #include "productshandler.h"
-#include "profileflow.h"
 #include "purchasehandler.h"
 #include "qmlengineholder.h"
 #include "releasemonitor.h"
@@ -1968,14 +1967,6 @@ void MozillaVPN::registerInspectorCommands() {
               QString("Please provide country and city codes as arguments");
         }
 
-        return QJsonObject();
-      });
-
-  InspectorHandler::registerCommand(
-      "force_subscription_management_reauthentication",
-      "Force re-authentication for the subscription management view", 0,
-      [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()->profileFlow()->setForceReauthFlow(true);
         return QJsonObject();
       });
 
