@@ -43,7 +43,6 @@ target_sources(mozillavpn PRIVATE
 get_property(OPENSSL_LIBS_DIR GLOBAL PROPERTY OPENSSL_LIBS)
 get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION_${CMAKE_BUILD_TYPE})
 
-target_link_options(mozillavpn PRIVATE "-Wl,-z,max-page-size=16384")
 # This property flags the build system to copy these
 # shared libraries into the expected Android shared library folder.
 #
@@ -71,7 +70,6 @@ set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
 
 
 if( ${Qt6_VERSION} VERSION_GREATER_EQUAL 6.4.0)
-    message("MATTHEW2 ${OPENSSL_LIBS_DIR}") # /Users/mcleinman/code/vpn-client-android/.tmp/ndk_openssl/libs
     set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
         ${OPENSSL_LIBS_DIR}/libcrypto_3.so
         ${OPENSSL_LIBS_DIR}/libssl_3.so

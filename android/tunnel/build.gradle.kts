@@ -64,12 +64,6 @@ android {
                 targets.add("go_shared_lib")
             }
         }
-
-        externalNativeBuild {
-          cmake {
-            arguments += listOf("-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON")
-          }
-        }
     }
     // Configure ndk-build integration
     externalNativeBuild {

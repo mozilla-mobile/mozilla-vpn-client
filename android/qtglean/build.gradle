@@ -29,12 +29,6 @@ android {
         targetSdkVersion Config.targetSdkVersion
         buildConfigField "int", "VERSION_CODE", System.getenv("VERSIONCODE") ?: "99999"
         buildConfigField "String", "VERSION_NAME", '"' + (System.getenv("SHORTVERSION") ?: "") + '"'
-
-        externalNativeBuild {
-          cmake {
-            arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
-          }
-        }
     }
 
     sourceSets {

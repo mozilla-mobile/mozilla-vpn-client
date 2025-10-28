@@ -147,11 +147,6 @@ android {
         targetSdkVersion Config.targetSdkVersion
         versionCode  System.getenv("VERSIONCODE")? System.getenv("VERSIONCODE")?.toInteger() : 99999
         versionName  System.getenv("SHORTVERSION") ? System.getenv("SHORTVERSION"): ""
-        externalNativeBuild {
-          cmake {
-            arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
-          }
-        }
 
     }
     compileOptions {

@@ -12,11 +12,6 @@ android {
         targetSdkVersion Config.targetSdkVersion
 
         buildConfigField  "String", "ADJUST_SDK_TOKEN" ,  '"' + (project.properties["adjusttoken"] ?: "no_token_found") +  '"'
-        externalNativeBuild {
-          cmake {
-            arguments "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
-          }
-        }
     }
     sourceSets {
         main {
