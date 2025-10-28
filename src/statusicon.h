@@ -20,6 +20,8 @@ class StatusIcon final : public QObject {
   StatusIcon();
   ~StatusIcon();
 
+  void initialize();
+
   const QIcon& icon();
   const QString iconString();
   const QColor indicatorColor() const;

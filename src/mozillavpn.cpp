@@ -277,6 +277,8 @@ void MozillaVPN::initialize() {
 
   m_private->m_serverData.initialize();
 
+  m_private->m_statusIcon.initialize();
+
   AddonManager::instance();
 
   RecentConnections::instance()->initialize();
