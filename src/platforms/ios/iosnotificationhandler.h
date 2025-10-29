@@ -21,7 +21,7 @@ class IOSNotificationHandler final : public NotificationHandler {
               int timerMsec) override;
 
  private:
-  void initialize() override;
+  void requestPermission();
 
  private:
   void* m_delegate = nullptr;
