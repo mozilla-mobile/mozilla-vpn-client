@@ -76,7 +76,7 @@ MZViewBase {
         MZExternalLinkListItem {
             objectName: "deleteAccount"
             title: MZI18n.DeleteAccountButtonLabel
-            visible: MZFeatureList.get("accountDeletion").isSupported
+            visible: MZFeatureList.get("accountDeletion").isSupported && VPN.userAuthenticated
 
             onClicked: {
                 MZUrlOpener.openUrlLabel("deleteAccount");
