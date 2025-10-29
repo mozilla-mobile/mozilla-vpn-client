@@ -64,6 +64,11 @@ StatusIcon::StatusIcon() {
 
 StatusIcon::~StatusIcon() { MZ_COUNT_DTOR(StatusIcon); }
 
+void StatusIcon::initialize() {
+  connect(MozillaVPN::instance()->controller(), &Controller::stateChanged, this,
+          [this]() { m_animationWatchdog.start(ANIMATION_WATCHDOG_TIMEOUT); });
+}
+
 const QIcon& StatusIcon::icon() {
   if (m_icon.isNull()) {
     m_icon = drawStatusIndicator();
