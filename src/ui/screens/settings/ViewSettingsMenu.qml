@@ -34,7 +34,7 @@ MZViewBase {
                 objectName: "settingsUserProfile"
                 settingTitle: MZI18n.SubscriptionManagementSectionTitle
                 imageLeftSrc: MZAssetLookup.getImageSource("IconAvatar")
-                imageRightSrc: MZAssetLookup.getImageSource("ExternalLinkGrayscale")
+                imageRightSrc: MZAssetLookup.getImageSource("ExternalLink")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
                    MZUrlOpener.openUrlLabel("account");
