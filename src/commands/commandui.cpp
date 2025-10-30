@@ -409,11 +409,11 @@ int CommandUI::run(QStringList& tokens) {
     if (!maybeURL.isValid()) {
       logger.error() << "Error in deep-link:" << maybeURL.toString();
     } else {
-      vpn->handleDeepLink(url);
+      vpn->handleDeepLink(maybeURL);
     }
     // Whenever the client is re-opened with a new url pass it to the handler.
     connect(AndroidVPNActivity::instance(),
-            &AndroidVPNActivity::onOpenedWithUrl, &vpn,
+            &AndroidVPNActivity::onOpenedWithUrl, vpn,
             &MozillaVPN::handleDeepLink);
 #else
     // If there happen to be navigation URLs, handle them.
