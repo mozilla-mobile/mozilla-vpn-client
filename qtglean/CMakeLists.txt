@@ -114,7 +114,7 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
 
         # On Android we will build a dynamic lib,
         # so that it can be linked to both the main app and the daemon.
-        set(RUSTFLAGS "-Ctarget-feature=-crt-static")
+        set(RUSTFLAGS "-Ctarget-feature=-crt-static -C link-arg=-Wl,-z,max-page-size=16384 -C link-arg=-Wl,-z,common-page-size=16384")
         set(SHARED 1)
     elseif(QT_FEATURE_static AND QT_FEATURE_openssl AND QT_FEATURE_openssl_linked)
         # If Qt is statically linked to OpenSSL, so to should the glean libs.
