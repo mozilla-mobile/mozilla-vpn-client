@@ -409,7 +409,7 @@ int CommandUI::run(QStringList& tokens) {
     if (!maybeURL.isValid()) {
       logger.error() << "Error in deep-link:" << maybeURL.toString();
     } else {
-      vpn.handleDeepLink(url);
+      vpn->handleDeepLink(url);
     }
     // Whenever the client is re-opened with a new url pass it to the handler.
     connect(AndroidVPNActivity::instance(),
@@ -422,7 +422,7 @@ int CommandUI::run(QStringList& tokens) {
       if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
         logger.error() << "Invalid link:" << value;
       } else {
-        vpn.handleDeepLink(url);
+        vpn->handleDeepLink(url);
       }
     }
 #endif
