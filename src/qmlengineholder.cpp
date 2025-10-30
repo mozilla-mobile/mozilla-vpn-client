@@ -50,7 +50,8 @@ class NMFactory : public QQmlNetworkAccessManagerFactory, public QObject {
 
 }  // namespace
 
-QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
+QmlEngineHolder::QmlEngineHolder(QQmlApplicationEngine* engine)
+    : m_engine(engine) {
   MZ_COUNT_CTOR(QmlEngineHolder);
 
   Q_ASSERT(engine);

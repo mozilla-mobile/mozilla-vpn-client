@@ -438,7 +438,6 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 #endif
-
     KeyRegenerator keyRegenerator;
     // Let's go.
     return qApp->exec();
