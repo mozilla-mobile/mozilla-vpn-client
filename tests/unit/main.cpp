@@ -134,7 +134,7 @@ int main(int argc, char* argv[]) {
 #endif
   QCoreApplication::setApplicationName("Mozilla VPN Unit Tests");
   QCoreApplication::setOrganizationName("Mozilla Testing");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion("1.2.3");
 
   {
     SettingsHolder settingsHolder;

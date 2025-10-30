@@ -75,7 +75,7 @@ void SentryAdapter::init() {
   sentry_options_set_environment(
       options, Constants::inProduction() ? "production" : "stage");
   auto semver_release =
-      QString("mozilla-vpn@%0").arg(Constants::versionString());
+      QString("mozilla-vpn@%0").arg(QCoreApplication::applicationVersion());
   sentry_options_set_release(options, semver_release.toLocal8Bit().constData());
   sentry_options_set_database_path(options,
                                    sentryFolder.toLocal8Bit().constData());

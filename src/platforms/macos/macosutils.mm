@@ -40,6 +40,12 @@ void MacOSUtils::openSystemSettingsLoginItems() {
 }
 
 // static
+int MacOSUtils::getMacOSMajorVersion() {
+  NSOperatingSystemVersion version = [[NSProcessInfo processInfo] operatingSystemVersion];
+  return version.majorVersion;
+}
+
+// static
 QString MacOSUtils::computerName() {
   NSString* name = [[NSHost currentHost] localizedName];
   return QString::fromNSString(name);
@@ -60,16 +66,18 @@ void MacOSUtils::enableLoginItem(bool startAtBoot) {
 
     if (startAtBoot) {
       if (![[SMAppService mainAppService] registerAndReturnError: & error]) {
-        logger.error() << "Failed to register Mozilla VPN LoginItem: " << error.localizedDescription;
+        logger.error() << "Failed to register Mozilla VPN LoginItem: " << error;
       } else {
         logger.debug() << "Mozilla VPN LoginItem registered successfully.";
       }
     } else {
-      if (![[SMAppService mainAppService] unregisterAndReturnError: & error]) {
-        logger.error() << "Failed to unregister Mozilla VPN LoginItem: " << error.localizedDescription;
-      } else {
-        logger.debug() << "LoginItem unregistered successfully.";
-      }
+      [[SMAppService mainAppService] unregisterWithCompletionHandler:^(NSError* error){
+        if (error != nil) {
+          logger.warning() << "Failed to unregister Mozilla VPN LoginItem:" << error;
+        } else {
+          logger.debug() << "LoginItem unregistered successfully.";
+        }
+      }];
     }
   } else {
     CFStringRef cfs = (__bridge CFStringRef) loginItemAppId;

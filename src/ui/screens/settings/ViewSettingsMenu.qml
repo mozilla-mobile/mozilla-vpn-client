@@ -31,22 +31,13 @@ MZViewBase {
             Layout.alignment: Qt.AlignHCenter
 
             MZSettingsItem {
-                _loaderVisible: VPNProfileFlow.state === VPNProfileFlow.StateLoading
-
-                property bool subscriptionManagementEnabled: MZFeatureList.get("subscriptionManagement").isSupported
                 objectName: "settingsUserProfile"
                 settingTitle: MZI18n.SubscriptionManagementSectionTitle
                 imageLeftSrc: MZAssetLookup.getImageSource("IconAvatar")
-                imageRightSrc: subscriptionManagementEnabled
-                    ? MZAssetLookup.getImageSource("Chevron")
-                    : MZAssetLookup.getImageSource("ExternalLinkGrayscale")
+                imageRightSrc: MZAssetLookup.getImageSource("ExternalLinkGrayscale")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    if (subscriptionManagementEnabled) {
-                        VPNProfileFlow.start();
-                    } else {
-                        MZUrlOpener.openUrlLabel("account");
-                    }
+                   MZUrlOpener.openUrlLabel("account");
                 }
             }
 
@@ -80,7 +71,6 @@ MZViewBase {
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    Glean.interaction.firefoxExtensionSelected.record({screen:telemetryScreenId});
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewFirefoxExtensionInfo.qml")
                 }
                 visible: Qt.platform.os === "windows"
@@ -138,90 +128,17 @@ MZViewBase {
                 }
             }
 
-        }
-    }
-
-    Connections {
-        target: VPNProfileFlow
-
-        function onStateChanged() {
-            if (
-                VPNProfileFlow.state === VPNProfileFlow.StateReady
-                && stackview.currentItem.objectName !== "subscriptionManagmentView"
-            ) {
-                reauthPopup.close();
-                return stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewSubscriptionManagement/ViewSubscriptionManagement.qml");
-            }
-            // Only push the profile view if it’s not already in the stack
-            if (VPNProfileFlow.state === VPNProfileFlow.StateAuthenticationNeeded) {
-              if (!MZFeatureList.get("inAppAuthentication").isSupported) {
-                reauthPopup.open();
-              } else if (stackview.currentItem.objectName !== "reauthenticationFlow") {
-                reauthPopup.close();
-                return stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewSubscriptionManagement/ViewReauthenticationFlow.qml", {
-                    _onClose: () => {
-                        VPNProfileFlow.reset();
-                        stackview.pop(null, StackView.Immediate);
-                    }
-                });
-              }
-            }
-
-            // An error occurred during the profile flow. Let’s reset and return
-            // to the main settings view.
-            const hasError = VPNProfileFlow.state === VPNProfileFlow.StateError;
-            if (hasError) {
-                reauthPopup.close();
-                if (stackview.currentItem.objectName === "reauthenticationFlow") {
-                  stackview.pop(null, StackView.Immediate);
+            MZSignOut {
+                id: signOutLink
+                objectName: "accountLogout"
+                anchors {
+                    horizontalCenter: undefined
+                    bottom: undefined
+                    bottomMargin: undefined
                 }
-                VPNProfileFlow.reset();
+                Layout.alignment: Qt.AlignHCenter | Qt.AlignBottom
+                Layout.topMargin: MZTheme.theme.vSpacingSmall - parent.spacing
             }
-        }
-    }
-
-    MZSimplePopup {
-        id: reauthPopup
-
-        anchors.centerIn: Overlay.overlay
-        imageSrc: MZAssetLookup.getImageSource("RefreshArrowsWithWarning")
-        imageSize: Qt.size(80, 80)
-        title: MZI18n.SettingsReauthTitle
-        description: MZI18n.SettingsReauthDescription
-        buttons: [
-            MZButton {
-                id: reauthButton
-                objectName: "reauthButton"
-                text: MZI18n.InAppAuthContinueToSignIn
-                Layout.fillWidth: true
-                onClicked: {
-                  VPNProfileFlow.reauthenticateViaWeb();
-                  loader.state = "active";
-                  reauthButton.enabled = false;
-                }
-
-                Rectangle {
-                  width: MZTheme.theme.rowHeight
-                  height: MZTheme.theme.rowHeight
-                  anchors.right: parent.right
-                  color: MZTheme.colors.transparent
-
-                  MZButtonLoader {
-                    id: loader
-                    color: MZTheme.colors.transparent
-                    iconUrl: MZAssetLookup.getImageSource("Spinner")
-                  }
-               }
-            }
-        ]
-
-        onOpened: {
-          loader.state = "inactive";
-          reauthButton.enabled = true;
-        }
-
-        onClosed: {
-          VPNProfileFlow.reset();
         }
     }
 }

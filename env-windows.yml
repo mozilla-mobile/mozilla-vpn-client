@@ -2,21 +2,22 @@ name: vpn
 channels:
   - conda-forge
 dependencies:
-  - clang=16.0.6
-  - clang-tools=16.0.6
-  - clangxx=16.0.6
-  - llvm=16.0.6
-  - llvmdev=16.0.6
-  - lld=16.0.6
+  - clang=20.1.8
+  - clang-tools=20.1.8
+  - clangxx=20.1.8
+  - llvm=20.1.8
+  - llvmdev=20.1.8
+  - lld=20.1.8
   - python=3.9
   - nodejs=18.16.*
   - pip=22.3.1
   - rust=1.82.0
-  - compiler-rt
+  - rust-std-x86_64-pc-windows-msvc=1.82.0
+  - compiler-rt=20.1.8
+  - compiler-rt_win-64
   - cmake=3.26.3
   - ninja=1.11.0
   - conda-pack=0.8.0
-  - vswhere=3.1.7
   - pip:
       - -r requirements.txt
       - -r taskcluster/scripts/requirements.txt

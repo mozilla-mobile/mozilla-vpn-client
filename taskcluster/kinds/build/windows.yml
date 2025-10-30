@@ -3,7 +3,6 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
 task-defaults:
-    description: "Windows Build"
     treeherder:
         symbol: B
         kind: build
@@ -12,23 +11,13 @@ task-defaults:
     worker-type: b-win2022
     fetches:
         fetch:
-            - win-conda
             - wireguard-nt
         toolchain:
             - cargo-vendor
-        conda-pack:
-            - artifact: conda-windows.tar.xz
-              dest: conda-windows
-    dependencies:
-        conda-pack: toolchain-windows-conda-pack
     worker:
         taskcluster-proxy: true
         chain-of-trust: true
         max-run-time: 3600
-        artifacts:
-            - type: file
-              name: public/build/MozillaVPN.msi
-              path: artifacts/MozillaVPN.msi
     release-artifacts:
         - unsigned.zip
     scopes:
@@ -36,14 +25,41 @@ task-defaults:
     run:
         using: run-task
         cwd: '{checkout}'
+
+windows/opt:
+    description: "Windows Build (release)"
+    fetches:
+        fetch:
+            - win-conda
+        toolchain:
+            - conda-windows-x86_64
+            - qt-windows-x86_64-6.6
+    treeherder:
+        symbol: B
+    worker:
+        artifacts:
+            - type: file
+              name: public/build/MozillaVPN.msi
+              path: artifacts/MozillaVPN.msi
+    run:
         exec-with: powershell
         command: taskcluster/scripts/build/windows_clang_cl.ps1
 
-windows/opt:
+windows/next:
+    description: "Windows Build (Next Qt)"
     fetches:
         toolchain:
-            - qt-windows-x86_64-6.6
-    description: "Windows Build"
+            - conda-windows-cross
+            - qt-windows-x86_64-next
+            - qt-tools-next
     treeherder:
-        symbol: B
-
+        symbol: NEXT
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: conda-base}
+        artifacts:
+            - type: directory
+              name: public/build
+              path: /builds/worker/artifacts
+    run:
+        command: ./taskcluster/scripts/build/windows_cross.sh

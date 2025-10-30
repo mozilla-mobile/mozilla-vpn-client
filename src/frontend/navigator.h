@@ -20,8 +20,8 @@ class Navigator final : public QObject {
                  currentComponentChanged)
   Q_PROPERTY(LoadingFlags loadingFlags MEMBER m_currentLoadingFlags NOTIFY
                  currentComponentChanged)
-  Q_PROPERTY(QQmlComponent* component MEMBER m_currentComponent NOTIFY
-                 currentComponentChanged)
+  Q_PROPERTY(
+      QUrl loadUrl MEMBER m_currentLoadUrl NOTIFY currentComponentChanged)
 
  public:
   enum LoadPolicy {
@@ -87,7 +87,7 @@ class Navigator final : public QObject {
   explicit Navigator(QObject* parent);
 
   void computeComponent();
-  void loadScreen(int screen, LoadPolicy loadPolicy, QQmlComponent* component,
+  void loadScreen(int screen, LoadPolicy loadPolicy, const QUrl& loadUrl,
                   LoadingFlags loadingFlags);
 
   void removeItem(QObject* obj);
@@ -96,7 +96,7 @@ class Navigator final : public QObject {
   int m_currentScreen = -1;
   LoadPolicy m_currentLoadPolicy = LoadTemporarily;
   LoadingFlags m_currentLoadingFlags = NoFlags;
-  QQmlComponent* m_currentComponent = nullptr;
+  QUrl m_currentLoadUrl;
 
   QList<int> m_screenHistory;
 

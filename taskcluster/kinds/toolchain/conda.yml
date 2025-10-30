@@ -27,6 +27,18 @@ conda-osxcross:
         toolchain-alias: conda-osxcross
         toolchain-artifact: public/build/conda-osxcross.tar.xz
 
+conda-windows-cross:
+    description: "conda-pack the windows cross-compile environment"
+    treeherder:
+        symbol: TL(conda-windows-cross)
+    run:
+        script: conda_pack_wincross.sh
+        resources:
+            - env-windows.yml
+            - scripts/windows/fetch-vsix-package.py
+        toolchain-alias: conda-windows-cross
+        toolchain-artifact: public/build/conda-windows-cross.tar.xz
+
 conda-wasm:
     description: "conda-pack the wasm environment"
     treeherder:

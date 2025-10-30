@@ -151,7 +151,9 @@ splittunnel:
   infoCardDescription2:
     value: VPN must be off to edit Excluded apps
     comment: Displays inside the information card at the top of the Excluded apps screen when the VPN is on
-
+  btnShowSystemApp: 
+    value: Show system apps
+    comment: Label for a checkbox that, if checked, will show the hidden "system/internal" apps. e.g. "Android Auto" is a system app on Android.
 multiHopFeature:
   singleHopToggleCTA: Single-hop
   multiHopToggleCTA: Multi-hop
@@ -279,6 +281,7 @@ notifications:
   connectionFailedMessage: Sorry, something went wrong with your VPN connection.
   subscriptionNotFound: Your Mozilla VPN subscription cannot be found. Please open the app to resolve this subscription issue.
   unsecuredNetworkTitle: Unsecured Wi-Fi network detected
+  unsecuredNetworkGeneric: "Wi-Fi network is not secure. Click here to turn on VPN and secure your device."
   unsecuredNetworkMessage:
     value: "%1 is not secure. Click here to turn on VPN and secure your device."
     comment: "%1 is the Wi-Fi network name"
@@ -777,94 +780,8 @@ subscriptionManagement:
   sectionTitle:
     value: Account
     comment: Menu title for a view with details on the user's account.
-  summaryHeadline:
-    value: Subscription summary
-    comment: Headline for a list with information on the subscription plan of the user.
-  paymentHeadline:
-    value: Payment Information
-    comment: Headline for a list with information on the payment information the user provided for their subscription.
-  planLabel:
-    value: Subscription plan
-    comment: Label for the selected subscription plan the user currently is subscribed to.
-  planValueMonthly:
-    value: "%1 Monthly"
-    comment: The %1 represents a localized currency string.
-  planValueHalfYearly:
-    value: "%1 Half-yearly"
-    comment: The %1 represents a localized currency string.
-  planValueYearly:
-    value: "%1 Yearly"
-    comment: The %1 represents a localized currency string.
-  planValueMonthlyPlusTax:
-    value: "%1 Monthly + tax"
-    comment: The %1 represents a localized currency string
-  planValueHalfYearlyPlusTax:
-    value: "%1 Half-yearly + tax"
-    comment: The %1 represents a localized currency string
-  planValueYearlyPlusTax:
-    value: "%1 Yearly + tax"
-    comment: The %1 represents a localized currency string
-  planMonthly:
-    value: "Monthly plan: %1"
-    comment: Price for a monthly subscription. %1 represents the localized currency string
-  planMonthlyWithoutTax:
-    value: "%1/month"
-    comment: Price for a monthly subscription without tax. %1 represents the localized currency string
-  planMonthlyPlusTax:
-    value: "%1/month + tax"
-    comment: Price for a monthly subscription plus tax. %1 represents the localized currency string
-  statusLabel:
-    value: Status
-    comment: Label for the current status of the subscription.
-  statusInactive:
-    value: Inactive
-    comment: Text for a label that indicates an inactive subscription.
-  statusActive:
-    value: Active
-    comment: Text for a label that indicates an active subscription.
-  nextLabel:
-    value: Next billed
-    comment: Label for the upcoming date on which the user will be billed for their subscription.
-  activatedLabel:
-    value: Active since
-    comment: Label for the date on which the subscription was activated.
-  expiresLabel:
-    value: Expires
-    comment: Label for the upcoming date on which the subscription will expire.
-  subscriptionPlatformLabel:
-    value: "%1 subscription"
-    comment:
-      - The %1 represents the subscription platform.
-      - Values for %1 could be “Apple” or “Google” for example.
-  cardLast4:
-    value: "Card ending in %1"
-    comment: The %1 represents the last four digits of a credit card.
-  cardExpiresLabel:
-    value: Expires
-    comment: Label for the date on which the payment method expires.
-  manageSubscriptionButton:
-    value: Manage subscription
-    comment: Label for a button that will take the user to a view where they can manage their subscription.
-  upgradeToAnnualButton:
-    value: Change plan
-    comment: Label for a button that will open the upgrade subscription flow.
-  upgradeToAnnual:
-    value: Save 50% on an annual plan
-    comment: Block of text appearing beside a button to upgrade subscription.
   manageAccount:
     value: Manage account
-
-paymentMethods:
-  amex: American Express
-  diners: Diners Club
-  discover: Discover
-  jcb: JCB
-  iapApple: Apple subscription
-  iapGoogle: Google subscription
-  mastercard: Mastercard
-  paypal: PayPal
-  unionpay: UnionPay
-  visa: Visa
 
 inAppMessaging:
   menuTitle: Messages
@@ -1045,10 +962,19 @@ permissionMacos:
     comment: Paragraph requesting the user to allow the VPN to run in the background.
   instructions:
     value: In order to do this, please click the button below to open the <i>Login Items</i> of your <i>System Preferences</i>, and enable <i>Allow in the background</i> for Mozilla VPN.
-    comment: Paragraph explaining how to enable the VPN to run in the background.
+    comment: Paragraph explaining how to enable the VPN to run in the background on macOS 14, see https://support.apple.com/guide/mac-help/mtusr003/mac for reference translations of these features on different versions of macOS.
+  instructionsMacOS15:
+    value: In order to do this, please click the button below to open the <i>Login Items & Extensions</i> of your <i>System Preferences</i>, and enable <i>Allow in the background</i> for Mozilla VPN.
+    comment: Paragraph explaining how to enable the VPN to run in the background on macOS 15 and above, see https://support.apple.com/guide/mac-help/mtusr003/mac for reference translations of these features on different versions of macOS.
+  instructionsMacOS26:
+    value: In order to do this, please click the button below to open the <i>Login Items & Extensions</i> of your <i>System Preferences</i>, and enable <i>App Background Activity</i> for Mozilla VPN.
+    comment: Paragraph explaining how to enable the VPN to run in the background on macOS 26 and above, see https://support.apple.com/guide/mac-help/mtusr003/mac for reference translations of these features on different versions of macOS.
   openSettingsButtonLabel:
     value: Open Login Items
-    comment: Label for the button that opens the login items settings page
+    comment: Label for the button that opens the login items settings page on macOS 14
+  openSettingsButtonLabelMacOS15:
+    value: Open Login Items & Extensions
+    comment: Label for the button that opens the login items settings page on macOS 15 and above
 
 global:
   expand:

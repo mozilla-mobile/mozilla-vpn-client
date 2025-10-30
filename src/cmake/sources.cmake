@@ -136,8 +136,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/dummy/dummynetworkwatcher.h
     ${CMAKE_CURRENT_SOURCE_DIR}/productshandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/productshandler.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/profileflow.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/profileflow.h
     ${CMAKE_CURRENT_SOURCE_DIR}/purchasehandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/purchasehandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/purchaseiaphandler.cpp
@@ -164,6 +162,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/controlleraction/taskcontrolleraction.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/createsupportticket/taskcreatesupportticket.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/createsupportticket/taskcreatesupportticket.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/deleteostunnelconfig/taskdeleteostunnelconfig.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/deleteostunnelconfig/taskdeleteostunnelconfig.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/getlocation/taskgetlocation.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/getlocation/taskgetlocation.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/getsubscriptiondetails/taskgetsubscriptiondetails.cpp

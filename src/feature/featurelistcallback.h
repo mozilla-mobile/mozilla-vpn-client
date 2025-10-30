@@ -107,14 +107,13 @@ bool FeatureCallback_splitTunnel() {
   }
   initDone = true;
 
-  /* Control groups v2 must be mounted for app/traffic classification
-   */
+  // Control groups v2 must be mounted for traffic classification
   if (LinuxUtils::findCgroup2Path().isNull()) {
     return false;
   }
 
-  /* Application tracking is only supported on GTK-based desktops
-   */
+  // The desktop environment must support scoping applications by cgroup upon
+  // launch for application detection to work as expected.
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   if (!pe.contains("XDG_CURRENT_DESKTOP")) {
     return false;
@@ -129,18 +128,17 @@ bool FeatureCallback_splitTunnel() {
       return false;
     }
   } else if (desktop.contains("KDE")) {
-    QVersionNumber kdeVersion = LinuxUtils::kdeFrameworkVersion();
+    // This has been tested as far back as KDE Plasma v5.24.
+    QVersionNumber kdeVersion = LinuxUtils::kdePlasmaVersion();
     if (kdeVersion.isNull()) {
       return false;
     }
-    /* The metadata we need (SourcePath) is only added since kio v5.75 */
-    if (kdeVersion < QVersionNumber(5, 75)) {
+    if (kdeVersion < QVersionNumber(5, 24)) {
       return false;
     }
   }
-  // TODO: These shells need more testing.
-  else if (!desktop.contains("MATE") && !desktop.contains("Unity") &&
-           !desktop.contains("X-Cinnamon")) {
+  // For all other desktop environments, assume split tunneling unsupported.
+  else {
     return false;
   }
   splitTunnelSupported = true;

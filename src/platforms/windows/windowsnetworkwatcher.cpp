@@ -12,7 +12,7 @@
 #include "networkwatcherimpl.h"
 #include "platforms/windows/windowsutils.h"
 
-#pragma comment(lib, "Wlanapi.lib")
+#pragma comment(lib, "wlanapi.lib")
 #pragma comment(lib, "windowsapp.lib")
 
 namespace {
@@ -134,7 +134,6 @@ void WindowsNetworkWatcher::processWlan(PWLAN_NOTIFICATION_DATA data) {
         (char)connectionInfo->wlanAssociationAttributes.dot11Ssid.ucSSID[i]));
   }
 
-  logger.debug() << "Unsecure network:" << logger.sensitive(ssid)
-                 << "id:" << logger.sensitive(bssid);
-  emit unsecuredNetwork(ssid, bssid);
+  logger.debug() << "Unsecure network:" << logger.sensitive(ssid);
+  emit unsecuredNetwork(ssid);
 }

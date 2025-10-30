@@ -112,10 +112,10 @@ class NetworkRequest final : public QObject {
 
   QUrl m_redirectedUrl;
 
-#ifndef QT_NO_SSL
+#ifdef MZ_WINDOWS
   /**
-   * @brief this is a workaround against a buggy old version of Firefox with an
-   * expired SRG Root X1 cert
+   * @brief this is a workaround for Windows 10 devices which may be missing the
+   * ISRG X1 root certificate (see: https://bugreports.qt.io/browse/QTBUG-97168)
    */
   void enableSSLIntervention();
 #endif

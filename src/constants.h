@@ -59,14 +59,7 @@ bool inProduction();
 const QString& getStagingServerAddress();
 void setStaging();
 
-/**
- * @brief In staging only, override the version string for testing
- * purposes.
- */
-void setVersionOverride(const QString& versionOverride);
-
-// Project version and build strings.
-QString versionString();
+// Project  build strings.
 QString buildNumber();
 QString envOrDefault(const QString& name, const QString& defaultValue);
 

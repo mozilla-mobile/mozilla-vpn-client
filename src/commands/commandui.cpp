@@ -142,6 +142,27 @@ int CommandUI::run(QStringList& tokens) {
     LogHandler::instance()->setStderr(true);
   }
 
+  // If there is another instance, the execution terminates here.
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
+  if (EventListener::checkForInstances()) {
+    QTextStream stream(stderr);
+    stream << "Existing instance found" << Qt::endl;
+
+    // If we are given URL parameters, send them to the UI socket and exit.
+    for (const QString& value : tokens) {
+      QUrl url(value);
+      if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
+        stream << "Invalid link:" << value << Qt::endl;
+      } else {
+        stream << "Sending link" << Qt::endl;
+        EventListener::sendDeepLink(url);
+      }
+    }
+
+    return 0;
+  }
+#endif
+
 #ifdef MZ_ANDROID
   // Configure graphics rendering for Android
   QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
@@ -193,23 +214,6 @@ int CommandUI::run(QStringList& tokens) {
     }
 
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
-    // If there is another instance, the execution terminates here.
-    if (EventListener::checkForInstances(
-            I18nStrings::instance()->t(I18nStrings::ProductName))) {
-      // If we are given URL parameters, send them to the UI socket and exit.
-      for (const QString& value : tokens) {
-        QUrl url(value);
-        if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
-          logger.error() << "Invalid link:" << value;
-        } else {
-          EventListener::sendDeepLink(url);
-        }
-      }
-
-      logger.debug() << "Terminating the current process";
-      return 0;
-    }
-
     // This class receives communications from other instances.
     EventListener eventListener;
 #endif
@@ -403,21 +407,20 @@ int CommandUI::run(QStringList& tokens) {
     if (!maybeURL.isValid()) {
       logger.error() << "Error in deep-link:" << maybeURL.toString();
     } else {
-      Navigator::instance()->requestDeepLink(url);
+      vpn.handleDeepLink(url);
     }
-    // Whenever the Client is re-opened with a new url
-    // pass that to the navigator
-    QObject::connect(
-        AndroidVPNActivity::instance(), &AndroidVPNActivity::onOpenedWithUrl,
-        [](QUrl url) { Navigator::instance()->requestDeepLink(url); });
+    // Whenever the client is re-opened with a new url pass it to the handler.
+    connect(AndroidVPNActivity::instance(),
+            &AndroidVPNActivity::onOpenedWithUrl, &vpn,
+            &MozillaVPN::handleDeepLink);
 #else
-    // If there happen to be navigation URLs, send them to the navigator class.
+    // If there happen to be navigation URLs, handle them.
     for (const QString& value : tokens) {
       QUrl url(value);
       if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
         logger.error() << "Invalid link:" << value;
       } else {
-        Navigator::instance()->requestDeepLink(url);
+        vpn.handleDeepLink(url);
       }
     }
 #endif

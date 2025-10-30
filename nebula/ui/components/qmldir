@@ -83,4 +83,3 @@ MZToggleRow 0.0 MZToggleRow.qml
 MZBottomNavigationBar 0.0 navigationBar/MZBottomNavigationBar.qml
 MZBottomNavigationBarButton 0.0 navigationBar/MZBottomNavigationBarButton.qml
 MZNavigatorLoader 0.0 navigator/MZNavigatorLoader.qml
-

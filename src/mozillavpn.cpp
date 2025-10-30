@@ -35,7 +35,6 @@
 #include "networkmanager.h"
 #include "networkwatcher.h"
 #include "productshandler.h"
-#include "profileflow.h"
 #include "purchasehandler.h"
 #include "qmlengineholder.h"
 #include "releasemonitor.h"
@@ -53,6 +52,7 @@
 #include "tasks/captiveportallookup/taskcaptiveportallookup.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "tasks/createsupportticket/taskcreatesupportticket.h"
+#include "tasks/deleteostunnelconfig/taskdeleteostunnelconfig.h"
 #include "tasks/getlocation/taskgetlocation.h"
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/heartbeat/taskheartbeat.h"
@@ -82,6 +82,9 @@
 #endif
 
 #ifdef MZ_MACOS
+#  include <QEvent>
+#  include <QFileOpenEvent>
+
 #  include "platforms/macos/macosutils.h"
 #endif
 
@@ -131,6 +134,10 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
 
   Q_ASSERT(!s_instance);
   s_instance = this;
+
+#ifdef MZ_MACOS
+  qApp->installEventFilter(this);
+#endif
 
   connect(&m_periodicOperationsTimer, &QTimer::timeout, []() {
     TaskScheduler::scheduleTask(new TaskGroup(
@@ -238,6 +245,10 @@ MozillaVPN::~MozillaVPN() {
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
 
+#ifdef MZ_MACOS
+  qApp->removeEventFilter(this);
+#endif
+
   delete m_private;
 }
 
@@ -266,6 +277,8 @@ void MozillaVPN::initialize() {
   m_private->m_serverLatency.initialize();
 
   m_private->m_serverData.initialize();
+
+  m_private->m_statusIcon.initialize();
 
   AddonManager::instance();
 
@@ -641,7 +654,7 @@ void MozillaVPN::deviceAdded(const QString& deviceName,
   settingsHolder->setPublicKey(publicKey);
   m_private->m_keys.storeKeys(privateKey, publicKey);
 
-  settingsHolder->setDeviceKeyVersion(Constants::versionString());
+  settingsHolder->setDeviceKeyVersion(QCoreApplication::applicationVersion());
 
   settingsHolder->setKeyRegenerationTimeSec(QDateTime::currentSecsSinceEpoch());
 }
@@ -840,7 +853,7 @@ void MozillaVPN::reset(bool forceInitialState) {
   m_private->m_keys.forgetKeys();
   m_private->m_serverData.forget();
 
-  controller()->deleteOSTunnelConfig();
+  TaskScheduler::scheduleTask(new TaskDeleteOSTunnelConfig());
 
   PurchaseHandler::instance()->stopSubscription();
   if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
@@ -1252,7 +1265,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 
 void MozillaVPN::hardReset() {
   SettingsManager::instance()->hardReset();
-  controller()->deleteOSTunnelConfig();
+  TaskScheduler::scheduleTask(new TaskDeleteOSTunnelConfig());
 }
 
 void MozillaVPN::hardResetAndQuit() {
@@ -1411,7 +1424,9 @@ void MozillaVPN::errorHandled() {
 
   // Controller errors should trigger a system tray notification.
   if (alert == ErrorHandler::ControllerErrorAlert) {
-    NotificationHandler::instance()->connectionFailureNotification();
+    if (NotificationHandler::instance() != nullptr) {
+      NotificationHandler::instance()->connectionFailureNotification();
+    }
   }
 
   // Any error in authenticating state sends to the Initial state.
@@ -1964,18 +1979,9 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
-      "force_subscription_management_reauthentication",
-      "Force re-authentication for the subscription management view", 0,
-      [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()->profileFlow()->setForceReauthFlow(true);
-        return QJsonObject();
-      });
-
-  InspectorHandler::registerCommand(
       "force_unsecured_network", "Force an unsecured network detection", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
-        MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy",
-                                                                   "Dummy");
+        MozillaVPN::instance()->networkWatcher()->unsecuredNetwork("Dummy");
         return QJsonObject();
       });
 
@@ -2183,12 +2189,20 @@ void MozillaVPN::registerInspectorCommands() {
         return QJsonObject();
       });
 #endif
+
+  InspectorHandler::registerCommand(
+      "deeplink", "Send a deep link to the VPN client", 1,
+      [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        QUrl url = QUrl(QString::fromUtf8(arguments[1]));
+        MozillaVPN::instance()->handleDeepLink(url);
+        return QJsonObject();
+      });
 }
 
 // static
 QString MozillaVPN::appVersionForUpdate() {
   if (s_updateVersion.isEmpty()) {
-    return Constants::versionString();
+    return QCoreApplication::applicationVersion();
   }
 
   return s_updateVersion;
@@ -2291,7 +2305,7 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << Constants::versionString();
+  logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
   return callback();
 }
@@ -2328,7 +2342,7 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
-  logger.info() << "MozillaVPN" << Constants::versionString();
+  logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
 #ifdef MZ_MACOS
@@ -2345,4 +2359,46 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   #endif
 
   return app.exec();
+}
+
+#ifdef MZ_MACOS
+bool MozillaVPN::eventFilter(QObject* obj, QEvent* event) {
+  if (event->type() != QEvent::FileOpen) {
+    return QObject::eventFilter(obj, event);
+  }
+
+  QFileOpenEvent* ev = static_cast<QFileOpenEvent*>(event);
+  QUrl url = ev->url();
+  if (url.scheme() != Constants::DEEP_LINK_SCHEME) {
+    return QObject::eventFilter(obj, event);
+  }
+
+  // The event has been handled.
+  handleDeepLink(url);
+  return false;
+}
+#endif
+
+void MozillaVPN::handleDeepLink(const QUrl& url) {
+  // We only accept the mozilla-vpn scheme.
+  if (url.scheme() != Constants::DEEP_LINK_SCHEME) {
+    return;
+  }
+
+  // The URL authority determines who handles this.
+  if (url.authority() == "nav") {
+    Navigator::instance()->requestDeepLink(url);
+  } else if (url.authority() == "login") {
+    // If TaskAuthenticate is running, send it the deep link.
+    auto task = qobject_cast<TaskAuthenticate*>(TaskScheduler::runningTask());
+    if (task) {
+      task->handleDeepLink(url);
+    }
+  } else {
+    logger.info() << "Unknown deep link target:" << url.authority();
+  }
+
+  // Show the window after handling a deep link.
+  QmlEngineHolder* engine = QmlEngineHolder::instance();
+  engine->showWindow();
 }

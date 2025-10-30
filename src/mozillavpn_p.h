@@ -11,6 +11,7 @@
 #include "controller.h"
 #include "feature/taskgetfeaturelistworker.h"
 #include "ipaddresslookup.h"
+#include "localizer.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
 #include "models/location.h"
@@ -20,13 +21,11 @@
 #include "models/supportcategorymodel.h"
 #include "models/user.h"
 #include "networkwatcher.h"
-#include "profileflow.h"
-#include "localizer.h"
 #include "releasemonitor.h"
 #include "serverlatency.h"
+#include "settingsholder.h"
 #include "statusicon.h"
 #include "telemetry.h"
-#include "settingsholder.h"
 
 struct MozillaVPNPrivate {
   SettingsHolder m_settingsHolder;
@@ -46,7 +45,6 @@ struct MozillaVPNPrivate {
   StatusIcon m_statusIcon;
   SubscriptionData m_subscriptionData;
   SupportCategoryModel m_supportCategoryModel;
-  ProfileFlow m_profileFlow;
   Telemetry m_telemetry;
   User m_user;
   TaskGetFeatureListWorker m_taskGetFeatureListWorker;

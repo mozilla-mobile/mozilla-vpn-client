@@ -88,6 +88,7 @@ void ServerData::update(const QString& exitCountryCode,
                         const QString& exitCityName,
                         const QString& entryCountryCode,
                         const QString& entryCityName) {
+  logger.debug() << "Updating server data";
   Q_ASSERT(m_initialized);
 
   m_previousExitCountryCode = m_exitCountryCode;

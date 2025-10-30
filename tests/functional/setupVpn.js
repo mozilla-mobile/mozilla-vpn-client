@@ -30,13 +30,7 @@ let vpnProcess = null;
 let vpnProcessTerminatePromise = null;
 let stdErr = '';
 
-async function startAndConnect() {
-  // Wait for existing processes to terminate, if any.
-  if (vpnProcessTerminatePromise) {
-    await vpnProcessTerminatePromise;
-    vpnProcessTerminatePromise = null;
-  }
-
+async function startAndDetach(args = []) {
   // If we are on Linux and `HEADLESS` has been set, launch the client using
   // an offscreen display buffer.
   let vpnEnv = process.env
@@ -44,7 +38,22 @@ async function startAndConnect() {
     vpnEnv['QT_QPA_PLATFORM'] = 'offscreen'
   }
 
-  vpnProcess = spawn(app, ['ui', '--testing'], env=vpnEnv);
+  let p = spawn(app, args, env=vpnEnv);
+  p.stderr.on('data', (data) => {
+    stdErr += data;
+  });
+
+  return p;
+}
+
+async function startAndConnect() {
+  // Wait for existing processes to terminate, if any.
+  if (vpnProcessTerminatePromise) {
+    await vpnProcessTerminatePromise;
+    vpnProcessTerminatePromise = null;
+  }
+
+  vpnProcess = await startAndDetach(['ui', '--testing'])
   stdErr += 'VPN Process ID: ' + vpnProcess.pid;
   vpnProcess.stderr.on('data', (data) => {
     stdErr += data;
@@ -68,6 +77,7 @@ function vpnIsRunning() {
 }
 
 exports.startAndConnect = startAndConnect;
+exports.startAndDetach = startAndDetach;
 exports.vpnIsRunning = vpnIsRunning;
 
 exports.mochaHooks = {

@@ -11,6 +11,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
+#include "applistprovider.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/android/androidcommons.h"
@@ -37,10 +38,12 @@ void AndroidAppListProvider::getApplicationList() {
   QJsonObject listObj = appList.object();
   QStringList keys = listObj.keys();
 
-  QMap<QString, QString> out;
+  QList<AppDescription> out;
   foreach (auto key, keys) {
-    // This comment is to make linter happy.
-    out[key] = listObj[key].toString();
+    // Todo: get for android
+    QJsonValue entry = listObj[key];
+    auto const obj = entry.toObject();
+    out.append({key, obj["name"].toString(), obj["isSystemApp"].toBool()});
   }
 
   emit newAppList(out);

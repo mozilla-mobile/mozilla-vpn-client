@@ -22,7 +22,7 @@ class LinuxNetworkWatcherWorker final : public QObject {
   void checkDevices();
 
  signals:
-  void unsecuredNetwork(const QString& networkName, const QString& networkId);
+  void unsecuredNetwork(const QString& networkName);
 
  public slots:
   void initialize();

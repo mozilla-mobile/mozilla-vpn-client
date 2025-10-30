@@ -6,6 +6,7 @@
 
 #include <QQmlApplicationEngine>
 #include <QTemporaryFile>
+#include <QVersionNumber>
 
 #include "addons/addon.h"
 #include "addons/addonmessage.h"
@@ -158,28 +159,45 @@ void TestAddon::conditions_data() {
         << obj << true << "foo" << QVariant("woow");
   }
 
+  QVersionNumber version =
+      QVersionNumber::fromString(QCoreApplication::applicationVersion());
+  int verMajor = version.majorVersion();
+  // These tests assume a non-zero minor version, so let's be sure that's true.
+  QVERIFY(version.minorVersion() > 0);
   {
     QJsonObject obj;
-    obj["min_client_version"] = "2.1";
+    obj["min_client_version"] = QString("%1.0").arg(verMajor);
     QTest::addRow("min client version ok")
         << obj << true << "" << QVariant("woow");
   }
   {
     QJsonObject obj;
-    obj["min_client_version"] = "3.0";
+    obj["min_client_version"] = QString("%1.0").arg(verMajor + 1);
     QTest::addRow("min client version ko")
         << obj << false << "" << QVariant("woow");
   }
   {
     QJsonObject obj;
-    obj["max_client_version"] = "2.0";
+    obj["min_client_version"] = QCoreApplication::applicationVersion();
+    QTest::addRow("min client version eq")
+        << obj << true << "" << QVariant("woow");
+  }
+  {
+    QJsonObject obj;
+    obj["max_client_version"] = QString("%1.0").arg(verMajor);
     QTest::addRow("max client version ko")
         << obj << false << "" << QVariant("woow");
   }
   {
     QJsonObject obj;
-    obj["max_client_version"] = "3.0";
+    obj["max_client_version"] = QString("%1.0").arg(verMajor + 1);
     QTest::addRow("max client version ok")
+        << obj << true << "" << QVariant("woow");
+  }
+  {
+    QJsonObject obj;
+    obj["max_client_version"] = QCoreApplication::applicationVersion();
+    QTest::addRow("max client version eq")
         << obj << true << "" << QVariant("woow");
   }
 

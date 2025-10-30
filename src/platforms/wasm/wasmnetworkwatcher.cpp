@@ -22,5 +22,5 @@ void WasmNetworkWatcher::initialize() { logger.debug() << "initialize"; }
 
 void WasmNetworkWatcher::start() {
   logger.debug() << "actived";
-  emit unsecuredNetwork("WifiName", "NetworkID");
+  emit unsecuredNetwork("WifiName");
 }

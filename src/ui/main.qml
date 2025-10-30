@@ -48,9 +48,10 @@ Window {
 
         // Dynamic island
         case 2556: // iPhone_14_Pro, 15, 15 Pro, 16
-        case 2622: // iPhone 16, 16 Pro
+        case 2622: // iPhone 16, 16 Pro, 17, 17 Pro
+        case 2736: // iPhone Air
         case 2796: // iPhone_14_Pro_Max, 15 Plus, 15 Pro Max, 16 Plus
-        case 2868: // iPhone 16 Pro Max
+        case 2868: // iPhone 16 Pro Max, 17 Pro Max
             return 48;
 
         default:
@@ -201,6 +202,24 @@ Window {
 
         visible: showNavigationBar.includes(MZNavigator.screen) &&
                  VPN.state === VPN.StateMain
+    }
+
+    Shortcut {
+        sequence: "Ctrl+M"
+        enabled: Qt.platform.os === "osx"
+
+        onActivated: {
+            window.showMinimized();
+        }
+    }
+
+    Shortcut {
+        sequence: "Ctrl+,"
+        enabled: Qt.platform.os === "osx"
+
+        onActivated: {
+            MZNavigator.requestScreen(VPN.ScreenSettings);
+        }
     }
 
     Connections {
