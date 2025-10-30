@@ -28,7 +28,6 @@ import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
 import org.mozilla.guardian.tunnel.WireGuardGo
 import java.io.File
 import java.util.*
-import org.mozilla.firefox.vpn.daemon.BuildConfig
 
 class VPNService : android.net.VpnService() {
     private val tag = "VPNService"

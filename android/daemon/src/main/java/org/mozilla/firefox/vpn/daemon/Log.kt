@@ -8,7 +8,6 @@ import android.content.Context
 import java.io.File
 import java.time.LocalDateTime
 import android.util.Log as nativeLog
-import org.mozilla.firefox.vpn.daemon.BuildConfig
 
 /*
  * Drop in replacement for android.util.Log

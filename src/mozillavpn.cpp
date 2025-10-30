@@ -94,7 +94,6 @@
 
 #include <QApplication>
 #include <QBuffer>
-#include <QQmlContext>
 #include <QDir>
 #include <QFileInfo>
 #include <QGuiApplication>
@@ -102,6 +101,7 @@
 #include <QJsonDocument>
 #include <QLocale>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
@@ -307,17 +307,17 @@ void MozillaVPN::initialize() {
 #endif
 
   m_private->m_captivePortalDetection.initialize();
-    logger.debug() << "Captive Portal Detection initialized";
+  logger.debug() << "Captive Portal Detection initialized";
   m_private->m_networkWatcher.initialize();
-    logger.debug() << "Network Watcher initialized";
+  logger.debug() << "Network Watcher initialized";
 
   DNSHelper::maybeMigrateDNSProviderFlags();
-    logger.debug() << "DNS Helper initialized";
+  logger.debug() << "DNS Helper initialized";
 
   SettingsWatcher::instance();
-    logger.debug() << "Settings Watcher initialized";
+  logger.debug() << "Settings Watcher initialized";
 
-      logger.debug()<< "Checking token";
+  logger.debug() << "Checking token";
   if (!settingsHolder->hasToken()) {
     return;
   }
@@ -2311,11 +2311,12 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
 }
 
 /**
-* This function instantiates a QMLApplication, MozillaVPN singleton and calles
-* the provided callback.
-* On Android, the callback is called when the Context is available, the Qt Eventloop is running in this case.
-* On other platforms, the callback is called before starting the Qt Eventloop.
-*/
+ * This function instantiates a QMLApplication, MozillaVPN singleton and calles
+ * the provided callback.
+ * On Android, the callback is called when the Context is available, the Qt
+ * Eventloop is running in this case. On other platforms, the callback is called
+ * before starting the Qt Eventloop.
+ */
 int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
@@ -2332,7 +2333,6 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   // TODO pending #3398
   QQmlContext* ctx = engine->rootContext();
   ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
-
 
   if (SettingsHolder::instance()->stagingServer()) {
     Constants::setStaging();
@@ -2352,11 +2352,11 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
-  #ifdef MZ_ANDROID
-    AndroidCommons::runWhenUiViewConstructible(callback);
-  #else
-    callback();
-  #endif
+#ifdef MZ_ANDROID
+  AndroidCommons::runWhenUiViewConstructible(callback);
+#else
+  callback();
+#endif
 
   return app.exec();
 }
