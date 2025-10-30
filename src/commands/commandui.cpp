@@ -250,7 +250,7 @@ int CommandUI::run(QStringList& tokens) {
     TemporaryDir::cleanupAll();
 
     vpn->setStartMinimized(minimizedOption.m_set ||
-                          (qgetenv("MVPN_MINIMIZED") == "1"));
+                           (qgetenv("MVPN_MINIMIZED") == "1"));
 
 #ifndef Q_OS_WIN
     // Signal handling for a proper shutdown.
@@ -322,15 +322,16 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn->controller(), &Controller::readyToQuit, vpn,
                      &App::quit, Qt::QueuedConnection);
 
-    #ifdef MZ_ANDROID
-    // On Android we need to make sure when we load a QML application that the context
-    // is set. Qt ___should___ do this for us, but it seems that in some cases it does not.
-    // So we chant dark JNI magic to make sure the VPNActivity is set as context provider.
+#ifdef MZ_ANDROID
+    // On Android we need to make sure when we load a QML application that the
+    // context is set. Qt ___should___ do this for us, but it seems that in some
+    // cases it does not. So we chant dark JNI magic to make sure the
+    // VPNActivity is set as context provider.
     logger.debug() << "Forcing activity publish";
     AndroidCommons::forcePublishActivity();
     // In case we have a pending exception, clear it before loading main.qml
     AndroidCommons::clearPendingJavaException("before main.qml load");
-    #endif 
+#endif
     const QUrl url(QStringLiteral("qrc:/qt/qml/Mozilla/VPN/main.qml"));
     logger.debug() << "Loading main QML file:" << url.toString();
     engine->load(url);
@@ -364,10 +365,11 @@ int CommandUI::run(QStringList& tokens) {
                      &MacOSMenuBar::controllerStateChanged);
 
 #endif
-    NotificationHandler* notificationHandler = NotificationHandler::create(qApp);
-    QObject::connect(vpn->controller(), &Controller::stateChanged,notificationHandler,
+    NotificationHandler* notificationHandler =
+        NotificationHandler::create(qApp);
+    QObject::connect(vpn->controller(), &Controller::stateChanged,
+                     notificationHandler,
                      &NotificationHandler::showNotification);
-
 
     QObject::connect(
         SettingsHolder::instance(), &SettingsHolder::languageCodeChanged, []() {
