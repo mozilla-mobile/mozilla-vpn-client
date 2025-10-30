@@ -5,9 +5,9 @@
 #include "platforms/ios/iosnotificationhandler.h"
 #include "leakdetector.h"
 
-#import <UserNotifications/UserNotifications.h>
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
+#import <UserNotifications/UserNotifications.h>
 
 @interface IOSNotificationDelegate
     : UIResponder <UIApplicationDelegate, UNUserNotificationCenterDelegate> {
@@ -48,7 +48,7 @@ IOSNotificationHandler::IOSNotificationHandler(QObject* parent) : NotificationHa
 
 IOSNotificationHandler::~IOSNotificationHandler() { MZ_COUNT_DTOR(IOSNotificationHandler); }
 
-void IOSNotificationHandler::initialize() {
+void IOSNotificationHandler::requestPermission() {
   UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
   [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
                                            UNAuthorizationOptionBadge)
@@ -63,6 +63,8 @@ void IOSNotificationHandler::initialize() {
 void IOSNotificationHandler::notify(NotificationHandler::Message type, const QString& title,
                                     const QString& message, int timerMsec) {
   Q_UNUSED(type);
+
+  requestPermission();
 
   if (!m_delegate) {
     return;
