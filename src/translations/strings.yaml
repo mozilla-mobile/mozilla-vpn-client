@@ -782,6 +782,15 @@ subscriptionManagement:
     comment: Menu title for a view with details on the user's account.
   manageAccount:
     value: Manage account
+  planMonthly:
+    value: "Monthly plan: %1"
+    comment: Price for a monthly subscription. %1 represents the localized currency string
+  planMonthlyWithoutTax:
+    value: "%1/month"
+    comment: Price for a monthly subscription without tax. %1 represents the localized currency string
+  planMonthlyPlusTax:
+    value: "%1/month + tax"
+    comment: Price for a monthly subscription plus tax. %1 represents the localized currency string
 
 inAppMessaging:
   menuTitle: Messages
