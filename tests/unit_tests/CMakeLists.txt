@@ -79,8 +79,6 @@ target_sources(app_unit_tests PRIVATE
     testcheckedint.h
     testcomposer.cpp
     testcomposer.h
-    testdaemonaccesscontrol.cpp
-    testdaemonaccesscontrol.h
     testenv.cpp
     testenv.h
     testlicense.cpp
@@ -121,8 +119,6 @@ target_sources(app_unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp
     ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.h
-    ${MZ_SOURCE_DIR}/daemon/daemonaccesscontrol.cpp
-    ${MZ_SOURCE_DIR}/daemon/daemonaccesscontrol.h
     ${MZ_SOURCE_DIR}/ui/composer/composer.cpp
     ${MZ_SOURCE_DIR}/ui/composer/composer.h
     ${MZ_SOURCE_DIR}/ui/composer/composerblock.cpp
