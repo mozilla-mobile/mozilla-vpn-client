@@ -16,7 +16,7 @@ void WebExtReader::readyRead() {
       m_device->startTransaction();
       char msgLength[sizeof(uint32_t)];
       qint64 rx = m_device->read(msgLength, sizeof(msgLength));
-      if (rx < sizeof(quint32)) {
+      if (rx < (qint64)sizeof(quint32)) {
         m_device->rollbackTransaction();
         return;
       }
@@ -29,7 +29,7 @@ void WebExtReader::readyRead() {
     }
 
     // Read some more data.
-    size_t maxlen = m_length - m_buffer.length();
+    qsizetype maxlen = m_length - m_buffer.length();
     QByteArray data = m_device->read(maxlen);
     Q_ASSERT(data.length() <= maxlen);
     m_buffer.append(data);
