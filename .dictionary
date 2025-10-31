@@ -84,6 +84,7 @@ Rizental
 Rustup
 SDKs
 SHA
+SMAppService
 Serde
 SettingsHolder
 Spacebar
@@ -113,6 +114,7 @@ WikiData
 Wintun
 WireGuard
 XLIFF
+XPC
 accessors
 activer
 adb
