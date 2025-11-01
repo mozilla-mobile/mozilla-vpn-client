@@ -29,7 +29,7 @@ fun getGoEnvArgsForNdkBuild(project: Project): Map<String, String> {
     val goPathProp = localProperties.getProperty("go.path") // Expect directory containing 'go'
 
     // Determine Go executable path (respecting property > PATH > default 'go')
-    val goExeName = "go" + if (System.getProperty("os.name").toLowerCase().contains("windows")) ".exe" else ""
+    val goExeName = "go" + if (System.getProperty("os.name").lowercase().contains("windows")) ".exe" else ""
     val goExePath =
         if (!goPathProp.isNullOrBlank()) {
             project
@@ -58,7 +58,6 @@ android {
 
     defaultConfig {
         minSdk = 24
-        targetSdk = Config.targetSdkVersion
 
         externalNativeBuild {
             cmake {

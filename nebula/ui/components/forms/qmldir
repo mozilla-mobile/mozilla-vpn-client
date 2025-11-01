@@ -1,11 +1,18 @@
-MZComboBox 0.1 MZComboBox.qml
-MZContextualAlert 0.1 MZContextualAlert.qml
-MZContextualAlerts 0.1 MZContextualAlerts.qml
-MZCursorDelegate 0.1 MZCursorDelegate.qml
-MZInputBackground 0.1 MZInputBackground.qml
-MZInputStates 0.1 MZInputStates.qml
-MZPasswordInput 0.1 MZPasswordInput.qml
-MZRadioButton 0.1 MZRadioButton.qml
-MZSearchBar 0.1 MZSearchBar.qml
-MZTextArea 0.1 MZTextArea.qml
-MZTextField 0.1 MZTextField.qml
+module components.forms
+linktarget formsplugin
+optional plugin qml_components_forms_formsplugin
+classname components_formsPlugin
+typeinfo forms.qmltypes
+prefer :/nebula/components/forms/
+MZContextualAlerts 0.0 MZContextualAlerts.qml
+MZInputStates 0.0 MZInputStates.qml
+MZTextField 0.0 MZTextField.qml
+MZInputBackground 0.0 MZInputBackground.qml
+MZTextArea 0.0 MZTextArea.qml
+MZPasswordInput 0.0 MZPasswordInput.qml
+MZRadioButton 0.0 MZRadioButton.qml
+MZCursorDelegate 0.0 MZCursorDelegate.qml
+MZSearchBar 0.0 MZSearchBar.qml
+MZContextualAlert 0.0 MZContextualAlert.qml
+MZComboBox 0.0 MZComboBox.qml
+

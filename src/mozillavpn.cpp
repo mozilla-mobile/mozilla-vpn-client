@@ -68,7 +68,7 @@
 #endif
 
 #ifdef MZ_ANDROID
-#  include "platforms/android/androidiaphandler.h"
+#  include "platforms/android/androidcommons.h"
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidvpnactivity.h"
 #endif
@@ -101,6 +101,7 @@
 #include <QJsonDocument>
 #include <QLocale>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
@@ -306,12 +307,17 @@ void MozillaVPN::initialize() {
 #endif
 
   m_private->m_captivePortalDetection.initialize();
+  logger.debug() << "Captive Portal Detection initialized";
   m_private->m_networkWatcher.initialize();
+  logger.debug() << "Network Watcher initialized";
 
   DNSHelper::maybeMigrateDNSProviderFlags();
+  logger.debug() << "DNS Helper initialized";
 
   SettingsWatcher::instance();
+  logger.debug() << "Settings Watcher initialized";
 
+  logger.debug() << "Checking token";
   if (!settingsHolder->hasToken()) {
     return;
   }
@@ -2301,13 +2307,16 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
 
   logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
-
-  Localizer localizer;
-
   return callback();
 }
 
-// static
+/**
+ * This function instantiates a QMLApplication, MozillaVPN singleton and calles
+ * the provided callback.
+ * On Android, the callback is called when the Context is available, the Qt
+ * Eventloop is running in this case. On other platforms, the callback is called
+ * before starting the Qt Eventloop.
+ */
 int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
@@ -2316,10 +2325,16 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
 #endif
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
+  // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
+  QQmlApplicationEngine* engine = new QQmlApplicationEngine();
+  MozillaVPN vpn;
+  QmlEngineHolder engineHolder(engine);
 
-  SettingsHolder settingsHolder;
+  // TODO pending #3398
+  QQmlContext* ctx = engine->rootContext();
+  ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
-  if (settingsHolder.stagingServer()) {
+  if (SettingsHolder::instance()->stagingServer()) {
     Constants::setStaging();
     LogHandler::instance()->setStderr(true);
   }
@@ -2330,8 +2345,6 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
-  Localizer localizer;
-
 #ifdef MZ_MACOS
   MacOSUtils::patchNSStatusBarSetImageForBigSur();
 #endif
@@ -2339,7 +2352,13 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
-  return callback();
+#ifdef MZ_ANDROID
+  AndroidCommons::runWhenUiViewConstructible(callback);
+#else
+  callback();
+#endif
+
+  return app.exec();
 }
 
 #ifdef MZ_MACOS

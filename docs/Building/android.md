@@ -14,7 +14,7 @@ $ conda activate vpn-android
 
 ### Optional: Choosing your Android Arch: 
 By default this environment will be setup to build android-arm64-v8a - 
-For real devices or Emulators on M1/M2 macs. 
+For real devices or emulators on Apple Silicon Macs.
 If you need any other architecture you need to set `ANDROID_ARCH` to the desired arch before continuing.
 Valid architecture values: `x86`, `x86_64`, `armeabi-v7a` `arm64-v8a`.
 ```
