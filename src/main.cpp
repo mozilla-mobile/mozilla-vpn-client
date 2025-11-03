@@ -52,11 +52,11 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
 
 #ifdef MVPN_WEBEXTENSION
   // Special case - if the first argument is a path to a file named
-  // 'manifest.json', or a URL with a scheme of 'chrome-extension'
+  // 'mozillavpn.json', or a URL with a scheme of 'chrome-extension'
   // then launch ourselves as the native messaging bridge.
   static Command::RegistrationProxy<WebExtCommand> s_commandWebExt;
   if (argc > 1) {
-    if ((QFileInfo(argv[1]).fileName() == "manifest.json") ||
+    if ((QFileInfo(argv[1]).fileName() == "mozillavpn.json") ||
         (QUrl(argv[1]).scheme() == "chrome-extension")) {
       char** newargs = (char**)calloc(argc+1, sizeof(char*));
       newargs[0] = argv[0];
