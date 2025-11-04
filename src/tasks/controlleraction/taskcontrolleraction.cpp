@@ -69,6 +69,10 @@ void TaskControllerAction::run() {
     case eSwitch:
       expectSignal = controller->switchServers(m_serverData);
       break;
+    case eRegenerateKey:
+      controller -> startKeyRegeneration();
+      expectSignal = true;
+      break;
   }
 
   // If no signal is expected, the VPN is probably already in the right state.

@@ -150,6 +150,34 @@ MZButtonBase {
             }
         },
 
+        State {
+            name: VPNController.StateRegeneratingKey
+
+            PropertyChanges {
+                target: cursor
+                anchors.leftMargin: 32
+                color: MZTheme.colors.connectingToggle
+            }
+
+            PropertyChanges {
+                target: toggle
+                color: MZTheme.colors.connectingToggleBackground
+                border.color: MZTheme.colors.primary
+            }
+
+            PropertyChanges {
+                target: toggleButton
+                //% "Turn VPN off"
+                toolTipTitle: qsTrId("vpn.toggle.off")
+                toggleColor: MZTheme.colors.vpnToggleConnected
+            }
+
+            PropertyChanges {
+                target: disconnectedOutline
+                opacity: 0
+            }
+
+        },
 
         State {
             name: VPNController.StateConnecting
@@ -179,6 +207,7 @@ MZButtonBase {
             }
 
         },
+
         State {
             name: VPNController.StateConfirming
 

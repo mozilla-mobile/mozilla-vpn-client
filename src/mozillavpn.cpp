@@ -1281,6 +1281,8 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   Q_ASSERT(m_private->m_deviceModel.hasCurrentDevice(keys()));
 
   if (mustRegenerateKey) {
+    TaskScheduler::scheduleTask(
+        new TaskControllerAction(TaskControllerAction::eRegenerateKey));
     // We do not need to remove the current device! guardian-website
     // "overwrites" the current device key when we submit a new one.
     addCurrentDeviceAndRefreshData();
