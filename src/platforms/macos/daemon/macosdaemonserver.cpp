@@ -4,28 +4,13 @@
 
 #include "macosdaemonserver.h"
 
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <unistd.h>
-
 #include <QCoreApplication>
-#include <QDir>
-#include <QLocalServer>
 
 #include "commandlineparser.h"
-#include "daemon/daemonlocalserverconnection.h"
 #include "leakdetector.h"
-#include "logger.h"
-#include "loghandler.h"
 #include "macosdaemon.h"
 #include "signalhandler.h"
 #include "xpcdaemonserver.h"
-
-namespace {
-Logger logger("MacOSDaemonServer");
-}
-
-constexpr const char* MACOS_DAEMON_PATH = "/var/run/mozillavpn/daemon.socket";
 
 MacOSDaemonServer::MacOSDaemonServer(QObject* parent)
     : Command(parent, "macosdaemon", "Activate the macos daemon") {
@@ -47,35 +32,8 @@ int MacOSDaemonServer::run(QStringList& tokens) {
                                             false);
   }
 
+  // Create the daemon and its XPC service handler.
   MacOSDaemon daemon;
-
-  QLocalServer server(qApp);
-  server.setSocketOptions(QLocalServer::WorldAccessOption);
-  connect(&server, &QLocalServer::newConnection, [&]() {
-    logger.debug() << "New connection received";
-    if (!server.hasPendingConnections()) {
-      return;
-    }
-
-    QLocalSocket* socket = server.nextPendingConnection();
-    Q_ASSERT(socket);
-    new DaemonLocalServerConnection(&daemon, socket);
-  });
-
-  QFileInfo path(MACOS_DAEMON_PATH);
-  if (path.exists()) {
-    QFile::remove(path.canonicalPath());
-  } else if (!makeRuntimeDir(path.dir())) {
-    logger.error() << "Failed to create runtime dir";
-    return 1;
-  }
-
-  if (!server.listen(MACOS_DAEMON_PATH)) {
-    logger.error() << "Failed to initialize the server";
-    return 1;
-  }
-
-  // Create an XPC service too.
   new XpcDaemonServer(&daemon);
 
   // Signal handling for a proper shutdown.
@@ -86,21 +44,6 @@ int MacOSDaemonServer::run(QStringList& tokens) {
                    &QCoreApplication::quit, Qt::QueuedConnection);
 
   return app.exec();
-}
-
-bool MacOSDaemonServer::makeRuntimeDir(const QDir& dir) {
-  if (dir.exists()) {
-    return true;
-  }
-
-  int ret = mkdir(dir.absolutePath().toLocal8Bit().constData(),
-                  S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH);
-  if (ret < 0) {
-    logger.warning() << "Failed to create runtime dir:" << strerror(errno);
-    return false;
-  }
-
-  return true;
 }
 
 static Command::RegistrationProxy<MacOSDaemonServer> s_commandMacOSDaemon;

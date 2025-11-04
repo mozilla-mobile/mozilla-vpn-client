@@ -10,7 +10,6 @@
 #include <QLocalSocket>
 
 #include "daemon.h"
-#include "daemonaccesscontrol.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -96,24 +95,6 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
 
   logger.debug() << "Command received:" << type;
 
-  auto accessControl = DaemonAccessControl::instance();
-  if (!accessControl->isCommandAuthorizedForPeer(type, m_socket)) {
-    // It is expected that sometimes the client will request backend logs
-    // before the first authentication. In these cases we just return empty
-    // logs.
-    if (type == "logs") {
-      QJsonObject obj;
-      obj.insert("type", "logs");
-      obj.insert("logs", "");
-      write(obj);
-      return;
-    }
-
-    logger.error() << "Unable to authorize command" << type
-                   << "for peer. Ignoring.";
-    return;
-  }
-
   if (type == "activate") {
     InterfaceConfig config;
     if (!Daemon::parseConfig(obj, config)) {
@@ -130,7 +111,6 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   }
 
   if (type == "deactivate") {
-    accessControl->resetSession();
     m_daemon->deactivate();
     return;
   }

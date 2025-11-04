@@ -71,13 +71,11 @@ protocol and retain the necessary capabilities to orchestrate interface creation
 
 ### MacOS launchd
 
-The MacOS daemon is launched using [launchd](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html)
-by installing a daemon plist at `/Library/LaunchDaemons/org.mozilla.macos.FirefoxVPN.daemon.plist` and registering the
-daemon for automatic startup with `launchctl load -w $DAEMON_PLIST_PATH`.
-
-Communication with the daemon is achieved via a named UNIX socket, which the daemon will create at
-`/var/run/mozillavpn/daemon.socket`. The API methods are invoked by formatting the arguments as a JSON object, and
-inserting a value of `type` set to the name of the method being invoked.
+Communication with the daemon is achieved via an XPC service named `org.mozilla.macos.FirefoxVPN.xpc-daemon` which
+is provided by the `org.mozilla.macos.FirefoxVPN.daemon` tool. For macOS versions 13 and later, this daemon is
+installed and launched via the [SMAppService](https://developer.apple.com/documentation/servicemanagement/smappservice)
+framework. For older macOS versions this daemon is launched using
+[launchd](https://developer.apple.com/library/archive/documentation/MacOSX/Conceptual/BPSystemStartup/Chapters/CreatingLaunchdJobs.html).
 
 MacOS does not include native support for the Wireguard protocol, so in order to establish a Wireguard tunnel, the
 daemon will create and manage other processes to perform this function. The
