@@ -324,6 +324,12 @@ void NotificationHandler::newInAppMessageNotification(const QString& title,
     return;
   }
 
+  if (App::instance()->state() == App::StateOnboarding ||
+      App::instance()->state() == MozillaVPN::StateDeviceLimit) {
+    logger.debug() << "User is onboarding, will not be notified.";
+    return;
+  }
+
   notifyInternal(NewInAppMessage, title, message,
                  Constants::NEW_IN_APP_MESSAGE_ALERT_MSEC);
 }
