@@ -154,14 +154,6 @@ osx_bundle_files(mozillavpn
     DESTINATION Library/LaunchServices
 )
 
-# Install the native messaging extensions into the bundle.
-add_dependencies(mozillavpn mozillavpnnp)
-osx_bundle_files(mozillavpn FILES
-    $<TARGET_FILE:mozillavpnnp>
-    ${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json
-    DESTINATION Resources/utils
-)
-
 # Install the background service plist into the bundle.
 configure_file(
     ${CMAKE_SOURCE_DIR}/macos/app/xpc-daemon.plist.in
