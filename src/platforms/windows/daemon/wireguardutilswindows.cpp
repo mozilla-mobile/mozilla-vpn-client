@@ -116,7 +116,7 @@ bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress ipAddress) {
   }
 
   InitializeUnicastIpAddressEntry(&row);
-  row.Address.Ipv6.sin6_family = AF_INET6;
+  row.Address.si_family = AF_INET6;
   row.Address.Ipv6 = sockaddr;
   row.InterfaceLuid = luid;
 
