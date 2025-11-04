@@ -290,6 +290,8 @@ qint64 Controller::connectionTimestamp() const {
   switch (m_state) {
     case Controller::State::StateConfirming:
       [[fallthrough]];
+    case Controller::State::StateRegeneratingKey:
+      [[fallthrough]];
     case Controller::State::StateConnecting:
       [[fallthrough]];
     case Controller::State::StateDisconnecting:
@@ -600,6 +602,10 @@ bool Controller::silentSwitchServers(
   setState(StateSilentSwitching);
   activateInternal(DoNotForceDNSPort, selectionPolicy, m_initiator);
   return true;
+}
+
+void Controller::startKeyRegeneration() {
+  setState(StateRegeneratingKey);
 }
 
 void Controller::clearRetryCounter() {
