@@ -39,9 +39,7 @@ MacOSMenuBar::~MacOSMenuBar() {
 }
 
 // static
-MacOSMenuBar* MacOSMenuBar::instance() {
-  return s_instance;
-}
+MacOSMenuBar* MacOSMenuBar::instance() { return s_instance; }
 
 void MacOSMenuBar::initialize() {
   logger.debug() << "Creating menubar";

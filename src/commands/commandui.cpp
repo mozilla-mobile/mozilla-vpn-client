@@ -380,9 +380,9 @@ int CommandUI::run(QStringList& tokens) {
           AddonManager::instance()->retranslate();
 
 #ifdef MZ_MACOS
-    if (auto *menuBar = MacOSMenuBar::instance()) {
-        menuBar->retranslate();
-    }
+          if (auto* menuBar = MacOSMenuBar::instance()) {
+            menuBar->retranslate();
+          }
 #endif
 
 #ifdef MZ_WASM
