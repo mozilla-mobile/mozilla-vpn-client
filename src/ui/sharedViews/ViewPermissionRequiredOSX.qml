@@ -28,7 +28,7 @@ MZFlickable {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: MZTheme.theme.contentTopMarginDesktop
 
-            source: MZAssetLookup.getLocalizedImageSource("MacosPermissionBackground")
+            source: VPNMacOSUtils.getMacOSMajorVersion() > 25 ? MZAssetLookup.getLocalizedImageSource("MacosPermissionBackgroundMacOS26") : MZAssetLookup.getLocalizedImageSource("MacosPermissionBackground")
             fillMode: Image.PreserveAspectFit
         }
 
@@ -64,7 +64,8 @@ MZFlickable {
                 Layout.topMargin: 8
                 Layout.fillWidth: true
 
-                text: MZI18n.PermissionMacosInstructions
+                text: VPNMacOSUtils.getMacOSMajorVersion() > 25 ? MZI18n.PermissionMacosInstructionsMacOS26 :
+                      VPNMacOSUtils.getMacOSMajorVersion() > 14 ? MZI18n.PermissionMacosInstructionsMacOS15 : MZI18n.PermissionMacosInstructions
                 horizontalAlignment: Text.AlignLeft
             }
         }
@@ -76,7 +77,7 @@ MZFlickable {
         MZButton {
             id: openSettingsButton
 
-            text: MZI18n.PermissionMacosOpenSettingsButtonLabel
+            text: VPNMacOSUtils.getMacOSMajorVersion() > 14 ? MZI18n.PermissionMacosOpenSettingsButtonLabelMacOS15 : MZI18n.PermissionMacosOpenSettingsButtonLabel
             Layout.preferredHeight: MZTheme.theme.rowHeight
             loaderVisible: false
             onClicked: VPNMacOSUtils.openSystemSettingsLoginItems()

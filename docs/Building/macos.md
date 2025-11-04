@@ -58,6 +58,9 @@ https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozil
 
 Extract the archive and remember the location for the configure step.
 
+Important note: As of November 3, 2025, the downloaded static Qt build is Qt 6.6. However, to compile the client on a macOS 26 machine, you must use later versions of
+6.8 and beyond. (It has been tested on 6.9.3, and that is recommended.) If building on macOS 26, download Qt manually and provide that path to the `CMAKE_PREFIX_PATH` argument.
+
 # Build
 
 Make the build directory
@@ -113,26 +116,6 @@ Use the `--target macpkg` to build the MacOS installer.
 This will produce an macOS installer package at `build-macos/macos/pkg/MozillaVPN.pkg`
 
 # Building with Xcode
-
-## Configure Xcode build environment
-
-You need to tell Xcode where to find the versions of rust and go that we have installed in our
-conda environment.
-
-First find and go to the Xcode `/usr/bin` directory. The `xcrun` step you ran earlier will give you a hint
-where to look. It is usually, `/Applications/Xcode.app/Contents/Developer/usr/bin/`.
-
-```
-cd /Applications/Xcode.app/Contents/Developer/usr/bin/
-```
-
-Now activate your conda environment
-
-```
-conda activate vpn
-```
-
-# Building
 
 Use the same configure command above and use `-GXcode` as the CMake generator:
 

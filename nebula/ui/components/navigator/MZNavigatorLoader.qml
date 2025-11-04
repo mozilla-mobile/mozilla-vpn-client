@@ -56,7 +56,7 @@ StackView {
       if (stackView.get(pos+1).sourceComponent === null ||
           (MZNavigator.loadingFlags === MZNavigator.ForceReload)) {
         stackView.get(pos+1).sourceComponent = null;
-        stackView.get(pos+1).sourceComponent = MZNavigator.component;
+        stackView.get(pos+1).source = MZNavigator.loadUrl;
       }
 
       for (let i = 0; i < stackView.screens.length; ++i) {

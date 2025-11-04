@@ -22,7 +22,7 @@ class EventListener final : public QObject {
    * @param windowTitle - expected name of the UI window.
    * @return * true if another instance was found.
    */
-  static bool checkForInstances(const QString& windowTitle);
+  static bool checkForInstances();
 
   /**
    * @brief Send a deep link command to the other instance of the program.
@@ -34,7 +34,6 @@ class EventListener final : public QObject {
 
  private:
   void socketReadyRead();
-  void handleLinkCommand(const QString& payload);
 
   static bool sendCommand(const QString& data);
 

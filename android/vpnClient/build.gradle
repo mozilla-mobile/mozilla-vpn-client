@@ -81,6 +81,7 @@ dependencies {
     testImplementation project(path: ':vpnClient')
     testImplementation "org.robolectric:robolectric:4.16"
     testImplementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
+    testImplementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1"
     implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'

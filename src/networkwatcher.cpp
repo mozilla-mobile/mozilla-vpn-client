@@ -121,10 +121,8 @@ void NetworkWatcher::settingsChanged() {
   }
 }
 
-void NetworkWatcher::unsecuredNetwork(const QString& networkName,
-                                      const QString& networkId) {
-  logger.debug() << "Unsecured network:" << logger.sensitive(networkName)
-                 << "id:" << logger.sensitive(networkId);
+void NetworkWatcher::unsecuredNetwork(const QString& networkName) {
+  logger.debug() << "Unsecured network:" << logger.sensitive(networkName);
 
 #ifndef UNIT_TEST
   if (!m_reportUnsecuredNetwork) {
@@ -147,15 +145,12 @@ void NetworkWatcher::unsecuredNetwork(const QString& networkName,
     return;
   }
 
-  if (!m_networks.contains(networkId)) {
-    m_networks.insert(networkId, QElapsedTimer());
-  } else if (!m_networks[networkId].hasExpired(NETWORK_WATCHER_TIMER_MSEC)) {
+  // Set a cooldown timer to prevent notification loops.
+  if (!m_cooldown.hasExpired(NETWORK_WATCHER_TIMER_MSEC)) {
     logger.debug() << "Notification already shown. Ignoring unsecured network";
     return;
   }
-
-  // Let's activate the QElapsedTimer to avoid notification loops.
-  m_networks[networkId].start();
+  m_cooldown.start();
 
   // We don't connect the system tray handler in the CTOR because it can be too
   // early. Maybe the NotificationHandler has not been created yet. We do it at

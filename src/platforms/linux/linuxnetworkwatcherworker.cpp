@@ -162,7 +162,6 @@ void LinuxNetworkWatcherWorker::checkDevices() {
 
     if (!checkUnsecureFlags(rsnFlags.toInt(), wpaFlags.toInt())) {
       QString ssid = ap.property("Ssid").toString();
-      QString bssid = ap.property("HwAddress").toString();
 
       // We have found 1 unsecured network. We don't need to check other wifi
       // network devices.
@@ -170,7 +169,7 @@ void LinuxNetworkWatcherWorker::checkDevices() {
                        << "rsnFlags:" << rsnFlags.toInt()
                        << "wpaFlags:" << wpaFlags.toInt()
                        << "ssid:" << logger.sensitive(ssid);
-      emit unsecuredNetwork(ssid, bssid);
+      emit unsecuredNetwork(ssid);
       break;
     }
   }

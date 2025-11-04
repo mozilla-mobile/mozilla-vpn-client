@@ -4,6 +4,7 @@
 
 #include "macoscontroller.h"
 
+#include <QCoreApplication>
 #include <QFile>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -46,7 +47,9 @@ MacOSController::MacOSController() : ControllerImpl()  {
 
 MacOSController::~MacOSController() {
   if (m_connection != nil) {
-    [static_cast<NSXPCConnection*>(m_connection) release];
+    NSXPCConnection* conn = static_cast<NSXPCConnection*>(m_connection);
+    [conn invalidate];
+    [conn release];
   }
 }
 
@@ -77,9 +80,11 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
   // Get the daemon version and decide if an upgrade is needed.
   [remote getVersion:^(NSString* version){
     logger.debug() << "Initialize daemon version:" << version;
+    QVersionNumber clientVersion =
+        QVersionNumber::fromString(QCoreApplication::applicationVersion());
     QVersionNumber daemonVersion =
         QVersionNumber::fromString(QString::fromNSString(version));
-    if (daemonVersion < QVersionNumber::fromString(APP_VERSION)) {
+    if (daemonVersion < clientVersion) {
       QMetaObject::invokeMethod(this, &MacOSController::upgradeService);
     } else {
       QMetaObject::invokeMethod(this, &MacOSController::connectService);
@@ -219,6 +224,9 @@ void MacOSController::connectService(void) {
     QJsonObject jsObj = QJsonDocument::fromJson(jsBlob).object();
     emit initialized(true, jsObj.value("connected").toBool(),
                      QDateTime::fromString(jsObj.value("date").toString()));
+    
+    // The delegate is now owned by the NSXPCConnection
+    [delegate release];
   }];
 }
 

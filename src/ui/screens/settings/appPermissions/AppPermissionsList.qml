@@ -27,6 +27,19 @@ ColumnLayout {
     objectName: "appListContainer"
     property string searchBarPlaceholder: ""
     property int availableHeight: 0;
+    property bool showSystemApps: false;
+    property string searchQuery: "";
+
+    MZFilterProxyModel {
+        id: showSystemAppsModel
+        source:  VPNAppPermissions
+        filterCallback: obj => { 
+            if (!appListContainer.showSystemApps && obj.isSystemApp) {
+                return false;
+            }
+            return obj.appName.toLowerCase().includes(appListContainer.searchQuery.toLowerCase());
+        }
+    }
 
     // ListView Header
     Component {
@@ -36,7 +49,7 @@ ColumnLayout {
             id: appListHeaderFocusScope
 
             readonly property ListView listView: ListView.view
-            readonly property var getProxyModel: searchBarWrapper.getProxyModel
+            readonly property var getProxyModel: showSystemAppsModel
 
             implicitHeight: appListHeaderColumn.implicitHeight
             implicitWidth: appListHeaderColumn.implicitWidth
@@ -77,15 +90,12 @@ ColumnLayout {
                 MZSearchBar {
                     property bool sorted: false;
                     id: searchBarWrapper
-                    _filterProxySource: VPNAppPermissions
-                    _filterProxyCallback: obj => {
-                        const filterValue = getSearchBarText();
-                        return obj.appName.toLowerCase().includes(filterValue);
-                    }
                     _editCallback: () => {
                         // Clear the list selection when editing the SearchBar to prevent the focus from moving
                         // from the SearchBar to the selected list item.
                         listView.currentIndex = -1; 
+                        appListContainer.searchQuery = getSearchBarText();
+                        showSystemAppsModel.recalculate();
                     }
                     // Return next item to be tabbed to
                     _getNextTabItem: () => {
@@ -152,7 +162,7 @@ ColumnLayout {
         id: appList
 
         objectName: "appList"
-        model: headerItem.getProxyModel()
+        model: headerItem.getProxyModel
         height: availableHeight
         Layout.fillWidth: true
         spacing: MZTheme.theme.windowMargin
@@ -164,6 +174,11 @@ ColumnLayout {
 
             implicitHeight: appRow.implicitHeight
             implicitWidth: appRow.implicitWidth
+
+            MZMouseArea {
+                    propagateClickToParent: false
+                    onClicked: () => appRow.handleClick()
+            }
 
             RowLayout {
                 id: appRow
@@ -258,14 +273,6 @@ ColumnLayout {
                     text: appName
                     color: MZTheme.colors.fontColorDark
                     horizontalAlignment: Text.AlignLeft
-                }
-
-                MZMouseArea {
-                    anchors.fill: parent
-                    width: parent.implicitWidth
-                    height: parent.implicitHeight
-                    propagateClickToParent: false
-                    onClicked: () => appRow.handleClick()
                 }
             }
         }
@@ -374,6 +381,36 @@ ColumnLayout {
                     }
                 }
 
+                RowLayout {
+                    visible: VPNAppPermissions.containsSystemApps 
+                    spacing: MZTheme.theme.windowMargin
+                    opacity: enabled ? 1.0 : 0.5
+                    Layout.preferredHeight: MZTheme.theme.navBarTopMargin
+
+                    MZCheckBox {
+                        Layout.alignment: Qt.AlignVCenter
+                        objectName: "systemCheckbox"
+                        onClicked: () => {
+                            appListContainer.showSystemApps = !appListContainer.showSystemApps
+                            showSystemAppsModel.recalculate();
+                        }
+                        accessibleName: MZI18n.SplittunnelBtnShowSystemApp
+                        checked: appListContainer.showSystemApps
+                    }
+
+                    MZInterLabel {
+                        id: label
+                        Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
+                        Layout.fillWidth: true
+                        Layout.fillHeight: true
+                        text: MZI18n.SplittunnelBtnShowSystemApp
+                        color: MZTheme.colors.fontColorDark
+                        horizontalAlignment: Text.AlignLeft
+                        Accessible.ignored: true
+                    }
+
+                }
+                
                 // Spacer to allow end of list to scroll up above the navbar
                 MZVerticalSpacer {
                     height: MZTheme.theme.navBarHeightWithMargins 

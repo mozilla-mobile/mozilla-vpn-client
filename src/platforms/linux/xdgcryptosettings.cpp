@@ -22,11 +22,11 @@ Logger logger("XdgCryptoSettings");
 }  // namespace
 
 XdgCryptoSettings::XdgCryptoSettings()
-    : CryptoSettings(), XdgPortal(XDG_PORTAL_SECRET) {
+    : XdgPortal(XDG_PORTAL_SECRET), CryptoSettings() {
   // Check if we can support cryptosettings.
   auto capabilities = QDBusConnection::sessionBus().connectionCapabilities();
   if ((capabilities & QDBusConnection::UnixFileDescriptorPassing) &&
-      (getVersion() >= 1)) {
+      (xdgVersion() >= 1)) {
     m_version = EncryptionChachaPolyV2;
 
     // Save changes to the "token" to the metadata settings file.
@@ -35,7 +35,7 @@ XdgCryptoSettings::XdgCryptoSettings()
   }
 }
 
-void XdgCryptoSettings::handleResponse(uint code, QVariantMap results) {
+void XdgCryptoSettings::handleResponse(uint code, const QVariantMap& results) {
   if (code != 0) {
     return;
   }
@@ -57,9 +57,9 @@ QDBusMessage XdgCryptoSettings::xdgRetrieveSecret(int fd,
   // but we need to be very sure that we close all write ends of the pipe. So
   // the point of this wrapper is to ensure that the QDBusUnixFileDescriptor
   // gets destructed and doesn't leave any open file descriptors.
-  return m_portal.call(QDBus::Block, "RetrieveSecret",
-                       QVariant::fromValue(QDBusUnixFileDescriptor(fd)),
-                       QVariant(options));
+  return call(QDBus::Block, "RetrieveSecret",
+              QVariant::fromValue(QDBusUnixFileDescriptor(fd)),
+              QVariant(options));
 }
 
 QByteArray XdgCryptoSettings::xdgReadSecretFile(int fd) {
@@ -104,7 +104,7 @@ QByteArray XdgCryptoSettings::getKey(CryptoSettings::Version version,
 
     // Request the secret.
     QVariantMap options;
-    options["handle_token"] = QVariant(token());
+    options["handle_token"] = QVariant(xdgToken());
     if (obj.contains("token")) {
       options["token"] = obj.value("token").toString();
     } else if (!m_token.isEmpty()) {

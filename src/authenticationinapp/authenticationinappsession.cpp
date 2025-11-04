@@ -768,6 +768,32 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
 
   int errorCode = obj["errno"].toInt();
 
+  // For case 107: Invalid parameter in request body, map it to a better error.
+  if (errorCode == 107) {
+    QJsonObject objValidation = obj["validation"].toObject();
+    const QJsonArray keyArray = objValidation["keys"].toArray();
+    QStringList keys;
+    for (const QJsonValue& key : keyArray) {
+      if (key.isString()) {
+        keys.append(key.toString());
+      }
+    }
+
+    if (keys.contains("unblockCode")) {
+      errorCode = 127;  // Invalid unblock code
+    } else if (keys.contains("email")) {
+      // We don't really know why email validation failed, so
+      // let's just handle this one here.
+      AuthenticationInApp* aia = AuthenticationInApp::instance();
+      aia->requestState(AuthenticationInApp::StateStart, this);
+      aia->requestErrorPropagation(
+          this, AuthenticationInApp::ErrorInvalidEmailAddress);
+      return;
+    } else if (keys.contains("code")) {
+      errorCode = 152;  // Invalid token confirmation code
+    }
+  }
+
   // See
   // https://github.com/mozilla/fxa/blob/main/packages/fxa-auth-server/docs/api.md#defined-errors
   switch (errorCode) {
@@ -788,57 +814,6 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
       aia->requestErrorPropagation(this,
                                    AuthenticationInApp::ErrorIncorrectPassword);
       break;
-
-    case 107: {  // Invalid parameter in request body
-      QJsonObject objValidation = obj["validation"].toObject();
-      const QJsonArray keyArray = objValidation["keys"].toArray();
-      QStringList keys;
-      for (const QJsonValue& key : keyArray) {
-        if (key.isString()) {
-          keys.append(key.toString());
-        }
-      }
-
-      if (keys.contains("unblockCode")) {
-        AuthenticationInApp* aia = AuthenticationInApp::instance();
-        aia->requestState(AuthenticationInApp::StateUnblockCodeNeeded, this);
-        aia->requestErrorPropagation(
-            this, AuthenticationInApp::ErrorInvalidUnblockCode);
-        break;
-      }
-
-      if (keys.contains("email")) {
-        AuthenticationInApp* aia = AuthenticationInApp::instance();
-        aia->requestState(AuthenticationInApp::StateStart, this);
-        aia->requestErrorPropagation(
-            this, AuthenticationInApp::ErrorInvalidEmailAddress);
-        break;
-      }
-
-      if (keys.contains("code")) {
-        AuthenticationInApp* aia = AuthenticationInApp::instance();
-        // Code invalid can be received both in totp and in email verification
-        // steps. We need to check the current step in order to send the correct
-        // message.
-        if (aia->state() ==
-            AuthenticationInApp::StateVerifyingSessionTotpCode) {
-          aia->requestState(
-              AuthenticationInApp::StateVerificationSessionByTotpNeeded, this);
-          aia->requestErrorPropagation(
-              this, AuthenticationInApp::ErrorInvalidTotpCode);
-          return;
-        }
-
-        aia->requestState(
-            AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
-        aia->requestErrorPropagation(
-            this, AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode);
-        break;
-      }
-
-      logger.error() << "Unsupported validation parameter";
-      break;
-    }
 
     case 114:  // Client has sent too many requests
       if (m_typeAuthentication == TypeDefault) {
@@ -890,6 +865,23 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
                                    AuthenticationInApp::ErrorFailedToSendEmail);
       break;
 
+    case 152:  // Invalid token confirmation code
+      // Code invalid can be received both in totp and in email verification
+      // steps. We need to check the current step in order to send the correct
+      // message.
+      if (aia->state() == AuthenticationInApp::StateVerifyingSessionTotpCode) {
+        aia->requestState(
+            AuthenticationInApp::StateVerificationSessionByTotpNeeded, this);
+        aia->requestErrorPropagation(this,
+                                     AuthenticationInApp::ErrorInvalidTotpCode);
+      } else {
+        aia->requestState(
+            AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
+        aia->requestErrorPropagation(
+            this, AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode);
+      }
+      break;
+
     case 183:  // Invalid or expired verification code
       aia->requestState(
           AuthenticationInApp::StateVerificationSessionByEmailNeeded, this);
@@ -910,6 +902,8 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
     case 105:  // Invalid verification code
       [[fallthrough]];
     case 106:  // Invalid JSON in request body
+      [[fallthrough]];
+    case 107:  // Invalid parameter in request body
       [[fallthrough]];
     case 108:  // Missing parameter in request body
       [[fallthrough]];
@@ -972,8 +966,6 @@ void AuthenticationInAppSession::processErrorObject(const QJsonObject& obj) {
       [[fallthrough]];
     case 150:  // Can not resend email code to an email that does not belong to
                // this account
-      [[fallthrough]];
-    case 152:  // Invalid token verification code
       [[fallthrough]];
     case 153:  // Expired token verification code
       [[fallthrough]];

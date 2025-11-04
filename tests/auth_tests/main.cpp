@@ -32,7 +32,7 @@ int main(int argc, char* argv[]) {
 
   QCoreApplication::setApplicationName("Mozilla VPN Auth Tests");
   QCoreApplication::setOrganizationName("Mozilla Testing");
-  QCoreApplication::setApplicationVersion(Constants::versionString());
+  QCoreApplication::setApplicationVersion("1.2.3");
 
   SettingsHolder settingsHolder;
   Constants::setStaging();
@@ -61,11 +61,11 @@ int main(int argc, char* argv[]) {
   TestPasswordValidation tpv(nonce);
   failures += QTest::qExec(&tpv);
 
-  TestSignUpAndIn tsuTotp(nonce, "vpn.auth.test.", true /* totp creation */);
-  failures += QTest::qExec(&tsuTotp);
-
   TestSignUpAndIn tsu(nonce, "vpn.auth.test.");
   failures += QTest::qExec(&tsu);
+
+  TestSignUpAndIn tsuTotp(nonce, "vpn.auth.test.totp.", true);
+  failures += QTest::qExec(&tsuTotp);
 
   TestSignUpAndIn tsuBlocked(nonce, "block.vpn.auth.test.");
   failures += QTest::qExec(&tsuBlocked);

@@ -35,23 +35,12 @@ object PackageManagerHelper {
         val browsers = getBrowserIDs(pm)
         val installedPackages = pm.getInstalledPackages(PackageManager.GET_PERMISSIONS)
         installedPackages.stream().filter {
-            if (isSelf(it)) {
-                // Cannot exclude ourselves
-                return@filter false
-            }
-            // If it's allowlisted, just keep it
-            if (isAllowListed(it.packageName)) {
-                return@filter true
-            }
-            // Make sure we add all system web-browsers
-            if (browsers.contains(it.packageName)) {
-                return@filter true
-            }
-            // Otherwise just add any app that is not
-            // a system package.
-            return@filter !isSystemPackage(it, pm)
+            return@filter !isSelf(it);
         }.forEach {
-            output.put(it.packageName, it.applicationInfo?.loadLabel(pm).toString())
+            val entry = JSONObject();
+            entry.put("name", it.applicationInfo?.loadLabel(pm).toString());
+            entry.put("isSystemApp", isSystemPackage(it, pm) && !isAllowListed(it.packageName));
+            output.put(it.packageName, entry);
         }
         return output.toString()
     }

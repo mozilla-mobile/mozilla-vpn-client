@@ -24,7 +24,7 @@
 #endif
 
 #if defined(MZ_LINUX)
-#  include "platforms/linux/linuxsystemtraynotificationhandler.h"
+#  include "platforms/linux/xdgnotificationhandler.h"
 #endif
 
 #if defined(MZ_MACOS)
@@ -60,9 +60,7 @@ NotificationHandler* NotificationHandler::createInternal(QObject* parent) {
 #endif
 
 #if defined(MZ_LINUX)
-  if (LinuxSystemTrayNotificationHandler::requiredCustomImpl()) {
-    return new LinuxSystemTrayNotificationHandler(parent);
-  }
+  return new XdgNotificationHandler(parent);
 #endif
 
 #if defined(MZ_MACOS)
@@ -281,9 +279,14 @@ void NotificationHandler::unsecuredNetworkNotification(
 
   QString title =
       i18nStrings->t(I18nStrings::NotificationsUnsecuredNetworkTitle);
-  QString message =
-      i18nStrings->t(I18nStrings::NotificationsUnsecuredNetworkMessage)
-          .arg(networkName);
+
+  QString message;
+  if (networkName.isEmpty()) {
+    message = i18nStrings->t(I18nStrings::NotificationsUnsecuredNetworkGeneric);
+  } else {
+    message = i18nStrings->t(I18nStrings::NotificationsUnsecuredNetworkMessage)
+                  .arg(networkName);
+  }
 
   notifyInternal(UnsecuredNetwork, title, message,
                  Constants::UNSECURED_NETWORK_ALERT_MSEC);
@@ -318,6 +321,12 @@ void NotificationHandler::newInAppMessageNotification(const QString& title,
 
   if (!App::isUserAuthenticated()) {
     logger.debug() << "User not authenticated, will not be notified.";
+    return;
+  }
+
+  if (App::instance()->state() == App::StateOnboarding ||
+      App::instance()->state() == MozillaVPN::StateDeviceLimit) {
+    logger.debug() << "User is onboarding, will not be notified.";
     return;
   }
 

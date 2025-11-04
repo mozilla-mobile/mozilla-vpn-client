@@ -12,5 +12,5 @@ Loader {
 
     // Let's use `onCompleted` to take the current value of
     // MZNavigator.component without creating a property binding.
-    Component.onCompleted: () => { loader.sourceComponent = MZNavigator.component }
+    Component.onCompleted: () => { loader.source = MZNavigator.loadUrl }
 }

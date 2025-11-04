@@ -8,13 +8,13 @@ this can break building for other platforms, it's advised to do those steps
 in a separate environment. 
 
 ```bash 
-$ conda env create -f env-android.yml -n vpn-android
+$ conda env create -f env-android.yml
 $ conda activate vpn-android
 ```
 
 ### Optional: Choosing your Android Arch: 
 By default this environment will be setup to build android-arm64-v8a - 
-For real devices or Emulators on M1/M2 macs. 
+For real devices or emulators on Apple Silicon Macs.
 If you need any other architecture you need to set `ANDROID_ARCH` to the desired arch before continuing.
 Valid architecture values: `x86`, `x86_64`, `armeabi-v7a` `arm64-v8a`.
 ```
@@ -79,9 +79,6 @@ We have a gradle task setup for that.
 
 If you need to work with subscriptions or other play store functionality in the emulator, you will need to sign the apk.
 
-Make sure have an environment variable `AUTOGRAPH_TOKEN` set (ask a fellow dev).
+There formerly was a `sign.sh` script that helped with this. The server it relied no longer exists.
 
-Then run
-```
-    ./scripts/android/sign.sh .tmp/src/android-build/build/outputs/apk/release
-```
+If locally created builds must be signed, talk to the Autograph team about setting up a local autograph instance on your machine. (And update this documentation, please.)

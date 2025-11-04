@@ -109,7 +109,8 @@ QByteArray NetworkManager::userAgent() {
 
     QTextStream out(&userAgent);
     out << Constants::NETWORK_USERAGENT_PREFIX << "/"
-        << Constants::versionString() << " (" << flags.join("; ") << ")";
+        << QCoreApplication::applicationVersion() << " (" << flags.join("; ")
+        << ")";
   }
 
   return userAgent;

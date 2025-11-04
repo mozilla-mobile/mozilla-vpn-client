@@ -236,9 +236,11 @@ void Controller::forceDaemonCrash() {
 }
 
 void Controller::deleteOSTunnelConfig() {
+  // This should only be called from TaskDeleteOSTunnelConfig
   if (m_impl) {
     m_impl->deleteOSTunnelConfig();
   }
+  setState(Controller::StateInitializing);
 }
 
 void Controller::startHandshakeTimer() {
@@ -825,8 +827,8 @@ void Controller::captivePortalPresent() {
 }
 
 void Controller::serverDataChanged() {
-  if (!isActive()) {
-    logger.debug() << "Server data changed but we are off";
+  if (!isActive() || m_state == StateDisconnecting) {
+    logger.debug() << "Server data changed but we are off or disconnecting";
     return;
   }
 

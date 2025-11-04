@@ -12,6 +12,7 @@
 #include <QSettings>
 #include <QStandardPaths>
 #include <QString>
+#include <cmath>
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -39,18 +40,17 @@ WindowsAppListProvider::~WindowsAppListProvider() {
  * locations
  */
 void WindowsAppListProvider::getApplicationList() {
-  QMap<QString, QString> appList;
+  QList<AppDescription> out;
 
   readLinkFiles("C:\\ProgramData\\Microsoft\\Windows\\Start Menu\\Programs",
-                appList);
+                out);
   readLinkFiles(
       QStandardPaths::writableLocation(QStandardPaths::AppDataLocation) +
           "\\..\\Microsoft\\Windows\\Start Menu\\Programs",
-      appList);
+      out);
   readLinkFiles(
-      QStandardPaths::writableLocation(QStandardPaths::DesktopLocation),
-      appList);
-  emit newAppList(appList);
+      QStandardPaths::writableLocation(QStandardPaths::DesktopLocation), out);
+  emit newAppList(out);
 }
 
 void WindowsAppListProvider::addApplication(const QString& appPath) {
@@ -76,12 +76,12 @@ bool WindowsAppListProvider::isValidAppId(const QString& appId) {
          WindowsAppImageProvider::hasImage(appId);
 }
 /**
- * @brief Reads all .lnk's in a Dir, filters them and Puts them into a QMap
+ * @brief Reads all .lnk's in a Dir, filters them and Puts them into a QList
  * @param path - Directory Path to read
- * @param out - QMap which valid links should be put into
+ * @param out - QList which valid links should be put into
  */
 void WindowsAppListProvider::readLinkFiles(const QString& path,
-                                           QMap<QString, QString>& out) {
+                                           QList<AppDescription>& out) {
   QFileInfo self(WindowsCommons::getCurrentPath());
   logger.debug() << "Read -> " << path;
   QDirIterator it(path, QStringList() << "*.lnk", QDir::Files,
@@ -106,26 +106,25 @@ void WindowsAppListProvider::readLinkFiles(const QString& path,
                      << target.absoluteFilePath();
       continue;
     }
-    if (target.path().toUpper().startsWith("C:/WINDOWS")) {
-      // 3: Don't include windows links like cmd/ps
-      logger.debug() << "Skip -> " << link.baseName()
-                     << target.absoluteFilePath();
-      continue;
-    }
     if (isUninstaller(target)) {
-      // 4: Don't include obvious uninstallers
+      // 3: Don't include obvious uninstallers
       logger.debug() << "Skip -> " << link.baseName()
                      << target.absoluteFilePath();
       continue;
     }
     if (!WindowsAppImageProvider::hasImage(target.absoluteFilePath())) {
-      // 5: Don't include apps without an icon
+      // 4: Don't include apps without an icon
       logger.debug() << "Skip -> " << link.baseName()
                      << target.absoluteFilePath();
       continue;
     }
+    const auto isSystemApp = [](QFileInfo link) {
+      QFileInfo target(link.symLinkTarget());
+      return target.path().toUpper().startsWith("C:/WINDOWS");
+    };
     logger.debug() << "Add -> " << link.baseName() << target.absoluteFilePath();
-    out.insert(target.absoluteFilePath(), link.baseName());
+    out.insert(out.size(), {target.absoluteFilePath(), link.baseName(),
+                            isSystemApp(target)});
   }
   logger.debug() << " Added: " << out.count() - oldCount;
 }

@@ -36,28 +36,28 @@ describe('User authentication in browser', function() {
 
   it('Completes authentication', async () => {
     await vpn.waitForInitialView();
+    await vpn.skipOnboarding();
     await vpn.authenticateInBrowser(this.ctx.wasm);
   });
 
+  it('Completes authentication via deep link', async () => {
+    await vpn.waitForInitialView();
+    await vpn.skipOnboarding();
+    await vpn.authenticateInBrowser(this.ctx.wasm, true);
+  });
+
   it('Completes authentication after logout', async () => {
+    await vpn.skipOnboarding();
     await vpn.authenticateInBrowser(this.ctx.wasm);
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
     await vpn.waitForQueryAndClick(
         queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQuery(
-        queries.screenSettings.subscriptionView.SCREEN.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-
-    await vpn.waitForQuery(
-        queries.screenSettings.subscriptionView.SIGN_OUT.visible());
-    await vpn.scrollToQuery(
-        queries.screenSettings.subscriptionView.FLICKABLE,
-        queries.screenSettings.subscriptionView.SIGN_OUT.visible());
 
     await vpn.waitForQueryAndClick(
-        queries.screenSettings.subscriptionView.SIGN_OUT.visible());
+        queries.screenSettings.SIGN_OUT.visible());
     await vpn.waitForInitialView();
+    await vpn.skipOnboarding();
 
     await vpn.authenticateInBrowser(this.ctx.wasm);
   });

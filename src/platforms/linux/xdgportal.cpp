@@ -33,8 +33,9 @@ namespace {
 Logger logger("XdgPortal");
 }
 
-XdgPortal::XdgPortal(const QString& iface, QObject* parent)
-    : QObject(parent), m_portal(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, iface) {
+XdgPortal::XdgPortal(const char* interface, QObject* parent)
+    : QDBusAbstractInterface(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, interface,
+                             QDBusConnection::sessionBus(), parent) {
   MZ_COUNT_CTOR(XdgPortal);
 
   // Generate a unique token
@@ -48,16 +49,35 @@ XdgPortal::XdgPortal(const QString& iface, QObject* parent)
   QString sender = bus.baseService().mid(1).replace('.', '_');
   constexpr const char* path = "/org/freedesktop/portal/desktop/request/%1/%2";
   setReplyPath(QString(path).arg(sender).arg(m_token));
+
+#if MZ_DEBUG
+  connect(this, &XdgPortal::xdgResponse, this, &XdgPortal::logResponse);
+#endif
 }
 
 XdgPortal::~XdgPortal() { MZ_COUNT_DTOR(XdgPortal); }
 
-uint XdgPortal::getVersion() {
-  QVariant qv = m_portal.property("version");
-  if (qv.typeId() == QMetaType::UInt) {
-    return qv.toUInt();
+QVariant XdgPortal::xdgProperty(const QString& name) const {
+  QDBusMessage msg =
+      QDBusMessage::createMethodCall(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH,
+                                     "org.freedesktop.DBus.Properties", "Get");
+  msg << interface();
+  msg << name;
+
+  QDBusReply<QDBusVariant> reply = connection().call(msg);
+  if (!reply.isValid()) {
+    logger.debug() << "Read" << name << "failed:" << reply.error().message();
+    return QVariant();
   }
-  return 0;
+  return reply.value().variant();
+}
+
+uint XdgPortal::xdgVersion() {
+  if (m_version < 0) {
+    QVariant qv = xdgProperty("version");
+    m_version = qv.toUInt();
+  }
+  return m_version;
 }
 
 void XdgPortal::setReplyPath(const QString& path) {
@@ -65,24 +85,22 @@ void XdgPortal::setReplyPath(const QString& path) {
     return;
   }
 
-  QDBusConnection bus = QDBusConnection::sessionBus();
+  QDBusConnection bus = connection();
   bus.disconnect(XDG_PORTAL_SERVICE, m_replyPath, XDG_PORTAL_REQUEST,
-                 "Response", this, SLOT(handleDbusResponse(uint, QVariantMap)));
+                 "Response", this, SIGNAL(xdgResponse(uint, QVariantMap)));
 
   m_replyPath = path;
   bus.connect(XDG_PORTAL_SERVICE, m_replyPath, XDG_PORTAL_REQUEST, "Response",
-              this, SLOT(handleDbusResponse(uint, QVariantMap)));
+              this, SIGNAL(xdgResponse(uint, QVariantMap)));
 }
 
-void XdgPortal::handleDbusResponse(uint response, QVariantMap results) {
-#ifdef MZ_DEBUG
-  logger.debug() << "Reply received:" << response;
+void XdgPortal::logResponse(uint code, const QVariantMap& results) {
+  const QString& name = metaObject()->className();
+  logger.debug() << name << "response:" << code;
   for (auto i = results.cbegin(); i != results.cend(); i++) {
-    logger.debug() << QString("%1:").arg(i.key()) << i.value().toString();
+    logger.debug() << name << QString("%1:").arg(i.key())
+                   << i.value().toString();
   }
-#endif
-
-  emit xdgResponse(response, results);
 }
 
 // Try to find the window identifier for an XDG desktop portal request.
@@ -121,9 +139,9 @@ QString XdgPortal::parentWindow() {
   return QString("");
 }
 
-// Decode systemd escape characters in the unit names.
+// Decode systemd escape characters in the cgroup names.
 static QString decodeSystemdEscape(const QString& str) {
-  static const QRegularExpression re("(_[0-9A-Fa-f][0-9A-Fa-f])");
+  static const QRegularExpression re("(\\\\x[0-9A-Fa-f][0-9A-Fa-f])");
 
   QString result = str;
   qsizetype offset = 0;
@@ -136,7 +154,7 @@ static QString decodeSystemdEscape(const QString& str) {
 
     bool okay;
     qsizetype start = match.capturedStart(0);
-    QChar code = match.captured(0).mid(1).toUShort(&okay, 16);
+    QChar code = match.captured(0).sliced(2).toUShort(&okay, 16);
     if (okay && (code != 0)) {
       // Replace the matched escape sequence with the decoded character.
       result.replace(start, match.capturedLength(0), QString(code));
@@ -166,37 +184,52 @@ static QString readCgroupAppId() {
       continue;
     }
 
-    // From https://systemd.io/DESKTOP_ENVIRONMENTS/ the format is one of:
-    //   app[-<launcher>]-<ApplicationID>-<RANDOM>.scope
-    //   app[-<launcher>]-<ApplicationID>-<RANDOM>.slice
-    QStringList cgroup = line.sliced(3).split("/");
-    for (auto i = cgroup.crbegin(); i != cgroup.crend(); i++) {
-      if (!i->startsWith("app-")) {
-        continue;
-      }
-      if (!i->endsWith(".scope") && !i->endsWith(".slice")) {
-        continue;
-      }
-
-      // Parse the scope for the application ID.
-      QStringList scopeSplit = i->chopped(6).split("-");
-
-      // Remove the last element of the scope if it's a number. This likely
-      // holds a PID or some other runtime identifier.
-      bool isDigit = false;
-      scopeSplit.last().toULong(&isDigit);
-      if (isDigit) {
-        scopeSplit.removeLast();
-      }
-
-      // The application ID should be the last token in the scope string.
-      return decodeSystemdEscape(scopeSplit.last());
-    }
-    break;
+    return XdgPortal::parseCgroupAppId(line.sliced(3));
   }
 
   // We failed to determine the scope.
   return QString();
+}
+
+QString XdgPortal::parseCgroupAppId(const QString& cgroup) {
+  QString cgName = cgroup.split("/").last();
+  if (!cgName.startsWith("app-")) {
+    return QString();
+  }
+
+  // Get the suffix after the final dot.
+  qsizetype dot = cgName.lastIndexOf('.');
+  if (dot < 0) {
+    QString();
+  }
+  QString suffix = cgName.sliced(dot + 1);
+
+  QString appId;
+  QStringList cgSplit = cgName.first(dot).split("-");
+  if (suffix == "service") {
+    // Systemd services can take the forms:
+    //   app[-<launcher>]-<ApplicationID>-autostart.service (deprecated)
+    //   app[-<launcher>]-<ApplicationID>[@<RANDOM>].service
+    if (cgSplit.last() == "autostart") {
+      cgSplit.removeLast();
+    }
+    appId = cgSplit.last().section('@', 0, 0);
+  } else if ((suffix == "scope") || (suffix == "slice")) {
+    // Systemd scopes and slices can take the forms:
+    //   app[-<launcher>]-<ApplicationID>-<RANDOM>.scope
+    //   app[-<launcher>]-<ApplicationID>-<RANDOM>.slice
+    if (cgSplit.length() < 3) {
+      logger.debug() << "Malformed" << suffix << "for:" << cgName;
+      return QString();
+    }
+    appId = cgSplit.at(cgSplit.length() - 2);
+  } else {
+    // Otherwise, we don't recognize this systemd cgroup format.
+    return QString();
+  }
+
+  // The application ID should be the last token in the scope string.
+  return decodeSystemdEscape(appId);
 }
 
 void XdgPortal::setupAppScope(const QString& appId) {
@@ -206,11 +239,12 @@ void XdgPortal::setupAppScope(const QString& appId) {
     return;
   }
 
-  QString cgAppId = readCgroupAppId();
-  if (!cgAppId.isEmpty()) {
-    // If we found an appId then we have no work to do.
-    logger.info() << "Launched as app" << cgAppId;
+  QString initAppId = readCgroupAppId();
+  if (initAppId == appId) {
+    // We already have the correct application ID.
     return;
+  } else if (!initAppId.isEmpty()) {
+    logger.info() << "Launched as app:" << initAppId;
   }
 
   // !! QTBUG-135928 WORKAROUND !!
@@ -270,12 +304,12 @@ void XdgPortal::setupAppScope(const QString& appId) {
   // because we don't have a QCoreApplication setup yet. So, instead lets poll
   // our cgroup until it changes.
   for (int retries = 0; retries < 15; retries++) {
-    cgAppId = readCgroupAppId();
-    if (cgAppId.isEmpty()) {
+    QString newAppId = readCgroupAppId();
+    if (newAppId.isEmpty() || (newAppId == initAppId)) {
       QThread::msleep(100);
       continue;
     }
-    logger.debug() << "App ID updated:" << cgAppId;
+    logger.debug() << "App ID updated:" << newAppId;
     break;
   }
 }

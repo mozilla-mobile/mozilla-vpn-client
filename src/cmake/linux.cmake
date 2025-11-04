@@ -20,14 +20,14 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxnetworkwatcherworker.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxpingsender.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxpingsender.h
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxsystemtraynotificationhandler.cpp
-    ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxsystemtraynotificationhandler.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxutils.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxutils.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgappearance.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgappearance.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgcryptosettings.h
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgnotificationhandler.cpp
+    ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgnotificationhandler.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgportal.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/xdgstartatbootwatcher.h
