@@ -40,7 +40,6 @@ MacOSMenuBar::~MacOSMenuBar() {
 
 // static
 MacOSMenuBar* MacOSMenuBar::instance() {
-  Q_ASSERT(s_instance);
   return s_instance;
 }
 
