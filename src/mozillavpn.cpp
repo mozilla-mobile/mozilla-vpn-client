@@ -471,10 +471,6 @@ void MozillaVPN::maybeStateMain() {
 
   Q_ASSERT(m_private->m_serverData.hasServerData());
 
-  // For 2.5 we need to regenerate the device key to allow the the custom DNS
-  // feature. We can do it in background when the main view is shown.
-  maybeRegenerateDeviceKey();
-
   auto controllerState = m_private->m_controller.state();
   if (controllerState == Controller::State::StatePermissionRequired) {
     setState(StatePermissionRequired);
@@ -991,8 +987,17 @@ void MozillaVPN::activate() {
   // is the right time to do it.
   maybeRegenerateDeviceKey();
 
-  TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eActivate));
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
+    if (modelsInitialized()) {
+      TaskScheduler::scheduleTask(
+          new TaskControllerAction(TaskControllerAction::eActivate));
+    } else {
+      logger.error() << "Failed to complete the key regeneration";
+      REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
+      setState(StateInitialize);
+      return;
+    }
+  }));
 }
 
 void MozillaVPN::deactivate(bool block) {
@@ -1244,35 +1249,42 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  if (settingsHolder->hasDeviceKeyVersion()) {
-    auto vers = QVersionNumber::fromString(settingsHolder->deviceKeyVersion());
-    if (vers >= QVersionNumber(2, 5, 0)) {
-      return;
+  bool mustRegenerateKey = false;
+
+  if (Feature::get(Feature::Feature_keyRegeneration)->isSupported()) {
+    qint64 timeSinceLastKeyRegeneration =
+        QDateTime::currentSecsSinceEpoch() -
+        settingsHolder->keyRegenerationTimeSec();
+    logger.debug() << "Time since last key regeneration: "
+                   << timeSinceLastKeyRegeneration;
+
+    if (timeSinceLastKeyRegeneration > Constants::keyRegenerationTimeSec()) {
+      logger.debug() << "Key regeneration needed for an expired device key";
+      mustRegenerateKey = mustRegenerateKey | true;
     }
   }
 
-  // We need a new device key only if the user wants to use custom DNS servers.
-  if (settingsHolder->dnsProviderFlags() ==
-      SettingsHolder::DNSProviderFlags::Gateway) {
-    logger.debug() << "Removal needed but no custom DNS used.";
-    return;
+  // We need a new device key if the user wants to use custom DNS servers
+  // and previous key was saved with version 2.5
+  if (!mustRegenerateKey && settingsHolder->dnsProviderFlags() !=
+                                SettingsHolder::DNSProviderFlags::Gateway) {
+    if (settingsHolder->hasDeviceKeyVersion()) {
+      auto vers =
+          QVersionNumber::fromString(settingsHolder->deviceKeyVersion());
+      if (vers < QVersionNumber(2, 5, 0)) {
+        logger.debug() << "Key regeneration needed for version 2.5";
+        mustRegenerateKey = mustRegenerateKey | true;
+      }
+    }
   }
 
   Q_ASSERT(m_private->m_deviceModel.hasCurrentDevice(keys()));
 
-  logger.debug() << "Removal needed for the 2.5 key regeneration.";
-
-  // We do not need to remove the current device! guardian-website "overwrites"
-  // the current device key when we submit a new one.
-  addCurrentDeviceAndRefreshData();
-  TaskScheduler::scheduleTask(new TaskFunction([this]() {
-    if (!modelsInitialized()) {
-      logger.error() << "Failed to complete the key regeneration";
-      REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
-      setState(StateInitialize);
-      return;
-    }
-  }));
+  if (mustRegenerateKey) {
+    // We do not need to remove the current device! guardian-website
+    // "overwrites" the current device key when we submit a new one.
+    addCurrentDeviceAndRefreshData();
+  }
 }
 
 void MozillaVPN::hardReset() {
