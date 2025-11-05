@@ -1069,4 +1069,4 @@ navBar:
 controller:
   regeneratingKey:
     value: Updating keys
-    comment: Connection status label for the main screen
+    comment: Connection status label for the main screen when the app is regenerating WireGuard keys
