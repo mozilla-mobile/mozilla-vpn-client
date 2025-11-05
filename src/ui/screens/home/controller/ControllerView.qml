@@ -160,8 +160,7 @@ Item {
 
             PropertyChanges {
                 target: logoSubtitle
-                //% "Masking connection and location"
-                text: qsTrId("vpn.controller.activating")
+                text: MZI18n.ControllerRegeratingKey
                 color: MZTheme.colors.fontColorInverted
                 opacity: 0.8
                 visible: true
