@@ -92,6 +92,41 @@ commonStrings:
     value: An option, under “Preferences”, to enable support for RCS/MMS messaging, Apple features like CarPlay and AirDrop, as well as connections to local devices.
     comment: First bullet point with a specific update in 2.31 - shown only on iOS
 
+233updateMessage:
+  bullet1:
+    value: "[all] Finish transitioning subscription management to the Mozilla Accounts website."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to all platforms.
+  bullet2:
+    value: "[all] Added regular key rotation, improving security in the event of extreme, unexpected situations."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to all platforms.
+  bullet3:
+    value: "[iOS] If you are using that beautiful new iPhone Air, Mozilla VPN should now look even better on it."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to iOS platform.
+  bullet4:
+    value: "[iOS] Improvements on when notification permissions are requested when the app launches for the first time."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to iOS platform.
+  bullet5:
+    value: "[Windows, macOS, Linux] In a rare situation, the status icon wasn't updating. We dug in deep, and it should again work for everyone."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to the 3 desktop platforms.
+  bullet6:
+    value: "[Linux] If your distro ships with that latest Qt 6.10, builds from scratch may have had issues. They no longer should."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Linux platform.
+  bullet7:
+    value: "[iOS] Some exciting under-the-hood work to support a future feature."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to iOS platform.
+  bullet8:
+    value: "[Android] Invisible work that will allow the app to run smoother on the latest devices."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Android platform.
+  bullet9:
+    value: "[macOS] Over the past few releases we've improved how the VPN operates under the hood. This release completes that work."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to macOS platform.
+  bullet10:
+    value: "[Linux] Some behind-the-scenes changes that help us get new versions out to you more easily."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Linux platform.
+  bullet11:
+    value: "[all] You can use Mozilla VPN in dozens of languages, and we've included the latest translations in this release."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to all platforms.
+
 tryFirefoxExtension:
   title:
     value: Try the Firefox extension
