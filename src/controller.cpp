@@ -891,7 +891,8 @@ bool Controller::activate(const ServerData& serverData,
   if (m_state != Controller::StateOff &&
       m_state != Controller::StateOnPartial &&
       m_state != Controller::StateSwitching &&
-      m_state != Controller::StateSilentSwitching) {
+      m_state != Controller::StateSilentSwitching &&
+      m_state != Controller::StateRegeneratingKey) {
     logger.debug() << "Already connected";
     return false;
   }
