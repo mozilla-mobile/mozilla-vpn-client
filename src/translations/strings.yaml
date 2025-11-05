@@ -1065,3 +1065,8 @@ navBar:
   settingsTab:
     value: Settings
     comment: Label for the tab on the navigation bar that takes the user to the settings screen
+
+controller:
+  regeneratingKey:
+    value: Updating keys
+    comment: Connection status label for the main screen
