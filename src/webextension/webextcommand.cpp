@@ -48,10 +48,10 @@ int WebExtCommand::run(QStringList& tokens) {
 
   QCommandLineOption optVersion = parser.addVersionOption();
   QCommandLineOption optHelp = parser.addHelpOption();
-  QCommandLineOption optPort(QStringList({"p", "port"}),
-                             "Port number of the Mozilla VPN client", "PORT");
-  optPort.setDefaultValue(QString::number(VPN_WEBEXTENSION_PORT));
-  parser.addOption(optPort);
+  QCommandLineOption optName(QStringList({"n", "name"}),
+                             "Local socket of the Mozilla VPN client", "NAME");
+  optName.setDefaultValue("mozillavpn.webext");
+  parser.addOption(optName);
 
   // Parse command line arguments.
   parser.parse(tokens);
@@ -62,18 +62,6 @@ int WebExtCommand::run(QStringList& tokens) {
   if (parser.isSet(optVersion)) {
     parser.showVersion();
     return 0;
-  }
-
-  quint16 portNum = VPN_WEBEXTENSION_PORT;
-  if (parser.isSet(optPort)) {
-    bool okay = false;
-    QString vstring = parser.value(optPort);
-    ulong value = vstring.toULong(&okay);
-    if (!okay || value > UINT16_MAX) {
-      qWarning() << "Invalid port specified:" << vstring;
-      return 1;
-    }
-    portNum = value;
   }
 
   QStringList args = parser.positionalArguments();
@@ -95,7 +83,7 @@ int WebExtCommand::run(QStringList& tokens) {
                    &QCoreApplication::quit);
 
   // Create a webextension bridge to the VPN client.
-  WebExtBridge bridge(portNum);
+  WebExtBridge bridge(parser.value(optName));
   QObject::connect(&bridge, &WebExtBridge::messageReceived, &handler,
                    &WebExtHandler::writeMsgStdout);
   QObject::connect(&handler, &WebExtHandler::unhandledMessage, &bridge,
@@ -106,6 +94,7 @@ int WebExtCommand::run(QStringList& tokens) {
                      }
                     });
   QObject::connect(&bridge, &WebExtBridge::connected, &handler, [&]() {
+    qInfo() << "Connected!";
     handler.writeJsonStdout(QJsonObject({{"status", "vpn-client-up"}}));
   });
   QObject::connect(&bridge, &WebExtBridge::disconnected, &handler, [&]() {

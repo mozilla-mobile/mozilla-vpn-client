@@ -5,12 +5,13 @@
 #ifndef HELPERSERVER_H
 #define HELPERSERVER_H
 
-#include <QTcpServer>
-#include <QTcpSocket>
+#include <QLocalServer>
 #include <QThread>
 #include <QTimer>
 
-class EchoServer final : public QTcpServer {
+class QLocalSocket;
+
+class EchoServer final : public QLocalServer {
   Q_OBJECT
 
  signals:
@@ -30,13 +31,13 @@ class EchoConnection final : public QObject {
   Q_OBJECT
 
  public:
-  EchoConnection(QTcpSocket* socket, int fuzzy);
+  EchoConnection(QLocalSocket* socket, int fuzzy);
 
  private:
   void maybeStartTimer();
 
  private:
-  QTcpSocket* m_socket = nullptr;
+  QLocalSocket* m_socket = nullptr;
   QTimer m_timer;
   QByteArray m_buffer;
   const int m_fuzzy;

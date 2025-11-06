@@ -19,7 +19,7 @@ TestHelper::TestHelper() {
 
 void TestHelper::init() {
   QStringList args;
-  args.append("/some/url/to/manifest.json");
+  args.append("/some/url/to/mozillavpn.json");
   args.append("@testpilot-containers");
 
   runNativeMessaging(args);

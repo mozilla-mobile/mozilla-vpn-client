@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include <QCoreApplication>
+#include <QDebug>
 #include <QHostAddress>
 #include <QStringList>
 
@@ -10,14 +11,15 @@
 #include "webexthandler.h"
 
 constexpr const int BRIDGE_RETRY_DELAY = 500;
+constexpr const int BRIDGE_START_DELAY = 10;
 
-WebExtBridge::WebExtBridge(quint16 port, QObject* parent)
-    : QObject(parent), m_port(port) {
+WebExtBridge::WebExtBridge(const QString& name, QObject* parent)
+    : QObject(parent), m_name(name) {
 
-  connect(&m_socket, &QAbstractSocket::stateChanged, this,
+  connect(&m_socket, &QLocalSocket::stateChanged, this,
           &WebExtBridge::stateChanged);
 
-  connect(&m_socket, &QAbstractSocket::errorOccurred, this,
+  connect(&m_socket, &QLocalSocket::errorOccurred, this,
           &WebExtBridge::errorOccurred);
 
   connect(&m_socket, &QIODevice::bytesWritten, this,
@@ -28,23 +30,14 @@ WebExtBridge::WebExtBridge(quint16 port, QObject* parent)
 
   // Upon disconnection - attempt to retry after a short delay.
   m_retryTimer.setSingleShot(true);
-  connect(&m_socket, &QAbstractSocket::stateChanged, &m_retryTimer,
-          [this](QAbstractSocket::SocketState state) {
-            if (state == QAbstractSocket::UnconnectedState) {
-              m_retryTimer.start(BRIDGE_RETRY_DELAY);
-            }
-          });
-
-  // Immediately try to establish a connection.
-  retryConnection();
+  m_retryTimer.start(BRIDGE_START_DELAY);
 }
 
-void WebExtBridge::stateChanged(QAbstractSocket::SocketState state) {
-  //qDebug() << "Web extension socket state:" << state;
-  if (state == QAbstractSocket::ConnectedState) {
+void WebExtBridge::stateChanged(QLocalSocket::LocalSocketState state) {
+  if (state == QLocalSocket::ConnectedState) {
     Q_ASSERT(m_reader == nullptr);
     m_reader = new WebExtReader(&m_socket, this);
-    connect(&m_socket, &QAbstractSocket::readyRead, m_reader,
+    connect(&m_socket, &QIODevice::readyRead, m_reader,
             &WebExtReader::readyRead);
     connect(m_reader, &WebExtReader::messageReceived, this,
             [&](const QByteArray& data) { emit messageReceived(data); });
@@ -55,22 +48,27 @@ void WebExtBridge::stateChanged(QAbstractSocket::SocketState state) {
     m_reader = nullptr;
     emit disconnected();
   }
+
+  // Upon disconnection - attempt to retry after a short delay.
+  if (state == QLocalSocket::UnconnectedState) {
+    m_retryTimer.start(BRIDGE_RETRY_DELAY);
+  }
 }
 
-void WebExtBridge::errorOccurred(QAbstractSocket::SocketError socketError) {
-  //qDebug() << "Web extension socket error:" << m_socket.errorString();
+void WebExtBridge::errorOccurred(QLocalSocket::LocalSocketError socketError) {
+  //qInfo() << "Web extension socket error:" << m_socket.errorString();
 }
 
 void WebExtBridge::retryConnection() {
   // Abort and try to reconnect.
-  if (m_socket.state() != QAbstractSocket::UnconnectedState) {
+  if (m_socket.state() != QLocalSocket::UnconnectedState) {
     m_socket.abort();
   }
-  m_socket.connectToHost(QHostAddress(QHostAddress::LocalHost), m_port);
+  m_socket.connectToServer(m_name);
 }
 
 bool WebExtBridge::sendMessage(const QByteArray& message) {
-  if (m_socket.state() != QAbstractSocket::ConnectedState) {
+  if (m_socket.state() != QLocalSocket::ConnectedState) {
     return false;
   }
 

@@ -4,6 +4,8 @@
 
 #include "helperserver.h"
 
+#include <QLocalSocket>
+
 void HelperServer::start(int fuzzy) {
   Q_ASSERT(!m_server);
   m_thread.start();
@@ -29,18 +31,18 @@ void HelperServer::stop() {
 EchoServer::EchoServer(int fuzzy) : m_fuzzy(fuzzy) {}
 
 void EchoServer::start() {
-  if (!listen(QHostAddress::Any, 8754)) {
-    qFatal("Failed to listen to port 8754");
+  if (!listen("mozillavpn.webext")) {
+    qFatal("Failed to listen");
     return;
   }
 
-  connect(this, &QTcpServer::newConnection,
+  connect(this, &QLocalServer::newConnection,
           [this]() { new EchoConnection(nextPendingConnection(), m_fuzzy); });
 
   emit ready();
 }
 
-EchoConnection::EchoConnection(QTcpSocket* socket, int fuzzy)
+EchoConnection::EchoConnection(QLocalSocket* socket, int fuzzy)
     : m_socket(socket), m_fuzzy(fuzzy) {
   m_timer.setSingleShot(true);
 
@@ -52,7 +54,7 @@ EchoConnection::EchoConnection(QTcpSocket* socket, int fuzzy)
     maybeStartTimer();
   });
 
-  connect(m_socket, &QTcpSocket::readyRead, m_socket, [this]() {
+  connect(m_socket, &QIODevice::readyRead, m_socket, [this]() {
     QByteArray buffer = m_socket->readAll();
     if (!m_fuzzy) {
       m_socket->write(buffer);

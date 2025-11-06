@@ -6,8 +6,8 @@
 #define WEBEXTBRIDGE_H
 
 #include <QByteArray>
+#include <QLocalSocket>
 #include <QObject>
-#include <QTcpSocket>
 #include <QTimer>
 
 #include "webextreader.h"
@@ -18,7 +18,7 @@ class WebExtBridge final : public QObject {
   Q_OBJECT
  
  public:
-  WebExtBridge(quint16 port, QObject* parent = nullptr);
+  WebExtBridge(const QString& name, QObject* parent = nullptr);
  
   bool isConnected() const { return m_reader != nullptr; }
 
@@ -32,16 +32,16 @@ class WebExtBridge final : public QObject {
   void messageReceived(const QByteArray& message);
  
  private slots:
-  void stateChanged(QAbstractSocket::SocketState socketState);
-  void errorOccurred(QAbstractSocket::SocketError socketError);
+  void stateChanged(QLocalSocket::LocalSocketState socketState);
+  void errorOccurred(QLocalSocket::LocalSocketError socketError);
  
  private:
   void retryConnection();
   void tryPushData();
  
-  quint16 m_port;
+  QString m_name;
   WebExtReader* m_reader = nullptr;
-  QTcpSocket m_socket;
+  QLocalSocket m_socket;
   QByteArray m_buffer;
   QTimer m_retryTimer;
 };

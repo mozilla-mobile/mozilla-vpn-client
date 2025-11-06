@@ -5,13 +5,13 @@
 #ifndef WEBEXTENSION_SERVER_H
 #define WEBEXTENSION_SERVER_H
 
-#include <QTcpServer>
+#include <QLocalServer>
 
 #include "baseadapter.h"
 
 namespace WebExtension {
 
-class Server final : public QTcpServer {
+class Server final : public QLocalServer {
   Q_OBJECT
 
  public:
@@ -22,7 +22,7 @@ class Server final : public QTcpServer {
    * @brief returns true if the QHostAddress is allowed to connect.
    * Right now only localhost addresses are allowed.
    */
-  static bool isAllowedToConnect(QHostAddress sock);
+  static bool isAllowedToConnect(qintptr sd);
 
  private:
   BaseAdapter* m_adapter;
