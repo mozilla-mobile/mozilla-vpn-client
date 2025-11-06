@@ -94,10 +94,10 @@ commonStrings:
 
 233updateMessage:
   bullet1:
-    value: "[all] Finish transitioning subscription management to the Mozilla Accounts website."
+    value: "[all] Subscription management has fully transitioned to the Mozilla accounts website."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to all platforms.
   bullet2:
-    value: "[all] Added regular key rotation, improving security in the event of extreme, unexpected situations."
+    value: "[all] Regular key rotation, improving security in the event of extreme, unexpected situations."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to all platforms.
   bullet3:
     value: "[iOS] If you are using that beautiful new iPhone Air, Mozilla VPN should now look even better on it."
