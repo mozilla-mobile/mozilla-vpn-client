@@ -238,7 +238,6 @@ void Localizer::initialize() {
 }
 
 void Localizer::loadLanguagesFromI18n() {
-  I18nStrings::initialize();
   beginResetModel();
 
   m_translationCompleteness =

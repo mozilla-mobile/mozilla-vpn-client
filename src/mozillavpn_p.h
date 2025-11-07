@@ -11,7 +11,6 @@
 #include "controller.h"
 #include "feature/taskgetfeaturelistworker.h"
 #include "ipaddresslookup.h"
-#include "localizer.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
 #include "models/location.h"
@@ -23,12 +22,10 @@
 #include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "serverlatency.h"
-#include "settingsholder.h"
 #include "statusicon.h"
 #include "telemetry.h"
 
 struct MozillaVPNPrivate {
-  SettingsHolder m_settingsHolder;
   CaptivePortal m_captivePortal;
   CaptivePortalDetection m_captivePortalDetection;
   ConnectionHealth m_connectionHealth;
@@ -48,7 +45,6 @@ struct MozillaVPNPrivate {
   Telemetry m_telemetry;
   User m_user;
   TaskGetFeatureListWorker m_taskGetFeatureListWorker;
-  Localizer m_localizer;
 };
 
 #endif  // MOZILLAVPN_PRIVATE_H

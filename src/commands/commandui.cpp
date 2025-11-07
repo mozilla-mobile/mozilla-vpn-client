@@ -183,8 +183,6 @@ int CommandUI::run(QStringList& tokens) {
   // Ensure that external styling hints are disabled.
   qunsetenv("QT_STYLE_OVERRIDE");
   return MozillaVPN::runGuiApp([&]() {
-    auto const vpn = MozillaVPN::instance();
-    Q_ASSERT(vpn);
     Telemetry::startTimeToFirstScreenTimer();
 
     if (testingOption.m_set) {
@@ -197,6 +195,7 @@ int CommandUI::run(QStringList& tokens) {
       MockDaemon* daemon = new MockDaemon(qApp);
       qputenv("MVPN_CONTROL_SOCKET", daemon->socketPath().toLocal8Bit());
     }
+    MozillaVPN vpn;
     logger.debug() << "UI starting";
 
     if (startAtBootOption.m_set || qgetenv("MVPN_STARTATBOOT") == "1") {
@@ -230,11 +229,13 @@ int CommandUI::run(QStringList& tokens) {
       qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
     }
 #endif
-    auto const engineHolder = QmlEngineHolder::instance();
-    auto const engine =
-        static_cast<QQmlApplicationEngine*>(engineHolder->engine());
-    Q_ASSERT(engine);
-    // // Glean.rs
+    // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
+    QQmlApplicationEngine* engine = new QQmlApplicationEngine();
+    QmlEngineHolder engineHolder(engine);
+    // TODO pending #3398
+    QQmlContext* ctx = engine->rootContext();
+    ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
+    // Glean.rs
     QString gleanChannel = "production";
     if (testingOption.m_set) {
       gleanChannel = "testing";
@@ -242,14 +243,32 @@ int CommandUI::run(QStringList& tokens) {
       gleanChannel = "staging";
     }
     MZGlean::initialize(gleanChannel);
+    // Clear leftover Glean.js stored data.
+    // TODO: This code can be removed starting one year after it is released.
+    auto offlineStorageDirectory =
+        QDir(QmlEngineHolder::instance()->engine()->offlineStoragePath() +
+             "/Databases");
+    if (offlineStorageDirectory.exists()) {
+      QStringList files = offlineStorageDirectory.entryList();
+      for (const QString& file : files) {
+        // Note: This is kinda dumb, it doesn't really know that this is
+        // Glean.js' storage. Since Glean.js was the only thing using sqlite in
+        // the app at the time of implementation this is fine. If we ever add
+        // other SQLite using things, then we need to change this.
+        if (file.endsWith(".sqlite")) {
+          QFile::remove(offlineStorageDirectory.absoluteFilePath(file));
+        }
+      }
+    }
 
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
+    I18nStrings::initialize();
 
     // Cleanup previous temporary files.
     TemporaryDir::cleanupAll();
 
-    vpn->setStartMinimized(minimizedOption.m_set ||
+    vpn.setStartMinimized(minimizedOption.m_set ||
                            (qgetenv("MVPN_MINIMIZED") == "1"));
 
 #ifndef Q_OS_WIN
@@ -262,7 +281,7 @@ int CommandUI::run(QStringList& tokens) {
     // Font loader
     FontLoader::loadFonts();
 
-    vpn->initialize();
+    vpn.initialize();
     logger.debug() << "VPN initialized";
 #ifdef MZ_MACOS
     MacOSStartAtBootWatcher startAtBootWatcher;
@@ -300,9 +319,9 @@ int CommandUI::run(QStringList& tokens) {
     logger.debug() << "Registered I18nStrings";
 
 #if MZ_IOS && QT_VERSION < 0x060300
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, &App::quit);
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn, &App::quit);
 #else
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, [] {
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn, [] {
       // Submit the main ping one last time.
       mozilla::glean_pings::Main.submit();
       // During shutdown Glean will attempt to finish all tasks
@@ -315,11 +334,11 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
     QObject::connect(
-        qApp, &QGuiApplication::commitDataRequest, vpn,
+        qApp, &QGuiApplication::commitDataRequest, &vpn,
         []() { MozillaVPN::instance()->deactivate(true); },
         Qt::DirectConnection);
 
-    QObject::connect(vpn->controller(), &Controller::readyToQuit, vpn,
+    QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &App::quit, Qt::QueuedConnection);
 
 #ifdef MZ_ANDROID
@@ -336,13 +355,14 @@ int CommandUI::run(QStringList& tokens) {
     logger.debug() << "Loading main QML file:" << url.toString();
     engine->load(url);
     logger.debug() << "Loaded main QML file";
-    if (!engineHolder->hasWindow()) {
+    if (!engineHolder.hasWindow()) {
       logger.error() << "Failed to load " << url.toString();
+      return -1;
     }
 
 #ifdef MZ_WINDOWS
     auto const updateWindowDecoration = [&engineHolder]() {
-      auto const window = engineHolder->window();
+      auto const window = engineHolder.window();
       WindowsUtils::updateTitleBarColor(window,
                                         Theme::instance()->isThemeDark());
       WindowsUtils::setDockIcon(window, QImage(":/ui/resources/logo-dock.png"));
@@ -353,23 +373,22 @@ int CommandUI::run(QStringList& tokens) {
                      updateWindowDecoration);
     updateWindowDecoration();
 #endif
-
+    NotificationHandler* notificationHandler =
+        NotificationHandler::create(qApp);
+    QObject::connect(vpn.controller(), &Controller::stateChanged,
+                     notificationHandler,
+                     &NotificationHandler::showNotification);
 #ifdef MZ_MACOS
     MacOSMenuBar menuBar;
     menuBar.initialize();
 
-    QObject::connect(vpn, &MozillaVPN::stateChanged, &menuBar,
+    QObject::connect(&vpn, &MozillaVPN::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
-    QObject::connect(vpn->controller(), &Controller::stateChanged, &menuBar,
+    QObject::connect(vpn.controller(), &Controller::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
 #endif
-    NotificationHandler* notificationHandler =
-        NotificationHandler::create(qApp);
-    QObject::connect(vpn->controller(), &Controller::stateChanged,
-                     notificationHandler,
-                     &NotificationHandler::showNotification);
 
     QObject::connect(
         SettingsHolder::instance(), &SettingsHolder::languageCodeChanged, []() {
@@ -401,7 +420,7 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MVPN_WEBEXTENSION
     WebExtension::Server extensionServer(new WebExtensionAdapter(qApp));
-    QObject::connect(vpn->controller(), &Controller::readyToQuit,
+    QObject::connect(vpn.controller(), &Controller::readyToQuit,
                      &extensionServer, &WebExtension::Server::close);
 #endif
 
@@ -411,11 +430,11 @@ int CommandUI::run(QStringList& tokens) {
     if (!maybeURL.isValid()) {
       logger.error() << "Error in deep-link:" << maybeURL.toString();
     } else {
-      vpn->handleDeepLink(maybeURL);
+      vpn.handleDeepLink(maybeURL);
     }
     // Whenever the client is re-opened with a new url pass it to the handler.
     connect(AndroidVPNActivity::instance(),
-            &AndroidVPNActivity::onOpenedWithUrl, vpn,
+            &AndroidVPNActivity::onOpenedWithUrl, &vpn,
             &MozillaVPN::handleDeepLink);
 #else
     // If there happen to be navigation URLs, handle them.
@@ -424,7 +443,7 @@ int CommandUI::run(QStringList& tokens) {
       if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
         logger.error() << "Invalid link:" << value;
       } else {
-        vpn->handleDeepLink(url);
+        vpn.handleDeepLink(url);
       }
     }
 #endif
@@ -432,7 +451,7 @@ int CommandUI::run(QStringList& tokens) {
     KeyRegenerator keyRegenerator;
     // We're ready to continue!
     logger.debug() << "CommandUI finished";
-    return 0;
+    return qApp->exec();
   });
 }
 

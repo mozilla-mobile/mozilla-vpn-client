@@ -101,7 +101,6 @@
 #include <QJsonDocument>
 #include <QLocale>
 #include <QQmlApplicationEngine>
-#include <QQmlContext>
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
@@ -2307,6 +2306,7 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
 
   logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
+  Localizer localizer;
   return callback();
 }
 
@@ -2325,16 +2325,9 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
 #endif
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
-  // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
-  QQmlApplicationEngine* engine = new QQmlApplicationEngine();
-  MozillaVPN vpn;
-  QmlEngineHolder engineHolder(engine);
 
-  // TODO pending #3398
-  QQmlContext* ctx = engine->rootContext();
-  ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
-
-  if (SettingsHolder::instance()->stagingServer()) {
+  SettingsHolder settingsHolder;
+  if (settingsHolder.stagingServer()) {
     Constants::setStaging();
     LogHandler::instance()->setStderr(true);
   }
@@ -2345,6 +2338,8 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
+   Localizer localizer;
+
 #ifdef MZ_MACOS
   MacOSUtils::patchNSStatusBarSetImageForBigSur();
 #endif
@@ -2353,12 +2348,10 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   app.setWindowIcon(icon);
 
 #ifdef MZ_ANDROID
-  AndroidCommons::runWhenUiViewConstructible(callback);
+  return AndroidCommons::runWhenUiViewConstructible(callback);
 #else
-  callback();
+  return callback();
 #endif
-
-  return app.exec();
 }
 
 #ifdef MZ_MACOS
