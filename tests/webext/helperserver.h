@@ -20,7 +20,7 @@ class EchoServer final : public QLocalServer {
  public:
   explicit EchoServer(int fuzzy);
 
-  void start();
+  void start(const QString& name);
   void newConnection();
 
  private:
@@ -47,7 +47,7 @@ class HelperServer final : public QObject {
   Q_OBJECT
 
  public:
-  void start(int fuzzy = 0);
+  void start(const QString& name, int fuzzy = 0);
   void stop();
 
  signals:
@@ -56,6 +56,7 @@ class HelperServer final : public QObject {
 
  private:
   EchoServer* m_server = nullptr;
+  QString m_name;
   QThread m_thread;
 };
 

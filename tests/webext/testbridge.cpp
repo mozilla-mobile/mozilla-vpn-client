@@ -38,7 +38,7 @@ void TestBridge::app_ping_failure() {
 
 void TestBridge::app_ping_success() {
   HelperServer hs;
-  hs.start();
+  hs.start(serverName());
 
   // Let's turn on a "VPN client" (echo-server)...
   QEventLoop loop;
@@ -67,7 +67,7 @@ void TestBridge::async_connection() {
     if (!started) {
       QCOMPARE(readIgnoringStatus(), "{\"error\":\"vpn-client-down\"}");
 
-      hs.start();
+      hs.start(serverName());
       started = true;
 
       QVERIFY(waitForConnection());
@@ -83,7 +83,7 @@ void TestBridge::async_connection() {
 
 void TestBridge::async_disconnection() {
   HelperServer hs;
-  hs.start();
+  hs.start(serverName());
 
   QEventLoop loop;
   connect(&hs, &HelperServer::ready, &hs, [&] { loop.exit(); });
@@ -113,7 +113,7 @@ void TestBridge::async_disconnection() {
 void TestBridge::fuzzy() {
   for (int fuzzy : QList<int>{1, 10, 100}) {
     HelperServer hs;
-    hs.start(fuzzy);
+    hs.start(serverName(), fuzzy);
 
     // Let's turn on a "VPN client" (echo-server)...
     QEventLoop loop;

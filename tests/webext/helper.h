@@ -29,6 +29,7 @@ class TestHelper : public QObject {
  protected:
   void runNativeMessaging(QStringList arguments);
   void killNativeMessaging();
+  QString serverName() const;
 
  private slots:
   void init();
@@ -38,6 +39,7 @@ class TestHelper : public QObject {
   static char* s_app;
   static QVector<QObject*> s_testList;
 
+  QString m_serverName;
   QProcess m_nativeMessagingProcess;
 };
 

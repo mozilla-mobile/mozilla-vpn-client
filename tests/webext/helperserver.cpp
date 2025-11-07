@@ -6,13 +6,13 @@
 
 #include <QLocalSocket>
 
-void HelperServer::start(int fuzzy) {
+void HelperServer::start(const QString& name, int fuzzy) {
   Q_ASSERT(!m_server);
   m_thread.start();
 
   m_server = new EchoServer(fuzzy);
   QObject::connect(this, &HelperServer::startServer, m_server,
-                   &EchoServer::start);
+                   [this, name]() { m_server->start(name); });
   QObject::connect(m_server, &EchoServer::ready, this, &HelperServer::ready);
 
   m_server->moveToThread(&m_thread);
@@ -30,8 +30,8 @@ void HelperServer::stop() {
 
 EchoServer::EchoServer(int fuzzy) : m_fuzzy(fuzzy) {}
 
-void EchoServer::start() {
-  if (!listen("mozillavpn.webext")) {
+void EchoServer::start(const QString& name) {
+  if (!listen(name)) {
     qFatal("Failed to listen");
     return;
   }

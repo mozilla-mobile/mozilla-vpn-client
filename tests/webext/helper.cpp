@@ -4,6 +4,8 @@
 
 #include "helper.h"
 
+#include <QRandomGenerator>
+
 QVector<QObject*> TestHelper::s_testList;
 char* TestHelper::s_app = nullptr;
 
@@ -18,6 +20,13 @@ TestHelper::TestHelper() {
 }
 
 void TestHelper::init() {
+  m_serverName.clear();
+  QRandomGenerator* g = QRandomGenerator::global();
+  for (int i = 0; i < 32; i++) {
+    m_serverName.append(QChar('a' + g->bounded(26)));
+  }
+  m_serverName.append(".webext");
+
   QStringList args;
   args.append("/some/url/to/mozillavpn.json");
   args.append("@testpilot-containers");
@@ -27,10 +36,22 @@ void TestHelper::init() {
 
 void TestHelper::cleanup() {
   killNativeMessaging();
+#ifndef Q_OS_WIN
+  QFile::remove(serverName());
+#endif
 }
 
-// static
+QString TestHelper::serverName() const {
+#ifdef Q_OS_WIN
+  return QString("\\\\.\\pipe\\%1").arg(m_serverName);
+#else
+  return QString("/tmp/%1").arg(m_serverName);
+#endif
+}
+
 void TestHelper::runNativeMessaging(QStringList arguments) {
+  arguments.prepend(serverName());
+  arguments.prepend("--name");
   arguments.prepend("webext");
   qDebug() << "run with args:" << arguments;
 
