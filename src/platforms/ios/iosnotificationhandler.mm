@@ -48,7 +48,7 @@ IOSNotificationHandler::IOSNotificationHandler(QObject* parent) : NotificationHa
 
 IOSNotificationHandler::~IOSNotificationHandler() { MZ_COUNT_DTOR(IOSNotificationHandler); }
 
-void IOSNotificationHandler::requestPermission() {
+void IOSNotificationHandler::requestPermission(std::function<void(void)> completionHandler) {
   UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
   [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
                                            UNAuthorizationOptionBadge)
@@ -56,6 +56,7 @@ void IOSNotificationHandler::requestPermission() {
                           Q_UNUSED(granted);
                           if (!error) {
                             m_delegate = [[IOSNotificationDelegate alloc] initWithObject:this];
+                            completionHandler();
                           }
                         }];
 }
@@ -64,32 +65,35 @@ void IOSNotificationHandler::notify(NotificationHandler::Message type, const QSt
                                     const QString& message, int timerMsec) {
   Q_UNUSED(type);
 
-  requestPermission();
+  void (^sendNotification)(void);
+  sendNotification = ^{
+    UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
+    content.title = title.toNSString();
+    content.body = message.toNSString();
+    content.sound = [UNNotificationSound defaultSound];
+
+    int timerSec = timerMsec / 1000;
+    UNTimeIntervalNotificationTrigger* trigger =
+        [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:timerSec repeats:NO];
+
+    UNNotificationRequest* request = [UNNotificationRequest requestWithIdentifier:@"mozillavpn"
+                                                                          content:content
+                                                                          trigger:trigger];
+
+    UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+    center.delegate = id(m_delegate);
+
+    [center addNotificationRequest:request
+             withCompletionHandler:^(NSError* _Nullable error) {
+               if (error) {
+                 NSLog(@"Local Notification failed");
+               }
+             }];
+  };
 
   if (!m_delegate) {
-    return;
+    requestPermission(sendNotification);
+  } else {
+    sendNotification();
   }
-
-  UNMutableNotificationContent* content = [[UNMutableNotificationContent alloc] init];
-  content.title = title.toNSString();
-  content.body = message.toNSString();
-  content.sound = [UNNotificationSound defaultSound];
-
-  int timerSec = timerMsec / 1000;
-  UNTimeIntervalNotificationTrigger* trigger =
-      [UNTimeIntervalNotificationTrigger triggerWithTimeInterval:timerSec repeats:NO];
-
-  UNNotificationRequest* request = [UNNotificationRequest requestWithIdentifier:@"mozillavpn"
-                                                                        content:content
-                                                                        trigger:trigger];
-
-  UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
-  center.delegate = id(m_delegate);
-
-  [center addNotificationRequest:request
-           withCompletionHandler:^(NSError* _Nullable error) {
-             if (error) {
-               NSLog(@"Local Notification failed");
-             }
-           }];
 }
