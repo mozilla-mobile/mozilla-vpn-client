@@ -7,6 +7,8 @@ task-defaults:
         env:
             QT_VERSION: "6.6.3"
         max-run-time: 14400
+    run: 
+        use-caches: []
 
 qt-macos-6.6:
     description: "Mac QT compile Task"
@@ -15,7 +17,6 @@ qt-macos-6.6:
             - qt-source-tarball
             - miniconda-osx
     run:
-        use-caches: []
         script: compile_qt_6_mac.sh
         resources:
             - scripts/utils/qt6_compile.sh
@@ -32,7 +33,6 @@ qt-macos-next:
             - qt-source-tarball-next
             - miniconda-osx
     run:
-        use-caches: []
         script: compile_qt_6_mac.sh
         resources:
             - scripts/utils/qt6_compile.sh
@@ -133,16 +133,16 @@ qt-linux-next:
     worker:
         docker-image: {in-tree: linux-qt6-build}
 
-qt-tools:
+qt-tools-6.6.3:
     description: "Linux Qt host tools"
     run:
         script: bundle_qt_tools.sh
         resources:
             - requirements.txt
-        toolchain-alias: qt-tools
+        toolchain-alias: qt-tools-6.6.3
         toolchain-artifact: public/build/qt-host-tools.tar.xz
     treeherder:
-        symbol: TL(qt-tools)
+        symbol: TL(qt-tools-6.6.3)
     worker-type: b-linux
     worker:
         docker-image: {in-tree: conda-base}
