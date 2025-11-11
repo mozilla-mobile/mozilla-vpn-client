@@ -42,12 +42,10 @@
 
 #ifdef MZ_LINUX
 #  include "eventlistener.h"
-#  include "platforms/linux/xdgstartatbootwatcher.h"
 #endif
 
 #ifdef MZ_MACOS
 #  include "platforms/macos/macosmenubar.h"
-#  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
 #endif
 
@@ -60,8 +58,10 @@
 #  include "platforms/android/androidvpnactivity.h"
 #endif
 
-#ifndef Q_OS_WIN
-#  include "signalhandler.h"
+
+#ifdef MVPN_WEBEXTENSION
+#  include "webextension/server.h"
+#  include "webextensionadapter.h"
 #endif
 
 #ifdef MZ_WINDOWS
@@ -72,18 +72,12 @@
 
 #  include "eventlistener.h"
 #  include "platforms/windows/windowscommons.h"
-#  include "platforms/windows/windowsstartatbootwatcher.h"
 #  include "platforms/windows/windowsutils.h"
 #  include "theme.h"
 #endif
 
 #ifdef MZ_WASM
 #  include "platforms/wasm/wasmwindowcontroller.h"
-#endif
-
-#ifdef MVPN_WEBEXTENSION
-#  include "webextension/server.h"
-#  include "webextensionadapter.h"
 #endif
 
 #include <QtQml/qqmlextensionplugin.h>
@@ -161,6 +155,8 @@ int CommandUI::run(QStringList& tokens) {
 
     return 0;
   }
+  // This class receives communications from other instances.
+  EventListener eventListener;
 #endif
 
 #ifdef MZ_ANDROID
@@ -180,9 +176,17 @@ int CommandUI::run(QStringList& tokens) {
   }
 #endif
 
+#ifdef MVPN_WEBEXTENSION
+    std::unique_ptr<WebExtension::Server> extensionServer {nullptr}; 
+#endif
+  std::unique_ptr<KeyRegenerator> keyRegenerator {nullptr};
+
+
   // Ensure that external styling hints are disabled.
   qunsetenv("QT_STYLE_OVERRIDE");
   return MozillaVPN::runGuiApp([&]() {
+    // Already intiziaized: VPN & qAPP. 
+    // Note: this lambda will exit, so don't use it's scope for long-living objects.
     auto const vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
     Telemetry::startTimeToFirstScreenTimer();
@@ -213,11 +217,6 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 
-#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
-    // This class receives communications from other instances.
-    EventListener eventListener;
-#endif
-
 #ifdef MZ_ANDROID
     // https://bugreports.qt.io/browse/QTBUG-82617
     // Currently there is a crash happening on exit with Huawei devices.
@@ -242,7 +241,6 @@ int CommandUI::run(QStringList& tokens) {
       gleanChannel = "staging";
     }
     MZGlean::initialize(gleanChannel);
-
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
 
@@ -252,30 +250,11 @@ int CommandUI::run(QStringList& tokens) {
     vpn->setStartMinimized(minimizedOption.m_set ||
                            (qgetenv("MVPN_MINIMIZED") == "1"));
 
-#ifndef Q_OS_WIN
-    // Signal handling for a proper shutdown.
-    SignalHandler sh;
-    QObject::connect(&sh, &SignalHandler::quitRequested,
-                     []() { MozillaVPN::instance()->controller()->quit(); });
-#endif
-
     // Font loader
     FontLoader::loadFonts();
 
     vpn->initialize();
     logger.debug() << "VPN initialized";
-#ifdef MZ_MACOS
-    MacOSStartAtBootWatcher startAtBootWatcher;
-    MacOSUtils::setDockClickHandler();
-#endif
-
-#ifdef MZ_WINDOWS
-    WindowsStartAtBootWatcher startAtBootWatcher;
-#endif
-
-#ifdef MZ_LINUX
-    XdgStartAtBootWatcher startAtBootWatcher;
-#endif
 
     // Prior to Qt 6.5, there was no default QML import path. We must set one.
 #if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
@@ -400,10 +379,10 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MVPN_WEBEXTENSION
-    WebExtension::Server extensionServer(new WebExtensionAdapter(qApp));
+    extensionServer.reset(new WebExtension::Server{new WebExtensionAdapter(qApp)});
     QObject::connect(vpn->controller(), &Controller::readyToQuit,
-                     &extensionServer, &WebExtension::Server::close);
-#endif
+                    extensionServer.get(), &WebExtension::Server::close);
+#endif 
 
 #ifdef MZ_ANDROID
     // If we are created with an url intent, auto pass that.
@@ -428,8 +407,7 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 #endif
-
-    KeyRegenerator keyRegenerator;
+    keyRegenerator.reset(new KeyRegenerator{});
     // We're ready to continue!
     logger.debug() << "CommandUI finished";
     return 0;
