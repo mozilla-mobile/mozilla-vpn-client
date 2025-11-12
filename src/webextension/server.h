@@ -19,8 +19,7 @@ class Server final : public QLocalServer {
   ~Server();
 
   /**
-   * @brief returns true if the QHostAddress is allowed to connect.
-   * Right now only localhost addresses are allowed.
+   * @brief returns true if the socket is allowed to connect.
    */
   static bool isAllowedToConnect(qintptr sd);
 

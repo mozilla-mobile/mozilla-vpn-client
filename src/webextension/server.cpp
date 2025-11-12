@@ -33,15 +33,6 @@ Server::Server(BaseAdapter* adapter) : QLocalServer(adapter) {
 
 Server::~Server() {}
 
-bool Server::isAllowedToConnect(qintptr sd) {
-  // TODO: ?????
-  // This is highly platform-dependent, for example:
-  //  - windows should ensure that the other end of the pipe is the same user and binary.
-  //  - linux should check that the other end of the pipe has CAP_NET_ADMIN permission.
-  //  - macos should check that the other end of the pipe has a valid codesign.
-  return true;
-}
-
 void Server::newConnectionReceived() {
   QLocalSocket* child = nextPendingConnection();
 

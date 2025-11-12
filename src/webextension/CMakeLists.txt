@@ -36,11 +36,19 @@ mz_add_new_module(
 )
 
 if(WIN32)
-    target_sources(mz_webextension PRIVATE webexthandler_windows.cpp)
+    target_sources(mz_webextension PRIVATE
+        server_windows.cpp
+        webexthandler_windows.cpp
+    )
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
-    target_sources(mz_webextension PRIVATE webexthandler_linux.cpp)
+    target_sources(mz_webextension PRIVATE
+        server_linux.cpp
+        webexthandler_linux.cpp
+    )
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-    target_sources(mz_webextension PRIVATE webexthandler_macos.mm)
+    target_sources(mz_webextension PRIVATE
+        webexthandler_macos.mm
+    )
 
     find_library(FW_APPKIT AppKit)
     target_link_libraries(mz_webextension PRIVATE ${FW_APPKIT})
