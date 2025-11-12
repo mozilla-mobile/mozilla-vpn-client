@@ -604,9 +604,7 @@ bool Controller::silentSwitchServers(
   return true;
 }
 
-void Controller::startKeyRegeneration() {
-  setState(StateRegeneratingKey);
-}
+void Controller::startKeyRegeneration() { setState(StateRegeneratingKey); }
 
 void Controller::clearRetryCounter() {
   m_connectionRetry = 0;
