@@ -70,7 +70,7 @@ void TaskControllerAction::run() {
       expectSignal = controller->switchServers(m_serverData);
       break;
     case eRegenerateKey:
-      controller -> startKeyRegeneration();
+      controller->startKeyRegeneration();
       expectSignal = true;
       break;
   }
