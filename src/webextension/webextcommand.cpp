@@ -22,8 +22,6 @@ const QStringList ALLOW_LISTED_WEBEXTENSIONS = {
     "vpn@mozilla.com"
 };
 
-constexpr const quint16 VPN_WEBEXTENSION_PORT = 8754;
-
 WebExtCommand::WebExtCommand(QObject* parent)
     : Command(parent, "webext", "Run in web extension/native messaging mode") {
   MZ_COUNT_CTOR(WebExtCommand);
@@ -35,7 +33,11 @@ int WebExtCommand::run(QStringList& tokens) {
   int argc = tokens.count();
   char** argv = (char**)calloc(sizeof(char*), argc);
   for (int i = 0; i < argc; i++) {
+#ifdef Q_OS_WIN
+    argv[i] = _strdup(qPrintable(tokens.at(i)));
+#else
     argv[i] = strdup(qPrintable(tokens.at(i)));
+#endif
   }
   QCoreApplication app(argc, argv);
 
