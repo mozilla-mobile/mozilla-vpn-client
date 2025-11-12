@@ -12,8 +12,8 @@ buildscript {
     }
     dependencies {
         classpath SharedDependencies.com_android_tools_build_gradle
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.7.22"
-        classpath "org.jetbrains.kotlin:kotlin-serialization:1.6.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:1.9.21"
+        classpath "org.jetbrains.kotlin:kotlin-serialization:1.9.21"
     }
 }
 plugins {
@@ -76,13 +76,13 @@ dependencies {
     implementation project(path: ':daemon')
     implementation project(path: ':qtglean')
 
+    implementation platform("org.jetbrains.kotlin:kotlin-bom:1.9.21")
+
     testImplementation("androidx.test:core-ktx:1.6.1")
     testImplementation 'junit:junit:4.13.2'
     testImplementation project(path: ':vpnClient')
-    testImplementation "org.robolectric:robolectric:4.12.2"
-    testImplementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
+    testImplementation "org.robolectric:robolectric:4.16"
     testImplementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1"
-    implementation "org.jetbrains.kotlin:kotlin-reflect:1.7.22"
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
