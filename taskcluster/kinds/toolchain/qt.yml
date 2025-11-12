@@ -133,16 +133,16 @@ qt-linux-next:
     worker:
         docker-image: {in-tree: linux-qt6-build}
 
-qt-tools-6.6.3:
+qt-tools-6.6:
     description: "Linux Qt host tools"
     run:
         script: bundle_qt_tools.sh
         resources:
             - requirements.txt
-        toolchain-alias: qt-tools-6.6.3
+        toolchain-alias: qt-tools-6.6
         toolchain-artifact: public/build/qt-host-tools.tar.xz
     treeherder:
-        symbol: TL(qt-tools-6.6.3)
+        symbol: TL(qt-tools-6.6)
     worker-type: b-linux
     worker:
         docker-image: {in-tree: conda-base}

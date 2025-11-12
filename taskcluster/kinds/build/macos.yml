@@ -49,7 +49,7 @@ macos/opt:
             - cargo-vendor
             - conda-osxcross
             - qt-macos-6.6
-            - qt-tools-6.6.3
+            - qt-tools-6.6
     worker-type: b-linux-large
     worker:
         docker-image: {in-tree: conda-base}
