@@ -75,7 +75,7 @@ jobs:
         uses: ./.github/actions/qt-setup-taskcluster
         with:
           dest: ${{ github.workspace }}/3rdparty
-          toolchain-alias: qt-tools
+          toolchain-alias: qt-tools-6.6
           cmake-env: false
 
       - name: Compile test client
