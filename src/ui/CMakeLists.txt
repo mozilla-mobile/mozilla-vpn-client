@@ -173,3 +173,5 @@ endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     target_sources(mozillavpn-ui PRIVATE singletons/VPNMacOSUtils.h)
 endif()
+
+add_subdirectory(systraywindow)
