@@ -58,7 +58,6 @@
 #  include "platforms/android/androidvpnactivity.h"
 #endif
 
-
 #ifdef MVPN_WEBEXTENSION
 #  include "webextension/server.h"
 #  include "webextensionadapter.h"
@@ -177,16 +176,16 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MVPN_WEBEXTENSION
-    std::unique_ptr<WebExtension::Server> extensionServer {nullptr}; 
+  std::unique_ptr<WebExtension::Server> extensionServer{nullptr};
 #endif
-  std::unique_ptr<KeyRegenerator> keyRegenerator {nullptr};
-
+  std::unique_ptr<KeyRegenerator> keyRegenerator{nullptr};
 
   // Ensure that external styling hints are disabled.
   qunsetenv("QT_STYLE_OVERRIDE");
   return MozillaVPN::runGuiApp([&]() {
-    // Already intiziaized: VPN & qAPP. 
-    // Note: this lambda will exit, so don't use it's scope for long-living objects.
+    // Already intiziaized: VPN & qAPP.
+    // Note: this lambda will exit, so don't use it's scope for long-living
+    // objects.
     auto const vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
     Telemetry::startTimeToFirstScreenTimer();
@@ -379,10 +378,11 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MVPN_WEBEXTENSION
-    extensionServer.reset(new WebExtension::Server{new WebExtensionAdapter(qApp)});
+    extensionServer.reset(
+        new WebExtension::Server{new WebExtensionAdapter(qApp)});
     QObject::connect(vpn->controller(), &Controller::readyToQuit,
-                    extensionServer.get(), &WebExtension::Server::close);
-#endif 
+                     extensionServer.get(), &WebExtension::Server::close);
+#endif
 
 #ifdef MZ_ANDROID
     // If we are created with an url intent, auto pass that.

@@ -84,6 +84,7 @@
 #ifdef MZ_MACOS
 #  include <QEvent>
 #  include <QFileOpenEvent>
+
 #  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
 #endif
@@ -95,12 +96,11 @@
 
 #ifdef MZ_WINDOWS
 #  include "platforms/windows/windowsstartatbootwatcher.h"
-#endif 
+#endif
 
 #ifndef Q_OS_WIN
 #  include "signalhandler.h"
 #endif
-
 
 #include <QApplication>
 #include <QBuffer>
@@ -127,8 +127,8 @@ QString s_updateVersion;
 
 // static
 MozillaVPN* MozillaVPN::instance() {
-  if(!s_instance) {
-      Q_ASSERT(s_instance);
+  if (!s_instance) {
+    Q_ASSERT(s_instance);
   }
   return s_instance;
 }
@@ -2364,26 +2364,25 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
-  #ifndef Q_OS_WIN
-    // Signal handling for a proper shutdown.
-    SignalHandler sh;
-    QObject::connect(&sh, &SignalHandler::quitRequested,
-                     []() { MozillaVPN::instance()->controller()->quit(); });
-  #endif
+#ifndef Q_OS_WIN
+  // Signal handling for a proper shutdown.
+  SignalHandler sh;
+  QObject::connect(&sh, &SignalHandler::quitRequested,
+                   []() { MozillaVPN::instance()->controller()->quit(); });
+#endif
 
-  #ifdef MZ_MACOS
-    MacOSStartAtBootWatcher startAtBootWatcher;
-    MacOSUtils::setDockClickHandler();
+#ifdef MZ_MACOS
+  MacOSStartAtBootWatcher startAtBootWatcher;
+  MacOSUtils::setDockClickHandler();
 #endif
 
 #ifdef MZ_WINDOWS
-    WindowsStartAtBootWatcher startAtBootWatcher;
+  WindowsStartAtBootWatcher startAtBootWatcher;
 #endif
 
 #ifdef MZ_LINUX
-    XdgStartAtBootWatcher startAtBootWatcher;
+  XdgStartAtBootWatcher startAtBootWatcher;
 #endif
-
 
 #ifdef MZ_ANDROID
   AndroidCommons::runWhenUiViewConstructible(callback);
