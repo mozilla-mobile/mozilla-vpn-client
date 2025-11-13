@@ -164,6 +164,12 @@ osx_bundle_files(mozillavpn FILES
     DESTINATION Library/LaunchDaemons
 )
 
+# Install the native messaging manifest into the bundle.
+osx_bundle_files(mozillavpn FILES
+    ${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json
+    DESTINATION Resources/utils
+)
+
 # Install the lproj translation files into the bundle.
 get_filename_component(I18N_DIR ${CMAKE_SOURCE_DIR}/3rdparty/i18n ABSOLUTE)
 file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)
