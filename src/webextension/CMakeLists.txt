@@ -47,6 +47,7 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     )
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     target_sources(mz_webextension PRIVATE
+        server_macos.cpp
         webexthandler_macos.mm
     )
 
