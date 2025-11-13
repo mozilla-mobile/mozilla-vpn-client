@@ -42,6 +42,10 @@ class Controller : public QObject, public LogSerializer {
     // a disconnected() signal from the ControllerImpl.
     StateDisconnecting,
 
+    // Requesting key to be regenerated due to version migration or expiration
+    // timeout.
+    StateRegeneratingKey,
+
     // One or more connections have been submitted to the ControllerImpl while
     // activating the VPN. The controller is waiting for a connected() signal
     // from the ControllerImpl before proceeding.
@@ -224,6 +228,8 @@ class Controller : public QObject, public LogSerializer {
 
   bool silentSwitchServers(
       ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy);
+
+  void startKeyRegeneration();
 
  private:
   enum NextStep {

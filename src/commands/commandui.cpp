@@ -24,7 +24,6 @@
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
-#include "keyregenerator.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/servercountrymodel.h"
@@ -439,7 +438,6 @@ int CommandUI::run(QStringList& tokens) {
     }
 #endif
 
-    KeyRegenerator keyRegenerator;
     // Let's go.
     return qApp->exec();
   });

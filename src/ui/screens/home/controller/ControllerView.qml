@@ -143,6 +143,46 @@ Item {
 
         },
         State {
+            name: "stateRegeneratingKey"
+            when: (VPNController.state === VPNController.StateRegeneratingKey)
+
+            PropertyChanges {
+                target: boxBackground
+                color: MZTheme.colors.primary
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                //% "Connecting…"
+                text: qsTrId("vpn.controller.connectingState")
+                color: MZTheme.colors.fontColorInverted
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                text: MZI18n.ControllerRegeratingKey
+                color: MZTheme.colors.fontColorInverted
+                opacity: 0.8
+                visible: true
+            }
+
+            PropertyChanges {
+                target: logoSubtitleOn
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRings
+                visible: false
+            }
+
+        },
+        State {
             name: "stateConnecting"
             when: (VPNController.state === VPNController.StateConnecting)
 

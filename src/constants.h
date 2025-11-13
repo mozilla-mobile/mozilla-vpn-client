@@ -250,7 +250,7 @@ constexpr const char* AUTOGRAPH_STAGE_FINGERPRINTS[] = {
     nullptr  // list termination
 };
 
-PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
+PRODBETAEXPR(qint64, keyRegenerationTimeSec, 604800, 300);
 
 PRODBETAEXPR(QString, upgradeToAnnualUrl,
              "https://www.mozilla.org/products/vpn/"
