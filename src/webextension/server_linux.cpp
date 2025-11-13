@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include <QDebug>
+#include <QDir>
 #include <QFile>
+#include <QProcessEnvironment>
 
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -31,4 +32,14 @@ bool WebExtension::Server::isAllowedToConnect(qintptr sd) {
   }
 
   return true;
+}
+
+QString WebExtension::Server::localSocketName() {
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  QDir runtime(pe.value("XDG_RUNTIME_DIR"));
+  if (pe.contains("FLATPAK_ID")) {
+    runtime.cd("app");
+    runtime.cd(pe.value("FLATPAK_ID"));
+  }
+  return runtime.absoluteFilePath(WEBEXT_SOCKET_NAME);
 }

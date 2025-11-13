@@ -42,3 +42,7 @@ bool WebExtension::Server::isAllowedToConnect(qintptr sd) {
   }
   return wcscmp(selfModuleName, clientModuleName) == 0;
 }
+
+QString WebExtension::Server::localSocketName() {
+  return QString("\\\\.\\pipe\\%1").arg(WEBEXT_SOCKET_NAME);
+}

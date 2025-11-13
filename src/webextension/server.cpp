@@ -11,8 +11,6 @@
 
 #include "connection.h"
 
-constexpr const char* WEBEXT_SERVER_NAME = "mozillavpn.webext";
-
 namespace WebExtension {
 
 Server::Server(BaseAdapter* adapter) : QLocalServer(adapter) {
@@ -22,11 +20,11 @@ Server::Server(BaseAdapter* adapter) : QLocalServer(adapter) {
   qInfo() << "Creating the server";
 
   setSocketOptions(QLocalServer::UserAccessOption);
-  if (!listen(WEBEXT_SERVER_NAME)) {
-    qCritical() << "Failed to listen on name" << WEBEXT_SERVER_NAME;
+  if (!listen(localSocketName())) {
+    qCritical() << "Failed to listen on name" << WEBEXT_SOCKET_NAME;
     return;
   }
-  qInfo() << "Server name:" << fullServerName();
+  qInfo() << "Server name:" << localSocketName();
 
   connect(this, &Server::newConnection, this, &Server::newConnectionReceived);
 }

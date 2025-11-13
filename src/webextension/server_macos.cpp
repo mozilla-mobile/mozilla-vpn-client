@@ -4,7 +4,15 @@
 
 #include "server.h"
 
+#include <QDir>
+#include <QStandardPaths>
+
 bool WebExtension::Server::isAllowedToConnect(qintptr sd) {
   // TODO: Implement Me!
   return true;
+}
+
+QString WebExtension::Server::localSocketName() {
+  QDir dir(QStandardPaths::writableLocation(QStandardPaths::RuntimeLocation));
+  return dir.absoluteFilePath(WEBEXT_SOCKET_NAME);
 }

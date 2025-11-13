@@ -23,9 +23,13 @@ class Server final : public QLocalServer {
    */
   static bool isAllowedToConnect(qintptr sd);
 
+  static QString localSocketName();
+
  private:
   BaseAdapter* m_adapter;
   void newConnectionReceived();
+
+  constexpr static const char* WEBEXT_SOCKET_NAME = "mozillavpn.webext";
 };
 
 }  // namespace WebExtension

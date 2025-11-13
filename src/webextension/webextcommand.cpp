@@ -14,6 +14,7 @@
 
 #include "commandlineparser.h"
 #include "leakdetector.h"
+#include "server.h"
 #include "webextbridge.h"
 #include "webexthandler.h"
 
@@ -52,7 +53,7 @@ int WebExtCommand::run(QStringList& tokens) {
   QCommandLineOption optHelp = parser.addHelpOption();
   QCommandLineOption optName(QStringList({"n", "name"}),
                              "Local socket of the Mozilla VPN client", "NAME");
-  optName.setDefaultValue("mozillavpn.webext");
+  optName.setDefaultValue(WebExtension::Server::localSocketName());
   parser.addOption(optName);
 
   // Parse command line arguments.
