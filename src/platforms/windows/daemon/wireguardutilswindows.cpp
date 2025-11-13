@@ -59,7 +59,7 @@ static void CALLBACK WireGuardLogger(_In_ WIREGUARD_LOGGER_LEVEL Level,
 /**
  * @brief Assigns an ipv4 address to a network device with a given LUID
  *
- * @param luid - LUID of the Adapter
+ * @param ifindex - Interface Index of the Adapter
  * @param address - Address and NetMask of the Adapter
  * @return ulong - nteContext - Call DeleteIPAddress(nteContext) to remove the
  * assignment.
