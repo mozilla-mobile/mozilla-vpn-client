@@ -18,10 +18,8 @@
 #include "webextbridge.h"
 #include "webexthandler.h"
 
-const QStringList ALLOW_LISTED_WEBEXTENSIONS = {
-    "@testpilot-containers",
-    "vpn@mozilla.com"
-};
+const QStringList ALLOW_LISTED_WEBEXTENSIONS = {"@testpilot-containers",
+                                                "vpn@mozilla.com"};
 
 WebExtCommand::WebExtCommand(QObject* parent)
     : Command(parent, "webext", "Run in web extension/native messaging mode") {
@@ -68,14 +66,14 @@ int WebExtCommand::run(QStringList& tokens) {
   }
 
   QStringList args = parser.positionalArguments();
-  if (args.length() != 2) { 
+  if (args.length() != 2) {
     qWarning() << "Expected 2 arguments got:" << args.length();
     return 1;
   }
   const QString extId = args.last();
   if (!ALLOW_LISTED_WEBEXTENSIONS.contains(extId)) {
-    qWarning() << app.applicationName() << "is not accessible for extension:"
-               << extId;
+    qWarning() << app.applicationName()
+               << "is not accessible for extension:" << extId;
     return 1;
   }
 
@@ -95,7 +93,7 @@ int WebExtCommand::run(QStringList& tokens) {
                        QJsonObject obj({{"error", "vpn-client-down"}});
                        handler.writeJsonStdout(obj);
                      }
-                    });
+                   });
   QObject::connect(&bridge, &WebExtBridge::connected, &handler, [&]() {
     qInfo() << "Connected!";
     handler.writeJsonStdout(QJsonObject({{"status", "vpn-client-up"}}));
@@ -106,7 +104,6 @@ int WebExtCommand::run(QStringList& tokens) {
 
   // Run the web extension bridge.
   QObject::connect(qApp, &QCoreApplication::aboutToQuit,
-    []() { qInfo() << "Shutting down"; });
+                   []() { qInfo() << "Shutting down"; });
   return app.exec();
 }
-

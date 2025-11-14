@@ -2,7 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "webexthandler.h"
+// psapi.h must be included after windows.h
+// clang-format off
+#include <windows.h>
+#include <psapi.h>
+#include <tlhelp32.h>
+// clang-format on
 
 #include <QDir>
 #include <QFileInfo>
@@ -10,9 +15,7 @@
 #include <QProcess>
 #include <QString>
 
-#include <windows.h>
-#include <psapi.h>
-#include <tlhelp32.h>
+#include "webexthandler.h"
 
 static DWORD getParentProcessId(DWORD pid) {
   HANDLE h = CreateToolhelp32Snapshot(TH32CS_SNAPPROCESS, 0);
@@ -20,7 +23,7 @@ static DWORD getParentProcessId(DWORD pid) {
     return 0;
   }
   auto guard = qScopeGuard([h]() { CloseHandle(h); });
-  
+
   PROCESSENTRY32W entry = {.dwSize = sizeof(PROCESSENTRY32W)};
   if (!Process32FirstW(h, &entry)) {
     return 0;
@@ -29,7 +32,7 @@ static DWORD getParentProcessId(DWORD pid) {
     if (entry.th32ProcessID == pid) {
       return entry.th32ParentProcessID;
     }
-  } while(Process32NextW(h, &entry));
+  } while (Process32NextW(h, &entry));
   return 0;
 }
 
