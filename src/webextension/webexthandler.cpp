@@ -51,7 +51,8 @@ void WebExtHandler::handleMessage(const QByteArray& msg) {
   int index = this->metaObject()->indexOfMethod(signature.constData());
   if (index >= 0) {
     // This command can be handled locally.
-    QMetaObject::invokeMethod(this, name.toLocal8Bit().constData(), msg);
+    QMetaObject::invokeMethod(this, name.toLocal8Bit().constData(),
+                              Q_ARG(QByteArray, msg));
   } else {
     // Otherwise - we cannot handle this message.
     emit unhandledMessage(msg);
