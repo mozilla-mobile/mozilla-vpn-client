@@ -94,6 +94,7 @@ Q_IMPORT_QML_PLUGIN(Mozilla_VPNPlugin);
 
 namespace {
 Logger logger("CommandUI");
+
 }
 
 CommandUI::CommandUI(QObject* parent) : Command(parent, "ui", "Start the UI.") {
@@ -181,7 +182,6 @@ int CommandUI::run(QStringList& tokens) {
 
   // Ensure that external styling hints are disabled.
   qunsetenv("QT_STYLE_OVERRIDE");
-
   return MozillaVPN::runGuiApp([&]() {
     Telemetry::startTimeToFirstScreenTimer();
 
@@ -195,7 +195,6 @@ int CommandUI::run(QStringList& tokens) {
       MockDaemon* daemon = new MockDaemon(qApp);
       qputenv("MVPN_CONTROL_SOCKET", daemon->socketPath().toLocal8Bit());
     }
-
     MozillaVPN vpn;
     logger.debug() << "UI starting";
 
@@ -223,22 +222,19 @@ int CommandUI::run(QStringList& tokens) {
     // Currently there is a crash happening on exit with Huawei devices.
     // Until this is fixed, setting this variable is the "official" workaround.
     // We certainly should look at this once 6.6 is out.
-#  if QT_VERSION >= 0x060800
+#  if QT_VERSION >= 0x061000
 #    error We have forgotten to remove this Huawei hack!
 #  endif
     if (AndroidCommons::GetManufacturer() == "Huawei") {
       qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
     }
 #endif
-
     // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
     QQmlApplicationEngine* engine = new QQmlApplicationEngine();
     QmlEngineHolder engineHolder(engine);
-
     // TODO pending #3398
     QQmlContext* ctx = engine->rootContext();
     ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
-
     // Glean.rs
     QString gleanChannel = "production";
     if (testingOption.m_set) {
@@ -273,7 +269,7 @@ int CommandUI::run(QStringList& tokens) {
     TemporaryDir::cleanupAll();
 
     vpn.setStartMinimized(minimizedOption.m_set ||
-                          (qgetenv("MVPN_MINIMIZED") == "1"));
+                           (qgetenv("MVPN_MINIMIZED") == "1"));
 
 #ifndef Q_OS_WIN
     // Signal handling for a proper shutdown.
@@ -286,7 +282,7 @@ int CommandUI::run(QStringList& tokens) {
     FontLoader::loadFonts();
 
     vpn.initialize();
-
+    logger.debug() << "VPN initialized";
 #ifdef MZ_MACOS
     MacOSStartAtBootWatcher startAtBootWatcher;
     MacOSUtils::setDockClickHandler();
@@ -304,12 +300,13 @@ int CommandUI::run(QStringList& tokens) {
 #if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
     engine->addImportPath("qrc:/");
     engine->addImportPath("qrc:/qt/qml");
+    logger.debug() << "Added QML import paths";
 #endif
-
     QQuickImageProvider* provider = ImageProviderFactory::create(qApp);
     if (provider) {
       engine->addImageProvider(QString("app"), provider);
     }
+    logger.debug() << "Added QML image provider";
 
     qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0,
                                  "MZAccessibleNotification",
@@ -319,6 +316,7 @@ int CommandUI::run(QStringList& tokens) {
     // work for the generation of i18nstrings.h/cpp for the unit-test app.
     qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZI18n",
                                  I18nStrings::instance());
+    logger.debug() << "Registered I18nStrings";
 
 #if MZ_IOS && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn, &App::quit);
@@ -343,13 +341,25 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
                      &App::quit, Qt::QueuedConnection);
 
-    // Here is the main QML file.
+#ifdef MZ_ANDROID
+    // On Android we need to make sure when we load a QML application that the
+    // context is set. Qt ___should___ do this for us, but it seems that in some
+    // cases it does not. So we chant dark JNI magic to make sure the
+    // VPNActivity is set as context provider.
+    logger.debug() << "Forcing activity publish";
+    AndroidCommons::forcePublishActivity();
+    // In case we have a pending exception, clear it before loading main.qml
+    AndroidCommons::clearPendingJavaException("before main.qml load");
+#endif
     const QUrl url(QStringLiteral("qrc:/qt/qml/Mozilla/VPN/main.qml"));
+    logger.debug() << "Loading main QML file:" << url.toString();
     engine->load(url);
+    logger.debug() << "Loaded main QML file";
     if (!engineHolder.hasWindow()) {
       logger.error() << "Failed to load " << url.toString();
       return -1;
     }
+
 #ifdef MZ_WINDOWS
     auto const updateWindowDecoration = [&engineHolder]() {
       auto const window = engineHolder.window();
@@ -363,14 +373,11 @@ int CommandUI::run(QStringList& tokens) {
                      updateWindowDecoration);
     updateWindowDecoration();
 #endif
-
     NotificationHandler* notificationHandler =
         NotificationHandler::create(qApp);
-
     QObject::connect(vpn.controller(), &Controller::stateChanged,
                      notificationHandler,
                      &NotificationHandler::showNotification);
-
 #ifdef MZ_MACOS
     MacOSMenuBar menuBar;
     menuBar.initialize();
@@ -392,7 +399,9 @@ int CommandUI::run(QStringList& tokens) {
           AddonManager::instance()->retranslate();
 
 #ifdef MZ_MACOS
-          MacOSMenuBar::instance()->retranslate();
+          if (auto* menuBar = MacOSMenuBar::instance()) {
+            menuBar->retranslate();
+          }
 #endif
 
 #ifdef MZ_WASM
@@ -404,7 +413,7 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     InspectorHandler::initialize();
-
+    logger.debug() << "Inspector Handler initialized";
 #ifdef MZ_WASM
     WasmWindowController wasmWindowController;
 #endif
@@ -421,7 +430,7 @@ int CommandUI::run(QStringList& tokens) {
     if (!maybeURL.isValid()) {
       logger.error() << "Error in deep-link:" << maybeURL.toString();
     } else {
-      vpn.handleDeepLink(url);
+      vpn.handleDeepLink(maybeURL);
     }
     // Whenever the client is re-opened with a new url pass it to the handler.
     connect(AndroidVPNActivity::instance(),
@@ -440,7 +449,8 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
     KeyRegenerator keyRegenerator;
-    // Let's go.
+    // We're ready to continue!
+    logger.debug() << "CommandUI finished";
     return qApp->exec();
   });
 }

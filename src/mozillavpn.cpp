@@ -68,7 +68,7 @@
 #endif
 
 #ifdef MZ_ANDROID
-#  include "platforms/android/androidiaphandler.h"
+#  include "platforms/android/androidcommons.h"
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidvpnactivity.h"
 #endif
@@ -306,12 +306,17 @@ void MozillaVPN::initialize() {
 #endif
 
   m_private->m_captivePortalDetection.initialize();
+  logger.debug() << "Captive Portal Detection initialized";
   m_private->m_networkWatcher.initialize();
+  logger.debug() << "Network Watcher initialized";
 
   DNSHelper::maybeMigrateDNSProviderFlags();
+  logger.debug() << "DNS Helper initialized";
 
   SettingsWatcher::instance();
+  logger.debug() << "Settings Watcher initialized";
 
+  logger.debug() << "Checking token";
   if (!settingsHolder->hasToken()) {
     return;
   }
@@ -2301,13 +2306,17 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
 
   logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
-
   Localizer localizer;
-
   return callback();
 }
 
-// static
+/**
+ * This function instantiates a QMLApplication, MozillaVPN singleton and calles
+ * the provided callback.
+ * On Android, the callback is called when the Context is available, the Qt
+ * Eventloop is running in this case. On other platforms, the callback is called
+ * before starting the Qt Eventloop.
+ */
 int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
@@ -2318,7 +2327,6 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
   SettingsHolder settingsHolder;
-
   if (settingsHolder.stagingServer()) {
     Constants::setStaging();
     LogHandler::instance()->setStderr(true);
@@ -2330,7 +2338,7 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
 
-  Localizer localizer;
+   Localizer localizer;
 
 #ifdef MZ_MACOS
   MacOSUtils::patchNSStatusBarSetImageForBigSur();
@@ -2339,7 +2347,11 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
+#ifdef MZ_ANDROID
+  return AndroidCommons::runWhenUiViewConstructible(callback);
+#else
   return callback();
+#endif
 }
 
 #ifdef MZ_MACOS

@@ -90,6 +90,7 @@ class AndroidVPNActivity : public QObject {
   static void maybeInit();
   static AndroidVPNActivity* instance();
   static bool handleBackButton(JNIEnv* env, jobject thiz);
+  static bool isReady();
   static void sendToService(ServiceAction type, const QString& data = "");
   static void connectService();
   /**
