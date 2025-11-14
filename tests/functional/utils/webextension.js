@@ -1,8 +1,8 @@
 const net = require('node:net');
 const {Buffer} = require('node:buffer');
+const {spawn} = require('child_process');
 
-
-const SERVER_PORT = 8754;
+const app = process.env.MVPN_BIN;
 
 class ExtensionMessage{
   t= ""
@@ -19,48 +19,62 @@ function makeMessage(aT, extra) {
  * Connects to the Client's default WebExtension
  * API Socket
  *
- * @returns {Promise<net.Socket>} a node:net Socket with an established
+ * @returns {Promise<ChildProcess>} a node:net Socket with an established
  *     connection
  */
 async function connectExtension() {
-  const sock = new net.Socket();
-  await new Promise(r => sock.connect(8754, '127.0.0.1', r));
-  return sock;
+  let p = spawn(app, ['webext', 'mozillavpn.json', 'vpn@mozilla.com']);
+  p.stderr.on('data', (data) => {
+    console.log("bridge stderr:", data.toString());
+  });
+
+  // await a status message indicating the VPN client is up.
+  let stream = getMessageStream(p);
+  const reader = stream.getReader();
+  while (true) {
+    const {value} = await reader.read();
+    if (value.status == "vpn-client-up") {
+      reader.releaseLock()
+      break;
+    }
+  }
+
+  return p;
 };
 
 /**
  * Encodes and sends a Message to the Client
  * @param {ExtensionMessage} message - Message :)
- * @param {net.Socket} socket - Socket
+ * @param {ClientProcess} bridge - an web extension bridge process
  *
  */
-function sentToClient(message, sock) {
-  const resEncodedMessage = new TextEncoder().encode(JSON.stringify(message))
+function sentToClient(message, bridge) {
+  const resEncodedMessage = new TextEncoder().encode(JSON.stringify(message));
   const b = new Uint32Array([resEncodedMessage.length]);
   const header = new Uint8Array(b.buffer);
 
-
   var raw_message = new Uint8Array([...header, ...resEncodedMessage]);
-  sock.write(raw_message);
+  bridge.stdin.write(raw_message);
 }
 
 /**
  * Returns a generator Yieling Messages from the Webextension
  * The Generator is valid as long as the socket is open
- * @param {*} sock - an Open Socket
+ * @param {*} bridge - an web extension bridge process
  * @returns {ReadableStream<Message>}- A ReadableStream yieling Messages
  */
-function getMessageStream(sock = new net.Socket) {
+function getMessageStream(bridge) {
   return new ReadableStream({
     start(cntrl) {
-      sock.on('data', (buff) => {
+      bridge.stdout.setEncoding('binary');
+      bridge.stdout.on('data', (buff) => {
         let data = buff;
         // Pop out the first X bytes
         // from data and return them
         const nom = (len) => {
           const out = data.slice(0, len)
           data = data.slice(len)
-          return out;
+          return Buffer.from(out);
         };
         while (data.length != 0) {
           const header = nom(4)
