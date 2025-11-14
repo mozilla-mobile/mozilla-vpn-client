@@ -21,7 +21,7 @@ class IOSNotificationHandler final : public NotificationHandler {
               int timerMsec) override;
 
  private:
-  void requestPermission();
+  void requestPermission(std::function<void(void)> completionHandler);
 
  private:
   void* m_delegate = nullptr;
