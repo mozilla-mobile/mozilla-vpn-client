@@ -44,7 +44,7 @@ class WebExtWorker final : public QThread {
   Q_OBJECT
 
  public:
-  WebExtWorker(QObject* parent = nullptr) : QThread(parent) {};
+  WebExtWorker(QObject* parent = nullptr) : QThread(parent){};
 
  signals:
   void messageReceived(const QByteArray& msg);

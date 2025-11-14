@@ -4,16 +4,17 @@
 
 #include "webexthandler.h"
 
+#include <stdio.h>
+
 #include <QByteArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMetaObject>
 
-#include <stdio.h>
-
 #include "webextreader.h"
 
-WebExtHandler::WebExtHandler(QFileDevice* d, QObject* parent) : QObject(parent) {
+WebExtHandler::WebExtHandler(QFileDevice* d, QObject* parent)
+    : QObject(parent) {
   m_output = d;
   m_worker = new WebExtWorker(this);
 

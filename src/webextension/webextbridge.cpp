@@ -2,12 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "webextbridge.h"
+
 #include <QCoreApplication>
 #include <QDebug>
 #include <QHostAddress>
 #include <QStringList>
 
-#include "webextbridge.h"
 #include "webexthandler.h"
 
 constexpr const int BRIDGE_RETRY_DELAY = 500;
@@ -15,7 +16,6 @@ constexpr const int BRIDGE_START_DELAY = 10;
 
 WebExtBridge::WebExtBridge(const QString& name, QObject* parent)
     : QObject(parent), m_name(name) {
-
   connect(&m_socket, &QLocalSocket::stateChanged, this,
           &WebExtBridge::stateChanged);
 
@@ -56,7 +56,7 @@ void WebExtBridge::stateChanged(QLocalSocket::LocalSocketState state) {
 }
 
 void WebExtBridge::errorOccurred(QLocalSocket::LocalSocketError socketError) {
-  //qInfo() << "Web extension socket error:" << m_socket.errorString();
+  // qInfo() << "Web extension socket error:" << m_socket.errorString();
 }
 
 void WebExtBridge::retryConnection() {

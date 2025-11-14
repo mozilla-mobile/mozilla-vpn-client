@@ -58,11 +58,11 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
   if (argc > 1) {
     if ((QFileInfo(argv[1]).fileName() == "mozillavpn.json") ||
         (QUrl(argv[1]).scheme() == "chrome-extension")) {
-      char** newargs = (char**)calloc(argc+1, sizeof(char*));
+      char** newargs = (char**)calloc(argc + 1, sizeof(char*));
       newargs[0] = argv[0];
       newargs[1] = (char*)"webext";
       for (int i = 1; i < argc; i++) {
-        newargs[i+1] = argv[i];
+        newargs[i + 1] = argv[i];
       }
       argc++;
       argv = newargs;

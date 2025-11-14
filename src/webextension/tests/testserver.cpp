@@ -11,6 +11,4 @@
 
 QTEST_MAIN(TestServer)
 
-void TestServer::testCanConnect() {
-
-}
+void TestServer::testCanConnect() {}

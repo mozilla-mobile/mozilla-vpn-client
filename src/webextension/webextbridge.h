@@ -13,32 +13,32 @@
 #include "webextreader.h"
 
 class QIODevice;
- 
+
 class WebExtBridge final : public QObject {
   Q_OBJECT
- 
+
  public:
   WebExtBridge(const QString& name, QObject* parent = nullptr);
- 
+
   bool isConnected() const { return m_reader != nullptr; }
 
   bool sendMessage(const QByteArray& message);
 
-  static int run(int argc,  char* argv[]);
+  static int run(int argc, char* argv[]);
 
  signals:
   void connected();
   void disconnected();
   void messageReceived(const QByteArray& message);
- 
+
  private slots:
   void stateChanged(QLocalSocket::LocalSocketState socketState);
   void errorOccurred(QLocalSocket::LocalSocketError socketError);
- 
+
  private:
   void retryConnection();
   void tryPushData();
- 
+
   QString m_name;
   WebExtReader* m_reader = nullptr;
   QLocalSocket m_socket;
@@ -47,4 +47,3 @@ class WebExtBridge final : public QObject {
 };
 
 #endif  // WEBEXTBRIDGE_H
- 

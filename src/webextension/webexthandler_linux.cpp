@@ -2,17 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "webexthandler.h"
+#include <unistd.h>
 
 #include <QJsonObject>
 #include <QProcess>
 #include <QString>
- 
-#include <unistd.h>
+
+#include "webexthandler.h"
 
 void WebExtHandler::proc_info(const QByteArray& msg) {
   Q_UNUSED(msg);
-  
+
   // Gather the parent process details.
   pid_t parent = getppid();
   QString procexe = QString("/proc/%1/exe").arg(parent);
