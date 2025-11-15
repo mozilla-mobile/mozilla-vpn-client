@@ -27,15 +27,20 @@ class TestHelper : public QObject {
   static int runTests(char* app);
 
  protected:
-  static void runNativeMessaging(const char* app, QStringList arguments);
-  static void killNativeMessaging();
+  void runNativeMessaging(QStringList arguments);
+  void killNativeMessaging();
+  QString serverName() const;
 
- public:
+ private slots:
+  void init();
+  void cleanup();
+
+ protected:
   static char* s_app;
-  static int s_last_exit_code;
   static QVector<QObject*> s_testList;
 
-  static QProcess* s_nativeMessagingProcess;
+  QString m_serverName;
+  QProcess m_nativeMessagingProcess;
 };
 
 #endif  // HELPER_H

@@ -4,20 +4,11 @@
 
 #include "test_illegal_invoke.h"
 
-void TestIllegalNoop::setup() {
-  // We will have a running instance with correct params
-  // to begin with, let's close that.
-  QVERIFY(s_nativeMessagingProcess);
-  killNativeMessaging();
-  QVERIFY(s_nativeMessagingProcess == nullptr);
-}
-
 void TestIllegalNoop::no_params() {
   // // Now we verify that it does not start
-  runNativeMessaging(s_app, QStringList());
-  s_nativeMessagingProcess->waitForFinished();
-  s_nativeMessagingProcess = nullptr;
-  QVERIFY(s_last_exit_code == 1);
+  runNativeMessaging(QStringList());
+  m_nativeMessagingProcess.waitForFinished();
+  QCOMPARE(m_nativeMessagingProcess.exitCode(), 1);
 }
 
 void TestIllegalNoop::wrong_param() {
@@ -25,10 +16,9 @@ void TestIllegalNoop::wrong_param() {
   args.append("aaaa");
   args.append("bbbb");
   // // Now we verify that it does not start
-  runNativeMessaging(s_app, args);
-  s_nativeMessagingProcess->waitForFinished();
-  s_nativeMessagingProcess = nullptr;
-  QVERIFY(s_last_exit_code == 1);
+  runNativeMessaging(args);
+  m_nativeMessagingProcess.waitForFinished();
+  QCOMPARE(m_nativeMessagingProcess.exitCode(), 1);
 }
 
 void TestIllegalNoop::partially_wrong_param() {
@@ -37,10 +27,9 @@ void TestIllegalNoop::partially_wrong_param() {
   args.append("@testpilot-containers");
   args.append("this should not be here");
   // // Now we verify that it does not start
-  runNativeMessaging(s_app, args);
-  s_nativeMessagingProcess->waitForFinished();
-  s_nativeMessagingProcess = nullptr;
-  QVERIFY(s_last_exit_code == 1);
+  runNativeMessaging(args);
+  m_nativeMessagingProcess.waitForFinished();
+  QCOMPARE(m_nativeMessagingProcess.exitCode(), 1);
 }
 
 static TestIllegalNoop s_testNoop;

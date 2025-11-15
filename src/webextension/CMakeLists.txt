@@ -11,6 +11,14 @@ mz_add_new_module(
         connection.h
         server.cpp
         server.h
+        webextbridge.cpp
+        webextbridge.h
+        webextcommand.cpp
+        webextcommand.h
+        webexthandler.cpp
+        webexthandler.h
+        webextreader.cpp
+        webextreader.h
     INCLUDE_DIRECTORIES 
         ${CMAKE_CURRENT_SOURCE_DIR}
     TEST_SOURCES
@@ -20,7 +28,29 @@ mz_add_new_module(
         tests/testconnection.h
         tests/testserver.cpp
         tests/testserver.h
+    EXTRA_DEPENDENCIES
+        mzutils
     QT_DEPENDENCIES
         Core
         Network
 )
+
+if(WIN32)
+    target_sources(mz_webextension PRIVATE
+        server_windows.cpp
+        webexthandler_windows.cpp
+    )
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+    target_sources(mz_webextension PRIVATE
+        server_linux.cpp
+        webexthandler_linux.cpp
+    )
+elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
+    target_sources(mz_webextension PRIVATE
+        server_macos.cpp
+        webexthandler_macos.mm
+    )
+
+    find_library(FW_APPKIT AppKit)
+    target_link_libraries(mz_webextension PRIVATE ${FW_APPKIT})
+endif()

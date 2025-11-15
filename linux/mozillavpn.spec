@@ -60,7 +60,6 @@ install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 %{_unitdir}/socksproxy.service
 %{_bindir}/mozillavpn
 %{_bindir}/socksproxy
-%{_prefix}/lib/mozillavpn/mozillavpnnp
 %{_prefix}/lib/mozilla/native-messaging-hosts/mozillavpn.json
 %{_datadir}/applications/org.mozilla.vpn.desktop
 %{_datadir}/dbus-1/system-services/org.mozilla.vpn.dbus.service

@@ -31,7 +31,6 @@ mac-signing:
           globs:
             - "/Contents/Library/LaunchServices/org.mozilla.macos.FirefoxVPN.daemon"
             - "/Contents/Resources/utils/wireguard-go"
-            - "/Contents/Resources/utils/mozillavpnnp"
 
         - deep: false
           runtime: true

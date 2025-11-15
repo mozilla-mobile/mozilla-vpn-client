@@ -7,49 +7,42 @@
 #include <QDebug>
 #include <QHostAddress>
 #include <QJsonObject>
-#include <QTcpSocket>
+#include <QLocalSocket>
 
 #include "connection.h"
 
-constexpr int SERVER_PORT = 8754;
-// `::ffff:127.0.0.1` is the IPv4 localhost address written with the IPv6
-// notation.
-constexpr auto LOCALHOST_V4_AS_V6 = "::ffff:127.0.0.1";
-
 namespace WebExtension {
 
-Server::Server(BaseAdapter* adapter) : QTcpServer(adapter) {
+Server::Server(BaseAdapter* adapter) : QLocalServer(adapter) {
   Q_ASSERT(adapter);
   m_adapter = adapter;
 
   qInfo() << "Creating the server";
 
-  if (!listen(QHostAddress::LocalHost, SERVER_PORT)) {
-    qCritical() << "Failed to listen on port" << SERVER_PORT;
+  setSocketOptions(QLocalServer::UserAccessOption);
+  if (!listen(localSocketName())) {
+    qCritical() << "Failed to listen on name" << WEBEXT_SOCKET_NAME;
     return;
   }
+  qInfo() << "Server name:" << localSocketName();
 
   connect(this, &Server::newConnection, this, &Server::newConnectionReceived);
 }
 
 Server::~Server() {}
 
-bool Server::isAllowedToConnect(QHostAddress addr) {
-  return addr == QHostAddress(LOCALHOST_V4_AS_V6) ||
-         addr == QHostAddress::LocalHost || addr == QHostAddress::LocalHostIPv6;
-}
-
 void Server::newConnectionReceived() {
-  QTcpSocket* child = nextPendingConnection();
+  QLocalSocket* child = nextPendingConnection();
 
-  if (!isAllowedToConnect(child->localAddress())) {
-    qInfo() << "Refused connection from non-localhost address.";
+  if (!isAllowedToConnect(child->socketDescriptor())) {
+    qInfo() << "Refused connection.";
     child->close();
     return;
   }
 
   Connection* connection = new Connection(this, child);
-  connect(child, &QTcpSocket::disconnected, connection, &QObject::deleteLater);
+  connect(child, &QLocalSocket::disconnected, connection,
+          &QObject::deleteLater);
   connect(connection, &Connection::onMessageReceived, m_adapter,
           &BaseAdapter::onMessage);
   connect(m_adapter, &BaseAdapter::onOutgoingMessage, connection,

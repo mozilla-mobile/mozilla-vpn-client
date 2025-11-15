@@ -5,13 +5,13 @@
 #ifndef WEBEXTENSION_SERVER_H
 #define WEBEXTENSION_SERVER_H
 
-#include <QTcpServer>
+#include <QLocalServer>
 
 #include "baseadapter.h"
 
 namespace WebExtension {
 
-class Server final : public QTcpServer {
+class Server final : public QLocalServer {
   Q_OBJECT
 
  public:
@@ -19,14 +19,17 @@ class Server final : public QTcpServer {
   ~Server();
 
   /**
-   * @brief returns true if the QHostAddress is allowed to connect.
-   * Right now only localhost addresses are allowed.
+   * @brief returns true if the socket is allowed to connect.
    */
-  static bool isAllowedToConnect(QHostAddress sock);
+  static bool isAllowedToConnect(qintptr sd);
+
+  static QString localSocketName();
 
  private:
   BaseAdapter* m_adapter;
   void newConnectionReceived();
+
+  constexpr static const char* WEBEXT_SOCKET_NAME = "mozillavpn.webext";
 };
 
 }  // namespace WebExtension
