@@ -26,6 +26,7 @@ bool WebExtension::Server::isAllowedToConnect(qintptr sd) {
     if (getsockopt(sd, SOL_SOCKET, SO_PEERSEC, peersec, &peerlen) < 0) {
       return false;
     }
+    peersec[peerlen] = '\0';
     if (QString::compare(selfctx.trimmed(), peersec) != 0) {
       return false;
     }
