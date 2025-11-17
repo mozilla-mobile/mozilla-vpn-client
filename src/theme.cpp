@@ -6,6 +6,7 @@
 
 #include <QDir>
 #include <QJSEngine>
+#include <QQmlApplicationEngine>
 #if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
 #  include <QGuiApplication>
 #  include <QStyleHints>

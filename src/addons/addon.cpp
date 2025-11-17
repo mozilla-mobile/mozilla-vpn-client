@@ -10,6 +10,7 @@
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QQmlApplicationEngine>
 #include <QVersionNumber>
 
 #include "addonapi.h"

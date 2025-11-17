@@ -12,6 +12,7 @@
 #include <sentry.h>
 
 #include <QDir>
+#include <QQmlApplicationEngine>
 #include <QQuickItem>
 #include <QStandardPaths>
 
@@ -181,7 +182,7 @@ void SentryAdapter::declineCrashReporting() {
 
 void SentryAdapter::captureQMLStacktrace(const char* description) {
 #ifndef UNIT_TEST
-  auto engine = QmlEngineHolder::instance()->engine();
+  auto engine = (QQmlEngine*)QmlEngineHolder::instance()->engine();
   auto privateEngine = QQmlEnginePrivate::get(engine);
   QV4::ExecutionEngine* qv4Engine = privateEngine->v4engine();
   QVector<QV4::StackFrame> stackTrace = qv4Engine->stackTrace(15);

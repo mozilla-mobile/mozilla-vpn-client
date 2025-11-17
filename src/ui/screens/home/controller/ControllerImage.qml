@@ -363,19 +363,26 @@ Rectangle {
         // gradientGlobe
         id: insetCircle
 
-        height: 32
-        width: 32
-        radius: 16
-        x: 44
-        y: 4
+        // Use relative sizing based on parent
+        height: logo.height * 0.4
+        width: height
+        radius: height / 2
+        
+        // Position relative to parent size
+        anchors.right: parent.right
+        anchors.top: parent.top
+        anchors.rightMargin: logo.width * 0.05
+        anchors.topMargin: logo.height * 0.05
+        
         antialiasing: true
         smooth: true
 
         Image {
             id: insetIcon
 
-            sourceSize.height: 32
-            sourceSize.width: 32
+            // Scale the icon with the circle
+            sourceSize.height: insetCircle.height
+            sourceSize.width: insetCircle.width
             anchors.centerIn: insetCircle
             opacity: 1
         }
@@ -383,8 +390,9 @@ Rectangle {
         Image {
             id: switchingIcon
             anchors.centerIn: insetCircle
-            sourceSize.height: 32
-            sourceSize.width: 32
+            // Scale the switching icon with the circle
+            sourceSize.height: insetCircle.height
+            sourceSize.width: insetCircle.width
             source: MZAssetLookup.getImageSource("RefreshArrowsForShield")
             opacity: 0
              PropertyAnimation {

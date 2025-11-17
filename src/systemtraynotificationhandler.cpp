@@ -11,12 +11,14 @@
 
 #include "constants.h"
 #include "controller.h"
+#include "feature/feature.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "qmlengineholder.h"
 #include "statusicon.h"
+#include "ui/systraywindow/systraywindow.h"
 
 namespace {
 Logger logger("SystemTrayNotificationHandler");
@@ -93,6 +95,8 @@ void SystemTrayNotificationHandler::createStatusMenu() {
 
   m_quitAction = m_menu->addAction(
       "", []() { MozillaVPN::instance()->controller()->quit(); });
+
+  m_systrayWindow = new SysTrayWindow(this);
 }
 
 void SystemTrayNotificationHandler::setStatusMenu() {
@@ -242,6 +246,11 @@ void SystemTrayNotificationHandler::maybeActivated(
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
   if (reason == QSystemTrayIcon::DoubleClick ||
       reason == QSystemTrayIcon::Trigger) {
+    auto flag = Feature::get(Feature::Feature_systrayUI);
+    if (flag->isSupported()) {
+      m_systrayWindow->showWindow();
+      return;
+    }
     QmlEngineHolder* engine = QmlEngineHolder::instance();
     engine->showWindow();
   }
