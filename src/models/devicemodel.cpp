@@ -18,6 +18,7 @@
 
 #if MZ_ANDROID
 #  include "platforms/android/androidcommons.h"
+#  include "platforms/android/androidutils.h"
 #endif
 
 #ifdef MZ_WINDOWS
@@ -299,6 +300,8 @@ void DeviceModel::logSerialize(QIODevice* device) {
 #endif
 #ifdef MZ_ANDROID
   out << "SDK Version -> " << AndroidCommons::getSDKVersion() << Qt::endl;
+  out << "Manufacturer -> " << AndroidCommons::GetManufacturer() << Qt::endl;
+  out << "Device Name -> " << AndroidUtils::getDeviceName() << Qt::endl;
 #endif
 
   out << "APP Version -> " << QCoreApplication::applicationVersion()

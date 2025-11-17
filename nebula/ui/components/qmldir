@@ -40,8 +40,6 @@ MZMetropolisLabel 0.0 MZMetropolisLabel.qml
 MZMobileStatusBarModifier 0.0 MZMobileStatusBarModifier.qml
 MZMouseArea 0.0 MZMouseArea.qml
 MZPanel 0.0 MZPanel.qml
-MZPaymentMethod 0.0 MZPaymentMethod.qml
-MZPill 0.0 MZPill.qml
 MZPopupButton 0.0 MZPopupButton.qml
 MZPopup 0.0 MZPopup.qml
 MZRadioButtonLabel 0.0 MZRadioButtonLabel.qml

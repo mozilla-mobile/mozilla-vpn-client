@@ -155,6 +155,8 @@ If you want to implement new add-ons, you need to follow these steps:
 3. If new shared strings were added, process them so that strings are shown in the addon:
 Delete the `build-addons` directory (if one exists) and run
 `python ./scripts/utils/generate_shared_addon_xliff.py -i ./addons/strings.yaml -o ./3rdparty/i18n/en/addons/strings.xliff`
+To run this script, the Qt bin directory (something like `~/Qt/6.9.3/macos/bin`) must be
+in your PATH variable.
 (This step is not necessary, strictly speaking. This script is what will be run as new
 strings are ingested into l10n repo, and once the new strings have done a round trip to
 the l10n repo and then back to the client repo, the string will show up in the addon as
