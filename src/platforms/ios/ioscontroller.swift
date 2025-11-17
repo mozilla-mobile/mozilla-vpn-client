@@ -272,25 +272,41 @@ public class IOSControllerImpl: NSObject {
         }
     }
 
-    @objc func disconnect() {
-        IOSControllerImpl.logger.info(message: "Disconnecting")
-        TunnelManager.withTunnel { tunnel in
-
-            // Turn off auto-connect, otherwise it will immediately reconnect.
-            tunnel.isOnDemandEnabled = false;
-            tunnel.onDemandRules = []
-
-            tunnel.saveToPreferences { saveError in
-                if let error = saveError {
-                    IOSControllerImpl.logger.error(message: "Disonnect tunnel save error: \(error)")
-                }
-                TunnelManager.session?.stopTunnel()
-            }
-
-            // Needs to return something, but this will be discarded.
-            return true
-        }
+    static func startTunnelFromIntent() {
+      do {
+        try TunnelManager.session?.startTunnel(options: ["source":"intent"])
+      } catch let error {
+        // LOG OUT ERROR HERE
+      }
     }
+
+    static func stopTunnelFromIntent() {
+      IOSControllerImpl.staticDisconnect()
+    }
+
+    @objc func disconnect() {
+      IOSControllerImpl.staticDisconnect()
+    }
+
+  static func staticDisconnect() {
+    IOSControllerImpl.logger.info(message: "Disconnecting")
+    TunnelManager.withTunnel { tunnel in
+
+        // Turn off auto-connect, otherwise it will immediately reconnect.
+        tunnel.isOnDemandEnabled = false;
+        tunnel.onDemandRules = []
+
+        tunnel.saveToPreferences { saveError in
+            if let error = saveError {
+                IOSControllerImpl.logger.error(message: "Disonnect tunnel save error: \(error)")
+            }
+            TunnelManager.session?.stopTunnel()
+        }
+
+        // Needs to return something, but this will be discarded.
+        return true
+    }
+  }
 
     @objc func deleteOSTunnelConfig() {
       IOSControllerImpl.logger.info(message: "Removing tunnel from iOS System Preferences")

@@ -83,12 +83,14 @@ target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
 find_library(FW_UI_KIT UIKit)
 find_library(FW_FOUNDATION Foundation)
 find_library(FW_STORE_KIT StoreKit)
+find_library(FW_APPINTENTS AppIntents)
 find_library(FW_USER_NOTIFICATIONS UserNotifications)
 find_library(FW_NETWORK Network)
 
 target_link_libraries(mozillavpn PRIVATE ${FW_UI_KIT})
 target_link_libraries(mozillavpn PRIVATE ${FW_FOUNDATION})
 target_link_libraries(mozillavpn PRIVATE ${FW_STORE_KIT})
+target_link_libraries(mozillavpn PRIVATE ${FW_APPINTENTS})
 target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
 target_link_libraries(mozillavpn PRIVATE ${FW_NETWORK})
 
@@ -145,6 +147,9 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioslogger.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iostunnelmessage.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iostunnelmanager.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/TurnOffIntent.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/TurnOnIntent.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/AppShortcuts.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.mm
 )
