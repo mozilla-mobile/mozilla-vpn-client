@@ -10,6 +10,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QWindow>
+#include <memory>
 
 #include "accessiblenotification.h"
 #include "addons/manager/addonmanager.h"
@@ -155,7 +156,7 @@ int CommandUI::run(QStringList& tokens) {
     return 0;
   }
   // This class receives communications from other instances.
-  EventListener eventListener;
+  std::unique_ptr<EventListener> eventListener;
 #endif
 
 #ifdef MZ_ANDROID
@@ -215,6 +216,9 @@ int CommandUI::run(QStringList& tokens) {
         return 0;
       }
     }
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
+    eventListener.reset(new EventListener{});
+#endif
 
 #ifdef MZ_ANDROID
     // https://bugreports.qt.io/browse/QTBUG-82617
