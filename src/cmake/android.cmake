@@ -6,6 +6,10 @@ set_property(TARGET mozillavpn APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/../android/
 )
 
+if(QT_KNOWN_POLICY_QTP0002)
+    qt_policy(SET QTP0002 OLD)
+endif()
+
 ## Generate Glean API files.
 include(${CMAKE_SOURCE_DIR}/qtglean/android.cmake)
 

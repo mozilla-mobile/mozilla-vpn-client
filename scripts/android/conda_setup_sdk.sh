@@ -36,8 +36,12 @@ echo y | sdkmanager --install $(cat android_sdk.txt) --sdk_root=$ANDROID_HOME
 
 
 installed_things=$(sdkmanager --list_installed --sdk_root=$ANDROID_HOME | grep "ndk")
-if [[ $installed_things =~ ndk/([0-9]+\.[0-9]+\.[0-9]+) ]]; then
-  ndk_path=${BASH_REMATCH[1]}
+latest_match=$(grep -oE 'ndk/[0-9]+\.[0-9]+\.[0-9]+' <<< "$installed_things" \
+  | sort -V \
+  | tail -n 1)
+
+if [[ -n "$latest_match" ]]; then
+  ndk_path="${latest_match#ndk/}"
 fi
 
 # Export ADB to env.

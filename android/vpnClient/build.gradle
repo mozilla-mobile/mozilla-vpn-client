@@ -26,7 +26,7 @@ plugins {
 }
 
 android {
-    //namespace 'org.mozilla.firefox.vpn'
+    namespace 'org.mozilla.firefox.vpn.qt'
     compileSdkVersion Config.compileSdkVersion
 
     defaultConfig {
@@ -87,8 +87,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 
     implementation project(path: ":common")
-    implementation project(path: ":qtBindings")
 
+    implementation fileTree(dir: '../libs', include: ['*.jar', '*.aar'])
 
     implementation SharedDependencies.androidx_core
     implementation "com.android.installreferrer:installreferrer:2.2"

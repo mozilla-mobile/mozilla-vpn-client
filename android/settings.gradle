@@ -25,7 +25,6 @@ dependencyResolutionManagement {
 include ':tunnel'
 include ':qtglean'
 include ':daemon'
-include ':qtBindings'
 include ':ClientCommon'
 include ':vpnClient'
 include ':common'
