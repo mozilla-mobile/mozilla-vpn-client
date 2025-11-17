@@ -6,6 +6,7 @@ const assert = require('assert');
 const vpn = require('./helper.js');
 const queries = require('./queries.js');
 const setup = require('./setupVpn.js');
+const guardianEndpoints = require('./servers/guardian_endpoints.js')
 
 describe('Connectivity', function() {
   this.ctx.authenticationNeeded = true;
@@ -180,5 +181,23 @@ describe('Connectivity', function() {
         await vpn.getMozillaProperty(
             'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName'),
         'Sydney');
+  });
+
+  it('Connect to VPN - key regeneration is triggered for expired keys', async () => {
+    await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+
+    await vpn.setSetting('connectionChangeNotification', 'true');
+    await vpn.setSetting('keyRegenerationTimeSec', 0);
+    await vpn.clickOnQuery(queries.screenHome.CONTROLLER_TOGGLE.visible());
+
+    await vpn.waitForCondition(async () => {
+      return await vpn.getQueryProperty(
+        queries.screenHome.CONTROLLER_SUBTITLE, 'text') === 'Preparing connection';
+    });
+
+    await vpn.waitForCondition(async () => {
+      return await vpn.getQueryProperty(
+        queries.screenHome.CONTROLLER_TITLE, 'text') === 'VPN is on';
+    });
   });
 });
