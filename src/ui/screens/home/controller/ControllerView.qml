@@ -160,7 +160,7 @@ Item {
 
             PropertyChanges {
                 target: logoSubtitle
-                text: MZI18n.ControllerRegeratingKey
+                text: MZI18n.ControllerRegeneratingKey
                 color: MZTheme.colors.fontColorInverted
                 opacity: 0.8
                 visible: true
