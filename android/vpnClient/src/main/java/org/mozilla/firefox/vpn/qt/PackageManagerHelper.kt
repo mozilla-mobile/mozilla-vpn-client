@@ -38,8 +38,8 @@ object PackageManagerHelper {
             return@filter !isSelf(it);
         }.forEach {
             val entry = JSONObject();
-            entry.put("name", it.applicationInfo.loadLabel(pm).toString())
-            entry.put("isSystemApp", isSystemPackage(it, pm) && !isAllowListed(it.packageName))
+            entry.put("name", it.applicationInfo?.loadLabel(pm).toString());
+            entry.put("isSystemApp", isSystemPackage(it, pm) && !isAllowListed(it.packageName));
             output.put(it.packageName, entry);
         }
         return output.toString()
@@ -62,7 +62,12 @@ object PackageManagerHelper {
     // 3. It has not had any updates.  
     // 4. It has no launchable activity (i.e., it's likely a system service).  
     private fun isSystemPackage(pkgInfo: PackageInfo, pm: PackageManager): Boolean {
-        if (pkgInfo.applicationInfo.flags and ApplicationInfo.FLAG_SYSTEM == 0) {
+        val flags = pkgInfo.applicationInfo?.flags
+        if (flags == null) {
+          // flags not found
+          return false
+        }
+        if (flags and ApplicationInfo.FLAG_SYSTEM == 0) {
             // no system app
             return false
         }
@@ -98,10 +103,16 @@ object PackageManagerHelper {
         }
 
         var index = 0
-        for (permission in pkgInfo.requestedPermissions) {
-            val flag = pkgInfo.requestedPermissionsFlags[index]
+        val reqPermissions = pkgInfo.requestedPermissions
+        val reqPermFlags = pkgInfo.requestedPermissionsFlags
+        if (reqPermissions == null || reqPermFlags == null) {
+          // flags not found
+          return false
+        }
+        for (permission in reqPermissions) {
+            val flag = reqPermFlags[index]
             index = +1
-            if (Manifest.permission.INTERNET == permission &&
+            if (permission == Manifest.permission.INTERNET &&
                 flag == PackageManager.PERMISSION_GRANTED
             ) {
                 return true

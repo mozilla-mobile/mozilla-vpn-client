@@ -3,8 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 object Config {
-    const val compileSdkVersion = 34
+    const val compileSdkVersion = 35
     const val minSdkVersion = 26
-    const val targetSdkVersion = 34
+    const val targetSdkVersion = 35
     const val ndkVersion = "27.2.12479018"
 }
