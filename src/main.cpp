@@ -6,7 +6,6 @@
 
 #include "commandlineparser.h"
 #include "leakdetector.h"
-#include "platforms/windows/windowsutils.h"
 #include "stdio.h"
 #include "version.h"
 
@@ -36,12 +35,17 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
 #ifdef MZ_WINDOWS
   if (AttachConsole(ATTACH_PARENT_PROCESS) != 0) {
     FILE* unusedFile;
-    // Swap to the new out/err streams
-    freopen_s(&unusedFile, "CONOUT$", "w", stdout);
+    // Always send stderr to the console.
     freopen_s(&unusedFile, "CONOUT$", "w", stderr);
-    std::cout.clear();
     std::clog.clear();
     std::cerr.clear();
+
+    // Redirect stdout to the console, unless it's being piped somewhere.
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (GetFileType(h) != FILE_TYPE_PIPE) {
+      freopen_s(&unusedFile, "CONOUT$", "w", stdout);
+      std::cout.clear();
+    }
   }
   WindowsUtils::lockDownDLLSearchPath();
 #endif
