@@ -152,6 +152,7 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/AppShortcuts.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/translations/Localizable.xcstrings
 )
 
 target_sources(mozillavpn PRIVATE

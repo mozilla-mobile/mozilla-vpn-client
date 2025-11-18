@@ -8,11 +8,9 @@ import AppIntents
 struct TurnOffIntent: AppIntent {
   static let title: LocalizedStringResource = "Turn off Mozilla VPN"
 
-  static let systemImageName = "shield.lefthalf.filled.slash"
+  static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
-  static var parameterSummary: some ParameterSummary {
-    Summary("Turn off Mozilla VPN")
-  }
+  static let systemImageName = "shield.lefthalf.filled.slash"
 
   @MainActor
   func perform() async throws -> some IntentResult & ProvidesDialog {

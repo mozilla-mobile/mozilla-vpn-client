@@ -8,11 +8,9 @@ import AppIntents
 struct TurnOnIntent: AppIntent {
   static let title: LocalizedStringResource = "Turn on Mozilla VPN"
 
-  static let systemImageName = "shield.lefthalf.filled"
+  static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
-  static var parameterSummary: some ParameterSummary {
-    Summary("Turn on Mozilla VPN")
-  }
+  static let systemImageName = "shield.lefthalf.filled"
 
   @MainActor
   func perform() async throws -> some IntentResult & ProvidesDialog {
