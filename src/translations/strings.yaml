@@ -1068,5 +1068,5 @@ navBar:
 
 controller:
   regeneratingKey:
-    value: Preparing connection
-    comment: Connection status label for the main screen when the app is regenerating WireGuard keys
+    value: Preparing your connection
+    comment: Connection subtitle label for the main screen when the app is regenerating WireGuard keys
