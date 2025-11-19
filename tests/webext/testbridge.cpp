@@ -9,17 +9,25 @@
 #include "helperserver.h"
 
 void TestBridge::bridge_ping() {
-  QVERIFY(s_nativeMessagingProcess);
-
   // A simple ping/pong.
   QVERIFY(write(R"({"t": "bridge_ping"})"));
   auto const json = QJsonDocument::fromJson(readIgnoringStatus());
   QCOMPARE(json["status"].toString(), "bridge_pong");
 }
 
-void TestBridge::app_ping_failure() {
-  QVERIFY(s_nativeMessagingProcess);
+void TestBridge::proc_info() {
+  qint64 selfpid = QCoreApplication::applicationPid();
+  QString selfexe = QCoreApplication::applicationFilePath();
 
+  // The proc_info command should get the parent process details, which
+  // should be this test binary.
+  QVERIFY(write(R"({"t": "proc_info"})"));
+  auto const json = QJsonDocument::fromJson(readIgnoringStatus());
+  QCOMPARE(json["pid"].toInteger(), selfpid);
+  QCOMPARE(json["exe"].toString(), QDir::toNativeSeparators(selfexe));
+}
+
+void TestBridge::app_ping_failure() {
   // No VPN client running, we want to receive a "down" status for each
   // message.
   for (int i = 0; i < 3; ++i) {
@@ -29,10 +37,8 @@ void TestBridge::app_ping_failure() {
 }
 
 void TestBridge::app_ping_success() {
-  QVERIFY(s_nativeMessagingProcess);
-
   HelperServer hs;
-  hs.start();
+  hs.start(serverName());
 
   // Let's turn on a "VPN client" (echo-server)...
   QEventLoop loop;
@@ -52,8 +58,6 @@ void TestBridge::app_ping_success() {
 }
 
 void TestBridge::async_connection() {
-  QVERIFY(s_nativeMessagingProcess);
-
   bool started = false;
   HelperServer hs;
 
@@ -63,7 +67,7 @@ void TestBridge::async_connection() {
     if (!started) {
       QCOMPARE(readIgnoringStatus(), "{\"error\":\"vpn-client-down\"}");
 
-      hs.start();
+      hs.start(serverName());
       started = true;
 
       QVERIFY(waitForConnection());
@@ -78,10 +82,8 @@ void TestBridge::async_connection() {
 }
 
 void TestBridge::async_disconnection() {
-  QVERIFY(s_nativeMessagingProcess);
-
   HelperServer hs;
-  hs.start();
+  hs.start(serverName());
 
   QEventLoop loop;
   connect(&hs, &HelperServer::ready, &hs, [&] { loop.exit(); });
@@ -109,11 +111,9 @@ void TestBridge::async_disconnection() {
 }
 
 void TestBridge::fuzzy() {
-  QVERIFY(s_nativeMessagingProcess);
-
   for (int fuzzy : QList<int>{1, 10, 100}) {
     HelperServer hs;
-    hs.start(fuzzy);
+    hs.start(serverName(), fuzzy);
 
     // Let's turn on a "VPN client" (echo-server)...
     QEventLoop loop;

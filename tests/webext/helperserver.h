@@ -5,12 +5,13 @@
 #ifndef HELPERSERVER_H
 #define HELPERSERVER_H
 
-#include <QTcpServer>
-#include <QTcpSocket>
+#include <QLocalServer>
 #include <QThread>
 #include <QTimer>
 
-class EchoServer final : public QTcpServer {
+class QLocalSocket;
+
+class EchoServer final : public QLocalServer {
   Q_OBJECT
 
  signals:
@@ -19,7 +20,7 @@ class EchoServer final : public QTcpServer {
  public:
   explicit EchoServer(int fuzzy);
 
-  void start();
+  void start(const QString& name);
   void newConnection();
 
  private:
@@ -30,13 +31,13 @@ class EchoConnection final : public QObject {
   Q_OBJECT
 
  public:
-  EchoConnection(QTcpSocket* socket, int fuzzy);
+  EchoConnection(QLocalSocket* socket, int fuzzy);
 
  private:
   void maybeStartTimer();
 
  private:
-  QTcpSocket* m_socket = nullptr;
+  QLocalSocket* m_socket = nullptr;
   QTimer m_timer;
   QByteArray m_buffer;
   const int m_fuzzy;
@@ -46,7 +47,7 @@ class HelperServer final : public QObject {
   Q_OBJECT
 
  public:
-  void start(int fuzzy = 0);
+  void start(const QString& name, int fuzzy = 0);
   void stop();
 
  signals:
@@ -55,6 +56,7 @@ class HelperServer final : public QObject {
 
  private:
   EchoServer* m_server = nullptr;
+  QString m_name;
   QThread m_thread;
 };
 

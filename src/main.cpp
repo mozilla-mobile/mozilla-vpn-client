@@ -6,7 +6,6 @@
 
 #include "commandlineparser.h"
 #include "leakdetector.h"
-#include "platforms/windows/windowsutils.h"
 #include "stdio.h"
 #include "version.h"
 
@@ -16,6 +15,13 @@
 #  include <iostream>
 
 #  include "platforms/windows/windowsutils.h"
+#endif
+
+#ifdef MVPN_WEBEXTENSION
+#  include <QFileInfo>
+#  include <QUrl>
+
+#  include "webextension/webextcommand.h"
 #endif
 
 constexpr const char* CLP_DEFAULT_COMMAND = "ui";
@@ -29,12 +35,17 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
 #ifdef MZ_WINDOWS
   if (AttachConsole(ATTACH_PARENT_PROCESS) != 0) {
     FILE* unusedFile;
-    // Swap to the new out/err streams
-    freopen_s(&unusedFile, "CONOUT$", "w", stdout);
+    // Always send stderr to the console.
     freopen_s(&unusedFile, "CONOUT$", "w", stderr);
-    std::cout.clear();
     std::clog.clear();
     std::cerr.clear();
+
+    // Redirect stdout to the console, unless it's being piped somewhere.
+    HANDLE h = GetStdHandle(STD_OUTPUT_HANDLE);
+    if (GetFileType(h) != FILE_TYPE_PIPE) {
+      freopen_s(&unusedFile, "CONOUT$", "w", stdout);
+      std::cout.clear();
+    }
   }
   WindowsUtils::lockDownDLLSearchPath();
 #endif
@@ -42,6 +53,26 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
   QCoreApplication::setApplicationName("Mozilla VPN");
   QCoreApplication::setOrganizationName("Mozilla");
   QCoreApplication::setApplicationVersion(APP_VERSION);
+
+#ifdef MVPN_WEBEXTENSION
+  // Special case - if the first argument is a path to a file named
+  // 'mozillavpn.json', or a URL with a scheme of 'chrome-extension'
+  // then launch ourselves as the native messaging bridge.
+  static Command::RegistrationProxy<WebExtCommand> s_commandWebExt;
+  if (argc > 1) {
+    if ((QFileInfo(argv[1]).fileName() == "mozillavpn.json") ||
+        (QUrl(argv[1]).scheme() == "chrome-extension")) {
+      char** newargs = (char**)calloc(argc + 1, sizeof(char*));
+      newargs[0] = argv[0];
+      newargs[1] = (char*)"webext";
+      for (int i = 1; i < argc; i++) {
+        newargs[i + 1] = argv[i];
+      }
+      argc++;
+      argv = newargs;
+    }
+  }
+#endif
 
   CommandLineParser clp;
   return clp.parse(argc, argv, CLP_DEFAULT_COMMAND);

@@ -2,21 +2,21 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-qt_add_executable(nativemessaging_tests)
-set_target_properties(nativemessaging_tests PROPERTIES
+qt_add_executable(webext_tests)
+set_target_properties(webext_tests PROPERTIES
     EXCLUDE_FROM_ALL ${BUILD_TESTS}
     FOLDER "Tests"
 )
-add_dependencies(build_tests nativemessaging_tests)
+add_dependencies(build_tests webext_tests)
 
-target_link_libraries(nativemessaging_tests PRIVATE
+target_link_libraries(webext_tests PRIVATE
     Qt6::Core
     Qt6::Network
     Qt6::Test
 )
 
 # Native messaging test sources
-target_sources(nativemessaging_tests PRIVATE
+target_sources(webext_tests PRIVATE
     main.cpp
     helper.cpp
     helper.h
@@ -30,6 +30,6 @@ target_sources(nativemessaging_tests PRIVATE
     test_illegal_invoke.h
 )
 
-add_dependencies(nativemessaging_tests mozillavpnnp)
-add_test(NAME nativemessaging_tests COMMAND nativemessaging_tests $<TARGET_FILE:mozillavpnnp>)
-set_property(TEST nativemessaging_tests PROPERTY LABELS nativemessaging)
+add_dependencies(webext_tests mozillavpn)
+add_test(NAME webext_tests COMMAND webext_tests $<TARGET_FILE:mozillavpn>)
+set_property(TEST webext_tests PROPERTY LABELS nativemessaging)

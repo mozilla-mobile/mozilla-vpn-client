@@ -186,7 +186,6 @@ endif()
 
 if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTS)
     # Unit Tests
-    add_subdirectory(tests/nativemessaging EXCLUDE_FROM_ALL)
     add_subdirectory(tests/unit EXCLUDE_FROM_ALL)
     add_subdirectory(tests/qml EXCLUDE_FROM_ALL)
     add_subdirectory(tests/unit_tests EXCLUDE_FROM_ALL)
@@ -196,6 +195,7 @@ if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTS)
 
     # Functional Tests
     add_subdirectory(tests/functional)
+    add_subdirectory(tests/webext)
 endif()
 
 # Extra platform targets

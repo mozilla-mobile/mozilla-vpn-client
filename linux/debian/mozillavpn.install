@@ -4,7 +4,6 @@ ${env:SYSTEMD_UNIT_PATH}/mozillavpn.service
 ${env:SYSTEMD_UNIT_PATH}/socksproxy.service
 usr/bin/mozillavpn
 usr/bin/socksproxy
-lib/mozillavpn/mozillavpnnp
 lib/mozilla/native-messaging-hosts/mozillavpn.json
 usr/share/applications/org.mozilla.vpn.desktop
 usr/share/dbus-1/system-services/org.mozilla.vpn.dbus.service
