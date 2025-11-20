@@ -192,7 +192,7 @@ describe('Connectivity', function() {
 
     await vpn.waitForCondition(async () => {
       return await vpn.getQueryProperty(
-        queries.screenHome.CONTROLLER_SUBTITLE, 'text') === 'Preparing you connection';
+        queries.screenHome.CONTROLLER_SUBTITLE, 'text') === 'Preparing your connection';
     });
 
     await vpn.waitForCondition(async () => {
