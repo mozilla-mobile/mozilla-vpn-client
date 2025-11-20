@@ -991,12 +991,13 @@ void MozillaVPN::activate() {
     if (modelsInitialized()) {
       TaskScheduler::scheduleTask(
           new TaskControllerAction(TaskControllerAction::eActivate));
-    } else {
-      logger.error() << "Failed to complete the key regeneration";
-      REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
-      setState(StateInitialize);
       return;
     }
+
+    logger.error() << "Failed to complete the key regeneration";
+    REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
+    setState(StateInitialize);
+    return;
   }));
 }
 
