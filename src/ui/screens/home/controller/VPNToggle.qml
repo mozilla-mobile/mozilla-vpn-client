@@ -167,7 +167,6 @@ MZButtonBase {
 
             PropertyChanges {
                 target: toggleButton
-                //% "Turn VPN off"
                 toolTipTitle: qsTrId("vpn.toggle.off")
                 toggleColor: MZTheme.colors.vpnToggleConnected
             }

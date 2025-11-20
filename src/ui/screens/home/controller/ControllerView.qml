@@ -153,7 +153,6 @@ Item {
 
             PropertyChanges {
                 target: logoTitle
-                //% "Connecting…"
                 text: qsTrId("vpn.controller.connectingState")
                 color: MZTheme.colors.fontColorInverted
             }
