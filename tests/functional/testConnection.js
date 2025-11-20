@@ -6,7 +6,6 @@ const assert = require('assert');
 const vpn = require('./helper.js');
 const queries = require('./queries.js');
 const setup = require('./setupVpn.js');
-const guardianEndpoints = require('./servers/guardian_endpoints.js')
 
 describe('Connectivity', function() {
   this.ctx.authenticationNeeded = true;
