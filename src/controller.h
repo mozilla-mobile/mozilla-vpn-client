@@ -43,7 +43,10 @@ class Controller : public QObject, public LogSerializer {
     StateDisconnecting,
 
     // Requesting key to be regenerated due to version migration or expiration
-    // timeout.
+    // timeout. In case of successful connection, we continue to
+    // StateConnecting.
+    // In case of failure, we go to StateDisconnecting (via
+    // TaskControllerAction::eDeactivate)
     StateRegeneratingKey,
 
     // One or more connections have been submitted to the ControllerImpl while
