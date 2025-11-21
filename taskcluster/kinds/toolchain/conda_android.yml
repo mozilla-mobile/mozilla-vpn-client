@@ -32,7 +32,7 @@ task-defaults:
 # conda-android-<android-arch>-<QT-Version>
 # see transforms/conda.py
 
-conda-android-arm64-6.9.2: {}
-conda-android-armv7-6.9.2: {}
-conda-android-x86-6.9.2: {}
-conda-android-x86_64-6.9.2: {}
+conda-android-arm64-6.9.3: {}
+conda-android-armv7-6.9.3: {}
+conda-android-x86-6.9.3: {}
+conda-android-x86_64-6.9.3: {}

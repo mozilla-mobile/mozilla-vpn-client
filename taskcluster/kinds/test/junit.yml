@@ -16,7 +16,7 @@ android-junit:
         tier: 1
     fetches:
         toolchain: 
-            - conda-android-arm64-6.9.2
+            - conda-android-arm64-6.9.3
     run:
         using: run-task
         use-caches: [checkout, cargo]
