@@ -433,6 +433,15 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsWindows::getPeerStatus() {
   DWORD bufferSize = 2048;
   auto buffer = std::array<uint8_t, 2048>{};
 
+  // The handshake time is reported with an epoch date of 1601-01-01. We will
+  // need to convert that into a UNIX timestamp, which uses 1970-01-01.
+  static DWORD64 epochdiff = 0;
+  if (!epochdiff) {
+    QDate wgEpoch(1601, 1, 1);
+    QDate qtEpoch(1970, 1, 1);
+    epochdiff = wgEpoch.daysTo(qtEpoch) * (24 * 60 * 60 * 1000);
+  }
+
   bool ok = m_wireguard_api->GetConfiguration(
       m_adapter, (WIREGUARD_INTERFACE*)&buffer, &bufferSize);
   if (!ok) {
@@ -468,7 +477,9 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsWindows::getPeerStatus() {
       auto b64_key =
           QByteArray::fromRawData((const char*)peer->PublicKey, 32).toBase64();
       auto status = PeerStatus{QString(b64_key)};
-      status.m_handshake = peer->LastHandshake;
+
+      // The handshake timestamp uses a time interval of 100ns per tick.
+      status.m_handshake = (peer->LastHandshake / 10000) - epochdiff;
       status.m_rxBytes = peer->RxBytes;
       status.m_txBytes = peer->TxBytes;
       peerList.append(status);
