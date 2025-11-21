@@ -99,15 +99,24 @@ commonStrings:
   bullet2:
     value: "[all] Regular key rotation, improving security in the event of extreme, unexpected situations."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to all platforms.
+  bullet21:
+    value: "[Windows] When you’ve been connected for a long time, has the connection timer in the app ever looked weird? While your device has always been protected in those cases, we’ve fixed that bug and now report the accurate time."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Windows platform.
   bullet3:
     value: "[iOS] If you are using that beautiful new iPhone Air, Mozilla VPN should now look even better on it."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to iOS platform.
+  bullet 31:
+    value: "[Windows] If you use the Firefox web extension, we’ve made some changes that should make it run even smoother."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Windows platform.
   bullet4:
     value: "[iOS] Improvements on when notification permissions are requested when the app launches for the first time."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to iOS platform.
   bullet5:
     value: "[Windows, macOS, Linux] In a rare situation, the status icon wasn’t updating. We dug in deep, and it should again work for everyone."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to the 3 desktop platforms.
+  bullet 51:
+    value: "[Android] If you share logs when contacting support, they now include the device model and manufacturer to help us better help you."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Android platform.
   bullet6:
     value: "[Linux] If your distro ships with that latest Qt 6.10, builds from scratch may have had issues. They no longer should."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Linux platform.
