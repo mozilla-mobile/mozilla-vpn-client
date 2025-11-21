@@ -105,7 +105,7 @@ commonStrings:
   bullet3:
     value: "[iOS] If you are using that beautiful new iPhone Air, Mozilla VPN should now look even better on it."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to iOS platform.
-  bullet 31:
+  bullet31:
     value: "[Windows] If you use the Firefox web extension, we’ve made some changes that should make it run even smoother."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Windows platform.
   bullet4:
@@ -114,7 +114,7 @@ commonStrings:
   bullet5:
     value: "[Windows, macOS, Linux] In a rare situation, the status icon wasn’t updating. We dug in deep, and it should again work for everyone."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to the 3 desktop platforms.
-  bullet 51:
+  bullet51:
     value: "[Android] If you share logs when contacting support, they now include the device model and manufacturer to help us better help you."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Android platform.
   bullet6:
