@@ -78,7 +78,11 @@ int WebExtCommand::run(QStringList& tokens) {
   }
 
   QFile stdoutFile;
-  stdoutFile.open(stdout, QIODeviceBase::WriteOnly);
+  if (!stdoutFile.open(stdout, QIODeviceBase::WriteOnly)) {
+    qWarning() << "Failed to open stdout: " << stdoutFile.errorString();
+    return 1;
+  };
+
   WebExtHandler handler(&stdoutFile);
   QObject::connect(&handler, &WebExtHandler::eofReceived, &app,
                    &QCoreApplication::quit);
