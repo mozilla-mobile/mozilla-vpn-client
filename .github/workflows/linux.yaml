@@ -45,7 +45,7 @@ jobs:
           include-hidden-files: true
 
   rpmbuild:
-    name: RPM Packages
+    name: RPM Packages (Fedora ${{ matrix.fedora-version }})
     needs: source-bundle
     runs-on: ubuntu-latest
     strategy:
@@ -75,7 +75,7 @@ jobs:
       - name: Uploading
         uses: actions/upload-artifact@v4
         with:
-          name: RPM Build
+          name: RPM Build (Fedora ${{ matrix.fedora-version }})
           path: |
             RPMS/
             SRPMS/
