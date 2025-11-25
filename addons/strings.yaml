@@ -106,7 +106,7 @@ commonStrings:
     value: "[iOS] If you are using that beautiful new iPhone Air, Mozilla VPN should now look even better on it."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to iOS platform.
   bullet31:
-    value: "[Windows] If you use the Firefox web extension, we’ve made some changes that should make it run even smoother."
+    value: "[Windows] If you use the Firefox extension, we’ve made some changes that should make it run even smoother."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Windows platform.
   bullet4:
     value: "[iOS] Improvements on when notification permissions are requested when the app launches for the first time."
