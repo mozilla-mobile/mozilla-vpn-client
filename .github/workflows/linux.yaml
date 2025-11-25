@@ -48,8 +48,13 @@ jobs:
     name: RPM Packages
     needs: source-bundle
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        # currently supported Fedora releases
+        fedora-version: [43, 42]
     container:
-      image: fedora:42
+      image: fedora:${{ matrix.fedora-version }}
 
     steps:
       - name: Download Source Package
