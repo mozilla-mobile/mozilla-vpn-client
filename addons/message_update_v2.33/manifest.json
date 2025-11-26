@@ -37,8 +37,16 @@
             "content": "vpn.233updateMessage.bullet2"
           },
           {
+            "id": "l_21",
+            "content": "vpn.233updateMessage.bullet21"
+          },
+          {
             "id": "l_3",
             "content": "vpn.233updateMessage.bullet3"
+          },
+          {
+            "id": "l_31",
+            "content": "vpn.233updateMessage.bullet31"
           },
           {
             "id": "l_4",
@@ -47,6 +55,10 @@
           {
             "id": "l_5",
             "content": "vpn.233updateMessage.bullet5"
+          },
+          {
+            "id": "l_51",
+            "content": "vpn.233updateMessage.bullet51"
           },
           {
             "id": "l_6",
