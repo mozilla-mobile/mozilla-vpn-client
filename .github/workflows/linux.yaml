@@ -14,6 +14,19 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  supported-fedora-releases:
+    name: Fetch currently supported Fedora releases
+    runs-on: ubuntu-22.04
+    outputs:
+      supported-releases: ${{ steps.fetch-supported-releases.outputs.releases }}
+    steps:
+      - id: fetch-supported-releases
+        name: Fetch currently supported Fedora releases
+        run: |
+          API_RESPONSE=$(curl -s https://endoflife.date/api/v1/products/fedora)
+          SUPPORTED_RELEASES=$(echo $API_RESPONSE | jq -c '[ .result.releases[] | select(.isEol == false) | { "fedora-version": .name } ]')
+          echo "releases=$SUPPORTED_RELEASES" >> $GITHUB_OUTPUT
+
   source-bundle:
     name: Source Bundle
     runs-on: ubuntu-22.04
@@ -46,13 +59,14 @@ jobs:
 
   rpmbuild:
     name: RPM Packages (Fedora ${{ matrix.fedora-version }})
-    needs: source-bundle
+    needs:
+      - source-bundle
+      - supported-fedora-releases
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
-        # currently supported Fedora releases
-        fedora-version: [43, 42]
+        include: ${{ fromJSON(needs.supported-fedora-releases.outputs.supported-releases) }}
     container:
       image: fedora:${{ matrix.fedora-version }}
 
