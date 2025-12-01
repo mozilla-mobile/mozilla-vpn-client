@@ -8,10 +8,10 @@ asn1-rs = { version = "0.7.1", features=["datetime"] }
 oid-registry = "0.8"
 data-encoding = "2.9.0"
 ffi-support = "0.4.4"
-thiserror = "2.0.12"
+thiserror = "2.0.17"
 hex = "0.4"
 ring = "0.17.14"
-x509-parser = { version = "0.17.0", features = ["verify", "validate"] }
+x509-parser = { version = "0.18.0", features = ["verify", "validate"] }
 
 [lib]
 name = "signature"
