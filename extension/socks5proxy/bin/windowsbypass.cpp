@@ -287,7 +287,7 @@ void WindowsBypass::updateNameserver() {
   std::sort(nameservers.begin(), nameservers.end(),
             [](auto a, auto b) { return a.metric < b.metric; });
   QList<QHostAddress> selectedNameServers(nameservers.length());
-  for (const auto& ns : qAsConst(nameservers)) {
+  for (const auto& ns : nameservers) {
     selectedNameServers.append(ns.addr);
   }
 
