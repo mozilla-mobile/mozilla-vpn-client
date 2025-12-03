@@ -216,6 +216,14 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
           &m_private->m_connectionHealth,
           &ConnectionHealth::connectionStateChanged);
 
+  // Staging must be set before the featuremodel is initialized, otherwise
+  // FeatureCallback_inStaging is read incorrectly.
+  // A feature is checked while setting up the ProductHandler, hence
+  // the staging initialization is here.
+  if (SettingsHolder::instance()->stagingServer()) {
+    Constants::setStaging();
+    LogHandler::instance()->setStderr(true);
+  }
   ProductsHandler::createInstance();
   PurchaseHandler* purchaseHandler = PurchaseHandler::createInstance();
   connect(purchaseHandler, &PurchaseHandler::subscriptionStarted, this,
@@ -2345,11 +2353,6 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   // TODO pending #3398
   QQmlContext* ctx = engine->rootContext();
   ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
-
-  if (SettingsHolder::instance()->stagingServer()) {
-    Constants::setStaging();
-    LogHandler::instance()->setStderr(true);
-  }
 
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
