@@ -15,14 +15,30 @@ if(NOT DEFINED ENV{CONDA_PREFIX})
 endif()
 
 # Specify default system configuration, if cross compiling
-if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(CMAKE_SYSTEM_NAME Windows CACHE STRING "Target operating system name")
-    set(CMAKE_SYSTEM_PROCESSOR amd64 CACHE STRING "Target operating system processor")
+set(CMAKE_SYSTEM_NAME "Windows" CACHE STRING "Target operating system name")
+if(NOT CMAKE_SYSTEM_PROCESSOR)
+    if(CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
+        set(CMAKE_SYSTEM_PROCESSOR ${CMAKE_HOST_SYSTEM_PROCESSOR} CACHE STRING "Target operating system processor")
+    else()
+        set(CMAKE_SYSTEM_PROCESSOR "amd64" CACHE STRING "Target operating system processor")
+    endif()
+endif()
+if(NOT (CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows" AND CMAKE_HOST_SYSTEM_PROCESSOR STREQUAL CMAKE_SYSTEM_PROCESSOR))
     set(CMAKE_CROSSCOMPILING TRUE CACHE BOOL "Target is cross compiled")
+endif()
 
+# Choose the compiler target that matches the system processor
+string(TOLOWER ${CMAKE_SYSTEM_PROCESSOR} _LOWERCASE_SYSTEM_PROCESSOR)
+if(_LOWERCASE_SYSTEM_PROCESSOR STREQUAL "amd64")
     set(CMAKE_C_COMPILER_TARGET x86_64-pc-windows-msvc)
     set(CMAKE_CXX_COMPILER_TARGET x86_64-pc-windows-msvc)
     set(CMAKE_RC_COMPILER_TARGET x86_64-pc-windows-msvc)
+elseif(_LOWERCASE_SYSTEM_PROCESSOR STREQUAL "arm64")
+    set(CMAKE_C_COMPILER_TARGET aarch64-pc-windows-msvc)
+    set(CMAKE_CXX_COMPILER_TARGET aarch64-pc-windows-msvc)
+    set(CMAKE_RC_COMPILER_TARGET aarch64-pc-windows-msvc)
+else()
+    message(FATAL_ERROR "Unsupported system processor: ${CMAKE_SYSTEM_PROCESSOR}")
 endif()
 
 # Set the C++ compiler and tools.
@@ -57,3 +73,4 @@ if(EXISTS $ENV{CONDA_PREFIX}/xwin)
 elseif(NOT CMAKE_LINKER)
     find_program(CMAKE_LINKER NAMES lld-link REQUIRED DOC "LLD Linker (MSVC Compatible)")
 endif()
+
