@@ -117,26 +117,3 @@ tryFirefoxExtension:
   downloadFirefox:
     value: Download Firefox
     comment: Button label
-
-upgradeToBundle:
-  upgrade:
-    value: Upgrade
-    comment: Text for upgrade button
-  title:
-    value: 3 tools, 1 privacy plan — VPN, email masking, and data protection
-    comment: Title for message
-  line1:
-    value: For %1/month, get our privacy tools in one plan.
-    comment: First line of message. The %1 variable is replaced with the price of the bundle.
-  bulletIntro:
-    value: "Plan includes:"
-    comment: Header for bullet list
-  bullet1:
-    value: VPN for secure, private browsing
-    comment: bullet focusing on VPN
-  bullet2:
-    value: Relay’s unlimited email masks to prevent spam and trackers
-    comment: bullet focusing on Relay
-  bullet3:
-    value: Monitor’s protection from data brokers who sell your info online
-    comment: bullet focusing on Monitor
