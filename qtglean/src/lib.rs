@@ -13,6 +13,7 @@ use metrics::__generated_pings::register_pings;
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
 use std::sync::Arc;
+use std::time::Duration;
 use uploader::VPNPingUploader;
 use logger::Logger;
 
@@ -62,6 +63,9 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
         enable_event_timestamps: false,
         experimentation_id: None,
         enable_internal_pings: true,
+        ping_lifetime_max_time: Duration::ZERO,
+        ping_lifetime_threshold: 0,
+        ping_schedule: Default::default(),
     };
 
     let client_info = ClientInfoMetrics {
@@ -125,6 +129,9 @@ pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: 
         enable_event_timestamps: false,
         experimentation_id: None,
         enable_internal_pings: true,
+        ping_lifetime_max_time: Duration::ZERO,
+        ping_lifetime_threshold: 0,
+        ping_schedule: Default::default(),
     };
 
     let client_info = ClientInfoMetrics {

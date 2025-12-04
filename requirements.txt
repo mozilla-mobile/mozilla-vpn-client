@@ -4,10 +4,6 @@
 #
 #    pip-compile --generate-hashes --output-file=requirements.txt --resolver=legacy requirements.in
 #
-appdirs==1.4.4 \
-    --hash=sha256:7d5d0167b2b1ba821647616af46a749d1c653740dd0d2415100fe26e27afdf41 \
-    --hash=sha256:a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128
-    # via glean-parser
 aqtinstall==3.3.0 \
     --hash=sha256:9c7d85fbe7258be2d7d23fda33f8aff2e8b7536817255eaeaaf4226da8546a31 \
     --hash=sha256:e88dbd87226f276fdd5d05347a44578d390d93a7f176e9476fbda0a7c9635f69
@@ -226,9 +222,9 @@ diskcache==5.6.3 \
     --hash=sha256:2c3a3fa2743d8535d832ec61c2054a1641f41775aa7c556758a109941e33e4fc \
     --hash=sha256:5e31b2d5fbad117cc363ebaf6b689474db18a1f6438bc82358b024abd4c2ca19
     # via glean-parser
-glean-parser==13.0.0 \
-    --hash=sha256:1c1e9d33fae3b804fc066ae6b2ae7ae8f4148cac1e5b248f2c1e2bfc2e3ae520 \
-    --hash=sha256:833780cab7e057034b352786203af94f21afcb0094cbed6010471f5dc21a5f91
+glean-parser==18.1.1 \
+    --hash=sha256:44052346083dddfbe4c68a05391b9b769902529fefb5c04e690418f2e5e2bea8 \
+    --hash=sha256:90b3465a5ef0958a62916051c2196db15388be2f4eb2aafb01c1b1ef6248be30
     # via -r requirements.in
 humanize==4.8.0 \
     --hash=sha256:8bc9e2bb9315e61ec06bf690151ae35aeb65651ab091266941edf97c90836404 \
@@ -386,6 +382,10 @@ pathspec==0.11.2 \
     --hash=sha256:1d6ed233af05e679efb96b1851550ea95bbb64b7c490b0f5aa52996c11e92a20 \
     --hash=sha256:e0d8d0ac2f12da61956eb2306b69f9469b42f4deb0f3cb6ed47b9cce9996ced3
     # via yamllint
+platformdirs==4.5.0 \
+    --hash=sha256:70ddccdd7c99fc5942e9fc25636a8b34d04c24b335100223152c2803e4063312 \
+    --hash=sha256:e578a81bb873cbb89a41fcc904c7ef523cc18284b7e3b3ccf06aca1403b7ebd3
+    # via glean-parser
 psutil==5.9.6 \
     --hash=sha256:10e8c17b4f898d64b121149afb136c53ea8b68c7531155147867b7b1ac9e7e28 \
     --hash=sha256:18cd22c5db486f33998f37e2bb054cc62fd06646995285e02a51b1e08da97017 \
