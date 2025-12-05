@@ -26,12 +26,11 @@ vs-2022-x86_64:
 vs-2022-aarch64:
     description: "MS Visual Studio 2022 (aarch64)"
     worker-type: b-win11-2024h2-arm64
-    worker:
-        env:
-            PROCESSOR_ARCHITECTURE: arm64 # Bug: I think the aarch64 workers set this incorrectly.
     treeherder:
         symbol: TL(vs-2022-aarch64)
         platform: windows/aarch64
     run:
+        arguments:
+            - --host-arch=arm64
         toolchain-alias: vs-2022-aarch64
         toolchain-artifact: public/build/visual-studio-2022.zip
