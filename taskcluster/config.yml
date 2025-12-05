@@ -25,7 +25,7 @@ taskgraph:
     repositories:
         mozillavpn:
             name: "MozillaVPN"
-    cached-task-prefix: mozillavpn.v3.mozillavpn
+    cached-task-prefix: mozillavpn.v2.mozillavpn
     decision-parameters: 'mozillavpn_taskgraph.parameters:get_decision_parameters'
 
 index:
