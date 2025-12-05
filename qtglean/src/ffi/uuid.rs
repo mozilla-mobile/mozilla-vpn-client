@@ -8,6 +8,7 @@ use std::os::raw::c_char;
 use glean::ErrorType;
 
 use crate::ffi::helpers;
+use glean::TestGetValue;
 
 #[no_mangle]
 pub extern "C" fn glean_uuid_set(id: u32, uuid: FfiStr) {

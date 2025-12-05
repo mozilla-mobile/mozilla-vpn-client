@@ -7,6 +7,7 @@ use std::os::raw::c_char;
 
 use ffi_support::FfiStr;
 use glean::ErrorType;
+use glean::TestGetValue;
 
 use crate::ffi::helpers;
 

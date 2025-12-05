@@ -1,9 +1,10 @@
-# Generated with flatpak-pip-generator --runtime=org.kde.Sdk//6.9 -o flatpak-glean-parser.yaml --yaml --build-only glean_parser==13.0
+# Earlier version generated with flatpak-pip-generator --runtime=org.kde.Sdk//6.9 -o flatpak-glean-parser.yaml --yaml --build-only glean_parser==13.0
+# There was a manual edit, as I don't have a Linux dev machine.
 name: python3-glean_parser
 buildsystem: simple
 build-commands:
 - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-  --prefix=${FLATPAK_DEST} "glean_parser==13.0" --no-build-isolation
+  --prefix=${FLATPAK_DEST} "glean_parser==18.1.1" --no-build-isolation
 sources:
 - type: file
   url: https://files.pythonhosted.org/packages/b2/97/5d42485e71dfc078108a86d6de8fa46db44a1a9295e89c5d6d4a06e23a62/markupsafe-3.0.2.tar.gz
@@ -11,9 +12,6 @@ sources:
 - type: file
   url: https://files.pythonhosted.org/packages/54/ed/79a089b6be93607fa5cdaedf301d7dfb23af5f25c398d5ead2525b063e17/pyyaml-6.0.2.tar.gz
   sha256: d584d9ec91ad65861cc08d42e834324ef890a082e591037abe114850ff7bbc3e
-- type: file
-  url: https://files.pythonhosted.org/packages/3b/00/2344469e2084fb287c2e0b57b72910309874c3245463acd6cf5e3db69324/appdirs-1.4.4-py2.py3-none-any.whl
-  sha256: a841dacd6b99318a741b166adb07e19ee71a274450e68237b4650ca1055ab128
 - type: file
   url: https://files.pythonhosted.org/packages/77/06/bb80f5f86020c4551da315d78b3ab75e8228f89f0162f2c3a819e407941a/attrs-25.3.0-py3-none-any.whl
   sha256: 427318ce031701fea540783410126f03899a97ffc6f61596ad581ac2e40e3bc3
@@ -24,8 +22,11 @@ sources:
   url: https://files.pythonhosted.org/packages/3f/27/4570e78fc0bf5ea0ca45eb1de3818a23787af9b390c0b0a0033a1b8236f9/diskcache-5.6.3-py3-none-any.whl
   sha256: 5e31b2d5fbad117cc363ebaf6b689474db18a1f6438bc82358b024abd4c2ca19
 - type: file
-  url: https://files.pythonhosted.org/packages/6d/ac/283ab21641a3e66949a58fdd7bee0b12c5593c47be80a815bbb27db9366e/glean_parser-13.0.0-py3-none-any.whl
-  sha256: 1c1e9d33fae3b804fc066ae6b2ae7ae8f4148cac1e5b248f2c1e2bfc2e3ae520
+  url: https://files.pythonhosted.org/packages/6f/e9/6721d0300b195489155f53aa0a7f71593e31e9e798e82712b38bee70e0cd/glean_parser-18.1.1-py3-none-any.whl
+  sha256: 44052346083dddfbe4c68a05391b9b769902529fefb5c04e690418f2e5e2bea8
+- type: file
+  url: https://files.pythonhosted.org/packages/cb/28/3bfe2fa5a7b9c46fe7e13c97bda14c895fb10fa2ebf1d0abb90e0cea7ee1/platformdirs-4.5.1-py3-none-any.whl
+  sha256: d03afa3963c806a9bed9d5125c8f4cb2fdaf74a55ab60e5d59b3fde758104d31
 - type: file
   url: https://files.pythonhosted.org/packages/62/a1/3d680cbfd5f4b8f15abc1d571870c5fc3e594bb582bc3b64ea099db13e56/jinja2-3.1.6-py3-none-any.whl
   sha256: 85ece4451f492d0c13c5dd7c13a64681a86afae63a5f347908daf103ce6d2f67

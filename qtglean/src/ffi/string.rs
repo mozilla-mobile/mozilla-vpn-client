@@ -6,6 +6,7 @@ use ffi_support::FfiStr;
 use std::ffi::CString;
 use std::os::raw::c_char;
 use glean::ErrorType;
+use glean::TestGetValue;
 
 use crate::ffi::helpers;
 
