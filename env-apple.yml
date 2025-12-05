@@ -8,7 +8,7 @@ dependencies:
   - ccache=4.10.1
   - cctools_osx-64=1010.6
   - cctools_osx-arm64=1010.6
-  - python=3.9
+  - python=3.10
   - nodejs=18.*
   - pip=22.3.1
   - rust=1.82
