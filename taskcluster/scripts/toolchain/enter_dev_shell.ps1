@@ -6,6 +6,14 @@
 # Is in the VS_bundle used by fetch/vs-dev-env. 
 # Elevates a powershell env to a vs-studio "dev-console" equivalent. 
 
+$VS_TARGET_ARCH = switch ($PROCESSOR_ARCHITECTURE) {
+  "amd64"   { "x64"   }
+  "x64"     { "x64"   }
+  "arm64"   { "arm64" }
+  "aarch64" { "arm64" }
+  default   { "x64"   }
+}
+
 $VS_STUDIO_LOCATION =resolve-path $PSScriptRoot
 $MSVC_VERSION =(Get-ChildItem -Path "$VS_STUDIO_LOCATION\VC\Tools\MSVC" | Select-Object -First 1)
 
@@ -32,12 +40,12 @@ ForEach-Object -InputObject $INCLUDE_ADDS {
 }
 
 $LIB_ADDS = `
-    "$W10_SDK_PATH\Lib\$W10_SDK_VERSION\ucrt\x64;" ,`
-    "$W10_SDK_PATH\Lib\$W10_SDK_VERSION\um\x64;" ,`
-    "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\ATLMFC\lib\x64;" ,`
-    "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\lib\x64;" ,`
-    "$VS_STUDIO_LOCATION\DIA SDK\lib\amd64;"
-    
+    "$W10_SDK_PATH\Lib\$W10_SDK_VERSION\ucrt\$VS_TARGET_ARCH;" ,`
+    "$W10_SDK_PATH\Lib\$W10_SDK_VERSION\um\$VS_TARGET_ARCH;" ,`
+    "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\ATLMFC\lib\$VS_TARGET_ARCH;" ,`
+    "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\lib\$VS_TARGET_ARCH;" ,`
+    "$VS_STUDIO_LOCATION\DIA SDK\lib\$PROCESSOR_ARCHITECTURE;"
+
 $ENV:LIB =""
 ForEach-Object -InputObject $LIB_ADDS {
   $ENV:LIB +=$_
@@ -46,8 +54,8 @@ ForEach-Object -InputObject $LIB_ADDS {
 $LIBPATH_ADDS =  `
   "$W10_SDK_PATH\UnionMetadata\$W10_SDK_VERSION;" ,`
   "$W10_SDK_PATH\References\$W10_SDK_VERSION;" ,`
-  "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\ATLMFC\lib\x64;" ,`
-  "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\lib\x64;" 
+  "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\ATLMFC\lib\$VS_TARGET_ARCH;" ,`
+  "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\lib\$VS_TARGET_ARCH;" 
 
 $ENV:LIBPATH =""
 ForEach-Object -InputObject $LIBPATH_ADDS {
@@ -55,13 +63,13 @@ ForEach-Object -InputObject $LIBPATH_ADDS {
 }
 
 $PATH_ADDS = ";",`
-  "$VS_STUDIO_LOCATION\DIA SDK\bin\amd64;" ,`
-  "$W10_SDK_PATH\bin\$W10_SDK_VERSION\x64;" ,`
-  "$W10_SDK_PATH\bin\x64;",`
-  "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\bin\HostX64\x64;",`
+  "$VS_STUDIO_LOCATION\DIA SDK\bin\$PROCESSOR_ARCHITECTURE;" ,`
+  "$W10_SDK_PATH\bin\$W10_SDK_VERSION\$VS_TARGET_ARCH;" ,`
+  "$W10_SDK_PATH\bin\$VS_TARGET_ARCH;",`
+  "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\bin\HostX64\$VS_TARGET_ARCH;",`
   "$VS_STUDIO_LOCATION\Common7\IDE\VC\VCPackages;",`
   "$VS_STUDIO_LOCATION\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;",`
-  "$VS_STUDIO_LOCATION\MSBuild\Current\Bin\amd64;",`
+  "$VS_STUDIO_LOCATION\MSBuild\Current\Bin\$PROCESSOR_ARCHITECTURE;",`
   "$VS_STUDIO_LOCATION\Common7\IDE;",`
   "$VS_STUDIO_LOCATION\Common7\Tools;",`
   "$VS_STUDIO_LOCATION\Common7\IDE\CommonExtensions\Microsoft\CMake\CMake\bin;",`
