@@ -17,7 +17,6 @@ execute_process(
 if(NOT CARGO_BUILD_RESULT EQUAL 0)
     message(FATAL_ERROR "Failed to build Glean Rust library")
 endif()
-
 message(STATUS "Glean Rust library built successfully")
 
 execute_process(
