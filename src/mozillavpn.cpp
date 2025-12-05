@@ -2390,7 +2390,7 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   callback();
 #endif
 
-  return app.exec();
+  return QCoreApplication::exec();
 }
 
 #ifdef MZ_MACOS
