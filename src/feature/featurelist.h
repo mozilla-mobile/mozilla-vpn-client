@@ -123,7 +123,7 @@ FEATURE(keyRegeneration,       // Feature ID
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
         // TODO: Disabled - VPN-2693
-        FeatureCallback_false)
+        FeatureCallback_true)
 
 FEATURE(multiHop,               // Feature ID
         "Multi-hop",            // Feature name
