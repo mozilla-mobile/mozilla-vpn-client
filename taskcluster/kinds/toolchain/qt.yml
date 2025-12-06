@@ -62,7 +62,7 @@ qt-windows-x86_64-6.6:
     worker-type: b-win2022
 
 qt-windows-x86_64-next:
-    description: "Windows QT compile Task"
+    description: "Windows QT compile Task (x86_64/next)"
     fetches:
         fetch:
             - artifact: qt-source-tarball-next
@@ -81,6 +81,27 @@ qt-windows-x86_64-next:
         symbol: TL(qt-win-next)
         platform: windows/x86_64
     worker-type: b-win2022
+
+qt-windows-aarch64-next:
+    description: "Windows QT compile Task (aarch64/next)"
+    fetches:
+        fetch:
+            - artifact: qt-source-tarball-next
+              extract: false
+        vs2022:
+            - artifact: visual-studio-2022.zip
+    dependencies:
+        vs2022: toolchain-vs-2022-aarch64
+    run:
+        script: compile_qt_6.ps1
+        resources:
+            - taskcluster/scripts/toolchain/configure_qt.ps1
+        toolchain-alias: qt-windows-aarch64-next
+        toolchain-artifact: public/build/qt6_win.tar.xz
+    treeherder:
+        symbol: TL(qt-win-next)
+        platform: windows/aarch64
+    worker-type: b-win11-2024h2-arm64
 
 qt-ios:
     description: "QT ios bundle Task"
