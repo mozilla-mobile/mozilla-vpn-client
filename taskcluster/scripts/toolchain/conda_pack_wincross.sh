@@ -32,6 +32,7 @@ tar xf xwin.tar.gz
 
 echo "Downloading the windows SDK..."
 ./xwin-${XWIN_TAG}-x86_64-unknown-linux-musl/xwin \
+    --arch aarch64 --arch x86_64 \
     --accept-license --manifest-version 17 splat \
     --include-debug-symbols --include-debug-libs \
     --use-winsysroot-style --preserve-ms-arch-notation \

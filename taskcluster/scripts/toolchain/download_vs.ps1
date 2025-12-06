@@ -29,7 +29,8 @@ python $env:TASK_WORKDIR\vsdownload.py `
     --accept-license `
     --skip-recommended `
     --msvc-version $MSVC_VERSION `
-    --dest "$env:TASK_WORKDIR\vs2022"
+    --dest "$env:TASK_WORKDIR\vs2022" `
+    @args
 
 # Download additional extensions
 python "$env:VCS_PATH\scripts\windows\fetch-vsix-package.py" --ltsc-version $MSVC_VERSION --output "$env:TASK_WORKDIR\vs2022" $VS_EXTRA_PACKAGES
