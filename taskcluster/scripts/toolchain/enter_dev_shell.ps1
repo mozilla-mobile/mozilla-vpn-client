@@ -6,13 +6,17 @@
 # Is in the VS_bundle used by fetch/vs-dev-env. 
 # Elevates a powershell env to a vs-studio "dev-console" equivalent. 
 
-$VS_TARGET_ARCH = switch ($PROCESSOR_ARCHITECTURE) {
-  "amd64"   { "x64"   }
-  "x64"     { "x64"   }
-  "arm64"   { "arm64" }
-  "aarch64" { "arm64" }
-  default   { "x64"   }
+$OS_ARCH = (Get-CimInstance -ClassName Win32_OperatingSystem).OSArchitecture
+if ($OS_ARCH -match "(?i)32") {
+  $VS_TARGET_ARCH = "x32"
+} elseif ($OS_ARCH -match "(?i)64" -and $OS_ARCH -match "(?i)ARM") {
+  $VS_TARGET_ARCH = "arm64"
+} elseif ($OS_ARCH -match "(?i)64") {
+  $VS_TARGET_ARCH = "x64"
+} else {
+  $VS_TARGET_ARCH = "x64"
 }
+Write-Host "Got architecture $VS_TARGET_ARCH from: $OS_ARCH"
 
 $VS_STUDIO_LOCATION =resolve-path $PSScriptRoot
 $MSVC_VERSION =(Get-ChildItem -Path "$VS_STUDIO_LOCATION\VC\Tools\MSVC" | Select-Object -First 1)
@@ -66,7 +70,7 @@ $PATH_ADDS = ";",`
   "$VS_STUDIO_LOCATION\DIA SDK\bin\$PROCESSOR_ARCHITECTURE;" ,`
   "$W10_SDK_PATH\bin\$W10_SDK_VERSION\$VS_TARGET_ARCH;" ,`
   "$W10_SDK_PATH\bin\$VS_TARGET_ARCH;",`
-  "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\bin\HostX64\$VS_TARGET_ARCH;",`
+  "$VS_STUDIO_LOCATION\VC\Tools\MSVC\$MSVC_VERSION\bin\Host$VS_TARGET_ARCH\$VS_TARGET_ARCH;",`
   "$VS_STUDIO_LOCATION\Common7\IDE\VC\VCPackages;",`
   "$VS_STUDIO_LOCATION\Common7\IDE\CommonExtensions\Microsoft\TeamFoundation\Team Explorer;",`
   "$VS_STUDIO_LOCATION\MSBuild\Current\Bin\$PROCESSOR_ARCHITECTURE;",`
