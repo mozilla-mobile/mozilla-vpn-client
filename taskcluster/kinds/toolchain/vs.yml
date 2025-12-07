@@ -32,5 +32,6 @@ vs-2022-aarch64:
     run:
         arguments:
             - --host-arch=arm64
+            - --only-host
         toolchain-alias: vs-2022-aarch64
         toolchain-artifact: public/build/visual-studio-2022.zip
