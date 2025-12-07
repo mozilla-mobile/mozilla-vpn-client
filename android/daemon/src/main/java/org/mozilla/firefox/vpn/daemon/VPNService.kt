@@ -20,6 +20,7 @@ import mozilla.telemetry.glean.BuildInfo
 import mozilla.telemetry.glean.Glean
 import mozilla.telemetry.glean.config.Configuration
 import org.json.JSONObject
+import org.mozilla.firefox.qt.common.BatteryOptimizationHelper
 import org.mozilla.firefox.qt.common.CoreBinder
 import org.mozilla.firefox.qt.common.Prefs
 import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
@@ -147,6 +148,9 @@ class VPNService : android.net.VpnService() {
         Log.i(tag, "Wireguard reported current tunnel: $currentTunnelHandle")
         mAlreadyInitialised = true
 
+        // Check battery optimization status and log warnings
+        checkBatteryOptimizationStatus()
+
         // It's usually a bad practice to initialize Glean with the wrong
         // value for uploadEnabled... However, since this is a very controlled
         // situation -- it should only happen when logging in to a brand new
@@ -157,6 +161,26 @@ class VPNService : android.net.VpnService() {
         // the user provided preference for this. So it should not be long until
         // the correct value is set here. See VPNServiceBinder > onTransact > ACTIONS.registerEventListener.
         initializeGlean(Prefs.get(this).getBoolean("glean_enabled", false))
+    }
+
+    /**
+     * Check battery optimization status and log warnings.
+     * This helps users understand why VPN may disconnect after a few hours.
+     */
+    private fun checkBatteryOptimizationStatus() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            BatteryOptimizationHelper.logBatteryOptimizationStatus(this, tag)
+            
+            // If battery optimization is enabled, send broadcast to notify UI
+            if (!BatteryOptimizationHelper.isIgnoringBatteryOptimizations(this)) {
+                try {
+                    val intent = Intent("org.mozilla.firefox.vpn.BATTERY_OPTIMIZATION_WARNING")
+                    sendBroadcast(intent)
+                } catch (e: Exception) {
+                    Log.e(tag, "Failed to send battery optimization warning broadcast: ${e.message}")
+                }
+            }
+        }
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -360,6 +384,13 @@ class VPNService : android.net.VpnService() {
         // asked boot vpn from the OS
         val prefs = Prefs.get(this)
         prefs.edit().putString("lastConf", json.toString()).apply()
+        
+        // Auto-enable start on boot when VPN connects successfully
+        // This ensures VPN will restart after device reboot
+        if (!prefs.getBoolean(BootReceiver.START_ON_BOOT, false)) {
+            Log.i(tag, "Auto-enabling start on boot for reliable VPN restart after reboot")
+            prefs.edit().putBoolean(BootReceiver.START_ON_BOOT, true).apply()
+        }
 
         // Go foreground
         CannedNotification(mConfig)?.let { mNotificationHandler.show(it) }

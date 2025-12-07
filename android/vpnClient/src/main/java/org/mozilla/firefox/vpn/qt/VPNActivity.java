@@ -5,10 +5,12 @@
 package org.mozilla.firefox.vpn.qt;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.pm.ActivityInfo;
 import android.graphics.Insets;
 import android.net.Uri;
@@ -29,6 +31,7 @@ import android.view.WindowInsets;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
+import org.mozilla.firefox.qt.common.BatteryOptimizationHelper;
 import org.mozilla.firefox.vpn.VPNClientBinder;
 import org.mozilla.firefox.vpn.daemon.VPNService;
 import org.qtproject.qt.android.QtActivityBase;
@@ -58,7 +61,34 @@ public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
     ready = true;
+    
+    // Check battery optimization when activity is created
+    checkAndWarnBatteryOptimization();
   }
+  
+  @Override
+  protected void onResume() {
+    super.onResume();
+    
+    // Check battery optimization when activity resumes (after Activity is ready to show dialogs)
+    // Also check again when returning to app (user may have changed settings)
+    checkAndWarnBatteryOptimization();
+  }
+  
+  @Override
+  protected void onStart() {
+    super.onStart();
+    
+    // Also check when Activity starts (in case onResume wasn't called)
+    // Use postDelayed to ensure Activity is fully ready
+    getWindow().getDecorView().postDelayed(new Runnable() {
+      @Override
+      public void run() {
+        checkAndWarnBatteryOptimization();
+      }
+    }, 500); // Delay 500ms to ensure Activity is ready
+  }
+  
   private static VPNActivity instance;
 
  public VPNActivity() {
@@ -347,5 +377,100 @@ public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
   private static boolean nativeMethodsAvailable = false;
   private static void nativeMethodsRegistered() {
     nativeMethodsAvailable = true;
+  }
+  
+  // Constants for battery optimization warning
+  private static final String PREFS_NAME = "vpn_prefs";
+  private static final String PREF_BATTERY_WARNING_DISMISSED = "battery_optimization_warning_dismissed";
+  private static final String PREF_BATTERY_CHECK_SHOWN = "battery_optimization_check_shown";
+  private static final int REQUEST_CODE_BATTERY_SETTINGS = 1001;
+  
+  /**
+   * Check battery optimization status and show warning if needed.
+   * This method respects user preference if they dismissed the warning.
+   */
+  private void checkAndWarnBatteryOptimization() {
+    Log.i("VPNActivity", "checkAndWarnBatteryOptimization() called");
+    
+    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
+      // Battery optimization not available before Android M
+      Log.i("VPNActivity", "Battery optimization check skipped - Android < M");
+      return;
+    }
+    
+    SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+    boolean warningDismissed = prefs.getBoolean(PREF_BATTERY_WARNING_DISMISSED, false);
+    boolean checkShown = prefs.getBoolean(PREF_BATTERY_CHECK_SHOWN, false);
+    
+    Log.i("VPNActivity", "Battery optimization check - warning dismissed: " + warningDismissed + ", check shown: " + checkShown);
+    
+    // Check if battery optimization is enabled
+    boolean isIgnoring = BatteryOptimizationHelper.isIgnoringBatteryOptimizations(this);
+    Log.i("VPNActivity", "Battery optimization status - isIgnoring: " + isIgnoring);
+    Log.i("VPNActivity", "Package name: " + getPackageName());
+    
+    // Show dialog if:
+    // 1. Battery optimization is ENABLED (not ignoring), OR
+    // 2. First time check and we have permission to request (proactive check)
+    boolean shouldShow = false;
+    
+    if (!isIgnoring) {
+      // Battery optimization is ENABLED - show warning
+      Log.i("VPNActivity", "Battery optimization is ENABLED - showing warning dialog");
+      shouldShow = true;
+    } else if (!checkShown && !warningDismissed && BatteryOptimizationHelper.hasRequestIgnoreBatteryOptimizationsPermission(this)) {
+      // First time - proactively show dialog to ensure battery optimization stays disabled
+      // Only if we have permission to request it
+      Log.i("VPNActivity", "First launch - proactively showing battery optimization dialog");
+      shouldShow = true;
+      prefs.edit().putBoolean(PREF_BATTERY_CHECK_SHOWN, true).apply();
+    }
+    
+    if (shouldShow && !warningDismissed) {
+      showBatteryOptimizationWarning();
+    } else if (!shouldShow) {
+      Log.i("VPNActivity", "Battery optimization is disabled - no warning needed");
+    }
+  }
+  
+  /**
+   * Show a dialog warning the user about battery optimization.
+   * Provides options to open settings, dismiss temporarily, or dismiss permanently.
+   */
+  private void showBatteryOptimizationWarning() {
+    new AlertDialog.Builder(this)
+        .setTitle("Battery Optimization Detected")
+        .setMessage(BatteryOptimizationHelper.getBatteryOptimizationExplanation())
+        .setPositiveButton("Open Settings", (dialog, which) -> {
+          Intent intent = BatteryOptimizationHelper.getRequestIgnoreBatteryOptimizationsIntent(this);
+          if (intent != null) {
+            try {
+              startActivityForResult(intent, REQUEST_CODE_BATTERY_SETTINGS);
+            } catch (Exception e) {
+              Log.e("VPNActivity", "Failed to open battery settings", e);
+            }
+          }
+        })
+        .setNegativeButton("Not Now", null)
+        .setNeutralButton("Don't Ask Again", (dialog, which) -> {
+          // Save preference to not ask again
+          SharedPreferences prefs = getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+          prefs.edit().putBoolean(PREF_BATTERY_WARNING_DISMISSED, true).apply();
+          Log.i("VPNActivity", "User dismissed battery optimization warning permanently");
+        })
+        .setCancelable(true)
+        .show();
+  }
+  
+  /**
+   * Allow users to reset the "Don't Ask Again" preference through settings.
+   * This method can be called from the native code if needed.
+   */
+  public static void resetBatteryOptimizationWarning() {
+    if (instance != null) {
+      SharedPreferences prefs = instance.getSharedPreferences(PREFS_NAME, MODE_PRIVATE);
+      prefs.edit().putBoolean(PREF_BATTERY_WARNING_DISMISSED, false).apply();
+      Log.i("VPNActivity", "Battery optimization warning preference reset");
+    }
   }
 }

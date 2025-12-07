@@ -56,7 +56,7 @@ file(MAKE_DIRECTORY "${OUTPUT_LIB_DIR}")
 add_custom_command(
         OUTPUT "${OUTPUT_LIB_DIR}/libtunnel.so"
         COMMAND ${CMAKE_COMMAND} -E env ${GO_ENV}
-        ${GO_EXECUTABLE} build -buildmode=c-shared
+        ${GO_EXECUTABLE} build -buildmode=c-shared -buildvcs=false
         -o "${OUTPUT_LIB_DIR}/libtunnel.so"
         "${GO_SRC}"
         WORKING_DIRECTORY "${GO_SRC}"

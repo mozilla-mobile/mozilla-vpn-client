@@ -9,6 +9,7 @@
 
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
+#include <QQmlError>
 #include <QWindow>
 #include <memory>
 
@@ -321,7 +322,6 @@ int CommandUI::run(QStringList& tokens) {
     if (!engineHolder->hasWindow()) {
       logger.error() << "Failed to load " << url.toString();
     }
-
 #ifdef MZ_WINDOWS
     auto const updateWindowDecoration = [engineHolder]() {
       auto const window = engineHolder->window();
