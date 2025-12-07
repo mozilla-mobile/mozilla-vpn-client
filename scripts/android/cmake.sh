@@ -147,6 +147,7 @@ cp $WORKSPACE_ROOT/qtglean/uniffi.toml 3rdparty/glean/glean-core/uniffi.toml
 if [[ "$RELEASE" ]]; then
   printn Y "Use release config"
   $QTPATH/bin/qt-cmake \
+    --warn-uninitialized \
     -DQT_HOST_PATH=$QT_HOST_PATH \
     -DQT_ANDROID_BUILD_ALL_ABIS=TRUE \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
@@ -156,10 +157,11 @@ if [[ "$RELEASE" ]]; then
     -DADJUST_TOKEN=$ADJUST_SDK_TOKEN \
     -DBUILD_TESTS=OFF \
     -GNinja \
-    -S . -B .tmp/
+    -S . -B .tmp/ || die "CMake configuration failed - check for missing libraries or dependencies"
 else
   printn Y "Use debug config \n"
   $QTPATH/bin/qt-cmake \
+    --warn-uninitialized \
     -DQT_HOST_PATH=$QT_HOST_PATH \
     -DQT_ANDROID_BUILD_ALL_ABIS=FALSE \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
@@ -168,7 +170,7 @@ else
     -DCMAKE_BUILD_TYPE=Debug \
     -DBUILD_TESTS=OFF \
     -GNinja \
-    -S . -B .tmp/
+    -S . -B .tmp/ || die "CMake configuration failed - check for missing libraries or dependencies"
 
 fi
 
@@ -179,7 +181,9 @@ cmake --build .tmp -j$JOBS
 # Generate a valid gradle project and pre-compile it.
 print Y "Generate Android Project"
 
-#androiddeployqt --input .tmp/src/android-mozillavpn-deployment-settings.json --output .tmp/src/android-build || cleanup_and_die
+# Note: androiddeployqt is already called automatically by qt_finalize_target during CMake build
+# It packages QML resources into assets/android_rcc_bundle.rcc (Qt 6 uses RCC bundle instead of qt.qml)
+# No need to call it again here
 
 cd .tmp/src/android-build/
 # This will combine the qt-libs + qt-resources and the client
