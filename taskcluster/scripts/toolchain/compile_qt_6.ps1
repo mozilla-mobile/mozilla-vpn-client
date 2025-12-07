@@ -120,21 +120,25 @@ if ($LastExitCode -ne 0) {
   Exit $LastExitCode
 }
 
+Write-Output "Installing debug Qt:"
 cmake --install $QT_BUILD_PATH --config Debug
 if ($LastExitCode -ne 0) {
   Exit $LastExitCode
 }
 
+Write-Output "Installing release Qt:"
 cmake --install $QT_BUILD_PATH --config Release
 if ($LastExitCode -ne 0) {
   Exit $LastExitCode
 }
 
-tar -cJf qt6_win.tar.xz qt-windows/
+Write-Output "Compressing tarball"
+tar -cvJf qt6_win.tar.xz qt-windows/
 if ($LastExitCode -ne 0) {
   Exit $LastExitCode
 }
 
+Write-Output "Moving tarball"
 New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/public/build" -Force
 Move-Item -Path qt6_win.tar.xz -Destination "$env:TASK_WORKDIR/public/build"
 
