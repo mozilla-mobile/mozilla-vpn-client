@@ -50,6 +50,7 @@ $QT_MOD_EXCLUDE = @(
 $QT_SRC_FILENAME = (resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*.tar.xz" | Split-Path -Leaf)
 $QT_TAR_ARGUMENTS = ('xf', "$QT_SRC_FILENAME") + ($QT_MOD_EXCLUDE | % { "--exclude=qt-everywhere-src-*/$_" })
 Start-Process -WorkingDirectory "$env:MOZ_FETCHES_DIR" -NoNewWindow -Wait "tar" -ArgumentList $QT_TAR_ARGUMENTS
+Remove-Item "$env:MOZ_FETCHES_DIR/$QT_SRC_FILENAME"
 
 # Activate the visual studio developer shell.
 $VS_SHELL_HELPER = resolve-path "$env:MOZ_FETCHES_DIR/*/enter_dev_shell.ps1"
@@ -133,14 +134,11 @@ if ($LastExitCode -ne 0) {
 }
 
 Write-Output "Compressing tarball"
-tar -cvJf qt6_win.tar.xz qt-windows/
+New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/public/build" -Force
+tar -cvJf public/build/qt6_win.tar.xz qt-windows/
 if ($LastExitCode -ne 0) {
   Exit $LastExitCode
 }
-
-Write-Output "Moving tarball"
-New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/public/build" -Force
-Move-Item -Path qt6_win.tar.xz -Destination "$env:TASK_WORKDIR/public/build"
 
 Write-Output "Build complete, tarball created:"
 
