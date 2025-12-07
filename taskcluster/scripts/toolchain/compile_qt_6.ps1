@@ -5,9 +5,51 @@
 Set-Location $env:TASK_WORKDIR
 Get-ChildItem env:
 
+# The modules to exclude from the Qt build.
+$QT_MOD_EXCLUDE = @(
+  'qtgraphs'
+  'qtcharts'
+  'qtdatavis3d'
+  'qt3d'
+  'qtdoc'
+  'qtgrpc'
+  'qtconnectivity'
+  'qtquickeffectmaker'
+  'qtwebengine'
+  'qtwebview'
+  'qtlocation'
+  'qtlanguageserver'
+  'qtserialport'
+  'qtsensors'
+  'qtgamepad'
+  'qtandroidextras'
+  'qtquick3dphysics'
+  'qtquicktimeline'
+  'qtactiveqt'
+  'qtcoap'
+  'qthttpserver'
+  'qtgrpc'
+  'qtremoteobjects'
+  'qtlottie'
+  'qtmqtt'
+  'qtopcua'
+  'qtpositioning'
+  'qtquick3d'
+  'qtscxml'
+  'qtserialbus'
+  'qtserialport'
+  'qtspeech'
+  'qtwayland'
+  'qtvirtualkeyboard'
+  'qtweb'
+  'qtwebwebchannel'
+  'qtmultimedia'
+)
+
 # Extract the Qt source tarball.
 $QT_SRC_FILENAME = (resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*.tar.xz" | Split-Path -Leaf)
-Start-Process -WorkingDirectory "$env:MOZ_FETCHES_DIR" -NoNewWindow -Wait "tar" -ArgumentList @('xf', "$QT_SRC_FILENAME", '--exclude=qt-everywhere-src-*/qtwebengine')
+$QT_TAR_ARGUMENTS = ('xf', "$QT_SRC_FILENAME") + ($QT_MOD_EXCLUDE | % { "--exclude=qt-everywhere-src-*/$_" })
+Start-Process -WorkingDirectory "$env:MOZ_FETCHES_DIR" -NoNewWindow -Wait "tar" -ArgumentList $QT_TAR_ARGUMENTS
 
 # Activate the visual studio developer shell.
 $VS_SHELL_HELPER = resolve-path "$env:MOZ_FETCHES_DIR/*/enter_dev_shell.ps1"
@@ -39,7 +81,7 @@ $ErrorActionPreference = "Stop"
 # For detailed feature flags, run the configuration, then check the CMakeLists.txt
 # Variables with FEATURE_XYZ can be switched off using -no-feature
 # Whole folders can be skipped using -skip <folder>
-Start-Process -WorkingDirectory "$QT_BUILD_PATH" -NoNewWindow -PassThru $QT_CONFIG_SCRIPT -ArgumentList @(
+$QT_CONFIG_ARGUMENTS = @(
   '-static'
   '-opensource'
   '-debug-and-release'
@@ -64,48 +106,12 @@ Start-Process -WorkingDirectory "$QT_BUILD_PATH" -NoNewWindow -PassThru $QT_CONF
   '-no-feature-textodfwriter'
   '-no-feature-networklistmanager'
   '-no-feature-dbus'
-  '-skip qtgraphs'
-  '-skip qtcharts'
-  '-skip qtdatavis3d'
-  '-skip qt3d'
-  '-skip qtdoc'
-  '-skip qtgrpc'
-  '-skip qtconnectivity'
-  '-skip qtquickeffectmaker'
-  '-skip qtwebengine'
-  '-skip qtwebview'
-  '-skip qtlocation'
-  '-skip qtlanguageserver'
-  '-skip qtserialport'
-  '-skip qtsensors'
-  '-skip qtgamepad'
-  '-skip qtandroidextras'
-  '-skip qtquick3dphysics'
-  '-skip qtquicktimeline'
-  '-skip qtactiveqt'
-  '-skip qtcoap'
-  '-skip qthttpserver'
-  '-skip qtgrpc'
-  '-skip qtremoteobjects'
-  '-skip qtlottie'
-  '-skip qtmqtt'
-  '-skip qtopcua'
-  '-skip qtpositioning'
-  '-skip qtquick3d'
-  '-skip qtscxml'
-  '-skip qtserialbus'
-  '-skip qtserialport'
-  '-skip qtspeech'
-  '-skip qtwayland'
-  '-skip qtvirtualkeyboard'
-  '-skip qtweb'
-  '-skip qtwebwebchannel'
-  '-skip qtmultimedia'
   '-feature-imageformat_png'
   '-qt-libpng'
   '-qt-zlib'
   "-prefix $QT_INSTALL_PATH"
-) | Wait-Process
+) + ($QT_MOD_EXCLUDE | % { "-skip $_" })
+Start-Process -WorkingDirectory "$QT_BUILD_PATH" -NoNewWindow -PassThru $QT_CONFIG_SCRIPT -ArgumentList $QT_CONFIG_ARGUMENTS | Wait-Process
 
 # Build and install Qt
 Write-Output "Starting build: $QT_BUILD_PATH"
