@@ -88,7 +88,8 @@ void TestConnectionHealth::healthCheckup() {
            ConnectionHealth::ConnectionStability::Stable);
 }
 
-// Temporarily commenting this out. Something is wrong with the test infrastructure, though submits metrics accurately. 
+// Temporarily commenting this out. Something is wrong with the test
+// infrastructure, though submits metrics accurately.
 
 // void TestConnectionHealth::testTelemetry() {
 //   ConnectionHealth connectionHealth;
