@@ -23,7 +23,10 @@ source ${MOZ_FETCHES_DIR}/conda/bin/activate
 conda-unpack
 
 # Use vendored crates - if available.
-if [ -d ${MOZ_FETCHES_DIR}/cargo-vendor ]; then
+# HACK: Disabled for aarch64 until https://github.com/briansmith/ring/pull/2216
+# can be merged onto mainline. This ensures that we can patch out the ring crate
+# without running afoul of vendored crates.
+if [[ -d ${MOZ_FETCHES_DIR}/cargo-vendor && "${ARCH}" != "aarch64" ]]; then
 mkdir -p .cargo
 cat << EOF > .cargo/config.toml
 [source.vendored-sources]
