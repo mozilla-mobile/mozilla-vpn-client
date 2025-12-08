@@ -5,6 +5,15 @@
 set -e
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
+env
+
+# The arugment, if present, selects the arch to build for
+if [[ $# -ge 1 ]]; then
+  ARCH=$1
+else
+  ARCH=x86_64
+fi
+
 # Ensure all git submodules are checked out
 git submodule update --init --recursive
 
@@ -29,7 +38,7 @@ print Y "Configuring the build..."
 mkdir ${TASK_WORKDIR}/build-win
 
 cmake -S ${VCS_PATH} -B ${TASK_WORKDIR}/build-win -GNinja \
-        -DCMAKE_TOOLCHAIN_FILE=${VCS_PATH}/scripts/windows/conda-toolchain.cmake \
+        -DCMAKE_TOOLCHAIN_FILE=${VCS_PATH}/scripts/windows/${ARCH}-toolchain.cmake \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt-windows/lib/cmake \
         -DQT_HOST_PATH=${MOZ_FETCHES_DIR}/qt-host-tools/ \
         -DQT_HOST_PATH_CMAKE_DIR=${MOZ_FETCHES_DIR}/qt-host-tools/lib/cmake \
