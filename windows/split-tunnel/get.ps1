@@ -1,10 +1,10 @@
 # Fetches only the split-tunnel driver from https://github.com/mullvad/mullvadvpn-app-binaries
 # To update the Driver, update the commit SHA :)
-$COMMIT_SHA = "375cfc52255ec3beb15cc0713988ea995cb7582e"
+$COMMIT_SHA = "84b943f9dfce49a571092846effa44e8200ec33f"
 
-$BASE_URI = "https://github.com/mullvad/mullvadvpn-app-binaries/raw/"+$COMMIT_SHA+"/x86_64-pc-windows-msvc/split-tunnel/win10/"
+$BASE_URI = "https://github.com/mullvad/mullvadvpn-app-binaries/raw/"+$COMMIT_SHA+"/x86_64-pc-windows-msvc/split-tunnel/"
 $STATUSFILE = $PSScriptRoot+"\.status"
-$FILES = "mullvad-split-tunnel.cat","mullvad-split-tunnel.inf","mullvad-split-tunnel.sys","WdfCoinstaller01011.dll"
+$FILES = "mullvad-split-tunnel.cat","mullvad-split-tunnel.inf","mullvad-split-tunnel.sys"
 
 try{
     $statusContent = Get-Content $STATUSFILE -Encoding ASCII
