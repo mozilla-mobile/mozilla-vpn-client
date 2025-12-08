@@ -2390,6 +2390,12 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   callback();
 #endif
 
+#if defined(MZ_ANDROID) && (QT_VERSION > QT_VERSION_CHECK(6, 10, 1))
+#  error \
+      "Revisit the code below and replace QCoreApplication::exec() \
+      with app.exec() if the app no longer crashes on Pixel 2 XL, \
+      see https://github.com/mozilla-mobile/mozilla-vpn-client/pull/10895"
+#endif
   return QCoreApplication::exec();
 }
 
