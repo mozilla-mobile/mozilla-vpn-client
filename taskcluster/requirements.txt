@@ -490,9 +490,9 @@ mozilla-repo-urls==0.1.1 \
     --hash=sha256:30510d3519479aa70211145d0ac9cf6e2fadcb8d30fa3b196bb957bd773502ba \
     --hash=sha256:7364da790751db2a060eb45adbf1d7db89a145ed279ba235f3425db9dd255915
     # via taskcluster-taskgraph
-mozilla-taskgraph==4.0.0 \
-    --hash=sha256:104271dfc41ed7f6e47783bc161e6911104a4a6f83bb55a5afb0f75cac9ed54d \
-    --hash=sha256:6bb6091febda3731f89e8a5af9ed75bf83f0667cc9d36c2b02c8304450099c5b
+mozilla-taskgraph==4.0.1 \
+    --hash=sha256:2b3dc28d9b4c3bf5fdcf90e68b2518e57c478052782406229f451152c8f262d9 \
+    --hash=sha256:64167d71ddb79207dadd5a5d554c0e4ab239cc797bf138356528ec19d3837b49
     # via -r requirements.in
 multidict==6.7.0 \
     --hash=sha256:03ca744319864e92721195fa28c7a3b2bc7b686246b35e4078c1e4d0eb5466d3 \
@@ -870,9 +870,9 @@ taskcluster==91.1.2 \
     --hash=sha256:ac9cb0c6b63367601a896d2724a9f62e15cf455191e5c0b533a2d8149340bf39 \
     --hash=sha256:fc588922305a0ba586d8eac8b8cb3a8479324d49ee37a176d34a3bf9a152963d
     # via taskcluster-taskgraph
-taskcluster-taskgraph==17.3.0 \
-    --hash=sha256:0cef83b9fd87d9dc977747945c61ce1f06c28dedddba93fe626b71c6163b90f6 \
-    --hash=sha256:7acc07d8d3140cb2bc2683cb80f368dfd3b2cd0d7249f4c375f95b10de4a33bc
+taskcluster-taskgraph==18.0.0 \
+    --hash=sha256:d4f50feb7b09c5dfd9a4cacfb8cf453812b16f068cc3ebd4be0e85f398ef3729 \
+    --hash=sha256:e609f78e13e3e18e04b5bf0a1f5b9416bf277fea96aee763f3fbfdf6c4839a42
     # via
     #   -r requirements.in
     #   mozilla-taskgraph
