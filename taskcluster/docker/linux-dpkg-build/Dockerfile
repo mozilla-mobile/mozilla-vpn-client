@@ -20,6 +20,7 @@ RUN apt-get update \
     && apt-get -y install --no-install-recommends \
       build-essential \
       ca-certificates \
+      curl \
       debhelper \
       devscripts \
       equivs \
@@ -35,6 +36,11 @@ RUN locale-gen "$LANG"
 ADD topsrcdir/linux/debian/control /root/mozillavpn-dpkg-control
 RUN mk-build-deps -i -r  --tool="apt-get --no-install-recommends --yes" \
         /root/mozillavpn-dpkg-control
+
+# Install rustup and upgrade cargo to meet Glean's minimum requirement (1.82)
+# Ubuntu Jammy and Noble have older cargo versions, so we use rustup to get a newer one
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.82.0
+ENV PATH="/root/.cargo/bin:${PATH}"
 
 # Cleanup after package installation
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*

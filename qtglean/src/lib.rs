@@ -142,6 +142,7 @@ pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: 
     };
 
     glean::test_reset_glean(cfg, client_info, true);
+    register_pings();
 }
 
 #[no_mangle]
