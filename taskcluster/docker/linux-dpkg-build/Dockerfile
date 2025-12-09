@@ -55,7 +55,8 @@ WORKDIR /builds/worker/
 # Install rustup for the worker user to meet Glean's minimum requirement (1.82)
 # Ubuntu Jammy and Noble have older cargo versions, so we use rustup to get a newer one
 USER worker
-RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.82.0
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.82.0 && \
+    /builds/worker/.cargo/bin/rustup default 1.82.0
 USER root
 
 # Grant the worker user the ability to install packages without login
