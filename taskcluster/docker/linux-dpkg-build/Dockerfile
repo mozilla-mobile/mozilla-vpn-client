@@ -39,6 +39,8 @@ ENV PATH="/root/.cargo/bin:${PATH}"
 # Also pull in packages from build-depends as early as possible
 # %include linux/debian/control
 ADD topsrcdir/linux/debian/control /root/mozillavpn-dpkg-control
+# Remove cargo from Build-Depends since we installed it via rustup
+RUN sed -rie '/\s+(cargo)/d' /root/mozillavpn-dpkg-control
 RUN mk-build-deps -i -r  --tool="apt-get --no-install-recommends --yes" \
         /root/mozillavpn-dpkg-control
 
