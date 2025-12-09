@@ -93,7 +93,10 @@ fi
 
 # Remove cargo, golang and cmake dependencies if manually installed
 # (e.g., via rustup in the Docker image)
+echo "DEBUG: Checking for cargo..."
+which cargo && echo "DEBUG: cargo found at $(which cargo)" || echo "DEBUG: cargo not found"
 if which cargo >/dev/null 2>&1; then
+  echo "DEBUG: Stripping cargo from debian/control"
   sed -rie '/\s+(cargo)/d' $(pwd)/mozillavpn-source/debian/control
 fi
 if which cmake >/dev/null 2>&1; then
@@ -102,6 +105,8 @@ fi
 if which go >/dev/null 2>&1; then
   sed -rie '/\s+(golang)/d' $(pwd)/mozillavpn-source/debian/control
 fi
+echo "DEBUG: debian/control Build-Depends after stripping:"
+grep -A 30 "^Build-Depends:" $(pwd)/mozillavpn-source/debian/control
 
 # Install the package build dependencies.
 mk-build-deps $(pwd)/mozillavpn-source/debian/control
