@@ -128,10 +128,10 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
 elseif(MSVC AND CMAKE_C_COMPILER_TARGET)
     __rust_build_toolchain_config(
         FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml
-	ARCH ${CMAKE_C_COMPILER_TARGET}
+        ARCH ${CMAKE_C_COMPILER_TARGET}
         ENV
             CFLAGS_${CMAKE_C_COMPILER_TARGET}=${CMAKE_C_FLAGS}
-	    CXXFLAGS_${CMAKE_C_COMPILER_TARGET}=${CMAKE_CXX_FLAGS}
+            CXXFLAGS_${CMAKE_C_COMPILER_TARGET}=${CMAKE_CXX_FLAGS}
     )
 
     file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml "\n[target.${CMAKE_C_COMPILER_TARGET}]\n")

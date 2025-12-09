@@ -5,10 +5,10 @@
 include(FetchContent)
 
 FetchContent_Declare(
-  win_split_tunnel
-  DOWNLOAD_EXTRACT_TIMESTAMP true
-  GIT_REPOSITORY https://github.com/mullvad/mullvadvpn-app-binaries.git
-  GIT_TAG 84b943f9dfce49a571092846effa44e8200ec33f # Latest commit as of December 8, 2025
+    win_split_tunnel
+    DOWNLOAD_EXTRACT_TIMESTAMP true
+    GIT_REPOSITORY https://github.com/mullvad/mullvadvpn-app-binaries.git
+    GIT_TAG 84b943f9dfce49a571092846effa44e8200ec33f # Latest commit as of December 8, 2025
 )
 FetchContent_MakeAvailable(win_split_tunnel)
 
