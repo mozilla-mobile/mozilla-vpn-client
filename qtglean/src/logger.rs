@@ -49,7 +49,12 @@ impl Log for Logger {
         };
 
         if let Ok(message) = CString::new(record.args().to_string()) {
-            (self.message_handler)(log_level, message.as_ptr() as *mut c_char);
+            // Use std::panic::catch_unwind to gracefully handle cases where
+            // the Qt logger has been destroyed (e.g., during static destruction).
+            // This prevents crashes in unit tests and during shutdown.
+            let _ = std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+                (self.message_handler)(log_level, message.as_ptr() as *mut c_char);
+            }));
         }
     }
 
