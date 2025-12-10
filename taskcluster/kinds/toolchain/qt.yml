@@ -96,8 +96,8 @@ qt-ios:
     worker:
         docker-image: {in-tree: base}
         env:
-            QT_VERSION: "6.2.4"
-            QT_MAJOR: "6.2"
+            QT_VERSION: "6.6.3"
+            QT_MAJOR: "6.6"
 
 qt-linux:
     description: "Linux QT compile Task"
