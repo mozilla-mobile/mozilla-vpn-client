@@ -59,18 +59,14 @@ static void CALLBACK WireGuardLogger(_In_ WIREGUARD_LOGGER_LEVEL Level,
 /**
  * @brief Assigns an ipv4 address to a network device with a given LUID
  *
- * @param luid - LUID of the Adapter
+ * @param ifindex - Interface Index of the Adapter
  * @param address - Address and NetMask of the Adapter
  * @return ulong - nteContext - Call DeleteIPAddress(nteContext) to remove the
  * assignment.
  */
-ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress address) {
+ulong setIPv4AddressAndMask(NET_IFINDEX ifindex, const IPAddress address) {
   ULONG nteContext = 0;
   ULONG nteInstance = 0;
-  NET_IFINDEX ifIndex;
-  if (ConvertInterfaceLuidToIndex(&luid, &ifIndex) != NO_ERROR) {
-    return 0;
-  }
   IN_ADDR ipAddrBinary, subnetMaskBinary;
   if (InetPtonA(AF_INET, qPrintable(address.address().toString()),
                 &ipAddrBinary) != 1) {
@@ -83,7 +79,7 @@ ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress address) {
   // Add IP address and subnet mask
   DWORD dwResult =
       AddIPAddress(ipAddrBinary.S_un.S_addr, subnetMaskBinary.S_un.S_addr,
-                   ifIndex, &nteContext, &nteInstance);
+                   ifindex, &nteContext, &nteInstance);
   if (dwResult != NO_ERROR) {
     WindowsUtils::windowsLog("WELP, failed to add ip address to adapter");
     return 0;
@@ -93,19 +89,12 @@ ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress address) {
 /**
  * @brief
  *
- * @param luid - LUID of the Adapter
+ * @param ifindex - Index of the Adapter
  * @param ipAddress - Address and NetMask of the Adapter
  * @return bool - If the assignment was successful
  */
-bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress ipAddress) {
+bool setIPv6AddressAndMask(NET_IFINDEX ifindex, const IPAddress ipAddress) {
   MIB_UNICASTIPADDRESS_ROW row;
-
-  NET_IFINDEX ifIndex;
-  if (ConvertInterfaceLuidToIndex(&luid, &ifIndex) != NO_ERROR) {
-    logger.error()
-        << "Failed to assign ivp6: Cannot Find Interface for this LUID";
-    return false;
-  }
   SOCKADDR_IN6 sockaddr = {};
   sockaddr.sin6_family = AF_INET6;
   if (InetPtonA(AF_INET6, qPrintable(ipAddress.address().toString()),
@@ -116,9 +105,9 @@ bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress ipAddress) {
   }
 
   InitializeUnicastIpAddressEntry(&row);
-  row.Address.Ipv6.sin6_family = AF_INET6;
+  row.Address.si_family = AF_INET6;
   row.Address.Ipv6 = sockaddr;
-  row.InterfaceLuid = luid;
+  row.InterfaceIndex = ifindex;
 
   // Calculate prefix length from subnet mask
   unsigned int prefixLength = ipAddress.prefixLength();
@@ -320,21 +309,25 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   auto destroyRouteMonitorOnFailure =
       qScopeGuard([this]() { m_routeMonitor->deleteLater(); });
 
+  NET_IFINDEX ifindex;
+  const auto res = ConvertInterfaceLuidToIndex(&luid, &ifindex);
+  if (res != NO_ERROR) {
+    logger.error() << "ConvertInterfaceLuidToIndex failed with error:" << res;
+    return false;
+  }
   // Set the Adapters Address:
   m_deviceIpv4_Handle =
-      setIPv4AddressAndMask(luid, IPAddress(config.m_deviceIpv4Address));
+      setIPv4AddressAndMask(ifindex, IPAddress(config.m_deviceIpv4Address));
   if (m_deviceIpv4_Handle == 0) {
     logger.error() << "Failed setIPv4AddressAndMask";
     return false;
   }
-  if (!setIPv6AddressAndMask(luid, IPAddress(config.m_deviceIpv6Address))) {
+  if (!setIPv6AddressAndMask(ifindex, IPAddress(config.m_deviceIpv6Address))) {
     logger.error() << "Failed setIPv6AddressAndMask";
     return false;
   };
 
   // Enable the windows firewall
-  NET_IFINDEX ifindex;
-  ConvertInterfaceLuidToIndex(&luid, &ifindex);
   if (!m_firewall->enableInterface(ifindex)) {
     logger.error() << "Failed enabling Killswitch";
     m_firewall->disableKillSwitch();
