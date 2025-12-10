@@ -89,22 +89,25 @@ dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${DPKG_PACKAGE_DIST_VERSION}
 if [[ "$STATICQT" == "Y" ]]; then
   export PATH=${MOZ_FETCHES_DIR}/qt-linux/bin:${PATH}
   sed -rie '/\s+(qt6-|qml6-|libqt6|qmake)/d' $(pwd)/mozillavpn-source/debian/control
+
+  # Remove cargo, golang and cmake dependencies if manually installed
+  # (e.g., via rustup in the Docker image)
+  echo "DEBUG: Checking for cargo..."
+  which cargo && echo "DEBUG: cargo found at $(which cargo)" || echo "DEBUG: cargo not found"
+  if which cargo >/dev/null 2>&1; then
+    echo "DEBUG: Stripping cargo from debian/control"
+    sed -rie '/\s+(cargo)/d' $(pwd)/mozillavpn-source/debian/control
+  fi
+  if which cmake >/dev/null 2>&1; then
+    echo "DEBUG: Stripping cmake from debian/control"
+    sed -rie '/\s+(cmake)/d' $(pwd)/mozillavpn-source/debian/control
+  fi
+  if which go >/dev/null 2>&1; then
+    echo "DEBUG: Stripping golang from debian/control"
+    sed -rie '/\s+(golang)/d' $(pwd)/mozillavpn-source/debian/control
+  fi
 fi
 
-# Remove cargo, golang and cmake dependencies if manually installed
-# (e.g., via rustup in the Docker image)
-echo "DEBUG: Checking for cargo..."
-which cargo && echo "DEBUG: cargo found at $(which cargo)" || echo "DEBUG: cargo not found"
-if which cargo >/dev/null 2>&1; then
-  echo "DEBUG: Stripping cargo from debian/control"
-  sed -rie '/\s+(cargo)/d' $(pwd)/mozillavpn-source/debian/control
-fi
-if which cmake >/dev/null 2>&1; then
-  sed -rie '/\s+(cmake)/d' $(pwd)/mozillavpn-source/debian/control
-fi
-if which go >/dev/null 2>&1; then
-  sed -rie '/\s+(golang)/d' $(pwd)/mozillavpn-source/debian/control
-fi
 echo "DEBUG: debian/control Build-Depends after stripping:"
 grep -A 30 "^Build-Depends:" $(pwd)/mozillavpn-source/debian/control
 
