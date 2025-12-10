@@ -2,6 +2,11 @@
 
 export DH_VERBOSE=1
 
+# Add cargo to PATH if installed via rustup
+ifneq ($(wildcard $(HOME)/.cargo/bin),)
+export PATH := $(HOME)/.cargo/bin:$(PATH)
+endif
+
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
 
