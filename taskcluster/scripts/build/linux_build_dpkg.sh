@@ -7,8 +7,25 @@
 set -e
 
 # Source cargo environment if rustup is installed
+echo "DEBUG: HOME is $HOME"
+echo "DEBUG: Checking for rustup installation..."
 if [ -f "$HOME/.cargo/env" ]; then
+    echo "DEBUG: Found $HOME/.cargo/env, sourcing it..."
     source "$HOME/.cargo/env"
+    echo "DEBUG: After sourcing, PATH is: $PATH"
+    echo "DEBUG: which rustup: $(which rustup 2>&1 || echo 'not found')"
+    echo "DEBUG: which cargo: $(which cargo 2>&1 || echo 'not found')"
+    echo "DEBUG: which rustc: $(which rustc 2>&1 || echo 'not found')"
+    if which rustup >/dev/null 2>&1; then
+        echo "DEBUG: rustup show:"
+        rustup show 2>&1 || echo "rustup show failed"
+        echo "DEBUG: rustup default:"
+        rustup default 2>&1 || echo "rustup default failed"
+    fi
+else
+    echo "DEBUG: $HOME/.cargo/env not found!"
+    echo "DEBUG: Contents of $HOME/.cargo/:"
+    ls -la "$HOME/.cargo/" 2>&1 || echo "$HOME/.cargo/ does not exist"
 fi
 
 ## Get the default distribution to build from /etc/os-release
