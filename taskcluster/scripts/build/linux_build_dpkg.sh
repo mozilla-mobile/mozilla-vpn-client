@@ -6,6 +6,11 @@
 
 set -e
 
+# Source cargo environment if rustup is installed
+if [ -f "$HOME/.cargo/env" ]; then
+    source "$HOME/.cargo/env"
+fi
+
 ## Get the default distribution to build from /etc/os-release
 source /etc/os-release
 
