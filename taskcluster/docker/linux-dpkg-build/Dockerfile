@@ -56,7 +56,10 @@ WORKDIR /builds/worker/
 # Ubuntu Jammy and Noble have older cargo versions, so we use rustup to get a newer one
 USER worker
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.82.0 && \
-    /builds/worker/.cargo/bin/rustup default 1.82.0
+    echo 'source $HOME/.cargo/env' >> /builds/worker/.bashrc && \
+    /builds/worker/.cargo/bin/rustup default 1.82.0 && \
+    /builds/worker/.cargo/bin/rustc --version && \
+    /builds/worker/.cargo/bin/cargo --version
 USER root
 
 # Grant the worker user the ability to install packages without login
