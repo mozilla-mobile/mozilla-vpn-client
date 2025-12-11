@@ -20,7 +20,7 @@ cat <<EOF > ${CONDA_VPN_PREFIX}/etc/conda/activate.d/emsdk-activate.sh
 #!/bin/bash
 export EMSDK_VERSION=${EMSDK_VERSION}
 emsdk activate \${EMSDK_VERSION}
-source \${CONDA_PREFIX}/lib/python3.9/site-packages/emsdk/emsdk_env.sh
+source \${CONDA_PREFIX}/lib/python3.10/site-packages/emsdk/emsdk_env.sh
 EOF
 chmod +x ${CONDA_VPN_PREFIX}/etc/conda/activate.d/emsdk-activate.sh
 

@@ -18,6 +18,7 @@ def cmakeBinaryDir = "$rootDir/../.."
 
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
+apply plugin: "kotlinx-serialization"
 
 android {
     namespace "mozilla.telemetry.glean"
@@ -91,6 +92,7 @@ dependencies {
     implementation gleanLibs.androidx.lifecycle.process
     implementation gleanLibs.androidx.work
     implementation gleanLibs.kotlinx.coroutines
+    api gleanLibs.kotlinx.serialization
 
     // We need a compileOnly dependency on the following block of testing
     // libraries in order to expose the GleanTestRule to applications/libraries

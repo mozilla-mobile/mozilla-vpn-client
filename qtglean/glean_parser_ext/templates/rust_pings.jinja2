@@ -21,7 +21,11 @@ pub static {{ obj.name|snake_case }}: Lazy<PingType> = Lazy::new(|| {
         {{ obj.send_if_empty|rust }},
         true,
         true,
+        true,
+        vec![],
         {{ obj.reason_codes|rust }},
+        true,
+        vec![],
     )
 });
 

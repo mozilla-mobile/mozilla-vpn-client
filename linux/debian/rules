@@ -2,6 +2,19 @@
 
 export DH_VERBOSE=1
 
+# Add cargo to PATH if installed via rustup
+# Use hardcoded path for CI environment, fallback to HOME for local builds
+WORKER_HOME := /builds/worker
+ifneq ($(wildcard $(WORKER_HOME)/.cargo/bin),)
+export PATH := $(WORKER_HOME)/.cargo/bin:$(PATH)
+export RUSTUP_HOME := $(WORKER_HOME)/.rustup
+export CARGO_HOME := $(WORKER_HOME)/.cargo
+else ifneq ($(wildcard $(HOME)/.cargo/bin),)
+export PATH := $(HOME)/.cargo/bin:$(PATH)
+export RUSTUP_HOME := $(HOME)/.rustup
+export CARGO_HOME := $(HOME)/.cargo
+endif
+
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
 
