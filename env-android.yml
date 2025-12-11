@@ -5,12 +5,12 @@ dependencies:
   - ccache=4.10.1
   - python=3.9
   - pip=22.3.1
-  - rust=1.75
+  - rust=1.82
   - go=1.24.5
-  - rust-std-armv7-linux-androideabi=1.75
-  - rust-std-x86_64-linux-android=1.75
-  - rust-std-i686-linux-android=1.75
-  - rust-std-aarch64-linux-android=1.75
+  - rust-std-armv7-linux-androideabi=1.82
+  - rust-std-x86_64-linux-android=1.82
+  - rust-std-i686-linux-android=1.82
+  - rust-std-aarch64-linux-android=1.82
   - cmake=3.31.6
   - ninja=1.11.0
   - conda-forge::openjdk=17
