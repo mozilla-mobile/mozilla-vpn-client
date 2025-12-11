@@ -46,7 +46,7 @@ windows/opt:
         command: taskcluster/scripts/build/windows_clang_cl.ps1
 
 windows/next:
-    description: "Windows Build (Next Qt)"
+    description: "Windows Build (Next Qt/x86_64)"
     fetches:
         toolchain:
             - conda-windows-cross
@@ -63,3 +63,23 @@ windows/next:
               path: /builds/worker/artifacts
     run:
         command: ./taskcluster/scripts/build/windows_cross.sh
+
+windows/next-aarch64:
+    description: "Windows Build (Next Qt/aarch64)"
+    fetches:
+        toolchain:
+            - conda-windows-cross
+            - qt-windows-aarch64-next
+            - qt-tools-next
+    treeherder:
+        symbol: NEXT
+        platform: windows/aarch64
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: conda-base}
+        artifacts:
+            - type: directory
+              name: public/build
+              path: /builds/worker/artifacts
+    run:
+        command: ./taskcluster/scripts/build/windows_cross.sh aarch64
