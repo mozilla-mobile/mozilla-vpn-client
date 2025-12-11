@@ -36,12 +36,6 @@ override_dh_clean:
 	dh_clean --exclude=3rdparty
 
 override_dh_auto_configure:
-	@echo "DEBUG [debian/rules]: HOME=$(HOME)"
-	@echo "DEBUG [debian/rules]: PATH=$(PATH)"
-	@echo "DEBUG [debian/rules]: RUSTUP_HOME=$(RUSTUP_HOME)"
-	@echo "DEBUG [debian/rules]: CARGO_HOME=$(CARGO_HOME)"
-	@which rustc || echo "rustc not found in PATH"
-	@which cargo || echo "cargo not found in PATH"
 	dh_auto_configure -- -DWEBEXT_INSTALL_LIBDIR=/lib -DBUILD_ID=$(DEB_VERSION) -DCMAKE_CXX_STANDARD=17 -DBUILD_TESTS=OFF ${OPENSSL_BUILD_ARGS}
 
 override_dh_auto_test:
