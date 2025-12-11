@@ -32,7 +32,7 @@ clang-tidy-android:
     worker-type: b-linux-large
     fetches:
       toolchain: 
-        - conda-android-arm64-6.9.3
+        - conda-android-arm64-6.10.1
     worker:
           docker-image: {in-tree: conda-base}
           artifacts:
