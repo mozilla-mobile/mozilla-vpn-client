@@ -290,6 +290,8 @@ qint64 Controller::connectionTimestamp() const {
   switch (m_state) {
     case Controller::State::StateConfirming:
       [[fallthrough]];
+    case Controller::State::StateRegeneratingKey:
+      [[fallthrough]];
     case Controller::State::StateConnecting:
       [[fallthrough]];
     case Controller::State::StateDisconnecting:
@@ -602,6 +604,8 @@ bool Controller::silentSwitchServers(
   return true;
 }
 
+void Controller::startKeyRegeneration() { setState(StateRegeneratingKey); }
+
 void Controller::clearRetryCounter() {
   m_connectionRetry = 0;
   emit connectionRetryChanged();
@@ -885,7 +889,8 @@ bool Controller::activate(const ServerData& serverData,
   if (m_state != Controller::StateOff &&
       m_state != Controller::StateOnPartial &&
       m_state != Controller::StateSwitching &&
-      m_state != Controller::StateSilentSwitching) {
+      m_state != Controller::StateSilentSwitching &&
+      m_state != Controller::StateRegeneratingKey) {
     logger.debug() << "Already connected";
     return false;
   }

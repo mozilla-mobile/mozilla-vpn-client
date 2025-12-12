@@ -26,6 +26,7 @@ class TaskControllerAction final : public Task {
     eDeactivateForExtension,
     eSilentSwitch,
     eSwitch,
+    eRegenerateKey,
   };
   Q_ENUM(TaskAction);
 
