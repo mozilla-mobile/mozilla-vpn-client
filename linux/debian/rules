@@ -5,6 +5,12 @@ export DH_VERBOSE=1
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
 
+# Ensure we use cargo/rust 1.82 or later.
+RUSTLANG_NATIVE_VERSION = $(shell dpkg-query --showformat='${Version}' --show rustc 2>/dev/null || echo 0)
+ifneq (ok,$(shell dpkg --compare-versions $(RUSTLANG_NATIVE_VERSION) ge 1.82 && echo ok))
+	export PATH := /usr/lib/rust-1.82/bin:$(PATH)
+endif
+
 # Check Qt features.
 QT_INSTALL_HEADERS := $(shell pkg-config --variable=includedir Qt6Core || qmake6 -query QT_INSTALL_HEADERS || true)
 qtfeature = $(shell test -d "$(QT_INSTALL_HEADERS)" && echo "$(1)" | gcc -I "$(QT_INSTALL_HEADERS)" -include QtCore/qconfig.h -E - | grep -e '^[[:alnum:]_-]')

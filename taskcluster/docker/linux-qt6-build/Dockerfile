@@ -66,8 +66,8 @@ RUN apt-get -y install libatspi2.0-dev \
 
 ## Install Rust
 RUN mkdir -p /tmp/rust
-RUN curl -sSL https://static.rust-lang.org/dist/rust-1.75.0-x86_64-unknown-linux-gnu.tar.gz -o /tmp/rust/rust-static.tar.gz
-RUN echo "473978b6f8ff216389f9e89315211c6b683cf95a966196e7914b46e8cf0d74f6 /tmp/rust/rust-static.tar.gz" | sha256sum -c -
+RUN curl -sSL https://static.rust-lang.org/dist/rust-1.82.0-x86_64-unknown-linux-gnu.tar.gz -o /tmp/rust/rust-static.tar.gz
+RUN echo "0265c08ae997c4de965048a244605fb1f24a600bbe35047b811c638b8fcf676b /tmp/rust/rust-static.tar.gz" | sha256sum -c -
 RUN tar -C /tmp/rust -xf /tmp/rust/rust-static.tar.gz
 RUN $(find /tmp/rust -name 'install.sh')
 RUN rm -rf /tmp/rust
