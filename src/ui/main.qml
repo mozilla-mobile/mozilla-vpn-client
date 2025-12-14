@@ -2,16 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.5
-import QtQuick.Controls 2.14
-import QtQuick.Layouts 1.14
-import QtQuick.Window 2.12
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Window
 
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-Window {
+ApplicationWindow {
     id: window
 
     signal showServerList
@@ -70,7 +70,7 @@ Window {
     }
 
     screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
-    flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
+    flags: Qt.Window | Qt.ExpandedClientAreaHint | Qt.NoTitlebarBackgroundHint
     visible: true
 
     width: fullscreenRequired() ? Screen.width : MZTheme.theme.desktopAppWidth;
