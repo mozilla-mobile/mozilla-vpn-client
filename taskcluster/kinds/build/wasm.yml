@@ -21,7 +21,7 @@ wasm/opt:
     fetches:
         toolchain:
             - conda-wasm
-            - qt-tools-6.9
+            - qt-tools-6.6
             - qt-wasm
     run:
         using: run-task
