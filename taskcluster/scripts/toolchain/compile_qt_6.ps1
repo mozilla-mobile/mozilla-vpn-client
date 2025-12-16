@@ -64,12 +64,13 @@ if ($LastExitCode -ne 0) {
   Exit $LastExitCode
 }
 
-Write-Output "Compressing tarball"
-New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/public/build" -Force
-tar -cvJf public/build/qt6_win.tar.xz $QT_INSTALL_PATH
-if ($LastExitCode -ne 0) {
-  Exit $LastExitCode
-}
+  Write-Output "Compressing tarball"
+  New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/public/build" -Force
+  Set-Location $env:TASK_WORKDIR
+  tar -cvJf "$env:TASK_WORKDIR/public/build/qt6_win.tar.xz" -C "$QT_INSTALL_PATH" .
+  if ($LastExitCode -ne 0) {
+    Exit $LastExitCode
+  }
 
 Write-Output "Build complete, tarball created:"
 
