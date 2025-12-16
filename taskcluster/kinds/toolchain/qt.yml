@@ -5,7 +5,7 @@
 task-defaults:
     worker:
         env:
-            QT_VERSION: "6.6.3"
+            QT_VERSION: "6.9.3"
         max-run-time: 14400
     run: 
         use-caches: []
@@ -195,8 +195,6 @@ qt-wasm:
     worker-type: b-linux
     worker:
         docker-image: {in-tree: base}
-        env:
-            QT_VERSION: "6.9.3"
     run:
         script: bundle_qt_wasm.sh
         resources:
