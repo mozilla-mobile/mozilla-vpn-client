@@ -8,27 +8,21 @@
 
 <?define UpgradeCode = "abd1aa2b-11d7-4c4d-85ee-cc987d82a443"?>
 <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
-<?define WintunPlatform = "amd64" ?>
 
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi" xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
-  <Product
-    Id="*"
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs" xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
+  <Package
     Name="Mozilla VPN"
-    Language="1033"
     Version="!(bind.FileVersion.MozillaVPNExecutable)"
     Manufacturer="Mozilla Corporation"
-    UpgradeCode="$(var.UpgradeCode)">
-    <Package
-      InstallerVersion="400"
-      Compressed="yes"
-      InstallScope="perMachine"
-      Description="Mozilla VPN"
-      ReadOnly="yes" />
+    Language="1033"
+    Scope="perMachine"
+    InstallerVersion="500"
+    UpgradeCode="$(var.UpgradeCode)"
+    Compressed="yes">
 
-    <Condition Message="This application is only supported on Windows 10 or higher.">
-      <![CDATA[Installed OR (VersionNT >= 603)]]>
-    </Condition>
-    <Condition Message="This application is only supported on 64 bit x86 platforms."> %PROCESSOR_ARCHITECTURE="AMD64" </Condition>
+    <SummaryInformation Description="Mozilla VPN" />
+
+    <Launch Condition="Installed OR (VersionNT &gt;= 603)" Message="This application is only supported on Windows 10 or higher." />
 
     <Upgrade Id="$(var.UpgradeCode)">
       <UpgradeVersion OnlyDetect='no' Property='PREVIOUSFOUND'
@@ -60,14 +54,12 @@
     <!--
       Folders
     -->
-    <Directory Id="TARGETDIR" Name="SourceDir">
-      <Directory Id="$(var.PlatformProgramFilesFolder)">
-        <Directory Id="MozillaFolder" Name="Mozilla">
-          <Directory Id="MozillaVPNFolder" Name="Mozilla VPN" />
-        </Directory>
+    <StandardDirectory Id="$(var.PlatformProgramFilesFolder)">
+      <Directory Id="MozillaFolder" Name="Mozilla">
+        <Directory Id="MozillaVPNFolder" Name="Mozilla VPN" />
       </Directory>
-      <Directory Id="ProgramMenuFolder" />
-    </Directory>
+    </StandardDirectory>
+    <StandardDirectory Id="ProgramMenuFolder" />
 
     <!--
       Components
@@ -92,15 +84,16 @@
           Start="auto"
           Arguments="windowsdaemon"
           ErrorControl="normal"
-          Vital="yes" />
+          Vital="yes">
 
-        <util:ServiceConfig
-          ServiceName="MozillaVPNBroker"
-          FirstFailureActionType="restart"
-          SecondFailureActionType="restart"
-          ThirdFailureActionType="none"
-          ResetPeriodInDays="1"
-          RestartServiceDelayInSeconds="5" />
+          <util:ServiceConfig
+            ServiceName="MozillaVPNBroker"
+            FirstFailureActionType="restart"
+            SecondFailureActionType="restart"
+            ThirdFailureActionType="none"
+            ResetPeriodInDays="1"
+            RestartServiceDelayInSeconds="5" />
+        </ServiceInstall>
 
         <ServiceControl Id="StartService" Start="install" Stop="both" Remove="both" Name="MozillaVPNBroker" Wait="yes" />
 
@@ -120,15 +113,16 @@
           Start="auto"
           Arguments="-p 8123 -s"
           ErrorControl="normal"
-          Vital="yes" />
+          Vital="yes">
 
-        <util:ServiceConfig
-          ServiceName="MozillaVPNProxy"
-          FirstFailureActionType="restart"
-          SecondFailureActionType="restart"
-          ThirdFailureActionType="none"
-          ResetPeriodInDays="1"
-          RestartServiceDelayInSeconds="5" />
+          <util:ServiceConfig
+            ServiceName="MozillaVPNProxy"
+            FirstFailureActionType="restart"
+            SecondFailureActionType="restart"
+            ThirdFailureActionType="none"
+            ResetPeriodInDays="1"
+            RestartServiceDelayInSeconds="5" />
+        </ServiceInstall>
 
         <ServiceControl Id="StartProxy" Start="install" Stop="both" Remove="both" Name="MozillaVPNProxy" Wait="yes" />
       </Component>
@@ -138,7 +132,7 @@
       Merge modules
     -->
     <DirectoryRef Id="MozillaVPNFolder">
-      <Merge Id="VCRedistModule" SourceFile="Microsoft_CRT_$(var.Platform).msm" DiskId="1" Language="0"/>
+      <Merge Id="VCRedistModule" SourceFile="Microsoft_CRT_x64.msm" DiskId="1" Language="0"/>
     </DirectoryRef>
 
     <DirectoryRef Id="MozillaVPNFolder">
@@ -183,18 +177,18 @@
     <!--
       Launch after setup complete
     -->
-    <CustomAction Id="LaunchVPNFirstExecution" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
-    <CustomAction Id="LaunchVPNAfterUpdate" Impersonate="yes" FileKey="MozillaVPNExecutable" ExeCommand="ui --updated" Return="asyncNoWait" />
+    <CustomAction Id="LaunchVPNFirstExecution" Impersonate="yes" FileRef="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
+    <CustomAction Id="LaunchVPNAfterUpdate" Impersonate="yes" FileRef="MozillaVPNExecutable" ExeCommand="ui --updated" Return="asyncNoWait" />
     <InstallExecuteSequence>
-       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize">NOT WIX_UPGRADE_DETECTED</Custom>
-       <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize">WIX_UPGRADE_DETECTED</Custom>
+       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize" Condition="WIX_UPGRADE_DETECTED" />
+       <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize" Condition="WIX_UPGRADE_DETECTED" />
     </InstallExecuteSequence>
 
     <!--
       Force application closed
     -->
-    <Property Id="QtExecCmdLine" Value='"[#SystemFolder]taskkill.exe" /F /IM "Mozilla VPN.exe" /IM "MozillaVPN.exe"'/>
-    <CustomAction Id="CloseApplication" BinaryKey="WixCA" DllEntry="CAQuietExec" Execute="immediate" Return="ignore"/>
+    <Property Id="WixQuietExecCmdLine" Value='"[#SystemFolder]taskkill.exe" /F /IM "Mozilla VPN.exe" /IM "MozillaVPN.exe"'/>
+    <CustomAction Id="CloseApplication" BinaryRef="Wix4UtilCA_$(sys.BUILDARCHSHORT)" DllEntry="WixQuietExec" Execute="immediate" Return="ignore"/>
     <InstallExecuteSequence>
       <Custom Action="CloseApplication" After="StopServices" />
     </InstallExecuteSequence>
@@ -204,9 +198,7 @@
     -->
     <CustomAction Id="ForceReinstall" Property="REINSTALL" Value="MozillaVPNFeature"/>
     <InstallExecuteSequence>
-      <Custom Action="ForceReinstall" Before="CostInitialize">
-        Installed AND NOT (REMOVE="ALL") and NOT REINSTALL
-      </Custom>
+      <Custom Action="ForceReinstall" Before="CostInitialize" Condition="Installed AND NOT (REMOVE=&quot;ALL&quot;) and NOT REINSTALL" />
     </InstallExecuteSequence>
-  </Product>
+  </Package>
 </Wix>
