@@ -45,11 +45,10 @@ qt-macos-next:
 qt-windows-x86_64-6.6:
     description: "Windows QT compile Task"
     fetches:
-        fetch:
-            - artifact: qt-source-tarball
-              extract: false
-            - artifact: win-dev-env
-              extract: true
+        vs2022:
+            - artifact: visual-studio-2022.zip
+    dependencies:
+        vs2022: toolchain-vs-2022-x86_64
     run:
         script: compile_qt_6.ps1
         resources:
@@ -64,9 +63,6 @@ qt-windows-x86_64-6.6:
 qt-windows-x86_64-next:
     description: "Windows QT compile Task (x86_64/next)"
     fetches:
-        fetch:
-            - artifact: qt-source-tarball-next
-              extract: false
         vs2022:
             - artifact: visual-studio-2022.zip
     dependencies:
@@ -88,9 +84,6 @@ qt-windows-x86_64-next:
 qt-windows-aarch64-next:
     description: "Windows QT compile Task (aarch64/next)"
     fetches:
-        fetch:
-            - artifact: qt-source-tarball-next
-              extract: false
         vs2022:
             - artifact: visual-studio-2022.zip
     dependencies:
