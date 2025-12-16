@@ -40,6 +40,7 @@ git submodule update --init --recursive --depth 1 --shallow-submodules qttools
 $ErrorActionPreference = "Stop"
 
 cmake -S . -B $QT_BUILD_PATH `
+    -G "Ninja" `
     -DFEATURE_relocatable=ON `
     -DQT_FEATURE_debug_and_release=ON `
     -DQT_BUILD_TESTS=OFF `
