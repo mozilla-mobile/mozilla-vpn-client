@@ -7,7 +7,7 @@ dependencies:
   - pip=22.3.1
   - rust=1.82.0
   - rust-std-wasm32-unknown-emscripten=1.82.0
-  - cmake=3.26.3
+  - cmake=4.2.1
   - ninja=1.11.0
   - pip:
       - -r requirements.txt

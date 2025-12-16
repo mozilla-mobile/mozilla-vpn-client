@@ -16,7 +16,7 @@ dependencies:
   - rust-std-x86_64-pc-windows-msvc=1.85.0
   - compiler-rt=20.1.8
   - compiler-rt_win-64
-  - cmake=3.26.3
+  - cmake=4.2.1
   - ninja=1.11.0
   - conda-pack=0.8.0
   - pip:
