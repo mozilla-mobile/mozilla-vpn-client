@@ -2,7 +2,7 @@ name: vpn
 channels:
   - conda-forge
 dependencies:
-  - emsdk=3.1.38
+  - emsdk=3.1.70
   - python=3.9
   - nodejs=18.16.*
   - pip=22.3.1
