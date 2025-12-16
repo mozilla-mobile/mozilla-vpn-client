@@ -86,16 +86,16 @@ tasks:
             artifact-name: cltools-macosnmos-sdk.pkg
             size: 58513026
     qt-source-tarball:
-        description: Qt 6.6.3 Source Tarball
+        description: Qt 6.9.3 Source Tarball
         fetch:
             type: static-url
-            url: https://download.qt.io/archive/qt/6.6/6.6.3/single/qt-everywhere-src-6.6.3.tar.xz
-            sha256: 69d0348fef415da98aa890a34651e9cfb232f1bffcee289b7b4e21386bf36104
-            size: 801192112
+            url: https://download.qt.io/archive/qt/6.9/6.9.3/single/qt-everywhere-src-6.9.3.tar.xz
+            sha256: 59d4fbf50d2524a9082f85d565f0197316cde89c26e97cfc6c157cb255b7ea18
+            size: 1102876596
     qt-source-tarball-next:
-        description: Qt 6.9.2 Source Tarball
+        description: Qt 6.10.1 Source Tarball
         fetch:
             type: static-url
-            url: https://download.qt.io/archive/qt/6.9/6.9.2/single/qt-everywhere-src-6.9.2.tar.xz
-            sha256: 643f1fe35a739e2bf5e1a092cfe83dbee61ff6683684e957351c599767ca279c
-            size: 1102604088
+            url: https://download.qt.io/archive/qt/6.10/6.10.1/single/qt-everywhere-src-6.10.1.tar.xz
+            sha256: 0ed08b079719394303cd2054b66b2dc0c5895ceeb88fb6131c18991c980bf00f
+            size: 1314503800

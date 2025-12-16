@@ -10,7 +10,7 @@ task-defaults:
     run: 
         use-caches: []
 
-qt-macos-6.6:
+qt-macos-6.9:
     description: "Mac QT compile Task"
     fetches:
         fetch:
@@ -20,10 +20,10 @@ qt-macos-6.6:
         script: compile_qt_6_mac.sh
         resources:
             - scripts/utils/qt6_compile.sh
-        toolchain-alias: qt-macos-6.6
+        toolchain-alias: qt-macos-6.9
         toolchain-artifact: public/build/qt6_macos.tar.xz
     treeherder:
-        symbol: TL(qt-mac-6.6)
+        symbol: TL(qt-mac-6.9)
     worker-type: b-macos
 
 qt-macos-next:
@@ -42,7 +42,7 @@ qt-macos-next:
         symbol: TL(qt-mac-next)
     worker-type: b-macos
 
-qt-windows-x86_64-6.6:
+qt-windows-x86_64-6.9:
     description: "Windows QT compile Task"
     fetches:
         fetch:
@@ -54,10 +54,10 @@ qt-windows-x86_64-6.6:
         script: compile_qt_6.ps1
         resources:
             - taskcluster/scripts/toolchain/configure_qt.ps1
-        toolchain-alias: qt-windows-x86_64-6.6
+        toolchain-alias: qt-windows-x86_64-6.9
         toolchain-artifact: public/build/qt6_win.tar.xz
     treeherder:
-        symbol: TL(qt-win-6.6)
+        symbol: TL(qt-win-6.9)
         platform: windows/x86_64
     worker-type: b-win2022
 
@@ -154,22 +154,22 @@ qt-linux-next:
     worker:
         docker-image: {in-tree: linux-qt6-build}
 
-qt-tools-6.6:
+qt-tools-6.9:
     description: "Linux Qt host tools"
     run:
         script: bundle_qt_tools.sh
         resources:
             - requirements.txt
-        toolchain-alias: qt-tools-6.6
+        toolchain-alias: qt-tools-6.9
         toolchain-artifact: public/build/qt-host-tools.tar.xz
     treeherder:
-        symbol: TL(qt-tools-6.6)
+        symbol: TL(qt-tools-6.9)
     worker-type: b-linux
     worker:
         docker-image: {in-tree: conda-base}
         max-run-time: 900
 
-qt-tools-6.9.2:
+qt-tools-6.10:
     description: "Linux Qt host tools (Qt/next)"
     run:
         script: bundle_qt_tools.sh
@@ -184,7 +184,7 @@ qt-tools-6.9.2:
         docker-image: {in-tree: conda-base}
         max-run-time: 900
         env:
-            QT_VERSION: "6.9.2"
+            QT_VERSION: "6.10.1"
 
 qt-wasm:
     description: "QT wasm bundle task"
@@ -194,7 +194,7 @@ qt-wasm:
     worker:
         docker-image: {in-tree: base}
         env:
-            QT_VERSION: "6.6.3"
+            QT_VERSION: "6.9.3"
     run:
         script: bundle_qt_wasm.sh
         resources:
