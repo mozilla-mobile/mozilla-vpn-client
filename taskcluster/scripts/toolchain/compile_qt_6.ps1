@@ -65,14 +65,6 @@ if(!(Test-Path $QT_BUILD_PATH)){
 }
 Copy-Item -Path "$env:VCS_PATH/taskcluster/scripts/toolchain/configure_qt.ps1" -Destination qt-windows/
 
-# Setup Openssl Import
-unzip -o -qq -d "$env:TASK_WORKDIR/qt-windows" "$env:MOZ_FETCHES_DIR/open_ssl_win.zip" # See toolchain/qt.yml for why
-$SSL_PATH = "$env:TASK_WORKDIR/qt-windows/SSL"
-if (Test-Path -Path $SSL_PATH) {
-  $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
-  $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
-}
-
 $ErrorActionPreference = "Stop"
 
 # Let's trim what we dont need.
@@ -83,7 +75,7 @@ $ErrorActionPreference = "Stop"
 $QT_CONFIG_ARGUMENTS = @(
   '-static'
   '-opensource'
-  '-debug-and-release'
+  '-release'
   '-confirm-license'
   '-silent'
   '-make libs'
@@ -119,13 +111,7 @@ if ($LastExitCode -ne 0) {
   Exit $LastExitCode
 }
 
-Write-Output "Installing debug Qt:"
-cmake --install $QT_BUILD_PATH --config Debug
-if ($LastExitCode -ne 0) {
-  Exit $LastExitCode
-}
-
-Write-Output "Installing release Qt:"
+Write-Output "Installing Qt:"
 cmake --install $QT_BUILD_PATH --config Release
 if ($LastExitCode -ne 0) {
   Exit $LastExitCode
