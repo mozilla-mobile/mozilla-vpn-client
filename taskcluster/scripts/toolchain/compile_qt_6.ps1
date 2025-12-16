@@ -5,112 +5,50 @@
 Set-Location $env:TASK_WORKDIR
 Get-ChildItem env:
 
-# The modules to exclude from the Qt build.
-$QT_MOD_EXCLUDE = @(
-  'qt3d'
-  'qtactiveqt'
-  'qtandroidextras'
-  'qtcharts'
-  'qtcoap'
-  'qtconnectivity'
-  'qtdatavis3d'
-  'qtdoc'
-  'qtgamepad'
-  'qtgraphs'
-  'qtgrpc'
-  'qthttpserver'
-  'qtlanguageserver'
-  'qtlocation'
-  'qtlottie'
-  'qtmqtt'
-  'qtmultimedia'
-  'qtopcua'
-  'qtpositioning'
-  'qtquick3d'
-  'qtquick3dphysics'
-  'qtquickeffectmaker'
-  'qtquicktimeline'
-  'qtremoteobjects'
-  'qtscxml'
-  'qtsensors'
-  'qtserialbus'
-  'qtserialport'
-  'qtspeech'
-  'qtvirtualkeyboard'
-  'qtwayland'
-  'qtweb'
-  'qtwebengine'
-  'qtwebview'
-  'qtwebchannel'
+# Define the submodules to initialize
+$QT_SUBMODULES = @(
+    'qt5compat'
+    'qtactiveqt'
+    'qtbase'
+    'qtdeclarative'
+    'qtimageformats'
+    'qtlanguageserver'
+    'qtnetworkauth'
+    'qtrepotools'
+    'qtwebsockets'
+    'qtshadertools'
+    'qttools'
+    'qtsvg'
 )
-
-# Extract the Qt source tarball.
-$QT_SRC_FILENAME = (resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*.tar.xz" | Split-Path -Leaf)
-$QT_TAR_ARGUMENTS = ('xf', "$QT_SRC_FILENAME") + ($QT_MOD_EXCLUDE | % { "--exclude=qt-everywhere-src-*/$_" })
-Start-Process -WorkingDirectory "$env:MOZ_FETCHES_DIR" -NoNewWindow -Wait "tar" -ArgumentList $QT_TAR_ARGUMENTS
-Remove-Item "$env:MOZ_FETCHES_DIR/$QT_SRC_FILENAME"
 
 # Activate the visual studio developer shell.
 $VS_SHELL_HELPER = resolve-path "$env:MOZ_FETCHES_DIR/*/enter_dev_shell.ps1"
 . "$VS_SHELL_HELPER"
 
-$QT_CONFIG_SCRIPT = resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*/configure.bat"
 $QT_BUILD_PATH = "$env:TASK_WORKDIR\qt-build"
 $QT_INSTALL_PATH = "$env:TASK_WORKDIR\qt-windows"
-if(!(Test-Path $QT_INSTALL_PATH)){
-  New-Item -Path qt-windows -ItemType "directory"
-}
-if(!(Test-Path $QT_BUILD_PATH)){
-  New-Item -Path qt-build -ItemType "directory"
-}
-Copy-Item -Path "$env:VCS_PATH/taskcluster/scripts/toolchain/configure_qt.ps1" -Destination qt-windows/
 
-# Setup Openssl Import
-unzip -o -qq -d "$env:TASK_WORKDIR/qt-windows" "$env:MOZ_FETCHES_DIR/open_ssl_win.zip" # See toolchain/qt.yml for why
-$SSL_PATH = "$env:TASK_WORKDIR/qt-windows/SSL"
-if (Test-Path -Path $SSL_PATH) {
-  $env:OPENSSL_ROOT_DIR = (resolve-path "$SSL_PATH").toString()
-  $env:OPENSSL_USE_STATIC_LIBS = "TRUE"
-}
+git clone --branch $env:QT_VERSION --depth 1 --single-branch git://code.qt.io/qt/qt5.git qt
+Set-Location qt
+
+git submodule init $QT_SUBMODULES
+git submodule update --depth 1 --recursive
+
+# Note: QtTools has more submoudles!
+git submodule update --init --recursive --depth 1 --shallow-submodules qttools
 
 $ErrorActionPreference = "Stop"
 
-# Let's trim what we dont need.
-# See for general config: https://github.com/qt/qtbase/blob/dev/config_help.txt
-# For detailed feature flags, run the configuration, then check the CMakeLists.txt
-# Variables with FEATURE_XYZ can be switched off using -no-feature
-# Whole folders can be skipped using -skip <folder>
-$QT_CONFIG_ARGUMENTS = @(
-  '-static'
-  '-opensource'
-  '-debug-and-release'
-  '-confirm-license'
-  '-silent'
-  '-make libs'
-  '-nomake tests'
-  '-nomake examples'
-  '-no-feature-dynamicgl'
-  '-no-feature-sql-odbc'
-  '-no-feature-pixeltool'
-  '-no-feature-qdbus'
-  '-no-feature-qtattributionsscanner'
-  '-no-feature-qtdiag'
-  '-no-feature-qtplugininfo'
-  '-no-feature-pixeltool'
-  '-no-feature-distancefieldgenerator'
-  '-no-feature-designer'
-  '-no-feature-assistant'
-  '-no-feature-sql-sqlite'
-  '-no-feature-sql'
-  '-no-feature-textodfwriter'
-  '-no-feature-networklistmanager'
-  '-no-feature-dbus'
-  '-feature-imageformat_png'
-  '-qt-libpng'
-  '-qt-zlib'
-  "-prefix $QT_INSTALL_PATH"
-) + ($QT_MOD_EXCLUDE | % { "-skip $_" })
-Start-Process -WorkingDirectory "$QT_BUILD_PATH" -NoNewWindow -PassThru $QT_CONFIG_SCRIPT -ArgumentList $QT_CONFIG_ARGUMENTS | Wait-Process
+cmake -S . -B $QT_BUILD_PATH `
+    -DFEATURE_relocatable=ON `
+    -DQT_FEATURE_debug_and_release=ON `
+    -DQT_BUILD_TESTS=OFF `
+    -DBUILD_SHARED_LIBS=OFF `
+    -DFEATURE_developer_build=OFF `
+    -DFEATURE_assistant=OFF `
+    -DFEATURE_designer=OFF `
+    -DFEATURE_qtdiag=OFF `
+    -DFEATURE_sql=OFF 
 
 # Build and install Qt
 Write-Output "Starting build: $QT_BUILD_PATH"
