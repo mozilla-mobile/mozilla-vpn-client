@@ -29,11 +29,49 @@ else()
     return()
 endif()
 
+# Determine the MSI installer arch by reading the PE/COFF header
+function(__read_pe_arch FILENAME OUTVAR)
+    # Find the PE header offset
+    file(READ ${FILENAME} LOW_BYTE OFFSET "60" LIMIT 1 HEX)
+    file(READ ${FILENAME} HIGH_BYTE OFFSET "61" LIMIT 1 HEX)
+    math(EXPR PE_SIG_OFFSET "0x${HIGH_BYTE}${LOW_BYTE}" OUTPUT_FORMAT DECIMAL)
+    math(EXPR PE_MACH_OFFSET "${PE_SIG_OFFSET} + 4" OUTPUT_FORMAT DECIMAL)
+
+    # Read the signature, which must contain the string "PE/0/0"
+    file(READ ${FILENAME} PE_SIGNATURE OFFSET ${PE_SIG_OFFSET} LIMIT 4 HEX)
+    if(NOT "${PE_SIGNATURE}" STREQUAL "50450000")
+        message(WARNING "Binary file ${FILENAME} does not appear to be a PE/COFF executable")
+        set(${OUTVAR} "x64" PARENT_SCOPE)
+        return()
+    endif()
+
+    # Read the COFF machine type
+    file(READ ${FILENAME} PE_MACH_LOW OFFSET ${PE_MACH_OFFSET} LIMIT 1 HEX)
+    math(EXPR PE_MACH_OFFSET "${PE_MACH_OFFSET} + 1" OUTPUT_FORMAT DECIMAL)
+    file(READ ${FILENAME} PE_MACH_HIGH OFFSET ${PE_MACH_OFFSET} LIMIT 1 HEX)
+    set(PE_MACH_TYPE "${PE_MACH_HIGH}${PE_MACH_LOW}")
+
+    # See: https://learn.microsoft.com/en-us/windows/win32/debug/pe-format#machine-types
+    if(PE_MACH_TYPE STREQUAL "8664")
+        set(${OUTVAR} "x64" PARENT_SCOPE)
+    elseif(PE_MACH_TYPE STREQUAL "aa64")
+        set(${OUTVAR} "arm64" PARENT_SCOPE)
+    elseif(PE_MACH_TYPE STREQUAL "014c")
+        set(${OUTVAR} "x86" PARENT_SCOPE)
+    else()
+        message(WARNING "Binary file ${FILENAME} has unknown machine type ${PE_MACH_TYPE}")
+        set(${OUTVAR} "x64" PARENT_SCOPE)
+    endif()
+endfunction()
+
 # Run CMake install to put everything together into the staging directory.
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # If this is the top-level project, use CMAKE_BINARY_DIR as the staging dir.
     set(WIX_STAGING_DIR ${CMAKE_CURRENT_BINARY_DIR})
     file(TOUCH ${CMAKE_CURRENT_BINARY_DIR}/install-stamp.txt)
+
+    # Select the MSI installer architecture from the executable being installed.
+    __read_pe_arch("${WIX_STAGING_DIR}/Mozilla VPN.exe" WIX_PLATFORM)
 else()
     # If this is embedded with another project, install into the staging dir.
     set(WIX_STAGING_DIR ${CMAKE_CURRENT_BINARY_DIR}/staging)
@@ -47,6 +85,11 @@ else()
         COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${WIX_STAGING_DIR} --config $<CONFIG>
         COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/install-stamp.txt
     )
+
+    string(TOLOWER "${CMAKE_SYSTEM_PROCESSOR}" WIX_PLATFORM)
+    if(WIX_PLATFORM STREQUAL "amd64")
+        set(WIX_PLATFORM "x64")
+    endif()
 endif()
 
 # Install the Wix util extension.
@@ -57,9 +100,6 @@ add_custom_command(
     COMMAND ${WIX_BUILD_TOOL} extension add WixToolset.Util.wixext/${WIX_BUILD_VERSION}
     COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/wixext-stamp.txt
 )
-
-# Use Wix to build the MSI installer.
-set(WIX_PLATFORM x64)
 
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.msi
