@@ -64,15 +64,11 @@ cmake -S $REPO_ROOT_PATH -B $BUILD_DIR -GNinja `
 
 cmake --build $BUILD_DIR
 
-## Building the MSI Installer.
-cmake --build $BUILD_DIR --target msi
-
 cmake --install $BUILD_DIR --prefix "$TASK_WORKDIR/unsigned"
 
 Write-Output "Writing Artifacts"
 New-Item -ItemType Directory -Path "$TASK_WORKDIR/artifacts" -Force
 $ARTIFACTS_PATH =resolve-path "$TASK_WORKDIR/artifacts"
-Copy-Item -Path $BUILD_DIR/windows/installer/MozillaVPN.msi -Destination $ARTIFACTS_PATH/MozillaVPN.msi
 
 Compress-Archive -Path $TASK_WORKDIR/unsigned/* -Destination $ARTIFACTS_PATH/unsigned.zip
 Write-Output "Artifacts Location:$TASK_WORKDIR/artifacts"

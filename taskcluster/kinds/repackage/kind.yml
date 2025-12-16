@@ -38,6 +38,8 @@ tasks:
                   # `fetch-content` script is not able to properly extract it. Until we can use a
                   # newer PowerShell, we'll need to handle extraction ourselves.
                   extract: false
+            fetch:
+               - wix-toolset
         dependencies:
             by-level:
                 "3":
@@ -49,8 +51,8 @@ tasks:
         attributes:
             build-type: windows/opt
         run:
-            cwd: build/src/windows/installer
-            command: [cmd.exe, /c, build_prod.cmd]
+            exec-with: powershell
+            command: ./taskcluster/scripts/build/windows_repackage.ps1
         treeherder:
             symbol: rpk(msi)
             platform: windows/x86_64
@@ -65,6 +67,8 @@ tasks:
                   # `fetch-content` script is not able to properly extract it. Until we can use a
                   # newer PowerShell, we'll need to handle extraction ourselves.
                   extract: false
+            fetch:
+               - wix-toolset
         dependencies:
             build: build-windows/next
         worker-type: b-win2022
@@ -72,8 +76,8 @@ tasks:
         attributes:
             build-type: windows/next
         run:
-            cwd: build/src/windows/installer
-            command: [cmd.exe, /c, build_prod.cmd]
+            exec-with: powershell
+            command: ./taskcluster/scripts/build/windows_repackage.ps1
         treeherder:
             symbol: rpk(msi-next)
             platform: windows/x86_64

@@ -39,6 +39,13 @@ tasks:
             url: https://download.wireguard.com/wireguard-nt/wireguard-nt-0.10.1.zip
             sha256: 772c0b1463d8d2212716f43f06f4594d880dea4f735165bd68e388fc41b81605
             size: 1774096
+    wix-toolset:
+        description: Wix Toolset CLI
+        fetch:
+            type: static-url
+            url: https://github.com/wixtoolset/wix/releases/download/v5.0.2/wix-cli-x64.msi
+            sha256: 097383b2773bdd3d76a6a2cd3f4de6357bae59172e1b6fa5ad87ce062074e8d0
+            size: 12967936
     macos-miniconda:
         description: MiniConda3 osx-x86 Python 3.10 
         fetch:
