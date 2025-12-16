@@ -39,28 +39,21 @@ git submodule update --init --recursive --depth 1 --shallow-submodules qttools
 
 $ErrorActionPreference = "Stop"
 
-  cmake -S . -B $QT_BUILD_PATH `
-    -G "Ninja Multi-Config" `
-    -DCMAKE_CONFIGURATION_TYPES="Debug;Release" `
-    -DFEATURE_relocatable=ON `
-    -DQT_FEATURE_debug_and_release=ON `
-    -DQT_BUILD_TESTS=OFF `
-    -DBUILD_SHARED_LIBS=OFF `
-    -DFEATURE_developer_build=OFF `
-    -DFEATURE_assistant=OFF `
-    -DFEATURE_designer=OFF `
-    -DFEATURE_qtdiag=OFF `
-    -DFEATURE_sql=OFF 
+cmake -S . -B $QT_BUILD_PATH `
+      -G "Ninja" `
+      -DCMAKE_BUILD_TYPE=Release `
+      -DFEATURE_relocatable=ON `
+      -DQT_BUILD_TESTS=OFF `
+      -DBUILD_SHARED_LIBS=OFF `
+      -DFEATURE_developer_build=OFF `
+      -DFEATURE_assistant=OFF `
+      -DFEATURE_designer=OFF `
+      -DFEATURE_qtdiag=OFF `
+      -DFEATURE_sql=OFF
 
 # Build and install Qt
 Write-Output "Starting build: $QT_BUILD_PATH"
 cmake --build $QT_BUILD_PATH --parallel --verbose
-if ($LastExitCode -ne 0) {
-  Exit $LastExitCode
-}
-
-Write-Output "Installing debug Qt:"
-cmake --install $QT_BUILD_PATH --config Debug
 if ($LastExitCode -ne 0) {
   Exit $LastExitCode
 }
