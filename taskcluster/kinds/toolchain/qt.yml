@@ -81,6 +81,9 @@ qt-windows-x86_64-next:
         symbol: TL(qt-win-next)
         platform: windows/x86_64
     worker-type: b-win2022
+    worker:
+        env:
+            QT_VERSION: "6.10.1"
 
 qt-windows-aarch64-next:
     description: "Windows QT compile Task (aarch64/next)"
@@ -102,6 +105,9 @@ qt-windows-aarch64-next:
         symbol: TL(qt-win-next)
         platform: windows/aarch64
     worker-type: b-win11-2024h2-arm64
+    worker:
+        env:
+            QT_VERSION: "6.10.1"
 
 qt-ios:
     description: "QT ios bundle Task"
