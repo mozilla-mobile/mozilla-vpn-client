@@ -13,17 +13,6 @@ task-defaults:
     docker-image: {in-tree: base}
 
 tasks:
-    win-dev-env:
-        description: Windows Dev-Enviroment
-        fetch:
-            type: static-url
-            url: https://s3.nl-ams.scw.cloud/basti.data/vs_studio_sdk.zip
-            artifact-name: vs_studio_sdk.zip
-            sha256: 56ad52e56f61db57446ca2c1a3752b4d33bb7aadc4637eedbf67cfcaece25914
-            size: 1514372704
-        #artifact-prefix: vpn/win-dev-env
-        fetch-alias: win-dev-env
-
     win-cmake:
         description: CMake windows-x86_64 v4.2.1
         fetch:
