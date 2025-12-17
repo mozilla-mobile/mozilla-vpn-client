@@ -6,6 +6,7 @@ cmake_minimum_required(VERSION 3.18)
 
 project(msi
     VERSION 1.0.0
+    LANGUAGES NONE
     DESCRIPTION "Mozilla VPN installer"
 )
 
@@ -101,6 +102,7 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/wixext-stamp.txt
 )
 
+# Build the MSI installer package
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.msi
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
@@ -114,4 +116,9 @@ add_custom_command(
                     -out ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.msi
                     ${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPN.wxs
 )
+
+# Wrap it up in a custom target
 add_custom_target(msi DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.msi)
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    set_target_properties(msi PROPERTIES EXCLUDE_FROM_ALL FALSE)
+endif()
