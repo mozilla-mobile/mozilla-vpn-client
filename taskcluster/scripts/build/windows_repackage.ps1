@@ -5,6 +5,10 @@
 Set-Location $env:TASK_WORKDIR
 Get-ChildItem env:
 
+# Add CMake to the path
+$CMAKE_INSTALL_DIR = (resolve-path "$env:MOZ_FETCHES_DIR\cmake-*-windows-x86_64")
+$env:PATH += ";$CMAKE_INSTALL_DIR\bin"
+
 # Install the wix toolset
 msiexec /i "$env:MOZ_FETCHES_DIR/wix-cli-x64.msi"
 
@@ -13,7 +17,6 @@ Write-Output "Extracting: $env:MOZ_FETCHES_DIR\unsigned.zip"
 Expand-Archive -Path "$env:MOZ_FETCHES_DIR\unsigned.zip" -DestinationPath "$env:TASK_WORKDIR\unsigned"
 
 # Package them with CMake and Wix
-# TODO: We might have to install CMake?
 cmake -B "$env:TASK_WORKDIR\unsigned" -S "$env:VCS_PATH\windows\installer"
 cmake --build "$env:TASK_WORKDIR\unsigned" --target msi
 

@@ -39,6 +39,7 @@ tasks:
                   # newer PowerShell, we'll need to handle extraction ourselves.
                   extract: false
             fetch:
+               - win-cmake
                - wix-toolset
         dependencies:
             by-level:
@@ -68,6 +69,7 @@ tasks:
                   # newer PowerShell, we'll need to handle extraction ourselves.
                   extract: false
             fetch:
+               - win-cmake
                - wix-toolset
         dependencies:
             build: build-windows/next
