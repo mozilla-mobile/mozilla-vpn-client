@@ -45,7 +45,7 @@ windows/opt:
         exec-with: powershell
         command: taskcluster/scripts/build/windows_clang_cl.ps1
 
-windows/next:
+windows/next-x86_64:
     description: "Windows Build (Next Qt/x86_64)"
     fetches:
         toolchain:

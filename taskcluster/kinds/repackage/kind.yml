@@ -58,8 +58,8 @@ tasks:
             symbol: rpk(msi)
             platform: windows/x86_64
 
-    msi-next:
-        description: Build MSI installer package (next Qt)
+    msi-next-x86_64:
+        description: Build MSI installer package (next Qt/x86_64)
         fetches:
             build:
                 - artifact: unsigned.zip
@@ -72,7 +72,7 @@ tasks:
                - win-cmake
                - wix-toolset
         dependencies:
-            build: build-windows/next
+            build: build-windows/next-x86_64
         worker-type: b-win2022
         release-artifacts: [MozillaVPN.msi]
         attributes:
@@ -83,6 +83,32 @@ tasks:
         treeherder:
             symbol: rpk(msi-next)
             platform: windows/x86_64
+
+    msi-next-aarch64:
+        description: Build MSI installer package (next Qt/aarch64)
+        fetches:
+            build:
+                - artifact: unsigned.zip
+                  # Workers are using an old version of PowerShell that doesn'tcontain the fix in
+                  # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/48, and the
+                  # `fetch-content` script is not able to properly extract it. Until we can use a
+                  # newer PowerShell, we'll need to handle extraction ourselves.
+                  extract: false
+            fetch:
+               - win-cmake
+               - wix-toolset
+        dependencies:
+            build: build-windows/next-aarch64
+        worker-type: b-win2022
+        release-artifacts: [MozillaVPN.msi]
+        attributes:
+            build-type: windows/next
+        run:
+            exec-with: powershell
+            command: ./taskcluster/scripts/build/windows_repackage.ps1
+        treeherder:
+            symbol: rpk(msi-next)
+            platform: windows/aarch64
 
     macpkg:
         description: Build macOS installer package
