@@ -33,7 +33,7 @@ windows/opt:
             - win-conda
         toolchain:
             - conda-windows-x86_64
-            - qt-windows-x86_64-6.6
+            - qt-windows-x86_64-6.9
     treeherder:
         symbol: B
     worker:

@@ -32,7 +32,7 @@ macos/native:
     fetches:
         toolchain:
             - conda-macos
-            - qt-macos-6.6
+            - qt-macos-6.9
     description: "Mac Build"
     treeherder:
         platform: macos/native
@@ -48,8 +48,8 @@ macos/opt:
         toolchain:
             - cargo-vendor
             - conda-osxcross
-            - qt-macos-6.6
-            - qt-tools-6.6
+            - qt-macos-6.9
+            - qt-tools-6.9
     worker-type: b-linux-large
     worker:
         docker-image: {in-tree: conda-base}
