@@ -18,7 +18,11 @@ if($NINJA_FILE_HASH -ne "07fc8261b42b20e71d1720b39068c2e14ffcee6396b76fb7a795fb4
 Expand-Archive -Path "$env:MOZ_FETCHES_DIR\ninja-win.zip" -DestinationPath "$CMAKE_INSTALL_DIR\bin"
 
 # Install the wix toolset
-msiexec /i (Resolve-Path "$env:MOZ_FETCHES_DIR\wix-cli-x64.msi")
+New-Item -ItemType Directory -Path "$env:TASK_WORKDIR\wix" -Force
+Copy-Item -Path (Resolve-Path "$env:MOZ_FETCHES_DIR\wix.*.nupkg") -Destination $env:TASK_WORKDIR\wix\wix.zip
+Expand-Archive -Path "$env:TASK_WORKDIR\wix\wix.zip" -DestinationPath "$env:TASK_WORKDIR\wix"
+$WIX_TOOLS_PATH = (Resolve-Path "$env:TASK_WORKDIR\wix\tools\net*")
+$env:PATH += ";$WIX_TOOLS_PATH\any"
 
 # Extract the build artifacts
 Write-Output "Extracting: $env:MOZ_FETCHES_DIR\unsigned.zip"
