@@ -25,8 +25,7 @@ class Theme final : public QAbstractListModel {
   Q_PROPERTY(QJSValue colors READ readColors NOTIFY changed)
   Q_PROPERTY(QString currentTheme READ currentTheme WRITE setCurrentTheme NOTIFY
                  changed)
-  Q_PROPERTY(QString currentSystemTheme READ currentSystemTheme NOTIFY
-                 changed)
+  Q_PROPERTY(QString currentSystemTheme READ currentSystemTheme NOTIFY changed)
 
  public:
   explicit Theme(QObject* parent);
