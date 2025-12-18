@@ -82,6 +82,19 @@ target_sources(iosglean PUBLIC
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h
 )
 
+message(STATUS "Building Glean Rust library...")
+execute_process(
+    COMMAND ${CARGO_BUILD_TOOL} build --release
+    WORKING_DIRECTORY ${GLEAN_VENDORED_PATH}/glean-core/bundle
+    RESULT_VARIABLE CARGO_BUILD_RESULT
+    COMMAND_ERROR_IS_FATAL ANY
+)
+
+if(NOT CARGO_BUILD_RESULT EQUAL 0)
+    message(FATAL_ERROR "Failed to build Glean Rust library")
+endif()
+message(STATUS "Glean Rust library built successfully")
+
 # Build gleanFFI.h and glean.swift files using UniFFI
 # and build the internal Glean metrics file
 execute_process(
