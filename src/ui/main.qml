@@ -84,7 +84,7 @@ ApplicationWindow {
     color: {
         // This is only relevant on android
         if(Qt.platform.os !== "android"){
-         return MZTheme.colors.bgColor;
+            return MZTheme.colors.bgColor;
         }
         if (MZTheme.currentSystemTheme === MZTheme.currentTheme) {
             return MZTheme.colors.bgColor;
