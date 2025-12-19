@@ -71,12 +71,6 @@ auto constexpr flag(BooleanMetric* metric) {
 }
 using namespace mozilla::glean;
 const auto map = QMap<QString, std::function<void(QVariant)>>{
-    {"fx_protection_disabled", event(&extension::fx_protection_disabled)},
-    {"fx_protection_enabled", event(&extension::fx_protection_enabled)},
-    {"fx_protection_mode_changed",
-     event(&extension::fx_protection_mode_changed)},
-    {"main_screen", event(&extension::main_screen)},
-    {"error_screen", event(&mozilla::glean::extension::error_screen)},
     {"has_completed_onboarding", flag(&extension::has_completed_onboarding)},
     {"used_feature_disable_firefox_protection",
      flag(&extension::used_feature_disable_firefox_protection)},
@@ -86,8 +80,6 @@ const auto map = QMap<QString, std::function<void(QVariant)>>{
      flag(&extension::used_feature_page_action_revoke_exclude)},
     {"used_feature_page_action_revoke_geopref",
      flag(&extension::used_feature_page_action_revoke_geopref)},
-    {"count_excluded", count(&extension::count_excluded)},
-    {"count_geoprefed", count(&extension::count_geoprefed)},
 };
 }  // namespace handlers
 
