@@ -81,7 +81,20 @@ ApplicationWindow {
     maximumHeight: fullscreenRequired() ? Screen.height : MZTheme.theme.desktopAppHeight;
 
     title: MZI18n.ProductName
-    color: MZTheme.colors.bgColor
+    color: {
+        // This is only relevant on android
+        if(Qt.platform.os !== "android"){
+            return MZTheme.colors.bgColor;
+        }
+        if (MZTheme.currentSystemTheme === MZTheme.currentTheme) {
+            return MZTheme.colors.bgColor;
+        } 
+        if (MZTheme.currentSystemTheme === "main") {
+            return "white";
+        } else {
+            return "black";
+        }
+    }
     onClosing: close => {
         console.log("Closing request handling");
 
@@ -134,8 +147,8 @@ ApplicationWindow {
         width: window.width
         anchors.top: parent.top
     }
-
     MZNavigatorLoader {
+      id: screenLoader
       objectName: "screenLoader"
       anchors {
           top: iosSafeAreaTopMargin.bottom
