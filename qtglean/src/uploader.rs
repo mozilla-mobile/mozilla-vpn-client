@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use glean::net::{PingUploader, UploadResult, PingUploadRequest};
+use glean::net::{PingUploader, UploadResult, PingUploadRequest, CapablePingUploadRequest};
 use reqwest::blocking::Client;
 use reqwest::header::{HeaderMap, HeaderName, HeaderValue};
 use std::sync::Mutex;
@@ -34,7 +34,8 @@ impl VPNPingUploader {
 }
 
 impl PingUploader for VPNPingUploader {
-    fn upload(&self, upload_request: PingUploadRequest) -> UploadResult {
+    fn upload(&self, upload_request: CapablePingUploadRequest) -> UploadResult {
+        let upload_request = upload_request.capable(|cap| cap.is_empty()).unwrap();
         if !self.allowed_to_send(&upload_request){
             // If we're not allowed to send, "fake" a 200 response, 
             // so the data is dropped and not retried later. 

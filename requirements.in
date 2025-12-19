@@ -1,5 +1,5 @@
 aqtinstall==3.3.0
-glean-parser==13.0.0
+glean-parser==18.1.1
 oathtool==2.4.0
 pyrsistent==0.20.0
 yamllint==1.37.1

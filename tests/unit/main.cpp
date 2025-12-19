@@ -183,5 +183,8 @@ int main(int argc, char* argv[]) {
     }
   }
 
+  // Shutdown Glean before Qt global statics are destroyed
+  MZGlean::shutdown();
+
   return failures;
 }
