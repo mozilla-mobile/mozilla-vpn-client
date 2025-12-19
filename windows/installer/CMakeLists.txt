@@ -10,6 +10,14 @@ project(msi
     DESCRIPTION "Mozilla VPN installer"
 )
 
+# Determine the root of the project checkout - we need scripts and localization.
+if(NOT CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    set(PROJECT_ROOT_DIR ${CMAKE_SOURCE_DIR})
+else()
+    get_filename_component(PROJECT_ROOT_DIR ../.. ABSOLUTE)
+    find_program(PYTHON_EXECUTABLE NAMES python3 python)
+endif()
+
 # Find the Wix installer tool, and get its version.
 find_program(WIX_BUILD_TOOL wix)
 if(WIX_BUILD_TOOL)
@@ -102,6 +110,53 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E touch ${CMAKE_CURRENT_BINARY_DIR}/wixext-stamp.txt
 )
 
+# Build the localization sources
+file(GLOB I18N_LOCALES LIST_DIRECTORIES true
+    RELATIVE ${PROJECT_ROOT_DIR}/3rdparty/i18n ${PROJECT_ROOT_DIR}/3rdparty/i18n/*)
+list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
+
+set(WIX_I18N_ARGS)
+set(WIX_I18N_DEPS)
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/i18n)
+foreach(LOCALE ${I18N_LOCALES})
+    if(NOT IS_DIRECTORY ${PROJECT_ROOT_DIR}/3rdparty/i18n/${LOCALE})
+        list(REMOVE_ITEM I18N_LOCALES ${LOCALE})
+        continue()
+    endif()
+    if(NOT EXISTS ${PROJECT_ROOT_DIR}/3rdparty/i18n/${LOCALE}/mozillavpn.xliff)
+        list(REMOVE_ITEM I18N_LOCALES ${LOCALE})
+        continue()
+    endif()
+    set(XLIFFTOOL ${PYTHON_EXECUTABLE} ${PROJECT_ROOT_DIR}/scripts/utils/xlifftool.py ${PROJECT_ROOT_DIR}/3rdparty/i18n/${LOCALE}/mozillavpn.xliff)
+    execute_process(
+        RESULT_VARIABLE XLIFF_CHECK_RESULT
+        COMMAND ${XLIFFTOOL} --locale=${LOCALE} --check
+    )
+    if(NOT XLIFF_CHECK_RESULT EQUAL 0)
+        continue()
+    endif()
+
+    # Build the localized wxl file
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/i18n/MozillaVPN-${LOCALE}.wxl
+        DEPENDS
+            ${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPN.wxl.in
+            ${PROJECT_ROOT_DIR}/3rdparty/i18n/${LOCALE}/mozillavpn.xliff
+        COMMAND ${XLIFFTOOL} -x ${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPN.wxl.in -o ${CMAKE_CURRENT_BINARY_DIR}/i18n/MozillaVPN-${LOCALE}.wxl
+    )
+
+    list(APPEND WIX_I18N_DEPS ${CMAKE_CURRENT_BINARY_DIR}/i18n/MozillaVPN-${LOCALE}.wxl)
+    list(APPEND WIX_I18N_ARGS -loc ${CMAKE_CURRENT_BINARY_DIR}/i18n/MozillaVPN-${LOCALE}.wxl)
+endforeach()
+
+# Wix translations require exactly one language file to be the native locale,
+# which should have the XML Culture attribute removed. Use the 'en' locale.
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/i18n/MozillaVPN-en.wxl APPEND
+    DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/fixup-native-locale.py
+    COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/fixup-native-locale.py ${CMAKE_CURRENT_BINARY_DIR}/i18n/MozillaVPN-en.wxl
+)
+
 # Build the MSI installer package
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.msi
@@ -110,8 +165,10 @@ add_custom_command(
     DEPENDS
         ${CMAKE_CURRENT_BINARY_DIR}/install-stamp.txt
         ${CMAKE_CURRENT_BINARY_DIR}/wixext-stamp.txt
+        ${WIX_I18N_DEPS}
     COMMAND ${CMAKE_COMMAND} -E echo "Building MSI installer"
-    COMMAND ${WIX_BUILD_TOOL} build -d Platform=${WIX_PLATFORM} -arch ${WIX_PLATFORM}
+    COMMAND ${WIX_BUILD_TOOL} build ${WIX_I18N_ARGS}
+                    -d Platform=${WIX_PLATFORM} -arch ${WIX_PLATFORM}
                     -bindpath ${WIX_STAGING_DIR} -ext WixToolset.Util.wixext
                     -out ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.msi
                     ${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPN.wxs
