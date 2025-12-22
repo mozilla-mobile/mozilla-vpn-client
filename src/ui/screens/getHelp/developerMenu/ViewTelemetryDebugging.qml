@@ -112,12 +112,12 @@ MZViewBase {
         }
 
         MZExternalLinkListItem {
-          id: goToPingViewer
-          Layout.preferredHeight: MZTheme.theme.rowHeight
-          title: "Open Glean Debug Ping Viewer"
-          onClicked: {
-              MZUrlOpener.openUrl("https://debug-ping-preview.firebaseapp.com/pings/" + MZSettings.gleanDebugTag);
-          }
+            id: goToPingViewer
+            Layout.preferredHeight: MZTheme.theme.rowHeight
+            title: "Open Glean Debug Ping Viewer"
+            onClicked: {
+                MZUrlOpener.openUrl("https://debug-ping-preview.firebaseapp.com/pings/" + MZSettings.gleanDebugTag);
+            }
         }
 
         MZCheckBoxRow {
