@@ -70,7 +70,8 @@ ApplicationWindow {
     }
 
     screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
-    flags: Qt.Window | Qt.ExpandedClientAreaHint | Qt.NoTitlebarBackgroundHint
+    // TODO: Once every platform is on Qt 6.9, swap MaximizeUsingFullscreenGeometryHint for ExpandedClientAreaHint: https://doc.qt.io/qt-6.9/qt.html
+    flags: Qt.Window | Qt.ExpandedClientAreaHint | Qt.NoTitlebarBackgroundHint | Qt.MaximizeUsingFullscreenGeometryHint
     visible: true
 
     width: fullscreenRequired() ? Screen.width : MZTheme.theme.desktopAppWidth;
