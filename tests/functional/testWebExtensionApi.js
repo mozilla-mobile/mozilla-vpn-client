@@ -119,26 +119,6 @@ describe('WebExtension API', function() {
     bridge.kill();
   });
 
-  it('A Webextension can read settings', async () => {
-    const bridge = await connectExtension();
-    const messagePipe = getMessageStream(bridge);
-    const settingsPromise = readResponseOfType('settings', messagePipe);
-    sentToClient(makeMessage('settings'), bridge);
-    const msg = await settingsPromise
-    assert(Object.keys(msg.settings).length != 0, "The Extension was sent setting values");
-    bridge.kill();
-  });
-  it('A Webextension can write settings', async () => {
-    const bridge = await connectExtension();
-    const messagePipe = getMessageStream(bridge);
-    const settingsPromise = readResponseOfType('settings', messagePipe);
-    sentToClient(makeMessage('settings', {
-      settings: {"extensionTelemetryEnabled":true}
-    }), bridge);
-    const msg = await settingsPromise
-    assert(msg.settings.extensionTelemetryEnabled, "The Extension was able to set the TelemetrySetting");
-    bridge.kill();
-  });
 });
 
 }
