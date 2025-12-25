@@ -183,7 +183,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
 endif()
 
 include(${CMAKE_SOURCE_DIR}/src/platforms/${MZ_PLATFORM_NAME}/sources.cmake)
-include(${CMAKE_SOURCE_DIR}/src/cmake/sentry.cmake)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/sentry)
 
 add_dependencies(shared-sources translations)
 
