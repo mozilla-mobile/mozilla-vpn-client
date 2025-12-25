@@ -38,14 +38,14 @@ windows/opt:
         symbol: B
     worker:
         artifacts:
-            - type: file
-              name: public/build/MozillaVPN.msi
-              path: artifacts/MozillaVPN.msi
+            - type: directory
+              name: public/build
+              path: artifacts
     run:
         exec-with: powershell
         command: taskcluster/scripts/build/windows_clang_cl.ps1
 
-windows/next:
+windows/next-x86_64:
     description: "Windows Build (Next Qt/x86_64)"
     fetches:
         toolchain:
