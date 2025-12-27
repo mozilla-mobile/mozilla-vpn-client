@@ -13,7 +13,7 @@
 
 namespace WebExtension {
 
-Server::Server(BaseAdapter* adapter) : QLocalServer(adapter) {
+Server::Server(BaseAdapter* adapter) : QLocalServer(nullptr) {
   Q_ASSERT(adapter);
   m_adapter = adapter;
 
