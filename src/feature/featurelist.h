@@ -217,13 +217,6 @@ FEATURE(superDooperMetrics,      // Feature ID
         QStringList(),           // feature dependencies
         FeatureCallback_true)
 
-FEATURE(themeSelection,        // Feature ID
-        "Theme selection",     // Feature name
-        FeatureCallback_true,  // Can be flipped on
-        FeatureCallback_true,  // Can be flipped off
-        QStringList(),         // feature dependencies
-        FeatureCallback_true)
-
 FEATURE(themeSelectionIncludesAutomatic,  // Feature ID
         "Theme option of 'automatic'",    // Feature name
         FeatureCallback_false,            // Can be flipped on
