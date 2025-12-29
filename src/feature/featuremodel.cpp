@@ -9,10 +9,6 @@
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 
-#ifdef MZ_ADJUST
-#  include "adjust/adjustfiltering.h"
-#endif
-
 #include <QHash>
 #include <QJsonArray>
 #include <QJsonDocument>

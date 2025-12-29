@@ -49,7 +49,6 @@ sed -i.bak -E \
 qt-cmake -S . -GXcode \
   -DCMAKE_OSX_ARCHITECTURES="arm64" \
   -DCMAKE_BUILD_TYPE=Release \
-  -DBUILD_ADJUST_SDK_TOKEN=$MVPN_IOS_ADJUST_TOKEN \
   -DBUILD_TESTS=OFF
 
 # Rename the default scheme to match the Xcode cloud configuration.

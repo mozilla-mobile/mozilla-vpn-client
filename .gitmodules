@@ -10,14 +10,6 @@
 	path = 3rdparty/wireguard-go
 	url = https://github.com/WireGuard/wireguard-go
 	shallow = true
-[submodule "3rdparty/adjust-ios-sdk"]
-	path = 3rdparty/adjust-ios-sdk
-	url = https://github.com/adjust/ios_sdk.git
-	shallow = true
-[submodule "3rdparty/adjust-android-sdk"]
-	path = 3rdparty/adjust-android-sdk
-	url = https://github.com/adjust/android_sdk
-	shallow = true
 [submodule "3rdparty/glean"]
 	path = 3rdparty/glean
 	url = https://github.com/mozilla/glean.git

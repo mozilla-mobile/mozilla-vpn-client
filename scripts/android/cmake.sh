@@ -23,18 +23,16 @@ cleanup_and_die() {
 
 JOBS=24
 RELEASE=1
-ADJUST_SDK_TOKEN=
 export SPLITAPK=0
 export ARCH="arm64-v8a"
 WORKSPACE_ROOT="$( cd "$(dirname "$0")/../.." ; pwd -P )"
 
 helpFunction() {
   print G "Usage:"
-  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>] [-a|--adjusttoken <adjust_token>]  [-A | --arch <architectures to build>] [--sentrydsn <dsn>] [--sentryendpoint <endpoint>]"
+  print N "\t$0 <path to QT> [-d|--debug] [-j|--jobs <jobs>] [-A | --arch <architectures to build>] [--sentrydsn <dsn>] [--sentryendpoint <endpoint>]"
   print N ""
   print N "By default, the android build is compiled in release mode. Use -d or --debug for a debug build."
   print N ""
-  print N "If MVPN_ANDROID_ADJUST_TOKEN env is found, this will be used at compilation time."
   print N "Valid architecture values: x86 x86_64 armeabi-v7a arm64-v8a, by default it will use all"
   print N ""
   exit 0
@@ -45,11 +43,6 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
-  -a | --adjusttoken)
-    ADJUST_SDK_TOKEN="$2"
-    shift
-    shift
-    ;;
   -A | --arch)
     ARCH="$2"
     shift
@@ -104,20 +97,12 @@ if [ -z "${ANDROID_SDK_ROOT}" ]; then
   die "Could not find 'ANDROID_SDK_ROOT' in env"
 fi
 
-if ! [[ "$ADJUST_SDK_TOKEN" ]] && [[ "$MVPN_ANDROID_ADJUST_TOKEN" ]]; then
-  print Y "Using the MVPN_ANDROID_ADJUST_TOKEN value for the adjust token"
-  ADJUST_SDK_TOKEN=$MVPN_ANDROID_ADJUST_TOKEN
-fi
-
 
 printn Y "Cleaning the folder... "
 print G "done."
 
 rm -rf .tmp/src/android-build || die "Failed to remove the temporary directory"
 mkdir -p .tmp || die "Failed to create the temporary directory"
-
-print Y "Patch Adjust files..."
-./scripts/android/patch_adjust.sh
 
 # If not provided - use the current time.
 if [ -z "$BUILD_TIMESTAMP" ]; then
@@ -127,7 +112,6 @@ fi
 printn Y "Computing the version... "
 export SHORTVERSION=$(cat version.txt) # Export so gradle can pick it up
 export VERSIONCODE=$(echo "$BUILD_TIMESTAMP" | sed 's/.\{2\}$//' ) #Remove the last 2 digits of the timestamp, should give us a new version every 100 seconds.
-export ADJUST_SDK_TOKEN=$ADJUST_SDK_TOKEN # Export it even if it is not set to override system env variables
 FULLVERSION=$SHORTVERSION.$(date +"%Y%m%d%H%M")
 print G "$SHORTVERSION - $FULLVERSION - $VERSIONCODE"
 print Y "Configuring the android build"
@@ -153,7 +137,6 @@ if [[ "$RELEASE" ]]; then
     -DANDROID_NDK_ROOT=$ANDROID_NDK_ROOT \
     -DANDROID_SDK_ROOT=$ANDROID_SDK_ROOT \
     -DCMAKE_BUILD_TYPE=Release \
-    -DADJUST_TOKEN=$ADJUST_SDK_TOKEN \
     -DBUILD_TESTS=OFF \
     -GNinja \
     -S . -B .tmp/
@@ -187,7 +170,7 @@ cd .tmp/src/android-build/
 if [[ "$RELEASE" ]]; then
   print Y "Generating Release APK..."
   ./gradlew compileReleaseSources
-  ./gradlew assemble -Padjusttoken=$ADJUST_SDK_TOKEN || cleanup_and_die
+  ./gradlew assemble || cleanup_and_die
 
   print G "Done 🎉"
   print G "Your Release APK is under .tmp/src/android-build/build/outputs/apk/release/"
