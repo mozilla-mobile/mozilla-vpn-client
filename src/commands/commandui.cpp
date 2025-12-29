@@ -382,7 +382,8 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MVPN_WEBEXTENSION
-    QPointer newServer = new WebExtension::Server{new WebExtensionAdapter(qApp)};
+    QPointer newServer =
+        new WebExtension::Server{new WebExtensionAdapter(qApp)};
     extensionServer.reset();
     QObject::connect(vpn->controller(), &Controller::readyToQuit,
                      extensionServer.get(), &WebExtension::Server::close);
