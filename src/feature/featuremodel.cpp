@@ -4,11 +4,6 @@
 
 #include "featuremodel.h"
 
-#include "feature.h"
-#include "logger.h"
-#include "qmlengineholder.h"
-#include "settingsholder.h"
-
 #include <QHash>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -16,6 +11,11 @@
 #include <QJsonValue>
 #include <QProcessEnvironment>
 #include <QQmlEngine>
+
+#include "feature.h"
+#include "logger.h"
+#include "qmlengineholder.h"
+#include "settingsholder.h"
 
 namespace {
 FeatureModel* s_instance = nullptr;
