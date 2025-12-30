@@ -28,7 +28,6 @@ include_directories(${CMAKE_SOURCE_DIR}/tests/unit_tests)
 qt_add_executable(app_unit_tests EXCLUDE_FROM_ALL MANUAL_FINALIZATION)
 add_dependencies(build_tests app_unit_tests)
 target_compile_definitions(app_unit_tests PRIVATE UNIT_TEST "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
-target_compile_definitions(app_unit_tests PRIVATE MZ_ADJUST)
 
 target_link_libraries(app_unit_tests PRIVATE
     Qt6::Gui
@@ -73,8 +72,6 @@ target_sources(app_unit_tests PRIVATE
     testaddonapi.h
     testaddonindex.cpp
     testaddonindex.h
-    testadjust.cpp
-    testadjust.h
     testcheckedint.cpp
     testcheckedint.h
     testcomposer.cpp
@@ -134,15 +131,6 @@ target_sources(app_unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.cpp
     ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.h
 )
-
-if(NOT BUILD_ADJUST_SDK_TOKEN)
-    target_sources(app_unit_tests PRIVATE
-        ${MZ_SOURCE_DIR}/adjust/adjustfiltering.cpp
-        ${MZ_SOURCE_DIR}/adjust/adjustfiltering.h
-        ${MZ_SOURCE_DIR}/adjust/adjustproxypackagehandler.cpp
-        ${MZ_SOURCE_DIR}/adjust/adjustproxypackagehandler.h
-    )
-endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     list(APPEND UNIT_TEST_ARGS -platform offscreen)
