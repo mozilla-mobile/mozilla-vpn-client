@@ -29,6 +29,7 @@
 
 struct MozillaVPNPrivate {
   SettingsHolder m_settingsHolder;
+  Localizer m_localizer;
   CaptivePortal m_captivePortal;
   CaptivePortalDetection m_captivePortalDetection;
   ConnectionHealth m_connectionHealth;
@@ -48,7 +49,6 @@ struct MozillaVPNPrivate {
   Telemetry m_telemetry;
   User m_user;
   TaskGetFeatureListWorker m_taskGetFeatureListWorker;
-  Localizer m_localizer;
 };
 
 #endif  // MOZILLAVPN_PRIVATE_H
