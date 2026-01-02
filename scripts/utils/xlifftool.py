@@ -108,6 +108,9 @@ class xliff_language:
             string = None
             if trid in self.__stringdb:
                 string = self.translate(trid)
+            elif trid.upper() == 'LOCALE':
+                # Special case, allow substitution of the locale being generated.
+                string = self.locale
             else:
                 ## Also consider snake cases and environment variable forms.
                 for key in self.__stringdb:
