@@ -193,12 +193,21 @@ void AndroidCommons::runWhenUiViewConstructible(std::function<void()> fn,
     }).then([retryMs, fn = std::move(fn)](QFuture<QVariant> f) mutable {
       const bool ok =
           f.isValid() && f.result().isValid() && f.result().toBool();
-      if (!ok)
+      if (!ok) {
         QTimer::singleShot(retryMs, qApp,
                            [fn = std::move(fn), retryMs]() mutable {
                              AndroidCommons::runWhenUiViewConstructible(
                                  std::move(fn), retryMs);
                            });
+      }
+
+      // On older android versions w/ 3 button nav (triangle/circle/square), the
+      // status bar color must be manually set.
+      if (AndroidCommons::getSDKVersion() < 29) {
+        QJniObject window = AndroidCommons::getActivity().callObjectMethod(
+            "getWindow", "()Landroid/view/Window;");
+        window.callMethod<void>("setStatusBarColor", "(I)V", 0xFF000000);
+      }
     });
   };
   QTimer::singleShot(0, qApp, attempt);
