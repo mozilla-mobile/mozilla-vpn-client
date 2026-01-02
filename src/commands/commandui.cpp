@@ -176,9 +176,6 @@ int CommandUI::run(QStringList& tokens) {
   }
 #endif
 
-#ifdef MVPN_WEBEXTENSION
-  std::unique_ptr<WebExtension::Server> extensionServer{nullptr};
-#endif
   std::unique_ptr<KeyRegenerator> keyRegenerator{nullptr};
 
   // Ensure that external styling hints are disabled.
@@ -382,10 +379,11 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MVPN_WEBEXTENSION
-    extensionServer.reset(
-        new WebExtension::Server{new WebExtensionAdapter(qApp)});
+    QPointer webExtensionServer =
+        new WebExtension::Server{new WebExtensionAdapter(qApp)};
     QObject::connect(vpn->controller(), &Controller::readyToQuit,
-                     extensionServer.get(), &WebExtension::Server::close);
+                     webExtensionServer.get(), &WebExtension::Server::close);
+    webExtensionServer.clear();
 #endif
 
 #ifdef MZ_ANDROID
