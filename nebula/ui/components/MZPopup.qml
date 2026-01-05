@@ -25,6 +25,7 @@ Popup {
     contentHeight: startContentBeneathCloseButton ? closeButton.height + closeButton.anchors.topMargin + popupContent.implicitHeight + popupContent.anchors.topMargin: popupContent.implicitHeight
     horizontalPadding: 0
     verticalPadding: 0
+    topPadding: 0 // shouldn't be necessary, as it should be equal to verticalPadding. However, it's needed to fix an iOS bug - see VPN-6477 for more info
 
     //Close popup if screen changes
     Connections {
