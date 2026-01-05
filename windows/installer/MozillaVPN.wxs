@@ -182,7 +182,7 @@
     <CustomAction Id="LaunchVPNFirstExecution" Impersonate="yes" FileRef="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
     <CustomAction Id="LaunchVPNAfterUpdate" Impersonate="yes" FileRef="MozillaVPNExecutable" ExeCommand="ui --updated" Return="asyncNoWait" />
     <InstallExecuteSequence>
-       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize" Condition="WIX_UPGRADE_DETECTED" />
+       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize" Condition="NOT WIX_UPGRADE_DETECTED" />
        <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize" Condition="WIX_UPGRADE_DETECTED" />
     </InstallExecuteSequence>
 
