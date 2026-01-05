@@ -21,7 +21,8 @@ MZDropShadow {
     states: [
         State {
             name: "on"
-            when: (state === VPNController.StateConnecting ||
+            when: (state === VPNController.StateRegeneratingKey ||
+                   state === VPNController.StateConnecting ||
                    state === VPNController.StateConfirming ||
                    state === VPNController.StateOn ||
                    state === VPNController.StateSilentSwitching ||

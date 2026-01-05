@@ -25,7 +25,6 @@
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
-#include "keyregenerator.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/servercountrymodel.h"
@@ -175,8 +174,6 @@ int CommandUI::run(QStringList& tokens) {
     QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
   }
 #endif
-
-  std::unique_ptr<KeyRegenerator> keyRegenerator{nullptr};
 
   // Ensure that external styling hints are disabled.
   qunsetenv("QT_STYLE_OVERRIDE");
@@ -409,7 +406,6 @@ int CommandUI::run(QStringList& tokens) {
       }
     }
 #endif
-    keyRegenerator.reset(new KeyRegenerator{});
     // We're ready to continue!
     logger.debug() << "CommandUI finished";
     return 0;

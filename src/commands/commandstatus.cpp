@@ -137,6 +137,9 @@ int CommandStatus::run(QStringList& tokens) {
       case Controller::StateOff:
         stream << "off";
         break;
+      case Controller::StateRegeneratingKey:
+        stream << "regenerating-key";
+        break;
       case Controller::StateConnecting:
         stream << "connecting";
         break;

@@ -94,8 +94,6 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/imageproviderfactory.h
     ${CMAKE_CURRENT_SOURCE_DIR}/ipaddresslookup.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/ipaddresslookup.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/keyregenerator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/keyregenerator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/localsocketcontroller.h
     ${CMAKE_CURRENT_SOURCE_DIR}/main.cpp

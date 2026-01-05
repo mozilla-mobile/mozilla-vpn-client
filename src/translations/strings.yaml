@@ -1065,3 +1065,8 @@ navBar:
   settingsTab:
     value: Settings
     comment: Label for the tab on the navigation bar that takes the user to the settings screen
+
+controller:
+  regeneratingKey:
+    value: Preparing your connection
+    comment: Connection subtitle label for the main screen when the app is regenerating WireGuard keys

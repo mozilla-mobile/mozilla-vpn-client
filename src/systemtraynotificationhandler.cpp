@@ -182,6 +182,8 @@ void SystemTrayNotificationHandler::updateContextMenu() {
 
     case Controller::StateSwitching:
       [[fallthrough]];
+    case Controller::StateRegeneratingKey:
+      [[fallthrough]];
     case Controller::StateConnecting:
       [[fallthrough]];
     case Controller::StateConfirming:
