@@ -40,6 +40,7 @@ tasks:
                   extract: false
             fetch:
                - win-cmake
+               - win-ninja
                - wix-toolset
         dependencies:
             by-level:
@@ -70,6 +71,7 @@ tasks:
                   extract: false
             fetch:
                - win-cmake
+               - win-ninja
                - wix-toolset
         dependencies:
             build: build-windows/next-x86_64
@@ -96,6 +98,7 @@ tasks:
                   extract: false
             fetch:
                - win-cmake
+               - win-ninja
                - wix-toolset
         dependencies:
             build: build-windows/next-aarch64

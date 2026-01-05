@@ -9,14 +9,6 @@ Get-ChildItem env:
 $CMAKE_INSTALL_DIR = (resolve-path "$env:MOZ_FETCHES_DIR\cmake-*-windows-x86_64")
 $env:PATH += ";$CMAKE_INSTALL_DIR\bin"
 
-# Download ninja
-Invoke-WebRequest -UseBasicParsing -Uri https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip -OutFile $env:MOZ_FETCHES_DIR\ninja-win.zip
-$NINJA_FILE_HASH = (Get-FileHash "$env:MOZ_FETCHES_DIR\ninja-win.zip").Hash
-if($NINJA_FILE_HASH -ne "07fc8261b42b20e71d1720b39068c2e14ffcee6396b76fb7a795fb460b78dc65") {
-    throw "Invalid file hash: $NINJA_FILE_HASH"
-}
-Expand-Archive -Path "$env:MOZ_FETCHES_DIR\ninja-win.zip" -DestinationPath "$CMAKE_INSTALL_DIR\bin"
-
 # Install the wix toolset
 New-Item -ItemType Directory -Path "$env:TASK_WORKDIR\wix" -Force
 Copy-Item -Path (Resolve-Path "$env:MOZ_FETCHES_DIR\wix.*.nupkg") -Destination $env:TASK_WORKDIR\wix\wix.zip
@@ -29,7 +21,7 @@ Write-Output "Extracting: $env:MOZ_FETCHES_DIR\unsigned.zip"
 Expand-Archive -Path "$env:MOZ_FETCHES_DIR\unsigned.zip" -DestinationPath "$env:TASK_WORKDIR\unsigned"
 
 # Package them with CMake and Wix
-cmake -B "$env:TASK_WORKDIR\unsigned" -S "$env:VCS_PATH\windows\installer" -GNinja
+cmake -B "$env:TASK_WORKDIR\unsigned" -S "$env:VCS_PATH\windows\installer" -GNinja -DCMAKE_MAKE_PROGRAM="$env:MOZ_FETCHES_DIR\ninja.exe"
 cmake --build "$env:TASK_WORKDIR\unsigned" --target msi
 
 # Upload the MSI installer

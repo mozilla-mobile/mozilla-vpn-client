@@ -39,6 +39,13 @@ tasks:
             sha256: f242f98378691496851f78beaf466797fb20251ba5092840c794503594d37726
             artifact-name: miniconda_installer.exe
             size: 80281312
+    win-ninja:
+        description: Ninja windows v1.13.2
+        fetch:
+            type: static-url
+            url: https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip
+            sha256: 07fc8261b42b20e71d1720b39068c2e14ffcee6396b76fb7a795fb460b78dc65
+            size: 291570
     wireguard-nt:
         description: Wireguard Driver
         fetch: 
