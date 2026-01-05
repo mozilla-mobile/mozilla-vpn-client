@@ -105,6 +105,11 @@ AddonMessage::MessageStatus AddonMessage::loadMessageStatus(const QString& id) {
     return static_cast<MessageStatus>(persistedStatus);
   }
 
+  // We need to persist this to disk to allow the SettingGroup that updates
+  // the red dot to properly work (in MozillaVPN::resetNotification).
+  QString newStatusSetting = statusMetaEnum.valueToKey(MessageStatus::Received);
+  m_messageSettingGroup->set(ADDON_MESSAGE_SETTINGS_STATUS_KEY,
+                             newStatusSetting);
   return MessageStatus::Received;
 }
 
