@@ -175,10 +175,6 @@ int CommandUI::run(QStringList& tokens) {
   }
 #endif
 
-#ifdef MVPN_WEBEXTENSION
-  std::unique_ptr<WebExtension::Server> extensionServer{nullptr};
-#endif
-
   // Ensure that external styling hints are disabled.
   qunsetenv("QT_STYLE_OVERRIDE");
   return MozillaVPN::runGuiApp([&]() {
@@ -321,7 +317,7 @@ int CommandUI::run(QStringList& tokens) {
     }
 
 #ifdef MZ_WINDOWS
-    auto const updateWindowDecoration = [&engineHolder]() {
+    auto const updateWindowDecoration = [engineHolder]() {
       auto const window = engineHolder->window();
       WindowsUtils::updateTitleBarColor(window,
                                         Theme::instance()->isThemeDark());
@@ -380,10 +376,11 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
 #ifdef MVPN_WEBEXTENSION
-    extensionServer.reset(
-        new WebExtension::Server{new WebExtensionAdapter(qApp)});
+    QPointer webExtensionServer =
+        new WebExtension::Server{new WebExtensionAdapter(qApp)};
     QObject::connect(vpn->controller(), &Controller::readyToQuit,
-                     extensionServer.get(), &WebExtension::Server::close);
+                     webExtensionServer.get(), &WebExtension::Server::close);
+    webExtensionServer.clear();
 #endif
 
 #ifdef MZ_ANDROID

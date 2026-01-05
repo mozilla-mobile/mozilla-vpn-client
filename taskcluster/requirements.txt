@@ -141,9 +141,7 @@ arrow==1.3.0 \
 async-timeout==5.0.1 \
     --hash=sha256:39e3809566ff85354557ec2398b55e096c8364bacac9405a7a1fa429e77fe76c \
     --hash=sha256:d9321a7a3d5a6a5e187e824d2fa0793ce379a202935782d555d6e9d2735677d3
-    # via
-    #   aiohttp
-    #   taskcluster
+    # via taskcluster
 attrs==25.4.0 \
     --hash=sha256:16d5969b87f0859ef33a48b35d55ac1be6e42ae49d5e853b597db70c35c57e11 \
     --hash=sha256:adcf7e2a1fb3b36ac48d97835bb6d8ade15b8dcce26aba8bf1d14847b57a3373
@@ -490,10 +488,10 @@ mozilla-repo-urls==0.1.1 \
     --hash=sha256:30510d3519479aa70211145d0ac9cf6e2fadcb8d30fa3b196bb957bd773502ba \
     --hash=sha256:7364da790751db2a060eb45adbf1d7db89a145ed279ba235f3425db9dd255915
     # via taskcluster-taskgraph
-mozilla-taskgraph==4.0.0 \
-    --hash=sha256:104271dfc41ed7f6e47783bc161e6911104a4a6f83bb55a5afb0f75cac9ed54d \
-    --hash=sha256:6bb6091febda3731f89e8a5af9ed75bf83f0667cc9d36c2b02c8304450099c5b
-    # via -r requirements.in
+mozilla-taskgraph==4.0.1 \
+    --hash=sha256:2b3dc28d9b4c3bf5fdcf90e68b2518e57c478052782406229f451152c8f262d9 \
+    --hash=sha256:64167d71ddb79207dadd5a5d554c0e4ab239cc797bf138356528ec19d3837b49
+    # via -r taskcluster/requirements.in
 multidict==6.7.0 \
     --hash=sha256:03ca744319864e92721195fa28c7a3b2bc7b686246b35e4078c1e4d0eb5466d3 \
     --hash=sha256:040f393368e63fb0f3330e70c26bfd336656bed925e5cbe17c9da839a6ab13ec \
@@ -870,11 +868,11 @@ taskcluster==91.1.2 \
     --hash=sha256:ac9cb0c6b63367601a896d2724a9f62e15cf455191e5c0b533a2d8149340bf39 \
     --hash=sha256:fc588922305a0ba586d8eac8b8cb3a8479324d49ee37a176d34a3bf9a152963d
     # via taskcluster-taskgraph
-taskcluster-taskgraph==17.3.0 \
-    --hash=sha256:0cef83b9fd87d9dc977747945c61ce1f06c28dedddba93fe626b71c6163b90f6 \
-    --hash=sha256:7acc07d8d3140cb2bc2683cb80f368dfd3b2cd0d7249f4c375f95b10de4a33bc
+taskcluster-taskgraph==18.0.0 \
+    --hash=sha256:d4f50feb7b09c5dfd9a4cacfb8cf453812b16f068cc3ebd4be0e85f398ef3729 \
+    --hash=sha256:e609f78e13e3e18e04b5bf0a1f5b9416bf277fea96aee763f3fbfdf6c4839a42
     # via
-    #   -r requirements.in
+    #   -r taskcluster/requirements.in
     #   mozilla-taskgraph
 taskcluster-urls==13.0.1 \
     --hash=sha256:5e25e7e6818e8877178b175ff43d2e6548afad72694aa125f404a7329ece0973 \
@@ -894,9 +892,7 @@ types-python-dateutil==2.9.0.20240316 \
 typing-extensions==4.15.0 \
     --hash=sha256:0cea48d173cc12fa28ecabc3b837ea3cf6f38c6d1136f85cbaaf598984861466 \
     --hash=sha256:f0fa19c6845758ab08074a0cfa8b7aecb71c999ca73d62883bc25cc018c4e548
-    # via
-    #   aiosignal
-    #   multidict
+    # via aiosignal
 urllib3==2.2.2 \
     --hash=sha256:a448b2f64d686155468037e1ace9f2d2199776e17f0a46610480d311f73e3472 \
     --hash=sha256:dd505485549a7a552833da5e6063639d0d177c04f23bc3864e41e5dc5f612168

@@ -2,16 +2,16 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.5
-import QtQuick.Controls 2.14
-import QtQuick.Layouts 1.14
-import QtQuick.Window 2.12
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Window
 
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-Window {
+ApplicationWindow {
     id: window
 
     signal showServerList
@@ -70,7 +70,8 @@ Window {
     }
 
     screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
-    flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
+    // TODO: Once every platform is on Qt 6.9, swap MaximizeUsingFullscreenGeometryHint for ExpandedClientAreaHint: https://doc.qt.io/qt-6.9/qt.html
+    flags: Qt.Window | Qt.ExpandedClientAreaHint | Qt.NoTitlebarBackgroundHint | Qt.MaximizeUsingFullscreenGeometryHint
     visible: true
 
     width: fullscreenRequired() ? Screen.width : MZTheme.theme.desktopAppWidth;
@@ -81,7 +82,20 @@ Window {
     maximumHeight: fullscreenRequired() ? Screen.height : MZTheme.theme.desktopAppHeight;
 
     title: MZI18n.ProductName
-    color: MZTheme.colors.bgColor
+    color: {
+        // This is only relevant on android
+        if(Qt.platform.os !== "android"){
+            return MZTheme.colors.bgColor;
+        }
+        if (MZTheme.currentSystemTheme === MZTheme.currentTheme) {
+            return MZTheme.colors.bgColor;
+        } 
+        if (MZTheme.currentSystemTheme === "main") {
+            return "white";
+        } else {
+            return "black";
+        }
+    }
     onClosing: close => {
         console.log("Closing request handling");
 
@@ -134,8 +148,8 @@ Window {
         width: window.width
         anchors.top: parent.top
     }
-
     MZNavigatorLoader {
+      id: screenLoader
       objectName: "screenLoader"
       anchors {
           top: iosSafeAreaTopMargin.bottom

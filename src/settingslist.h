@@ -61,18 +61,6 @@ SETTING_BOOL(addonProdKeyInStaging,        // getter
              true                          // sensitive (do not log)
 )
 
-#if defined(MZ_ADJUST)
-SETTING_BOOL(adjustActivatable,        // getter
-             setAdjustActivatable,     // setter
-             removeAdjustActivatable,  // remover
-             hasAdjustActivatable,     // has
-             "adjustActivatable",      // key
-             false,                    // default value
-             false,                    // remove when reset
-             false                     // sensitive (do not log)
-)
-#endif
-
 SETTING_BOOL(captivePortalAlert,        // getter
              setCaptivePortalAlert,     // setter
              removeCaptivePortalAlert,  // remover

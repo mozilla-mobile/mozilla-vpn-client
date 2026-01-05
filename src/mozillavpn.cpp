@@ -73,10 +73,6 @@
 #  include "platforms/android/androidvpnactivity.h"
 #endif
 
-#ifdef MZ_ADJUST
-#  include "adjust/adjusthandler.h"
-#endif
-
 #ifdef MZ_IOS
 #  include "platforms/ios/ioscommons.h"
 #endif
@@ -216,6 +212,14 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
           &m_private->m_connectionHealth,
           &ConnectionHealth::connectionStateChanged);
 
+  // Staging must be set before the featuremodel is initialized, otherwise
+  // FeatureCallback_inStaging is read incorrectly.
+  // A feature is checked while setting up the ProductHandler, hence
+  // the staging initialization is here.
+  if (SettingsHolder::instance()->stagingServer()) {
+    Constants::setStaging();
+    LogHandler::instance()->setStderr(true);
+  }
   ProductsHandler::createInstance();
   PurchaseHandler* purchaseHandler = PurchaseHandler::createInstance();
   connect(purchaseHandler, &PurchaseHandler::subscriptionStarted, this,
@@ -298,13 +302,6 @@ void MozillaVPN::initialize() {
   RecommendedLocationModel::instance()->initialize();
 
   QList<Task*> initTasks{new TaskAddonIndex()};
-
-#ifdef MZ_ADJUST
-  logger.debug() << "Adjust included in build.";
-  initTasks.append(new TaskFunction([] { AdjustHandler::initialize(); }));
-#else
-  logger.debug() << "Adjust not included in build.";
-#endif
 
   TaskScheduler::scheduleTask(new TaskGroup(initTasks));
 
@@ -492,16 +489,6 @@ void MozillaVPN::maybeStateMain() {
     settingsHolder->setOnboardingStep(0);
     settingsHolder->setOnboardingDataCollectionEnabled(false);
   }
-
-#ifdef MZ_ADJUST
-  // When the client is ready to be activated, we do not need adjustSDK anymore
-  // (the subscription is done, and no extra events will be dispatched). We
-  // cannot disable AdjustSDK at runtime, but we can disable it for the next
-  // execution.
-  if (settingsHolder->hasAdjustActivatable()) {
-    settingsHolder->setAdjustActivatable(false);
-  }
-#endif
 
   // This next bit covers specific situation: When signing out and signing back
   // in (without quitting the client), the client should automatically start if
@@ -1070,10 +1057,6 @@ void MozillaVPN::subscriptionCompleted() {
 #endif
 
   logger.debug() << "Subscription completed";
-
-#ifdef MZ_ADJUST
-  AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
-#endif
 
   completeActivation();
 }
@@ -2361,11 +2344,6 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   QQmlContext* ctx = engine->rootContext();
   ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
-  if (SettingsHolder::instance()->stagingServer()) {
-    Constants::setStaging();
-    LogHandler::instance()->setStderr(true);
-  }
-
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
@@ -2405,7 +2383,13 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   callback();
 #endif
 
-  return app.exec();
+#if defined(MZ_ANDROID) && (QT_VERSION > QT_VERSION_CHECK(6, 10, 1))
+#  error \
+      "Revisit the code below and replace QCoreApplication::exec() \
+      with app.exec() if the app no longer crashes on Pixel 2 XL, \
+      see https://github.com/mozilla-mobile/mozilla-vpn-client/pull/10895"
+#endif
+  return QCoreApplication::exec();
 }
 
 #ifdef MZ_MACOS

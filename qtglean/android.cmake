@@ -6,6 +6,19 @@ include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
 set(GLEAN_VENDORED_PATH ${CMAKE_SOURCE_DIR}/3rdparty/glean)
 
+message(STATUS "Building Glean Rust library...")
+execute_process(
+    COMMAND ${CARGO_BUILD_TOOL} build --release
+    WORKING_DIRECTORY ${GLEAN_VENDORED_PATH}/glean-core/bundle-android
+    RESULT_VARIABLE CARGO_BUILD_RESULT
+    COMMAND_ERROR_IS_FATAL ANY
+)
+
+if(NOT CARGO_BUILD_RESULT EQUAL 0)
+    message(FATAL_ERROR "Failed to build Glean Rust library")
+endif()
+message(STATUS "Glean Rust library built successfully")
+
 execute_process(
     COMMAND ${CMAKE_COMMAND} -E env
         ${CARGO_BUILD_TOOL} run --manifest-path ${GLEAN_VENDORED_PATH}/tools/embedded-uniffi-bindgen/Cargo.toml

@@ -49,8 +49,6 @@ $ conda activate vpn-android
 $ ./scripts/android/cmake.sh -d 
 ```
 
-> For release builds: Add the Adjust SDK token with `-a | --adjust <adjust_token>`.
-
 
 # Run
 

@@ -20,14 +20,12 @@ env
 
 # Get Secrets for building
 if [[ "$MOZ_SCM_LEVEL" == "3" ]]; then
-  echo "Fetching Tokens!"
-  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k adjust -f adjust_token
+  echo "Fetching Token!"
   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
 else
     echo "Using dummy Tokens!"
     # write a dummy value in the files, so that we still compile sentry c:
     echo "dummy" > sentry_debug_file_upload_key
-    echo "dummy" > adjust_token
 fi
 
 
@@ -42,7 +40,7 @@ mkdir -p /builds/worker/artifacts/
 # aqt-name "x86"         -> qmake-name: "x86"
 # aqt-name "x86_64"      -> qmake-name: "x86_64"
 
-./scripts/android/cmake.sh $QTPATH -A $1 -a $(cat adjust_token)
+./scripts/android/cmake.sh $QTPATH -A $1
 
 if [[ "$MOZ_SCM_LEVEL" == "3" ]]; then
   sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)

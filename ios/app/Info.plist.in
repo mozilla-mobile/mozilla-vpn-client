@@ -47,8 +47,6 @@
 	<array/>
 	<key>com.wireguard.ios.app_group_id</key>
 	<string>group.org.mozilla.ios.Guardian</string>
-	<key>ADJUST_SDK_TOKEN</key>
-	<string>${BUILD_ADJUST_SDK_TOKEN}</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>
 </dict>

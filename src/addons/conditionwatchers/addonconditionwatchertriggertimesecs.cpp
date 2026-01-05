@@ -53,7 +53,7 @@ bool AddonConditionWatcherTriggerTimeSecs::maybeStartTimer() {
   }
 
   m_timer.setSingleShot(true);
-  m_timer.start(now.msecsTo(expire));
+  m_timer.start(std::chrono::milliseconds(now.msecsTo(expire)));
 
   return false;
 }

@@ -2,7 +2,5 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-target_sources(shared-sources INTERFACE
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscommons.h
-     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioscommons.mm
-)
+set(CMAKE_SYSTEM_PROCESSOR arm64 CACHE STRING "Target operating system processor")
+include(${CMAKE_CURRENT_LIST_DIR}/conda-toolchain.cmake)

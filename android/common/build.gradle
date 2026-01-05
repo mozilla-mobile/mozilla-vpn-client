@@ -16,7 +16,6 @@ android {
         Config.targetSdkVersion
         buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
         buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
-        buildConfigField  "String", "ADJUST_SDK_TOKEN" ,  '"' + (project.properties["adjusttoken"] ?: "no_token_found") +  '"'
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
@@ -51,7 +50,6 @@ dependencies {
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
     implementation project(path: ':qtglean')
-    implementation project(path: ':adjust')
 
     implementation "androidx.security:security-crypto:1.1.0-alpha06"
     implementation "androidx.security:security-identity-credential:1.0.0-alpha03"

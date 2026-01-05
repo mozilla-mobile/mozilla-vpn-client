@@ -4,6 +4,7 @@
 
 use ffi_support::FfiStr;
 use glean::ErrorType;
+use glean::TestGetValue;
 
 use crate::ffi::helpers;
 

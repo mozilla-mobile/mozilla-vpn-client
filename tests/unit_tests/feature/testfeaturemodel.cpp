@@ -4,7 +4,6 @@
 
 #include "testfeaturemodel.h"
 
-#include "adjust/adjustfiltering.h"
 #include "feature/feature.h"
 #include "feature/featuremodel.h"
 #include "helper.h"

@@ -182,8 +182,7 @@ void Theme::setUsingSystemTheme(const bool usingSystemTheme) {
 }
 
 void Theme::setToSystemTheme() {
-  if (!Feature::get(Feature::Feature_themeSelection)->isSupported() ||
-      !Feature::get(Feature::Feature_themeSelectionIncludesAutomatic)) {
+  if (!Feature::get(Feature::Feature_themeSelectionIncludesAutomatic)) {
     logger.debug()
         << "Not setting to system theme because feature is not supported.";
     return;

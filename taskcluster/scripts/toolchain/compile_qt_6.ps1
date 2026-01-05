@@ -5,9 +5,50 @@
 Set-Location $env:TASK_WORKDIR
 Get-ChildItem env:
 
+# The modules to exclude from the Qt build.
+$QT_MOD_EXCLUDE = @(
+  'qt3d'
+  'qtactiveqt'
+  'qtandroidextras'
+  'qtcharts'
+  'qtcoap'
+  'qtconnectivity'
+  'qtdatavis3d'
+  'qtdoc'
+  'qtgamepad'
+  'qtgraphs'
+  'qtgrpc'
+  'qthttpserver'
+  'qtlanguageserver'
+  'qtlocation'
+  'qtlottie'
+  'qtmqtt'
+  'qtmultimedia'
+  'qtopcua'
+  'qtpositioning'
+  'qtquick3d'
+  'qtquick3dphysics'
+  'qtquickeffectmaker'
+  'qtquicktimeline'
+  'qtremoteobjects'
+  'qtscxml'
+  'qtsensors'
+  'qtserialbus'
+  'qtserialport'
+  'qtspeech'
+  'qtvirtualkeyboard'
+  'qtwayland'
+  'qtweb'
+  'qtwebengine'
+  'qtwebview'
+  'qtwebchannel'
+)
+
 # Extract the Qt source tarball.
 $QT_SRC_FILENAME = (resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*.tar.xz" | Split-Path -Leaf)
-Start-Process -WorkingDirectory "$env:MOZ_FETCHES_DIR" -NoNewWindow -Wait "tar" -ArgumentList @('xf', "$QT_SRC_FILENAME", '--exclude=qt-everywhere-src-*/qtwebengine')
+$QT_TAR_ARGUMENTS = ('xf', "$QT_SRC_FILENAME") + ($QT_MOD_EXCLUDE | % { "--exclude=qt-everywhere-src-*/$_" })
+Start-Process -WorkingDirectory "$env:MOZ_FETCHES_DIR" -NoNewWindow -Wait "tar" -ArgumentList $QT_TAR_ARGUMENTS
+Remove-Item "$env:MOZ_FETCHES_DIR/$QT_SRC_FILENAME"
 
 # Activate the visual studio developer shell.
 $VS_SHELL_HELPER = resolve-path "$env:MOZ_FETCHES_DIR/*/enter_dev_shell.ps1"
@@ -39,7 +80,7 @@ $ErrorActionPreference = "Stop"
 # For detailed feature flags, run the configuration, then check the CMakeLists.txt
 # Variables with FEATURE_XYZ can be switched off using -no-feature
 # Whole folders can be skipped using -skip <folder>
-Start-Process -WorkingDirectory "$QT_BUILD_PATH" -NoNewWindow -PassThru $QT_CONFIG_SCRIPT -ArgumentList @(
+$QT_CONFIG_ARGUMENTS = @(
   '-static'
   '-opensource'
   '-debug-and-release'
@@ -64,41 +105,12 @@ Start-Process -WorkingDirectory "$QT_BUILD_PATH" -NoNewWindow -PassThru $QT_CONF
   '-no-feature-textodfwriter'
   '-no-feature-networklistmanager'
   '-no-feature-dbus'
-  '-skip qtgraphs'
-  '-skip qt3d'
-  '-skip qtdoc'
-  '-skip qtgrpc'
-  '-skip qtconnectivity'
-  '-skip qtquickeffectmaker'
-  '-skip qtwebengine'
-  '-skip qtwebview'
-  '-skip qtlocation'
-  '-skip qtserialport'
-  '-skip qtsensors'
-  '-skip qtgamepad'
-  '-skip qtandroidextras'
-  '-skip qtquick3dphysics'
-  '-skip qtactiveqt'
-  '-skip qtcoap'
-  '-skip qtgrpc'
-  '-skip qtremoteobjects'
-  '-skip qtlottie'
-  '-skip qtmqtt'
-  '-skip qtopcua'
-  '-skip qtpositioning'
-  '-skip qtquick3d'
-  '-skip qtscxml'
-  '-skip qtserialbus'
-  '-skip qtserialport'
-  '-skip qtspeech'
-  '-skip qtwayland'
-  '-skip qtvirtualkeyboard'
-  '-skip qtweb'
   '-feature-imageformat_png'
   '-qt-libpng'
   '-qt-zlib'
   "-prefix $QT_INSTALL_PATH"
-) | Wait-Process
+) + ($QT_MOD_EXCLUDE | % { "-skip $_" })
+Start-Process -WorkingDirectory "$QT_BUILD_PATH" -NoNewWindow -PassThru $QT_CONFIG_SCRIPT -ArgumentList $QT_CONFIG_ARGUMENTS | Wait-Process
 
 # Build and install Qt
 Write-Output "Starting build: $QT_BUILD_PATH"
@@ -107,23 +119,24 @@ if ($LastExitCode -ne 0) {
   Exit $LastExitCode
 }
 
+Write-Output "Installing debug Qt:"
 cmake --install $QT_BUILD_PATH --config Debug
 if ($LastExitCode -ne 0) {
   Exit $LastExitCode
 }
 
+Write-Output "Installing release Qt:"
 cmake --install $QT_BUILD_PATH --config Release
 if ($LastExitCode -ne 0) {
   Exit $LastExitCode
 }
 
-tar -cJf qt6_win.tar.xz qt-windows/
+Write-Output "Compressing tarball"
+New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/public/build" -Force
+tar -cvJf public/build/qt6_win.tar.xz qt-windows/
 if ($LastExitCode -ne 0) {
   Exit $LastExitCode
 }
-
-New-Item -ItemType Directory -Path "$env:TASK_WORKDIR/public/build" -Force
-Move-Item -Path qt6_win.tar.xz -Destination "$env:TASK_WORKDIR/public/build"
 
 Write-Output "Build complete, tarball created:"
 
