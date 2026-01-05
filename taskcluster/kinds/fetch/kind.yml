@@ -24,6 +24,13 @@ tasks:
         #artifact-prefix: vpn/win-dev-env
         fetch-alias: win-dev-env
 
+    win-cmake:
+        description: CMake windows-x86_64 v4.2.1
+        fetch:
+            type: static-url
+            url: https://github.com/Kitware/CMake/releases/download/v4.2.1/cmake-4.2.1-windows-x86_64.zip
+            sha256: dfc2b2afac257555e3b9ce375b12b2883964283a366c17fec96cf4d17e4f1677
+            size: 50046734
     win-conda:
         description: Miniconda Installer
         fetch: 
@@ -32,6 +39,13 @@ tasks:
             sha256: f242f98378691496851f78beaf466797fb20251ba5092840c794503594d37726
             artifact-name: miniconda_installer.exe
             size: 80281312
+    win-ninja:
+        description: Ninja windows v1.13.2
+        fetch:
+            type: static-url
+            url: https://github.com/ninja-build/ninja/releases/download/v1.13.2/ninja-win.zip
+            sha256: 07fc8261b42b20e71d1720b39068c2e14ffcee6396b76fb7a795fb460b78dc65
+            size: 291570
     wireguard-nt:
         description: Wireguard Driver
         fetch: 
@@ -39,6 +53,13 @@ tasks:
             url: https://download.wireguard.com/wireguard-nt/wireguard-nt-0.10.1.zip
             sha256: 772c0b1463d8d2212716f43f06f4594d880dea4f735165bd68e388fc41b81605
             size: 1774096
+    wix-toolset:
+        description: Wix Toolset CLI
+        fetch:
+            type: static-url
+            url: https://github.com/wixtoolset/wix/releases/download/v5.0.2/artifacts.zip
+            sha256: 2b28db604c69e10d48297357dcd70adf5cfadf548be73186ffd38ff657563ecd
+            size: 187269562
     macos-miniconda:
         description: MiniConda3 osx-x86 Python 3.10 
         fetch:
