@@ -27,7 +27,7 @@ task-defaults:
         cwd: '{checkout}'
 
 windows/opt:
-    description: "Windows Build (release)"
+    description: "Windows Build (Release/x86_64)"
     fetches:
         fetch:
             - win-conda
@@ -44,6 +44,28 @@ windows/opt:
     run:
         exec-with: powershell
         command: taskcluster/scripts/build/windows_clang_cl.ps1
+
+windows/opt-aarch64:
+    description: "Windows Build (Release/aarch64)"
+    fetches:
+        fetch:
+            - win-conda
+        toolchain:
+            - conda-windows-cross
+            - qt-windows-aarch64-6.9
+            - qt-tools-6.9
+    treeherder:
+        symbol: B
+        platform: windows/aarch64
+    worker-type: b-linux
+    worker:
+        docker-image: {in-tree: conda-base}
+        artifacts:
+            - type: directory
+              name: public/build
+              path: artifacts
+    run:
+        command: ./taskcluster/scripts/build/windows_cross.sh aarch64
 
 windows/next-x86_64:
     description: "Windows Build (Next Qt/x86_64)"
