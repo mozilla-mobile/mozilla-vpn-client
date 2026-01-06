@@ -200,6 +200,11 @@ describe('Key regeneration', function () {
   };
 
   it('Connect to VPN - key regeneration is triggered for expired keys', async () => {
+    if (this.ctx.wasm) {
+      // This test cannot run in wasm
+      return;
+    }
+
     await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
     await vpn.setSetting('connectionChangeNotification', 'true');
