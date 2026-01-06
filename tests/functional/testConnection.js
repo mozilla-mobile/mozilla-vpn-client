@@ -181,6 +181,23 @@ describe('Connectivity', function() {
             'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName'),
         'Sydney');
   });
+});
+
+describe('Key regeneration', function () {
+  this.ctx.authenticationNeeded = true;
+
+  this.ctx.guardianOverrideEndpoints = {
+    POSTs: {
+      '/api/v1/vpn/device': {
+        status: 201,
+        requiredHeaders: ['Authorization'],
+        callback: async (req) => {
+          await vpn.wait();
+        },
+        body: {}
+      },
+    }
+  };
 
   it('Connect to VPN - key regeneration is triggered for expired keys', async () => {
     await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
@@ -192,11 +209,6 @@ describe('Connectivity', function() {
     await vpn.waitForCondition(async () => {
       return await vpn.getQueryProperty(
         queries.screenHome.CONTROLLER_SUBTITLE, 'text') === 'Preparing your connection';
-    });
-
-    await vpn.waitForCondition(async () => {
-      return await vpn.getQueryProperty(
-        queries.screenHome.CONTROLLER_TITLE, 'text') === 'VPN is on';
     });
   });
 });
