@@ -92,20 +92,7 @@ ApplicationWindow {
     maximumHeight: fullscreenRequired() ? Screen.height : MZTheme.theme.desktopAppHeight;
 
     title: MZI18n.ProductName
-    color: {
-        // This is only relevant on android
-        if(Qt.platform.os !== "android"){
-            return MZTheme.colors.bgColor;
-        }
-        if (MZTheme.currentSystemTheme === MZTheme.currentTheme) {
-            return MZTheme.colors.bgColor;
-        } 
-        if (MZTheme.currentSystemTheme === "main") {
-            return "white";
-        } else {
-            return "black";
-        }
-    }
+    color: MZTheme.colors.bgColor
     onClosing: close => {
         console.log("Closing request handling");
 

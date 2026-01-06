@@ -21,6 +21,10 @@
 #  include "platforms/ios/ioscommons.h"
 #endif
 
+#ifdef MZ_ANDROID
+#  include "platforms/android/androidcommons.h"
+#endif
+
 #if defined(MZ_LINUX) && !defined(UNIT_TEST)
 #  include "platforms/linux/xdgappearance.h"
 #endif
@@ -276,9 +280,16 @@ QString Theme::currentSystemTheme() {
 #endif
 
 void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
-#ifdef MZ_IOS
+#if defined MZ_IOS
   IOSCommons::setStatusBarTextColor(color);
+#elif defined MZ_ANDROID
+  if (color == Theme::StatusBarTextColorLight) {
+    AndroidCommons::setStatusBarTextColor("light");
+  } else {
+    AndroidCommons::setStatusBarTextColor("dark");
+  }
 #endif
+
 }
 
 bool Theme::usesDarkModeAssets() const {
