@@ -21,6 +21,8 @@ import android.os.RemoteException;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
@@ -36,6 +38,9 @@ import org.qtproject.qt.android.QtActivityBase;
 
 
 public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
+  private static boolean splashScreenReady = false;
+  private static ViewTreeObserver.OnPreDrawListener preDrawListener = null;
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
     Log.d("VPNActivity", "onCreate");
@@ -52,6 +57,25 @@ public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
 
     super.onCreate(savedInstanceState);
     instance = this;
+
+    // Set up splash screen delay using OnPreDrawListener
+    final View content = findViewById(android.R.id.content);
+    preDrawListener = new ViewTreeObserver.OnPreDrawListener() {
+      @Override
+      public boolean onPreDraw() {
+        if (splashScreenReady) {
+          // Content is ready, remove listener and start drawing
+          content.getViewTreeObserver().removeOnPreDrawListener(this);
+          Log.d("VPNActivity", "Splash screen dismissed - app ready");
+          return true;
+        } else {
+          // Keep splash screen visible
+          Log.d("VPNActivity", "Splash screen waiting for ready signal");
+          return false;
+        }
+      }
+    };
+    content.getViewTreeObserver().addOnPreDrawListener(preDrawListener);
     if (needsOrientationLock()) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     } else {
@@ -69,6 +93,24 @@ public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
   private static boolean ready = false;
   public static boolean isReady(){
     return ready;
+  }
+
+  // Call this from JNI to dismiss the splash screen and start rendering the app
+  public static void dismissSplashScreen() {
+    Log.d("VPNActivity", "dismissSplashScreen called from native code");
+    splashScreenReady = true;
+    // Trigger a redraw to invoke the OnPreDrawListener
+    if (instance != null) {
+      instance.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          View content = instance.findViewById(android.R.id.content);
+          if (content != null) {
+            content.invalidate();
+          }
+        }
+      });
+    }
   }
 
   public static VPNActivity getInstance() {
