@@ -36,6 +36,8 @@ class AndroidCommons final : public QObject {
   static void initializeGlean(bool isTelemetryEnabled, const QString& channel);
 
   static void dispatchToMainThread(std::function<void()> callback);
+
+  static void dismissSplashScreen();
 };
 
 #endif  // ANDROIDCOMMONS_H
