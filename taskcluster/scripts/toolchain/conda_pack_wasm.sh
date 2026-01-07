@@ -11,16 +11,19 @@ conda env create -f ${VCS_PATH}/env-wasm.yml
 conda run -n vpn conda info
 CONDA_VPN_PREFIX=$(conda env list | awk '{ if($1=="vpn") print $NF }')
 
-# Pull the EMSDK version from the environment file.
-EMSDK_VERSION=$(grep emsdk ${VCS_PATH}/env-wasm.yml | cut -d= -f2)
+# Copy the EMSDK fetch into the conda environment
+EMSDK_SOURCE_DIR=$(find ${MOZ_FETCHES_DIR} -maxdepth 2 -name 'emscripten-releases-tags.json' -printf '%h\n')
+EMSDK_VERSION=$(basename "${EMSDK_SOURCE_DIR}" | cut -d- -f2)
+cp -r ${EMSDK_SOURCE_DIR} ${CONDA_VPN_PREFIX}/emsdk
 
+# Install the EMSDK into the conda prefix
 echo "Installing EMSDK..."
-conda run -n vpn emsdk install ${EMSDK_VERSION}
+conda run -n vpn ${CONDA_VPN_PREFIX}/emsdk/emsdk install ${EMSDK_VERSION}
 cat <<EOF > ${CONDA_VPN_PREFIX}/etc/conda/activate.d/emsdk-activate.sh
 #!/bin/bash
 export EMSDK_VERSION=${EMSDK_VERSION}
-emsdk activate \${EMSDK_VERSION}
-source \${CONDA_PREFIX}/lib/python3.10/site-packages/emsdk/emsdk_env.sh
+\${CONDA_PREFIX}/emsdk/emsdk activate \${EMSDK_VERSION}
+source \${CONDA_PREFIX}/emsdk/emsdk_env.sh
 EOF
 chmod +x ${CONDA_VPN_PREFIX}/etc/conda/activate.d/emsdk-activate.sh
 
