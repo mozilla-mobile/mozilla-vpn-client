@@ -117,9 +117,6 @@ commonStrings:
   bullet51:
     value: "[Android] If you share logs when contacting support, they now include the device model and manufacturer to help us better help you."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Android platform.
-  bullet52:
-    value: "[Windows] ARM builds have arrived!"
-    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Windows platform.
   bullet6:
     value: "[Linux] If your distro ships with that latest Qt 6.10, builds from scratch may have had issues. They no longer should."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Linux platform.
