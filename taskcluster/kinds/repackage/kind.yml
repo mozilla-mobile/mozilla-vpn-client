@@ -29,7 +29,7 @@ task-defaults:
 
 tasks:
     msi:
-        description: Build MSI installer package
+        description: Build MSI installer package (x86_64)
         fetches:
             from-dependency: # Updated to match dependencies in repackage.py
                 - artifact: unsigned.zip
@@ -45,13 +45,13 @@ tasks:
         dependencies:
             by-level:
                 "3":
-                    signing: signing-windows/opt
+                    signing: signing-windows-x86_64/opt
                 default:
-                    build: build-windows/opt
+                    build: build-windows-x86_64/opt
         worker-type: b-win2022
         release-artifacts: [MozillaVPN.msi]
         attributes:
-            build-type: windows/opt
+            build-type: windows-x86_64/opt
         run:
             exec-with: powershell
             command: ./taskcluster/scripts/build/windows_repackage.ps1
@@ -59,8 +59,8 @@ tasks:
             symbol: rpk(msi)
             platform: windows/x86_64
 
-    msi-next-x86_64:
-        description: Build MSI installer package (next Qt/x86_64)
+    msi-aarch64:
+        description: Build MSI installer package (aarch64)
         fetches:
             build:
                 - artifact: unsigned.zip
@@ -74,43 +74,16 @@ tasks:
                - win-ninja
                - wix-toolset
         dependencies:
-            build: build-windows/next-x86_64
+            build: build-windows-aarch64/opt
         worker-type: b-win2022
         release-artifacts: [MozillaVPN.msi]
         attributes:
-            build-type: windows/next
+            build-type: windows-aarch64/opt
         run:
             exec-with: powershell
             command: ./taskcluster/scripts/build/windows_repackage.ps1
         treeherder:
-            symbol: rpk(msi-next)
-            platform: windows/x86_64
-
-    msi-next-aarch64:
-        description: Build MSI installer package (next Qt/aarch64)
-        fetches:
-            build:
-                - artifact: unsigned.zip
-                  # Workers are using an old version of PowerShell that doesn'tcontain the fix in
-                  # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/48, and the
-                  # `fetch-content` script is not able to properly extract it. Until we can use a
-                  # newer PowerShell, we'll need to handle extraction ourselves.
-                  extract: false
-            fetch:
-               - win-cmake
-               - win-ninja
-               - wix-toolset
-        dependencies:
-            build: build-windows/next-aarch64
-        worker-type: b-win2022
-        release-artifacts: [MozillaVPN.msi]
-        attributes:
-            build-type: windows/next
-        run:
-            exec-with: powershell
-            command: ./taskcluster/scripts/build/windows_repackage.ps1
-        treeherder:
-            symbol: rpk(msi-next)
+            symbol: rpk(msi)
             platform: windows/aarch64
 
     macpkg:
@@ -136,27 +109,3 @@ tasks:
         treeherder:
             symbol: rpk(macpkg)
             platform: macos/universal
-
-    macpkg-next:
-        description: Build macOS installer package (next Qt)
-        fetches:
-            fetch:
-               - macos-cmake
-            from-dependency: # Updated to match dependencies in repackage.py
-                - artifact: MozillaVPN.tar.gz
-                  extract: false
-        dependencies:
-            by-level:
-                "3":
-                    signing: signing-macos/next
-                default:
-                    build: build-macos/next
-        worker-type: b-macos
-        release-artifacts: [MozillaVPN.pkg]
-        attributes:
-            build-type: macos/next
-        run:
-            command: ./taskcluster/scripts/build/macos_repackage.sh
-        treeherder:
-            symbol: rpk(macpkg)
-            platform: macos/next

@@ -26,16 +26,16 @@ task-defaults:
         using: run-task
         cwd: '{checkout}'
 
-windows/opt:
-    description: "Windows Build (Release/x86_64)"
+windows-x86_64/native:
+    description: "Windows Build (native compile)"
     fetches:
         fetch:
             - win-conda
         toolchain:
             - conda-windows-x86_64
-            - qt-windows-x86_64-6.9
+            - qt-windows-x86_64-6.10
     treeherder:
-        symbol: B
+        symbol: BD
     worker:
         artifacts:
             - type: directory
@@ -44,18 +44,37 @@ windows/opt:
     run:
         exec-with: powershell
         command: taskcluster/scripts/build/windows_clang_cl.ps1
+    # TODO: Set this before merging to minimize the need for Windows
+    # workers.
+    #requires-level: 3
 
-windows/opt-aarch64:
-    description: "Windows Build (Release/aarch64)"
+windows-x86_64/opt:
+    description: "Windows Build (Release/x86_64)"
     fetches:
-        fetch:
-            - win-conda
         toolchain:
             - conda-windows-cross
-            - qt-windows-aarch64-6.9
-            - qt-tools-6.9
+            - qt-windows-x86_64-6.10
+            - qt-tools-6.10
+    worker-type: b-linux
     treeherder:
-        symbol: B
+        platform: windows/x86_64
+    worker:
+        docker-image: {in-tree: conda-base}
+        artifacts:
+            - type: directory
+              name: public/build
+              path: artifacts
+    run:
+        command: ./taskcluster/scripts/build/windows_cross.sh x86_64
+
+windows-aarch64/opt:
+    description: "Windows Build (Release/aarch64)"
+    fetches:
+        toolchain:
+            - conda-windows-cross
+            - qt-windows-aarch64-6.10
+            - qt-tools-6.10
+    treeherder:
         platform: windows/aarch64
     worker-type: b-linux
     worker:
@@ -64,44 +83,5 @@ windows/opt-aarch64:
             - type: directory
               name: public/build
               path: artifacts
-    run:
-        command: ./taskcluster/scripts/build/windows_cross.sh aarch64
-
-windows/next-x86_64:
-    description: "Windows Build (Next Qt/x86_64)"
-    fetches:
-        toolchain:
-            - conda-windows-cross
-            - qt-windows-x86_64-next
-            - qt-tools-next
-    treeherder:
-        symbol: NEXT
-    worker-type: b-linux
-    worker:
-        docker-image: {in-tree: conda-base}
-        artifacts:
-            - type: directory
-              name: public/build
-              path: /builds/worker/artifacts
-    run:
-        command: ./taskcluster/scripts/build/windows_cross.sh
-
-windows/next-aarch64:
-    description: "Windows Build (Next Qt/aarch64)"
-    fetches:
-        toolchain:
-            - conda-windows-cross
-            - qt-windows-aarch64-next
-            - qt-tools-next
-    treeherder:
-        symbol: NEXT
-        platform: windows/aarch64
-    worker-type: b-linux
-    worker:
-        docker-image: {in-tree: conda-base}
-        artifacts:
-            - type: directory
-              name: public/build
-              path: /builds/worker/artifacts
     run:
         command: ./taskcluster/scripts/build/windows_cross.sh aarch64

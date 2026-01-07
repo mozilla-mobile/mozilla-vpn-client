@@ -22,7 +22,7 @@ tasks:
         from-deps:
             with-attributes:
                 build-type:
-                    - windows/opt
+                    - windows-x86_64/opt
             group-by:
                 attribute: build-type
             copy-attributes: true

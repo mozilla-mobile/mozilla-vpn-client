@@ -5,12 +5,12 @@
 task-defaults:
     worker:
         env:
-            QT_VERSION: "6.9.3"
+            QT_VERSION: "6.10.1"
         max-run-time: 14400
     run: 
         use-caches: []
 
-qt-macos-6.9:
+qt-macos-6.10:
     description: "Mac QT compile Task"
     fetches:
         fetch:
@@ -20,29 +20,13 @@ qt-macos-6.9:
         script: compile_qt_6_mac.sh
         resources:
             - scripts/utils/qt6_compile.sh
-        toolchain-alias: qt-macos-6.9
+        toolchain-alias: qt-macos-6.10
         toolchain-artifact: public/build/qt6_macos.tar.xz
     treeherder:
-        symbol: TL(qt-mac-6.9)
+        symbol: TL(qt-mac-6.10)
     worker-type: b-macos
 
-qt-macos-next:
-    description: "macOS Qt compile Task"
-    fetches:
-        fetch:
-            - qt-source-tarball-next
-            - miniconda-osx
-    run:
-        script: compile_qt_6_mac.sh
-        resources:
-            - scripts/utils/qt6_compile.sh
-        toolchain-alias: qt-macos-next
-        toolchain-artifact: public/build/qt6_macos.tar.xz
-    treeherder:
-        symbol: TL(qt-mac-next)
-    worker-type: b-macos
-
-qt-windows-x86_64-6.9:
+qt-windows-x86_64-6.10:
     description: "Windows QT compile Task (x86_64)"
     fetches:
         fetch:
@@ -56,14 +40,14 @@ qt-windows-x86_64-6.9:
         script: compile_qt_6.ps1
         resources:
             - taskcluster/scripts/toolchain/configure_qt.ps1
-        toolchain-alias: qt-windows-x86_64-6.9
+        toolchain-alias: qt-windows-x86_64-6.10
         toolchain-artifact: public/build/qt6_win.tar.xz
     treeherder:
-        symbol: TL(qt-win-6.9)
+        symbol: TL(qt-win-6.10)
         platform: windows/x86_64
     worker-type: b-win2022
 
-qt-windows-aarch64-6.9:
+qt-windows-aarch64-6.10:
     description: "Windows QT compile Task (aarch64)"
     fetches:
         fetch:
@@ -77,52 +61,10 @@ qt-windows-aarch64-6.9:
         script: compile_qt_6.ps1
         resources:
             - taskcluster/scripts/toolchain/configure_qt.ps1
-        toolchain-alias: qt-windows-aarch64-6.9
+        toolchain-alias: qt-windows-aarch64-6.10
         toolchain-artifact: public/build/qt6_win.tar.xz
     treeherder:
-        symbol: TL(qt-win-6.9)
-        platform: windows/aarch64
-    worker-type: b-win11-2024h2-arm64
-
-qt-windows-x86_64-next:
-    description: "Windows QT compile Task (x86_64/next)"
-    fetches:
-        fetch:
-            - artifact: qt-source-tarball-next
-              extract: false
-        vs2022:
-            - artifact: visual-studio-2022.zip
-    dependencies:
-        vs2022: toolchain-vs-2022-x86_64
-    run:
-        script: compile_qt_6.ps1
-        resources:
-            - taskcluster/scripts/toolchain/configure_qt.ps1
-        toolchain-alias: qt-windows-x86_64-next
-        toolchain-artifact: public/build/qt6_win.tar.xz
-    treeherder:
-        symbol: TL(qt-win-next)
-        platform: windows/x86_64
-    worker-type: b-win2022
-
-qt-windows-aarch64-next:
-    description: "Windows QT compile Task (aarch64/next)"
-    fetches:
-        fetch:
-            - artifact: qt-source-tarball-next
-              extract: false
-        vs2022:
-            - artifact: visual-studio-2022.zip
-    dependencies:
-        vs2022: toolchain-vs-2022-aarch64
-    run:
-        script: compile_qt_6.ps1
-        resources:
-            - taskcluster/scripts/toolchain/configure_qt.ps1
-        toolchain-alias: qt-windows-aarch64-next
-        toolchain-artifact: public/build/qt6_win.tar.xz
-    treeherder:
-        symbol: TL(qt-win-next)
+        symbol: TL(qt-win-6.10)
         platform: windows/aarch64
     worker-type: b-win11-2024h2-arm64
 
@@ -160,48 +102,16 @@ qt-linux:
     worker:
         docker-image: {in-tree: linux-qt6-build}
 
-qt-linux-next:
-    description: "Linux QT compile Task"
-    fetches:
-        fetch:
-            - qt-source-tarball-next
-    run:
-        script: compile_qt_6_linux.sh
-        resources:
-            - scripts/utils/qt6_compile.sh
-        toolchain-alias: qt-linux-next
-        toolchain-artifact: public/build/qt6_linux.tar.xz
-    treeherder:
-        symbol: TL(qt-linux-next)
-    worker-type: b-linux-large
-    worker:
-        docker-image: {in-tree: linux-qt6-build}
-
-qt-tools-6.9:
+qt-tools-6.10:
     description: "Linux Qt host tools"
     run:
         script: bundle_qt_tools.sh
         resources:
             - requirements.txt
-        toolchain-alias: qt-tools-6.9
+        toolchain-alias: qt-tools
         toolchain-artifact: public/build/qt-host-tools.tar.xz
     treeherder:
-        symbol: TL(qt-tools-6.9)
-    worker-type: b-linux
-    worker:
-        docker-image: {in-tree: conda-base}
-        max-run-time: 900
-
-qt-tools-6.10:
-    description: "Linux Qt host tools (Qt/next)"
-    run:
-        script: bundle_qt_tools.sh
-        resources:
-            - requirements.txt
-        toolchain-alias: qt-tools-next
-        toolchain-artifact: public/build/qt-host-tools.tar.xz
-    treeherder:
-        symbol: TL(qt-tools-next)
+        symbol: TL(qt-tools)
     worker-type: b-linux
     worker:
         docker-image: {in-tree: conda-base}
@@ -209,7 +119,7 @@ qt-tools-6.10:
         env:
             QT_VERSION: "6.10.1"
 
-qt-wasm:
+qt-wasm-6.10:
     description: "QT wasm bundle task"
     treeherder:
         symbol: TL(qt-wasm)

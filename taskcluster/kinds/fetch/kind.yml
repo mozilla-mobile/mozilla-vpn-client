@@ -75,20 +75,13 @@ tasks:
             artifact-name: cltools-macosnmos-sdk.pkg
             size: 58513026
     emsdk:
-        description: Emscripten SDK 3.1.70
+        description: Emscripten SDK 4.0.7
         fetch:
             type: static-url
-            url: https://github.com/emscripten-core/emsdk/archive/refs/tags/3.1.70.tar.gz
-            sha256: 5aa3fcdfbc3812419e9c73a5147ca9f9fdda897e05f24161813df14b35fcd7a5
-            size: 111853
+            url: https://github.com/emscripten-core/emsdk/archive/refs/tags/4.0.7.tar.gz
+            sha256: b7262c64f4b5f0692f3bab063cafb09682495f98355677a3f1373d0520457bad
+            size: 198679
     qt-source-tarball:
-        description: Qt 6.9.3 Source Tarball
-        fetch:
-            type: static-url
-            url: https://download.qt.io/archive/qt/6.9/6.9.3/single/qt-everywhere-src-6.9.3.tar.xz
-            sha256: 59d4fbf50d2524a9082f85d565f0197316cde89c26e97cfc6c157cb255b7ea18
-            size: 1102876596
-    qt-source-tarball-next:
         description: Qt 6.10.1 Source Tarball
         fetch:
             type: static-url

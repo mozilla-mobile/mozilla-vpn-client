@@ -89,16 +89,3 @@ linux64/release-deb:
         type: build
     run:
         command: /builds/worker/builder.sh -s
-
-linux64/next-deb:
-    description: "Linux Build (Debian/Next Qt)"
-    treeherder:
-        symbol: NEXT
-        platform: linux/x86_64
-    fetches:
-        toolchain:
-            - qt-linux-next
-    worker:
-        docker-image: {in-tree: linux-qt6-build}
-    run:
-        command: /builds/worker/builder.sh -s
