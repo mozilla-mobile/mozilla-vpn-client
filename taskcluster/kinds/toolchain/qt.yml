@@ -177,25 +177,6 @@ qt-linux-next:
     worker:
         docker-image: {in-tree: linux-qt6-build}
 
-# The 6.6.3 tools are retained only for WASM which is stuck
-# there until we can upgrade the EMSDK
-qt-tools-6.6:
-    description: "Linux Qt host tools (Qt/6.6.3)"
-    run:
-        script: bundle_qt_tools.sh
-        resources:
-            - requirements.txt
-        toolchain-alias: qt-tools-6.6
-        toolchain-artifact: public/build/qt-host-tools.tar.xz
-    treeherder:
-        symbol: TL(qt-tools-6.6)
-    worker-type: b-linux
-    worker:
-        docker-image: {in-tree: conda-base}
-        max-run-time: 900
-        env:
-            QT_VERSION: "6.6.3"
-
 qt-tools-6.9:
     description: "Linux Qt host tools"
     run:
@@ -235,8 +216,6 @@ qt-wasm:
     worker-type: b-linux
     worker:
         docker-image: {in-tree: base}
-        env:
-            QT_VERSION: "6.6.3"
     run:
         script: bundle_qt_wasm.sh
         resources:

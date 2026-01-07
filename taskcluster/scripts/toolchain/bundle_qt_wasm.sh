@@ -7,7 +7,7 @@ set -e
 export XZ_DEFAULTS="-T0"
 
 python3 -m pip install -r ${VCS_PATH}/requirements.txt
-python3 -m aqt install-qt -O $(pwd)/qt-install linux desktop ${QT_VERSION} wasm_singlethread -m qtwebsockets qt5compat qtshadertools
+python3 -m aqt install-qt -O $(pwd)/qt-install all_os wasm ${QT_VERSION} wasm_singlethread -m qtwebsockets qt5compat qtshadertools
 
 mv $(pwd)/qt-install/${QT_VERSION}/wasm_singlethread $(pwd)/qt-wasm
 chmod +x $(pwd)/qt-wasm/bin/qt-cmake
