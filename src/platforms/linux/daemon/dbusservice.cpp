@@ -34,6 +34,15 @@ constexpr const char* DBUS_LOGIN_USER = "org.freedesktop.login1.User";
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MZ_COUNT_CTOR(DBusService);
 
+  static bool typesRegistered = []() {
+    qRegisterMetaType<PolkitSubject>();
+    qDBusRegisterMetaType<PolkitSubject>();
+    qRegisterMetaType<PolkitDetails>();
+    qDBusRegisterMetaType<PolkitDetails>();
+    return true;
+  }();
+  Q_UNUSED(typesRegistered);
+
   m_wgutils = new WireguardUtilsLinux(this);
 
   if (!removeInterfaceIfExists()) {
