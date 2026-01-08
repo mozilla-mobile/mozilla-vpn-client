@@ -283,11 +283,7 @@ void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
 #if defined MZ_IOS
   IOSCommons::setStatusBarTextColor(color);
 #elif defined MZ_ANDROID
-  if (color == Theme::StatusBarTextColorLight) {
-    AndroidCommons::setStatusBarTextColor("light");
-  } else {
-    AndroidCommons::setStatusBarTextColor("dark");
-  }
+  AndroidCommons::setStatusBarTextColor(color == Theme::StatusBarTextColorLight);
 #endif
 
 }

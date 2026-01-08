@@ -149,16 +149,17 @@ void AndroidCommons::launchPlayStore() {
                                      appActivity.object());
 }
 
-void AndroidCommons::setStatusBarTextColor(QString statusBarTextColor) {
-  QNativeInterface::QAndroidApplication::runOnAndroidMainThread([statusBarTextColor]() {
-    QJniObject window = AndroidCommons::getActivity().callObjectMethod(
-          "getWindow", "()Landroid/view/Window;");
-    if (statusBarTextColor == "light") {
-      window.callMethod<void>("setStatusBarColor", "(I)V", 0xFFFFFFFF);
-    } else {
-      window.callMethod<void>("setStatusBarColor", "(I)V", 0xFF000000);
-    }
-  });
+void AndroidCommons::setStatusBarTextColor(bool isLight) {
+  QNativeInterface::QAndroidApplication::runOnAndroidMainThread(
+      [statusBarTextColor]() {
+        QJniObject window = AndroidCommons::getActivity().callObjectMethod(
+            "getWindow", "()Landroid/view/Window;");
+        if (isLight) {
+          window.callMethod<void>("setStatusBarColor", "(I)V", 0xFFFFFFFF);
+        } else {
+          window.callMethod<void>("setStatusBarColor", "(I)V", 0xFF000000);
+        }
+      });
 }
 
 bool AndroidCommons::clearPendingJavaException(const char* where) {

@@ -33,7 +33,7 @@ class AndroidCommons final : public QObject {
 
   static void launchPlayStore();
 
-  static void setStatusBarTextColor(QString statusBarTextColor);
+  static void setStatusBarTextColor(bool isLight);
 
   static void initializeGlean(bool isTelemetryEnabled, const QString& channel);
 
