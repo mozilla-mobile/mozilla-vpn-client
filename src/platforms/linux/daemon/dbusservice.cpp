@@ -438,8 +438,12 @@ void DBusService::checkPolkitAuthorizationAsync(
   subjectArg << subjectDetails;
   subjectArg.endStructure();
 
+  QDBusArgument detailsArg;
+  detailsArg.beginMap(QMetaType::QString, QMetaType::QString);
+  detailsArg.endMap();
+
   polkitCall.setArguments({QVariant::fromValue(subjectArg), actionId,
-                           QVariantMap(), quint32(1), cancellationId});
+                           QVariant::fromValue(detailsArg), quint32(1), cancellationId});
 
   QDBusPendingCall pending = QDBusConnection::systemBus().asyncCall(polkitCall);
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(pending, this);
