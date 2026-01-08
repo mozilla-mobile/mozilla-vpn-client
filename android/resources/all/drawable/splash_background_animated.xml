@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background color -->
+    <item android:drawable="@android:color/black" />
+    
+    <!-- Your AVD animation centered -->
+    <item 
+        android:drawable="@drawable/vpnlogo-drop_animation"
+        android:gravity="center"
+        android:width="200dp"
+        android:height="200dp"/>
+</layer-list>
