@@ -120,6 +120,12 @@ commonStrings:
   bullet6:
     value: "[Linux] If your distro ships with that latest Qt 6.10, builds from scratch may have had issues. They no longer should."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to Linux platform.
+  bullet61:
+    value: "[all] The navigation bar’s message icon sometimes retained the ’unread’ indicator even after all messages were read. That should not happen anymore."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to all platforms.
+  bullet62:
+    value: "[iOS] Did you notice that the close button on popups was a litle too low? It no longer is."
+    comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to iOS platform.
   bullet7:
     value: "[iOS] Some exciting under-the-hood work to support a future feature."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to iOS platform.
