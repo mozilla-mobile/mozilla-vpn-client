@@ -159,7 +159,6 @@ void AndroidCommons::setStatusBarTextColor(bool isLight) {
       window.callMethod<void>("setStatusBarColor", "(I)V", 0xFF000000);
     }
   });
-
 }
 
 bool AndroidCommons::clearPendingJavaException(const char* where) {
