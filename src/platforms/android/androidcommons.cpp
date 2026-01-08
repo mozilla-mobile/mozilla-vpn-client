@@ -150,16 +150,16 @@ void AndroidCommons::launchPlayStore() {
 }
 
 void AndroidCommons::setStatusBarTextColor(bool isLight) {
-  QNativeInterface::QAndroidApplication::runOnAndroidMainThread(
-      [isLight]() {
-        QJniObject window = AndroidCommons::getActivity().callObjectMethod(
-            "getWindow", "()Landroid/view/Window;");
-        if (isLight) {
-          window.callMethod<void>("setStatusBarColor", "(I)V", 0xFFFFFFFF);
-        } else {
-          window.callMethod<void>("setStatusBarColor", "(I)V", 0xFF000000);
-        }
-      });
+  QNativeInterface::QAndroidApplication::runOnAndroidMainThread([isLight]() {
+    QJniObject window = AndroidCommons::getActivity().callObjectMethod(
+        "getWindow", "()Landroid/view/Window;");
+    if (isLight) {
+      window.callMethod<void>("setStatusBarColor", "(I)V", 0xFFFFFFFF);
+    } else {
+      window.callMethod<void>("setStatusBarColor", "(I)V", 0xFF000000);
+    }
+  });
+
 }
 
 bool AndroidCommons::clearPendingJavaException(const char* where) {
