@@ -70,8 +70,18 @@ ApplicationWindow {
     }
 
     screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
-    // TODO: Once every platform is on Qt 6.9, swap MaximizeUsingFullscreenGeometryHint for ExpandedClientAreaHint: https://doc.qt.io/qt-6.9/qt.html
-    flags: Qt.Window | Qt.ExpandedClientAreaHint | Qt.NoTitlebarBackgroundHint | Qt.MaximizeUsingFullscreenGeometryHint
+    flags: {
+        var baseFlags = Qt.Window | Qt.NoTitlebarBackgroundHint;
+
+        // Do not use edge-to-edge flags on Android API 28 and below
+        // Older versions have issues with 3-button navigation overlapping content
+        if (Qt.platform.os === "android" && (VPNAndroidCommons.getAndroidApiLevel() < 29)) {
+            return baseFlags;
+        }
+
+        // TODO: Once every platform is on Qt 6.9, swap MaximizeUsingFullscreenGeometryHint for ExpandedClientAreaHint: https://doc.qt.io/qt-6.9/qt.html!
+        return baseFlags | Qt.ExpandedClientAreaHint | Qt.MaximizeUsingFullscreenGeometryHint;
+    }
     visible: true
 
     width: fullscreenRequired() ? Screen.width : MZTheme.theme.desktopAppWidth;
@@ -82,20 +92,7 @@ ApplicationWindow {
     maximumHeight: fullscreenRequired() ? Screen.height : MZTheme.theme.desktopAppHeight;
 
     title: MZI18n.ProductName
-    color: {
-        // This is only relevant on android
-        if(Qt.platform.os !== "android"){
-            return MZTheme.colors.bgColor;
-        }
-        if (MZTheme.currentSystemTheme === MZTheme.currentTheme) {
-            return MZTheme.colors.bgColor;
-        } 
-        if (MZTheme.currentSystemTheme === "main") {
-            return "white";
-        } else {
-            return "black";
-        }
-    }
+    color: MZTheme.colors.bgColor
     onClosing: close => {
         console.log("Closing request handling");
 
