@@ -71,7 +71,10 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
   dropRootPermissions();
 }
 
-DBusService::~DBusService() { MZ_COUNT_DTOR(DBusService); }
+DBusService::~DBusService() {
+  cancelPendingAuthorization();
+  MZ_COUNT_DTOR(DBusService);
+}
 
 IPUtils* DBusService::iputils() {
   if (!m_iputils) {
@@ -104,6 +107,20 @@ QString DBusService::version() {
 }
 
 bool DBusService::activate(const InterfaceConfig& config) {
+  logger.debug() << "Activation requested";
+
+  if (!calledFromDBus()) {
+    return activateInternal(config);
+  }
+
+  cancelPendingAuthorization();
+
+  setDelayedReply(true);
+  checkPolkitAuthorizationAsync("org.mozilla.vpn.activate", config);
+  return true;
+}
+
+bool DBusService::activateInternal(const InterfaceConfig& config) {
   logger.debug() << "Activate";
   if (!isCallerAuthorized()) {
     logger.error() << "Insufficient caller permissions";
@@ -318,21 +335,20 @@ bool DBusService::isCallerAuthorized() {
       return true;
     }
   }
-  // Otherwise, if this is the activate method, we permit any non-root user to
-  // activate the VPN, but we will remember their UID for later authorization
-  // checks.
-  else if ((message().type() == QDBusMessage::MethodCallMessage) &&
-           (message().member() == "activate")) {
-    const QDBusReply<uint> reply = iface->serviceUid(message().service());
-    const uint senderuid = reply.value();
-    if (reply.isValid() && senderuid != 0) {
-      m_sessionUid = senderuid;
-      return true;
-    }
-  }
+  // // Otherwise, if this is the activate method, we permit any non-root user to
+  // // activate the VPN, but we will remember their UID for later authorization
+  // // checks.
+  // else if ((message().type() == QDBusMessage::MethodCallMessage) &&
+  //          (message().member() == "activate")) {
+  //   const QDBusReply<uint> reply = iface->serviceUid(message().service());
+  //   const uint senderuid = reply.value();
+  //   if (reply.isValid() && senderuid != 0) {
+  //     m_sessionUid = senderuid;
+  //     return true;
+  //   }
+  // }
   // In all other cases, the use of this D-Bus API requires the CAP_NET_ADMIN
-  // permission, which we can check by examining the PID of the sender. Note
-  // that a zero UID (root) is used as a guard value to fall back to this case.
+  // permission, which we can check by examining the PID of the sender.
 
   // Get the PID of the D-Bus message sender.
   const QDBusReply<uint> reply = iface->servicePid(message().service());
@@ -358,4 +374,162 @@ bool DBusService::isCallerAuthorized() {
     return false;
   }
   return (flag == CAP_SET);
+}
+
+void DBusService::cancelPendingAuthorization() {
+  if (!m_pendingAuthorization) {
+    return;
+  }
+
+  logger.debug() << "Cancelling pending authorization";
+
+  QDBusMessage cancelCall = QDBusMessage::createMethodCall(
+      "org.freedesktop.PolicyKit1", "/org/freedesktop/PolicyKit1/Authority",
+      "org.freedesktop.PolicyKit1.Authority", "CancelCheckAuthorization");
+  cancelCall.setArguments({m_pendingAuthorization->cancellationId});
+  QDBusConnection::systemBus().asyncCall(cancelCall);
+
+  QDBusMessage response = m_pendingAuthorization->message.createErrorReply(
+      QDBusError::Failed, "Replaced by a new authorization request");
+  QDBusConnection::systemBus().send(response);
+
+  disconnect(m_pendingAuthorization->watcher, nullptr, this, nullptr);
+  m_pendingAuthorization->watcher->deleteLater();
+  m_pendingAuthorization->timer->stop();
+  m_pendingAuthorization->timer->deleteLater();
+  m_pendingAuthorization.reset();
+}
+
+void DBusService::checkPolkitAuthorizationAsync(
+    const QString& actionId, const InterfaceConfig& pendingConfig) {
+  const QDBusConnectionInterface* iface =
+      QDBusConnection::systemBus().interface();
+
+  QDBusReply<uint> pidReply = iface->servicePid(message().service());
+
+  if (!pidReply.isValid()) {
+    QDBusMessage error = message().createErrorReply(QDBusError::Failed,
+                                                    "Failed to get caller PID");
+    QDBusConnection::systemBus().send(error);
+    return;
+  }
+
+  uint pid = pidReply.value();
+
+  QString cancellationId = QString("mozillavpn-%1-%2")
+                               .arg(pid)
+                               .arg(QDateTime::currentMSecsSinceEpoch());
+
+  logger.debug() << "Starting PolKit authorization for PID" << pid;
+
+  QVariantMap subjectDetails;
+
+  subjectDetails["pid"] = QVariant::fromValue(quint32(pid));
+  subjectDetails["start-time"] = QVariant::fromValue(quint64(0));
+
+  QDBusMessage polkitCall = QDBusMessage::createMethodCall(
+      "org.freedesktop.PolicyKit1", "/org/freedesktop/PolicyKit1/Authority",
+      "org.freedesktop.PolicyKit1.Authority", "CheckAuthorization");
+
+  QDBusArgument subjectArg;
+
+  subjectArg.beginStructure();
+  subjectArg << QString("unix-process");
+  subjectArg << subjectDetails;
+  subjectArg.endStructure();
+
+  polkitCall.setArguments({QVariant::fromValue(subjectArg), actionId,
+                           QVariantMap(), quint32(1), cancellationId});
+
+  QDBusPendingCall pending = QDBusConnection::systemBus().asyncCall(polkitCall);
+  QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(pending, this);
+
+  QTimer* timeoutTimer = new QTimer(this);
+  timeoutTimer->setSingleShot(true);
+  connect(timeoutTimer, &QTimer::timeout, this, &DBusService::onPolkitTimeout);
+
+  m_pendingAuthorization = PendingAuthorization{
+      pendingConfig, message(), watcher, timeoutTimer, cancellationId};
+
+  connect(watcher, &QDBusPendingCallWatcher::finished, this,
+          &DBusService::onPolkitAuthorizationResult);
+
+  timeoutTimer->start(POLKIT_TIMEOUT_MS);
+}
+
+void DBusService::onPolkitAuthorizationResult(
+    QDBusPendingCallWatcher* watcher) {
+  if (!m_pendingAuthorization || m_pendingAuthorization->watcher != watcher) {
+    watcher->deleteLater();
+    return;
+  }
+
+  m_pendingAuthorization->timer->stop();
+  m_pendingAuthorization->timer->deleteLater();
+  watcher->deleteLater();
+
+  QDBusPendingReply<> reply = *watcher;
+  bool authorized = false;
+
+  if (!reply.isError()) {
+    QDBusMessage msg = reply.reply();
+
+    if (!msg.arguments().isEmpty()) {
+      QDBusArgument arg = msg.arguments().at(0).value<QDBusArgument>();
+
+      arg.beginStructure();
+      arg >> authorized;
+      arg.endStructure();
+    }
+  } else {
+    logger.error() << "PolKit error:" << reply.error().message();
+  }
+
+  logger.debug() << "PolKit authorization result:" << authorized;
+
+  QDBusMessage response;
+
+  if (authorized) {
+    // Store session UID for subsequent calls
+    const QDBusConnectionInterface* iface =
+        QDBusConnection::systemBus().interface();
+
+    QDBusReply<uint> uidReply =
+        iface->serviceUid(m_pendingAuthorization->message.service());
+
+    if (uidReply.isValid() && uidReply.value() != 0) {
+      m_sessionUid = uidReply.value();
+    }
+
+    bool success = activateInternal(m_pendingAuthorization->config);
+    response = m_pendingAuthorization->message.createReply(success);
+  } else {
+    response = m_pendingAuthorization->message.createErrorReply(
+        QDBusError::AccessDenied, "Authorization request denied");
+  }
+
+  QDBusConnection::systemBus().send(response);
+  m_pendingAuthorization.reset();
+}
+
+void DBusService::onPolkitTimeout() {
+  if (!m_pendingAuthorization) {
+    return;
+  }
+
+  logger.warning() << "PolKit authorization timed out";
+
+  QDBusMessage cancelCall = QDBusMessage::createMethodCall(
+      "org.freedesktop.PolicyKit1", "/org/freedesktop/PolicyKit1/Authority",
+      "org.freedesktop.PolicyKit1.Authority", "CancelCheckAuthorization");
+  cancelCall.setArguments({m_pendingAuthorization->cancellationId});
+  QDBusConnection::systemBus().asyncCall(cancelCall);
+
+  QDBusMessage response = m_pendingAuthorization->message.createErrorReply(
+      QDBusError::Timeout, "Authorization timed out");
+  QDBusConnection::systemBus().send(response);
+
+  m_pendingAuthorization->watcher->deleteLater();
+  m_pendingAuthorization->timer->deleteLater();
+  m_pendingAuthorization.reset();
 }

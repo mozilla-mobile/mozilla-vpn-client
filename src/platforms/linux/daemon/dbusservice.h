@@ -16,6 +16,14 @@
 
 class DbusAdaptor;
 
+struct PendingAuthorization {
+  InterfaceConfig config;
+  QDBusMessage message;
+  QDBusPendingCallWatcher* watcher = nullptr;
+  QTimer* timer = nullptr;
+  QString cancellationId;
+};
+
 class DBusService final : public Daemon, protected QDBusContext {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(DBusService)
@@ -53,6 +61,11 @@ class DBusService final : public Daemon, protected QDBusContext {
   void setAppState(const QString& desktopFileId, AppState state);
   void clearAppStates();
 
+  bool activateInternal(const InterfaceConfig& config);
+  void cancelPendingAuthorization();
+  void checkPolkitAuthorizationAsync(const QString& actionId,
+                                     const InterfaceConfig& pendingConfig);
+
  private slots:
   void appLaunched(const QString& cgroup, const QString& desktopFileId);
   void appTerminated(const QString& cgroup, const QString& desktopFileId);
@@ -61,7 +74,12 @@ class DBusService final : public Daemon, protected QDBusContext {
   void userCreated(uint uid, const QDBusObjectPath& path);
   void userRemoved(uint uid, const QDBusObjectPath& path);
 
+  void onPolkitAuthorizationResult(QDBusPendingCallWatcher* watcher);
+  void onPolkitTimeout();
+
  private:
+  static constexpr int POLKIT_TIMEOUT_MS = 60000;
+
   WireguardUtilsLinux* m_wgutils = nullptr;
   IPUtilsLinux* m_iputils = nullptr;
   DnsUtilsLinux* m_dnsutils = nullptr;
@@ -71,6 +89,8 @@ class DBusService final : public Daemon, protected QDBusContext {
   QHash<QString, AppState> m_excludedCgroups;
 
   uint m_sessionUid = 0;
+
+  std::optional<PendingAuthorization> m_pendingAuthorization;
 };
 
 #endif  // DBUSSERVICE_H
