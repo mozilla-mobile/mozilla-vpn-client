@@ -197,6 +197,36 @@ typedef QList<SystemdUnitAux> SystemdUnitAuxList;
 Q_DECLARE_METATYPE(SystemdUnitAux);
 Q_DECLARE_METATYPE(SystemdUnitAuxList);
 
+/* D-Bus metatype for marshalling Polkit subject arguments (sa{sv}) */
+class PolkitSubject {
+ public:
+  PolkitSubject(const QString& k = QString(),
+                const QVariantMap& d = QVariantMap())
+      : kind(k), details(d) {}
+  QString kind;
+  QVariantMap details;
+
+  friend QDBusArgument& operator<<(QDBusArgument& args,
+                                   const PolkitSubject& subject) {
+    args.beginStructure();
+    args << subject.kind << subject.details;
+    args.endStructure();
+    return args;
+  }
+  friend const QDBusArgument& operator>>(const QDBusArgument& args,
+                                         PolkitSubject& subject) {
+    args.beginStructure();
+    args >> subject.kind >> subject.details;
+    args.endStructure();
+    return args;
+  }
+};
+Q_DECLARE_METATYPE(PolkitSubject);
+
+/* D-Bus metatype for marshalling Polkit details arguments a{ss} */
+typedef QMap<QString, QString> PolkitDetails;
+Q_DECLARE_METATYPE(PolkitDetails);
+
 class DBusMetatypeRegistrationProxy {
  public:
   DBusMetatypeRegistrationProxy() {
@@ -224,6 +254,10 @@ class DBusMetatypeRegistrationProxy {
     qDBusRegisterMetaType<SystemdUnitAux>();
     qRegisterMetaType<SystemdUnitAuxList>();
     qDBusRegisterMetaType<SystemdUnitAuxList>();
+    qRegisterMetaType<PolkitSubject>();
+    qDBusRegisterMetaType<PolkitSubject>();
+    qRegisterMetaType<PolkitDetails>();
+    qDBusRegisterMetaType<PolkitDetails>();
   }
 };
 

@@ -19,6 +19,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "platforms/linux/dbustypes.h"
 #include "platforms/linux/linuxutils.h"
 
 namespace {
@@ -423,27 +424,19 @@ void DBusService::checkPolkitAuthorizationAsync(
   logger.debug() << "Starting PolKit authorization for PID" << pid;
 
   QVariantMap subjectDetails;
-
   subjectDetails["pid"] = QVariant::fromValue(quint32(pid));
   subjectDetails["start-time"] = QVariant::fromValue(quint64(0));
+
+  PolkitSubject subject("unix-process", subjectDetails);
+  PolkitDetails details;
 
   QDBusMessage polkitCall = QDBusMessage::createMethodCall(
       "org.freedesktop.PolicyKit1", "/org/freedesktop/PolicyKit1/Authority",
       "org.freedesktop.PolicyKit1.Authority", "CheckAuthorization");
 
-  QDBusArgument subjectArg;
-
-  subjectArg.beginStructure();
-  subjectArg << QString("unix-process");
-  subjectArg << subjectDetails;
-  subjectArg.endStructure();
-
-  QDBusArgument detailsArg;
-  detailsArg.beginMap(QMetaType::QString, QMetaType::QString);
-  detailsArg.endMap();
-
-  polkitCall.setArguments({QVariant::fromValue(subjectArg), actionId,
-                           QVariant::fromValue(detailsArg), quint32(1), cancellationId});
+  polkitCall.setArguments({QVariant::fromValue(subject), actionId,
+                           QVariant::fromValue(details), quint32(1),
+                           cancellationId});
 
   QDBusPendingCall pending = QDBusConnection::systemBus().asyncCall(polkitCall);
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(pending, this);
