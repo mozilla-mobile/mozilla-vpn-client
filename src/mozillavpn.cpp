@@ -865,11 +865,6 @@ void MozillaVPN::reset(bool forceInitialState) {
 
 void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
-
-#ifdef MZ_ANDROID
-  AndroidCommons::dismissSplashScreen();
-#endif
-
   m_private->m_telemetry.stopTimeToFirstScreenTimer();
 
 #ifndef MZ_WASM
@@ -2392,6 +2387,10 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
       "Revisit the code below and replace QCoreApplication::exec() \
       with app.exec() if the app no longer crashes on Pixel 2 XL, \
       see https://github.com/mozilla-mobile/mozilla-vpn-client/pull/10895"
+#endif
+
+#ifdef MZ_ANDROID
+  AndroidCommons::dismissSplashScreen();
 #endif
   return QCoreApplication::exec();
 }
