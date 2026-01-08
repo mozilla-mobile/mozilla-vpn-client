@@ -151,7 +151,7 @@ void AndroidCommons::launchPlayStore() {
 
 void AndroidCommons::setStatusBarTextColor(bool isLight) {
   QNativeInterface::QAndroidApplication::runOnAndroidMainThread(
-      [statusBarTextColor]() {
+      [isLight]() {
         QJniObject window = AndroidCommons::getActivity().callObjectMethod(
             "getWindow", "()Landroid/view/Window;");
         if (isLight) {
