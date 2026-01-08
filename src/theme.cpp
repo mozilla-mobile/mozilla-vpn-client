@@ -286,7 +286,6 @@ void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
   AndroidCommons::setStatusBarTextColor(color ==
                                         Theme::StatusBarTextColorLight);
 #endif
-
 }
 
 bool Theme::usesDarkModeAssets() const {
