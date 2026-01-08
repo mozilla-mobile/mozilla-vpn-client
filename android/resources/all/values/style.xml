@@ -10,7 +10,7 @@
         
         <!-- Modern Android 12+ Splash Screen API (API 31+) -->
         <item name="android:windowSplashScreenBackground">@android:color/black</item>
-        <item name="android:windowSplashScreenAnimatedIcon">@drawable/vpnlogo-drop_animation</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/vpnlogo_drop_animation</item>
         <item name="postSplashScreenTheme">@style/AppTheme</item>
     </style>
 </resources>

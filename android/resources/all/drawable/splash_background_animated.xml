@@ -5,7 +5,7 @@
     
     <!-- Your AVD animation centered -->
     <item 
-        android:drawable="@drawable/vpnlogo-drop_animation"
+        android:drawable="@drawable/vpnlogo_drop_animation"
         android:gravity="center"
         android:width="200dp"
         android:height="200dp"/>
