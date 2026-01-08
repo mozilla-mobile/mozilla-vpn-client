@@ -209,14 +209,33 @@ class PolkitSubject {
   friend QDBusArgument& operator<<(QDBusArgument& args,
                                    const PolkitSubject& subject) {
     args.beginStructure();
-    args << subject.kind << subject.details;
+    args << subject.kind;
+    args.beginMap(QMetaType::QString, qMetaTypeId<QDBusVariant>());
+    for (auto it = subject.details.constBegin();
+         it != subject.details.constEnd(); ++it) {
+      args.beginMapEntry();
+      args << it.key() << QDBusVariant(it.value());
+      args.endMapEntry();
+    }
+    args.endMap();
     args.endStructure();
     return args;
   }
   friend const QDBusArgument& operator>>(const QDBusArgument& args,
                                          PolkitSubject& subject) {
     args.beginStructure();
-    args >> subject.kind >> subject.details;
+    args >> subject.kind;
+    args.beginMap();
+    subject.details.clear();
+    while (!args.atEnd()) {
+      QString key;
+      QDBusVariant value;
+      args.beginMapEntry();
+      args >> key >> value;
+      args.endMapEntry();
+      subject.details.insert(key, value.variant());
+    }
+    args.endMap();
     args.endStructure();
     return args;
   }
