@@ -58,24 +58,8 @@ public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
     super.onCreate(savedInstanceState);
     instance = this;
 
-    // Set up splash screen delay using OnPreDrawListener
-    final View content = findViewById(android.R.id.content);
-    preDrawListener = new ViewTreeObserver.OnPreDrawListener() {
-      @Override
-      public boolean onPreDraw() {
-        if (splashScreenReady) {
-          // Content is ready, remove listener and start drawing
-          content.getViewTreeObserver().removeOnPreDrawListener(this);
-          Log.d("VPNActivity", "Splash screen dismissed - app ready");
-          return true;
-        } else {
-          // Keep splash screen visible
-          Log.d("VPNActivity", "Splash screen waiting for ready signal");
-          return false;
-        }
-      }
-    };
-    content.getViewTreeObserver().addOnPreDrawListener(preDrawListener);
+    setupSplashScreenDelay();
+    
     if (needsOrientationLock()) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     } else {
@@ -93,6 +77,27 @@ public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
   private static boolean ready = false;
   public static boolean isReady(){
     return ready;
+  }
+
+  // Set up splash screen delay using OnPreDrawListener
+  private void setupSplashScreenDelay() {
+    final View content = findViewById(android.R.id.content);
+    preDrawListener = new ViewTreeObserver.OnPreDrawListener() {
+      @Override
+      public boolean onPreDraw() {
+        if (splashScreenReady) {
+          // Content is ready, remove listener and start drawing
+          content.getViewTreeObserver().removeOnPreDrawListener(this);
+          Log.d("VPNActivity", "Splash screen dismissed - app ready");
+          return true;
+        } else {
+          // Keep splash screen visible
+          Log.d("VPNActivity", "Splash screen waiting for ready signal");
+          return false;
+        }
+      }
+    };
+    content.getViewTreeObserver().addOnPreDrawListener(preDrawListener);
   }
 
   // Call this from JNI to dismiss the splash screen and start rendering the app
