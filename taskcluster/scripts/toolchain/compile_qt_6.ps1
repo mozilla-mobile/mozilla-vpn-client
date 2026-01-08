@@ -97,6 +97,8 @@ $QT_CONFIG_ARGUMENTS = @(
   '-no-feature-textodfwriter'
   '-no-feature-networklistmanager'
   '-no-feature-dbus'
+  '-no-feature-icu'
+  '-no-feature-winsdkicu'
   '-feature-imageformat_png'
   '-qt-libpng'
   '-qt-zlib'
