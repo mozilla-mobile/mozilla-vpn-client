@@ -25,7 +25,7 @@ jobs:
     name: Build Test Client
     runs-on: ubuntu-latest
     env:
-      QT_VERSION: 6.6.3
+      QT_VERSION: 6.10.1
     defaults:
       run:
         shell: bash -el {0}
@@ -75,7 +75,7 @@ jobs:
         uses: ./.github/actions/qt-setup-taskcluster
         with:
           dest: ${{ github.workspace }}/3rdparty
-          toolchain-alias: qt-tools-6.6
+          toolchain-alias: qt-tools-6.10
           cmake-env: false
 
       - name: Compile test client
