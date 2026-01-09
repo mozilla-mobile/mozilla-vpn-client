@@ -865,7 +865,6 @@ void MozillaVPN::reset(bool forceInitialState) {
 
 void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
-
   m_private->m_telemetry.stopTimeToFirstScreenTimer();
 
 #ifndef MZ_WASM

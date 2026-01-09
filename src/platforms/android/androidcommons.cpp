@@ -224,3 +224,10 @@ void AndroidCommons::runWhenUiViewConstructible(std::function<void()> fn,
   };
   QTimer::singleShot(0, qApp, attempt);
 }
+
+// static
+void AndroidCommons::dismissSplashScreen() {
+  logger.debug() << "Dismissing splash screen";
+  QJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/qt/VPNActivity",
+                                     "dismissSplashScreen", "()V");
+}
