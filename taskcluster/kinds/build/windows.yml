@@ -44,9 +44,7 @@ windows-x86_64/native:
     run:
         exec-with: powershell
         command: taskcluster/scripts/build/windows_clang_cl.ps1
-    # TODO: Set this before merging to minimize the need for Windows
-    # workers.
-    #requires-level: 3
+    requires-level: 3
 
 windows-x86_64/opt:
     description: "Windows Build (Release/x86_64)"
