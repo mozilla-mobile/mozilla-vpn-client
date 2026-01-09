@@ -106,8 +106,8 @@ export MVPN_ADDONS_PATH=build-addons/
  * `ARTIFACT_DIR` - optional (directory to put screenshots from test failures)
  * Sample .env file:
   ```
-  export PATH=$PATH:~/Qt/6.6.3/macos/bin:$PATH
-  export QT_MACOS_BIN=~/Qt/6.6.3/macos/bin
+  export PATH=$PATH:~/Qt/6.10.1/macos/bin:$PATH
+  export QT_MACOS_BIN=~/Qt/6.10.1/macos/bin
   MVPN_API_BASE_URL=http://localhost:5000
   ARTIFACT_DIR=tests/artifact
   ```
