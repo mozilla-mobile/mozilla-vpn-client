@@ -10,7 +10,7 @@ task-defaults:
     worker:
         max-run-time: 14400
         env:
-            QT_VERSION: "6.6.3"
+            QT_VERSION: "6.10.1"
     worker-type: b-macos
     run:
         script: conda_pack_ios.sh

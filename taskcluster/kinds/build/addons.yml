@@ -11,7 +11,7 @@ addons-bundle:
         platform: addons/all
     fetches:
         toolchain: 
-            - qt-tools-6.6
+            - qt-tools-6.10
     attributes:
         build-type: addons/opt  # needed by the signing kind
     worker-type: b-linux

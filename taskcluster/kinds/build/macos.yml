@@ -32,7 +32,7 @@ macos/native:
     fetches:
         toolchain:
             - conda-macos
-            - qt-macos-6.6
+            - qt-macos-6.10
     description: "Mac Build"
     treeherder:
         platform: macos/native
@@ -48,29 +48,8 @@ macos/opt:
         toolchain:
             - cargo-vendor
             - conda-osxcross
-            - qt-macos-6.6
-            - qt-tools-6.6
-    worker-type: b-linux-large
-    worker:
-        docker-image: {in-tree: conda-base}
-        artifacts:
-            - type: directory
-              name: public/build
-              path: /builds/worker/artifacts
-    run:
-        command: ./taskcluster/scripts/build/macos_osxcross.sh
-
-
-macos/next:
-    description: "macOS Build (Next Qt)"
-    treeherder:
-            platform: macos/next
-    fetches:
-        toolchain:
-            - cargo-vendor
-            - conda-osxcross
-            - qt-macos-next
-            - qt-tools-next
+            - qt-macos-6.10
+            - qt-tools-6.10
     worker-type: b-linux-large
     worker:
         docker-image: {in-tree: conda-base}

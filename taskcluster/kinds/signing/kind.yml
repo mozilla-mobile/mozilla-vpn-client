@@ -51,25 +51,25 @@ tasks:
                     - android-arm64/release
                     - android-armv7/release
                     - macos/opt
-                    - macos/next
-                    - windows/opt
+                    - windows-x86_64/opt
+                    - windows-aarch64/opt
                     - addons/opt
             copy-attributes: true
         add-index-routes:
             by-build-type:
-                windows/opt: null  # for Windows we want the 'repackage-signing' task
+                windows.*: null  # for Windows we want the 'repackage-signing' task
                 macos.*: null      # for macOS we want the 'mac-notarization' task
                 default: build
         signing-format:
             by-build-type:
                 android.*: gcp_prod_autograph_apk
                 macos.*: macapp
-                windows/opt: gcp_prod_autograph_authenticode_202412
+                windows.*: gcp_prod_autograph_authenticode_202412
                 addons/opt: gcp_prod_autograph_rsa
         treeherder:
             job-symbol:
                 by-build-type:
-                    windows/opt: Bs-internals
+                    windows.*: Bs-internals
                     default: Bs
             kind: build
             tier: 1
@@ -81,6 +81,6 @@ tasks:
                     android-armv7/release: android/armv7
                     linux/opt: linux/opt
                     macos/opt: macos/opt
-                    macos/next: macos/next
-                    windows/opt: windows/x86_64
+                    windows-x86_64/opt: windows/x86_64
+                    windows-aarch64/opt: windows/aarch64
                     addons/opt: addons/opt

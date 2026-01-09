@@ -25,7 +25,7 @@ chmod +x ${CONDA_VPN_PREFIX}/etc/conda/activate.d/ZZ-unset-cargo-hacks.sh
 echo "Downloading x-win..."
 
 # Fetch vsdownload.py from the msvc-wine repository.
-XWIN_TAG="0.6.7"
+XWIN_TAG="0.7.0"
 XWIN_URL="https://github.com/Jake-Shadle/xwin/releases/download/${XWIN_TAG}/xwin-${XWIN_TAG}-x86_64-unknown-linux-musl.tar.gz"
 curl -sSL $XWIN_URL -o xwin.tar.gz
 tar xf xwin.tar.gz
@@ -42,14 +42,6 @@ echo "Downloading Microsoft.VisualStudio.Component.VC.Redist.MSM"
 python ${VCS_PATH}/scripts/windows/fetch-vsix-package.py \
     --manifest-version 17 --output ${CONDA_VPN_PREFIX}/xwin \
     Microsoft.VisualStudio.Component.VC.Redist.MSM
-
-# Workaround for https://github.com/Jake-Shadle/xwin/issues/146
-find ${CONDA_VPN_PREFIX} -type d -name 'lib' -printf '%h\n' | while read DIRNAME; do
-    ln -s lib "${DIRNAME}/Lib"
-done
-find ${CONDA_VPN_PREFIX} -type d -name 'include' -printf '%h\n' | while read DIRNAME; do
-    ln -s include "${DIRNAME}/Include"
-done
 
 echo "Packing conda environment..."
 mkdir -p ${UPLOAD_DIR}

@@ -27,7 +27,6 @@ existing_tasks:
   build-macos/opt: YsDBZowUSvKTh2G9pkaYig
   build-wasm/opt: JqlM_tFGTcm_plxOMTd3bQ
   build-windows/opt: NdU9bEA_TCSYBz5jNgpEcQ
-  fetch-win-dev-env: fLQik_MPQPqVeAOA_B46IA
   fetch-win-go: aVfhCuu4SVqLmpvz4bAgnQ
   fetch-win-perl: KlpgRvHESp-9hiReWnJnvw
   fetch-win-rustup: RwOTt66NRfyxKIXDF6VBEQ

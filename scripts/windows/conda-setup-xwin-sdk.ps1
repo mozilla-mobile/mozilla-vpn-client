@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 
-$X_WIN_VERSION = "0.6.5"
+$X_WIN_VERSION = "0.7.0"
 $MSVC_MANIFEST = 17
 
 $conda_env = conda info --json | ConvertFrom-Json

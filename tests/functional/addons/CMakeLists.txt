@@ -9,7 +9,7 @@ project(testing_addons VERSION 1.0.0 LANGUAGES CXX
 )
 
 find_program(PYTHON_EXECUTABLE NAMES python3 python)
-find_package(Qt6 REQUIRED COMPONENTS Core Qml)
+find_package(Qt6 REQUIRED COMPONENTS Core)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../../scripts/cmake/addons.cmake)
 
