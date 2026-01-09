@@ -12,4 +12,4 @@ dependencies:
   - pip:
       - -r requirements.txt
 variables:
-  QT_VERSION: 6.6.3
+  QT_VERSION: 6.10.1

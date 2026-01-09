@@ -23,4 +23,4 @@ dependencies:
       - -r requirements.txt
       - -r taskcluster/scripts/requirements.txt
 variables:
-  QT_VERSION: 6.9.3
+  QT_VERSION: 6.10.1
