@@ -54,12 +54,9 @@ When you next want to start building the VPN, all you need to do is activate you
 
 Get a static build of Qt made built in our CI.
 
-https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public/build/qt6_macos.tar.xz
+https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.10.latest/artifacts/public/build/qt6_macos.tar.xz
 
 Extract the archive and remember the location for the configure step.
-
-Important note: As of November 3, 2025, the downloaded static Qt build is Qt 6.6. However, to compile the client on a macOS 26 machine, you must use later versions of
-6.8 and beyond. (It has been tested on 6.9.3, and that is recommended.) If building on macOS 26, download Qt manually and provide that path to the `CMAKE_PREFIX_PATH` argument.
 
 # Build
 
