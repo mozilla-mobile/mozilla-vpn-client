@@ -124,7 +124,7 @@ commonStrings:
     value: "[all] The navigation bar’s message icon sometimes retained the ’unread’ indicator even after all messages were read. That should not happen anymore."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to all platforms.
   bullet62:
-    value: "[iOS] Did you notice that the close button on popups was a litle too low? It no longer is."
+    value: "[iOS] Did you notice that the close button on popups was a little too low? It no longer is."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to iOS platform.
   bullet7:
     value: "[iOS] Some exciting under-the-hood work to support a future feature."
