@@ -71,8 +71,11 @@ void TaskControllerAction::run() {
       break;
     case eRegenerateKey:
       controller->startKeyRegeneration();
-      expectSignal = true;
-      break;
+      // Complete immediately - this just sets UI state, key regeneration is
+      // handled by TaskAddDevice.
+      m_timer.stop();
+      emit completed();
+      return;
   }
 
   // If no signal is expected, the VPN is probably already in the right state.
