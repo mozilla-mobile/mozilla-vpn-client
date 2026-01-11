@@ -15,15 +15,8 @@ cmake_policy(SET CMP0077 NEW)
 
 include(FetchContent)
 
-FetchContent_Declare(libcares SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/c-ares")
+# Build c-ares
+include(${CMAKE_CURRENT_LIST_DIR}/c-ares.cmake)
 
-# Set options before calling FetchContent_MakeAvailable
-set(CARES_STATIC ON CACHE BOOL "Build static c-ares" FORCE)
-set(CARES_SHARED OFF CACHE BOOL "Disable shared c-ares" FORCE)
-set(CARES_BUILD_TESTS OFF CACHE BOOL "Disable c-ares tests" FORCE)
-set(CARES_BUILD_CONTAINER_TESTS OFF CACHE BOOL "Disable c-ares container tests" FORCE)
-set(CARES_BUILD_TOOLS OFF CACHE BOOL "Disable c-ares tools" FORCE)
-set(CARES_INSTALL OFF CACHE BOOL "Disable c-ares global install" FORCE)
-
-
-FetchContent_MakeAvailable(libcares)
+# Build sentry
+include(${CMAKE_CURRENT_LIST_DIR}/sentry.cmake)
