@@ -46,7 +46,7 @@ jobs:
         shell: bash
         run: |
           # Qt for wasm needs the desktop linux installation
-          python -m aqt install-qt -O /opt linux desktop $QTVERSION gcc_64 -m qtshadertools
+          python -m aqt install-qt -O /opt linux desktop $QTVERSION linux_gcc_64 -m qtshadertools
           python -m aqt install-qt -O /opt all_os wasm $QTVERSION wasm_singlethread -m qtwebsockets qt5compat qtshadertools
 
       - name: Setup emsdk
