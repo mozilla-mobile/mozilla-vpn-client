@@ -73,7 +73,7 @@
                                 exitData.text !== undefined ? ` (${exitData.text})` : '';
                             showUi(spinner);
                         },
-                        entryFunction: window.createQtAppInstance,
+                        entryFunction: window.mozillavpn_entry,
                         containerElements: [screen],
                         environment: {
                             MVPN_API_BASE_URL: u.searchParams.get('guardian'),
