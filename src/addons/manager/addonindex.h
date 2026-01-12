@@ -23,6 +23,7 @@ constexpr const char* ADDON_INDEX_SIGNATURE_FILENAME = "manifest.json.sig";
 // addon does not need to be loaded for unmatched conditions.
 struct AddonData {
   QByteArray m_sha256;
+  QByteArray m_content;
   QString m_addonId;
   Addon* m_addon;
 };
