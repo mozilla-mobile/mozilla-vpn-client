@@ -26,7 +26,7 @@ existing_tasks:
   build-linux/opt: EHhfiDzVSMaVh8tnVMGezA
   build-macos/opt: YsDBZowUSvKTh2G9pkaYig
   build-wasm/opt: JqlM_tFGTcm_plxOMTd3bQ
-  build-windows/opt: NdU9bEA_TCSYBz5jNgpEcQ
+  build-windows-x86_64/opt: NdU9bEA_TCSYBz5jNgpEcQ
   fetch-win-go: aVfhCuu4SVqLmpvz4bAgnQ
   fetch-win-perl: KlpgRvHESp-9hiReWnJnvw
   fetch-win-rustup: RwOTt66NRfyxKIXDF6VBEQ
@@ -40,7 +40,7 @@ existing_tasks:
   signing-android-x86/release: CKVdRCcITRiOZFG5k2Lynw
   signing-linux/opt: UBdcGduyToibUCay3wc9zg
   signing-macos/opt: RUqoZ6rCQ_68QQzRhcWm0Q
-  signing-windows/opt: dMuIg-2dSjmICd8cti80WA
+  signing-windows-x86_64/opt: dMuIg-2dSjmICd8cti80WA
   test-taskgraph-definition: EMtIyKY7TxCqFbyB7jiFdA
   toolchain-openssl-win: P_D5Ht0qT-mQLUmBh_Alxg
   toolchain-qt-ios: Pyw_bgMXRSidDQUOHypXug
