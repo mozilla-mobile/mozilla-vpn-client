@@ -99,7 +99,7 @@ target_include_directories(mzutils PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/hacl-star/kremlin/minimal
 )
 
-target_compile_definitions(mzutils PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
+target_compile_definitions(mzutils PUBLIC "$<$<CONFIG:Debug>:MZ_DEBUG>")
 target_compile_definitions(mzutils PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 
 if(NOT CMAKE_CROSSCOMPILING)
