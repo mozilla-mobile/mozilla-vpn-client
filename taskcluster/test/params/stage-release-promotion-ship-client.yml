@@ -21,12 +21,12 @@ existing_tasks:
   build-macos/pr: ZMxnxgT_SImzRMn27DDyXg
   build-source/vpn: HjtImOLUQV6dFIoIqUfpcQ
   build-wasm/opt: bSjKBM0qSISH7kQ1UIVJdQ
-  build-windows/opt: ajetqRIORX2GnwiKy8bifQ
+  build-windows-x86_64/opt: ajetqRIORX2GnwiKy8bifQ
   repackage-msi: G9UcKDAGTRKiiqic9kIrxQ
   repackage-signing-msi: f7OS87xwQwGerLFCHn7C7w
   signing-addons-bundle: YhdzN2BnQBy5ZHXMEystPA
   signing-android-arm64/release: cbQmLU2FT-GQ7tTvQD6FQA
-  signing-windows/opt: UGL3O7yPRZe4vlO20fbpQg
+  signing-windows-x86_64/opt: UGL3O7yPRZe4vlO20fbpQg
   test-taskgraph-definition: O4LTEpGISkGGMMqKKCBtrg
 filters:
 - target_tasks_method

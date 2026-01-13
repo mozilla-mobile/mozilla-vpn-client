@@ -73,7 +73,7 @@ def add_beetmover_worker_config(config, tasks):
     build_id = config.params["moz_build_date"]
     build_type_os = {
         "macos/opt": "mac",
-        "windows/opt": "windows",
+        "windows-x86_64/opt": "windows",
         "android/x86": "android",
         "android/x64": "android",
         "android/armv7": "android",

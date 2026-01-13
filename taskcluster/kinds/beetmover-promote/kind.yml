@@ -65,7 +65,7 @@ tasks:
         dependencies:
             repackage-signing: repackage-signing-msi
         attributes:
-            build-type: windows/opt
+            build-type: windows-x86_64/opt
     addons-bundle:
         run-on-tasks-for: [action]
         # The addons-bundle release-artifacts are dynamically generated in the beetmover transform
