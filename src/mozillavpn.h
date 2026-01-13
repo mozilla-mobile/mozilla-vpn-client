@@ -13,6 +13,7 @@
 #include "app.h"
 #include "authenticationlistener.h"
 #include "frontend/navigator.h"
+#include "frontend/navigationbarbutton.h"
 
 struct MozillaVPNPrivate;
 class CaptivePortal;
@@ -253,6 +254,8 @@ class MozillaVPN final : public App {
   static void registerInspectorCommands();
 
   static void registerNavigationBarButtons();
+
+  static void setupMessageNotificationWatch(NavigationBarButton &messageIcon);
 
   static void registerAddonApis();
 
