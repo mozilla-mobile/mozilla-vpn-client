@@ -316,6 +316,10 @@ int CommandUI::run(QStringList& tokens) {
       logger.error() << "Failed to load " << url.toString();
     }
 
+#ifdef MZ_ANDROID
+    AndroidCommons::dismissSplashScreen();
+#endif
+
 #ifdef MZ_WINDOWS
     auto const updateWindowDecoration = [engineHolder]() {
       auto const window = engineHolder->window();
