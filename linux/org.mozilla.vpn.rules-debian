@@ -1,0 +1,11 @@
+polkit.addRule(function(action, subject) {
+        if ((action.id == "org.mozilla.vpn.activate" ||
+             action.id == "org.mozilla.vpn.deactivate") &&
+            subject.active == true &&
+            subject.local == true &&
+            subject.isInGroup("sudo")) {
+                return polkit.Result.YES;
+        }
+
+        return polkit.Result.NOT_HANDLED;
+});

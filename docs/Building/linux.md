@@ -23,6 +23,7 @@ On Ubuntu, apt install the following dependencies
 
 * libsecret-1 (>=0.18)
 * libcap-dev (>=1:2.32)
+* libpolkit-gobject-1-dev
 * wireguard (>=1.0.20200319)
 * wireguard-tools (>=1.0.20200319)
 
@@ -43,6 +44,16 @@ Compile
 Install
 
     sudo cmake --install build
+
+Copy polkit authorization rules
+
+On Debian systems:
+
+    sudo cp linux/org.mozilla.vpn.rules-debian /usr/share/polkit-1/rules.d/org.mozilla.vpn.rules
+
+On RedHat/Arch/openSUSE systems:
+
+    sudo cp linux/org.mozilla.vpn.rules-others /usr/share/polkit-1/rules.d/org.mozilla.vpn.rules
 
 # Run
 

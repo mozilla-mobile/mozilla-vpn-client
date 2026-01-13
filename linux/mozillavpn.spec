@@ -20,6 +20,7 @@ BuildRequires: golang >= 1.18
 BuildRequires: libcap-devel
 BuildRequires: libsecret-devel
 BuildRequires: openssl-devel
+BuildRequires: polkit-devel
 BuildRequires: python3-yaml
 BuildRequires: qt6-qtbase-devel >= 6.0
 BuildRequires: qt6-qtbase-private-devel >= 6.0
@@ -51,6 +52,7 @@ Read more on https://vpn.mozilla.org
 %cmake_install
 install -d %{buildroot}/%{_licensedir}/%{name}
 install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
+install -D -m 644 %{_srcdir}/linux/org.mozilla.vpn.rules-others %{buildroot}%{_datadir}/polkit-1/rules.d/org.mozilla.vpn.rules
 
 %files
 %license %{_licensedir}/%{name}/LICENSE.md
@@ -72,3 +74,4 @@ install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 %{_datadir}/icons/hicolor/scalable/apps/org.mozilla.vpn.svg
 %{_datadir}/metainfo/org.mozilla.vpn.metainfo.xml
 %{_datadir}/metainfo/org.mozilla.vpn.releases.xml
+%{_datadir}/polkit-1/rules.d/org.mozilla.vpn.rules

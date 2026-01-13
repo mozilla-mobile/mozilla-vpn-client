@@ -37,5 +37,9 @@ override_dh_installdocs:
 
 override_dh_installinfo:
 
+override_dh_install:
+	dh_install
+	install -D -m 644 linux/org.mozilla.vpn.rules-debian debian/mozillavpn/usr/share/polkit-1/rules.d/org.mozilla.vpn.rules
+
 override_dh_builddeb:
 	dh_builddeb -- -Zgzip
