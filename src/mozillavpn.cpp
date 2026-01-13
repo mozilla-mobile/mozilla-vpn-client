@@ -1835,14 +1835,17 @@ void MozillaVPN::registerNavigationBarButtons() {
 
   setupMessageNotificationWatch(*messageIcon);
 
-  // When creating a SettingGroup, only the keys that include that group are pulled.
-  // Creating `test/another` would add a watch to `test/another/word`, but not vice versa.
-  // Thus, ensure group is re-created *after* loading new messages.
-  connect(AddonManager::instance(), &AddonManager::countChanged,
-          instance(), [messageIcon]() { setupMessageNotificationWatch(*messageIcon); });
+  // When creating a SettingGroup, only the keys that include that group are
+  // pulled. Creating `test/another` would add a watch to `test/another/word`,
+  // but not vice versa. Thus, ensure group is re-created *after* loading new
+  // messages.
+  connect(AddonManager::instance(), &AddonManager::countChanged, instance(),
+          [messageIcon]() { setupMessageNotificationWatch(*messageIcon); });
+
 }
 // static
-void MozillaVPN::setupMessageNotificationWatch(NavigationBarButton &messageIcon) {
+void MozillaVPN::setupMessageNotificationWatch(
+    NavigationBarButton &messageIcon) {
   // A group of settings containing all the addon message settings.
   SettingGroup* messageSettingGroup =
       SettingsManager::instance()->createSettingGroup(
