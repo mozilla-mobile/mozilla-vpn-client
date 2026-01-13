@@ -11,7 +11,8 @@ class PolkitHelper final {
  public:
   static PolkitHelper* instance();
 
-  bool checkAuthorization(const QString& actionId);
+  bool checkAuthorization(const QString& actionId,
+                          const QString& senderBusName);
 
  private:
   PolkitHelper() = default;

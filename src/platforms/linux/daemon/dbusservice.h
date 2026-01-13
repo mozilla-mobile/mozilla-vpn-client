@@ -69,8 +69,6 @@ class DBusService final : public Daemon, protected QDBusContext {
   AppTracker* m_appTracker = nullptr;
   QHash<QString, AppState> m_excludedApps;
   QHash<QString, AppState> m_excludedCgroups;
-
-  uint m_sessionUid = 0;
 };
 
 #endif  // DBUSSERVICE_H
