@@ -1,4 +1,4 @@
 multidict >= 5.0.0 
 yarl>=1.6.0
 taskcluster==91.1.2
-sentry-cli==2.58.2
+sentry-cli==3.1.0
