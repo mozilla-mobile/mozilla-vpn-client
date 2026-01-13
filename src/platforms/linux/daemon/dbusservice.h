@@ -47,7 +47,7 @@ class DBusService final : public Daemon, protected QDBusContext {
 
  private:
   bool removeInterfaceIfExists();
-  bool isCallerAuthorized();
+  bool isCallerAuthorized(const QString& actionId);
   void dropRootPermissions();
 
   void setAppState(const QString& desktopFileId, AppState state);

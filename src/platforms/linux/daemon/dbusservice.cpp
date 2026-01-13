@@ -19,8 +19,8 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "polkithelper.h"
 #include "platforms/linux/linuxutils.h"
+#include "polkithelper.h"
 
 namespace {
 Logger logger("DBusService");
@@ -106,7 +106,7 @@ QString DBusService::version() {
 
 bool DBusService::activate(const InterfaceConfig& config) {
   logger.debug() << "Activate";
-  if (!isCallerAuthorized()) {
+  if (!isCallerAuthorized("org.mozilla.vpn.activate")) {
     logger.error() << "Insufficient caller permissions";
     return false;
   }
@@ -126,7 +126,7 @@ bool DBusService::activate(const InterfaceConfig& config) {
 
 bool DBusService::deactivate(bool emitSignals) {
   logger.debug() << "Deactivate";
-  if (!isCallerAuthorized()) {
+  if (!isCallerAuthorized("org.mozilla.vpn.deactivate")) {
     logger.error() << "Insufficient caller permissions";
     return false;
   }
@@ -141,7 +141,7 @@ QString DBusService::status() {
 
 QString DBusService::getLogs() {
   logger.debug() << "Log request";
-  if (!isCallerAuthorized()) {
+  if (!isCallerAuthorized("org.mozilla.vpn.activate")) {
     logger.error() << "Insufficient caller permissions";
     return QString();
   }
@@ -301,13 +301,13 @@ void DBusService::dropRootPermissions() {
 }
 
 /* Checks to see if the caller has sufficient authorization */
-bool DBusService::isCallerAuthorized() {
+bool DBusService::isCallerAuthorized(const QString& actionId) {
   if (!calledFromDBus()) {
     // If this is not a D-Bus call, it came from the daemon itself.
     return true;
   }
 
-  if (PolkitHelper::instance()->checkAuthorization("org.mozilla.vpn.activate",
+  if (PolkitHelper::instance()->checkAuthorization(actionId,
                                                    message().service())) {
     logger.debug() << "Polkit authorization granted";
     return true;
@@ -338,8 +338,7 @@ bool DBusService::isCallerAuthorized() {
     return false;
   }
 
-  auto guard = qScopeGuard([&] {
-    cap_free(caps); });
+  auto guard = qScopeGuard([&] { cap_free(caps); });
 
   // Check if the calling process has CAP_NET_ADMIN.
   cap_flag_value_t flag;
