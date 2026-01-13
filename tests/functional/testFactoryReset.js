@@ -26,21 +26,21 @@ describe('Factory Reset', function() {
 
   //Tests all the navigation for the reset settings view and confirmation modal
   it('setting navigation', async () => {
-  	await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
+  	await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
   	await vpn.waitForQueryAndClick(queries.screenGetHelp.BACK_BUTTON.visible());
 
-  	await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
+  	await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
   	await vpn.waitForQueryAndClick(queries.screenGetHelp.RESET.visible());
 
-  	await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
-	await vpn.scrollToQuery(queries.screenGetHelp.resetView.VIEW,
+  	await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
+	await vpn.scrollToQuery(queries.screenGetHelp.resetView.SCREEN,
 		queries.screenGetHelp.resetView.BACK_BUTTON);
   	await vpn.waitForQueryAndClick(queries.screenGetHelp.resetView.BACK_BUTTON.visible());
 
-  	await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
+  	await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
   	await vpn.waitForQueryAndClick(queries.screenGetHelp.RESET.visible());
 
-  	await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
+  	await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
   	await vpn.waitForQueryAndClick(queries.screenGetHelp.resetView.RESET_BUTTON.visible());
 
   	await vpn.waitForQuery(queries.screenGetHelp.resetView.POPUP_LOADER.prop('active', true));
