@@ -58,28 +58,30 @@ FocusScope {
                 countryItem.openCityList();
             }
 
-            const doScroll = () => {
-                // Get distance to the current server city and scroll
-                const currentCityYPosition = (countryItem.y
-                                              + MZTheme.theme.cityListTopMargin * 3 * countryItem.currentCityIndex
-                                              - serverListYCenter);
-                const destinationY = (currentCityYPosition + serverListFlickable.height > serverListFlickable.contentHeight)
-                                   ? serverListFlickable.contentHeight - serverListFlickable.height
-                                   : currentCityYPosition;
-                serverListFlickable.contentY = destinationY;
+            // Get distance to the current server city and scroll
+            const currentCityYPosition = (countryItem.y
+                                          + MZTheme.theme.cityListTopMargin * 3 * countryItem.currentCityIndex
+                                          - serverListYCenter);
+            const destinationY = (currentCityYPosition + serverListFlickable.height > serverListFlickable.contentHeight)
+                                ? serverListFlickable.contentHeight - serverListFlickable.height
+                                : currentCityYPosition;
+            serverListFlickable.contentY = destinationY;
 
-                // Call it again if we're not ready yet. However, we want to set the contentY
-                // on each pass, as it gets close to the accurate contentY and thus prevents
-                // one final large visual jump for the user.
-                if (!countryItem.ready) {
-                    Qt.callLater(doScroll);
-                    return;
-                }
-            };
-
-            doScroll();
-            return;
+            // Call it again if we're not ready yet. However, we want to set the contentY
+            // on each pass, as it gets close to the accurate contentY and thus prevents
+            // one final large visual jump for the user.
+            if (!countryItem.ready) {
+              scrollTimer.serverList = serverListFlickable
+              scrollTimer.restart();
+            }
         }
+    }
+
+    Timer {
+      id: scrollTimer
+      interval: 50
+      onTriggered: scrollToActiveServer(serverList)
+      property var serverList: null
     }
 
     function centerActiveServer() {
