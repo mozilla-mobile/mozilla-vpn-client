@@ -9,7 +9,7 @@
     <message>Activate the Mozilla VPN</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
-      <allow_active>auth_admin</allow_active>
+      <allow_active>auth_admin_keep</allow_active>
     </defaults>
   </action>
 
@@ -18,7 +18,7 @@
     <message>Deactivate the Mozilla VPN</message>
     <defaults>
       <allow_inactive>no</allow_inactive>
-      <allow_active>auth_admin</allow_active>
+      <allow_active>auth_admin_keep</allow_active>
     </defaults>
   </action>
 </policyconfig>
