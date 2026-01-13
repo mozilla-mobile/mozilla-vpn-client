@@ -56,12 +56,15 @@ Column {
 
             anchors.centerIn: parent
 
+            readonly property bool shouldExpand: button.activeFocus || button.state === MZTheme.theme.uiState.stateHovered || button.state === MZTheme.theme.uiState.statePressed || delegate.currentState === MZStepProgressBarDelegate.State.Active
+
             z: parent.z - 1
             radius: implicitWidth / 2
             color: MZTheme.colors.stepProgressBarHighlight
+            visible: implicitWidth > 0 && implicitHeight > 0
 
-            implicitHeight: button.activeFocus || button.state === MZTheme.theme.uiState.stateHovered || button.state === MZTheme.theme.uiState.statePressed || delegate.currentState === MZStepProgressBarDelegate.State.Active ? parent.implicitHeight + 8 : 0
-            implicitWidth: button.activeFocus || button.state === MZTheme.theme.uiState.stateHovered || button.state === MZTheme.theme.uiState.statePressed || delegate.currentState === MZStepProgressBarDelegate.State.Active ? parent.implicitWidth + 8 : 0
+            implicitHeight: shouldExpand ? parent.implicitHeight + 8 : 0
+            implicitWidth: shouldExpand ? parent.implicitWidth + 8 : 0
 
             Behavior on implicitHeight {
                 enabled: button.state !== MZTheme.theme.uiState.stateHovered && button.state !== MZTheme.theme.uiState.statePressed
