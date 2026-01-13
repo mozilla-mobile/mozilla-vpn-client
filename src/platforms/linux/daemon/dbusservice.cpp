@@ -126,6 +126,7 @@ bool DBusService::activate(const InterfaceConfig& config) {
 
 bool DBusService::deactivate(bool emitSignals) {
   logger.debug() << "Deactivate";
+
   if (!isCallerAuthorized("org.mozilla.vpn.deactivate")) {
     logger.error() << "Insufficient caller permissions";
     return false;
@@ -136,11 +137,19 @@ bool DBusService::deactivate(bool emitSignals) {
 }
 
 QString DBusService::status() {
+  logger.debug() << "Status request";
+
+  if (!isCallerAuthorized("org.mozilla.vpn.activate")) {
+    logger.error() << "Insufficient caller permissions";
+    return QString();
+  }
+
   return QString(QJsonDocument(getStatus()).toJson(QJsonDocument::Compact));
 }
 
 QString DBusService::getLogs() {
   logger.debug() << "Log request";
+
   if (!isCallerAuthorized("org.mozilla.vpn.activate")) {
     logger.error() << "Insufficient caller permissions";
     return QString();
