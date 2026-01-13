@@ -149,6 +149,17 @@ QString DBusService::getLogs() {
   return Daemon::logs();
 }
 
+void DBusService::cleanupLogs() {
+  logger.debug() << "Cleanup logs request";
+
+  if (!isCallerAuthorized("org.mozilla.vpn.activate")) {
+    logger.error() << "Insufficient caller permissions";
+    return;
+  }
+
+  cleanLogs();
+}
+
 void DBusService::userListCompleted(QDBusPendingCallWatcher* watcher) {
   QDBusPendingReply<UserDataList> reply = *watcher;
   if (reply.isValid()) {

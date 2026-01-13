@@ -37,7 +37,7 @@ class DBusService final : public Daemon, protected QDBusContext {
   QString status();
   QString version();
   QString getLogs();
-  void cleanupLogs() { cleanLogs(); }
+  void cleanupLogs();
 
  protected:
   WireguardUtils* wgutils() const override { return m_wgutils; }
