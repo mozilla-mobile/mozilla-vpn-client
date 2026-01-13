@@ -16,3 +16,4 @@ usr/share/icons/hicolor/64x64/apps/org.mozilla.vpn.png
 usr/share/icons/hicolor/scalable/apps/org.mozilla.vpn.svg
 usr/share/metainfo/org.mozilla.vpn.metainfo.xml
 usr/share/metainfo/org.mozilla.vpn.releases.xml
+usr/share/polkit-1/actions/org.mozilla.vpn.policy

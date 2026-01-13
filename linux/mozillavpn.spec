@@ -74,4 +74,5 @@ install -D -m 644 %{_srcdir}/linux/org.mozilla.vpn.rules-others %{buildroot}%{_d
 %{_datadir}/icons/hicolor/scalable/apps/org.mozilla.vpn.svg
 %{_datadir}/metainfo/org.mozilla.vpn.metainfo.xml
 %{_datadir}/metainfo/org.mozilla.vpn.releases.xml
+%{_datadir}/polkit-1/actions/org.mozilla.vpn.policy
 %{_datadir}/polkit-1/rules.d/org.mozilla.vpn.rules
