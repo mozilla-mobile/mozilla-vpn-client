@@ -1841,11 +1841,10 @@ void MozillaVPN::registerNavigationBarButtons() {
   // messages.
   connect(AddonManager::instance(), &AddonManager::countChanged, instance(),
           [messageIcon]() { setupMessageNotificationWatch(*messageIcon); });
-
 }
 // static
 void MozillaVPN::setupMessageNotificationWatch(
-    NavigationBarButton &messageIcon) {
+    NavigationBarButton& messageIcon) {
   // A group of settings containing all the addon message settings.
   SettingGroup* messageSettingGroup =
       SettingsManager::instance()->createSettingGroup(
