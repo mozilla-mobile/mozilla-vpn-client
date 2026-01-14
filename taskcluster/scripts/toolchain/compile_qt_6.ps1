@@ -70,11 +70,11 @@ Copy-Item -Path "$env:VCS_PATH/taskcluster/scripts/toolchain/configure_qt.ps1" -
 Write-Output "Preparing to buld Qt $QT_SOURCE_VERSION"
 if ($QT_SOURCE_VERSION -lt "6.10.3") {
     Write-Output "Patching for QTBUG-141830"
-    Start-Process -WorkingDirectory ${QT_SOURCE_DIR}/qtdeclarative -NoNewWindow -PassThru "git" -ArgumentList @(
+    Start-Process -WorkingDirectory $QT_SOURCE_DIR/qtdeclarative -NoNewWindow -PassThru "git" -ArgumentList @(
       'apply'
       '--ignore-space-change'
       '--ignore-whitespace'
-      "$env:VCS_PATH/taskcluster/scripts/toolchain/patches/qtbug-141830-qsortfilterproxymodel.patch"
+      (resolve-path "$env:VCS_PATH/taskcluster/scripts/toolchain/patches/qtbug-141830-qsortfilterproxymodel.patch")
     )
 }
 
