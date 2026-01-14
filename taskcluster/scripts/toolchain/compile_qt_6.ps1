@@ -55,8 +55,8 @@ $VS_SHELL_HELPER = resolve-path "$env:MOZ_FETCHES_DIR/*/enter_dev_shell.ps1"
 . "$VS_SHELL_HELPER"
 
 $QT_CONFIG_SCRIPT = resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*/configure.bat"
-$QT_SOURCE_DIR = Split-Path "$QT_CONFIG_SCRIPT" | Split-Path -Leaf
-$QT_SOURCE_VERSION = $QT_SOURCE_DIR.split("-")[-1]
+$QT_SOURCE_DIR = Split-Path "$QT_CONFIG_SCRIPT"
+$QT_SOURCE_VERSION = (Split-Path -Path "$QT_CONFIG_SCRIPT" | Split-Path -Leaf).split("-")[-1]
 $QT_BUILD_PATH = "$env:TASK_WORKDIR\qt-build"
 $QT_INSTALL_PATH = "$env:TASK_WORKDIR\qt-windows"
 if(!(Test-Path $QT_INSTALL_PATH)){
