@@ -74,7 +74,7 @@ if ($QT_SOURCE_VERSION -lt "6.10.3") {
       'apply'
       '--ignore-space-change'
       '--ignore-whitespace'
-      "${VCS_PATH}/taskcluster/scripts/toolchain/patches/qtbug-141830-qsortfilterproxymodel.patch"
+      "$env:VCS_PATH/taskcluster/scripts/toolchain/patches/qtbug-141830-qsortfilterproxymodel.patch"
     )
 }
 
