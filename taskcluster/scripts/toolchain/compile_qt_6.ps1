@@ -72,7 +72,7 @@ if ($QT_SOURCE_VERSION -lt "6.10.3") {
     Write-Output "Patching for QTBUG-141830"
     Start-Process -WorkingDirectory ${QT_SOURCE_DIR}/qtdeclarative -NoNewWindow -PassThru "git" -ArgumentList @(
       'apply'
-      '--ignore-space-changes'
+      '--ignore-space-change'
       '--ignore-whitespace'
       "${VCS_PATH}/taskcluster/scripts/toolchain/patches/qtbug-141830-qsortfilterproxymodel.patch"
     )
