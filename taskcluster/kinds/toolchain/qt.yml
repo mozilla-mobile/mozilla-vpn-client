@@ -20,6 +20,7 @@ qt-macos-6.10:
         script: compile_qt_6_mac.sh
         resources:
             - scripts/utils/qt6_compile.sh
+            - taskcluster/scripts/toolchain/patches/*.patch
         toolchain-alias: qt-macos-6.10
         toolchain-artifact: public/build/qt6_macos.tar.xz
     treeherder:
@@ -40,6 +41,7 @@ qt-windows-x86_64-6.10:
         script: compile_qt_6.ps1
         resources:
             - taskcluster/scripts/toolchain/configure_qt.ps1
+            - taskcluster/scripts/toolchain/patches/*.patch
         toolchain-alias: qt-windows-x86_64-6.10
         toolchain-artifact: public/build/qt6_win.tar.xz
     treeherder:
@@ -61,6 +63,7 @@ qt-windows-aarch64-6.10:
         script: compile_qt_6.ps1
         resources:
             - taskcluster/scripts/toolchain/configure_qt.ps1
+            - taskcluster/scripts/toolchain/patches/*.patch
         toolchain-alias: qt-windows-aarch64-6.10
         toolchain-artifact: public/build/qt6_win.tar.xz
     treeherder:
@@ -94,6 +97,7 @@ qt-linux:
         script: compile_qt_6_linux.sh
         resources:
             - scripts/utils/qt6_compile.sh
+            - taskcluster/scripts/toolchain/patches/*.patch
         toolchain-alias: qt-linux
         toolchain-artifact: public/build/qt6_linux.tar.xz
     treeherder:
