@@ -2304,9 +2304,7 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
-  SettingsHolder settingsHolder;
-
-  if (settingsHolder.stagingServer()) {
+  if (SettingsHolder::instance()->stagingServer()) {
     Constants::setStaging();
     LogHandler::instance()->setStderr(true);
   }
