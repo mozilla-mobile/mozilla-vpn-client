@@ -12,9 +12,8 @@
 #include "tasks/ipfinder/taskipfinder.h"
 
 void TestIpFinder::ipv4AndIpv6() {
-  SettingsHolder settingsHolder;
 
-  settingsHolder.setToken("TOKEN!");
+  SettingsHolder::instance()->setToken("TOKEN!");
 
   TestHelper::networkConfig.clear();
 

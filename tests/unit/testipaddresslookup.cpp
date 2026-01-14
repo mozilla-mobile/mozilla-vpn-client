@@ -9,9 +9,7 @@
 #include "settingsholder.h"
 
 void TestIpAddressLookup::checkIpAddressFailure() {
-  SettingsHolder settingsHolder;
-
-  settingsHolder.setToken("TOKEN!");
+  SettingsHolder::instance()->setToken("TOKEN!");
 
   IpAddressLookup ial;
   ial.reset();
@@ -49,9 +47,7 @@ void TestIpAddressLookup::checkIpAddressSucceess_data() {
 }
 
 void TestIpAddressLookup::checkIpAddressSucceess() {
-  SettingsHolder settingsHolder;
-
-  settingsHolder.setToken("TOKEN!");
+  SettingsHolder::instance()->setToken("TOKEN!");
 
   IpAddressLookup ial;
   ial.reset();

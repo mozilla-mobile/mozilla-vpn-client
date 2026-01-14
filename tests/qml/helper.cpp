@@ -7,6 +7,7 @@
 #include "nebula.h"
 #include "qmlengineholder.h"
 #include "settings/settinggroup.h"
+#include "settingsholder.h"
 
 TestHelper::TestHelper()
     : m_testSettingGroup(
@@ -64,7 +65,7 @@ void TestHelper::qmlEngineAvailable(QQmlEngine* engine) {
   qmlRegisterSingletonType<TestHelper>(
       "Mozilla.Shared", 1, 0, "MZSettings",
       [this](QQmlEngine*, QJSEngine*) -> QObject* {
-        QObject* obj = &m_settingsHolder;
+        QObject* obj = SettingsHolder::instance();
         QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
         return obj;
       });

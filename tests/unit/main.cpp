@@ -11,7 +11,6 @@
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "networkrequest.h"
-#include "settingsholder.h"
 
 #ifdef _WIN32
 #  include <windows.h>
@@ -137,7 +136,6 @@ int main(int argc, char* argv[]) {
   QCoreApplication::setApplicationVersion("1.2.3");
 
   {
-    SettingsHolder settingsHolder;
     Constants::setStaging();
   }
 

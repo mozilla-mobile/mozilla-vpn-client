@@ -35,7 +35,6 @@ class TestHelper final : public QObject {
   TestHelper();
   ~TestHelper() = default;
 
-  SettingsHolder m_settingsHolder;
   Localizer m_localizer;
 
   bool m_mainWindowLoadedCalled = false;

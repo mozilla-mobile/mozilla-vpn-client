@@ -4,7 +4,6 @@
 
 #include "helper.h"
 
-class SettingsHolder;
 
 class TestLocalizer final : public TestHelper {
   Q_OBJECT
@@ -43,7 +42,4 @@ class TestLocalizer final : public TestHelper {
   void getTranslatedCountryName();
 
   void getTranslatedCityName();
-
- private:
-  SettingsHolder* m_settingsHolder = nullptr;
 };

@@ -39,7 +39,6 @@ class TestConnectionHealth final : public TestHelper {
   }
 
  private:
-  SettingsHolder* m_settingsHolder = nullptr;
   void metricsTestCount(int expectedStablePeriods, int expectedUnstablePeriods,
                         int expectedNoSignalPeriods);
 };

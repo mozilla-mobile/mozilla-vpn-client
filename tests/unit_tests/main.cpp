@@ -48,7 +48,6 @@ int main(int argc, char* argv[]) {
   QCoreApplication::setApplicationVersion("1.2.3");
 
   {
-    SettingsHolder settingsHolder;
     Constants::setStaging();
   }
 

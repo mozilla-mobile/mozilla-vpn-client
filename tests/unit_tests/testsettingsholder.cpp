@@ -7,106 +7,106 @@
 #define SETTING(type, toType, getter, setter, remover, has, key, defaultValue, \
                 ...)                                                           \
   void TestSettingsHolder::testGetSetCheckRemove_##getter() {                  \
-    SettingsHolder settingsHolder;                                             \
+    SettingsHolder* settingsHolder = SettingsHolder::instance();               \
     SettingsManager::instance()->hardReset();                                  \
                                                                                \
-    QSignalSpy spy(&settingsHolder, &SettingsHolder::getter##Changed);         \
+    QSignalSpy spy(settingsHolder, &SettingsHolder::getter##Changed);         \
                                                                                \
     QVariant v = QVariant(defaultValue);                                       \
     switch (v.metaType().id()) {                                               \
       case QMetaType::Bool: {                                                  \
-        QVERIFY(!settingsHolder.has());                                        \
-        QCOMPARE(QVariant(settingsHolder.getter()).toBool(), v.toBool());      \
+        QVERIFY(!settingsHolder->has());                                        \
+        QCOMPARE(QVariant(settingsHolder->getter()).toBool(), v.toBool());      \
                                                                                \
         bool expectedValue = !v.toBool();                                      \
-        settingsHolder.setter(QVariant(expectedValue).toType());               \
+        settingsHolder->setter(QVariant(expectedValue).toType());               \
         QCOMPARE(spy.count(), 1);                                              \
-        QCOMPARE(QVariant(settingsHolder.getter()).toBool(), expectedValue);   \
-        QVERIFY(settingsHolder.has());                                         \
+        QCOMPARE(QVariant(settingsHolder->getter()).toBool(), expectedValue);   \
+        QVERIFY(settingsHolder->has());                                         \
                                                                                \
-        settingsHolder.remover();                                              \
+        settingsHolder->remover();                                              \
         QCOMPARE(spy.count(), 2);                                              \
-        QVERIFY(!settingsHolder.has());                                        \
+        QVERIFY(!settingsHolder->has());                                        \
         return;                                                                \
       }                                                                        \
       case QMetaType::QByteArray: {                                            \
-        QVERIFY(!settingsHolder.has());                                        \
-        QCOMPARE(QVariant(settingsHolder.getter()).toByteArray(),              \
+        QVERIFY(!settingsHolder->has());                                        \
+        QCOMPARE(QVariant(settingsHolder->getter()).toByteArray(),              \
                  v.toByteArray());                                             \
                                                                                \
         QByteArray expectedValue = QString("abytearray").toUtf8();             \
-        settingsHolder.setter(QVariant(expectedValue).toType());               \
+        settingsHolder->setter(QVariant(expectedValue).toType());               \
         QCOMPARE(spy.count(), 1);                                              \
-        QCOMPARE(QVariant(settingsHolder.getter()).toByteArray(),              \
+        QCOMPARE(QVariant(settingsHolder->getter()).toByteArray(),              \
                  expectedValue);                                               \
-        QVERIFY(settingsHolder.has());                                         \
+        QVERIFY(settingsHolder->has());                                         \
                                                                                \
-        settingsHolder.remover();                                              \
+        settingsHolder->remover();                                              \
         QCOMPARE(spy.count(), 2);                                              \
-        QVERIFY(!settingsHolder.has());                                        \
+        QVERIFY(!settingsHolder->has());                                        \
         return;                                                                \
       }                                                                        \
       case QMetaType::QDateTime: {                                             \
-        QVERIFY(!settingsHolder.has());                                        \
-        QCOMPARE(QVariant(settingsHolder.getter()).toDateTime().toString(),    \
+        QVERIFY(!settingsHolder->has());                                        \
+        QCOMPARE(QVariant(settingsHolder->getter()).toDateTime().toString(),    \
                  v.toDateTime().toString());                                   \
                                                                                \
         QDateTime expectedValue = QDateTime::fromMSecsSinceEpoch(0);           \
-        settingsHolder.setter(QVariant(expectedValue).toType());               \
+        settingsHolder->setter(QVariant(expectedValue).toType());               \
         QCOMPARE(spy.count(), 1);                                              \
-        QCOMPARE(QVariant(settingsHolder.getter()).toDateTime().toString(),    \
+        QCOMPARE(QVariant(settingsHolder->getter()).toDateTime().toString(),    \
                  expectedValue.toString());                                    \
-        QVERIFY(settingsHolder.has());                                         \
+        QVERIFY(settingsHolder->has());                                         \
                                                                                \
-        settingsHolder.remover();                                              \
+        settingsHolder->remover();                                              \
         QCOMPARE(spy.count(), 2);                                              \
-        QVERIFY(!settingsHolder.has());                                        \
+        QVERIFY(!settingsHolder->has());                                        \
         return;                                                                \
       }                                                                        \
       case QMetaType::Int:                                                     \
       case QMetaType::LongLong: {                                              \
-        QVERIFY(!settingsHolder.has());                                        \
-        QCOMPARE(QVariant(settingsHolder.getter()).toInt(), v.toInt());        \
+        QVERIFY(!settingsHolder->has());                                        \
+        QCOMPARE(QVariant(settingsHolder->getter()).toInt(), v.toInt());        \
                                                                                \
         auto expectedValue = 42;                                               \
-        settingsHolder.setter(QVariant(expectedValue).toType());               \
+        settingsHolder->setter(QVariant(expectedValue).toType());               \
         QCOMPARE(spy.count(), 1);                                              \
-        QCOMPARE(QVariant(settingsHolder.getter()).toInt(), expectedValue);    \
+        QCOMPARE(QVariant(settingsHolder->getter()).toInt(), expectedValue);    \
                                                                                \
-        settingsHolder.remover();                                              \
+        settingsHolder->remover();                                              \
         QCOMPARE(spy.count(), 2);                                              \
-        QVERIFY(!settingsHolder.has());                                        \
+        QVERIFY(!settingsHolder->has());                                        \
         return;                                                                \
       }                                                                        \
       case QMetaType::QString: {                                               \
-        QVERIFY(!settingsHolder.has());                                        \
-        QCOMPARE(QVariant(settingsHolder.getter()).toString(), v.toString());  \
+        QVERIFY(!settingsHolder->has());                                        \
+        QCOMPARE(QVariant(settingsHolder->getter()).toString(), v.toString());  \
                                                                                \
         QString expectedValue = "astring";                                     \
-        settingsHolder.setter(QVariant(expectedValue).toType());               \
+        settingsHolder->setter(QVariant(expectedValue).toType());               \
         QCOMPARE(spy.count(), 1);                                              \
-        QCOMPARE(QVariant(settingsHolder.getter()).toString(), expectedValue); \
+        QCOMPARE(QVariant(settingsHolder->getter()).toString(), expectedValue); \
                                                                                \
-        settingsHolder.remover();                                              \
+        settingsHolder->remover();                                              \
         QCOMPARE(spy.count(), 2);                                              \
-        QVERIFY(!settingsHolder.has());                                        \
+        QVERIFY(!settingsHolder->has());                                        \
         return;                                                                \
       }                                                                        \
       case QMetaType::QStringList: {                                           \
-        QVERIFY(!settingsHolder.has());                                        \
-        QCOMPARE(QVariant(settingsHolder.getter()).toStringList().join(","),   \
+        QVERIFY(!settingsHolder->has());                                        \
+        QCOMPARE(QVariant(settingsHolder->getter()).toStringList().join(","),   \
                  v.toStringList().join(","));                                  \
                                                                                \
         QStringList expectedValue = QStringList({"a", "string", "list"});      \
-        settingsHolder.setter(QVariant(expectedValue).toType());               \
+        settingsHolder->setter(QVariant(expectedValue).toType());               \
         QCOMPARE(spy.count(), 1);                                              \
-        QCOMPARE(QVariant(settingsHolder.getter()).toStringList().join(","),   \
+        QCOMPARE(QVariant(settingsHolder->getter()).toStringList().join(","),   \
                  expectedValue.join(","));                                     \
-        QVERIFY(settingsHolder.has());                                         \
+        QVERIFY(settingsHolder->has());                                         \
                                                                                \
-        settingsHolder.remover();                                              \
+        settingsHolder->remover();                                              \
         QCOMPARE(spy.count(), 2);                                              \
-        QVERIFY(!settingsHolder.has());                                        \
+        QVERIFY(!settingsHolder->has());                                        \
         return;                                                                \
       }                                                                        \
       default: {                                                               \
@@ -121,8 +121,7 @@
 #define EXPERIMENTAL_FEATURE(experimentId, experimentDescription, \
                              experimentSettings)                  \
   void TestSettingsHolder::testGetSet_##experimentId() {          \
-    SettingsHolder settingsHolder;                                \
-    auto group = settingsHolder.experimentId();                   \
+    auto group = SettingsHolder::instance()->experimentId();                   \
                                                                   \
     QSignalSpy spy(group, &SettingGroup::changed);                \
                                                                   \

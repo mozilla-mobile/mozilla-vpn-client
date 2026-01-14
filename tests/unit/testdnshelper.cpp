@@ -7,7 +7,11 @@
 #include "dnshelper.h"
 #include "settingsholder.h"
 
-void TestDNSHelper::migration_data() {
+void TestDNSHelper::cleanup() {
+  SettingsHolder::testCleanup();
+}
+
+void TestDNSHelper::migration_data() {  
   QTest::addColumn<int>("deprecated");
   QTest::addColumn<int>("flags");
 
@@ -23,20 +27,20 @@ void TestDNSHelper::migration_data() {
 }
 
 void TestDNSHelper::migration() {
-  SettingsHolder settingsHolder;
+  qDebug() << SettingsHolder::instance()->hasDNSProviderFlags();
 
-  QVERIFY(!settingsHolder.hasDNSProviderFlags());
-  QVERIFY(!settingsHolder.hasDNSProviderDeprecated());
+  QVERIFY(!SettingsHolder::instance()->hasDNSProviderFlags());
+  QVERIFY(!SettingsHolder::instance()->hasDNSProviderDeprecated());
 
   QFETCH(int, deprecated);
-  settingsHolder.setDNSProviderDeprecated(deprecated);
-  QVERIFY(settingsHolder.hasDNSProviderDeprecated());
-
+  qDebug() << "Setting deprecated to" << deprecated;
+  SettingsHolder::instance()->setDNSProviderDeprecated(deprecated);
+  QVERIFY(SettingsHolder::instance()->hasDNSProviderDeprecated());
   DNSHelper::maybeMigrateDNSProviderFlags();
-  QVERIFY(!settingsHolder.hasDNSProviderDeprecated());
+  QVERIFY(!SettingsHolder::instance()->hasDNSProviderDeprecated());
 
   QFETCH(int, flags);
-  QCOMPARE(settingsHolder.dnsProviderFlags(), flags);
+  QCOMPARE(SettingsHolder::instance()->dnsProviderFlags(), flags);
 }
 
 static TestDNSHelper s_testDNSHelper;

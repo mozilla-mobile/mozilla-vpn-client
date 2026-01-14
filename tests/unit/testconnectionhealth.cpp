@@ -10,11 +10,12 @@
 #include "helper.h"
 
 void TestConnectionHealth::init() {
-  m_settingsHolder = new SettingsHolder();
   MZGlean::initialize("testing");
 }
 
-void TestConnectionHealth::cleanup() { delete m_settingsHolder; }
+void TestConnectionHealth::cleanup() {
+  SettingsHolder::testCleanup();
+}
 
 void TestConnectionHealth::dnsPingReceived() {
   ConnectionHealth connectionHealth;

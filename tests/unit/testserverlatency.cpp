@@ -15,9 +15,8 @@
 #include "settingsholder.h"
 
 void TestServerLatency::init() {
-  SettingsHolder settingsHolder;
-  settingsHolder.setFeaturesFlippedOn(QStringList{"serverConnectionScore"});
-  QVERIFY(settingsHolder.featuresFlippedOn().contains("serverConnectionScore"));
+  SettingsHolder::instance()->setFeaturesFlippedOn(QStringList{"serverConnectionScore"});
+  QVERIFY(SettingsHolder::instance()->featuresFlippedOn().contains("serverConnectionScore"));
 }
 
 void TestServerLatency::latency() {

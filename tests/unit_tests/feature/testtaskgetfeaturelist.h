@@ -8,6 +8,7 @@ class TestTaskGetFeatureList final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void cleanup();
   void testSendsAuthedRequestWhenAuthed();
   void testAddsExperimeterIdToBodyWhenNotAuthed();
   void testUnauthedExperimenterIdIsOnlySetOnce();

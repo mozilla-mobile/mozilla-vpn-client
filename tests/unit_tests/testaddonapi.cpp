@@ -18,7 +18,6 @@
 #include "urlopener.h"
 
 void TestAddonApi::env() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -42,7 +41,6 @@ void TestAddonApi::env() {
 }
 
 void TestAddonApi::featurelist() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -78,7 +76,6 @@ void TestAddonApi::featurelist() {
 }
 
 void TestAddonApi::navigator() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -102,7 +99,6 @@ void TestAddonApi::navigator() {
 }
 
 void TestAddonApi::settings() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -119,18 +115,17 @@ void TestAddonApi::settings() {
   Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
   QVERIFY(!!message);
 
-  settingsHolder.setAddonApiSetting(false);
-  QVERIFY(!settingsHolder.addonApiSetting());
+  SettingsHolder::instance()->setAddonApiSetting(false);
+  QVERIFY(!SettingsHolder::instance()->addonApiSetting());
 
   AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
       message, ":/addons_test/api_settings.js");
   QVERIFY(!!a);
   QVERIFY(a->conditionApplied());
-  QVERIFY(settingsHolder.addonApiSetting());
+  QVERIFY(SettingsHolder::instance()->addonApiSetting());
 }
 
 void TestAddonApi::urlopener() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -161,7 +156,6 @@ void TestAddonApi::foobar() {
   AddonApi::setConstructorCallback(
       [](AddonApi* addonApi) { addonApi->insert("foobar", 42); });
 
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -187,7 +181,6 @@ void TestAddonApi::foobar() {
 }
 
 void TestAddonApi::settimedcallback() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
