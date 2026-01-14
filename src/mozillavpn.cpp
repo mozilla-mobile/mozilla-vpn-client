@@ -268,6 +268,12 @@ MozillaVPN::~MozillaVPN() {
   delete m_private;
 }
 
+// This is used by CommandServers before running TaskServers
+void MozillaVPN::initializeServerData() {
+  logger.debug() << "MozillaVPN ServerData Initialization";
+  m_private->m_serverData.initialize();
+}
+
 void MozillaVPN::initialize() {
   logger.debug() << "MozillaVPN Initialization";
 
