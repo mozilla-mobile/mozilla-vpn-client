@@ -28,7 +28,7 @@ class AddonApi final : public QQmlPropertyMap {
                                  const QJSValue& callback);
   Q_INVOKABLE void log(const QString& message);
 
-  Q_INVOKABLE void setTimedCallback(int interval, const QJSValue& callback);
+  Q_INVOKABLE void setTimedCallback(qint64 interval, const QJSValue& callback);
 
   /**
    * @brief callback executed when a new AddonApi is created. Use it to add
