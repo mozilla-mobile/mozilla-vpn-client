@@ -49,7 +49,7 @@ modules:
     buildsystem: cmake-ninja
     sources:
       - type: git
-        tag: v6.10.0
+        tag: v6.10.1
         url: https://github.com/qt/qt5compat
 
   - name: mozillavpn
