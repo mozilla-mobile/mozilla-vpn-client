@@ -23,18 +23,21 @@ tasks:
             with-attributes:
                 build-type:
                     - windows-x86_64/opt
+                    - windows-aarch64/opt
             group-by:
                 attribute: build-type
             copy-attributes: true
         add-index-routes:
-            name: windows
             type: build
         signing-format: gcp_prod_autograph_authenticode_202412
         treeherder:
             job-symbol: Bs
             kind: build
             tier: 1
-            platform: windows/x86_64
+            platform:
+                by-build-type:
+                    windows-x86_64/opt: windows/x86_64
+                    windows-aarch64/opt: windows/aarch64
 
     repackage-macpkg:
         description: Sign macOS installer package
