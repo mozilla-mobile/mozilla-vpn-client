@@ -18,14 +18,14 @@ void TestSettingsManager::cleanup() {
 
 void TestSettingsManager::testGetSetting() {
   // Try to get a setting that doesn't exist. All good, but nullptr
-  Q_ASSERT(!SettingsManager::instance()->getSetting("doesnotexist"));
+  QVERIFY(!SettingsManager::instance()->getSetting("doesnotexist"));
 
   // Create a setting
   auto setting = SettingsManager::instance()->createOrGetSetting("doesexist");
   Q_UNUSED(setting)
 
   // Try to get it, now it's not a nullptr.
-  Q_ASSERT(SettingsManager::instance()->getSetting("doesexist"));
+  QVERIFY(SettingsManager::instance()->getSetting("doesexist"));
 }
 
 void TestSettingsManager::testReset() {
@@ -43,8 +43,8 @@ void TestSettingsManager::testReset() {
   );
 
   // Check they are there, just in case.
-  Q_ASSERT(SettingsManager::instance()->getSetting("doreset"));
-  Q_ASSERT(SettingsManager::instance()->getSetting("donotreset"));
+  QVERIFY(SettingsManager::instance()->getSetting("doreset"));
+  QVERIFY(SettingsManager::instance()->getSetting("donotreset"));
 
   doReset->set(QVariant("hey"));
   doNotReset->set(QVariant("ho"));
@@ -57,8 +57,8 @@ void TestSettingsManager::testReset() {
   SettingsManager::instance()->reset();
 
   // Reset should _not_ unregister. Check that is true.
-  Q_ASSERT(SettingsManager::instance()->getSetting("doreset"));
-  Q_ASSERT(SettingsManager::instance()->getSetting("donotreset"));
+  QVERIFY(SettingsManager::instance()->getSetting("doreset"));
+  QVERIFY(SettingsManager::instance()->getSetting("donotreset"));
 
   // But it will clear the storage, if the setting is setup to do that.
   QVERIFY(doReset->get().isNull());
@@ -81,8 +81,8 @@ void TestSettingsManager::testHardReset() {
   );
 
   // Check they are there, just in case.
-  Q_ASSERT(SettingsManager::instance()->getSetting("doreset"));
-  Q_ASSERT(SettingsManager::instance()->getSetting("donotreset"));
+  QVERIFY(SettingsManager::instance()->getSetting("doreset"));
+  QVERIFY(SettingsManager::instance()->getSetting("donotreset"));
 
   doReset->set(QVariant("hey"));
   doNotReset->set(QVariant("ho"));
@@ -98,8 +98,8 @@ void TestSettingsManager::testHardReset() {
   SettingsManager::instance()->hardReset();
 
   // Hard reset will also not unregister settings. Check it.
-  Q_ASSERT(SettingsManager::instance()->getSetting("doreset"));
-  Q_ASSERT(SettingsManager::instance()->getSetting("donotreset"));
+  QVERIFY(SettingsManager::instance()->getSetting("doreset"));
+  QVERIFY(SettingsManager::instance()->getSetting("donotreset"));
 
   // It will also clear the storage, for all settings regardless of
   // configuration.

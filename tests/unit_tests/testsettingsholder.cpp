@@ -110,7 +110,7 @@
         return;                                                                \
       }                                                                        \
       default: {                                                               \
-        Q_ASSERT(false);                                                       \
+        QFAIL("Unsupported QMetaType");                                        \
       }                                                                        \
     }                                                                          \
   }
