@@ -66,7 +66,7 @@ RUN apt-get -y install libatspi2.0-dev \
 
 ## Install wayland build dependencies
 RUN apt -y install libwayland-dev \
-                   libwayland-egl-dev \
+                   libwayland-egl-backend-dev \
                    wayland-protocols
 
 ## Install Rust
