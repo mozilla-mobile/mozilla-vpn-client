@@ -42,6 +42,9 @@ class InterfaceConfig {
   QJsonObject toJson() const;
   QString toWgConf(
       const QMap<QString, QString>& extra = QMap<QString, QString>()) const;
+  QString toMultiHopWgConf(
+      const InterfaceConfig& exitConfig,
+      const QMap<QString, QString>& extra = QMap<QString, QString>()) const;
 };
 
 #endif  // INTERFACECONFIG_H
