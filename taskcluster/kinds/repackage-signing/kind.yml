@@ -27,8 +27,7 @@ tasks:
             group-by:
                 attribute: build-type
             copy-attributes: true
-        add-index-routes:
-            type: build
+        add-index-routes: build
         signing-format: gcp_prod_autograph_authenticode_202412
         treeherder:
             job-symbol: Bs
