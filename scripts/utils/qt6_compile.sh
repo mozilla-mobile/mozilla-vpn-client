@@ -78,6 +78,7 @@ LINUX="
   -fontconfig \
   -bundled-xcb-xinput \
   -feature-qdbus \
+  -feature-wayland \
   -xcb \
   -- \
   -DOPENSSL_USE_STATIC_LIBS=ON \
