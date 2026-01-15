@@ -264,9 +264,9 @@ void TestModels::deviceFromJson() {
   QFETCH(QByteArray, json);
   QJsonDocument doc = QJsonDocument::fromJson(json);
 
-  Q_ASSERT(doc.isObject());
+  QVERIFY(doc.isObject());
   QJsonObject obj = doc.object();
-  Q_ASSERT(obj.contains("test"));
+  QVERIFY(obj.contains("test"));
 
   Device device;
 
