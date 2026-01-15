@@ -18,7 +18,7 @@ jobs:
     name: "Build"
     runs-on: ubuntu-latest
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:kde-6.6
+      image: ghcr.io/flathub-infra/flatpak-github-actions:kde-6.10
       options: --privileged
 
     steps:
@@ -43,4 +43,3 @@ jobs:
       - name: Run post-build linters
         continue-on-error: true
         run: flatpak-builder-lint builddir flatpak_app
-
