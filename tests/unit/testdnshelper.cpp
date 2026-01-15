@@ -7,11 +7,9 @@
 #include "dnshelper.h"
 #include "settingsholder.h"
 
-void TestDNSHelper::cleanup() {
-  SettingsHolder::testCleanup();
-}
+void TestDNSHelper::cleanup() { SettingsHolder::testCleanup(); }
 
-void TestDNSHelper::migration_data() {  
+void TestDNSHelper::migration_data() {
   QTest::addColumn<int>("deprecated");
   QTest::addColumn<int>("flags");
 

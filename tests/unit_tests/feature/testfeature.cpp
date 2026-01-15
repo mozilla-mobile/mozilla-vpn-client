@@ -10,10 +10,14 @@
 
 void TestFeature::flipOnOff() {
   // Fresh settings!
-  QVERIFY(!SettingsHolder::instance()->featuresFlippedOn().contains("testFeatureA"));
-  QVERIFY(!SettingsHolder::instance()->featuresFlippedOn().contains("testFeatureB"));
-  QVERIFY(!SettingsHolder::instance()->featuresFlippedOff().contains("testFeatureA"));
-  QVERIFY(!SettingsHolder::instance()->featuresFlippedOff().contains("testFeatureB"));
+  QVERIFY(!SettingsHolder::instance()->featuresFlippedOn().contains(
+      "testFeatureA"));
+  QVERIFY(!SettingsHolder::instance()->featuresFlippedOn().contains(
+      "testFeatureB"));
+  QVERIFY(!SettingsHolder::instance()->featuresFlippedOff().contains(
+      "testFeatureA"));
+  QVERIFY(!SettingsHolder::instance()->featuresFlippedOff().contains(
+      "testFeatureB"));
 
   // Let's create a few features
 

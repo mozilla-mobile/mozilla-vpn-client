@@ -4,7 +4,6 @@
 
 #include "helper.h"
 
-
 class TestLocalizer final : public TestHelper {
   Q_OBJECT
 

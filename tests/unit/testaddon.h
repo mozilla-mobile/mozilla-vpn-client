@@ -15,5 +15,4 @@ class TestAddon final : public TestHelper {
 
   void message_notification_data();
   void message_notification();
-
 };

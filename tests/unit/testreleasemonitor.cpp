@@ -14,7 +14,6 @@
 #include "update/versionapi.h"
 
 void TestReleaseMonitor::failure() {
-
   TestHelper::networkConfig.append(TestHelper::NetworkConfig(
       TestHelper::NetworkConfig::Failure, QByteArray()));
 
@@ -102,7 +101,6 @@ void TestReleaseMonitor::success_data() {
 }
 
 void TestReleaseMonitor::success() {
-
   ReleaseMonitor rm;
   rm.runSoon();
 

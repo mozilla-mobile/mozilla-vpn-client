@@ -9,10 +9,7 @@
 #include "helper.h"
 #include "settingsholder.h"
 
-
-void TestFeatureModel::init() {
-  Feature::maybeInitialize();
-}
+void TestFeatureModel::init() { Feature::maybeInitialize(); }
 
 void TestFeatureModel::cleanup() {
   Feature::testReset();
@@ -287,7 +284,7 @@ void TestFeatureModel::updateFeatureListExperimentalFeaturesInvalidSettings() {
 
   // It is flipped on!
   QCOMPARE(initialFeaturesOnState.count() + 1,
-              settingsHolder->featuresFlippedOn().count());
+           settingsHolder->featuresFlippedOn().count());
   QVERIFY(
       settingsHolder->featuresFlippedOn().contains("myExperimentalFeature"));
 

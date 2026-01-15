@@ -9,9 +9,7 @@
 #include "feature/feature.h"
 #include "settingsholder.h"
 
-void TestAddonIndex::cleanup() {
-  SettingsHolder::testCleanup();
-}
+void TestAddonIndex::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestAddonIndex::update_data() {
   QTest::addColumn<QByteArray>("index");
@@ -72,8 +70,8 @@ void TestAddonIndex::update() {
   QFETCH(QStringList, expectedAddonIds);
   QFETCH(bool, expectsSignal);
 
-
-  SettingsHolder::instance()->setFeaturesFlippedOff(QStringList{"addonSignature"});
+  SettingsHolder::instance()->setFeaturesFlippedOff(
+      QStringList{"addonSignature"});
 
   // This is a horrible hack! The `Feature` objects are created at the startup
   // of the test app, and they listen for signals emitted by another
@@ -107,8 +105,8 @@ void TestAddonIndex::update() {
 }
 
 void TestAddonIndex::testSignatureChecksCanBeToggled() {
-
-  SettingsHolder::instance()->setFeaturesFlippedOff(QStringList{"addonSignature"});
+  SettingsHolder::instance()->setFeaturesFlippedOff(
+      QStringList{"addonSignature"});
 
   // This is a horrible hack! The `Feature` objects are created at the startup
   // of the test app, and they listen for signals emitted by another
@@ -138,7 +136,8 @@ void TestAddonIndex::testSignatureChecksCanBeToggled() {
   ai.update(QJsonDocument(index).toJson(), QByteArray());
   QTRY_COMPARE(indexUpdatedSpy.count(), 1);
 
-  SettingsHolder::instance()->setFeaturesFlippedOn(QStringList{"addonSignature"});
+  SettingsHolder::instance()->setFeaturesFlippedOn(
+      QStringList{"addonSignature"});
   const_cast<Feature*>(Feature::get(Feature::Feature_addonSignature))
       ->maybeFlipOnOrOff();
 

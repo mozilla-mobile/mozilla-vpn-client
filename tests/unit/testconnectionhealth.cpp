@@ -9,13 +9,9 @@
 #include "glean/mzglean.h"
 #include "helper.h"
 
-void TestConnectionHealth::init() {
-  MZGlean::initialize("testing");
-}
+void TestConnectionHealth::init() { MZGlean::initialize("testing"); }
 
-void TestConnectionHealth::cleanup() {
-  SettingsHolder::testCleanup();
-}
+void TestConnectionHealth::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestConnectionHealth::dnsPingReceived() {
   ConnectionHealth connectionHealth;

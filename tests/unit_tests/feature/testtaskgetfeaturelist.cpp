@@ -29,9 +29,7 @@ void stubRequestPostHandler(
 }
 }  // namespace
 
-void TestTaskGetFeatureList::cleanup() {
-  SettingsHolder::testCleanup();
-}
+void TestTaskGetFeatureList::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestTaskGetFeatureList::testSendsAuthedRequestWhenAuthed() {
   QNetworkRequest featureListRequest;
@@ -82,8 +80,8 @@ void TestTaskGetFeatureList::testAddsExperimeterIdToBodyWhenNotAuthed() {
 
   QVERIFY(!featureListRequest.hasRawHeader("Authorization"));
   QVERIFY(featureListRequestBody.contains("experimenterId"));
-  QVERIFY(
-      featureListRequestBody.contains(SettingsHolder::instance()->unauthedExperimenterId()));
+  QVERIFY(featureListRequestBody.contains(
+      SettingsHolder::instance()->unauthedExperimenterId()));
 
   // Reset request handlers.
   NetworkRequest::resetRequestHandler();

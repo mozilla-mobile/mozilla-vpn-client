@@ -36,9 +36,7 @@ constexpr const char* X25519_BOB_PRIVATE =
 constexpr const char* X25519_BOB_PUBLIC =
     "3p7bfXt9wbTTW2HC7OQ1Nz+DQ8hbeGdNrfx+FG+IK08=";
 
-void TestModels::cleanup() {
-  SettingsHolder::testCleanup();
-}
+void TestModels::cleanup() { SettingsHolder::testCleanup(); }
 
 // ApiError
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -903,7 +901,6 @@ void TestModels::recentConnectionMigration_data() {
 }
 
 void TestModels::recentConnectionMigration() {
-
   QFETCH(QStringList, data);
   SettingsHolder::instance()->setRecentConnectionsDeprecated(data);
   QVERIFY(SettingsHolder::instance()->hasRecentConnectionsDeprecated());
@@ -1276,7 +1273,7 @@ void TestModels::serverDataBasic() {
 
 void TestModels::serverDataMigrate() {
   {
-    SettingsHolder *settingsHolder = SettingsHolder::instance();
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
     settingsHolder->setCurrentServerCountryCodeDeprecated("foo");
     settingsHolder->setCurrentServerCityDeprecated("bar");
 
@@ -1315,7 +1312,7 @@ void TestModels::serverDataMigrate() {
   }
 
   {
-    SettingsHolder *settingsHolder = SettingsHolder::instance();
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
     settingsHolder->setCurrentServerCountryCodeDeprecated("foo");
     settingsHolder->setCurrentServerCityDeprecated("bar");
     settingsHolder->setEntryServerCountryCodeDeprecated("aa");

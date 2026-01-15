@@ -43,9 +43,7 @@ void TestAddon::init() {
   MZGlean::initialize("testing");
 }
 
-void TestAddon::cleanup() {
-  SettingsHolder::testCleanup();
-}
+void TestAddon::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestAddon::property() {
   AddonProperty p;

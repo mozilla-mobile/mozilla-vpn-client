@@ -42,9 +42,7 @@ void TestAddon::init() {
   MZGlean::initialize("testing");
 }
 
-void TestAddon::cleanup() {
-  SettingsHolder::testCleanup();
-}
+void TestAddon::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestAddon::message_notification_data() {
   Localizer l;

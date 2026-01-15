@@ -129,7 +129,8 @@ void TestResourceLoader::licenseModel() {
 void TestResourceLoader::addon() {
   Localizer l;
 
-  SettingsHolder::instance()->setFeaturesFlippedOn(QStringList{"replacerAddon"});
+  SettingsHolder::instance()->setFeaturesFlippedOn(
+      QStringList{"replacerAddon"});
   const_cast<Feature*>(Feature::get(Feature::Feature_replacerAddon))
       ->maybeFlipOnOrOff();
 
@@ -182,7 +183,8 @@ void TestResourceLoader::addon() {
   QCOMPARE(rl->loadDir(":/dir"), ":/replace/");
   QCOMPARE(rl->loadDir(":/dir/"), ":/replace/");
 
-  SettingsHolder::instance()->setFeaturesFlippedOff(QStringList{"replacerAddon"});
+  SettingsHolder::instance()->setFeaturesFlippedOff(
+      QStringList{"replacerAddon"});
   const_cast<Feature*>(Feature::get(Feature::Feature_replacerAddon))
       ->maybeFlipOnOrOff();
 }

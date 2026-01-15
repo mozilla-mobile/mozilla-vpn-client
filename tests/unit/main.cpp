@@ -135,9 +135,7 @@ int main(int argc, char* argv[]) {
   QCoreApplication::setOrganizationName("Mozilla Testing");
   QCoreApplication::setApplicationVersion("1.2.3");
 
-  {
-    Constants::setStaging();
-  }
+  { Constants::setStaging(); }
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   pe.insert("LANG", "en");

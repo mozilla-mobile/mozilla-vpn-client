@@ -25,9 +25,7 @@ void TestLocalizer::init() {
   MZGlean::initialize("testing");
 }
 
-void TestLocalizer::cleanup() {
-  SettingsHolder::testCleanup();
-}
+void TestLocalizer::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestLocalizer::basic() {
   Localizer l;

@@ -114,26 +114,28 @@ QString InterfaceConfig::toWgConf(const QMap<QString, QString>& extra) const {
   return content;
 }
 
-QString InterfaceConfig::toMultiHopWgConf(const InterfaceConfig& exitConfig, const QMap<QString, QString>& extra) const {
+QString InterfaceConfig::toMultiHopWgConf(
+    const InterfaceConfig& exitConfig,
+    const QMap<QString, QString>& extra) const {
   QString content = toWgConf(extra);
   QTextStream out(&content);
-  
-  #define VALIDATE(x) \
-    if (x.contains("\n")) return "";
-    VALIDATE(exitConfig.m_serverPublicKey);
-    VALIDATE(exitConfig.m_serverIpv4AddrIn);
-  #undef VALIDATE
-  
+
+#define VALIDATE(x) \
+  if (x.contains("\n")) return "";
+  VALIDATE(exitConfig.m_serverPublicKey);
+  VALIDATE(exitConfig.m_serverIpv4AddrIn);
+#undef VALIDATE
+
   out << "\n[Peer]\n";
   out << "PublicKey = " << exitConfig.m_serverPublicKey << "\n";
-  out << "Endpoint = " << exitConfig.m_serverIpv4AddrIn.toUtf8() << ":" << exitConfig.m_serverPort
-  << "\n";
+  out << "Endpoint = " << exitConfig.m_serverIpv4AddrIn.toUtf8() << ":"
+      << exitConfig.m_serverPort << "\n";
 
   QStringList ranges;
   for (const IPAddress& ip : exitConfig.m_allowedIPAddressRanges) {
     ranges.append(ip.toString());
   }
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
-  
+
   return content;
 }
