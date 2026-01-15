@@ -55,6 +55,8 @@ $VS_SHELL_HELPER = resolve-path "$env:MOZ_FETCHES_DIR/*/enter_dev_shell.ps1"
 . "$VS_SHELL_HELPER"
 
 $QT_CONFIG_SCRIPT = resolve-path "$env:MOZ_FETCHES_DIR/qt-everywhere-src-*/configure.bat"
+$QT_SOURCE_DIR = Split-Path "$QT_CONFIG_SCRIPT"
+$QT_SOURCE_VERSION = (Split-Path -Path "$QT_CONFIG_SCRIPT" | Split-Path -Leaf).split("-")[-1]
 $QT_BUILD_PATH = "$env:TASK_WORKDIR\qt-build"
 $QT_INSTALL_PATH = "$env:TASK_WORKDIR\qt-windows"
 if(!(Test-Path $QT_INSTALL_PATH)){
@@ -64,6 +66,17 @@ if(!(Test-Path $QT_BUILD_PATH)){
   New-Item -Path qt-build -ItemType "directory"
 }
 Copy-Item -Path "$env:VCS_PATH/taskcluster/scripts/toolchain/configure_qt.ps1" -Destination qt-windows/
+
+Write-Output "Preparing to buld Qt $QT_SOURCE_VERSION"
+if ($QT_SOURCE_VERSION -lt "6.10.3") {
+    Write-Output "Patching for QTBUG-141830"
+    Start-Process -WorkingDirectory $QT_SOURCE_DIR/qtdeclarative -NoNewWindow -Wait "git" -ArgumentList @(
+      'apply'
+      '--ignore-space-change'
+      '--ignore-whitespace'
+      (resolve-path "$env:VCS_PATH/taskcluster/scripts/toolchain/patches/qtbug-141830-qsortfilterproxymodel.patch")
+    )
+}
 
 $ErrorActionPreference = "Stop"
 
