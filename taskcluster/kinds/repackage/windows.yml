@@ -1,0 +1,58 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+task-defaults:
+    run-on-tasks-for: [github-pull-request, github-push]
+    fetches:
+        from-dependency: # Updated to match dependencies in repackage.py
+            - artifact: unsigned.zip
+              # Workers are using an old version of PowerShell that doesn'tcontain the fix in
+              # https://github.com/PowerShell/Microsoft.PowerShell.Archive/issues/48, and the
+              # `fetch-content` script is not able to properly extract it. Until we can use a
+              # newer PowerShell, we'll need to handle extraction ourselves.
+              extract: false
+        fetch:
+            - win-cmake
+            - win-ninja
+            - wix-toolset
+    worker-type: b-win2022
+    worker:
+        chain-of-trust: true
+        max-run-time: 600
+    release-artifacts: [MozillaVPN.msi]
+    run:
+        using: run-task
+        cwd: '{checkout}'
+        exec-with: powershell
+        command: ./taskcluster/scripts/build/windows_repackage.ps1
+    treeherder:
+        kind: build
+        symbol: rpk(msi)
+        tier: 1
+
+msi-x86_64:
+    description: Build MSI installer package (x86_64)
+    dependencies:
+        by-level:
+            "3":
+                signing: signing-windows-x86_64/opt
+            default:
+                build: build-windows-x86_64/opt
+    attributes:
+        build-type: windows-x86_64/opt
+    treeherder:
+        platform: windows/x86_64
+
+msi-aarch64:
+    description: Build MSI installer package (aarch64)
+    dependencies:
+        by-level:
+            "3":
+                signing: signing-windows-aarch64/opt
+            default:
+                build: build-windows-aarch64/opt
+    attributes:
+        build-type: windows-aarch64/opt
+    treeherder:
+        platform: windows/aarch64

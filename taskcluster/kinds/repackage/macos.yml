@@ -1,0 +1,35 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+macpkg:
+    description: Build macOS installer package
+    fetches:
+        fetch:
+            - macos-cmake
+        from-dependency: # Updated to match dependencies in repackage.py
+            - artifact: MozillaVPN.tar.gz
+              extract: false
+    dependencies:
+        by-level:
+            "3":
+                signing: signing-macos/opt
+            default:
+                build: build-macos/opt
+    worker-type: b-macos
+    worker:
+        chain-of-trust: true
+        max-run-time: 600
+    release-artifacts: [MozillaVPN.pkg]
+    attributes:
+        build-type: macos/opt
+    run-on-tasks-for: [github-pull-request, github-push]
+    run:
+        using: run-task
+        cwd: '{checkout}'
+        command: ./taskcluster/scripts/build/macos_repackage.sh
+    treeherder:
+        symbol: rpk(macpkg)
+        kind: build
+        tier: 1
+        platform: macos/universal

@@ -63,7 +63,7 @@ tasks:
         run-on-tasks-for: [action]
         release-artifacts: [MozillaVPN.msi]
         dependencies:
-            repackage-signing: repackage-signing-msi
+            repackage-signing: repackage-signing-msi-x86_64
         attributes:
             build-type: windows-x86_64/opt
     addons-bundle:
