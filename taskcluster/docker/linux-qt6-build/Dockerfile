@@ -64,6 +64,11 @@ RUN apt-get -y install libatspi2.0-dev \
                        libxkbcommon-dev \
                        libxkbcommon-x11-dev
 
+## Install wayland build dependencies
+RUN apt -y install libwayland-dev \
+                   libwayland-egl-backend-dev \
+                   wayland-protocols
+
 ## Install Rust
 RUN mkdir -p /tmp/rust
 RUN curl -sSL https://static.rust-lang.org/dist/rust-1.82.0-x86_64-unknown-linux-gnu.tar.gz -o /tmp/rust/rust-static.tar.gz
