@@ -96,9 +96,6 @@ class MozillaVPN final : public App {
 
   void initialize();
 
-  // Initializtion methods for CLI commands
-  void initializeServerData();
-
   // Exposed QML methods:
   Q_INVOKABLE void authenticate();
   Q_INVOKABLE void cancelAuthentication();
