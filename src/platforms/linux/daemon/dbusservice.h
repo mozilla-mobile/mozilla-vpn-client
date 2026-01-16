@@ -37,7 +37,7 @@ class DBusService final : public Daemon, protected QDBusContext {
   QString status();
   QString version();
   QString getLogs();
-  void cleanupLogs() { cleanLogs(); }
+  void cleanupLogs();
 
  protected:
   WireguardUtils* wgutils() const override { return m_wgutils; }
@@ -47,7 +47,7 @@ class DBusService final : public Daemon, protected QDBusContext {
 
  private:
   bool removeInterfaceIfExists();
-  bool isCallerAuthorized();
+  bool isCallerAuthorized(const QString& actionId);
   void dropRootPermissions();
 
   void setAppState(const QString& desktopFileId, AppState state);
@@ -69,8 +69,6 @@ class DBusService final : public Daemon, protected QDBusContext {
   AppTracker* m_appTracker = nullptr;
   QHash<QString, AppState> m_excludedApps;
   QHash<QString, AppState> m_excludedCgroups;
-
-  uint m_sessionUid = 0;
 };
 
 #endif  // DBUSSERVICE_H

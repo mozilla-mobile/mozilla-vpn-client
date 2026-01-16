@@ -78,6 +78,7 @@ Qt's
 QtLottie
 RCC
 README
+RedHat
 RSA
 Replacer
 Rizental
@@ -196,6 +197,7 @@ json
 launchd
 le
 libcap
+libpolkit
 libsecret
 licensable
 licensor
@@ -228,11 +230,13 @@ ok
 olist
 onboarding
 ons
+openSUSE
 os
 perl
 personalization
 personalizations
 plist
+polkit
 powershell
 ppa
 pre

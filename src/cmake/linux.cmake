@@ -46,6 +46,8 @@ if(NOT BUILD_FLATPAK)
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(LIBCAP REQUIRED IMPORTED_TARGET libcap)
     pkg_check_modules(LIBSECRET REQUIRED IMPORTED_TARGET libsecret-1)
+    pkg_check_modules(polkit REQUIRED IMPORTED_TARGET polkit-gobject-1)
+
     if (QT_FEATURE_static)
         target_link_libraries(mozillavpn PRIVATE ${LIBCAP_STATIC_LIBRARIES} ${LIBSECRET_STATIC_LIBRARIES})
         target_include_directories(mozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS} ${LIBSECRET_STATIC_INCLUDE_DIRS})
@@ -57,6 +59,8 @@ if(NOT BUILD_FLATPAK)
     else()
         target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP PkgConfig::LIBSECRET)
     endif()
+
+    target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit)
 
     target_sources(mozillavpn PRIVATE
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.cpp
@@ -84,6 +88,8 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/linuxfirewall.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.h
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/polkithelper.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/polkithelper.h
     )
 
     target_compile_options(mozillavpn PRIVATE -DPROTOCOL_VERSION=\"1\")
@@ -176,6 +182,22 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.dbus.service)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.dbus.service
         DESTINATION /usr/share/dbus-1/system-services)
+
+    pkg_get_variable(POLKIT_POLICY_DIR polkit-gobject-1 policydir)
+    install(FILES ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.policy
+        DESTINATION ${POLKIT_POLICY_DIR})
+
+    if(EXISTS /etc/debian_version)
+        install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.rules-debian
+            RENAME org.mozilla.vpn.rules
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/rules.d)
+    elseif(EXISTS /etc/redhat-release)
+        install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.rules-others
+            RENAME org.mozilla.vpn.rules
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/rules.d)
+    else()
+        message(INFO "Unknown Linux distribution, please install polkit rules manually")
+    endif()
 
     pkg_check_modules(SYSTEMD systemd)
     if("${SYSTEMD_FOUND}" EQUAL 1)
