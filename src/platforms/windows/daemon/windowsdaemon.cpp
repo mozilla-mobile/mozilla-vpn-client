@@ -64,6 +64,7 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
     m_splitTunnelManager->stop();
     return true;
   }
+
   if (config.m_vpnDisabledApps.length() > 0) {
     // Before creating the interface we need to check which adapter routes to
     // the entry server endpoint. This will be selected as the outgoing
@@ -81,6 +82,12 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
     int inetAdapterIndex = WindowsCommons::AdapterIndexTo(entryServerAddr);
     if (inetAdapterIndex < 0) {
       emit backendFailure(DaemonError::ERROR_SPLIT_TUNNEL_START_FAILURE);
+    }
+
+    // Clear existing filters to avoid FWP_E_ALREADY_EXISTS errors when
+    // switching servers
+    if (m_splitTunnelManager->isRunning()) {
+      m_splitTunnelManager->stop();
     }
 
     if (!m_splitTunnelManager->start(inetAdapterIndex)) {
