@@ -52,7 +52,6 @@ Read more on https://vpn.mozilla.org
 %cmake_install
 install -d %{buildroot}/%{_licensedir}/%{name}
 install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
-install -D -m 644 %{_srcdir}/linux/org.mozilla.vpn.rules-others %{buildroot}%{_datadir}/polkit-1/rules.d/org.mozilla.vpn.rules
 
 %files
 %license %{_licensedir}/%{name}/LICENSE.md
