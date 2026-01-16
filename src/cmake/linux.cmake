@@ -53,7 +53,7 @@ if(NOT BUILD_FLATPAK)
 
         find_package(Qt6 REQUIRED COMPONENTS WaylandClient)
         qt_import_plugins(mozillavpn INCLUDE Qt6::QWaylandIntegrationPlugin)
-        target_link_libraries(mozillavpn Qt6::WaylandClientPrivate)
+        target_link_libraries(mozillavpn PRIVATE Qt6::WaylandClientPrivate)
     else()
         target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP PkgConfig::LIBSECRET)
     endif()
