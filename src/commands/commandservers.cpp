@@ -13,6 +13,7 @@
 #include "commandlineparser.h"
 #include "leakdetector.h"
 #include "models/servercountrymodel.h"
+#include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "tasks/servers/taskservers.h"
 
@@ -54,6 +55,8 @@ int CommandServers::run(QStringList& tokens) {
     }
 
     MozillaVPN vpn;
+    vpn.serverData()->initialize();
+
     if (!vpn.hasToken()) {
       return 1;
     }
