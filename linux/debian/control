@@ -82,7 +82,9 @@ Depends: wireguard (>=1.0.20200319),
          qml6-module-qtqml-models (>=6.2.0~),
          qml6-module-qtqml-workerscript (>=6.2.0~),
          qml6-module-qt-labs-qmlmodels (>=6.2.0~),
-         qt6-qpa-plugins (>=6.2.0~)
+         qt6-qpa-plugins (>=6.2.0~),
+         ${shlibs:Depends},
+         ${misc:Depends}
 Description: A fast, secure and easy to use VPN. Built by the makers of Firefox.
  Read more on https://vpn.mozilla.org
 
