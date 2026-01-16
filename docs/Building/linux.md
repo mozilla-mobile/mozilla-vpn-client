@@ -45,16 +45,6 @@ Install
 
     sudo cmake --install build
 
-Copy polkit authorization rules
-
-On Debian systems:
-
-    sudo cp linux/org.mozilla.vpn.rules-debian /usr/share/polkit-1/rules.d/org.mozilla.vpn.rules
-
-On RedHat/Arch/openSUSE systems:
-
-    sudo cp linux/org.mozilla.vpn.rules-others /usr/share/polkit-1/rules.d/org.mozilla.vpn.rules
-
 # Run
 
 After the installation, you can run the app with

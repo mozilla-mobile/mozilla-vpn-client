@@ -183,6 +183,18 @@ if(NOT BUILD_FLATPAK)
     install(FILES ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.policy
         DESTINATION ${POLKIT_POLICY_DIR})
 
+    if(EXISTS /etc/debian_version)
+        install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.rules-debian
+            RENAME org.mozilla.vpn.rules
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/rules.d)
+    elif(EXISTS /etc/redhat-release)
+        install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.rules-others
+            RENAME org.mozilla.vpn.rules
+            DESTINATION ${CMAKE_INSTALL_DATADIR}/polkit-1/rules.d)
+    else()
+        message(INFO "Unknown Linux distribution, please install polkit rules manually")
+    endif()
+
     pkg_check_modules(SYSTEMD systemd)
     if("${SYSTEMD_FOUND}" EQUAL 1)
         pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
