@@ -84,6 +84,7 @@ jobs:
 
       - name: Building tests
         run: |
+          export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           mkdir -p build
           cmake -S . -B $(pwd)/build -GNinja
           cmake --build $(pwd)/build --target build_tests
