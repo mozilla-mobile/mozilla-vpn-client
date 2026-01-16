@@ -51,7 +51,7 @@ if(NOT BUILD_FLATPAK)
         target_include_directories(mozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS} ${LIBSECRET_STATIC_INCLUDE_DIRS})
         target_compile_options(mozillavpn PRIVATE ${LIBCAP_STATIC_CFLAGS} ${LIBSECRET_STATIC_CFLAGS})
 
-        find_package(Qt6 REQUIRED COMPONENTS WaylandClient)
+        find_package(Qt6 REQUIRED COMPONENTS WaylandClientPrivate)
         qt_import_plugins(mozillavpn INCLUDE Qt6::QWaylandIntegrationPlugin)
         target_link_libraries(mozillavpn PRIVATE Qt6::WaylandClientPrivate)
     else()
