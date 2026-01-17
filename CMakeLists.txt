@@ -99,14 +99,18 @@ if(ANDROID)
 endif()
 
 if(NOT DEFINED BUILD_ID)
-    if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/.git)
+    find_program(GIT_EXECUTABLE git)
+    if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/.git AND GIT_EXECUTABLE)
         execute_process(
             OUTPUT_VARIABLE BUILD_ID
             OUTPUT_STRIP_TRAILING_WHITESPACE 
-            COMMAND git -C ${CMAKE_SOURCE_DIR} log -1 --format=%cd --date=format:${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M HEAD   
+            COMMAND ${GIT_EXECUTABLE} -C ${CMAKE_SOURCE_DIR} log -1 --format=%cd --date=format:${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M HEAD   
         )
     else()
         string(TIMESTAMP BUILD_ID ${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M)
+    endif()
+    if(NOT BUILD_ID)
+        message(FATAL_ERROR "BUILD_ID could not be generated and is empty.")
     endif()
     message("Generated BUILD_ID: ${BUILD_ID}")
 endif()

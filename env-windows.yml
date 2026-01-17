@@ -9,14 +9,14 @@ dependencies:
   - llvmdev=20.1.8
   - lld=20.1.8
   - python=3.10
-  - nodejs=18.16.*
+  - nodejs=20.*
   - pip=22.3.1
   - rust=1.85.0
   - rust-std-aarch64-pc-windows-msvc=1.85.0
   - rust-std-x86_64-pc-windows-msvc=1.85.0
   - compiler-rt=20.1.8
   - compiler-rt_win-64
-  - cmake=3.26.3
+  - cmake=4.2.1
   - ninja=1.11.0
   - conda-pack=0.8.0
   - pip:

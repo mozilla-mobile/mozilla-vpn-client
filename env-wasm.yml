@@ -3,7 +3,7 @@ channels:
   - conda-forge
 dependencies:
   - python=3.10
-  - nodejs=18.16.*
+  - nodejs=20.*
   - pip=22.3.1
   - rust=1.82.0
   - rust-std-wasm32-unknown-emscripten=1.82.0

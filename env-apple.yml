@@ -9,7 +9,7 @@ dependencies:
   - cctools_osx-64=1010.6
   - cctools_osx-arm64=1010.6
   - python=3.10
-  - nodejs=18.*
+  - nodejs=20.*
   - pip=22.3.1
   - rust=1.82
   - rust-std-aarch64-apple-darwin=1.82
@@ -20,7 +20,7 @@ dependencies:
   - compiler-rt=20.1.8
   - compiler-rt_osx-64
   - compiler-rt_osx-arm64
-  - cmake=3.26.3
+  - cmake=4.2.1
   - ninja=1.11.0
   - icnsutil=1.1.0
   - pip:
