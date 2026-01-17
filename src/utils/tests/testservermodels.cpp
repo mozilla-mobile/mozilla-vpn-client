@@ -160,7 +160,7 @@ void TestServerModels::serverFromJson() {
   QCOMPARE(s.multihopPort(), 1337);
 
   QFETCH(QList<int>, ports);
-  Q_ASSERT(ports.length() >= 1);
+  QVERIFY(ports.length() >= 1);
   if (ports.length() == 1) {
     QCOMPARE(s.choosePort(), (uint32_t)ports[0]);
   } else {
@@ -523,7 +523,7 @@ void TestServerModels::serverCountryModelFromJson() {
         QCOMPARE(m.data(index, ServerCountryModel::CodeRole), code);
 
         QFETCH(QVariant, cities);
-        Q_ASSERT(cities.typeId() == QMetaType::QVariantList);
+        QVERIFY(cities.typeId() == QMetaType::QVariantList);
         QVariant cityData = m.data(index, ServerCountryModel::CitiesRole);
         QCOMPARE(cityData.typeId(), QMetaType::QVariantList);
         QCOMPARE(cities.toList().length(), cityData.toList().length());

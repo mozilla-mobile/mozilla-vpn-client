@@ -56,8 +56,6 @@ target_link_libraries(app_auth_tests PRIVATE
     translations
 )
 
-target_compile_definitions(app_auth_tests PRIVATE MZ_DEBUG)
-
 # Unit test source files
 target_sources(app_auth_tests PRIVATE
     main.cpp

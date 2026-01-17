@@ -407,7 +407,7 @@ void TestSignUpAndIn::sendNextTotpCode() {
   QCOMPARE(aia->state(),
            AuthenticationInApp::StateVerificationSessionByTotpNeeded);
 
-  Q_ASSERT(m_sendTotpCodeState < GoodTotpCode);
+  QVERIFY(m_sendTotpCodeState < GoodTotpCode);
   m_sendTotpCodeState = static_cast<SendTotpCodeState>(m_sendTotpCodeState + 1);
   switch (m_sendTotpCodeState) {
     case SendWrongTotpCodeNumber:
@@ -450,7 +450,7 @@ void TestSignUpAndIn::sendNextTotpCode() {
       break;
 
     default:
-      Q_ASSERT(false);
+      QVERIFY(false);
       break;
   }
 

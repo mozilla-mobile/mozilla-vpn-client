@@ -27,7 +27,7 @@ jobs:
     outputs:
       matrix: ${{ steps.enumerate.outputs.tests }}
     env:
-      QTVERSION: 6.6.3
+      QTVERSION: 6.10.1
 
     steps:
       - name: Clone repository
@@ -46,8 +46,8 @@ jobs:
         shell: bash
         run: |
           # Qt for wasm needs the desktop linux installation
-          python -m aqt install-qt -O /opt linux desktop $QTVERSION gcc_64 -m qtshadertools
-          python -m aqt install-qt -O /opt linux desktop $QTVERSION wasm_singlethread -m qtcharts qtwebsockets qt5compat qtshadertools
+          python -m aqt install-qt -O /opt linux desktop $QTVERSION linux_gcc_64 -m qtshadertools
+          python -m aqt install-qt -O /opt all_os wasm $QTVERSION wasm_singlethread -m qtwebsockets qt5compat qtshadertools
 
       - name: Setup emsdk
         uses: mymindstorm/setup-emsdk@v14
@@ -55,7 +55,7 @@ jobs:
           # Emscripten does not guarantee ABI compatibility, we should use the
           # same version used to build Qt. See:
           # https://doc.qt.io/qt-6/wasm.html#installing-emscripten
-          version: 3.1.37
+          version: 4.0.7
 
       - name: Compile test client
         shell: bash

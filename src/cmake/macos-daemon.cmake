@@ -24,7 +24,6 @@ target_link_libraries(daemon PRIVATE mzutils)
 
 # VPN client include paths
 target_include_directories(daemon PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-target_compile_definitions(daemon PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 target_compile_definitions(daemon PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 
 target_sources(daemon PRIVATE

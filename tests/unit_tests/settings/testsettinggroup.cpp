@@ -32,12 +32,12 @@ void TestSettingGroup::testLoadSettingsOnInit() {
 
   // Check that just by calling the initializer the settings were registered.
   auto settingOne = SettingsManager::instance()->getSetting("aGroup/keyOne");
-  Q_ASSERT(settingOne);
+  QVERIFY(settingOne);
   auto settingTwo = SettingsManager::instance()->getSetting("aGroup/keyTwo");
-  Q_ASSERT(settingTwo);
+  QVERIFY(settingTwo);
   auto settingThree =
       SettingsManager::instance()->getSetting("aGroup/keyThree");
-  Q_ASSERT(settingThree);
+  QVERIFY(settingThree);
 }
 
 void TestSettingGroup::testSettingsAreCreatedWithTheRightProperties() {

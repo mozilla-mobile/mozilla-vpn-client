@@ -151,27 +151,36 @@ exports.mochaHooks = {
   },
 
   async afterEach() {
+    console.log('DEBUG: afterEach A');
     if (!this.currentTest.state || this.currentTest.state === 'failed') {
       // Print error logs
       console.log('::group::Error Logs');
       console.log(fs.readFileSync(stdout).toString());
       console.log('::endgroup');
     }
+    console.log('DEBUG: afterEach B');
 
     // Close VPN app
     // If something's gone really wrong with the test,
     // then this can fail and cause the tests to hang.
     // Logging the error lets us clean-up and move on.
     try {
+      console.log('DEBUG: afterEach C');
       await vpn.hardReset();
+      console.log('DEBUG: afterEach D');
       await vpn.quit();
+      console.log('DEBUG: afterEach E');
     } catch (error) {
       console.error(error);
     }
+    console.log('DEBUG: afterEach F');
     vpn.disconnect();
+    console.log('DEBUG: afterEach G');
     // Give each test 2 seconds to chill!
     // Seems to help with tests that are slow to close vpn app at end.
     await vpn.wait();
+    console.log('DEBUG: afterEach H');
     await vpn.wait();
+    console.log('DEBUG: afterEach Done');
   },
 }

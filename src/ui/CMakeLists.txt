@@ -109,7 +109,6 @@ qt_add_qml_module(mozillavpn-ui
         sharedViews/ViewErrorFullScreen.qml
         sharedViews/ViewPermissionRequiredOSX.qml
         sharedViews/ViewUpdate.qml
-        sharedViews/ViewFullScreen.qml
     SOURCES
         composer/composer.cpp
         composer/composer.h

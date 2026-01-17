@@ -6,6 +6,7 @@
 #include <QObject>
 #include <QtTest/QtTest>
 
+#include "leakdetector.h"
 #include "loghandler.h"
 #include "testhelper.h"
 
