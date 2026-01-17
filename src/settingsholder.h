@@ -34,9 +34,6 @@ class SettingsHolder final : public QObject {
 #include "settingslist.h"
 #undef SETTING
 
-  SettingsHolder();
-  ~SettingsHolder();
-
   static SettingsHolder* instance();
 
   bool firstExecution() const { return m_firstExecution; }
@@ -65,7 +62,13 @@ class SettingsHolder final : public QObject {
 #include "feature/experimentalfeaturelist.h"
 #undef EXPERIMENTAL_FEATURE
 
+#ifdef UNIT_TEST
+  static void testCleanup();
+#endif
+
  private:
+  SettingsHolder();
+  ~SettingsHolder();
 #define SETTING(type, toType, getter, setter, remover, has, key, defaultValue, \
                 removeWhenReset, isSensitive)                                  \
   Setting* m_##getter = SettingsManager::instance()->createOrGetSetting(       \

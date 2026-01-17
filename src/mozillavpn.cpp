@@ -268,6 +268,12 @@ MozillaVPN::~MozillaVPN() {
   delete m_private;
 }
 
+// This is used by CommandServers before running TaskServers
+void MozillaVPN::initializeServerData() {
+  logger.debug() << "MozillaVPN ServerData Initialization";
+  m_private->m_serverData.initialize();
+}
+
 void MozillaVPN::initialize() {
   logger.debug() << "MozillaVPN Initialization";
 
@@ -2304,9 +2310,7 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
-  SettingsHolder settingsHolder;
-
-  if (settingsHolder.stagingServer()) {
+  if (SettingsHolder::instance()->stagingServer()) {
     Constants::setStaging();
     LogHandler::instance()->setStderr(true);
   }

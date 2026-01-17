@@ -5,6 +5,8 @@
 #include "commandwgconf.h"
 
 #include <QEventLoop>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QTextStream>
 
 #include "commandlineparser.h"
@@ -15,6 +17,7 @@
 #include "models/devicemodel.h"
 #include "models/keys.h"
 #include "models/server.h"
+#include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
 
@@ -48,7 +51,8 @@ int CommandWgConf::run(QStringList& tokens) {
       return 1;
     }
 
-    InterfaceConfig config;
+    InterfaceConfig entryConfig;
+    InterfaceConfig exitConfig;
     DeviceModel* dm = vpn.deviceModel();
     Q_ASSERT(dm);
     if (!dm->hasCurrentDevice(vpn.keys())) {
@@ -56,32 +60,53 @@ int CommandWgConf::run(QStringList& tokens) {
       return 1;
     }
     const Device* cd = dm->currentDevice(vpn.keys());
-    config.m_hopType = InterfaceConfig::SingleHop;
-    config.m_privateKey = vpn.keys()->privateKey();
-    config.m_deviceIpv4Address = cd->ipv4Address();
-    config.m_deviceIpv6Address = cd->ipv6Address();
 
     ServerData* sd = vpn.serverData();
     Q_ASSERT(sd);
     // Now we need to select a server.
     Server exitServer = Server::weightChooser(sd->exitServers());
-    config.m_serverIpv4Gateway = exitServer.ipv4Gateway();
-    config.m_serverIpv6Gateway = exitServer.ipv6Gateway();
-    config.m_serverPublicKey = exitServer.publicKey();
-    config.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
-    config.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
+    exitConfig.m_serverIpv4Gateway = exitServer.ipv4Gateway();
+    exitConfig.m_serverIpv6Gateway = exitServer.ipv6Gateway();
+    exitConfig.m_serverPublicKey = exitServer.publicKey();
+    exitConfig.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
+    exitConfig.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
     if (sd->multihop()) {
+      exitConfig.m_hopType = InterfaceConfig::MultiHopExit;
+      exitConfig.m_serverPort = exitServer.multihopPort();
+
+      // Configure entry server
       Server entryServer = Server::weightChooser(sd->entryServers());
-      config.m_serverPort = entryServer.multihopPort();
+      entryConfig.m_hopType = InterfaceConfig::MultiHopEntry;
+      entryConfig.m_privateKey = vpn.keys()->privateKey();
+      entryConfig.m_deviceIpv4Address = cd->ipv4Address();
+      entryConfig.m_deviceIpv6Address = cd->ipv6Address();
+      entryConfig.m_serverPublicKey = entryServer.publicKey();
+      entryConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
+      entryConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
+      entryConfig.m_serverPort = entryServer.choosePort();
+      entryConfig.m_allowedIPAddressRanges.append(
+          IPAddress(exitServer.ipv4AddrIn()));
+      if (!exitServer.ipv6AddrIn().isEmpty()) {
+        entryConfig.m_allowedIPAddressRanges.append(
+            IPAddress(exitServer.ipv6AddrIn()));
+      }
     } else {
-      config.m_serverPort = exitServer.choosePort();
+      exitConfig.m_hopType = InterfaceConfig::SingleHop;
+      exitConfig.m_privateKey = vpn.keys()->privateKey();
+      exitConfig.m_deviceIpv4Address = cd->ipv4Address();
+      exitConfig.m_deviceIpv6Address = cd->ipv6Address();
+      exitConfig.m_serverPort = exitServer.choosePort();
     }
-    config.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
-    config.m_allowedIPAddressRanges =
+    exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
+    exitConfig.m_allowedIPAddressRanges =
         Controller::getAllowedIPAddressRanges(exitServer);
 
     // Stream it out to the user.
-    stream << config.toWgConf() << Qt::endl;
+    if (sd->multihop()) {
+      stream << entryConfig.toMultiHopWgConf(exitConfig) << Qt::endl;
+    } else {
+      stream << exitConfig.toWgConf() << Qt::endl;
+    }
     return 0;
   });
 }

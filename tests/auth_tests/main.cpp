@@ -34,12 +34,11 @@ int main(int argc, char* argv[]) {
   QCoreApplication::setOrganizationName("Mozilla Testing");
   QCoreApplication::setApplicationVersion("1.2.3");
 
-  SettingsHolder settingsHolder;
   Constants::setStaging();
 
   QCoreApplication a(argc, argv);
 
-  settingsHolder.setFeaturesFlippedOn(QStringList{
+  SettingsHolder::instance()->setFeaturesFlippedOn(QStringList{
       "inAppAccountCreate", "inAppAuthentication", "accountDeletion"});
 
   LogHandler::instance()->setStderr(true);

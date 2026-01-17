@@ -9,7 +9,6 @@
 
 #include "localizer.h"
 #include "qmlengineholder.h"
-#include "settingsholder.h"
 #include "statusicon.h"
 
 void TestStatusIcon::basic() {
@@ -20,7 +19,6 @@ void TestStatusIcon::basic() {
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
 
   MozillaVPN vpn;
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;

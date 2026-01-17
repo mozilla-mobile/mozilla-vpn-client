@@ -17,7 +17,6 @@
 #include "helper.h"
 #include "localizer.h"
 #include "qmlengineholder.h"
-#include "settingsholder.h"
 
 void TestComposer::generic_data() {
   QTest::addColumn<QJsonObject>("json");
@@ -46,7 +45,6 @@ void TestComposer::generic_data() {
 }
 
 void TestComposer::generic() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -122,7 +120,6 @@ void TestComposer::button_data() {
 }
 
 void TestComposer::button() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -181,7 +178,6 @@ void TestComposer::text_data() {
 }
 
 void TestComposer::text() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -235,7 +231,6 @@ void TestComposer::title_data() {
 }
 
 void TestComposer::title() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -310,7 +305,6 @@ void TestComposer::unorderedList_data() {
 }
 
 void TestComposer::unorderedList() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -392,7 +386,6 @@ void TestComposer::orderedList_data() {
 }
 
 void TestComposer::orderedList() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;

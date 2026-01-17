@@ -8,6 +8,7 @@ class TestModels final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void cleanup();
   void apiErrorBasic();
   void apiErrorParse();
   void apiErrorParse_data();

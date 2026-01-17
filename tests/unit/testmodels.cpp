@@ -36,6 +36,8 @@ constexpr const char* X25519_BOB_PRIVATE =
 constexpr const char* X25519_BOB_PUBLIC =
     "3p7bfXt9wbTTW2HC7OQ1Nz+DQ8hbeGdNrfx+FG+IK08=";
 
+void TestModels::cleanup() { SettingsHolder::testCleanup(); }
+
 // ApiError
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -331,8 +333,6 @@ void TestModels::deviceModelBasic() {
   QCOMPARE(dm.rowCount(QModelIndex()), 0);
   QCOMPARE(dm.data(QModelIndex(), DeviceModel::NameRole), QVariant());
 
-  SettingsHolder settingsHolder;
-
   QVERIFY(!dm.fromSettings(&keys));
 
   dm.writeSettings();
@@ -464,7 +464,6 @@ void TestModels::deviceModelFromJson() {
 
   // fromSettings
   {
-    SettingsHolder settingsHolder;
     SettingsHolder::instance()->setDevices(json);
 
     Keys keys;
@@ -621,8 +620,6 @@ void TestModels::keysBasic() {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void TestModels::recentConnectionBasic() {
-  SettingsHolder settingsHolder;
-
   RecentConnections* rc = RecentConnections::instance();
 
   const RecentConnectionModel* rcSingleHop = rc->singleHopModel();
@@ -904,11 +901,9 @@ void TestModels::recentConnectionMigration_data() {
 }
 
 void TestModels::recentConnectionMigration() {
-  SettingsHolder settingsHolder;
-
   QFETCH(QStringList, data);
-  settingsHolder.setRecentConnectionsDeprecated(data);
-  QVERIFY(settingsHolder.hasRecentConnectionsDeprecated());
+  SettingsHolder::instance()->setRecentConnectionsDeprecated(data);
+  QVERIFY(SettingsHolder::instance()->hasRecentConnectionsDeprecated());
 
   RecentConnections* rc = RecentConnections::instance();
   rc->initialize();
@@ -956,12 +951,10 @@ void TestModels::recentConnectionMigration() {
              firstValueMultiHop[3]);
   }
 
-  QVERIFY(!settingsHolder.hasRecentConnectionsDeprecated());
+  QVERIFY(!SettingsHolder::instance()->hasRecentConnectionsDeprecated());
 }
 
 void TestModels::recentConnectionSaveAndRestore() {
-  SettingsHolder settingsHolder;
-
   RecentConnections* rc = RecentConnections::instance();
 
   const RecentConnectionModel* rcSingleHop = rc->singleHopModel();
@@ -1148,7 +1141,6 @@ void TestModels::recommendedLocationsPick() {
   QByteArray json = QJsonDocument(obj).toJson();
 
   {
-    SettingsHolder settingsHolder;
     Localizer l;
 
     QCOMPARE(MozillaVPN::instance()->serverCountryModel()->fromJson(json),
@@ -1169,8 +1161,6 @@ void TestModels::recommendedLocationsPick() {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 void TestModels::serverDataBasic() {
-  SettingsHolder settingsHolder;
-
   ServerData sd;
   sd.initialize();
 
@@ -1283,9 +1273,9 @@ void TestModels::serverDataBasic() {
 
 void TestModels::serverDataMigrate() {
   {
-    SettingsHolder settingsHolder;
-    settingsHolder.setCurrentServerCountryCodeDeprecated("foo");
-    settingsHolder.setCurrentServerCityDeprecated("bar");
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    settingsHolder->setCurrentServerCountryCodeDeprecated("foo");
+    settingsHolder->setCurrentServerCityDeprecated("bar");
 
     ServerData sd;
     sd.initialize();
@@ -1298,12 +1288,11 @@ void TestModels::serverDataMigrate() {
     QCOMPARE(sd.entryCountryCode(), "");
     QCOMPARE(sd.entryCityName(), "");
 
-    QVERIFY(settingsHolder.hasServerData());
-    QVERIFY(!settingsHolder.hasCurrentServerCountryCodeDeprecated());
-    QVERIFY(!settingsHolder.hasCurrentServerCityDeprecated());
-    QVERIFY(!settingsHolder.hasEntryServerCountryCodeDeprecated());
-    QVERIFY(!settingsHolder.hasEntryServerCityDeprecated());
-
+    QVERIFY(settingsHolder->hasServerData());
+    QVERIFY(!settingsHolder->hasCurrentServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder->hasCurrentServerCityDeprecated());
+    QVERIFY(!settingsHolder->hasEntryServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder->hasEntryServerCityDeprecated());
     ServerData sd2;
     sd2.initialize();
 
@@ -1315,19 +1304,19 @@ void TestModels::serverDataMigrate() {
     QCOMPARE(sd2.entryCountryCode(), "");
     QCOMPARE(sd2.entryCityName(), "");
 
-    QVERIFY(settingsHolder.hasServerData());
-    QVERIFY(!settingsHolder.hasCurrentServerCountryCodeDeprecated());
-    QVERIFY(!settingsHolder.hasCurrentServerCityDeprecated());
-    QVERIFY(!settingsHolder.hasEntryServerCountryCodeDeprecated());
-    QVERIFY(!settingsHolder.hasEntryServerCityDeprecated());
+    QVERIFY(settingsHolder->hasServerData());
+    QVERIFY(!settingsHolder->hasCurrentServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder->hasCurrentServerCityDeprecated());
+    QVERIFY(!settingsHolder->hasEntryServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder->hasEntryServerCityDeprecated());
   }
 
   {
-    SettingsHolder settingsHolder;
-    settingsHolder.setCurrentServerCountryCodeDeprecated("foo");
-    settingsHolder.setCurrentServerCityDeprecated("bar");
-    settingsHolder.setEntryServerCountryCodeDeprecated("aa");
-    settingsHolder.setEntryServerCityDeprecated("bb");
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    settingsHolder->setCurrentServerCountryCodeDeprecated("foo");
+    settingsHolder->setCurrentServerCityDeprecated("bar");
+    settingsHolder->setEntryServerCountryCodeDeprecated("aa");
+    settingsHolder->setEntryServerCityDeprecated("bb");
 
     ServerData sd;
     sd.initialize();
@@ -1340,12 +1329,11 @@ void TestModels::serverDataMigrate() {
     QCOMPARE(sd.entryCountryCode(), "aa");
     QCOMPARE(sd.entryCityName(), "bb");
 
-    QVERIFY(settingsHolder.hasServerData());
-    QVERIFY(!settingsHolder.hasCurrentServerCountryCodeDeprecated());
-    QVERIFY(!settingsHolder.hasCurrentServerCityDeprecated());
-    QVERIFY(!settingsHolder.hasEntryServerCountryCodeDeprecated());
-    QVERIFY(!settingsHolder.hasEntryServerCityDeprecated());
-
+    QVERIFY(settingsHolder->hasServerData());
+    QVERIFY(!settingsHolder->hasCurrentServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder->hasCurrentServerCityDeprecated());
+    QVERIFY(!settingsHolder->hasEntryServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder->hasEntryServerCityDeprecated());
     ServerData sd2;
     sd2.initialize();
 
@@ -1357,11 +1345,11 @@ void TestModels::serverDataMigrate() {
     QCOMPARE(sd2.entryCountryCode(), "aa");
     QCOMPARE(sd2.entryCityName(), "bb");
 
-    QVERIFY(settingsHolder.hasServerData());
-    QVERIFY(!settingsHolder.hasCurrentServerCountryCodeDeprecated());
-    QVERIFY(!settingsHolder.hasCurrentServerCityDeprecated());
-    QVERIFY(!settingsHolder.hasEntryServerCountryCodeDeprecated());
-    QVERIFY(!settingsHolder.hasEntryServerCityDeprecated());
+    QVERIFY(settingsHolder->hasServerData());
+    QVERIFY(!settingsHolder->hasCurrentServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder->hasCurrentServerCityDeprecated());
+    QVERIFY(!settingsHolder->hasEntryServerCountryCodeDeprecated());
+    QVERIFY(!settingsHolder->hasEntryServerCityDeprecated());
   }
 }
 
@@ -1493,7 +1481,6 @@ void TestModels::userFromJson() {
   QCOMPARE(user.subscriptionNeeded(), subscriptionNeeded);
 
   {
-    SettingsHolder settingsHolder;
     user.writeSettings();
 
     // FromSettings
@@ -1524,8 +1511,6 @@ void TestModels::userFromJson() {
 }
 
 void TestModels::userFromSettings() {
-  SettingsHolder settingsHolder;
-
   User user;
   QSignalSpy spy(&user, &User::changed);
 

@@ -35,7 +35,6 @@ class Interceptor final : public QQmlAbstractUrlInterceptor {
 };
 
 void TestResourceLoader::loadFile() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -56,7 +55,6 @@ void TestResourceLoader::loadFile() {
 }
 
 void TestResourceLoader::loadDir() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -77,7 +75,6 @@ void TestResourceLoader::loadDir() {
 }
 
 void TestResourceLoader::commonPasswords() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -102,7 +99,6 @@ void TestResourceLoader::commonPasswords() {
 }
 
 void TestResourceLoader::licenseModel() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;
@@ -131,10 +127,10 @@ void TestResourceLoader::licenseModel() {
 }
 
 void TestResourceLoader::addon() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
-  settingsHolder.setFeaturesFlippedOn(QStringList{"replacerAddon"});
+  SettingsHolder::instance()->setFeaturesFlippedOn(
+      QStringList{"replacerAddon"});
   const_cast<Feature*>(Feature::get(Feature::Feature_replacerAddon))
       ->maybeFlipOnOrOff();
 
@@ -187,7 +183,8 @@ void TestResourceLoader::addon() {
   QCOMPARE(rl->loadDir(":/dir"), ":/replace/");
   QCOMPARE(rl->loadDir(":/dir/"), ":/replace/");
 
-  settingsHolder.setFeaturesFlippedOff(QStringList{"replacerAddon"});
+  SettingsHolder::instance()->setFeaturesFlippedOff(
+      QStringList{"replacerAddon"});
   const_cast<Feature*>(Feature::get(Feature::Feature_replacerAddon))
       ->maybeFlipOnOrOff();
 }

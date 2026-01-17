@@ -4,8 +4,6 @@
 
 #include "helper.h"
 
-class SettingsHolder;
-
 class TestAddon final : public TestHelper {
   Q_OBJECT
 
@@ -32,7 +30,4 @@ class TestAddon final : public TestHelper {
   void message_load_status_data();
   void message_load_status();
   void message_dismiss();
-
- private:
-  SettingsHolder* m_settingsHolder = nullptr;
 };

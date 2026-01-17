@@ -31,8 +31,6 @@
 #include "settingsholder.h"
 
 void TestAddon::init() {
-  m_settingsHolder = new SettingsHolder();
-
   // Glean needs to be initialized for every test because this test suite
   // includes telemetry tests.
   //
@@ -45,7 +43,7 @@ void TestAddon::init() {
   MZGlean::initialize("testing");
 }
 
-void TestAddon::cleanup() { delete m_settingsHolder; }
+void TestAddon::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestAddon::property() {
   AddonProperty p;

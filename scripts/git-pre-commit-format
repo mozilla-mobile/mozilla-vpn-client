@@ -287,6 +287,15 @@ fi
 
 # The code is not formatted correctly.
 
+if hash colordiff 2> /dev/null; then
+    colordiff < "$patch"
+else
+    echo "${b}(Install colordiff to see this diff in color!)${n}"
+    echo
+    cat "$patch"
+fi
+echo
+
 interactive=$(cd "$top_dir" && git config --bool hooks.clangFormatDiffInteractive)
 if [ "$interactive" != false ]; then
     # Interactive is the default, so anything that is not false is converted to
@@ -305,14 +314,6 @@ if [ "$interactive" = false ]; then
     exit 1
 fi
 
-if hash colordiff 2> /dev/null; then
-    colordiff < "$patch"
-else
-    echo "${b}(Install colordiff to see this diff in color!)${n}"
-    echo
-    cat "$patch"
-fi
-
 # We don't want to suggest applying clang-format after merge resolution
 if git rev-parse MERGE_HEAD >/dev/null 2>&1; then
     readonly this_is_a_merge=true
@@ -320,7 +321,6 @@ else
     readonly this_is_a_merge=false
 fi
 
-echo
 echo "${b}The staged content is not formatted correctly.${n}"
 echo "The fix shown above can be applied automatically to the commit."
 echo

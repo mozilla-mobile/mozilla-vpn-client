@@ -27,10 +27,9 @@ void TestThemes::loadTheme() {
   QFETCH(QString, theme);
   QFETCH(QString, expected);
 
-  SettingsHolder settingsHolder;
   if (!theme.isEmpty()) {
-    settingsHolder.setUsingSystemTheme(false);
-    settingsHolder.setTheme(theme);
+    SettingsHolder::instance()->setUsingSystemTheme(false);
+    SettingsHolder::instance()->setTheme(theme);
   }
 
   Localizer l;
@@ -52,7 +51,6 @@ void TestThemes::loadTheme() {
 }
 
 void TestThemes::model() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QQmlApplicationEngine engine;

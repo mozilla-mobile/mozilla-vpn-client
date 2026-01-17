@@ -9,13 +9,15 @@
 #include "settingsholder.h"
 
 void TestFeature::flipOnOff() {
-  SettingsHolder settingsHolder;
-
   // Fresh settings!
-  QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureA"));
-  QVERIFY(!settingsHolder.featuresFlippedOn().contains("testFeatureB"));
-  QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureA"));
-  QVERIFY(!settingsHolder.featuresFlippedOff().contains("testFeatureB"));
+  QVERIFY(!SettingsHolder::instance()->featuresFlippedOn().contains(
+      "testFeatureA"));
+  QVERIFY(!SettingsHolder::instance()->featuresFlippedOn().contains(
+      "testFeatureB"));
+  QVERIFY(!SettingsHolder::instance()->featuresFlippedOff().contains(
+      "testFeatureA"));
+  QVERIFY(!SettingsHolder::instance()->featuresFlippedOff().contains(
+      "testFeatureB"));
 
   // Let's create a few features
 
