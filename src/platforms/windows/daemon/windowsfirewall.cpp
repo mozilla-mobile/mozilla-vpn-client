@@ -34,6 +34,9 @@
 // ID for the Firewall Sublayer
 DEFINE_GUID(ST_FW_WINFW_BASELINE_SUBLAYER_KEY, 0xc78056ff, 0x2bc1, 0x4211, 0xaa,
             0xdd, 0x7f, 0x35, 0x8d, 0xef, 0x20, 0x2d);
+// ID for the DNS Sublayer
+DEFINE_GUID(ST_FW_WINFW_DNS_SUBLAYER_KEY, 0x60090787, 0xcca1, 0x4937, 0xaa,
+            0xce, 0x51, 0x25, 0x6e, 0xf4, 0x81, 0xf3);
 // ID for the Mullvad Split-Tunnel Sublayer Provider
 DEFINE_GUID(ST_FW_PROVIDER_KEY, 0xe2c114ee, 0xf32a, 0x4264, 0xa6, 0xcb, 0x3f,
             0xa7, 0x99, 0x63, 0x56, 0xd9);
@@ -132,7 +135,7 @@ bool WindowsFirewall::initSublayer() {
     return false;
   }
 
-  // Step 3: Add Sublayer
+  // Step 3: Add Baseline Sublayer
   FWPM_SUBLAYER0 subLayer;
   memset(&subLayer, 0, sizeof(subLayer));
   subLayer.subLayerKey = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
@@ -143,17 +146,34 @@ bool WindowsFirewall::initSublayer() {
 
   result = FwpmSubLayerAdd0(wfp, &subLayer, NULL);
   if (result != ERROR_SUCCESS) {
-    logger.error() << "FwpmSubLayerAdd0 failed:" << QString::number(result, 16);
+    logger.error() << "FwpmSubLayerAdd0 (baseline) failed:"
+                   << QString::number(result, 16);
     return false;
   }
-  // Step 4: Commit!
+
+  // Step 4: Add DNS Sublayer (required for split tunnel driver DNS filters)
+  FWPM_SUBLAYER0 dnsSubLayer;
+  memset(&dnsSubLayer, 0, sizeof(dnsSubLayer));
+  dnsSubLayer.subLayerKey = ST_FW_WINFW_DNS_SUBLAYER_KEY;
+  dnsSubLayer.displayData.name = (PWSTR)L"MozillaVPN-SplitTunnel-DNS-Sublayer";
+  dnsSubLayer.displayData.description =
+      (PWSTR)L"Filters for DNS traffic in split tunnel";
+  dnsSubLayer.weight = 0xFFFE;
+
+  result = FwpmSubLayerAdd0(wfp, &dnsSubLayer, NULL);
+  if (result != ERROR_SUCCESS) {
+    logger.error() << "FwpmSubLayerAdd0 (DNS) failed:"
+                   << QString::number(result, 16);
+    return false;
+  }
+  // Step 5: Commit!
   result = FwpmTransactionCommit0(wfp);
   if (result != ERROR_SUCCESS) {
     logger.error() << "FwpmTransactionCommit0 failed:"
                    << QString::number(result, 16);
     return false;
   }
-  logger.debug() << "Initialised Sublayer";
+  logger.debug() << "Initialised Sublayers (baseline + DNS)";
   return true;
 }
 
