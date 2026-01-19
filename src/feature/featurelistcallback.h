@@ -86,10 +86,10 @@ bool FeatureCallback_inAppAuthentication() {
 #if defined(MZ_WINDOWS)
   // Windows: InAppAuth for prod, web auth for staging
   return Constants::inProduction();
-#elif defined(MZ_ANDROID) || defined(MZ_IOS) || defined(MZ_WASM)
+#elif defined(MZ_ANDROID) || defined(MZ_WASM)
   return true;
 #else
-  // macOS and Linux
+  // iOS, macOS and Linux
   return false;
 #endif
 }

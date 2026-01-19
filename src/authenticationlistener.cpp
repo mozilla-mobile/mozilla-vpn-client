@@ -10,7 +10,9 @@
 #include "logger.h"
 #include "networkmanager.h"
 
-#if defined(MZ_WASM)
+#if defined(MZ_IOS)
+#  include "platforms/ios/iosauthenticationlistener.h"
+#elif defined(MZ_WASM)
 #  include "platforms/wasm/wasmauthenticationlistener.h"
 #else
 #  include "tasks/authenticate/desktopauthenticationlistener.h"
@@ -29,9 +31,11 @@ AuthenticationListener* AuthenticationListener::create(
     QObject* parent, AuthenticationType authenticationType) {
   switch (authenticationType) {
     case AuthenticationInBrowser:
-#if defined(MZ_ANDROID) or defined(MZ_IOS)
+#if defined(MZ_ANDROID)
       logger.error() << "Something went totally wrong";
       Q_ASSERT(false);
+#elif defined(MZ_IOS)
+      return new IOSAuthenticationListener(parent);
 #elif defined(MZ_WASM)
       return new WasmAuthenticationListener(parent);
 #else
