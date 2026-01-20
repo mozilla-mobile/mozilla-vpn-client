@@ -5,6 +5,8 @@
 #include <Windows.h>
 #include <winsvc.h>
 
+#include <QDebug>
+
 #include "server.h"
 
 constexpr const DWORD MODULE_FILENAME_MAX = 32768;
@@ -40,7 +42,13 @@ bool WebExtension::Server::isAllowedToConnect(qintptr sd) {
   if (!QueryFullProcessImageNameW(clientProc, 0, clientModuleName, &len)) {
     return false;
   }
+#ifdef MZ_DEBUG
+  qDebug() << "[Debug] Allowing Webextension Connection from:"
+           << QString::fromWCharArray(clientModuleName);
+  return true;
+#else
   return wcscmp(selfModuleName, clientModuleName) == 0;
+#endif
 }
 
 QString WebExtension::Server::localSocketName() {
