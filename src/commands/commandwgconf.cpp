@@ -36,14 +36,14 @@ int CommandWgConf::run(QStringList& tokens) {
     QString appName = tokens[0];
 
     CommandLineParser::Option hOption = CommandLineParser::helpOption();
-    CommandLineParser::Option mullvaldMultihop(
-        "m", "mullvald-multihop", "Generate config for Mullvad multihop.");
+    CommandLineParser::Option mullvadMultihop(
+        "m", "mullvad-multihop", "Generate config for Mullvad multihop.");
     CommandLineParser::Option wireguardMultihop(
         "w", "wireguard-multihop", "Generate config for Wireguard multihop.");
 
     QList<CommandLineParser::Option*> options;
     options.append(&hOption);
-    options.append(&mullvaldMultihop);
+    options.append(&mullvadMultihop);
     options.append(&wireguardMultihop);
 
     CommandLineParser clp;
@@ -57,8 +57,8 @@ int CommandWgConf::run(QStringList& tokens) {
     }
 
     QTextStream stream(stdout);
-    if (mullvaldMultihop.m_set && wireguardMultihop.m_set) {
-      stream << "Cannot use both --mullvald-multihop and --wireguard-multihop"
+    if (mullvadMultihop.m_set && wireguardMultihop.m_set) {
+      stream << "Cannot use both --mullvad-multihop and --wireguard-multihop"
              << Qt::endl;
       return 1;
     }
@@ -76,7 +76,7 @@ int CommandWgConf::run(QStringList& tokens) {
 
     const bool useWireguardMultihop =
 #if defined(MZ_LINUX)
-        !mullvaldMultihop.m_set;
+        !mullvadMultihop.m_set;
 #else
         wireguardMultihop.m_set;
 #endif
@@ -134,7 +134,7 @@ int CommandWgConf::run(QStringList& tokens) {
               IPAddress(exitServer.ipv6AddrIn()));
         }
       } else {
-        // configure main peer for Mullvald multihop
+        // configure main peer for Mullvad multihop
         exitPeerComment = entryPeerComment + "\n" + exitPeerComment;
         exitConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
         exitConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
@@ -165,7 +165,7 @@ int CommandWgConf::run(QStringList& tokens) {
                 "generate a\n";
       stream << "# configuration that works across all supported systems by "
                 "using the\n";
-      stream << "# --mullvald-multihop flag.\n\n";
+      stream << "# --mullvad-multihop flag.\n\n";
       stream << entryConfig.toMultiHopWgConf(exitConfig,
                                              QMap<QString, QString>(),
                                              exitPeerComment, entryPeerComment)
