@@ -141,7 +141,9 @@ ApplicationWindow {
         id: iosSafeAreaTopMargin
 
         color: MZTheme.colors.transparent
-        height: safeAreaHeightByDevice();
+        // offset screen contents by window.safeAreaMargins on desktop
+        // and fall back to device-specific values on iOS
+        height: Math.max(safeAreaHeightByDevice(), window.safeAreaMargins.top)
         width: window.width
         anchors.top: parent.top
     }
