@@ -188,7 +188,10 @@ QString Localizer::systemLanguageCode() const {
 
 // static
 Localizer* Localizer::instance() {
-  Q_ASSERT(s_instance);
+  if (!s_instance) {
+    s_instance = new Localizer();
+    qAddPostRoutine([]() { delete s_instance; });
+  }
   return s_instance;
 }
 
