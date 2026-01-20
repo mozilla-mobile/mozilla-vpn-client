@@ -110,6 +110,14 @@ Rectangle {
         color: {
             buttonBackground.color = root.startingState
         }
+
+        // Because we intentionally do not bind the color (see above), it must be manually updated when theme changes.
+        Connections {
+          target: MZTheme
+          function onChanged() {
+            buttonBackground.color = root.startingState
+          }
+        }
     }
 
     MZFocusBorder {
