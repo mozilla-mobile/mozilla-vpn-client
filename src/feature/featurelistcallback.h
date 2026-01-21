@@ -83,10 +83,11 @@ bool FeatureCallback_captivePortal() {
 }
 
 bool FeatureCallback_inAppAuthentication() {
-#if defined(MZ_ANDROID) || defined(MZ_WASM)
+#if defined(MZ_ANDROID) || defined(MZ_IOS) || defined(MZ_WASM) || \
+    defined(MZ_WINDOWS)
   return true;
 #else
-  // iOS, Windows, macOS and Linux
+  // macOS and Linux
   return false;
 #endif
 }
