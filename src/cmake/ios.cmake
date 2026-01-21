@@ -85,12 +85,14 @@ find_library(FW_FOUNDATION Foundation)
 find_library(FW_STORE_KIT StoreKit)
 find_library(FW_USER_NOTIFICATIONS UserNotifications)
 find_library(FW_NETWORK Network)
+find_library(FW_AUTHENTICATION_SERVICES AuthenticationServices)
 
 target_link_libraries(mozillavpn PRIVATE ${FW_UI_KIT})
 target_link_libraries(mozillavpn PRIVATE ${FW_FOUNDATION})
 target_link_libraries(mozillavpn PRIVATE ${FW_STORE_KIT})
 target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
 target_link_libraries(mozillavpn PRIVATE ${FW_NETWORK})
+target_link_libraries(mozillavpn PRIVATE ${FW_AUTHENTICATION_SERVICES})
 
 ## Hack: IOSUtils needs QtGui internals...
 target_include_directories(mozillavpn PRIVATE ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
@@ -101,6 +103,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macospingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosauthenticationlistener.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosauthenticationlistener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosiaphandler.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosiaphandler.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosiaphandler.h
