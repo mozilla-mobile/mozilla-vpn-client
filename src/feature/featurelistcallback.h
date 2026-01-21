@@ -83,13 +83,10 @@ bool FeatureCallback_captivePortal() {
 }
 
 bool FeatureCallback_inAppAuthentication() {
-#if defined(MZ_WINDOWS)
-  // Windows: InAppAuth for prod, web auth for staging
-  return Constants::inProduction();
-#elif defined(MZ_ANDROID) || defined(MZ_WASM)
+#if defined(MZ_ANDROID) || defined(MZ_WASM)
   return true;
 #else
-  // iOS, macOS and Linux
+  // iOS, Windows, macOS and Linux
   return false;
 #endif
 }
