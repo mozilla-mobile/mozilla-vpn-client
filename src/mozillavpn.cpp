@@ -1832,6 +1832,18 @@ void MozillaVPN::registerNavigationBarButtons() {
       "qrc:/nebula/resources/navbar/settings.svg",
       "qrc:/nebula/resources/navbar/settings-selected-dark.svg"));
 
+  setupMessageNotificationWatch(*messageIcon);
+
+  // When creating a SettingGroup, only the keys that include that group are
+  // pulled. Creating `test/another` would add a watch to `test/another/word`,
+  // but not vice versa. Thus, ensure group is re-created *after* loading new
+  // messages.
+  connect(AddonManager::instance(), &AddonManager::countChanged, instance(),
+          [messageIcon]() { setupMessageNotificationWatch(*messageIcon); });
+}
+// static
+void MozillaVPN::setupMessageNotificationWatch(
+    NavigationBarButton& messageIcon) {
   // A group of settings containing all the addon message settings.
   SettingGroup* messageSettingGroup =
       SettingsManager::instance()->createSettingGroup(
@@ -1843,12 +1855,12 @@ void MozillaVPN::registerNavigationBarButtons() {
       );
 
   connect(messageSettingGroup, &SettingGroup::changed, instance(),
-          [messageIcon]() { resetNotification(messageIcon); });
+          [&messageIcon]() { resetNotification(&messageIcon); });
 
   connect(AddonManager::instance(), &AddonManager::loadCompletedChanged,
-          instance(), [messageIcon]() { resetNotification(messageIcon); });
+          instance(), [&messageIcon]() { resetNotification(&messageIcon); });
 
-  resetNotification(messageIcon);
+  resetNotification(&messageIcon);
 }
 
 // static
