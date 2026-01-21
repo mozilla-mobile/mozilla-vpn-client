@@ -131,14 +131,12 @@
     <!--
       Merge modules
     -->
-    <?if $(var.Platform) = "x64" ?>
-      <DirectoryRef Id="MozillaVPNFolder">
-        <Merge Id="VCRedistModule" SourceFile="Microsoft_CRT_x64.msm" DiskId="1" Language="0"/>
-      </DirectoryRef>
-      <Feature Id="VCRedistFeature" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
-        <MergeRef Id="VCRedistModule" />
-      </Feature>
-    <?endif ?>
+    <DirectoryRef Id="MozillaVPNFolder">
+      <Merge Id="VCRedistModule" SourceFile="Microsoft_CRT_x64.msm" DiskId="1" Language="0"/>
+    </DirectoryRef>
+    <Feature Id="VCRedistFeature" Title="Visual C++ Runtime" AllowAdvertise="no" Display="hidden" Level="1">
+      <MergeRef Id="VCRedistModule" />
+    </Feature>
 
     <DirectoryRef Id="MozillaVPNFolder">
       <Component Id="RegistryEntries" Guid="71d1c1ef-2133-4cbf-954d-7f1e0e24dace">
