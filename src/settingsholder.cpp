@@ -19,24 +19,30 @@
 namespace {
 
 Logger logger("SettingsHolder");
-
 SettingsHolder* s_instance = nullptr;
 }  // namespace
 
 // static
 SettingsHolder* SettingsHolder::instance() {
-  Q_ASSERT(s_instance);
+  if (!s_instance) {
+    s_instance = new SettingsHolder();
+    qAddPostRoutine([]() { delete s_instance; });
+  }
   return s_instance;
 }
 
+#ifdef UNIT_TEST
+// static
+void SettingsHolder::testCleanup() {
+  if (s_instance) {
+    delete s_instance;
+  }
+}
+#endif
+
 SettingsHolder::SettingsHolder() {
   MZ_COUNT_CTOR(SettingsHolder);
-
-  Q_ASSERT(!s_instance);
-  s_instance = this;
-
   logger.debug() << "Initializing SettingsHolder";
-
 #define SETTING(type, toType, getter, ...)     \
   connect(m_##getter, &Setting::changed, this, \
           [&]() { emit getter##Changed(); });
@@ -66,7 +72,6 @@ SettingsHolder::~SettingsHolder() {
   // singleton.
   SettingsManager::testCleanup();
 #endif
-
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
 }

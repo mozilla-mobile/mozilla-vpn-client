@@ -9,13 +9,11 @@
 #include "taskfunction.h"
 
 void TestNetworkRequest::testSetAuthHeader() {
-  SettingsHolder settingsHolder;
-
   TaskFunction task([&]() {});
   NetworkRequest request(&task);
 
   // If this is not set we will hit a Q_ASSERT.
-  settingsHolder.setToken("TOKEN");
+  SettingsHolder::instance()->setToken("TOKEN");
 
   // Test that if no token is provided we use what is the settings holder.
   request.auth();

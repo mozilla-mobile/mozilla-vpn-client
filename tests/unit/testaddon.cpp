@@ -30,8 +30,6 @@
 #include "systemtraynotificationhandler.h"
 
 void TestAddon::init() {
-  m_settingsHolder = new SettingsHolder();
-
   // Glean needs to be initialized for every test because this test suite
   // includes telemetry tests.
   //
@@ -44,10 +42,9 @@ void TestAddon::init() {
   MZGlean::initialize("testing");
 }
 
-void TestAddon::cleanup() { delete m_settingsHolder; }
+void TestAddon::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestAddon::message_notification_data() {
-  SettingsHolder settingsHolder;
   Localizer l;
 
   QObject parent;
@@ -76,7 +73,7 @@ void TestAddon::message_notification_data() {
 
   // Mock a user login.
   TestHelper::resetLastSystemNotification();
-  settingsHolder.setToken("Hello World");
+  SettingsHolder::instance()->setToken("Hello World");
   App::instance()->setState(App::StateMain);
   // A login should not trigger any messages either.
   QTest::addRow("login") << QString() << QString()

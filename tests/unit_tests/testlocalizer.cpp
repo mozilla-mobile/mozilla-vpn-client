@@ -13,8 +13,6 @@
 #include "settingsholder.h"
 
 void TestLocalizer::init() {
-  m_settingsHolder = new SettingsHolder();
-
   // Glean needs to be initialized for every test because this test suite
   // includes telemetry tests.
   //
@@ -27,7 +25,7 @@ void TestLocalizer::init() {
   MZGlean::initialize("testing");
 }
 
-void TestLocalizer::cleanup() { delete m_settingsHolder; }
+void TestLocalizer::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestLocalizer::basic() {
   Localizer l;
@@ -50,24 +48,24 @@ void TestLocalizer::systemLanguage() {
 
   Localizer l;
 
-  m_settingsHolder->setLanguageCode("");
-  QCOMPARE(m_settingsHolder->languageCode(), "");
+  SettingsHolder::instance()->setLanguageCode("");
+  QCOMPARE(SettingsHolder::instance()->languageCode(), "");
   QCOMPARE(l.languageCodeOrSystem(), "en");
 
-  m_settingsHolder->setLanguageCode("en");
-  QCOMPARE(m_settingsHolder->languageCode(), "en");
-  QVERIFY(!m_settingsHolder->previousLanguageCode().isEmpty());
+  SettingsHolder::instance()->setLanguageCode("en");
+  QCOMPARE(SettingsHolder::instance()->languageCode(), "en");
+  QVERIFY(!SettingsHolder::instance()->previousLanguageCode().isEmpty());
   QCOMPARE(l.languageCodeOrSystem(), "en");
 
-  m_settingsHolder->setLanguageCode("");
-  QCOMPARE(m_settingsHolder->languageCode(), "");
-  QCOMPARE(m_settingsHolder->previousLanguageCode(), "en");
+  SettingsHolder::instance()->setLanguageCode("");
+  QCOMPARE(SettingsHolder::instance()->languageCode(), "");
+  QCOMPARE(SettingsHolder::instance()->previousLanguageCode(), "en");
   QCOMPARE(l.languageCodeOrSystem(), "en");
 }
 
 void TestLocalizer::localizeCurrency() {
   Localizer l;
-  m_settingsHolder->setLanguageCode("en_GB");
+  SettingsHolder::instance()->setLanguageCode("en_GB");
 
   // Invalid iso4217 values
   QCOMPARE(l.localizeCurrency(123.123, "FOOBAR"), "FOOBAR123.12");
@@ -405,13 +403,13 @@ void TestLocalizer::localizedLanguageName() {
   // Happy path
   QCOMPARE(localizer.localizedLanguageName("en"), "English");
 
-  m_settingsHolder->setLanguageCode("es_ES");
+  SettingsHolder::instance()->setLanguageCode("es_ES");
   QCOMPARE(localizer.localizedLanguageName("en"), "Inglés");
 
   // This language doesn't have a translations for "es_MX".
   // It does have fallback into es_MX and then es_ES.
   // It should get the translation from the first fallback language: es_MX.
-  m_settingsHolder->setLanguageCode("es_CL");
+  SettingsHolder::instance()->setLanguageCode("es_CL");
   QCOMPARE(localizer.localizedLanguageName("es_MX"), "Español");
 
   // This language doesn't have a translations for "es_ES",
@@ -421,7 +419,7 @@ void TestLocalizer::localizedLanguageName() {
 
   // This language doesn't have a translations for "es_ES"
   // and it also doesn't have fallbacks. "en" is the default fallback locale.
-  m_settingsHolder->setLanguageCode("pt_BR");
+  SettingsHolder::instance()->setLanguageCode("pt_BR");
   QCOMPARE(localizer.localizedLanguageName("es_ES"), "Spanish");
 }
 
@@ -440,19 +438,19 @@ void TestLocalizer::getTranslatedCountryName() {
   QCOMPARE(localizer.getTranslatedCountryName("us", ""),
            "United States of America");
 
-  m_settingsHolder->setLanguageCode("es_ES");
+  SettingsHolder::instance()->setLanguageCode("es_ES");
   QCOMPARE(localizer.getTranslatedCountryName("us", ""),
            "Estados Unidos de América");
 
   // This language doesn't have a translations for "us",
   // but it should not fallback to English. It should fallback to Spanish.
-  m_settingsHolder->setLanguageCode("es_CL");
+  SettingsHolder::instance()->setLanguageCode("es_CL");
   QCOMPARE(localizer.getTranslatedCountryName("us", ""),
            "Estados Unidos de América");
 
   // This language doesn't have a translations for "en"
   // and it also doesn't have fallbacks. It should fallback to English.
-  m_settingsHolder->setLanguageCode("pt_BR");
+  SettingsHolder::instance()->setLanguageCode("pt_BR");
   QCOMPARE(localizer.getTranslatedCountryName("us", ""),
            "United States of America");
 }
@@ -473,17 +471,17 @@ void TestLocalizer::getTranslatedCityName() {
   QCOMPARE(localizer.getTranslatedCityName("São Paulo, SP"), "São Paulo");
 
   // Happy path
-  m_settingsHolder->setLanguageCode("es_ES");
+  SettingsHolder::instance()->setLanguageCode("es_ES");
   QCOMPARE(localizer.getTranslatedCityName("Mexico City"), "Ciudad de México");
 
   // This language doesn't have a translations for "Mexico City",
   // but it should not fallback to English. It should fallback to Spanish.
-  m_settingsHolder->setLanguageCode("es_CL");
+  SettingsHolder::instance()->setLanguageCode("es_CL");
   QCOMPARE(localizer.getTranslatedCityName("Mexico City"), "Ciudad de México");
 
   // This language doesn't have a translations for "en"
   // and it also doesn't have fallbacks. It should fallback to English.
-  m_settingsHolder->setLanguageCode("pt_BR");
+  SettingsHolder::instance()->setLanguageCode("pt_BR");
   QCOMPARE(localizer.getTranslatedCityName("Mexico City"), "Mexico City");
 }
 

@@ -29,10 +29,9 @@ void stubRequestPostHandler(
 }
 }  // namespace
 
-void TestTaskGetFeatureList::testSendsAuthedRequestWhenAuthed() {
-  // Initialize singletons that are expected to exist.
-  SettingsHolder settingsHolder;
+void TestTaskGetFeatureList::cleanup() { SettingsHolder::testCleanup(); }
 
+void TestTaskGetFeatureList::testSendsAuthedRequestWhenAuthed() {
   QNetworkRequest featureListRequest;
   QString featureListRequestBody;
 
@@ -49,7 +48,7 @@ void TestTaskGetFeatureList::testSendsAuthedRequestWhenAuthed() {
   stubRequestPostHandler(mockPostHandler);
 
   // If a token is set, the task will assume we are authed.
-  settingsHolder.setToken("aToken");
+  SettingsHolder::instance()->setToken("aToken");
 
   TaskGetFeatureList task;
   task.run();
@@ -61,9 +60,6 @@ void TestTaskGetFeatureList::testSendsAuthedRequestWhenAuthed() {
   NetworkRequest::resetRequestHandler();
 }
 void TestTaskGetFeatureList::testAddsExperimeterIdToBodyWhenNotAuthed() {
-  // Initialize singletons that are expected to exist.
-  SettingsHolder settingsHolder;
-
   QNetworkRequest featureListRequest;
   QString featureListRequestBody;
 
@@ -84,17 +80,14 @@ void TestTaskGetFeatureList::testAddsExperimeterIdToBodyWhenNotAuthed() {
 
   QVERIFY(!featureListRequest.hasRawHeader("Authorization"));
   QVERIFY(featureListRequestBody.contains("experimenterId"));
-  QVERIFY(
-      featureListRequestBody.contains(settingsHolder.unauthedExperimenterId()));
+  QVERIFY(featureListRequestBody.contains(
+      SettingsHolder::instance()->unauthedExperimenterId()));
 
   // Reset request handlers.
   NetworkRequest::resetRequestHandler();
 }
 
 void TestTaskGetFeatureList::testUnauthedExperimenterIdIsOnlySetOnce() {
-  // Initialize singletons that are expected to exist.
-  SettingsHolder settingsHolder;
-
   QNetworkRequest featureListRequest;
   QString featureListRequestBody;
 
@@ -112,7 +105,7 @@ void TestTaskGetFeatureList::testUnauthedExperimenterIdIsOnlySetOnce() {
 
   // Manually set an experimenter id. The task should not overwrite it.
   QString expectedExperimenterId = "aId";
-  settingsHolder.setUnauthedExperimenterId(expectedExperimenterId);
+  SettingsHolder::instance()->setUnauthedExperimenterId(expectedExperimenterId);
 
   TaskGetFeatureList task;
   task.run();
@@ -129,7 +122,7 @@ void TestTaskGetFeatureList::testUnauthedExperimenterIdIsOnlySetOnce() {
 
   // Reset it again just in case.
   expectedExperimenterId = "anotherId";
-  settingsHolder.setUnauthedExperimenterId(expectedExperimenterId);
+  SettingsHolder::instance()->setUnauthedExperimenterId(expectedExperimenterId);
 
   task.run();
 

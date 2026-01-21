@@ -8,6 +8,7 @@ class TestDNSHelper final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void cleanup();
   void migration_data();
   void migration();
 };

@@ -302,7 +302,11 @@ else # Diff-only.
         readonly patch_dest=/dev/stdout
     fi
 
-    declare git_args=(git diff -U0 --no-color)
+    # To support git when it is configured to use a non-default prefix, use
+    # --src-prefix and --dst-prefix to set the default prefixes explicitly. We
+    # don't use the newer --default-prefix option because we want to support git
+    # versions older than 2.41.
+    declare git_args=(git diff -U0 --no-color --src-prefix=a/ --dst-prefix=b/)
     [ "$staged" = true ] && git_args+=("--staged")
 
     # $format_diff may contain a command ("python") and the script to excute, so we
@@ -325,8 +329,10 @@ else # Diff-only.
             -p1 \
             -style="$style" \
             -iregex="$exclusions_regex"'.*\.(c|cpp|cxx|cc|h|hpp|m|mm|js|java)' \
-            > "$patch_dest" \
-        || exit 1
+            > "$patch_dest"
+    # Starting with version 18, clang-format-diff exits with status 1 when there
+    # are diffs, but other non-zero statuses indicate errors.
+    [ $? -gt 1 ] && exit $?
 
     if [ "$apply_to_staged" = true ]; then
         if [ ! -s "$patch_dest" ]; then
