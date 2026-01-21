@@ -79,8 +79,13 @@ ApplicationWindow {
             return baseFlags;
         }
 
-        // TODO: Once every platform is on Qt 6.9, swap MaximizeUsingFullscreenGeometryHint for ExpandedClientAreaHint: https://doc.qt.io/qt-6.9/qt.html!
-        return baseFlags | Qt.ExpandedClientAreaHint | Qt.MaximizeUsingFullscreenGeometryHint;
+        // workaround for Qt.ExpandedClientAreaHint misbehaving on windows
+        // TODO: revise after Qt 6.10.2 is released
+        if (Qt.platform.os === "windows") {
+            return baseFlags;
+        }
+
+        return baseFlags | Qt.ExpandedClientAreaHint;
     }
     visible: true
 
@@ -141,9 +146,7 @@ ApplicationWindow {
         id: iosSafeAreaTopMargin
 
         color: MZTheme.colors.transparent
-        // offset screen contents by window.safeAreaMargins on desktop
-        // and fall back to device-specific values on iOS
-        height: Math.max(safeAreaHeightByDevice(), window.safeAreaMargins.top)
+        height: safeAreaHeightByDevice()
         width: window.width
         anchors.top: parent.top
     }
