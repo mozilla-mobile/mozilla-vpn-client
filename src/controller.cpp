@@ -323,6 +323,19 @@ void Controller::serverUnavailable() {
   logger.info() << "Server Unavailable - Ping succeeded: " << m_pingReceived;
 
   emit readyToServerUnavailable(m_pingReceived);
+
+  if (m_state == StateConnecting) {
+    // If we are connecting to a server marked as unavailable, just go back to
+    // off
+    setState(StateOff);
+  } else {
+    // Deactivate in all other cases where the server is offline but not marked
+    // as unavailable like:
+    // - Confirming, we are conneting but the server is not responding
+    // - Switching, we are switching server but the new server is not responding
+    deactivate();
+  }
+
   return;
 }
 
