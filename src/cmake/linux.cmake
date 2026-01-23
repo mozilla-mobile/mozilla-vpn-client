@@ -188,6 +188,9 @@ if(NOT BUILD_FLATPAK)
         DESTINATION ${POLKIT_POLICY_DIR})
 
     pkg_get_variable(POLKIT_DATA_DIR polkit-gobject-1 datadir)
+    if(NOT POLKIT_DATA_DIR)
+        set(POLKIT_DATA_DIR "/usr/share")
+    endif()
     if(EXISTS /etc/debian_version)
         install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.rules-debian
             RENAME org.mozilla.vpn.rules
