@@ -28,6 +28,10 @@
       <UpgradeVersion OnlyDetect='no' Property='PREVIOUSFOUND'
         Minimum='0.0.0.0' IncludeMinimum='yes'
         Maximum='1.0.0.0' IncludeMaximum='no' />
+      <!-- Prompt system restart when upgrading from 2.32 to properly reload split tunnel driver -->
+      <UpgradeVersion OnlyDetect='yes' Property='NEEDSREBOOT'
+        Minimum='0.0.0.0' IncludeMinimum='yes'
+        Maximum='2.32.99.99' IncludeMaximum='yes' />
     </Upgrade>
 
     <MediaTemplate EmbedCab="yes" CompressionLevel="high" />
@@ -182,8 +186,9 @@
     <CustomAction Id="LaunchVPNFirstExecution" Impersonate="yes" FileRef="MozillaVPNExecutable" ExeCommand="" Return="asyncNoWait" />
     <CustomAction Id="LaunchVPNAfterUpdate" Impersonate="yes" FileRef="MozillaVPNExecutable" ExeCommand="ui --updated" Return="asyncNoWait" />
     <InstallExecuteSequence>
-       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize" Condition="NOT WIX_UPGRADE_DETECTED" />
-       <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize" Condition="WIX_UPGRADE_DETECTED" />
+       <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize" Condition="NOT WIX_UPGRADE_DETECTED AND NOT NEEDSREBOOT" />
+       <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize" Condition="WIX_UPGRADE_DETECTED AND NOT NEEDSREBOOT" />
+       <ScheduleReboot After="InstallFinalize" Condition="NEEDSREBOOT" />
     </InstallExecuteSequence>
 
     <!--
