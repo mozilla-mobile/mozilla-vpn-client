@@ -93,11 +93,44 @@ less).
 
 If the account exists, we go to **Sign-in**, otherwise, for a new account, we
 go to **Sign-up** or **fallback in the browser**, in case the authentication
-method is “without account creation”.
+method is "without account creation".
 
-* Next states: **Sign-in**, **Sign-up**, **fallback in the browser**
+In some cases, the account might exist but have special conditions:
+- If the account is a stub account (no password set), we go to **Stub account**
+- If the account is linked to SSO (Google/Apple) but has no password, we go to **SSO account**
+
+* Next states: **Sign-in**, **Sign-up**, **Stub account**, **SSO account**, **fallback in the browser**
 * Errors: none
 * Available methods: none
+
+### State: Stub account
+
+The account exists but does not have a password yet. This happens when an
+account has been created but not fully verified. The user needs to check their
+email and follow the verification link sent by Mozilla Accounts to set a
+password.
+
+From this state, the user can retry checking the account after setting up the
+password through the email verification link.
+
+* Next states: **Checking-account** (when user retries after setting password)
+* Errors: none
+* Available methods:
+    * `MZAuthInApp.checkAccount(emailAddress)` - retry after password setup
+
+### State: SSO account
+
+The account is linked to a third-party authentication provider (Google or
+Apple) but does not have a password associated with it. Mozilla VPN requires
+all accounts to have a password before they can be used with the VPN client.
+
+The user needs to set a password for their account through Mozilla Accounts
+before being able to authenticate with the VPN client.
+
+* Next states: **Checking-account** (when user retries after setting password)
+* Errors: none
+* Available methods:
+    * `MZAuthInApp.checkAccount(emailAddress)` - retry after password setup
 
 ### State: Sign-in
 
@@ -295,6 +328,8 @@ stateDiagram-v2
   CheckingAccount: Checking Account
   SignIn: Sign In
   SignUp: Sign Up
+  StubAccount: Stub account
+  SsoAccount: SSO account
   Fallback: Fallback in the browser
   SigningIn: Signing In
   SigningUp: Signing Up
@@ -312,7 +347,11 @@ stateDiagram-v2
   Start --> CheckingAccount: email address received
   CheckingAccount --> SignIn: the account already exists
   CheckingAccount --> SignUp: new account is required
+  CheckingAccount --> StubAccount: account exists but no password
+  CheckingAccount --> SsoAccount: SSO account without password
   CheckingAccount --> Fallback: new account is required
+  StubAccount --> CheckingAccount: retry after password setup
+  SsoAccount --> CheckingAccount: retry after password setup
   SignIn --> SigningIn: password received
   SigningIn --> signing_results
   signing_results --> SignIn: invalid password or error
