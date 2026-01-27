@@ -188,7 +188,7 @@
     <InstallExecuteSequence>
        <Custom Action="LaunchVPNFirstExecution" After="InstallFinalize" Condition="NOT WIX_UPGRADE_DETECTED AND NOT NEEDSREBOOT" />
        <Custom Action="LaunchVPNAfterUpdate" After="InstallFinalize" Condition="WIX_UPGRADE_DETECTED AND NOT NEEDSREBOOT" />
-       <ScheduleReboot After="InstallFinalize" Condition="NEEDSREBOOT" />
+       <ScheduleReboot Before="InstallFinalize" Condition="NEEDSREBOOT" />
     </InstallExecuteSequence>
 
     <!--
