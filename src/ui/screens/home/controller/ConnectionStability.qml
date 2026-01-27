@@ -38,6 +38,14 @@ Item {
         }
     }
 
+    function stabilityLabelText() {
+        if (VPNController.state == VPNController.StateConnectionError && (VPNController.error == VPNController.ErrorServerTimeout || VPNController.error == VPNController.ErrorNoServerAvailable)) {
+            // TODO maybe use a different string than ModalHeaderText here
+            return MZI18n.ServerUnavailableModalHeaderText;
+        }
+        return qsTrId("vpn.connectionStability.checkConnection");
+    }
+
     GridLayout {
         id: grid
 
@@ -161,7 +169,7 @@ Item {
             //% "Check Connection"
             //: Message displayed to the user when the connection is unstable or
             //: missing, asking them to check their connection.
-            text: qsTrId("vpn.connectionStability.checkConnection")
+            text: stabilityLabelText()
             color: MZTheme.colors.fontColorInverted
             opacity: 0.8
             Layout.alignment: Qt.AlignCenter

@@ -214,7 +214,7 @@ Rectangle {
                 color: MZTheme.colors.errorAccent
             }
             PropertyChanges {
-                target: insetIcon                
+                target: insetIcon
                 source: MZAssetLookup.getImageSource("ShieldOff")
                 opacity: 1
             }
