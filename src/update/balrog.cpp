@@ -393,6 +393,7 @@ bool Balrog::install(const QString& filePath) {
   QString logFile = m_tmpDir.filePath("msiexec.log");
   QStringList arguments;
   arguments << "/qb!"
+            << "REBOOT=Suppress"
             << "/i" << QDir::toNativeSeparators(filePath) << "/lv!"
             << QDir::toNativeSeparators(logFile);
 
