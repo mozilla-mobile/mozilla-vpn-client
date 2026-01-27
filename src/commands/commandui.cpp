@@ -347,9 +347,9 @@ int CommandUI::run(QStringList& tokens) {
 
 #ifdef MZ_WASM
     WasmWindowController wasmWindowController;
-    QObject::connect(
-        SettingsHolder::instance(), &SettingsHolder::languageCodeChanged,
-        &wasmWindowController, &WasmWindowController::retranslate);
+    QObject::connect(SettingsHolder::instance(),
+                     &SettingsHolder::languageCodeChanged,
+                     &wasmWindowController, &WasmWindowController::retranslate);
 #endif
 
     NotificationHandler* notificationHandler =
