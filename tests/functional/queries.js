@@ -257,7 +257,7 @@ const screenGetHelp = {
   },
 
   resetView: {
-    VIEW: new QmlQueryComposer('//resetVpnView'),
+    SCREEN: new QmlQueryComposer('//resetVpnView-flickable'),
     RESET_BUTTON: new QmlQueryComposer('//resetVpnButton'),
     BACK_BUTTON: new QmlQueryComposer('//goBackButton'),
     POPUP_LOADER: new QmlQueryComposer('//confirmResetPopupLoader'),

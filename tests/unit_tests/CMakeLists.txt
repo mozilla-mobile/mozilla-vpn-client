@@ -59,8 +59,6 @@ target_link_libraries(app_unit_tests PRIVATE
     translations-unit-tests
 )
 
-target_compile_definitions(app_unit_tests PRIVATE MZ_DEBUG)
-
 # Unit test source files
 target_sources(app_unit_tests PRIVATE
     helper.h

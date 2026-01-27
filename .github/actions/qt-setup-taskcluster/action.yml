@@ -8,7 +8,7 @@ inputs:
   toolchain-alias:
     description: 'Taskcluster toolchain alias'
     required: false
-    default: ${{ runner.os == 'Windows' && 'qt-windows-x86_64-6.6' || 'qt-macos-6.6' }}
+    default: ${{ runner.os == 'Windows' && 'qt-windows-x86_64-6.10' || 'qt-macos-6.10' }}
   cache:
     description: 'Cache Qt toolchain artifacts'
     required: false
