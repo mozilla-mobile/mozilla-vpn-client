@@ -334,6 +334,10 @@ MZButtonBase {
                 toggleColor: MZTheme.colors.vpnToggleConnected
             }
 
+        },
+        State {
+            name: VPNController.StateConnectionError
+            extend: VPNController.StateOn
         }
     ]
     transitions: [
@@ -422,9 +426,10 @@ MZButtonBase {
     function toggleClickable() {
         return VPN.state === VPN.StateMain &&
                (VPNController.state === VPNController.StateOn ||
-               VPNController.state === VPNController.StateOnPartial ||
+                VPNController.state === VPNController.StateOnPartial ||
                 VPNController.state === VPNController.StateSilentSwitching ||
                 VPNController.state === VPNController.StateOff ||
+                VPNController.state === VPNController.StateConnectionError ||
                 (VPNController.state === VPNController.StateConfirming &&
                  (connectionRetryOverX || enableDisconnectInConfirming)));
     }
