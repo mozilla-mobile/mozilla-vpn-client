@@ -294,6 +294,8 @@ qint64 Controller::connectionTimestamp() const {
       [[fallthrough]];
     case Controller::State::StateConnecting:
       [[fallthrough]];
+    case Controller::State::StateConnectionError:
+      [[fallthrough]];
     case Controller::State::StateDisconnecting:
       [[fallthrough]];
     case Controller::State::StateInitializing:
@@ -323,18 +325,16 @@ void Controller::serverUnavailable() {
   logger.info() << "Server Unavailable - Ping succeeded: " << m_pingReceived;
 
   emit readyToServerUnavailable(m_pingReceived);
+  // REPORTERROR(ErrorHandler::ConnectionFailureError, "controller");
 
   if (m_state == StateConnecting) {
-    // If we are connecting to a server marked as unavailable, just go back to
-    // off
-    setState(StateOff);
+    setError(ErrorNoServerAvailable);
+    // No tunnel established yet, herw we should force network down to avoid
+    // leaks.
   } else {
-    // Deactivate in all other cases where the server is offline but not marked
-    // as unavailable like:
-    // - Confirming, we are conneting but the server is not responding
-    // - Switching, we are switching server but the new server is not responding
-    deactivate();
+    setError(ErrorServerTimeout);
   }
+  setState(StateConnectionError);
 
   return;
 }
@@ -580,6 +580,17 @@ void Controller::setState(State state) {
 
 Controller::State Controller::state() const { return m_state; }
 
+void Controller::setError(ErrorCode code) {
+  if (m_errorCode == code) {
+    return;
+  }
+  logger.debug() << "Setting error code:" << code;
+  m_errorCode = code;
+  emit errorChanged();
+}
+
+Controller::ErrorCode Controller::error() const { return m_errorCode; }
+
 bool Controller::silentSwitchServers(
     ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy) {
   logger.debug() << "Silently switch servers" << serverCoolDownPolicy;
@@ -767,6 +778,7 @@ void Controller::logSerialize(QIODevice* device) {
 
 void Controller::handleBackendFailure(ErrorCode code) {
   logger.warning() << "backend failure:" << code;
+  setError(code);
   switch (code) {
     case ErrorNone:
       [[fallthrough]];
@@ -908,6 +920,7 @@ bool Controller::activate(const ServerData& serverData,
     return false;
   }
 
+  setError(ErrorNone);
   m_serverData = serverData;
   emit currentServerChanged();
 
@@ -1014,6 +1027,13 @@ bool Controller::deactivate(ActivationPrincipal user) {
     logger.warning()
         << "ActivationPrincipal does not have permission allowed to deactivate";
     return false;
+  }
+
+  if (m_state == StateConnectionError &&
+      m_errorCode == ErrorNoServerAvailable) {
+    logger.warning() << "VPN never initialized properly, nothing to disconnect";
+    setState(StateOff);
+    return true;
   }
 
   if (!isActive()) {
