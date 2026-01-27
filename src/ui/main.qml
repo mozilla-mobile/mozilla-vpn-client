@@ -85,7 +85,7 @@ ApplicationWindow {
             return baseFlags;
         }
 
-        return baseFlags | Qt.ExpandedClientAreaHint;
+        return baseFlags | Qt.ExpandedClientAreaHint | Qt.MaximizeUsingFullscreenGeometryHint;
     }
     visible: true
 
