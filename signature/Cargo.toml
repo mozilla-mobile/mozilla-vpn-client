@@ -6,9 +6,9 @@ edition = "2021"
 [dependencies]
 asn1-rs = { version = "0.7.1", features=["datetime"] }
 oid-registry = "0.8"
-data-encoding = "2.9.0"
+data-encoding = "2.10.0"
 ffi-support = "0.4.4"
-thiserror = "2.0.12"
+thiserror = "2.0.18"
 hex = "0.4"
 ring = "0.17.14"
 x509-parser = { version = "0.18.0", features = ["verify", "validate"] }
