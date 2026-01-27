@@ -343,8 +343,15 @@ int CommandUI::run(QStringList& tokens) {
 
     QObject::connect(vpn->controller(), &Controller::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
-
 #endif
+
+#ifdef MZ_WASM
+    WasmWindowController wasmWindowController;
+    QObject::connect(
+        SettingsHolder::instance(), &SettingsHolder::languageCodeChanged,
+        &wasmWindowController, &WasmWindowController::retranslate);
+#endif
+
     NotificationHandler* notificationHandler =
         NotificationHandler::create(qApp);
     QObject::connect(vpn->controller(), &Controller::stateChanged,
@@ -365,19 +372,12 @@ int CommandUI::run(QStringList& tokens) {
           }
 #endif
 
-#ifdef MZ_WASM
-          WasmWindowController::instance()->retranslate();
-#endif
-
           MozillaVPN::instance()->serverCountryModel()->retranslate();
           MozillaVPN::instance()->serverData()->retranslate();
         });
 
     InspectorHandler::initialize();
     logger.debug() << "Inspector Handler initialized";
-#ifdef MZ_WASM
-    WasmWindowController wasmWindowController;
-#endif
 
 #ifdef MVPN_WEBEXTENSION
     QPointer webExtensionServer =
