@@ -85,7 +85,8 @@ ApplicationWindow {
             return baseFlags;
         }
 
-        return baseFlags | Qt.ExpandedClientAreaHint;
+        // TODO: Once every platform is on Qt 6.9, swap MaximizeUsingFullscreenGeometryHint for ExpandedClientAreaHint: https://doc.qt.io/qt-6.9/qt.html
+        return baseFlags | Qt.ExpandedClientAreaHint | Qt.MaximizeUsingFullscreenGeometryHint;
     }
     visible: true
 
