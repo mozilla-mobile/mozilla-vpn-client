@@ -11,7 +11,7 @@ MAINTAINER Naomi Kirby <naomi@mozilla.com>
 #----------------------------------------------------------------------------------------------------------------------
 #-- Extra Packages ----------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
-RUN yum -y install git rpm-build rpmdevtools yum-utils sudo
+RUN yum -y install git python3 rpm-build rpmdevtools yum-utils sudo
 
 # Grant the worker user the ability to install packages without login
 RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/yum,/usr/bin/yum-builddep" > /etc/sudoers.d/worker-packages
