@@ -15,6 +15,8 @@ Requires:  qt6-qtsvg >= 6.0
 Requires:  qt6-qt5compat >= 6.0
 Requires:  wireguard-tools
 
+BuildRequires: cmake
+BuildRequires: cmake-rpm-macros
 BuildRequires: cargo >= 1.82
 BuildRequires: golang >= 1.18
 BuildRequires: libcap-devel
