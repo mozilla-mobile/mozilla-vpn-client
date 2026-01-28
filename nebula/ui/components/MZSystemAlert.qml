@@ -84,6 +84,19 @@ MZAlert {
                 }
             },
             State {
+                name: MZErrorHandler.SplitTunnelErrorAlertWithLink
+                PropertyChanges {
+                    target: alertBox
+                    alertText: MZI18n.SplittunnelErrorActivating
+                    alertActionText: MZI18n.GetHelpHelpCenter
+                    visible: true
+
+                    onActionPressed: ()=>{
+                        MZUrlOpener.openUrlLabel("sumoExcludedApps")
+                    }
+                }
+            },
+            State {
                 name: MZErrorHandler.UnrecoverableErrorAlert
                 PropertyChanges {
                     target: alertBox
