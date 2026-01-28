@@ -53,7 +53,7 @@ Item {
         columns: 3
         layoutDirection: Qt.LeftToRight
         anchors.horizontalCenter: parent.horizontalCenter
-        state: VPNConnectionHealth.stability
+        state: VPNController.state != VPNController.StateConnectionError ? VPNConnectionHealth.stability : VPNConnectionHealth.NoSignal
         onStateChanged: stability.setColumns()
 
         Component.onCompleted: {

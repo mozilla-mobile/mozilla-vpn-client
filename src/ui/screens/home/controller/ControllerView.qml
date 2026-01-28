@@ -366,7 +366,7 @@ Item {
 
             PropertyChanges {
                 target: connectionStability
-                visible: false
+                visible: true
             }
 
             PropertyChanges {
