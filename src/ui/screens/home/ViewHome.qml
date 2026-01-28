@@ -102,7 +102,8 @@ MZFlickable {
 
             disableRowWhen: (VPNController.state !== VPNController.StateOn &&
                             VPNController.state !== VPNController.StateOnPartial &&
-                            VPNController.state !== VPNController.StateOff)
+                            VPNController.state !== VPNController.StateOff &&
+                            VPNController.state !== VPNController.StateConnectionError)
             Layout.topMargin: 12
             contentChildren: [
 

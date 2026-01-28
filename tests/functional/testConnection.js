@@ -181,6 +181,26 @@ describe('Connectivity', function() {
             'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName'),
         'Sydney');
   });
+
+  it('Connection remains disabled when the server is unavailable and popup is closed',
+     async () => {
+       await vpn.forceServerUnavailable('at', 'vie');
+       await vpn.activateViaToggle();
+
+       // Wait for state to settle
+       await vpn.wait();
+       // Close the popup using close button
+       await vpn.waitForQueryAndClick(
+           queries.screenHome.SERVER_UNAVAILABLE_POPUP_CLOSE_BUTTON.visible());
+
+       await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+
+       assert.equal(
+           await vpn.getQueryProperty(
+               queries.screenHome.CONTROLLER_TITLE, 'text'),
+           'VPN is off');
+     });
 });
 
 describe('Key regeneration', function () {

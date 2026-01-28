@@ -339,6 +339,43 @@ Item {
             }
         },
         State {
+            name: "stateConnectionError"
+            when: (VPNController.state === VPNController.StateConnectionError)
+
+            PropertyChanges {
+                target: boxBackground
+                color: MZTheme.colors.primary
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                //% "VPN is on"
+                text: qsTrId("vpn.controller.activated")
+                color: MZTheme.colors.fontColorInverted
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                visible: false
+            }
+
+            PropertyChanges {
+                target: logoSubtitleOn
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRings
+                visible: false
+            }
+
+        },
+        State {
             name: "stateSwitching"
             when: VPNController.state === VPNController.StateSwitching
 
