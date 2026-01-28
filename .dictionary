@@ -1,4 +1,4 @@
-personal_ws-1.1 en 315 utf-8
+personal_ws-1.1 en 322 utf-8
 ADRs
 APIs
 ATs
@@ -78,14 +78,15 @@ Qt's
 QtLottie
 RCC
 README
-RedHat
 RSA
+RedHat
 Replacer
 Rizental
 Rustup
 SDKs
 SHA
 SMAppService
+SSO
 Serde
 SettingsHolder
 Spacebar
