@@ -14,8 +14,11 @@ helpFunction() {
   echo ""
   echo "Build options:"
   echo "  -d, --dist DIST     Build packages for distribution DIST (defaut: ${VERSION_CODENAME})"
+  echo "  -s, --static        Build packages for statically linked Qt."
   echo "  -h, --help          Display this message and exit"
 }
+
+STATICQT=N
 
 ## Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -25,6 +28,12 @@ while [[ $# -gt 0 ]]; do
     -d|--dist)
       DIST="$2"
       shift
+      shift
+      ;;
+
+    -s|--static)
+      STATICQT=Y
+      DIST="static"
       shift
       ;;
 
@@ -54,22 +63,32 @@ case ${ID} in
     BUILDSUFFIX="fc${VERSION_ID}"
     ;;
 
+  static)
+    BUILDSUFFIX="static"
+    ;;
+
   *)
     echo "Unsupported RPM distribution: ${ID}"
     exit 1
     ;;
 esac
 
-RPM_BUILD_ARCH=$(uname -m)
-
-# Install the build dependencies.
-sudo yum-builddep -y ${MOZ_FETCHES_DIR}/mozillavpn.spec
-
 # Append the build suffix to the package revision.
 sed -e "s/^Release: \(.*\)$/Release: \1.${BUILDSUFFIX}/" ${MOZ_FETCHES_DIR}/mozillavpn.spec > ${MOZ_FETCHES_DIR}/mozillavpn-${BUILDSUFFIX}.spec
+
+# For static Qt, strip out the Qt build and runtime dependencies.
+if [[ "$STATICQT" == "Y" ]]; then
+  export PATH=${MOZ_FETCHES_DIR}/qt-linux/bin:${PATH}
+  sed -rie '/Requires:\s+qt6-/d' ${MOZ_FETCHES_DIR}/mozillavpn-${BUILDSUFFIX}.spec
+  sed -rie '/BuildRequires:\s+qt6-/d' ${MOZ_FETCHES_DIR}/mozillavpn-${BUILDSUFFIX}.spec
+fi
+
+# Install the build dependencies.
+sudo yum-builddep -y ${MOZ_FETCHES_DIR}/mozillavpn-${BUILDSUFFIX}.spec
 
 # Build the packages.
 rpmbuild -D "_topdir ${HOME}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCHES_DIR}/mozillavpn-${BUILDSUFFIX}.spec
 
 # Gather the build artifacts for export
+RPM_BUILD_ARCH=$(uname -m)
 tar -C ${HOME}/RPMS/${RPM_BUILD_ARCH} -cvzf /builds/worker/artifacts/mozillavpn-${ID}-${BUILDSUFFIX}.tar.gz .
