@@ -23,6 +23,7 @@ BuildRequires: gcc >= 8.0.0
 BuildRequires: gcc-c++ >= 8.0.0
 BuildRequires: libcap-devel
 BuildRequires: libsecret-devel
+BuildRequires: libglvnd-devel
 BuildRequires: openssl-devel
 BuildRequires: polkit-devel
 BuildRequires: python3-yaml
