@@ -89,3 +89,15 @@ linux64/release-deb:
         type: build
     run:
         command: /builds/worker/builder.sh -s
+
+linux64/release-rpm:
+    description: "Linux Build (RPM/Static Qt)"
+    treeherder:
+        platform: linux/x86_64
+    fetches:
+        toolchain:
+            - qt-linux
+    worker:
+        docker-image: {in-tree: linux-rpm-build}
+    run:
+        command: /builds/worker/builder.sh -s
