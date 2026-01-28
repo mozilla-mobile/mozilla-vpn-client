@@ -19,6 +19,8 @@ BuildRequires: cmake
 BuildRequires: cmake-rpm-macros
 BuildRequires: cargo >= 1.82
 BuildRequires: golang >= 1.18
+BuildRequires: gcc >= 8.0.0
+BuildRequires: gcc-c++ >= 8.0.0
 BuildRequires: libcap-devel
 BuildRequires: libsecret-devel
 BuildRequires: openssl-devel
