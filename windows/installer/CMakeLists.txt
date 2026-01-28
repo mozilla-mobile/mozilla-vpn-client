@@ -157,9 +157,19 @@ add_custom_command(
     COMMAND ${PYTHON_EXECUTABLE} ${CMAKE_CURRENT_SOURCE_DIR}/fixup-native-locale.py ${CMAKE_CURRENT_BINARY_DIR}/i18n/MozillaVPN-en.wxl
 )
 
+# Append the architecture to the filename so that we can distinguish the
+# build artifacts when uploaded to a common directory.
+if(WIX_PLATFORM STREQUAL "x64")
+    set(MSI_OUTPUT_FILENAME MozillaVPN.msi)
+elseif(WIX_PLATFORM STREQUAL "arm64")
+    set(MSI_OUTPUT_FILENAME MozillaVPN-aarch64.msi)
+else()
+    set(MSI_OUTPUT_FILENAME "MozillaVPN-${WIX_PLATFORM}.msi")
+endif()
+
 # Build the MSI installer package
 add_custom_command(
-    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.msi
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${MSI_OUTPUT_FILENAME}
     WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
     MAIN_DEPENDENCY ${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPN.wxs
     DEPENDS
@@ -170,12 +180,20 @@ add_custom_command(
     COMMAND ${WIX_BUILD_TOOL} build ${WIX_I18N_ARGS}
                     -d Platform=${WIX_PLATFORM} -arch ${WIX_PLATFORM}
                     -bindpath ${WIX_STAGING_DIR} -ext WixToolset.Util.wixext
-                    -out ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.msi
+                    -out ${CMAKE_CURRENT_BINARY_DIR}/${MSI_OUTPUT_FILENAME}
                     ${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPN.wxs
 )
 
 # Wrap it up in a custom target
-add_custom_target(msi DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/MozillaVPN.msi)
+add_custom_target(msi DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/${MSI_OUTPUT_FILENAME})
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     set_target_properties(msi PROPERTIES EXCLUDE_FROM_ALL FALSE)
 endif()
+
+# Make it installable as the msi component
+install(
+    FILES ${CMAKE_CURRENT_BINARY_DIR}/${MSI_OUTPUT_FILENAME}
+    DESTINATION .
+    COMPONENT msi
+    EXCLUDE_FROM_ALL
+)

@@ -59,7 +59,14 @@ tasks:
             mac-notarization: mac-notarization-macos/opt
         attributes:
             build-type: macos/opt
-    windows:
+    windows-aarch64:
+        run-on-tasks-for: [action]
+        release-artifacts: [MozillaVPN-aarch64.msi]
+        dependencies:
+            repackage-signing: repackage-signing-msi-aarch64
+        attributes:
+            build-type: windows-aarch64/opt
+    windows-x86_64:
         run-on-tasks-for: [action]
         release-artifacts: [MozillaVPN.msi]
         dependencies:

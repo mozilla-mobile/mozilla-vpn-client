@@ -20,7 +20,6 @@ task-defaults:
     worker:
         chain-of-trust: true
         max-run-time: 600
-    release-artifacts: [MozillaVPN.msi]
     run:
         using: run-task
         cwd: '{checkout}'
@@ -39,6 +38,7 @@ msi-x86_64:
                 signing: signing-windows-x86_64/opt
             default:
                 build: build-windows-x86_64/opt
+    release-artifacts: [MozillaVPN.msi]
     attributes:
         build-type: windows-x86_64/opt
     treeherder:
@@ -52,6 +52,7 @@ msi-aarch64:
                 signing: signing-windows-aarch64/opt
             default:
                 build: build-windows-aarch64/opt
+    release-artifacts: [MozillaVPN-aarch64.msi]
     attributes:
         build-type: windows-aarch64/opt
     treeherder:
