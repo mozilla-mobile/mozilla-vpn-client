@@ -195,17 +195,8 @@ void ConnectionHealth::connectionStateChanged() {
           });
       break;
 
-    case Controller::StateConnectionError:
-      startIdle();
-      // Set stability to NoSignal in case of connection error so "No Signal"
-      // alert is triggered
-      setStability(NoSignal);
-      break;
-
     case Controller::StateOff:
       startIdle();
-      // When the VPN is turned off, set the stability to a "neutral" state.
-      setStability(Stable);
       break;
 
     default:
