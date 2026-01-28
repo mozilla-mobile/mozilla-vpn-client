@@ -8,17 +8,24 @@ set -e
 
 ## Get the default distribution to build from /etc/os-release
 source /etc/os-release
+case ${ID} in
+  fedora)
+    DIST="fc${VERSION_ID}"
+    ;;
+
+  *)
+    DIST="${ID}${VERSION_ID}"
+    ;;
+esac
 
 helpFunction() {
   echo "Usage: $0 [options]"
   echo ""
   echo "Build options:"
-  echo "  -d, --dist DIST     Build packages for distribution DIST (defaut: ${VERSION_CODENAME})"
+  echo "  -d, --dist DIST     Build packages for distribution DIST (defaut: ${DIST})"
   echo "  -s, --static        Build packages for statically linked Qt."
   echo "  -h, --help          Display this message and exit"
 }
-
-STATICQT=N
 
 ## Parse arguments
 while [[ $# -gt 0 ]]; do
@@ -32,7 +39,6 @@ while [[ $# -gt 0 ]]; do
       ;;
 
     -s|--static)
-      STATICQT=Y
       DIST="static"
       shift
       ;;
@@ -52,43 +58,22 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-# Fall back to the host operating system if no distribution was specified
-if [[ -z "$DIST" ]]; then
-  DIST="${VERSION_CODENAME}"
-fi
-
-# Determine the build suffix to generate from /etc/os-release
-case ${ID} in
-  fedora)
-    BUILDSUFFIX="fc${VERSION_ID}"
-    ;;
-
-  static)
-    BUILDSUFFIX="static"
-    ;;
-
-  *)
-    echo "Unsupported RPM distribution: ${ID}"
-    exit 1
-    ;;
-esac
-
 # Append the build suffix to the package revision.
-sed -e "s/^Release: \(.*\)$/Release: \1.${BUILDSUFFIX}/" ${MOZ_FETCHES_DIR}/mozillavpn.spec > ${MOZ_FETCHES_DIR}/mozillavpn-${BUILDSUFFIX}.spec
+sed -e "s/^Release: \(.*\)$/Release: \1.${DIST}/" ${MOZ_FETCHES_DIR}/mozillavpn.spec > ${MOZ_FETCHES_DIR}/mozillavpn-${DIST}.spec
 
 # For static Qt, strip out the Qt build and runtime dependencies.
-if [[ "$STATICQT" == "Y" ]]; then
+if [[ "$DIST" == "static" ]]; then
   export PATH=${MOZ_FETCHES_DIR}/qt-linux/bin:${PATH}
-  sed -rie '/Requires:\s+qt6-/d' ${MOZ_FETCHES_DIR}/mozillavpn-${BUILDSUFFIX}.spec
-  sed -rie '/BuildRequires:\s+qt6-/d' ${MOZ_FETCHES_DIR}/mozillavpn-${BUILDSUFFIX}.spec
+  sed -rie '/Requires:\s+qt6-/d' ${MOZ_FETCHES_DIR}/mozillavpn-${DIST}.spec
+  sed -rie '/BuildRequires:\s+qt6-/d' ${MOZ_FETCHES_DIR}/mozillavpn-${DIST}.spec
 fi
 
 # Install the build dependencies.
-sudo yum-builddep -y ${MOZ_FETCHES_DIR}/mozillavpn-${BUILDSUFFIX}.spec
+sudo yum-builddep -y ${MOZ_FETCHES_DIR}/mozillavpn-${DIST}.spec
 
 # Build the packages.
-rpmbuild -D "_topdir ${HOME}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCHES_DIR}/mozillavpn-${BUILDSUFFIX}.spec
+rpmbuild -D "_topdir ${HOME}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCHES_DIR}/mozillavpn-${DIST}.spec
 
 # Gather the build artifacts for export
 RPM_BUILD_ARCH=$(uname -m)
-tar -C ${HOME}/RPMS/${RPM_BUILD_ARCH} -cvzf /builds/worker/artifacts/mozillavpn-${ID}-${BUILDSUFFIX}.tar.gz .
+tar -C ${HOME}/RPMS/${RPM_BUILD_ARCH} -cvzf /builds/worker/artifacts/mozillavpn-${DIST}.tar.gz .
