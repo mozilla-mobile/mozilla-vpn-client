@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-ARG DOCKER_BASE_IMAGE=almalinux:8
+ARG DOCKER_BASE_IMAGE=almalinux:9
 
 FROM $DOCKER_BASE_IMAGE
 
@@ -12,6 +12,25 @@ MAINTAINER Naomi Kirby <naomi@mozilla.com>
 #-- Extra Packages ----------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
 RUN yum -y install git python3 rpm-build rpmdevtools yum-utils sudo
+
+# Enable extra repositories depending on base image
+RUN if [[ -f /etc/almalinux-release ]]; then yum -y install dnf-plugins-core && dnf config-manager --enable crb; fi
+
+# Install Qt6 Build Dependencies
+RUN yum -y install \
+        brotli-devel \
+        dbus-devel \
+        libglvnd-devel \
+        libxkbcommon-devel \
+        libxkbcommon-x11-devel \
+        fontconfig-devel \
+        freetype-devel \
+        xcb-util-devel \
+        xcb-util-cursor-devel \
+        xcb-util-image-devel \
+        xcb-util-renderutil-devel \
+        xcb-util-wm-devel \
+        wayland-devel
 
 # Grant the worker user the ability to install packages without login
 RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/yum,/usr/bin/yum-builddep" > /etc/sudoers.d/worker-packages
