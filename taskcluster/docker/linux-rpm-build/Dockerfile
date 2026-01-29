@@ -28,6 +28,7 @@ RUN yum -y install \
         xcb-util-devel \
         xcb-util-cursor-devel \
         xcb-util-image-devel \
+        xcb-util-keysyms-devel \
         xcb-util-renderutil-devel \
         xcb-util-wm-devel \
         wayland-devel
