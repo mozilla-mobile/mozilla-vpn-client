@@ -13,8 +13,7 @@
 
 namespace {
 Logger logger("TaskScheduler");
-TaskScheduler* s_taskScheduler = nullptr;
-}  // namespace
+}
 
 Q_GLOBAL_STATIC(TaskScheduler, taskScheduler);
 
