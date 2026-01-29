@@ -80,6 +80,13 @@ SettingsManager::SettingsManager(QObject* parent)
 
   logger.debug() << "Initializing SettingsManager";
 
+  if (m_settings.status() == QSettings::FormatError) {
+    logger.error() << "Failed to read settings file:" << m_settings.fileName();
+  } else if (m_settings.status() == QSettings::AccessError) {
+    logger.warning() << "Failed to access settings file:"
+                     << m_settings.fileName();
+  }
+
   LogHandler::instance()->registerLogSerializer(this);
 }
 
