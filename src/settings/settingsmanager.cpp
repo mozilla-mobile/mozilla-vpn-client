@@ -109,6 +109,17 @@ SettingsManager::~SettingsManager() {
   s_instance = nullptr;
 }
 
+void SettingsManager::sync() {
+  m_settings.sync();
+
+  if (m_settings.status() == QSettings::FormatError) {
+    logger.error() << "Failed to write settings file:" << m_settings.fileName();
+  } else if (m_settings.status() == QSettings::AccessError) {
+    logger.warning() << "Failed to access settings file for writing:"
+                     << m_settings.fileName();
+  }
+}
+
 QString SettingsManager::settingsFileName() { return m_settings.fileName(); }
 
 void SettingsManager::registerSetting(Setting* setting) {
