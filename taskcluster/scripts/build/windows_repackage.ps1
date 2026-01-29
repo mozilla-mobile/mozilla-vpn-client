@@ -26,4 +26,4 @@ cmake --build "$env:TASK_WORKDIR\unsigned" --target msi
 
 # Upload the MSI installer
 New-Item -ItemType Directory -Path "$env:TASK_WORKDIR\artifacts" -Force
-Move-Item -Path "$env:TASK_WORKDIR\unsigned\MozillaVPN.msi" -Destination "$env:TASK_WORKDIR\artifacts"
+cmake --install "$env:TASK_WORKDIR\unsigned" --prefix "$env:TASK_WORKDIR\artifacts" --component msi
