@@ -78,7 +78,7 @@ linux/fedora-fc40:
 linux64/release-deb:
     description: "Linux Build (Debian/Static Qt)"
     treeherder:
-        platform: linux/x86_64
+        platform: linux-x86_64/deb
     fetches:
         toolchain:
             - qt-linux
@@ -87,5 +87,17 @@ linux64/release-deb:
     add-index-routes:
         name: linux-static
         type: build
+    run:
+        command: /builds/worker/builder.sh -s
+
+linux64/release-rpm:
+    description: "Linux Build (RPM/Static Qt)"
+    treeherder:
+        platform: linux-x86_64/rpm
+    fetches:
+        toolchain:
+            - qt-linux
+    worker:
+        docker-image: {in-tree: linux-rpm-build}
     run:
         command: /builds/worker/builder.sh -s
