@@ -32,6 +32,9 @@ XdgCryptoSettings::XdgCryptoSettings()
     // Save changes to the "token" to the metadata settings file.
     connect(this, &XdgPortal::xdgResponse, this,
             &XdgCryptoSettings::handleResponse);
+  } else {
+    logger.warning()
+        << "XDG portal requirements not met. Falling back to QSettings";
   }
 }
 
