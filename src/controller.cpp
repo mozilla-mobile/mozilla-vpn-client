@@ -325,12 +325,11 @@ void Controller::serverUnavailable() {
   logger.info() << "Server Unavailable - Ping succeeded: " << m_pingReceived;
 
   emit readyToServerUnavailable(m_pingReceived);
-  // REPORTERROR(ErrorHandler::ConnectionFailureError, "controller");
 
   if (m_state == StateConnecting) {
+    // No tunnel established yet, set this error so if the vpn is deactivated we
+    // can go directly to StateOff
     setError(ErrorNoServerAvailable);
-    // No tunnel established yet, herw we should force network down to avoid
-    // leaks.
   } else {
     setError(ErrorServerTimeout);
   }
@@ -688,8 +687,12 @@ void Controller::connected(const QString& pubkey) {
   } else {
     setState(StateOn);
   }
+  setError(ErrorNone);
 
-  if (!isSwitchingServer) {
+  // Check if connection time is valid in case we are switching from a
+  // StateConnectionError and timer was never set up
+
+  if (!isSwitchingServer || !m_connectedTimeInUTC.isValid()) {
     m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
     emit timestampChanged();
 
@@ -1061,6 +1064,7 @@ bool Controller::deactivate(ActivationPrincipal user) {
   m_handshakeTimer.stop();
   m_activationQueue.clear();
   clearRetryCounter();
+  setError(ErrorNone);
 
   Q_ASSERT(m_impl);
   m_impl->deactivate();
