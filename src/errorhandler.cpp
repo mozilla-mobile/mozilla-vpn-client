@@ -49,8 +49,13 @@ QList<ErrorTypeData> s_errorData{
 
     ErrorTypeData(ErrorHandler::ControllerError, true,
                   []() { return ErrorHandler::ControllerErrorAlert; }),
+#ifdef MZ_WINDOWS
+    ErrorTypeData(ErrorHandler::SplitTunnelError, true,
+                  []() { return ErrorHandler::SplitTunnelErrorAlertWithLink; }),
+#else
     ErrorTypeData(ErrorHandler::SplitTunnelError, true,
                   []() { return ErrorHandler::SplitTunnelErrorAlert; }),
+#endif
 
     ErrorTypeData(ErrorHandler::RemoteServiceError, true,
                   []() { return ErrorHandler::RemoteServiceErrorAlert; }),
@@ -227,6 +232,7 @@ void ErrorHandler::requestAlert(AlertType alert) {
 }
 
 void ErrorHandler::setAlert(AlertType alert) {
+  logger.debug() << "Setting alert" << alert;
   m_alertTimer.stop();
 
   if (alert != NoAlert) {
