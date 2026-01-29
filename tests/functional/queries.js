@@ -95,6 +95,9 @@ const screenHome = {
   SERVER_UNAVAILABLE_POPUP_CLOSE_BUTTON:
       new QmlQueryComposer('//serverUnavailablePopup-closeButton'),
   STACKVIEW: new QmlQueryComposer('//screenHome-stackView'),
+  STABILITY_LABEL: new QmlQueryComposer('//stabilityLabel'),
+  STABILITY_LABEL_INSTRUCTION:
+      new QmlQueryComposer('//stabilityLabelInstruction'),
 
   serverListView: {
     generateCountryId: (serverCode) => {

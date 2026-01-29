@@ -146,6 +146,7 @@ Item {
                                                         "vpn.connectionStability.noSignal")
 
                 id: stabilityLabel
+                objectName: "stabilityLabel"
                 color: MZTheme.colors.fontColorDark
                 lineHeight: MZTheme.theme.controllerInterLineHeight
                 onPaintedWidthChanged: stability.setColumns()
@@ -165,7 +166,8 @@ Item {
         }
 
         MZInterLabel {
-             id: stabilityLabelInstruction
+            id: stabilityLabelInstruction
+            objectName: "stabilityLabelInstruction"
             //% "Check Connection"
             //: Message displayed to the user when the connection is unstable or
             //: missing, asking them to check their connection.
