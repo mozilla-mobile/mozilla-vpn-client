@@ -16,6 +16,11 @@ Item {
     property real gridFlow: grid.flow
     id: stability
 
+    //% "Check Connection"
+    //: Message displayed to the user when the connection is unstable or
+    //: missing, asking them to check their connection.
+    readonly property var textCheckConnection: qsTrId("vpn.connectionStability.checkConnection")
+
     function setColumns() {
         if (!visible) {
             return;
@@ -43,7 +48,7 @@ Item {
             // TODO maybe use a different string than ModalHeaderText here
             return MZI18n.ServerUnavailableModalHeaderText;
         }
-        return qsTrId("vpn.connectionStability.checkConnection");
+        return textCheckConnection;
     }
 
     GridLayout {
@@ -168,9 +173,6 @@ Item {
         MZInterLabel {
             id: stabilityLabelInstruction
             objectName: "stabilityLabelInstruction"
-            //% "Check Connection"
-            //: Message displayed to the user when the connection is unstable or
-            //: missing, asking them to check their connection.
             text: stabilityLabelText()
             color: MZTheme.colors.fontColorInverted
             opacity: 0.8
