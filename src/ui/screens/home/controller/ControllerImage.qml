@@ -215,7 +215,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetIcon
-                source: MZAssetLookup.getImageSource("ShieldOff")
+                source: MZAssetLookup.getImageSource("ShieldOn")
                 opacity: 1
             }
         }
