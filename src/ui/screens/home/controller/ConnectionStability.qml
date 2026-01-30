@@ -16,11 +16,6 @@ Item {
     property real gridFlow: grid.flow
     id: stability
 
-    //% "Check Connection"
-    //: Message displayed to the user when the connection is unstable or
-    //: missing, asking them to check their connection.
-    readonly property var textCheckConnection: qsTrId("vpn.connectionStability.checkConnection")
-
     function setColumns() {
         if (!visible) {
             return;
@@ -48,7 +43,10 @@ Item {
             // TODO maybe use a different string than ModalHeaderText here
             return MZI18n.ServerUnavailableModalHeaderText;
         }
-        return textCheckConnection;
+        //% "Check Connection"
+        //: Message displayed to the user when the connection is unstable or
+        //: missing, asking them to check their connection.
+        return qsTrId("vpn.connectionStability.checkConnection");
     }
 
     GridLayout {
