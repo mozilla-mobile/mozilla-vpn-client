@@ -39,14 +39,7 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
-
 )
-
-# The reqwest library depends on SystemConfiguration for MacOS.
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    find_library(FW_SYSTEMCONFIG SystemConfiguration)
-    target_link_libraries(qtglean PRIVATE ${FW_SYSTEMCONFIG})
-endif()
 
 mz_target_handle_warnings(qtglean)
 
