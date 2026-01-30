@@ -4,36 +4,83 @@
 
 use glean::net::{PingUploader, UploadResult, PingUploadRequest, CapablePingUploadRequest};
 use std::ffi::CString;
+use std::ffi::NulError;
 use std::os::raw::c_char;
 use std::os::raw::c_uchar;
 use std::os::raw::c_int;
-use std::ptr;
 use std::sync::Mutex;
 use std::sync::Arc;
+use ::core::slice;
 
 #[repr(C)]
-pub struct vpn_ping_header {
+#[derive(Clone)]
+pub struct VPNPingHeader {
     name: *const c_char,
     value: *const c_char,
 }
 
 #[repr(C)]
-pub struct vpn_ping_payload {
+pub struct VPNPingPayload {
     url: *const c_char,
     body: *const c_uchar,
     length: usize,
     has_info: bool,
-    headers: *const vpn_ping_header,
+    header_list: *const VPNPingHeader,
+    header_count: usize,
+}
+
+impl VPNPingPayload {
+    pub fn new(pingreq: &PingUploadRequest) -> Result<Self, NulError> {
+        let url = CString::new(pingreq.url.as_bytes())?;
+
+        let mut cstr_headers: Vec<(CString,CString)> = Vec::with_capacity(pingreq.headers.len());
+        for (name, value) in &pingreq.headers {
+            let cstr_name = CString::new(name.as_str())?;
+            let cstr_value = CString::new(value.as_str())?;
+            cstr_headers.push((cstr_name, cstr_value));
+        }
+        let mut ffi_headers: Vec<VPNPingHeader> = Vec::with_capacity(pingreq.headers.len());
+        for (name, value) in cstr_headers {
+            ffi_headers.push(VPNPingHeader{
+                name: name.into_raw(),
+                value: value.into_raw(),
+            });
+        }
+        let ffi_slice = Box::into_raw(ffi_headers.into_boxed_slice());
+
+        Ok(VPNPingPayload{
+            url: url.into_raw(),
+            body: pingreq.body.as_ptr(),
+            length: pingreq.body.len(),
+            has_info: pingreq.body_has_info_sections,
+            header_list: ffi_slice as *const VPNPingHeader,
+            header_count: ffi_slice.len(),
+        })
+    }
+}
+
+impl Drop for VPNPingPayload {
+    fn drop(&mut self) {
+        unsafe {
+            let _url = CString::from_raw(self.url as *mut c_char);
+            let ffi_slice = slice::from_raw_parts_mut(self.header_list as *mut VPNPingHeader, self.header_count);
+            let ffi_boxed = Box::from_raw(ffi_slice);
+            for x in ffi_boxed {
+                let _n = CString::from_raw(x.name as *mut c_char);
+                let _v = CString::from_raw(x.value as *mut c_char);
+            }
+        };
+    }
 }
 
 #[derive(Debug)]
 pub struct VPNPingUploader {
     forbidden_ping_list: Arc<Mutex<Vec<String>>>,
-    handler: extern "C" fn(*const vpn_ping_payload) -> c_int,
+    handler: extern "C" fn(*const VPNPingPayload) -> c_int,
 }
 
 impl VPNPingUploader {
-    pub fn new(handler: extern "C" fn(*const vpn_ping_payload) -> c_int,
+    pub fn new(handler: extern "C" fn(*const VPNPingPayload) -> c_int,
                forbidden_pings: Arc<Mutex<Vec<String>>>) -> VPNPingUploader {
         VPNPingUploader {
             forbidden_ping_list: forbidden_pings,
@@ -50,19 +97,6 @@ impl VPNPingUploader {
         // Otherwise the ping_name MUST NOT be in the list.
         return data.iter().all(|e| e != &req.ping_name);
     }
-
-    fn free_ffi_headers(&self, headers: Vec<vpn_ping_header>) {
-        unsafe {
-            for x in headers {
-                if !x.name.is_null() {
-                    let _ = CString::from_raw(x.name as *mut c_char);
-                }
-                if !x.value.is_null() {
-                    let _ = CString::from_raw(x.value as *mut c_char);
-                }
-            }
-        }
-    }
 }
 
 impl PingUploader for VPNPingUploader {
@@ -73,42 +107,12 @@ impl PingUploader for VPNPingUploader {
             // so the data is dropped and not retried later. 
             return UploadResult::http_status(200); 
         }
-        let Ok(url) = CString::new(upload_request.url) else {
+
+        let Ok(payload) = VPNPingPayload::new(&upload_request) else {
             return UploadResult::unrecoverable_failure();
-        };
-
-        // Garbage collect the raw CStrings
-        let mut ffiHeaders: Vec<vpn_ping_header> = Vec::new();
-        ffiHeaders.reserve(upload_request.headers.len() + 1);
-        for (name, value) in upload_request.headers {
-            let Ok(cName) = CString::new(name) else {
-                self.free_ffi_headers(ffiHeaders);
-                return UploadResult::unrecoverable_failure();
-            };
-            let Ok(cValue) = CString::new(value) else {
-                self.free_ffi_headers(ffiHeaders);
-                return UploadResult::unrecoverable_failure();
-            };
-            ffiHeaders.push(vpn_ping_header{
-                name: cName.into_raw(),
-                value: cValue.into_raw(),
-            });
-        }
-        ffiHeaders.push(vpn_ping_header{
-            name: ptr::null(),
-            value: ptr::null(),
-        });
-
-        let payload = vpn_ping_payload{
-            url: url.as_ptr(),
-            body: upload_request.body.as_ptr(),
-            length: upload_request.body.len(),
-            has_info: upload_request.body_has_info_sections,
-            headers: ffiHeaders.as_ptr(),
         };
         let callback = self.handler;
         let response = callback(&payload);
-        self.free_ffi_headers(ffiHeaders);
 
         if response < 0 {
             UploadResult::unrecoverable_failure()

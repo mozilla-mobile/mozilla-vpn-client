@@ -175,7 +175,7 @@ void MZGlean::updateUploadEnabled() {
 }
 
 // static
-int MZGlean::uploadTelemetry(const struct vpn_ping_payload* payload) {
+int MZGlean::uploadTelemetry(const struct VPNPingPayload* payload) {
 #ifndef MZ_WASM
   logger.warning() << "Glean upload to:" << payload->url;
 
@@ -183,8 +183,8 @@ int MZGlean::uploadTelemetry(const struct vpn_ping_payload* payload) {
   QUrl url(payload->url);
   QNetworkRequest req(url);
   req.setTransferTimeout(30000);
-  for (int i = 0; payload->headers[i].name; i++) {
-    const struct vpn_ping_header* hdr = &payload->headers[i];
+  for (uintptr_t i = 0; i < payload->header_count; i++) {
+    const struct VPNPingHeader* hdr = &payload->header_list[i];
     req.setRawHeader(QByteArray(hdr->name), QByteArray(hdr->value));
   }
 
