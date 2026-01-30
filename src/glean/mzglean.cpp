@@ -176,6 +176,7 @@ void MZGlean::updateUploadEnabled() {
 
 // static
 int MZGlean::uploadTelemetry(const struct vpn_ping_payload* payload) {
+#ifndef MZ_WASM
   logger.warning() << "Glean upload to:" << payload->url;
 
   // Create the HTTP request.
@@ -206,6 +207,9 @@ int MZGlean::uploadTelemetry(const struct vpn_ping_payload* payload) {
     loop.exit(qv.toInt());
   });
   return loop.exec();
+#else
+  return 200;
+#endif
 }
 
 // static
