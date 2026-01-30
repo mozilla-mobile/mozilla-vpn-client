@@ -52,7 +52,8 @@ class ErrorHandler final : public QObject {
     AuthCodeSentAlert,
     CopiedToClipboardConfirmationAlert,
     VPNMustBeOffWarning,
-    SampleInfoAlert
+    SampleInfoAlert,
+    SettingsDecryptionErrorAlert
   };
   Q_ENUM(AlertType)
 

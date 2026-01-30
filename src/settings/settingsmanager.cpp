@@ -80,6 +80,13 @@ SettingsManager::SettingsManager(QObject* parent)
 
   logger.debug() << "Initializing SettingsManager";
 
+  if (m_settings.status() == QSettings::FormatError) {
+    logger.error() << "Failed to read settings file:" << m_settings.fileName();
+  } else if (m_settings.status() == QSettings::AccessError) {
+    logger.warning() << "Failed to access settings file:"
+                     << m_settings.fileName();
+  }
+
   LogHandler::instance()->registerLogSerializer(this);
 }
 
@@ -100,6 +107,17 @@ SettingsManager::~SettingsManager() {
 
   Q_ASSERT(s_instance == this);
   s_instance = nullptr;
+}
+
+void SettingsManager::sync() {
+  m_settings.sync();
+
+  if (m_settings.status() == QSettings::FormatError) {
+    logger.error() << "Failed to write settings file:" << m_settings.fileName();
+  } else if (m_settings.status() == QSettings::AccessError) {
+    logger.warning() << "Failed to access settings file for writing:"
+                     << m_settings.fileName();
+  }
 }
 
 QString SettingsManager::settingsFileName() { return m_settings.fileName(); }
