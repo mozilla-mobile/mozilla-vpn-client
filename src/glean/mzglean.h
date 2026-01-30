@@ -9,7 +9,7 @@
 
 constexpr const char* GLEAN_DATA_DIRECTORY = "glean";
 
-struct vpn_ping_payload;
+struct VPNPingPayload;
 
 class MZGlean final : public QObject {
   Q_OBJECT
@@ -20,7 +20,7 @@ class MZGlean final : public QObject {
 
   static void updateUploadEnabled();
 
-  static int uploadTelemetry(const struct vpn_ping_payload* payload);
+  static int uploadTelemetry(const struct VPNPingPayload* payload);
 
   /**
    * @brief Broadcast to the mobile VPN daemon instances of Glean,

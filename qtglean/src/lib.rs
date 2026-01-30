@@ -15,7 +15,7 @@ use std::sync::Mutex;
 use std::sync::Arc;
 use std::time::Duration;
 use std::os::raw::c_int;
-use uploader::{VPNPingUploader, vpn_ping_payload};
+use uploader::{VPNPingUploader, VPNPingPayload};
 use logger::Logger;
 
 // Make internal Glean symbols public for mobile SDK consumption.
@@ -42,7 +42,7 @@ pub extern "C" fn glean_initialize(
         data_path: FfiStr,
         channel: FfiStr,
         locale: FfiStr,
-        uploader: Option<extern "C" fn(*const vpn_ping_payload) -> c_int>) {
+        uploader: Option<extern "C" fn(*const VPNPingPayload) -> c_int>) {
     let cfg = Configuration {
         data_path: data_path
             .to_string_fallible()
