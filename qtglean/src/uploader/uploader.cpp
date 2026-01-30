@@ -2,14 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+#include "uploader.h"
+
 #include <QBuffer>
 #include <QDebug>
 #include <QEventLoop>
 #include <QNetworkReply>
 #include <QNetworkRequest>
 #include <QNetworkAccessManager>
-
-#include "qtglean.h"
 
 int vpn_ping_upload(const vpn_ping_payload* payload) {
 #ifdef __wasm__
