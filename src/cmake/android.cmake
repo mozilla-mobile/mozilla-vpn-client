@@ -47,6 +47,7 @@ get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION_${CM
 # shared libraries into the expected Android shared library folder.
 #
 # Qt requires this to be set on the "app" target.
+add_dependencies(mozillavpn ndk_openssl_merged)
 set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
     ## --- PILE OF SHAME --- ##
     # android-deploy-qt is bad and randomly decides to not deploy
