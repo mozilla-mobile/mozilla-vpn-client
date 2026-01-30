@@ -144,6 +144,13 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
     target_link_libraries(qtglean PRIVATE qtglean_bindings)
 endif()
 
+# HACK: For now, let's make this an interface source property in order to
+# prevent garbage collection. We probably have a wacky dependency order
+# here.
+set_property(TARGET qtglean APPEND PROPERTY
+    INTERFACE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/uploader.cpp
+)
+
 set(GLEAN_PARSER_VERSION_MIN 5.0)
 if(GLEAN_PARSER_VERSION VERSION_GREATER_EQUAL ${GLEAN_PARSER_VERSION_MIN})
     # If the glean parser exists, then we can build the telemetry bindings.
