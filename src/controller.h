@@ -49,6 +49,12 @@ class Controller : public QObject, public LogSerializer {
     // TaskControllerAction::eDeactivate)
     StateRegeneratingKey,
 
+    // An error occurred during connection (i.e. server unavailable). The
+    // controller is idle.
+    // User action is required to recover from this state.
+    // User's network is forced down in this state to avoid traffic leaks.
+    StateConnectionError,
+
     // One or more connections have been submitted to the ControllerImpl while
     // activating the VPN. The controller is waiting for a connected() signal
     // from the ControllerImpl before proceeding.
@@ -93,6 +99,10 @@ class Controller : public QObject, public LogSerializer {
     ErrorSplitTunnelInit = 2,
     ErrorSplitTunnelStart = 3,
     ErrorSplitTunnelExclude = 4,
+    // Connection to server timed out during Confirming or Switching
+    ErrorServerTimeout = 5,
+    // Attempt to connect to a server marked as unavailable or empty server list
+    ErrorNoServerAvailable = 6,
   };
   Q_ENUM(ErrorCode);
 
@@ -134,6 +144,7 @@ class Controller : public QObject, public LogSerializer {
 
   int connectionRetry() const { return m_connectionRetry; }
   State state() const;
+  ErrorCode error() const;
   bool silentServerSwitchingSupported() const;
   void cleanupBackendLogs();
 
@@ -162,6 +173,7 @@ class Controller : public QObject, public LogSerializer {
 
  private:
   Q_PROPERTY(State state READ state NOTIFY stateChanged)
+  Q_PROPERTY(ErrorCode error READ error NOTIFY errorChanged)
   Q_PROPERTY(qint64 connectionTimestamp READ connectionTimestamp NOTIFY
                  timestampChanged)
   Q_PROPERTY(
@@ -191,6 +203,7 @@ class Controller : public QObject, public LogSerializer {
 
  signals:
   void stateChanged();
+  void errorChanged();
   void timestampChanged();
   void enableDisconnectInConfirmingChanged();
   void connectionRetryChanged();
@@ -257,6 +270,7 @@ class Controller : public QObject, public LogSerializer {
   void clearRetryCounter();
   void activateNext();
   void setState(State state);
+  void setError(ErrorCode code);
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
   QString useLocalSocketPath() const;
@@ -276,6 +290,7 @@ class Controller : public QObject, public LogSerializer {
   QScopedPointer<ControllerImpl> m_impl;
   bool m_portalDetected = false;
   bool m_isDeviceConnected = true;
+  ErrorCode m_errorCode = ErrorNone;
 
   // Server data can change while the controller is busy completing an
   // activation or a server switch because they are managed by the

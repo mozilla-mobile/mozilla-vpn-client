@@ -92,7 +92,12 @@ const screenHome = {
   SERVER_LIST_BUTTON: new QmlQueryComposer('//serverListButton-btn'),
   SERVER_UNAVAILABLE_POPUP_BUTTON:
       new QmlQueryComposer('//serverUnavailablePopup-button'),
+  SERVER_UNAVAILABLE_POPUP_CLOSE_BUTTON:
+      new QmlQueryComposer('//serverUnavailablePopup-closeButton'),
   STACKVIEW: new QmlQueryComposer('//screenHome-stackView'),
+  STABILITY_LABEL: new QmlQueryComposer('//stabilityLabel'),
+  STABILITY_LABEL_INSTRUCTION:
+      new QmlQueryComposer('//stabilityLabelInstruction'),
 
   serverListView: {
     generateCountryId: (serverCode) => {

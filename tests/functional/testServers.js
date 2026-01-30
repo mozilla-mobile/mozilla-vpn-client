@@ -211,7 +211,7 @@ describe('Server', function() {
       await vpn.waitForCondition(async () => {
         let connectingMsg = await vpn.getQueryProperty(
             queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
-        return connectingMsg === 'Switching…' || connectingMsg === 'VPN is on';
+        return connectingMsg === 'Switching…';
       });
 
       await vpn.waitForCondition(async () => {
@@ -224,8 +224,7 @@ describe('Server', function() {
       await vpn.wait(1500);
       assert.notEqual(
           await vpn.getQueryProperty(
-              queries.screenHome.CONNECTION_TIMER,
-              'connectionTime'),
+              queries.screenHome.CONNECTION_TIMER, 'connectionTime'),
           '00:00:00');
     });
 

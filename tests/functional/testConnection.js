@@ -181,6 +181,51 @@ describe('Connectivity', function() {
             'Mozilla.VPN', 'VPNCurrentServer', 'exitCityName'),
         'Sydney');
   });
+
+  it('Connection error screen is showed and VPN toggle is clickable when server unavailable popup is closed',
+     async () => {
+       await vpn.forceServerUnavailable('at', 'vie');
+       await vpn.activateViaToggle();
+
+       // Wait for state to settle
+       await vpn.wait();
+       // Close the popup using close button
+       await vpn.waitForQueryAndClick(
+           queries.screenHome.SERVER_UNAVAILABLE_POPUP_CLOSE_BUTTON.visible());
+
+       await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
+       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
+
+       await vpn.waitForCondition(async () => {
+         return await vpn.getQueryProperty(
+                    queries.screenHome.CONTROLLER_TITLE, 'text') ===
+             'VPN is on';
+       });
+
+       // Ensure we see the connection stability labels with the correct text
+       assert(await queries.screenHome.STABILITY_LABEL.visible());
+
+       assert.equal(
+           await vpn.getQueryProperty(
+               queries.screenHome.STABILITY_LABEL, 'text'),
+           'No Signal');
+
+       assert.equal(
+           await vpn.getQueryProperty(
+               queries.screenHome.STABILITY_LABEL_INSTRUCTION, 'text'),
+           'Server unavailable');
+
+       await vpn.wait();
+       await vpn.waitForQueryAndClick(
+           queries.screenHome.CONTROLLER_TOGGLE.visible().prop(
+               'toolTipTitle', 'Turn VPN off'));
+
+       await vpn.waitForCondition(async () => {
+         return await vpn.getQueryProperty(
+                    queries.screenHome.CONTROLLER_TITLE, 'text') ===
+             'VPN is off';
+       });
+     });
 });
 
 describe('Key regeneration', function () {

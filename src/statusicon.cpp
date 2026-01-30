@@ -103,6 +103,8 @@ const QString StatusIcon::iconString() {
   }
 
   switch (vpn->controller()->state()) {
+    case Controller::StateConnectionError:
+      [[fallthrough]];
     case Controller::StateOn:
       [[fallthrough]];
     case Controller::StateSilentSwitching:
@@ -139,8 +141,15 @@ const QColor StatusIcon::indicatorColor() const {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  if (vpn->state() != App::StateMain ||
-      vpn->controller()->state() != Controller::StateOn) {
+  if (vpn->state() != App::StateMain) {
+    return INVALID_COLOR;
+  }
+
+  if (vpn->controller()->state() == Controller::StateConnectionError) {
+    return RED_COLOR;
+  }
+
+  if (vpn->controller()->state() != Controller::StateOn) {
     return INVALID_COLOR;
   }
 
@@ -170,8 +179,10 @@ QIcon StatusIcon::drawStatusIndicator() {
 
   MozillaVPN* vpn = MozillaVPN::instance();
 
-  // Only draw a status indicator if the VPN is connected
-  if (vpn->controller()->state() == Controller::StateOn) {
+  // Only draw a status indicator if the VPN is connected or in connection error
+  // state.
+  if (vpn->controller()->state() == Controller::StateOn ||
+      vpn->controller()->state() == Controller::StateConnectionError) {
     QPainter painter(&iconPixmap);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
