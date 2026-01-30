@@ -374,6 +374,7 @@ settings:
   appearanceDark:
     value: Dark
     comment: Dark as in "dark mode theme"
+  decryptionErrorText: Couldn't load settings.
 
 bypassVPN:
   labelTitle: Bypass VPN for select traffic
