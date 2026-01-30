@@ -41,6 +41,13 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
 )
 
+## Add a static library for the Glean uploader.
+add_library(qtglean_uploader STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/uploader/uploader.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/uploader/uploader.h
+)
+target_link_libraries(qtglean_uploader PRIVATE Qt6::Core Qt6::Network)
+
 mz_target_handle_warnings(qtglean)
 
 target_include_directories(qtglean PUBLIC
@@ -98,26 +105,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
             message(FATAL_ERROR "Attempting to for unsupported architecture '${CMAKE_SYSTEM_PROCESSOR}'")
         endif()
 
-        get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
-        get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
-        list(APPEND CARGO_ENV
-            OPENSSL_LIB_DIR=${openssl_libs}
-            OPENSSL_INCLUDE_DIR=${ssl_module}/include
-            AR=llvm-ar)
-
         # On Android we will build a dynamic lib,
         # so that it can be linked to both the main app and the daemon.
         set(RUSTFLAGS "-Ctarget-feature=-crt-static -C link-arg=-Wl,-z,max-page-size=16384 -C link-arg=-Wl,-z,common-page-size=16384")
         set(SHARED 1)
-    elseif(QT_FEATURE_static AND QT_FEATURE_openssl AND QT_FEATURE_openssl_linked)
-        # If Qt is statically linked to OpenSSL, so to should the glean libs.
-        find_package(OpenSSL REQUIRED)
-        get_filename_component(OPENSSL_LIB_DIR ${OPENSSL_SSL_LIBRARY} DIRECTORY)
-
-        list(APPEND CARGO_ENV
-            OPENSSL_STATIC=TRUE
-            OPENSSL_LIB_DIR=${OPENSSL_LIB_DIR}
-            OPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR})
     endif()
 
     ## Build the qtglean Rust library
@@ -134,15 +125,9 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         FW_NAME ${FW_NAME}
     )
 
+    set_property(TARGET qtglean_bindings APPEND PROPERTY INTERFACE_LINK_LIBRARIES qtglean_uploader)
     target_link_libraries(qtglean PRIVATE qtglean_bindings)
 endif()
-
-# HACK: For now, let's make this an interface source property in order to
-# prevent garbage collection. We probably have a wacky dependency order
-# here.
-set_property(TARGET qtglean APPEND PROPERTY
-    INTERFACE_SOURCES ${CMAKE_CURRENT_SOURCE_DIR}/src/cpp/uploader.cpp
-)
 
 set(GLEAN_PARSER_VERSION_MIN 5.0)
 if(GLEAN_PARSER_VERSION VERSION_GREATER_EQUAL ${GLEAN_PARSER_VERSION_MIN})
@@ -208,17 +193,3 @@ set_source_files_properties(
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     PROPERTIES GENERATED TRUE
 )
-
-## Fixup any missing link dependencies to pass to the qtglean consumer
-if(ANDROID)
-    add_dependencies(qtglean ndk_openssl_merged)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    find_package(OpenSSL REQUIRED)
-    set_property(TARGET qtglean APPEND PROPERTY
-        INTERFACE_LINK_LIBRARIES OpenSSL::SSL
-    )
-elseif(WIN32)
-    ## Windows seems to miss some system libraries when importing static OpenSSL
-    set_property(TARGET qtglean APPEND PROPERTY
-        INTERFACE_LINK_LIBRARIES crypt32 secur32 bcrypt ncrypt ntdll)
-endif()
