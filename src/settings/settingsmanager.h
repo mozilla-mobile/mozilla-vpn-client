@@ -90,6 +90,8 @@ class SettingsManager final : public QObject, public LogSerializer {
    */
   void sync();
 
+  bool hasError() const { return m_settings.status() != QSettings::NoError; }
+
   /**
    * @brief Construct a new Setting object and register it.
    *
