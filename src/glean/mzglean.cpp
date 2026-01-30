@@ -26,9 +26,9 @@
 #include <QCoreApplication>
 #include <QDir>
 #include <QEventLoop>
+#include <QNetworkAccessManager>
 #include <QNetworkReply>
 #include <QNetworkRequest>
-#include <QNetworkAccessManager>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QStandardPaths>
@@ -189,7 +189,7 @@ int MZGlean::uploadTelemetry(const struct vpn_ping_payload* payload) {
   }
 
   QBuffer body;
-  body.setData((const char *)payload->body, payload->length);
+  body.setData((const char*)payload->body, payload->length);
 
   // Start the request.
   QNetworkAccessManager manager;
@@ -199,7 +199,7 @@ int MZGlean::uploadTelemetry(const struct vpn_ping_payload* payload) {
 
   // Run the event loop until the HTTP reply is finished.
   QEventLoop loop;
-  QObject::connect(reply, &QNetworkReply::finished, &loop, [&](){
+  QObject::connect(reply, &QNetworkReply::finished, &loop, [&]() {
     QVariant qv = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
     if (!qv.isValid()) {
       loop.exit(-1);
