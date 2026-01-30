@@ -41,13 +41,6 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
 )
 
-## Add a static library for the Glean uploader.
-add_library(qtglean_uploader STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/uploader/uploader.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/src/uploader/uploader.h
-)
-target_link_libraries(qtglean_uploader PRIVATE Qt6::Core Qt6::Network)
-
 mz_target_handle_warnings(qtglean)
 
 target_include_directories(qtglean PUBLIC
@@ -125,7 +118,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
         FW_NAME ${FW_NAME}
     )
 
-    set_property(TARGET qtglean_bindings APPEND PROPERTY INTERFACE_LINK_LIBRARIES qtglean_uploader)
     target_link_libraries(qtglean PRIVATE qtglean_bindings)
 endif()
 

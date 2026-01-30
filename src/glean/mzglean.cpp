@@ -22,8 +22,13 @@
 #  include "platforms/ios/iosgleanbridge.h"
 #endif
 
+#include <QBuffer>
 #include <QCoreApplication>
 #include <QDir>
+#include <QEventLoop>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QNetworkAccessManager>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QStandardPaths>
@@ -121,7 +126,8 @@ void MZGlean::initialize(const QString& channel) {
 
     updatePingFilter();
     glean_initialize(shouldUpload, gleanDirectory.absolutePath().toUtf8(),
-                     channel.toUtf8(), QLocale::system().name().toUtf8());
+                     channel.toUtf8(), QLocale::system().name().toUtf8(),
+                     &MZGlean::uploadTelemetry);
 
     setLogPings(settingsHolder->gleanLogPings());
     if (settingsHolder->gleanDebugTagActive()) {
@@ -166,6 +172,40 @@ void MZGlean::updateUploadEnabled() {
     SettingsHolder::instance()->removeInstallationId();
 #endif
   }
+}
+
+// static
+int MZGlean::uploadTelemetry(const struct vpn_ping_payload* payload) {
+  logger.warning() << "Glean upload to:" << payload->url;
+
+  // Create the HTTP request.
+  QUrl url(payload->url);
+  QNetworkRequest req(url);
+  req.setTransferTimeout(30000);
+  for (int i = 0; payload->headers[i].name; i++) {
+    const struct vpn_ping_header* hdr = &payload->headers[i];
+    req.setRawHeader(QByteArray(hdr->name), QByteArray(hdr->value));
+  }
+
+  QBuffer body;
+  body.setData((const char *)payload->body, payload->length);
+
+  // Start the request.
+  QNetworkAccessManager manager;
+  QNetworkReply* reply = manager.post(req, &body);
+  QObject::connect(reply, &QNetworkReply::finished, reply,
+                   &QObject::deleteLater);
+
+  // Run the event loop until the HTTP reply is finished.
+  QEventLoop loop;
+  QObject::connect(reply, &QNetworkReply::finished, &loop, [&](){
+    QVariant qv = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    if (!qv.isValid()) {
+      loop.exit(-1);
+    }
+    loop.exit(qv.toInt());
+  });
+  return loop.exec();
 }
 
 // static

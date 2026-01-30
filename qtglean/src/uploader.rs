@@ -26,20 +26,18 @@ pub struct vpn_ping_payload {
     headers: *const vpn_ping_header,
 }
 
-// The actual upload is handled in C++ using the Qt network library.
-unsafe extern "C" {
-    fn vpn_ping_upload(payload: *const vpn_ping_payload) -> c_int;
-}
-
 #[derive(Debug)]
 pub struct VPNPingUploader {
     forbidden_ping_list: Arc<Mutex<Vec<String>>>,
+    handler: extern "C" fn(*const vpn_ping_payload) -> c_int,
 }
 
 impl VPNPingUploader {
-    pub fn new(forbidden_pings :Arc<Mutex<Vec<String>>> ) -> VPNPingUploader {
+    pub fn new(handler: extern "C" fn(*const vpn_ping_payload) -> c_int,
+               forbidden_pings: Arc<Mutex<Vec<String>>>) -> VPNPingUploader {
         VPNPingUploader {
-            forbidden_ping_list: forbidden_pings
+            forbidden_ping_list: forbidden_pings,
+            handler: handler,
         }
     }
 
@@ -108,7 +106,8 @@ impl PingUploader for VPNPingUploader {
             has_info: upload_request.body_has_info_sections,
             headers: ffiHeaders.as_ptr(),
         };
-        let response = unsafe { vpn_ping_upload(&payload) };
+        let callback = self.handler;
+        let response = callback(&payload);
         self.free_ffi_headers(ffiHeaders);
 
         if response < 0 {
