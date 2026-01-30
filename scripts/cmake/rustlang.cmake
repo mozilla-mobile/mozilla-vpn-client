@@ -464,6 +464,11 @@ function(add_rust_library TARGET_NAME)
         )
     endif()
 
+    get_filename_component(LINKER_FILENAME "${CMAKE_LINKER}" NAME_WE)
+    if(LINKER_FILENAME STREQUAL "ld" OR LINKER_FILENAME MATCHES "-ld$")
+        set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_LINK_OPTIONS "-Wl,--allow-multiple-definition")
+    endif()
+
     add_dependencies(${TARGET_NAME} ${TARGET_NAME}_builder)
     set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
 endfunction()
