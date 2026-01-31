@@ -44,6 +44,7 @@ Package: mozillavpn
 Architecture: any
 Depends: wireguard (>=1.0.20200319),
          wireguard-tools (>=1.0.20200319),
+         openssl,
          libsecret-1-0,
          libfreetype6,
          libfontconfig1,
