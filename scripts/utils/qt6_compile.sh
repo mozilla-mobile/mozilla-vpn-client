@@ -69,7 +69,7 @@ fi
 
 LINUX="
   -platform linux-clang \
-  -openssl-linked \
+  -openssl-runtime \
   -egl \
   -opengl es2 \
   -no-icu \
@@ -79,9 +79,7 @@ LINUX="
   -bundled-xcb-xinput \
   -feature-qdbus \
   -feature-wayland \
-  -xcb \
-  -- \
-  -DOPENSSL_USE_STATIC_LIBS=ON \
+  -xcb
 "
 
 MACOS="

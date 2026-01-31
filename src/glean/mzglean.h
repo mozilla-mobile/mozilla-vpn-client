@@ -9,6 +9,8 @@
 
 constexpr const char* GLEAN_DATA_DIRECTORY = "glean";
 
+struct VPNPingPayload;
+
 class MZGlean final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(MZGlean)
@@ -17,6 +19,8 @@ class MZGlean final : public QObject {
   explicit MZGlean(QObject* parent);
 
   static void updateUploadEnabled();
+
+  static int uploadTelemetry(const struct VPNPingPayload* payload);
 
   /**
    * @brief Broadcast to the mobile VPN daemon instances of Glean,

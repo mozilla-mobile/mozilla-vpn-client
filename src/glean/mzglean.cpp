@@ -22,8 +22,13 @@
 #  include "platforms/ios/iosgleanbridge.h"
 #endif
 
+#include <QBuffer>
 #include <QCoreApplication>
 #include <QDir>
+#include <QEventLoop>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QStandardPaths>
@@ -121,7 +126,8 @@ void MZGlean::initialize(const QString& channel) {
 
     updatePingFilter();
     glean_initialize(shouldUpload, gleanDirectory.absolutePath().toUtf8(),
-                     channel.toUtf8(), QLocale::system().name().toUtf8());
+                     channel.toUtf8(), QLocale::system().name().toUtf8(),
+                     &MZGlean::uploadTelemetry);
 
     setLogPings(settingsHolder->gleanLogPings());
     if (settingsHolder->gleanDebugTagActive()) {
@@ -166,6 +172,44 @@ void MZGlean::updateUploadEnabled() {
     SettingsHolder::instance()->removeInstallationId();
 #endif
   }
+}
+
+// static
+int MZGlean::uploadTelemetry(const struct VPNPingPayload* payload) {
+#ifndef MZ_WASM
+  logger.warning() << "Glean upload to:" << payload->url;
+
+  // Create the HTTP request.
+  QUrl url(payload->url);
+  QNetworkRequest req(url);
+  req.setTransferTimeout(30000);
+  for (uintptr_t i = 0; i < payload->header_count; i++) {
+    const struct VPNPingHeader* hdr = &payload->header_list[i];
+    req.setRawHeader(QByteArray(hdr->name), QByteArray(hdr->value));
+  }
+
+  QBuffer body;
+  body.setData((const char*)payload->body, payload->length);
+
+  // Start the request.
+  QNetworkAccessManager manager;
+  QNetworkReply* reply = manager.post(req, &body);
+  QObject::connect(reply, &QNetworkReply::finished, reply,
+                   &QObject::deleteLater);
+
+  // Run the event loop until the HTTP reply is finished.
+  QEventLoop loop;
+  QObject::connect(reply, &QNetworkReply::finished, &loop, [&]() {
+    QVariant qv = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    if (!qv.isValid()) {
+      loop.exit(-1);
+    }
+    loop.exit(qv.toInt());
+  });
+  return loop.exec();
+#else
+  return 200;
+#endif
 }
 
 // static
