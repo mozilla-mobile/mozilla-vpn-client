@@ -22,14 +22,14 @@ task-defaults:
             - taskcluster/scripts/requirements.txt
 
 
-conda-ios-x86_64-6.6.0:
+conda-ios-x86_64-6.10.0:
         treeherder:
-            symbol: "conda-ios-6.6"
+            symbol: "conda-ios-6.10"
         worker:
             env:
-                QT_VERSION: "6.6.0"
+                QT_VERSION: "6.10.1"
         run:
-            toolchain-alias: conda-ios-6.6.0
+            toolchain-alias: conda-ios-6.10.1
             toolchain-artifact: public/build/conda-ios.tar.xz
 
 conda-macos:

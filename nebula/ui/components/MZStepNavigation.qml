@@ -112,7 +112,7 @@ ColumnLayout {
         Layout.fillWidth: true
 
         //Always goes to bottom of the screen - can expose this property if we ever need a custom height
-        implicitHeight: root.height - window.safeAreaHeightByDevice() - stepProgressBar.implicitHeight - stepNavigation.anchors.topMargin
+        implicitHeight: root.height - stepProgressBar.implicitHeight - stepNavigation.anchors.topMargin
         flickContentHeight: stackView.currentItem.implicitHeight + stackView.currentItem.anchors.topMargin + stackView.currentItem.anchors.bottomMargin
 
         StackView {

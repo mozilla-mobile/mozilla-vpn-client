@@ -4,7 +4,6 @@
 
 #include "iosauthenticationlistener.h"
 
-#include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QUrl>
@@ -36,8 +35,7 @@ UIView* resolvePresentationView() {
 
   QWindow* window = rootObject ? qobject_cast<QWindow*>(rootObject) : nullptr;
   if (window) {
-    UIView* view = static_cast<UIView*>(
-        QGuiApplication::platformNativeInterface()->nativeResourceForWindow("uiview", window));
+    UIView* view = (__bridge UIView*)window->winId();
     if (view) {
       return view;
     }

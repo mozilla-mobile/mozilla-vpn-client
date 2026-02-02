@@ -344,7 +344,7 @@ Rectangle {
             if (setY > 0) {
                 y = setY;
             } else {
-                y = fullscreenRequired() ? iosSafeAreaTopMargin.height + MZTheme.theme.windowMargin : MZTheme.theme.windowMargin;
+                y = MZTheme.theme.windowMargin;
             }
             anchors.horizontalCenter = parent.horizontalCenter;
             anchors.margins = MZTheme.theme.windowMargin / 2;

@@ -8,8 +8,8 @@
 #include "loghandler.h"
 #include "qmlengineholder.h"
 
-#include <QtGui/qpa/qplatformnativeinterface.h>
 #include <QGuiApplication>
+#include <QWindow>
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -34,26 +34,20 @@ QStringList IOSCommons::systemLanguageCodes() {
 @end
 
 void IOSCommons::setStatusBarTextColor(Theme::StatusBarTextColor color) {
+  if (!QmlEngineHolder::instance()->hasWindow()) {
+    logger.info() << "Starting app; no window for status bar color yet.";
+    return;
+  }
+  QWindow* window = QmlEngineHolder::instance()->window();
+  UIView* view = (__bridge UIView*)window->winId();
   StatusBarModifierViewController* rootViewController =
-      static_cast<StatusBarModifierViewController*>(
-          [[UIApplication sharedApplication].windows[0] rootViewController]);
+      static_cast<StatusBarModifierViewController*>([[view window] rootViewController]);
   if (color == Theme::StatusBarTextColorLight) {
     rootViewController.preferredStatusBarStyle = UIStatusBarStyleLightContent;
   } else {
     rootViewController.preferredStatusBarStyle = UIStatusBarStyleDarkContent;
   }
   [rootViewController setNeedsStatusBarAppearanceUpdate];
-}
-
-// There is a bug for iOS 16 and below where the status bar text is the wrong color
-// when app is restored from background. This fixes the bug. More info: VPN-2387
-// Remove this code when the app's minimum supported iOS version is iOS 17.
-void IOSCommons::statusBarUpdateHack() {
-  if (@available(iOS 17, *)) {
-    // No need to update status bar color, as works as expected on iOS 17+.
-  } else {
-    setStatusBarTextColor(Theme::StatusBarTextColorLight);
-  }
 }
 
 // static
@@ -77,9 +71,7 @@ bool IOSCommons::verifySignature(const QByteArray& publicKey, const QByteArray& 
 }
 
 void IOSCommons::shareLogs(const QString& logs) {
-  UIView* view =
-      static_cast<UIView*>(QGuiApplication::platformNativeInterface()->nativeResourceForWindow(
-          "uiview", QmlEngineHolder::instance()->window()));
+  UIView* view = (__bridge UIView*)QmlEngineHolder::instance()->window()->winId();
   UIViewController* qtController = [[view window] rootViewController];
 
   NSURL* url =
