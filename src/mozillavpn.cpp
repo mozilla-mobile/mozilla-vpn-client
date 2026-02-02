@@ -281,7 +281,7 @@ void MozillaVPN::initialize() {
   if (SettingsManager::instance()->hasError()) {
     QMetaObject::invokeMethod(
         this,
-        [this]() {
+        []() {
           ErrorHandler::instance()->requestAlert(
               ErrorHandler::SettingsDecryptionErrorAlert);
         },
