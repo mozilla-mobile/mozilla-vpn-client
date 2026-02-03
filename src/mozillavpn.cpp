@@ -2287,19 +2287,6 @@ void MozillaVPN::ensureApplicationIdExists() {
 #endif
 }
 
-// There is a bug for iOS 16 and below where the status bar text is the wrong
-// color when app is restored from background. This fixes the bug. More info:
-// VPN-2387 Remove this code when the app's minimum supported iOS version is
-// iOS 17.
-void MozillaVPN::statusBarCheck() {
-#ifdef MZ_IOS
-  if (QGuiApplication::applicationState() ==
-      Qt::ApplicationState::ApplicationActive) {
-    IOSCommons::statusBarUpdateHack();
-  }
-#endif
-}
-
 void MozillaVPN::gleanSetDebugViewTag(QString tag) {
   MZGlean::setDebugViewTag(tag);
 }

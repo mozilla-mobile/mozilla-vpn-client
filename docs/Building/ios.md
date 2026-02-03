@@ -23,12 +23,15 @@ $ conda activate vpn
 
 See [here](./index.md#conda) for conda environment instructions.
 
-## Download Qt 6.6.3
+## Setup Qt 6.10.1
 
-As of January 2026, all platforms except iOS are using Qt 6.10.1. To best support older iOS versions, iOS is
-continuing to use Qt 6.6.3 for now.
+Run the conda setup script.
+Confirm the `qt-cmake` being used is the one installed by the script.
 
-Download Qt 6.6.3. The easiest way to do this is via the [Qt Maintenance Tool](https://doc.qt.io/archives/qt-6.6/get-and-install-qt.html).
+```bash
+$ ./scripts/macos/conda_setup_qt.sh
+$ which qt-cmake # should be ~/miniconda3/envsvpn/bin/qt-cmake
+```
 
 ## Create symbolic links for iOS SDKs
 **(Only for macOS 26 and higher.)**
@@ -46,15 +49,15 @@ $ ln -s iPhoneOS.sdk iPhoneOS26.0.sdk # (for iOS 26.0 - change the version numbe
 
 ## Build
 
-Configure, using qt-cmake from Qt 6.6.3
-
 ```bash
-~/Qt/6.6.3/ios/bin/qt-cmake -S . -B build-ios -GXcode -DQT_HOST_PATH=~/Qt/6.6.3/macos -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk
+qt-cmake -S . -B build-ios -GXcode -DQT_HOST_PATH_CMAKE_DIR=~/Qt/6.10.1/macos/lib/cmake -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk
 ```
+
+(Older qt-cmake versions used the `-DQT_HOST_PATH=~/Qt/6.6.3/macos` flag rather than `QT_HOST_PATH_CMAKE_DIR` shown here. If having issues, try the older format.)
 
 If you get the error `No CMAKE_Swift_COMPILER could be found.`, include the flag with the direct path the Swift compiler: 
 ```bash
-~/Qt/6.6.3/ios/bin/qt-cmake -S . -B build-ios -GXcode -DQT_HOST_PATH=~/Qt/6.6.3/macos -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk -DCMAKE_Swift_COMPILER=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc
+qt-cmake -S . -B build-ios -GXcode -DQT_HOST_PATH_CMAKE_DIR=~/Qt/6.10.1/macos/lib/cmake -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk -DCMAKE_Swift_COMPILER=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc
 ```
 
 This will generate an Xcode project file at `build-ios/Mozilla VPN.xcodeproj` which can be opened

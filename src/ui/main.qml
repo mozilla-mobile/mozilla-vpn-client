@@ -18,7 +18,7 @@ ApplicationWindow {
     signal screenClicked(double x, double y)
     signal unwindStackView
 
-    property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
+    property var safeContentHeight: window.height
 
     LayoutMirroring.enabled: MZLocalizer.isRightToLeft
     LayoutMirroring.childrenInherit: true
@@ -27,36 +27,6 @@ ApplicationWindow {
         return Qt.platform.os === "android" ||
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
-    }
-
-    function safeAreaHeightByDevice() {
-        if (Qt.platform.os !== "ios") {
-            return 0;
-        }
-        switch(window.height * Screen.devicePixelRatio) {
-        // Notch (natch)
-        case 1624: // iPhone_XR (Qt Provided Physical Resolution)
-        case 1792: // iPhone_XR
-
-        case 2436: // iPhone_X_XS
-        case 2688: // iPhone_XS_MAX
-
-        case 2532: // iPhone_12_Pro
-        case 2778: // iPhone_12_Pro_Max
-        case 2340: // iPhone_12_mini
-            return 34;
-
-        // Dynamic island
-        case 2556: // iPhone_14_Pro, 15, 15 Pro, 16
-        case 2622: // iPhone 16, 16 Pro, 17, 17 Pro
-        case 2736: // iPhone Air
-        case 2796: // iPhone_14_Pro_Max, 15 Plus, 15 Pro Max, 16 Plus
-        case 2868: // iPhone 16 Pro Max, 17 Pro Max
-            return 48;
-
-        default:
-            return 20;
-        }
     }
 
     function removeFocus(item, x, y) {
@@ -143,19 +113,11 @@ ApplicationWindow {
         id: statusBarModifier
     }
 
-    Rectangle {
-        id: iosSafeAreaTopMargin
-
-        color: MZTheme.colors.transparent
-        height: safeAreaHeightByDevice()
-        width: window.width
-        anchors.top: parent.top
-    }
     MZNavigatorLoader {
       id: screenLoader
       objectName: "screenLoader"
       anchors {
-          top: iosSafeAreaTopMargin.bottom
+          top: parent.top
           left: parent.left
           right: parent.right
           bottom: parent.bottom

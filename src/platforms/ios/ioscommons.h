@@ -12,7 +12,6 @@
 class IOSCommons final {
  public:
   static void setStatusBarTextColor(Theme::StatusBarTextColor color);
-  static void statusBarUpdateHack();
 
   static QStringList systemLanguageCodes();
 
