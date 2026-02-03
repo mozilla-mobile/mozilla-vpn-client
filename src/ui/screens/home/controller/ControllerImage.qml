@@ -201,6 +201,22 @@ Rectangle {
                 target: insetIcon
                 source: MZAssetLookup.getImageSource("ShieldOn")
                 opacity: 1
+            }            
+        },
+        State {
+            name: VPNController.StateConnectionError
+            PropertyChanges {
+                target: logo
+                showVPNOnIcon: true
+            }
+            PropertyChanges {
+                target: insetCircle
+                color: MZTheme.colors.errorAccent
+            }
+            PropertyChanges {
+                target: insetIcon
+                source: MZAssetLookup.getImageSource("ShieldOn")
+                opacity: 1
             }
         }
     ]

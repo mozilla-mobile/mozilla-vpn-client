@@ -294,6 +294,8 @@ qint64 Controller::connectionTimestamp() const {
       [[fallthrough]];
     case Controller::State::StateConnecting:
       [[fallthrough]];
+    case Controller::State::StateConnectionError:
+      [[fallthrough]];
     case Controller::State::StateDisconnecting:
       [[fallthrough]];
     case Controller::State::StateInitializing:
@@ -323,6 +325,16 @@ void Controller::serverUnavailable() {
   logger.info() << "Server Unavailable - Ping succeeded: " << m_pingReceived;
 
   emit readyToServerUnavailable(m_pingReceived);
+
+  if (m_state == StateConnecting) {
+    // No tunnel established yet, set this error so if the vpn is deactivated we
+    // can go directly to StateOff
+    setError(ErrorNoServerAvailable);
+  } else {
+    setError(ErrorServerTimeout);
+  }
+  setState(StateConnectionError);
+
   return;
 }
 
@@ -567,6 +579,17 @@ void Controller::setState(State state) {
 
 Controller::State Controller::state() const { return m_state; }
 
+void Controller::setError(ErrorCode code) {
+  if (m_errorCode == code) {
+    return;
+  }
+  logger.debug() << "Setting error code:" << code;
+  m_errorCode = code;
+  emit errorChanged();
+}
+
+Controller::ErrorCode Controller::error() const { return m_errorCode; }
+
 bool Controller::silentSwitchServers(
     ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy) {
   logger.debug() << "Silently switch servers" << serverCoolDownPolicy;
@@ -664,8 +687,12 @@ void Controller::connected(const QString& pubkey) {
   } else {
     setState(StateOn);
   }
+  setError(ErrorNone);
 
-  if (!isSwitchingServer) {
+  // Check if connection time is valid in case we are switching from a
+  // StateConnectionError and timer was never set up
+
+  if (!isSwitchingServer || !m_connectedTimeInUTC.isValid()) {
     m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
     emit timestampChanged();
 
@@ -754,6 +781,7 @@ void Controller::logSerialize(QIODevice* device) {
 
 void Controller::handleBackendFailure(ErrorCode code) {
   logger.warning() << "backend failure:" << code;
+  setError(code);
   switch (code) {
     case ErrorNone:
       [[fallthrough]];
@@ -895,6 +923,7 @@ bool Controller::activate(const ServerData& serverData,
     return false;
   }
 
+  setError(ErrorNone);
   m_serverData = serverData;
   emit currentServerChanged();
 
@@ -1003,6 +1032,13 @@ bool Controller::deactivate(ActivationPrincipal user) {
     return false;
   }
 
+  if (m_state == StateConnectionError &&
+      m_errorCode == ErrorNoServerAvailable) {
+    logger.warning() << "VPN never initialized properly, nothing to disconnect";
+    setState(StateOff);
+    return true;
+  }
+
   if (!isActive()) {
     logger.warning() << "Already disconnected";
     return false;
@@ -1028,6 +1064,7 @@ bool Controller::deactivate(ActivationPrincipal user) {
   m_handshakeTimer.stop();
   m_activationQueue.clear();
   clearRetryCounter();
+  setError(ErrorNone);
 
   Q_ASSERT(m_impl);
   m_impl->deactivate();

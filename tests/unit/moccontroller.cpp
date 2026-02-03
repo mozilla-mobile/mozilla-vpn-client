@@ -45,6 +45,8 @@ void Controller::disconnected() {}
 
 void Controller::setState(State) {}
 
+void Controller::setError(ErrorCode) {}
+
 qint64 Controller::connectionTimestamp() const { return 42; }
 
 void Controller::statusUpdated(const QString&, const QString&, uint64_t,
@@ -57,6 +59,10 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(const Server& server) {
 
 Controller::State Controller::state() const {
   return TestHelper::controllerState;
+}
+
+Controller::ErrorCode Controller::error() const {
+  return Controller::ErrorCode::ErrorNone;
 }
 
 void Controller::updateRequired() {}
