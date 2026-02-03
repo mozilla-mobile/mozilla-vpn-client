@@ -31,4 +31,4 @@ ios-arm64/debug:
         symbol: BD
     fetches:
         toolchain:
-            - conda-ios-6.6.0
+            - conda-ios-6.10.1
