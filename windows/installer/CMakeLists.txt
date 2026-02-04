@@ -167,6 +167,20 @@ else()
     set(MSI_OUTPUT_FILENAME "MozillaVPN-${WIX_PLATFORM}.msi")
 endif()
 
+# Repack the CRT merge module to workaround arch mismatches.
+add_custom_command(
+    OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/Microsoft_CRT_repack.msm
+    WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+    BYPRODUCTS ${CMAKE_CURRENT_BINARY_DIR}/Microsoft_CRT_repack.wxs
+    DEPENDS ${CMAKE_CURRENT_BINARY_DIR}/install-stamp.txt
+    COMMAND ${CMAKE_COMMAND} -E echo "Repack CRT merge module"
+    COMMAND ${WIX_BUILD_TOOL} msi decompile
+                -out ${CMAKE_CURRENT_BINARY_DIR}/Microsoft_CRT_repack.wxs
+                -x ${CMAKE_CURRENT_BINARY_DIR}/SourceDir
+                ${WIX_STAGING_DIR}/Microsoft_CRT_x64.msm
+    COMMAND ${WIX_BUILD_TOOL} build -arch ${WIX_PLATFORM} ${CMAKE_CURRENT_BINARY_DIR}/Microsoft_CRT_repack.wxs
+)
+
 # Build the MSI installer package
 add_custom_command(
     OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/${MSI_OUTPUT_FILENAME}
@@ -175,6 +189,7 @@ add_custom_command(
     DEPENDS
         ${CMAKE_CURRENT_BINARY_DIR}/install-stamp.txt
         ${CMAKE_CURRENT_BINARY_DIR}/wixext-stamp.txt
+        ${CMAKE_CURRENT_BINARY_DIR}/Microsoft_CRT_repack.msm
         ${WIX_I18N_DEPS}
     COMMAND ${CMAKE_COMMAND} -E echo "Building MSI installer"
     COMMAND ${WIX_BUILD_TOOL} build ${WIX_I18N_ARGS}
