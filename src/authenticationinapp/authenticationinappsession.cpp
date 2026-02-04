@@ -669,10 +669,12 @@ void AuthenticationInAppSession::finalizeSignInOrUp() {
 
   NetworkRequest* request = fxaHawkPostRequest(
       m_task, "/v1/oauth/authorization", m_sessionToken,
-      QJsonObject{{"client_id", m_fxaParams.m_clientId},
-                  {"state", m_fxaParams.m_state},
-                  {"scope", m_fxaParams.m_scope},
-                  {"access_type", m_fxaParams.m_accessType}});
+      QJsonObject{
+          {"client_id", m_fxaParams.m_clientId},
+          {"state", m_fxaParams.m_state},
+          {"scope", m_fxaParams.m_scope},
+          {"access_type", m_fxaParams.m_accessType},
+          {"redirect_uri", Constants::apiUrl(Constants::OAuthSuccess)}});
 
   connect(request, &NetworkRequest::requestFailed, this,
           [this](QNetworkReply::NetworkError error, const QByteArray& data) {
