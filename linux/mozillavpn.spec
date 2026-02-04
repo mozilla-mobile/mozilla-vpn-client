@@ -23,6 +23,7 @@ BuildRequires: gcc >= 8.0.0
 BuildRequires: gcc-c++ >= 8.0.0
 BuildRequires: libcap-devel
 BuildRequires: libsecret-devel
+BuildRequires: ninja-build
 BuildRequires: openssl-devel
 BuildRequires: polkit-devel
 BuildRequires: python3-yaml
@@ -49,6 +50,7 @@ Read more on https://vpn.mozilla.org
 
 %build
 %define _vpath_srcdir %{_srcdir}
+%define __builder ninja
 %cmake -DWEBEXT_INSTALL_LIBDIR=/usr/lib -DCMAKE_INSTALL_SYSCONFDIR=/etc -DBUILD_TESTING=OFF
 %cmake_build
 
