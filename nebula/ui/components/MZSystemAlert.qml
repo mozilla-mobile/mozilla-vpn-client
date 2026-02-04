@@ -161,6 +161,14 @@ MZAlert {
                 }
             },
             State {
+                name: MZErrorHandler.SettingsDecryptionErrorAlert
+                PropertyChanges {
+                    target: alertBox
+                    alertText: MZI18n.SettingsDecryptionErrorText
+                    visible: true
+                }
+            },
+            State {
                 name: MZErrorHandler.SampleInfoAlert
                 PropertyChanges {
                     target: alertBox

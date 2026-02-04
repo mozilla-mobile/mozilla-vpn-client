@@ -88,7 +88,9 @@ class SettingsManager final : public QObject, public LogSerializer {
    * meantime by another application.
    *
    */
-  void sync() { instance()->m_settings.sync(); };
+  void sync();
+
+  bool hasError() const { return m_settings.status() != QSettings::NoError; }
 
   /**
    * @brief Construct a new Setting object and register it.

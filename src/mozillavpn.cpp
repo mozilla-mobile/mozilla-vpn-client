@@ -278,6 +278,16 @@ void MozillaVPN::initialize() {
 
   registerNavigationBarButtons();
 
+  if (SettingsManager::instance()->hasError()) {
+    QMetaObject::invokeMethod(
+        this,
+        []() {
+          ErrorHandler::instance()->requestAlert(
+              ErrorHandler::SettingsDecryptionErrorAlert);
+        },
+        Qt::QueuedConnection);
+  }
+
   // This is our first state.
   Q_ASSERT(state() == StateInitialize);
 
