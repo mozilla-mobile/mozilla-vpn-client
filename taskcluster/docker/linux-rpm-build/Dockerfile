@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-ARG DOCKER_BASE_IMAGE=almalinux:9
+ARG DOCKER_BASE_IMAGE=almalinux:8
 
 FROM $DOCKER_BASE_IMAGE
 
@@ -14,7 +14,7 @@ MAINTAINER Naomi Kirby <naomi@mozilla.com>
 RUN yum -y install git python3 rpm-build rpmdevtools yum-utils sudo
 
 # Enable extra repositories depending on base image
-RUN if [[ -f /etc/almalinux-release ]]; then yum -y install dnf-plugins-core && dnf config-manager --enable crb; fi
+RUN if [[ -f /etc/almalinux-release ]]; then yum -y install dnf-plugins-core epel-release && dnf config-manager --enable powertools; fi
 
 # Install Qt6 Build Dependencies
 RUN yum -y install \
