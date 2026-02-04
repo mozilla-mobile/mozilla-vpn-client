@@ -18,7 +18,9 @@ fi
 echo "Installing Qt build dependencies"
 if [ -f /etc/redhat-release ]; then
     sudo yum -y install \
+            at-spi2-core-devel \
             clang \
+            clang-devel \
             openssl-static
 elif [ -f /etc/debian_version ]; then
     sudo apt-get -y install \
