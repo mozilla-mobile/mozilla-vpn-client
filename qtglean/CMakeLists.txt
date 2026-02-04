@@ -39,14 +39,7 @@ add_library(qtglean STATIC
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/metrics.cpp
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.cpp
-
 )
-
-# The reqwest library depends on SystemConfiguration for MacOS.
-if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    find_library(FW_SYSTEMCONFIG SystemConfiguration)
-    target_link_libraries(qtglean PRIVATE ${FW_SYSTEMCONFIG})
-endif()
 
 mz_target_handle_warnings(qtglean)
 
@@ -105,26 +98,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten")
             message(FATAL_ERROR "Attempting to for unsupported architecture '${CMAKE_SYSTEM_PROCESSOR}'")
         endif()
 
-        get_property(ssl_module GLOBAL PROPERTY OPENSSL_SSL_MODULE)
-        get_property(openssl_libs GLOBAL PROPERTY OPENSSL_LIBS)
-        list(APPEND CARGO_ENV
-            OPENSSL_LIB_DIR=${openssl_libs}
-            OPENSSL_INCLUDE_DIR=${ssl_module}/include
-            AR=llvm-ar)
-
         # On Android we will build a dynamic lib,
         # so that it can be linked to both the main app and the daemon.
         set(RUSTFLAGS "-Ctarget-feature=-crt-static -C link-arg=-Wl,-z,max-page-size=16384 -C link-arg=-Wl,-z,common-page-size=16384")
         set(SHARED 1)
-    elseif(QT_FEATURE_static AND QT_FEATURE_openssl AND QT_FEATURE_openssl_linked)
-        # If Qt is statically linked to OpenSSL, so to should the glean libs.
-        find_package(OpenSSL REQUIRED)
-        get_filename_component(OPENSSL_LIB_DIR ${OPENSSL_SSL_LIBRARY} DIRECTORY)
-
-        list(APPEND CARGO_ENV
-            OPENSSL_STATIC=TRUE
-            OPENSSL_LIB_DIR=${OPENSSL_LIB_DIR}
-            OPENSSL_INCLUDE_DIR=${OPENSSL_INCLUDE_DIR})
     endif()
 
     ## Build the qtglean Rust library
@@ -208,17 +185,3 @@ set_source_files_properties(
     ${CMAKE_CURRENT_BINARY_DIR}/glean/generated/pings.h
     PROPERTIES GENERATED TRUE
 )
-
-## Fixup any missing link dependencies to pass to the qtglean consumer
-if(ANDROID)
-    add_dependencies(qtglean ndk_openssl_merged)
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
-    find_package(OpenSSL REQUIRED)
-    set_property(TARGET qtglean APPEND PROPERTY
-        INTERFACE_LINK_LIBRARIES OpenSSL::SSL
-    )
-elseif(WIN32)
-    ## Windows seems to miss some system libraries when importing static OpenSSL
-    set_property(TARGET qtglean APPEND PROPERTY
-        INTERFACE_LINK_LIBRARIES crypt32 secur32 bcrypt ncrypt ntdll)
-endif()

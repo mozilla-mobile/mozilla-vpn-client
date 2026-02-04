@@ -14,7 +14,8 @@ use once_cell::sync::Lazy;
 use std::sync::Mutex;
 use std::sync::Arc;
 use std::time::Duration;
-use uploader::VPNPingUploader;
+use std::os::raw::c_int;
+use uploader::{VPNPingUploader, VPNPingPayload};
 use logger::Logger;
 
 // Make internal Glean symbols public for mobile SDK consumption.
@@ -36,7 +37,12 @@ pub extern "C" fn glean_register_log_handler(message_handler: extern fn(i32, *mu
 }
 
 #[no_mangle]
-pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr, channel: FfiStr, locale: FfiStr) {
+pub extern "C" fn glean_initialize(
+        is_telemetry_enabled: bool,
+        data_path: FfiStr,
+        channel: FfiStr,
+        locale: FfiStr,
+        uploader: Option<extern "C" fn(*const VPNPingPayload) -> c_int>) {
     let cfg = Configuration {
         data_path: data_path
             .to_string_fallible()
@@ -51,7 +57,10 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
         // Default is "https://incoming.telemetry.mozilla.org"
         server_endpoint: None,
         // Use the Glean provided one once https://bugzilla.mozilla.org/show_bug.cgi?id=1675468 is resolved
-        uploader: Some(Box::new(VPNPingUploader::new(GLOBAL_PING_FILTER_LIST.clone()))),
+        uploader: match uploader {
+            Some(x) => Some(Box::new(VPNPingUploader::new(x, GLOBAL_PING_FILTER_LIST.clone()))),
+            None => None,
+        },
         // Whether Glean should schedule “metrics” pings for you
         use_core_mps: true,
         trim_data_to_registered_pings: false,

@@ -464,6 +464,13 @@ function(add_rust_library TARGET_NAME)
         )
     endif()
 
+    # Some GNU toolchains throw linker warnings, so we may need to explicitly
+    # allow duplicate symbols during linking. This can occur if we are linking
+    # muitple rust static libraries into the final binary.
+    if(CMAKE_C_COMPILER_LINKER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
+        set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_LINK_OPTIONS "-Wl,--allow-multiple-definition")
+    endif()
+
     add_dependencies(${TARGET_NAME} ${TARGET_NAME}_builder)
     set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
 endfunction()
