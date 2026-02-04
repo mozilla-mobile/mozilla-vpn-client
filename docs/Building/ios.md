@@ -30,7 +30,7 @@ Confirm the `qt-cmake` being used is the one installed by the script.
 
 ```bash
 $ ./scripts/macos/conda_setup_qt.sh
-$ which qt-cmake # should be ~/miniconda3/envsvpn/bin/qt-cmake
+$ which qt-cmake # should be ~/miniconda3/envs/vpn/bin/qt-cmake
 ```
 
 ## Create symbolic links for iOS SDKs
