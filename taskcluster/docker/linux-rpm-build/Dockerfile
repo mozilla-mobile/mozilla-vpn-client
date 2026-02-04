@@ -31,7 +31,8 @@ RUN yum -y install \
         xcb-util-keysyms-devel \
         xcb-util-renderutil-devel \
         xcb-util-wm-devel \
-        wayland-devel
+        wayland-devel \
+        patchelf
 
 # Grant the worker user the ability to install packages without login
 RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/yum,/usr/bin/yum-builddep" > /etc/sudoers.d/worker-packages
