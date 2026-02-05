@@ -47,6 +47,7 @@ Read more on https://vpn.mozilla.org
 
 %prep
 %undefine _lto_cflags
+%undefine _annotated_build
 
 %build
 if [[ $(echo "__GNUC__" | gcc -E - | grep -v "^#") -lt 10 ]]; then
