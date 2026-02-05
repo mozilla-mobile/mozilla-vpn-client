@@ -6,6 +6,7 @@
 
 set -e
 cd $HOME
+export XZ_DEFAULTS="-T0"
 
 QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-src-*' | head -1)
 QT_SOURCE_VERSION=$(echo $QT_SOURCE_DIR | awk -F"-" '{print $NF}')
