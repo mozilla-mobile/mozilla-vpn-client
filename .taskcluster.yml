@@ -29,6 +29,18 @@ tasks:
           else:
             $if: 'tasks_for in ["cron", "action"]'
             then: "${repository.url}"
+      base_sha:
+        $if: 'tasks_for == "github-push"'
+        then: "${event.before}"
+        else:
+          $if: 'tasks_for[:19] == "github-pull-request"'
+          then: "${event.pull_request.base.sha}"
+          else:
+            $if: 'tasks_for == "github-release"'
+            then: "${event.release.target_commitish}"
+            else:
+              $if: 'tasks_for in ["action", "cron"]'
+              then: "${push.base_revision}"
       repoUrl:
         $if: 'tasks_for in ["github-push", "github-release"]'
         then: "${event.repository.html_url}"
@@ -207,6 +219,7 @@ tasks:
               # to `mach taskgraph decision` are all on the command line.
               $merge:
                 - MOZILLAVPN_BASE_REPOSITORY: "${baseRepoUrl}"
+                  MOZILLAVPN_BASE_REV: "${base_sha}"
                   MOZILLAVPN_HEAD_REPOSITORY: "${repoUrl}"
                   MOZILLAVPN_HEAD_REF: "${head_branch}"
                   MOZILLAVPN_HEAD_REV: "${head_sha}"
@@ -231,13 +244,14 @@ tasks:
 
             # Note: This task is built server side without the context or tooling that
             # exist in tree so we must hard code the hash
-            image: mozillareleases/taskgraph:decision-v14.2.1@sha256:f4e3a22df9ec0017a2534b3a7b4cd9b60318f86619e0c2156c12c1ec1a0e32cb
+            image: mozillareleases/taskgraph:decision-v18.0.1@sha256:0657e6a6e2ed2272a2ba7c8cbb1df5860a608e97af431e6f32e5106804d236f0
 
             maxRunTime: 1800
 
             command:
               - run-task
               - "--mozillavpn-checkout=/builds/worker/checkouts/src"
+              - "--mozillavpn-shallow-clone"
               - "--task-cwd=/builds/worker/checkouts/src"
               - "--"
               - bash
@@ -264,6 +278,7 @@ tasks:
                     --owner='${ownerEmail}'
                     --level='${level}'
                     --base-repository="$MOZILLAVPN_BASE_REPOSITORY"
+                    --base-rev="$MOZILLAVPN_BASE_REV"
                     --head-repository="$MOZILLAVPN_HEAD_REPOSITORY"
                     --head-ref="$MOZILLAVPN_HEAD_REF"
                     --head-rev="$MOZILLAVPN_HEAD_REV"
