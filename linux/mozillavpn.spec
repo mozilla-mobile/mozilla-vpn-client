@@ -49,6 +49,9 @@ Read more on https://vpn.mozilla.org
 %undefine _lto_cflags
 
 %build
+if [[ $(echo "__GNUC__" | gcc -E - | grep -v "^#") -lt 10 ]]; then
+    source /opt/rh/gcc-toolset-10/enable
+fi
 %define _vpath_srcdir %{_srcdir}
 %define __builder ninja
 %cmake -DWEBEXT_INSTALL_LIBDIR=/usr/lib -DCMAKE_INSTALL_SYSCONFDIR=/etc -DBUILD_TESTING=OFF
