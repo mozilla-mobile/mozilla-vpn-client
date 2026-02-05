@@ -60,6 +60,9 @@ void TaskAuthenticate::run() {
             m_authenticationListener->aboutToFinish();
           });
 
+  connect(m_authenticationListener, &AuthenticationListener::started, this,
+          [this]() { emit authenticationStarted(); });
+
   m_metricUuid = QUuid::createUuid();
   m_authenticationListener->start(this, challenge, CODE_CHALLENGE_METHOD,
                                   SettingsHolder::instance()->userEmail());

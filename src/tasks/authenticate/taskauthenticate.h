@@ -25,13 +25,14 @@ class TaskAuthenticate final : public Task {
   void run() override;
 
   void handleDeepLink(const QUrl& url);
+  void authenticatePkceSuccess(const QString& code);
 
  signals:
   void authenticationAborted();
+  void authenticationStarted();
   void authenticationCompleted(const QByteArray& json, const QString& token);
 
  private:
-  void authenticatePkceSuccess(const QString& code);
   void authenticationCompletedInternal(const QByteArray& data);
 
  private:

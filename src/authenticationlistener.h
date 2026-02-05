@@ -52,6 +52,8 @@ class AuthenticationListener : public QObject {
 
   void readyToFinish();
 
+  void started();
+
  protected:
   explicit AuthenticationListener(QObject* parent);
   virtual ~AuthenticationListener();
