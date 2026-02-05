@@ -23,6 +23,7 @@ RUN yum -y install \
         libglvnd-devel \
         libxkbcommon-devel \
         libxkbcommon-x11-devel \
+        libzstd-devel \
         fontconfig-devel \
         freetype-devel \
         xcb-util-devel \
