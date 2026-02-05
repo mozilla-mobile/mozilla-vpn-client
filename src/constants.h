@@ -28,6 +28,7 @@ enum ApiEndpoint {
   Heartbeat,
   IPInfo,
   LoginVerify,
+  OAuthSuccess,
   Products,
 #ifdef MZ_ANDROID
   PurchasesAndroid,
