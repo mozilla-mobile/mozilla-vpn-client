@@ -70,7 +70,7 @@ jobs:
 
       - name: Build source bundle
         shell: bash
-        run: ./scripts/linux/script.sh --source --gitref ${{github.ref}}
+        run: ./scripts/linux/script.sh --source --gitref ${{github.ref}} --version ${{github.run_attempt}}
 
       - name: Import signing keys
         id: keys
@@ -108,7 +108,7 @@ jobs:
 
             PACKAGE_SOURCE_NAME=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Source)
             PACKAGE_BASE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version)
-            PACKAGE_DIST_VERSION=${PACKAGE_BASE_VERSION}-${dist}1
+            PACKAGE_DIST_VERSION=${PACKAGE_BASE_VERSION}-${dist}${GITHUB_RUN_ATTEMPT}
 
             dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${PACKAGE_DIST_VERSION} -D ${dist}  "Release for ${dist}"
             (cd mozillavpn-source && dpkg-buildpackage --build=source --sign-key=$KEYID -sa --no-check-builddeps)
