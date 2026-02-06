@@ -68,7 +68,6 @@ if [[ -z "$BUILDDIR" ]]; then
 fi
 
 LINUX="
-  -platform linux-clang \
   -openssl-linked \
   -egl \
   -opengl es2 \
