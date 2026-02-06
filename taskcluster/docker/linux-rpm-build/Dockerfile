@@ -20,6 +20,7 @@ RUN if [[ -f /etc/almalinux-release ]]; then yum -y install dnf-plugins-core epe
 RUN yum -y install \
         brotli-devel \
         dbus-devel \
+        glib2-devel \
         libglvnd-devel \
         libxkbcommon-devel \
         libxkbcommon-x11-devel \
