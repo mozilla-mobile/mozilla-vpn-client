@@ -10,7 +10,6 @@
 #include <QtQuickTest>
 
 #include "i18nstrings.h"
-#include "localizer.h"
 #include "mozillavpn.h"
 #include "settings/settinggroup.h"
 #include "settingsholder.h"
@@ -34,8 +33,6 @@ class TestHelper final : public QObject {
  private:
   TestHelper();
   ~TestHelper() = default;
-
-  Localizer m_localizer;
 
   bool m_mainWindowLoadedCalled = false;
 

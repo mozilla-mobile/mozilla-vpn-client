@@ -15,7 +15,6 @@
 #include "composerblocktitle.h"
 #include "composerblockunorderedlist.h"
 #include "helper.h"
-#include "localizer.h"
 #include "qmlengineholder.h"
 
 void TestComposer::generic_data() {
@@ -45,8 +44,6 @@ void TestComposer::generic_data() {
 }
 
 void TestComposer::generic() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -120,8 +117,6 @@ void TestComposer::button_data() {
 }
 
 void TestComposer::button() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -178,8 +173,6 @@ void TestComposer::text_data() {
 }
 
 void TestComposer::text() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -231,8 +224,6 @@ void TestComposer::title_data() {
 }
 
 void TestComposer::title() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -305,8 +296,6 @@ void TestComposer::unorderedList_data() {
 }
 
 void TestComposer::unorderedList() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -386,8 +375,6 @@ void TestComposer::orderedList_data() {
 }
 
 void TestComposer::orderedList() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 

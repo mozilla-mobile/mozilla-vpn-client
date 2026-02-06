@@ -7,7 +7,6 @@
 #include <QEventLoop>
 #include <QQmlApplicationEngine>
 
-#include "localizer.h"
 #include "qmlengineholder.h"
 #include "statusicon.h"
 
@@ -19,7 +18,6 @@ void TestStatusIcon::basic() {
   QCOMPARE(si.iconString(), ":/ui/resources/logo-generic-mask.png");
 
   MozillaVPN vpn;
-  Localizer l;
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);

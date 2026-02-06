@@ -12,14 +12,11 @@
 #include "addons/conditionwatchers/addonconditionwatcherjavascript.h"
 #include "feature/feature.h"
 #include "helper.h"
-#include "localizer.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
 #include "urlopener.h"
 
 void TestAddonApi::env() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -41,8 +38,6 @@ void TestAddonApi::env() {
 }
 
 void TestAddonApi::featurelist() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -76,8 +71,6 @@ void TestAddonApi::featurelist() {
 }
 
 void TestAddonApi::navigator() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -99,8 +92,6 @@ void TestAddonApi::navigator() {
 }
 
 void TestAddonApi::settings() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -126,8 +117,6 @@ void TestAddonApi::settings() {
 }
 
 void TestAddonApi::urlopener() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -156,8 +145,6 @@ void TestAddonApi::foobar() {
   AddonApi::setConstructorCallback(
       [](AddonApi* addonApi) { addonApi->insert("foobar", 42); });
 
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -181,8 +168,6 @@ void TestAddonApi::foobar() {
 }
 
 void TestAddonApi::settimedcallback() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 

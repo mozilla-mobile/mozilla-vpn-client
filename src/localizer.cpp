@@ -199,7 +199,6 @@ Localizer::Localizer() {
   MZ_COUNT_CTOR(Localizer);
 
   Q_ASSERT(!s_instance);
-  s_instance = this;
 
   initialize();
 }

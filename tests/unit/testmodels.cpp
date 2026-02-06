@@ -11,7 +11,6 @@
 
 #include "constants.h"
 #include "helper.h"
-#include "localizer.h"
 #include "models/apierror.h"
 #include "models/device.h"
 #include "models/devicemodel.h"
@@ -1141,8 +1140,6 @@ void TestModels::recommendedLocationsPick() {
   QByteArray json = QJsonDocument(obj).toJson();
 
   {
-    Localizer l;
-
     QCOMPARE(MozillaVPN::instance()->serverCountryModel()->fromJson(json),
              true);
 
