@@ -12,6 +12,8 @@
 
 #if defined(MZ_IOS)
 #  include "platforms/ios/iosauthenticationlistener.h"
+#elif defined(MZ_ANDROID)
+#  include "platforms/android/androidauthenticationlistener.h"
 #elif defined(MZ_WASM)
 #  include "platforms/wasm/wasmauthenticationlistener.h"
 #else
@@ -32,8 +34,7 @@ AuthenticationListener* AuthenticationListener::create(
   switch (authenticationType) {
     case AuthenticationInBrowser:
 #if defined(MZ_ANDROID)
-      logger.error() << "Something went totally wrong";
-      Q_ASSERT(false);
+      return new AndroidAuthenticationListener(parent);
 #elif defined(MZ_IOS)
       return new IOSAuthenticationListener(parent);
 #elif defined(MZ_WASM)
