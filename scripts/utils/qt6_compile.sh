@@ -68,7 +68,6 @@ if [[ -z "$BUILDDIR" ]]; then
 fi
 
 LINUX="
-  -platform linux-clang \
   -openssl-linked \
   -egl \
   -opengl es2 \
@@ -79,6 +78,7 @@ LINUX="
   -bundled-xcb-xinput \
   -feature-qdbus \
   -feature-wayland \
+  -no-feature-zstd \
   -xcb \
   -- \
   -DOPENSSL_USE_STATIC_LIBS=ON \

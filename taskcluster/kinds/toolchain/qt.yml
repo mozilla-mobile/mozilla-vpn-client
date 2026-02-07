@@ -104,7 +104,7 @@ qt-linux:
         symbol: TL(qt-linux)
     worker-type: b-linux-large
     worker:
-        docker-image: {in-tree: linux-qt6-build}
+        docker-image: {in-tree: linux-rpm-build}
 
 qt-tools-6.10:
     description: "Linux Qt host tools"

@@ -550,7 +550,7 @@ with open(args.source, "r", encoding="utf-8") as file:
 
                 xlifftool_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "xlifftool.py")
                 xlifftool_cmd = [sys.executable, xlifftool_path, "-C", f"--locale={locale}", xliff_path]
-                xlifftool = subprocess.run(xlifftool_cmd, capture_output=True)
+                xlifftool = subprocess.run(xlifftool_cmd, stdout=subprocess.PIPE)
                 # This completeness metric can be out-of-date, sometimes reporting a higher-than-actual completeness after a new string is
                 # added to the app. This happens because the .xliff file doesn't have all the source strings, so an incorrect denominator is used.
                 # To show up in the .xliff, there must be a complete cycle of a new string being pulled into Pontoon (via the `extract new strings`
