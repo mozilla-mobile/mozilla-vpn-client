@@ -78,6 +78,7 @@ LINUX="
   -bundled-xcb-xinput \
   -feature-qdbus \
   -feature-wayland \
+  -no-feature-zstd \
   -xcb \
   -- \
   -DOPENSSL_USE_STATIC_LIBS=ON \

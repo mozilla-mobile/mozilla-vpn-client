@@ -25,7 +25,6 @@ RUN yum -y install \
         libmount-devel \
         libxkbcommon-devel \
         libxkbcommon-x11-devel \
-        libzstd-devel \
         fontconfig-devel \
         freetype-devel \
         xcb-util-devel \

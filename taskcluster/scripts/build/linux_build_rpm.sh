@@ -6,17 +6,7 @@
 
 set -e
 
-## Get the default distribution to build from /etc/os-release
-source /etc/os-release
-case ${ID} in
-  fedora)
-    DIST="fc${VERSION_ID}"
-    ;;
-
-  *)
-    DIST="${ID}${VERSION_ID}"
-    ;;
-esac
+DIST=$(rpm --eval "%{dist}" | cut -d. -f2-)
 
 helpFunction() {
   echo "Usage: $0 [options]"
