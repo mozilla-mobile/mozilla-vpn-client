@@ -78,6 +78,7 @@ LINUX="
   -bundled-xcb-xinput \
   -feature-qdbus \
   -feature-wayland \
+  -no-feature-gssapi \
   -no-feature-zstd \
   -xcb \
   -- \
