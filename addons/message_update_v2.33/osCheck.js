@@ -11,8 +11,8 @@
   // Then check for macOS...
   const isMacOS = (api.env.platform === "macos");
   if (isMacOS) {
-    // ...then check for the minimum version - minimum is 11 for macOS
-    const minVersion = 11;
+    // ...then check for the minimum version - 13 for now, given Qt 6.10 issues
+    const minVersion = 13;
     const osVersion = api.env.osVersion;
     if (!osVersion || (typeof osVersion !== "string") || osVersion.length === 0) {
       // Something unexpected happened. Enable on failure.

@@ -27,7 +27,7 @@ class App : public QObject {
     // Something went wrong during the purchase initialization.
     StateBillingNotAvailable,
 
-    // he app is fully activated, and the user is authenticated and subscribed.
+    // The app is fully activated, and the user is authenticated and subscribed.
     // All good!
     StateMain,
 
