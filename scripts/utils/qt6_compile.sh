@@ -68,7 +68,7 @@ if [[ -z "$BUILDDIR" ]]; then
 fi
 
 LINUX="
-  -openssl-linked \
+  -openssl-runtime \
   -egl \
   -opengl es2 \
   -no-icu \

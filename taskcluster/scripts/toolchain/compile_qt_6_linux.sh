@@ -20,8 +20,7 @@ echo "Installing Qt build dependencies"
 if [ -f /etc/redhat-release ]; then
     sudo yum -y install \
             gcc-toolset-10 \
-            at-spi2-core-devel \
-            openssl-static
+            at-spi2-core-devel
     source /opt/rh/gcc-toolset-10/enable
 elif [ -f /etc/debian_version ]; then
     sudo apt-get -y install \
