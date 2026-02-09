@@ -19,8 +19,9 @@ namespace {
 Logger logger("DesktopAuthenticationListener");
 }
 
-DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
-    : AuthenticationListener(parent) {
+DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent,
+                                                             bool headless)
+    : AuthenticationListener(parent), m_headless(headless) {
   MZ_COUNT_CTOR(DesktopAuthenticationListener);
 
   m_server = new QOAuthHttpServerReplyHandler(QHostAddress::LocalHost, this);
@@ -75,7 +76,9 @@ void DesktopAuthenticationListener::start(Task* task,
   if (!qobject_cast<QGuiApplication*>(QCoreApplication::instance())) {
     logger.debug()
         << "CLI application detected, output auth URL to the console";
-    query.addQueryItem("utm_source", "cli-signup-flow");
+    if (m_headless) {
+      query.addQueryItem("headless", "1");
+    }
     url.setQuery(query);
     QTextStream stdoutStream(stdout);
     stdoutStream << "Please open the following URL in your browser to continue "
@@ -83,7 +86,6 @@ void DesktopAuthenticationListener::start(Task* task,
                  << Qt::endl;
     stdoutStream << url.toEncoded(QUrl::FullyEncoded) << Qt::endl;
   } else {
-    query.addQueryItem("utm_source", "desktop-signup-flow");
     url.setQuery(query);
     UrlOpener::instance()->openUrl(url);
   }

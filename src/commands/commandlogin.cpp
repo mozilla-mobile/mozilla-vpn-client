@@ -105,8 +105,9 @@ int CommandLogin::run(QStringList& tokens) {
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
       eventListener.reset(new EventListener{});
 #endif
-      vpn.authenticateWithType(AuthenticationListener::AuthenticationInBrowser);
       if (headlessOption.m_set) {
+        vpn.authenticateWithType(
+            AuthenticationListener::AuthenticationInBrowserHeadless);
         QObject::connect(&vpn, &MozillaVPN::authenticationStarted, this, [&] {
           QString code = getInput("Enter the code:");
           auto task =
@@ -115,6 +116,9 @@ int CommandLogin::run(QStringList& tokens) {
             task->authenticatePkceSuccess(code);
           }
         });
+      } else {
+        vpn.authenticateWithType(
+            AuthenticationListener::AuthenticationInBrowser);
       }
     } else {
       vpn.authenticateWithType(AuthenticationListener::AuthenticationInApp);

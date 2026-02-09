@@ -43,6 +43,8 @@ AuthenticationListener* AuthenticationListener::create(
 #endif
     case AuthenticationInApp:
       return new AuthenticationInAppListener(parent);
+    case AuthenticationInBrowserHeadless:
+      return new DesktopAuthenticationListener(parent, true);
 
     default:
       Q_ASSERT(false);
