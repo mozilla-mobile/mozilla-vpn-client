@@ -44,7 +44,13 @@ AuthenticationListener* AuthenticationListener::create(
     case AuthenticationInApp:
       return new AuthenticationInAppListener(parent);
     case AuthenticationInBrowserHeadless:
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
       return new DesktopAuthenticationListener(parent, true);
+#else
+      logger.error()
+          << "Headless authentication is not supported on this platform";
+      Q_ASSERT(false);
+#endif
 
     default:
       Q_ASSERT(false);
