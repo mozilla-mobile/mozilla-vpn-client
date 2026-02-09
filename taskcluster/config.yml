@@ -119,6 +119,11 @@ workers:
             implementation: beetmover-import-from-gcs-to-artifact-registry
             os: scriptworker
             worker-type: 'mozillavpn-1-beetmover'
+        github:
+            provisioner: scriptworker-k8s
+            implementation: scriptworker-github
+            os: scriptworker
+            worker-type: mobile-{level}-github
         shipit:
             provisioner: scriptworker-k8s
             implementation: scriptworker-shipit

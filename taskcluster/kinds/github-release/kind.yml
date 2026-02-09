@@ -1,0 +1,37 @@
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+---
+loader: taskgraph.loader.transform:loader
+
+transforms:
+    - taskgraph.transforms.from_deps
+    - mozillavpn_taskgraph.transforms.scriptworker:upstream_artifacts
+    - mozillavpn_taskgraph.transforms.github_release
+    - taskgraph.transforms.task
+
+kind-dependencies:
+    - signing
+
+tasks:
+    publish:
+      description: Create a Github release
+      dependencies:
+        android-arm64: signing-android-arm64/release
+        android-armv7: signing-android-armv7/release
+        android-x86: signing-android-x86/release
+        android-x64: signing-android-x64/release
+      run-on-tasks-for: []
+      treeherder:
+        symbol: GH
+        tier: 1
+        kind: build
+        platform: github
+      worker-type: github
+      shipping-phase: ship-client
+      worker:
+        action: release
+        git-tag: "{head_tag}"
+        github-project: mozilla-vpn-client
+        is-prerelease: false
+        release-name: "{head_tag}"

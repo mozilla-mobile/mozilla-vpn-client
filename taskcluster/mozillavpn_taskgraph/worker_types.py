@@ -202,3 +202,46 @@ def build_import_from_gcs_to_artifact_registry_payload(config, task, task_def):
         "product": task["worker"]["product"],
         "gcs_sources": task["worker"]["gcs-sources"],
     }
+
+@payload_builder(
+    "scriptworker-github",
+    schema={
+        Optional("upstream-artifacts"): [
+            {
+                Required("taskId"): taskref_or_string,
+                Required("taskType"): str,
+                Required("paths"): [str],
+            }
+        ],
+        Optional("artifact-map"): [object],
+        Required("action"): str,
+        Required("git-tag"): str,
+        Required("git-revision"): str,
+        Required("github-project"): str,
+        Required("is-prerelease"): bool,
+        Optional("release-body"): str,
+        Required("release-name"): str,
+    },
+)
+def build_github_release_payload(config, task, task_def):
+    worker = task["worker"]
+
+    task_def["tags"]["worker-implementation"] = "scriptworker"
+
+    task_def["payload"] = {
+        "artifactMap": worker.get("artifact-map", {}),
+        "gitTag": worker["git-tag"],
+        "gitRevision": worker["git-revision"],
+        "isPrerelease": worker["is-prerelease"],
+        "releaseBody": worker.get("release-body"),
+        "releaseName": worker["release-name"],
+        "upstreamArtifacts": worker.get("upstream-artifacts", []),
+    }
+
+    scope_prefix = "project:mozillavpn"
+    task_def["scopes"].extend(
+        [
+            "{}:github:project:{}".format(scope_prefix, worker["github-project"]),
+            "{}:github:action:{}".format(scope_prefix, worker["action"]),
+        ]
+    )
