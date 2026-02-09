@@ -166,9 +166,9 @@ TIMEREXPR(gleanTimeout, 20min, 20min, 0ms)
 #undef TIMEREXPR
 }  // namespace Timers
 
-constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
+constexpr const char* API_PRODUCTION_URL = "https://prod.vpn.prod.webservices.mozgcp.net/";
 constexpr const char* API_STAGING_URL =
-    "https://stage.guardian.nonprod.cloudops.mozgcp.net";
+    "https://stage.vpn.nonprod.webservices.mozgcp.net";
 
 constexpr auto CRASH_PRODUCTION_URL =
     "https://crash-reports.mozilla.com/submit";
