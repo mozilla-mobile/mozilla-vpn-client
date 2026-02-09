@@ -2420,14 +2420,14 @@
     {
         "type": "archive",
         "archive-type": "tar-gzip",
-        "url": "https://static.crates.io/crates/x509-parser/x509-parser-0.18.0.crate",
-        "sha256": "eb3e137310115a65136898d2079f003ce33331a6c4b0d51f1531d1be082b6425",
-        "dest": "cargo/vendor/x509-parser-0.18.0"
+        "url": "https://static.crates.io/crates/x509-parser/x509-parser-0.18.1.crate",
+        "sha256": "d43b0f71ce057da06bc0851b23ee24f3f86190b07203dd8f567d0b706a185202",
+        "dest": "cargo/vendor/x509-parser-0.18.1"
     },
     {
         "type": "inline",
-        "contents": "{\"package\": \"eb3e137310115a65136898d2079f003ce33331a6c4b0d51f1531d1be082b6425\", \"files\": {}}",
-        "dest": "cargo/vendor/x509-parser-0.18.0",
+        "contents": "{\"package\": \"d43b0f71ce057da06bc0851b23ee24f3f86190b07203dd8f567d0b706a185202\", \"files\": {}}",
+        "dest": "cargo/vendor/x509-parser-0.18.1",
         "dest-filename": ".cargo-checksum.json"
     },
     {
