@@ -69,14 +69,6 @@ RUN apt -y install libwayland-dev \
                    libwayland-egl-backend-dev \
                    wayland-protocols
 
-## Install Rust
-RUN mkdir -p /tmp/rust
-RUN curl -sSL https://static.rust-lang.org/dist/rust-1.82.0-x86_64-unknown-linux-gnu.tar.gz -o /tmp/rust/rust-static.tar.gz
-RUN echo "0265c08ae997c4de965048a244605fb1f24a600bbe35047b811c638b8fcf676b /tmp/rust/rust-static.tar.gz" | sha256sum -c -
-RUN tar -C /tmp/rust -xf /tmp/rust/rust-static.tar.gz
-RUN $(find /tmp/rust -name 'install.sh')
-RUN rm -rf /tmp/rust
-
 ## Install Golang
 RUN mkdir -p /tmp/golang
 RUN curl -sSL https://go.dev/dl/go1.22.12.linux-amd64.tar.gz -o /tmp/golang/golang-static.tar.gz
