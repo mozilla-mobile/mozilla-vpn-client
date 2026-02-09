@@ -145,12 +145,16 @@ const QColor StatusIcon::indicatorColor() const {
     return INVALID_COLOR;
   }
 
-  if (vpn->controller()->state() == Controller::StateConnectionError) {
-    return RED_COLOR;
-  }
-
-  if (vpn->controller()->state() != Controller::StateOn) {
-    return INVALID_COLOR;
+  switch (vpn->controller()->state()) {
+    case Controller::StateConnectionError:
+      return RED_COLOR;
+      break;
+    case Controller::StateOn:
+      [[fallthrough]];
+    case Controller::StateSilentSwitching:
+      break;
+    default:
+      return INVALID_COLOR;
   }
 
   switch (vpn->connectionHealth()->stability()) {
@@ -182,7 +186,8 @@ QIcon StatusIcon::drawStatusIndicator() {
   // Only draw a status indicator if the VPN is connected or in connection error
   // state.
   if (vpn->controller()->state() == Controller::StateOn ||
-      vpn->controller()->state() == Controller::StateConnectionError) {
+      vpn->controller()->state() == Controller::StateConnectionError ||
+      vpn->controller()->state() == Controller::StateSilentSwitching) {
     QPainter painter(&iconPixmap);
     painter.setRenderHint(QPainter::Antialiasing);
     painter.setPen(Qt::NoPen);
