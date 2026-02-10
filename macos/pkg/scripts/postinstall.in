@@ -12,20 +12,7 @@ LOG_DIR=/var/log/mozillavpn
 OSX_MAJOR_VER=$(sw_vers -productVersion | cut -d. -f1)
 
 CODESIGN_APP_IDENTIFIER="@BUILD_OSX_APP_IDENTIFIER@"
-CODESIGN_TEAM_IDENTIFIER="@BUILD_VPN_DEVELOPMENT_TEAM@"
-
 DAEMON_PLIST_PATH="/Library/LaunchDaemons/${CODESIGN_APP_IDENTIFIER}.daemon.plist"
-
-## These OIDs check that the app bundle was signed with a valid
-# Developer ID Application certificate issued by Apple.
-APPLE_OID_EXT_APP_CODESIGNING="1.2.840.113635.100.6.1.13"
-APPLE_OID_EXT_CA_INTERMEDIATE="1.2.840.113635.100.6.2.6"
-
-# For local development, use this instead
-#   Apple developer program: 1.2.840.113635.6.1.12
-#   Apple WWDR intermediate: 1.2.840.113635.6.2.1
-#APPLE_OID_EXT_APP_CODESIGNING="1.2.840.113635.100.6.1.12"
-#APPLE_OID_EXT_CA_INTERMEDIATE="1.2.840.113635.100.6.2.1"
 
 mkdir -p $LOG_DIR
 chmod 755 $LOG_DIR
@@ -42,28 +29,6 @@ if [ ${OSX_MAJOR_VER} -lt 13 ]; then
   rm -rf "$APP_DIR"
   exit 1
 fi
-
-## Before MacOS 13, take extra care to prevent tampering with the app.
-echo "Restrict App file permissions..."
-chown -R root "$APP_DIR"
-chmod -R go-w "$APP_DIR"
-if [ -n "$(find "$APP_DIR" -type l)" ]; then
-  echo "Symlinks detected in application directory! Aborting."
-  rm -rf "$APP_DIR"
-  exit 1
-fi
-
-echo "Validate application codesign..."
-CODESIGN_REQS="anchor apple generic and identifier ${CODESIGN_APP_IDENTIFIER}"
-CODESIGN_REQS+=" and certificate 1[field.${APPLE_OID_EXT_CA_INTERMEDIATE}] /* exists */"
-CODESIGN_REQS+=" and certificate leaf[field.${APPLE_OID_EXT_APP_CODESIGNING}] /* exists */"
-CODESIGN_REQS+=" and certificate leaf[subject.OU] = \"${CODESIGN_TEAM_IDENTIFIER}\""
-if ! codesign -v --verbose=4 -R="${CODESIGN_REQS}" "$APP_DIR"; then
-  echo "Codesign failed! Aborting."
-  rm -rf "$APP_DIR"
-  exit 1
-fi
-echo "Codesign successful!"
 
 # Unload any daemons from the system.
 UPDATING=
