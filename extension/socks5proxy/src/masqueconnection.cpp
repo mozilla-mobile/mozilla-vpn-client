@@ -4,9 +4,7 @@
 
 #include "masqueconnection.h"
 
-#ifndef PROXY_MASQUE_ENABLED
-#  error "MASQUE proxy protocol is disabled"
-#endif
+#ifdef PROXY_MASQUE_ENABLED
 
 #include <QDebug>
 #include <QNetworkDatagram>
@@ -210,3 +208,5 @@ void MasqueConnection::handleCapsule(quint64 type, const QByteArray& data) {
       break;
   }
 }
+
+#endif  // PROXY_MASQUE_ENABLED
