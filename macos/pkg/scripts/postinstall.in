@@ -15,7 +15,6 @@ CODESIGN_APP_IDENTIFIER="@BUILD_OSX_APP_IDENTIFIER@"
 CODESIGN_TEAM_IDENTIFIER="@BUILD_VPN_DEVELOPMENT_TEAM@"
 
 DAEMON_PLIST_PATH="/Library/LaunchDaemons/${CODESIGN_APP_IDENTIFIER}.daemon.plist"
-DAEMON_HELPER_TOOL="/Library/PrivilegedHelperTools/${CODESIGN_APP_IDENTIFIER}.daemon"
 
 ## These OIDs check that the app bundle was signed with a valid
 # Developer ID Application certificate issued by Apple.
@@ -37,6 +36,12 @@ echo "Installing Mozilla VPN to ${APP_DIR}"
 
 pkill -U "${USER}" -x "Mozilla VPN" || echo "Unable to kill GUI, not running?"
 sleep 1
+
+if [ ${OSX_MAJOR_VER} -lt 13 ]; then
+  echo "Minimum OSX version not met: ${OSX_MAJOR_VER} < 13"
+  rm -rf "$APP_DIR"
+  exit 1
+fi
 
 ## Before MacOS 13, take extra care to prevent tampering with the app.
 echo "Restrict App file permissions..."
@@ -60,7 +65,7 @@ if ! codesign -v --verbose=4 -R="${CODESIGN_REQS}" "$APP_DIR"; then
 fi
 echo "Codesign successful!"
 
-# Unload any daemons matching our app identifier.
+# Unload any daemons from the system.
 UPDATING=
 for SERVICE in $(launchctl list | awk '{print $3}' | grep "^${CODESIGN_APP_IDENTIFIER}."); do
   echo "Unloading launchd service: ${SERVICE}"
@@ -71,36 +76,6 @@ done
 if [ -f "$DAEMON_PLIST_PATH" ]; then
   echo "Removing legacy daemon plist"
   rm -f ${DAEMON_PLIST_PATH}
-fi
-
-# For legacy MacOS versions - a privileged helper tool is required to run
-# the daemon. This isn't necessary for MacOS 13 and later, which makes use
-# of the SMAppService interface.
-if [ ${OSX_MAJOR_VER} -lt 13 ]; then
-  echo "Installing privileged helper tool"
-  install -d -m 755 -o root -g wheel /Library/PrivilegedHelperTools
-  install "${APP_DIR}/Contents/Library/LaunchServices/${CODESIGN_APP_IDENTIFIER}.daemon" /Library/PrivilegedHelperTools
-
-  # Modify the SMAppService plist for use as a legacy daemon.
-  echo "Loading the Daemon at $DAEMON_PLIST_PATH"
-  plutil -insert Program -string "$DAEMON_HELPER_TOOL" -o $DAEMON_PLIST_PATH \
-    "${APP_DIR}/Contents/Library/LaunchDaemons/${CODESIGN_APP_IDENTIFIER}.xpc-daemon.plist"
-  plutil -replace Label -string ${CODESIGN_APP_IDENTIFIER}.daemon $DAEMON_PLIST_PATH
-  launchctl load -w $DAEMON_PLIST_PATH
-fi
-
-if [ -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" ]; then
-  echo "Install the firefox native messaging manifest"
-  mkdir -p "/Library/Application Support/Mozilla/NativeMessagingHosts"
-  cp -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" "/Library/Application Support/Mozilla/NativeMessagingHosts/mozillavpn.json"
-
-  echo "Install the chrome native messaging manifest"
-  mkdir -p "/Library/Google/Chrome/NativeMessagingHosts"
-  cp -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" "/Library/Google/Chrome/NativeMessagingHosts/mozillavpn.json"
-
-  echo "Install the chromium native messaging manifest"
-  mkdir -p "/Library/Application Support/Chromium/NativeMessagingHosts"
-  cp -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" "/Library/Application Support/Chromium/NativeMessagingHosts/mozillavpn.json"
 fi
 
 echo "Install Complete Run the app"
