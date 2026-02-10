@@ -113,14 +113,18 @@ int CommandStatus::run(QStringList& tokens) {
       stream << "Entry Server country: "
              << model->countryName(sd->entryCountryCode()) << Qt::endl;
       stream << "Entry Server city: " << sd->entryCityName() << Qt::endl;
+      stream << "Exit Server country code: " << sd->exitCountryCode()
+             << Qt::endl;
+      stream << "Exit Server country: "
+             << model->countryName(sd->exitCountryCode()) << Qt::endl;
+      stream << "Exit Server city: " << sd->exitCityName() << Qt::endl;
+    } else {
+      stream << "Server country code: " << sd->exitCountryCode() << Qt::endl;
+      stream << "Server country: " << model->countryName(sd->exitCountryCode())
+             << Qt::endl;
+      stream << "Server city: " << sd->exitCityName() << Qt::endl;
     }
-    const QString multihopExit = sd->multihop() ? "Exit " : "";
-    stream << multihopExit << "Server country code: " << sd->exitCountryCode()
-           << Qt::endl;
-    stream << multihopExit
-           << "Server country: " << model->countryName(sd->exitCountryCode())
-           << Qt::endl;
-    stream << multihopExit << "Server city: " << sd->exitCityName() << Qt::endl;
+
     Controller controller;
 
     QEventLoop loop;
