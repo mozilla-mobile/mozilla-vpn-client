@@ -4,10 +4,13 @@
 
 package org.mozilla.firefox.vpn.qt
 
+import android.app.Activity
+import android.app.Application
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Bundle
 import androidx.browser.customtabs.CustomTabsIntent
 import androidx.browser.customtabs.CustomTabsService
 
@@ -35,10 +38,32 @@ object CustomTabHelper {
                 .setShareState(CustomTabsIntent.SHARE_STATE_OFF)
                 .build()
                 .launchUrl(ctx, uri)
+            registerCustomTabClosedCallback(ctx)
             SUCCESS
         } catch (e: Exception) {
             ERROR_LAUNCH_FAILED
         }
+    }
+
+    private fun registerCustomTabClosedCallback(ctx: Context) {
+        val activity = ctx as? Activity ?: return
+        val app = activity.application ?: return
+
+        val callback = object : Application.ActivityLifecycleCallbacks {
+            override fun onActivityResumed(a: Activity) {
+                if (a is VPNActivity) {
+                    app.unregisterActivityLifecycleCallbacks(this)
+                    a.onCustomTabClosed()
+                }
+            }
+            override fun onActivityCreated(a: Activity, b: Bundle?) {}
+            override fun onActivityStarted(a: Activity) {}
+            override fun onActivityPaused(a: Activity) {}
+            override fun onActivityStopped(a: Activity) {}
+            override fun onActivitySaveInstanceState(a: Activity, b: Bundle) {}
+            override fun onActivityDestroyed(a: Activity) {}
+        }
+        app.registerActivityLifecycleCallbacks(callback)
     }
 
     @JvmStatic

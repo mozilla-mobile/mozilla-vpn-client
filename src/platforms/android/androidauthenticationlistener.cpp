@@ -8,6 +8,7 @@
 #include <QJniObject>
 #include <QUrlQuery>
 
+#include "androidvpnactivity.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/android/androidcommons.h"
@@ -65,6 +66,9 @@ void AndroidAuthenticationListener::start(Task* task,
   switch (result) {
     case CUSTOM_TAB_SUCCESS:
       logger.debug() << "Custom Tab launched successfully";
+      connect(AndroidVPNActivity::instance(),
+              &AndroidVPNActivity::customTabClosed, this,
+              &AndroidAuthenticationListener::abortedByUser);
       break;
 
     case CUSTOM_TAB_ERROR_NO_CUSTOM_TABS:

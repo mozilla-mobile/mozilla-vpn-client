@@ -137,5 +137,10 @@ void TaskAuthenticate::handleDeepLink(const QUrl& url) {
     return;
   }
 
+  // On Android, onResume fires after onNewIntent, which would trigger the
+  // Custom Tab "closed" callback and falsely abort a successful authentication.
+  disconnect(m_authenticationListener, &AuthenticationListener::abortedByUser,
+             this, nullptr);
+
   authenticatePkceSuccess(query.queryItemValue("code"));
 }
