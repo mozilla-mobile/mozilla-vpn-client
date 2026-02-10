@@ -34,9 +34,7 @@ QString MacOSUtils::appId(const QString& suffix) {
 }
 
 void MacOSUtils::openSystemSettingsLoginItems() {
-  if (@available(macOS 13, *)) {
-    [SMAppService openSystemSettingsLoginItems];
-  }
+  [SMAppService openSystemSettingsLoginItems];
 }
 
 // static
