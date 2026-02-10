@@ -73,7 +73,8 @@ elseif(CMAKE_OSX_SYSROOT)
     execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
         COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-path)
 else()
-    message(FATAL_ERROR "One of CMAKE_OSX_SYSROOT or ENV{SDKROOT} must be defined")
+    execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
+        COMMAND xcrun --sdk macosx --show-sdk-path)
 endif()
 
 # Enable Balrog for update support.
