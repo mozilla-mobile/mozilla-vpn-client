@@ -65,7 +65,7 @@ MZViewBase {
             onTextChanged: text => {
                 var serverAddressText = serverAddressInput.text.trim();
                 if (serverAddressText.endsWith('/')) {
-                  serverAddressText = serverAddressText.trim(0, -1);
+                  serverAddressText = serverAddressText.slice(0, -1);
                 }
                 if (MZSettings.stagingServerAddress !== serverAddressText) {
                     MZSettings.stagingServerAddress = serverAddressText;
