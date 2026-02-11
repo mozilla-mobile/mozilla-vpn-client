@@ -43,6 +43,20 @@ if [ -f "$DAEMON_PLIST_PATH" ]; then
   rm -f ${DAEMON_PLIST_PATH}
 fi
 
+if [ -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" ]; then
+  echo "Install the firefox native messaging manifest"
+  mkdir -p "/Library/Application Support/Mozilla/NativeMessagingHosts"
+  cp -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" "/Library/Application Support/Mozilla/NativeMessagingHosts/mozillavpn.json"
+
+  echo "Install the chrome native messaging manifest"
+  mkdir -p "/Library/Google/Chrome/NativeMessagingHosts"
+  cp -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" "/Library/Google/Chrome/NativeMessagingHosts/mozillavpn.json"
+
+  echo "Install the chromium native messaging manifest"
+  mkdir -p "/Library/Application Support/Chromium/NativeMessagingHosts"
+  cp -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" "/Library/Application Support/Chromium/NativeMessagingHosts/mozillavpn.json"
+fi
+
 echo "Install Complete Run the app"
 if [ "$UPDATING" ]; then
   open -a "$APP_DIR" --args ui --updated
