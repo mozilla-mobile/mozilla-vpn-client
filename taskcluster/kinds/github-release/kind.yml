@@ -5,6 +5,7 @@
 loader: taskgraph.loader.transform:loader
 
 transforms:
+    - mozillavpn_taskgraph.transforms.requires_level:transforms
     - mozillavpn_taskgraph.transforms.scriptworker:upstream_artifacts
     - mozillavpn_taskgraph.transforms.github_release
     - taskgraph.transforms.task
@@ -21,6 +22,7 @@ tasks:
         android-x86: signing-android-x86/release
         android-x64: signing-android-x64/release
       run-on-tasks-for: []
+      requires-level: 3
       treeherder:
         symbol: GH
         tier: 1
