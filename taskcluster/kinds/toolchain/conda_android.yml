@@ -2,37 +2,25 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
-task-defaults:
-    description: "Conda Pack an environment"
+conda-android:
+    description: "Conda Pack Android environment"
     worker:
-        env:
-            QT_VERSION: "filled-by-transform: conda.py"
-            ANDROID_ARCH: "filled-by-transform: conda.py"
+        env: {}
         max-run-time: 14400
         docker-image: {in-tree: conda-base}
     worker-type: b-linux
     treeherder:
-        symbol: "filled-by-transform: conda.py"
-        platform: "filled-by-transform: conda.py"
+        symbol: TL(conda-android)
+        platform: android/opt
     run:
         script: conda_pack_android.sh
+        use-caches: []
         resources:
-            - scripts/android/conda_setup_qt.sh
             - scripts/android/conda_setup_sdk.sh
             - scripts/android/conda_trim.sh
             - taskcluster/scripts/requirements.txt
             - android_sdk.txt
             - requirements.txt
             - env-android.yml
-        toolchain-alias: "filled-by-transform: conda.py"
+        toolchain-alias: conda-android
         toolchain-artifact: public/build/conda-android.tar.xz
-
-# Note: for auto inflate to work 
-# Tasks need to follow the naming scheme 
-# conda-android-<android-arch>-<QT-Version>
-# see transforms/conda.py
-
-conda-android-arm64-6.10.2: {}
-conda-android-armv7-6.10.2: {}
-conda-android-x86-6.10.2: {}
-conda-android-x86_64-6.10.2: {}

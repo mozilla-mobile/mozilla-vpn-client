@@ -104,6 +104,7 @@ qt-linux:
         symbol: TL(qt-linux)
     worker-type: b-linux-large
     worker:
+        env: {}
         docker-image: {in-tree: linux-qt6-build}
 
 qt-tools-6.10:
@@ -123,12 +124,37 @@ qt-tools-6.10:
         env:
             QT_VERSION: "6.10.1"
 
+qt-android-6.10:
+    description: "Android QT compile Task"
+    fetches:
+        toolchain:
+            - qt-tools-6.10
+            - conda-android
+        fetch:
+            - qt-source-tarball
+    run:
+        script: compile_qt_6_android.sh
+        resources:
+            - scripts/utils/qt6_compile.sh
+            - taskcluster/scripts/toolchain/patches/*.patch
+        toolchain-alias: qt-android-6.10
+        toolchain-artifact: public/build/qt6_android.tar.xz
+    treeherder:
+        symbol: TL(qt-android-6.10)
+    worker-type: b-linux-large
+    worker:
+        env:
+            QT_VERSION: "6.10.1"
+        docker-image: {in-tree: linux-qt6-build}
+
+
 qt-wasm-6.10:
     description: "QT wasm bundle task"
     treeherder:
         symbol: TL(qt-wasm)
     worker-type: b-linux
     worker:
+        env: {}
         docker-image: {in-tree: base}
     run:
         script: bundle_qt_wasm.sh

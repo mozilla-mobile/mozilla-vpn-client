@@ -11,9 +11,7 @@ cd vcs
 ls 
 
 /opt/conda/bin/conda env create -f env-android.yml -n vpn
-bash -l -c "conda activate vpn && conda env config vars set QT_VERSION=${QT_VERSION}"
 bash -l -c "conda activate vpn && ./scripts/android/conda_setup_sdk.sh"
-bash -l -c "conda activate vpn && ./scripts/android/conda_setup_qt.sh"
 bash -l -c "conda activate vpn && ./scripts/android/conda_trim.sh"
     
 mkdir -p ../../public/build

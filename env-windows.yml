@@ -24,3 +24,5 @@ dependencies:
       - -r taskcluster/scripts/requirements.txt
 variables:
   QT_VERSION: 6.10.1
+  TASKCLUSTER_ROOT_URL: https://firefox-ci-tc.services.mozilla.com
+

@@ -10,6 +10,11 @@ task-defaults:
             tier: 1
     worker-type: b-linux-large
     requires-level: 1
+    fetches:
+        toolchain: 
+                - qt-android-6.10                                                                                                                        
+                - conda-android                                                                                                                          
+                - qt-tools-6.10 
     worker:
           max-run-time: 3600
           chain-of-trust: true
@@ -18,29 +23,12 @@ task-defaults:
           using: run-task
           use-caches: [checkout]
           cwd: '{checkout}'
-# TODO: Re-Enable The next build
-# android-qt-next/debug:
-#         treeherder:
-#             platform: android/arm64-v8a
-#             symbol: NEXT
-#         fetches:
-#             toolchain: 
-#                 - conda-android-arm64-6.7.0
-#         requires-level: 1
-#         run:
-#             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
-#         release-artifacts:
-#             # APK Artifacts expects file to be in /builds/worker/artifacts/
-#             - mozillavpn-arm64-v8a-debug.apk
 
 # Debug Builds:
 android-arm64/debug:
         description: "Android Debug (arm64-v8a)"
         treeherder:
             platform: android/arm64-v8a
-        fetches:
-            toolchain: 
-                - conda-android-arm64-6.10.2
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
         release-artifacts:
@@ -56,9 +44,6 @@ android-x64/debug:
         description: "Android Debug (x86_64)"
         treeherder:
             platform: android/x86_64
-        fetches:
-            toolchain: 
-                    - conda-android-x86_64-6.10.2
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh x86_64
         release-artifacts:
@@ -75,9 +60,6 @@ android-arm64/release:
                 "3": 
                     - secrets:get:project/mozillavpn/tokens
                 default: []
-        fetches:
-            toolchain: 
-                    - conda-android-arm64-6.10.2
         treeherder:
             symbol: B
             platform: android/arm64-v8a
@@ -92,9 +74,6 @@ android-armv7/release:
         requires-level: 3
         scopes:
             - 'secrets:get:project/mozillavpn/tokens'
-        fetches:
-            toolchain: 
-                    - conda-android-armv7-6.10.2
         treeherder:
             symbol: B
             platform: android/armv7
@@ -110,9 +89,6 @@ android-x86/release:
         requires-level: 3
         scopes:
             - 'secrets:get:project/mozillavpn/tokens'
-        fetches:
-            toolchain: 
-                    - conda-android-x86-6.10.2
         treeherder:
             symbol: B
             platform: android/x86
@@ -127,9 +103,6 @@ android-x64/release:
         requires-level: 3
         scopes:
             - 'secrets:get:project/mozillavpn/tokens'
-        fetches:
-            toolchain: 
-                    - conda-android-x86_64-6.10.2
         treeherder:
             symbol: B
             platform: android/x86_64

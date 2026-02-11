@@ -4,6 +4,7 @@
 ---
 task-defaults:
     worker:
+        env: {}
         max-run-time: 3600
         docker-image: {in-tree: conda-base}
     worker-type: b-linux

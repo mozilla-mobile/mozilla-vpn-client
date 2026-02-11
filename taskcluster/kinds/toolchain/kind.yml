@@ -9,7 +9,6 @@ kind-dependencies:
     - docker-image
 
 transforms:
-    - mozillavpn_taskgraph.transforms.conda:transforms
     - taskgraph.transforms.run:transforms
     - taskgraph.transforms.cached_tasks:transforms
     - taskgraph.transforms.task:transforms
