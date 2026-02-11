@@ -26,8 +26,9 @@ tasks:
         tier: 1
         kind: build
         platform: github
+      attributes:
+        shipping-phase: ship-client
       worker-type: github
-      shipping-phase: ship-client
       worker:
         action: release
         git-tag: "{head_tag}"
