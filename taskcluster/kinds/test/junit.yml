@@ -15,8 +15,10 @@ android-junit:
         platform: android/arm64-v8a
         tier: 1
     fetches:
-        toolchain: 
-            - conda-android-arm64-6.10.2
+        toolchain:
+            - qt-android-6.10
+            - conda-android
+            - qt-tools-6.10
     run:
         using: run-task
         use-caches: [checkout, cargo]

@@ -1,0 +1,136 @@
+diff --git a/cmake/QtAutoDetectHelpers.cmake b/cmake/QtAutoDetectHelpers.cmake
+index 6e6473da641..95d1f65617f 100644
+--- a/cmake/QtAutoDetectHelpers.cmake
++++ b/cmake/QtAutoDetectHelpers.cmake
+@@ -177,9 +177,9 @@ function(qt_auto_detect_android)
+             # ANDROID_NATIVE_API_LEVEL is an just an alias to ANDROID_PLATFORM, check for both
+             if(NOT DEFINED ANDROID_PLATFORM AND NOT DEFINED ANDROID_NATIVE_API_LEVEL)
+                 message(STATUS "Neither ANDROID_PLATFORM nor ANDROID_NATIVE_API_LEVEL"
+-                    " were specified, using API level 28 as default")
+-                set(ANDROID_PLATFORM "android-28" CACHE STRING "")
+-                set(ANDROID_NATIVE_API_LEVEL 28 CACHE STRING "")
++                    " were specified, using API level 26 as default")
++                set(ANDROID_PLATFORM "android-26" CACHE STRING "")
++                set(ANDROID_NATIVE_API_LEVEL 26 CACHE STRING "")
+             endif()
+             if(NOT DEFINED ANDROID_STL)
+                 set(ANDROID_STL "c++_shared" CACHE STRING "")
+diff --git a/cmake/QtPriHelpers.cmake b/cmake/QtPriHelpers.cmake
+index 67fe87693fc..41494d22ae7 100644
+--- a/cmake/QtPriHelpers.cmake
++++ b/cmake/QtPriHelpers.cmake
+@@ -880,7 +880,7 @@ function(qt_generate_global_device_pri_file)
+         file(TO_CMAKE_PATH ${ANDROID_NDK} ANDROID_NDK)
+         string(APPEND content "DEFAULT_ANDROID_NDK_ROOT = ${ANDROID_NDK}\n")
+ 
+-        set(android_platform "android-28")
++        set(android_platform "android-26")
+         if(ANDROID_PLATFORM)
+             set(android_platform "${ANDROID_PLATFORM}")
+         elseif(ANDROID_NATIVE_API_LEVEL)
+diff --git a/cmake/README.md b/cmake/README.md
+index 0d8179a32c8..ebbf49c2298 100644
+--- a/cmake/README.md
++++ b/cmake/README.md
+@@ -190,7 +190,7 @@ If you don't supply the configuration argument ``-DANDROID_ABI=...``, it will de
+   * x86: ``-DANDROID_ABI=x86``
+   * x86_64: ``-DANDROID_ABI=x86_64``
+ 
+-By default we set the android API level to 28. Should you need to change this supply the following
++By default we set the android API level to 26. Should you need to change this supply the following
+ configuration argument to the above CMake call: ``-DANDROID_PLATFORM=android-${API_LEVEL}``.
+ 
+ ### Cross compiling for iOS
+diff --git a/doc/global/macros.qdocconf b/doc/global/macros.qdocconf
+index f414b3fed18..af9d53be350 100644
+--- a/doc/global/macros.qdocconf
++++ b/doc/global/macros.qdocconf
+@@ -90,9 +90,9 @@ macro.NdkVer              = "r27c"
+ macro.NdkFullVer          = "27.2.12479018"
+ macro.NdkCompilerVer      = "Clang 17.0.2"
+ macro.JdkVer              = "17"
+-macro.AndroidMinApiVer    = "28"
++macro.AndroidMinApiVer    = "26"
+ macro.AndroidMaxApiVer    = "36"
+-macro.AndroidMinVer       = "9"
++macro.AndroidMinVer       = "8"
+ macro.AndroidMaxVer       = "16"
+ macro.AndroidPlatformVer  = "36"
+ macro.AndroidBuildToolsVer = "36.0.0"
+diff --git a/src/android/jar/build.gradle b/src/android/jar/build.gradle
+index 54512f6f4b3..52972b84a0b 100644
+--- a/src/android/jar/build.gradle
++++ b/src/android/jar/build.gradle
+@@ -27,7 +27,7 @@ android {
+     namespace = "org.qtproject.qt.android"
+ 
+     defaultConfig {
+-        minSdkVersion 28
++        minSdkVersion 26
+     }
+ 
+     sourceSets {
+diff --git a/src/network/android/jar/build.gradle b/src/network/android/jar/build.gradle
+index 580e15b92f6..713894e9ef2 100644
+--- a/src/network/android/jar/build.gradle
++++ b/src/network/android/jar/build.gradle
+@@ -26,7 +26,7 @@ android {
+     compileSdk 36
+ 
+     defaultConfig {
+-        minSdkVersion 28
++        minSdkVersion 26
+     }
+ 
+     sourceSets {
+diff --git a/src/plugins/networkinformation/android/jar/build.gradle b/src/plugins/networkinformation/android/jar/build.gradle
+index 580e15b92f6..713894e9ef2 100644
+--- a/src/plugins/networkinformation/android/jar/build.gradle
++++ b/src/plugins/networkinformation/android/jar/build.gradle
+@@ -26,7 +26,7 @@ android {
+     compileSdk 36
+ 
+     defaultConfig {
+-        minSdkVersion 28
++        minSdkVersion 26
+     }
+ 
+     sourceSets {
+diff --git a/src/tools/androiddeployqt/main.cpp b/src/tools/androiddeployqt/main.cpp
+index 72c636557be..79f143c24c3 100644
+--- a/src/tools/androiddeployqt/main.cpp
++++ b/src/tools/androiddeployqt/main.cpp
+@@ -172,7 +172,7 @@ struct Options
+     // Versioning
+     QString versionName;
+     QString versionCode;
+-    QByteArray minSdkVersion{"28"};
++    QByteArray minSdkVersion{"26"};
+     QByteArray targetSdkVersion{"36"};
+ 
+     // lib c++ path
+@@ -1993,8 +1993,8 @@ bool updateAndroidManifest(Options &options)
+             if (reader.isStartElement()) {
+                 if (reader.name() == "uses-sdk"_L1) {
+                     if (reader.attributes().hasAttribute("android:minSdkVersion"_L1))
+-                        if (reader.attributes().value("android:minSdkVersion"_L1).toInt() < 28) {
+-                            fprintf(stderr, "Invalid minSdkVersion version, minSdkVersion must be >= 28\n");
++                        if (reader.attributes().value("android:minSdkVersion"_L1).toInt() < 26) {
++                            fprintf(stderr, "Invalid minSdkVersion version, minSdkVersion must be >= 26\n");
+                             return false;
+                         }
+                 } else if ((reader.name() == "application"_L1 ||
+diff --git a/coin/provisioning/common/linux/android/gradle_project/app/build.gradle b/coin/provisioning/common/linux/android/gradle_project/app/build.gradle
+index 2c353ebd..b841ca66 100644
+--- a/coin/provisioning/common/linux/android/gradle_project/app/build.gradle
++++ b/coin/provisioning/common/linux/android/gradle_project/app/build.gradle
+@@ -8,7 +8,7 @@ android {
+ 
+     defaultConfig {
+         applicationId "com.example.gradle_project"
+-        minSdk 28
++        minSdk 26
+         targetSdk 36
+         versionCode 1
+         versionName "1.0"
+

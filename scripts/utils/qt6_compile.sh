@@ -9,15 +9,25 @@
 POSITIONAL=()
 JOBS=8
 BUILDDIR=
+PLATFORM_ARG=
+QT_HOST_PATH=
+ANDROID_SDK="$HOME/Android/Sdk"
+ANDROID_NDK="$HOME/Android/Sdk/ndk/27.2.12479018"
 
 helpFunction() {
   print G "Usage:"
   print N "\t$0 <QT_source_folder> <destination_folder> [options]"
   print N ""
   print N "Build options:"
-  print N "  -j, --jobs NUM   Parallelize build across NUM processes. (default: 8)"
-  print N "  -b, --build DIR  Build in DIR. (default: <QT_source_folder>/build)"
-  print N "  -h, --help       Display this message and exit."
+  print N "  -p, --platform PLATFORM      Target platform: linux, macos, or android. (default: auto-detect)"
+  print N "  -j, --jobs NUM               Parallelize build across NUM processes. (default: 8)"
+  print N "  -b, --build DIR              Build in DIR. (default: <QT_source_folder>/build)"
+  print N "  -h, --help                   Display this message and exit."
+  print N ""
+  print N "Android-specific options:"
+  print N "  --qt-host-path PATH          Path to Qt host tools (required for android)"
+  print N "  --android-sdk PATH           Path to Android SDK. (default: ~/Android/Sdk)"
+  print N "  --android-ndk PATH           Path to Android NDK. (default: ~/Android/Sdk/ndk/27.2.12479018)"
   print N ""
   print N "Any other arguments will be passed to the Qt configure script."
   exit 0
@@ -30,6 +40,11 @@ while [[ $# -gt 0 ]]; do
   key="$1"
 
   case $key in
+  -p | --platform)
+    PLATFORM_ARG="$2"
+    shift
+    shift
+    ;;
   -j | --jobs)
     JOBS="$2"
     shift
@@ -37,6 +52,21 @@ while [[ $# -gt 0 ]]; do
     ;;
   -b | --build)
     BUILDDIR="$2"
+    shift
+    shift
+    ;;
+  --qt-host-path)
+    QT_HOST_PATH="$2"
+    shift
+    shift
+    ;;
+  --android-sdk)
+    ANDROID_SDK="$2"
+    shift
+    shift
+    ;;
+  --android-ndk)
+    ANDROID_NDK="$2"
     shift
     shift
     ;;
@@ -89,20 +119,62 @@ MACOS="
   -no-feature-qdbus \
   -qt-freetype \
   -appstore-compliant \
-  -feature-texthtmlparser \ 
+  -feature-texthtmlparser \
   -- \
   -DCMAKE_OSX_ARCHITECTURES='arm64;x86_64'
 "
 
-if [[ "$OSTYPE" == "linux-gnu"* ]]; then
-  print N "Configure for linux"
-  PLATFORM=$LINUX
-elif [[ "$OSTYPE" == "darwin"* ]]; then
-  print N "Configure for darwin"
+ANDROID="
+  -qt-host-path $QT_HOST_PATH \
+  -android-abis arm64-v8a,armeabi-v7a,x86,x86_64 \
+  -android-sdk $ANDROID_SDK \
+  -android-ndk $ANDROID_NDK
+"
 
-  PLATFORM=$MACOS
+# Determine target platform
+if [[ -n "$PLATFORM_ARG" ]]; then
+  # Platform explicitly specified via argument
+  case "$PLATFORM_ARG" in
+  linux)
+    print N "Configure for linux"
+    PLATFORM=$LINUX
+    ;;
+  macos)
+    print N "Configure for macos"
+    PLATFORM=$MACOS
+    ;;
+  android)
+    print N "Configure for android"
+    # Validate required Android arguments
+    if [[ -z "$QT_HOST_PATH" ]]; then
+      die "Android build requires --qt-host-path argument"
+    fi
+    if [[ ! -d "$QT_HOST_PATH" ]]; then
+      die "Qt host path does not exist: $QT_HOST_PATH"
+    fi
+    if [[ ! -d "$ANDROID_SDK" ]]; then
+      die "Android SDK path does not exist: $ANDROID_SDK"
+    fi
+    if [[ ! -d "$ANDROID_NDK" ]]; then
+      die "Android NDK path does not exist: $ANDROID_NDK"
+    fi
+    PLATFORM=$ANDROID
+    ;;
+  *)
+    die "Unsupported platform: $PLATFORM_ARG (supported: linux, macos, android)"
+    ;;
+  esac
 else
-  die "Unsupported platform (yet?)"
+  # Auto-detect platform from OSTYPE
+  if [[ "$OSTYPE" == "linux-gnu"* ]]; then
+    print N "Configure for linux (auto-detected)"
+    PLATFORM=$LINUX
+  elif [[ "$OSTYPE" == "darwin"* ]]; then
+    print N "Configure for macos (auto-detected)"
+    PLATFORM=$MACOS
+  else
+    die "Unsupported platform (yet?)"
+  fi
 fi
 
 # There is a QT-Linguist GUI tool that 
