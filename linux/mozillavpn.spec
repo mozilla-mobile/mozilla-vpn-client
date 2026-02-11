@@ -8,7 +8,7 @@ Summary:   Mozilla VPN
 License:   MPL-2.0
 URL:       https://vpn.mozilla.org
 Packager:  Naomi Kirby
-Requires:  (openssl-libs <= 1:3.0.0 or openssl3-libs)
+Requires:  (openssl-libs >= 1:3.0.0 or openssl3-libs)
 Requires:  qt6-qtbase >= 6.0
 Requires:  qt6-qtnetworkauth >= 6.0
 Requires:  qt6-qtquickcontrols2 >= 6.0
@@ -25,7 +25,6 @@ BuildRequires: (gcc-c++ >= 10.0.0 or gcc-toolset-10)
 BuildRequires: libcap-devel
 BuildRequires: libsecret-devel
 BuildRequires: ninja-build
-BuildRequires: (openssl-devel >= 1:3.0.0 or openssl3-devel)
 BuildRequires: polkit-devel
 BuildRequires: python3-yaml
 BuildRequires: qt6-qtbase-devel >= 6.0

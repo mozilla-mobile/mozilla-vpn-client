@@ -80,9 +80,7 @@ LINUX="
   -feature-wayland \
   -no-feature-gssapi \
   -no-feature-zstd \
-  -xcb \
-  -- \
-  -DOPENSSL_USE_STATIC_LIBS=ON \
+  -xcb
 "
 
 MACOS="
