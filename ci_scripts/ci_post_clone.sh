@@ -23,7 +23,6 @@ git submodule update --init
 # create xcode.xconfig
 cat > xcode.xconfig << EOF
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
-LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
 GROUP_ID_IOS = group.org.mozilla.ios.Guardian
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension

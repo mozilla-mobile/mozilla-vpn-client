@@ -195,14 +195,6 @@ foreach(LOCALE ${I18N_LOCALES})
     )
 endforeach()
 
-## Install the LoginItems into the bundle.
-add_dependencies(mozillavpn loginitem)
-add_custom_command(TARGET mozillavpn POST_BUILD
-    COMMENT "Bundling LoginItems"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:loginitem>
-        $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/LoginItems/$<TARGET_PROPERTY:loginitem,OUTPUT_NAME>.app/
-)
-
 ## Compile and install the app icons into the bundle.
 file(READ ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/AppIcon.appiconset/Contents.json APPICON_CONTENTS_JSON)
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/AppIcon.appiconset/Contents.json)

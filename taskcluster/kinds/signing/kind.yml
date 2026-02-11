@@ -20,13 +20,6 @@ mac-signing:
         - deep: false
           runtime: true
           force: true
-          entitlements: taskcluster/scripts/signing/loginItems-entitlements.xml
-          globs:
-            - "/Contents/Library/LoginItems/MozillaVPNLoginItem.app"
-
-        - deep: false
-          runtime: true
-          force: true
           # These files are signed without entitlements
           globs:
             - "/Contents/Library/LaunchServices/org.mozilla.macos.FirefoxVPN.daemon"
