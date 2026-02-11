@@ -6,13 +6,13 @@
 
 #ifdef PROXY_MASQUE_ENABLED
 
-#include <QDebug>
-#include <QNetworkDatagram>
-#include <QUdpSocket>
-#include <QUrl>
-#include <QtEndian>
+#  include <QDebug>
+#  include <QNetworkDatagram>
+#  include <QUdpSocket>
+#  include <QUrl>
+#  include <QtEndian>
 
-#include "dnsresolver.h"
+#  include "dnsresolver.h"
 
 constexpr const uint MASQUE_CAPSULE_DATAGRAM = 0;
 
