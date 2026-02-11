@@ -63,8 +63,12 @@ MZViewBase {
             }
 
             onTextChanged: text => {
-                if (MZSettings.stagingServerAddress !== serverAddressInput.text) {
-                    MZSettings.stagingServerAddress = serverAddressInput.text;
+                var serverAddressText = serverAddressInput.text.trim();
+                if (serverAddressText.endsWith('/')) {
+                  serverAddressText = serverAddressText.slice(0, -1);
+                }
+                if (MZSettings.stagingServerAddress !== serverAddressText) {
+                    MZSettings.stagingServerAddress = serverAddressText;
                 }
             }
 
@@ -105,8 +109,12 @@ MZViewBase {
             }
 
             onTextChanged: text => {
-                               if (MZSettings.addonCustomServerAddress !== addonCustomServerInput.text) {
-                                   MZSettings.addonCustomServerAddress = addonCustomServerInput.text;
+                               var addonAddressText = addonCustomServerInput.text.trim();
+                               if (!addonAddressText.endsWith('/')) {
+                                 addonAddressText = addonAddressText + '/';
+                               }
+                               if (MZSettings.addonCustomServerAddress !== addonAddressText) {
+                                   MZSettings.addonCustomServerAddress = addonAddressText;
                                }
                            }
 
