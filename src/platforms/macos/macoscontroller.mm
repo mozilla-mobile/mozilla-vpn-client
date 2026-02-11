@@ -93,83 +93,71 @@ void MacOSController::initialize(const Device* device, const Keys* keys) {
 }
 
 void MacOSController::upgradeService() {
-  // For MacOS 13 and beyond, attempt to register the daemon using the
-  // SMAppService interface.
-  if (@available(macOS 13, *)) {
-    SMAppService* service = [SMAppService daemonServiceWithPlistName:plist()];
+  // Attempt to register the daemon using the SMAppService interface.
+  SMAppService* service = [SMAppService daemonServiceWithPlistName:plist()];
 
-    // If the service purports to be installed, but the local socket doesn't
-    // exist. We might need to forcibly remove the old daemon and upgrade it.
-    // This can occur when upgrading from a legacy launchd-style service to
-    // one that is managed by SMAppService.
-    [service unregisterWithCompletionHandler:^(NSError* error){
-      if (error != nil) {
-        logger.warning() << "Legacy service removal failed:" << error;
-      } else {
-        logger.info() << "Legacy service removal succeeded";
-      }
-      QMetaObject::invokeMethod(this, &MacOSController::registerService);
-    }];
-  } else {
-    // Otherwise, for legacy Mac users, they will need to install the daemon
-    // some other way. This is normally handled by the installer package.
-    return connectService();
-  }
+  // If the service purports to be installed, but the local socket doesn't
+  // exist. We might need to forcibly remove the old daemon and upgrade it.
+  // This can occur when upgrading from a legacy launchd-style service to
+  // one that is managed by SMAppService.
+  [service unregisterWithCompletionHandler:^(NSError* error){
+    if (error != nil) {
+      logger.warning() << "Legacy service removal failed:" << error;
+    } else {
+      logger.info() << "Legacy service removal succeeded";
+    }
+    QMetaObject::invokeMethod(this, &MacOSController::registerService);
+  }];
 }
 
 void MacOSController::registerService(void) {
-  if (@available(macOS 13, *)) {
-    SMAppService* service = [SMAppService daemonServiceWithPlistName:plist()];
+  SMAppService* service = [SMAppService daemonServiceWithPlistName:plist()];
 
-    // Attempt to register the service upon initialization. This should be a
-    // no-op if the service is already registered.
-    NSError* error = nil;
-    if ([service registerAndReturnError: &error]) {
-      logger.debug() << "Mozilla VPN daemon registered successfully.";
-    } else if (error.code == kSMErrorInvalidSignature) {
-      // If the build is unsigned, continue anyways and hope for the best.
-      // This is to mitigate developer pain by allowing the VPN to make use
-      // of a pre-existing daemon from a signed installation.
-      logger.error() << "Unable to register Mozilla VPN daemon:"
-                     << "code signature invalid";
-      connectService();
-      return;
-    } else {
-      // Otherwise, we encountered some other error. Most likely the user
-      // needs to approve the daemon to run. Which will be handled below.
-      logger.error() << "Unable to register Mozilla VPN daemon:"
-                     << error.localizedDescription;
-    }
-
-    // Check the service status for how to proceed.
-    switch ([service status]) {
-      case SMAppServiceStatusNotRegistered:
-        logger.debug() << "Mozilla VPN daemon not registered.";
-        m_registerTimer.start(SERVICE_INIT_POLL_INTERVAL_MSEC);
-        break;
-
-      case SMAppServiceStatusNotFound:
-        logger.debug() << "Mozilla VPN daemon not found.";
-        break;
-
-      case SMAppServiceStatusEnabled:
-        logger.debug() << "Mozilla VPN daemon enabled.";
-        m_permissionRequired = false;
-        connectService();
-        break;
-
-      case SMAppServiceStatusRequiresApproval:
-        logger.debug() << "Mozilla VPN daemon requires approval.";
-        if (!m_permissionRequired) {
-          m_permissionRequired = true;
-          emit permissionRequired();
-        }
-        m_registerTimer.start(SERVICE_INIT_POLL_INTERVAL_MSEC);
-        break;
-    }
+  // Attempt to register the service upon initialization. This should be a
+  // no-op if the service is already registered.
+  NSError* error = nil;
+  if ([service registerAndReturnError: &error]) {
+    logger.debug() << "Mozilla VPN daemon registered successfully.";
+  } else if (error.code == kSMErrorInvalidSignature) {
+    // If the build is unsigned, continue anyways and hope for the best.
+    // This is to mitigate developer pain by allowing the VPN to make use
+    // of a pre-existing daemon from a signed installation.
+    logger.error() << "Unable to register Mozilla VPN daemon:"
+                    << "code signature invalid";
+    connectService();
+    return;
   } else {
-    // This method should only ever be called for macOS 13 and newer.
-    Q_UNREACHABLE();
+    // Otherwise, we encountered some other error. Most likely the user
+    // needs to approve the daemon to run. Which will be handled below.
+    logger.error() << "Unable to register Mozilla VPN daemon:"
+                    << error.localizedDescription;
+  }
+
+  // Check the service status for how to proceed.
+  switch ([service status]) {
+    case SMAppServiceStatusNotRegistered:
+      logger.debug() << "Mozilla VPN daemon not registered.";
+      m_registerTimer.start(SERVICE_INIT_POLL_INTERVAL_MSEC);
+      break;
+
+    case SMAppServiceStatusNotFound:
+      logger.debug() << "Mozilla VPN daemon not found.";
+      break;
+
+    case SMAppServiceStatusEnabled:
+      logger.debug() << "Mozilla VPN daemon enabled.";
+      m_permissionRequired = false;
+      connectService();
+      break;
+
+    case SMAppServiceStatusRequiresApproval:
+      logger.debug() << "Mozilla VPN daemon requires approval.";
+      if (!m_permissionRequired) {
+        m_permissionRequired = true;
+        emit permissionRequired();
+      }
+      m_registerTimer.start(SERVICE_INIT_POLL_INTERVAL_MSEC);
+      break;
   }
 }
 
