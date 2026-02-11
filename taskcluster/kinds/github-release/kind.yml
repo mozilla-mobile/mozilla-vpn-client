@@ -25,7 +25,7 @@ tasks:
         symbol: GH
         tier: 1
         kind: build
-        platform: github
+        platform: github/opt
       attributes:
         shipping-phase: ship-client
       worker-type: github
