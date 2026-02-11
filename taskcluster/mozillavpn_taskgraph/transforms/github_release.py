@@ -27,3 +27,18 @@ def build_artifact_map(config, tasks):
 
         task["worker"]["artifact-map"] = artifact_map
         yield task
+
+@transforms.add
+def build_parameters(config, tasks):
+    for task in tasks:
+        worker = task.setdefault("worker", {})
+        worker["git-revision"] = config.params["head_rev"]
+
+        for field in (
+            "release-body",
+            "release-name",
+            "git-tag",
+        ):
+            if field in worker:
+                worker[field] = worker[field].format(**config.params)
+        yield task
