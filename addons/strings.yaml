@@ -155,9 +155,6 @@ commonStrings:
   bullet4:
     value: "[macOS, Linux] Better experience in the rare situation where credentials are not found upon app launch."
     comment: Bullet point with a specific update in 2.34. Should have tag that indicates it applies to macOS and Linux platforms.
-  bullet5:
-    value: "[Linux] Improved installation directories for polkit."
-    comment: Bullet point with a specific update in 2.34. Should have tag that indicates it applies to Linux platform.
 
 tryFirefoxExtension:
   title:
