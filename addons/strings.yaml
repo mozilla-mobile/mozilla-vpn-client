@@ -142,6 +142,20 @@ commonStrings:
     value: "[all] You can use Mozilla VPN in dozens of languages, and we’ve included the latest translations in this release."
     comment: Bullet point with a specific update in 2.33. Should have tag that indicates it applies to all platforms.
 
+234updateMessage:
+  bullet1:
+    value: "[iOS, Windows] Improved method of signing in."
+    comment: Bullet point with a specific update in 2.34. Should have tag that indicates it applies to iOS and Windows platforms.
+  bullet2:
+    value: "[all] In the rare situation where all servers in a location are unavailable, it was difficult for people to turn off the VPN. This is now easier."
+    comment: Bullet point with a specific update in 2.34. Should have tag that indicates it applies to all platforms.
+  bullet3:
+    value: "[macOS, Windows, Linux] Small improvements in the system status bar icon when switching servers."
+    comment: Bullet point with a specific update in 2.34. Should have tag that indicates it applies to macOS, Windows, and Linux platforms.
+  bullet4:
+    value: "[macOS, Linux] Better experience in the rare situation where credentials are not found upon app launch."
+    comment: Bullet point with a specific update in 2.34. Should have tag that indicates it applies to macOS and Linux platforms.
+
 tryFirefoxExtension:
   title:
     value: Try the Firefox extension
