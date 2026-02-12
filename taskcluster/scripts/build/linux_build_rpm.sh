@@ -65,5 +65,9 @@ sudo yum-builddep -y ${MOZ_FETCHES_DIR}/mozillavpn-${DIST}.spec
 rpmbuild -D "_topdir ${HOME}" -D "_sourcedir ${MOZ_FETCHES_DIR}" -ba ${MOZ_FETCHES_DIR}/mozillavpn-${DIST}.spec
 
 # Gather the build artifacts for export
-RPM_BUILD_ARCH=$(uname -m)
+RPM_BUILD_ARCH=$(rpm --eval '%{_arch}')
 tar -C ${HOME}/RPMS/${RPM_BUILD_ARCH} -cvzf /builds/worker/artifacts/mozillavpn-${DIST}.tar.gz .
+find ${HOME}/RPMS/${RPM_BUILD_ARCH} -name 'mozillavpn-*.rpm' | while read -r RPM_BUILD_FILE; do
+  RPM_BUILD_PACKAGE=$(basename ${RPM_BUILD_FILE} | grep -E -o '^mozillavpn(-[a-z]+)?')
+  cp -v ${RPM_BUILD_FILE} /builds/worker/artifacts/${RPM_BUILD_PACKAGE}.rpm
+done
