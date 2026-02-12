@@ -4,6 +4,8 @@
 
 #include "desktopauthenticationlistener.h"
 
+#include <QCoreApplication>
+#include <QGuiApplication>
 #include <QOAuthHttpServerReplyHandler>
 #include <QRandomGenerator>
 #include <QUrlQuery>
@@ -17,8 +19,9 @@ namespace {
 Logger logger("DesktopAuthenticationListener");
 }
 
-DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent)
-    : AuthenticationListener(parent) {
+DesktopAuthenticationListener::DesktopAuthenticationListener(QObject* parent,
+                                                             bool headless)
+    : AuthenticationListener(parent), m_headless(headless) {
   MZ_COUNT_CTOR(DesktopAuthenticationListener);
 
   m_server = new QOAuthHttpServerReplyHandler(QHostAddress::LocalHost, this);
@@ -68,7 +71,23 @@ void DesktopAuthenticationListener::start(Task* task,
   query.addQueryItem("port", QString::number(m_server->port()));
   query.addQueryItem("utm_medium", "vpn-client");
   query.addQueryItem("utm_source", "desktop-signup-flow");
-  url.setQuery(query);
 
-  UrlOpener::instance()->openUrl(url);
+  // Check if we are running in a GUI application
+  if (!qobject_cast<QGuiApplication*>(QCoreApplication::instance())) {
+    logger.debug()
+        << "CLI application detected, output auth URL to the console";
+    if (m_headless) {
+      query.addQueryItem("headless", "1");
+    }
+    url.setQuery(query);
+    QTextStream stdoutStream(stdout);
+    stdoutStream << "Please open the following URL in your browser to continue "
+                    "the authentication process:"
+                 << Qt::endl;
+    stdoutStream << url.toEncoded(QUrl::FullyEncoded) << Qt::endl;
+  } else {
+    url.setQuery(query);
+    UrlOpener::instance()->openUrl(url);
+  }
+  emit started();
 }

@@ -12,7 +12,6 @@
 #include "authenticationinapp/authenticationinapp.h"
 #include "feature/feature.h"
 #include "helper.h"
-#include "localizer.h"
 #include "models/licensemodel.h"
 #include "qmlengineholder.h"
 #include "resourceloader.h"
@@ -35,8 +34,6 @@ class Interceptor final : public QQmlAbstractUrlInterceptor {
 };
 
 void TestResourceLoader::loadFile() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -55,8 +52,6 @@ void TestResourceLoader::loadFile() {
 }
 
 void TestResourceLoader::loadDir() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -75,8 +70,6 @@ void TestResourceLoader::loadDir() {
 }
 
 void TestResourceLoader::commonPasswords() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -99,8 +92,6 @@ void TestResourceLoader::commonPasswords() {
 }
 
 void TestResourceLoader::licenseModel() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -127,8 +118,6 @@ void TestResourceLoader::licenseModel() {
 }
 
 void TestResourceLoader::addon() {
-  Localizer l;
-
   SettingsHolder::instance()->setFeaturesFlippedOn(
       QStringList{"replacerAddon"});
   const_cast<Feature*>(Feature::get(Feature::Feature_replacerAddon))

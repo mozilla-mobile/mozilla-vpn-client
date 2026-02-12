@@ -23,7 +23,6 @@
 #include "feature/featuremodel.h"
 #include "glean/mzglean.h"
 #include "helper.h"
-#include "localizer.h"
 #include "qmlengineholder.h"
 #include "qtglean.h"
 #include "settingsholder.h"
@@ -45,8 +44,6 @@ void TestAddon::init() {
 void TestAddon::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestAddon::message_notification_data() {
-  Localizer l;
-
   QObject parent;
   SystemTrayNotificationHandler nh(&parent);
 

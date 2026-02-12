@@ -540,10 +540,10 @@ void MozillaVPN::authenticateWithType(
           &MozillaVPN::abortAuthentication);
   connect(taskAuthenticate, &TaskAuthenticate::authenticationCompleted, this,
           &MozillaVPN::completeAuthentication);
+  connect(taskAuthenticate, &TaskAuthenticate::authenticationStarted, this,
+          [this]() { emit authenticationStarted(); });
 
   TaskScheduler::scheduleTask(taskAuthenticate);
-
-  emit authenticationStarted();
 }
 
 void MozillaVPN::abortAuthentication() {
@@ -2429,7 +2429,10 @@ void MozillaVPN::handleDeepLink(const QUrl& url) {
     logger.info() << "Unknown deep link target:" << url.authority();
   }
 
-  // Show the window after handling a deep link.
-  QmlEngineHolder* engine = QmlEngineHolder::instance();
-  engine->showWindow();
+  // Show the window after handling a deep link only if the authentication flow
+  // was initiated by a GUI App
+  if (qobject_cast<QGuiApplication*>(QCoreApplication::instance())) {
+    QmlEngineHolder* engine = QmlEngineHolder::instance();
+    engine->showWindow();
+  }
 }

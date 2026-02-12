@@ -28,7 +28,6 @@
 #include "telemetry.h"
 
 struct MozillaVPNPrivate {
-  Localizer m_localizer;
   CaptivePortal m_captivePortal;
   CaptivePortalDetection m_captivePortalDetection;
   ConnectionHealth m_connectionHealth;
