@@ -78,6 +78,10 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
     ## Build the list of supported locales and add rules to build them.
     file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${TRANSLATIONS_DIRECTORY} ${TRANSLATIONS_DIRECTORY}/*)
     list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
+    set(LRELEASE_FLAGS "-verbose")
+    if(Qt6_VERSION VERSION_EQUAL 6.10.0)
+        list(APPEND LRELEASE_FLAGS "-idbased")
+    endif()
     foreach(LOCALE ${I18N_LOCALES})
         if(NOT EXISTS ${TRANSLATIONS_DIRECTORY}/${LOCALE}/mozillavpn.xliff)
             list(REMOVE_ITEM I18N_LOCALES ${LOCALE})
@@ -105,7 +109,7 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
         add_custom_command(
             OUTPUT ${GENERATED_DIR}/mozillavpn_${LOCALE}.qm
             MAIN_DEPENDENCY ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
-            COMMAND ${QT_LRELEASE_EXECUTABLE} -verbose -idbased ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
+            COMMAND ${QT_LRELEASE_EXECUTABLE} ${LRELEASE_FLAGS} ${GENERATED_DIR}/mozillavpn_${LOCALE}.ts
         )
     endforeach()
 

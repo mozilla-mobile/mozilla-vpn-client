@@ -12,6 +12,7 @@ import tempfile
 import shutil
 import subprocess
 import sys
+from packaging.version import Version
 
 # hack to be able to re-use parseYAMLTranslationStrings
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../utils')))
@@ -419,6 +420,11 @@ lrelease = shutil.which("lrelease", path=qtsearchpath)
 if lrelease is None:
     print("Unable to locate lrelease path.", file=sys.stderr)
 
+lrelease_flags = ""
+lrelease_version = subprocess.run([lrelease, "-version"], stdout=subprocess.PIPE).stdout.decode('utf-8').split()[-1]
+if Version(lrelease_version) < Version("6.10"):
+    lrelease_flags = "-idbased" 
+
 rcc = shutil.which("rcc", path=qtsearchpath)
 if rcc is None:
     print("Unable to locate rcc path.", file=sys.stderr)
@@ -471,12 +477,12 @@ with open(args.source, "r", encoding="utf-8") as file:
         # This will be probably replaced by the en locale if it exists
         en_ts_file = os.path.join(tmp_path, "i18n", "locale_en.ts")
         shutil.copyfile(template_ts_file, en_ts_file)
-        os.system(f"{lrelease} -idbased {en_ts_file}")
+        os.system(f"{lrelease} {lrelease_flags} {en_ts_file}")
 
         # Fallback
         ts_file = os.path.join(tmp_path, "i18n", "locale.ts")
         shutil.copyfile(template_ts_file, ts_file)
-        os.system(f"{lrelease} -idbased {ts_file}")
+        os.system(f"{lrelease} {lrelease_flags} {ts_file}")
 
         # Prepare for shared strings, if they will be used
         use_shared_strings = "message" in manifest and "usesSharedStrings" in manifest["message"] and manifest["message"]["usesSharedStrings"] == True
@@ -546,7 +552,7 @@ with open(args.source, "r", encoding="utf-8") as file:
                 else:
                     os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
 
-                os.system(f"{lrelease} -idbased {locale_file}")
+                os.system(f"{lrelease} {lrelease_flags} {locale_file}")
 
                 xlifftool_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "xlifftool.py")
                 xlifftool_cmd = [sys.executable, xlifftool_path, "-C", f"--locale={locale}", xliff_path]
