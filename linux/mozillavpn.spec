@@ -23,7 +23,6 @@ BuildRequires: golang >= 1.18
 BuildRequires: (gcc >= 10.0.0 or gcc-toolset-10)
 BuildRequires: (gcc-c++ >= 10.0.0 or gcc-toolset-10)
 BuildRequires: libcap-devel
-BuildRequires: libsecret-devel
 BuildRequires: ninja-build
 BuildRequires: polkit-devel
 BuildRequires: python3-yaml
