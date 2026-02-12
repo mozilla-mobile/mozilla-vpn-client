@@ -1,0 +1,6 @@
+[Activate or deactivate MozillaVPN]
+Identity=unix-group:admin;unix-group:sudo
+Action=org.mozilla.vpn.activate;org.mozilla.vpn.deactivate
+ResultAny=no
+ResultInactive=no
+ResultActive=yes
