@@ -9,6 +9,7 @@ License:   MPL-2.0
 URL:       https://vpn.mozilla.org
 Packager:  Naomi Kirby
 Requires:  (openssl-libs >= 1:3.0.0 or openssl3-libs)
+Requires:  polkit-libs
 Requires:  qt6-qtbase >= 6.0
 Requires:  qt6-qtnetworkauth >= 6.0
 Requires:  qt6-qtquickcontrols2 >= 6.0
