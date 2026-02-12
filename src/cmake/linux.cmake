@@ -195,6 +195,8 @@ if(NOT BUILD_FLATPAK)
         install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.rules-debian
             RENAME org.mozilla.vpn.rules
             DESTINATION ${POLKIT_DATA_DIR}/polkit-1/rules.d)
+        install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.pkla
+            DESTINATION /var/lib/polkit-1/localauthority/55-org.mozilla.d/)
     elseif(EXISTS /etc/redhat-release)
         install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.rules-others
             RENAME org.mozilla.vpn.rules
