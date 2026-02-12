@@ -115,7 +115,9 @@ Rectangle {
         Connections {
             target: MZTheme
             function onChanged() {
-                buttonBackground.color = root.startingState
+                if (Qt.platform.os !== "ios") {
+                    buttonBackground.color = root.startingState
+                }
             }
         }
     }
