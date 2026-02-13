@@ -58,7 +58,7 @@ linux/plucky:
 linux/ubuntu:
     description: "Linux Build (Ubuntu/Latest)"
     treeherder:
-        platform: linux/plucky
+        platform: linux/ubuntu
     worker:
         docker-image: {in-tree: linux-build-ubuntu}
     add-index-routes:
