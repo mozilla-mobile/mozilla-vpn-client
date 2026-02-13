@@ -42,22 +42,21 @@ if(Qt6_VERSION VERSION_GREATER_EQUAL 6.5.0)
 endif()
 
 if(NOT BUILD_FLATPAK)
-    # Link to libcap and libsecret
+    # Link to libcap and polkit
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(LIBCAP REQUIRED IMPORTED_TARGET libcap)
-    pkg_check_modules(LIBSECRET REQUIRED IMPORTED_TARGET libsecret-1)
     pkg_check_modules(polkit REQUIRED IMPORTED_TARGET polkit-gobject-1)
 
     if (QT_FEATURE_static)
-        target_link_libraries(mozillavpn PRIVATE ${LIBCAP_STATIC_LIBRARIES} ${LIBSECRET_STATIC_LIBRARIES})
-        target_include_directories(mozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS} ${LIBSECRET_STATIC_INCLUDE_DIRS})
-        target_compile_options(mozillavpn PRIVATE ${LIBCAP_STATIC_CFLAGS} ${LIBSECRET_STATIC_CFLAGS})
+        target_link_libraries(mozillavpn PRIVATE ${LIBCAP_STATIC_LIBRARIES})
+        target_include_directories(mozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS})
+        target_compile_options(mozillavpn PRIVATE ${LIBCAP_STATIC_CFLAGS})
 
         find_package(Qt6 REQUIRED COMPONENTS WaylandClientPrivate)
         qt_import_plugins(mozillavpn INCLUDE Qt6::QWaylandIntegrationPlugin)
         target_link_libraries(mozillavpn PRIVATE Qt6::WaylandClientPrivate)
     else()
-        target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP PkgConfig::LIBSECRET)
+        target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP)
     endif()
 
     target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit)
@@ -65,8 +64,6 @@ if(NOT BUILD_FLATPAK)
     target_sources(mozillavpn PRIVATE
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.h
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcryptosettings.cpp
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcryptosettings.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbusclient.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbusclient.h
     )

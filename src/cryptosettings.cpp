@@ -15,10 +15,8 @@
 
 #if defined(UNIT_TEST)
 #  include "platforms/dummy/dummycryptosettings.h"
-#elif defined(MZ_FLATPAK)
-#  include "platforms/linux/xdgcryptosettings.h"
 #elif defined(MZ_LINUX)
-#  include "platforms/linux/linuxcryptosettings.h"
+#  include "platforms/linux/xdgcryptosettings.h"
 #elif defined(MZ_MACOS) || defined(MZ_IOS)
 #  include "platforms/macos/macoscryptosettings.h"
 #elif defined(MZ_WINDOWS)
@@ -40,10 +38,8 @@ CryptoSettings* s_instance = nullptr;
 void CryptoSettings::create() {
 #if defined(UNIT_TEST)
   new DummyCryptoSettings();
-#elif defined(MZ_FLATPAK)
-  new XdgCryptoSettings();
 #elif defined(MZ_LINUX)
-  new LinuxCryptoSettings();
+  new XdgCryptoSettings();
 #elif defined(MZ_MACOS) || defined(MZ_IOS)
   new MacOSCryptoSettings();
 #elif defined(MZ_WINDOWS)

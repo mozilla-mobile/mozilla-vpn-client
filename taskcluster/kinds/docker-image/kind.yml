@@ -36,6 +36,10 @@ tasks:
         parent: base
         symbol: I(linux-qt6-build)
         definition: linux-qt6-build
+    linux-rpm-build:
+        parent: base
+        symbol: I(linux-rpm-build)
+        definition: linux-rpm-build
     linux-build-jammy:
         symbol: I(linux-jammy)
         definition: linux-dpkg-build
