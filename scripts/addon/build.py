@@ -12,7 +12,6 @@ import tempfile
 import shutil
 import subprocess
 import sys
-from distutils.version import LooseVersion
 
 # hack to be able to re-use parseYAMLTranslationStrings
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../utils')))
@@ -421,8 +420,9 @@ if lrelease is None:
     print("Unable to locate lrelease path.", file=sys.stderr)
 
 lrelease_flags = ""
-lrelease_version = subprocess.run([lrelease, "-version"], stdout=subprocess.PIPE).stdout.decode('utf-8').split()[-1]
-if LooseVersion(lrelease_version) < LooseVersion("6.10"):
+lrelease_verstr = subprocess.run([lrelease, "-version"], stdout=subprocess.PIPE).stdout.decode('utf-8').split()[-1]
+lrelease_version = tuple(int(x) for x in lrelease_verstr.split('.')[0:2])
+if lrelease_version < (6, 10):
     lrelease_flags = "-idbased" 
 
 rcc = shutil.which("rcc", path=qtsearchpath)
