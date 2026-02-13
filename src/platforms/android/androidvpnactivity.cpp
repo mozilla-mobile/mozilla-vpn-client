@@ -37,7 +37,9 @@ AndroidVPNActivity::AndroidVPNActivity() {
          reinterpret_cast<void*>(onServiceConnected)},
         {"qtOnServiceDisconnected", "()V",
          reinterpret_cast<void*>(onServiceDisconnected)},
-        {"onIntentInternal", "()V", reinterpret_cast<void*>(onIntentInternal)}};
+        {"onIntentInternal", "()V", reinterpret_cast<void*>(onIntentInternal)},
+        {"onCustomTabClosed", "()V",
+         reinterpret_cast<void*>(onCustomTabClosed)}};
     QJniObject javaClass(CLASSNAME);
     QJniEnvironment env;
     jclass objectClass = env->GetObjectClass(javaClass.object<jobject>());
@@ -221,6 +223,14 @@ void AndroidVPNActivity::onIntentInternal(JNIEnv* env, jobject thiz) {
     return;
   }
   emit s_instance->onOpenedWithUrl(url);
+}
+
+void AndroidVPNActivity::onCustomTabClosed(JNIEnv* env, jobject thiz) {
+  Q_UNUSED(env);
+  Q_UNUSED(thiz);
+  logger.debug() << "Custom Tab closed";
+  AndroidCommons::dispatchToMainThread(
+      [] { emit AndroidVPNActivity::instance()->customTabClosed(); });
 }
 
 bool AndroidVPNActivity::isReady() {

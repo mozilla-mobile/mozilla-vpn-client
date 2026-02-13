@@ -18,6 +18,8 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Xml)
 
 target_sources(mozillavpn PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidauthenticationlistener.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidauthenticationlistener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidcontroller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidiaphandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidnetworkwatcher.cpp
