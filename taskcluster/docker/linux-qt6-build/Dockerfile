@@ -73,7 +73,7 @@ RUN apt -y install libwayland-dev \
 # %include linux/debian/control
 ADD topsrcdir/linux/debian/control /root/mozillavpn-dpkg-control
 RUN sed -rie '/\s+(qt6-|qml6-|libqt6|qmake)/d' /root/mozillavpn-dpkg-control && \
-	mk-build-deps -i -r  --tool="apt-get --no-install-recommends --yes" /root/mozillavpn-dpkg-control
+	mk-build-deps -i -r --tool="apt-get --no-install-recommends --yes" /root/mozillavpn-dpkg-control
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
