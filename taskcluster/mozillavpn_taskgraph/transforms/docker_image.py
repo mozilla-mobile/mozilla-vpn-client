@@ -20,18 +20,19 @@ def dockerhub_fetch_digest(repo, tag):
 def resolve_tag_digest(config, tasks):
     for task in tasks:
         if not "args" in task:
+            yield task
             continue
 
         # If we find text of the form: {dockerhub:repository:tag} then use the
-        # Docker Hub API to replace it with the hash of the tag.
+        # Docker Hub API to generate the image tag including the current digest
         dockerhub_regex = re.compile('{dockerhub:[a-z0-9:]+}')
         for key, value in task.get("args", {}).items():
             match = dockerhub_regex.search(value)
             if match:
                 dh_args = match.group(0)[1:-1].split(':')
                 digest = dockerhub_fetch_digest(dh_args[1], dh_args[2])
-                tag = f'{dh_args[1]}:{dh_args[2]}@{dh_digest}'
-                if dh_digest:
+                if digest:
+                    tag = f'{dh_args[1]}:{dh_args[2]}@{digest}'
                     task["args"][key] = value[0:match.start()] + tag + value[match.end():]
 
         yield task

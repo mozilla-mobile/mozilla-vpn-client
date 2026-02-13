@@ -60,12 +60,12 @@ tasks:
         symbol: I(linux-ubuntu)
         definition: linux-dpkg-build
         args:
-            DOCKER_BASE_IMAGE: {dockerhub:ubuntu:latest}
+            DOCKER_BASE_IMAGE: '{dockerhub:ubuntu:latest}'
     linux-build-fedora:
         symbol: I(linux-fedora)
         definition: linux-rpm-build
         args:
-            DOCKER_BASE_IMAGE: {dockerhub:fedora:latest}
+            DOCKER_BASE_IMAGE: '{dockerhub:fedora:latest}'
     sentry:
         parent: base
         symbol: I(sentry)
