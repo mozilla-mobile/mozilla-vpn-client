@@ -55,24 +55,24 @@ linux/plucky:
         name: linux-plucky
         type: build
 
-linux/fedora-fc39:
-    description: "Linux Build (Fedora/39)"
+linux/ubuntu:
+    description: "Linux Build (Ubuntu/Latest)"
     treeherder:
-        platform: linux/fedora-fc39
+        platform: linux/plucky
     worker:
-        docker-image: {in-tree: linux-build-fedora-fc39}
+        docker-image: {in-tree: linux-build-ubuntu}
     add-index-routes:
-        name: linux-fedora-fc39
+        name: linux-ubuntu
         type: build
 
-linux/fedora-fc40:
-    description: "Linux Build (Fedora/40)"
+linux/fedora:
+    description: "Linux Build (Fedora/Latest)"
     treeherder:
-        platform: linux/fedora-fc40
+        platform: linux/fedora
     worker:
-        docker-image: {in-tree: linux-build-fedora-fc40}
+        docker-image: {in-tree: linux-build-fedora}
     add-index-routes:
-        name: linux-fedora-fc40
+        name: linux-fedora
         type: build
 
 linux64/release-deb:
