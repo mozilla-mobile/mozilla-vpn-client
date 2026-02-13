@@ -78,7 +78,7 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
     ## Build the list of supported locales and add rules to build them.
     file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${TRANSLATIONS_DIRECTORY} ${TRANSLATIONS_DIRECTORY}/*)
     list(FILTER I18N_LOCALES EXCLUDE REGEX "^\\..+")
-    set(LRELEASE_FLAGS "-verbose")
+    set(LRELEASE_FLAGS)
     if(Qt6_VERSION VERSION_LESS 6.10.0)
         list(APPEND LRELEASE_FLAGS "-idbased")
     endif()
