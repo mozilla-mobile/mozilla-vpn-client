@@ -202,6 +202,12 @@ if(NOT BUILD_FLATPAK)
         message(INFO "Unknown Linux distribution, please install polkit rules manually")
     endif()
 
+    configure_file(${CMAKE_SOURCE_DIR}/linux/apparmor.profile.in
+        ${CMAKE_CURRENT_BINARY_DIR}/apparmor.profile)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/apparmor.profile
+        DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/apparmor.d
+        RENAME mozillavpn)
+
     pkg_check_modules(SYSTEMD systemd)
     if("${SYSTEMD_FOUND}" EQUAL 1)
         pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
