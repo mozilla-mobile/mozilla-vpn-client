@@ -1,6 +1,8 @@
-// Only enable for macOS 11 and 12
+// Only enable for macOS 11 and 12, as 2.32.0 is the final release those
+// machines can receive.
+
 (function(api, condition) {
-// Then check for macOS...
+// Confirm it's macOS...
 const isMacOS = (api.env.platform === 'macos');
 if (!isMacOS) {
   // This shouldn't be possible. Do not show.
