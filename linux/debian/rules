@@ -29,7 +29,13 @@ override_dh_clean:
 	dh_clean --exclude=3rdparty
 
 override_dh_auto_configure:
-	dh_auto_configure -- -DWEBEXT_INSTALL_LIBDIR=/lib -DBUILD_ID=$(DEB_VERSION) -DCMAKE_CXX_STANDARD=17 -DBUILD_TESTS=OFF ${OPENSSL_BUILD_ARGS}
+	dh_auto_configure -- \
+		-DCMAKE_CXX_STANDARD=17 \
+		-DWEBEXT_INSTALL_LIBDIR=/lib \
+		-DBUILD_ID=$(DEB_VERSION) \
+		-DBUILD_TESTS=OFF \
+		-DBUILD_APPARMOR=ON \
+		${OPENSSL_BUILD_ARGS}
 
 override_dh_auto_test:
 
