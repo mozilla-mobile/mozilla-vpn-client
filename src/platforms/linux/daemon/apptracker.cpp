@@ -18,9 +18,6 @@
 #include "platforms/linux/linuxutils.h"
 #include "platforms/linux/xdgportal.h"
 
-constexpr const char* GTK_DESKTOP_APP_SERVICE = "org.gtk.gio.DesktopAppInfo";
-constexpr const char* GTK_DESKTOP_APP_PATH = "/org/gtk/gio/DesktopAppInfo";
-
 constexpr const char* DBUS_SYSTEMD_SERVICE = "org.freedesktop.systemd1";
 constexpr const char* DBUS_SYSTEMD_PATH = "/org/freedesktop/systemd1";
 constexpr const char* DBUS_SYSTEMD_MANAGER = "org.freedesktop.systemd1.Manager";
