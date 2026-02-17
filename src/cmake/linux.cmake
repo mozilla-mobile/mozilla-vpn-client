@@ -206,7 +206,7 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_CURRENT_BINARY_DIR}/apparmor.profile)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/apparmor.profile
         DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/apparmor.d
-        RENAME mozillavpn)
+        RENAME "usr.bin.mozillavpn")
 
     pkg_check_modules(SYSTEMD systemd)
     if("${SYSTEMD_FOUND}" EQUAL 1)

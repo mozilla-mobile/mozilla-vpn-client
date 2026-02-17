@@ -33,6 +33,10 @@ override_dh_auto_configure:
 
 override_dh_auto_test:
 
+override_dh_install:
+	dh_install
+	dh_apparmor --profile-name=usr.bin.mozillavpn -p mozillavpn
+
 override_dh_installdocs:
 
 override_dh_installinfo:
