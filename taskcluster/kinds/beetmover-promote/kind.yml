@@ -25,28 +25,28 @@ task-defaults:
 tasks:
     android-arm64:
         requires-level: 3
-        release-artifacts: [mozillavpn-arm64-v8a-release.apk]
+        release-artifacts: [mozillavpn-arm64-v8a-release.apk, mozillavpn-website-arm64-v8a-release.apk]
         dependencies:
             signing: signing-android-arm64/release
         attributes:
             build-type: android/arm64-v8a
     android-armv7:
         requires-level: 3
-        release-artifacts: [mozillavpn-armeabi-v7a-release.apk]
+        release-artifacts: [mozillavpn-armeabi-v7a-release.apk, mozillavpn-website-armeabi-v7a-release.apk]
         dependencies:
             signing: signing-android-armv7/release
         attributes:
             build-type: android/armv7
     android-x86:
         requires-level: 3
-        release-artifacts: [mozillavpn-x86-release.apk]
+        release-artifacts: [mozillavpn-x86-release.apk, mozillavpn-website-armeabi-v7a-release.apk]
         dependencies:
             signing: signing-android-x86/release
         attributes:
             build-type: android/x86
     android-x64:
         requires-level: 3
-        release-artifacts: [mozillavpn-x86_64-release.apk]
+        release-artifacts: [mozillavpn-x86_64-release.apk, mozillavpn-website-armeabi-v7a-release.apk]
         dependencies:
             signing: signing-android-x64/release
         attributes:
