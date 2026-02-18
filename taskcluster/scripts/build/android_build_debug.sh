@@ -56,7 +56,7 @@ ls /builds/worker/artifacts/
 (cd .tmp/playstore/src/; zip -r android-build.zip android-build)
 cp .tmp/playstore/src/android-build.zip /builds/worker/artifacts/
 
-(cd .tmp/website/; zip -r android-build-website.zip android-build)
+(cd .tmp/website/src/; zip -r android-build-website.zip android-build)
 cp .tmp/website/src/android-build-website.zip /builds/worker/artifacts/
 
 
