@@ -1,6 +1,6 @@
 {
   "api_version": "0.1",
-  "id": "message_update_v2.32",
+  "id": "message_update_v2.32_legacy_macos",
   "name": "Update to Mozilla VPN 2.32",
   "type": "message",
   "conditions": {
@@ -15,7 +15,7 @@
     "date": 1761194901,
     "usesSharedStrings": true,
     "shortVersion": "2.32",
-    "id": "message_update_v2.32",
+    "id": "message_update_v2.32_legacy_macos",
     "title": "vpn.commonStrings.updateTitle",
     "subtitle": "vpn.commonStrings.subtitle",
     "badge": "new_update",
