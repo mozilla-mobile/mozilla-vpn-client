@@ -33,7 +33,7 @@ jobs:
           curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/${DECISION_TASK_INDEX}" -o decision-task.json
           DECISION_TASK_ID=$(jq -r '.taskId' decision-task.json)
           curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task-group/${DECISION_TASK_ID}/list" -o task-group.json
-          echo taskid=$(jq -r '.tasks[] | select(.task.metadata.name == "${{ matrix.name }}") | .status.taskId') >> $GITHUB_OUTPUT
+          echo taskid=$(jq -r '.tasks[] | select(.task.metadata.name == "${{ matrix.name }}") | .status.taskId' task-group.json) >> $GITHUB_OUTPUT
 
       - name: Upload artifacts
         shell: bash
