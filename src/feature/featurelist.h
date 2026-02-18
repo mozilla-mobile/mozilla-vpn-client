@@ -241,6 +241,9 @@ FEATURE(webPurchase,           // Feature ID
             .windows = true,
             .macos = true,
             .gnu_linux = true,
+#if defined(MZ_ANDROID) && defined(MZ_ANDROID_WEBSITE_BUILD)
+            .android = true,
+#endif
         }))
 
 FEATURE(webExtension,    // Feature ID

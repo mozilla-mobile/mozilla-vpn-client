@@ -76,3 +76,10 @@ if( ${Qt6_VERSION} VERSION_GREATER_EQUAL 6.4.0)
         ${OPENSSL_LIBS_DIR}/libssl_3.so
     APPEND)
 endif()
+
+option(MZ_ANDROID_WEBSITE_BUILD "Build apk without google play services" OFF)
+
+if(MZ_ANDROID_WEBSITE_BUILD)
+    message(STATUS "Website build enabled")
+    target_compile_definitions(mozillavpn PRIVATE "MZ_ANDROID_WEBSITE_BUILD=1")
+endif()
