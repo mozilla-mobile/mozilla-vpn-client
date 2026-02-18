@@ -26,7 +26,7 @@ jobs:
         run: |
           curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/${DECISION_TASK_INDEX}" -o decision-task.json
           DECISION_TASK_ID=$(jq -r '.taskId' decision-task.json)
-          curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task-group/${DECISION_TASK_ID}" -o task-group.json
+          curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task-group/${DECISION_TASK_ID}/list" -o task-group.json
           jq '.tasks[] | {"key": .task.metadata.name, "value": {"name": .task.metadata.name, "id": .status.taskId}}' task-group.json | jq -s 'from_entries' > task-map.json
 
           jq 'with_entries(.value |= {"artifacts": .})' > artifact-map.json << EOF
