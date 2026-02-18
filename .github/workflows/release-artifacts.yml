@@ -39,7 +39,7 @@ jobs:
           EOF
 
           echo -n "tasks=" >> $GITHUB_OUTPUT
-          jq -s '. *= input | .[] | select(.artifacts)' task-map.json artifact-map.json >> $GITHUB_OUTPUT
+          jq '. *= input | .[] | select(.artifacts)' task-map.json artifact-map.json | jq -s -c >> $GITHUB_OUTPUT
 
   gh-upload-artifacts:
     name: Upload artifacts
