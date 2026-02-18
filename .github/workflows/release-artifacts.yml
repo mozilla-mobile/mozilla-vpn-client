@@ -9,62 +9,46 @@ on:
       - main
 
 jobs:
-  gh-enumerate-artifacts:
-    name: Enumerate artifacts
+  gh-upload-artifacts:
+    name: Upload artifacts
     runs-on: ubuntu-latest
     env:
       #DECISION_TASK_REF: ${{ github.sha }}
       DECISION_TASK_REF: ${{ github.event.pull_request.base.sha }}
-    outputs:
-      tasks: ${{ steps.enumerate.outputs.tasks }}
+    strategy:
+      matrix:
+        name:
+          - build-linux64/release-deb
+          - repackage-signing-msi-x86_64
+          - repackage-signing-msi-aarch64
+          - mac-notarization-macos/opt
+
     steps:
-      - name: Enumerate artifacts
+      - name: Resolve task
         shell: bash
-        id: enumerate
+        id: resolve
         env:
           DECISION_TASK_INDEX: mozillavpn.v2.mozilla-vpn-client.revision.${{ env.DECISION_TASK_REF }}.taskgraph.decision
         run: |
           curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/${DECISION_TASK_INDEX}" -o decision-task.json
           DECISION_TASK_ID=$(jq -r '.taskId' decision-task.json)
           curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task-group/${DECISION_TASK_ID}/list" -o task-group.json
-          jq '.tasks[] | {"key": .task.metadata.name, "value": {"name": .task.metadata.name, "id": .status.taskId}}' task-group.json | jq -s 'from_entries' > task-map.json
+          echo taskid=$(jq -r '.tasks[] | select(.task.metadata.name == "${{ matrix.name }}") | .status.taskId') >> $GITHUB_OUTPUT
 
-          jq 'with_entries(.value |= {"artifacts": .})' > artifact-map.json << EOF
-          {
-            "build-linux64/release-deb": "public/build/mozillavpn.deb",
-            "repackage-signing-msi-x86_64": "public/build/MozillaVPN.msi",
-            "repackage-signing-msi-aarch64": "public/build/MozillaVPN-aarch64.msi",
-            "mac-notarization-macos/opt": "public/build/MozillaVPN.pkg"
-          }
-          EOF
-
-          echo -n "tasks=" >> $GITHUB_OUTPUT
-          jq '. *= input | .[] | select(.artifacts)' task-map.json artifact-map.json | jq -s -c >> $GITHUB_OUTPUT
-
-  gh-upload-artifacts:
-    name: Upload artifacts
-    runs-on: ubuntu-latest
-    needs:
-      - gh-enumerate-artifacts
-    strategy:
-      matrix:
-        task: ${{ fromJson(needs.gh-enumerate-artifacts.outputs.tasks) }}
-
-    steps:
       - name: Upload artifacts
         shell: bash
         run: |
-          curl -v -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ matrix.task.id }}/artifacts" -o artifacts.json
-          
-          ARTIFACT_PATH=${{ matrix.task.artifact }}
-          ARTIFACT_TYPE=$(jq -r ".artifacts[] | select(.name == \"${ARTIFACT_PATH}\")" artifacts.json)
-          ARTIFACT_NAME=$(basename ${ARTIFACT_PATH})
-          curl -sSL https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${PATH} -o ${ARTIFACT_NAME}
+          curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.taskid }}/artifacts" -o artifacts.json
+          for ARTIFACT_PATH in $(jq -r '.artifacts[] | .name' artifacts.json); do
+            ARTIFACT_TYPE=$(jq -r ".artifacts[] | select(.name == \"${ARTIFACT_PATH}\")" artifacts.json)
+            ARTIFACT_NAME=$(basename ${ARTIFACT_PATH})
+            curl -v -sSL https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${PATH} -o ${ARTIFACT_NAME}
 
-          echo curl -v -L POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ github.token }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            -H "Content-Type: ${ARTIFACT_TYPE}" \
-            --data-binary @${ARTIFACT_NAME} \
-            https://uploads.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}/assets?name=$(basename ${PATH})
+            echo curl -v -L POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ github.token }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -H "Content-Type: ${ARTIFACT_TYPE}" \
+              --data-binary @${ARTIFACT_NAME} \
+              https://uploads.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}/assets?name=$(basename ${PATH})
+            done
