@@ -40,9 +40,9 @@ jobs:
         run: |
           curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts" -o artifacts.json
           for ARTIFACT_PATH in $(jq -r '.artifacts[] | .name' artifacts.json); do
-            ARTIFACT_TYPE=$(jq -r ".artifacts[] | select(.name == \"${ARTIFACT_PATH}\")" artifacts.json)
+            ARTIFACT_TYPE=$(jq -r ".artifacts[] | select(.name == \"${ARTIFACT_PATH}\").contentType" artifacts.json)
             ARTIFACT_NAME=$(basename ${ARTIFACT_PATH})
-            curl -v -sSL https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${PATH} -o ${ARTIFACT_NAME}
+            curl -v -sSL https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${ARTIFACT_PATH} -o ${ARTIFACT_NAME}
 
             echo curl -v -L POST \
               -H "Accept: application/vnd.github+json" \
