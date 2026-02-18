@@ -38,7 +38,7 @@ jobs:
       - name: Upload artifacts
         shell: bash
         run: |
-          curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.taskid }}/artifacts" -o artifacts.json
+          curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts" -o artifacts.json
           for ARTIFACT_PATH in $(jq -r '.artifacts[] | .name' artifacts.json); do
             ARTIFACT_TYPE=$(jq -r ".artifacts[] | select(.name == \"${ARTIFACT_PATH}\")" artifacts.json)
             ARTIFACT_NAME=$(basename ${ARTIFACT_PATH})
