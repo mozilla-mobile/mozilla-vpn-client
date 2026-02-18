@@ -238,11 +238,9 @@ FEATURE(webPurchase,           // Feature ID
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
         byPlatform({
-            .windows = true,
-            .macos = true,
-            .gnu_linux = true,
+          .windows = true, .macos = true, .gnu_linux = true,
 #if defined(MZ_ANDROID) && defined(MZ_ANDROID_WEBSITE_BUILD)
-            .android = true,
+          .android = true,
 #endif
         }))
 
