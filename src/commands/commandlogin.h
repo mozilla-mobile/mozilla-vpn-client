@@ -5,6 +5,8 @@
 #ifndef COMMANDLOGIN_H
 #define COMMANDLOGIN_H
 
+#define MZ_CLI_AUTHENTICATION_IN_APP
+
 #include "command.h"
 
 class CommandLogin final : public Command {
