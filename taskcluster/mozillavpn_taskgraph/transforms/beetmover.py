@@ -8,13 +8,13 @@ import os.path
 from taskgraph.transforms.base import TransformSequence
 from taskgraph.transforms.task import task_description_schema
 from taskgraph.util.dependencies import get_dependencies
-from taskgraph.util.schema import Schema
+from taskgraph.util.schema import LegacySchema
 from voluptuous import Extra, Optional, Required
 
 transforms = TransformSequence()
 
 
-beetmover_schema = Schema(
+beetmover_schema = LegacySchema(
     {
         Required("beetmover-action"): str,
         Required("attributes"): {
