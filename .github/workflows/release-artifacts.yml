@@ -12,20 +12,18 @@ jobs:
   gh-upload-artifacts:
     name: Upload artifacts
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     env:
       #DECISION_TASK_REF: ${{ github.sha }}
       DECISION_TASK_REF: ${{ github.event.pull_request.base.sha }}
     strategy:
       matrix:
         task:
-          - name: build-linux64/release-deb
-            path: public/build/mozillavpn.deb
-          - name: repackage-signing-msi-x86_64
-            path: public/build/MozillaVPN.msi
-          - name: repackage-signing-msi-aarch64
-            path: public/build/MozillaVPN-aarch64.msi
-          - name: mac-notarization-macos/opt
-            path: public/build/MozillaVPN.pkg
+          - build-linux64/release-deb
+          - repackage-signing-msi-x86_64
+          - repackage-signing-msi-aarch64
+          - mac-notarization-macos/opt
 
     steps:
       - name: Resolve task
@@ -37,21 +35,42 @@ jobs:
           curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/${DECISION_TASK_INDEX}" -o decision-task.json
           DECISION_TASK_ID=$(jq -r '.taskId' decision-task.json)
           curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task-group/${DECISION_TASK_ID}/list" -o task-group.json
-          echo taskid=$(jq -r '.tasks[] | select(.task.metadata.name == "${{ matrix.task.name }}") | .status.taskId' task-group.json) >> $GITHUB_OUTPUT
+          echo taskid=$(jq -r '.tasks[] | select(.task.metadata.name == "${{ matrix.task }}") | .status.taskId' task-group.json) >> $GITHUB_OUTPUT
 
       - name: Upload artifacts
         shell: bash
         run: |
           curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts" -o artifacts.json
-          ARTIFACT_PATH=${{ matrix.task.path }}
-          ARTIFACT_TYPE=$(jq -r ".artifacts[] | select(.name == \"${ARTIFACT_PATH}\").contentType" artifacts.json)
-          ARTIFACT_NAME=$(basename ${ARTIFACT_PATH})
-          curl -v -sSL https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts/${ARTIFACT_PATH} -o ${ARTIFACT_NAME}
+          jq -r '.artifacts[].name' artifacts.json | while read ARTIFACT_PATH; do
+            ARTIFACT_TYPE=$(jq -r ".artifacts[] | select(.name == \"${ARTIFACT_PATH}\").contentType" artifacts.json)
+            case $(echo "$ARTIFACT_TYPE" | cut -d\; -f1) in
+              application/x-msi)
+                break
+                ;;
 
-          echo curl -v -L POST \
-            -H "Accept: application/vnd.github+json" \
-            -H "Authorization: Bearer ${{ github.token }}" \
-            -H "X-GitHub-Api-Version: 2022-11-28" \
-            -H "Content-Type: ${ARTIFACT_TYPE}" \
-            --data-binary @${ARTIFACT_NAME} \
-            https://uploads.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}/assets?name=$(basename ${PATH})
+              application/vnd.apple.installer*)
+                break
+                ;;
+
+              application/vnd.debian.binary-package)
+                break
+                ;;
+
+              *)
+                echo "Skipping artifact: ${ARTIFACT_PATH} with type ${ARTIFACT_TYPE}"
+                continue
+                ;;
+            esac
+
+            ARTIFACT_NAME=$(basename ${ARTIFACT_PATH})
+            curl -v -sSL https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts/${ARTIFACT_PATH} -o ${ARTIFACT_NAME}
+
+            echo curl -v -L \
+              -X POST \
+              -H "Accept: application/vnd.github+json" \
+              -H "Authorization: Bearer ${{ github.token }}" \
+              -H "X-GitHub-Api-Version: 2022-11-28" \
+              -H "Content-Type: ${ARTIFACT_TYPE}" \
+              --data-binary @${ARTIFACT_NAME} \
+              https://uploads.github.com/repos/${{ github.repository }}/releases/${{ github.event.release.id }}/assets?name=$(basename ${PATH})
+          done
