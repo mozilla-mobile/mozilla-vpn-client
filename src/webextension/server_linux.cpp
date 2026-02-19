@@ -11,25 +11,66 @@
 
 #include "server.h"
 
-bool WebExtension::Server::isAllowedToConnect(qintptr sd) {
-  // Compare the socket security context to our own.
-  QFile selfproc("/proc/self/attr/current");
-  if (selfproc.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
-    QString selfctx = QString::fromUtf8(selfproc.readAll());
-    qsizetype end = selfctx.indexOf('\0');
-    if (end >= 0) {
-      selfctx.truncate(end);
-    }
+enum LinuxSecurityModule {
+  Unknown = 0,
+  SELinux,
+  AppArmor,
+  Disabled,
+};
 
-    char peersec[NAME_MAX];
-    socklen_t peerlen = sizeof(peersec);
-    if (getsockopt(sd, SOL_SOCKET, SO_PEERSEC, peersec, &peerlen) < 0) {
-      return false;
+static QString readFromFile(const QString& filename) {
+  QFile file(filename);
+  if (!file.open(QIODeviceBase::ReadOnly | QIODeviceBase::Text)) {
+    return QString();
+  }
+  QString result = QString::fromUtf8(file.readAll());
+  qsizetype end = result.indexOf('\0');
+  if (end >= 0) {
+    result.truncate(end);
+  }
+  return result.trimmed();
+}
+
+bool WebExtension::Server::isAllowedToConnect(qintptr sd) {
+  // Determine the major security module in use.
+  static enum LinuxSecurityModule lsm = LinuxSecurityModule::Unknown;
+  if (lsm == LinuxSecurityModule::Unknown) {
+    QStringList modules = readFromFile("/sys/kernel/security/lsm").split(',');
+    if (modules.contains("selinux")) {
+      lsm = SELinux;
+    } else if (modules.contains("apparmor")) {
+      lsm = AppArmor;
+    } else {
+      lsm = Disabled;
     }
-    peersec[peerlen] = '\0';
-    if (QString::compare(selfctx.trimmed(), peersec) != 0) {
-      return false;
+  }
+  if (lsm == Disabled) {
+    return true;
+  }
+
+  // Fetch the peer security context. 
+  char peersec[NAME_MAX];
+  socklen_t peerlen = sizeof(peersec);
+  if (getsockopt(sd, SOL_SOCKET, SO_PEERSEC, peersec, &peerlen) < 0) {
+    return false;
+  }
+  peersec[peerlen] = '\0';
+
+  // Restrict socket access to applications running within same security policy.
+  QString peer = QString(peersec);
+  QString policy = readFromFile("/proc/self/attr/current");
+  if (lsm == AppArmor) {
+    if (policy == "unconfined") {
+      return true;
     }
+    return peer == policy;
+  } else if (lsm == SELinux) {
+    QString setype = policy.split(':').value(2);
+    QString peertype = peer.split(':').value(2);
+    if (setype == "unconfined_t") {
+      return true;
+    }
+    return peertype == setype;
   }
 
   return true;
