@@ -49,19 +49,15 @@ jobs:
             ARTIFACT_TYPE=$(jq -r ".artifacts[] | select(.name == \"${ARTIFACT_PATH}\").contentType" artifacts.json)
             case $(echo "$ARTIFACT_TYPE" | cut -d\; -f1) in
               application/x-msi)
-                break
                 ;;
 
               application/vnd.apple.installer*)
-                break
                 ;;
 
               application/vnd.debian.binary-package)
-                break
                 ;;
               
               application/vnd.android.package-archive)
-                break
                 ;;
 
               *)
