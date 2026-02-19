@@ -46,7 +46,7 @@ jobs:
           ARTIFACT_PATH=${{ matrix.task.path }}
           ARTIFACT_TYPE=$(jq -r ".artifacts[] | select(.name == \"${ARTIFACT_PATH}\").contentType" artifacts.json)
           ARTIFACT_NAME=$(basename ${ARTIFACT_PATH})
-          curl -v -sSL https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${ARTIFACT_PATH} -o ${ARTIFACT_NAME}
+          curl -v -sSL https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts/${ARTIFACT_PATH} -o ${ARTIFACT_NAME}
 
           echo curl -v -L POST \
             -H "Accept: application/vnd.github+json" \
