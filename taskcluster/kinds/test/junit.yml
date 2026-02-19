@@ -27,6 +27,10 @@ android-junit:
           conda-unpack;
           unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER;
           ./scripts/android/cmake.sh -d;
-          cd .tmp/src/android-build/;
+          pushd .tmp/playstore/src/android-build/;
           ls;
-          ./gradlew test
+          ./gradlew test;
+          popd;
+          pushd .tmp/website/src/android-build/;
+          ls;
+          ./gradlew test;
