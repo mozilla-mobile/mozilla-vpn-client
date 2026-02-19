@@ -4,6 +4,9 @@
 
 #include "commandlogin.h"
 
+#ifdef MZ_CLI_AUTHENTICATION_IN_APP
+#  include "authenticationinapp/authenticationinapp.h"
+#endif
 #include "authenticationinapp/authenticationinapp.h"
 #include "authenticationlistener.h"
 #include "commandlineparser.h"
@@ -92,7 +95,6 @@ int CommandLogin::run(QStringList& tokens) {
 
   return MozillaVPN::runCommandLineApp([&] {
     MozillaVPN vpn;
-    vpn.serverData()->initialize();
     if (vpn.hasToken()) {
       QTextStream stream(stdout);
       stream << "User status: already authenticated" << Qt::endl;
@@ -102,6 +104,7 @@ int CommandLogin::run(QStringList& tokens) {
     QTextStream stream(stdout);
 
     if (!passwordOption.m_set) {
+      vpn.serverData()->initialize();
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
       eventListener.reset(new EventListener{});
 #endif
@@ -127,6 +130,8 @@ int CommandLogin::run(QStringList& tokens) {
     QEventLoop loop;
 
     if (passwordOption.m_set) {
+#ifdef MZ_CLI_AUTHENTICATION_IN_APP
+      vpn.serverData()->initialize();
       AuthenticationInApp* aia = AuthenticationInApp::instance();
 
       QObject::connect(aia, &AuthenticationInApp::stateChanged, aia, [&] {
@@ -273,6 +278,12 @@ int CommandLogin::run(QStringList& tokens) {
                 break;
             }
           });
+#else
+      stream << "Password-based authentication is not supported anymore"
+             << Qt::endl;
+      loop.exit();
+      return 1;
+#endif
     }
 
     QObject::connect(&vpn, &App::stateChanged, &vpn, [&] {
