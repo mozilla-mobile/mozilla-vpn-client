@@ -12,6 +12,7 @@
 #include <QScopeGuard>
 #include <QSslCertificate>
 #include <QSslKey>
+#include <QSysInfo>
 
 #include "constants.h"
 #include "env.h"
@@ -36,14 +37,6 @@ bool verify_content_signature(const char* x5u_ptr, size_t x5u_length,
                               const char* signature, const char* certSubject,
                               void (*logfn)(const char*));
 }
-
-#if defined(MZ_WINDOWS)
-constexpr const char* BALROG_WINDOWS_BUILD_TARGET = "WINNT_x86_64";
-#elif defined(MZ_MACOS)
-constexpr const char* BALROG_MACOS_BUILD_TARGET = "Darwin_x86";
-#else
-#  error Platform not supported yet
-#endif
 
 constexpr const char* BALROG_CERT_SUBJECT_CN =
     "aus.content-signature.mozilla.org";
@@ -72,9 +65,9 @@ Balrog::~Balrog() {
 // static
 QString Balrog::buildTarget() {
 #if defined(MZ_WINDOWS)
-  return BALROG_WINDOWS_BUILD_TARGET;
+  return QString("WINNT_%1").arg(QSysInfo::currentCpuArchitecture());
 #elif defined(MZ_MACOS)
-  return BALROG_MACOS_BUILD_TARGET;
+  return "Darwin_x86";
 #else
 #  error Balrog: Unsupported platform
 #endif
