@@ -10,9 +10,6 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
-    env:
-      #DECISION_TASK_REF: ${{ github.sha }}
-      DECISION_TASK_REF: 7f5ccb7f1e68b89ed7706106e172ba4cd27de6a0
     strategy:
       matrix:
         task:
@@ -31,7 +28,7 @@ jobs:
         shell: bash
         id: resolve
         env:
-          DECISION_TASK_INDEX: mozillavpn.v2.mozilla-vpn-client.revision.${{ env.DECISION_TASK_REF }}.taskgraph.decision
+          DECISION_TASK_INDEX: mozillavpn.v2.mozilla-vpn-client.revision.${{ github.sha }}.taskgraph.decision
         run: |
           curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/${DECISION_TASK_INDEX}" -o decision-task.json
           DECISION_TASK_ID=$(jq -r '.taskId' decision-task.json)
