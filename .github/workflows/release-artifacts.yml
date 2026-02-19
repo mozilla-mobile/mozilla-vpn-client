@@ -3,10 +3,6 @@ on:
   release:
     types:
       - created
-  # This is just for testing - remove this before merge.
-  pull_request:
-    branches:
-      - main
 
 jobs:
   gh-upload-artifacts:
@@ -16,7 +12,7 @@ jobs:
       contents: write
     env:
       #DECISION_TASK_REF: ${{ github.sha }}
-      DECISION_TASK_REF: ${{ github.event.pull_request.base.sha }}
+      DECISION_TASK_REF: 7f5ccb7f1e68b89ed7706106e172ba4cd27de6a0
     strategy:
       matrix:
         task:
