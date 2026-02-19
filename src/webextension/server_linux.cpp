@@ -48,7 +48,7 @@ bool WebExtension::Server::isAllowedToConnect(qintptr sd) {
     return true;
   }
 
-  // Fetch the peer security context. 
+  // Fetch the peer security context.
   char peersec[NAME_MAX];
   socklen_t peerlen = sizeof(peersec);
   if (getsockopt(sd, SOL_SOCKET, SO_PEERSEC, peersec, &peerlen) < 0) {
