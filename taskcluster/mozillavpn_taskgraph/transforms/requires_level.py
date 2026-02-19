@@ -6,14 +6,14 @@ Deletes a task when the current level is < then the required level
 """
 
 from taskgraph.transforms.base import TransformSequence
-from taskgraph.util.schema import Schema
+from taskgraph.util.schema import LegacySchema
 from voluptuous import Optional, Extra
 
 
 
 transforms = TransformSequence()
 
-build_schema = Schema(
+build_schema = LegacySchema(
     {
         Optional("requires-level"): int,
         Extra: object   
