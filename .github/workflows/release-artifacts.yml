@@ -23,6 +23,10 @@ jobs:
           - build-linux64/release-deb
           - repackage-signing-msi-x86_64
           - repackage-signing-msi-aarch64
+          - signing-android-arm64/release
+          - signing-android-armv7/release
+          - signing-android-x86/release
+          - signing-android-x64/release
           - mac-notarization-macos/opt
 
     steps:
@@ -53,6 +57,10 @@ jobs:
                 ;;
 
               application/vnd.debian.binary-package)
+                break
+                ;;
+              
+              application/vnd.android.package-archive)
                 break
                 ;;
 
