@@ -21,6 +21,7 @@ jobs:
       matrix:
         task:
           - build-linux64/release-deb
+          - build-linux64/release-rpm
           - repackage-signing-msi-x86_64
           - repackage-signing-msi-aarch64
           - signing-android-arm64/release
@@ -47,29 +48,29 @@ jobs:
           curl -sSL "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts" -o artifacts.json
           jq -r '.artifacts[].name' artifacts.json | while read ARTIFACT_PATH; do
             ARTIFACT_TYPE=$(jq -r ".artifacts[] | select(.name == \"${ARTIFACT_PATH}\").contentType" artifacts.json)
-            case $(echo "$ARTIFACT_TYPE" | cut -d\; -f1) in
-              application/x-msi)
+            ARTIFACT_NAME=$(basename ${ARTIFACT_PATH})
+            case ${ARTIFACT_NAME} in
+              *.msi)
                 ;;
 
-              application/vnd.apple.installer*)
+              *.pkg)
                 ;;
 
-              application/vnd.debian.binary-package)
+              *.deb | *.rpm)
                 ;;
-              
-              application/vnd.android.package-archive)
+
+              *.apk)
                 ;;
 
               *)
-                echo "Skipping artifact: ${ARTIFACT_PATH} with type ${ARTIFACT_TYPE}"
+                echo "Skipping artifact: ${ARTIFACT_PATH}"
                 continue
                 ;;
             esac
 
-            ARTIFACT_NAME=$(basename ${ARTIFACT_PATH})
-            curl -v -sSL https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts/${ARTIFACT_PATH} -o ${ARTIFACT_NAME}
+            curl -sSL https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts/${ARTIFACT_PATH} -o ${ARTIFACT_NAME}
 
-            echo curl -v -L \
+            echo curl -L \
               -X POST \
               -H "Accept: application/vnd.github+json" \
               -H "Authorization: Bearer ${{ github.token }}" \
