@@ -46,6 +46,7 @@ void AndroidAuthenticationListener::start(Task* task,
   QUrlQuery query(url.query());
   query.addQueryItem("utm_medium", "vpn-client");
   query.addQueryItem("utm_source", "android-customtab-flow");
+  query.addQueryItem("iap", "true");
   url.setQuery(query);
 
   QString urlString = url.toString();
