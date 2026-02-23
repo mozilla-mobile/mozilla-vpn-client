@@ -17,15 +17,19 @@ Item {
     property string logoSubtitle: MZI18n.ProductDescription
 
     Rectangle {
+        // The +100 and -50 in this rectangle is an awful hack to allow the purple color to cover
+        // the iOS status bar and bottom bar area (the items outside the safe area). It doesn't make a
+        // difference for other platforms. (In main.qml, we set the background color to the general bgColor,
+        // so this only is needed on this screen - it is the only one that has a custom background color.)
         id: fallBackBackground
         // This is a fallback for MZRadialGradient
         color: MZTheme.colors.onBoardingGradient.end
-        height: Screen.height
+        height: Screen.height + 100
         width: Screen.width
 
         anchors {
             top: parent.top
-            topMargin:  -window.safeAreaHeightByDevice()
+            topMargin:  -50
         }
     }
 
