@@ -56,7 +56,7 @@ void CryptoSettings::create() {
 
 // static
 QSettings::Format CryptoSettings::format() {
-  logger.error() << "Creating QSettings format";
+  logger.debug() << "Creating QSettings format";
   static QSettings::Format format =
       QSettings::registerFormat("moz", readFile, writeFile);
 
@@ -83,7 +83,7 @@ CryptoSettings::~CryptoSettings() {
 
 // static
 bool CryptoSettings::readFile(QIODevice& device, QSettings::SettingsMap& map) {
-  logger.error() << "Reading settings file.";
+  logger.debug() << "Reading settings file.";
   QByteArray version = device.read(1);
   if (version.length() != 1) {
     logger.error() << "Failed to read the version";
@@ -122,7 +122,7 @@ bool CryptoSettings::readFile(QIODevice& device, QSettings::SettingsMap& map) {
 // static
 bool CryptoSettings::readJsonFile(QIODevice& device,
                                   QSettings::SettingsMap& map) {
-  logger.info() << "Reading JSON file.";
+  logger.debug() << "Reading JSON file.";
   QByteArray content = device.readAll();
 
   QJsonDocument json = QJsonDocument::fromJson(content);
@@ -143,7 +143,7 @@ bool CryptoSettings::readJsonFile(QIODevice& device,
 bool CryptoSettings::readEncryptedChachaPolyFile(Version fileVersion,
                                                  QIODevice& device,
                                                  QSettings::SettingsMap& map) {
-  logger.error() << "Reading encrypted settings file.";
+  logger.debug() << "Reading encrypted settings file.";
   QByteArray header(1, fileVersion);
   QByteArray metadata;
   if (fileVersion == EncryptionChachaPolyV2) {
