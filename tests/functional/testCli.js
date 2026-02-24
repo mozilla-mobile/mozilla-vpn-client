@@ -67,11 +67,13 @@ describe('CLI Tests', function() {
     // Logout after each test to reset vpn
     await execCli(['logout', '-t']);
     // If a test failed dump stdout and stderr for debugging
-    if (this.currentTest.state === 'failed') {
-      console.log('\nCaptured stdout:');
+    if (!this.currentTest.state || this.currentTest.state === 'failed') {
+      console.log('::group::Stdout Logs');
       console.log(stdout);
-      console.log('\nCaptured stderr:');
-      console.log(stderr)
+      console.log('::endgroup');
+      console.log('::group::Stderr Logs');
+      console.log(stderr);
+      console.log('::endgroup');
     }
   });
 
