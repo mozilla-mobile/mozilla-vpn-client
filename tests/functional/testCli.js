@@ -3,7 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 const assert = require('assert');
-const {spawn, execSync} = require('child_process');
+const {spawn} = require('child_process');
 const guardian = require('./servers/guardian.js');
 const fxaServer = require('./servers/fxa.js');
 const addonServer = require('./servers/addon.js');
@@ -124,7 +124,15 @@ describe('CLI Tests', function() {
 
   describe('Login and Logout Commands', () => {
     it('Login should succeed with valid credentials', async () => {
-      const result = await cliLogin();
+      const result = await execCli(['login', '-p', '-t'], {
+        onStdout: (output, child) => {
+          if (output.includes('Username')) {
+            child.stdin.write('test@test.com\n');
+          } else if (output.includes('Password')) {
+            child.stdin.write('password\n');
+          }
+        }
+      });
       assert(result.code === 0, 'Login command should exit with code 0');
 
       const statusResult = await execCli(['status', '-t', '-c'])
