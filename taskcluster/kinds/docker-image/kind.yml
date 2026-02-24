@@ -6,6 +6,7 @@
 loader: taskgraph.loader.transform:loader
 
 transforms:
+    - mozillavpn_taskgraph.transforms.docker_image:transforms
     - taskgraph.transforms.docker_image:transforms
     - taskgraph.transforms.cached_tasks:transforms
     - taskgraph.transforms.task:transforms
@@ -55,16 +56,16 @@ tasks:
         definition: linux-dpkg-build
         args:
             DOCKER_BASE_IMAGE: ubuntu:plucky
-    linux-build-fedora-fc39:
-        symbol: I(linux-fedora-fc39)
+    linux-build-ubuntu:
+        symbol: I(linux-ubuntu)
+        definition: linux-dpkg-build
+        args:
+            DOCKER_BASE_IMAGE: '{dockerhub:ubuntu:latest}'
+    linux-build-fedora:
+        symbol: I(linux-fedora)
         definition: linux-rpm-build
         args:
-            DOCKER_BASE_IMAGE: fedora:39
-    linux-build-fedora-fc40:
-        symbol: I(linux-fedora-fc40)
-        definition: linux-rpm-build
-        args:
-            DOCKER_BASE_IMAGE: fedora:40
+            DOCKER_BASE_IMAGE: '{dockerhub:fedora:latest}'
     sentry:
         parent: base
         symbol: I(sentry)
