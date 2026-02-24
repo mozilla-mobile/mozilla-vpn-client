@@ -12,8 +12,6 @@ import components 0.1
 MZScreenBase {
     objectName: "screenHome"
     id: screenHome
-    Accessible.name: MZI18n.ProductName
-    Accessible.role: Accessible.Client
 
     Component.onCompleted: () => {
         MZNavigator.addStackView(VPN.ScreenHome, getStack())

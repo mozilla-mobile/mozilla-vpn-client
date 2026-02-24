@@ -103,6 +103,7 @@ ApplicationWindow {
     MouseArea {
         anchors.fill: parent
         z: MZTheme.theme.maxZLevel
+        Accessible.ignored: true
         onPressed: (mouse) => {
             window.screenClicked(mouse.x, mouse.y)
             mouse.accepted = false
