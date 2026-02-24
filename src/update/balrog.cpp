@@ -38,7 +38,11 @@ bool verify_content_signature(const char* x5u_ptr, size_t x5u_length,
 }
 
 #if defined(MZ_WINDOWS)
+#  if defined(_M_ARM64) || defined(__aarch64__)
+constexpr const char* BALROG_WINDOWS_BUILD_TARGET = "WINNT_aarch64";
+#  else
 constexpr const char* BALROG_WINDOWS_BUILD_TARGET = "WINNT_x86_64";
+#  endif
 #elif defined(MZ_MACOS)
 constexpr const char* BALROG_MACOS_BUILD_TARGET = "Darwin_x86";
 #else
