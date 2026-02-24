@@ -14,10 +14,17 @@ add_subdirectory(addons)
 
 foreach(FILENAME ${FTEST_SOURCES})
     get_filename_component(FTEST_NAME ${FILENAME} NAME_WLE)
-    add_test(NAME ${FTEST_NAME}
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMAND npm run functionalTest -- ${FILENAME})
-    
+
+    if(FTEST_NAME STREQUAL "testCli")
+        add_test(NAME ${FTEST_NAME}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMAND npm run "functionalTestCli")
+    else()
+        add_test(NAME ${FTEST_NAME}
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            COMMAND npm run "functionalTest" -- ${FILENAME})
+    endif()
+
     set_tests_properties(${FTEST_NAME} PROPERTIES
         RUN_SERIAL TRUE
         LABELS functional
