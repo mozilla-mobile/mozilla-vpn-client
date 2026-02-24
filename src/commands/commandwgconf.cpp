@@ -4,16 +4,19 @@
 
 #include "commandwgconf.h"
 
+#include <QCoreApplication>
 #include <QEventLoop>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QTextStream>
 
 #include "commandlineparser.h"
+#include "constants.h"
 #include "controller.h"
 #include "dnshelper.h"
 #include "interfaceconfig.h"
 #include "leakdetector.h"
+#include "loghandler.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
 #include "models/server.h"
@@ -30,40 +33,49 @@ CommandWgConf::~CommandWgConf() { MZ_COUNT_DTOR(CommandWgConf); }
 
 int CommandWgConf::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
+  QString appName = tokens[0];
+
+  CommandLineParser::Option hOption = CommandLineParser::helpOption();
+  CommandLineParser::Option mullvadMultihop(
+      "m", "mullvad-multihop", "Generate config for Mullvad multihop.");
+  CommandLineParser::Option wireguardMultihop(
+      "w", "wireguard-multihop", "Generate config for Wireguard multihop.");
+  CommandLineParser::Option testingOption("t", "testing",
+                                          "Run in testing mode.");
+
+  QList<CommandLineParser::Option*> options;
+  options.append(&hOption);
+  options.append(&mullvadMultihop);
+  options.append(&wireguardMultihop);
+  options.append(&testingOption);
+
+  CommandLineParser clp;
+  if (clp.parse(tokens, options, false)) {
+    return 1;
+  }
+
+  if (hOption.m_set) {
+    clp.showHelp(this, appName, options, false, false);
+    return 0;
+  }
+
+  if (testingOption.m_set) {
+    QCoreApplication::setOrganizationName("Mozilla Testing");
+    LogHandler::instance()->setStderr(true);
+  }
+
+  QTextStream stream(stdout);
+  if (mullvadMultihop.m_set && wireguardMultihop.m_set) {
+    stream << "Cannot use both --mullvad-multihop and --wireguard-multihop"
+           << Qt::endl;
+    return 1;
+  }
 
   return MozillaVPN::runCommandLineApp([&]() {
-    Q_ASSERT(!tokens.isEmpty());
-    QString appName = tokens[0];
-
-    CommandLineParser::Option hOption = CommandLineParser::helpOption();
-    CommandLineParser::Option mullvadMultihop(
-        "m", "mullvad-multihop", "Generate config for Mullvad multihop.");
-    CommandLineParser::Option wireguardMultihop(
-        "w", "wireguard-multihop", "Generate config for Wireguard multihop.");
-
-    QList<CommandLineParser::Option*> options;
-    options.append(&hOption);
-    options.append(&mullvadMultihop);
-    options.append(&wireguardMultihop);
-
-    CommandLineParser clp;
-    if (clp.parse(tokens, options, false)) {
-      return 1;
-    }
-
-    if (hOption.m_set) {
-      clp.showHelp(this, appName, options, false, false);
-      return 0;
-    }
-
-    QTextStream stream(stdout);
-    if (mullvadMultihop.m_set && wireguardMultihop.m_set) {
-      stream << "Cannot use both --mullvad-multihop and --wireguard-multihop"
-             << Qt::endl;
-      return 1;
-    }
-
     MozillaVPN vpn;
+    if (testingOption.m_set) {
+      Constants::setStaging();
+    }
     if (!vpn.hasToken()) {
       stream << "User is not authenticated" << Qt::endl;
       return 1;

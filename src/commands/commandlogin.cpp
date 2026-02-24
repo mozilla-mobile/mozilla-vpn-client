@@ -4,7 +4,7 @@
 
 #include "commandlogin.h"
 
-#ifdef MZ_CLI_AUTHENTICATION_IN_APP
+#if defined(MZ_CLI_AUTHENTICATION_IN_APP) || defined(MZ_DEBUG)
 #  include "authenticationinapp/authenticationinapp.h"
 #endif
 #include "authenticationinapp/authenticationinapp.h"
@@ -12,6 +12,7 @@
 #include "commandlineparser.h"
 #include "constants.h"
 #include "controller.h"
+#include "daemon/mock/mockdaemon.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/devicemodel.h"
@@ -32,6 +33,7 @@
 #  include <unistd.h>
 #endif
 
+#include <QCoreApplication>
 #include <QEventLoop>
 #include <QScopeGuard>
 #include <QTextStream>
@@ -53,12 +55,15 @@ int CommandLogin::run(QStringList& tokens) {
                                            "Login using e-mail and password");
   CommandLineParser::Option headlessOption("d", "headless",
                                            "Login in headless mode.");
+  CommandLineParser::Option testingOption("t", "testing",
+                                          "Run in testing mode.");
 
   QList<CommandLineParser::Option*> options;
   options.append(&hOption);
   options.append(&verboseOption);
   options.append(&passwordOption);
   options.append(&headlessOption);
+  options.append(&testingOption);
 
   CommandLineParser clp;
   if (clp.parse(tokens, options, false)) {
@@ -68,6 +73,12 @@ int CommandLogin::run(QStringList& tokens) {
   if (hOption.m_set) {
     clp.showHelp(this, appName, options, false, false);
     return 0;
+  }
+
+  if (testingOption.m_set) {
+    QCoreApplication::setOrganizationName("Mozilla Testing");
+
+    LogHandler::instance()->setStderr(true);
   }
 
   // If there is another instance, the execution terminates here.
@@ -95,6 +106,9 @@ int CommandLogin::run(QStringList& tokens) {
 
   return MozillaVPN::runCommandLineApp([&] {
     MozillaVPN vpn;
+    if (testingOption.m_set) {
+      Constants::setStaging();
+    }
     if (vpn.hasToken()) {
       QTextStream stream(stdout);
       stream << "User status: already authenticated" << Qt::endl;
@@ -130,7 +144,7 @@ int CommandLogin::run(QStringList& tokens) {
     QEventLoop loop;
 
     if (passwordOption.m_set) {
-#ifdef MZ_CLI_AUTHENTICATION_IN_APP
+#if defined(MZ_CLI_AUTHENTICATION_IN_APP) || defined(MZ_DEBUG)
       vpn.serverData()->initialize();
       AuthenticationInApp* aia = AuthenticationInApp::instance();
 
@@ -287,7 +301,8 @@ int CommandLogin::run(QStringList& tokens) {
     }
 
     QObject::connect(&vpn, &App::stateChanged, &vpn, [&] {
-      if (vpn.state() == App::StateMain) {
+      if (vpn.state() == App::StateMain ||
+          vpn.state() == App::StateOnboarding) {
         loop.exit();
       }
       if (ErrorHandler::instance()->alert() ==
