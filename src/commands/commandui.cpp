@@ -162,9 +162,14 @@ int CommandUI::run(QStringList& tokens) {
   // Configure graphics rendering for Android
   QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
       Qt::HighDpiScaleFactorRoundingPolicy::Round);
+  // Skip the workaround on Qt 6.10+
+  // if the underlying ChromeOS rendering bug
+  // resurfaces, re-evaluate after upgrading further.
+#  if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
   if (AndroidUtils::isChromeOSContext()) {
     QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
   }
+#  endif
 #endif
 
 #ifdef MZ_WINDOWS
