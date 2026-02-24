@@ -4,7 +4,7 @@
 
 #include "commandlogin.h"
 
-#if defined(MZ_CLI_AUTHENTICATION_IN_APP) || defined(MZ_DEBUG)
+#if defined(MZ_CLI_AUTHENTICATION_IN_APP)
 #  include "authenticationinapp/authenticationinapp.h"
 #endif
 #include "authenticationinapp/authenticationinapp.h"
@@ -144,7 +144,7 @@ int CommandLogin::run(QStringList& tokens) {
     QEventLoop loop;
 
     if (passwordOption.m_set) {
-#if defined(MZ_CLI_AUTHENTICATION_IN_APP) || defined(MZ_DEBUG)
+#if defined(MZ_CLI_AUTHENTICATION_IN_APP)
       vpn.serverData()->initialize();
       AuthenticationInApp* aia = AuthenticationInApp::instance();
 

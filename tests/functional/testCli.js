@@ -110,12 +110,10 @@ describe('CLI Tests', function() {
   }
 
   async function cliLogin() {
-    const result = await execCli(['login', '-p', '-t'], {
+    const result = await execCli(['login', '-d', '-t'], {
       onStdout: (output, child) => {
-        if (output.includes('Username')) {
-          child.stdin.write('test@test.com\n');
-        } else if (output.includes('Password')) {
-          child.stdin.write('password\n');
+        if (output.includes('Enter the code:')) {
+          child.stdin.write('the_code\n');
         }
       }
     });
@@ -124,15 +122,7 @@ describe('CLI Tests', function() {
 
   describe('Login and Logout Commands', () => {
     it('Login should succeed with valid credentials', async () => {
-      const result = await execCli(['login', '-p', '-t'], {
-        onStdout: (output, child) => {
-          if (output.includes('Username')) {
-            child.stdin.write('test@test.com\n');
-          } else if (output.includes('Password')) {
-            child.stdin.write('password\n');
-          }
-        }
-      });
+      const result = await cliLogin();
       assert(result.code === 0, 'Login command should exit with code 0');
 
       const statusResult = await execCli(['status', '-t', '-c'])
@@ -145,7 +135,7 @@ describe('CLI Tests', function() {
       await cliLogin();
 
       // Attempt to login again
-      const result = await execCli(['login', '-p', '-t']);
+      const result = await execCli(['login', '-d', '-t']);
       assert(result.code !== 0, 'Should fail when already authenticated');
       assert(
           result.stdout.includes('User status: already authenticated'),
