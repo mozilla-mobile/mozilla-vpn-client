@@ -97,7 +97,10 @@ Item {
         }
 
         SwipeView {
-            property int _topMargin: safeAreaHeight / 2 - currentPanelValues._animationHeight
+            // The extra 40 for iOS below is due to VPN-7497. Qt 6.10 upgrade seems to have changed how the status bar and bottom bar are
+            // calculated for iOS. We could re-do this entire layout with safeHitArea, but this is the quickest solution and the one needed
+            // right now.
+            property int _topMargin: (safeAreaHeight - (Qt.platform.os === "ios" ? 40 : 0)) / 2 - currentPanelValues._animationHeight
             property bool _isFirstSlide: swipeView.currentIndex === 0
 
             id: swipeView
