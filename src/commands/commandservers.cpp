@@ -4,6 +4,7 @@
 
 #include "commandservers.h"
 
+#include <QCoreApplication>
 #include <QEventLoop>
 #include <QJsonArray>
 #include <QJsonDocument>
@@ -11,7 +12,9 @@
 #include <QTextStream>
 
 #include "commandlineparser.h"
+#include "constants.h"
 #include "leakdetector.h"
+#include "loghandler.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
@@ -26,35 +29,46 @@ CommandServers::~CommandServers() { MZ_COUNT_DTOR(CommandServers); }
 
 int CommandServers::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
+  QString appName = tokens[0];
+
+  CommandLineParser::Option hOption = CommandLineParser::helpOption();
+  CommandLineParser::Option verboseOption("v", "verbose", "Verbose mode.");
+  CommandLineParser::Option cacheOption("c", "cache", "From local cache.");
+  CommandLineParser::Option jsonOption("j", "json", "Json format.");
+  CommandLineParser::Option testingOption("t", "testing",
+                                          "Run in testing mode.");
+
+  QList<CommandLineParser::Option*> options;
+  options.append(&hOption);
+  options.append(&verboseOption);
+  options.append(&cacheOption);
+  options.append(&jsonOption);
+  options.append(&testingOption);
+
+  CommandLineParser clp;
+  if (clp.parse(tokens, options, false)) {
+    return 1;
+  }
+
+  if (!tokens.isEmpty()) {
+    return clp.unknownOption(this, appName, tokens[0], options, false);
+  }
+
+  if (hOption.m_set) {
+    clp.showHelp(this, appName, options, false, false);
+    return 0;
+  }
+
+  if (testingOption.m_set) {
+    QCoreApplication::setOrganizationName("Mozilla Testing");
+    LogHandler::instance()->setStderr(true);
+  }
+
   return MozillaVPN::runCommandLineApp([&]() {
-    QString appName = tokens[0];
-
-    CommandLineParser::Option hOption = CommandLineParser::helpOption();
-    CommandLineParser::Option verboseOption("v", "verbose", "Verbose mode.");
-    CommandLineParser::Option cacheOption("c", "cache", "From local cache.");
-    CommandLineParser::Option jsonOption("j", "json", "Json format.");
-
-    QList<CommandLineParser::Option*> options;
-    options.append(&hOption);
-    options.append(&verboseOption);
-    options.append(&cacheOption);
-    options.append(&jsonOption);
-
-    CommandLineParser clp;
-    if (clp.parse(tokens, options, false)) {
-      return 1;
-    }
-
-    if (!tokens.isEmpty()) {
-      return clp.unknownOption(this, appName, tokens[0], options, false);
-    }
-
-    if (hOption.m_set) {
-      clp.showHelp(this, appName, options, false, false);
-      return 0;
-    }
-
     MozillaVPN vpn;
+    if (testingOption.m_set) {
+      Constants::setStaging();
+    }
     vpn.serverData()->initialize();
 
     if (!vpn.hasToken()) {

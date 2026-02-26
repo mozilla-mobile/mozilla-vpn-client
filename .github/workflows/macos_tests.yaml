@@ -110,7 +110,7 @@ jobs:
         run: |
           echo -n "tests=" >> $GITHUB_OUTPUT
           for test in $(find tests/functional -name 'test*.js' | sort); do
-            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+            printf '{"name": "%s", "path": "%s"}' "$(basename ${test%.js} | sed -n 's/test//p')" "$test"
           done | jq -s -c >> $GITHUB_OUTPUT
 
       - name: Check tests
@@ -173,10 +173,16 @@ jobs:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_ADDONS_PATH: ./build/addons
           MVPN_BIN: ./build/Mozilla VPN.app/Contents/MacOS/Mozilla VPN
+          TEST_PATH: ${{ matrix.test.path }}
+          TEST_NAME: ${{ matrix.test.name }}
         run: |
           export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
           mkdir -p $ARTIFACT_DIR
-          npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
+          if [ "$TEST_NAME" = "Cli" ]; then
+          npm run functionalTestCli --  --retries 3
+          else
+          npm run functionalTest --  --retries 3 "$TEST_PATH"
+          fi
 
       - name: Uploading artifacts
         uses: actions/upload-artifact@v4

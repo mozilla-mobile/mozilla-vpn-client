@@ -4,12 +4,15 @@
 
 #include "commandstatus.h"
 
+#include <QCoreApplication>
 #include <QEventLoop>
 #include <QTextStream>
 
 #include "commandlineparser.h"
+#include "constants.h"
 #include "controller.h"
 #include "leakdetector.h"
+#include "loghandler.h"
 #include "models/devicemodel.h"
 #include "models/servercountrymodel.h"
 #include "models/user.h"
@@ -25,33 +28,44 @@ CommandStatus::~CommandStatus() { MZ_COUNT_DTOR(CommandStatus); }
 
 int CommandStatus::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
-  return MozillaVPN::runCommandLineApp([&]() {
-    QString appName = tokens[0];
+  QString appName = tokens[0];
 
-    CommandLineParser::Option hOption = CommandLineParser::helpOption();
-    CommandLineParser::Option cacheOption("c", "cache", "From local cache.");
+  CommandLineParser::Option hOption = CommandLineParser::helpOption();
+  CommandLineParser::Option cacheOption("c", "cache", "From local cache.");
+  CommandLineParser::Option testingOption("t", "testing",
+                                          "Run in testing mode.");
 
+  QList<CommandLineParser::Option*> options;
+  options.append(&hOption);
+  options.append(&cacheOption);
+  options.append(&testingOption);
+
+  CommandLineParser clp;
+  if (clp.parse(tokens, options, false)) {
+    return 1;
+  }
+
+  if (!tokens.isEmpty()) {
     QList<CommandLineParser::Option*> options;
-    options.append(&hOption);
-    options.append(&cacheOption);
+    return CommandLineParser::unknownOption(this, tokens[1], tokens[0], options,
+                                            false);
+  }
 
-    CommandLineParser clp;
-    if (clp.parse(tokens, options, false)) {
-      return 1;
-    }
+  if (hOption.m_set) {
+    clp.showHelp(this, appName, options, false, false);
+    return 0;
+  }
 
-    if (!tokens.isEmpty()) {
-      QList<CommandLineParser::Option*> options;
-      return CommandLineParser::unknownOption(this, tokens[1], tokens[0],
-                                              options, false);
-    }
+  if (testingOption.m_set) {
+    QCoreApplication::setOrganizationName("Mozilla Testing");
+    LogHandler::instance()->setStderr(true);
+  }
 
-    if (hOption.m_set) {
-      clp.showHelp(this, appName, options, false, false);
-      return 0;
-    }
-
+  return MozillaVPN::runCommandLineApp([&]() {
     MozillaVPN vpn;
+    if (testingOption.m_set) {
+      Constants::setStaging();
+    }
     QTextStream stream(stdout);
     if (!vpn.hasToken()) {
       stream << "User status: not authenticated" << Qt::endl;
@@ -108,16 +122,16 @@ int CommandStatus::run(QStringList& tokens) {
     Q_ASSERT(sd);
 
     if (sd->multihop()) {
-      stream << "Entry Server country code: " << sd->entryCountryCode()
+      stream << "Entry server country code: " << sd->entryCountryCode()
              << Qt::endl;
-      stream << "Entry Server country: "
+      stream << "Entry server country: "
              << model->countryName(sd->entryCountryCode()) << Qt::endl;
-      stream << "Entry Server city: " << sd->entryCityName() << Qt::endl;
-      stream << "Exit Server country code: " << sd->exitCountryCode()
+      stream << "Entry server city: " << sd->entryCityName() << Qt::endl;
+      stream << "Exit server country code: " << sd->exitCountryCode()
              << Qt::endl;
-      stream << "Exit Server country: "
+      stream << "Exit server country: "
              << model->countryName(sd->exitCountryCode()) << Qt::endl;
-      stream << "Exit Server city: " << sd->exitCityName() << Qt::endl;
+      stream << "Exit server city: " << sd->exitCityName() << Qt::endl;
     } else {
       stream << "Server country code: " << sd->exitCountryCode() << Qt::endl;
       stream << "Server country: " << model->countryName(sd->exitCountryCode())
