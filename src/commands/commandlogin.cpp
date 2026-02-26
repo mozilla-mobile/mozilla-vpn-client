@@ -7,7 +7,6 @@
 #if defined(MZ_CLI_AUTHENTICATION_IN_APP)
 #  include "authenticationinapp/authenticationinapp.h"
 #endif
-#include "authenticationinapp/authenticationinapp.h"
 #include "authenticationlistener.h"
 #include "commandlineparser.h"
 #include "constants.h"
