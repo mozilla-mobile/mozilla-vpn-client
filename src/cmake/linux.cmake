@@ -2,7 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-option(BUILD_FLATPAK "Build for Flatpak distribution" OFF)
+if("$ENV{container}" STREQUAL "flatpak")
+    set(DEFAULT_FLATPAK ON)
+endif()
+option(BUILD_FLATPAK "Build for Flatpak distribution" ${DEFAULT_FLATPAK})
+
+if(EXISTS /etc/debian_version)
+    set(DEFAULT_APPARMOR ON)
+endif()
+option(BUILD_APPARMOR "Build AppArmor profile" ${DEFAULT_APPARMOR})
 
 find_package(Qt6 REQUIRED COMPONENTS DBus)
 target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
@@ -214,4 +222,12 @@ if(NOT BUILD_FLATPAK)
         DESTINATION ${SYSTEMD_UNIT_DIR})
 
     install(SCRIPT ${CMAKE_SOURCE_DIR}/scripts/linux/postinst.cmake)
+endif()
+
+if(BUILD_APPARMOR)
+    configure_file(${CMAKE_SOURCE_DIR}/linux/apparmor.profile.in
+        ${CMAKE_CURRENT_BINARY_DIR}/apparmor.profile)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/apparmor.profile
+        DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/apparmor.d
+        RENAME "usr.bin.mozillavpn")
 endif()
