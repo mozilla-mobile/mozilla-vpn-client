@@ -46,11 +46,15 @@ android-arm64/debug:
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-arm64-v8a-debug.apk
+            - mozillavpn-website-arm64-v8a-debug.apk
         worker:
             artifacts:
                 - type: file
                   name: public/build/android-build.zip
                   path: /builds/worker/artifacts/android-build.zip
+                - type: file
+                  name: public/build/android-build-website.zip
+                  path: /builds/worker/artifacts/android-build-website.zip
 
 android-x64/debug:
         description: "Android Debug (x86_64)"
@@ -64,6 +68,7 @@ android-x64/debug:
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-x86_64-debug.apk
+            - mozillavpn-website-x86_64-debug.apk
 
 ## Release Builds
 
@@ -86,6 +91,7 @@ android-arm64/release:
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-arm64-v8a-release.apk
+            - mozillavpn-website-arm64-v8a-release.apk
 
 android-armv7/release:
         description: "Android Release (android-armv7)"
@@ -103,6 +109,7 @@ android-armv7/release:
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-armeabi-v7a-release.apk
+            - mozillavpn-website-armeabi-v7a-release.apk
 
 
 android-x86/release:
@@ -121,6 +128,7 @@ android-x86/release:
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-x86-release.apk
+            - mozillavpn-website-x86-release.apk
 
 android-x64/release:
         description: "Android Release (x86_64)"
@@ -138,3 +146,4 @@ android-x64/release:
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-x86_64-release.apk
+            - mozillavpn-website-x86_64-release.apk
