@@ -6,14 +6,14 @@ Apply some defaults and minor modifications to the jobs defined in the build
 kind.
 """
 from taskgraph.transforms.base import TransformSequence 
-from taskgraph.util.schema import Schema
+from taskgraph.util.schema import LegacySchema
 from taskgraph.util.schema import resolve_keyed_by
 from voluptuous import Optional, Required, Extra
 
 
 transforms = TransformSequence()
 
-build_schema = Schema(
+build_schema = LegacySchema(
     {
         Required("name"): str,
         Optional("requires-level"): int,
