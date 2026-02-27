@@ -28,28 +28,29 @@ jobs:
       matrix: ${{ steps.enumerate.outputs.tests }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: "recursive"
+          persist-credentials: false
       - run: |
           sudo apt-get update
           sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control) ccache
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.10"
           cache: "pip"
       - run: pip install -r requirements.txt
 
       - name: Setup compiler cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: ~/.cache/ccache
           key: ccache-linux-${{ runner.arch }}-${{ github.sha }}
           restore-keys: ccache-linux-${{ runner.arch }}-${{ github.event.pull_request.base.sha }}
 
       - name: Fetch cached rust crates
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         with:
           path: 3rdparty/cargo-vendor
           key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
@@ -64,7 +65,7 @@ jobs:
             -DRUST_VENDOR_DIR=3rdparty/cargo-vendor
           cmake --build build-${{ runner.os }} --target mozillavpn
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: test-client-${{ github.sha }}
           path: |
@@ -74,7 +75,7 @@ jobs:
             build-${{ runner.os }}/tests/functional
 
       - name: Save compiler cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
         if: ${{ github.event_name != 'pull_request' }}
         with:
           path: ~/.cache/ccache
@@ -102,14 +103,16 @@ jobs:
         test: ${{ fromJson(needs.build_test_app.outputs.matrix) }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: test-client-${{ github.sha }}
           path: build-${{ runner.os }}
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: test-addons-${{ github.sha }}
           path: build-${{ runner.os }}/tests/functional/addons
@@ -121,13 +124,13 @@ jobs:
           sudo apt install --no-upgrade firefox xvfb -y
           chmod +x build-${{ runner.os }}/src/mozillavpn
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.10"
           cache: "pip"
       - run: pip install -r requirements.txt
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
           node-version: 20
           cache: "npm"
@@ -144,7 +147,7 @@ jobs:
         run: ctest -R "test$TEST_NAME" --test-dir build-${{ runner.os }} --verbose
 
       - name: Uploading artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: ${{ always() }}
         with:
           name: ${{ matrix.test.name }} Logs

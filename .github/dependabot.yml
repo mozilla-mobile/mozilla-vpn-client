@@ -19,6 +19,8 @@ updates:
     labels:
       - "dependencies"
     open-pull-requests-limit: 0 # Only Scan for Security Vulns
+    cooldown:
+      default-days: 7
 # Android JVM Dependencies 
   - package-ecosystem: "gradle"
     directory: "/android/"
@@ -27,6 +29,8 @@ updates:
     labels:
       - "dependencies"
     open-pull-requests-limit: 0 # Only Scan for Security Vulns
+    cooldown:
+      default-days: 7
 # Rust dependencies
   - package-ecosystem: "cargo"
     directory: "/"
@@ -38,6 +42,8 @@ updates:
       cargo: 
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
 # Taskcluster 
   - package-ecosystem: "pip"
     directory: "/taskcluster"
@@ -49,6 +55,8 @@ updates:
       taskcluster-pip: 
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
 # Python build deps
   - package-ecosystem: "pip"
     directory: "/"
@@ -63,6 +71,8 @@ updates:
     # We should not update glean-parser unless we are updating the glean submodule.
     ignore:
       - dependency-name: "glean-parser"
+    cooldown:
+      default-days: 7
 # Functional Tests, tooling etc
   - package-ecosystem: "npm"
     directory: "/"
@@ -75,3 +85,5 @@ updates:
       dev-npm: 
         patterns:
           - "*"
+    cooldown:
+      default-days: 7
