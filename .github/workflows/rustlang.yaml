@@ -31,7 +31,6 @@ jobs:
         with:
           path: 3rdparty/cargo-vendor
           key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
-          lookup-only: true
           enableCrossOsArchive: true
 
       - name: Update cached crates
