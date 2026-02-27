@@ -11,12 +11,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
         - name: Clone repository
-          uses: actions/checkout@v2
+          uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2
+          with:
+            persist-credentials: false
         - name: Finalize sentry-cli release
           env:
             SENTRY_KEY: ${{ secrets.SENTRY_KEY }}
           run: | 
-            TAG=${{github.ref_name}}
+            TAG=${GITHUB_REF_NAME}
             VERSION=${TAG:1}
             npm install -g @sentry/cli
             sentry-cli login --auth-token $SENTRY_KEY            

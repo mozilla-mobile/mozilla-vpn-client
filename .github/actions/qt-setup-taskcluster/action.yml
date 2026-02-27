@@ -45,7 +45,7 @@ runs:
         echo "toolchain-path=$(xzcat qt-toolchain-head.tar.xz 2>/dev/null | tar t 2>/dev/null | head -1 | grep -o '^[^/]*')" >> $GITHUB_OUTPUT
 
     - name: Cache Qt toolchain
-      uses: actions/cache/restore@v4
+      uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       id: qt-toolchain-cache
       if: ${{ inputs.cache == 'true' }}
       with:
@@ -78,7 +78,7 @@ runs:
       run: echo "CMAKE_PREFIX_PATH=$(Resolve-Path lib/cmake)" >> $Env:GITHUB_ENV
 
     - name: Save Qt toolchain
-      uses: actions/cache/save@v4
+      uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       if: ${{ inputs.cache == 'true' && github.event_name == 'push' && steps.qt-toolchain-cache.outputs.cache-hit != 'true'}}
       with:
         path: ${{ inputs.dest }}/${{ steps.resolve.outputs.toolchain-path }}
