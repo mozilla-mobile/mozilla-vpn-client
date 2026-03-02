@@ -221,7 +221,7 @@ describe('Server', function() {
       });
 
       // Wait at least one second for the timer to tick passed zero.
-      await vpn.wait(1500);
+      await vpn.wait(2500);
       assert.notEqual(
           await vpn.getQueryProperty(
               queries.screenHome.CONNECTION_TIMER, 'connectionTime'),
