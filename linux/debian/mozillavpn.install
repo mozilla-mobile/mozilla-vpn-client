@@ -1,3 +1,4 @@
+etc/apparmor.d/usr.bin.mozillavpn
 etc/chromium/native-messaging-hosts/mozillavpn.json
 etc/opt/chrome/native-messaging-hosts/mozillavpn.json
 ${env:SYSTEMD_UNIT_PATH}/mozillavpn.service

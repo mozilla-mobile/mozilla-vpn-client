@@ -3,6 +3,7 @@ Section: net
 Priority: optional
 Maintainer: mozilla <vpn@mozilla.com>
 Build-Depends: debhelper (>= 13),
+               dh-apparmor,
                cdbs,
                cmake (>= 3.20~),
                flex,
@@ -82,6 +83,7 @@ Depends: wireguard (>=1.0.20200319),
          qml6-module-qtqml-workerscript (>=6.2.0~),
          qml6-module-qt-labs-qmlmodels (>=6.2.0~),
          qt6-qpa-plugins (>=6.2.0~)
+Suggests: apparmor (>= 2.3)
 Description: A fast, secure and easy to use VPN. Built by the makers of Firefox.
  Read more on https://vpn.mozilla.org
 
