@@ -90,6 +90,8 @@ find_library(FW_AUTHENTICATION_SERVICES AuthenticationServices)
 # This next section fixes a compile bug on iOS: https://qt-project.atlassian.net/browse/QTBUG-135978, found
 # via https://forum.qt.io/topic/162177/ios-objc-link-option-leads-to-duplicate-symbol-for-qtcore.framework/2
 # When the fix hits a version of Qt 6.10 we're using, we should be able to remove this section.
+# This flag requires cmake 3.29+.
+cmake_minimum_required(VERSION 3.29)
 if (POLICY CMP0156)
     message(STATUS "Setting CMP0156 policy to NEW...")
     set(QT_FORCE_CMP0156_TO_NEW ON CACHE BOOL "Force CMake policy CMP0156 to NEW behavior for Qt6")
