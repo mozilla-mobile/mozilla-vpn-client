@@ -125,6 +125,12 @@ do
                   -t -m "/x:xliff/x:file/x:body/x:trans-unit[$BLOCK_ID]" \
                   -v "concat(x:target, '\n')" -n \
                   "$XLIFF_FILE")
+          if [[ "$POTENTIAL_TRANSLATION" == "" ]]; then
+            PARTIAL_ID=${BLOCK_ID#*\'}
+            STRING_ID=${PARTIAL_ID%\'*}
+            echo "Error: $STRING_ID not found."
+            exit 1
+          fi
           if [[ "$POTENTIAL_TRANSLATION" == "\n" ]]; then
               MISSING_TRANSLATION=true
           else
