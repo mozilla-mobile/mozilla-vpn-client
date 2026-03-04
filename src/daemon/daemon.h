@@ -13,6 +13,7 @@
 #include "dnsutils.h"
 #include "interfaceconfig.h"
 #include "iputils.h"
+#include "masqueutils.h"
 #include "wireguardutils.h"
 
 class Daemon : public QObject {
@@ -35,7 +36,15 @@ class Daemon : public QObject {
   virtual bool activate(const InterfaceConfig& config);
   virtual bool deactivate(bool emitSignals);
 
+  virtual bool activateWireGuard(const InterfaceConfig& config);
+  virtual bool deactivateWireGuard(bool emitSignals);
+
+  virtual bool activateMasque(const InterfaceConfig& config);
+  virtual bool deactivateMasque(bool emitSignals);
+
   QJsonObject getStatus();
+  QJsonObject getStatusWireGuard();
+  QJsonObject getStatusMasque();
   QString logs();
 
   Q_INVOKABLE bool activate(const QString& json);
@@ -64,6 +73,7 @@ class Daemon : public QObject {
   virtual bool supportServerSwitching(const InterfaceConfig& config) const;
   virtual bool switchServer(const InterfaceConfig& config);
   virtual WireguardUtils* wgutils() const = 0;
+  virtual MasqueUtils* masqueutils() const = 0;
   virtual bool supportIPUtils() const { return false; }
   virtual IPUtils* iputils() { return nullptr; }
   virtual DnsUtils* dnsutils() { return nullptr; }
@@ -73,6 +83,8 @@ class Daemon : public QObject {
 
   void abortBackendFailure();
   void checkHandshake();
+  void checkHandshakeMasque();
+  void checkHandshakeWireGuard();
 
   class ConnectionState {
    public:

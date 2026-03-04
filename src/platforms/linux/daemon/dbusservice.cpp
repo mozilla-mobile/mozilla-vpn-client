@@ -35,6 +35,7 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MZ_COUNT_CTOR(DBusService);
 
   m_wgutils = new WireguardUtilsLinux(this);
+  m_masqueutils = new MasqueUtilsLinux(this);
 
   if (!removeInterfaceIfExists()) {
     qFatal("Interface `%s` exists and cannot be removed. Cannot proceed!",
@@ -116,9 +117,11 @@ bool DBusService::activate(const InterfaceConfig& config) {
   }
 
   // (Re)load the split tunnelling configuration.
-  clearAppStates();
-  for (const QString& app : config.m_vpnDisabledApps) {
-    setAppState(LinuxUtils::desktopFileId(app), Excluded);
+  if (config.m_protocolType == Server::ProtocolType::WireGuard) {
+    clearAppStates();
+    for (const QString& app : config.m_vpnDisabledApps) {
+      setAppState(LinuxUtils::desktopFileId(app), Excluded);
+    }
   }
 
   return true;
@@ -131,8 +134,10 @@ bool DBusService::deactivate(bool emitSignals) {
     logger.error() << "Insufficient caller permissions";
     return false;
   }
-
-  clearAppStates();
+  if (m_connections.first().m_config.m_protocolType ==
+      Server::ProtocolType::WireGuard) {
+    clearAppStates();
+  }
   return Daemon::deactivate(emitSignals);
 }
 

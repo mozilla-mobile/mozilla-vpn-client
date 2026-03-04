@@ -6,12 +6,15 @@
 #define SERVER_H
 
 #include <QList>
+#include <QObject>
 #include <QPair>
 #include <QString>
 
 class QJsonObject;
 
 class Server final {
+  Q_GADGET
+
  public:
   Server();
   Server(const QString& countryCode, const QString& cityName);
@@ -19,12 +22,17 @@ class Server final {
   Server& operator=(const Server& other);
   ~Server();
 
+  enum ProtocolType { WireGuard, Masque };
+  Q_ENUM(ProtocolType);
+
   [[nodiscard]] bool fromJson(const QJsonObject& obj);
   bool fromMultihop(const Server& exit, const Server& entry);
 
   static const Server& weightChooser(const QList<Server>& servers);
 
   bool initialized() const { return !m_hostname.isEmpty(); }
+
+  const ProtocolType protocol() const { return m_protocol; }
 
   const QString& hostname() const { return m_hostname; }
 
@@ -62,6 +70,7 @@ class Server final {
   }
 
  private:
+  ProtocolType m_protocol;
   QString m_hostname;
   QString m_ipv4AddrIn;
   QString m_ipv4Gateway;

@@ -25,6 +25,7 @@ class MockDaemon final : public Daemon {
 
  protected:
   WireguardUtils* wgutils() const override { return m_wgutils; }
+  MasqueUtils* masqueutils() const override { return nullptr; }
   DnsUtils* dnsutils() override { return m_dnsutils; }
 
  private:

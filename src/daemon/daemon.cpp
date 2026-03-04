@@ -16,6 +16,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "models/server.h"
 
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 constexpr int HANDSHAKE_POLL_MSEC = 250;
@@ -66,7 +67,45 @@ bool Daemon::activate(const QString& json) {
 }
 
 bool Daemon::activate(const InterfaceConfig& config) {
+  switch (config.m_protocolType) {
+    case Server::ProtocolType::WireGuard:
+      return activateWireGuard(config);
+    case Server::ProtocolType::Masque:
+      return activateMasque(config);
+    default:
+      logger.error() << "Unsupported protocol type" << config.m_protocolType;
+      return false;
+  }
+}
+
+bool Daemon::activateMasque(const InterfaceConfig& config) {
+  Q_ASSERT(config.m_protocolType == Server::ProtocolType::Masque);
+  Q_ASSERT(masqueutils() != nullptr);
+  if (m_connections.contains(config.m_hopType)) {
+    if (supportServerSwitching(config)) {
+      logger.debug() << "Already connected. Server switching supported.";
+
+      if (!switchServer(config)) {
+        return false;
+      }
+    }
+  }
+  auto emit_failure_guard = qScopeGuard([this] { emit activationFailure(); });
+  logger.debug() << "Activating Masque interface.";
+  bool status = masqueutils()->addInterface(config);
+  if (status) {
+    m_connections[config.m_hopType] = ConnectionState(config);
+    m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
+    emit_failure_guard.dismiss();
+    return true;
+  }
+  return false;
+}
+
+bool Daemon::activateWireGuard(const InterfaceConfig& config) {
   Q_ASSERT(wgutils() != nullptr);
+  Q_ASSERT(config.m_protocolType == Server::ProtocolType::WireGuard);
+  logger.debug() << "Activating WireGuard interface.";
 
   // There are 3 possible scenarios in which this method is called:
   //
@@ -238,6 +277,22 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   GETVALUE("serverPublicKey", config.m_serverPublicKey, String);
   GETVALUE("serverPort", config.m_serverPort, Double);
 
+  QMetaEnum protocolMetaEnum = QMetaEnum::fromType<Server::ProtocolType>();
+  QJsonValue protocolValue = obj.value("protocolType");
+  if (protocolValue.isString()) {
+    bool okay;
+    config.m_protocolType = Server::ProtocolType(protocolMetaEnum.keyToValue(
+        protocolValue.toString().toUtf8().constData(), &okay));
+    if (!okay) {
+      logger.error() << "protocolType" << protocolValue.toString()
+                     << "is not valid";
+      return false;
+    }
+  } else {
+    logger.debug() << "protocolType is not a string";
+    return false;
+  }
+
   config.m_deviceIpv4Address = obj.value("deviceIpv4Address").toString();
   config.m_deviceIpv6Address = obj.value("deviceIpv6Address").toString();
   if (config.m_deviceIpv4Address.isNull() &&
@@ -347,11 +402,39 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 }
 
 bool Daemon::deactivate(bool emitSignals) {
+  if (!m_connections.isEmpty()) {
+    const ConnectionState& state = m_connections.first();
+    switch (state.m_config.m_protocolType) {
+      case Server::ProtocolType::WireGuard:
+        return deactivateWireGuard(emitSignals);
+      case Server::ProtocolType::Masque:
+        return deactivateMasque(emitSignals);
+      default:
+        logger.error() << "Unsupported protocol type";
+        return false;
+    }
+  }
+  return false;
+}
+
+bool Daemon::deactivateMasque(bool emitSignals) {
+  auto guard = qScopeGuard([&]() {
+    if (emitSignals) {
+      emit disconnected();
+    }
+  });
+  Q_ASSERT(masqueutils() != nullptr);
+  m_connections.clear();
+  return masqueutils()->deleteInterface();
+}
+
+bool Daemon::deactivateWireGuard(bool emitSignals) {
   Q_ASSERT(wgutils() != nullptr);
 
   // Deactivate the main interface.
   if (!m_connections.isEmpty()) {
     const ConnectionState& state = m_connections.first();
+    Q_ASSERT(state.m_config.m_protocolType == Server::ProtocolType::WireGuard);
     if (!run(Down, state.m_config)) {
       return false;
     }
@@ -401,14 +484,18 @@ bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
   if (!m_connections.contains(config.m_hopType)) {
     return false;
   }
+  logger.debug() << "Checking if server switching is possible for"
+                 << config.m_hopType;
+
   const InterfaceConfig& current =
       m_connections.value(config.m_hopType).m_config;
 
-  return current.m_privateKey == config.m_privateKey &&
-         current.m_deviceIpv4Address == config.m_deviceIpv4Address &&
-         current.m_deviceIpv6Address == config.m_deviceIpv6Address &&
-         current.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
-         current.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
+  return (current.m_privateKey == config.m_privateKey &&
+          current.m_deviceIpv4Address == config.m_deviceIpv4Address &&
+          current.m_deviceIpv6Address == config.m_deviceIpv6Address &&
+          current.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
+          current.m_serverIpv6Gateway == config.m_serverIpv6Gateway) ||
+         (current.m_protocolType != config.m_protocolType);
 }
 
 bool Daemon::switchServer(const InterfaceConfig& config) {
@@ -420,37 +507,101 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   const InterfaceConfig& lastConfig =
       m_connections.value(config.m_hopType).m_config;
 
-  // Activate the new peer and its routes.
-  if (!wgutils()->updatePeer(config)) {
-    logger.error() << "Server switch failed to update the wireguard interface";
-    return false;
-  }
-  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-    if (!wgutils()->updateRoutePrefix(ip)) {
-      logger.error() << "Server switch failed to update the routing table";
-      break;
-    }
-  }
-
-  // Remove routing entries for the old peer.
-  for (const IPAddress& ip : lastConfig.m_allowedIPAddressRanges) {
-    if (!config.m_allowedIPAddressRanges.contains(ip)) {
-      wgutils()->deleteRoutePrefix(ip);
-    }
-  }
-
-  // Remove the old peer if it is no longer necessary.
-  if (config.m_serverPublicKey != lastConfig.m_serverPublicKey) {
-    if (!wgutils()->deletePeer(lastConfig)) {
+  // Wireguard to wireguard switching
+  if (lastConfig.m_protocolType == Server::ProtocolType::WireGuard &&
+      config.m_protocolType == Server::ProtocolType::WireGuard) {
+    // Activate the new peer and its routes.
+    if (!wgutils()->updatePeer(config)) {
+      logger.error()
+          << "Server switch failed to update the wireguard interface";
       return false;
     }
-  }
+    for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
+      if (!wgutils()->updateRoutePrefix(ip)) {
+        logger.error() << "Server switch failed to update the routing table";
+        break;
+      }
+    }
 
-  m_connections[config.m_hopType] = ConnectionState(config);
-  return true;
+    // Remove routing entries for the old peer.
+    for (const IPAddress& ip : lastConfig.m_allowedIPAddressRanges) {
+      if (!config.m_allowedIPAddressRanges.contains(ip)) {
+        wgutils()->deleteRoutePrefix(ip);
+      }
+    }
+
+    // Remove the old peer if it is no longer necessary.
+    if (config.m_serverPublicKey != lastConfig.m_serverPublicKey) {
+      if (!wgutils()->deletePeer(lastConfig)) {
+        return false;
+      }
+    }
+
+    m_connections[config.m_hopType] = ConnectionState(config);
+    return true;
+  }
+  // Masque to masque switching is not supported yet, so we fallback to a full
+  // reconnect.
+  if (lastConfig.m_protocolType == Server::ProtocolType::Masque &&
+      config.m_protocolType == Server::ProtocolType::Masque) {
+    logger.warning() << "Server switching for Masque is not supported yet, "
+                        "falling back to reconnect.";
+    if (!deactivateMasque(false)) {
+      return false;
+    }
+    if (!activateMasque(config)) {
+      return false;
+    }
+    return true;
+  }
+  // Masque to Wireguard
+  if (lastConfig.m_protocolType == Server::ProtocolType::Masque &&
+      config.m_protocolType == Server::ProtocolType::WireGuard) {
+    logger.warning() << "Switching from Masque to WireGuard is not supported "
+                        "yet, falling back to reconnect.";
+    if (!deactivateMasque(false)) {
+      return false;
+    }
+    if (!activateWireGuard(config)) {
+      return false;
+    }
+    return true;
+  }
+  // Wireguard to Masque
+  if (lastConfig.m_protocolType == Server::ProtocolType::WireGuard &&
+      config.m_protocolType == Server::ProtocolType::Masque) {
+    logger.warning() << "Switching from WireGuard to Masque is not supported "
+                        "yet, falling back to reconnect.";
+    if (!deactivateWireGuard(false)) {
+      return false;
+    }
+    if (!activateMasque(config)) {
+      return false;
+    }
+    return true;
+  }
+  return false;
 }
 
 QJsonObject Daemon::getStatus() {
+  if (!m_connections.isEmpty()) {
+    const ConnectionState& connection = m_connections.first();
+    switch (connection.m_config.m_protocolType) {
+      case Server::ProtocolType::WireGuard:
+        return getStatusWireGuard();
+      case Server::ProtocolType::Masque:
+        return getStatusMasque();
+      default:
+        logger.error() << "Unsupported protocol type";
+        return QJsonObject();
+    }
+  }
+  QJsonObject json;
+  json.insert("connected", QJsonValue(false));
+  return json;
+}
+
+QJsonObject Daemon::getStatusWireGuard() {
   Q_ASSERT(wgutils() != nullptr);
   QJsonObject json;
   logger.debug() << "Status request";
@@ -481,7 +632,50 @@ QJsonObject Daemon::getStatus() {
   return json;
 }
 
+QJsonObject Daemon::getStatusMasque() {
+  QJsonObject json;
+  json.insert("connected", QJsonValue(true));
+  const ConnectionState& connection = m_connections.first();
+  json.insert("serverIpv4Gateway",
+              QJsonValue(connection.m_config.m_serverIpv4Gateway));
+  json.insert("deviceIpv4Address",
+              QJsonValue(connection.m_config.m_deviceIpv4Address));
+  json.insert("date", connection.m_date.toString());
+  json.insert("txBytes", QJsonValue(0));
+  json.insert("rxBytes", QJsonValue(0));
+  return json;
+}
+
 void Daemon::checkHandshake() {
+  const ConnectionState& connection = m_connections.first();
+  switch (connection.m_config.m_protocolType) {
+    case Server::ProtocolType::WireGuard:
+      checkHandshakeWireGuard();
+      break;
+    case Server::ProtocolType::Masque:
+      checkHandshakeMasque();
+      break;
+    default:
+      logger.error() << "Unsupported protocol type";
+  }
+}
+
+void Daemon::checkHandshakeMasque() {
+  Q_ASSERT(masqueutils() != nullptr);
+
+  logger.debug() << "Checking for handshake...";
+
+  // Masque doesn't have a concept of handshake, so we consider the connection
+  // established as soon as the interface is up.
+  const ConnectionState& connection = m_connections.first();
+  if (!connection.m_date.isValid()) {
+    m_connections[connection.m_config.m_hopType].m_date =
+        QDateTime::currentDateTime();
+    emit connected(connection.m_config.m_serverPublicKey);
+  }
+}
+
+void Daemon::checkHandshakeWireGuard() {
   Q_ASSERT(wgutils() != nullptr);
 
   logger.debug() << "Checking for handshake...";

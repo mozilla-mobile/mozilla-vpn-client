@@ -391,6 +391,7 @@ void Controller::activateInternal(
                            : getAllowedIPAddressRanges(exitServer);
   // Prepare the exit server's connection data.
   InterfaceConfig exitConfig;
+  exitConfig.m_protocolType = exitServer.protocol();
   exitConfig.m_privateKey = vpn->keys()->privateKey();
   exitConfig.m_deviceIpv4Address = device->ipv4Address();
   exitConfig.m_deviceIpv6Address = device->ipv6Address();

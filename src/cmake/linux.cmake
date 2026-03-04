@@ -85,6 +85,8 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/linuxfirewall.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.h
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/masqueutilslinux.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/masqueutilslinux.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/polkithelper.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/polkithelper.h
     )

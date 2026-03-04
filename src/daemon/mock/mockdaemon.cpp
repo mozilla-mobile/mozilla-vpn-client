@@ -10,6 +10,7 @@
 #include "daemon/daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/server.h"
 
 namespace {
 Logger logger("MockDaemon");
@@ -67,6 +68,7 @@ MockDaemon::~MockDaemon() {
 bool MockDaemon::activate(const InterfaceConfig& config) {
   // Overwrite the addresses with loopback.
   InterfaceConfig mockConfig(config);
+  mockConfig.m_protocolType = Server::ProtocolType::WireGuard;
   mockConfig.m_serverIpv4Gateway = "127.0.0.1";
   mockConfig.m_serverIpv6Gateway = "::1";
   mockConfig.m_deviceIpv4Address = "127.0.0.1";
