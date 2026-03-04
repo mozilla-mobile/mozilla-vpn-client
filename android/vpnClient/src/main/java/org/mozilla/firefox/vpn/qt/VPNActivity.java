@@ -173,6 +173,7 @@ public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
   public native void qtOnServiceConnected();
   public native void qtOnServiceDisconnected();
   public native void onIntentInternal();
+  public native void onCustomTabClosed();
 
   public static void connectService(){
     VPNActivity.getInstance().initServiceConnection();

@@ -96,4 +96,5 @@ dependencies {
     implementation "com.google.android.gms:play-services-ads-identifier:17.0.1"
     implementation "org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1"
 
+    implementation "androidx.browser:browser:1.8.0"
 }
