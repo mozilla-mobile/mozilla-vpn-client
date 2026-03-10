@@ -13,7 +13,7 @@ concurrency:
 
 jobs:
   linux-unit-tests:
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     name: Run auth tests on Linux
     steps:
       - name: Clone repository

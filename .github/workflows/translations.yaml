@@ -18,7 +18,7 @@ concurrency:
 jobs:
   translations:
     name: Translations
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     env:
       QTVERSION: 6.10.1
 
