@@ -152,7 +152,7 @@ rm -rf $WORKDIR/linux/debian || die "Failed"
 print G "done."
 
 printn Y "Archiving the source code... "
-TAR_OPTIONS="--mtime=$(git log -1 --format=%cI) --owner=root:0 --group=root:0 --sort=name"
+TAR_OPTIONS="--mtime=$(git log -1 --format=%cI) --owner=root:0 --group=root:0 --sort=name --format=gnu"
 LC_ALL=C tar cfz mozillavpn_$SHORTVERSION.orig.tar.gz $TAR_OPTIONS $WORKDIR || die "Failed"
 print G "done."
 
