@@ -22,7 +22,6 @@ Build-Depends: debhelper (>= 13),
                libqt6networkauth6-dev (>=6.2.0~),
                libqt6opengl6-dev (>=6.2.0~),
                libqt6svg6-dev (>=6.2.0~),
-               libqt6websockets6-dev (>=6.2.0~),
                libxkbcommon-dev,
                ninja-build,
                qmake6 (>=6.2.0~),
@@ -33,7 +32,8 @@ Build-Depends: debhelper (>= 13),
                qt6-declarative-private-dev (>=6.2.0~),
                qt6-declarative-dev-tools (>=6.2.0~),
                qt6-l10n-tools (>=6.2.0~),
-               qt6-tools-dev-tools (>=6.2.0~)
+               qt6-tools-dev-tools (>=6.2.0~),
+               qt6-websockets-dev (>=6.2.0~) | libqt6websockets6-dev (>=6.2.0~)
 Standards-Version: 4.4.1
 Homepage: https://vpn.mozilla.org/
 Vcs-Git: https://github.com/mozilla-mobile/mozilla-vpn-client
