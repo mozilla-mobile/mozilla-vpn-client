@@ -204,14 +204,14 @@ build_flavor() {
     ./gradlew "assembleRelease" || cleanup_and_die
 
     print G "Done 🎉"
-    print G "Your $FLAVOR_NAME Release APK is under: $BUILD_DIR/src/android-build/build/outputs/apk/$FLAVOR_NAME/release"
+    print G "Your $FLAVOR_NAME Release APK is under: $BUILD_DIR/src/android-build/build/outputs/apk/release"
   else
     print Y "Generating Debug APK for $FLAVOR_NAME..."
     ./gradlew compileDebugSources || cleanup_and_die
     ./gradlew "assembleDebug" || cleanup_and_die
 
     print G "Done 🎉"
-    print G "Your $FLAVOR_NAME Debug APK is under: $BUILD_DIR/src/android-build/build/outputs/apk/$FLAVOR_NAME/debug"
+    print G "Your $FLAVOR_NAME Debug APK is under: $BUILD_DIR/src/android-build/build/outputs/apk/debug"
   fi
   popd > /dev/null
 }
