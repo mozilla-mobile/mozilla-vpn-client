@@ -156,6 +156,23 @@ commonStrings:
     value: "[macOS, Linux] Better experience in the rare situation where credentials are not found upon app launch."
     comment: Bullet point with a specific update in 2.34. Should have tag that indicates it applies to macOS and Linux platforms.
 
+235updateMessage:
+  bullet1:
+    value: "[Android] Improved method of signing in."
+    comment: Bullet point with a specific update in 2.35. Should have tag that indicates it applies to Android platform.
+  bullet2:
+    value: "[all] In a rare situation, the final line of a message was obscured by the navigation bar. This has been fixed, and it should be easy to read the complete message."
+    comment: Bullet point with a specific update in 2.35. Should have tag that indicates it applies to all platforms.
+  bullet3:
+    value: "[iOS] Improvements for VoiceOver users."
+    comment: Bullet point with a specific update in 2.35. Should have tag that indicates it applies to iOS platform.
+  bullet4:
+    value: "[Windows] Preparation for ARM Windows releases."
+    comment: Bullet point with a specific update in 2.35. Should have tag that indicates it applies to Windows platform.
+  bullet5:
+    value: "[all] There are so many under-the-hood improvements in this version. Even if you cannot see them, we promise they are in there."
+    comment: Bullet point with a specific update in 2.35. Should have tag that indicates it applies to all platforms.
+
 tryFirefoxExtension:
   title:
     value: Try the Firefox extension
