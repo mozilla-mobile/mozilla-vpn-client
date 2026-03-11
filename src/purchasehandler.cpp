@@ -9,11 +9,11 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-#ifdef MZ_IOS
+#if defined(MZ_IOS)
 #  include "platforms/ios/iosiaphandler.h"
-#elif MZ_ANDROID
+#elif defined(MZ_ANDROID) && !defined(MZ_ANDROID_WEBSITE_BUILD)
 #  include "platforms/android/androidiaphandler.h"
-#elif MZ_WASM
+#elif defined(MZ_WASM)
 #  include "platforms/wasm/wasmiaphandler.h"
 #else
 #  include "purchasewebhandler.h"
@@ -27,11 +27,11 @@ PurchaseHandler* s_instance = nullptr;
 // static
 PurchaseHandler* PurchaseHandler::createInstance() {
   Q_ASSERT(!s_instance);
-#ifdef MZ_IOS
+#if defined(MZ_IOS)
   new IOSIAPHandler(qApp);
-#elif MZ_ANDROID
+#elif defined(MZ_ANDROID) && !defined(MZ_ANDROID_WEBSITE_BUILD)
   new AndroidIAPHandler(qApp);
-#elif MZ_WASM
+#elif defined(MZ_WASM)
   new WasmIAPHandler(qApp);
 #else
   new PurchaseWebHandler(qApp);
