@@ -51,6 +51,7 @@ MZClickableRow {
         MZBoldLabel {
             id: title
             text: settingTitle
+            Accessible.ignored: true
             Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
             verticalAlignment: Text.AlignVCenter
             horizontalAlignment: Text.AlignLeft

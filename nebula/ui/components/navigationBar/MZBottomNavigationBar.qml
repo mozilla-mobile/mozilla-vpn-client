@@ -83,6 +83,7 @@ Rectangle {
                 enabled: root.visible
 
                 checked: buttonItem.checked
+                Accessible.selected: buttonItem.checked
             }
         }
     }
