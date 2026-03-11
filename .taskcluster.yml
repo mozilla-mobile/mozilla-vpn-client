@@ -231,7 +231,7 @@ tasks:
 
             # Note: This task is built server side without the context or tooling that
             # exist in tree so we must hard code the hash
-            image: mozillareleases/taskgraph:decision-v14.2.1@sha256:f4e3a22df9ec0017a2534b3a7b4cd9b60318f86619e0c2156c12c1ec1a0e32cb
+            image: mozillareleases/taskgraph:run-task-v19.2.1@sha256:6d369ec1cd14a9a67a660ef406633e4672986ae5fa0ac592c21436fc735592d1
 
             maxRunTime: 1800
 
@@ -253,10 +253,10 @@ tasks:
                   $if: 'tasks_for == "action"'
                   then: >
                     ln -s /builds/worker/artifacts artifacts &&
-                    taskgraph action-callback
+                    ~/.local/bin/taskgraph action-callback
                   else: >
                     ln -s /builds/worker/artifacts artifacts &&
-                    taskgraph decision
+                    ~/.local/bin/taskgraph decision
                     --pushlog-id='0'
                     --pushdate='0'
                     --project='${project}'
