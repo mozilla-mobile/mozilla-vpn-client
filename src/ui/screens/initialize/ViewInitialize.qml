@@ -55,7 +55,7 @@ Item {
     MZFlickable {
         id: onboardingPanel
 
-        flickContentHeight: Math.max(window.safeContentHeight / 2 + col.implicitHeight, parent.height)
+        flickContentHeight: parent.height
         height: parent.height
         width: parent.width
 
@@ -100,7 +100,6 @@ Item {
             // The extra 40 for iOS below is due to VPN-7497. Qt 6.10 upgrade seems to have changed how the status bar and bottom bar are
             // calculated for iOS. We could re-do this entire layout with safeHitArea, but this is the quickest solution and the one needed
             // right now.
-            property int _topMargin: (safeAreaHeight - ((Qt.platform.os === "ios" || Qt.platform.os === "android") ? 40 : 0)) / 2 - currentPanelValues._animationHeight
             property bool _isFirstSlide: swipeView.currentIndex === 0
 
             id: swipeView
@@ -133,8 +132,8 @@ Item {
                             anchors.fill: undefined
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.top: parent.top
-                            anchors.topMargin: swipeView._isFirstSlide ? 0 : swipeView._topMargin
-                            height: currentPanelValues._animationHeight + (swipeView._isFirstSlide ? swipeView._topMargin : 0)
+                            anchors.topMargin: swipeView._isFirstSlide ? 0 : currentPanelValues._topMargin
+                            height: currentPanelValues._animationHeight + (swipeView._isFirstSlide ? currentPanelValues._topMargin : 0)
                             loop: loopAnimation
                             opacity: panelAnimation.imageOpacityValue
                             source: MZAssetLookup.getAnimationSource(animationSrc)
@@ -264,6 +263,32 @@ Item {
             property string _panelTitleText: ""
             property string _panelDescriptionText: ""
             property real _animationHeight: Math.min(240, safeAreaHeight * .35)
+            // next line is 2/3 of empty space on the screen
+            property int _topMargin: ((safeAreaHeight - ((Qt.platform.os === "ios" || Qt.platform.os === "android") ? 40 : 0)) - panelBottomContent.implicitHeight - panelTextMaxHeight - _animationHeight - headerLink.height) * 2 / 3
+            property real panelTextMaxHeight: 0
+        }
+
+        // This next section isn't visible to the user. It is used to calcuate the largest text size, to use that for layout elsewhere.
+        Repeater {
+          model: onboardingModel
+          delegate: ColumnLayout {
+              visible: false
+              width: parent.width
+              spacing: MZTheme.the5me.windowMargin / 2
+
+              MZHeadline {
+                  Layout.fillWidth: true
+                  text: MZI18n[titleStringId]
+              }
+              MZSubtitle {
+                  Layout.fillWidth: true
+                  text: MZI18n[subtitleStringId]
+              }
+
+              Component.onCompleted: {
+                  currentPanelValues.panelTextMaxHeight = Math.max(currentPanelValues.panelTextMaxHeight, implicitHeight)
+              }
+          }
         }
 
         ColumnLayout {
@@ -271,7 +296,7 @@ Item {
 
             anchors {
                 fill: parent
-                topMargin: onboardingPanel.height / 2
+                topMargin: currentPanelValues._animationHeight + currentPanelValues._topMargin
                 leftMargin: MZTheme.theme.windowMargin * 1.5
                 rightMargin: MZTheme.theme.windowMargin * 1.5
             }
