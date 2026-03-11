@@ -200,6 +200,7 @@ tasks:
           requires: all-completed
           priority: lowest
           retries: 5
+          dependencies: [Z7h1IMEBQheNI6VRZStMKQ]
 
           payload:
             env:
@@ -231,7 +232,11 @@ tasks:
 
             # Note: This task is built server side without the context or tooling that
             # exist in tree so we must hard code the hash
-            image: mozillareleases/taskgraph:run-task-v19.2.1@sha256:6d369ec1cd14a9a67a660ef406633e4672986ae5fa0ac592c21436fc735592d1
+            # image: mozillareleases/taskgraph:run-task-v19.2.1@sha256:6d369ec1cd14a9a67a660ef406633e4672986ae5fa0ac592c21436fc735592d1
+            image:
+               type: task-image
+               taskId: Z7h1IMEBQheNI6VRZStMKQ
+               path: public/image.tar.zst
 
             maxRunTime: 1800
 
