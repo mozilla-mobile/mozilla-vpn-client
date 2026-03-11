@@ -14,7 +14,7 @@ permissions:
 jobs: 
   add_label: 
       name: Add "Landing Label"
-      runs-on: ubuntu-22.04
+      runs-on: ubuntu-slim
       steps:
       - name: Set 
         run: gh pr edit --add-label "🛬 Landing" https://github.com/mozilla-mobile/mozilla-vpn-client/pull/$PR_NUMBER

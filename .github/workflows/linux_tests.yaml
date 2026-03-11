@@ -23,7 +23,7 @@ jobs:
 
   build_test_app:
     name: Build Test Client
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.enumerate.outputs.tests }}
     steps:
@@ -95,7 +95,7 @@ jobs:
     needs:
       - build_test_app
       - build_test_addons
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails

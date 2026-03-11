@@ -50,7 +50,7 @@ jobs:
   rust-unit-tests:
     strategy:
       matrix:
-        os: [ubuntu-22.04, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     runs-on: ${{ matrix.os }}
     name: Rust unit tests (${{ matrix.os }})

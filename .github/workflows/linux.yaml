@@ -16,7 +16,7 @@ concurrency:
 jobs:
   supported-fedora-releases:
     name: Fetch currently supported Fedora releases
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-slim
     outputs:
       supported-releases: ${{ steps.fetch-supported-releases.outputs.releases }}
     steps:
@@ -29,7 +29,7 @@ jobs:
 
   source-bundle:
     name: Source Bundle
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
