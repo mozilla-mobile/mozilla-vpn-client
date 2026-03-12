@@ -45,17 +45,17 @@ tasks:
         symbol: I(linux-jammy)
         definition: linux-dpkg-build
         args:
-            DOCKER_BASE_IMAGE: ubuntu:jammy
+            DOCKER_BASE_IMAGE: '{dockerhub:ubuntu:jammy}'
     linux-build-noble:
         symbol: I(linux-noble)
         definition: linux-dpkg-build
         args:
-            DOCKER_BASE_IMAGE: ubuntu:noble
+            DOCKER_BASE_IMAGE: '{dockerhub:ubuntu:noble}'
     linux-build-resolute:
         symbol: I(linux-resolute)
         definition: linux-dpkg-build
         args:
-            DOCKER_BASE_IMAGE: ubuntu:resolute
+            DOCKER_BASE_IMAGE: '{dockerhub:ubuntu:resolute}'
     linux-build-fedora-fc39:
         symbol: I(linux-fedora-fc39)
         definition: linux-rpm-build
