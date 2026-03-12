@@ -45,14 +45,14 @@ linux/noble:
         name: linux-noble
         type: build
 
-linux/plucky:
-    description: "Linux Build (Ubuntu/Plucky)"
+linux/resolute:
+    description: "Linux Build (Ubuntu/Resolute)"
     treeherder:
-        platform: linux/plucky
+        platform: linux/resolute
     worker:
-        docker-image: {in-tree: linux-build-plucky}
+        docker-image: {in-tree: linux-build-resolute}
     add-index-routes:
-        name: linux-plucky
+        name: linux-resolute
         type: build
 
 linux/fedora-fc39:
