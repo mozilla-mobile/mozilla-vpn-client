@@ -5,7 +5,7 @@
 from voluptuous import Any, Extra, Optional
 
 from taskgraph.transforms.base import TransformSequence
-from taskgraph.util.schema import Schema, optionally_keyed_by, resolve_keyed_by
+from taskgraph.util.schema import LegacySchema, optionally_keyed_by, resolve_keyed_by
 
 transforms = TransformSequence()
 
@@ -19,7 +19,7 @@ RELEASE_INDEX_ROUTES = (
 )
 
 
-release_index_schema = Schema(
+release_index_schema = LegacySchema(
     {
         Optional("add-index-routes"): optionally_keyed_by(
             "build-type", Any(str, {"name": str, "type": str}, None)
