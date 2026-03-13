@@ -231,3 +231,10 @@ void AndroidCommons::dismissSplashScreen() {
   QJniObject::callStaticMethod<void>("org/mozilla/firefox/vpn/qt/VPNActivity",
                                      "dismissSplashScreen", "()V");
 }
+
+// static
+int AndroidCommons::getNavigationBarHeight() {
+  return QJniObject::callStaticMethod<jint>(
+      "org/mozilla/firefox/vpn/qt/VPNActivity", "getNavigationBarHeight",
+      "()I");
+}
