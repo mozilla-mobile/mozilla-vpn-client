@@ -40,6 +40,8 @@ class AndroidCommons final : public QObject {
   static void dispatchToMainThread(std::function<void()> callback);
 
   static void dismissSplashScreen();
+
+  static int getNavigationBarHeight();
 };
 
 #endif  // ANDROIDCOMMONS_H

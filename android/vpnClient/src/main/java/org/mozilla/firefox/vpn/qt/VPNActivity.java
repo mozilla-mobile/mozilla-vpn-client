@@ -118,6 +118,16 @@ public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
     }
   }
 
+  public static int getNavigationBarHeight() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && instance != null) {
+      WindowMetrics windowMetrics = instance.getWindowManager().getCurrentWindowMetrics();
+      Insets insets = windowMetrics.getWindowInsets().getInsets(WindowInsets.Type.navigationBars());
+      float density = instance.getResources().getDisplayMetrics().density;
+      return Math.round(insets.bottom / density);
+    }
+    return 0;
+  }
+
   public static VPNActivity getInstance() {
     Log.d("VPNActivity", "getInstance");
     if(instance != null){

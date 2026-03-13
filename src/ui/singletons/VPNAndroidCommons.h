@@ -18,6 +18,10 @@ class VPNAndroidCommons : public QObject {
   Q_INVOKABLE int getAndroidApiLevel() {
     return AndroidCommons::getSDKVersion();
   }
+
+  Q_INVOKABLE int getNavigationBarHeight() {
+    return AndroidCommons::getNavigationBarHeight();
+  }
 };
 
 #endif  // VPNANDROIDCOMMONS_H
