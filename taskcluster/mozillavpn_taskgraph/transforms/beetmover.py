@@ -14,21 +14,19 @@ from voluptuous import Extra, Optional, Required
 transforms = TransformSequence()
 
 
-beetmover_schema = Schema(
-    {
-        Required("beetmover-action"): str,
-        Required("attributes"): {
-            Required("build-type"): str,
-            Required("release-artifacts"): [dict],
-            Extra: object,
-        },
-        Required("dependencies"): task_description_schema["dependencies"],
-        Required("name"): str,
-        Required("run-on-tasks-for"): task_description_schema["run-on-tasks-for"],
-        Required("worker-type"): task_description_schema["worker-type"],
-        Optional("task-from"): task_description_schema["task-from"],
-    }
-)
+class BeetmoverAttributes(Schema, forbid_unknown_fields=False):
+    build_type: str
+    release_artifacts: list[dict]
+
+
+class BeetmoverSchema(Schema):
+    beetmover_action: str
+    attributes: BeetmoverAttributes
+    dependencies: task_description_schema.__annotations__["dependencies"]
+    name: str
+    run_on_tasks_for: task_description_schema.__annotations__["run_on_tasks_for"]
+    worker_type: task_description_schema.__annotations__["worker_type"]
+    task_from: task_description_schema.__annotations__["task_from"]
 
 
 @transforms.add
@@ -41,7 +39,7 @@ def remove_worker(config, tasks):
         yield task
 
 
-transforms.add_validate(beetmover_schema)
+transforms.add_validate(BeetmoverSchema)
 
 
 @transforms.add
