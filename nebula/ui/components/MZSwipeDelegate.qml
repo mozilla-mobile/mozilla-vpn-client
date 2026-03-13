@@ -24,6 +24,10 @@ SwipeDelegate {
     }
 
     padding: 0
+    // These next 2 lines should not be needed, given prior line. But it fixes VPN-7485, and infuriatingly Qt themselves
+    // say it is sometimes needed in `note`: https://doc.qt.io/qt-6/qml-qtquick-controls-control.html#padding-prop
+    leftPadding: 0
+    rightPadding: 0
     clip: true
     hoverEnabled: true
     activeFocusOnTab: !blockClose
