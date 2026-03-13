@@ -138,7 +138,8 @@ MZButtonBase {
             font.family: fontName
             wrapMode: Text.WordWrap
             opacity: loaderVisible ? 0 : 1
-            Accessible.ignored: !visible
+            // on iOS, without this the item is read twice - once as a button, once as a label
+            Accessible.ignored: !visible || Qt.platform.os === "ios"
             Behavior on color {
                 ColorAnimation {
                     duration: 200

@@ -20,7 +20,8 @@ Item {
    property alias _interactive: vpnFlickable.interactive
    property alias _contentHeight: vpnFlickable.contentHeight
 
-   Accessible.name: (_menuTitle.length > 0) ? _menuTitle : _accessibleName
+   // This adds an element on iOS that we don't want read by VoiceOver.
+   Accessible.name: Qt.platform.os === "ios" ? "" : ((_menuTitle.length > 0) ? _menuTitle : _accessibleName)
    Accessible.role: Accessible.Pane
 
    anchors {
