@@ -39,3 +39,5 @@ override_dh_installinfo:
 
 override_dh_builddeb:
 	dh_builddeb -- -Zgzip
+
+override_dh_dwz:
