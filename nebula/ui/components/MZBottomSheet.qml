@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 
 import components 0.1
 import Mozilla.Shared 1.0
+import Mozilla.VPN 1.0
 
 //SUMMARY: MZBottomSheet opens a drawer from the bottom of the screen showing it's contentItem
 
@@ -50,7 +51,8 @@ Loader {
 
     sourceComponent: Drawer {
         implicitWidth: window.width
-        implicitHeight: root.sizeToContent ? Math.min(contentItem.implicitHeight, maxSheetHeight) : maxSheetHeight
+        bottomPadding: Qt.platform.os === "android" ? VPNAndroidCommons.getNavigationBarHeight() : 0
+        implicitHeight: (root.sizeToContent ? Math.min(contentItem.implicitHeight, maxSheetHeight) : maxSheetHeight) + bottomPadding
 
         topPadding: 0
 
