@@ -77,6 +77,60 @@ MZViewBase {
             }
         }
 
+        function maybeTurnOffStartOnBoot() {
+            if (MZSettings.startAtBoot) {
+              startOnBootDeactivated.visible = true;
+              // This settings change fixes a crash (VPN-7523)
+              MZSettings.startAtBoot = false;
+            }
+        }
+
+        MZContextualAlerts {
+            id: restartRequired
+            visible: false
+            Layout.leftMargin: MZTheme.theme.windowMargin/2
+
+            messages: [
+                {
+                    type: MZContextualAlert.AlertType.Warning,
+                    message: MZI18n.SettingsDevRestartRequired,
+                }
+            ]
+
+            Connections {
+                target: MZSettings
+                function onStagingServerAddressChanged() {
+                    restartRequired.visible = true;
+                }
+                function onStagingServerChanged() {
+                    restartRequired.visible = true;
+                }
+            }
+        }
+
+        MZContextualAlerts {
+            id: startOnBootDeactivated
+            visible: false
+            Layout.leftMargin: MZTheme.theme.windowMargin/2
+
+            messages: [
+                {
+                    type: MZContextualAlert.AlertType.Warning,
+                    message: "'Connect VPN on startup' setting has been disabled",
+                }
+            ]
+
+            Connections {
+                target: MZSettings
+                function onStagingServerAddressChanged() {
+                    root.maybeTurnOffStartOnBoot();
+                }
+                function onStagingServerChanged() {
+                    root.maybeTurnOffStartOnBoot();
+                }
+            }
+        }
+
         MZCheckBoxRow {
             Layout.fillWidth: true
             Layout.topMargin: MZTheme.theme.windowMargin
@@ -180,7 +234,7 @@ MZViewBase {
             Layout.fillWidth: true
             Layout.preferredHeight: MZTheme.theme.rowHeight
 
-            visible: checkBoxRowStagingServer.isChecked && !restartRequired.isVisible
+            visible: checkBoxRowStagingServer.isChecked && !restartRequired.visible
 
             MZExternalLinkListItem {
                 id: inspectorLink
@@ -200,9 +254,8 @@ MZViewBase {
         }
 
         MZContextualAlerts {
-            id: restartRequired
-
-            property bool isVisible: false
+            id: restartRequiredForButtons
+            visible: false
 
             Layout.topMargin: MZTheme.theme.listSpacing
             Layout.leftMargin: MZTheme.theme.windowMargin/2
@@ -211,19 +264,8 @@ MZViewBase {
                 {
                     type: MZContextualAlert.AlertType.Warning,
                     message: MZI18n.SettingsDevRestartRequired,
-                    visible: isVisible
                 }
             ]
-
-            Connections {
-                target: MZSettings
-                function onStagingServerAddressChanged() {
-                    restartRequired.isVisible = true;
-                }
-                function onStagingServerChanged() {
-                    restartRequired.isVisible = true;
-                }
-            }
         }
 
         MZButton {
@@ -234,7 +276,7 @@ MZViewBase {
             text: "Reinstate messages"
             onClicked: {
                 MZAddonManager.reinstateMessages()
-                restartRequired.isVisible = true
+                restartRequiredForButtons.visible = true
             }
         }
 
@@ -244,7 +286,7 @@ MZViewBase {
             text: "View onboarding at next launch"
             onClicked: {
                 MZSettings.onboardingCompleted = false
-                restartRequired.isVisible = true
+                restartRequiredForButtons.visible = true
             }
         }
 
