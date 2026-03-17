@@ -175,9 +175,9 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
     # gets merged into mainline
     if(CMAKE_C_COMPILER_TARGET STREQUAL "aarch64-pc-windows-msvc")
         file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml
-            # "\n"
-            # "[patch.crates-io]\n"
-            # "ring = { git = \"https://github.com/briansmith/ring\", rev = \"e26dd862c9c2d08c6ed5ac9208be0e70c37de0c1\" }\n"
+            "\n"
+            "[patch.crates-io]\n"
+            "ring = { git = \"https://github.com/briansmith/ring\", rev = \"e26dd862c9c2d08c6ed5ac9208be0e70c37de0c1\" }\n"
         )
     endif()
 endif()
