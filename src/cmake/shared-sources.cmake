@@ -177,7 +177,7 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
         file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml
             "\n"
             "[patch.crates-io]\n"
-            "ring = { git = \"https://github.com/dennisameling/ring\", branch = \"windows-arm64-clang-cl\" }\n"
+            "ring = { git = \"https://github.com/dennisameling/ring\", rev = \"27e2b2de18c120b73fc8e17e8c018461f4570c64\" }\n"
         )
     endif()
 endif()
