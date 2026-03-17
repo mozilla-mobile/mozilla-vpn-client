@@ -171,13 +171,13 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
     target_link_libraries(shared-sources INTERFACE signature)
 
     # HACK: Patch in a fix for the ring compilation fail on windows/aarch64.
-    # This can be removed once https://github.com/briansmith/ring/pull/2216
+    # This can be removed once https://github.com/briansmith/ring/pull/2699
     # gets merged into mainline
     if(CMAKE_C_COMPILER_TARGET STREQUAL "aarch64-pc-windows-msvc")
         file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml
             "\n"
             "[patch.crates-io]\n"
-            "ring = { git = \"https://github.com/MarijnS95/ring\", branch = \"aarch64-windows-allow-clang-cl\" }\n"
+            "ring = { git = \"https://github.com/dennisameling/ring\", branch = \"windows-arm64-clang-cl\" }\n"
         )
     endif()
 endif()
