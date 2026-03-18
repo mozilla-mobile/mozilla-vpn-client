@@ -2,4 +2,4 @@
 # https://taskcluster-taskgraph.readthedocs.io/en/latest/howto/bootstrap-taskgraph.html
 
 mozilla-taskgraph>=3.1
-taskcluster-taskgraph>=14.1.1
+taskcluster-taskgraph>=19

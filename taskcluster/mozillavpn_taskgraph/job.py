@@ -3,7 +3,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 from taskgraph.transforms.run import run_task_using, configure_taskdesc_for_run
-from taskgraph.util.schema import Schema, taskref_or_string
+from taskgraph.util.schema import LegacySchema, taskref_or_string
 from voluptuous import Required, Optional
 
 from shlex import quote as shell_quote
@@ -15,7 +15,7 @@ secret_schema = {
     Optional("json"): bool,
 }
 
-run_commands_schema = Schema(
+run_commands_schema = LegacySchema(
     {
         Required("using"): "run-commands",
         Optional("pre-commands"): [[str]],
