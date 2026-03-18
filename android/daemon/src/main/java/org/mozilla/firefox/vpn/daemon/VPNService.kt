@@ -274,7 +274,7 @@ class VPNService : android.net.VpnService() {
             return JSONObject().apply {
                 putOpt("rx_bytes", getConfigValue("rx_bytes")?.toInt())
                 putOpt("tx_bytes", getConfigValue("tx_bytes")?.toInt())
-                putOpt("endpoint", mConfig?.getJSONObject("server")?.getString("ipv4Gateway"))
+                putOpt("endpoint", mConfig?.getJSONArray("servers")?.getJSONObject(currentServerConfig)?.getString("ipv4Gateway"))
                 putOpt("deviceIpv4", mConfig?.getJSONObject("device")?.getString("ipv4Address"))
             }
         }
