@@ -33,6 +33,7 @@
 #include "settingsholder.h"
 #include "taskfunction.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
+#include "tasks/token/tasktoken.h"
 #include "taskscheduler.h"
 
 #if defined(MZ_FLATPAK)
@@ -377,6 +378,23 @@ void Controller::activateInternal(
     return;
   }
 
+  logger.debug() << "Selected exit server:" << exitServer.hostname()
+                 << "with protocol" << exitServer.protocol() << "and auth type"
+                 << exitServer.authType();
+  if (exitServer.authType() == Server::AuthType::Token &&
+      MozillaVPN::instance()->token().isEmpty()) {
+    TaskScheduler::deleteTasks();
+    Task* task = new TaskToken(ErrorHandler::PropagateError);
+    bool block = true;
+    if (block) {
+      connect(task, &Task::completed, this, [&]() { block = false; });
+    }
+    TaskScheduler::scheduleTask(task);
+    while (block) {
+      QCoreApplication::processEvents();
+    }
+  }
+
   MozillaVPN* vpn = MozillaVPN::instance();
   const Device* device = vpn->deviceModel()->currentDevice(vpn->keys());
   if (!device) {
@@ -392,7 +410,10 @@ void Controller::activateInternal(
   // Prepare the exit server's connection data.
   InterfaceConfig exitConfig;
   exitConfig.m_protocolType = exitServer.protocol();
-  exitConfig.m_privateKey = vpn->keys()->privateKey();
+  exitConfig.m_privateKey = exitServer.authType() == Server::AuthType::KeyPair
+                                ? vpn->keys()->privateKey()
+                                : MozillaVPN::instance()->token();
+  exitConfig.m_hostname = exitServer.hostname();
   exitConfig.m_deviceIpv4Address = device->ipv4Address();
   exitConfig.m_deviceIpv6Address = device->ipv6Address();
   exitConfig.m_serverIpv4Gateway = exitServer.ipv4Gateway();
@@ -448,7 +469,12 @@ void Controller::activateInternal(
     }
 
     InterfaceConfig entryConfig;
-    entryConfig.m_privateKey = vpn->keys()->privateKey();
+    entryConfig.m_protocolType = entryServer.protocol();
+    entryConfig.m_privateKey =
+        entryServer.authType() == Server::AuthType::KeyPair
+            ? vpn->keys()->privateKey()
+            : MozillaVPN::instance()->token();
+    entryConfig.m_hostname = entryServer.hostname();
     entryConfig.m_deviceIpv4Address = device->ipv4Address();
     entryConfig.m_deviceIpv6Address = device->ipv6Address();
     entryConfig.m_serverPublicKey = entryServer.publicKey();

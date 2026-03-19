@@ -25,6 +25,9 @@ class Server final {
   enum ProtocolType { WireGuard, Masque };
   Q_ENUM(ProtocolType);
 
+  enum AuthType { KeyPair, Token };
+  Q_ENUM(AuthType);
+
   [[nodiscard]] bool fromJson(const QJsonObject& obj);
   bool fromMultihop(const Server& exit, const Server& entry);
 
@@ -33,6 +36,8 @@ class Server final {
   bool initialized() const { return !m_hostname.isEmpty(); }
 
   const ProtocolType protocol() const { return m_protocol; }
+
+  const AuthType authType() const { return m_authType; }
 
   const QString& hostname() const { return m_hostname; }
 
@@ -71,6 +76,7 @@ class Server final {
 
  private:
   ProtocolType m_protocol;
+  AuthType m_authType;
   QString m_hostname;
   QString m_ipv4AddrIn;
   QString m_ipv4Gateway;

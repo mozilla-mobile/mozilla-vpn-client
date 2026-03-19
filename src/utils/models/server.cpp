@@ -30,6 +30,7 @@ Server& Server::operator=(const Server& other) {
   if (this == &other) return *this;
 
   m_protocol = other.m_protocol;
+  m_authType = other.m_authType;
   m_hostname = other.m_hostname;
   m_ipv4AddrIn = other.m_ipv4AddrIn;
   m_ipv4Gateway = other.m_ipv4Gateway;
@@ -56,17 +57,37 @@ bool Server::fromJson(const QJsonObject& obj) {
   if (!hostname.isString()) {
     return false;
   }
-  QMetaEnum metaEnum = QMetaEnum::fromType<ProtocolType>();
+  QMetaEnum metaEnumProtocol = QMetaEnum::fromType<ProtocolType>();
   QJsonValue protocol = obj.value("protocol");
   if (!protocol.isString()) {
-    return false;
+    // Protocol not set defaulting to wireguard
+    qDebug() << "Protocol not set, defaulting to WireGuard";
+    m_protocol = ProtocolType::WireGuard;
+  } else {
+    bool ok = true;
+    m_protocol = ProtocolType(metaEnumProtocol.keyToValue(
+        protocol.toString().toUtf8().constData(), &ok));
+    if (!ok) {
+      qDebug() << "Unknown protocol type:" << protocol.toString();
+      return false;
+    }
   }
-  bool ok = true;
-  m_protocol = ProtocolType(
-      metaEnum.keyToValue(protocol.toString().toUtf8().constData(), &ok));
-  if (!ok) {
-    qDebug() << "Unknown protocol type:" << protocol.toString();
-    return false;
+
+  QMetaEnum metaEnumAuth = QMetaEnum::fromType<AuthType>();
+  QJsonValue authType = obj.value("auth_type");
+  if (!authType.isString()) {
+    // Auth type not set defaulting to KeyPair
+    m_authType = m_protocol == ProtocolType::WireGuard ? AuthType::KeyPair
+                                                       : AuthType::Token;
+    qDebug() << "Auth type not set, defaulting to" << m_authType << m_hostname;
+  } else {
+    bool ok = true;
+    m_authType = AuthType(
+        metaEnumAuth.keyToValue(authType.toString().toUtf8().constData(), &ok));
+    if (!ok) {
+      qDebug() << "Unknown auth type:" << authType.toString();
+      return false;
+    }
   }
 
   QJsonValue ipv4AddrIn = obj.value("ipv4_addr_in");
