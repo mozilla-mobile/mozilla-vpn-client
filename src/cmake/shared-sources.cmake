@@ -177,7 +177,14 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
         file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml
             "\n"
             "[patch.crates-io]\n"
-            "ring = { git = \"https://github.com/MarijnS95/ring\", branch = \"aarch64-windows-allow-clang-cl\" }\n"
+            "ring = { git = \"https://github.com/briansmith/ring\", rev = \"b04eed0a2f30874c62309459d6a2abb22d14775d\" }\n"
+        )
+
+        # We may also need to update the lockfile if the ring version changed.
+        execute_process(
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home
+                    ${CARGO_BUILD_TOOL} update ring
         )
     endif()
 endif()
