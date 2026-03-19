@@ -171,8 +171,8 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
     target_link_libraries(shared-sources INTERFACE signature)
 
     # HACK: Patch in a fix for the ring compilation fail on windows/aarch64.
-    # This can be removed once https://github.com/briansmith/ring/pull/2216
-    # gets merged into mainline
+    # This can be removed once version 0.17.1600 is published to crates.io
+    # See: https://github.com/briansmith/ring/issues/2215
     if(CMAKE_C_COMPILER_TARGET STREQUAL "aarch64-pc-windows-msvc")
         file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml
             "\n"
