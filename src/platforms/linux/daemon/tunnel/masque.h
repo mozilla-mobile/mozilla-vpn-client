@@ -24,9 +24,9 @@ class MasqueTunnelLinux final : public MasqueTunnel {
   bool interfaceExists();
   bool addInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
-  void resetApp(const QString& app) override {};
-  void excludeApp(const QString& app) override {};
-  void resetAllApps() override {};
+  void resetApp(const QString& app) override{};
+  void excludeApp(const QString& app) override{};
+  void resetAllApps() override{};
   bool supportSplitTunnel() override { return false; };
   bool waitForInterfaceReady();
 

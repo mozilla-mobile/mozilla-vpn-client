@@ -9,16 +9,18 @@
 
 constexpr const char* MASQUE_INTERFACE = "mozmasque0";
 
-class MasqueTunnel :  public Tunnel {
-    Q_OBJECT
-    public:
-        MasqueTunnel(QObject* parent) : Tunnel(parent) {};
-        Server::ProtocolType protocolType() const override { return Server::ProtocolType::Masque; }
-        QString interfaceName() const override { return MASQUE_INTERFACE; };
-        QJsonObject getStatus() const override;
-        int checkHandshake() override;
-        bool activate(const InterfaceConfig& config) override;
-        bool switchServer(const InterfaceConfig& config) override;
+class MasqueTunnel : public Tunnel {
+  Q_OBJECT
+ public:
+  MasqueTunnel(QObject* parent) : Tunnel(parent){};
+  Server::ProtocolType protocolType() const override {
+    return Server::ProtocolType::Masque;
+  }
+  QString interfaceName() const override { return MASQUE_INTERFACE; };
+  QJsonObject getStatus() const override;
+  int checkHandshake() override;
+  bool activate(const InterfaceConfig& config) override;
+  bool switchServer(const InterfaceConfig& config) override;
 };
 
 #endif  // MASQUE_H

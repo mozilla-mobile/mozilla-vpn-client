@@ -82,7 +82,8 @@ bool Daemon::activate(const InterfaceConfig& config) {
   logger.debug() << "Activating interface.";
   auto emit_failure_guard = qScopeGuard([this] { emit activationFailure(); });
 
-  if (m_tunnel != nullptr && m_tunnel->connections().contains(config.m_hopType)) {
+  if (m_tunnel != nullptr &&
+      m_tunnel->connections().contains(config.m_hopType)) {
     if (m_tunnel->supportServerSwitching(config)) {
       logger.debug() << "Already connected. Server switching supported.";
 
@@ -106,9 +107,9 @@ bool Daemon::activate(const InterfaceConfig& config) {
         return true;
       }
       return false;
-    }
-    else {
-      // Server switching is not supported, we need to deactivate and then activate with the new server.
+    } else {
+      // Server switching is not supported, we need to deactivate and then
+      // activate with the new server.
       logger.warning() << "Already connected. Server switching not supported.";
       if (!deactivate(false)) {
         logger.error() << "Deactivation failed during server switch.";
@@ -119,8 +120,8 @@ bool Daemon::activate(const InterfaceConfig& config) {
 
   logger.debug() << "Not connected. Activating new connection.";
 
-  if(!selectTunnel(config.m_protocolType)) {
-      return false;
+  if (!selectTunnel(config.m_protocolType)) {
+    return false;
   }
 
   bool status = m_tunnel->run(Tunnel::Op::Up, config);
@@ -135,7 +136,6 @@ bool Daemon::activate(const InterfaceConfig& config) {
   }
   return false;
 }
-
 
 bool Daemon::maybeUpdateResolvers(const InterfaceConfig& config) {
   logger.debug() << "Maybe update resolvers for" << config.m_hopType;
@@ -230,7 +230,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   }
   config.m_serverIpv4Gateway = obj.value("serverIpv4Gateway").toString();
   config.m_serverIpv6Gateway = obj.value("serverIpv6Gateway").toString();
-  
+
   config.m_hostname = obj.value("hostname").toString();
   if (config.m_hostname.isNull()) {
     logger.warning() << "no server hostname found in jsonConfig input";
@@ -368,10 +368,9 @@ QString Daemon::logs() {
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
 QJsonObject Daemon::getStatus() {
-  if(m_tunnel != nullptr) {
+  if (m_tunnel != nullptr) {
     return m_tunnel->getStatus();
-  }
-  else {
+  } else {
     QJsonObject json;
     json.insert("connected", QJsonValue(false));
     return json;
@@ -379,7 +378,7 @@ QJsonObject Daemon::getStatus() {
 }
 
 void Daemon::checkHandshake() {
-  if(m_tunnel != nullptr) {
+  if (m_tunnel != nullptr) {
     int pendingHandshakes = m_tunnel->checkHandshake();
     if (pendingHandshakes > 0) {
       m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);

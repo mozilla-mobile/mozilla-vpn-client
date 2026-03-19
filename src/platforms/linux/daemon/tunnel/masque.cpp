@@ -17,25 +17,24 @@
 #include <sys/types.h>
 #include <unistd.h>
 
+#include <QCoreApplication>
+#include <QEventLoop>
 #include <QFileInfo>
 #include <QProcess>
 #include <QProcessEnvironment>
-#include <QCoreApplication>
-#include <QEventLoop>
 #include <QTimer>
 #include <chrono>
 #include <thread>
 
+#include "daemon/protocols/masque.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/server.h"
-#include "daemon/protocols/masque.h"
 
 namespace {
 Logger logger("MasqueTunnelLinux");
 Logger logmasque("MasqueDaemon");
 }  // namespace
-
 
 MasqueTunnelLinux::MasqueTunnelLinux(QObject* parent)
     : MasqueTunnel(parent), m_firewall(this), m_daemonProcess(this) {
@@ -85,9 +84,12 @@ bool MasqueTunnelLinux::addInterface(const InterfaceConfig& config) {
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   m_daemonProcess.setProcessEnvironment(pe);
   m_daemonProcess.setProgram(programPath);
+  // CRITICAL - This approach is UNSAFE and experiment only
+  // command injection can happen here, this should be done via config file,
+  // stdin or parameter should be sanitized
   m_daemonProcess.setArguments(
-      QStringList({"-verbose", "-token", config.m_privateKey, "-insecure", "-relay",
-                   config.m_serverIpv4AddrIn}));
+      QStringList({"-verbose", "-token", config.m_privateKey, "-relay",
+                   config.m_hostname, "-tun", interfaceName()}));
 
   // Start the daemon process
   logger.info() << "Starting MASQUE daemon...";
@@ -100,7 +102,7 @@ bool MasqueTunnelLinux::addInterface(const InterfaceConfig& config) {
                    << "Error code:" << m_daemonProcess.error();
     return false;
   }
-  if(!waitForInterfaceReady()) {
+  if (!waitForInterfaceReady()) {
     logger.error() << "MASQUE interface did not become ready in time.";
     m_daemonProcess.terminate();
     if (!m_daemonProcess.waitForFinished(5000)) {
@@ -152,14 +154,13 @@ bool MasqueTunnelLinux::interfaceExists() {
   return true;
 }
 
-
 bool MasqueTunnelLinux::waitForInterfaceReady() {
   QTimer timeout;
   timeout.setSingleShot(true);
   timeout.start(10000);  // Wait up to 10 seconds for the interface to be ready
 
   while ((m_daemonProcess.state() == QProcess::Running) && timeout.isActive()) {
-    if(interfaceExists()) {
+    if (interfaceExists()) {
       logger.info() << "Interface" << MASQUE_INTERFACE << "is ready";
       return true;
     }
@@ -171,7 +172,7 @@ bool MasqueTunnelLinux::waitForInterfaceReady() {
 
 QJsonObject MasqueTunnelLinux::getStatus() const {
   QJsonObject json;
-  if(m_daemonProcess.state() == QProcess::NotRunning) {
+  if (m_daemonProcess.state() == QProcess::NotRunning) {
     json.insert("connected", QJsonValue(false));
     return json;
   }
@@ -212,7 +213,7 @@ void MasqueTunnelLinux::daemonErrorOccurred(QProcess::ProcessError error) {
 }
 
 void MasqueTunnelLinux::daemonFinished(int exitCode,
-                                      QProcess::ExitStatus exitStatus) {
+                                       QProcess::ExitStatus exitStatus) {
   if ((exitStatus != QProcess::NormalExit) || (exitCode != 0)) {
     logger.warning() << "Daemon process exited with code:" << exitCode;
     emit backendFailure();

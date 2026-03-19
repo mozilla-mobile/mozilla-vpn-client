@@ -21,6 +21,8 @@
 #include "loghandler.h"
 #include "platforms/linux/linuxutils.h"
 #include "polkithelper.h"
+#include "tunnel/masque.h"
+#include "tunnel/wireguard.h"
 
 namespace {
 Logger logger("DBusService");
@@ -34,13 +36,7 @@ constexpr const char* DBUS_LOGIN_USER = "org.freedesktop.login1.User";
 DBusService::DBusService(QObject* parent) : Daemon(parent) {
   MZ_COUNT_CTOR(DBusService);
 
-  m_wgutils = new WireguardUtilsLinux(this);
-  m_masqueutils = new MasqueUtilsLinux(this);
-
-  if (!removeInterfaceIfExists()) {
-    qFatal("Interface `%s` exists and cannot be removed. Cannot proceed!",
-           WG_INTERFACE);
-  }
+  initializeTunnels();
 
   m_appTracker = new AppTracker(this);
   connect(m_appTracker, SIGNAL(appLaunched(QString, QString)), this,
@@ -75,29 +71,11 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
 
 DBusService::~DBusService() { MZ_COUNT_DTOR(DBusService); }
 
-IPUtils* DBusService::iputils() {
-  if (!m_iputils) {
-    m_iputils = new IPUtilsLinux(this);
-  }
-  return m_iputils;
-}
-
 DnsUtils* DBusService::dnsutils() {
   if (!m_dnsutils) {
     m_dnsutils = new DnsUtilsLinux(this);
   }
   return m_dnsutils;
-}
-
-bool DBusService::removeInterfaceIfExists() {
-  if (m_wgutils->interfaceExists()) {
-    logger.warning() << "Device already exists. Let's remove it.";
-    if (!m_wgutils->deleteInterface()) {
-      logger.error() << "Failed to remove the device.";
-      return false;
-    }
-  }
-  return true;
 }
 
 QString DBusService::version() {
@@ -117,7 +95,7 @@ bool DBusService::activate(const InterfaceConfig& config) {
   }
 
   // (Re)load the split tunnelling configuration.
-  if (config.m_protocolType == Server::ProtocolType::WireGuard) {
+  if (m_tunnel->supportSplitTunnel()) {
     clearAppStates();
     for (const QString& app : config.m_vpnDisabledApps) {
       setAppState(LinuxUtils::desktopFileId(app), Excluded);
@@ -134,8 +112,7 @@ bool DBusService::deactivate(bool emitSignals) {
     logger.error() << "Insufficient caller permissions";
     return false;
   }
-  if (m_connections.first().m_config.m_protocolType ==
-      Server::ProtocolType::WireGuard) {
+  if (m_tunnel->supportSplitTunnel()) {
     clearAppStates();
   }
   return Daemon::deactivate(emitSignals);
@@ -236,7 +213,7 @@ void DBusService::appLaunched(const QString& cgroup,
   // Apply firewall rules to this control group.
   m_excludedCgroups[cgroup] = state;
   if (state == Excluded) {
-    m_wgutils->excludeCgroup(cgroup);
+    m_tunnel->excludeApp(cgroup);
   }
 }
 
@@ -246,7 +223,7 @@ void DBusService::appTerminated(const QString& cgroup,
 
   // Remove any firewall rules applied to this control group.
   if (m_excludedCgroups.remove(cgroup)) {
-    m_wgutils->resetCgroup(cgroup);
+    m_tunnel->resetApp(cgroup);
   }
 }
 
@@ -258,7 +235,7 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
     m_excludedApps.remove(desktopFileId);
     for (const QString& cgroup :
          m_appTracker->findByDesktopFileId(desktopFileId)) {
-      m_wgutils->resetCgroup(cgroup);
+      m_tunnel->resetApp(cgroup);
     }
     return;
   }
@@ -268,13 +245,13 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
   for (const QString& cgroup :
        m_appTracker->findByDesktopFileId(desktopFileId)) {
     if (m_excludedCgroups.contains(cgroup)) {
-      m_wgutils->resetCgroup(cgroup);
+      m_tunnel->resetApp(cgroup);
     }
     m_excludedCgroups[cgroup] = state;
     if (state == Excluded) {
       // Excluded control groups are given special netfilter rules to direct
       // their traffic outside of the VPN tunnel.
-      m_wgutils->excludeCgroup(cgroup);
+      m_tunnel->excludeApp(cgroup);
     }
   }
 }
@@ -282,7 +259,7 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
 /* Clear the firewall and return all applications to the active state */
 void DBusService::clearAppStates() {
   logger.debug() << "Clearing excluded app list";
-  m_wgutils->resetAllCgroups();
+  m_tunnel->resetAllApps();
   m_excludedCgroups.clear();
   m_excludedApps.clear();
 }
@@ -373,4 +350,36 @@ bool DBusService::isCallerAuthorized(const QString& actionId) {
   }
 
   return (flag == CAP_SET);
+}
+
+void DBusService::initializeTunnels() {
+  m_masqueTunnel = new MasqueTunnelLinux(this);
+  m_masqueTunnel->removeInterfaceIfExists();
+  connect(m_masqueTunnel, &Tunnel::connected, this,
+          [this](const QString& pubkey) { emit connected(pubkey); });
+  connect(m_masqueTunnel, &Tunnel::backendFailure, this,
+          [this]() { abortBackendFailure(); });
+
+  m_wireGuardTunnel = new WireGuardTunnelLinux(this);
+  m_wireGuardTunnel->removeInterfaceIfExists();
+  connect(m_wireGuardTunnel, &Tunnel::connected, this,
+          [this](const QString& pubkey) { emit connected(pubkey); });
+  connect(m_wireGuardTunnel, &Tunnel::backendFailure, this,
+          [this]() { abortBackendFailure(); });
+}
+
+bool DBusService::selectTunnel(Server::ProtocolType protocolType) {
+  if (protocolType == Server::ProtocolType::WireGuard) {
+    logger.debug() << "Select WireGuard tunnel";
+    m_tunnel = m_wireGuardTunnel;
+    return true;
+  } else if (protocolType == Server::ProtocolType::Masque) {
+    logger.debug() << "Select Masque tunnel";
+    m_tunnel = m_masqueTunnel;
+    return true;
+  } else {
+    logger.error() << "Unsupported protocol type:" << protocolType;
+    m_tunnel = nullptr;
+    return false;
+  }
 }

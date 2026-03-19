@@ -12,28 +12,30 @@
 #include <QStringList>
 
 #include "daemon/protocols/wireguard.h"
-#include "platforms/linux/daemon/wireguardutilslinux.h"
-#include "platforms/linux/daemon/linuxfirewall.h"
 #include "platforms/linux/daemon/iputilslinux.h"
+#include "platforms/linux/daemon/linuxfirewall.h"
+#include "platforms/linux/daemon/wireguardutilslinux.h"
 
 class WireGuardTunnelLinux final : public WireGuardTunnel {
   Q_OBJECT
 
  public:
-   WireGuardTunnelLinux(QObject* parent);
-   bool supportSplitTunnel() override { return true; };
-   void resetApp(const QString& app) override { m_wgutils->resetCgroup(app); };
-   void excludeApp(const QString& app) override { m_wgutils->excludeCgroup(app); };
-   void resetAllApps() override { m_wgutils->resetAllCgroups(); };
-   bool supportIPUtils() const override { return true; };
+  WireGuardTunnelLinux(QObject* parent);
+  bool supportSplitTunnel() override { return true; };
+  void resetApp(const QString& app) override { m_wgutils->resetCgroup(app); };
+  void excludeApp(const QString& app) override {
+    m_wgutils->excludeCgroup(app);
+  };
+  void resetAllApps() override { m_wgutils->resetAllCgroups(); };
+  bool supportIPUtils() const override { return true; };
 
-  protected:
-    WireguardUtils* wgutils() const override { return m_wgutils; };
-    IPUtils* iputils() override;
+ protected:
+  WireguardUtils* wgutils() const override { return m_wgutils; };
+  IPUtils* iputils() override;
 
-  private:
-    WireguardUtilsLinux* m_wgutils = nullptr;
-    IPUtilsLinux* m_iputils = nullptr; 
+ private:
+  WireguardUtilsLinux* m_wgutils = nullptr;
+  IPUtilsLinux* m_iputils = nullptr;
 };
 
 #endif  // WIREGUARDTUNNELLINUX_H

@@ -13,8 +13,8 @@
 #include "dnsutils.h"
 #include "interfaceconfig.h"
 #include "iputils.h"
-#include "wireguardutils.h"
 #include "protocols/tunnel.h"
+#include "wireguardutils.h"
 
 class Daemon : public QObject {
   Q_OBJECT
@@ -72,7 +72,7 @@ class Daemon : public QObject {
   void checkHandshakeWireGuard();
 
   QTimer m_handshakeTimer;
-  Tunnel *m_tunnel = nullptr;
+  Tunnel* m_tunnel = nullptr;
 };
 
 #endif  // DAEMON_H

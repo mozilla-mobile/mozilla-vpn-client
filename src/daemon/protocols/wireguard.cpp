@@ -3,12 +3,13 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "wireguard.h"
-#include "daemon/wireguardutils.h"
-#include <QList>
+
 #include <QJsonObject>
 #include <QJsonValue>
-#include "logger.h"
+#include <QList>
 
+#include "daemon/wireguardutils.h"
+#include "logger.h"
 
 namespace {
 Logger logger("WireguardTunnel");
@@ -82,35 +83,34 @@ bool WireGuardTunnel::switchServer(const InterfaceConfig& config) {
   const InterfaceConfig& lastConfig =
       m_connections.value(config.m_hopType).m_config;
 
-    // Activate the new peer and its routes.
-    if (!wgutils()->updatePeer(config)) {
-        logger.error()
-            << "Server switch failed to update the wireguard interface";
-        return false;
+  // Activate the new peer and its routes.
+  if (!wgutils()->updatePeer(config)) {
+    logger.error() << "Server switch failed to update the wireguard interface";
+    return false;
+  }
+  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
+    if (!wgutils()->updateRoutePrefix(ip)) {
+      logger.error() << "Server switch failed to update the routing table";
+      break;
     }
-    for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-        if (!wgutils()->updateRoutePrefix(ip)) {
-        logger.error() << "Server switch failed to update the routing table";
-        break;
-        }
-    }
+  }
 
-    // Remove routing entries for the old peer.
-    for (const IPAddress& ip : lastConfig.m_allowedIPAddressRanges) {
-        if (!config.m_allowedIPAddressRanges.contains(ip)) {
-        wgutils()->deleteRoutePrefix(ip);
-        }
+  // Remove routing entries for the old peer.
+  for (const IPAddress& ip : lastConfig.m_allowedIPAddressRanges) {
+    if (!config.m_allowedIPAddressRanges.contains(ip)) {
+      wgutils()->deleteRoutePrefix(ip);
     }
+  }
 
-    // Remove the old peer if it is no longer necessary.
-    if (config.m_serverPublicKey != lastConfig.m_serverPublicKey) {
-        if (!wgutils()->deletePeer(lastConfig)) {
-        return false;
-        }
+  // Remove the old peer if it is no longer necessary.
+  if (config.m_serverPublicKey != lastConfig.m_serverPublicKey) {
+    if (!wgutils()->deletePeer(lastConfig)) {
+      return false;
     }
+  }
 
-    m_connections[config.m_hopType] = ConnectionState(config);
-    return true;
+  m_connections[config.m_hopType] = ConnectionState(config);
+  return true;
 }
 
 bool WireGuardTunnel::deleteInterface() {
