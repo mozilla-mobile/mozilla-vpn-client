@@ -85,6 +85,10 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/linuxfirewall.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.h
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/tunnel/wireguard.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/tunnel/wireguard.h
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/tunnel/masque.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/tunnel/masque.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/polkithelper.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/polkithelper.h
     )
@@ -215,3 +219,30 @@ if(NOT BUILD_FLATPAK)
 
     install(SCRIPT ${CMAKE_SOURCE_DIR}/scripts/linux/postinst.cmake)
 endif()
+
+
+# Build the Masque tunnel
+set(MASQUE_GO_ENV
+    GOCACHE=${CMAKE_BINARY_DIR}/go-cache
+    CC=${CMAKE_C_COMPILER}
+    CXX=${CMAKE_CXX_COMPILER}
+    GOROOT=${GOLANG_GOROOT}
+    GOOS=linux
+    CGO_ENABLED=1
+    GO111MODULE=on
+)
+
+add_custom_target(build_masque_go
+    COMMENT "Building masque-go"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/masque
+    DEPENDS
+        ${WIREGUARD_GO_DEPS}
+        ${CMAKE_SOURCE_DIR}/masque/go.mod
+        ${CMAKE_SOURCE_DIR}/masque/go.sum
+    COMMAND ${CMAKE_COMMAND} -E env ${MASQUE_GO_ENV}
+            ${GOLANG_BUILD_TOOL} build -o ${CMAKE_CURRENT_BINARY_DIR}/masque-vpn
+)
+
+
+add_dependencies(mozillavpn build_masque_go)
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/masque-vpn DESTINATION ${CMAKE_INSTALL_BINDIR})

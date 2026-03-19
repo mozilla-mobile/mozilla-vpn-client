@@ -2025,6 +2025,16 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
+      "append_servers", "Append servers from JSON", 1,
+      [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        logger.debug() << "Appending servers from JSON:" << arguments[1];
+        qDebug() << "Appending servers from JSON:" << arguments[1];
+        MozillaVPN::instance()->serverCountryModel()->appendFromJson(
+            arguments[1]);
+        return QJsonObject();
+      });
+
+  InspectorHandler::registerCommand(
       "hard_reset", "Hard reset (wipe all settings).", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
         MozillaVPN::instance()->hardReset();

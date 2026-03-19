@@ -10,8 +10,10 @@
 
 #include "apptracker.h"
 #include "daemon/daemon.h"
+#include "daemon/protocols/tunnel.h"
 #include "dnsutilslinux.h"
-#include "iputilslinux.h"
+#include "tunnel/masque.h"
+#include "tunnel/wireguard.h"
 #include "wireguardutilslinux.h"
 
 class DbusAdaptor;
@@ -40,18 +42,16 @@ class DBusService final : public Daemon, protected QDBusContext {
   void cleanupLogs();
 
  protected:
-  WireguardUtils* wgutils() const override { return m_wgutils; }
-  bool supportIPUtils() const override { return true; }
-  IPUtils* iputils() override;
   DnsUtils* dnsutils() override;
 
  private:
-  bool removeInterfaceIfExists();
   bool isCallerAuthorized(const QString& actionId);
   void dropRootPermissions();
 
   void setAppState(const QString& desktopFileId, AppState state);
   void clearAppStates();
+  void initializeTunnels() override;
+  bool selectTunnel(Server::ProtocolType protocolType) override;
 
  private slots:
   void appLaunched(const QString& cgroup, const QString& desktopFileId);
@@ -62,13 +62,13 @@ class DBusService final : public Daemon, protected QDBusContext {
   void userRemoved(uint uid, const QDBusObjectPath& path);
 
  private:
-  WireguardUtilsLinux* m_wgutils = nullptr;
-  IPUtilsLinux* m_iputils = nullptr;
   DnsUtilsLinux* m_dnsutils = nullptr;
 
   AppTracker* m_appTracker = nullptr;
   QHash<QString, AppState> m_excludedApps;
   QHash<QString, AppState> m_excludedCgroups;
+  WireGuardTunnelLinux* m_wireGuardTunnel = nullptr;
+  MasqueTunnelLinux* m_masqueTunnel = nullptr;
 };
 
 #endif  // DBUSSERVICE_H

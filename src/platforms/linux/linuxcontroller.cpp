@@ -97,6 +97,8 @@ void LinuxController::activate(const InterfaceConfig& config,
                                Controller::Reason reason) {
   Q_UNUSED(reason);
 
+  logger.debug() << "Activating with protocol type:" << config.m_protocolType;
+
   connect(m_dbus->activate(config), &QDBusPendingCallWatcher::finished, this,
           &LinuxController::operationCompleted);
 

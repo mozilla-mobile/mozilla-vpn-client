@@ -16,6 +16,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "models/server.h"
 
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 constexpr int HANDSHAKE_POLL_MSEC = 250;
@@ -66,8 +67,6 @@ bool Daemon::activate(const QString& json) {
 }
 
 bool Daemon::activate(const InterfaceConfig& config) {
-  Q_ASSERT(wgutils() != nullptr);
-
   // There are 3 possible scenarios in which this method is called:
   //
   // 1. the VPN is off: the method tries to enable the VPN.
@@ -79,14 +78,16 @@ bool Daemon::activate(const InterfaceConfig& config) {
   // At the end, if the activation succeds, the `connected` signal is emitted.
   // If the activation abort's for any reason `the `activationFailure` signal is
   // emitted.
+
   logger.debug() << "Activating interface.";
   auto emit_failure_guard = qScopeGuard([this] { emit activationFailure(); });
 
-  if (m_connections.contains(config.m_hopType)) {
-    if (supportServerSwitching(config)) {
+  if (m_tunnel != nullptr &&
+      m_tunnel->connections().contains(config.m_hopType)) {
+    if (m_tunnel->supportServerSwitching(config)) {
       logger.debug() << "Already connected. Server switching supported.";
 
-      if (!switchServer(config)) {
+      if (!m_tunnel->switchServer(config)) {
         return false;
       }
 
@@ -98,79 +99,37 @@ bool Daemon::activate(const InterfaceConfig& config) {
         return false;
       }
 
-      bool status = run(Switch, config);
-      logger.debug() << "Connection status:" << status;
+      bool status = m_tunnel->run(Tunnel::Op::Switch, config);
+      logger.debug() << "Connection status after switch:" << status;
       if (status) {
-        m_connections[config.m_hopType] = ConnectionState(config);
         m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
         emit_failure_guard.dismiss();
         return true;
       }
       return false;
-    }
-
-    logger.warning() << "Already connected. Server switching not supported.";
-    if (!deactivate(false)) {
-      return false;
-    }
-
-    Q_ASSERT(!m_connections.contains(config.m_hopType));
-    if (activate(config)) {
-      emit_failure_guard.dismiss();
-      return true;
-    }
-    return false;
-  }
-
-  // Bring up the wireguard interface if not already done.
-  if (!wgutils()->interfaceExists()) {
-    // Create the interface.
-    if (!wgutils()->addInterface(config)) {
-      logger.error() << "Interface creation failed.";
-      return false;
-    }
-
-    // Bring the interface up.
-    if (supportIPUtils()) {
-      if (!iputils()->addInterfaceIPs(config)) {
-        return false;
-      }
-      if (!iputils()->setMTUAndUp(config)) {
+    } else {
+      // Server switching is not supported, we need to deactivate and then
+      // activate with the new server.
+      logger.warning() << "Already connected. Server switching not supported.";
+      if (!deactivate(false)) {
+        logger.error() << "Deactivation failed during server switch.";
         return false;
       }
     }
-
-    // Configure LAN exclusion policies
-    auto lanAddressRanges = IPAddress::lanAddressRanges();
-    if (!wgutils()->excludeLocalNetworks(lanAddressRanges)) {
-      logger.error() << "LAN exclusion failed.";
-      return false;
-    }
   }
 
-  // Add the peer to this interface.
-  if (!wgutils()->updatePeer(config)) {
-    logger.error() << "Peer creation failed.";
+  logger.debug() << "Not connected. Activating new connection.";
+
+  if (!selectTunnel(config.m_protocolType)) {
     return false;
   }
 
+  bool status = m_tunnel->run(Tunnel::Op::Up, config);
+  logger.debug() << "Connection status after up:" << status;
   if (!maybeUpdateResolvers(config)) {
     return false;
   }
-
-  // set routing
-  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-    if (!wgutils()->updateRoutePrefix(ip)) {
-      logger.debug() << "Routing configuration failed for"
-                     << logger.sensitive(ip.toString());
-      return false;
-    }
-  }
-
-  bool status = run(Up, config);
-  logger.debug() << "Connection status:" << status;
   if (status) {
-    m_connections[config.m_hopType] = ConnectionState(config);
     m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
     emit_failure_guard.dismiss();
     return true;
@@ -179,6 +138,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
 }
 
 bool Daemon::maybeUpdateResolvers(const InterfaceConfig& config) {
+  logger.debug() << "Maybe update resolvers for" << config.m_hopType;
   if ((config.m_hopType == InterfaceConfig::MultiHopExit) ||
       (config.m_hopType == InterfaceConfig::SingleHop)) {
     QList<QHostAddress> resolvers;
@@ -190,7 +150,7 @@ bool Daemon::maybeUpdateResolvers(const InterfaceConfig& config) {
       resolvers.append(QHostAddress(config.m_serverIpv6Gateway));
     }
 
-    if (!dnsutils()->updateResolvers(wgutils()->interfaceName(), resolvers)) {
+    if (!dnsutils()->updateResolvers(m_tunnel->interfaceName(), resolvers)) {
       return false;
     }
   }
@@ -238,6 +198,22 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   GETVALUE("serverPublicKey", config.m_serverPublicKey, String);
   GETVALUE("serverPort", config.m_serverPort, Double);
 
+  QMetaEnum protocolMetaEnum = QMetaEnum::fromType<Server::ProtocolType>();
+  QJsonValue protocolValue = obj.value("protocolType");
+  if (protocolValue.isString()) {
+    bool okay;
+    config.m_protocolType = Server::ProtocolType(protocolMetaEnum.keyToValue(
+        protocolValue.toString().toUtf8().constData(), &okay));
+    if (!okay) {
+      logger.error() << "protocolType" << protocolValue.toString()
+                     << "is not valid";
+      return false;
+    }
+  } else {
+    logger.debug() << "protocolType is not a string";
+    return false;
+  }
+
   config.m_deviceIpv4Address = obj.value("deviceIpv4Address").toString();
   config.m_deviceIpv6Address = obj.value("deviceIpv6Address").toString();
   if (config.m_deviceIpv4Address.isNull() &&
@@ -254,6 +230,12 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   }
   config.m_serverIpv4Gateway = obj.value("serverIpv4Gateway").toString();
   config.m_serverIpv6Gateway = obj.value("serverIpv6Gateway").toString();
+
+  config.m_hostname = obj.value("hostname").toString();
+  if (config.m_hostname.isNull()) {
+    logger.warning() << "no server hostname found in jsonConfig input";
+    return false;
+  }
 
   if (!obj.contains("dnsServer")) {
     config.m_dnsServer = QString();
@@ -347,12 +329,12 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 }
 
 bool Daemon::deactivate(bool emitSignals) {
-  Q_ASSERT(wgutils() != nullptr);
-
+  Q_ASSERT(m_tunnel != nullptr);
+  logger.info() << "Deactivating interface";
   // Deactivate the main interface.
-  if (!m_connections.isEmpty()) {
-    const ConnectionState& state = m_connections.first();
-    if (!run(Down, state.m_config)) {
+  if (!m_tunnel->connections().isEmpty()) {
+    const Tunnel::ConnectionState& state = m_tunnel->connections().first();
+    if (!m_tunnel->run(Tunnel::Op::Down, state.m_config)) {
       return false;
     }
   }
@@ -369,19 +351,7 @@ bool Daemon::deactivate(bool emitSignals) {
     logger.warning() << "Failed to restore DNS resolvers.";
   }
 
-  // Cleanup peers and routing
-  for (const ConnectionState& state : m_connections) {
-    const InterfaceConfig& config = state.m_config;
-    logger.debug() << "Deleting routes for" << config.m_hopType;
-    for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-      wgutils()->deleteRoutePrefix(ip);
-    }
-    wgutils()->deletePeer(config);
-  }
-  m_connections.clear();
-
-  // Delete the interface
-  return wgutils()->deleteInterface();
+  return m_tunnel->deleteInterface();
 }
 
 QString Daemon::logs() {
@@ -397,123 +367,22 @@ QString Daemon::logs() {
 
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
-bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
-  if (!m_connections.contains(config.m_hopType)) {
-    return false;
-  }
-  const InterfaceConfig& current =
-      m_connections.value(config.m_hopType).m_config;
-
-  return current.m_privateKey == config.m_privateKey &&
-         current.m_deviceIpv4Address == config.m_deviceIpv4Address &&
-         current.m_deviceIpv6Address == config.m_deviceIpv6Address &&
-         current.m_serverIpv4Gateway == config.m_serverIpv4Gateway &&
-         current.m_serverIpv6Gateway == config.m_serverIpv6Gateway;
-}
-
-bool Daemon::switchServer(const InterfaceConfig& config) {
-  Q_ASSERT(wgutils() != nullptr);
-
-  logger.debug() << "Switching server for" << config.m_hopType;
-
-  Q_ASSERT(m_connections.contains(config.m_hopType));
-  const InterfaceConfig& lastConfig =
-      m_connections.value(config.m_hopType).m_config;
-
-  // Activate the new peer and its routes.
-  if (!wgutils()->updatePeer(config)) {
-    logger.error() << "Server switch failed to update the wireguard interface";
-    return false;
-  }
-  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
-    if (!wgutils()->updateRoutePrefix(ip)) {
-      logger.error() << "Server switch failed to update the routing table";
-      break;
-    }
-  }
-
-  // Remove routing entries for the old peer.
-  for (const IPAddress& ip : lastConfig.m_allowedIPAddressRanges) {
-    if (!config.m_allowedIPAddressRanges.contains(ip)) {
-      wgutils()->deleteRoutePrefix(ip);
-    }
-  }
-
-  // Remove the old peer if it is no longer necessary.
-  if (config.m_serverPublicKey != lastConfig.m_serverPublicKey) {
-    if (!wgutils()->deletePeer(lastConfig)) {
-      return false;
-    }
-  }
-
-  m_connections[config.m_hopType] = ConnectionState(config);
-  return true;
-}
-
 QJsonObject Daemon::getStatus() {
-  Q_ASSERT(wgutils() != nullptr);
-  QJsonObject json;
-  logger.debug() << "Status request";
-
-  if (!wgutils()->interfaceExists() || m_connections.isEmpty()) {
+  if (m_tunnel != nullptr) {
+    return m_tunnel->getStatus();
+  } else {
+    QJsonObject json;
     json.insert("connected", QJsonValue(false));
     return json;
   }
-
-  const ConnectionState& connection = m_connections.first();
-  QList<WireguardUtils::PeerStatus> peers = wgutils()->getPeerStatus();
-  for (const WireguardUtils::PeerStatus& status : peers) {
-    if (status.m_pubkey != connection.m_config.m_serverPublicKey) {
-      continue;
-    }
-    json.insert("connected", QJsonValue(true));
-    json.insert("serverIpv4Gateway",
-                QJsonValue(connection.m_config.m_serverIpv4Gateway));
-    json.insert("deviceIpv4Address",
-                QJsonValue(connection.m_config.m_deviceIpv4Address));
-    json.insert("date", connection.m_date.toString());
-    json.insert("txBytes", QJsonValue(status.m_txBytes));
-    json.insert("rxBytes", QJsonValue(status.m_rxBytes));
-    return json;
-  }
-
-  json.insert("connected", QJsonValue(false));
-  return json;
 }
 
 void Daemon::checkHandshake() {
-  Q_ASSERT(wgutils() != nullptr);
-
-  logger.debug() << "Checking for handshake...";
-
-  int pendingHandshakes = 0;
-  QList<WireguardUtils::PeerStatus> peers = wgutils()->getPeerStatus();
-  for (ConnectionState& connection : m_connections) {
-    const InterfaceConfig& config = connection.m_config;
-    if (connection.m_date.isValid()) {
-      continue;
+  if (m_tunnel != nullptr) {
+    int pendingHandshakes = m_tunnel->checkHandshake();
+    if (pendingHandshakes > 0) {
+      m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
     }
-    logger.debug() << "awaiting" << logger.keys(config.m_serverPublicKey);
-
-    // Check if the handshake has completed.
-    for (const WireguardUtils::PeerStatus& status : peers) {
-      if (config.m_serverPublicKey != status.m_pubkey) {
-        continue;
-      }
-      if (status.m_handshake != 0) {
-        connection.m_date.setMSecsSinceEpoch(status.m_handshake);
-        emit connected(status.m_pubkey);
-      }
-    }
-
-    if (!connection.m_date.isValid()) {
-      pendingHandshakes++;
-    }
-  }
-
-  // Check again if there were connections that haven't completed a handshake.
-  if (pendingHandshakes > 0) {
-    m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
   }
 }
 

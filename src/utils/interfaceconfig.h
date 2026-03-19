@@ -10,6 +10,7 @@
 #include <QString>
 
 #include "ipaddress.h"
+#include "models/server.h"
 
 class QJsonObject;
 
@@ -18,12 +19,13 @@ class InterfaceConfig {
 
  public:
   InterfaceConfig() {}
-
   enum HopType { SingleHop, MultiHopEntry, MultiHopExit };
   Q_ENUM(HopType)
 
+  Server::ProtocolType m_protocolType;
   HopType m_hopType;
   QString m_privateKey;
+  QString m_hostname;
   QString m_deviceIpv4Address;
   QString m_deviceIpv6Address;
   QString m_serverIpv4Gateway;
