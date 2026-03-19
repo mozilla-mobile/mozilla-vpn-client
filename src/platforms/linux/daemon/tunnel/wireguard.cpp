@@ -15,6 +15,14 @@ WireGuardTunnelLinux::WireGuardTunnelLinux(QObject* parent)
   logger.debug() << "WireGuardTunnelLinux created.";
 }
 
+WireGuardTunnelLinux::~WireGuardTunnelLinux() {
+  MZ_COUNT_DTOR(WireGuardTunnelLinux);
+  removeInterfaceIfExists();
+  delete m_wgutils;
+  delete m_iputils;
+  logger.debug() << "WireGuardTunnelLinux destroyed.";
+}
+
 IPUtils* WireGuardTunnelLinux::iputils() {
   if (!m_iputils) {
     m_iputils = new IPUtilsLinux(this);

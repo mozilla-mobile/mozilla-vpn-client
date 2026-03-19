@@ -21,6 +21,7 @@ class WireGuardTunnelLinux final : public WireGuardTunnel {
 
  public:
   WireGuardTunnelLinux(QObject* parent);
+  ~WireGuardTunnelLinux();
   bool supportSplitTunnel() override { return true; };
   void resetApp(const QString& app) override { m_wgutils->resetCgroup(app); };
   void excludeApp(const QString& app) override {

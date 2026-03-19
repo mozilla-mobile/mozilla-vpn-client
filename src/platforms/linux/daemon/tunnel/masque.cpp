@@ -39,8 +39,8 @@ Logger logmasque("MasqueDaemon");
 MasqueTunnelLinux::MasqueTunnelLinux(QObject* parent)
     : MasqueTunnel(parent), m_firewall(this), m_daemonProcess(this) {
   MZ_COUNT_CTOR(MasqueTunnelLinux);
-  // Connect signals to monitor the daemon
   removeInterfaceIfExists();
+  // Connect signals to monitor the daemon
   connect(&m_daemonProcess, &QProcess::readyReadStandardOutput, this,
           &MasqueTunnelLinux::daemonStdoutReady);
   connect(&m_daemonProcess, &QProcess::errorOccurred, this,
@@ -56,7 +56,7 @@ MasqueTunnelLinux::MasqueTunnelLinux(QObject* parent)
 
 MasqueTunnelLinux::~MasqueTunnelLinux() {
   MZ_COUNT_DTOR(MasqueTunnelLinux);
-  deleteInterface();
+  removeInterfaceIfExists();
   logger.debug() << "MasqueTunnelLinux destroyed.";
 }
 

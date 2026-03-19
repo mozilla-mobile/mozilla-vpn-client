@@ -354,14 +354,12 @@ bool DBusService::isCallerAuthorized(const QString& actionId) {
 
 void DBusService::initializeTunnels() {
   m_masqueTunnel = new MasqueTunnelLinux(this);
-  m_masqueTunnel->removeInterfaceIfExists();
   connect(m_masqueTunnel, &Tunnel::connected, this,
           [this](const QString& pubkey) { emit connected(pubkey); });
   connect(m_masqueTunnel, &Tunnel::backendFailure, this,
           [this]() { abortBackendFailure(); });
 
   m_wireGuardTunnel = new WireGuardTunnelLinux(this);
-  m_wireGuardTunnel->removeInterfaceIfExists();
   connect(m_wireGuardTunnel, &Tunnel::connected, this,
           [this](const QString& pubkey) { emit connected(pubkey); });
   connect(m_wireGuardTunnel, &Tunnel::backendFailure, this,
