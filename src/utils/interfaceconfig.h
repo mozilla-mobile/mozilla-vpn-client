@@ -25,6 +25,7 @@ class InterfaceConfig {
   Server::ProtocolType m_protocolType;
   HopType m_hopType;
   QString m_privateKey;
+  QString m_hostname;
   QString m_deviceIpv4Address;
   QString m_deviceIpv6Address;
   QString m_serverIpv4Gateway;

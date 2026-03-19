@@ -11,6 +11,7 @@
 #include "daemon/daemon.h"
 #include "dnsutilsmock.h"
 #include "wireguardutilsmock.h"
+#include "mocktunnelwireguard.h"
 
 class MockDaemon final : public Daemon {
   Q_OBJECT
@@ -22,10 +23,10 @@ class MockDaemon final : public Daemon {
 
   bool activate(const InterfaceConfig& config) override;
   QString socketPath() const { return m_server.fullServerName(); }
+  void initializeTunnels() override {  m_tunnel = new MockWireGuardTunnel(this); }
+  bool selectTunnel(Server::ProtocolType protocolType) override { return true; }
 
  protected:
-  WireguardUtils* wgutils() const override { return m_wgutils; }
-  MasqueUtils* masqueutils() const override { return nullptr; }
   DnsUtils* dnsutils() override { return m_dnsutils; }
 
  private:

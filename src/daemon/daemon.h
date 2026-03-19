@@ -13,8 +13,8 @@
 #include "dnsutils.h"
 #include "interfaceconfig.h"
 #include "iputils.h"
-#include "masqueutils.h"
 #include "wireguardutils.h"
+#include "protocols/tunnel.h"
 
 class Daemon : public QObject {
   Q_OBJECT
@@ -35,12 +35,8 @@ class Daemon : public QObject {
 
   virtual bool activate(const InterfaceConfig& config);
   virtual bool deactivate(bool emitSignals);
-
-  virtual bool activateWireGuard(const InterfaceConfig& config);
-  virtual bool deactivateWireGuard(bool emitSignals);
-
-  virtual bool activateMasque(const InterfaceConfig& config);
-  virtual bool deactivateMasque(bool emitSignals);
+  virtual void initializeTunnels() = 0;
+  virtual bool selectTunnel(Server::ProtocolType protocolType) = 0;
 
   QJsonObject getStatus();
   QJsonObject getStatusWireGuard();
@@ -65,17 +61,6 @@ class Daemon : public QObject {
   bool maybeUpdateResolvers(const InterfaceConfig& config);
 
  protected:
-  virtual bool run(Op op, const InterfaceConfig& config) {
-    Q_UNUSED(op);
-    Q_UNUSED(config);
-    return true;
-  }
-  virtual bool supportServerSwitching(const InterfaceConfig& config) const;
-  virtual bool switchServer(const InterfaceConfig& config);
-  virtual WireguardUtils* wgutils() const = 0;
-  virtual MasqueUtils* masqueutils() const = 0;
-  virtual bool supportIPUtils() const { return false; }
-  virtual IPUtils* iputils() { return nullptr; }
   virtual DnsUtils* dnsutils() { return nullptr; }
 
   static bool parseStringList(const QJsonObject& obj, const QString& name,
@@ -86,15 +71,8 @@ class Daemon : public QObject {
   void checkHandshakeMasque();
   void checkHandshakeWireGuard();
 
-  class ConnectionState {
-   public:
-    ConnectionState(){};
-    ConnectionState(const InterfaceConfig& config) { m_config = config; }
-    QDateTime m_date;
-    InterfaceConfig m_config;
-  };
-  QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
   QTimer m_handshakeTimer;
+  Tunnel *m_tunnel = nullptr;
 };
 
 #endif  // DAEMON_H
