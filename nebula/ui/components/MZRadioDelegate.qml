@@ -17,8 +17,6 @@ RadioDelegate {
     property var uiState: MZTheme.theme.uiState
     readonly property int labelX: radioButton.anchors.margins + radioButton.implicitWidth + radioButtonLabel.anchors.leftMargin
 
-    signal clicked()
-
     ButtonGroup.group: radioButtonGroup
     implicitWidth: radioButton.implicitWidth + radioButtonLabel.implicitWidth + radioButtonLabel.anchors.leftMargin
     implicitHeight: Math.max(radioButtonLabel.implicitHeight, radioButton.implicitHeight)
@@ -41,13 +39,22 @@ RadioDelegate {
 
     Keys.onReleased: event => {
         if (event.key === Qt.Key_Return || event.key === Qt.Key_Space)
+            radioControl.injectClick();
+    }
+
+    function injectClick() {
+        // Qt 6.8 and later has a handy click() function that does this correctly.
+        if (typeof radioControl.click === 'function') {
+            radioControl.click();
+        } else {
             radioControl.clicked();
+        }
     }
 
     function handleAccessiblePressAction() {
         let prevAccessibleName = radioControl.Accessible.name;
 
-        clicked();
+        radioControl.injectClick();
 
         // Currently, Qt doesn't have built-in accessibility support for screen readers to announce the selection of a radio button through
         // PressAction. A workaround on Windows is to manually raise the "Selected" state as an Accessible Notification.
