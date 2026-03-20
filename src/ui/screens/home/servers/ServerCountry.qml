@@ -22,12 +22,12 @@ MZClickableRow {
     property string _countryCode: code
     property var currentCityIndex
     property alias serverCountryName: countryName.text
-    property var cityList: cityListVisible ? cityLoader.item : cityLoader
     property var cityListExpandedHeight: 54 * cities.length
     property bool ready: cityListVisible && !(scrollAnimation.running || listOpenTransition.running || listClosedTransition.running)
 
     Component.onCompleted:{
        cityLoader.active = cityListVisible
+       serverCountry.height = serverCountryRow.height + (cityListVisible ? cityListExpandedHeight : 0)
     }
 
     // The city connection score can be used for every case except the multihop exit location,
@@ -46,10 +46,10 @@ MZClickableRow {
         const itemDistanceFromWindowTop = serverCountry.mapToItem(null, 0, 0).y - multiHopMenuHeight;
         const listScrollPosition = vpnFlickable.contentY
 
-        if (itemDistanceFromWindowTop + cityList.height < vpnFlickable.height || !cityListVisible) {
+        if (itemDistanceFromWindowTop + cityListExpandedHeight < vpnFlickable.height || !cityListVisible) {
             return;
         }
-        scrollAnimation.to = (cityList.height > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - MZTheme.theme.rowHeight * 1.5 : listScrollPosition + cityList.height + MZTheme.theme.rowHeight;
+        scrollAnimation.to = (cityListExpandedHeight > vpnFlickable.height) ? listScrollPosition + itemDistanceFromWindowTop - MZTheme.theme.rowHeight * 1.5 : listScrollPosition + cityListExpandedHeight + MZTheme.theme.rowHeight;
         scrollAnimation.duration = animationDuration
         scrollAnimation.start();
     }
@@ -71,34 +71,6 @@ MZClickableRow {
     }
 
     state: cityListVisible ? "listOpen" : "listClosed"
-    states: [
-        State {
-            name: "listClosed"
-
-            PropertyChanges {
-                target: serverCountry
-                height: serverCountryRow.height
-            }
-
-            PropertyChanges {
-                target: cityList
-                opacity: 0
-            }
-        },
-        State {
-            name: "listOpen"
-
-            PropertyChanges {
-                target: serverCountry
-                height: serverCountryRow.height + cityListExpandedHeight
-            }
-            
-            PropertyChanges {
-                target: cityList
-                opacity: 1
-            }
-        }
-    ]
 
     transitions: [
         Transition {
@@ -107,14 +79,16 @@ MZClickableRow {
                 SequentialAnimation{
                     ParallelAnimation {
                         PropertyAnimation {
-                                target: cityList
-                                property: "opacity"
+                                target: cityLoader.item
                                 duration: animationDuration
+                                property: "opacity"
+                                to: 0
                         }
                         PropertyAnimation {
                                 target: serverCountry
-                                property: "height"
                                 duration: animationDuration
+                                property: "height"
+                                to: serverCountryRow.height
                         }
                     }
                     ScriptAction{
@@ -131,14 +105,9 @@ MZClickableRow {
             to: "listOpen"               
                     PropertyAnimation {
                         target: serverCountry
-                        property: "height"
-                        to: serverCountryRow.height + cityList.implicitHeight
                         duration: animationDuration
-                    }
-                    PropertyAnimation {
-                        target: cityList
-                        property: "opacity"
-                        duration: 0
+                        property: "height"
+                        to: serverCountryRow.height + cityListExpandedHeight
                     }
         }
 
@@ -199,7 +168,8 @@ MZClickableRow {
             //: The title for the list of cities.
             Accessible.name: qsTrId("cities")
             Accessible.ignored: !visible
-            
+            opacity: 1.0
+
             Repeater {
                 id: citiesRepeater
                 model: cities
