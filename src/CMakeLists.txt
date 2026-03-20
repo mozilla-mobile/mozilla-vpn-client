@@ -9,13 +9,14 @@ qt_add_executable(mozillavpn MANUAL_FINALIZATION)
 
 mz_target_handle_warnings(mozillavpn)
 
-find_package(Qt6 REQUIRED COMPONENTS Svg)
+find_package(Qt6 REQUIRED COMPONENTS Svg QuickControls2)
 if(Qt6_VERSION VERSION_GREATER_EQUAL 6.10.0)
     find_package(Qt6 REQUIRED COMPONENTS GuiPrivate QmlPrivate)
 endif()
 
 target_link_libraries(mozillavpn PRIVATE
     Qt6::Quick
+    Qt6::QuickControls2
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
