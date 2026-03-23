@@ -14,6 +14,7 @@ jobs:
   linter:
     name: Run Main Linters (clang, l10n, colors, etc.)
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Clone repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4

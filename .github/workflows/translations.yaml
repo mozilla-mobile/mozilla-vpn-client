@@ -19,6 +19,7 @@ jobs:
   translations:
     name: Translations
     runs-on: ubuntu-latest
+    permissions: {}
     env:
       QTVERSION: 6.10.1
 

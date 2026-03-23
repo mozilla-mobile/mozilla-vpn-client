@@ -8,6 +8,7 @@ jobs:
   flathub-beta:
     name: Trigger Flathub Beta Checker 
     runs-on: ubuntu-latest
+    permissions: {}
     environment:
       name: flathub
     steps:
@@ -37,6 +38,7 @@ jobs:
     needs: flathub-beta
     if: needs.flathub-beta.outputs.curl_response != 200
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: fail_job
         uses: actions/github-script@ffc2c79a5b2490bd33e0a41c1de74b877714d736 # v3
