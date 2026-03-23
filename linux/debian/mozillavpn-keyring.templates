@@ -1,4 +1,4 @@
-Template: mozilla-keyring/purge-warning
+Template: mozillavpn-keyring/purge-warning
 Type: note
 Description: Mozilla APT repository will be removed
  Purging this package will remove the Mozilla APT repository signing key
