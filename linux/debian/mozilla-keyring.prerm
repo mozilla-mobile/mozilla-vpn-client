@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+. /usr/share/debconf/confmodule
+
+if [ "$1" = "purge" ]; then
+    db_input high mozilla-keyring/purge-warning || true
+    db_go || true
+fi

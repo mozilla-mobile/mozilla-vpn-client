@@ -1,0 +1,10 @@
+Template: mozilla-keyring/purge-warning
+Type: note
+Description: Mozilla APT repository will be removed
+ Purging this package will remove the Mozilla APT repository signing key
+ and configuration from your system. Mozilla products - including Firefox,
+ Thunderbird, and Mozilla VPN - will no longer receive updates through APT.
+ .
+ To re-enable the repository in the future, visit:
+ https://support.mozilla.org/kb/install-firefox-linux
+ and follow the instructions to add the Mozilla APT repository manually.
