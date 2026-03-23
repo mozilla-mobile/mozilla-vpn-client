@@ -18,6 +18,11 @@ inputs:
     required: false
     default: true
 
+outputs:
+  cmake-prefix-path:
+    description: 'Path to Qt CMake files for CMAKE_PREFIX_PATH'
+    value: ${{ steps.get-cmake-path.outputs.cmake-prefix-path }}
+
 runs:
   using: "composite"
   steps:
@@ -65,17 +70,12 @@ runs:
         curl -sSL "${QT6_TOOLCHAIN_URL}" -o ${FILENAME}
         tar -xf ${FILENAME}
 
-    - name: Setup cmake paths
-      if: ${{ inputs.cmake-env == 'true' && runner.os != 'Windows' }}
+    - name: Get CMake prefix path
+      if: ${{ inputs.cmake-env == 'true' }}
+      id: get-cmake-path
       working-directory: ${{ inputs.dest }}/${{ steps.resolve.outputs.toolchain-path }}
       shell: bash
-      run: echo CMAKE_PREFIX_PATH=$(pwd)/lib/cmake >> $GITHUB_ENV
-
-    - name: Setup cmake paths
-      if: ${{ inputs.cmake-env == 'true' && runner.os == 'Windows' }}
-      working-directory: ${{ inputs.dest }}/${{ steps.resolve.outputs.toolchain-path }}
-      shell: pwsh
-      run: echo "CMAKE_PREFIX_PATH=$(Resolve-Path lib/cmake)" >> $Env:GITHUB_ENV
+      run: echo "cmake-prefix-path=$(pwd)/lib/cmake" >> $GITHUB_OUTPUT
 
     - name: Save Qt toolchain
       uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4

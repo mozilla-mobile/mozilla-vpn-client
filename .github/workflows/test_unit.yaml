@@ -82,11 +82,14 @@ jobs:
           brew install ninja
 
       - name: Setup Qt for macOS
+        id: setup-qt
         uses: ./.github/actions/qt-setup-taskcluster
         with:
           dest: ${{ github.workspace }}/3rdparty
 
       - name: Building tests
+        env:
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt.outputs.cmake-prefix-path }}
         run: |
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           mkdir -p build
@@ -118,6 +121,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Qt for Windows
+        id: setup-qt-win
         uses: ./.github/actions/qt-setup-taskcluster
         with:
           dest: ${{ github.workspace }}/3rdparty
@@ -157,6 +161,7 @@ jobs:
         env:
           CC: ${{ steps.set-compiler.outputs.CC }}
           CXX: ${{ steps.set-compiler.outputs.CXX }}
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt-win.outputs.cmake-prefix-path }}
         run: |
           mkdir ./build-win
 

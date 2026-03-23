@@ -72,6 +72,7 @@ jobs:
           enableCrossOsArchive: true
 
       - name: Setup Qt for macOS
+        id: setup-qt
         uses: ./.github/actions/qt-setup-taskcluster
         with:
           dest: ${{ github.workspace }}/3rdparty
@@ -86,6 +87,7 @@ jobs:
       - name: Compile test client
         env:
           SDKROOT: ${{ steps.set-sdkroot.outputs.SDKROOT }}
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt.outputs.cmake-prefix-path }}
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \

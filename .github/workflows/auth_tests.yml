@@ -62,11 +62,14 @@ jobs:
           activate-environment: vpn
 
       - name: Setup Qt for macOS
+        id: setup-qt
         uses: ./.github/actions/qt-setup-taskcluster
         with:
           dest: ${{ github.workspace }}/3rdparty
 
       - name: Compile test client
+        env:
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt.outputs.cmake-prefix-path }}
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja
@@ -88,6 +91,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Qt for Windows
+        id: setup-qt-win
         uses: ./.github/actions/qt-setup-taskcluster
         with:
           dest: ${{ github.workspace }}/3rdparty
@@ -127,6 +131,7 @@ jobs:
         env:
           CC: ${{ steps.set-compiler.outputs.CC }}
           CXX: ${{ steps.set-compiler.outputs.CXX }}
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt-win.outputs.cmake-prefix-path }}
         run: |
           mkdir ./build-win
 
