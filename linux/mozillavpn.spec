@@ -19,7 +19,7 @@ Requires:  wireguard-tools
 
 BuildRequires: cmake
 BuildRequires: cmake-rpm-macros
-BuildRequires: cargo >= 1.82
+BuildRequires: cargo >= 1.85
 BuildRequires: golang >= 1.18
 BuildRequires: (gcc >= 10.0.0 or gcc-toolset-10)
 BuildRequires: (gcc-c++ >= 10.0.0 or gcc-toolset-10)
