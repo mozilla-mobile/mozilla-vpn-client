@@ -16,12 +16,6 @@ on:
   schedule:
     - cron: "0 5 * * *"
 
-# Sets permissions of the GITHUB_TOKEN to allow deployment to GitHub Pages
-permissions:
-  contents: read
-  pages: write
-  id-token: write
-
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
@@ -30,6 +24,8 @@ jobs:
   wasm_chrome:
     name: Add Wasm_Chrome
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Clone repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -52,6 +48,7 @@ jobs:
   logviewer:
     name: Add Logviewer
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Clone repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -65,6 +62,7 @@ jobs:
   addonStats:
     name: Add Addon-Stats
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Clone repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -78,6 +76,7 @@ jobs:
   inspector:
     name: Add Inspector
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Clone repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -91,6 +90,7 @@ jobs:
 
   addons:
     runs-on: ubuntu-latest
+    permissions: {}
     steps:
       - name: Clone repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -147,6 +147,7 @@ jobs:
         addonstats,
       ]
     name: Compile Github Page from Components
+    permissions: {}
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
@@ -191,6 +192,9 @@ jobs:
     runs-on: ubuntu-latest
     needs: ghPages
     if: github.ref == 'refs/heads/main'
+    permissions:
+      pages: write
+      id-token: write
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
