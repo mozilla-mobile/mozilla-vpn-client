@@ -24,6 +24,7 @@ jobs:
   build_test_app:
     name: Build Test Client
     runs-on: ubuntu-latest
+    permissions: {}
     env:
       QT_VERSION: 6.10.1
     defaults:
@@ -46,7 +47,9 @@ jobs:
           ref: main
           sparse-checkout: MacOSX15.5.sdk/
           persist-credentials: false
-      - run: echo "SDKROOT=$(find ${{ github.workspace }}/3rdparty/macos-sdk -name 'SDKSettings.plist' -printf '%h\n')" >> $GITHUB_ENV
+      - name: Set SDK root path
+        id: set-sdkroot
+        run: echo "SDKROOT=$(find ${{ github.workspace }}/3rdparty/macos-sdk -name 'SDKSettings.plist' -printf '%h\n')" >> $GITHUB_OUTPUT
 
       - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3
         with:
@@ -81,6 +84,8 @@ jobs:
           cmake-env: false
 
       - name: Compile test client
+        env:
+          SDKROOT: ${{ steps.set-sdkroot.outputs.SDKROOT }}
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -127,6 +132,7 @@ jobs:
       - build_test_app
       - build_test_addons
     runs-on: macos-latest
+    permissions: {}
     timeout-minutes: 45
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
