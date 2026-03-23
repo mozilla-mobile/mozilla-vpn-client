@@ -144,6 +144,7 @@ find_package(Qt6 REQUIRED COMPONENTS
     Network
     Qml
     Quick
+    QuickControls2
     QuickTest
     Test
     WebSockets
