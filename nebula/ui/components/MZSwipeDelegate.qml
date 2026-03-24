@@ -18,6 +18,10 @@ SwipeDelegate {
     property var onSwipeOpen: () => {}
     property var onSwipeClose: () => {}
     property var uiState: MZTheme.theme.uiState
+    property bool pauseHover: false
+    property bool highlight: false
+
+    readonly property int highlightFadeTime: 200
 
     function closeSwipe() {
         if(!swipeDelegate.isSwipeOpen || overlayMouseArea.mouseX <= overlayMouseArea.pressedMouseX && !swipeDelegate.blockClose) swipeDelegate.swipe.close()
@@ -92,10 +96,11 @@ SwipeDelegate {
             anchors.fill: parent
             opacity: 0
             visible: swipeDelegate.hasUiStates
+            color: swipeDelegateContentItem.backgroundColor.defaultColor
 
             states: [
                 State {
-                    when: swipeDelegate.state === swipeDelegate.uiState.stateHovered
+                    when: (swipeDelegate.state === swipeDelegate.uiState.stateHovered && !pauseHover) || highlight
 
                     PropertyChanges {
                         target: messageBackground
@@ -125,7 +130,7 @@ SwipeDelegate {
 
             Behavior on opacity {
                 PropertyAnimation {
-                    duration: 200
+                    duration: highlightFadeTime
                 }
             }
         }

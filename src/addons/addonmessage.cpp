@@ -57,6 +57,10 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
     return nullptr;
   }
 
+  message->m_promoText.initialize(
+      QString("message.%1.promo_text").arg(messageId),
+      messageObj["promo_text"].toString());
+
   message->m_date = messageObj["date"].toInteger();
   message->planDateRetranslation();
 
@@ -139,6 +143,10 @@ void AddonMessage::dismiss() {
 }
 
 void AddonMessage::markAsRead() { updateMessageStatus(MessageStatus::Read); }
+
+void AddonMessage::markAsPromoShown() {
+  updateMessageStatus(MessageStatus::PromoShown);
+}
 
 // Marks messaged as un-read and un-dimissed
 void AddonMessage::resetMessage() {

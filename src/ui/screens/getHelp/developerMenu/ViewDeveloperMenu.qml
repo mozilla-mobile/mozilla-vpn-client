@@ -143,6 +143,10 @@ MZViewBase {
             showDivider: false
             onClicked: {
                 MZSettings.addonCustomServer = !MZSettings.addonCustomServer
+
+                if (MZSettings.addonCustomServer && MZFeatureList.get("addonSignature").isSupported) {
+                  reminderForAddonsSignature.visible = true
+                }
             }
         }
 
@@ -177,6 +181,19 @@ MZViewBase {
             }
         }
 
+        MZContextualAlerts {
+            id: reminderForAddonsSignature
+            visible: false
+            Layout.leftMargin: MZTheme.theme.windowMargin/2
+
+            messages: [
+                {
+                    type: MZContextualAlert.AlertType.Warning,
+                    message: "'Addon signature' feature is active, which may break custom addon URL",
+                }
+            ]
+        }
+
         MZCheckBoxRow {
             id: checkBoxRowProdKeyInStaging
 
@@ -209,7 +226,7 @@ MZViewBase {
                     viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewFeatureList.qml"
                 }
                 ListElement {
-                    title: "UI Testing"
+                    title: "UI Debugging"
                     viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewUiTesting.qml"
                 }
                 ListElement {
@@ -269,14 +286,13 @@ MZViewBase {
         }
 
         MZButton {
-            id: reinstateMessages
+            id: resetMessages
 
             Layout.topMargin: MZTheme.theme.listSpacing * 2
 
-            text: "Reinstate messages"
+            text: "Reset messages"
             onClicked: {
-                MZAddonManager.reinstateMessages()
-                restartRequiredForButtons.visible = true
+                MZAddonManager.reset()
             }
         }
 

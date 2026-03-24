@@ -12,6 +12,7 @@
     "id": "message_dom",
     "title": "✨ DOM ✨",
     "subtitle": "Hello world",
+    "promo_text": "Promoting a staging message",
     "date": 1661021990,
     "badge": "new_update",
     "blocks": [
