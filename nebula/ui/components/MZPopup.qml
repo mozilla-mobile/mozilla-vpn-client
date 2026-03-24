@@ -6,7 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 
 import Mozilla.Shared 1.0
-import compat 0.1
+import QtQuick.Effects
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Popup {
@@ -81,27 +81,16 @@ Popup {
         color: MZTheme.colors.bgColor
         radius: 8
 
-        Rectangle {
-            id: popUpShadowSource
-            anchors.fill: popupBackground
-            visible: false
-            radius: popupBackground.radius
-            z: -1
-        }
-
-        MZDropShadow {
+        RectangularShadow {
             id: popupShadow
 
-            anchors.fill: popUpShadowSource
-            cached: true
+            anchors.fill: popupBackground
             color: MZTheme.colors.dropShadow
             opacity: 0.2
-            radius: 16
-            source: popUpShadowSource
-            spread: 0.1
-            transparentBorder: true
-            verticalOffset: 4
-            z: -1
+            blur: 6
+            z:-1
+            radius: popupBackground.radius
+            offset: Qt.vector2d(0, 4)
         }
     }
 

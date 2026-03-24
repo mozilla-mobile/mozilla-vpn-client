@@ -9,7 +9,7 @@ import QtQuick.Shapes 1.15
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
-import compat 0.1
+import QtQuick.Effects
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 // A non-modal speech bubble that points down toward the messages nav button.
@@ -186,23 +186,13 @@ Item {
           onTriggered: window.promotedAddonId = ""
         }
 
-        MZDropShadow {
-            anchors.fill: shadowSource
-            source: shadowSource
-            transparentBorder: true
-            verticalOffset: 2
-            radius: 8
+        RectangularShadow {
+            anchors.fill: parent
+            offset: Qt.vector2d(0, 2)
+            blur: 8
+            radius: parent.radius
             color: MZTheme.colors.dropShadow
             opacity: 0.2
-            cached: true
-            z: -1
-        }
-
-        Rectangle {
-            id: shadowSource
-            anchors.fill: parent
-            radius: parent.radius
-            visible: false
             z: -1
         }
 
@@ -252,15 +242,12 @@ Item {
     }
 
     // Downward-pointing caret connecting the bubble to the nav button
-    MZDropShadow {
+    RectangularShadow {
         anchors.fill: caret
-        source: caret
-        transparentBorder: true
-        verticalOffset: 2
-        radius: 8
+        offset: Qt.vector2d(0, 2)
+        blur: 8
         color: MZTheme.colors.dropShadow
         opacity: 0.2
-        cached: true
         z: -1
     }
 

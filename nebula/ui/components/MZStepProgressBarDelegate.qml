@@ -7,7 +7,7 @@ import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
 
-import compat 0.1
+import QtQuick.Effects
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Column {
@@ -97,10 +97,11 @@ Column {
                 source: delegate.currentState === MZStepProgressBarDelegate.State.Complete ? MZAssetLookup.getImageSource("CheckmarkSuccessColor") : delegate.iconSource
             }
 
-            MZColorOverlay {
+            MultiEffect {
                 anchors.fill: parent
 
-                color: delegate.currentState === MZStepProgressBarDelegate.State.Complete ? MZTheme.colors.stepProgressIconComplete : MZTheme.colors.stepProgressIconIncomplete
+                colorization: 1.0
+                colorizationColor: delegate.currentState === MZStepProgressBarDelegate.State.Complete ? MZTheme.colors.stepProgressIconComplete : MZTheme.colors.stepProgressIconIncomplete
                 source: icon
             }
         }

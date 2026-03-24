@@ -7,7 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import compat 0.1
+import QtQuick.Effects
 import components 0.1
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
@@ -114,16 +114,13 @@ ComboBox {
                 visible: false
                 radius: MZTheme.theme.cornerRadius
             }
-
-            MZDropShadow {
-                source: shadowMask
-                anchors.fill: shadowMask
-                transparentBorder: true
-                radius: 7.5
+            RectangularShadow {
+                anchors.fill: bg
+                blur: 7.5
                 color: MZTheme.colors.dropShadow
+                radius: MZTheme.theme.cornerRadius
                 z: -1
                 opacity: .1
-                cached: true
             }
             MZInputBackground {
                 id: bg

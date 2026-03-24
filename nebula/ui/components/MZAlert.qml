@@ -7,7 +7,7 @@ import QtQuick.Controls 2.14
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
-import compat 0.1
+import QtQuick.Effects
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Rectangle {
@@ -154,18 +154,17 @@ Rectangle {
         }
     }
 
-    MZDropShadow {
+    RectangularShadow {
         anchors.fill: parent
-        source: parent
         opacity: 0.1
         state: "overwrite-state"
         z: -1
         id: dropShadow
-        horizontalOffset: 1
-        verticalOffset: 1
-        radius: 5.5
+        offset: Qt.vector2d(1, 1)
+        blur: 5.5
         color: MZTheme.colors.dropShadow
-   }
+        radius: alertBox.radius
+    }
 
     MZButtonBase {
         id: alertAction
