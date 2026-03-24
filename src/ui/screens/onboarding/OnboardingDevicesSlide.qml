@@ -7,7 +7,7 @@ import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
 import components 0.1
-import compat 0.1
+import QtQuick.Effects
 import "qrc:/nebula/utils/MZUiUtils.js" as MZUiUtils
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
@@ -129,16 +129,12 @@ ColumnLayout {
             Layout.maximumHeight: qrcodeStack.qrcodeSize
             Layout.maximumWidth: qrcodeStack.qrcodeSize
 
-            MZDropShadow {
+            RectangularShadow {
                 anchors.fill: parent
-                source: parent
-
-                verticalOffset: 1
-                horizontalOffset: 1
+                offset: Qt.vector2d(1, 1)
                 color: MZTheme.colors.dropShadow
                 opacity: .1
-                transparentBorder: true
-                cached: true
+                blur: 0
             }
 
             Image {
@@ -166,16 +162,12 @@ ColumnLayout {
             Layout.maximumHeight: qrcodeStack.qrcodeSize
             Layout.maximumWidth: qrcodeStack.qrcodeSize
 
-            MZDropShadow {
+            RectangularShadow {
                 anchors.fill: parent
-                source: parent
-
-                verticalOffset: 1
-                horizontalOffset: 1
+                offset: Qt.vector2d(1, 1)
                 color: MZTheme.colors.dropShadow
                 opacity: .1
-                transparentBorder: true
-                cached: true
+                blur: 0
             }
 
             Image {

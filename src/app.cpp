@@ -50,15 +50,6 @@ void App::quit() {
   logger.debug() << "quit";
   TaskScheduler::forceDeleteTasks();
 
-#if QT_VERSION < QT_VERSION_CHECK(6, 2, 4)
-  // Qt5Compat.GraphicalEffects makes the app crash on shutdown. Let's do a
-  // quick exit. See: https://bugreports.qt.io/browse/QTBUG-100687
-  // it is unknown when exactly this was fixed but aparently 6.2.4 is fine.
-
-  SettingsManager::instance()->sync();
-  exit(0);
-#endif
-
   qApp->quit();
 }
 
