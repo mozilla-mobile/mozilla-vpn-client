@@ -100,8 +100,7 @@ Item {
 
     function maybeShowMessagePopover() {
         if (MZNavigator.screen !== VPN.ScreenHome ||
-          VPN.state !== VPN.StateMain) { // ||
-          //serverUnavailablePopup.opened) {
+          VPN.state !== VPN.StateMain) {
             console.log("[MessageAddonPopover] wrong conditions, not showing");
             return;
         }
@@ -173,7 +172,7 @@ Item {
             anchors.fill: parent
             onClicked: {
               root.hide()
-              window.promotedAddonId = root.promotedAddonId; // could move this to onClicked, but then still have the "what if they go back into the messaging screen" issue, and we have a "need to hold onto the addon ID issue"
+              window.promotedAddonId = root.promotedAddonId;
               MZNavigator.requestScreen(VPN.ScreenMessaging)
               endAddonPromotionTimer.restart()
             }
@@ -220,12 +219,10 @@ Item {
 
             Text {
                 id: label
-                // Layout.fillWidth: true
                 text: root.messageText
                 color: MZTheme.colors.fontColorDark
                 font.pixelSize: MZTheme.theme.fontSize
                 wrapMode: Text.WordWrap
-                // horizontalAlignment: Text.AlignHCenter
                 Accessible.ignored: !root.visible
             }
 
