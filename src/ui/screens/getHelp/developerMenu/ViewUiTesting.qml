@@ -23,7 +23,7 @@ MZViewBase {
             Layout.leftMargin: MZTheme.theme.windowMargin / 2
             Layout.rightMargin: MZTheme.theme.windowMargin / 2
             labelText: "Short timeout between addon message promotions on home screen"
-            subLabelText: "Typically a promoted addon is shown at most once every 24 hours. This shortens the waiting period to 30 seconds."
+            subLabelText: "Typically a promoted addon is shown at most once every 48 hours. This shortens the waiting period to 30 seconds."
             isChecked: MZSettings.useShortAddonPromoTime
             showDivider: false
             onClicked: {

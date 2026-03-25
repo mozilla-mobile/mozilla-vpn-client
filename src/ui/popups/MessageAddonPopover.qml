@@ -105,9 +105,9 @@ Item {
             return;
         }
 
-        const oneDay = 1000 * 60 * 60 * 24;
+        const twoDays = 1000 * 60 * 60 * 24 * 2;
         const thirtySeconds = 1000 * 30;
-        const minimumTime = MZSettings.useShortAddonPromoTime ? thirtySeconds : oneDay;
+        const minimumTime = MZSettings.useShortAddonPromoTime ? thirtySeconds : twoDays;
         const timeSinceLastPromo = new Date() - MZSettings.addonPromoLastShown;
         const withinMinimumTime = timeSinceLastPromo < minimumTime;
         if (withinMinimumTime) {
