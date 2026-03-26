@@ -183,7 +183,11 @@ void SentryAdapter::captureQMLStacktrace(const char* description) {
 #ifndef UNIT_TEST
   auto engine = QmlEngineHolder::instance()->engine();
   auto privateEngine = QQmlEnginePrivate::get(engine);
+#  if QT_VERSION < QT_VERSION_CHECK(6, 11, 0)
   QV4::ExecutionEngine* qv4Engine = privateEngine->v4engine();
+#  else
+  QV4::ExecutionEngine* qv4Engine = privateEngine->v4Engine.get();
+#  endif
   QVector<QV4::StackFrame> stackTrace = qv4Engine->stackTrace(15);
   sentry_value_t crumb = sentry_value_new_breadcrumb("info", description);
   sentry_value_set_by_key(crumb, "category",
