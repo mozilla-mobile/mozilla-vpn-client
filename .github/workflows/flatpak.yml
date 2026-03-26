@@ -13,11 +13,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   build:
     name: "Build"
     runs-on: ubuntu-latest
-    permissions: {}
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:kde-6.10
       options: --privileged

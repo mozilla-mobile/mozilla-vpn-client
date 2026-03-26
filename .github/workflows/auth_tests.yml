@@ -11,11 +11,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   linux-unit-tests:
     runs-on: ubuntu-latest
     name: Run auth tests on Linux
-    permissions: {}
     steps:
       - name: Clone repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -46,7 +47,6 @@ jobs:
       run:
         shell: bash -el {0}
     name: Run auth tests on MacOS
-    permissions: {}
 
     steps:
       - name: Clone repository
@@ -81,7 +81,6 @@ jobs:
   windows-unit-tests:
     name: Run auth tests on Windows
     runs-on: windows-latest
-    permissions: {}
 
     steps:
       - name: Clone repository

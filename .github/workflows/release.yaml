@@ -5,11 +5,12 @@ on:
     types: [published] 
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   update_sentry_info:
     name: Sentry - Mark as Released
     runs-on: ubuntu-latest
-    permissions: {}
     steps:
         - name: Clone repository
           uses: actions/checkout@ee0669bd1cc54295c223e0bb666b733df41de1c5 # v2

@@ -14,11 +14,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   cargo-vendor:
     name: "Update cached crates"
     runs-on: ubuntu-latest
-    permissions: {}
     steps:
       - name: Clone repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -55,7 +56,6 @@ jobs:
 
     runs-on: ${{ matrix.os }}
     name: Rust unit tests (${{ matrix.os }})
-    permissions: {}
     steps:
       - name: Clone repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -74,7 +74,6 @@ jobs:
   dependabot:
     name: "Update flatpak crates"
     runs-on: ubuntu-latest
-    permissions: {}
     if: |
       startsWith(github.head_ref, 'dependabot/cargo/') &&
       github.event.pull_request.user.login == 'dependabot[bot]' &&

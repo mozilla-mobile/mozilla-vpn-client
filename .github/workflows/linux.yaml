@@ -13,11 +13,12 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   supported-fedora-releases:
     name: Fetch currently supported Fedora releases
     runs-on: ubuntu-slim
-    permissions: {}
     outputs:
       supported-releases: ${{ steps.fetch-supported-releases.outputs.releases }}
     steps:
@@ -31,7 +32,6 @@ jobs:
   source-bundle:
     name: Source Bundle
     runs-on: ubuntu-latest
-    permissions: {}
     steps:
       - name: Checkout sources
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -67,7 +67,6 @@ jobs:
       - source-bundle
       - supported-fedora-releases
     runs-on: ubuntu-latest
-    permissions: {}
     strategy:
       fail-fast: false
       matrix:

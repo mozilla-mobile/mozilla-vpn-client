@@ -8,12 +8,13 @@ on:
   schedule:
     - cron: "0 5 * * *"
 
+permissions: {}
+
 jobs:
   ppa-release-candidate:
     name: PPA Releases
     if: github.repository == 'mozilla-mobile/mozilla-vpn-client'
     runs-on: ubuntu-latest
-    permissions: {}
     environment: PPA Automation
     env:
       DEBEMAIL: ${{ github.actor }}@users.noreply.github.com

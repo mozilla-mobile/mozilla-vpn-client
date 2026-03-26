@@ -14,6 +14,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   build_test_addons:
     name: Build Test Addons
@@ -24,7 +26,6 @@ jobs:
   build_test_app:
     name: Wasm Qt6
     runs-on: ubuntu-latest
-    permissions: {}
     outputs:
       matrix: ${{ steps.enumerate.outputs.tests }}
     env:
@@ -101,7 +102,6 @@ jobs:
       - build_test_app
       - build_test_addons
     runs-on: ubuntu-latest
-    permissions: {}
     timeout-minutes: 45
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
