@@ -79,9 +79,9 @@ if( ${Qt6_VERSION} VERSION_GREATER_EQUAL 6.4.0)
     APPEND)
 endif()
 
-option(MZ_ANDROID_WEBSITE_BUILD "Build apk without google play services" OFF)
+option(MZ_ANDROID_FOSS_BUILD "Build apk without google play services" OFF)
 
-if(MZ_ANDROID_WEBSITE_BUILD)
+if(MZ_ANDROID_FOSS_BUILD)
     message(STATUS "Website build enabled")
-    target_compile_definitions(mozillavpn PRIVATE "MZ_ANDROID_WEBSITE_BUILD=1")
+    target_compile_definitions(mozillavpn PRIVATE "MZ_ANDROID_FOSS_BUILD=1")
 endif()

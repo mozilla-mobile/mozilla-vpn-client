@@ -11,7 +11,7 @@
 
 #if defined(MZ_IOS)
 #  include "platforms/ios/iosiaphandler.h"
-#elif defined(MZ_ANDROID) && !defined(MZ_ANDROID_WEBSITE_BUILD)
+#elif defined(MZ_ANDROID) && !defined(MZ_ANDROID_FOSS_BUILD)
 #  include "platforms/android/androidiaphandler.h"
 #elif defined(MZ_WASM)
 #  include "platforms/wasm/wasmiaphandler.h"
@@ -29,7 +29,7 @@ PurchaseHandler* PurchaseHandler::createInstance() {
   Q_ASSERT(!s_instance);
 #if defined(MZ_IOS)
   new IOSIAPHandler(qApp);
-#elif defined(MZ_ANDROID) && !defined(MZ_ANDROID_WEBSITE_BUILD)
+#elif defined(MZ_ANDROID) && !defined(MZ_ANDROID_FOSS_BUILD)
   new AndroidIAPHandler(qApp);
 #elif defined(MZ_WASM)
   new WasmIAPHandler(qApp);

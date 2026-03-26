@@ -38,7 +38,7 @@ help_function() {
   print N ""
   print N "Valid architecture values: x86 x86_64 armeabi-v7a arm64-v8a, by default it will use all"
   print N ""
-  print N "Valid flavor values: playstore, website, all. By default it will build all flavors."
+  print N "Valid flavor values: playstore, foss, all. By default it will build all flavors."
   print N ""
   exit 0
 }
@@ -93,8 +93,8 @@ else
 fi
 
 print Y "Flavor: $FLAVOR"
-if [[ "$FLAVOR" != "playstore" && "$FLAVOR" != "website" && "$FLAVOR" != "all" ]]; then
-  die "Invalid flavor '$FLAVOR'. Valid values are: playstore, website, all"
+if [[ "$FLAVOR" != "playstore" && "$FLAVOR" != "foss" && "$FLAVOR" != "all" ]]; then
+  die "Invalid flavor '$FLAVOR'. Valid values are: playstore, foss, all"
 fi
 
 if ! [ -d "$QTPATH/bin" ]; then
@@ -150,8 +150,8 @@ build_flavor() {
   cp $WORKSPACE_ROOT/qtglean/uniffi.toml $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
 
   local EXTRA_CMAKE_ARGS=""
-  if [[ "$FLAVOR_NAME" == "website" ]]; then
-    EXTRA_CMAKE_ARGS="-DMZ_ANDROID_WEBSITE_BUILD=ON"
+  if [[ "$FLAVOR_NAME" == "foss" ]]; then
+    EXTRA_CMAKE_ARGS="-DMZ_ANDROID_FOSS_BUILD=ON"
   fi
 
   if [[ "$RELEASE" ]]; then
@@ -219,7 +219,7 @@ build_flavor() {
 # Build the requested flavors
 if [[ "$FLAVOR" == "all" ]]; then
   build_flavor "playstore"
-  build_flavor "website"
+  build_flavor "foss"
 else
   build_flavor "$FLAVOR"
 fi

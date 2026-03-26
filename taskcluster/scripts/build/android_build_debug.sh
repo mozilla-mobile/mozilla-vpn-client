@@ -43,12 +43,12 @@ mv /builds/worker/artifacts/android-build-arm64-v8a-debug.apk /builds/worker/art
 mv /builds/worker/artifacts/android-build-armeabi-v7a-debug.apk /builds/worker/artifacts/mozillavpn-armeabi-v7a-debug.apk
 mv /builds/worker/artifacts/android-build-x86-debug.apk /builds/worker/artifacts//mozillavpn-x86-debug.apk
 
-# Move and rename website builds
-cp .tmp/website/src/android-build/build/outputs/apk/debug/*  /builds/worker/artifacts/
-mv /builds/worker/artifacts/android-build-x86_64-debug.apk /builds/worker/artifacts/mozillavpn-website-x86_64-debug.apk
-mv /builds/worker/artifacts/android-build-arm64-v8a-debug.apk /builds/worker/artifacts/mozillavpn-website-arm64-v8a-debug.apk
-mv /builds/worker/artifacts/android-build-armeabi-v7a-debug.apk /builds/worker/artifacts/mozillavpn-website-armeabi-v7a-debug.apk
-mv /builds/worker/artifacts/android-build-x86-debug.apk /builds/worker/artifacts/mozillavpn-website-x86-debug.apk
+# Move and rename foss builds
+cp .tmp/foss/src/android-build/build/outputs/apk/debug/*  /builds/worker/artifacts/
+mv /builds/worker/artifacts/android-build-x86_64-debug.apk /builds/worker/artifacts/mozillavpn-foss-x86_64-debug.apk
+mv /builds/worker/artifacts/android-build-arm64-v8a-debug.apk /builds/worker/artifacts/mozillavpn-foss-arm64-v8a-debug.apk
+mv /builds/worker/artifacts/android-build-armeabi-v7a-debug.apk /builds/worker/artifacts/mozillavpn-foss-armeabi-v7a-debug.apk
+mv /builds/worker/artifacts/android-build-x86-debug.apk /builds/worker/artifacts/mozillavpn-foss-x86-debug.apk
 
 ls /builds/worker/artifacts/
 
@@ -56,8 +56,8 @@ ls /builds/worker/artifacts/
 (cd .tmp/playstore/src/; zip -r android-build.zip android-build)
 cp .tmp/playstore/src/android-build.zip /builds/worker/artifacts/
 
-(cd .tmp/website/src/; zip -r android-build-website.zip android-build)
-cp .tmp/website/src/android-build-website.zip /builds/worker/artifacts/
+(cd .tmp/foss/src/; zip -r android-build-foss.zip android-build)
+cp .tmp/foss/src/android-build-foss.zip /builds/worker/artifacts/
 
 
 if test -n "$(find /builds/worker/artifacts/ -maxdepth 0 -empty)" ; then

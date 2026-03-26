@@ -31,6 +31,6 @@ android-junit:
           ls;
           ./gradlew test;
           popd;
-          pushd .tmp/website/src/android-build/;
+          pushd .tmp/foss/src/android-build/;
           ls;
           ./gradlew test;

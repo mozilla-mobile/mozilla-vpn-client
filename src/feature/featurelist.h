@@ -239,7 +239,7 @@ FEATURE(webPurchase,           // Feature ID
         QStringList(),         // feature dependencies
         byPlatform({
           .windows = true, .macos = true, .gnu_linux = true,
-#if defined(MZ_ANDROID) && defined(MZ_ANDROID_WEBSITE_BUILD)
+#if defined(MZ_ANDROID_FOSS_BUILD)
           .android = true,
 #endif
         }))
