@@ -1,4 +1,4 @@
-Template: mozilla-keyring/ppa-deprecation-warning
+Template: mozillavpn/ppa-deprecation-warning
 Type: note
 Description: Mozilla VPN PPA replaced by packages.mozilla.org
  The Mozilla VPN PPA source has been disabled and replaced with the

@@ -54,9 +54,9 @@ EOF
     mv "$f" "${f}.save"
   done
 
-  if ls /etc/apt/sources.list.d/mozillacorp-ubuntu-mozillavpn-*.sources.save 2>/dev/null; then
+  if ls /etc/apt/sources.list.d/mozillacorp-ubuntu-mozillavpn-*.sources.save >/dev/null 2>&1; then
     . /usr/share/debconf/confmodule
-    db_input high mozilla-keyring/ppa-deprecation-warning || true
+    db_input high mozillavpn/ppa-deprecation-warning || true
     db_go || true
   fi
 fi
