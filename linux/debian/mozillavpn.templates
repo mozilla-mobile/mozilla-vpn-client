@@ -1,0 +1,10 @@
+Template: mozilla-keyring/ppa-deprecation-warning
+Type: note
+Description: Mozilla VPN PPA replaced by packages.mozilla.org
+ The Mozilla VPN PPA source has been disabled and replaced with the
+ packages.mozilla.org repository, which provides Mozilla VPN and other
+ Mozilla products from a single source.
+ .
+ The original PPA source file has been saved with a .save extension and
+ can be safely removed.
+
