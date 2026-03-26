@@ -2,6 +2,8 @@
 
 set -e
 
+. /usr/share/debconf/confmodule
+
 action="$1"
 
 if [ "$action" = "configure" ]; then
@@ -52,10 +54,10 @@ EOF
   for f in /etc/apt/sources.list.d/mozillacorp-ubuntu-mozillavpn-*.sources; do
     [ -f "$f" ] || break
     mv "$f" "${f}.save"
+    ppa_disabled=true
   done
 
-  if ls /etc/apt/sources.list.d/mozillacorp-ubuntu-mozillavpn-*.sources.save >/dev/null 2>&1; then
-    . /usr/share/debconf/confmodule
+  if [ "$ppa_disabled" ]; then
     db_input high mozillavpn/ppa-deprecation-warning || true
     db_go || true
   fi
