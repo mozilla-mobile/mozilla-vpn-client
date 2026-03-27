@@ -81,7 +81,6 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: ${{ github.head_ref }}
-          token: ${{ secrets.DEPENDABOT_TOKEN }}
           persist-credentials: false
 
       - name: Install pip tools
@@ -112,5 +111,5 @@ jobs:
             git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
             git commit -m "[dependabot skip] Update linux/flatpak/flatpak-vpn-crates.json"
             git format-patch --stdout HEAD~1
-            git push
+            git push https://${{ secrets.DEPENDABOT_TOKEN }}@github.com/${{ github.repository }} ${{ github.head_ref }}
           fi
