@@ -84,8 +84,6 @@ jobs:
       - name: Setup Qt for macOS
         id: setup-qt
         uses: ./.github/actions/qt-setup-taskcluster
-        with:
-          dest: ${{ github.workspace }}/3rdparty
 
       - name: Building tests
         env:
@@ -122,8 +120,6 @@ jobs:
       - name: Setup Qt for Windows
         id: setup-qt-win
         uses: ./.github/actions/qt-setup-taskcluster
-        with:
-          dest: ${{ github.workspace }}/3rdparty
 
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@ebc0426251bc40c7cd31162802432c68818ab8f0 # v2
