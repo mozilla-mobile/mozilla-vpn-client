@@ -1,0 +1,19 @@
+{
+  "api_version": "0.1",
+  "id": "message_promo_empty_text",
+  "name": "Promo Test Message - Empty Promo Text",
+  "type": "message",
+  "message": {
+    "id": "message_promo_empty_text",
+    "title": "Test title empty promo",
+    "subtitle": "Test subtitle empty promo",
+    "promo_text": "",
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "text",
+        "content": "Test message content."
+      }
+    ]
+  }
+}

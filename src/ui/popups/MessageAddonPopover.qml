@@ -16,6 +16,7 @@ import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 // (i.e. set y = navbar.y - height).
 Item {
     id: root
+    objectName: "messageAddonPopover"
 
     property string messageText: ""
     property string promotedAddonId: ""
@@ -219,6 +220,7 @@ Item {
 
             Text {
                 id: label
+                objectName: "messageAddonPopover-label"
                 text: root.messageText
                 color: MZTheme.colors.fontColorDark
                 font.pixelSize: MZTheme.theme.fontSize

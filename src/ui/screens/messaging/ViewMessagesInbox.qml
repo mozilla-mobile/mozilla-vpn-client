@@ -170,7 +170,7 @@ MZViewBase {
                     property string formattedDate: typeof(addon) !== "undefined" ? addon.formattedDate : ""
                     property string subtitle: typeof(addon) !== "undefined" ? addon.subtitle : ""
                     highlight: window.promotedAddonId === addon.id
-                    pauseHover: window.promotedAddonId.length && window.promotedAddonId !== addon.id
+                    pauseHover: ((window.promotedAddonId.length > 0) && (window.promotedAddonId !== addon.id))
 
                     Layout.fillWidth: true
                     Accessible.name: swipeDelegate.title + ". " + swipeDelegate.formattedDate + ". " +  swipeDelegate.subtitle

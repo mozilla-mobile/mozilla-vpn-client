@@ -47,3 +47,33 @@ add_addon_target(test_08_message_disabled
     SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/08_message_disabled
 )
 set_target_properties(test_08_message_disabled PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_addon_target(test_04_promo_message
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/04_promo_message
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/04_promo_message
+)
+set_target_properties(test_04_promo_message PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_addon_target(test_05_promo_no_promo_text
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/05_promo_no_promo_text
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/05_promo_no_promo_text
+)
+set_target_properties(test_05_promo_no_promo_text PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_addon_target(test_06_promo_empty_text
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/06_promo_empty_text
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/06_promo_empty_text
+)
+set_target_properties(test_06_promo_empty_text PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_addon_target(test_07_two_promo_messages
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/07_two_promo_messages
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/07_two_promo_messages
+)
+set_target_properties(test_07_two_promo_messages PROPERTIES EXCLUDE_FROM_ALL FALSE)
+
+add_addon_target(test_09_promo_no_notify
+    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/09_promo_no_notify
+    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/09_promo_no_notify
+)
+set_target_properties(test_09_promo_no_notify PROPERTIES EXCLUDE_FROM_ALL FALSE)
