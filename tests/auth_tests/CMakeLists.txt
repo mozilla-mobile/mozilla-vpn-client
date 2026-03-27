@@ -36,6 +36,7 @@ target_compile_definitions(app_auth_tests PRIVATE UNIT_TEST "MZ_$<UPPER_CASE:${M
 target_link_libraries(app_auth_tests PRIVATE
     Qt6::Core
     Qt6::Quick
+    Qt6::QuickControls2
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets

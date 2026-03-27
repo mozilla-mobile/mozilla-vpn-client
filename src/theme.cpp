@@ -32,6 +32,7 @@
 #include <QCoreApplication>
 #include <QPainter>
 #include <QQmlEngine>
+#include <QQuickStyle>
 
 namespace {
 Logger logger("Theme");
@@ -76,6 +77,8 @@ Theme* Theme::instance() {
 
 void Theme::initialize(QJSEngine* engine) {
   m_themes.clear();
+
+  QQuickStyle::setStyle("Basic");
 
   QDir dir(
       ResourceLoader::instance()->loadDir(":/nebula/themes/color-themes/"));

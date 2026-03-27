@@ -16,6 +16,7 @@ endif()
 
 target_link_libraries(mozillavpn PRIVATE
     Qt6::Quick
+    Qt6::QuickControls2
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
