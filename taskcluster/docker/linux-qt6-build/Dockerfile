@@ -64,11 +64,6 @@ RUN apt-get -y install libatspi2.0-dev \
                        libxkbcommon-dev \
                        libxkbcommon-x11-dev
 
-## Install wayland build dependencies
-RUN apt -y install libwayland-dev \
-                   libwayland-egl-backend-dev \
-                   wayland-protocols
-
 # Also pull in packages from build-depends as early as possible
 # %include linux/debian/control
 ADD topsrcdir/linux/debian/control /root/mozillavpn-dpkg-control
