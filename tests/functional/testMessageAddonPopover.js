@@ -201,7 +201,7 @@ describe('Message addon popover conditions:', function() {
     });
   });
 
-  describe.only('UI works as expected', function() {
+  describe('UI works as expected', function() {
     beforeEach(async () => {
       await vpn.resetAddons('04_promo_message');
       await waitForHomeReady();
@@ -260,38 +260,37 @@ describe('Message addon popover conditions:', function() {
          assert.equal(pauseHover, 'false');
        });
 
-    it.only(
-        'when multiple messages, tapping the popover navigates to the messaging screen and highlights correct message',
-        async () => {
-          // change the normal setup so we show the 2 promo messages
-          await vpn.resetAddons('07_two_promo_messages');
-          await setLastAddonPopoverToFourDaysAgo();
-          await waitForHomeReady();
+    it('when multiple messages, tapping the popover navigates to the messaging screen and highlights correct message',
+       async () => {
+         // change the normal setup so we show the 2 promo messages
+         await vpn.resetAddons('07_two_promo_messages');
+         await setLastAddonPopoverToFourDaysAgo();
+         await waitForHomeReady();
 
-          await vpn.waitForQueryAndClick(
-              queries.screenMessageAddonPopover.POPOVER.visible());
-          await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
-          await vpn.waitForQuery(
-              queries.screenMessaging.messageItem('message_promo_a').visible());
-          await vpn.waitForQuery(
-              queries.screenMessaging.messageItem('message_promo_b').visible());
-          const highlightA = await vpn.getQueryProperty(
-              queries.screenMessaging.messageItem('message_promo_a'),
-              'highlight');
-          assert.equal(highlightA, 'true');
-          const pauseHoverA = await vpn.getQueryProperty(
-              queries.screenMessaging.messageItem('message_promo_a'),
-              'pauseHover');
-          assert.equal(pauseHoverA, 'false');
-          const highlightB = await vpn.getQueryProperty(
-              queries.screenMessaging.messageItem('message_promo_b'),
-              'highlight');
-          assert.equal(highlightB, 'false');
-          const pauseHoverB = await vpn.getQueryProperty(
-              queries.screenMessaging.messageItem('message_promo_b'),
-              'pauseHover');
-          assert.equal(pauseHoverB, 'true');
-        });
+         await vpn.waitForQueryAndClick(
+             queries.screenMessageAddonPopover.POPOVER.visible());
+         await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
+         await vpn.waitForQuery(
+             queries.screenMessaging.messageItem('message_promo_a').visible());
+         await vpn.waitForQuery(
+             queries.screenMessaging.messageItem('message_promo_b').visible());
+         const highlightA = await vpn.getQueryProperty(
+             queries.screenMessaging.messageItem('message_promo_a'),
+             'highlight');
+         assert.equal(highlightA, 'true');
+         const pauseHoverA = await vpn.getQueryProperty(
+             queries.screenMessaging.messageItem('message_promo_a'),
+             'pauseHover');
+         assert.equal(pauseHoverA, 'false');
+         const highlightB = await vpn.getQueryProperty(
+             queries.screenMessaging.messageItem('message_promo_b'),
+             'highlight');
+         assert.equal(highlightB, 'false');
+         const pauseHoverB = await vpn.getQueryProperty(
+             queries.screenMessaging.messageItem('message_promo_b'),
+             'pauseHover');
+         assert.equal(pauseHoverB, 'true');
+       });
 
     it('tapping the message nav bar buton does not cause message to be highlighted',
        async () => {
