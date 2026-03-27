@@ -7,7 +7,7 @@ import QtQuick.Layouts 1.14
 import QtQuick.Window 2.12
 
 import Mozilla.Shared 1.0
-import compat 0.1
+import QtQuick.Effects
 import components 0.1
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
@@ -26,19 +26,14 @@ Rectangle {
     radius: 8
     property int cardType: MZInformationCard.CardType.Error
 
-    MZDropShadow {
-        anchors.fill: dropShadowSource
-        source: dropShadowSource
-
-        horizontalOffset: 1
-        verticalOffset: 1
-        radius: 8
+    RectangularShadow {
+        anchors.fill: card
+        offset: Qt.vector2d(1, 1)
+        blur: 8
         color: MZTheme.colors.dropShadow
+        radius: card.radius
         opacity: .15
-        transparentBorder: true
-        cached: true
     }
-
     Rectangle {
         id: dropShadowSource
         anchors.fill: card

@@ -10,7 +10,7 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import components.forms 0.1
-import compat 0.1
+import QtQuick.Effects
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 FocusScope {
@@ -238,10 +238,11 @@ FocusScope {
                                     sourceSize.width: parent.width
                                 }
 
-                                MZColorOverlay {
+                                MultiEffect {
                                     anchors.fill: parent
 
-                                    color: MZTheme.colors.normalButton.defaultColor
+                                    colorization: 1.0
+                                    colorizationColor: MZTheme.colors.normalButton.defaultColor
                                     source: refreshIcon
                                 }
                             }

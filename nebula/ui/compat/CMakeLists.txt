@@ -4,15 +4,9 @@
 
 qt_add_qml_module(compat
     VERSION 0.1
-    URI compat 
+    URI compat
     STATIC
     RESOURCE_PREFIX /nebula
     QML_FILES
-        qt6/MZColorOverlay.qml
-        qt6/MZLinearGradient.qml
-        qt6/MZRadialGradient.qml
-        qt6/MZRectangularGlow.qml
         qt6/MZAnimatedRingsShader.qml
-        qt6/MZOpacityMask.qml
-        qt6/MZDropShadow.qml
 )

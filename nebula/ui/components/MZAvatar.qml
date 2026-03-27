@@ -4,7 +4,7 @@
 
 import QtQuick 2.0
 
-import compat 0.1
+import QtQuick.Effects
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
@@ -46,9 +46,10 @@ Item {
         visible: false
     }
 
-    MZOpacityMask {
+    MultiEffect {
         anchors.fill: avatar
         source: avatar
+        maskEnabled: true
         maskSource: avatarMask
     }
 
