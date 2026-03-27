@@ -82,8 +82,7 @@ MZFlickable {
                 if (disableRowWhen) {
                     return
                 }
-
-                stackview.push("ViewServers.qml")
+                window.showServerList(false)
             }
 
             id: serverInfo

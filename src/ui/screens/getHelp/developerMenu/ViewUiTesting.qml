@@ -11,11 +11,25 @@ import components 0.1
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
-    _menuTitle: "UI Testing"
+    _menuTitle: "UI Debugging"
     _interactive: false
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin
         Layout.fillWidth: true
+
+        MZCheckBoxRow {
+            id: checkBoxRowShortAddonPromoTime
+
+            Layout.leftMargin: MZTheme.theme.windowMargin / 2
+            Layout.rightMargin: MZTheme.theme.windowMargin / 2
+            labelText: "Short timeout between addon message promotions on home screen"
+            subLabelText: "Typically a promoted addon is shown at most once every 72 hours. This shortens the waiting period to 30 seconds."
+            isChecked: MZSettings.useShortAddonPromoTime
+            showDivider: false
+            onClicked: {
+                MZSettings.useShortAddonPromoTime = !MZSettings.useShortAddonPromoTime
+            }
+        }
 
         MZSettingsItem {
             settingTitle: "Image playground"

@@ -1,0 +1,20 @@
+{
+  "api_version": "0.1",
+  "id": "message_promo_b",
+  "name": "Promo Test Message B",
+  "type": "message",
+  "message": {
+    "id": "message_promo_b",
+    "title": "Test promo title B",
+    "subtitle": "Test promo subtitle B",
+    "promo_text": "Message B - tap to see!",
+    "date": 1699000000,
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "text",
+        "content": "Test message B content."
+      }
+    ]
+  }
+}

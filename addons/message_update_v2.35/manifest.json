@@ -17,6 +17,7 @@
     "id": "message_update_v2.35",
     "title": "vpn.commonStrings.updateTitle",
     "subtitle": "vpn.commonStrings.subtitle",
+    "promo_text": "vpn.commonStrings.updatePromo",
     "badge": "new_update",
     "blocks": [
       {

@@ -27,9 +27,12 @@ class AddonMessage final : public Addon {
   ADDON_PROPERTY(title, m_title, getTitle, setTitle, retranslationCompleted)
   ADDON_PROPERTY(subtitle, m_subtitle, getSubtitle, setSubtitle,
                  retranslationCompleted)
+  ADDON_PROPERTY(promoText, m_promoText, getPromoText, setPromoText,
+                 retranslationCompleted)
 
   Q_PROPERTY(Composer* composer READ composer CONSTANT)
   Q_PROPERTY(bool isRead READ isRead NOTIFY statusChanged)
+  Q_PROPERTY(bool isNotified READ isNotified NOTIFY statusChanged)
   Q_PROPERTY(qint64 date MEMBER m_date WRITE setDate NOTIFY dateChanged)
   Q_PROPERTY(
       QString formattedDate READ formattedDate NOTIFY retranslationCompleted)
@@ -58,6 +61,8 @@ class AddonMessage final : public Addon {
     Received,
     // A notification has been shown to the user i.e it's been enabled
     Notified,
+    // The promo popover was shown on the home screen
+    PromoShown,
     // Message has been read
     Read,
     // Message has been dismissed
@@ -67,6 +72,7 @@ class AddonMessage final : public Addon {
 
   Q_INVOKABLE void dismiss();
   Q_INVOKABLE void markAsRead();
+  Q_INVOKABLE void markAsPromoShown();
   Q_INVOKABLE void resetMessage();
   Q_INVOKABLE bool containsSearchString(const QString& query) const;
 
@@ -76,6 +82,8 @@ class AddonMessage final : public Addon {
   bool isRead() const { return m_status == MessageStatus::Read; }
 
   bool isReceived() const { return m_status == MessageStatus::Received; }
+
+  bool isNotified() const { return m_status == MessageStatus::Notified; }
 
   bool shouldNotify() const { return m_shouldNotify; }
 
@@ -108,6 +116,7 @@ class AddonMessage final : public Addon {
  private:
   AddonProperty m_title;
   AddonProperty m_subtitle;
+  AddonProperty m_promoText;
   Composer* m_composer = nullptr;
 
   qint64 m_date = 0;

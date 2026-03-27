@@ -22,7 +22,7 @@ MZScreenBase {
         target: window
 
         // TODO - This only works when we are already in ScreenHome
-        function onShowServerList() {
+        function onShowServerList(isImmediate) {
 
             // Don't push another server view if it's already open
             if (getStack().currentItem.objectName === "viewServers") { return; }
@@ -31,7 +31,12 @@ MZScreenBase {
             getStack().pop(null);
 
             // push server view
-            getStack().push("qrc:/qt/qml/Mozilla/VPN/screens/home/ViewServers.qml", StackView.Immediate);
+            if (isImmediate) {
+                getStack().push("qrc:/qt/qml/Mozilla/VPN/screens/home/ViewServers.qml", StackView.Immediate);
+            } else {
+                getStack().push("qrc:/qt/qml/Mozilla/VPN/screens/home/ViewServers.qml");
+            }
+
         }
     }
 

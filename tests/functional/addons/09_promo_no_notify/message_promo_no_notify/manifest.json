@@ -1,0 +1,20 @@
+{
+  "api_version": "0.1",
+  "id": "message_promo_no_notify",
+  "name": "Promo Test Message - No Notify",
+  "type": "message",
+  "message": {
+    "id": "message_promo_no_notify",
+    "title": "Test title no notify",
+    "subtitle": "Test subtitle no notify",
+    "notify": false,
+    "promo_text": "You should not see this promo.",
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "text",
+        "content": "Test message content."
+      }
+    ]
+  }
+}

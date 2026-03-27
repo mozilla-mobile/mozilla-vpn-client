@@ -20,6 +20,7 @@ qt_add_qml_module(mozillavpn-ui
         authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml
         authenticationInApp/ViewAuthenticationStubAccount.qml
         authenticationInApp/ViewAuthenticationSsoAccount.qml
+        popups/MessageAddonPopover.qml
         popups/ServerUnavailablePopup.qml
         screens/authenticationInApp/ViewAuthenticationInApp.qml
         screens/devices/ViewDevices.qml

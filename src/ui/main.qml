@@ -14,11 +14,12 @@ import components 0.1
 ApplicationWindow {
     id: window
 
-    signal showServerList
+    signal showServerList(bool isImmediate)
     signal screenClicked(double x, double y)
     signal unwindStackView
 
     property var safeContentHeight: window.height
+    property string promotedAddonId: ""
 
     LayoutMirroring.enabled: MZLocalizer.isRightToLeft
     LayoutMirroring.childrenInherit: true
@@ -97,6 +98,7 @@ ApplicationWindow {
 
         }
         VPN.mainWindowLoaded()
+        messageAddonPopover.maybeShowMessagePopover();
     }
 
     //Overlays the entire window at all times to remove focus from components on click away
@@ -182,6 +184,15 @@ ApplicationWindow {
 
         visible: showNavigationBar.includes(MZNavigator.screen) &&
                  VPN.state === VPN.StateMain
+    }
+
+    MessageAddonPopover {
+        id: messageAddonPopover
+
+        // Center on the messages button, which is the middle button of the
+        // three-item nav bar. Position the caret tip at the top of the nav bar.
+        x: navbar.x + navbar.width / 2 - width / 2
+        y: navbar.y - height - MZTheme.theme.cornerRadius
     }
 
     Shortcut {
