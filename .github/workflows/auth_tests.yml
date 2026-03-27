@@ -11,6 +11,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   linux-unit-tests:
     runs-on: ubuntu-latest
@@ -60,11 +62,12 @@ jobs:
           activate-environment: vpn
 
       - name: Setup Qt for macOS
+        id: setup-qt
         uses: ./.github/actions/qt-setup-taskcluster
-        with:
-          dest: ${{ github.workspace }}/3rdparty
 
       - name: Compile test client
+        env:
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt.outputs.cmake-prefix-path }}
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja
@@ -85,9 +88,8 @@ jobs:
           persist-credentials: false
 
       - name: Setup Qt for Windows
+        id: setup-qt-win
         uses: ./.github/actions/qt-setup-taskcluster
-        with:
-          dest: ${{ github.workspace }}/3rdparty
 
       - name: Install LLVM and Clang
         uses: KyleMayes/install-llvm-action@ebc0426251bc40c7cd31162802432c68818ab8f0 # v2
@@ -95,9 +97,10 @@ jobs:
           version: 20.1.4
 
       - name: Setup clang env variables
+        id: set-compiler
         run: |
-          echo "CC=$LLVM_PATH/bin/clang-cl.exe" >> $GITHUB_ENV
-          echo "CXX=$LLVM_PATH/bin/clang-cl.exe" >> $GITHUB_ENV
+          echo "CC=$LLVM_PATH/bin/clang-cl.exe" >> $GITHUB_OUTPUT
+          echo "CXX=$LLVM_PATH/bin/clang-cl.exe" >> $GITHUB_OUTPUT
 
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
@@ -120,6 +123,10 @@ jobs:
           unzip -d 3rdparty/ wireguard-nt.zip
 
       - name: Building tests
+        env:
+          CC: ${{ steps.set-compiler.outputs.CC }}
+          CXX: ${{ steps.set-compiler.outputs.CXX }}
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt-win.outputs.cmake-prefix-path }}
         run: |
           mkdir ./build-win
 

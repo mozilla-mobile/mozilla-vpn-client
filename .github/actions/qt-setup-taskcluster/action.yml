@@ -1,10 +1,6 @@
 name: Setup Qt
 description: Setup Qt from Taskcluster artifacts
 inputs:
-  dest:
-    description: 'Destination path'
-    required: true
-    default: ${{ github.workspace }}/3rdparty
   toolchain-alias:
     description: 'Taskcluster toolchain alias'
     required: false
@@ -18,9 +14,19 @@ inputs:
     required: false
     default: true
 
+outputs:
+  cmake-prefix-path:
+    description: 'Path to Qt CMake files for CMAKE_PREFIX_PATH'
+    value: ${{ steps.get-cmake-path.outputs.cmake-prefix-path }}
+
 runs:
   using: "composite"
   steps:
+    - name: Set destination path
+      id: set-dest
+      shell: bash
+      run: echo "path=${GITHUB_WORKSPACE}/3rdparty" >> $GITHUB_OUTPUT
+
     - name: Resolve artifact task
       id: resolve
       shell: bash
@@ -49,14 +55,14 @@ runs:
       id: qt-toolchain-cache
       if: ${{ inputs.cache == 'true' }}
       with:
-        path: ${{ inputs.dest }}/${{ steps.resolve.outputs.toolchain-path }}
+        path: ${{ steps.set-dest.outputs.path }}/${{ steps.resolve.outputs.toolchain-path }}
         key: qt-toolchain-${{ steps.resolve.outputs.taskid }}
         enableCrossOsArchive: true
 
     - name: Install Qt toolchain
       if: ${{ inputs.cache != 'true' || steps.qt-toolchain-cache.outputs.cache-hit != 'true' }}
       id: qt-toolchain-install
-      working-directory: ${{ inputs.dest }}
+      working-directory: ${{ steps.set-dest.outputs.path }}
       shell: bash
       env:
         QT6_TOOLCHAIN_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts/${{ steps.resolve.outputs.filename }}
@@ -65,22 +71,17 @@ runs:
         curl -sSL "${QT6_TOOLCHAIN_URL}" -o ${FILENAME}
         tar -xf ${FILENAME}
 
-    - name: Setup cmake paths
-      if: ${{ inputs.cmake-env == 'true' && runner.os != 'Windows' }}
-      working-directory: ${{ inputs.dest }}/${{ steps.resolve.outputs.toolchain-path }}
+    - name: Get CMake prefix path
+      if: ${{ inputs.cmake-env == 'true' }}
+      id: get-cmake-path
+      working-directory: ${{ steps.set-dest.outputs.path }}/${{ steps.resolve.outputs.toolchain-path }}
       shell: bash
-      run: echo CMAKE_PREFIX_PATH=$(pwd)/lib/cmake >> $GITHUB_ENV
-
-    - name: Setup cmake paths
-      if: ${{ inputs.cmake-env == 'true' && runner.os == 'Windows' }}
-      working-directory: ${{ inputs.dest }}/${{ steps.resolve.outputs.toolchain-path }}
-      shell: pwsh
-      run: echo "CMAKE_PREFIX_PATH=$(Resolve-Path lib/cmake)" >> $Env:GITHUB_ENV
+      run: echo "cmake-prefix-path=$(pwd)/lib/cmake" >> $GITHUB_OUTPUT
 
     - name: Save Qt toolchain
       uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       if: ${{ inputs.cache == 'true' && github.event_name == 'push' && steps.qt-toolchain-cache.outputs.cache-hit != 'true'}}
       with:
-        path: ${{ inputs.dest }}/${{ steps.resolve.outputs.toolchain-path }}
+        path: ${{ steps.set-dest.outputs.path }}/${{ steps.resolve.outputs.toolchain-path }}
         key: qt-toolchain-${{ steps.resolve.outputs.taskid }}
         enableCrossOsArchive: true

@@ -10,6 +10,8 @@ on:
       - synchronize
       - reopened
 
+permissions: {}
+
 jobs:
   linter:
     name: Run Main Linters (clang, l10n, colors, etc.)
