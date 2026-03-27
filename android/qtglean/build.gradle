@@ -8,7 +8,7 @@
 // qtglean binary instead and we don't event need to add it here because
 // those symbols are already alvailable from the VPN project.
 
-def repositoryRoot = "$rootDir/../../.."
+def repositoryRoot = "$rootDir/../../../.."
 def gleanVendoredPath = "$repositoryRoot/3rdparty/glean"
 
 // Path to the CMake build directory.

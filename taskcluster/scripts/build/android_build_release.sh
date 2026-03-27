@@ -56,9 +56,11 @@ echo "Finding all .apk files in .tmp directory:"
 find .tmp -name "*.apk" -type f -exec ls -la {} \;
 
 # Artifacts should be placed here!
-mkdir -p /builds/worker/artifacts/
-cp -r .tmp/src/android-build/build/outputs/apk/release/*  /builds/worker/artifacts/
-echo "Moved .apk files in /builds/worker/artifacts:"
+mkdir -p /builds/worker/artifacts
+
+# Move and rename playstore builds
+cp -r .tmp/playstore/src/android-build/build/outputs/apk/release/*  /builds/worker/artifacts/
+echo "Moved playstore .apk files in /builds/worker/artifacts:"
 ls  /builds/worker/artifacts/
 
 echo "Renaming Artifacts"
@@ -66,7 +68,16 @@ echo "Renaming Artifacts"
 mv /builds/worker/artifacts/android-build-x86_64-release-unsigned.apk /builds/worker/artifacts/mozillavpn-x86_64-release.apk
 mv /builds/worker/artifacts/android-build-arm64-v8a-release-unsigned.apk /builds/worker/artifacts/mozillavpn-arm64-v8a-release.apk
 mv /builds/worker/artifacts/android-build-armeabi-v7a-release-unsigned.apk /builds/worker/artifacts/mozillavpn-armeabi-v7a-release.apk
-mv /builds/worker/artifacts/android-build-x86-release-unsigned.apk /builds/worker/artifacts//mozillavpn-x86-release.apk
+mv /builds/worker/artifacts/android-build-x86-release-unsigned.apk /builds/worker/artifacts/mozillavpn-x86-release.apk
+
+# Move and rename foss builds
+echo "Moved foss .apk files in /builds/worker/artifacts:"
+ls  /builds/worker/artifacts/
+cp -r .tmp/foss/src/android-build/build/outputs/apk/release/*  /builds/worker/artifacts/
+mv /builds/worker/artifacts/android-build-x86_64-release-unsigned.apk /builds/worker/artifacts/mozillavpn-foss-x86_64-release.apk
+mv /builds/worker/artifacts/android-build-arm64-v8a-release-unsigned.apk /builds/worker/artifacts/mozillavpn-foss-arm64-v8a-release.apk
+mv /builds/worker/artifacts/android-build-armeabi-v7a-release-unsigned.apk /builds/worker/artifacts/mozillavpn-foss-armeabi-v7a-release.apk
+mv /builds/worker/artifacts/android-build-x86-release-unsigned.apk /builds/worker/artifacts/mozillavpn-foss-x86-release.apk
 ls  /builds/worker/artifacts/
 
 
