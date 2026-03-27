@@ -105,7 +105,9 @@ QByteArray NetworkManager::userAgent() {
   {
     QStringList flags;
     flags.append(QString("sys:") + NetworkManager::osVersion());
-    flags.append("iap:true");
+    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+      flags.append("iap:true");
+    }
 
     QTextStream out(&userAgent);
     out << Constants::NETWORK_USERAGENT_PREFIX << "/"
