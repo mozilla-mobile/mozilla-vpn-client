@@ -43,8 +43,6 @@ target_sources(daemon PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/iputilsmacos.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/firewallutilsmacos.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/firewallutilsmacos.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdaemonmain.cpp
@@ -54,8 +52,6 @@ target_sources(daemon PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosdnsmanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macosroutemonitor.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macossplittunnelloader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/macossplittunnelloader.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/wireguardutilsmacos.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/xpcdaemonserver.h

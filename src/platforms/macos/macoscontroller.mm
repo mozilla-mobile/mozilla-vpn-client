@@ -14,14 +14,17 @@
 #include "constants.h"
 #include "glean/generated/metrics.h"
 #include "logger.h"
+#include "macossplittunnelloader.h"
 #include "macosutils.h"
 #include "version.h"
 #include "xpcdaemonprotocol.h"
 
 #import <Cocoa/Cocoa.h>
+#import <NetworkExtension/NetworkExtension.h>
 #import <Security/Authorization.h>
 #import <Security/AuthorizationTags.h>
 #import <ServiceManagement/ServiceManagement.h>
+#import <SystemExtensions/SystemExtensions.h>
 
 namespace {
 Logger logger("MacOSController");
@@ -43,6 +46,23 @@ MacOSController::MacOSController() : ControllerImpl()  {
   m_connectTimer.setSingleShot(true);
   connect(&m_connectTimer, &QTimer::timeout, this,
           &MacOSController::connectService);
+
+  // Create the Obj-C loader class.
+  MacosSplitTunnelLoader* loader = [MacosSplitTunnelLoader new];
+  [loader retain];
+  m_loader = loader;
+
+  // Create a request to install the system extension.
+  dispatch_queue_t queue =
+      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  OSSystemExtensionRequest* req =
+      [OSSystemExtensionRequest activationRequestForExtension: loader.identifier
+                                                        queue: queue];
+  req.delegate = loader;
+
+  // Start the request
+  logger.debug() << "activation request started:" << req.identifier;
+  [[OSSystemExtensionManager sharedManager] submitRequest: req];
 }
 
 MacOSController::~MacOSController() {
@@ -51,6 +71,8 @@ MacOSController::~MacOSController() {
     [conn invalidate];
     [conn release];
   }
+
+  [static_cast<MacosSplitTunnelLoader*>(m_loader) release];
 }
 
 NSString* MacOSController::plist() const {
@@ -230,10 +252,43 @@ void MacOSController::activate(const InterfaceConfig& config,
                                Controller::Reason reason) {
   QString json = QString::fromUtf8(QJsonDocument(config.toJson()).toJson());
   [remoteObject() activate:json.toNSString()];
+
+  // Create a new tunnel provider session.
+  auto loader = static_cast<MacosSplitTunnelLoader*>(m_loader);
+  if ((loader.manager == nil) || !loader.manager.enabled) {
+    // Split tunnelling is not supported.
+    return;
+  }
+
+  // Get a session and start it.
+  NSError* error = nil;
+  NETunnelProviderSession* session =
+      static_cast<NETunnelProviderSession*>(loader.manager.connection);
+  // Start the split tunnel proxy.
+  BOOL okay = [session startTunnelWithOptions:[NSDictionary<NSString*,id> new]
+                                andReturnError:&error];
+  if (error) {
+    logger.warning() << "proxy start error:" << error.localizedDescription;
+  } else if (!okay) {
+    logger.warning() << "proxy start failed";
+  } else {
+    // Save the session and retain it.
+    [session retain];
+    m_session = session;
+  }
 }
 
 void MacOSController::deactivate() {
   [remoteObject() deactivate];
+
+  if (m_session) {
+    NETunnelProviderSession* session =
+        static_cast<NETunnelProviderSession*>(m_session);
+    // Stop the split tunnel proxy.
+    [session stopTunnel];
+    [session release];
+    m_session = nullptr;
+  }
 }
 
 void MacOSController::checkStatus() {
