@@ -10,14 +10,13 @@ on:
     - cron: "0 6 * * *" # Every Day 6:00 UTC
   workflow_dispatch:
 
-permissions:
-  pull-requests: write
-  contents: write
-
 jobs:
   main:
     name: Update Main Branch Languages
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
     steps:
       - name: Clone repository
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
@@ -53,6 +52,8 @@ jobs:
   get_release_branches:
     name: Get Unreleased Branches
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     outputs:
       matrix: ${{ steps.gen.outputs.branches }}
     steps:
@@ -73,6 +74,9 @@ jobs:
     needs:
       - get_release_branches
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
+      contents: write
     strategy:
       fail-fast: false # Don't cancel other jobs if a test fails
       matrix:

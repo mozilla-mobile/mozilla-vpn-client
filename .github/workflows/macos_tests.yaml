@@ -14,6 +14,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   build_test_addons:
     name: Build Test Addons
@@ -46,7 +48,9 @@ jobs:
           ref: main
           sparse-checkout: MacOSX15.5.sdk/
           persist-credentials: false
-      - run: echo "SDKROOT=$(find ${{ github.workspace }}/3rdparty/macos-sdk -name 'SDKSettings.plist' -printf '%h\n')" >> $GITHUB_ENV
+      - name: Set SDK root path
+        id: set-sdkroot
+        run: echo "SDKROOT=$(find ${GITHUB_WORKSPACE}/3rdparty/macos-sdk -name 'SDKSettings.plist' -printf '%h\n')" >> $GITHUB_OUTPUT
 
       - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3
         with:
@@ -69,18 +73,19 @@ jobs:
           enableCrossOsArchive: true
 
       - name: Setup Qt for macOS
+        id: setup-qt
         uses: ./.github/actions/qt-setup-taskcluster
-        with:
-          dest: ${{ github.workspace }}/3rdparty
 
       - name: Setup Qt host tools
         uses: ./.github/actions/qt-setup-taskcluster
         with:
-          dest: ${{ github.workspace }}/3rdparty
           toolchain-alias: qt-tools-6.10
           cmake-env: false
 
       - name: Compile test client
+        env:
+          SDKROOT: ${{ steps.set-sdkroot.outputs.SDKROOT }}
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt.outputs.cmake-prefix-path }}
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
