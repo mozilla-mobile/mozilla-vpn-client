@@ -30,7 +30,7 @@ jobs:
       - name: Update server name strings
         run: |
           scripts/ci/update_server_names.py
-      - uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6
+      - uses: peter-evans/create-pull-request@c0f553fe549906ede9cf27b5156039d195d2ece0 # v8.1.0
         id: cpr
         with:
           # This may not be github, cuz gh actions cannot self approve
