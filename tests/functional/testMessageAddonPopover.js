@@ -124,11 +124,11 @@ describe('Message addon popover conditions:', function() {
     it('shows 2nd popover after the normal cooldown period', async () => {
       await loadAdditionalAddonsAndShowFirstPopover();
 
-      await setLastAddonPopoverToFourDaysAgo();
-
-      // go to messages screen (dismisses the addon), go back to home screen
+      // go to messages screen (dismisses the addon), reset timer, go back to
+      // home screen
       await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
       await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
+      await setLastAddonPopoverToFourDaysAgo();
       await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
       await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
       assert.equal(
@@ -139,17 +139,17 @@ describe('Message addon popover conditions:', function() {
 
     it('shows 2nd popover after the short cooldown period', async () => {
       await vpn.setSetting('useShortAddonPromoTime', 'true');
-
       await loadAdditionalAddonsAndShowFirstPopover();
+
+      // go to messages screen (dismisses the addon), go back to home screen
+      await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
+      await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
 
       // update the last time to one that allows it to be shown, as it runs once
       // every 30 seconds
       const fortySecondsAgo = Date.now() - (1000 * 40);
       await vpn.setLastAddonPopover(fortySecondsAgo);
 
-      // go to messages screen (dismisses the addon), go back to home screen
-      await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
-      await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
       await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
       await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
       assert.equal(
