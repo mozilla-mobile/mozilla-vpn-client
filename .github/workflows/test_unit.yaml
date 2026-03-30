@@ -140,7 +140,7 @@ jobs:
 
       - name: Cache Wireguard NT
         id: cache-wireguard-nt
-        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: 3rdparty/wireguard-nt
           key: wireguard-nt-${{ hashFiles('windows/wireguard_nt/CMakeLists.txt') }}
