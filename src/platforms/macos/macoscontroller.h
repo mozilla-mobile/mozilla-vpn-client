@@ -54,6 +54,10 @@ class MacOSController final : public ControllerImpl {
 
   // NSXPCConnection to the daemon.
   void* m_connection = nullptr;
+
+  // Split tunneling driver.
+  void* m_loader = nullptr;
+  void* m_session = nullptr;
 };
 
 #endif  // MACOSCONTROLLER_H

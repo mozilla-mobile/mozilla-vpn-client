@@ -56,6 +56,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macossystemtraynotificationhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosnetworkwatcher.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosnetworkwatcher.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macossplittunnelloader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macossplittunnelloader.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosstatusicon.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosstatusicon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosutils.mm

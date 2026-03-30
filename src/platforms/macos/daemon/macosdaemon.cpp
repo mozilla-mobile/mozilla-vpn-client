@@ -16,7 +16,6 @@
 #include <QtGlobal>
 
 #include "dnsutilsmacos.h"
-#include "firewallutilsmacos.h"
 #include "iputilsmacos.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -33,7 +32,6 @@ MacOSDaemon::MacOSDaemon(QObject* parent) : Daemon(parent) {
   m_wgutils = new WireguardUtilsMacos(this);
   m_dnsutils = new DnsUtilsMacos(this);
   m_iputils = new IPUtilsMacos(this);
-  m_fwutils = new FirewallUtilsMacos(this);
 
   connect(m_wgutils, &WireguardUtils::backendFailure, this,
           &MacOSDaemon::abortBackendFailure);
