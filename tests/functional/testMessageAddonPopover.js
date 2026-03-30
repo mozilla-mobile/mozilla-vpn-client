@@ -51,7 +51,7 @@ beforeEach(async () => {
 });
 
 describe('Message addon popover conditions:', function() {
-  this.timeout(3000000);
+  this.timeout(120000);
   this.ctx.authenticationNeeded = true;
 
   describe('with a Notified message that has promo_text', function() {
