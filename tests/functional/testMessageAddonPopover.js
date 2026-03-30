@@ -272,23 +272,23 @@ describe('Message addon popover conditions:', function() {
          await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
          await vpn.waitForQuery(
              queries.screenMessaging.messageItem('message_promo_a').visible());
-         await vpn.waitForQuery(
-             queries.screenMessaging.messageItem('message_promo_b').visible());
          const highlightA = await vpn.getQueryProperty(
              queries.screenMessaging.messageItem('message_promo_a'),
              'highlight');
-         assert.equal(highlightA, 'true');
          const pauseHoverA = await vpn.getQueryProperty(
              queries.screenMessaging.messageItem('message_promo_a'),
              'pauseHover');
-         assert.equal(pauseHoverA, 'false');
+         await vpn.waitForQuery(
+             queries.screenMessaging.messageItem('message_promo_b').visible());
          const highlightB = await vpn.getQueryProperty(
              queries.screenMessaging.messageItem('message_promo_b'),
              'highlight');
-         assert.equal(highlightB, 'false');
          const pauseHoverB = await vpn.getQueryProperty(
              queries.screenMessaging.messageItem('message_promo_b'),
              'pauseHover');
+         assert.equal(highlightA, 'true');
+         assert.equal(pauseHoverA, 'false');
+         assert.equal(highlightB, 'false');
          assert.equal(pauseHoverB, 'true');
        });
 
