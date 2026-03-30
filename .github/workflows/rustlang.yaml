@@ -83,7 +83,6 @@ jobs:
         uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: ${{ github.head_ref }}
-          token: ${{ secrets.DEPENDABOT_TOKEN }}
           persist-credentials: false
 
       - name: Install pip tools
@@ -107,6 +106,8 @@ jobs:
       - name: Commit the changes
         shell: bash
         if: ${{ steps.inspect.outputs.flatpak-changes == 0 }}
+        env:
+          DEPENDABOT_TOKEN: ${{ secrets.DEPENDABOT_TOKEN }}
         run: |
           if git diff --name-only | grep -q '^linux/flatpak/flatpak-vpn-crates.json'; then
             git add linux/flatpak/flatpak-vpn-crates.json
@@ -114,5 +115,5 @@ jobs:
             git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
             git commit -m "[dependabot skip] Update linux/flatpak/flatpak-vpn-crates.json"
             git format-patch --stdout HEAD~1
-            git push
+            git push https://${DEPENDABOT_TOKEN}@github.com/${GITHUB_REPOSITORY} ${GITHUB_HEAD_REF}
           fi
