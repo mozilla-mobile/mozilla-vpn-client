@@ -1,9 +1,67 @@
 #!/bin/sh
+
+set -e
+umask 022
+
+. /usr/share/debconf/confmodule
+
 action="$1"
+
 if [ "$action" = "configure" ]; then
   # Remove the legacy XDG autostart start-on-boot configuration
   rm -f /etc/xdg/autostart/mozillavpn-startup.desktop
   rm -f /etc/xdg/autostart/org.mozilla.vpn-startup.desktop
+
+  # Add the packages.mozilla.org repository if not already configured.
+  if ! grep -qrs '^[[:space:]]*[^#[:space:]].*packages\.mozilla\.org' /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null; then
+    install -d /etc/apt/keyrings /etc/apt/sources.list.d
+
+    cat > /etc/apt/keyrings/packages.mozilla.org.asc << 'EOF'
+-----BEGIN PGP PUBLIC KEY BLOCK-----
+
+xsBNBGCRt7MBCADkYJHHQQoL6tKrW/LbmfR9ljz7ib2aWno4JO3VKQvLwjyUMPpq
+/SXXMOnx8jXwgWizpPxQYDRJ0SQXS9ULJ1hXRL/OgMnZAYvYDeV2jBnKsAIEdiG/
+e1qm8P4W9qpWJc+hNq7FOT13RzGWRx57SdLWSXo0KeY38r9lvjjOmT/cuOcmjwlD
+T9XYf/RSO+yJ/AsyMdAr+ZbDeQUd9HYJiPdI04lGaGM02MjDMnx+monc+y54t+Z+
+ry1WtQdzoQt9dHlIPlV1tR+xV5DHHsejCZxu9TWzzSlL5wfBBeEz7R/OIzivGJpW
+QdJzd+2QDXSRg9q2XYWP5ZVtSgjVVJjNlb6ZABEBAAHNVEFydGlmYWN0IFJlZ2lz
+dHJ5IFJlcG9zaXRvcnkgU2lnbmVyIDxhcnRpZmFjdC1yZWdpc3RyeS1yZXBvc2l0
+b3J5LXNpZ25lckBnb29nbGUuY29tPsLAjgQTAQoAOBYhBDW6oLM+nrOW9ZyoOMC6
+XObcYxWjBQJgkbezAhsDBQsJCAcCBhUKCQgLAgQWAgMBAh4BAheAAAoJEMC6XObc
+YxWj+igIAMFh6DrAYMeq9sbZ1ZG6oAMrinUheGQbEqe76nIDQNsZnhDwZ2wWqgVC
+7DgOMqlhQmOmzm7M6Nzmq2dvPwq3xC2OeI9fQyzjT72deBTzLP7PJok9PJFOMdLf
+ILSsUnmMsheQt4DUO0jYAX2KUuWOIXXJaZ319QyoRNBPYa5qz7qXS7wHLOY89IDq
+fHt6Aud8ER5zhyOyhytcYMeaGC1g1IKWmgewnhEq02FantMJGlmmFi2eA0EPD02G
+C3742QGqRxLwjWsm5/TpyuU24EYKRGCRm7QdVIo3ugFSetKrn0byOxWGBvtu4fH8
+XWvZkRT+u+yzH1s5yFYBqc2JTrrJvRU=
+=QnvN
+-----END PGP PUBLIC KEY BLOCK-----
+EOF
+
+    cat > /etc/apt/sources.list.d/mozilla.list << 'EOF'
+deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main
+EOF
+  fi
+
+  # Pin mozillavpn origin to packages.mozilla.org.
+  install -d /etc/apt/preferences.d
+  cat > /etc/apt/preferences.d/mozilla-vpn.pref << 'EOF'
+Package: mozillavpn
+Pin: origin packages.mozilla.org
+Pin-Priority: 1000
+EOF
+
+  # Disable the Mozilla VPN PPA sources if present and notify the user.
+  for f in /etc/apt/sources.list.d/mozillacorp-ubuntu-mozillavpn-*.sources; do
+    [ -f "$f" ] || break
+    mv "$f" "${f}.save"
+    ppa_disabled=true
+  done
+
+  if [ "$ppa_disabled" ]; then
+    db_input high mozillavpn/ppa-deprecation-warning || true
+    db_go || true
+  fi
 fi
 
 #DEBHELPER#
