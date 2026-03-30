@@ -104,6 +104,8 @@ jobs:
       - name: Commit the changes
         shell: bash
         if: ${{ steps.inspect.outputs.flatpak-changes == 0 }}
+        env:
+          DEPENDABOT_TOKEN: ${{ secrets.DEPENDABOT_TOKEN }}
         run: |
           if git diff --name-only | grep -q '^linux/flatpak/flatpak-vpn-crates.json'; then
             git add linux/flatpak/flatpak-vpn-crates.json
@@ -111,5 +113,5 @@ jobs:
             git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
             git commit -m "[dependabot skip] Update linux/flatpak/flatpak-vpn-crates.json"
             git format-patch --stdout HEAD~1
-            git push https://${{ secrets.DEPENDABOT_TOKEN }}@github.com/${{ github.repository }} ${{ github.head_ref }}
+            git push https://${DEPENDABOT_TOKEN}@github.com/${GITHUB_REPOSITORY} ${GITHUB_HEAD_REF}
           fi
