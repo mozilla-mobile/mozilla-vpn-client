@@ -44,6 +44,10 @@ async function setLastAddonPopoverToFourDaysAgo() {
 
 beforeEach(async () => {
   await setLastAddonPopoverToFourDaysAgo();
+  // Without this, some tests fail on CI, because the highlight fades before
+  // all the tests are finished. This is especially true for test starting
+  // with "when multiple messages...".
+  await vpn.setSetting('useLengthyAddonMessageHighlight', 'true');
 });
 
 describe('Message addon popover conditions:', function() {

@@ -815,3 +815,14 @@ SETTING_BOOL(useShortAddonPromoTime,        // getter
              true,                          // remove when reset
              false                          // sensitive (do not log)
 )
+
+// This setting is only intended for running the functional tests.
+SETTING_BOOL(useLengthyAddonMessageHighlight,        // Feature ID
+             setUseLengthyAddonMessageHighlight,     // setter
+             removeUseLengthyAddonMessageHighlight,  // remover
+             hasUseLengthyAddonMessageHighlight,     // has
+             "useLengthyAddonMessageHighlight",      // key
+             false,                                  // default value
+             true,                                   // remove when reset
+             false                                   // sensitive (do not log)
+)
