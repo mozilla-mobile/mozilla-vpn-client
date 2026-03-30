@@ -6,33 +6,18 @@ const assert = require('assert');
 const queries = require('./queries.js');
 const vpn = require('./helper.js');
 
-// Wait for the home screen and addons, then navigate away and back so that
-// onCurrentComponentChanged fires with VPN.state === StateMain and
-// screen === ScreenHome simultaneously — the condition maybeShowMessagePopover
-// requires. Without this, all three QML triggers fire during startup before
-// both conditions are true and the popover never appears.
-async function waitForHomeReady() {
-  await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
-  await vpn.waitForMozillaProperty(
-      'Mozilla.Shared', 'MZAddonManager', 'loadCompleted', 'true');
+// Navigate away from home screen to prevent accidental promo message,
+// load new addons, then go back to main screen.
+async function loadAddonsAndNavigateHome(testAddonName) {
   await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
   await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
-  await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
-  await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
-}
 
-async function loadAdditionalAddonsAndShowFirstPopover() {
-  await vpn.fetchAddons('07_two_promo_messages');
+  await vpn.resetAddons(testAddonName);
   await vpn.waitForMozillaProperty(
       'Mozilla.Shared', 'MZAddonManager', 'loadCompleted', 'true');
 
-  await vpn.waitForQuery(queries.screenMessageAddonPopover.POPOVER.visible());
-  const raw = await vpn.getSetting('addonPromoLastShown');
-  const lastShown = new Date(raw);
-  const ageMs = Date.now() - lastShown.getTime();
-  assert(
-      ageMs >= 0 && ageMs < 3000,
-      `addonPromoLastShown should be within last 3s, but was ${ageMs}ms ago`);
+  await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
+  await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
 }
 
 async function setLastAddonPopoverToFourDaysAgo() {
@@ -56,8 +41,7 @@ describe('Message addon popover conditions:', function() {
 
   describe('with a Notified message that has promo_text', function() {
     beforeEach(async () => {
-      await vpn.resetAddons('04_promo_message');
-      await waitForHomeReady();
+      await loadAddonsAndNavigateHome('04_promo_message');
     })
 
     it('unread message w/ promo text is shown and displays correct text (happy path)',
@@ -92,11 +76,25 @@ describe('Message addon popover conditions:', function() {
               queries.screenMessageAddonPopover.POPOVER, 'visible'),
           'false');
     });
+  });
+
+  describe('with two messages', function() {
+    beforeEach(async () => {
+      await loadAddonsAndNavigateHome('07_two_promo_messages');
+
+      await vpn.waitForQuery(
+          queries.screenMessageAddonPopover.POPOVER.visible());
+      const raw = await vpn.getSetting('addonPromoLastShown');
+      const lastShown = new Date(raw);
+      const ageMs = Date.now() - lastShown.getTime();
+      assert(
+          ageMs >= 0 && ageMs < 3000,
+          `addonPromoLastShown should be within last 3s, but was ${
+              ageMs}ms ago`);
+    })
 
     it('does not show 2nd popover within the normal cooldown period',
        async () => {
-         await loadAdditionalAddonsAndShowFirstPopover();
-
          // go to messages screen (dismisses the addon), go back to home screen
          await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
          await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
@@ -112,8 +110,6 @@ describe('Message addon popover conditions:', function() {
        async () => {
          await vpn.setSetting('useShortAddonPromoTime', 'true');
 
-         await loadAdditionalAddonsAndShowFirstPopover();
-
          // go to messages screen (dismisses the addon), go back to home screen
          await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
          await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
@@ -126,8 +122,6 @@ describe('Message addon popover conditions:', function() {
        });
 
     it('shows 2nd popover after the normal cooldown period', async () => {
-      await loadAdditionalAddonsAndShowFirstPopover();
-
       // go to messages screen (dismisses the addon), reset timer, go back to
       // home screen
       await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
@@ -143,7 +137,6 @@ describe('Message addon popover conditions:', function() {
 
     it('shows 2nd popover after the short cooldown period', async () => {
       await vpn.setSetting('useShortAddonPromoTime', 'true');
-      await loadAdditionalAddonsAndShowFirstPopover();
 
       // go to messages screen (dismisses the addon), go back to home screen
       await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
@@ -165,8 +158,7 @@ describe('Message addon popover conditions:', function() {
 
   describe('with a Received message', function() {
     beforeEach(async () => {
-      await vpn.resetAddons('09_promo_no_notify');
-      await waitForHomeReady();
+      await loadAddonsAndNavigateHome('09_promo_no_notify');
     })
 
     it('does not show popover when message status is Received', async () => {
@@ -179,8 +171,7 @@ describe('Message addon popover conditions:', function() {
 
   describe('with a message that has no promo_text', function() {
     beforeEach(async () => {
-      await vpn.resetAddons('05_promo_no_promo_text');
-      await waitForHomeReady();
+      await loadAddonsAndNavigateHome('05_promo_no_promo_text');
     })
 
     it('does not show popover when promo_text is absent', async () => {
@@ -193,8 +184,7 @@ describe('Message addon popover conditions:', function() {
 
   describe('with a message that has empty string promo_text', function() {
     beforeEach(async () => {
-      await vpn.resetAddons('06_promo_empty_text');
-      await waitForHomeReady();
+      await loadAddonsAndNavigateHome('06_promo_empty_text');
     })
 
     it('does not show popover when promo_text is empty string', async () => {
@@ -207,10 +197,8 @@ describe('Message addon popover conditions:', function() {
 
   describe('UI works as expected', function() {
     beforeEach(async () => {
-      await vpn.resetAddons('04_promo_message');
-      await waitForHomeReady();
+      await loadAddonsAndNavigateHome('04_promo_message');
     })
-
 
     it('close button dismisses the popover', async () => {
       await vpn.waitForQuery(
@@ -264,13 +252,30 @@ describe('Message addon popover conditions:', function() {
          assert.equal(pauseHover, 'false');
        });
 
+    it('tapping the message nav bar buton does not cause message to be highlighted',
+       async () => {
+         await vpn.waitForQuery(
+             queries.screenMessageAddonPopover.POPOVER.visible());
+         await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
+         await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
+         await vpn.waitForQuery(
+             queries.screenMessaging.messageItem('message_promo').visible());
+         const highlight = await vpn.getQueryProperty(
+             queries.screenMessaging.messageItem('message_promo'), 'highlight');
+         assert.equal(highlight, 'false');
+         const pauseHover = await vpn.getQueryProperty(
+             queries.screenMessaging.messageItem('message_promo'),
+             'pauseHover');
+         assert.equal(pauseHover, 'false');
+       });
+  });
+
+  describe('UI works as expected with multiple messages', function() {
+    beforeEach(async () => {
+      await loadAddonsAndNavigateHome('07_two_promo_messages');
+    })
     it('when multiple messages, tapping the popover navigates to the messaging screen and highlights correct message',
        async () => {
-         // change the normal setup so we show the 2 promo messages
-         await vpn.resetAddons('07_two_promo_messages');
-         await setLastAddonPopoverToFourDaysAgo();
-         await waitForHomeReady();
-
          await vpn.waitForQueryAndClick(
              queries.screenMessageAddonPopover.POPOVER.visible());
          await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
@@ -294,23 +299,6 @@ describe('Message addon popover conditions:', function() {
          assert.equal(pauseHoverA, 'false');
          assert.equal(highlightB, 'false');
          assert.equal(pauseHoverB, 'true');
-       });
-
-    it('tapping the message nav bar buton does not cause message to be highlighted',
-       async () => {
-         await vpn.waitForQuery(
-             queries.screenMessageAddonPopover.POPOVER.visible());
-         await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
-         await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
-         await vpn.waitForQuery(
-             queries.screenMessaging.messageItem('message_promo').visible());
-         const highlight = await vpn.getQueryProperty(
-             queries.screenMessaging.messageItem('message_promo'), 'highlight');
-         assert.equal(highlight, 'false');
-         const pauseHover = await vpn.getQueryProperty(
-             queries.screenMessaging.messageItem('message_promo'),
-             'pauseHover');
-         assert.equal(pauseHover, 'false');
        });
   });
 });

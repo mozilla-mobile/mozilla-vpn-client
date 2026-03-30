@@ -182,7 +182,7 @@ Item {
 
         Timer {
           id: endAddonPromotionTimer
-          interval: MZSettings.useLengthyAddonMessageHighlight ? 6000 : 1200 // This setting is only used in functional tests.
+          interval: MZSettings.useLengthyAddonMessageHighlight ? 8000 : 1200 // This setting is only used in functional tests.
           onTriggered: window.promotedAddonId = ""
         }
 
