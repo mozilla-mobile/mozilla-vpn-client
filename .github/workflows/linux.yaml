@@ -55,7 +55,7 @@ jobs:
         run: ./scripts/linux/script.sh --source --gitref ${GITHUB_REF}
 
       - name: Upload source bundle
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: Sources
           path: .tmp
@@ -91,7 +91,7 @@ jobs:
         run: rpmbuild -D "_topdir $(pwd)" -D "_sourcedir $(pwd)" -ba mozillavpn.spec
 
       - name: Uploading
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: RPM Build (Fedora ${{ matrix.fedora-version }})
           path: |
