@@ -4,6 +4,7 @@
 
 import QtQuick 2.15
 import QtQuick.Layouts 1.14
+import QtQuick.Shapes 1.15
 
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
@@ -263,28 +264,21 @@ Item {
         z: -1
     }
 
-    Canvas {
-        id: caret
+    Shape {
+      id: caret
+      width: _caretWidth
+      height: _caretHeight
+      anchors.top: bubble.bottom
+      anchors.horizontalCenter: bubble.horizontalCenter
 
-        width: _caretWidth
-        height: _caretHeight
-        anchors.top: bubble.bottom
-        anchors.horizontalCenter: bubble.horizontalCenter
+      ShapePath {
+          fillColor: MZTheme.colors.bgColorStronger
+          strokeWidth: 0
 
-        // this allows the caret to change color when theme changes
-        property color caretColor: MZTheme.colors.bgColorStronger                                                                                                                       
-        onCaretColorChanged: requestPaint() 
-
-        onPaint: {
-            var ctx = getContext("2d");
-            ctx.clearRect(0, 0, width, height);
-            ctx.fillStyle = caretColor;
-            ctx.beginPath();
-            ctx.moveTo(0, 0);
-            ctx.lineTo(width, 0);
-            ctx.lineTo(width / 2, height);
-            ctx.closePath();
-            ctx.fill();
-        }
+          PathMove { x: 0;              y: 0            }
+          PathLine { x: _caretWidth;    y: 0            }
+          PathLine { x: _caretWidth/2;  y: _caretHeight }
+          PathLine { x: 0;              y: 0            }
+      }
     }
 }

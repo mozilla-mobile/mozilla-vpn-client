@@ -455,6 +455,10 @@ void AddonManager::reset() {
     removeAddon(addonId);
   }
 
+  qint64 longAgoEpochTime = 1000;
+  SettingsHolder::instance()->setAddonPromoLastShown(
+      QDateTime::fromMSecsSinceEpoch(longAgoEpochTime));
+
   refreshAddons();
 }
 
