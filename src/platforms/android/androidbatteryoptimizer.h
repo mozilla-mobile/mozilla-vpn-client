@@ -11,10 +11,12 @@ class AndroidBatteryOptimizer {
   // false → app is exempted (good)
   static bool batteryOptimizationEnabled();
 
-  // true → app holds REQUEST_IGNORE_BATTERY_OPTIMIZATIONS; system dialog shown directly
+  // true → app holds REQUEST_IGNORE_BATTERY_OPTIMIZATIONS; system dialog shown
+  // directly
   static bool canTriggerIntent();
 
-  // Opens battery settings (system dialog or app details depending on permission/SDK)
+  // Opens battery settings (system dialog or app details depending on
+  // permission/SDK)
   static void triggerBatteryOptimizationIntent();
 };
 
