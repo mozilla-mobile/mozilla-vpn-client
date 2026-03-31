@@ -26,7 +26,8 @@ MZViewBase {
 
         MZInformationCard {
             id: batteryOptimizationCard
-            visible: BatteryOptimizer.batteryOptimizationEnabled
+            visible: !MZSettings.hasDismissedBatteryOptimization
+                     && BatteryOptimizer.batteryOptimizationEnabled
                      && BatteryOptimizer.canTriggerIntent
             cardType: MZInformationCard.CardType.Warning
             Layout.preferredWidth: Math.min(window.width - MZTheme.theme.windowMargin * 2,
@@ -44,7 +45,10 @@ MZViewBase {
 
             MouseArea {
                 anchors.fill: batteryOptimizationCard
-                onClicked: BatteryOptimizer.triggerBatteryOptimizationIntent()
+                onClicked: {
+                    MZSettings.hasDismissedBatteryOptimization = true
+                    BatteryOptimizer.triggerBatteryOptimizationIntent()
+                }
             }
         }
 
