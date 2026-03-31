@@ -100,10 +100,8 @@ describe('Message addon popover conditions:', function() {
          await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
          await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
          await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
-         assert.equal(
-             await vpn.getQueryProperty(
-                 queries.screenMessageAddonPopover.POPOVER, 'visible'),
-             'false');
+         await vpn.waitForQuery(
+             queries.screenMessageAddonPopover.POPOVER.hidden());
        });
 
     it('does not show 2nd popover within the short cooldown period',
@@ -115,10 +113,8 @@ describe('Message addon popover conditions:', function() {
          await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
          await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
          await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
-         assert.equal(
-             await vpn.getQueryProperty(
-                 queries.screenMessageAddonPopover.POPOVER, 'visible'),
-             'false');
+         await vpn.waitForQuery(
+             queries.screenMessageAddonPopover.POPOVER.hidden());
        });
 
     it('shows 2nd popover after the normal cooldown period', async () => {
