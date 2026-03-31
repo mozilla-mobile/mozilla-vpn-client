@@ -72,6 +72,9 @@ commonStrings:
   whatsNewClosing:
     value: Thank you for installing the latest version!
     comment: Closing for default What's New message
+  updatePromo:
+    value: Update to the latest version
+    comment: Promo text for the ’new update available’ message
 
 225updateMessage:
   bullet1:

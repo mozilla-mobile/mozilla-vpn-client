@@ -434,6 +434,12 @@ const screenBackendFailure = {
   HEARTBEAT_TRY_BUTTON: new QmlQueryComposer('//heartbeatTryButton'),
 };
 
+const screenMessageAddonPopover = {
+  POPOVER: new QmlQueryComposer('//messageAddonPopover'),
+  LABEL: new QmlQueryComposer('//messageAddonPopover-label'),
+  CLOSE_BUTTON: new QmlQueryComposer('//messageAddonPopover-closeButton'),
+};
+
 const screenMessaging = {
   SCREEN: new QmlQueryComposer('//messageInboxView'),
   messageItem: function(id) {
@@ -523,6 +529,7 @@ module.exports = {
   screenGetHelp,
   screenSettings,
   screenBackendFailure,
+  screenMessageAddonPopover,
   screenMessaging,
   screenSubscriptionNeeded,
   screenInBrowserSubscriptionLoading,

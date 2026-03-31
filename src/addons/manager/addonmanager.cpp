@@ -212,6 +212,21 @@ void AddonManager::unload(const QString& addonId) {
   }
 
   m_addons.remove(addonId);
+
+  // Remove settings, otherwise will maintain Read status
+  // when reloaded.
+  SettingGroup* messageSettingGroup =
+      SettingsManager::instance()->createSettingGroup(
+          QString("%1/%2/%3")
+              .arg(Constants::ADDONS_SETTINGS_GROUP)
+              .arg(ADDON_MESSAGE_SETTINGS_GROUP)
+              .arg(addonId),
+          true,  // remove when reset
+          false  // sensitive setting
+      );
+  messageSettingGroup->remove();
+  ;
+
   emit countChanged();
 }
 
@@ -416,25 +431,6 @@ QJSValue AddonManager::reduce(QJSValue callback, QJSValue initialValue) const {
   return reducedValue;
 }
 
-// Undismisses any dismissed messages and marks all messages as unread
-void AddonManager::reinstateMessages() const {
-  logger.debug() << "Reinstating all messages";
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
-  // Group containing all the message settings.
-  // It only needs to live for the scope of this function.
-  SettingGroup* messageSettingGroup =
-      SettingsManager::instance()->createSettingGroup(
-          QString("%1/%2")
-              .arg(Constants::ADDONS_SETTINGS_GROUP)
-              .arg(ADDON_MESSAGE_SETTINGS_GROUP),
-          true,  // remove when reset
-          false  // sensitive setting
-      );
-  messageSettingGroup->remove();
-}
-
 // static
 QString AddonManager::mountPath(const QString& addonId) {
   return QString("/addons/%1").arg(addonId);
@@ -458,6 +454,10 @@ void AddonManager::reset() {
     unload(addonId);
     removeAddon(addonId);
   }
+
+  qint64 longAgoEpochTime = 1000;
+  SettingsHolder::instance()->setAddonPromoLastShown(
+      QDateTime::fromMSecsSinceEpoch(longAgoEpochTime));
 
   refreshAddons();
 }

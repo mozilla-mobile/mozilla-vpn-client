@@ -21,6 +21,7 @@ property object with the following properties:
 | shortVersion | A human-readable version number to insert into user-facing strings | Strings | Yes if usesSharedStrings is true, No otherwise |
 | title | The subject of the message  | String | Yes |
 | subtitle | A brief description of the message | String | No |
+| promo_text | A promotional message shown on main screen, written to encourage further investigation by the user | String | No |
 | title_comment | An optional comment to describe the meaning of the title | String | No |
 | subtitle_comment | An optional comment to describe the meaning of the subtitle | String | No |
 | date | The date the message was received (using seconds since epoch time) | Number | No |

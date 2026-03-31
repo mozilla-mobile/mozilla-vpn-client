@@ -243,6 +243,16 @@ def retrieve_shared_strings_message(message_json, filename):
         "legacy_id": legacy_subtitle_id
     }
 
+    if "promo_text" in message_json:
+      promo_text_id = message_json["promo_text"]
+      promo_text_object = find_translation_object(json_translations, promo_text_id)
+      legacy_promo_text_id = f"message.{message_id}.promo_text"
+      message_strings[promo_text_id] = {
+          "value": promo_text_object['value'][0],
+          "comments": translation_comment(promo_text_object),
+          "legacy_id": legacy_promo_text_id
+      }
+
     return retrieve_strings_blocks(message_json["blocks"], filename, message_strings, f"message.{message_id}", json_translations)
 
 def find_translation_object(json_translations, target_id):

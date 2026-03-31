@@ -795,3 +795,34 @@ SETTING_BOOL(addonApiSetting,        // getter
              false                   // sensitive (do not log)
 )
 #endif
+
+SETTING_DATETIME(addonPromoLastShown,        // getter
+                 setAddonPromoLastShown,     // setter
+                 removeAddonPromoLastShown,  // remover
+                 hasAddonPromoLastShown,     // has
+                 "addonPromoLastShown",      // key
+                 QDateTime(),                // default value
+                 true,                       // remove when reset
+                 false                       // sensitive (do not log)
+)
+
+SETTING_BOOL(useShortAddonPromoTime,        // getter
+             setUseShortAddonPromoTime,     // setter
+             removeUseShortAddonPromoTime,  // remover
+             hasUseShortAddonPromoTime,     // has
+             "useShortAddonPromoTime",      // key
+             false,                         // default value
+             true,                          // remove when reset
+             false                          // sensitive (do not log)
+)
+
+// This setting is only intended for running the functional tests.
+SETTING_BOOL(useLengthyAddonMessageHighlight,        // Feature ID
+             setUseLengthyAddonMessageHighlight,     // setter
+             removeUseLengthyAddonMessageHighlight,  // remover
+             hasUseLengthyAddonMessageHighlight,     // has
+             "useLengthyAddonMessageHighlight",      // key
+             false,                                  // default value
+             true,                                   // remove when reset
+             false                                   // sensitive (do not log)
+)

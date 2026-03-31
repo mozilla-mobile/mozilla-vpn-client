@@ -29,7 +29,7 @@ MZSimplePopup {
             Layout.fillWidth: true
             onClicked: {
                 MZNavigator.requestScreen(VPN.ScreenHome)
-                window.showServerList();
+                window.showServerList(true);
                 root.close();
             }
         }]
