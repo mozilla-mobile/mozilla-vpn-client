@@ -359,6 +359,9 @@ settings:
   dnsSettingsWarning: These options may cause some websites to break or not display content correctly.
   dnsSettingsInputPlaceholder: Enter custom DNS
   dnsSettingsDisconnectWarning: Changing these settings will cause the VPN to disconnect and reconnect automatically.
+  batteryOptimizationWarning:
+    value: For the best experience, tap here to ensure reliable app functionality by disabling battery optimization.
+    comment: Warning shown in the settings screen on Android when battery optimization is enabled for the app.
   appExclusionClearAllApps:
     value: Clear all
     comment: Button label to clear all apps from the exclusions list
