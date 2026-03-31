@@ -29,7 +29,7 @@ jobs:
 
       - name: Lookup cached crates
         id: rust-cache
-        uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: 3rdparty/cargo-vendor
           key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
@@ -43,7 +43,7 @@ jobs:
 
       - name: Saved cached crates
         if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: 3rdparty/cargo-vendor
           key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
