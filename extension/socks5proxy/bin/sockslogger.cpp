@@ -239,12 +239,12 @@ void SocksLogger::setLogfile(const QString& logfile) {
         QIODeviceBase::WriteOnly | QIODeviceBase::Text | QIODeviceBase::Append;
     const auto perms = QFileDevice::ReadOwner | QFileDevice::WriteOwner |
                        QFileDevice::ReadGroup;
-    const auto ok = !m_logFileDevice->open(mode);
-    if (!ok) {
-      qInfo() << "Failed open log file";
-      return;
+    if (!m_logFileDevice->open(mode)) {
+      delete m_logFileDevice;
+      m_logFileDevice = nullptr;
+    } else {
+      m_logFileDevice->setPermissions(perms);
     }
-    m_logFileDevice->setPermissions(perms);
   }
 }
 
