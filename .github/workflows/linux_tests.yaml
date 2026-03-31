@@ -67,7 +67,7 @@ jobs:
             -DRUST_VENDOR_DIR=3rdparty/cargo-vendor
           cmake --build build-${{ runner.os }} --target mozillavpn
 
-      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: test-client-${{ github.sha }}
           path: |
@@ -149,7 +149,7 @@ jobs:
         run: ctest -R "test$TEST_NAME" --test-dir build-${{ runner.os }} --verbose
 
       - name: Uploading artifacts
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: ${{ always() }}
         with:
           name: ${{ matrix.test.name }} Logs
