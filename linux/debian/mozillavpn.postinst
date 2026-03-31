@@ -12,11 +12,15 @@ if [ "$action" = "configure" ]; then
   rm -f /etc/xdg/autostart/mozillavpn-startup.desktop
   rm -f /etc/xdg/autostart/org.mozilla.vpn-startup.desktop
 
-  # Add the packages.mozilla.org repository if not already configured.
-  if ! grep -qrs '^[[:space:]]*[^#[:space:]].*packages\.mozilla\.org' /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null; then
-    install -d /etc/apt/keyrings /etc/apt/sources.list.d
+  # Migrate users from the Mozilla VPN PPA to packages.mozilla.org.
+  for ppa_sources_list in /etc/apt/sources.list.d/mozillacorp-ubuntu-mozillavpn-*.sources; do break; done
+  if [ -f "$ppa_sources_list" ]; then
 
-    cat > /etc/apt/keyrings/packages.mozilla.org.asc << 'EOF'
+    # Add the packages.mozilla.org repository if not already configured.
+    if ! grep -qrs '^[[:space:]]*[^#[:space:]].*packages\.mozilla\.org' /etc/apt/sources.list /etc/apt/sources.list.d/ 2>/dev/null; then
+      install -d /etc/apt/keyrings /etc/apt/sources.list.d
+
+      cat > /etc/apt/keyrings/packages.mozilla.org.asc << 'EOF'
 -----BEGIN PGP PUBLIC KEY BLOCK-----
 
 xsBNBGCRt7MBCADkYJHHQQoL6tKrW/LbmfR9ljz7ib2aWno4JO3VKQvLwjyUMPpq
@@ -38,27 +42,21 @@ XWvZkRT+u+yzH1s5yFYBqc2JTrrJvRU=
 -----END PGP PUBLIC KEY BLOCK-----
 EOF
 
-    cat > /etc/apt/sources.list.d/mozilla.list << 'EOF'
+      cat > /etc/apt/sources.list.d/mozilla.list << 'EOF'
 deb [signed-by=/etc/apt/keyrings/packages.mozilla.org.asc] https://packages.mozilla.org/apt mozilla main
 EOF
-  fi
+    fi
 
-  # Pin mozillavpn origin to packages.mozilla.org.
-  install -d /etc/apt/preferences.d
-  cat > /etc/apt/preferences.d/mozilla-vpn.pref << 'EOF'
+    # Pin mozillavpn origin to packages.mozilla.org.
+    install -d /etc/apt/preferences.d
+    cat > /etc/apt/preferences.d/mozilla-vpn.pref << 'EOF'
 Package: mozillavpn
 Pin: origin packages.mozilla.org
 Pin-Priority: 1000
 EOF
 
-  # Disable the Mozilla VPN PPA sources if present and notify the user.
-  for f in /etc/apt/sources.list.d/mozillacorp-ubuntu-mozillavpn-*.sources; do
-    [ -f "$f" ] || break
-    mv "$f" "${f}.save"
-    ppa_disabled=true
-  done
+    mv "$ppa_sources_list" "${ppa_sources_list}.save"
 
-  if [ "$ppa_disabled" ]; then
     db_input high mozillavpn/ppa-deprecation-warning || true
     db_go || true
   fi
