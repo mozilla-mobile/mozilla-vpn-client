@@ -13,6 +13,8 @@ import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Rectangle {
     property alias _infoContent: infoContent.data
+    property alias _buttonText: button.text
+    property var _buttonAction: function() {}
     id: card
 
     enum CardType {
@@ -25,6 +27,7 @@ Rectangle {
     color: MZTheme.colors.bgColorStronger
     radius: 8
     property int cardType: MZInformationCard.CardType.Error
+    implicitHeight: infoContentHolder.height + MZTheme.theme.windowMargin * 2
 
     MZDropShadow {
         anchors.fill: dropShadowSource
@@ -106,10 +109,9 @@ Rectangle {
             return console.error("Unable to create view for info card of type: " + cardType)
         }
     }
-
-    RowLayout {
-        id: info
+    ColumnLayout {
         spacing: MZTheme.theme.windowMargin * 0.75
+        id: infoContentHolder
 
         anchors {
             left: parent.left
@@ -119,17 +121,29 @@ Rectangle {
             verticalCenter: parent.verticalCenter
         }
 
-        MZIcon {
-            source: getIconImage()
-            Layout.leftMargin: 4 // to account for the color stripe
-            Layout.alignment: Qt.AlignVCenter
+        RowLayout {
+            id: info
+            spacing: MZTheme.theme.windowMargin * 0.75
+
+            MZIcon {
+                source: getIconImage()
+                Layout.leftMargin: 4 // to account for the color stripe
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            ColumnLayout {
+                id: infoContent
+                Layout.fillWidth: true
+                spacing: 0
+            }
         }
 
-        ColumnLayout {
-            id: infoContent
-            Layout.fillWidth: true
-            spacing: 0
-        }
+        MZButton {
+              id: button
+              text: ""
+              visible: text !== ""
+              onClicked: card._buttonAction()
+          }
     }
 }
 
