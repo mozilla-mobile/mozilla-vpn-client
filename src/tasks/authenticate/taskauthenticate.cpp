@@ -60,6 +60,9 @@ void TaskAuthenticate::run() {
             m_authenticationListener->aboutToFinish();
           });
 
+  connect(m_authenticationListener, &AuthenticationListener::started, this,
+          [this]() { emit authenticationStarted(); });
+
   m_metricUuid = QUuid::createUuid();
   m_authenticationListener->start(this, challenge, CODE_CHALLENGE_METHOD,
                                   SettingsHolder::instance()->userEmail());
@@ -136,6 +139,11 @@ void TaskAuthenticate::handleDeepLink(const QUrl& url) {
     logger.warning() << "Received OAuth success, but no code was found";
     return;
   }
+
+  // On Android, onResume fires after onNewIntent, which would trigger the
+  // Custom Tab "closed" callback and falsely abort a successful authentication.
+  disconnect(m_authenticationListener, &AuthenticationListener::abortedByUser,
+             this, nullptr);
 
   authenticatePkceSuccess(query.queryItemValue("code"));
 }

@@ -22,6 +22,10 @@
 #  include <QRandomGenerator>
 #endif
 
+#ifdef MZ_FLATPAK
+#  include <QDBusConnection>
+#endif
+
 #ifdef MZ_IOS
 #  include "platforms/ios/iosutils.h"
 #elif MZ_MACOS
@@ -85,8 +89,11 @@ QString Device::currentDeviceName() {
 QString Device::uniqueDeviceId() {
 #if MZ_ANDROID
   return AndroidUtils::DeviceId();
-#endif
+#elif MZ_FLATPAK
+  return QDBusConnection::localMachineId();
+#else
   return QSysInfo::machineUniqueId();
+#endif
 }
 
 Device::Device() { MZ_COUNT_CTOR(Device); }

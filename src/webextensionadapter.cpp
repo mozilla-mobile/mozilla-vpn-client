@@ -27,7 +27,7 @@
 #include "settingsholder.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "taskscheduler.h"
-#include "webextensiontelemetry.h"
+#include "webextensionadapter.h"
 
 #if defined(MZ_WINDOWS)
 #  include "platforms/windows/windowsutils.h"
@@ -152,24 +152,6 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
                     obj["status"] = serializeStatus();
                     return obj;
                   }},
-      RequestType{"telemetry",
-                  [](const QJsonObject& data) {
-                    auto info = WebextensionTelemetry::fromJson(data);
-                    if (info.has_value()) {
-                      WebextensionTelemetry::recordTelemetry(info.value());
-                    }
-                    return QJsonObject{};
-                  }},
-      RequestType{"session_start",
-                  [](const QJsonObject& data) {
-                    WebextensionTelemetry::startSession();
-                    return QJsonObject{};
-                  }},
-      RequestType{"session_stop",
-                  [](const QJsonObject& data) {
-                    WebextensionTelemetry::stopSession();
-                    return QJsonObject{};
-                  }},
       RequestType{"interventions",
                   [](const QJsonObject&) {
                     QJsonObject out;
@@ -181,13 +163,6 @@ WebExtensionAdapter::WebExtensionAdapter(QObject* parent)
 #endif
                     out["interventions"] = interventions;
                     return out;
-                  }},
-      RequestType{"settings",
-                  [this](const QJsonObject& data) {
-                    if (data["settings"].isObject()) {
-                      applySettings(data["settings"].toObject());
-                    }
-                    return QJsonObject{{"settings", serializeSettings()}};
                   }},
   });
 }
@@ -308,18 +283,4 @@ void WebExtensionAdapter::serializeServerCountry(ServerCountryModel* model,
   }
 
   obj["countries"] = countries;
-}
-
-QJsonObject WebExtensionAdapter::serializeSettings() {
-  auto const settings = SettingsHolder::instance();
-  return {{"extensionTelemetryEnabled", settings->extensionTelemetryEnabled()}};
-}
-
-void WebExtensionAdapter::applySettings(const QJsonObject& data) {
-  auto const settings = SettingsHolder::instance();
-
-  auto enabled = data["extensionTelemetryEnabled"];
-  if (enabled.isBool()) {
-    settings->setExtensionTelemetryEnabled(enabled.toBool());
-  }
 }

@@ -10,24 +10,27 @@ on:
       - synchronize
       - reopened
 
+permissions: {}
+
 jobs:
   linter:
     name: Run Main Linters (clang, l10n, colors, etc.)
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: "true"
+          persist-credentials: false
 
       - name: Install dependecies
         run: |
           sudo apt-get update
           sudo apt-get install -y aspell aspell-en $(./scripts/linux/getdeps.py -b linux/debian/control)
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
-          python-version: "3.9"
+          python-version: "3.10"
           cache: "pip"
       - run: pip install -r requirements.txt
 
@@ -45,7 +48,7 @@ jobs:
           python scripts/ci/check_jsonschema.py addon.json addons/*/manifest.json
 
       - name: Check for issues with clang-format
-        uses: DoozyX/clang-format-lint-action@v0.16.2
+        uses: DoozyX/clang-format-lint-action@bcb4eb2cb0d707ee4f3e5cc3b456eb075f12cf73 # v0.20
         with:
           source: "."
           clangFormatVersion: 16
@@ -82,13 +85,14 @@ jobs:
         shell: bash -el {0}
     steps:
       - name: Clone repo
-        uses: actions/checkout@master
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           fetch-depth: 1
+          persist-credentials: false
 
       - name: Cache conda packages
         id: conda-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: ~/conda_pkgs_dir
           key: android-conda-packages-${{ hashFiles('env-android.yml', 'requirements.txt') }}
@@ -98,7 +102,7 @@ jobs:
         run: |
           git submodule update --init 3rdparty/glean
 
-      - uses: conda-incubator/setup-miniconda@v3
+      - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3
         with:
           activate-environment: vpn
           environment-file: env-android.yml
@@ -109,7 +113,7 @@ jobs:
           ./scripts/android/conda_setup_sdk.sh
 
       - name: Save conda package cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         if: ${{ github.event_name == 'push' && steps.conda-cache.outputs.cache-hit != 'true' }}
         with:
           path: ~/conda_pkgs_dir

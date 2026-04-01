@@ -1,10 +1,10 @@
+etc/apparmor.d/usr.bin.mozillavpn
 etc/chromium/native-messaging-hosts/mozillavpn.json
 etc/opt/chrome/native-messaging-hosts/mozillavpn.json
 ${env:SYSTEMD_UNIT_PATH}/mozillavpn.service
 ${env:SYSTEMD_UNIT_PATH}/socksproxy.service
 usr/bin/mozillavpn
 usr/bin/socksproxy
-lib/mozillavpn/mozillavpnnp
 lib/mozilla/native-messaging-hosts/mozillavpn.json
 usr/share/applications/org.mozilla.vpn.desktop
 usr/share/dbus-1/system-services/org.mozilla.vpn.dbus.service
@@ -17,3 +17,6 @@ usr/share/icons/hicolor/64x64/apps/org.mozilla.vpn.png
 usr/share/icons/hicolor/scalable/apps/org.mozilla.vpn.svg
 usr/share/metainfo/org.mozilla.vpn.metainfo.xml
 usr/share/metainfo/org.mozilla.vpn.releases.xml
+usr/share/polkit-1/actions/org.mozilla.vpn.policy
+usr/share/polkit-1/rules.d/org.mozilla.vpn.rules
+var/lib/polkit-1/localauthority/55-org.mozilla.d/org.mozilla.vpn.pkla

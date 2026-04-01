@@ -204,17 +204,29 @@ void AddonManager::unload(const QString& addonId) {
       addon->disable();
     }
 
-    QDir dir;
-    if (m_addonDirectory.getDirectory(&dir)) {
-      QString addonFileName(QString("%1.rcc").arg(addonId));
-      QString addonFilePath(dir.filePath(addonFileName));
-      QResource::unregisterResource(addonFilePath, mountPath(addonId));
-    }
+    QResource::unregisterResource(
+        reinterpret_cast<const uchar*>(m_addons[addonId].m_buffer.constData()),
+        mountPath(addonId));
 
     addon->deleteLater();
   }
 
   m_addons.remove(addonId);
+
+  // Remove settings, otherwise will maintain Read status
+  // when reloaded.
+  SettingGroup* messageSettingGroup =
+      SettingsManager::instance()->createSettingGroup(
+          QString("%1/%2/%3")
+              .arg(Constants::ADDONS_SETTINGS_GROUP)
+              .arg(ADDON_MESSAGE_SETTINGS_GROUP)
+              .arg(addonId),
+          true,  // remove when reset
+          false  // sensitive setting
+      );
+  messageSettingGroup->remove();
+  ;
+
   emit countChanged();
 }
 
@@ -242,7 +254,7 @@ bool AddonManager::validateAndLoad(const QString& addonId,
     return false;
   }
 
-  m_addons.insert(addonId, {QByteArray(), addonId, nullptr});
+  m_addons.insert(addonId, {QByteArray(), QByteArray(), addonId, nullptr});
 
   QString addonFileName(QString("%1.rcc").arg(addonId));
 
@@ -250,33 +262,35 @@ bool AddonManager::validateAndLoad(const QString& addonId,
   if (!m_addonDirectory.getDirectory(&dir)) {
     return false;
   }
-  QString addonFilePath(dir.filePath(addonFileName));
+  QByteArray addonFileContents;
+  if (!m_addonDirectory.readFile(addonFileName, &addonFileContents)) {
+    return false;
+  }
 
   // Hash validation
-  if (checkSha256) {
-    QByteArray addonFileContents;
-
-    if (!m_addonDirectory.readFile(addonFileName, &addonFileContents)) {
-      return false;
-    }
-
-    if (QCryptographicHash::hash(addonFileContents,
-                                 QCryptographicHash::Sha256) != sha256) {
-      logger.warning() << "Addon hash does not match" << addonId;
-      return false;
-    }
+  if (checkSha256 &&
+      QCryptographicHash::hash(addonFileContents, QCryptographicHash::Sha256) !=
+          sha256) {
+    logger.warning() << "Addon hash does not match" << addonId;
+    return false;
   }
 
   m_addons[addonId].m_sha256 = sha256;
+  m_addons[addonId].m_buffer = addonFileContents;
+
   QString addonMountPath = mountPath(addonId);
 
-  if (!QResource::registerResource(addonFilePath, addonMountPath)) {
+  if (!QResource::registerResource(reinterpret_cast<const uchar*>(
+                                       m_addons[addonId].m_buffer.constData()),
+                                   addonMountPath)) {
     logger.warning() << "Unable to load resource from file" << addonId;
     return false;
   }
 
   if (!loadManifest(QString(":%1/manifest.json").arg(addonMountPath))) {
-    QResource::unregisterResource(addonFilePath, addonMountPath);
+    QResource::unregisterResource(
+        reinterpret_cast<const uchar*>(m_addons[addonId].m_buffer.constData()),
+        addonMountPath);
     return false;
   }
 
@@ -417,25 +431,6 @@ QJSValue AddonManager::reduce(QJSValue callback, QJSValue initialValue) const {
   return reducedValue;
 }
 
-// Undismisses any dismissed messages and marks all messages as unread
-void AddonManager::reinstateMessages() const {
-  logger.debug() << "Reinstating all messages";
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
-  // Group containing all the message settings.
-  // It only needs to live for the scope of this function.
-  SettingGroup* messageSettingGroup =
-      SettingsManager::instance()->createSettingGroup(
-          QString("%1/%2")
-              .arg(Constants::ADDONS_SETTINGS_GROUP)
-              .arg(ADDON_MESSAGE_SETTINGS_GROUP),
-          true,  // remove when reset
-          false  // sensitive setting
-      );
-  messageSettingGroup->remove();
-}
-
 // static
 QString AddonManager::mountPath(const QString& addonId) {
   return QString("/addons/%1").arg(addonId);
@@ -459,6 +454,10 @@ void AddonManager::reset() {
     unload(addonId);
     removeAddon(addonId);
   }
+
+  qint64 longAgoEpochTime = 1000;
+  SettingsHolder::instance()->setAddonPromoLastShown(
+      QDateTime::fromMSecsSinceEpoch(longAgoEpochTime));
 
   refreshAddons();
 }

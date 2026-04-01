@@ -3,13 +3,14 @@ Section: net
 Priority: optional
 Maintainer: mozilla <vpn@mozilla.com>
 Build-Depends: debhelper (>= 13),
+               dh-apparmor,
                cdbs,
                cmake (>= 3.20~),
                flex,
                gcc (>=4:8.0.0~),
                g++ (>=4:8.0.0~),
                golang (>=2:1.18~),
-               cargo (>=1.75),
+               cargo (>=1.85) | cargo-web (>=1.85) | cargo-1.85,
                python3-yaml,
                python3-jinja2,
                python3-click,
@@ -17,13 +18,11 @@ Build-Depends: debhelper (>= 13),
                libgcrypt20-dev,
                libgl-dev,
                libopengl-dev (>= 1.3.0~),
+               libpolkit-gobject-1-dev,
                libqt6core5compat6-dev (>=6.2.0~),
                libqt6networkauth6-dev (>=6.2.0~),
                libqt6opengl6-dev (>=6.2.0~),
                libqt6svg6-dev (>=6.2.0~),
-               libqt6websockets6-dev (>=6.2.0~),
-               libsecret-1-dev,
-               libssl-dev,
                libxkbcommon-dev,
                ninja-build,
                qmake6 (>=6.2.0~),
@@ -34,7 +33,8 @@ Build-Depends: debhelper (>= 13),
                qt6-declarative-private-dev (>=6.2.0~),
                qt6-declarative-dev-tools (>=6.2.0~),
                qt6-l10n-tools (>=6.2.0~),
-               qt6-tools-dev-tools (>=6.2.0~)
+               qt6-tools-dev-tools (>=6.2.0~),
+               qt6-websockets-dev (>=6.2.0~) | libqt6websockets6-dev (>=6.2.0~)
 Standards-Version: 4.4.1
 Homepage: https://vpn.mozilla.org/
 Vcs-Git: https://github.com/mozilla-mobile/mozilla-vpn-client
@@ -43,11 +43,12 @@ Package: mozillavpn
 Architecture: any
 Depends: wireguard (>=1.0.20200319),
          wireguard-tools (>=1.0.20200319),
-         libsecret-1-0,
          libfreetype6,
          libfontconfig1,
          libegl1,
          libgles2,
+         libpolkit-gobject-1-0,
+         libssl3,
          libxcb-cursor0,
          libxcb-icccm4,
          libxcb-keysyms1,
@@ -77,11 +78,13 @@ Depends: wireguard (>=1.0.20200319),
          qml6-module-qtquick-layouts (>=6.2.0~),
          qml6-module-qtquick-templates (>=6.2.0~),
          qml6-module-qtquick-window (>=6.2.0~),
+         qml6-module-qtquick-shapes (>=6.2.0~),
          qml6-module-qtqml (>=6.2.0~),
          qml6-module-qtqml-models (>=6.2.0~),
          qml6-module-qtqml-workerscript (>=6.2.0~),
          qml6-module-qt-labs-qmlmodels (>=6.2.0~),
          qt6-qpa-plugins (>=6.2.0~)
+Suggests: apparmor (>= 2.3)
 Description: A fast, secure and easy to use VPN. Built by the makers of Firefox.
  Read more on https://vpn.mozilla.org
 

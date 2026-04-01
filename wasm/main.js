@@ -41,7 +41,7 @@ class MVPNWasm {
               exitData.text !== undefined ? ` (${exitData.text})` : '';
             showUi(spinner);
           },
-          entryFunction: window.createQtAppInstance,
+          entryFunction: window.mozillavpn_entry,
           containerElements: [screen],
         }
       });

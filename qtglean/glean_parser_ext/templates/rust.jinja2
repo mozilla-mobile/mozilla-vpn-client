@@ -164,7 +164,7 @@ pub(crate) fn record_event_by_id_no_extra(metric_id: u32) -> Result<(), EventRec
 pub(crate) fn event_test_get_value(metric_id: u32, ping_name: Option<String>) -> Option<Vec<RecordedEvent>> {
     match metric_id {
 {% for metric_id, event in events_by_id.items() %}
-        {{metric_id}} => {{event}}.test_get_value(ping_name.as_deref()),
+        {{metric_id}} => {{event}}.test_get_value(ping_name),
 {% endfor %}
         _ => panic!("No event for metric id {}", metric_id),
     }

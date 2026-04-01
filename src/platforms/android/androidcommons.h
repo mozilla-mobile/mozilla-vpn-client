@@ -13,6 +13,11 @@ class AndroidCommons final : public QObject {
   Q_DISABLE_COPY_MOVE(AndroidCommons)
 
  public:
+  static bool clearPendingJavaException(const char* where);
+  static void runWhenUiViewConstructible(std::function<void()> fn,
+                                         int retryMs = 50);
+
+  static void forcePublishActivity();
   static QJniObject getActivity();
 
   static int getSDKVersion();
@@ -28,9 +33,15 @@ class AndroidCommons final : public QObject {
 
   static void launchPlayStore();
 
+  static void setStatusBarTextColor(bool isLight);
+
   static void initializeGlean(bool isTelemetryEnabled, const QString& channel);
 
   static void dispatchToMainThread(std::function<void()> callback);
+
+  static void dismissSplashScreen();
+
+  static int getNavigationBarHeight();
 };
 
 #endif  // ANDROIDCOMMONS_H

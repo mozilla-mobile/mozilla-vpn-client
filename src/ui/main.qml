@@ -2,23 +2,24 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-import QtQuick 2.5
-import QtQuick.Controls 2.14
-import QtQuick.Layouts 1.14
-import QtQuick.Window 2.12
+import QtQuick
+import QtQuick.Controls
+import QtQuick.Layouts
+import QtQuick.Window
 
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 
-Window {
+ApplicationWindow {
     id: window
 
-    signal showServerList
+    signal showServerList(bool isImmediate)
     signal screenClicked(double x, double y)
     signal unwindStackView
 
-    property var safeContentHeight: window.height - iosSafeAreaTopMargin.height
+    property var safeContentHeight: window.height
+    property string promotedAddonId: ""
 
     LayoutMirroring.enabled: MZLocalizer.isRightToLeft
     LayoutMirroring.childrenInherit: true
@@ -27,36 +28,6 @@ Window {
         return Qt.platform.os === "android" ||
                 Qt.platform.os === "ios" ||
                 Qt.platform.os === "tvos";
-    }
-
-    function safeAreaHeightByDevice() {
-        if (Qt.platform.os !== "ios") {
-            return 0;
-        }
-        switch(window.height * Screen.devicePixelRatio) {
-        // Notch (natch)
-        case 1624: // iPhone_XR (Qt Provided Physical Resolution)
-        case 1792: // iPhone_XR
-
-        case 2436: // iPhone_X_XS
-        case 2688: // iPhone_XS_MAX
-
-        case 2532: // iPhone_12_Pro
-        case 2778: // iPhone_12_Pro_Max
-        case 2340: // iPhone_12_mini
-            return 34;
-
-        // Dynamic island
-        case 2556: // iPhone_14_Pro, 15, 15 Pro, 16
-        case 2622: // iPhone 16, 16 Pro, 17, 17 Pro
-        case 2736: // iPhone Air
-        case 2796: // iPhone_14_Pro_Max, 15 Plus, 15 Pro Max, 16 Plus
-        case 2868: // iPhone 16 Pro Max, 17 Pro Max
-            return 48;
-
-        default:
-            return 20;
-        }
     }
 
     function removeFocus(item, x, y) {
@@ -70,7 +41,24 @@ Window {
     }
 
     screen: Qt.platform.os === "wasm" && Qt.application.screens.length > 1 ? Qt.application.screens[1] : Qt.application.screens[0]
-    flags: Qt.platform.os === "ios" ? Qt.MaximizeUsingFullscreenGeometryHint : Qt.Window
+    flags: {
+        var baseFlags = Qt.Window | Qt.NoTitlebarBackgroundHint;
+
+        // Do not use edge-to-edge flags on Android API 28 and below
+        // Older versions have issues with 3-button navigation overlapping content
+        if (Qt.platform.os === "android" && (VPNAndroidCommons.getAndroidApiLevel() < 29)) {
+            return baseFlags;
+        }
+
+        // workaround for Qt.ExpandedClientAreaHint misbehaving on windows
+        // TODO: revise after Qt 6.10.2 is released
+        if (Qt.platform.os === "windows") {
+            return baseFlags;
+        }
+
+        // TODO: Once every platform is on Qt 6.9, swap MaximizeUsingFullscreenGeometryHint for ExpandedClientAreaHint: https://doc.qt.io/qt-6.9/qt.html
+        return baseFlags | Qt.ExpandedClientAreaHint | Qt.MaximizeUsingFullscreenGeometryHint;
+    }
     visible: true
 
     width: fullscreenRequired() ? Screen.width : MZTheme.theme.desktopAppWidth;
@@ -110,12 +98,14 @@ Window {
 
         }
         VPN.mainWindowLoaded()
+        messageAddonPopover.maybeShowMessagePopover();
     }
 
     //Overlays the entire window at all times to remove focus from components on click away
     MouseArea {
         anchors.fill: parent
         z: MZTheme.theme.maxZLevel
+        Accessible.ignored: true
         onPressed: (mouse) => {
             window.screenClicked(mouse.x, mouse.y)
             mouse.accepted = false
@@ -126,19 +116,11 @@ Window {
         id: statusBarModifier
     }
 
-    Rectangle {
-        id: iosSafeAreaTopMargin
-
-        color: MZTheme.colors.transparent
-        height: safeAreaHeightByDevice();
-        width: window.width
-        anchors.top: parent.top
-    }
-
     MZNavigatorLoader {
+      id: screenLoader
       objectName: "screenLoader"
       anchors {
-          top: iosSafeAreaTopMargin.bottom
+          top: parent.top
           left: parent.left
           right: parent.right
           bottom: parent.bottom
@@ -202,6 +184,15 @@ Window {
 
         visible: showNavigationBar.includes(MZNavigator.screen) &&
                  VPN.state === VPN.StateMain
+    }
+
+    MessageAddonPopover {
+        id: messageAddonPopover
+
+        // Center on the messages button, which is the middle button of the
+        // three-item nav bar. Position the caret tip at the top of the nav bar.
+        x: navbar.x + navbar.width / 2 - width / 2
+        y: navbar.y - height - MZTheme.theme.cornerRadius
     }
 
     Shortcut {

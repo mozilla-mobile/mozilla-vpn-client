@@ -125,16 +125,16 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
             "CFLAGS_x86_64-apple-darwin=-target x86_64-apple-darwin"
             MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
     )
-elseif(MSVC)
+elseif(MSVC AND CMAKE_C_COMPILER_TARGET)
     __rust_build_toolchain_config(
         FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml
-        ARCH x86_64-pc-windows-msvc
+        ARCH ${CMAKE_C_COMPILER_TARGET}
         ENV
-            CFLAGS_x86_64-pc-windows-msvc=${CMAKE_C_FLAGS}
-            CXXFLAGS_x86_64-pc-windows-msvc=${CMAKE_CXX_FLAGS}
+            CFLAGS_${CMAKE_C_COMPILER_TARGET}=${CMAKE_C_FLAGS}
+            CXXFLAGS_${CMAKE_C_COMPILER_TARGET}=${CMAKE_CXX_FLAGS}
     )
 
-    file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml "\n[target.x86_64-pc-windows-msvc]\n")
+    file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml "\n[target.${CMAKE_C_COMPILER_TARGET}]\n")
     file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml "linker=\"${CMAKE_LINKER}\"\n")
 else()
     __rust_build_toolchain_config(FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml)
@@ -462,6 +462,13 @@ function(add_rust_library TARGET_NAME)
         set_target_properties(${TARGET_NAME} PROPERTIES
             IMPORTED_NO_SONAME TRUE
         )
+    endif()
+
+    # Some GNU toolchains throw linker warnings, so we may need to explicitly
+    # allow duplicate symbols during linking. This can occur if we are linking
+    # muitple rust static libraries into the final binary.
+    if(CMAKE_C_COMPILER_LINKER_ID STREQUAL "GNU" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
+        set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_LINK_OPTIONS "-Wl,--allow-multiple-definition")
     endif()
 
     add_dependencies(${TARGET_NAME} ${TARGET_NAME}_builder)

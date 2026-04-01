@@ -137,7 +137,7 @@ tasks:
                   name: "Decision Task for cron job ${cron.job_name}"
                   description: "Created by a [cron task](https://firefox-ci-tc.services.mozilla.com/tasks/${cron.task_id})"
           provisionerId: "mozillavpn-${level}"
-          workerType: "decision-gcp"
+          workerType: "decision"
 
           tags:
             $if: 'tasks_for == "github-push" || isPullRequest'
@@ -231,7 +231,7 @@ tasks:
 
             # Note: This task is built server side without the context or tooling that
             # exist in tree so we must hard code the hash
-            image: mozillareleases/taskgraph:decision-v14.2.1@sha256:f4e3a22df9ec0017a2534b3a7b4cd9b60318f86619e0c2156c12c1ec1a0e32cb
+            image: mozillareleases/taskgraph:run-task-v20.0.0@sha256:a905d5e14a97f0d313319b6bec4e5d670cf4505747e0cbaf360226046c1d4511
 
             maxRunTime: 1800
 
@@ -253,10 +253,10 @@ tasks:
                   $if: 'tasks_for == "action"'
                   then: >
                     ln -s /builds/worker/artifacts artifacts &&
-                    taskgraph action-callback
+                    ~/.local/bin/taskgraph action-callback
                   else: >
                     ln -s /builds/worker/artifacts artifacts &&
-                    taskgraph decision
+                    ~/.local/bin/taskgraph decision
                     --pushlog-id='0'
                     --pushdate='0'
                     --project='${project}'

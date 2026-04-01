@@ -15,10 +15,8 @@
 
 #if defined(UNIT_TEST)
 #  include "platforms/dummy/dummycryptosettings.h"
-#elif defined(MZ_FLATPAK)
-#  include "platforms/linux/xdgcryptosettings.h"
 #elif defined(MZ_LINUX)
-#  include "platforms/linux/linuxcryptosettings.h"
+#  include "platforms/linux/xdgcryptosettings.h"
 #elif defined(MZ_MACOS) || defined(MZ_IOS)
 #  include "platforms/macos/macoscryptosettings.h"
 #elif defined(MZ_WINDOWS)
@@ -40,10 +38,8 @@ CryptoSettings* s_instance = nullptr;
 void CryptoSettings::create() {
 #if defined(UNIT_TEST)
   new DummyCryptoSettings();
-#elif defined(MZ_FLATPAK)
-  new XdgCryptoSettings();
 #elif defined(MZ_LINUX)
-  new LinuxCryptoSettings();
+  new XdgCryptoSettings();
 #elif defined(MZ_MACOS) || defined(MZ_IOS)
   new MacOSCryptoSettings();
 #elif defined(MZ_WINDOWS)
@@ -60,6 +56,7 @@ void CryptoSettings::create() {
 
 // static
 QSettings::Format CryptoSettings::format() {
+  logger.debug() << "Creating QSettings format";
   static QSettings::Format format =
       QSettings::registerFormat("moz", readFile, writeFile);
 
@@ -86,6 +83,7 @@ CryptoSettings::~CryptoSettings() {
 
 // static
 bool CryptoSettings::readFile(QIODevice& device, QSettings::SettingsMap& map) {
+  logger.debug() << "Reading settings file.";
   QByteArray version = device.read(1);
   if (version.length() != 1) {
     logger.error() << "Failed to read the version";
@@ -106,6 +104,7 @@ bool CryptoSettings::readFile(QIODevice& device, QSettings::SettingsMap& map) {
 
   switch (fileVersion) {
     case NoEncryption:
+      logger.error() << "No encryption; this shouldn't be possible.";
       Q_UNREACHABLE();
       return false;
 
@@ -123,6 +122,7 @@ bool CryptoSettings::readFile(QIODevice& device, QSettings::SettingsMap& map) {
 // static
 bool CryptoSettings::readJsonFile(QIODevice& device,
                                   QSettings::SettingsMap& map) {
+  logger.debug() << "Reading JSON file.";
   QByteArray content = device.readAll();
 
   QJsonDocument json = QJsonDocument::fromJson(content);
@@ -143,6 +143,7 @@ bool CryptoSettings::readJsonFile(QIODevice& device,
 bool CryptoSettings::readEncryptedChachaPolyFile(Version fileVersion,
                                                  QIODevice& device,
                                                  QSettings::SettingsMap& map) {
+  logger.debug() << "Reading encrypted settings file.";
   QByteArray header(1, fileVersion);
   QByteArray metadata;
   if (fileVersion == EncryptionChachaPolyV2) {

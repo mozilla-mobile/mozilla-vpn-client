@@ -4,13 +4,25 @@
 
 #include "commandlogin.h"
 
-#include "authenticationinapp/authenticationinapp.h"
+#if defined(MZ_CLI_AUTHENTICATION_IN_APP)
+#  include "authenticationinapp/authenticationinapp.h"
+#endif
 #include "authenticationlistener.h"
 #include "commandlineparser.h"
+#include "constants.h"
+#include "controller.h"
+#include "daemon/mock/mockdaemon.h"
 #include "leakdetector.h"
+#include "logger.h"
 #include "models/devicemodel.h"
+#include "models/serverdata.h"
 #include "mozillavpn.h"
 #include "tasks/authenticate/taskauthenticate.h"
+#include "taskscheduler.h"
+
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
+#  include "eventlistener.h"
+#endif
 
 #ifdef _WIN32  // Avoid using MZ_WINDOWS here as it conflicts with MZ_DUMMY on
                // Windows
@@ -20,6 +32,7 @@
 #  include <unistd.h>
 #endif
 
+#include <QCoreApplication>
 #include <QEventLoop>
 #include <QScopeGuard>
 #include <QTextStream>
@@ -39,19 +52,21 @@ int CommandLogin::run(QStringList& tokens) {
   CommandLineParser::Option verboseOption("v", "verbose", "Verbose mode.");
   CommandLineParser::Option passwordOption("p", "password",
                                            "Login using e-mail and password");
+  CommandLineParser::Option headlessOption("d", "headless",
+                                           "Login in headless mode.");
+  CommandLineParser::Option testingOption("t", "testing",
+                                          "Run in testing mode.");
 
   QList<CommandLineParser::Option*> options;
   options.append(&hOption);
   options.append(&verboseOption);
   options.append(&passwordOption);
+  options.append(&headlessOption);
+  options.append(&testingOption);
 
   CommandLineParser clp;
   if (clp.parse(tokens, options, false)) {
     return 1;
-  }
-
-  if (!tokens.isEmpty()) {
-    return clp.unknownOption(this, appName, tokens[0], options, false);
   }
 
   if (hOption.m_set) {
@@ -59,16 +74,68 @@ int CommandLogin::run(QStringList& tokens) {
     return 0;
   }
 
-  return MozillaVPN::runGuiApp([&] {
+  if (testingOption.m_set) {
+    QCoreApplication::setOrganizationName("Mozilla Testing");
+
+    LogHandler::instance()->setStderr(true);
+  }
+
+  // If there is another instance, the execution terminates here.
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
+  if (EventListener::checkForInstances()) {
+    QTextStream stream(stderr);
+    stream << "Existing instance found" << Qt::endl;
+
+    // If we are given URL parameters, send them to the UI socket and exit.
+    for (const QString& value : tokens) {
+      QUrl url(value);
+      if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
+        stream << "Invalid link:" << value << Qt::endl;
+      } else {
+        stream << "Sending link" << Qt::endl;
+        EventListener::sendDeepLink(url);
+      }
+    }
+
+    return 0;
+  }
+  // This class receives communications from other instances.
+  std::unique_ptr<EventListener> eventListener;
+#endif
+
+  return MozillaVPN::runCommandLineApp([&] {
     MozillaVPN vpn;
+    if (testingOption.m_set) {
+      Constants::setStaging();
+    }
     if (vpn.hasToken()) {
       QTextStream stream(stdout);
       stream << "User status: already authenticated" << Qt::endl;
       return 1;
     }
 
+    QTextStream stream(stdout);
+
     if (!passwordOption.m_set) {
-      vpn.authenticateWithType(AuthenticationListener::AuthenticationInBrowser);
+      vpn.serverData()->initialize();
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX)
+      eventListener.reset(new EventListener{});
+#endif
+      if (headlessOption.m_set) {
+        vpn.authenticateWithType(
+            AuthenticationListener::AuthenticationInBrowserHeadless);
+        QObject::connect(&vpn, &MozillaVPN::authenticationStarted, this, [&] {
+          QString code = getInput("Enter the code:");
+          auto task =
+              qobject_cast<TaskAuthenticate*>(TaskScheduler::runningTask());
+          if (task) {
+            task->authenticatePkceSuccess(code);
+          }
+        });
+      } else {
+        vpn.authenticateWithType(
+            AuthenticationListener::AuthenticationInBrowser);
+      }
     } else {
       vpn.authenticateWithType(AuthenticationListener::AuthenticationInApp);
     }
@@ -76,6 +143,8 @@ int CommandLogin::run(QStringList& tokens) {
     QEventLoop loop;
 
     if (passwordOption.m_set) {
+#if defined(MZ_CLI_AUTHENTICATION_IN_APP)
+      vpn.serverData()->initialize();
       AuthenticationInApp* aia = AuthenticationInApp::instance();
 
       QObject::connect(aia, &AuthenticationInApp::stateChanged, aia, [&] {
@@ -222,10 +291,17 @@ int CommandLogin::run(QStringList& tokens) {
                 break;
             }
           });
+#else
+      stream << "Password-based authentication is not supported anymore"
+             << Qt::endl;
+      loop.exit();
+      return 1;
+#endif
     }
 
     QObject::connect(&vpn, &App::stateChanged, &vpn, [&] {
-      if (vpn.state() == App::StateMain) {
+      if (vpn.state() == App::StateMain ||
+          vpn.state() == App::StateOnboarding) {
         loop.exit();
       }
       if (ErrorHandler::instance()->alert() ==

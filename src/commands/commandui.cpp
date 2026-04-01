@@ -10,6 +10,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QWindow>
+#include <memory>
 
 #include "accessiblenotification.h"
 #include "addons/manager/addonmanager.h"
@@ -24,7 +25,6 @@
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
-#include "keyregenerator.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/servercountrymodel.h"
@@ -42,12 +42,10 @@
 
 #ifdef MZ_LINUX
 #  include "eventlistener.h"
-#  include "platforms/linux/xdgstartatbootwatcher.h"
 #endif
 
 #ifdef MZ_MACOS
 #  include "platforms/macos/macosmenubar.h"
-#  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
 #endif
 
@@ -60,8 +58,9 @@
 #  include "platforms/android/androidvpnactivity.h"
 #endif
 
-#ifndef Q_OS_WIN
-#  include "signalhandler.h"
+#ifdef MVPN_WEBEXTENSION
+#  include "webextension/server.h"
+#  include "webextensionadapter.h"
 #endif
 
 #ifdef MZ_WINDOWS
@@ -72,18 +71,12 @@
 
 #  include "eventlistener.h"
 #  include "platforms/windows/windowscommons.h"
-#  include "platforms/windows/windowsstartatbootwatcher.h"
 #  include "platforms/windows/windowsutils.h"
 #  include "theme.h"
 #endif
 
 #ifdef MZ_WASM
 #  include "platforms/wasm/wasmwindowcontroller.h"
-#endif
-
-#ifdef MVPN_WEBEXTENSION
-#  include "webextension/server.h"
-#  include "webextensionadapter.h"
 #endif
 
 #include <QtQml/qqmlextensionplugin.h>
@@ -94,6 +87,7 @@ Q_IMPORT_QML_PLUGIN(Mozilla_VPNPlugin);
 
 namespace {
 Logger logger("CommandUI");
+
 }
 
 CommandUI::CommandUI(QObject* parent) : Command(parent, "ui", "Start the UI.") {
@@ -160,15 +154,22 @@ int CommandUI::run(QStringList& tokens) {
 
     return 0;
   }
+  // This class receives communications from other instances.
+  std::unique_ptr<EventListener> eventListener;
 #endif
 
 #ifdef MZ_ANDROID
   // Configure graphics rendering for Android
   QGuiApplication::setHighDpiScaleFactorRoundingPolicy(
       Qt::HighDpiScaleFactorRoundingPolicy::Round);
+  // Skip the workaround on Qt 6.10+
+  // if the underlying ChromeOS rendering bug
+  // resurfaces, re-evaluate after upgrading further.
+#  if QT_VERSION < QT_VERSION_CHECK(6, 10, 0)
   if (AndroidUtils::isChromeOSContext()) {
     QQuickWindow::setGraphicsApi(QSGRendererInterface::Software);
   }
+#  endif
 #endif
 
 #ifdef MZ_WINDOWS
@@ -181,8 +182,12 @@ int CommandUI::run(QStringList& tokens) {
 
   // Ensure that external styling hints are disabled.
   qunsetenv("QT_STYLE_OVERRIDE");
-
   return MozillaVPN::runGuiApp([&]() {
+    // Already intiziaized: VPN & qAPP.
+    // Note: this lambda will exit, so don't use it's scope for long-living
+    // objects.
+    auto const vpn = MozillaVPN::instance();
+    Q_ASSERT(vpn);
     Telemetry::startTimeToFirstScreenTimer();
 
     if (testingOption.m_set) {
@@ -195,8 +200,6 @@ int CommandUI::run(QStringList& tokens) {
       MockDaemon* daemon = new MockDaemon(qApp);
       qputenv("MVPN_CONTROL_SOCKET", daemon->socketPath().toLocal8Bit());
     }
-
-    MozillaVPN vpn;
     logger.debug() << "UI starting";
 
     if (startAtBootOption.m_set || qgetenv("MVPN_STARTATBOOT") == "1") {
@@ -212,34 +215,27 @@ int CommandUI::run(QStringList& tokens) {
         return 0;
       }
     }
-
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
-    // This class receives communications from other instances.
-    EventListener eventListener;
+    eventListener.reset(new EventListener{});
 #endif
 
 #ifdef MZ_ANDROID
     // https://bugreports.qt.io/browse/QTBUG-82617
     // Currently there is a crash happening on exit with Huawei devices.
     // Until this is fixed, setting this variable is the "official" workaround.
-    // We certainly should look at this once 6.6 is out.
-#  if QT_VERSION >= 0x060800
+    // We certainly should look at this once 6.11 is out.
+#  if QT_VERSION >= QT_VERSION_CHECK(6, 11, 0)
 #    error We have forgotten to remove this Huawei hack!
 #  endif
     if (AndroidCommons::GetManufacturer() == "Huawei") {
       qputenv("QT_ANDROID_NO_EXIT_CALL", "1");
     }
 #endif
-
-    // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
-    QQmlApplicationEngine* engine = new QQmlApplicationEngine();
-    QmlEngineHolder engineHolder(engine);
-
-    // TODO pending #3398
-    QQmlContext* ctx = engine->rootContext();
-    ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
-
-    // Glean.rs
+    auto const engineHolder = QmlEngineHolder::instance();
+    auto const engine =
+        static_cast<QQmlApplicationEngine*>(engineHolder->engine());
+    Q_ASSERT(engine);
+    // // Glean.rs
     QString gleanChannel = "production";
     if (testingOption.m_set) {
       gleanChannel = "testing";
@@ -247,69 +243,32 @@ int CommandUI::run(QStringList& tokens) {
       gleanChannel = "staging";
     }
     MZGlean::initialize(gleanChannel);
-    // Clear leftover Glean.js stored data.
-    // TODO: This code can be removed starting one year after it is released.
-    auto offlineStorageDirectory =
-        QDir(QmlEngineHolder::instance()->engine()->offlineStoragePath() +
-             "/Databases");
-    if (offlineStorageDirectory.exists()) {
-      QStringList files = offlineStorageDirectory.entryList();
-      for (const QString& file : files) {
-        // Note: This is kinda dumb, it doesn't really know that this is
-        // Glean.js' storage. Since Glean.js was the only thing using sqlite in
-        // the app at the time of implementation this is fine. If we ever add
-        // other SQLite using things, then we need to change this.
-        if (file.endsWith(".sqlite")) {
-          QFile::remove(offlineStorageDirectory.absoluteFilePath(file));
-        }
-      }
-    }
-
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
-    I18nStrings::initialize();
 
     // Cleanup previous temporary files.
     TemporaryDir::cleanupAll();
 
-    vpn.setStartMinimized(minimizedOption.m_set ||
-                          (qgetenv("MVPN_MINIMIZED") == "1"));
-
-#ifndef Q_OS_WIN
-    // Signal handling for a proper shutdown.
-    SignalHandler sh;
-    QObject::connect(&sh, &SignalHandler::quitRequested,
-                     []() { MozillaVPN::instance()->controller()->quit(); });
-#endif
+    vpn->setStartMinimized(minimizedOption.m_set ||
+                           (qgetenv("MVPN_MINIMIZED") == "1"));
 
     // Font loader
     FontLoader::loadFonts();
 
-    vpn.initialize();
-
-#ifdef MZ_MACOS
-    MacOSStartAtBootWatcher startAtBootWatcher;
-    MacOSUtils::setDockClickHandler();
-#endif
-
-#ifdef MZ_WINDOWS
-    WindowsStartAtBootWatcher startAtBootWatcher;
-#endif
-
-#ifdef MZ_LINUX
-    XdgStartAtBootWatcher startAtBootWatcher;
-#endif
+    vpn->initialize();
+    logger.debug() << "VPN initialized";
 
     // Prior to Qt 6.5, there was no default QML import path. We must set one.
 #if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
     engine->addImportPath("qrc:/");
     engine->addImportPath("qrc:/qt/qml");
+    logger.debug() << "Added QML import paths";
 #endif
-
     QQuickImageProvider* provider = ImageProviderFactory::create(qApp);
     if (provider) {
       engine->addImageProvider(QString("app"), provider);
     }
+    logger.debug() << "Added QML image provider";
 
     qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0,
                                  "MZAccessibleNotification",
@@ -319,11 +278,12 @@ int CommandUI::run(QStringList& tokens) {
     // work for the generation of i18nstrings.h/cpp for the unit-test app.
     qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZI18n",
                                  I18nStrings::instance());
+    logger.debug() << "Registered I18nStrings";
 
 #if MZ_IOS && QT_VERSION < 0x060300
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn, &App::quit);
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, &App::quit);
 #else
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, &vpn, [] {
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, [] {
       // Submit the main ping one last time.
       mozilla::glean_pings::Main.submit();
       // During shutdown Glean will attempt to finish all tasks
@@ -336,23 +296,38 @@ int CommandUI::run(QStringList& tokens) {
 #endif
 
     QObject::connect(
-        qApp, &QGuiApplication::commitDataRequest, &vpn,
+        qApp, &QGuiApplication::commitDataRequest, vpn,
         []() { MozillaVPN::instance()->deactivate(true); },
         Qt::DirectConnection);
 
-    QObject::connect(vpn.controller(), &Controller::readyToQuit, &vpn,
+    QObject::connect(vpn->controller(), &Controller::readyToQuit, vpn,
                      &App::quit, Qt::QueuedConnection);
 
-    // Here is the main QML file.
+#ifdef MZ_ANDROID
+    // On Android we need to make sure when we load a QML application that the
+    // context is set. Qt ___should___ do this for us, but it seems that in some
+    // cases it does not. So we chant dark JNI magic to make sure the
+    // VPNActivity is set as context provider.
+    logger.debug() << "Forcing activity publish";
+    AndroidCommons::forcePublishActivity();
+    // In case we have a pending exception, clear it before loading main.qml
+    AndroidCommons::clearPendingJavaException("before main.qml load");
+#endif
     const QUrl url(QStringLiteral("qrc:/qt/qml/Mozilla/VPN/main.qml"));
+    logger.debug() << "Loading main QML file:" << url.toString();
     engine->load(url);
-    if (!engineHolder.hasWindow()) {
+    logger.debug() << "Loaded main QML file";
+    if (!engineHolder->hasWindow()) {
       logger.error() << "Failed to load " << url.toString();
-      return -1;
     }
+
+#ifdef MZ_ANDROID
+    AndroidCommons::dismissSplashScreen();
+#endif
+
 #ifdef MZ_WINDOWS
-    auto const updateWindowDecoration = [&engineHolder]() {
-      auto const window = engineHolder.window();
+    auto const updateWindowDecoration = [engineHolder]() {
+      auto const window = engineHolder->window();
       WindowsUtils::updateTitleBarColor(window,
                                         Theme::instance()->isThemeDark());
       WindowsUtils::setDockIcon(window, QImage(":/ui/resources/logo-dock.png"));
@@ -364,24 +339,29 @@ int CommandUI::run(QStringList& tokens) {
     updateWindowDecoration();
 #endif
 
-    NotificationHandler* notificationHandler =
-        NotificationHandler::create(qApp);
-
-    QObject::connect(vpn.controller(), &Controller::stateChanged,
-                     notificationHandler,
-                     &NotificationHandler::showNotification);
-
 #ifdef MZ_MACOS
     MacOSMenuBar menuBar;
     menuBar.initialize();
 
-    QObject::connect(&vpn, &MozillaVPN::stateChanged, &menuBar,
+    QObject::connect(vpn, &MozillaVPN::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
 
-    QObject::connect(vpn.controller(), &Controller::stateChanged, &menuBar,
+    QObject::connect(vpn->controller(), &Controller::stateChanged, &menuBar,
                      &MacOSMenuBar::controllerStateChanged);
-
 #endif
+
+#ifdef MZ_WASM
+    WasmWindowController wasmWindowController;
+    QObject::connect(SettingsHolder::instance(),
+                     &SettingsHolder::languageCodeChanged,
+                     &wasmWindowController, &WasmWindowController::retranslate);
+#endif
+
+    NotificationHandler* notificationHandler =
+        NotificationHandler::create(qApp);
+    QObject::connect(vpn->controller(), &Controller::stateChanged,
+                     notificationHandler,
+                     &NotificationHandler::showNotification);
 
     QObject::connect(
         SettingsHolder::instance(), &SettingsHolder::languageCodeChanged, []() {
@@ -392,11 +372,9 @@ int CommandUI::run(QStringList& tokens) {
           AddonManager::instance()->retranslate();
 
 #ifdef MZ_MACOS
-          MacOSMenuBar::instance()->retranslate();
-#endif
-
-#ifdef MZ_WASM
-          WasmWindowController::instance()->retranslate();
+          if (auto* menuBar = MacOSMenuBar::instance()) {
+            menuBar->retranslate();
+          }
 #endif
 
           MozillaVPN::instance()->serverCountryModel()->retranslate();
@@ -404,15 +382,14 @@ int CommandUI::run(QStringList& tokens) {
         });
 
     InspectorHandler::initialize();
-
-#ifdef MZ_WASM
-    WasmWindowController wasmWindowController;
-#endif
+    logger.debug() << "Inspector Handler initialized";
 
 #ifdef MVPN_WEBEXTENSION
-    WebExtension::Server extensionServer(new WebExtensionAdapter(qApp));
-    QObject::connect(vpn.controller(), &Controller::readyToQuit,
-                     &extensionServer, &WebExtension::Server::close);
+    QPointer webExtensionServer =
+        new WebExtension::Server{new WebExtensionAdapter(qApp)};
+    QObject::connect(vpn->controller(), &Controller::readyToQuit,
+                     webExtensionServer.get(), &WebExtension::Server::close);
+    webExtensionServer.clear();
 #endif
 
 #ifdef MZ_ANDROID
@@ -421,11 +398,11 @@ int CommandUI::run(QStringList& tokens) {
     if (!maybeURL.isValid()) {
       logger.error() << "Error in deep-link:" << maybeURL.toString();
     } else {
-      vpn.handleDeepLink(url);
+      vpn->handleDeepLink(maybeURL);
     }
     // Whenever the client is re-opened with a new url pass it to the handler.
     connect(AndroidVPNActivity::instance(),
-            &AndroidVPNActivity::onOpenedWithUrl, &vpn,
+            &AndroidVPNActivity::onOpenedWithUrl, vpn,
             &MozillaVPN::handleDeepLink);
 #else
     // If there happen to be navigation URLs, handle them.
@@ -434,14 +411,13 @@ int CommandUI::run(QStringList& tokens) {
       if (!url.isValid() || (url.scheme() != Constants::DEEP_LINK_SCHEME)) {
         logger.error() << "Invalid link:" << value;
       } else {
-        vpn.handleDeepLink(url);
+        vpn->handleDeepLink(url);
       }
     }
 #endif
-
-    KeyRegenerator keyRegenerator;
-    // Let's go.
-    return qApp->exec();
+    // We're ready to continue!
+    logger.debug() << "CommandUI finished";
+    return 0;
   });
 }
 

@@ -68,13 +68,9 @@
 #endif
 
 #ifdef MZ_ANDROID
-#  include "platforms/android/androidiaphandler.h"
+#  include "platforms/android/androidcommons.h"
 #  include "platforms/android/androidutils.h"
 #  include "platforms/android/androidvpnactivity.h"
-#endif
-
-#ifdef MZ_ADJUST
-#  include "adjust/adjusthandler.h"
 #endif
 
 #ifdef MZ_IOS
@@ -85,11 +81,21 @@
 #  include <QEvent>
 #  include <QFileOpenEvent>
 
+#  include "platforms/macos/macosstartatbootwatcher.h"
 #  include "platforms/macos/macosutils.h"
 #endif
 
 #ifdef MZ_LINUX
 #  include "platforms/linux/xdgportal.h"
+#  include "platforms/linux/xdgstartatbootwatcher.h"
+#endif
+
+#ifdef MZ_WINDOWS
+#  include "platforms/windows/windowsstartatbootwatcher.h"
+#endif
+
+#ifndef Q_OS_WIN
+#  include "signalhandler.h"
 #endif
 
 #include <QApplication>
@@ -101,6 +107,7 @@
 #include <QJsonDocument>
 #include <QLocale>
 #include <QQmlApplicationEngine>
+#include <QQmlContext>
 #include <QScreen>
 #include <QTimer>
 #include <QUrl>
@@ -116,7 +123,9 @@ QString s_updateVersion;
 
 // static
 MozillaVPN* MozillaVPN::instance() {
-  Q_ASSERT(s_instance);
+  if (!s_instance) {
+    Q_ASSERT(s_instance);
+  }
   return s_instance;
 }
 
@@ -203,6 +212,14 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
           &m_private->m_connectionHealth,
           &ConnectionHealth::connectionStateChanged);
 
+  // Staging must be set before the featuremodel is initialized, otherwise
+  // FeatureCallback_inStaging is read incorrectly.
+  // A feature is checked while setting up the ProductHandler, hence
+  // the staging initialization is here.
+  if (SettingsHolder::instance()->stagingServer()) {
+    Constants::setStaging();
+    LogHandler::instance()->setStderr(true);
+  }
   ProductsHandler::createInstance();
   PurchaseHandler* purchaseHandler = PurchaseHandler::createInstance();
   connect(purchaseHandler, &PurchaseHandler::subscriptionStarted, this,
@@ -261,6 +278,16 @@ void MozillaVPN::initialize() {
 
   registerNavigationBarButtons();
 
+  if (SettingsManager::instance()->hasError()) {
+    QMetaObject::invokeMethod(
+        this,
+        []() {
+          ErrorHandler::instance()->requestAlert(
+              ErrorHandler::SettingsDecryptionErrorAlert);
+        },
+        Qt::QueuedConnection);
+  }
+
   // This is our first state.
   Q_ASSERT(state() == StateInitialize);
 
@@ -286,13 +313,6 @@ void MozillaVPN::initialize() {
 
   QList<Task*> initTasks{new TaskAddonIndex()};
 
-#ifdef MZ_ADJUST
-  logger.debug() << "Adjust included in build.";
-  initTasks.append(new TaskFunction([] { AdjustHandler::initialize(); }));
-#else
-  logger.debug() << "Adjust not included in build.";
-#endif
-
   TaskScheduler::scheduleTask(new TaskGroup(initTasks));
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
@@ -306,12 +326,17 @@ void MozillaVPN::initialize() {
 #endif
 
   m_private->m_captivePortalDetection.initialize();
+  logger.debug() << "Captive Portal Detection initialized";
   m_private->m_networkWatcher.initialize();
+  logger.debug() << "Network Watcher initialized";
 
   DNSHelper::maybeMigrateDNSProviderFlags();
+  logger.debug() << "DNS Helper initialized";
 
   SettingsWatcher::instance();
+  logger.debug() << "Settings Watcher initialized";
 
+  logger.debug() << "Checking token";
   if (!settingsHolder->hasToken()) {
     return;
   }
@@ -453,10 +478,6 @@ void MozillaVPN::maybeStateMain() {
 
   Q_ASSERT(m_private->m_serverData.hasServerData());
 
-  // For 2.5 we need to regenerate the device key to allow the the custom DNS
-  // feature. We can do it in background when the main view is shown.
-  maybeRegenerateDeviceKey();
-
   auto controllerState = m_private->m_controller.state();
   if (controllerState == Controller::State::StatePermissionRequired) {
     setState(StatePermissionRequired);
@@ -478,16 +499,6 @@ void MozillaVPN::maybeStateMain() {
     settingsHolder->setOnboardingStep(0);
     settingsHolder->setOnboardingDataCollectionEnabled(false);
   }
-
-#ifdef MZ_ADJUST
-  // When the client is ready to be activated, we do not need adjustSDK anymore
-  // (the subscription is done, and no extra events will be dispatched). We
-  // cannot disable AdjustSDK at runtime, but we can disable it for the next
-  // execution.
-  if (settingsHolder->hasAdjustActivatable()) {
-    settingsHolder->setAdjustActivatable(false);
-  }
-#endif
 
   // This next bit covers specific situation: When signing out and signing back
   // in (without quitting the client), the client should automatically start if
@@ -529,10 +540,10 @@ void MozillaVPN::authenticateWithType(
           &MozillaVPN::abortAuthentication);
   connect(taskAuthenticate, &TaskAuthenticate::authenticationCompleted, this,
           &MozillaVPN::completeAuthentication);
+  connect(taskAuthenticate, &TaskAuthenticate::authenticationStarted, this,
+          [this]() { emit authenticationStarted(); });
 
   TaskScheduler::scheduleTask(taskAuthenticate);
-
-  emit authenticationStarted();
 }
 
 void MozillaVPN::abortAuthentication() {
@@ -864,7 +875,6 @@ void MozillaVPN::reset(bool forceInitialState) {
 
 void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
-
   m_private->m_telemetry.stopTimeToFirstScreenTimer();
 
 #ifndef MZ_WASM
@@ -973,8 +983,18 @@ void MozillaVPN::activate() {
   // is the right time to do it.
   maybeRegenerateDeviceKey();
 
-  TaskScheduler::scheduleTask(
-      new TaskControllerAction(TaskControllerAction::eActivate));
+  TaskScheduler::scheduleTask(new TaskFunction([this]() {
+    if (modelsInitialized()) {
+      TaskScheduler::scheduleTask(
+          new TaskControllerAction(TaskControllerAction::eActivate));
+      return;
+    }
+
+    logger.error() << "Failed to complete the key regeneration";
+    REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
+    setState(StateInitialize);
+    return;
+  }));
 }
 
 void MozillaVPN::deactivate(bool block) {
@@ -1046,10 +1066,6 @@ void MozillaVPN::subscriptionCompleted() {
 #endif
 
   logger.debug() << "Subscription completed";
-
-#ifdef MZ_ADJUST
-  AdjustHandler::trackEvent(Constants::ADJUST_SUBSCRIPTION_COMPLETED);
-#endif
 
   completeActivation();
 }
@@ -1226,35 +1242,44 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
 
-  if (settingsHolder->hasDeviceKeyVersion()) {
-    auto vers = QVersionNumber::fromString(settingsHolder->deviceKeyVersion());
-    if (vers >= QVersionNumber(2, 5, 0)) {
-      return;
+  bool mustRegenerateKey = false;
+
+  if (Feature::get(Feature::Feature_keyRegeneration)->isSupported()) {
+    qint64 timeSinceLastKeyRegeneration =
+        QDateTime::currentSecsSinceEpoch() -
+        settingsHolder->keyRegenerationTimeSec();
+    logger.debug() << "Time since last key regeneration: "
+                   << timeSinceLastKeyRegeneration;
+
+    if (timeSinceLastKeyRegeneration > Constants::keyRegenerationTimeSec()) {
+      logger.debug() << "Key regeneration needed for an expired device key";
+      mustRegenerateKey = mustRegenerateKey | true;
     }
   }
 
-  // We need a new device key only if the user wants to use custom DNS servers.
-  if (settingsHolder->dnsProviderFlags() ==
-      SettingsHolder::DNSProviderFlags::Gateway) {
-    logger.debug() << "Removal needed but no custom DNS used.";
-    return;
+  // We need a new device key if the user wants to use custom DNS servers
+  // and previous key was saved with version 2.5
+  if (!mustRegenerateKey && settingsHolder->dnsProviderFlags() !=
+                                SettingsHolder::DNSProviderFlags::Gateway) {
+    if (settingsHolder->hasDeviceKeyVersion()) {
+      auto vers =
+          QVersionNumber::fromString(settingsHolder->deviceKeyVersion());
+      if (vers < QVersionNumber(2, 5, 0)) {
+        logger.debug() << "Key regeneration needed for version 2.5";
+        mustRegenerateKey = mustRegenerateKey | true;
+      }
+    }
   }
 
   Q_ASSERT(m_private->m_deviceModel.hasCurrentDevice(keys()));
 
-  logger.debug() << "Removal needed for the 2.5 key regeneration.";
-
-  // We do not need to remove the current device! guardian-website "overwrites"
-  // the current device key when we submit a new one.
-  addCurrentDeviceAndRefreshData();
-  TaskScheduler::scheduleTask(new TaskFunction([this]() {
-    if (!modelsInitialized()) {
-      logger.error() << "Failed to complete the key regeneration";
-      REPORTERROR(ErrorHandler::RemoteServiceError, "vpn");
-      setState(StateInitialize);
-      return;
-    }
-  }));
+  if (mustRegenerateKey) {
+    TaskScheduler::scheduleTask(
+        new TaskControllerAction(TaskControllerAction::eRegenerateKey));
+    // We do not need to remove the current device! guardian-website
+    // "overwrites" the current device key when we submit a new one.
+    addCurrentDeviceAndRefreshData();
+  }
 }
 
 void MozillaVPN::hardReset() {
@@ -1817,6 +1842,18 @@ void MozillaVPN::registerNavigationBarButtons() {
       "qrc:/nebula/resources/navbar/settings.svg",
       "qrc:/nebula/resources/navbar/settings-selected-dark.svg"));
 
+  setupMessageNotificationWatch(*messageIcon);
+
+  // When creating a SettingGroup, only the keys that include that group are
+  // pulled. Creating `test/another` would add a watch to `test/another/word`,
+  // but not vice versa. Thus, ensure group is re-created *after* loading new
+  // messages.
+  connect(AddonManager::instance(), &AddonManager::countChanged, instance(),
+          [messageIcon]() { setupMessageNotificationWatch(*messageIcon); });
+}
+// static
+void MozillaVPN::setupMessageNotificationWatch(
+    NavigationBarButton& messageIcon) {
   // A group of settings containing all the addon message settings.
   SettingGroup* messageSettingGroup =
       SettingsManager::instance()->createSettingGroup(
@@ -1828,12 +1865,12 @@ void MozillaVPN::registerNavigationBarButtons() {
       );
 
   connect(messageSettingGroup, &SettingGroup::changed, instance(),
-          [messageIcon]() { resetNotification(messageIcon); });
+          [&messageIcon]() { resetNotification(&messageIcon); });
 
   connect(AddonManager::instance(), &AddonManager::loadCompletedChanged,
-          instance(), [messageIcon]() { resetNotification(messageIcon); });
+          instance(), [&messageIcon]() { resetNotification(&messageIcon); });
 
-  resetNotification(messageIcon);
+  resetNotification(&messageIcon);
 }
 
 // static
@@ -2260,19 +2297,6 @@ void MozillaVPN::ensureApplicationIdExists() {
 #endif
 }
 
-// There is a bug for iOS 16 and below where the status bar text is the wrong
-// color when app is restored from background. This fixes the bug. More info:
-// VPN-2387 Remove this code when the app's minimum supported iOS version is
-// iOS 17.
-void MozillaVPN::statusBarCheck() {
-#ifdef MZ_IOS
-  if (QGuiApplication::applicationState() ==
-      Qt::ApplicationState::ApplicationActive) {
-    IOSCommons::statusBarUpdateHack();
-  }
-#endif
-}
-
 void MozillaVPN::gleanSetDebugViewTag(QString tag) {
   MZGlean::setDebugViewTag(tag);
 }
@@ -2289,9 +2313,7 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
 
   QCoreApplication app(CommandLineParser::argc(), CommandLineParser::argv());
 
-  SettingsHolder settingsHolder;
-
-  if (settingsHolder.stagingServer()) {
+  if (SettingsHolder::instance()->stagingServer()) {
     Constants::setStaging();
     LogHandler::instance()->setStderr(true);
   }
@@ -2301,13 +2323,16 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
 
   logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
-
-  Localizer localizer;
-
   return callback();
 }
 
-// static
+/**
+ * This function instantiates a QMLApplication, MozillaVPN singleton and calles
+ * the provided callback.
+ * On Android, the callback is called when the Context is available, the Qt
+ * Eventloop is running in this case. On other platforms, the callback is called
+ * before starting the Qt Eventloop.
+ */
 int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
 
@@ -2316,21 +2341,20 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
 #endif
 
   QApplication app(CommandLineParser::argc(), CommandLineParser::argv());
+  // This object _must_ live longer than MozillaVPN to avoid shutdown crashes.
+  QQmlApplicationEngine* engine = new QQmlApplicationEngine();
+  MozillaVPN vpn;
+  QmlEngineHolder engineHolder(engine);
 
-  SettingsHolder settingsHolder;
-
-  if (settingsHolder.stagingServer()) {
-    Constants::setStaging();
-    LogHandler::instance()->setStderr(true);
-  }
+  // TODO pending #3398
+  QQmlContext* ctx = engine->rootContext();
+  ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
   MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
   logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
   logger.info() << "User-Agent:" << NetworkManager::userAgent();
-
-  Localizer localizer;
 
 #ifdef MZ_MACOS
   MacOSUtils::patchNSStatusBarSetImageForBigSur();
@@ -2339,7 +2363,33 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   QIcon icon(Constants::LOGO_URL);
   app.setWindowIcon(icon);
 
-  return callback();
+#ifndef Q_OS_WIN
+  // Signal handling for a proper shutdown.
+  SignalHandler sh;
+  QObject::connect(&sh, &SignalHandler::quitRequested,
+                   []() { MozillaVPN::instance()->controller()->quit(); });
+#endif
+
+#ifdef MZ_MACOS
+  MacOSStartAtBootWatcher startAtBootWatcher;
+  MacOSUtils::setDockClickHandler();
+#endif
+
+#ifdef MZ_WINDOWS
+  WindowsStartAtBootWatcher startAtBootWatcher;
+#endif
+
+#ifdef MZ_LINUX
+  XdgStartAtBootWatcher startAtBootWatcher;
+#endif
+
+#ifdef MZ_ANDROID
+  AndroidCommons::runWhenUiViewConstructible(callback);
+#else
+  callback();
+#endif
+
+  return app.exec();
 }
 
 #ifdef MZ_MACOS
@@ -2379,7 +2429,10 @@ void MozillaVPN::handleDeepLink(const QUrl& url) {
     logger.info() << "Unknown deep link target:" << url.authority();
   }
 
-  // Show the window after handling a deep link.
-  QmlEngineHolder* engine = QmlEngineHolder::instance();
-  engine->showWindow();
+  // Show the window after handling a deep link only if the authentication flow
+  // was initiated by a GUI App
+  if (qobject_cast<QGuiApplication*>(QCoreApplication::instance())) {
+    QmlEngineHolder* engine = QmlEngineHolder::instance();
+    engine->showWindow();
+  }
 }

@@ -53,20 +53,6 @@ MZViewBase {
                 }
             }
         }
-        MZCheckBoxRow {
-            Layout.fillWidth: true
-            Layout.rightMargin: MZTheme.theme.windowMargin
-            labelText: "Glean Enable Extension Telemetry"
-            subLabelText: "Enables / Disables Glean Telemetry for the extension"
-            isChecked: MZSettings.extensionTelemetryEnabled
-            showDivider: false
-            onClicked: {
-                MZSettings.extensionTelemetryEnabled = !MZSettings.extensionTelemetryEnabled
-                if (MZSettings.extensionTelemetryEnabled) {
-                  MZSettings.gleanEnabled = true
-                }
-            }
-        }
 
         MZCheckBoxRow {
             id: checkBoxRowGleanDebugTag
@@ -111,6 +97,15 @@ MZViewBase {
             }
         }
 
+        MZExternalLinkListItem {
+            id: goToPingViewer
+            Layout.preferredHeight: MZTheme.theme.rowHeight
+            title: "Open Glean Debug Ping Viewer"
+            onClicked: {
+                MZUrlOpener.openUrl("https://debug-ping-preview.firebaseapp.com/pings/" + MZSettings.gleanDebugTag);
+            }
+        }
+
         MZCheckBoxRow {
             id: checkBoxRowShortSessionTimer
 
@@ -148,10 +143,6 @@ MZViewBase {
             id: submitSessionPing
             text: "Submit the 'vpnsession' ping"
             onClicked: GleanPings.Vpnsession.submit()
-        }
-        MZButton {
-            text: "Submit the 'extensionsession' ping"
-            onClicked: GleanPings.Extensionsession.submit()
         }
     }
 }

@@ -40,6 +40,7 @@ QByteArray WindowsCryptoSettings::getKey(CryptoSettings::Version version,
         m_key =
             QByteArray((char*)cred->CredentialBlob, cred->CredentialBlobSize);
         logger.debug() << "Key found with length:" << m_key.length();
+        CredFree(cred);
         return m_key;
       } else if (GetLastError() != ERROR_NOT_FOUND) {
         logger.error() << "Failed to retrieve the key";

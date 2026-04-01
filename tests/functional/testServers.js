@@ -211,7 +211,7 @@ describe('Server', function() {
       await vpn.waitForCondition(async () => {
         let connectingMsg = await vpn.getQueryProperty(
             queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
-        return connectingMsg === 'Switching…' || connectingMsg === 'VPN is on';
+        return connectingMsg === 'Switching…';
       });
 
       await vpn.waitForCondition(async () => {
@@ -221,11 +221,10 @@ describe('Server', function() {
       });
 
       // Wait at least one second for the timer to tick passed zero.
-      await vpn.wait(1500);
+      await vpn.wait(2500);
       assert.notEqual(
           await vpn.getQueryProperty(
-              queries.screenHome.CONNECTION_TIMER,
-              'connectionTime'),
+              queries.screenHome.CONNECTION_TIMER, 'connectionTime'),
           '00:00:00');
     });
 

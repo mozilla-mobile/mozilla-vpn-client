@@ -29,7 +29,7 @@ class AddonManager final : public QAbstractListModel {
    * This is mainly for testing. All the addons are unloaded and the cache is
    * reset.
    */
-  void reset();
+  Q_INVOKABLE void reset();
 
   /**
    * Force a fetch of the addon index manifest instead of waiting for the
@@ -40,8 +40,6 @@ class AddonManager final : public QAbstractListModel {
   Q_INVOKABLE Addon* pick(QJSValue filterCallback) const;
 
   Q_INVOKABLE QJSValue reduce(QJSValue callback, QJSValue initialValue) const;
-
-  Q_INVOKABLE void reinstateMessages() const;
 
   enum ModelRoles {
     AddonRole = Qt::UserRole + 1,

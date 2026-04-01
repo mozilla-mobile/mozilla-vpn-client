@@ -20,6 +20,7 @@
 #include "logger.h"
 #include "loghandler.h"
 #include "platforms/linux/linuxutils.h"
+#include "polkithelper.h"
 
 namespace {
 Logger logger("DBusService");
@@ -105,7 +106,7 @@ QString DBusService::version() {
 
 bool DBusService::activate(const InterfaceConfig& config) {
   logger.debug() << "Activate";
-  if (!isCallerAuthorized()) {
+  if (!isCallerAuthorized("org.mozilla.vpn.activate")) {
     logger.error() << "Insufficient caller permissions";
     return false;
   }
@@ -125,28 +126,47 @@ bool DBusService::activate(const InterfaceConfig& config) {
 
 bool DBusService::deactivate(bool emitSignals) {
   logger.debug() << "Deactivate";
-  if (!isCallerAuthorized()) {
+
+  if (!isCallerAuthorized("org.mozilla.vpn.deactivate")) {
     logger.error() << "Insufficient caller permissions";
     return false;
   }
 
-  m_sessionUid = 0;
   clearAppStates();
   return Daemon::deactivate(emitSignals);
 }
 
 QString DBusService::status() {
+  logger.debug() << "Status request";
+
+  if (!isCallerAuthorized("org.mozilla.vpn.activate")) {
+    logger.error() << "Insufficient caller permissions";
+    return QString();
+  }
+
   return QString(QJsonDocument(getStatus()).toJson(QJsonDocument::Compact));
 }
 
 QString DBusService::getLogs() {
   logger.debug() << "Log request";
-  if (!isCallerAuthorized()) {
+
+  if (!isCallerAuthorized("org.mozilla.vpn.activate")) {
     logger.error() << "Insufficient caller permissions";
     return QString();
   }
 
   return Daemon::logs();
+}
+
+void DBusService::cleanupLogs() {
+  logger.debug() << "Cleanup logs request";
+
+  if (!isCallerAuthorized("org.mozilla.vpn.activate")) {
+    logger.error() << "Insufficient caller permissions";
+    return;
+  }
+
+  cleanLogs();
 }
 
 void DBusService::userListCompleted(QDBusPendingCallWatcher* watcher) {
@@ -301,42 +321,30 @@ void DBusService::dropRootPermissions() {
 }
 
 /* Checks to see if the caller has sufficient authorization */
-bool DBusService::isCallerAuthorized() {
+bool DBusService::isCallerAuthorized(const QString& actionId) {
   if (!calledFromDBus()) {
     // If this is not a D-Bus call, it came from the daemon itself.
     return true;
   }
-  const QDBusConnectionInterface* iface =
-      QDBusConnection::systemBus().interface();
 
-  // If the VPN is active, and we know the UID that turned it on, as a special
-  // case we permit that user full access to the D-Bus API in order to manage
-  // the connection.
-  if (m_sessionUid != 0) {
-    const QDBusReply<uint> reply = iface->serviceUid(message().service());
-    if (reply.isValid() && m_sessionUid == reply.value()) {
-      return true;
-    }
+  if (PolkitHelper::instance()->checkAuthorization(actionId,
+                                                   message().service())) {
+    logger.debug() << "Polkit authorization granted";
+    return true;
   }
-  // Otherwise, if this is the activate method, we permit any non-root user to
-  // activate the VPN, but we will remember their UID for later authorization
-  // checks.
-  else if ((message().type() == QDBusMessage::MethodCallMessage) &&
-           (message().member() == "activate")) {
-    const QDBusReply<uint> reply = iface->serviceUid(message().service());
-    const uint senderuid = reply.value();
-    if (reply.isValid() && senderuid != 0) {
-      m_sessionUid = senderuid;
-      return true;
-    }
-  }
+
   // In all other cases, the use of this D-Bus API requires the CAP_NET_ADMIN
   // permission, which we can check by examining the PID of the sender. Note
   // that a zero UID (root) is used as a guard value to fall back to this case.
+  logger.debug() << "Checking CAP_NET_ADMIN permissions";
+
+  const QDBusConnectionInterface* iface =
+      QDBusConnection::systemBus().interface();
 
   // Get the PID of the D-Bus message sender.
   const QDBusReply<uint> reply = iface->servicePid(message().service());
   const uint senderpid = reply.value();
+
   if (!reply.isValid() || (senderpid == 0)) {
     // Could not lookup the sender's PID. Rejected!
     logger.warning() << "Failed to resolve sender PID";
@@ -349,6 +357,7 @@ bool DBusService::isCallerAuthorized() {
     logger.warning() << "Failed to retrieve process capabilities";
     return false;
   }
+
   auto guard = qScopeGuard([&] { cap_free(caps); });
 
   // Check if the calling process has CAP_NET_ADMIN.
@@ -357,5 +366,6 @@ bool DBusService::isCallerAuthorized() {
     logger.warning() << "Failed to retrieve process cap_net_admin flags";
     return false;
   }
+
   return (flag == CAP_SET);
 }

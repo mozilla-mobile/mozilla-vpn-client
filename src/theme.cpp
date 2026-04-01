@@ -21,6 +21,10 @@
 #  include "platforms/ios/ioscommons.h"
 #endif
 
+#ifdef MZ_ANDROID
+#  include "platforms/android/androidcommons.h"
+#endif
+
 #if defined(MZ_LINUX) && !defined(UNIT_TEST)
 #  include "platforms/linux/xdgappearance.h"
 #endif
@@ -28,6 +32,7 @@
 #include <QCoreApplication>
 #include <QPainter>
 #include <QQmlEngine>
+#include <QQuickStyle>
 
 namespace {
 Logger logger("Theme");
@@ -72,6 +77,8 @@ Theme* Theme::instance() {
 
 void Theme::initialize(QJSEngine* engine) {
   m_themes.clear();
+
+  QQuickStyle::setStyle("Basic");
 
   QDir dir(
       ResourceLoader::instance()->loadDir(":/nebula/themes/color-themes/"));
@@ -182,8 +189,7 @@ void Theme::setUsingSystemTheme(const bool usingSystemTheme) {
 }
 
 void Theme::setToSystemTheme() {
-  if (!Feature::get(Feature::Feature_themeSelection)->isSupported() ||
-      !Feature::get(Feature::Feature_themeSelectionIncludesAutomatic)) {
+  if (!Feature::get(Feature::Feature_themeSelectionIncludesAutomatic)) {
     logger.debug()
         << "Not setting to system theme because feature is not supported.";
     return;
@@ -277,8 +283,11 @@ QString Theme::currentSystemTheme() {
 #endif
 
 void Theme::setStatusBarTextColor([[maybe_unused]] StatusBarTextColor color) {
-#ifdef MZ_IOS
+#if defined MZ_IOS
   IOSCommons::setStatusBarTextColor(color);
+#elif defined MZ_ANDROID
+  AndroidCommons::setStatusBarTextColor(color ==
+                                        Theme::StatusBarTextColorLight);
 #endif
 }
 

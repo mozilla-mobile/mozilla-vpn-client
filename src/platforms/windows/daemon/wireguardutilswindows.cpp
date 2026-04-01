@@ -59,18 +59,14 @@ static void CALLBACK WireGuardLogger(_In_ WIREGUARD_LOGGER_LEVEL Level,
 /**
  * @brief Assigns an ipv4 address to a network device with a given LUID
  *
- * @param luid - LUID of the Adapter
+ * @param ifindex - Interface Index of the Adapter
  * @param address - Address and NetMask of the Adapter
  * @return ulong - nteContext - Call DeleteIPAddress(nteContext) to remove the
  * assignment.
  */
-ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress address) {
+ulong setIPv4AddressAndMask(NET_IFINDEX ifindex, const IPAddress address) {
   ULONG nteContext = 0;
   ULONG nteInstance = 0;
-  NET_IFINDEX ifIndex;
-  if (ConvertInterfaceLuidToIndex(&luid, &ifIndex) != NO_ERROR) {
-    return 0;
-  }
   IN_ADDR ipAddrBinary, subnetMaskBinary;
   if (InetPtonA(AF_INET, qPrintable(address.address().toString()),
                 &ipAddrBinary) != 1) {
@@ -83,7 +79,7 @@ ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress address) {
   // Add IP address and subnet mask
   DWORD dwResult =
       AddIPAddress(ipAddrBinary.S_un.S_addr, subnetMaskBinary.S_un.S_addr,
-                   ifIndex, &nteContext, &nteInstance);
+                   ifindex, &nteContext, &nteInstance);
   if (dwResult != NO_ERROR) {
     WindowsUtils::windowsLog("WELP, failed to add ip address to adapter");
     return 0;
@@ -93,19 +89,12 @@ ulong setIPv4AddressAndMask(NET_LUID luid, const IPAddress address) {
 /**
  * @brief
  *
- * @param luid - LUID of the Adapter
+ * @param luid - locally unique identifier of the Adapter
  * @param ipAddress - Address and NetMask of the Adapter
  * @return bool - If the assignment was successful
  */
 bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress ipAddress) {
   MIB_UNICASTIPADDRESS_ROW row;
-
-  NET_IFINDEX ifIndex;
-  if (ConvertInterfaceLuidToIndex(&luid, &ifIndex) != NO_ERROR) {
-    logger.error()
-        << "Failed to assign ivp6: Cannot Find Interface for this LUID";
-    return false;
-  }
   SOCKADDR_IN6 sockaddr = {};
   sockaddr.sin6_family = AF_INET6;
   if (InetPtonA(AF_INET6, qPrintable(ipAddress.address().toString()),
@@ -116,7 +105,7 @@ bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress ipAddress) {
   }
 
   InitializeUnicastIpAddressEntry(&row);
-  row.Address.Ipv6.sin6_family = AF_INET6;
+  row.Address.si_family = AF_INET6;
   row.Address.Ipv6 = sockaddr;
   row.InterfaceLuid = luid;
 
@@ -125,6 +114,11 @@ bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress ipAddress) {
   row.OnLinkPrefixLength = prefixLength;
 
   DWORD dwResult = CreateUnicastIpAddressEntry(&row);
+  if (dwResult == ERROR_NOT_FOUND) {
+    // This can occur if the user has globally disabled IPv6 support.
+    logger.warning() << "Failed to assign ivp6: interface not found";
+    return true;
+  }
   if (dwResult != NO_ERROR) {
     logger.error() << "Failed to assign ivp6: CreateUnicastIpAddressEntry "
                       "failed with error : "
@@ -289,9 +283,13 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
       .ListenPort = 0,  // Choose Randomly
       .PeersCount = 0,  // that will happen later with updatePeer()
   };
-  auto private_key = QByteArray::fromBase64(config.m_privateKey.toUtf8(),
-                                            QByteArray::Base64Encoding);
-  std::copy(std::begin(private_key), std::end(private_key),
+  const auto privateKey = QByteArray::fromBase64Encoding(
+      config.m_privateKey.toUtf8(), QByteArray::Base64Encoding);
+  if (!privateKey || (privateKey.decoded.length() != WIREGUARD_KEY_LENGTH)) {
+    logger.error() << "Failed to parse wireguard private key";
+    return false;
+  }
+  std::copy(std::begin(*privateKey), std::end(*privateKey),
             std::begin(wgConf.PrivateKey));
 
   if (!m_wireguard_api->SetConfiguration(wireguard_adapter, &wgConf,
@@ -320,9 +318,15 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   auto destroyRouteMonitorOnFailure =
       qScopeGuard([this]() { m_routeMonitor->deleteLater(); });
 
+  NET_IFINDEX ifindex;
+  const auto res = ConvertInterfaceLuidToIndex(&luid, &ifindex);
+  if (res != NO_ERROR) {
+    logger.error() << "ConvertInterfaceLuidToIndex failed with error:" << res;
+    return false;
+  }
   // Set the Adapters Address:
   m_deviceIpv4_Handle =
-      setIPv4AddressAndMask(luid, IPAddress(config.m_deviceIpv4Address));
+      setIPv4AddressAndMask(ifindex, IPAddress(config.m_deviceIpv4Address));
   if (m_deviceIpv4_Handle == 0) {
     logger.error() << "Failed setIPv4AddressAndMask";
     return false;
@@ -333,8 +337,6 @@ bool WireguardUtilsWindows::addInterface(const InterfaceConfig& config) {
   };
 
   // Enable the windows firewall
-  NET_IFINDEX ifindex;
-  ConvertInterfaceLuidToIndex(&luid, &ifindex);
   if (!m_firewall->enableInterface(ifindex)) {
     logger.error() << "Failed enabling Killswitch";
     m_firewall->disableKillSwitch();
@@ -394,9 +396,13 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
     return false;
   }
 
-  auto peer_public_key = QByteArray::fromBase64(
+  const auto peerPubKey = QByteArray::fromBase64Encoding(
       config.m_serverPublicKey.toUtf8(), QByteArray::Base64Encoding);
-  std::copy(std::begin(peer_public_key), std::end(peer_public_key),
+  if (!peerPubKey || (peerPubKey.decoded.length() != WIREGUARD_KEY_LENGTH)) {
+    logger.error() << "Failed to parse peer public key";
+    return false;
+  }
+  std::copy(std::begin(*peerPubKey), std::end(*peerPubKey),
             std::begin(wgnt_conf.peer.PublicKey));
 
   wgnt_conf.peer.Flags =
@@ -433,6 +439,15 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsWindows::getPeerStatus() {
   DWORD bufferSize = 2048;
   auto buffer = std::array<uint8_t, 2048>{};
 
+  // The handshake time is reported with an epoch date of 1601-01-01. We will
+  // need to convert that into a UNIX timestamp, which uses 1970-01-01.
+  static DWORD64 epochdiff = 0;
+  if (!epochdiff) {
+    QDate wgEpoch(1601, 1, 1);
+    QDate qtEpoch(1970, 1, 1);
+    epochdiff = wgEpoch.daysTo(qtEpoch) * (24 * 60 * 60 * 1000);
+  }
+
   bool ok = m_wireguard_api->GetConfiguration(
       m_adapter, (WIREGUARD_INTERFACE*)&buffer, &bufferSize);
   if (!ok) {
@@ -468,7 +483,9 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsWindows::getPeerStatus() {
       auto b64_key =
           QByteArray::fromRawData((const char*)peer->PublicKey, 32).toBase64();
       auto status = PeerStatus{QString(b64_key)};
-      status.m_handshake = peer->LastHandshake;
+
+      // The handshake timestamp uses a time interval of 100ns per tick.
+      status.m_handshake = (peer->LastHandshake / 10000) - epochdiff;
       status.m_rxBytes = peer->RxBytes;
       status.m_txBytes = peer->TxBytes;
       peerList.append(status);
@@ -499,9 +516,13 @@ bool WireguardUtilsWindows::deletePeer(const InterfaceConfig& config) {
           .Flags = WIREGUARD_PEER_HAS_PUBLIC_KEY | WIREGUARD_PEER_REMOVE,
           .AllowedIPsCount = 0,
       }};
-  const auto peer_public_key = QByteArray::fromBase64(
+  const auto peerPubKey = QByteArray::fromBase64Encoding(
       config.m_serverPublicKey.toUtf8(), QByteArray::Base64Encoding);
-  std::copy(std::begin(peer_public_key), std::end(peer_public_key),
+  if (!peerPubKey || (peerPubKey.decoded.length() != WIREGUARD_KEY_LENGTH)) {
+    logger.error() << "Failed to parse peer public key";
+    return false;
+  }
+  std::copy(std::begin(*peerPubKey), std::end(*peerPubKey),
             std::begin(wgnt_conf.peer.PublicKey));
 
   if (!m_wireguard_api->SetConfiguration(m_adapter, &wgnt_conf.interface,
@@ -565,6 +586,10 @@ bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
 
   // Install the route
   DWORD result = CreateIpForwardEntry2(&entry);
+  if ((result == ERROR_NOT_FOUND) &&
+      (prefix.type() == QAbstractSocket::IPv6Protocol)) {
+    return true;
+  }
   if (result == ERROR_OBJECT_ALREADY_EXISTS) {
     return true;
   }

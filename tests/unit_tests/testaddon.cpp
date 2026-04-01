@@ -24,15 +24,12 @@
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
 #include "helper.h"
-#include "localizer.h"
 #include "qmlengineholder.h"
 #include "qtglean.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 
 void TestAddon::init() {
-  m_settingsHolder = new SettingsHolder();
-
   // Glean needs to be initialized for every test because this test suite
   // includes telemetry tests.
   //
@@ -45,7 +42,7 @@ void TestAddon::init() {
   MZGlean::initialize("testing");
 }
 
-void TestAddon::cleanup() { delete m_settingsHolder; }
+void TestAddon::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestAddon::property() {
   AddonProperty p;
@@ -256,8 +253,6 @@ void TestAddon::conditions() {
 }
 
 void TestAddon::conditionWatcher_javascript() {
-  Localizer l;
-
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
 
@@ -322,8 +317,6 @@ void TestAddon::conditionWatcher_javascript() {
 }
 
 void TestAddon::conditionWatcher_locale() {
-  Localizer l;
-
   QObject parent;
 
   // No locales -> no watcher.
@@ -598,8 +591,6 @@ void TestAddon::message_load_status_data() {
 }
 
 void TestAddon::message_load_status() {
-  Localizer l;
-
   QFETCH(AddonMessage::MessageStatus, status);
   QFETCH(QString, setting);
 
@@ -629,8 +620,6 @@ void TestAddon::message_load_status() {
 }
 
 void TestAddon::message_dismiss() {
-  Localizer l;
-
   QJsonObject messageObj;
   messageObj["id"] = "foo";
   messageObj["blocks"] = QJsonArray();

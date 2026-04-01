@@ -264,7 +264,7 @@ QList<AddonData> AddonIndex::extractAddonsFromIndex(
     QJsonObject addon = item.toObject();
     addons.append(
         {QByteArray::fromHex(addon["sha256"].toString().toLocal8Bit()),
-         addon["id"].toString(), nullptr});
+         QByteArray(), addon["id"].toString(), nullptr});
   }
 
   return addons;

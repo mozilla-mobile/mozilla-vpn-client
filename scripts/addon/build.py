@@ -243,6 +243,16 @@ def retrieve_shared_strings_message(message_json, filename):
         "legacy_id": legacy_subtitle_id
     }
 
+    if "promo_text" in message_json:
+      promo_text_id = message_json["promo_text"]
+      promo_text_object = find_translation_object(json_translations, promo_text_id)
+      legacy_promo_text_id = f"message.{message_id}.promo_text"
+      message_strings[promo_text_id] = {
+          "value": promo_text_object['value'][0],
+          "comments": translation_comment(promo_text_object),
+          "legacy_id": legacy_promo_text_id
+      }
+
     return retrieve_strings_blocks(message_json["blocks"], filename, message_strings, f"message.{message_id}", json_translations)
 
 def find_translation_object(json_translations, target_id):
@@ -419,6 +429,12 @@ lrelease = shutil.which("lrelease", path=qtsearchpath)
 if lrelease is None:
     print("Unable to locate lrelease path.", file=sys.stderr)
 
+lrelease_flags = ""
+lrelease_verstr = subprocess.run([lrelease, "-version"], stdout=subprocess.PIPE).stdout.decode('utf-8').split()[-1]
+lrelease_version = tuple(int(x) for x in lrelease_verstr.split('.')[0:2])
+if lrelease_version < (6, 10):
+    lrelease_flags = "-idbased" 
+
 rcc = shutil.which("rcc", path=qtsearchpath)
 if rcc is None:
     print("Unable to locate rcc path.", file=sys.stderr)
@@ -471,12 +487,12 @@ with open(args.source, "r", encoding="utf-8") as file:
         # This will be probably replaced by the en locale if it exists
         en_ts_file = os.path.join(tmp_path, "i18n", "locale_en.ts")
         shutil.copyfile(template_ts_file, en_ts_file)
-        os.system(f"{lrelease} -idbased {en_ts_file}")
+        os.system(f"{lrelease} {lrelease_flags} {en_ts_file}")
 
         # Fallback
         ts_file = os.path.join(tmp_path, "i18n", "locale.ts")
         shutil.copyfile(template_ts_file, ts_file)
-        os.system(f"{lrelease} -idbased {ts_file}")
+        os.system(f"{lrelease} {lrelease_flags} {ts_file}")
 
         # Prepare for shared strings, if they will be used
         use_shared_strings = "message" in manifest and "usesSharedStrings" in manifest["message"] and manifest["message"]["usesSharedStrings"] == True
@@ -546,11 +562,11 @@ with open(args.source, "r", encoding="utf-8") as file:
                 else:
                     os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
 
-                os.system(f"{lrelease} -idbased {locale_file}")
+                os.system(f"{lrelease} {lrelease_flags} {locale_file}")
 
                 xlifftool_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "xlifftool.py")
                 xlifftool_cmd = [sys.executable, xlifftool_path, "-C", f"--locale={locale}", xliff_path]
-                xlifftool = subprocess.run(xlifftool_cmd, capture_output=True)
+                xlifftool = subprocess.run(xlifftool_cmd, stdout=subprocess.PIPE)
                 # This completeness metric can be out-of-date, sometimes reporting a higher-than-actual completeness after a new string is
                 # added to the app. This happens because the .xliff file doesn't have all the source strings, so an incorrect denominator is used.
                 # To show up in the .xliff, there must be a complete cycle of a new string being pulled into Pontoon (via the `extract new strings`

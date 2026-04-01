@@ -4,12 +4,15 @@
 
 #include "commanddeactivate.h"
 
+#include <QCoreApplication>
 #include <QEventLoop>
 #include <QTextStream>
 
 #include "commandlineparser.h"
+#include "constants.h"
 #include "controller.h"
 #include "leakdetector.h"
+#include "logger.h"
 #include "mozillavpn.h"
 
 CommandDeactivate::CommandDeactivate(QObject* parent)
@@ -21,14 +24,36 @@ CommandDeactivate::~CommandDeactivate() { MZ_COUNT_DTOR(CommandDeactivate); }
 
 int CommandDeactivate::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
-  return MozillaVPN::runCommandLineApp([&]() {
-    if (tokens.length() > 1) {
-      QList<CommandLineParser::Option*> options;
-      return CommandLineParser::unknownOption(this, tokens[1], tokens[0],
-                                              options, false);
-    }
+  QString appName = tokens[0];
 
+  CommandLineParser::Option hOption = CommandLineParser::helpOption();
+  CommandLineParser::Option testingOption("t", "testing",
+                                          "Run in testing mode.");
+
+  QList<CommandLineParser::Option*> options;
+  options.append(&hOption);
+  options.append(&testingOption);
+
+  CommandLineParser clp;
+  if (clp.parse(tokens, options, false)) {
+    return 1;
+  }
+
+  if (hOption.m_set) {
+    clp.showHelp(this, appName, options, false, false);
+    return 0;
+  }
+
+  if (testingOption.m_set) {
+    QCoreApplication::setOrganizationName("Mozilla Testing");
+    LogHandler::instance()->setStderr(true);
+  }
+
+  return MozillaVPN::runCommandLineApp([&]() {
     MozillaVPN vpn;
+    if (testingOption.m_set) {
+      Constants::setStaging();
+    }
     if (!vpn.hasToken()) {
       QTextStream stream(stdout);
       stream << "User status: not authenticated" << Qt::endl;

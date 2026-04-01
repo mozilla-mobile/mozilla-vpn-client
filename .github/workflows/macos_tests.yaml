@@ -14,6 +14,8 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   build_test_addons:
     name: Build Test Addons
@@ -25,7 +27,7 @@ jobs:
     name: Build Test Client
     runs-on: ubuntu-latest
     env:
-      QT_VERSION: 6.6.3
+      QT_VERSION: 6.10.1
     defaults:
       run:
         shell: bash -el {0}
@@ -33,52 +35,57 @@ jobs:
       matrix: ${{ steps.testGen.outputs.tests }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: "recursive"
+          persist-credentials: false
 
       - name: Checkout macOS SDK
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           repository: alexey-lysiuk/macos-sdk
           path: 3rdparty/macos-sdk
           ref: main
           sparse-checkout: MacOSX15.5.sdk/
-      - run: echo "SDKROOT=$(find ${{ github.workspace }}/3rdparty/macos-sdk -name 'SDKSettings.plist' -printf '%h\n')" >> $GITHUB_ENV
+          persist-credentials: false
+      - name: Set SDK root path
+        id: set-sdkroot
+        run: echo "SDKROOT=$(find ${GITHUB_WORKSPACE}/3rdparty/macos-sdk -name 'SDKSettings.plist' -printf '%h\n')" >> $GITHUB_OUTPUT
 
-      - uses: conda-incubator/setup-miniconda@v3
+      - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3
         with:
           miniconda-version: "latest"
           environment-file: "env-apple.yml"
           activate-environment: vpn
 
       - name: Setup compiler cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: ~/.cache/ccache
           key: ccache-macos-${{ github.sha }}
           restore-keys: ccache-macos-${{ github.event.pull_request.base.sha }}
 
       - name: Fetch cached rust crates
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: 3rdparty/cargo-vendor
           key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
           enableCrossOsArchive: true
 
       - name: Setup Qt for macOS
+        id: setup-qt
         uses: ./.github/actions/qt-setup-taskcluster
-        with:
-          dest: ${{ github.workspace }}/3rdparty
 
       - name: Setup Qt host tools
         uses: ./.github/actions/qt-setup-taskcluster
         with:
-          dest: ${{ github.workspace }}/3rdparty
-          toolchain-alias: qt-tools-6.6
+          toolchain-alias: qt-tools-6.10
           cmake-env: false
 
       - name: Compile test client
+        env:
+          SDKROOT: ${{ steps.set-sdkroot.outputs.SDKROOT }}
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt.outputs.cmake-prefix-path }}
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
@@ -91,7 +98,7 @@ jobs:
           cmake --build build/cmake
           cp -r ./build/cmake/src/Mozilla\ VPN.app/ build/Mozilla\ VPN.app
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: test-client-${{ github.sha }}
           path: |
@@ -99,7 +106,7 @@ jobs:
             !build/cmake/
 
       - name: Save compiler cache
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         if: ${{ github.event_name != 'pull_request' }}
         with:
           path: ~/.cache/ccache
@@ -110,7 +117,7 @@ jobs:
         run: |
           echo -n "tests=" >> $GITHUB_OUTPUT
           for test in $(find tests/functional -name 'test*.js' | sort); do
-            printf '{"name": "%s", "path": "%s"}' $(basename ${test%.js} | sed -n 's/test//p') $test
+            printf '{"name": "%s", "path": "%s"}' "$(basename ${test%.js} | sed -n 's/test//p')" "$test"
           done | jq -s -c >> $GITHUB_OUTPUT
 
       - name: Check tests
@@ -132,29 +139,31 @@ jobs:
         test: ${{ fromJson(needs.build_test_app.outputs.matrix) }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: test-client-${{ github.sha }}
           path: build/
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: test-addons-${{ github.sha }}
           path: build/addons/
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
         with:
-          python-version: "3.9"
+          python-version: "3.10"
           cache: "pip"
       - run: pip install -r requirements.txt
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
-          node-version: 18
+          node-version: 20
           cache: "npm"
       - run: npm install
 
@@ -173,13 +182,19 @@ jobs:
           ARTIFACT_DIR: ${{ runner.temp }}/artifacts
           MVPN_ADDONS_PATH: ./build/addons
           MVPN_BIN: ./build/Mozilla VPN.app/Contents/MacOS/Mozilla VPN
+          TEST_PATH: ${{ matrix.test.path }}
+          TEST_NAME: ${{ matrix.test.name }}
         run: |
           export PATH=$GECKOWEBDRIVER:$(npm bin):$PATH
           mkdir -p $ARTIFACT_DIR
-          npm run functionalTest --  --retries 3 ${{ matrix.test.path }}
+          if [ "$TEST_NAME" = "Cli" ]; then
+          npm run functionalTestCli --  --retries 3
+          else
+          npm run functionalTest --  --retries 3 "$TEST_PATH"
+          fi
 
       - name: Uploading artifacts
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         if: ${{ always() }}
         with:
           name: ${{ matrix.test.name }} Logs

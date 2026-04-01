@@ -87,9 +87,9 @@ if(APPLE)
     set(CMAKE_XCODE_ATTRIBUTE_GROUP_ID_IOS ${BUILD_IOS_GROUP_IDENTIFIER})
 
     if(IOS)
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 15.0)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET 17.0)
     else()
-        set(CMAKE_OSX_DEPLOYMENT_TARGET 11.0)
+        set(CMAKE_OSX_DEPLOYMENT_TARGET 13.0)
     endif()
 endif()
 
@@ -99,14 +99,18 @@ if(ANDROID)
 endif()
 
 if(NOT DEFINED BUILD_ID)
-    if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/.git)
+    find_program(GIT_EXECUTABLE git)
+    if(IS_DIRECTORY ${CMAKE_SOURCE_DIR}/.git AND GIT_EXECUTABLE)
         execute_process(
             OUTPUT_VARIABLE BUILD_ID
             OUTPUT_STRIP_TRAILING_WHITESPACE 
-            COMMAND git -C ${CMAKE_SOURCE_DIR} log -1 --format=%cd --date=format:${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M HEAD   
+            COMMAND ${GIT_EXECUTABLE} -C ${CMAKE_SOURCE_DIR} log -1 --format=%cd --date=format:${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M HEAD   
         )
     else()
         string(TIMESTAMP BUILD_ID ${PROJECT_VERSION_MAJOR}.%Y%m%d%H%M)
+    endif()
+    if(NOT BUILD_ID)
+        message(FATAL_ERROR "BUILD_ID could not be generated and is empty.")
     endif()
     message("Generated BUILD_ID: ${BUILD_ID}")
 endif()
@@ -134,12 +138,13 @@ set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER "Autogen")
 set_property(GLOBAL PROPERTY AUTOMOC_TARGETS_FOLDER "Autogen")
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "Autogen")
 
-find_package(Qt6 COMPONENTS
+find_package(Qt6 REQUIRED COMPONENTS
     Core
     Gui
     Network
     Qml
     Quick
+    QuickControls2
     QuickTest
     Test
     WebSockets
@@ -158,6 +163,10 @@ endif()
 
 if(QT_KNOWN_POLICY_QTP0001)
     qt_policy(SET QTP0001 NEW)
+endif()
+
+if(QT_KNOWN_POLICY_QTP0004)
+    qt_policy(SET QTP0004 OLD)
 endif()
 
 message("Using Qt version ${Qt6_VERSION}")
@@ -182,7 +191,6 @@ endif()
 
 if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTS)
     # Unit Tests
-    add_subdirectory(tests/nativemessaging EXCLUDE_FROM_ALL)
     add_subdirectory(tests/unit EXCLUDE_FROM_ALL)
     add_subdirectory(tests/qml EXCLUDE_FROM_ALL)
     add_subdirectory(tests/unit_tests EXCLUDE_FROM_ALL)
@@ -192,6 +200,7 @@ if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTS)
 
     # Functional Tests
     add_subdirectory(tests/functional)
+    add_subdirectory(tests/webext)
 endif()
 
 # Extra platform targets
@@ -201,13 +210,9 @@ if(WIN32)
     add_subdirectory(windows/wireguard_nt)
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    add_subdirectory(macos/loginitem)
     add_subdirectory(macos/pkg)
 elseif(IOS)
     add_subdirectory(ios/networkextension)
-    if(BUILD_ADJUST_SDK_TOKEN)
-        add_subdirectory(ios/adjust)
-    endif()
 endif()
 
 

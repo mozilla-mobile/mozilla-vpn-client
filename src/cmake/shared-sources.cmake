@@ -169,10 +169,28 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
     )
     target_compile_definitions(shared-sources INTERFACE MZ_SIGNATURE)
     target_link_libraries(shared-sources INTERFACE signature)
+
+    # HACK: Patch in a fix for the ring compilation fail on windows/aarch64.
+    # This can be removed once version 0.17.1600 is published to crates.io
+    # See: https://github.com/briansmith/ring/issues/2215
+    if(CMAKE_C_COMPILER_TARGET STREQUAL "aarch64-pc-windows-msvc")
+        file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml
+            "\n"
+            "[patch.crates-io]\n"
+            "ring = { git = \"https://github.com/briansmith/ring\", rev = \"b04eed0a2f30874c62309459d6a2abb22d14775d\" }\n"
+        )
+
+        # We may also need to update the lockfile if the ring version changed.
+        execute_process(
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+            COMMAND ${CMAKE_COMMAND} -E env CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home
+                    ${CARGO_BUILD_TOOL} update ring
+        )
+    endif()
 endif()
 
 include(${CMAKE_SOURCE_DIR}/src/platforms/${MZ_PLATFORM_NAME}/sources.cmake)
-include(${CMAKE_SOURCE_DIR}/src/cmake/sentry.cmake)
+add_subdirectory(${CMAKE_SOURCE_DIR}/src/sentry)
 
 add_dependencies(shared-sources translations)
 

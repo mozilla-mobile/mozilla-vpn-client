@@ -21,14 +21,10 @@
 
 namespace {
 Logger logger("WasmWindowController");
-
-WasmWindowController* s_instance = nullptr;
-}  // namespace
+}
 
 WasmWindowController::WasmWindowController() {
   MZ_COUNT_CTOR(WasmWindowController);
-  Q_ASSERT(s_instance == nullptr);
-  s_instance = this;
 
   QList<QScreen*> screens = qApp->screens();
   if (screens.length() < 2) {
@@ -103,15 +99,8 @@ WasmWindowController::WasmWindowController() {
 }
 
 WasmWindowController::~WasmWindowController() {
+  logger.debug() << "Window controller teardown";
   MZ_COUNT_DTOR(WasmWindowController);
-  Q_ASSERT(s_instance == this);
-  s_instance = nullptr;
-}
-
-// static
-WasmWindowController* WasmWindowController::instance() {
-  Q_ASSERT(s_instance);
-  return s_instance;
 }
 
 void WasmWindowController::iconChanged() {

@@ -41,6 +41,9 @@ conda-windows-cross:
 
 conda-wasm:
     description: "conda-pack the wasm environment"
+    fetches:
+            fetch:
+               - emsdk
     treeherder:
         symbol: TL(conda-wasm)
     run:

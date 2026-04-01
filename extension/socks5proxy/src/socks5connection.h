@@ -33,6 +33,14 @@ class Socks5Connection final : public ProxyConnection {
     ErrorAddressNotSupported = 0x08u,
   };
 
+  enum Socks5AuthMethods : uint8_t {
+    AuthNotRequired = 0x00u,
+    AuthGssapi = 0x01u,
+    AuthUsernamePassword = 0x02u,
+    AuthPrivateMethodStart = 0x80u,
+    AuthNoAcceptableMethods = 0xffu,
+  };
+
   static Socks5Replies socketErrorToSocks5Rep(
       QAbstractSocket::SocketError error);
 

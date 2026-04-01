@@ -30,6 +30,7 @@ MacOSCryptoSettings::MacOSCryptoSettings() : CryptoSettings() {
   if (appId) {
     m_appId = QString::fromNSString(appId);
   } else {
+    logger.warning() << "Bundle identifier not found, using fallback app ID";
 #ifdef MZ_IOS
     m_appId = Constants::IOS_FALLBACK_APP_ID;
 #else

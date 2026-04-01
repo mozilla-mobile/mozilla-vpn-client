@@ -1,0 +1,86 @@
+{
+  "api_version": "0.1",
+  "id": "message_update_v2.35",
+  "name": "Update to Mozilla VPN 2.35",
+  "type": "message",
+  "conditions": {
+    "max_client_version": "2.34.9",
+    "javascript": "osCheck.js"
+  },
+  "javascript": {
+    "enable": "enable.js"
+  },
+  "message": {
+    "date": 1774454123,
+    "usesSharedStrings": true,
+    "shortVersion": "2.35",
+    "id": "message_update_v2.35",
+    "title": "vpn.commonStrings.updateTitle",
+    "subtitle": "vpn.commonStrings.subtitle",
+    "promo_text": "vpn.commonStrings.updatePromo",
+    "badge": "new_update",
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "text",
+        "content": "vpn.commonStrings.generalUpdateBulletIntro"
+      },
+      {
+        "id": "c_2",
+        "type": "ulist",
+        "content": [
+          {
+            "id": "l_1",
+            "content": "vpn.235updateMessage.bullet1"
+          },
+          {
+            "id": "l_2",
+            "content": "vpn.235updateMessage.bullet2"
+          },
+          {
+            "id": "l_3",
+            "content": "vpn.235updateMessage.bullet3"
+          },
+          {
+            "id": "l_4",
+            "content": "vpn.235updateMessage.bullet4"
+          },
+          {
+            "id": "l_5",
+            "content": "vpn.235updateMessage.bullet5"
+          },
+          {
+            "id": "l_6",
+            "content": "vpn.233updateMessage.bullet11"
+          }
+        ]
+      },
+      {
+        "id": "c_3",
+        "type": "button",
+        "style": "primary",
+        "content": "vpn.commonStrings.updateButton",
+        "javascript": "update.js"
+      },
+      {
+        "id": "c_4",
+        "type": "button",
+        "style": "primary",
+        "content": "vpn.commonStrings.downloadButton",
+        "javascript": "updateWeb.js"
+      },
+      {
+        "id": "c_5",
+        "type": "button",
+        "style": "link",
+        "content": "vpn.commonStrings.getHelpButton",
+        "javascript": "getHelp.js"
+      },
+      {
+        "id": "extra_1",
+        "type": "text",
+        "content": "vpn.commonStrings.downloadTitle"
+      }
+    ]
+  }
+}

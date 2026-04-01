@@ -41,17 +41,22 @@ workers:
             provisioner: 'mozillavpn-{level}'
             implementation: docker-worker
             os: linux
-            worker-type: b-linux-gcp
+            worker-type: b-linux
         b-linux-large:
             provisioner: 'mozillavpn-{level}'
             implementation: docker-worker
             os: linux
-            worker-type: b-linux-large-gcp
+            worker-type: b-linux-large
         b-win2022:
             provisioner: 'mozillavpn-{level}'
             implementation: generic-worker
             os: windows
             worker-type: b-win2022
+        b-win11-2024h2-arm64:
+            provisioner: 'mozillavpn-{level}'
+            implementation: generic-worker
+            os: windows
+            worker-type: win11-a64-24h2-builder
         b-macos:
             provisioner: 'releng-hardware'
             implementation: generic-worker
@@ -64,7 +69,7 @@ workers:
             provisioner: 'mozillavpn-{level}'
             implementation: docker-worker
             os: linux
-            worker-type: 'images-gcp'
+            worker-type: 'images'
         dep-signing:
             provisioner: scriptworker-k8s
             implementation: scriptworker-signing

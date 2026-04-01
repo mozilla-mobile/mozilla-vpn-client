@@ -40,9 +40,6 @@ class Localizer final : public QAbstractListModel {
 
   static Localizer* instance();
 
-  Localizer();
-  ~Localizer();
-
   void initialize();
 
   bool hasLanguages() const { return !m_languages.isEmpty(); }
@@ -97,6 +94,8 @@ class Localizer final : public QAbstractListModel {
   void localeChanged();
 
  private:
+  Localizer();
+  ~Localizer();
   QString localizedLanguageName(const QString& languageCode) const;
   static QString nativeLanguageName(const QLocale& locale, const QString& code);
 

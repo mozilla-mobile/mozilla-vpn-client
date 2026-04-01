@@ -14,7 +14,8 @@ class DesktopAuthenticationListener : public AuthenticationListener {
   Q_DISABLE_COPY_MOVE(DesktopAuthenticationListener)
 
  public:
-  explicit DesktopAuthenticationListener(QObject* parent);
+  explicit DesktopAuthenticationListener(QObject* parent,
+                                         bool headless = false);
   ~DesktopAuthenticationListener();
 
   void start(Task* task, const QString& codeChallenge,
@@ -23,6 +24,7 @@ class DesktopAuthenticationListener : public AuthenticationListener {
 
  private:
   QOAuthHttpServerReplyHandler* m_server = nullptr;
+  const bool m_headless;
 };
 
 #endif  // DESKTOPAUTHENTICATIONLISTENER_H

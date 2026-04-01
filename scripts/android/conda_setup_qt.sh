@@ -7,8 +7,21 @@ if [[ "$CONDA_PREFIX" == "$BASE_PREFIX" ]]; then
     exit 1
 fi
 
+# Check QT_VERSION is at least 6.9
+if [[ -z "$QT_VERSION" ]]; then
+    echo "Error: QT_VERSION environment variable is not set."
+    exit 1
+fi
+
+# Extract minor version from QT_VERSION (assuming format Major.minor.patch)
+QT_MINOR=$(echo "$QT_VERSION" | cut -d'.' -f2)
+if [[ "$QT_MINOR" -lt 9 ]]; then
+    echo "Error: Qt versions below 6.9 are no longer supported. Current version: $QT_VERSION"
+    exit 1
+fi
+
 if [[ "$(uname)" == "Linux" ]]; then
-    HOST_TARGET="linux desktop ${QT_VERSION} gcc_64"
+    HOST_TARGET="linux desktop ${QT_VERSION} linux_gcc_64"
     HOST="linux"
     HOST_FOLDER_NAME="gcc_64" # Things can't be consistent, can they?
 elif [[ "$(uname)" == "Darwin" ]]; then
@@ -29,12 +42,14 @@ fi
 export QT_DIR=$CONDA_PREFIX/Qt
 
 # QT_Host Tools
+echo "aqt install-qt --outputdir $QT_DIR $HOST_TARGET"
 python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET
 for QT_HOST_DIR in $(find ${QT_DIR} -type d -name "${HOST_FOLDER_NAME}"); do
     find ${QT_HOST_DIR} -type f -name 'lib*.a' -delete
 done
 
 # QT Android Tools
+echo "aqt install-qt --outputdir $QT_DIR $HOST android ${QT_VERSION} ${ANDROID_ARCH} -m all"
 if ! python -m aqt install-qt --outputdir $QT_DIR $HOST android ${QT_VERSION} ${ANDROID_ARCH} -m all; then
     echo "Whoops something went wrong. "
     echo "If no pri was found make sure your ANDROID_ARCH is one of:"

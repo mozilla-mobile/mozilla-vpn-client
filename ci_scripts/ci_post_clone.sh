@@ -23,14 +23,13 @@ git submodule update --init
 # create xcode.xconfig
 cat > xcode.xconfig << EOF
 APP_ID_MACOS = org.mozilla.macos.FirefoxVPN
-LOGIN_ID_MACOS = org.mozilla.macos.FirefoxVPN.login-item
 GROUP_ID_IOS = group.org.mozilla.ios.Guardian
 APP_ID_IOS = org.mozilla.ios.FirefoxVPN
 NETEXT_ID_IOS = org.mozilla.ios.FirefoxVPN.network-extension
 EOF
 
 
-export INDEX_KEY=mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.conda-ios-x86_64-6.6.0.latest
+export INDEX_KEY=mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.conda-ios-x86_64-6.10.1.latest
 curl -L https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/$INDEX_KEY/artifacts/public%2Fbuild%2Fconda-ios.tar.xz --output conda-ios.tar.xz
 
 tar -xf conda-ios.tar.xz
@@ -49,7 +48,6 @@ sed -i.bak -E \
 qt-cmake -S . -GXcode \
   -DCMAKE_OSX_ARCHITECTURES="arm64" \
   -DCMAKE_BUILD_TYPE=Release \
-  -DBUILD_ADJUST_SDK_TOKEN=$MVPN_IOS_ADJUST_TOKEN \
   -DBUILD_TESTS=OFF
 
 # Rename the default scheme to match the Xcode cloud configuration.

@@ -90,6 +90,7 @@ class AndroidVPNActivity : public QObject {
   static void maybeInit();
   static AndroidVPNActivity* instance();
   static bool handleBackButton(JNIEnv* env, jobject thiz);
+  static bool isReady();
   static void sendToService(ServiceAction type, const QString& data = "");
   static void connectService();
   /**
@@ -114,6 +115,7 @@ class AndroidVPNActivity : public QObject {
   void eventVpnConfigPermissionResponse(bool granted);
   void eventRequestGleanUploadEnabledState();
   void onOpenedWithUrl(const QUrl& data);
+  void customTabClosed();
 
  private:
   AndroidVPNActivity();
@@ -127,6 +129,7 @@ class AndroidVPNActivity : public QObject {
 
   // We got a new Intent
   static void onIntentInternal(JNIEnv* env, jobject thiz);
+  static void onCustomTabClosed(JNIEnv* env, jobject thiz);
   void handleServiceMessage(int code, const QString& data);
 };
 

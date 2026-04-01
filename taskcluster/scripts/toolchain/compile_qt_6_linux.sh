@@ -6,48 +6,53 @@
 
 set -e
 cd $HOME
+export XZ_DEFAULTS="-T0"
 
 QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-src-*' | head -1)
 QT_SOURCE_VERSION=$(echo $QT_SOURCE_DIR | awk -F"-" '{print $NF}')
 
-if dpkg --compare-versions "$QT_SOURCE_VERSION" lt "6.4.2"; then
-    echo "Patching for QTBUG-109046"
-    patch -d ${QT_SOURCE_DIR}/qtwebengine -p1 << EOF
-From 240e71877865ed07e4c8d5bd4553aa0772c2adf4 Mon Sep 17 00:00:00 2001
-From: Alexey Edelev <alexey.edelev@qt.io>
-Date: Wed, 23 Nov 2022 12:40:45 +0100
-Subject: [PATCH] Fix Linux build with CMake versions >= 3.25
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+if [[ $(echo -e "${QT_SOURCE_VERSION}\n6.10.3" | sort --version-sort | head -1) != "6.10.3" ]]; then
+    echo "Patching for QTBUG-141830"
+    patch -d ${QT_SOURCE_DIR}/qtdeclarative -p1 < ${VCS_PATH}/taskcluster/scripts/toolchain/patches/qtbug-141830-qsortfilterproxymodel.patch
+fi
 
-The 'LINUX' variable exists in CMake since the version 3.25. This
-variable previously was undefined while preparsing the configure.cmake
-files. Since the CMake script that defines the 'check_for_ulimit'
-function is not included while evaluating configure.cmake first time
-we need to add a stub.
-
-Pick-to: 6.2 6.4
-Change-Id: I25bdec4f4a1b6af23174507a8f0f9cbf01f0c398
-Reviewed-by: Jörg Bornemann <joerg.bornemann@qt.io>
----
- configure.cmake | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/configure.cmake b/configure.cmake
-index 37ac1f42846..a082ec1a665 100644
---- a/configure.cmake
-+++ b/configure.cmake
-@@ -6,6 +6,8 @@ if(QT_CONFIGURE_RUNNING)
-     endfunction()
-     function(add_check_for_support)
-     endfunction()
-+    function(check_for_ulimit)
-+    endfunction()
- else()
-     find_package(Ninja 1.7.2)
-     find_package(Gn \${QT_REPO_MODULE_VERSION} EXACT)
-EOF
+echo "Installing Qt build dependencies"
+if [ -f /etc/redhat-release ]; then
+    sudo yum -y install \
+            gcc-toolset-10 \
+            at-spi2-core-devel \
+            openssl3-devel
+    source /opt/rh/gcc-toolset-10/enable
+elif [ -f /etc/debian_version ]; then
+    sudo apt-get -y install \
+            libatspi2.0-dev \
+            libdbus-1-dev \
+            libfontconfig1-dev \
+            libfreetype6-dev \
+            libssl-dev \
+            libx11-dev \
+            libx11-xcb-dev \
+            libxext-dev \
+            libxfixes-dev \
+            libxi-dev \
+            libxrender-dev \
+            libxcb1-dev \
+            libxcb-cursor-dev \
+            libxcb-glx0-dev \
+            libxcb-keysyms1-dev \
+            libxcb-image0-dev \
+            libxcb-shm0-dev \
+            libxcb-icccm4-dev \
+            libxcb-sync-dev \
+            libxcb-xfixes0-dev \
+            libxcb-shape0-dev \
+            libxcb-randr0-dev \
+            libxcb-render-util0-dev \
+            libxcb-util-dev \
+            libxcb-xinerama0-dev \
+            libxcb-xkb-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-dev
 fi
 
 echo "Building $(basename $QT_SOURCE_DIR)"

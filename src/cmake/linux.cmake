@@ -2,7 +2,15 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-option(BUILD_FLATPAK "Build for Flatpak distribution" OFF)
+if("$ENV{container}" STREQUAL "flatpak")
+    set(DEFAULT_FLATPAK ON)
+endif()
+option(BUILD_FLATPAK "Build for Flatpak distribution" ${DEFAULT_FLATPAK})
+
+if(EXISTS /etc/debian_version)
+    set(DEFAULT_APPARMOR ON)
+endif()
+option(BUILD_APPARMOR "Build AppArmor profile" ${DEFAULT_APPARMOR})
 
 find_package(Qt6 REQUIRED COMPONENTS DBus)
 target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
@@ -42,23 +50,28 @@ if(Qt6_VERSION VERSION_GREATER_EQUAL 6.5.0)
 endif()
 
 if(NOT BUILD_FLATPAK)
-    # Link to libcap and libsecret
+    # Link to libcap and polkit
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(LIBCAP REQUIRED IMPORTED_TARGET libcap)
-    pkg_check_modules(LIBSECRET REQUIRED IMPORTED_TARGET libsecret-1)
+    pkg_check_modules(polkit REQUIRED IMPORTED_TARGET polkit-gobject-1)
+
     if (QT_FEATURE_static)
-        target_link_libraries(mozillavpn PRIVATE ${LIBCAP_STATIC_LIBRARIES} ${LIBSECRET_STATIC_LIBRARIES})
-        target_include_directories(mozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS} ${LIBSECRET_STATIC_INCLUDE_DIRS})
-        target_compile_options(mozillavpn PRIVATE ${LIBCAP_STATIC_CFLAGS} ${LIBSECRET_STATIC_CFLAGS})
+        target_link_libraries(mozillavpn PRIVATE ${LIBCAP_STATIC_LIBRARIES})
+        target_include_directories(mozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS})
+        target_compile_options(mozillavpn PRIVATE ${LIBCAP_STATIC_CFLAGS})
+
+        find_package(Qt6 REQUIRED COMPONENTS WaylandClientPrivate)
+        qt_import_plugins(mozillavpn INCLUDE Qt6::QWaylandIntegrationPlugin)
+        target_link_libraries(mozillavpn PRIVATE Qt6::WaylandClientPrivate)
     else()
-        target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP PkgConfig::LIBSECRET)
+        target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP)
     endif()
+
+    target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit)
 
     target_sources(mozillavpn PRIVATE
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.h
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcryptosettings.cpp
-        ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcryptosettings.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbusclient.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbusclient.h
     )
@@ -80,6 +93,8 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/linuxfirewall.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/wireguardutilslinux.h
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/polkithelper.cpp
+        ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/polkithelper.h
     )
 
     target_compile_options(mozillavpn PRIVATE -DPROTOCOL_VERSION=\"1\")
@@ -173,6 +188,28 @@ if(NOT BUILD_FLATPAK)
     install(FILES ${CMAKE_CURRENT_BINARY_DIR}/org.mozilla.vpn.dbus.service
         DESTINATION /usr/share/dbus-1/system-services)
 
+    pkg_get_variable(POLKIT_POLICY_DIR polkit-gobject-1 policydir)
+    install(FILES ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/org.mozilla.vpn.policy
+        DESTINATION ${POLKIT_POLICY_DIR})
+
+    pkg_get_variable(POLKIT_DATA_DIR polkit-gobject-1 datadir)
+    if(NOT POLKIT_DATA_DIR)
+        set(POLKIT_DATA_DIR "/usr/share")
+    endif()
+    if(EXISTS /etc/debian_version)
+        install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.rules-debian
+            RENAME org.mozilla.vpn.rules
+            DESTINATION ${POLKIT_DATA_DIR}/polkit-1/rules.d)
+        install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.pkla
+            DESTINATION /var/lib/polkit-1/localauthority/55-org.mozilla.d/)
+    elseif(EXISTS /etc/redhat-release)
+        install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.rules-others
+            RENAME org.mozilla.vpn.rules
+            DESTINATION ${POLKIT_DATA_DIR}/polkit-1/rules.d)
+    else()
+        message(INFO "Unknown Linux distribution, please install polkit rules manually")
+    endif()
+
     pkg_check_modules(SYSTEMD systemd)
     if("${SYSTEMD_FOUND}" EQUAL 1)
         pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
@@ -185,4 +222,12 @@ if(NOT BUILD_FLATPAK)
         DESTINATION ${SYSTEMD_UNIT_DIR})
 
     install(SCRIPT ${CMAKE_SOURCE_DIR}/scripts/linux/postinst.cmake)
+endif()
+
+if(BUILD_APPARMOR)
+    configure_file(${CMAKE_SOURCE_DIR}/linux/apparmor.profile.in
+        ${CMAKE_CURRENT_BINARY_DIR}/apparmor.profile)
+    install(FILES ${CMAKE_CURRENT_BINARY_DIR}/apparmor.profile
+        DESTINATION ${CMAKE_INSTALL_SYSCONFDIR}/apparmor.d
+        RENAME "usr.bin.mozillavpn")
 endif()

@@ -23,6 +23,7 @@ class AuthenticationListener : public QObject {
   enum AuthenticationType {
     AuthenticationInBrowser,
     AuthenticationInApp,
+    AuthenticationInBrowserHeadless,
   };
 
   static AuthenticationListener* create(QObject* parent,
@@ -51,6 +52,8 @@ class AuthenticationListener : public QObject {
   void abortedByUser();
 
   void readyToFinish();
+
+  void started();
 
  protected:
   explicit AuthenticationListener(QObject* parent);

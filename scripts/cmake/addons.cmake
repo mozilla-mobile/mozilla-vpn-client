@@ -27,8 +27,8 @@ function(add_addon_target NAME)
     endif()
 
     # Get the path to the Qt host tools.
-    get_target_property(QT_QMLLINT_EXECUTABLE Qt6::qmllint LOCATION)
-    get_filename_component(QT_TOOL_BIN_PATH ${QT_QMLLINT_EXECUTABLE} PATH)
+    get_target_property(QT_PATHS_EXECUTABLE Qt6::qtpaths LOCATION)
+    get_filename_component(QT_TOOL_BIN_PATH ${QT_PATHS_EXECUTABLE} PATH)
     get_target_property(QT_RCC_EXECUTABLE Qt6::rcc LOCATION)
     get_filename_component(QT_TOOL_LIBEXEC_PATH ${QT_RCC_EXECUTABLE} PATH)
 

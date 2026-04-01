@@ -153,7 +153,6 @@ MZViewBase {
                 onClicked: {
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewAppearance.qml")
                 }
-                visible: MZFeatureList.get("themeSelection").isSupported
             }
         }
     }

@@ -49,10 +49,10 @@ QJsonObject InterfaceConfig::toJson() const {
   return json;
 }
 
-QString InterfaceConfig::toWgConf(const QMap<QString, QString>& extra) const {
+QString InterfaceConfig::toWgConf(const QMap<QString, QString>& extra,
+                                  const QString peerComment) const {
 #define VALIDATE(x) \
   if (x.contains("\n")) return "";
-
   VALIDATE(m_privateKey);
   VALIDATE(m_deviceIpv4Address);
   VALIDATE(m_deviceIpv6Address);
@@ -65,6 +65,7 @@ QString InterfaceConfig::toWgConf(const QMap<QString, QString>& extra) const {
 
   QString content;
   QTextStream out(&content);
+
   out << "[Interface]\n";
   out << "PrivateKey = " << m_privateKey << "\n";
 
@@ -96,6 +97,11 @@ QString InterfaceConfig::toWgConf(const QMap<QString, QString>& extra) const {
   }
 
   out << "\n[Peer]\n";
+  if (!peerComment.isEmpty()) {
+    for (const QString& line : peerComment.split('\n')) {
+      out << "# " << line << "\n";
+    }
+  }
   out << "PublicKey = " << m_serverPublicKey << "\n";
   out << "Endpoint = " << m_serverIpv4AddrIn.toUtf8() << ":" << m_serverPort
       << "\n";
@@ -107,6 +113,37 @@ QString InterfaceConfig::toWgConf(const QMap<QString, QString>& extra) const {
   */
   QStringList ranges;
   for (const IPAddress& ip : m_allowedIPAddressRanges) {
+    ranges.append(ip.toString());
+  }
+  out << "AllowedIPs = " << ranges.join(", ") << "\n";
+
+  return content;
+}
+
+QString InterfaceConfig::toMultiHopWgConf(
+    const InterfaceConfig& exitConfig, const QMap<QString, QString>& extra,
+    const QString exitPeerComment, const QString entryPeerComment) const {
+  QString content = toWgConf(extra, entryPeerComment);
+  QTextStream out(&content);
+
+#define VALIDATE(x) \
+  if (x.contains("\n")) return "";
+  VALIDATE(exitConfig.m_serverPublicKey);
+  VALIDATE(exitConfig.m_serverIpv4AddrIn);
+#undef VALIDATE
+
+  out << "\n[Peer]\n";
+  if (!exitPeerComment.isEmpty()) {
+    for (const QString& line : exitPeerComment.split('\n')) {
+      out << "# " << line << "\n";
+    }
+  }
+  out << "PublicKey = " << exitConfig.m_serverPublicKey << "\n";
+  out << "Endpoint = " << exitConfig.m_serverIpv4AddrIn.toUtf8() << ":"
+      << exitConfig.m_serverPort << "\n";
+
+  QStringList ranges;
+  for (const IPAddress& ip : exitConfig.m_allowedIPAddressRanges) {
     ranges.append(ip.toString());
   }
   out << "AllowedIPs = " << ranges.join(", ") << "\n";

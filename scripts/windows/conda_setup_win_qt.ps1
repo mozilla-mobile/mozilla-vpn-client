@@ -16,16 +16,28 @@ Write-Output("Installing in $conda_folder")
 $OLD_PWD = $PWD # Backup that to go back once we done. 
 Set-Location $conda_folder 
 
-$TASKCLUSTER_LINK = "https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-6.6.latest/artifacts/public%2Fbuild%2Fqt6_win.tar.xz"
+# Get QT version from conda environment variable
+$QT_VERSION = $env:QT_VERSION
+if (-not $QT_VERSION) {
+     Write-Output("QT_VERSION not found in conda environment. abort")
+     Set-Location $OLD_PWD
+     return -1
+}
+Write-Output("Using QT version: $QT_VERSION")
 
-$ProgressPreference = 'SilentlyContinue'
+# Parse version to get major.minor format (e.g., "6.10.1" -> "6.10")
+$version = [System.Version]$QT_VERSION
+$QT_VERSION_SHORT = "$($version.Major).$($version.Minor)"
+
+# Construct the index and download URLs
+$TASKCLUSTER_LINK ="https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-windows-x86_64-$QT_VERSION_SHORT.latest/artifacts/public%2Fbuild%2Fqt6_win.tar.xz"
+
 Set-Location $conda_folder 
 Write-Output("Downloading qt artifact ...")
-Invoke-WebRequest -Uri $TASKCLUSTER_LINK -OutFile "qt.zip" 
-Write-Output("Expanding qt artifact ...")
-Expand-Archive -Path "qt.zip" -DestinationPath "TaskCluster_QT"
-$ProgressPreference = 'Continue'
-Remove-Item "qt.zip" -ErrorAction SilentlyContinue
+curl.exe -L -o "qt6_win.tar.xz" $TASKCLUSTER_LINK
+Write-Output("Extracting qt artifact ...")
+tar -xf "qt6_win.tar.xz"
+Remove-Item "qt6_win.tar.xz" -ErrorAction SilentlyContinue
 
 # Let conda find QT: 
 
@@ -33,9 +45,8 @@ Remove-Item "qt.zip" -ErrorAction SilentlyContinue
 #
 
 $activate = @"
-`$env:CMAKE_PREFIX_PATH="`$env:CONDA_PREFIX\TaskCluster_QT\qt-windows\lib\cmake"
-`$env:OPENSSL_ROOT_DIR="`$env:CONDA_PREFIX\TaskCluster_QT\qt-windows\SSL"
-`$env:QT_HOST_PATH="`$env:CONDA_PREFIX\TaskCluster_QT\qt-windows\"
+`$env:CMAKE_PREFIX_PATH="`$env:CONDA_PREFIX\qt-windows\lib\cmake"
+`$env:QT_HOST_PATH="`$env:CONDA_PREFIX\qt-windows\"
 "@
 Out-File -Encoding utf8 `
          -FilePath  "$conda_folder\etc\conda\activate.d\vpn_qt.ps1"`
@@ -43,7 +54,6 @@ Out-File -Encoding utf8 `
 
 
 $deactivate = @"
-Remove-Item Env:\OPENSSL_ROOT_DIR
 Remove-Item Env:\QT_HOST_PATH
 Remove-Item Env:\CMAKE_PREFIX_PATH
 "@

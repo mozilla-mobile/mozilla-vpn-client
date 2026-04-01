@@ -6,20 +6,24 @@ on:
         required: true
         type: string
 
+permissions: {}
+
 jobs:
   build-test-addons:
     name: Build Test Addons
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
 
       - name: Setup addons cache
         id: addons-cache
-        uses: actions/cache@v4
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: build-addons/
-          key: test-addons-${{ hashFiles('addons/**', 'test/functional/addons/**', 'scripts/addons/*.py', 'scripts/cmake/addons.cmake') }}
+          key: test-addons-${{ hashFiles('addons/**', 'tests/functional/addons/**', 'scripts/addon/*.py', 'scripts/cmake/addons.cmake') }}
 
       - name: Install build dependencies
         if: steps.addons-cache.outputs.cache-hit != 'true'
@@ -38,7 +42,7 @@ jobs:
           cmake -S $(pwd)/tests/functional/addons -B build-addons/
           cmake --build build-addons/
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: ${{ inputs.test-addons-name }}
           path: build-addons/

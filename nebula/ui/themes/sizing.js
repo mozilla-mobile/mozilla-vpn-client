@@ -44,7 +44,7 @@ theme.helpSheetSecondaryButtonSpacing = 8
 theme.navBarHeight = 64;
 theme.navBarMaxWidth = 608;
 theme.navBarTopMargin = 48;
-theme.navBarBottomMargin = Qt.platform.os !== 'ios' ? 16 : 34;
+theme.navBarBottomMargin = 16;
 theme.navBarHeightWithMargins =
     theme.navBarHeight + theme.navBarTopMargin + theme.navBarBottomMargin;
 theme.navBarIconSize = 48

@@ -20,6 +20,7 @@ qt_add_qml_module(mozillavpn-ui
         authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml
         authenticationInApp/ViewAuthenticationStubAccount.qml
         authenticationInApp/ViewAuthenticationSsoAccount.qml
+        popups/MessageAddonPopover.qml
         popups/ServerUnavailablePopup.qml
         screens/authenticationInApp/ViewAuthenticationInApp.qml
         screens/devices/ViewDevices.qml
@@ -109,7 +110,6 @@ qt_add_qml_module(mozillavpn-ui
         sharedViews/ViewErrorFullScreen.qml
         sharedViews/ViewPermissionRequiredOSX.qml
         sharedViews/ViewUpdate.qml
-        sharedViews/ViewFullScreen.qml
     SOURCES
         composer/composer.cpp
         composer/composer.h
@@ -169,6 +169,7 @@ target_include_directories(mozillavpn-uiplugin PUBLIC
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     target_sources(mozillavpn-ui PRIVATE singletons/VPNAndroidUtils.h)
+    target_sources(mozillavpn-ui PRIVATE singletons/VPNAndroidCommons.h)
 endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     target_sources(mozillavpn-ui PRIVATE singletons/VPNMacOSUtils.h)

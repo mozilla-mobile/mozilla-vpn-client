@@ -1,0 +1,18 @@
+{
+  "api_version": "0.1",
+  "id": "message_promo_no_text",
+  "name": "Promo Test Message - No Promo Text",
+  "type": "message",
+  "message": {
+    "id": "message_promo_no_text",
+    "title": "Test title no promo",
+    "subtitle": "Test subtitle no promo",
+    "blocks": [
+      {
+        "id": "c_1",
+        "type": "text",
+        "content": "Test message content."
+      }
+    ]
+  }
+}

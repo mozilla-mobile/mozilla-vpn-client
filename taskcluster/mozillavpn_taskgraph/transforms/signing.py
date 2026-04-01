@@ -20,7 +20,8 @@ PRODUCTION_SIGNING_BUILD_TYPES = [
     "linux/opt",
     "macos/opt",
     "macos/next", # TODO: This would be a candidate for debug signing, if we supported it.
-    "windows/opt",
+    "windows-x86_64/opt",
+    "windows-aarch64/opt",
     "addons/opt",
 ]
 

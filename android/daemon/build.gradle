@@ -35,9 +35,17 @@ android {
         buildConfigField "String", "VERSION_NAME", '"' + (System.getenv("SHORTVERSION") ?: "") + '"'
         buildConfigField  "String", "VERSIONCODE" ,  '"' +System.getenv("VERSIONCODE") + '"'
         buildConfigField  "String", "SHORTVERSION" ,  '"' + System.getenv("SHORTVERSION") +  '"'
-        buildConfigField  "String", "ADJUST_SDK_TOKEN" ,  '"' + (project.properties["adjusttoken"] ?: "no_token_found") +  '"'
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    namespace 'org.mozilla.firefox.vpn.daemon'
+
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
     }
 
     buildFeatures {

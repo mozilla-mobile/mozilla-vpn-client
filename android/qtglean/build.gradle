@@ -8,7 +8,7 @@
 // qtglean binary instead and we don't event need to add it here because
 // those symbols are already alvailable from the VPN project.
 
-def repositoryRoot = "$rootDir/../../.."
+def repositoryRoot = "$rootDir/../../../.."
 def gleanVendoredPath = "$repositoryRoot/3rdparty/glean"
 
 // Path to the CMake build directory.
@@ -18,6 +18,7 @@ def cmakeBinaryDir = "$rootDir/../.."
 
 apply plugin: "com.android.library"
 apply plugin: "kotlin-android"
+apply plugin: "kotlinx-serialization"
 
 android {
     namespace "mozilla.telemetry.glean"
@@ -39,6 +40,13 @@ android {
                 "$cmakeBinaryDir/glean"
             ]
         }
+    }
+    compileOptions {
+      sourceCompatibility JavaVersion.VERSION_1_8
+      targetCompatibility JavaVersion.VERSION_1_8
+    }
+    kotlinOptions {
+      jvmTarget = '1.8'
     }
 
     buildFeatures {
@@ -84,6 +92,7 @@ dependencies {
     implementation gleanLibs.androidx.lifecycle.process
     implementation gleanLibs.androidx.work
     implementation gleanLibs.kotlinx.coroutines
+    api gleanLibs.kotlinx.serialization
 
     // We need a compileOnly dependency on the following block of testing
     // libraries in order to expose the GleanTestRule to applications/libraries

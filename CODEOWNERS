@@ -2,6 +2,9 @@
 /src/translations/strings.yaml @flodolo
 /src/translations/extras @flodolo
 
+# GitHub workflows and configuration - Repository team reviews for security
+/.github/ @oskirby @lesleyjanenorton @strseb @mcleinman @artfwo @encrypt94
+
 # Taskcluster / Taskgraph related files. Releng will review for best practices
 # and security. Most changes should additionally be reviewed by VPN team.
 .cron.yml @mozilla-mobile/releng

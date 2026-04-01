@@ -4,6 +4,8 @@ on:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+"
 
+permissions: {}
+
 jobs:
   flathub-beta:
     name: Trigger Flathub Beta Checker 
@@ -26,7 +28,9 @@ jobs:
           echo "response=$response" >> $GITHUB_OUTPUT
 
       - name: Response
-        run: echo ${{ steps.curl.outputs.response }}
+        run: echo ${CURL_RESPONSE}
+        env:
+          CURL_RESPONSE: ${{ steps.curl.outputs.response }}
 
     outputs:
       curl_response: ${{ steps.code.outputs.response }}
@@ -37,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: fail_job
-        uses: actions/github-script@v3
+        uses: actions/github-script@ffc2c79a5b2490bd33e0a41c1de74b877714d736 # v3
         with:
           script: |
               core.setFailed('Curl failed')

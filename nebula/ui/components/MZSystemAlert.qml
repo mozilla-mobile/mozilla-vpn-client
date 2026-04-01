@@ -84,6 +84,19 @@ MZAlert {
                 }
             },
             State {
+                name: MZErrorHandler.SplitTunnelErrorAlertWithLink
+                PropertyChanges {
+                    target: alertBox
+                    alertText: MZI18n.SplittunnelErrorActivating
+                    alertActionText: MZI18n.GetHelpHelpCenter
+                    visible: true
+
+                    onActionPressed: ()=>{
+                        MZUrlOpener.openUrlLabel("sumoExcludedApps")
+                    }
+                }
+            },
+            State {
                 name: MZErrorHandler.UnrecoverableErrorAlert
                 PropertyChanges {
                     target: alertBox
@@ -144,6 +157,14 @@ MZAlert {
                     target: alertBox
                     alertType: alertTypes.warning
                     alertText: MZI18n.BypassVPNVpnMustBeOff
+                    visible: true
+                }
+            },
+            State {
+                name: MZErrorHandler.SettingsDecryptionErrorAlert
+                PropertyChanges {
+                    target: alertBox
+                    alertText: MZI18n.SettingsDecryptionErrorText
                     visible: true
                 }
             },

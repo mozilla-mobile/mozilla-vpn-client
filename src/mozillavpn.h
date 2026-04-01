@@ -12,6 +12,7 @@
 
 #include "app.h"
 #include "authenticationlistener.h"
+#include "frontend/navigationbarbutton.h"
 #include "frontend/navigator.h"
 
 struct MozillaVPNPrivate;
@@ -114,7 +115,6 @@ class MozillaVPN final : public App {
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
   Q_INVOKABLE void hardResetAndQuit();
   Q_INVOKABLE void cancelReauthentication();
-  Q_INVOKABLE static void statusBarCheck();
 
   Q_INVOKABLE void gleanSetDebugViewTag(QString tag);
   Q_INVOKABLE void gleanSetLogPings(bool flag);
@@ -253,6 +253,8 @@ class MozillaVPN final : public App {
   static void registerInspectorCommands();
 
   static void registerNavigationBarButtons();
+
+  static void setupMessageNotificationWatch(NavigationBarButton& messageIcon);
 
   static void registerAddonApis();
 

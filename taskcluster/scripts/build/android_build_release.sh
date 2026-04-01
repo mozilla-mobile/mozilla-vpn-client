@@ -20,14 +20,12 @@ env
 
 # Get Secrets for building
 if [[ "$MOZ_SCM_LEVEL" == "3" ]]; then
-  echo "Fetching Tokens!"
-  ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k adjust -f adjust_token
+  echo "Fetching Token!"
   ./taskcluster/scripts/get-secret.py -s project/mozillavpn/tokens -k sentry_debug_file_upload_key -f sentry_debug_file_upload_key
 else
     echo "Using dummy Tokens!"
     # write a dummy value in the files, so that we still compile sentry c:
     echo "dummy" > sentry_debug_file_upload_key
-    echo "dummy" > adjust_token
 fi
 
 
@@ -42,7 +40,7 @@ mkdir -p /builds/worker/artifacts/
 # aqt-name "x86"         -> qmake-name: "x86"
 # aqt-name "x86_64"      -> qmake-name: "x86_64"
 
-./scripts/android/cmake.sh $QTPATH -A $1 -a $(cat adjust_token)
+./scripts/android/cmake.sh $QTPATH -A $1
 
 if [[ "$MOZ_SCM_LEVEL" == "3" ]]; then
   sentry-cli login --auth-token $(cat sentry_debug_file_upload_key)
@@ -53,16 +51,34 @@ else
   echo "Skipping sentry stuff"
 fi
 
+# Find and list all .apk files for debugging
+echo "Finding all .apk files in .tmp directory:"
+find .tmp -name "*.apk" -type f -exec ls -la {} \;
 
 # Artifacts should be placed here!
-mkdir -p /builds/worker/artifacts/
-cp .tmp/src/android-build/build/outputs/apk/release/*  /builds/worker/artifacts/
+mkdir -p /builds/worker/artifacts
 
+# Move and rename playstore builds
+cp -r .tmp/playstore/src/android-build/build/outputs/apk/release/*  /builds/worker/artifacts/
+echo "Moved playstore .apk files in /builds/worker/artifacts:"
+ls  /builds/worker/artifacts/
+
+echo "Renaming Artifacts"
 # The Sign task will not rename them, so marking them as unsigned is a bit off. :)
 mv /builds/worker/artifacts/android-build-x86_64-release-unsigned.apk /builds/worker/artifacts/mozillavpn-x86_64-release.apk
 mv /builds/worker/artifacts/android-build-arm64-v8a-release-unsigned.apk /builds/worker/artifacts/mozillavpn-arm64-v8a-release.apk
 mv /builds/worker/artifacts/android-build-armeabi-v7a-release-unsigned.apk /builds/worker/artifacts/mozillavpn-armeabi-v7a-release.apk
-mv /builds/worker/artifacts/android-build-x86-release-unsigned.apk /builds/worker/artifacts//mozillavpn-x86-release.apk
+mv /builds/worker/artifacts/android-build-x86-release-unsigned.apk /builds/worker/artifacts/mozillavpn-x86-release.apk
+
+# Move and rename foss builds
+echo "Moved foss .apk files in /builds/worker/artifacts:"
+ls  /builds/worker/artifacts/
+cp -r .tmp/foss/src/android-build/build/outputs/apk/release/*  /builds/worker/artifacts/
+mv /builds/worker/artifacts/android-build-x86_64-release-unsigned.apk /builds/worker/artifacts/mozillavpn-foss-x86_64-release.apk
+mv /builds/worker/artifacts/android-build-arm64-v8a-release-unsigned.apk /builds/worker/artifacts/mozillavpn-foss-arm64-v8a-release.apk
+mv /builds/worker/artifacts/android-build-armeabi-v7a-release-unsigned.apk /builds/worker/artifacts/mozillavpn-foss-armeabi-v7a-release.apk
+mv /builds/worker/artifacts/android-build-x86-release-unsigned.apk /builds/worker/artifacts/mozillavpn-foss-x86-release.apk
+ls  /builds/worker/artifacts/
 
 
 ccache -s

@@ -78,8 +78,14 @@ void EventListener::socketReadyRead() {
   QString payload = input.section(' ', 1, -1);
 
   if (command == "show") {
-    QmlEngineHolder* engine = QmlEngineHolder::instance();
-    engine->showWindow();
+    // Bring the application window to the front only if we are running in a GUI
+    // application
+    if (qobject_cast<QGuiApplication*>(QCoreApplication::instance())) {
+      QmlEngineHolder* engine = QmlEngineHolder::instance();
+      engine->showWindow();
+    } else {
+      logger.debug() << "Show command received, but not a GUI application.";
+    }
   } else if (command == "link") {
     MozillaVPN::instance()->handleDeepLink(QUrl(payload));
   } else {

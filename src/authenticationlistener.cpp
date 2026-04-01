@@ -10,7 +10,11 @@
 #include "logger.h"
 #include "networkmanager.h"
 
-#if defined(MZ_WASM)
+#if defined(MZ_IOS)
+#  include "platforms/ios/iosauthenticationlistener.h"
+#elif defined(MZ_ANDROID)
+#  include "platforms/android/androidauthenticationlistener.h"
+#elif defined(MZ_WASM)
 #  include "platforms/wasm/wasmauthenticationlistener.h"
 #else
 #  include "tasks/authenticate/desktopauthenticationlistener.h"
@@ -29,9 +33,10 @@ AuthenticationListener* AuthenticationListener::create(
     QObject* parent, AuthenticationType authenticationType) {
   switch (authenticationType) {
     case AuthenticationInBrowser:
-#if defined(MZ_ANDROID) or defined(MZ_IOS)
-      logger.error() << "Something went totally wrong";
-      Q_ASSERT(false);
+#if defined(MZ_ANDROID)
+      return new AndroidAuthenticationListener(parent);
+#elif defined(MZ_IOS)
+      return new IOSAuthenticationListener(parent);
 #elif defined(MZ_WASM)
       return new WasmAuthenticationListener(parent);
 #else
@@ -39,6 +44,14 @@ AuthenticationListener* AuthenticationListener::create(
 #endif
     case AuthenticationInApp:
       return new AuthenticationInAppListener(parent);
+    case AuthenticationInBrowserHeadless:
+#if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
+      return new DesktopAuthenticationListener(parent, true);
+#else
+      logger.error()
+          << "Headless authentication is not supported on this platform";
+      Q_ASSERT(false);
+#endif
 
     default:
       Q_ASSERT(false);

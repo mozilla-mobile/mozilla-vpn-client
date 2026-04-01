@@ -61,18 +61,6 @@ SETTING_BOOL(addonProdKeyInStaging,        // getter
              true                          // sensitive (do not log)
 )
 
-#if defined(MZ_ADJUST)
-SETTING_BOOL(adjustActivatable,        // getter
-             setAdjustActivatable,     // setter
-             removeAdjustActivatable,  // remover
-             hasAdjustActivatable,     // has
-             "adjustActivatable",      // key
-             false,                    // default value
-             false,                    // remove when reset
-             false                     // sensitive (do not log)
-)
-#endif
-
 SETTING_BOOL(captivePortalAlert,        // getter
              setCaptivePortalAlert,     // setter
              removeCaptivePortalAlert,  // remover
@@ -808,12 +796,33 @@ SETTING_BOOL(addonApiSetting,        // getter
 )
 #endif
 
-SETTING_BOOL(extensionTelemetryEnabled,        // getter
-             setExtensionTelemetryEnabled,     // setter
-             removeExtensionTelemetryEnabled,  // remover
-             hasExtensionTelemetryEnabled,     // has
-             "extensionTelemetryEnabled",      // key
-             false,                            // default value
-             true,                             // remove when reset
-             false                             // sensitive (do not log)
+SETTING_DATETIME(addonPromoLastShown,        // getter
+                 setAddonPromoLastShown,     // setter
+                 removeAddonPromoLastShown,  // remover
+                 hasAddonPromoLastShown,     // has
+                 "addonPromoLastShown",      // key
+                 QDateTime(),                // default value
+                 true,                       // remove when reset
+                 false                       // sensitive (do not log)
+)
+
+SETTING_BOOL(useShortAddonPromoTime,        // getter
+             setUseShortAddonPromoTime,     // setter
+             removeUseShortAddonPromoTime,  // remover
+             hasUseShortAddonPromoTime,     // has
+             "useShortAddonPromoTime",      // key
+             false,                         // default value
+             true,                          // remove when reset
+             false                          // sensitive (do not log)
+)
+
+// This setting is only intended for running the functional tests.
+SETTING_BOOL(useLengthyAddonMessageHighlight,        // Feature ID
+             setUseLengthyAddonMessageHighlight,     // setter
+             removeUseLengthyAddonMessageHighlight,  // remover
+             hasUseLengthyAddonMessageHighlight,     // has
+             "useLengthyAddonMessageHighlight",      // key
+             false,                                  // default value
+             true,                                   // remove when reset
+             false                                   // sensitive (do not log)
 )

@@ -8,6 +8,8 @@ Summary:   Mozilla VPN
 License:   MPL-2.0
 URL:       https://vpn.mozilla.org
 Packager:  Naomi Kirby
+Requires:  (openssl-libs >= 1:3.0.0 or openssl3-libs)
+Requires:  polkit-libs
 Requires:  qt6-qtbase >= 6.0
 Requires:  qt6-qtnetworkauth >= 6.0
 Requires:  qt6-qtquickcontrols2 >= 6.0
@@ -15,11 +17,15 @@ Requires:  qt6-qtsvg >= 6.0
 Requires:  qt6-qt5compat >= 6.0
 Requires:  wireguard-tools
 
-BuildRequires: cargo >= 1.75
+BuildRequires: cmake
+BuildRequires: cmake-rpm-macros
+BuildRequires: cargo >= 1.85
 BuildRequires: golang >= 1.18
+BuildRequires: (gcc >= 10.0.0 or gcc-toolset-10)
+BuildRequires: (gcc-c++ >= 10.0.0 or gcc-toolset-10)
 BuildRequires: libcap-devel
-BuildRequires: libsecret-devel
-BuildRequires: openssl-devel
+BuildRequires: ninja-build
+BuildRequires: polkit-devel
 BuildRequires: python3-yaml
 BuildRequires: qt6-qtbase-devel >= 6.0
 BuildRequires: qt6-qtbase-private-devel >= 6.0
@@ -41,9 +47,14 @@ Read more on https://vpn.mozilla.org
 
 %prep
 %undefine _lto_cflags
+%undefine _annotated_build
 
 %build
+if [[ $(echo "__GNUC__" | gcc -E - | grep -v "^#") -lt 10 ]]; then
+    source /opt/rh/gcc-toolset-10/enable
+fi
 %define _vpath_srcdir %{_srcdir}
+%define __builder ninja
 %cmake -DWEBEXT_INSTALL_LIBDIR=/usr/lib -DCMAKE_INSTALL_SYSCONFDIR=/etc -DBUILD_TESTING=OFF
 %cmake_build
 
@@ -60,7 +71,6 @@ install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 %{_unitdir}/socksproxy.service
 %{_bindir}/mozillavpn
 %{_bindir}/socksproxy
-%{_prefix}/lib/mozillavpn/mozillavpnnp
 %{_prefix}/lib/mozilla/native-messaging-hosts/mozillavpn.json
 %{_datadir}/applications/org.mozilla.vpn.desktop
 %{_datadir}/dbus-1/system-services/org.mozilla.vpn.dbus.service
@@ -73,3 +83,5 @@ install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 %{_datadir}/icons/hicolor/scalable/apps/org.mozilla.vpn.svg
 %{_datadir}/metainfo/org.mozilla.vpn.metainfo.xml
 %{_datadir}/metainfo/org.mozilla.vpn.releases.xml
+%{_datadir}/polkit-1/actions/org.mozilla.vpn.policy
+%{_datadir}/polkit-1/rules.d/org.mozilla.vpn.rules

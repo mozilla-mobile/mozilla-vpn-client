@@ -2,7 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-ARG DOCKER_BASE_IMAGE=fedora:36
+ARG DOCKER_BASE_IMAGE=almalinux:8
 
 FROM $DOCKER_BASE_IMAGE
 
@@ -11,15 +11,37 @@ MAINTAINER Naomi Kirby <naomi@mozilla.com>
 #----------------------------------------------------------------------------------------------------------------------
 #-- Extra Packages ----------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------
-RUN yum -y install git rpm-build rpmdevtools yum-utils sudo
+RUN yum -y install git python3 rpm-build rpmdevtools yum-utils sudo
+
+# Enable extra repositories depending on base image
+RUN if [[ -f /etc/almalinux-release ]]; then yum -y install dnf-plugins-core epel-release almalinux-release-devel && dnf config-manager --enable powertools; fi
+
+# Install indirect Qt6 Build Dependencies
+RUN yum -y install \
+        brotli-devel \
+        dbus-devel \
+        libglvnd-devel \
+        libxkbcommon-devel \
+        libxkbcommon-x11-devel \
+        fontconfig-devel \
+        freetype-devel \
+        xcb-util-devel \
+        xcb-util-cursor-devel \
+        xcb-util-image-devel \
+        xcb-util-keysyms-devel \
+        xcb-util-renderutil-devel \
+        xcb-util-wm-devel \
+        wayland-devel \
+        patchelf
 
 # Grant the worker user the ability to install packages without login
 RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/yum,/usr/bin/yum-builddep" > /etc/sudoers.d/worker-packages
 
-# Also pull in packages from BuildRequires as early as possible
+# Also pull in packages from BuildRequires as early as possible, excluding Qt deps.
 # %include linux/mozillavpn.spec
 ADD topsrcdir/linux/mozillavpn.spec /root/mozillavpn-rpm.spec
-RUN yum-builddep -y /root/mozillavpn-rpm.spec -D "_version 0.0.1"
+RUN grep -v 'BuildRequires: qt6-' /root/mozillavpn-rpm.spec > /root/mozillavpn-no-qt6.spec
+RUN yum-builddep -y /root/mozillavpn-no-qt6.spec -D "_version 0.0.1"
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------

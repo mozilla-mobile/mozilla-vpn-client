@@ -16,7 +16,7 @@ android-junit:
         tier: 1
     fetches:
         toolchain: 
-            - conda-android-arm64-6.6.3
+            - conda-android-arm64-6.10.2
     run:
         using: run-task
         use-caches: [checkout, cargo]
@@ -27,6 +27,10 @@ android-junit:
           conda-unpack;
           unset CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER;
           ./scripts/android/cmake.sh -d;
-          cd .tmp/src/android-build/;
+          pushd .tmp/playstore/src/android-build/;
           ls;
-          ./gradlew test
+          ./gradlew test;
+          popd;
+          pushd .tmp/foss/src/android-build/;
+          ls;
+          ./gradlew test;

@@ -25,6 +25,7 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::Widgets
     Qt6::Qml
     Qt6::Quick
+    Qt6::QuickControls2
     Qt6::QuickTest
     Qt6::Svg
 )

@@ -12,6 +12,10 @@
       "type": "string",
       "description": "The title of the message"
     },
+    "promo_text": {
+      "type": "string",
+      "description": "Optional promotional test to show on home screen"
+    },
     "title_comment": {
       "type": "string",
       "description": "A comment to describe how to translate the title"

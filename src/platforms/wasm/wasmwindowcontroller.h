@@ -19,10 +19,9 @@ class WasmWindowController final : public QObject {
   WasmWindowController();
   ~WasmWindowController();
 
-  static WasmWindowController* instance();
-
   void notification(const QString& title, const QString& message);
 
+ public slots:
   void retranslate();
 
  private:

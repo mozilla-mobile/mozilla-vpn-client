@@ -4,6 +4,7 @@
 
 package org.mozilla.firefox.vpn.qt;
 
+import android.app.Activity;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -20,32 +21,123 @@ import android.os.RemoteException;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.View;
+import android.view.ViewTreeObserver;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.WindowMetrics;
 import android.view.WindowInsets;
+
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import org.mozilla.firefox.vpn.VPNClientBinder;
 import org.mozilla.firefox.vpn.daemon.VPNService;
+import org.qtproject.qt.android.QtActivityBase;
 
 
 
-public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
+public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
+  private static boolean splashScreenReady = false;
+  private static ViewTreeObserver.OnPreDrawListener preDrawListener = null;
+
   @Override
   public void onCreate(Bundle savedInstanceState) {
+    Log.d("VPNActivity", "onCreate");
+          Class<?> qtNative = null;
+      try {
+          qtNative = Class.forName("org.qtproject.qt.android.QtNative");
+          Method setActivity = qtNative.getDeclaredMethod("setActivity", Activity.class);
+          setActivity.setAccessible(true);
+          setActivity.invoke(null, this);  // static method → target = n
+      } catch (ClassNotFoundException | IllegalAccessException | InvocationTargetException |
+               NoSuchMethodException e) {
+          throw new RuntimeException(e);
+      }
+
     super.onCreate(savedInstanceState);
+    instance = this;
+
+    setupSplashScreenDelay();
+    
     if (needsOrientationLock()) {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     } else {
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED);
     }
-    instance = this;
+    ready = true;
   }
   private static VPNActivity instance;
 
+ public VPNActivity() {
+    super();
+    Log.d("VPNActivity", "Constructor");
+  }
+  
+  private static boolean ready = false;
+  public static boolean isReady(){
+    return ready;
+  }
+
+  // Set up splash screen delay using OnPreDrawListener
+  private void setupSplashScreenDelay() {
+    final View content = findViewById(android.R.id.content);
+    preDrawListener = new ViewTreeObserver.OnPreDrawListener() {
+      @Override
+      public boolean onPreDraw() {
+        if (splashScreenReady) {
+          // Content is ready, remove listener and start drawing
+          content.getViewTreeObserver().removeOnPreDrawListener(this);
+          Log.d("VPNActivity", "Splash screen dismissed - app ready");
+          return true;
+        } else {
+          // Keep splash screen visible
+          Log.d("VPNActivity", "Splash screen waiting for ready signal");
+          return false;
+        }
+      }
+    };
+    content.getViewTreeObserver().addOnPreDrawListener(preDrawListener);
+  }
+
+  // Call this from JNI to dismiss the splash screen and start rendering the app
+  public static void dismissSplashScreen() {
+    Log.d("VPNActivity", "dismissSplashScreen called from native code");
+    splashScreenReady = true;
+    // Trigger a redraw to invoke the OnPreDrawListener
+    if (instance != null) {
+      instance.runOnUiThread(new Runnable() {
+        @Override
+        public void run() {
+          View content = instance.findViewById(android.R.id.content);
+          if (content != null) {
+            content.invalidate();
+          }
+        }
+      });
+    }
+  }
+
+  public static int getNavigationBarHeight() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R && instance != null) {
+      WindowMetrics windowMetrics = instance.getWindowManager().getCurrentWindowMetrics();
+      Insets insets = windowMetrics.getWindowInsets().getInsets(WindowInsets.Type.navigationBars());
+      float density = instance.getResources().getDisplayMetrics().density;
+      return Math.round(insets.bottom / density);
+    }
+    return 0;
+  }
+
   public static VPNActivity getInstance() {
+    Log.d("VPNActivity", "getInstance");
+    if(instance != null){
+      Log.d("VPNActivity", "instance exists");
+    } else {
+      Log.d("VPNActivity", "instance is null");
+    }
     return instance;
   }
+
 
   @Override
   public boolean onKeyDown(int keyCode, KeyEvent event) {
@@ -69,6 +161,18 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
 
   @Override
   public Object getSystemService (String name){
+    Log.d("VPNActivity", "getSystemService: " + name);
+     try {
+        Object svc = getApplicationContext().getSystemService(name);
+        if (svc != null) {
+            return svc;
+        }
+    } catch (Throwable t) {
+        // swallow; we'll fall back to super below
+        android.util.Log.w("VPNActivity", "getSystemService(" + name + ") via appCtx failed", t);
+    }
+    // For services that *require* an Activity (e.g. layout inflater tied to this theme),
+    // use the normal path – but this should only happen after super.onCreate has returned.
     return super.getSystemService(name);
   }
 
@@ -79,6 +183,7 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
   public native void qtOnServiceConnected();
   public native void qtOnServiceDisconnected();
   public native void onIntentInternal();
+  public native void onCustomTabClosed();
 
   public static void connectService(){
     VPNActivity.getInstance().initServiceConnection();
@@ -262,6 +367,7 @@ public class VPNActivity extends org.qtproject.qt.android.bindings.QtActivity {
     if(bound){
       unbindService(mConnection);
     }
+    ready = false;
     super.onDestroy();
   }
 

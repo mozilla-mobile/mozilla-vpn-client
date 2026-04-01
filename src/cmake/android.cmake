@@ -6,6 +6,10 @@ set_property(TARGET mozillavpn APPEND PROPERTY QT_ANDROID_PACKAGE_SOURCE_DIR
     ${CMAKE_CURRENT_SOURCE_DIR}/../android/
 )
 
+if(QT_KNOWN_POLICY_QTP0002)
+    qt_policy(SET QTP0002 OLD)
+endif()
+
 ## Generate Glean API files.
 include(${CMAKE_SOURCE_DIR}/qtglean/android.cmake)
 
@@ -14,6 +18,8 @@ target_link_libraries(mozillavpn PRIVATE
     Qt6::Xml)
 
 target_sources(mozillavpn PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidauthenticationlistener.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidauthenticationlistener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidcontroller.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidiaphandler.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidnetworkwatcher.cpp
@@ -43,6 +49,7 @@ get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION_${CM
 # shared libraries into the expected Android shared library folder.
 #
 # Qt requires this to be set on the "app" target.
+add_dependencies(mozillavpn ndk_openssl_merged)
 set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
     ## --- PILE OF SHAME --- ##
     # android-deploy-qt is bad and randomly decides to not deploy
@@ -70,4 +77,11 @@ if( ${Qt6_VERSION} VERSION_GREATER_EQUAL 6.4.0)
         ${OPENSSL_LIBS_DIR}/libcrypto_3.so
         ${OPENSSL_LIBS_DIR}/libssl_3.so
     APPEND)
+endif()
+
+option(MZ_ANDROID_FOSS_BUILD "Build apk without google play services" OFF)
+
+if(MZ_ANDROID_FOSS_BUILD)
+    message(STATUS "Website build enabled")
+    target_compile_definitions(mozillavpn PRIVATE "MZ_ANDROID_FOSS_BUILD=1")
 endif()

@@ -92,7 +92,12 @@ const screenHome = {
   SERVER_LIST_BUTTON: new QmlQueryComposer('//serverListButton-btn'),
   SERVER_UNAVAILABLE_POPUP_BUTTON:
       new QmlQueryComposer('//serverUnavailablePopup-button'),
+  SERVER_UNAVAILABLE_POPUP_CLOSE_BUTTON:
+      new QmlQueryComposer('//serverUnavailablePopup-closeButton'),
   STACKVIEW: new QmlQueryComposer('//screenHome-stackView'),
+  STABILITY_LABEL: new QmlQueryComposer('//stabilityLabel'),
+  STABILITY_LABEL_INSTRUCTION:
+      new QmlQueryComposer('//stabilityLabelInstruction'),
 
   serverListView: {
     generateCountryId: (serverCode) => {
@@ -257,7 +262,7 @@ const screenGetHelp = {
   },
 
   resetView: {
-    VIEW: new QmlQueryComposer('//resetVpnView'),
+    SCREEN: new QmlQueryComposer('//resetVpnView-flickable'),
     RESET_BUTTON: new QmlQueryComposer('//resetVpnButton'),
     BACK_BUTTON: new QmlQueryComposer('//goBackButton'),
     POPUP_LOADER: new QmlQueryComposer('//confirmResetPopupLoader'),
@@ -429,6 +434,12 @@ const screenBackendFailure = {
   HEARTBEAT_TRY_BUTTON: new QmlQueryComposer('//heartbeatTryButton'),
 };
 
+const screenMessageAddonPopover = {
+  POPOVER: new QmlQueryComposer('//messageAddonPopover'),
+  LABEL: new QmlQueryComposer('//messageAddonPopover-label'),
+  CLOSE_BUTTON: new QmlQueryComposer('//messageAddonPopover-closeButton'),
+};
+
 const screenMessaging = {
   SCREEN: new QmlQueryComposer('//messageInboxView'),
   messageItem: function(id) {
@@ -518,6 +529,7 @@ module.exports = {
   screenGetHelp,
   screenSettings,
   screenBackendFailure,
+  screenMessageAddonPopover,
   screenMessaging,
   screenSubscriptionNeeded,
   screenInBrowserSubscriptionLoading,

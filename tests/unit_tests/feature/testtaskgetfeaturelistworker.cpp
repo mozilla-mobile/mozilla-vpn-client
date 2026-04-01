@@ -13,8 +13,6 @@
 #include "taskscheduler.h"
 
 void TestTaskGetFeatureListWorker::testTaskIsScheduledOnStart() {
-  SettingsHolder settingsHolder;
-
   // Stop the TaskScheduler so we can inpect the tasks scheduled.
   TaskScheduler::pause();
   auto guard = qScopeGuard(&TaskScheduler::resume);
@@ -39,8 +37,6 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledOnStart() {
 }
 
 void TestTaskGetFeatureListWorker::testTaskIsScheduledPeriodically() {
-  SettingsHolder settingsHolder;
-
   // Stop the TaskScheduler so we can inpect the tasks scheduled.
   TaskScheduler::pause();
   auto guard = qScopeGuard(&TaskScheduler::resume);
@@ -84,8 +80,6 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledPeriodically() {
 }
 
 void TestTaskGetFeatureListWorker::testTaskIsScheduledOnTokenChange() {
-  SettingsHolder settingsHolder;
-
   // Stop the TaskScheduler so we can inpect the tasks scheduled.
   TaskScheduler::pause();
   auto guard = qScopeGuard(&TaskScheduler::resume);
@@ -94,9 +88,9 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledOnTokenChange() {
   TaskGetFeatureListWorker worker;
   worker.start(std::chrono::milliseconds(1 * 1000 * 60 * 60));  // 1hr
 
-  settingsHolder.setToken("aToken");
-  settingsHolder.setToken("anotherToken");
-  settingsHolder.removeToken();
+  SettingsHolder::instance()->setToken("aToken");
+  SettingsHolder::instance()->setToken("anotherToken");
+  SettingsHolder::instance()->removeToken();
 
   auto updatedListOfTasks = TaskScheduler::tasks();
 
@@ -117,8 +111,6 @@ void TestTaskGetFeatureListWorker::testTaskIsScheduledOnTokenChange() {
 }
 
 void TestTaskGetFeatureListWorker::testTimerIsStoppedOnDestruction() {
-  SettingsHolder settingsHolder;
-
   // Stop the TaskScheduler so we can inpect the tasks scheduled.
   TaskScheduler::pause();
   auto guard = qScopeGuard(&TaskScheduler::resume);
@@ -166,7 +158,7 @@ void TestTaskGetFeatureListWorker::testTimerIsStoppedOnDestruction() {
 
   // Also change the token, this should also not schedule any tasks unless
   // the signal connection was done incorrectly.
-  settingsHolder.setToken("aToken");
+  SettingsHolder::instance()->setToken("aToken");
 
   // The scheduled tasks were consumed above, so this should be back to initial
   // list of tasks size.

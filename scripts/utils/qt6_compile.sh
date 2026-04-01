@@ -68,8 +68,7 @@ if [[ -z "$BUILDDIR" ]]; then
 fi
 
 LINUX="
-  -platform linux-clang \
-  -openssl-linked \
+  -openssl-runtime \
   -egl \
   -opengl es2 \
   -no-icu \
@@ -78,9 +77,11 @@ LINUX="
   -fontconfig \
   -bundled-xcb-xinput \
   -feature-qdbus \
+  -feature-wayland \
+  -no-feature-gssapi \
+  -no-feature-zstd \
   -xcb \
-  -- \
-  -DOPENSSL_USE_STATIC_LIBS=ON \
+  --
 "
 
 MACOS="
@@ -96,6 +97,11 @@ MACOS="
 if [[ "$OSTYPE" == "linux-gnu"* ]]; then
   print N "Configure for linux"
   PLATFORM=$LINUX
+
+  # Force Qt to select OpenSSL 3.x if multiple major versions are installed.
+  if pkg-config --exists libssl3; then
+    PLATFORM+="-DOPENSSL_ROOT_DIR=\"$(pkg-config --variable=includedir libssl3)/openssl3;$(pkg-config --variable=libdir libssl3)/openssl3\""
+  fi
 elif [[ "$OSTYPE" == "darwin"* ]]; then
   print N "Configure for darwin"
 

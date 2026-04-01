@@ -143,6 +143,45 @@ Item {
 
         },
         State {
+            name: "stateRegeneratingKey"
+            when: (VPNController.state === VPNController.StateRegeneratingKey)
+
+            PropertyChanges {
+                target: boxBackground
+                color: MZTheme.colors.primary
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                text: qsTrId("vpn.controller.connectingState")
+                color: MZTheme.colors.fontColorInverted
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                text: MZI18n.ControllerRegeneratingKey
+                color: MZTheme.colors.fontColorInverted
+                opacity: 0.8
+                visible: true
+            }
+
+            PropertyChanges {
+                target: logoSubtitleOn
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: false
+            }
+
+            PropertyChanges {
+                target: animatedRings
+                visible: false
+            }
+
+        },
+        State {
             name: "stateConnecting"
             when: (VPNController.state === VPNController.StateConnecting)
 
@@ -298,6 +337,43 @@ Item {
                 target: animatedRings
                 visible: false
             }
+        },
+        State {
+            name: "stateConnectionError"
+            when: (VPNController.state === VPNController.StateConnectionError)
+
+            PropertyChanges {
+                target: boxBackground
+                color: MZTheme.colors.primary
+            }
+
+            PropertyChanges {
+                target: logoTitle
+                //% "VPN is on"
+                text: qsTrId("vpn.controller.activated")
+                color: MZTheme.colors.fontColorInverted
+            }
+
+            PropertyChanges {
+                target: logoSubtitle
+                visible: false
+            }
+
+            PropertyChanges {
+                target: logoSubtitleOn
+                visible: false
+            }
+
+            PropertyChanges {
+                target: connectionStability
+                visible: true
+            }
+
+            PropertyChanges {
+                target: animatedRings
+                visible: false
+            }
+
         },
         State {
             name: "stateSwitching"

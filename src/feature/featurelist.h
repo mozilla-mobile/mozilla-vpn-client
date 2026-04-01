@@ -123,7 +123,7 @@ FEATURE(keyRegeneration,       // Feature ID
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
         // TODO: Disabled - VPN-2693
-        FeatureCallback_false)
+        FeatureCallback_true)
 
 FEATURE(multiHop,               // Feature ID
         "Multi-hop",            // Feature name
@@ -217,13 +217,6 @@ FEATURE(superDooperMetrics,      // Feature ID
         QStringList(),           // feature dependencies
         FeatureCallback_true)
 
-FEATURE(themeSelection,        // Feature ID
-        "Theme selection",     // Feature name
-        FeatureCallback_true,  // Can be flipped on
-        FeatureCallback_true,  // Can be flipped off
-        QStringList(),         // feature dependencies
-        FeatureCallback_true)
-
 FEATURE(themeSelectionIncludesAutomatic,  // Feature ID
         "Theme option of 'automatic'",    // Feature name
         FeatureCallback_false,            // Can be flipped on
@@ -245,9 +238,10 @@ FEATURE(webPurchase,           // Feature ID
         FeatureCallback_true,  // Can be flipped off
         QStringList(),         // feature dependencies
         byPlatform({
-            .windows = true,
-            .macos = true,
-            .gnu_linux = true,
+          .windows = true, .macos = true, .gnu_linux = true,
+#if defined(MZ_ANDROID_FOSS_BUILD)
+          .android = true,
+#endif
         }))
 
 FEATURE(webExtension,    // Feature ID

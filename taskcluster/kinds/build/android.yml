@@ -40,17 +40,21 @@ android-arm64/debug:
             platform: android/arm64-v8a
         fetches:
             toolchain: 
-                - conda-android-arm64-6.6.3
+                - conda-android-arm64-6.10.2
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh arm64-v8a
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-arm64-v8a-debug.apk
+            - mozillavpn-foss-arm64-v8a-debug.apk
         worker:
             artifacts:
                 - type: file
                   name: public/build/android-build.zip
                   path: /builds/worker/artifacts/android-build.zip
+                - type: file
+                  name: public/build/android-build-foss.zip
+                  path: /builds/worker/artifacts/android-build-foss.zip
 
 android-x64/debug:
         description: "Android Debug (x86_64)"
@@ -58,12 +62,13 @@ android-x64/debug:
             platform: android/x86_64
         fetches:
             toolchain: 
-                    - conda-android-x86_64-6.6.3
+                    - conda-android-x86_64-6.10.2
         run:
             command: ./taskcluster/scripts/build/android_build_debug.sh x86_64
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-x86_64-debug.apk
+            - mozillavpn-foss-x86_64-debug.apk
 
 ## Release Builds
 
@@ -77,7 +82,7 @@ android-arm64/release:
                 default: []
         fetches:
             toolchain: 
-                    - conda-android-arm64-6.6.3
+                    - conda-android-arm64-6.10.2
         treeherder:
             symbol: B
             platform: android/arm64-v8a
@@ -86,6 +91,7 @@ android-arm64/release:
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-arm64-v8a-release.apk
+            - mozillavpn-foss-arm64-v8a-release.apk
 
 android-armv7/release:
         description: "Android Release (android-armv7)"
@@ -94,7 +100,7 @@ android-armv7/release:
             - 'secrets:get:project/mozillavpn/tokens'
         fetches:
             toolchain: 
-                    - conda-android-armv7-6.6.3
+                    - conda-android-armv7-6.10.2
         treeherder:
             symbol: B
             platform: android/armv7
@@ -103,6 +109,7 @@ android-armv7/release:
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-armeabi-v7a-release.apk
+            - mozillavpn-foss-armeabi-v7a-release.apk
 
 
 android-x86/release:
@@ -112,7 +119,7 @@ android-x86/release:
             - 'secrets:get:project/mozillavpn/tokens'
         fetches:
             toolchain: 
-                    - conda-android-x86-6.6.3
+                    - conda-android-x86-6.10.2
         treeherder:
             symbol: B
             platform: android/x86
@@ -121,6 +128,7 @@ android-x86/release:
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-x86-release.apk
+            - mozillavpn-foss-x86-release.apk
 
 android-x64/release:
         description: "Android Release (x86_64)"
@@ -129,7 +137,7 @@ android-x64/release:
             - 'secrets:get:project/mozillavpn/tokens'
         fetches:
             toolchain: 
-                    - conda-android-x86_64-6.6.3
+                    - conda-android-x86_64-6.10.2
         treeherder:
             symbol: B
             platform: android/x86_64
@@ -138,3 +146,4 @@ android-x64/release:
         release-artifacts:
             # APK Artifacts expects file to be in /builds/worker/artifacts/
             - mozillavpn-x86_64-release.apk
+            - mozillavpn-foss-x86_64-release.apk

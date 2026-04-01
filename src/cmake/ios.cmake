@@ -86,6 +86,22 @@ find_library(FW_STORE_KIT StoreKit)
 find_library(FW_APPINTENTS AppIntents)
 find_library(FW_USER_NOTIFICATIONS UserNotifications)
 find_library(FW_NETWORK Network)
+find_library(FW_AUTHENTICATION_SERVICES AuthenticationServices)
+
+# This next section fixes a compile bug on iOS: https://qt-project.atlassian.net/browse/QTBUG-135978, found
+# via https://forum.qt.io/topic/162177/ios-objc-link-option-leads-to-duplicate-symbol-for-qtcore.framework/2
+# When the fix hits a version of Qt 6.10 we're using, we should be able to remove this section.
+# This flag requires cmake 3.29+.
+cmake_minimum_required(VERSION 3.29)
+if (POLICY CMP0156)
+    message(STATUS "Setting CMP0156 policy to NEW...")
+    set(QT_FORCE_CMP0156_TO_NEW ON CACHE BOOL "Force CMake policy CMP0156 to NEW behavior for Qt6")
+    if (Qt6_VERSION VERSION_GREATER_EQUAL "6.11.0")
+      message(FATAL_ERROR "See if this can be removed. If not, increase the Qt version here.")
+    endif ()
+elseif ()
+    message(FATAL_ERROR "CMP0156 policy not found. The iOS client should be built on a newer version of cmake and/or Qt.")
+endif ()
 
 target_link_libraries(mozillavpn PRIVATE ${FW_UI_KIT})
 target_link_libraries(mozillavpn PRIVATE ${FW_FOUNDATION})
@@ -93,6 +109,7 @@ target_link_libraries(mozillavpn PRIVATE ${FW_STORE_KIT})
 target_link_libraries(mozillavpn PRIVATE ${FW_APPINTENTS})
 target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
 target_link_libraries(mozillavpn PRIVATE ${FW_NETWORK})
+target_link_libraries(mozillavpn PRIVATE ${FW_AUTHENTICATION_SERVICES})
 
 ## Hack: IOSUtils needs QtGui internals...
 target_include_directories(mozillavpn PRIVATE ${Qt6Gui_PRIVATE_INCLUDE_DIRS})
@@ -103,6 +120,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macospingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosauthenticationlistener.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosauthenticationlistener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosiaphandler.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosiaphandler.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosiaphandler.h

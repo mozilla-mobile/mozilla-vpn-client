@@ -4,9 +4,13 @@
 
 #include "commandselect.h"
 
+#include <QCoreApplication>
 #include <QTextStream>
 
+#include "commandlineparser.h"
+#include "constants.h"
 #include "leakdetector.h"
+#include "loghandler.h"
 #include "models/servercity.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
@@ -21,18 +25,46 @@ CommandSelect::~CommandSelect() { MZ_COUNT_DTOR(CommandSelect); }
 
 int CommandSelect::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
+  QString appName = tokens[0];
+
+  CommandLineParser::Option hOption = CommandLineParser::helpOption();
+  CommandLineParser::Option testingOption("t", "testing",
+                                          "Run in testing mode.");
+
+  QList<CommandLineParser::Option*> options;
+  options.append(&hOption);
+  options.append(&testingOption);
+
+  CommandLineParser clp;
+  if (clp.parse(tokens, options, false)) {
+    return 1;
+  }
+
+  if (hOption.m_set) {
+    clp.showHelp(this, appName, options, false, false);
+    return 0;
+  }
+
+  if (testingOption.m_set) {
+    QCoreApplication::setOrganizationName("Mozilla Testing");
+    LogHandler::instance()->setStderr(true);
+  }
+
   return MozillaVPN::runCommandLineApp([&]() {
     QTextStream stream(stdout);
-    if ((tokens.length() < 2) || (tokens.length() > 3)) {
-      stream << "usage: " << tokens[0] << " <server_hostname> [entry_hostname]"
+    if ((tokens.length() < 1) || (tokens.length() > 2)) {
+      stream << "usage: " << appName << " <server_hostname> [entry_hostname]"
              << Qt::endl;
       stream << Qt::endl;
       stream << "The list of hostnames can be obtained using: '"
-             << tokens[0].split(" ").at(0) << " servers'" << Qt::endl;
+             << appName.split(" ").at(0) << " servers'" << Qt::endl;
       return 1;
     }
 
     MozillaVPN vpn;
+    if (testingOption.m_set) {
+      Constants::setStaging();
+    }
     if (!vpn.hasToken()) {
       stream << "User status: not authenticated" << Qt::endl;
       return 1;
@@ -46,14 +78,14 @@ int CommandSelect::run(QStringList& tokens) {
     QString exitCityName;
     QString entryCountryCode;
     QString entryCityName;
-    if (!pickServer(tokens[1], exitCountryCode, exitCityName)) {
-      stream << "unknown server hostname: " << tokens[1] << Qt::endl;
+    if (!pickServer(tokens[0], exitCountryCode, exitCityName)) {
+      stream << "unknown server hostname: " << tokens[0] << Qt::endl;
       return 1;
     }
 
-    if ((tokens.length() > 2) &&
-        !pickServer(tokens[2], entryCountryCode, entryCityName)) {
-      stream << "unknown server hostname: " << tokens[2] << Qt::endl;
+    if ((tokens.length() > 1) &&
+        !pickServer(tokens[1], entryCountryCode, entryCityName)) {
+      stream << "unknown server hostname: " << tokens[1] << Qt::endl;
       return 1;
     }
 

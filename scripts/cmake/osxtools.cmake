@@ -155,6 +155,22 @@ function(osx_embed_provision_profile TARGET)
     set(BEST_TIMESTAMP 0)
     set(BEST_PROFILE "")
     foreach(FILENAME ${XCODE_PROVISION_PROFILES})
+        # When auto-detecting a provisioning profile, only consider those
+        # that provision all devices within the development team.
+        execute_process(
+            OUTPUT_VARIABLE DEVICES_ALL
+            OUTPUT_STRIP_TRAILING_WHITESPACE
+            RESULT_VARIABLE DEVICES_ALL_RETURN_CODE
+            ERROR_QUIET
+            COMMAND security cms -D -i ${FILENAME}
+            COMMAND plutil -extract ProvisionsAllDevices raw -
+        )
+        if(NOT DEVICES_ALL_RETURN_CODE EQUAL 0)
+            continue()
+        elseif(NOT DEVICES_ALL STREQUAL "true")
+            continue()
+        endif()
+
         # Extract the creation date of this profile, we will want to use the
         # most-recently created profile that matches the application being
         # signed.

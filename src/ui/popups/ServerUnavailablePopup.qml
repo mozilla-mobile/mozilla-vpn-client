@@ -21,6 +21,7 @@ MZSimplePopup {
     title: MZI18n.ServerUnavailableModalHeaderText
     // In case the handshake failed but the ping succeeded - use the Firewall Error Message
     description: receivedPing ? MZI18n.ServerUnavailableNotificationBodyTextFireWallBlocked : MZI18n.ServerUnavailableModalBodyText
+    closeButtonObjectName: "serverUnavailablePopup-closeButton"
     buttons: [
         MZButton {
             text: MZI18n.ServerUnavailableModalButtonLabel
@@ -28,7 +29,7 @@ MZSimplePopup {
             Layout.fillWidth: true
             onClicked: {
                 MZNavigator.requestScreen(VPN.ScreenHome)
-                window.showServerList();
+                window.showServerList(true);
                 root.close();
             }
         }]

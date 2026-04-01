@@ -94,7 +94,7 @@ void AddonApi::initialize() {
   m_timer.setSingleShot(true);
 }
 
-void AddonApi::setTimedCallback(int interval, const QJSValue& callback) {
+void AddonApi::setTimedCallback(qint64 interval, const QJSValue& callback) {
   if (!callback.isCallable()) {
     logger.debug() << "No callback received";
     return;
@@ -109,7 +109,7 @@ void AddonApi::setTimedCallback(int interval, const QJSValue& callback) {
 
   connect(&m_timer, &QTimer::timeout, this, [callback]() { callback.call(); });
 
-  m_timer.start(interval);
+  m_timer.start(std::chrono::milliseconds(interval));
 }
 
 void AddonApi::log(const QString& message) { logger.debug() << message; }

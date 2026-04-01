@@ -23,9 +23,15 @@ conda activate qt
 conda install -y -c conda-forge cmake=3.26.3 ninja=1.11.0
 
 QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-src-*' | head -1)
+QT_SOURCE_VERSION=$(echo $QT_SOURCE_DIR | awk -F"-" '{print $NF}')
+if [[ $(echo -e "${QT_SOURCE_VERSION}\n6.10.3" | sort --version-sort | head -1) != "6.10.3" ]]; then
+    echo "Patching for QTBUG-141830"
+    patch -d ${QT_SOURCE_DIR}/qtdeclarative -p1 < ${VCS_PATH}/taskcluster/scripts/toolchain/patches/qtbug-141830-qsortfilterproxymodel.patch
+fi
+
 echo "Building $(basename $QT_SOURCE_DIR)"
 rm -rf ${TASK_WORKDIR}/qt-macos ${TASK_WORKDIR}/qt-build
-$VCS_PATH/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR ${TASK_WORKDIR}/qt-macos -b ${TASK_WORKDIR}/qt-build
+${VCS_PATH}/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR ${TASK_WORKDIR}/qt-macos -b ${TASK_WORKDIR}/qt-build
 
 echo "Creating Qt dist artifact"
 mkdir -p ${TASK_WORKDIR}/public/build

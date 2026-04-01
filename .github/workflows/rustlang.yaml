@@ -14,23 +14,25 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
   cargo-vendor:
     name: "Update cached crates"
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           submodules: true
+          persist-credentials: false
 
       - name: Lookup cached crates
         id: rust-cache
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: 3rdparty/cargo-vendor
           key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
-          lookup-only: true
           enableCrossOsArchive: true
 
       - name: Update cached crates
@@ -41,7 +43,7 @@ jobs:
 
       - name: Saved cached crates
         if: ${{ steps.rust-cache.outputs.cache-hit != 'true' }}
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: 3rdparty/cargo-vendor
           key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
@@ -50,13 +52,15 @@ jobs:
   rust-unit-tests:
     strategy:
       matrix:
-        os: [ubuntu-22.04, windows-latest, macos-latest]
+        os: [ubuntu-latest, windows-latest, macos-latest]
 
     runs-on: ${{ matrix.os }}
     name: Rust unit tests (${{ matrix.os }})
     steps:
       - name: Clone repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        with:
+          persist-credentials: false
 
       - name: Fetch glean submodules
         run: |
@@ -72,27 +76,27 @@ jobs:
     runs-on: ubuntu-latest
     if: |
       startsWith(github.head_ref, 'dependabot/cargo/') &&
-      github.actor ==  'dependabot[bot]' &&
+      github.event.pull_request.user.login == 'dependabot[bot]' &&
       github.event_name == 'pull_request'
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           ref: ${{ github.head_ref }}
-          token: ${{ secrets.DEPENDABOT_TOKEN }}
+          persist-credentials: false
 
       - name: Install pip tools
         shell: bash
-        run: pip install requirements-parser PyYAML toml aiohttp
+        run: pip install requirements-parser PyYAML tomlkit aiohttp
 
       # Do not continue if there are changes to the flatpak directory.
       - name: Inspect pull request
         id: inspect
         shell: bash
         run: |
-          git fetch origin "${{ github.base_ref }}" --depth=1
+          git fetch origin "${GITHUB_BASE_REF}" --depth=1
           echo -n "flatpak-changes=" >> $GITHUB_OUTPUT
-          git diff --name-only --relative=linux/flatpak "origin/${{ github.base_ref }}" | wc -l >> $GITHUB_OUTPUT
+          git diff --name-only --relative=linux/flatpak "origin/${GITHUB_BASE_REF}" | wc -l >> $GITHUB_OUTPUT
 
       - name: Update flatpak rust crates
         shell: bash
@@ -102,6 +106,8 @@ jobs:
       - name: Commit the changes
         shell: bash
         if: ${{ steps.inspect.outputs.flatpak-changes == 0 }}
+        env:
+          DEPENDABOT_TOKEN: ${{ secrets.DEPENDABOT_TOKEN }}
         run: |
           if git diff --name-only | grep -q '^linux/flatpak/flatpak-vpn-crates.json'; then
             git add linux/flatpak/flatpak-vpn-crates.json
@@ -109,5 +115,5 @@ jobs:
             git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
             git commit -m "[dependabot skip] Update linux/flatpak/flatpak-vpn-crates.json"
             git format-patch --stdout HEAD~1
-            git push
+            git push https://${DEPENDABOT_TOKEN}@github.com/${GITHUB_REPOSITORY} ${GITHUB_HEAD_REF}
           fi

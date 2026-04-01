@@ -16,6 +16,7 @@ endif()
 
 target_link_libraries(mozillavpn PRIVATE
     Qt6::Quick
+    Qt6::QuickControls2
     Qt6::Test
     Qt6::WebSockets
     Qt6::Widgets
@@ -74,7 +75,6 @@ if ((${CMAKE_SYSTEM_NAME} STREQUAL "Android") OR (${CMAKE_SYSTEM_NAME} STREQUAL 
     target_compile_definitions(mozillavpn PRIVATE "MZ_MOBILE")
 endif()
 
-target_compile_definitions(mozillavpn PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 target_compile_definitions(mozillavpn PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 include(cmake/${MZ_PLATFORM_NAME}.cmake)
 

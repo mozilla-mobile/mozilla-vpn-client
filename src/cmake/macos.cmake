@@ -73,7 +73,8 @@ elseif(CMAKE_OSX_SYSROOT)
     execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
         COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-path)
 else()
-    message(FATAL_ERROR "One of CMAKE_OSX_SYSROOT or ENV{SDKROOT} must be defined")
+    execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
+        COMMAND xcrun --sdk macosx --show-sdk-path)
 endif()
 
 # Enable Balrog for update support.
@@ -154,14 +155,6 @@ osx_bundle_files(mozillavpn
     DESTINATION Library/LaunchServices
 )
 
-# Install the native messaging extensions into the bundle.
-add_dependencies(mozillavpn mozillavpnnp)
-osx_bundle_files(mozillavpn FILES
-    $<TARGET_FILE:mozillavpnnp>
-    ${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json
-    DESTINATION Resources/utils
-)
-
 # Install the background service plist into the bundle.
 configure_file(
     ${CMAKE_SOURCE_DIR}/macos/app/xpc-daemon.plist.in
@@ -170,6 +163,12 @@ configure_file(
 osx_bundle_files(mozillavpn FILES
     ${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.xpc-daemon.plist
     DESTINATION Library/LaunchDaemons
+)
+
+# Install the native messaging manifest into the bundle.
+osx_bundle_files(mozillavpn FILES
+    ${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json
+    DESTINATION Resources/utils
 )
 
 # Install the lproj translation files into the bundle.
@@ -196,14 +195,6 @@ foreach(LOCALE ${I18N_LOCALES})
                     ${CMAKE_SOURCE_DIR}/src/translations/locversion.plist.in
     )
 endforeach()
-
-## Install the LoginItems into the bundle.
-add_dependencies(mozillavpn loginitem)
-add_custom_command(TARGET mozillavpn POST_BUILD
-    COMMENT "Bundling LoginItems"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:loginitem>
-        $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/LoginItems/$<TARGET_PROPERTY:loginitem,OUTPUT_NAME>.app/
-)
 
 ## Compile and install the app icons into the bundle.
 file(READ ${CMAKE_SOURCE_DIR}/macos/app/Images.xcassets/AppIcon.appiconset/Contents.json APPICON_CONTENTS_JSON)

@@ -22,8 +22,13 @@
 #  include "platforms/ios/iosgleanbridge.h"
 #endif
 
+#include <QBuffer>
 #include <QCoreApplication>
 #include <QDir>
+#include <QEventLoop>
+#include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
 #include <QStandardPaths>
@@ -82,12 +87,6 @@ void MZGlean::initialize(const QString& channel) {
                 updatePingFilter();
                 updateUploadEnabled();
               });
-      connect(SettingsHolder::instance(),
-              &SettingsHolder::extensionTelemetryEnabledChanged, s_instance,
-              []() {
-                updatePingFilter();
-                updateUploadEnabled();
-              });
     }
 
     QDir gleanDirectory(rootAppFolder());
@@ -122,15 +121,13 @@ void MZGlean::initialize(const QString& channel) {
     SettingsHolder* settingsHolder = SettingsHolder::instance();
     Q_ASSERT(settingsHolder);
     auto const clientTelemetryEnabled = settingsHolder->gleanEnabled();
-    auto const extensionTelemetryEnabled =
-        settingsHolder->extensionTelemetryEnabled();
 
-    auto const shouldUpload =
-        extensionTelemetryEnabled | clientTelemetryEnabled;
+    auto const shouldUpload = clientTelemetryEnabled;
 
     updatePingFilter();
     glean_initialize(shouldUpload, gleanDirectory.absolutePath().toUtf8(),
-                     channel.toUtf8(), QLocale::system().name().toUtf8());
+                     channel.toUtf8(), QLocale::system().name().toUtf8(),
+                     &MZGlean::uploadTelemetry);
 
     setLogPings(settingsHolder->gleanLogPings());
     if (settingsHolder->gleanDebugTagActive()) {
@@ -145,9 +142,8 @@ void MZGlean::initialize(const QString& channel) {
 void MZGlean::updateUploadEnabled() {
   auto const settings = SettingsHolder::instance();
   auto const clientTelemetryEnabled = settings->gleanEnabled();
-  auto const extensionTelemetryEnabled = settings->extensionTelemetryEnabled();
 
-  auto const shouldUpload = extensionTelemetryEnabled | clientTelemetryEnabled;
+  auto const shouldUpload = clientTelemetryEnabled;
   logger.debug() << "Changing MZGlean upload status to" << shouldUpload;
 
 #if not(defined(MZ_WASM))
@@ -176,6 +172,44 @@ void MZGlean::updateUploadEnabled() {
     SettingsHolder::instance()->removeInstallationId();
 #endif
   }
+}
+
+// static
+int MZGlean::uploadTelemetry(const struct VPNPingPayload* payload) {
+#ifndef MZ_WASM
+  logger.warning() << "Glean upload to:" << payload->url;
+
+  // Create the HTTP request.
+  QUrl url(payload->url);
+  QNetworkRequest req(url);
+  req.setTransferTimeout(30000);
+  for (uintptr_t i = 0; i < payload->header_count; i++) {
+    const struct VPNPingHeader* hdr = &payload->header_list[i];
+    req.setRawHeader(QByteArray(hdr->name), QByteArray(hdr->value));
+  }
+
+  QBuffer body;
+  body.setData((const char*)payload->body, payload->length);
+
+  // Start the request.
+  QNetworkAccessManager manager;
+  QNetworkReply* reply = manager.post(req, &body);
+  QObject::connect(reply, &QNetworkReply::finished, reply,
+                   &QObject::deleteLater);
+
+  // Run the event loop until the HTTP reply is finished.
+  QEventLoop loop;
+  QObject::connect(reply, &QNetworkReply::finished, &loop, [&]() {
+    QVariant qv = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute);
+    if (!qv.isValid()) {
+      loop.exit(-1);
+    }
+    loop.exit(qv.toInt());
+  });
+  return loop.exec();
+#else
+  return 200;
+#endif
 }
 
 // static
@@ -246,24 +280,18 @@ void MZGlean::updatePingFilter() {
   glean_clear_ping_filter();
   auto settings = SettingsHolder::instance();
   auto clientTelemetryEnabled = settings->gleanEnabled();
-  auto extensionTelemetryEnabled = settings->extensionTelemetryEnabled();
 
   // Everything is allowed, only required to clear the filter.
-  if (clientTelemetryEnabled && extensionTelemetryEnabled) {
+  if (clientTelemetryEnabled) {
     return;
   }
-  // All extension telemetry is inside the extension session ping
-  // so filter that ping out.
-  if (clientTelemetryEnabled) {
-    glean_push_ping_filter("extensionsession");
-  }
-  // Otherwise, filter the vpn pings out.
-  else if (extensionTelemetryEnabled) {
+  // Filter VPN pings out.
+  if (!clientTelemetryEnabled) {
     glean_push_ping_filter("daemonsession");
     glean_push_ping_filter("main");
     glean_push_ping_filter("vpnsession");
   }
-  // If neither are enabled, we won't send things anyway.
+  // If nothing is enabled, we won't send things anyway.
 
 #endif
 }

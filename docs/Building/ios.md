@@ -11,26 +11,27 @@ Apple ID. If you are a Mozilla developer, this is an Apple ID associated with yo
 
 ## Activate conda
 
+If the macOS conda environment has not already been installed, install it:
 ```bash 
 $ conda env create -f env-apple.yml -n vpn
+```
+
+Activate the environment:
+```bash 
 $ conda activate vpn
 ```
 
 See [here](./index.md#conda) for conda environment instructions.
 
-## Get Qt
+## Setup Qt 6.10.1
 
-```bash 
-$ conda activate vpn
+Run the conda setup script.
+Confirm the `qt-cmake` being used is the one installed by the script.
+
+```bash
 $ ./scripts/macos/conda_setup_qt.sh
+$ which qt-cmake # should be ~/miniconda3/envs/vpn/bin/qt-cmake
 ```
-
-
-# Build with Xcode
-
-## Configure Xcode build environment
-
-Complete the steps in [macOS.md#configure-xcode-build-environment](./macos.md#configure-xcode-build-environment).
 
 ## Create symbolic links for iOS SDKs
 **(Only for macOS 26 and higher.)**
@@ -40,7 +41,7 @@ _Xcode 26 has changed where iOS SDKs are stored. Symbolic links must be created 
 
 ```bash
 $ cd /Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/
-$ ln -s iPhoneOS.sdk iPhoneOS18.1.sdk # (for iOS 18.1 - change the version number for other SDK versions)
+$ ln -s iPhoneOS.sdk iPhoneOS26.0.sdk # (for iOS 26.0 - change the version number for other SDK versions)
 ```
 
 *Important: The specific iOS SDK versions must also be downloaded via Xcode. Creating a symbolic link will not download the SDK automatically.*
@@ -48,10 +49,16 @@ $ ln -s iPhoneOS.sdk iPhoneOS18.1.sdk # (for iOS 18.1 - change the version numbe
 
 ## Build
 
-Configure, using the qt-cmake
+```bash
+qt-cmake -S . -B build-ios -GXcode -DQT_HOST_PATH_CMAKE_DIR=~/Qt/6.10.1/macos/lib/cmake -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk
+```
 
-    qt-cmake -S . -B build-ios
+(Older qt-cmake versions used the `-DQT_HOST_PATH=~/Qt/6.6.3/macos` flag rather than `QT_HOST_PATH_CMAKE_DIR` shown here. If having issues, try the older format.)
 
+If you get the error `No CMAKE_Swift_COMPILER could be found.`, include the flag with the direct path the Swift compiler: 
+```bash
+qt-cmake -S . -B build-ios -GXcode -DQT_HOST_PATH_CMAKE_DIR=~/Qt/6.10.1/macos/lib/cmake -DCMAKE_OSX_SYSROOT=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS26.0.sdk -DCMAKE_Swift_COMPILER=/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/swiftc
+```
 
 This will generate an Xcode project file at `build-ios/Mozilla VPN.xcodeproj` which can be opened
 by Xcode:

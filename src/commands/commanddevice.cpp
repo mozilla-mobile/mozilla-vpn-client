@@ -4,10 +4,14 @@
 
 #include "commanddevice.h"
 
+#include <QCoreApplication>
 #include <QEventLoop>
 #include <QTextStream>
 
+#include "commandlineparser.h"
+#include "constants.h"
 #include "leakdetector.h"
+#include "logger.h"
 #include "models/devicemodel.h"
 #include "mozillavpn.h"
 #include "tasks/removedevice/taskremovedevice.h"
@@ -21,10 +25,35 @@ CommandDevice::~CommandDevice() { MZ_COUNT_DTOR(CommandDevice); }
 
 int CommandDevice::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
+  QString appName = tokens[0];
+
+  CommandLineParser::Option hOption = CommandLineParser::helpOption();
+  CommandLineParser::Option testingOption("t", "testing",
+                                          "Run in testing mode.");
+
+  QList<CommandLineParser::Option*> options;
+  options.append(&hOption);
+  options.append(&testingOption);
+
+  CommandLineParser clp;
+  if (clp.parse(tokens, options, false)) {
+    return 1;
+  }
+
+  if (hOption.m_set) {
+    clp.showHelp(this, appName, options, false, false);
+    return 0;
+  }
+
+  if (testingOption.m_set) {
+    QCoreApplication::setOrganizationName("Mozilla Testing");
+    LogHandler::instance()->setStderr(true);
+  }
+
   return MozillaVPN::runCommandLineApp([&]() {
-    if (tokens.length() != 2) {
+    if (tokens.length() != 1) {
       QTextStream stream(stdout);
-      stream << "usage: " << tokens[0] << " <device_id>" << Qt::endl;
+      stream << "usage: " << appName << " <device_id>" << Qt::endl;
       stream << Qt::endl;
       stream << "The list of <device_id> can be obtained using: 'status'"
              << Qt::endl;
@@ -32,6 +61,9 @@ int CommandDevice::run(QStringList& tokens) {
     }
 
     MozillaVPN vpn;
+    if (testingOption.m_set) {
+      Constants::setStaging();
+    }
     if (!vpn.hasToken()) {
       QTextStream stream(stdout);
       stream << "User status: not authenticated" << Qt::endl;
@@ -44,10 +76,10 @@ int CommandDevice::run(QStringList& tokens) {
     }
 
     bool ok;
-    int id = tokens[1].toUInt(&ok);
+    int id = tokens[0].toUInt(&ok);
     if (!ok) {
       QTextStream stream(stdout);
-      stream << tokens[1] << " is not a valid number." << Qt::endl;
+      stream << tokens[0] << " is not a valid number." << Qt::endl;
       return 1;
     }
 
@@ -57,7 +89,7 @@ int CommandDevice::run(QStringList& tokens) {
     const QList<Device>& devices = dm->devices();
     if (id == 0 || id > devices.length()) {
       QTextStream stream(stdout);
-      stream << tokens[1] << " is not a valid ID." << Qt::endl;
+      stream << tokens[0] << " is not a valid ID." << Qt::endl;
       return 1;
     }
 

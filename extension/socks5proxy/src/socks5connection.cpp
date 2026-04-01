@@ -126,16 +126,29 @@ void Socks5Connection::handshakeRead() {
         return;
       }
 
-      char buffer[INT8_MAX];
-      if (m_clientSocket->read(buffer, m_authNumber) != m_authNumber) {
+      QByteArray methods = m_clientSocket->read(m_authNumber);
+      if (methods.length() != m_authNumber) {
         setError(ErrorGeneral, m_clientSocket->errorString());
         return;
       }
 
+      // TODO: Implement authentication checks.
+      if (!methods.contains(AuthNotRequired)) {
+        // The client did not offer the null authentication method.
+        ServerChoicePacket rejectAuth;
+        rejectAuth.version = 0x5;
+        rejectAuth.cauth = AuthNoAcceptableMethods;
+        m_clientSocket->write((const char*)&rejectAuth, sizeof(rejectAuth));
+
+        m_errorString = "No authentication method was acceptable";
+        setState(Closed);
+        return;
+      }
+
+      // Choose the 'NO AUTHENTICATION REQUIRED' method.
       ServerChoicePacket packet;
       packet.version = 0x5;
-      packet.cauth = 0x00;  // TODO: authentication check!
-
+      packet.cauth = AuthNotRequired;
       if (m_clientSocket->write((const char*)&packet, sizeof(packet)) !=
           sizeof(packet)) {
         setError(ErrorGeneral, m_clientSocket->errorString());

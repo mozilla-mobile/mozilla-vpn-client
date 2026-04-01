@@ -622,6 +622,14 @@ module.exports = {
         `Command failed: ${json.error}`);
   },
 
+  async setLastAddonPopover(value) {
+    const json = await this._writeCommand(
+        `set_last_addon_popover ${encodeURIComponent(value)}`);
+    assert(
+        json.type === 'set_last_addon_popover' && !('error' in json),
+        `Command failed: ${json.error}`);
+  },
+
   async getSetting(key) {
     const json = await this._writeCommand(`setting ${encodeURIComponent(key)}`);
     assert(

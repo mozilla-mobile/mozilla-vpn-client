@@ -3,15 +3,15 @@ channels:
   - conda-forge
 dependencies:
   - ccache=4.10.1
-  - python=3.9
+  - python=3.10
   - pip=22.3.1
-  - rust=1.75
+  - rust=1.85
   - go=1.24.5
-  - rust-std-armv7-linux-androideabi=1.75
-  - rust-std-x86_64-linux-android=1.75
-  - rust-std-i686-linux-android=1.75
-  - rust-std-aarch64-linux-android=1.75
-  - cmake=3.31.6
+  - rust-std-armv7-linux-androideabi=1.85
+  - rust-std-x86_64-linux-android=1.85
+  - rust-std-i686-linux-android=1.85
+  - rust-std-aarch64-linux-android=1.85
+  - cmake=4.2.1
   - ninja=1.11.0
   - conda-forge::openjdk=17
   - wget
@@ -19,4 +19,4 @@ dependencies:
       - -r requirements.txt
       - -r taskcluster/scripts/requirements.txt
 variables:
-  QT_VERSION: 6.6.3
+  QT_VERSION: 6.10.1

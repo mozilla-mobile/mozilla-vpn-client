@@ -44,6 +44,7 @@ class ErrorHandler final : public QObject {
     NoConnectionAlert,
     ControllerErrorAlert,
     SplitTunnelErrorAlert,
+    SplitTunnelErrorAlertWithLink,
     RemoteServiceErrorAlert,
     SubscriptionFailureAlert,
     GeoIpRestrictionAlert,
@@ -51,7 +52,8 @@ class ErrorHandler final : public QObject {
     AuthCodeSentAlert,
     CopiedToClipboardConfirmationAlert,
     VPNMustBeOffWarning,
-    SampleInfoAlert
+    SampleInfoAlert,
+    SettingsDecryptionErrorAlert
   };
   Q_ENUM(AlertType)
 

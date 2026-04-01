@@ -7,6 +7,8 @@
 #include <QHostAddress>
 #include <QTextStream>
 
+#include "commandlineparser.h"
+#include "constants.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "mozillavpn.h"
@@ -25,26 +27,50 @@ CommandExcludeIP::~CommandExcludeIP() { MZ_COUNT_DTOR(CommandExcludeIP); }
 
 int CommandExcludeIP::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
+  QString appName = tokens[0];
+
+  CommandLineParser::Option hOption = CommandLineParser::helpOption();
+  CommandLineParser::Option testingOption("t", "testing",
+                                          "Run in testing mode.");
+
+  QList<CommandLineParser::Option*> options;
+  options.append(&hOption);
+  options.append(&testingOption);
+
+  CommandLineParser clp;
+  if (clp.parse(tokens, options, false)) {
+    return 1;
+  }
+
+  if (hOption.m_set) {
+    clp.showHelp(this, appName, options, false, false);
+    return 0;
+  }
+
+  if (testingOption.m_set) {
+    QCoreApplication::setOrganizationName("Mozilla Testing");
+    LogHandler::instance()->setStderr(true);
+  }
+
   return MozillaVPN::runCommandLineApp([&]() {
     QStringList commandList{"list", "add", "remove"};
 
     qsizetype command = -1;
-    if (tokens.length() > 1) {
-      command = commandList.indexOf(tokens[1]);
+    if (tokens.length() > 0) {
+      command = commandList.indexOf(tokens[0]);
     }
 
     QTextStream stream(stdout);
     if (command < 0) {
-      stream << "usage: " << tokens[0] << " <list|add|remove> [ip]" << Qt::endl;
+      stream << "usage: " << appName << " <list|add|remove> [ip]" << Qt::endl;
       return 1;
     }
-    if (command == LIST && tokens.length() != 2) {
-      stream << "usage: " << tokens[0] << " " << tokens[1] << Qt::endl;
+    if (command == LIST && tokens.length() != 1) {
+      stream << "usage: " << appName << " " << tokens[0] << Qt::endl;
       return 1;
     }
-    if (command != LIST && tokens.length() != 3) {
-      stream << "usage: " << tokens[0] << " " << tokens[1] << " <ip>"
-             << Qt::endl;
+    if (command != LIST && tokens.length() != 2) {
+      stream << "usage: " << appName << " " << tokens[0] << " <ip>" << Qt::endl;
       stream << Qt::endl;
       stream << "The list of excluded <ips> can be obtained using: 'list'"
              << Qt::endl;
@@ -52,6 +78,9 @@ int CommandExcludeIP::run(QStringList& tokens) {
     }
 
     MozillaVPN vpn;
+    if (testingOption.m_set) {
+      Constants::setStaging();
+    }
     if (!vpn.hasToken()) {
       stream << "User status: not authenticated" << Qt::endl;
       return 1;
@@ -81,10 +110,10 @@ int CommandExcludeIP::run(QStringList& tokens) {
     // parseSubnet allows generous parsing, also works on IPs without /prefix
     QHostAddress ip;
     int prefix;
-    std::tie(ip, prefix) = QHostAddress::parseSubnet(tokens[2]);
+    std::tie(ip, prefix) = QHostAddress::parseSubnet(tokens[1]);
 
     if (ip.isNull() || prefix < 0) {
-      stream << tokens[2] << " is not a valid IP address." << Qt::endl;
+      stream << tokens[1] << " is not a valid IP address." << Qt::endl;
       return 1;
     }
 

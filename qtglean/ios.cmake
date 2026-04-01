@@ -57,6 +57,7 @@ target_sources(iosglean PRIVATE
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Metrics/EventMetric.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Metrics/LabeledMetric.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Metrics/MemoryDistributionMetric.swift
+    ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Metrics/ObjectMetric.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Metrics/Ping.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Metrics/QuantityMetric.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Metrics/RateMetric.swift
@@ -68,6 +69,8 @@ target_sources(iosglean PRIVATE
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Metrics/UrlMetric.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Metrics/UuidMetric.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Net/HttpPingUploader.swift
+    ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Net/PingUploader.swift
+    ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Net/PingUploadScheduler.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Scheduler/GleanLifecycleObserver.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Scheduler/MetricsPingScheduler.swift
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Utils/Logger.swift
@@ -78,6 +81,19 @@ target_sources(iosglean PRIVATE
 target_sources(iosglean PUBLIC
     ${GLEAN_VENDORED_PATH}/glean-core/ios/Glean/Glean.h
 )
+
+message(STATUS "Building Glean Rust library...")
+execute_process(
+    COMMAND ${CARGO_BUILD_TOOL} build --release
+    WORKING_DIRECTORY ${GLEAN_VENDORED_PATH}/glean-core/bundle
+    RESULT_VARIABLE CARGO_BUILD_RESULT
+    COMMAND_ERROR_IS_FATAL ANY
+)
+
+if(NOT CARGO_BUILD_RESULT EQUAL 0)
+    message(FATAL_ERROR "Failed to build Glean Rust library")
+endif()
+message(STATUS "Glean Rust library built successfully")
 
 # Build gleanFFI.h and glean.swift files using UniFFI
 # and build the internal Glean metrics file

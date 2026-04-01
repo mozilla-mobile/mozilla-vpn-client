@@ -38,8 +38,16 @@
             "content": "vpn.233updateMessage.bullet2"
           },
           {
+            "id": "l_21",
+            "content": "vpn.233updateMessage.bullet21"
+          },
+          {
             "id": "l_3",
             "content": "vpn.233updateMessage.bullet3"
+          },
+          {
+            "id": "l_31",
+            "content": "vpn.233updateMessage.bullet31"
           },
           {
             "id": "l_4",
@@ -50,8 +58,20 @@
             "content": "vpn.233updateMessage.bullet5"
           },
           {
+            "id": "l_51",
+            "content": "vpn.233updateMessage.bullet51"
+          },
+          {
             "id": "l_6",
             "content": "vpn.233updateMessage.bullet6"
+          },
+          {
+            "id": "l_61",
+            "content": "vpn.233updateMessage.bullet61"
+          },
+          {
+            "id": "l_62",
+            "content": "vpn.233updateMessage.bullet62"
           },
           {
             "id": "l_7",

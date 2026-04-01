@@ -2,17 +2,18 @@
   "scripts": {
     "build": "npm run build --workspaces",
     "functionalTest": "mocha --require ./tests/functional/setupVpn.js --timeout 30000",
+    "functionalTestCli": "mocha ./tests/functional/testCli.js --timeout 30000",
     "functionalTestWasm": "WASM=true mocha --require ./tests/functional/setupWasm.js --timeout 30000",
     "wasm:dev": "node tests/functional/wasm.js"
   },
   "devDependencies": {
-    "body-parser": "^2.2.0",
-    "cors": "^2.8.5",
-    "dotenv": "^17.2.1",
-    "express": "^5.1.0",
+    "body-parser": "^2.2.2",
+    "cors": "^2.8.6",
+    "dotenv": "^17.2.3",
+    "express": "^5.2.1",
     "jsonschema": "^1.5.0",
-    "mocha": "^11.7.1",
-    "selenium-webdriver": "^4.35.0",
+    "mocha": "^11.7.5",
+    "selenium-webdriver": "^4.40.0",
     "websocket": "^1.0.35"
   }
 }

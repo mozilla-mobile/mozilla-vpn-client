@@ -57,6 +57,10 @@ Addon* AddonMessage::create(QObject* parent, const QString& manifestFileName,
     return nullptr;
   }
 
+  message->m_promoText.initialize(
+      QString("message.%1.promo_text").arg(messageId),
+      messageObj["promo_text"].toString());
+
   message->m_date = messageObj["date"].toInteger();
   message->planDateRetranslation();
 
@@ -105,6 +109,11 @@ AddonMessage::MessageStatus AddonMessage::loadMessageStatus(const QString& id) {
     return static_cast<MessageStatus>(persistedStatus);
   }
 
+  // We need to persist this to disk to allow the SettingGroup that updates
+  // the red dot to properly work (in MozillaVPN::resetNotification).
+  QString newStatusSetting = statusMetaEnum.valueToKey(MessageStatus::Received);
+  m_messageSettingGroup->set(ADDON_MESSAGE_SETTINGS_STATUS_KEY,
+                             newStatusSetting);
   return MessageStatus::Received;
 }
 
@@ -134,6 +143,10 @@ void AddonMessage::dismiss() {
 }
 
 void AddonMessage::markAsRead() { updateMessageStatus(MessageStatus::Read); }
+
+void AddonMessage::markAsPromoShown() {
+  updateMessageStatus(MessageStatus::PromoShown);
+}
 
 // Marks messaged as un-read and un-dimissed
 void AddonMessage::resetMessage() {

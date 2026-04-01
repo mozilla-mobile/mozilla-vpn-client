@@ -7,59 +7,22 @@ Install Xcode - https://developer.apple.com/xcode/
 Before you start this process, open Xcode, go to settings, accounts, and sign in with your
 Apple ID. If you are a Mozilla developer, this is an Apple ID associated with your LDAP account.
 
-## Activate conda
+## Setup conda
 
 ```
 conda env create -f env-apple.yml
 conda activate vpn
 ```
 
-See [here](./index.md#conda) for conda environment instructions.
-
-Your Xcode install comes with a copy of the MacOS-SDK.
-We need to tell the conda environment where to find it.
-
-Find the sdk path
-
-```
-xcrun --sdk macosx --show-sdk-path
-```
-
-If xcrun didn't work, default paths where you probably find your SDK:
- * Default Xcode-command-line tool path: `/Library/Developer/CommandLineTools/SDKs/MacOSX.<VersionNumber>.sdk`
- * Default Xcode.app path: `/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk`
-
-Add it to the conda env
-
-```
-conda env config vars set SDKROOT=$SDK_PATH
-```
-
-Reactivate your conda env
-
-```
-conda activate vpn
-```
-
-You can view your set variables
-
-```
-conda env config vars list
-```
-
-The variable config step only needs to be done once.
 When you next want to start building the VPN, all you need to do is activate your conda environment (`conda activate vpn`).
 
 ## Get Qt
 
 Get a static build of Qt made built in our CI.
 
-https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.6.latest/artifacts/public/build/qt6_macos.tar.xz
+https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozillavpn.cache.level-3.toolchains.v3.qt-macos-6.10.latest/artifacts/public/build/qt6_macos.tar.xz
 
 Extract the archive and remember the location for the configure step.
-
-Important note: As of November 3, 2025, the downloaded static Qt build is Qt 6.6. However, to compile the client on a macOS 26 machine, you must use later versions of
-6.8 and beyond. (It has been tested on 6.9.3, and that is recommended.) If building on macOS 26, download Qt manually and provide that path to the `CMAKE_PREFIX_PATH` argument.
 
 # Build
 

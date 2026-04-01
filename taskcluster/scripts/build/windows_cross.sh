@@ -5,6 +5,15 @@
 set -e
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
+env
+
+# The arugment, if present, selects the arch to build for
+if [[ $# -ge 1 ]]; then
+  ARCH=$1
+else
+  ARCH=x86_64
+fi
+
 # Ensure all git submodules are checked out
 git submodule update --init --recursive
 
@@ -14,7 +23,10 @@ source ${MOZ_FETCHES_DIR}/conda/bin/activate
 conda-unpack
 
 # Use vendored crates - if available.
-if [ -d ${MOZ_FETCHES_DIR}/cargo-vendor ]; then
+# HACK: Disabled for aarch64 until https://github.com/briansmith/ring/pull/2216
+# can be merged onto mainline. This ensures that we can patch out the ring crate
+# without running afoul of vendored crates.
+if [[ -d ${MOZ_FETCHES_DIR}/cargo-vendor && "${ARCH}" != "aarch64" ]]; then
 mkdir -p .cargo
 cat << EOF > .cargo/config.toml
 [source.vendored-sources]
@@ -29,7 +41,7 @@ print Y "Configuring the build..."
 mkdir ${TASK_WORKDIR}/build-win
 
 cmake -S ${VCS_PATH} -B ${TASK_WORKDIR}/build-win -GNinja \
-        -DCMAKE_TOOLCHAIN_FILE=${VCS_PATH}/scripts/windows/conda-toolchain.cmake \
+        -DCMAKE_TOOLCHAIN_FILE=${VCS_PATH}/scripts/windows/${ARCH}-toolchain.cmake \
         -DCMAKE_PREFIX_PATH=${MOZ_FETCHES_DIR}/qt-windows/lib/cmake \
         -DQT_HOST_PATH=${MOZ_FETCHES_DIR}/qt-host-tools/ \
         -DQT_HOST_PATH_CMAKE_DIR=${MOZ_FETCHES_DIR}/qt-host-tools/lib/cmake \

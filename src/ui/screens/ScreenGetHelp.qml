@@ -14,7 +14,7 @@ import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 Item {
     Rectangle {
         anchors.fill: parent
-        color: window.color
+        color: MZTheme.colors.bgColor
     }
 
     ColumnLayout {

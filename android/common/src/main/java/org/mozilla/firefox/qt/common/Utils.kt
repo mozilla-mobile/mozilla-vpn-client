@@ -17,6 +17,7 @@ import java.security.KeyFactory
 import java.security.Signature
 import java.security.spec.RSAPublicKeySpec
 import java.util.*
+import org.mozilla.firefox.qt.common.BuildConfig
 
 // Companion for Utils.cpp
 object Utils {

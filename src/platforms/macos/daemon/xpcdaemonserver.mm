@@ -18,11 +18,6 @@ namespace {
 Logger logger("XpcDaemonServer");
 }  // namespace
 
-// This property exists, but it's private. Make it available:
-@interface NSXPCConnection(PrivateAuditToken)
-@property (nonatomic, readonly) audit_token_t auditToken;
-@end
-
 @interface XpcDaemonDelegate : NSObject<NSXPCListenerDelegate>
 @property Daemon* daemon;
 @property (copy) NSString* teamIdentifier;
@@ -58,39 +53,38 @@ XpcDaemonServer::XpcDaemonServer(Daemon* daemon) : QObject(daemon) {
 
   // Connections to the daemon require codesigning
   // TODO: It would be nice if we could turn this off for developers somehow.
-  if (@available(macOS 13, *)) {
-    // These certificate extension OIDs are described in Apple's technical note
-    // TN3127: Inside Code Signing Requirements, and are used to identify
-    // certificates and authorities used by Apple for codesigning.
-    //
-    // The extension identifiers ending in 6.1.13 and 6.2.6 denote a Developer
-    // ID certificate granted by the apple Developer ID CA. This permits release
-    // software signed by our development team to access this service.
-    //
-    // The extension identifiers ending in 6.1.12 and 6.2.1 denote a macOS
-    // developer certificate granted by the Apple WWDR intermediate CA. This
-    // permits development builds signed by our development team to access this
-    // service.
-    //
-    constexpr const char* oidExtAppleCodesign =
-        "(certificate leaf[field.1.2.840.113635.100.6.1.13] or" \
-        " certificate leaf[field.1.2.840.113635.100.6.1.12])";
-    constexpr const char* oidExtAppleCaIntermediate =
-        "(certificate 1[field.1.2.840.113635.100.6.2.6] or" \
-        " certificate 1[field.1.2.840.113635.100.6.2.1])";
-    QString devTeamIdentifier =
-        QString::fromNSString(delegate.teamIdentifier);
-    QString devTeamSubject =
-        QString("certificate leaf[subject.OU] = \"%1\"").arg(devTeamIdentifier);
 
-    QStringList xpcCodesignList;
-    xpcCodesignList.append("anchor apple generic");
-    xpcCodesignList.append(devTeamSubject);
-    xpcCodesignList.append(oidExtAppleCodesign);
-    xpcCodesignList.append(oidExtAppleCaIntermediate);
-    QString xpcCodesignReq = xpcCodesignList.join(" and ");
-    [listener setConnectionCodeSigningRequirement:xpcCodesignReq.toNSString()];
-  }
+  // These certificate extension OIDs are described in Apple's technical note
+  // TN3127: Inside Code Signing Requirements, and are used to identify
+  // certificates and authorities used by Apple for codesigning.
+  //
+  // The extension identifiers ending in 6.1.13 and 6.2.6 denote a Developer
+  // ID certificate granted by the apple Developer ID CA. This permits release
+  // software signed by our development team to access this service.
+  //
+  // The extension identifiers ending in 6.1.12 and 6.2.1 denote a macOS
+  // developer certificate granted by the Apple WWDR intermediate CA. This
+  // permits development builds signed by our development team to access this
+  // service.
+  //
+  constexpr const char* oidExtAppleCodesign =
+      "(certificate leaf[field.1.2.840.113635.100.6.1.13] or" \
+      " certificate leaf[field.1.2.840.113635.100.6.1.12])";
+  constexpr const char* oidExtAppleCaIntermediate =
+      "(certificate 1[field.1.2.840.113635.100.6.2.6] or" \
+      " certificate 1[field.1.2.840.113635.100.6.2.1])";
+  QString devTeamIdentifier =
+      QString::fromNSString(delegate.teamIdentifier);
+  QString devTeamSubject =
+      QString("certificate leaf[subject.OU] = \"%1\"").arg(devTeamIdentifier);
+
+  QStringList xpcCodesignList;
+  xpcCodesignList.append("anchor apple generic");
+  xpcCodesignList.append(devTeamSubject);
+  xpcCodesignList.append(oidExtAppleCodesign);
+  xpcCodesignList.append(oidExtAppleCaIntermediate);
+  QString xpcCodesignReq = xpcCodesignList.join(" and ");
+  [listener setConnectionCodeSigningRequirement:xpcCodesignReq.toNSString()];
 
   [listener retain];
   [listener resume];
@@ -153,29 +147,6 @@ XpcDaemonServer::~XpcDaemonServer() {
 - (BOOL)         listener:(NSXPCListener *) listener
 shouldAcceptNewConnection:(NSXPCConnection *) newConnection {
   logger.debug() << "new connection";
-
-  if (@available(macOS 13, *)) {
-    // Nothing to do here - this is handled by the listener.
-  } else {
-    // For macOS versions prior to 13.0 we must roll our own connection auth
-    // code. This uses the private auditToken property on the NSXPCConnection
-    // and inspects the caller's entitlements for a matching team identifier.
-    //
-    // Sadly there is no public API to get this information, and doing it via
-    // the caller's PID is vulnerable to race conditions.
-    SecTaskRef task = SecTaskCreateWithAuditToken(kCFAllocatorDefault,
-                                                  newConnection.auditToken);
-    if (!task) {
-      logger.debug() << "rejecting connection: unable to locate calling task";
-      return false;
-    }
-    NSString* clientTeamIdentifier = [XpcDaemonDelegate getTeamIdentifier:task];
-    CFRelease(task);
-    if ([clientTeamIdentifier compare:self.teamIdentifier] != NSOrderedSame) {
-      logger.debug() << "rejecting connection:" << clientTeamIdentifier;
-      return false;
-    }
-  }
 
   XpcSessionDelegate* delegate = [XpcSessionDelegate alloc];
   delegate.bridge = new XpcDaemonSession(self.daemon, newConnection);

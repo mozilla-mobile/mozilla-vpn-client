@@ -120,8 +120,21 @@ Flickable {
     function recalculateContentHeight() {
         //Absolute y coordinate position of the scroll view
         const absoluteYPosition = mapToItem(window.contentItem, 0, 0).y
+
+        var platformBottomBar;
+        switch (Qt.platform.os) {
+        case "ios":
+            platformBottomBar = 34 // This is not needed for touch ID phones, but those are a very small portion of users and will not hurt to have this.
+            break
+        case "android":
+            platformBottomBar = 48 // This should cover both gesture-based and 3 button navigation.
+            break
+        default:
+            platformBottomBar = 0
+        }
+
         //Portion of the screen that a view's contents can reside without interfering with the navbar
-        const contentSpace = window.height - MZTheme.theme.navBarHeightWithMargins
+        const contentSpace = window.height - MZTheme.theme.navBarHeightWithMargins - platformBottomBar
 
         //Checks if the flickable AND it's content interferes with the navbar area (bottom 146px for iOS, bottom 128px for other platforms)
         //If it does, we pad the flickable's contentHeight with whatever bottom padding is needed so that there is always 48px (aka theme.navBarTopMargin)

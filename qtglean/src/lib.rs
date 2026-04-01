@@ -13,7 +13,9 @@ use metrics::__generated_pings::register_pings;
 use once_cell::sync::Lazy;
 use std::sync::Mutex;
 use std::sync::Arc;
-use uploader::VPNPingUploader;
+use std::time::Duration;
+use std::os::raw::c_int;
+use uploader::{VPNPingUploader, VPNPingPayload};
 use logger::Logger;
 
 // Make internal Glean symbols public for mobile SDK consumption.
@@ -35,7 +37,12 @@ pub extern "C" fn glean_register_log_handler(message_handler: extern fn(i32, *mu
 }
 
 #[no_mangle]
-pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr, channel: FfiStr, locale: FfiStr) {
+pub extern "C" fn glean_initialize(
+        is_telemetry_enabled: bool,
+        data_path: FfiStr,
+        channel: FfiStr,
+        locale: FfiStr,
+        uploader: Option<extern "C" fn(*const VPNPingPayload) -> c_int>) {
     let cfg = Configuration {
         data_path: data_path
             .to_string_fallible()
@@ -50,7 +57,10 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
         // Default is "https://incoming.telemetry.mozilla.org"
         server_endpoint: None,
         // Use the Glean provided one once https://bugzilla.mozilla.org/show_bug.cgi?id=1675468 is resolved
-        uploader: Some(Box::new(VPNPingUploader::new(GLOBAL_PING_FILTER_LIST.clone()))),
+        uploader: match uploader {
+            Some(x) => Some(Box::new(VPNPingUploader::new(x, GLOBAL_PING_FILTER_LIST.clone()))),
+            None => None,
+        },
         // Whether Glean should schedule “metrics” pings for you
         use_core_mps: true,
         trim_data_to_registered_pings: false,
@@ -62,6 +72,9 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
         enable_event_timestamps: false,
         experimentation_id: None,
         enable_internal_pings: true,
+        ping_lifetime_max_time: Duration::ZERO,
+        ping_lifetime_threshold: 0,
+        ping_schedule: Default::default(),
     };
 
     let client_info = ClientInfoMetrics {
@@ -71,8 +84,8 @@ pub extern "C" fn glean_initialize(is_telemetry_enabled: bool, data_path: FfiStr
         locale: locale.to_string_fallible().ok(),
     };
 
-    register_pings();
     glean::initialize(cfg, client_info);
+    register_pings();
 }
 
 #[no_mangle]
@@ -125,6 +138,9 @@ pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: 
         enable_event_timestamps: false,
         experimentation_id: None,
         enable_internal_pings: true,
+        ping_lifetime_max_time: Duration::ZERO,
+        ping_lifetime_threshold: 0,
+        ping_schedule: Default::default(),
     };
 
     let client_info = ClientInfoMetrics {
@@ -135,6 +151,7 @@ pub extern "C" fn glean_test_reset_glean(is_telemetry_enabled: bool, data_path: 
     };
 
     glean::test_reset_glean(cfg, client_info, true);
+    register_pings();
 }
 
 #[no_mangle]

@@ -29,11 +29,11 @@ target_link_libraries(unit_tests PRIVATE
     Qt6::Gui
     Qt6::Qml
     Qt6::Quick
+    Qt6::QuickControls2
     Qt6::Svg
 )
 
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
-target_compile_definitions(unit_tests PRIVATE MZ_DEBUG)
 
 target_link_libraries(unit_tests PRIVATE qtglean lottie mzutils nebula translations)
 

@@ -497,6 +497,17 @@ static QList<InspectorCommand> s_commands{
           return obj;
         }},
 
+    // Thanks to limitations with QDateTime, cannot set this from JS, and thus
+    // can't use set_setting
+    InspectorCommand{"set_last_addon_popover",
+                     "Set the last time the addon popover was shown", 1,
+                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
+                       qint64 epochTime = arguments[1].toLongLong();
+                       SettingsHolder::instance()->setAddonPromoLastShown(
+                           QDateTime::fromMSecsSinceEpoch(epochTime));
+                       return QJsonObject();
+                     }},
+
     InspectorCommand{
         "setting", "Get a setting value", 1,
         [](InspectorHandler*, const QList<QByteArray>& arguments) {

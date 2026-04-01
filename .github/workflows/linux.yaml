@@ -13,17 +13,34 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions: {}
+
 jobs:
+  supported-fedora-releases:
+    name: Fetch currently supported Fedora releases
+    runs-on: ubuntu-slim
+    outputs:
+      supported-releases: ${{ steps.fetch-supported-releases.outputs.releases }}
+    steps:
+      - id: fetch-supported-releases
+        name: Fetch currently supported Fedora releases
+        run: |
+          API_RESPONSE=$(curl -s https://endoflife.date/api/v1/products/fedora)
+          SUPPORTED_RELEASES=$(echo $API_RESPONSE | jq -c '[ .result.releases[] | select(.isEol == false) | { "fedora-version": .name } ]')
+          echo "releases=$SUPPORTED_RELEASES" >> $GITHUB_OUTPUT
+
   source-bundle:
     name: Source Bundle
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     steps:
       - name: Checkout sources
-        uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
+        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
-          python-version: "3.9"
+          persist-credentials: false
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: "3.10"
           cache: "pip"
       - run: pip install -r requirements.txt
 
@@ -35,25 +52,31 @@ jobs:
 
       - name: Build source bundle
         shell: bash
-        run: ./scripts/linux/script.sh --source --gitref ${{github.ref}}
+        run: ./scripts/linux/script.sh --source --gitref ${GITHUB_REF}
 
       - name: Upload source bundle
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: Sources
           path: .tmp
           include-hidden-files: true
 
   rpmbuild:
-    name: RPM Packages
-    needs: source-bundle
+    name: RPM Packages (Fedora ${{ matrix.fedora-version }})
+    needs:
+      - source-bundle
+      - supported-fedora-releases
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.supported-fedora-releases.outputs.supported-releases) }}
     container:
-      image: fedora:42
+      image: fedora:${{ matrix.fedora-version }}
 
     steps:
       - name: Download Source Package
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
           name: Sources
 
@@ -68,9 +91,9 @@ jobs:
         run: rpmbuild -D "_topdir $(pwd)" -D "_sourcedir $(pwd)" -ba mozillavpn.spec
 
       - name: Uploading
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
-          name: RPM Build
+          name: RPM Build (Fedora ${{ matrix.fedora-version }})
           path: |
             RPMS/
             SRPMS/

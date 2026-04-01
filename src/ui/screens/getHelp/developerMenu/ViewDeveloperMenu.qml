@@ -63,13 +63,71 @@ MZViewBase {
             }
 
             onTextChanged: text => {
-                if (MZSettings.stagingServerAddress !== serverAddressInput.text) {
-                    MZSettings.stagingServerAddress = serverAddressInput.text;
+                var serverAddressText = serverAddressInput.text.trim();
+                if (serverAddressText.endsWith('/')) {
+                  serverAddressText = serverAddressText.slice(0, -1);
+                }
+                if (MZSettings.stagingServerAddress !== serverAddressText) {
+                    MZSettings.stagingServerAddress = serverAddressText;
                 }
             }
 
             Component.onCompleted: {
                 serverAddressInput.text = MZSettings.stagingServerAddress;
+            }
+        }
+
+        function maybeTurnOffStartOnBoot() {
+            if (MZSettings.startAtBoot) {
+              startOnBootDeactivated.visible = true;
+              // This settings change fixes a crash (VPN-7523)
+              MZSettings.startAtBoot = false;
+            }
+        }
+
+        MZContextualAlerts {
+            id: restartRequired
+            visible: false
+            Layout.leftMargin: MZTheme.theme.windowMargin/2
+
+            messages: [
+                {
+                    type: MZContextualAlert.AlertType.Warning,
+                    message: MZI18n.SettingsDevRestartRequired,
+                }
+            ]
+
+            Connections {
+                target: MZSettings
+                function onStagingServerAddressChanged() {
+                    restartRequired.visible = true;
+                }
+                function onStagingServerChanged() {
+                    restartRequired.visible = true;
+                }
+            }
+        }
+
+        MZContextualAlerts {
+            id: startOnBootDeactivated
+            visible: false
+            Layout.leftMargin: MZTheme.theme.windowMargin/2
+
+            messages: [
+                {
+                    type: MZContextualAlert.AlertType.Warning,
+                    message: "'Connect VPN on startup' setting has been disabled",
+                }
+            ]
+
+            Connections {
+                target: MZSettings
+                function onStagingServerAddressChanged() {
+                    root.maybeTurnOffStartOnBoot();
+                }
+                function onStagingServerChanged() {
+                    root.maybeTurnOffStartOnBoot();
+                }
             }
         }
 
@@ -85,6 +143,10 @@ MZViewBase {
             showDivider: false
             onClicked: {
                 MZSettings.addonCustomServer = !MZSettings.addonCustomServer
+
+                if (MZSettings.addonCustomServer && MZFeatureList.get("addonSignature").isSupported) {
+                  reminderForAddonsSignature.visible = true
+                }
             }
         }
 
@@ -105,14 +167,31 @@ MZViewBase {
             }
 
             onTextChanged: text => {
-                               if (MZSettings.addonCustomServerAddress !== addonCustomServerInput.text) {
-                                   MZSettings.addonCustomServerAddress = addonCustomServerInput.text;
+                               var addonAddressText = addonCustomServerInput.text.trim();
+                               if (!addonAddressText.endsWith('/')) {
+                                 addonAddressText = addonAddressText + '/';
+                               }
+                               if (MZSettings.addonCustomServerAddress !== addonAddressText) {
+                                   MZSettings.addonCustomServerAddress = addonAddressText;
                                }
                            }
 
             Component.onCompleted: {
                 addonCustomServerInput.text = MZSettings.addonCustomServerAddress;
             }
+        }
+
+        MZContextualAlerts {
+            id: reminderForAddonsSignature
+            visible: false
+            Layout.leftMargin: MZTheme.theme.windowMargin/2
+
+            messages: [
+                {
+                    type: MZContextualAlert.AlertType.Warning,
+                    message: "'Addon signature' feature is active, which may break custom addon URL",
+                }
+            ]
         }
 
         MZCheckBoxRow {
@@ -147,7 +226,7 @@ MZViewBase {
                     viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewFeatureList.qml"
                 }
                 ListElement {
-                    title: "UI Testing"
+                    title: "UI Debugging"
                     viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewUiTesting.qml"
                 }
                 ListElement {
@@ -172,7 +251,7 @@ MZViewBase {
             Layout.fillWidth: true
             Layout.preferredHeight: MZTheme.theme.rowHeight
 
-            visible: checkBoxRowStagingServer.isChecked && !restartRequired.isVisible
+            visible: checkBoxRowStagingServer.isChecked && !restartRequired.visible
 
             MZExternalLinkListItem {
                 id: inspectorLink
@@ -192,9 +271,8 @@ MZViewBase {
         }
 
         MZContextualAlerts {
-            id: restartRequired
-
-            property bool isVisible: false
+            id: restartRequiredForButtons
+            visible: false
 
             Layout.topMargin: MZTheme.theme.listSpacing
             Layout.leftMargin: MZTheme.theme.windowMargin/2
@@ -203,30 +281,18 @@ MZViewBase {
                 {
                     type: MZContextualAlert.AlertType.Warning,
                     message: MZI18n.SettingsDevRestartRequired,
-                    visible: isVisible
                 }
             ]
-
-            Connections {
-                target: MZSettings
-                function onStagingServerAddressChanged() {
-                    restartRequired.isVisible = true;
-                }
-                function onStagingServerChanged() {
-                    restartRequired.isVisible = true;
-                }
-            }
         }
 
         MZButton {
-            id: reinstateMessages
+            id: resetMessages
 
             Layout.topMargin: MZTheme.theme.listSpacing * 2
 
-            text: "Reinstate messages"
+            text: "Reset messages"
             onClicked: {
-                MZAddonManager.reinstateMessages()
-                restartRequired.isVisible = true
+                MZAddonManager.reset()
             }
         }
 
@@ -236,7 +302,7 @@ MZViewBase {
             text: "View onboarding at next launch"
             onClicked: {
                 MZSettings.onboardingCompleted = false
-                restartRequired.isVisible = true
+                restartRequiredForButtons.visible = true
             }
         }
 

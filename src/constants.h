@@ -19,7 +19,6 @@ QString apiBaseUrl();
 
 enum ApiEndpoint {
   Account,
-  Adjust,
   CreateSupportTicket,
   CreateSupportTicketGuest,
   Device,
@@ -29,6 +28,7 @@ enum ApiEndpoint {
   Heartbeat,
   IPInfo,
   LoginVerify,
+  OAuthSuccess,
   Products,
 #ifdef MZ_ANDROID
   PurchasesAndroid,
@@ -250,7 +250,7 @@ constexpr const char* AUTOGRAPH_STAGE_FINGERPRINTS[] = {
     nullptr  // list termination
 };
 
-PRODBETAEXPR(qint64, keyRegeneratorTimeSec, 604800, 300);
+PRODBETAEXPR(qint64, keyRegenerationTimeSec, 1209600, 86400);
 
 PRODBETAEXPR(QString, upgradeToAnnualUrl,
              "https://www.mozilla.org/products/vpn/"
@@ -259,21 +259,6 @@ PRODBETAEXPR(QString, upgradeToAnnualUrl,
              "?utm_medium=mozillavpn&utm_source=account#pricing")
 
 #undef PRODBETAEXPR
-
-#if defined(MZ_ADJUST)
-// These are the two auto-generated token from the Adjust dashboard for the
-// "Subscription Completed" event. We have two since in the Adjust dashboard we
-// have defined two apps for iOS and Android with a event token each.
-constexpr const char* ADJUST_SUBSCRIPTION_COMPLETED =
-#  if defined(MZ_IOS)
-    "jl72xm"
-#  elif defined(MZ_ANDROID)
-    "o1mn9m"
-#  else
-    ""
-#  endif
-    ;
-#endif
 
 #if defined(__APPLE__)
 // This is the name of the service to encrypt the settings file

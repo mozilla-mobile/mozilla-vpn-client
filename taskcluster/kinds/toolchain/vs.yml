@@ -2,12 +2,7 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 ---
-vs-2022:
-    description: "MS Visual Studio 2022"
-    worker-type: b-win2022
-    treeherder:
-        symbol: TL(vs-2022)
-        platform: windows/x86_64
+task-defaults:
     worker:
         env:
             FOO: bar    # Bug: taskcluster fails if there is no env key?
@@ -17,5 +12,26 @@ vs-2022:
         resources:
             - scripts/windows/fetch-vsix-package.py
             - taskcluster/scripts/toolchain/enter_dev_shell.ps1
-        toolchain-alias: vs-2022
+
+vs-2022-x86_64:
+    description: "MS Visual Studio 2022"
+    worker-type: b-win2022
+    treeherder:
+        symbol: TL(vs-2022-x86_64)
+        platform: windows/x86_64
+    run:
+        toolchain-alias: vs-2022-x86_64
+        toolchain-artifact: public/build/visual-studio-2022.zip
+
+vs-2022-aarch64:
+    description: "MS Visual Studio 2022 (aarch64)"
+    worker-type: b-win11-2024h2-arm64
+    treeherder:
+        symbol: TL(vs-2022-aarch64)
+        platform: windows/aarch64
+    run:
+        arguments:
+            - --host-arch=arm64
+            - --only-host
+        toolchain-alias: vs-2022-aarch64
         toolchain-artifact: public/build/visual-studio-2022.zip
