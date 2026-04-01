@@ -504,7 +504,13 @@ void Controller::activateInternal(
       m_activationQueue.last().m_serverPublicKey);
 
   m_pingReceived = false;
-  m_pingCanary.start(m_activationQueue.first().m_serverIpv4AddrIn, "0.0.0.0/0");
+  {
+    const auto& firstConfig = m_activationQueue.first();
+    const QString pingTarget = firstConfig.m_serverIpv4AddrIn.isNull()
+                                   ? firstConfig.m_serverIpv6AddrIn
+                                   : firstConfig.m_serverIpv4AddrIn;
+    m_pingCanary.start(pingTarget, "0.0.0.0/0");
+  }
   logger.info() << "Canary Ping Started";
   activateNext();
 }

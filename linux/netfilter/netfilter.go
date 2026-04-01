@@ -67,6 +67,7 @@ type nftCtx struct {
 	input       *nftables.Chain
 	output      *nftables.Chain
 	addrset     *nftables.Set
+	addrset6    *nftables.Set
 	fwmark      uint32
 	conn        nftables.Conn
 }
@@ -123,13 +124,11 @@ func (ctx *nftCtx) nftApplyFwMark() {
 		},
 	})
 
-	// Inbound packets from wireguard servers should be marked for RPF.
+	// Inbound IPv4 packets from wireguard servers should be marked for RPF.
 	ctx.conn.AddRule(&nftables.Rule{
 		Table: ctx.table,
 		Chain: ctx.preroute,
 		Exprs: []expr.Any{
-			// For now, we only support IPv4 in this check.
-			// TODO: Support IPv6.
 			&expr.Meta{
 				Key:      expr.MetaKeyNFPROTO,
 				Register: 1,
@@ -169,6 +168,55 @@ func (ctx *nftCtx) nftApplyFwMark() {
 			&expr.Meta{
 				Key:            expr.MetaKeyMARK,
 				Register:       1,
+				SourceRegister: true,
+			},
+		},
+	})
+
+	// Inbound IPv6 packets from wireguard servers should be marked for RPF.
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table,
+		Chain: ctx.preroute,
+		Exprs: []expr.Any{
+			&expr.Meta{
+				Key: 	  expr.MetaKeyNFPROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op: 	  expr.CmpOpEq,
+				Register: 1,
+				Data: 	  []byte{linux.NFPROTO_IPV6},
+			},
+			// Match UDP packets
+			&expr.Meta{
+				Key: 	  expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op: 	  expr.CmpOpEq,
+				Register: 1,
+				Data: 	  []byte{linux.IPPROTO_UDP},
+			},
+			// Lookup the IPv6 source address
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseNetworkHeader,
+				Offset:       uint32(8), // IPv6 saddr
+				Len:          uint32(16),
+			},
+			&expr.Lookup{
+				SourceRegister: 1,
+				SetName: 		ctx.addrset6.Name,
+				SetID: 			ctx.addrset6.ID,
+			},
+			// Set the firewall mark
+			&expr.Immediate{
+				Register: 1,
+				Data: 	  binaryutil.NativeEndian.PutUint32(ctx.fwmark),
+			},
+			&expr.Meta{
+				Key: 	  		expr.MetaKeyMARK,
+				Register: 		1,
 				SourceRegister: true,
 			},
 		},
@@ -250,7 +298,7 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 		Table: ctx.table,
 		Chain: ctx.input,
 		Exprs: []expr.Any{
-			// Accept all packets from the VPN server
+			// Accept IPv4 UDP packets from the VPN server
 			&expr.Meta{
 				Key:      expr.MetaKeyPROTOCOL,
 				Register: 1,
@@ -279,6 +327,46 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 				SourceRegister: 1,
 				SetName:        ctx.addrset.Name,
 				SetID:          ctx.addrset.ID,
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table,
+		Chain: ctx.input,
+		Exprs: []expr.Any{
+			// Accept IPv6 UDP packets from the VPN server
+			&expr.Meta{
+				Key: 	  expr.MetaKeyPROTOCOL,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op: 	  expr.CmpOpEq,
+				Register: 1,
+				Data: 	  binaryutil.BigEndian.PutUint16(linux.ETH_P_IPV6),
+			},
+			&expr.Meta{
+				Key: expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op: 	  expr.CmpOpEq,
+				Register: 1,
+				Data: 	  []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseNetworkHeader,
+				Offset:       uint32(8), // IPv6 saddr
+				Len:          uint32(16),
+			},
+			&expr.Lookup{
+				SourceRegister: 1,
+				SetName: 		ctx.addrset6.Name,
+				SetID: 			ctx.addrset6.ID,
 			},
 			&expr.Verdict{
 				Kind: expr.VerdictAccept,
@@ -351,7 +439,7 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 		Table: ctx.table,
 		Chain: ctx.output,
 		Exprs: []expr.Any{
-			// Accept all packets to the VPN server
+			// Accept IPv4 UDP packets to the VPN server
 			&expr.Meta{
 				Key:      expr.MetaKeyPROTOCOL,
 				Register: 1,
@@ -380,6 +468,46 @@ func (ctx *nftCtx) nftRestrictTraffic(ifname string) {
 				SourceRegister: 1,
 				SetName:        ctx.addrset.Name,
 				SetID:          ctx.addrset.ID,
+			},
+			&expr.Verdict{
+				Kind: expr.VerdictAccept,
+			},
+		},
+	})
+
+	ctx.conn.AddRule(&nftables.Rule{
+		Table: ctx.table,
+		Chain: ctx.output,
+		Exprs: []expr.Any{
+			// Accept IPv6 UDP packets to the VPN server
+			&expr.Meta{
+				Key: 	  expr.MetaKeyPROTOCOL,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op: 	  expr.CmpOpEq,
+				Register: 1,
+				Data: 	  binaryutil.BigEndian.PutUint16(linux.ETH_P_IPV6),
+			},
+			&expr.Meta{
+				Key: 	  expr.MetaKeyL4PROTO,
+				Register: 1,
+			},
+			&expr.Cmp{
+				Op: 	  expr.CmpOpEq,
+				Register: 1,
+				Data: 	  []byte{linux.IPPROTO_UDP},
+			},
+			&expr.Payload{
+				DestRegister: 1,
+				Base:         expr.PayloadBaseNetworkHeader,
+				Offset:       uint32(24), // IPv6 daddr
+				Len:          uint32(16),
+			},
+			&expr.Lookup{
+				SourceRegister: 1,
+				SetName: 		ctx.addrset6.Name,
+				SetID: 			ctx.addrset6.ID,
 			},
 			&expr.Verdict{
 				Kind: expr.VerdictAccept,
@@ -670,6 +798,13 @@ func NetfilterCreateTables() int32 {
 	}
 	mozvpn_ctx.conn.AddSet(mozvpn_ctx.addrset, nil)
 
+	mozvpn_ctx.addrset6 = &nftables.Set{
+		Table:   mozvpn_ctx.table,
+		Name:    "mozvpn-addrset6",
+		KeyType: nftables.TypeIP6Addr,
+	}
+	mozvpn_ctx.conn.AddSet(mozvpn_ctx.addrset6, nil)
+
 	log.Println("Creating netfilter tables")
 	return mozvpn_ctx.nftCommit()
 }
@@ -808,23 +943,36 @@ func NetfilterAllowPrefix(prefix string) int32 {
 
 //export NetfilterMarkInbound
 func NetfilterMarkInbound(ipaddr string) int32 {
-	element := []nftables.SetElement{
-		{Key: net.ParseIP(ipaddr).To4()},
+	ip := net.ParseIP(ipaddr)
+	if ip == nil {
+		log.Println("NetfilterMarkInbound: failed to parse IP address", ipaddr)
+		return -1
 	}
-
-	mozvpn_ctx.conn.SetAddElements(mozvpn_ctx.addrset, element)
-
+	if ip4 := ip.To4(); ip4 != nil {
+		mozvpn_ctx.conn.SetAddElements(mozvpn_ctx.addrset,
+			[]nftables.SetElement{{Key: ip4}})
+	} else {
+		mozvpn_ctx.conn.SetAddElements(mozvpn_ctx.addrset6,
+			[]nftables.SetElement{{Key: ip.To16()}})
+	}
 	log.Println("Marking inbound traffic from server")
 	return mozvpn_ctx.nftCommit()
 }
 
 //export NetfilterClearInbound
 func NetfilterClearInbound(ipaddr string) int32 {
-	element := []nftables.SetElement{
-		{Key: net.ParseIP(ipaddr).To4()},
+	ip := net.ParseIP(ipaddr)
+	if ip == nil {
+		log.Println("NetfilterClearInbound: failed to parse IP address", ipaddr)
+		return -1
 	}
-
-	mozvpn_ctx.conn.SetDeleteElements(mozvpn_ctx.addrset, element)
+	if ip4 := ip.To4(); ip4 != nil {
+		mozvpn_ctx.conn.SetDeleteElements(mozvpn_ctx.addrset,
+			[]nftables.SetElement{{Key: ip4}})
+	} else {
+		mozvpn_ctx.conn.SetDeleteElements(mozvpn_ctx.addrset6,
+			[]nftables.SetElement{{Key: ip.To16()}})
+	}
 	log.Println("Clearing traffic marks for server")
 	return mozvpn_ctx.nftCommit()
 }

@@ -18,8 +18,8 @@ class LinuxFirewall final : public QObject {
           const QString& deviceIpv6Address);
   bool down();
 
-  bool markInbound(const QString& serverIpv4AddrIn);
-  bool clearInbound(const QString& serverIpv4AddrIn);
+  bool markInbound(const QString& serverAddrIn);
+  bool clearInbound(const QString& serverAddrIn);
 
   bool markCgroupV1(uint32_t cgroup);
   bool markCgroupV2(const QString& cgroup);

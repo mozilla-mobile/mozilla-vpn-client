@@ -133,22 +133,22 @@ bool LinuxFirewall::down() {
   return true;
 }
 
-bool LinuxFirewall::markInbound(const QString& serverIpv4AddrIn) {
-  MAKE_GO_STRING(goAddress, serverIpv4AddrIn);
+bool LinuxFirewall::markInbound(const QString& serverAddrIn) {
+  MAKE_GO_STRING(goAddress, serverAddrIn);
   if (NetfilterMarkInbound(goAddress) != 0) {
     logger.error() << "Error attempting to mark inbound traffic from"
-                   << serverIpv4AddrIn;
+                   << serverAddrIn;
     return false;
   }
 
   return true;
 }
 
-bool LinuxFirewall::clearInbound(const QString& serverIpv4AddrIn) {
-  MAKE_GO_STRING(goAddress, serverIpv4AddrIn);
+bool LinuxFirewall::clearInbound(const QString& serverAddrIn) {
+  MAKE_GO_STRING(goAddress, serverAddrIn);
   if (NetfilterClearInbound(goAddress) != 0) {
     logger.error() << "Error attempting to clear inbound traffic from"
-                   << serverIpv4AddrIn;
+                   << serverAddrIn;
     return false;
   }
 
