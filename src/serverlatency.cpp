@@ -5,6 +5,9 @@
 #include "serverlatency.h"
 
 #include <QDateTime>
+#ifndef MZ_WASM
+#  include <QNetworkInterface>
+#endif
 
 #include "controller.h"
 #include "feature/feature.h"
@@ -31,6 +34,24 @@ namespace {
 Logger logger("ServerLatency");
 
 using namespace std::chrono_literals;
+
+bool hasIPv4Connectivity() {
+#ifdef MZ_WASM
+  return true;
+#else
+  for (const QNetworkInterface& iface : QNetworkInterface::allInterfaces()) {
+    if (iface.flags() & QNetworkInterface::IsLoopBack) {
+      continue;
+    }
+    for (const QNetworkAddressEntry& entry : iface.addressEntries()) {
+      if (entry.ip().protocol() == QAbstractSocket::IPv4Protocol) {
+        return true;
+      }
+    }
+  }
+  return false;
+#endif
+}
 constexpr const std::chrono::milliseconds SERVER_LATENCY_TIMEOUT = 5s;
 constexpr const auto SERVER_LATENCY_INITIAL = 1s;
 constexpr const auto SERVER_LATENCY_REFRESH = 30min;
@@ -95,7 +116,10 @@ void ServerLatency::start() {
 
   m_sequence = 0;
   m_wantRefresh = false;
-  m_pingSender = PingSenderFactory::create(QHostAddress(), this);
+  m_pingSender = PingSenderFactory::create(
+      hasIPv4Connectivity() ? QHostAddress()
+                            : QHostAddress(QHostAddress::AnyIPv6),
+      this);
   if (!m_pingSender->isValid()) {
     // Fallback to using TCP handshake times for pings if we can't create an
     // ICMP socket on this platform, this probes at the ports used for Wireguard
@@ -171,7 +195,10 @@ void ServerLatency::maybeSendPings() {
       m_pingReplyList.append(retry);
 
       const Server& server = scm->server(retry.publicKey);
-      m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), retry.sequence);
+      m_pingSender->sendPing(
+          QHostAddress(hasIPv4Connectivity() ? server.ipv4AddrIn()
+                                             : server.ipv6AddrIn()),
+          retry.sequence);
     }
 
     // TODO: Mark the server unavailable?
@@ -191,7 +218,10 @@ void ServerLatency::maybeSendPings() {
     m_pingReplyList.append(record);
 
     const Server& server = scm->server(record.publicKey);
-    m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), record.sequence);
+    m_pingSender->sendPing(
+        QHostAddress(hasIPv4Connectivity() ? server.ipv4AddrIn()
+                                           : server.ipv6AddrIn()),
+        record.sequence);
   }
 
   m_lastUpdateTime = QDateTime::currentDateTime();
