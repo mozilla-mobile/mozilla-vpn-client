@@ -635,7 +635,7 @@ func NetfilterCreateTables() int32 {
 		Table:    mozvpn_ctx.table,
 		Type:     nftables.ChainTypeRoute,
 		Hooknum:  nftables.ChainHookOutput,
-		Priority: nftables.ChainPriorityConntrack + 1,
+		Priority: nftables.ChainPriorityRef(*nftables.ChainPriorityConntrack + 1),
 	})
 	mozvpn_ctx.preroute = mozvpn_ctx.conn.AddChain(&nftables.Chain{
 		Name:     "mozvpn-preroute",
