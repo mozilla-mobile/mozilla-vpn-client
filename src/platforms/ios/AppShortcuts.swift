@@ -27,7 +27,5 @@ struct MozillaVPNAppShortcuts: AppShortcutsProvider {
       shortTitle: "Turn Off Mozilla VPN",
       systemImageName: "shield.lefthalf.filled.slash"
     )
-
-
   }
 }

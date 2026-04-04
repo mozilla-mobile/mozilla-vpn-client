@@ -1071,3 +1071,51 @@ controller:
   regeneratingKey:
     value: Preparing your connection
     comment: Connection subtitle label for the main screen when the app is regenerating WireGuard keys
+
+iosAppIntentsMain:
+  turnOnAction:
+    value: Turn On Mozilla VPN
+    comment: Title used by system to offer turning on VPN
+  turnOffAction:
+    value: Turn Off Mozilla VPN
+    comment: Title used by system to offer turning off VPN
+  turnOnConfirmation:
+    value: Mozilla VPN turned on
+    comment: Confirmation string used by Siri after turning on VPN
+  turnOffConfirmation:
+    value: Mozilla VPN turned off
+    comment: Confirmation string used by Siri after turning off VPN
+
+iosAppIntentsActivate:
+  activate1:
+    value: Activate ${applicationName}
+    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+  activate2:
+    value: "Turn on ${applicationName}"
+    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+  activate3:
+    value: "Turn ${applicationName} on"
+    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+  activate4:
+    value: "Switch on ${applicationName}"
+    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+  activate5:
+    value: "Switch ${applicationName} on"
+    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+
+iosAppIntentsDeactivate:
+  deactivate1:
+    value: Deactivate ${applicationName}
+    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+  deactivate2:
+    value: "Turn off ${applicationName}"
+    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+  deactivate3:
+    value: "Turn ${applicationName} off"
+    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+  deactivate4:
+    value: "Switch off ${applicationName}"
+    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+  deactivate5:
+    value: "Switch ${applicationName} off"
+    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.

@@ -6,7 +6,7 @@ import AppIntents
 
 @available(iOS 16.0, *)
 struct TurnOnIntent: AppIntent {
-  static let title: LocalizedStringResource = "Turn on Mozilla VPN"
+  static let title: LocalizedStringResource = "Turn On Mozilla VPN"
 
   static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 

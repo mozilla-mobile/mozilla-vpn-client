@@ -148,7 +148,7 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
     # exist?), let's create it now.
     if (NOT EXISTS ${ASSETS_DIRECTORY}/extras/translations.completeness AND
         NOT EXISTS ${GENERATED_DIR}/translations.completeness)
-        message("Creating an empty tanslations.completeness file")
+        message("Creating an empty translations.completeness file")
         file(WRITE ${GENERATED_DIR}/translations.completeness "")
     endif()
 
