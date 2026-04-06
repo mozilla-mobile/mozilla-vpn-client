@@ -29,17 +29,17 @@ find_library(FW_NW_EXTENSION NetworkExtension)
 # The VPN Split Tunnel extension
 add_executable(split-tunnel)
 set_target_properties(split-tunnel PROPERTIES
-    OUTPUT_NAME "${BUILD_OSX_APP_IDENTIFIER}.split-tunnel"
+    OUTPUT_NAME "${BUILD_OSX_APP_IDENTIFIER}.network-extension"
     BUNDLE_EXTENSION systemextension
     MACOSX_BUNDLE ON
     MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
-    MACOSX_BUNDLE_BUNDLE_NAME "${BUILD_OSX_APP_IDENTIFIER}.split-tunnel"
+    MACOSX_BUNDLE_BUNDLE_NAME "${BUILD_OSX_APP_IDENTIFIER}.network-extension"
     MACOSX_BUNDLE_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}"
     MACOSX_BUNDLE_COPYRIGHT "MPL-2.0"
-    MACOSX_BUNDLE_GUI_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}.split-tunnel"
+    MACOSX_BUNDLE_GUI_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}.network-extension"
     MACOSX_BUNDLE_INFO_STRING "MozillaVPNSplitTunnel"
     XCODE_GENERATE_SCHEME TRUE
-    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}.split-tunnel"
+    XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}.network-extension"
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_PACKAGE_TYPE "SYSX"
     XCODE_ATTRIBUTE_ENABLE_HARDENED_RUNTIME YES
     XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES YES
@@ -52,9 +52,21 @@ set_target_properties(split-tunnel PROPERTIES
 target_link_libraries(split-tunnel PRIVATE ${FW_FOUNDATION})
 target_link_libraries(split-tunnel PRIVATE ${FW_NW_EXTENSION})
 target_sources(split-tunnel PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/bypasstcpflow.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/bypasstcpflow.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/main.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/VPNSplitTunnelProvider.mm
 )
+
+# Install an embedded provisioning profile if one exists in the source directory.
+if((NOT XCODE) AND (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile))
+    add_custom_command(TARGET split-tunnel POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Bundling split-tunnel embedded.provisionprofile"
+        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile $<TARGET_BUNDLE_CONTENT_DIR:split-tunnel>/embedded.provisionprofile
+    )
+    target_sources(split-tunnel PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile)
+    set_property(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile PROPERTY HEADER_FILE_ONLY TRUE)
+endif()
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 osx_codesign_target(split-tunnel FORCE)
