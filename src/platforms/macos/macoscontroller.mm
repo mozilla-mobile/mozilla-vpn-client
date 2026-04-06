@@ -263,6 +263,8 @@ void MacOSController::activate(const InterfaceConfig& config,
   // Serialize the interface configuration.
   NSMutableDictionary* options = [NSMutableDictionary dictionary];
   [options setObject:config.m_privateKey.toNSString() forKey:@"privateKey"];
+  [options setObject:config.m_deviceIpv4Address.toNSString() forKey:@"deviceIpv4Address"];
+  [options setObject:config.m_deviceIpv6Address.toNSString() forKey:@"deviceIpv6Address"];
   [options setObject:config.m_serverPublicKey.toNSString() forKey:@"serverPublicKey"];
   [options setObject:config.m_serverIpv4AddrIn.toNSString() forKey:@"serverIpv4AddrIn"];
   [options setObject:config.m_serverIpv6AddrIn.toNSString() forKey:@"serverIpv6AddrIn"];
@@ -270,8 +272,6 @@ void MacOSController::activate(const InterfaceConfig& config,
   [options setObject:config.m_serverIpv6Gateway.toNSString() forKey:@"serverIpv6Gateway"];
   [options setObject:[NSNumber numberWithInt:config.m_serverPort] forKey:@"serverPort"];
 
-//  QString m_deviceIpv4Address;
-//  QString m_deviceIpv6Address;
 //  QString m_dnsServer;
 //  QList<IPAddress> m_allowedIPAddressRanges;
 

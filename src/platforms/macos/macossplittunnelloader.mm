@@ -18,7 +18,7 @@ Logger logger("MacosSplitTunnelLoader");
 
 - (NSString*) identifier {
   NSString* appId = [[NSBundle mainBundle] bundleIdentifier];
-  return [appId stringByAppendingString:@".split-tunnel"];
+  return [appId stringByAppendingString:@".network-extension"];
 }
 
 - (id)init {
