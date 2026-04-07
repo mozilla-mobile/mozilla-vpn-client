@@ -43,6 +43,16 @@ def load_xliff_translations(xliff_path):
         exit(1)
     return translations
 
+SPECIAL_LOCALE_MAP = {
+    'zh_CN': 'zh-Hans',
+    'zh_TW': 'zh-Hant',
+}
+
+def normalize_locale(locale):
+    if locale in SPECIAL_LOCALE_MAP:
+        return SPECIAL_LOCALE_MAP[locale]
+    return locale.replace('_', '-')
+
 
 def get_locales(i18n_dir):
     """Returns list of non-English locale codes that have a mozillavpn.xliff."""
@@ -76,7 +86,7 @@ def build_localizable_xcstrings(main_strings, locale_translations):
         for locale, translations in locale_translations.items():
             translated = translations.get(string_id)
             if translated:
-                localizations[locale.replace('_', '-')] = {
+                localizations[normalize_locale(locale)] = {
                     'stringUnit': {
                         'state': 'translated',
                         'value': translated
@@ -109,7 +119,7 @@ def build_phrase_section(phrase_strings, locale_translations):
                   exit(1)
 
         if locale_values:
-            localizations[locale.replace('_', '-')] = {
+            localizations[normalize_locale(locale)] = {
                 'stringSet': {'state': 'translated', 'values': locale_values}
             }
 
