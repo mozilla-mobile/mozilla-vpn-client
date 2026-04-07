@@ -182,32 +182,14 @@
   self.settings = [[NETransparentProxyNetworkSettings alloc] initWithTunnelRemoteAddress:self.protocolConfiguration.serverAddress];
 
   // Configure the proxy to capture all traffic
-#if 0
-  if (@available(macOS 15, *)) {
-    NSLog(@"including networks (modern)");
-    self.settings.includedNetworkRules = @[
-      [VPNSplitTunnelProvider matchRoute:@"0.0.0.0" andPrefix:1],
-      [VPNSplitTunnelProvider matchRoute:@"128.0.0.0" andPrefix:1],
-      [VPNSplitTunnelProvider matchRoute:@"::" andPrefix:1],
-      [VPNSplitTunnelProvider matchRoute:@"8000::" andPrefix:1],
-    ];
-  } else {
-    NSLog(@"including networks (legacy)");
-    NENetworkRule* includeAllRule =
-        [[NENetworkRule alloc] initWithRemoteNetwork:nil
-                                        remotePrefix:0
-                                        localNetwork:nil
-                                        localPrefix:0
-                                           protocol:NENetworkRuleProtocolAny
-                                          direction:NETrafficDirectionOutbound];
-    self.settings.includedNetworkRules = @[includeAllRule];
-  }
-#else
-  // For testing purposes - only match root.manawolf.net.
-  self.settings.includedNetworkRules = @[
-    [VPNSplitTunnelProvider matchRoute:@"108.180.86.140" andPrefix:32]
-  ];
-#endif
+  NENetworkRule* includeAllRule =
+    [[NENetworkRule alloc] initWithRemoteNetwork:nil
+                                    remotePrefix:0
+                                    localNetwork:nil
+                                    localPrefix:0
+                                       protocol:NENetworkRuleProtocolAny
+                                      direction:NETrafficDirectionOutbound];
+  self.settings.includedNetworkRules = @[includeAllRule];
 
   auto excludeRules = [[NSMutableArray<NENetworkRule*> new] init];
 

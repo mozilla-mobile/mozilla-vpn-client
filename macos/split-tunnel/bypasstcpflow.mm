@@ -67,7 +67,6 @@
       }];
     } else {
       NSLog(@"bypass opening (legacy)");
-      NSLog(@"bypass started to %@", flow.remoteHostname);
       [flow openWithLocalEndpoint:nil
                 completionHandler:^(NSError* openError){
         if (openError) {
@@ -123,7 +122,7 @@
     completionHandler:(void (^)(NSError *)) completionHandler {
   nw_connection_receive(m_connection, 1, UINT16_MAX, ^(dispatch_data_t data, nw_content_context_t ctx, bool completed, nw_error_t error){
     if (error){
-    NSError *err = (NSError *)CFBridgingRelease(nw_error_copy_cf_error(error));
+      NSError *err = (NSError *)CFBridgingRelease(nw_error_copy_cf_error(error));
       [self closeConnection:flow withError:err completionHandler:completionHandler];
       return;
     }
