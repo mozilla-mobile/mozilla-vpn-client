@@ -116,16 +116,17 @@ void ServerLatency::start() {
 
   m_sequence = 0;
   m_wantRefresh = false;
-  m_pingSender = PingSenderFactory::create(
-      hasIPv4Connectivity() ? QHostAddress()
-                            : QHostAddress(QHostAddress::AnyIPv6),
-      this);
+  m_hasIPv4Connectivity = hasIPv4Connectivity();
+  QHostAddress sourceAddr = m_hasIPv4Connectivity
+                                ? QHostAddress()
+                                : QHostAddress(QHostAddress::AnyIPv6);
+  m_pingSender = PingSenderFactory::create(sourceAddr, this);
   if (!m_pingSender->isValid()) {
     // Fallback to using TCP handshake times for pings if we can't create an
     // ICMP socket on this platform, this probes at the ports used for Wireguard
     // over TCP.
     delete m_pingSender;
-    m_pingSender = new TcpPingSender(QHostAddress(), 80, this);
+    m_pingSender = new TcpPingSender(sourceAddr, 80, this);
   }
 
   connect(m_pingSender, SIGNAL(recvPing(quint16)), this,
@@ -196,7 +197,7 @@ void ServerLatency::maybeSendPings() {
 
       const Server& server = scm->server(retry.publicKey);
       m_pingSender->sendPing(
-          QHostAddress(hasIPv4Connectivity() ? server.ipv4AddrIn()
+          QHostAddress(m_hasIPv4Connectivity ? server.ipv4AddrIn()
                                              : server.ipv6AddrIn()),
           retry.sequence);
     }
@@ -219,7 +220,7 @@ void ServerLatency::maybeSendPings() {
 
     const Server& server = scm->server(record.publicKey);
     m_pingSender->sendPing(
-        QHostAddress(hasIPv4Connectivity() ? server.ipv4AddrIn()
+        QHostAddress(m_hasIPv4Connectivity ? server.ipv4AddrIn()
                                            : server.ipv6AddrIn()),
         record.sequence);
   }
