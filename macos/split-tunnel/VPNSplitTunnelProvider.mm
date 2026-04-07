@@ -38,6 +38,7 @@
     struct sockaddr_in  m_vpnIpv4Addr;
     struct sockaddr_in6 m_vpnIpv6Addr;
     nw_interface_t      m_vpnInterface;
+    nw_interface_t      m_bypassInterface;
 }
 
 - (id)init{
@@ -124,14 +125,12 @@
       inet_ntop(AF_INET, &sin->sin_addr, buf, sizeof(buf));
       NSLog(@"interface found: %s %s", ifr.ifr_name, buf);
 
+      // Ignore the VPN interface.
       if (sin->sin_addr.s_addr == self->m_vpnIpv4Addr.sin_addr.s_addr) {
         // We found the VPN interface!
         m_vpnInterface = iface;
-
-        // Debug
-        char buf[INET_ADDRSTRLEN];
-        inet_ntop(AF_INET, &sin->sin_addr, buf, sizeof(buf));
-        NSLog(@"vpn found: %s %s", ifr.ifr_name, buf);
+      } else {
+        m_bypassInterface = iface;
       }
 
       return true;
@@ -239,17 +238,25 @@
 }
 
 - (BOOL)handleNewFlow: (NEAppProxyFlow*) flow {
+  if (flow.metaData == nil) {
+    return NO;
+  }
+
 #if 1
   NSLog(@"handle flow");
-  if (flow.metaData != nil) {
-    NSLog(@"metadata sourceAppUniqueIdentifier: %@", flow.metaData.sourceAppUniqueIdentifier);
-    NSLog(@"metadata sourceAppSigningIdentifier: %@", flow.metaData.sourceAppSigningIdentifier);
-    NSLog(@"metadata filterFlowIdentifier: %@", flow.metaData.filterFlowIdentifier);
-  }
+  NSLog(@"metadata sourceAppUniqueIdentifier: %@", flow.metaData.sourceAppUniqueIdentifier);
+  NSLog(@"metadata sourceAppSigningIdentifier: %@", flow.metaData.sourceAppSigningIdentifier);
+  NSLog(@"metadata filterFlowIdentifier: %@", flow.metaData.filterFlowIdentifier);
 #endif
+
+  // For the purposes of testing. Only handle flows from com.apple.safari
+  if ([flow.metaData.sourceAppSigningIdentifier compare:@"com.apple.Safari"] != NSOrderedSame) {
+    return NO;
+  }
+
   if ([flow isKindOfClass:[NEAppProxyTCPFlow class]]) {
     NEAppProxyTCPFlow* tcpFlow = (NEAppProxyTCPFlow*)flow;
-    BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow withInterface:m_vpnInterface];
+    BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow withInterface:m_bypassInterface];
     [handler startBypass:tcpFlow completionHandler:^(NSError* error){
       if (error) {
         NSLog(@"flow closed with error: %@", error);
