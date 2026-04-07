@@ -128,14 +128,16 @@ if(CMAKE_OSX_ARCHITECTURES)
         list(APPEND WG_GO_ARCH_BUILDS ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH})
     endforeach()
 
-    add_custom_target(build_wireguard_go
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
         COMMENT "Building wireguard-go"
         DEPENDS ${WG_GO_ARCH_BUILDS}
         COMMAND ${LIPO_BUILD_TOOL} -create -output ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go ${WG_GO_ARCH_BUILDS}
     )
 else()
     # This only builds for the host architecture.
-    add_custom_target(build_wireguard_go
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
         COMMENT "Building wireguard-go"
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go
         DEPENDS
@@ -147,34 +149,66 @@ else()
                     -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
     )
 endif()
-add_dependencies(mozillavpn build_wireguard_go)
-osx_codesign_target(build_wireguard_go FILES ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go FORCE)
-osx_bundle_files(mozillavpn
-    FILES ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
-    DESTINATION Resources/utils
+
+# Manually sign the wireguard-go binary.
+if(XCODE)
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
+        COMMAND codesign --timestamp -f -s $<QUOTE>$EXPANDED_CODE_SIGN_IDENTITY$<QUOTE> ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
+        APPEND
+    )
+elseif(CODE_SIGN_IDENTITY)
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
+        COMMAND ${CODESIGN_BIN} --timestamp -f -s "${CODE_SIGN_IDENTITY}" ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
+        APPEND
+    )
+endif()
+
+target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/wireguard-go PROPERTIES
+    MACOSX_PACKAGE_LOCATION Resources/utils
+    HEADER_FILE_ONLY TRUE
+    GENERATED TRUE
 )
 
 # Install the daemon into the bundle.
 add_dependencies(mozillavpn daemon)
-osx_bundle_files(mozillavpn
-    FILES $<TARGET_FILE:daemon>
-    DESTINATION Library/LaunchServices
-)
+if(XCODE)
+    # We can't use target_sources here as that would require a generator
+    # expression to resolve the object file path, and that will break Xcode.
+    # Fortunately, Xcode supports embedding targets into the bundle.
+    set_target_properties(mozillavpn PROPERTIES
+        XCODE_EMBED_XPC_SERVICES daemon
+        XCODE_EMBED_XPC_SERVICES_PATH "$(CONTENTS_FOLDER_PATH)/Library/LaunchServices"
+    )
+else()
+    get_target_property(DAEMON_BINARY_DIR daemon BINARY_DIR)
+    get_target_property(DAEMON_OUTPUT_NAME daemon OUTPUT_NAME)
+    target_sources(mozillavpn PRIVATE ${DAEMON_BINARY_DIR}/${DAEMON_OUTPUT_NAME})
+    set_source_files_properties(${DAEMON_BINARY_DIR}/${DAEMON_OUTPUT_NAME} PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Library/LaunchServices"
+        HEADER_FILE_ONLY TRUE
+        GENERATED TRUE
+    )
+endif()
 
 # Install the background service plist into the bundle.
 configure_file(
     ${CMAKE_SOURCE_DIR}/macos/app/xpc-daemon.plist.in
     ${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.xpc-daemon.plist
 )
-osx_bundle_files(mozillavpn FILES
-    ${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.xpc-daemon.plist
-    DESTINATION Library/LaunchDaemons
+target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.xpc-daemon.plist)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/${BUILD_OSX_APP_IDENTIFIER}.xpc-daemon.plist PROPERTIES
+    MACOSX_PACKAGE_LOCATION Library/LaunchDaemons
+    HEADER_FILE_ONLY TRUE
 )
 
 # Install the native messaging manifest into the bundle.
-osx_bundle_files(mozillavpn FILES
-    ${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json
-    DESTINATION Resources/utils
+target_sources(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json)
+set_source_files_properties(${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozillavpn.json PROPERTIES
+    MACOSX_PACKAGE_LOCATION Resources/utils
+    HEADER_FILE_ONLY TRUE
 )
 
 # Install the lproj translation files into the bundle.
@@ -193,12 +227,20 @@ foreach(LOCALE ${I18N_LOCALES})
         continue()
     endif()
 
-    add_custom_command(TARGET mozillavpn POST_BUILD
-        COMMENT "Bundling locale ${LOCALE}"
-        COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj
+    file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lproj/${LOCALE}.lproj)
+    add_custom_command(
+        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/lproj/${LOCALE}.lproj/locversion.plist
+        DEPENDS ${CMAKE_CURRENT_SOURCE_DIR}/translations/locversion.plist.in
         COMMAND ${CMAKE_SOURCE_DIR}/scripts/utils/make_template.py -k LOCALE=${LOCALE}
-                    -o $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Resources/${LOCALE}.lproj/locversion.plist
-                    ${CMAKE_SOURCE_DIR}/src/translations/locversion.plist.in
+                    -o ${CMAKE_CURRENT_BINARY_DIR}/lproj/${LOCALE}.lproj/locversion.plist
+                    ${CMAKE_CURRENT_SOURCE_DIR}/translations/locversion.plist.in
+    )
+
+    target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/lproj/${LOCALE}.lproj/locversion.plist)
+    set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/lproj/${LOCALE}.lproj/locversion.plist PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Resources/${LOCALE}.lproj"
+        HEADER_FILE_ONLY TRUE
+        GENERATED TRUE
     )
 endforeach()
 
@@ -227,11 +269,25 @@ set_property(TARGET mozillavpn APPEND PROPERTY RESOURCE ${CMAKE_CURRENT_BINARY_D
 
 # Install the split-tunnel system extension into the bundle.
 add_dependencies(mozillavpn split-tunnel)
-add_custom_command(TARGET mozillavpn POST_BUILD
-    COMMAND ${CMAKE_COMMAND} -E echo "Bundling $<TARGET_NAME:split-tunnel>"
-    COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:split-tunnel>
-        $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/SystemExtensions/$<TARGET_BUNDLE_DIR_NAME:split-tunnel>
-)
+if(XCODE)
+    set_target_properties(mozillavpn PROPERTIES
+        XCODE_EMBED_APP_EXTENSIONS split-tunnel
+        XCODE_EMBED_APP_EXTENSIONS_PATH "$(CONTENTS_FOLDER_PATH)/Library/SystemExtensions"
+    )
+else()
+    # I can't think of an easy way to do this when the embedded target is a
+    # bundle. Using a POST_BUILD hook only runs when the target is relinked
+    # and not necessarily when a dependency is rebuilt.
+    add_custom_command(TARGET mozillavpn POST_BUILD
+        COMMAND ${CMAKE_COMMAND} -E echo "Bundling $<TARGET_NAME:split-tunnel>"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:split-tunnel>
+            $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/SystemExtensions/$<TARGET_BUNDLE_DIR_NAME:split-tunnel>
+    )
+
+    # Create a link dependency to trigger the POST_BUILD hooks in case the split-tunnel
+    # gets rebuilt. This only works on Ninja and Makefile generators.
+    set_target_properties(mozillavpn PROPERTIES LINK_DEPENDS $<TARGET_FILE:split-tunnel>)
+endif()
 
 # Perform codesigning.
 osx_embed_provision_profile(mozillavpn)
