@@ -16,6 +16,7 @@ endif()
 
 # Specify default system configuration, if cross compiling
 set(CMAKE_SYSTEM_NAME "Windows" CACHE STRING "Target operating system name")
+set(CMAKE_SYSTEM_VERSION "10.0" CACHE STRING "Target operating system version")
 if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
     set(CMAKE_CROSSCOMPILING TRUE CACHE BOOL "Target is cross compiled")
 elseif(NOT CMAKE_HOST_SYSTEM_PROCESSOR)
