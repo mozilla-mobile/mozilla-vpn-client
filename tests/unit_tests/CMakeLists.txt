@@ -112,9 +112,6 @@ target_sources(app_unit_tests PRIVATE
     settings/testsettingsmanager.cpp
     settings/testsettingsmanager.h
     ${MZ_SOURCE_DIR}/mozillavpn.h
-    ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
-    ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp
-    ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.h
     ${MZ_SOURCE_DIR}/ui/composer/composer.cpp
     ${MZ_SOURCE_DIR}/ui/composer/composer.h
     ${MZ_SOURCE_DIR}/ui/composer/composerblock.cpp
@@ -130,6 +127,13 @@ target_sources(app_unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.cpp
     ${MZ_SOURCE_DIR}/ui/composer/composerblockunorderedlist.h
 )
+if(BUILD_CRASHREPORTING)
+  target_sources(app_unit_tests PRIVATE
+  ${MZ_SOURCE_DIR}/sentry/sentryadapter.h
+      ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.cpp
+      ${MZ_SOURCE_DIR}/tasks/sentry/tasksentry.h
+  )
+endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     list(APPEND UNIT_TEST_ARGS -platform offscreen)
