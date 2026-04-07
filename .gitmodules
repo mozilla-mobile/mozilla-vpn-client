@@ -15,10 +15,10 @@
 	url = https://github.com/mozilla/glean.git
 	branch = release
 	shallow = true
-[submodule "3rdparty/sentry"]
-	path = 3rdparty/sentry
-	url = https://github.com/getsentry/sentry-native/
-	shallow = true
+# [submodule "3rdparty/sentry"]
+# 	path = 3rdparty/sentry
+# 	url = https://github.com/getsentry/sentry-native/
+# 	shallow = true
 [submodule "3rdparty/i18n"]
 	path = 3rdparty/i18n
 	url = https://github.com/mozilla-l10n/mozilla-vpn-client-l10n.git
