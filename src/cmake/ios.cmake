@@ -99,7 +99,7 @@ if (POLICY CMP0156)
     if (Qt6_VERSION VERSION_GREATER_EQUAL "6.11.0")
       message(FATAL_ERROR "See if this can be removed. If not, increase the Qt version here.")
     endif ()
-elseif ()
+else()
     message(FATAL_ERROR "CMP0156 policy not found. The iOS client should be built on a newer version of cmake and/or Qt.")
 endif ()
 

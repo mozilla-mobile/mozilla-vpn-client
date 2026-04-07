@@ -22,11 +22,6 @@ import json
 import os
 import sys
 import xml.etree.ElementTree as ET
-
-# # hack to be able to re-use parseYAMLTranslationStrings
-# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../utils')))
-# from generate_strings import parseYAMLTranslationStrings
-# sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from generate_strings import parseYAMLTranslationStrings
 
 XLIFF_NS = '{urn:oasis:names:tc:xliff:document:1.2}'
