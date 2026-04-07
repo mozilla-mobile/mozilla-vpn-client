@@ -360,8 +360,11 @@ settings:
   dnsSettingsInputPlaceholder: Enter custom DNS
   dnsSettingsDisconnectWarning: Changing these settings will cause the VPN to disconnect and reconnect automatically.
   batteryOptimizationWarning:
-    value: For the best experience, tap here to ensure reliable app functionality by disabling battery optimization.
+    value: Allow Mozilla VPN to run in background to ensure VPN connection is maintained
     comment: Warning shown in the settings screen on Android when battery optimization is enabled for the app.
+  batteryOptimizationWarningButton:
+    value: Allow background permissions
+    comment: Button label for the call to action to allow background permissions on Android.
   appExclusionClearAllApps:
     value: Clear all
     comment: Button label to clear all apps from the exclusions list
