@@ -115,7 +115,6 @@ MZViewBase {
             sourceComponent: MZInformationCard {
                 objectName: "DNSSettingsViewInformationCard"
                 cardType: MZInformationCard.CardType.Info
-                height: textBlocks.height + MZTheme.theme.windowMargin * 2
                 width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
                 _infoContent: ColumnLayout {
                     id: textBlocks
