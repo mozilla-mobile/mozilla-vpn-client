@@ -272,11 +272,13 @@ public class IOSControllerImpl: NSObject {
         }
     }
 
-    static func startTunnelFromIntent() {
+    static func startTunnelFromIntent() -> Bool {
       do {
         try TunnelManager.session?.startTunnel(options: ["source":"intent"])
+        return true
       } catch let error {
-        // LOG OUT ERROR HERE
+        IOSControllerImpl.logger.info(message: "Error starting from intent: \(error.localizedDescription)")
+        return false
       }
     }
 

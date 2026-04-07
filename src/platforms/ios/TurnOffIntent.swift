@@ -8,6 +8,8 @@ import AppIntents
 struct TurnOffIntent: AppIntent {
   static let title: LocalizedStringResource = "Turn Off Mozilla VPN"
 
+  static let description: LocalizedStringResource = "Deactivate the Mozilla VPN connection"
+
   static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
   static let systemImageName = "shield.lefthalf.filled.slash"
