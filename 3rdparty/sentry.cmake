@@ -4,6 +4,9 @@
 
 # Build Sentry library
 
+message("Sentry disabled temporarily")
+return()
+
 if(NOT BUILD_CRASHREPORTING)
     message("Sentry disabled by commandline")
     return()
