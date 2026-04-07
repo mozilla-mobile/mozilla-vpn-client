@@ -38,18 +38,15 @@ MZViewBase {
             _infoContent: MZTextBlock {
                 id: batteryWarningText
                 Layout.fillWidth: true
-                width: undefined
                 text: MZI18n.SettingsBatteryOptimizationWarning
-                verticalAlignment: Text.AlignVCenter
+                //verticalAlignment: Text.AlignVCenter
             }
-
-            MouseArea {
-                anchors.fill: batteryOptimizationCard
-                onClicked: {
+            _buttonAction: function() {
                     MZSettings.hasDismissedBatteryOptimization = true
                     BatteryOptimizer.triggerBatteryOptimizationIntent()
-                }
             }
+            _buttonText : MZI18n.SettingsBatteryOptimizationWarningButton
+
         }
 
         ColumnLayout {
