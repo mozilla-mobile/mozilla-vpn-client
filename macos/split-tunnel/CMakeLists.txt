@@ -60,12 +60,11 @@ target_sources(split-tunnel PRIVATE
 
 # Install an embedded provisioning profile if one exists in the source directory.
 if((NOT XCODE) AND (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile))
-    add_custom_command(TARGET split-tunnel POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Bundling split-tunnel embedded.provisionprofile"
-        COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile $<TARGET_BUNDLE_CONTENT_DIR:split-tunnel>/embedded.provisionprofile
-    )
     target_sources(split-tunnel PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile)
-    set_property(SOURCE ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile PROPERTY HEADER_FILE_ONLY TRUE)
+    set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile PROPERTIES
+        MACOSX_PACKAGE_LOCATION "/"
+        HEADER_FILE_ONLY TRUE
+    )
 endif()
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
