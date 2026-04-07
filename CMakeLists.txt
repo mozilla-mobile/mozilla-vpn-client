@@ -8,7 +8,7 @@ cmake_minimum_required(VERSION 3.20)
 cmake_policy(SET CMP0118 NEW)
 
 option(BUILD_TESTS "Whether or not to build test targets" ON)
-option(BUILD_CRASHREPORTING "Whether or not Sentry-Crash Reporting will be built" ON)
+option(BUILD_CRASHREPORTING "Whether or not Sentry-Crash Reporting will be built" OFF)
 
 
 message("Configuring for ${CMAKE_GENERATOR}")
