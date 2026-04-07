@@ -24,6 +24,8 @@ class MacosRouteMonitor final : public QObject {
   MacosRouteMonitor(const QString& ifname, QObject* parent = nullptr);
   ~MacosRouteMonitor();
 
+  void setDetaultRouteCapture(bool enable);
+
   bool insertRoute(const IPAddress& prefix, int flags = 0);
   bool deleteRoute(const IPAddress& prefix, int flags = 0);
   int interfaceFlags() { return m_ifflags; }
@@ -51,6 +53,7 @@ class MacosRouteMonitor final : public QObject {
   static QString addrToString(const QByteArray& data);
 
   QList<IPAddress> m_exclusionRoutes;
+  bool m_defaultRouteCapture = false;
   QByteArray m_defaultGatewayIpv4;
   QByteArray m_defaultGatewayIpv6;
   unsigned int m_defaultIfindexIpv4 = 0;

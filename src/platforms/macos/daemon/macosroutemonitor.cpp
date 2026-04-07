@@ -58,6 +58,33 @@ MacosRouteMonitor::~MacosRouteMonitor() {
   logger.debug() << "MacosRouteMonitor destroyed.";
 }
 
+void MacosRouteMonitor::setDetaultRouteCapture(bool enable) {
+  // Delete captured routes when disabling the feature.
+  if (!enable) {
+    if (m_defaultIfindexIpv4) {
+      rtmSendRoute(RTM_DELETE, IPAddress("0.0.0.0/0"), m_defaultIfindexIpv4,
+                  nullptr, RTF_IFSCOPE);
+    }
+    if (m_defaultIfindexIpv6) {
+      rtmSendRoute(RTM_DELETE, IPAddress("::/0"), m_defaultIfindexIpv6, nullptr,
+                  RTF_IFSCOPE);
+    }
+  }
+  // Add captured routes when enabling the feature.
+  else if (!m_defaultRouteCapture) {
+    if (m_defaultIfindexIpv4) {
+      rtmSendRoute(RTM_ADD, IPAddress("0.0.0.0/0"), m_defaultIfindexIpv4,
+                   m_defaultGatewayIpv4, RTF_IFSCOPE);
+    }
+    if (m_defaultIfindexIpv6) {
+      rtmSendRoute(RTM_ADD, IPAddress("::/0"), m_defaultIfindexIpv6,
+                   m_defaultGatewayIpv6, RTF_IFSCOPE);
+    }
+  }
+
+  m_defaultRouteCapture = enable;
+}
+
 // Compare memory against zero.
 static int memcmpzero(const void* data, size_t len) {
   const quint8* ptr = static_cast<const quint8*>(data);
@@ -139,6 +166,13 @@ void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
     protocol = QAbstractSocket::IPv6Protocol;
   }
 
+  // Delete the captured default route.
+  if (m_defaultRouteCapture) {
+    rtmSendRoute(RTM_DELETE, IPAddress(QHostAddress(dst), 0), rtm->rtm_index,
+                nullptr, RTF_IFSCOPE);
+  }
+
+  // Delete exclusion routes.
   logger.debug() << "Lost default route via" << ifname
                  << logger.sensitive(addrToString(addrlist[1]));
   for (const IPAddress& prefix : m_exclusionRoutes) {
@@ -235,7 +269,9 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
       reinterpret_cast<const struct sockaddr*>(addrlist[0].constData());
   QAbstractSocket::NetworkLayerProtocol protocol;
   int rtm_type = RTM_ADD;
+  int prev_ifindex = 0;
   if (dst->sa_family == AF_INET) {
+    prev_ifindex = m_defaultIfindexIpv4;
     if (m_defaultIfindexIpv4 != 0) {
       rtm_type = RTM_CHANGE;
     }
@@ -243,6 +279,7 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
     m_defaultIfindexIpv4 = ifindex;
     protocol = QAbstractSocket::IPv4Protocol;
   } else if (dst->sa_family == AF_INET6) {
+    prev_ifindex = m_defaultIfindexIpv6;
     if (m_defaultIfindexIpv6 != 0) {
       rtm_type = RTM_CHANGE;
     }
@@ -251,6 +288,19 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
     protocol = QAbstractSocket::IPv6Protocol;
   } else {
     return;
+  }
+
+  // Update the captured default route.
+  if (m_defaultRouteCapture) {
+    const IPAddress prefix(QHostAddress(dst), 0);
+    if (prev_ifindex == ifindex) {
+      rtmSendRoute(RTM_CHANGE, prefix, ifindex, addrlist[1], RTF_IFSCOPE);
+    } else {
+      if (prev_ifindex != 0) {
+        rtmSendRoute(RTM_DELETE, prefix, ifindex, nullptr, RTF_IFSCOPE);
+      }
+      rtmSendRoute(RTM_ADD, prefix, ifindex, addrlist[1], RTF_IFSCOPE);
+    }
   }
 
   // Update the exclusion routes with the new default route.

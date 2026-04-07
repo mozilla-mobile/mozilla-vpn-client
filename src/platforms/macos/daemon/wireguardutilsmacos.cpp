@@ -404,6 +404,8 @@ bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix) {
     return m_rtmonitor->insertRoute(prefix);
   }
 
+  m_rtmonitor->setDetaultRouteCapture(true);
+
   // Ensure that we do not replace the default route.
   if (prefix.type() == QAbstractSocket::IPv4Protocol) {
     return m_rtmonitor->insertRoute(IPAddress("0.0.0.0/1")) &&
@@ -425,6 +427,9 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
   if (prefix.prefixLength() > 0) {
     return m_rtmonitor->deleteRoute(prefix);
   }
+
+  m_rtmonitor->setDetaultRouteCapture(false);
+
   // Ensure that we do not replace the default route.
   if (prefix.type() == QAbstractSocket::IPv4Protocol) {
     return m_rtmonitor->deleteRoute(IPAddress("0.0.0.0/1")) &&
