@@ -32,6 +32,8 @@ class AndroidController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
+  bool splitTunnelSupported() override { return true; }
+
   void forceDaemonSilentServerSwitch() override;
 
  private:

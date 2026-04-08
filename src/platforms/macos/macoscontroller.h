@@ -32,6 +32,10 @@ class MacOSController final : public ControllerImpl {
 
   void forceDaemonCrash() override;
 
+  bool multihopSupported() override { return true; }
+
+  bool splitTunnelSupported() override;
+
  private slots:
   void upgradeService();
   void registerService();

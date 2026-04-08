@@ -407,8 +407,7 @@ void Controller::activateInternal(
 #endif
   logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
 
-  // Splittunnel-feature could have been disabled due to a driver conflict.
-  if (Feature::get(Feature::Feature_splitTunnel)->isSupported()) {
+  if(m_impl->splitTunnelSupported()) {
     exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
   if (Feature::get(Feature::Feature_alwaysPort53)->isSupported()) {
@@ -769,6 +768,10 @@ void Controller::maybeEnableDisconnectInConfirming() {
 
 bool Controller::silentServerSwitchingSupported() const {
   return m_impl->silentServerSwitchingSupported();
+}
+
+bool Controller::splitTunnelSupported() const {
+  return m_impl->splitTunnelSupported();
 }
 
 void Controller::logSerialize(QIODevice* device) {

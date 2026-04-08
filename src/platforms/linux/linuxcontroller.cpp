@@ -15,6 +15,7 @@
 #include "errorhandler.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
+#include "linuxutils.h"
 #include "logger.h"
 #include "models/device.h"
 #include "models/keys.h"
@@ -108,6 +109,54 @@ void LinuxController::deactivate() {
 
   connect(m_dbus->deactivate(), &QDBusPendingCallWatcher::finished, this,
           &LinuxController::operationCompleted);
+}
+
+bool LinuxController::splitTunnelSupported() {
+  static int splitTunnelSupported = -1;
+  if (splitTunnelSupported >= 0) {
+    return splitTunnelSupported;
+  }
+
+  // Assume not supported unless all the following requirements are met.
+  splitTunnelSupported = 0;
+
+  // Control groups v2 must be mounted for traffic classification
+  if (LinuxUtils::findCgroup2Path().isNull()) {
+    return false;
+  }
+
+  // The desktop environment must support scoping applications by cgroup upon
+  // launch for application detection to work as expected.
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  if (!pe.contains("XDG_CURRENT_DESKTOP")) {
+    return false;
+  }
+  QStringList desktop = pe.value("XDG_CURRENT_DESKTOP").split(":");
+  if (desktop.contains("GNOME")) {
+    QVersionNumber shellVersion = LinuxUtils::gnomeShellVersion();
+    if (shellVersion.isNull()) {
+      return false;
+    }
+    if (shellVersion < QVersionNumber(3, 34)) {
+      return false;
+    }
+  } else if (desktop.contains("KDE")) {
+    // This has been tested as far back as KDE Plasma v5.24.
+    QVersionNumber kdeVersion = LinuxUtils::kdePlasmaVersion();
+    if (kdeVersion.isNull()) {
+      return false;
+    }
+    if (kdeVersion < QVersionNumber(5, 24)) {
+      return false;
+    }
+  }
+  // For all other desktop environments, assume split tunneling unsupported.
+  else {
+    return false;
+  }
+
+  splitTunnelSupported = 1;
+  return true;
 }
 
 void LinuxController::operationCompleted(QDBusPendingCallWatcher* call) {
