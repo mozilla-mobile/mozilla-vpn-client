@@ -44,7 +44,8 @@ bool hasIPv4Connectivity() {
       continue;
     }
     for (const QNetworkAddressEntry& entry : iface.addressEntries()) {
-      if (entry.ip().protocol() == QAbstractSocket::IPv4Protocol) {
+      if (entry.ip().protocol() == QAbstractSocket::IPv4Protocol &&
+          !entry.ip().isLinkLocal()) {
         return true;
       }
     }
