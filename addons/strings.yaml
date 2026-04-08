@@ -176,6 +176,29 @@ commonStrings:
     value: "[all] There are so many under-the-hood improvements in this version. Even if you cannot see them, we promise they are in there."
     comment: Bullet point with a specific update in 2.35. Should have tag that indicates it applies to all platforms.
 
+236updateMessage:
+  bullet1:
+    value: "[all] The main screen will now show a small, dismissible notification for important new messages."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to all platforms.
+  bullet2:
+    value: "[Android] A variant of the app that is not dependent on Google Play Services has now been released."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to Android platform.
+  bullet3:
+    value: "[Windows] If IPv6 is disabled, the VPN will again work."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to Windows platform.
+  bullet4:
+    value: "[Linux] THIS ONE IS FOR NAOMI STUFF"
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to Linux platform.
+  bullet5:
+    value: "[Windows] In rare cases, Mozilla VPN could not be installed. This is now fixed."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to Windows platform.
+  bullet6:
+    value: "[Android] Improved filtering on language selection screen, especially for languages with non-Latin alphabets."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to Android platform.
+  bullet7:
+    value: "[Linux] Ubuntu users may have had an issue when using Firefox Multi-Account Containers with custom VPN locations. This is no longer a problem."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to Linux platform.
+
 tryFirefoxExtension:
   title:
     value: Try the Firefox extension
