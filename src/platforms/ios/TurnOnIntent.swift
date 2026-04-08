@@ -14,19 +14,30 @@ struct TurnOnIntent: AppIntent {
 
   static let systemImageName = "shield.lefthalf.filled"
 
+  enum Result {
+    case success, errorNoSession, errorAlreadyActive
+  }
+
   @MainActor
   func perform() async throws -> some IntentResult & ProvidesDialog {
     let dialog: IntentDialog
-    let wasSuccessfullyActivated = IOSControllerImpl.startTunnelFromIntent()
+    let activationResult = IOSControllerImpl.startTunnelFromIntent()
     let responseText: LocalizedStringResource
     let responseImage: String
-    if wasSuccessfullyActivated {
-      responseText = LocalizedStringResource("Mozilla VPN turned on")
-      responseImage = TurnOnIntent.systemImageName
-    } else {
-      responseText = LocalizedStringResource("Error turning on Mozilla VPN")
-      responseImage = "exclamationmark.triangle"
+
+    switch activationResult {
+      case .success:
+        responseText = LocalizedStringResource("Mozilla VPN connected")
+        responseImage = TurnOnIntent.systemImageName
+      case .errorNoSession:
+        responseText = LocalizedStringResource("Error turning on Mozilla VPN")
+        responseImage = "exclamationmark.triangle"
+      case .errorAlreadyActive:
+        responseText = LocalizedStringResource("VPN is already connected")
+        responseImage = "exclamationmark.triangle"
+
     }
+
     if #available(iOS 17.2, *) {
       dialog = IntentDialog(full: responseText,
                             systemImageName: responseImage)

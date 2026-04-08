@@ -272,13 +272,21 @@ public class IOSControllerImpl: NSObject {
         }
     }
 
-    static func startTunnelFromIntent() -> Bool {
+    static func startTunnelFromIntent() -> TurnOnIntent.Result {
+      guard let session = TunnelManager.session else {
+        IOSControllerImpl.logger.info(message: "No current session")
+        return .errorNoSession
+      }
+      guard session.status != .connected else {
+        IOSControllerImpl.logger.info(message: "VPN already connected")
+        return .errorAlreadyActive
+      }
       do {
         try TunnelManager.session?.startTunnel(options: ["source":"intent"])
-        return true
+        return .success
       } catch let error {
         IOSControllerImpl.logger.info(message: "Error starting from intent: \(error.localizedDescription)")
-        return false
+        return .errorNoSession
       }
     }
 

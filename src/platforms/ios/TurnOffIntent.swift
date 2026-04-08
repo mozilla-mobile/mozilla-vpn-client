@@ -21,7 +21,7 @@ struct TurnOffIntent: AppIntent {
     let responseText: LocalizedStringResource
     let responseImage: String
     if wasSuccessfullyDeactivated {
-      responseText = LocalizedStringResource("Mozilla VPN turned off")
+      responseText = LocalizedStringResource("Mozilla VPN disconnected")
       responseImage = TurnOffIntent.systemImageName
     } else {
       responseText = LocalizedStringResource("No active VPN connection")

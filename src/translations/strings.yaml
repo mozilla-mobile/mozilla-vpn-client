@@ -1086,14 +1086,17 @@ iosAppIntentsMain:
     value: Deactivate the Mozilla VPN connection
     comment: Description used to provide more context in Shortcuts and other places
   turnOnConfirmation:
-    value: Mozilla VPN turned on
+    value: Mozilla VPN connected
     comment: Confirmation string used by Siri after turning on VPN
   turnOffConfirmation:
-    value: Mozilla VPN turned off
+    value: Mozilla VPN disconnected
     comment: Confirmation string used by Siri after turning off VPN
   turnOnError:
     value: Error turning on Mozilla VPN
     comment: Error given by Siri when unable to turn on VPN
+  turnOnAlreadyConnectedError:
+    value: VPN is already connected
+    comment: Error given by Siri when VPN already has an active connection
   turnOffError:
     value: No active VPN connection
     comment: Error given by Siri when unable to turn off VPN due to a lack of existing connection

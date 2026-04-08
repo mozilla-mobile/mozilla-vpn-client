@@ -6,6 +6,9 @@ import AppIntents
 
 @available(iOS 16.0, *)
 struct MozillaVPNAppShortcuts: AppShortcutsProvider {
+
+  static var shortcutTileColor = ShortcutTileColor.grape
+
   static var appShortcuts: [AppShortcut] {
     AppShortcut(
       intent: TurnOnIntent(),
