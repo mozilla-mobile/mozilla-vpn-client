@@ -20,6 +20,8 @@
 #  include "platforms/android/androidapplistprovider.h"
 #elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxapplistprovider.h"
+#elif defined(MZ_MACOS)
+#  include "platforms/macos/macosapplistprovider.h"
 #elif defined(MZ_WINDOWS)
 #  include "platforms/windows/windowsapplistprovider.h"
 #endif
@@ -90,6 +92,8 @@ AppPermission* AppPermission::instance() {
     s_instance = new AppPermission(new AndroidAppListProvider(qApp));
 #elif defined(MZ_LINUX)
     s_instance = new AppPermission(new LinuxAppListProvider(qApp));
+#elif defined(MZ_MACOS)
+    s_instance = new AppPermission(new MacOSAppListProvider(qApp));
 #elif defined(MZ_WINDOWS)
     s_instance = new AppPermission(new WindowsAppListProvider(qApp));
 #else
