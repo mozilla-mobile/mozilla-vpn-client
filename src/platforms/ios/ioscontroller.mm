@@ -150,7 +150,9 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
                              ipv6Gateway:config.m_serverIpv6Gateway.toNSString()
                                publicKey:config.m_serverPublicKey.toNSString()
                               ipv4AddrIn:config.m_serverIpv4AddrIn.toNSString()
-                                    port:config.m_serverPort];
+                                    port:config.m_serverPort
+                               entryCity:config.m_entryCity.toNSString()
+                                exitCity:config.m_exitCity.toNSString()];
   [serverData addObject:mainServer];
 
   // Select the best DNS - if user is using a special privacy or user-specified DNS, use that.
@@ -172,7 +174,11 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
                                ipv6Gateway:fallbackServer.ipv6Gateway().toNSString()
                                  publicKey:fallbackServer.publicKey().toNSString()
                                 ipv4AddrIn:fallbackServer.ipv4AddrIn().toNSString()
-                                      port:fallbackServer.choosePort()];
+                                      port:fallbackServer.choosePort()
+                                 // Reusing config here - city names will be identical, and no good
+                                 // way to get entry city otherwise.
+                                 entryCity:config.m_entryCity.toNSString()
+                                  exitCity:config.m_exitCity.toNSString()];
     [serverData addObject:backupServerData];
   }
 

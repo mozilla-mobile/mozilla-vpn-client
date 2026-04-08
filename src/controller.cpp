@@ -402,6 +402,7 @@ void Controller::activateInternal(
   exitConfig.m_serverPort = exitServer.choosePort();
   exitConfig.m_allowedIPAddressRanges = allowedIPList;
   exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
+  exitConfig.m_exitCity = exitServer.cityName();
 #if defined(MZ_ANDROID) || defined(MZ_IOS)
   exitConfig.m_installationId = settingsHolder->installationId();
 #endif
@@ -461,6 +462,7 @@ void Controller::activateInternal(
       entryConfig.m_allowedIPAddressRanges.append(
           IPAddress(exitServer.ipv6AddrIn()));
     }
+    exitConfig.m_entryCity = entryServer.cityName();
 
     // If requested, force the use of port 53/DNS.
     if (dnsPort == ForceDNSPort) {
@@ -495,6 +497,7 @@ void Controller::activateInternal(
     exitConfig.m_serverPort = exitServer.multihopPort();
     exitConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
     exitConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
+    exitConfig.m_entryCity = entryServer.cityName();
   }
 
   m_activationQueue.append(exitConfig);

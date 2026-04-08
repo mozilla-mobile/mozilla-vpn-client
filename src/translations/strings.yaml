@@ -1088,6 +1088,12 @@ iosAppIntentsMain:
   turnOnConfirmation:
     value: Mozilla VPN connected
     comment: Confirmation string used by Siri after turning on VPN
+  turnOnConfirmationSingleHop:
+    value: Mozilla VPN connected through \(exitCity)
+    comment: Confirmation string used by Siri after turning on VPN. `\(exitCity)` will be replaced with the name of the exit city, and must be precisely used in the string.
+  turnOnConfirmationMultiHop:
+    value: Mozilla VPN connected through \(exitCity) via \(entryCity)
+    comment: Confirmation string used by Siri after turning on VPN. `\(exitCity)` and `\(entryCity)` will be replaced with the name of the cities, and must be precisely used in the string.
   turnOffConfirmation:
     value: Mozilla VPN disconnected
     comment: Confirmation string used by Siri after turning off VPN

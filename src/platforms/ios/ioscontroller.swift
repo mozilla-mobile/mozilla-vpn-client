@@ -28,13 +28,17 @@ let VPN_NAME = "Mozilla VPN"
     let publicKey: String
     let ipv4AddrIn: String
     let port: Int
+    let entryCity: String?
+    let exitCity: String
 
-    @objc init(dns: String, ipv6Gateway: String, publicKey: String, ipv4AddrIn: String, port: Int) {
+    @objc init(dns: String, ipv6Gateway: String, publicKey: String, ipv4AddrIn: String, port: Int, entryCity: String?, exitCity: String) {
         self.dns = dns
         self.ipv6Gateway = ipv6Gateway
         self.publicKey = publicKey
         self.ipv4AddrIn = ipv4AddrIn
         self.port = port
+        self.entryCity = entryCity
+        self.exitCity = exitCity
 
         super.init()
     }
@@ -177,14 +181,14 @@ public class IOSControllerImpl: NSObject {
               disconnectOnErrorCallback()
               return
             }
-          return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, permitLocalNetworkFeatures: permitLocalNetworkFeatures, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isServerLocatedInUserCountry: !isMissingLocalLocation ? isServerLocatedInUserCountry : nil, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
+          return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, permitLocalNetworkFeatures: permitLocalNetworkFeatures, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isServerLocatedInUserCountry: !isMissingLocalLocation ? isServerLocatedInUserCountry : nil, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback, entryCity: serverData.first?.entryCity, exitCity: serverData.first?.exitCity)
         }
     }
 
     func configureTunnel(configs: [TunnelConfiguration], reason: Int, serverName: String, permitLocalNetworkFeatures: Bool,
             gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isServerLocatedInUserCountry: Bool?,
             disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
-            vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+            vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void, entryCity: String?, exitCity: String?) {
         TunnelManager.withTunnel { tunnel in
             guard let config = configs.first else {
               IOSControllerImpl.logger.error(message: "No VPN config found")
@@ -214,6 +218,8 @@ public class IOSControllerImpl: NSObject {
             customConfig["isServerLocatedInUserCountry"] = isServerLocatedInUserCountry
             customConfig["gleanDebugTag"] = gleanDebugTag
             customConfig["installationId"] = installationId
+            customConfig["entryCity"] = entryCity
+            customConfig["exitCity"] = exitCity
             customConfig["configs"] = configs.map({ $0.asWgQuickConfig() })
             proto?.providerConfiguration = customConfig
 
@@ -283,7 +289,8 @@ public class IOSControllerImpl: NSObject {
       }
       do {
         try TunnelManager.session?.startTunnel(options: ["source":"intent"])
-        return .success
+        let config = TunnelManager.protocolConfiguration?.providerConfiguration
+        return .success(entryCity: config?["entryCity"] as? String, exitCity: config?["exitCity"] as? String)
       } catch let error {
         IOSControllerImpl.logger.info(message: "Error starting from intent: \(error.localizedDescription)")
         return .errorNoSession
