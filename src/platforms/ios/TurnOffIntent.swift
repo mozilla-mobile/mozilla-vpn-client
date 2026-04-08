@@ -16,12 +16,20 @@ struct TurnOffIntent: AppIntent {
 
   @MainActor
   func perform() async throws -> some IntentResult & ProvidesDialog {
-    IOSControllerImpl.stopTunnelFromIntent()
-    let responseText = LocalizedStringResource("Mozilla VPN turned off")
     let dialog: IntentDialog
+    let wasSuccessfullyDeactivated = IOSControllerImpl.stopTunnelFromIntent()
+    let responseText: LocalizedStringResource
+    let responseImage: String
+    if wasSuccessfullyDeactivated {
+      responseText = LocalizedStringResource("Mozilla VPN turned off")
+      responseImage = TurnOffIntent.systemImageName
+    } else {
+      responseText = LocalizedStringResource("No active VPN connection")
+      responseImage = "exclamationmark.triangle"
+    }
     if #available(iOS 17.2, *) {
       dialog = IntentDialog(full: responseText,
-                            systemImageName: TurnOffIntent.systemImageName)
+                            systemImageName: responseImage)
     } else {
       dialog = IntentDialog(responseText)
     }

@@ -282,8 +282,13 @@ public class IOSControllerImpl: NSObject {
       }
     }
 
-    static func stopTunnelFromIntent() {
+    static func stopTunnelFromIntent() -> Bool {
+      guard let session = TunnelManager.session, session.status == .connected else {
+        IOSControllerImpl.logger.info(message: "Error stopping from intent: No active VPN session")
+        return false
+      }
       IOSControllerImpl.staticDisconnect()
+      return true
     }
 
     @objc func disconnect() {

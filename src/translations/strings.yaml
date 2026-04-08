@@ -1095,8 +1095,8 @@ iosAppIntentsMain:
     value: Error turning on Mozilla VPN
     comment: Error given by Siri when unable to turn on VPN
   turnOffError:
-    value: Error turning off Mozilla VPN
-    comment: Error given by Siri when unable to turn off VPN
+    value: No active VPN connection
+    comment: Error given by Siri when unable to turn off VPN due to a lack of existing connection
 
 iosAppIntentsActivate:
   activate1:
