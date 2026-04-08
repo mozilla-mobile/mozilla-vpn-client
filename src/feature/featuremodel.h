@@ -37,7 +37,6 @@ inline const AnyFeature s_exposedFeatures[] = {
     ref(replacerAddon),
     ref(serverUnavailableNotification),
     ref(shareLogs),
-    ref(splitTunnel),
     ref(startOnBoot),
     ref(subscriptionManagement),
     ref(themeSelectionIncludesAutomatic),

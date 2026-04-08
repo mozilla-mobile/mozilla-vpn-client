@@ -345,6 +345,11 @@ void MacOSController::cleanupBackendLogs() {
   [remoteObject() cleanupBackendLogs];
 }
 
+bool MacOSController::splitTunnelSupported() {
+  auto loader = static_cast<MacosSplitTunnelLoader*>(m_loader);
+  return (loader.manager != nil) && loader.manager.enabled;
+}
+
 void MacOSController::forceDaemonCrash() {
   if (m_connection == nullptr) {
     logger.error() << "Daemon does not seem to be running";

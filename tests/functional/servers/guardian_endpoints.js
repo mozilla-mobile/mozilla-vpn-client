@@ -261,7 +261,7 @@ exports.endpoints = {
     '/api/v2/vpn/featurelist': {
       status: 200,
       body: {
-        featuresOverwrite: {'enableUpdateServer': false, 'splitTunnel': true},
+        featuresOverwrite: {'enableUpdateServer': false},
         experimentalFeatures: {}
       }
     },

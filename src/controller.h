@@ -146,6 +146,7 @@ class Controller : public QObject, public LogSerializer {
   State state() const;
   ErrorCode error() const;
   bool silentServerSwitchingSupported() const;
+  bool splitTunnelSupported() const;
   void cleanupBackendLogs();
 
   // LogSerializer interface
@@ -184,6 +185,7 @@ class Controller : public QObject, public LogSerializer {
                  silentServerSwitchingSupported CONSTANT);
   Q_PROPERTY(bool isDeviceConnected READ isDeviceConnected NOTIFY
                  isDeviceConnectedChanged);
+  Q_PROPERTY(bool splitTunnelSupported READ splitTunnelSupported CONSTANT);
 
   // This is just for testing purposes.
   Q_PROPERTY(QString currentServerString READ currentServerString NOTIFY

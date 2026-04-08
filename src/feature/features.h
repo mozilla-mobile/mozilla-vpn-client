@@ -336,8 +336,6 @@ inline const OverridableFeature webExtension = {
     },
 };
 
-extern const OverridableFeature splitTunnel;
-
 }  // namespace Feature
 
 #endif  // FEATURES_H
