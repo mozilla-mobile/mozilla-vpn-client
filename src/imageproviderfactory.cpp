@@ -8,6 +8,10 @@
 #  include "platforms/linux/linuxappimageprovider.h"
 #endif
 
+#ifdef MZ_MACOS
+#  include "platforms/macos/macosappimageprovider.h"
+#endif
+
 #ifdef MZ_ANDROID
 #  include "platforms/android/androidappimageprovider.h"
 #endif
@@ -19,6 +23,10 @@
 QQuickImageProvider* ImageProviderFactory::create(QObject* parent) {
 #ifdef MZ_LINUX
   return new LinuxAppImageProvider(parent);
+#endif
+
+#ifdef MZ_MACOS
+  return new MacOSAppImageProvider(parent);
 #endif
 
 #ifdef MZ_ANDROID

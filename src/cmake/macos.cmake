@@ -42,6 +42,8 @@ target_link_libraries(mozillavpn PRIVATE ${FW_SYS_EXTENSION})
 
 # MacOS platform source files
 target_sources(mozillavpn PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosappimageprovider.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosappimageprovider.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosapplistprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosapplistprovider.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscontroller.h
