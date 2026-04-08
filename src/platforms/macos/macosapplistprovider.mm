@@ -35,18 +35,15 @@ void MacOSAppListProvider::fetchEntries(const QString& appDir,
   while (iter.hasNext()) {
     QString path = iter.next();
 
-    logger.debug() << "Examining:" << path;
     NSBundle* bundle = [NSBundle bundleWithPath: path.toNSString()];
     if (bundle == nil) {
       continue;
     }
-    logger.debug() << "Bundle identifier:" << bundle.bundleIdentifier;
 
     NSString* type = [bundle objectForInfoDictionaryKey:@"CFBundlePackageType"];
     if (type == nil) {
       continue;
     }
-    logger.debug() << "Bundle type:" << type;
     if ([type compare:@"APPL"] != NSOrderedSame) {
       continue;
     }
