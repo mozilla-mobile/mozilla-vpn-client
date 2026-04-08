@@ -291,15 +291,15 @@
         //completionHandler(nil);
         return;
     }
-    NSObject* objAction = [msg decodeObjectForKey:@"action"];
-    if (![objAction isKindOfClass:[NSString class]]) {
+    NSString* action = [msg decodeObjectOfClass:NSString.class
+                                         forKey:@"action"];
+    if (!action) {
         NSLog(@"app message invalid action");
         //completionHandler(nil);
         return;
     }
     [msg finishDecoding];
 
-    NSString* action = static_cast<NSString*>(objAction);
     NSLog(@"app message: %@", action);
     //completionHandler(nil);
 }
