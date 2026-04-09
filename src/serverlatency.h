@@ -102,6 +102,7 @@ class ServerLatency final : public QObject {
   QTimer m_progressDelayTimer;
   QTimer m_cooldownTimer;
   bool m_wantRefresh = false;
+  bool m_hasIPv4Connectivity = true;
 
  private slots:
   void stateChanged();

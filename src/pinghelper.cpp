@@ -35,13 +35,13 @@ PingHelper::PingHelper() {
 
 PingHelper::~PingHelper() { MZ_COUNT_DTOR(PingHelper); }
 
-void PingHelper::start(const QString& serverIpv4Gateway,
-                       const QString& deviceIpv4Address) {
+void PingHelper::start(const QString& serverGateway,
+                       const QString& deviceAddress) {
   logger.debug() << "PingHelper activated for server:"
-                 << logger.sensitive(serverIpv4Gateway);
+                 << logger.sensitive(serverGateway);
 
-  m_gateway = QHostAddress(serverIpv4Gateway);
-  m_source = QHostAddress(deviceIpv4Address.section('/', 0, 0));
+  m_gateway = QHostAddress(serverGateway);
+  m_source = QHostAddress(deviceAddress.section('/', 0, 0));
   m_pingSender = PingSenderFactory::create(m_source, this);
 
   // Some platforms require root access to send and receive ICMP pings. If

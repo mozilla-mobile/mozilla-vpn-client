@@ -25,10 +25,12 @@ class LinuxPingSender final : public PingSender {
 
  private:
   int createSocket();
+  int createSocket6();
 
  private slots:
   void rawSocketReady();
   void icmpSocketReady();
+  void icmp6SocketReady();
 
  private:
   QSocketNotifier* m_notifier = nullptr;
