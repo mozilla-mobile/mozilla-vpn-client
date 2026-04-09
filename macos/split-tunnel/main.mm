@@ -5,14 +5,19 @@
 #import <Foundation/Foundation.h>
 #import <NetworkExtension/NetworkExtension.h>
 
+#import "routemanager.h"
+
 int main(int argc, char *argv[])
 {
   @autoreleasepool {
     NSLog(@"started: %@ (pid: %d / uid: %d)", NSProcessInfo.processInfo.arguments.firstObject, getpid(), getuid());
+    NSRunLoop* runloop = [NSRunLoop mainRunLoop];
+
+    RouteManager* rtManager = [[RouteManager new] initWithRunLoop: [runloop getCFRunLoop]];
 
     [NEProvider startSystemExtensionMode];
 
-    [[NSRunLoop mainRunLoop] run];
+    [runloop run];
   }
   return 0;
 }
