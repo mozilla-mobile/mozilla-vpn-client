@@ -123,6 +123,27 @@ qt-tools-6.10:
         env:
             QT_VERSION: "6.10.1"
 
+qt-linux-aarch64:
+    description: "Linux aarch64 Qt compile Task (cross-compiled from x86_64)"
+    fetches:
+        fetch:
+            - qt-source-tarball
+        toolchain:
+            - qt-tools-6.10
+    run:
+        script: compile_qt_6_linux_aarch64.sh
+        resources:
+            - scripts/linux/aarch64-toolchain.cmake
+            - taskcluster/scripts/toolchain/patches/*.patch
+        toolchain-alias: qt-linux-aarch64
+        toolchain-artifact: public/build/qt6_linux_aarch64.tar.xz
+    treeherder:
+        symbol: TL(qt-linux-aarch64)
+        platform: linux/aarch64
+    worker-type: b-linux-large
+    worker:
+        docker-image: {in-tree: linux-aarch64-qt-build}
+
 qt-wasm-6.10:
     description: "QT wasm bundle task"
     treeherder:

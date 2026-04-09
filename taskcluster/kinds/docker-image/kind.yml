@@ -61,6 +61,14 @@ tasks:
         definition: linux-rpm-build
         args:
             DOCKER_BASE_IMAGE: '{dockerhub:fedora:latest}'
+    linux-aarch64-qt-build:
+        parent: base
+        symbol: I(linux-aarch64-qt-build)
+        definition: linux-aarch64-qt-build
+    linux-aarch64-deb-build:
+        parent: base
+        symbol: I(linux-aarch64-deb-build)
+        definition: linux-aarch64-deb-build
     sentry:
         parent: base
         symbol: I(sentry)
