@@ -26,7 +26,7 @@ from generate_strings import parseYAMLTranslationStrings
 
 XLIFF_NS = '{urn:oasis:names:tc:xliff:document:1.2}'
 
-def load_xliff_translations(xliff_path):
+def load_xliff_translations(xliff_path, isEnglish):
     """Returns dict of {string_id: translated_string} for one locale's XLIFF file."""
     if not os.path.isfile(xliff_path):
         print(f"XLIFF file not found: {xliff_path}")
@@ -35,9 +35,10 @@ def load_xliff_translations(xliff_path):
     tree = ET.parse(xliff_path)
     for unit in tree.getroot().iter(f'{XLIFF_NS}trans-unit'):
         trid = unit.attrib.get('id', '')
-        target = unit.findtext(f'{XLIFF_NS}target', default='')
-        source = unit.findtext(f'{XLIFF_NS}source', default='')
-        translations[trid] = target if target else source
+        if isEnglish:
+          translations[trid] = unit.findtext(f'{XLIFF_NS}source', default='')
+        else:
+          translations[trid] = unit.findtext(f'{XLIFF_NS}target', default='')
     if not translations:
         print(f"No translations found: {xliff_path}")
         exit(1)
@@ -55,11 +56,9 @@ def normalize_locale(locale):
 
 
 def get_locales(i18n_dir):
-    """Returns list of non-English locale codes that have a mozillavpn.xliff."""
+    """Returns list of locale codes that have a mozillavpn.xliff."""
     locales = []
     for entry in os.listdir(i18n_dir):
-        if entry == 'en':
-            continue
         xliff = os.path.join(i18n_dir, entry, 'mozillavpn.xliff')
         if os.path.isfile(xliff):
             locales.append(entry)
@@ -95,7 +94,7 @@ def build_localizable_xcstrings(main_strings, locale_translations):
         if localizations:
             entry['localizations'] = localizations
 
-        strings[english_value] = entry
+        strings[string_id] = entry
 
     return {'sourceLanguage': 'en', 'strings': strings, 'version': '1.1'}
 
@@ -175,7 +174,7 @@ def main():
     locale_translations = {}
     for locale in locales:
         xliff_path = os.path.join(args.i18n_dir, locale, 'mozillavpn.xliff')
-        locale_translations[locale] = load_xliff_translations(xliff_path)
+        locale_translations[locale] = load_xliff_translations(xliff_path, locale == 'en')
 
     os.makedirs(args.output_dir, exist_ok=True)
 
