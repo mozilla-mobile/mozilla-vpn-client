@@ -133,6 +133,8 @@ INSTALL_DIR=$(cd "${INSTALL_DIR}" && pwd)
     -- \
     -DCMAKE_TOOLCHAIN_FILE="${TOOLCHAIN_FILE}" \
     -DCMAKE_STAGING_PREFIX="${INSTALL_DIR}" \
+    -DCMAKE_FIND_ROOT_PATH="/" \
+    -DCMAKE_LIBRARY_ARCHITECTURE=aarch64-linux-gnu \
 ) || { echo "Qt configure failed" >&2; exit 1; }
 
 echo "Building Qt6 for aarch64..."
