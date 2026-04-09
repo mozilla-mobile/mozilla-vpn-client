@@ -187,18 +187,18 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
       memcpy(&src6.sin6_addr, &v6src, sizeof(src6.sin6_addr));
     }
 
-    Icmp6SendEcho2(m_private->m_handle6,              // IcmpHandle
-                   m_private->m_event6,               // Event
-                   nullptr,                           // ApcRoutine
-                   nullptr,                           // ApcContext
-                   &src6,                             // SourceAddress
-                   &dst6,                             // DestinationAddress
-                   &sequence,                         // RequestData
-                   sizeof(sequence),                  // RequestSize
-                   nullptr,                           // RequestOptions
-                   &m_private->m_replyBuffer6,        // [OUT] ReplyBuffer
-                   sizeof(m_private->m_replyBuffer6), // ReplySize
-                   10000                              // Timeout
+    Icmp6SendEcho2(m_private->m_handle6,               // IcmpHandle
+                   m_private->m_event6,                // Event
+                   nullptr,                            // ApcRoutine
+                   nullptr,                            // ApcContext
+                   &src6,                              // SourceAddress
+                   &dst6,                              // DestinationAddress
+                   &sequence,                          // RequestData
+                   sizeof(sequence),                   // RequestSize
+                   nullptr,                            // RequestOptions
+                   &m_private->m_replyBuffer6,         // [OUT] ReplyBuffer
+                   sizeof(m_private->m_replyBuffer6),  // ReplySize
+                   10000                               // Timeout
     );
   } else {
     if (m_private->m_handle == INVALID_HANDLE_VALUE) {
