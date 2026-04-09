@@ -187,7 +187,7 @@ commonStrings:
     value: "[Windows] If IPv6 is disabled, the VPN will again work."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to Windows platform.
   bullet4:
-    value: "[Linux] Migrate PPA builds to use the APT repository for future updates"
+    value: "[Linux] Migrate PPA builds to use the Mozilla APT repository for future updates"
     comment: Bullet point with a specific update. Should have tag that indicates it applies to Linux platform.
   bullet5:
     value: "[Windows] In rare cases, Mozilla VPN could not be installed. This is now fixed."
