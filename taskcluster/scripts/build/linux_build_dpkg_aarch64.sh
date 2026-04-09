@@ -109,6 +109,8 @@ with open(rules_file) as f:
 cross_flags = (
     ' \\\\\n'
     '\t\t-DCMAKE_TOOLCHAIN_FILE=' + toolchain + ' \\\\\n'
+    '\t\t-DCMAKE_FIND_ROOT_PATH=/ \\\\\n'
+    '\t\t-DCMAKE_LIBRARY_ARCHITECTURE=aarch64-linux-gnu \\\\\n'
     '\t\t-DCMAKE_PREFIX_PATH=' + qt_aarch64 + ' \\\\\n'
     '\t\t-DQT_HOST_PATH=' + qt_host + ' \\\\\n'
     '\t\t-DQT_HOST_PATH_CMAKE_DIR=' + qt_host + '/lib/cmake'
