@@ -11,13 +11,10 @@ int main(int argc, char *argv[])
 {
   @autoreleasepool {
     NSLog(@"started: %@ (pid: %d / uid: %d)", NSProcessInfo.processInfo.arguments.firstObject, getpid(), getuid());
-    NSRunLoop* runloop = [NSRunLoop mainRunLoop];
-
-    RouteManager* rtManager = [[RouteManager new] initWithRunLoop: [runloop getCFRunLoop]];
 
     [NEProvider startSystemExtensionMode];
 
-    [runloop run];
+    [[NSRunLoop mainRunLoop] run];
   }
   return 0;
 }

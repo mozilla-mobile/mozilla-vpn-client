@@ -5,6 +5,7 @@
 #import <NetworkExtension/NetworkExtension.h>
 
 #import "bypasstcpflow.h"
+#import "routemanager.h"
 
 #include <atomic>
 #include <arpa/inet.h>
@@ -14,7 +15,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
-@interface VPNSplitTunnelProvider : NETransparentProxyProvider
+@interface VPNSplitTunnelProvider : NETransparentProxyProvider<RouteManagerDelegate>
 
 - (void)startProxyWithOptions:(NSDictionary<NSString *,id> * _Nullable)options
             completionHandler:(void (^ _Nonnull)(NSError * _Nullable))completionHandler;
@@ -23,6 +24,10 @@
           completionHandler:(void (^ _Nonnull)(void))completionHandler;
 
 - (BOOL)handleNewFlow:(NEAppProxyFlow * _Nonnull)flow;
+
+- (void)defaultRouteChanged:(int)family
+               viaInterface:(nw_interface_t)interface
+                withGateway:(NSData*)gateway;
 
 @property (retain) NETransparentProxyNetworkSettings* settings;
 
@@ -34,11 +39,12 @@
     std::atomic_uint64_t m_handledUnknown;
 
     // Detection of the VPN interface
-    nw_path_monitor_t   m_pathMonitor;
+    RouteManager *      m_routeManager;
     struct sockaddr_in  m_vpnIpv4Addr;
     struct sockaddr_in6 m_vpnIpv6Addr;
     nw_interface_t      m_vpnInterface;
-    nw_interface_t      m_bypassInterface;
+    nw_interface_t      m_ipv4Interface;
+    nw_interface_t      m_ipv6Interface;
 }
 
 - (id)init{
@@ -95,48 +101,6 @@
   return rule;
 }
 
-- (void)enumeratePath:(nw_path_t)path {
-    NSLog(@"enumerating path");
-    NSLog(@"ipv4: %d, ipv6: %d, dns: %d", nw_path_has_ipv4(path),
-          nw_path_has_ipv6(path), nw_path_has_dns(path));
-
-    nw_path_enumerate_interfaces(path, ^(nw_interface_t iface){
-      // Fetch the interface's IPv4 address
-      int sd = socket(PF_INET, SOCK_DGRAM, IPPROTO_IP);
-      if (sd < 0) {
-        return true;
-      }
-      struct ifreq ifr;
-      strncpy(ifr.ifr_name, nw_interface_get_name(iface), IFNAMSIZ);
-      if (ioctl(sd, SIOCGIFADDR, &ifr) != 0) {
-        close(sd);
-        return true;
-      }
-      close(sd);
-
-      if ((ifr.ifr_addr.sa_family != AF_INET) ||
-          (ifr.ifr_addr.sa_len < sizeof(struct sockaddr_in))) {
-        return true;
-      }
-      struct sockaddr_in* sin = (struct sockaddr_in*)&ifr.ifr_addr;
-
-      // Debug
-      char buf[INET_ADDRSTRLEN];
-      inet_ntop(AF_INET, &sin->sin_addr, buf, sizeof(buf));
-      NSLog(@"interface found: %s %s", ifr.ifr_name, buf);
-
-      // Ignore the VPN interface.
-      if (sin->sin_addr.s_addr == self->m_vpnIpv4Addr.sin_addr.s_addr) {
-        // We found the VPN interface!
-        m_vpnInterface = iface;
-      } else {
-        m_bypassInterface = iface;
-      }
-
-      return true;
-    });
-}
-
 - (void)startProxyWithOptions:(NSDictionary<NSString *,id> *)options
             completionHandler:(void (^)(NSError *error))completionHandler {
   NSLog(@"starting proxy");
@@ -172,11 +136,9 @@
     inet_pton(AF_INET6, addr.UTF8String, &m_vpnIpv6Addr.sin6_addr.s6_addr);
   }
 
-  m_pathMonitor = nw_path_monitor_create();
-  nw_path_monitor_set_update_handler(m_pathMonitor, ^(nw_path_t path){
-    [self enumeratePath: path];
-  });
-  nw_path_monitor_start(m_pathMonitor);
+  // Start the route manager
+  m_routeManager = [[RouteManager new] initWithRunLoop:[NSRunLoop currentRunLoop]];
+  [m_routeManager startWithDelegate:self];
 
   self.settings = [[NETransparentProxyNetworkSettings alloc] initWithTunnelRemoteAddress:self.protocolConfiguration.serverAddress];
 
@@ -228,7 +190,8 @@
 - (void)stopProxyWithReason:(NEProviderStopReason)reason 
           completionHandler:(void (^)(void))completionHandler {
     NSLog(@"stopping proxy");
-    nw_path_monitor_cancel(m_pathMonitor);
+    [m_routeManager release];
+    m_routeManager = nil;
 
     NSLog(@"handled tcp flows: %lld", std::atomic_load(&m_handledTcpFlows));
     NSLog(@"handled udp flows: %lld", std::atomic_load(&m_handledUdpFlows));
@@ -256,7 +219,7 @@
 
   if ([flow isKindOfClass:[NEAppProxyTCPFlow class]]) {
     NEAppProxyTCPFlow* tcpFlow = (NEAppProxyTCPFlow*)flow;
-    BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow withInterface:m_bypassInterface];
+    BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow withInterface:m_ipv4Interface];
     [handler startBypass:tcpFlow completionHandler:^(NSError* error){
       if (error) {
         NSLog(@"flow closed with error: %@", error);
@@ -288,20 +251,40 @@
                           error:&error];
     if (error != nil) {
         NSLog(@"app message error: %@", error.localizedDescription);
-        //completionHandler(nil);
+        completionHandler(nil);
         return;
     }
     NSString* action = [msg decodeObjectOfClass:NSString.class
                                          forKey:@"action"];
     if (!action) {
         NSLog(@"app message invalid action");
-        //completionHandler(nil);
+        completionHandler(nil);
         return;
     }
     [msg finishDecoding];
 
     NSLog(@"app message: %@", action);
-    //completionHandler(nil);
+    completionHandler(nil);
+}
+
+- (void)defaultRouteChanged:(int)family
+               viaInterface:(nw_interface_t)iface
+                withGateway:(NSData*)gateway {
+  if (family == AF_INET) {
+    m_ipv4Interface = iface;
+    if (iface) {
+      NSLog(@"default ipv4 route via %s", nw_interface_get_name(iface));
+    } else {
+      NSLog(@"default ipv4 route lost");
+    }
+  } else if (family == AF_INET6) {
+    m_ipv6Interface = iface;
+    if (iface) {
+      NSLog(@"default ipv6 route via %s", nw_interface_get_name(iface));
+    } else {
+      NSLog(@"default ipv6 route lost");
+    }
+  }
 }
 
 @end
