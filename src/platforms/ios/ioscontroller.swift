@@ -56,6 +56,13 @@ public class IOSControllerImpl: NSObject {
     private var deviceIpv4Address: String? = nil
     private var deviceIpv6Address: String? = nil
 
+    // When activating/deactivate from an app intent (Siri, etc.), iOS already
+    // provides confirmation to the user. If we also showed our local notification,
+    // the user would see two confirmation notifications one from Siri, and our
+    // normal one from the app. Thus, we want to suppress the typical one in
+    // these cases, as we can't suppress the system-generated one.
+    private static var shouldSkipNextNotification = false
+
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
     @objc init(bundleID: String, privateKey: Data, deviceIpv4Address: String, deviceIpv6Address: String, closure: @escaping (ConnectionState, Date?) -> Void, callback: @escaping (Bool) -> Void) {
@@ -288,6 +295,7 @@ public class IOSControllerImpl: NSObject {
         return .errorAlreadyActive
       }
       do {
+        IOSControllerImpl.shouldSkipNextNotification = true
         try TunnelManager.session?.startTunnel(options: ["source":"intent"])
         let config = TunnelManager.protocolConfiguration?.providerConfiguration
         return .success(entryCity: config?["entryCity"] as? String, exitCity: config?["exitCity"] as? String)
@@ -302,6 +310,7 @@ public class IOSControllerImpl: NSObject {
         IOSControllerImpl.logger.info(message: "Error stopping from intent: No active VPN session")
         return false
       }
+      IOSControllerImpl.shouldSkipNextNotification = true
       IOSControllerImpl.staticDisconnect()
       return true
     }
@@ -448,5 +457,11 @@ public class IOSControllerImpl: NSObject {
         interface.dns = [DNSServer(address: dnsServerIP!), DNSServer(address: ipv6GatewayIP!)]
 
         return TunnelConfiguration(name: VPN_NAME, interface: interface, peers: peerConfigurations)
+    }
+
+    @objc func shouldSuppressNextNotification() -> Bool {
+        let oldValue = IOSControllerImpl.shouldSkipNextNotification
+        IOSControllerImpl.shouldSkipNextNotification = false
+        return oldValue
     }
 }

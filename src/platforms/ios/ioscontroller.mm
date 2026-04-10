@@ -293,3 +293,7 @@ void IOSController::getBackendLogs(QIODevice* device) {
 }
 
 void IOSController::cleanupBackendLogs() { [IOSLoggerImpl clearLogs]; }
+
+bool IOSController::shouldSuppressNextNotification() {
+  return [impl shouldSuppressNextNotification];
+}

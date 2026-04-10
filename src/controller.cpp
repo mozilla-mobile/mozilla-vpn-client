@@ -1088,3 +1088,12 @@ void Controller::forceDaemonSilentServerSwitch() {
                     "and Android. Not sending message.";
 #endif
 }
+
+bool Controller::shouldSuppressNextNotification() {
+  if (m_impl) {
+    return m_impl->shouldSuppressNextNotification();
+  } else {
+    logger.error() << "No implementation found for notification check.";
+    return false;
+  }
+}

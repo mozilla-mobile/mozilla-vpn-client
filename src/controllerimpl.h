@@ -77,6 +77,8 @@ class ControllerImpl : public QObject {
 
   virtual bool silentServerSwitchingSupported() const { return true; }
 
+  virtual bool shouldSuppressNextNotification() { return false; }
+
  protected:
   // Helper method - process a JSON status and emit the statusUpdated signal.
   void emitStatusFromJson(const QJsonObject& obj);

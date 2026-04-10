@@ -35,6 +35,8 @@ class IOSController final : public ControllerImpl {
 
   bool silentServerSwitchingSupported() const override { return false; }
 
+  bool shouldSuppressNextNotification() override;
+
  private:
   bool m_checkingStatus = false;
   QString m_serverPublicKey;

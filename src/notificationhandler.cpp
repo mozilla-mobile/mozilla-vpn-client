@@ -103,6 +103,18 @@ void NotificationHandler::showNotification() {
     return;
   }
 
+  // This check must come *before* the checks if an individual notification is
+  // enabled (via SettingsManager), otherwise we'll introduce a corner case bug:
+  // If notifications are not active when an iOS AppIntent is run AND the
+  // notification is then toggled to be active in Settings AND the next
+  // notification comes from an action in the client (like turning on the VPN
+  // from the client), then that first single notification would be suppressed.
+  // But with this before the SettingsManager checks, we'll always clear the
+  // shouldSkipNextNotification flag appropriately.
+  if (vpn->controller()->shouldSuppressNextNotification()) {
+    return;
+  }
+
   // We want to show notifications about the location in use by the controller,
   // which could be different than MozillaVPN::serverData in the rare case of a
   // server-switch request processed in the meantime.
