@@ -3,7 +3,16 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #import <Foundation/Foundation.h>
+#import <Network/Network.h>
+
+@protocol RouteManagerDelegate
+- (void)defaultRouteChanged:(int)family
+               viaInterface:(nw_interface_t)interface
+                withGateway:(NSData*)gateway;
+@end
 
 @interface RouteManager : NSObject
-- (id)initWithRunLoop:(CFRunLoopRef)runloop;
+- (id)initWithRunLoop:(NSRunLoop*)runloop;
+
+- (void)startWithDelegate:(id)delegate;
 @end
