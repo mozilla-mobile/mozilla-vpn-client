@@ -15,6 +15,10 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 
+#if __has_feature(objc_arc)
+# error "RouteManager must be compiled with manual reference counting"
+#endif
+
 // Private method in the network framework
 extern "C" nw_interface_t nw_interface_create_with_index(int ifindex);
 
@@ -25,14 +29,7 @@ extern "C" nw_interface_t nw_interface_create_with_index(int ifindex);
   CFRunLoopSourceRef   m_source;
   int                  m_rtseq;
 
-  // A delegate object to receive route changes.
-  id                   m_delegate;
-
-  // The default route.
-  int                     m_defaultIfindexIpv4;
-  struct sockaddr_storage m_defaultGatewayIpv4;
-  int                     m_defaultIfindexIpv6;
-  struct sockaddr_storage m_defaultGatewayIpv6;
+  NSObject<RouteManagerDelegate>* m_delegate;
 }
 
 static void rawSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRef address, const void * data, void *info) {
@@ -130,25 +127,20 @@ NSString* rtmAddrString(const void *ptr) {
   return [NSString stringWithFormat:@"unknown(af=%d)", sa->sa_family];
 }
 
-void rtmLogMsg(const struct rt_msghdr* rtm, CFArrayRef addrlist) {
-  int ifindex = 0;
+void rtmLogRouteMsg(const struct rt_msghdr* rtm, CFArrayRef addrlist) {
   NSString* rtmType = nullptr;
   switch (rtm->rtm_type) {
     case RTM_ADD:
       rtmType = @"RTM_ADD";
-      ifindex = rtm->rtm_index;
       break;
     case RTM_DELETE:
       rtmType = @"RTM_DELETE";
-      ifindex = rtm->rtm_index;
       break;
     case RTM_CHANGE:
       rtmType = @"RTM_CHANGE";
-      ifindex = rtm->rtm_index;
       break;
     case RTM_GET:
       rtmType = @"RTM_GET";
-      ifindex = rtm->rtm_index;
       break;
     case RTM_IFINFO:
       rtmType = @"RTM_IFINFO";
@@ -158,34 +150,28 @@ void rtmLogMsg(const struct rt_msghdr* rtm, CFArrayRef addrlist) {
       break;
   }
 
-  NSMutableString* details = [NSMutableString stringWithCapacity:0];
-  if (ifindex) {
-    char ifname[IF_NAMESIZE] = "null";
-    if_indextoname(ifindex, ifname);
-    [details appendFormat:@" via %s", ifname];
-  }
-#if 0
   // Figure out the relevant interface name.
+  char ifname[IF_NAMESIZE] = "null";
   if (rtm->rtm_addrs & RTA_IFP) {
     const struct sockaddr_dl* sdl = (const struct sockaddr_dl*)rtmLookupAddr(rtm, RTA_IFP, addrlist);
     if (sdl && sdl->sdl_family == AF_LINK) {
-      if_indextoname( sdl->sdl_index, ifname);
+      if_indextoname(sdl->sdl_index, ifname);
     }
-  } else if (rtm->rtm_ifindex) {
-    if_indextoname(rtm->rtm_ifindex, ifname);
+  } else if (rtm->rtm_index) {
+    if_indextoname(rtm->rtm_index, ifname);
   }
-#endif
 
+  NSMutableString* details = [NSMutableString stringWithCapacity:0];
   // Log relevant updates to the routing table.
   if (addrlist && CFArrayGetCount(addrlist)) {
-    [details appendString:@" addrs"];
+    [details appendFormat:@" addrs(%x)", rtm->rtm_addrs];
     for (int i = 0; i < CFArrayGetCount(addrlist); i++) {
       [details appendString:@" "];
       [details appendString:rtmAddrString(CFArrayGetValueAtIndex(addrlist, i))];
     }
   }
 
-  NSLog(@"route %@:%@", rtmType, details);
+  NSLog(@"route %@ %s:%@", rtmType, ifname, details);
 }
 
 // Compare memory against zero.
@@ -197,7 +183,7 @@ static int memcmpzero(const void* data, size_t len) {
   return 0;
 }
 
-- (id)initWithRunLoop:(NSRunLoop*)runloop {
+- (id)init {
   self = [super init];
   NSLog(@"route manager created");
 
@@ -206,12 +192,13 @@ static int memcmpzero(const void* data, size_t len) {
   if (m_sockfd < 0) {
     NSLog(@"failed to create routing socket: %s", strerror(errno));
   }
-  CFSocketContext ctx = { .info = self };
+  CFSocketContext ctx = { .info = (void *)self };
   m_socket = CFSocketCreateWithNative(kCFAllocatorDefault, m_sockfd, kCFSocketDataCallBack,
                                       rawSockCallback, &ctx);
 
-  m_source = CFSocketCreateRunLoopSource(kCFAllocatorDefault, m_socket, 100);
-  CFRunLoopAddSource([runloop getCFRunLoop], m_source, kCFRunLoopCommonModes);
+  // Create a source and attach it to the main run loop.
+  m_source = CFSocketCreateRunLoopSource(kCFAllocatorDefault, m_socket, 0);
+  CFRunLoopAddSource(CFRunLoopGetMain(), m_source, kCFRunLoopDefaultMode);
 
   return self;
 }
@@ -219,41 +206,17 @@ static int memcmpzero(const void* data, size_t len) {
 - (void)dealloc {
   NSLog(@"route manager destroyed");
 
-  // Delete captured routes on shutdown.
-  if (m_defaultIfindexIpv4) {
-    struct sockaddr_in dst;
-    memset(&dst, 0, sizeof(dst));
-    dst.sin_family = AF_INET;
-    dst.sin_len = sizeof(struct sockaddr_in);
-
-    [self rtmSendRoute:RTM_DELETE
-         toDestination:(struct sockaddr*)&dst
-            withPrefix:0
-          viaInterface:m_defaultIfindexIpv4
-           withGateway:nil
-              andFlags:RTF_IFSCOPE];
-  }
-  if (m_defaultIfindexIpv6) {
-    struct sockaddr_in6 dst;
-    memset(&dst, 0, sizeof(dst));
-    dst.sin6_family = AF_INET6;
-    dst.sin6_len = sizeof(struct sockaddr_in6);
-
-    [self rtmSendRoute:RTM_DELETE
-         toDestination:(struct sockaddr*)&dst
-            withPrefix:0
-          viaInterface:m_defaultIfindexIpv4
-           withGateway:nil
-              andFlags:RTF_IFSCOPE];
-  }
-
-  CFRunLoopSourceInvalidate(m_source);
+  CFSocketInvalidate(m_socket);
   CFRelease(m_socket);
   close(m_sockfd);
+
+  CFRunLoopRemoveSource(CFRunLoopGetMain(), m_source, kCFRunLoopDefaultMode);
+  CFRelease(m_source);
+
   [super dealloc];
 }
 
-- (void)startWithDelegate:(id)delegate {
+- (void)startWithDelegate:(NSObject<RouteManagerDelegate>*)delegate {
   m_delegate = delegate;
 
   // Grab the default routes at startup.
@@ -304,7 +267,6 @@ static int memcmpzero(const void* data, size_t len) {
         break;
     }
 
-    rtmLogMsg(rtm, addrs);
     if (addrs) {
       CFRelease(addrs);
     }
@@ -334,6 +296,9 @@ static int memcmpzero(const void* data, size_t len) {
   if ((rtm->rtm_pid == getpid()) && (rtm->rtm_type != RTM_GET)) {
     return;
   }
+
+  // Log the relevant routing messages.
+  rtmLogRouteMsg(rtm, addrlist);
 
   // Special case: If RTA_IFP is set, then we should get the interface index
   // from the address list instead of rtm_index.
@@ -367,49 +332,9 @@ static int memcmpzero(const void* data, size_t len) {
     return;
   }
 
-  // Determine if this is the IPv4 or IPv6 default route.
+  // Notify the delegates about the default route update.
   const struct sockaddr* gateway = rtmLookupAddr(rtm, RTA_GATEWAY, addrlist);
   const struct sockaddr* dst = rtmLookupAddr(rtm, RTA_DST, addrlist);
-  int rtm_type = RTM_ADD;
-  int prev_ifindex = 0;
-  if (dst->sa_family == AF_INET) {
-    prev_ifindex = m_defaultIfindexIpv4;
-    if (m_defaultIfindexIpv4 != 0) {
-      rtm_type = RTM_CHANGE;
-    }
-    memcpy(&m_defaultGatewayIpv4, gateway, gateway->sa_len);
-    m_defaultIfindexIpv4 = ifindex;
-  } else if (dst->sa_family == AF_INET6) {
-    prev_ifindex = m_defaultIfindexIpv6;
-    if (m_defaultIfindexIpv6 != 0) {
-      rtm_type = RTM_CHANGE;
-    }
-    memcpy(&m_defaultGatewayIpv6, gateway, gateway->sa_len);
-    m_defaultIfindexIpv6 = ifindex;
-  } else {
-    return;
-  }
-
-  // If the interface was previously known, and has changed, then delete
-  // the captured default route before proceeding.
-  if ((prev_ifindex != 0) && (prev_ifindex != ifindex)) {
-    [self rtmSendRoute:RTM_DELETE
-         toDestination:dst
-            withPrefix:0
-          viaInterface:prev_ifindex
-           withGateway:nil
-              andFlags:RTF_IFSCOPE];
-  }
-
-  // Add or update the captured default route.
-  [self rtmSendRoute:(prev_ifindex == ifindex) ? RTM_CHANGE : RTM_ADD
-       toDestination:dst
-          withPrefix:0
-        viaInterface:ifindex
-         withGateway:gateway
-            andFlags:RTF_IFSCOPE];
-  
-  // Notify the delegates about the default route.
   nw_interface_t iface = nw_interface_create_with_index(ifindex);
   if (m_delegate) {
     NSData* gwData = [NSData dataWithBytes:gateway
@@ -418,7 +343,6 @@ static int memcmpzero(const void* data, size_t len) {
                        viaInterface:iface
                         withGateway:gwData];
   }
-  nw_release(iface);
 }
 
 - (void) handleRtmDelete:(const struct rt_msghdr*)rtm
@@ -439,6 +363,9 @@ static int memcmpzero(const void* data, size_t len) {
   if (rtm->rtm_flags & RTF_IFSCOPE) {
     return;
   }
+
+  // Log the relevant routing messages.
+  rtmLogRouteMsg(rtm, addrlist);
 
   // Check for a default route, which should have a netmask of zero.
   const struct sockaddr* mask = rtmLookupAddr(rtm, RTA_NETMASK, addrlist);
@@ -463,28 +390,8 @@ static int memcmpzero(const void* data, size_t len) {
     return;
   }
 
-  // Clear the default gateway
-  const struct sockaddr* dst = rtmLookupAddr(rtm, RTA_DST, addrlist);
-  if (dst->sa_family == AF_INET) {
-    memset(&m_defaultGatewayIpv4, 0, sizeof(m_defaultGatewayIpv4));
-    m_defaultIfindexIpv4 = 0;
-  } else if (dst->sa_family == AF_INET6) {
-    memset(&m_defaultGatewayIpv6, 0, sizeof(m_defaultGatewayIpv6));
-    m_defaultIfindexIpv6 = 0;
-  } else {
-    // We don't recognize this route type.
-    return;
-  }
-
-  // Delete the captured default route.
-  [self rtmSendRoute:RTM_DELETE
-       toDestination:(struct sockaddr*)dst
-          withPrefix:0
-        viaInterface:rtm->rtm_index
-         withGateway:nil
-            andFlags:RTF_IFSCOPE];
-
   // Delete exclusion routes.
+  const struct sockaddr* dst = rtmLookupAddr(rtm, RTA_DST, addrlist);
   NSLog(@"Lost default route");
   if (m_delegate) {
     [m_delegate defaultRouteChanged:dst->sa_family
@@ -540,10 +447,10 @@ static int memcmpzero(const void* data, size_t len) {
 }
 
 - (void) rtmSendRoute:(int)action
-        toDestination:(const struct sockaddr*)dst
+        toDestination:(NSData*)dst
            withPrefix:(unsigned int)plen
          viaInterface:(unsigned int)ifindex
-          withGateway:(const void*)gateway
+          withGateway:(NSData*)gateway
              andFlags:(int)flags {
   constexpr size_t rtm_max_size = sizeof(struct rt_msghdr) +
                                   sizeof(struct sockaddr_in6) * 2 +
@@ -564,19 +471,20 @@ static int memcmpzero(const void* data, size_t len) {
   memset(&rtm->rtm_rmx, 0, sizeof(rtm->rtm_rmx));
 
   // Append RTA_DST
-  rtmAppendAddr(rtm, rtm_max_size, RTA_DST, dst);
+  const struct sockaddr* dstAddr = (const struct sockaddr*)dst.bytes;
+  rtmAppendAddr(rtm, rtm_max_size, RTA_DST, dstAddr);
 
   // Append RTA_GATEWAY
   if (gateway != nullptr) {
-    int family = static_cast<const struct sockaddr*>(gateway)->sa_family;
-    if ((family == AF_INET) || (family == AF_INET6)) {
+    const struct sockaddr* gw = (const struct sockaddr*)gateway.bytes;
+    if ((gw->sa_family == AF_INET) || (gw->sa_family == AF_INET6)) {
       rtm->rtm_flags |= RTF_GATEWAY;
     }
-    rtmAppendAddr(rtm, rtm_max_size, RTA_GATEWAY, gateway);
+    rtmAppendAddr(rtm, rtm_max_size, RTA_GATEWAY, gw);
   }
 
   // Append RTA_NETMASK
-  if (dst->sa_family == AF_INET6) {
+  if (dstAddr->sa_family == AF_INET6) {
     struct sockaddr_in6 mask;
     memset(&mask, 0, sizeof(mask));
     mask.sin6_family = AF_INET6;
@@ -586,7 +494,7 @@ static int memcmpzero(const void* data, size_t len) {
       mask.sin6_addr.s6_addr[plen / 8] = 0xFF ^ (0xFF >> (plen % 8));
     }
     rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &mask);
-  } else if (dst->sa_family == AF_INET) {
+  } else if (dstAddr->sa_family == AF_INET) {
     struct sockaddr_in mask;
     memset(&mask, 0, sizeof(mask));
     mask.sin_family = AF_INET;
@@ -597,16 +505,15 @@ static int memcmpzero(const void* data, size_t len) {
     }
     rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &mask);
   }
-#if 0
+
   // Send the routing message into the kernel.
   CFDataRef data = CFDataCreate(kCFAllocatorDefault, (const UInt8*)rtm, rtm->rtm_msglen);
   CFSocketError err = CFSocketSendData(m_socket, NULL, data, 1);
   CFRelease(data);
   if (err != kCFSocketSuccess) {
-    NSLog(@"Failed to request routing table: %d", (int)err);
+    NSLog(@"Failed to send route to kernel: %d", (int)err);
     return;
   }
-#endif
 }
 
 @end

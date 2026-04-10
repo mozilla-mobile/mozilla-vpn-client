@@ -13,6 +13,7 @@
 #include <net/route.h>
 #include <netinet/in.h>
 #include <sys/socket.h>
+#include <sys/sysctl.h>
 #include <unistd.h>
 
 #include <QCoreApplication>
@@ -22,6 +23,11 @@
 
 #include "leakdetector.h"
 #include "logger.h"
+
+#ifndef RTMSG_NEXT
+#  define RTMSG_NEXT(_rtm_) \
+    (struct rt_msghdr*)((char*)(_rtm_) + (_rtm_)->rtm_msglen)
+#endif
 
 namespace {
 Logger logger("MacosRouteMonitor");
@@ -56,33 +62,6 @@ MacosRouteMonitor::~MacosRouteMonitor() {
     close(m_rtsock);
   }
   logger.debug() << "MacosRouteMonitor destroyed.";
-}
-
-void MacosRouteMonitor::setDetaultRouteCapture(bool enable) {
-  // Delete captured routes when disabling the feature.
-  if (!enable) {
-    if (m_defaultIfindexIpv4) {
-      rtmSendRoute(RTM_DELETE, IPAddress("0.0.0.0/0"), m_defaultIfindexIpv4,
-                  nullptr, RTF_IFSCOPE);
-    }
-    if (m_defaultIfindexIpv6) {
-      rtmSendRoute(RTM_DELETE, IPAddress("::/0"), m_defaultIfindexIpv6, nullptr,
-                  RTF_IFSCOPE);
-    }
-  }
-  // Add captured routes when enabling the feature.
-  else if (!m_defaultRouteCapture) {
-    if (m_defaultIfindexIpv4) {
-      rtmSendRoute(RTM_ADD, IPAddress("0.0.0.0/0"), m_defaultIfindexIpv4,
-                   m_defaultGatewayIpv4, RTF_IFSCOPE);
-    }
-    if (m_defaultIfindexIpv6) {
-      rtmSendRoute(RTM_ADD, IPAddress("::/0"), m_defaultIfindexIpv6,
-                   m_defaultGatewayIpv6, RTF_IFSCOPE);
-    }
-  }
-
-  m_defaultRouteCapture = enable;
 }
 
 // Compare memory against zero.
@@ -164,12 +143,6 @@ void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
     m_defaultGatewayIpv6.clear();
     m_defaultIfindexIpv6 = 0;
     protocol = QAbstractSocket::IPv6Protocol;
-  }
-
-  // Delete the captured default route.
-  if (m_defaultRouteCapture) {
-    rtmSendRoute(RTM_DELETE, IPAddress(QHostAddress(dst), 0), rtm->rtm_index,
-                nullptr, RTF_IFSCOPE);
   }
 
   // Delete exclusion routes.
@@ -269,9 +242,7 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
       reinterpret_cast<const struct sockaddr*>(addrlist[0].constData());
   QAbstractSocket::NetworkLayerProtocol protocol;
   int rtm_type = RTM_ADD;
-  int prev_ifindex = 0;
   if (dst->sa_family == AF_INET) {
-    prev_ifindex = m_defaultIfindexIpv4;
     if (m_defaultIfindexIpv4 != 0) {
       rtm_type = RTM_CHANGE;
     }
@@ -279,7 +250,6 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
     m_defaultIfindexIpv4 = ifindex;
     protocol = QAbstractSocket::IPv4Protocol;
   } else if (dst->sa_family == AF_INET6) {
-    prev_ifindex = m_defaultIfindexIpv6;
     if (m_defaultIfindexIpv6 != 0) {
       rtm_type = RTM_CHANGE;
     }
@@ -288,19 +258,6 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
     protocol = QAbstractSocket::IPv6Protocol;
   } else {
     return;
-  }
-
-  // Update the captured default route.
-  if (m_defaultRouteCapture) {
-    const IPAddress prefix(QHostAddress(dst), 0);
-    if (prev_ifindex == ifindex) {
-      rtmSendRoute(RTM_CHANGE, prefix, ifindex, addrlist[1], RTF_IFSCOPE);
-    } else {
-      if (prev_ifindex != 0) {
-        rtmSendRoute(RTM_DELETE, prefix, ifindex, nullptr, RTF_IFSCOPE);
-      }
-      rtmSendRoute(RTM_ADD, prefix, ifindex, addrlist[1], RTF_IFSCOPE);
-    }
   }
 
   // Update the exclusion routes with the new default route.
@@ -344,11 +301,6 @@ void MacosRouteMonitor::rtsockReady() {
   if (len <= 0) {
     return;
   }
-
-#ifndef RTMSG_NEXT
-#  define RTMSG_NEXT(_rtm_) \
-    (struct rt_msghdr*)((char*)(_rtm_) + (_rtm_)->rtm_msglen)
-#endif
 
   struct rt_msghdr* rtm = reinterpret_cast<struct rt_msghdr*>(buf);
   struct rt_msghdr* end = reinterpret_cast<struct rt_msghdr*>(&buf[len]);
@@ -496,48 +448,41 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const IPAddress& prefix,
 }
 
 bool MacosRouteMonitor::rtmFetchRoutes(int family) {
-  constexpr size_t rtm_max_size =
-      sizeof(struct rt_msghdr) + sizeof(struct sockaddr_storage) * 2;
-  char buf[rtm_max_size] = {0};
-  struct rt_msghdr* rtm = reinterpret_cast<struct rt_msghdr*>(buf);
-
-  rtm->rtm_msglen = sizeof(struct rt_msghdr);
-  rtm->rtm_version = RTM_VERSION;
-  rtm->rtm_type = RTM_GET;
-  rtm->rtm_flags = RTF_UP | RTF_GATEWAY;
-  rtm->rtm_addrs = 0;
-  rtm->rtm_pid = 0;
-  rtm->rtm_seq = m_rtseq++;
-  rtm->rtm_errno = 0;
-  rtm->rtm_inits = 0;
-  memset(&rtm->rtm_rmx, 0, sizeof(rtm->rtm_rmx));
-
-  if (family == AF_INET) {
-    struct sockaddr_in sin;
-    memset(&sin, 0, sizeof(struct sockaddr_in));
-    sin.sin_family = AF_INET;
-    sin.sin_len = sizeof(struct sockaddr_in);
-    rtmAppendAddr(rtm, rtm_max_size, RTA_DST, &sin);
-    rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &sin);
-  } else if (family == AF_INET6) {
-    struct sockaddr_in6 sin6;
-    memset(&sin6, 0, sizeof(struct sockaddr_in6));
-    sin6.sin6_family = AF_INET6;
-    sin6.sin6_len = sizeof(struct sockaddr_in6);
-    rtmAppendAddr(rtm, rtm_max_size, RTA_DST, &sin6);
-    rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &sin6);
-  } else {
-    logger.warning() << "Unsupported address family";
+  int mib[] = { CTL_NET, PF_ROUTE, 0, family, NET_RT_DUMP, 0 };
+  int miblen = sizeof(mib)/sizeof(int);
+  size_t bufsize;
+  if (sysctl(mib, miblen, nullptr, &bufsize, nullptr, 0) < 0) {
+    logger.warning() << "Failed to get routing table size:" << strerror(errno);
     return false;
   }
 
-  // Send the routing message into the kernel.
-  int len = write(m_rtsock, rtm, rtm->rtm_msglen);
-  if (len == rtm->rtm_msglen) {
-    return true;
+  // Allocate memory for the routing table
+  bufsize += 4096;
+  char* buffer = (char*)malloc(bufsize);
+  auto guard = qScopeGuard([buffer]() { free(buffer); });
+  if (sysctl(mib, miblen, buffer, &bufsize, nullptr, 0) < 0) {
+    logger.warning() << "Failed to fetch routing table:" << strerror(errno);
+    return false;
   }
-  logger.warning() << "Failed to request routing table:" << strerror(errno);
-  return false;
+
+  struct rt_msghdr* rtm = reinterpret_cast<struct rt_msghdr*>(buffer);
+  struct rt_msghdr* end = reinterpret_cast<struct rt_msghdr*>(buffer + bufsize);
+  while (rtm < end) {
+    // Ensure the message fits within the buffer
+    if (RTMSG_NEXT(rtm) > end) {
+      logger.debug() << "Routing message overflowed with length"
+                     << rtm->rtm_msglen;
+      break;
+    }
+    if (rtm->rtm_type == RTM_GET) {
+      QByteArray message((char*)rtm, rtm->rtm_msglen);
+      message.remove(0, sizeof(struct rt_msghdr));
+      handleRtmUpdate(rtm, message);
+    }
+
+    rtm = RTMSG_NEXT(rtm);
+  }
+  return true;
 }
 
 bool MacosRouteMonitor::insertRoute(const IPAddress& prefix, int flags) {
