@@ -12,6 +12,7 @@
 #include <libkern/OSAtomic.h>
 
 #include <net/if.h>
+#include <net/route.h>
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
@@ -29,7 +30,11 @@
                viaInterface:(nw_interface_t)interface
                 withGateway:(NSData*)gateway;
 
-@property (retain) NETransparentProxyNetworkSettings* settings;
+@property (strong) NETransparentProxyNetworkSettings* settings;
+@property (strong) RouteManager* routeManager;
+@property (strong) nw_interface_t ipv4Interface;
+@property (strong) nw_interface_t ipv6Interface;
+@property (strong) nw_interface_t vpnInterface;
 
 @end
 
@@ -37,23 +42,22 @@
     std::atomic_uint64_t m_handledTcpFlows;
     std::atomic_uint64_t m_handledUdpFlows;
     std::atomic_uint64_t m_handledUnknown;
-
-    // Detection of the VPN interface
-    RouteManager *      m_routeManager;
-    struct sockaddr_in  m_vpnIpv4Addr;
-    struct sockaddr_in6 m_vpnIpv6Addr;
-    nw_interface_t      m_vpnInterface;
-    nw_interface_t      m_ipv4Interface;
-    nw_interface_t      m_ipv6Interface;
 }
 
 - (id)init{
   self = [super init];
+  NSLog(@"init proxy class");
+
   m_handledTcpFlows = 0;
   m_handledUdpFlows = 0;
   m_handledUnknown = 0;
-  NSLog(@"init proxy class");
+
   return self;
+}
+
+- (void)dealloc {
+  NSLog(@"destroy proxy class");
+  [super dealloc];
 }
 
 + (NSError*) makeError:(NSInteger)code
@@ -110,35 +114,9 @@
   m_handledUdpFlows = 0;
   m_handledUnknown = 0;
 
-  NSString* deviceIpv4Addr = [options objectForKey:@"deviceIpv4Address"];
-  memset(&m_vpnIpv4Addr, 0, sizeof(m_vpnIpv4Addr));
-  if (!deviceIpv4Addr) {
-    completionHandler([VPNSplitTunnelProvider makeError:1 withDescription: @"No device IPv4 address"]);
-    return;
-  } else {
-    NSString* addr = [deviceIpv4Addr componentsSeparatedByString:@"/"][0];
-    m_vpnIpv4Addr.sin_family = AF_INET;
-    m_vpnIpv4Addr.sin_len = sizeof(struct sockaddr_in);
-    m_vpnIpv4Addr.sin_port = 0;
-    inet_pton(AF_INET, addr.UTF8String, &m_vpnIpv4Addr.sin_addr.s_addr);
-  }
-
-  NSString* deviceIpv6Addr = [options objectForKey:@"deviceIpv6Address"];
-  memset(&m_vpnIpv6Addr, 0, sizeof(m_vpnIpv6Addr));
-  if (!deviceIpv6Addr) {
-    completionHandler([VPNSplitTunnelProvider makeError:1 withDescription: @"No device IPv6 address"]);
-    return;
-  } else {
-    NSString* addr = [deviceIpv6Addr componentsSeparatedByString:@"/"][0];
-    m_vpnIpv6Addr.sin6_family = AF_INET6;
-    m_vpnIpv6Addr.sin6_len = sizeof(struct sockaddr_in6);
-    m_vpnIpv6Addr.sin6_port = 0;
-    inet_pton(AF_INET6, addr.UTF8String, &m_vpnIpv6Addr.sin6_addr.s6_addr);
-  }
-
   // Start the route manager
-  m_routeManager = [[RouteManager new] initWithRunLoop:[NSRunLoop currentRunLoop]];
-  [m_routeManager startWithDelegate:self];
+  _routeManager = [RouteManager new];
+  [self.routeManager startWithDelegate:self];
 
   self.settings = [[NETransparentProxyNetworkSettings alloc] initWithTunnelRemoteAddress:self.protocolConfiguration.serverAddress];
 
@@ -190,8 +168,41 @@
 - (void)stopProxyWithReason:(NEProviderStopReason)reason 
           completionHandler:(void (^)(void))completionHandler {
     NSLog(@"stopping proxy");
-    [m_routeManager release];
-    m_routeManager = nil;
+
+    // Remove captured default routes, if known.
+    if (self.ipv4Interface) {
+      struct sockaddr_in sin;
+      memset(&sin, 0, sizeof(sin));
+      sin.sin_family = AF_INET;
+      sin.sin_len = sizeof(sin);
+      NSData* dst = [NSData dataWithBytes:&sin length:sizeof(sin)];
+
+      [self.routeManager rtmSendRoute:RTM_DELETE
+                        toDestination:dst
+                           withPrefix:0
+                         viaInterface:nw_interface_get_index(self.ipv4Interface)
+                          withGateway:nil
+                             andFlags:RTF_IFSCOPE];
+
+      self.ipv4Interface = nil;
+    }
+    if (self.ipv6Interface) {
+      struct sockaddr_in6 sin6;
+      memset(&sin6, 0, sizeof(sin6));
+      sin6.sin6_family = AF_INET;
+      sin6.sin6_len = sizeof(sin6);
+      NSData* dst = [NSData dataWithBytes:&sin6 length:sizeof(sin6)];
+
+      [self.routeManager rtmSendRoute:RTM_DELETE
+                        toDestination:dst
+                           withPrefix:0
+                         viaInterface:nw_interface_get_index(self.ipv6Interface)
+                          withGateway:nil
+                             andFlags:RTF_IFSCOPE];
+
+      self.ipv6Interface = nil;
+    }
+    self.routeManager = nil;
 
     NSLog(@"handled tcp flows: %lld", std::atomic_load(&m_handledTcpFlows));
     NSLog(@"handled udp flows: %lld", std::atomic_load(&m_handledUdpFlows));
@@ -219,7 +230,7 @@
 
   if ([flow isKindOfClass:[NEAppProxyTCPFlow class]]) {
     NEAppProxyTCPFlow* tcpFlow = (NEAppProxyTCPFlow*)flow;
-    BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow withInterface:m_ipv4Interface];
+    BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow withInterface:self.ipv4Interface];
     [handler startBypass:tcpFlow completionHandler:^(NSError* error){
       if (error) {
         NSLog(@"flow closed with error: %@", error);
@@ -244,41 +255,102 @@
 }
 
 - (void)handleAppMessage:(NSData *) messageData
-       completionHandler:(void (^)(NSData* responseData)) completionHandler {
+       completionHandler:(void (^)(NSData*)) completionHandler {
     NSError* error;
     NSKeyedUnarchiver* msg = [NSKeyedUnarchiver alloc];
     [msg initForReadingFromData:messageData
                           error:&error];
     if (error != nil) {
         NSLog(@"app message error: %@", error.localizedDescription);
-        completionHandler(nil);
+        [VPNSplitTunnelProvider sendAppError:error completionHandler:completionHandler];
         return;
     }
     NSString* action = [msg decodeObjectOfClass:NSString.class
                                          forKey:@"action"];
     if (!action) {
         NSLog(@"app message invalid action");
-        completionHandler(nil);
+        NSError* error = [VPNSplitTunnelProvider makeError:1 withDescription:@"invalid app message invalid"];
+        [VPNSplitTunnelProvider sendAppError:error completionHandler:completionHandler];
         return;
     }
     [msg finishDecoding];
 
     NSLog(@"app message: %@", action);
-    completionHandler(nil);
+    [VPNSplitTunnelProvider sendAppResponse:nil completionHandler:completionHandler];
+}
+
++ (void)sendAppResponse:(NSData*) responseData
+      completionHandler:(void (^)(NSData*)) completionHandler {
+  if (!completionHandler) {
+    return;
+  }
+  completionHandler(responseData);
+}
+
++ (void)sendAppError:(NSError*) error
+   completionHandler:(void (^)(NSData*)) completionHandler {
+  if (!completionHandler) {
+    return;
+  }
+  NSKeyedArchiver* encoder = [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
+  [encoder encodeObject:error forKey:@"error"];
+  [encoder finishEncoding];
+  completionHandler(encoder.encodedData);
 }
 
 - (void)defaultRouteChanged:(int)family
                viaInterface:(nw_interface_t)iface
                 withGateway:(NSData*)gateway {
   if (family == AF_INET) {
-    m_ipv4Interface = iface;
+    int action = RTM_ADD;
+    int ifindex = 0;
+
+    struct sockaddr_in dst;
+    memset(&dst, 0, sizeof(dst));
+    dst.sin_family = AF_INET;
+    dst.sin_len = sizeof(dst);
+    NSData* dstAddr = [NSData dataWithBytes:&dst
+                                     length:sizeof(dst)];
+
     if (iface) {
       NSLog(@"default ipv4 route via %s", nw_interface_get_name(iface));
+
+      ifindex = nw_interface_get_index(iface);
+      if (!self.ipv4Interface) {
+        action = RTM_ADD;
+      } else if (ifindex == nw_interface_get_index(self.ipv4Interface)) {
+        action = RTM_CHANGE;
+      } else {
+        action = RTM_ADD;
+        [self.routeManager rtmSendRoute:RTM_DELETE
+                          toDestination:dstAddr
+                            withPrefix:0
+                          viaInterface:nw_interface_get_index(self.ipv4Interface)
+                            withGateway:nil
+                              andFlags:RTF_IFSCOPE];
+      }
+
+      self.ipv4Interface = iface;
     } else {
       NSLog(@"default ipv4 route lost");
+      if (self.ipv4Interface) {
+        action = RTM_DELETE;
+        ifindex = nw_interface_get_index(self.ipv4Interface);
+        self.ipv4Interface = nil;
+      }
+    }
+
+    // Update the cloned IPv4 default route.
+    if (ifindex != 0) {
+      [self.routeManager rtmSendRoute:action
+                        toDestination:dstAddr
+                          withPrefix:0
+                        viaInterface:ifindex
+                          withGateway:gateway
+                            andFlags:RTF_IFSCOPE];
     }
   } else if (family == AF_INET6) {
-    m_ipv6Interface = iface;
+    //m_ipv6Interface = iface;
     if (iface) {
       NSLog(@"default ipv6 route via %s", nw_interface_get_name(iface));
     } else {

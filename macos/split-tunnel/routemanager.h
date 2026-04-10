@@ -5,6 +5,8 @@
 #import <Foundation/Foundation.h>
 #import <Network/Network.h>
 
+struct sockaddr;
+
 @protocol RouteManagerDelegate
 - (void)defaultRouteChanged:(int)family
                viaInterface:(nw_interface_t)interface
@@ -12,7 +14,14 @@
 @end
 
 @interface RouteManager : NSObject
-- (id)initWithRunLoop:(NSRunLoop*)runloop;
+- (id)init;
 
-- (void)startWithDelegate:(id)delegate;
+- (void)startWithDelegate:(NSObject<RouteManagerDelegate>*)delegate;
+
+- (void) rtmSendRoute:(int)action
+        toDestination:(NSData*)dst
+           withPrefix:(unsigned int)plen
+         viaInterface:(unsigned int)ifindex
+          withGateway:(NSData*)gateway
+             andFlags:(int)flags;
 @end
