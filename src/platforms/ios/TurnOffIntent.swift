@@ -29,6 +29,7 @@ struct TurnOffIntent: AppIntent {
     }
     if #available(iOS 17.2, *) {
       dialog = IntentDialog(full: responseText,
+                            supporting: responseText,
                             systemImageName: responseImage)
     } else {
       dialog = IntentDialog(responseText)
