@@ -18,8 +18,10 @@ Example:
 """
 
 import argparse
+import glob
 import json
 import os
+import re
 import sys
 import xml.etree.ElementTree as ET
 from generate_strings import parseYAMLTranslationStrings
@@ -85,6 +87,10 @@ def build_localizable_xcstrings(main_strings, locale_translations):
         for locale, translations in locale_translations.items():
             translated = translations.get(string_id)
             if translated:
+                for placeholder in re.findall(r'%.{0,2}@', english_value):
+                    if placeholder not in translated:
+                        print(f"Error: placeholder '{placeholder}' from missing from {locale} translation of '{string_id}'")
+                        exit(1)
                 localizations[normalize_locale(locale)] = {
                     'stringUnit': {
                         'state': 'translated',
@@ -140,6 +146,17 @@ def build_appshortcuts_xcstrings(activate_strings, deactivate_strings, locale_tr
 
     return {'sourceLanguage': 'en', 'strings': strings, 'version': '1.1'}
 
+def find_localized_string_resources_in_swift():
+      """Find all LocalizedStringResource string literals in Swift files."""
+      repo_root = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+      pattern = re.compile(r'LocalizedStringResource\("([^"]*)"')
+      results = []
+      for swift_file in glob.glob(f'{repo_root}/**/*.swift', recursive=True):
+          with open(swift_file, 'r', encoding='utf-8') as f:
+              content = f.read()
+          for match in pattern.finditer(content):
+              results.append(match.group(1))
+      return results
 
 def main():
     parser = argparse.ArgumentParser(
@@ -177,6 +194,18 @@ def main():
         locale_translations[locale] = load_xliff_translations(xliff_path, locale == 'en')
 
     os.makedirs(args.output_dir, exist_ok=True)
+
+    # Confirm each main string is in Swift code. Confirm that all keys in Swift code are in our translations
+    keys_used_in_swift = find_localized_string_resources_in_swift()
+    string_ids_from_main = [item['string_id'] for item in main_strings.values()]
+    for string_id in string_ids_from_main:
+        if string_id not in keys_used_in_swift:
+            print(f"Translation not used in Swift files: {string_id}")
+            exit(1)
+    for string_id in keys_used_in_swift:
+        if string_id not in string_ids_from_main:
+            print(f"Key in Swift files not found in VPN translation pipeline: {string_id}")
+            exit(1)
 
     # Write Localizable.xcstrings
     localizable = build_localizable_xcstrings(main_strings, locale_translations)
