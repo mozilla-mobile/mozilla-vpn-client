@@ -1079,7 +1079,7 @@ iosAppIntentsMain:
   turnOffAction:
     value: Turn Off Mozilla VPN
     comment: Title used by system to offer turning off VPN
-  turnOnADescription:
+  turnOnDescription:
     value: Activate the Mozilla VPN connection
     comment: Description used to provide more context in Shortcuts and other places
   turnOffDescription:

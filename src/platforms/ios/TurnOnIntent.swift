@@ -6,9 +6,9 @@ import AppIntents
 
 @available(iOS 16.0, *)
 struct TurnOnIntent: AppIntent {
-  static let title: LocalizedStringResource = "Turn On Mozilla VPN"
+  static let title = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnAction", defaultValue: "Turn On Mozilla VPN")
 
-  static let description: LocalizedStringResource = "Activate the Mozilla VPN connection"
+  static let description = IntentDescription(LocalizedStringResource("vpn.iosAppIntentsMain.turnOnDescription", defaultValue: "Activate the Mozilla VPN connection"))
 
   static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
 
@@ -29,19 +29,19 @@ struct TurnOnIntent: AppIntent {
       case .success(let entryCity, let exitCity):
         if let exitCity = exitCity,!exitCity.isEmpty {
           if let entryCity = entryCity, !entryCity.isEmpty {
-            responseText = LocalizedStringResource("Mozilla VPN connected through \(exitCity) via \(entryCity)")
+            responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmationMultiHop", defaultValue: "Mozilla VPN connected through \(exitCity) via \(entryCity)")
           } else {
-            responseText = LocalizedStringResource("Mozilla VPN connected through \(exitCity)")
+            responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmationSingleHop", defaultValue: "Mozilla VPN connected through \(exitCity)")
           }
         } else {
-          responseText = LocalizedStringResource("Mozilla VPN connected")
+          responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmation", defaultValue: "Mozilla VPN connected")
         }
         responseImage = TurnOnIntent.systemImageName
       case .errorNoSession:
-        responseText = LocalizedStringResource("Error turning on Mozilla VPN")
+        responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnError", defaultValue: "Error turning on Mozilla VPN")
         responseImage = "exclamationmark.triangle"
       case .errorAlreadyActive:
-        responseText = LocalizedStringResource("VPN is already connected")
+        responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnAlreadyConnectedError", defaultValue: "VPN is already connected")
         responseImage = "exclamationmark.triangle"
 
     }
