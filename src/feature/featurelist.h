@@ -253,3 +253,10 @@ FEATURE(webExtension,    // Feature ID
         QStringList(),         // feature dependencies
         byPlatform({           // default value
                     .windows = true}))
+
+FEATURE(networkExtension,               // Feature ID
+        "networkExtension",             // Feature name
+        byPlatform({.macos = true}),    // Can be flipped on
+        FeatureCallback_false,          // Can be flipped off
+        QStringList(),                  // feature dependencies
+        FeatureCallback_false)          // default value
