@@ -474,17 +474,17 @@ QJsonObject Daemon::getStatus() {
   QJsonObject json;
   logger.debug() << "Status request";
 
-  if (!wgutils()->interfaceExists() || m_connections.isEmpty()) {
-    json.insert("connected", QJsonValue(false));
-    return json;
-  }
-
   json.insert("version", QCoreApplication::applicationVersion());
   QJsonArray features;
   for (const QString& f: getFeatures()) {
     features.append(f);
   }
   json.insert("features", features);
+
+  if (!wgutils()->interfaceExists() || m_connections.isEmpty()) {
+    json.insert("connected", QJsonValue(false));
+    return json;
+  }
 
   const ConnectionState& connection = m_connections.first();
   QList<WireguardUtils::PeerStatus> peers = wgutils()->getPeerStatus();
