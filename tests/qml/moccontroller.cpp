@@ -93,3 +93,5 @@ void Controller::forceDaemonSilentServerSwitch() {}
 void Controller::handleBackendFailure(ErrorCode code) {}
 
 void Controller::startKeyRegeneration() {}
+
+bool Controller::splitTunnelSupported() const { return true; }
