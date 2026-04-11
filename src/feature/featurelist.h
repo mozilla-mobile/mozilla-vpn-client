@@ -181,13 +181,6 @@ FEATURE(shareLogs,              // Feature ID
         QStringList(),          // feature dependencies
         FeatureCallback_shareLogs)
 
-FEATURE(splitTunnel,            // Feature ID
-        "Split-tunnel",         // Feature name
-        FeatureCallback_true,   // Can be flipped on
-        FeatureCallback_false,  // Can be flipped off
-        QStringList(),          // feature dependencies
-        FeatureCallback_splitTunnel)
-
 FEATURE(startOnBoot,            // Feature ID
         "Start on boot",        // Feature name
         FeatureCallback_true,   // Can be flipped on

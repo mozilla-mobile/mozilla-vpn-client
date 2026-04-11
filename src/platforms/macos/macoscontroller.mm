@@ -348,7 +348,7 @@ void MacOSController::cleanupBackendLogs() {
   [remoteObject() cleanupBackendLogs];
 }
 
-bool MacOSController::splitTunnelSupported() {
+bool MacOSController::splitTunnelSupported() const {
   auto loader = static_cast<MacosSplitTunnelLoader*>(m_loader);
   return (loader.manager != nil) && loader.manager.enabled;
 }

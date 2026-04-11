@@ -76,7 +76,7 @@ class ControllerImpl : public QObject {
   virtual bool multihopSupported() { return false; }
 
   // Whether the controller supports split tunneling
-  virtual bool splitTunnelSupported() { return false; }
+  virtual bool splitTunnelSupported() const { return false; }
 
   virtual bool silentServerSwitchingSupported() const { return true; }
 

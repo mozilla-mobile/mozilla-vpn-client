@@ -9,10 +9,6 @@
 #  include "platforms/android/androidcommons.h"
 #endif
 
-#ifdef MZ_WINDOWS
-#  include "platforms/windows/daemon/windowssplittunnel.h"
-#endif
-
 #ifdef MZ_LINUX
 #  include <QProcessEnvironment>
 
@@ -87,18 +83,6 @@ bool FeatureCallback_inAppAuthentication() {
   return true;
 #else
   // Android, iOS, Windows, macOS and Linux
-  return false;
-#endif
-}
-
-bool FeatureCallback_splitTunnel() {
-#if defined(MZ_ANDROID) || defined(MZ_WASM) || defined(UNIT_TEST) || defined(MZ_MACOS)
-  return true;
-#elif defined(MZ_WINDOWS)
-  return !WindowsSplitTunnel::detectConflict();
-#elif defined(MZ_LINUX) && !defined(MZ_FLATPAK)
-  return true;
-#else
   return false;
 #endif
 }
