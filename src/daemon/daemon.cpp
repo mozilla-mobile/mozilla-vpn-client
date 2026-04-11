@@ -479,6 +479,13 @@ QJsonObject Daemon::getStatus() {
     return json;
   }
 
+  json.insert("version", QCoreApplication::applicationVersion());
+  QJsonArray features;
+  for (const QString& f: getFeatures()) {
+    features.append(f);
+  }
+  json.insert("features", features);
+
   const ConnectionState& connection = m_connections.first();
   QList<WireguardUtils::PeerStatus> peers = wgutils()->getPeerStatus();
   for (const WireguardUtils::PeerStatus& status : peers) {

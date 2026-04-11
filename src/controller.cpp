@@ -35,9 +35,7 @@
 #include "tasks/controlleraction/taskcontrolleraction.h"
 #include "taskscheduler.h"
 
-#if defined(MZ_WINDOWS)
-#  include "platforms/windows/windowscontroller.h"
-#elif defined(MZ_FLATPAK)
+#if defined(MZ_FLATPAK)
 #  include "platforms/linux/netmgrcontroller.h"
 #elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxcontroller.h"
@@ -108,6 +106,10 @@ QString Controller::useLocalSocketPath() const {
   }
 #endif
 
+#if defined(MZ_WINDOWS)
+  return Constants::WINDOWS_DAEMON_PATH;
+#endif
+
   // Otherwise, we will need some other controller.
   return QString();
 }
@@ -132,9 +134,7 @@ void Controller::initialize() {
     m_impl.reset(new LocalSocketController(path));
   } else {
     // We must use a specialized platform controller
-#if defined(MZ_WINDOWS)
-    m_impl.reset(new WindowsController());
-#elif defined(MZ_FLATPAK)
+#if defined(MZ_FLATPAK)
     m_impl.reset(new NetmgrController());
 #elif defined(MZ_LINUX)
     m_impl.reset(new LinuxController());

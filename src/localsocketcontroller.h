@@ -35,6 +35,8 @@ class LocalSocketController : public ControllerImpl {
 
   bool multihopSupported() override { return true; }
 
+  bool splitTunnelSupported() const override { return m_splitTunnelSupported; }
+
  private:
   // For messages that are expected to generate a synchronous response, this
   // defines the default time that we will wait before assuming an error in
@@ -82,6 +84,8 @@ class LocalSocketController : public ControllerImpl {
 
   QTimer m_initializingTimer;
   uint32_t m_initializingInterval = 0;
+
+  bool m_splitTunnelSupported = false;
 
   // When a message to the daemon expects an immediate response, these
   // are used to trigger a timeout error if the response never arrives.

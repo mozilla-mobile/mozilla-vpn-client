@@ -35,6 +35,8 @@ class Daemon : public QObject {
   virtual bool activate(const InterfaceConfig& config);
   virtual bool deactivate(bool emitSignals);
 
+  virtual QStringList getFeatures() const { return QStringList(); } 
+
   QJsonObject getStatus();
   QString logs();
   QString interfaceName() const;
