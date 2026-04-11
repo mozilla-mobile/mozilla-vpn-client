@@ -100,7 +100,7 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
 }
 
 QStringList WindowsDaemon::getFeatures() const {
-  QJsonArray list;
+  QStringList list;
   if (!WindowsSplitTunnel::detectConflict()) {
     list.append("splitTunnel");
   }
