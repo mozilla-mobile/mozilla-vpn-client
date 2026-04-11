@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -256,6 +257,14 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "status") {
+    if (obj.contains("features")) {
+      QJsonArray arr = obj.value("features").toArray();
+      QStringList features;
+      for (auto i = arr.cbegin(); i != arr.cend(); i++) {
+        features.append(i->toString());
+      }
+      m_splitTunnelSupported = features.contains("splitTunnel");
+    }
     emitStatusFromJson(obj);
     return;
   }
