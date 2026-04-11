@@ -45,6 +45,9 @@ class MacOSController final : public ControllerImpl {
   NSString* plist() const;
   NSString* machServiceName() const;
 
+  bool sendSplitTunnelMessage(const QString& actions,
+                              const QStringList& apps = QStringList()) const;
+
  private:
   QString plistName() const;
 #ifdef __OBJC__

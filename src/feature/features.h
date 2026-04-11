@@ -336,6 +336,14 @@ inline const OverridableFeature webExtension = {
     },
 };
 
+const OverridableFeature networkExtension = {
+    .id = "networkExtension",
+    .name = "Network Extension",
+    .evaluator = +[] { return false; },
+    .canFlipOn = +[] { return Platform::macos; },
+    .canFlipOff = +[] { return Platform::macos; },
+};
+
 }  // namespace Feature
 
 #endif  // FEATURES_H

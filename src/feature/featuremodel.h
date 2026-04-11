@@ -32,6 +32,7 @@ inline const AnyFeature s_exposedFeatures[] = {
     ref(inAppAccountCreate),
     ref(inAppAuthentication),
     ref(multiHop),
+    ref(networkExtension),
     ref(notificationControl),
     ref(recommendedServers),
     ref(replacerAddon),
