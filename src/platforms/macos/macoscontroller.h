@@ -34,7 +34,7 @@ class MacOSController final : public ControllerImpl {
 
   bool multihopSupported() override { return true; }
 
-  bool splitTunnelSupported() override;
+  bool splitTunnelSupported() const override;
 
  private slots:
   void upgradeService();

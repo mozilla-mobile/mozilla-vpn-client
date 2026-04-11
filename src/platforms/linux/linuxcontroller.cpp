@@ -111,7 +111,7 @@ void LinuxController::deactivate() {
           &LinuxController::operationCompleted);
 }
 
-bool LinuxController::splitTunnelSupported() {
+bool LinuxController::splitTunnelSupported() const {
   static int splitTunnelSupported = -1;
   if (splitTunnelSupported >= 0) {
     return splitTunnelSupported;
