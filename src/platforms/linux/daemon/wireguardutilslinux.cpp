@@ -49,9 +49,7 @@ constexpr uint32_t WG_ROUTE_TABLE = 0xca6c;
  * classifiers aren't important so long as they are unique.
  */
 constexpr const char* VPN_EXCLUDE_CGROUP = "/mozvpn.exclude";
-constexpr const char* VPN_BLOCK_CGROUP = "/mozvpn.block";
 constexpr uint32_t VPN_EXCLUDE_CLASS_ID = 0x00110011;
-constexpr uint32_t VPN_BLOCK_CLASS_ID = 0x00220022;
 
 static void nlmsg_append_attr(struct nlmsghdr* nlmsg, size_t maxlen,
                               int attrtype, const void* attrdata,
