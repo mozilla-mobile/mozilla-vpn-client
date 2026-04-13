@@ -14,6 +14,7 @@
 #include <netinet/in.h>
 #include <sys/types.h>
 #include <sys/socket.h>
+#include <sys/sysctl.h>
 
 #if __has_feature(objc_arc)
 # error "RouteManager must be compiled with manual reference counting"
@@ -401,49 +402,29 @@ static int memcmpzero(const void* data, size_t len) {
 }
 
 - (void)rtmFetchRoutes:(int)family {
-  constexpr size_t rtm_max_size =
-      sizeof(struct rt_msghdr) + sizeof(struct sockaddr_storage) * 2;
-  char buf[rtm_max_size] = {0};
-  struct rt_msghdr* rtm = reinterpret_cast<struct rt_msghdr*>(buf);
+  int mib[] = { CTL_NET, PF_ROUTE, 0, family, NET_RT_DUMP, 0 };
+  int miblen = sizeof(mib)/sizeof(int);
+  size_t bufsize = 0;
 
-  rtm->rtm_msglen = sizeof(struct rt_msghdr);
-  rtm->rtm_version = RTM_VERSION;
-  rtm->rtm_type = RTM_GET;
-  rtm->rtm_flags = RTF_UP | RTF_GATEWAY;
-  rtm->rtm_addrs = 0;
-  rtm->rtm_pid = 0;
-  rtm->rtm_seq = m_rtseq++;
-  rtm->rtm_errno = 0;
-  rtm->rtm_inits = 0;
-  memset(&rtm->rtm_rmx, 0, sizeof(rtm->rtm_rmx));
+  // Get the size of the routing table.
+  if (sysctl(mib, miblen, nullptr, &bufsize, nullptr, 0) < 0) {
+    NSLog(@"Failed to get routing table size: %s", strerror(errno));
+    return;
+  }
+  // Add a little extra in case of a race condition.
+  bufsize += 4096;
 
-  if (family == AF_INET) {
-    struct sockaddr_in sin;
-    memset(&sin, 0, sizeof(struct sockaddr_in));
-    sin.sin_family = AF_INET;
-    sin.sin_len = sizeof(struct sockaddr_in);
-    rtmAppendAddr(rtm, rtm_max_size, RTA_DST, &sin);
-    rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &sin);
-  } else if (family == AF_INET6) {
-    struct sockaddr_in6 sin6;
-    memset(&sin6, 0, sizeof(struct sockaddr_in6));
-    sin6.sin6_family = AF_INET6;
-    sin6.sin6_len = sizeof(struct sockaddr_in6);
-    rtmAppendAddr(rtm, rtm_max_size, RTA_DST, &sin6);
-    rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &sin6);
-  } else {
-    NSLog(@"Failed to request routing table: unsupported address family");
+  // Fetch a copy of the routing table from the kernel.
+  char* buffer = (char*)malloc(bufsize);
+  if (sysctl(mib, miblen, buffer, &bufsize, nullptr, 0) < 0) {
+    NSLog(@"Failed to feetch routing table: %s", strerror(errno));
+    free(buffer);
     return;
   }
 
-  // Send the routing message into the kernel.
-  CFDataRef data = CFDataCreate(kCFAllocatorDefault, (const UInt8*)rtm, rtm->rtm_msglen);
-  CFSocketError err = CFSocketSendData(m_socket, NULL, data, 1);
-  CFRelease(data);
-  if (err != kCFSocketSuccess) {
-    NSLog(@"Failed to request routing table: %d", (int)err);
-    return;
-  }
+  [self rtDataCallback:[NSData dataWithBytesNoCopy:buffer
+                                     length:bufsize
+                               freeWhenDone:true]];
 }
 
 - (void) rtmSendRoute:(int)action
