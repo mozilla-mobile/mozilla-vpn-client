@@ -56,6 +56,8 @@ target_link_libraries(split-tunnel PRIVATE ${FW_NW_EXTENSION})
 target_sources(split-tunnel PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/bypasstcpflow.h
     ${CMAKE_CURRENT_SOURCE_DIR}/bypasstcpflow.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/bypassudpflow.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/bypassudpflow.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/main.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/routemanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/routemanager.mm

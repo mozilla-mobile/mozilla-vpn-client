@@ -5,6 +5,7 @@
 #import <NetworkExtension/NetworkExtension.h>
 
 #import "bypasstcpflow.h"
+#import "bypassudpflow.h"
 #import "routemanager.h"
 
 #include <atomic>
@@ -221,6 +222,9 @@
   NSLog(@"metadata sourceAppUniqueIdentifier: %@", flow.metaData.sourceAppUniqueIdentifier);
   NSLog(@"metadata sourceAppSigningIdentifier: %@", flow.metaData.sourceAppSigningIdentifier);
   NSLog(@"metadata filterFlowIdentifier: %@", flow.metaData.filterFlowIdentifier);
+  if (flow.remoteHostname) {
+    NSLog(@"metadata remoteHostname: %@", flow.remoteHostname);
+  }
 #endif
 
   // For the purposes of testing. Only handle flows from com.apple.safari
@@ -231,6 +235,11 @@
   if ([flow isKindOfClass:[NEAppProxyTCPFlow class]]) {
     NEAppProxyTCPFlow* tcpFlow = (NEAppProxyTCPFlow*)flow;
     BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow withInterface:self.ipv4Interface];
+    if (!handler) {
+      // No handling required for this flow.
+      return NO;
+    }
+
     [handler startBypass:tcpFlow completionHandler:^(NSError* error){
       if (error) {
         NSLog(@"flow closed with error: %@", error);
@@ -242,7 +251,23 @@
     std::atomic_fetch_add(&m_handledTcpFlows, 1);
     return YES;
   } else if ([flow isKindOfClass:[NEAppProxyUDPFlow class]]) {
+    NEAppProxyUDPFlow* udpFlow = (NEAppProxyUDPFlow*)flow;
+    BypassUdpFlow* handler = [BypassUdpFlow createBypass:udpFlow withInterface:self.ipv4Interface];
+    if (!handler) {
+      // No handling required for this flow.
+      return NO;
+    }
+
+    [handler startBypass:^(NSError* error){
+      if (error) {
+        NSLog(@"flow closed with error: %@", error);
+      } else {
+        NSLog(@"flow closed succefully");
+      }
+    }];
+
     std::atomic_fetch_add(&m_handledUdpFlows, 1);
+    return YES;
   } else {
     std::atomic_fetch_add(&m_handledUnknown, 1);
   }
