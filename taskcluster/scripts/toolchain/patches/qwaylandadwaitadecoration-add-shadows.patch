@@ -1,8 +1,8 @@
 diff --git a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
-index ca1f0af0..237294cf 100644
+index ca1f0af0..4186f9f0 100644
 --- a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
 +++ b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
-@@ -124,6 +124,97 @@ void QWaylandAdwaitaDecoration::paint(QPaintDevice *device)
+@@ -124,6 +124,112 @@ void QWaylandAdwaitaDecoration::paint(QPaintDevice *device)
      QPainter p(device);
      p.setRenderHint(QPainter::Antialiasing);
  
@@ -58,21 +58,36 @@ index ca1f0af0..237294cf 100644
 +			surfaceRect.width() - frameRect.right(), frameRect.height()), grad);
 +    }
 +
++    // The top corners of this decoration are rounded when the window is neither
++    // maximized nor tiled. The corner shadow gradients must be centered at the
++    // arc center (not the rectangular frame corner) so they follow the curve
++    // and correctly cover the transparent "bite" area carved out by the rounding.
++    const bool hasRoundedTopCorners =
++        !(waylandWindow()->windowStates() & Qt::WindowMaximized)
++        && waylandWindow()->toplevelWindowTilingStates() == QWaylandWindow::WindowNoState;
++    const qreal topCornerRadius = hasRoundedTopCorners ? static_cast<qreal>(ceCornerRadius) : 0.0;
++
 +    // Top-left corner
 +    if (sm.top() > 0 && sm.left() > 0) {
-+      QRadialGradient grad(frameRect.topLeft(), qMax(sm.left(), sm.top()));
-+      grad.setColorAt(0.0, shadowColor);
-+      grad.setColorAt(1.0, shadowTransparent);
-+      p.fillRect(QRectF(0.0, 0.0, frameRect.left(), frameRect.top()), grad);
++        const qreal gradRadius = qMax(sm.left(), sm.top()) + topCornerRadius;
++        QRadialGradient grad(frameRect.topLeft() + QPointF(topCornerRadius, topCornerRadius), gradRadius);
++        grad.setColorAt(0.0, shadowColor);
++        if (topCornerRadius > 0.0)
++            grad.setColorAt(topCornerRadius / gradRadius, shadowColor);
++        grad.setColorAt(1.0, shadowTransparent);
++        p.fillRect(QRectF(0.0, 0.0, frameRect.left() + topCornerRadius, frameRect.top() + topCornerRadius), grad);
 +    }
 +
 +    // Top-right corner
 +    if (sm.top() > 0 && sm.right() > 0) {
-+      QRadialGradient grad(frameRect.topRight(), qMax(sm.right(), sm.top()));
-+      grad.setColorAt(0.0, shadowColor);
-+      grad.setColorAt(1.0, shadowTransparent);
-+      p.fillRect(QRectF(frameRect.right(), 0.0,
-+			surfaceRect.width() - frameRect.right(), frameRect.top()), grad);
++        const qreal gradRadius = qMax(sm.right(), sm.top()) + topCornerRadius;
++        QRadialGradient grad(frameRect.topRight() + QPointF(-topCornerRadius, topCornerRadius), gradRadius);
++        grad.setColorAt(0.0, shadowColor);
++        if (topCornerRadius > 0.0)
++            grad.setColorAt(topCornerRadius / gradRadius, shadowColor);
++        grad.setColorAt(1.0, shadowTransparent);
++        p.fillRect(QRectF(frameRect.right() - topCornerRadius, 0.0,
++                          surfaceRect.width() - frameRect.right() + topCornerRadius, frameRect.top() + topCornerRadius), grad);
 +    }
 +
 +    // Bottom-left corner
