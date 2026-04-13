@@ -1123,6 +1123,12 @@ iosAppIntentsActivate:
   activate5:
     value: "Switch ${applicationName} on"
     comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+  activate6:
+    value: "Connect ${applicationName}"
+    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+  activate7:
+    value: "Connect to ${applicationName}"
+    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
 
 iosAppIntentsDeactivate:
   deactivate1:
@@ -1139,4 +1145,10 @@ iosAppIntentsDeactivate:
     comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
   deactivate5:
     value: "Switch ${applicationName} off"
+    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+  deactivate6:
+    value: "Disconnect ${applicationName}"
+    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
+  deactivate7:
+    value: "Disconnect from ${applicationName}"
     comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `${applicationName}`, where someone would say `Mozilla VPN`.
