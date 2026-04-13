@@ -1,8 +1,8 @@
 diff --git a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
-index ca1f0af0..4186f9f0 100644
+index ca1f0af0..5c83cd5d 100644
 --- a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
 +++ b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
-@@ -124,6 +124,112 @@ void QWaylandAdwaitaDecoration::paint(QPaintDevice *device)
+@@ -124,6 +124,115 @@ void QWaylandAdwaitaDecoration::paint(QPaintDevice *device)
      QPainter p(device);
      p.setRenderHint(QPainter::Antialiasing);
  
@@ -22,6 +22,16 @@ index ca1f0af0..4186f9f0 100644
 +    const qreal frameBottom = surfaceRect.height() - sm.bottom();
 +    const QRectF frameRect(frameLeft, frameTop, frameRight - frameLeft, frameBottom - frameTop);
 +
++    // The top corners are rounded unless the window is maximized or tiled.
++    // The straight edge shadows are shortened by topCornerRadius on each
++    // relevant end so they don't overlap the corner gradient zones.
++    // The corner gradients then cover those zones exclusively, avoiding
++    // double-painting (which would produce visibly darker squares).
++    const bool hasRoundedTopCorners =
++        !(waylandWindow()->windowStates() & Qt::WindowMaximized)
++        && waylandWindow()->toplevelWindowTilingStates() == QWaylandWindow::WindowNoState;
++    const qreal topCornerRadius = hasRoundedTopCorners ? static_cast<qreal>(ceCornerRadius) : 0.0;
++
 +    p.save();
 +
 +    // Top edge
@@ -29,7 +39,8 @@ index ca1f0af0..4186f9f0 100644
 +      QLinearGradient grad(0.0, frameRect.top(), 0.0, 0.0);
 +      grad.setColorAt(0.0, shadowColor);
 +      grad.setColorAt(1.0, shadowTransparent);
-+      p.fillRect(QRectF(frameRect.left(), 0.0, frameRect.width(), frameRect.top()), grad);
++      p.fillRect(QRectF(frameRect.left() + topCornerRadius, 0.0,
++                        frameRect.width() - 2.0 * topCornerRadius, frameRect.top()), grad);
 +    }
 +
 +    // Bottom edge
@@ -46,7 +57,8 @@ index ca1f0af0..4186f9f0 100644
 +      QLinearGradient grad(frameRect.left(), 0.0, 0.0, 0.0);
 +      grad.setColorAt(0.0, shadowColor);
 +      grad.setColorAt(1.0, shadowTransparent);
-+      p.fillRect(QRectF(0.0, frameRect.top(), frameRect.left(), frameRect.height()), grad);
++      p.fillRect(QRectF(0.0, frameRect.top() + topCornerRadius,
++                        frameRect.left(), frameRect.height() - topCornerRadius), grad);
 +    }
 +
 +    // Right edge
@@ -54,18 +66,9 @@ index ca1f0af0..4186f9f0 100644
 +      QLinearGradient grad(frameRect.right(), 0.0, surfaceRect.width(), 0.0);
 +      grad.setColorAt(0.0, shadowColor);
 +      grad.setColorAt(1.0, shadowTransparent);
-+      p.fillRect(QRectF(frameRect.right(), frameRect.top(),
-+			surfaceRect.width() - frameRect.right(), frameRect.height()), grad);
++      p.fillRect(QRectF(frameRect.right(), frameRect.top() + topCornerRadius,
++                        surfaceRect.width() - frameRect.right(), frameRect.height() - topCornerRadius), grad);
 +    }
-+
-+    // The top corners of this decoration are rounded when the window is neither
-+    // maximized nor tiled. The corner shadow gradients must be centered at the
-+    // arc center (not the rectangular frame corner) so they follow the curve
-+    // and correctly cover the transparent "bite" area carved out by the rounding.
-+    const bool hasRoundedTopCorners =
-+        !(waylandWindow()->windowStates() & Qt::WindowMaximized)
-+        && waylandWindow()->toplevelWindowTilingStates() == QWaylandWindow::WindowNoState;
-+    const qreal topCornerRadius = hasRoundedTopCorners ? static_cast<qreal>(ceCornerRadius) : 0.0;
 +
 +    // Top-left corner
 +    if (sm.top() > 0 && sm.left() > 0) {
