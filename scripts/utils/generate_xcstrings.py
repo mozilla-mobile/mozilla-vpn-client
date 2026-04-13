@@ -46,6 +46,9 @@ def load_xliff_translations(xliff_path, isEnglish):
         exit(1)
     return translations
 
+def using_app_placeholder(value):
+    return value.replace("%@",f"${{applicationName}}")
+
 SPECIAL_LOCALE_MAP = {
     'zh_CN': 'zh-Hans',
     'zh_TW': 'zh-Hant',
@@ -55,7 +58,6 @@ def normalize_locale(locale):
     if locale in SPECIAL_LOCALE_MAP:
         return SPECIAL_LOCALE_MAP[locale]
     return locale.replace('_', '-')
-
 
 def get_locales(i18n_dir):
     """Returns list of locale codes that have a mozillavpn.xliff."""
@@ -107,7 +109,7 @@ def build_localizable_xcstrings(main_strings, locale_translations):
 
 def build_phrase_section(phrase_strings, locale_translations):
     """Build the xcstrings entry for a set of Siri phrases (stringSet format)."""
-    en_values = [v for data in phrase_strings.values() for v in data['value']]
+    en_values = [using_app_placeholder(v) for data in phrase_strings.values() for v in data['value']]
 
     localizations = {
         'en': {'stringSet': {'state': 'new', 'values': en_values}}
@@ -118,10 +120,10 @@ def build_phrase_section(phrase_strings, locale_translations):
         for data in phrase_strings.values():                                                                                                                      
           translation = translations.get(data['string_id'])
           if translation:                                                                                                                                       
-              locale_values.append(translation)
-              if not f"${{applicationName}}" in translation:
-                  print(f"Missing required `${{applicationName}}` in {translation} for {locale}")
+              if not f"%@" in translation:
+                  print(f"Missing required placeholder in {translation} for {locale}")
                   exit(1)
+              locale_values.append(using_app_placeholder(translation))
 
         if locale_values:
             localizations[normalize_locale(locale)] = {
@@ -137,11 +139,11 @@ def build_appshortcuts_xcstrings(activate_strings, deactivate_strings, locale_tr
 
     if activate_strings:
         # The xcstrings key for a phrase group is the first English phrase value
-        section_key = next(iter(activate_strings.values()))['value'][0]
+        section_key = using_app_placeholder(next(iter(activate_strings.values()))['value'][0])
         strings[section_key] = build_phrase_section(activate_strings, locale_translations)
 
     if deactivate_strings:
-        section_key = next(iter(deactivate_strings.values()))['value'][0]
+        section_key = using_app_placeholder(next(iter(deactivate_strings.values()))['value'][0])
         strings[section_key] = build_phrase_section(deactivate_strings, locale_translations)
 
     return {'sourceLanguage': 'en', 'strings': strings, 'version': '1.1'}
