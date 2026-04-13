@@ -77,6 +77,7 @@ LINUX="
   -fontconfig \
   -bundled-xcb-xinput \
   -feature-qdbus \
+  -feature-qsvg \
   -feature-wayland \
   -feature-wayland-client \
   -no-feature-gssapi \
