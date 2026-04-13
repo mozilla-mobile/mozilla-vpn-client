@@ -16,6 +16,9 @@ if [[ $(echo -e "${QT_SOURCE_VERSION}\n6.10.3" | sort --version-sort | head -1) 
     patch -d ${QT_SOURCE_DIR}/qtdeclarative -p1 < ${VCS_PATH}/taskcluster/scripts/toolchain/patches/qtbug-141830-qsortfilterproxymodel.patch
 fi
 
+echo "Patching QWaylandAdwaitaDecorations to add shadows"
+patch -d ${QT_SOURCE_DIR}/qtwayland -p1 < ${VCS_PATH}/taskcluster/scripts/toolchain/patches/qwaylandadwaitadecoration-add-shadows.patch
+
 echo "Installing Qt build dependencies"
 if [ -f /etc/redhat-release ]; then
     sudo yum -y install \

@@ -1,0 +1,116 @@
+diff --git a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
+index ca1f0af0..237294cf 100644
+--- a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
++++ b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
+@@ -124,6 +124,97 @@ void QWaylandAdwaitaDecoration::paint(QPaintDevice *device)
+     QPainter p(device);
+     p.setRenderHint(QPainter::Antialiasing);
+ 
++    /*
++     * Shadow
++     *
++     */
++
++    const bool active = waylandWindow()->windowStates() & Qt::WindowActive;
++    const QColor shadowColor(0, 0, 0, active ? 100 : 40);
++    const QColor shadowTransparent(0, 0, 0, 0);
++
++    const QMargins sm = margins(ShadowsOnly);
++    const qreal frameLeft   = sm.left();
++    const qreal frameTop    = sm.top();
++    const qreal frameRight  = surfaceRect.width()  - sm.right();
++    const qreal frameBottom = surfaceRect.height() - sm.bottom();
++    const QRectF frameRect(frameLeft, frameTop, frameRight - frameLeft, frameBottom - frameTop);
++
++    p.save();
++
++    // Top edge
++    if (sm.top() > 0) {
++      QLinearGradient grad(0.0, frameRect.top(), 0.0, 0.0);
++      grad.setColorAt(0.0, shadowColor);
++      grad.setColorAt(1.0, shadowTransparent);
++      p.fillRect(QRectF(frameRect.left(), 0.0, frameRect.width(), frameRect.top()), grad);
++    }
++
++    // Bottom edge
++    if (sm.bottom() > 0) {
++      QLinearGradient grad(0.0, frameRect.bottom(), 0.0, surfaceRect.height());
++      grad.setColorAt(0.0, shadowColor);
++      grad.setColorAt(1.0, shadowTransparent);
++      p.fillRect(QRectF(frameRect.left(), frameRect.bottom(),
++			frameRect.width(), surfaceRect.height() - frameRect.bottom()), grad);
++    }
++
++    // Left edge
++    if (sm.left() > 0) {
++      QLinearGradient grad(frameRect.left(), 0.0, 0.0, 0.0);
++      grad.setColorAt(0.0, shadowColor);
++      grad.setColorAt(1.0, shadowTransparent);
++      p.fillRect(QRectF(0.0, frameRect.top(), frameRect.left(), frameRect.height()), grad);
++    }
++
++    // Right edge
++    if (sm.right() > 0) {
++      QLinearGradient grad(frameRect.right(), 0.0, surfaceRect.width(), 0.0);
++      grad.setColorAt(0.0, shadowColor);
++      grad.setColorAt(1.0, shadowTransparent);
++      p.fillRect(QRectF(frameRect.right(), frameRect.top(),
++			surfaceRect.width() - frameRect.right(), frameRect.height()), grad);
++    }
++
++    // Top-left corner
++    if (sm.top() > 0 && sm.left() > 0) {
++      QRadialGradient grad(frameRect.topLeft(), qMax(sm.left(), sm.top()));
++      grad.setColorAt(0.0, shadowColor);
++      grad.setColorAt(1.0, shadowTransparent);
++      p.fillRect(QRectF(0.0, 0.0, frameRect.left(), frameRect.top()), grad);
++    }
++
++    // Top-right corner
++    if (sm.top() > 0 && sm.right() > 0) {
++      QRadialGradient grad(frameRect.topRight(), qMax(sm.right(), sm.top()));
++      grad.setColorAt(0.0, shadowColor);
++      grad.setColorAt(1.0, shadowTransparent);
++      p.fillRect(QRectF(frameRect.right(), 0.0,
++			surfaceRect.width() - frameRect.right(), frameRect.top()), grad);
++    }
++
++    // Bottom-left corner
++    if (sm.bottom() > 0 && sm.left() > 0) {
++      QRadialGradient grad(frameRect.bottomLeft(), qMax(sm.left(), sm.bottom()));
++      grad.setColorAt(0.0, shadowColor);
++      grad.setColorAt(1.0, shadowTransparent);
++      p.fillRect(QRectF(0.0, frameRect.bottom(),
++			frameRect.left(), surfaceRect.height() - frameRect.bottom()), grad);
++    }
++
++    // Bottom-right corner
++    if (sm.bottom() > 0 && sm.right() > 0) {
++      QRadialGradient grad(frameRect.bottomRight(), qMax(sm.right(), sm.bottom()));
++      grad.setColorAt(0.0, shadowColor);
++      grad.setColorAt(1.0, shadowTransparent);
++      p.fillRect(QRectF(frameRect.right(), frameRect.bottom(),
++			surfaceRect.width()  - frameRect.right(),
++			surfaceRect.height() - frameRect.bottom()), grad);
++    }
++
++    p.restore();
++
++
+     /*
+      * Titlebar and window border
+      */
+diff --git a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration_p.h b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration_p.h
+index 34874e08..abd5c6d6 100644
+--- a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration_p.h
++++ b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration_p.h
+@@ -42,9 +42,6 @@ namespace QtWaylandClient {
+ // to Gtk3 will not work out. Possibly in future we can make a QGtk4Theme providing us
+ // what we need to paint the decorations without having to deal with the colors ourself.
+ //
+-// TODO: Implement shadows
+-
+-
+ class QWaylandAdwaitaDecoration : public QWaylandAbstractDecoration
+ {
+     Q_OBJECT
