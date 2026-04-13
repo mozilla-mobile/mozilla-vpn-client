@@ -78,7 +78,7 @@ LINUX="
   -bundled-xcb-xinput \
   -feature-qdbus \
   -feature-wayland \
-  -feature-wayland-decoration-adwaita \
+  -feature-wayland-client \
   -no-feature-gssapi \
   -no-feature-zstd \
   -xcb \
