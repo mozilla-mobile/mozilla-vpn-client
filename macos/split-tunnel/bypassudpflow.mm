@@ -9,8 +9,6 @@
 @implementation BypassUdpFlow {
   CFSocketRef          m_socket;
   CFRunLoopSourceRef   m_source;
-
-  nw_interface_t       m_vpnInterface;
 }
 
 static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRef address, const void * data, void *info) {
@@ -32,7 +30,6 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRe
   }
 
   BypassUdpFlow* bypass = [BypassUdpFlow new];
-  bypass->m_vpnInterface = interface;
   bypass.flow = flow;
 
   CFSocketContext ctx = { .info = (void *)bypass };
@@ -65,15 +62,7 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRe
 }
 
 - (void)dealloc {
-  if (m_socket) {
-    CFSocketInvalidate(m_socket);
-    CFRelease(m_socket);
-  }
-  if (m_source) {
-    CFRunLoopRemoveSource(CFRunLoopGetMain(), m_source, kCFRunLoopDefaultMode);
-    CFRelease(m_source);
-  }
-
+  [self closeConnection:nil completionHandler:nil];
   [super dealloc];
 }
 
@@ -81,37 +70,34 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRe
   if (@available(macOS 15, *)) {
     NSLog(@"bypass opening");
     [self.flow openWithLocalFlowEndpoint:self.flow.localFlowEndpoint
-                    completionHandler:^(NSError* openError){
+                       completionHandler:^(NSError* openError){
       if (openError) {
         NSLog(@"bypass open error: %@", openError);
         //nw_connection_cancel(m_connection);
         completionHandler(openError);
       } else {
-        NSLog(@"bypass data begin");
         [self handleOutbound:completionHandler];
       }
     }];
   } else if ([self.flow.localEndpoint isKindOfClass:[NWHostEndpoint class]]) {
     NSLog(@"bypass opening (legacy bound)");
     [self.flow openWithLocalEndpoint:(NWHostEndpoint*)self.flow.localEndpoint
-                completionHandler:^(NSError* openError){
+                   completionHandler:^(NSError* openError){
       if (openError) {
         NSLog(@"bypass open error: %@", openError);
         [self closeConnection:openError completionHandler:completionHandler];
       } else {
-        NSLog(@"bypass data begin");
         [self handleOutbound:completionHandler];
       }
     }];
   } else if (self.flow.localEndpoint == nil) {
     NSLog(@"bypass opening (legacy unbound)");
     [self.flow openWithLocalEndpoint:nil
-                completionHandler:^(NSError* openError){
+                   completionHandler:^(NSError* openError){
       if (openError) {
         NSLog(@"bypass open error: %@", openError);
         [self closeConnection:openError completionHandler:completionHandler];
       } else {
-        NSLog(@"bypass data begin");
         [self handleOutbound:completionHandler];
       }
     }];
@@ -140,7 +126,6 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRe
 
       // Outbound data flow terminated gracefully.
       if (datagrams.count == 0) {
-        NSLog(@"dgram finished");
         [self closeConnection:nil completionHandler:completionHandler];
         return;
       }
@@ -193,7 +178,7 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRe
   // TODO: Handle address and URL endpoints?
   if (nw_endpoint_get_type(ep) != nw_endpoint_type_address) {
     // We cannot handle this destination address type.
-    NSLog(@"dgram tx: unsupported type %d", (int)nw_endpoint_get_type(ep));
+    NSLog(@"dgram: unsupported type %d", (int)nw_endpoint_get_type(ep));
   } else {
     // Otherwise, it must be an address endpoint.
     const struct sockaddr* sa = nw_endpoint_get_address(ep);
@@ -216,9 +201,12 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRe
       }
     }];
   } else {
-    NSString* hostname = [NSString stringWithUTF8String:nw_endpoint_copy_address_string(ep)];
-    NSString* port = [NSString stringWithUTF8String:nw_endpoint_copy_port_string(ep)];
-    NWHostEndpoint* host = [NWHostEndpoint endpointWithHostname:hostname port:port];
+    char* addr = nw_endpoint_copy_address_string(ep);
+    char* port = nw_endpoint_copy_port_string(ep);
+    NWHostEndpoint* host =
+        [NWHostEndpoint endpointWithHostname:[NSString stringWithUTF8String:addr]
+                                        port:[NSString stringWithUTF8String:port]];
+
     [self.flow writeDatagrams:[NSArray arrayWithObject:dgram]
               sentByEndpoints:[NSArray arrayWithObject:host]
             completionHandler:^(NSError* error){
@@ -226,6 +214,9 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRe
         // TODO: Handle the error?
       }
     }];
+
+    free(addr);
+    free(port);
   }
 }
 
@@ -233,20 +224,27 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRe
       completionHandler:(void (^)(NSError *)) completionHandler {
   NSLog(@"bypass close");
   // Close the flow.
-  [self.flow closeReadWithError:error];
-  [self.flow closeWriteWithError:error];
-  self.flow = nil;
+  if (self.flow) {
+    [self.flow closeReadWithError:error];
+    [self.flow closeWriteWithError:error];
+    self.flow = nil;
+  }
 
   // And the associated bypass socket.
-  CFSocketInvalidate(m_socket);
-  CFRelease(m_socket);
-  m_socket = nil;
+  if (m_socket) {
+    CFSocketInvalidate(m_socket);
+    CFRelease(m_socket);
+    m_socket = nil;
+  }
+  if (m_source) {
+    CFRunLoopRemoveSource(CFRunLoopGetMain(), m_source, kCFRunLoopDefaultMode);
+    CFRelease(m_source);
+    m_source = nil;
+  }
 
-  CFRunLoopRemoveSource(CFRunLoopGetMain(), m_source, kCFRunLoopDefaultMode);
-  CFRelease(m_source);
-  m_source = nil;
-
-  completionHandler(error);
+  if (completionHandler) {
+    completionHandler(error);
+  }
 }
 
 @end
