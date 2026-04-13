@@ -218,7 +218,6 @@
   }
 
 #if 1
-  NSLog(@"handle flow");
   NSLog(@"metadata sourceAppUniqueIdentifier: %@", flow.metaData.sourceAppUniqueIdentifier);
   NSLog(@"metadata sourceAppSigningIdentifier: %@", flow.metaData.sourceAppSigningIdentifier);
   NSLog(@"metadata filterFlowIdentifier: %@", flow.metaData.filterFlowIdentifier);
