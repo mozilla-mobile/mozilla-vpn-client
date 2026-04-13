@@ -85,6 +85,7 @@ Rizental
 Rustup
 SDKs
 SHA
+Siri
 SMAppService
 SSO
 Serde
@@ -317,6 +318,7 @@ xcodeproj
 xcodes
 xconfig
 xcrun
+xcstrings
 xliff
 yaml
 yml
