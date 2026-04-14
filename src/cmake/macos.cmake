@@ -60,8 +60,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macossystemtraynotificationhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosnetworkwatcher.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosnetworkwatcher.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macossplittunnelloader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macossplittunnelloader.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosextensionloader.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosextensionloader.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosstatusicon.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosstatusicon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosutils.mm
@@ -271,11 +271,11 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns PROPERTIES
 )
 set_property(TARGET mozillavpn APPEND PROPERTY RESOURCE ${CMAKE_CURRENT_BINARY_DIR}/AppIcon.icns)
 
-# Install the split-tunnel system extension into the bundle.
-add_dependencies(mozillavpn split-tunnel)
+# Install the network-extension system extension into the bundle.
+add_dependencies(mozillavpn networkextension)
 if(XCODE)
     set_target_properties(mozillavpn PROPERTIES
-        XCODE_EMBED_APP_EXTENSIONS split-tunnel
+        XCODE_EMBED_APP_EXTENSIONS networkextension
         XCODE_EMBED_APP_EXTENSIONS_PATH "$(CONTENTS_FOLDER_PATH)/Library/SystemExtensions"
     )
 else()
@@ -283,14 +283,14 @@ else()
     # bundle. Using a POST_BUILD hook only runs when the target is relinked
     # and not necessarily when a dependency is rebuilt.
     add_custom_command(TARGET mozillavpn POST_BUILD
-        COMMAND ${CMAKE_COMMAND} -E echo "Bundling $<TARGET_NAME:split-tunnel>"
-        COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:split-tunnel>
-            $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/SystemExtensions/$<TARGET_BUNDLE_DIR_NAME:split-tunnel>
+        COMMAND ${CMAKE_COMMAND} -E echo "Bundling $<TARGET_NAME:networkextension>"
+        COMMAND ${CMAKE_COMMAND} -E copy_directory $<TARGET_BUNDLE_DIR:networkextension>
+            $<TARGET_BUNDLE_CONTENT_DIR:mozillavpn>/Library/SystemExtensions/$<TARGET_BUNDLE_DIR_NAME:networkextension>
     )
 
-    # Create a link dependency to trigger the POST_BUILD hooks in case the split-tunnel
+    # Create a link dependency to trigger the POST_BUILD hooks in case the networkextension
     # gets rebuilt. This only works on Ninja and Makefile generators.
-    set_target_properties(mozillavpn PROPERTIES LINK_DEPENDS $<TARGET_FILE:split-tunnel>)
+    set_target_properties(mozillavpn PROPERTIES LINK_DEPENDS $<TARGET_FILE:networkextension>)
 endif()
 
 # Perform codesigning.

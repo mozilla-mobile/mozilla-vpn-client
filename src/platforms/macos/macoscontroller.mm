@@ -15,7 +15,7 @@
 #include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "logger.h"
-#include "macossplittunnelloader.h"
+#include "macosextensionloader.h"
 #include "macosutils.h"
 #include "version.h"
 #include "xpcdaemonprotocol.h"
@@ -51,7 +51,7 @@ MacOSController::MacOSController() : ControllerImpl()  {
   // Load the system extension if the networkExtension feature is enabled.
   if (Feature::get(Feature::Feature_networkExtension)->isSupported()) {
     // Create the Obj-C loader class.
-    MacosSplitTunnelLoader* loader = [MacosSplitTunnelLoader new];
+    MacosExtensionLoader* loader = [MacosExtensionLoader new];
     [loader retain];
     m_loader = loader;
 
@@ -77,7 +77,7 @@ MacOSController::~MacOSController() {
   }
 
   if (m_loader) {
-    [static_cast<MacosSplitTunnelLoader*>(m_loader) release];
+    [static_cast<MacosExtensionLoader*>(m_loader) release];
   }
 }
 
@@ -260,7 +260,7 @@ void MacOSController::activate(const InterfaceConfig& config,
   [remoteObject() activate:json.toNSString()];
 
   // Create a new tunnel provider session.
-  auto loader = static_cast<MacosSplitTunnelLoader*>(m_loader);
+  auto loader = static_cast<MacosExtensionLoader*>(m_loader);
   if (!loader || (loader.manager == nil) || !loader.manager.enabled) {
     // Split tunnelling is not supported.
     return;
@@ -354,7 +354,7 @@ void MacOSController::cleanupBackendLogs() {
 }
 
 bool MacOSController::splitTunnelSupported() const {
-  auto loader = static_cast<MacosSplitTunnelLoader*>(m_loader);
+  auto loader = static_cast<MacosExtensionLoader*>(m_loader);
   return (loader.manager != nil) && loader.manager.enabled;
 }
 
