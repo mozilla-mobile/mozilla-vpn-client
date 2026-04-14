@@ -411,7 +411,8 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
 
   // Activate the new peer and its routes.
   if (!wgutils()->updatePeer(config)) {
-    logger.error() << "Server switch failed to update the peer wireguard config";
+    logger.error()
+        << "Server switch failed to update the peer wireguard config";
     return false;
   }
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
