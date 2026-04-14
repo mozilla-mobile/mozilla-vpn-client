@@ -14,7 +14,6 @@
 
 class DnsUtils;
 class IPUtils;
-class FirewallUtils;
 class WireguardUtils;
 
 class Daemon : public QObject {
@@ -69,7 +68,6 @@ class Daemon : public QObject {
   virtual WireguardUtils* wgutils() const = 0;
   virtual IPUtils* iputils() { return nullptr; }
   virtual DnsUtils* dnsutils() { return nullptr; }
-  virtual FirewallUtils* fwutils() { return nullptr; }
 
   static bool parseStringList(const QJsonObject& obj, const QString& name,
                               QStringList& list);
