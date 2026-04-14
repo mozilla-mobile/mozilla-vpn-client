@@ -19,20 +19,19 @@
 
 @interface VPNSplitTunnelProvider : NETransparentProxyProvider<RouteManagerDelegate>
 
-- (void)startProxyWithOptions:(NSDictionary<NSString *,id> * _Nullable)options
-            completionHandler:(void (^ _Nonnull)(NSError * _Nullable))completionHandler;
+- (void)startProxyWithOptions:(NSDictionary<NSString *,id> *)options
+            completionHandler:(void (^)(NSError *))completionHandler;
 
 - (void)stopProxyWithReason:(NEProviderStopReason)reason
-          completionHandler:(void (^ _Nonnull)(void))completionHandler;
+          completionHandler:(void (^)(void))completionHandler;
 
-- (BOOL)handleNewFlow:(NEAppProxyFlow * _Nonnull)flow;
+- (BOOL)handleNewFlow:(NEAppProxyFlow *)flow;
 
 - (BOOL)matchAppFlow:(NEAppProxyFlow *)flow;
 
 - (void)defaultRouteChanged:(int)family
                viaInterface:(nw_interface_t)interface
                 withGateway:(NSData*)gateway;
-
 
 @property (strong) NETransparentProxyNetworkSettings* settings;
 @property (strong) RouteManager* routeManager;
@@ -45,9 +44,9 @@
 @end
 
 @implementation VPNSplitTunnelProvider {
-    std::atomic_uint64_t m_handledTcpFlows;
-    std::atomic_uint64_t m_handledUdpFlows;
-    std::atomic_uint64_t m_handledUnknown;
+  std::atomic_uint64_t m_handledTcpFlows;
+  std::atomic_uint64_t m_handledUdpFlows;
+  std::atomic_uint64_t m_handledUnknown;
 }
 
 - (id)init{
@@ -66,7 +65,7 @@
 + (NSError*) makeError:(NSInteger)code
        withDescription:(NSString*)desc {
   return [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
-                             code:1
+                             code:code
                          userInfo:@{NSLocalizedDescriptionKey: desc}];
 }
 
@@ -123,13 +122,24 @@
   self.settings = [[NETransparentProxyNetworkSettings alloc] initWithTunnelRemoteAddress:self.protocolConfiguration.serverAddress];
 
   // Configure the proxy to capture all traffic
-  NENetworkRule* includeAllRule =
-    [[NENetworkRule alloc] initWithRemoteNetwork:nil
-                                    remotePrefix:0
-                                    localNetwork:nil
-                                    localPrefix:0
-                                       protocol:NENetworkRuleProtocolAny
-                                      direction:NETrafficDirectionOutbound];
+  NENetworkRule* includeAllRule = nil;
+  if (@available(macOS 15, *)) {
+    includeAllRule =
+        [[NENetworkRule alloc] initWithRemoteNetworkEndpoint:nil
+                                                remotePrefix:0
+                                        localNetworkEndpoint:nil
+                                                 localPrefix:0
+                                                    protocol:NENetworkRuleProtocolAny
+                                                   direction:NETrafficDirectionOutbound];
+  } else {
+    includeAllRule =
+        [[NENetworkRule alloc] initWithRemoteNetwork:nil
+                                        remotePrefix:0
+                                        localNetwork:nil
+                                         localPrefix:0
+                                            protocol:NENetworkRuleProtocolAny
+                                           direction:NETrafficDirectionOutbound];
+  }
   self.settings.includedNetworkRules = @[includeAllRule];
 
   auto excludeRules = [[NSMutableArray<NENetworkRule*> new] init];
@@ -294,15 +304,12 @@
     NEAppProxyTCPFlow* tcpFlow = (NEAppProxyTCPFlow*)flow;
     BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow withInterface:self.ipv4Interface];
     if (!handler) {
-      // No handling required for this flow.
       return NO;
     }
 
     [handler startBypass:^(NSError* error){
       if (error) {
         NSLog(@"flow closed with error: %@", error);
-      } else {
-        NSLog(@"flow closed succefully");
       }
     }];
 
@@ -312,15 +319,12 @@
     NEAppProxyUDPFlow* udpFlow = (NEAppProxyUDPFlow*)flow;
     BypassUdpFlow* handler = [BypassUdpFlow createBypass:udpFlow withInterface:self.ipv4Interface];
     if (!handler) {
-      // No handling required for this flow.
       return NO;
     }
 
     [handler startBypass:^(NSError* error){
       if (error) {
         NSLog(@"flow closed with error: %@", error);
-      } else {
-        NSLog(@"flow closed succefully");
       }
     }];
 
@@ -333,58 +337,55 @@
 }
 
 - (void)cancelProxyWithError:(NSError *) error {
-    // TODO: Implement Me!
-    NSLog(@"cancel proxy: %@", error.localizedDescription);
+  NSLog(@"cancel proxy: %@", error.localizedDescription);
 }
 
 - (void)handleAppMessage:(NSData *) messageData
        completionHandler:(void (^)(NSData*)) completionHandler {
-    NSError* error;
-    NSKeyedUnarchiver* msg =
-      [[NSKeyedUnarchiver alloc] initForReadingFromData:messageData
-                                                  error:&error];
-    if (error != nil) {
-        NSLog(@"app message error: %@", error.localizedDescription);
-        [VPNSplitTunnelProvider sendAppError:error completionHandler:completionHandler];
-        return;
-    }
-    NSString* action = [msg decodeObjectOfClass:NSString.class
-                                         forKey:@"action"];
-    if (!action) {
-        NSLog(@"app message invalid action");
-        NSError* error = [VPNSplitTunnelProvider makeError:1 withDescription:@"invalid app message invalid"];
-        [VPNSplitTunnelProvider sendAppError:error completionHandler:completionHandler];
-        return;
-    }
+  NSError* error;
+  NSKeyedUnarchiver* msg =
+    [[NSKeyedUnarchiver alloc] initForReadingFromData:messageData
+                                                error:&error];
+  if (error != nil) {
+      NSLog(@"app message error: %@", error.localizedDescription);
+      [VPNSplitTunnelProvider sendAppError:error completionHandler:completionHandler];
+      return;
+  }
+  NSString* action = [msg decodeObjectOfClass:NSString.class forKey:@"action"];
+  if (!action) {
+      NSLog(@"app message invalid action");
+      NSError* error = [VPNSplitTunnelProvider makeError:1 withDescription:@"invalid app message invalid"];
+      [VPNSplitTunnelProvider sendAppError:error completionHandler:completionHandler];
+      return;
+  }
 
-    NSMutableArray* apps = [NSMutableArray new];
-    NSArray* msgAppList = [msg decodeObjectOfClass:NSArray.class
-                                         forKey:@"apps"];
-    if (msgAppList) {
-      NSEnumerator* iter = [msgAppList objectEnumerator];
-      while (id appId = [iter nextObject]) {
-        if (![appId isKindOfClass:[NSString class]]) {
-          continue;
-        }
-#ifdef MZ_DEBUG
-        NSLog(@"msg %@ %@ from excluded application set", action, appId);
-#endif
-        [apps addObject:appId];
+  NSMutableArray* apps = [NSMutableArray new];
+  NSArray* msgAppList = [msg decodeObjectOfClass:NSArray.class forKey:@"apps"];
+  if (msgAppList) {
+    NSEnumerator* iter = [msgAppList objectEnumerator];
+    while (id appId = [iter nextObject]) {
+      if (![appId isKindOfClass:[NSString class]]) {
+      continue;
       }
+#ifdef MZ_DEBUG
+      NSLog(@"msg %@ %@ from excluded application set", action, appId);
+#endif
+      [apps addObject:appId];
     }
-    [msg finishDecoding];
+  }
+  [msg finishDecoding];
 
-    if ([action isEqualToString: @"clear"]) {
-      [self.vpnDisabledApps removeAllObjects];
-    } else if ([action isEqualToString: @"add"]) {
-      [self.vpnDisabledApps addObjectsFromArray:apps];
-    } else if ([action isEqualToString: @"delete"]) {
-      [self.vpnDisabledApps removeObjectsInArray:apps];
-    } else {
-      NSLog(@"unsupported app message: %@", action);  
-    }
+  if ([action isEqualToString: @"clear"]) {
+    [self.vpnDisabledApps removeAllObjects];
+  } else if ([action isEqualToString: @"add"]) {
+    [self.vpnDisabledApps addObjectsFromArray:apps];
+  } else if ([action isEqualToString: @"delete"]) {
+    [self.vpnDisabledApps removeObjectsInArray:apps];
+  } else {
+    NSLog(@"unsupported app message: %@", action);  
+  }
 
-    [VPNSplitTunnelProvider sendAppResponse:nil completionHandler:completionHandler];
+  [VPNSplitTunnelProvider sendAppResponse:nil completionHandler:completionHandler];
 }
 
 + (void)sendAppResponse:(NSData*) responseData
@@ -484,10 +485,10 @@
     if (ifindex != 0) {
       [self.routeManager rtmSendRoute:action
                         toDestination:dstAddr
-                          withPrefix:0
-                        viaInterface:ifindex
+                           withPrefix:0
+                         viaInterface:ifindex
                           withGateway:gateway
-                            andFlags:RTF_IFSCOPE];
+                             andFlags:RTF_IFSCOPE];
     }
   }
 }
