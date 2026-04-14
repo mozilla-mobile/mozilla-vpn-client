@@ -164,6 +164,8 @@
 
     // Remove captured default routes, if known.
     if (self.ipv4Interface) {
+      NSLog(@"clearing cloned ipv4 route");
+
       struct sockaddr_in sin;
       memset(&sin, 0, sizeof(sin));
       sin.sin_family = AF_INET;
@@ -180,9 +182,11 @@
       self.ipv4Interface = nil;
     }
     if (self.ipv6Interface) {
+      NSLog(@"clearing cloned ipv6 route");
+
       struct sockaddr_in6 sin6;
       memset(&sin6, 0, sizeof(sin6));
-      sin6.sin6_family = AF_INET;
+      sin6.sin6_family = AF_INET6;
       sin6.sin6_len = sizeof(sin6);
       NSData* dst = [NSData dataWithBytes:&sin6 length:sizeof(sin6)];
 
@@ -315,23 +319,20 @@
 }
 
 - (void)defaultRouteChanged:(int)family
-               viaInterface:(nw_interface_t)iface
+               viaInterface:(nw_interface_t)interface
                 withGateway:(NSData*)gateway {
-  if (family == AF_INET) {
-    int action = RTM_ADD;
-    int ifindex = 0;
+  int action = RTM_ADD;
+  int ifindex = interface ? nw_interface_get_index(interface) : 0;
 
+  if (family == AF_INET) {
     struct sockaddr_in dst;
     memset(&dst, 0, sizeof(dst));
     dst.sin_family = AF_INET;
     dst.sin_len = sizeof(dst);
-    NSData* dstAddr = [NSData dataWithBytes:&dst
-                                     length:sizeof(dst)];
+    NSData* dstAddr = [NSData dataWithBytes:&dst length:sizeof(dst)];
 
-    if (iface) {
-      NSLog(@"default ipv4 route via %s", nw_interface_get_name(iface));
-
-      ifindex = nw_interface_get_index(iface);
+    if (interface) {
+      NSLog(@"default ipv4 route via %s", nw_interface_get_name(interface));
       if (!self.ipv4Interface) {
         action = RTM_ADD;
       } else if (ifindex == nw_interface_get_index(self.ipv4Interface)) {
@@ -345,18 +346,14 @@
                             withGateway:nil
                               andFlags:RTF_IFSCOPE];
       }
-
-      self.ipv4Interface = iface;
-    } else {
+    } else if (self.ipv4Interface) {
       NSLog(@"default ipv4 route lost");
-      if (self.ipv4Interface) {
-        action = RTM_DELETE;
-        ifindex = nw_interface_get_index(self.ipv4Interface);
-        self.ipv4Interface = nil;
-      }
+      action = RTM_DELETE;
+      ifindex = nw_interface_get_index(self.ipv4Interface);
     }
 
     // Update the cloned IPv4 default route.
+    self.ipv4Interface = interface;
     if (ifindex != 0) {
       [self.routeManager rtmSendRoute:action
                         toDestination:dstAddr
@@ -366,11 +363,43 @@
                             andFlags:RTF_IFSCOPE];
     }
   } else if (family == AF_INET6) {
-    //m_ipv6Interface = iface;
-    if (iface) {
-      NSLog(@"default ipv6 route via %s", nw_interface_get_name(iface));
-    } else {
+    struct sockaddr_in6 dst;
+    memset(&dst, 0, sizeof(dst));
+    dst.sin6_family = AF_INET6;
+    dst.sin6_len = sizeof(dst);
+    NSData* dstAddr = [NSData dataWithBytes:&dst length:sizeof(dst)];
+
+    if (interface) {
+      NSLog(@"default ipv6 route via %s", nw_interface_get_name(interface));
+
+      if (!self.ipv6Interface) {
+        action = RTM_ADD;
+      } else if (ifindex == nw_interface_get_index(self.ipv6Interface)) {
+        action = RTM_CHANGE;
+      } else {
+        action = RTM_ADD;
+        [self.routeManager rtmSendRoute:RTM_DELETE
+                          toDestination:dstAddr
+                            withPrefix:0
+                          viaInterface:nw_interface_get_index(self.ipv6Interface)
+                            withGateway:nil
+                              andFlags:RTF_IFSCOPE];
+      }
+    } else if (self.ipv6Interface) {
       NSLog(@"default ipv6 route lost");
+      action = RTM_DELETE;
+      ifindex = nw_interface_get_index(self.ipv6Interface);
+    }
+
+    // Update the cloned IPv6 default route.
+    self.ipv6Interface = interface;
+    if (ifindex != 0) {
+      [self.routeManager rtmSendRoute:action
+                        toDestination:dstAddr
+                          withPrefix:0
+                        viaInterface:ifindex
+                          withGateway:gateway
+                            andFlags:RTF_IFSCOPE];
     }
   }
 }
