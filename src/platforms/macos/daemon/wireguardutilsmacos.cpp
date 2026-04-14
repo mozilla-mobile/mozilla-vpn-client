@@ -14,9 +14,9 @@
 
 #include <QByteArray>
 #include <QDir>
-#include <QScopeGuard>
 #include <QFile>
 #include <QLocalSocket>
+#include <QScopeGuard>
 #include <QSysInfo>
 #include <QTimer>
 #include <QVersionNumber>
@@ -40,7 +40,7 @@ static bool hasRouteToIPv4(const QString& ipv4addr) {
 
   auto guard = qScopeGuard([sock] { ::close(sock); });
 
-  struct sockaddr_in dest{};
+  struct sockaddr_in dest {};
   dest.sin_family = AF_INET;
   dest.sin_port = htons(1);
 

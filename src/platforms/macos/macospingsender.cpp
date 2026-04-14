@@ -190,15 +190,15 @@ void MacOSPingSender::socketReady() {
 
 void MacOSPingSender::icmp6SocketReady() {
   u_char packet[IP_MAXPACKET];
- 
+
   ssize_t rc =
       recv(m_socket6, packet, sizeof(packet), MSG_DONTWAIT | MSG_NOSIGNAL);
- 
+
   if (rc < (ssize_t)sizeof(struct icmp6_hdr)) {
     if (rc < 0) {
       logger.error() << "ICMPv6 recv failed:" << strerror(errno);
     }
- 
+
     return;
   }
 
