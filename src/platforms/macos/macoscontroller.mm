@@ -268,15 +268,20 @@ void MacOSController::activate(const InterfaceConfig& config,
 
   // Serialize the interface configuration.
   NSMutableDictionary* options = [NSMutableDictionary dictionary];
-  [options setObject:config.m_privateKey.toNSString() forKey:@"privateKey"];
-  [options setObject:config.m_deviceIpv4Address.toNSString() forKey:@"deviceIpv4Address"];
-  [options setObject:config.m_deviceIpv6Address.toNSString() forKey:@"deviceIpv6Address"];
   [options setObject:config.m_serverPublicKey.toNSString() forKey:@"serverPublicKey"];
   [options setObject:config.m_serverIpv4AddrIn.toNSString() forKey:@"serverIpv4AddrIn"];
   [options setObject:config.m_serverIpv6AddrIn.toNSString() forKey:@"serverIpv6AddrIn"];
   [options setObject:config.m_serverIpv4Gateway.toNSString() forKey:@"serverIpv4Gateway"];
   [options setObject:config.m_serverIpv6Gateway.toNSString() forKey:@"serverIpv6Gateway"];
   [options setObject:[NSNumber numberWithInt:config.m_serverPort] forKey:@"serverPort"];
+
+  // Serialize the excluded application list.
+  NSMutableArray* vpnDisabledApps =
+      [NSMutableArray arrayWithCapacity:config.m_vpnDisabledApps.length()];
+  for (const QString& appId : config.m_vpnDisabledApps) {
+    [vpnDisabledApps addObject:appId.toNSString()];
+  }
+  [options setObject:vpnDisabledApps forKey:@"apps"];
 
   // Get a session and start it.
   NSError* error = nil;

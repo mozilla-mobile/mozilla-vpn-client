@@ -100,7 +100,7 @@ static const struct sockaddr* rtmLookupAddr(const struct rt_msghdr* rtm, int whi
   return (struct sockaddr*)CFDataGetBytePtr(data);
 }
 
-NSString* rtmAddrString(const void *ptr) {
+static NSString* rtmAddrString(const void *ptr) {
   CFDataRef data = (CFDataRef)ptr;
   const struct sockaddr* sa = (const struct sockaddr*)CFDataGetBytePtr(data);
   if (sa->sa_len > CFDataGetLength(data)) {
@@ -125,7 +125,8 @@ NSString* rtmAddrString(const void *ptr) {
   return [NSString stringWithFormat:@"unknown(af=%d)", sa->sa_family];
 }
 
-void rtmLogRouteMsg(const struct rt_msghdr* rtm, CFArrayRef addrlist) {
+static void rtmLogRouteMsg(const struct rt_msghdr* rtm, CFArrayRef addrlist) {
+#ifdef MZ_DEBUG
   NSString* rtmType = nullptr;
   switch (rtm->rtm_type) {
     case RTM_ADD:
@@ -170,6 +171,7 @@ void rtmLogRouteMsg(const struct rt_msghdr* rtm, CFArrayRef addrlist) {
   }
 
   NSLog(@"route %@ %s:%@", rtmType, ifname, details);
+#endif
 }
 
 // Compare memory against zero.
