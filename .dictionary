@@ -1,4 +1,4 @@
-personal_ws-1.1 en 322 utf-8
+personal_ws-1.1 en 327 utf-8
 ADRs
 APIs
 ATs
@@ -21,6 +21,7 @@ DBUILD
 DNS
 DevOps
 Docusaurus
+EMSDK
 FFI
 FastPass
 FeatureList
@@ -119,6 +120,7 @@ XLIFF
 XPC
 accessors
 activer
+aarch
 adb
 addon
 addons
@@ -130,6 +132,7 @@ anonymized
 api
 apk
 apk's
+apks
 appareil
 aqt
 assignees
@@ -178,6 +181,7 @@ featuresOverride
 ffi
 flathub
 flatpak
+foss
 frontend
 getters
 gobject
@@ -185,6 +189,7 @@ golang
 gps
 gradle
 hotreloader
+html
 iap
 ici
 idfv

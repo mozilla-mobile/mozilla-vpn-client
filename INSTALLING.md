@@ -24,7 +24,7 @@ There are pre-built binaries of the last released version of Mozilla VPN for Win
     - [Windows 10&11 x64](#windows-1011-x64)
     - [Windows 11 aarch64](#windows-11-aarch64)
     - [From Source](#from-source-2)
-- [Macos](#macos)
+- [macOS](#macos)
     - [From Source](#from-source-3)
 - [iOS](#ios)
     - [From Source](#from-source-4)
@@ -134,8 +134,9 @@ pip install -r requirements.txt
 Then configure and build:
 
 ```bash
-cmake -S . -B build -GNinja
+cmake -S . -B build -GNinja -DCMAKE_INSTALL_PREFIX="/"
 cmake --build build
+sudo cmake --install build
 ```
 
 The built binary is at `build/src/mozillavpn`. Note that `wireguard-tools` is also required at runtime.
@@ -190,10 +191,11 @@ Get the installer of the latest release [here](https://vpn.mozilla.org/r/vpn/dow
 
 ### Windows 11 aarch64
 
-[!CAUTION]
-This is not Stable yet! Do at your own risk. 
+[!INFO]
+We don't consider those builds rock-stable
 
-We don't have any stable arm64 builds yet, you can however help us test by grabbing the latest build of [main directly from our CI](https://firefox-ci-tc.services.mozilla.com/api/index/v1/task/mozillavpn.v2.mozilla-vpn-client.branch.main.latest.build.msi-aarch64/artifacts/public%2Fbuild%2FMozillaVPN-aarch64.msi)
+We don't have any stable arm64 builds yet, you can however help us test by grabbing the latest release from [archive.mozilla.org](https://archive.mozilla.org/pub/vpn/releases/).
+Look for windows `MozillaVPN-aarch64.msi`
 
 
 ### From Source 
@@ -223,7 +225,7 @@ $ cmake -S . -B build -GNinja
 $ cmake --build build
 ```
 
-## Macos 
+## macOS
 Get the installer of the latest release [here](https://vpn.mozilla.org/r/vpn/download/macos), you can find past versions on [archive.mozilla.org](https://archive.mozilla.org/pub/vpn/releases/). 
 
 ### From Source 
@@ -381,7 +383,7 @@ qt-cmake -S . -B build-wasm -GNinja \
     -DBUILD_TESTS=OFF
 cmake --build build-wasm
 ```
-You will find the index.html in `<build-folder>/wasm_build/index.html`
+You will find the index.html in `./build-wasm/wasm-build/index.html`
 
 
 ## Troubleshooting
