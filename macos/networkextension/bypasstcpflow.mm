@@ -6,15 +6,10 @@
 
 #import "bypasstcpflow.h"
 
-@implementation BypassTcpFlow {
-  nw_connection_t    m_connection;
-}
+@implementation BypassTcpFlow
 
 + (id)createBypass:(NEAppProxyTCPFlow *)flow
      withInterface:(nw_interface_t)interface {
-
-  BypassTcpFlow* bypass = [BypassTcpFlow new];
-  bypass.flow = flow;
 
   nw_endpoint_t endpoint;
   if (@available(macOS 15, *)) {
@@ -22,15 +17,21 @@
   } else if ([flow.remoteEndpoint isKindOfClass:[NWHostEndpoint class]]) {
     NWHostEndpoint* host = (NWHostEndpoint*)flow.remoteEndpoint;
     endpoint = nw_endpoint_create_host([host.hostname UTF8String], [host.port UTF8String]);
+  } else if ([flow.remoteEndpoint isKindOfClass:[NWBonjourServiceEndpoint class]]) {
+    NWBonjourServiceEndpoint* service = (NWBonjourServiceEndpoint*)flow.remoteEndpoint;
+    endpoint = nw_endpoint_create_bonjour_service([service.name UTF8String],
+                                                  [service.type UTF8String],
+                                                  [service.domain UTF8String]);
   } else {
-    // TODO: The other option is a bonjour endpoint?
+    // Unsupported remote endpoint type.
+    return nil;
   }
 
-  // TODO: Outbound interface selection is tricky... it doesn't seem like we can
-  // use nw_parameters_prohibit_interface without putting the VPN interface into
-  // a different path.
+  BypassTcpFlow* bypass = [BypassTcpFlow new];
+  bypass.flow = flow;
+
+  // Bind the flow to the default network interface route.
   nw_parameters_t params = nw_parameters_create_secure_tcp(NW_PARAMETERS_DISABLE_PROTOCOL, NW_PARAMETERS_DEFAULT_CONFIGURATION);
-  //nw_parameters_prohibit_interface(params, interface);
   nw_parameters_require_interface(params, interface);
 
   bypass.connection = nw_connection_create(endpoint, params);
@@ -40,10 +41,12 @@
 }
 
 - (void)startBypass:(void (^)(NSError *error)) completionHandler {
-  nw_connection_set_state_changed_handler(self.connection, ^(nw_connection_state_t state, nw_error_t error) {
-    if (error) {
-      NSError *err = (NSError *)CFBridgingRelease(nw_error_copy_cf_error(error));
-      completionHandler(err);
+  nw_connection_set_state_changed_handler(self.connection,
+                                          ^(nw_connection_state_t state, nw_error_t err) {
+    if (err) {
+      CFErrorRef cfError = nw_error_copy_cf_error(err);
+      completionHandler((__bridge NSError*)cfError);
+      CFRelease(cfError);
     } else if (state == nw_connection_state_cancelled || state == nw_connection_state_failed) {
       NSLog(@"bypass state closed");
       [self closeConnection:nil completionHandler:completionHandler];
@@ -82,7 +85,7 @@
 }
 
 - (void)handleOutbound:(void (^)(NSError *error)) completionHandler {
-  [self.flow readDataWithCompletionHandler:^(NSData * _Nullable data, NSError * _Nullable error) {
+  [self.flow readDataWithCompletionHandler:^(NSData *data, NSError *error) {
     if (error) {
       [self closeConnection:error completionHandler:completionHandler];
       return;
@@ -101,11 +104,15 @@
     }
 
     // Forward the data out to the network
-    dispatch_data_t chunk = dispatch_data_create(data.bytes, data.length, dispatch_get_main_queue(), DISPATCH_DATA_DESTRUCTOR_DEFAULT);
-    nw_connection_send(self.connection, chunk, NW_CONNECTION_DEFAULT_MESSAGE_CONTEXT, true, ^(nw_error_t  _Nullable sendError) {
+    dispatch_data_t chunk = dispatch_data_create(data.bytes, data.length,
+                                                 dispatch_get_main_queue(),
+                                                 DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+    nw_connection_send(self.connection, chunk, NW_CONNECTION_DEFAULT_MESSAGE_CONTEXT,
+                       true, ^(nw_error_t  sendError) {
       if (sendError) {
-        NSError *err = (NSError *)CFBridgingRelease(nw_error_copy_cf_error(sendError));
-        [self closeConnection:err completionHandler:completionHandler];
+        CFErrorRef cfError = nw_error_copy_cf_error(sendError);
+        [self closeConnection:(__bridge NSError*)cfError completionHandler:completionHandler];
+        CFRelease(cfError);
       } else {
         [self handleOutbound:completionHandler];
       }
@@ -114,10 +121,12 @@
 }
 
 - (void)handleInbound:(void (^)(NSError *)) completionHandler {
-  nw_connection_receive(self.connection, 1, UINT16_MAX, ^(dispatch_data_t data, nw_content_context_t ctx, bool completed, nw_error_t error){
-    if (error){
-      NSError *err = (NSError *)CFBridgingRelease(nw_error_copy_cf_error(error));
-      [self closeConnection:err completionHandler:completionHandler];
+  nw_connection_receive(self.connection, 1, UINT16_MAX,
+                        ^(dispatch_data_t data, nw_content_context_t ctx, bool done, nw_error_t err){
+    if (err) {
+      CFErrorRef cfError = nw_error_copy_cf_error(err);
+      [self closeConnection:(__bridge NSError *)cfError completionHandler:completionHandler];
+      CFRelease(cfError);
       return;
     }
     if (!data) {
@@ -133,7 +142,7 @@
     [self.flow writeData:chunk withCompletionHandler:^(NSError* recvError){
       if (recvError) {
         [self closeConnection:recvError completionHandler:completionHandler];
-      } else if (completed) {
+      } else if (done) {
         [self closeConnection:nil completionHandler:completionHandler];
       } else {
         [self handleInbound:completionHandler];
