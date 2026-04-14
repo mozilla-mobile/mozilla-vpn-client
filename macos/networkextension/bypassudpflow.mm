@@ -63,7 +63,17 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType,
 }
 
 - (void)dealloc {
-  [self closeConnection:nil completionHandler:nil];
+  if (m_socket) {
+    CFSocketInvalidate(m_socket);
+    CFRelease(m_socket);
+    m_socket = nil;
+  }
+  if (m_source) {
+    CFRunLoopRemoveSource(CFRunLoopGetMain(), m_source, kCFRunLoopDefaultMode);
+    CFRelease(m_source);
+    m_source = nil;
+  }
+
 #if !__has_feature(objc_arc)
   [super dealloc];
 #endif
