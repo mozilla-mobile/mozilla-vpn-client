@@ -45,7 +45,7 @@
                                           ^(nw_connection_state_t state, nw_error_t err) {
     if (err) {
       CFErrorRef cfError = nw_error_copy_cf_error(err);
-      completionHandler((__bridge NSError*)cfError);
+      [self closeConnection:(__bridge NSError*)cfError completionHandler:completionHandler];
       CFRelease(cfError);
     } else if (state == nw_connection_state_cancelled || state == nw_connection_state_failed) {
       NSLog(@"bypass state closed");
