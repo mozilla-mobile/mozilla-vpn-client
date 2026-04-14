@@ -56,11 +56,6 @@
   return self;
 }
 
-- (void)dealloc {
-  NSLog(@"destroy proxy class");
-  [super dealloc];
-}
-
 + (NSError*) makeError:(NSInteger)code
        withDescription:(NSString*)desc {
   return [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
@@ -90,20 +85,17 @@
       inet_pton(AF_INET, dest.UTF8String, &sin->sin_addr.s_addr);
     }
 
-    nw_endpoint_t endpoint = nw_endpoint_create_address((struct sockaddr*)&addr);
-    [rule initWithDestinationNetworkEndpoint:endpoint
-                                      prefix:prefix
-                                    protocol:NENetworkRuleProtocolAny];
+    nw_endpoint_t dest = nw_endpoint_create_address((struct sockaddr*)&addr);
+    return [rule initWithDestinationNetworkEndpoint:dest
+                                             prefix:prefix
+                                           protocol:NENetworkRuleProtocolAny];
   } else {
     // Deprecated API for macOS < 15.0
-    NWHostEndpoint* endpoint = [NWHostEndpoint endpointWithHostname:dest
-                                                               port:@"0"];
-    [rule initWithDestinationNetwork:endpoint
-                              prefix:prefix
-                            protocol:NENetworkRuleProtocolAny];
+    NWHostEndpoint* host = [NWHostEndpoint endpointWithHostname:dest port:@"0"];
+    return [rule initWithDestinationNetwork:host
+                                     prefix:prefix
+                                   protocol:NENetworkRuleProtocolAny];
   }
-
-  return rule;
 }
 
 - (void)startProxyWithOptions:(NSDictionary<NSString *,id> *)options
@@ -281,9 +273,9 @@
 - (void)handleAppMessage:(NSData *) messageData
        completionHandler:(void (^)(NSData*)) completionHandler {
     NSError* error;
-    NSKeyedUnarchiver* msg = [NSKeyedUnarchiver alloc];
-    [msg initForReadingFromData:messageData
-                          error:&error];
+    NSKeyedUnarchiver* msg =
+      [[NSKeyedUnarchiver alloc] initForReadingFromData:messageData
+                                                  error:&error];
     if (error != nil) {
         NSLog(@"app message error: %@", error.localizedDescription);
         [VPNSplitTunnelProvider sendAppError:error completionHandler:completionHandler];

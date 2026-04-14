@@ -11,11 +11,12 @@
   CFRunLoopSourceRef   m_source;
 }
 
-static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRef address, const void * data, void *info) {
-  BypassUdpFlow* bypass = (BypassUdpFlow*)info;
+static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType,
+                            CFDataRef address, const void * data, void *info) {
+  BypassUdpFlow* bypass = (__bridge BypassUdpFlow*)info;
   if (cbType == kCFSocketDataCallBack) {
     const struct sockaddr* sa = (const struct sockaddr*)CFDataGetBytePtr(address);
-    [bypass recvDatagram:(NSData*)data
+    [bypass recvDatagram:(__bridge NSData*)data
             fromEndpoint:nw_endpoint_create_address(sa)];
   } else {
     NSLog(@"udpSockCallback: unexpected type %d", (int)cbType);
@@ -32,7 +33,7 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRe
   BypassUdpFlow* bypass = [BypassUdpFlow new];
   bypass.flow = flow;
 
-  CFSocketContext ctx = { .info = (void *)bypass };
+  CFSocketContext ctx = { .info = (__bridge void *)bypass };
   bypass->m_socket = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_DGRAM, IPPROTO_UDP,
                                     kCFSocketDataCallBack, udpSockCallback, &ctx);
 
@@ -63,7 +64,9 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRe
 
 - (void)dealloc {
   [self closeConnection:nil completionHandler:nil];
+#if !__has_feature(objc_arc)
   [super dealloc];
+#endif
 }
 
 - (void)startBypass:(void (^)(NSError *error)) completionHandler {
