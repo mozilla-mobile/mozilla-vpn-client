@@ -16,10 +16,6 @@
 #include <sys/socket.h>
 #include <sys/sysctl.h>
 
-#if __has_feature(objc_arc)
-# error "RouteManager must be compiled with manual reference counting"
-#endif
-
 // Private method in the network framework
 extern "C" nw_interface_t nw_interface_create_with_index(int ifindex);
 
@@ -33,10 +29,11 @@ extern "C" nw_interface_t nw_interface_create_with_index(int ifindex);
   NSObject<RouteManagerDelegate>* m_delegate;
 }
 
-static void rawSockCallback(CFSocketRef s, CFSocketCallBackType cbType, CFDataRef address, const void * data, void *info) {
-  RouteManager* monitor = (RouteManager*)info;
+static void rawSockCallback(CFSocketRef s, CFSocketCallBackType cbType,
+                            CFDataRef address, const void * data, void *info) {
+  RouteManager* monitor = (__bridge RouteManager*)info;
   if (cbType == kCFSocketDataCallBack) {
-    [monitor rtDataCallback:(NSData*)data];
+    [monitor rtDataCallback:(__bridge NSData*)data];
   } else {
     NSLog(@"rawSockCallback: unexpected type %d", (int)cbType);
   }
@@ -193,7 +190,7 @@ static int memcmpzero(const void* data, size_t len) {
   if (m_sockfd < 0) {
     NSLog(@"failed to create routing socket: %s", strerror(errno));
   }
-  CFSocketContext ctx = { .info = (void *)self };
+  CFSocketContext ctx = { .info = (__bridge void *)self };
   m_socket = CFSocketCreateWithNative(kCFAllocatorDefault, m_sockfd, kCFSocketDataCallBack,
                                       rawSockCallback, &ctx);
 
@@ -214,7 +211,9 @@ static int memcmpzero(const void* data, size_t len) {
   CFRunLoopRemoveSource(CFRunLoopGetMain(), m_source, kCFRunLoopDefaultMode);
   CFRelease(m_source);
 
+#if !__has_feature(objc_arc)
   [super dealloc];
+#endif
 }
 
 - (void)startWithDelegate:(NSObject<RouteManagerDelegate>*)delegate {

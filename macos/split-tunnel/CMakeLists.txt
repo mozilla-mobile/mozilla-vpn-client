@@ -49,7 +49,7 @@ set_target_properties(split-tunnel PROPERTIES
     XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS ${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPNSplitTunnel.entitlements
 )
 
-target_compile_options(split-tunnel PUBLIC "-fno-objc-arc" "-fno-objc-arc-exceptions")
+target_compile_options(split-tunnel PUBLIC "-fobjc-arc" "-fno-objc-arc-exceptions")
 
 target_link_libraries(split-tunnel PRIVATE ${FW_FOUNDATION})
 target_link_libraries(split-tunnel PRIVATE ${FW_NW_EXTENSION})
