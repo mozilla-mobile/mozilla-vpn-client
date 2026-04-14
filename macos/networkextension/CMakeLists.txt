@@ -4,8 +4,8 @@
 
 cmake_minimum_required(VERSION 3.20)
 
-project(split-tunnel VERSION 0.1 LANGUAGES C CXX OBJC
-        DESCRIPTION "Mozilla VPN Split Tunnel"
+project(networkextension VERSION 0.1 LANGUAGES C CXX OBJC
+        DESCRIPTION "Mozilla VPN Network Extension"
         HOMEPAGE_URL "https://vpn.mozilla.org"
 )
 
@@ -27,8 +27,8 @@ find_library(FW_FOUNDATION Foundation)
 find_library(FW_NW_EXTENSION NetworkExtension)
 
 # The VPN Split Tunnel extension
-add_executable(split-tunnel)
-set_target_properties(split-tunnel PROPERTIES
+add_executable(networkextension)
+set_target_properties(networkextension PROPERTIES
     OUTPUT_NAME "${BUILD_OSX_APP_IDENTIFIER}.network-extension"
     BUNDLE_EXTENSION systemextension
     MACOSX_BUNDLE ON
@@ -37,7 +37,7 @@ set_target_properties(split-tunnel PROPERTIES
     MACOSX_BUNDLE_BUNDLE_VERSION "${CMAKE_PROJECT_VERSION}"
     MACOSX_BUNDLE_COPYRIGHT "MPL-2.0"
     MACOSX_BUNDLE_GUI_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}.network-extension"
-    MACOSX_BUNDLE_INFO_STRING "MozillaVPNSplitTunnel"
+    MACOSX_BUNDLE_INFO_STRING "Mozilla VPN Network Extension"
     XCODE_GENERATE_SCHEME TRUE
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}.network-extension"
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_PACKAGE_TYPE "SYSX"
@@ -46,15 +46,15 @@ set_target_properties(split-tunnel PROPERTIES
     XCODE_ATTRIBUTE_ENABLE_BITCODE NO
     XCODE_ATTRIBUTE_GCC_ENABLE_OBJC_ARC YES
     XCODE_ATTRIBUTE_CLANG_ENABLE_OBJC_ARC YES
-    XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS ${CMAKE_CURRENT_SOURCE_DIR}/MozillaVPNSplitTunnel.entitlements
+    XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS ${CMAKE_CURRENT_SOURCE_DIR}/network-extension.entitlements
 )
 
-target_compile_options(split-tunnel PUBLIC "-fobjc-arc" "-fno-objc-arc-exceptions")
-target_compile_definitions(split-tunnel PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
+target_compile_options(networkextension PUBLIC "-fobjc-arc" "-fno-objc-arc-exceptions")
+target_compile_definitions(networkextension PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 
-target_link_libraries(split-tunnel PRIVATE ${FW_FOUNDATION})
-target_link_libraries(split-tunnel PRIVATE ${FW_NW_EXTENSION})
-target_sources(split-tunnel PRIVATE
+target_link_libraries(networkextension PRIVATE ${FW_FOUNDATION})
+target_link_libraries(networkextension PRIVATE ${FW_NW_EXTENSION})
+target_sources(networkextension PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/bypasstcpflow.h
     ${CMAKE_CURRENT_SOURCE_DIR}/bypasstcpflow.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/bypassudpflow.h
@@ -67,7 +67,7 @@ target_sources(split-tunnel PRIVATE
 
 # Install an embedded provisioning profile if one exists in the source directory.
 if((NOT XCODE) AND (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile))
-    target_sources(split-tunnel PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile)
+    target_sources(networkextension PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile)
     set_source_files_properties(${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile PROPERTIES
         MACOSX_PACKAGE_LOCATION "/"
         HEADER_FILE_ONLY TRUE
@@ -75,4 +75,4 @@ if((NOT XCODE) AND (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile
 endif()
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
-osx_codesign_target(split-tunnel FORCE)
+osx_codesign_target(networkextension FORCE)
