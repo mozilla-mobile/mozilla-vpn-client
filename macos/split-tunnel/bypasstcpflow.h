@@ -9,5 +9,6 @@
 - (void)startBypass:(void (^)(NSError* error))completionHandler;
 
 @property(strong) NEAppProxyTCPFlow* flow;
+@property(strong) nw_connection_t connection;
 
 @end
