@@ -4,11 +4,10 @@
 
 @interface BypassUdpFlow : NSObject
 
-+ (id)createBypass:(NEAppProxyUDPFlow *)flow
-     withInterface:(nw_interface_t)interface;
++ (id)createBypass:(NEAppProxyUDPFlow *)flow withInterface:(nw_interface_t)interface;
 
 - (void)startBypass:(void (^)(NSError* error))completionHandler;
 
-@property (strong) NEAppProxyUDPFlow* flow;
+@property(strong) NEAppProxyUDPFlow* flow;
 
 @end

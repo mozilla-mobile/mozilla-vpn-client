@@ -18,10 +18,10 @@ struct sockaddr;
 
 - (void)startWithDelegate:(NSObject<RouteManagerDelegate>*)delegate;
 
-- (void) rtmSendRoute:(int)action
-        toDestination:(NSData*)dst
-           withPrefix:(unsigned int)plen
-         viaInterface:(unsigned int)ifindex
-          withGateway:(NSData*)gateway
-             andFlags:(int)flags;
+- (void)rtmSendRoute:(int)action
+       toDestination:(NSData*)dst
+          withPrefix:(unsigned int)plen
+        viaInterface:(unsigned int)ifindex
+         withGateway:(NSData*)gateway
+            andFlags:(int)flags;
 @end

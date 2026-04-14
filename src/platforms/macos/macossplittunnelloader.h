@@ -9,7 +9,7 @@
 #import <NetworkExtension/NetworkExtension.h>
 #import <SystemExtensions/SystemExtensions.h>
 
-@interface MacosSplitTunnelLoader : NSObject<OSSystemExtensionRequestDelegate>
+@interface MacosSplitTunnelLoader : NSObject <OSSystemExtensionRequestDelegate>
 @property(readonly) NSString* identifier;
 @property(retain) NETransparentProxyManager* manager;
 @end

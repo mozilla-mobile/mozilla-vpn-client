@@ -448,8 +448,8 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const IPAddress& prefix,
 }
 
 bool MacosRouteMonitor::rtmFetchRoutes(int family) {
-  int mib[] = { CTL_NET, PF_ROUTE, 0, family, NET_RT_DUMP, 0 };
-  int miblen = sizeof(mib)/sizeof(int);
+  int mib[] = {CTL_NET, PF_ROUTE, 0, family, NET_RT_DUMP, 0};
+  int miblen = sizeof(mib) / sizeof(int);
   size_t bufsize;
   if (sysctl(mib, miblen, nullptr, &bufsize, nullptr, 0) < 0) {
     logger.warning() << "Failed to get routing table size:" << strerror(errno);
