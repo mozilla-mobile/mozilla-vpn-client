@@ -27,15 +27,20 @@
 
 - (BOOL)handleNewFlow:(NEAppProxyFlow * _Nonnull)flow;
 
+- (BOOL)matchAppFlow:(NEAppProxyFlow *)flow;
+
 - (void)defaultRouteChanged:(int)family
                viaInterface:(nw_interface_t)interface
                 withGateway:(NSData*)gateway;
+
 
 @property (strong) NETransparentProxyNetworkSettings* settings;
 @property (strong) RouteManager* routeManager;
 @property (strong) nw_interface_t ipv4Interface;
 @property (strong) nw_interface_t ipv6Interface;
 @property (strong) nw_interface_t vpnInterface;
+
+@property (strong) NSMutableArray* vpnDisabledApps;
 
 @end
 
@@ -48,6 +53,8 @@
 - (id)init{
   self = [super init];
   NSLog(@"init proxy class");
+
+  self.vpnDisabledApps = [NSMutableArray new];
 
   m_handledTcpFlows = 0;
   m_handledUdpFlows = 0;
@@ -101,7 +108,9 @@
 - (void)startProxyWithOptions:(NSDictionary<NSString *,id> *)options
             completionHandler:(void (^)(NSError *error))completionHandler {
   NSLog(@"starting proxy");
+#ifdef MZ_DEBUG
   NSLog(@"config serverAddress: %@", self.protocolConfiguration.serverAddress);
+#endif
 
   m_handledTcpFlows = 0;
   m_handledUdpFlows = 0;
@@ -137,14 +146,30 @@
   // Exclude connections to the VPN server
   NSString* serverIpv4Addr = [options objectForKey:@"serverIpv4AddrIn"];
   if (serverIpv4Addr) {
-    [excludeRules addObject: [VPNSplitTunnelProvider matchRoute:serverIpv4Addr andPrefix:32]];
+    [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:serverIpv4Addr andPrefix:32]];
   }
   NSString* serverIpv6Addr = [options objectForKey:@"serverIpv6AddrIn"];
   if (serverIpv6Addr) {
-    [excludeRules addObject: [VPNSplitTunnelProvider matchRoute:serverIpv6Addr andPrefix:128]];
+    [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:serverIpv6Addr andPrefix:128]];
   }
 
   self.settings.excludedNetworkRules = excludeRules;
+
+  // Initialize the excluded application list.
+  [self.vpnDisabledApps removeAllObjects];
+  NSArray* apps = [options objectForKey:@"apps"];
+  if (apps) {
+    NSEnumerator* iter = [apps objectEnumerator];
+    while (id appId = [iter nextObject]) {
+      if (![appId isKindOfClass:[NSString class]]) {
+        continue;
+      }
+#ifdef MZ_DEBUG
+      NSLog(@"excluding app %@ from VPN", appId);
+#endif
+      [self.vpnDisabledApps addObject: appId];
+    }
+  }
 
   // Configure the settings.
   [self setTunnelNetworkSettings: self.settings
@@ -208,25 +233,63 @@
     completionHandler();
 }
 
-- (BOOL)handleNewFlow: (NEAppProxyFlow*) flow {
+- (BOOL)matchAppFlow:(NEAppProxyFlow*)flow {
+  // Without metadata - do not exclude the application.
   if (flow.metaData == nil) {
     return NO;
   }
 
-#if 1
-  NSLog(@"metadata sourceAppUniqueIdentifier: %@", flow.metaData.sourceAppUniqueIdentifier);
-  NSLog(@"metadata sourceAppSigningIdentifier: %@", flow.metaData.sourceAppSigningIdentifier);
-  NSLog(@"metadata filterFlowIdentifier: %@", flow.metaData.filterFlowIdentifier);
-  if (flow.remoteHostname) {
-    NSLog(@"metadata remoteHostname: %@", flow.remoteHostname);
-  }
+  // If not signed - do not exclude the application.
+  if (flow.metaData.sourceAppSigningIdentifier == nil) {
+#ifdef MZ_DEBUG
+    NSLog(@"new flow: unsigned -> %@", flow.remoteHostname);
 #endif
-
-  // For the purposes of testing. Only handle flows from com.apple.safari
-  if ([flow.metaData.sourceAppSigningIdentifier compare:@"com.apple.Safari"] != NSOrderedSame) {
     return NO;
   }
 
+  NSString* sourceId = flow.metaData.sourceAppSigningIdentifier;
+#ifdef MZ_DEBUG
+  NSLog(@"new flow: %@ -> %@", sourceId, flow.remoteHostname);
+#endif
+
+  NSEnumerator* iter = [self.vpnDisabledApps objectEnumerator];
+  while (NSString* appId = [iter nextObject]) {
+    if (sourceId.length < appId.length) {
+      continue;
+    }
+    // The source application can also be a child of the application id.
+    // for example: "com.example.foo.bar" would match "com.example.foo"
+    if ((sourceId.length > appId.length) &&
+        ([sourceId characterAtIndex:appId.length] != '.')) {
+      continue;
+    }
+
+    NSComparisonResult result = [sourceId compare:appId
+                                          options:NSLiteralSearch
+                                            range:NSMakeRange(0, appId.length)];
+    if (result == NSOrderedSame) {
+      return YES;
+    }
+  }
+
+  // No application matches this signing identifier.
+  return NO;
+}
+
+- (BOOL)handleNewFlow:(NEAppProxyFlow*) flow {
+  if (flow.metaData == nil) {
+    return NO;
+  }
+  if (flow.metaData.sourceAppSigningIdentifier == nil) {
+    return NO;
+  }
+
+  // Evaluate whether the source of this flow should be excluded from the VPN.
+  if (![self matchAppFlow:flow]) {
+    return NO;
+  }
+
+  // Perform flow bypassing.
   if ([flow isKindOfClass:[NEAppProxyTCPFlow class]]) {
     NEAppProxyTCPFlow* tcpFlow = (NEAppProxyTCPFlow*)flow;
     BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow withInterface:self.ipv4Interface];
@@ -293,9 +356,34 @@
         [VPNSplitTunnelProvider sendAppError:error completionHandler:completionHandler];
         return;
     }
+
+    NSMutableArray* apps = [NSMutableArray new];
+    NSArray* msgAppList = [msg decodeObjectOfClass:NSArray.class
+                                         forKey:@"apps"];
+    if (msgAppList) {
+      NSEnumerator* iter = [msgAppList objectEnumerator];
+      while (id appId = [iter nextObject]) {
+        if (![appId isKindOfClass:[NSString class]]) {
+          continue;
+        }
+#ifdef MZ_DEBUG
+        NSLog(@"msg %@ %@ from excluded application set", action, appId);
+#endif
+        [apps addObject:appId];
+      }
+    }
     [msg finishDecoding];
 
-    NSLog(@"app message: %@", action);
+    if ([action isEqualToString: @"clear"]) {
+      [self.vpnDisabledApps removeAllObjects];
+    } else if ([action isEqualToString: @"add"]) {
+      [self.vpnDisabledApps addObjectsFromArray:apps];
+    } else if ([action isEqualToString: @"delete"]) {
+      [self.vpnDisabledApps removeObjectsInArray:apps];
+    } else {
+      NSLog(@"unsupported app message: %@", action);  
+    }
+
     [VPNSplitTunnelProvider sendAppResponse:nil completionHandler:completionHandler];
 }
 

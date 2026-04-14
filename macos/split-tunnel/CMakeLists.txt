@@ -50,6 +50,7 @@ set_target_properties(split-tunnel PROPERTIES
 )
 
 target_compile_options(split-tunnel PUBLIC "-fobjc-arc" "-fno-objc-arc-exceptions")
+target_compile_definitions(split-tunnel PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 
 target_link_libraries(split-tunnel PRIVATE ${FW_FOUNDATION})
 target_link_libraries(split-tunnel PRIVATE ${FW_NW_EXTENSION})
