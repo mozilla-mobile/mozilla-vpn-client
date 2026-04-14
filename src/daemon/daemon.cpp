@@ -14,7 +14,6 @@
 
 #include "controller.h"
 #include "dnsutils.h"
-#include "firewallutils.h"
 #include "iputils.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -56,7 +55,6 @@ bool Daemon::activate(const QString& json) {
 
 bool Daemon::activate(const InterfaceConfig& config) {
   Q_ASSERT(wgutils() != nullptr);
-  FirewallUtils* fwu = fwutils();
 
   // There are 3 possible scenarios in which this method is called:
   //
@@ -131,11 +129,6 @@ bool Daemon::activate(const InterfaceConfig& config) {
       }
     }
 
-    // Configure the firewall, if supported.
-    if (fwu && !fwu->enable(config)) {
-      return false;
-    }
-
     // Configure LAN exclusion policies
     auto lanAddressRanges = IPAddress::lanAddressRanges();
     if (!wgutils()->excludeLocalNetworks(lanAddressRanges)) {
@@ -147,10 +140,6 @@ bool Daemon::activate(const InterfaceConfig& config) {
   // Add the peer to this interface.
   if (!wgutils()->updatePeer(config)) {
     logger.error() << "Peer creation failed.";
-    return false;
-  }
-  if (fwu && !fwu->updatePeer(config)) {
-    logger.error() << "Peer firewall setup failed.";
     return false;
   }
 
@@ -348,7 +337,6 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
 
 bool Daemon::deactivate(bool emitSignals) {
   Q_ASSERT(wgutils() != nullptr);
-  FirewallUtils* fwu = fwutils();
 
   // Deactivate the main interface.
   if (!m_connections.isEmpty()) {
@@ -377,17 +365,9 @@ bool Daemon::deactivate(bool emitSignals) {
     for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
       wgutils()->deleteRoutePrefix(ip);
     }
-    if (fwu) {
-      fwu->deletePeer(config);
-    }
     wgutils()->deletePeer(config);
   }
   m_connections.clear();
-
-  // Deactivate the firewall.
-  if (fwu) {
-    fwu->disable();
-  }
 
   // Delete the interface
   return wgutils()->deleteInterface();
@@ -422,7 +402,6 @@ bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
 
 bool Daemon::switchServer(const InterfaceConfig& config) {
   Q_ASSERT(wgutils() != nullptr);
-  FirewallUtils* fwu = fwutils();
 
   logger.debug() << "Switching server for" << config.m_hopType;
 
@@ -433,10 +412,6 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   // Activate the new peer and its routes.
   if (!wgutils()->updatePeer(config)) {
     logger.error() << "Server switch failed to update the peer wireguard config";
-    return false;
-  }
-  if (fwu && !fwu->updatePeer(config)) {
-    logger.error() << "Server switch failed to update the peer firewall config";
     return false;
   }
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
@@ -457,9 +432,6 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   if (config.m_serverPublicKey != lastConfig.m_serverPublicKey) {
     if (!wgutils()->deletePeer(lastConfig)) {
       return false;
-    }
-    if (fwu) {
-      fwu->deletePeer(lastConfig);
     }
   }
 

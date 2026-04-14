@@ -20,13 +20,11 @@ class MacOSDaemon final : public Daemon {
   WireguardUtils* wgutils() const override { return m_wgutils; }
   DnsUtils* dnsutils() override { return m_dnsutils; }
   IPUtils* iputils() override { return m_iputils; }
-  FirewallUtils* fwutils() override { return m_fwutils; }
 
  private:
   WireguardUtils* m_wgutils = nullptr;
   DnsUtils* m_dnsutils = nullptr;
   IPUtils* m_iputils = nullptr;
-  FirewallUtils* m_fwutils = nullptr;
 };
 
 #endif  // MACOSDAEMON_H
