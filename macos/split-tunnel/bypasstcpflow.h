@@ -6,7 +6,8 @@
 
 + (id)createBypass:(NEAppProxyTCPFlow *)flow withInterface:(nw_interface_t)interface;
 
-- (void)startBypass:(NEAppProxyTCPFlow *)flow
-    completionHandler:(void (^)(NSError* error))completionHandler;
+- (void)startBypass:(void (^)(NSError* error))completionHandler;
+
+@property(strong) NEAppProxyTCPFlow* flow;
 
 @end

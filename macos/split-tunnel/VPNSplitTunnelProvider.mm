@@ -235,7 +235,7 @@
       return NO;
     }
 
-    [handler startBypass:tcpFlow completionHandler:^(NSError* error){
+    [handler startBypass:^(NSError* error){
       if (error) {
         NSLog(@"flow closed with error: %@", error);
       } else {
