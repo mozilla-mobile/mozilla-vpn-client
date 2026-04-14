@@ -42,9 +42,7 @@ Daemon::~Daemon() {
   logger.debug() << "Daemon released";
 }
 
-QString Daemon::interfaceName() const {
-  return wgutils()->interfaceName();
-}
+QString Daemon::interfaceName() const { return wgutils()->interfaceName(); }
 
 bool Daemon::activate(const QString& json) {
   QJsonDocument jsDocument = QJsonDocument::fromJson(json.toUtf8());
@@ -476,7 +474,7 @@ QJsonObject Daemon::getStatus() {
 
   json.insert("version", QCoreApplication::applicationVersion());
   QJsonArray features;
-  for (const QString& f: getFeatures()) {
+  for (const QString& f : getFeatures()) {
     features.append(f);
   }
   json.insert("features", features);

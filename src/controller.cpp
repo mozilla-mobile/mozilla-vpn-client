@@ -407,7 +407,7 @@ void Controller::activateInternal(
 #endif
   logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
 
-  if(m_impl->splitTunnelSupported()) {
+  if (m_impl->splitTunnelSupported()) {
     exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
   if (Feature::get(Feature::Feature_alwaysPort53)->isSupported()) {
