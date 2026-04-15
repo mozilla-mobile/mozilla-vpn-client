@@ -5,11 +5,10 @@
 #ifndef FEATURES_H
 #define FEATURES_H
 
-#include "featuretypes.h"
-
 #include <QtGlobal>
 
 #include "constants.h"
+#include "featuretypes.h"
 
 namespace Platform {
 
@@ -94,7 +93,8 @@ namespace Feature {
 //    ConstantFeature   - Value known at compile time. Zero runtime cost.
 //                        Use when the flag depends only on platform, build
 //                        defines, or Qt version.
-//                        Example: .supported = Platform::android || Platform::ios
+//                        Example: .supported = Platform::android ||
+//                        Platform::ios
 //
 //    RuntimeFeature    - Value determined at runtime but cannot be overridden.
 //                        Use when you need to check something that isn't known
@@ -133,7 +133,6 @@ namespace Feature {
 
 // ---- Tier 1: ConstantFeature (constexpr, zero-cost) ----------------------
 
-
 inline constexpr ConstantFeature appReview = {
     .id = "appReview",
     .name = "App Review",
@@ -153,7 +152,6 @@ inline const OverridableFeature enableUpdateServer = {
     .canFlipOn = +[] { return Platform::hasBalrog; },
     .canFlipOff = +[] { return Platform::hasBalrog; },
 };
-
 
 inline constexpr ConstantFeature gleanRust = {
     .id = "gleanRust",
@@ -203,7 +201,6 @@ inline constexpr ConstantFeature stagingUpdateServer = {
     .supported = false,
 };
 
-
 inline constexpr ConstantFeature superDooperMetrics = {
     .id = "superDooperMetrics",
     .name = "Super Dooper Metrics",
@@ -249,21 +246,15 @@ inline const OverridableFeature alwaysPort53 = {
 inline constexpr ConstantFeature annualUpgrade = {
     .id = "annualUpgrade",
     .name = "Annual upgrade",
-    .evaluator = +[] {
-      return Platform::windows || Platform::macos || Platform::linux_ ||
-             Platform::wasm;
-    },
+    .supported = Platform::windows || Platform::macos || Platform::linux_ ||
+                 Platform::wasm,
 };
 
 inline constexpr ConstantFeature captivePortal = {
     .id = "captivePortal",
     .name = "Captive Portal",
-    .evaluator = +[] {
-      return Platform::linux_ || Platform::macos || Platform::windows ||
-             Platform::wasm;
-    },
-    .canFlipOn = +[] { return true; },
-    .canFlipOff = +[] { return false; },
+    .supported = Platform::linux_ || Platform::macos || Platform::windows ||
+                 Platform::wasm,
 };
 
 inline constexpr ConstantFeature checkConnectivityOnActivation = {
@@ -305,17 +296,15 @@ inline const OverridableFeature subscriptionManagement = {
 inline constexpr ConstantFeature startOnBoot = {
     .id = "startOnBoot",
     .name = "Start on boot",
-    .evaluator = +[] {
-      return Platform::windows || Platform::macos || Platform::linux_;
-    },
+    .supported = Platform::windows || Platform::macos || Platform::linux_ ||
+                 Platform::wasm,
 };
 
 inline constexpr ConstantFeature unsecuredNetworkNotification = {
     .id = "unsecuredNetworkNotification",
     .name = "Unsecured network notification",
-    .evaluator = +[] {
-      return Platform::windows || Platform::macos || Platform::linux_;
-    },
+    .supported = Platform::windows || Platform::macos || Platform::linux_ ||
+                 Platform::wasm,
 };
 
 inline const OverridableFeature addonSignature = {

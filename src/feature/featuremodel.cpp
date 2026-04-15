@@ -30,6 +30,13 @@ FeatureModel* FeatureModel::instance() {
   return s_instance;
 }
 
+#ifdef UNIT_TEST
+void FeatureModel::testCleanup() {
+  delete s_instance;
+  s_instance = nullptr;
+}
+#endif
+
 void FeatureModel::initialize() {
   if (m_initialized) return;
   m_initialized = true;
@@ -117,7 +124,7 @@ void FeatureModel::toggle(const QString& featureId) {
 
 // static
 QHash<QString, bool> FeatureModel::parseFeatures(const QByteArray& data,
-                                                  bool acceptExperiments) {
+                                                 bool acceptExperiments) {
   QHash<QString, bool> overrides;
   QJsonObject json = QJsonDocument::fromJson(data).object();
 

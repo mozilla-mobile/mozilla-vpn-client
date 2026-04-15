@@ -6,7 +6,7 @@
 
 #include "constants.h"
 #include "controller.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mfbt/checkedint.h"
@@ -30,9 +30,6 @@ KeyRegenerator::KeyRegenerator() {
   connect(vpn->controller(), &Controller::stateChanged, this,
           &KeyRegenerator::stateChanged);
   connect(&m_timer, &QTimer::timeout, this, &KeyRegenerator::stateChanged);
-  connect(Feature::get(Feature::Feature_keyRegeneration),
-          &Feature::supportedChanged, this, &KeyRegenerator::stateChanged);
-
   stateChanged();
 }
 
@@ -43,7 +40,7 @@ void KeyRegenerator::stateChanged() {
 
   m_timer.stop();
 
-  if (!Feature::get(Feature::Feature_keyRegeneration)->isSupported()) {
+  if (!Feature::keyRegeneration.supported) {
     logger.debug() << "Feature disabled";
     return;
   }

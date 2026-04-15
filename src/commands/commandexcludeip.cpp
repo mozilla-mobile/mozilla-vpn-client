@@ -4,6 +4,7 @@
 
 #include "commandexcludeip.h"
 
+#include <QCoreApplication>
 #include <QHostAddress>
 #include <QTextStream>
 
@@ -11,6 +12,7 @@
 #include "constants.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
+#include "loghandler.h"
 #include "mozillavpn.h"
 #include "settingsholder.h"
 

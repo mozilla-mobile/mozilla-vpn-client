@@ -22,6 +22,7 @@ inline const AnyFeature s_exposedFeatures[] = {
     ref(addonSignature),
     ref(alwaysPort53),
     ref(annualUpgrade),
+    ref(appReview),
     ref(captivePortal),
     ref(checkConnectivityOnActivation),
     ref(customDNS),
@@ -67,6 +68,10 @@ class FeatureModel final : public QAbstractListModel {
 
   bool isEnabledById(const QString& id) const;
 
+#ifdef UNIT_TEST
+  static void testCleanup();
+#endif
+
  private:
   FeatureModel();
   void initialize();
@@ -74,7 +79,7 @@ class FeatureModel final : public QAbstractListModel {
   FeatureProxy* proxyForId(const QString& id);
 
   static QHash<QString, bool> parseFeatures(const QByteArray& data,
-                                             bool acceptExperiments);
+                                            bool acceptExperiments);
 
   bool m_initialized = false;
   std::array<FeatureProxy, std::size(s_exposedFeatures)> m_proxies;

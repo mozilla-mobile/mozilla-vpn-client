@@ -27,7 +27,6 @@
 #endif
 
 #include "constants.h"
-#include "feature/feature.h"
 #include "feature/featuremodel.h"
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
@@ -115,37 +114,39 @@ static QList<InspectorCommand> s_commands{
                        return QJsonObject();
                      }},
 
-    InspectorCommand{"flip_off_feature", "Flip Off a feature", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       QString featureName = arguments[1];
-                       const Feature* feature = Feature::getOrNull(featureName);
-                       if (!feature) {
-                         QJsonObject obj;
-                         obj["error"] = "Feature does not exist";
-                         return obj;
-                       }
+    InspectorCommand{
+        "flip_off_feature", "Flip Off a feature", 1,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QString featureName = arguments[1];
+          auto* proxy = FeatureModel::instance()->get(featureName);
+          if (!proxy) {
+            QJsonObject obj;
+            obj["error"] = "Feature does not exist";
+            return obj;
+          }
 
-                       if (feature->isSupported()) {
-                         FeatureModel::instance()->toggle(arguments[1]);
-                       }
-                       return QJsonObject();
-                     }},
+          if (FeatureModel::instance()->isEnabledById(featureName)) {
+            FeatureModel::instance()->toggle(arguments[1]);
+          }
+          return QJsonObject();
+        }},
 
-    InspectorCommand{"flip_on_feature", "Flip On a feature", 1,
-                     [](InspectorHandler*, const QList<QByteArray>& arguments) {
-                       QString featureName = arguments[1];
-                       const Feature* feature = Feature::getOrNull(featureName);
-                       if (!feature) {
-                         QJsonObject obj;
-                         obj["error"] = "Feature does not exist";
-                         return obj;
-                       }
+    InspectorCommand{
+        "flip_on_feature", "Flip On a feature", 1,
+        [](InspectorHandler*, const QList<QByteArray>& arguments) {
+          QString featureName = arguments[1];
+          auto* proxy = FeatureModel::instance()->get(featureName);
+          if (!proxy) {
+            QJsonObject obj;
+            obj["error"] = "Feature does not exist";
+            return obj;
+          }
 
-                       if (!feature->isSupported()) {
-                         FeatureModel::instance()->toggle(arguments[1]);
-                       }
-                       return QJsonObject();
-                     }},
+          if (!FeatureModel::instance()->isEnabledById(featureName)) {
+            FeatureModel::instance()->toggle(arguments[1]);
+          }
+          return QJsonObject();
+        }},
 
     InspectorCommand{"view_tree", "Sends a view tree", 0,
                      [](InspectorHandler*, const QList<QByteArray>&) {
@@ -623,14 +624,15 @@ static QList<InspectorCommand> s_commands{
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QJsonObject obj;
                        QString featureName = arguments[1];
-                       const Feature* feature = Feature::getOrNull(featureName);
+                       auto* proxy = FeatureModel::instance()->get(featureName);
 
-                       if (!feature) {
+                       if (!proxy) {
                          obj["error"] = "Feature does not exist";
                          return obj;
                        }
 
-                       bool featureEnabled = feature->isSupported();
+                       bool featureEnabled =
+                           FeatureModel::instance()->isEnabledById(featureName);
 
                        obj["value"] = featureEnabled;
                        return obj;

@@ -19,17 +19,16 @@ QString FeatureProxy::name() const {
 bool FeatureProxy::isSupported() const { return isEnabled(*m_feature); }
 
 bool FeatureProxy::isToggleable() const {
-  return std::visit(
-      overloaded{
-          [](const ConstantFeature*) { return false; },
-          [](const RuntimeFeature*) { return false; },
-          [](const OverridableFeature* f) -> bool {
-            bool onByDefault = f->evaluator();
-            return (onByDefault && f->canFlipOff()) ||
-                   (!onByDefault && f->canFlipOn());
-          },
-      },
-      *m_feature);
+  return std::visit(AnyFeatureVisitor{
+                        [](const ConstantFeature*) { return false; },
+                        [](const RuntimeFeature*) { return false; },
+                        [](const OverridableFeature* f) -> bool {
+                          bool onByDefault = f->evaluator();
+                          return (onByDefault && f->canFlipOff()) ||
+                                 (!onByDefault && f->canFlipOn());
+                        },
+                    },
+                    *m_feature);
 }
 
 bool FeatureProxy::isOverridable() const {

@@ -5,7 +5,7 @@
 #include "mzglean.h"
 
 #include "constants.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "leakdetector.h"
@@ -78,7 +78,7 @@ void MZGlean::registerLogHandler(void (*messageHandler)(int32_t, char*)) {
 void MZGlean::initialize(const QString& channel) {
   logger.debug() << "Initializing MZGlean";
 
-  if (Feature::get(Feature::Feature_gleanRust)->isSupported()) {
+  if (Feature::gleanRust.supported) {
     if (!s_instance) {
       s_instance = new MZGlean(qApp);
 

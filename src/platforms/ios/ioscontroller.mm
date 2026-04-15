@@ -5,7 +5,7 @@
 #include "ioscontroller.h"
 #include "Mozilla-Swift.h"
 #include "controller.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "glean/generated/metrics.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -183,7 +183,7 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
       gleanDebugTag:settingsHolder->gleanDebugTagActive()
                         ? settingsHolder->gleanDebugTag().toNSString()
                         : @""
-      isSuperDooperFeatureActive:Feature::get(Feature::Feature_superDooperMetrics)->isSupported()
+      isSuperDooperFeatureActive:Feature::isEnabled(Feature::superDooperMetrics)
       installationId:config.m_installationId.toNSString()
       isMissingLocalLocation:MozillaVPN::instance()->location()->countryCode().isEmpty()
       isServerLocatedInUserCountry:MozillaVPN::instance()
@@ -269,8 +269,8 @@ void IOSController::checkStatus() {
     }
 
     logger.debug() << "ServerIpv4Gateway:" << serverIpv4Gateway
-                   << "DeviceIpv4Address:" << deviceIpv4Address
-                   << "RxBytes:" << rxBytes << "TxBytes:" << txBytes;
+                   << "DeviceIpv4Address:" << deviceIpv4Address << "RxBytes:" << rxBytes
+                   << "TxBytes:" << txBytes;
     emit statusUpdated(QString::fromNSString(serverIpv4Gateway),
                        QString::fromNSString(deviceIpv4Address), txBytes, rxBytes);
   }];
@@ -280,8 +280,7 @@ void IOSController::forceDaemonSilentServerSwitch() { [impl silentServerSwitch];
 
 void IOSController::getBackendLogs(QIODevice* device) {
   [IOSLoggerImpl getLogsWithCallback:^(NSString* logs) {
-    device->write([logs UTF8String],
-                  [logs lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
+    device->write([logs UTF8String], [logs lengthOfBytesUsingEncoding:NSUTF8StringEncoding]);
     device->close();
   }];
 }

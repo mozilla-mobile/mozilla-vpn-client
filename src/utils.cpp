@@ -6,7 +6,7 @@
 
 #include "app.h"
 #include "constants.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "logger.h"
 #include "loghandler.h"
 #include "urlopener.h"
@@ -75,7 +75,7 @@ void Utils::launchPlayStore() {
 bool Utils::viewLogs() {
   logger.debug() << "View logs";
 
-  if (!Feature::get(Feature::Feature_shareLogs)->isSupported()) {
+  if (!Feature::isEnabled(Feature::shareLogs)) {
     logger.error() << "ViewLogs Called on unsupported OS or version!";
     return false;
   }

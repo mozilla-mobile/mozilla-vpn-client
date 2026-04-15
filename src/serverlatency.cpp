@@ -4,13 +4,14 @@
 
 #include "serverlatency.h"
 
+#include <QApplication>
 #include <QDateTime>
 #ifndef MZ_WASM
 #  include <QNetworkInterface>
 #endif
 
 #include "controller.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mfbt/checkedint.h"
@@ -82,9 +83,7 @@ void ServerLatency::initialize() {
   connect(&m_progressDelayTimer, &QTimer::timeout, this,
           [this]() { emit progressChanged(); });
 
-  const Feature* feature = Feature::get(Feature::Feature_serverConnectionScore);
-  connect(feature, &Feature::supportedChanged, this, &ServerLatency::start);
-  if (feature->isSupported()) {
+  if (Feature::serverConnectionScore.supported) {
     m_refreshTimer.start(SERVER_LATENCY_INITIAL);
   }
 
@@ -98,7 +97,7 @@ void ServerLatency::initialize() {
 
 void ServerLatency::start() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
+  if (!Feature::serverConnectionScore.supported) {
     clear();
     return;
   }

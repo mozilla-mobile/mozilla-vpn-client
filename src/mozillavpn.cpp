@@ -13,7 +13,7 @@
 #include "constants.h"
 #include "controller.h"
 #include "dnshelper.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "feature/taskgetfeaturelistworker.h"
 #include "frontend/navigationbarmodel.h"
 #include "frontend/navigator.h"
@@ -516,7 +516,7 @@ void MozillaVPN::maybeStateMain() {
 
 void MozillaVPN::authenticate() {
   return authenticateWithType(
-      Feature::get(Feature::Feature_inAppAuthentication)->isSupported()
+      Feature::isEnabled(Feature::inAppAuthentication)
           ? AuthenticationListener::AuthenticationInApp
           : AuthenticationListener::AuthenticationInBrowser);
 }
@@ -588,7 +588,7 @@ void MozillaVPN::completeAuthentication(const QByteArray& json,
     return;
   }
 
-  if (Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+  if (Feature::webPurchase.supported) {
     // Note that if web purchase gets split up so that it is not linked
     // to a fresh authentication task then this can be removed from here
     // as the end of that flow should call subscriptionCompleted.
@@ -861,7 +861,7 @@ void MozillaVPN::reset(bool forceInitialState) {
   TaskScheduler::scheduleTask(new TaskDeleteOSTunnelConfig());
 
   PurchaseHandler::instance()->stopSubscription();
-  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+  if (!Feature::webPurchase.supported) {
     ProductsHandler::instance()->stopProductsRegistration();
   }
 
@@ -1036,7 +1036,7 @@ void MozillaVPN::subscriptionStarted(const QString& productIdentifier) {
   logger.debug() << "Subscription started" << productIdentifier;
 
   setState(StateSubscriptionInProgress);
-  if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+  if (!Feature::webPurchase.supported) {
     ProductsHandler* products = ProductsHandler::instance();
     Q_ASSERT(products->hasProductsRegistered());
   }
@@ -1244,7 +1244,7 @@ void MozillaVPN::maybeRegenerateDeviceKey() {
 
   bool mustRegenerateKey = false;
 
-  if (Feature::get(Feature::Feature_keyRegeneration)->isSupported()) {
+  if (Feature::isEnabled(Feature::keyRegeneration)) {
     qint64 timeSinceLastKeyRegeneration =
         QDateTime::currentSecsSinceEpoch() -
         settingsHolder->keyRegenerationTimeSec();
@@ -1495,9 +1495,7 @@ void MozillaVPN::registerNavigatorScreens() {
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenAuthenticating.qml",
       QVector<int>{App::StateAuthenticating},
       [](int*) -> int8_t {
-        return Feature::get(Feature::Feature_inAppAuthentication)->isSupported()
-                   ? -1
-                   : 0;
+        return Feature::isEnabled(Feature::inAppAuthentication) ? -1 : 0;
       },
       []() -> bool {
         MozillaVPN::instance()->cancelAuthentication();
@@ -1510,9 +1508,7 @@ void MozillaVPN::registerNavigatorScreens() {
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenAuthenticationInApp.qml",
       QVector<int>{App::StateAuthenticating},
       [](int*) -> int8_t {
-        return Feature::get(Feature::Feature_inAppAuthentication)->isSupported()
-                   ? 0
-                   : -1;
+        return Feature::isEnabled(Feature::inAppAuthentication) ? 0 : -1;
       },
       []() -> bool {
         MozillaVPN::instance()->cancelAuthentication();
@@ -1664,10 +1660,7 @@ void MozillaVPN::registerNavigatorScreens() {
       Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenSubscriptionInProgressIAP.qml",
       QVector<int>{App::StateSubscriptionInProgress},
-      [](int*) -> int8_t {
-        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? -1
-                                                                         : 99;
-      },
+      [](int*) -> int8_t { return Feature::webPurchase.supported ? -1 : 99; },
       []() -> bool { return false; });
 
   Navigator::registerScreen(
@@ -1675,10 +1668,7 @@ void MozillaVPN::registerNavigatorScreens() {
       Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenSubscriptionInProgressWeb.qml",
       QVector<int>{App::StateSubscriptionInProgress},
-      [](int*) -> int8_t {
-        return Feature::get(Feature::Feature_webPurchase)->isSupported() ? 99
-                                                                         : -1;
-      },
+      [](int*) -> int8_t { return Feature::webPurchase.supported ? 99 : -1; },
       []() -> bool { return false; });
 
   Navigator::registerScreen(

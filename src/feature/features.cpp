@@ -61,9 +61,10 @@ const OverridableFeature splitTunnel = {
 const OverridableFeature splitTunnel = {
     .id = "splitTunnel",
     .name = "Split-tunnel",
-    .evaluator = +[] {
-      return Platform::android || Platform::wasm || Platform::unitTest;
-    },
+    .evaluator =
+        +[] {
+          return Platform::android || Platform::wasm || Platform::unitTest;
+        },
 };
 #endif
 
