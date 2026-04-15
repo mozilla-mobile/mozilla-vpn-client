@@ -354,17 +354,8 @@ void Controller::updateRequired() {
   }
 }
 
-void Controller::activateInternal(
-    DNSPortPolicy dnsPort,
-    ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection,
-    ActivationPrincipal initiator = ClientUser) {
-  logger.debug() << "Activation internal";
-  Q_ASSERT(m_impl);
-  m_initiator = initiator;
-
-  m_handshakeTimer.stop();
-  m_activationQueue.clear();
-
+void Controller::setupConfigs(DNSPortPolicy dnsPort,
+                              ServerSelectionPolicy serverSelectionPolicy) {
   Server exitServer =
       serverSelectionPolicy == DoNotRandomizeServerSelection &&
               !m_serverData.exitServerPublicKey().isEmpty()
@@ -386,7 +377,7 @@ void Controller::activateInternal(
   }
   SettingsHolder* settingsHolder = SettingsHolder::instance();
 
-  auto allowedIPList = initiator == ExtensionUser
+  auto allowedIPList = m_initiator == ExtensionUser
                            ? getExtensionProxyAddressRanges(exitServer)
                            : getAllowedIPAddressRanges(exitServer);
   // Prepare the exit server's connection data.
@@ -505,6 +496,20 @@ void Controller::activateInternal(
       m_activationQueue.first().m_serverPublicKey);
   m_serverData.setExitServerPublicKey(
       m_activationQueue.last().m_serverPublicKey);
+}
+
+void Controller::activateInternal(
+    DNSPortPolicy dnsPort,
+    ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection,
+    ActivationPrincipal initiator = ClientUser) {
+  logger.debug() << "Activation internal";
+  Q_ASSERT(m_impl);
+  m_initiator = initiator;
+
+  m_handshakeTimer.stop();
+  m_activationQueue.clear();
+
+  setupConfigs(dnsPort, serverSelectionPolicy);
 
   m_pingReceived = false;
   m_pingCanary.start(m_activationQueue.first().m_serverIpv4AddrIn, "0.0.0.0/0");
@@ -864,7 +869,15 @@ void Controller::captivePortalPresent() {
 void Controller::serverDataChanged() {
   if (!isActive() || m_state == StateDisconnecting) {
     logger.debug() << "Server data changed but we are off or disconnecting";
+
+#ifdef MZ_IOS
+    // If the VPN is disconnected, we still need to update the config in the
+    // network extension so if the next connection comes from control center or
+    // app intent the latest config will be used.
+    logger.debug() << "However, we are on iOS so we are forwarding the config";
+#else
     return;
+#endif
   }
 
   TaskScheduler::deleteTasks();
@@ -872,9 +885,22 @@ void Controller::serverDataChanged() {
       new TaskControllerAction(TaskControllerAction::eSwitch));
 }
 
+#ifdef MZ_IOS
+void Controller::sendUpdatedConfig(const ServerData& serverData) {
+  logger.debug() << "Sending updated config";
+  m_serverData = serverData;
+  setupConfigs(DoNotForceDNSPort, RandomizeServerSelection);
+  const InterfaceConfig& config = m_activationQueue.first();
+  m_impl->activate(config, Controller::ReasonUpdating);
+}
+#endif
+
 bool Controller::switchServers(const ServerData& serverData) {
   if (!isActive()) {
     logger.debug() << "Server data changed but we are off";
+#ifdef MZ_IOS
+    sendUpdatedConfig(serverData);
+#endif
     return false;
   }
 

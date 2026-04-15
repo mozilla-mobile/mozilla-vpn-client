@@ -91,6 +91,7 @@ class Controller : public QObject, public LogSerializer {
     ReasonNone = 0,
     ReasonSwitching,
     ReasonConfirming,
+    ReasonUpdating
   };
 
   enum ErrorCode {
@@ -274,6 +275,9 @@ class Controller : public QObject, public LogSerializer {
   void setError(ErrorCode code);
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
+  void setupConfigs(DNSPortPolicy dnsPort,
+                    ServerSelectionPolicy serverSelectionPolicy);
+  void sendUpdatedConfig(const ServerData& serverData);
   QString useLocalSocketPath() const;
 
  private:
