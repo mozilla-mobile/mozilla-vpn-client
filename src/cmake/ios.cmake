@@ -168,6 +168,7 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iostunnelmanager.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/TurnOffIntent.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/TurnOnIntent.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/VPNStatusIntent.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/AppShortcuts.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.mm

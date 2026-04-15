@@ -1106,6 +1106,18 @@ iosAppIntentsMain:
   turnOffError:
     value: No active VPN connection
     comment: Error given by Siri when unable to turn off VPN due to a lack of existing connection
+  statusQueryTitle:
+    value: Is the VPN currently connected?
+    comment: Title used by system to offer to query VPN status
+  statusQueryDescription:
+    value: Queries current Mozilla VPN connection status
+    comment: Description used to provide more context in Shortcuts and other places
+  statusQueryResponseConnected:
+    value: Mozilla VPN is currently connected
+    comment: Response given when the VPN is connected
+  statusQueryResponseDisconnected:
+    value: Mozilla VPN is currently disconnected
+    comment: Response given when the VPN is disconnected
 
 iosAppIntentsActivate:
   activate1:
@@ -1152,3 +1164,35 @@ iosAppIntentsDeactivate:
   deactivate7:
     value: "Disconnect from %@"
     comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+
+iosAppIntentsQueryStatus:
+  query1:
+    value: Is %@ currently active?
+    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  query2:
+    value: Is %@ currently activated?
+    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  query3:
+    value: Is %@ currently turned on?
+    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  query4:
+    value: Is %@ currently switched on?
+    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  query5:
+    value: Is %@ currently connected?
+    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  query6:
+    value: Is %@ active?
+    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  query7:
+    value: Is %@ activated?
+    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  query8:
+    value: Is %@ turned on?
+    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  query9:
+    value: Is %@ switched on?
+    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  query10:
+    value: Is %@ connected?
+    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.

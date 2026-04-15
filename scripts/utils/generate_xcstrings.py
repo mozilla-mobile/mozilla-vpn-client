@@ -133,18 +133,14 @@ def build_phrase_section(phrase_strings, locale_translations):
     return {'localizations': localizations}
 
 
-def build_appshortcuts_xcstrings(activate_strings, deactivate_strings, locale_translations):
-    """Build AppShortcuts.xcstrings dict from activate/deactivate phrase strings."""
+def build_appshortcuts_xcstrings(intent_phrase_array, locale_translations):
+    """Build AppShortcuts.xcstrings dict from phrase strings."""
     strings = {}
 
-    if activate_strings:
+    for phrase_set in intent_phrase_array:
         # The xcstrings key for a phrase group is the first English phrase value
-        section_key = using_app_placeholder(next(iter(activate_strings.values()))['value'][0])
-        strings[section_key] = build_phrase_section(activate_strings, locale_translations)
-
-    if deactivate_strings:
-        section_key = using_app_placeholder(next(iter(deactivate_strings.values()))['value'][0])
-        strings[section_key] = build_phrase_section(deactivate_strings, locale_translations)
+        section_key = using_app_placeholder(next(iter(phrase_set.values()))['value'][0])
+        strings[section_key] = build_phrase_section(phrase_set, locale_translations)
 
     return {'sourceLanguage': 'en', 'strings': strings, 'version': '1.1'}
 
@@ -183,6 +179,10 @@ def main():
         k: v for k, v in all_strings.items()
         if v['string_id'].startswith('vpn.iosAppIntentsDeactivate')
     }
+    query_strings = {
+        k: v for k, v in all_strings.items()
+        if v['string_id'].startswith('vpn.iosAppIntentsQueryStatus')
+    }
     main_strings = {
         k: v for k, v in all_strings.items()
         if v['string_id'].startswith('vpn.iosAppIntentsMain')
@@ -218,7 +218,7 @@ def main():
     print(f'Wrote {localizable_path}')
 
     # Write AppShortcuts.xcstrings
-    appshortcuts = build_appshortcuts_xcstrings(activate_strings, deactivate_strings, locale_translations)
+    appshortcuts = build_appshortcuts_xcstrings([activate_strings, deactivate_strings, query_strings], locale_translations)
     appshortcuts_path = os.path.join(args.output_dir, 'AppShortcuts.xcstrings')
     with open(appshortcuts_path, 'w', encoding='utf-8') as f:
         json.dump(appshortcuts, f, indent=2, ensure_ascii=False)
