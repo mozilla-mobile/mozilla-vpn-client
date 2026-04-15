@@ -178,13 +178,6 @@ public class IOSControllerImpl: NSObject {
             vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
 
-      self.configureTunnel(isActivating: reason != 3, serverData: serverData, reason: reason, permitLocalNetworkFeatures: permitLocalNetworkFeatures, allowedIPAddressRanges: allowedIPAddressRanges, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isServerLocatedInUserCountry: !isMissingLocalLocation ? isServerLocatedInUserCountry : nil, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback, entryCity: serverData.first?.entryCity, exitCity: serverData.first?.exitCity)
-    }
-
-    func configureTunnel(isActivating: Bool = true, serverData: [VPNServerData], reason: Int, permitLocalNetworkFeatures: Bool, allowedIPAddressRanges: [VPNIPAddressRange],
-            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isServerLocatedInUserCountry: Bool?,
-            disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
-            vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void, entryCity: String?, exitCity: String?) {
         TunnelManager.withTunnel { tunnel in
             // Let's remove the previous config if it exists.
             (tunnel.protocolConfiguration as? NETunnelProviderProtocol)?.destroyConfigurationReference()
@@ -195,6 +188,16 @@ public class IOSControllerImpl: NSObject {
               disconnectOnErrorCallback()
               return
             }
+          return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, permitLocalNetworkFeatures: permitLocalNetworkFeatures, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isServerLocatedInUserCountry: !isMissingLocalLocation ? isServerLocatedInUserCountry : nil, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback, entryCity: serverData.first?.entryCity, exitCity: serverData.first?.exitCity)
+        }
+    }
+
+    func configureTunnel(configs: [TunnelConfiguration], reason: Int, serverName: String, permitLocalNetworkFeatures: Bool,
+            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isServerLocatedInUserCountry: Bool?,
+            disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
+            vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void, entryCity: String?, exitCity: String?) {
+        let isActivating = reason != 3
+        TunnelManager.withTunnel { tunnel in
 
             guard let config = configs.first else {
               IOSControllerImpl.logger.error(message: "No VPN config found")
