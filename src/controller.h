@@ -277,7 +277,9 @@ class Controller : public QObject, public LogSerializer {
   void serverDataChanged();
   void setupConfigs(DNSPortPolicy dnsPort,
                     ServerSelectionPolicy serverSelectionPolicy);
+#ifdef MZ_IOS
   void sendUpdatedConfig(const ServerData& serverData);
+#endif
   QString useLocalSocketPath() const;
 
  private:
