@@ -198,7 +198,6 @@ public class IOSControllerImpl: NSObject {
             vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void, entryCity: String?, exitCity: String?) {
         let isActivating = reason != 3
         TunnelManager.withTunnel { tunnel in
-
             guard let config = configs.first else {
               IOSControllerImpl.logger.error(message: "No VPN config found")
               disconnectOnErrorCallback()
@@ -236,23 +235,23 @@ public class IOSControllerImpl: NSObject {
             tunnel.localizedDescription = VPN_NAME
             tunnel.isEnabled = true
 
-          if isActivating {
-            // Create a rule so that the VPN always connects. This allows reconnection if
-            // the device reboots or the network extension is stopped for an unexpected reason,
-            // such as the magic Apple "soft reboot".
-             let alwaysConnect = NEOnDemandRuleConnect()
-             alwaysConnect.interfaceTypeMatch = .any
-             tunnel.isOnDemandEnabled = true
-             tunnel.onDemandRules = [alwaysConnect]
-          }
+            if isActivating {
+              // Create a rule so that the VPN always connects. This allows reconnection if
+              // the device reboots or the network extension is stopped for an unexpected reason,
+              // such as the magic Apple "soft reboot".
+              let alwaysConnect = NEOnDemandRuleConnect()
+              alwaysConnect.interfaceTypeMatch = .any
+              tunnel.isOnDemandEnabled = true
+              tunnel.onDemandRules = [alwaysConnect]
+            }
 
             return tunnel.saveToPreferences { saveError in
                 // At this point, the user has made a selection on the system config permission modal to either allow or not allow
                 // the vpn configuration to be created, so it is safe to run activation retries via Controller::startHandshakeTimer()
                 // without the possibility or re-prompting (flickering) the modal while it is currently being displayed
-              if isActivating {
-                vpnConfigPermissionResponseCallback(saveError == nil)
-              }
+                if isActivating {
+                  vpnConfigPermissionResponseCallback(saveError == nil)
+                }
 
                 if let error = saveError {
                     IOSControllerImpl.logger.error(message: "Connect Tunnel Save Error: \(error)")
