@@ -159,8 +159,12 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/env.h
     ${MZ_SOURCE_DIR}/errorhandler.cpp
     ${MZ_SOURCE_DIR}/errorhandler.h
-    ${MZ_SOURCE_DIR}/feature/feature.cpp
-    ${MZ_SOURCE_DIR}/feature/feature.h
+    ${MZ_SOURCE_DIR}/feature/features.h
+    ${MZ_SOURCE_DIR}/feature/features.cpp
+    ${MZ_SOURCE_DIR}/feature/featuretypes.h
+    ${MZ_SOURCE_DIR}/feature/featuretypes.cpp
+    ${MZ_SOURCE_DIR}/feature/featureproxy.cpp
+    ${MZ_SOURCE_DIR}/feature/featureproxy.h
     ${MZ_SOURCE_DIR}/frontend/navigator.cpp
     ${MZ_SOURCE_DIR}/frontend/navigator.h
     ${MZ_SOURCE_DIR}/frontend/navigationbarbutton.cpp

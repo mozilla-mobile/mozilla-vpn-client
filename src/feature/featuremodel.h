@@ -6,17 +6,48 @@
 #define FEATUREMODEL_H
 
 #include <QAbstractListModel>
-#include <QObject>
-#include <QPair>
+#include <QHash>
+#include <array>
 
-class Feature;
+#include "featureproxy.h"
+#include "features.h"
+
+using namespace Feature;
+
+// Features the FeatureModel exposes: anything QML/UI reads, plus anything the
+// Guardian override API or dev menu needs to flip. Features outside this list
+// are unreachable via get()/isEnabledById()/updateFeatureList().
+inline const AnyFeature s_exposedFeatures[] = {
+    ref(accountDeletion),
+    ref(addonSignature),
+    ref(alwaysPort53),
+    ref(annualUpgrade),
+    ref(captivePortal),
+    ref(checkConnectivityOnActivation),
+    ref(customDNS),
+    ref(enableUpdateServer),
+    ref(factoryReset),
+    ref(freeTrial),
+    ref(inAppAccountCreate),
+    ref(inAppAuthentication),
+    ref(multiHop),
+    ref(notificationControl),
+    ref(recommendedServers),
+    ref(replacerAddon),
+    ref(serverUnavailableNotification),
+    ref(shareLogs),
+    ref(splitTunnel),
+    ref(startOnBoot),
+    ref(subscriptionManagement),
+    ref(themeSelectionIncludesAutomatic),
+    ref(unsecuredNetworkNotification),
+    ref(webExtension),
+    ref(webPurchase),
+};
 
 class FeatureModel final : public QAbstractListModel {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(FeatureModel)
-
- private:
-  FeatureModel() = default;
 
  public:
   enum ModelRoles {
@@ -27,7 +58,6 @@ class FeatureModel final : public QAbstractListModel {
 
   void updateFeatureList(const QByteArray& data);
 
-  // QAbstractListModel methods
   QHash<int, QByteArray> roleNames() const override;
   int rowCount(const QModelIndex&) const override;
   QVariant data(const QModelIndex& index, int role) const override;
@@ -35,54 +65,19 @@ class FeatureModel final : public QAbstractListModel {
   Q_INVOKABLE void toggle(const QString& feature);
   Q_INVOKABLE QObject* get(const QString& feature);
 
- private:
-  /**
-   * @brief Parses an object with a list of features to enable / disable.
-   *
-   * The expected format of the object is:
-   *
-   * ```json
-   * {
-   *   "featureToEnable": true,
-   *   "featureToDisable": false,
-   * }
-   * ```
-   *
-   * Features _not_ in the object are ignored by this function.
-   *
-   * @param features
-   * @return QPair<QStringList, QStringList> Returns the a list of the feature
-   * to enabled and disable respectively.
-   */
-  static QPair<QStringList, QStringList> parseFeatures(
-      const QJsonValue& features);
+  bool isEnabledById(const QString& id) const;
 
-  /**
-   * @brief Parses an object with a list of experimental features to enable /
-   * disable and the values of related experimental feature settings.
-   *
-   * The expected format of the object is:
-   *
-   * ```json
-   * {
-   *   "experimentalFeatureToEnable": {
-   *      "aFeatureSetting": "aha!"
-   *   },
-   *   "anotherExperimentalFeatureToEnable": {
-   *      "anotherFeatureSetting": 42
-   *   },
-   * }
-   * ```
-   *
-   * Experimental features _not_ in the object are disabled.
-   *
-   *
-   * @param features
-   * @return QPair<QStringList, QStringList> Returns a list of the feature
-   * to enabled and disable respectively.
-   */
-  static QPair<QStringList, QStringList> parseExperimentalFeatures(
-      const QJsonValue& experimentalFeatures);
+ private:
+  FeatureModel();
+  void initialize();
+
+  FeatureProxy* proxyForId(const QString& id);
+
+  static QHash<QString, bool> parseFeatures(const QByteArray& data,
+                                             bool acceptExperiments);
+
+  bool m_initialized = false;
+  std::array<FeatureProxy, std::size(s_exposedFeatures)> m_proxies;
 };
 
 #endif  // FEATUREMODEL_H

@@ -22,8 +22,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/constants.h
     ${CMAKE_SOURCE_DIR}/src/constants.cpp
     ${CMAKE_SOURCE_DIR}/src/settingslist.h
-    ${CMAKE_SOURCE_DIR}/src/feature/featurelist.h
-    ${CMAKE_SOURCE_DIR}/src/feature/experimentalfeaturelist.h
     ${CMAKE_SOURCE_DIR}/src/addons/addon.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/addon.h
     ${CMAKE_SOURCE_DIR}/src/addons/addonapi.cpp
@@ -78,8 +76,12 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/env.h
     ${CMAKE_SOURCE_DIR}/src/errorhandler.cpp
     ${CMAKE_SOURCE_DIR}/src/errorhandler.h
-    ${CMAKE_SOURCE_DIR}/src/feature/feature.cpp
-    ${CMAKE_SOURCE_DIR}/src/feature/feature.h
+    ${CMAKE_SOURCE_DIR}/src/feature/features.h
+    ${CMAKE_SOURCE_DIR}/src/feature/features.cpp
+    ${CMAKE_SOURCE_DIR}/src/feature/featuretypes.h
+    ${CMAKE_SOURCE_DIR}/src/feature/featuretypes.cpp
+    ${CMAKE_SOURCE_DIR}/src/feature/featureproxy.cpp
+    ${CMAKE_SOURCE_DIR}/src/feature/featureproxy.h
     ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelist.cpp
     ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelist.h
     ${CMAKE_SOURCE_DIR}/src/feature/taskgetfeaturelistworker.cpp
