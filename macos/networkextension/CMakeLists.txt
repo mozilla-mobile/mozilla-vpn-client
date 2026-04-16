@@ -65,6 +65,16 @@ target_sources(networkextension PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/VPNSplitTunnelProvider.mm
 )
 
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
+add_rust_library(boringtun
+    PACKAGE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/boringtun
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    FEATURES ffi-bindings
+    CRATE_NAME boringtun
+)
+target_include_directories(networkextension PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/boringtun/boringtun/src)
+target_link_libraries(networkextension PRIVATE boringtun)
+
 # Install an embedded provisioning profile if one exists in the source directory.
 if((NOT XCODE) AND (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile))
     target_sources(networkextension PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile)
