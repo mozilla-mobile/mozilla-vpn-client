@@ -304,7 +304,18 @@
   // Perform flow bypassing.
   if ([flow isKindOfClass:[NEAppProxyTCPFlow class]]) {
     NEAppProxyTCPFlow* tcpFlow = (NEAppProxyTCPFlow*)flow;
-    BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow withInterface:self.ipv4Interface];
+    nw_interface_t via = nil;
+    if (@available(macOS 15, *)) {
+      int family = nw_endpoint_get_address(tcpFlow.remoteFlowEndpoint)->sa_family;
+      via = (family == AF_INET6) ? self.ipv6Interface : self.ipv4Interface;
+    } else if ([tcpFlow.remoteEndpoint isKindOfClass:[NWHostEndpoint class]]) {
+      NWHostEndpoint* host = (NWHostEndpoint*)tcpFlow.remoteEndpoint;
+      via = [host.hostname containsString:@":"] ? self.ipv6Interface : self.ipv4Interface;
+    } else {
+      via = self.ipv4Interface;
+    }
+
+    BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow withInterface:via];
     if (!handler) {
       return NO;
     }
