@@ -39,14 +39,14 @@ tasks:
             build-type: android/armv7
     android-x86:
         requires-level: 3
-        release-artifacts: [mozillavpn-x86-release.apk, mozillavpn-foss-armeabi-v7a-release.apk]
+        release-artifacts: [mozillavpn-x86-release.apk, mozillavpn-foss-x86-release.apk]
         dependencies:
             signing: signing-android-x86/release
         attributes:
             build-type: android/x86
     android-x64:
         requires-level: 3
-        release-artifacts: [mozillavpn-x86_64-release.apk, mozillavpn-foss-armeabi-v7a-release.apk]
+        release-artifacts: [mozillavpn-x86_64-release.apk, mozillavpn-foss-x86_64-release.apk]
         dependencies:
             signing: signing-android-x64/release
         attributes:
