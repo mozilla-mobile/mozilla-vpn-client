@@ -179,6 +179,7 @@ endfunction()
 #   LIBRARY_FILE: Filename of the expected library to be built.
 #   CARGO_ENV: Environment variables to pass to cargo
 #   SHARED: Whether or not we are building a shared library. Defaults to "false".
+#   EXTRA_ARGS: Additional arguments to pass to 'cargo build' when building the crate.
 #
 # This function generates commands necessary to build static archives
 # in ${BINARY_DIR}/${ARCH}/debug/ and ${BINARY_DIR}/${ARCH}/release/
@@ -192,7 +193,7 @@ function(build_rust_archives)
     cmake_parse_arguments(RUST_BUILD
         ""
         "ARCH;BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
-        "CARGO_ENV;SHARED"
+        "CARGO_ENV;SHARED;EXTRA_ARGS"
         ${ARGN})
 
     list(APPEND RUST_BUILD_CARGO_ENV CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home)
@@ -235,6 +236,8 @@ function(build_rust_archives)
         endif()
     endif()
 
+    set(RUST_BUILD_COMMON_ARGS)
+    list(APPEND RUST_BUILD_COMMON_ARGS --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR} ${RUST_BUILD_EXTRA_ARGS})
     if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles") OR XCODE)
         ## If the generator supports it, we can improve build times by setting
         # a DEPFILE to let CMake know when the library needs building and when
@@ -252,7 +255,7 @@ function(build_rust_archives)
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build --lib --release ${RUST_BUILD_COMMON_ARGS}
         )
 
         ## Outputs for the debug build
@@ -262,7 +265,7 @@ function(build_rust_archives)
             JOB_POOL cargo
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build --lib ${RUST_BUILD_COMMON_ARGS}
         )
 
         ## Reset our policy changes
@@ -280,7 +283,7 @@ function(build_rust_archives)
                 ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/.noexist
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --release --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build --lib --release ${RUST_BUILD_COMMON_ARGS}
         )
 
         ## Outputs for the debug build
@@ -290,7 +293,7 @@ function(build_rust_archives)
                 ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/.noexist
             WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
             COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR}
+                    ${CARGO_BUILD_TOOL} build --lib ${${RUST_BUILD_COMMON_ARGS}}
         )
     endif()
 endfunction()
@@ -309,12 +312,13 @@ endfunction()
 #   DEPENDS: Additional files on which the target depends.
 #   SHARED: Whether or not we are building a shared library. Defaults to "false".
 #   FW_NAME: Standalone dylibs need to be wrapped in a framework for distribtuion. Required when building shared lib for iOS.
+#   FEATURES: Additional features to enable when building the crate.
 #
 function(add_rust_library TARGET_NAME)
     cmake_parse_arguments(RUST_TARGET
         ""
         "BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
-        "ARCH;CARGO_ENV;DEPENDS;SHARED;FW_NAME"
+        "ARCH;CARGO_ENV;DEPENDS;SHARED;FW_NAME;FEATURES"
         ${ARGN})
 
     if(NOT RUST_TARGET_SHARED)
@@ -369,6 +373,12 @@ function(add_rust_library TARGET_NAME)
         endif()
     endif()
 
+    set(RUST_TARGET_EXTRA_ARGS)
+    if(RUST_TARGET_FEATURES)
+        list(JOIN RUST_TARGET_FEATURES "," RUST_TARGET_FEATURES_JOINED)
+        list(APPEND RUST_TARGET_EXTRA_ARGS --features ${RUST_TARGET_FEATURES_JOINED})
+    endif()
+
     get_rust_library_filename(${RUST_TARGET_SHARED} ${RUST_TARGET_CRATE_NAME})
 
     ## Build the rust library file(s)
@@ -380,6 +390,7 @@ function(add_rust_library TARGET_NAME)
             CRATE_NAME ${RUST_TARGET_CRATE_NAME}
             CARGO_ENV ${RUST_TARGET_CARGO_ENV}
             SHARED ${RUST_TARGET_SHARED}
+            EXTRA_ARGS ${RUST_TARGET_EXTRA_ARGS}
         )
 
         if(RUST_TARGET_DEPENDS)
