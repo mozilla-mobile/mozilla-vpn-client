@@ -14,8 +14,6 @@ class MacOSDaemon final : public Daemon {
   MacOSDaemon(QObject* parent = nullptr);
   ~MacOSDaemon();
 
-  static MacOSDaemon* instance();
-
  protected:
   WireguardUtils* wgutils() const override { return m_wgutils; }
   DnsUtils* dnsutils() override { return m_dnsutils; }
