@@ -155,7 +155,7 @@
   [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"ff00::" andPrefix:8]];
 
   // Exclude link-local traffic
-  [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"169.256.0.0" andPrefix:16]];
+  [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"169.254.0.0" andPrefix:16]];
   [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"fe80::" andPrefix:10]];
 
   // Exclude loopback traffic
@@ -296,13 +296,6 @@
 }
 
 - (BOOL)handleNewFlow:(NEAppProxyFlow*) flow {
-  if (flow.metaData == nil) {
-    return NO;
-  }
-  if (flow.metaData.sourceAppSigningIdentifier == nil) {
-    return NO;
-  }
-
   // Evaluate whether the source of this flow should be excluded from the VPN.
   if (![self matchAppFlow:flow]) {
     return NO;
