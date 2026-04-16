@@ -65,10 +65,13 @@ void MacOSAppListProvider::getApplicationList() {
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   if (pe.contains("HOME")) {
     fetchEntries(pe.value("HOME") + "/Applications", out);
+    fetchEntries(pe.value("HOME") + "/Applications/Utilities", out);
   }
 
   fetchEntries("/Applications", out);
+  fetchEntries("/Applications/Utilities", out);
   fetchEntries("/System/Applications", out);
+  fetchEntries("/System/Applications/Utilities", out);
   fetchEntries("/System/Cryptexes/App/System/Applications", out);
 
   emit newAppList(out);
