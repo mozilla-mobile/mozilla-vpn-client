@@ -148,10 +148,19 @@
   [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"10.0.0.0" andPrefix:8]];
   [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"172.16.0.0" andPrefix:12]];
   [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"192.168.0.0" andPrefix:16]];
+  [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"fc00::" andPrefix:7]];
+
+  // Exclude multicast traffic
   [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"224.0.0.0" andPrefix:4]];
+  [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"ff00::" andPrefix:8]];
+
+  // Exclude link-local traffic
+  [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"169.256.0.0" andPrefix:16]];
+  [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"fe80::" andPrefix:10]];
 
   // Exclude loopback traffic
   [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"127.0.0.0" andPrefix:8]];
+  [excludeRules addObject:[VPNSplitTunnelProvider matchRoute:@"::1" andPrefix:128]];
 
   // Exclude connections to the VPN server
   NSString* serverIpv4Addr = [options objectForKey:@"serverIpv4AddrIn"];
