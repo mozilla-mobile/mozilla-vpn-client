@@ -9,24 +9,8 @@
 @implementation BypassTcpFlow
 
 + (id)createBypass:(NEAppProxyTCPFlow *)flow
+        toEndpoint:(nw_endpoint_t)endpoint
      withInterface:(nw_interface_t)interface {
-
-  nw_endpoint_t endpoint;
-  if (@available(macOS 15, *)) {
-    endpoint = flow.remoteFlowEndpoint;
-  } else if ([flow.remoteEndpoint isKindOfClass:[NWHostEndpoint class]]) {
-    NWHostEndpoint* host = (NWHostEndpoint*)flow.remoteEndpoint;
-    endpoint = nw_endpoint_create_host([host.hostname UTF8String], [host.port UTF8String]);
-  } else if ([flow.remoteEndpoint isKindOfClass:[NWBonjourServiceEndpoint class]]) {
-    NWBonjourServiceEndpoint* service = (NWBonjourServiceEndpoint*)flow.remoteEndpoint;
-    endpoint = nw_endpoint_create_bonjour_service([service.name UTF8String],
-                                                  [service.type UTF8String],
-                                                  [service.domain UTF8String]);
-  } else {
-    // Unsupported remote endpoint type.
-    return nil;
-  }
-
   BypassTcpFlow* bypass = [BypassTcpFlow new];
   bypass.flow = flow;
 

@@ -4,6 +4,8 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
+#include <sys/socket.h>
+
 #import "bypassudpflow.h"
 
 @implementation BypassUdpFlow {
@@ -24,36 +26,66 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType,
 }
 
 + (id)createBypass:(NEAppProxyUDPFlow *)flow
+     localEndpoint:(nw_endpoint_t)endpoint
      withInterface:(nw_interface_t)interface {
   // If the packet flow is already bound then there is nothing to do here.
   if (flow.isBound) {
     return nil;
   }
 
+  int family = AF_INET;
+  if (endpoint && (nw_endpoint_get_type(endpoint) == nw_endpoint_type_address)) {
+    family = nw_endpoint_get_address(endpoint)->sa_family;
+  }
+
   BypassUdpFlow* bypass = [BypassUdpFlow new];
   bypass.flow = flow;
 
   CFSocketContext ctx = { .info = (__bridge void *)bypass };
-  bypass->m_socket = CFSocketCreate(kCFAllocatorDefault, PF_INET, SOCK_DGRAM, IPPROTO_UDP,
+  bypass->m_socket = CFSocketCreate(kCFAllocatorDefault, family, SOCK_DGRAM, IPPROTO_UDP,
                                     kCFSocketDataCallBack, udpSockCallback, &ctx);
 
   // TODO: If flow.remoteHostname is set should we turn this into a connected socket?
 
-  // TODO: What should we do if a local endpoint was specified?
-#if 0
-  nw_endpoint_t endpoint = nil;
-  if (@available(macOS 15, *)) {
-    endpoint = flow.localFlowEndpoint;
-  } else if (flow.localEndpoint && [flow.localEndpoint isKindOfClass:[NWHostEndpoint class]]) {
-    NWHostEndpoint* host = (NWHostEndpoint*)flow.localEndpoint;
-    endpoint = nw_endpoint_create_host([host.hostname UTF8String], [host.port UTF8String]);
-  }
-#endif
   // Bind the socket to the bypass interface.
   int sockfd = CFSocketGetNative(bypass->m_socket);
   int ifindex = nw_interface_get_index(interface);
-  setsockopt(sockfd, IPPROTO_IP, IP_BOUND_IF, &ifindex, sizeof(ifindex));
-  setsockopt(sockfd, IPPROTO_IPV6, IPV6_BOUND_IF, &ifindex, sizeof(ifindex));
+  if (family == AF_INET6) {
+    setsockopt(sockfd, IPPROTO_IPV6, IPV6_BOUND_IF, &ifindex, sizeof(ifindex));
+  } else {
+    setsockopt(sockfd, IPPROTO_IP, IP_BOUND_IF, &ifindex, sizeof(ifindex));
+  }
+
+  // Bind the socket if a local port was specified.
+  // Note that this intentionally ignores the local address since we are
+  // binding to a specific interface anyways.
+  if (endpoint && (nw_endpoint_get_port(endpoint) != 0)) {
+    struct sockaddr_storage ss;
+    int port = nw_endpoint_get_port(endpoint);
+    memset(&ss, 0, sizeof(struct sockaddr_storage));
+    if (family == AF_INET6) {
+      struct sockaddr_in6* sin6 = (struct sockaddr_in6 *)&ss;
+      sin6->sin6_family = AF_INET6;
+      sin6->sin6_len = sizeof(struct sockaddr_in6);
+      sin6->sin6_port = htons(port);
+    } else {
+      struct sockaddr_in* sin = (struct sockaddr_in *)&ss;
+      sin->sin_family = AF_INET;
+      sin->sin_len = sizeof(struct sockaddr_in);
+      sin->sin_port = htons(port);
+    }
+
+#if MZ_DEBUG
+    char* addrstr = nw_endpoint_copy_address_string(endpoint);
+    NSLog(@"udp bind to %s port %d", addrstr, port);
+    free(addrstr);
+#endif
+
+    CFDataRef addr = CFDataCreateWithBytesNoCopy(kCFAllocatorDefault, (const UInt8*)&ss,
+                                                 ss.ss_len, kCFAllocatorNull);
+    CFSocketSetAddress(bypass->m_socket, addr);
+    CFRelease(addr);
+  }
 
   // Create a source and attach it to the main run loop.
   bypass->m_source = CFSocketCreateRunLoopSource(kCFAllocatorDefault, bypass->m_socket, 0);
@@ -206,8 +238,8 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType,
 - (void)recvDatagram:(NSData*)dgram
         fromEndpoint:(nw_endpoint_t)ep {
   if (@available(macOS 15, *)) {
-    [self.flow writeDatagrams:[NSArray arrayWithObject:dgram]
-          sentByFlowEndpoints:[NSArray arrayWithObject:ep]
+    [self.flow writeDatagrams:@[dgram]
+          sentByFlowEndpoints:@[ep]
             completionHandler:^(NSError* error){
       if (error) {
         // TODO: Handle the error?
@@ -215,21 +247,20 @@ static void udpSockCallback(CFSocketRef s, CFSocketCallBackType cbType,
     }];
   } else {
     char* addr = nw_endpoint_copy_address_string(ep);
-    char* port = nw_endpoint_copy_port_string(ep);
-    NWHostEndpoint* host =
-        [NWHostEndpoint endpointWithHostname:[NSString stringWithUTF8String:addr]
-                                        port:[NSString stringWithUTF8String:port]];
+    NSString* hostname = [[NSString alloc] initWithBytesNoCopy:addr
+                                                        length:strlen(addr)
+                                                      encoding:NSUTF8StringEncoding
+                                                  freeWhenDone:TRUE];
+    NSString* port = [NSString stringWithFormat:@"%d", nw_endpoint_get_port(ep)];
+    NWHostEndpoint* host = [NWHostEndpoint endpointWithHostname:hostname port:port];
 
-    [self.flow writeDatagrams:[NSArray arrayWithObject:dgram]
-              sentByEndpoints:[NSArray arrayWithObject:host]
+    [self.flow writeDatagrams:@[dgram]
+              sentByEndpoints:@[host]
             completionHandler:^(NSError* error){
       if (error) {
         // TODO: Handle the error?
       }
     }];
-
-    free(addr);
-    free(port);
   }
 }
 

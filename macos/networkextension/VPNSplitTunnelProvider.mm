@@ -69,6 +69,46 @@
                          userInfo:@{NSLocalizedDescriptionKey: desc}];
 }
 
++ (nw_endpoint_t)convertEndpoint:(NWEndpoint*)old {
+  if (old == nil) {
+    return nil;
+  } else if ([old isKindOfClass:[NWBonjourServiceEndpoint class]]) {
+    NWBonjourServiceEndpoint* service = (NWBonjourServiceEndpoint*)old;
+    return nw_endpoint_create_bonjour_service([service.name UTF8String],
+                                              [service.type UTF8String],
+                                              [service.domain UTF8String]);
+  } else if (![old isKindOfClass:[NWHostEndpoint class]]) {
+    // Some endpoint type we don't support.
+    return nil;
+  }
+  NWHostEndpoint* host = (NWHostEndpoint*)old;
+  
+  // If possible, try to convert it into an address endpoint.
+  int port = host.port.intValue;
+  if ([host.hostname containsString:@":"]) {
+    struct sockaddr_in6 sin6;
+    memset(&sin6, 0, sizeof(sin6));
+    sin6.sin6_family = AF_INET6;
+    sin6.sin6_len = sizeof(sin6);
+    sin6.sin6_port = htons(port);
+    if (inet_pton(AF_INET6, host.hostname.UTF8String, &sin6.sin6_addr.s6_addr)) {
+      return nw_endpoint_create_address((struct sockaddr*)&sin6);
+    }
+  } else {
+    struct sockaddr_in sin;
+    memset(&sin, 0, sizeof(sin));
+    sin.sin_family = AF_INET;
+    sin.sin_len = sizeof(sin);
+    sin.sin_port = htons(port);
+    sin.sin_addr.s_addr = inet_addr(host.hostname.UTF8String);
+    if (sin.sin_addr.s_addr != INADDR_NONE) {
+      return nw_endpoint_create_address((struct sockaddr*)&sin);
+    }
+  }
+
+  return nw_endpoint_create_host(host.hostname.UTF8String, host.port.UTF8String);
+}
+
 + (NENetworkRule*) matchRoute:(NSString*)dest
                     andPrefix:(NSUInteger)prefix {
   NENetworkRule* rule = [NENetworkRule alloc];
@@ -304,18 +344,21 @@
   // Perform flow bypassing.
   if ([flow isKindOfClass:[NEAppProxyTCPFlow class]]) {
     NEAppProxyTCPFlow* tcpFlow = (NEAppProxyTCPFlow*)flow;
-    nw_interface_t via = nil;
+    nw_interface_t via = self.ipv4Interface;
+    nw_endpoint_t dest = nil;
     if (@available(macOS 15, *)) {
-      int family = nw_endpoint_get_address(tcpFlow.remoteFlowEndpoint)->sa_family;
-      via = (family == AF_INET6) ? self.ipv6Interface : self.ipv4Interface;
-    } else if ([tcpFlow.remoteEndpoint isKindOfClass:[NWHostEndpoint class]]) {
-      NWHostEndpoint* host = (NWHostEndpoint*)tcpFlow.remoteEndpoint;
-      via = [host.hostname containsString:@":"] ? self.ipv6Interface : self.ipv4Interface;
+      dest = tcpFlow.remoteFlowEndpoint;
     } else {
-      via = self.ipv4Interface;
+      dest = [VPNSplitTunnelProvider convertEndpoint:tcpFlow.remoteEndpoint];
+    }
+    if (nw_endpoint_get_type(dest) == nw_endpoint_type_address &&
+        nw_endpoint_get_address(dest)->sa_family == AF_INET6) {
+      via = self.ipv6Interface;
     }
 
-    BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow withInterface:via];
+    BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow
+                                              toEndpoint:dest
+                                           withInterface:via];
     if (!handler) {
       return NO;
     }
@@ -330,7 +373,21 @@
     return YES;
   } else if ([flow isKindOfClass:[NEAppProxyUDPFlow class]]) {
     NEAppProxyUDPFlow* udpFlow = (NEAppProxyUDPFlow*)flow;
-    BypassUdpFlow* handler = [BypassUdpFlow createBypass:udpFlow withInterface:self.ipv4Interface];
+    nw_interface_t via = self.ipv4Interface;
+    nw_endpoint_t source;
+    if (@available(macOS 15, *)) {
+      source = udpFlow.localFlowEndpoint;
+    } else {
+      source = [VPNSplitTunnelProvider convertEndpoint:udpFlow.localEndpoint];
+    }
+    if (source && (nw_endpoint_get_type(source) == nw_endpoint_type_address) &&
+        (nw_endpoint_get_address(source)->sa_family == AF_INET6)) {
+      via = self.ipv6Interface;
+    }
+
+    BypassUdpFlow* handler = [BypassUdpFlow createBypass:udpFlow
+                                           localEndpoint:source
+                                           withInterface:via];
     if (!handler) {
       return NO;
     }
