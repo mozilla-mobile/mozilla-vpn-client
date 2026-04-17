@@ -4,7 +4,9 @@
 
 @interface BypassTcpFlow : NSObject
 
-+ (id)createBypass:(NEAppProxyTCPFlow*)flow withInterface:(nw_interface_t)interface;
++ (id)createBypass:(NEAppProxyTCPFlow*)flow
+        toEndpoint:(nw_endpoint_t)endpoint
+     withInterface:(nw_interface_t)interface;
 
 - (void)startBypass:(void (^)(NSError* error))completionHandler;
 
