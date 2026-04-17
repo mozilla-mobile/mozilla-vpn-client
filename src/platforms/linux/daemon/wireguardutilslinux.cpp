@@ -203,6 +203,15 @@ static bool hasRouteToIPv4(const QString& ipv4addr) {
 
   auto guard = qScopeGuard([sock] { ::close(sock); });
 
+  // Mark the socket with WG_FIREWALL_MARK to bypass the VPN routing table to
+  // ensure the VPN's 0.0.0.0/0 route doesn't produce a false positive on
+  // IPv6-only network
+  uint32_t mark = WG_FIREWALL_MARK;
+  if (::setsockopt(sock, SOL_SOCKET, SO_MARK, &mark, sizeof(mark)) < 0) {
+    logger.warning() << "Failed to set SO_MARK on test socket:"
+                     << strerror(errno);
+  }
+
   struct sockaddr_in dest {};
   dest.sin_family = AF_INET;
   dest.sin_port = htons(1);
