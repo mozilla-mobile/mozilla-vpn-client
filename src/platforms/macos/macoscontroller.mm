@@ -257,6 +257,9 @@ void MacOSController::activate(const InterfaceConfig& config,
 
   // Serialize the interface configuration.
   NSMutableDictionary* options = [NSMutableDictionary dictionary];
+  [options setObject:config.m_privateKey.toNSString() forKey:@"privateKey"];
+  [options setObject:config.m_deviceIpv4Address.toNSString() forKey:@"deviceIpv4Addr"];
+  [options setObject:config.m_deviceIpv6Address.toNSString() forKey:@"deviceIpv6Addr"];
   [options setObject:config.m_serverPublicKey.toNSString() forKey:@"serverPublicKey"];
   [options setObject:config.m_serverIpv4AddrIn.toNSString() forKey:@"serverIpv4AddrIn"];
   [options setObject:config.m_serverIpv6AddrIn.toNSString() forKey:@"serverIpv6AddrIn"];
@@ -340,6 +343,12 @@ void MacOSController::getBackendLogs(QIODevice* device) {
 
 void MacOSController::cleanupBackendLogs() {
   [remoteObject() cleanupBackendLogs];
+}
+
+bool MacOSController::multihopSupported() {
+  // The daemon always supports multihop.
+  // The network extension only supports single-hop for now.
+  return !splitTunnelSupported();
 }
 
 bool MacOSController::splitTunnelSupported() const {

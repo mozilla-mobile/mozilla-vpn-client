@@ -6,7 +6,9 @@
 
 #import "bypasstcpflow.h"
 #import "bypassudpflow.h"
+#import "interfaceconfig.h"
 #import "routemanager.h"
+#import "wireguardtunnel.h"
 
 #include <atomic>
 #include <arpa/inet.h>
@@ -35,6 +37,9 @@
 
 @property (strong) NETransparentProxyNetworkSettings* settings;
 @property (strong) RouteManager* routeManager;
+@property (strong) WireguardTunnel* wireguard;
+@property (strong) InterfaceConfig* config;
+
 @property (strong) nw_interface_t ipv4Interface;
 @property (strong) nw_interface_t ipv6Interface;
 @property (strong) nw_interface_t vpnInterface;
@@ -155,10 +160,20 @@
   m_handledUdpFlows = 0;
   m_handledUnknown = 0;
 
+  // Parse the configuration
+  InterfaceConfig* config = [InterfaceConfig parseFromDict:options];
+  if (!config) {
+    completionHandler([VPNSplitTunnelProvider makeError:1
+                                        withDescription:@"invalid configuration"]);
+    return;
+  }
+  _config = config;
+
   // Start the route manager
   _routeManager = [RouteManager new];
   [self.routeManager startWithDelegate:self];
 
+  self.wireguard = [WireguardTunnel new];
   self.settings = [[NETransparentProxyNetworkSettings alloc] initWithTunnelRemoteAddress:self.protocolConfiguration.serverAddress];
 
   // Configure the proxy to capture all traffic
@@ -231,65 +246,69 @@
   }
 
   // Configure the settings.
+  __unsafe_unretained VPNSplitTunnelProvider* weakSelf = self;
   [self setTunnelNetworkSettings: self.settings
                completionHandler:^(NSError* error){
     if (error != nil) {
       NSLog(@"settings error: %@", error.localizedDescription);
+      completionHandler(error);
     } else {
       NSLog(@"settings applied");
+      [weakSelf.wireguard startTunnelWithOptions:weakSelf.config
+                               completionHandler:completionHandler];
     }
-    completionHandler(error);
   }];
 }
 
 - (void)stopProxyWithReason:(NEProviderStopReason)reason 
           completionHandler:(void (^)(void))completionHandler {
-    NSLog(@"stopping proxy");
+  NSLog(@"stopping proxy");
 
-    // Remove captured default routes, if known.
-    if (self.ipv4Interface) {
-      NSLog(@"clearing cloned ipv4 route");
+  // Remove captured default routes, if known.
+  if (self.ipv4Interface) {
+    NSLog(@"clearing cloned ipv4 route");
 
-      struct sockaddr_in sin;
-      memset(&sin, 0, sizeof(sin));
-      sin.sin_family = AF_INET;
-      sin.sin_len = sizeof(sin);
-      NSData* dst = [NSData dataWithBytes:&sin length:sizeof(sin)];
+    struct sockaddr_in sin;
+    memset(&sin, 0, sizeof(sin));
+    sin.sin_family = AF_INET;
+    sin.sin_len = sizeof(sin);
+    NSData* dst = [NSData dataWithBytes:&sin length:sizeof(sin)];
 
-      [self.routeManager rtmSendRoute:RTM_DELETE
-                        toDestination:dst
-                           withPrefix:0
-                         viaInterface:nw_interface_get_index(self.ipv4Interface)
-                          withGateway:nil
-                             andFlags:RTF_IFSCOPE];
+    [self.routeManager rtmSendRoute:RTM_DELETE
+                      toDestination:dst
+                         withPrefix:0
+                       viaInterface:nw_interface_get_index(self.ipv4Interface)
+                        withGateway:nil
+                           andFlags:RTF_IFSCOPE];
 
-      self.ipv4Interface = nil;
-    }
-    if (self.ipv6Interface) {
-      NSLog(@"clearing cloned ipv6 route");
+    self.ipv4Interface = nil;
+  }
+  if (self.ipv6Interface) {
+    NSLog(@"clearing cloned ipv6 route");
 
-      struct sockaddr_in6 sin6;
-      memset(&sin6, 0, sizeof(sin6));
-      sin6.sin6_family = AF_INET6;
-      sin6.sin6_len = sizeof(sin6);
-      NSData* dst = [NSData dataWithBytes:&sin6 length:sizeof(sin6)];
+    struct sockaddr_in6 sin6;
+    memset(&sin6, 0, sizeof(sin6));
+    sin6.sin6_family = AF_INET6;
+    sin6.sin6_len = sizeof(sin6);
+    NSData* dst = [NSData dataWithBytes:&sin6 length:sizeof(sin6)];
 
-      [self.routeManager rtmSendRoute:RTM_DELETE
-                        toDestination:dst
-                           withPrefix:0
-                         viaInterface:nw_interface_get_index(self.ipv6Interface)
-                          withGateway:nil
-                             andFlags:RTF_IFSCOPE];
+    [self.routeManager rtmSendRoute:RTM_DELETE
+                      toDestination:dst
+                         withPrefix:0
+                       viaInterface:nw_interface_get_index(self.ipv6Interface)
+                        withGateway:nil
+                           andFlags:RTF_IFSCOPE];
 
-      self.ipv6Interface = nil;
-    }
-    self.routeManager = nil;
+    self.ipv6Interface = nil;
+  }
+  self.routeManager = nil;
 
-    NSLog(@"handled tcp flows: %lld", std::atomic_load(&m_handledTcpFlows));
-    NSLog(@"handled udp flows: %lld", std::atomic_load(&m_handledUdpFlows));
-    NSLog(@"handled unknown flows: %lld", std::atomic_load(&m_handledUnknown));
+  NSLog(@"handled tcp flows: %lld", std::atomic_load(&m_handledTcpFlows));
+  NSLog(@"handled udp flows: %lld", std::atomic_load(&m_handledUdpFlows));
+  NSLog(@"handled unknown flows: %lld", std::atomic_load(&m_handledUnknown));
 
-    completionHandler();
+  [self.wireguard stopTunnelWithReason:reason
+                     completionHandler:completionHandler];
 }
 
 - (BOOL)matchAppFlow:(NEAppProxyFlow*)flow {
@@ -406,11 +425,11 @@
   return NO;
 }
 
-- (void)cancelProxyWithError:(NSError *) error {
+- (void)cancelProxyWithError:(NSError *)error {
   NSLog(@"cancel proxy: %@", error.localizedDescription);
 }
 
-- (void)handleAppMessage:(NSData *) messageData
+- (void)handleAppMessage:(NSData *)messageData
        completionHandler:(void (^)(NSData*)) completionHandler {
   NSError* error;
   NSKeyedUnarchiver* msg =

@@ -32,7 +32,7 @@ class MacOSController final : public ControllerImpl {
 
   void forceDaemonCrash() override;
 
-  bool multihopSupported() override { return true; }
+  bool multihopSupported() override;
 
   bool splitTunnelSupported() const override;
 
