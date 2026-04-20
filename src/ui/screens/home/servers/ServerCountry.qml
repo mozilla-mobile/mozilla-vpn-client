@@ -192,6 +192,8 @@ MZClickableRow {
                     // provides all the necessary information
                     isRadioButtonLabelAccessible: false
                     implicitWidth: parent.width
+                    // Reserve space for the latency indicator
+                    labelRightPadding: latencyIndicator.implicitWidth + MZTheme.theme.hSpacing
 
                     onClicked: {
                         if (!isAvailable) {
