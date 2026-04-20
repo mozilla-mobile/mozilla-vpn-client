@@ -171,18 +171,17 @@ def main():
         print(f"Error parsing YAML")
         exit(1)
 
-    activate_strings = {
-        k: v for k, v in all_strings.items()
-        if v['string_id'].startswith('vpn.iosAppIntentsActivate')
-    }
-    deactivate_strings = {
-        k: v for k, v in all_strings.items()
-        if v['string_id'].startswith('vpn.iosAppIntentsDeactivate')
-    }
-    query_strings = {
-        k: v for k, v in all_strings.items()
-        if v['string_id'].startswith('vpn.iosAppIntentsQueryStatus')
-    }
+    shortcut_strings = []
+    for translation_prefix in ['vpn.iosAppIntentsActivate', 'vpn.iosAppIntentsDeactivate', 'vpn.iosAppIntentsQueryStatus', 'vpn.iosAppIntentsToggle']:
+        current_string_set = {
+            k: v for k, v in all_strings.items()
+            if v['string_id'].startswith(translation_prefix)
+        }
+        if not current_string_set:
+            print(f"No strings found for {translation_prefix}")
+            exit(1)
+        shortcut_strings.append(current_string_set)
+
     main_strings = {
         k: v for k, v in all_strings.items()
         if v['string_id'].startswith('vpn.iosAppIntentsMain')
@@ -218,7 +217,7 @@ def main():
     print(f'Wrote {localizable_path}')
 
     # Write AppShortcuts.xcstrings
-    appshortcuts = build_appshortcuts_xcstrings([activate_strings, deactivate_strings, query_strings], locale_translations)
+    appshortcuts = build_appshortcuts_xcstrings(shortcut_strings, locale_translations)
     appshortcuts_path = os.path.join(args.output_dir, 'AppShortcuts.xcstrings')
     with open(appshortcuts_path, 'w', encoding='utf-8') as f:
         json.dump(appshortcuts, f, indent=2, ensure_ascii=False)

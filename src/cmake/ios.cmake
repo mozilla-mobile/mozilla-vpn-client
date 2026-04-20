@@ -166,6 +166,7 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioslogger.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iostunnelmessage.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iostunnelmanager.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ToggleIntent.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/TurnOffIntent.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/TurnOnIntent.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/VPNStatusIntent.swift

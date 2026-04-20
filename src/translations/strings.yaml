@@ -1118,6 +1118,18 @@ iosAppIntentsMain:
   statusQueryResponseDisconnected:
     value: Mozilla VPN is currently disconnected
     comment: Response given when the VPN is disconnected
+  toggleTitle:
+    value: Toggle Mozilla VPN
+    comment: Title used by system to offer to toggle VPN status
+  toggleDescription:
+    value: Changes Mozilla VPN status
+    comment: Description used to provide more context in Shortcuts and other places
+  # statusQueryResponseConnected:
+  #   value: Mozilla VPN is currently connected
+  #   comment: Response given when the VPN is connected
+  # statusQueryResponseDisconnected:
+  #   value: Mozilla VPN is currently disconnected
+  #   comment: Response given when the VPN is disconnected
 
 iosAppIntentsActivate:
   activate1:
@@ -1196,3 +1208,11 @@ iosAppIntentsQueryStatus:
   query10:
     value: Is %@ connected?
     comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+
+iosAppIntentsToggle:
+  toggle1:
+    value: Toggle %@
+    comment: A phrase that may be used to ask about swap VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  toggle2:
+    value: Switch %@
+    comment: A phrase that may be used to ask about swap VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
