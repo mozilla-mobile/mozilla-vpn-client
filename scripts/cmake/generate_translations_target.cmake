@@ -10,19 +10,38 @@ get_filename_component(MVPN_SCRIPT_DIR ${CMAKE_SOURCE_DIR}/scripts ABSOLUTE)
 ## so instead we will workaround it by searching the path where other
 ## tools can be found.
 get_target_property(QT_QMLLINT_EXECUTABLE Qt6::qmllint LOCATION)
-get_filename_component(QT_TOOL_PATH ${QT_QMLLINT_EXECUTABLE} PATH)
-find_program(QT_LCONVERT_EXECUTABLE
-    NAMES lconvert-qt6 lconvert lconvert-qt5
-    PATHS ${QT_TOOL_PATH}
-    NO_DEFAULT_PATH)
-find_program(QT_LUPDATE_EXECUTABLE
-    NAMES lupdate-qt6 lupdate lupdate-qt5
-    PATHS ${QT_TOOL_PATH}
-    NO_DEFAULT_PATH)
-find_program(QT_LRELEASE_EXECUTABLE
-    NAMES lrelease-qt6 lrelease lrelease-qt5
-    PATHS ${QT_TOOL_PATH}
-    NO_DEFAULT_PATH)
+if(QT_QMLLINT_EXECUTABLE)
+    get_filename_component(QT_TOOL_PATH ${QT_QMLLINT_EXECUTABLE} PATH)
+endif()
+
+# Helper function to search for Qt tools with fallback to system PATH
+function(_search_qt_tool tool_name)
+    string(TOUPPER "${tool_name}" upper_name)
+    set(var_name "QT_${upper_name}_EXECUTABLE")
+
+    # Stage 1: Search in QT_TOOL_PATH if available (restricted search)
+    if(QT_TOOL_PATH)
+        find_program(${var_name}
+            NAMES ${tool_name}-qt6 ${tool_name} ${tool_name}-qt5
+            PATHS ${QT_TOOL_PATH}
+            NO_DEFAULT_PATH)
+    endif()
+
+    # Stage 2: If not found, search system PATH (unrestricted search)
+    if(NOT ${var_name})
+        find_program(${var_name}
+            NAMES ${tool_name}-qt6 ${tool_name} ${tool_name}-qt5)
+    endif()
+
+    # Stage 3: Validate the tool was found
+    if(NOT ${var_name})
+        message(FATAL_ERROR "Qt tool '${tool_name}' not found. Please ensure Qt linguistic tools are installed.")
+    endif()
+endfunction()
+
+_search_qt_tool(lconvert)
+_search_qt_tool(lupdate)
+_search_qt_tool(lrelease)
 
 function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_DIRECTORY)
     ## The generated folder will contain sub-folders for each supported project
