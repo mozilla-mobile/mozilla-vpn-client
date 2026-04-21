@@ -489,13 +489,17 @@ static int memcmpzero(const void* data, size_t len) {
   }
 
   // Send the routing message into the kernel.
-  CFDataRef data = CFDataCreate(kCFAllocatorDefault, (const UInt8*)rtm, rtm->rtm_msglen);
-  CFSocketError err = CFSocketSendData(m_socket, NULL, data, 1);
-  CFRelease(data);
-  if (err != kCFSocketSuccess) {
-    NSLog(@"Failed to send route to kernel: %d", (int)err);
+  int len = write(m_sockfd, rtm, rtm->rtm_msglen);
+  if (len == rtm->rtm_msglen) {
     return;
   }
+  if ((action == RTM_ADD) && (errno == EEXIST)) {
+    return;
+  }
+  if ((action == RTM_DELETE) && (errno == ESRCH)) {
+    return;
+  }
+  NSLog(@"Failed to send route to kernel: %s", strerror(errno));
 }
 
 @end
