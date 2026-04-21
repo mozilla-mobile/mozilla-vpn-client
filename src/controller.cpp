@@ -43,6 +43,7 @@
 #  include "platforms/linux/linuxcontroller.h"
 #elif defined(MZ_MACOS)
 #  include "platforms/macos/macoscontroller.h"
+#  include "platforms/macos/macosextensioncontroller.h"
 #elif defined(MZ_IOS)
 #  include "platforms/ios/ioscontroller.h"
 #elif defined(MZ_ANDROID)
@@ -141,7 +142,11 @@ void Controller::initialize() {
 #elif defined(MZ_LINUX)
     m_impl.reset(new LinuxController());
 #elif defined(MZ_MACOS)
+  if (Feature::isEnabled(Feature::networkExtension)) {
+    m_impl.reset(new MacOSExtensionController());
+  } else {
     m_impl.reset(new MacOSController());
+  }
 #elif defined(MZ_IOS)
     m_impl.reset(new IOSController());
 #elif defined(MZ_ANDROID)

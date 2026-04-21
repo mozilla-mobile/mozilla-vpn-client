@@ -1,0 +1,229 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+#include "macosextensioncontroller.h"
+
+#import <Foundation/Foundation.h>
+#import <NetworkExtension/NetworkExtension.h>
+#import <SystemExtensions/SystemExtensions.h>
+
+#include <QMetaMethod>
+
+#include "logger.h"
+#include "macosutils.h"
+
+// An extension loader - used to forward Obj-C messages back to Qt.
+@interface MacOSExtensionDelegate : NSObject <OSSystemExtensionRequestDelegate>
+@property MacOSExtensionController* parent;
+- (id)initWithObject:(MacOSExtensionController*)controller;
+@end
+
+namespace {
+Logger logger("MacOSExtensionController");
+}  // namespace
+
+MacOSExtensionController::MacOSExtensionController() : ControllerImpl()  {
+  // Create the system extension loader delegate.
+  m_delegate = [[MacOSExtensionDelegate alloc] initWithObject:this];
+  [static_cast<MacOSExtensionDelegate*>(m_delegate) retain];
+}
+
+MacOSExtensionController::~MacOSExtensionController() {
+  [static_cast<MacOSExtensionDelegate*>(m_delegate) release];
+}
+
+void MacOSExtensionController::initialize(const Device* device, const Keys* keys) {
+  // Create a request to install the system extension.
+  dispatch_queue_t queue =
+      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  OSSystemExtensionRequest* req =
+      [OSSystemExtensionRequest activationRequestForExtension: extIdentifier()
+                                                        queue: queue];
+  req.delegate = static_cast<MacOSExtensionDelegate*>(m_delegate);
+
+  // Start the request
+  logger.debug() << "activation request started:" << req.identifier;
+  [[OSSystemExtensionManager sharedManager] submitRequest: req];
+}
+
+NSString* MacOSExtensionController::extIdentifier() {
+  return MacOSUtils::appId(".network-extension").toNSString();
+}
+
+void MacOSExtensionController::extLoaderSuccess(int result) {
+  logger.info() << "activation request complete:" << result;
+
+  // Start by loading all the proxy managers.
+  [NETransparentProxyManager loadAllFromPreferencesWithCompletionHandler:^(NSArray<NETransparentProxyManager *>* managers, NSError* err){
+    if (err != nil) {
+      logger.debug() << "activation setup failed:" << err;
+      emit initialized(false, false, QDateTime());
+      return;
+    }
+
+    // Check if an existing manager can be used.
+    NSString* extId = MacOSExtensionController::extIdentifier();
+    for (NETransparentProxyManager* mgr in managers) {
+      if (![mgr.protocolConfiguration isKindOfClass:[NETunnelProviderProtocol class]]) {
+        continue;
+      }
+      NETunnelProviderProtocol* proto =
+          static_cast<NETunnelProviderProtocol*>(mgr.protocolConfiguration);
+      if ([proto.providerBundleIdentifier isEqualToString:extId]) {
+        logger.info() << "proxy manager found for:" << proto.providerBundleIdentifier;
+        m_manager = mgr;
+        break;
+      }
+    }
+
+    // Otherwise - create a new manager.
+    if (m_manager == nil) {
+      m_manager = [NETransparentProxyManager new];
+      m_manager.localizedDescription = @"Mozilla VPN Network Extension";
+      logger.info() << "proxy manager created for:" << extId;
+    }
+
+    // Update the tunnel configuration.
+    auto protocol = [NETunnelProviderProtocol new];
+    protocol.providerBundleIdentifier = extId;
+    protocol.serverAddress = @"127.0.0.1";
+    m_manager.protocolConfiguration = protocol;
+
+    // Enable the manager and sync preferences
+    m_manager.enabled = true;
+    [m_manager saveToPreferencesWithCompletionHandler:^(NSError* saveErr){
+      if (saveErr != nil) {
+        logger.debug() << "proxy prefs setup failed:"
+                       << saveErr.localizedDescription;
+      }
+      [m_manager loadFromPreferencesWithCompletionHandler:^(NSError* loadErr){
+        if (loadErr != nil) {
+          logger.debug() << "proxy prefs load failed:"
+                         << loadErr.localizedDescription;
+        }
+        emit initialized(true, false, QDateTime());
+      }];
+    }];
+  }];
+}
+
+void MacOSExtensionController::extLoaderFailure(const QString& reason) {
+  logger.warning() << "activation request failed:" << reason;
+}
+
+void MacOSExtensionController::extNeedsApproval() {
+  logger.warning() << "activation request needs user approval";
+  emit permissionRequired();
+}
+
+void MacOSExtensionController::activate(const InterfaceConfig& config,
+                                        Controller::Reason reason) {
+  Q_UNUSED(reason);
+
+  // Create a new tunnel provider session.
+  if ((m_manager == nil) || !m_manager.enabled) {
+    // Split tunnelling is not supported.
+    return;
+  }
+
+  // Serialize the interface configuration.
+  NSMutableDictionary* options = [NSMutableDictionary dictionary];
+  [options setObject:config.m_privateKey.toNSString() forKey:@"privateKey"];
+  [options setObject:config.m_deviceIpv4Address.toNSString() forKey:@"deviceIpv4Addr"];
+  [options setObject:config.m_deviceIpv6Address.toNSString() forKey:@"deviceIpv6Addr"];
+  [options setObject:config.m_serverPublicKey.toNSString() forKey:@"serverPublicKey"];
+  [options setObject:config.m_serverIpv4AddrIn.toNSString() forKey:@"serverIpv4AddrIn"];
+  [options setObject:config.m_serverIpv6AddrIn.toNSString() forKey:@"serverIpv6AddrIn"];
+  [options setObject:config.m_serverIpv4Gateway.toNSString() forKey:@"serverIpv4Gateway"];
+  [options setObject:config.m_serverIpv6Gateway.toNSString() forKey:@"serverIpv6Gateway"];
+  [options setObject:[NSNumber numberWithInt:config.m_serverPort] forKey:@"serverPort"];
+
+  // Serialize the excluded application list.
+  NSMutableArray* vpnDisabledApps =
+      [NSMutableArray arrayWithCapacity:config.m_vpnDisabledApps.length()];
+  for (const QString& appId : config.m_vpnDisabledApps) {
+    [vpnDisabledApps addObject:appId.toNSString()];
+  }
+  [options setObject:vpnDisabledApps forKey:@"apps"];
+
+  // Start the split tunnel proxy.
+  NSError* error = nil;
+  NETunnelProviderSession* session =
+      static_cast<NETunnelProviderSession*>(m_manager.connection);
+  BOOL okay = [session startTunnelWithOptions:options andReturnError:&error];
+  if (error) {
+    logger.warning() << "proxy start error:" << error.localizedDescription;
+  } else if (!okay) {
+    logger.warning() << "proxy start failed";
+  } else {
+    // Save the session and retain it.
+    m_session = [session retain];
+    emit connected(config.m_serverPublicKey);
+  }
+}
+
+void MacOSExtensionController::deactivate() {
+  if (m_session) {
+    // Stop the split tunnel proxy.
+    [m_session stopTunnel];
+    [m_session release];
+    m_session = nullptr;
+  }
+}
+
+void MacOSExtensionController::checkStatus() {
+  if (!m_session) {
+    // Extension is not running.
+    return;
+  }
+
+  NSKeyedArchiver* msg = [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
+  [msg encodeObject:@"status" forKey:@"action"];
+  [msg finishEncoding];
+
+  NSError* error = nil;
+  [m_session sendProviderMessage:msg.encodedData
+                     returnError:&error
+                 responseHandler:^(NSData* response){
+    // TODO: Parse the status and emit something.
+  }];
+
+  if (error != nil) {
+    logger.debug() << "Split tunneling status failed:" << error;
+    return;
+  }
+}
+
+@implementation MacOSExtensionDelegate
+- (id)initWithObject:(MacOSExtensionController*)controller {
+  self = [super init];
+  self.parent = controller;
+  return self;
+}
+
+- (void) request:(OSSystemExtensionRequest *) request
+didFailWithError:(NSError *) error {
+  QMetaObject::invokeMethod(self.parent, "extLoaderFailure");
+                            Q_ARG(QString, QString::fromNSString(error.localizedDescription));
+}
+
+- (void) requestNeedsUserApproval:(OSSystemExtensionRequest *) request {
+  QMetaObject::invokeMethod(self.parent, "extNeedsApproval");
+}
+
+- (OSSystemExtensionReplacementAction) request:(OSSystemExtensionRequest *) request
+                   actionForReplacingExtension:(OSSystemExtensionProperties *) existing
+                                 withExtension:(OSSystemExtensionProperties *) ext {
+  logger.warning() << "extension replacement action:" << existing.bundleVersion
+                   << "->" << ext.bundleVersion;
+  return OSSystemExtensionReplacementActionReplace;
+}
+
+- (void)    request:(OSSystemExtensionRequest *) request
+didFinishWithResult:(OSSystemExtensionRequestResult) result {
+  QMetaObject::invokeMethod(self.parent, "extLoaderSuccess", Q_ARG(int, result));
+}
+
+@end
+

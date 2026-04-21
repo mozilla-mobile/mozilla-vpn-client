@@ -21,6 +21,7 @@
 #include <sys/sys_domain.h>
 #include <sys/uio.h>
 #include <sys/un.h>
+#include <time.h>
 #include <unistd.h>
 
 extern "C" {
@@ -30,6 +31,10 @@ extern "C" {
 // Private method in the network framework
 extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, const char *ifname);
 
+@implementation WireguardStats
+// Nothing to see here.
+@end
+
 @implementation WireguardTunnel {
   struct wireguard_tunnel*  m_wireguard;
 
@@ -37,6 +42,8 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
   CFSocketRef          m_socket;
   CFRunLoopSourceRef   m_source;
   CFRunLoopTimerRef    m_timer;
+
+  struct timespec      m_lastHandshake;
 }
 
 constexpr const int WG_PACKET_OVERHEAD = 32;
@@ -374,6 +381,17 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     r = wireguard_read(m_wireguard, (const uint8_t*)ciphertext, length,
                        plaintext, length);
 
+    // After processing a handshake response, update the lastHandshake time
+    // if it looks and smells like the handshake was successful.
+    if (*(const uint8_t*)ciphertext == 0x02) {
+      struct stats wgStats = wireguard_stats(m_wireguard);
+      if (wgStats.time_since_last_handshake < 0) {
+        memset(&m_lastHandshake, 0, sizeof(m_lastHandshake));
+      } else if (wgStats.time_since_last_handshake < 5) {
+        clock_gettime(CLOCK_MONOTONIC, &m_lastHandshake);
+      }
+    }
+
     dispatch_data_t packet = dispatch_data_create(plaintext, r.size,
                                                   dispatch_get_main_queue(),
                                                   DISPATCH_DATA_DESTRUCTOR_FREE);
@@ -466,6 +484,29 @@ static NSError* errorFromErrno(int code, NSString* desc) {
 
 - (void)cancelTunnelWithError:(NSError*)error {
   [self shutdownTunnel:error completionHandler:nil];
+}
+
+- (WireguardStats*)getStatus {
+  WireguardStats* result = [WireguardStats new];
+
+  // Get the handshake time from the timestamp of the last received handshake
+  // response packet, this will yeild better precision than the stats we get
+  // from the boringtun API.
+  if (m_lastHandshake.tv_sec || m_lastHandshake.tv_nsec) {
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    NSTimeInterval diff = (m_lastHandshake.tv_sec - now.tv_sec);
+    diff += (m_lastHandshake.tv_nsec - now.tv_nsec) / (1000000000.0);
+    result.lastHandshake = [NSDate dateWithTimeIntervalSinceNow:diff];
+  }
+
+  // Fetch the rest of the stats directly from boringtun.
+  struct stats wgStats = wireguard_stats(m_wireguard);
+  result.txBytes = wgStats.tx_bytes;
+  result.rxBytes = wgStats.rx_bytes;
+  result.estimatedLoss = wgStats.estimated_loss;
+  result.estimatedRtt = wgStats.estimated_rtt;
+  return result;
 }
 
 - (void)setMtu:(NSUInteger)mtu {

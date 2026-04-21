@@ -8,6 +8,14 @@
 
 #import "interfaceconfig.h"
 
+@interface WireguardStats : NSObject
+@property (strong) NSDate *lastHandshake;
+@property NSUInteger txBytes;
+@property NSUInteger rxBytes;
+@property float      estimatedLoss;
+@property NSUInteger estimatedRtt;
+@end
+
 @interface WireguardTunnel : NSObject
 
 - (void) startTunnelWithOptions:(InterfaceConfig*) options
@@ -21,6 +29,7 @@
 - (NSError*) setTunnelAddress:(nw_endpoint_t)endpoint;
 
 @property (nonatomic) NSUInteger mtu;
+@property (strong, readonly, getter=getStatus) WireguardStats* stats;
 
 @property (strong) nw_connection_t connection;
 @property (strong) nw_interface_t virtualInterface;

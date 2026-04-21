@@ -32,9 +32,7 @@ class MacOSController final : public ControllerImpl {
 
   void forceDaemonCrash() override;
 
-  bool multihopSupported() override;
-
-  bool splitTunnelSupported() const override;
+  bool multihopSupported() override { return true; }
 
  private slots:
   void upgradeService();
@@ -44,9 +42,6 @@ class MacOSController final : public ControllerImpl {
  private:
   NSString* plist() const;
   NSString* machServiceName() const;
-
-  bool sendSplitTunnelMessage(const QString& actions,
-                              const QStringList& apps = QStringList()) const;
 
  private:
   QString plistName() const;
@@ -60,10 +55,6 @@ class MacOSController final : public ControllerImpl {
 
   // NSXPCConnection to the daemon.
   void* m_connection = nullptr;
-
-  // Split tunneling driver.
-  void* m_loader = nullptr;
-  void* m_session = nullptr;
 };
 
 #endif  // MACOSCONTROLLER_H
