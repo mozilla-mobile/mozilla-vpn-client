@@ -266,7 +266,7 @@
         // leave the real default route untouched.
         for (RoutePrefix* prefix in weakSelf.config.routes) {
           [weakSelf.routeManager rtmSendRoute:RTM_ADD
-                                toDestination:nw_endpoint_get_address(prefix.destination)
+                                toDestination:prefix.destination
                                    withPrefix:prefix.prefixLength
                                  viaInterface:weakSelf.wireguard.virtualInterface
                                   withGateway:nil

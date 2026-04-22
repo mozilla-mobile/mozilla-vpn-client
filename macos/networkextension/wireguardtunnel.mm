@@ -460,7 +460,6 @@ static NSError* errorFromErrno(int code, NSString* desc) {
         {.iov_base = (void *)packet.bytes, .iov_len = packet.length},
       };
       int err = writev(m_tunfd, iov, 2);
-      NSLog(@"utun write: %d", err);
       break;
   }
 }

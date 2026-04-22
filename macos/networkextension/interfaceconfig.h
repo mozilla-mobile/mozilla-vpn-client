@@ -6,8 +6,11 @@
 #import <Network/Network.h>
 
 @interface RoutePrefix : NSObject
-@property (strong) nw_endpoint_t destination;
-@property NSUInteger prefixLength;
+
++ (id)parseRoute:(NSString *)dict;
+
+@property (readonly, getter=getDestination) const struct sockaddr* destination;
+@property (readonly) NSUInteger prefixLength;
 @end
 
 @interface InterfaceConfig : NSObject

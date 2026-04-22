@@ -10,8 +10,54 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
-@implementation RoutePrefix
-// Nothing to do here
+@implementation RoutePrefix {
+  struct sockaddr_storage m_storage;
+}
+
++ (id)parseRoute:(NSString*)routeString {
+  RoutePrefix* route = [RoutePrefix new];
+
+  NSArray<NSString*>* split = [routeString componentsSeparatedByString:@"/"];
+  NSString* dest = split[0];
+
+  if ([dest containsString:@":"]) {
+    // IPv6 address
+    struct sockaddr_in6* sin6 = (struct sockaddr_in6*)&route->m_storage;
+    memset(sin6, 0, sizeof(struct sockaddr_in6));
+    sin6->sin6_family = AF_INET6;
+    sin6->sin6_len = sizeof(struct sockaddr_in6);
+    sin6->sin6_port = 0; // Not used.
+    if (!inet_pton(AF_INET6, dest.UTF8String, &sin6->sin6_addr.s6_addr)) {
+      return nil;
+    }
+    route->_prefixLength = 128;
+  } else {
+    struct sockaddr_in* sin = (struct sockaddr_in*)&route->m_storage;
+    memset(sin, 0, sizeof(struct sockaddr_in));
+    sin->sin_family = AF_INET;
+    sin->sin_len = sizeof(struct sockaddr_in);
+    sin->sin_port = 0; // Not used.
+    if (!inet_pton(AF_INET, dest.UTF8String, &sin->sin_addr.s_addr)) {
+      return nil;
+    }
+    route->_prefixLength = 32;
+  }
+
+  if (split.count > 1) {
+    NSInteger i = split[1].integerValue;
+    if ((i < 0) || (i > route.prefixLength)) {
+      return nil;
+    }
+    route->_prefixLength = i;
+  }
+
+  return route;
+}
+
+- (const struct sockaddr*)getDestination {
+  return (const struct sockaddr*)&m_storage;
+}
+
 @end
 
 @implementation InterfaceConfig
@@ -119,43 +165,10 @@
   if ([rangesObject isKindOfClass:[NSArray<NSString*> class]]) {
     NSArray<NSString*>* list = (NSArray<NSString*>*)rangesObject;
     for (NSString* rangeString in list) {
-      NSArray<NSString*>* split = [rangeString componentsSeparatedByString:@"/"];
-      NSString* dest = split[0];
-      RoutePrefix* prefix = [RoutePrefix new];
-
-      if ([dest containsString:@":"]) {
-        // IPv6 address
-        struct sockaddr_in6 sin6;
-        memset(&sin6, 0, sizeof(sin6));
-        sin6.sin6_family = AF_INET6;
-        sin6.sin6_len = sizeof(sin6);
-        sin6.sin6_port = 0; // Not used.
-        if (!inet_pton(AF_INET6, dest.UTF8String, &sin6.sin6_addr.s6_addr)) {
-          return nil;
-        }
-        prefix.destination = nw_endpoint_create_address((struct sockaddr*)&sin6);
-        prefix.prefixLength = 128;
-      } else {
-        struct sockaddr_in sin;
-        memset(&sin, 0, sizeof(sin));
-        sin.sin_family = AF_INET;
-        sin.sin_len = sizeof(sin);
-        sin.sin_port = 0; // Not used.
-        if (!inet_pton(AF_INET, dest.UTF8String, &sin.sin_addr.s_addr)) {
-          return nil;
-        }
-        prefix.destination = nw_endpoint_create_address((struct sockaddr*)&sin);
-        prefix.prefixLength = 32;
+      RoutePrefix* prefix = [RoutePrefix parseRoute:rangeString];
+      if (!prefix) {
+        return nil;
       }
-
-      if (split.count > 1) {
-        NSInteger i = split[1].integerValue;
-        if ((i < 0) || (i > prefix.prefixLength)) {
-          return nil;
-        }
-        prefix.prefixLength = i;
-      }
-
       [routes addObject:prefix];
     }
   }
