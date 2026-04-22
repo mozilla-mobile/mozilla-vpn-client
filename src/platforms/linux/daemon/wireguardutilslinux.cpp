@@ -282,6 +282,8 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
     return false;
   }
 
+  m_peerEndpoints[config.m_serverPublicKey] = endpointAddr;
+
   // Set/update peer
   strncpy(device->name, WG_INTERFACE, IFNAMSIZ);
   device->flags = (wg_device_flags)0;
@@ -326,12 +328,9 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   }
 
   // Clear firewall settings for this server.
-  const bool useIPv4 = !config.m_serverIpv4AddrIn.isNull() &&
-                       (config.m_serverIpv6AddrIn.isNull() ||
-                        hasRouteToIPv4(config.m_serverIpv4AddrIn));
-  const QString endpointAddr =
-      useIPv4 ? config.m_serverIpv4AddrIn : config.m_serverIpv6AddrIn;
-  if (!m_firewall.clearInbound(endpointAddr)) {
+  const QString endpointAddr = m_peerEndpoints.take(config.m_serverPublicKey);
+
+  if (!endpointAddr.isEmpty() && !m_firewall.clearInbound(endpointAddr)) {
     return false;
   }
 

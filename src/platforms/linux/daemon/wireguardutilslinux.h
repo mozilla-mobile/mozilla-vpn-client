@@ -5,6 +5,7 @@
 #ifndef WIREGUARDUTILSLINUX_H
 #define WIREGUARDUTILSLINUX_H
 
+#include <QHash>
 #include <QHostAddress>
 #include <QObject>
 #include <QSocketNotifier>
@@ -70,6 +71,10 @@ class WireguardUtilsLinux final : public WireguardUtils {
   // Excluded routes are not automatically removed when the interface goes down
   // therefore, we have to remove them manually in deleteInterface()
   QList<IPAddress> m_routesExcluded;
+
+  // Maps server public key to the endpoint address marked in updatePeer(),
+  // so we can clear that address in deletePeer()
+  QHash<QString, QString> m_peerEndpoints;
 
  private slots:
   void nlsockReady();
