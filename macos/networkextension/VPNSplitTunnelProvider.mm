@@ -255,7 +255,27 @@
     } else {
       NSLog(@"settings applied");
       [weakSelf.wireguard startTunnelWithOptions:weakSelf.config
-                               completionHandler:completionHandler];
+                               completionHandler:^(NSError* wgError){
+        if (wgError != nil) {
+          completionHandler(wgError);
+          return;
+        }
+
+        // Configure routes into the tunnel interface.
+        // Note that the default route should set RTF_IFSCOPE so that we
+        // leave the real default route untouched.
+        for (RoutePrefix* prefix in weakSelf.config.routes) {
+          [weakSelf.routeManager rtmSendRoute:RTM_ADD
+                                toDestination:nw_endpoint_get_address(prefix.destination)
+                                   withPrefix:prefix.prefixLength
+                                 viaInterface:weakSelf.wireguard.virtualInterface
+                                  withGateway:nil
+                                     andFlags:(prefix.prefixLength == 0) ? RTF_IFSCOPE : 0];
+        }
+
+        // Success
+        completionHandler(nil);
+      }];
     }
   }];
 }
@@ -272,12 +292,11 @@
     memset(&sin, 0, sizeof(sin));
     sin.sin_family = AF_INET;
     sin.sin_len = sizeof(sin);
-    NSData* dst = [NSData dataWithBytes:&sin length:sizeof(sin)];
 
     [self.routeManager rtmSendRoute:RTM_DELETE
-                      toDestination:dst
+                      toDestination:(struct sockaddr*)&sin
                          withPrefix:0
-                       viaInterface:nw_interface_get_index(self.ipv4Interface)
+                       viaInterface:self.ipv4Interface
                         withGateway:nil
                            andFlags:RTF_IFSCOPE];
 
@@ -290,12 +309,11 @@
     memset(&sin6, 0, sizeof(sin6));
     sin6.sin6_family = AF_INET6;
     sin6.sin6_len = sizeof(sin6);
-    NSData* dst = [NSData dataWithBytes:&sin6 length:sizeof(sin6)];
 
     [self.routeManager rtmSendRoute:RTM_DELETE
-                      toDestination:dst
+                      toDestination:(struct sockaddr*)&sin6
                          withPrefix:0
-                       viaInterface:nw_interface_get_index(self.ipv6Interface)
+                       viaInterface:self.ipv6Interface
                         withGateway:nil
                            andFlags:RTF_IFSCOPE];
 
@@ -514,7 +532,6 @@
 - (void)defaultRouteChanged:(int)family
                viaInterface:(nw_interface_t)interface
                 withGateway:(NSData*)gateway {
-  int action = RTM_ADD;
   int ifindex = interface ? nw_interface_get_index(interface) : 0;
 
   if (family == AF_INET) {
@@ -522,47 +539,52 @@
     memset(&dst, 0, sizeof(dst));
     dst.sin_family = AF_INET;
     dst.sin_len = sizeof(dst);
-    NSData* dstAddr = [NSData dataWithBytes:&dst length:sizeof(dst)];
 
     if (interface) {
+      int action = RTM_ADD;
       NSLog(@"default ipv4 route via %s", nw_interface_get_name(interface));
+
       if (!self.ipv4Interface) {
         action = RTM_ADD;
       } else if (ifindex == nw_interface_get_index(self.ipv4Interface)) {
         action = RTM_CHANGE;
       } else {
+        // Default route has changed interface - delete the old clone.
         action = RTM_ADD;
         [self.routeManager rtmSendRoute:RTM_DELETE
-                          toDestination:dstAddr
+                          toDestination:(struct sockaddr*)&dst
                             withPrefix:0
-                          viaInterface:nw_interface_get_index(self.ipv4Interface)
+                          viaInterface:self.ipv4Interface
                             withGateway:nil
                               andFlags:RTF_IFSCOPE];
       }
+
+      // Add or update the cloned default route.
+      [self.routeManager rtmSendRoute:action
+                        toDestination:(struct sockaddr*)&dst
+                            withPrefix:0
+                          viaInterface:interface
+                           withGateway:gateway
+                              andFlags:RTF_IFSCOPE];
     } else if (self.ipv4Interface) {
       NSLog(@"default ipv4 route lost");
-      action = RTM_DELETE;
-      ifindex = nw_interface_get_index(self.ipv4Interface);
+      [self.routeManager rtmSendRoute:RTM_DELETE
+                        toDestination:(struct sockaddr*)&dst
+                           withPrefix:0
+                         viaInterface:self.ipv4Interface
+                          withGateway:gateway
+                             andFlags:RTF_IFSCOPE];
     }
 
-    // Update the cloned IPv4 default route.
     self.ipv4Interface = interface;
-    if (ifindex != 0) {
-      [self.routeManager rtmSendRoute:action
-                        toDestination:dstAddr
-                          withPrefix:0
-                        viaInterface:ifindex
-                          withGateway:gateway
-                            andFlags:RTF_IFSCOPE];
-    }
   } else if (family == AF_INET6) {
     struct sockaddr_in6 dst;
     memset(&dst, 0, sizeof(dst));
     dst.sin6_family = AF_INET6;
     dst.sin6_len = sizeof(dst);
-    NSData* dstAddr = [NSData dataWithBytes:&dst length:sizeof(dst)];
 
     if (interface) {
+      int action = RTM_ADD;
       NSLog(@"default ipv6 route via %s", nw_interface_get_name(interface));
 
       if (!self.ipv6Interface) {
@@ -571,29 +593,33 @@
         action = RTM_CHANGE;
       } else {
         action = RTM_ADD;
+        // Default route has changed interface - delete the old clone.
         [self.routeManager rtmSendRoute:RTM_DELETE
-                          toDestination:dstAddr
-                            withPrefix:0
-                          viaInterface:nw_interface_get_index(self.ipv6Interface)
+                          toDestination:(struct sockaddr*)&dst
+                             withPrefix:0
+                           viaInterface:self.ipv6Interface
                             withGateway:nil
-                              andFlags:RTF_IFSCOPE];
+                               andFlags:RTF_IFSCOPE];
       }
+
+      // Add or update the cloned default route.
+      [self.routeManager rtmSendRoute:action
+                        toDestination:(struct sockaddr*)&dst
+                           withPrefix:0
+                         viaInterface:interface
+                          withGateway:gateway
+                             andFlags:RTF_IFSCOPE];
     } else if (self.ipv6Interface) {
       NSLog(@"default ipv6 route lost");
-      action = RTM_DELETE;
-      ifindex = nw_interface_get_index(self.ipv6Interface);
-    }
-
-    // Update the cloned IPv6 default route.
-    self.ipv6Interface = interface;
-    if (ifindex != 0) {
-      [self.routeManager rtmSendRoute:action
-                        toDestination:dstAddr
+      [self.routeManager rtmSendRoute:RTM_DELETE
+                        toDestination:(struct sockaddr*)&dst
                            withPrefix:0
-                         viaInterface:ifindex
+                         viaInterface:interface
                           withGateway:gateway
                              andFlags:RTF_IFSCOPE];
     }
+
+    self.ipv6Interface = interface;
   }
 }
 

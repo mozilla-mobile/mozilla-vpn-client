@@ -175,6 +175,13 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
   [options setObject:config.m_serverIpv6Gateway.toNSString() forKey:@"serverIpv6Gateway"];
   [options setObject:[NSNumber numberWithInt:config.m_serverPort] forKey:@"serverPort"];
 
+  NSMutableArray* ipAddressRanges =
+      [NSMutableArray arrayWithCapacity:config.m_allowedIPAddressRanges.length()];
+  for (const IPAddress& range : config.m_allowedIPAddressRanges) {
+    [ipAddressRanges addObject:range.toString().toNSString()];
+  }
+  [options setObject:ipAddressRanges forKey:@"routes"];
+
   // Serialize the excluded application list.
   NSMutableArray* vpnDisabledApps =
       [NSMutableArray arrayWithCapacity:config.m_vpnDisabledApps.length()];

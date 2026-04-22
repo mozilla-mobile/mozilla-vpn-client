@@ -197,8 +197,6 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   self.connection = nw_connection_create(options.serverIpv4Addr, params);
   nw_connection_set_queue(self.connection, dispatch_get_main_queue());
 
-  // The tunnel username should contain the base64-encoded server public key and
-  // the password should hold the device private key.
   m_wireguard = new_tunnel(options.privateKey.UTF8String,
                            options.serverPublicKey.UTF8String,
                            nil, // Preshared key
@@ -383,10 +381,10 @@ static NSError* errorFromErrno(int code, NSString* desc) {
       CFRelease(cfError);
       return;
     }
-    if (!data) {
-      // No data? That was kinda weird - oh well, try again.
+
+    if (data == nil) {
+      // This may be nil if the message or stream is complete.
       NSLog(@"recv empty");
-      [self handleInbound];
       return;
     }
 
@@ -477,7 +475,10 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   } else {
     NSLog(@"wireguard shutdown");
   }
-  self.connection = nil;
+  if (self.connection) {
+    nw_connection_cancel(self.connection);
+    self.connection = nil;
+  }
   self.virtualInterface = nil;
 
   if (m_timer) {

@@ -10,6 +10,10 @@
 #include <netinet/in.h>
 #include <sys/socket.h>
 
+@implementation RoutePrefix
+// Nothing to do here
+@end
+
 @implementation InterfaceConfig
 
 - (NSString*)findString:(NSString*)key {
@@ -95,7 +99,7 @@
     config.serverIpv4Addr = nw_endpoint_create_address((struct sockaddr*)&sin);
   }
 
-  NSString* serverIpv6Addr = [dict objectForKey:@"serverIpv6AddrIn"];
+  NSString* serverIpv6Addr = [config findString:@"serverIpv6AddrIn"];
   if (serverIpv6Addr) {
     struct sockaddr_in6 sin6;
     memset(&sin6, 0, sizeof(sin6));
@@ -108,6 +112,54 @@
 
     config.serverIpv6Addr = nw_endpoint_create_address((struct sockaddr*)&sin6);
   }
+
+  // Parse the allowed IP address ranges.
+  NSObject* rangesObject = [config.dict objectForKey:@"routes"];
+  NSMutableArray<RoutePrefix*>* routes = [NSMutableArray new];
+  if ([rangesObject isKindOfClass:[NSArray<NSString*> class]]) {
+    NSArray<NSString*>* list = (NSArray<NSString*>*)rangesObject;
+    for (NSString* rangeString in list) {
+      NSArray<NSString*>* split = [rangeString componentsSeparatedByString:@"/"];
+      NSString* dest = split[0];
+      RoutePrefix* prefix = [RoutePrefix new];
+
+      if ([dest containsString:@":"]) {
+        // IPv6 address
+        struct sockaddr_in6 sin6;
+        memset(&sin6, 0, sizeof(sin6));
+        sin6.sin6_family = AF_INET6;
+        sin6.sin6_len = sizeof(sin6);
+        sin6.sin6_port = 0; // Not used.
+        if (!inet_pton(AF_INET6, dest.UTF8String, &sin6.sin6_addr.s6_addr)) {
+          return nil;
+        }
+        prefix.destination = nw_endpoint_create_address((struct sockaddr*)&sin6);
+        prefix.prefixLength = 128;
+      } else {
+        struct sockaddr_in sin;
+        memset(&sin, 0, sizeof(sin));
+        sin.sin_family = AF_INET;
+        sin.sin_len = sizeof(sin);
+        sin.sin_port = 0; // Not used.
+        if (!inet_pton(AF_INET, dest.UTF8String, &sin.sin_addr.s_addr)) {
+          return nil;
+        }
+        prefix.destination = nw_endpoint_create_address((struct sockaddr*)&sin);
+        prefix.prefixLength = 32;
+      }
+
+      if (split.count > 1) {
+        NSInteger i = split[1].integerValue;
+        if ((i < 0) || (i > prefix.prefixLength)) {
+          return nil;
+        }
+        prefix.prefixLength = i;
+      }
+
+      [routes addObject:prefix];
+    }
+  }
+  config.routes = [NSArray arrayWithArray:routes];
 
   return config;
 }

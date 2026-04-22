@@ -429,9 +429,9 @@ static int memcmpzero(const void* data, size_t len) {
 }
 
 - (void) rtmSendRoute:(int)action
-        toDestination:(NSData*)dst
+        toDestination:(const struct sockaddr*)dst
            withPrefix:(unsigned int)plen
-         viaInterface:(unsigned int)ifindex
+         viaInterface:(nw_interface_t)interface
           withGateway:(NSData*)gateway
              andFlags:(int)flags {
   constexpr size_t rtm_max_size = sizeof(struct rt_msghdr) +
@@ -443,7 +443,7 @@ static int memcmpzero(const void* data, size_t len) {
   rtm->rtm_msglen = sizeof(struct rt_msghdr);
   rtm->rtm_version = RTM_VERSION;
   rtm->rtm_type = action;
-  rtm->rtm_index = ifindex;
+  rtm->rtm_index = nw_interface_get_index(interface);
   rtm->rtm_flags = flags | RTF_STATIC | RTF_UP;
   rtm->rtm_addrs = 0;
   rtm->rtm_pid = 0;
@@ -453,8 +453,7 @@ static int memcmpzero(const void* data, size_t len) {
   memset(&rtm->rtm_rmx, 0, sizeof(rtm->rtm_rmx));
 
   // Append RTA_DST
-  const struct sockaddr* dstAddr = (const struct sockaddr*)dst.bytes;
-  rtmAppendAddr(rtm, rtm_max_size, RTA_DST, dstAddr);
+  rtmAppendAddr(rtm, rtm_max_size, RTA_DST, dst);
 
   // Append RTA_GATEWAY
   if (gateway != nullptr) {
@@ -463,10 +462,23 @@ static int memcmpzero(const void* data, size_t len) {
       rtm->rtm_flags |= RTF_GATEWAY;
     }
     rtmAppendAddr(rtm, rtm_max_size, RTA_GATEWAY, gw);
+  } else if (action != RTM_DELETE) {
+    const char* ifname = nw_interface_get_name(interface);
+    struct sockaddr_dl datalink;
+    memset(&datalink, 0, sizeof(datalink));
+    datalink.sdl_family = AF_LINK;
+    datalink.sdl_len = offsetof(struct sockaddr_dl, sdl_data) + strlen(ifname);
+    datalink.sdl_index = nw_interface_get_index(interface);
+    datalink.sdl_type = IFT_OTHER;
+    datalink.sdl_nlen = strlen(ifname);
+    datalink.sdl_alen = 0;
+    datalink.sdl_slen = 0;
+    memcpy(&datalink.sdl_data, ifname, datalink.sdl_nlen);
+    rtmAppendAddr(rtm, rtm_max_size, RTA_GATEWAY, (struct sockaddr*)&datalink);
   }
 
   // Append RTA_NETMASK
-  if (dstAddr->sa_family == AF_INET6) {
+  if (dst->sa_family == AF_INET6) {
     struct sockaddr_in6 mask;
     memset(&mask, 0, sizeof(mask));
     mask.sin6_family = AF_INET6;
@@ -476,7 +488,7 @@ static int memcmpzero(const void* data, size_t len) {
       mask.sin6_addr.s6_addr[plen / 8] = 0xFF ^ (0xFF >> (plen % 8));
     }
     rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &mask);
-  } else if (dstAddr->sa_family == AF_INET) {
+  } else if (dst->sa_family == AF_INET) {
     struct sockaddr_in mask;
     memset(&mask, 0, sizeof(mask));
     mask.sin_family = AF_INET;

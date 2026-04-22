@@ -19,9 +19,9 @@ struct sockaddr;
 - (void)startWithDelegate:(NSObject<RouteManagerDelegate>*)delegate;
 
 - (void)rtmSendRoute:(int)action
-       toDestination:(NSData*)dst
+       toDestination:(const struct sockaddr*)dst
           withPrefix:(unsigned int)plen
-        viaInterface:(unsigned int)ifindex
+        viaInterface:(nw_interface_t)ifindex
          withGateway:(NSData*)gateway
             andFlags:(int)flags;
 @end

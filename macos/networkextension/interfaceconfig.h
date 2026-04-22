@@ -5,6 +5,11 @@
 #import <Foundation/Foundation.h>
 #import <Network/Network.h>
 
+@interface RoutePrefix : NSObject
+@property (strong) nw_endpoint_t destination;
+@property NSUInteger prefixLength;
+@end
+
 @interface InterfaceConfig : NSObject
 
 + (id)parseFromDict:(NSDictionary<NSString *,id> *)dict;
@@ -18,6 +23,8 @@
 @property NSUInteger serverPort;
 @property (strong) nw_endpoint_t serverIpv4Addr;
 @property (strong) nw_endpoint_t serverIpv6Addr;
+
+@property (strong) NSArray<RoutePrefix*>* routes;
 
 @property (strong, readonly) NSDictionary<NSString *,id>* dict;
 
