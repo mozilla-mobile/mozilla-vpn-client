@@ -33,8 +33,8 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
-QT_AARCH64_PATH="${MOZ_FETCHES_DIR}/qt-linux-aarch64"
-QT_HOST_PATH="${MOZ_FETCHES_DIR}/qt-host-tools"
+export QT_AARCH64_PATH="${MOZ_FETCHES_DIR}/qt-linux-aarch64"
+export QT_HOST_PATH="${MOZ_FETCHES_DIR}/qt-host-tools"
 
 if [[ ! -d "${QT_AARCH64_PATH}" ]]; then
     echo "ERROR: qt-linux-aarch64 not found at ${QT_AARCH64_PATH}" >&2
@@ -85,59 +85,6 @@ dch -c "$(pwd)/mozillavpn-source/debian/changelog" \
 
 # Strip Qt6 package dependencies from debian/control - Qt is statically linked.
 sed -rie '/\s+(qt6-|qml6-|libqt6|qmake)/d' "$(pwd)/mozillavpn-source/debian/control"
-
-# -----------------------------------------------------------------------
-# Patch debian/rules to inject cross-compilation cmake flags.
-# We add the aarch64 toolchain file and Qt paths as extra cmake arguments
-# after the existing ${OPENSSL_BUILD_ARGS} line.
-# -----------------------------------------------------------------------
-TOOLCHAIN_CMAKE="$(pwd)/mozillavpn-source/scripts/linux/aarch64-toolchain.cmake"
-
-python3 << PYEOF
-import sys
-
-rules_file = 'mozillavpn-source/debian/rules'
-toolchain  = '${TOOLCHAIN_CMAKE}'
-qt_aarch64 = '${QT_AARCH64_PATH}'
-qt_host    = '${QT_HOST_PATH}'
-
-with open(rules_file) as f:
-    content = f.read()
-
-# Append cross-compile cmake flags after the last argument (\${OPENSSL_BUILD_ARGS}).
-# The backslash-newline-tab pattern continues the Makefile recipe line.
-cross_flags = (
-    ' \\\\\n'
-    '\t\t-DCMAKE_TOOLCHAIN_FILE=' + toolchain + ' \\\\\n'
-    '\t\t-DCMAKE_FIND_ROOT_PATH=/ \\\\\n'
-    '\t\t-DCMAKE_LIBRARY_ARCHITECTURE=aarch64-linux-gnu \\\\\n'
-    '\t\t-DCMAKE_PREFIX_PATH=' + qt_aarch64 + ' \\\\\n'
-    '\t\t-DQT_HOST_PATH=' + qt_host + ' \\\\\n'
-    '\t\t-DQT_HOST_PATH_CMAKE_DIR=' + qt_host + '/lib/cmake'
-)
-
-marker = '\t\t\${OPENSSL_BUILD_ARGS}'
-if marker not in content:
-    print("WARNING: marker '\${OPENSSL_BUILD_ARGS}' not found in debian/rules", file=sys.stderr)
-    print("Appending cross-compile flags to override_dh_auto_configure instead.", file=sys.stderr)
-    # Fall back: append a whole new override block
-    override = (
-        '\noverride_dh_auto_configure:\n'
-        '\tdh_auto_configure -- \\\n'
-        '\t\t-DCMAKE_CXX_STANDARD=17 \\\n'
-        '\t\t-DWEBEXT_INSTALL_LIBDIR=/lib \\\n'
-        '\t\t-DBUILD_TESTS=OFF \\\n'
-        '\t\t-DBUILD_APPARMOR=ON' + cross_flags.replace('\t\t', '\t\t')
-        + '\n'
-    )
-    content += override
-else:
-    content = content.replace(marker, marker + cross_flags)
-
-with open(rules_file, 'w') as f:
-    f.write(content)
-print("debian/rules patched for aarch64 cross-compilation.")
-PYEOF
 
 # Set up Rust cross-compilation for the aarch64-unknown-linux-gnu target.
 export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER=aarch64-linux-gnu-gcc
