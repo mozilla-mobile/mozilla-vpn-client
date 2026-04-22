@@ -29,7 +29,7 @@
 - (NSError*) setTunnelAddress:(nw_endpoint_t)endpoint;
 
 @property (nonatomic) NSUInteger mtu;
-@property (strong, readonly, getter=getStatus) WireguardStats* stats;
+@property (strong, readonly, getter=getStatus) WireguardStats* status;
 
 @property (strong) nw_connection_t connection;
 @property (strong) nw_interface_t virtualInterface;

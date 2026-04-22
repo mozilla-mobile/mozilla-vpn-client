@@ -464,6 +464,21 @@
   }
   [msg finishDecoding];
 
+  // Wireguard Tunnel messages
+  if ([action isEqualToString:@"status"]) {
+    NSError* err;
+    NSData* reply = [NSKeyedArchiver archivedDataWithRootObject:self.wireguard.status
+                                          requiringSecureCoding:YES
+                                                          error:&err];
+    if (err == nil) {
+      [VPNSplitTunnelProvider sendAppError:err completionHandler:completionHandler];
+    } else {
+      [VPNSplitTunnelProvider sendAppResponse:reply completionHandler:completionHandler];
+    }
+    return;
+  }
+  
+  // Application exclusion messages.
   if ([action isEqualToString: @"clear"]) {
     [self.vpnDisabledApps removeAllObjects];
   } else if ([action isEqualToString: @"add"]) {

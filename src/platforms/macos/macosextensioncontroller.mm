@@ -17,6 +17,8 @@
 @interface MacOSExtensionDelegate : NSObject <OSSystemExtensionRequestDelegate>
 @property MacOSExtensionController* parent;
 - (id)initWithObject:(MacOSExtensionController*)controller;
+- (void)notifyEnabledChanged:(NSNotification*)notify;
+- (void)notifyStatusChanged:(NSNotification*)notify;
 @end
 
 namespace {
@@ -26,11 +28,11 @@ Logger logger("MacOSExtensionController");
 MacOSExtensionController::MacOSExtensionController() : ControllerImpl()  {
   // Create the system extension loader delegate.
   m_delegate = [[MacOSExtensionDelegate alloc] initWithObject:this];
-  [static_cast<MacOSExtensionDelegate*>(m_delegate) retain];
+  [m_delegate retain];
 }
 
 MacOSExtensionController::~MacOSExtensionController() {
-  [static_cast<MacOSExtensionDelegate*>(m_delegate) release];
+  [m_delegate release];
 }
 
 void MacOSExtensionController::initialize(const Device* device, const Keys* keys) {
@@ -40,7 +42,7 @@ void MacOSExtensionController::initialize(const Device* device, const Keys* keys
   OSSystemExtensionRequest* req =
       [OSSystemExtensionRequest activationRequestForExtension: extIdentifier()
                                                         queue: queue];
-  req.delegate = static_cast<MacOSExtensionDelegate*>(m_delegate);
+  req.delegate = m_delegate;
 
   // Start the request
   logger.debug() << "activation request started:" << req.identifier;
@@ -90,6 +92,13 @@ void MacOSExtensionController::extLoaderSuccess(int result) {
     protocol.serverAddress = @"127.0.0.1";
     m_manager.protocolConfiguration = protocol;
 
+    // Register the delegate to receive updates when the extension state is changed.
+    NSNotificationCenter* notify = [NSNotificationCenter defaultCenter];
+    [notify addObserver:m_delegate
+               selector:@selector(notifyEnabledChanged:)
+                   name:NEVPNConfigurationChangeNotification
+                 object:m_manager];
+
     // Enable the manager and sync preferences
     m_manager.enabled = true;
     [m_manager saveToPreferencesWithCompletionHandler:^(NSError* saveErr){
@@ -102,7 +111,17 @@ void MacOSExtensionController::extLoaderSuccess(int result) {
           logger.debug() << "proxy prefs load failed:"
                          << loadErr.localizedDescription;
         }
-        emit initialized(true, false, QDateTime());
+        NEVPNConnection* conn = m_manager.connection;
+        [notify addObserver:m_delegate
+                   selector:@selector(notifyStatusChanged:)
+                       name:NEVPNStatusDidChangeNotification
+                     object:conn];
+
+        if (conn.status == NEVPNStatusConnected) {
+          emit initialized(true, true, QDateTime::fromCFDate((CFDateRef)conn.connectedDate));
+        } else {
+          emit initialized(true, false, QDateTime());
+        }
       }];
     }];
   }];
@@ -117,6 +136,20 @@ void MacOSExtensionController::extNeedsApproval() {
   emit permissionRequired();
 }
 
+void MacOSExtensionController::extEnabledChange(bool enabled) {
+  logger.warning() << "activation enable changed:" << enabled;
+}
+
+void MacOSExtensionController::extStatusChange(int status) {
+  logger.warning() << "connection status changed:" << status;
+  if (status == NEVPNStatusConnected) {
+    emit connected(m_serverPublicKey);
+  }
+  if (status == NEVPNStatusDisconnected) {
+    emit disconnected();
+  }
+}
+
 void MacOSExtensionController::activate(const InterfaceConfig& config,
                                         Controller::Reason reason) {
   Q_UNUSED(reason);
@@ -126,6 +159,9 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
     // Split tunnelling is not supported.
     return;
   }
+
+  // Save the public key for signal emissions.
+  m_serverPublicKey = config.m_serverPublicKey;
 
   // Serialize the interface configuration.
   NSMutableDictionary* options = [NSMutableDictionary dictionary];
@@ -159,7 +195,6 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
   } else {
     // Save the session and retain it.
     m_session = [session retain];
-    emit connected(config.m_serverPublicKey);
   }
 }
 
@@ -225,5 +260,14 @@ didFinishWithResult:(OSSystemExtensionRequestResult) result {
   QMetaObject::invokeMethod(self.parent, "extLoaderSuccess", Q_ARG(int, result));
 }
 
-@end
+- (void)notifyEnabledChanged:(NSNotification*)notify {
+  bool enabled = static_cast<NETransparentProxyManager*>(notify.object).enabled;
+  QMetaObject::invokeMethod(self.parent, "extEnabledChange", Q_ARG(bool, enabled));
+}
 
+- (void)notifyStatusChanged:(NSNotification*)notify {
+  NEVPNStatus status = static_cast<NEVPNConnection*>(notify.object).status;
+  QMetaObject::invokeMethod(self.parent, "extStatusChange", Q_ARG(int, status));
+}
+
+@end

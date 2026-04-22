@@ -44,11 +44,16 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
   CFRunLoopTimerRef    m_timer;
 
   struct timespec      m_lastHandshake;
+  struct timespec      m_handshakeTimeout;
+
+  // The completion handler to run on initial handshake or timeout. 
+  void (^m_completionHandler)(NSError *error);
 }
 
 constexpr const int WG_PACKET_OVERHEAD = 32;
 constexpr const int WG_MTU_OVERHEAD = 80;
 constexpr const int WG_MAX_HANDSHAKE_SIZE = 148;
+constexpr const int WG_MAX_HANDSHAKE_TIMEOUT = 15;
 
 static void wgLog(const char* msg) {
   NSLog(@"wg: %s", msg);
@@ -99,10 +104,10 @@ static NSError* errorFromErrno(int code, NSString* desc) {
 
 - (void) startTunnelWithOptions:(InterfaceConfig *)options 
               completionHandler:(void (^)(NSError *error)) completionHandler {
+  m_completionHandler = completionHandler;
   m_tunfd = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
   if (m_tunfd < 0) {
-    [self shutdownTunnel:errorFromErrno(errno, @"tunnel creation failed")
-       completionHandler:completionHandler];
+    [self shutdownTunnel:@"tunnel creation failed" withErrno:errno];
     return;
   }
 
@@ -110,8 +115,7 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   struct ctl_info info = {.ctl_name = "com.apple.net.utun_control"};
   int err = ioctl(m_tunfd, CTLIOCGINFO, &info);
   if (err < 0) {
-    [self shutdownTunnel:errorFromErrno(errno, @"kernel utun lookup failed")
-       completionHandler:completionHandler];
+    [self shutdownTunnel:@"kernel utun lookup failed" withErrno:errno];
     return;
   }
   struct sockaddr_ctl addr = {};
@@ -122,8 +126,7 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   addr.sc_unit = 0;
   err = connect(m_tunfd, (struct sockaddr*)&addr, sizeof(addr));
   if (err < 0) {
-    [self shutdownTunnel:errorFromErrno(errno, @"kernel utun connect failed")
-       completionHandler:completionHandler];
+    [self shutdownTunnel:@"kernel utun connect failed" withErrno:errno];
     return;
   }
 
@@ -133,8 +136,7 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   err = getsockopt(m_tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifr.ifr_name,
                    &ifnamesize);
   if (err < 0) {
-    [self shutdownTunnel:errorFromErrno(errno, @"utun name loookup failed")
-       completionHandler:completionHandler];
+    [self shutdownTunnel:@"utun name loookup failed" withErrno:errno];
     return;
   }
   int ifindex = if_nametoindex(ifr.ifr_name);
@@ -142,35 +144,31 @@ static NSError* errorFromErrno(int code, NSString* desc) {
 
   // Assign addresses
   if (NSError *err = [self setTunnelAddress:options.deviceIpv4Addr]) {
-    [self shutdownTunnel:err completionHandler:completionHandler];
+    [self shutdownTunnel:err];
     return;
   }
   if (NSError *err = [self setTunnelAddress:options.deviceIpv6Addr]) {
-    [self shutdownTunnel:err completionHandler:completionHandler];
+    [self shutdownTunnel:err];
     return;
   }
 
   // Set a base MTU, it will get updated later.
   ifr.ifr_mtu = self.mtu;
   if (ioctl(m_tunfd, SIOCSIFMTU, &ifr) != 0) {
-    [self shutdownTunnel:errorFromErrno(errno, @"failed to set mtu")
-       completionHandler:completionHandler];
+    [self shutdownTunnel:@"failed to set mtu" withErrno:errno];
     return;
   }
-
 
   // Bring the device up.
   err = ioctl(m_tunfd, SIOCGIFFLAGS, &ifr);
   if (err != 0) {
-    [self shutdownTunnel:errorFromErrno(errno, @"failed to get interface flags")
-       completionHandler:completionHandler];
+    [self shutdownTunnel:@"failed to get interface flags" withErrno:errno];
     return;
   }
   ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
   err = ioctl(m_tunfd, SIOCSIFFLAGS, &ifr);
   if (err != 0) {
-    [self shutdownTunnel:errorFromErrno(errno, @"failed to set device up")
-       completionHandler:completionHandler];
+    [self shutdownTunnel:@"failed to set device up" withErrno:errno];
     return;
   }
 
@@ -207,17 +205,17 @@ static NSError* errorFromErrno(int code, NSString* desc) {
                            300, // Keepalive period
                            index % (1U << 24));
 
+  m_completionHandler = completionHandler;
   nw_connection_set_state_changed_handler(self.connection,
                                           ^(nw_connection_state_t state, nw_error_t err) {
-    // TODO: Implement Me!
     if (err) {
       CFErrorRef cfError = nw_error_copy_cf_error(err);
       NSLog(@"vpn socket error: %@", (__bridge NSError*)cfError);
-      completionHandler((__bridge NSError*)cfError);
+      [self shutdownTunnel:(__bridge NSError*)cfError];
       CFRelease(cfError);
     } else if (state == nw_connection_state_cancelled || state == nw_connection_state_failed) {
       NSLog(@"vpn socket closed");
-      [self cancelTunnelWithError:nil];
+      [self shutdownTunnel:nil];
     } else if (state != nw_connection_state_ready) {
       NSLog(@"vpn socket state %d", state);
     } else {
@@ -237,9 +235,11 @@ static NSError* errorFromErrno(int code, NSString* desc) {
 
 - (void) stopTunnelWithReason:(NEProviderStopReason)reason 
             completionHandler:(void (^)()) completionHandler {
-  [self shutdownTunnel:nil completionHandler:^(NSError*error){
+  m_completionHandler = ^(NSError *error){
     completionHandler();
-  }];
+  };
+
+  [self shutdownTunnel:nil];
 }
 
 - (NSError*)setTunnelAddress:(nw_endpoint_t)endpoint {
@@ -305,9 +305,13 @@ static NSError* errorFromErrno(int code, NSString* desc) {
 - (void) renegotiate {
   NSLog(@"wireguard renegotiate");
   UInt8* handshake = (UInt8 *)malloc(WG_MAX_HANDSHAKE_SIZE);
-  NSMutableData* buffer = [NSMutableData dataWithLength:WG_MAX_HANDSHAKE_SIZE];
+
   struct wireguard_result r;
   r = wireguard_force_handshake(m_wireguard, handshake, WG_MAX_HANDSHAKE_SIZE);
+
+  // Set a timeout for the handshake to finish.
+  clock_gettime(CLOCK_MONOTONIC, &m_handshakeTimeout);
+  m_handshakeTimeout.tv_sec += WG_MAX_HANDSHAKE_TIMEOUT;
 
   dispatch_data_t data = dispatch_data_create(handshake, r.size,
                                               dispatch_get_main_queue(),
@@ -316,6 +320,21 @@ static NSError* errorFromErrno(int code, NSString* desc) {
 }
 
 - (void) handleTimer {
+  // Check for a handshake timeout.
+  if (m_handshakeTimeout.tv_sec && m_handshakeTimeout.tv_nsec) {
+    struct timespec now;
+    clock_gettime(CLOCK_MONOTONIC, &now);
+    if (now.tv_sec > m_handshakeTimeout.tv_sec) {
+      [self shutdownTunnel:@"handshake timeout" withErrno:ETIMEDOUT];
+      return;
+    } else if (now.tv_sec < m_handshakeTimeout.tv_sec) {
+      // It has not timed out.
+    } else if (now.tv_nsec > m_handshakeTimeout.tv_nsec) {
+      [self shutdownTunnel:@"handshake timeout" withErrno:ETIMEDOUT];
+      return;
+    }
+  }
+
   UInt8* handshake = (UInt8 *)malloc(WG_MAX_HANDSHAKE_SIZE);
   struct wireguard_result r;
   r = wireguard_tick(m_wireguard, handshake, WG_MAX_HANDSHAKE_SIZE);
@@ -342,7 +361,6 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     [plaintext increaseLengthBy:16 - tail];
   }
 
-
   // Encrypt the packet.
   size_t length = plaintext.length + WG_PACKET_OVERHEAD;
   uint8_t* ciphertext = (uint8_t*)malloc(length);
@@ -357,8 +375,8 @@ static NSError* errorFromErrno(int code, NSString* desc) {
 }
 
 - (void) handleInbound {
-  nw_connection_receive(self.connection, 1, UINT16_MAX,
-                        ^(dispatch_data_t data, nw_content_context_t ctx, bool done, nw_error_t err){
+  nw_connection_receive_message(self.connection,
+                                ^(dispatch_data_t data, nw_content_context_t ctx, bool done, nw_error_t err){
     if (err) {
       CFErrorRef cfError = nw_error_copy_cf_error(err);
       NSLog(@"recv error: %@", (__bridge NSError *)cfError);
@@ -366,7 +384,9 @@ static NSError* errorFromErrno(int code, NSString* desc) {
       return;
     }
     if (!data) {
-      //[self closeConnection:nil completionHandler:completionHandler];
+      // No data? That was kinda weird - oh well, try again.
+      NSLog(@"recv empty");
+      [self handleInbound];
       return;
     }
 
@@ -374,7 +394,6 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     const void *ciphertext;
     dispatch_data_t __unused map = dispatch_data_create_map(data, &ciphertext, &length);
     uint8_t* plaintext = (uint8_t*)malloc(length);
-    NSLog(@"wireguard recv: %zu", length);
 
     // Decrypt the wireguard packet.
     struct wireguard_result r;
@@ -389,6 +408,15 @@ static NSError* errorFromErrno(int code, NSString* desc) {
         memset(&m_lastHandshake, 0, sizeof(m_lastHandshake));
       } else if (wgStats.time_since_last_handshake < 5) {
         clock_gettime(CLOCK_MONOTONIC, &m_lastHandshake);
+
+        // Clear the handshake timeout
+        memset(&m_handshakeTimeout, 0, sizeof(m_handshakeTimeout));
+
+        // The conneciton is now up.
+        if (m_completionHandler) {
+          m_completionHandler(nil);
+          m_completionHandler = nil;
+        }
       }
     }
 
@@ -396,6 +424,9 @@ static NSError* errorFromErrno(int code, NSString* desc) {
                                                   dispatch_get_main_queue(),
                                                   DISPATCH_DATA_DESTRUCTOR_FREE);
     [self handleWireguard:(int)r.op withData:packet];
+
+    // Keep going to receive more data.
+    [self handleInbound];
   });
 }
 
@@ -406,7 +437,6 @@ static NSError* errorFromErrno(int code, NSString* desc) {
       break;
 
     case WRITE_TO_NETWORK:
-      NSLog(@"wireguard send: %zu", dispatch_data_get_size(data));
       nw_connection_send(self.connection, data,
                          NW_CONNECTION_DEFAULT_MESSAGE_CONTEXT, true,
                          ^(nw_error_t error) {
@@ -414,8 +444,6 @@ static NSError* errorFromErrno(int code, NSString* desc) {
           CFErrorRef cfError = nw_error_copy_cf_error(error);
           NSLog(@"wireguard send error: %@", (__bridge NSError*)cfError);
           CFRelease(cfError);
-        } else {
-          NSLog(@"wireguard send okay");
         }
       });
       break;
@@ -427,7 +455,6 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     case WRITE_TO_TUNNEL_IPV4:
       [[fallthrough]];
     case WRITE_TO_TUNNEL_IPV6:
-      NSLog(@"wireguard send: %zu", dispatch_data_get_size(data));
       NSData* packet = (NSData*)data;
       uint32_t header = (op == WRITE_TO_TUNNEL_IPV6) ? htonl(AF_INET6) : htonl(AF_INET);
       const struct iovec iov[2] = {
@@ -440,8 +467,11 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   }
 }
 
-- (void)shutdownTunnel:(NSError*)error
-     completionHandler:(void (^)(NSError *error)) completionHandler {
+- (void)shutdownTunnel:(NSString*)desc withErrno:(int)code {
+  [self shutdownTunnel:errorFromErrno(code, desc)];
+}
+
+- (void)shutdownTunnel:(NSError*)error {
   if (error) {
     NSLog(@"wireguard shutdown: %@", error);
   } else {
@@ -456,15 +486,16 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     m_timer = nil;
   }
 
+  if (m_socket) {
+    CFSocketInvalidate(m_socket);
+    CFRelease(m_socket);
+    m_socket = nil;
+  }
+
   if (m_source) {
     CFRunLoopRemoveSource(CFRunLoopGetMain(), m_source, kCFRunLoopDefaultMode);
     CFRelease(m_source);
     m_source = nil;
-  }
-
-  if (m_socket) {
-    CFSocketInvalidate(m_socket);
-    CFRelease(m_socket);
   }
 
   if (m_tunfd >= 0) {
@@ -477,13 +508,14 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     m_wireguard = nil;
   }
 
-  if (completionHandler) {
-    completionHandler(error);
+  if (m_completionHandler) {
+    m_completionHandler(error);
+    m_completionHandler = nil;
   }
 }
 
 - (void)cancelTunnelWithError:(NSError*)error {
-  [self shutdownTunnel:error completionHandler:nil];
+  [self shutdownTunnel:error];
 }
 
 - (WireguardStats*)getStatus {

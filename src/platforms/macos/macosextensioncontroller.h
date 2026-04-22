@@ -9,6 +9,7 @@
 
 #include <QtDarwinHelpers>
 
+Q_FORWARD_DECLARE_OBJC_CLASS(MacOSExtensionDelegate);
 Q_FORWARD_DECLARE_OBJC_CLASS(NETransparentProxyManager);
 Q_FORWARD_DECLARE_OBJC_CLASS(NETunnelProviderSession);
 
@@ -34,12 +35,16 @@ class MacOSExtensionController final : public ControllerImpl {
   void extLoaderSuccess(int result);
   void extLoaderFailure(const QString& reason);
   void extNeedsApproval();
+  void extEnabledChange(bool value);
+  void extStatusChange(int status);
 
  private:
   static NSString* extIdentifier();
 
  private:
-  void* m_delegate = nullptr;
+  QString m_serverPublicKey;
+
+  MacOSExtensionDelegate* m_delegate = nullptr;
   NETransparentProxyManager* m_manager = nullptr;
   NETunnelProviderSession* m_session = nullptr;
 };
