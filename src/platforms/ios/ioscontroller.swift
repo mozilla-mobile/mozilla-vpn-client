@@ -4,6 +4,7 @@
 
 import Foundation
 import NetworkExtension
+import WidgetKit
 
 let VPN_NAME = "Mozilla VPN"
 
@@ -130,6 +131,13 @@ public class IOSControllerImpl: NSObject {
         default:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: unknown status")
         }
+
+
+      if #available(iOS 18.0, *) {
+        ControlCenter.shared.reloadAllControls()
+      } else {
+        // Fallback on earlier versions
+      }
 
         // We care about "unknown" state changes.
         if (session.status != .connected && session.status != .disconnected) {
@@ -319,25 +327,25 @@ public class IOSControllerImpl: NSObject {
       IOSControllerImpl.staticDisconnect()
     }
 
-  static func staticDisconnect() {
-    IOSControllerImpl.logger.info(message: "Disconnecting")
-    TunnelManager.withTunnel { tunnel in
+    static func staticDisconnect() {
+      IOSControllerImpl.logger.info(message: "Disconnecting")
+      TunnelManager.withTunnel { tunnel in
 
-        // Turn off auto-connect, otherwise it will immediately reconnect.
-        tunnel.isOnDemandEnabled = false;
-        tunnel.onDemandRules = []
+          // Turn off auto-connect, otherwise it will immediately reconnect.
+          tunnel.isOnDemandEnabled = false;
+          tunnel.onDemandRules = []
 
-        tunnel.saveToPreferences { saveError in
-            if let error = saveError {
-                IOSControllerImpl.logger.error(message: "Disonnect tunnel save error: \(error)")
-            }
-            TunnelManager.session?.stopTunnel()
-        }
+          tunnel.saveToPreferences { saveError in
+              if let error = saveError {
+                  IOSControllerImpl.logger.error(message: "Disonnect tunnel save error: \(error)")
+              }
+              TunnelManager.session?.stopTunnel()
+          }
 
-        // Needs to return something, but this will be discarded.
-        return true
+          // Needs to return something, but this will be discarded.
+          return true
+      }
     }
-  }
 
     @objc func deleteOSTunnelConfig() {
       IOSControllerImpl.logger.info(message: "Removing tunnel from iOS System Preferences")
