@@ -154,20 +154,8 @@ elif [[ "$STATICQT" == "Y" ]]; then
 fi
 
 # Install build dependencies
+mk-build-deps "$(pwd)/mozillavpn-source/debian/control"
 if [[ -n "$CROSS_ARCH" ]]; then
-  # Native host tools
-  sudo apt-get -y install --no-install-recommends \
-      cdbs \
-      cmake \
-      debhelper \
-      dh-apparmor \
-      flex \
-      ninja-build \
-      python3-click \
-      python3-jinja2 \
-      python3-yaml
-
-  # Target-arch link libraries
   sudo apt-get -y install --no-install-recommends \
       "libcap-dev:${CROSS_DEB_ARCH}" \
       "libgcrypt20-dev:${CROSS_DEB_ARCH}" \
@@ -176,8 +164,6 @@ if [[ -n "$CROSS_ARCH" ]]; then
       "libpolkit-gobject-1-dev:${CROSS_DEB_ARCH}" \
       "libxkbcommon-dev:${CROSS_DEB_ARCH}"
 else
-  # TODO maybe move this ouf ot the branch as build deps are shared and it should not be a problem if we install libraries for both architectures
-  mk-build-deps "$(pwd)/mozillavpn-source/debian/control"
   sudo apt -y install "./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb"
   rm -f "./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_*"
 fi
