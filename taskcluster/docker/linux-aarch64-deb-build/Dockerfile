@@ -118,8 +118,8 @@ RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bi
 # Task Setup
 
 # %include-run-task
-# %include taskcluster/scripts/build/linux_build_dpkg_aarch64.sh
-ADD topsrcdir/taskcluster/scripts/build/linux_build_dpkg_aarch64.sh /builds/worker/builder.sh
+# %include taskcluster/scripts/build/linux_build_dpkg.sh
+ADD topsrcdir/taskcluster/scripts/build/linux_build_dpkg.sh /builds/worker/builder.sh
 
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \

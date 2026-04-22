@@ -13,91 +13,186 @@ helpFunction() {
   echo "Usage: $0 [options]"
   echo ""
   echo "Build options:"
-  echo "  -d, --dist DIST     Build packages for distribution DIST (defaut: ${VERSION_CODENAME})"
-  echo "  -s, --static        Build packages for statically linked Qt."
-  echo "  -h, --help          Display this message and exit"
+  echo "  -d, --dist DIST         Build packages for distribution DIST"
+  echo "  -s, --static            Build with statically linked Qt (x86_64)"
+  echo "  --cross-arch ARCH       Cross-compile for ARCH (supported: aarch64)"
+  echo "  -h, --help              Display this message and exit"
 }
 
+CROSS_ARCH=""
+CROSS_DEB_ARCH=""
 STATICQT=N
+DIST=""
 
 ## Parse arguments
 while [[ $# -gt 0 ]]; do
-  key="$1"
-
-  case $key in
+  key="$1"  
+  case "$key" in
     -d|--dist)
       DIST="$2"
-      shift
-      shift
+      shift 2
       ;;
-    
     -s|--static)
       STATICQT=Y
       DIST="static"
       shift
       ;;
-
+    --cross-arch)
+      CROSS_ARCH="$2"
+      shift 2
+      ;;
     -h|--help)
       helpFunction
-      shift
       exit 0
       ;;
-
     *)
       echo "Unknown argument: $1" >&2
       helpFunction
-      shift
       exit 1
       ;;
   esac
 done
 
+# Validate cross-arch and resolve the Debian architecture name
+if [[ -n "$CROSS_ARCH" ]]; then
+  case "$CROSS_ARCH" in
+    aarch64) CROSS_DEB_ARCH="arm64" ;;
+    *) echo "ERROR: unsupported --cross-arch value: ${CROSS_ARCH}" >&2; exit 1 ;;
+  esac
+  STATICQT=Y
+  DIST="${DIST:-static-${CROSS_DEB_ARCH}}"
+fi
+
 # Fall back to the host operating system if no distribution was specified
-if [[ -z "$DIST" ]]; then
-  DIST="${VERSION_CODENAME}"
+DIST="${DIST:-${VERSION_CODENAME}}"
+
+# Register the cross-arch before updating the package database
+if [[ -n "$CROSS_ARCH" ]]; then
+  sudo dpkg --add-architecture "${CROSS_DEB_ARCH}"
 fi
 
 # Update the package database, just in case.
 sudo apt-get update
 
 # Find and extract the package source
-DSCFILE=$(find ${MOZ_FETCHES_DIR} -name '*.dsc')
-if [[ ! -f "$DSCFILE" ]]; then
-    echo "Unable to locate DSC file" >&2
-    echo "${MOZ_FETCHES_DIR} contained:" >2&
-    ls -al ${MOZ_FETCHES_DIR}
+DSCFILE=$(find "${MOZ_FETCHES_DIR}" -name '*.dsc')
+if [[ -f "${DSCFILE}" ]]; then
+  dpkg-source -x "${DSCFILE}" "$(pwd)/mozillavpn-source/"
+elif [[ -n "$CROSS_ARCH" ]]; then
+  # For cross-builds the source arrive as a pre-extracted tree rather than a .dsc
+  SRCTREE=$(find "${MOZ_FETCHES_DIR}" -maxdepth 3 -name 'debian' -type d \
+            2>/dev/null | head -1 | xargs -I{} dirname {})
+  if [[ -d "${SRCTREE}" ]]; then
+    echo "No .dsc found; using pre-extracted source tree: ${SRCTREE}"
+    cp -a "${SRCTREE}" "$(pwd)/mozillavpn-source"
+  else
+    echo "ERROR: No .dsc file and no source tree with debian/ found under ${MOZ_FETCHES_DIR}" >&2
+    find "${MOZ_FETCHES_DIR}" -maxdepth 3 | head -40 >&2
     exit 1
+  fi
+else
+  echo "ERROR: Unable to locate DSC file" >&2
+  echo "${MOZ_FETCHES_DIR} contained:" >&2
+  ls -al "${MOZ_FETCHES_DIR}"
+  exit 1
 fi
-dpkg-source -x ${DSCFILE} $(pwd)/mozillavpn-source/
+
 DPKG_PACKAGE_SRCNAME=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Source)
 DPKG_PACKAGE_BASE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version)
-DPKG_PACKAGE_DIST_VERSION=${DPKG_PACKAGE_BASE_VERSION}-${DIST}1
+DPKG_PACKAGE_DIST_VERSION="${DPKG_PACKAGE_BASE_VERSION}-${DIST}1"
 DPKG_PACKAGE_BUILD_ARGS="--unsigned-source"
 
-# Update the changelog to release for the target distribution.
-if [[ -z "$TASK_OWNER" ]]; then
+# Update the changelog entry for this distribution
+if [[ -z "${TASK_OWNER}" ]]; then
   export DEBEMAIL="vpn@mozilla.com"
   export DEBFULLNAME="Mozilla VPN Team"
 else
   export DEBEMAIL="${TASK_OWNER}"
-  export DEBFULLNAME=$(echo ${TASK_OWNER} | cut -d@ -f1)
+  export DEBFULLNAME=$(echo "${TASK_OWNER}" | cut -d@ -f1)
 fi
-dch -c $(pwd)/mozillavpn-source/debian/changelog -v ${DPKG_PACKAGE_DIST_VERSION} \
-    -D ${DIST} --force-distribution "Release for ${DIST}"
+dch -c "$(pwd)/mozillavpn-source/debian/changelog" \
+    -v "${DPKG_PACKAGE_DIST_VERSION}" \
+    -D "${DIST}" --force-distribution "Release for ${DIST}"
 
-# For static Qt, strip out the Qt build and runtime dependencies.
+# For static Qt or cross builds, strip out the Qt build and runtime dependencies.
 if [[ "$STATICQT" == "Y" ]]; then
-  export PATH=${MOZ_FETCHES_DIR}/qt-linux/bin:${PATH}
-  sed -rie '/\s+(qt6-|qml6-|libqt6|qmake)/d' $(pwd)/mozillavpn-source/debian/control
+  sed -rie '/\s+(qt6-|qml6-|libqt6|qmake)/d' "$(pwd)/mozillavpn-source/debian/control"
 fi
 
-# Install the package build dependencies.
-mk-build-deps $(pwd)/mozillavpn-source/debian/control
-sudo apt -y install ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb
-rm -f ./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_*
+# Set up cross-compilation environment
+if [[ -n "$CROSS_ARCH" ]]; then
+  export QT_AARCH64_PATH="${MOZ_FETCHES_DIR}/qt-linux-${CROSS_ARCH}"
+  export QT_HOST_PATH="${MOZ_FETCHES_DIR}/qt-host-tools"
+
+  if [[ ! -d "${QT_AARCH64_PATH}" ]]; then
+    echo "qt-linux-${CROSS_ARCH} not found at ${QT_AARCH64_PATH}" >&2
+    exit 1
+  fi
+  if [[ ! -d "${QT_HOST_PATH}" ]]; then
+    echo "qt-host-tools not found at ${QT_HOST_PATH}" >&2
+    exit 1
+  fi
+
+  # Put Qt host tools on PATH so cross-build CMake steps can find moc/rcc
+  export PATH="${QT_HOST_PATH}/bin:${PATH}"
+
+  # Rust cross-compilation
+  export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="${CROSS_ARCH}-linux-gnu-gcc"
+  export CARGO_BUILD_TARGET="${CROSS_ARCH}-unknown-linux-gnu"
+  if command -v rustup > /dev/null 2>&1; then
+    rustup target add "${CROSS_ARCH}-unknown-linux-gnu" 2>/dev/null || true
+  fi
+
+  # Go cross-compilation
+  export GOARCH="${CROSS_DEB_ARCH}"
+  export GOOS=linux
+  export CGO_ENABLED=1
+  export CC="${CROSS_ARCH}-linux-gnu-gcc"
+  export CXX="${CROSS_ARCH}-linux-gnu-g++"
+elif [[ "$STATICQT" == "Y" ]]; then
+  export PATH="${MOZ_FETCHES_DIR}/qt-linux/bin:${PATH}"
+fi
+
+# Install build dependencies
+if [[ -n "$CROSS_ARCH" ]]; then
+  # Native host tools
+  sudo apt-get -y install --no-install-recommends \
+      cdbs \
+      cmake \
+      debhelper \
+      dh-apparmor \
+      flex \
+      ninja-build \
+      python3-click \
+      python3-jinja2 \
+      python3-yaml
+
+  # Target-arch link libraries
+  sudo apt-get -y install --no-install-recommends \
+      "libcap-dev:${CROSS_DEB_ARCH}" \
+      "libgcrypt20-dev:${CROSS_DEB_ARCH}" \
+      "libgl-dev:${CROSS_DEB_ARCH}" \
+      "libopengl-dev:${CROSS_DEB_ARCH}" \
+      "libpolkit-gobject-1-dev:${CROSS_DEB_ARCH}" \
+      "libxkbcommon-dev:${CROSS_DEB_ARCH}"
+else
+  # TODO maybe move this ouf ot the branch as build deps are shared and it should not be a problem if we install libraries for both architectures
+  mk-build-deps "$(pwd)/mozillavpn-source/debian/control"
+  sudo apt -y install "./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb"
+  rm -f "./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_*"
+fi
 
 # Build the packages
-(cd mozillavpn-source/ && dpkg-buildpackage --unsigned-source --build=full)
+if [[ -n "$CROSS_ARCH" ]]; then
+  (cd mozillavpn-source/ && \
+      dpkg-buildpackage \
+          --build=binary \
+          --no-sign \
+          --host-arch="${CROSS_DEB_ARCH}" \
+          -d)
+else
+  (cd mozillavpn-source/ && dpkg-buildpackage --unsigned-source --build=full)
+fi
 
 # Compress all build artifacts into a tarball
 BUILD_ARTIFACTS=$(find . -maxdepth 1 -type f -name 'mozillavpn*' -printf '%f\n')
@@ -107,11 +202,11 @@ tar -cvzf /builds/worker/artifacts/mozillavpn-${DIST}.tar.gz ${BUILD_ARTIFACTS}
 for FILENAME in ${BUILD_ARTIFACTS}; do
   PACKAGE_NAME=$(echo "${FILENAME}" | cut -d_ -f1)
   PACKAGE_EXT=$(echo "${FILENAME}" | grep -o '[^.]*$')
-  if [ "$(echo ${FILENAME} | cut -d_ -f2)" != "${DPKG_PACKAGE_DIST_VERSION}" ]; then
+  if [[ "$(echo ${FILENAME} | cut -d_ -f2)" != "${DPKG_PACKAGE_DIST_VERSION}" ]]; then
     continue
   fi
-  if echo "${PACKAGE_NAME}" | grep -e "-dbgsym$"; then
+  if echo "${PACKAGE_NAME}" | grep -q -e "-dbgsym$"; then
     PACKAGE_EXT="ddeb"
   fi
-  cp -v ${FILENAME} /builds/worker/artifacts/${PACKAGE_NAME}.${PACKAGE_EXT}
+  cp -v "${FILENAME}" "/builds/worker/artifacts/${PACKAGE_NAME}.${PACKAGE_EXT}"
 done

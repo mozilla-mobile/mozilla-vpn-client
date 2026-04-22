@@ -94,7 +94,7 @@ linux-aarch64/release-deb:
         name: linux-aarch64-static-deb
         type: build
     run:
-        command: /builds/worker/builder.sh
+        command: /builds/worker/builder.sh --cross-arch aarch64
 
 linux64/release-rpm:
     description: "Linux Build (RPM/Static Qt)"
