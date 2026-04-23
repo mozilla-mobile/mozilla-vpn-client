@@ -100,7 +100,7 @@ fi
 DPKG_PACKAGE_SRCNAME=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Source)
 DPKG_PACKAGE_BASE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version)
 DPKG_PACKAGE_DIST_VERSION="${DPKG_PACKAGE_BASE_VERSION}-${DIST}1"
-DPKG_PACKAGE_BUILD_ARGS="--unsigned-source"
+DPKG_PACKAGE_BUILD_ARGS="--unsigned-source --build=full"
 
 # Update the changelog entry for this distribution
 if [[ -z "${TASK_OWNER}" ]]; then
@@ -121,7 +121,8 @@ fi
 
 # Set up cross-compilation environment
 if [[ -n "$CROSS_ARCH" ]]; then
-  MK_BUILD_DEPS_FLAGS="--host-arch ${CROSS_DEB_ARCH}"
+  MK_BUILD_DEPS_ARGS="--host-arch ${CROSS_DEB_ARCH}"
+  DPKG_PACKAGE_BUILD_ARGS="-d --unsigned-source --build=binary ${MK_BUILD_DEPS_FLAGS}"
   export QT_AARCH64_PATH="${MOZ_FETCHES_DIR}/qt-linux-${CROSS_ARCH}"
   export QT_HOST_PATH="${MOZ_FETCHES_DIR}/qt-host-tools"
 
@@ -155,7 +156,7 @@ elif [[ "$STATICQT" == "Y" ]]; then
 fi
 
 # Install build dependencies
-mk-build-deps $MK_BUILD_DEPS_FLAGS "$(pwd)/mozillavpn-source/debian/control"
+mk-build-deps $MK_BUILD_DEPS_ARGS "$(pwd)/mozillavpn-source/debian/control"
 if [[ -n "$CROSS_ARCH" ]]; then
   sudo apt-get -y install --no-install-recommends \
       "libcap-dev:${CROSS_DEB_ARCH}" \
@@ -169,20 +170,7 @@ else
   rm -f "./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_*"
 fi
 
-# Build the packages
-if [[ -n "$CROSS_ARCH" ]]; then
-  echo "Building for ${CROSS_ARCH}"  
-  (cd mozillavpn-source/ && \
-      dpkg-buildpackage \
-          --build=binary \
-          --no-sign \
-          --host-arch="${CROSS_DEB_ARCH}" \
-          -d)
-  echo "Building done"
-else
-  echo "Building for x86_64"
-  (cd mozillavpn-source/ && dpkg-buildpackage --unsigned-source --build=full)
-fi
+(cd mozillavpn-source/ && dpkg-buildpackage $DPKG_PACKAGE_BUILD_ARGS)
 
 # Compress all build artifacts into a tarball
 BUILD_ARTIFACTS=$(find . -maxdepth 1 -type f -name 'mozillavpn*' -printf '%f\n')
