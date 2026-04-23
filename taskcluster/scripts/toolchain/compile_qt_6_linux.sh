@@ -29,7 +29,6 @@ if [[ -n "$CROSS_ARCH" ]]; then
         exit 1
     fi
     ARTIFACT_NAME="qt6_linux_${CROSS_ARCH}.tar.xz"
-else
 fi
 
 if [[ $(echo -e "${QT_SOURCE_VERSION}\n6.10.3" | sort --version-sort | head -1) != "6.10.3" ]]; then
