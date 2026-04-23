@@ -55,17 +55,14 @@ SPECIAL_LOCALE_MAP = {
 }
 
 def normalize_locale(locale):
-    if locale in SPECIAL_LOCALE_MAP:
-        return SPECIAL_LOCALE_MAP[locale]
-    return locale.replace('_', '-')
+    return SPECIAL_LOCALE_MAP.get(locale, locale).replace('_', '-')
 
 def get_locales(i18n_dir):
     """Returns list of locale codes that have a mozillavpn.xliff."""
-    locales = []
-    for entry in os.listdir(i18n_dir):
-        xliff = os.path.join(i18n_dir, entry, 'mozillavpn.xliff')
-        if os.path.isfile(xliff):
-            locales.append(entry)
+    locales = [
+          entry for entry in os.listdir(i18n_dir)
+          if os.path.isfile(os.path.join(i18n_dir, entry, "mozillavpn.xliff"))
+      ]
     if not locales:
         print(f"No other locales found")
         exit(1)
@@ -91,11 +88,11 @@ def build_localizable_xcstrings(main_strings, locale_translations):
             if translated:
                 for placeholder in re.findall(r'%.{0,2}@', english_value):
                     if placeholder not in translated:
-                        print(f"Error: placeholder '{placeholder}' from missing from {locale} translation of '{string_id}'")
+                        print(f"Error: placeholder '{placeholder}' missing from {locale} translation of '{string_id}'")
                         exit(1)
                 localizations[normalize_locale(locale)] = {
                     'stringUnit': {
-                        'state': 'translated',
+                        'state': 'translated' if locale != "en" else 'new',
                         'value': translated
                     }
                 }
@@ -109,12 +106,8 @@ def build_localizable_xcstrings(main_strings, locale_translations):
 
 def build_phrase_section(phrase_strings, locale_translations):
     """Build the xcstrings entry for a set of Siri phrases (stringSet format)."""
-    en_values = [using_app_placeholder(v) for data in phrase_strings.values() for v in data['value']]
 
-    localizations = {
-        'en': {'stringSet': {'state': 'new', 'values': en_values}}
-    }
-
+    localizations = {}
     for locale, translations in locale_translations.items():
         locale_values = []
         for data in phrase_strings.values():                                                                                                                      
@@ -127,7 +120,7 @@ def build_phrase_section(phrase_strings, locale_translations):
 
         if locale_values:
             localizations[normalize_locale(locale)] = {
-                'stringSet': {'state': 'translated', 'values': locale_values}
+                'stringSet': {'state': 'translated' if locale != "en" else 'new', 'values': locale_values}
             }
 
     return {'localizations': localizations}
