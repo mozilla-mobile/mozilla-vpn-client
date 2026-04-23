@@ -149,8 +149,7 @@ RadioDelegate {
         text: radioButtonLabelText
         lineHeightMode: Text.FixedHeight
         lineHeight: MZTheme.theme.labelLineHeight
-        wrapMode: Text.NoWrap
-        elide: Text.ElideRight
+        wrapMode: Text.Wrap
     }
 
     background: Rectangle {
