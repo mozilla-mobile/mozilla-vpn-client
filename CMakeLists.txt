@@ -213,6 +213,7 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_subdirectory(macos/pkg)
 elseif(IOS)
     add_subdirectory(ios/networkextension)
+    add_subdirectory(ios/widgetextension)
 endif()
 
 
