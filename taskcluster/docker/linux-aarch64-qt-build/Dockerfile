@@ -105,6 +105,10 @@ ADD topsrcdir/taskcluster/scripts/setup-worker.sh /root/setup-worker.sh
 RUN /root/setup-worker.sh
 WORKDIR /builds/worker/
 
+# %include-run-task
+# %include taskcluster/scripts/build/linux_build_dpkg.sh
+ADD topsrcdir/taskcluster/scripts/build/linux_build_dpkg.sh /builds/worker/builder.sh
+
 RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bin/dpkg" > /etc/sudoers.d/worker-packages
 
 ENV SHELL=/bin/bash \
