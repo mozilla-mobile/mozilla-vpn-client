@@ -10,79 +10,112 @@ export XZ_DEFAULTS="-T0"
 
 QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-src-*' | head -1)
 QT_SOURCE_VERSION=$(echo $QT_SOURCE_DIR | awk -F"-" '{print $NF}')
+CROSS_ARCH=""
+
+while [[ $# -gt 0 ]]; do
+    case "$1" in
+        --cross-arch) CROSS_ARCH="$2"; shift 2 ;;
+        *) echo "Unknown argument: $1" >&2; exit 1 ;;
+    esac
+done
+
+ARTIFACT_NAME="qt6_linux.tar.xz"
+
+if [[ -n "$CROSS_ARCH" ]]; then
+    QT_HOST_TOOLS="${MOZ_FETCHES_DIR}/qt-host-tools"
+    if [[ ! -d "${QT_HOST_TOOLS}" ]]; then
+        echo "ERROR: qt-host-tools not found at ${QT_HOST_TOOLS}" >&2
+        echo "Cross-compilation requires the qt-host-tools toolchain artifact." >&2
+        exit 1
+    fi
+    ARTIFACT_NAME="qt6_linux_${CROSS_ARCH}.tar.xz"
+else
+fi
 
 if [[ $(echo -e "${QT_SOURCE_VERSION}\n6.10.3" | sort --version-sort | head -1) != "6.10.3" ]]; then
     echo "Patching for QTBUG-141830"
-    patch -d ${QT_SOURCE_DIR}/qtdeclarative -p1 < ${VCS_PATH}/taskcluster/scripts/toolchain/patches/qtbug-141830-qsortfilterproxymodel.patch
+    patch -d "${QT_SOURCE_DIR}/qtdeclarative" -p1 < "${VCS_PATH}/taskcluster/scripts/toolchain/patches/qtbug-141830-qsortfilterproxymodel.patch"
 fi
 
 echo "Patching QWaylandAdwaitaDecorations to add shadows"
-patch -d ${QT_SOURCE_DIR}/qtwayland -p1 < ${VCS_PATH}/taskcluster/scripts/toolchain/patches/VPN-7529-qwaylandadwaitadecoration-add-shadows.patch
+patch -d "${QT_SOURCE_DIR}/qtwayland" -p1 < "${VCS_PATH}/taskcluster/scripts/toolchain/patches/VPN-7529-qwaylandadwaitadecoration-add-shadows.patch"
 
-echo "Installing Qt build dependencies"
-if [ -f /etc/redhat-release ]; then
-    sudo yum -y install \
-            gcc-toolset-10 \
-            at-spi2-core-devel \
-            openssl3-devel
-    source /opt/rh/gcc-toolset-10/enable
-elif [ -f /etc/debian_version ]; then
-    sudo apt-get -y install \
-            libatspi2.0-dev \
-            libdbus-1-dev \
-            libfontconfig1-dev \
-            libfreetype6-dev \
-            libssl-dev \
-            libx11-dev \
-            libx11-xcb-dev \
-            libxext-dev \
-            libxfixes-dev \
-            libxi-dev \
-            libxrender-dev \
-            libxcb1-dev \
-            libxcb-cursor-dev \
-            libxcb-glx0-dev \
-            libxcb-keysyms1-dev \
-            libxcb-image0-dev \
-            libxcb-shm0-dev \
-            libxcb-icccm4-dev \
-            libxcb-sync-dev \
-            libxcb-xfixes0-dev \
-            libxcb-shape0-dev \
-            libxcb-randr0-dev \
-            libxcb-render-util0-dev \
-            libxcb-util-dev \
-            libxcb-xinerama0-dev \
-            libxcb-xkb-dev \
-            libxkbcommon-dev \
-            libxkbcommon-x11-dev
+if [[ -z "$CROSS_ARCH" ]]; then
+    echo "Installing Qt build dependencies"
+    if [ -f /etc/redhat-release ]; then
+        sudo yum -y install \
+                gcc-toolset-10 \
+                at-spi2-core-devel \
+                openssl3-devel
+        source /opt/rh/gcc-toolset-10/enable
+    elif [ -f /etc/debian_version ]; then
+        sudo apt-get -y install \
+                libatspi2.0-dev \
+                libdbus-1-dev \
+                libfontconfig1-dev \
+                libfreetype6-dev \
+                libssl-dev \
+                libx11-dev \
+                libx11-xcb-dev \
+                libxext-dev \
+                libxfixes-dev \
+                libxi-dev \
+                libxrender-dev \
+                libxcb1-dev \
+                libxcb-cursor-dev \
+                libxcb-glx0-dev \
+                libxcb-keysyms1-dev \
+                libxcb-image0-dev \
+                libxcb-shm0-dev \
+                libxcb-icccm4-dev \
+                libxcb-sync-dev \
+                libxcb-xfixes0-dev \
+                libxcb-shape0-dev \
+                libxcb-randr0-dev \
+                libxcb-render-util0-dev \
+                libxcb-util-dev \
+                libxcb-xinerama0-dev \
+                libxcb-xkb-dev \
+                libxkbcommon-dev \
+                libxkbcommon-x11-dev
+    fi
 fi
 
 echo "Building $(basename $QT_SOURCE_DIR)"
 mkdir qt-linux
 
-$VCS_PATH/scripts/utils/qt6_compile.sh $QT_SOURCE_DIR $(pwd)/qt-linux -b $(pwd)/qt_build
+COMPILE_ARGS=("${QT_SOURCE_DIR}" "$(pwd)/qt-linux" -b "$(pwd)/qt_build")
+if [[ -n "$CROSS_ARCH" ]]; then
+    COMPILE_ARGS+=(
+        --cross-arch "${CROSS_ARCH}"
+        --host-path "${QT_HOST_TOOLS}"
+        --toolchain-file "${VCS_PATH}/scripts/linux/${CROSS_ARCH}-toolchain.cmake"
+    )
+fi
+$VCS_PATH/scripts/utils/qt6_compile.sh "${COMPILE_ARGS[@]}"
 
-echo "Patch Qt configuration"
-cat << EOF > $(pwd)/qt-linux/bin/qt.conf
+echo "Patching Qt configuration"
+cat << EOF > "$(pwd)/qt-linux/bin/qt.conf"
 [Paths]
 Prefix=..
 EOF
 
-cat << EOF > $(pwd)/qt-linux/libexec/qt.conf
+cat << EOF > "$(pwd)/qt-linux/libexec/qt.conf"
 [Paths]
 Prefix=..
 EOF
 
-echo "Bundling extra libs"
-for qttool in $(find $(pwd)/qt-linux/bin -executable -type f); do
-    ldd $qttool | grep '=>' | awk '{print $3}' >> $(pwd)/qt_build/qtlibdeps.txt
-done
-for qtlibdep in $(sort -u $(pwd)/qt_build/qtlibdeps.txt); do
-    cp -v $qtlibdep $(pwd)/qt-linux/lib/
-    patchelf --set-rpath '$ORIGIN/../lib' $(pwd)/qt-linux/lib/$(basename $qtlibdep) 
-done
+if [[ -z "$CROSS_ARCH" ]]; then
+    echo "Bundling extra libs"
+    for qttool in $(find "$(pwd)/bin" -executable -type f); do
+        ldd $qttool | grep '=>' | awk '{print $3}' >> "$(pwd)/qt_build/qtlibdeps.txt"
+    done
+    for qtlibdep in $(sort -u "$(pwd)/qt_build/qtlibdeps.txt"); do
+        cp -v $qtlibdep "$(pwd)/qt-linux/lib/"
+        patchelf --set-rpath '$ORIGIN/../lib' "$(pwd)/qt-linux/lib/$(basename $qtlibdep)"
+    done
+fi
 
-echo "Build Qt- Creating dist artifact"
+echo "Build Qt - Creating dist artifact"
 echo $UPLOAD_DIR
-tar -cJf $UPLOAD_DIR/qt6_linux.tar.xz qt-linux/
+tar -cJf "${UPLOAD_DIR}/${ARTIFACT_NAME}" qt-linux/
