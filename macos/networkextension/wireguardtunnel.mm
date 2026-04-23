@@ -38,9 +38,7 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
 @implementation WireguardTunnel {
   struct wireguard_tunnel*  m_wireguard;
 
-  int                  m_tunfd;
   CFSocketRef          m_socket;
-  CFRunLoopSourceRef   m_source;
   CFRunLoopTimerRef    m_timer;
 
   struct timespec      m_lastHandshake;
@@ -83,7 +81,6 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   self = [super init];
   set_logging_function(wgLog);
 
-  m_tunfd = -1;
   m_wireguard = nil;
 
   _mtu = IPV6_MMTU;
@@ -105,15 +102,22 @@ static NSError* errorFromErrno(int code, NSString* desc) {
 - (void) startTunnelWithOptions:(InterfaceConfig *)options 
               completionHandler:(void (^)(NSError *error)) completionHandler {
   m_completionHandler = completionHandler;
-  m_tunfd = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
-  if (m_tunfd < 0) {
+
+  int tunfd = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
+  if (tunfd < 0) {
     [self shutdownTunnel:@"tunnel creation failed" withErrno:errno];
     return;
   }
 
+  // Wrap the tunnel device in a CFSocket
+  CFSocketContext ctx = { .info = (__bridge void *)self };
+  m_socket = CFSocketCreateWithNative(kCFAllocatorDefault, tunfd,
+                                      kCFSocketDataCallBack,
+                                      utunSockCallback, &ctx);
+
   // Connect to the utun control kernel service.
   struct ctl_info info = {.ctl_name = "com.apple.net.utun_control"};
-  int err = ioctl(m_tunfd, CTLIOCGINFO, &info);
+  int err = ioctl(tunfd, CTLIOCGINFO, &info);
   if (err < 0) {
     [self shutdownTunnel:@"kernel utun lookup failed" withErrno:errno];
     return;
@@ -124,7 +128,7 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   addr.ss_sysaddr = AF_SYS_CONTROL;
   addr.sc_id = info.ctl_id;
   addr.sc_unit = 0;
-  err = connect(m_tunfd, (struct sockaddr*)&addr, sizeof(addr));
+  err = connect(tunfd, (struct sockaddr*)&addr, sizeof(addr));
   if (err < 0) {
     [self shutdownTunnel:@"kernel utun connect failed" withErrno:errno];
     return;
@@ -133,7 +137,7 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   // Get the tunnel device's name.
   struct ifreq ifr;
   socklen_t ifnamesize = sizeof(ifr.ifr_name);
-  err = getsockopt(m_tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifr.ifr_name,
+  err = getsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifr.ifr_name,
                    &ifnamesize);
   if (err < 0) {
     [self shutdownTunnel:@"utun name loookup failed" withErrno:errno];
@@ -154,33 +158,27 @@ static NSError* errorFromErrno(int code, NSString* desc) {
 
   // Set a base MTU, it will get updated later.
   ifr.ifr_mtu = self.mtu;
-  if (ioctl(m_tunfd, SIOCSIFMTU, &ifr) != 0) {
+  if (ioctl(tunfd, SIOCSIFMTU, &ifr) != 0) {
     [self shutdownTunnel:@"failed to set mtu" withErrno:errno];
     return;
   }
 
   // Bring the device up.
-  err = ioctl(m_tunfd, SIOCGIFFLAGS, &ifr);
+  err = ioctl(tunfd, SIOCGIFFLAGS, &ifr);
   if (err != 0) {
     [self shutdownTunnel:@"failed to get interface flags" withErrno:errno];
     return;
   }
   ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
-  err = ioctl(m_tunfd, SIOCSIFFLAGS, &ifr);
+  err = ioctl(tunfd, SIOCSIFFLAGS, &ifr);
   if (err != 0) {
     [self shutdownTunnel:@"failed to set device up" withErrno:errno];
     return;
   }
 
-  // Wrap the tunnel device in a CFSocket
-  CFSocketContext ctx = { .info = (__bridge void *)self };
-  m_socket = CFSocketCreateWithNative(kCFAllocatorDefault, m_tunfd,
-                                      kCFSocketDataCallBack,
-                                      utunSockCallback, &ctx);
-
   // Create a source and attach it to the main run loop.
-  m_source = CFSocketCreateRunLoopSource(kCFAllocatorDefault, m_socket, 0);
-  CFRunLoopAddSource(CFRunLoopGetMain(), m_source, kCFRunLoopDefaultMode);
+  CFRunLoopSourceRef source = CFSocketCreateRunLoopSource(kCFAllocatorDefault, m_socket, 0);
+  CFRunLoopAddSource(CFRunLoopGetMain(), source, kCFRunLoopDefaultMode);
 
   // (Re)-create the Wireguard tunnel structure.
   if (m_wireguard) {
@@ -459,7 +457,7 @@ static NSError* errorFromErrno(int code, NSString* desc) {
         {.iov_base = &header, .iov_len = sizeof(header)},
         {.iov_base = (void *)packet.bytes, .iov_len = packet.length},
       };
-      int err = writev(m_tunfd, iov, 2);
+      int err = writev(CFSocketGetNative(m_socket), iov, 2);
       break;
   }
 }
@@ -490,17 +488,6 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     CFSocketInvalidate(m_socket);
     CFRelease(m_socket);
     m_socket = nil;
-  }
-
-  if (m_source) {
-    CFRunLoopRemoveSource(CFRunLoopGetMain(), m_source, kCFRunLoopDefaultMode);
-    CFRelease(m_source);
-    m_source = nil;
-  }
-
-  if (m_tunfd >= 0) {
-    close(m_tunfd);
-    m_tunfd = -1;
   }
 
   if (m_wireguard) {
@@ -543,21 +530,11 @@ static NSError* errorFromErrno(int code, NSString* desc) {
 
 - (void)setMtu:(NSUInteger)mtu {
   _mtu = mtu;
-  if (m_tunfd < 0) {
-    return;
-  }
 
   struct ifreq ifr;
-  socklen_t ifnamesize = sizeof(ifr.ifr_name);
-  int err = getsockopt(m_tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifr.ifr_name,
-                       &ifnamesize);
-  if (err < 0) {
-    NSLog(@"mtu failed to find ifname: %s", strerror(errno));
-    return;
-  }
-
+  strncpy(ifr.ifr_name, nw_interface_get_name(self.virtualInterface), sizeof(ifr.ifr_name));
   ifr.ifr_mtu = _mtu;
-  if (ioctl(m_tunfd, SIOCSIFMTU, &ifr) != 0) {
+  if (ioctl(CFSocketGetNative(m_socket), SIOCSIFMTU, &ifr) != 0) {
     NSLog(@"mtu update failed: %s", strerror(errno));
   }
 }

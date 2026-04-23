@@ -21,9 +21,7 @@ extern "C" nw_interface_t nw_interface_create_with_index(int ifindex);
 
 @implementation RouteManager {
   // The routing socket.
-  CFSocketNativeHandle m_sockfd;
   CFSocketRef          m_socket;
-  CFRunLoopSourceRef   m_source;
   int                  m_rtseq;
 
   NSObject<RouteManagerDelegate>* m_delegate;
@@ -188,17 +186,17 @@ static int memcmpzero(const void* data, size_t len) {
   NSLog(@"route manager created");
 
   m_rtseq = 0;
-  m_sockfd = socket(PF_ROUTE, SOCK_RAW, 0);
-  if (m_sockfd < 0) {
+  int sockfd = socket(PF_ROUTE, SOCK_RAW, 0);
+  if (sockfd < 0) {
     NSLog(@"failed to create routing socket: %s", strerror(errno));
   }
   CFSocketContext ctx = { .info = (__bridge void *)self };
-  m_socket = CFSocketCreateWithNative(kCFAllocatorDefault, m_sockfd, kCFSocketDataCallBack,
+  m_socket = CFSocketCreateWithNative(kCFAllocatorDefault, sockfd, kCFSocketDataCallBack,
                                       rawSockCallback, &ctx);
 
   // Create a source and attach it to the main run loop.
-  m_source = CFSocketCreateRunLoopSource(kCFAllocatorDefault, m_socket, 0);
-  CFRunLoopAddSource(CFRunLoopGetMain(), m_source, kCFRunLoopDefaultMode);
+  CFRunLoopSourceRef source = CFSocketCreateRunLoopSource(kCFAllocatorDefault, m_socket, 0);
+  CFRunLoopAddSource(CFRunLoopGetMain(), source, kCFRunLoopDefaultMode);
 
   return self;
 }
@@ -208,10 +206,6 @@ static int memcmpzero(const void* data, size_t len) {
 
   CFSocketInvalidate(m_socket);
   CFRelease(m_socket);
-  close(m_sockfd);
-
-  CFRunLoopRemoveSource(CFRunLoopGetMain(), m_source, kCFRunLoopDefaultMode);
-  CFRelease(m_source);
 
 #if !__has_feature(objc_arc)
   [super dealloc];
@@ -501,7 +495,7 @@ static int memcmpzero(const void* data, size_t len) {
   }
 
   // Send the routing message into the kernel.
-  int len = write(m_sockfd, rtm, rtm->rtm_msglen);
+  int len = write(CFSocketGetNative(m_socket), rtm, rtm->rtm_msglen);
   if (len == rtm->rtm_msglen) {
     return;
   }
