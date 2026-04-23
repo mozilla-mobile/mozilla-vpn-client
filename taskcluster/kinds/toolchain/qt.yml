@@ -135,7 +135,7 @@ qt-linux-aarch64:
         resources:
             - scripts/linux/aarch64-toolchain.cmake
             - taskcluster/scripts/toolchain/patches/*.patch
-	    - scripts/utils/qt6_compile.sh
+            - scripts/utils/qt6_compile.sh
         toolchain-alias: qt-linux-aarch64
         toolchain-artifact: public/build/qt6_linux_aarch64.tar.xz
     treeherder:
