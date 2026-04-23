@@ -52,6 +52,15 @@ set_target_properties(networkextension PROPERTIES
 target_compile_options(networkextension PUBLIC "-fobjc-arc" "-fno-objc-arc-exceptions")
 target_compile_definitions(networkextension PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 
+# Improve the macOS debug experience - tune for LLDB and copy dSYM into
+# the bundle when we are building for the Debug configuration.
+target_compile_options(networkextension PRIVATE $<$<CONFIG:Debug>:-O0 -gfull -glldb>)
+target_link_options(networkextension PRIVATE $<$<CONFIG:Debug>:-O0 -gfull -glldb>)
+add_custom_command(TARGET networkextension POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E rm -rf $<TARGET_FILE:networkextension>.dSYM
+    COMMAND ${CMAKE_COMMAND} -E $<IF:$<CONFIG:Debug>,env,true> -- dsymutil $<TARGET_FILE:networkextension> -o $<TARGET_FILE:networkextension>.dSYM
+)
+
 target_link_libraries(networkextension PRIVATE ${FW_FOUNDATION})
 target_link_libraries(networkextension PRIVATE ${FW_NW_EXTENSION})
 target_sources(networkextension PRIVATE
