@@ -107,10 +107,6 @@ WORKDIR /builds/worker/
 
 RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bin/dpkg" > /etc/sudoers.d/worker-packages
 
-# %include-run-task
-# %include taskcluster/scripts/toolchain/compile_qt_6_linux_aarch64.sh
-ADD topsrcdir/taskcluster/scripts/toolchain/compile_qt_6_linux_aarch64.sh /builds/worker/toolchain.sh
-
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \
     PATH="/builds/worker/.local/bin:$PATH"
