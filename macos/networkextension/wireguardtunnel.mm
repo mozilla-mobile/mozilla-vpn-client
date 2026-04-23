@@ -61,15 +61,11 @@ static void utunSockCallback(CFSocketRef s, CFSocketCallBackType cbType,
                              CFDataRef address, const void * data, void *info) {
   WireguardTunnel* tunnel = (__bridge WireguardTunnel*)info;
   NSData* rawData = (__bridge NSData*)data;
-  if (cbType != kCFSocketDataCallBack) {
+  if (cbType != kCFSocketReadCallBack) {
     NSLog(@"utunSockCallback: unexpected type %d", (int)cbType);
-  } else if (rawData.length < 4) {
-    NSLog(@"utunSockCallback: packet truncated");
-  } else {
-    NSData* packet = [rawData subdataWithRange:NSMakeRange(4, rawData.length - 4)];
-    [tunnel handleOutbound:packet
-              withProtocol:htonl(*(uint32_t*)rawData.bytes)];
+    return;
   }
+  [tunnel handleOutbound];
 }
 
 static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
@@ -112,7 +108,7 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   // Wrap the tunnel device in a CFSocket
   CFSocketContext ctx = { .info = (__bridge void *)self };
   m_socket = CFSocketCreateWithNative(kCFAllocatorDefault, tunfd,
-                                      kCFSocketDataCallBack,
+                                      kCFSocketReadCallBack,
                                       utunSockCallback, &ctx);
 
   // Connect to the utun control kernel service.
@@ -176,25 +172,23 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     return;
   }
 
-  // Create a source and attach it to the main run loop.
-  CFRunLoopSourceRef source = CFSocketCreateRunLoopSource(kCFAllocatorDefault, m_socket, 0);
-  CFRunLoopAddSource(CFRunLoopGetMain(), source, kCFRunLoopDefaultMode);
-
-  // (Re)-create the Wireguard tunnel structure.
-  if (m_wireguard) {
-    tunnel_free(m_wireguard);
-  }
-  uint32_t index;
-  getentropy(&index, sizeof(index));
-
+#ifdef MZ_DEBUG
   char *addrstr = nw_endpoint_copy_address_string(options.serverIpv4Addr);
   NSLog(@"wireguard peer: %s port=%d", addrstr, nw_endpoint_get_port(options.serverIpv4Addr));
   free(addrstr);
+#endif
 
   nw_parameters_t params = nw_parameters_create_secure_udp(NW_PARAMETERS_DISABLE_PROTOCOL, NW_PARAMETERS_DEFAULT_CONFIGURATION);
   self.connection = nw_connection_create(options.serverIpv4Addr, params);
   nw_connection_set_queue(self.connection, dispatch_get_main_queue());
 
+  // (Re)-create the Wireguard tunnel structure.
+  if (m_wireguard) {
+    tunnel_free(m_wireguard);
+  }
+
+  uint32_t index;
+  getentropy(&index, sizeof(index));
   m_wireguard = new_tunnel(options.privateKey.UTF8String,
                            options.serverPublicKey.UTF8String,
                            nil, // Preshared key
@@ -207,11 +201,10 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     if (err) {
       CFErrorRef cfError = nw_error_copy_cf_error(err);
       NSLog(@"vpn socket error: %@", (__bridge NSError*)cfError);
-      [self shutdownTunnel:(__bridge NSError*)cfError];
+      [self cancelTunnelWithError:(__bridge NSError*)cfError];
       CFRelease(cfError);
     } else if (state == nw_connection_state_cancelled || state == nw_connection_state_failed) {
       NSLog(@"vpn socket closed");
-      [self shutdownTunnel:nil];
     } else if (state != nw_connection_state_ready) {
       NSLog(@"vpn socket state %d", state);
     } else {
@@ -227,6 +220,10 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     }
   });
   nw_connection_start(self.connection);
+
+  // Start processing tunnel socket events.
+  CFRunLoopSourceRef source = CFSocketCreateRunLoopSource(kCFAllocatorDefault, m_socket, 0);
+  CFRunLoopAddSource(CFRunLoopGetMain(), source, kCFRunLoopDefaultMode);
 }
 
 - (void) stopTunnelWithReason:(NEProviderStopReason)reason 
@@ -300,19 +297,18 @@ static NSError* errorFromErrno(int code, NSString* desc) {
 
 - (void) renegotiate {
   NSLog(@"wireguard renegotiate");
-  UInt8* handshake = (UInt8 *)malloc(WG_MAX_HANDSHAKE_SIZE);
+  uint8_t* handshake = (UInt8 *)malloc(WG_MAX_HANDSHAKE_SIZE);
 
-  struct wireguard_result r;
-  r = wireguard_force_handshake(m_wireguard, handshake, WG_MAX_HANDSHAKE_SIZE);
+  struct wireguard_result result;
+  result = wireguard_force_handshake(m_wireguard, handshake, WG_MAX_HANDSHAKE_SIZE);
 
   // Set a timeout for the handshake to finish.
   clock_gettime(CLOCK_MONOTONIC, &m_handshakeTimeout);
   m_handshakeTimeout.tv_sec += WG_MAX_HANDSHAKE_TIMEOUT;
 
-  dispatch_data_t data = dispatch_data_create(handshake, r.size,
-                                              dispatch_get_main_queue(),
-                                              DISPATCH_DATA_DESTRUCTOR_FREE);
-  [self handleWireguard:(int)r.op withData:data];
+  NSData* data = [NSData dataWithBytesNoCopy:handshake
+                                      length:WG_MAX_HANDSHAKE_SIZE];
+  [self handleWireguard:result withData:data];
 }
 
 - (void) handleTimer {
@@ -331,43 +327,67 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     }
   }
 
-  UInt8* handshake = (UInt8 *)malloc(WG_MAX_HANDSHAKE_SIZE);
-  struct wireguard_result r;
-  r = wireguard_tick(m_wireguard, handshake, WG_MAX_HANDSHAKE_SIZE);
+  uint8_t* handshake = (uint8_t *)malloc(WG_MAX_HANDSHAKE_SIZE);
+  struct wireguard_result result;
+  result = wireguard_tick(m_wireguard, handshake, WG_MAX_HANDSHAKE_SIZE);
 
-  dispatch_data_t data = dispatch_data_create(handshake, r.size,
-                                              dispatch_get_main_queue(),
-                                              DISPATCH_DATA_DESTRUCTOR_FREE);
-  [self handleWireguard:(int)r.op withData:data];
+  NSData* data = [NSData dataWithBytesNoCopy:handshake
+                                      length:WG_MAX_HANDSHAKE_SIZE];
+  [self handleWireguard:result withData:data];
 }
 
-- (void) handleOutbound:(NSData*)packet
-           withProtocol:(int)protocol {
-  if (!m_wireguard) {
-    return;
+- (void) handleOutbound {
+  size_t mtu = self.mtu;
+  uint8_t buffer[mtu + 16];
+  uint32_t header;
+
+  struct iovec iov[2];
+  iov[0].iov_base = &header;
+  iov[0].iov_len = sizeof(header);
+  iov[1].iov_base = buffer;
+  iov[1].iov_len = mtu;
+
+  struct msghdr msg = {
+    .msg_name = nullptr,
+    .msg_namelen = 0,
+    .msg_iov = iov,
+    .msg_iovlen = 2,
+    .msg_control = nullptr,
+    .msg_controllen = 0,
+    .msg_flags = 0
+  };
+
+  while (true) {
+    int rx = recvmsg(CFSocketGetNative(m_socket), &msg, MSG_DONTWAIT);
+    if (rx < 0) {
+      // Socket error occurred.
+      if (errno == EINTR) continue;
+      return;
+    }
+    int pktlen = rx - sizeof(header);
+    if ((pktlen < 0) || (pktlen > mtu)) {
+      continue;
+    }
+
+    // I think there is a small bug in boringtun to do with message padding.
+    // The wireguard protocol states that the encapsulated packet must first
+    // be padded out to a multiple of 16 bytes in length, but boringtun does
+    // no such padding during encryption. So let's do it manually ourself.
+    int tail = pktlen % 16;
+    if (tail) {
+      memset(buffer + pktlen, 0, 16 - tail);
+      pktlen += 16 - tail;
+    }
+
+    // Encrypt the wireguard packet.
+    uint8_t *ciphertext = (uint8_t *)malloc(mtu + WG_MTU_OVERHEAD);
+    struct wireguard_result result;
+    result = wireguard_write(m_wireguard, buffer, pktlen, ciphertext, mtu + WG_MTU_OVERHEAD);
+
+    NSData* data = [NSData dataWithBytesNoCopy:ciphertext
+                                        length:mtu + WG_MTU_OVERHEAD];
+    [self handleWireguard:result withData:data];
   }
-
-  // I think there is a small bug in boringtun to do with message padding.
-  // The wireguard protocol states that the encapsulated packet must first
-  // be padded out to a multiple of 16 bytes in length, but boringtun does
-  // no such padding during encryption. So let's do it manually ourself.
-  NSMutableData* plaintext = [NSMutableData dataWithData:packet];
-  int tail = plaintext.length % 16;
-  if (tail) {
-    [plaintext increaseLengthBy:16 - tail];
-  }
-
-  // Encrypt the packet.
-  size_t length = plaintext.length + WG_PACKET_OVERHEAD;
-  uint8_t* ciphertext = (uint8_t*)malloc(length);
-  struct wireguard_result r;
-  r = wireguard_write(m_wireguard, (const uint8_t*)plaintext.bytes,
-                      plaintext.length, ciphertext, length);
-
-  dispatch_data_t data = dispatch_data_create(ciphertext, r.size,
-                                              dispatch_get_main_queue(),
-                                              DISPATCH_DATA_DESTRUCTOR_FREE);
-  [self handleWireguard:(int)r.op withData:data];
 }
 
 - (void) handleInbound {
@@ -392,9 +412,9 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     uint8_t* plaintext = (uint8_t*)malloc(length);
 
     // Decrypt the wireguard packet.
-    struct wireguard_result r;
-    r = wireguard_read(m_wireguard, (const uint8_t*)ciphertext, length,
-                       plaintext, length);
+    struct wireguard_result result;
+    result = wireguard_read(m_wireguard, (const uint8_t*)ciphertext, length,
+                            plaintext, length);
 
     // After processing a handshake response, update the lastHandshake time
     // if it looks and smells like the handshake was successful.
@@ -416,48 +436,53 @@ static NSError* errorFromErrno(int code, NSString* desc) {
       }
     }
 
-    dispatch_data_t packet = dispatch_data_create(plaintext, r.size,
-                                                  dispatch_get_main_queue(),
-                                                  DISPATCH_DATA_DESTRUCTOR_FREE);
-    [self handleWireguard:(int)r.op withData:packet];
+    NSData* packet = [NSData dataWithBytesNoCopy:plaintext length:length];
+    [self handleWireguard:result withData:packet];
 
     // Keep going to receive more data.
     [self handleInbound];
   });
 }
 
-- (void) handleWireguard:(int)op
-                withData:(dispatch_data_t)data {
-  switch (op) {
+- (void) handleWireguard:(struct wireguard_result)result
+                withData:(NSData*)data {
+  uint32_t header = htonl(AF_INET);
+  switch (result.op) {
     case WIREGUARD_DONE:
       break;
 
     case WRITE_TO_NETWORK:
-      nw_connection_send(self.connection, data,
-                         NW_CONNECTION_DEFAULT_MESSAGE_CONTEXT, true,
-                         ^(nw_error_t error) {
-        if (error) {
-          CFErrorRef cfError = nw_error_copy_cf_error(error);
-          NSLog(@"wireguard send error: %@", (__bridge NSError*)cfError);
-          CFRelease(cfError);
-        }
-      });
+      if (result.size <= data.length) {
+        dispatch_data_t dgram = dispatch_data_create(data.bytes, result.size,
+                                                     dispatch_get_main_queue(),
+                                                     DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+        nw_connection_send(self.connection, dgram,
+                           NW_CONNECTION_DEFAULT_MESSAGE_CONTEXT, true,
+                           ^(nw_error_t error) {
+          if (error) {
+            CFErrorRef cfError = nw_error_copy_cf_error(error);
+            NSLog(@"wireguard send error: %@", (__bridge NSError*)cfError);
+            CFRelease(cfError);
+          }
+        });
+      }
       break;
 
     case WIREGUARD_ERROR:
-      NSLog(@"wireguard error");
+      NSLog(@"wireguard error: %zu", result.size);
       break;
 
-    case WRITE_TO_TUNNEL_IPV4:
-      [[fallthrough]];
     case WRITE_TO_TUNNEL_IPV6:
-      NSData* packet = (NSData*)data;
-      uint32_t header = (op == WRITE_TO_TUNNEL_IPV6) ? htonl(AF_INET6) : htonl(AF_INET);
-      const struct iovec iov[2] = {
-        {.iov_base = &header, .iov_len = sizeof(header)},
-        {.iov_base = (void *)packet.bytes, .iov_len = packet.length},
-      };
-      int err = writev(CFSocketGetNative(m_socket), iov, 2);
+      header = htonl(AF_INET6);
+      [[fallthrough]];
+    case WRITE_TO_TUNNEL_IPV4:
+      if (result.size <= data.length) {
+        const struct iovec iov[2] = {
+          {.iov_base = &header, .iov_len = sizeof(header)},
+          {.iov_base = (void *)data.bytes, .iov_len = result.size},
+        };
+        int err = writev(CFSocketGetNative(m_socket), iov, 2);
+      }
       break;
   }
 }
