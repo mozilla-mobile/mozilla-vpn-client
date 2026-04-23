@@ -78,18 +78,6 @@ sudo apt-get update
 DSCFILE=$(find "${MOZ_FETCHES_DIR}" -name '*.dsc')
 if [[ -f "${DSCFILE}" ]]; then
   dpkg-source -x "${DSCFILE}" "$(pwd)/mozillavpn-source/"
-elif [[ -n "$CROSS_ARCH" ]]; then
-  # For cross-builds the source arrive as a pre-extracted tree rather than a .dsc
-  SRCTREE=$(find "${MOZ_FETCHES_DIR}" -maxdepth 3 -name 'debian' -type d \
-            2>/dev/null | head -1 | xargs -I{} dirname {})
-  if [[ -d "${SRCTREE}" ]]; then
-    echo "No .dsc found; using pre-extracted source tree: ${SRCTREE}"
-    cp -a "${SRCTREE}" "$(pwd)/mozillavpn-source"
-  else
-    echo "ERROR: No .dsc file and no source tree with debian/ found under ${MOZ_FETCHES_DIR}" >&2
-    find "${MOZ_FETCHES_DIR}" -maxdepth 3 | head -40 >&2
-    exit 1
-  fi
 else
   echo "ERROR: Unable to locate DSC file" >&2
   echo "${MOZ_FETCHES_DIR} contained:" >&2
