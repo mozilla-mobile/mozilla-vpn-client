@@ -131,7 +131,7 @@ qt-linux-aarch64:
         toolchain:
             - qt-tools-6.10
     run:
-        script: compile_qt_6_linux.sh --cross-arch aarch64
+        command: compile_qt_6_linux.sh --cross-arch aarch64
         resources:
             - scripts/linux/aarch64-toolchain.cmake
             - taskcluster/scripts/toolchain/patches/*.patch
