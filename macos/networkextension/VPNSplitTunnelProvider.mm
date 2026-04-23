@@ -40,10 +40,6 @@
 @property (strong) WireguardTunnel* wireguard;
 @property (strong) InterfaceConfig* config;
 
-@property (strong) nw_interface_t ipv4Interface;
-@property (strong) nw_interface_t ipv6Interface;
-@property (strong) nw_interface_t vpnInterface;
-
 @property (strong) NSMutableArray* vpnDisabledApps;
 
 @end
@@ -284,41 +280,6 @@
           completionHandler:(void (^)(void))completionHandler {
   NSLog(@"stopping proxy");
 
-  // Remove captured default routes, if known.
-  if (self.ipv4Interface) {
-    NSLog(@"clearing cloned ipv4 route");
-
-    struct sockaddr_in sin;
-    memset(&sin, 0, sizeof(sin));
-    sin.sin_family = AF_INET;
-    sin.sin_len = sizeof(sin);
-
-    [self.routeManager rtmSendRoute:RTM_DELETE
-                      toDestination:(struct sockaddr*)&sin
-                         withPrefix:0
-                       viaInterface:self.ipv4Interface
-                        withGateway:nil
-                           andFlags:RTF_IFSCOPE];
-
-    self.ipv4Interface = nil;
-  }
-  if (self.ipv6Interface) {
-    NSLog(@"clearing cloned ipv6 route");
-
-    struct sockaddr_in6 sin6;
-    memset(&sin6, 0, sizeof(sin6));
-    sin6.sin6_family = AF_INET6;
-    sin6.sin6_len = sizeof(sin6);
-
-    [self.routeManager rtmSendRoute:RTM_DELETE
-                      toDestination:(struct sockaddr*)&sin6
-                         withPrefix:0
-                       viaInterface:self.ipv6Interface
-                        withGateway:nil
-                           andFlags:RTF_IFSCOPE];
-
-    self.ipv6Interface = nil;
-  }
   self.routeManager = nil;
 
   NSLog(@"handled tcp flows: %lld", std::atomic_load(&m_handledTcpFlows));
@@ -330,17 +291,17 @@
 }
 
 - (BOOL)matchAppFlow:(NEAppProxyFlow*)flow {
-  // Without metadata - do not exclude the application.
+  // Without metadata - always direct the flow into the VPN.
   if (flow.metaData == nil) {
-    return NO;
+    return YES;
   }
 
-  // If not signed - do not exclude the application.
+  // If not signed - always direct the flow into the VPN.
   if (flow.metaData.sourceAppSigningIdentifier == nil) {
 #ifdef MZ_DEBUG
     NSLog(@"new flow: unsigned -> %@", flow.remoteHostname);
 #endif
-    return NO;
+    return YES;
   }
 
   NSString* sourceId = flow.metaData.sourceAppSigningIdentifier;
@@ -364,16 +325,16 @@
                                           options:NSLiteralSearch
                                             range:NSMakeRange(0, appId.length)];
     if (result == NSOrderedSame) {
-      return YES;
+      return NO;
     }
   }
 
-  // No application matches this signing identifier.
-  return NO;
+  // No application matches this signing identifier - direct the flow into the VPN.
+  return YES;
 }
 
 - (BOOL)handleNewFlow:(NEAppProxyFlow*) flow {
-  // Evaluate whether the source of this flow should be excluded from the VPN.
+  // Evaluate whether the source of this flow should be redirected into the VPN.
   if (![self matchAppFlow:flow]) {
     return NO;
   }
@@ -381,21 +342,16 @@
   // Perform flow bypassing.
   if ([flow isKindOfClass:[NEAppProxyTCPFlow class]]) {
     NEAppProxyTCPFlow* tcpFlow = (NEAppProxyTCPFlow*)flow;
-    nw_interface_t via = self.ipv4Interface;
     nw_endpoint_t dest = nil;
     if (@available(macOS 15, *)) {
       dest = tcpFlow.remoteFlowEndpoint;
     } else {
       dest = [VPNSplitTunnelProvider convertEndpoint:tcpFlow.remoteEndpoint];
     }
-    if (nw_endpoint_get_type(dest) == nw_endpoint_type_address &&
-        nw_endpoint_get_address(dest)->sa_family == AF_INET6) {
-      via = self.ipv6Interface;
-    }
 
     BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow
                                               toEndpoint:dest
-                                           withInterface:via];
+                                           withInterface:self.wireguard.virtualInterface];
     if (!handler) {
       return NO;
     }
@@ -410,21 +366,16 @@
     return YES;
   } else if ([flow isKindOfClass:[NEAppProxyUDPFlow class]]) {
     NEAppProxyUDPFlow* udpFlow = (NEAppProxyUDPFlow*)flow;
-    nw_interface_t via = self.ipv4Interface;
     nw_endpoint_t source;
     if (@available(macOS 15, *)) {
       source = udpFlow.localFlowEndpoint;
     } else {
       source = [VPNSplitTunnelProvider convertEndpoint:udpFlow.localEndpoint];
     }
-    if (source && (nw_endpoint_get_type(source) == nw_endpoint_type_address) &&
-        (nw_endpoint_get_address(source)->sa_family == AF_INET6)) {
-      via = self.ipv6Interface;
-    }
 
     BypassUdpFlow* handler = [BypassUdpFlow createBypass:udpFlow
                                            localEndpoint:source
-                                           withInterface:via];
+                                           withInterface:self.wireguard.virtualInterface];
     if (!handler) {
       return NO;
     }
@@ -535,91 +486,17 @@
   int ifindex = interface ? nw_interface_get_index(interface) : 0;
 
   if (family == AF_INET) {
-    struct sockaddr_in dst;
-    memset(&dst, 0, sizeof(dst));
-    dst.sin_family = AF_INET;
-    dst.sin_len = sizeof(dst);
-
     if (interface) {
-      int action = RTM_ADD;
       NSLog(@"default ipv4 route via %s", nw_interface_get_name(interface));
-
-      if (!self.ipv4Interface) {
-        action = RTM_ADD;
-      } else if (ifindex == nw_interface_get_index(self.ipv4Interface)) {
-        action = RTM_CHANGE;
-      } else {
-        // Default route has changed interface - delete the old clone.
-        action = RTM_ADD;
-        [self.routeManager rtmSendRoute:RTM_DELETE
-                          toDestination:(struct sockaddr*)&dst
-                            withPrefix:0
-                          viaInterface:self.ipv4Interface
-                            withGateway:nil
-                              andFlags:RTF_IFSCOPE];
-      }
-
-      // Add or update the cloned default route.
-      [self.routeManager rtmSendRoute:action
-                        toDestination:(struct sockaddr*)&dst
-                            withPrefix:0
-                          viaInterface:interface
-                           withGateway:gateway
-                              andFlags:RTF_IFSCOPE];
-    } else if (self.ipv4Interface) {
+    } else {
       NSLog(@"default ipv4 route lost");
-      [self.routeManager rtmSendRoute:RTM_DELETE
-                        toDestination:(struct sockaddr*)&dst
-                           withPrefix:0
-                         viaInterface:self.ipv4Interface
-                          withGateway:gateway
-                             andFlags:RTF_IFSCOPE];
     }
-
-    self.ipv4Interface = interface;
   } else if (family == AF_INET6) {
-    struct sockaddr_in6 dst;
-    memset(&dst, 0, sizeof(dst));
-    dst.sin6_family = AF_INET6;
-    dst.sin6_len = sizeof(dst);
-
     if (interface) {
-      int action = RTM_ADD;
       NSLog(@"default ipv6 route via %s", nw_interface_get_name(interface));
-
-      if (!self.ipv6Interface) {
-        action = RTM_ADD;
-      } else if (ifindex == nw_interface_get_index(self.ipv6Interface)) {
-        action = RTM_CHANGE;
-      } else {
-        action = RTM_ADD;
-        // Default route has changed interface - delete the old clone.
-        [self.routeManager rtmSendRoute:RTM_DELETE
-                          toDestination:(struct sockaddr*)&dst
-                             withPrefix:0
-                           viaInterface:self.ipv6Interface
-                            withGateway:nil
-                               andFlags:RTF_IFSCOPE];
-      }
-
-      // Add or update the cloned default route.
-      [self.routeManager rtmSendRoute:action
-                        toDestination:(struct sockaddr*)&dst
-                           withPrefix:0
-                         viaInterface:interface
-                          withGateway:gateway
-                             andFlags:RTF_IFSCOPE];
-    } else if (self.ipv6Interface) {
+    } else {
       NSLog(@"default ipv6 route lost");
-      [self.routeManager rtmSendRoute:RTM_DELETE
-                        toDestination:(struct sockaddr*)&dst
-                           withPrefix:0
-                         viaInterface:interface
-                          withGateway:gateway
-                             andFlags:RTF_IFSCOPE];
     }
-
-    self.ipv6Interface = interface;
   }
 }
 
