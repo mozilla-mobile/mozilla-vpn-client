@@ -49,7 +49,6 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
 }
 
 constexpr const int WG_PACKET_OVERHEAD = 32;
-constexpr const int WG_MTU_OVERHEAD = 80;
 constexpr const int WG_MAX_HANDSHAKE_SIZE = 148;
 constexpr const int WG_MAX_HANDSHAKE_TIMEOUT = 15;
 
@@ -209,14 +208,18 @@ static NSError* errorFromErrno(int code, NSString* desc) {
       NSLog(@"vpn socket state %d", state);
     } else {
       NSLog(@"vpn socket opened");
-      [self renegotiate];
-      [self handleInbound];
+      // Update the MTU once the socket is open
+      self.mtu = nw_connection_get_maximum_datagram_size(self.connection) - WG_PACKET_OVERHEAD;
 
       // Start the timer.
       CFRunLoopTimerContext timerContext = { .info = (__bridge void *)self };
       m_timer = CFRunLoopTimerCreate(kCFAllocatorDefault, 0, 0.1, 0, 0,
                                      wgTimerCallback, &timerContext);
       CFRunLoopAddTimer(CFRunLoopGetMain(), m_timer, kCFRunLoopDefaultMode);
+
+      // Force an initial handshake and begin packet processing.
+      [self renegotiate];
+      [self handleInbound];
     }
   });
   nw_connection_start(self.connection);
@@ -380,12 +383,13 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     }
 
     // Encrypt the wireguard packet.
-    uint8_t *ciphertext = (uint8_t *)malloc(mtu + WG_MTU_OVERHEAD);
+    size_t enclength = mtu + WG_PACKET_OVERHEAD;
+    uint8_t *encrypt = (uint8_t *)malloc(enclength);
     struct wireguard_result result;
-    result = wireguard_write(m_wireguard, buffer, pktlen, ciphertext, mtu + WG_MTU_OVERHEAD);
+    result = wireguard_write(m_wireguard, buffer, pktlen, encrypt, enclength);
 
-    NSData* data = [NSData dataWithBytesNoCopy:ciphertext
-                                        length:mtu + WG_MTU_OVERHEAD];
+    NSData* data = [NSData dataWithBytesNoCopy:encrypt
+                                        length:enclength];
     [self handleWireguard:result withData:data];
   }
 }
