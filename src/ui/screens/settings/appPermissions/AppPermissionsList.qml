@@ -188,6 +188,7 @@ ColumnLayout {
                 spacing: MZTheme.theme.windowMargin
                 opacity: enabled ? 1.0 : 0.5
                 Layout.preferredHeight: MZTheme.theme.navBarTopMargin
+                width: listView.width
 
                 function handleClick() {
                     VPNAppPermissions.flip(appID)
