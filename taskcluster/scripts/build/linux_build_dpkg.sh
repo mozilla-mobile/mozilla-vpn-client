@@ -111,7 +111,7 @@ fi
 if [[ -n "$CROSS_ARCH" ]]; then
   MK_BUILD_DEPS_ARGS="--host-arch ${CROSS_DEB_ARCH}"
   DPKG_PACKAGE_BUILD_ARGS="-d --unsigned-source --build=binary ${MK_BUILD_DEPS_FLAGS}"
-  export QT_AARCH64_PATH="${MOZ_FETCHES_DIR}/qt-linux-${CROSS_ARCH}"
+  export QT_AARCH64_PATH="${MOZ_FETCHES_DIR}/qt-linux"
   export QT_HOST_PATH="${MOZ_FETCHES_DIR}/qt-host-tools"
 
   if [[ ! -d "${QT_AARCH64_PATH}" ]]; then
