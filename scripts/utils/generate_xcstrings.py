@@ -107,12 +107,20 @@ def build_localizable_xcstrings(main_strings, locale_translations):
 def build_phrase_section(phrase_strings, locale_translations):
     """Build the xcstrings entry for a set of Siri phrases (stringSet format)."""
 
+    phrase_blocks = phrase_strings.values()
+    if len(phrase_blocks) != 1:
+      print(f"Should only have 1 translation block for phrase strings, instead found {len(phrase_blocks)}")
+      exit(1)
+    string_id = next(iter(phrase_blocks))['string_id']
+
     localizations = {}
     for locale, translations in locale_translations.items():
         locale_values = []
-        for data in phrase_strings.values():                                                                                                                      
-          translation = translations.get(data['string_id'])
-          if translation:                                                                                                                                       
+        translation_block = translations.get(string_id)
+        if translation_block is None:
+          continue
+        for translation in translation_block.split('\n'):
+          if translation:
               if not f"%@" in translation:
                   print(f"Missing required placeholder in {translation} for {locale}")
                   exit(1)
@@ -131,13 +139,16 @@ def build_appshortcuts_xcstrings(activate_strings, deactivate_strings, locale_tr
     strings = {}
 
     if activate_strings:
-        # The xcstrings key for a phrase group is the first English phrase value
-        section_key = using_app_placeholder(next(iter(activate_strings.values()))['value'][0])
-        strings[section_key] = build_phrase_section(activate_strings, locale_translations)
+        phrase_section = build_phrase_section(activate_strings, locale_translations)
+        # The xcstrings key for a phrase group is the first English phrase value. But this is so ugly, sorry.
+        section_key = next(iter(phrase_section['localizations']['en']['stringSet']['values']))
+        strings[section_key] = phrase_section
 
     if deactivate_strings:
-        section_key = using_app_placeholder(next(iter(deactivate_strings.values()))['value'][0])
-        strings[section_key] = build_phrase_section(deactivate_strings, locale_translations)
+        phrase_section = build_phrase_section(deactivate_strings, locale_translations)
+        # The xcstrings key for a phrase group is the first English phrase value. But this is so ugly, sorry.
+        section_key = next(iter(phrase_section['localizations']['en']['stringSet']['values']))
+        strings[section_key] = phrase_section
 
     return {'sourceLanguage': 'en', 'strings': strings, 'version': '1.1'}
 
