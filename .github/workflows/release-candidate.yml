@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: fail_job
-        uses: actions/github-script@ffc2c79a5b2490bd33e0a41c1de74b877714d736 # v3
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         with:
           script: |
               core.setFailed('Curl failed')
