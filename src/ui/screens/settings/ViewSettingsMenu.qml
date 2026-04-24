@@ -24,6 +24,31 @@ MZViewBase {
         spacing: MZTheme.theme.windowMargin
         Layout.fillWidth: true
 
+        MZInformationCard {
+            id: batteryOptimizationCard
+            visible: !MZSettings.hasDismissedBatteryOptimization
+                     && BatteryOptimizer.batteryOptimizationEnabled
+                     && BatteryOptimizer.canTriggerIntent
+            cardType: MZInformationCard.CardType.Warning
+            Layout.preferredWidth: Math.min(window.width - MZTheme.theme.windowMargin * 2,
+                                            MZTheme.theme.navBarMaxWidth)
+            Layout.minimumHeight: batteryWarningText.height + MZTheme.theme.windowMargin * 2
+            Layout.alignment: Qt.AlignHCenter
+
+            _infoContent: MZTextBlock {
+                id: batteryWarningText
+                Layout.fillWidth: true
+                text: MZI18n.SettingsBatteryOptimizationWarning
+                //verticalAlignment: Text.AlignVCenter
+            }
+            _buttonAction: function() {
+                    MZSettings.hasDismissedBatteryOptimization = true
+                    BatteryOptimizer.triggerBatteryOptimizationIntent()
+            }
+            _buttonText : MZI18n.SettingsBatteryOptimizationWarningButton
+
+        }
+
         ColumnLayout {
             Layout.fillWidth: true
             Layout.leftMargin: MZTheme.theme.windowMargin /2
