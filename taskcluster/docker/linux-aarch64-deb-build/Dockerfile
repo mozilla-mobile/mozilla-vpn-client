@@ -25,6 +25,7 @@ RUN apt-get update -q \
         devscripts \
         equivs \
         flex \
+	git \
         locales \
         ninja-build \
         patchelf \
