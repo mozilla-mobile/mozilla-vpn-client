@@ -10,7 +10,9 @@ export XZ_DEFAULTS="-T0"
 
 QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-src-*' | head -1)
 QT_SOURCE_VERSION=$(echo $QT_SOURCE_DIR | awk -F"-" '{print $NF}')
+ARTIFACT_NAME="qt6_linux.tar.xz"
 CROSS_ARCH=""
+APT_ARCH=""
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -19,7 +21,13 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-ARTIFACT_NAME="qt6_linux.tar.xz"
+# Validate cross-arch and set apt arch
+if [[ -n "$CROSS_ARCH" ]]; then
+  case "$CROSS_ARCH" in
+    aarch64) APT_ARCH=":arm64" ;;
+    *) echo "ERROR: unsupported --cross-arch value: ${CROSS_ARCH}" >&2; exit 1 ;;
+  esac
+fi
 
 if [[ -n "$CROSS_ARCH" ]]; then
     QT_HOST_TOOLS="${MOZ_FETCHES_DIR}/qt-host-tools"
@@ -39,46 +47,46 @@ fi
 echo "Patching QWaylandAdwaitaDecorations to add shadows"
 patch -d "${QT_SOURCE_DIR}/qtwayland" -p1 < "${VCS_PATH}/taskcluster/scripts/toolchain/patches/VPN-7529-qwaylandadwaitadecoration-add-shadows.patch"
 
-if [[ -z "$CROSS_ARCH" ]]; then
-    echo "Installing Qt build dependencies"
-    if [ -f /etc/redhat-release ]; then
-        sudo yum -y install \
-                gcc-toolset-10 \
-                at-spi2-core-devel \
-                openssl3-devel
-        source /opt/rh/gcc-toolset-10/enable
-    elif [ -f /etc/debian_version ]; then
-        sudo apt-get -y install \
-                libatspi2.0-dev \
-                libdbus-1-dev \
-                libfontconfig1-dev \
-                libfreetype6-dev \
-                libssl-dev \
-                libx11-dev \
-                libx11-xcb-dev \
-                libxext-dev \
-                libxfixes-dev \
-                libxi-dev \
-                libxrender-dev \
-                libxcb1-dev \
-                libxcb-cursor-dev \
-                libxcb-glx0-dev \
-                libxcb-keysyms1-dev \
-                libxcb-image0-dev \
-                libxcb-shm0-dev \
-                libxcb-icccm4-dev \
-                libxcb-sync-dev \
-                libxcb-xfixes0-dev \
-                libxcb-shape0-dev \
-                libxcb-randr0-dev \
-                libxcb-render-util0-dev \
-                libxcb-util-dev \
-                libxcb-xinerama0-dev \
-                libxcb-xkb-dev \
-                libxkbcommon-dev \
-                libxkbcommon-x11-dev
-    fi
+
+echo "Installing Qt build dependencies"
+if [ -f /etc/redhat-release ]; then
+    sudo yum -y install \
+            gcc-toolset-10 \
+            at-spi2-core-devel \
+            openssl3-devel
+    source /opt/rh/gcc-toolset-10/enable
+elif [ -f /etc/debian_version ]; then
+    sudo apt-get -y install \
+            libatspi2.0-dev${APT_ARCH} \
+            libdbus-1-dev${APT_ARCH} \
+            libfontconfig1-dev${APT_ARCH} \
+            libfreetype6-dev${APT_ARCH} \
+            libssl-dev${APT_ARCH} \
+            libx11-dev${APT_ARCH} \
+            libx11-xcb-dev${APT_ARCH} \
+            libxext-dev${APT_ARCH} \
+            libxfixes-dev${APT_ARCH} \
+            libxi-dev${APT_ARCH} \
+            libxrender-dev${APT_ARCH} \
+            libxcb1-dev${APT_ARCH} \
+            libxcb-cursor-dev${APT_ARCH} \
+            libxcb-glx0-dev${APT_ARCH} \
+            libxcb-keysyms1-dev${APT_ARCH} \
+            libxcb-image0-dev${APT_ARCH} \
+            libxcb-shm0-dev${APT_ARCH} \
+            libxcb-icccm4-dev${APT_ARCH} \
+            libxcb-sync-dev${APT_ARCH} \
+            libxcb-xfixes0-dev${APT_ARCH} \
+            libxcb-shape0-dev${APT_ARCH} \
+            libxcb-randr0-dev${APT_ARCH} \
+            libxcb-render-util0-dev${APT_ARCH} \
+            libxcb-util-dev${APT_ARCH} \
+            libxcb-xinerama0-dev${APT_ARCH} \
+            libxcb-xkb-dev${APT_ARCH} \
+            libxkbcommon-dev${APT_ARCH} \
+            libxkbcommon-x11-dev${APT_ARCH}
 fi
+
 
 echo "Building $(basename $QT_SOURCE_DIR)"
 mkdir qt-linux

@@ -144,7 +144,7 @@ qt-linux-aarch64:
         platform: linux/aarch64
     worker-type: b-linux-large
     worker:
-        docker-image: {in-tree: linux-aarch64-qt-build}
+        docker-image: {in-tree: linux-aarch64-deb-build}
 
 qt-wasm-6.10:
     description: "QT wasm bundle task"
