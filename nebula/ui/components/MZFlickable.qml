@@ -141,7 +141,7 @@ Flickable {
         //between the bottom of the flickable's content and the navbar
         if (vpnFlickable.addNavbarHeightOffset && absoluteYPosition + height >= contentSpace
                 && flickContentHeight + absoluteYPosition >= contentSpace) {
-            vpnFlickable.contentHeight = flickContentHeight + (flickContentHeight >= height ? MZTheme.theme.navBarHeightWithMargins : (absoluteYPosition + flickContentHeight) - contentSpace + (height - flickContentHeight))
+            vpnFlickable.contentHeight = flickContentHeight + (flickContentHeight >= height ? MZTheme.theme.navBarHeightWithMargins : (absoluteYPosition + flickContentHeight) - contentSpace + (height - flickContentHeight)) + 15
         }
         //If the navbar isn't visible, or the flickable's content does not interfere with the navbar area, don't worry about adding any padding
         else {
