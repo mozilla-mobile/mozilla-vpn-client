@@ -55,17 +55,14 @@ SPECIAL_LOCALE_MAP = {
 }
 
 def normalize_locale(locale):
-    if locale in SPECIAL_LOCALE_MAP:
-        return SPECIAL_LOCALE_MAP[locale]
-    return locale.replace('_', '-')
+    return SPECIAL_LOCALE_MAP.get(locale, locale).replace('_', '-')
 
 def get_locales(i18n_dir):
     """Returns list of locale codes that have a mozillavpn.xliff."""
-    locales = []
-    for entry in os.listdir(i18n_dir):
-        xliff = os.path.join(i18n_dir, entry, 'mozillavpn.xliff')
-        if os.path.isfile(xliff):
-            locales.append(entry)
+    locales = [
+          entry for entry in os.listdir(i18n_dir)
+          if os.path.isfile(os.path.join(i18n_dir, entry, "mozillavpn.xliff"))
+      ]
     if not locales:
         print(f"No other locales found")
         exit(1)
@@ -91,11 +88,11 @@ def build_localizable_xcstrings(main_strings, locale_translations):
             if translated:
                 for placeholder in re.findall(r'%.{0,2}@', english_value):
                     if placeholder not in translated:
-                        print(f"Error: placeholder '{placeholder}' from missing from {locale} translation of '{string_id}'")
+                        print(f"Error: placeholder '{placeholder}' missing from {locale} translation of '{string_id}'")
                         exit(1)
                 localizations[normalize_locale(locale)] = {
                     'stringUnit': {
-                        'state': 'translated',
+                        'state': 'translated' if locale != "en" else 'new',
                         'value': translated
                     }
                 }
@@ -109,17 +106,21 @@ def build_localizable_xcstrings(main_strings, locale_translations):
 
 def build_phrase_section(phrase_strings, locale_translations):
     """Build the xcstrings entry for a set of Siri phrases (stringSet format)."""
-    en_values = [using_app_placeholder(v) for data in phrase_strings.values() for v in data['value']]
 
-    localizations = {
-        'en': {'stringSet': {'state': 'new', 'values': en_values}}
-    }
+    phrase_blocks = phrase_strings.values()
+    if len(phrase_blocks) != 1:
+      print(f"Should only have 1 translation block for phrase strings, instead found {len(phrase_blocks)}")
+      exit(1)
+    string_id = next(iter(phrase_blocks))['string_id']
 
+    localizations = {}
     for locale, translations in locale_translations.items():
         locale_values = []
-        for data in phrase_strings.values():                                                                                                                      
-          translation = translations.get(data['string_id'])
-          if translation:                                                                                                                                       
+        translation_block = translations.get(string_id)
+        if translation_block is None:
+          continue
+        for translation in translation_block.split('\n'):
+          if translation:
               if not f"%@" in translation:
                   print(f"Missing required placeholder in {translation} for {locale}")
                   exit(1)
@@ -127,24 +128,21 @@ def build_phrase_section(phrase_strings, locale_translations):
 
         if locale_values:
             localizations[normalize_locale(locale)] = {
-                'stringSet': {'state': 'translated', 'values': locale_values}
+                'stringSet': {'state': 'translated' if locale != "en" else 'new', 'values': locale_values}
             }
 
     return {'localizations': localizations}
 
 
-def build_appshortcuts_xcstrings(activate_strings, deactivate_strings, locale_translations):
+def build_appshortcuts_xcstrings(intent_phrase_array, locale_translations):
     """Build AppShortcuts.xcstrings dict from activate/deactivate phrase strings."""
     strings = {}
 
-    if activate_strings:
-        # The xcstrings key for a phrase group is the first English phrase value
-        section_key = using_app_placeholder(next(iter(activate_strings.values()))['value'][0])
-        strings[section_key] = build_phrase_section(activate_strings, locale_translations)
-
-    if deactivate_strings:
-        section_key = using_app_placeholder(next(iter(deactivate_strings.values()))['value'][0])
-        strings[section_key] = build_phrase_section(deactivate_strings, locale_translations)
+    for phrase_set in intent_phrase_array:
+        phrase_section = build_phrase_section(phrase_set, locale_translations)
+        # The xcstrings key for a phrase group is the first English phrase value. But this is so ugly, sorry.
+        section_key = next(iter(phrase_section['localizations']['en']['stringSet']['values']))
+        strings[section_key] = phrase_section
 
     return {'sourceLanguage': 'en', 'strings': strings, 'version': '1.1'}
 
@@ -218,7 +216,7 @@ def main():
     print(f'Wrote {localizable_path}')
 
     # Write AppShortcuts.xcstrings
-    appshortcuts = build_appshortcuts_xcstrings(activate_strings, deactivate_strings, locale_translations)
+    appshortcuts = build_appshortcuts_xcstrings([activate_strings, deactivate_strings], locale_translations)
     appshortcuts_path = os.path.join(args.output_dir, 'AppShortcuts.xcstrings')
     with open(appshortcuts_path, 'w', encoding='utf-8') as f:
         json.dump(appshortcuts, f, indent=2, ensure_ascii=False)

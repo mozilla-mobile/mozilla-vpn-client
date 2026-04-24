@@ -1108,47 +1108,43 @@ iosAppIntentsMain:
     comment: Error given by Siri when unable to turn off VPN due to a lack of existing connection
 
 iosAppIntentsActivate:
-  activate1:
-    value: Activate %@
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  activate2:
-    value: "Turn on %@"
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  activate3:
-    value: "Turn %@ on"
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  activate4:
-    value: "Switch on %@"
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  activate5:
-    value: "Switch %@ on"
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  activate6:
-    value: "Connect %@"
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  activate7:
-    value: "Connect to %@"
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  phrases:
+    value: |
+      Activate %@
+      Turn on %@
+      Turn %@ on
+      Switch on %@
+      Switch %@ on
+      Connect %@
+      Connect to %@
+    comments:
+      - >
+        Siri phrase variants for activating the VPN via App Intents.
+        Each line is a separate phrase Siri will recognize.
+        Rules:
+          - Write natural, conversational phrases a user might say to Siri.
+          - Do NOT translate literally — write phrases natural in your language.
+          - Every line MUST contain %@, which will have "Mozilla VPN" substituted in.
+          - Add or remove lines freely; your language may need fewer or more variants.
+          - No line should be a duplicate of another.
 
 iosAppIntentsDeactivate:
-  deactivate1:
-    value: Deactivate %@
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  deactivate2:
-    value: "Turn off %@"
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  deactivate3:
-    value: "Turn %@ off"
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  deactivate4:
-    value: "Switch off %@"
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  deactivate5:
-    value: "Switch %@ off"
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  deactivate6:
-    value: "Disconnect %@"
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  deactivate7:
-    value: "Disconnect from %@"
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  phrases:
+    value: |
+      Deactivate %@
+      Turn off %@
+      Turn %@ off
+      Switch off %@
+      Switch %@ off
+      Disconnect %@
+      Disconnect from %@
+    comments:
+      - >
+        Siri phrase variants for deactivating the VPN via App Intents.
+        Each line is a separate phrase Siri will recognize.
+        Rules:
+          - Write natural, conversational phrases a user might say to Siri.
+          - Do NOT translate literally — write phrases natural in your language.
+          - Every line MUST contain %@, which will have "Mozilla VPN" substituted in.
+          - Add or remove lines freely; your language may need fewer or more variants.
+          - No line should be a duplicate of another.
