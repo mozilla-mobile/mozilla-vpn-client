@@ -41,6 +41,7 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
 
   int                  m_tunfd;
   CFRunLoopTimerRef    m_timer;
+  dispatch_queue_t     m_dispatch;
   dispatch_group_t     m_workqueue;
 
   struct timespec      m_lastHandshake;
@@ -70,6 +71,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 
   m_tunfd = -1;
   m_wireguard = nil;
+  m_dispatch = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
 
   _mtu = IPV6_MMTU;
   return self;
@@ -180,7 +182,7 @@ static int getWorkerCount() {
 
   nw_parameters_t params = nw_parameters_create_secure_udp(NW_PARAMETERS_DISABLE_PROTOCOL, NW_PARAMETERS_DEFAULT_CONFIGURATION);
   self.connection = nw_connection_create(options.serverIpv4Addr, params);
-  nw_connection_set_queue(self.connection, dispatch_get_main_queue());
+  nw_connection_set_queue(self.connection, m_dispatch);
 
   // (Re)-create the Wireguard tunnel structure.
   if (m_wireguard) {
@@ -302,7 +304,7 @@ static int getWorkerCount() {
 
 - (void) renegotiate {
   NSLog(@"wireguard renegotiate");
-  uint8_t* handshake = (UInt8 *)malloc(WG_MAX_HANDSHAKE_SIZE);
+  uint8_t handshake[WG_MAX_HANDSHAKE_SIZE];
 
   struct wireguard_result result;
   result = wireguard_force_handshake(m_wireguard, handshake, WG_MAX_HANDSHAKE_SIZE);
@@ -311,9 +313,7 @@ static int getWorkerCount() {
   clock_gettime(CLOCK_MONOTONIC, &m_handshakeTimeout);
   m_handshakeTimeout.tv_sec += WG_MAX_HANDSHAKE_TIMEOUT;
 
-  NSData* data = [NSData dataWithBytesNoCopy:handshake
-                                      length:WG_MAX_HANDSHAKE_SIZE];
-  [self handleWireguard:result withData:data];
+  [self handleWireguard:result withBuffer:handshake];
 }
 
 - (void) handleTimer {
@@ -332,27 +332,23 @@ static int getWorkerCount() {
     }
   }
 
-  uint8_t* handshake = (uint8_t *)malloc(WG_MAX_HANDSHAKE_SIZE);
+  uint8_t handshake[WG_MAX_HANDSHAKE_SIZE];
   struct wireguard_result result;
   result = wireguard_tick(m_wireguard, handshake, WG_MAX_HANDSHAKE_SIZE);
-
-  NSData* data = [NSData dataWithBytesNoCopy:handshake
-                                      length:WG_MAX_HANDSHAKE_SIZE];
-  [self handleWireguard:result withData:data];
+  [self handleWireguard:result withBuffer:handshake];
 }
 
 - (void) startOutboundWorker {
-  dispatch_group_async(m_workqueue,
-                       dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0),
-                       ^(void){
+  dispatch_group_async(m_workqueue, m_dispatch, ^(void){
     size_t mtu = self.mtu;
-    uint8_t buffer[mtu + 16];
+    uint8_t plaintext[mtu + 16];
+    uint8_t ciphertext[mtu + WG_PACKET_OVERHEAD];
     uint32_t header;
 
     struct iovec iov[2];
     iov[0].iov_base = &header;
     iov[0].iov_len = sizeof(header);
-    iov[1].iov_base = buffer;
+    iov[1].iov_base = plaintext;
     iov[1].iov_len = mtu;
 
     while (true) {
@@ -379,19 +375,15 @@ static int getWorkerCount() {
       // no such padding during encryption. So let's do it manually ourself.
       int tail = pktlen % 16;
       if (tail) {
-        memset(buffer + pktlen, 0, 16 - tail);
+        memset(plaintext + pktlen, 0, 16 - tail);
         pktlen += 16 - tail;
       }
 
       // Encrypt the wireguard packet.
-      size_t enclength = mtu + WG_PACKET_OVERHEAD;
-      uint8_t *encrypt = (uint8_t *)malloc(enclength);
       struct wireguard_result result;
-      result = wireguard_write(m_wireguard, buffer, pktlen, encrypt, enclength);
-
-      NSData* data = [NSData dataWithBytesNoCopy:encrypt
-                                          length:enclength];
-      [self handleWireguard:result withData:data];
+      result = wireguard_write(m_wireguard, plaintext, pktlen, ciphertext,
+                               sizeof(ciphertext));
+      [self handleWireguard:result withBuffer:ciphertext];
     }     
   });
 }
@@ -442,8 +434,8 @@ static int getWorkerCount() {
       }
     }
 
-    NSData* packet = [NSData dataWithBytesNoCopy:plaintext length:length];
-    [self handleWireguard:result withData:packet];
+    [self handleWireguard:result withBuffer:plaintext];
+    free(plaintext);
 
     // Keep going to receive more data.
     [self handleInbound];
@@ -451,28 +443,27 @@ static int getWorkerCount() {
 }
 
 - (void) handleWireguard:(struct wireguard_result)result
-                withData:(NSData*)data {
+              withBuffer:(const uint8_t*)data {
   uint32_t header = htonl(AF_INET);
   switch (result.op) {
     case WIREGUARD_DONE:
       break;
 
-    case WRITE_TO_NETWORK:
-      if (result.size <= data.length) {
-        dispatch_data_t dgram = dispatch_data_create(data.bytes, result.size,
-                                                     dispatch_get_main_queue(),
-                                                     DISPATCH_DATA_DESTRUCTOR_DEFAULT);
-        nw_connection_send(self.connection, dgram,
-                           NW_CONNECTION_DEFAULT_MESSAGE_CONTEXT, true,
-                           ^(nw_error_t error) {
-          if (error) {
-            CFErrorRef cfError = nw_error_copy_cf_error(error);
-            NSLog(@"wireguard send error: %@", (__bridge NSError*)cfError);
-            CFRelease(cfError);
-          }
-        });
-      }
-      break;
+    case WRITE_TO_NETWORK:{
+      dispatch_data_t dgram = dispatch_data_create(data, result.size,
+                                                   dispatch_get_main_queue(),
+                                                   DISPATCH_DATA_DESTRUCTOR_DEFAULT);
+      nw_connection_send(self.connection, dgram,
+                         NW_CONNECTION_DEFAULT_MESSAGE_CONTEXT, true,
+                         ^(nw_error_t error) {
+        if (error) {
+          CFErrorRef cfError = nw_error_copy_cf_error(error);
+          NSLog(@"wireguard send error: %@", (__bridge NSError*)cfError);
+          CFRelease(cfError);
+        }
+      });
+    }
+    break;
 
     case WIREGUARD_ERROR:
       NSLog(@"wireguard error: %zu", result.size);
@@ -482,13 +473,11 @@ static int getWorkerCount() {
       header = htonl(AF_INET6);
       [[fallthrough]];
     case WRITE_TO_TUNNEL_IPV4:
-      if (result.size <= data.length) {
-        const struct iovec iov[2] = {
-          {.iov_base = &header, .iov_len = sizeof(header)},
-          {.iov_base = (void *)data.bytes, .iov_len = result.size},
-        };
-        int err = writev(m_tunfd, iov, 2);
-      }
+      const struct iovec iov[2] = {
+        {.iov_base = &header, .iov_len = sizeof(header)},
+        {.iov_base = (void *)data, .iov_len = result.size},
+      };
+      int err = writev(m_tunfd, iov, 2);
       break;
   }
 }
