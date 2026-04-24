@@ -134,18 +134,12 @@ def build_phrase_section(phrase_strings, locale_translations):
     return {'localizations': localizations}
 
 
-def build_appshortcuts_xcstrings(activate_strings, deactivate_strings, locale_translations):
+def build_appshortcuts_xcstrings(intent_phrase_array, locale_translations):
     """Build AppShortcuts.xcstrings dict from activate/deactivate phrase strings."""
     strings = {}
 
-    if activate_strings:
-        phrase_section = build_phrase_section(activate_strings, locale_translations)
-        # The xcstrings key for a phrase group is the first English phrase value. But this is so ugly, sorry.
-        section_key = next(iter(phrase_section['localizations']['en']['stringSet']['values']))
-        strings[section_key] = phrase_section
-
-    if deactivate_strings:
-        phrase_section = build_phrase_section(deactivate_strings, locale_translations)
+    for phrase_set in intent_phrase_array:
+        phrase_section = build_phrase_section(phrase_set, locale_translations)
         # The xcstrings key for a phrase group is the first English phrase value. But this is so ugly, sorry.
         section_key = next(iter(phrase_section['localizations']['en']['stringSet']['values']))
         strings[section_key] = phrase_section
@@ -222,7 +216,7 @@ def main():
     print(f'Wrote {localizable_path}')
 
     # Write AppShortcuts.xcstrings
-    appshortcuts = build_appshortcuts_xcstrings(activate_strings, deactivate_strings, locale_translations)
+    appshortcuts = build_appshortcuts_xcstrings([activate_strings, deactivate_strings], locale_translations)
     appshortcuts_path = os.path.join(args.output_dir, 'AppShortcuts.xcstrings')
     with open(appshortcuts_path, 'w', encoding='utf-8') as f:
         json.dump(appshortcuts, f, indent=2, ensure_ascii=False)
