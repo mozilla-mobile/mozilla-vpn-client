@@ -6,7 +6,7 @@ import QtQuick 2.5
 import QtQuick.Controls 2.14
 
 import Mozilla.Shared 1.0
-import compat 0.1
+import QtQuick.Effects
 
 ToolTip {
     id: toolTip
@@ -61,12 +61,12 @@ ToolTip {
         color: MZTheme.colors.bgColor
         z: -1
 
-        MZRectangularGlow {
+        RectangularShadow {
             anchors.fill: glowClippingPath
-            glowRadius: 2
-            spread: 0.5
+            blur: 2
+            spread: 1
             color: MZTheme.colors.dropShadow
-            cornerRadius: glowClippingPath.radius + glowRadius
+            radius: glowClippingPath.radius
             opacity: 0.1
             z: -2
         }

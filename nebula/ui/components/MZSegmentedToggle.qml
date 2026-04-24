@@ -6,7 +6,6 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
-import compat 0.1
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 // MZSegmentedToggle

@@ -5,7 +5,7 @@
 import QtQuick 2.5
 import QtQuick.Layouts 1.14
 import QtQuick.Controls 2.14
-import compat 0.1
+import QtQuick.Effects
 
 import Mozilla.Shared 1.0
 import components 0.1
@@ -103,12 +103,12 @@ ColumnLayout {
                 color: MZTheme.colors.bgColorStronger
                 radius: MZTheme.theme.cornerRadius
 
-                MZRectangularGlow {
+                RectangularShadow {
                     anchors.fill: glowVector
-                    glowRadius: 4
-                    spread: .3
+                    blur: 4
+                    spread: 1
                     color: MZTheme.colors.divider
-                    cornerRadius: glowVector.radius + glowRadius
+                    radius: glowVector.radius
                     z: -2
                 }
 
