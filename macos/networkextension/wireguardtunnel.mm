@@ -19,6 +19,7 @@
 #include <sys/random.h>
 #include <sys/socket.h>
 #include <sys/sys_domain.h>
+#include <sys/sysctl.h>
 #include <sys/uio.h>
 #include <sys/un.h>
 #include <time.h>
@@ -38,8 +39,9 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
 @implementation WireguardTunnel {
   struct wireguard_tunnel*  m_wireguard;
 
-  CFSocketRef          m_socket;
+  int                  m_tunfd;
   CFRunLoopTimerRef    m_timer;
+  dispatch_group_t     m_workqueue;
 
   struct timespec      m_lastHandshake;
   struct timespec      m_handshakeTimeout;
@@ -51,20 +53,10 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
 constexpr const int WG_PACKET_OVERHEAD = 32;
 constexpr const int WG_MAX_HANDSHAKE_SIZE = 148;
 constexpr const int WG_MAX_HANDSHAKE_TIMEOUT = 15;
+constexpr const int64_t WG_WORKQUEUE_TIMEOUT = 30;
 
 static void wgLog(const char* msg) {
   NSLog(@"wg: %s", msg);
-}
-
-static void utunSockCallback(CFSocketRef s, CFSocketCallBackType cbType,
-                             CFDataRef address, const void * data, void *info) {
-  WireguardTunnel* tunnel = (__bridge WireguardTunnel*)info;
-  NSData* rawData = (__bridge NSData*)data;
-  if (cbType != kCFSocketReadCallBack) {
-    NSLog(@"utunSockCallback: unexpected type %d", (int)cbType);
-    return;
-  }
-  [tunnel handleOutbound];
 }
 
 static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
@@ -76,6 +68,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   self = [super init];
   set_logging_function(wgLog);
 
+  m_tunfd = -1;
   m_wireguard = nil;
 
   _mtu = IPV6_MMTU;
@@ -94,25 +87,33 @@ static NSError* errorFromErrno(int code, NSString* desc) {
                          userInfo:@{NSLocalizedDescriptionKey: msg}];
 }
 
+// Aim to allocate roughly half the total core count as workers.
+static int getWorkerCount() {
+  int mib[] = { CTL_HW, HW_NCPU };
+  int count = 4;
+  size_t length = sizeof(count);
+  sysctl(mib, sizeof(mib)/sizeof(int), &count, &length, nullptr, 0);
+  if (count < 2) {
+    return 1;
+  } else {
+    return count / 2;
+  }
+}
+
 - (void) startTunnelWithOptions:(InterfaceConfig *)options 
               completionHandler:(void (^)(NSError *error)) completionHandler {
   m_completionHandler = completionHandler;
+  m_workqueue = dispatch_group_create();
 
-  int tunfd = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
-  if (tunfd < 0) {
+  m_tunfd = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
+  if (m_tunfd < 0) {
     [self shutdownTunnel:@"tunnel creation failed" withErrno:errno];
     return;
   }
 
-  // Wrap the tunnel device in a CFSocket
-  CFSocketContext ctx = { .info = (__bridge void *)self };
-  m_socket = CFSocketCreateWithNative(kCFAllocatorDefault, tunfd,
-                                      kCFSocketReadCallBack,
-                                      utunSockCallback, &ctx);
-
   // Connect to the utun control kernel service.
   struct ctl_info info = {.ctl_name = "com.apple.net.utun_control"};
-  int err = ioctl(tunfd, CTLIOCGINFO, &info);
+  int err = ioctl(m_tunfd, CTLIOCGINFO, &info);
   if (err < 0) {
     [self shutdownTunnel:@"kernel utun lookup failed" withErrno:errno];
     return;
@@ -123,7 +124,7 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   addr.ss_sysaddr = AF_SYS_CONTROL;
   addr.sc_id = info.ctl_id;
   addr.sc_unit = 0;
-  err = connect(tunfd, (struct sockaddr*)&addr, sizeof(addr));
+  err = connect(m_tunfd, (struct sockaddr*)&addr, sizeof(addr));
   if (err < 0) {
     [self shutdownTunnel:@"kernel utun connect failed" withErrno:errno];
     return;
@@ -132,7 +133,7 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   // Get the tunnel device's name.
   struct ifreq ifr;
   socklen_t ifnamesize = sizeof(ifr.ifr_name);
-  err = getsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifr.ifr_name,
+  err = getsockopt(m_tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifr.ifr_name,
                    &ifnamesize);
   if (err < 0) {
     [self shutdownTunnel:@"utun name loookup failed" withErrno:errno];
@@ -153,19 +154,19 @@ static NSError* errorFromErrno(int code, NSString* desc) {
 
   // Set a base MTU, it will get updated later.
   ifr.ifr_mtu = self.mtu;
-  if (ioctl(tunfd, SIOCSIFMTU, &ifr) != 0) {
+  if (ioctl(m_tunfd, SIOCSIFMTU, &ifr) != 0) {
     [self shutdownTunnel:@"failed to set mtu" withErrno:errno];
     return;
   }
 
   // Bring the device up.
-  err = ioctl(tunfd, SIOCGIFFLAGS, &ifr);
+  err = ioctl(m_tunfd, SIOCGIFFLAGS, &ifr);
   if (err != 0) {
     [self shutdownTunnel:@"failed to get interface flags" withErrno:errno];
     return;
   }
   ifr.ifr_flags |= (IFF_UP | IFF_RUNNING);
-  err = ioctl(tunfd, SIOCSIFFLAGS, &ifr);
+  err = ioctl(m_tunfd, SIOCSIFFLAGS, &ifr);
   if (err != 0) {
     [self shutdownTunnel:@"failed to set device up" withErrno:errno];
     return;
@@ -220,13 +221,14 @@ static NSError* errorFromErrno(int code, NSString* desc) {
       // Force an initial handshake and begin packet processing.
       [self renegotiate];
       [self handleInbound];
+
+      // Start outbound encryption workers.
+      for (int i = 0; i < getWorkerCount(); i++) {
+        [self startOutboundWorker];
+      }
     }
   });
   nw_connection_start(self.connection);
-
-  // Start processing tunnel socket events.
-  CFRunLoopSourceRef source = CFSocketCreateRunLoopSource(kCFAllocatorDefault, m_socket, 0);
-  CFRunLoopAddSource(CFRunLoopGetMain(), source, kCFRunLoopDefaultMode);
 }
 
 - (void) stopTunnelWithReason:(NEProviderStopReason)reason 
@@ -339,59 +341,59 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   [self handleWireguard:result withData:data];
 }
 
-- (void) handleOutbound {
-  size_t mtu = self.mtu;
-  uint8_t buffer[mtu + 16];
-  uint32_t header;
+- (void) startOutboundWorker {
+  dispatch_group_async(m_workqueue,
+                       dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0),
+                       ^(void){
+    size_t mtu = self.mtu;
+    uint8_t buffer[mtu + 16];
+    uint32_t header;
 
-  struct iovec iov[2];
-  iov[0].iov_base = &header;
-  iov[0].iov_len = sizeof(header);
-  iov[1].iov_base = buffer;
-  iov[1].iov_len = mtu;
+    struct iovec iov[2];
+    iov[0].iov_base = &header;
+    iov[0].iov_len = sizeof(header);
+    iov[1].iov_base = buffer;
+    iov[1].iov_len = mtu;
 
-  struct msghdr msg = {
-    .msg_name = nullptr,
-    .msg_namelen = 0,
-    .msg_iov = iov,
-    .msg_iovlen = 2,
-    .msg_control = nullptr,
-    .msg_controllen = 0,
-    .msg_flags = 0
-  };
+    while (true) {
+      int rx = readv(m_tunfd, iov, 2);
+      if (rx == 0) {
+        // Socket has closed.
+        NSLog(@"utun closed");
+        return;
+      }
+      if (rx < 0) {
+        // Socket error occurred.
+        NSLog(@"utun error: %s", strerror(errno));
+        if (errno == EINTR) continue;
+        return;
+      }
+      int pktlen = rx - sizeof(header);
+      if ((pktlen < 0) || (pktlen > mtu)) {
+        continue;
+      }
 
-  while (true) {
-    int rx = recvmsg(CFSocketGetNative(m_socket), &msg, MSG_DONTWAIT);
-    if (rx < 0) {
-      // Socket error occurred.
-      if (errno == EINTR) continue;
-      return;
-    }
-    int pktlen = rx - sizeof(header);
-    if ((pktlen < 0) || (pktlen > mtu)) {
-      continue;
-    }
+      // I think there is a small bug in boringtun to do with message padding.
+      // The wireguard protocol states that the encapsulated packet must first
+      // be padded out to a multiple of 16 bytes in length, but boringtun does
+      // no such padding during encryption. So let's do it manually ourself.
+      int tail = pktlen % 16;
+      if (tail) {
+        memset(buffer + pktlen, 0, 16 - tail);
+        pktlen += 16 - tail;
+      }
 
-    // I think there is a small bug in boringtun to do with message padding.
-    // The wireguard protocol states that the encapsulated packet must first
-    // be padded out to a multiple of 16 bytes in length, but boringtun does
-    // no such padding during encryption. So let's do it manually ourself.
-    int tail = pktlen % 16;
-    if (tail) {
-      memset(buffer + pktlen, 0, 16 - tail);
-      pktlen += 16 - tail;
-    }
+      // Encrypt the wireguard packet.
+      size_t enclength = mtu + WG_PACKET_OVERHEAD;
+      uint8_t *encrypt = (uint8_t *)malloc(enclength);
+      struct wireguard_result result;
+      result = wireguard_write(m_wireguard, buffer, pktlen, encrypt, enclength);
 
-    // Encrypt the wireguard packet.
-    size_t enclength = mtu + WG_PACKET_OVERHEAD;
-    uint8_t *encrypt = (uint8_t *)malloc(enclength);
-    struct wireguard_result result;
-    result = wireguard_write(m_wireguard, buffer, pktlen, encrypt, enclength);
-
-    NSData* data = [NSData dataWithBytesNoCopy:encrypt
-                                        length:enclength];
-    [self handleWireguard:result withData:data];
-  }
+      NSData* data = [NSData dataWithBytesNoCopy:encrypt
+                                          length:enclength];
+      [self handleWireguard:result withData:data];
+    }     
+  });
 }
 
 - (void) handleInbound {
@@ -485,7 +487,7 @@ static NSError* errorFromErrno(int code, NSString* desc) {
           {.iov_base = &header, .iov_len = sizeof(header)},
           {.iov_base = (void *)data.bytes, .iov_len = result.size},
         };
-        int err = writev(CFSocketGetNative(m_socket), iov, 2);
+        int err = writev(m_tunfd, iov, 2);
       }
       break;
   }
@@ -513,10 +515,17 @@ static NSError* errorFromErrno(int code, NSString* desc) {
     m_timer = nil;
   }
 
-  if (m_socket) {
-    CFSocketInvalidate(m_socket);
-    CFRelease(m_socket);
-    m_socket = nil;
+  // Shutdown the tunnel workers.
+  if (m_workqueue) {
+    shutdown(m_tunfd, SHUT_RDWR);
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, WG_WORKQUEUE_TIMEOUT * 1000000000);
+    dispatch_group_wait(m_workqueue, delay);
+    m_workqueue = nil;
+  }
+
+  if (m_tunfd >= 0) {
+    close(m_tunfd);
+    m_tunfd = -1;
   }
 
   if (m_wireguard) {
@@ -563,7 +572,7 @@ static NSError* errorFromErrno(int code, NSString* desc) {
   struct ifreq ifr;
   strncpy(ifr.ifr_name, nw_interface_get_name(self.virtualInterface), sizeof(ifr.ifr_name));
   ifr.ifr_mtu = _mtu;
-  if (ioctl(CFSocketGetNative(m_socket), SIOCSIFMTU, &ifr) != 0) {
+  if (ioctl(m_tunfd, SIOCSIFMTU, &ifr) != 0) {
     NSLog(@"mtu update failed: %s", strerror(errno));
   }
 }
