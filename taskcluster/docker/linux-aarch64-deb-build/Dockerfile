@@ -5,7 +5,7 @@
 # Docker image for cross-compiling the Mozilla VPN DEB packages for aarch64.
 # Uses Debian Bookworm for best arm64 multiarch and dpkg cross-build support.
 
-ARG DOCKER_BASE_IMAGE=ubuntu:jammy
+ARG DOCKER_BASE_IMAGE=debian:bookworm
 
 FROM $DOCKER_BASE_IMAGE
 
