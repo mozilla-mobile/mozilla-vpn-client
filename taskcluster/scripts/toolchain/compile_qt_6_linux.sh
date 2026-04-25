@@ -84,7 +84,10 @@ elif [ -f /etc/debian_version ]; then
             libxcb-xinerama0-dev${APT_ARCH} \
             libxcb-xkb-dev${APT_ARCH} \
             libxkbcommon-dev${APT_ARCH} \
-            libxkbcommon-x11-dev${APT_ARCH}
+            libxkbcommon-x11-dev${APT_ARCH} \
+            libwayland-dev${APT_ARCH} \
+            libwayland-egl-backend-dev${APT_ARCH} \
+            wayland-protocols
 fi
 
 
