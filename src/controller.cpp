@@ -354,17 +354,8 @@ void Controller::updateRequired() {
   }
 }
 
-void Controller::activateInternal(
-    DNSPortPolicy dnsPort,
-    ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection,
-    ActivationPrincipal initiator = ClientUser) {
-  logger.debug() << "Activation internal";
-  Q_ASSERT(m_impl);
-  m_initiator = initiator;
-
-  m_handshakeTimer.stop();
-  m_activationQueue.clear();
-
+auto Controller::setupConfigs(DNSPortPolicy dnsPort,
+                              ServerSelectionPolicy serverSelectionPolicy) {
   Server exitServer =
       serverSelectionPolicy == DoNotRandomizeServerSelection &&
               !m_serverData.exitServerPublicKey().isEmpty()
@@ -374,7 +365,7 @@ void Controller::activateInternal(
   if (!exitServer.initialized()) {
     logger.error() << "Empty exit server list in state" << m_state;
     serverUnavailable();
-    return;
+    return QList<InterfaceConfig>();
   }
 
   MozillaVPN* vpn = MozillaVPN::instance();
@@ -382,11 +373,12 @@ void Controller::activateInternal(
   if (!device) {
     logger.warning() << "No current device. Aborting activation.";
     m_nextStep = Disconnect;
-    return;
+    return QList<InterfaceConfig>();
   }
   SettingsHolder* settingsHolder = SettingsHolder::instance();
+  QList<InterfaceConfig> returnList;
 
-  auto allowedIPList = initiator == ExtensionUser
+  auto allowedIPList = m_initiator == ExtensionUser
                            ? getExtensionProxyAddressRanges(exitServer)
                            : getAllowedIPAddressRanges(exitServer);
   // Prepare the exit server's connection data.
@@ -444,7 +436,7 @@ void Controller::activateInternal(
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
-      return;
+      return QList<InterfaceConfig>();
     }
 
     InterfaceConfig entryConfig;
@@ -470,7 +462,7 @@ void Controller::activateInternal(
       entryConfig.m_serverPort = 53;
     }
 
-    m_activationQueue.append(entryConfig);
+    returnList.append(entryConfig);
   }
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
@@ -488,7 +480,7 @@ void Controller::activateInternal(
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
-      return;
+      return QList<InterfaceConfig>();
     }
 
     // NOTE: For platforms without multihop support, we cannot emulate multihop
@@ -500,6 +492,29 @@ void Controller::activateInternal(
     exitConfig.m_entryCity = entryServer.cityName();
   }
 
+  returnList.append(exitConfig);
+  return returnList;
+}
+
+void Controller::activateInternal(
+    DNSPortPolicy dnsPort,
+    ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection,
+    ActivationPrincipal initiator = ClientUser) {
+  logger.debug() << "Activation internal";
+  Q_ASSERT(m_impl);
+  m_initiator = initiator;
+
+  m_handshakeTimer.stop();
+  m_activationQueue.clear();
+
+  QList<InterfaceConfig> serverConfigs =
+      setupConfigs(dnsPort, serverSelectionPolicy);
+  Q_ASSERT(serverConfigs.size() == 1 || serverConfigs.size() == 2);
+  InterfaceConfig exitConfig = serverConfigs.takeLast();
+  if (!serverConfigs.isEmpty()) {
+    InterfaceConfig entryConfig = serverConfigs.takeFirst();
+    m_activationQueue.append(entryConfig);
+  }
   m_activationQueue.append(exitConfig);
   m_serverData.setEntryServerPublicKey(
       m_activationQueue.first().m_serverPublicKey);
@@ -864,7 +879,15 @@ void Controller::captivePortalPresent() {
 void Controller::serverDataChanged() {
   if (!isActive() || m_state == StateDisconnecting) {
     logger.debug() << "Server data changed but we are off or disconnecting";
+
+#ifdef MZ_IOS
+    // If the VPN is disconnected, we still need to update the config in the
+    // network extension so if the next connection comes from control center or
+    // app intent the latest config will be used.
+    logger.debug() << "However, we are on iOS so we are forwarding the config";
+#else
     return;
+#endif
   }
 
   TaskScheduler::deleteTasks();
@@ -872,9 +895,33 @@ void Controller::serverDataChanged() {
       new TaskControllerAction(TaskControllerAction::eSwitch));
 }
 
+void Controller::maybeSendUpdatedConfig(const ServerData& serverData) {
+  if (m_impl->canSendUpdatedConfig()) {
+    logger.debug() << "Sending updated config";
+    m_serverData = serverData;
+    QList<InterfaceConfig> serverConfigs =
+        setupConfigs(DoNotForceDNSPort, RandomizeServerSelection);
+    Q_ASSERT(serverConfigs.size() == 1 || serverConfigs.size() == 2);
+    InterfaceConfig exitConfig = serverConfigs.takeLast();
+    InterfaceConfig entryConfig;
+    if (!serverConfigs.isEmpty()) {
+      entryConfig = serverConfigs.takeFirst();
+      m_activationQueue.append(entryConfig);
+      m_serverData.setEntryServerPublicKey(entryConfig.m_serverPublicKey);
+    } else {
+      m_serverData.setEntryServerPublicKey(exitConfig.m_serverPublicKey);
+    }
+    m_serverData.setExitServerPublicKey(exitConfig.m_serverPublicKey);
+    m_impl->sendUpdatedConfig(entryConfig, exitConfig);
+  } else {
+    logger.debug() << "Skipping sending updated config";
+  }
+}
+
 bool Controller::switchServers(const ServerData& serverData) {
   if (!isActive()) {
     logger.debug() << "Server data changed but we are off";
+    maybeSendUpdatedConfig(serverData);
     return false;
   }
 
