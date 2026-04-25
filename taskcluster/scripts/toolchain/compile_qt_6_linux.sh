@@ -87,7 +87,10 @@ elif [ -f /etc/debian_version ]; then
             libxkbcommon-x11-dev${APT_ARCH} \
             libwayland-dev${APT_ARCH} \
             libwayland-egl-backend-dev${APT_ARCH} \
-            wayland-protocols
+            wayland-protocols \
+            libgl-dev${APT_ARCH} \
+            libgles-dev${APT_ARCH} \
+            libegl-dev${APT_ARCH}
 fi
 
 
