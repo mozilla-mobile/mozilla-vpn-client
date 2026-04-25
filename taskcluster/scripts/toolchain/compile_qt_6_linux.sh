@@ -56,6 +56,21 @@ if [ -f /etc/redhat-release ]; then
             openssl3-devel
     source /opt/rh/gcc-toolset-10/enable
 elif [ -f /etc/debian_version ]; then
+
+    if [[ -n "$CROSS_ARCH" ]]; then    
+	apt-get -y install \
+		libxkbcommon0 \
+		libdbus-1-3 \
+		libglib2.0-0 \
+		libzstd1 \
+		libgl1 \
+		libegl1 \
+		libfreetype6 \
+		libpng16-16 \
+		libharfbuzz0b \
+		libpcre2-8-0
+    fi
+ 
     sudo apt-get -y install \
             libatspi2.0-dev${APT_ARCH} \
             libdbus-1-dev${APT_ARCH} \
