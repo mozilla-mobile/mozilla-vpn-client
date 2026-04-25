@@ -275,11 +275,9 @@ class Controller : public QObject, public LogSerializer {
   void setError(ErrorCode code);
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
-  void setupConfigs(DNSPortPolicy dnsPort,
+  auto setupConfigs(DNSPortPolicy dnsPort,
                     ServerSelectionPolicy serverSelectionPolicy);
-#ifdef MZ_IOS
-  void sendUpdatedConfig(const ServerData& serverData);
-#endif
+  void maybeSendUpdatedConfig(const ServerData& serverData);
   QString useLocalSocketPath() const;
 
  private:

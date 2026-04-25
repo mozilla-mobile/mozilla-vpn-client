@@ -354,7 +354,7 @@ void Controller::updateRequired() {
   }
 }
 
-void Controller::setupConfigs(DNSPortPolicy dnsPort,
+auto Controller::setupConfigs(DNSPortPolicy dnsPort,
                               ServerSelectionPolicy serverSelectionPolicy) {
   Server exitServer =
       serverSelectionPolicy == DoNotRandomizeServerSelection &&
@@ -365,7 +365,7 @@ void Controller::setupConfigs(DNSPortPolicy dnsPort,
   if (!exitServer.initialized()) {
     logger.error() << "Empty exit server list in state" << m_state;
     serverUnavailable();
-    return;
+    return QList<InterfaceConfig>();
   }
 
   MozillaVPN* vpn = MozillaVPN::instance();
@@ -373,9 +373,10 @@ void Controller::setupConfigs(DNSPortPolicy dnsPort,
   if (!device) {
     logger.warning() << "No current device. Aborting activation.";
     m_nextStep = Disconnect;
-    return;
+    return QList<InterfaceConfig>();
   }
   SettingsHolder* settingsHolder = SettingsHolder::instance();
+  QList<InterfaceConfig> returnList;
 
   auto allowedIPList = m_initiator == ExtensionUser
                            ? getExtensionProxyAddressRanges(exitServer)
@@ -435,7 +436,7 @@ void Controller::setupConfigs(DNSPortPolicy dnsPort,
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
-      return;
+      return QList<InterfaceConfig>();
     }
 
     InterfaceConfig entryConfig;
@@ -461,7 +462,7 @@ void Controller::setupConfigs(DNSPortPolicy dnsPort,
       entryConfig.m_serverPort = 53;
     }
 
-    m_activationQueue.append(entryConfig);
+    returnList.append(entryConfig);
   }
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
@@ -479,7 +480,7 @@ void Controller::setupConfigs(DNSPortPolicy dnsPort,
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
-      return;
+      return QList<InterfaceConfig>();
     }
 
     // NOTE: For platforms without multihop support, we cannot emulate multihop
@@ -491,11 +492,8 @@ void Controller::setupConfigs(DNSPortPolicy dnsPort,
     exitConfig.m_entryCity = entryServer.cityName();
   }
 
-  m_activationQueue.append(exitConfig);
-  m_serverData.setEntryServerPublicKey(
-      m_activationQueue.first().m_serverPublicKey);
-  m_serverData.setExitServerPublicKey(
-      m_activationQueue.last().m_serverPublicKey);
+  returnList.append(exitConfig);
+  return returnList;
 }
 
 void Controller::activateInternal(
@@ -509,7 +507,19 @@ void Controller::activateInternal(
   m_handshakeTimer.stop();
   m_activationQueue.clear();
 
-  setupConfigs(dnsPort, serverSelectionPolicy);
+  QList<InterfaceConfig> serverConfigs =
+      setupConfigs(dnsPort, serverSelectionPolicy);
+  Q_ASSERT(serverConfigs.size() == 1 || serverConfigs.size() == 2);
+  InterfaceConfig exitConfig = serverConfigs.takeLast();
+  if (!serverConfigs.isEmpty()) {
+    InterfaceConfig entryConfig = serverConfigs.takeFirst();
+    m_activationQueue.append(entryConfig);
+  }
+  m_activationQueue.append(exitConfig);
+  m_serverData.setEntryServerPublicKey(
+      m_activationQueue.first().m_serverPublicKey);
+  m_serverData.setExitServerPublicKey(
+      m_activationQueue.last().m_serverPublicKey);
 
   m_pingReceived = false;
   m_pingCanary.start(m_activationQueue.first().m_serverIpv4AddrIn, "0.0.0.0/0");
@@ -885,22 +895,33 @@ void Controller::serverDataChanged() {
       new TaskControllerAction(TaskControllerAction::eSwitch));
 }
 
-#ifdef MZ_IOS
-void Controller::sendUpdatedConfig(const ServerData& serverData) {
-  logger.debug() << "Sending updated config";
-  m_serverData = serverData;
-  setupConfigs(DoNotForceDNSPort, RandomizeServerSelection);
-  const InterfaceConfig& config = m_activationQueue.first();
-  m_impl->activate(config, Controller::ReasonUpdating);
+void Controller::maybeSendUpdatedConfig(const ServerData& serverData) {
+  if (m_impl->canSendUpdatedConfig()) {
+    logger.debug() << "Sending updated config";
+    m_serverData = serverData;
+    QList<InterfaceConfig> serverConfigs =
+        setupConfigs(DoNotForceDNSPort, RandomizeServerSelection);
+    Q_ASSERT(serverConfigs.size() == 1 || serverConfigs.size() == 2);
+    InterfaceConfig exitConfig = serverConfigs.takeLast();
+    InterfaceConfig entryConfig;
+    if (!serverConfigs.isEmpty()) {
+      entryConfig = serverConfigs.takeFirst();
+      m_activationQueue.append(entryConfig);
+      m_serverData.setEntryServerPublicKey(entryConfig.m_serverPublicKey);
+    } else {
+      m_serverData.setEntryServerPublicKey(exitConfig.m_serverPublicKey);
+    }
+    m_serverData.setExitServerPublicKey(exitConfig.m_serverPublicKey);
+    m_impl->sendUpdatedConfig(entryConfig, exitConfig);
+  } else {
+    logger.debug() << "Skipping sending updated config";
+  }
 }
-#endif
 
 bool Controller::switchServers(const ServerData& serverData) {
   if (!isActive()) {
     logger.debug() << "Server data changed but we are off";
-#ifdef MZ_IOS
-    sendUpdatedConfig(serverData);
-#endif
+    maybeSendUpdatedConfig(serverData);
     return false;
   }
 

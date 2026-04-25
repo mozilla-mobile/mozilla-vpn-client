@@ -37,6 +37,11 @@ class IOSController final : public ControllerImpl {
 
   bool shouldSuppressNextNotification() override;
 
+  bool canSendUpdatedConfig() const override { return true; }
+
+  void sendUpdatedConfig(InterfaceConfig entryConfig,
+                         InterfaceConfig exitConfig) override;
+
  private:
   bool m_checkingStatus = false;
   QString m_serverPublicKey;

@@ -297,3 +297,7 @@ void IOSController::cleanupBackendLogs() { [IOSLoggerImpl clearLogs]; }
 bool IOSController::shouldSuppressNextNotification() {
   return [impl shouldSuppressNextNotification];
 }
+
+void IOSController::sendUpdatedConfig(InterfaceConfig entryConfig, InterfaceConfig exitConfig) {
+  activate(exitConfig, Controller::ReasonUpdating);
+}
