@@ -97,7 +97,7 @@ struct ToggleIntent: SetValueIntent {
       }
 
       let currentStatus = (tunnel?.connection as? NETunnelProviderSession)?.status == .connected || (tunnel?.connection as? NETunnelProviderSession)?.status == .connecting
-    if currentStatus != value { // false { //} 
+    if currentStatus == value {
         logger.info("MATTHEW EEEEK \(currentStatus) and \(value)")
         if !value {
           responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOffError", defaultValue: "No active VPN connection")
@@ -111,7 +111,7 @@ struct ToggleIntent: SetValueIntent {
       } else {
         logger.info("MATTHEW UP TOP")
 
-        if value {
+        if !value {
           // IF DOING IT THIS WAY, MUST REMEMBER TO REMOVE THE AUTO RECONNECT STUFF
           // Turn off auto-connect, otherwise it will immediately reconnect.
           tunnel?.isOnDemandEnabled = false;
