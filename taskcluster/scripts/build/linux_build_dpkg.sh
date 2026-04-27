@@ -145,18 +145,8 @@ fi
 
 # Install build dependencies
 mk-build-deps $MK_BUILD_DEPS_ARGS "$(pwd)/mozillavpn-source/debian/control"
-if [[ -n "$CROSS_ARCH" ]]; then
-  sudo apt-get -y install --no-install-recommends \
-      "libcap-dev:${CROSS_DEB_ARCH}" \
-      "libgcrypt20-dev:${CROSS_DEB_ARCH}" \
-      "libgl-dev:${CROSS_DEB_ARCH}" \
-      "libopengl-dev:${CROSS_DEB_ARCH}" \
-      "libpolkit-gobject-1-dev:${CROSS_DEB_ARCH}" \
-      "libxkbcommon-dev:${CROSS_DEB_ARCH}"
-else
-  sudo apt -y install "./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb"
-  rm -f "./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_*"
-fi
+sudo apt -y install "./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_all.deb"
+rm -f "./${DPKG_PACKAGE_SRCNAME}-build-deps_${DPKG_PACKAGE_DIST_VERSION}_*"
 
 (cd mozillavpn-source/ && dpkg-buildpackage $DPKG_PACKAGE_BUILD_ARGS)
 
