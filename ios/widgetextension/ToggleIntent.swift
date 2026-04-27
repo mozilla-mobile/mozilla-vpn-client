@@ -37,35 +37,28 @@ struct ToggleIntent: SetValueIntent {
     let dialog: IntentDialog
     let responseText: LocalizedStringResource
     let responseImage: String
-    var tunnel: NETunnelProviderManager? = (managers?.first(where: {
-      guard
-        let proto = $0.protocolConfiguration,
-        let tunnelProto = proto as? NETunnelProviderProtocol
-      else {
-        logger.debug("Ignoring manager because the proto is invalid.")
-        return false
-      }
-
-      guard let bundleIdentifier = tunnelProto.providerBundleIdentifier else {
-        logger.debug("Ignoring manager because the bundle identifier is null.")
-        return false
-      }
-
-      if (bundleIdentifier != "org.mozilla.ios.FirefoxVPN.network-extension") {
-        logger.debug("Ignoring manager because the bundle identifier doesn't match.")
-        return false;
-      }
-
-      logger.debug("Found the manager with the correct bundle identifier: \(bundleIdentifier)")
-      return true
-    }))
-
-    if (tunnel == nil) {
+    let tunnel: NETunnelProviderManager
+    if let potentialTunnel = (managers?.first(where: { $0.isOurManager })) {
+      tunnel = potentialTunnel
+    } else {
       logger.warning("Creating the tunnel, as none were found")
       tunnel = NETunnelProviderManager()
     }
 
-    let currentStatus = (tunnel?.connection as? NETunnelProviderSession)?.status == .connected || (tunnel?.connection as? NETunnelProviderSession)?.status == .connecting
+    guard let connection = tunnel.connection as? NETunnelProviderSession else {
+      logger.error("Tunnel connection is not of the correct type")
+      responseText = LocalizedStringResource("vpn.iosAppIntentsMain.toggleError", defaultValue: "Error changing VPN status")
+      if #available(iOS 17.2, *) {
+        dialog = IntentDialog(full: responseText,
+                              supporting: responseText,
+                              systemImageName: "exclamationmark.triangle")
+      } else {
+        dialog = IntentDialog(responseText)
+      }
+      return .result(dialog: dialog)
+    }
+
+    let currentStatus = (connection.status == .connected || connection.status == .connecting)
     if currentStatus == value {
       if !value {
         responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOffError", defaultValue: "No active VPN connection")
@@ -80,11 +73,11 @@ struct ToggleIntent: SetValueIntent {
       if !value {
         logger.info("Turning off VPN")
         // Turn off auto-connect, otherwise it will immediately reconnect.
-        tunnel?.isOnDemandEnabled = false;
-        tunnel?.onDemandRules = []
+        tunnel.isOnDemandEnabled = false;
+        tunnel.onDemandRules = []
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-          tunnel?.saveToPreferences { error in
+          tunnel.saveToPreferences { error in
             if let error = error {
               logger.info("Error saving tunnel: \(error.localizedDescription)")
               continuation.resume(throwing: error)
@@ -94,23 +87,22 @@ struct ToggleIntent: SetValueIntent {
           }
         }
 
-        (tunnel?.connection as? NETunnelProviderSession)?.stopTunnel()
+        connection.stopTunnel()
         responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOffConfirmation", defaultValue: "Mozilla VPN disconnected")
         responseImage = "shield.lefthalf.filled.slash"
         value = true
       } else {
         logger.info("Turning on VPN")
-        let activationResult: Bool
         do {
           // Create a rule so that the VPN always connects. This allows reconnection if
           // the device reboots or the network extension is stopped for an unexpected reason.
           let alwaysConnect = NEOnDemandRuleConnect()
           alwaysConnect.interfaceTypeMatch = .any
-          tunnel?.isOnDemandEnabled = true
-          tunnel?.onDemandRules = [alwaysConnect]
+          tunnel.isOnDemandEnabled = true
+          tunnel.onDemandRules = [alwaysConnect]
 
-          try (tunnel?.connection as? NETunnelProviderSession)?.startTunnel(options: ["source": "control"])
-          let config = (tunnel?.protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration
+          try connection.startTunnel(options: ["source": "control"])
+          let config = (tunnel.protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration
           let entryCity: String? = config?["entryCity"] as? String
           let exitCity: String? = config?["exitCity"] as? String
 
@@ -126,6 +118,7 @@ struct ToggleIntent: SetValueIntent {
           responseImage = "shield.lefthalf.filled"
           value = false
         } catch let error {
+          logger.warning("Error: \(error.localizedDescription)")
           responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnError", defaultValue: "Error turning on Mozilla VPN")
           responseImage = "exclamationmark.triangle"
         }

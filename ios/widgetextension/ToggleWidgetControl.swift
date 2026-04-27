@@ -42,9 +42,9 @@ extension ToggleWidgetControl {
 
     func currentValue() async -> Bool {
       let logger = Logger(subsystem: "org.mozilla.ios.FirefoxVPN", category: "WidgetControl")
-      var tunnel: NETunnelProviderManager?
+      let managers: [NETunnelProviderManager]?
       do {
-        let managers: [NETunnelProviderManager]? = try await withCheckedThrowingContinuation { continuation in
+        managers = try await withCheckedThrowingContinuation { continuation in
           NETunnelProviderManager.loadAllFromPreferences { managers, error in
             if let error = error {
               logger.warning("Error loading tunnels: \(error.localizedDescription)")
@@ -54,42 +54,22 @@ extension ToggleWidgetControl {
             }
           }
         }
-
-        tunnel = (managers?.first(where: {
-          guard
-            let proto = $0.protocolConfiguration,
-            let tunnelProto = proto as? NETunnelProviderProtocol
-          else {
-            logger.debug("Ignoring manager because the proto is invalid.")
-            return false
-          }
-
-          guard let bundleIdentifier = tunnelProto.providerBundleIdentifier else {
-            logger.debug("Ignoring manager because the bundle identifier is null.")
-            return false
-          }
-
-          if (bundleIdentifier != "org.mozilla.ios.FirefoxVPN.network-extension") {
-            logger.debug("Ignoring manager because the bundle identifier doesn't match.")
-            return false;
-          }
-
-          logger.debug("Found the manager with the correct bundle identifier: \(bundleIdentifier)")
-          return true
-        }))
-
-
       } catch let error {
         logger.debug("Error: \(error.localizedDescription)")
         return false
       }
 
-      if (tunnel == nil) {
-        logger.warning("Creating the tunnel, as none were found")
-        tunnel = NETunnelProviderManager()
+      guard let managers = managers, let tunnel = (managers.first(where: { $0.isOurManager })) else {
+        logger.warning("No tunnel found")
+        return false
       }
 
-      let isOn = (tunnel?.connection as? NETunnelProviderSession)?.status == .connected || (tunnel?.connection as? NETunnelProviderSession)?.status == .connecting
+      guard let connection = tunnel.connection as? NETunnelProviderSession else {
+        logger.error("Tunnel connection not proper type")
+        return false
+      }
+
+      let isOn = (connection.status == .connected || connection.status == .connecting)
       return isOn
     }
   }

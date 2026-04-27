@@ -142,6 +142,7 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/ios/app/launch.png
     ${CMAKE_SOURCE_DIR}/ios/app/MozillaVPNLaunchScreen.storyboard
     ${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets
+    ${CMAKE_SOURCE_DIR}/ios/NETunnelProviderManager+Extension.swift
 )
 
 set_property(TARGET mozillavpn APPEND PROPERTY RESOURCE
