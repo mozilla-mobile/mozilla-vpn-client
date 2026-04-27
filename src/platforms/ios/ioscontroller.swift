@@ -132,11 +132,8 @@ public class IOSControllerImpl: NSObject {
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: unknown status")
         }
 
-
       if #available(iOS 18.0, *) {
         ControlCenter.shared.reloadAllControls()
-      } else {
-        // Fallback on earlier versions
       }
 
         // We care about "unknown" state changes.

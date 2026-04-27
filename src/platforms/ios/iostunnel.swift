@@ -4,9 +4,7 @@
 import Foundation
 import NetworkExtension
 import os
-#if canImport(IOSGlean)
 import IOSGlean
-#endif
 
 class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
     private let logger = IOSLoggerImpl(tag: "Tunnel")
@@ -28,7 +26,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
         }
     }()
 
-#if canImport(IOSGlean)
     private var gleanDebugTag: String? {
         guard let tag = (protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["gleanDebugTag"] as? String,
             !tag.isEmpty else {
@@ -44,13 +41,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
     private var isServerLocatedInUserCountry: Bool? {
         return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isServerLocatedInUserCountry"] as? Bool)
     }
-#endif
 
     override init() {
         super.init()
 
         connectionHealthMonitor.serverSwitchingDelegate = self
-     #if canImport(IOSGlean)
+
         // Copied from https://github.com/mozilla/glean/blob/c501555ad63051a4d5813957c67ae783afef1996/glean-core/ios/Glean/Utils/Utils.swift#L90
         let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
         let documentsDirectory = paths[0]
@@ -70,17 +66,14 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
             ),
             buildInfo: GleanMetrics.GleanBuild.info
         )
-      #endif
     }
 
     override func startTunnel(options: [String: NSObject]?, completionHandler: @escaping (Error?) -> Void) {
-      #if canImport(IOSGlean)
         // If this isGleanDebugTagActive check is in intializer, protocolConfig isn't set and it always fails.
         if let gleanDebugTag = gleanDebugTag {
             logger.info(message: "Setting Glean debug tag for Network Extension.")
             Glean.shared.setDebugViewTag(gleanDebugTag)
         }
-      #endif
 
         let errorNotifier = ErrorNotifier(activationAttemptId: nil)
         let isSourceApp = ((options?["source"] as? String) ?? "") == "app"
@@ -93,7 +86,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
             return
         }
 
-        #if canImport(IOSGlean)
         if shouldSendTelemetry {
             if let installationIdString = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["installationId"] as? String),
                 let installationId = UUID(uuidString: installationIdString) {
@@ -105,7 +97,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
 
             GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonFlush)
         }
-        #endif
 
         // Start the tunnel
         adapter.start(tunnelConfiguration: tunnelConfiguration) { adapterError in
@@ -114,14 +105,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
 
                 self.logger.info(message: "Tunnel interface is \(interfaceName)")
 
-              #if canImport(IOSGlean)
                 if self.shouldSendTelemetry {
                     GleanMetrics.Session.daemonSessionSource.set(isSourceApp ? "app" : "system")
                     GleanMetrics.Session.daemonSessionId.generateAndSet()
                     GleanMetrics.Session.daemonSessionStart.set()
                     GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
                 }
-              #endif
 
                 self.originalStartTime = Date()
 
@@ -179,7 +168,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
         adapter.stop { error in
             ErrorNotifier.removeLastErrorFile()
             self.connectionHealthMonitor.stop()
-          #if canImport(IOSGlean)
             if self.shouldSendTelemetry {
                 if let isServerLocatedInUserCountry = self.isServerLocatedInUserCountry {
                   GleanMetrics.Session.serverInSameCountry.set(isServerLocatedInUserCountry)
@@ -196,7 +184,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
                 // metrics.
                 GleanMetrics.Session.daemonSessionId.generateAndSet()
             }
-          #endif
 
             if let error = error {
                 self.logger.error(message: "Failed to stop WireGuard adapter: \(error.localizedDescription)")
@@ -210,9 +197,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
             // called.
             // Note: This doesn't wait for pings to be uploaded,
             // just for Glean to persist the ping for later sending.
-          #if canImport(IOSGlean)
             Glean.shared.shutdown();
-          #endif
             completionHandler()
         }
     }
@@ -242,9 +227,7 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
                 logger.info(message: "Switching tunnel configuration from app message")
                 updateServerConfig(with: configString, completionHandler: completionHandler)
             case .telemetryEnabledChanged(let uploadEnabled):
-              #if canImport(IOSGlean)
                 Glean.shared.setUploadEnabled(uploadEnabled)
-              #endif
                 completionHandler(nil)
             case .silentServerSwitch:
                 silentServerSwitch()
@@ -274,16 +257,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
     func silentServerSwitch() {
         if let fallbackServerConfig = nextValidServerConfig() {
             self.logger.info(message: "Sending silent server switch in Network Extension")
-          #if canImport(IOSGlean)
             GleanMetrics.Session.daemonSilentServerSwitch.record(GleanMetrics.Session.DaemonSilentServerSwitchExtra(wasServerAvailable: true))
-          #endif
             updateServerConfig(with: fallbackServerConfig)
             (protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["fallbackConfig"] = ""
         } else {
             logger.info(message: "Silent server switch called, but no fallbackConfig available")
-          #if canImport(IOSGlean)
             GleanMetrics.Session.daemonSilentServerSwitch.record(GleanMetrics.Session.DaemonSilentServerSwitchExtra(wasServerAvailable: false))
-          #endif
         }
     }
 

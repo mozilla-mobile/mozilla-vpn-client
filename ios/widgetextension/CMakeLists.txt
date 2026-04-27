@@ -6,9 +6,8 @@ enable_language(Swift)
 
 add_executable(widgetextension)
 set_target_properties(widgetextension PROPERTIES
-####### DO EVERYTHING FORM HERE
     OUTPUT_NAME "MozillaVPNWidgetExtension"
-    XCODE_PRODUCT_TYPE com.apple.product-type.app-extension       #### THIS MAY BE WRONG
+    XCODE_PRODUCT_TYPE com.apple.product-type.app-extension
     BUNDLE_EXTENSION appex
     MACOSX_BUNDLE ON
     MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in

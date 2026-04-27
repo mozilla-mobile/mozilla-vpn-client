@@ -1,9 +1,6 @@
-//
-//  ToggleWidgetControl.swift
-//  ToggleWidget
-//
-//  Created by Matt Cleinman on 4/17/26.
-//
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import AppIntents
 import NetworkExtension
@@ -43,9 +40,6 @@ extension ToggleWidgetControl {
 
   struct Provider: ControlValueProvider {
         var previewValue: Bool { true }
-//        func previewValue() -> Value {
-//            ToggleWidgetControl.Value(isTurningOn: true)
-//        }
 
         func currentValue() async -> Bool {
           var tunnel: NETunnelProviderManager?
