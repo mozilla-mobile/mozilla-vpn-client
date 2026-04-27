@@ -58,7 +58,7 @@ if [ -f /etc/redhat-release ]; then
 elif [ -f /etc/debian_version ]; then
 
     if [[ -n "$CROSS_ARCH" ]]; then    
-	apt-get -y install \
+	sudo apt-get -y install \
 		libxkbcommon0 \
 		libdbus-1-3 \
 		libglib2.0-0 \
