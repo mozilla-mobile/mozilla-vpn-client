@@ -14,12 +14,6 @@ class TestSettingsHolder final : public TestHelper {
 #include "settingslist.h"
 #undef SETTING
 
-#define EXPERIMENTAL_FEATURE(experimentId, ...) \
-  void testGetSet_##experimentId();
-
-#include "feature/experimentalfeaturelist.h"
-#undef EXPERIMENTAL_FEATURE
-
  private slots:
   void runAllTests() {
 #define SETTING(type, toType, getter, setter, remover, has, ...) \
@@ -28,12 +22,5 @@ class TestSettingsHolder final : public TestHelper {
 
 #include "settingslist.h"
 #undef SETTING
-
-#define EXPERIMENTAL_FEATURE(experimentId, ...)                      \
-  qDebug() << "Testing experimental setting group" << #experimentId; \
-  testGetSet_##experimentId();
-
-#include "feature/experimentalfeaturelist.h"
-#undef EXPERIMENTAL_FEATURE
   }
 };

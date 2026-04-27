@@ -10,7 +10,7 @@
 
 #include "addons/addonreplacer.h"
 #include "authenticationinapp/authenticationinapp.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "helper.h"
 #include "models/licensemodel.h"
 #include "qmlengineholder.h"
@@ -32,6 +32,8 @@ class Interceptor final : public QQmlAbstractUrlInterceptor {
   const QUrl m_a;
   const QUrl m_b;
 };
+
+void TestResourceLoader::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestResourceLoader::loadFile() {
   QQmlApplicationEngine engine;
@@ -118,10 +120,7 @@ void TestResourceLoader::licenseModel() {
 }
 
 void TestResourceLoader::addon() {
-  SettingsHolder::instance()->setFeaturesFlippedOn(
-      QStringList{"replacerAddon"});
-  const_cast<Feature*>(Feature::get(Feature::Feature_replacerAddon))
-      ->maybeFlipOnOrOff();
+  Feature::toggle(Feature::replacerAddon, true);
 
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
@@ -172,10 +171,7 @@ void TestResourceLoader::addon() {
   QCOMPARE(rl->loadDir(":/dir"), ":/replace/");
   QCOMPARE(rl->loadDir(":/dir/"), ":/replace/");
 
-  SettingsHolder::instance()->setFeaturesFlippedOff(
-      QStringList{"replacerAddon"});
-  const_cast<Feature*>(Feature::get(Feature::Feature_replacerAddon))
-      ->maybeFlipOnOrOff();
+  Feature::toggle(Feature::replacerAddon, false);
 }
 
 static TestResourceLoader s_testResourceLoader;

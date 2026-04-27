@@ -61,15 +61,14 @@ SETTING_BOOL(addonProdKeyInStaging,        // getter
              true                          // sensitive (do not log)
 )
 
-SETTING_BOOL(captivePortalAlert,        // getter
-             setCaptivePortalAlert,     // setter
-             removeCaptivePortalAlert,  // remover
-             hasCaptivePortalAlert,     // has
-             "captivePortalAlert",      // key
-             Feature::get(Feature::Feature_captivePortal)
-                 ->isSupported(),  // default value
-             false,                // remove when reset
-             false                 // sensitive (do not log)
+SETTING_BOOL(captivePortalAlert,                          // getter
+             setCaptivePortalAlert,                       // setter
+             removeCaptivePortalAlert,                    // remover
+             hasCaptivePortalAlert,                       // has
+             "captivePortalAlert",                        // key
+             Feature::isEnabled(Feature::captivePortal),  // default value
+             false,                                       // remove when reset
+             false  // sensitive (do not log)
 )
 
 SETTING_STRINGLIST(captivePortalIpv4Addresses,        // getter
@@ -446,15 +445,14 @@ SETTING_BOOL(serverSwitchNotification,        // getter
              false                            // sensitive (do not log)
 )
 
-SETTING_BOOL(serverUnavailableNotification,        // getter
-             setServerUnavailableNotification,     // setter
-             removeServerUnavailableNotification,  // remover
-             hasServerUnavailableNotification,     // has
-             "serverUnavailableNotification",      // key
-             Feature::get(Feature::Feature_serverUnavailableNotification)
-                 ->isSupported(),  // default value
-             false,                // remove when reset
-             false                 // sensitive (do not log)
+SETTING_BOOL(serverUnavailableNotification,                     // getter
+             setServerUnavailableNotification,                  // setter
+             removeServerUnavailableNotification,               // remover
+             hasServerUnavailableNotification,                  // has
+             "serverUnavailableNotification",                   // key
+             Feature::serverUnavailableNotification.supported,  // default value
+             false,  // remove when reset
+             false   // sensitive (do not log)
 )
 
 SETTING_BOOL(recommendedServerSelected,        // getter
@@ -577,15 +575,15 @@ SETTING_STRING(token,        // getter
                true          // sensitive (do not log)
 )
 
-SETTING_BOOL(unsecuredNetworkAlert,        // getter
-             setUnsecuredNetworkAlert,     // setter
-             removeUnsecuredNetworkAlert,  // remover
-             hasUnsecuredNetworkAlert,     // has
-             "unsecuredNetworkAlert",      // key
-             Feature::get(Feature::Feature_unsecuredNetworkNotification)
-                 ->isSupported(),  // default value
-             false,                // remove when reset
-             false                 // sensitive (do not log)
+SETTING_BOOL(
+    unsecuredNetworkAlert,                                      // getter
+    setUnsecuredNetworkAlert,                                   // setter
+    removeUnsecuredNetworkAlert,                                // remover
+    hasUnsecuredNetworkAlert,                                   // has
+    "unsecuredNetworkAlert",                                    // key
+    Feature::isEnabled(Feature::unsecuredNetworkNotification),  // default value
+    false,  // remove when reset
+    false   // sensitive (do not log)
 )
 
 SETTING_STRING(userAvatar,        // getter

@@ -4,139 +4,68 @@
 
 #include "featuremodel.h"
 
-#include <QHash>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
-#include <QProcessEnvironment>
 #include <QQmlEngine>
+#include <array>
 
-#include "feature.h"
 #include "logger.h"
-#include "qmlengineholder.h"
 #include "settingsholder.h"
+
+using namespace Feature;
 
 namespace {
 FeatureModel* s_instance = nullptr;
 Logger logger("FeatureModel");
-
-void featureToggleOff(const QString& feature, bool add_to_off) {
-  auto const settings = SettingsHolder::instance();
-
-  QStringList flags = settings->featuresFlippedOff();
-  if (add_to_off) {
-    Q_ASSERT(!flags.contains(feature));
-    flags.append(feature);
-  } else {
-    Q_ASSERT(flags.contains(feature));
-    flags.removeAll(feature);
-  }
-
-  settings->setFeaturesFlippedOff(flags);
-
-  flags = settings->featuresFlippedOn();
-  if (flags.contains(feature)) {
-    flags.removeAll(feature);
-    settings->setFeaturesFlippedOn(flags);
-  }
-}
-
-void featureToggleOn(const QString& feature, bool add_to_on) {
-  auto const settings = SettingsHolder::instance();
-
-  QStringList flags = settings->featuresFlippedOn();
-  if (add_to_on) {
-    Q_ASSERT(!flags.contains(feature));
-    flags.append(feature);
-  } else {
-    Q_ASSERT(flags.contains(feature));
-    flags.removeAll(feature);
-  }
-
-  settings->setFeaturesFlippedOn(flags);
-
-  flags = settings->featuresFlippedOff();
-  if (flags.contains(feature)) {
-    flags.removeAll(feature);
-    settings->setFeaturesFlippedOff(flags);
-  }
-}
-
-// Comprehensive list of experimental feature ids.
-//
-// This is required due to the format of the object parsed by
-// FeatureModel::parseExperimentalFeatures. The object only contains the
-// features that must be enabled. Feature not in the object must be disabled,
-// this list is used to check what is not in the list.
-QStringList experimentalFeatureIds({
-#define EXPERIMENTAL_FEATURE(id, ...) #id,
-#include "experimentalfeaturelist.h"
-#undef EXPERIMENTAL_FEATURE
-});
-
 }  // namespace
+
+FeatureModel::FeatureModel() { initialize(); }
 
 FeatureModel* FeatureModel::instance() {
   if (!s_instance) {
     s_instance = new FeatureModel();
-  };
+  }
   return s_instance;
 }
 
-void FeatureModel::toggle(const QString& feature) {
-  logger.debug() << "Toggle feature" << feature;
+#ifdef UNIT_TEST
+void FeatureModel::testCleanup() {
+  delete s_instance;
+  s_instance = nullptr;
+}
+#endif
 
-  const Feature* f = Feature::get(feature);
-  if (!f) {
-    logger.debug() << "Feature" << feature << "does not exist";
-    return;
+void FeatureModel::initialize() {
+  if (m_initialized) return;
+  m_initialized = true;
+
+  for (size_t i = 0; i < std::size(s_exposedFeatures); ++i) {
+    m_proxies[i].init(&s_exposedFeatures[i]);
   }
 
-  // On -> off
-  if (f->isSupported()) {
-    if (f->isSupportedIgnoringFlip()) {
-      // On -> On(+flipped-off)
-      if (!f->isFlippableOff()) {
-        logger.error() << "This feature should not be toggleable!";
-        return;
+  SettingsHolder* sh = SettingsHolder::instance();
+  auto notifyFlipChange = [this]() {
+    for (auto& proxy : m_proxies) {
+      if (proxy.isOverridable()) {
+        emit proxy.supportedChanged();
       }
-
-      featureToggleOff(feature, true);
-      emit dataChanged(
-          createIndex(0, 0),
-          createIndex(static_cast<int>(Feature::getAll().size()), 0));
-      return;
     }
+    emit dataChanged(createIndex(0, 0),
+                     createIndex(std::size(s_exposedFeatures) - 1, 0));
+  };
+  connect(sh, &SettingsHolder::featuresFlippedOnChanged, this,
+          notifyFlipChange);
+  connect(sh, &SettingsHolder::featuresFlippedOffChanged, this,
+          notifyFlipChange);
+}
 
-    // Off(+flipped-on) -> Off
-    featureToggleOn(feature, false);
-    emit dataChanged(
-        createIndex(0, 0),
-        createIndex(static_cast<int>(Feature::getAll().size()), 0));
-    return;
+FeatureProxy* FeatureModel::proxyForId(const QString& id) {
+  for (auto& proxy : m_proxies) {
+    if (proxy.id() == id) return &proxy;
   }
-
-  // Off -> on
-  if (!f->isSupportedIgnoringFlip()) {
-    // Off -> on((+flipped-off)
-    if (!f->isFlippableOn()) {
-      logger.error() << "This feature should not be toggleable!";
-      return;
-    }
-
-    featureToggleOn(feature, true);
-    emit dataChanged(
-        createIndex(0, 0),
-        createIndex(static_cast<int>(Feature::getAll().size()), 0));
-    return;
-  }
-
-  // On(+flipped-off) -> On
-  featureToggleOff(feature, false);
-  emit dataChanged(createIndex(0, 0),
-                   createIndex(static_cast<int>(Feature::getAll().size()), 0));
-  return;
+  return nullptr;
 }
 
 QHash<int, QByteArray> FeatureModel::roleNames() const {
@@ -146,171 +75,99 @@ QHash<int, QByteArray> FeatureModel::roleNames() const {
 }
 
 int FeatureModel::rowCount(const QModelIndex&) const {
-  return static_cast<int>(Feature::getAll().size());
+  return std::size(s_exposedFeatures);
 }
 
 QVariant FeatureModel::data(const QModelIndex& index, int role) const {
-  auto feature = Feature::getAll().at(index.row());
-  if (feature == nullptr || role != FeatureRole) {
+  if (role != FeatureRole || index.row() < 0 ||
+      index.row() >= static_cast<int>(std::size(s_exposedFeatures))) {
     return QVariant();
   }
-
-  return QVariant::fromValue(feature);
-};
+  auto* proxy = const_cast<FeatureProxy*>(&m_proxies[index.row()]);
+  return QVariant::fromValue(static_cast<QObject*>(proxy));
+}
 
 QObject* FeatureModel::get(const QString& feature) {
-  const Feature* f = Feature::getOrNull(feature);
-  auto obj = (QObject*)f;
-  QQmlEngine::setObjectOwnership(obj, QQmlEngine::CppOwnership);
-  return obj;
+  auto* proxy = proxyForId(feature);
+  if (!proxy) {
+    logger.error() << "Feature not found:" << feature;
+    return nullptr;
+  }
+  QQmlEngine::setObjectOwnership(proxy, QQmlEngine::CppOwnership);
+  return proxy;
+}
+
+bool FeatureModel::isEnabledById(const QString& id) const {
+  for (const auto& entry : s_exposedFeatures) {
+    if (id == Feature::getId(entry)) return Feature::isEnabled(entry);
+  }
+  logger.error() << "Unknown feature ID:" << id;
+  return false;
+}
+
+void FeatureModel::toggle(const QString& featureId) {
+  logger.debug() << "Toggle feature" << featureId;
+
+  auto* proxy = proxyForId(featureId);
+  if (!proxy) {
+    logger.error() << "Feature" << featureId << "not found";
+    return;
+  }
+  if (!proxy->isOverridable()) {
+    logger.error() << "Feature" << featureId << "is not overridable";
+    return;
+  }
+
+  const auto* f = std::get<const OverridableFeature*>(*proxy->feature());
+  Feature::toggle(*f, !isEnabled(*f));
 }
 
 // static
-QPair<QStringList, QStringList> FeatureModel::parseFeatures(
-    const QJsonValue& features) {
-  QPair<QStringList, QStringList> result;
+QHash<QString, bool> FeatureModel::parseFeatures(const QByteArray& data,
+                                                 bool acceptExperiments) {
+  QHash<QString, bool> overrides;
+  QJsonObject json = QJsonDocument::fromJson(data).object();
 
-  if (!features.isObject()) {
-    logger.error() << "Error in the features json format";
-    return result;
-  }
-
-  QStringList featuresFlippedOn;
-  QStringList featuresFlippedOff;
-
-  QJsonObject featuresObj = features.toObject();
-  for (const QString& key : featuresObj.keys()) {
-    QJsonValue value = featuresObj.value(key);
-    if (!value.isBool()) {
-      logger.error() << "Error in parsing feature enabling:" << key;
-      continue;
-    }
-
-    const Feature* feature = Feature::getOrNull(key);
-    if (!feature) {
-      logger.error() << "No feature named" << key;
-      continue;
-    }
-
-    if (value.toBool()) {
-      if (!feature->isFlippableOn()) {
-        logger.error() << "Feature" << key << "cannot be flipped on";
+  if (json.contains("featuresOverwrite")) {
+    QJsonObject obj = json["featuresOverwrite"].toObject();
+    for (const QString& key : obj.keys()) {
+      QJsonValue value = obj.value(key);
+      if (!value.isBool()) {
+        logger.error() << "Invalid feature value for:" << key;
         continue;
       }
+      overrides.insert(key, value.toBool());
+    }
+  }
 
-      featuresFlippedOn.append(key);
-    } else {
-      if (!feature->isFlippableOff()) {
-        logger.error() << "Feature" << key << "cannot be flipped off";
+  if (acceptExperiments && json.contains("experimentalFeatures")) {
+    QJsonObject obj = json["experimentalFeatures"].toObject();
+    for (const QString& key : obj.keys()) {
+      if (!obj.value(key).isObject()) {
+        logger.error() << "Invalid experimental feature format:" << key;
         continue;
       }
-
-      featuresFlippedOff.append(key);
+      overrides.insert(key, true);
     }
   }
-
-  result.first = featuresFlippedOn;
-  result.second = featuresFlippedOff;
-  return result;
-}
-
-// static
-QPair<QStringList, QStringList> FeatureModel::parseExperimentalFeatures(
-    const QJsonValue& experimentalFeatures) {
-  QPair<QStringList, QStringList> result;
-  if (!experimentalFeatures.isObject()) {
-    logger.error() << "Error in the json format: experimentalFeatures is"
-                      "not an object.";
-    return result;
-  }
-
-  QJsonObject experimentalFeaturesObj = experimentalFeatures.toObject();
-
-  QStringList experimentalFeaturesToToggleOn = experimentalFeaturesObj.keys();
-
-  // Starts with all features. As experimentalFeaturesToToggleOn are parsed,
-  // they are removed from this list.
-  QStringList experimentalFeaturesToToggleOff = experimentalFeatureIds;
-
-  for (const QString& key : experimentalFeaturesToToggleOn) {
-    const Feature* experimentalFeature = Feature::getOrNull(key);
-    if (!experimentalFeature) {
-      logger.warning() << "Got" << key
-                       << "but experimental feature doesn't exist. Ignoring.";
-      experimentalFeaturesToToggleOn.removeAll(key);
-      continue;
-    }
-
-    QJsonValue experimentalFeatureSettings = experimentalFeaturesObj[key];
-    if (!experimentalFeatureSettings.isObject()) {
-      logger.error() << "Error in the json format: experimentalFeature" << key
-                     << "is not an object.";
-      experimentalFeaturesToToggleOn.removeAll(key);
-      continue;
-    }
-
-    QJsonObject experimentalFeatureSettingsObj =
-        experimentalFeatureSettings.toObject();
-    for (const QString& settingKey : experimentalFeatureSettingsObj.keys()) {
-      auto value = experimentalFeatureSettingsObj[settingKey].toVariant();
-      if (!value.isValid() || value.isNull()) {
-        logger.warning()
-            << "Received null value for experimental feature setting"
-            << settingKey;
-        continue;
-      }
-
-      logger.debug() << "Setting experimental feature setting" << settingKey;
-
-      experimentalFeature->settingGroup()->set(settingKey, value);
-    }
-
-    experimentalFeaturesToToggleOff.removeAll(key);
-  }
-
-  result.first = experimentalFeaturesToToggleOn;
-  result.second = experimentalFeaturesToToggleOff;
-  return result;
+  return overrides;
 }
 
 void FeatureModel::updateFeatureList(const QByteArray& data) {
-  QJsonObject json = QJsonDocument::fromJson(data).object();
+  auto overrides = parseFeatures(data, true);
 
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-
-  QStringList featuresToToggleOn = settingsHolder->featuresFlippedOn();
-  QStringList featuresToToggleOff = settingsHolder->featuresFlippedOff();
-
-  if (json.contains("featuresOverwrite")) {
-    QJsonValue features = json["featuresOverwrite"];
-    auto parsedFeatures = parseFeatures(features);
-
-    featuresToToggleOn = parsedFeatures.first;
-    featuresToToggleOff = parsedFeatures.second;
-  }
-
-  if (json.contains("experimentalFeatures")) {
-    QJsonValue experimentalFeatures = json["experimentalFeatures"];
-    auto parsedExperimentalFeatures =
-        parseExperimentalFeatures(experimentalFeatures);
-    auto experimentalFeaturesToToggleOn = parsedExperimentalFeatures.first;
-    auto experimentalFeaturesToToggleOff = parsedExperimentalFeatures.second;
-
-    // Disable features that should be toggled off.
-    foreach (const QString& feature, featuresToToggleOn) {
-      if (experimentalFeaturesToToggleOff.contains(feature)) {
-        featuresToToggleOn.removeAll(feature);
-      }
+  for (auto it = overrides.constBegin(); it != overrides.constEnd(); ++it) {
+    auto* proxy = proxyForId(it.key());
+    if (!proxy) {
+      logger.warning() << "Unknown feature in server response:" << it.key();
+      continue;
+    }
+    if (!proxy->isOverridable()) {
+      logger.warning() << "Feature" << it.key() << "is not overridable";
+      continue;
     }
 
-    // Enable features that should be toggled on.
-    foreach (const QString& feature, experimentalFeaturesToToggleOn) {
-      if (!featuresToToggleOn.contains(feature)) {
-        featuresToToggleOn.append(feature);
-      }
-    }
+    const auto* f = std::get<const OverridableFeature*>(*proxy->feature());
+    Feature::toggle(*f, it.value());
   }
-
-  settingsHolder->setFeaturesFlippedOff(featuresToToggleOff);
-  settingsHolder->setFeaturesFlippedOn(featuresToToggleOn);
 }

@@ -4,6 +4,7 @@
 
 #include "devicemodel.h"
 
+#include <QCoreApplication>
 #include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>

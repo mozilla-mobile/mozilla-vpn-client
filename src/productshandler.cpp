@@ -12,7 +12,7 @@
 #include <QScopeGuard>
 
 #include "constants.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -45,7 +45,7 @@ ProductsHandler::ProductsHandler(QObject* parent) : QAbstractListModel(parent) {
   s_instance = this;
 
   // If web purchases are supported, then we don't need to do anything.
-  if (Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+  if (Feature::webPurchase.supported) {
     return;
   }
 
@@ -242,7 +242,7 @@ QVariant ProductsHandler::data(const QModelIndex& index, int role) const {
       return QVariant(m_products.at(index.row()).m_savings);
 
     case ProductTrialDaysRole:
-      if (Feature::get(Feature::Feature_freeTrial)->isSupported()) {
+      if (Feature::isEnabled(Feature::freeTrial)) {
         if ((m_products.at(index.row()).m_type == ProductYearly) &&
             MozillaVPN::mockFreeTrial()) {
           return QVariant(7);

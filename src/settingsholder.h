@@ -10,8 +10,8 @@
 #include <QVariant>
 
 // Used in the settingslist.h
-#include "constants.h"        // IWYU pragma: keep
-#include "feature/feature.h"  // IWYU pragma: keep
+#include "constants.h"         // IWYU pragma: keep
+#include "feature/features.h"  // IWYU pragma: keep
 #include "settings/setting.h"
 #include "settings/settingsmanager.h"
 
@@ -56,12 +56,6 @@ class SettingsHolder final : public QObject {
 #include "settingslist.h"
 #undef SETTING
 
-#define EXPERIMENTAL_FEATURE(experimentId, ...) \
-  SettingGroup* experimentId() { return m_##experimentId; }
-
-#include "feature/experimentalfeaturelist.h"
-#undef EXPERIMENTAL_FEATURE
-
 #ifdef UNIT_TEST
   static void testCleanup();
 #endif
@@ -77,16 +71,6 @@ class SettingsHolder final : public QObject {
 
 #include "settingslist.h"
 #undef SETTING
-
-#define EXPERIMENTAL_FEATURE(experimentId, experimentDescription,             \
-                             experimentSettings)                              \
-  SettingGroup* m_##experimentId =                                            \
-      SettingsManager::instance()->createSettingGroup(                        \
-          QString("%1/%2").arg(EXPERIMENTS_SETTING_GROUP).arg(#experimentId), \
-          true, false, experimentSettings);
-
-#include "feature/experimentalfeaturelist.h"
-#undef EXPERIMENTAL_FEATURE
 
   bool m_firstExecution = false;
 };

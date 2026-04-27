@@ -4,7 +4,10 @@
 
 #include "networkmanager.h"
 
+#include <QCoreApplication>
+
 #include "constants.h"
+#include "feature/features.h"
 #include "leakdetector.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
@@ -105,7 +108,7 @@ QByteArray NetworkManager::userAgent() {
   {
     QStringList flags;
     flags.append(QString("sys:") + NetworkManager::osVersion());
-    if (!Feature::get(Feature::Feature_webPurchase)->isSupported()) {
+    if (!Feature::isEnabled(Feature::webPurchase)) {
       flags.append("iap:true");
     }
 

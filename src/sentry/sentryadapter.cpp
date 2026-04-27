@@ -16,7 +16,7 @@
 #include <QStandardPaths>
 
 #include "constants.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
@@ -43,7 +43,7 @@ SentryAdapter::SentryAdapter() { MZ_COUNT_CTOR(SentryAdapter); }
 SentryAdapter::~SentryAdapter() { MZ_COUNT_DTOR(SentryAdapter); }
 
 void SentryAdapter::init() {
-  if (!Feature::get(Feature::Feature_sentry)->isSupported()) {
+  if (!Feature::sentry.supported) {
     return;
   }
   if (m_initialized) {

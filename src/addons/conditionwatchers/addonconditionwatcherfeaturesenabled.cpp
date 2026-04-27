@@ -4,7 +4,8 @@
 
 #include "addonconditionwatcherfeaturesenabled.h"
 
-#include "feature/feature.h"
+#include "feature/featuremodel.h"
+#include "feature/featureproxy.h"
 #include "leakdetector.h"
 
 // static
@@ -15,8 +16,7 @@ AddonConditionWatcher* AddonConditionWatcherFeaturesEnabled::maybeCreate(
   }
 
   for (const QString& featureName : features) {
-    const Feature* feature = Feature::getOrNull(featureName);
-    if (!feature) {
+    if (!FeatureModel::instance()->get(featureName)) {
       return nullptr;
     }
   }
@@ -32,10 +32,11 @@ AddonConditionWatcherFeaturesEnabled::AddonConditionWatcherFeaturesEnabled(
   m_currentStatus = conditionApplied();
 
   for (const QString& featureName : m_features) {
-    const Feature* feature = Feature::get(featureName);
-    Q_ASSERT(feature);
+    auto* proxy =
+        qobject_cast<FeatureProxy*>(FeatureModel::instance()->get(featureName));
+    Q_ASSERT(proxy);
 
-    connect(feature, &Feature::supportedChanged, this, [this]() {
+    connect(proxy, &FeatureProxy::supportedChanged, this, [this]() {
       bool newStatus = conditionApplied();
       if (m_currentStatus != newStatus) {
         m_currentStatus = newStatus;
@@ -51,11 +52,7 @@ AddonConditionWatcherFeaturesEnabled::~AddonConditionWatcherFeaturesEnabled() {
 
 bool AddonConditionWatcherFeaturesEnabled::conditionApplied() const {
   for (const QString& featureName : m_features) {
-    // If the feature doesn't exist, we crash.
-    const Feature* feature = Feature::get(featureName);
-    Q_ASSERT(feature);
-
-    if (!feature->isSupported()) {
+    if (!FeatureModel::instance()->isEnabledById(featureName)) {
       return false;
     }
   }

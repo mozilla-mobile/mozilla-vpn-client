@@ -6,7 +6,7 @@
 
 #include <QHostAddress>
 
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "logger.h"
 #include "settingsholder.h"
 
@@ -37,7 +37,7 @@ QString DNSHelper::getDNSType() {
 
 // static
 dnsData DNSHelper::getDNSDetails(const QString& fallback) {
-  if (!Feature::get(Feature::Feature_customDNS)->isSupported()) {
+  if (!Feature::customDNS.supported) {
     return dnsData{fallback, "NoCustomDNSAvailable"};
   }
 

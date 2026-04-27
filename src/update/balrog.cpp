@@ -16,7 +16,7 @@
 #include "constants.h"
 #include "env.h"
 #include "errorhandler.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
@@ -500,7 +500,7 @@ QString Balrog::balrogUrl() {
   QString hostname = Constants::BALROG_PROD_HOSTNAME;
   QString channel = "release";
 
-  if (Feature::get(Feature::Feature_stagingUpdateServer)->isSupported()) {
+  if (Feature::stagingUpdateServer.supported) {
     hostname = Constants::BALROG_STAGE_HOSTNAME;
     channel = "release-cdntest";
   } else if (!Constants::inProduction()) {
@@ -519,7 +519,7 @@ QString Balrog::balrogUrl() {
 // static
 QStringList Balrog::rootCertHashes() {
   QStringList result;
-  if (Feature::get(Feature::Feature_stagingUpdateServer)->isSupported()) {
+  if (Feature::stagingUpdateServer.supported) {
     for (int i = 0; Constants::AUTOGRAPH_STAGE_FINGERPRINTS[i] != nullptr;
          i++) {
       result.append(Constants::AUTOGRAPH_STAGE_FINGERPRINTS[i]);

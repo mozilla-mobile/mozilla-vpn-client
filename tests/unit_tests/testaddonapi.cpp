@@ -10,7 +10,7 @@
 #include "addons/addonapi.h"
 #include "addons/addonmessage.h"
 #include "addons/conditionwatchers/addonconditionwatcherjavascript.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "helper.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -52,22 +52,17 @@ void TestAddonApi::featurelist() {
   Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
   QVERIFY(!!message);
 
-  QVERIFY(!Feature::getOrNull("testFeatureAddonApi"));
-  Feature feature(
-      "testFeatureAddonApi", "Feature Addon API",
-      []() -> bool { return true; },  // Can be flipped on
-      []() -> bool { return true; },  // Can be flipped off
-      QStringList(),                  // feature dependencies
-      []() -> bool { return false; });
-  QVERIFY(!!Feature::get("testFeatureAddonApi"));
-  QVERIFY(!Feature::get("testFeatureAddonApi")->isSupported());
+  // alwaysPort53 is an OverridableFeature, default off.
+  // Ensure it starts disabled for this test.
+  Feature::toggle(Feature::alwaysPort53, false);
+  QVERIFY(!Feature::isEnabled(Feature::alwaysPort53));
 
   AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
       message, ":/addons_test/api_featurelist.js");
   QVERIFY(!!a);
   QVERIFY(a->conditionApplied());
 
-  QVERIFY(Feature::get("testFeatureAddonApi")->isSupported());
+  QVERIFY(Feature::isEnabled(Feature::alwaysPort53));
 }
 
 void TestAddonApi::navigator() {
