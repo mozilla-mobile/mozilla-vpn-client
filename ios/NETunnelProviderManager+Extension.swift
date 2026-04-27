@@ -30,4 +30,15 @@ extension NETunnelProviderManager {
       logger.debug("Found the manager with the correct bundle identifier")
       return true
   }
+
+  var isConnected: Bool {
+    let logger = Logger(subsystem: "NETunnelProviderManager", category: "MozillaVPN")
+    guard let connection = self.connection as? NETunnelProviderSession else {
+        logger.error("Tunnel connection not proper type")
+        return false
+    }
+
+    let isOn = (connection.status == .connected || connection.status == .connecting)
+    return isOn
+  }
 }

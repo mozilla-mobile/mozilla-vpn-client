@@ -64,13 +64,7 @@ extension ToggleWidgetControl {
         return false
       }
 
-      guard let connection = tunnel.connection as? NETunnelProviderSession else {
-        logger.error("Tunnel connection not proper type")
-        return false
-      }
-
-      let isOn = (connection.status == .connected || connection.status == .connecting)
-      return isOn
+      return tunnel.isConnected
     }
   }
 }
