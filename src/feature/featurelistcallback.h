@@ -9,10 +9,6 @@
 #  include "platforms/android/androidcommons.h"
 #endif
 
-#ifdef MZ_WINDOWS
-#  include "platforms/windows/daemon/windowssplittunnel.h"
-#endif
-
 #ifdef MZ_LINUX
 #  include <QProcessEnvironment>
 
@@ -87,60 +83,6 @@ bool FeatureCallback_inAppAuthentication() {
   return true;
 #else
   // Android, iOS, Windows, macOS and Linux
-  return false;
-#endif
-}
-
-bool FeatureCallback_splitTunnel() {
-#if defined(MZ_ANDROID) || defined(MZ_WASM) || defined(UNIT_TEST)
-  return true;
-#elif defined(MZ_WINDOWS)
-  return !WindowsSplitTunnel::detectConflict();
-#elif defined(MZ_LINUX) && !defined(MZ_FLATPAK)
-  static bool initDone = false;
-  static bool splitTunnelSupported = false;
-  if (initDone) {
-    return splitTunnelSupported;
-  }
-  initDone = true;
-
-  // Control groups v2 must be mounted for traffic classification
-  if (LinuxUtils::findCgroup2Path().isNull()) {
-    return false;
-  }
-
-  // The desktop environment must support scoping applications by cgroup upon
-  // launch for application detection to work as expected.
-  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  if (!pe.contains("XDG_CURRENT_DESKTOP")) {
-    return false;
-  }
-  QStringList desktop = pe.value("XDG_CURRENT_DESKTOP").split(":");
-  if (desktop.contains("GNOME")) {
-    QVersionNumber shellVersion = LinuxUtils::gnomeShellVersion();
-    if (shellVersion.isNull()) {
-      return false;
-    }
-    if (shellVersion < QVersionNumber(3, 34)) {
-      return false;
-    }
-  } else if (desktop.contains("KDE")) {
-    // This has been tested as far back as KDE Plasma v5.24.
-    QVersionNumber kdeVersion = LinuxUtils::kdePlasmaVersion();
-    if (kdeVersion.isNull()) {
-      return false;
-    }
-    if (kdeVersion < QVersionNumber(5, 24)) {
-      return false;
-    }
-  }
-  // For all other desktop environments, assume split tunneling unsupported.
-  else {
-    return false;
-  }
-  splitTunnelSupported = true;
-  return splitTunnelSupported;
-#else
   return false;
 #endif
 }

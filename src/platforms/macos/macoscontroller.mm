@@ -12,16 +12,20 @@
 #include <QVersionNumber>
 
 #include "constants.h"
+#include "feature/feature.h"
 #include "glean/generated/metrics.h"
 #include "logger.h"
+#include "macosextensionloader.h"
 #include "macosutils.h"
 #include "version.h"
 #include "xpcdaemonprotocol.h"
 
 #import <Cocoa/Cocoa.h>
+#import <NetworkExtension/NetworkExtension.h>
 #import <Security/Authorization.h>
 #import <Security/AuthorizationTags.h>
 #import <ServiceManagement/ServiceManagement.h>
+#import <SystemExtensions/SystemExtensions.h>
 
 namespace {
 Logger logger("MacOSController");
@@ -43,6 +47,26 @@ MacOSController::MacOSController() : ControllerImpl()  {
   m_connectTimer.setSingleShot(true);
   connect(&m_connectTimer, &QTimer::timeout, this,
           &MacOSController::connectService);
+
+  // Load the system extension if the networkExtension feature is enabled.
+  if (Feature::get(Feature::Feature_networkExtension)->isSupported()) {
+    // Create the Obj-C loader class.
+    MacosExtensionLoader* loader = [MacosExtensionLoader new];
+    [loader retain];
+    m_loader = loader;
+
+    // Create a request to install the system extension.
+    dispatch_queue_t queue =
+        dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+    OSSystemExtensionRequest* req =
+        [OSSystemExtensionRequest activationRequestForExtension: loader.identifier
+                                                          queue: queue];
+    req.delegate = loader;
+
+    // Start the request
+    logger.debug() << "activation request started:" << req.identifier;
+    [[OSSystemExtensionManager sharedManager] submitRequest: req];
+  }
 }
 
 MacOSController::~MacOSController() {
@@ -50,6 +74,10 @@ MacOSController::~MacOSController() {
     NSXPCConnection* conn = static_cast<NSXPCConnection*>(m_connection);
     [conn invalidate];
     [conn release];
+  }
+
+  if (m_loader) {
+    [static_cast<MacosExtensionLoader*>(m_loader) release];
   }
 }
 
@@ -230,10 +258,60 @@ void MacOSController::activate(const InterfaceConfig& config,
                                Controller::Reason reason) {
   QString json = QString::fromUtf8(QJsonDocument(config.toJson()).toJson());
   [remoteObject() activate:json.toNSString()];
+
+  // Create a new tunnel provider session.
+  auto loader = static_cast<MacosExtensionLoader*>(m_loader);
+  if (!loader || (loader.manager == nil) || !loader.manager.enabled) {
+    // Split tunnelling is not supported.
+    return;
+  }
+
+  // Serialize the interface configuration.
+  NSMutableDictionary* options = [NSMutableDictionary dictionary];
+  [options setObject:config.m_serverPublicKey.toNSString() forKey:@"serverPublicKey"];
+  [options setObject:config.m_serverIpv4AddrIn.toNSString() forKey:@"serverIpv4AddrIn"];
+  [options setObject:config.m_serverIpv6AddrIn.toNSString() forKey:@"serverIpv6AddrIn"];
+  [options setObject:config.m_serverIpv4Gateway.toNSString() forKey:@"serverIpv4Gateway"];
+  [options setObject:config.m_serverIpv6Gateway.toNSString() forKey:@"serverIpv6Gateway"];
+  [options setObject:[NSNumber numberWithInt:config.m_serverPort] forKey:@"serverPort"];
+
+  // Serialize the excluded application list.
+  NSMutableArray* vpnDisabledApps =
+      [NSMutableArray arrayWithCapacity:config.m_vpnDisabledApps.length()];
+  for (const QString& appId : config.m_vpnDisabledApps) {
+    [vpnDisabledApps addObject:appId.toNSString()];
+  }
+  [options setObject:vpnDisabledApps forKey:@"apps"];
+
+  // Get a session and start it.
+  NSError* error = nil;
+  NETunnelProviderSession* session =
+      static_cast<NETunnelProviderSession*>(loader.manager.connection);
+
+  // Start the split tunnel proxy.
+  BOOL okay = [session startTunnelWithOptions:options andReturnError:&error];
+  if (error) {
+    logger.warning() << "proxy start error:" << error.localizedDescription;
+  } else if (!okay) {
+    logger.warning() << "proxy start failed";
+  } else {
+    // Save the session and retain it.
+    [session retain];
+    m_session = session;
+  }
 }
 
 void MacOSController::deactivate() {
   [remoteObject() deactivate];
+
+  if (m_session) {
+    NETunnelProviderSession* session =
+        static_cast<NETunnelProviderSession*>(m_session);
+    // Stop the split tunnel proxy.
+    [session stopTunnel];
+    [session release];
+    m_session = nullptr;
+  }
 }
 
 void MacOSController::checkStatus() {
@@ -273,6 +351,48 @@ void MacOSController::getBackendLogs(QIODevice* device) {
 
 void MacOSController::cleanupBackendLogs() {
   [remoteObject() cleanupBackendLogs];
+}
+
+bool MacOSController::splitTunnelSupported() const {
+  auto loader = static_cast<MacosExtensionLoader*>(m_loader);
+  return (loader.manager != nil) && loader.manager.enabled;
+}
+
+bool MacOSController::sendSplitTunnelMessage(const QString& action,
+                                             const QStringList& apps) const {
+  if (!m_session) {
+    logger.debug() << "Split tunneling" << action << "failed: not running";
+    return false;
+  }
+
+  NSKeyedArchiver* encoder =
+      [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
+  [encoder encodeObject:action.toNSString()
+                 forKey:@"action"];
+
+  if (!apps.isEmpty()) {
+    NSMutableArray* array = [[NSMutableArray new] init];
+    for (const QString& appId : apps) {
+      [array addObject:appId.toNSString()];
+    }
+    [encoder encodeObject:array
+                  forKey:@"apps"];
+  }
+
+  [encoder finishEncoding];
+
+  NSError* error = nil;
+  NETunnelProviderSession* session =
+      static_cast<NETunnelProviderSession*>(m_session);
+  [session sendProviderMessage:encoder.encodedData
+                   returnError:&error
+               responseHandler:nil];
+
+  if (error != nil) {
+    logger.debug() << "Split tunneling" << action << "failed:" << error;
+    return false;
+  }
+  return true;
 }
 
 void MacOSController::forceDaemonCrash() {

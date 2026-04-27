@@ -4,27 +4,11 @@
 <dict>
 	<key>com.apple.application-identifier</key>
 	<string>$(DEVELOPMENT_TEAM).$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-
-	<key>keychain-access-groups</key>
-	<array>
-		<string>$(DEVELOPMENT_TEAM).*</string>
-	</array>
-
-	<key>com.apple.developer.team-identifier</key>
-	<string>$(DEVELOPMENT_TEAM)</string>
-
-	<key>com.apple.security.network.client</key>
-	<true/>
-
-	<key>com.apple.security.network.server</key>
-	<true/>
-
 	<key>com.apple.developer.networking.networkextension</key>
 	<array>
 		<string>app-proxy-provider</string>
 	</array>
-
-	<key>com.apple.developer.system-extension.install</key>
-	<true/>
+	<key>com.apple.developer.team-identifier</key>
+	<string>$(DEVELOPMENT_TEAM)</string>
 </dict>
 </plist>

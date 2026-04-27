@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include <QJsonArray>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -222,32 +223,44 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   logger.debug() << "Parse command:" << type;
   clearTimeout(type);
 
-  if (m_daemonState == eInitializing && type == "status") {
-    m_daemonState = eReady;
+  // Update the daemon's supported feature set.
+  if (type == "status") {
+    QStringList features;
+    if (obj.contains("features")) {
+      QJsonArray arr = obj.value("features").toArray();
+      for (auto i = arr.cbegin(); i != arr.cend(); i++) {
+        features.append(i->toString());
+      }
+    }
+    m_splitTunnelSupported = features.contains("splitTunnel");
 
-    QJsonValue connected = obj.value("connected");
-    if (!connected.isBool()) {
-      logger.error() << "Invalid JSON for status - connected expected";
+    if (m_daemonState == eInitializing) {
+      m_daemonState = eReady;
+
+      QJsonValue connected = obj.value("connected");
+      if (!connected.isBool()) {
+        logger.error() << "Invalid JSON for status - connected expected";
+        return;
+      }
+
+      QDateTime datetime;
+      if (connected.toBool()) {
+        QJsonValue date = obj.value("date");
+        if (!date.isString()) {
+          logger.error() << "Invalid JSON for status - date expected";
+          return;
+        }
+
+        datetime = QDateTime::fromString(date.toString());
+        if (!datetime.isValid()) {
+          logger.error() << "Invalid JSON for status - date is invalid";
+          return;
+        }
+      }
+
+      emit initialized(true, connected.toBool(), datetime);
       return;
     }
-
-    QDateTime datetime;
-    if (connected.toBool()) {
-      QJsonValue date = obj.value("date");
-      if (!date.isString()) {
-        logger.error() << "Invalid JSON for status - date expected";
-        return;
-      }
-
-      datetime = QDateTime::fromString(date.toString());
-      if (!datetime.isValid()) {
-        logger.error() << "Invalid JSON for status - date is invalid";
-        return;
-      }
-    }
-
-    emit initialized(true, connected.toBool(), datetime);
-    return;
   }
 
   if (m_daemonState != eReady) {

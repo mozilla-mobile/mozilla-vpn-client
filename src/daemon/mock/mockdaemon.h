@@ -23,6 +23,10 @@ class MockDaemon final : public Daemon {
   bool activate(const InterfaceConfig& config) override;
   QString socketPath() const { return m_server.fullServerName(); }
 
+  QStringList getFeatures() const override {
+    return QStringList("splitTunnel");
+  }
+
  protected:
   WireguardUtils* wgutils() const override { return m_wgutils; }
   DnsUtils* dnsutils() override { return m_dnsutils; }
