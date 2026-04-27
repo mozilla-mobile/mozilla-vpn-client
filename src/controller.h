@@ -129,6 +129,7 @@ class Controller : public QObject, public LogSerializer {
   void startHandshakeTimer();
   bool isDeviceConnected() const { return m_isDeviceConnected; }
   bool isInitialized() const { return m_state >= StateOff; }
+  bool shouldSuppressNextNotification();
   Q_INVOKABLE bool isActive() const { return m_state > StateOff; }
 
   const ServerData& currentServer() const { return m_serverData; }

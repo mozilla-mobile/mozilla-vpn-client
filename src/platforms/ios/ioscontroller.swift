@@ -28,13 +28,17 @@ let VPN_NAME = "Mozilla VPN"
     let publicKey: String
     let ipv4AddrIn: String
     let port: Int
+    let entryCity: String?
+    let exitCity: String
 
-    @objc init(dns: String, ipv6Gateway: String, publicKey: String, ipv4AddrIn: String, port: Int) {
+    @objc init(dns: String, ipv6Gateway: String, publicKey: String, ipv4AddrIn: String, port: Int, entryCity: String?, exitCity: String) {
         self.dns = dns
         self.ipv6Gateway = ipv6Gateway
         self.publicKey = publicKey
         self.ipv4AddrIn = ipv4AddrIn
         self.port = port
+        self.entryCity = entryCity
+        self.exitCity = exitCity
 
         super.init()
     }
@@ -51,6 +55,13 @@ public class IOSControllerImpl: NSObject {
     private var privateKey : PrivateKey? = nil
     private var deviceIpv4Address: String? = nil
     private var deviceIpv6Address: String? = nil
+
+    // When activating/deactivate from an app intent (Siri, etc.), iOS already
+    // provides confirmation to the user. If we also showed our local notification,
+    // the user would see two confirmation notifications one from Siri, and our
+    // normal one from the app. Thus, we want to suppress the typical one in
+    // these cases, as we can't suppress the system-generated one.
+    private static var shouldSkipNextNotification = false
 
     @objc enum ConnectionState: Int { case Error, Connected, Disconnected }
 
@@ -177,14 +188,14 @@ public class IOSControllerImpl: NSObject {
               disconnectOnErrorCallback()
               return
             }
-          return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, permitLocalNetworkFeatures: permitLocalNetworkFeatures, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isServerLocatedInUserCountry: !isMissingLocalLocation ? isServerLocatedInUserCountry : nil, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback)
+          return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, permitLocalNetworkFeatures: permitLocalNetworkFeatures, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isServerLocatedInUserCountry: !isMissingLocalLocation ? isServerLocatedInUserCountry : nil, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback, entryCity: serverData.first?.entryCity, exitCity: serverData.first?.exitCity)
         }
     }
 
     func configureTunnel(configs: [TunnelConfiguration], reason: Int, serverName: String, permitLocalNetworkFeatures: Bool,
             gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isServerLocatedInUserCountry: Bool?,
             disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
-            vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
+            vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void, entryCity: String?, exitCity: String?) {
         TunnelManager.withTunnel { tunnel in
             guard let config = configs.first else {
               IOSControllerImpl.logger.error(message: "No VPN config found")
@@ -214,6 +225,8 @@ public class IOSControllerImpl: NSObject {
             customConfig["isServerLocatedInUserCountry"] = isServerLocatedInUserCountry
             customConfig["gleanDebugTag"] = gleanDebugTag
             customConfig["installationId"] = installationId
+            customConfig["entryCity"] = entryCity
+            customConfig["exitCity"] = exitCity
             customConfig["configs"] = configs.map({ $0.asWgQuickConfig() })
             proto?.providerConfiguration = customConfig
 
@@ -272,25 +285,59 @@ public class IOSControllerImpl: NSObject {
         }
     }
 
-    @objc func disconnect() {
-        IOSControllerImpl.logger.info(message: "Disconnecting")
-        TunnelManager.withTunnel { tunnel in
-
-            // Turn off auto-connect, otherwise it will immediately reconnect.
-            tunnel.isOnDemandEnabled = false;
-            tunnel.onDemandRules = []
-
-            tunnel.saveToPreferences { saveError in
-                if let error = saveError {
-                    IOSControllerImpl.logger.error(message: "Disonnect tunnel save error: \(error)")
-                }
-                TunnelManager.session?.stopTunnel()
-            }
-
-            // Needs to return something, but this will be discarded.
-            return true
-        }
+    static func startTunnelFromIntent() -> TurnOnIntent.Result {
+      guard let session = TunnelManager.session else {
+        IOSControllerImpl.logger.info(message: "No current session")
+        return .errorNoSession
+      }
+      guard session.status != .connected else {
+        IOSControllerImpl.logger.info(message: "VPN already connected")
+        return .errorAlreadyActive
+      }
+      do {
+        IOSControllerImpl.shouldSkipNextNotification = true
+        try TunnelManager.session?.startTunnel(options: ["source":"intent"])
+        let config = TunnelManager.protocolConfiguration?.providerConfiguration
+        return .success(entryCity: config?["entryCity"] as? String, exitCity: config?["exitCity"] as? String)
+      } catch let error {
+        IOSControllerImpl.logger.info(message: "Error starting from intent: \(error.localizedDescription)")
+        return .errorNoSession
+      }
     }
+
+    static func stopTunnelFromIntent() -> Bool {
+      guard let session = TunnelManager.session, session.status == .connected else {
+        IOSControllerImpl.logger.info(message: "Error stopping from intent: No active VPN session")
+        return false
+      }
+      IOSControllerImpl.shouldSkipNextNotification = true
+      IOSControllerImpl.staticDisconnect()
+      return true
+    }
+
+    @objc func disconnect() {
+      IOSControllerImpl.staticDisconnect()
+    }
+
+  static func staticDisconnect() {
+    IOSControllerImpl.logger.info(message: "Disconnecting")
+    TunnelManager.withTunnel { tunnel in
+
+        // Turn off auto-connect, otherwise it will immediately reconnect.
+        tunnel.isOnDemandEnabled = false;
+        tunnel.onDemandRules = []
+
+        tunnel.saveToPreferences { saveError in
+            if let error = saveError {
+                IOSControllerImpl.logger.error(message: "Disonnect tunnel save error: \(error)")
+            }
+            TunnelManager.session?.stopTunnel()
+        }
+
+        // Needs to return something, but this will be discarded.
+        return true
+    }
+  }
 
     @objc func deleteOSTunnelConfig() {
       IOSControllerImpl.logger.info(message: "Removing tunnel from iOS System Preferences")
@@ -410,5 +457,11 @@ public class IOSControllerImpl: NSObject {
         interface.dns = [DNSServer(address: dnsServerIP!), DNSServer(address: ipv6GatewayIP!)]
 
         return TunnelConfiguration(name: VPN_NAME, interface: interface, peers: peerConfigurations)
+    }
+
+    @objc func shouldSuppressNextNotification() -> Bool {
+        let oldValue = IOSControllerImpl.shouldSkipNextNotification
+        IOSControllerImpl.shouldSkipNextNotification = false
+        return oldValue
     }
 }
