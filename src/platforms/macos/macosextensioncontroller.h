@@ -12,6 +12,7 @@
 Q_FORWARD_DECLARE_OBJC_CLASS(MacOSExtensionDelegate);
 Q_FORWARD_DECLARE_OBJC_CLASS(NETransparentProxyManager);
 Q_FORWARD_DECLARE_OBJC_CLASS(NETunnelProviderSession);
+Q_FORWARD_DECLARE_OBJC_CLASS(NSCoder);
 
 class MacOSExtensionController final : public ControllerImpl {
   Q_OBJECT
@@ -40,6 +41,9 @@ class MacOSExtensionController final : public ControllerImpl {
 
  private:
   static NSString* extIdentifier();
+
+  static QString parseArchivedString(NSCoder* archive, NSString* key);
+  static QHostAddress parseArchivedAddress(NSCoder* archive, NSString* key);
 
  private:
   QString m_serverPublicKey;

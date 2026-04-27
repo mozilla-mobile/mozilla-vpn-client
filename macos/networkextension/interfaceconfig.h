@@ -15,17 +15,19 @@
 
 @interface InterfaceConfig : NSObject
 
-+ (id)parseFromDict:(NSDictionary<NSString *,id> *)dict;
-+ (id)parseFromCoder:(NSCoder*)coder;
+- (id)initFromDict:(NSDictionary<NSString *,id> *)dict;
+- (id)initFromCoder:(NSCoder*)coder;
 
 @property (strong) NSString* privateKey;
 @property (strong) nw_endpoint_t deviceIpv4Addr;
 @property (strong) nw_endpoint_t deviceIpv6Addr;
 
 @property (strong) NSString* serverPublicKey;
-@property NSUInteger serverPort;
+@property (assign) NSUInteger serverPort;
 @property (strong) nw_endpoint_t serverIpv4Addr;
 @property (strong) nw_endpoint_t serverIpv6Addr;
+@property (strong) nw_endpoint_t serverIpv4Gateway;
+@property (strong) nw_endpoint_t serverIpv6Gateway;
 
 @property (strong) NSArray<RoutePrefix*>* routes;
 

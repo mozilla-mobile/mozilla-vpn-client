@@ -7,14 +7,7 @@
 #import <NetworkExtension/NetworkExtension.h>
 
 #import "interfaceconfig.h"
-
-@interface WireguardStats : NSObject
-@property (strong) NSDate *lastHandshake;
-@property NSUInteger txBytes;
-@property NSUInteger rxBytes;
-@property float      estimatedLoss;
-@property NSUInteger estimatedRtt;
-@end
+#import "wireguardstatus.h"
 
 @interface WireguardTunnel : NSObject
 
@@ -29,7 +22,9 @@
 - (NSError*) setTunnelAddress:(nw_endpoint_t)endpoint;
 
 @property (nonatomic) NSUInteger mtu;
-@property (strong, readonly, getter=getStatus) WireguardStats* status;
+@property (strong, readonly, getter=getStatus) WireguardStatus* status;
+@property (strong) nw_endpoint_t ipv4address;
+@property (strong) nw_endpoint_t ipv6address;
 
 @property (strong) nw_connection_t connection;
 @property (strong) nw_interface_t virtualInterface;

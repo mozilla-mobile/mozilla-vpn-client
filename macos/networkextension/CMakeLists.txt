@@ -73,6 +73,8 @@ target_sources(networkextension PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/main.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/routemanager.h
     ${CMAKE_CURRENT_SOURCE_DIR}/routemanager.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardstatus.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardstatus.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardtunnel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardtunnel.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/VPNSplitTunnelProvider.mm

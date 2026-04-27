@@ -61,7 +61,6 @@
 @end
 
 @implementation InterfaceConfig
-
 - (NSString*)findString:(NSString*)key {
   NSObject* value = [self.dict objectForKey:key];
   if (value == nil) {
@@ -73,11 +72,41 @@
   return (NSString*)value;
 }
 
-+ (id)parseFromCoder:(NSCoder*)coder {
-  return [InterfaceConfig parseFromDict:[[NSDictionary alloc] initWithCoder:coder]];
+- (nw_endpoint_t)findAddress:(NSString*)key
+                    withPort:(NSUInteger)port {
+  NSString* addr = [self findString:key];
+  if (!addr) {
+    return nil;
+  }
+  // Strip the prefix length, if present.
+  addr = [addr componentsSeparatedByString:@"/"][0];
+
+  if ([addr containsString:@":"]) {
+    // IPv6 address
+    struct sockaddr_in6 sin6;
+    memset(&sin6, 0, sizeof(struct sockaddr_in6));
+    sin6.sin6_family = AF_INET6;
+    sin6.sin6_len = sizeof(struct sockaddr_in6);
+    sin6.sin6_port = htons(port);
+    if (!inet_pton(AF_INET6, addr.UTF8String, &sin6.sin6_addr.s6_addr)) {
+      return nil;
+    }
+    return nw_endpoint_create_address((struct sockaddr*)&sin6);
+  } else {
+    // IPv4 address
+    struct sockaddr_in sin;
+    memset(&sin, 0, sizeof(struct sockaddr_in));
+    sin.sin_family = AF_INET;
+    sin.sin_len = sizeof(struct sockaddr_in);
+    sin.sin_port = htons(port);
+    if (!inet_pton(AF_INET, addr.UTF8String, &sin.sin_addr.s_addr)) {
+      return nil;
+    }
+    return nw_endpoint_create_address((struct sockaddr*)&sin);
+  }
 }
 
-+ (id)parseFromDict:(NSDictionary<NSString *,id> *)dict {
+- (id)parseFromDict:(NSDictionary<NSString *,id> *)dict {
   InterfaceConfig* config = [InterfaceConfig new];
   config->_dict = dict;
 
@@ -85,35 +114,15 @@
   if (!config.privateKey) {
     return nil;
   }
-  NSString* deviceIpv4Addr = [config findString:@"deviceIpv4Addr"];
-  if (!deviceIpv4Addr) {
+  config.deviceIpv4Addr = [config findAddress:@"deviceIpv4Addr" withPort:0];
+  if ((!config.deviceIpv4Addr) ||
+      (nw_endpoint_get_address(config.deviceIpv4Addr)->sa_family != AF_INET)) {
     return nil;
-  } else {
-    struct sockaddr_in sin;
-    NSString* addr = [deviceIpv4Addr componentsSeparatedByString:@"/"][0];
-
-    memset(&sin, 0, sizeof(sin));
-    sin.sin_family = AF_INET;
-    sin.sin_len = sizeof(sin);
-    if (!inet_pton(AF_INET, addr.UTF8String, &sin.sin_addr.s_addr)) {
-      return nil;
-    }
-    config.deviceIpv4Addr = nw_endpoint_create_address((struct sockaddr*)&sin);
   }
-  NSString* deviceIpv6Addr = [config findString:@"deviceIpv6Addr"];
-  if (!deviceIpv6Addr) {
+  config.deviceIpv6Addr = [config findAddress:@"deviceIpv6Addr" withPort:0];
+  if ((!config.deviceIpv6Addr) ||
+      (nw_endpoint_get_address(config.deviceIpv6Addr)->sa_family != AF_INET6)) {
     return nil;
-  } else {
-    struct sockaddr_in6 sin6;
-    NSString* addr = [deviceIpv6Addr componentsSeparatedByString:@"/"][0];
-
-    memset(&sin6, 0, sizeof(sin6));
-    sin6.sin6_family = AF_INET6;
-    sin6.sin6_len = sizeof(sin6);
-    if (!inet_pton(AF_INET6, addr.UTF8String, &sin6.sin6_addr.s6_addr)) {
-      return nil;
-    }
-    config.deviceIpv6Addr = nw_endpoint_create_address((struct sockaddr*)&sin6);
   }
 
   config.serverPublicKey = [config findString:@"serverPublicKey"];
@@ -131,33 +140,12 @@
     config.serverPort = 51820;
   }
 
-  NSString* serverIpv4Addr = [config findString:@"serverIpv4AddrIn"];
-  if (serverIpv4Addr) {
-    struct sockaddr_in sin;
-    memset(&sin, 0, sizeof(sin));
-    sin.sin_family = AF_INET;
-    sin.sin_len = sizeof(sin);
-    sin.sin_port = htons(config.serverPort);
-    if (!inet_pton(AF_INET, serverIpv4Addr.UTF8String, &sin.sin_addr.s_addr)) {
-      return nil;
-    }
+  config.serverIpv4Addr = [config findAddress:@"serverIpv4AddrIn" withPort:config.serverPort];
+  config.serverIpv6Addr = [config findAddress:@"serverIpv6AddrIn" withPort:config.serverPort];
 
-    config.serverIpv4Addr = nw_endpoint_create_address((struct sockaddr*)&sin);
-  }
-
-  NSString* serverIpv6Addr = [config findString:@"serverIpv6AddrIn"];
-  if (serverIpv6Addr) {
-    struct sockaddr_in6 sin6;
-    memset(&sin6, 0, sizeof(sin6));
-    sin6.sin6_family = AF_INET6;
-    sin6.sin6_len = sizeof(sin6);
-    sin6.sin6_port = htons(config.serverPort);
-    if (!inet_pton(AF_INET6, serverIpv6Addr.UTF8String, &sin6.sin6_addr.s6_addr)) {
-      return nil;
-    }
-
-    config.serverIpv6Addr = nw_endpoint_create_address((struct sockaddr*)&sin6);
-  }
+  // We don't actually use this, but parse it anyways.
+  config.serverIpv4Gateway = [config findAddress:@"serverIpv4Gateway" withPort:0];
+  config.serverIpv6Gateway = [config findAddress:@"serverIpv6Gateway" withPort:0];
 
   // Parse the allowed IP address ranges.
   NSObject* rangesObject = [config.dict objectForKey:@"routes"];
@@ -175,6 +163,16 @@
   config.routes = [NSArray arrayWithArray:routes];
 
   return config;
+}
+
+- (id)initFromCoder:(NSCoder*)coder {
+  self = [super init];
+  return [self parseFromDict:[[NSDictionary alloc] initWithCoder:coder]];
+}
+
+- (id)initFromDict:(NSDictionary<NSString *,id> *)dict {
+  self = [super init];
+  return [self parseFromDict:dict];
 }
 
 @end

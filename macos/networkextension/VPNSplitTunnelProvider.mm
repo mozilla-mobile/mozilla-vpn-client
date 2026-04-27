@@ -157,7 +157,7 @@
   m_handledUnknown = 0;
 
   // Parse the configuration
-  InterfaceConfig* config = [InterfaceConfig parseFromDict:options];
+  InterfaceConfig* config = [[InterfaceConfig alloc] initFromDict:options];
   if (!config) {
     completionHandler([VPNSplitTunnelProvider makeError:1
                                         withDescription:@"invalid configuration"]);
@@ -435,18 +435,11 @@
 
   // Wireguard Tunnel messages
   if ([action isEqualToString:@"status"]) {
-    NSError* err;
-    NSData* reply = [NSKeyedArchiver archivedDataWithRootObject:self.wireguard.status
-                                          requiringSecureCoding:YES
-                                                          error:&err];
-    if (err == nil) {
-      [VPNSplitTunnelProvider sendAppError:err completionHandler:completionHandler];
-    } else {
-      [VPNSplitTunnelProvider sendAppResponse:reply completionHandler:completionHandler];
-    }
+    [VPNSplitTunnelProvider sendAppObject:self.wireguard.status
+                        completionHandler:completionHandler];
     return;
   }
-  
+
   // Application exclusion messages.
   if ([action isEqualToString: @"clear"]) {
     [self.vpnDisabledApps removeAllObjects];
@@ -467,6 +460,16 @@
     return;
   }
   completionHandler(responseData);
+}
+
++ (void)sendAppObject:(id) obj
+    completionHandler:(void (^)(NSData*)) completionHandler {
+  NSKeyedArchiver* encoder = [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
+  if ([obj respondsToSelector:@selector(encodeWithCoder:)]) {
+    [obj encodeWithCoder: encoder];
+  }
+  [encoder finishEncoding];
+  completionHandler(encoder.encodedData);
 }
 
 + (void)sendAppError:(NSError*) error

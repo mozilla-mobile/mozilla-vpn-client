@@ -32,10 +32,6 @@ extern "C" {
 // Private method in the network framework
 extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, const char *ifname);
 
-@implementation WireguardStats
-// Nothing to see here.
-@end
-
 @implementation WireguardTunnel {
   struct wireguard_tunnel*  m_wireguard;
 
@@ -46,6 +42,10 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
 
   struct timespec      m_lastHandshake;
   struct timespec      m_handshakeTimeout;
+
+  // Not used for anything, we just hold them for status generation.
+  nw_endpoint_t        m_ipv4gateway;
+  nw_endpoint_t        m_ipv6gateway;
 
   // The completion handler to run on initial handshake or timeout. 
   void (^m_completionHandler)(NSError *error);
@@ -106,6 +106,8 @@ static int getWorkerCount() {
               completionHandler:(void (^)(NSError *error)) completionHandler {
   m_completionHandler = completionHandler;
   m_workqueue = dispatch_group_create();
+  m_ipv4gateway = options.serverIpv4Gateway;
+  m_ipv6gateway = options.serverIpv6Gateway;
 
   m_tunfd = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
   if (m_tunfd < 0) {
@@ -276,6 +278,8 @@ static int getWorkerCount() {
 
     if (ioctl(sock, SIOCAIFADDR, &ifr) < 0) {
       err = errorFromErrno(errno, @"failed to set tunnel address");
+    } else {
+      self.ipv4address = endpoint;
     }
   } else if (sa->sa_family == AF_INET6) {
     struct in6_aliasreq ifr6;
@@ -293,6 +297,8 @@ static int getWorkerCount() {
 
     if (ioctl(sock, SIOCAIFADDR_IN6, &ifr6) < 0) {
       err = errorFromErrno(errno, @"failed to set tunnel address");
+    } else {
+      self.ipv6address = endpoint;
     }
   } else {
     // We don't recognize this address type.
@@ -532,8 +538,8 @@ static int getWorkerCount() {
   [self shutdownTunnel:error];
 }
 
-- (WireguardStats*)getStatus {
-  WireguardStats* result = [WireguardStats new];
+- (WireguardStatus*)getStatus {
+  WireguardStatus* result = [WireguardStatus new];
 
   // Get the handshake time from the timestamp of the last received handshake
   // response packet, this will yeild better precision than the stats we get
@@ -544,6 +550,36 @@ static int getWorkerCount() {
     NSTimeInterval diff = (m_lastHandshake.tv_sec - now.tv_sec);
     diff += (m_lastHandshake.tv_nsec - now.tv_nsec) / (1000000000.0);
     result.lastHandshake = [NSDate dateWithTimeIntervalSinceNow:diff];
+  }
+
+  // Get the interface addresses.
+  if (self.ipv4address) {
+    char* addrstr = nw_endpoint_copy_address_string(self.ipv4address);
+    result.ipv4address = [[NSString alloc] initWithBytesNoCopy:addrstr
+                                                        length:strlen(addrstr)
+                                                      encoding:NSASCIIStringEncoding
+                                                  freeWhenDone:YES];
+  }
+  if (self.ipv6address) {
+    char* addrstr = nw_endpoint_copy_address_string(self.ipv6address);
+    result.ipv6address = [[NSString alloc] initWithBytesNoCopy:addrstr
+                                                        length:strlen(addrstr)
+                                                      encoding:NSASCIIStringEncoding
+                                                  freeWhenDone:YES];
+  }
+  if (m_ipv4gateway) {
+    char* addrstr = nw_endpoint_copy_address_string(m_ipv4gateway);
+    result.ipv4gateway = [[NSString alloc] initWithBytesNoCopy:addrstr
+                                                        length:strlen(addrstr)
+                                                      encoding:NSASCIIStringEncoding
+                                                  freeWhenDone:YES];
+  }
+  if (m_ipv6gateway) {
+    char* addrstr = nw_endpoint_copy_address_string(m_ipv6gateway);
+    result.ipv6gateway = [[NSString alloc] initWithBytesNoCopy:addrstr
+                                                        length:strlen(addrstr)
+                                                      encoding:NSASCIIStringEncoding
+                                                  freeWhenDone:YES];
   }
 
   // Fetch the rest of the stats directly from boringtun.

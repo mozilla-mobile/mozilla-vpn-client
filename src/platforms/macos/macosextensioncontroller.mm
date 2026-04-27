@@ -214,6 +214,17 @@ void MacOSExtensionController::deactivate() {
   }
 }
 
+QString MacOSExtensionController::parseArchivedString(NSCoder* archive,
+                                                      NSString* key) {
+  NSString* s = [archive decodeObjectOfClass:[NSString class] forKey:key];
+  return QString::fromNSString(s);
+}
+
+QHostAddress MacOSExtensionController::parseArchivedAddress(NSCoder* archive,
+                                                            NSString* key) {
+  return QHostAddress(parseArchivedString(archive, key));
+}
+
 void MacOSExtensionController::checkStatus() {
   if (!m_session) {
     // Extension is not running.
@@ -228,11 +239,31 @@ void MacOSExtensionController::checkStatus() {
   [m_session sendProviderMessage:msg.encodedData
                      returnError:&error
                  responseHandler:^(NSData* response){
-    // TODO: Parse the status and emit something.
+    NSError* decodeError = nil;
+    NSKeyedUnarchiver* archive = [NSKeyedUnarchiver alloc];
+    if (![archive initForReadingFromData:response error:&decodeError]) {
+      logger.debug() << "status decode failed:" << decodeError;
+      return;
+    }
+
+    ControllerStatus st;
+    NSDate* timestamp = [archive decodeObjectOfClass:[NSDate class] forKey:@"lastHandshake"];
+    if (timestamp) {
+      st.m_connected = true; 
+      st.m_timestamp = QDateTime::fromCFDate((CFDateRef)timestamp);
+    }
+    st.m_ipv4Gateway = parseArchivedAddress(archive, @"ipv4gateway");
+    st.m_ipv6Gateway = parseArchivedAddress(archive, @"ipv6gateway");
+    st.m_ipv4Address = parseArchivedAddress(archive, @"ipv4address");
+    st.m_ipv6Address = parseArchivedAddress(archive, @"ipv6address");
+    st.m_rxBytes = [archive decodeInt64ForKey:@"rxBytes"];
+    st.m_txBytes = [archive decodeInt64ForKey:@"txBytes"];
+    emit statusUpdated(st);
   }];
 
   if (error != nil) {
-    logger.debug() << "Split tunneling status failed:" << error;
+    logger.debug() << "status request failed:" << error;
+    emit statusUpdated(ControllerStatus());
     return;
   }
 }
