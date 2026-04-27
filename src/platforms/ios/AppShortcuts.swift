@@ -47,14 +47,5 @@ struct MozillaVPNAppShortcuts: AppShortcutsProvider {
       shortTitle: "Is the VPN currently connected?", // THIS MUST BE LOCALIZED STRING RESOURCE - do i need to add checks?
       systemImageName: "questionmark.square.dashed"
     )
-//    AppShortcut(
-//      intent: ToggleIntent(),
-//      phrases: [
-//        "Toggle \(.applicationName)",
-//        "Switch \(.applicationName)"
-//      ],
-//      shortTitle: "Toggle Mozilla VPN", // THIS MUST BE LOCALIZED STRING RESOURCE - do i need to add checks?
-//      systemImageName: "bolt.shield"
-//    )
   }
 }
