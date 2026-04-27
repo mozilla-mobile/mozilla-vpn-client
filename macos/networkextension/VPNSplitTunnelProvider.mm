@@ -7,7 +7,6 @@
 #import "bypasstcpflow.h"
 #import "bypassudpflow.h"
 #import "interfaceconfig.h"
-#import "routemanager.h"
 #import "wireguardtunnel.h"
 
 #include <atomic>
@@ -19,7 +18,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
-@interface VPNSplitTunnelProvider : NETransparentProxyProvider<RouteManagerDelegate>
+@interface VPNSplitTunnelProvider : NETransparentProxyProvider
 
 - (void)startProxyWithOptions:(NSDictionary<NSString *,id> *)options
             completionHandler:(void (^)(NSError *))completionHandler;
@@ -31,12 +30,7 @@
 
 - (BOOL)matchAppFlow:(NEAppProxyFlow *)flow;
 
-- (void)defaultRouteChanged:(int)family
-               viaInterface:(nw_interface_t)interface
-                withGateway:(NSData*)gateway;
-
 @property (strong) NETransparentProxyNetworkSettings* settings;
-@property (strong) RouteManager* routeManager;
 @property (strong) WireguardTunnel* wireguard;
 @property (strong) InterfaceConfig* config;
 
@@ -165,10 +159,6 @@
   }
   _config = config;
 
-  // Start the route manager
-  _routeManager = [RouteManager new];
-  [self.routeManager startWithDelegate:self];
-
   self.wireguard = [WireguardTunnel new];
   self.settings = [[NETransparentProxyNetworkSettings alloc] initWithTunnelRemoteAddress:self.protocolConfiguration.serverAddress];
 
@@ -257,18 +247,6 @@
           return;
         }
 
-        // Configure routes into the tunnel interface.
-        // Note that the default route should set RTF_IFSCOPE so that we
-        // leave the real default route untouched.
-        for (RoutePrefix* prefix in weakSelf.config.routes) {
-          [weakSelf.routeManager rtmSendRoute:RTM_ADD
-                                toDestination:prefix.destination
-                                   withPrefix:prefix.prefixLength
-                                 viaInterface:weakSelf.wireguard.virtualInterface
-                                  withGateway:nil
-                                     andFlags:(prefix.prefixLength == 0) ? RTF_IFSCOPE : 0];
-        }
-
         // Success
         completionHandler(nil);
       }];
@@ -279,8 +257,6 @@
 - (void)stopProxyWithReason:(NEProviderStopReason)reason 
           completionHandler:(void (^)(void))completionHandler {
   NSLog(@"stopping proxy");
-
-  self.routeManager = nil;
 
   NSLog(@"handled tcp flows: %lld", std::atomic_load(&m_handledTcpFlows));
   NSLog(@"handled udp flows: %lld", std::atomic_load(&m_handledUdpFlows));
@@ -481,26 +457,6 @@
   [encoder encodeObject:error forKey:@"error"];
   [encoder finishEncoding];
   completionHandler(encoder.encodedData);
-}
-
-- (void)defaultRouteChanged:(int)family
-               viaInterface:(nw_interface_t)interface
-                withGateway:(NSData*)gateway {
-  int ifindex = interface ? nw_interface_get_index(interface) : 0;
-
-  if (family == AF_INET) {
-    if (interface) {
-      NSLog(@"default ipv4 route via %s", nw_interface_get_name(interface));
-    } else {
-      NSLog(@"default ipv4 route lost");
-    }
-  } else if (family == AF_INET6) {
-    if (interface) {
-      NSLog(@"default ipv6 route via %s", nw_interface_get_name(interface));
-    } else {
-      NSLog(@"default ipv6 route lost");
-    }
-  }
 }
 
 @end

@@ -10,7 +10,10 @@
 
 #include <errno.h>
 #include <net/if.h>
+#include <net/if_dl.h>
+#include <net/if_types.h>
 #include <net/if_utun.h>
+#include <net/route.h>
 #include <netinet/in.h>
 #include <netinet/ip6.h>
 #include <netinet/in_var.h>
@@ -43,6 +46,10 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
   struct timespec      m_lastHandshake;
   struct timespec      m_handshakeTimeout;
 
+  // The routing socket
+  int                  m_rtseq;
+  int                  m_rtsock;
+
   // Not used for anything, we just hold them for status generation.
   nw_endpoint_t        m_ipv4gateway;
   nw_endpoint_t        m_ipv6gateway;
@@ -70,6 +77,8 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   set_logging_function(wgLog);
 
   m_tunfd = -1;
+  m_rtseq = 0;
+  m_rtsock = -1;
   m_wireguard = nil;
   m_dispatch = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
 
@@ -112,6 +121,13 @@ static int getWorkerCount() {
   m_tunfd = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
   if (m_tunfd < 0) {
     [self shutdownTunnel:@"tunnel creation failed" withErrno:errno];
+    return;
+  }
+
+  // Create a routing socket too.
+  m_rtsock = socket(PF_ROUTE, SOCK_RAW, 0);
+  if (m_rtsock < 0) {
+    [self shutdownTunnel:@"routing socket creation failed" withErrno:errno];
     return;
   }
 
@@ -174,6 +190,16 @@ static int getWorkerCount() {
   if (err != 0) {
     [self shutdownTunnel:@"failed to set device up" withErrno:errno];
     return;
+  }
+
+  // Configure routes into the tunnel interface.
+  // Note that the default route should set RTF_IFSCOPE so that we
+  // leave the real default route untouched.
+  for (RoutePrefix* prefix in options.routes) {
+    [self rtmSendRoute:RTM_ADD
+         toDestination:prefix.destination
+            withPrefix:prefix.prefixLength
+              andFlags:(prefix.prefixLength == 0) ? RTF_IFSCOPE : 0];
   }
 
 #ifdef MZ_DEBUG
@@ -523,6 +549,11 @@ static int getWorkerCount() {
     m_tunfd = -1;
   }
 
+  if (m_rtsock >= 0) {
+    close(m_rtsock);
+    m_rtsock = -1;
+  }
+
   if (m_wireguard) {
     tunnel_free(m_wireguard);
     m_wireguard = nil;
@@ -600,6 +631,102 @@ static int getWorkerCount() {
   if (ioctl(m_tunfd, SIOCSIFMTU, &ifr) != 0) {
     NSLog(@"mtu update failed: %s", strerror(errno));
   }
+}
+
+
+static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, const void* sa) {
+  size_t sa_len = ((const struct sockaddr*)sa)->sa_len;
+  if ((rtm->rtm_addrs & rtaddr) != 0) {
+    return;
+  }
+  if ((rtm->rtm_msglen + sa_len) > maxlen) {
+    return;
+  }
+
+  memcpy((char*)rtm + rtm->rtm_msglen, sa, sa_len);
+  rtm->rtm_addrs |= rtaddr;
+  rtm->rtm_msglen += sa_len;
+  if (rtm->rtm_msglen % sizeof(uint32_t)) {
+    rtm->rtm_msglen += sizeof(uint32_t) - (rtm->rtm_msglen % sizeof(uint32_t));
+  }
+}
+
+- (void)rtmSendRoute:(int)action
+       toDestination:(const struct sockaddr*)dest
+          withPrefix:(NSUInteger)plen
+            andFlags:(int)flags {
+  constexpr size_t rtm_max_size = sizeof(struct rt_msghdr) +
+                                  sizeof(struct sockaddr_in6) * 2 +
+                                  sizeof(struct sockaddr_dl);
+  char buf[rtm_max_size] = {0};
+  struct rt_msghdr* rtm = (struct rt_msghdr*)buf;
+
+  rtm->rtm_msglen = sizeof(struct rt_msghdr);
+  rtm->rtm_version = RTM_VERSION;
+  rtm->rtm_type = action;
+  rtm->rtm_index = nw_interface_get_index(self.virtualInterface);
+  rtm->rtm_flags = flags | RTF_STATIC | RTF_UP;
+  rtm->rtm_addrs = 0;
+  rtm->rtm_pid = 0;
+  rtm->rtm_seq = m_rtseq++;
+  rtm->rtm_errno = 0;
+  rtm->rtm_inits = 0;
+  memset(&rtm->rtm_rmx, 0, sizeof(rtm->rtm_rmx));
+
+  // Append RTA_DST
+  rtmAppendAddr(rtm, rtm_max_size, RTA_DST, dest);
+
+  // Append RTA_GATEWAY - unless deleting the route.
+  if (action != RTM_DELETE) {
+    const char* ifname = nw_interface_get_name(self.virtualInterface);
+    struct sockaddr_dl datalink;
+    memset(&datalink, 0, sizeof(datalink));
+    datalink.sdl_family = AF_LINK;
+    datalink.sdl_len = offsetof(struct sockaddr_dl, sdl_data) + strlen(ifname);
+    datalink.sdl_index = nw_interface_get_index(self.virtualInterface);
+    datalink.sdl_type = IFT_OTHER;
+    datalink.sdl_nlen = strlen(ifname);
+    datalink.sdl_alen = 0;
+    datalink.sdl_slen = 0;
+    memcpy(datalink.sdl_data, ifname, datalink.sdl_nlen);
+    rtmAppendAddr(rtm, rtm_max_size, RTA_GATEWAY, (struct sockaddr*)&datalink);
+  }
+
+  // Append RTM_NETMASK
+  if (dest->sa_family == AF_INET6) {
+    struct sockaddr_in6 mask;
+    memset(&mask, 0, sizeof(mask));
+    mask.sin6_family = AF_INET6;
+    mask.sin6_len = sizeof(mask);
+    memset(&mask.sin6_addr.s6_addr, 0xff, plen / 8);
+    if (plen % 8) {
+      mask.sin6_addr.s6_addr[plen / 8] = 0xff ^ (0xff >> (plen % 8));
+    }
+    rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &mask);
+  } else if (dest->sa_family == AF_INET) {
+    struct sockaddr_in mask;
+    memset(&mask, 0, sizeof(mask));
+    mask.sin_family = AF_INET;
+    mask.sin_len = sizeof(mask);
+    mask.sin_addr.s_addr = 0xffffffff;
+    if (plen < 32) {
+      mask.sin_addr.s_addr ^= htonl(0xffffffff >> plen);
+    }
+    rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &mask);
+  }
+
+  // Send the routing message into the kernel.
+  int len = write(m_rtsock, rtm, rtm->rtm_msglen);
+  if (len == rtm->rtm_msglen) {
+    return;
+  }
+  if ((action == RTM_ADD) && (errno == EEXIST)) {
+    return;
+  }
+  if ((action == RTM_DELETE) && (errno == ESRCH)) {
+    return;
+  }
+  NSLog(@"Failed to send route to kernel: %s", strerror(errno));
 }
 
 @end
