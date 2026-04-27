@@ -68,7 +68,8 @@ elif [ -f /etc/debian_version ]; then
 		libfreetype6 \
 		libpng16-16 \
 		libharfbuzz0b \
-		libpcre2-8-0
+		libpcre2-8-0 \
+		libfontconfig1
     fi
  
     sudo apt-get -y install \
