@@ -80,6 +80,22 @@ linux64/release-deb:
     run:
         command: /builds/worker/builder.sh -s
 
+linux-aarch64/release-deb:
+    description: "Linux Build (Debian/aarch64 cross-compile, Static Qt)"
+    treeherder:
+        platform: linux-aarch64/deb
+    fetches:
+        toolchain:
+            - qt-linux-aarch64
+            - qt-tools-6.10
+    worker:
+        docker-image: {in-tree: linux-aarch64-deb-build}
+    add-index-routes:
+        name: linux-aarch64-static-deb
+        type: build
+    run:
+        command: /builds/worker/builder.sh --cross-arch aarch64
+
 linux64/release-rpm:
     description: "Linux Build (RPM/Static Qt)"
     treeherder:

@@ -9,15 +9,21 @@
 POSITIONAL=()
 JOBS=8
 BUILDDIR=
+CROSS_ARCH=
+HOST_PATH=
+TOOLCHAIN_FILE=
 
 helpFunction() {
   print G "Usage:"
   print N "\t$0 <QT_source_folder> <destination_folder> [options]"
   print N ""
   print N "Build options:"
-  print N "  -j, --jobs NUM   Parallelize build across NUM processes. (default: 8)"
-  print N "  -b, --build DIR  Build in DIR. (default: <QT_source_folder>/build)"
-  print N "  -h, --help       Display this message and exit."
+  print N "  -j, --jobs NUM           Parallelize build across NUM processes. (default: 8)"
+  print N "  -b, --build DIR          Build in DIR. (default: <QT_source_folder>/build)"
+  print N "  --cross-arch ARCH        Cross-compile for ARCH (e.g. aarch64)"
+  print N "  --host-path PATH         Path to Qt host tools (required for --cross-arch)"
+  print N "  --toolchain-file PATH    CMake toolchain file (required for --cross-arch)"
+  print N "  -h, --help               Display this message and exit."
   print N ""
   print N "Any other arguments will be passed to the Qt configure script."
   exit 0
@@ -32,13 +38,23 @@ while [[ $# -gt 0 ]]; do
   case $key in
   -j | --jobs)
     JOBS="$2"
-    shift
-    shift
+    shift 2
     ;;
   -b | --build)
     BUILDDIR="$2"
-    shift
-    shift
+    shift 2
+    ;;
+  --cross-arch)
+    CROSS_ARCH="$2"
+    shift 2
+    ;;
+  --host-path)
+    HOST_PATH="$2"
+    shift 2
+    ;;
+  --toolchain-file)
+    TOOLCHAIN_FILE="$2"
+    shift 2    
     ;;
   -h | --help)
     helpFunction
@@ -123,10 +139,26 @@ fi
 mkdir -p $PREFIX
 PREFIX=$(cd $PREFIX && pwd)
 
+CROSS_QT_FLAGS=
+CMAKE_CROSS_FLAGS=
+if [[ -n "$CROSS_ARCH" ]]; then
+  [[ -n "$HOST_PATH" ]] || die "--host-path is required when using --cross-arch."
+  [[ -n "$TOOLCHAIN_FILE" ]] || die "--toolchain-file is required when using --cross-arch."
+  [[ -f "$TOOLCHAIN_FILE" ]] || die "Toolchain file not found: ${TOOLCHAIN_FILE}"
+  CROSS_QT_FLAGS="-qt-host-path ${HOST_PATH}"
+  CMAKE_CROSS_FLAGS="
+    -DCMAKE_TOOLCHAIN_FILE=${TOOLCHAIN_FILE}
+    -DCMAKE_STAGING_PREFIX=${PREFIX}
+    -DCMAKE_FIND_ROOT_PATH=/
+    -DCMAKE_LIBRARY_ARCHITECTURE=${CROSS_ARCH}-linux-gnu
+  "
+fi
+
 print Y "Wait..."
 mkdir -p $BUILDDIR
 (cd $BUILDDIR && bash $SRCDIR/configure \
   $* \
+  $CROSS_QT_FLAGS \
   --prefix=$PREFIX \
   -opensource \
   -confirm-license \
@@ -190,7 +222,8 @@ mkdir -p $BUILDDIR
   -qt-libpng \
   -qt-zlib \
   -qt-pcre \
-  $PLATFORM) || die "Configuration error."
+  $PLATFORM \
+  $CMAKE_CROSS_FLAGS) || die "Configuration error."
 
 print Y "Compiling..."
 cmake --build $BUILDDIR --parallel $JOBS || die "Make failed"
