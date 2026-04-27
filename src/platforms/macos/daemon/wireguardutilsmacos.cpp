@@ -8,8 +8,6 @@
 #include <Security/SecRequirement.h>
 #include <Security/SecStaticCode.h>
 #include <Security/SecTask.h>
-#include <arpa/inet.h>
-#include <errno.h>
 #include <net/route.h>
 
 #include <QByteArray>
@@ -30,29 +28,6 @@ constexpr const char* WG_RUNTIME_DIR = "/var/run/wireguard";
 namespace {
 Logger logger("WireguardUtilsMacos");
 Logger logwireguard("WireguardGo");
-
-static bool hasRouteToIPv4(const QString& ipv4addr) {
-  int sock = ::socket(AF_INET, SOCK_DGRAM, 0);
-
-  if (sock < 0) {
-    return true;
-  }
-
-  auto guard = qScopeGuard([sock] { ::close(sock); });
-
-  struct sockaddr_in dest {};
-  dest.sin_len = sizeof(dest);
-  dest.sin_family = AF_INET;
-  dest.sin_port = htons(1);
-
-  if (::inet_pton(AF_INET, qPrintable(ipv4addr), &dest.sin_addr) != 1) {
-    return true;
-  }
-
-  int rc =
-      ::connect(sock, reinterpret_cast<struct sockaddr*>(&dest), sizeof(dest));
-  return rc == 0 || (errno != ENETUNREACH && errno != EHOSTUNREACH);
-}
 };  // namespace
 
 WireguardUtilsMacos::WireguardUtilsMacos(QObject* parent)
@@ -321,7 +296,7 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
 
   const bool useIPv4 = !config.m_serverIpv4AddrIn.isNull() &&
                        (config.m_serverIpv6AddrIn.isNull() ||
-                        hasRouteToIPv4(config.m_serverIpv4AddrIn));
+                        m_rtmonitor->hasIpv4DefaultRoute());
   const QString endpointAddr =
       useIPv4 ? config.m_serverIpv4AddrIn : config.m_serverIpv6AddrIn;
 

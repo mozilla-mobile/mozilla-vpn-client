@@ -27,6 +27,7 @@ class MacosRouteMonitor final : public QObject {
   bool insertRoute(const IPAddress& prefix, int flags = 0);
   bool deleteRoute(const IPAddress& prefix, int flags = 0);
   int interfaceFlags() { return m_ifflags; }
+  bool hasIpv4DefaultRoute() const { return m_defaultIfindexIpv4 != 0; }
 
   bool addExclusionRoute(const IPAddress& prefix);
   bool deleteExclusionRoute(const IPAddress& prefix);
