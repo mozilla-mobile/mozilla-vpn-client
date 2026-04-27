@@ -11,7 +11,8 @@ import SwiftUI
 @main
 struct ToggleWidgetBundle: WidgetBundle {
     var body: some Widget {
-//        ToggleWidget()
+      if #available(iOS 18.0, *) {
         ToggleWidgetControl()
+      }
     }
 }

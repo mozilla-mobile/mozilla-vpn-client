@@ -30,7 +30,7 @@ target_sources(mozillavpn PRIVATE
 )
 
 ## Install the Network Extension into the bundle.
-add_dependencies(mozillavpn networkextension)
+add_dependencies(mozillavpn networkextension widgetextension)
 
 # We have to manually build the QtGlean bindings framework,
 # so we also have to manually add it.
@@ -62,7 +62,6 @@ set_target_properties(mozillavpn PROPERTIES
     # Set device target family to iPhone and iPad
     XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
     # Make sure the network extension is added as a plugin to the final bundle
-    XCODE_EMBED_APP_EXTENSIONS networkextension
     XCODE_EMBED_APP_EXTENSIONS_REMOVE_HEADERS_ON_COPY "YES"
     XCODE_EMBED_APP_EXTENSIONS_CODE_SIGN_ON_COPY "YES"
     # Make sure Glean is added as a framework to the final bundle
@@ -79,6 +78,9 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_ENABLE_DEBUG_DYLIB "NO"
 )
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
+
+set_property(TARGET mozillavpn APPEND PROPERTY XCODE_EMBED_APP_EXTENSIONS networkextension)
+set_property(TARGET mozillavpn APPEND PROPERTY XCODE_EMBED_APP_EXTENSIONS widgetextension)
 
 find_library(FW_UI_KIT UIKit)
 find_library(FW_FOUNDATION Foundation)
@@ -166,7 +168,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ioslogger.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iostunnelmessage.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iostunnelmanager.swift
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/ToggleIntent.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/TurnOffIntent.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/TurnOnIntent.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/VPNStatusIntent.swift

@@ -149,7 +149,7 @@ struct ToggleIntent: SetValueIntent {
           logger.info("MATTHEW IN TURN ON")
           let activationResult: Bool
           do {
-            // IF DOING IT THIS WAY, MUST REMEMBER TO ADD THE AUTO RECONNECT STUFF
+            // IF DOING IT THIS WAY, MUST REMEMBER TO ADD THE AUTO RECONNECT STUFF!!!!
             logger.info("MATTHEW GOOD 3.0")
             try (tunnel?.connection as? NETunnelProviderSession)?.startTunnel(options: ["source": "control"])
             logger.info("MATTHEW GOOD 3.1")

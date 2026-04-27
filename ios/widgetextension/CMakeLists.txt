@@ -11,7 +11,7 @@ set_target_properties(widgetextension PROPERTIES
     XCODE_PRODUCT_TYPE com.apple.product-type.app-extension       #### THIS MAY BE WRONG
     BUNDLE_EXTENSION appex
     MACOSX_BUNDLE ON
-    # MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in.  #### MUST UPDATE THIS ONE
+    MACOSX_BUNDLE_INFO_PLIST ${CMAKE_CURRENT_SOURCE_DIR}/Info.plist.in
     MACOSX_BUNDLE_BUNDLE_NAME "MozillaVPNWidgetExtension"
     MACOSX_BUNDLE_BUNDLE_VERSION "${BUILD_ID}"
     MACOSX_BUNDLE_COPYRIGHT "MPL-2.0"
@@ -22,7 +22,6 @@ set_target_properties(widgetextension PROPERTIES
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}.widget-extension"
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
     XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES "YES"
-    # XCODE_ATTRIBUTE_SWIFT_OBJC_BRIDGING_HEADER "${CMAKE_CURRENT_SOURCE_DIR}/WireGuardNetworkExtension-Bridging-Header.h"
     XCODE_ATTRIBUTE_SWIFT_PRECOMPILE_BRIDGING_HEADER "NO"
     XCODE_ATTRIBUTE_APPLICATION_EXTENSION_API_ONLY "YES"
     XCODE_ATTRIBUTE_ENABLE_BITCODE "NO"
@@ -33,13 +32,11 @@ set_target_properties(widgetextension PROPERTIES
     XCODE_ATTRIBUTE_STRIP_INSTALLED_PRODUCT "NO"
 )
 
-# find_library(FW_ASSETS_LIBRARY AssetsLibrary)
-# find_library(FW_MOBILE_CORE MobileCoreServices)
-# find_library(FW_UI_KIT UIKit)
+find_library(FW_WIDGETKIT WidgetKit REQUIRED)
+find_library(FW_SWIFTUI SwiftUI REQUIRED)
 
-# target_link_libraries(networkextension PRIVATE ${FW_ASSETS_LIBRARY})
-# target_link_libraries(networkextension PRIVATE ${FW_MOBILE_CORE})
-# target_link_libraries(networkextension PRIVATE ${FW_UI_KIT})
+target_link_libraries(widgetextension PRIVATE ${FW_WIDGETKIT})
+target_link_libraries(widgetextension PRIVATE ${FW_SWIFTUI})
 
 target_compile_options(widgetextension PRIVATE -DGROUP_ID=\"${BUILD_IOS_GROUP_IDENTIFIER}\")
 target_compile_options(widgetextension PRIVATE -DNETWORK_EXTENSION=1)

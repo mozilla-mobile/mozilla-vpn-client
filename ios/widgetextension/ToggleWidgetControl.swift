@@ -11,6 +11,7 @@ import SwiftUI
 import WidgetKit
 import os
 
+@available(iOS 18.0, *)
 struct ToggleWidgetControl: ControlWidget {
     static let kind: String = "org.mozilla.ios.FirefoxVPN.ToggleWidget"
     static let logger = Logger(subsystem: "org.mozilla.BLAH", category: "api")
@@ -33,6 +34,7 @@ struct ToggleWidgetControl: ControlWidget {
     }
 }
 
+@available(iOS 18.0, *)
 extension ToggleWidgetControl {
 
     struct Value {
