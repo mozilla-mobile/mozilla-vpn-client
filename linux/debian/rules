@@ -3,6 +3,7 @@
 export DH_VERBOSE=1
 
 DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
+DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
 
 # Ensure we use cargo/rust 1.85 or later.
@@ -22,6 +23,23 @@ endif
 
 export SYSTEMD_UNIT_PATH := $(shell (pkg-config --variable=systemdsystemunitdir systemd || echo "/lib/systemd/system") | sed 's/^[/]//g')
 
+# Cross-compilation flags injected when building for arm64.
+# QT_AARCH64_PATH and QT_HOST_PATH are expected to be exported by the caller.
+ifeq (arm64,$(DEB_HOST_ARCH))
+CROSS_BUILD_ARGS := \
+	-DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/scripts/linux/aarch64-toolchain.cmake \
+	-DCMAKE_FIND_ROOT_PATH=/ \
+	-DCMAKE_LIBRARY_ARCHITECTURE=aarch64-linux-gnu
+ifneq (,$(QT_AARCH64_PATH))
+CROSS_BUILD_ARGS += -DCMAKE_PREFIX_PATH=$(QT_AARCH64_PATH)
+endif
+ifneq (,$(QT_HOST_PATH))
+CROSS_BUILD_ARGS += \
+	-DQT_HOST_PATH=$(QT_HOST_PATH) \
+	-DQT_HOST_PATH_CMAKE_DIR=$(QT_HOST_PATH)/lib/cmake
+endif
+endif
+
 %:
 	dh $@ --buildsystem=cmake+ninja --builddirectory=build-$(DEB_HOST_MULTIARCH) --warn-missing
 
@@ -35,7 +53,8 @@ override_dh_auto_configure:
 		-DBUILD_ID=$(DEB_VERSION) \
 		-DBUILD_TESTS=OFF \
 		-DBUILD_APPARMOR=ON \
-		${OPENSSL_BUILD_ARGS}
+		${OPENSSL_BUILD_ARGS} \
+		$(CROSS_BUILD_ARGS)
 
 override_dh_auto_test:
 
