@@ -336,7 +336,13 @@ inline const OverridableFeature webExtension = {
     },
 };
 
-extern const OverridableFeature splitTunnel;
+const OverridableFeature networkExtension = {
+    .id = "networkExtension",
+    .name = "Network Extension",
+    .evaluator = +[] { return false; },
+    .canFlipOn = +[] { return Platform::macos; },
+    .canFlipOff = +[] { return Platform::macos; },
+};
 
 }  // namespace Feature
 

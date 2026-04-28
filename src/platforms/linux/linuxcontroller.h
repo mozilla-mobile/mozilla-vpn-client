@@ -36,6 +36,8 @@ class LinuxController final : public ControllerImpl {
 
   bool multihopSupported() override { return true; }
 
+  bool splitTunnelSupported() const override;
+
  private slots:
   void checkStatusCompleted(QDBusPendingCallWatcher* call);
   void initializeCompleted(QDBusPendingCallWatcher* call);

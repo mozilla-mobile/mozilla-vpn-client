@@ -38,28 +38,6 @@ if(CODE_SIGN_IDENTITY)
     set(CMAKE_XCODE_ATTRIBUTE_CODE_SIGN_IDENTITY ${CODE_SIGN_IDENTITY})
 endif()
 
-## A helper to copy files into the application bundle
-function(osx_bundle_files TARGET)
-    cmake_parse_arguments(BUNDLE
-        ""
-        "DESTINATION"
-        "FILES"
-        ${ARGN})
-    
-    if(NOT BUNDLE_DESTINATION)
-        set(BUNDLE_DESTINATION Resources)
-    endif()
-
-    foreach(FILE ${BUNDLE_FILES})
-        add_custom_command(TARGET ${TARGET} POST_BUILD
-            COMMAND_EXPAND_LISTS
-            COMMAND ${COMMENT_ECHO_COMMAND} "Bundling ${FILE}"
-            COMMAND ${CMAKE_COMMAND} -E make_directory $<TARGET_BUNDLE_CONTENT_DIR:${TARGET}>/${BUNDLE_DESTINATION}
-            COMMAND ${CMAKE_COMMAND} -E copy ${FILE} $<TARGET_BUNDLE_CONTENT_DIR:${TARGET}>/${BUNDLE_DESTINATION}/
-        )
-    endforeach()
-endfunction(osx_bundle_files)
-
 ## A helper to code-sign an executable.
 function(osx_codesign_target TARGET)
     ## Xcode should perform automatic code-signing for us.
@@ -124,9 +102,16 @@ function(osx_embed_provision_profile TARGET)
     endif()
     ## A provisioning profile can be manually specified
     if(CODE_SIGN_PROFILE)
-        add_custom_command(TARGET ${TARGET} POST_BUILD
-            COMMAND ${COMMENT_ECHO_COMMAND} "Bundling embedded.provisionprofile"
-            COMMAND ${CMAKE_COMMAND} -E copy ${CODE_SIGN_PROFILE} $<TARGET_BUNDLE_CONTENT_DIR:${TARGET}>/embedded.provisionprofile
+        add_custom_command(
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile
+            DEPENDS ${CODE_SIGN_PROFILE}
+            COMMAND ${CMAKE_COMMAND} -E copy ${CODE_SIGN_PROFILE} ${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile
+        )
+        target_sources(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile)
+        set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile PROPERTIES
+            MACOSX_PACKAGE_LOCATION "/"
+            HEADER_FILE_ONLY TRUE
+            GENERATED TRUE
         )
         return()
     endif()
@@ -223,10 +208,16 @@ function(osx_embed_provision_profile TARGET)
         )
         message("Using provisioning profile: ${PROFILE_NAME}")
 
-        add_custom_command(TARGET ${TARGET} POST_BUILD
-            COMMAND_EXPAND_LISTS
-            COMMAND ${COMMENT_ECHO_COMMAND} "Bundling embedded.provisionprofile"
-            COMMAND ${CMAKE_COMMAND} -E copy ${BEST_PROFILE} $<TARGET_BUNDLE_CONTENT_DIR:${TARGET}>/embedded.provisionprofile
+        add_custom_command(
+            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile
+            DEPENDS ${BEST_PROFILE}
+            COMMAND ${CMAKE_COMMAND} -E copy ${BEST_PROFILE} ${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile
+        )
+        target_sources(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile)
+        set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile PROPERTIES
+            MACOSX_PACKAGE_LOCATION "/"
+            HEADER_FILE_ONLY TRUE
+            GENERATED TRUE
         )
     endif()
 endfunction()

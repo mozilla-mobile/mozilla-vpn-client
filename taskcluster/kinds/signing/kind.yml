@@ -28,6 +28,13 @@ mac-signing:
         - deep: false
           runtime: true
           force: true
+          entitlements: taskcluster/scripts/signing/networkextension-entitlements.xml
+          globs:
+            - "/Contents/Library/SystemExtensionorg.mozilla.macos.FirefoxVPN.network-extension.systemextension"
+
+        - deep: false
+          runtime: true
+          force: true
           entitlements: taskcluster/scripts/signing/entitlements.xml
           globs:
             - "/"  # The .app
