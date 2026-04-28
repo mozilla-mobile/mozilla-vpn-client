@@ -30,7 +30,7 @@ mac-signing:
           force: true
           entitlements: taskcluster/scripts/signing/networkextension-entitlements.xml
           globs:
-            - "/Contents/Library/SystemExtensionorg.mozilla.macos.FirefoxVPN.network-extension.systemextension"
+            - "/Contents/Library/SystemExtensions/org.mozilla.macos.FirefoxVPN.network-extension.systemextension"
 
         - deep: false
           runtime: true
