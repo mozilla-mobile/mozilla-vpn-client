@@ -22,7 +22,6 @@ import glob
 import json
 import os
 import re
-import sys
 import xml.etree.ElementTree as ET
 from generate_strings import parseYAMLTranslationStrings
 
@@ -121,7 +120,7 @@ def build_phrase_section(phrase_strings, locale_translations):
           continue
         for translation in translation_block.split('\n'):
           if translation:
-              if not "%@" in translation:
+              if "%@" not in translation:
                   print(f"Missing required placeholder in {translation} for {locale}")
                   exit(1)
               locale_values.append(using_app_placeholder(translation))
