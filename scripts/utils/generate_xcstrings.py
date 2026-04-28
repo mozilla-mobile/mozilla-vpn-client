@@ -47,7 +47,7 @@ def load_xliff_translations(xliff_path, isEnglish):
     return translations
 
 def using_app_placeholder(value):
-    return value.replace("%@",f"${{applicationName}}")
+    return value.replace("%@", "${{applicationName}}")
 
 SPECIAL_LOCALE_MAP = {
     'zh_CN': 'zh-Hans',
