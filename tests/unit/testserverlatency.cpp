@@ -8,7 +8,7 @@
 #include <QJsonObject>
 
 #include "constants.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "models/location.h"
 #include "models/servercity.h"
 #include "serverlatency.h"

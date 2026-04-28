@@ -16,7 +16,7 @@
 #include "androidvpnactivity.h"
 #include "controller.h"
 #include "errorhandler.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "i18nstrings.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -230,8 +230,7 @@ void AndroidController::activate(const InterfaceConfig& config,
           .arg(localizedCityName);
   args["messages"] = messages;
 
-  args["isSuperDooperFeatureActive"] =
-      Feature::get(Feature::Feature_superDooperMetrics)->isSupported();
+  args["isSuperDooperFeatureActive"] = Feature::superDooperMetrics.supported;
   QString trueCountryCode = MozillaVPN::instance()->location()->countryCode();
   if (!trueCountryCode.isEmpty()) {
     args["serverLocatedInUserCountry"] =

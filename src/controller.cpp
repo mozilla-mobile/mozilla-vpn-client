@@ -12,7 +12,7 @@
 #include "controller_p.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "frontend/navigator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -408,16 +408,15 @@ void Controller::activateInternal(
   logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
 
   // Splittunnel-feature could have been disabled due to a driver conflict.
-  if (Feature::get(Feature::Feature_splitTunnel)->isSupported()) {
+  if (Feature::isEnabled(Feature::splitTunnel)) {
     exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
-  if (Feature::get(Feature::Feature_alwaysPort53)->isSupported()) {
+  if (Feature::isEnabled(Feature::alwaysPort53)) {
     dnsPort = ForceDNSPort;
   }
 
   // For single-hop connections, exclude the entry server
-  if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
-      !m_serverData.multihop()) {
+  if (!Feature::multiHop.supported || !m_serverData.multihop()) {
     logger.info() << "Activating single hop";
     exitConfig.m_hopType = InterfaceConfig::SingleHop;
 
@@ -943,8 +942,7 @@ bool Controller::activate(const ServerData& serverData,
       return true;
     }
 
-    if (Feature::get(Feature::Feature_checkConnectivityOnActivation)
-            ->isSupported()) {
+    if (Feature::isEnabled(Feature::checkConnectivityOnActivation)) {
       // Ensure that the device is connected to the Internet.
       if (MozillaVPN::instance()->networkWatcher()->getReachability() ==
           QNetworkInformation::Reachability::Disconnected) {

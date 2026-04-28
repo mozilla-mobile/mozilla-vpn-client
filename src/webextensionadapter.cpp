@@ -4,6 +4,7 @@
 
 #include "webextensionadapter.h"
 
+#include <QCoreApplication>
 #include <QFileInfo>
 #include <QHostAddress>
 #include <QJsonArray>
@@ -15,7 +16,7 @@
 
 #include "connectionhealth.h"
 #include "controller.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -210,8 +211,7 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
 
 QJsonObject WebExtensionAdapter::serializeFeaturelist() {
   auto out = QJsonObject();
-  out["webExtension"] =
-      Feature::get(Feature::Feature_webExtension)->isSupported();
+  out["webExtension"] = Feature::isEnabled(Feature::webExtension);
 
   // Detect the localProxy feature by checking the running services.
 #if defined(MZ_LINUX) && !defined(MZ_FLATPAK)

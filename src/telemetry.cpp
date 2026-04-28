@@ -7,7 +7,7 @@
 #include "apppermission.h"
 #include "controller.h"
 #include "dnshelper.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
 #include "leakdetector.h"
@@ -68,46 +68,45 @@ void Telemetry::initialize() {
     }
   });
 
-  connect(
-      controller, &Controller::recordConnectionStartTelemetry, this,
-      [this, controller]() {
-        if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-          if (controller->state() == Controller::StateOn) {
-            mozilla::glean_pings::Vpnsession.submit("flush");
+  connect(controller, &Controller::recordConnectionStartTelemetry, this,
+          [this, controller]() {
+            if (Feature::superDooperMetrics.supported) {
+              if (controller->state() == Controller::StateOn) {
+                mozilla::glean_pings::Vpnsession.submit("flush");
 
-            mozilla::glean::session::session_id.generateAndSet();
-            mozilla::glean::session::session_start.set();
-            mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
-            mozilla::glean::session::apps_excluded.set(
-                AppPermission::instance()->disabledAppCount());
+                mozilla::glean::session::session_id.generateAndSet();
+                mozilla::glean::session::session_start.set();
+                mozilla::glean::session::dns_type.set(DNSHelper::getDNSType());
+                mozilla::glean::session::apps_excluded.set(
+                    AppPermission::instance()->disabledAppCount());
 
-            mozilla::glean_pings::Vpnsession.submit("start");
+                mozilla::glean_pings::Vpnsession.submit("start");
 
-            if (SettingsHolder::instance()->shortTimerSessionPing()) {
-              m_vpnSessionPingTimer.start(
-                  SHORT_DEBUG_VPNSESSION_PING_TIMER_SEC * 1000);
-            } else {
-              m_vpnSessionPingTimer.start(VPNSESSION_PING_TIMER_SEC * 1000);
+                if (SettingsHolder::instance()->shortTimerSessionPing()) {
+                  m_vpnSessionPingTimer.start(
+                      SHORT_DEBUG_VPNSESSION_PING_TIMER_SEC * 1000);
+                } else {
+                  m_vpnSessionPingTimer.start(VPNSESSION_PING_TIMER_SEC * 1000);
+                }
+              }
             }
-          }
-        }
-      });
+          });
 
-  connect(
-      controller, &Controller::recordConnectionEndTelemetry, this, [this]() {
-        if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
-          mozilla::glean::session::session_end.set();
-          mozilla::glean_pings::Vpnsession.submit("end");
-          m_vpnSessionPingTimer.stop();
+  connect(controller, &Controller::recordConnectionEndTelemetry, this,
+          [this]() {
+            if (Feature::superDooperMetrics.supported) {
+              mozilla::glean::session::session_end.set();
+              mozilla::glean_pings::Vpnsession.submit("end");
+              m_vpnSessionPingTimer.stop();
 
-          // We are rotating the UUID here as a safety measure. It is rotated
-          // again before the next session start, and we expect to see the
-          // UUID created here in only one ping: The session ping with a
-          // "flush" reason, which should contain this UUID and no other
-          // metrics.
-          mozilla::glean::session::session_id.generateAndSet();
-        }
-      });
+              // We are rotating the UUID here as a safety measure. It is
+              // rotated again before the next session start, and we expect to
+              // see the UUID created here in only one ping: The session ping
+              // with a "flush" reason, which should contain this UUID and no
+              // other metrics.
+              mozilla::glean::session::session_id.generateAndSet();
+            }
+          });
 
 #ifndef MZ_MOBILE
   connect(controller, &Controller::recordDataTransferTelemetry, this,
@@ -153,7 +152,7 @@ void Telemetry::connectionStabilityEvent() {
 }
 
 void Telemetry::vpnSessionPingTimeout() {
-  if (Feature::get(Feature::Feature_superDooperMetrics)->isSupported()) {
+  if (Feature::superDooperMetrics.supported) {
     mozilla::glean_pings::Vpnsession.submit("timer");
   }
 }
