@@ -64,7 +64,7 @@ def get_locales(i18n_dir):
           if os.path.isfile(os.path.join(i18n_dir, entry, "mozillavpn.xliff"))
       ]
     if not locales:
-        print(f"No other locales found")
+        print("No other locales found")
         exit(1)
     return locales
 
@@ -170,7 +170,7 @@ def main():
     # Load all strings and filter to iosAppIntents.*    
     all_strings = parseYAMLTranslationStrings(args.strings_yaml)
     if not all_strings:
-        print(f"Error parsing YAML")
+        print("Error parsing YAML")
         exit(1)
 
     activate_strings = {
