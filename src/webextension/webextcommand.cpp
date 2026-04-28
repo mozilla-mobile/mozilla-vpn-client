@@ -12,7 +12,6 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 
-#include "commandlineparser.h"
 #include "leakdetector.h"
 #include "server.h"
 #include "webextbridge.h"
@@ -49,10 +48,12 @@ int WebExtCommand::run(QStringList& tokens) {
 
   QCommandLineOption optVersion = parser.addVersionOption();
   QCommandLineOption optHelp = parser.addHelpOption();
-  QCommandLineOption optName(QStringList({"n", "name"}),
-                             "Local socket of the Mozilla VPN client", "NAME");
-  optName.setDefaultValue(WebExtension::Server::localSocketName());
-  parser.addOption(optName);
+  #ifdef MZ_DEBUG
+    QCommandLineOption optName(QStringList({"n", "name"}),
+                              "Local socket of the Mozilla VPN client", "NAME");
+    optName.setDefaultValue(WebExtension::Server::localSocketName());
+    parser.addOption(optName);
+  #endif 
 
   // Parse command line arguments.
   parser.parse(tokens);
@@ -64,6 +65,12 @@ int WebExtCommand::run(QStringList& tokens) {
     parser.showVersion();
     return 0;
   }
+
+  #ifdef MZ_DEBUG
+    const auto socketName = parser.value(optName);
+  #else 
+    const auto socketName = WebExtension::Server::localSocketName();
+  #endif
 
   QStringList args = parser.positionalArguments();
   if (args.length() != 2) {
@@ -88,7 +95,7 @@ int WebExtCommand::run(QStringList& tokens) {
                    &QCoreApplication::quit);
 
   // Create a webextension bridge to the VPN client.
-  WebExtBridge bridge(parser.value(optName));
+  WebExtBridge bridge(socketName);
   QObject::connect(&bridge, &WebExtBridge::messageReceived, &handler,
                    &WebExtHandler::writeMsgStdout);
   QObject::connect(&handler, &WebExtHandler::unhandledMessage, &bridge,
