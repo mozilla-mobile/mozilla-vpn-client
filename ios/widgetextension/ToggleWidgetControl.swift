@@ -18,15 +18,15 @@ struct ToggleWidgetControl: ControlWidget {
       provider: Provider()
     ) { value in
       ControlWidgetToggle(
-        "Mozilla VPN",
+        LocalizedStringResource("vpn.iosAppIntentsMain.toggleTitle", defaultValue: "Toggle Mozilla VPN"),
         isOn: value,
         action: ToggleIntent()
       ) { isOn in
         Label(isOn ? "On" : "Off", systemImage: isOn ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
       }
     }
-    .displayName("Mozilla VPN") // OMG LOCALIZE
-    .description("VPN BUT NEED TO UPDATE THIS") // OMG LOCALIZE
+    .displayName("Mozilla VPN") // Not localizing - this is localized in another part of the app (that we can't easily get to Apple-land), and seems like all locales translate it as "Mozilla VPN"
+    .description(LocalizedStringResource("vpn.iosAppIntentsMain.toggleDescription", defaultValue: "Changes Mozilla VPN status"))
   }
 }
 
@@ -42,29 +42,18 @@ extension ToggleWidgetControl {
 
     func currentValue() async -> Bool {
       let logger = Logger(subsystem: "org.mozilla.ios.FirefoxVPN", category: "WidgetControl")
-      let managers: [NETunnelProviderManager]?
       do {
-        managers = try await withCheckedThrowingContinuation { continuation in
-          NETunnelProviderManager.loadAllFromPreferences { managers, error in
-            if let error = error {
-              logger.warning("Error loading tunnels: \(error.localizedDescription)")
-              continuation.resume(throwing: error)
-            } else {
-              continuation.resume(returning: managers)
-            }
-          }
+
+        guard let tunnel = try await NETunnelProviderManager.ourVpnTunnel() else {
+          logger.warning("No tunnel found")
+          return false
         }
+        return tunnel.isConnected
+
       } catch let error {
         logger.debug("Error: \(error.localizedDescription)")
         return false
       }
-
-      guard let managers = managers, let tunnel = (managers.first(where: { $0.isOurManager })) else {
-        logger.warning("No tunnel found")
-        return false
-      }
-
-      return tunnel.isConnected
     }
   }
 }

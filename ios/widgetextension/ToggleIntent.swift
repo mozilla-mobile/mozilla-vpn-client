@@ -14,8 +14,7 @@ struct ToggleIntent: SetValueIntent {
   static let description = IntentDescription(LocalizedStringResource("vpn.iosAppIntentsMain.toggleDescription", defaultValue: "Changes Mozilla VPN status"))
 
   static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
-
-  static let systemImageName = "bolt.shield"
+  static let errorSystemImageName = "exclamationmark.triangle"
 
   @Parameter(title: "VPN is connected")
   var value: Bool
@@ -23,25 +22,15 @@ struct ToggleIntent: SetValueIntent {
   @MainActor
   func perform() async throws -> some IntentResult & ProvidesDialog {
     let logger = Logger(subsystem: "org.mozilla.ios.FirefoxVPN", category: "ToggleIntent")
-    let managers: [NETunnelProviderManager]? = try await withCheckedThrowingContinuation { continuation in
-      NETunnelProviderManager.loadAllFromPreferences { managers, error in
-        if let error = error {
-          logger.warning("Error loading tunnel managers: \(error.localizedDescription)")
-          continuation.resume(throwing: error)
-        } else {
-          continuation.resume(returning: managers)
-        }
-      }
-    }
-
     let dialog: IntentDialog
     let responseText: LocalizedStringResource
     let responseImage: String
+
     let tunnel: NETunnelProviderManager
-    if let potentialTunnel = (managers?.first(where: { $0.isOurManager })) {
-      tunnel = potentialTunnel
+    if let foundTunnel = try await NETunnelProviderManager.ourVpnTunnel() {
+      tunnel = foundTunnel
     } else {
-      logger.warning("Creating the tunnel, as none were found")
+      logger.warning("Creating tunnel, as none was found")
       tunnel = NETunnelProviderManager()
     }
 
@@ -51,21 +40,21 @@ struct ToggleIntent: SetValueIntent {
       if #available(iOS 17.2, *) {
         dialog = IntentDialog(full: responseText,
                               supporting: responseText,
-                              systemImageName: "exclamationmark.triangle")
+                              systemImageName: ToggleIntent.errorSystemImageName)
       } else {
         dialog = IntentDialog(responseText)
       }
       return .result(dialog: dialog)
     }
 
-    let currentStatus = (connection.status == .connected || connection.status == .connecting)
+    let currentStatus = tunnel.isConnected
     if currentStatus == value {
       if !value {
         responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOffError", defaultValue: "No active VPN connection")
-        responseImage = "exclamationmark.triangle"
+        responseImage = ToggleIntent.errorSystemImageName
       } else {
         responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnAlreadyConnectedError", defaultValue: "VPN is already connected")
-        responseImage = "exclamationmark.triangle"
+        responseImage = ToggleIntent.errorSystemImageName
       }
       logger.error("Widget status (\(value)) doesn't match current tunnel status (\(currentStatus)).")
       value = currentStatus
@@ -101,6 +90,17 @@ struct ToggleIntent: SetValueIntent {
           tunnel.isOnDemandEnabled = true
           tunnel.onDemandRules = [alwaysConnect]
 
+          try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
+            tunnel.saveToPreferences { error in
+              if let error = error {
+                logger.info("Error saving tunnel: \(error.localizedDescription)")
+                continuation.resume(throwing: error)
+              } else {
+                continuation.resume()
+              }
+            }
+          }
+
           try connection.startTunnel(options: ["source": "control"])
           let config = (tunnel.protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration
           let entryCity: String? = config?["entryCity"] as? String
@@ -113,6 +113,7 @@ struct ToggleIntent: SetValueIntent {
               responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmationSingleHop", defaultValue: "Mozilla VPN connected through \(exitCity)")
             }
           } else {
+            logger.warning("Did not find a city")
             responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmation", defaultValue: "Mozilla VPN connected")
           }
           responseImage = "shield.lefthalf.filled"
@@ -120,7 +121,7 @@ struct ToggleIntent: SetValueIntent {
         } catch let error {
           logger.warning("Error: \(error.localizedDescription)")
           responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnError", defaultValue: "Error turning on Mozilla VPN")
-          responseImage = "exclamationmark.triangle"
+          responseImage = ToggleIntent.errorSystemImageName
         }
       }
     }

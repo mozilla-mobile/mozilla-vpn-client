@@ -17,7 +17,7 @@ struct MozillaVPNAppShortcuts: AppShortcutsProvider {
         "Turn on \(.applicationName)",
         "Turn \(.applicationName) on"
       ],
-      shortTitle: "Turn On Mozilla VPN", // THIS MUST BE LOCALIZED STRING RESOURCE - do i need to add checks?
+      shortTitle: LocalizedStringResource("vpn.iosAppIntentsMain.turnOnAction", defaultValue: "Turn On Mozilla VPN"),
       systemImageName: "shield.lefthalf.filled"
     )
     AppShortcut(
@@ -27,7 +27,7 @@ struct MozillaVPNAppShortcuts: AppShortcutsProvider {
         "Turn off \(.applicationName)",
         "Turn \(.applicationName) off"
       ],
-      shortTitle: "Turn Off Mozilla VPN", // THIS MUST BE LOCALIZED STRING RESOURCE - do i need to add checks?
+      shortTitle: LocalizedStringResource("vpn.iosAppIntentsMain.turnOffAction", defaultValue: "Turn Off Mozilla VPN"),
       systemImageName: "shield.lefthalf.filled.slash"
     )
     AppShortcut(
@@ -44,7 +44,7 @@ struct MozillaVPNAppShortcuts: AppShortcutsProvider {
         "Is \(.applicationName) switched on?",
         "Is \(.applicationName) connected?"
       ],
-      shortTitle: "Is the VPN currently connected?", // THIS MUST BE LOCALIZED STRING RESOURCE - do i need to add checks?
+      shortTitle: LocalizedStringResource("vpn.iosAppIntentsMain.statusQueryTitle", defaultValue: "Is the VPN currently connected?"),
       systemImageName: "questionmark.square.dashed"
     )
   }

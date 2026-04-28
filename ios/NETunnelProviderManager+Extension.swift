@@ -7,6 +7,11 @@ import NetworkExtension
 import os
 
 extension NETunnelProviderManager {
+  static func ourVpnTunnel() async throws -> NETunnelProviderManager? {
+    let managers = try await NETunnelProviderManager.loadAllFromPreferences()
+    return (managers.first(where: { $0.isOurManager }))
+  }
+
   var isOurManager: Bool {
     let logger = Logger(subsystem: "NETunnelProviderManager", category: "MozillaVPN")
       guard
