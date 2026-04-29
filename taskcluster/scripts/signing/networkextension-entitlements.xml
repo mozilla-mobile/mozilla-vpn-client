@@ -9,7 +9,7 @@
 	<string>43AQ936H96.org.mozilla.macos.FirefoxVPN.network-extension</string>
 	<key>com.apple.developer.networking.networkextension</key>
 	<array>
-		<string>app-proxy-provider</string>
+		<string>app-proxy-provider-systemextension</string>
 	</array>
 	<key>com.apple.developer.team-identifier</key>
 	<string>43AQ936H96</string>
