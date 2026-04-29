@@ -39,8 +39,8 @@ class IOSController final : public ControllerImpl {
 
   bool canSendUpdatedConfig() const override { return true; }
 
-  void sendUpdatedConfig(InterfaceConfig entryConfig,
-                         InterfaceConfig exitConfig) override;
+  void sendUpdatedConfig(InterfaceConfig& entryConfig,
+                         InterfaceConfig& exitConfig) override;
 
  private:
   bool m_checkingStatus = false;
