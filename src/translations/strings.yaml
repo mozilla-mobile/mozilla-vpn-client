@@ -1117,7 +1117,7 @@ iosAppIntentsActivate:
       Switch %@ on
       Connect %@
       Connect to %@
-    comments:
+    comment:
       - >
         Siri phrase variants for activating the VPN via App Intents.
         Each line is a separate phrase Siri will recognize.
@@ -1138,7 +1138,7 @@ iosAppIntentsDeactivate:
       Switch %@ off
       Disconnect %@
       Disconnect from %@
-    comments:
+    comment:
       - >
         Siri phrase variants for deactivating the VPN via App Intents.
         Each line is a separate phrase Siri will recognize.

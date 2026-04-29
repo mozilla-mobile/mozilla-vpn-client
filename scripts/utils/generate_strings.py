@@ -236,7 +236,8 @@ const char* const I18nStrings::_ids[] = {
             output.write(f"    //% \"{output_value}\"\n")
 
             for comment in data["comments"]:
-                output.write(f"    //: {comment}\n")
+                processed = comment.replace('\n', '\\n')
+                output.write(f"    //: {processed}\n")
             output.write(f"    QT_TRID_NOOP(\"{data['string_id']}\"),\n\n")
 
         # This is done to make windows compiler happy
