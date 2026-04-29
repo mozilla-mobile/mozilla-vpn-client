@@ -4,365 +4,129 @@
 
 #include "testfeaturemodel.h"
 
-#include "feature/feature.h"
+#include <QJsonDocument>
+#include <QJsonObject>
+
 #include "feature/featuremodel.h"
+#include "feature/features.h"
 #include "helper.h"
 #include "settingsholder.h"
 
-void TestFeatureModel::init() { Feature::maybeInitialize(); }
+using namespace Feature;
 
-void TestFeatureModel::cleanup() {
-  Feature::testReset();
-  SettingsHolder::testCleanup();
-}
+void TestFeatureModel::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestFeatureModel::flipOnOff() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  // Fresh settings!
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureA"));
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureB"));
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureC"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureA"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureB"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureC"));
+  auto* settings = SettingsHolder::instance();
 
-  // Let's create a few features
+  // alwaysPort53: default off, flippable
+  QVERIFY(!isEnabled(alwaysPort53));
 
-  QVERIFY(!Feature::getOrNull("testFeatureA"));
-  Feature fA(
-      "testFeatureA", "Feature A",
-      []() -> bool { return true; },  // Can be flipped on
-      []() -> bool { return true; },  // Can be flipped off
-      QStringList(),                  // feature dependencies
-      []() -> bool { return true; });
-  QVERIFY(!!Feature::get("testFeatureA"));
-  QVERIFY(Feature::get("testFeatureA")->isSupported());
+  // Toggle on
+  FeatureModel::instance()->toggle("alwaysPort53");
+  QVERIFY(isEnabled(alwaysPort53));
+  QVERIFY(settings->featuresFlippedOn().contains("alwaysPort53"));
 
-  QVERIFY(!Feature::getOrNull("testFeatureB"));
-  Feature fB(
-      "testFeatureB", "Feature B",
-      []() -> bool { return true; },  // Can be flipped on
-      []() -> bool { return true; },  // Can be flipped off
-      QStringList(),                  // feature dependencies
-      []() -> bool { return false; });
-  QVERIFY(!!Feature::get("testFeatureB"));
-  QVERIFY(!Feature::get("testFeatureB")->isSupported());
+  // Toggle back off
+  FeatureModel::instance()->toggle("alwaysPort53");
+  QVERIFY(!isEnabled(alwaysPort53));
+  QVERIFY(!settings->featuresFlippedOn().contains("alwaysPort53"));
 
-  QVERIFY(!Feature::getOrNull("testFeatureC"));
-  Feature fC(
-      "testFeatureC", "Feature C",
-      []() -> bool { return false; },  // Can be flipped on
-      []() -> bool { return false; },  // Can be flipped off
-      QStringList(),                   // feature dependencies
-      []() -> bool { return false; });
-  QVERIFY(!!Feature::get("testFeatureC"));
-  QVERIFY(!Feature::get("testFeatureC")->isSupported());
+  // recommendedServers: default on, flippable
+  QVERIFY(isEnabled(recommendedServers));
 
-  FeatureModel* fm = FeatureModel::instance();
+  // Toggle off
+  FeatureModel::instance()->toggle("recommendedServers");
+  QVERIFY(!isEnabled(recommendedServers));
+  QVERIFY(settings->featuresFlippedOff().contains("recommendedServers"));
 
-  // On -> On(+flip off)
-  fm->toggle("testFeatureA");
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureA"));
-  QVERIFY(settingsHolder->featuresFlippedOff().contains("testFeatureA"));
-  QVERIFY(!Feature::get("testFeatureA")->isSupported());
-
-  // On(+flip off) -> On
-  fm->toggle("testFeatureA");
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureA"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureA"));
-  QVERIFY(Feature::get("testFeatureA")->isSupported());
-
-  // Off -> Off(+flip on)
-  fm->toggle("testFeatureB");
-  QVERIFY(settingsHolder->featuresFlippedOn().contains("testFeatureB"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureB"));
-  QVERIFY(Feature::get("testFeatureB")->isSupported());
-
-  // Off(+flip on) -> Off
-  fm->toggle("testFeatureB");
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureB"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureB"));
-  QVERIFY(!Feature::get("testFeatureB")->isSupported());
-
-  // Flipping on an unflippable feature doesn't produce changes.
-  fm->toggle("testFeatureC");
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureC"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureC"));
-  QVERIFY(!Feature::get("testFeatureC")->isSupported());
+  // Toggle back on
+  FeatureModel::instance()->toggle("recommendedServers");
+  QVERIFY(isEnabled(recommendedServers));
+  QVERIFY(!settings->featuresFlippedOff().contains("recommendedServers"));
 }
 
 void TestFeatureModel::updateFeatureListOverwriteFeatures() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  // Fresh settings
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureA"));
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureB"));
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureC"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureA"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureB"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureC"));
+  // alwaysPort53 is off by default, flippable
+  QVERIFY(!isEnabled(alwaysPort53));
 
-  // Let's create a few features
-
-  Feature fA(
-      "testFeatureA", "Feature A",
-      []() -> bool { return true; },  // Can be flipped on
-      []() -> bool { return true; },  // Can be flipped off
-      QStringList(),                  // feature dependencies
-      []() -> bool { return true; });
-  QVERIFY(!!Feature::get("testFeatureA"));
-  QVERIFY(Feature::get("testFeatureA")->isSupported());
-
-  Feature fB(
-      "testFeatureB", "Feature B",
-      []() -> bool { return true; },  // Can be flipped on
-      []() -> bool { return true; },  // Can be flipped off
-      QStringList(),                  // feature dependencies
-      []() -> bool { return false; });
-  QVERIFY(!!Feature::get("testFeatureB"));
-  QVERIFY(!Feature::get("testFeatureB")->isSupported());
-
-  Feature fC(
-      "testFeatureC", "Feature C",
-      []() -> bool { return false; },  // Can be flipped on
-      []() -> bool { return false; },  // Can be flipped off
-      QStringList(),                   // feature dependencies
-      []() -> bool { return false; });
-  QVERIFY(!!Feature::get("testFeatureC"));
-  QVERIFY(!Feature::get("testFeatureC")->isSupported());
-
-  QJsonObject obj;
-  obj["testFeatureA"] = true;
-  obj["testFeatureB"] = true;
-  obj["testFeatureC"] = true;
-
+  // Server says: flip on
+  QJsonObject overwrite;
+  overwrite["alwaysPort53"] = true;
   QJsonObject json;
-  json["featuresOverwrite"] = obj;
+  json["featuresOverwrite"] = overwrite;
 
   FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
-  QVERIFY(settingsHolder->featuresFlippedOn().contains("testFeatureA"));
-  QVERIFY(settingsHolder->featuresFlippedOn().contains("testFeatureB"));
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureC"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureA"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureB"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureC"));
-  QVERIFY(Feature::get("testFeatureA")->isSupported());
-  QVERIFY(Feature::get("testFeatureB")->isSupported());
-  QVERIFY(!Feature::get("testFeatureC")->isSupported());
+  QVERIFY(isEnabled(alwaysPort53));
 
-  obj["testFeatureA"] = false;
-  obj["testFeatureB"] = false;
-  obj["testFeatureC"] = false;
-  json["featuresOverwrite"] = obj;
+  // Server says: flip off
+  overwrite["alwaysPort53"] = false;
+  json["featuresOverwrite"] = overwrite;
 
   FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureA"));
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureB"));
-  QVERIFY(!settingsHolder->featuresFlippedOn().contains("testFeatureC"));
-  QVERIFY(settingsHolder->featuresFlippedOff().contains("testFeatureA"));
-  QVERIFY(settingsHolder->featuresFlippedOff().contains("testFeatureB"));
-  QVERIFY(!settingsHolder->featuresFlippedOff().contains("testFeatureC"));
-  QVERIFY(!Feature::get("testFeatureA")->isSupported());
-  QVERIFY(!Feature::get("testFeatureB")->isSupported());
-  QVERIFY(!Feature::get("testFeatureC")->isSupported());
+  QVERIFY(!isEnabled(alwaysPort53));
 }
 
 void TestFeatureModel::updateFeatureListExperimentalFeaturesEmpty() {
-  // Clean up the features state.
-  SettingsHolder::instance()->setFeaturesFlippedOn({});
+  auto* settings = SettingsHolder::instance();
+  settings->setFeaturesFlippedOn({});
+  auto initialCount = settings->featuresFlippedOn().count();
 
-  auto initialFeaturesOnState = SettingsHolder::instance()->featuresFlippedOn();
+  QJsonObject json;
+  json["experimentalFeatures"] = QJsonObject();
 
-  QJsonObject obj;
-  // Empty object ¯\_(ツ)_/¯
-  QJsonObject experimentalFeatures;
-  obj["experimentalFeatures"] = experimentalFeatures;
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
 
-  // Nothing happened, because we got an empty object
-  QCOMPARE(initialFeaturesOnState.count(),
-           SettingsHolder::instance()->featuresFlippedOn().count());
+  // Empty object — nothing changed
+  QCOMPARE(settings->featuresFlippedOn().count(), initialCount);
 }
 
 void TestFeatureModel::updateFeatureListExperimentalFeaturesNotObject() {
-  // Clean up the features state.
-  SettingsHolder::instance()->setFeaturesFlippedOn({});
+  auto* settings = SettingsHolder::instance();
+  settings->setFeaturesFlippedOn({});
+  auto initialCount = settings->featuresFlippedOn().count();
 
-  auto initialFeaturesOnState = SettingsHolder::instance()->featuresFlippedOn();
+  QJsonObject json;
+  json["experimentalFeatures"] = "notanobject";
 
-  QJsonObject obj;
-  obj["experimentalFeatures"] = "notanobject";
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
 
-  // Nothing happened, because we got misformatted input
-  QCOMPARE(initialFeaturesOnState.count(),
-           SettingsHolder::instance()->featuresFlippedOn().count());
+  // Malformed input — nothing changed
+  QCOMPARE(settings->featuresFlippedOn().count(), initialCount);
 }
 
 void TestFeatureModel::
     updateFeatureListExperimentalFeaturesUnknownExperiment() {
-  // Clean up the features state.
-  SettingsHolder::instance()->setFeaturesFlippedOn({});
+  auto* settings = SettingsHolder::instance();
+  settings->setFeaturesFlippedOn({});
+  auto initialCount = settings->featuresFlippedOn().count();
 
-  auto initialFeaturesOnState = SettingsHolder::instance()->featuresFlippedOn();
+  QJsonObject experimental;
+  experimental["unknownExperiment"] = QJsonObject();
+  QJsonObject json;
+  json["experimentalFeatures"] = experimental;
 
-  QJsonObject obj;
-  QJsonObject experimentalFeatures;
-  QJsonObject unknownExperiment;
-  experimentalFeatures["unknownExperiment"] = unknownExperiment;
-  obj["experimentalFeatures"] = experimentalFeatures;
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
 
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
-
-  // Nothing happened, because we got an unknown feature
-  QCOMPARE(initialFeaturesOnState.count(),
-           SettingsHolder::instance()->featuresFlippedOn().count());
+  // Unknown feature — nothing changed
+  QCOMPARE(settings->featuresFlippedOn().count(), initialCount);
 }
 
 void TestFeatureModel::
     updateFeatureListExperimentalFeaturesNonObjectExperiment() {
-  // Clean up the features state.
-  SettingsHolder::instance()->setFeaturesFlippedOn({});
+  auto* settings = SettingsHolder::instance();
+  settings->setFeaturesFlippedOn({});
+  auto initialCount = settings->featuresFlippedOn().count();
 
-  auto initialFeaturesOnState = SettingsHolder::instance()->featuresFlippedOn();
+  QJsonObject experimental;
+  experimental["alwaysPort53"] = "notanobject";
+  QJsonObject json;
+  json["experimentalFeatures"] = experimental;
 
-  QJsonObject obj;
-  QJsonObject experimentalFeatures;
-  experimentalFeatures["myExperimentalFeature"] = "notanobject";
-  obj["experimentalFeatures"] = experimentalFeatures;
+  FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
 
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
-
-  // Nothing happened, because we got a misconfigured feature
-  QCOMPARE(initialFeaturesOnState.count(),
-           SettingsHolder::instance()->featuresFlippedOn().count());
+  // Malformed experiment — nothing changed
+  QCOMPARE(settings->featuresFlippedOn().count(), initialCount);
 }
 
-void TestFeatureModel::updateFeatureListExperimentalFeaturesNoSettings() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  // Clean up the features state.
-  settingsHolder->setFeaturesFlippedOn({});
-
-  auto initialFeaturesOnState = settingsHolder->featuresFlippedOn();
-
-  QJsonObject obj;
-  QJsonObject experimentalFeatures;
-  QJsonObject myExperimentalFeature;
-  experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
-  obj["experimentalFeatures"] = experimentalFeatures;
-
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
-
-  // Finally, it is flipped on!
-  QCOMPARE(initialFeaturesOnState.count() + 1,
-           settingsHolder->featuresFlippedOn().count());
-  QVERIFY(
-      settingsHolder->featuresFlippedOn().contains("myExperimentalFeature"));
-
-  // No settings were set though, settings were empty.
-  QVERIFY(!settingsHolder->myExperimentalFeature()->get("one").isValid());
-  QVERIFY(!settingsHolder->myExperimentalFeature()->get("two").isValid());
-  QVERIFY(!settingsHolder->myExperimentalFeature()->get("three").isValid());
-}
-
-void TestFeatureModel::updateFeatureListExperimentalFeaturesInvalidSettings() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  // Clean up the features state.
-  settingsHolder->setFeaturesFlippedOn({});
-
-  auto initialFeaturesOnState = settingsHolder->featuresFlippedOn();
-
-  QJsonObject obj;
-  QJsonObject experimentalFeatures;
-  QJsonObject myExperimentalFeature;
-  myExperimentalFeature["one"] = QJsonValue::Null;
-  myExperimentalFeature["two"] = QJsonValue::Null;
-  myExperimentalFeature["three"] = QJsonValue::Null;
-  experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
-  obj["experimentalFeatures"] = experimentalFeatures;
-
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
-
-  // It is flipped on!
-  QCOMPARE(initialFeaturesOnState.count() + 1,
-           settingsHolder->featuresFlippedOn().count());
-  QVERIFY(
-      settingsHolder->featuresFlippedOn().contains("myExperimentalFeature"));
-
-  // No settings were set though, settings had invalid values
-  QVERIFY(!settingsHolder->myExperimentalFeature()->get("one").isValid());
-  QVERIFY(!settingsHolder->myExperimentalFeature()->get("two").isValid());
-  QVERIFY(!settingsHolder->myExperimentalFeature()->get("three").isValid());
-}
-
-void TestFeatureModel::updateFeatureListExperimentalFeaturesValidSettings() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  // Clean up the features state.
-  settingsHolder->setFeaturesFlippedOn({});
-
-  auto initialFeaturesOnState = settingsHolder->featuresFlippedOn();
-
-  QJsonObject obj;
-  QJsonObject experimentalFeatures;
-  QJsonObject myExperimentalFeature;
-  myExperimentalFeature["one"] = "one";
-  myExperimentalFeature["two"] = "two";
-  myExperimentalFeature["three"] = "three";
-  experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
-  obj["experimentalFeatures"] = experimentalFeatures;
-
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
-
-  // It is flipped on!
-  QCOMPARE(initialFeaturesOnState.count() + 1,
-           settingsHolder->featuresFlippedOn().count());
-  QVERIFY(
-      settingsHolder->featuresFlippedOn().contains("myExperimentalFeature"));
-
-  // And finally, the settings were set!
-  QCOMPARE(settingsHolder->myExperimentalFeature()->get("one").toString(),
-           "one");
-  QCOMPARE(settingsHolder->myExperimentalFeature()->get("two").toString(),
-           "two");
-  QCOMPARE(settingsHolder->myExperimentalFeature()->get("three").toString(),
-           "three");
-}
-
-void TestFeatureModel::updateFeatureListExperimentalFeaturesToggleOnOff() {
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  // Setup the initial feature state with some random features that shouldn't be
-  // messed with by meddling with the experimental features.
-  settingsHolder->setFeaturesFlippedOn({"some", "random", "feature"});
-  auto initialFeaturesOnState = SettingsHolder::instance()->featuresFlippedOn();
-
-  QJsonObject obj;
-  QJsonObject experimentalFeatures;
-  QJsonObject myExperimentalFeature;
-  experimentalFeatures["myExperimentalFeature"] = myExperimentalFeature;
-  obj["experimentalFeatures"] = experimentalFeatures;
-
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
-
-  // It is flipped on!
-  QCOMPARE(initialFeaturesOnState.count() + 1,
-           settingsHolder->featuresFlippedOn().count());
-  QVERIFY(
-      settingsHolder->featuresFlippedOn().contains("myExperimentalFeature"));
-  QVERIFY(settingsHolder->featuresFlippedOn().contains("some"));
-  QVERIFY(settingsHolder->featuresFlippedOn().contains("random"));
-  QVERIFY(settingsHolder->featuresFlippedOn().contains("feature"));
-
-  QJsonObject emptyObj;
-  obj["experimentalFeatures"] = emptyObj;
-  FeatureModel::instance()->updateFeatureList(QJsonDocument(obj).toJson());
-
-  // It is flipped off!
-  QCOMPARE(initialFeaturesOnState.count(),
-           settingsHolder->featuresFlippedOn().count());
-  QVERIFY(
-      !settingsHolder->featuresFlippedOn().contains("myExperimentalFeature"));
-  QVERIFY(settingsHolder->featuresFlippedOn().contains("some"));
-  QVERIFY(settingsHolder->featuresFlippedOn().contains("random"));
-  QVERIFY(settingsHolder->featuresFlippedOn().contains("feature"));
-}
-
-static TestFeatureModel s_testFeature;
+static TestFeatureModel s_testFeatureModel;

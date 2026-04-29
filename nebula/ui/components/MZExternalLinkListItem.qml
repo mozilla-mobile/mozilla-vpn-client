@@ -23,9 +23,7 @@ MZClickableRow {
 
         MZBoldLabel {
             id: title
-        }
-
-        Item {
+            wrapMode: Text.Wrap
             Layout.fillWidth: true
         }
 

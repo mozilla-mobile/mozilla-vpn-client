@@ -20,7 +20,7 @@
 #include "addonindex.h"
 #include "addons/addonmessage.h"
 #include "constants.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
@@ -474,7 +474,7 @@ bool AddonManager::signatureVerificationNeeded() {
     return false;
   }
 
-  return Feature::get(Feature::Feature_addonSignature)->isSupported();
+  return Feature::isEnabled(Feature::addonSignature);
 }
 
 void AddonManager::loadCompleted() {

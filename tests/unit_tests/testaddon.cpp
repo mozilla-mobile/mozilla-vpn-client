@@ -19,8 +19,8 @@
 #include "addons/conditionwatchers/addonconditionwatchertimeend.h"
 #include "addons/conditionwatchers/addonconditionwatchertimestart.h"
 #include "addons/conditionwatchers/addonconditionwatchertriggertimesecs.h"
-#include "feature/feature.h"
 #include "feature/featuremodel.h"
+#include "feature/features.h"
 #include "glean/generated/metrics.h"
 #include "glean/mzglean.h"
 #include "helper.h"
@@ -42,7 +42,10 @@ void TestAddon::init() {
   MZGlean::initialize("testing");
 }
 
-void TestAddon::cleanup() { SettingsHolder::testCleanup(); }
+void TestAddon::cleanup() {
+  FeatureModel::testCleanup();
+  SettingsHolder::testCleanup();
+}
 
 void TestAddon::property() {
   AddonProperty p;
@@ -386,20 +389,15 @@ void TestAddon::conditionWatcher_featuresEnabled() {
   QVERIFY(!AddonConditionWatcherFeaturesEnabled::maybeCreate(
       &parent, QStringList{"invalid"}));
 
-  QVERIFY(!Feature::getOrNull("testFeatureAddon"));
-  Feature feature(
-      "testFeatureAddon", "Feature Addon",
-      []() -> bool { return true; },  // Can be flipped on
-      []() -> bool { return true; },  // Can be flipped off
-      QStringList(),                  // feature dependencies
-      []() -> bool { return false; });
-  QVERIFY(!!Feature::get("testFeatureAddon"));
-  QVERIFY(!Feature::get("testFeatureAddon")->isSupported());
+  // alwaysPort53 is an OverridableFeature, default off.
+  // Ensure it starts disabled for this test.
+  Feature::toggle(Feature::alwaysPort53, false);
+  QVERIFY(!Feature::isEnabled(Feature::alwaysPort53));
 
   // A condition not enabled by default
   AddonConditionWatcher* acw =
       AddonConditionWatcherFeaturesEnabled::maybeCreate(
-          &parent, QStringList{"testFeatureAddon"});
+          &parent, QStringList{"alwaysPort53"});
   QVERIFY(!!acw);
   QVERIFY(!acw->conditionApplied());
 
@@ -408,8 +406,8 @@ void TestAddon::conditionWatcher_featuresEnabled() {
 
   FeatureModel* fm = FeatureModel::instance();
 
-  fm->toggle("testFeatureAddon");
-  QVERIFY(Feature::get("testFeatureAddon")->isSupported());
+  fm->toggle("alwaysPort53");
+  QVERIFY(Feature::isEnabled(Feature::alwaysPort53));
   QCOMPARE(signalSpy.count(), 1);
   QVERIFY(acw->conditionApplied());
 
@@ -417,13 +415,13 @@ void TestAddon::conditionWatcher_featuresEnabled() {
   {
     AddonConditionWatcher* acw2 =
         AddonConditionWatcherFeaturesEnabled::maybeCreate(
-            &parent, QStringList{"testFeatureAddon"});
+            &parent, QStringList{"alwaysPort53"});
     QVERIFY(!!acw2);
     QVERIFY(acw2->conditionApplied());
   }
 
-  fm->toggle("testFeatureAddon");
-  QVERIFY(!Feature::get("testFeatureAddon")->isSupported());
+  fm->toggle("alwaysPort53");
+  QVERIFY(!Feature::isEnabled(Feature::alwaysPort53));
   QCOMPARE(signalSpy.count(), 2);
   QVERIFY(!acw->conditionApplied());
 }

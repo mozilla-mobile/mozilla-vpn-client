@@ -180,8 +180,14 @@ QVariantMap NetmgrController::wgPeer(const InterfaceConfig& config) {
   }
 
   QVariantMap peer;
-  QString endpoint =
-      config.m_serverIpv4AddrIn + ":" + QString::number(config.m_serverPort);
+  QString endpoint;
+  if (!config.m_serverIpv4AddrIn.isNull()) {
+    endpoint =
+        config.m_serverIpv4AddrIn + ":" + QString::number(config.m_serverPort);
+  } else {
+    endpoint = "[" + config.m_serverIpv6AddrIn +
+               "]:" + QString::number(config.m_serverPort);
+  }
   peer.insert("endpoint", endpoint);
   peer.insert("persistent-keepalive", WG_KEEPALIVE_PERIOD);
   peer.insert("public-key", config.m_serverPublicKey);

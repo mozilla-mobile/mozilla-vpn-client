@@ -6,7 +6,7 @@
 
 #include "addons/manager/addondirectory.h"
 #include "addons/manager/addonindex.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "settingsholder.h"
 
 void TestAddonIndex::cleanup() { SettingsHolder::testCleanup(); }
@@ -70,16 +70,7 @@ void TestAddonIndex::update() {
   QFETCH(QStringList, expectedAddonIds);
   QFETCH(bool, expectsSignal);
 
-  SettingsHolder::instance()->setFeaturesFlippedOff(
-      QStringList{"addonSignature"});
-
-  // This is a horrible hack! The `Feature` objects are created at the startup
-  // of the test app, and they listen for signals emitted by another
-  // `SettingsHolder`. This means that the previous line does not reset the
-  // feature-state. We need to force the feature to read the settings from the
-  // current `SettingsHolder`.
-  const_cast<Feature*>(Feature::get(Feature::Feature_addonSignature))
-      ->maybeFlipOnOrOff();
+  Feature::toggle(Feature::addonSignature, false);
 
   AddonDirectory ad;
   AddonIndex ai(&ad);
@@ -105,16 +96,7 @@ void TestAddonIndex::update() {
 }
 
 void TestAddonIndex::testSignatureChecksCanBeToggled() {
-  SettingsHolder::instance()->setFeaturesFlippedOff(
-      QStringList{"addonSignature"});
-
-  // This is a horrible hack! The `Feature` objects are created at the startup
-  // of the test app, and they listen for signals emitted by another
-  // `SettingsHolder`. This means that the previous line does not reset the
-  // feature-state. We need to force the feature to read the settings from the
-  // current `SettingsHolder`.
-  const_cast<Feature*>(Feature::get(Feature::Feature_addonSignature))
-      ->maybeFlipOnOrOff();
+  Feature::toggle(Feature::addonSignature, false);
 
   AddonDirectory ad;
   AddonIndex ai(&ad);
@@ -136,10 +118,7 @@ void TestAddonIndex::testSignatureChecksCanBeToggled() {
   ai.update(QJsonDocument(index).toJson(), QByteArray());
   QTRY_COMPARE(indexUpdatedSpy.count(), 1);
 
-  SettingsHolder::instance()->setFeaturesFlippedOn(
-      QStringList{"addonSignature"});
-  const_cast<Feature*>(Feature::get(Feature::Feature_addonSignature))
-      ->maybeFlipOnOrOff();
+  Feature::toggle(Feature::addonSignature, true);
 
   // We need to reset otherwise update
   // will bail early due to index not having changed.

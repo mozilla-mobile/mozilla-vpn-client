@@ -7,6 +7,7 @@
 #include <arpa/inet.h>
 #include <errno.h>
 #include <linux/filter.h>
+#include <netinet/icmp6.h>
 #include <netinet/in.h>
 #include <netinet/ip.h>
 #include <netinet/ip_icmp.h>
@@ -63,12 +64,66 @@ int LinuxPingSender::createSocket() {
   return m_socket;
 }
 
+int LinuxPingSender::createSocket6() {
+  // Try creating an ICMP socket. This would be the ideal choice, but it can
+  // fail depending on the kernel config (see: sys.net.ipv4.ping_group_range)
+  m_socket = socket(AF_INET6, SOCK_DGRAM, IPPROTO_ICMPV6);
+  if (m_socket >= 0) {
+    m_ident = 0;
+    return m_socket;
+  }
+  if ((errno != EPERM) && (errno != EACCES)) {
+    return -1;
+  }
+
+  // As a fallback, create a raw socket, which requires root permissions
+  // or CAP_NET_RAW to be granted to the VPN client.
+  m_socket = socket(AF_INET6, SOCK_RAW, IPPROTO_ICMPV6);
+  if (m_socket < 0) {
+    return -1;
+  }
+  m_ident = getpid() & 0xffff;
+
+  // Use ICMP6_FILTER to pass only echo replies.
+  struct icmp6_filter filter;
+  ICMP6_FILTER_SETBLOCKALL(&filter);
+  ICMP6_FILTER_SETPASS(ICMP6_ECHO_REPLY, &filter);
+  setsockopt(m_socket, IPPROTO_ICMPV6, ICMP6_FILTER, &filter, sizeof(filter));
+
+  return m_socket;
+}
+
 LinuxPingSender::LinuxPingSender(const QHostAddress& source, QObject* parent)
     : PingSender(parent) {
   MZ_COUNT_CTOR(LinuxPingSender);
 
   logger.debug() << "LinuxPingSender(" + logger.sensitive(source.toString()) +
                         ") created";
+
+  if (source.protocol() == QAbstractSocket::IPv6Protocol) {
+    m_socket = createSocket6();
+    if (m_socket < 0) {
+      return;
+    }
+
+    struct sockaddr_in6 addr {};
+    addr.sin6_family = AF_INET6;
+    if (!source.isNull()) {
+      Q_IPV6ADDR qaddr = source.toIPv6Address();
+      memcpy(&addr.sin6_addr, &qaddr, sizeof(addr.sin6_addr));
+    }
+    if (bind(m_socket, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
+      close(m_socket);
+      m_socket = -1;
+      logger.error() << "bind error:" << strerror(errno);
+      return;
+    }
+
+    m_notifier = new QSocketNotifier(m_socket, QSocketNotifier::Read, this);
+    connect(m_notifier, &QSocketNotifier::activated, this,
+            &LinuxPingSender::icmp6SocketReady);
+    return;
+  }
 
   m_socket = createSocket();
   if (m_socket < 0) {
@@ -110,6 +165,25 @@ LinuxPingSender::~LinuxPingSender() {
 }
 
 void LinuxPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
+  if (dest.protocol() == QAbstractSocket::IPv6Protocol) {
+    struct sockaddr_in6 addr {};
+    addr.sin6_family = AF_INET6;
+    Q_IPV6ADDR qaddr = dest.toIPv6Address();
+    memcpy(&addr.sin6_addr, &qaddr, sizeof(addr.sin6_addr));
+
+    struct icmp6_hdr packet {};
+    packet.icmp6_type = ICMP6_ECHO_REQUEST;
+    packet.icmp6_id = htons(m_ident);
+    packet.icmp6_seq = htons(sequence);
+
+    int rc = sendto(m_socket, &packet, sizeof(packet), 0,
+                    (struct sockaddr*)&addr, sizeof(addr));
+    if (rc < 0) {
+      logger.error() << "failed to send:" << strerror(errno);
+    }
+    return;
+  }
+
   quint32 ipv4dest = dest.toIPv4Address();
   struct sockaddr_in addr;
   memset(&addr, 0, sizeof(addr));
@@ -144,6 +218,24 @@ void LinuxPingSender::icmpSocketReady() {
     memcpy(&packet, data, sizeof(packet));
     if (packet.type == ICMP_ECHOREPLY) {
       emit recvPing(htons(packet.un.echo.sequence));
+    }
+  }
+}
+
+void LinuxPingSender::icmp6SocketReady() {
+  unsigned char data[2048];
+  int rc = recvfrom(m_socket, data, sizeof(data), MSG_DONTWAIT, NULL, NULL);
+  if (rc <= 0) {
+    logger.error() << "recvfrom failed:" << strerror(errno);
+    return;
+  }
+
+  struct icmp6_hdr packet;
+  if (rc >= (int)sizeof(packet)) {
+    memcpy(&packet, data, sizeof(packet));
+    if (packet.icmp6_type == ICMP6_ECHO_REPLY &&
+        (m_ident == 0 || ntohs(packet.icmp6_id) == m_ident)) {
+      emit recvPing(ntohs(packet.icmp6_seq));
     }
   }
 }

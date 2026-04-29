@@ -150,9 +150,7 @@ Rectangle {
                         text: MZI18n[segmentLabelStringId]
                         horizontalAlignment: Text.AlignHCenter
                         verticalAlignment: Text.AlignVCenter
-                        // Bug VPN-2158 - Apparently QText is not rendered on android
-                        // When we select any other elide then none
-                        elide: Qt.platform.os === "android" ? Text.ElideNone : Text.ElideRight
+                        elide: Text.ElideRight
                         font.family: MZTheme.theme.fontBoldFamily
                         font.pixelSize: MZTheme.theme.fontSize
                         // Ignore because the parent MZButtonBase provides accessibility

@@ -98,3 +98,11 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
   m_splitTunnelManager->stop();
   return true;
 }
+
+QStringList WindowsDaemon::getFeatures() const {
+  QStringList list;
+  if (!WindowsSplitTunnel::detectConflict()) {
+    list.append("splitTunnel");
+  }
+  return list;
+}
