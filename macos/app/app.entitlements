@@ -18,5 +18,13 @@
 
 	<key>com.apple.security.network.server</key>
 	<true/>
+
+	<key>com.apple.developer.networking.networkextension</key>
+	<array>
+		<string>app-proxy-provider</string>
+	</array>
+
+	<key>com.apple.developer.system-extension.install</key>
+	<true/>
 </dict>
 </plist>

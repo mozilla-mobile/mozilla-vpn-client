@@ -13,7 +13,7 @@
 #include "authenticationinapp.h"
 #include "authenticationlistener.h"
 #include "constants.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "hawkauth.h"
 #include "hkdf.h"
 #include "leakdetector.h"
@@ -222,7 +222,7 @@ void AuthenticationInAppSession::accountChecked(bool exists, bool hasPassword,
     return;
   }
 
-  if (Feature::get(Feature::Feature_inAppAccountCreate)->isSupported()) {
+  if (Feature::isEnabled(Feature::inAppAccountCreate)) {
     AuthenticationInApp::instance()->requestState(
         AuthenticationInApp::StateSignUp, this);
     return;

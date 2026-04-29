@@ -174,11 +174,28 @@ MZViewBase {
                                if (MZSettings.addonCustomServerAddress !== addonAddressText) {
                                    MZSettings.addonCustomServerAddress = addonAddressText;
                                }
+
+                               if (addonAddressText.includes("localhost")) {
+                                  reminderForLocalhostHttps.visible = addonAddressText.startsWith("https")
+                               }
                            }
 
             Component.onCompleted: {
                 addonCustomServerInput.text = MZSettings.addonCustomServerAddress;
             }
+        }
+
+        MZContextualAlerts {
+            id: reminderForLocalhostHttps
+            visible: false
+            Layout.leftMargin: MZTheme.theme.windowMargin/2
+
+            messages: [
+                {
+                    type: MZContextualAlert.AlertType.Warning,
+                    message: "Did you mean to use `https` with `localhost`?",
+                }
+            ]
         }
 
         MZContextualAlerts {

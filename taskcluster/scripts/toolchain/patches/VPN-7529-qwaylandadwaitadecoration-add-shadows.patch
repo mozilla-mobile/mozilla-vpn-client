@@ -1,0 +1,124 @@
+diff --git a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
+index ca1f0af0..5b6414f8 100644
+--- a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
++++ b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
+@@ -42,7 +42,7 @@ namespace QtWaylandClient {
+ static constexpr int ceButtonSpacing = 12;
+ static constexpr int ceButtonWidth = 24;
+ static constexpr int ceCornerRadius = 12;
+-static constexpr int ceShadowsWidth = 10;
++static constexpr int ceShadowsWidth = 30;
+ static constexpr int ceTitlebarHeight = 38;
+ static constexpr int ceWindowBorderWidth = 1;
+ 
+@@ -124,6 +124,96 @@ void QWaylandAdwaitaDecoration::paint(QPaintDevice *device)
+     QPainter p(device);
+     p.setRenderHint(QPainter::Antialiasing);
+ 
++    /*
++     * Shadow
++     *
++     */
++
++    const bool active = waylandWindow()->windowStates() & Qt::WindowActive;
++    const QColor shadowColor(0, 0, 0, active ? 25 : 10);
++    const QColor shadowTransparent(0, 0, 0, 0);
++
++    const QMargins sm = margins(ShadowsOnly);
++    const qreal frameLeft   = sm.left();
++    const qreal frameTop    = sm.top();
++    const qreal frameRight  = surfaceRect.width()  - sm.right();
++    const qreal frameBottom = surfaceRect.height() - sm.bottom();
++    const QRectF frameRect(frameLeft, frameTop, frameRight - frameLeft, frameBottom - frameTop);
++
++    // The top corners are rounded unless the window is maximized or tiled.
++    const bool hasRoundedTopCorners =
++        !(waylandWindow()->windowStates() & Qt::WindowMaximized)
++        && waylandWindow()->toplevelWindowTilingStates() == QWaylandWindow::WindowNoState;
++    const qreal topCornerRadius = hasRoundedTopCorners ? static_cast<qreal>(ceCornerRadius) : 0.0;
++
++    p.save();
++
++    // Linear gradients for edges
++    const QList<std::tuple<QPointF, QPointF, QRectF>> edges = {
++        // Top edge
++        { QPointF(0.0, frameRect.top()), QPointF(0.0, 0.0),
++          QRectF(frameRect.left() + topCornerRadius, 0.0,
++                 frameRect.width() - 2.0 * topCornerRadius, frameRect.top()) },
++        // Bottom edge
++        { QPointF(0.0, frameRect.bottom()), QPointF(0.0, surfaceRect.height()),
++          QRectF(frameRect.left(), frameRect.bottom(),
++                 frameRect.width(), surfaceRect.height() - frameRect.bottom()) },
++        // Left edge
++        { QPointF(frameRect.left(), 0.0), QPointF(0.0, 0.0),
++          QRectF(0.0, frameRect.top() + topCornerRadius,
++                 frameRect.left(), frameRect.height() - topCornerRadius) },
++        // Right edge
++        { QPointF(frameRect.right(), 0.0), QPointF(surfaceRect.width(), 0.0),
++          QRectF(frameRect.right(), frameRect.top() + topCornerRadius,
++                 surfaceRect.width() - frameRect.right(), frameRect.height() - topCornerRadius) }
++    };
++
++    for (const auto &edge : edges) {
++        QLinearGradient grad(std::get<0>(edge), std::get<1>(edge));
++        grad.setColorAt(0.0, shadowColor);
++        grad.setColorAt(1.0, shadowTransparent);
++        p.fillRect(std::get<2>(edge), grad);
++    }
++
++    // Radial gradients for corners
++    const qreal topLeftGradRadius = qMax(sm.left(), sm.top()) + topCornerRadius;
++    const qreal topRightGradRadius = qMax(sm.right(), sm.top()) + topCornerRadius;
++
++    const QList<std::tuple<QPointF, qreal, bool, qreal, QRectF>> corners = {
++        // Top-left corner
++        { frameRect.topLeft() + QPointF(topCornerRadius, topCornerRadius), topLeftGradRadius,
++          topCornerRadius > 0.0, topCornerRadius / topLeftGradRadius,
++          QRectF(0.0, 0.0, frameRect.left() + topCornerRadius, frameRect.top() + topCornerRadius) },
++        // Top-right corner
++        { frameRect.topRight() + QPointF(-topCornerRadius, topCornerRadius), topRightGradRadius,
++          topCornerRadius > 0.0, topCornerRadius / topRightGradRadius,
++          QRectF(frameRect.right() - topCornerRadius, 0.0,
++                 surfaceRect.width() - frameRect.right() + topCornerRadius, frameRect.top() + topCornerRadius) },
++        // Bottom-left corner
++        { frameRect.bottomLeft(), qMax(sm.left(), sm.bottom()),
++          false, 0.0,
++          QRectF(0.0, frameRect.bottom(),
++                 frameRect.left(), surfaceRect.height() - frameRect.bottom()) },
++        // Bottom-right corner
++        { frameRect.bottomRight(), qMax(sm.right(), sm.bottom()),
++          false, 0.0,
++          QRectF(frameRect.right(), frameRect.bottom(),
++                 surfaceRect.width() - frameRect.right(),
++                 surfaceRect.height() - frameRect.bottom()) }
++    };
++
++    for (const auto &corner : corners) {
++        QRadialGradient grad(std::get<0>(corner), std::get<1>(corner));
++        grad.setColorAt(0.0, shadowColor);
++        if (std::get<2>(corner))
++            grad.setColorAt(std::get<3>(corner), shadowColor);
++        grad.setColorAt(1.0, shadowTransparent);
++        p.fillRect(std::get<4>(corner), grad);
++    }
++
++    p.restore();
++
++
+     /*
+      * Titlebar and window border
+      */
+diff --git a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration_p.h b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration_p.h
+index 34874e08..abd5c6d6 100644
+--- a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration_p.h
++++ b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration_p.h
+@@ -42,9 +42,6 @@ namespace QtWaylandClient {
+ // to Gtk3 will not work out. Possibly in future we can make a QGtk4Theme providing us
+ // what we need to paint the decorations without having to deal with the colors ourself.
+ //
+-// TODO: Implement shadows
+-
+-
+ class QWaylandAdwaitaDecoration : public QWaylandAbstractDecoration
+ {
+     Q_OBJECT

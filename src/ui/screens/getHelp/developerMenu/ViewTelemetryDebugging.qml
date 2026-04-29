@@ -20,7 +20,6 @@ MZViewBase {
 
         MZInformationCard {
           cardType: MZInformationCard.CardType.Info
-          height: textBlocks.height + MZTheme.theme.windowMargin * 2
           width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
           Layout.leftMargin: MZTheme.theme.windowMargin
           Layout.rightMargin: MZTheme.theme.windowMargin

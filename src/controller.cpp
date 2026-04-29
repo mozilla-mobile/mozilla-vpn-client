@@ -12,7 +12,7 @@
 #include "controller_p.h"
 #include "controllerimpl.h"
 #include "dnshelper.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "frontend/navigator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
@@ -408,17 +408,15 @@ void Controller::activateInternal(
 #endif
   logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
 
-  // Splittunnel-feature could have been disabled due to a driver conflict.
-  if (Feature::get(Feature::Feature_splitTunnel)->isSupported()) {
+  if (m_impl->splitTunnelSupported()) {
     exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
-  if (Feature::get(Feature::Feature_alwaysPort53)->isSupported()) {
+  if (Feature::isEnabled(Feature::alwaysPort53)) {
     dnsPort = ForceDNSPort;
   }
 
   // For single-hop connections, exclude the entry server
-  if (!Feature::get(Feature::Feature_multiHop)->isSupported() ||
-      !m_serverData.multihop()) {
+  if (!Feature::multiHop.supported || !m_serverData.multihop()) {
     logger.info() << "Activating single hop";
     exitConfig.m_hopType = InterfaceConfig::SingleHop;
 
@@ -507,7 +505,14 @@ void Controller::activateInternal(
       m_activationQueue.last().m_serverPublicKey);
 
   m_pingReceived = false;
-  m_pingCanary.start(m_activationQueue.first().m_serverIpv4AddrIn, "0.0.0.0/0");
+  {
+    const auto& firstConfig = m_activationQueue.first();
+    if (firstConfig.m_serverIpv4AddrIn.isNull()) {
+      m_pingCanary.start(firstConfig.m_serverIpv6AddrIn, "::/0");
+    } else {
+      m_pingCanary.start(firstConfig.m_serverIpv4AddrIn, "0.0.0.0/0");
+    }
+  }
   logger.info() << "Canary Ping Started";
   activateNext();
 }
@@ -774,6 +779,10 @@ bool Controller::silentServerSwitchingSupported() const {
   return m_impl->silentServerSwitchingSupported();
 }
 
+bool Controller::splitTunnelSupported() const {
+  return m_impl->splitTunnelSupported();
+}
+
 void Controller::logSerialize(QIODevice* device) {
   if (m_impl) {
     m_impl->getBackendLogs(device);
@@ -939,8 +948,7 @@ bool Controller::activate(const ServerData& serverData,
       return true;
     }
 
-    if (Feature::get(Feature::Feature_checkConnectivityOnActivation)
-            ->isSupported()) {
+    if (Feature::isEnabled(Feature::checkConnectivityOnActivation)) {
       // Ensure that the device is connected to the Internet.
       if (MozillaVPN::instance()->networkWatcher()->getReachability() ==
           QNetworkInformation::Reachability::Disconnected) {
