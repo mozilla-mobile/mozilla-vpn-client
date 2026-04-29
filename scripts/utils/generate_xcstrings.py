@@ -152,11 +152,14 @@ def build_appshortcuts_xcstrings(intent_phrase_array, locale_translations):
 
     for phrase_set in intent_phrase_array:
         phrase_section = build_phrase_section(phrase_set, locale_translations)
-        # The xcstrings key for a phrase group is the first English phrase value. But this is so ugly, sorry.
-        section_key = next(
-            iter(phrase_section["localizations"]["en"]["stringSet"]["values"])
-        )
-        strings[section_key] = phrase_section
+        if (len(phrase_section["localizations"]) > 0):
+            # The xcstrings key for a phrase group is the first English phrase value. But this is so ugly, sorry.
+            section_key = next(
+                iter(phrase_section["localizations"]["en"]["stringSet"]["values"])
+            )
+            strings[section_key] = phrase_section
+        else:
+            print(f"Skipping {next(iter(phrase_set))} because no translations were found in xliff files. This should only occur for new strings that are yet to be ingested into the l10n repo.")
 
     return {"sourceLanguage": "en", "strings": strings, "version": "1.1"}
 
