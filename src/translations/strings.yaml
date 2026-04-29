@@ -1093,7 +1093,7 @@ iosAppIntentsMain:
     comment: Confirmation string used by Siri after turning on VPN. `%@` must be included, and it will be replaced with the name of the exit city.
   turnOnConfirmationMultiHop:
     value: Mozilla VPN connected through %1$@ via %2$@
-    comment: Confirmation string used by Siri after turning on VPN. `%1$@` will be replaced with the exit city, and `%2$@` will be replaced with the entry city. They must be included.
+    comment: Confirmation string used by Siri after turning on VPN. `%1$@` will be replaced with the exit city, and `%2$@` will be replaced with the entry city.
   turnOffConfirmation:
     value: Mozilla VPN disconnected
     comment: Confirmation string used by Siri after turning off VPN
@@ -1129,87 +1129,83 @@ iosAppIntentsMain:
     comment: Generic error message used when toggling VPN fails early
 
 iosAppIntentsActivate:
-  activate1:
-    value: Activate %@
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  activate2:
-    value: "Turn on %@"
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  activate3:
-    value: "Turn %@ on"
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  activate4:
-    value: "Switch on %@"
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  activate5:
-    value: "Switch %@ on"
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  activate6:
-    value: "Connect %@"
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  activate7:
-    value: "Connect to %@"
-    comment: A phrase that may be used to turn on the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn on the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  phrases:
+    value: |
+      Activate %@
+      Turn on %@
+      Turn %@ on
+      Switch on %@
+      Switch %@ on
+      Connect %@
+      Connect to %@
+    comment:
+      - >
+        Siri phrase variants for activating the VPN via App Intents.
+        Each line is a separate phrase Siri will recognize.
+        Rules:
+          - Write natural, conversational phrases a user might say to Siri.
+          - Do NOT translate literally — write phrases natural in your language.
+          - Every line MUST contain %@, which will have "Mozilla VPN" substituted in.
+          - Add or remove lines freely; your language may need fewer or more variants.
+          - No line should be a duplicate of another.
 
 iosAppIntentsDeactivate:
-  deactivate1:
-    value: Deactivate %@
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  deactivate2:
-    value: "Turn off %@"
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  deactivate3:
-    value: "Turn %@ off"
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  deactivate4:
-    value: "Switch off %@"
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  deactivate5:
-    value: "Switch %@ off"
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  deactivate6:
-    value: "Disconnect %@"
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  deactivate7:
-    value: "Disconnect from %@"
-    comment: A phrase that may be used to turn off the Mozilla VPN when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  phrases:
+    value: |
+      Deactivate %@
+      Turn off %@
+      Turn %@ off
+      Switch off %@
+      Switch %@ off
+      Disconnect %@
+      Disconnect from %@
+    comment:
+      - >
+        Siri phrase variants for deactivating the VPN via App Intents.
+        Each line is a separate phrase Siri will recognize.
+        Rules:
+          - Write natural, conversational phrases a user might say to Siri.
+          - Do NOT translate literally — write phrases natural in your language.
+          - Every line MUST contain %@, which will have "Mozilla VPN" substituted in.
+          - Add or remove lines freely; your language may need fewer or more variants.
+          - No line should be a duplicate of another.
 
 iosAppIntentsQueryStatus:
-  query1:
-    value: Is %@ currently active?
-    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  query2:
-    value: Is %@ currently activated?
-    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  query3:
-    value: Is %@ currently turned on?
-    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  query4:
-    value: Is %@ currently switched on?
-    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  query5:
-    value: Is %@ currently connected?
-    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  query6:
-    value: Is %@ active?
-    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  query7:
-    value: Is %@ activated?
-    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  query8:
-    value: Is %@ turned on?
-    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  query9:
-    value: Is %@ switched on?
-    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  query10:
-    value: Is %@ connected?
-    comment: A phrase that may be used to ask about current VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  phrases:
+    value: |
+      Is %@ currently active?
+      Is %@ currently activated?
+      Is %@ currently turned on?
+      Is %@ currently switched on?
+      Is %@ currently connected?
+      Is %@ active?
+      Is %@ activated?
+      Is %@ turned on?
+      Is %@ switched on?
+      Is %@ connected?
+    comment:
+      - >
+        Siri phrase variants for querying whether the VPN is active via App Intents.
+        Each line is a separate phrase Siri will recognize.
+        Rules:
+          - Write natural, conversational phrases a user might say to Siri.
+          - Do NOT translate literally — write phrases natural in your language.
+          - Every line MUST contain %@, which will have "Mozilla VPN" substituted in.
+          - Add or remove lines freely; your language may need fewer or more variants.
+          - No line should be a duplicate of another.
 
 iosAppIntentsToggle:
-  toggle1:
-    value: Toggle %@
-    comment: A phrase that may be used to ask about swap VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
-  toggle2:
-    value: Switch %@
-    comment: A phrase that may be used to ask about swap VPN status when talking to Siri. Do not literally translate, please write any string that a user may use to conversationally turn off the VPN. Must include `%@` placeholder symbol, where `Mozilla VPN` is inserted by Apple.
+  phrases:
+    value: |
+      Toggle %@
+      Switch %@
+    comment:
+      - >
+        Siri phrase variants for toggling the VPN status via App Intents.
+        Each line is a separate phrase Siri will recognize.
+        Rules:
+          - Write natural, conversational phrases a user might say to Siri.
+          - Do NOT translate literally — write phrases natural in your language.
+          - Every line MUST contain %@, which will have "Mozilla VPN" substituted in.
+          - Add or remove lines freely; your language may need fewer or more variants.
+          - No line should be a duplicate of another.

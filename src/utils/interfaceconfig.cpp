@@ -103,14 +103,11 @@ QString InterfaceConfig::toWgConf(const QMap<QString, QString>& extra,
     }
   }
   out << "PublicKey = " << m_serverPublicKey << "\n";
-  out << "Endpoint = " << m_serverIpv4AddrIn.toUtf8() << ":" << m_serverPort
-      << "\n";
-
-  /* In theory, we should use the ipv6 endpoint, but wireguard doesn't seem
-   * to be happy if there are 2 endpoints.
-  out << "Endpoint = [" << config.m_serverIpv6AddrIn << "]:"
-      << config.m_serverPort << "\n";
-  */
+  if (!m_serverIpv4AddrIn.isNull()) {
+    out << "Endpoint = " << m_serverIpv4AddrIn << ":" << m_serverPort << "\n";
+  } else if (!m_serverIpv6AddrIn.isNull()) {
+    out << "Endpoint = [" << m_serverIpv6AddrIn << "]:" << m_serverPort << "\n";
+  }
   QStringList ranges;
   for (const IPAddress& ip : m_allowedIPAddressRanges) {
     ranges.append(ip.toString());
@@ -139,8 +136,13 @@ QString InterfaceConfig::toMultiHopWgConf(
     }
   }
   out << "PublicKey = " << exitConfig.m_serverPublicKey << "\n";
-  out << "Endpoint = " << exitConfig.m_serverIpv4AddrIn.toUtf8() << ":"
-      << exitConfig.m_serverPort << "\n";
+  if (!exitConfig.m_serverIpv4AddrIn.isNull()) {
+    out << "Endpoint = " << exitConfig.m_serverIpv4AddrIn << ":"
+        << exitConfig.m_serverPort << "\n";
+  } else if (!exitConfig.m_serverIpv6AddrIn.isNull()) {
+    out << "Endpoint = [" << exitConfig.m_serverIpv6AddrIn
+        << "]:" << exitConfig.m_serverPort << "\n";
+  }
 
   QStringList ranges;
   for (const IPAddress& ip : exitConfig.m_allowedIPAddressRanges) {

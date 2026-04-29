@@ -4,6 +4,7 @@
 
 #include "xdgstartatbootwatcher.h"
 
+#include <QCoreApplication>
 #include <QDBusConnection>
 #include <QDBusMessage>
 #include <QDBusObjectPath>

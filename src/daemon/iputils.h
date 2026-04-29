@@ -8,11 +8,12 @@
 #include <QCoreApplication>
 #include <QObject>
 
+#include "daemon.h"
 #include "interfaceconfig.h"
 
 class IPUtils : public QObject {
  public:
-  explicit IPUtils(QObject* parent) : QObject(parent){};
+  explicit IPUtils(Daemon* daemon) : QObject(daemon){};
   virtual ~IPUtils() = default;
 
   virtual bool addInterfaceIPs(const InterfaceConfig& config) {

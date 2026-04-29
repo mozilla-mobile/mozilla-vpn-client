@@ -11,6 +11,7 @@
 #  include <QStyleHints>
 #endif
 
+#include "feature/features.h"
 #include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -189,7 +190,7 @@ void Theme::setUsingSystemTheme(const bool usingSystemTheme) {
 }
 
 void Theme::setToSystemTheme() {
-  if (!Feature::get(Feature::Feature_themeSelectionIncludesAutomatic)) {
+  if (!Feature::isEnabled(Feature::themeSelectionIncludesAutomatic)) {
     logger.debug()
         << "Not setting to system theme because feature is not supported.";
     return;

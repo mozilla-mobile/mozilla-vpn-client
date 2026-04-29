@@ -61,7 +61,7 @@ MZViewBase {
                 onClicked: {
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/appPermissions/ViewAppPermissions.qml")
                 }
-                visible: MZFeatureList.get("splitTunnel").isSupported
+                visible: VPNController.splitTunnelSupported
             }
 
             MZSettingsItem {

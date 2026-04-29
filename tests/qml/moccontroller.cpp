@@ -95,3 +95,5 @@ void Controller::handleBackendFailure(ErrorCode code) {}
 void Controller::startKeyRegeneration() {}
 
 bool Controller::shouldSuppressNextNotification() { return false; }
+
+bool Controller::splitTunnelSupported() const { return true; }

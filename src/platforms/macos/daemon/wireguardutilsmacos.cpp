@@ -425,6 +425,7 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
   if (prefix.prefixLength() > 0) {
     return m_rtmonitor->deleteRoute(prefix);
   }
+
   // Ensure that we do not replace the default route.
   if (prefix.type() == QAbstractSocket::IPv4Protocol) {
     return m_rtmonitor->deleteRoute(IPAddress("0.0.0.0/1")) &&

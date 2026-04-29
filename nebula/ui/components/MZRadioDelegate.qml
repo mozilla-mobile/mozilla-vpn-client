@@ -15,6 +15,7 @@ RadioDelegate {
     property string accessibleName: ""
     property bool isRadioButtonLabelAccessible: true
     property var uiState: MZTheme.theme.uiState
+    property real labelRightPadding: 0
     readonly property int labelX: radioButton.anchors.margins + radioButton.implicitWidth + radioButtonLabel.anchors.leftMargin
 
     ButtonGroup.group: radioButtonGroup
@@ -143,6 +144,7 @@ RadioDelegate {
         anchors.left: radioButton.right
         anchors.right: parent.right
         anchors.leftMargin: 16 + radioButton.anchors.rightMargin
+        anchors.rightMargin: radioControl.labelRightPadding
 
         text: radioButtonLabelText
         lineHeightMode: Text.FixedHeight

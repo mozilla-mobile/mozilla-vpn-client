@@ -114,7 +114,12 @@ AddonReplacer::AddonReplacer(QObject* parent, const QString& manifestFileName,
   MZ_COUNT_CTOR(AddonReplacer);
 }
 
-AddonReplacer::~AddonReplacer() { MZ_COUNT_DTOR(AddonReplacer); }
+AddonReplacer::~AddonReplacer() {
+  MZ_COUNT_DTOR(AddonReplacer);
+  if (enabled()) {
+    AddonReplacer::disable();
+  }
+}
 
 void AddonReplacer::enable() {
   Addon::enable();

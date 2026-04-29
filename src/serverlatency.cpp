@@ -4,10 +4,14 @@
 
 #include "serverlatency.h"
 
+#include <QApplication>
 #include <QDateTime>
+#ifndef MZ_WASM
+#  include <QNetworkInterface>
+#endif
 
 #include "controller.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mfbt/checkedint.h"
@@ -31,6 +35,24 @@ namespace {
 Logger logger("ServerLatency");
 
 using namespace std::chrono_literals;
+
+bool hasIPv4Connectivity() {
+#ifdef MZ_WASM
+  return true;
+#else
+  for (const QNetworkInterface& iface : QNetworkInterface::allInterfaces()) {
+    if (iface.flags() & QNetworkInterface::IsLoopBack) {
+      continue;
+    }
+    for (const QNetworkAddressEntry& entry : iface.addressEntries()) {
+      if (entry.ip().protocol() == QAbstractSocket::IPv4Protocol) {
+        return true;
+      }
+    }
+  }
+  return false;
+#endif
+}
 constexpr const std::chrono::milliseconds SERVER_LATENCY_TIMEOUT = 5s;
 constexpr const auto SERVER_LATENCY_INITIAL = 1s;
 constexpr const auto SERVER_LATENCY_REFRESH = 30min;
@@ -61,9 +83,7 @@ void ServerLatency::initialize() {
   connect(&m_progressDelayTimer, &QTimer::timeout, this,
           [this]() { emit progressChanged(); });
 
-  const Feature* feature = Feature::get(Feature::Feature_serverConnectionScore);
-  connect(feature, &Feature::supportedChanged, this, &ServerLatency::start);
-  if (feature->isSupported()) {
+  if (Feature::serverConnectionScore.supported) {
     m_refreshTimer.start(SERVER_LATENCY_INITIAL);
   }
 
@@ -77,7 +97,7 @@ void ServerLatency::initialize() {
 
 void ServerLatency::start() {
   MozillaVPN* vpn = MozillaVPN::instance();
-  if (!Feature::get(Feature::Feature_serverConnectionScore)->isSupported()) {
+  if (!Feature::serverConnectionScore.supported) {
     clear();
     return;
   }
@@ -95,13 +115,17 @@ void ServerLatency::start() {
 
   m_sequence = 0;
   m_wantRefresh = false;
-  m_pingSender = PingSenderFactory::create(QHostAddress(), this);
+  m_hasIPv4Connectivity = hasIPv4Connectivity();
+  QHostAddress sourceAddr = m_hasIPv4Connectivity
+                                ? QHostAddress()
+                                : QHostAddress(QHostAddress::AnyIPv6);
+  m_pingSender = PingSenderFactory::create(sourceAddr, this);
   if (!m_pingSender->isValid()) {
     // Fallback to using TCP handshake times for pings if we can't create an
     // ICMP socket on this platform, this probes at the ports used for Wireguard
     // over TCP.
     delete m_pingSender;
-    m_pingSender = new TcpPingSender(QHostAddress(), 80, this);
+    m_pingSender = new TcpPingSender(sourceAddr, 80, this);
   }
 
   connect(m_pingSender, SIGNAL(recvPing(quint16)), this,
@@ -171,7 +195,10 @@ void ServerLatency::maybeSendPings() {
       m_pingReplyList.append(retry);
 
       const Server& server = scm->server(retry.publicKey);
-      m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), retry.sequence);
+      m_pingSender->sendPing(
+          QHostAddress(m_hasIPv4Connectivity ? server.ipv4AddrIn()
+                                             : server.ipv6AddrIn()),
+          retry.sequence);
     }
 
     // TODO: Mark the server unavailable?
@@ -191,7 +218,10 @@ void ServerLatency::maybeSendPings() {
     m_pingReplyList.append(record);
 
     const Server& server = scm->server(record.publicKey);
-    m_pingSender->sendPing(QHostAddress(server.ipv4AddrIn()), record.sequence);
+    m_pingSender->sendPing(
+        QHostAddress(m_hasIPv4Connectivity ? server.ipv4AddrIn()
+                                           : server.ipv6AddrIn()),
+        record.sequence);
   }
 
   m_lastUpdateTime = QDateTime::currentDateTime();

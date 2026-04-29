@@ -119,23 +119,4 @@
 #include "settingslist.h"
 #undef SETTING
 
-#define EXPERIMENTAL_FEATURE(experimentId, experimentDescription, \
-                             experimentSettings)                  \
-  void TestSettingsHolder::testGetSet_##experimentId() {          \
-    auto group = SettingsHolder::instance()->experimentId();      \
-                                                                  \
-    QSignalSpy spy(group, &SettingGroup::changed);                \
-                                                                  \
-    if (experimentSettings.count() > 0) {                         \
-      group->set(experimentSettings[0], QVariant("hey"));         \
-      QCOMPARE(spy.count(), 1);                                   \
-    }                                                             \
-                                                                  \
-    group->set("disalowedkey", QVariant("hey"));                  \
-    QCOMPARE(spy.count(), 1);                                     \
-  }
-
-#include "feature/experimentalfeaturelist.h"
-#undef EXPERIMENTAL_FEATURE
-
 static TestSettingsHolder s_testSettingsHolder;

@@ -24,7 +24,8 @@
 #include "conditionwatchers/addonconditionwatchertranslationthreshold.h"
 #include "conditionwatchers/addonconditionwatchertriggertimesecs.h"
 #include "env.h"
-#include "feature/feature.h"
+#include "feature/featuremodel.h"
+#include "feature/features.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "logger.h"
@@ -59,8 +60,7 @@ QList<ConditionCallback> s_conditionCallbacks{
        for (const QJsonValue& enabledFeature : enabledFeatures) {
          QString featureName = enabledFeature.toString();
 
-         const Feature* feature = Feature::getOrNull(featureName);
-         if (!feature) {
+         if (!FeatureModel::instance()->get(featureName)) {
            logger.info() << "Feature not found" << featureName;
            return false;
          }
@@ -369,7 +369,7 @@ Addon* Addon::create(QObject* parent, const QString& manifestFileName) {
   }
 
   else if (type == "replacer") {
-    if (!Feature::get(Feature::Feature_replacerAddon)->isSupported()) {
+    if (!Feature::isEnabled(Feature::replacerAddon)) {
       // This addon type is blocked pending
       // https://mozilla-hub.atlassian.net/browse/VPN-4858
       logger.error() << "The replacer type addon is unsupported.";
@@ -461,7 +461,12 @@ Addon::Addon(QObject* parent, const QString& manifestFileName,
   }
 }
 
-Addon::~Addon() { MZ_COUNT_DTOR(Addon); }
+Addon::~Addon() {
+  MZ_COUNT_DTOR(Addon);
+  if (!m_translators.isEmpty()) {
+    unloadTranslators();
+  }
+}
 
 void Addon::updateAddonStatus(Status newStatus) {
   Q_ASSERT(newStatus != Unknown);
