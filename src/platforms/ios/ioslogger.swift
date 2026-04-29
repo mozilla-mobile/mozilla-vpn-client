@@ -10,11 +10,13 @@ public class IOSLoggerImpl : NSObject {
     enum LogType {
         case swift
         case networkExtension
+        case widgetExtension
 
         var filename: String {
             switch self {
             case .swift: return "mozillavpnswift.log"
             case .networkExtension: return "networkextension.log"
+            case .widgetExtension: return "widgetextension.log"
             }
         }
 
@@ -27,6 +29,7 @@ public class IOSLoggerImpl : NSObject {
             switch self {
             case .swift: return "\n\nApp Swift Logs\n==============\n"
             case .networkExtension: return ""
+            case .widgetExtension: return "\n\nSwift Widget Logs\n=================\n"
             }
         }
     }
@@ -83,7 +86,14 @@ public class IOSLoggerImpl : NSObject {
         let formattedDateString = dateFormatter.string(from: currentDate)
 
         if let data = "[\(formattedDateString)] \(message)\n".data(using: .utf8) {
-            let fileType: LogType = Bundle.main.bundlePath.hasSuffix(".appex") ? .networkExtension : .swift
+            let fileType: LogType
+            if Bundle.main.bundlePath.contains("MozillaVPNWidgetExtension") {
+              fileType = .widgetExtension
+            } else if Bundle.main.bundlePath.contains("MozillaVPNNetworkExtension") {
+              fileType = .networkExtension
+            } else {
+              fileType = .swift
+            }
             let _ = IOSLoggerImpl.withLogFile(for: fileType) { logFileHandle in
                 logFileHandle.seekToEndOfFile()
                 logFileHandle.write(data)
@@ -93,7 +103,7 @@ public class IOSLoggerImpl : NSObject {
 
     @objc static func getLogs(callback: @escaping (String) -> Void) {
         var returnLogs: String = ""
-        [LogType.networkExtension, .swift].forEach {
+        [LogType.networkExtension, .swift, .widgetExtension].forEach {
             IOSLoggerImpl.withLogFile(for: $0) { logFileHandle in
                 if let contents = String(data: logFileHandle.readDataToEndOfFile(), encoding: .utf8) {
                     returnLogs.append(contents)
@@ -104,7 +114,7 @@ public class IOSLoggerImpl : NSObject {
     }
 
     @objc static func clearLogs() {
-        [LogType.networkExtension, .swift].forEach { logType in
+        [LogType.networkExtension, .swift, .widgetExtension].forEach { logType in
             IOSLoggerImpl.withLogFile(for: logType) { logFileHandle in
                 logFileHandle.truncateFile(atOffset: 0)
                 if let data = logType.newFileText.data(using: .utf8) {

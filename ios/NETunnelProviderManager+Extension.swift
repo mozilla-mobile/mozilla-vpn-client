@@ -13,33 +13,32 @@ extension NETunnelProviderManager {
   }
 
   var isOurManager: Bool {
-    let logger = Logger(subsystem: "NETunnelProviderManager", category: "MozillaVPN")
+      let logger = IOSLoggerImpl(tag: "NETunnelProviderManager")
       guard
           let proto = self.protocolConfiguration,
           let tunnelProto = proto as? NETunnelProviderProtocol
       else {
-          logger.debug("Ignoring manager because the proto is invalid.")
+          logger.debug(message: "Ignoring manager because the proto is invalid.")
           return false
       }
 
       guard let bundleIdentifier = tunnelProto.providerBundleIdentifier else {
-          logger.debug("Ignoring manager because the bundle identifier is null.")
+          logger.debug(message: "Ignoring manager because the bundle identifier is null.")
           return false
       }
 
       if (bundleIdentifier != "org.mozilla.ios.FirefoxVPN.network-extension") {
-          logger.debug("Ignoring manager because the bundle identifier doesn't match.")
+          logger.debug(message: "Ignoring manager because the bundle identifier doesn't match.")
           return false;
       }
 
-      logger.debug("Found the manager with the correct bundle identifier")
       return true
   }
 
   var isConnected: Bool {
-    let logger = Logger(subsystem: "NETunnelProviderManager", category: "MozillaVPN")
     guard let connection = self.connection as? NETunnelProviderSession else {
-        logger.error("Tunnel connection not proper type")
+        let logger = IOSLoggerImpl(tag: "NETunnelProviderManager")
+        logger.error(message: "Tunnel connection not proper type")
         return false
     }
 

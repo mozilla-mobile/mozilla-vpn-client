@@ -41,17 +41,17 @@ extension ToggleWidgetControl {
     var previewValue: Bool { true }
 
     func currentValue() async -> Bool {
-      let logger = Logger(subsystem: "org.mozilla.ios.FirefoxVPN", category: "WidgetControl")
+      let logger = IOSLoggerImpl(tag: "WidgetControl")
       do {
 
         guard let tunnel = try await NETunnelProviderManager.ourVpnTunnel() else {
-          logger.warning("No tunnel found")
+          logger.info(message: "No tunnel found")
           return false
         }
         return tunnel.isConnected
 
       } catch let error {
-        logger.debug("Error: \(error.localizedDescription)")
+        logger.debug(message: "Error: \(error.localizedDescription)")
         return false
       }
     }
