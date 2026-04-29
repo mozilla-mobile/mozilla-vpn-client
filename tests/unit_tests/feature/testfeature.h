@@ -8,5 +8,11 @@ class TestFeature final : public TestHelper {
   Q_OBJECT
 
  private slots:
-  void flipOnOff();
+  void cleanup();
+
+  void testConstantFeature();
+  void testRuntimeFeature();
+  void testOverridableFeatureDefault();
+  void testOverridableFeatureEvaluator();
+  void testOverridableFeatureToggle();
 };

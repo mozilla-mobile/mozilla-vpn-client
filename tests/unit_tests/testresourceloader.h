@@ -8,6 +8,8 @@ class TestResourceLoader final : public TestHelper {
   Q_OBJECT
 
  private slots:
+  void cleanup();
+
   void loadFile();
   void loadDir();
 

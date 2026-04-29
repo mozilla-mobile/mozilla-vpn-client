@@ -69,7 +69,6 @@ ColumnLayout {
                     sourceComponent: MZInformationCard {
                         width: parent.width
                         cardType: MZInformationCard.CardType.Info
-                        implicitHeight: textBlock.height + MZTheme.theme.windowMargin * 2
                         anchors.top: parent.top
                         anchors.topMargin: MZTheme.theme.viewBaseTopMargin
 
@@ -189,6 +188,7 @@ ColumnLayout {
                 spacing: MZTheme.theme.windowMargin
                 opacity: enabled ? 1.0 : 0.5
                 Layout.preferredHeight: MZTheme.theme.navBarTopMargin
+                width: listView.width
 
                 function handleClick() {
                     VPNAppPermissions.flip(appID)

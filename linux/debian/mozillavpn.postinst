@@ -13,7 +13,11 @@ if [ "$action" = "configure" ]; then
   rm -f /etc/xdg/autostart/org.mozilla.vpn-startup.desktop
 
   # Migrate users from the Mozilla VPN PPA to packages.mozilla.org.
-  for ppa_sources_list in /etc/apt/sources.list.d/mozillacorp-ubuntu-mozillavpn-*.sources; do break; done
+  for ppa_sources_list in /etc/apt/sources.list.d/mozillacorp-ubuntu-mozillavpn-*.sources \
+                          /etc/apt/sources.list.d/mozillacorp-ubuntu-mozillavpn-*.list; do
+    [ -f "$ppa_sources_list" ] && break
+  done
+
   if [ -f "$ppa_sources_list" ]; then
 
     # Add the packages.mozilla.org repository if not already configured.
@@ -55,7 +59,10 @@ Pin: origin packages.mozilla.org
 Pin-Priority: 1000
 EOF
 
-    mv "$ppa_sources_list" "${ppa_sources_list}.save"
+    for ppa_sources_list in /etc/apt/sources.list.d/mozillacorp-ubuntu-mozillavpn-*.sources \
+                            /etc/apt/sources.list.d/mozillacorp-ubuntu-mozillavpn-*.list; do
+      [ -f "$ppa_sources_list" ] && mv "$ppa_sources_list" "${ppa_sources_list}.save"
+    done
 
     db_input high mozillavpn/ppa-deprecation-warning || true
     db_go || true

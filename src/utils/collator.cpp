@@ -6,6 +6,8 @@
 
 #if defined(MZ_IOS)
 #  include <CoreFoundation/CoreFoundation.h>
+#elif defined(MZ_ANDROID)
+#  include <QJniObject>
 #elif defined(MZ_WASM)
 #  include <emscripten.h>
 
@@ -34,6 +36,15 @@ int Collator::compare(const QString& a, const QString& b) {
     default:
       return 0;
   }
+#elif defined(MZ_ANDROID)
+  // Similar issue also on Android. Let's call the platform collator via QJni.
+  // The ICU4C NDK APIs (ucol_*) require API 33+, while
+  // android.icu.text.Collator is available from API 24.
+  return QJniObject::callStaticMethod<jint>(
+      "org/mozilla/firefox/vpn/qt/MZCollator", "compareStrings",
+      "(Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)I",
+      QJniObject::fromString(a).object(), QJniObject::fromString(b).object(),
+      QJniObject::fromString(m_collator.locale().bcp47Name()).object());
 #elif defined(MZ_WASM)
   // For WASM, we have a similar issue (no ICU). Let's use the JS API to sort
   // strings.

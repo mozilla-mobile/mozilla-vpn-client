@@ -4,8 +4,10 @@
 
 #include "updater.h"
 
+#include <QCoreApplication>
+
 #include "constants.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -25,7 +27,7 @@ Updater* Updater::create(
     QObject* parent, bool downloadAndInstall,
     ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy) {
 #ifdef MVPN_BALROG
-  if (Feature::get(Feature::Feature_enableUpdateServer)->isSupported()) {
+  if (Feature::isEnabled(Feature::enableUpdateServer)) {
     return new Balrog(parent, downloadAndInstall, errorPropagationPolicy);
   }
 #endif

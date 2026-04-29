@@ -9,7 +9,6 @@
 
 #include "app.h"
 #include "errorhandler.h"
-#include "feature/feature.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "loglevel.h"
@@ -119,9 +118,6 @@ Navigator::~Navigator() { MZ_COUNT_DTOR(Navigator); }
 void Navigator::initialize() {
   connect(App::instance(), &App::stateChanged, this,
           &Navigator::computeComponent);
-
-  connect(Feature::get(Feature::Feature_inAppAuthentication),
-          &Feature::supportedChanged, this, &Navigator::computeComponent);
 
   computeComponent();
 }

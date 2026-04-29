@@ -53,9 +53,7 @@ describe('Settings', function() {
     }
 
     await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
-    if (await vpn.isFeatureFlippedOn('splitTunnel')) {
-      await vpn.waitForQuery(queries.screenSettings.APP_EXCLUSIONS.visible());
-    }
+    await vpn.waitForQuery(queries.screenSettings.APP_EXCLUSIONS.visible());
     await vpn.waitForQuery(queries.screenSettings.MY_DEVICES.visible());
     await vpn.waitForQuery(queries.screenSettings.APP_PREFERENCES.visible());
     await vpn.waitForQuery(queries.screenSettings.GET_HELP.visible());

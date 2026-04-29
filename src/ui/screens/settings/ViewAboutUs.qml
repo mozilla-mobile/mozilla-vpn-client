@@ -161,6 +161,8 @@ MZViewBase {
             Layout.fillWidth: true
             Layout.leftMargin: MZTheme.theme.windowMargin
             Layout.rightMargin: MZTheme.theme.windowMargin
+            leftPadding: MZTheme.theme.iconSize * 1.5 + MZTheme.theme.windowMargin * 2
+            rightPadding: MZTheme.theme.windowMargin
 
             onClicked: {
                 listenForUpdateEvents=true;
@@ -171,10 +173,7 @@ MZViewBase {
             Image {
                 id:updateButtonImage
                 anchors {
-                    // TODO: The content item spans the whole Button
-                    // If we wish to align to the text, maybe we can get
-                    // the texts bounding box with "TextMetrics"?
-                    left: updateButton.contentItem.left
+                    left: updateButton.left
                     leftMargin: MZTheme.theme.windowMargin
                     verticalCenter: parent.verticalCenter
                 }

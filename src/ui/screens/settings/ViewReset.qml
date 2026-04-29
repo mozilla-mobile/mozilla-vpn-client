@@ -72,7 +72,7 @@ MZViewBase {
                 text: "<ul style='margin-left: -20px;'><li>%1</li></ul>".arg(MZI18n.SettingsAppExclusionTitle)
                 textFormat: Text.RichText
                 horizontalAlignment: Text.AlignLeft
-                visible: MZFeatureList.get("splitTunnel").isSupported
+                visible: VPNController.splitTunnelSupported
 
                 Accessible.name: MZI18n.SettingsAppExclusionTitle
             }

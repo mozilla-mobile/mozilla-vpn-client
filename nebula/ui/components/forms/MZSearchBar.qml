@@ -44,6 +44,7 @@ FocusScope {
             leftPadding: MZTheme.theme.windowMargin * 3
             rightPadding: MZTheme.theme.windowMargin * 3
             rightInset: MZTheme.theme.windowMargin * 3
+            inputMethodHints: Qt.ImhNoPredictiveText
             hasError: _searchBarHasError
 
             onLengthChanged: text => model.invalidate()

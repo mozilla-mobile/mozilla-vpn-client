@@ -49,9 +49,7 @@ constexpr uint32_t WG_ROUTE_TABLE = 0xca6c;
  * classifiers aren't important so long as they are unique.
  */
 constexpr const char* VPN_EXCLUDE_CGROUP = "/mozvpn.exclude";
-constexpr const char* VPN_BLOCK_CGROUP = "/mozvpn.block";
 constexpr uint32_t VPN_EXCLUDE_CLASS_ID = 0x00110011;
-constexpr uint32_t VPN_BLOCK_CLASS_ID = 0x00220022;
 
 static void nlmsg_append_attr(struct nlmsghdr* nlmsg, size_t maxlen,
                               int attrtype, const void* attrdata,
@@ -194,6 +192,37 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
   return true;
 }
 
+static bool hasRouteToIPv4(const QString& ipv4addr) {
+  int sock = ::socket(AF_INET, SOCK_DGRAM, 0);
+
+  if (sock < 0) {
+    return true;
+  }
+
+  auto guard = qScopeGuard([sock] { ::close(sock); });
+
+  // Mark the socket with WG_FIREWALL_MARK to bypass the VPN routing table to
+  // ensure the VPN's 0.0.0.0/0 route doesn't produce a false positive on
+  // IPv6-only network
+  uint32_t mark = WG_FIREWALL_MARK;
+  if (::setsockopt(sock, SOL_SOCKET, SO_MARK, &mark, sizeof(mark)) < 0) {
+    logger.warning() << "Failed to set SO_MARK on test socket:"
+                     << strerror(errno);
+  }
+
+  struct sockaddr_in dest {};
+  dest.sin_family = AF_INET;
+  dest.sin_port = htons(1);
+
+  if (::inet_pton(AF_INET, qPrintable(ipv4addr), &dest.sin_addr) != 1) {
+    return true;
+  }
+
+  int rc =
+      ::connect(sock, reinterpret_cast<struct sockaddr*>(&dest), sizeof(dest));
+  return rc == 0 || (errno != ENETUNREACH && errno != EHOSTUNREACH);
+}
+
 bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   wg_device* device = static_cast<wg_device*>(calloc(1, sizeof(*device)));
   if (!device) {
@@ -213,8 +242,13 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
 
   // Public Key
   wg_key_from_base64(peer->public_key, qPrintable(config.m_serverPublicKey));
-  // Endpoint
-  if (!setPeerEndpoint(&peer->endpoint.addr, config.m_serverIpv4AddrIn,
+  // Prefer IPv4, but fall back to IPv6 on IPv6-only networks.
+  const bool useIPv4 = !config.m_serverIpv4AddrIn.isNull() &&
+                       (config.m_serverIpv6AddrIn.isNull() ||
+                        hasRouteToIPv4(config.m_serverIpv4AddrIn));
+  const QString endpointAddr =
+      useIPv4 ? config.m_serverIpv4AddrIn : config.m_serverIpv6AddrIn;
+  if (!setPeerEndpoint(&peer->endpoint.addr, endpointAddr,
                        config.m_serverPort)) {
     logger.error() << "Failed to set peer endpoint for" << config.m_hopType;
     return false;
@@ -244,9 +278,11 @@ bool WireguardUtilsLinux::updatePeer(const InterfaceConfig& config) {
   }
 
   // Update the firewall to mark inbound traffic from the server.
-  if (!m_firewall.markInbound(config.m_serverIpv4AddrIn)) {
+  if (!m_firewall.markInbound(endpointAddr)) {
     return false;
   }
+
+  m_peerEndpoints[config.m_serverPublicKey] = endpointAddr;
 
   // Set/update peer
   strncpy(device->name, WG_INTERFACE, IFNAMSIZ);
@@ -292,7 +328,9 @@ bool WireguardUtilsLinux::deletePeer(const InterfaceConfig& config) {
   }
 
   // Clear firewall settings for this server.
-  if (!m_firewall.clearInbound(config.m_serverIpv4AddrIn)) {
+  const QString endpointAddr = m_peerEndpoints.take(config.m_serverPublicKey);
+
+  if (!endpointAddr.isEmpty() && !m_firewall.clearInbound(endpointAddr)) {
     return false;
   }
 

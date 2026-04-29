@@ -10,7 +10,7 @@
 #include "authenticationinapp/authenticationinappsession.h"
 #include "authenticationlistener.h"
 #include "constants.h"
-#include "feature/feature.h"
+#include "feature/features.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/subscriptiondata.h"
@@ -129,7 +129,7 @@ void TaskGetSubscriptionDetails::initAuthentication() {
 
   // If transitioning from in-app auth to web-based auth, bounce to web-based
 #ifndef MZ_WASM
-  if (!Feature::get(Feature::Feature_inAppAuthentication)->isSupported()) {
+  if (!Feature::isEnabled(Feature::inAppAuthentication)) {
     logger.info() << "Starting web-based re-authentication.";
     emit mustTransitionAuthToWeb();
     emit completed();

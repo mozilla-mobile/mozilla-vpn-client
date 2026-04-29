@@ -32,7 +32,6 @@ MZViewBase {
               width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
               cardType: MZInformationCard.CardType.Info
               anchors.horizontalCenter: parent.horizontalCenter
-              implicitHeight: textBlock.height + MZTheme.theme.windowMargin * 2
               
               _infoContent: MZTextBlock {
                   id: textBlock
@@ -47,10 +46,8 @@ MZViewBase {
               width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
               cardType: MZInformationCard.CardType.Success
               anchors.horizontalCenter: parent.horizontalCenter
-              implicitHeight: textBlock.height + MZTheme.theme.windowMargin * 2
               
               _infoContent: MZTextBlock {
-                  // id: textBlock
                   Layout.fillWidth: true
 
                   text: "Info card with success colors"
@@ -62,10 +59,8 @@ MZViewBase {
               width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
               cardType: MZInformationCard.CardType.Warning
               anchors.horizontalCenter: parent.horizontalCenter
-              implicitHeight: textBlock.height + MZTheme.theme.windowMargin * 2
               
               _infoContent: MZTextBlock {
-                  // id: textBlock
                   Layout.fillWidth: true
 
                   text: "Info card with warning colors"
@@ -77,15 +72,36 @@ MZViewBase {
               width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
               cardType: MZInformationCard.CardType.Error
               anchors.horizontalCenter: parent.horizontalCenter
-              implicitHeight: textBlock.height + MZTheme.theme.windowMargin * 2
               
               _infoContent: MZTextBlock {
-                  // id: textBlock
                   Layout.fillWidth: true
 
                   text: "Info card with error colors"
                   verticalAlignment: Text.AlignVCenter
               }
+          }
+
+          Rectangle {
+              Layout.fillWidth: true
+              Layout.preferredHeight: 10
+
+              color: MZTheme.colors.divider
+          }
+
+          MZInformationCard {
+              width: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
+              cardType: MZInformationCard.CardType.Error
+              anchors.horizontalCenter: parent.horizontalCenter
+
+              _infoContent: MZTextBlock {
+                  Layout.fillWidth: true
+
+                  text: "Info card with button"
+                  verticalAlignment: Text.AlignVCenter
+              }
+
+              _buttonText: "Tap for alert"
+              _buttonAction: function() { MZErrorHandler.requestAlert(MZErrorHandler.GeoIpRestrictionAlert) }
           }
 
           Rectangle {
@@ -158,13 +174,6 @@ MZViewBase {
               badgeLabel.width: badgeLabel.implicitWidth
               text: "Normal badge"
               badgeType: MZBadge.BadgeType.Normal
-          }
-
-          Rectangle {
-              Layout.fillWidth: true
-              Layout.preferredHeight: 10
-
-              color: MZTheme.colors.divider
           }
 
           Rectangle {
