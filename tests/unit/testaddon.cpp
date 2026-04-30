@@ -23,7 +23,6 @@
 #include "feature/features.h"
 #include "helper.h"
 #include "qmlengineholder.h"
-#include "qtglean.h"
 #include "settingsholder.h"
 #include "systemtraynotificationhandler.h"
 

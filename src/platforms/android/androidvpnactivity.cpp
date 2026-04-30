@@ -133,9 +133,6 @@ void AndroidVPNActivity::handleServiceMessage(int code, const QString& data) {
     case ServiceEvents::EVENT_ACTIVATION_ERROR:
       emit eventActivationError(data);
       break;
-    case ServiceEvents::EVENT_REQUEST_GLEAN_UPLOAD_ENABLED:
-      emit eventRequestGleanUploadEnabledState();
-      break;
     case ServiceEvents::EVENT_REQUEST_NOTIFICATION_PERMISSION:
       // This is completely handled in Java-Land
       // See VPNActivity.java

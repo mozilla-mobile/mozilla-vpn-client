@@ -12,7 +12,6 @@
 #endif
 
 #include "feature/features.h"
-#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "qmlengineholder.h"
@@ -215,9 +214,6 @@ void Theme::setToSystemTheme() {
 bool Theme::loadTheme(const QString& themeName) {
   if (!m_themes.contains(themeName)) return false;
   m_currentTheme = themeName;
-  mozilla::glean::settings::using_dark_mode.set(isThemeDark());
-  mozilla::glean::settings::is_using_system_theme.set(
-      SettingsHolder::instance()->usingSystemTheme());
   emit changed();
   return true;
 }

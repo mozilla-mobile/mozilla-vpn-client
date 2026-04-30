@@ -153,12 +153,6 @@ inline const OverridableFeature enableUpdateServer = {
     .canFlipOff = +[] { return Platform::hasBalrog; },
 };
 
-inline constexpr ConstantFeature gleanRust = {
-    .id = "gleanRust",
-    .name = "Glean Rust SDK",
-    .supported = true,
-};
-
 inline constexpr ConstantFeature keyRegeneration = {
     .id = "keyRegeneration",
     .name = "Key Regeneration",

@@ -99,16 +99,6 @@ class VPNServiceBinder(service: VPNService) : CoreBinder() {
                 val binder = data.readStrongBinder()
                 mListeners.add(binder)
                 Log.i(tag, "Registered binder now: ${mListeners.size} Binders")
-
-                if (!Prefs.get(mService).contains("glean_enabled")) {
-                    Log.i(tag, "Requesting Glean upload enabled state. No value in storage.")
-                    dispatchEvent(
-                        EVENTS.requestGleanUploadEnabledState,
-                        "",
-                        binder,
-                    )
-                }
-
                 return true
             }
             ACTIONS.getStatus -> {

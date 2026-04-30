@@ -84,17 +84,6 @@ class VPNService : android.net.VpnService() {
         currentTunnelHandle = WireGuardGo.wgGetLatestHandle()
         Log.i(tag, "Wireguard reported current tunnel: $currentTunnelHandle")
         mAlreadyInitialised = true
-
-        // It's usually a bad practice to initialize Glean with the wrong
-        // value for uploadEnabled... However, since this is a very controlled
-        // situation -- it should only happen when logging in to a brand new
-        // installation of the app -- we should be fine
-        //
-        // If the `glean_enabled` preference is not set, when a new event listener
-        // is bound to this service, it will request that the main app broadcast
-        // the user provided preference for this. So it should not be long until
-        // the correct value is set here. See VPNServiceBinder > onTransact > ACTIONS.registerEventListener.
-        initializeGlean(Prefs.get(this).getBoolean("glean_enabled", false))
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -495,57 +484,7 @@ class VPNService : android.net.VpnService() {
         return obj.getJSONArray("servers").getJSONObject(currentServerConfig)
     }
 
-    fun setGleanUploadEnabled(uploadEnabled: Boolean) {
-        Log.i(tag, "Setting glean upload enabled state: $uploadEnabled")
-
-        Prefs.get(this).edit().apply {
-            putBoolean("glean_enabled", uploadEnabled)
-            apply()
-        }
-
-        Glean.setUploadEnabled(uploadEnabled)
-    }
-
-    private fun initializeGlean(uploadEnabled: Boolean) {
-        val customDataPath = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR).path
-        val channel =
-            if (this.packageName.endsWith(".debug")) {
-                "staging"
-            } else {
-                "production"
-            }
-
-        Glean.registerPings(Pings)
-        Glean.initialize(
-            applicationContext = this.applicationContext,
-            uploadEnabled = uploadEnabled,
-            // GleanBuildInfo can only be generated for application,
-            // We are in a library so we have to build it ourselves.
-            buildInfo =
-            BuildInfo(
-                BuildConfig.VERSIONCODE,
-                BuildConfig.SHORTVERSION,
-                Calendar.getInstance(),
-            ),
-            configuration =
-            Configuration(
-                channel = channel,
-                // When initializing Glean from outside the main process,
-                // we need to provide it with a dataPath manually.
-                dataPath = customDataPath,
-            ),
-        )
-
-        Log.i(tag, "Initialized Glean for daemon. Upload enabled state: $uploadEnabled")
-    }
-
     companion object {
-        // This value cannot be "glean_data",
-        // because that is the data path for the Glean data on the main application.
-        // See:
-        // https://mozilla.github.io/glean/book/reference/general/initializing.html#configuration
-        internal const val GLEAN_DATA_DIR: String = "glean_daemon_data"
-
         @JvmStatic
         fun startService(c: Context) {
             c.applicationContext.startService(

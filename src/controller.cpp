@@ -675,8 +675,7 @@ void Controller::connected(const QString& pubkey) {
     // daemon's silent server switch would activate. However, there is a slight
     // chance that the app is open AND the daemon initiates a silently server
     // switch. In this case, we need to belatedly set isSwitchingServer to
-    // prevent resetting the timer and recording telemetry for the start of a
-    // new session.
+    // prevent resetting the timer for the start of a new session.
     isSwitchingServer = true;
   }
 #endif

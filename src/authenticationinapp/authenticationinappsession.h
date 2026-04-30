@@ -86,11 +86,6 @@ class AuthenticationInAppSession final : public QObject {
   void unblockCodeNeeded();
   void finalizeSignInOrUp();
 
-  bool shouldRecordAuthenticationFlowTelemetry() {
-    // AuthFlow telemetry only applies to TypeDefault.
-    return m_typeAuthentication == TypeDefault;
-  }
-
 #ifdef UNIT_TEST
   void createTotpCodes();
 #endif

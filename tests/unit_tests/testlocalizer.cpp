@@ -6,7 +6,6 @@
 
 #include "helper.h"
 #include "localizer.h"
-#include "qtglean.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 

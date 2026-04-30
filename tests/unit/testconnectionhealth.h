@@ -17,7 +17,6 @@ class TestConnectionHealth final : public TestHelper {
   void dnsPingReceived();
   void healthCheckup();
   void updateDnsPingLatency();
-  // void testTelemetry();
 
   /**
    * @brief Calculates the Exponentially Weighted Moving Average of the

@@ -31,7 +31,6 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "telemetry.h"
 #include "temporarydir.h"
 
 #ifdef MZ_DEBUG
@@ -186,7 +185,6 @@ int CommandUI::run(QStringList& tokens) {
     // objects.
     auto const vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
-    Telemetry::startTimeToFirstScreenTimer();
 
     if (testingOption.m_set) {
       Constants::setStaging();

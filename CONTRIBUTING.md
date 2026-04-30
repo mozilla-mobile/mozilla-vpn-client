@@ -108,61 +108,6 @@ The inspector offers a number of tools to help debug and navigate through the VP
 
 ![inspector_snapshot](https://user-images.githubusercontent.com/3746552/204422879-0799cbd8-91cd-4601-8df8-0d0e9f7cd887.png)
 
-## Glean
-
-[Glean](https://docs.telemetry.mozilla.org/concepts/glean/glean.html) is a
-Mozilla analytics & telemetry solution that provides a consistent
-experience and behavior across all of Mozilla products.
-
-When the client is in staging mode, pings will have the [app channel](app-channel) set to
-`staging`. This allows for filtering between staging and production pings through the
-`client_info.app_channel` metric present in all pings.
-
-[app-channel]: https://mozilla.github.io/glean/book/reference/general/initializing.html?highlight=app%20channel#gleaninitializeconfiguration
-
-### Debug tooling
-
-Glean provides a series of [debug APIs](debug-apis) to aid developers and testers
-in verifying Glean metrics.
-
-These APIs can be accessed through the Mozilla VPN developer menu, under "Telemetry Debugging".
-
-#### Data review
-
-If you are responsible for a piece of work that adds new Glean instrumentation you will need to do a data review.
-Following is the recommended process along with some pointers.
-
-> The data review process is also described here: https://wiki.mozilla.org/Data_Collection
-
-The basic process is this:
-
-* Implement the new instrumentation. Refer to [the Glean book](https://mozilla.github.io/glean/book/user/metrics/adding-new-metrics.html) on how to do that.
-* When adding or updating new metrics or pings, the [Glean YAML files](https://github.com/mozilla-mobile/mozilla-vpn-client/tree/main/glean) might need to be updated.
-  When that is the case a new data-review must be requested and added to the list of data-reviews for the updated/added instrumentation.
-  When updating data-review links on the YAML files, these are the things to keep in mind:
-  * Include a link to the *GitHub* bug that describes the work, this must be a public link;
-  * Put "TBD" in the `data_reviews` entry, that needs to be updated *before* releasing the new instrumentation and ideally before merging it;
-  * Think about whether the data you are collecting is technical or interaction, sometimes it's both. In that case pick interaction which is a higher category of data. (See more details on https://wiki.mozilla.org/Data_Collection);
-* Open a **draft** PR on GitHub;
-* Fill out the data-review[^1] form and request a data-review from one of the [Mozilla Data Stewards](https://wiki.mozilla.org/Data_Collection)[^2].
-  That can be done by opening a Bugzilla ticket or more easily by attaching the questionnaire as a comment on the PR that implements the instrumentation changes.
-  For Bugzilla, there is a special Bugzilla data review request option and for GitHub it's enough to add the chosen data steward as a reviewer for the PR.
-* The data-review questionnaire will result in a data review response. The link to that response is what should be added to the `data_review` entry on the Glean YAML files.
-  It must be a public link.
-
-> Note:
-> - It is **ok** for a reviewer to review and approve your code while you're waiting for data review.
-> - It is **not** ok to release code that contains instrumentation changes without a data review r+. It is good practice not to merge code that does not have a data review r+.
-
-[^1]: The data-review questionnaire can be found at https://github.com/mozilla/data-review/blob/main/request.md. That can be copy pasted and filled out manually. However,
-since the VPN application uses Glean for data collection developers can also use the [`glean_parser data-review`](https://mozilla.github.io/glean_parser/) command,
-which generates a mostly filled out data-review questionnaire for Glean users. The questionnaire can seem quite intimidating, but don't panic.
-First, look at an old data-review such as https://github.com/mozilla-mobile/mozilla-vpn-client/pull/4594.
-Questions 1, 2, 3 an 10 are the ones that require most of your attention and thought.
-If you don't know the answers to these questions, reach out to Sarah Bird or the product manager so you can answer these with full confidence.
-[^2]: Feel free to ping any of the data-stewards. If the collection is time sensitive consider pinging all data-stewards directly on the [data-stewards](https://matrix.to/#/#data-stewards:mozilla.org) matrix channel.
-
-
 ## CPP Notes
 
 We have the includes following these guidelines:

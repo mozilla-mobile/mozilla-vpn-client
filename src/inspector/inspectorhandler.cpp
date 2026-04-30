@@ -29,7 +29,6 @@
 #include "constants.h"
 #include "feature/featuremodel.h"
 #include "frontend/navigator.h"
-#include "glean/generated/metrics.h"
 #include "inspectorhotreloader.h"
 #include "inspectoritempicker.h"
 #include "inspectorutils.h"

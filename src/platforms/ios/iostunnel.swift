@@ -148,9 +148,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
                 // Updates the tunnel configuration and responds with the active configuration
                 logger.info(message: "Switching tunnel configuration from app message")
                 updateServerConfig(with: configString, completionHandler: completionHandler)
-            case .telemetryEnabledChanged(let uploadEnabled):
-                Glean.shared.setUploadEnabled(uploadEnabled)
-                completionHandler(nil)
             case .silentServerSwitch:
                 silentServerSwitch()
                 completionHandler(nil)

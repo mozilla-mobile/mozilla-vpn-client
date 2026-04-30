@@ -161,8 +161,6 @@ TIMEREXPR(schedulePeriodicTask, 60min, 5min, 0ms)
 TIMEREXPR(captivePortalRequest, 10s, 30s, 0ms)
 // How fast the animated icon should move
 TIMEREXPR(statusIconAnimation, 200ms, 200ms, 0ms)
-// How often glean pings are sent
-TIMEREXPR(gleanTimeout, 20min, 20min, 0ms)
 #undef TIMEREXPR
 }  // namespace Timers
 

@@ -17,8 +17,6 @@
 #include "feature/taskgetfeaturelistworker.h"
 #include "frontend/navigationbarmodel.h"
 #include "frontend/navigator.h"
-#include "glean/generated/metrics.h"
-#include "glean/generated/pings.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "localizer.h"

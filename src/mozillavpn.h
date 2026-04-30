@@ -273,7 +273,6 @@ class MozillaVPN final : public App {
   struct MozillaVPNPrivate* m_private = nullptr;
 
   QTimer m_periodicOperationsTimer;
-  QTimer m_gleanTimer;
 
   bool m_startMinimized = false;
   bool m_updating = false;
