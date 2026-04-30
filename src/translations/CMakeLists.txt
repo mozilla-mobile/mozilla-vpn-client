@@ -18,29 +18,32 @@ if(IOS)
     set(TRANSLATIONS_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
     file(MAKE_DIRECTORY "${TRANSLATIONS_OUT_DIR}")
 
-    execute_process(
-        COMMAND
-            ${PYTHON_EXECUTABLE}
+    file(GLOB_RECURSE XLIFF_FILE_LIST CONFIGURE_DEPENDS
+        ${CMAKE_SOURCE_DIR}/3rdparty/i18n/*/mozillavpn.xliff
+    )
+
+    add_custom_command(
+        OUTPUT ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
+        DEPENDS ${XLIFF_FILE_LIST}
+        COMMAND ${PYTHON_EXECUTABLE}
             ${GENERATE_XCSTRINGS_SCRIPT}
             ${CMAKE_SOURCE_DIR}/src/translations/strings.yaml
             ${CMAKE_SOURCE_DIR}/3rdparty/i18n
             ${TRANSLATIONS_OUT_DIR}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        RESULT_VARIABLE apple_translations_result
     )
-    if(NOT apple_translations_result EQUAL 0)
-        message(FATAL_ERROR "xcstrings generation failed: ${apple_translations_result}")
-    endif()
 
-    set(APPLE_TRANSLATION_FILES
-        ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
+    set_source_files_properties(
         ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
+        ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
+        PROPERTIES GENERATED TRUE
     )
-    target_sources(mozillavpn PRIVATE
-        ${APPLE_TRANSLATION_FILES}
+
+    add_custom_target(generate_xcstrings
+        DEPENDS
+            ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
+            ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
     )
-    set_property(TARGET mozillavpn APPEND PROPERTY
-        RESOURCE ${APPLE_TRANSLATION_FILES}
-    )
+    add_dependencies(mozillavpn generate_xcstrings)
 
 endif()
