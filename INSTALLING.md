@@ -160,18 +160,18 @@ Look for the `android` directory (if you are using archive.mozilla.org) and sele
 
 ##### Verify certificate hash before installing (optional)
 
-This is the SHA-256 fingerprint of the certificate used to sign the APKs
+This is the SHA-256 fingerprint of the certificate used to sign the Apk's
 `33:5D:AB:EB:46:9D:40:D7:77:90:31:D9:AE:E3:B8:56:8E:01:DB:52:BF:C3:C1:AF:60:40:B5:39:9A:51:7A:3C`
 
 You can use the following command to retrieve the signing certificate fingerprint of the file:
 `apksigner verify -v --print-certs ./path/to/mozillavpn-foss.apk`
 
-To verify the autenticity of the downloaded APK, ensure that the field `Signer #1 certificate SHA-256 digest` matches the certificate hash above.
+To verify the authenticity of the downloaded APK, ensure that the field `Signer #1 certificate SHA-256 digest` matches the certificate hash above.
 
 
 #### Using Obtainium
 
-Obtainium is an handy tool for installing and updating Android apps directly from their release channels (GitHub releases, websites, ecc.). You can download Obtainium from the [official website](https://obtainium.imranr.dev/) or from [F-Droid](https://f-droid.org/en/packages/dev.imranr.obtainium.fdroid/).
+Obtainium is an handy tool for installing and updating Android apps directly from their release channels (GitHub releases, websites, etc.). You can download Obtainium from the [official website](https://obtainium.imranr.dev/) or from [F-Droid](https://f-droid.org/en/packages/dev.imranr.obtainium.fdroid/).
 
 Install procedure:
 - Install and open Obtainium
