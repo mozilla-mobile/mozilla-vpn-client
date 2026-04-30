@@ -71,6 +71,10 @@ target_sources(networkextension PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/main.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardpeer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardpeer.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardstatus.h
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardstatus.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardtunnel.h

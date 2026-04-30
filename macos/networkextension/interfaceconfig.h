@@ -7,7 +7,7 @@
 
 @interface RoutePrefix : NSObject
 
-+ (id)parseRoute:(NSString *)dict;
++ (id)parseRoute:(NSString *)routeString;
 
 @property (readonly, getter=getDestination) const struct sockaddr* destination;
 @property (readonly) NSUInteger prefixLength;
