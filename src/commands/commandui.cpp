@@ -271,9 +271,8 @@ int CommandUI::run(QStringList& tokens) {
 #if MZ_IOS && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, &App::quit);
 #else
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, [] {
-      MozillaVPN::instance()->aboutToQuit();
-    });
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn,
+                     [] { MozillaVPN::instance()->aboutToQuit(); });
 #endif
 
     QObject::connect(
