@@ -37,8 +37,4 @@ class TestConnectionHealth final : public TestHelper {
     return weight * obs.back() +
            (1 - weight) * ewma(std::vector(obs.begin(), obs.end() - 1), weight);
   }
-
- private:
-  void metricsTestCount(int expectedStablePeriods, int expectedUnstablePeriods,
-                        int expectedNoSignalPeriods);
 };

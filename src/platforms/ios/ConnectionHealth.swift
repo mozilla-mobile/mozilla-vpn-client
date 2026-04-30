@@ -76,7 +76,6 @@ class ConnectionHealth {
             }
 
             self.logger.info(message: "ConnectionHealth connectivity: \(connectivity)")
-            self.recordMetrics(with: connectivity)
 
             let isServerSwitchCriteriaReached = ((connectivity == .noSignal) || (connectivity == .unstable && self.lastHealthStatus == .unstable))
             let isTimeForSilentServerSwitch = (self.nextPossibleServerSwitch < Date())
@@ -90,14 +89,5 @@ class ConnectionHealth {
         }
 
         // Timer set to repeat until stop() is run, so no need to call any repeat step in this function.
-    }
-
-    private func recordMetrics(with stability: ConnectionStability) {
-        switch stability {
-        case .stable: GleanMetrics.ConnectionHealth.stableCount.add()
-        case .unstable: GleanMetrics.ConnectionHealth.unstableCount.add()
-        case .noSignal: GleanMetrics.ConnectionHealth.noSignalCount.add()
-        case .pending: GleanMetrics.ConnectionHealth.pendingCount.add()
-        }
     }
 }

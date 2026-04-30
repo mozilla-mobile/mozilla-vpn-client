@@ -6,7 +6,6 @@
 
 #include <QApplication>
 
-#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -202,27 +201,6 @@ void ErrorHandler::errorHandle(ErrorHandler::ErrorType error,
   }
 
   setAlert(alert);
-
-  QVariantMap extraKeys;
-  mozilla::glean::sample::ErrorAlertShownExtra extras;
-
-  if (!taskName.isEmpty()) {
-    extraKeys["task"] = taskName;
-    extras._task = taskName;
-  }
-
-  if (!fileName.isEmpty()) {
-    extraKeys["filename"] = fileName;
-    extras._filename = fileName;
-  }
-
-  if (lineNumber >= 0) {
-    extraKeys["linenumber"] = lineNumber;
-    extras._linenumber = lineNumber;
-  }
-
-  mozilla::glean::sample::error_alert_shown.record(extras);
-
   emit errorHandled();
 }
 

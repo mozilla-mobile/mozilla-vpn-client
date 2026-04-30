@@ -1,0 +1,42 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "Activate ${{applicationName}}": {
+      "localizations": {
+        "en": {
+          "stringSet": {
+            "state": "new",
+            "values": [
+              "Activate ${{applicationName}}",
+              "Turn on ${{applicationName}}",
+              "Turn ${{applicationName}} on",
+              "Switch on ${{applicationName}}",
+              "Switch ${{applicationName}} on",
+              "Connect ${{applicationName}}",
+              "Connect to ${{applicationName}}"
+            ]
+          }
+        }
+      }
+    },
+    "Deactivate ${{applicationName}}": {
+      "localizations": {
+        "en": {
+          "stringSet": {
+            "state": "new",
+            "values": [
+              "Deactivate ${{applicationName}}",
+              "Turn off ${{applicationName}}",
+              "Turn ${{applicationName}} off",
+              "Switch off ${{applicationName}}",
+              "Switch ${{applicationName}} off",
+              "Disconnect ${{applicationName}}",
+              "Disconnect from ${{applicationName}}"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "version": "1.1"
+}

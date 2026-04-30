@@ -10,7 +10,6 @@
 #include "app.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
-#include "glean/mzglean.h"
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "settingsholder.h"
@@ -42,7 +41,6 @@ int main(int argc, char* argv[]) {
       "inAppAccountCreate", "inAppAuthentication", "accountDeletion"});
 
   LogHandler::instance()->setStderr(true);
-  MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
 
   QString nonce = QString::number(QDateTime::currentSecsSinceEpoch());
 

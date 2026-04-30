@@ -36,7 +36,6 @@ qt_add_qml_module(mozillavpn-ui
         screens/getHelp/developerMenu/ViewImagesPlayground.qml
         screens/getHelp/developerMenu/ViewDeveloperMenu.qml
         screens/getHelp/developerMenu/ViewFeatureList.qml
-        screens/getHelp/developerMenu/ViewTelemetryDebugging.qml
         screens/getHelp/developerMenu/ViewUiTesting.qml
         screens/home/controller/ConnectionStability.qml
         screens/home/controller/ConnectionTimer.qml

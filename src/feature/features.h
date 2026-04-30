@@ -201,12 +201,6 @@ inline constexpr ConstantFeature stagingUpdateServer = {
     .supported = false,
 };
 
-inline constexpr ConstantFeature superDooperMetrics = {
-    .id = "superDooperMetrics",
-    .name = "Super Dooper Metrics",
-    .supported = true,
-};
-
 inline constexpr ConstantFeature webPurchase = {
     .id = "webPurchase",
     .name = "Web Purchase",

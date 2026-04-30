@@ -26,55 +26,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
         }
     }()
 
-    private var gleanDebugTag: String? {
-        guard let tag = (protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["gleanDebugTag"] as? String,
-            !tag.isEmpty else {
-            return nil
-        }
-        return tag
-    }
-
-    private var shouldSendTelemetry: Bool {
-        return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isSuperDooperFeatureActive"] as? Bool) ?? false
-    }
-
-    private var isServerLocatedInUserCountry: Bool? {
-        return ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["isServerLocatedInUserCountry"] as? Bool)
-    }
-
     override init() {
         super.init()
-
         connectionHealthMonitor.serverSwitchingDelegate = self
-
-        // Copied from https://github.com/mozilla/glean/blob/c501555ad63051a4d5813957c67ae783afef1996/glean-core/ios/Glean/Utils/Utils.swift#L90
-        let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
-        let documentsDirectory = paths[0]
-        // We just can't use "glean_data". Otherwise we will crash with the main Glean storage.
-        let gleanDataPath = documentsDirectory.appendingPathComponent("glean_netext_data")
-
-        let defaults = UserDefaults(suiteName: Constants.appGroupIdentifier)
-        let telemetryEnabled = defaults!.bool(forKey: Constants.UserDefaultKeys.telemetryEnabled)
-        let appChannel = defaults!.string(forKey: Constants.UserDefaultKeys.appChannel)
-
-        Glean.shared.registerPings(GleanMetrics.Pings.self)
-        Glean.shared.initialize(
-            uploadEnabled: telemetryEnabled,
-            configuration: Configuration.init(
-                channel: appChannel != nil ? appChannel : "unknown",
-                dataPath: gleanDataPath.relativePath
-            ),
-            buildInfo: GleanMetrics.GleanBuild.info
-        )
     }
 
     override func startTunnel(options: [String: NSObject]?, completionHandler: @escaping (Error?) -> Void) {
-        // If this isGleanDebugTagActive check is in intializer, protocolConfig isn't set and it always fails.
-        if let gleanDebugTag = gleanDebugTag {
-            logger.info(message: "Setting Glean debug tag for Network Extension.")
-            Glean.shared.setDebugViewTag(gleanDebugTag)
-        }
-
         let errorNotifier = ErrorNotifier(activationAttemptId: nil)
         let isSourceApp = ((options?["source"] as? String) ?? "") == "app"
         logger.info(message: "Starting tunnel from the " + (isSourceApp ? "app" : "OS directly, rather than the app"))
@@ -86,31 +43,12 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
             return
         }
 
-        if shouldSendTelemetry {
-            if let installationIdString = ((protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration?["installationId"] as? String),
-                let installationId = UUID(uuidString: installationIdString) {
-                logger.info(message: "Setting installation ID in network extension")
-                GleanMetrics.Session.installationId.set(installationId)
-            } else {
-                logger.error(message: "No installation ID found for network extension Glean instance")
-            }
-
-            GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonFlush)
-        }
-
         // Start the tunnel
         adapter.start(tunnelConfiguration: tunnelConfiguration) { adapterError in
             guard let adapterError = adapterError else {
                 let interfaceName = self.adapter.interfaceName ?? "unknown"
 
                 self.logger.info(message: "Tunnel interface is \(interfaceName)")
-
-                if self.shouldSendTelemetry {
-                    GleanMetrics.Session.daemonSessionSource.set(isSourceApp ? "app" : "system")
-                    GleanMetrics.Session.daemonSessionId.generateAndSet()
-                    GleanMetrics.Session.daemonSessionStart.set()
-                    GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonStart)
-                }
 
                 self.originalStartTime = Date()
 
@@ -168,22 +106,6 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
         adapter.stop { error in
             ErrorNotifier.removeLastErrorFile()
             self.connectionHealthMonitor.stop()
-            if self.shouldSendTelemetry {
-                if let isServerLocatedInUserCountry = self.isServerLocatedInUserCountry {
-                  GleanMetrics.Session.serverInSameCountry.set(isServerLocatedInUserCountry)
-                } else {
-                  self.logger.error(message: "Not setting serverInSameCountry because no local location was found.")
-                }
-                GleanMetrics.Session.daemonSessionEnd.set()
-                GleanMetrics.Pings.shared.daemonsession.submit(reason: .daemonEnd)
-
-                // We are rotating the UUID here as a safety measure. It is rotated
-                // again before the next session start, and we expect to see the
-                // UUID created here in only one ping: The daemon ping with a
-                // "flush" reason, which should contain this UUID and no other
-                // metrics.
-                GleanMetrics.Session.daemonSessionId.generateAndSet()
-            }
 
             if let error = error {
                 self.logger.error(message: "Failed to stop WireGuard adapter: \(error.localizedDescription)")

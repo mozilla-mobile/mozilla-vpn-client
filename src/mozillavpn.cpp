@@ -19,7 +19,6 @@
 #include "frontend/navigator.h"
 #include "glean/generated/metrics.h"
 #include "glean/generated/pings.h"
-#include "glean/mzglean.h"
 #include "inspector/inspectorhandler.h"
 #include "leakdetector.h"
 #include "localizer.h"
@@ -59,7 +58,6 @@
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/servers/taskservers.h"
 #include "taskscheduler.h"
-#include "telemetry.h"
 #include "update/updater.h"
 #include "urlopener.h"
 
@@ -249,8 +247,6 @@ MozillaVPN::MozillaVPN() : App(nullptr), m_private(new MozillaVPNPrivate()) {
 
   connect(ErrorHandler::instance(), &ErrorHandler::errorHandled, this,
           &MozillaVPN::errorHandled);
-
-  ensureApplicationIdExists();
 }
 
 MozillaVPN::~MozillaVPN() {
@@ -295,8 +291,6 @@ void MozillaVPN::initialize() {
       Constants::Timers::schedulePeriodicTask());
 
   m_private->m_releaseMonitor.runSoon();
-
-  m_private->m_telemetry.initialize();
 
   m_private->m_ipAddressLookup.initialize();
 
@@ -875,24 +869,9 @@ void MozillaVPN::reset(bool forceInitialState) {
 
 void MozillaVPN::mainWindowLoaded() {
   logger.debug() << "main window loaded";
-  m_private->m_telemetry.stopTimeToFirstScreenTimer();
 
-#ifndef MZ_WASM
-  // Initialize glean with an async call because at this time,
-  // QQmlEngine does not have root objects yet to see the current
-  // graphics API in use.
-  logger.debug() << "Initializing Glean";
-  QTimer::singleShot(0, this, &MozillaVPN::initializeGlean);
-
-  // Setup regular glean ping sending
-  connect(&m_gleanTimer, &QTimer::timeout, this, [this] {
-    mozilla::glean_pings::Main.submit();
-    emit MozillaVPN::sendGleanPings();
-  });
-  m_gleanTimer.start(Constants::Timers::gleanTimeout());
-  m_gleanTimer.setSingleShot(false);
-#endif
 #ifdef SENTRY_ENABLED
+  logger.debug() << "Initializing Sentry";
   SentryAdapter::instance()->init();
   QObject::connect(controller(), &Controller::readyToQuit,
                    SentryAdapter::instance(), &SentryAdapter::onBeforeShutdown);
@@ -2126,15 +2105,6 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
-      "set_glean_source_tags",
-      "Set Glean Source Tags (supply a comma seperated list)", 1,
-      [](InspectorHandler*, const QList<QByteArray>& arguments) {
-        QStringList tags = QString(arguments[1]).split(',');
-        emit MozillaVPN::instance()->setGleanSourceTags(tags);
-        return QJsonObject();
-      });
-
-  InspectorHandler::registerCommand(
       "quit", "Quit the app", 0,
       [](InspectorHandler*, const QList<QByteArray>&) {
         MozillaVPN::instance()->controller()->quit();
@@ -2277,22 +2247,6 @@ void MozillaVPN::registerAddonApis() {
   });
 }
 
-void MozillaVPN::ensureApplicationIdExists() {
-#if defined(MZ_ANDROID) || defined(MZ_IOS)
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  if (!settingsHolder->hasInstallationId()) {
-    QString uuid = mozilla::glean::session::installation_id.generateAndSet();
-    settingsHolder->setInstallationId(uuid);
-  }
-#endif
-}
-
-void MozillaVPN::gleanSetDebugViewTag(QString tag) {
-  MZGlean::setDebugViewTag(tag);
-}
-
-void MozillaVPN::gleanSetLogPings(bool flag) { MZGlean::setLogPings(flag); }
-
 // static
 int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
   std::function<int()> callback = std::move(a_callback);
@@ -2308,7 +2262,6 @@ int MozillaVPN::runCommandLineApp(std::function<int()>&& a_callback) {
     LogHandler::instance()->setStderr(true);
   }
 
-  MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
   logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();
@@ -2340,7 +2293,6 @@ int MozillaVPN::runGuiApp(std::function<int()>&& a_callback) {
   QQmlContext* ctx = engine->rootContext();
   ctx->setContextProperty("QT_QUICK_BACKEND", qgetenv("QT_QUICK_BACKEND"));
 
-  MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
   qInstallMessageHandler(LogHandler::messageQTHandler);
 
   logger.info() << "MozillaVPN" << QCoreApplication::applicationVersion();

@@ -27,7 +27,6 @@
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
-#include "settingsholder.h"
 
 namespace {
 Logger logger("AndroidController");
@@ -229,25 +228,6 @@ void AndroidController::activate(const InterfaceConfig& config,
           ->t(I18nStrings::NotificationsVPNDisconnectedMessage)
           .arg(localizedCityName);
   args["messages"] = messages;
-
-  args["isSuperDooperFeatureActive"] = Feature::superDooperMetrics.supported;
-  QString trueCountryCode = MozillaVPN::instance()->location()->countryCode();
-  if (!trueCountryCode.isEmpty()) {
-    args["serverLocatedInUserCountry"] =
-        MozillaVPN::instance()->serverData()->serverLocatedInUserCountry();
-  } else {
-    logger.warning() << "Not setting `server_in_same_country` in Android "
-                        "payload because country code is blank.";
-  }
-  args["installationId"] = config.m_installationId;
-
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-  args["gleanDebugTag"] = settingsHolder->gleanDebugTagActive()
-                              ? settingsHolder->gleanDebugTag()
-                              : "";
-  args["isUsingShortTimerSessionPing"] =
-      settingsHolder->shortTimerSessionPing();
 
   args["isOnboarding"] =
       MozillaVPN::instance()->state() == App::StateOnboarding;

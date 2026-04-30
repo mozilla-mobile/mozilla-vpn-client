@@ -156,13 +156,6 @@ class VPNServiceBinder(service: VPNService) : CoreBinder() {
             ACTIONS.clearStorage -> {
                 mService.clearConfig()
             }
-            ACTIONS.setGleanUploadEnabled -> {
-                val buffer = data.createByteArray()
-                val json = buffer?.let { String(it) }
-                val args = JSONObject(json)
-                mService.setGleanUploadEnabled(args.getBoolean("uploadEnabled"))
-                return true
-            }
             ACTIONS.notificationPermissionFired -> {
                 mService.mNotificationHandler.onNotificationPermissionPromptFired()
                 return true

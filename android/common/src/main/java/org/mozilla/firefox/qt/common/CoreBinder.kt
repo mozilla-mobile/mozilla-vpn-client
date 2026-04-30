@@ -17,7 +17,6 @@ open class CoreBinder : Binder() {
         const val setStartOnBoot = 15
         const val reactivate = 16
         const val clearStorage = 17
-        const val setGleanUploadEnabled = 18
         const val notificationPermissionFired = 19
         const val silentServerSwitch = 20
     }
@@ -30,7 +29,6 @@ open class CoreBinder : Binder() {
         const val statisticUpdate = 3
         const val activationError = 5
         const val permissionRequired = 6
-        const val requestGleanUploadEnabledState = 7
         const val requestNotificationPermission = 8
         const val onboardingCompleted = 9
     }

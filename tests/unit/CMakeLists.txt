@@ -173,8 +173,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/frontend/navigationbarmodel.h
     ${MZ_SOURCE_DIR}/frontend/navigatorreloader.cpp
     ${MZ_SOURCE_DIR}/frontend/navigatorreloader.h
-    ${MZ_SOURCE_DIR}/glean/mzglean.h
-    ${MZ_SOURCE_DIR}/glean/mzglean.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.h

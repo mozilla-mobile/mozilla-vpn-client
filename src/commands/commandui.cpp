@@ -20,8 +20,6 @@
 #include "controller.h"
 #include "daemon/mock/mockdaemon.h"
 #include "fontloader.h"
-#include "glean/generated/pings.h"
-#include "glean/mzglean.h"
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
@@ -235,14 +233,6 @@ int CommandUI::run(QStringList& tokens) {
     auto const engine =
         static_cast<QQmlApplicationEngine*>(engineHolder->engine());
     Q_ASSERT(engine);
-    // // Glean.rs
-    QString gleanChannel = "production";
-    if (testingOption.m_set) {
-      gleanChannel = "testing";
-    } else if (!Constants::inProduction()) {
-      gleanChannel = "staging";
-    }
-    MZGlean::initialize(gleanChannel);
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
 
@@ -284,13 +274,6 @@ int CommandUI::run(QStringList& tokens) {
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, &App::quit);
 #else
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, [] {
-      // Submit the main ping one last time.
-      mozilla::glean_pings::Main.submit();
-      // During shutdown Glean will attempt to finish all tasks
-      // and submit all enqueued pings (including the one we
-      // just sent).
-      MZGlean::shutdown();
-
       MozillaVPN::instance()->aboutToQuit();
     });
 #endif

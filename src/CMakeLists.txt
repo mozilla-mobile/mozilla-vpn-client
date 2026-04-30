@@ -58,7 +58,6 @@ target_link_libraries(mozillavpn PRIVATE
     mzutils
     nebula
     translations
-    qtglean
 )
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR

@@ -37,7 +37,6 @@
 #include "localizer.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "mzglean.h"
 #include "networkmanager.h"
 #include "qmlengineholder.h"
 #include "settings/settingsmanager.h"
@@ -695,47 +694,6 @@ static QList<InspectorCommand> s_commands{
                      [](InspectorHandler*, const QList<QByteArray>& arguments) {
                        QString versionOverride = QString(arguments[1]);
                        QCoreApplication::setApplicationVersion(versionOverride);
-                       return QJsonObject();
-                     }},
-
-    InspectorCommand{
-        "glean_test_get_value", "Get value of a Glean metric", 3,
-        [](InspectorHandler*, const QList<QByteArray>& arguments) {
-          QString ping = QString(arguments[3]);
-          QJsonObject obj;
-
-          QObject* instance = __DONOTUSE__GleanMetrics::instance();
-          QVariant qvCategory = instance->property(arguments[1].constData());
-          QObject* category = qvCategory.value<QObject*>();
-          if (category == nullptr) {
-            obj["error"] = QString(arguments[1]) + "is not a valid category";
-            return obj;
-          }
-
-          QVariant metric = category->property(arguments[2].constData());
-          if (!metric.isValid()) {
-            obj["error"] = QString(arguments[2]) + "is not a valid metric";
-            return obj;
-          }
-
-          if (metric.canConvert<BaseMetric*>()) {
-            BaseMetric* baseMetric = metric.value<BaseMetric*>();
-            obj["value"] = baseMetric->testGetValue(ping);
-            return obj;
-          }
-
-          QString className = "unknown";
-          if (metric.canConvert<QObject*>()) {
-            className = metric.value<QObject*>()->metaObject()->className();
-          }
-          obj["error"] =
-              QString("not a supported metric type (%1)").arg(className);
-          return obj;
-        }},
-
-    InspectorCommand{"glean_test_reset", "Resets Glean for testing", 0,
-                     [](InspectorHandler*, const QList<QByteArray>&) {
-                       MZGlean::initialize("testing");
                        return QJsonObject();
                      }},
 

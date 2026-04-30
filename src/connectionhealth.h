@@ -92,8 +92,6 @@ class ConnectionHealth final : public QObject {
   QString m_currentGateway;
   QString m_deviceAddress;
 
-  void recordMetrics(ConnectionStability stability);
-
 #ifdef UNIT_TEST
   friend class TestConnectionHealth;
 #endif

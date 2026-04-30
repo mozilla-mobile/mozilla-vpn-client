@@ -4,26 +4,11 @@
 
 #include "testlocalizer.h"
 
-#include "glean/generated/metrics.h"
-#include "glean/mzglean.h"
 #include "helper.h"
 #include "localizer.h"
 #include "qtglean.h"
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
-
-void TestLocalizer::init() {
-  // Glean needs to be initialized for every test because this test suite
-  // includes telemetry tests.
-  //
-  // Glean operations are queued and applied once Glean is initialized.
-  // If we only initialize it in the test that actually tests telemetry all
-  // of the Glean operations from previous tests will be applied and mess with
-  // the state of the test that actually is testing telemetry.
-  //
-  // Note: on tests Glean::initialize clears Glean's storage.
-  MZGlean::initialize("testing");
-}
 
 void TestLocalizer::cleanup() {
   SettingsHolder::testCleanup();

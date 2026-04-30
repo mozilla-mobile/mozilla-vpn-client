@@ -11,7 +11,6 @@
 
 #include "constants.h"
 #include "controller.h"
-#include "glean/generated/metrics.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "mozillavpn.h"
@@ -148,15 +147,7 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
     return;
   }
 
-  // Connection check pings sometimes come between VPN sessions, triggering
-  // setStability. Do not record count metrics in these cases.
   Controller::State state = MozillaVPN::instance()->controller()->state();
-  if (state == Controller::StateOn || state == Controller::StateSwitching ||
-      state == Controller::StateSilentSwitching ||
-      state == Controller::StateOnPartial) {
-    recordMetrics(stability);
-  }
-
   if (state != Controller::StateOnPartial && stability == Unstable) {
     MozillaVPN::instance()->silentSwitch();
   }
@@ -304,17 +295,4 @@ void ConnectionHealth::overwriteStabilityForInspector(
   m_stabilityOverwritten = true;
   m_stability = stability;
   emit stabilityChanged();
-}
-
-void ConnectionHealth::recordMetrics(ConnectionStability stability) {
-  switch (stability) {
-    case ConnectionHealth::Unstable:
-      mozilla::glean::connection_health::unstable_count.add();
-      break;
-    case ConnectionHealth::NoSignal:
-      mozilla::glean::connection_health::no_signal_count.add();
-      break;
-    default:
-      mozilla::glean::connection_health::stable_count.add();
-  }
 }

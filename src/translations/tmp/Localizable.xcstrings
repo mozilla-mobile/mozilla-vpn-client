@@ -1,0 +1,39 @@
+{
+  "sourceLanguage": "en",
+  "strings": {
+    "vpn.iosAppIntentsMain.turnOnAction": {
+      "comment": "Title used by system to offer turning on VPN"
+    },
+    "vpn.iosAppIntentsMain.turnOffAction": {
+      "comment": "Title used by system to offer turning off VPN"
+    },
+    "vpn.iosAppIntentsMain.turnOnDescription": {
+      "comment": "Description used to provide more context in Shortcuts and other places"
+    },
+    "vpn.iosAppIntentsMain.turnOffDescription": {
+      "comment": "Description used to provide more context in Shortcuts and other places"
+    },
+    "vpn.iosAppIntentsMain.turnOnConfirmation": {
+      "comment": "Confirmation string used by Siri after turning on VPN"
+    },
+    "vpn.iosAppIntentsMain.turnOnConfirmationSingleHop": {
+      "comment": "Confirmation string used by Siri after turning on VPN. `%@` must be included, and it will be replaced with the name of the exit city."
+    },
+    "vpn.iosAppIntentsMain.turnOnConfirmationMultiHop": {
+      "comment": "Confirmation string used by Siri after turning on VPN. `%1$@` will be replaced with the exit city, and `%2$@` will be replaced with the entry city."
+    },
+    "vpn.iosAppIntentsMain.turnOffConfirmation": {
+      "comment": "Confirmation string used by Siri after turning off VPN"
+    },
+    "vpn.iosAppIntentsMain.turnOnError": {
+      "comment": "Error given by Siri when unable to turn on VPN"
+    },
+    "vpn.iosAppIntentsMain.turnOnAlreadyConnectedError": {
+      "comment": "Error given by Siri when VPN already has an active connection"
+    },
+    "vpn.iosAppIntentsMain.turnOffError": {
+      "comment": "Error given by Siri when unable to turn off VPN due to a lack of existing connection"
+    }
+  },
+  "version": "1.1"
+}

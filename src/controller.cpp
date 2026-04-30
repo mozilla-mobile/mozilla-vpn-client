@@ -402,9 +402,6 @@ void Controller::activateInternal(
   exitConfig.m_serverPort = exitServer.choosePort();
   exitConfig.m_allowedIPAddressRanges = allowedIPList;
   exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
-#if defined(MZ_ANDROID) || defined(MZ_IOS)
-  exitConfig.m_installationId = settingsHolder->installationId();
-#endif
   logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
 
   if (m_impl->splitTunnelSupported()) {
@@ -624,7 +621,6 @@ bool Controller::silentSwitchServers(
   }
 
   logger.debug() << "Switching to a different server";
-  emit recordDataTransferTelemetry();
   clearRetryCounter();
 
   setState(StateSilentSwitching);
@@ -700,12 +696,8 @@ void Controller::connected(const QString& pubkey) {
   if (!isSwitchingServer || !m_connectedTimeInUTC.isValid()) {
     m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
     emit timestampChanged();
-
-    logger.debug() << "Collecting telemetry for new session.";
-    emit recordConnectionStartTelemetry();
   } else {
-    logger.debug() << "Connection happened due to server switch. Not "
-                      "collecting telemetry.";
+    logger.debug() << "Connection happened due to server switch.";
   }
 
   if (m_nextStep == Quit || m_nextStep == Disconnect || m_nextStep == Update) {
@@ -751,11 +743,6 @@ void Controller::disconnected() {
   m_connectedTimeInUTC = QDateTime();
   emit timestampChanged();
 
-  // Need this StateConfirming check to prevent recording telemetry during
-  // Android onboarding.
-  if (m_state != StateConfirming) {
-    emit recordConnectionEndTelemetry();
-  }
   m_initiator = Null;
   setState(StateOff);
 }
@@ -886,7 +873,6 @@ bool Controller::switchServers(const ServerData& serverData) {
 
   logger.debug() << "Switching to a different server";
   m_nextServerData = serverData;
-  emit recordDataTransferTelemetry();
   clearRetryCounter();
 
   // Special case - if we switch servers while connecting, then we have yet to
@@ -1065,7 +1051,6 @@ bool Controller::deactivate(ActivationPrincipal user) {
 
   if (m_state != StateSwitching && m_state != StateSilentSwitching) {
     setState(StateDisconnecting);
-    emit recordDataTransferTelemetry();
   }
 
   m_pingCanary.stop();

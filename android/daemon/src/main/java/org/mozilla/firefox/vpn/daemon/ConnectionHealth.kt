@@ -11,8 +11,6 @@ import android.net.NetworkCapabilities
 import android.net.NetworkRequest
 import android.os.Build
 import android.os.CountDownTimer
-import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
-import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
 import java.time.LocalDateTime
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
@@ -265,14 +263,6 @@ class ConnectionHealth(service: VPNService) {
             recordMetrics(ConnectionStability.NoSignal)
             mPanicStateReached = true
             taskDone()
-        }
-    }
-
-    private fun recordMetrics(stability: ConnectionStability) {
-        when (stability) {
-            ConnectionStability.Unstable -> ConnectionHealth.unstableCount.add()
-            ConnectionStability.NoSignal -> ConnectionHealth.noSignalCount.add()
-            ConnectionStability.Stable -> ConnectionHealth.stableCount.add()
         }
     }
 }

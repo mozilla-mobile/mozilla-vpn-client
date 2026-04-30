@@ -203,16 +203,6 @@ void MacOSController::connectService(void) {
   NSObject<XpcDaemonProtocol>* remote = nullptr;
   remote = [conn remoteObjectProxyWithErrorHandler:^(NSError* error) {
     logger.debug() << "daemon connection failed:" << error.localizedDescription;
-
-    // On a third failure, record Glean telemetry that can be used for alerting.
-    if (m_connectAttempt < 3) {
-      m_connectAttempt = m_connectAttempt + 1;
-      if (m_connectAttempt == 3) {
-        mozilla::glean::performance::DaemonConnectionErrorExtra extras;
-        extras._platform = "macOS";
-        mozilla::glean::performance::daemon_connection_error.record(extras);
-      };
-    }
     QMetaObject::invokeMethod(&m_connectTimer, "start",
                               Q_ARG(int, SERVICE_INIT_POLL_INTERVAL_MSEC));
   }];

@@ -209,9 +209,6 @@ class Controller : public QObject, public LogSerializer {
   void timestampChanged();
   void enableDisconnectInConfirmingChanged();
   void connectionRetryChanged();
-  void recordConnectionStartTelemetry();
-  void recordConnectionEndTelemetry();
-  void recordDataTransferTelemetry();
   void readyToQuit();
   void readyToUpdate();
   void readyToServerUnavailable(bool pingReceived);
