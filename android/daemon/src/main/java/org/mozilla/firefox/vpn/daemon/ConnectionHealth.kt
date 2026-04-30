@@ -38,28 +38,7 @@ class ConnectionHealth(service: VPNService) {
     var mVPNNetwork: Network? = null
     var mWorker: ExecutorService = Executors.newSingleThreadExecutor()
 
-    @Deprecated("Only added temporary telemetry, please remove (VPN-3956)")
-    fun getStatusString(): String {
-        if (!mActive) {
-            if (Build.VERSION.SDK_INT < 31) {
-                return "deactivated-feature-flagged"
-            }
-            // We have been feature flagged-off, or are disconnected
-            return "deactivated"
-        }
-        if (!mResetUsed) {
-            // We have not yet silent-server switched
-            return "active-not-silent-switched"
-        }
-        if (!mPanicStateReached) {
-            // We have silent-server switched
-            return "active-silent-switched"
-        }
-        // We have silent-server switched and it did not help.
-        return "active-panic-state-reached"
-    }
-
-    fun start(endpoint: String, gateway: String, dns: String, altEndpoint: String, shouldRecordTelemetry: Boolean) {
+    fun start(endpoint: String, gateway: String, dns: String, altEndpoint: String) {
         if (Build.VERSION.SDK_INT < 31) {
             // Let's disable Daemon Connection health for anyone
             // Below android 12, that's roughly 50% of our users.
@@ -197,8 +176,6 @@ class ConnectionHealth(service: VPNService) {
             // For DNS, we check both the main DNS (gateway) and the specific value (which could be user-input DNS or privacy DNS, or may be gateway)
             val canReachDNS = vpnNetwork.getByName(dns).isReachable(PING_TIMEOUT) || vpnNetwork.getByName(endpoint).isReachable(PING_TIMEOUT)
             if (canReachGateway && canReachDNS) {
-                recordMetrics(ConnectionStability.Stable)
-
                 // Internet should be fine :)
                 mResetUsed = false
                 taskDone()
@@ -218,8 +195,6 @@ class ConnectionHealth(service: VPNService) {
                 it.getByName(endpoint).isReachable(PING_TIMEOUT)
             } != null
             if (anyNetworkCanConnect && canReachDNS && !mResetUsed) {
-                recordMetrics(ConnectionStability.Unstable)
-
                 // The server seems to be online but the connection broke,
                 // Let's just try to force a reconnect ... but only once.
                 mService.mainLooper.run {
@@ -236,8 +211,6 @@ class ConnectionHealth(service: VPNService) {
                 it.getByName(fallbackEndpoint).isReachable(PING_TIMEOUT)
             } != null
             if (fallbackServerIsReachable) {
-                recordMetrics(ConnectionStability.Unstable)
-
                 if (LocalDateTime.now() < nextPossibleServerSwitch) {
                     Log.i(TAG, "Want to switch servers, but it has not been enough time since last server switch")
                     taskDone()
@@ -260,7 +233,6 @@ class ConnectionHealth(service: VPNService) {
             // Nothing we can do here to help.
             Log.e(TAG, "Both Server / Serverfallback seem to be unreachable.")
 
-            recordMetrics(ConnectionStability.NoSignal)
             mPanicStateReached = true
             taskDone()
         }

@@ -882,8 +882,8 @@ void MozillaVPN::onboardingCompleted() {
   logger.debug() << "onboarding completed";
   settingsHolder->setOnboardingCompleted(true);
 
-  // Toggle glean on or off at the end of onboarding, depending on what the
-  // user selected
+  // Toggle Sentry/telemetry on or off at the end of onboarding, depending on
+  // what the user selected
   settingsHolder->setGleanEnabled(
       settingsHolder->onboardingDataCollectionEnabled());
 

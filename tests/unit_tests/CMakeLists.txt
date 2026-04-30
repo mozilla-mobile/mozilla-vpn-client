@@ -21,7 +21,6 @@ endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MZ_SOURCE_DIR})
-include_directories(${MZ_SOURCE_DIR}/glean)
 include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/tests/unit_tests)
 
@@ -54,7 +53,6 @@ generate_translations_target(translations-unit-tests
 )
 
 target_link_libraries(app_unit_tests PRIVATE
-    qtglean
     shared-sources
     mzutils
     translations-unit-tests

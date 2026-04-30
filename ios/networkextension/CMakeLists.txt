@@ -131,25 +131,15 @@ set_target_properties(libwg_builder PROPERTIES FOLDER "Libs")
 add_dependencies(networkextension libwg_builder)
 target_link_libraries(networkextension PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/libwg-unified.a)
 
-## Add Glean to the extension
-target_link_libraries(networkextension PRIVATE iosglean)
-set_source_files_properties(
-    ${CMAKE_BINARY_DIR}/src/generated/VPNMetrics.swift
-    PROPERTIES GENERATED TRUE
-)
-target_sources(networkextension PRIVATE
-    ${CMAKE_BINARY_DIR}/src/generated/VPNMetrics.swift
-)
-
-# The IOSGlean framework is built under the src directory, so we'll need to
-# explicitly add it to the framework search paths. However, this gets messy
-# in Xcode because the actual path is somewhat somewhat buried in
-# subdirectories.
-if(XCODE)
-    # Xcode is a multi-config generator, so technically we need to do this for
-    # each supported config too.
-    foreach(CONFIG ${CMAKE_CONFIGURATION_TYPES})
-        set_target_properties(networkextension PROPERTIES
-            "XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS[variant=${CONFIG}]" "${CMAKE_BINARY_DIR}/src/${CONFIG}$(EFFECTIVE_PLATFORM_NAME)")
-    endforeach()
-endif()
+# # The IOSGlean framework is built under the src directory, so we'll need to
+# # explicitly add it to the framework search paths. However, this gets messy
+# # in Xcode because the actual path is somewhat somewhat buried in
+# # subdirectories.
+# if(XCODE)
+#     # Xcode is a multi-config generator, so technically we need to do this for
+#     # each supported config too.
+#     foreach(CONFIG ${CMAKE_CONFIGURATION_TYPES})
+#         set_target_properties(networkextension PROPERTIES
+#             "XCODE_ATTRIBUTE_FRAMEWORK_SEARCH_PATHS[variant=${CONFIG}]" "${CMAKE_BINARY_DIR}/src/${CONFIG}$(EFFECTIVE_PLATFORM_NAME)")
+#     endforeach()
+# endif()

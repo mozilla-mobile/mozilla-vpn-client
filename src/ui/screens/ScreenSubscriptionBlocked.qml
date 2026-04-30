@@ -35,6 +35,5 @@ MZStackView {
             getHelpLinkVisible: false
             }
         );
-        Glean.sample.subscriptionBlockedViewed.record();
     }
 }

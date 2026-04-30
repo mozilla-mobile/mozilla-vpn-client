@@ -899,6 +899,10 @@ describe('Settings', function() {
         queries.screenSettings.appPreferencesView.START_AT_BOOT_TOGGLE,
         'startAtBoot');
 
+    await checkSetting(
+        queries.screenSettings.appPreferencesView.DATA_COLLECTION_TOGGLE,
+        'gleanEnabled');
+
     await vpn.waitForQuery(
         queries.screenSettings.appPreferencesView.LANGUAGE.visible());
     await vpn.waitForQuery(

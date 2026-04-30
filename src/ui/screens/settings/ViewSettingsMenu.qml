@@ -18,8 +18,6 @@ MZViewBase {
 
     _menuTitle: MZI18n.NavBarSettingsTab
 
-    readonly property string telemetryScreenId : "settings"
-
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin
         Layout.fillWidth: true

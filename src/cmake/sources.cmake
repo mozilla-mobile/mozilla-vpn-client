@@ -13,7 +13,6 @@ set_property(TARGET mozillavpn-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_CURRENT_SOURCE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/addons
     ${CMAKE_CURRENT_SOURCE_DIR}/composer
-    ${CMAKE_CURRENT_SOURCE_DIR}/glean
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
@@ -217,6 +216,5 @@ mz_add_clang_tidy(mozillavpn-sources)
 # we need to make sure those are up to date before we build.
 # Those targets generate code we #include, therefore
 
-mz_optional_dependency(mozillavpn-sources_clang_tidy_report qtglean)
 mz_optional_dependency(mozillavpn-sources_clang_tidy_report sentry)
 mz_optional_dependency(mozillavpn-sources_clang_tidy_report translations)

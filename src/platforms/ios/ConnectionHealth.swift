@@ -4,7 +4,6 @@
 
 import Foundation
 import NetworkExtension
-import IOSGlean
 
 protocol SilentServerSwitching: AnyObject {
     func silentServerSwitch()

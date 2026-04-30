@@ -98,11 +98,4 @@ describe('Settings', function() {
     });
     await vpn.waitForQueryAndClick(queries.screenSettings.appExclusionsView.HELP_SHEET_CLOSE_BUTTON.visible());
   });
-
-  describe('Checking Excluded Apps screen telemetry', function() {
-    // No Glean on WASM.
-    if(vpn.runningOnWasm()) {
-      return;
-    }
-  });
 });

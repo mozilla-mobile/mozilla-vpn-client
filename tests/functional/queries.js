@@ -357,6 +357,7 @@ const screenSettings = {
 
   appPreferencesView: {
     START_AT_BOOT_TOGGLE: new QmlQueryComposer('//startAtBootToogle'),
+    DATA_COLLECTION_TOGGLE: new QmlQueryComposer('//dataCollectionToggle'),
     LANGUAGE: new QmlQueryComposer('//settingsLanguages'),
     APPEARANCE: new QmlQueryComposer('//appearance'),
     NOTIFICATIONS: new QmlQueryComposer('//settingsNotifications'),
@@ -480,6 +481,7 @@ const screenOnboarding = {
   STEP_PROG_BAR_DEVICES_BUTTON:
       new QmlQueryComposer('//progressBarRow/devices'),
   DATA_SLIDE: new QmlQueryComposer('//onboardingDataSlide'),
+  DATA_TOGGLE: new QmlQueryComposer('//dataCollectionToggle'),
   DATA_PRIVACY_LINK: new QmlQueryComposer('//dataPrivacyLink'),
   DATA_NEXT_BUTTON: new QmlQueryComposer('//dataNextButton'),
   PRIVACY_SLIDE: new QmlQueryComposer('//onboardingPrivacySlide'),

@@ -14,7 +14,6 @@ import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 MZViewBase {
     id: vpnFlickable
     objectName: "firefoxExtensionInfo"
-    property string telemetryScreenId: "firefox_extension"
 
     _menuTitle: MZI18n.SettingsFirefoxExtensionInfo
     _menuOnBackClicked: () => { stackview.pop(null) }

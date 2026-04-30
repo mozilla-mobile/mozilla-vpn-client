@@ -21,7 +21,7 @@ cleanup:
   - /share/man
   - /share/doc
 modules:
-  # Dependency for jsonschema and glean-parser, needs to be installed as a
+  # Dependency for jsonschema, needs to be installed as a
   # binary wheel because it has a bunch of complex rust dependencies that are
   # difficult to replicate offline.
   - name: python3-rpds
@@ -42,8 +42,6 @@ modules:
           - aarch64
     cleanup:
       - '*'
-
-  - flatpak-glean-parser.yaml
 
   - name: qt5compat
     buildsystem: cmake-ninja

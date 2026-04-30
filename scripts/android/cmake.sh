@@ -10,13 +10,6 @@ if [ -f .env ]; then
   . .env
 fi
 
-cleanup() {
-  if [ -f "$WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup" ]; then
-    rm -f $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
-    mv $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
-  fi
-}
-
 cleanup_and_die() {
   cleanup
   die
@@ -135,19 +128,6 @@ build_flavor() {
   local BUILD_DIR=".tmp/${FLAVOR_NAME}"
 
   print Y "Configuring the android build for flavor: $FLAVOR_NAME"
-  # Warning: this is hacky.
-  #
-  # We build the Glean Android SDK from scratch in order to have it linked to the qtglean binary instead of the default glean one.
-  # In order to do that we need to generate the Glean internal Kotlin bindings.
-  #
-  # We need to change the name of the binary in the Uniffi UDL file inside the Glean folder
-  # for this to work.
-  #
-  # Here we go
-  if [ ! -f "$WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup" ]; then
-    mv $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup
-  fi
-  cp $WORKSPACE_ROOT/qtglean/uniffi.toml $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
 
   local EXTRA_CMAKE_ARGS=""
   if [[ "$FLAVOR_NAME" == "foss" ]]; then
@@ -185,12 +165,6 @@ build_flavor() {
   print Y "Compiling apk_install_target in $BUILD_DIR/"
   # This compiles the client and generates a mozillavpn.so
   cmake --build "$BUILD_DIR" -j$JOBS
-
-  # Restore the original uniffi.toml after the build
-  if [ -f "$WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup" ]; then
-    rm $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
-    cp $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
-  fi
 
   # Generate a valid gradle project and pre-compile it.
   print Y "Generate Android Project for $FLAVOR_NAME"

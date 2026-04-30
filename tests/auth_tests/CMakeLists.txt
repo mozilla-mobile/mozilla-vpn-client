@@ -21,7 +21,6 @@ endif()
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 include_directories(${MZ_SOURCE_DIR})
-include_directories(${MZ_SOURCE_DIR}/glean)
 include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/tests/auth_tests)
 
@@ -51,7 +50,6 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
 endif()
 
 target_link_libraries(app_auth_tests PRIVATE
-    qtglean
     mzutils
     shared-sources
     translations

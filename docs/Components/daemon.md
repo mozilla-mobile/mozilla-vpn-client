@@ -152,5 +152,4 @@ remain stateless. An attempt to re-activate the connection may lead to the same 
 therefore we feel it is safer to leave the VPN inactive after recovery.
 
 Because the daemon runs as a privileged process, has no UI, and is outside of direct user control, it does not currently
-support crash reporting via Sentry. However, we can still get telemetry about the frequency of crashes and controller
-communication errors through analysis of the `error_alert_shown` ping.
+support crash reporting via Sentry.

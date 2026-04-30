@@ -13,7 +13,6 @@
 
 #include "constants.h"
 #include "feature/features.h"
-#include "glean/generated/metrics.h"
 #include "logger.h"
 #include "macosextensionloader.h"
 #include "macosutils.h"

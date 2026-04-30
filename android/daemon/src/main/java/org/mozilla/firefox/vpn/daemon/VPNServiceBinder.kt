@@ -107,7 +107,6 @@ class VPNServiceBinder(service: VPNService) : CoreBinder() {
                 obj.put("time", mService.connectionTime)
                 obj.put("city", mService.cityname)
                 obj.put("canActivate", mService.canActivate)
-                obj.put("connection-health-status", mService.mConnectionHealth.getStatusString())
                 dispatchEvent(EVENTS.init, obj.toString())
                 return true
             }
