@@ -100,7 +100,9 @@
 #include <QFileInfo>
 #include <QGuiApplication>
 #include <QIcon>
+#include <QJsonArray>
 #include <QJsonDocument>
+#include <QJsonObject>
 #include <QLocale>
 #include <QQmlApplicationEngine>
 #include <QQmlContext>
