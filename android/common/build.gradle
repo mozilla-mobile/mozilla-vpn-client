@@ -49,8 +49,6 @@ dependencies {
 
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
 
-    implementation project(path: ':qtglean')
-
     implementation "androidx.security:security-crypto:1.1.0-alpha06"
     implementation "androidx.security:security-identity-credential:1.0.0-alpha03"
 

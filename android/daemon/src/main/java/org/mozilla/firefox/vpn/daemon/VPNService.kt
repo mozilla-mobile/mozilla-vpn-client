@@ -7,7 +7,6 @@ package org.mozilla.firefox.vpn.daemon
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.CountDownTimer
 import android.os.IBinder
 import android.system.OsConstants
 import com.wireguard.config.Config
@@ -20,7 +19,6 @@ import org.json.JSONObject
 import org.mozilla.firefox.qt.common.CoreBinder
 import org.mozilla.firefox.qt.common.Prefs
 import org.mozilla.guardian.tunnel.WireGuardGo
-import java.io.File
 import java.util.*
 
 class VPNService : android.net.VpnService() {
