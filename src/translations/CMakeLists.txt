@@ -18,29 +18,44 @@ if(IOS)
     set(TRANSLATIONS_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
     file(MAKE_DIRECTORY "${TRANSLATIONS_OUT_DIR}")
 
-    execute_process(
-        COMMAND
-            ${PYTHON_EXECUTABLE}
+    file(GLOB_RECURSE XLIFF_FILE_LIST CONFIGURE_DEPENDS
+        ${CMAKE_SOURCE_DIR}/3rdparty/i18n/*/mozillavpn.xliff
+    )
+
+    add_custom_command(
+        OUTPUT ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
+        DEPENDS
+            ${XLIFF_FILE_LIST}
+            ${GENERATE_XCSTRINGS_SCRIPT}
+            ${CMAKE_SOURCE_DIR}/src/translations/strings.yaml
+        COMMAND ${PYTHON_EXECUTABLE}
             ${GENERATE_XCSTRINGS_SCRIPT}
             ${CMAKE_SOURCE_DIR}/src/translations/strings.yaml
             ${CMAKE_SOURCE_DIR}/3rdparty/i18n
             ${TRANSLATIONS_OUT_DIR}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        RESULT_VARIABLE apple_translations_result
     )
-    if(NOT apple_translations_result EQUAL 0)
-        message(FATAL_ERROR "xcstrings generation failed: ${apple_translations_result}")
-    endif()
+    message("Output xcstrings file in ${TRANSLATIONS_OUT_DIR}")
 
-    set(APPLE_TRANSLATION_FILES
-        ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
-        ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
+    # Due to some dark magic of CMake/Xcode, the only way to get these files visible in Xcode
+    # is to *not* put them in the mozillavpn target, but their own target - but also add them
+    # as a mozillavpn target source. Yes, I know how weird this sounds - many, many permutations
+    # and other things were tried.
+    add_custom_target(generate_xcstrings
+        DEPENDS
+            ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
+            ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
     )
     target_sources(mozillavpn PRIVATE
-        ${APPLE_TRANSLATION_FILES}
+        ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
+        ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
     )
-    set_property(TARGET mozillavpn APPEND PROPERTY
-        RESOURCE ${APPLE_TRANSLATION_FILES}
+
+    set_source_files_properties(
+        ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
+        ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
+        PROPERTIES GENERATED TRUE
     )
+    add_dependencies(mozillavpn generate_xcstrings)
 
 endif()

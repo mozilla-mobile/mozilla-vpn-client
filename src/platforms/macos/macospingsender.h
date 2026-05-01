@@ -17,16 +17,19 @@ class MacOSPingSender final : public PingSender {
   MacOSPingSender(const QHostAddress& source, QObject* parent = nullptr);
   ~MacOSPingSender();
 
-  bool isValid() override { return (m_socket >= 0); };
+  bool isValid() override { return (m_socket >= 0) || (m_socket6 >= 0); };
 
   void sendPing(const QHostAddress& dest, quint16 sequence) override;
 
  private slots:
   void socketReady();
+  void icmp6SocketReady();
 
  private:
   QSocketNotifier* m_notifier = nullptr;
+  QSocketNotifier* m_notifier6 = nullptr;
   int m_socket = -1;
+  int m_socket6 = -1;
 };
 
 #endif  // MACOSPINGSENDER_H
