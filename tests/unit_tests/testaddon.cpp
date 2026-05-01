@@ -26,6 +26,8 @@
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 
+void TestAddon::init() {}
+
 void TestAddon::cleanup() {
   FeatureModel::testCleanup();
   SettingsHolder::testCleanup();

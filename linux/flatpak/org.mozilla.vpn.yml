@@ -24,20 +24,20 @@ modules:
   # Dependency for jsonschema, needs to be installed as a
   # binary wheel because it has a bunch of complex rust dependencies that are
   # difficult to replicate offline.
-  - name: python3-rpds
+  - name: python3-pyyaml
     buildsystem: simple
     build-commands:
       - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "rpds-py" --no-build-isolation
+        --prefix=${FLATPAK_DEST} "PyYAML" --no-build-isolation
     sources:
       - type: file
-        url: https://files.pythonhosted.org/packages/6c/b0/8fa5e36e58657997873fd6a1cf621285ca822ca75b4b3434ead047daa307/rpds_py-0.26.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-        sha256: 2c03c9b0c64afd0320ae57de4c982801271c0c211aa2d37f3003ff5feb75bb04
+        url: https://files.pythonhosted.org/packages/b1/5e/f77dc6b9036943e285ba76b49e118d9ea929885becb0a29ba8a7c75e29fe/pyyaml-6.0.3-cp314-cp314t-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl
+        sha256: 00c4bdeba853cc34e7dd471f16b4114f4162dc03e6b7afcc2128711f0eca823c
         only_arches:
           - x86_64
       - type: file
-        url: https://files.pythonhosted.org/packages/75/83/1953a9d4f4e4de7fd0533733e041c28135f3c21485faaef56a8aadbd96b5/rpds_py-0.26.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl
-        sha256: 390e3170babf42462739a93321e657444f0862c6d722a291accc46f9d21ed04e
+        url: https://files.pythonhosted.org/packages/7b/5b/3babb19104a46945cf816d047db2788bcaf8c94527a805610b0289a01c6b/pyyaml-6.0.3-cp314-cp314t-manylinux2014_aarch64.manylinux_2_17_aarch64.manylinux_2_28_aarch64.whl
+        sha256: 6adc77889b628398debc7b65c073bcb99c4a0237b248cacaf3fe8a557563ef6c
         only_arches:
           - aarch64
     cleanup:

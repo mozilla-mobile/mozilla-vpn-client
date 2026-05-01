@@ -26,6 +26,8 @@
 #include "settingsholder.h"
 #include "systemtraynotificationhandler.h"
 
+void TestAddon::init() {}
+
 void TestAddon::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestAddon::message_notification_data() {
