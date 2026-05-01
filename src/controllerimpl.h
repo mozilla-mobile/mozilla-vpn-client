@@ -84,7 +84,7 @@ class ControllerImpl : public QObject {
 
   virtual bool canSendUpdatedConfig() const { return false; }
   virtual void sendUpdatedConfig(InterfaceConfig& entryConfig,
-                                 InterfaceConfig& exitConfig) {};
+                                 InterfaceConfig& exitConfig){};
 
  protected:
   // Helper method - process a JSON status and emit the statusUpdated signal.
