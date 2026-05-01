@@ -32,6 +32,8 @@ class InterfaceConfig {
   QString m_serverIpv4AddrIn;
   QString m_serverIpv6AddrIn;
   QString m_dnsServer;
+  QString m_entryCity;
+  QString m_exitCity;
   int m_serverPort = 0;
   QList<IPAddress> m_allowedIPAddressRanges;
   QStringList m_vpnDisabledApps;
