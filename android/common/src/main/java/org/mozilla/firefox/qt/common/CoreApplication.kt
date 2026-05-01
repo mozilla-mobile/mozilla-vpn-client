@@ -11,7 +11,7 @@ import org.qtproject.qt.android.QtApplicationBase
  * CoreApplication - extends QtApplication
  */
 class CoreApplication : org.qtproject.qt.android.QtApplicationBase(), Configuration.Provider {
-    override val workManagerConfiguration: Configuration
+    override val getWorkManagerConfiguration: Configuration
         get() = Configuration.Builder()
             // This is required for Glean to be able to enqueue the PingUploadWorker
             // from both the daemon and the main app.
