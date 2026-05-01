@@ -1184,4 +1184,3 @@ iosAppIntentsQueryStatus:
           - Every line MUST contain %@, which will have "Mozilla VPN" substituted in.
           - Add or remove lines freely; your language may need fewer or more variants.
           - No line should be a duplicate of another.
-=======
