@@ -9,6 +9,8 @@
 #include "settings/settingsmanager.h"
 #include "settingsholder.h"
 
+void TestLocalizer::init() {}
+
 void TestLocalizer::cleanup() {
   SettingsHolder::testCleanup();
   delete Localizer::instance();
