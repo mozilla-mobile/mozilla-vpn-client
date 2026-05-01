@@ -62,10 +62,6 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: Fetch glean submodules
-        run: |
-          git submodule update --init 3rdparty/glean
-
       - name: Signature library tests
         shell: bash
         working-directory: ./signature

@@ -97,11 +97,6 @@ jobs:
           path: ~/conda_pkgs_dir
           key: android-conda-packages-${{ hashFiles('env-android.yml', 'requirements.txt') }}
 
-      # Glean is required for the gradle build.
-      - name: Fetch glean submodules
-        run: |
-          git submodule update --init 3rdparty/glean
-
       - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3
         with:
           activate-environment: vpn
