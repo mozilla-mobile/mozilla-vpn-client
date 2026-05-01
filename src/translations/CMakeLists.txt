@@ -24,7 +24,10 @@ if(IOS)
 
     add_custom_command(
         OUTPUT ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
-        DEPENDS ${XLIFF_FILE_LIST}
+        DEPENDS
+            ${XLIFF_FILE_LIST}
+            ${GENERATE_XCSTRINGS_SCRIPT}
+            ${CMAKE_SOURCE_DIR}/src/translations/strings.yaml
         COMMAND ${PYTHON_EXECUTABLE}
             ${GENERATE_XCSTRINGS_SCRIPT}
             ${CMAKE_SOURCE_DIR}/src/translations/strings.yaml
@@ -32,17 +35,26 @@ if(IOS)
             ${TRANSLATIONS_OUT_DIR}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     )
+    message("Output xcstrings file in ${TRANSLATIONS_OUT_DIR}")
+
+    # Due to some dark magic of CMake/Xcode, the only way to get these files visible in Xcode
+    # is to *not* put them in the mozillavpn target, but their own target - but also add them
+    # as a mozillavpn target source. Yes, I know how weird this sounds - many, many permutations
+    # and other things were tried.
+    add_custom_target(generate_xcstrings
+        DEPENDS
+            ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
+            ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
+    )
+    target_sources(mozillavpn PRIVATE
+        ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
+        ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
+    )
 
     set_source_files_properties(
         ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
         ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
         PROPERTIES GENERATED TRUE
-    )
-
-    add_custom_target(generate_xcstrings
-        DEPENDS
-            ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
-            ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
     )
     add_dependencies(mozillavpn generate_xcstrings)
 
