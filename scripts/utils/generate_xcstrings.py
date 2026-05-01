@@ -48,7 +48,7 @@ def load_xliff_translations(xliff_path, isEnglish):
 
 
 def using_app_placeholder(value):
-    return value.replace("%@", "${{applicationName}}")
+    return value.replace("%@", "\(.applicationName)")
 
 
 SPECIAL_LOCALE_MAP = {
@@ -206,10 +206,12 @@ def main():
         for k, v in all_strings.items()
         if v["string_id"].startswith("vpn.iosAppIntentsDeactivate")
     }
+
     query_strings = {
         k: v for k, v in all_strings.items()
         if v['string_id'].startswith('vpn.iosAppIntentsQueryStatus')
     }
+
     main_strings = {
         k: v
         for k, v in all_strings.items()
