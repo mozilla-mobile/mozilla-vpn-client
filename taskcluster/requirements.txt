@@ -552,10 +552,12 @@ mohawk==1.1.0 \
     --hash=sha256:3ed296a30453d0b724679e0fd41e4e940497f8e461a9a9c3b7f36e43bab0fa09 \
     --hash=sha256:d2a0e3ab10a209cc79e95e28f2dd54bd4a73fd1998ffe27b7ba0f962b6be9723
     # via taskcluster
-mozilla-repo-urls==0.2.2 \
-    --hash=sha256:161ab84cac58c0bef2c9ce0c414aaec5483fc9593fc5616c5b186e0cccff4984 \
-    --hash=sha256:f6e6e037ed28b38956624dfc6b40ed78247e747f13157863ab39ac89ecd7ffd6
-    # via taskcluster-taskgraph
+mozilla-repo-urls==0.1.1 \
+    --hash=sha256:30510d3519479aa70211145d0ac9cf6e2fadcb8d30fa3b196bb957bd773502ba \
+    --hash=sha256:7364da790751db2a060eb45adbf1d7db89a145ed279ba235f3425db9dd255915
+    # via
+    #   -r taskcluster/requirements.in
+    #   taskcluster-taskgraph
 mozilla-taskgraph==4.1.1 \
     --hash=sha256:43ef061caf80ad0dcb3c8a3e29fa6e547fe6f8a11b77a63f8cce2bede58e428f \
     --hash=sha256:553935ba90b34476b2d190ba9857b067e8165b35bffbad8cb54e22504ab40f56

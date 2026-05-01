@@ -7,6 +7,8 @@
 #include "connectionhealth.h"
 #include "helper.h"
 
+void TestConnectionHealth::init() {}
+
 void TestConnectionHealth::cleanup() { SettingsHolder::testCleanup(); }
 
 void TestConnectionHealth::dnsPingReceived() {
