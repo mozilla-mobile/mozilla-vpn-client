@@ -9,6 +9,9 @@ struct MozillaVPNAppShortcuts: AppShortcutsProvider {
 
   static var shortcutTileColor = ShortcutTileColor.purple
 
+  // There are no phrases for ToggleIntent here, which is intentional. We do not use Siri phrases to
+  // activate it; it is only used to control widgets/controls.
+
   static var appShortcuts: [AppShortcut] {
     AppShortcut(
       intent: TurnOnIntent(),

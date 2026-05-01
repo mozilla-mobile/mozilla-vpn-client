@@ -199,7 +199,8 @@ def main():
         exit(1)
 
     shortcut_strings = []
-    for translation_prefix in ['vpn.iosAppIntentsActivate', 'vpn.iosAppIntentsDeactivate', 'vpn.iosAppIntentsQueryStatus', 'vpn.iosAppIntentsToggle']:
+    # ToggleIntent intentionally is not included here, as we do not use Siri phrases to activate it. It is only used to control widgets/controls.
+    for translation_prefix in ['vpn.iosAppIntentsActivate', 'vpn.iosAppIntentsDeactivate', 'vpn.iosAppIntentsQueryStatus']:
         current_string_set = {
             k: v for k, v in all_strings.items()
             if v['string_id'].startswith(translation_prefix)
