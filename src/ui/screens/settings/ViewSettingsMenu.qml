@@ -39,7 +39,6 @@ MZViewBase {
                 id: batteryWarningText
                 Layout.fillWidth: true
                 text: MZI18n.SettingsBatteryOptimizationWarning
-                //verticalAlignment: Text.AlignVCenter
             }
             _buttonAction: function() {
                     MZSettings.hasDismissedBatteryOptimization = true
