@@ -10,9 +10,6 @@ if(QT_KNOWN_POLICY_QTP0002)
     qt_policy(SET QTP0002 OLD)
 endif()
 
-## Generate Glean API files.
-include(${CMAKE_SOURCE_DIR}/qtglean/android.cmake)
-
 target_link_libraries(mozillavpn PRIVATE
     Qt6::Test
     Qt6::Xml)
@@ -43,7 +40,6 @@ target_sources(mozillavpn PRIVATE
 )
 
 get_property(OPENSSL_LIBS_DIR GLOBAL PROPERTY OPENSSL_LIBS)
-get_property(QTGLEAN_LIB_LOCATION TARGET qtglean_bindings PROPERTY LOCATION_${CMAKE_BUILD_TYPE})
 
 # This property flags the build system to copy these
 # shared libraries into the expected Android shared library folder.
@@ -68,7 +64,6 @@ set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
     ${OPENSSL_LIBS_DIR}/libssl.so
     ${OPENSSL_LIBS_DIR}/libcrypto_1_1.so
     ${OPENSSL_LIBS_DIR}/libssl_1_1.so
-    ${QTGLEAN_LIB_LOCATION}
     APPEND)
 
 

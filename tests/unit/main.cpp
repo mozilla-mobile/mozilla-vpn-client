@@ -5,7 +5,6 @@
 #include <QCoreApplication>
 
 #include "constants.h"
-#include "glean/mzglean.h"
 #include "helper.h"
 #include "i18nstrings.h"
 #include "leakdetector.h"
@@ -151,7 +150,6 @@ int main(int argc, char* argv[]) {
 
   I18nStrings::initialize();
   LogHandler::instance()->setStderr(true);
-  MZGlean::registerLogHandler(LogHandler::rustMessageHandler);
 
   // If arguments were passed, then run a subset of tests.
   QStringList args = app.arguments();
@@ -178,9 +176,6 @@ int main(int argc, char* argv[]) {
       }
     }
   }
-
-  // Shutdown Glean before Qt global statics are destroyed
-  MZGlean::shutdown();
 
   return failures;
 }

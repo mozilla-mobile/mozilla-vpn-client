@@ -161,12 +161,9 @@ exports.mochaHooks = {
       }
 
       await startAndConnect();
-      await vpn.gleanTestReset();
       await vpn.reset();
       await vpn.setSetting('startAtBoot', 'false');
     }
-
-    await vpn.setGleanAutomationHeader();
 
     // Add servers to the context so that stub endpoints can be modified in the
     // middle of the tests

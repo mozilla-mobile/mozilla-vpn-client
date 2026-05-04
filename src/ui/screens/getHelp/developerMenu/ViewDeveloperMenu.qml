@@ -246,10 +246,6 @@ MZViewBase {
                     title: "UI Debugging"
                     viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewUiTesting.qml"
                 }
-                ListElement {
-                    title: "Telemetry Debugging"
-                    viewQrc: "qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewTelemetryDebugging.qml"
-                }
             }
 
             delegate: MZSettingsItem {

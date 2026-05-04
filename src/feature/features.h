@@ -153,12 +153,6 @@ inline const OverridableFeature enableUpdateServer = {
     .canFlipOff = +[] { return Platform::hasBalrog; },
 };
 
-inline constexpr ConstantFeature gleanRust = {
-    .id = "gleanRust",
-    .name = "Glean Rust SDK",
-    .supported = true,
-};
-
 inline constexpr ConstantFeature keyRegeneration = {
     .id = "keyRegeneration",
     .name = "Key Regeneration",
@@ -199,12 +193,6 @@ inline constexpr ConstantFeature stagingUpdateServer = {
     .id = "stagingUpdateServer",
     .name = "Staging Update Server",
     .supported = false,
-};
-
-inline constexpr ConstantFeature superDooperMetrics = {
-    .id = "superDooperMetrics",
-    .name = "Super Dooper Metrics",
-    .supported = true,
 };
 
 inline constexpr ConstantFeature webPurchase = {

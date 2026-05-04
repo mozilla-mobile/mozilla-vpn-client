@@ -34,6 +34,5 @@ MZStackView {
             getHelpLinkVisible: true
             }
         );
-        Glean.sample.billingNotAvailableViewed.record();
     }
 }

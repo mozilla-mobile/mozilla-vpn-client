@@ -7,9 +7,7 @@ get_filename_component(MZ_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/addons)
-include_directories(${MZ_SOURCE_DIR}/glean)
 include_directories(${MZ_SOURCE_DIR}/ui/composer)
-include_directories(${CMAKE_SOURCE_DIR}/glean)
 
 qt_add_executable(qml_tests)
 set_target_properties(qml_tests PROPERTIES
@@ -30,7 +28,7 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::Svg
 )
 
-target_link_libraries(qml_tests PRIVATE qtglean lottie mzutils nebula translations)
+target_link_libraries(qml_tests PRIVATE lottie mzutils nebula translations)
 
 target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
 target_compile_definitions(qml_tests PRIVATE UNIT_TEST)
@@ -128,8 +126,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/frontend/navigationbarmodel.h
     ${MZ_SOURCE_DIR}/frontend/navigatorreloader.cpp
     ${MZ_SOURCE_DIR}/frontend/navigatorreloader.h
-    ${MZ_SOURCE_DIR}/glean/mzglean.h
-    ${MZ_SOURCE_DIR}/glean/mzglean.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.h

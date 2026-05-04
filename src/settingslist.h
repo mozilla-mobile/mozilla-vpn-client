@@ -254,16 +254,6 @@ SETTING_STRINGLIST(iapProducts,        // getter
                    false               // sensitive (do not log)
 )
 
-SETTING_STRING(installationId,        // getter
-               setInstallationId,     // setter
-               removeInstallationId,  // remover
-               hasInstallationId,     // has
-               "installationId",      // key
-               "",                    // default value
-               true,                  // remove when reset
-               true                   // sensitive (do not log)
-)
-
 SETTING_DATETIME(installationTime,        // getter
                  setInstallationTime,     // setter
                  removeInstallationTime,  // remover
@@ -707,46 +697,6 @@ SETTING_BOOL(localNetworkAccess,        // getter
 )
 
 #endif
-
-SETTING_BOOL(gleanDebugTagActive,        // getter
-             setGleanDebugTagIsActive,   // setter
-             removeGleanDebugTagActive,  // remover
-             hasGleanDebugTagActive,     // has
-             "isGleanDebugTagActive",    // key
-             false,                      // default value
-             true,                       // remove when reset
-             false                       // sensitive (do not log)
-)
-
-SETTING_STRING(gleanDebugTag,        // getter
-               setGleanDebugTag,     // setter
-               removeGleanDebugTag,  // remover
-               hasGleanDebugTag,     // has
-               "gleanDebugTag",      // key
-               "VPNTest",            // default value
-               true,                 // remove when reset
-               false                 // sensitive (do not log)
-)
-
-SETTING_BOOL(gleanLogPings,        // getter
-             setGleanLogPings,     // setter
-             removeGleanLogPings,  // remover
-             hasGleanLogPings,     // has
-             "gleanLogPings",      // key
-             false,                // default value
-             true,                 // remove when reset
-             false                 // sensitive (do not log)
-)
-
-SETTING_BOOL(shortTimerSessionPing,        // getter
-             setShortTimerSessionPing,     // setter
-             removeShortTimerSessionPing,  // remover
-             hasShortTimerSessionPing,     // has
-             "shortTimerSessionPing",      // key
-             false,                        // default value
-             true,                         // remove when reset
-             false                         // sensitive (do not log)
-)
 
 #if defined(MZ_FLATPAK)
 SETTING_STRING(tunnelUuid,        // getter

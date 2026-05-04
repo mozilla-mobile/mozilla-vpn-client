@@ -34,6 +34,5 @@ MZStackView {
             getHelpLinkVisible: true,
             }
         );
-        Glean.record.subNotValidatedViewed.record();
     }
 }

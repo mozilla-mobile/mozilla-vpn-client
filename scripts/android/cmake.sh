@@ -10,19 +10,6 @@ if [ -f .env ]; then
   . .env
 fi
 
-cleanup() {
-  if [ -f "$WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup" ]; then
-    rm -f $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
-    mv $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
-  fi
-}
-
-cleanup_and_die() {
-  cleanup
-  die
-}
-
-
 JOBS=24
 RELEASE=1
 export SPLITAPK=0
@@ -135,19 +122,6 @@ build_flavor() {
   local BUILD_DIR=".tmp/${FLAVOR_NAME}"
 
   print Y "Configuring the android build for flavor: $FLAVOR_NAME"
-  # Warning: this is hacky.
-  #
-  # We build the Glean Android SDK from scratch in order to have it linked to the qtglean binary instead of the default glean one.
-  # In order to do that we need to generate the Glean internal Kotlin bindings.
-  #
-  # We need to change the name of the binary in the Uniffi UDL file inside the Glean folder
-  # for this to work.
-  #
-  # Here we go
-  if [ ! -f "$WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup" ]; then
-    mv $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup
-  fi
-  cp $WORKSPACE_ROOT/qtglean/uniffi.toml $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
 
   local EXTRA_CMAKE_ARGS=""
   if [[ "$FLAVOR_NAME" == "foss" ]]; then
@@ -186,29 +160,23 @@ build_flavor() {
   # This compiles the client and generates a mozillavpn.so
   cmake --build "$BUILD_DIR" -j$JOBS
 
-  # Restore the original uniffi.toml after the build
-  if [ -f "$WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup" ]; then
-    rm $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
-    cp $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml.backup $WORKSPACE_ROOT/3rdparty/glean/glean-core/uniffi.toml
-  fi
-
   # Generate a valid gradle project and pre-compile it.
   print Y "Generate Android Project for $FLAVOR_NAME"
 
-  pushd "$BUILD_DIR/src/android-build/" > /dev/null || cleanup_and_die
+  pushd "$BUILD_DIR/src/android-build/" > /dev/null || die
   # This will combine the qt-libs + qt-resources and the client
   # Into a single gradle project
   if [[ "$RELEASE" ]]; then
     print Y "Generating Release APK for $FLAVOR_NAME..."
-    ./gradlew compileReleaseSources || cleanup_and_die
-    ./gradlew "assembleRelease" || cleanup_and_die
+    ./gradlew compileReleaseSources || die
+    ./gradlew "assembleRelease" || die
 
     print G "Done 🎉"
     print G "Your $FLAVOR_NAME Release APK is under: $BUILD_DIR/src/android-build/build/outputs/apk/release"
   else
     print Y "Generating Debug APK for $FLAVOR_NAME..."
-    ./gradlew compileDebugSources || cleanup_and_die
-    ./gradlew "assembleDebug" || cleanup_and_die
+    ./gradlew compileDebugSources || die
+    ./gradlew "assembleDebug" || die
 
     print G "Done 🎉"
     print G "Your $FLAVOR_NAME Debug APK is under: $BUILD_DIR/src/android-build/build/outputs/apk/debug"
@@ -223,5 +191,3 @@ if [[ "$FLAVOR" == "all" ]]; then
 else
   build_flavor "$FLAVOR"
 fi
-
-cleanup

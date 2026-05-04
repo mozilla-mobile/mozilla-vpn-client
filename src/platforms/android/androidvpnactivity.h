@@ -44,8 +44,6 @@ enum ServiceAction {
   ACTION_REACTIVATE = 16,
   // Clear the VPN storage
   ACTION_CLEAR_STORAGE = 17,
-  // Broadcast a change in telemetry preferences
-  ACTION_SET_GLEAN_UPLOAD_ENABLED = 18,
   // Daemon-based silent server switch
   ACTION_SILENT_SERVER_SWITCH = 20,
 
@@ -65,12 +63,6 @@ enum ServiceEvents {
   // An Error happened during activation
   // Contains the error message
   EVENT_ACTIVATION_ERROR = 5,
-  // An event dispatched when the Daemon doesn't have
-  // any stored value for the user telemetry preferences.
-  //
-  // When this event is received, the app should broadcast
-  // the telemetry preferences to the daemon ASAP.
-  EVENT_REQUEST_GLEAN_UPLOAD_ENABLED = 7,
   // The Daemon need's the app to ask for notification
   // permissions, to show the "you're connected" messages.
   EVENT_REQUEST_NOTIFICATION_PERMISSION = 8,
@@ -113,7 +105,6 @@ class AndroidVPNActivity : public QObject {
   void eventActivationError(const QString& data);
   void eventOnboardingCompleted();
   void eventVpnConfigPermissionResponse(bool granted);
-  void eventRequestGleanUploadEnabledState();
   void onOpenedWithUrl(const QUrl& data);
   void customTabClosed();
 
