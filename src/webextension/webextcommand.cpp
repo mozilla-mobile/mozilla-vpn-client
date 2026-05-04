@@ -48,12 +48,12 @@ int WebExtCommand::run(QStringList& tokens) {
 
   QCommandLineOption optVersion = parser.addVersionOption();
   QCommandLineOption optHelp = parser.addHelpOption();
-  #ifdef MZ_DEBUG
-    QCommandLineOption optName(QStringList({"n", "name"}),
-                              "Local socket of the Mozilla VPN client", "NAME");
-    optName.setDefaultValue(WebExtension::Server::localSocketName());
-    parser.addOption(optName);
-  #endif 
+#ifdef MZ_DEBUG
+  QCommandLineOption optName(QStringList({"n", "name"}),
+                             "Local socket of the Mozilla VPN client", "NAME");
+  optName.setDefaultValue(WebExtension::Server::localSocketName());
+  parser.addOption(optName);
+#endif
 
   // Parse command line arguments.
   parser.parse(tokens);
@@ -66,11 +66,11 @@ int WebExtCommand::run(QStringList& tokens) {
     return 0;
   }
 
-  #ifdef MZ_DEBUG
-    const auto socketName = parser.value(optName);
-  #else 
-    const auto socketName = WebExtension::Server::localSocketName();
-  #endif
+#ifdef MZ_DEBUG
+  const auto socketName = parser.value(optName);
+#else
+  const auto socketName = WebExtension::Server::localSocketName();
+#endif
 
   QStringList args = parser.positionalArguments();
   if (args.length() != 2) {
