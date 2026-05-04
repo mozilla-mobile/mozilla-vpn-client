@@ -10,12 +10,6 @@ if [ -f .env ]; then
   . .env
 fi
 
-cleanup_and_die() {
-  cleanup
-  die
-}
-
-
 JOBS=24
 RELEASE=1
 export SPLITAPK=0
@@ -169,20 +163,20 @@ build_flavor() {
   # Generate a valid gradle project and pre-compile it.
   print Y "Generate Android Project for $FLAVOR_NAME"
 
-  pushd "$BUILD_DIR/src/android-build/" > /dev/null || cleanup_and_die
+  pushd "$BUILD_DIR/src/android-build/" > /dev/null || die
   # This will combine the qt-libs + qt-resources and the client
   # Into a single gradle project
   if [[ "$RELEASE" ]]; then
     print Y "Generating Release APK for $FLAVOR_NAME..."
-    ./gradlew compileReleaseSources || cleanup_and_die
-    ./gradlew "assembleRelease" || cleanup_and_die
+    ./gradlew compileReleaseSources || die
+    ./gradlew "assembleRelease" || die
 
     print G "Done 🎉"
     print G "Your $FLAVOR_NAME Release APK is under: $BUILD_DIR/src/android-build/build/outputs/apk/release"
   else
     print Y "Generating Debug APK for $FLAVOR_NAME..."
-    ./gradlew compileDebugSources || cleanup_and_die
-    ./gradlew "assembleDebug" || cleanup_and_die
+    ./gradlew compileDebugSources || die
+    ./gradlew "assembleDebug" || die
 
     print G "Done 🎉"
     print G "Your $FLAVOR_NAME Debug APK is under: $BUILD_DIR/src/android-build/build/outputs/apk/debug"
@@ -197,5 +191,3 @@ if [[ "$FLAVOR" == "all" ]]; then
 else
   build_flavor "$FLAVOR"
 fi
-
-cleanup
