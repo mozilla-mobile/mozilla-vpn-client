@@ -19,6 +19,7 @@ class WebExtBridge final : public QObject {
 
  public:
   WebExtBridge(const QString& name, QObject* parent = nullptr);
+  ~WebExtBridge();
 
   bool isConnected() const { return m_reader != nullptr; }
 

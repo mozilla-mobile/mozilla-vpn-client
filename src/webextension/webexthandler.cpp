@@ -11,26 +11,38 @@
 #include <QJsonObject>
 #include <QMetaObject>
 
+#include <QFileDevice>
+
 #include "webextreader.h"
 
-WebExtHandler::WebExtHandler(QFileDevice* d, QObject* parent)
+WebExtHandler::~WebExtHandler() {
+  if (m_worker && m_worker->isRunning()) {
+    m_worker->terminate();
+    m_worker->wait();
+  }
+}
+
+WebExtHandler::WebExtHandler(QIODevice* d, bool startWorker, QObject* parent)
     : QObject(parent) {
   m_output = d;
-  m_worker = new WebExtWorker(this);
 
-  connect(m_worker, SIGNAL(messageReceived(QByteArray)), this,
-          SLOT(handleMessage(QByteArray)));
-  connect(m_worker, &WebExtWorker::eofReceived, this,
-          [&]() { emit eofReceived(); });
-
-  m_worker->start();
+  if (startWorker) {
+    m_worker = new WebExtWorker(this);
+    connect(m_worker, SIGNAL(messageReceived(QByteArray)), this,
+            SLOT(handleMessage(QByteArray)));
+    connect(m_worker, &WebExtWorker::eofReceived, this,
+            [&]() { emit eofReceived(); });
+    m_worker->start();
+  }
 }
 
 void WebExtHandler::writeMsgStdout(const QByteArray& msg) {
   quint32 length = msg.length();
   m_output->write(reinterpret_cast<const char*>(&length), sizeof(length));
   m_output->write(msg);
-  m_output->flush();
+  if (auto* fd = qobject_cast<QFileDevice*>(m_output)) {
+    fd->flush();
+  }
 }
 
 void WebExtHandler::writeJsonStdout(const QJsonObject& obj) {
