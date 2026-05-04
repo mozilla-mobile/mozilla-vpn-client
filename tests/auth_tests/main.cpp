@@ -7,21 +7,15 @@
 #include <QRandomGenerator>
 #include <QtTest/QtTest>
 
-#include "app.h"
 #include "authenticationinapp/authenticationinapp.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "loghandler.h"
+#include "mozillavpn.h"
 #include "settingsholder.h"
 #include "testemailvalidation.h"
 #include "testpasswordvalidation.h"
 #include "testsignupandin.h"
-
-// static
-App* App::instance() {
-  qFatal("This method should not be called!");
-  return nullptr;
-}
 
 int main(int argc, char* argv[]) {
 #ifdef MZ_DEBUG

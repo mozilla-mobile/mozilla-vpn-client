@@ -8,11 +8,11 @@
 #include <QJsonObject>
 #include <QUuid>
 
-#include "app.h"
 #include "constants.h"
 #include "feature/featuremodel.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "settingsholder.h"
 

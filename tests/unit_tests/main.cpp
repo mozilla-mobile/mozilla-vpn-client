@@ -4,7 +4,6 @@
 
 #include <QCoreApplication>
 
-#include "app.h"
 #include "constants.h"
 #include "helper.h"
 #include "i18nstrings.h"
@@ -13,17 +12,6 @@
 #include "settingsholder.h"
 
 QVector<QObject*> TestHelper::testList;
-
-// static
-App* App::instance() {
-  static App* app = nullptr;
-
-  if (!app) {
-    app = new App(qApp);
-  }
-
-  return app;
-}
 
 QObject* TestHelper::findTest(const QString& name) {
   for (QObject* obj : TestHelper::testList) {

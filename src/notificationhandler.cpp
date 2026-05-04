@@ -6,7 +6,6 @@
 
 #include "addons/addonmessage.h"
 #include "addons/manager/addonmanager.h"
-#include "app.h"
 #include "constants.h"
 #include "controller.h"
 #include "i18nstrings.h"
@@ -94,11 +93,11 @@ void NotificationHandler::showNotification() {
   logger.debug() << "Show notification";
 
   MozillaVPN* vpn = MozillaVPN::instance();
-  if (vpn->state() != App::StateMain &&
+  if (vpn->state() != MozillaVPN::StateMain &&
       // The Disconnected notification should be triggerable
       // on StateInitialize, in case the user was connected during a log-out
       // Otherwise existing notifications showing "connected" would update
-      !(vpn->state() == App::StateInitialize &&
+      !(vpn->state() == MozillaVPN::StateInitialize &&
         vpn->controller()->state() == Controller::StateOff)) {
     return;
   }
@@ -331,13 +330,13 @@ void NotificationHandler::newInAppMessageNotification(const QString& title,
                                                       const QString& message) {
   logger.debug() << "New in-app message notification";
 
-  if (!App::isUserAuthenticated()) {
+  if (!MozillaVPN::isUserAuthenticated()) {
     logger.debug() << "User not authenticated, will not be notified.";
     return;
   }
 
-  if (App::instance()->state() == App::StateOnboarding ||
-      App::instance()->state() == MozillaVPN::StateDeviceLimit) {
+  if (MozillaVPN::instance()->state() == MozillaVPN::StateOnboarding ||
+      MozillaVPN::instance()->state() == MozillaVPN::StateDeviceLimit) {
     logger.debug() << "User is onboarding, will not be notified.";
     return;
   }

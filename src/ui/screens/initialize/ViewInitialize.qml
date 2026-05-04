@@ -274,7 +274,7 @@ Item {
           delegate: ColumnLayout {
               visible: false
               width: parent.width
-              spacing: MZTheme.the5me.windowMargin / 2
+              spacing: MZTheme.theme.windowMargin / 2
 
               MZHeadline {
                   Layout.fillWidth: true

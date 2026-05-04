@@ -7,17 +7,6 @@
 
 #include "helper.h"
 
-// static
-App* App::instance() {
-  static App* app = nullptr;
-
-  if (!app) {
-    app = new App(qApp);
-  }
-
-  return app;
-}
-
 int main(int argc, char* argv[]) {
   QCoreApplication::setApplicationName("Mozilla VPN QML Tests");
   QCoreApplication::setOrganizationName("Mozilla Testing");

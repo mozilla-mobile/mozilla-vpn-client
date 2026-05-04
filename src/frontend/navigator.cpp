@@ -7,7 +7,6 @@
 #include <QCoreApplication>
 #include <QQuickItem>
 
-#include "app.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -79,7 +78,7 @@ bool computeScreen(const ScreenData& screen, int* requestedScreen) {
   }
 
   if (!screen.m_requiredState.isEmpty() &&
-      !screen.m_requiredState.contains(App::instance()->state())) {
+      !screen.m_requiredState.contains(MozillaVPN::instance()->state())) {
     return false;
   }
 
@@ -116,7 +115,7 @@ Navigator::Navigator(QObject* parent) : QObject(parent) {
 Navigator::~Navigator() { MZ_COUNT_DTOR(Navigator); }
 
 void Navigator::initialize() {
-  connect(App::instance(), &App::stateChanged, this,
+  connect(MozillaVPN::instance(), &MozillaVPN::stateChanged, this,
           &Navigator::computeComponent);
 
   computeComponent();

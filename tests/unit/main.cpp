@@ -93,17 +93,6 @@ void maybeWaitForDebugger(int argc, char* argv[]) {
 TestHelper::TestHelper() { testList.append(this); }
 
 // static
-App* App::instance() {
-  static App* app = nullptr;
-
-  if (!app) {
-    app = new App(qApp);
-  }
-
-  return app;
-}
-
-// static
 bool TestHelper::networkRequestGeneric(NetworkRequest* request) {
   Q_ASSERT(!TestHelper::networkConfig.isEmpty());
   TestHelper::NetworkConfig nc = TestHelper::networkConfig.takeFirst();

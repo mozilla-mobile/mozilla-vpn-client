@@ -299,9 +299,9 @@ int CommandLogin::run(QStringList& tokens) {
 #endif
     }
 
-    QObject::connect(&vpn, &App::stateChanged, &vpn, [&] {
-      if (vpn.state() == App::StateMain ||
-          vpn.state() == App::StateOnboarding) {
+    QObject::connect(&vpn, &MozillaVPN::stateChanged, &vpn, [&] {
+      if (vpn.state() == MozillaVPN::StateMain ||
+          vpn.state() == MozillaVPN::StateOnboarding) {
         loop.exit();
       }
       if (ErrorHandler::instance()->alert() ==

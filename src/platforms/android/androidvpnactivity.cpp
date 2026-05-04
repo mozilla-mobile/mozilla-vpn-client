@@ -170,7 +170,7 @@ void AndroidVPNActivity::startAtBootChanged() {
 
 void AndroidVPNActivity::onAppStateChange() {
   // Drop service configuration upon logout.
-  if (!App::instance()->userAuthenticated()) {
+  if (!MozillaVPN::instance()->userAuthenticated()) {
     sendToService(ServiceAction::ACTION_CLEAR_STORAGE);
   }
 
@@ -182,7 +182,7 @@ void AndroidVPNActivity::onAppStateChange() {
   // if so, mark the content as sensitive, so no screenshots can be taken from
   // those screens.
   auto state = MozillaVPN::instance()->state();
-  bool isSensitive = state == App::StateAuthenticating;
+  bool isSensitive = state == MozillaVPN::StateAuthenticating;
   QNativeInterface::QAndroidApplication::runOnAndroidMainThread(
       [isSensitive]() {
         QJniObject::callStaticMethod<void>(CLASSNAME, "setScreenSensitivity",

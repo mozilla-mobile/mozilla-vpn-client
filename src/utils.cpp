@@ -4,11 +4,11 @@
 
 #include "utils.h"
 
-#include "app.h"
 #include "constants.h"
 #include "feature/features.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "mozillavpn.h"
 #include "urlopener.h"
 
 #ifdef MZ_ANDROID
@@ -42,7 +42,7 @@ Utils* Utils::instance() {
 void Utils::exitForUnrecoverableError(const QString& reason) {
   Q_ASSERT(!reason.isEmpty());
   logger.error() << "Unrecoverable error detected: " << reason;
-  App::instance()->quit();
+  MozillaVPN::instance()->quit();
 }
 
 // static

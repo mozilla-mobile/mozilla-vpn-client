@@ -4,10 +4,10 @@
 
 #include "taskpurchase.h"
 
-#include "app.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "networkrequest.h"
 
 #ifdef MZ_IOS

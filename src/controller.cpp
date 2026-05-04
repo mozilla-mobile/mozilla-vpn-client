@@ -7,7 +7,6 @@
 #include <QFileInfo>
 #include <QNetworkInformation>
 
-#include "app.h"
 #include "constants.h"
 #include "controller_p.h"
 #include "controllerimpl.h"
@@ -957,31 +956,31 @@ bool Controller::activate(const ServerData& serverData,
     request->auth();
     request->get(Constants::apiUrl(Constants::Account));
 
-    connect(request, &NetworkRequest::requestFailed, this,
-            [this, serverSelectionPolicy, initiator](
-                QNetworkReply::NetworkError error, const QByteArray&) {
-              logger.error() << "Account request failed" << error;
-              REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
-                                 "PreActivationSubscriptionCheck");
+    connect(
+        request, &NetworkRequest::requestFailed, this,
+        [this, serverSelectionPolicy, initiator](
+            QNetworkReply::NetworkError error, const QByteArray&) {
+          logger.error() << "Account request failed" << error;
+          REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
+                             "PreActivationSubscriptionCheck");
 
-              // Check if the error propagation has changed the Mozilla VPN
-              // state. Continue only if the user is still authenticated and
-              // subscribed. We can ignore this during onboarding because we are
-              // not actually turning the VPN on (only asking for VPN system
-              // config permissions)
-              if (App::instance()->state() != App::StateMain &&
-                  App::instance()->state() != App::StateOnboarding) {
-                return;
-              }
+          // Check if the error propagation has changed the Mozilla VPN
+          // state. Continue only if the user is still authenticated and
+          // subscribed. We can ignore this during onboarding because we are
+          // not actually turning the VPN on (only asking for VPN system
+          // config permissions)
+          if (MozillaVPN::instance()->state() != MozillaVPN::StateMain &&
+              MozillaVPN::instance()->state() != MozillaVPN::StateOnboarding) {
+            return;
+          }
 
-              if (initiator != ExtensionUser) {
-                setState(StateConnecting);
-              }
+          if (initiator != ExtensionUser) {
+            setState(StateConnecting);
+          }
 
-              clearRetryCounter();
-              activateInternal(DoNotForceDNSPort, serverSelectionPolicy,
-                               initiator);
-            });
+          clearRetryCounter();
+          activateInternal(DoNotForceDNSPort, serverSelectionPolicy, initiator);
+        });
 
     connect(request, &NetworkRequest::requestCompleted, this,
             [this, serverSelectionPolicy, initiator](const QByteArray& data) {
