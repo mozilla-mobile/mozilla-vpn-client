@@ -161,7 +161,7 @@ jobs:
           mkdir ./build-win
 
           cmake -S . -B ./build-win -GNinja \
-              -DCMAKE_BUILD_TYPE=RelWithDebInfo \
+              -DCMAKE_BUILD_TYPE=Debug \
               -DWIREGUARD_FOLDER="$(pwd)/3rdparty/wireguard-nt"
           cmake --build ./build-win --target build_tests
 
