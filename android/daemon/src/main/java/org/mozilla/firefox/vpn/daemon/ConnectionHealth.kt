@@ -221,7 +221,6 @@ class ConnectionHealth(service: VPNService) {
                 // The server is online but the connection broke up, let's reconnect to a new server.
                 mService.mainLooper.run {
                     // Silent server switch to a different server in same geo
-                    Session.daemonSilentServerSwitch.record()
                     nextPossibleServerSwitch = LocalDateTime.now().plusMinutes(SERVER_SWITCH_COOLDOWN_MINUTES)
                     mService.reconnect(true)
                 }
