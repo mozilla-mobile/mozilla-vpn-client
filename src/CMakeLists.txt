@@ -14,22 +14,6 @@ if(Qt6_VERSION VERSION_GREATER_EQUAL 6.10.0)
     find_package(Qt6 REQUIRED COMPONENTS GuiPrivate QmlPrivate)
 endif()
 
-target_link_libraries(mozillavpn PRIVATE
-    Qt6::Quick
-    Qt6::QuickControls2
-    Qt6::Test
-    Qt6::WebSockets
-    Qt6::Widgets
-    Qt6::Svg
-)
-
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
-   AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android" )
-    target_link_libraries(mozillavpn PRIVATE
-        Qt6::NetworkAuth
-    )
-endif()
-
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     set(MZ_PLATFORM_NAME "linux")
 elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Windows")
@@ -51,30 +35,67 @@ include(cmake/sources.cmake)
 add_subdirectory(inspector)
 add_subdirectory(utils)
 
-target_link_libraries(mozillavpn PRIVATE
+qt_add_qml_module(libMozillavpn
+    URI Mozilla.VPN.Cpp
+    VERSION 1.0
+    STATIC
+    NO_PLUGIN
+    NO_GENERATE_QMLDIR
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Mozilla/VPN/Cpp
+)
+mz_target_handle_warnings(libMozillavpn)
+target_link_libraries(libMozillavpn PRIVATE
     shared-sources
     mozillavpn-sources
+)
+
+target_link_libraries(libMozillavpn PUBLIC
     lottie
     mzutils
     nebula
     translations
+    Qt6::Quick
+    Qt6::QuickControls2
+    Qt6::Test
+    Qt6::WebSockets
+    Qt6::Widgets
+    Qt6::Svg
 )
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
+   AND NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android" )
+    target_link_libraries(libMozillavpn PUBLIC Qt6::NetworkAuth)
+endif()
+
+target_compile_definitions(libMozillavpn PUBLIC
+    "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>"
+)
+if ((${CMAKE_SYSTEM_NAME} STREQUAL "Android") OR (${CMAKE_SYSTEM_NAME} STREQUAL "iOS"))
+    target_compile_definitions(libMozillavpn PUBLIC "MZ_MOBILE")
+endif()
+
+target_include_directories(libMozillavpn PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/composer
+)
+
+target_include_directories(libMozillavpn PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_CURRENT_SOURCE_DIR}/addons
+    ${CMAKE_CURRENT_BINARY_DIR}
+)
+
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/whole-archive.cmake)
+link_whole_archive(mozillavpn libMozillavpn)
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
    ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
    ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     add_subdirectory(webextension)
     add_subdirectory(interventions)
-    target_link_libraries(mozillavpn PRIVATE mz_webextension)
+    target_link_libraries(libMozillavpn PRIVATE mz_webextension)
 endif()
 
 target_link_libraries(mozillavpn PUBLIC ${CMAKE_DL_LIBS})
 
-if ((${CMAKE_SYSTEM_NAME} STREQUAL "Android") OR (${CMAKE_SYSTEM_NAME} STREQUAL "iOS"))
-    target_compile_definitions(mozillavpn PRIVATE "MZ_MOBILE")
-endif()
-
-target_compile_definitions(mozillavpn PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 include(cmake/${MZ_PLATFORM_NAME}.cmake)
 
 

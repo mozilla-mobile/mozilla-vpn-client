@@ -5,7 +5,6 @@
 #ifndef IOSIAPHANDLER_H
 #define IOSIAPHANDLER_H
 
-#include "Mozilla-Swift.h"
 #include "purchaseiaphandler.h"
 
 class IOSIAPHandler final : public PurchaseIAPHandler {

@@ -13,10 +13,10 @@ endif()
 option(BUILD_APPARMOR "Build AppArmor profile" ${DEFAULT_APPARMOR})
 
 find_package(Qt6 REQUIRED COMPONENTS DBus)
-target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
+target_link_libraries(libMozillavpn PRIVATE Qt6::DBus)
 
 # Linux platform source files
-target_sources(mozillavpn PRIVATE
+target_sources(libMozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbustypes.h
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxappimageprovider.cpp
     ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxappimageprovider.h
@@ -46,7 +46,7 @@ target_sources(mozillavpn PRIVATE
 # needs the Gui internal header files on Qt 6.5.0 and later. Otherwise it
 # only works for X11.
 if(Qt6_VERSION VERSION_GREATER_EQUAL 6.5.0)
-    target_link_libraries(mozillavpn PRIVATE Qt6::GuiPrivate)
+    target_link_libraries(libMozillavpn PRIVATE Qt6::GuiPrivate)
 endif()
 
 if(NOT BUILD_FLATPAK)
@@ -56,21 +56,22 @@ if(NOT BUILD_FLATPAK)
     pkg_check_modules(polkit REQUIRED IMPORTED_TARGET polkit-gobject-1)
 
     if (QT_FEATURE_static)
-        target_link_libraries(mozillavpn PRIVATE ${LIBCAP_STATIC_LIBRARIES})
-        target_include_directories(mozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS})
-        target_compile_options(mozillavpn PRIVATE ${LIBCAP_STATIC_CFLAGS})
+        target_link_libraries(libMozillavpn PRIVATE ${LIBCAP_STATIC_LIBRARIES})
+        target_include_directories(libMozillavpn PRIVATE ${LIBCAP_STATIC_INCLUDE_DIRS})
+        target_compile_options(libMozillavpn PRIVATE ${LIBCAP_STATIC_CFLAGS})
 
         find_package(Qt6 REQUIRED COMPONENTS WaylandClientPrivate)
+        # Plugins import into the executable, not the static lib.
         qt_import_plugins(mozillavpn INCLUDE Qt6::QWaylandIntegrationPlugin)
         qt_import_plugins(mozillavpn INCLUDE Qt6::QWaylandAdwaitaDecorationPlugin)
-        target_link_libraries(mozillavpn PRIVATE Qt6::WaylandClientPrivate)
+        target_link_libraries(libMozillavpn PRIVATE Qt6::WaylandClientPrivate)
     else()
-        target_link_libraries(mozillavpn PRIVATE PkgConfig::LIBCAP)
+        target_link_libraries(libMozillavpn PRIVATE PkgConfig::LIBCAP)
     endif()
 
-    target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit)
+    target_link_libraries(libMozillavpn PRIVATE PkgConfig::polkit)
 
-    target_sources(mozillavpn PRIVATE
+    target_sources(libMozillavpn PRIVATE
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.cpp
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/dbusclient.cpp
@@ -78,7 +79,7 @@ if(NOT BUILD_FLATPAK)
     )
 
     # Linux daemon source files
-    target_sources(mozillavpn PRIVATE
+    target_sources(libMozillavpn PRIVATE
         ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.c
         ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-tools/contrib/embeddable-wg-library/wireguard.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/apptracker.cpp
@@ -98,7 +99,7 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/polkithelper.h
     )
 
-    target_compile_options(mozillavpn PRIVATE -DPROTOCOL_VERSION=\"1\")
+    target_compile_options(libMozillavpn PRIVATE -DPROTOCOL_VERSION=\"1\")
 
     set(DBUS_GENERATED_SOURCES)
     qt_add_dbus_interface(DBUS_GENERATED_SOURCES
@@ -108,17 +109,17 @@ if(NOT BUILD_FLATPAK)
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/daemon/dbusservice.h
         ""
         dbus_adaptor)
-    target_sources(mozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
+    target_sources(libMozillavpn PRIVATE ${DBUS_GENERATED_SOURCES})
 
     include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
     add_go_library(netfilter ${CMAKE_SOURCE_DIR}/linux/netfilter/netfilter.go)
-    target_link_libraries(mozillavpn PRIVATE netfilter)
+    target_link_libraries(libMozillavpn PRIVATE netfilter)
 else()
     # Linux source files for sandboxed builds
-    target_compile_definitions(mozillavpn PRIVATE MZ_FLATPAK)
+    target_compile_definitions(libMozillavpn PUBLIC MZ_FLATPAK)
 
     # Network Manager controller
-    target_sources(mozillavpn PRIVATE
+    target_sources(libMozillavpn PRIVATE
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/netmgrtypes.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/netmgrdevice.h
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/netmgrdevice.cpp

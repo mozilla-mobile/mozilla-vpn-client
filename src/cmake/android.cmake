@@ -10,11 +10,9 @@ if(QT_KNOWN_POLICY_QTP0002)
     qt_policy(SET QTP0002 OLD)
 endif()
 
-target_link_libraries(mozillavpn PRIVATE
-    Qt6::Test
-    Qt6::Xml)
+target_link_libraries(libMozillavpn PRIVATE Qt6::Xml)
 
-target_sources(mozillavpn PRIVATE
+target_sources(libMozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidauthenticationlistener.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidauthenticationlistener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/android/androidcontroller.cpp
@@ -78,5 +76,5 @@ option(MZ_ANDROID_FOSS_BUILD "Build apk without google play services" OFF)
 
 if(MZ_ANDROID_FOSS_BUILD)
     message(STATUS "Website build enabled")
-    target_compile_definitions(mozillavpn PRIVATE "MZ_ANDROID_FOSS_BUILD=1")
+    target_compile_definitions(libMozillavpn PUBLIC "MZ_ANDROID_FOSS_BUILD=1")
 endif()

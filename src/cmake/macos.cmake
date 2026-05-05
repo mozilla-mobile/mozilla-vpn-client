@@ -31,17 +31,17 @@ find_library(FW_USER_NOTIFICATIONS UserNotifications)
 find_library(FW_NW_EXTENSION NetworkExtension)
 find_library(FW_SYS_EXTENSION SystemExtensions)
 
-target_link_libraries(mozillavpn PRIVATE ${FW_SYSTEMCONFIG})
-target_link_libraries(mozillavpn PRIVATE ${FW_SERVICEMGMT})
-target_link_libraries(mozillavpn PRIVATE ${FW_SECURITY})
-target_link_libraries(mozillavpn PRIVATE ${FW_COREWLAN})
-target_link_libraries(mozillavpn PRIVATE ${FW_NETWORK})
-target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
-target_link_libraries(mozillavpn PRIVATE ${FW_NW_EXTENSION})
-target_link_libraries(mozillavpn PRIVATE ${FW_SYS_EXTENSION})
+target_link_libraries(libMozillavpn PRIVATE ${FW_SYSTEMCONFIG})
+target_link_libraries(libMozillavpn PRIVATE ${FW_SERVICEMGMT})
+target_link_libraries(libMozillavpn PRIVATE ${FW_SECURITY})
+target_link_libraries(libMozillavpn PRIVATE ${FW_COREWLAN})
+target_link_libraries(libMozillavpn PRIVATE ${FW_NETWORK})
+target_link_libraries(libMozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
+target_link_libraries(libMozillavpn PRIVATE ${FW_NW_EXTENSION})
+target_link_libraries(libMozillavpn PRIVATE ${FW_SYS_EXTENSION})
 
 # MacOS platform source files
-target_sources(mozillavpn PRIVATE
+target_sources(libMozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosappimageprovider.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosappimageprovider.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosapplistprovider.h
@@ -88,8 +88,8 @@ else()
 endif()
 
 # Enable Balrog for update support.
-target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
-target_sources(mozillavpn PRIVATE
+target_compile_definitions(libMozillavpn PUBLIC MVPN_BALROG)
+target_sources(libMozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/update/balrog.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/update/balrog.h
 )

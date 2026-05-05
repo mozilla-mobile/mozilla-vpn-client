@@ -124,6 +124,7 @@ qt_add_qml_module(mozillavpn-ui
         composer/composerblocktitle.h
         composer/composerblockunorderedlist.cpp
         composer/composerblockunorderedlist.h
+        singletons/BatteryOptimizer.h
         singletons/VPN.h
         singletons/VPNAppPermissions.h
         singletons/VPNCaptivePortal.h
@@ -146,6 +147,8 @@ qt_add_qml_module(mozillavpn-ui
 )
 
 target_link_libraries(mozillavpn-ui PRIVATE
+    libMozillavpn
+    mozillavpn-shared
     mzutils
     Qt6::Quick
     Qt6::Widgets
@@ -166,7 +169,49 @@ target_include_directories(mozillavpn-uiplugin PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/types
 )
 
-target_sources(mozillavpn-ui PRIVATE singletons/BatteryOptimizer.h)
+qt_add_qml_module(mozillavpn-shared
+    VERSION 1.0
+    URI Mozilla.Shared
+    RESOURCE_PREFIX /qt/qml
+    STATIC
+    OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Mozilla/Shared
+    SOURCES
+        shared/MZAddonManager.h
+        shared/MZAuthInApp.h
+        shared/MZErrorHandler.h
+        shared/MZEnv.h
+        shared/MZFeatureList.h
+        shared/MZLicenseModel.h
+        shared/MZLocalizer.h
+        shared/MZLog.h
+        shared/MZNavigator.h
+        shared/MZNavigationBarModel.h
+        shared/MZSettings.h
+        shared/MZUrlOpener.h
+        shared/MZUtils.h
+        shared/MZAccessibleNotification.h
+        shared/MZI18n.h
+        shared/MZTheme.h
+)
+
+target_link_libraries(mozillavpn-shared PRIVATE
+    libMozillavpn
+    mzutils
+    Qt6::Quick
+)
+
+target_include_directories(mozillavpn-shared PRIVATE
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_BINARY_DIR}/src/translations/generated
+)
+
+target_include_directories(mozillavpn-shared PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/shared
+)
+
+if(SENTRY_ENABLED)
+    target_sources(mozillavpn-shared PRIVATE shared/MZCrashReporter.h)
+endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
     target_compile_definitions(mozillavpn-ui PRIVATE MZ_ANDROID)

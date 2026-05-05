@@ -12,7 +12,6 @@
 #include <QWindow>
 #include <memory>
 
-#include "accessiblenotification.h"
 #include "addons/manager/addonmanager.h"
 #include "apppermission.h"
 #include "commandlineparser.h"
@@ -258,14 +257,6 @@ int CommandUI::run(QStringList& tokens) {
     }
     logger.debug() << "Added QML image provider";
 
-    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0,
-                                 "MZAccessibleNotification",
-                                 AccessibleNotification::instance());
-
-    // TODO: MZI18n should be moved to QmlEngineHolder but it requires extra
-    // work for the generation of i18nstrings.h/cpp for the unit-test app.
-    qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZI18n",
-                                 I18nStrings::instance());
     logger.debug() << "Registered I18nStrings";
 
 #if MZ_IOS && QT_VERSION < 0x060300

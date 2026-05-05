@@ -4,7 +4,7 @@
 
 list(APPEND QT_WASM_EXTRA_EXPORTED_METHODS ENV)
 
-target_sources(mozillavpn PRIVATE
+target_sources(libMozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.cpp
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.h
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/wasm/wasmcontroller.cpp
