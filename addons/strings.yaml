@@ -219,7 +219,7 @@ commonStrings:
     value: "[Windows] IPv6-only networks are now supported."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to Windows platform.
   bullet7:
-    value: "[Linux] Use GNOME+Wayland? Window decoration is back, so Mozilla VPN stands out from the background."
+    value: "[Linux] Use GNOME+Wayland? Window decorations are back, so Mozilla VPN stands out from the background."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to Linux platform.
   bullet8:
     value: "[Linux] Support for IPv6-only networks was introduced in the last release, though switching servers while using multihop on IPv6-only networks sometimes had issues. It no longer should."
