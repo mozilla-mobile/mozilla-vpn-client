@@ -18,8 +18,8 @@ QTEST_MAIN(TestWebExtBridge)
 
 // Returns a unique socket name for each test run to avoid conflicts.
 static QString uniqueSocketName() {
-  return QStringLiteral("mzvpn-test-%1").arg(
-      QRandomGenerator::global()->generate(), 8, 16, QLatin1Char('0'));
+  return QStringLiteral("mzvpn-test-%1")
+      .arg(QRandomGenerator::global()->generate(), 8, 16, QLatin1Char('0'));
 }
 
 // ---------------------------------------------------------------------------
@@ -121,8 +121,7 @@ void TestWebExtBridge::app_ping_success() {
   // Send three messages and verify each is echoed back.
   QSignalSpy msgSpy(&bridge, &WebExtBridge::messageReceived);
   for (int i = 0; i < 3; ++i) {
-    const QByteArray msg =
-        QStringLiteral("\"hello world %1\"").arg(i).toUtf8();
+    const QByteArray msg = QStringLiteral("\"hello world %1\"").arg(i).toUtf8();
     QVERIFY(bridge.sendMessage(msg));
     QVERIFY(msgSpy.wait(5000));
     QCOMPARE(msgSpy.last().at(0).toByteArray(), msg);
@@ -204,7 +203,6 @@ void TestWebExtBridge::fuzzy() {
       QVERIFY(msgSpy.wait(10000));
       QCOMPARE(msgSpy.last().at(0).toByteArray(), msg);
     }
-
   }
 }
 

@@ -17,7 +17,8 @@ class WebExtHandler final : public QObject {
   Q_OBJECT
 
  public:
-  WebExtHandler(QIODevice* d, bool startWorker = true, QObject* parent = nullptr);
+  WebExtHandler(QIODevice* d, bool startWorker = true,
+                QObject* parent = nullptr);
   ~WebExtHandler();
 
   // The methods we can handle locally are exposed as meta-methods.

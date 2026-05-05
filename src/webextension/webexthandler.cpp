@@ -7,11 +7,10 @@
 #include <stdio.h>
 
 #include <QByteArray>
+#include <QFileDevice>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QMetaObject>
-
-#include <QFileDevice>
 
 #include "webextreader.h"
 
