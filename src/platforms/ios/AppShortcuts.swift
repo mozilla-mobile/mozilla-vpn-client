@@ -30,5 +30,22 @@ struct MozillaVPNAppShortcuts: AppShortcutsProvider {
       shortTitle: "Turn Off Mozilla VPN",
       systemImageName: "shield.lefthalf.filled.slash"
     )
+    AppShortcut(
+      intent: VPNStatusIntent(),
+      phrases: [
+        "Is \(.applicationName) currently active?",
+        "Is \(.applicationName) currently activated?",
+        "Is \(.applicationName) currently turned on?",
+        "Is \(.applicationName) currently switched on?",
+        "Is \(.applicationName) currently connected?",
+        "Is \(.applicationName) active?",
+        "Is \(.applicationName) activated?",
+        "Is \(.applicationName) turned on?",
+        "Is \(.applicationName) switched on?",
+        "Is \(.applicationName) connected?"
+      ],
+      shortTitle: "IIs the VPN currently connected?",
+      systemImageName: "questionmark.square.dashed"
+    )
   }
 }
