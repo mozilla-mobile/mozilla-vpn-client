@@ -28,6 +28,10 @@ mz_add_new_module(
         tests/testconnection.h
         tests/testserver.cpp
         tests/testserver.h
+        tests/testwebexthandler.cpp
+        tests/testwebexthandler.h
+        tests/testwebextbridge.cpp
+        tests/testwebextbridge.h
     EXTRA_DEPENDENCIES
         mzutils
     QT_DEPENDENCIES

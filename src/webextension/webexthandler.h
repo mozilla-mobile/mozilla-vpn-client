@@ -5,7 +5,7 @@
 #ifndef WEBEXTHANDLER_H
 #define WEBEXTHANDLER_H
 
-#include <QFileDevice>
+#include <QIODevice>
 #include <QObject>
 #include <QThread>
 
@@ -17,7 +17,9 @@ class WebExtHandler final : public QObject {
   Q_OBJECT
 
  public:
-  WebExtHandler(QFileDevice* d, QObject* parent = nullptr);
+  WebExtHandler(QIODevice* d, bool startWorker = true,
+                QObject* parent = nullptr);
+  ~WebExtHandler();
 
   // The methods we can handle locally are exposed as meta-methods.
   Q_INVOKABLE void bridge_ping(const QByteArray& msg);
@@ -35,8 +37,8 @@ class WebExtHandler final : public QObject {
   void handleMessage(const QByteArray& msg);
 
  private:
-  WebExtWorker* m_worker;
-  QFileDevice* m_output;
+  WebExtWorker* m_worker = nullptr;
+  QIODevice* m_output = nullptr;
 };
 
 // Helper class to read web-extension commands from stdin.

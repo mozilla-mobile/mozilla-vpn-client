@@ -44,10 +44,6 @@ jobs:
           cmake -S $(pwd) -B build -GNinja
           cmake --build build --target build_tests
 
-      - name: Running native messaging tests
-        shell: bash
-        run: ctest -L nativemessaging --test-dir build --output-on-failure
-
       - name: Running QML tests
         shell: bash
         run: ctest -L qml --test-dir build --output-on-failure
@@ -93,9 +89,6 @@ jobs:
           mkdir -p build
           cmake -S . -B $(pwd)/build -GNinja
           cmake --build $(pwd)/build --target build_tests
-
-      - name: Running native messaging tests
-        run: ctest -L nativemessaging --test-dir $(pwd)/build --output-on-failure
 
       - name: Running QML tests
         run: ctest -L qml --test-dir $(pwd)/build --output-on-failure
@@ -164,10 +157,6 @@ jobs:
               -DCMAKE_BUILD_TYPE=RelWithDebInfo \
               -DWIREGUARD_FOLDER="$(pwd)/3rdparty/wireguard-nt"
           cmake --build ./build-win --target build_tests
-
-      - name: Running native messaging tests
-        shell: bash
-        run: ctest -L nativemessaging --test-dir ./build-win --output-on-failure
 
       - name: Running QML tests
         shell: bash
