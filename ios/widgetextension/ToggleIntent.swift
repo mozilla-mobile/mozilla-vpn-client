@@ -19,6 +19,12 @@ struct ToggleIntent: SetValueIntent {
   @Parameter(title: "VPN is connected")
   var value: Bool
 
+  init() {}
+
+  init(value: Bool) {
+    self.value = value
+  }
+
   @MainActor
   func perform() async throws -> some IntentResult & ProvidesDialog {
     let logger = IOSLoggerImpl(tag: "ToggleIntent")
@@ -102,20 +108,7 @@ struct ToggleIntent: SetValueIntent {
           }
 
           try connection.startTunnel(options: ["source": "control"])
-          let config = (tunnel.protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration
-          let entryCity: String? = config?["entryCity"] as? String
-          let exitCity: String? = config?["exitCity"] as? String
-
-          if let exitCity = exitCity, !exitCity.isEmpty {
-            if let entryCity = entryCity, !entryCity.isEmpty {
-              responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmationMultiHop", defaultValue: "Mozilla VPN connected through \(exitCity) via \(entryCity)")
-            } else {
-              responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmationSingleHop", defaultValue: "Mozilla VPN connected through \(exitCity)")
-            }
-          } else {
-            logger.error(message: "Did not find a city")
-            responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmation", defaultValue: "Mozilla VPN connected")
-          }
+          responseText = tunnel.turnOnConfirmation
           responseImage = "shield.lefthalf.filled"
           value = false
         } catch let error {

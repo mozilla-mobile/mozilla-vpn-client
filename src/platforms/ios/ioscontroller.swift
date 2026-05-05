@@ -135,6 +135,7 @@ public class IOSControllerImpl: NSObject {
       if #available(iOS 18.0, *) {
         ControlCenter.shared.reloadAllControls()
       }
+      WidgetCenter.shared.reloadAllTimelines()
 
         // We care about "unknown" state changes.
         if (session.status != .connected && session.status != .disconnected) {
@@ -260,6 +261,9 @@ public class IOSControllerImpl: NSObject {
 
                IOSControllerImpl.logger.info(message: "Saving the tunnel succeeded")
 
+               // If this included changing the location, we may need to update widgets.
+               WidgetCenter.shared.reloadAllTimelines()
+
                tunnel.loadFromPreferences { error in
                     if let error = error {
                         IOSControllerImpl.logger.error(message: "Connect Tunnel Load Error: \(error)")
@@ -317,8 +321,11 @@ public class IOSControllerImpl: NSObject {
       do {
         IOSControllerImpl.shouldSkipNextNotification = true
         try TunnelManager.session?.startTunnel(options: ["source":"intent"])
-        let config = TunnelManager.protocolConfiguration?.providerConfiguration
-        return .success(entryCity: config?["entryCity"] as? String, exitCity: config?["exitCity"] as? String)
+        guard let turnOnConfirmation = TunnelManager.turnOnConfirmation else {
+          IOSControllerImpl.logger.info(message: "No confirmation dialog available")
+          return .errorNoSession
+        }
+        return .success(turnOnConfirmation: turnOnConfirmation)
       } catch let error {
         IOSControllerImpl.logger.info(message: "Error starting from intent: \(error.localizedDescription)")
         return .errorNoSession

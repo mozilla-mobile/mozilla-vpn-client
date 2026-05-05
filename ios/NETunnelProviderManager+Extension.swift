@@ -45,4 +45,19 @@ extension NETunnelProviderManager {
     let isOn = (connection.status == .connected || connection.status == .connecting)
     return isOn
   }
+
+  var turnOnConfirmation: LocalizedStringResource {
+    guard let config = (self.protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration,
+          let exitCity = config["exitCity"] as? String, !exitCity.isEmpty else {
+      let logger = IOSLoggerImpl(tag: "NETunnelProviderManager")
+      logger.error(message: "Did not find a city")
+      return LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmation", defaultValue: "Mozilla VPN connected")
+    }
+
+    if let entryCity = config["entryCity"] as? String, !entryCity.isEmpty {
+      return LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmationMultiHop", defaultValue: "Mozilla VPN connected through \(exitCity) via \(entryCity)")
+    } else {
+      return LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmationSingleHop", defaultValue: "Mozilla VPN connected through \(exitCity)")
+    }
+  }
 }

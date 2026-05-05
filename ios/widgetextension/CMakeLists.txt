@@ -21,6 +21,7 @@ set_target_properties(widgetextension PROPERTIES
     XCODE_GENERATE_SCHEME TRUE
     XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_IOS_APP_IDENTIFIER}.widget-extension"
     XCODE_ATTRIBUTE_SWIFT_VERSION "5.0"
+    XCODE_ATTRIBUTE_SWIFT_OPTIMIZATION_LEVEL "-Onone"
     XCODE_ATTRIBUTE_CLANG_ENABLE_MODULES "YES"
     XCODE_ATTRIBUTE_SWIFT_PRECOMPILE_BRIDGING_HEADER "NO"
     XCODE_ATTRIBUTE_APPLICATION_EXTENSION_API_ONLY "YES"
@@ -45,7 +46,17 @@ target_sources(widgetextension PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/ToggleIntent.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/ToggleWidgetBundle.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/ToggleWidgetControl.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/ToggleWidget.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgetimages.xcassets
     ${CMAKE_SOURCE_DIR}/ios/NETunnelProviderManager+Extension.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/ioslogger.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosconstants.swift
+    ${CMAKE_SOURCE_DIR}/nebula/ui/resources/fonts/Metropolis-SemiBold.otf
+    ${CMAKE_SOURCE_DIR}/nebula/ui/resources/fonts/Metropolis.otf
+)
+
+set_property(TARGET widgetextension APPEND PROPERTY RESOURCE
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgetimages.xcassets
+    ${CMAKE_SOURCE_DIR}/nebula/ui/resources/fonts/Metropolis-SemiBold.otf
+    ${CMAKE_SOURCE_DIR}/nebula/ui/resources/fonts/Metropolis.otf
 )
