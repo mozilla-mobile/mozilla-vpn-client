@@ -210,7 +210,7 @@ static bool hasRouteToIPv4(const QString& ipv4addr) {
                      << strerror(errno);
   }
 
-  struct sockaddr_in dest {};
+  struct sockaddr_in dest{};
   dest.sin_family = AF_INET;
   dest.sin_port = htons(1);
 

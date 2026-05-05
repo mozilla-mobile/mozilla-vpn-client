@@ -14,7 +14,7 @@ class DnsUtils : public QObject {
   Q_OBJECT
 
  public:
-  explicit DnsUtils(QObject* parent) : QObject(parent){};
+  explicit DnsUtils(QObject* parent) : QObject(parent) {};
   virtual ~DnsUtils() = default;
 
   virtual bool updateResolvers(const QString& ifname,

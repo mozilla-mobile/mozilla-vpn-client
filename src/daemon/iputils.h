@@ -13,7 +13,7 @@
 
 class IPUtils : public QObject {
  public:
-  explicit IPUtils(Daemon* daemon) : QObject(daemon){};
+  explicit IPUtils(Daemon* daemon) : QObject(daemon) {};
   virtual ~IPUtils() = default;
 
   virtual bool addInterfaceIPs(const InterfaceConfig& config) {

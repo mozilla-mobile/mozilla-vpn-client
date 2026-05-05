@@ -9,7 +9,7 @@
 
 class WindowsCryptoSettings final : public CryptoSettings {
  public:
-  WindowsCryptoSettings() : CryptoSettings(){};
+  WindowsCryptoSettings() : CryptoSettings() {};
   virtual ~WindowsCryptoSettings() = default;
 
   void resetKey() override;

@@ -14,7 +14,7 @@ class ApiError final {
   Q_GADGET
 
  public:
-  ApiError(){};
+  ApiError() {};
   ApiError(const ApiError& other);
   ApiError& operator=(const ApiError& other);
 

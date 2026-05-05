@@ -13,7 +13,7 @@ class HttpConnection final : public HttpConnectionBase {
   Q_OBJECT
 
  public:
-  explicit HttpConnection(QIODevice* socket) : HttpConnectionBase(socket){};
+  explicit HttpConnection(QIODevice* socket) : HttpConnectionBase(socket) {};
   ~HttpConnection() = default;
 
   // Peek at the request and determine if this is a HTTP CONNECT proxy.
