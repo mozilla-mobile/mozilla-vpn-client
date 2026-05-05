@@ -507,6 +507,11 @@ void Controller::activateInternal(
 
   QList<InterfaceConfig> serverConfigs =
       setupConfigs(dnsPort, serverSelectionPolicy);
+  if (serverConfigs.isEmpty()) {
+    // Error in setupConfigs, so do not continue
+    return;
+  }
+
   Q_ASSERT(serverConfigs.size() == 1 || serverConfigs.size() == 2);
   InterfaceConfig exitConfig = serverConfigs.takeLast();
   if (!serverConfigs.isEmpty()) {
