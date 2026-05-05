@@ -147,10 +147,6 @@ void MozillaVPN::scheduleRefreshDataTasks() {}
 
 void MozillaVPN::registerUrlOpenerLabels() {}
 
-void MozillaVPN::gleanSetDebugViewTag(QString tag) {}
-
-void MozillaVPN::gleanSetLogPings(bool flag) {}
-
 #ifdef MZ_MACOS
 bool MozillaVPN::eventFilter(QObject* obj, QEvent* event) {
   return QObject::eventFilter(obj, event);

@@ -4,9 +4,4 @@
 
 struct Constants {
   static let appGroupIdentifier = "group.org.mozilla.ios.Guardian"
-
-  struct UserDefaultKeys {
-    static let telemetryEnabled = "TELEMETRY_ENABLED"
-    static let appChannel = "APP_CHANNEL"
-  }
 }

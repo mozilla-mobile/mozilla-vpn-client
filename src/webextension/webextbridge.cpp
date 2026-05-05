@@ -14,6 +14,13 @@
 constexpr const int BRIDGE_RETRY_DELAY = 500;
 constexpr const int BRIDGE_START_DELAY = 10;
 
+WebExtBridge::~WebExtBridge() {
+  // Disconnect all signals from m_socket to this before our members are
+  // destroyed. Without this, QLocalSocket's destructor can emit stateChanged
+  // after m_retryTimer has already been torn down, causing a null-vtable crash.
+  m_socket.disconnect(this);
+}
+
 WebExtBridge::WebExtBridge(const QString& name, QObject* parent)
     : QObject(parent), m_name(name) {
   connect(&m_socket, &QLocalSocket::stateChanged, this,

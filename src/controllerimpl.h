@@ -50,7 +50,7 @@ class ControllerImpl : public QObject {
   // This method is used to remove the tunnel config from the operating
   // system. This is used upon logging out and resetting, so the
   // tunnel cannot be reactivated in system settings.
-  virtual void deleteOSTunnelConfig(){};
+  virtual void deleteOSTunnelConfig() {};
 
   // This method attempts to force the daemon to crash, and is used for
   // testing the ability of the VPN to recover from a backend error.
@@ -58,7 +58,7 @@ class ControllerImpl : public QObject {
 
   // This method attempts to force the daemon to do a silent server switch,
   // and is used exclusively for testing.
-  virtual void forceDaemonSilentServerSwitch(){};
+  virtual void forceDaemonSilentServerSwitch() {};
 
   // This method is used to retrieve the VPN tunnel status (mainly the number
   // of bytes sent and received). It's called always when the VPN tunnel is
@@ -70,7 +70,7 @@ class ControllerImpl : public QObject {
   virtual void getBackendLogs(QIODevice* device);
 
   // Cleanup the backend logs.
-  virtual void cleanupBackendLogs(){};
+  virtual void cleanupBackendLogs() {};
 
   // Whether the controller supports multihop
   virtual bool multihopSupported() { return false; }
@@ -81,6 +81,10 @@ class ControllerImpl : public QObject {
   virtual bool silentServerSwitchingSupported() const { return true; }
 
   virtual bool shouldSuppressNextNotification() { return false; }
+
+  virtual bool canSendUpdatedConfig() const { return false; }
+  virtual void sendUpdatedConfig(InterfaceConfig& entryConfig,
+                                 InterfaceConfig& exitConfig) {};
 
  protected:
   // Helper method - process a JSON status and emit the statusUpdated signal.

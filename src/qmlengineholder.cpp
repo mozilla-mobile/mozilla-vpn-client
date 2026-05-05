@@ -16,8 +16,6 @@
 #include "feature/featuremodel.h"
 #include "frontend/navigationbarmodel.h"
 #include "frontend/navigator.h"
-#include "glean/generated/metrics.h"
-#include "glean/generated/pings.h"
 #include "leakdetector.h"
 #include "localizer.h"
 #include "loghandler.h"
@@ -58,10 +56,6 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
   s_instance = this;
   engine->setNetworkAccessManagerFactory(new NMFactory(qApp));
 
-  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "GleanPings",
-                               __DONOTUSE__GleanPings::instance());
-  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "Glean",
-                               __DONOTUSE__GleanMetrics::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZAddonManager",
                                AddonManager::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZAuthInApp",

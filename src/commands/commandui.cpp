@@ -20,8 +20,6 @@
 #include "controller.h"
 #include "daemon/mock/mockdaemon.h"
 #include "fontloader.h"
-#include "glean/generated/pings.h"
-#include "glean/mzglean.h"
 #include "i18nstrings.h"
 #include "imageproviderfactory.h"
 #include "inspector/inspectorhandler.h"
@@ -33,7 +31,6 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "telemetry.h"
 #include "temporarydir.h"
 
 #ifdef MZ_DEBUG
@@ -188,7 +185,6 @@ int CommandUI::run(QStringList& tokens) {
     // objects.
     auto const vpn = MozillaVPN::instance();
     Q_ASSERT(vpn);
-    Telemetry::startTimeToFirstScreenTimer();
 
     if (testingOption.m_set) {
       Constants::setStaging();
@@ -235,14 +231,6 @@ int CommandUI::run(QStringList& tokens) {
     auto const engine =
         static_cast<QQmlApplicationEngine*>(engineHolder->engine());
     Q_ASSERT(engine);
-    // // Glean.rs
-    QString gleanChannel = "production";
-    if (testingOption.m_set) {
-      gleanChannel = "testing";
-    } else if (!Constants::inProduction()) {
-      gleanChannel = "staging";
-    }
-    MZGlean::initialize(gleanChannel);
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
 
@@ -283,16 +271,8 @@ int CommandUI::run(QStringList& tokens) {
 #if MZ_IOS && QT_VERSION < 0x060300
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, &App::quit);
 #else
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, [] {
-      // Submit the main ping one last time.
-      mozilla::glean_pings::Main.submit();
-      // During shutdown Glean will attempt to finish all tasks
-      // and submit all enqueued pings (including the one we
-      // just sent).
-      MZGlean::shutdown();
-
-      MozillaVPN::instance()->aboutToQuit();
-    });
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn,
+                     [] { MozillaVPN::instance()->aboutToQuit(); });
 #endif
 
     QObject::connect(

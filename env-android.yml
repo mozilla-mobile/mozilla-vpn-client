@@ -3,8 +3,8 @@ channels:
   - conda-forge
 dependencies:
   - ccache=4.10.1
-  - python=3.10
-  - pip=22.3.1
+  - python=3.12
+  - pip=25.0
   - rust=1.85
   - go=1.24.5
   - rust-std-armv7-linux-androideabi=1.85

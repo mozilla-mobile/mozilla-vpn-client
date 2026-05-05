@@ -13,7 +13,6 @@ target_sources(shared-sources INTERFACE ${CMAKE_CURRENT_BINARY_DIR}/version.h)
 
 set_property(TARGET shared-sources PROPERTY INTERFACE_INCLUDE_DIRECTORIES
     ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/glean
     ${CMAKE_CURRENT_BINARY_DIR}
 )
 
@@ -96,8 +95,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/frontend/navigationbarmodel.h
     ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.cpp
     ${CMAKE_SOURCE_DIR}/src/frontend/navigatorreloader.h
-    ${CMAKE_SOURCE_DIR}/src/glean/mzglean.h
-    ${CMAKE_SOURCE_DIR}/src/glean/mzglean.cpp
     ${CMAKE_SOURCE_DIR}/src/itempicker.cpp
     ${CMAKE_SOURCE_DIR}/src/itempicker.h
     ${CMAKE_SOURCE_DIR}/src/localizer.cpp
@@ -200,6 +197,5 @@ mz_add_clang_tidy(shared-sources)
 if(TARGET shared-sources_clang_tidy_report)
     add_dependencies(shared-sources_clang_tidy_report
         translations
-        qtglean
     )
 endif()

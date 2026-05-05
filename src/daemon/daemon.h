@@ -77,7 +77,7 @@ class Daemon : public QObject {
 
   class ConnectionState {
    public:
-    ConnectionState(){};
+    ConnectionState() {};
     ConnectionState(const InterfaceConfig& config) { m_config = config; }
     QDateTime m_date;
     InterfaceConfig m_config;

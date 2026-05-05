@@ -99,16 +99,6 @@ class VPNServiceBinder(service: VPNService) : CoreBinder() {
                 val binder = data.readStrongBinder()
                 mListeners.add(binder)
                 Log.i(tag, "Registered binder now: ${mListeners.size} Binders")
-
-                if (!Prefs.get(mService).contains("glean_enabled")) {
-                    Log.i(tag, "Requesting Glean upload enabled state. No value in storage.")
-                    dispatchEvent(
-                        EVENTS.requestGleanUploadEnabledState,
-                        "",
-                        binder,
-                    )
-                }
-
                 return true
             }
             ACTIONS.getStatus -> {
@@ -117,7 +107,6 @@ class VPNServiceBinder(service: VPNService) : CoreBinder() {
                 obj.put("time", mService.connectionTime)
                 obj.put("city", mService.cityname)
                 obj.put("canActivate", mService.canActivate)
-                obj.put("connection-health-status", mService.mConnectionHealth.getStatusString())
                 dispatchEvent(EVENTS.init, obj.toString())
                 return true
             }
@@ -155,13 +144,6 @@ class VPNServiceBinder(service: VPNService) : CoreBinder() {
             }
             ACTIONS.clearStorage -> {
                 mService.clearConfig()
-            }
-            ACTIONS.setGleanUploadEnabled -> {
-                val buffer = data.createByteArray()
-                val json = buffer?.let { String(it) }
-                val args = JSONObject(json)
-                mService.setGleanUploadEnabled(args.getBoolean("uploadEnabled"))
-                return true
             }
             ACTIONS.notificationPermissionFired -> {
                 mService.mNotificationHandler.onNotificationPermissionPromptFired()

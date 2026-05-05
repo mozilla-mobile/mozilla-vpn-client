@@ -21,29 +21,17 @@ cleanup:
   - /share/man
   - /share/doc
 modules:
-  # Dependency for jsonschema and glean-parser, needs to be installed as a
-  # binary wheel because it has a bunch of complex rust dependencies that are
-  # difficult to replicate offline.
-  - name: python3-rpds
+  - name: python3-pyyaml
     buildsystem: simple
     build-commands:
       - pip3 install --verbose --exists-action=i --no-index --find-links="file://${PWD}"
-        --prefix=${FLATPAK_DEST} "rpds-py" --no-build-isolation
+        --prefix=${FLATPAK_DEST} "PyYAML" --no-build-isolation
     sources:
       - type: file
-        url: https://files.pythonhosted.org/packages/6c/b0/8fa5e36e58657997873fd6a1cf621285ca822ca75b4b3434ead047daa307/rpds_py-0.26.0-cp313-cp313-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-        sha256: 2c03c9b0c64afd0320ae57de4c982801271c0c211aa2d37f3003ff5feb75bb04
-        only_arches:
-          - x86_64
-      - type: file
-        url: https://files.pythonhosted.org/packages/75/83/1953a9d4f4e4de7fd0533733e041c28135f3c21485faaef56a8aadbd96b5/rpds_py-0.26.0-cp313-cp313-manylinux_2_17_aarch64.manylinux2014_aarch64.whl
-        sha256: 390e3170babf42462739a93321e657444f0862c6d722a291accc46f9d21ed04e
-        only_arches:
-          - aarch64
+        url: https://files.pythonhosted.org/packages/05/8e/961c0007c59b8dd7729d542c61a4d537767a59645b82a0b521206e1e25c2/pyyaml-6.0.3.tar.gz
+        sha256: d76623373421df22fb4cf8817020cbb7ef15c725b9d5e45f17e189bfc384190f
     cleanup:
       - '*'
-
-  - flatpak-glean-parser.yaml
 
   - name: qt5compat
     buildsystem: cmake-ninja

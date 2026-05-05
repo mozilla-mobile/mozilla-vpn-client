@@ -10,11 +10,6 @@
 	path = 3rdparty/wireguard-go
 	url = https://github.com/WireGuard/wireguard-go
 	shallow = true
-[submodule "3rdparty/glean"]
-	path = 3rdparty/glean
-	url = https://github.com/mozilla/glean.git
-	branch = release
-	shallow = true
 [submodule "3rdparty/sentry"]
 	path = 3rdparty/sentry
 	url = https://github.com/getsentry/sentry-native/

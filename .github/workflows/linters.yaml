@@ -30,7 +30,7 @@ jobs:
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: "pip"
       - run: pip install -r requirements.txt
 
@@ -51,7 +51,7 @@ jobs:
         uses: DoozyX/clang-format-lint-action@bcb4eb2cb0d707ee4f3e5cc3b456eb075f12cf73 # v0.20
         with:
           source: "."
-          clangFormatVersion: 16
+          clangFormatVersion: 20
           style: file
 
       - name: Check for issues with cargo fmt
@@ -96,11 +96,6 @@ jobs:
         with:
           path: ~/conda_pkgs_dir
           key: android-conda-packages-${{ hashFiles('env-android.yml', 'requirements.txt') }}
-
-      # Glean is required for the gradle build.
-      - name: Fetch glean submodules
-        run: |
-          git submodule update --init 3rdparty/glean
 
       - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3
         with:

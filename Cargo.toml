@@ -1,6 +1,5 @@
 [workspace]
 members = [
-    "qtglean",
     "signature",
 ]
 resolver = "2"

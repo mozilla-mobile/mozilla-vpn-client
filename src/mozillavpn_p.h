@@ -25,7 +25,6 @@
 #include "serverlatency.h"
 #include "settingsholder.h"
 #include "statusicon.h"
-#include "telemetry.h"
 
 struct MozillaVPNPrivate {
   CaptivePortal m_captivePortal;
@@ -44,7 +43,6 @@ struct MozillaVPNPrivate {
   StatusIcon m_statusIcon;
   SubscriptionData m_subscriptionData;
   SupportCategoryModel m_supportCategoryModel;
-  Telemetry m_telemetry;
   User m_user;
   TaskGetFeatureListWorker m_taskGetFeatureListWorker;
 };

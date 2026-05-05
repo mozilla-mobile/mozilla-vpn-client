@@ -8,13 +8,13 @@
 #include <Security/SecRequirement.h>
 #include <Security/SecStaticCode.h>
 #include <Security/SecTask.h>
-#include <errno.h>
 #include <net/route.h>
 
 #include <QByteArray>
 #include <QDir>
 #include <QFile>
 #include <QLocalSocket>
+#include <QScopeGuard>
 #include <QSysInfo>
 #include <QTimer>
 #include <QVersionNumber>
@@ -294,18 +294,24 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   QByteArray publicKey =
       QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
 
+  const bool useIPv4 = !config.m_serverIpv4AddrIn.isNull() &&
+                       (config.m_serverIpv6AddrIn.isNull() ||
+                        m_rtmonitor->hasIpv4DefaultRoute());
+  const QString endpointAddr =
+      useIPv4 ? config.m_serverIpv4AddrIn : config.m_serverIpv6AddrIn;
+
   logger.debug() << "Configuring peer" << logger.keys(config.m_serverPublicKey)
-                 << "via" << config.m_serverIpv4AddrIn;
+                 << "via" << endpointAddr;
 
   // Update/create the peer config
   QString message;
   QTextStream out(&message);
   out << "set=1\n";
   out << "public_key=" << QString(publicKey.toHex()) << "\n";
-  if (!config.m_serverIpv4AddrIn.isNull()) {
-    out << "endpoint=" << config.m_serverIpv4AddrIn << ":";
-  } else if (!config.m_serverIpv6AddrIn.isNull()) {
-    out << "endpoint=[" << config.m_serverIpv6AddrIn << "]:";
+  if (useIPv4) {
+    out << "endpoint=" << endpointAddr << ":";
+  } else if (!endpointAddr.isNull()) {
+    out << "endpoint=[" << endpointAddr << "]:";
   } else {
     logger.warning() << "Failed to create peer with no endpoints";
     return false;

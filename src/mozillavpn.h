@@ -32,7 +32,6 @@ class ServerLatency;
 class StatusIcon;
 class SubscriptionData;
 class SupportCategoryModel;
-class Telemetry;
 class User;
 class QEvent;
 class QUrl;
@@ -116,9 +115,6 @@ class MozillaVPN final : public App {
   Q_INVOKABLE void hardResetAndQuit();
   Q_INVOKABLE void cancelReauthentication();
 
-  Q_INVOKABLE void gleanSetDebugViewTag(QString tag);
-  Q_INVOKABLE void gleanSetLogPings(bool flag);
-
   void authenticateWithType(
       AuthenticationListener::AuthenticationType authenticationType);
 
@@ -139,7 +135,6 @@ class MozillaVPN final : public App {
   ServerLatency* serverLatency() const;
   StatusIcon* statusIcon() const;
   SubscriptionData* subscriptionData() const;
-  Telemetry* telemetry() const;
   User* user() const;
 
   // Called at the end of the authentication flow. We can continue adding the
@@ -242,8 +237,6 @@ class MozillaVPN final : public App {
 
   void scheduleRefreshDataTasks();
 
-  static void ensureApplicationIdExists();
-
   static void registerUrlOpenerLabels();
 
   static void registerErrorHandlers();
@@ -269,10 +262,6 @@ class MozillaVPN final : public App {
   void authenticationAborted();
   void authenticationCompleted();
 
-  // For Glean
-  void initializeGlean();
-  void sendGleanPings();
-  void setGleanSourceTags(const QStringList& tags);
   void logSubscriptionCompleted();
 
   void aboutToQuit();
@@ -284,7 +273,6 @@ class MozillaVPN final : public App {
   struct MozillaVPNPrivate* m_private = nullptr;
 
   QTimer m_periodicOperationsTimer;
-  QTimer m_gleanTimer;
 
   bool m_startMinimized = false;
   bool m_updating = false;

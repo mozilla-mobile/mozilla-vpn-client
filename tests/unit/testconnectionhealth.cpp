@@ -5,11 +5,9 @@
 #include "testconnectionhealth.h"
 
 #include "connectionhealth.h"
-#include "glean/generated/metrics.h"
-#include "glean/mzglean.h"
 #include "helper.h"
 
-void TestConnectionHealth::init() { MZGlean::initialize("testing"); }
+void TestConnectionHealth::init() {}
 
 void TestConnectionHealth::cleanup() { SettingsHolder::testCleanup(); }
 
@@ -83,61 +81,6 @@ void TestConnectionHealth::healthCheckup() {
   connectionHealth.healthCheckup();
   QCOMPARE(connectionHealth.m_stability,
            ConnectionHealth::ConnectionStability::Stable);
-}
-
-// Temporarily commenting this out. Something is wrong with the test
-// infrastructure, though submits metrics accurately.
-
-// void TestConnectionHealth::testTelemetry() {
-//   ConnectionHealth connectionHealth;
-
-//   // Nothing recorded at start.
-//   metricsTestCount(0, 0, 0);
-
-//   // Shouldn't do anything if controller state isn't on.
-//   connectionHealth.startActive("", "");
-//   connectionHealth.stop();
-//   metricsTestCount(0, 0, 0);
-
-//   // Activate controller, which allows recording
-//   TestHelper::controllerState = Controller::StateOn;
-
-//   // Currently unstable connection
-//   connectionHealth.setStability(ConnectionHealth::Unstable);
-//   connectionHealth.startActive("", "");
-//   metricsTestCount(0, 1, 0);
-
-//   // Connections changes to stable
-//   connectionHealth.setStability(ConnectionHealth::ConnectionStability::Stable);
-//   metricsTestCount(1, 1, 0);
-
-//   // Connections changes to no signal
-//   connectionHealth.setStability(
-//       ConnectionHealth::ConnectionStability::NoSignal);
-//   metricsTestCount(1, 1, 1);
-
-//   // Stops (stopping resets status to stable)
-//   connectionHealth.stop();
-//   metricsTestCount(1, 1, 1);
-// }
-
-void TestConnectionHealth::metricsTestCount(int expectedStablePeriods,
-                                            int expectedUnstablePeriods,
-                                            int expectedNoSignalPeriods) {
-  // test the 3 counters
-  // Expect a non-zero counter if there has been at least one period.
-  auto stableCount =
-      mozilla::glean::connection_health::stable_count.testGetValue();
-  auto unstableCount =
-      mozilla::glean::connection_health::unstable_count.testGetValue();
-  auto noSignalCount =
-      mozilla::glean::connection_health::no_signal_count.testGetValue();
-  QCOMPARE(stableCount.isDouble(), true);
-  QCOMPARE(stableCount.toInt(), expectedStablePeriods);
-  QCOMPARE(unstableCount.isDouble(), true);
-  QCOMPARE(unstableCount.toInt(), expectedUnstablePeriods);
-  QCOMPARE(noSignalCount.isDouble(), true);
-  QCOMPARE(noSignalCount.toInt(), expectedNoSignalPeriods);
 }
 
 static TestConnectionHealth s_testConnectionHealth;

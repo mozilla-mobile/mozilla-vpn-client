@@ -19,7 +19,7 @@ struct TestCase {
 
 class TestAdapter : public WebExtension::BaseAdapter {
  public:
-  TestAdapter() : BaseAdapter(nullptr){};
+  TestAdapter() : BaseAdapter(nullptr) {};
 
   void addCommand(RequestType cmd) { m_commands.append(cmd); }
 };

@@ -24,8 +24,8 @@ Logger logger("XdgNotificationHandler");
 // Custom D-Bus type to encode the button element.
 class XdgButtonList : public QList<QVariantMap> {
  public:
-  XdgButtonList() : QList<QVariantMap>(){};
-  XdgButtonList(const QVariantMap& data) : QList<QVariantMap>({data}){};
+  XdgButtonList() : QList<QVariantMap>() {};
+  XdgButtonList(const QVariantMap& data) : QList<QVariantMap>({data}) {};
 
   friend QDBusArgument& operator<<(QDBusArgument& args,
                                    const XdgButtonList& data) {

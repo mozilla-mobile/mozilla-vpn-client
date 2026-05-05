@@ -147,8 +147,8 @@ Q_DECLARE_METATYPE(UserDataList);
 
 class SystemdUnitProp {
  public:
-  SystemdUnitProp(){};
-  SystemdUnitProp(const QString& n, const QVariant& v) : name(n), value(v){};
+  SystemdUnitProp() {};
+  SystemdUnitProp(const QString& n, const QVariant& v) : name(n), value(v) {};
   QString name;
   QVariant value;
 

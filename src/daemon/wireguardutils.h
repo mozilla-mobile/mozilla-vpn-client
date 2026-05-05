@@ -29,7 +29,7 @@ class WireguardUtils : public QObject {
     qint64 m_txBytes = 0;
   };
 
-  explicit WireguardUtils(QObject* parent) : QObject(parent){};
+  explicit WireguardUtils(QObject* parent) : QObject(parent) {};
   virtual ~WireguardUtils() = default;
 
   virtual bool interfaceExists() = 0;

@@ -215,8 +215,6 @@ void ServerData::changeServer(const QString& countryCode,
   } else {
     logger.info() << "Multihop server change";
     // If exit changed, or changing from single hop to multihop
-    // (could have same exit for single and multihop, and we'd want to record
-    // metric)
     if (m_exitCountryCode != countryCode || m_exitCityName != cityName ||
         (m_entryCountryCode.isEmpty() && m_entryCityName.isEmpty())) {
       logger.info() << "Multihop exit server change";

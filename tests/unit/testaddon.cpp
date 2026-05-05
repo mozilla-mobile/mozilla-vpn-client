@@ -21,25 +21,12 @@
 #include "addons/manager/addonmanager.h"
 #include "feature/featuremodel.h"
 #include "feature/features.h"
-#include "glean/mzglean.h"
 #include "helper.h"
 #include "qmlengineholder.h"
-#include "qtglean.h"
 #include "settingsholder.h"
 #include "systemtraynotificationhandler.h"
 
-void TestAddon::init() {
-  // Glean needs to be initialized for every test because this test suite
-  // includes telemetry tests.
-  //
-  // Glean operations are queued and applied once Glean is initialized.
-  // If we only initialize it in the test that actually tests telemetry all
-  // of the Glean operations from previous tests will be applied and mess with
-  // the status of the test that actually is testing telemetry.
-  //
-  // Note: on tests Glean::initialize clears Glean's storage.
-  MZGlean::initialize("testing");
-}
+void TestAddon::init() {}
 
 void TestAddon::cleanup() { SettingsHolder::testCleanup(); }
 

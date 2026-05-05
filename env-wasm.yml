@@ -2,9 +2,9 @@ name: vpn
 channels:
   - conda-forge
 dependencies:
-  - python=3.10
+  - python=3.12
   - nodejs=20.*
-  - pip=22.3.1
+  - pip=25.0
   - rust=1.85
   - rust-std-wasm32-unknown-emscripten=1.85
   - cmake=3.26.3

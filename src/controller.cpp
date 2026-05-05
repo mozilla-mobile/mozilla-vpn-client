@@ -354,17 +354,8 @@ void Controller::updateRequired() {
   }
 }
 
-void Controller::activateInternal(
-    DNSPortPolicy dnsPort,
-    ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection,
-    ActivationPrincipal initiator = ClientUser) {
-  logger.debug() << "Activation internal";
-  Q_ASSERT(m_impl);
-  m_initiator = initiator;
-
-  m_handshakeTimer.stop();
-  m_activationQueue.clear();
-
+auto Controller::setupConfigs(DNSPortPolicy dnsPort,
+                              ServerSelectionPolicy serverSelectionPolicy) {
   Server exitServer =
       serverSelectionPolicy == DoNotRandomizeServerSelection &&
               !m_serverData.exitServerPublicKey().isEmpty()
@@ -374,7 +365,7 @@ void Controller::activateInternal(
   if (!exitServer.initialized()) {
     logger.error() << "Empty exit server list in state" << m_state;
     serverUnavailable();
-    return;
+    return QList<InterfaceConfig>();
   }
 
   MozillaVPN* vpn = MozillaVPN::instance();
@@ -382,11 +373,12 @@ void Controller::activateInternal(
   if (!device) {
     logger.warning() << "No current device. Aborting activation.";
     m_nextStep = Disconnect;
-    return;
+    return QList<InterfaceConfig>();
   }
   SettingsHolder* settingsHolder = SettingsHolder::instance();
+  QList<InterfaceConfig> returnList;
 
-  auto allowedIPList = initiator == ExtensionUser
+  auto allowedIPList = m_initiator == ExtensionUser
                            ? getExtensionProxyAddressRanges(exitServer)
                            : getAllowedIPAddressRanges(exitServer);
   // Prepare the exit server's connection data.
@@ -403,9 +395,6 @@ void Controller::activateInternal(
   exitConfig.m_allowedIPAddressRanges = allowedIPList;
   exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
   exitConfig.m_exitCity = exitServer.cityName();
-#if defined(MZ_ANDROID) || defined(MZ_IOS)
-  exitConfig.m_installationId = settingsHolder->installationId();
-#endif
   logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
 
   if (m_impl->splitTunnelSupported()) {
@@ -442,7 +431,7 @@ void Controller::activateInternal(
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
-      return;
+      return QList<InterfaceConfig>();
     }
 
     InterfaceConfig entryConfig;
@@ -468,7 +457,7 @@ void Controller::activateInternal(
       entryConfig.m_serverPort = 53;
     }
 
-    m_activationQueue.append(entryConfig);
+    returnList.append(entryConfig);
   }
   // Otherwise, we can approximate multihop support by redirecting the
   // connection to the exit server via the multihop port.
@@ -486,7 +475,7 @@ void Controller::activateInternal(
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
-      return;
+      return QList<InterfaceConfig>();
     }
 
     // NOTE: For platforms without multihop support, we cannot emulate multihop
@@ -498,6 +487,34 @@ void Controller::activateInternal(
     exitConfig.m_entryCity = entryServer.cityName();
   }
 
+  returnList.append(exitConfig);
+  return returnList;
+}
+
+void Controller::activateInternal(
+    DNSPortPolicy dnsPort,
+    ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection,
+    ActivationPrincipal initiator = ClientUser) {
+  logger.debug() << "Activation internal";
+  Q_ASSERT(m_impl);
+  m_initiator = initiator;
+
+  m_handshakeTimer.stop();
+  m_activationQueue.clear();
+
+  QList<InterfaceConfig> serverConfigs =
+      setupConfigs(dnsPort, serverSelectionPolicy);
+  if (serverConfigs.isEmpty()) {
+    // Error in setupConfigs, so do not continue
+    return;
+  }
+
+  Q_ASSERT(serverConfigs.size() == 1 || serverConfigs.size() == 2);
+  InterfaceConfig exitConfig = serverConfigs.takeLast();
+  if (!serverConfigs.isEmpty()) {
+    InterfaceConfig entryConfig = serverConfigs.takeFirst();
+    m_activationQueue.append(entryConfig);
+  }
   m_activationQueue.append(exitConfig);
   m_serverData.setEntryServerPublicKey(
       m_activationQueue.first().m_serverPublicKey);
@@ -627,7 +644,6 @@ bool Controller::silentSwitchServers(
   }
 
   logger.debug() << "Switching to a different server";
-  emit recordDataTransferTelemetry();
   clearRetryCounter();
 
   setState(StateSilentSwitching);
@@ -682,8 +698,7 @@ void Controller::connected(const QString& pubkey) {
     // daemon's silent server switch would activate. However, there is a slight
     // chance that the app is open AND the daemon initiates a silently server
     // switch. In this case, we need to belatedly set isSwitchingServer to
-    // prevent resetting the timer and recording telemetry for the start of a
-    // new session.
+    // prevent resetting the timer for the start of a new session.
     isSwitchingServer = true;
   }
 #endif
@@ -703,12 +718,8 @@ void Controller::connected(const QString& pubkey) {
   if (!isSwitchingServer || !m_connectedTimeInUTC.isValid()) {
     m_connectedTimeInUTC = QDateTime::currentDateTimeUtc();
     emit timestampChanged();
-
-    logger.debug() << "Collecting telemetry for new session.";
-    emit recordConnectionStartTelemetry();
   } else {
-    logger.debug() << "Connection happened due to server switch. Not "
-                      "collecting telemetry.";
+    logger.debug() << "Connection happened due to server switch.";
   }
 
   if (m_nextStep == Quit || m_nextStep == Disconnect || m_nextStep == Update) {
@@ -754,11 +765,6 @@ void Controller::disconnected() {
   m_connectedTimeInUTC = QDateTime();
   emit timestampChanged();
 
-  // Need this StateConfirming check to prevent recording telemetry during
-  // Android onboarding.
-  if (m_state != StateConfirming) {
-    emit recordConnectionEndTelemetry();
-  }
   m_initiator = Null;
   setState(StateOff);
 }
@@ -873,7 +879,15 @@ void Controller::captivePortalPresent() {
 void Controller::serverDataChanged() {
   if (!isActive() || m_state == StateDisconnecting) {
     logger.debug() << "Server data changed but we are off or disconnecting";
+
+#ifdef MZ_IOS
+    // If the VPN is disconnected, we still need to update the config in the
+    // network extension so if the next connection comes from control center or
+    // app intent the latest config will be used.
+    logger.debug() << "However, we are on iOS so we are forwarding the config";
+#else
     return;
+#endif
   }
 
   TaskScheduler::deleteTasks();
@@ -881,15 +895,38 @@ void Controller::serverDataChanged() {
       new TaskControllerAction(TaskControllerAction::eSwitch));
 }
 
+void Controller::maybeSendUpdatedConfig(const ServerData& serverData) {
+  if (m_impl->canSendUpdatedConfig()) {
+    logger.debug() << "Sending updated config";
+    m_serverData = serverData;
+    QList<InterfaceConfig> serverConfigs =
+        setupConfigs(DoNotForceDNSPort, RandomizeServerSelection);
+    Q_ASSERT(serverConfigs.size() == 1 || serverConfigs.size() == 2);
+    InterfaceConfig exitConfig = serverConfigs.takeLast();
+    InterfaceConfig entryConfig;
+    if (!serverConfigs.isEmpty()) {
+      entryConfig = serverConfigs.takeFirst();
+      m_activationQueue.append(entryConfig);
+      m_serverData.setEntryServerPublicKey(entryConfig.m_serverPublicKey);
+    } else {
+      m_serverData.setEntryServerPublicKey(exitConfig.m_serverPublicKey);
+    }
+    m_serverData.setExitServerPublicKey(exitConfig.m_serverPublicKey);
+    m_impl->sendUpdatedConfig(entryConfig, exitConfig);
+  } else {
+    logger.debug() << "Skipping sending updated config";
+  }
+}
+
 bool Controller::switchServers(const ServerData& serverData) {
   if (!isActive()) {
     logger.debug() << "Server data changed but we are off";
+    maybeSendUpdatedConfig(serverData);
     return false;
   }
 
   logger.debug() << "Switching to a different server";
   m_nextServerData = serverData;
-  emit recordDataTransferTelemetry();
   clearRetryCounter();
 
   // Special case - if we switch servers while connecting, then we have yet to
@@ -1068,7 +1105,6 @@ bool Controller::deactivate(ActivationPrincipal user) {
 
   if (m_state != StateSwitching && m_state != StateSilentSwitching) {
     setState(StateDisconnecting);
-    emit recordDataTransferTelemetry();
   }
 
   m_pingCanary.stop();

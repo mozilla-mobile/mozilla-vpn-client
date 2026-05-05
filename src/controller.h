@@ -91,6 +91,7 @@ class Controller : public QObject, public LogSerializer {
     ReasonNone = 0,
     ReasonSwitching,
     ReasonConfirming,
+    ReasonUpdating
   };
 
   enum ErrorCode {
@@ -210,9 +211,6 @@ class Controller : public QObject, public LogSerializer {
   void timestampChanged();
   void enableDisconnectInConfirmingChanged();
   void connectionRetryChanged();
-  void recordConnectionStartTelemetry();
-  void recordConnectionEndTelemetry();
-  void recordDataTransferTelemetry();
   void readyToQuit();
   void readyToUpdate();
   void readyToServerUnavailable(bool pingReceived);
@@ -276,6 +274,9 @@ class Controller : public QObject, public LogSerializer {
   void setError(ErrorCode code);
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
+  auto setupConfigs(DNSPortPolicy dnsPort,
+                    ServerSelectionPolicy serverSelectionPolicy);
+  void maybeSendUpdatedConfig(const ServerData& serverData);
   QString useLocalSocketPath() const;
 
  private:

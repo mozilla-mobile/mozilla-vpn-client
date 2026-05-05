@@ -6,7 +6,6 @@
 #include "Mozilla-Swift.h"
 #include "controller.h"
 #include "feature/features.h"
-#include "glean/generated/metrics.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -186,15 +185,6 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
       permitLocalNetworkFeatures:settingsHolder->localNetworkAccess()
       allowedIPAddressRanges:allowedIPAddressRangesNS
       reason:reason
-      gleanDebugTag:settingsHolder->gleanDebugTagActive()
-                        ? settingsHolder->gleanDebugTag().toNSString()
-                        : @""
-      isSuperDooperFeatureActive:Feature::isEnabled(Feature::superDooperMetrics)
-      installationId:config.m_installationId.toNSString()
-      isMissingLocalLocation:MozillaVPN::instance()->location()->countryCode().isEmpty()
-      isServerLocatedInUserCountry:MozillaVPN::instance()
-                                       ->serverData()
-                                       ->serverLocatedInUserCountry()
       disconnectOnErrorCallback:^() {
         logger.error() << "IOSSWiftController - disconnecting";
         emit disconnected();
@@ -295,4 +285,8 @@ void IOSController::cleanupBackendLogs() { [IOSLoggerImpl clearLogs]; }
 
 bool IOSController::shouldSuppressNextNotification() {
   return [impl shouldSuppressNextNotification];
+}
+
+void IOSController::sendUpdatedConfig(InterfaceConfig& entryConfig, InterfaceConfig& exitConfig) {
+  activate(exitConfig, Controller::ReasonUpdating);
 }

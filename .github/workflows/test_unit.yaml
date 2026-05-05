@@ -33,7 +33,7 @@ jobs:
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: "pip"
       - run: pip install -r requirements.txt
 
@@ -43,10 +43,6 @@ jobs:
           mkdir -p build
           cmake -S $(pwd) -B build -GNinja
           cmake --build build --target build_tests
-
-      - name: Running native messaging tests
-        shell: bash
-        run: ctest -L nativemessaging --test-dir build --output-on-failure
 
       - name: Running QML tests
         shell: bash
@@ -94,9 +90,6 @@ jobs:
           cmake -S . -B $(pwd)/build -GNinja
           cmake --build $(pwd)/build --target build_tests
 
-      - name: Running native messaging tests
-        run: ctest -L nativemessaging --test-dir $(pwd)/build --output-on-failure
-
       - name: Running QML tests
         run: ctest -L qml --test-dir $(pwd)/build --output-on-failure
 
@@ -134,7 +127,7 @@ jobs:
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
-          python-version: "3.10"
+          python-version: "3.12"
           cache: "pip"
       - run: pip install -r requirements.txt
 
@@ -164,10 +157,6 @@ jobs:
               -DCMAKE_BUILD_TYPE=RelWithDebInfo \
               -DWIREGUARD_FOLDER="$(pwd)/3rdparty/wireguard-nt"
           cmake --build ./build-win --target build_tests
-
-      - name: Running native messaging tests
-        shell: bash
-        run: ctest -L nativemessaging --test-dir ./build-win --output-on-failure
 
       - name: Running QML tests
         shell: bash

@@ -178,7 +178,6 @@ public class IOSControllerImpl: NSObject {
     }
 
     @objc func connect(serverData: [VPNServerData], permitLocalNetworkFeatures: Bool, allowedIPAddressRanges: [VPNIPAddressRange], reason: Int,
-            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isMissingLocalLocation: Bool, isServerLocatedInUserCountry: Bool,
             disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
             vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void) {
         IOSControllerImpl.logger.debug(message: "Connecting")
@@ -193,14 +192,14 @@ public class IOSControllerImpl: NSObject {
               disconnectOnErrorCallback()
               return
             }
-          return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, permitLocalNetworkFeatures: permitLocalNetworkFeatures, gleanDebugTag: gleanDebugTag, isSuperDooperFeatureActive: isSuperDooperFeatureActive, installationId: installationId, isServerLocatedInUserCountry: !isMissingLocalLocation ? isServerLocatedInUserCountry : nil, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback, entryCity: serverData.first?.entryCity, exitCity: serverData.first?.exitCity)
+          return self.configureTunnel(configs: configs, reason: reason, serverName: serverName, permitLocalNetworkFeatures: permitLocalNetworkFeatures, disconnectOnErrorCallback: disconnectOnErrorCallback, onboardingCompletedCallback: onboardingCompletedCallback, vpnConfigPermissionResponseCallback: vpnConfigPermissionResponseCallback, entryCity: serverData.first?.entryCity, exitCity: serverData.first?.exitCity)
         }
     }
 
     func configureTunnel(configs: [TunnelConfiguration], reason: Int, serverName: String, permitLocalNetworkFeatures: Bool,
-            gleanDebugTag: String, isSuperDooperFeatureActive: Bool, installationId: String, isServerLocatedInUserCountry: Bool?,
             disconnectOnErrorCallback: @escaping () -> Void, onboardingCompletedCallback: @escaping () -> Void,
             vpnConfigPermissionResponseCallback: @escaping (Bool) -> Void, entryCity: String?, exitCity: String?) {
+        let isActivating = reason != 3
         TunnelManager.withTunnel { tunnel in
             guard let config = configs.first else {
               IOSControllerImpl.logger.error(message: "No VPN config found")
@@ -226,10 +225,6 @@ public class IOSControllerImpl: NSObject {
             }
 
             var customConfig = proto?.providerConfiguration ?? [:]
-            customConfig["isSuperDooperFeatureActive"] = isSuperDooperFeatureActive
-            customConfig["isServerLocatedInUserCountry"] = isServerLocatedInUserCountry
-            customConfig["gleanDebugTag"] = gleanDebugTag
-            customConfig["installationId"] = installationId
             customConfig["entryCity"] = entryCity
             customConfig["exitCity"] = exitCity
             customConfig["configs"] = configs.map({ $0.asWgQuickConfig() })
@@ -239,18 +234,23 @@ public class IOSControllerImpl: NSObject {
             tunnel.localizedDescription = VPN_NAME
             tunnel.isEnabled = true
 
-            // Create a rule so that the VPN always connects. This allows reconnection if
-            // the device reboots or the network extension is stopped for an unexpected reason.
-            let alwaysConnect = NEOnDemandRuleConnect()
-            alwaysConnect.interfaceTypeMatch = .any
-            tunnel.isOnDemandEnabled = true
-            tunnel.onDemandRules = [alwaysConnect]
+            if isActivating {
+              // Create a rule so that the VPN always connects. This allows reconnection if
+              // the device reboots or the network extension is stopped for an unexpected reason,
+              // such as the magic Apple "soft reboot".
+              let alwaysConnect = NEOnDemandRuleConnect()
+              alwaysConnect.interfaceTypeMatch = .any
+              tunnel.isOnDemandEnabled = true
+              tunnel.onDemandRules = [alwaysConnect]
+            }
 
             return tunnel.saveToPreferences { saveError in
                 // At this point, the user has made a selection on the system config permission modal to either allow or not allow
                 // the vpn configuration to be created, so it is safe to run activation retries via Controller::startHandshakeTimer()
                 // without the possibility or re-prompting (flickering) the modal while it is currently being displayed
-                vpnConfigPermissionResponseCallback(saveError == nil)
+                if isActivating {
+                  vpnConfigPermissionResponseCallback(saveError == nil)
+                }
 
                 if let error = saveError {
                     IOSControllerImpl.logger.error(message: "Connect Tunnel Save Error: \(error)")
@@ -268,6 +268,12 @@ public class IOSControllerImpl: NSObject {
                     }
 
                     IOSControllerImpl.logger.info(message: "Loading the tunnel succeeded")
+
+                    if (!isActivating) {
+                        // No more work to do; return
+                        IOSControllerImpl.logger.info(message: "Config saved")
+                        return
+                    }
 
                     do {
                         if (reason == 1 /* ReasonSwitching */ && TunnelManager.session?.status == .connected) {
@@ -299,6 +305,15 @@ public class IOSControllerImpl: NSObject {
         IOSControllerImpl.logger.info(message: "VPN already connected")
         return .errorAlreadyActive
       }
+
+      TunnelManager.withTunnel{ tunnel in
+        let alwaysConnect = NEOnDemandRuleConnect()
+        alwaysConnect.interfaceTypeMatch = .any
+        tunnel.isOnDemandEnabled = true
+        tunnel.onDemandRules = [alwaysConnect]
+        return true
+      }
+
       do {
         IOSControllerImpl.shouldSkipNextNotification = true
         try TunnelManager.session?.startTunnel(options: ["source":"intent"])
@@ -324,25 +339,25 @@ public class IOSControllerImpl: NSObject {
       IOSControllerImpl.staticDisconnect()
     }
 
-    static func staticDisconnect() {
-      IOSControllerImpl.logger.info(message: "Disconnecting")
-      TunnelManager.withTunnel { tunnel in
+  static func staticDisconnect() {
+    IOSControllerImpl.logger.info(message: "Disconnecting")
+    TunnelManager.withTunnel { tunnel in
 
-          // Turn off auto-connect, otherwise it will immediately reconnect.
-          tunnel.isOnDemandEnabled = false;
-          tunnel.onDemandRules = []
+        // Turn off auto-connect, otherwise it will immediately reconnect.
+        tunnel.isOnDemandEnabled = false;
+        tunnel.onDemandRules = []
 
-          tunnel.saveToPreferences { saveError in
-              if let error = saveError {
-                  IOSControllerImpl.logger.error(message: "Disonnect tunnel save error: \(error)")
-              }
-              TunnelManager.session?.stopTunnel()
-          }
+        tunnel.saveToPreferences { saveError in
+            if let error = saveError {
+                IOSControllerImpl.logger.error(message: "Disonnect tunnel save error: \(error)")
+            }
+            TunnelManager.session?.stopTunnel()
+        }
 
-          // Needs to return something, but this will be discarded.
-          return true
-      }
+        // Needs to return something, but this will be discarded.
+        return true
     }
+  }
 
     @objc func deleteOSTunnelConfig() {
       IOSControllerImpl.logger.info(message: "Removing tunnel from iOS System Preferences")

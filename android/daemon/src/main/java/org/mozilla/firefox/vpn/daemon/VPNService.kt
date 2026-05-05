@@ -7,7 +7,6 @@ package org.mozilla.firefox.vpn.daemon
 import android.content.Context
 import android.content.Intent
 import android.os.Build
-import android.os.CountDownTimer
 import android.os.IBinder
 import android.system.OsConstants
 import com.wireguard.config.Config
@@ -16,17 +15,10 @@ import com.wireguard.config.InetNetwork
 import com.wireguard.config.Interface
 import com.wireguard.config.Peer
 import com.wireguard.crypto.Key
-import mozilla.telemetry.glean.BuildInfo
-import mozilla.telemetry.glean.Glean
-import mozilla.telemetry.glean.config.Configuration
 import org.json.JSONObject
 import org.mozilla.firefox.qt.common.CoreBinder
 import org.mozilla.firefox.qt.common.Prefs
-import org.mozilla.firefox.vpn.daemon.GleanMetrics.ConnectionHealth
-import org.mozilla.firefox.vpn.daemon.GleanMetrics.Pings
-import org.mozilla.firefox.vpn.daemon.GleanMetrics.Session
 import org.mozilla.guardian.tunnel.WireGuardGo
-import java.io.File
 import java.util.*
 
 class VPNService : android.net.VpnService() {
@@ -43,68 +35,12 @@ class VPNService : android.net.VpnService() {
 
     private var currentServerConfig = 0
 
-    // `isUsingShortTimerSessionPing` is not reliable until mConfig has been set, so it cannot be set upon
-    // class initialization (VPN-6629). And this cannot be a lazy var, as that caused a crash (PR #8555)
-    // Thus, the interval ticks are for the debug timer mode (but `isUsingShortTimerSessionPing` determines
-    // if a ping is actually sent), and countdown finishes are for typical sending times.
-    private val mMetricsTimer: CountDownTimer = object : CountDownTimer(mBackgroundPingTimerMSec, mShortTimerBackgroundPingMSec) {
-        override fun onTick(millisUntilFinished: Long) {
-            // We want to skip the first onTick, which is called as the timer is started.
-            // (The Start ping is sent then, so there is no need for a Timer ping.)
-            var wasTimerJustStarted = (millisUntilFinished >= (mBackgroundPingTimerMSec - 1000))
-            if (!wasTimerJustStarted && isUsingShortTimerSessionPing && isSuperDooperMetricsActive) {
-                Log.i(tag, "Sending daemon_timer ping (on short timer debug schedule)")
-                Pings.daemonsession.submit(
-                    Pings.daemonsessionReasonCodes.daemonTimer,
-                )
-            }
-        }
-        override fun onFinish() {
-            Log.i(tag, "Sending daemon_timer ping")
-            if (isSuperDooperMetricsActive) {
-                Pings.daemonsession.submit(
-                    Pings.daemonsessionReasonCodes.daemonTimer,
-                )
-            }
-            this.start()
-        }
-    }
-
-    private val isSuperDooperMetricsActive: Boolean
-        get() {
-            return this.mConfig?.optBoolean("isSuperDooperFeatureActive", false) ?: false
-        }
-
-    private val isServerLocatedInUserCountry: Boolean?
-        get() {
-            if (this.mConfig?.isNull("serverLocatedInUserCountry") ?: false) {
-                return null
-            } else {
-                return this.mConfig?.optBoolean("serverLocatedInUserCountry")
-            }
-        }
-
     // Is a VPN connection coming from the app (not daemon) AND
     // is happening because of a server switch?
     private val isAppChangingServers: Boolean
         get() {
             // could be user choosing new server or silent switching
             return (this.mConfig?.optInt("reason") ?: 0) == 1
-        }
-
-    private val isUsingShortTimerSessionPing: Boolean
-        get() {
-            return this.mConfig?.optBoolean("isUsingShortTimerSessionPing", false) ?: false
-        }
-
-    private val gleanDebugTag: String?
-        get() {
-            val gleanDebugTag = this.mConfig?.optString("gleanDebugTag", "") ?: ""
-            if (!(gleanDebugTag.isEmpty())) {
-                return gleanDebugTag
-            } else {
-                return null
-            }
         }
 
     private var currentTunnelHandle = -1
@@ -146,17 +82,6 @@ class VPNService : android.net.VpnService() {
         currentTunnelHandle = WireGuardGo.wgGetLatestHandle()
         Log.i(tag, "Wireguard reported current tunnel: $currentTunnelHandle")
         mAlreadyInitialised = true
-
-        // It's usually a bad practice to initialize Glean with the wrong
-        // value for uploadEnabled... However, since this is a very controlled
-        // situation -- it should only happen when logging in to a brand new
-        // installation of the app -- we should be fine
-        //
-        // If the `glean_enabled` preference is not set, when a new event listener
-        // is bound to this service, it will request that the main app broadcast
-        // the user provided preference for this. So it should not be long until
-        // the correct value is set here. See VPNServiceBinder > onTransact > ACTIONS.registerEventListener.
-        initializeGlean(Prefs.get(this).getBoolean("glean_enabled", false))
     }
 
     override fun onUnbind(intent: Intent?): Boolean {
@@ -328,12 +253,6 @@ class VPNService : android.net.VpnService() {
             // now.
             if (currentTunnelHandle != -1) {
                 Log.i(tag, "Currently have a connection, close old handle")
-                // Record data transfer metrics, as we're switching servers/configs and this data will get reset
-                // Data metrics must be recorded prior to wgTurnOff, or we can't get data from the config
-                if (isSuperDooperMetricsActive) {
-                    recordDataTransferMetrics()
-                }
-
                 WireGuardGo.wgTurnOff(currentTunnelHandle)
             }
             currentTunnelHandle = WireGuardGo.wgTurnOn("mvpn0", tun.detachFd(), wgConfig)
@@ -347,14 +266,11 @@ class VPNService : android.net.VpnService() {
         protect(WireGuardGo.wgGetSocketV6(currentTunnelHandle))
 
         mConfig = json
-        // We don't want to record start metrics in several situations:
-        // - If Super Dooper feature is not active.
+        // We don't want to update connection health in several situations:
         // - If this is an app-caused server switch.
         // - If this is a daemon-caused server switch.
         // This must be calculated after mConfig is set (on line above)
         val isChangingServers = isDaemonChangingServers || isAppChangingServers
-        val shouldSkipStartTelemetry = !isSuperDooperMetricsActive || isChangingServers
-        Log.i(tag, "Is changing server: " + shouldSkipStartTelemetry)
 
         // Store the config in case the service gets
         // asked boot vpn from the OS
@@ -382,46 +298,8 @@ class VPNService : android.net.VpnService() {
                 jServer.getString("ipv4Gateway"),
                 json.getString("dns"),
                 fallbackIpv4,
-                isSuperDooperMetricsActive,
             )
         }
-
-        // For `isGleanDebugTagActive` and `isSuperDooperMetricsActive` to work,
-        // this must be after the mConfig is set to the latest data.
-        val gleanTag = gleanDebugTag
-        if (gleanTag != null) {
-            Log.i(tag, "Setting Glean debug tag for daemon.")
-            Glean.setDebugViewTag(gleanTag)
-        }
-        if (!shouldSkipStartTelemetry) {
-            Log.v(tag, "Recording start telmetry")
-            val installationIdString = json.getString("installationId")
-            installationIdString?.let {
-                try {
-                    val installationId = UUID.fromString(installationIdString)
-                    Session.installationId.set(installationId)
-                } catch (e: Exception) {
-                    Log.e(tag, "Daemon installation ID string was not UUID:")
-                    Log.e(tag, e.toString())
-                }
-            }
-            Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonFlush,
-            )
-
-            Session.daemonSessionStart.set()
-            Session.daemonSessionId.generateAndSet()
-            if (source != null) {
-                Session.daemonSessionSource.set(source)
-            }
-            Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonStart,
-            )
-        } else {
-            Log.v(tag, "Skipping recording of start telemetry")
-        }
-        mMetricsTimer.cancel() // if this is a server switch, time is already running and must be reset
-        mMetricsTimer.start()
     }
 
     fun reconnect(forceFallBack: Boolean = false, source: String? = null) {
@@ -450,10 +328,10 @@ class VPNService : android.net.VpnService() {
         try {
             // When `reconnect` is called with `source = system`, it is a new activation.
             // In all other cases - where source is null - this is called from a failed health
-            // check, and we're doing a silent server switch - which shouldn't record telemetry
-            // for a new session.
-            val shouldSkipMetrics = (source == null)
-            this.turnOn(config, forceFallBack, source, shouldSkipMetrics)
+            // check, and we're doing a silent server switch - which shouldn't change
+            // connection health timer.
+            val isDaemonChangingServers = (source == null)
+            this.turnOn(config, forceFallBack, source, isDaemonChangingServers)
         } catch (e: Exception) {
             Log.e(tag, "VPN service - Reconnect failed")
             // TODO: If we end up here, we might have screwed up the connection.
@@ -474,12 +352,6 @@ class VPNService : android.net.VpnService() {
 
     fun turnOff() {
         Log.v(tag, "Try to disable tunnel")
-        // turnOff is not called when switching locations, doing a silent server switch from app, or doing a silent server switch from daemon...
-        // Thus we always want to record end-of-session metrics here, and send the ping below.
-        if (isSuperDooperMetricsActive) {
-            // Data metrics must be recorded prior to wgTurnOff, or we can't get data from the config
-            recordDataTransferMetrics()
-        }
 
         WireGuardGo.wgTurnOff(currentTunnelHandle)
         currentTunnelHandle = -1
@@ -492,23 +364,6 @@ class VPNService : android.net.VpnService() {
         // Clear the notification message, so the content
         // is not "disconnected" in case we connect from a non-client.
         CannedNotification(mConfig)?.let { mNotificationHandler.hide(it) }
-        if (isSuperDooperMetricsActive) {
-            Log.v(tag, "Sending ending metrics")
-            Session.daemonSessionEnd.set()
-            Pings.daemonsession.submit(
-                Pings.daemonsessionReasonCodes.daemonEnd,
-            )
-
-            // We are rotating the UUID here as a safety measure. It is rotated
-            // again before the next session start, and we expect to see the
-            // UUID created here in only one ping: The daemon ping with a
-            // "flush" reason, which should contain this UUID and no other
-            // metrics.
-            Session.daemonSessionId.generateAndSet()
-        } else {
-            Log.v(tag, "Skipping ending metrics")
-        }
-        mMetricsTimer.cancel()
     }
 
     /** Configures an Android VPN Service Tunnel with a given Wireguard Config */
@@ -627,73 +482,7 @@ class VPNService : android.net.VpnService() {
         return obj.getJSONArray("servers").getJSONObject(currentServerConfig)
     }
 
-    fun setGleanUploadEnabled(uploadEnabled: Boolean) {
-        Log.i(tag, "Setting glean upload enabled state: $uploadEnabled")
-
-        Prefs.get(this).edit().apply {
-            putBoolean("glean_enabled", uploadEnabled)
-            apply()
-        }
-
-        Glean.setUploadEnabled(uploadEnabled)
-    }
-
-    private fun initializeGlean(uploadEnabled: Boolean) {
-        val customDataPath = File(applicationContext.applicationInfo.dataDir, GLEAN_DATA_DIR).path
-        val channel =
-            if (this.packageName.endsWith(".debug")) {
-                "staging"
-            } else {
-                "production"
-            }
-
-        Glean.registerPings(Pings)
-        Glean.initialize(
-            applicationContext = this.applicationContext,
-            uploadEnabled = uploadEnabled,
-            // GleanBuildInfo can only be generated for application,
-            // We are in a library so we have to build it ourselves.
-            buildInfo =
-            BuildInfo(
-                BuildConfig.VERSIONCODE,
-                BuildConfig.SHORTVERSION,
-                Calendar.getInstance(),
-            ),
-            configuration =
-            Configuration(
-                channel = channel,
-                // When initializing Glean from outside the main process,
-                // we need to provide it with a dataPath manually.
-                dataPath = customDataPath,
-            ),
-        )
-
-        Log.i(tag, "Initialized Glean for daemon. Upload enabled state: $uploadEnabled")
-    }
-
-    private fun recordDataTransferMetrics() {
-        Log.v(tag, "Recording data metrics")
-        val isServerInCountry = isServerLocatedInUserCountry // with an open getter, can't directly use isServerLocatedInUserCountry in smart cast
-        if (isServerInCountry != null) {
-            Session.serverInSameCountry.set(isServerInCountry)
-        }
-        val rxBytes = getConfigValue("rx_bytes")?.toLong()
-        val txBytes = getConfigValue("tx_bytes")?.toLong()
-        if (rxBytes != null && txBytes != null) {
-            ConnectionHealth.dataTransferredRx.accumulateSingleSample(rxBytes)
-            ConnectionHealth.dataTransferredTx.accumulateSingleSample(txBytes)
-        } else {
-            Log.e(tag, "Config gave bad value for rxBytes and/or txBytes")
-        }
-    }
-
     companion object {
-        // This value cannot be "glean_data",
-        // because that is the data path for the Glean data on the main application.
-        // See:
-        // https://mozilla.github.io/glean/book/reference/general/initializing.html#configuration
-        internal const val GLEAN_DATA_DIR: String = "glean_daemon_data"
-
         @JvmStatic
         fun startService(c: Context) {
             c.applicationContext.startService(

@@ -13,15 +13,15 @@
  * defined too. They have no meaning for other platforms, so we define them to
  * be empty macros in other situations. */
 #ifndef _MSC_VER
-#ifndef __cdecl
-#define __cdecl
-#endif
-#ifndef __stdcall
-#define __stdcall
-#endif
-#ifndef __fastcall
-#define __fastcall
-#endif
+#  ifndef __cdecl
+#    define __cdecl
+#  endif
+#  ifndef __stdcall
+#    define __stdcall
+#  endif
+#  ifndef __fastcall
+#    define __fastcall
+#  endif
 #endif
 
 /* Since KreMLin emits the inline keyword unconditionally, we follow the

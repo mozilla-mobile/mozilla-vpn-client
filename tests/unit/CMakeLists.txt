@@ -5,10 +5,8 @@
 get_filename_component(MZ_SOURCE_DIR ${CMAKE_SOURCE_DIR}/src ABSOLUTE)
 
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
-include_directories(${CMAKE_BINARY_DIR}/qtglean)
 include_directories(${MZ_SOURCE_DIR})
 include_directories(${MZ_SOURCE_DIR}/addons)
-include_directories(${MZ_SOURCE_DIR}/glean)
 include_directories(${MZ_SOURCE_DIR}/ui/composer)
 include_directories(${CMAKE_SOURCE_DIR}/tests/unit)
 
@@ -35,7 +33,7 @@ target_link_libraries(unit_tests PRIVATE
 
 target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
 
-target_link_libraries(unit_tests PRIVATE qtglean lottie mzutils nebula translations)
+target_link_libraries(unit_tests PRIVATE lottie mzutils nebula translations)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE
@@ -173,8 +171,6 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/frontend/navigationbarmodel.h
     ${MZ_SOURCE_DIR}/frontend/navigatorreloader.cpp
     ${MZ_SOURCE_DIR}/frontend/navigatorreloader.h
-    ${MZ_SOURCE_DIR}/glean/mzglean.h
-    ${MZ_SOURCE_DIR}/glean/mzglean.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.h
     ${MZ_SOURCE_DIR}/inspector/inspectorhandler.cpp
     ${MZ_SOURCE_DIR}/inspector/inspectoritempicker.h
