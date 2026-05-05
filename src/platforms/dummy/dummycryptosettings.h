@@ -10,7 +10,7 @@
 // A mocked implementation that returns a fixed key.
 class DummyCryptoSettings final : public CryptoSettings {
  public:
-  DummyCryptoSettings() : CryptoSettings(){};
+  DummyCryptoSettings() : CryptoSettings() {};
   virtual ~DummyCryptoSettings() = default;
 
   virtual void resetKey() override { m_fakeKeyValue++; };

@@ -11,7 +11,7 @@
 
 class AndroidCryptoSettings final : public CryptoSettings {
  public:
-  AndroidCryptoSettings() : CryptoSettings(){};
+  AndroidCryptoSettings() : CryptoSettings() {};
   virtual ~AndroidCryptoSettings() = default;
 
   void resetKey() override;

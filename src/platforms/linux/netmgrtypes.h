@@ -75,8 +75,8 @@ Q_DECLARE_METATYPE(NetmgrConfig);
 class NetmgrDataList : public QList<QVariantMap>,
                        public NetmgrType<NetmgrDataList> {
  public:
-  NetmgrDataList() : QList<QVariantMap>(){};
-  NetmgrDataList(const QVariantMap& data) : QList<QVariantMap>({data}){};
+  NetmgrDataList() : QList<QVariantMap>() {};
+  NetmgrDataList(const QVariantMap& data) : QList<QVariantMap>({data}) {};
 
   friend QDBusArgument& operator<<(QDBusArgument& args,
                                    const NetmgrDataList& data) {

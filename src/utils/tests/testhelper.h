@@ -39,7 +39,7 @@ class TestHelper {
  private:
   class TestRegistrationHelper : public TestRegistration {
    public:
-    TestRegistrationHelper() : TestRegistration(&T::staticMetaObject){};
+    TestRegistrationHelper() : TestRegistration(&T::staticMetaObject) {};
   };
   static inline TestRegistrationHelper s_registration;
 };

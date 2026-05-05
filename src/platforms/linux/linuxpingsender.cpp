@@ -106,7 +106,7 @@ LinuxPingSender::LinuxPingSender(const QHostAddress& source, QObject* parent)
       return;
     }
 
-    struct sockaddr_in6 addr {};
+    struct sockaddr_in6 addr{};
     addr.sin6_family = AF_INET6;
     if (!source.isNull()) {
       Q_IPV6ADDR qaddr = source.toIPv6Address();
@@ -166,12 +166,12 @@ LinuxPingSender::~LinuxPingSender() {
 
 void LinuxPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
   if (dest.protocol() == QAbstractSocket::IPv6Protocol) {
-    struct sockaddr_in6 addr {};
+    struct sockaddr_in6 addr{};
     addr.sin6_family = AF_INET6;
     Q_IPV6ADDR qaddr = dest.toIPv6Address();
     memcpy(&addr.sin6_addr, &qaddr, sizeof(addr.sin6_addr));
 
-    struct icmp6_hdr packet {};
+    struct icmp6_hdr packet{};
     packet.icmp6_type = ICMP6_ECHO_REQUEST;
     packet.icmp6_id = htons(m_ident);
     packet.icmp6_seq = htons(sequence);
