@@ -4,6 +4,7 @@
 
 import Foundation
 import NetworkExtension
+import WidgetKit
 
 let VPN_NAME = "Mozilla VPN"
 
@@ -130,6 +131,10 @@ public class IOSControllerImpl: NSObject {
         default:
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: unknown status")
         }
+
+      if #available(iOS 18.0, *) {
+        ControlCenter.shared.reloadAllControls()
+      }
 
         // We care about "unknown" state changes.
         if (session.status != .connected && session.status != .disconnected) {

@@ -79,7 +79,7 @@ class TunnelManager {
             let nsManagers = managers ?? []
             TunnelManager.logger.debug(message: "We have received \(nsManagers.count) managers.")
 
-            guard let tunnel = nsManagers.first(where: TunnelManager.isOurManager(_:)) else {
+            guard let tunnel = nsManagers.first(where: {$0.isOurManager} ) else {
                 TunnelManager.logger.debug(message: "Creating the tunnel")
                 self.tunnel = NETunnelProviderManager()
                 completionHandler();
@@ -90,28 +90,5 @@ class TunnelManager {
             self.tunnel = tunnel
             completionHandler()
         }
-    }
-
-    private static func isOurManager(_ manager: NETunnelProviderManager) -> Bool {
-        guard
-            let proto = manager.protocolConfiguration,
-            let tunnelProto = proto as? NETunnelProviderProtocol
-        else {
-            logger.debug(message: "Ignoring manager because the proto is invalid.")
-            return false
-        }
-
-        guard let bundleIdentifier = tunnelProto.providerBundleIdentifier else {
-            logger.debug(message: "Ignoring manager because the bundle identifier is null.")
-            return false
-        }
-
-        if (bundleIdentifier != vpnBundleId) {
-            logger.debug(message: "Ignoring manager because the bundle identifier doesn't match.")
-            return false;
-        }
-
-        logger.debug(message: "Found the manager with the correct bundle identifier: \(bundleIdentifier)")
-        return true
     }
 }

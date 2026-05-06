@@ -1118,6 +1118,15 @@ iosAppIntentsMain:
   statusQueryResponseDisconnected:
     value: Mozilla VPN is currently disconnected
     comment: Response given when the VPN is disconnected
+  toggleTitle:
+    value: Toggle Mozilla VPN
+    comment: Title used by system to offer to toggle VPN status
+  toggleDescription:
+    value: Changes Mozilla VPN status
+    comment: Description used to provide more context in Shortcuts and other places
+  toggleError:
+    value: Error changing VPN status
+    comment: Generic error message used when toggling VPN fails early
 
 iosAppIntentsActivate:
   phrases:

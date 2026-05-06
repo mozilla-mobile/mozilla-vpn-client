@@ -9,6 +9,9 @@ struct MozillaVPNAppShortcuts: AppShortcutsProvider {
 
   static var shortcutTileColor = ShortcutTileColor.purple
 
+  // There are no phrases for ToggleIntent here, which is intentional. We do not use Siri phrases to
+  // activate it; it is only used to control widgets/controls.
+
   static var appShortcuts: [AppShortcut] {
     AppShortcut(
       intent: TurnOnIntent(),
@@ -17,7 +20,7 @@ struct MozillaVPNAppShortcuts: AppShortcutsProvider {
         "Turn on \(.applicationName)",
         "Turn \(.applicationName) on"
       ],
-      shortTitle: "Turn On Mozilla VPN",
+      shortTitle: LocalizedStringResource("vpn.iosAppIntentsMain.turnOnAction", defaultValue: "Turn On Mozilla VPN"),
       systemImageName: "shield.lefthalf.filled"
     )
     AppShortcut(
@@ -27,7 +30,7 @@ struct MozillaVPNAppShortcuts: AppShortcutsProvider {
         "Turn off \(.applicationName)",
         "Turn \(.applicationName) off"
       ],
-      shortTitle: "Turn Off Mozilla VPN",
+      shortTitle: LocalizedStringResource("vpn.iosAppIntentsMain.turnOffAction", defaultValue: "Turn Off Mozilla VPN"),
       systemImageName: "shield.lefthalf.filled.slash"
     )
     AppShortcut(
@@ -44,7 +47,7 @@ struct MozillaVPNAppShortcuts: AppShortcutsProvider {
         "Is \(.applicationName) switched on?",
         "Is \(.applicationName) connected?"
       ],
-      shortTitle: "IIs the VPN currently connected?",
+      shortTitle: LocalizedStringResource("vpn.iosAppIntentsMain.statusQueryTitle", defaultValue: "Is the VPN currently connected?"),
       systemImageName: "questionmark.square.dashed"
     )
   }

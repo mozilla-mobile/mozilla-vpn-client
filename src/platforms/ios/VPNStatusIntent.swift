@@ -20,7 +20,7 @@ struct VPNStatusIntent: AppIntent {
     let responseText: LocalizedStringResource
     let responseImage: String
 
-    let isCurrentlyConnected = TunnelManager.session?.status == .connected
+    let isCurrentlyConnected = TunnelManager.session?.status == .connected || TunnelManager.session?.status == .connecting
 
     if isCurrentlyConnected {
         responseText = LocalizedStringResource("vpn.iosAppIntentsMain.statusQueryResponseConnected", defaultValue: "Mozilla VPN is currently connected")

@@ -19,7 +19,7 @@ set_property(GLOBAL PROPERTY XCODE_EMIT_EFFECTIVE_PLATFORM_NAME ON)
 target_link_options(mozillavpn PRIVATE "-ObjC")
 
 ## Install the Network Extension into the bundle.
-add_dependencies(mozillavpn networkextension)
+add_dependencies(mozillavpn networkextension widgetextension)
 
 # Configure the application bundle Info.plist
 set_target_properties(mozillavpn PROPERTIES
@@ -46,7 +46,6 @@ set_target_properties(mozillavpn PROPERTIES
     # Set device target family to iPhone and iPad
     XCODE_ATTRIBUTE_TARGETED_DEVICE_FAMILY "1,2"
     # Make sure the network extension is added as a plugin to the final bundle
-    XCODE_EMBED_APP_EXTENSIONS networkextension
     XCODE_EMBED_APP_EXTENSIONS_REMOVE_HEADERS_ON_COPY "YES"
     XCODE_EMBED_APP_EXTENSIONS_CODE_SIGN_ON_COPY "YES"
     XCODE_EMBED_FRAMEWORKS_REMOVE_HEADERS_ON_COPY "YES"
@@ -61,6 +60,9 @@ set_target_properties(mozillavpn PROPERTIES
     XCODE_ATTRIBUTE_ENABLE_DEBUG_DYLIB "NO"
 )
 target_include_directories(mozillavpn PRIVATE ${CMAKE_SOURCE_DIR})
+
+set_property(TARGET mozillavpn APPEND PROPERTY XCODE_EMBED_APP_EXTENSIONS networkextension)
+set_property(TARGET mozillavpn APPEND PROPERTY XCODE_EMBED_APP_EXTENSIONS widgetextension)
 
 find_library(FW_UI_KIT UIKit)
 find_library(FW_FOUNDATION Foundation)
@@ -122,6 +124,7 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_SOURCE_DIR}/ios/app/launch.png
     ${CMAKE_SOURCE_DIR}/ios/app/MozillaVPNLaunchScreen.storyboard
     ${CMAKE_SOURCE_DIR}/ios/app/Images.xcassets
+    ${CMAKE_SOURCE_DIR}/ios/NETunnelProviderManager+Extension.swift
 )
 
 set_property(TARGET mozillavpn APPEND PROPERTY RESOURCE
