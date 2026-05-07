@@ -94,8 +94,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/addons/manager/addonindex.h
     ${MZ_SOURCE_DIR}/addons/manager/addonmanager.cpp
     ${MZ_SOURCE_DIR}/addons/manager/addonmanager.h
-    ${MZ_SOURCE_DIR}/app.cpp
-    ${MZ_SOURCE_DIR}/app.h
     ${MZ_SOURCE_DIR}/authenticationinapp/authenticationinapp.cpp
     ${MZ_SOURCE_DIR}/authenticationinapp/authenticationinapp.h
     ${MZ_SOURCE_DIR}/authenticationinapp/authenticationinapplistener.cpp

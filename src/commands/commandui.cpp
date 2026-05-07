@@ -269,7 +269,8 @@ int CommandUI::run(QStringList& tokens) {
     logger.debug() << "Registered I18nStrings";
 
 #if MZ_IOS && QT_VERSION < 0x060300
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn, &App::quit);
+    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn,
+                     &MozillaVPN::quit);
 #else
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn,
                      [] { MozillaVPN::instance()->aboutToQuit(); });
@@ -281,7 +282,7 @@ int CommandUI::run(QStringList& tokens) {
         Qt::DirectConnection);
 
     QObject::connect(vpn->controller(), &Controller::readyToQuit, vpn,
-                     &App::quit, Qt::QueuedConnection);
+                     &MozillaVPN::quit, Qt::QueuedConnection);
 
 #ifdef MZ_ANDROID
     // On Android we need to make sure when we load a QML application that the

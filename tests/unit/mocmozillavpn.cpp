@@ -9,6 +9,7 @@
 #include "models/subscriptiondata.h"
 #include "mozillavpn.h"
 #include "serverlatency.h"
+#include "settingsholder.h"
 
 // The singleton.
 static MozillaVPN* s_instance = nullptr;
@@ -25,9 +26,24 @@ MozillaVPN* MozillaVPN::maybeInstance() {
   return s_instance;
 }
 
-MozillaVPN::MozillaVPN() : App(nullptr) {}
+MozillaVPN::MozillaVPN() {}
 
 MozillaVPN::~MozillaVPN() {}
+
+int MozillaVPN::state() const { return m_state; }
+
+void MozillaVPN::setState(int state) {
+  m_state = state;
+  emit stateChanged();
+  emit userAuthenticationMaybeChanged();
+}
+
+bool MozillaVPN::userAuthenticated() const {
+  return (m_state > MozillaVPN::StateAuthenticating) &&
+         SettingsHolder::instance()->hasToken();
+}
+
+void MozillaVPN::quit() {}
 
 CaptivePortal* MozillaVPN::captivePortal() const { return nullptr; }
 

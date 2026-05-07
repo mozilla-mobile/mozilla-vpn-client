@@ -190,18 +190,14 @@ QJsonObject WebExtensionAdapter::serializeStatus() {
   locationObj["entry_city_name"] = vpn->serverData()->entryCityName();
 
   QJsonObject obj;
-  obj["authenticated"] = App::isUserAuthenticated();
+  obj["authenticated"] = MozillaVPN::isUserAuthenticated();
   obj["location"] = locationObj;
   obj["version"] = QCoreApplication::applicationVersion();
   obj["connectedSince"] =
       QString::number(vpn->controller()->connectionTimestamp());
   {
     int stateValue = vpn->state();
-    if (stateValue > App::StateCustom) {
-      obj["app"] = asString(static_cast<MozillaVPN::CustomState>(stateValue));
-    } else {
-      obj["app"] = asString(static_cast<App::State>(stateValue));
-    }
+    obj["app"] = asString(static_cast<MozillaVPN::State>(stateValue));
   }
   obj["vpn"] = asString(vpn->controller()->state());
   obj["connectionHealth"] = asString(vpn->connectionHealth()->stability());

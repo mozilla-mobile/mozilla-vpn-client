@@ -6,7 +6,6 @@
 
 #include <QJsonObject>
 
-#include "app.h"
 #include "constants.h"
 #include "env.h"
 #include "errorhandler.h"
@@ -49,12 +48,12 @@ void TaskCreateSupportTicket::run() {
   logger.debug() << "Sending the support ticket";
 
   NetworkRequest* request = new NetworkRequest(this, 201);
-  if (App::isUserAuthenticated()) {
+  if (MozillaVPN::isUserAuthenticated()) {
     request->auth();
   }
 
   request->post(
-      Constants::apiUrl(App::isUserAuthenticated()
+      Constants::apiUrl(MozillaVPN::isUserAuthenticated()
                             ? Constants::CreateSupportTicket
                             : Constants::CreateSupportTicketGuest),
       QJsonObject{{"email", m_email},

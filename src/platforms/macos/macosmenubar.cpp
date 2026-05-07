@@ -60,7 +60,7 @@ void MacOSMenuBar::initialize() {
   m_aboutAction = fileMenu->addAction(
       "about.vpn", []() { MozillaVPN::instance()->requestAbout(); });
   m_aboutAction->setMenuRole(QAction::AboutRole);
-  m_aboutAction->setVisible(vpn->state() == App::StateMain);
+  m_aboutAction->setVisible(vpn->state() == MozillaVPN::StateMain);
 
   m_closeAction = fileMenu->addAction("close", []() {
     QmlEngineHolder::instance()->hideWindow();
@@ -74,7 +74,8 @@ void MacOSMenuBar::initialize() {
 };
 
 void MacOSMenuBar::controllerStateChanged() {
-  m_aboutAction->setVisible(App::instance()->state() == App::StateMain);
+  m_aboutAction->setVisible(MozillaVPN::instance()->state() ==
+                            MozillaVPN::StateMain);
 }
 
 void MacOSMenuBar::retranslate() {
