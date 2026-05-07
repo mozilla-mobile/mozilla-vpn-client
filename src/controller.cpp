@@ -504,6 +504,7 @@ void Controller::activateInternal(
   QList<InterfaceConfig> serverConfigs =
       setupConfigs(dnsPort, serverSelectionPolicy);
   if (serverConfigs.isEmpty()) {
+    logger.info() << "Config setup error";
     // Error in setupConfigs, so do not continue
     return;
   }
@@ -906,6 +907,7 @@ void Controller::maybeSendUpdatedConfig(const ServerData& serverData) {
       // Controller::serverDataChanged is called because all settings emit a
       // changed signal while updating the settings during sign out. However
       // when signing out, there is no new server data to send.
+      logger.info() << "Error setting up configs";
       return;
     }
     Q_ASSERT(serverConfigs.size() == 1 || serverConfigs.size() == 2);
