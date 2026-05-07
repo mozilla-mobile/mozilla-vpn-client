@@ -900,7 +900,16 @@ void Controller::maybeSendUpdatedConfig(const ServerData& serverData) {
     m_serverData = serverData;
     QList<InterfaceConfig> serverConfigs =
         setupConfigs(DoNotForceDNSPort, RandomizeServerSelection);
+    if (serverConfigs.isEmpty()) {
+      // Error in setupConfigs, so do not continue
+      // This most commonly happens when signing out -
+      // Controller::serverDataChanged is called because all settings emit a
+      // changed signal while updating the settings during sign out. However
+      // when signing out, there is no new server data to send.
+      return;
+    }
     Q_ASSERT(serverConfigs.size() == 1 || serverConfigs.size() == 2);
+
     InterfaceConfig exitConfig = serverConfigs.takeLast();
     InterfaceConfig entryConfig;
     if (!serverConfigs.isEmpty()) {
