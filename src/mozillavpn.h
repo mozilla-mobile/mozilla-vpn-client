@@ -10,7 +10,6 @@
 #include <QObject>
 #include <QTimer>
 
-#include "app.h"
 #include "authenticationlistener.h"
 #include "frontend/navigationbarbutton.h"
 #include "frontend/navigator.h"
@@ -36,18 +35,66 @@ class User;
 class QEvent;
 class QUrl;
 
-class MozillaVPN final : public App {
+class MozillaVPN final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(MozillaVPN)
 
+  Q_PROPERTY(int state READ state NOTIFY stateChanged)
+  Q_PROPERTY(bool userAuthenticated READ userAuthenticated NOTIFY
+                 userAuthenticationMaybeChanged)
+  Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
+  Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
+
  public:
-  enum CustomState {
-    StateDeviceLimit = StateCustom + 1,
+  enum State : int {
+    // This is the first state when the app starts. During the initialization,
+    // the app can move to a different state
+    StateInitialize = 0,
+
+    // The authentication flow has started.
+    StateAuthenticating,
+
+    // Something went wrong during the purchase initialization.
+    StateBillingNotAvailable,
+
+    // The app is fully activated, and the user is authenticated and subscribed.
+    // All good!
+    StateMain,
+
+    // Something went wrong during the subscription flow. We are unable to
+    // complete the subscription.
+    StateSubscriptionBlocked,
+
+    // The user is authenticated but has yet to be subscribed.
+    StateSubscriptionNeeded,
+
+    // The subscription flow is in progress.
+    StateSubscriptionInProgress,
+
+    // An error occurred during the subscription validation.
+    StateSubscriptionNotValidated,
+
+    // The user was successfully authenticated and moves into the onboarding
+    // flow
+    StateOnboarding,
+
+    StateDeviceLimit,
     StateHeartbeatFailure,
     StateUpdateRequired,
     StatePermissionRequired,
   };
-  Q_ENUM(CustomState);
+  Q_ENUM(State);
+
+  // Important! Each app _must_ implement this static method.
+  static MozillaVPN* instance();
+
+  int state() const;
+  void setState(int state);
+
+  bool userAuthenticated() const;
+  static bool isUserAuthenticated() { return instance()->userAuthenticated(); };
+
+  void quit();
 
   enum CustomScreen {
     ScreenAuthenticating = Navigator::ScreenCustom + 1,
@@ -80,15 +127,8 @@ class MozillaVPN final : public App {
   };
   Q_ENUM(CustomScreen);
 
- private:
-  Q_PROPERTY(bool startMinimized READ startMinimized CONSTANT)
-  Q_PROPERTY(bool updating READ updating NOTIFY updatingChanged)
-
- public:
   MozillaVPN();
   ~MozillaVPN();
-
-  static MozillaVPN* instance();
 
   // This is exactly like the ::instance() method, but it doesn't crash if the
   // MozillaVPN is null. It should be used rarely.
@@ -192,6 +232,26 @@ class MozillaVPN final : public App {
 
   void handleDeepLink(const QUrl& url);
 
+ signals:
+  void userAuthenticationMaybeChanged();
+  void stateChanged();
+
+  void deviceRemoving(const QString& publicKey);
+  void deviceRemoved(const QString& source);
+  void aboutNeeded();
+  void updatingChanged();
+  void accountDeleted();
+
+  void authenticationStarted();
+  void authenticationAborted();
+  void authenticationCompleted();
+
+  void logSubscriptionCompleted();
+
+  void aboutToQuit();
+
+  void ticketCreationAnswer(bool successful);
+
  protected:
 #if MZ_MACOS
   bool eventFilter(QObject* obj, QEvent* event);
@@ -251,24 +311,8 @@ class MozillaVPN final : public App {
 
   static void registerAddonApis();
 
- signals:
-  void deviceRemoving(const QString& publicKey);
-  void deviceRemoved(const QString& source);
-  void aboutNeeded();
-  void updatingChanged();
-  void accountDeleted();
-
-  void authenticationStarted();
-  void authenticationAborted();
-  void authenticationCompleted();
-
-  void logSubscriptionCompleted();
-
-  void aboutToQuit();
-
-  void ticketCreationAnswer(bool successful);
-
  private:
+  int m_state = StateInitialize;
   bool m_initialized = false;
   struct MozillaVPNPrivate* m_private = nullptr;
 

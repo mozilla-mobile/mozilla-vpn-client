@@ -4,11 +4,11 @@
 
 #include "taskproducts.h"
 
-#include "app.h"
 #include "constants.h"
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "mozillavpn.h"
 #include "networkrequest.h"
 #include "productshandler.h"
 

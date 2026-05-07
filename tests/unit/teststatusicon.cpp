@@ -23,7 +23,7 @@ void TestStatusIcon::basic() {
   QmlEngineHolder qml(&engine);
 
   // VPN is on
-  MozillaVPN::instance()->setState(App::StateMain);
+  MozillaVPN::instance()->setState(MozillaVPN::StateMain);
   TestHelper::controllerState = Controller::StateOn;
   si.refreshNeeded();
 

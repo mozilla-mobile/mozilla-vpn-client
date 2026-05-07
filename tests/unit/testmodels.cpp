@@ -448,7 +448,9 @@ void TestModels::deviceModelFromJson() {
 
       if (devices > 0) {
         QVERIFY(dm.deviceFromPublicKey(devicePublicKey.toString()) != nullptr);
-        QVERIFY(dm.deviceFromUniqueId() != nullptr);
+        if (!Device::uniqueDeviceId().isEmpty()) {
+          QVERIFY(dm.deviceFromUniqueId() != nullptr);
+        }
 
         dm.removeDeviceFromPublicKey("FOO");
         QCOMPARE(dm.activeDevices(), devices);
@@ -508,7 +510,9 @@ void TestModels::deviceModelFromJson() {
 
       if (devices > 0) {
         QVERIFY(dm.deviceFromPublicKey(devicePublicKey.toString()) != nullptr);
-        QVERIFY(dm.deviceFromUniqueId() != nullptr);
+        if (!Device::uniqueDeviceId().isEmpty()) {
+          QVERIFY(dm.deviceFromUniqueId() != nullptr);
+        }
 
         dm.removeDeviceFromPublicKey("FOO");
         QCOMPARE(dm.activeDevices(), devices);

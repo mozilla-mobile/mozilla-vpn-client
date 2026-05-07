@@ -116,7 +116,7 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
     logger.error() << "Controller not correctly initialized";
 
 #if TARGET_OS_SIMULATOR
-    if (MozillaVPN::instance()->state() == App::StateOnboarding) {
+    if (MozillaVPN::instance()->state() == MozillaVPN::StateOnboarding) {
       logger.debug() << "Cannot activate VPN on a simulator. Completing onboarding.";
       MozillaVPN::instance()->onboardingCompleted();
     }
@@ -195,7 +195,7 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
         }
       }
       onboardingCompletedCallback:^() {
-        BOOL isOnboarding = MozillaVPN::instance()->state() == App::StateOnboarding;
+        BOOL isOnboarding = MozillaVPN::instance()->state() == MozillaVPN::StateOnboarding;
         if (isOnboarding) {
           logger.debug() << "Onboarding completed";
           MozillaVPN::instance()->onboardingCompleted();

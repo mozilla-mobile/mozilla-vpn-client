@@ -199,6 +199,32 @@ commonStrings:
     value: "[Linux] Ubuntu users may have had an issue when using Firefox Multi-Account Containers with custom VPN locations. This is no longer a problem."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to Linux platform.
 
+237updateMessage:
+  bullet1:
+    value: "[macOS] App exclusions are now available for macOS. Want to let some programs bypass the VPN completely? You now can."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to macOS platform.
+  bullet2:
+    value: "[iOS] Exciting news: Mozilla VPN widgets are now available."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to iOS platform.
+  bullet3:
+    value: "[iOS] ’Hey Siri, activate Mozilla VPN.’ The VPN can now be turned on and off with Siri. And with the Shortcuts app, you can now automate VPN activation and deactivation."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to iOS platform.
+  bullet4:
+    value: "[iOS] Add a switch for Mozilla VPN to Control Center or the lock screen. And on the latest iPhones, it’s even possible to choose Mozilla VPN to be the Action button function."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to iOS platform.
+  bullet5:
+    value: "[macOS] IPv6-only networks are now supported."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to macOS platform.
+  bullet6:
+    value: "[Windows] IPv6-only networks are now supported."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to Windows platform.
+  bullet7:
+    value: "[Linux] Use GNOME+Wayland? Window decorations are back, so Mozilla VPN stands out from the background."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to Linux platform.
+  bullet8:
+    value: "[Linux] Support for IPv6-only networks was introduced in the last release, though switching servers while using multihop on IPv6-only networks sometimes had issues. It no longer should."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to Linux platform.
+
 tryFirefoxExtension:
   title:
     value: Try the Firefox extension

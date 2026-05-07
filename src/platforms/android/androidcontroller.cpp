@@ -101,7 +101,7 @@ AndroidController::AndroidController() {
       activity, &AndroidVPNActivity::eventOnboardingCompleted, this,
       [this]() {
         auto vpn = MozillaVPN::instance();
-        if (vpn->state() == App::StateOnboarding) {
+        if (vpn->state() == MozillaVPN::StateOnboarding) {
           vpn->onboardingCompleted();
           emit disconnected();
         }
@@ -230,7 +230,7 @@ void AndroidController::activate(const InterfaceConfig& config,
   args["messages"] = messages;
 
   args["isOnboarding"] =
-      MozillaVPN::instance()->state() == App::StateOnboarding;
+      MozillaVPN::instance()->state() == MozillaVPN::StateOnboarding;
 
   QJsonDocument doc(args);
   AndroidVPNActivity::sendToService(ServiceAction::ACTION_ACTIVATE,

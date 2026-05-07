@@ -25,9 +25,21 @@ MozillaVPN* MozillaVPN::maybeInstance() {
   return s_instance;
 }
 
-MozillaVPN::MozillaVPN() : App(nullptr) {}
+MozillaVPN::MozillaVPN() {}
 
 MozillaVPN::~MozillaVPN() {}
+
+int MozillaVPN::state() const { return m_state; }
+
+void MozillaVPN::setState(int state) {
+  m_state = state;
+  emit stateChanged();
+  emit userAuthenticationMaybeChanged();
+}
+
+bool MozillaVPN::userAuthenticated() const { return false; }
+
+void MozillaVPN::quit() {}
 
 ConnectionHealth* MozillaVPN::connectionHealth() const { return nullptr; }
 
