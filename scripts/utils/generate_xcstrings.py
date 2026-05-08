@@ -211,7 +211,7 @@ def main():
     main_strings = {
         k: v
         for k, v in all_strings.items()
-        if v["string_id"].startswith("vpn.iosAppIntentsMain")
+        if v["string_id"].startswith("vpn.iosAppIntentsMain") or v["string_id"].startswith("vpn.mobileOnboarding.panelOneTitle")
     }
 
     # Load translations for all locales

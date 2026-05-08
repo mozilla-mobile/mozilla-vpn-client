@@ -47,6 +47,7 @@ target_sources(widgetextension PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/ToggleWidgetBundle.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/ToggleWidgetControl.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/ToggleWidget.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/WidgetColors.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/widgetimages.xcassets
     ${CMAKE_SOURCE_DIR}/ios/NETunnelProviderManager+Extension.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/ioslogger.swift
