@@ -94,6 +94,12 @@ serversView:
     value: "Last updated: %1. To update this list please disconnect from the VPN."
     comment: The time (or in extremely rare circumstances, the date, day of the week, or "yesterday") which the recommended servers list was last updated and instructions to re-enable the refresh button. Argument is the time or date/day
   recommendedRefreshLastUpdatedLabelYesterday: yesterday
+  recommendedRefreshNoUpdateLabel:
+    value: Tap to update
+    comment: Label next to the refresh button shown when the recommended list has never been updated yet. The whole row is clickable and tapping triggers an update.
+  recommendedRefreshNoUpdateDisabledLabel:
+    value: Disconnect from the VPN to update this list.
+    comment: Label next to the refresh button shown when the recommended list has never been updated yet but the user is connected to the VPN, so cannot update yet.
   serverCityWithGoodConnection:
     value: "%1. Good connectivity"
     comment: Button label that reads out a city name whose connection is good. Argument is the city name.
@@ -463,7 +469,7 @@ connectionInfo:
     comment: Label for the upload benchmark shown in the speed test view.
   unitPing:
     value: ms
-    commnent: milliseconds
+    comment: milliseconds
   loadingIndicatorLabel:
     value: Testing speed…
     comment: Shown to the user while waiting for the connection speed test results
