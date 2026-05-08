@@ -8,13 +8,22 @@ import SwiftUI
 import WidgetKit
 
 struct WidgetSwitchToggleStyle: ToggleStyle {
+  @Environment(\.widgetRenderingMode) var widgetRenderingMode
   var capsuleColor: Color
   var circleColor: Color
 
   func makeBody(configuration: Configuration) -> some View {
+      if widgetRenderingMode != .fullColor {
+          switchShape(configuration: configuration).luminanceToAlpha()
+      } else {
+          switchShape(configuration: configuration)
+      }
+  }
+
+  private func switchShape(configuration: Configuration) -> some View {
     ZStack(alignment: configuration.isOn ? .trailing : .leading) {
       Capsule()
-        .fill(capsuleColor)
+        .fill(widgetRenderingMode == .fullColor ? capsuleColor : WidgetColors.color(WidgetColors.grey50))
         .frame(width: 60, height: 36)
       Circle()
         .fill(circleColor)
@@ -71,51 +80,6 @@ struct VPNStatusProvider: TimelineProvider {
   }
 }
 
-/*
- colors
-
-
-
-
- ----light mode
- ---off
-
- logo / logo text = black
- city text = gray
- background = background gray
- frame = purple?
- toggle background = gray
- toggle center = white
-
- ---on
-
- logo / logo text = white
- city text = almost white
- background = purple
- frame = purple?
- toggle background = green
- toggle center = white
-
-
-
- ----dark mode
- logo / logo text = white
- city text = almost white
- background = light-ish gray
- frame = purple? maybe black?
- toggle background = real dark
- toggle center = dark grey
- --- off
-
- ---on
- logo / logo text = white
- city text = almost white
- background = purple
- frame = purple?
- toggle background = shitty blue
- toggle center = dark grey
-
- */
 struct WidgetColors {
   static func color(_ hexCode: String) -> Color {
     let hex = hexCode.trimmingCharacters(in: CharacterSet.alphanumerics.inverted)
@@ -136,11 +100,15 @@ struct WidgetColors {
 
   static let grey3 = "FBFBFE"
   static let grey5 = "F9F9FA"
+  static let grey10 = "E7E7E7"
   static let grey20 = "CECECF"
   static let grey30 = "9E9E9E"
   static let grey40 = "6D6D6E"
   static let grey45 = "42414D"
+  static let grey50 = "3D3D3D"
   static let green50 = "3FE1B0"
+  static let green70 = "1CC4A0"
+  static let green90 = "00736C"
   static let blue20 = "00DDFF"
   static let black = "000000"
   static let white = "FFFFFF"
@@ -151,7 +119,7 @@ struct WidgetColors {
     if isConnected {
       return colorScheme == .light ? WidgetColors.color(purple90) : WidgetColors.color(purple90)
     } else {
-      return colorScheme == .light ? WidgetColors.color(grey5) : WidgetColors.color(grey45)
+      return colorScheme == .light ? WidgetColors.color(grey10) : WidgetColors.color(grey45)
     }
   }
 
@@ -167,21 +135,13 @@ struct WidgetColors {
     if isConnected {
       return colorScheme == .light ? WidgetColors.color(grey20) : WidgetColors.color(grey3)
     } else {
-      return colorScheme == .light ? WidgetColors.color(grey40) : WidgetColors.color(grey3)
-    }
-  }
-
-  static func frameColor(_ colorScheme: ColorScheme, isConnected: Bool) -> Color {
-    if isConnected {
-      return colorScheme == .light ? .red : .blue
-    } else {
-      return colorScheme == .light ? .red : .blue
+      return colorScheme == .light ? WidgetColors.color(grey50) : WidgetColors.color(grey3)
     }
   }
 
   static func toggleBackground(_ colorScheme: ColorScheme, isConnected: Bool) -> Color {
     if isConnected {
-      return colorScheme == .light ? WidgetColors.color(green50) : WidgetColors.color(blue20)
+      return colorScheme == .light ? WidgetColors.color(green50) : WidgetColors.color(green70)
     } else {
       return colorScheme == .light ? WidgetColors.color(grey30) : WidgetColors.color(brightSlate)
     }
@@ -189,180 +149,122 @@ struct WidgetColors {
 
   static func toggleCircle(_ colorScheme: ColorScheme, isConnected: Bool) -> Color {
     if isConnected {
-      return colorScheme == .light ? WidgetColors.color(white) : WidgetColors.color(grey30)
+      return colorScheme == .light ? WidgetColors.color(white) : WidgetColors.color(grey20)
     } else {
-      return colorScheme == .light ? WidgetColors.color(white) : WidgetColors.color(grey30)
+      return colorScheme == .light ? WidgetColors.color(white) : WidgetColors.color(grey20)
     }
   }
 }
 
 struct ToggleWidgetView: View {
+  @Environment(\.widgetFamily) var family
+  let entry: VPNStatusEntry
+
+  var body: some View {
+    switch family {
+    case .systemSmall:
+      SmallToggleWidget(entry: entry)
+    case .systemMedium:
+      MediumToggleWidget(entry: entry)
+    default:
+      // This should never be seen
+      Text("Error: Unsupported widget size")
+    }
+
+  }
+}
+
+struct SmallToggleWidget: View {
   @Environment(\.colorScheme) var colorScheme
   let entry: VPNStatusEntry
 
   var body: some View {
-    VStack(alignment: .leading, spacing: 0) {
-      Spacer(minLength: 10)
-      HStack(spacing: 5) {
-        Image("logo")
-          .resizable()
-          .frame(width: 35, height: 35)
-        Text("Mozilla VPN")
-          .font(Font.custom("MetropolisSemiBold", size: 18))
-          .multilineTextAlignment(.center)
-      }.foregroundStyle(WidgetColors.logoColor(colorScheme, isConnected: entry.isConnected))
-        .frame(maxWidth: .infinity, alignment: .center)
+  VStack(alignment: .leading, spacing: 0) {
+    Image("logo")
+      .resizable()
+      .frame(width: 30, height: 30)
+      .frame(maxWidth: .infinity, alignment: .center)
+      .foregroundStyle(WidgetColors.logoColor(colorScheme, isConnected: entry.isConnected))
+    Spacer(minLength: 10)
+    CityTextToggleComponentView(entry: entry)
+  }
+  .containerBackground(for: .widget) {
+    WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
+  }
+}
+}
 
-      Spacer(minLength: 20)
+struct MediumToggleWidget: View {
+  @Environment(\.colorScheme) var colorScheme
+  let entry: VPNStatusEntry
 
-      Toggle("VPN", isOn: entry.isConnected, intent: ToggleIntent(value: !entry.isConnected))
-        .toggleStyle(WidgetSwitchToggleStyle(capsuleColor: WidgetColors.toggleBackground(colorScheme, isConnected: entry.isConnected), circleColor: WidgetColors.toggleCircle(colorScheme, isConnected: entry.isConnected)))
-        .labelsHidden()
-        .frame(maxWidth: .infinity, alignment: .center)
-      Spacer(minLength: 10)
-    }
+  var body: some View {
+    ZStack {
+      Image("logo")
+        .resizable()
+        .frame(width: 75, height: 75)
+        .padding(.leading, 30)
+        .containerRelativeFrame(.horizontal, alignment: .leading)
+        .containerRelativeFrame(.vertical, alignment: .center)
+        .foregroundStyle(WidgetColors.logoColor(colorScheme, isConnected: entry.isConnected))
+      VStack {
+        Spacer()
+        CityTextToggleComponentView(entry: entry, largeText: true)
+        Spacer()
+      }
+      .padding(20)
+      .padding(.leading, 95)
+      }
     .containerBackground(for: .widget) {
-      ContainerRelativeShape()
-        .inset(by: 10)
-        .fill(WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected))
-        .background(WidgetColors.color(WidgetColors.purple90))
+        WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
     }
   }
 }
 
-struct ToggleWidgetViewAlt2: View {
+struct CityTextToggleComponentView: View {
   @Environment(\.colorScheme) var colorScheme
   let entry: VPNStatusEntry
-  private static let vpnPurple = Color(red: 0.42, green: 0.20, blue: 0.89)
+  let largeText: Bool
 
-  var body: some View {
-    VStack(alignment: .leading, spacing: 0) {
-      Spacer(minLength: 5)
-      HStack(spacing: 5) {
-        Spacer(minLength: 0)
-        Image("logo")
-          .resizable()
-          .frame(width: 25, height: 25)
-        Spacer(minLength: 0)
-      }.foregroundStyle(WidgetColors.logoColor(colorScheme, isConnected: entry.isConnected))
-
-      if let exitCity = entry.exitCity, !exitCity.isEmpty {
-        Spacer(minLength: 10)
-
-        if let entryCity = entry.entryCity, !entryCity.isEmpty {
-
-          VStack(alignment: .leading, spacing: 3) {
-
-            HStack {
-              Text(entryCity)
-                .layoutPriority(1)
-                .lineLimit(1)
-              Image(systemName: "arrow.right")
-            }.frame(maxWidth: .infinity, alignment: .center)
-            Text(exitCity)
-              .frame(maxWidth: .infinity, alignment: .center)
-              .layoutPriority(0)
-              .lineLimit(1)
-          }.font(Font.custom("Metropolis", size: 13))
-            .foregroundStyle(WidgetColors.cityTextColor(colorScheme, isConnected: entry.isConnected))
-            .multilineTextAlignment(.center)
-            .lineLimit(1)
-
-        } else {
-          HStack {
-            Spacer(minLength: 0)
-            Text(exitCity)
-            Spacer(minLength: 0)
-          }.font(Font.custom("Metropolis", size: 16))
-            .foregroundStyle(WidgetColors.cityTextColor(colorScheme, isConnected: entry.isConnected))
-            .multilineTextAlignment(.center)
-        }
-      }
-
-      Spacer(minLength: 10)
-
-      HStack {
-        Spacer(minLength: 0)
-        Toggle("VPN", isOn: entry.isConnected, intent: ToggleIntent(value: !entry.isConnected))
-          .toggleStyle(WidgetSwitchToggleStyle(capsuleColor: WidgetColors.toggleBackground(colorScheme, isConnected: entry.isConnected), circleColor: WidgetColors.toggleCircle(colorScheme, isConnected: entry.isConnected)))
-          .labelsHidden()
-          .frame(maxWidth: .infinity, alignment: .center)
-        Spacer(minLength: 0)
-      }
-      Spacer(minLength: 5)
-    }
-    .containerBackground(for: .widget) {
-      ContainerRelativeShape()
-        .inset(by: 5)
-        .fill(WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected))
-        .background(WidgetColors.color(WidgetColors.purple90))
-    }
+  init(entry: VPNStatusEntry, largeText: Bool = false) {
+    self.entry = entry
+    self.largeText = largeText
   }
-}
 
-struct ToggleWidgetViewAlt: View {
-  @Environment(\.colorScheme) var colorScheme
-  let entry: VPNStatusEntry
-  private static let vpnPurple = Color(red: 0.42, green: 0.20, blue: 0.89)
-
+  @ViewBuilder
   var body: some View {
-    VStack(alignment: .center, spacing: 0) {
-      HStack(spacing: 5) {
-        Image("logo")
-          .resizable()
-          .frame(width: 30, height: 30)
-        Text("Mozilla VPN")
-          .font(Font.custom("MetropolisSemiBold", size: 14))
-          .multilineTextAlignment(.center)
-          .lineSpacing(3)
-      }.foregroundStyle(WidgetColors.logoColor(colorScheme, isConnected: entry.isConnected))
-        .frame(maxWidth: .infinity, alignment: .center)
 
+    if let exitCity = entry.exitCity, !exitCity.isEmpty {
 
-      if let exitCity = entry.exitCity, !exitCity.isEmpty {
-        Spacer(minLength: 10)
-        VStack(alignment: .leading, spacing: 3) {
-
-          if let entryCity = entry.entryCity, !entryCity.isEmpty {
-
-            HStack {
-              Spacer(minLength: 0)
-              Text(entryCity)
-              Image(systemName: "arrow.right")
-              Spacer(minLength: 0)
-            }
-          }
+      if let entryCity = entry.entryCity, !entryCity.isEmpty {
+        VStack(alignment: .leading, spacing: 5) {
           HStack {
-            Spacer(minLength: 0)
-            Text(exitCity)
-            Spacer(minLength: 0)
-          }
-        }.font(Font.custom("Metropolis", size: 14))
+            Text(entryCity)
+            Image(systemName: "arrow.right")
+          }.frame(maxWidth: .infinity, alignment: .center)
+          Text(exitCity)
+            .frame(maxWidth: .infinity, alignment: .center)
+        }.font(Font.custom("Metropolis", size: largeText ? 20 : 14))
           .foregroundStyle(WidgetColors.cityTextColor(colorScheme, isConnected: entry.isConnected))
           .multilineTextAlignment(.center)
           .lineLimit(1)
+      } else {
+        Text(exitCity)
+          .frame(maxWidth: .infinity, alignment: .center)
+          .font(Font.custom("Metropolis", size: largeText ? 25 : 16))
+          .foregroundStyle(WidgetColors.cityTextColor(colorScheme, isConnected: entry.isConnected))
+          .multilineTextAlignment(.center)
       }
-
 
       Spacer(minLength: 10)
+    }
 
-      HStack {
-        Spacer(minLength: 0)
-        Toggle("VPN", isOn: entry.isConnected, intent: ToggleIntent(value: !entry.isConnected))
-          .toggleStyle(WidgetSwitchToggleStyle(capsuleColor: WidgetColors.toggleBackground(colorScheme, isConnected: entry.isConnected), circleColor: WidgetColors.toggleCircle(colorScheme, isConnected: entry.isConnected)))
-          .labelsHidden()
-          .frame(maxWidth: .infinity, alignment: .center)
-        Spacer(minLength: 0)
-      }
-    }
-    .frame(maxHeight: .infinity, alignment: .center)
-    .containerBackground(for: .widget) {
-      ContainerRelativeShape()
-        .inset(by: 5)
-        .fill(WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected))
-        .background(WidgetColors.color(WidgetColors.purple90))
-    }
+    Toggle("VPN", isOn: entry.isConnected, intent: ToggleIntent(value: !entry.isConnected))
+      .toggleStyle(WidgetSwitchToggleStyle(capsuleColor: WidgetColors.toggleBackground(colorScheme, isConnected: entry.isConnected), circleColor: WidgetColors.toggleCircle(colorScheme, isConnected: entry.isConnected)))
+      .labelsHidden()
+      .frame(maxWidth: .infinity, alignment: .center)
   }
+
 }
 
 struct ToggleWidget: Widget {
@@ -370,36 +272,10 @@ struct ToggleWidget: Widget {
 
   var body: some WidgetConfiguration {
     StaticConfiguration(kind: Self.kind, provider: VPNStatusProvider()) { entry in
-      ToggleWidgetView(entry: entry) // oh man update this
+      ToggleWidgetView(entry: entry)
     }
     .configurationDisplayName("Mozilla VPN")
     .description("Shows your VPN connection status.") // LcalizedStringResource("vpn.statusWidget.description", defaultValue: "Shows your VPN connection status."))
-    .supportedFamilies([.systemSmall])
-  }
-}
-
-struct ToggleWidgetAlt: Widget {
-  static let kind = "org.mozilla.ios.FirefoxVPN.ToggleWidgetAlt"
-
-  var body: some WidgetConfiguration {
-    StaticConfiguration(kind: Self.kind, provider: VPNStatusProvider()) { entry in
-      ToggleWidgetViewAlt(entry: entry) // oh man update this
-    }
-    .configurationDisplayName("Mozilla VPN")
-    .description("Shows your VPN connection status.") // LcalizedStringResource("vpn.statusWidget.description", defaultValue: "Shows your VPN connection status."))
-    .supportedFamilies([.systemSmall])
-  }
-}
-
-struct ToggleWidgetAlt2: Widget {
-  static let kind = "org.mozilla.ios.FirefoxVPN.ToggleWidgetAlt2"
-
-  var body: some WidgetConfiguration {
-    StaticConfiguration(kind: Self.kind, provider: VPNStatusProvider()) { entry in
-      ToggleWidgetViewAlt2(entry: entry) // oh man update this
-    }
-    .configurationDisplayName("Mozilla VPN")
-    .description("Shows your VPN connection status.") // LcalizedStringResource("vpn.statusWidget.description", defaultValue: "Shows your VPN connection status."))
-    .supportedFamilies([.systemSmall])
+    .supportedFamilies([.systemSmall, .systemMedium])
   }
 }

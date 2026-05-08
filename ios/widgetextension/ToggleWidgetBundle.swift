@@ -9,8 +9,6 @@ import SwiftUI
 struct ToggleWidgetBundle: WidgetBundle {
     var body: some Widget {
         ToggleWidget()
-        ToggleWidgetAlt()
-        ToggleWidgetAlt2()
         if #available(iOS 18.0, *) {
             ToggleWidgetControl()
         }
