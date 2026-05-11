@@ -56,6 +56,12 @@ if(IOS)
         ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
         PROPERTIES GENERATED TRUE
     )
+
+    set_property(TARGET mozillavpn APPEND PROPERTY RESOURCE
+        ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
+        ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
+    )
+
     add_dependencies(mozillavpn generate_xcstrings)
 
 endif()
