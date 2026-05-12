@@ -333,39 +333,6 @@ bool DBusService::isCallerAuthorized(const QString& actionId) {
     return true;
   }
 
-  // In all other cases, the use of this D-Bus API requires the CAP_NET_ADMIN
-  // permission, which we can check by examining the PID of the sender. Note
-  // that a zero UID (root) is used as a guard value to fall back to this case.
-  logger.debug() << "Checking CAP_NET_ADMIN permissions";
-
-  const QDBusConnectionInterface* iface =
-      QDBusConnection::systemBus().interface();
-
-  // Get the PID of the D-Bus message sender.
-  const QDBusReply<uint> reply = iface->servicePid(message().service());
-  const uint senderpid = reply.value();
-
-  if (!reply.isValid() || (senderpid == 0)) {
-    // Could not lookup the sender's PID. Rejected!
-    logger.warning() << "Failed to resolve sender PID";
-    return false;
-  }
-
-  // Get the capabilties of the sender process.
-  cap_t caps = cap_get_pid(senderpid);
-  if (caps == nullptr) {
-    logger.warning() << "Failed to retrieve process capabilities";
-    return false;
-  }
-
-  auto guard = qScopeGuard([&] { cap_free(caps); });
-
-  // Check if the calling process has CAP_NET_ADMIN.
-  cap_flag_value_t flag;
-  if (cap_get_flag(caps, CAP_NET_ADMIN, CAP_EFFECTIVE, &flag) != 0) {
-    logger.warning() << "Failed to retrieve process cap_net_admin flags";
-    return false;
-  }
-
-  return (flag == CAP_SET);
+  logger.warning() << "Polkit authorization denied";
+  return false;
 }
