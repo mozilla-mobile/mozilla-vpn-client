@@ -4,8 +4,6 @@
 ---
 task-defaults:
     worker:
-        env:
-            QT_VERSION: "6.10.3"
         max-run-time: 14400
     run: 
         use-caches: []
@@ -75,6 +73,8 @@ qt-ios:
     description: "QT ios bundle Task"
     run:
         script: bundle_qt_ios.sh
+        arguments:
+            - 6.10.3
         resources:
             - taskcluster/scripts/toolchain/bundle_qt_ios.sh
         toolchain-alias: qt-ios
@@ -84,9 +84,6 @@ qt-ios:
     worker-type: b-linux
     worker:
         docker-image: {in-tree: base}
-        env:
-            QT_VERSION: "6.2.4"
-            QT_MAJOR: "6.2"
 
 qt-linux:
     description: "Linux QT compile Task"
