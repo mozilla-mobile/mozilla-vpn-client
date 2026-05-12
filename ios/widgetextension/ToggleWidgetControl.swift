@@ -20,10 +20,11 @@ struct ToggleWidgetControl: ControlWidget {
       ControlWidgetToggle(
         LocalizedStringResource("vpn.iosAppIntentsMain.toggleTitle", defaultValue: "Toggle Mozilla VPN"),
         isOn: value,
-        action: ToggleIntent()
-      ) { isOn in
-        Label(isOn ? "On" : "Off", systemImage: isOn ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
-      }
+        action: ToggleIntent(),
+        valueLabel: some View { isOn in
+          Label(isOn ? "On" : "Off", systemImage: isOn ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
+        }
+      )
     }
     .displayName("Mozilla VPN") // Not localizing - this is localized in another part of the app (that we can't easily get to Apple-land), and seems like all locales translate it as "Mozilla VPN"
     .description(LocalizedStringResource("vpn.iosAppIntentsMain.toggleDescription", defaultValue: "Changes Mozilla VPN status"))
