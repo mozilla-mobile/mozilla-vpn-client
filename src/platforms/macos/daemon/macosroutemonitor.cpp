@@ -368,6 +368,19 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const IPAddress& prefix,
   char buf[rtm_max_size] = {0};
   struct rt_msghdr* rtm = reinterpret_cast<struct rt_msghdr*>(buf);
 
+  // Without RTF_HOST, host-length prefixes are silently shadowed
+  // by RTF_IFSCOPE|RTF_REJECT routes. isHostRoute identifies a /32 or
+  // /128 route so we can set RTF_HOST and omit RTA_NETMASK later.
+  const bool isHostRoute =
+      (prefix.address().protocol() == QAbstractSocket::IPv6Protocol &&
+       prefix.prefixLength() == 128) ||
+      (prefix.address().protocol() == QAbstractSocket::IPv4Protocol &&
+       prefix.prefixLength() == 32);
+
+  if (isHostRoute) {
+    flags |= RTF_HOST;
+  }
+
   rtm->rtm_msglen = sizeof(struct rt_msghdr);
   rtm->rtm_version = RTM_VERSION;
   rtm->rtm_type = action;
@@ -408,28 +421,37 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const IPAddress& prefix,
     rtmAppendAddr(rtm, rtm_max_size, RTA_GATEWAY, gateway);
   }
 
-  // Append RTA_NETMASK
   unsigned int plen = prefix.prefixLength();
-  if (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) {
-    struct sockaddr_in6 sin6;
-    memset(&sin6, 0, sizeof(sin6));
-    sin6.sin6_family = AF_INET6;
-    sin6.sin6_len = sizeof(sin6);
-    memset(&sin6.sin6_addr.s6_addr, 0xff, plen / 8);
-    if (plen % 8) {
-      sin6.sin6_addr.s6_addr[plen / 8] = 0xFF ^ (0xFF >> (plen % 8));
+
+  // RTF_HOST implies an all-ones netmask; do not append RTA_NETMASK with it.
+  if (!isHostRoute) {
+    if (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) {
+      struct sockaddr_in6 sin6;
+      memset(&sin6, 0, sizeof(sin6));
+
+      sin6.sin6_family = AF_INET6;
+      sin6.sin6_len = sizeof(sin6);
+      memset(&sin6.sin6_addr.s6_addr, 0xff, plen / 8);
+
+      if (plen % 8) {
+        sin6.sin6_addr.s6_addr[plen / 8] = 0xFF ^ (0xFF >> (plen % 8));
+      }
+
+      rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &sin6);
+    } else if (prefix.address().protocol() == QAbstractSocket::IPv4Protocol) {
+      struct sockaddr_in sin;
+      memset(&sin, 0, sizeof(sin));
+
+      sin.sin_family = AF_INET;
+      sin.sin_len = sizeof(struct sockaddr_in);
+      sin.sin_addr.s_addr = 0xffffffff;
+
+      if (plen < 32) {
+        sin.sin_addr.s_addr ^= htonl(0xffffffff >> plen);
+      }
+
+      rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &sin);
     }
-    rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &sin6);
-  } else if (prefix.address().protocol() == QAbstractSocket::IPv4Protocol) {
-    struct sockaddr_in sin;
-    memset(&sin, 0, sizeof(sin));
-    sin.sin_family = AF_INET;
-    sin.sin_len = sizeof(struct sockaddr_in);
-    sin.sin_addr.s_addr = 0xffffffff;
-    if (plen < 32) {
-      sin.sin_addr.s_addr ^= htonl(0xffffffff >> plen);
-    }
-    rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &sin);
   }
 
   // Send the routing message to the kernel.
@@ -497,7 +519,15 @@ bool MacosRouteMonitor::insertRoute(const IPAddress& prefix, int flags) {
   datalink.sdl_slen = 0;
   memcpy(&datalink.sdl_data, qPrintable(m_ifname), datalink.sdl_nlen);
 
-  return rtmSendRoute(RTM_ADD, prefix, m_ifindex, &datalink, flags);
+  if (rtmSendRoute(RTM_ADD, prefix, m_ifindex, &datalink, flags)) {
+    logger.debug() << "Added route" << logger.sensitive(prefix.toString())
+                   << "via" << m_ifname;
+    return true;
+  }
+
+  logger.warning() << "Failed to add route"
+                   << logger.sensitive(prefix.toString()) << "via" << m_ifname;
+  return false;
 }
 
 bool MacosRouteMonitor::deleteRoute(const IPAddress& prefix, int flags) {
