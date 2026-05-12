@@ -14,6 +14,8 @@ constexpr const int WG_PACKET_ALIGN = 16;
 constexpr const int WG_MAX_HANDSHAKE_SIZE = 148;
 constexpr const int WG_MAX_HANDSHAKE_TIMEOUT = 15;
 
+extern "C" struct wireguard_tunnel;
+
 @interface WireguardPeer : NSObject
 
 - (id) initWithOptions:(InterfaceConfig*) options
@@ -29,10 +31,10 @@ constexpr const int WG_MAX_HANDSHAKE_TIMEOUT = 15;
 
 - (void) renegotiate:(void (^)(NSError *error)) completionHandler;
 
-- (void) sendPacket:(int)protocol
-          withBytes:(const void*)data
-             length:(size_t)len;
+- (void) writePacket:(int)protocol
+            withData:(NSData*)data;
 
 @property (strong, readonly, getter=getStatus) WireguardStatus* status;
 @property (strong) nw_connection_t connection;
+@property struct wireguard_tunnel* wireguard;
 @end

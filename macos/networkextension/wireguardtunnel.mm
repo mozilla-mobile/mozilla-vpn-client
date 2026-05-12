@@ -39,8 +39,8 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
 
 @implementation WireguardTunnel {
   int                  m_tunfd;
-  dispatch_queue_t     m_dispatch;
-  dispatch_group_t     m_workqueue;
+  dispatch_semaphore_t m_semaphore; 
+  NSThread *           m_worker;
 
   // The routing socket
   int                  m_rtseq;
@@ -51,7 +51,7 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
   nw_endpoint_t        m_ipv6gateway;
 }
 
-constexpr const int64_t WG_WORKQUEUE_TIMEOUT = 30;
+constexpr const int64_t WG_WORKQUEUE_TIMEOUT = 5LL * 1000000000LL;
 
 static void wgLog(const char* msg) {
   NSLog(@"wg: %s", msg);
@@ -64,7 +64,6 @@ static void wgLog(const char* msg) {
   m_tunfd = -1;
   m_rtseq = 0;
   m_rtsock = -1;
-  m_dispatch = dispatch_get_global_queue(QOS_CLASS_USER_INTERACTIVE, 0);
 
   m_tunfd = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
   if (m_tunfd < 0) {
@@ -113,8 +112,11 @@ static void wgLog(const char* msg) {
   }
 
   // Start outbound encryption workers.
-  m_workqueue = dispatch_group_create();
-  [self startOutboundWorker];
+  m_semaphore = dispatch_semaphore_create(0);
+  m_worker = [[NSThread alloc] initWithTarget:self
+                                     selector:@selector(tunnelWorker:)
+                                       object:nil];
+  [m_worker start];
 
   return self;
 }
@@ -154,6 +156,7 @@ static void wgLog(const char* msg) {
   // Configure the peer
   self.peer = [[WireguardPeer alloc] initWithOptions:options andTunnel:m_tunfd];
   [self.peer startWithOptions:options completionHandler:^(NSError* error){
+    NSLog(@"handshake completed");
     if (error) {
       completionHandler(error);
       return;
@@ -265,67 +268,68 @@ static void wgLog(const char* msg) {
   return err;
 }
 
-- (void) startOutboundWorker {
-  dispatch_group_async(m_workqueue, m_dispatch, ^(void){
-    size_t mtu = self.mtu;
-    uint8_t plaintext[mtu + WG_PACKET_ALIGN];
-    uint32_t header;
+- (void) tunnelWorker:(id)arg {
+  size_t mtu = self.mtu;
+  uint8_t plaintext[mtu + WG_PACKET_ALIGN];
+  uint32_t header;
+
+  NSThread* thread = [NSThread currentThread];
+  while (!thread.cancelled) {
+    NSMutableData* buffer = [NSMutableData dataWithLength:mtu + WG_PACKET_ALIGN];
 
     struct iovec iov[2];
     iov[0].iov_base = &header;
     iov[0].iov_len = sizeof(header);
-    iov[1].iov_base = plaintext;
+    iov[1].iov_base = buffer.mutableBytes;
     iov[1].iov_len = mtu;
 
-    while (true) {
-      int rx = readv(m_tunfd, iov, 2);
-      if (rx == 0) {
-        // Socket has closed.
-        NSLog(@"utun closed");
-        return;
-      }
-      if (rx < 0) {
-        // Socket error occurred.
-        NSLog(@"utun error: %s", strerror(errno));
-        if (errno == EINTR) continue;
-        return;
-      }
-      int pktlen = rx - sizeof(header);
-      if ((pktlen < 0) || (pktlen > mtu)) {
-        continue;
-      }
-
-      // I think there is a small bug in boringtun to do with message padding.
-      // The wireguard protocol states that the encapsulated packet must first
-      // be padded out to a multiple of 16 bytes in length, but boringtun does
-      // no such padding during encryption. So let's do it manually ourself.
-      int tail = pktlen % WG_PACKET_ALIGN;
-      if (tail) {
-        memset(plaintext + pktlen, 0, WG_PACKET_ALIGN - tail);
-        pktlen += WG_PACKET_ALIGN - tail;
-      }
-
-      // If there is no peer to handle this packet, then drop it.
-      if (!self.peer) {
-        continue;
-      }
-
-      [self.peer sendPacket:htonl(header)
-                  withBytes:plaintext
-                     length:pktlen];
+    int rx = readv(m_tunfd, iov, 2);
+    if (rx == 0) {
+      // Socket has closed.
+      NSLog(@"utun closed");
+      return;
     }
-  });
+    if (rx < 0) {
+      // Socket error occurred.
+      NSLog(@"utun error: %s", strerror(errno));
+      if (errno == EINTR) continue;
+      return;
+    }
+    if ((rx < sizeof(header)) || (rx > (mtu - sizeof(header)))) {
+      continue;
+    }
+    buffer.length = rx - sizeof(header);
+
+    // I think there is a small bug in boringtun to do with message padding.
+    // The wireguard protocol states that the encapsulated packet must first
+    // be padded out to a multiple of 16 bytes in length, but boringtun does
+    // no such padding during encryption. So let's do it manually ourself.
+    int tail = buffer.length % WG_PACKET_ALIGN;
+    if (tail) {
+      buffer.length += WG_PACKET_ALIGN - tail;
+    }
+
+    // If there is no peer to handle this packet, then drop it.
+    if (!self.peer) {
+      continue;
+    }
+
+    [self.peer writePacket:htonl(header)
+                  withData:buffer];
+  }
 }
 
 - (void)shutdownTunnel {
   self.virtualInterface = nil;
 
-  // Shutdown the tunnel workers.
-  if (m_workqueue) {
+  // Shutdown the tunnel worker.
+  if (m_worker) {
     shutdown(m_tunfd, SHUT_RDWR);
-    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, WG_WORKQUEUE_TIMEOUT * 1000000000);
-    dispatch_group_wait(m_workqueue, delay);
-    m_workqueue = nil;
+    [m_worker cancel];
+    m_worker = nil;
+
+    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, WG_WORKQUEUE_TIMEOUT);
+    dispatch_semaphore_wait(m_semaphore, delay);
   }
 
   if (m_tunfd >= 0) {

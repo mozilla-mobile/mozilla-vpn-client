@@ -19,15 +19,13 @@ constexpr const int64_t PEER_WORKQUEUE_TIMEOUT = 30;
 constexpr const size_t PEER_DATAGRAM_BUFSIZE = 4096;
 
 @implementation WireguardPeer {
-  struct wireguard_tunnel*  m_wireguard;
   CFRunLoopTimerRef         m_timer;
   struct timespec           m_lastHandshake;
   struct timespec           m_handshakeTimeout;
 
   int                       m_socket;
   int                       m_tunfd;
-  dispatch_queue_t          m_dispatch;
-  dispatch_group_t          m_workqueue;
+  NSThread*                 m_worker;
 
   // The completion handler to run on initial handshake or timeout. 
   void (^m_completionHandler)(NSError *error);
@@ -42,7 +40,10 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
              andTunnel:(int)fd {
   self = [super init];
   self->m_tunfd = fd;
-  self->m_dispatch = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+
+  // Create the dispatch queue.
+  NSString* bundleId = [[NSBundle mainBundle] bundleIdentifier];
+  NSString* queueId = [NSString stringWithFormat:@"%@.wireguard", bundleId];
 
   m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
   if (m_socket < 0) {
@@ -51,15 +52,19 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 
   uint32_t index;
   getentropy(&index, sizeof(index));
-  self->m_wireguard = new_tunnel(options.privateKey.UTF8String,
+  self.wireguard = new_tunnel(options.privateKey.UTF8String,
                                  options.serverPublicKey.UTF8String,
                                  nil, // Preshared key
                                  300, // Keepalive period
                                  index % (1U << 24));
-  if (!self->m_wireguard) {
+  if (!self.wireguard) {
     return nil;
   }
 
+  // Give the socket its own worker.
+  self->m_worker = [[NSThread alloc] initWithTarget:self
+                                           selector:@selector(socketWorker:)
+                                             object:nil];
   return self;
 }
 
@@ -67,8 +72,8 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   if (m_socket >= 0) {
     close(m_socket);
   }
-  if (m_wireguard) {
-    tunnel_free(m_wireguard);
+  if (self.wireguard) {
+    tunnel_free(self.wireguard);
   }
 
 #if !__has_feature(objc_arc)
@@ -99,54 +104,58 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   // Force an initial handshake.
   [self renegotiate:completionHandler];
 
-  // Start inbound decryption workers.
-  m_workqueue = dispatch_group_create();
-  [self startInboundWorker];
+  // Start the socket worker
+  [m_worker start];
 }
 
-- (void) startInboundWorker {
-  dispatch_group_async(m_workqueue, m_dispatch, ^(void){
-    uint8_t ciphertext[PEER_DATAGRAM_BUFSIZE];
+- (void) socketWorker:(id)arg {
+  NSLog(@"socket worker started");
+
+  NSThread* thread = [NSThread currentThread];
+  while (!thread.cancelled) {
+    NSMutableData* dgram = [NSMutableData dataWithLength:PEER_DATAGRAM_BUFSIZE];
+    int rx = read(m_socket, dgram.mutableBytes, dgram.length);
+    if (rx == 0) {
+      // Socket has closed.
+      NSLog(@"socket closed");
+      return;
+    }
+    if (rx < 0) {
+      // Socket error occurred.
+      if (errno == EINTR) continue;
+      NSLog(@"socket error: %s", strerror(errno));
+      return;
+    }
+    dgram.length = rx;
+    uint8_t wgMsgtype = *(const uint8_t *)dgram.bytes;
+
     uint8_t plaintext[PEER_DATAGRAM_BUFSIZE];
+    struct wireguard_result result;
+    result = wireguard_read(self.wireguard, (const uint8_t *)dgram.bytes,
+                            dgram.length, plaintext, PEER_DATAGRAM_BUFSIZE);
+    [self handleWireguard:result withBuffer:plaintext];
 
-    while (true) {
-      int length = read(m_socket, ciphertext, sizeof(ciphertext));
-      if (length == 0) {
-        // Socket has closed.
-        NSLog(@"socket closed");
-        return;
-      }
-      if (length < 0) {
-        // Socket error occurred.
-        NSLog(@"socket error: %s", strerror(errno));
-        if (errno == EINTR) continue;
-        return;
-      }
+    // After processing a handshake response, update the lastHandshake time
+    // if it looks and smells like the handshake was successful.
+    if (wgMsgtype == 0x02) {
+      struct stats wgStats = wireguard_stats(self.wireguard);
+      if (wgStats.time_since_last_handshake < 0) {
+        memset(&m_lastHandshake, 0, sizeof(m_lastHandshake));
+      } else if (wgStats.time_since_last_handshake < 5) {
+        clock_gettime(CLOCK_MONOTONIC, &m_lastHandshake);
+        memset(&m_handshakeTimeout, 0, sizeof(m_handshakeTimeout));
 
-      // Decrypt the wireguard packet.
-      struct wireguard_result result;
-      result = wireguard_read(m_wireguard, ciphertext, length, plaintext, length);
-      [self handleWireguard:result withBuffer:plaintext];
+        // The conneciton is now up.
+        if (m_completionHandler) {
+          auto block = m_completionHandler;
+          m_completionHandler = nil;
 
-      // After processing a handshake response, update the lastHandshake time
-      // if it looks and smells like the handshake was successful.
-      if (ciphertext[0] == 0x02) {
-        struct stats wgStats = wireguard_stats(m_wireguard);
-        if (wgStats.time_since_last_handshake < 0) {
-          memset(&m_lastHandshake, 0, sizeof(m_lastHandshake));
-        } else if (wgStats.time_since_last_handshake < 5) {
-          clock_gettime(CLOCK_MONOTONIC, &m_lastHandshake);
-          memset(&m_handshakeTimeout, 0, sizeof(m_handshakeTimeout));
-
-          // The conneciton is now up.
-          if (m_completionHandler) {
-            m_completionHandler(nil);
-            m_completionHandler = nil;
-          }
+          // We have to do this from the main thread or it all falls apart.
+          dispatch_async(dispatch_get_main_queue(), ^(){ block(nil); });
         }
       }
     }
-  });
+  }
 }
 
 - (void) stopWithReason:(NEProviderStopReason)reason 
@@ -156,12 +165,10 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 }
 
 - (void) cancelWithError:(NSError*)error {
-  if (m_workqueue) {
-    shutdown(m_socket, SHUT_RDWR);
-    dispatch_time_t delay = dispatch_time(DISPATCH_TIME_NOW, PEER_WORKQUEUE_TIMEOUT * 1000000000);
-    dispatch_group_wait(m_workqueue, delay);
-    m_workqueue = nil;
+  if (m_worker) {
+    [m_worker cancel];
   }
+  shutdown(m_socket, SHUT_RDWR);
 
   if (m_timer) {
     CFRunLoopRemoveTimer(CFRunLoopGetMain(), m_timer, kCFRunLoopDefaultMode);
@@ -180,7 +187,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   uint8_t handshake[WG_MAX_HANDSHAKE_SIZE];
 
   struct wireguard_result result;
-  result = wireguard_force_handshake(m_wireguard, handshake, WG_MAX_HANDSHAKE_SIZE);
+  result = wireguard_force_handshake(self.wireguard, handshake, WG_MAX_HANDSHAKE_SIZE);
 
   // Set a timeout for the handshake to finish.
   clock_gettime(CLOCK_MONOTONIC, &m_handshakeTimeout);
@@ -190,13 +197,13 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   [self handleWireguard:result withBuffer:handshake];
 }
 
-- (void) sendPacket:(int)protocol
-          withBytes:(const void*)data
-             length:(size_t)length {
-  uint8_t ciphertext[length + WG_PACKET_OVERHEAD];
+- (void) writePacket:(int)protocol
+            withData:(NSData*)data {
+  uint8_t ciphertext[data.length + WG_PACKET_OVERHEAD];
+  const uint8_t* plaintext = (const uint8_t*)data.bytes;
   struct wireguard_result result;
-  result = wireguard_write(m_wireguard, (const uint8_t*)data, length,
-                           ciphertext, sizeof(ciphertext));
+  result = wireguard_write(self.wireguard, plaintext, data.length,
+                          ciphertext, sizeof(ciphertext));
   [self handleWireguard:result withBuffer:ciphertext];
 }
 
@@ -218,7 +225,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 
   uint8_t handshake[WG_MAX_HANDSHAKE_SIZE];
   struct wireguard_result result;
-  result = wireguard_tick(m_wireguard, handshake, WG_MAX_HANDSHAKE_SIZE);
+  result = wireguard_tick(self.wireguard, handshake, WG_MAX_HANDSHAKE_SIZE);
   [self handleWireguard:result withBuffer:handshake];
 }
 
@@ -270,7 +277,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   }
 
   // Fetch the rest of the stats directly from boringtun.
-  struct stats wgStats = wireguard_stats(m_wireguard);
+  struct stats wgStats = wireguard_stats(self.wireguard);
   result.txBytes = wgStats.tx_bytes;
   result.rxBytes = wgStats.rx_bytes;
   result.estimatedLoss = wgStats.estimated_loss;
