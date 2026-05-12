@@ -296,7 +296,7 @@ public class IOSControllerImpl: NSObject {
         }
     }
 
-    static func startTunnelFromIntent() -> TurnOnIntent.Result {
+    static func startTunnelFromIntent() async -> TurnOnIntent.Result {
       guard let session = TunnelManager.session else {
         IOSControllerImpl.logger.info(message: "No current session")
         return .errorNoSession
@@ -316,13 +316,21 @@ public class IOSControllerImpl: NSObject {
 
       do {
         IOSControllerImpl.shouldSkipNextNotification = true
-        try TunnelManager.session?.startTunnel(options: ["source":"intent"])
-        let config = TunnelManager.protocolConfiguration?.providerConfiguration
-        return .success(entryCity: config?["entryCity"] as? String, exitCity: config?["exitCity"] as? String)
+        try session.startTunnel(options: ["source":"intent"])
       } catch let error {
         IOSControllerImpl.logger.info(message: "Error starting from intent: \(error.localizedDescription)")
         return .errorNoSession
       }
+      let deadline = Date().addingTimeInterval(3)
+      while Date() < deadline {
+        if session.status == .connected {
+          let config = TunnelManager.protocolConfiguration?.providerConfiguration
+          return .success(entryCity: config?["entryCity"] as? String, exitCity: config?["exitCity"] as? String)
+        }
+        try? await Task.sleep(nanoseconds: 250_000_000)
+      }
+      return .errorNoSession
+
     }
 
     static func stopTunnelFromIntent() -> Bool {
