@@ -360,7 +360,7 @@ settings:
   dnsSettingsInputPlaceholder: Enter custom DNS
   dnsSettingsDisconnectWarning: Changing these settings will cause the VPN to disconnect and reconnect automatically.
   batteryOptimizationWarning:
-    value: On some devices, Mozilla VPN may be disconnected in the background. If you've experienced this, allow it to run in the background.
+    value: On some devices, Mozilla VPN may be disconnected in the background. If you’ve experienced this, allow it to run in the background.
     comment: Warning shown in the settings screen on Android when battery optimization is enabled for the app.
   batteryOptimizationWarningButton:
     value: Allow background permissions
