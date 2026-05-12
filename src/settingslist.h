@@ -315,6 +315,16 @@ SETTING_STRINGLIST(missingApps,        // getter
                    false               // sensitive (do not log)
 )
 
+SETTING_INT(obfuscationMethod,                                 // getter
+            setObfuscationMethod,                              // setter
+            removeObfuscationMethod,                           // remover
+            hasObfuscationMethod,                              // has
+            "obfuscationMethod",                               // key
+            SettingsHolder::ObfuscationMethod::NoObfuscation,  // default value
+            false,  // remove when reset
+            false   // sensitive (do not log)
+)
+
 SETTING_BOOL(onboardingCompleted,        // getter
              setOnboardingCompleted,     // setter
              removeOnboardingCompleted,  // remover
