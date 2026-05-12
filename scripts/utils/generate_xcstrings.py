@@ -142,6 +142,8 @@ def build_phrase_section(phrase_strings, locale_translations):
                     "values": locale_values,
                 }
             }
+        else:
+            print(f"No translations found for {string_id} in {locale}")
 
     return {"localizations": localizations}
 
