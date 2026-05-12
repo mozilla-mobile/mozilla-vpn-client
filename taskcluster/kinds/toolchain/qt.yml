@@ -110,6 +110,8 @@ qt-tools-6.10:
     description: "Linux Qt host tools"
     run:
         script: bundle_qt_tools.sh
+        arguments:
+            - 6.10.3
         resources:
             - requirements.txt
         toolchain-alias: qt-tools
@@ -120,8 +122,6 @@ qt-tools-6.10:
     worker:
         docker-image: {in-tree: conda-base}
         max-run-time: 900
-        env:
-            QT_VERSION: "6.10.3"
 
 qt-wasm-6.10:
     description: "QT wasm bundle task"
@@ -132,6 +132,8 @@ qt-wasm-6.10:
         docker-image: {in-tree: base}
     run:
         script: bundle_qt_wasm.sh
+        arguments:
+            - 6.10.3
         resources:
             - requirements.txt
         toolchain-alias: qt-wasm

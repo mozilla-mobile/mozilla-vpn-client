@@ -6,6 +6,16 @@
 set -e
 export XZ_DEFAULTS="-T0"
 
+# This script takes one argument - the Qt version.
+if [[ $# -ge 1 ]]; then
+  QT_VERSION="$1"
+else
+  echo "No Qt version specified." >&2
+  echo "" >&2
+  echo "Usage: $0 <QT_VERSION>" >&2
+  exit 1
+fi
+
 python3 -m pip install -r ${VCS_PATH}/requirements.txt
 python3 -m aqt install-qt -O $(pwd)/qt-install linux desktop ${QT_VERSION} --archives icu qtbase qtdeclarative qttools --modules qtshadertools
 
