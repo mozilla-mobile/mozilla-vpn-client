@@ -633,6 +633,20 @@ Item {
             implicitHeight: childrenRect.height
         }
 
+        MZInterLabel {
+            id: obfuscationMethodDescription
+            objectName: "obfuscationMethodDescription"
+            anchors.horizontalCenter: parent.horizontalCenter
+            opacity: 0.8
+            color: MZTheme.colors.fontColorInverted
+            lineHeight: MZTheme.theme.controllerInterLineHeight
+            visible: VPNController.state === VPNController.StateOn &&
+                     MZSettings.obfuscationMethod !== MZSettings.NoObfuscation
+            Accessible.ignored: ipInfoPanel.isOpen || !visible
+
+            text: MZI18n.ControllerAntiCensorshipOn
+        }
+
     }
 
     VPNToggle {
