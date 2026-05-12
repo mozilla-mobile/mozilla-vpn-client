@@ -159,7 +159,8 @@ QVariant RecommendedLocationModel::data(const QModelIndex& index,
 }
 
 void RecommendedLocationModel::maybeRefreshModel() {
-  if (!MozillaVPN::instance()->serverLatency()->isActive()) {
+  if (MozillaVPN::instance()->serverLatency()->state() !=
+      ServerLatency::Loading) {
     if (m_timer.isActive()) {
       m_timer.stop();
       refreshModel();

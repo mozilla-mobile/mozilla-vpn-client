@@ -4,6 +4,7 @@
 
 #include "qmlengineholder.h"
 
+#include <QApplication>
 #include <QNetworkAccessManager>
 #include <QQmlApplicationEngine>
 #include <QQmlNetworkAccessManagerFactory>

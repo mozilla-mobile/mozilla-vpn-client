@@ -21,7 +21,7 @@ class ServerLatency final : public QObject {
   Q_PROPERTY(
       QDateTime lastUpdateTime READ lastUpdateTime NOTIFY progressChanged)
   Q_PROPERTY(qint64 avgLatency READ avgLatency NOTIFY progressChanged)
-  Q_PROPERTY(bool isActive READ isActive NOTIFY progressChanged)
+  Q_PROPERTY(State state READ state NOTIFY progressChanged)
   Q_PROPERTY(double progress READ progress NOTIFY progressChanged)
 
  public:
@@ -38,8 +38,19 @@ class ServerLatency final : public QObject {
   };
   Q_ENUM(ConnectionScores);
 
+  enum State {
+    Initial,
+    Loading,
+    Loaded,
+  };
+  Q_ENUM(State);
+
   const QDateTime& lastUpdateTime() const { return m_lastUpdateTime; }
-  bool isActive() const { return m_pingSender != nullptr; }
+  State state() const {
+    if (m_pingSender != nullptr) return Loading;
+    if (m_lastUpdateTime.isValid()) return Loaded;
+    return Initial;
+  }
   double progress() const;
 
   qint64 avgLatency() const;

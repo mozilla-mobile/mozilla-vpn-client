@@ -112,7 +112,7 @@ FocusScope {
             Loader {
                 id: serverListRecommendedEmptyLoader
 
-                active: VPNRecommendedLocationModel.rowCount() === 0 && !VPNServerLatency.isActive
+                active: VPNRecommendedLocationModel.rowCount() === 0 && VPNServerLatency.state !== VPNServerLatency.Loading
                 anchors.fill: parent
                 sourceComponent: ColumnLayout {
 
@@ -157,7 +157,7 @@ FocusScope {
 
                 anchors.fill: parent
 
-                active: VPNRecommendedLocationModel.rowCount() > 0 || VPNServerLatency.isActive
+                active: VPNRecommendedLocationModel.rowCount() > 0 || VPNServerLatency.state === VPNServerLatency.Loading
                 sourceComponent: Column {
                     objectName: "serverListRecommended"
 
@@ -183,7 +183,7 @@ FocusScope {
                         accessibleName: statusTitle.text + '. ' + MZI18n.ServersViewRecommendedRefreshLabel
                         canGrowVertical: true
                         height: statusTitle.implicitHeight + MZTheme.theme.vSpacingSmall
-                        rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff) || VPNServerLatency.isActive
+                        rowShouldBeDisabled: !(VPNController.state === VPNController.StateOff) || VPNServerLatency.state === VPNServerLatency.Loading
                         opacity: 1.0
 
                         onClicked: {
@@ -214,13 +214,29 @@ FocusScope {
                                 Layout.maximumWidth: parent.width
 
                                 horizontalAlignment: Text.AlignLeft
-                                // TODO: Replace placeholder strings and generate
-                                // values that will be set instead of `%1`
-                                text: VPNServerLatency.isActive
-                                      ? MZI18n.ServersViewRecommendedRefreshlLoadingLabel.arg(Math.round(VPNServerLatency.progress * 100))
-                                      : (VPNController.state === VPNController.StateOff)
-                                        ? MZI18n.ServersViewRecommendedRefreshLastUpdatedLabel.arg(MZLocalizer.formatDate(new Date(), VPNServerLatency.lastUpdateTime, MZI18n.ServersViewRecommendedRefreshLastUpdatedLabelYesterday))
-                                        : MZI18n.ServersViewRecommendedRefreshLastUpdatedDisabledLabel.arg(MZLocalizer.formatDate(new Date(), VPNServerLatency.lastUpdateTime, MZI18n.ServersViewRecommendedRefreshLastUpdatedLabelYesterday))
+                                text: {
+                                    switch (VPNServerLatency.state) {
+                                    case VPNServerLatency.Loading:
+                                        return MZI18n.ServersViewRecommendedRefreshlLoadingLabel.arg(
+                                            Math.round(VPNServerLatency.progress * 100));
+
+                                    case VPNServerLatency.Initial:
+                                        return (VPNController.state === VPNController.StateOff)
+                                            ? MZI18n.ServersViewRecommendedRefreshNoUpdateLabel
+                                            : MZI18n.ServersViewRecommendedRefreshNoUpdateDisabledLabel;
+
+                                    case VPNServerLatency.Loaded:
+                                    default:
+                                        const formatted = MZLocalizer.formatDate(
+                                            new Date(),
+                                            VPNServerLatency.lastUpdateTime,
+                                            MZI18n.ServersViewRecommendedRefreshLastUpdatedLabelYesterday);
+                                        const template = (VPNController.state === VPNController.StateOff)
+                                            ? MZI18n.ServersViewRecommendedRefreshLastUpdatedLabel
+                                            : MZI18n.ServersViewRecommendedRefreshLastUpdatedDisabledLabel;
+                                        return template.arg(formatted);
+                                    }
+                                }
                                 wrapMode: Text.WordWrap
                             }
 
