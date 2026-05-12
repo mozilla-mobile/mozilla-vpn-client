@@ -5,7 +5,7 @@
 task-defaults:
     worker:
         env:
-            QT_VERSION: "6.10.1"
+            QT_VERSION: "6.10.3"
         max-run-time: 14400
     run: 
         use-caches: []
@@ -121,7 +121,7 @@ qt-tools-6.10:
         docker-image: {in-tree: conda-base}
         max-run-time: 900
         env:
-            QT_VERSION: "6.10.1"
+            QT_VERSION: "6.10.3"
 
 qt-wasm-6.10:
     description: "QT wasm bundle task"
