@@ -263,6 +263,30 @@ inline constexpr ConstantFeature freeTrial = {
     .supported = false,
 };
 
+inline constexpr ConstantFeature obfuscationLwo = {
+    .id = "obfuscationLwo",
+    .name = "LWO obfuscation",
+    .supported = false,
+};
+
+inline constexpr ConstantFeature obfuscationMasque = {
+    .id = "obfuscationMasque",
+    .name = "MASQUE obfuscation",
+    .supported = false,
+};
+
+inline constexpr ConstantFeature obfuscationShadowsocks = {
+    .id = "obfuscationShadowsocks",
+    .name = "SHADOWSOCKS obfuscation",
+    .supported = false,
+};
+
+inline constexpr ConstantFeature obfuscationUdpOverTcp = {
+    .id = "obfuscationUdpOverTcp",
+    .name = "UDP over TCP",
+    .supported = Platform::linux_,
+};
+
 inline const OverridableFeature replacerAddon = {
     .id = "replacerAddon",
     .name = "Replacer Addon",

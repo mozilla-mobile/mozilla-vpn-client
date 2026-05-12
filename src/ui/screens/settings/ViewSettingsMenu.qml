@@ -75,6 +75,17 @@ MZViewBase {
             }
 
             MZSettingsItem {
+                objectName: "antiCensorshipSettings"
+                settingTitle: MZI18n.SettingsAntiCensorshipSettings
+                imageLeftSrc: MZAssetLookup.getImageSource("EyeHidden")
+                imageRightSrc: MZAssetLookup.getImageSource("Chevron")
+                imageRightMirror: MZLocalizer.isRightToLeft
+                onClicked: {
+                    stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/antiCensorship/ViewAntiCensorship.qml")
+                }
+            }
+
+            MZSettingsItem {
                 objectName: "appExclusionSettings"
                 settingTitle: MZI18n.SettingsAppExclusionTitle
                 imageLeftSrc: MZAssetLookup.getImageSource("IconPermissions")
