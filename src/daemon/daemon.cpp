@@ -18,6 +18,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "obfuscator.h"
 #include "wireguardutils.h"
 
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
@@ -31,6 +32,8 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
   MZ_COUNT_CTOR(Daemon);
 
   logger.debug() << "Daemon created";
+
+  obfuscators_set_log_handler(LogHandler::rustMessageHandler);
 
   m_handshakeTimer.setSingleShot(true);
   connect(&m_handshakeTimer, &QTimer::timeout, this, &Daemon::checkHandshake);
@@ -137,8 +140,28 @@ bool Daemon::activate(const InterfaceConfig& config) {
     }
   }
 
+  // If an obfuscator is configured, start the relay and rewrite the peer
+  // endpoint so WireGuard talks to it instead of the real server.
+  // For multi-hop configure obfuscator only on the entry node.
+  std::unique_ptr<Obfuscator> obfuscator;
+  InterfaceConfig peerConfig = config;
+  if (config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
+      config.m_hopType != InterfaceConfig::MultiHopExit) {
+    obfuscator = std::make_unique<Obfuscator>(config);
+    if (!obfuscator->isRunning()) {
+      logger.error() << "Failed to start obfuscator"
+                     << config.m_obfuscationMethod;
+      return false;
+    }
+    markObfuscatorSockets(obfuscator->socketV4(), obfuscator->socketV6());
+    peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
+    peerConfig.m_serverIpv6AddrIn = "::1";
+    peerConfig.m_serverPort = obfuscator->localPort();
+    m_obfuscator = std::move(obfuscator);
+  }
+
   // Add the peer to this interface.
-  if (!wgutils()->updatePeer(config)) {
+  if (!wgutils()->updatePeer(peerConfig)) {
     logger.error() << "Peer creation failed.";
     return false;
   }
@@ -224,6 +247,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   }
 
   GETVALUE("privateKey", config.m_privateKey, String);
+  GETVALUE("publicKey", config.m_publicKey, String);
   GETVALUE("serverPublicKey", config.m_serverPublicKey, String);
   GETVALUE("serverPort", config.m_serverPort, Double);
 
@@ -332,6 +356,27 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   if (!parseStringList(obj, "vpnDisabledApps", config.m_vpnDisabledApps)) {
     return false;
   }
+
+  if (!obj.contains("obfuscationMethod")) {
+    config.m_obfuscationMethod = Server::ObfuscationMethod::NoObfuscation;
+  } else {
+    QJsonValue value = obj.value("obfuscationMethod");
+    if (!value.isString()) {
+      logger.error() << "obfuscationMethod is not a string";
+      return false;
+    }
+
+    bool okay;
+    QMetaEnum meta = QMetaEnum::fromType<Server::ObfuscationMethod>();
+    config.m_obfuscationMethod = Server::ObfuscationMethod(
+        meta.keyToValue(value.toString().toUtf8().constData(), &okay));
+    if (!okay) {
+      logger.error() << "obfuscationMethod" << value.toString()
+                     << "is not valid";
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -368,6 +413,9 @@ bool Daemon::deactivate(bool emitSignals) {
     wgutils()->deletePeer(config);
   }
   m_connections.clear();
+
+  // Delete the obfuscator
+  m_obfuscator.reset();
 
   // Delete the interface
   return wgutils()->deleteInterface();
@@ -409,8 +457,26 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   const InterfaceConfig& lastConfig =
       m_connections.value(config.m_hopType).m_config;
 
+  // Stand up a new obfuscator for the new endpoint (entry hop only)
+  std::unique_ptr<Obfuscator> obfuscator;
+  InterfaceConfig peerConfig = config;
+  if (config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
+      config.m_hopType != InterfaceConfig::MultiHopExit) {
+    obfuscator = std::make_unique<Obfuscator>(config);
+    if (!obfuscator->isRunning()) {
+      logger.error() << "Failed to start obfuscator on switch"
+                     << config.m_obfuscationMethod;
+      return false;
+    }
+    markObfuscatorSockets(obfuscator->socketV4(), obfuscator->socketV6());
+    peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
+    peerConfig.m_serverIpv6AddrIn = QString();
+    peerConfig.m_serverPort = obfuscator->localPort();
+    m_obfuscator = std::move(obfuscator);
+  }
+
   // Activate the new peer and its routes.
-  if (!wgutils()->updatePeer(config)) {
+  if (!wgutils()->updatePeer(peerConfig)) {
     logger.error()
         << "Server switch failed to update the peer wireguard config";
     return false;

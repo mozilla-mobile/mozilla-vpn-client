@@ -40,9 +40,6 @@ class InterfaceConfig {
   QList<IPAddress> m_allowedIPAddressRanges;
   QStringList m_vpnDisabledApps;
   Server::ObfuscationMethod m_obfuscationMethod;
-#if defined(MZ_ANDROID) || defined(MZ_IOS)
-  QString m_installationId;
-#endif
 
   QJsonObject toJson() const;
   QString toWgConf(

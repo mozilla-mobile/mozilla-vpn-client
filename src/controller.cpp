@@ -376,6 +376,9 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
   }
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   QList<InterfaceConfig> returnList;
+  Server::ObfuscationMethod obfuscationMethod =
+      static_cast<Server::ObfuscationMethod>(
+          settingsHolder->obfuscationMethod());
 
   auto allowedIPList = m_initiator == ExtensionUser
                            ? getExtensionProxyAddressRanges(exitServer)
@@ -383,6 +386,7 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
   // Prepare the exit server's connection data.
   InterfaceConfig exitConfig;
   exitConfig.m_privateKey = vpn->keys()->privateKey();
+  exitConfig.m_publicKey = vpn->keys()->publicKey();
   exitConfig.m_deviceIpv4Address = device->ipv4Address();
   exitConfig.m_deviceIpv6Address = device->ipv6Address();
   exitConfig.m_serverIpv4Gateway = exitServer.ipv4Gateway();
@@ -394,6 +398,7 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
   exitConfig.m_allowedIPAddressRanges = allowedIPList;
   exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
   exitConfig.m_exitCity = exitServer.cityName();
+  exitConfig.m_obfuscationMethod = Server::ObfuscationMethod::NoObfuscation;
   logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
 
   if (m_impl->splitTunnelSupported()) {
@@ -407,11 +412,18 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
   if (!Feature::multiHop.supported || !m_serverData.multihop()) {
     logger.info() << "Activating single hop";
     exitConfig.m_hopType = InterfaceConfig::SingleHop;
+    exitConfig.m_obfuscationMethod = obfuscationMethod;
 
     // If requested, force the use of port 53/DNS.
     if (dnsPort == ForceDNSPort) {
       logger.info() << "Forcing port 53";
       exitConfig.m_serverPort = 53;
+    }
+
+    // If UDP over TCP is enabled choose a dedicated port
+    if (settingsHolder->obfuscationMethod() ==
+        Server::ObfuscationMethod::UdpOverTcp) {
+      exitConfig.m_serverPort = exitServer.chooseTcpPort();
     }
   }
   // For controllers that support multiple hops, create a queue of connections.
@@ -435,6 +447,7 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
 
     InterfaceConfig entryConfig;
     entryConfig.m_privateKey = vpn->keys()->privateKey();
+    entryConfig.m_publicKey = vpn->keys()->publicKey();
     entryConfig.m_deviceIpv4Address = device->ipv4Address();
     entryConfig.m_deviceIpv6Address = device->ipv6Address();
     entryConfig.m_serverPublicKey = entryServer.publicKey();
@@ -442,6 +455,7 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
     entryConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
     entryConfig.m_serverPort = entryServer.choosePort();
     entryConfig.m_hopType = InterfaceConfig::MultiHopEntry;
+    entryConfig.m_obfuscationMethod = obfuscationMethod;
     entryConfig.m_allowedIPAddressRanges.append(
         IPAddress(exitServer.ipv4AddrIn()));
     if (!exitServer.ipv6AddrIn().isEmpty()) {
@@ -454,6 +468,11 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
     if (dnsPort == ForceDNSPort) {
       logger.info() << "Forcing port 53";
       entryConfig.m_serverPort = 53;
+    }
+    // If UDP over TCP is enabled choose a dedicated port
+    if (settingsHolder->obfuscationMethod() ==
+        Server::ObfuscationMethod::UdpOverTcp) {
+      entryConfig.m_serverPort = exitServer.chooseTcpPort();
     }
 
     returnList.append(entryConfig);
@@ -484,6 +503,12 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
     exitConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
     exitConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
     exitConfig.m_entryCity = entryServer.cityName();
+    // We cannot emulate multihop and use UDP over TCP at the same time, LWO
+    // will work
+    exitConfig.m_obfuscationMethod =
+        obfuscationMethod == Server::ObfuscationMethod::LWO
+            ? Server::ObfuscationMethod::LWO
+            : Server::ObfuscationMethod::NoObfuscation;
   }
 
   returnList.append(exitConfig);
