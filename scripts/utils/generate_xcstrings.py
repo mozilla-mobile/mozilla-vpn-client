@@ -48,7 +48,7 @@ def load_xliff_translations(xliff_path, isEnglish):
 
 
 def using_app_placeholder(value):
-    return value.replace("%@", "\(.applicationName)")
+    return value.replace("%@", "\\(.applicationName)")
 
 
 SPECIAL_LOCALE_MAP = {
@@ -130,8 +130,8 @@ def build_phrase_section(phrase_strings, locale_translations):
             continue
         for translation in translation_block.split("\n"):
             if translation:
-                if "%@" not in translation:
-                    print(f"Missing required placeholder in {translation} for {locale}")
+                if translation.count("%@") != 1:
+                    print(f"Placeholder found {translation.count('%@')} times in {translation} for {locale}, expected 1")
                     exit(1)
                 locale_values.append(using_app_placeholder(translation))
 
@@ -142,6 +142,8 @@ def build_phrase_section(phrase_strings, locale_translations):
                     "values": locale_values,
                 }
             }
+        else:
+            print(f"No translations found for {string_id} in {locale}")
 
     return {"localizations": localizations}
 
