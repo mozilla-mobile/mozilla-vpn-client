@@ -1111,7 +1111,7 @@ controller:
     value: Preparing your connection
     comment: Connection subtitle label for the main screen when the app is regenerating WireGuard keys
   antiCensorshipOn:
-    value: Anti-Censorship is active
+    value: Anti-Censorship is on
     comment: Label for the main screen when Anti-Censorship features are enabled
 
 iosAppIntentsMain:
