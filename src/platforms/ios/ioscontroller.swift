@@ -311,11 +311,21 @@ public class IOSControllerImpl: NSObject {
         alwaysConnect.interfaceTypeMatch = .any
         tunnel.isOnDemandEnabled = true
         tunnel.onDemandRules = [alwaysConnect]
+        tunnel.saveToPreferences { saveError in
+          if let error = saveError {
+            IOSControllerImpl.logger.error(message: "Tunnel save error when saving on demand rules: \(error)")
+          }
+        }
         return true
       }
 
       do {
         IOSControllerImpl.shouldSkipNextNotification = true
+        // after saving this above, it seems like we need to use an updated session
+        guard let session = TunnelManager.session else {
+          IOSControllerImpl.logger.info(message: "No updated session")
+          return .errorNoSession
+        }
         try session.startTunnel(options: ["source":"intent"])
       } catch let error {
         IOSControllerImpl.logger.info(message: "Error starting from intent: \(error.localizedDescription)")
