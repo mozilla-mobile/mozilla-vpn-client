@@ -786,7 +786,14 @@ bool Controller::silentServerSwitchingSupported() const {
 }
 
 bool Controller::splitTunnelSupported() const {
-  return m_impl->splitTunnelSupported();
+  if (m_impl) {
+    return m_impl->splitTunnelSupported();
+  } else {
+    // Fix for VPN-7599 - when signed out, we need this to
+    // resolve when resetting client, as one line is shown
+    // depending on whether split tunnel is supported.
+    return false;
+  }
 }
 
 void Controller::logSerialize(QIODevice* device) {
