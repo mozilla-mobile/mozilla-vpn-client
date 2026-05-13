@@ -76,9 +76,13 @@ def get_locales(i18n_dir):
 
 def build_localizable_xcstrings(main_strings, locale_translations):
     """Build Localizable.xcstrings dict for iosAppIntents.main.* strings."""
-    strings = {}
+    strings = build_main_strings(main_strings, locale_translations)
+    return {"sourceLanguage": "en", "strings": strings, "version": "1.1"}
 
-    for data in main_strings.values():
+
+def build_main_strings(strings_to_translate, locale_translations, use_id_as_key = True):
+    strings = {}
+    for data in strings_to_translate.values():
         english_value = data["value"][0]
         string_id = data["string_id"]
         comment = data["comments"][0] if data["comments"] else None
@@ -106,9 +110,11 @@ def build_localizable_xcstrings(main_strings, locale_translations):
         if localizations:
             entry["localizations"] = localizations
 
-        strings[string_id] = entry
-
-    return {"sourceLanguage": "en", "strings": strings, "version": "1.1"}
+        if use_id_as_key:
+            strings[string_id] = entry
+        else:
+            strings[english_value] = entry
+    return strings
 
 
 def build_phrase_section(phrase_strings, locale_translations):
@@ -148,7 +154,7 @@ def build_phrase_section(phrase_strings, locale_translations):
     return {"localizations": localizations}
 
 
-def build_appshortcuts_xcstrings(intent_phrase_array, locale_translations):
+def build_appshortcuts_xcstrings(intent_phrase_array, intent_title_array, locale_translations):
     """Build AppShortcuts.xcstrings dict from phrase strings."""
     strings = {}
 
@@ -162,6 +168,9 @@ def build_appshortcuts_xcstrings(intent_phrase_array, locale_translations):
             strings[section_key] = phrase_section
         else:
             print(f"Skipping {next(iter(phrase_set))} because no translations were found in xliff files. This should only occur for new strings that are yet to be ingested into the l10n repo.")
+
+    title_strings = build_main_strings(intent_title_array, locale_translations, False)
+    strings.update(title_strings)
 
     return {"sourceLanguage": "en", "strings": strings, "version": "1.1"}
 
@@ -216,6 +225,13 @@ def main():
         if v["string_id"].startswith("vpn.iosAppIntentsMain")
     }
 
+    intent_titles = ["vpn.iosAppIntentsMain.statusQueryTitle", "vpn.iosAppIntentsMain.turnOffAction", "vpn.iosAppIntentsMain.turnOnAction"]
+    intent_title_array = {
+        k: v
+        for k, v in all_strings.items()
+        if v["string_id"] in intent_titles
+    }
+
     # Load translations for all locales
     locales = get_locales(args.i18n_dir)
     locale_translations = {}
@@ -250,7 +266,7 @@ def main():
     print(f"Wrote {localizable_path}")
 
     # Write AppShortcuts.xcstrings
-    appshortcuts = build_appshortcuts_xcstrings(shortcut_strings, locale_translations)
+    appshortcuts = build_appshortcuts_xcstrings(shortcut_strings, intent_title_array, locale_translations)
     appshortcuts_path = os.path.join(args.output_dir, "AppShortcuts.xcstrings")
     with open(appshortcuts_path, "w", encoding="utf-8") as f:
         json.dump(appshortcuts, f, indent=2, ensure_ascii=False)
