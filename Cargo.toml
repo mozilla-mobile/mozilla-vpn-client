@@ -2,6 +2,7 @@
 members = [
     "3rdparty/boringtun/boringtun",
     "signature",
+    "obfuscators",
 ]
 resolver = "2"
 
