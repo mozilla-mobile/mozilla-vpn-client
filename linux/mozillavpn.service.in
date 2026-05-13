@@ -8,6 +8,8 @@ Type=dbus
 BusName=org.mozilla.vpn.dbus
 Restart=on-failure
 ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/mozillavpn linuxdaemon
+CapabilityBoundingSet=CAP_NET_ADMIN CAP_SETUID
+NoNewPrivileges=yes
 
 [Install]
 WantedBy=multi-user.target

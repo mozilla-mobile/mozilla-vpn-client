@@ -38,8 +38,6 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
         linuxbypass.h)
 
     find_package(PkgConfig REQUIRED)
-    pkg_check_modules(LIBCAP REQUIRED IMPORTED_TARGET libcap)
-    target_link_libraries(socksproxy PRIVATE PkgConfig::LIBCAP)
 
     # Install a Systemd service to run the proxy, if supported.
     pkg_check_modules(SYSTEMD systemd)
