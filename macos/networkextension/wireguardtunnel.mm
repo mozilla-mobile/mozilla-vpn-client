@@ -71,7 +71,7 @@ static void wgLog(const char* msg) {
   }
 
   // Connect to the utun control kernel service.
-  struct ctl_info info = {.ctl_name = "com.apple.net.utun_control"};
+  struct ctl_info info = {.ctl_name = UTUN_CONTROL_NAME};
   int err = ioctl(m_tunfd, CTLIOCGINFO, &info);
   if (err < 0) {
     close(m_tunfd);
@@ -88,6 +88,11 @@ static void wgLog(const char* msg) {
     close(m_tunfd);
     return nil;
   }
+
+  // Allow packets to queue up in the kernel when under load.
+  uint32_t utun_max_backlog = 64;
+  setsockopt(m_tunfd, SYSPROTO_CONTROL, UTUN_OPT_MAX_PENDING_PACKETS,
+             &utun_max_backlog, sizeof(utun_max_backlog));
 
   // Get the tunnel device's name.
   struct ifreq ifr;
