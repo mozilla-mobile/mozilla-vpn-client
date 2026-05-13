@@ -49,7 +49,7 @@ jobs:
 
       - name: Check for iOS translations (l10n PRs only)
         run: |
-          if [[ "${{ github.ref_name }}" == "i18n_automation" ]]; then
+          if [[ "${{ github.head_ref }}" == "i18n_automation" ]]; then
             python scripts/utils/generate_xcstrings.py src/translations/strings.yaml 3rdparty/i18n .tmp/
           fi
 
