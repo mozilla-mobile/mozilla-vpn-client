@@ -47,6 +47,8 @@ RUN apt-get update -qq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN ln -s /usr/bin/cargo-1.85 /usr/bin/cargo
+
 # Install the taskcluster script's package dependencies
 # %include taskcluster/scripts/requirements.txt
 ADD topsrcdir/taskcluster/scripts/requirements.txt /root/pip-requirements.txt
