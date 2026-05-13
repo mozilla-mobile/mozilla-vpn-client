@@ -9,16 +9,15 @@ open class CoreBinder : Binder() {
         const val deactivate = 2
         const val registerEventListener = 3
         const val requestStatistic = 4
-        const val requestCleanupLog = 6
-        const val resumeActivate = 7
-        const val setNotificationText = 8
-        const val recordEvent = 10
-        const val getStatus = 13
-        const val setStartOnBoot = 15
-        const val reactivate = 16
-        const val clearStorage = 17
-        const val notificationPermissionFired = 19
-        const val silentServerSwitch = 20
+        const val requestCleanupLog = 5
+        const val resumeActivate = 6
+        const val setNotificationText = 7
+        const val getStatus = 8
+        const val setStartOnBoot = 9
+        const val reactivate = 10
+        const val clearStorage = 11
+        const val notificationPermissionFired = 12
+        const val silentServerSwitch = 13
     }
 
     /** The codes we Are Using in case of [dispatchEvent] */
@@ -27,9 +26,9 @@ open class CoreBinder : Binder() {
         const val connected = 1
         const val disconnected = 2
         const val statisticUpdate = 3
-        const val activationError = 5
-        const val permissionRequired = 6
-        const val requestNotificationPermission = 8
-        const val onboardingCompleted = 9
+        const val activationError = 4
+        const val permissionRequired = 5
+        const val requestNotificationPermission = 6
+        const val onboardingCompleted = 7
     }
 }
