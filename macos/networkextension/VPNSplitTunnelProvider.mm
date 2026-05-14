@@ -5,6 +5,7 @@
 #import <NetworkExtension/NetworkExtension.h>
 
 #import "interfaceconfig.h"
+#import "utils.h"
 #import "wireguardtunnel.h"
 
 #include <atomic>
@@ -53,13 +54,6 @@
   m_handledUnknown = 0;
 
   return self;
-}
-
-+ (NSError*) makeError:(NSInteger)code
-       withDescription:(NSString*)desc {
-  return [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
-                             code:code
-                         userInfo:@{NSLocalizedDescriptionKey: desc}];
 }
 
 + (nw_endpoint_t)convertEndpoint:(NWEndpoint*)old {
@@ -149,13 +143,11 @@
   m_handledUnknown = 0;
 
   // Parse the configuration
-  InterfaceConfig* config = [[InterfaceConfig alloc] initFromDict:options];
-  if (!config) {
-    completionHandler([VPNSplitTunnelProvider makeError:1
-                                        withDescription:@"invalid configuration"]);
+  _config = [[InterfaceConfig alloc] initFromDict:options];
+  if (!self.config) {
+    completionHandler(vpnProviderError(NEProviderStopReasonConfigurationFailed));
     return;
   }
-  _config = config;
 
   self.wireguard = [WireguardTunnel new];
   self.settings = [[NETransparentProxyNetworkSettings alloc] initWithTunnelRemoteAddress:self.protocolConfiguration.serverAddress];
@@ -245,6 +237,12 @@
           return;
         }
 
+        // Register a KVO observer to switch servers upon configuration change.
+        [weakSelf addObserver:weakSelf
+                   forKeyPath:@"protocolConfiguration"
+                      options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
+                      context:nil];
+
         // Success
         completionHandler(nil);
       }];
@@ -260,8 +258,89 @@
   NSLog(@"handled udp flows: %lld", std::atomic_load(&m_handledUdpFlows));
   NSLog(@"handled unknown flows: %lld", std::atomic_load(&m_handledUnknown));
 
+  [self removeObserver:self
+            forKeyPath:@"protocolConfiguration"];
+
   [self.wireguard stopTunnelWithReason:reason
                      completionHandler:completionHandler];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context {
+  // The only thing we should be observing is the protocolConfiguration
+  if (![keyPath isEqual:@"protocolConfiguration"]) {
+    return;
+  }
+  NSLog(@"configuration changed");
+
+  // Parse and update the configuration
+  NETunnelProviderProtocol* proto = (NETunnelProviderProtocol*)self.protocolConfiguration;
+  _config = [[InterfaceConfig alloc] initFromDict:proto.providerConfiguration];
+  if (!self.config) {
+    // We can't make sense of this configuration.
+    [self.wireguard stopTunnelWithReason:NEProviderStopReasonConfigurationFailed
+                       completionHandler:^(){
+      [self cancelProxyWithError:vpnProviderError(NEProviderStopReasonConfigurationFailed)];
+    }];
+    return;
+  }
+
+  // Update the app exclusion settings.
+  [self.vpnDisabledApps removeAllObjects];
+  NSArray* apps = [proto.providerConfiguration objectForKey:@"apps"];
+  if (apps) {
+    NSEnumerator* iter = [apps objectEnumerator];
+    while (id appId = [iter nextObject]) {
+      if (![appId isKindOfClass:[NSString class]]) {
+        continue;
+      }
+#ifdef MZ_DEBUG
+      NSLog(@"excluding app %@ from VPN", appId);
+#endif
+      [self.vpnDisabledApps addObject: appId];
+    }
+  }
+  // TODO: We probably need to update/reset connections if they changed their exclusion status.
+  // but how?
+
+  // YOLO: Does this do anything....
+  [self performSelector:@selector(fetchFlowStatesWithCompletionHandler:)
+             withObject:^(NSArray* result){
+    NSLog(@"flow count: %lu", result.count);
+    for (NSObject* obj in result) {
+      NSLog(@"flow state: %@", NSStringFromClass(obj.class));
+    }
+  }];
+
+  // Check if the server identitiy changed. Do nothing if no changes.
+  NETunnelProviderProtocol* old = [change objectForKey:@"old"];
+  if (old && [old isKindOfClass:NETunnelProviderProtocol.class]) {
+    NSString* oldPubKey = [old.providerConfiguration objectForKey:@"serverPublicKey"];
+    if (oldPubKey && [oldPubKey isKindOfClass:NSString.class]) {
+      if ([oldPubKey isEqual:self.config.serverPublicKey]) {
+        return;
+      }
+    }
+  }
+
+  // Shutdown the old wireguard peer and start a new one.
+  self.reasserting = TRUE;
+  [self.wireguard.peer stopWithReason:NEProviderStopReasonSuperceded
+                    completionHandler:^(){
+    // Create and start a new peer.
+    self.wireguard.peer = [[WireguardPeer alloc] initWithOptions:self.config
+                                                       andTunnel:self.wireguard];
+    [self.wireguard.peer startWithOptions:self.config
+                        completionHandler:^(NSError*err){
+      if (err) {
+        [self cancelProxyWithError:err];
+      } else {
+        self.reasserting = FALSE;
+      }
+    }];
+  }];
 }
 
 - (BOOL)matchAppFlow:(NEAppProxyFlow*)flow {
@@ -337,14 +416,14 @@
                                                 error:&error];
   if (error != nil) {
       NSLog(@"app message error: %@", error.localizedDescription);
-      [VPNSplitTunnelProvider sendAppError:error completionHandler:completionHandler];
+      [VPNSplitTunnelProvider sendAppResponse:error completionHandler:completionHandler];
       return;
   }
   NSString* action = [msg decodeObjectOfClass:NSString.class forKey:@"action"];
   if (!action) {
       NSLog(@"app message invalid action");
-      NSError* error = [VPNSplitTunnelProvider makeError:1 withDescription:@"invalid app message invalid"];
-      [VPNSplitTunnelProvider sendAppError:error completionHandler:completionHandler];
+      NSError* error = vpnProviderError(NEProviderStopReasonConfigurationFailed);
+      [VPNSplitTunnelProvider sendAppResponse:error completionHandler:completionHandler];
       return;
   }
 
@@ -366,8 +445,8 @@
 
   // Wireguard Tunnel messages
   if ([action isEqualToString:@"status"]) {
-    [VPNSplitTunnelProvider sendAppObject:self.wireguard.status
-                        completionHandler:completionHandler];
+    [VPNSplitTunnelProvider sendAppResponse:self.wireguard.status
+                          completionHandler:completionHandler];
     return;
   }
 
@@ -385,31 +464,18 @@
   [VPNSplitTunnelProvider sendAppResponse:nil completionHandler:completionHandler];
 }
 
-+ (void)sendAppResponse:(NSData*) responseData
++ (void)sendAppResponse:(id) obj
       completionHandler:(void (^)(NSData*)) completionHandler {
   if (!completionHandler) {
     return;
   }
-  completionHandler(responseData);
-}
 
-+ (void)sendAppObject:(id) obj
-    completionHandler:(void (^)(NSData*)) completionHandler {
   NSKeyedArchiver* encoder = [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
-  if ([obj respondsToSelector:@selector(encodeWithCoder:)]) {
+  if ([obj isKindOfClass:[NSError class]]) {
+    [encoder encodeObject:obj forKey:@"error"];
+  } else if ([obj respondsToSelector:@selector(encodeWithCoder:)]) {
     [obj encodeWithCoder: encoder];
   }
-  [encoder finishEncoding];
-  completionHandler(encoder.encodedData);
-}
-
-+ (void)sendAppError:(NSError*) error
-   completionHandler:(void (^)(NSData*)) completionHandler {
-  if (!completionHandler) {
-    return;
-  }
-  NSKeyedArchiver* encoder = [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
-  [encoder encodeObject:error forKey:@"error"];
   [encoder finishEncoding];
   completionHandler(encoder.encodedData);
 }

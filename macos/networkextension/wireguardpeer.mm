@@ -170,7 +170,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 
 - (void) stopWithReason:(NEProviderStopReason)reason 
       completionHandler:(void (^)()) completionHandler {
-  [self cancelWithError:vpnPosixError(ECANCELED, @"wireguard peer stopped")];
+  [self cancelWithError:vpnProviderError(reason)];
   completionHandler();
 }
 

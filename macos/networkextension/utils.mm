@@ -62,10 +62,81 @@ nw_endpoint_t convertEndpoint(NWEndpoint* old) {
   return nw_endpoint_create_host(host.hostname.UTF8String, host.port.UTF8String);
 }
 
-NSError* vpnProviderError(VPNErrorType err, NSString* description) {
+NSError* vpnProviderError(NEProviderStopReason reason) {
+  NSDictionary<NSString *,id>* info = nil;
+  switch (reason) {
+    case NEProviderStopReasonNone:
+      info = @{NSLocalizedDescriptionKey: @"No specific reason"};
+      break;
+
+    case NEProviderStopReasonUserInitiated:
+      info = @{NSLocalizedDescriptionKey: @"The user stopped the provider extension"};
+      break;
+
+    case NEProviderStopReasonProviderFailed:
+      info = @{NSLocalizedDescriptionKey: @"The provider failed to function correctly"};
+      break;
+
+    case NEProviderStopReasonNoNetworkAvailable:
+      info = @{NSLocalizedDescriptionKey: @"No network connectivity is currently available"};
+      break;
+
+    case NEProviderStopReasonUnrecoverableNetworkChange:
+      info = @{NSLocalizedDescriptionKey: @"The device's network connectivity changed"};
+      break;
+
+    case NEProviderStopReasonProviderDisabled:
+      info = @{NSLocalizedDescriptionKey: @"The provider was disabled"};
+      break;
+
+    case NEProviderStopReasonAuthenticationCanceled:
+      info = @{NSLocalizedDescriptionKey: @"The authentication process was canceled"};
+      break;
+
+    case NEProviderStopReasonConfigurationFailed:
+      info = @{NSLocalizedDescriptionKey: @"The configuration is invalid"};
+      break;
+
+    case NEProviderStopReasonIdleTimeout:
+      info = @{NSLocalizedDescriptionKey: @"The session timed out"};
+      break;
+
+    case NEProviderStopReasonConfigurationDisabled:
+      info = @{NSLocalizedDescriptionKey: @"The configuration was disabled"};
+      break;
+
+    case NEProviderStopReasonConfigurationRemoved:
+      info = @{NSLocalizedDescriptionKey: @"The configuration was removed"};
+      break;
+
+    case NEProviderStopReasonSuperceded:
+      info = @{NSLocalizedDescriptionKey: @"The configuration was superceded by a higher-priority configuration"};
+      break;
+
+    case NEProviderStopReasonUserLogout:
+      info = @{NSLocalizedDescriptionKey: @"The user logged out"};
+      break;
+
+    case NEProviderStopReasonConnectionFailed:
+      info = @{NSLocalizedDescriptionKey: @"The connection failed"};
+      break;
+
+    case NEProviderStopReasonSleep:
+      info = @{NSLocalizedDescriptionKey: @"A stop reason indicating the configuration enabled disconnect on sleep and the device went to sleep"};
+      break;
+
+    case NEProviderStopReasonInternalError:
+      info = @{NSLocalizedDescriptionKey: @"The provider encountered an internal error"};
+      break;
+
+    case NEProviderStopReasonAppUpdate:
+    default:
+      break;
+  }
+
   return [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
-                             code:(NSUInteger)err
-                         userInfo:@{NSLocalizedDescriptionKey: description}];
+                             code:(NSUInteger)reason
+                         userInfo:info];
 }
 
 NSError* vpnPosixError(int code, NSString* desc) {

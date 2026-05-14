@@ -190,19 +190,32 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
   }
   [options setObject:vpnDisabledApps forKey:@"apps"];
 
-  // Start the split tunnel proxy.
-  NSError* error = nil;
-  NETunnelProviderSession* session =
-      static_cast<NETunnelProviderSession*>(m_manager.connection);
-  BOOL okay = [session startTunnelWithOptions:options andReturnError:&error];
-  if (error) {
-    logger.warning() << "proxy start error:" << error.localizedDescription;
-  } else if (!okay) {
-    logger.warning() << "proxy start failed";
-  } else {
-    // Save the session and retain it.
-    m_session = [session retain];
-  }
+  // Update the tunnel configuration.
+  NETunnelProviderProtocol* proto =
+      static_cast<NETunnelProviderProtocol*>(m_manager.protocolConfiguration);
+  proto.providerConfiguration = options;
+  [m_manager saveToPreferencesWithCompletionHandler:^(NSError* error) {
+    if (error) {
+      logger.warning() << "prefs update error:" << error.localizedDescription;
+      return;
+    }
+
+    // If we don't already have a session - start one.
+    if (m_session) {
+      return;
+    }
+    NETunnelProviderSession* session =
+        static_cast<NETunnelProviderSession*>(m_manager.connection);
+    BOOL okay = [session startTunnelWithOptions:options andReturnError:&error];
+    if (error) {
+      logger.warning() << "proxy start error:" << error.localizedDescription;
+    } else if (!okay) {
+      logger.warning() << "proxy start failed";
+    } else {
+      // Save the session and retain it.
+      m_session = [session retain];
+    }
+  }];
 }
 
 void MacOSExtensionController::deactivate() {
@@ -304,8 +317,8 @@ didFinishWithResult:(OSSystemExtensionRequestResult) result {
 }
 
 - (void)notifyStatusChanged:(NSNotification*)notify {
-  NEVPNStatus status = static_cast<NEVPNConnection*>(notify.object).status;
-  QMetaObject::invokeMethod(self.parent, "extStatusChange", Q_ARG(int, status));
+  NEVPNConnection* conn = static_cast<NEVPNConnection*>(notify.object);
+  QMetaObject::invokeMethod(self.parent, "extStatusChange", Q_ARG(int, conn.status));
 }
 
 @end
