@@ -16,10 +16,12 @@ constexpr const int WG_MAX_HANDSHAKE_TIMEOUT = 15;
 
 extern "C" struct wireguard_tunnel;
 
+@class WireguardTunnel;
+
 @interface WireguardPeer : NSObject
 
 - (id) initWithOptions:(InterfaceConfig*) options
-             andTunnel:(int)fd;
+             andTunnel:(WireguardTunnel*) tunnel;
 
 - (void) startWithOptions:(InterfaceConfig*) options
         completionHandler:(void (^)(NSError *error)) completionHandler;
@@ -35,6 +37,6 @@ extern "C" struct wireguard_tunnel;
             withData:(NSData*)data;
 
 @property (strong, readonly, getter=getStatus) WireguardStatus* status;
+@property (weak, readonly) WireguardTunnel* tunnel;
 @property (strong) nw_connection_t connection;
-@property struct wireguard_tunnel* wireguard;
 @end

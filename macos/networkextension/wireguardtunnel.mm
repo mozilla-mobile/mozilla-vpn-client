@@ -63,8 +63,7 @@ static void wgLog(const char* msg) {
 
   m_tunfd = -1;
   m_rtseq = 0;
-  m_rtsock = -1;
-
+  m_rtsock = socket(PF_ROUTE, SOCK_RAW, 0);
   m_tunfd = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
   if (m_tunfd < 0) {
     return nil;
@@ -131,13 +130,6 @@ static void wgLog(const char* msg) {
   m_ipv4gateway = options.serverIpv4Gateway;
   m_ipv6gateway = options.serverIpv6Gateway;
 
-  // Create a routing socket too.
-  m_rtsock = socket(PF_ROUTE, SOCK_RAW, 0);
-  if (m_rtsock < 0) {
-    completionHandler(vpnPosixError(errno, @"routing socket creation failed"));
-    return;
-  }
-
   // Assign addresses
   if (NSError *err = [self setTunnelAddress:options.deviceIpv4Addr]) {
     completionHandler(err);
@@ -148,18 +140,8 @@ static void wgLog(const char* msg) {
     return;
   }
 
-  // Configure routes into the tunnel interface.
-  // Note that the default route should set RTF_IFSCOPE so that we
-  // leave the real default route untouched.
-  for (RoutePrefix* prefix in options.routes) {
-    [self rtmSendRoute:RTM_ADD
-         toDestination:prefix.destination
-            withPrefix:prefix.prefixLength
-              andFlags:(prefix.prefixLength == 0) ? RTF_IFSCOPE : 0];
-  }
-
   // Configure the peer
-  self.peer = [[WireguardPeer alloc] initWithOptions:options andTunnel:m_tunfd];
+  self.peer = [[WireguardPeer alloc] initWithOptions:options andTunnel:self];
   [self.peer startWithOptions:options completionHandler:^(NSError* error){
     NSLog(@"handshake completed");
     if (error) {
@@ -357,6 +339,10 @@ static void wgLog(const char* msg) {
   [self shutdownTunnel];
 }
 
+- (int)getTunfd {
+  return m_tunfd;
+}
+
 - (WireguardStatus*)getStatus {
   if (!self.peer) {
     return [WireguardStatus new];
@@ -500,6 +486,22 @@ static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, cons
     return;
   }
   NSLog(@"Failed to send route to kernel: %s", strerror(errno));
+}
+
+- (void) addRoute:(RoutePrefix*)prefix {
+  // Note that the default route should set RTF_IFSCOPE so that we
+  // leave the real default route untouched.
+  [self rtmSendRoute:RTM_ADD
+       toDestination:prefix.destination
+          withPrefix:prefix.prefixLength
+            andFlags:(prefix.prefixLength == 0) ? RTF_IFSCOPE : 0];
+}
+
+- (void) removeRoute:(RoutePrefix*)prefix {
+  [self rtmSendRoute:RTM_DELETE
+       toDestination:prefix.destination
+          withPrefix:prefix.prefixLength
+            andFlags:(prefix.prefixLength == 0) ? RTF_IFSCOPE : 0];
 }
 
 @end

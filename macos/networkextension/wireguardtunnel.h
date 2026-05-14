@@ -22,8 +22,12 @@
 
 - (NSError*) setTunnelAddress:(nw_endpoint_t)endpoint;
 
+- (void) addRoute:(RoutePrefix*)prefix;
+- (void) removeRoute:(RoutePrefix*)prefix;
+
 @property (nonatomic) NSUInteger mtu;
 @property (strong) WireguardPeer* peer;
+@property (readonly, getter=getTunfd) int tunfd;
 @property (strong, readonly, getter=getStatus) WireguardStatus* status;
 @property (strong) nw_endpoint_t ipv4address;
 @property (strong) nw_endpoint_t ipv6address;
