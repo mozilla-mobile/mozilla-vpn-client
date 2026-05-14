@@ -463,7 +463,7 @@ connectionInfo:
     comment: Label for the upload benchmark shown in the speed test view.
   unitPing:
     value: ms
-    commnent: milliseconds
+    comment: milliseconds
   loadingIndicatorLabel:
     value: Testing speed…
     comment: Shown to the user while waiting for the connection speed test results
