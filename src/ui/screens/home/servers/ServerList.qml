@@ -220,11 +220,6 @@ FocusScope {
                                         return MZI18n.ServersViewRecommendedRefreshlLoadingLabel.arg(
                                             Math.round(VPNServerLatency.progress * 100));
 
-                                    case VPNServerLatency.Initial:
-                                        return (VPNController.state === VPNController.StateOff)
-                                            ? MZI18n.ServersViewRecommendedRefreshNoUpdateLabel
-                                            : MZI18n.ServersViewRecommendedRefreshNoUpdateDisabledLabel;
-
                                     case VPNServerLatency.Loaded:
                                     default:
                                         const formatted = MZLocalizer.formatDate(
