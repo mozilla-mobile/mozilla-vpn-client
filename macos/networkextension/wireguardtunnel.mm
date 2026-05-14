@@ -457,11 +457,13 @@ static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, cons
     memset(&mask, 0, sizeof(mask));
     mask.sin6_family = AF_INET6;
     mask.sin6_len = sizeof(mask);
-    memset(&mask.sin6_addr.s6_addr, 0xff, plen / 8);
-    if (plen % 8) {
-      mask.sin6_addr.s6_addr[plen / 8] = 0xff ^ (0xff >> (plen % 8));
+    if (plen < 128) {
+      memset(&mask.sin6_addr.s6_addr, 0xff, plen / 8);
+      mask.sin6_addr.s6_addr[plen / 8] = ~(0xff >> (plen % 8));
+      rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &mask);
+    } else {
+      rtm->rtm_flags |= RTF_HOST;
     }
-    rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &mask);
   } else if (dest->sa_family == AF_INET) {
     struct sockaddr_in mask;
     memset(&mask, 0, sizeof(mask));
@@ -469,9 +471,11 @@ static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, cons
     mask.sin_len = sizeof(mask);
     mask.sin_addr.s_addr = 0xffffffff;
     if (plen < 32) {
-      mask.sin_addr.s_addr ^= htonl(0xffffffff >> plen);
+      mask.sin_addr.s_addr = ~htonl(0xffffffff >> plen);
+      rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &mask);
+    } else {
+      rtm->rtm_flags |= RTF_HOST;
     }
-    rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &mask);
   }
 
   // Send the routing message into the kernel.
