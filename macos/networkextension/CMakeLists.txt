@@ -64,10 +64,6 @@ add_custom_command(TARGET networkextension POST_BUILD
 target_link_libraries(networkextension PRIVATE ${FW_FOUNDATION})
 target_link_libraries(networkextension PRIVATE ${FW_NW_EXTENSION})
 target_sources(networkextension PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/bypasstcpflow.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/bypasstcpflow.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/bypassudpflow.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/bypassudpflow.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/main.mm

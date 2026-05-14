@@ -4,8 +4,6 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
-#import "bypasstcpflow.h"
-#import "bypassudpflow.h"
 #import "interfaceconfig.h"
 #import "wireguardtunnel.h"
 
@@ -316,58 +314,15 @@
   }
 
   // Perform flow bypassing.
+  flow.networkInterface = self.wireguard.virtualInterface;
   if ([flow isKindOfClass:[NEAppProxyTCPFlow class]]) {
-    NEAppProxyTCPFlow* tcpFlow = (NEAppProxyTCPFlow*)flow;
-    nw_endpoint_t dest = nil;
-    if (@available(macOS 15, *)) {
-      dest = tcpFlow.remoteFlowEndpoint;
-    } else {
-      dest = [VPNSplitTunnelProvider convertEndpoint:tcpFlow.remoteEndpoint];
-    }
-
-    BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow
-                                              toEndpoint:dest
-                                           withInterface:self.wireguard.virtualInterface];
-    if (!handler) {
-      return NO;
-    }
-
-    [handler startBypass:^(NSError* error){
-      if (error) {
-        NSLog(@"flow closed with error: %@", error);
-      }
-    }];
-
     std::atomic_fetch_add(&m_handledTcpFlows, 1);
-    return YES;
   } else if ([flow isKindOfClass:[NEAppProxyUDPFlow class]]) {
-    NEAppProxyUDPFlow* udpFlow = (NEAppProxyUDPFlow*)flow;
-    nw_endpoint_t source;
-    if (@available(macOS 15, *)) {
-      source = udpFlow.localFlowEndpoint;
-    } else {
-      source = [VPNSplitTunnelProvider convertEndpoint:udpFlow.localEndpoint];
-    }
-
-    BypassUdpFlow* handler = [BypassUdpFlow createBypass:udpFlow
-                                           localEndpoint:source
-                                           withInterface:self.wireguard.virtualInterface];
-    if (!handler) {
-      return NO;
-    }
-
-    [handler startBypass:^(NSError* error){
-      if (error) {
-        NSLog(@"flow closed with error: %@", error);
-      }
-    }];
-
     std::atomic_fetch_add(&m_handledUdpFlows, 1);
-    return YES;
   } else {
     std::atomic_fetch_add(&m_handledUnknown, 1);
   }
-  return NO;
+  return YES;
 }
 
 - (void)cancelProxyWithError:(NSError *)error {
