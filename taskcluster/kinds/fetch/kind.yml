@@ -82,9 +82,9 @@ tasks:
             sha256: b7262c64f4b5f0692f3bab063cafb09682495f98355677a3f1373d0520457bad
             size: 198679
     qt-source-tarball:
-        description: Qt 6.10.1 Source Tarball
+        description: Qt 6.10.3 Source Tarball
         fetch:
             type: static-url
-            url: https://download.qt.io/archive/qt/6.10/6.10.1/single/qt-everywhere-src-6.10.1.tar.xz
-            sha256: 0ed08b079719394303cd2054b66b2dc0c5895ceeb88fb6131c18991c980bf00f
-            size: 1314503800
+            url: https://download.qt.io/archive/qt/6.10/6.10.3/single/qt-everywhere-src-6.10.3.tar.xz
+            sha256: cbc81e726b0ff3c0cdb0219bf74545e91cec013c4a8503c20f93f83d73dff5d2
+            size: 1315591828

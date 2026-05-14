@@ -94,6 +94,15 @@ def parseYAMLTranslationStrings(yamlfile):
                     value = [obj]
 
                 elif type(obj) is dict:
+                    allowed_keys = {"value", "comment"}
+                    unknown_keys = set(obj.keys()) - allowed_keys
+                    if unknown_keys:
+                        exit(
+                            f"The key {string_id} contains unknown field(s) "
+                            f"{sorted(unknown_keys)}. Allowed fields: "
+                            f"{sorted(allowed_keys)}"
+                        )
+
                     if not ("value" in obj):
                         exit(
                             f"The key {string_id} must contain a `value` string or an array of strings"

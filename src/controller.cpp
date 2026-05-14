@@ -798,7 +798,14 @@ bool Controller::silentServerSwitchingSupported() const {
 }
 
 bool Controller::splitTunnelSupported() const {
-  return m_impl->splitTunnelSupported();
+  if (m_impl) {
+    return m_impl->splitTunnelSupported();
+  } else {
+    // Fix for VPN-7599 - when signed out, we need this to
+    // resolve when resetting client, as one line is shown
+    // depending on whether split tunnel is supported.
+    return false;
+  }
 }
 
 void Controller::logSerialize(QIODevice* device) {
@@ -895,7 +902,15 @@ void Controller::serverDataChanged() {
 #ifdef MZ_IOS
     // If the VPN is disconnected, we still need to update the config in the
     // network extension so if the next connection comes from control center or
-    // app intent the latest config will be used.
+    // app intent the latest config will be used. But skip if not in main state.
+    if (!SettingsHolder::instance()->hasServerData()) {
+      logger.debug() << "Logging out, so skipping iOS config forwarding";
+      return false;
+    }
+    if (MozillaVPN::instance()->state() != MozillaVPN::StateMain) {
+      logger.debug() << "Not in StateMain, so skipping iOS config forwarding";
+      return false;
+    }
     logger.debug() << "However, we are on iOS so we are forwarding the config";
 #else
     return;

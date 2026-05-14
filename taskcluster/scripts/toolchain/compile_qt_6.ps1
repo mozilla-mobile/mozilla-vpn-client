@@ -67,16 +67,69 @@ if(!(Test-Path $QT_BUILD_PATH)){
 }
 Copy-Item -Path "$env:VCS_PATH/taskcluster/scripts/toolchain/configure_qt.ps1" -Destination qt-windows/
 
-Write-Output "Preparing to buld Qt $QT_SOURCE_VERSION"
-if ($QT_SOURCE_VERSION -lt "6.10.3") {
-    Write-Output "Patching for QTBUG-141830"
-    Start-Process -WorkingDirectory $QT_SOURCE_DIR/qtdeclarative -NoNewWindow -Wait "git" -ArgumentList @(
+function Add-QtbugPatch {
+<#
+.SYNOPSIS
+    Apply a patch to the Qt sources before building.
+
+.PARAMETER PatchFile
+    The patch file to apply. Relative filenames will be interpreted with a
+    base bath of $env:VCS_PATH/taskcluster/scripts/toolchain/patches/
+
+.PARAMETER SourcePath
+    The Qt source directory to apply the patch to.
+
+.PARAMETER Desc
+    A descriptive name of the patch being applied. The default is taken from
+    the patch filename.
+
+.PARAMETER VersionMax
+    The maximum Qt version number (exclusive) to which this patch should be
+    applied. This should be set to the upstream version of Qt where the bug or
+    issue was fixed.
+
+.PARAMETER VersionMin
+    The minimum Qt version number (inclusive) to which this patch should be
+    applied. This should be set to the version in which the bug or issue was
+    introduced.
+#>
+  param (
+    [Parameter(Mandatory)]
+    [string]$PatchFile,
+    [ValidateNotNullOrEmpty()]
+    [string]$SourcePath = $QT_SOURCE_DIR,
+    [ValidateNotNullOrEmpty()]
+    [string]$Desc = $PatchFile,
+    [string]$VersionMax,
+    [string]$VersionMin
+  )
+
+  if (($VersionMax) -and ($QT_SOURCE_VERSION -ge $VersionMax)) {
+    return
+  }
+  if (($VersionMin) -and ($QT_SOURCE_VERSION -lt $VersionMin)) {
+    return
+  }
+
+
+  Write-Output "Patching for $Desc"
+  Push-Location "$env:VCS_PATH/taskcluster/scripts/toolchain/patches"
+  try {
+    Start-Process -WorkingDirectory $SourcePath -NoNewWindow -Wait "git" -ArgumentList @(
       'apply'
       '--ignore-space-change'
       '--ignore-whitespace'
-      (resolve-path "$env:VCS_PATH/taskcluster/scripts/toolchain/patches/qtbug-141830-qsortfilterproxymodel.patch")
+      (Resolve-Path -Path "$PatchFile")
     )
+  } finally {
+    Pop-Location
+  }
 }
+
+Write-Output "Preparing to buld Qt $QT_SOURCE_VERSION"
+Add-QtbugPatch -SourcePath $QT_SOURCE_DIR/qtdeclarative -VersionMax "6.10.3" -Desc "QTBUG-141830" -PatchFile qtbug-141830-qsortfilterproxymodel.patch
+Add-QtbugPatch -SourcePath $QT_SOURCE_DIR/qtsvg -VersionMax "6.11.0" -Desc "CVE-2026-6210" -PatchFile cve-2026-6210-qtsvg-6.10.diff
+Add-QtbugPatch -SourcePath $QT_SOURCE_DIR/qtbase -VersionMax "6.11.1" -Desc "QLocalServer pipe fix" -PatchFile qtbug-windows-qlocalserver-reject-remote.patch
 
 $ErrorActionPreference = "Stop"
 

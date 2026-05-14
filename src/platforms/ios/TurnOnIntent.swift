@@ -21,7 +21,7 @@ struct TurnOnIntent: AppIntent {
   @MainActor
   func perform() async throws -> some IntentResult & ProvidesDialog {
     let dialog: IntentDialog
-    let activationResult = IOSControllerImpl.startTunnelFromIntent()
+    let activationResult = await IOSControllerImpl.startTunnelFromIntent()
     let responseText: LocalizedStringResource
     let responseImage: String
 

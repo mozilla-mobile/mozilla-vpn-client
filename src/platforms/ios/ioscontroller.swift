@@ -300,7 +300,7 @@ public class IOSControllerImpl: NSObject {
         }
     }
 
-    static func startTunnelFromIntent() -> TurnOnIntent.Result {
+    static func startTunnelFromIntent() async -> TurnOnIntent.Result {
       guard let session = TunnelManager.session else {
         IOSControllerImpl.logger.info(message: "No current session")
         return .errorNoSession
@@ -315,21 +315,39 @@ public class IOSControllerImpl: NSObject {
         alwaysConnect.interfaceTypeMatch = .any
         tunnel.isOnDemandEnabled = true
         tunnel.onDemandRules = [alwaysConnect]
+        tunnel.saveToPreferences { saveError in
+          if let error = saveError {
+            IOSControllerImpl.logger.error(message: "Tunnel save error when saving on demand rules: \(error)")
+          }
+        }
         return true
       }
 
       do {
         IOSControllerImpl.shouldSkipNextNotification = true
-        try TunnelManager.session?.startTunnel(options: ["source":"intent"])
-        guard let turnOnConfirmation = TunnelManager.turnOnConfirmation else {
-          IOSControllerImpl.logger.info(message: "No confirmation dialog available")
+        // after saving this above, it seems like we need to use an updated session
+        guard let session = TunnelManager.session else {
+          IOSControllerImpl.logger.info(message: "No updated session")
           return .errorNoSession
         }
-        return .success(turnOnConfirmation: turnOnConfirmation)
+        try session.startTunnel(options: ["source":"intent"])
       } catch let error {
         IOSControllerImpl.logger.info(message: "Error starting from intent: \(error.localizedDescription)")
         return .errorNoSession
       }
+      let deadline = Date().addingTimeInterval(3)
+      while Date() < deadline {
+        if session.status == .connected {
+          guard let turnOnConfirmation = TunnelManager.turnOnConfirmation else {
+            IOSControllerImpl.logger.info(message: "No confirmation dialog available")
+            return .errorNoSession
+          }
+          return .success(turnOnConfirmation: turnOnConfirmation)
+        }
+        try? await Task.sleep(nanoseconds: 250_000_000)
+      }
+      return .errorNoSession
+
     }
 
     static func stopTunnelFromIntent() -> Bool {

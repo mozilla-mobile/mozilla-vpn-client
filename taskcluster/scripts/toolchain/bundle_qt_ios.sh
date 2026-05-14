@@ -7,6 +7,16 @@
 # This script creates a qt-bundle that we can use in xcode-cloud and 
 # in the taskcluser/ios builds ( to be coming ... )
 
+# This script takes one argument - the Qt version.
+if [[ $# -ge 1 ]]; then
+  QT_VERSION="$1"
+else
+  echo "No Qt version specified." >&2
+  echo "" >&2
+  echo "Usage: $0 <QT_VERSION>" >&2
+  exit 1
+fi
+
 python3 -m pip install --upgrade pip
 python3 -m pip install --upgrade aqtinstall
 

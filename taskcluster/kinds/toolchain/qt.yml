@@ -4,8 +4,6 @@
 ---
 task-defaults:
     worker:
-        env:
-            QT_VERSION: "6.10.1"
         max-run-time: 14400
     run: 
         use-caches: []
@@ -75,6 +73,8 @@ qt-ios:
     description: "QT ios bundle Task"
     run:
         script: bundle_qt_ios.sh
+        arguments:
+            - 6.10.3
         resources:
             - taskcluster/scripts/toolchain/bundle_qt_ios.sh
         toolchain-alias: qt-ios
@@ -84,9 +84,6 @@ qt-ios:
     worker-type: b-linux
     worker:
         docker-image: {in-tree: base}
-        env:
-            QT_VERSION: "6.2.4"
-            QT_MAJOR: "6.2"
 
 qt-linux:
     description: "Linux QT compile Task"
@@ -110,6 +107,8 @@ qt-tools-6.10:
     description: "Linux Qt host tools"
     run:
         script: bundle_qt_tools.sh
+        arguments:
+            - 6.10.3
         resources:
             - requirements.txt
         toolchain-alias: qt-tools
@@ -120,8 +119,6 @@ qt-tools-6.10:
     worker:
         docker-image: {in-tree: conda-base}
         max-run-time: 900
-        env:
-            QT_VERSION: "6.10.1"
 
 qt-wasm-6.10:
     description: "QT wasm bundle task"
@@ -132,6 +129,8 @@ qt-wasm-6.10:
         docker-image: {in-tree: base}
     run:
         script: bundle_qt_wasm.sh
+        arguments:
+            - 6.10.3
         resources:
             - requirements.txt
         toolchain-alias: qt-wasm
