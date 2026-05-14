@@ -325,16 +325,6 @@ SETTING_BOOL(onboardingCompleted,        // getter
              false                       // sensitive (do not log)
 )
 
-SETTING_BOOL(hasDismissedBatteryOptimization,        // getter
-             setHasDismissedBatteryOptimization,     // setter
-             removeHasDismissedBatteryOptimization,  // remover
-             hasHasDismissedBatteryOptimization,     // has
-             "hasDismissedBatteryOptimization",      // key
-             false,                                  // default value
-             true,  // remove when reset (clears on logout)
-             false  // sensitive (do not log)
-)
-
 SETTING_BOOL(onboardingDataCollectionEnabled,        // getter
              setOnboardingDataCollectionEnabled,     // setter
              removeOnboardingDataCollectionEnabled,  // remover
