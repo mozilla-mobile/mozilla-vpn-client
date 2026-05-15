@@ -180,8 +180,7 @@ struct ToggleWidget: Widget {
       ToggleWidgetView(entry: entry)
     }
     .configurationDisplayName(LocalizedStringResource("vpn.mobileOnboarding.panelOneTitle", defaultValue: "Mozilla VPN"))
-    // This next line will be added in after string freeze. OK to initially ship without it, this description doesn't add much to the iOS widget page.
-//    .description(LcalizedStringResource("vpn.toggleWidget.description", defaultValue: "Turn Mozilla VPN on and off, and see the current location."))
+    .description(LocalizedStringResource("vpn.toggleWidget.description", defaultValue: "Turn Mozilla VPN on and off, and see the current location."))
     .supportedFamilies([.systemSmall, .systemMedium])
   }
 }

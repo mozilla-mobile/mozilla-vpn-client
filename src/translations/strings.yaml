@@ -1140,6 +1140,11 @@ iosAppIntentsMain:
     value: Error changing VPN status
     comment: Generic error message used when toggling VPN fails early
 
+toggleWidget:
+  description:
+    value: Turn Mozilla VPN on and off, and see the current location.
+    comment: More information about what the Mozilla VPN widget contains.
+
 iosAppIntentsActivate:
   phrases:
     value: |
