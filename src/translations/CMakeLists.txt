@@ -18,34 +18,32 @@ if(IOS)
     set(TRANSLATIONS_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
     file(MAKE_DIRECTORY "${TRANSLATIONS_OUT_DIR}")
 
-    file(GLOB_RECURSE XLIFF_FILE_LIST CONFIGURE_DEPENDS
-        ${CMAKE_SOURCE_DIR}/3rdparty/i18n/*/mozillavpn.xliff
-    )
-
-    add_custom_command(
-        OUTPUT ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
-        DEPENDS
-            ${XLIFF_FILE_LIST}
-            ${GENERATE_XCSTRINGS_SCRIPT}
-            ${CMAKE_SOURCE_DIR}/src/translations/strings.yaml
-        COMMAND ${PYTHON_EXECUTABLE}
+    # `execute_process` runs when steting up the Xcode Project. This has the downside
+    # of not re-running unless the iOS build folder is deleted - so new translations
+    # are not added until the folder is removed.
+    # Running the Python script was previously done at build time, with `execute_process` being
+    # replaced by `add_custom_command`. However, that led to a bug where keys were shown for intent
+    # suggestions (https://mozilla-hub.atlassian.net/browse/VPN-7603?focusedCommentId=1436443).
+    # Xcode was pulling the translation files for system extensions before the command was actually
+    # being run, even though the command and its output was set to be target that was a dependency
+    # of the mozillavpn target. Thus, we were always building with the xcstrings files that were from
+    # the prior build. Or in the case of the first build (like in CI), we weren't including them at all. 
+    execute_process(
+        COMMAND
+            ${PYTHON_EXECUTABLE}
             ${GENERATE_XCSTRINGS_SCRIPT}
             ${CMAKE_SOURCE_DIR}/src/translations/strings.yaml
             ${CMAKE_SOURCE_DIR}/3rdparty/i18n
             ${TRANSLATIONS_OUT_DIR}
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        RESULT_VARIABLE apple_translations_result
     )
+
+    if(NOT apple_translations_result EQUAL 0)
+        message(FATAL_ERROR "xcstrings generation failed: ${apple_translations_result}")
+    endif()
     message("Output xcstrings file in ${TRANSLATIONS_OUT_DIR}")
 
-    # Due to some dark magic of CMake/Xcode, the only way to get these files visible in Xcode
-    # is to *not* put them in the mozillavpn target, but their own target - but also add them
-    # as a mozillavpn target source. Yes, I know how weird this sounds - many, many permutations
-    # and other things were tried.
-    add_custom_target(generate_xcstrings
-        DEPENDS
-            ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
-            ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
-    )
     target_sources(mozillavpn PRIVATE
         ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
         ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
@@ -61,7 +59,5 @@ if(IOS)
         ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
         ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
     )
-
-    add_dependencies(mozillavpn generate_xcstrings)
 
 endif()
