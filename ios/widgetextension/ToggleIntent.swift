@@ -10,8 +10,9 @@ import WidgetKit
 @available(iOS 16.0, *)
 struct ToggleIntent: SetValueIntent {
   static let title = LocalizedStringResource("vpn.iosAppIntentsMain.toggleTitle", defaultValue: "Toggle Mozilla VPN")
-
   static let description = IntentDescription(LocalizedStringResource("vpn.iosAppIntentsMain.toggleDescription", defaultValue: "Changes Mozilla VPN status"))
+
+  static var isDiscoverable = false
 
   static var authenticationPolicy: IntentAuthenticationPolicy = .requiresAuthentication
   static let errorSystemImageName = "exclamationmark.triangle"
