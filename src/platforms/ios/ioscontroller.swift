@@ -329,6 +329,7 @@ public class IOSControllerImpl: NSObject {
         try session.startTunnel(options: ["source":"intent"])
       } catch let error {
         IOSControllerImpl.logger.info(message: "Error starting from intent: \(error.localizedDescription)")
+        IOSControllerImpl.removeOnDemandRules()
         return .errorNoSession
       }
       let deadline = Date().addingTimeInterval(3)
@@ -339,6 +340,7 @@ public class IOSControllerImpl: NSObject {
         }
         try? await Task.sleep(nanoseconds: 250_000_000)
       }
+      IOSControllerImpl.removeOnDemandRules()
       return .errorNoSession
 
     }
@@ -357,24 +359,26 @@ public class IOSControllerImpl: NSObject {
       IOSControllerImpl.staticDisconnect()
     }
 
-  static func staticDisconnect() {
-    IOSControllerImpl.logger.info(message: "Disconnecting")
-    TunnelManager.withTunnel { tunnel in
-
-        // Turn off auto-connect, otherwise it will immediately reconnect.
-        tunnel.isOnDemandEnabled = false;
-        tunnel.onDemandRules = []
-
-        tunnel.saveToPreferences { saveError in
-            if let error = saveError {
-                IOSControllerImpl.logger.error(message: "Disonnect tunnel save error: \(error)")
-            }
-            TunnelManager.session?.stopTunnel()
-        }
-
-        // Needs to return something, but this will be discarded.
-        return true
+    static func staticDisconnect() {
+      IOSControllerImpl.logger.info(message: "Disconnecting")
+      IOSControllerImpl.removeOnDemandRules()
+      TunnelManager.session?.stopTunnel()
     }
+
+    private static func removeOnDemandRules() {
+      TunnelManager.withTunnel { tunnel in
+
+          // Turn off auto-connect, otherwise it will immediately reconnect.
+          tunnel.isOnDemandEnabled = false;
+          tunnel.onDemandRules = []
+
+          tunnel.saveToPreferences { saveError in
+              if let error = saveError {
+                  IOSControllerImpl.logger.error(message: "Disonnect tunnel save error: \(error)")
+              }
+          }
+          return
+      }
   }
 
     @objc func deleteOSTunnelConfig() {
