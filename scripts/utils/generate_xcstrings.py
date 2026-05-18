@@ -26,6 +26,7 @@ import xml.etree.ElementTree as ET
 from generate_strings import parseYAMLTranslationStrings
 
 XLIFF_NS = "{urn:oasis:names:tc:xliff:document:1.2}"
+_FALLBACK_LOCALES = None
 
 
 def load_xliff_translations(xliff_path, isEnglish):
@@ -94,27 +95,55 @@ def build_main_strings(strings_to_translate, locale_translations, use_id_as_key 
         localizations = {}
         for locale, translations in locale_translations.items():
             translated = translations.get(string_id)
-            if translated:
-                for placeholder in re.findall(r"%.{0,2}@", english_value):
-                    if placeholder not in translated:
-                        print(
-                            f"Error: placeholder '{placeholder}' missing from {locale} translation of '{string_id}'"
-                        )
-                        exit(1)
-                localizations[normalize_locale(locale)] = {
-                    "stringUnit": {
-                        "state": "translated" if locale != "en" else "new",
-                        "value": translated,
-                    }
+            if not translated:
+                # Apple will show the key if it doesn't have a string. Need to provide *some* string.
+                translated = get_fallback_translation(string_id, locale, locale_translations)
+            for placeholder in re.findall(r"%.{0,2}@", english_value):
+                if placeholder not in translated:
+                    print(
+                        f"Error: placeholder '{placeholder}' missing from {locale} translation of '{string_id}'"
+                    )
+                    exit(1)
+            localizations[normalize_locale(locale)] = {
+                "stringUnit": {
+                    "state": "translated",
+                    "value": translated,
                 }
-        if localizations:
-            entry["localizations"] = localizations
+            }
+        entry["localizations"] = localizations
 
         if use_id_as_key:
             strings[string_id] = entry
         else:
             strings[english_value] = entry
     return strings
+
+
+def fallback_locales():
+    global _FALLBACK_LOCALES
+    if _FALLBACK_LOCALES is None:
+        repo_root = os.path.dirname(
+            os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        )
+        path = os.path.join(
+            repo_root, "src", "translations", "extras", "translations_fallback.json"
+        )
+        if not os.path.exists(path):
+            print(f"Translations fallback file not found at {path}")
+            exit(1)
+        with open(path, encoding="utf-8") as f:
+            _FALLBACK_LOCALES = json.load(f)
+    return _FALLBACK_LOCALES
+
+
+def get_fallback_translation(string_id, locale, locale_translations):
+    for fallback_locale in fallback_locales().get(locale, []):
+        translated = locale_translations.get(fallback_locale, {}).get(string_id)
+        if translated:
+            print(f"Falling back to {fallback_locale} for {locale} for {string_id}")
+            return translated
+    print(f"Falling back to English for {locale} for {string_id}")
+    return locale_translations.get("en", {}).get(string_id, string_id)
 
 
 def build_phrase_section(phrase_strings, locale_translations):
@@ -144,7 +173,7 @@ def build_phrase_section(phrase_strings, locale_translations):
         if locale_values:
             localizations[normalize_locale(locale)] = {
                 "stringSet": {
-                    "state": "translated" if locale != "en" else "new",
+                    "state": "translated",
                     "values": locale_values,
                 }
             }
