@@ -12,7 +12,7 @@ QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-s
 QT_SOURCE_VERSION=$(echo $QT_SOURCE_DIR | awk -F"-" '{print $NF}')
 ARTIFACT_NAME="qt6_linux.tar.xz"
 CROSS_ARCH=""
-APT_ARCH=""
+DEB_HOST_ARCH="x86_64"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
@@ -24,7 +24,7 @@ done
 # Validate cross-arch and set apt arch
 if [[ -n "$CROSS_ARCH" ]]; then
   case "$CROSS_ARCH" in
-    aarch64) APT_ARCH=":arm64" ;;
+    aarch64) DEB_HOST_ARCH="arm64" ;;
     *) echo "ERROR: unsupported --cross-arch value: ${CROSS_ARCH}" >&2; exit 1 ;;
   esac
 fi
@@ -74,40 +74,40 @@ elif [ -f /etc/debian_version ]; then
     fi
 
     sudo apt-get -y install \
-            libatspi2.0-dev${APT_ARCH} \
-            libdbus-1-dev${APT_ARCH} \
-            libfontconfig1-dev${APT_ARCH} \
-            libfreetype6-dev${APT_ARCH} \
-            libssl-dev${APT_ARCH} \
-            libx11-dev${APT_ARCH} \
-            libx11-xcb-dev${APT_ARCH} \
-            libxext-dev${APT_ARCH} \
-            libxfixes-dev${APT_ARCH} \
-            libxi-dev${APT_ARCH} \
-            libxrender-dev${APT_ARCH} \
-            libxcb1-dev${APT_ARCH} \
-            libxcb-cursor-dev${APT_ARCH} \
-            libxcb-glx0-dev${APT_ARCH} \
-            libxcb-keysyms1-dev${APT_ARCH} \
-            libxcb-image0-dev${APT_ARCH} \
-            libxcb-shm0-dev${APT_ARCH} \
-            libxcb-icccm4-dev${APT_ARCH} \
-            libxcb-sync-dev${APT_ARCH} \
-            libxcb-xfixes0-dev${APT_ARCH} \
-            libxcb-shape0-dev${APT_ARCH} \
-            libxcb-randr0-dev${APT_ARCH} \
-            libxcb-render-util0-dev${APT_ARCH} \
-            libxcb-util-dev${APT_ARCH} \
-            libxcb-xinerama0-dev${APT_ARCH} \
-            libxcb-xkb-dev${APT_ARCH} \
-            libxkbcommon-dev${APT_ARCH} \
-            libxkbcommon-x11-dev${APT_ARCH} \
-            libwayland-dev${APT_ARCH} \
-            libwayland-egl-backend-dev${APT_ARCH} \
+            libatspi2.0-dev:${DEB_HOST_ARCH} \
+            libdbus-1-dev:${DEB_HOST_ARCH} \
+            libfontconfig1-dev:${DEB_HOST_ARCH} \
+            libfreetype6-dev:${DEB_HOST_ARCH} \
+            libssl-dev:${DEB_HOST_ARCH} \
+            libx11-dev:${DEB_HOST_ARCH} \
+            libx11-xcb-dev:${DEB_HOST_ARCH} \
+            libxext-dev:${DEB_HOST_ARCH} \
+            libxfixes-dev:${DEB_HOST_ARCH} \
+            libxi-dev:${DEB_HOST_ARCH} \
+            libxrender-dev:${DEB_HOST_ARCH} \
+            libxcb1-dev:${DEB_HOST_ARCH} \
+            libxcb-cursor-dev:${DEB_HOST_ARCH} \
+            libxcb-glx0-dev:${DEB_HOST_ARCH} \
+            libxcb-keysyms1-dev:${DEB_HOST_ARCH} \
+            libxcb-image0-dev:${DEB_HOST_ARCH} \
+            libxcb-shm0-dev:${DEB_HOST_ARCH} \
+            libxcb-icccm4-dev:${DEB_HOST_ARCH} \
+            libxcb-sync-dev:${DEB_HOST_ARCH} \
+            libxcb-xfixes0-dev:${DEB_HOST_ARCH} \
+            libxcb-shape0-dev:${DEB_HOST_ARCH} \
+            libxcb-randr0-dev:${DEB_HOST_ARCH} \
+            libxcb-render-util0-dev:${DEB_HOST_ARCH} \
+            libxcb-util-dev:${DEB_HOST_ARCH} \
+            libxcb-xinerama0-dev:${DEB_HOST_ARCH} \
+            libxcb-xkb-dev:${DEB_HOST_ARCH} \
+            libxkbcommon-dev:${DEB_HOST_ARCH} \
+            libxkbcommon-x11-dev:${DEB_HOST_ARCH} \
+            libwayland-dev:${DEB_HOST_ARCH} \
+            libwayland-egl-backend-dev:${DEB_HOST_ARCH} \
             wayland-protocols \
-            libgl-dev${APT_ARCH} \
-            libgles-dev${APT_ARCH} \
-            libegl-dev${APT_ARCH}
+            libgl-dev:${DEB_HOST_ARCH} \
+            libgles-dev:${DEB_HOST_ARCH} \
+            libegl-dev:${DEB_HOST_ARCH}
 fi
 
 

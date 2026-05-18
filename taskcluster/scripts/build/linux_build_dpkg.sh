@@ -15,12 +15,12 @@ helpFunction() {
   echo "Build options:"
   echo "  -d, --dist DIST         Build packages for distribution DIST"
   echo "  -s, --static            Build with statically linked Qt (x86_64)"
-  echo "  --cross-arch ARCH       Cross-compile for ARCH (supported: aarch64)"
+  echo "  --deb-host-arch ARCH    Cross-compile for ARCH (supported: aarch64)"
   echo "  -h, --help              Display this message and exit"
 }
 
-CROSS_ARCH=""
-CROSS_DEB_ARCH=""
+DEB_HOST_GNU_CPU=""
+DEB_HOST_ARCH=""
 STATICQT=N
 DIST=""
 
@@ -37,8 +37,8 @@ while [[ $# -gt 0 ]]; do
       DIST="static"
       shift
       ;;
-    --cross-arch)
-      CROSS_ARCH="$2"
+    --deb-host-arch)
+      DEB_HOST_ARCH="$2"
       shift 2
       ;;
     -h|--help)
@@ -54,21 +54,21 @@ while [[ $# -gt 0 ]]; do
 done
 
 # Validate cross-arch and resolve the Debian architecture name
-if [[ -n "$CROSS_ARCH" ]]; then
-  case "$CROSS_ARCH" in
-    aarch64) CROSS_DEB_ARCH="arm64" ;;
-    *) echo "ERROR: unsupported --cross-arch value: ${CROSS_ARCH}" >&2; exit 1 ;;
+if [[ -n "$DEB_HOST_ARCH" ]]; then
+  case "$DEB_HOST_ARCH" in
+    arm64) DEB_HOST_GNU_CPU="aarch64" ;;
+    *) echo "ERROR: unsupported --deb-host-arch value: ${DEB_HOST_ARCH}" >&2; exit 1 ;;
   esac
   STATICQT=Y
-  DIST="${DIST:-static-${CROSS_DEB_ARCH}}"
+  DIST="${DIST:-static-${DEB_HOST_ARCH}}"
 fi
 
 # Fall back to the host operating system if no distribution was specified
 DIST="${DIST:-${VERSION_CODENAME}}"
 
 # Register the cross-arch before updating the package database
-if [[ -n "$CROSS_ARCH" ]]; then
-  sudo dpkg --add-architecture "${CROSS_DEB_ARCH}"
+if [[ -n "$DEB_HOST_ARCH" ]]; then
+  sudo dpkg --add-architecture "${DEB_HOST_ARCH}"
 fi
 
 # Update the package database, just in case.
@@ -108,14 +108,14 @@ if [[ "$STATICQT" == "Y" ]]; then
 fi
 
 # Set up cross-compilation environment
-if [[ -n "$CROSS_ARCH" ]]; then
-  MK_BUILD_DEPS_ARGS="--host-arch ${CROSS_DEB_ARCH}"
+if [[ -n "$DEB_HOST_ARCH" ]]; then
+  MK_BUILD_DEPS_ARGS="--host-arch ${DEB_HOST_ARCH}"
   DPKG_PACKAGE_BUILD_ARGS="-d --unsigned-source --build=binary ${MK_BUILD_DEPS_ARGS}"
   export QT_AARCH64_PATH="${MOZ_FETCHES_DIR}/qt-linux"
   export QT_HOST_PATH="${MOZ_FETCHES_DIR}/qt-host-tools"
 
   if [[ ! -d "${QT_AARCH64_PATH}" ]]; then
-    echo "qt-linux-${CROSS_ARCH} not found at ${QT_AARCH64_PATH}" >&2
+    echo "qt-linux-${DEB_HOST_ARCH} not found at ${QT_AARCH64_PATH}" >&2
     exit 1
   fi
   if [[ ! -d "${QT_HOST_PATH}" ]]; then
@@ -126,19 +126,8 @@ if [[ -n "$CROSS_ARCH" ]]; then
   # Put Qt host tools on PATH so cross-build CMake steps can find moc/rcc
   export PATH="${QT_HOST_PATH}/bin:${PATH}"
 
-  # Rust cross-compilation
-  export CARGO_TARGET_AARCH64_UNKNOWN_LINUX_GNU_LINKER="${CROSS_ARCH}-linux-gnu-gcc"
-  export CARGO_BUILD_TARGET="${CROSS_ARCH}-unknown-linux-gnu"
-  if command -v rustup > /dev/null 2>&1; then
-    rustup target add "${CROSS_ARCH}-unknown-linux-gnu" 2>/dev/null || true
-  fi
-
-  # Go cross-compilation
-  export GOARCH="${CROSS_DEB_ARCH}"
-  export GOOS=linux
-  export CGO_ENABLED=1
-  export CC="${CROSS_ARCH}-linux-gnu-gcc"
-  export CXX="${CROSS_ARCH}-linux-gnu-g++"
+  export CC="${DEB_HOST_GNU_CPU}-linux-gnu-gcc"
+  export CXX="${DEB_HOST_GNU_CPU}-linux-gnu-g++"
 elif [[ "$STATICQT" == "Y" ]]; then
   export PATH="${MOZ_FETCHES_DIR}/qt-linux/bin:${PATH}"
 fi
