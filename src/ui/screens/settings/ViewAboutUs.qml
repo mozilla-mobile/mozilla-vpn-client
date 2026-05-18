@@ -161,8 +161,8 @@ MZViewBase {
             Layout.fillWidth: true
             Layout.leftMargin: MZTheme.theme.windowMargin
             Layout.rightMargin: MZTheme.theme.windowMargin
-            leftPadding: MZTheme.theme.iconSize * 1.5 + MZTheme.theme.windowMargin * 2
-            rightPadding: MZTheme.theme.windowMargin
+            leftPadding: MZTheme.theme.iconSize * 1.5 + MZTheme.theme.windowMargin * 1.25
+            rightPadding: MZTheme.theme.iconSize * 1.5 + MZTheme.theme.windowMargin * 1.25
 
             onClicked: {
                 listenForUpdateEvents=true;
@@ -174,7 +174,7 @@ MZViewBase {
                 id:updateButtonImage
                 anchors {
                     left: updateButton.left
-                    leftMargin: MZTheme.theme.windowMargin
+                    leftMargin: MZTheme.theme.windowMargin * 1.25
                     verticalCenter: parent.verticalCenter
                 }
                 fillMode: Image.PreserveAspectFit
