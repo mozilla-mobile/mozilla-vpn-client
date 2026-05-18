@@ -24,14 +24,14 @@ endif
 export SYSTEMD_UNIT_PATH := $(shell (pkg-config --variable=systemdsystemunitdir systemd || echo "/lib/systemd/system") | sed 's/^[/]//g')
 
 # Cross-compilation flags injected when building for arm64.
-# QT_AARCH64_PATH and QT_HOST_PATH are expected to be exported by the caller.
-ifeq (arm64,$(DEB_HOST_ARCH))
+# QT_CROSS_PATH and QT_HOST_PATH are expected to be exported by the caller.
+ifneq ($(DEB_BUILD_ARCH),$(DEB_HOST_ARCH))
 CROSS_BUILD_ARGS := \
-	-DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/scripts/linux/aarch64-toolchain.cmake \
+	-DCMAKE_TOOLCHAIN_FILE=$(CURDIR)/scripts/linux/$(DEB_HOST_GNU_CPU)-toolchain.cmake \
 	-DCMAKE_FIND_ROOT_PATH=/ \
-	-DCMAKE_LIBRARY_ARCHITECTURE=aarch64-linux-gnu
-ifneq (,$(QT_AARCH64_PATH))
-CROSS_BUILD_ARGS += -DCMAKE_PREFIX_PATH=$(QT_AARCH64_PATH)
+	-DCMAKE_LIBRARY_ARCHITECTURE=$(DEB_HOST_GNU_CPU)-linux-gnu
+ifneq (,$(QT_CROSS_PATH))
+CROSS_BUILD_ARGS += -DCMAKE_PREFIX_PATH=$(QT_CROSS_PATH)
 endif
 ifneq (,$(QT_HOST_PATH))
 CROSS_BUILD_ARGS += \

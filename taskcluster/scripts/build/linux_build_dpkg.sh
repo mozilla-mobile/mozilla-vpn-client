@@ -19,8 +19,8 @@ helpFunction() {
   echo "  -h, --help              Display this message and exit"
 }
 
-DEB_HOST_GNU_CPU=""
 DEB_HOST_ARCH=""
+DEB_HOST_GNU_CPU=""
 STATICQT=N
 DIST=""
 
@@ -111,11 +111,11 @@ fi
 if [[ -n "$DEB_HOST_ARCH" ]]; then
   MK_BUILD_DEPS_ARGS="--host-arch ${DEB_HOST_ARCH}"
   DPKG_PACKAGE_BUILD_ARGS="-d --unsigned-source --build=binary ${MK_BUILD_DEPS_ARGS}"
-  export QT_AARCH64_PATH="${MOZ_FETCHES_DIR}/qt-linux"
+  export QT_CROSS_PATH="${MOZ_FETCHES_DIR}/qt-linux"
   export QT_HOST_PATH="${MOZ_FETCHES_DIR}/qt-host-tools"
 
-  if [[ ! -d "${QT_AARCH64_PATH}" ]]; then
-    echo "qt-linux-${DEB_HOST_ARCH} not found at ${QT_AARCH64_PATH}" >&2
+  if [[ ! -d "${QT_CROSS_PATH}" ]]; then
+    echo "qt-linux-${DEB_HOST_ARCH} not found at ${QT_CROSS_PATH}" >&2
     exit 1
   fi
   if [[ ! -d "${QT_HOST_PATH}" ]]; then
@@ -125,15 +125,13 @@ if [[ -n "$DEB_HOST_ARCH" ]]; then
 
   # Put Qt host tools on PATH so cross-build CMake steps can find moc/rcc
   export PATH="${QT_HOST_PATH}/bin:${PATH}"
-
-  export CC="${DEB_HOST_GNU_CPU}-linux-gnu-gcc"
-  export CXX="${DEB_HOST_GNU_CPU}-linux-gnu-g++"
 elif [[ "$STATICQT" == "Y" ]]; then
   export PATH="${MOZ_FETCHES_DIR}/qt-linux/bin:${PATH}"
 fi
 
 # Install build dependencies
-sudo mk-build-deps --tool 'apt-get -y -o Debug::pkgProblemResolver=yes --no-install-recommends' --install --remove $MK_BUILD_DEPS_ARGS "$(pwd)/mozillavpn-source/debian/control"
+sudo mk-build-deps --tool 'apt-get -y -o Debug::pkgProblemResolver=yes --no-install-recommends' \
+   --install --remove $MK_BUILD_DEPS_ARGS "$(pwd)/mozillavpn-source/debian/control"
 
 (cd mozillavpn-source/ && dpkg-buildpackage $DPKG_PACKAGE_BUILD_ARGS)
 
