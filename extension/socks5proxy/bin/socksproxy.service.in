@@ -6,6 +6,8 @@ Type=simple
 Restart=on-failure
 ExecStart=@CMAKE_INSTALL_FULL_BINDIR@/socksproxy --unix /var/run/mozillavpn.proxy
 ExecStopPost=rm -f /var/run/mozillavpn.proxy
+CapabilityBoundingSet=CAP_NET_RAW
+NoNewPrivileges=yes
 
 [Install]
 WantedBy=multi-user.target
