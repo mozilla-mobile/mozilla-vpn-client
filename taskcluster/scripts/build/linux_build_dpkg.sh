@@ -60,7 +60,6 @@ if [[ -n "$DEB_HOST_ARCH" ]]; then
     *) echo "ERROR: unsupported --deb-host-arch value: ${DEB_HOST_ARCH}" >&2; exit 1 ;;
   esac
   STATICQT=Y
-  DIST="${DIST:-static-${DEB_HOST_ARCH}}"
 fi
 
 # Fall back to the host operating system if no distribution was specified

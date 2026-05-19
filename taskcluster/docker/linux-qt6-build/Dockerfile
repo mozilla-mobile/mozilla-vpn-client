@@ -6,7 +6,6 @@ FROM debian:bookworm
 
 ARG DEB_HOST_ARCH=amd64
 ARG DEB_HOST_GNU_CPU=x86_64
-ARG RUST_VERSION=1.85.0
 
 MAINTAINER Naomi Kirby <naomi@mozilla.com>
 
@@ -97,12 +96,12 @@ ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo
 
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
-    sh -s -- -y --default-toolchain $RUST_VERSION --profile minimal --no-modify-path
+    sh -s -- -y --default-toolchain $(rustc --version | awk '{print $2}') --profile minimal --no-modify-path
 
 ENV PATH="/usr/local/cargo/bin:${PATH}"
 
 RUN if [ "$DEB_HOST_ARCH" != "amd64" ]; then \
-        rustup target add --toolchain $RUST_VERSION ${DEB_HOST_GNU_CPU}-unknown-linux-gnu; \
+        rustup target add --toolchain $(rustc --version | awk '{print $2}') ${DEB_HOST_GNU_CPU}-unknown-linux-gnu; \
     fi
 
 #----------------------------------------------------------------------------------------------------------------------

@@ -12,7 +12,7 @@ QT_SOURCE_DIR=$(find $MOZ_FETCHES_DIR -maxdepth 1 -type d -name 'qt-everywhere-s
 QT_SOURCE_VERSION=$(echo $QT_SOURCE_DIR | awk -F"-" '{print $NF}')
 ARTIFACT_NAME="qt6_linux.tar.xz"
 CROSS_ARCH=""
-DEB_HOST_ARCH="x86_64"
+DEB_HOST_ARCH="amd64"
 
 while [[ $# -gt 0 ]]; do
     case "$1" in
