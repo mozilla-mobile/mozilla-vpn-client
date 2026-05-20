@@ -188,20 +188,24 @@ import StoreKit
     if let _ = transaction.revocationDate {
       InAppPurchaseHandler.logger.info(message: "Transaction was revoked")
       errorCallback(false)
+      await transaction.finish()
     } else if let expirationDate = transaction.expirationDate,
         expirationDate < Date() {
       // Expirations handled by server
       InAppPurchaseHandler.logger.info(message: "Transaction has expired")
       errorCallback(false)
+      await transaction.finish()
     } else if transaction.isUpgraded {
         // Do nothing, there is an active transaction
         // for a higher level of service.
       InAppPurchaseHandler.logger.info(message: "Transaction was upgraded")
       errorCallback(false)
+      await transaction.finish()
     } else {
       InAppPurchaseHandler.logger.info(message: "New successful transaction returned")
       let originalTransactionIdentifier: String = "\(transaction.originalID)"
       successCallback(NSString(string: transaction.productID), NSString(string: originalTransactionIdentifier))
+      await transaction.finish()
       await transaction.finish()
     }
   }
