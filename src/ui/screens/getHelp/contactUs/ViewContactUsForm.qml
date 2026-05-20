@@ -201,6 +201,7 @@ MZViewBase {
                 Layout.fillWidth: true
 
                 MZTextBlock {
+                    objectName: "contactUs-disclaimer"
                     visible: shareLogsCheckBox.checked
                     font.pixelSize: MZTheme.theme.fontSize
                     horizontalAlignment: Text.AlignHCenter

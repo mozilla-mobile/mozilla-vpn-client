@@ -257,8 +257,17 @@ const screenGetHelp = {
   SUPPORT: new QmlQueryComposer('//inAppSupport'),
 
   contactSupportView: {
+    VIEW: new QmlQueryComposer('//contactUs-flickable'),
     UNAUTH_USER_INPUTS: new QmlQueryComposer('//contactUs-unauthedUserInputs'),
     USER_INFO: new QmlQueryComposer('//contactUs-userInfo'),
+    SHARE_LOGS_CHECKBOX: new QmlQueryComposer('//contactUs-shareLogsCheckBox'),
+    DROPDOWN: new QmlQueryComposer('//contactUs-dropDown'),
+    SUBJECT_INPUT: new QmlQueryComposer('//contactUs-subjectInput'),
+    TEXTAREA: new QmlQueryComposer('//contactUs-textArea//MZTextArea-textArea'),
+    DISCLAIMER: new QmlQueryComposer('//contactUs-disclaimer'),
+    SUBMIT_BUTTON: new QmlQueryComposer('//contactUs-submitButton'),
+    THANK_YOU_PANEL: new QmlQueryComposer('//contactUs-ResponsePanel'),
+    DONE_BUTTON: new QmlQueryComposer('//contactUs-ResponseButton'),
   },
 
   resetView: {
