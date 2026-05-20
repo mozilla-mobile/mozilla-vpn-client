@@ -163,6 +163,7 @@ MZViewBase {
             Layout.rightMargin: MZTheme.theme.windowMargin
             leftPadding: MZTheme.theme.iconSize * 1.5 + MZTheme.theme.windowMargin * 1.25
             rightPadding: MZTheme.theme.iconSize * 1.5 + MZTheme.theme.windowMargin * 1.25
+            wrapMode: Text.WordWrap
 
             onClicked: {
                 listenForUpdateEvents=true;
