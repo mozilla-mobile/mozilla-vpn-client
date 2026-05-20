@@ -4,6 +4,9 @@
 
 FROM debian:bookworm
 
+ARG DEB_HOST_ARCH=amd64
+ARG DEB_HOST_GNU_CPU=x86_64
+
 MAINTAINER Naomi Kirby <naomi@mozilla.com>
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -33,47 +36,73 @@ RUN apt-get -y install build-essential \
                        patchelf \
                        sudo
 
+# Enable multiarch and add cross-compilation toolchain
+RUN if [ "$DEB_HOST_ARCH" != "amd64" ]; then \
+        dpkg --add-architecture $DEB_HOST_ARCH && apt-get update; \
+        apt-get -y install --no-install-recommends \
+                crossbuild-essential-${DEB_HOST_ARCH} \
+                gcc-${DEB_HOST_GNU_CPU}-linux-gnu \
+                g++-${DEB_HOST_GNU_CPU}-linux-gnu \
+                binutils-${DEB_HOST_GNU_CPU}-linux-gnu \
+                pkg-config \
+                cmake \
+                golang; \
+    fi
+
 ## Install Qt6/X11 build dependencies
 ## From: https://doc.qt.io/qt-6/linux-requirements.html
-RUN apt-get -y install libatspi2.0-dev \
-                       libdbus-1-dev \
-                       libfontconfig1-dev \
-                       libfreetype6-dev \
-                       libssl-dev \
-                       libx11-dev \
-                       libx11-xcb-dev \
-                       libxext-dev \
-                       libxfixes-dev \
-                       libxi-dev \
-                       libxrender-dev \
-                       libxcb1-dev \
-                       libxcb-cursor-dev \
-                       libxcb-glx0-dev \
-                       libxcb-keysyms1-dev \
-                       libxcb-image0-dev \
-                       libxcb-shm0-dev \
-                       libxcb-icccm4-dev \
-                       libxcb-sync-dev \
-                       libxcb-xfixes0-dev \
-                       libxcb-shape0-dev \
-                       libxcb-randr0-dev \
-                       libxcb-render-util0-dev \
-                       libxcb-util-dev \
-                       libxcb-xinerama0-dev \
-                       libxcb-xkb-dev \
-                       libxkbcommon-dev \
-                       libxkbcommon-x11-dev
+RUN apt-get -y install libatspi2.0-dev:${DEB_HOST_ARCH} \
+                       libdbus-1-dev:${DEB_HOST_ARCH} \
+                       libfontconfig1-dev:${DEB_HOST_ARCH} \
+                       libfreetype6-dev:${DEB_HOST_ARCH} \
+                       libgles-dev:${DEB_HOST_ARCH} \
+                       libssl-dev:${DEB_HOST_ARCH} \
+                       libx11-dev:${DEB_HOST_ARCH} \
+                       libx11-xcb-dev:${DEB_HOST_ARCH} \
+                       libxext-dev:${DEB_HOST_ARCH} \
+                       libxfixes-dev:${DEB_HOST_ARCH} \
+                       libxi-dev:${DEB_HOST_ARCH} \
+                       libxrender-dev:${DEB_HOST_ARCH} \
+                       libxcb1-dev:${DEB_HOST_ARCH} \
+                       libxcb-cursor-dev:${DEB_HOST_ARCH} \
+                       libxcb-glx0-dev:${DEB_HOST_ARCH} \
+                       libxcb-keysyms1-dev:${DEB_HOST_ARCH} \
+                       libxcb-image0-dev:${DEB_HOST_ARCH} \
+                       libxcb-shm0-dev:${DEB_HOST_ARCH} \
+                       libxcb-icccm4-dev:${DEB_HOST_ARCH} \
+                       libxcb-sync-dev:${DEB_HOST_ARCH} \
+                       libxcb-xfixes0-dev:${DEB_HOST_ARCH} \
+                       libxcb-shape0-dev:${DEB_HOST_ARCH} \
+                       libxcb-randr0-dev:${DEB_HOST_ARCH} \
+                       libxcb-render-util0-dev:${DEB_HOST_ARCH} \
+                       libxcb-util-dev:${DEB_HOST_ARCH} \
+                       libxcb-xinerama0-dev:${DEB_HOST_ARCH} \
+                       libxcb-xkb-dev:${DEB_HOST_ARCH} \
+                       libxkbcommon-dev:${DEB_HOST_ARCH} \
+                       libxkbcommon-x11-dev:${DEB_HOST_ARCH}
 
 ## Install wayland build dependencies
-RUN apt -y install libwayland-dev \
-                   libwayland-egl-backend-dev \
+RUN apt -y install libwayland-dev:${DEB_HOST_ARCH} \
+                   libwayland-egl-backend-dev:${DEB_HOST_ARCH} \
                    wayland-protocols
 
 # Also pull in packages from build-depends as early as possible
 # %include linux/debian/control
 ADD topsrcdir/linux/debian/control /root/mozillavpn-dpkg-control
 RUN sed -rie '/\s+(qt6-|qml6-|libqt6|qmake)/d' /root/mozillavpn-dpkg-control && \
-	mk-build-deps -i -r --tool="apt-get --no-install-recommends --yes" /root/mozillavpn-dpkg-control
+	mk-build-deps -i -r --tool="apt-get --no-install-recommends --yes" --host-arch $DEB_HOST_ARCH /root/mozillavpn-dpkg-control
+
+ENV RUSTUP_HOME=/usr/local/rustup \
+    CARGO_HOME=/usr/local/cargo
+
+RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
+    sh -s -- -y --default-toolchain $(rustc --version | awk '{print $2}') --profile minimal --no-modify-path
+
+ENV PATH="/usr/local/cargo/bin:${PATH}"
+
+RUN if [ "$DEB_HOST_ARCH" != "amd64" ]; then \
+        rustup target add --toolchain $(rustc --version | awk '{print $2}') ${DEB_HOST_GNU_CPU}-unknown-linux-gnu; \
+    fi
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
@@ -86,7 +115,7 @@ RUN /root/setup-worker.sh
 WORKDIR /builds/worker/
 
 # Grant the worker user the ability to install packages without login
-RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bin/dpkg" > /etc/sudoers.d/worker-packages
+RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bin/dpkg,/usr/bin/mk-build-deps" > /etc/sudoers.d/worker-packages
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Task Setup --------------------------------------------------------------------------------------------------------
