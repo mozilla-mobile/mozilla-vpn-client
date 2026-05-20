@@ -22,11 +22,11 @@ MZViewBase {
 
        id: contactUsRoot
 
-       function createSupportTicket(email, subject, issueText, category) {
+       function createSupportTicket(email, subject, issueText, category, shareLogs) {
            getHelpStackView.push("qrc:/nebula/components/MZLoader.qml", {
                footerLinkIsVisible: false
            });
-           VPN.createSupportTicket(email, subject, issueText, category);
+           VPN.createSupportTicket(email, subject, issueText, category, shareLogs);
        }
 
        Connections {
@@ -135,6 +135,7 @@ MZViewBase {
 
                 MZComboBox {
                     id: dropDown
+                    objectName: "contactUs-dropDown"
                     placeholderText: MZI18n.InAppSupportWorkflowDropdownLabel
                     model: VPNSupportCategoryModel
                     Layout.fillWidth: true
@@ -144,7 +145,7 @@ MZViewBase {
 
             MZTextField {
                 id: subjectInput
-
+                objectName: "contactUs-subjectInput"
                 verticalAlignment: Text.AlignVCenter
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
@@ -153,9 +154,33 @@ MZViewBase {
 
             MZTextArea {
                 id: textArea
+                objectName: "contactUs-textArea"
                 placeholderText: MZI18n.InAppSupportWorkflowIssueFieldPlaceholder
                 Layout.alignment: Qt.AlignHCenter
                 Layout.fillWidth: true
+            }
+
+            RowLayout {
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignHCenter
+                spacing: 10
+
+                MZCheckBox {
+                    id: shareLogsCheckBox
+                    objectName: "contactUs-shareLogsCheckBox"
+                    Layout.alignment: Qt.AlignHCenter
+                    checked: dropDown.currentValue === 'account' || dropDown.currentValue === 'technical'
+                    onClicked: () => checked = !checked
+                }
+
+                MZInterLabel {
+                    id: label
+                    Layout.fillWidth: true
+                    text: MZI18n.InAppSupportWorkflowShareLogsCheckBoxText
+                    wrapMode: Text.WordWrap
+                    color: MZTheme.colors.fontColorDark
+                    horizontalAlignment: Text.AlignLeft
+                }
             }
         }
 
@@ -176,6 +201,7 @@ MZViewBase {
                 Layout.fillWidth: true
 
                 MZTextBlock {
+                    visible: shareLogsCheckBox.checked
                     font.pixelSize: MZTheme.theme.fontSize
                     horizontalAlignment: Text.AlignHCenter
                     text: MZI18n.InAppSupportWorkflowDisclaimerText
@@ -196,10 +222,11 @@ MZViewBase {
                 spacing: MZTheme.theme.windowMargin
 
                 MZButton {
+                    objectName: "contactUs-submitButton"
                     text: MZI18n.InAppSupportWorkflowSupportPrimaryButtonText
                     onClicked: {
                       contactUsRoot._emailAddress = (VPN.userAuthenticated ? VPNUser.email : emailInput.text);
-                      contactUsRoot.createSupportTicket(contactUsRoot._emailAddress, subjectInput.text, textArea.userEntry, dropDown.currentValue);
+                      contactUsRoot.createSupportTicket(contactUsRoot._emailAddress, subjectInput.text, textArea.userEntry, dropDown.currentValue, shareLogsCheckBox.checked);
                     }
                     enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
                              (VPN.userAuthenticated  ? true :
