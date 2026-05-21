@@ -117,17 +117,13 @@ describe('Contact us view', function() {
             index);
         assert.equal(
             await vpn.query(queries.screenGetHelp.contactSupportView
-                                .SHARE_LOGS_CHECKBOX.checked()),
+                                .SHARE_LOGS_CHECKBOX.prop('isChecked', true)),
             shouldShareLogs);
         assert.equal(
             await vpn.getQueryProperty(
                 queries.screenGetHelp.contactSupportView.DROPDOWN,
                 'currentValue'),
             category);
-        assert.equal(
-            await vpn.query(
-                queries.screenGetHelp.contactSupportView.DISCLAIMER.visible()),
-            shouldShareLogs);
       }
     });
 
@@ -145,8 +141,9 @@ describe('Contact us view', function() {
           'user issue subject');
       // Checkbox should be checked by default
       assert.equal(
-          await vpn.query(queries.screenGetHelp.contactSupportView
-                              .SHARE_LOGS_CHECKBOX.checked()),
+          await vpn.query(
+              queries.screenGetHelp.contactSupportView.SHARE_LOGS_CHECKBOX.prop(
+                  'isChecked', true)),
           true);
       await vpn.wait(200);
       // We need to scroll to be able to click the submit button
@@ -181,12 +178,13 @@ describe('Contact us view', function() {
           'user issue subject');
       // Ensure the checkbox is checked and can be unchecked
       assert.equal(
-          await vpn.query(queries.screenGetHelp.contactSupportView
-                              .SHARE_LOGS_CHECKBOX.checked()),
+          await vpn.query(
+              queries.screenGetHelp.contactSupportView.SHARE_LOGS_CHECKBOX.prop(
+                  'isChecked', true)),
           true);
       await vpn.setQueryProperty(
           queries.screenGetHelp.contactSupportView.SHARE_LOGS_CHECKBOX,
-          'checked', false);
+          'isChecked', false);
       await vpn.wait(200);
       await vpn.scrollToQuery(
           queries.screenGetHelp.contactSupportView.VIEW,

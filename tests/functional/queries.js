@@ -264,7 +264,6 @@ const screenGetHelp = {
     DROPDOWN: new QmlQueryComposer('//contactUs-dropDown'),
     SUBJECT_INPUT: new QmlQueryComposer('//contactUs-subjectInput'),
     TEXTAREA: new QmlQueryComposer('//contactUs-textArea//MZTextArea-textArea'),
-    DISCLAIMER: new QmlQueryComposer('//contactUs-disclaimer'),
     SUBMIT_BUTTON: new QmlQueryComposer('//contactUs-submitButton'),
     THANK_YOU_PANEL: new QmlQueryComposer('//contactUs-ResponsePanel'),
     DONE_BUTTON: new QmlQueryComposer('//contactUs-ResponseButton'),

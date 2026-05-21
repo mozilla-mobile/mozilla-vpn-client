@@ -160,27 +160,18 @@ MZViewBase {
                 Layout.fillWidth: true
             }
 
-            RowLayout {
-                Layout.fillWidth: true
+            MZCheckBoxRow {
+                id: shareLogsCheckBox
+                objectName: "contactUs-shareLogsCheckBox"
+                labelText: MZI18n.InAppSupportWorkflowShareLogsCheckBoxTitle
+                subLabelText: MZI18n.InAppSupportWorkflowShareLogsCheckBoxSubtitle
                 Layout.alignment: Qt.AlignHCenter
-                spacing: 10
-
-                MZCheckBox {
-                    id: shareLogsCheckBox
-                    objectName: "contactUs-shareLogsCheckBox"
-                    Layout.alignment: Qt.AlignHCenter
-                    checked: dropDown.currentValue === 'account' || dropDown.currentValue === 'technical'
-                    onClicked: () => checked = !checked
-                }
-
-                MZInterLabel {
-                    id: label
-                    Layout.fillWidth: true
-                    text: MZI18n.InAppSupportWorkflowShareLogsCheckBoxText
-                    wrapMode: Text.WordWrap
-                    color: MZTheme.colors.fontColorDark
-                    horizontalAlignment: Text.AlignLeft
-                }
+                Layout.fillWidth: true
+                Layout.rightMargin: MZTheme.theme.windowMargin
+                leftMargin: 0
+                showDivider: false
+                isChecked: dropDown.currentValue === 'account' || dropDown.currentValue === 'technical'
+                onClicked: () => isChecked = !isChecked
             }
         }
 
@@ -190,33 +181,11 @@ MZViewBase {
             Layout.fillHeight: true
             spacing: 24
 
-            MZVerticalSpacer {
-                Layout.fillWidth: true
-                Layout.minimumHeight: 16
-                Layout.fillHeight: !window.fullscreenRequired()
-            }
-
-            Column {
-                spacing: 0
-                Layout.fillWidth: true
-
-                MZTextBlock {
-                    objectName: "contactUs-disclaimer"
-                    visible: shareLogsCheckBox.checked
-                    font.pixelSize: MZTheme.theme.fontSize
-                    horizontalAlignment: Text.AlignHCenter
-                    text: MZI18n.InAppSupportWorkflowDisclaimerText
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-
-                }
-
-                MZLinkButton {
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
-                    onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
-                }
+            MZLinkButton {
+                anchors.left: parent.left
+                anchors.right: parent.right
+                labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
+                onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
             }
 
             ColumnLayout {
@@ -227,7 +196,7 @@ MZViewBase {
                     text: MZI18n.InAppSupportWorkflowSupportPrimaryButtonText
                     onClicked: {
                       contactUsRoot._emailAddress = (VPN.userAuthenticated ? VPNUser.email : emailInput.text);
-                      contactUsRoot.createSupportTicket(contactUsRoot._emailAddress, subjectInput.text, textArea.userEntry, dropDown.currentValue, shareLogsCheckBox.checked);
+                      contactUsRoot.createSupportTicket(contactUsRoot._emailAddress, subjectInput.text, textArea.userEntry, dropDown.currentValue, shareLogsCheckBox.isChecked);
                     }
                     enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
                              (VPN.userAuthenticated  ? true :
