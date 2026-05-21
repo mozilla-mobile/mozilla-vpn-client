@@ -98,7 +98,7 @@ jobs:
 
       - name: Cache conda packages
         id: conda-cache
-        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/conda_pkgs_dir
           key: android-conda-packages-${{ hashFiles('env-android.yml', 'requirements.txt') }}
@@ -114,7 +114,7 @@ jobs:
           ./scripts/android/conda_setup_sdk.sh
 
       - name: Save conda package cache
-        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: ${{ github.event_name == 'push' && steps.conda-cache.outputs.cache-hit != 'true' }}
         with:
           path: ~/conda_pkgs_dir
