@@ -41,26 +41,6 @@ tasks:
         parent: base
         symbol: I(linux-rpm-build)
         definition: linux-rpm-build
-    linux-build-jammy:
-        symbol: I(linux-jammy)
-        definition: linux-dpkg-build
-        args:
-            DOCKER_BASE_IMAGE: '{dockerhub:ubuntu:jammy}'
-    linux-build-noble:
-        symbol: I(linux-noble)
-        definition: linux-dpkg-build
-        args:
-            DOCKER_BASE_IMAGE: '{dockerhub:ubuntu:noble}'
-    linux-build-resolute:
-        symbol: I(linux-resolute)
-        definition: linux-dpkg-build
-        args:
-            DOCKER_BASE_IMAGE: '{dockerhub:ubuntu:resolute}'
-    linux-build-fedora:
-        symbol: I(linux-fedora)
-        definition: linux-rpm-build
-        args:
-            DOCKER_BASE_IMAGE: '{dockerhub:fedora:latest}'
     linux-aarch64-deb-build:
         parent: base
         symbol: I(linux-aarch64-deb-build)

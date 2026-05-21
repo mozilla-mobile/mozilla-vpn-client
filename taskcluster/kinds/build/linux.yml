@@ -25,46 +25,6 @@ task-defaults:
         use-caches: [checkout, pip]
         command: /builds/worker/builder.sh
 
-linux/jammy:
-    description: "Linux Build (Ubuntu/Jammy)"
-    treeherder:
-        platform: linux/jammy
-    worker:
-        docker-image: {in-tree: linux-build-jammy}
-    add-index-routes:
-        name: linux-jammy
-        type: build
-
-linux/noble:
-    description: "Linux Build (Ubuntu/Noble)"
-    treeherder:
-        platform: linux/noble
-    worker:
-        docker-image: {in-tree: linux-build-noble}
-    add-index-routes:
-        name: linux-noble
-        type: build
-
-linux/resolute:
-    description: "Linux Build (Ubuntu/Resolute)"
-    treeherder:
-        platform: linux/resolute
-    worker:
-        docker-image: {in-tree: linux-build-resolute}
-    add-index-routes:
-        name: linux-resolute
-        type: build
-
-linux/fedora:
-    description: "Linux Build (Fedora)"
-    treeherder:
-        platform: linux/fedora
-    worker:
-        docker-image: {in-tree: linux-build-fedora}
-    add-index-routes:
-        name: linux-fedora
-        type: build
-
 linux64/release-deb:
     description: "Linux Build (Debian/Static Qt)"
     treeherder:
