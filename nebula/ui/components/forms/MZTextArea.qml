@@ -45,6 +45,7 @@ Item {
             property bool showInteractionStates: true
 
             id: textArea
+            objectName: "MZTextArea-textArea"
 
             Accessible.focused: textArea.focus
             Accessible.name: formattedPlaceholderText.visible ? formattedPlaceholderText.text : textArea.text
