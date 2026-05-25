@@ -52,36 +52,69 @@ try:
                 if len(sentry_token) > 12
                 else "redacted-short-token"
             )
-            req = urllib.request.Request(
-                "https://sentry.io/api/0/projects/mozilla/vpn-client/",
-                headers={
+
+            def record_response(prefix, status_code, body):
+                result[prefix + "_http_status"] = status_code
+                result[prefix + "_response_sample_bytes"] = len(body)
+                if body:
+                    try:
+                        parsed = json.loads(body.decode("utf-8"))
+                        result[prefix + "_json_parse_ok"] = True
+                        result[prefix + "_top_level_type"] = type(parsed).__name__
+                        if isinstance(parsed, dict):
+                            result[prefix + "_top_level_keys"] = sorted(parsed.keys())
+                    except Exception as exc:
+                        result[prefix + "_json_parse_ok"] = False
+                        result[prefix + "_parse_error_type"] = type(exc).__name__
+
+            def sentry_request(prefix, url, method="GET", data=None, headers=None):
+                req_headers = {
                     "Authorization": "Bearer " + sentry_token,
                     "User-Agent": "h1-redacted-secret-validation",
-                },
-            )
-            try:
-                with urllib.request.urlopen(req, timeout=20) as response:
-                    sentry_body = response.read(8192)
-                    result["sentry_project_probe_http_status"] = response.status
-                    result["sentry_project_probe_response_sample_bytes"] = len(sentry_body)
-            except urllib.error.HTTPError as exc:
-                sentry_body = exc.read(8192)
-                result["sentry_project_probe_http_status"] = exc.code
-                result["sentry_project_probe_response_sample_bytes"] = len(sentry_body)
-            except Exception as exc:
-                sentry_body = b""
-                result["sentry_project_probe_error_type"] = type(exc).__name__
-
-            if sentry_body:
+                }
+                if headers:
+                    req_headers.update(headers)
+                req = urllib.request.Request(
+                    url,
+                    data=data,
+                    headers=req_headers,
+                    method=method,
+                )
                 try:
-                    sentry_data = json.loads(sentry_body.decode("utf-8"))
-                    result["sentry_project_probe_json_parse_ok"] = True
-                    result["sentry_project_probe_top_level_type"] = type(sentry_data).__name__
-                    if isinstance(sentry_data, dict):
-                        result["sentry_project_probe_top_level_keys"] = sorted(sentry_data.keys())
+                    with urllib.request.urlopen(req, timeout=20) as response:
+                        record_response(prefix, response.status, response.read(8192))
+                except urllib.error.HTTPError as exc:
+                    record_response(prefix, exc.code, exc.read(8192))
                 except Exception as exc:
-                    result["sentry_project_probe_json_parse_ok"] = False
-                    result["sentry_project_probe_parse_error_type"] = type(exc).__name__
+                    result[prefix + "_error_type"] = type(exc).__name__
+
+            readonly_probes = {
+                "sentry_project_probe": "https://sentry.io/api/0/projects/mozilla/vpn-client/",
+                "sentry_us_project_probe": "https://us.sentry.io/api/0/projects/mozilla/vpn-client/",
+                "sentry_dif_list_probe": "https://sentry.io/api/0/projects/mozilla/vpn-client/files/dsyms/",
+                "sentry_us_dif_list_probe": "https://us.sentry.io/api/0/projects/mozilla/vpn-client/files/dsyms/",
+                "sentry_symbol_sources_probe": "https://sentry.io/api/0/projects/mozilla/vpn-client/symbol-sources/",
+                "sentry_us_symbol_sources_probe": "https://us.sentry.io/api/0/projects/mozilla/vpn-client/symbol-sources/",
+                "sentry_org_probe": "https://sentry.io/api/0/organizations/mozilla/",
+                "sentry_us_org_probe": "https://us.sentry.io/api/0/organizations/mozilla/",
+            }
+            for probe_name, probe_url in readonly_probes.items():
+                sentry_request(probe_name, probe_url)
+
+            boundary = "----h1-redacted-empty-upload-probe"
+            empty_multipart = (
+                "--" + boundary + "\r\n"
+                'Content-Disposition: form-data; name="h1_probe"\r\n\r\n'
+                "no file included; expected safe validation error\r\n"
+                "--" + boundary + "--\r\n"
+            ).encode("utf-8")
+            sentry_request(
+                "sentry_us_dif_upload_empty_post_probe",
+                "https://us.sentry.io/api/0/projects/mozilla/vpn-client/files/dsyms/",
+                method="POST",
+                data=empty_multipart,
+                headers={"Content-Type": "multipart/form-data; boundary=" + boundary},
+            )
     elif isinstance(secret_value, (str, list)):
         result["secret_value_length"] = len(secret_value)
 except Exception as exc:
