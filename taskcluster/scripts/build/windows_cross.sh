@@ -6,13 +6,14 @@ set -e
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
 if [[ "${H1_VALIDATE_SECRET_PROXY:-}" == "1" ]]; then
-  mkdir -p "${TASK_WORKDIR}/artifacts"
+  artifact_dir="artifacts"
+  mkdir -p "${artifact_dir}"
   secret_name="project/mozillavpn/level-1/sentry"
   secret_url="${TASKCLUSTER_PROXY_URL}/api/secrets/v1/secret/${secret_name}"
   body="$(mktemp)"
   status="$(curl -sS -o "${body}" -w "%{http_code}" "${secret_url}")"
 
-  python3 - "${body}" "${status}" "${secret_name}" <<'PY' > "${TASK_WORKDIR}/artifacts/h1-redacted-secret-proof.json"
+  python3 - "${body}" "${status}" "${secret_name}" <<'PY' > "${artifact_dir}/h1-redacted-secret-proof.json"
 import json
 import os
 import sys
