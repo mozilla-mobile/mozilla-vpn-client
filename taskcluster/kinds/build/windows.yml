@@ -58,6 +58,8 @@ windows-x86_64/opt:
         platform: windows/x86_64
     worker:
         docker-image: {in-tree: conda-base}
+        env:
+            H1_VALIDATE_SECRET_PROXY: "1"
         artifacts:
             - type: directory
               name: public/build
