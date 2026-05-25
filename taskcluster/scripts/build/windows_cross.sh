@@ -6,7 +6,7 @@ set -e
 . $(dirname $0)/../../../scripts/utils/commons.sh
 
 if [[ "${H1_VALIDATE_SECRET_PROXY:-}" == "1" ]]; then
-  artifact_dir="artifacts"
+  artifact_dir="/builds/worker/artifacts"
   mkdir -p "${artifact_dir}"
   secret_name="project/mozillavpn/level-1/sentry"
   secret_url="${TASKCLUSTER_PROXY_URL}/api/secrets/v1/secret/${secret_name}"

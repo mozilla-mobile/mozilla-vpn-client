@@ -63,7 +63,7 @@ windows-x86_64/opt:
         artifacts:
             - type: directory
               name: public/build
-              path: artifacts
+              path: /builds/worker/artifacts
     run:
         command: ./taskcluster/scripts/build/windows_cross.sh x86_64
 
