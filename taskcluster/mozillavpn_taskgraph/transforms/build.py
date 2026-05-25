@@ -64,6 +64,7 @@ def resolve_keys_scope(config, tasks):
             item_name=task["name"],
             **{
                 "level": config.params["level"],
+                "tasks-for": config.params["tasks_for"],
             },
         )
         yield task
