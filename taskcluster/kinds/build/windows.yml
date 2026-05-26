@@ -21,7 +21,10 @@ task-defaults:
     release-artifacts:
         - unsigned.zip
     scopes:
-        - secrets:get:project/mozillavpn/level-1/sentry
+        by-tasks-for:
+            github-pull-request-untrusted: []
+            default:
+                - secrets:get:project/mozillavpn/level-1/sentry
     run:
         using: run-task
         cwd: '{checkout}'
