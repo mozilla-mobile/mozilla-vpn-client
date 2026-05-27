@@ -50,7 +50,7 @@ RUN /root/setup-worker.sh
 WORKDIR /builds/worker/
 
 # Grant the worker user the ability to install packages without login
-RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bin/dpkg" > /etc/sudoers.d/worker-packages
+RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bin/dpkg,/usr/bin/mk-build-deps" > /etc/sudoers.d/worker-packages
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Task Setup --------------------------------------------------------------------------------------------------------

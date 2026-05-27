@@ -26,26 +26,23 @@ enum ServiceAction {
   // Requests an EVENT_STATISTIC_UPDATE to be send
   ACTION_REQUEST_STATISTIC = 4,
   // Requests to clean up the internal log
-  ACTION_REQUEST_CLEANUP_LOG = 6,
+  ACTION_REQUEST_CLEANUP_LOG = 5,
   // Retry activation using the last config
   // Used when the activation is aborted for VPN-Permission prompt
-  ACTION_RESUME_ACTIVATE = 7,
+  ACTION_RESUME_ACTIVATE = 6,
   // Sets the current notification text.
   // Does nothing if there is no notification
-  ACTION_SET_NOTIFICATION_TEXT = 8,
-  // Sets the fallback text if the OS triggered the VPN-Service
-  // to show a notification
-  ACTION_SET_NOTIFICATION_FALLBACK = 9,
+  ACTION_SET_NOTIFICATION_TEXT = 7,
   // Get's current status
-  ACTION_GET_STATUS = 13,
+  ACTION_GET_STATUS = 8,
   // Set startOnBoot pref
-  ACTION_SET_START_ON_BOOT = 15,
+  ACTION_SET_START_ON_BOOT = 9,
   // Reactivate the last connection (unusued from the client)
-  ACTION_REACTIVATE = 16,
+  ACTION_REACTIVATE = 10,
   // Clear the VPN storage
-  ACTION_CLEAR_STORAGE = 17,
+  ACTION_CLEAR_STORAGE = 11,
   // Daemon-based silent server switch
-  ACTION_SILENT_SERVER_SWITCH = 20,
+  ACTION_SILENT_SERVER_SWITCH = 13,
 
 };
 typedef enum ServiceAction ServiceAction;
@@ -62,16 +59,16 @@ enum ServiceEvents {
   EVENT_STATISTIC_UPDATE = 3,
   // An Error happened during activation
   // Contains the error message
-  EVENT_ACTIVATION_ERROR = 5,
+  EVENT_ACTIVATION_ERROR = 4,
   // The Daemon need's the app to ask for notification
   // permissions, to show the "you're connected" messages.
-  EVENT_REQUEST_NOTIFICATION_PERMISSION = 8,
+  EVENT_REQUEST_NOTIFICATION_PERMISSION = 6,
   // Signals MozillaVPN that we have completed onboarding
-  EVENT_ONBOARDING_COMPLETED = 9,
+  EVENT_ONBOARDING_COMPLETED = 7,
   // Signals the Controller that it may now allow
   // activation retries now that the system vpn config modal
   // has been responded to
-  EVENT_VPN_CONFIG_PERMISSION_RESPONSE = 10,
+  EVENT_VPN_CONFIG_PERMISSION_RESPONSE = 8,
 };
 typedef enum ServiceEvents ServiceEvents;
 

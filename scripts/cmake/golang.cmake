@@ -39,7 +39,11 @@ function(build_go_archive OUTPUT_NAME MODULE_FILE)
         execute_process(OUTPUT_VARIABLE GOBUILD_GOOS OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND ${GOLANG_BUILD_TOOL} env GOOS)
     endif()
     if(NOT GOBUILD_GOARCH)
-        execute_process(OUTPUT_VARIABLE GOBUILD_GOARCH OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND ${GOLANG_BUILD_TOOL} env GOARCH)
+        if (CMAKE_CROSSCOMPILING AND (CMAKE_SYSTEM_PROCESSOR MATCHES "aarch64|amd64"))
+            set(GOBUILD_GOARCH arm64)
+        else()
+            execute_process(OUTPUT_VARIABLE GOBUILD_GOARCH OUTPUT_STRIP_TRAILING_WHITESPACE COMMAND ${GOLANG_BUILD_TOOL} env GOARCH)
+        endif()
     endif()
 
     ## Use a go-cache isolated to our project

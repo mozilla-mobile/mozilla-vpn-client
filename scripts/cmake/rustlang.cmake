@@ -136,6 +136,12 @@ elseif(MSVC AND CMAKE_C_COMPILER_TARGET)
 
     file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml "\n[target.${CMAKE_C_COMPILER_TARGET}]\n")
     file(APPEND ${CMAKE_BINARY_DIR}/cargo_home/config.toml "linker=\"${CMAKE_LINKER}\"\n")
+elseif(CMAKE_CROSSCOMPILING AND CMAKE_SYSTEM_NAME STREQUAL "Linux")
+    __rust_build_toolchain_config(
+        FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml
+        ARCH ${CMAKE_SYSTEM_PROCESSOR}-unknown-linux-gnu
+        RUSTFLAGS "-Clinker=${CMAKE_C_COMPILER}"
+    )
 else()
     __rust_build_toolchain_config(FILENAME ${CMAKE_BINARY_DIR}/cargo_home/config.toml)
 endif()

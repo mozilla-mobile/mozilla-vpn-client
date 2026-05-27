@@ -21,30 +21,13 @@ task-defaults:
     release-artifacts:
         - unsigned.zip
     scopes:
-        - secrets:get:project/mozillavpn/level-1/sentry
+        by-tasks-for:
+            github-pull-request-untrusted: []
+            default:
+                - secrets:get:project/mozillavpn/level-1/sentry
     run:
         using: run-task
         cwd: '{checkout}'
-
-windows-x86_64/native:
-    description: "Windows Build (native compile)"
-    fetches:
-        fetch:
-            - win-conda
-        toolchain:
-            - conda-windows-x86_64
-            - qt-windows-x86_64-6.10
-    treeherder:
-        symbol: BD
-    worker:
-        artifacts:
-            - type: directory
-              name: public/build
-              path: artifacts
-    run:
-        exec-with: powershell
-        command: taskcluster/scripts/build/windows_clang_cl.ps1
-    requires-level: 3
 
 windows-x86_64/opt:
     description: "Windows Build (Release/x86_64)"

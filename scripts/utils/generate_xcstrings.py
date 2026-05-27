@@ -157,6 +157,7 @@ def build_phrase_section(phrase_strings, locale_translations):
     string_id = next(iter(phrase_blocks))["string_id"]
 
     localizations = {}
+    error_locales = []
     for locale, translations in locale_translations.items():
         locale_values = []
         translation_block = translations.get(string_id)
@@ -166,7 +167,7 @@ def build_phrase_section(phrase_strings, locale_translations):
             if translation:
                 if translation.count("%@") != 1:
                     print(f"Placeholder found {translation.count('%@')} times in {translation} for {locale}, expected 1")
-                    exit(1)
+                    error_locales.append(locale)
                 locale_values.append(using_app_placeholder(translation))
 
         if locale_values:
@@ -179,15 +180,19 @@ def build_phrase_section(phrase_strings, locale_translations):
         else:
             print(f"No translations found for {string_id} in {locale}")
 
-    return {"localizations": localizations}
+    return {"localizations": localizations}, error_locales
 
 
 def build_appshortcuts_xcstrings(intent_phrase_array, intent_title_array, locale_translations):
     """Build AppShortcuts.xcstrings dict from phrase strings."""
     strings = {}
 
+    overall_error_locales = {}
     for phrase_set in intent_phrase_array:
-        phrase_section = build_phrase_section(phrase_set, locale_translations)
+        phrase_section, error_locales = build_phrase_section(phrase_set, locale_translations)
+        if error_locales:
+            string_id = next(iter(phrase_set.values()))["string_id"]
+            overall_error_locales[string_id] = error_locales
         if (len(phrase_section["localizations"]) > 0):
             # The xcstrings key for a phrase group is the first English phrase value. But this is so ugly, sorry.
             section_key = next(
@@ -196,6 +201,12 @@ def build_appshortcuts_xcstrings(intent_phrase_array, intent_title_array, locale
             strings[section_key] = phrase_section
         else:
             print(f"Skipping {next(iter(phrase_set))} because no translations were found in xliff files. This should only occur for new strings that are yet to be ingested into the l10n repo.")
+
+    if overall_error_locales:
+        print("Incorrect translation phrases found in:")
+        for string_id, locales in overall_error_locales.items():
+            print(f"  {string_id}: {', '.join(locales)}")
+        exit(1)
 
     title_strings = build_main_strings(intent_title_array, locale_translations, False)
     strings.update(title_strings)

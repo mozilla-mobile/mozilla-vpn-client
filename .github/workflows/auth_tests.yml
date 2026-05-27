@@ -19,7 +19,7 @@ jobs:
     name: Run auth tests on Linux
     steps:
       - name: Clone repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: "recursive"
           persist-credentials: false
@@ -50,12 +50,12 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: "recursive"
           persist-credentials: false
 
-      - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3
+      - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniconda-version: "latest"
           environment-file: env-apple.yml
@@ -82,7 +82,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: "recursive"
           persist-credentials: false
@@ -110,7 +110,7 @@ jobs:
 
       - name: Cache Wireguard NT
         id: cache-wireguard-nt
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: 3rdparty/wireguard-nt
           key: wireguard-nt-${{ hashFiles('windows/wireguard_nt/CMakeLists.txt') }}

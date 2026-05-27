@@ -35,13 +35,13 @@ jobs:
       matrix: ${{ steps.testGen.outputs.tests }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: "recursive"
           persist-credentials: false
 
       - name: Checkout macOS SDK
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           repository: alexey-lysiuk/macos-sdk
           path: 3rdparty/macos-sdk
@@ -52,21 +52,21 @@ jobs:
         id: set-sdkroot
         run: echo "SDKROOT=$(find ${GITHUB_WORKSPACE}/3rdparty/macos-sdk -name 'SDKSettings.plist' -printf '%h\n')" >> $GITHUB_OUTPUT
 
-      - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3
+      - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           miniconda-version: "latest"
           environment-file: "env-apple.yml"
           activate-environment: vpn
 
       - name: Setup compiler cache
-        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/.cache/ccache
           key: ccache-macos-${{ github.sha }}
           restore-keys: ccache-macos-${{ github.event.pull_request.base.sha }}
 
       - name: Fetch cached rust crates
-        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: 3rdparty/cargo-vendor
           key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
@@ -106,7 +106,7 @@ jobs:
             !build/cmake/
 
       - name: Save compiler cache
-        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: ${{ github.event_name != 'pull_request' }}
         with:
           path: ~/.cache/ccache
@@ -139,7 +139,7 @@ jobs:
         test: ${{ fromJson(needs.build_test_app.outputs.matrix) }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 

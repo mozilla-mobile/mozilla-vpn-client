@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Clone repository
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           submodules: "true"
           persist-credentials: false
@@ -46,6 +46,12 @@ jobs:
       - name: Check for addons JSON syntax
         run: |
           python scripts/ci/check_jsonschema.py addon.json addons/*/manifest.json
+
+      - name: Check for iOS translations (l10n PRs only)
+        run: |
+          if [[ "${{ github.head_ref }}" == "i18n_automation" ]]; then
+            python scripts/utils/generate_xcstrings.py src/translations/strings.yaml 3rdparty/i18n .tmp/
+          fi
 
       - name: Check for issues with clang-format
         uses: DoozyX/clang-format-lint-action@bcb4eb2cb0d707ee4f3e5cc3b456eb075f12cf73 # v0.20
@@ -85,19 +91,19 @@ jobs:
         shell: bash -el {0}
     steps:
       - name: Clone repo
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 1
           persist-credentials: false
 
       - name: Cache conda packages
         id: conda-cache
-        uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: ~/conda_pkgs_dir
           key: android-conda-packages-${{ hashFiles('env-android.yml', 'requirements.txt') }}
 
-      - uses: conda-incubator/setup-miniconda@fc2d68f6413eb2d87b895e92f8584b5b94a10167 # v3
+      - uses: conda-incubator/setup-miniconda@8ee1f361103df19b6f8c8655fd3967a8ecb162d5 # v4.0.1
         with:
           activate-environment: vpn
           environment-file: env-android.yml
@@ -108,7 +114,7 @@ jobs:
           ./scripts/android/conda_setup_sdk.sh
 
       - name: Save conda package cache
-        uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        uses: actions/cache/save@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         if: ${{ github.event_name == 'push' && steps.conda-cache.outputs.cache-hit != 'true' }}
         with:
           path: ~/conda_pkgs_dir

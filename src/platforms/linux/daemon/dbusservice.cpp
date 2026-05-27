@@ -4,7 +4,6 @@
 
 #include "dbusservice.h"
 
-#include <sys/capability.h>
 #include <unistd.h>
 
 #include <QCoreApplication>
@@ -12,7 +11,6 @@
 #include <QDBusInterface>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QScopeGuard>
 #include <QtDBus/QtDBus>
 
 #include "dbus_adaptor.h"
@@ -67,9 +65,6 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
   QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
   QObject::connect(watcher, SIGNAL(finished(QDBusPendingCallWatcher*)), this,
                    SLOT(userListCompleted(QDBusPendingCallWatcher*)));
-
-  // Drop as many root permissions as we are able.
-  dropRootPermissions();
 }
 
 DBusService::~DBusService() { MZ_COUNT_DTOR(DBusService); }
@@ -280,44 +275,6 @@ void DBusService::clearAppStates() {
   m_wgutils->resetAllCgroups();
   m_excludedCgroups.clear();
   m_excludedApps.clear();
-}
-
-/* Drop root permissions from the daemon. */
-void DBusService::dropRootPermissions() {
-  logger.debug() << "Dropping root permissions";
-
-  cap_t caps = cap_get_proc();
-  if (caps == nullptr) {
-    logger.warning() << "Failed to retrieve process capabilities";
-    return;
-  }
-  auto guard = qScopeGuard([&] { cap_free(caps); });
-
-  // Clear the capability set, which effectively makes us an unpriveleged user.
-  cap_clear(caps);
-
-  // Acquire CAP_NET_ADMIN, we need it to perform bringup and management
-  // of the network interfaces and Wireguard tunnel.
-  //
-  // Acquire CAP_SETUID, we need it to masquerade as other users on their
-  // session busses for application tracking.
-  //
-  // NOTE: ptrace is a dangerous permission to hold. If it may be safer to
-  // relent on the executable check and grant CAP_NET_ADMIN to the client
-  // process during installation.
-  //
-  // Clear all other capabilities, effectively discarding our root permissions.
-  cap_value_t newcaps[] = {CAP_NET_ADMIN, CAP_SETUID};
-  const int numcaps = sizeof(newcaps) / sizeof(cap_value_t);
-  if (cap_set_flag(caps, CAP_EFFECTIVE, numcaps, newcaps, CAP_SET) ||
-      cap_set_flag(caps, CAP_PERMITTED, numcaps, newcaps, CAP_SET)) {
-    logger.warning() << "Failed to set process capability flags";
-    return;
-  }
-  if (cap_set_proc(caps) != 0) {
-    logger.warning() << "Failed to update process capabilities";
-    return;
-  }
 }
 
 /* Checks to see if the caller has sufficient authorization */

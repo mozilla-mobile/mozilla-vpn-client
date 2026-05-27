@@ -18,6 +18,7 @@ MZButtonBase {
 
     property int fontSize: MZTheme.theme.fontSize
     property alias label: label
+    property int wrapMode: Text.NoWrap
 
     id: button
 
@@ -26,11 +27,12 @@ MZButtonBase {
         id: style
         property var colorScheme: (buttonType === MZButton.ButtonType.Normal) ? MZTheme.colors.normalButton : MZTheme.colors.destructiveButton
     }
-    height: MZTheme.theme.rowHeight
+    height: Math.max(MZTheme.theme.rowHeight, label.implicitHeight + MZTheme.theme.rowHeight / 2)
     width: Math.min(parent.width * 0.83, MZTheme.theme.maxHorizontalContentWidth)
 
     Layout.alignment: Layout ? Qt.AlignHCenter : undefined
-    Layout.preferredHeight: Layout ? MZTheme.theme.rowHeight : undefined
+    Layout.preferredHeight: Layout ? Math.max(MZTheme.theme.rowHeight, label.implicitHeight + MZTheme.theme.rowHeight / 2) : undefined
+
     Layout.preferredWidth: Layout
         ? Math.min(parent.width * 0.83, MZTheme.theme.maxHorizontalContentWidth)
         : undefined
@@ -65,7 +67,8 @@ MZButtonBase {
         text: button.text
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
-        elide: Text.ElideRight
+        wrapMode: button.wrapMode
+        elide: button.wrapMode === Text.NoWrap ? Text.ElideRight : Text.ElideNone
         width: button.width
         font.family: MZTheme.theme.fontBoldFamily
         font.pixelSize: fontSize

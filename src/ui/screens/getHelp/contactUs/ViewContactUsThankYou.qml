@@ -22,6 +22,7 @@ ColumnLayout {
     }
 
     MZPanel {
+        objectName: "contactUs-ResponsePanel"
         anchors.horizontalCenter: undefined
         Layout.topMargin: window.fullscreenRequired() ? 0 : base.height * 0.2
         Layout.preferredHeight: height
@@ -38,6 +39,7 @@ ColumnLayout {
     }
 
     MZButton {
+        objectName: "contactUs-ResponseButton"
         Layout.fillWidth: true
         Layout.leftMargin: MZTheme.theme.windowMargin * 2
         Layout.rightMargin: MZTheme.theme.windowMargin * 2

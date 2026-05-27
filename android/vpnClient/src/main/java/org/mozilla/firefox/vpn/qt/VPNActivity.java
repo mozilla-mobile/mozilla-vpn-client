@@ -311,12 +311,12 @@ public class VPNActivity extends org.qtproject.qt.android.QtActivityBase {
   // so we can use that Shared Code
   private final int PERMISSION_TRANSACTION = 1337;
   private final int ACTION_REGISTER_LISTENER = 3;
-  private final int ACTION_RESUME_ACTIVATE = 7;
-  private final int ACTION_NOTIFICATION_PROMPT_SENT = 19;
-  private final int EVENT_PERMISSION_REQURED = 6;
+  private final int ACTION_RESUME_ACTIVATE = 6;
+  private final int ACTION_NOTIFICATION_PROMPT_SENT = 12;
+  private final int EVENT_PERMISSION_REQURED = 5;
   private final int EVENT_DISCONNECTED = 2;
-  private final int EVENT_ONBOARDING_COMPLETED = 9;
-  private final int EVENT_VPN_CONFIG_PERMISSION_RESPONSE = 10;
+  private final int EVENT_ONBOARDING_COMPLETED = 7;
+  private final int EVENT_VPN_CONFIG_PERMISSION_RESPONSE = 8;
 
   public void onPermissionRequest(int code, Parcel data) {
     if(code != EVENT_PERMISSION_REQURED){

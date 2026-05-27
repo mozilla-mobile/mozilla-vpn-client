@@ -781,7 +781,8 @@ void MozillaVPN::removeDeviceFromPublicKey(const QString& publicKey) {
 void MozillaVPN::createSupportTicket(const QString& email,
                                      const QString& subject,
                                      const QString& issueText,
-                                     const QString& category) {
+                                     const QString& category,
+                                     const bool shareLogs) {
   logger.debug() << "Create support ticket";
 
   QBuffer* buffer = new QBuffer();
@@ -801,7 +802,13 @@ void MozillaVPN::createSupportTicket(const QString& email,
             // immediately and let's hope it does not fail.
             TaskScheduler::scheduleTaskNow(task);
           });
-  LogHandler::instance()->logSerialize(buffer);
+  if (shareLogs) {
+    LogHandler::instance()->logSerialize(buffer);
+  } else {
+    QString noLogs = "Logs not shared.";
+    buffer->write(noLogs.toUtf8());
+    buffer->close();
+  }
 }
 
 void MozillaVPN::accountChecked(const QByteArray& json) {

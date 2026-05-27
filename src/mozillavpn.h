@@ -150,7 +150,8 @@ class MozillaVPN final : public QObject {
   Q_INVOKABLE void createSupportTicket(const QString& email,
                                        const QString& subject,
                                        const QString& issueText,
-                                       const QString& category);
+                                       const QString& category,
+                                       const bool shareLogs);
   Q_INVOKABLE bool validateUserDNS(const QString& dns) const;
   Q_INVOKABLE void hardResetAndQuit();
   Q_INVOKABLE void cancelReauthentication();

@@ -201,8 +201,9 @@ inAppSupportWorkflow:
     comment: A user selecting this will be submitting in-app feedback related to issues not covered under the other categories.
   subjectFieldPlaceholder: Subject (optional)
   issueFieldPlaceholder: Describe issue
-  disclaimerText: When you submit, Mozilla VPN will collect technical and interaction data with your email to help our support team understand your issue.
   privacyNoticeLinkText: Mozilla VPN Privacy Notice
+  shareLogsCheckBoxTitle: Share logs with support
+  shareLogsCheckBoxSubtitle: Support will use this data to better diagnose your issue.
   supportPrimaryButtonText: Submit
   supportSecondaryActionText: Cancel
   supportResponseHeader: Thank you!
