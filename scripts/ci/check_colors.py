@@ -11,6 +11,8 @@ HEX_COLOR_REGEX = r"#[0-9a-fA-F]{6}"
 NAMED_COLOR_REGEX = r"color: [\'|\"].*[\'|\"]"
 COLOR_DEF_REGEX = r"color\..* ="
 COLOR_USE_REGEX = r"MZTheme\.colors\.[0-9A-Za-z]+"
+JS_COLOR_CAPTURE_REGEX = r"color\.(\w+)\s*=\s*'#([0-9A-Fa-f]{6,8})'"
+SWIFT_COLOR_CAPTURE_REGEX = r'static let (\w+)\s*=\s*"([0-9A-Fa-f]{6})"'
 
 def fileContents(filepath):
     try:
@@ -101,7 +103,6 @@ for file_path in file_paths:
 
 ###
 # 2. Explict colors should not be used in theme-derived.js or any theme's color file.
-
 file_paths = list(map(lambda x: args.themeDirectory[0] + "/" + x + ".js", all_themes))
 file_paths.append(os.path.join(args.themeDirectory[0], os.pardir) + "/theme-derived.js")
 for file_path in file_paths:
@@ -141,3 +142,34 @@ for qml_file_path in all_qml_files:
     for color in colors_used:
         if color not in color_list:
             exit(f"Unexpected color {color} found in {qml_file_path}")
+
+###
+# 4. Every color defined in ios/widgetextension/WidgetColors.swift must exist in
+#    nebula/ui/themes/colors.js with a matching RGB value.
+
+repo_root = os.path.join(script_path, os.path.pardir, os.path.pardir)
+widget_colors_path = os.path.join(repo_root, "ios", "widgetextension", "WidgetColors.swift")
+colors_js_path = os.path.join(repo_root, "nebula", "ui", "themes", "colors.js")
+
+print(f"Cross-checking {widget_colors_path} against {colors_js_path}")
+
+js_color_pairs = re.findall(JS_COLOR_CAPTURE_REGEX, fileContents(colors_js_path))
+# colors.js stores either #RRGGBB or Qt-style #AARRGGBB (alpha first). Normalize to RGB.
+js_colors = {}
+for name, value in js_color_pairs:
+    rgb = value[2:] if len(value) == 8 else value
+    js_colors[name] = rgb.upper()
+
+widget_color_pairs = re.findall(SWIFT_COLOR_CAPTURE_REGEX, fileContents(widget_colors_path))
+if not widget_color_pairs:
+    exit(f"No color definitions found in: {widget_colors_path}")
+
+for name, hex_value in widget_color_pairs:
+    hex_value = hex_value.upper()
+    if name not in js_colors:
+        exit(f"Color '{name}' in WidgetColors.swift has no matching entry in colors.js")
+    if js_colors[name] != hex_value:
+        exit(
+            f"Color '{name}' in WidgetColors.swift is #{hex_value} but "
+            f"colors.js defines it as #{js_colors[name]}"
+        )
