@@ -13,7 +13,7 @@ See Android build documentation for details on these scripts.
 
 # Linux-specific scripts
 
-- ./linux/script.sh - compile the client and upload it to the PPA
+- ./linux/script.sh - bundle a Github source checkout into Debian/RPM source packages
 - ./linux/getdeps.py - extract dependencies from the Debian package control file.
 
 # macOS-specific scripts
