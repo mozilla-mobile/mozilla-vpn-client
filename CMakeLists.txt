@@ -177,7 +177,6 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 add_subdirectory(src)
 add_subdirectory(lottie)
 add_subdirectory(nebula)
-add_subdirectory(src/translations)
 add_subdirectory(addons)
 
 # Build the extension for desktop targets
@@ -214,5 +213,7 @@ elseif(IOS)
     add_subdirectory(ios/widgetextension)
 endif()
 
+# This must come after iOS creates widgetextension
+add_subdirectory(src/translations)
 
 add_subdirectory(tools/qml_hot_reload)
