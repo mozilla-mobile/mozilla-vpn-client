@@ -132,10 +132,10 @@ public class IOSControllerImpl: NSObject {
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: unknown status")
         }
 
-      if #available(iOS 18.0, *) {
-        ControlCenter.shared.reloadAllControls()
-      }
-      WidgetCenter.shared.reloadAllTimelines()
+        if #available(iOS 18.0, *) {
+          ControlCenter.shared.reloadAllControls()
+        }
+        WidgetCenter.shared.reloadAllTimelines()
 
         // We care about "unknown" state changes.
         if (session.status != .connected && session.status != .disconnected) {
@@ -262,6 +262,7 @@ public class IOSControllerImpl: NSObject {
                IOSControllerImpl.logger.info(message: "Saving the tunnel succeeded")
 
                // If this included changing the location, we may need to update widgets.
+               // We want to do this even if the VPN is not activated, so that it has the latest city.
                WidgetCenter.shared.reloadAllTimelines()
 
                tunnel.loadFromPreferences { error in

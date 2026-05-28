@@ -120,6 +120,18 @@ struct ToggleIntent: SetValueIntent {
       }
     }
 
+    // We should not need this next block, as it should be handled in
+    // iostunnel.swift. However, closing the tunnel seems to kill the
+    // network extension quickly, and when activated/deactivate from
+    // control center toggle, we weren't always updating any widgets,
+    // and vice versa. This seemed to fix it.
+    // However, the turn on and turn off intents work just fine for
+    // both widgets and controls, it seems, so they do not need this.
+    WidgetCenter.shared.reloadAllTimelines()
+    if #available(iOS 18.0, *) {
+        ControlCenter.shared.reloadAllControls()
+    }
+
     if #available(iOS 17.2, *) {
       dialog = IntentDialog(full: responseText,
                             supporting: responseText,
