@@ -9,7 +9,6 @@
 #include <QUrl>
 
 #include "addons/addonreplacer.h"
-#include "authenticationinapp/authenticationinapp.h"
 #include "feature/features.h"
 #include "helper.h"
 #include "models/licensemodel.h"

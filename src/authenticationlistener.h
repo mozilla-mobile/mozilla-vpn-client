@@ -22,7 +22,6 @@ class AuthenticationListener : public QObject {
  public:
   enum AuthenticationType {
     AuthenticationInBrowser,
-    AuthenticationInApp,
     AuthenticationInBrowserHeadless,
   };
 

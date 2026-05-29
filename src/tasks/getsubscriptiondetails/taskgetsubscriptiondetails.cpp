@@ -6,11 +6,7 @@
 
 #include <QJsonObject>
 
-#include "authenticationinapp/authenticationinapp.h"
-#include "authenticationinapp/authenticationinappsession.h"
-#include "authenticationlistener.h"
 #include "constants.h"
-#include "feature/features.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "models/subscriptiondata.h"
@@ -64,11 +60,9 @@ void TaskGetSubscriptionDetails::runInternal() {
         } else {
           switch (m_authenticationPolicy) {
             case RunAuthenticationFlowIfNeeded:
-              if (!m_authenticationInAppSession) {
-                logger.error() << "Needs authentication";
-                initAuthentication();
-                return;
-              }
+              logger.error() << "Needs authentication";
+              initAuthentication();
+              return;
 
               logger.error() << "Network request failed after authentication";
               break;
@@ -76,12 +70,10 @@ void TaskGetSubscriptionDetails::runInternal() {
             case ForceAuthenticationFlow:
               logger.error() << "We did the auth before, but somehow it "
                                 "was not enough";
-              Q_ASSERT(m_authenticationInAppSession);
               break;
 
             case NoAuthenticationFlow:
               logger.error() << "Needs authentication, but excluded by policy";
-              Q_ASSERT(!m_authenticationInAppSession);
               break;
           }
         }
@@ -114,94 +106,12 @@ void TaskGetSubscriptionDetails::maybeComplete(bool status) {
   }
 
   emit operationCompleted(status);
-
-  if (m_authenticationInAppSession) {
-    m_authenticationInAppSession->terminate();
-    return;
-  }
-
   emit completed();
 }
 
 void TaskGetSubscriptionDetails::initAuthentication() {
-  logger.debug() << "Init authentication";
-  Q_ASSERT(!m_authenticationInAppSession);
-
   // If transitioning from in-app auth to web-based auth, bounce to web-based
-#ifndef MZ_WASM
-  if (!Feature::isEnabled(Feature::inAppAuthentication)) {
-    logger.info() << "Starting web-based re-authentication.";
-    emit mustTransitionAuthToWeb();
-    emit completed();
-    return;
-  }
-#endif
-
-  emit needsAuthentication();
-
-  QByteArray pkceCodeVerifier;
-  QByteArray pkceCodeChallenge;
-  AuthenticationListener::generatePkceCodes(pkceCodeVerifier,
-                                            pkceCodeChallenge);
-  Q_ASSERT(!pkceCodeVerifier.isEmpty() && !pkceCodeChallenge.isEmpty());
-
-  m_authenticationInAppSession = new AuthenticationInAppSession(
-      this, AuthenticationInAppSession::TypeSubscriptionManagement);
-
-  connect(m_authenticationInAppSession, &AuthenticationInAppSession::terminated,
-          this, &Task::completed);
-
-  connect(m_authenticationInAppSession, &AuthenticationInAppSession::completed,
-          this, [this, pkceCodeVerifier](const QString& pkceCodeSuccess) {
-            logger.debug() << "Authentication completed with code:"
-                           << logger.sensitive(pkceCodeSuccess);
-
-            NetworkRequest* request = new NetworkRequest(this, 200);
-            request->post(
-                Constants::apiUrl(Constants::LoginVerify),
-                QJsonObject{{"code", pkceCodeSuccess},
-                            {"code_verifier", QString(pkceCodeVerifier)}});
-
-            connect(
-                request, &NetworkRequest::requestFailed, this,
-                [this](QNetworkReply::NetworkError error, const QByteArray&) {
-                  logger.error()
-                      << "Failed to complete the authentication" << error;
-                  maybeComplete(false);
-                });
-
-            connect(request, &NetworkRequest::requestCompleted, this,
-                    [this](const QByteArray&) {
-                      logger.debug() << "Authentication completed. Attempt "
-                                        "fetching subscription details again.";
-                      runInternal();
-                    });
-          });
-
-  connect(m_authenticationInAppSession, &AuthenticationInAppSession::failed,
-          this, [this](const ErrorHandler::ErrorType error) {
-            REPORTERROR(error, name());
-            maybeComplete(false);
-          });
-
-  connect(AuthenticationInApp::instance(), &AuthenticationInApp::stateChanged,
-          this, [this] {
-            switch (AuthenticationInApp::instance()->state()) {
-              case AuthenticationInApp::StateSignUp:
-                [[fallthrough]];
-              case AuthenticationInApp::StateFallbackInBrowser:
-                REPORTERROR(ErrorHandler::AuthenticationError, name());
-                maybeComplete(false);
-                break;
-
-              default:
-                // All the other states should be handled by the
-                // front-end code.
-                break;
-            }
-          });
-
-  m_authenticationInAppSession->start(this, pkceCodeChallenge,
-                                      CODE_CHALLENGE_METHOD,
-                                      MozillaVPN::instance()->user()->email());
+  logger.info() << "Starting web-based re-authentication.";
+  emit mustTransitionAuthToWeb();
+  emit completed();
 }

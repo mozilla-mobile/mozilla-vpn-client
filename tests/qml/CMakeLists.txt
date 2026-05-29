@@ -94,14 +94,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/addons/manager/addonindex.h
     ${MZ_SOURCE_DIR}/addons/manager/addonmanager.cpp
     ${MZ_SOURCE_DIR}/addons/manager/addonmanager.h
-    ${MZ_SOURCE_DIR}/authenticationinapp/authenticationinapp.cpp
-    ${MZ_SOURCE_DIR}/authenticationinapp/authenticationinapp.h
-    ${MZ_SOURCE_DIR}/authenticationinapp/authenticationinapplistener.cpp
-    ${MZ_SOURCE_DIR}/authenticationinapp/authenticationinapplistener.h
-    ${MZ_SOURCE_DIR}/authenticationinapp/authenticationinappsession.cpp
-    ${MZ_SOURCE_DIR}/authenticationinapp/authenticationinappsession.h
-    ${MZ_SOURCE_DIR}/authenticationinapp/incrementaldecoder.cpp
-    ${MZ_SOURCE_DIR}/authenticationinapp/incrementaldecoder.h
     ${MZ_SOURCE_DIR}/authenticationlistener.cpp
     ${MZ_SOURCE_DIR}/authenticationlistener.h
     ${MZ_SOURCE_DIR}/cryptosettings.cpp

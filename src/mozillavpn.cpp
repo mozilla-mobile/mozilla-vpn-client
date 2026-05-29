@@ -7,7 +7,6 @@
 #include "addons/addonapi.h"
 #include "addons/addonmessage.h"
 #include "addons/manager/addonmanager.h"
-#include "authenticationinapp/authenticationinapp.h"
 #include "captiveportal/captiveportaldetection.h"
 #include "commandlineparser.h"
 #include "constants.h"
@@ -550,10 +549,7 @@ void MozillaVPN::maybeStateMain() {
 }
 
 void MozillaVPN::authenticate() {
-  return authenticateWithType(
-      Feature::isEnabled(Feature::inAppAuthentication)
-          ? AuthenticationListener::AuthenticationInApp
-          : AuthenticationListener::AuthenticationInBrowser);
+  return authenticateWithType(AuthenticationListener::AuthenticationInBrowser);
 }
 
 void MozillaVPN::authenticateWithType(
@@ -1327,8 +1323,6 @@ void MozillaVPN::hardResetAndQuit() {
 
 void MozillaVPN::cancelReauthentication() {
   logger.warning() << "Canceling reauthentication";
-  AuthenticationInApp::instance()->terminateSession();
-
   cancelAuthentication();
 }
 
