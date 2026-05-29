@@ -68,9 +68,14 @@ pub struct ObfuscatorConfig {
     pub server_ipv4_addr_in: *const c_char,
     pub server_ipv6_addr_in: *const c_char,
     pub server_port: u16,
+    /// Local UDP port the obfuscator should listen on (127.0.0.1).
+    /// 0 = let the OS pick a free port.
+    pub listen_port: u16,
     // Wireguard keys required by LWO
     pub server_public_key: *const c_char,
     pub public_key: *const c_char,
+    #[cfg(target_os = "linux")]
+    pub fwmark: u32,
 }
 
 /// Safe Rust mirror used inside the crate.
@@ -81,7 +86,10 @@ pub struct Config {
     pub server_ipv4: Option<Ipv4Addr>,
     pub server_ipv6: Option<Ipv6Addr>,
     pub server_port: u16,
+    pub listen_port: u16,
     pub server_public_key: Option<[u8; WG_KEY_LEN]>,
+    #[cfg(target_os = "linux")]
+    pub fwmark: Option<u32>,
 }
 
 impl Config {
@@ -103,13 +111,17 @@ impl Config {
         }
         let public_key = parse_wg_key(cfg.public_key);
         let server_public_key = parse_wg_key(cfg.server_public_key);
+
         Some(Self {
             method,
             public_key,
             server_ipv4,
             server_ipv6,
             server_port: cfg.server_port,
+            listen_port: cfg.listen_port,
             server_public_key,
+            #[cfg(target_os = "linux")]
+            fwmark: if cfg.fwmark == 0 { None } else { Some(cfg.fwmark) },
         })
     }
 
