@@ -22,18 +22,6 @@ target_link_libraries(daemon PRIVATE ${FW_FOUNDATION} ${FW_NETWORK} ${FW_SECURIT
 target_link_libraries(daemon PRIVATE Qt6::Core Qt6::Network)
 target_link_libraries(daemon PRIVATE mzutils)
 
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
-add_rust_library(obfuscators_daemon
-    PACKAGE_DIR ${CMAKE_SOURCE_DIR}/obfuscators
-    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/obfuscators_daemon
-    CRATE_NAME obfuscators
-    CARGO_ENV CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}/obfuscators_daemon
-)
-target_include_directories(obfuscators_daemon INTERFACE
-    ${CMAKE_CURRENT_BINARY_DIR}/obfuscators_daemon
-)
-target_link_libraries(daemon PRIVATE obfuscators_daemon)
-
 find_library(FW_NW_EXTENSION NetworkExtension)
 find_library(FW_SYS_EXTENSION SystemExtensions)
 target_link_libraries(daemon PRIVATE ${FW_NW_EXTENSION})

@@ -157,18 +157,6 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
     target_compile_definitions(shared-sources INTERFACE MZ_SIGNATURE)
     target_link_libraries(shared-sources INTERFACE signature)
 
-    # Compile and link the obfuscators library
-    add_rust_library(obfuscators
-        PACKAGE_DIR ${CMAKE_SOURCE_DIR}/obfuscators
-        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/obfuscators_target
-        CRATE_NAME obfuscators
-        CARGO_ENV CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}/obfuscators_target
-    )
-    target_include_directories(obfuscators INTERFACE
-        ${CMAKE_CURRENT_BINARY_DIR}/obfuscators_target
-    )
-    target_link_libraries(shared-sources INTERFACE obfuscators)
-
     # HACK: Patch in a fix for the ring compilation fail on windows/aarch64.
     # This can be removed once version 0.17.1600 is published to crates.io
     # See: https://github.com/briansmith/ring/issues/2215
