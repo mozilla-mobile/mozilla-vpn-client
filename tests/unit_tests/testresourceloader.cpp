@@ -70,28 +70,6 @@ void TestResourceLoader::loadDir() {
   QCOMPARE(rl->loadDir(":aa"), ":aa");
 }
 
-void TestResourceLoader::commonPasswords() {
-  QQmlApplicationEngine engine;
-  QmlEngineHolder qml(&engine);
-
-  AuthenticationInApp* aia = AuthenticationInApp::instance();
-  QVERIFY(!!aia);
-
-  QCOMPARE(aia->validatePasswordCommons("12345678"), false);
-
-  Interceptor i(QUrl("qrc:/resources/encodedPassword.txt"),
-                QUrl("qrc:/replace/encodedPassword.txt"));
-
-  ResourceLoader* rl = ResourceLoader::instance();
-
-  rl->addUrlInterceptor(&i);
-  QCOMPARE(aia->validatePasswordCommons("12345678"), true);
-  QCOMPARE(aia->validatePasswordCommons("ciaociao"), false);
-
-  rl->removeUrlInterceptor(&i);
-  QCOMPARE(aia->validatePasswordCommons("12345678"), false);
-}
-
 void TestResourceLoader::licenseModel() {
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);

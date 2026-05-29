@@ -133,12 +133,10 @@ target_sources(shared-sources INTERFACE
 
 target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/resources/license.qrc
-    ${CMAKE_SOURCE_DIR}/src/resources/resources.qrc
 )
 
 if(NOT QT_FEATURE_zstd)
     set_property(SOURCE  ${CMAKE_SOURCE_DIR}/src/resources/license.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
-    set_property(SOURCE  ${CMAKE_SOURCE_DIR}/src/resources/resources.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
