@@ -138,7 +138,7 @@ exports.mochaHooks = {
     await vpn.connect(vpnWasm, { url, driver });
 
     if (this.currentTest.ctx.authenticationNeeded) {
-      await vpn.authenticateInApp();
+      await vpn.authenticate();
     }
 
     // Add servers to the context so that stub endpoints can be modified in the

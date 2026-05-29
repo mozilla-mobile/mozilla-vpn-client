@@ -133,11 +133,7 @@ describe('Devices', function() {
     };
 
     it('Device limit', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-      }
-
-      // skip onboarding. normally done in helper::authenticateInApp(), but
+      // skip onboarding. normally done in helper::authenticate(), but
       // this test logs in manually
       await vpn.skipOnboarding();
 
@@ -271,10 +267,6 @@ describe('Devices', function() {
     };
 
     it('Device limit', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-      }
-
       // This method must be called when the client is on the "Get Started"
       // view.
       await vpn.waitForInitialView();
@@ -395,11 +387,7 @@ describe('Devices', function() {
     };
 
     it('Device limit', async () => {
-      if (!(await vpn.isFeatureFlippedOn('inAppAuthentication'))) {
-        await vpn.flipFeatureOn('inAppAuthentication');
-      }
-
-      // skip onboarding. normally done in helper::authenticateInApp(), but
+      // skip onboarding. normally done in helper::authenticate(), but
       // this test logs in manually
       await vpn.skipOnboarding();
 

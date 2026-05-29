@@ -9,10 +9,6 @@ const vpn = require('./helper.js');
 describe('User authentication in browser', function() {
   this.timeout(60000);
 
-  beforeEach(async () => {
-    await vpn.flipFeatureOff('inAppAuthentication');
-  })
-
   it('returns to main view on canceling authentication', async () => {
     await vpn.waitForInitialView();
 
@@ -37,18 +33,18 @@ describe('User authentication in browser', function() {
   it('Completes authentication', async () => {
     await vpn.waitForInitialView();
     await vpn.skipOnboarding();
-    await vpn.authenticateInBrowser(this.ctx.wasm);
+    await vpn.authenticateInBrowser();
   });
 
   it('Completes authentication via deep link', async () => {
     await vpn.waitForInitialView();
     await vpn.skipOnboarding();
-    await vpn.authenticateInBrowser(this.ctx.wasm, true);
+    await vpn.authenticateInBrowser(true);
   });
 
   it('Completes authentication after logout', async () => {
     await vpn.skipOnboarding();
-    await vpn.authenticateInBrowser(this.ctx.wasm);
+    await vpn.authenticateInBrowser();
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
     await vpn.waitForQueryAndClick(
@@ -59,6 +55,6 @@ describe('User authentication in browser', function() {
     await vpn.waitForInitialView();
     await vpn.skipOnboarding();
 
-    await vpn.authenticateInBrowser(this.ctx.wasm);
+    await vpn.authenticateInBrowser();
   });
 });

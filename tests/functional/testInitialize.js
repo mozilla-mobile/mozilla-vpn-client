@@ -92,16 +92,10 @@ describe('Initialize', function() {
     await vpn.waitForQueryAndClick(
         queries.screenInitialize.ALREADY_A_SUBSCRIBER_LINK.visible());
 
-    // What happens next depends on feature flagging.
-    if (await vpn.isFeatureEnabled('inAppAuthentication')) {
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-    } else {
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.includes('/api/v2/vpn/login');
-      });
-    }
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+      return url.includes('/api/v2/vpn/login');
+    });
   });
 
 });

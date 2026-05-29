@@ -36,8 +36,6 @@ describe('Backend failure', function() {
       return;
     }
 
-    await vpn.flipFeatureOff('inAppAuthentication');
-
     await vpn.waitForInitialView();
     await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
