@@ -29,8 +29,6 @@ inline const AnyFeature s_exposedFeatures[] = {
     ref(enableUpdateServer),
     ref(factoryReset),
     ref(freeTrial),
-    ref(inAppAccountCreate),
-    ref(inAppAuthentication),
     ref(multiHop),
     ref(networkExtension),
     ref(notificationControl),

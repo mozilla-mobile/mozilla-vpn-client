@@ -303,18 +303,6 @@ inline const OverridableFeature addonSignature = {
     .canFlipOff = +[] { return !Constants::inProduction(); },
 };
 
-inline const OverridableFeature inAppAuthentication = {
-    .id = "inAppAuthentication",
-    .name = "In-app Authentication",
-    .evaluator = +[]() -> bool { return Platform::wasm; },
-};
-
-inline const OverridableFeature inAppAccountCreate = {
-    .id = "inAppAccountCreate",
-    .name = "In-app Account Creation",
-    .evaluator = +[]() -> bool { return isEnabled(inAppAuthentication); },
-};
-
 inline const OverridableFeature webExtension = {
     .id = "webExtension",
     .name = "webExtension",
