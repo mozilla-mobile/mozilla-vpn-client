@@ -91,6 +91,10 @@ Controller::Controller() {
   // if the locale changed, send the new translation for the city name to iOS
   // widget
   connect(Localizer::instance(), &Localizer::localeChanged, this, [this]() {
+    if (SettingsHolder::instance()->languageCode().isEmpty()) {
+      // If setting is empty, this was called while tearing down the client
+      return;
+    }
     const ServerData& serverData = *MozillaVPN::instance()->serverData();
     maybeSendUpdatedConfig(serverData);
   });
