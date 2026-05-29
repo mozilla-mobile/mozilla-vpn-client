@@ -49,7 +49,6 @@ class ErrorHandler final : public QObject {
     SubscriptionFailureAlert,
     GeoIpRestrictionAlert,
     UnrecoverableErrorAlert,
-    AuthCodeSentAlert,
     CopiedToClipboardConfirmationAlert,
     VPNMustBeOffWarning,
     SampleInfoAlert,

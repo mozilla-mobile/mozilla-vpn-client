@@ -1515,22 +1515,7 @@ void MozillaVPN::registerNavigatorScreens() {
       MozillaVPN::ScreenAuthenticating, Navigator::LoadPolicy::LoadTemporarily,
       "qrc:/qt/qml/Mozilla/VPN/screens/ScreenAuthenticating.qml",
       QVector<int>{MozillaVPN::StateAuthenticating},
-      [](int*) -> int8_t {
-        return Feature::isEnabled(Feature::inAppAuthentication) ? -1 : 0;
-      },
-      []() -> bool {
-        MozillaVPN::instance()->cancelAuthentication();
-        return true;
-      });
-
-  Navigator::registerScreen(
-      MozillaVPN::ScreenAuthenticationInApp,
-      Navigator::LoadPolicy::LoadTemporarily,
-      "qrc:/qt/qml/Mozilla/VPN/screens/ScreenAuthenticationInApp.qml",
-      QVector<int>{MozillaVPN::StateAuthenticating},
-      [](int*) -> int8_t {
-        return Feature::isEnabled(Feature::inAppAuthentication) ? 0 : -1;
-      },
+      [](int*) -> int8_t { return 0; },
       []() -> bool {
         MozillaVPN::instance()->cancelAuthentication();
         return true;

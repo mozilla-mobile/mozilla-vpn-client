@@ -23,15 +23,6 @@ MZAlert {
                     visible: false
                 }
             },
-            State{
-                name: MZErrorHandler.AuthCodeSentAlert
-                PropertyChanges {
-                    target: alertBox
-                    alertType: alertTypes.success
-                    alertText: MZI18n.InAppAuthEmailTokenResentAlert
-                    visible: true
-                }
-            },
             State {
                 name: MZErrorHandler.AuthenticationFailedAlert
                 PropertyChanges {

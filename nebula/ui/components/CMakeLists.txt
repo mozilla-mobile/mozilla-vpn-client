@@ -92,13 +92,10 @@ qt_add_qml_module(components
 )
 
 add_subdirectory(forms)
-add_subdirectory(inAppAuth)
 
 
 set_target_properties(components PROPERTIES FOLDER "Libs")
 target_link_libraries(components PRIVATE
     forms
     formsplugin
-    inAppAuth
-    inAppAuthplugin
 )

@@ -98,7 +98,6 @@ class MozillaVPN final : public QObject {
 
   enum CustomScreen {
     ScreenAuthenticating = Navigator::ScreenCustom + 1,
-    ScreenAuthenticationInApp,
     ScreenHeartbeatFailure,
     ScreenBillingNotAvailable,
     ScreenCaptivePortal,

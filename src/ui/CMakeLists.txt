@@ -10,19 +10,8 @@ qt_add_qml_module(mozillavpn-ui
     OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/Mozilla/VPN
     QML_FILES
         main.qml
-        authenticationInApp/ViewAuthenticationFallbackInBrowser.qml
-        authenticationInApp/ViewAuthenticationInitializing.qml
-        authenticationInApp/ViewAuthenticationSignIn.qml
-        authenticationInApp/ViewAuthenticationSignUp.qml
-        authenticationInApp/ViewAuthenticationStart.qml
-        authenticationInApp/ViewAuthenticationUnblockCodeNeeded.qml
-        authenticationInApp/ViewAuthenticationVerificationSessionByEmailNeeded.qml
-        authenticationInApp/ViewAuthenticationVerificationSessionByTotpNeeded.qml
-        authenticationInApp/ViewAuthenticationStubAccount.qml
-        authenticationInApp/ViewAuthenticationSsoAccount.qml
         popups/MessageAddonPopover.qml
         popups/ServerUnavailablePopup.qml
-        screens/authenticationInApp/ViewAuthenticationInApp.qml
         screens/devices/ViewDevices.qml
         screens/devices/ViewDeviceLimit.qml
         screens/devices/VPNDeviceList.qml
@@ -65,7 +54,6 @@ qt_add_qml_module(mozillavpn-ui
         screens/onboarding/ViewOnboarding.qml
         screens/ScreenRemovingDevice.qml
         screens/ScreenAuthenticating.qml
-        screens/ScreenAuthenticationInApp.qml
         screens/ScreenBackendFailure.qml
         screens/ScreenBillingNotAvailable.qml
         screens/ScreenCaptivePortal.qml
