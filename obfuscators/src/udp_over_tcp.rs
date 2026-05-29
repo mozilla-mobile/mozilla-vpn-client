@@ -33,9 +33,15 @@ impl UdpOverTcpObfuscator {
             .enable_all()
             .build()?;
 
-        let listen_addr: SocketAddr = ([127, 0, 0, 1], 0).into();
+        let listen_addr: SocketAddr = ([127, 0, 0, 1], cfg.listen_port).into();
+        let mut tcp_options = TcpOptions::default();
+        tcp_options.nodelay = true;
+        #[cfg(target_os = "linux")]
+        {
+            tcp_options.fwmark = cfg.fwmark;
+        }
         let inner = runtime
-            .block_on(Udp2Tcp::new(listen_addr, server, TcpOptions::default()))
+            .block_on(Udp2Tcp::new(listen_addr, server, tcp_options))
             .map_err(|e| io::Error::new(io::ErrorKind::Other, e.to_string()))?;
 
         let local_port = inner.local_udp_addr()?.port();

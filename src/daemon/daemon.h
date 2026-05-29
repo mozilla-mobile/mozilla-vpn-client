@@ -88,12 +88,6 @@ class Daemon : public QObject {
   QTimer m_handshakeTimer;
   std::unique_ptr<Obfuscator> m_obfuscator;
 
-  // Hook for platform-specific code to mark the obfuscator outbound socket
-  // so its packets bypass the VPN. Default no-op, Linux marks SO_MARK
-  virtual void markObfuscatorSockets(int v4, int v6) {
-    Q_UNUSED(v4);
-    Q_UNUSED(v6);
-  }
 };
 
 #endif  // DAEMON_H

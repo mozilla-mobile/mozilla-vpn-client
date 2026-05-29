@@ -33,8 +33,6 @@ Daemon::Daemon(QObject* parent) : QObject(parent) {
 
   logger.debug() << "Daemon created";
 
-  obfuscators_set_log_handler(LogHandler::rustMessageHandler);
-
   m_handshakeTimer.setSingleShot(true);
   connect(&m_handshakeTimer, &QTimer::timeout, this, &Daemon::checkHandshake);
 }
@@ -148,12 +146,11 @@ bool Daemon::activate(const InterfaceConfig& config) {
   if (config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
       config.m_hopType != InterfaceConfig::MultiHopExit) {
     obfuscator = std::make_unique<Obfuscator>(config);
-    if (!obfuscator->isRunning()) {
+    if (!obfuscator->start()) {
       logger.error() << "Failed to start obfuscator"
                      << config.m_obfuscationMethod;
       return false;
     }
-    markObfuscatorSockets(obfuscator->socketV4(), obfuscator->socketV6());
     peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
     peerConfig.m_serverIpv6AddrIn = "::1";
     peerConfig.m_serverPort = obfuscator->localPort();
@@ -463,12 +460,11 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   if (config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
       config.m_hopType != InterfaceConfig::MultiHopExit) {
     obfuscator = std::make_unique<Obfuscator>(config);
-    if (!obfuscator->isRunning()) {
+    if (!obfuscator->start()) {
       logger.error() << "Failed to start obfuscator on switch"
                      << config.m_obfuscationMethod;
       return false;
     }
-    markObfuscatorSockets(obfuscator->socketV4(), obfuscator->socketV6());
     peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
     peerConfig.m_serverIpv6AddrIn = QString();
     peerConfig.m_serverPort = obfuscator->localPort();
