@@ -142,75 +142,48 @@ describe('Subscription manager', function() {
          // screen. Once they click on the "Subscribe Now" button, they will be
          // taken to the browser to finish subscription and then will be then
          // redirected back to the controller home screen.
+         await vpn.authenticate();
+         await vpn.setMozillaProperty(
+             'Mozilla.Shared', 'MZUrlOpener', 'lastUrl', '');
 
-         if (!this.ctx.wasm) {
-           await vpn.authenticate();
+         // Mark the user subscription as inactive
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+             userDataInactive;
 
-           // Mark the user subscription as inactive
-           this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
-               userDataInactive;
+         await vpn.waitForQuery(
+             queries.screenHome.CONTROLLER_TITLE.visible());
+         await vpn.clickOnQuery(
+             queries.screenHome.CONTROLLER_TOGGLE.visible());
 
-           await vpn.waitForQuery(
-               queries.screenHome.CONTROLLER_TITLE.visible());
-           await vpn.clickOnQuery(
-               queries.screenHome.CONTROLLER_TOGGLE.visible());
+         // Verify that user gets the "Subscribe to Mozilla VPN" screen.
+         await vpn.waitForQuery(queries.screenSubscriptionNeeded
+                                    .SUBSCRIPTION_NEEDED_VIEW.visible());
 
-           // Verify that user gets the "Subscribe to Mozilla VPN" screen.
-           await vpn.waitForQuery(queries.screenSubscriptionNeeded
-                                      .SUBSCRIPTION_NEEDED_VIEW.visible());
+         // Click on the Subscribe Now button.
+         await vpn.waitForQueryAndClick(
+             queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON
+                 .visible());
 
-
-           // Click on the Subscribe Now button.
-           await vpn.waitForQueryAndClick(
-               queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON
-                   .visible());
-
-           await vpn.waitForCondition(async () => {
-             const url = await vpn.getLastUrl();
-             return url.includes('/api/v2/vpn/login');
-           });
-
-           // Mark the user subscription as active
-           this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
-               userDataActive;
-
-           // We don't really want to go through the
-           // authentication flow because we
-           // are mocking everything. So this next chunk of code manually
-           // makes a call to the DesktopAuthenticationListener to mock
-           // a successful authentication in browser.
+         await vpn.waitForCondition(async () => {
            const url = await vpn.getLastUrl();
-           const authListenerPort = (new URL(url)).searchParams.get('port');
-           const options = {
-             // We hardcode 127.0.0.1 to match listening on
-             // QHostAddress:LocalHost
-             // and hardcoded in guardian's vpnClientPixelImageAuthUrl
-             hostname: '127.0.0.1',
-             port: parseInt(authListenerPort, 10),
-             path: '/?code=the_code',
-             method: 'GET',
-           };
+           return url.includes('/api/v2/vpn/login');
+         });
 
-           await new Promise(resolve => {
-             const req = http.request(options, res => {});
-             req.on('close', resolve);
-             req.on('error', error => {
-               throw new Error(
-                   `Unable to connect to ${urlObj.hostname} to complete the
-                  auth. ${error.name}, ${error.message}, ${error.stack}`);
-             });
-             req.end();
-           });
+         // Mark the user subscription as active
+         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+             userDataActive;
 
-           // Wait for VPN client screen to move from spinning wheel to next
-           // screen
-           await vpn.waitForQuery(
-               queries.screenHome.CONTROLLER_TITLE.visible());
-           assert.equal(
-               await vpn.getQueryProperty(
-                   queries.screenHome.CONTROLLER_TITLE, 'text'),
-               'VPN is off');
-         }
+         // Mock a successful authentication flow.
+         await vpn.mockInBrowserAuthentication(true);
+
+         // Wait for VPN client screen to move from spinning wheel to next
+         // screen
+         await vpn.waitForQuery(
+             queries.screenHome.CONTROLLER_TITLE.visible());
+         assert.equal(
+             await vpn.getQueryProperty(
+                 queries.screenHome.CONTROLLER_TITLE, 'text'),
+             'VPN is off');
        });
 
     it('Continues to try connecting if call to check subscription status fails',

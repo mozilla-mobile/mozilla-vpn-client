@@ -15,7 +15,7 @@ class UrlOpener final : public QObject {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(UrlOpener)
 
-  Q_PROPERTY(QString lastUrl READ lastUrl NOTIFY lastUrlChanged)
+  Q_PROPERTY(QString lastUrl READ lastUrl WRITE setLastUrl NOTIFY lastUrlChanged)
 
  public:
   static UrlOpener* instance();
