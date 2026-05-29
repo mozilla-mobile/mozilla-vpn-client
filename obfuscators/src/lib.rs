@@ -9,13 +9,13 @@ use std::sync::Arc;
 use std::thread::{self, JoinHandle};
 use logger::Logger;
 
-mod factory;
+pub mod factory;
 mod logger;
 #[allow(dead_code)]
 mod obfuscator;
 mod udp_over_tcp;
 
-pub use obfuscator::{Obfuscator, ObfuscatorConfig, Config};
+pub use obfuscator::{Config, ObfuscationMethod, Obfuscator, ObfuscatorConfig};
 
 /// Opaque handle held by C++ caller.
 /// Owns the runner thread and the shutdown flag dropping it stops the obfuscator.

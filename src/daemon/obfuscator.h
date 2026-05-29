@@ -5,10 +5,10 @@
 #ifndef OBFUSCATOR_H
 #define OBFUSCATOR_H
 
+#include <QProcess>
 #include <QtGlobal>
 
 #include "../utils/interfaceconfig.h"
-#include "obfuscators.h"
 
 class Obfuscator {
  public:
@@ -18,21 +18,19 @@ class Obfuscator {
   Obfuscator(const Obfuscator&) = delete;
   Obfuscator& operator=(const Obfuscator&) = delete;
 
-  bool isRunning() const { return m_handle != nullptr; }
-
+  bool start();
+  bool isRunning() const { return m_process.state() != QProcess::NotRunning; }
+  quint16 parseListeningPort(const QByteArray& line) const;
+  QStringList buildArgs(const InterfaceConfig& config);
+  QString binaryName() const;
   // Local UDP port the service is listening on
   // The daemon should set up the WireGuard peer to point to this port on
   // localhost
   quint16 localPort() const { return m_localPort; }
 
-  int socketV4() const { return m_socketV4; }
-  int socketV6() const { return m_socketV6; }
-
  private:
-  ::ObfuscatorHandle* m_handle = nullptr;
+  QProcess m_process;
   quint16 m_localPort = 0;
-  int m_socketV4 = -1;
-  int m_socketV6 = -1;
 };
 
 #endif  // OBFUSCATOR_H

@@ -5,10 +5,16 @@
 #include "obfuscator.h"
 
 #include <QByteArray>
-#include <cstdint>
+#include <QCoreApplication>
+#include <QDir>
+#include <QFileInfo>
+#include <QStringList>
 
 #include "leakdetector.h"
 #include "logger.h"
+
+constexpr int OBFUSCATOR_PROC_TIMEOUT_MS = 5000;
+constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
 
 namespace {
 Logger logger("Obfuscator");
@@ -16,41 +22,107 @@ Logger logger("Obfuscator");
 
 Obfuscator::Obfuscator(const InterfaceConfig& config) {
   MZ_COUNT_CTOR(Obfuscator);
-  // QByteArrays own the UTF-8 buffers for the duration of the FFI call
-  // the Rust side copies what it needs before returning.
-  QByteArray ipv4Utf8 = config.m_serverIpv4AddrIn.toUtf8();
-  QByteArray ipv6Utf8 = config.m_serverIpv6AddrIn.toUtf8();
-  QByteArray serverPubKeyUtf8 = config.m_serverPublicKey.toUtf8();
-  QByteArray publicKeyUtf8 = config.m_publicKey.toUtf8();
 
-  ObfuscatorConfig cfg{};
-  cfg.obfuscation_method = static_cast<uint32_t>(config.m_obfuscationMethod);
-  cfg.server_ipv4_addr_in = ipv4Utf8.constData();
-  cfg.server_ipv6_addr_in = ipv6Utf8.constData();
-  cfg.server_port = static_cast<uint16_t>(config.m_serverPort);
-  cfg.server_public_key = serverPubKeyUtf8.constData();
-  cfg.public_key = publicKeyUtf8.constData();
-
-  logger.debug() << "Starting obfuscator" << config.m_obfuscationMethod;
-
-  m_handle = obfuscator_start(&cfg);
-  if (!m_handle) {
-    logger.error() << "Failed to start obfuscator"
+  const QStringList args = buildArgs(config);
+  if (args.isEmpty()) {
+    logger.error() << "Unsupported obfuscation method"
                    << config.m_obfuscationMethod;
     return;
   }
-  m_localPort = obfuscator_local_port(m_handle);
-  m_socketV4 = obfuscator_socket_v4(m_handle);
-  m_socketV6 = obfuscator_socket_v6(m_handle);
-  logger.debug() << "Obfuscator" << config.m_obfuscationMethod
-                 << "listening on 127.0.0.1:" << m_localPort;
+
+  const QString binary = binaryName();
+  m_process.setProgram(binary);
+  m_process.setArguments(args);
+  // Merge stderr into stdout so we can read the "listening on" announce line
+  m_process.setProcessChannelMode(QProcess::MergedChannels);
+}
+
+bool Obfuscator::start() {
+  logger.debug() << "Starting obfuscator";
+  m_process.start();
+  if (!m_process.waitForStarted(OBFUSCATOR_PROC_TIMEOUT_MS)) {
+    logger.error() << "Failed to start obfuscator process"
+                   << m_process.errorString();
+    return false;
+  }
+
+  // Block until the helper either announces its port or exits
+  while (m_process.state() == QProcess::Running) {
+    if (!m_process.waitForReadyRead(OBFUSCATOR_PROC_TIMEOUT_MS)) {
+      logger.error() << "Obfuscator did not announce a listening port";
+      m_process.kill();
+      m_process.waitForFinished(OBFUSCATOR_PROC_TIMEOUT_MS);
+      return false;
+    }
+    while (m_process.canReadLine()) {
+      const QByteArray line = m_process.readLine().trimmed();
+      logger.debug() << "obf:" << QString::fromUtf8(line);
+      const quint16 port = parseListeningPort(line);
+      if (port != 0) {
+        m_localPort = port;
+        return true;
+      }
+    }
+  }
+
+  logger.error() << "Obfuscator exited before announcing a port"
+                 << m_process.exitCode();
+  return false;
+}
+
+quint16 Obfuscator::parseListeningPort(const QByteArray& line) const {
+  static const QByteArray prefix = "listening on 127.0.0.1:";
+  const int idx = line.indexOf(prefix);
+  if (idx < 0) {
+    return 0;
+  }
+  bool ok = false;
+  const quint16 port = line.mid(idx + prefix.size()).toUShort(&ok);
+  return ok ? port : 0;
+}
+
+QStringList Obfuscator::buildArgs(const InterfaceConfig& config) {
+  QStringList args;
+  switch (config.m_obfuscationMethod) {
+    case Server::ObfuscationMethod::UdpOverTcp:
+      args << QStringLiteral("udp-over-tcp");
+      break;
+    default:
+      return {};
+  }
+
+  const QString server = !config.m_serverIpv4AddrIn.isEmpty()
+                             ? config.m_serverIpv4AddrIn
+                             : config.m_serverIpv6AddrIn;
+  args << QStringLiteral("--server") << server;
+  args << QStringLiteral("--port") << QString::number(config.m_serverPort);
+#ifdef MZ_LINUX
+  args << QStringLiteral("--fwmark") << QString::number(WG_FIREWALL_MARK);
+#endif
+  // The obfuscator needs to bind to the same interface as the WireGuard peer
+  return args;
+}
+
+QString Obfuscator::binaryName() const {
+#if defined(MZ_WINDOWS)
+  return QStringLiteral("mozillavpn-obfuscator.exe");
+#elif defined(MZ_LINUX)
+  return QStringLiteral("mozillavpn-obfuscator");
+#else
+  logger.error() << "Obfuscation is not supported on this platform";
+  return QString();
+#endif
 }
 
 Obfuscator::~Obfuscator() {
   MZ_COUNT_DTOR(Obfuscator);
-  if (m_handle) {
-    logger.debug() << "Stopping obfuscator";
-    obfuscator_stop(m_handle);
-    m_handle = nullptr;
+  if (m_process.state() == QProcess::NotRunning) {
+    return;
+  }
+  logger.debug() << "Stopping obfuscator";
+  m_process.terminate();
+  if (!m_process.waitForFinished(OBFUSCATOR_PROC_TIMEOUT_MS)) {
+    m_process.kill();
+    m_process.waitForFinished(OBFUSCATOR_PROC_TIMEOUT_MS);
   }
 }
