@@ -133,39 +133,7 @@ describe('Devices', function() {
     };
 
     it('Device limit', async () => {
-      // skip onboarding. normally done in helper::authenticate(), but
-      // this test logs in manually
-      await vpn.skipOnboarding();
-
-      // This method must be called when the client is on the "Get Started"
-      // view.
-      await vpn.waitForInitialView();
-
-      // Click on get started and wait for authenticating view
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
-          'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
-              .enabled());
-
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
-                                 .AUTH_SIGNIN_PASSWORD_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
-              .visible(),
-          'text', 'password');
-
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
-              .enabled());
-
-      // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
+      await vpn.authenticate();
 
       await vpn.waitForQuery(
           queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
@@ -267,34 +235,7 @@ describe('Devices', function() {
     };
 
     it('Device limit', async () => {
-      // This method must be called when the client is on the "Get Started"
-      // view.
-      await vpn.waitForInitialView();
-
-      // Click on get started and wait for authenticating view
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
-          'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
-              .enabled());
-
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
-                                 .AUTH_SIGNIN_PASSWORD_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
-              .visible(),
-          'text', 'password');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
-              .enabled());
-
-      // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
+      await vpn.authenticate();
 
       await vpn.waitForQuery(
           queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
@@ -389,35 +330,7 @@ describe('Devices', function() {
     it('Device limit', async () => {
       // skip onboarding. normally done in helper::authenticate(), but
       // this test logs in manually
-      await vpn.skipOnboarding();
-
-      // This method must be called when the client is on the "Get Started"
-      // view.
-      await vpn.waitForInitialView();
-
-      // Click on get started and wait for authenticating view
-      await vpn.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-      await vpn.waitForQuery(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
-          'text', 'test@test.com');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
-              .enabled());
-
-      await vpn.waitForQuery(queries.screenAuthenticationInApp
-                                 .AUTH_SIGNIN_PASSWORD_INPUT.visible());
-      await vpn.setQueryProperty(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT
-              .visible(),
-          'text', 'password');
-      await vpn.waitForQueryAndClick(
-          queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible());
-
-      // Wait for VPN client screen to move from spinning wheel to next screen
-      await vpn.waitForMozillaProperty(
-          'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
+      await vpn.authenticate();
 
       await vpn.waitForQuery(
           queries.screenSettings.myDevicesView.DEVICE_LIST.visible());
