@@ -82,6 +82,7 @@ exports.mochaHooks = {
       'captivePortal', `http://%1:${captivePortalServer.port}/success.txt`);
     url = u.toString()
 
+    process.env['MVPN_WASM_TESTING'] = '1';
     process.env['MVPN_SKIP_ADDON_SIGNATURE'] = '1';
 
     const prefs = new logging.Preferences()

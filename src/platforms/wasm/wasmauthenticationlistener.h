@@ -18,6 +18,9 @@ class WasmAuthenticationListener final : public AuthenticationListener {
   void start(Task* task, const QString& codeChallenge,
              const QString& codeChallengeMethod,
              const QString& emailAddress) override;
+
+ private:
+  bool isTesting() const;
 };
 
 #endif  // WASMAUTHENTICATIONLISTENER_H

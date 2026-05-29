@@ -4,10 +4,13 @@
 
 #include "wasmauthenticationlistener.h"
 
+#include <QProcessEnvironment>
 #include <QTimer>
+#include <QUrlQuery>
 
 #include "leakdetector.h"
 #include "logger.h"
+#include "urlopener.h"
 
 namespace {
 
@@ -27,14 +30,32 @@ WasmAuthenticationListener::~WasmAuthenticationListener() {
 void WasmAuthenticationListener::start(Task* task, const QString& codeChallenge,
                                        const QString& codeChallengeMethod,
                                        const QString& emailAddress) {
+  Q_UNUSED(task);
   logger.debug() << "WasmAuthenticationListener initialize";
 
-  Q_UNUSED(task);
-  Q_UNUSED(codeChallenge);
-  Q_UNUSED(codeChallengeMethod);
-  Q_UNUSED(emailAddress);
+  QUrl url(createAuthenticationUrl(codeChallenge, codeChallengeMethod,
+                                   emailAddress));
 
-  QTimer* timer = new QTimer(this);
-  connect(timer, &QTimer::timeout, this, [this]() { emit completed("WASM"); });
-  timer->start(2000);
+  QUrlQuery query(url.query());
+  query.addQueryItem("utm_medium", "vpn-client");
+  query.addQueryItem("utm_source", "wasm-signup-flow");
+
+  url.setQuery(query);
+  UrlOpener::instance()->setLastUrl(url.toString());
+
+  // Unless we're in an automated test environment, mock out a successful auth.
+  if (!isTesting()) {
+    QTimer* timer = new QTimer(this);
+    connect(timer, &QTimer::timeout, this, [this]() { emit completed("WASM"); });
+    timer->start(2000);
+  }
+  // TODO: Food for future though - it's actually not improbable to do a real
+  // auth via FxA here. We're already in a browser and we just need some way to
+  // redirect back into the WASM client when done.
+}
+
+bool WasmAuthenticationListener::isTesting() const {
+  QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
+  return pe.contains("MVPN_WASM_TESTING") &&
+      !pe.value("MVPN_WASM_TESTING").isEmpty();
 }
