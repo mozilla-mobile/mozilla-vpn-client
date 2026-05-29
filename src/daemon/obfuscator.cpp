@@ -14,7 +14,9 @@
 #include "logger.h"
 
 constexpr int OBFUSCATOR_PROC_TIMEOUT_MS = 5000;
+#ifdef MZ_LINUX
 constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
+#endif
 
 namespace {
 Logger logger("Obfuscator");

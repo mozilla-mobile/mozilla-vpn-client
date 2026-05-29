@@ -155,6 +155,117 @@ if(NOT HAS_CARGO_POOL)
     set_property(GLOBAL APPEND PROPERTY JOB_POOLS cargo=1)
 endif()
 
+## Append the appropriate SDKROOT entry to an env list for Apple targets.
+## Updates the variable named by OUT_VAR in the caller's scope.
+function(__rust_append_apple_sdkroot OUT_VAR ARCH)
+    set(_env "${${OUT_VAR}}")
+    if((ARCH STREQUAL "aarch64-apple-ios-sim") OR (ARCH STREQUAL "x86_64-apple-ios"))
+        execute_process(OUTPUT_VARIABLE IOS_SDK_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE
+            COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-version)
+        execute_process(OUTPUT_VARIABLE IOS_SIMULATOR_SDKROOT OUTPUT_STRIP_TRAILING_WHITESPACE
+            COMMAND xcrun --sdk iphonesimulator${IOS_SDK_VERSION} --show-sdk-path)
+        list(APPEND _env SDKROOT=${IOS_SIMULATOR_SDKROOT})
+    elseif(APPLE AND CMAKE_OSX_SYSROOT)
+        if(IS_DIRECTORY ${CMAKE_OSX_SYSROOT})
+            list(APPEND _env "SDKROOT=${CMAKE_OSX_SYSROOT}")
+        else()
+            execute_process(OUTPUT_VARIABLE _sdkroot OUTPUT_STRIP_TRAILING_WHITESPACE
+                COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-path)
+            list(APPEND _env "SDKROOT=${_sdkroot}")
+        endif()
+    endif()
+    set(${OUT_VAR} "${_env}" PARENT_SCOPE)
+endfunction()
+
+## Guess rust target architecture(s) from the CMake configuration.
+function(__rust_guess_target_arch OUT_VAR)
+    set(_arch "")
+    if((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND CMAKE_OSX_ARCHITECTURES)
+        # Special case for MacOS universal binaries.
+        foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
+            string(REPLACE "arm64" "aarch64" OSXARCH ${OSXARCH})
+            list(APPEND _arch "${OSXARCH}-apple-darwin")
+        endforeach()
+    elseif(NOT CMAKE_CROSSCOMPILING)
+        set(_arch ${RUSTC_HOST_ARCH})
+    elseif(CMAKE_C_COMPILER_TARGET)
+        # If set, the C compiler triple makes a reasonable guess.
+        set(_arch ${CMAKE_C_COMPILER_TARGET})
+    else()
+        message(FATAL_ERROR "Unable to determine rust target architecture when cross compiling.")
+    endif()
+    set(${OUT_VAR} "${_arch}" PARENT_SCOPE)
+endfunction()
+
+## Emit add_custom_command rules that lipo per-arch artifacts into
+## ${BINARY_DIR}/unified/{debug,release}/${FILENAME}.
+function(__rust_lipo_unified)
+    cmake_parse_arguments(LIPO
+        ""
+        "BINARY_DIR;FILENAME"
+        "RELEASE_INPUTS;DEBUG_INPUTS"
+        ${ARGN})
+    foreach(PROFILE debug release)
+        if(PROFILE STREQUAL "release")
+            set(_inputs ${LIPO_RELEASE_INPUTS})
+        else()
+            set(_inputs ${LIPO_DEBUG_INPUTS})
+        endif()
+        add_custom_command(
+            OUTPUT ${LIPO_BINARY_DIR}/unified/${PROFILE}/${LIPO_FILENAME}
+            DEPENDS ${_inputs}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${LIPO_BINARY_DIR}/unified/${PROFILE}
+            COMMAND ${LIPO_BUILD_TOOL} -create -output ${LIPO_BINARY_DIR}/unified/${PROFILE}/${LIPO_FILENAME}
+                        ${_inputs}
+        )
+    endforeach()
+endfunction()
+
+## Emit add_custom_command rules to invoke cargo for one (ARCH, PROFILE) pair.
+## CARGO_ARGS supplies the subcommand args that differ between libraries
+## (--lib) and binaries (--bin NAME); everything else is shared.
+function(__rust_add_cargo_build_command)
+    cmake_parse_arguments(RUST_BUILD
+        ""
+        "ARCH;BINARY_DIR;PACKAGE_DIR;OUTPUT_FILE;DEPFILE;PROFILE"
+        "CARGO_ENV;CARGO_ARGS"
+        ${ARGN})
+
+    set(_outdir ${RUST_BUILD_BINARY_DIR}/${RUST_BUILD_ARCH}/${RUST_BUILD_PROFILE})
+    set(_args ${RUST_BUILD_CARGO_ARGS} --target ${RUST_BUILD_ARCH} --target-dir ${RUST_BUILD_BINARY_DIR})
+    if(RUST_BUILD_PROFILE STREQUAL "release")
+        list(APPEND _args --release)
+    endif()
+
+    if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles") OR XCODE)
+        ## If the generator supports it, we can improve build times by setting
+        ## a DEPFILE to let CMake know when the artifact needs rebuilding.
+        cmake_policy(PUSH)
+        cmake_policy(SET CMP0116 NEW)
+        add_custom_command(
+            OUTPUT ${_outdir}/${RUST_BUILD_OUTPUT_FILE}
+            DEPFILE ${_outdir}/${RUST_BUILD_DEPFILE}
+            JOB_POOL cargo
+            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
+            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
+                    ${CARGO_BUILD_TOOL} build ${_args}
+        )
+        cmake_policy(POP)
+    else()
+        ## For all other generators, set a non-existent output file to force
+        ## the command to be invoked on every build. This relies on cargo to
+        ## rebuild if necessary.
+        add_custom_command(
+            OUTPUT
+                ${_outdir}/${RUST_BUILD_OUTPUT_FILE}
+                ${_outdir}/.noexist
+            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
+            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
+                    ${CARGO_BUILD_TOOL} build ${_args}
+        )
+    endif()
+endfunction()
+
 ### Helper function to get the rust library filename with extension.
 #
 # Sets the variable "RUST_LIBRARY_FILENAME" with the value.
@@ -170,36 +281,31 @@ function(get_rust_library_filename SHARED CRATE_NAME)
     endif()
 endfunction()
 
-### Helper function to build Rust static libraries.
+### Helper to build a Rust artifact (library or binary) for one architecture.
 #
 # Accepts the following arguments:
-#   ARCH: Rust target architecture to build with --target ${ARCH}
+#   KIND: "library" or "binary". Required.
+#   ARCH: Rust target architecture to build with --target ${ARCH}. Required.
 #   BINARY_DIR: Binary directory to output build artifacts to.
-#   PACKAGE_DIR: Soruce directory where Cargo.toml can be found.
-#   LIBRARY_FILE: Filename of the expected library to be built.
-#   CARGO_ENV: Environment variables to pass to cargo
-#   SHARED: Whether or not we are building a shared library. Defaults to "false".
+#   PACKAGE_DIR: Source directory where Cargo.toml can be found.
+#   CRATE_NAME: Name of the crate to build. Required.
+#   BIN_NAME: For KIND=binary, the name of the [[bin]] target. Defaults to CRATE_NAME.
+#   CARGO_ENV: Environment variables to pass to cargo.
+#   SHARED: For KIND=library, whether to build a shared library. Required for libraries.
 #   EXTRA_ARGS: Additional arguments to pass to 'cargo build' when building the crate.
 #
-# This function generates commands necessary to build static archives
-# in ${BINARY_DIR}/${ARCH}/debug/ and ${BINARY_DIR}/${ARCH}/release/
-# and it is up to the caller of this function to link the artifacts
-# into their targets as necessary.
-#
-# This function is intended to be used internally by add_rust_library,
-# you should consider using that instead.
-#
-function(build_rust_archives)
+# Generates the add_custom_command rules to produce the artifact in
+# ${BINARY_DIR}/${ARCH}/{debug,release}/. Intended for internal use only;
+# callers should prefer add_rust_library / add_rust_binary.
+function(__rust_build_cargo_target)
     cmake_parse_arguments(RUST_BUILD
         ""
-        "ARCH;BINARY_DIR;PACKAGE_DIR;CRATE_NAME"
+        "KIND;ARCH;BINARY_DIR;PACKAGE_DIR;CRATE_NAME;BIN_NAME"
         "CARGO_ENV;SHARED;EXTRA_ARGS"
         ${ARGN})
 
-    list(APPEND RUST_BUILD_CARGO_ENV CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home)
-
-    if(NOT DEFINED RUST_BUILD_SHARED)
-        message(FATAL_ERROR "Mandatory argument SHARED was not found")
+    if(NOT RUST_BUILD_KIND)
+        message(FATAL_ERROR "Mandatory argument KIND was not found")
     endif()
     if(NOT RUST_BUILD_CRATE_NAME)
         message(FATAL_ERROR "Mandatory argument CRATE_NAME was not found")
@@ -214,88 +320,43 @@ function(build_rust_archives)
         set(RUST_BUILD_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
-    ## Some files that we will be building.
-    file(MAKE_DIRECTORY ${RUST_BUILD_BINARY_DIR})
-    get_rust_library_filename(${RUST_BUILD_SHARED} ${RUST_BUILD_CRATE_NAME})
+    list(APPEND RUST_BUILD_CARGO_ENV CARGO_HOME=${CMAKE_BINARY_DIR}/cargo_home)
 
-    ## For iOS simulator targets, find the SDKROOT of the simulator matching the
-    ## iOS platform SDK.
-    if((RUST_BUILD_ARCH STREQUAL "aarch64-apple-ios-sim") OR (RUST_BUILD_ARCH STREQUAL "x86_64-apple-ios"))
-        execute_process(OUTPUT_VARIABLE IOS_SDK_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE
-            COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-version)
-        execute_process(OUTPUT_VARIABLE IOS_SIMULATOR_SDKROOT OUTPUT_STRIP_TRAILING_WHITESPACE
-            COMMAND xcrun --sdk iphonesimulator${IOS_SDK_VERSION} --show-sdk-path)
-        list(APPEND RUST_BUILD_CARGO_ENV SDKROOT=${IOS_SIMULATOR_SDKROOT})
-    elseif(APPLE AND CMAKE_OSX_SYSROOT)
-        if (IS_DIRECTORY ${CMAKE_OSX_SYSROOT})
-            list(APPEND RUST_BUILD_CARGO_ENV "SDKROOT=${CMAKE_OSX_SYSROOT}")
-        else()
-            execute_process(OUTPUT_VARIABLE RUST_BUILD_SDKROOT OUTPUT_STRIP_TRAILING_WHITESPACE
-                COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-path)
-            list(APPEND RUST_BUILD_CARGO_ENV "SDKROOT=${RUST_BUILD_SDKROOT}")
+    if(RUST_BUILD_KIND STREQUAL "library")
+        if(NOT DEFINED RUST_BUILD_SHARED)
+            message(FATAL_ERROR "Mandatory argument SHARED was not found")
         endif()
-    endif()
-
-    set(RUST_BUILD_COMMON_ARGS)
-    list(APPEND RUST_BUILD_COMMON_ARGS --target ${ARCH} --target-dir ${RUST_BUILD_BINARY_DIR} ${RUST_BUILD_EXTRA_ARGS})
-    if((CMAKE_GENERATOR MATCHES "Ninja") OR (CMAKE_GENERATOR MATCHES "Makefiles") OR XCODE)
-        ## If the generator supports it, we can improve build times by setting
-        # a DEPFILE to let CMake know when the library needs building and when
-        # we can skip it.
-        set(RUST_BUILD_DEPENDENCY_FILE
-            ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}.d
-        )
-        cmake_policy(PUSH)
-        cmake_policy(SET CMP0116 NEW)
-
-        ## Outputs for the release build
-        add_custom_command(
-            OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_LIBRARY_FILENAME}
-            DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_BUILD_DEPENDENCY_FILE}
-            JOB_POOL cargo
-            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
-            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --release ${RUST_BUILD_COMMON_ARGS}
-        )
-
-        ## Outputs for the debug build
-        add_custom_command(
-            OUTPUT ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_LIBRARY_FILENAME}
-            DEPFILE ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_BUILD_DEPENDENCY_FILE}
-            JOB_POOL cargo
-            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
-            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib ${RUST_BUILD_COMMON_ARGS}
-        )
-
-        ## Reset our policy changes
-        cmake_policy(POP)
+        get_rust_library_filename(${RUST_BUILD_SHARED} ${RUST_BUILD_CRATE_NAME})
+        set(_output ${RUST_LIBRARY_FILENAME})
+        set(_depfile ${CMAKE_STATIC_LIBRARY_PREFIX}${RUST_BUILD_CRATE_NAME}.d)
+        set(_cargo_args --lib ${RUST_BUILD_EXTRA_ARGS})
+    elseif(RUST_BUILD_KIND STREQUAL "binary")
+        if(NOT RUST_BUILD_BIN_NAME)
+            set(RUST_BUILD_BIN_NAME ${RUST_BUILD_CRATE_NAME})
+        endif()
+        get_rust_binary_filename(${RUST_BUILD_BIN_NAME})
+        set(_output ${RUST_BINARY_FILENAME})
+        set(_depfile ${RUST_BUILD_BIN_NAME}.d)
+        set(_cargo_args --bin ${RUST_BUILD_BIN_NAME} ${RUST_BUILD_EXTRA_ARGS})
     else()
-        ## For all other generators, set a non-existent output file to force
-        # the command to be invoked on every build. This ensures that the
-        # library stays up todate with the sources, and relies on cargo to
-        # rebuild if necessary.
-
-        ## Outputs for the release build
-        add_custom_command(
-            OUTPUT
-                ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/${RUST_LIBRARY_FILENAME}
-                ${RUST_BUILD_BINARY_DIR}/${ARCH}/release/.noexist
-            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
-            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib --release ${RUST_BUILD_COMMON_ARGS}
-        )
-
-        ## Outputs for the debug build
-        add_custom_command(
-            OUTPUT
-                ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/${RUST_LIBRARY_FILENAME}
-                ${RUST_BUILD_BINARY_DIR}/${ARCH}/debug/.noexist
-            WORKING_DIRECTORY ${RUST_BUILD_PACKAGE_DIR}
-            COMMAND ${CMAKE_COMMAND} -E env ${RUST_BUILD_CARGO_ENV}
-                    ${CARGO_BUILD_TOOL} build --lib ${${RUST_BUILD_COMMON_ARGS}}
-        )
+        message(FATAL_ERROR "Invalid KIND \"${RUST_BUILD_KIND}\": must be 'library' or 'binary'")
     endif()
+
+    file(MAKE_DIRECTORY ${RUST_BUILD_BINARY_DIR})
+    __rust_append_apple_sdkroot(RUST_BUILD_CARGO_ENV ${RUST_BUILD_ARCH})
+
+    foreach(PROFILE debug release)
+        __rust_add_cargo_build_command(
+            ARCH ${RUST_BUILD_ARCH}
+            BINARY_DIR ${RUST_BUILD_BINARY_DIR}
+            PACKAGE_DIR ${RUST_BUILD_PACKAGE_DIR}
+            OUTPUT_FILE ${_output}
+            DEPFILE ${_depfile}
+            PROFILE ${PROFILE}
+            CARGO_ENV ${RUST_BUILD_CARGO_ENV}
+            CARGO_ARGS ${_cargo_args}
+        )
+    endforeach()
 endfunction()
 
 ### Helper function to create a linkable target from a Rust package.
@@ -354,23 +415,8 @@ function(add_rust_library TARGET_NAME)
         set(RUST_TARGET_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
     endif()
 
-    # Guess the target architecture if not set.
     if(NOT RUST_TARGET_ARCH)
-        if((CMAKE_SYSTEM_NAME STREQUAL "Darwin") AND CMAKE_OSX_ARCHITECTURES)
-            # Special case for MacOS universal binaries.
-            foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
-                string(REPLACE "arm64" "aarch64" OSXARCH ${OSXARCH})
-                list(APPEND RUST_TARGET_ARCH "${OSXARCH}-apple-darwin")
-            endforeach()
-        elseif(NOT CMAKE_CROSSCOMPILING)
-            set(RUST_TARGET_ARCH ${RUSTC_HOST_ARCH})
-        elseif(CMAKE_C_COMPILER_TARGET)
-            # If set, the C compiler triple makes a reasonable guess.
-            set(RUST_TARGET_ARCH ${CMAKE_C_COMPILER_TARGET})
-        else()
-            # TODO: We could write something here for Android and IOS maybe
-            message(FATAL_ERROR "Unable to determine rust target architecture when cross compiling.")
-        endif()
+        __rust_guess_target_arch(RUST_TARGET_ARCH)
     endif()
 
     set(RUST_TARGET_EXTRA_ARGS)
@@ -383,7 +429,8 @@ function(add_rust_library TARGET_NAME)
 
     ## Build the rust library file(s)
     foreach(ARCH ${RUST_TARGET_ARCH})
-        build_rust_archives(
+        __rust_build_cargo_target(
+            KIND library
             ARCH ${ARCH}
             BINARY_DIR ${RUST_TARGET_BINARY_DIR}
             PACKAGE_DIR ${RUST_TARGET_PACKAGE_DIR}
@@ -439,19 +486,11 @@ function(add_rust_library TARGET_NAME)
                 IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/unified/debug/${FW_NAME}.framework/${FW_NAME}
             )
         else()
-            add_custom_command(
-                OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
-                DEPENDS ${RUST_TARGET_RELEASE_LIBS}
-                COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/release
-                COMMAND ${LIPO_BUILD_TOOL} -create -output ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_LIBRARY_FILENAME}
-                            ${RUST_TARGET_RELEASE_LIBS}
-            )
-            add_custom_command(
-                OUTPUT ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
-                DEPENDS ${RUST_TARGET_DEBUG_LIBS}
-                COMMAND ${CMAKE_COMMAND} -E make_directory ${RUST_TARGET_BINARY_DIR}/unified/debug
-                COMMAND ${LIPO_BUILD_TOOL} -create -output ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_LIBRARY_FILENAME}
-                            ${RUST_TARGET_DEBUG_LIBS}
+            __rust_lipo_unified(
+                BINARY_DIR ${RUST_TARGET_BINARY_DIR}
+                FILENAME ${RUST_LIBRARY_FILENAME}
+                RELEASE_INPUTS ${RUST_TARGET_RELEASE_LIBS}
+                DEBUG_INPUTS ${RUST_TARGET_DEBUG_LIBS}
             )
 
             add_custom_target(${TARGET_NAME}_builder
@@ -490,4 +529,123 @@ function(add_rust_library TARGET_NAME)
 
     add_dependencies(${TARGET_NAME} ${TARGET_NAME}_builder)
     set_property(TARGET ${TARGET_NAME} APPEND PROPERTY INTERFACE_LINK_LIBRARIES ${CMAKE_DL_LIBS})
+endfunction()
+
+### Helper function to get the rust binary filename with platform extension.
+#
+# Sets the variable "RUST_BINARY_FILENAME" with the value.
+function(get_rust_binary_filename BIN_NAME)
+    set(RUST_BINARY_FILENAME
+        ${BIN_NAME}${CMAKE_EXECUTABLE_SUFFIX}
+        PARENT_SCOPE)
+endfunction()
+
+### Helper function to create an IMPORTED executable target from a Rust crate.
+#
+# This function takes one mandatory argument: TARGET_NAME which sets the
+# name of the CMake target to produce.
+#
+# Accepts the following optional arguments:
+#   ARCH: Rust target architecture(s) to build with --target ${ARCH}
+#   BINARY_DIR: Binary directory to output build artifacts to.
+#   PACKAGE_DIR: Source directory where Cargo.toml can be found.
+#   CRATE_NAME: Name of the crate (Cargo package) to build. Required.
+#   BIN_NAME: Name of the [[bin]] target inside the crate. Defaults to CRATE_NAME.
+#   CARGO_ENV: Environment variables to pass to cargo.
+#   DEPENDS: Additional files on which the binary depends.
+#
+# Produces an IMPORTED executable target so callers can refer to the binary
+# via $<TARGET_FILE:${TARGET_NAME}> (e.g. in install() or custom commands).
+# On macOS multiple architectures are combined into a universal binary using
+# lipo, mirroring add_rust_library. iOS targets are not supported and should
+# not call this function.
+function(add_rust_binary TARGET_NAME)
+    cmake_parse_arguments(RUST_TARGET
+        ""
+        "BINARY_DIR;PACKAGE_DIR;CRATE_NAME;BIN_NAME"
+        "ARCH;CARGO_ENV;DEPENDS"
+        ${ARGN})
+
+    if(IOS)
+        message(FATAL_ERROR "add_rust_binary is not supported on iOS; use add_rust_library instead.")
+    endif()
+
+    add_executable(${TARGET_NAME} IMPORTED GLOBAL)
+
+    if(NOT RUST_TARGET_CRATE_NAME)
+        message(FATAL_ERROR "Mandatory argument CRATE_NAME was not found")
+    endif()
+    if(NOT RUST_TARGET_BIN_NAME)
+        set(RUST_TARGET_BIN_NAME ${RUST_TARGET_CRATE_NAME})
+    endif()
+    if(NOT RUST_TARGET_BINARY_DIR)
+        set(RUST_TARGET_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+    endif()
+    if(NOT RUST_TARGET_PACKAGE_DIR)
+        set(RUST_TARGET_PACKAGE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
+    endif()
+
+    if(NOT RUST_TARGET_ARCH)
+        __rust_guess_target_arch(RUST_TARGET_ARCH)
+    endif()
+
+    get_rust_binary_filename(${RUST_TARGET_BIN_NAME})
+
+    ## Build the rust binary for each requested architecture.
+    foreach(ARCH ${RUST_TARGET_ARCH})
+        __rust_build_cargo_target(
+            KIND binary
+            ARCH ${ARCH}
+            BINARY_DIR ${RUST_TARGET_BINARY_DIR}
+            PACKAGE_DIR ${RUST_TARGET_PACKAGE_DIR}
+            CRATE_NAME ${RUST_TARGET_CRATE_NAME}
+            BIN_NAME ${RUST_TARGET_BIN_NAME}
+            CARGO_ENV ${RUST_TARGET_CARGO_ENV}
+        )
+
+        if(RUST_TARGET_DEPENDS)
+            add_custom_command(APPEND
+                OUTPUT ${RUST_TARGET_BINARY_DIR}/${ARCH}/release/${RUST_BINARY_FILENAME}
+                DEPENDS ${RUST_TARGET_DEPENDS}
+            )
+            add_custom_command(APPEND
+                OUTPUT ${RUST_TARGET_BINARY_DIR}/${ARCH}/debug/${RUST_BINARY_FILENAME}
+                DEPENDS ${RUST_TARGET_DEPENDS}
+            )
+        endif()
+
+        list(APPEND RUST_TARGET_RELEASE_BINS ${RUST_TARGET_BINARY_DIR}/${ARCH}/release/${RUST_BINARY_FILENAME})
+        list(APPEND RUST_TARGET_DEBUG_BINS ${RUST_TARGET_BINARY_DIR}/${ARCH}/debug/${RUST_BINARY_FILENAME})
+    endforeach()
+
+    if((CMAKE_SYSTEM_NAME STREQUAL "Darwin"))
+        ## Combine all architectures into a single universal binary.
+        __rust_lipo_unified(
+            BINARY_DIR ${RUST_TARGET_BINARY_DIR}
+            FILENAME ${RUST_BINARY_FILENAME}
+            RELEASE_INPUTS ${RUST_TARGET_RELEASE_BINS}
+            DEBUG_INPUTS ${RUST_TARGET_DEBUG_BINS}
+        )
+
+        add_custom_target(${TARGET_NAME}_builder
+            DEPENDS ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_BINARY_FILENAME}
+        )
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_BINARY_FILENAME}
+            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_BINARY_FILENAME}
+        )
+    else()
+        ## For non-Darwin platforms, only build the first architecture.
+        list(GET RUST_TARGET_ARCH 0 RUST_FIRST_ARCH)
+        add_custom_target(${TARGET_NAME}_builder
+            DEPENDS ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_BINARY_FILENAME}
+        )
+        set_target_properties(${TARGET_NAME} PROPERTIES
+            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/release/${RUST_BINARY_FILENAME}
+            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/debug/${RUST_BINARY_FILENAME}
+        )
+    endif()
+
+    set_target_properties(${TARGET_NAME}_builder PROPERTIES FOLDER "Tools")
+    add_dependencies(${TARGET_NAME} ${TARGET_NAME}_builder)
 endfunction()
