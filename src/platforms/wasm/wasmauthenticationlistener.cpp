@@ -46,7 +46,8 @@ void WasmAuthenticationListener::start(Task* task, const QString& codeChallenge,
   // Unless we're in an automated test environment, mock out a successful auth.
   if (!isTesting()) {
     QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this, [this]() { emit completed("WASM"); });
+    connect(timer, &QTimer::timeout, this,
+            [this]() { emit completed("WASM"); });
     timer->start(2000);
   }
   // TODO: Food for future though - it's actually not improbable to do a real
@@ -57,5 +58,5 @@ void WasmAuthenticationListener::start(Task* task, const QString& codeChallenge,
 bool WasmAuthenticationListener::isTesting() const {
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   return pe.contains("MVPN_WASM_TESTING") &&
-      !pe.value("MVPN_WASM_TESTING").isEmpty();
+         !pe.value("MVPN_WASM_TESTING").isEmpty();
 }
