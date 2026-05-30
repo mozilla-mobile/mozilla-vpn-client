@@ -118,7 +118,7 @@ int CommandLogin::run(QStringList& tokens) {
              << Qt::endl;
       return 1;
     }
-  
+
     vpn.serverData()->initialize();
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
     eventListener.reset(new EventListener{});
