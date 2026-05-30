@@ -142,48 +142,50 @@ describe('Subscription manager', function() {
          // screen. Once they click on the "Subscribe Now" button, they will be
          // taken to the browser to finish subscription and then will be then
          // redirected back to the controller home screen.
-         await vpn.authenticate();
-         await vpn.setMozillaProperty(
-             'Mozilla.Shared', 'MZUrlOpener', 'lastUrl', '');
+         if (await vpn.isFeatureEnabled('webPurchase')) {
+           await vpn.authenticate();
+           await vpn.setMozillaProperty(
+               'Mozilla.Shared', 'MZUrlOpener', 'lastUrl', '');
 
-         // Mark the user subscription as inactive
-         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
-             userDataInactive;
+           // Mark the user subscription as inactive
+           this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+               userDataInactive;
 
-         await vpn.waitForQuery(
-             queries.screenHome.CONTROLLER_TITLE.visible());
-         await vpn.clickOnQuery(
-             queries.screenHome.CONTROLLER_TOGGLE.visible());
+           await vpn.waitForQuery(
+               queries.screenHome.CONTROLLER_TITLE.visible());
+           await vpn.clickOnQuery(
+               queries.screenHome.CONTROLLER_TOGGLE.visible());
 
-         // Verify that user gets the "Subscribe to Mozilla VPN" screen.
-         await vpn.waitForQuery(queries.screenSubscriptionNeeded
-                                    .SUBSCRIPTION_NEEDED_VIEW.visible());
+           // Verify that user gets the "Subscribe to Mozilla VPN" screen.
+           await vpn.waitForQuery(queries.screenSubscriptionNeeded
+                                      .SUBSCRIPTION_NEEDED_VIEW.visible());
 
-         // Click on the Subscribe Now button.
-         await vpn.waitForQueryAndClick(
-             queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON
-                 .visible());
+           // Click on the Subscribe Now button.
+           await vpn.waitForQueryAndClick(
+               queries.screenSubscriptionNeeded.SUBSCRIPTION_NEEDED_BUTTON
+                   .visible());
 
-         await vpn.waitForCondition(async () => {
-           const url = await vpn.getLastUrl();
-           return url.includes('/api/v2/vpn/login');
-         });
+           await vpn.waitForCondition(async () => {
+             const url = await vpn.getLastUrl();
+             return url.includes('/api/v2/vpn/login');
+           });
 
-         // Mark the user subscription as active
-         this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
-             userDataActive;
+           // Mark the user subscription as active
+           this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
+               userDataActive;
 
-         // Mock a successful authentication flow.
-         await vpn.mockInBrowserAuthentication(true);
+           // Mock a successful authentication flow.
+           await vpn.mockInBrowserAuthentication(true);
 
-         // Wait for VPN client screen to move from spinning wheel to next
-         // screen
-         await vpn.waitForQuery(
-             queries.screenHome.CONTROLLER_TITLE.visible());
-         assert.equal(
-             await vpn.getQueryProperty(
-                 queries.screenHome.CONTROLLER_TITLE, 'text'),
-             'VPN is off');
+           // Wait for VPN client screen to move from spinning wheel to next
+           // screen
+           await vpn.waitForQuery(
+               queries.screenHome.CONTROLLER_TITLE.visible());
+           assert.equal(
+               await vpn.getQueryProperty(
+                   queries.screenHome.CONTROLLER_TITLE, 'text'),
+               'VPN is off');
+         }
        });
 
     it('Continues to try connecting if call to check subscription status fails',
