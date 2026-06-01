@@ -32,10 +32,9 @@ task-defaults:
         checkout: false
         use-caches: []
         command: /builds/worker/sentry_upload.sh
-    # comment out for debug purposes
-    #requires-level: 3
-    #scopes:
-    #    - secrets:get:project/mozillavpn/level-1/sentry
+    requires-level: 3
+    scopes:
+        - secrets:get:project/mozillavpn/level-1/sentry
 
 tasks:
     macos/opt:
