@@ -56,4 +56,10 @@ cmake --install ${TASK_WORKDIR}/build-win --prefix ${TASK_WORKDIR}/unsigned
 mkdir -p ${TASK_WORKDIR}/artifacts/
 (cd ${TASK_WORKDIR}/unsigned && zip -r ${TASK_WORKDIR}/artifacts/unsigned.zip .)
 
+print Y "Generating debug symbol artifacts..."
+find ${TASK_WORKDIR}/unsigned -type f -name '*.pdb' | while read DBGFILE; do
+  sentry-cli difutil check "${DBGFILE}"
+  sentry-cli difutil bundle-sources -o ${TASK_WORKDIR}/unsigned "${DBGFILE}"
+done
+
 print G "Done!"
