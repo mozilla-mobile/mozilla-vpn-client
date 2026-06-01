@@ -4,9 +4,6 @@
 
 #include "commandlogin.h"
 
-#if defined(MZ_CLI_AUTHENTICATION_IN_APP)
-#  include "authenticationinapp/authenticationinapp.h"
-#endif
 #include "authenticationlistener.h"
 #include "commandlineparser.h"
 #include "constants.h"
@@ -116,188 +113,32 @@ int CommandLogin::run(QStringList& tokens) {
 
     QTextStream stream(stdout);
 
-    if (!passwordOption.m_set) {
-      vpn.serverData()->initialize();
+    if (passwordOption.m_set) {
+      stream << "Password-based authentication is not supported anymore"
+             << Qt::endl;
+      return 1;
+    }
+
+    vpn.serverData()->initialize();
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX)
-      eventListener.reset(new EventListener{});
+    eventListener.reset(new EventListener{});
 #endif
-      if (headlessOption.m_set) {
-        vpn.authenticateWithType(
-            AuthenticationListener::AuthenticationInBrowserHeadless);
-        QObject::connect(&vpn, &MozillaVPN::authenticationStarted, this, [&] {
-          QString code = getInput("Enter the code:");
-          auto task =
-              qobject_cast<TaskAuthenticate*>(TaskScheduler::runningTask());
-          if (task) {
-            task->authenticatePkceSuccess(code);
-          }
-        });
-      } else {
-        vpn.authenticateWithType(
-            AuthenticationListener::AuthenticationInBrowser);
-      }
+    if (headlessOption.m_set) {
+      vpn.authenticateWithType(
+          AuthenticationListener::AuthenticationInBrowserHeadless);
+      QObject::connect(&vpn, &MozillaVPN::authenticationStarted, this, [&] {
+        QString code = getInput("Enter the code:");
+        auto task =
+            qobject_cast<TaskAuthenticate*>(TaskScheduler::runningTask());
+        if (task) {
+          task->authenticatePkceSuccess(code);
+        }
+      });
     } else {
-      vpn.authenticateWithType(AuthenticationListener::AuthenticationInApp);
+      vpn.authenticateWithType(AuthenticationListener::AuthenticationInBrowser);
     }
 
     QEventLoop loop;
-
-    if (passwordOption.m_set) {
-#if defined(MZ_CLI_AUTHENTICATION_IN_APP)
-      vpn.serverData()->initialize();
-      AuthenticationInApp* aia = AuthenticationInApp::instance();
-
-      QObject::connect(aia, &AuthenticationInApp::stateChanged, aia, [&] {
-        switch (AuthenticationInApp::instance()->state()) {
-          case AuthenticationInApp::StateInitializing:
-            break;
-
-          case AuthenticationInApp::StateStart: {
-            QString email = getInput("Username:");
-            AuthenticationInApp::instance()->checkAccount(email);
-          } break;
-
-          case AuthenticationInApp::StateCheckingAccount:
-            break;
-
-          case AuthenticationInApp::StateSignIn: {
-            QString password = getPassword("Password:");
-            AuthenticationInApp::instance()->setPassword(password);
-            AuthenticationInApp::instance()->signIn();
-          } break;
-
-          case AuthenticationInApp::StateSigningIn:
-            break;
-
-          case AuthenticationInApp::StateSignUp: {
-            QTextStream stream(stdout);
-            stream << "Sign up is not supported in CLI mode." << Qt::endl;
-            loop.exit();
-          } break;
-
-          case AuthenticationInApp::StateSigningUp:
-            break;
-
-          case AuthenticationInApp::StateUnblockCodeNeeded: {
-            QString code = getInput("Check your email. Unblock code:");
-            AuthenticationInApp::instance()->verifyUnblockCode(code);
-          } break;
-
-          case AuthenticationInApp::StateVerifyingUnblockCode:
-            break;
-
-          case AuthenticationInApp::StateVerificationSessionByEmailNeeded: {
-            AuthenticationInApp::instance()
-                ->resendVerificationSessionCodeEmail();
-            QString code =
-                getInput("Session verification by email needed. Code:");
-            AuthenticationInApp::instance()->verifySessionEmailCode(code);
-          } break;
-
-          case AuthenticationInApp::StateVerifyingSessionEmailCode:
-            break;
-
-          case AuthenticationInApp::StateVerificationSessionByTotpNeeded: {
-            QString code =
-                getInput("Session verification by TOTP needed. Code:");
-            AuthenticationInApp::instance()->verifySessionTotpCode(code);
-          } break;
-
-          case AuthenticationInApp::StateVerifyingSessionTotpCode:
-            break;
-
-          case AuthenticationInApp::StateIsStubAccount: {
-            QTextStream stream(stdout);
-            stream << "This account is a stub account, i.e. it does not yet "
-                      "have a password. Please check your email, and follow "
-                      "the verification link sent by Mozilla Accounts to set a "
-                      "password, and try again."
-                   << Qt::endl;
-            loop.exit();
-          } break;
-
-          case AuthenticationInApp::StateIsSsoAccount: {
-            QTextStream stream(stdout);
-            stream << "This account is linked to a third-party authentication "
-                      "provider (i.e. Google or Apple), but does not have a "
-                      "password associated with it. Mozilla VPN requires all "
-                      "accounts to be associated with a password before they "
-                      "can be used to authenticate with the client. Please "
-                      "visit https://accounts.firefox.com/settings/password to "
-                      "set a password, then try to log in again."
-                   << Qt::endl;
-            loop.exit();
-          } break;
-
-          case AuthenticationInApp::StateAccountDeletionRequest:
-            Q_ASSERT(false);
-            break;
-
-          case AuthenticationInApp::StateDeletingAccount:
-            Q_ASSERT(false);
-            break;
-
-          case AuthenticationInApp::StateFallbackInBrowser: {
-            QTextStream stream(stdout);
-            stream << "Unable to continue with the flow. Please, continue the "
-                      "login in browser.";
-            loop.exit();
-          } break;
-        }
-      });
-
-      QObject::connect(
-          aia, &AuthenticationInApp::errorOccurred,
-          [&](AuthenticationInApp::ErrorType error) {
-            QTextStream stream(stdout);
-            switch (error) {
-              case AuthenticationInApp::ErrorAccountAlreadyExists:
-                [[fallthrough]];
-              case AuthenticationInApp::ErrorUnknownAccount:
-                stream << "Unknown account" << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorIncorrectPassword:
-                stream << "Incorrect password!" << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorInvalidUnblockCode:
-                stream << "Invalid unblock code!" << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorInvalidEmailAddress:
-                stream << "Invalid email address" << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorInvalidOrExpiredVerificationCode:
-                stream << "Invalid or expired verification code!" << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorEmailTypeNotSupported:
-                stream << "Email type not supported" << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorEmailCanNotBeUsedToLogin:
-                stream << "This email can not be used to login" << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorFailedToSendEmail:
-                stream << "Failed to send email" << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorTooManyRequests:
-                stream << "Too many requests. Slow down, please." << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorServerUnavailable:
-                stream << "The server is down" << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorInvalidTotpCode:
-                stream << "Invalid TOTP code" << Qt::endl;
-                break;
-              case AuthenticationInApp::ErrorConnectionTimeout:
-                stream << "Request Timed Out" << Qt::endl;
-                break;
-            }
-          });
-#else
-      stream << "Password-based authentication is not supported anymore"
-             << Qt::endl;
-      loop.exit();
-      return 1;
-#endif
-    }
 
     QObject::connect(&vpn, &MozillaVPN::stateChanged, &vpn, [&] {
       if (vpn.state() == MozillaVPN::StateMain ||

@@ -429,11 +429,7 @@ module.exports = {
 
   // TODO - The expected staging urls are hardcoded, we may want to
   // move these hardcoded urls out if testing in alternate environments.
-  async authenticateInBrowser(wasm, useDeepLink = false) {
-    if (await this.isFeatureEnabled('inAppAuthentication')) {
-      await this.flipFeatureOff('inAppAuthentication');
-    }
-
+  async authenticateInBrowser(useDeepLink = false) {
     // This method must be called when the client is on the "Get Started"view.
     await this.waitForInitialView();
     await this.setMozillaProperty(
@@ -442,54 +438,19 @@ module.exports = {
     // Click on get started and wait for authenticating view
     await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
 
-    if (!wasm) {
-      await this.mockInBrowserAuthentication(useDeepLink);
-    }
+    await this.mockInBrowserAuthentication(useDeepLink || this.runningOnWasm());
 
     // Wait for VPN client screen to move from spinning wheel to next screen
     await this.waitForMozillaProperty(
         'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
   },
 
-  async authenticateInApp(skipOnboarding = true) {
+  async authenticate(skipOnboarding = true) {
     if (skipOnboarding) {
       await this.skipOnboarding();
     }
 
-    if (!await this.isFeatureEnabled('inAppAuthentication')) {
-      await this.flipFeatureOn('inAppAuthentication');
-    }
-
-    // This method must be called when the client is on the "Get Started" view.
-    await this.waitForInitialView();
-
-    // Click on get started and wait for authenticating view
-    await this.clickOnQuery(queries.screenInitialize.SIGN_UP_BUTTON.visible());
-    // Wait for the authentication view to finish loading.
-    await this.waitForQuery(queries.screenAuthenticationInApp.AUTH_LOADER.ready());
-
-    await this.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible());
-    await this.setQueryProperty(
-        queries.screenAuthenticationInApp.AUTH_START_TEXT_INPUT.visible(),
-        'text', 'test@test.com');
-    await this.waitForQueryAndClick(
-        queries.screenAuthenticationInApp.AUTH_START_BUTTON.visible()
-            .enabled());
-
-    await this.waitForQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible());
-    await this.setQueryProperty(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_PASSWORD_INPUT.visible(),
-        'text', 'password');
-
-    await this.clickOnQuery(
-        queries.screenAuthenticationInApp.AUTH_SIGNIN_BUTTON.visible()
-            .enabled());
-
-    // Wait for VPN client screen to move from spinning wheel to next screen
-    await this.waitForMozillaProperty(
-        'Mozilla.VPN', 'VPN', 'userAuthenticated', 'true');
+    await this.authenticateInBrowser(true);
   },
 
   async skipOnboarding() {

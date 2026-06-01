@@ -4,7 +4,6 @@
 
 #include "authenticationlistener.h"
 
-#include "authenticationinapp/authenticationinapplistener.h"
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -42,8 +41,6 @@ AuthenticationListener* AuthenticationListener::create(
 #else
       return new DesktopAuthenticationListener(parent);
 #endif
-    case AuthenticationInApp:
-      return new AuthenticationInAppListener(parent);
     case AuthenticationInBrowserHeadless:
 #if defined(MZ_WINDOWS) || defined(MZ_LINUX) || defined(MZ_MACOS)
       return new DesktopAuthenticationListener(parent, true);

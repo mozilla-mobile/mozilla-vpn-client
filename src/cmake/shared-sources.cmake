@@ -57,14 +57,6 @@ target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/addons/manager/addonindex.h
     ${CMAKE_SOURCE_DIR}/src/addons/manager/addonmanager.cpp
     ${CMAKE_SOURCE_DIR}/src/addons/manager/addonmanager.h
-    ${CMAKE_SOURCE_DIR}/src/authenticationinapp/authenticationinapp.cpp
-    ${CMAKE_SOURCE_DIR}/src/authenticationinapp/authenticationinapp.h
-    ${CMAKE_SOURCE_DIR}/src/authenticationinapp/authenticationinapplistener.cpp
-    ${CMAKE_SOURCE_DIR}/src/authenticationinapp/authenticationinapplistener.h
-    ${CMAKE_SOURCE_DIR}/src/authenticationinapp/authenticationinappsession.cpp
-    ${CMAKE_SOURCE_DIR}/src/authenticationinapp/authenticationinappsession.h
-    ${CMAKE_SOURCE_DIR}/src/authenticationinapp/incrementaldecoder.cpp
-    ${CMAKE_SOURCE_DIR}/src/authenticationinapp/incrementaldecoder.h
     ${CMAKE_SOURCE_DIR}/src/authenticationlistener.cpp
     ${CMAKE_SOURCE_DIR}/src/authenticationlistener.h
     ${CMAKE_SOURCE_DIR}/src/cryptosettings.cpp
@@ -141,12 +133,10 @@ target_sources(shared-sources INTERFACE
 
 target_sources(shared-sources INTERFACE
     ${CMAKE_SOURCE_DIR}/src/resources/license.qrc
-    ${CMAKE_SOURCE_DIR}/src/resources/resources.qrc
 )
 
 if(NOT QT_FEATURE_zstd)
     set_property(SOURCE  ${CMAKE_SOURCE_DIR}/src/resources/license.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
-    set_property(SOURCE  ${CMAKE_SOURCE_DIR}/src/resources/resources.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
 endif()
 
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR

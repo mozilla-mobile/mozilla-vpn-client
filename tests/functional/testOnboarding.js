@@ -13,7 +13,7 @@ describe('Onboarding', function() {
   beforeEach(async () => {
     assert.equal(await vpn.getSetting('onboardingCompleted'), false);
     assert.equal(await vpn.getSetting('onboardingStep'), 0);
-    await vpn.authenticateInApp(false);
+    await vpn.authenticate(false);
   });
 
   async function advanceToSlide(slide) {

@@ -8,8 +8,6 @@
 #include "errorhandler.h"
 #include "task.h"
 
-class AuthenticationInAppSession;
-
 class TaskGetSubscriptionDetails final : public Task {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(TaskGetSubscriptionDetails)
@@ -17,7 +15,6 @@ class TaskGetSubscriptionDetails final : public Task {
  public:
   enum AuthenticationPolicy {
     RunAuthenticationFlowIfNeeded,
-    ForceAuthenticationFlow,
     NoAuthenticationFlow,
   };
 
@@ -34,13 +31,9 @@ class TaskGetSubscriptionDetails final : public Task {
   void mustTransitionAuthToWeb();
 
  private:
-  void initAuthentication();
-  void runInternal();
   void maybeComplete(bool status);
 
  private:
-  AuthenticationInAppSession* m_authenticationInAppSession = nullptr;
-
   AuthenticationPolicy m_authenticationPolicy = RunAuthenticationFlowIfNeeded;
   ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
       ErrorHandler::DoNotPropagateError;

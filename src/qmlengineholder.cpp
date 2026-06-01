@@ -11,7 +11,6 @@
 #include <QWindow>
 
 #include "addons/manager/addonmanager.h"
-#include "authenticationinapp/authenticationinapp.h"
 #include "env.h"
 #include "errorhandler.h"
 #include "feature/featuremodel.h"
@@ -59,8 +58,6 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
 
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZAddonManager",
                                AddonManager::instance());
-  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZAuthInApp",
-                               AuthenticationInApp::instance());
 #ifdef SENTRY_ENABLED
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZCrashReporter",
                                SentryAdapter::instance());

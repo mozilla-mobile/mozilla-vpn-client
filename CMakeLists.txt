@@ -193,9 +193,6 @@ if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTS)
     add_subdirectory(tests/qml EXCLUDE_FROM_ALL)
     add_subdirectory(tests/unit_tests EXCLUDE_FROM_ALL)
 
-    # E2E Tests
-    add_subdirectory(tests/auth_tests EXCLUDE_FROM_ALL)
-
     # Functional Tests
     add_subdirectory(tests/functional)
 endif()

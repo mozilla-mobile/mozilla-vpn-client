@@ -38,7 +38,6 @@ describe('Navigation bar', async function() {
 
 
   it('Is not visible during browser authentication', async () => {
-    await vpn.flipFeatureOff('inAppAuthentication');
     await vpn.waitForInitialView();
     await vpn.waitForQueryAndClick(
         queries.screenInitialize.SIGN_UP_BUTTON.visible());

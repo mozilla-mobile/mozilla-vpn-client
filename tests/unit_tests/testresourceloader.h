@@ -13,7 +13,6 @@ class TestResourceLoader final : public TestHelper {
   void loadFile();
   void loadDir();
 
-  void commonPasswords();
   void licenseModel();
 
   void addon();

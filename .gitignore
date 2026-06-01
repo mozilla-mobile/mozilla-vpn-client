@@ -79,9 +79,6 @@ xcode.xconfig
 .gradle_cache/
 
 *.ts
-tests/auth/tests
-tests/auth/auth_tests
-tests/auth/auth_tests_autogen/
 tests/unit/tests
 tests/unit/tests_autogen/
 tests/qml/qml_tests

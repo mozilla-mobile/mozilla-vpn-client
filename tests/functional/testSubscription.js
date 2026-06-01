@@ -116,7 +116,7 @@ describe('Subscription manager', function() {
          // When they try to turn the VPN on, they get the
          // "Subscribe to Mozilla VPN" screen.
 
-         await vpn.authenticateInApp();
+         await vpn.authenticate();
 
          // Step 1: Override the Guardian endpoint to mock an expired
          // subscription.
@@ -142,9 +142,10 @@ describe('Subscription manager', function() {
          // screen. Once they click on the "Subscribe Now" button, they will be
          // taken to the browser to finish subscription and then will be then
          // redirected back to the controller home screen.
-
-         if (!this.ctx.wasm) {
-           await vpn.authenticateInApp();
+         if (await vpn.isFeatureEnabled('webPurchase')) {
+           await vpn.authenticate();
+           await vpn.setMozillaProperty(
+               'Mozilla.Shared', 'MZUrlOpener', 'lastUrl', '');
 
            // Mark the user subscription as inactive
            this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
@@ -158,7 +159,6 @@ describe('Subscription manager', function() {
            // Verify that user gets the "Subscribe to Mozilla VPN" screen.
            await vpn.waitForQuery(queries.screenSubscriptionNeeded
                                       .SUBSCRIPTION_NEEDED_VIEW.visible());
-
 
            // Click on the Subscribe Now button.
            await vpn.waitForQueryAndClick(
@@ -174,33 +174,8 @@ describe('Subscription manager', function() {
            this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
                userDataActive;
 
-           // We don't really want to go through the
-           // authentication flow because we
-           // are mocking everything. So this next chunk of code manually
-           // makes a call to the DesktopAuthenticationListener to mock
-           // a successful authentication in browser.
-           const url = await vpn.getLastUrl();
-           const authListenerPort = (new URL(url)).searchParams.get('port');
-           const options = {
-             // We hardcode 127.0.0.1 to match listening on
-             // QHostAddress:LocalHost
-             // and hardcoded in guardian's vpnClientPixelImageAuthUrl
-             hostname: '127.0.0.1',
-             port: parseInt(authListenerPort, 10),
-             path: '/?code=the_code',
-             method: 'GET',
-           };
-
-           await new Promise(resolve => {
-             const req = http.request(options, res => {});
-             req.on('close', resolve);
-             req.on('error', error => {
-               throw new Error(
-                   `Unable to connect to ${urlObj.hostname} to complete the
-                  auth. ${error.name}, ${error.message}, ${error.stack}`);
-             });
-             req.end();
-           });
+           // Mock a successful authentication flow.
+           await vpn.mockInBrowserAuthentication(true);
 
            // Wait for VPN client screen to move from spinning wheel to next
            // screen
@@ -224,7 +199,7 @@ describe('Subscription manager', function() {
          this.ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/account'].body =
              userDataActive;
 
-         await vpn.authenticateInApp();
+         await vpn.authenticate();
 
          // Step 1: Override the Guardian endpoint to mock an expired
          // subscription. Set the error status to 500.
@@ -253,7 +228,7 @@ describe('Subscription manager', function() {
          // They enter No Signal, and once they toggle the VPN off
          // they get the "Subscribe to Mozilla VPN" screen.
 
-         await vpn.authenticateInApp();
+         await vpn.authenticate();
 
          // toggle on VPN here
          await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
