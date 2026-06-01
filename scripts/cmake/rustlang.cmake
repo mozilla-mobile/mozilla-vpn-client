@@ -545,8 +545,9 @@ endfunction()
 #   CARGO_ENV: Environment variables to pass to cargo.
 #   DEPENDS: Additional files on which the binary depends.
 #
-# Produces an IMPORTED executable target so callers can refer to the binary
-# via $<TARGET_FILE:${TARGET_NAME}> (e.g. in install() or custom commands).
+# Produces a custom target named ${TARGET_NAME} that builds the binary and
+# sets ${TARGET_NAME}_EXECUTABLE in the caller's scope to the path of the built
+# binary (usable in install()).
 # On macOS multiple architectures are combined into a universal binary using
 # lipo, mirroring add_rust_library. iOS targets are not supported and should
 # not call this function.
@@ -560,8 +561,6 @@ function(add_rust_binary TARGET_NAME)
     if(IOS)
         message(FATAL_ERROR "add_rust_binary is not supported on iOS; use add_rust_library instead.")
     endif()
-
-    add_executable(${TARGET_NAME} IMPORTED GLOBAL)
 
     if(NOT RUST_TARGET_CRATE_NAME)
         message(FATAL_ERROR "Mandatory argument CRATE_NAME was not found")
@@ -617,26 +616,14 @@ function(add_rust_binary TARGET_NAME)
             RELEASE_INPUTS ${RUST_TARGET_RELEASE_BINS}
             DEBUG_INPUTS ${RUST_TARGET_DEBUG_BINS}
         )
-
-        add_custom_target(${TARGET_NAME}_builder
-            DEPENDS ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_BINARY_FILENAME}
-        )
-        set_target_properties(${TARGET_NAME} PROPERTIES
-            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/unified/release/${RUST_BINARY_FILENAME}
-            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/unified/debug/${RUST_BINARY_FILENAME}
-        )
+        set(_executable ${RUST_TARGET_BINARY_DIR}/unified/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_BINARY_FILENAME})
     else()
         ## For non-Darwin platforms, only build the first architecture.
         list(GET RUST_TARGET_ARCH 0 RUST_FIRST_ARCH)
-        add_custom_target(${TARGET_NAME}_builder
-            DEPENDS ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_BINARY_FILENAME}
-        )
-        set_target_properties(${TARGET_NAME} PROPERTIES
-            IMPORTED_LOCATION ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/release/${RUST_BINARY_FILENAME}
-            IMPORTED_LOCATION_DEBUG ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/debug/${RUST_BINARY_FILENAME}
-        )
+        set(_executable ${RUST_TARGET_BINARY_DIR}/${RUST_FIRST_ARCH}/$<IF:$<CONFIG:Debug>,debug,release>/${RUST_BINARY_FILENAME})
     endif()
 
-    set_target_properties(${TARGET_NAME}_builder PROPERTIES FOLDER "Tools")
-    add_dependencies(${TARGET_NAME} ${TARGET_NAME}_builder)
+    add_custom_target(${TARGET_NAME} DEPENDS ${_executable})
+    set_target_properties(${TARGET_NAME} PROPERTIES FOLDER "Tools")
+    set(${TARGET_NAME}_EXECUTABLE ${_executable} PARENT_SCOPE)
 endfunction()

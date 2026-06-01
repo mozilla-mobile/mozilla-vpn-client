@@ -118,7 +118,7 @@ if(NOT BUILD_FLATPAK)
     add_dependencies(mozillavpn mozillavpn-obfuscator)
 
     # Install the obfuscator binary
-    install(PROGRAMS $<TARGET_FILE:mozillavpn-obfuscator> DESTINATION bin)
+    install(PROGRAMS ${mozillavpn-obfuscator_EXECUTABLE} DESTINATION bin)
 else()
     # Linux source files for sandboxed builds
     target_compile_definitions(mozillavpn PRIVATE MZ_FLATPAK)
