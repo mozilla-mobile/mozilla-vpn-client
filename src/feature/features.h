@@ -266,7 +266,7 @@ inline constexpr ConstantFeature obfuscationShadowsocks = {
 inline constexpr ConstantFeature obfuscationUdpOverTcp = {
     .id = "obfuscationUdpOverTcp",
     .name = "UDP over TCP",
-    .supported = Platform::linux_,
+    .supported = Platform::linux_ || Platform::android,
 };
 
 inline const OverridableFeature replacerAddon = {
