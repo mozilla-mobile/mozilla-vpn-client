@@ -102,8 +102,9 @@ dch -c "$(pwd)/mozillavpn-source/debian/changelog" \
     -D "${DIST}" --force-distribution "Release for ${DIST}"
 
 # For static Qt or cross builds, strip out the Qt build and runtime dependencies.
+# Also strip out the rust toolchain as it's installed in the docker image
 if [[ "$STATICQT" == "Y" ]]; then
-  sed -rie '/\s+(qt6-|qml6-|libqt6|qmake)/d' "$(pwd)/mozillavpn-source/debian/control"
+  sed -rie '/\s+(qt6-|qml6-|libqt6|qmake|cargo)/d' "$(pwd)/mozillavpn-source/debian/control"
 fi
 
 # Set up cross-compilation environment
