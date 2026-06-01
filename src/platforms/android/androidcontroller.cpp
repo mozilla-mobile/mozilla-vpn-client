@@ -204,6 +204,7 @@ void AndroidController::activate(const InterfaceConfig& config,
   args["allowedIPs"] = jAllowedIPs;
   args["excludedApps"] = excludedApps;
   args["dns"] = config.m_dnsServer;
+  args["obfuscationMethod"] = (int)config.m_obfuscationMethod;
 
   // Build the "canned" Notification messages
   // They will be used in case this config will be re-enabled
