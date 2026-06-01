@@ -15,7 +15,6 @@ class TaskGetSubscriptionDetails final : public Task {
  public:
   enum AuthenticationPolicy {
     RunAuthenticationFlowIfNeeded,
-    ForceAuthenticationFlow,
     NoAuthenticationFlow,
   };
 
@@ -32,8 +31,6 @@ class TaskGetSubscriptionDetails final : public Task {
   void mustTransitionAuthToWeb();
 
  private:
-  void initAuthentication();
-  void runInternal();
   void maybeComplete(bool status);
 
  private:

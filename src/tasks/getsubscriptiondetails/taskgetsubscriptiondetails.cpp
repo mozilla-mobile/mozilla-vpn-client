@@ -34,18 +34,6 @@ TaskGetSubscriptionDetails::~TaskGetSubscriptionDetails() {
 void TaskGetSubscriptionDetails::run() {
   logger.debug() << "run";
 
-  // If this Task is created with `ForceAuthenticationFlow` policy,
-  // we are forcing the user to authenticate.
-  if (m_authenticationPolicy == ForceAuthenticationFlow) {
-    logger.error() << "Force authentication";
-    initAuthentication();
-    return;
-  }
-
-  runInternal();
-}
-
-void TaskGetSubscriptionDetails::runInternal() {
   NetworkRequest* request = new NetworkRequest(this, 200);
   request->auth();
   request->get(Constants::apiUrl(Constants::SubscriptionDetails));
@@ -60,16 +48,12 @@ void TaskGetSubscriptionDetails::runInternal() {
         } else {
           switch (m_authenticationPolicy) {
             case RunAuthenticationFlowIfNeeded:
-              logger.error() << "Needs authentication";
-              initAuthentication();
+              logger.info() << "Starting web-based re-authentication.";
+              emit mustTransitionAuthToWeb();
+              emit completed();
               return;
 
               logger.error() << "Network request failed after authentication";
-              break;
-
-            case ForceAuthenticationFlow:
-              logger.error() << "We did the auth before, but somehow it "
-                                "was not enough";
               break;
 
             case NoAuthenticationFlow:
@@ -106,12 +90,5 @@ void TaskGetSubscriptionDetails::maybeComplete(bool status) {
   }
 
   emit operationCompleted(status);
-  emit completed();
-}
-
-void TaskGetSubscriptionDetails::initAuthentication() {
-  // If transitioning from in-app auth to web-based auth, bounce to web-based
-  logger.info() << "Starting web-based re-authentication.";
-  emit mustTransitionAuthToWeb();
   emit completed();
 }
