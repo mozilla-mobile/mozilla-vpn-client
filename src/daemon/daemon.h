@@ -87,7 +87,6 @@ class Daemon : public QObject {
   QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
   QTimer m_handshakeTimer;
   std::unique_ptr<Obfuscator> m_obfuscator;
-
 };
 
 #endif  // DAEMON_H
