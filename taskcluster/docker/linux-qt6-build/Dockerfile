@@ -31,6 +31,7 @@ RUN apt-get -y install build-essential \
                        devscripts \
                        equivs \
                        golang \
+                       gawk \
                        libclang-16-dev \
                        libdbus-1-3 \
                        libgl1-mesa-dev \
@@ -53,20 +54,22 @@ RUN if [ "$DEB_HOST_ARCH" != "amd64" ]; then \
 # Also pull in packages from build-depends as early as possible
 # %include linux/debian/control
 ADD topsrcdir/linux/debian/control /root/mozillavpn-dpkg-control
-RUN sed -rie '/\s+(qt6-|qml6-|libqt6|qmake)/d' /root/mozillavpn-dpkg-control && \
-	mk-build-deps -i -r --tool="apt-get --no-install-recommends --yes" --host-arch $DEB_HOST_ARCH /root/mozillavpn-dpkg-control
 
 ENV RUSTUP_HOME=/usr/local/rustup \
     CARGO_HOME=/usr/local/cargo
 
+# Install rust toolchain using rustup, cargo version is parsed from control file
 RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
-    sh -s -- -y --default-toolchain $(rustc --version | awk '{print $2}') --profile minimal --no-modify-path
+    sh -s -- -y --default-toolchain $(gawk 'match($0, /cargo-([0-9.]+):native/, a) { print a[1] }' /root/mozillavpn-dpkg-control) --profile minimal --no-modify-path
 
 ENV PATH="/usr/local/cargo/bin:${PATH}"
 
 RUN if [ "$DEB_HOST_ARCH" != "amd64" ]; then \
         rustup target add --toolchain $(rustc --version | awk '{print $2}') ${DEB_HOST_GNU_CPU}-unknown-linux-gnu; \
     fi
+
+RUN sed -rie '/\s+(qt6-|qml6-|libqt6|qmake|cargo)/d' /root/mozillavpn-dpkg-control && \
+	mk-build-deps -i -r --tool="apt-get --no-install-recommends --yes" --host-arch $DEB_HOST_ARCH /root/mozillavpn-dpkg-control
 
 #----------------------------------------------------------------------------------------------------------------------
 #-- Worker User -------------------------------------------------------------------------------------------------------
