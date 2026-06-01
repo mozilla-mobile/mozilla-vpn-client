@@ -132,6 +132,17 @@ fi
 sudo mk-build-deps --tool 'apt-get -y -o Debug::pkgProblemResolver=yes --no-install-recommends' \
    --install --remove $MK_BUILD_DEPS_ARGS "$(pwd)/mozillavpn-source/debian/control"
 
+# /usr/bin/cargo and /usr/bin/rustc may be installed as cargo-<version> and rustc-<version> 
+# Find the latest versions of these binaries as installed  by the build dependencies and link them to /usr/bin.
+
+if ! command -v cargo >/dev/null 2>&1; then
+    CARGO_BIN=$(find /usr/bin -maxdepth 1 -type f -name 'cargo-*' | sort -V | tail -n1)
+    RUSTC_BIN=$(find /usr/bin -maxdepth 1 -type f -name 'rustc-*' | sort -V | tail -n1)
+
+    [ -n "$CARGO_BIN" ] && sudo ln -sf "$CARGO_BIN" /usr/bin/cargo
+    [ -n "$RUSTC_BIN" ] && sudo ln -sf "$RUSTC_BIN" /usr/bin/rustc
+fi
+
 (cd mozillavpn-source/ && dpkg-buildpackage $DPKG_PACKAGE_BUILD_ARGS)
 
 # Compress all build artifacts into a tarball
