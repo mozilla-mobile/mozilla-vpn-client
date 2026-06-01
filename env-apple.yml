@@ -11,11 +11,11 @@ dependencies:
   - python=3.12
   - nodejs=20.*
   - pip=25.0
-  - rust=1.89
-  - rust-std-aarch64-apple-darwin=1.89
-  - rust-std-x86_64-apple-darwin=1.89
-  - rust-std-aarch64-apple-ios=1.89
-  - rust-std-x86_64-apple-ios=1.89
+  - rust=1.91
+  - rust-std-aarch64-apple-darwin=1.91
+  - rust-std-x86_64-apple-darwin=1.91
+  - rust-std-aarch64-apple-ios=1.91
+  - rust-std-x86_64-apple-ios=1.91
   - go=1.23
   - compiler-rt=20.1.8
   - compiler-rt_osx-64
