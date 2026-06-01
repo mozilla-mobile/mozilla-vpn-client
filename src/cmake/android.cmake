@@ -10,7 +10,41 @@ if(QT_KNOWN_POLICY_QTP0002)
     qt_policy(SET QTP0002 OLD)
 endif()
 
+## Build the obfuscators shared library.
+## This is used by Android via JNA.
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
+
+if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
+    set(OBFUSCATORS_RUST_ARCH "aarch64-linux-android")
+elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a")
+    set(OBFUSCATORS_RUST_ARCH "armv7-linux-androideabi")
+elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
+    set(OBFUSCATORS_RUST_ARCH "i686-linux-android")
+elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
+    set(OBFUSCATORS_RUST_ARCH "x86_64-linux-android")
+else()
+    message(FATAL_ERROR "Unsupported Android architecture for obfuscators: ${CMAKE_SYSTEM_PROCESSOR}")
+endif()
+
+set(OBFUSCATORS_CARGO_ENV
+    CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}/obfuscators
+    "RUSTFLAGS=-Ctarget-feature=-crt-static -C link-arg=-Wl,-z,max-page-size=16384 -C link-arg=-Wl,-z,common-page-size=16384"
+)
+
+add_rust_library(obfuscators
+    ARCH ${OBFUSCATORS_RUST_ARCH}
+    PACKAGE_DIR ${CMAKE_SOURCE_DIR}/obfuscators
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/obfuscators
+    CRATE_NAME obfuscators
+    CARGO_ENV ${OBFUSCATORS_CARGO_ENV}
+    SHARED 1
+)
+target_include_directories(obfuscators INTERFACE
+    ${CMAKE_CURRENT_BINARY_DIR}/obfuscators
+)
+
 target_link_libraries(mozillavpn PRIVATE
+    obfuscators
     Qt6::Test
     Qt6::Xml)
 
@@ -40,6 +74,7 @@ target_sources(mozillavpn PRIVATE
 )
 
 get_property(OPENSSL_LIBS_DIR GLOBAL PROPERTY OPENSSL_LIBS)
+get_property(OBFUSCATORS_LIB_LOCATION TARGET obfuscators PROPERTY LOCATION_${CMAKE_BUILD_TYPE})
 
 # This property flags the build system to copy these
 # shared libraries into the expected Android shared library folder.
@@ -64,6 +99,7 @@ set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
     ${OPENSSL_LIBS_DIR}/libssl.so
     ${OPENSSL_LIBS_DIR}/libcrypto_1_1.so
     ${OPENSSL_LIBS_DIR}/libssl_1_1.so
+    ${OBFUSCATORS_LIB_LOCATION}
     APPEND)
 
 
