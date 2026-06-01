@@ -63,6 +63,6 @@ find ${TASK_WORKDIR}/unsigned -type f -name '*.pdb' | while read DBGFILE; do
   sentry-cli difutil check "${DBGFILE}"
   sentry-cli difutil bundle-sources -o ${TASK_WORKDIR}/symbols/ "${DBGFILE}"
 done
-tar -C ${TASK_WORKDIR} -cJvf ${TASK_WORKDIR}/artifacts/MozillaVPN-dsym.tar.xz symbols/ || die 
+tar -C ${TASK_WORKDIR}/symbols/ -cJvf ${TASK_WORKDIR}/artifacts/MozillaVPN-dsym.tar.xz . || die 
 
 print G "Done!"
