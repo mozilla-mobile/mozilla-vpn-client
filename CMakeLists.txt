@@ -163,13 +163,8 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
     )
 endif()
 
-if(QT_KNOWN_POLICY_QTP0001)
-    qt_policy(SET QTP0001 NEW)
-endif()
-
-if(QT_KNOWN_POLICY_QTP0004)
-    qt_policy(SET QTP0004 OLD)
-endif()
+qt_policy(SET QTP0001 NEW)
+qt_policy(SET QTP0004 OLD)
 
 message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)
