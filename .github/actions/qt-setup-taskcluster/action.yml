@@ -4,7 +4,9 @@ inputs:
   toolchain-alias:
     description: 'Taskcluster toolchain alias'
     required: false
-    default: ${{ runner.os == 'Windows' && 'qt-windows-x86_64-6.10' || 'qt-macos-6.10' }}
+    default: ${{ case(runner.os == 'Windows', 'qt-windows-x86_64-6.10',
+                      runner.os == 'macOS', 'qt-macos-6.10',
+                      'qt-linux') }}
   cache:
     description: 'Cache Qt toolchain artifacts'
     required: false
@@ -13,11 +15,6 @@ inputs:
     description: 'Add cmake environment variables'
     required: false
     default: true
-
-outputs:
-  cmake-prefix-path:
-    description: 'Path to Qt CMake files for CMAKE_PREFIX_PATH'
-    value: ${{ steps.get-cmake-path.outputs.cmake-prefix-path }}
 
 runs:
   using: "composite"
@@ -76,7 +73,8 @@ runs:
       id: get-cmake-path
       working-directory: ${{ steps.set-dest.outputs.path }}/${{ steps.resolve.outputs.toolchain-path }}
       shell: bash
-      run: echo "cmake-prefix-path=$(pwd)/lib/cmake" >> $GITHUB_OUTPUT
+      run: |
+        echo "CMAKE_PREFIX_PATH=$(pwd)/lib/cmake" >> $GITHUB_ENV
 
     - name: Save Qt toolchain
       uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
