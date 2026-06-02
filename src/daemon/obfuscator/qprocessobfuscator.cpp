@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "obfuscator.h"
+#include "qprocessobfuscator.h"
 
 #include <QByteArray>
 #include <QCoreApplication>
@@ -19,11 +19,11 @@ constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
 #endif
 
 namespace {
-Logger logger("Obfuscator");
+Logger logger("QProcessObfuscator");
 }
 
-Obfuscator::Obfuscator(const InterfaceConfig& config) {
-  MZ_COUNT_CTOR(Obfuscator);
+QProcessObfuscator::QProcessObfuscator(const InterfaceConfig& config) {
+  MZ_COUNT_CTOR(QProcessObfuscator);
 
   const QStringList args = buildArgs(config);
   if (args.isEmpty()) {
@@ -39,7 +39,7 @@ Obfuscator::Obfuscator(const InterfaceConfig& config) {
   m_process.setProcessChannelMode(QProcess::MergedChannels);
 }
 
-bool Obfuscator::start() {
+bool QProcessObfuscator::start() {
   logger.debug() << "Starting obfuscator";
   m_process.start();
   if (!m_process.waitForStarted(OBFUSCATOR_PROC_TIMEOUT_MS)) {
@@ -72,7 +72,7 @@ bool Obfuscator::start() {
   return false;
 }
 
-quint16 Obfuscator::parseListeningPort(const QByteArray& line) const {
+quint16 QProcessObfuscator::parseListeningPort(const QByteArray& line) const {
   static const QByteArray prefix = "listening on 127.0.0.1:";
   const int idx = line.indexOf(prefix);
   if (idx < 0) {
@@ -83,7 +83,7 @@ quint16 Obfuscator::parseListeningPort(const QByteArray& line) const {
   return ok ? port : 0;
 }
 
-QStringList Obfuscator::buildArgs(const InterfaceConfig& config) {
+QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config) {
   QStringList args;
   switch (config.m_obfuscationMethod) {
     case Server::ObfuscationMethod::UdpOverTcp:
@@ -105,7 +105,7 @@ QStringList Obfuscator::buildArgs(const InterfaceConfig& config) {
   return args;
 }
 
-QString Obfuscator::binaryName() const {
+QString QProcessObfuscator::binaryName() const {
 #if defined(MZ_WINDOWS)
   return QStringLiteral("mozillavpn-obfuscator.exe");
 #elif defined(MZ_LINUX)
@@ -116,8 +116,8 @@ QString Obfuscator::binaryName() const {
 #endif
 }
 
-Obfuscator::~Obfuscator() {
-  MZ_COUNT_DTOR(Obfuscator);
+QProcessObfuscator::~QProcessObfuscator() {
+  MZ_COUNT_DTOR(QProcessObfuscator);
   if (m_process.state() == QProcess::NotRunning) {
     return;
   }
