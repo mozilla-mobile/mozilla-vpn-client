@@ -61,7 +61,7 @@ impl ObfuscationMethod {
     }
 }
 
-/// C-ABI view: what the C++ side actually fills in and passes across the FFI.
+/// C-ABI view: what the JNA caller actually fills in and passes across the FFI.
 #[repr(C)]
 pub struct ObfuscatorConfig {
     pub obfuscation_method: u32,

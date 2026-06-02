@@ -17,7 +17,7 @@ mod udp_over_tcp;
 
 pub use obfuscator::{Config, ObfuscationMethod, Obfuscator, ObfuscatorConfig};
 
-/// Opaque handle held by C++ caller.
+/// Opaque handle held by the JNA caller.
 /// Owns the runner thread and the shutdown flag dropping it stops the obfuscator.
 pub struct ObfuscatorHandle {
     shutdown: Arc<AtomicBool>,
