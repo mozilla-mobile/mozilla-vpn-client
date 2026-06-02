@@ -39,9 +39,6 @@ add_rust_library(obfuscators
     CARGO_ENV ${OBFUSCATORS_CARGO_ENV}
     SHARED 1
 )
-target_include_directories(obfuscators INTERFACE
-    ${CMAKE_CURRENT_BINARY_DIR}/obfuscators
-)
 
 target_link_libraries(mozillavpn PRIVATE
     obfuscators
