@@ -29,7 +29,7 @@ jobs:
       - name: Install dependences
         run: |
           sudo apt-get update
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control | grep -vE '^(qml6|libqt6|qt6)')
+          sudo apt-get install -y $(./scripts/linux/getdeps.py --all --no-qt)
 
       - name: Setup Qt for Linux
         id: setup-qt

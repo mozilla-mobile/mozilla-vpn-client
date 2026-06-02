@@ -36,7 +36,11 @@ jobs:
           persist-credentials: false
       - run: |
           sudo apt-get update
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control) ccache
+          sudo apt-get install -y $(./scripts/linux/getdeps.py --build --no-qt) ccache
+
+      - name: Setup Qt for Linux
+        id: setup-qt
+        uses: ./.github/actions/qt-setup-taskcluster
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
@@ -122,7 +126,7 @@ jobs:
       - name: Install test dependecies
         run: |
           sudo apt-get update
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -r linux/debian/control)
+          sudo apt-get install -y $(./scripts/linux/getdeps.py --runtime --no-qt)
           sudo apt install --no-upgrade firefox xvfb -y
           chmod +x build-${{ runner.os }}/src/mozillavpn
 
