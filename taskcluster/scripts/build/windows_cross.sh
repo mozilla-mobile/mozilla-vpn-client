@@ -56,4 +56,13 @@ cmake --install ${TASK_WORKDIR}/build-win --prefix ${TASK_WORKDIR}/unsigned
 mkdir -p ${TASK_WORKDIR}/artifacts/
 (cd ${TASK_WORKDIR}/unsigned && zip -r ${TASK_WORKDIR}/artifacts/unsigned.zip .)
 
+print Y "Generating debug symbol artifacts..."
+mkdir -p ${TASK_WORKDIR}/symbols/
+find ${TASK_WORKDIR}/unsigned -type f -name '*.pdb' | while read DBGFILE; do
+  cp -v "${DBGFILE}" ${TASK_WORKDIR}/symbols/
+  sentry-cli difutil check "${DBGFILE}"
+  sentry-cli difutil bundle-sources -o ${TASK_WORKDIR}/symbols/ "${DBGFILE}"
+done
+tar -C ${TASK_WORKDIR}/symbols/ -cJvf ${TASK_WORKDIR}/artifacts/MozillaVPN-dsym.tar.xz . || die 
+
 print G "Done!"
