@@ -64,7 +64,6 @@ Vcs-Git: https://github.com/mozilla-mobile/mozilla-vpn-client
 Package: mozillavpn
 Architecture: any
 Depends: wireguard (>=1.0.20200319),
-         wireguard-tools (>=1.0.20200319),
          libfreetype6,
          libfontconfig1,
          libegl1,
