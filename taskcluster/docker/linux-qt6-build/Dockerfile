@@ -101,7 +101,7 @@ RUN curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | \
 ENV PATH="/usr/local/cargo/bin:${PATH}"
 
 RUN if [ "$DEB_HOST_ARCH" != "amd64" ]; then \
-        rustup target add --toolchain $(rustc --version | awk '{print $2}') ${DEB_HOST_GNU_CPU}-unknown-linux-gnu; \
+        rustup target add ${DEB_HOST_GNU_CPU}-unknown-linux-gnu; \
     fi
 
 RUN sed -rie '/\s+(qt6-|qml6-|libqt6|qmake|cargo)/d' /root/mozillavpn-dpkg-control && \
