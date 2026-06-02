@@ -18,8 +18,14 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
-#include "obfuscator.h"
+#include "obfuscator/obfuscator.h"
 #include "wireguardutils.h"
+
+#if defined(MZ_WASM) || defined(MZ_IOS)
+#  include "obfuscator/dummyobfuscator.h"
+#else
+#  include "obfuscator/qprocessobfuscator.h"
+#endif
 
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 constexpr int HANDSHAKE_POLL_MSEC = 250;
@@ -145,7 +151,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   InterfaceConfig peerConfig = config;
   if (config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
       config.m_hopType != InterfaceConfig::MultiHopExit) {
-    obfuscator = std::make_unique<Obfuscator>(config);
+    obfuscator = createObfuscator(config);
     if (!obfuscator->start()) {
       logger.error() << "Failed to start obfuscator"
                      << config.m_obfuscationMethod;
@@ -431,6 +437,15 @@ QString Daemon::logs() {
 
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
+std::unique_ptr<Obfuscator> Daemon::createObfuscator(
+    const InterfaceConfig& config) {
+#if defined(MZ_WASM) || defined(MZ_IOS)
+  return std::make_unique<DummyObfuscator>(config);
+#else
+  return std::make_unique<QProcessObfuscator>(config);
+#endif
+}
+
 bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
   if (!m_connections.contains(config.m_hopType)) {
     return false;
@@ -459,7 +474,7 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   InterfaceConfig peerConfig = config;
   if (config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
       config.m_hopType != InterfaceConfig::MultiHopExit) {
-    obfuscator = std::make_unique<Obfuscator>(config);
+    obfuscator = createObfuscator(config);
     if (!obfuscator->start()) {
       logger.error() << "Failed to start obfuscator on switch"
                      << config.m_obfuscationMethod;

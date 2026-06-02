@@ -70,8 +70,7 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/controller_p.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator.cpp
-    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator/obfuscator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
@@ -196,11 +195,19 @@ if(NOT QT_FEATURE_zstd)
     set_property(SOURCE  ${CMAKE_CURRENT_SOURCE_DIR}/resources/public_keys/public_keys.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
 endif()
 
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
+   NOT ${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
+    target_sources(mozillavpn-sources INTERFACE
+        ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator/qprocessobfuscator.cpp
+        ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator/qprocessobfuscator.h
+       )
+endif()
+
 # Sources for desktop platforms.
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
    ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
    ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
-     target_sources(mozillavpn-sources INTERFACE
+    target_sources(mozillavpn-sources INTERFACE
         ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.cpp
         ${CMAKE_CURRENT_SOURCE_DIR}/systemtraynotificationhandler.h
        )

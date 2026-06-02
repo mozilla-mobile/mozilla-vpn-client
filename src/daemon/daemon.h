@@ -12,6 +12,7 @@
 #include "daemon/daemonerrors.h"
 #include "daemonerrors.h"
 #include "interfaceconfig.h"
+#include "obfuscator/obfuscator.h"
 
 class DnsUtils;
 class IPUtils;
@@ -58,6 +59,7 @@ class Daemon : public QObject {
 
  private:
   bool maybeUpdateResolvers(const InterfaceConfig& config);
+  std::unique_ptr<Obfuscator> createObfuscator(const InterfaceConfig& config);
 
  protected:
   virtual bool run(Op op, const InterfaceConfig& config) {
