@@ -28,6 +28,9 @@ target_link_libraries(qml_tests PRIVATE
     Qt6::Svg
 )
 
+if (QT_FEATURE_static)
+    qt_import_plugins(qml_tests INCLUDE Qt6::QOffscreenIntegrationPlugin)
+endif()
 target_link_libraries(qml_tests PRIVATE lottie mzutils nebula translations)
 
 target_compile_definitions(qml_tests PRIVATE QUICK_TEST_SOURCE_DIR=\"${CMAKE_CURRENT_SOURCE_DIR}\")
