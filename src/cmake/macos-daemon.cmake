@@ -37,6 +37,9 @@ target_sources(daemon PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonerrors.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/iputils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator/obfuscator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator/qprocessobfuscator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator/qprocessobfuscator.cpp    
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/wireguardutils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/daemon/dnsutilsmacos.h

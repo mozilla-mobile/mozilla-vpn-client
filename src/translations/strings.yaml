@@ -329,6 +329,18 @@ systray:
 
 settings:
   privacySettings: Privacy features
+  antiCensorshipSettings: Anti-Censorship features
+  antiCensorshipSettingsWarning: These options may cause connection stability issues.
+  antiCensorshipPort53Title: Connect using port 53
+  antiCensorshipPort53Body: This may help on networks that block ports or UDP traffic.
+  antiCensorshipMasqueTitle: MASQUE
+  antiCensorshipMasqueBody: This may help on networks that block VPN protocols by disguising VPN traffic as regular HTTPS traffic.
+  antiCensorshipLwoTitle: Lightweight obfuscation
+  antiCensorshipLwoBody: The fastest obfuscation method. May help on networks that detect or block WireGuard traffic without adding significant overhead.
+  antiCensorshipShadowsocksTitle: SHADOWSOCKS
+  antiCensorshipShadowsocksBody: A reliable censorship circumvention protocol that may help bypass restrictive or heavily filtered networks.
+  antiCensorshipUdpOverTcpTitle: UDP over TCP
+  antiCensorshipUdpOverTcpBody: This may help on networks that block UDP traffic by tunneling it over TCP.
   appExclusionTitle: Excluded apps
   appearance:
     value: Appearance
@@ -880,6 +892,18 @@ devices:
     comment: Title for the menu bar when viewing the devices or device limit pages
 
 helpSheets:
+  antiCensorshipTitle:
+    value: Anti-Censorship features
+    comment: Title label for the Anti-Censorship features help sheet
+  antiCensorshipHeader:
+    value: What can Anti-Censorship features do for me?
+    comment: Header label for the Anti-Censorship features help sheet
+  antiCensorshipBody1:
+    value: Anti-Censorship features can help when your provider or network blocks VPN or UDP traffic.
+    comment: Body label for the Anti-Censorship features help sheet
+  antiCensorshipBody2:
+    value: These features may slow down your connection, so turn them off when you no longer need them.
+    comment: Body label for the Anti-Censorship features help sheet
   dnsTitle:
     value: Custom DNS settings
     comment: Title label for the custom dns help sheet
@@ -1084,6 +1108,9 @@ controller:
   regeneratingKey:
     value: Preparing your connection
     comment: Connection subtitle label for the main screen when the app is regenerating WireGuard keys
+  antiCensorshipOn:
+    value: Anti-Censorship is on
+    comment: Label for the main screen when Anti-Censorship features are enabled
 
 iosAppIntentsMain:
   turnOnAction:

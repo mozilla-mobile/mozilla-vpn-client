@@ -10,6 +10,7 @@
 #include <QString>
 
 #include "ipaddress.h"
+#include "models/server.h"
 
 class QJsonObject;
 
@@ -24,6 +25,7 @@ class InterfaceConfig {
 
   HopType m_hopType;
   QString m_privateKey;
+  QString m_publicKey;
   QString m_deviceIpv4Address;
   QString m_deviceIpv6Address;
   QString m_serverIpv4Gateway;
@@ -37,6 +39,7 @@ class InterfaceConfig {
   int m_serverPort = 0;
   QList<IPAddress> m_allowedIPAddressRanges;
   QStringList m_vpnDisabledApps;
+  Server::ObfuscationMethod m_obfuscationMethod;
 
   QJsonObject toJson() const;
   QString toWgConf(

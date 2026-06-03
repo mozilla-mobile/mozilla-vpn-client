@@ -40,12 +40,14 @@ RUN apt-get update -qq \
                           git \
                           wget \
                           zip \
-                          cargo \
+                          cargo-1.91 \
                           curl \
                           rpm \
                           libglib2.0-0 \
                           ccache \
     && apt-get clean
+
+RUN ln -s /usr/bin/cargo-1.91 /usr/bin/cargo
 
 RUN pip install --upgrade pip
 RUN pip install taskcluster

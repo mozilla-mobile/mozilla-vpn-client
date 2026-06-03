@@ -148,6 +148,26 @@ bool Server::forcePort(uint32_t port) {
   return true;
 }
 
+bool Server::supportObfuscationMethod(const ObfuscationMethod method) const {
+  switch (method) {
+    case NoObfuscation:
+      [[fallthrough]];
+    case UdpOverTcp:
+      return true;
+    case LWO:
+      [[fallthrough]];
+    case Masque:
+      [[fallthrough]];
+    case Shadowsocks:
+      // Shadowsocks currently falls under false as it looks like it's not
+      // supported by the server itself but we should communicate to the server
+      // through a relay and this requires changes in the guardian api
+      [[fallthrough]];
+    default:
+      return false;
+  }
+}
+
 // static
 const Server& Server::weightChooser(const QList<Server>& servers) {
   static const Server emptyServer;
@@ -177,14 +197,16 @@ const Server& Server::weightChooser(const QList<Server>& servers) {
   return emptyServer;
 }
 
-uint32_t Server::choosePort() const {
-  if (m_portRanges.isEmpty()) {
+uint32_t Server::choosePort(bool tcp) const {
+  QList<QPair<uint32_t, uint32_t>> portRanges =
+      tcp ? m_udpOverTcpPorts : m_portRanges;
+  if (portRanges.isEmpty()) {
     return 0;
   }
 
   // Count the total number of potential ports.
   quint32 length = 0;
-  for (const QPair<uint32_t, uint32_t>& range : m_portRanges) {
+  for (const QPair<uint32_t, uint32_t>& range : portRanges) {
     Q_ASSERT(range.first <= range.second);
     length += range.second - range.first + 1;
   }
@@ -195,7 +217,7 @@ uint32_t Server::choosePort() const {
   quint32 r = QRandomGenerator::global()->generate() % length;
   quint32 port = 0;
 
-  for (const QPair<uint32_t, uint32_t>& range : m_portRanges) {
+  for (const QPair<uint32_t, uint32_t>& range : portRanges) {
     if (r <= (range.second - range.first)) {
       port = r + range.first;
       break;

@@ -7,13 +7,16 @@
 
 #include <QDateTime>
 #include <QTimer>
+#include <memory>
 
 #include "daemon/daemonerrors.h"
 #include "daemonerrors.h"
 #include "interfaceconfig.h"
+#include "obfuscator/obfuscator.h"
 
 class DnsUtils;
 class IPUtils;
+class Obfuscator;
 class WireguardUtils;
 
 class Daemon : public QObject {
@@ -56,6 +59,7 @@ class Daemon : public QObject {
 
  private:
   bool maybeUpdateResolvers(const InterfaceConfig& config);
+  std::unique_ptr<Obfuscator> createObfuscator(const InterfaceConfig& config);
 
  protected:
   virtual bool run(Op op, const InterfaceConfig& config) {
@@ -84,6 +88,7 @@ class Daemon : public QObject {
   };
   QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
   QTimer m_handshakeTimer;
+  std::unique_ptr<Obfuscator> m_obfuscator;
 };
 
 #endif  // DAEMON_H

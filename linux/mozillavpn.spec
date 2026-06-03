@@ -69,6 +69,7 @@ install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 %{_unitdir}/mozillavpn.service
 %{_unitdir}/socksproxy.service
 %{_bindir}/mozillavpn
+%{_bindir}/mozillavpn-obfuscator
 %{_bindir}/socksproxy
 %{_prefix}/lib/mozilla/native-messaging-hosts/mozillavpn.json
 %{_datadir}/applications/org.mozilla.vpn.desktop

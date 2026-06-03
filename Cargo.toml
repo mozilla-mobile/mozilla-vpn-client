@@ -1,6 +1,7 @@
 [workspace]
 members = [
     "signature",
+    "obfuscators",
 ]
 resolver = "2"
 
