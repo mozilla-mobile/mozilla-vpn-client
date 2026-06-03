@@ -25,15 +25,18 @@ RUN apt-get update -q
 RUN apt-get -y install tzdata
 RUN apt-get -y install build-essential \
                        clang-16 \
+                       cmake \
                        curl \
                        debhelper \
                        devscripts \
                        equivs \
+                       golang \
                        libclang-16-dev \
                        libgl1-mesa-dev \
                        locales \
                        ninja-build \
                        patchelf \
+                       pkg-config \
                        sudo
 
 # Enable multiarch and add cross-compilation toolchain
@@ -43,48 +46,8 @@ RUN if [ "$DEB_HOST_ARCH" != "amd64" ]; then \
                 crossbuild-essential-${DEB_HOST_ARCH} \
                 gcc-${DEB_HOST_GNU_CPU}-linux-gnu \
                 g++-${DEB_HOST_GNU_CPU}-linux-gnu \
-                binutils-${DEB_HOST_GNU_CPU}-linux-gnu \
-                pkg-config \
-                cmake \
-                golang; \
+                binutils-${DEB_HOST_GNU_CPU}-linux-gnu; \
     fi
-
-## Install Qt6/X11 build dependencies
-## From: https://doc.qt.io/qt-6/linux-requirements.html
-RUN apt-get -y install libatspi2.0-dev:${DEB_HOST_ARCH} \
-                       libdbus-1-dev:${DEB_HOST_ARCH} \
-                       libfontconfig1-dev:${DEB_HOST_ARCH} \
-                       libfreetype6-dev:${DEB_HOST_ARCH} \
-                       libgles-dev:${DEB_HOST_ARCH} \
-                       libssl-dev:${DEB_HOST_ARCH} \
-                       libx11-dev:${DEB_HOST_ARCH} \
-                       libx11-xcb-dev:${DEB_HOST_ARCH} \
-                       libxext-dev:${DEB_HOST_ARCH} \
-                       libxfixes-dev:${DEB_HOST_ARCH} \
-                       libxi-dev:${DEB_HOST_ARCH} \
-                       libxrender-dev:${DEB_HOST_ARCH} \
-                       libxcb1-dev:${DEB_HOST_ARCH} \
-                       libxcb-cursor-dev:${DEB_HOST_ARCH} \
-                       libxcb-glx0-dev:${DEB_HOST_ARCH} \
-                       libxcb-keysyms1-dev:${DEB_HOST_ARCH} \
-                       libxcb-image0-dev:${DEB_HOST_ARCH} \
-                       libxcb-shm0-dev:${DEB_HOST_ARCH} \
-                       libxcb-icccm4-dev:${DEB_HOST_ARCH} \
-                       libxcb-sync-dev:${DEB_HOST_ARCH} \
-                       libxcb-xfixes0-dev:${DEB_HOST_ARCH} \
-                       libxcb-shape0-dev:${DEB_HOST_ARCH} \
-                       libxcb-randr0-dev:${DEB_HOST_ARCH} \
-                       libxcb-render-util0-dev:${DEB_HOST_ARCH} \
-                       libxcb-util-dev:${DEB_HOST_ARCH} \
-                       libxcb-xinerama0-dev:${DEB_HOST_ARCH} \
-                       libxcb-xkb-dev:${DEB_HOST_ARCH} \
-                       libxkbcommon-dev:${DEB_HOST_ARCH} \
-                       libxkbcommon-x11-dev:${DEB_HOST_ARCH}
-
-## Install wayland build dependencies
-RUN apt -y install libwayland-dev:${DEB_HOST_ARCH} \
-                   libwayland-egl-backend-dev:${DEB_HOST_ARCH} \
-                   wayland-protocols
 
 # Also pull in packages from build-depends as early as possible
 # %include linux/debian/control
