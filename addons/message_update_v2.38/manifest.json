@@ -1,20 +1,20 @@
 {
   "api_version": "0.1",
-  "id": "message_update_v2.37",
-  "name": "Update to Mozilla VPN 2.37",
+  "id": "message_update_v2.38",
+  "name": "Update to Mozilla VPN 2.38",
   "type": "message",
   "conditions": {
-    "max_client_version": "2.36.9",
+    "max_client_version": "2.37.9",
     "javascript": "osCheck.js"
   },
   "javascript": {
     "enable": "enable.js"
   },
   "message": {
-    "date": 1779295224,
+    "date": 1781711721,
     "usesSharedStrings": true,
-    "shortVersion": "2.37",
-    "id": "message_update_v2.37",
+    "shortVersion": "2.38",
+    "id": "message_update_v2.38",
     "title": "vpn.commonStrings.updateTitle",
     "subtitle": "vpn.commonStrings.subtitle",
     "promo_text": "vpn.commonStrings.updatePromo",
@@ -30,24 +30,28 @@
         "type": "ulist",
         "content": [
           {
+            "id": "l_1",
+            "content": "vpn.237updateMessage.bullet1"
+          },
+          {
+            "id": "l_2",
+            "content": "vpn.237updateMessage.bullet2"
+          },
+          {
             "id": "l_3",
-            "content": "vpn.237updateMessage.bullet3"
+            "content": "vpn.238updateMessage.bullet1"
           },
           {
             "id": "l_4",
-            "content": "vpn.237updateMessage.bullet4"
+            "content": "vpn.237updateMessage.bullet6"
           },
           {
             "id": "l_5",
-            "content": "vpn.237updateMessage.bullet5"
+            "content": "vpn.238updateMessage.bullet2"
           },
           {
-            "id": "l_7",
-            "content": "vpn.237updateMessage.bullet7"
-          },
-          {
-            "id": "l_8",
-            "content": "vpn.237updateMessage.bullet8"
+            "id": "l_6",
+            "content": "vpn.238updateMessage.bullet3"
           },
           {
             "id": "l_9",
