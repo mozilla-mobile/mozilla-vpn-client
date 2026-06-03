@@ -11,19 +11,15 @@ inputs:
     description: 'Cache Qt toolchain artifacts'
     required: false
     default: ${{ runner.os == 'Windows' }}
-  cmake-env:
-    description: 'Add cmake environment variables'
-    required: false
-    default: true
+
+outputs:
+  path:
+    description: 'Qt toolchain installation path'
+    value: ${{ steps.resolve.outputs.toolchain-path }}
 
 runs:
   using: "composite"
   steps:
-    - name: Set destination path
-      id: set-dest
-      shell: bash
-      run: echo "path=${GITHUB_WORKSPACE}/3rdparty" >> $GITHUB_OUTPUT
-
     - name: Resolve artifact task
       id: resolve
       shell: bash
@@ -45,41 +41,34 @@ runs:
         # contents. Lucky for us, tar is a streamable format so this kinda works
         # even though the archive is truncated.
         curl -sSL -r0-4096 "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${NAME}" -o qt-toolchain-head.tar.xz
-        echo "toolchain-path=$(xzcat qt-toolchain-head.tar.xz 2>/dev/null | tar t 2>/dev/null | head -1 | grep -o '^[^/]*')" >> $GITHUB_OUTPUT
+        TARBALL_PATH=$((xzcat qt-toolchain-head.tar.xz | tar t | head -1 | grep -o '^[^/]*') 2>/dev/null || true)
+        echo "toolchain-path=${GITHUB_WORKSPACE}/3rdparty/${TARBALL_PATH}" >> $GITHUB_OUTPUT
 
     - name: Cache Qt toolchain
       uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       id: qt-toolchain-cache
       if: ${{ inputs.cache == 'true' }}
       with:
-        path: ${{ steps.set-dest.outputs.path }}/${{ steps.resolve.outputs.toolchain-path }}
+        path: ${{ steps.resolve.outputs.toolchain-path }}
         key: qt-toolchain-${{ steps.resolve.outputs.taskid }}
         enableCrossOsArchive: true
 
     - name: Install Qt toolchain
       if: ${{ inputs.cache != 'true' || steps.qt-toolchain-cache.outputs.cache-hit != 'true' }}
       id: qt-toolchain-install
-      working-directory: ${{ steps.set-dest.outputs.path }}
+      working-directory: ${{ runner.temp }}
       shell: bash
       env:
         QT6_TOOLCHAIN_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts/${{ steps.resolve.outputs.filename }}
       run: |
         FILENAME=$(basename "${QT6_TOOLCHAIN_URL}")
         curl -sSL "${QT6_TOOLCHAIN_URL}" -o ${FILENAME}
-        tar -xf ${FILENAME}
-
-    - name: Get CMake prefix path
-      if: ${{ inputs.cmake-env == 'true' }}
-      id: get-cmake-path
-      working-directory: ${{ steps.set-dest.outputs.path }}/${{ steps.resolve.outputs.toolchain-path }}
-      shell: bash
-      run: |
-        echo "CMAKE_PREFIX_PATH=$(pwd)/lib/cmake" >> $GITHUB_ENV
+        tar -C ${GITHUB_WORKSPACE}/3rdparty/ -xf ${FILENAME}
 
     - name: Save Qt toolchain
       uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
       if: ${{ inputs.cache == 'true' && github.event_name == 'push' && steps.qt-toolchain-cache.outputs.cache-hit != 'true'}}
       with:
-        path: ${{ steps.set-dest.outputs.path }}/${{ steps.resolve.outputs.toolchain-path }}
+        path: ${{ steps.resolve.outputs.toolchain-path }}
         key: qt-toolchain-${{ steps.resolve.outputs.taskid }}
         enableCrossOsArchive: true

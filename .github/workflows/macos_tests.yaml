@@ -75,16 +75,18 @@ jobs:
       - name: Setup Qt for macOS
         id: setup-qt
         uses: ./.github/actions/qt-setup-taskcluster
+        with:
+          toolchain-alias: qt-macos-6.10
 
       - name: Setup Qt host tools
         uses: ./.github/actions/qt-setup-taskcluster
         with:
           toolchain-alias: qt-tools-6.10
-          cmake-env: false
 
       - name: Compile test client
         env:
           SDKROOT: ${{ steps.set-sdkroot.outputs.SDKROOT }}
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt.outputs.path }}/lib/cmake
         run: |
           mkdir -p build/cmake
           cmake -S $(pwd) -B build/cmake -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \

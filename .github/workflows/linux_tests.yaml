@@ -64,6 +64,8 @@ jobs:
 
       - name: Compile test client
         shell: bash
+        env:
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt.outputs.path }}/lib/cmake
         run: |
           mkdir -p build-${{ runner.os }}
           cmake -S $(pwd) -B build-${{ runner.os }} -GNinja -DCMAKE_BUILD_TYPE=RelWithDebInfo \
