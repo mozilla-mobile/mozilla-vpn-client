@@ -32,8 +32,12 @@ class InterfaceConfig {
   QString m_serverIpv4AddrIn;
   QString m_serverIpv6AddrIn;
   QString m_dnsServer;
+
+  // These are localized city names. They are used for iOS widgets and other
+  // situations where city name is needed, but the client is not running.
   QString m_entryCity;
   QString m_exitCity;
+
   int m_serverPort = 0;
   QList<IPAddress> m_allowedIPAddressRanges;
   QStringList m_vpnDisabledApps;
