@@ -15,6 +15,7 @@ async function loadAddonsAndNavigateHome(testAddonName) {
   await vpn.resetAddons(testAddonName);
   await vpn.waitForMozillaProperty(
       'Mozilla.Shared', 'MZAddonManager', 'loadCompleted', 'true');
+  await vpn.waitForQuery(queries.screenMessaging.SCREEN.ready());
 
   await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
   await vpn.waitForQuery(queries.screenHome.SCREEN.visible());

@@ -16,15 +16,11 @@ describe('IP info', function() {
     // Open IP info panel
     await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.visible());
     await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.ready());
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenHome.IP_INFO_PANEL, 'isOpen'), 'true');
+    await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.opened());
 
     // Close IP info panel
     await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.visible());
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenHome.IP_INFO_PANEL, 'isOpen'), 'false');
+    await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.closed());
   });
 
   it('Closes when VPN is deactivated', async () => {
@@ -34,15 +30,10 @@ describe('IP info', function() {
     // Open IP info panel
     await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.visible());
     await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.ready());
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenHome.IP_INFO_PANEL, 'isOpen'), 'true');
+    await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.opened());
 
     // Deactivate VPN
     await vpn.deactivate();
-
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenHome.IP_INFO_PANEL, 'isOpen'), 'false');
+    await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.closed());
   });
 });

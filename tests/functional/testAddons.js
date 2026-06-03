@@ -308,18 +308,28 @@ describe('Addons', function() {
 
             //Check timestamp
             let expectedTimestamp
+            let expectedTimestampAlt;
             let actualTimestamp = await vpn.getQueryProperty(queries.screenMessaging.messageItem('message_upgrade_to_annual_plan'), 'formattedDate');
             //Maybe add 14 days to account for the timestamp that starts 14 days into the subscription
             const addedTime =  Date.now() > Date.now() - (14 * 24 * 60 * 60 * 1000) ? 1000 * 60 * 60 * 24 * 14 : 0;
+            const addedTimeAlt = addedTime -
+                (60 * 1000);  // in case the clock turned over during setup
 
             if (expectedTimeFormat === "time") {
               expectedTimestamp = new Date(createdAtTimestamp() + addedTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
+              expectedTimestampAlt =
+                  new Date(createdAtTimestamp() + addedTimeAlt)
+                      .toLocaleTimeString(
+                          'en-US',
+                          {hour: 'numeric', minute: 'numeric', hour12: true});
             }
             else if (expectedTimeFormat === "date") {
               expectedTimestamp = new Date(createdAtTimestamp() + addedTime).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
+              expectedTimestampAlt = expectedTimestamp
             }
             else if (expectedTimeFormat === "yesterday") {
               expectedTimestamp = "Yesterday";
+              expectedTimestampAlt = expectedTimestamp
             }
 
             /*
@@ -337,9 +347,17 @@ describe('Addons', function() {
 
             */
 
-            assert.equal(
-                actualTimestamp.replace(/\s/g, ''),
-                expectedTimestamp.replace(/\s/g, ''));
+            const betterActualTimestamp = actualTimestamp.replace(/\s/g, '');
+            const betterExpectedTimestamp =
+                expectedTimestamp.replace(/\s/g, '');
+            const betterExpectedTimestampAlt =
+                expectedTimestampAlt.replace(/\s/g, '');
+
+            assert(
+                [betterExpectedTimestamp, betterExpectedTimestampAlt].includes(
+                    betterActualTimestamp),
+                `Incorrect timestamp ${betterActualTimestamp}, expected ${
+                    betterExpectedTimestamp} or ${betterExpectedTimestampAlt}`);
         }
         assert.equal(shouldBeAvailable, loadedMessages.includes('message_upgrade_to_annual_plan'));
 
