@@ -16,6 +16,7 @@ MZViewBase {
     id: vpnFlickable
     objectName: "messageInboxView"
 
+    property alias ready: listView.ready
     property bool isEmptyState
     property bool isEditing: false
     property var dismissedMessages: []
@@ -115,6 +116,7 @@ MZViewBase {
         ListView {
             id: listView
 
+            property bool ready: !add.running && !addDisplaced.running && !removeDisplaced.running
             interactive: false
             Layout.fillWidth: true
             Layout.preferredHeight: childrenRect.height

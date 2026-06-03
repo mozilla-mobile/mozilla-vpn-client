@@ -15,12 +15,9 @@ async function loadAddonsAndNavigateHome(testAddonName) {
   await vpn.resetAddons(testAddonName);
   await vpn.waitForMozillaProperty(
       'Mozilla.Shared', 'MZAddonManager', 'loadCompleted', 'true');
+  await vpn.waitForQuery(queries.screenMessaging.SCREEN.ready());
 
   await vpn.waitForQueryAndClick(queries.navBar.HOME.visible());
-  await vpn.waitForQueryAndClick(
-      queries.navBar.HOME.visible());  // shouldn't be needed - but next line is
-                                       // timing out on some Linux runs, so
-                                       // let's be extra sure we get to home
   await vpn.waitForQuery(queries.screenHome.SCREEN.visible());
 }
 
