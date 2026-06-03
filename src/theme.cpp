@@ -5,8 +5,8 @@
 #include "theme.h"
 
 #include <QDir>
-#include <QJSEngine>
 #include <QGuiApplication>
+#include <QJSEngine>
 #include <QStyleHints>
 
 #include "feature/features.h"

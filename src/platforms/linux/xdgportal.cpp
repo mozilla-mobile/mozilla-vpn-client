@@ -4,16 +4,15 @@
 
 #include "xdgportal.h"
 
+#include <private/qdesktopunixservices_p.h>
+#include <private/qguiapplication_p.h>
+#include <qpa/qplatformintegration.h>
 #include <unistd.h>
 
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QProcessEnvironment>
 #include <QRandomGenerator>
-
-#include <private/qdesktopunixservices_p.h>
-#include <private/qguiapplication_p.h>
-#include <qpa/qplatformintegration.h>
 
 #include "dbustypes.h"
 #include "leakdetector.h"
