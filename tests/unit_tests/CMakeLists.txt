@@ -46,6 +46,10 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten"
     )
 endif()
 
+if (QT_FEATURE_static)
+    qt_import_plugins(app_unit_tests INCLUDE Qt6::QOffscreenIntegrationPlugin)
+endif()
+
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/generate_translations_target.cmake)
 generate_translations_target(translations-unit-tests
     ${CMAKE_SOURCE_DIR}/tests/unit_tests/translations
