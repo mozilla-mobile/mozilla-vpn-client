@@ -21,6 +21,7 @@ WORKDIR /builds/worker/
 ENV CURL='curl --location --retry 5' \
     DEBIAN_FRONTEND='noninteractive' \
     LANG='en_US.UTF-8' \
+    PIP_BREAK_SYSTEM_PACKAGES=1 \
     TERM='dumb'
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -49,7 +50,7 @@ RUN apt-get update -qq \
 # Install the taskcluster script's package dependencies
 # %include taskcluster/scripts/requirements.txt
 ADD topsrcdir/taskcluster/scripts/requirements.txt /root/pip-requirements.txt
-RUN pip install --break-system-packages -r /root/pip-requirements.txt
+RUN pip install -r /root/pip-requirements.txt
 
 RUN locale-gen "$LANG"
 
