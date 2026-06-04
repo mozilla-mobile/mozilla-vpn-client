@@ -32,6 +32,7 @@ RUN apt-get -y install build-essential \
                        equivs \
                        golang \
                        libclang-16-dev \
+                       libdbus-1-3 \
                        libgl1-mesa-dev \
                        locales \
                        ninja-build \
