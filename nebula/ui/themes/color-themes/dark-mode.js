@@ -82,9 +82,9 @@ color.stepProgressIconComplete = mixColors(color.bgColor, color.white, 0.8);
 
 // Toggle
 color.vpnToggleConnected = {
-  defaultColor: color.blue20,
-  buttonHovered: mixColors(color.blue20, color.black, 0.2),
-  buttonPressed: mixColors(color.blue20, color.black, 0.3),
+  defaultColor: color.green70,
+  buttonHovered: mixColors(color.green70, color.black, 0.2),
+  buttonPressed: mixColors(color.green70, color.black, 0.3),
   focusOutline: addTransparency(color.bgColor, 0.4),
   focusBorder: color.focusBorder,
 };

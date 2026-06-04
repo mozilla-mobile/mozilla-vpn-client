@@ -28,6 +28,10 @@ class TunnelManager {
         return TunnelManager.instance.tunnel?.protocolConfiguration as? NETunnelProviderProtocol
     }
 
+    static var turnOnConfirmation: LocalizedStringResource? {
+        return TunnelManager.instance.tunnel?.turnOnConfirmation
+    }
+
     private init() {}
     
     static func initialize(_ bundleId: String, _ completionHandler: @escaping (_ error: Error?, _ tunnel: NETunnelProviderManager?) -> Void) {

@@ -15,6 +15,7 @@
 #include "frontend/navigator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "localsocketcontroller.h"
 #include "logger.h"
 #include "models/devicemodel.h"
@@ -86,6 +87,17 @@ Controller::Controller() {
 
   connect(&m_handshakeTimer, &QTimer::timeout, this,
           &Controller::handshakeTimeout);
+
+  // if the locale changed, send the new translation for the city name to iOS
+  // widget
+  connect(Localizer::instance(), &Localizer::localeChanged, this, [this]() {
+    if (SettingsHolder::instance()->languageCode().isEmpty()) {
+      // If setting is empty, this was called while tearing down the client
+      return;
+    }
+    const ServerData& serverData = *MozillaVPN::instance()->serverData();
+    maybeSendUpdatedConfig(serverData);
+  });
 
   LogHandler::instance()->registerLogSerializer(this);
 }
@@ -393,7 +405,8 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
   exitConfig.m_serverPort = exitServer.choosePort();
   exitConfig.m_allowedIPAddressRanges = allowedIPList;
   exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
-  exitConfig.m_exitCity = exitServer.cityName();
+  exitConfig.m_exitCity =
+      Localizer::instance()->getTranslatedCityName(exitServer.cityName());
   logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
 
   if (m_impl->splitTunnelSupported()) {
@@ -448,7 +461,9 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
       entryConfig.m_allowedIPAddressRanges.append(
           IPAddress(exitServer.ipv6AddrIn()));
     }
-    exitConfig.m_entryCity = entryServer.cityName();
+    // always pulls city names from exitConfig, so put entry city in exitConfig
+    exitConfig.m_entryCity =
+        Localizer::instance()->getTranslatedCityName(entryServer.cityName());
 
     // If requested, force the use of port 53/DNS.
     if (dnsPort == ForceDNSPort) {
@@ -483,7 +498,8 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
     exitConfig.m_serverPort = exitServer.multihopPort();
     exitConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
     exitConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
-    exitConfig.m_entryCity = entryServer.cityName();
+    exitConfig.m_entryCity =
+        Localizer::instance()->getTranslatedCityName(entryServer.cityName());
   }
 
   returnList.append(exitConfig);

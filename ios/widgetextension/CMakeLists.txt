@@ -45,7 +45,18 @@ target_sources(widgetextension PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/ToggleIntent.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/ToggleWidgetBundle.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/ToggleWidgetControl.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/ToggleWidget.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/WidgetColors.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgetimages.xcassets
     ${CMAKE_SOURCE_DIR}/ios/NETunnelProviderManager+Extension.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/ioslogger.swift
     ${CMAKE_SOURCE_DIR}/src/platforms/ios/iosconstants.swift
+    ${CMAKE_SOURCE_DIR}/nebula/ui/resources/fonts/Metropolis-SemiBold.otf
+    ${CMAKE_SOURCE_DIR}/nebula/ui/resources/fonts/Metropolis.otf
+)
+
+set_property(TARGET widgetextension APPEND PROPERTY RESOURCE
+    ${CMAKE_CURRENT_SOURCE_DIR}/widgetimages.xcassets
+    ${CMAKE_SOURCE_DIR}/nebula/ui/resources/fonts/Metropolis-SemiBold.otf
+    ${CMAKE_SOURCE_DIR}/nebula/ui/resources/fonts/Metropolis.otf
 )

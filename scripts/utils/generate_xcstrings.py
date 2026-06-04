@@ -28,7 +28,6 @@ from generate_strings import parseYAMLTranslationStrings
 XLIFF_NS = "{urn:oasis:names:tc:xliff:document:1.2}"
 _FALLBACK_LOCALES = None
 
-
 def load_xliff_translations(xliff_path, isEnglish):
     """Returns dict of {string_id: translated_string} for one locale's XLIFF file."""
     if not os.path.isfile(xliff_path):
@@ -262,7 +261,7 @@ def main():
     main_strings = {
         k: v
         for k, v in all_strings.items()
-        if v["string_id"].startswith("vpn.iosAppIntentsMain")
+        if v["string_id"].startswith("vpn.iosAppIntentsMain") or v["string_id"].startswith("vpn.mobileOnboarding.panelOneTitle") or v["string_id"].startswith("vpn.toggleWidget")
     }
 
     intent_titles = ["vpn.iosAppIntentsMain.statusQueryTitle", "vpn.iosAppIntentsMain.turnOffAction", "vpn.iosAppIntentsMain.turnOnAction"]

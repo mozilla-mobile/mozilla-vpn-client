@@ -35,6 +35,11 @@
 		<string>com.apple.widgetkit-extension</string>
 	</dict>
 
+  <key>UIAppFonts</key>
+  <array>
+      <string>Metropolis-SemiBold.otf</string>
+      <string>Metropolis.otf</string>
+  </array>
 
 </dict>
 </plist>

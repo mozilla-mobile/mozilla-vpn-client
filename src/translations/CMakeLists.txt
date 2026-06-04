@@ -49,15 +49,28 @@ if(IOS)
         ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
     )
 
+    set_property(TARGET mozillavpn APPEND PROPERTY RESOURCE
+        ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
+        ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
+    )
+
+    # Localizable.xcstrings contains strings both for app intents (needed by mozillavpn target)
+    # and widget descriptions (needed by widgetextension target).
+    # Thus, it gets added to both targets.
+    # Despite the Xcode project not showing it as part of both targets, it gets compiled successfully
+    # into both of them.
+    target_sources(widgetextension PRIVATE
+        ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
+    )
+
+    set_property(TARGET widgetextension APPEND PROPERTY RESOURCE
+        ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
+    )
+
     set_source_files_properties(
         ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
         ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
         PROPERTIES GENERATED TRUE
-    )
-
-    set_property(TARGET mozillavpn APPEND PROPERTY RESOURCE
-        ${TRANSLATIONS_OUT_DIR}/Localizable.xcstrings
-        ${TRANSLATIONS_OUT_DIR}/AppShortcuts.xcstrings
     )
 
 endif()

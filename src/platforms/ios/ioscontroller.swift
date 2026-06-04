@@ -132,9 +132,10 @@ public class IOSControllerImpl: NSObject {
             IOSControllerImpl.logger.debug(message: "STATE CHANGED: unknown status")
         }
 
-      if #available(iOS 18.0, *) {
-        ControlCenter.shared.reloadAllControls()
-      }
+        if #available(iOS 18.0, *) {
+          ControlCenter.shared.reloadAllControls()
+        }
+        WidgetCenter.shared.reloadAllTimelines()
 
         // We care about "unknown" state changes.
         if (session.status != .connected && session.status != .disconnected) {
@@ -260,6 +261,10 @@ public class IOSControllerImpl: NSObject {
 
                IOSControllerImpl.logger.info(message: "Saving the tunnel succeeded")
 
+               // If this included changing the location, we may need to update widgets.
+               // We want to do this even if the VPN is not activated, so that it has the latest city.
+               WidgetCenter.shared.reloadAllTimelines()
+
                tunnel.loadFromPreferences { error in
                     if let error = error {
                         IOSControllerImpl.logger.error(message: "Connect Tunnel Load Error: \(error)")
@@ -335,8 +340,11 @@ public class IOSControllerImpl: NSObject {
       let deadline = Date().addingTimeInterval(3)
       while Date() < deadline {
         if session.status == .connected {
-          let config = TunnelManager.protocolConfiguration?.providerConfiguration
-          return .success(entryCity: config?["entryCity"] as? String, exitCity: config?["exitCity"] as? String)
+          guard let turnOnConfirmation = TunnelManager.turnOnConfirmation else {
+            IOSControllerImpl.logger.info(message: "No confirmation dialog available")
+            return .errorNoSession
+          }
+          return .success(turnOnConfirmation: turnOnConfirmation)
         }
         try? await Task.sleep(nanoseconds: 250_000_000)
       }

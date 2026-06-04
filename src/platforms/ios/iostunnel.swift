@@ -4,6 +4,7 @@
 import Foundation
 import NetworkExtension
 import os
+import WidgetKit
 
 class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
     private let logger = IOSLoggerImpl(tag: "Tunnel")
@@ -64,6 +65,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
                     assertionFailure("Missing endpoint")
                 }
 
+                WidgetCenter.shared.reloadAllTimelines()
+                if #available(iOS 18.0, *) {
+                    ControlCenter.shared.reloadAllControls()
+                }
                 completionHandler(nil)
                 return
             }
@@ -108,6 +113,10 @@ class PacketTunnelProvider: NEPacketTunnelProvider, SilentServerSwitching {
 
             if let error = error {
                 self.logger.error(message: "Failed to stop WireGuard adapter: \(error.localizedDescription)")
+            }
+            WidgetCenter.shared.reloadAllTimelines()
+            if #available(iOS 18.0, *) {
+                ControlCenter.shared.reloadAllControls()
             }
             completionHandler()
         }

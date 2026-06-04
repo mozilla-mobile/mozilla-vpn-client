@@ -20,6 +20,12 @@ struct ToggleIntent: SetValueIntent {
   @Parameter(title: "VPN is connected")
   var value: Bool
 
+  init() {}
+
+  init(value: Bool) {
+    self.value = value
+  }
+
   @MainActor
   func perform() async throws -> some IntentResult & ProvidesDialog {
     let logger = IOSLoggerImpl(tag: "ToggleIntent")
@@ -103,20 +109,7 @@ struct ToggleIntent: SetValueIntent {
           }
 
           try connection.startTunnel(options: ["source": "control"])
-          let config = (tunnel.protocolConfiguration as? NETunnelProviderProtocol)?.providerConfiguration
-          let entryCity: String? = config?["entryCity"] as? String
-          let exitCity: String? = config?["exitCity"] as? String
-
-          if let exitCity = exitCity, !exitCity.isEmpty {
-            if let entryCity = entryCity, !entryCity.isEmpty {
-              responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmationMultiHop", defaultValue: "Mozilla VPN connected through \(exitCity) via \(entryCity)")
-            } else {
-              responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmationSingleHop", defaultValue: "Mozilla VPN connected through \(exitCity)")
-            }
-          } else {
-            logger.error(message: "Did not find a city")
-            responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmation", defaultValue: "Mozilla VPN connected")
-          }
+          responseText = tunnel.turnOnConfirmation
           responseImage = "shield.lefthalf.filled"
           value = false
         } catch let error {
@@ -125,6 +118,18 @@ struct ToggleIntent: SetValueIntent {
           responseImage = ToggleIntent.errorSystemImageName
         }
       }
+    }
+
+    // We should not need this next block, as it should be handled in
+    // iostunnel.swift. However, closing the tunnel seems to kill the
+    // network extension quickly, and when activated/deactivate from
+    // control center toggle, we weren't always updating any widgets,
+    // and vice versa. This seemed to fix it.
+    // However, the turn on and turn off intents work just fine for
+    // both widgets and controls, it seems, so they do not need this.
+    WidgetCenter.shared.reloadAllTimelines()
+    if #available(iOS 18.0, *) {
+        ControlCenter.shared.reloadAllControls()
     }
 
     if #available(iOS 17.2, *) {

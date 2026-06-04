@@ -15,7 +15,7 @@ struct TurnOnIntent: AppIntent {
   static let systemImageName = "shield.lefthalf.filled"
 
   enum Result {
-    case success (entryCity: String?, exitCity: String?), errorNoSession, errorAlreadyActive
+    case success(turnOnConfirmation: LocalizedStringResource), errorNoSession, errorAlreadyActive
   }
 
   @MainActor
@@ -26,16 +26,8 @@ struct TurnOnIntent: AppIntent {
     let responseImage: String
 
     switch activationResult {
-      case .success(let entryCity, let exitCity):
-        if let exitCity = exitCity,!exitCity.isEmpty {
-          if let entryCity = entryCity, !entryCity.isEmpty {
-            responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmationMultiHop", defaultValue: "Mozilla VPN connected through \(exitCity) via \(entryCity)")
-          } else {
-            responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmationSingleHop", defaultValue: "Mozilla VPN connected through \(exitCity)")
-          }
-        } else {
-          responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnConfirmation", defaultValue: "Mozilla VPN connected")
-        }
+      case .success(let turnOnConfirmation):
+        responseText = turnOnConfirmation
         responseImage = TurnOnIntent.systemImageName
       case .errorNoSession:
         responseText = LocalizedStringResource("vpn.iosAppIntentsMain.turnOnError", defaultValue: "Error turning on Mozilla VPN")
