@@ -49,7 +49,7 @@ RUN apt-get update -qq \
 # Install the taskcluster script's package dependencies
 # %include taskcluster/scripts/requirements.txt
 ADD topsrcdir/taskcluster/scripts/requirements.txt /root/pip-requirements.txt
-RUN pip install -r /root/pip-requirements.txt
+RUN pip install --break-system-packages -r /root/pip-requirements.txt
 
 RUN locale-gen "$LANG"
 
