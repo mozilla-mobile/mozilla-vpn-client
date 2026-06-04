@@ -20,7 +20,6 @@ existing_tasks:
   build-docker-image-android-build-x86: C6dV18LKTMCCwWlpLztc1w
   build-docker-image-base: DmhX43CwTfyB1nbvkiwbBg
   build-docker-image-build: OiiIOA8BQPmzMeqF-_FuBw
-  build-docker-image-lint: Kzoqg9mgQQ2DAzfjaQBz-A
   build-docker-image-wasm: fFfeWVUQTY-m1bbJGwhtqw
   build-ios/debug: cX6WjYQ4RnaNrNhItxYBeA
   build-linux/opt: BEe2AnFPRhSdi1EEaEZvcg
