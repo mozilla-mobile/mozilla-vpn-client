@@ -67,7 +67,7 @@ qt-windows-aarch64-6.10:
     treeherder:
         symbol: TL(qt-win-6.10)
         platform: windows/aarch64
-    worker-type: b-win11-2024h2-arm64
+    worker-type: b-win11-arm64
 
 qt-ios:
     description: "QT ios bundle Task"
