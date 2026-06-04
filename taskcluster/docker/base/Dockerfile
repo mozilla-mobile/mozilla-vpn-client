@@ -8,13 +8,10 @@ VOLUME /builds/worker/checkouts
 VOLUME /builds/worker/.task-cache/pip
 VOLUME /builds/worker/.task-cache/cargo
 
-# Add worker user
-RUN mkdir -p /builds && \
-    useradd -d /builds/worker -s /bin/bash -m worker && \
-    chown worker:worker /builds/worker && \
-    mkdir /builds/worker/artifacts && \
-    chown worker:worker /builds/worker/artifacts
-
+# Setup the worker user
+# %include taskcluster/scripts/setup-worker.sh
+ADD topsrcdir/taskcluster/scripts/setup-worker.sh /root/setup-worker.sh
+RUN /root/setup-worker.sh
 WORKDIR /builds/worker/
 
 #----------------------------------------------------------------------------------------------------------------------
@@ -22,6 +19,7 @@ WORKDIR /builds/worker/
 #----------------------------------------------------------------------------------------------------------------------
 
 ENV CURL='curl --location --retry 5' \
+    DEBIAN_FRONTEND='noninteractive' \
     LANG='en_US.UTF-8' \
     TERM='dumb'
 
@@ -45,10 +43,13 @@ RUN apt-get update -qq \
                           rpm \
                           libglib2.0-0 \
                           ccache \
-    && apt-get clean
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN pip install --upgrade pip
-RUN pip install taskcluster
+# Install the taskcluster script's package dependencies
+# %include taskcluster/scripts/requirements.txt
+ADD topsrcdir/taskcluster/scripts/requirements.txt /root/pip-requirements.txt
+RUN pip install -r /root/pip-requirements.txt
 
 RUN locale-gen "$LANG"
 
