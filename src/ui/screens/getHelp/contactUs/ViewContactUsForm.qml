@@ -112,7 +112,7 @@ MZViewBase {
                 MZBoldLabel {
                     property string enterEmailAddress: MZI18n.InAppSupportWorkflowSupportFieldHeader
 
-                    text: enterEmailAddress
+                    text: enterEmailAddress + " *"
                     lineHeight: MZTheme.theme.labelLineHeight
                     lineHeightMode: Text.FixedHeight
                     wrapMode: Text.WordWrap
