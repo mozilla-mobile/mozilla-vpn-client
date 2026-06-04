@@ -225,6 +225,14 @@ commonStrings:
     value: "[Linux] Support for IPv6-only networks was introduced in the last release, though switching servers while using multihop on IPv6-only networks sometimes had issues. It no longer should."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to Linux platform.
 
+238updateMessage:
+  bullet1:
+    value: "[all] When contacting support, including logs is now optional. While Mozilla VPN logs have never included personal data, we now only default to including logs when it would help diagnose your issue."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to all platforms.
+  bullet2:
+    value: "[iOS] When on Airplane Mode, trying to start the VPN gives an error. However if starting via Siri or Shortcuts, the VPN would be turned on after Airplane Mode was deactivated. This no longer happens."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to iOS platform.
+
 tryFirefoxExtension:
   title:
     value: Try the Firefox extension
