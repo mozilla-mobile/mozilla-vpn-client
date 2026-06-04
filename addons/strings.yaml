@@ -230,11 +230,8 @@ commonStrings:
     value: "[all] When contacting support, including logs is now optional. While Mozilla VPN logs have never included personal data, we now only default to including logs when it would help diagnose your issue."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to all platforms.
   bullet2:
-    value: "[iOS] When on Airplane mode, trying to start the VPN gives an error. However if starting via Siri or Shortcuts, the VPN would be turned on after Airplane mode was deactivated. This no longer happens."
+    value: "[iOS] When on Airplane Mode, trying to start the VPN gives an error. However if starting via Siri or Shortcuts, the VPN would be turned on after Airplane Mode was deactivated. This no longer happens."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to iOS platform.
-  bullet3:
-    value: "[all] The `Check for Updates` text is, once again, centered in its button."
-    comment: Bullet point with a specific update. Should have tag that indicates it applies to all platforms.
 
 tryFirefoxExtension:
   title:
