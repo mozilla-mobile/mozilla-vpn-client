@@ -261,7 +261,7 @@ def main():
     main_strings = {
         k: v
         for k, v in all_strings.items()
-        if v["string_id"].startswith("vpn.iosAppIntentsMain") or v["string_id"].startswith("vpn.mobileOnboarding.panelOneTitle") or v["string_id"].startswith("vpn.toggleWidget")
+        if v["string_id"].startswith("vpn.iosAppIntentsMain") or v["string_id"].startswith("vpn.mobileOnboarding.panelOneTitle") or v["string_id"].startswith("vpn.toggleWidget") or v["string_id"].startswith("vpn.multiHopFeature.multiHopToggleCTA")
     }
 
     intent_titles = ["vpn.iosAppIntentsMain.statusQueryTitle", "vpn.iosAppIntentsMain.turnOffAction", "vpn.iosAppIntentsMain.turnOnAction"]

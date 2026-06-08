@@ -9,6 +9,8 @@ import SwiftUI
 struct ToggleWidgetBundle: WidgetBundle {
     var body: some Widget {
         ToggleWidget()
+        LogoAccessoryWidget()
+        CityAccessoryWidget()
         if #available(iOS 18.0, *) {
             ToggleWidgetControl()
         }

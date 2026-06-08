@@ -1,0 +1,62 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+import AppIntents
+import NetworkExtension
+import SwiftUI
+import WidgetKit
+
+struct LogoCircularAccessoryWidget: View {
+  @Environment(\.colorScheme) var colorScheme
+  let entry: VPNStatusEntry
+
+  var body: some View {
+    ZStack {
+      if entry.isConnected {
+        AccessoryWidgetBackground()
+      }
+      VStack(spacing: 7) {
+        Image("logo")
+          .resizable()
+          .frame(width: 18, height: 18)
+          .containerRelativeFrame(.horizontal, alignment: .center)
+        Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
+          .font(.system(size: 25))
+          .containerRelativeFrame(.horizontal, alignment: .center)
+      }
+      .containerRelativeFrame(.vertical, alignment: .center)
+    }
+    .containerBackground(for: .widget) { // need this for AccessoryWidgetBackground to work, it seems
+      WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
+    }
+  }
+}
+
+struct LogoAccessoryWidgetView: View {
+  @Environment(\.widgetFamily) var family
+  let entry: VPNStatusEntry
+
+  var body: some View {
+    switch family {
+    case .accessoryCircular:
+      LogoCircularAccessoryWidget(entry: entry)
+    default:
+      // This should never be seen
+      Text("Error: Unsupported widget size")
+    }
+  }
+}
+
+struct LogoAccessoryWidget: Widget {
+  static let kind = "org.mozilla.ios.FirefoxVPN.LogoAccessoryWidget"
+
+  var body: some WidgetConfiguration {
+      return StaticConfiguration(kind: Self.kind, provider: VPNStatusProvider()) { entry in
+            LogoAccessoryWidgetView(entry: entry)
+          }
+          .configurationDisplayName(LocalizedStringResource("vpn.mobileOnboarding.panelOneTitle", defaultValue: "Mozilla VPN"))
+          // .description(LocalizedStringResfource("vpn.accessoryLogoWidget.description", defaultValue: "See current Mozilla VPN status")) // PUT THIS IN ALL THINGS
+          .supportedFamilies([.accessoryCircular])
+  }
+}

@@ -1,0 +1,75 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
+import AppIntents
+import NetworkExtension
+import SwiftUI
+import WidgetKit
+
+struct CityCircularAccessoryWidget: View {
+  @Environment(\.colorScheme) var colorScheme
+  let entry: VPNStatusEntry
+
+  var body: some View {
+    ZStack {
+      if entry.isConnected {
+        AccessoryWidgetBackground()
+      }
+      VStack(spacing: 7) {
+        Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
+          .font(.system(size: 25))
+        if let exitCity = entry.exitCity, !exitCity.isEmpty {
+          if let entryCity = entry.entryCity, !entryCity.isEmpty {
+            formattedText(String(localized: LocalizedStringResource("vpn.multiHopFeature.multiHopToggleCTA", defaultValue: "Multi-hop")))
+          } else {
+            formattedText(exitCity)
+          }
+        }
+      }
+      .padding(8)
+      .containerRelativeFrame(.vertical, alignment: .center)
+      .containerRelativeFrame(.horizontal, alignment: .center)
+    }
+    .containerBackground(for: .widget) { // need this for AccessoryWidgetBackground to work, it seems
+      WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
+    }
+  }
+
+  func formattedText(_ text: String) -> some View {
+    return Text(text)
+      .font(Font.custom("Metropolis", size: 13))
+      .allowsTightening(true)
+      .minimumScaleFactor(0.5)
+      .multilineTextAlignment(.center)
+      .foregroundStyle(WidgetColors.cityTextColor(colorScheme, isConnected: entry.isConnected))
+  }
+}
+
+struct CityAccessoryWidgetView: View {
+  @Environment(\.widgetFamily) var family
+  let entry: VPNStatusEntry
+
+  var body: some View {
+    switch family {
+    case .accessoryCircular:
+      CityCircularAccessoryWidget(entry: entry)
+    default:
+      // This should never be seen
+      Text("Error: Unsupported widget size")
+    }
+  }
+}
+
+struct CityAccessoryWidget: Widget {
+  static let kind = "org.mozilla.ios.FirefoxVPN.CityAccessoryWidget"
+
+  var body: some WidgetConfiguration {
+      return StaticConfiguration(kind: Self.kind, provider: VPNStatusProvider()) { entry in
+            CityAccessoryWidgetView(entry: entry)
+          }
+          .configurationDisplayName(LocalizedStringResource("vpn.mobileOnboarding.panelOneTitle", defaultValue: "Mozilla VPN"))
+          // .description(LocalizedStringResfource("vpn.accessoryCityWidget.description", defaultValue: "See current Mozilla VPN status")) // PUT THIS IN ALL THINGS
+          .supportedFamilies([.accessoryCircular])
+  }
+}
