@@ -140,6 +140,9 @@ MZViewBase {
                     model: VPNSupportCategoryModel
                     Layout.fillWidth: true
                     Layout.preferredWidth: undefined
+                    onCurrentValueChanged: {
+                        shareLogsCheckBox.isChecked = currentValue === 'account' || currentValue === 'technical';
+                    }
                 }
             }
 
@@ -170,7 +173,6 @@ MZViewBase {
                 Layout.rightMargin: MZTheme.theme.windowMargin
                 leftMargin: 0
                 showDivider: false
-                isChecked: dropDown.currentValue === 'account' || dropDown.currentValue === 'technical'
                 onClicked: () => isChecked = !isChecked
             }
         }
