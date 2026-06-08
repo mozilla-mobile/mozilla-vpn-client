@@ -152,7 +152,9 @@ find_package(Qt6 REQUIRED COMPONENTS
     Xml
     Svg
 )
-include("scripts/cmake/check_qt_breakage.cmake")
+if(Qt6_VERSION VERSION_LESS 6.9.0)
+    message(FATAL_ERROR "Qt 6.9.0 or higher is required.  You are building with version ${Qt6_VERSION}")
+endif()
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
    NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Android")
@@ -161,13 +163,8 @@ if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
     )
 endif()
 
-if(QT_KNOWN_POLICY_QTP0001)
-    qt_policy(SET QTP0001 NEW)
-endif()
-
-if(QT_KNOWN_POLICY_QTP0004)
-    qt_policy(SET QTP0004 OLD)
-endif()
+qt_policy(SET QTP0001 NEW)
+qt_policy(SET QTP0004 OLD)
 
 message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)

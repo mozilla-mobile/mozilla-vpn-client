@@ -4,25 +4,15 @@
 
 #include "xdgportal.h"
 
+#include <private/qdesktopunixservices_p.h>
+#include <private/qguiapplication_p.h>
+#include <qpa/qplatformintegration.h>
 #include <unistd.h>
 
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QProcessEnvironment>
 #include <QRandomGenerator>
-
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
-#  include <private/qdesktopunixservices_p.h>
-#  include <private/qguiapplication_p.h>
-#  include <qpa/qplatformintegration.h>
-#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-#  include <private/qgenericunixservices_p.h>
-#  include <private/qguiapplication_p.h>
-#  include <qpa/qplatformintegration.h>
-#else
-#  include <QGuiApplication>
-#  include <QWindow>
-#endif
 
 #include "dbustypes.h"
 #include "leakdetector.h"
@@ -116,24 +106,12 @@ QString XdgPortal::parentWindow() {
   if (!holder->hasWindow()) {
     return QString("");
   }
-#if QT_VERSION >= QT_VERSION_CHECK(6, 9, 0)
+
   QDesktopUnixServices* services = dynamic_cast<QDesktopUnixServices*>(
       QGuiApplicationPrivate::platformIntegration()->services());
   if (services != nullptr) {
     return services->portalWindowIdentifier(holder->window());
   }
-#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-  QGenericUnixServices* services = dynamic_cast<QGenericUnixServices*>(
-      QGuiApplicationPrivate::platformIntegration()->services());
-  if (services != nullptr) {
-    return services->portalWindowIdentifier(holder->window());
-  }
-#else
-  // X11 is the only platform that we can get a window handle on prior to 6.5.0
-  if (QGuiApplication::platformName() == "xcb") {
-    return "x11:" + QString::number(holder->window()->winId(), 16);
-  }
-#endif
 
   // Otherwise, we don't support this windowing system.
   return QString("");
@@ -251,14 +229,14 @@ void XdgPortal::setupAppScope(const QString& appId) {
   // Qt 6.8 introduced a bug where using QDBusConnection::sessionBus() before
   // QCoreApplication is created will silently break D-Bus signal connections.
   // To workaround this, spin up a separate, standalone bus for these steps.
-#if (QT_VERSION >= QT_VERSION_CHECK(6, 8, 0)) && \
-    (QT_VERSION < QT_VERSION_CHECK(6, 9, 2))
+#if QT_VERSION < QT_VERSION_CHECK(6, 9, 2)
   QString busName = QString("%1-appid-scope-helper").arg(appId);
   QDBusConnection bus =
       QDBusConnection::connectToBus(QDBusConnection::SessionBus, busName);
   auto guard =
       qScopeGuard([busName]() { QDBusConnection::disconnectFromBus(busName); });
 #else
+
   // If the XDG Registry portal exists, use it to advertise our application ID.
   // This is the right tool to use, but it's also very new.
   QDBusInterface xdgRegistry(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH,

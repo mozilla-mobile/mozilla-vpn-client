@@ -310,15 +310,11 @@ bool LogHandler::makeLogDir(const QDir& dir) {
   }
 
   // Create the log directory.
-#if QT_VERSION >= QT_VERSION_CHECK(6, 3, 0)
   QFileDevice::Permissions perms =
       QFileDevice::ReadOwner | QFileDevice::WriteOwner | QFileDevice::ExeOwner |
       QFileDevice::ReadGroup | QFileDevice::ExeGroup | QFileDevice::ReadOther |
       QFileDevice::ExeOther;
   return parent.mkdir(dir.dirName(), perms);
-#else
-  return parent.mkdir(dir.dirName());
-#endif
 }
 
 void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {

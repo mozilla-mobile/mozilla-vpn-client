@@ -43,25 +43,23 @@ target_sources(mozillavpn PRIVATE
 )
 
 # Resolving the parent window handle for the XDG desktop portal on Wayland
-# needs the Gui internal header files on Qt 6.5.0 and later. Otherwise it
-# only works for X11.
-if(Qt6_VERSION VERSION_GREATER_EQUAL 6.5.0)
-    target_link_libraries(mozillavpn PRIVATE Qt6::GuiPrivate)
-endif()
+# needs the Gui internal header files on Qt 6.5.0 and later.
+target_link_libraries(mozillavpn PRIVATE Qt6::GuiPrivate)
 
 if(NOT BUILD_FLATPAK)
     # Link to polkit
     find_package(PkgConfig REQUIRED)
     pkg_check_modules(polkit REQUIRED IMPORTED_TARGET polkit-gobject-1)
+    target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit)
 
     if (QT_FEATURE_static)
         find_package(Qt6 REQUIRED COMPONENTS WaylandClientPrivate)
         qt_import_plugins(mozillavpn INCLUDE Qt6::QWaylandIntegrationPlugin)
         qt_import_plugins(mozillavpn INCLUDE Qt6::QWaylandAdwaitaDecorationPlugin)
         target_link_libraries(mozillavpn PRIVATE Qt6::WaylandClientPrivate)
-    endif()
 
-    target_link_libraries(mozillavpn PRIVATE PkgConfig::polkit)
+        qt_import_plugins(mozillavpn INCLUDE Qt6::QOffscreenIntegrationPlugin)
+    endif()
 
     target_sources(mozillavpn PRIVATE
         ${CMAKE_SOURCE_DIR}/src/platforms/linux/linuxcontroller.cpp

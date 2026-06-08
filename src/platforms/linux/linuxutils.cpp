@@ -132,16 +132,5 @@ QString LinuxUtils::desktopFileId(const QString& path) {
   return path.mid(index).replace('/', '-');
 }
 
-// Workaround for QTBUG-108822 by manually registering QDBusObjectPath with the
-// D-Bus meta-type system, otherwise we are unable to connect to some signals.
-#if QT_VERSION < 0x060403
-class QtbugRegistrationProxy {
- public:
-  QtbugRegistrationProxy() { qDBusRegisterMetaType<QDBusObjectPath>(); }
-};
-
-static QtbugRegistrationProxy s_qtbugRegistrationProxy;
-#endif
-
 // Ensure that the D-Bus custom types are registered.
 static DBusMetatypeRegistrationProxy s_dbusMetatypeProxy;

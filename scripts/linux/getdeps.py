@@ -13,6 +13,8 @@ parser.add_argument('-r', '--runtime', action='store_true',
                     help='List packages from the Depends paragraph')
 parser.add_argument('-a', '--all', action='store_true',
                     help='List all packages dependencies')
+parser.add_argument('-n', '--no-qt', action='store_true',
+                    help='Ignore Qt package dependencies')
 args = parser.parse_args()
 
 ## If no control file was provided, assume control.qt6 from the source checkout.
@@ -32,9 +34,21 @@ if not (args.build or args.runtime):
 # Parse the control file to dump the package dependencies.
 def dump(depends):
     for dep in depends.split(','):
-        if dep.startswith('$'):
+        pkg = dep.split()[0]
+        if pkg.startswith('$'):
             continue
-        print(dep.split()[0])
+
+        if args.no_qt:
+            if pkg.startswith('qml6'):
+                continue
+            if pkg.startswith('qt6'):
+                continue
+            if pkg.startswith('libqt6'):
+                continue
+            if pkg.startswith('qmake'):
+                continue
+
+        print(pkg)
 
 for p in Deb822.iter_paragraphs(open(args.control)):
     for item in p.items():

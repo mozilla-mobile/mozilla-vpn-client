@@ -211,37 +211,6 @@ void NetworkRequest::replyFinished() {
     return;
   }
 
-#if QT_VERSION < 0x060400
-  if (m_reply->error() == QNetworkReply::HostNotFoundError && isRedirect()) {
-    QUrl brokenUrl = m_reply->url();
-
-    if (brokenUrl.host().isEmpty() && !m_redirectedUrl.isEmpty()) {
-      QUrl url = m_redirectedUrl.resolved(brokenUrl);
-
-#  ifdef MZ_DEBUG
-      // See https://bugreports.qt.io/browse/QTBUG-100651
-      logger.debug()
-          << "QT6 redirect bug! The current URL is broken because it's not "
-             "resolved using the latest HTTP redirection as base-URL";
-      logger.debug() << "Broken URL:" << brokenUrl.toString();
-      logger.debug() << "Latest redirected URL:" << m_redirectedUrl.toString();
-      logger.debug() << "Final URL:" << url.toString();
-#  endif
-
-      m_request = QNetworkRequest(url);
-      m_request.setHeader(QNetworkRequest::ContentTypeHeader,
-                          "application/json");
-      m_request.setAttribute(QNetworkRequest::RedirectPolicyAttribute,
-                             QNetworkRequest::NoLessSafeRedirectPolicy);
-
-      m_reply = nullptr;
-      m_timer.stop();
-      getResource();
-      return;
-    }
-  }
-#endif
-
   int status = statusCode();
   logger.debug() << "Network reply received - status:" << status
                  << "- expected:" << expectStatusString();
@@ -332,29 +301,7 @@ void NetworkRequest::handleHeaderReceived() {
 }
 
 void NetworkRequest::handleRedirect(const QUrl& redirectUrl) {
-#if QT_VERSION < 0x060400
-  if (redirectUrl.host().isEmpty()) {
-#  ifdef MZ_DEBUG
-    // See https://bugreports.qt.io/browse/QTBUG-100651
-    logger.debug()
-        << "QT6 redirect bug! The redirected URL is broken because it's not "
-           "resolved using the previous HTTP redirection as base-URL";
-    logger.debug() << "Broken URL:" << redirectUrl.toString();
-    logger.debug() << "Latest redirected URL:" << m_redirectedUrl.toString();
-#  endif
-
-    if (m_redirectedUrl.isEmpty()) {
-      m_redirectedUrl = url().resolved(redirectUrl);
-    } else {
-      m_redirectedUrl = m_redirectedUrl.resolved(redirectUrl);
-    }
-  } else {
-    m_redirectedUrl = redirectUrl;
-  }
-  emit requestRedirected(this, m_redirectedUrl);
-#else
   emit requestRedirected(this, redirectUrl);
-#endif
 }
 
 void NetworkRequest::timeout() {

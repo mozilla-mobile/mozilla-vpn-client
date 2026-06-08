@@ -29,7 +29,11 @@ jobs:
       - name: Install dependences
         run: |
           sudo apt-get update
-          sudo apt-get install -y $(./scripts/linux/getdeps.py -a linux/debian/control)
+          sudo apt-get install -y $(./scripts/linux/getdeps.py --all --no-qt)
+
+      - name: Setup Qt for Linux
+        id: setup-qt
+        uses: ./.github/actions/qt-setup-taskcluster
 
       - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
         with:
@@ -39,6 +43,8 @@ jobs:
 
       - name: Building tests
         shell: bash
+        env:
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt.outputs.path }}/lib/cmake
         run: |
           mkdir -p build
           cmake -S $(pwd) -B build -GNinja
@@ -83,7 +89,7 @@ jobs:
 
       - name: Building tests
         env:
-          CMAKE_PREFIX_PATH: ${{ steps.setup-qt.outputs.cmake-prefix-path }}
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt.outputs.path }}/lib/cmake
         run: |
           export SDKROOT=$(xcrun --sdk macosx --show-sdk-path)
           mkdir -p build
@@ -149,7 +155,7 @@ jobs:
         env:
           CC: ${{ steps.set-compiler.outputs.CC }}
           CXX: ${{ steps.set-compiler.outputs.CXX }}
-          CMAKE_PREFIX_PATH: ${{ steps.setup-qt-win.outputs.cmake-prefix-path }}
+          CMAKE_PREFIX_PATH: ${{ steps.setup-qt-win.outputs.path }}/lib/cmake
         run: |
           mkdir ./build-win
 

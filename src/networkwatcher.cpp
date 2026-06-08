@@ -91,12 +91,10 @@ void NetworkWatcher::initialize() {
     m_impl->start();
   }
 
-#if QT_VERSION >= QT_VERSION_CHECK(6, 4, 0)
   // This call creates an instance of QNetworkInformation which can be used
   // later on to check other network related attributes such as network type, or
   // whether or not the network is behind captive portal.
   QNetworkInformation::loadDefaultBackend();
-#endif
 
   connect(settingsHolder, &SettingsHolder::unsecuredNetworkAlertChanged, this,
           &NetworkWatcher::settingsChanged);

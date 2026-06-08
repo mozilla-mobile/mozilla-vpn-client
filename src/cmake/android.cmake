@@ -67,12 +67,10 @@ set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
     APPEND)
 
 
-if( ${Qt6_VERSION} VERSION_GREATER_EQUAL 6.4.0)
-    set_property(TARGET mozillavpn PROPERTY QT_ANDROID_EXTRA_LIBS
+set_property(TARGET mozillavpn APPEND PROPERTY
+    QT_ANDROID_EXTRA_LIBS
         ${OPENSSL_LIBS_DIR}/libcrypto_3.so
-        ${OPENSSL_LIBS_DIR}/libssl_3.so
-    APPEND)
-endif()
+        ${OPENSSL_LIBS_DIR}/libssl_3.so)
 
 option(MZ_ANDROID_FOSS_BUILD "Build apk without google play services" OFF)
 

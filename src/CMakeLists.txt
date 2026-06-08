@@ -11,6 +11,7 @@ mz_target_handle_warnings(mozillavpn)
 
 find_package(Qt6 REQUIRED COMPONENTS Svg)
 if(Qt6_VERSION VERSION_GREATER_EQUAL 6.10.0)
+    set(QT_NO_PRIVATE_MODULE_WARNING ON)
     find_package(Qt6 REQUIRED COMPONENTS GuiPrivate QmlPrivate)
 endif()
 

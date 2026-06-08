@@ -5,11 +5,9 @@
 #include "theme.h"
 
 #include <QDir>
+#include <QGuiApplication>
 #include <QJSEngine>
-#if QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
-#  include <QGuiApplication>
-#  include <QStyleHints>
-#endif
+#include <QStyleHints>
 
 #include "feature/features.h"
 #include "leakdetector.h"
@@ -54,7 +52,7 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
       setToSystemTheme();
     }
   });
-#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#else
   connect(QGuiApplication::styleHints(), &QStyleHints::colorSchemeChanged, this,
           [this]() {
             if (SettingsHolder::instance()->usingSystemTheme()) {
@@ -259,16 +257,13 @@ QString Theme::currentSystemTheme() {
   } else {
     return "dark-mode";
   }
-#elif QT_VERSION >= QT_VERSION_CHECK(6, 5, 0)
+#else
   QStyleHints* styleHints = QGuiApplication::styleHints();
   if (styleHints->colorScheme() != Qt::ColorScheme::Dark) {
     return "main";
   } else {
     return "dark-mode";
   }
-#else
-  // Otherwise, we have no way to detect the system theme.
-  return "main";
 #endif
 }
 

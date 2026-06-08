@@ -246,12 +246,6 @@ int CommandUI::run(QStringList& tokens) {
     vpn->initialize();
     logger.debug() << "VPN initialized";
 
-    // Prior to Qt 6.5, there was no default QML import path. We must set one.
-#if QT_VERSION < QT_VERSION_CHECK(6, 5, 0)
-    engine->addImportPath("qrc:/");
-    engine->addImportPath("qrc:/qt/qml");
-    logger.debug() << "Added QML import paths";
-#endif
     QQuickImageProvider* provider = ImageProviderFactory::create(qApp);
     if (provider) {
       engine->addImageProvider(QString("app"), provider);
@@ -268,13 +262,8 @@ int CommandUI::run(QStringList& tokens) {
                                  I18nStrings::instance());
     logger.debug() << "Registered I18nStrings";
 
-#if MZ_IOS && QT_VERSION < 0x060300
-    QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn,
-                     &MozillaVPN::quit);
-#else
     QObject::connect(qApp, &QCoreApplication::aboutToQuit, vpn,
                      [] { MozillaVPN::instance()->aboutToQuit(); });
-#endif
 
     QObject::connect(
         qApp, &QGuiApplication::commitDataRequest, vpn,
