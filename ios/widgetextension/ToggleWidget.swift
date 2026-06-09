@@ -16,7 +16,7 @@ struct VPNStatusEntry: TimelineEntry {
 
 struct VPNStatusProvider: TimelineProvider {
   func placeholder(in context: Context) -> VPNStatusEntry {
-    VPNStatusEntry(date: Date(), isConnected: true, entryCity: "-------", exitCity: nil)
+    VPNStatusEntry(date: Date(), isConnected: true, entryCity: "Portland", exitCity: nil)
   }
 
   func getSnapshot(in context: Context, completion: @escaping (VPNStatusEntry) -> Void) {
@@ -156,6 +156,7 @@ struct CityTextComponentView: View {
           .font(Font.custom("Metropolis", size: largeText ? 25 : 16))
           .foregroundStyle(WidgetColors.cityTextColor(colorScheme, isConnected: entry.isConnected))
           .multilineTextAlignment(.center)
+          .lineSpacing(5.0)
       }
     } else {
       EmptyView()

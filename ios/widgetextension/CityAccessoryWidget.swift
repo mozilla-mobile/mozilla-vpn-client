@@ -7,6 +7,58 @@ import NetworkExtension
 import SwiftUI
 import WidgetKit
 
+struct CityInlineAccessoryWidget: View {
+  @Environment(\.colorScheme) var colorScheme
+  let entry: VPNStatusEntry
+
+  var body: some View {
+    ViewThatFits(in: .horizontal) {
+      HStack(spacing: 4) {
+        Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
+          .font(.system(size: 26))
+        if let exitCity = entry.exitCity, !exitCity.isEmpty {
+          if let entryCity = entry.entryCity, !entryCity.isEmpty {
+            Text(LocalizedStringResource("vpn.multiHopFeature.multiHopToggleCTA", defaultValue: "Multi-hop"))
+          } else {
+            Text(exitCity)
+          }
+        }
+      }
+    }
+  }
+}
+
+struct CityRectangularAccessoryWidget: View {
+  @Environment(\.colorScheme) var colorScheme
+  let entry: VPNStatusEntry
+
+  var body: some View {
+    ZStack {
+      if entry.isConnected {
+        AccessoryWidgetBackground()
+      }
+      HStack {
+        VStack {
+          Image("logo")
+            .resizable()
+            .frame(width: 25, height: 25)
+          Spacer()
+          Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
+            .font(.system(size: 25))
+        }
+        Spacer()
+        CityTextComponentView(entry: entry)
+          .allowsTightening(true)
+          .minimumScaleFactor(0.5)
+        }
+        .padding(8)
+    }
+    .containerBackground(for: .widget) { // need this for AccessoryWidgetBackground to work, it seems
+      WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
+    }
+  }
+}
+
 struct CityCircularAccessoryWidget: View {
   @Environment(\.colorScheme) var colorScheme
   let entry: VPNStatusEntry
@@ -54,6 +106,10 @@ struct CityAccessoryWidgetView: View {
     switch family {
     case .accessoryCircular:
       CityCircularAccessoryWidget(entry: entry)
+    case .accessoryInline:
+      CityInlineAccessoryWidget(entry: entry)
+    case .accessoryRectangular:
+      CityRectangularAccessoryWidget(entry: entry)
     default:
       // This should never be seen
       Text("Error: Unsupported widget size")
@@ -70,6 +126,6 @@ struct CityAccessoryWidget: Widget {
           }
           .configurationDisplayName(LocalizedStringResource("vpn.mobileOnboarding.panelOneTitle", defaultValue: "Mozilla VPN"))
           // .description(LocalizedStringResfource("vpn.accessoryCityWidget.description", defaultValue: "See current Mozilla VPN status")) // PUT THIS IN ALL THINGS
-          .supportedFamilies([.accessoryCircular])
+          .supportedFamilies([.accessoryCircular, .accessoryInline, .accessoryRectangular])
   }
 }

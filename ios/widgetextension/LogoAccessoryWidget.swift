@@ -33,6 +33,21 @@ struct LogoCircularAccessoryWidget: View {
   }
 }
 
+struct LogoInlineAccessoryWidget: View {
+  @Environment(\.colorScheme) var colorScheme
+  let entry: VPNStatusEntry
+
+  var body: some View {
+    ViewThatFits(in: .horizontal) {
+      HStack(spacing: 4) {
+        Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
+          .font(.system(size: 26))
+        Text(entry.isConnected ? "Mozilla VPN On" : "Mozilla VPN Off") // GET TRANSLATIONS FOR THIS
+      }
+    }
+  }
+}
+
 struct LogoAccessoryWidgetView: View {
   @Environment(\.widgetFamily) var family
   let entry: VPNStatusEntry
@@ -41,6 +56,8 @@ struct LogoAccessoryWidgetView: View {
     switch family {
     case .accessoryCircular:
       LogoCircularAccessoryWidget(entry: entry)
+    case .accessoryInline:
+      LogoInlineAccessoryWidget(entry: entry)
     default:
       // This should never be seen
       Text("Error: Unsupported widget size")
@@ -57,6 +74,6 @@ struct LogoAccessoryWidget: Widget {
           }
           .configurationDisplayName(LocalizedStringResource("vpn.mobileOnboarding.panelOneTitle", defaultValue: "Mozilla VPN"))
           // .description(LocalizedStringResfource("vpn.accessoryLogoWidget.description", defaultValue: "See current Mozilla VPN status")) // PUT THIS IN ALL THINGS
-          .supportedFamilies([.accessoryCircular])
+          .supportedFamilies([.accessoryCircular, .accessoryInline])
   }
 }
