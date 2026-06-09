@@ -1,5 +1,5 @@
 diff --git a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
-index ca1f0af0..5b6414f8 100644
+index ca1f0af0..2ee77937 100644
 --- a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
 +++ b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration.cpp
 @@ -42,7 +42,7 @@ namespace QtWaylandClient {
@@ -108,6 +108,16 @@ index ca1f0af0..5b6414f8 100644
      /*
       * Titlebar and window border
       */
+@@ -162,7 +252,8 @@ void QWaylandAdwaitaDecoration::paint(QPaintDevice *device)
+     /*
+      * Window title
+      */
+-    const QRect top = QRect(margins().left(), margins().bottom(), surfaceRect.width(),
++    const QRect top = QRect(margins().left(), margins().bottom(),
++                            surfaceRect.width() - margins().left() - margins().right(),
+                             margins().top() - margins().bottom());
+     const QString windowTitleText = waylandWindow()->windowTitle();
+     if (!windowTitleText.isEmpty()) {
 diff --git a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration_p.h b/src/plugins/decorations/adwaita/qwaylandadwaitadecoration_p.h
 index 34874e08..abd5c6d6 100644
 --- a/src/plugins/decorations/adwaita/qwaylandadwaitadecoration_p.h
