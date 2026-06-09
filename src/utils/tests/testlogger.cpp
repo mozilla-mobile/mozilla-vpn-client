@@ -55,10 +55,9 @@ void TestLogger::logTruncation() {
 
   // Keep track of how much data was written.
   qsizetype total = 0;
-  QObject::connect(LogHandler::instance(), &LogHandler::logEntryAdded, this,
-                   [&total](const QByteArray& msg, LogLevel level) {
-                     total += msg.size();
-                   });
+  QObject::connect(
+      LogHandler::instance(), &LogHandler::logEntryAdded, this,
+      [&total](const QByteArray& msg, LogLevel level) { total += msg.size(); });
 
   // Log truncation is somewhat inexact, and can vary by a line or two in either
   // direction.
@@ -90,6 +89,11 @@ void TestLogger::logTruncation() {
   // The next line written should truncate the logs.
   l.warning() << "REDRUM";
 
+  // Check that the file on disk has been truncated.
+  qsizetype logFileSize = QFileInfo(LogHandler::s_filename).size();
+  QVERIFY(logFileSize > (LogHandler::LOG_MAX_FILE_SIZE / 2) - EPSILON);
+  QVERIFY(logFileSize < (LogHandler::LOG_MAX_FILE_SIZE / 2) + EPSILON);
+
   // Write the logs, and we should get approximately half the max log size.
   QByteArray logBuffer;
   QTextStream out(&logBuffer);
@@ -103,7 +107,8 @@ void TestLogger::logTruncation() {
   const int NEWLINE_SHRINKAGE = 0;
 #endif
 
-  QVERIFY(logBuffer.size() > (LogHandler::LOG_MAX_FILE_SIZE / 2) - EPSILON - NEWLINE_SHRINKAGE);
+  QVERIFY(logBuffer.size() >
+          (LogHandler::LOG_MAX_FILE_SIZE / 2) - EPSILON - NEWLINE_SHRINKAGE);
   QVERIFY(logBuffer.size() < (LogHandler::LOG_MAX_FILE_SIZE / 2) + EPSILON);
   QVERIFY(logBuffer.last(EPSILON).contains("REDRUM"));
 }

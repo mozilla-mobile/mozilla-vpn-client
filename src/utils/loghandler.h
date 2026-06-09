@@ -12,7 +12,6 @@
 #include <QObject>
 #include <QScopedPointer>
 #include <QStandardPaths>
-#include <QTextStream>
 
 #ifdef MZ_IOS
 #  include <os/log.h>
@@ -22,6 +21,7 @@
 
 class QBuffer;
 class QDir;
+class QTextStream;
 
 class LogSerializer {
  public:
