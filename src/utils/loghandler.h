@@ -10,6 +10,7 @@
 #include <QMutexLocker>
 #include <QObject>
 #include <QStandardPaths>
+#include <QTextStream>
 
 #ifdef MZ_IOS
 #  include <os/log.h>
@@ -20,7 +21,6 @@
 class QBuffer;
 class QDir;
 class QFile;
-class QTextStream;
 
 class LogSerializer {
  public:
@@ -111,11 +111,19 @@ class LogHandler final : public QObject, public LogSerializer {
   void logsReady(const QString& logs);
   void cleanupLogsNeeded();
 
+ protected:
+  static constexpr qint64 LOG_MAX_FILE_SIZE = 204800;
+  static constexpr const char* LOG_FILE_SUFFIX = ".log";
+  static QString s_filename;
+
+  QTextStream m_output;
+
  private:
   void addLog(const Log& log);
   void addLog(const Log& log, const QMutexLocker<QMutex>& proofOfLock);
 
   static bool makeLogDir(const QDir& dir);
+  void setLogDevice(QIODevice* device, const QMutexLocker<QMutex>& proofOfLock);
 
   void openLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
@@ -128,7 +136,6 @@ class LogHandler final : public QObject, public LogSerializer {
 
   QMutex m_mutex;
   QString m_shortname;
-  static QString s_filename;
 
   bool m_stderrEnabled = false;
 
@@ -136,10 +143,9 @@ class LogHandler final : public QObject, public LogSerializer {
   os_log_t m_ioslog;
 #endif
 
-  QFile* m_logFile = nullptr;
-  QTextStream* m_output = nullptr;
-
   QList<LogSerializer*> m_logSerializers;
+
+  friend class TestLogger;
 };
 
 class LogSerializeHelper final : public QObject {
