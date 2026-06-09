@@ -11,7 +11,7 @@ class NullIODevice : public QIODevice {
  public:
   NullIODevice(QObject* parent = nullptr) : QIODevice(parent) {}
 
-  virtual bool isSequential() const;
+  virtual bool isSequential() const override;
 
  protected:
   virtual qint64 readData(char* data, qint64 maxSize) override;
