@@ -278,12 +278,9 @@ bool LogHandler::makeLogDir(const QDir& dir) {
 void LogHandler::setLogDevice(QFileDevice* device,
                               const QMutexLocker<QMutex>& proofOfLock) {
   Q_UNUSED(proofOfLock);
+  Q_ASSERT(device);
 
   m_output.reset(device);
-  if (m_output.isNull()) {
-    return;
-  }
-
   connect(this, &LogHandler::logEntryAdded, device,
           [device](const QByteArray& data) {
             device->write(data);
@@ -297,19 +294,20 @@ void LogHandler::setLogDevice(QFileDevice* device,
 }
 
 void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
+  // Cleanup the current log file device, if any.
+  m_output.reset(nullptr);
+
+  // Create the log directory and file device.
   QDir appDataLocation = QFileInfo(s_filename).dir();
   if (!makeLogDir(appDataLocation)) {
-    setLogDevice(nullptr, proofOfLock);
     return;
   }
-
   QFile* file = new QFile(s_filename);
 
   // If the log file is undersize, no truncation is needed.
   if (file->size() < LOG_MAX_FILE_SIZE) {
     if (!file->open(QIODevice::ReadWrite | QIODevice::Append |
                     QIODevice::Text)) {
-      setLogDevice(nullptr, proofOfLock);
       delete file;
     } else {
       setLogDevice(file, proofOfLock);
@@ -317,36 +315,32 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
     return;
   }
 
-  QString tempName = s_filename + ".bak";
+  // Rename the log file, and delete it when finished.
   if (!file->rename(s_filename + ".bak")) {
     setLogDevice(file, proofOfLock);
-    fprintf(stderr, "rename failed\n");
     return;
   }
-  if (!file->open(QIODevice::ReadOnly | QIODevice::Text)) {
-    setLogDevice(nullptr, proofOfLock);
-    return;
-  }
-
-  // Discard all but the tail of the log and align to the next new line.
-  file->seek(file->size() - (LOG_MAX_FILE_SIZE / 2));
-  file->readLine();
   auto guard = qScopeGuard([file] {
     file->remove();
     delete file;
   });
 
+  // Open the log, discard all but the tail, and align to the next new line.
+  if (!file->open(QIODevice::ReadOnly | QIODevice::Text)) {
+    return;
+  }
+  file->seek(file->size() - (LOG_MAX_FILE_SIZE / 2));
+  file->readLine();
+
   // Re-create the original log file and copy the truncated contents.
   QFile* newLogFile = new QFile(s_filename);
-  if (newLogFile->open(QIODevice::ReadWrite | QIODevice::Truncate |
+  if (!newLogFile->open(QIODevice::ReadWrite | QIODevice::Truncate |
                        QIODevice::Text)) {
-    newLogFile->write(file->readAll());
-    setLogDevice(newLogFile, proofOfLock);
-  } else {
-    // Failed to write the new log file - use a null device.
-    setLogDevice(nullptr, proofOfLock);
     delete newLogFile;
+    return;
   }
+  newLogFile->write(file->readAll());
+  setLogDevice(newLogFile, proofOfLock);
 }
 
 void LogHandler::requestViewLogs() {
