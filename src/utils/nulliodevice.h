@@ -2,14 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef NULLDEVICE_H
-#define NULLDEVICE_H
+#ifndef NULLIODEVICE_H
+#define NULLIODEVICE_H
 
 #include <QIODevice>
 
-class NullDevice : public QIODevice {
+class NullIODevice : public QIODevice {
  public:
-  NullDevice(QObject* parent = nullptr) : QIODevice(parent) {}
+  NullIODevice(QObject* parent = nullptr) : QIODevice(parent) {}
 
   virtual bool isSequential() const;
 
