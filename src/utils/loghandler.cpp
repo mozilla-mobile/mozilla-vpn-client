@@ -137,8 +137,14 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
 }
 
 void LogHandler::setStderr(bool enabled) {
-  QMutexLocker<QMutex> lock(&m_mutex);
-  m_stderrEnabled = enabled;
+  if (enabled) {
+    auto flags = Qt::DirectConnection | Qt::UniqueConnection;
+    connect(this, &LogHandler::logEntryAdded, this, &LogHandler::logWriteStderr,
+            static_cast<Qt::ConnectionType>(flags));
+  } else {
+    QObject::disconnect(this, &LogHandler::logEntryAdded, this,
+               &LogHandler::logWriteStderr);
+  }
 }
 
 LogHandler::LogHandler() : QObject(nullptr), m_output(new NullIODevice()) {
@@ -148,7 +154,7 @@ LogHandler::LogHandler() : QObject(nullptr), m_output(new NullIODevice()) {
   m_shortname = qApp->applicationName().toLower().remove(nonAlpha);
 
 #if defined(MZ_DEBUG)
-  m_stderrEnabled = true;
+  setStderr(true);
 #endif
 
 #if defined(MZ_IOS)
@@ -190,42 +196,39 @@ void LogHandler::addLog(const Log& log,
     prettyOutput(out, log);
   }
 
-  if (m_stderrEnabled) {
-#if defined(MZ_ANDROID)
-    const char* str = buffer.constData();
-    if (str) {
-      __android_log_write(ANDROID_LOG_DEBUG, qPrintable(m_shortname), str);
-    }
-#elif defined(MZ_IOS)
-    QString logstr = QString::fromUtf8(buffer);
-    switch (log.m_logLevel) {
-      case Error:
-      case Warning:
-        os_log_error(m_ioslog, "%s", qPrintable(logstr));
-        break;
-      case Info:
-        os_log_info(m_ioslog, "%s", qPrintable(logstr));
-        break;
-      default:
-        os_log_debug(m_ioslog, "%s", qPrintable(logstr));
-        break;
-    }
-#else
-    QTextStream out(stderr);
-    prettyOutput(out, log);
-#endif
-  }
-
   emit logEntryAdded(buffer);
+}
+
+void LogHandler::logWriteStderr(const QByteArray& msg) {
+#if defined(MZ_ANDROID)
+  const char* str = msg.constData();
+  if (str) {
+    __android_log_write(ANDROID_LOG_DEBUG, qPrintable(m_shortname), str);
+  }
+#elif defined(MZ_IOS)
+  QString logstr = QString::fromUtf8(msg);
+  switch (log.m_logLevel) {
+    case Error:
+    case Warning:
+      os_log_error(m_ioslog, "%s", qPrintable(logstr));
+      break;
+    case Info:
+      os_log_info(m_ioslog, "%s", qPrintable(logstr));
+      break;
+    default:
+      os_log_debug(m_ioslog, "%s", qPrintable(logstr));
+      break;
+  }
+#else
+  fwrite(msg.constData(), msg.size(), 1, stderr);
+#endif
 }
 
 void LogHandler::writeLogs(QTextStream& out) {
   QMutexLocker<QMutex> lock(&m_mutex);
   m_output.flush();
-  if (m_output.device()->isSequential()) {
-    return;
-  }
-  if (m_output.seek(0)) {
+  if (!m_output.device()->isSequential()) {
+    m_output.seek(0);
     out << m_output.readAll();
   }
 }

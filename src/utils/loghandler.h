@@ -116,8 +116,6 @@ class LogHandler final : public QObject, public LogSerializer {
   static constexpr const char* LOG_FILE_SUFFIX = ".log";
   static QString s_filename;
 
-  QTextStream m_output;
-
  private:
   void addLog(const Log& log);
   void addLog(const Log& log, const QMutexLocker<QMutex>& proofOfLock);
@@ -134,10 +132,11 @@ class LogHandler final : public QObject, public LogSerializer {
   void truncateLogFile(const QMutexLocker<QMutex>& proofOfLock,
                        const QString& filename);
 
+  void logWriteStderr(const QByteArray& msg);
+
   QMutex m_mutex;
   QString m_shortname;
-
-  bool m_stderrEnabled = false;
+  QTextStream m_output;
 
 #ifdef MZ_IOS
   os_log_t m_ioslog;
