@@ -69,8 +69,7 @@ void TestLogger::logTruncation() {
   while (count-- > 0) {
     l.info() << example;
 
-    // At no point should the log size ever exceed LOG_MAX_FILE_SIZE plus one
-    // line.
+    // At no point should the logs ever exceed LOG_MAX_FILE_SIZE plus one line.
     QFileInfo info(LogHandler::s_filename);
     QVERIFY(info.size() < LogHandler::LOG_MAX_FILE_SIZE + EPSILON);
   }
@@ -79,21 +78,21 @@ void TestLogger::logTruncation() {
 
   // Write some more messages until we get close to truncation.
   while (true) {
-    l.info() << example;
     QFileInfo info(LogHandler::s_filename);
     if (info.size() >= LogHandler::LOG_MAX_FILE_SIZE) {
       break;
     }
+    l.info() << example;
   }
 
-  // The next line should truncate the logs.
+  // The next line written should truncate the logs.
   l.info() << "REDRUM";
 
-  // Write the logs, and we should get well in excess of 1MB of text.
-  QString hugeBuffer;
-  QTextStream out(&hugeBuffer);
+  // Write the logs, and we should get approximately half the max log size.
+  QString logBuffer;
+  QTextStream out(&logBuffer);
   lh->writeLogs(out);
-  QVERIFY(hugeBuffer.size() > (LogHandler::LOG_MAX_FILE_SIZE / 2) - EPSILON);
-  QVERIFY(hugeBuffer.size() < LogHandler::LOG_MAX_FILE_SIZE + EPSILON);
-  QVERIFY(hugeBuffer.last(EPSILON).contains("REDRUM"));
+  QVERIFY(logBuffer.size() > (LogHandler::LOG_MAX_FILE_SIZE / 2) - EPSILON);
+  QVERIFY(logBuffer.size() < (LogHandler::LOG_MAX_FILE_SIZE / 2) + EPSILON);
+  QVERIFY(logBuffer.last(EPSILON).contains("REDRUM"));
 }
