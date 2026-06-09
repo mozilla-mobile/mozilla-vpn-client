@@ -26,7 +26,6 @@
 #endif
 
 #include "logger.h"
-#include "nulliodevice.h"
 
 namespace {
 LogLevel qtTypeToLogLevel(QtMsgType type) {
@@ -142,12 +141,12 @@ void LogHandler::setStderr(bool enabled) {
     connect(this, &LogHandler::logEntryAdded, this, &LogHandler::logWriteStderr,
             static_cast<Qt::ConnectionType>(flags));
   } else {
-    QObject::disconnect(this, &LogHandler::logEntryAdded, this,
+    disconnect(this, &LogHandler::logEntryAdded, this,
                &LogHandler::logWriteStderr);
   }
 }
 
-LogHandler::LogHandler() : QObject(nullptr), m_output(new NullIODevice()) {
+LogHandler::LogHandler() : QObject(nullptr) {
   QMutexLocker<QMutex> lock(&m_mutex);
 
   QRegularExpression nonAlpha("[^a-z]");
@@ -185,16 +184,13 @@ void LogHandler::addLog(const Log& log) {
 void LogHandler::addLog(const Log& log,
                         const QMutexLocker<QMutex>& proofOfLock) {
   // If the log file has grown too big, truncate it before writing more logs.
-  if (m_output.pos() > LOG_MAX_FILE_SIZE) {
+  if (m_output && m_output->size() >= LOG_MAX_FILE_SIZE) {
     openLogFile(proofOfLock);
   }
-  prettyOutput(m_output, log);
 
   QByteArray buffer;
-  {
-    QTextStream out(&buffer);
-    prettyOutput(out, log);
-  }
+  QTextStream out(&buffer);
+  prettyOutput(out, log);
 
   emit logEntryAdded(buffer);
 }
@@ -226,10 +222,10 @@ void LogHandler::logWriteStderr(const QByteArray& msg) {
 
 void LogHandler::writeLogs(QTextStream& out) {
   QMutexLocker<QMutex> lock(&m_mutex);
-  m_output.flush();
-  if (!m_output.device()->isSequential()) {
-    m_output.seek(0);
-    out << m_output.readAll();
+  if (m_output) {
+    m_output->flush();
+    m_output->seek(0);
+    out << m_output->readAll();
   }
 }
 
@@ -240,12 +236,10 @@ void LogHandler::cleanupLogs() {
 
 void LogHandler::cleanupLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   Q_UNUSED(proofOfLock);
-  m_output.flush();
-  m_output.seek(0);
 
-  QFileDevice* device = qobject_cast<QFileDevice*>(m_output.device());
-  if (device) {
-    device->resize(0);
+  if (m_output) {
+    m_output->seek(0);
+    m_output->resize(0);
   }
 }
 
@@ -281,34 +275,31 @@ bool LogHandler::makeLogDir(const QDir& dir) {
   return parent.mkdir(dir.dirName(), perms);
 }
 
-void LogHandler::setLogDevice(QIODevice* device,
+void LogHandler::setLogDevice(QFileDevice* device,
                               const QMutexLocker<QMutex>& proofOfLock) {
   Q_UNUSED(proofOfLock);
 
-  // Close the previous log device, if any.
-  QIODevice* prevDevice = m_output.device();
-  m_output.setDevice(device);
-  if (prevDevice) {
-    prevDevice->close();
-    delete prevDevice;
+  m_output.reset(device);
+  if (m_output.isNull()) {
+    return;
   }
 
+  connect(this, &LogHandler::logEntryAdded, device,
+          [device](const QByteArray& data) {
+            device->write(data);
+            device->flush();
+          });
+
 #ifdef MZ_DEBUG
-  QString message;
-  QFileDevice* filedev = qobject_cast<QFileDevice*>(device);
-  if (filedev) {
-    message = QString("Log file: %1").arg(filedev->fileName());
-  } else {
-    message = QString("Log device: %1").arg(device->metaObject()->className());
-  }
-  addLog(Log(Debug, "LogHandler", message), proofOfLock);
+  QString msg = QString("Log file: %1").arg(m_output->fileName());
+  addLog(Log(Debug, "LogHandler", msg), proofOfLock);
 #endif
 }
 
 void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   QDir appDataLocation = QFileInfo(s_filename).dir();
   if (!makeLogDir(appDataLocation)) {
-    setLogDevice(new NullIODevice(), proofOfLock);
+    setLogDevice(nullptr, proofOfLock);
     return;
   }
 
@@ -318,7 +309,7 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   if (file->size() < LOG_MAX_FILE_SIZE) {
     if (!file->open(QIODevice::ReadWrite | QIODevice::Append |
                     QIODevice::Text)) {
-      setLogDevice(new NullIODevice(), proofOfLock);
+      setLogDevice(nullptr, proofOfLock);
       delete file;
     } else {
       setLogDevice(file, proofOfLock);
@@ -333,7 +324,7 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
     return;
   }
   if (!file->open(QIODevice::ReadOnly | QIODevice::Text)) {
-    setLogDevice(new NullIODevice(), proofOfLock);
+    setLogDevice(nullptr, proofOfLock);
     return;
   }
 
@@ -353,7 +344,7 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
     setLogDevice(newLogFile, proofOfLock);
   } else {
     // Failed to write the new log file - use a null device.
-    setLogDevice(new NullIODevice(), proofOfLock);
+    setLogDevice(nullptr, proofOfLock);
     delete newLogFile;
   }
 }

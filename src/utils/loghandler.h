@@ -6,9 +6,11 @@
 #define LOGHANDLER_H
 
 #include <QDateTime>
+#include <QFileDevice>
 #include <QList>
 #include <QMutexLocker>
 #include <QObject>
+#include <QScopedPointer>
 #include <QStandardPaths>
 #include <QTextStream>
 
@@ -20,7 +22,6 @@
 
 class QBuffer;
 class QDir;
-class QFile;
 
 class LogSerializer {
  public:
@@ -121,7 +122,7 @@ class LogHandler final : public QObject, public LogSerializer {
   void addLog(const Log& log, const QMutexLocker<QMutex>& proofOfLock);
 
   static bool makeLogDir(const QDir& dir);
-  void setLogDevice(QIODevice* device, const QMutexLocker<QMutex>& proofOfLock);
+  void setLogDevice(QFileDevice* device, const QMutexLocker<QMutex>& proofOfLock);
 
   void openLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
@@ -136,7 +137,7 @@ class LogHandler final : public QObject, public LogSerializer {
 
   QMutex m_mutex;
   QString m_shortname;
-  QTextStream m_output;
+  QScopedPointer<QFileDevice> m_output;
 
 #ifdef MZ_IOS
   os_log_t m_ioslog;

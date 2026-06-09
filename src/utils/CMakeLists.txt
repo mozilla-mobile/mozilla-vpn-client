@@ -52,8 +52,6 @@ add_library(mzutils STATIC
     models/servercountry.h
     models/servercountrymodel.cpp
     models/servercountrymodel.h
-    nulliodevice.cpp
-    nulliodevice.h
     pingsender/dnspingsender.cpp
     pingsender/dnspingsender.h
     pingsender/dummypingsender.cpp
