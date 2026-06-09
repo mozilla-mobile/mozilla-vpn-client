@@ -84,8 +84,7 @@ struct CityCircularAccessoryWidget: View {
         }
       }
       .padding(8)
-      .containerRelativeFrame(.vertical, alignment: .center)
-      .containerRelativeFrame(.horizontal, alignment: .center)
+      .containerRelativeFrame([.vertical, .horizontal])
     }
     .containerBackground(for: .widget) { // need this for AccessoryWidgetBackground to work, it seems
       WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
