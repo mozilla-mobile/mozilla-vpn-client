@@ -8,6 +8,8 @@
 #include <QByteArray>
 #include <QObject>
 
+#include "loglevel.h"
+
 class QNetworkReply;
 class QUrl;
 class QQuickItem;
@@ -49,7 +51,7 @@ class InspectorHandler : public QObject {
 
  private:
   void addonLoadCompleted();
-  void logEntryAdded(const QByteArray& log);
+  void logEntryAdded(const QByteArray& log, LogLevel level);
   void networkRequestFinished(QNetworkReply* reply);
 };
 

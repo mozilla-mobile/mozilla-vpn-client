@@ -122,7 +122,9 @@ void SentryAdapter::onBeforeShutdown() {
   sentry_close();
 }
 
-void SentryAdapter::onLoglineAdded(const QByteArray& line) {
+void SentryAdapter::onLoglineAdded(const QByteArray& line, LogLevel level) {
+  Q_UNUSED(level);
+
   if (!m_initialized) {
     return;
   }

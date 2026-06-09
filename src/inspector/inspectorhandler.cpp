@@ -793,7 +793,8 @@ void InspectorHandler::recv(const QByteArray& command) {
   send(QJsonDocument(obj).toJson(QJsonDocument::Compact));
 }
 
-void InspectorHandler::logEntryAdded(const QByteArray& log) {
+void InspectorHandler::logEntryAdded(const QByteArray& log, LogLevel level) {
+  Q_UNUSED(level);
   // No logger here to avoid loops!
 
   QJsonObject obj;

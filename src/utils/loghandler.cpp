@@ -192,10 +192,10 @@ void LogHandler::addLog(const Log& log,
   QTextStream out(&buffer);
   prettyOutput(out, log);
 
-  emit logEntryAdded(buffer);
+  emit logEntryAdded(buffer, log.m_logLevel);
 }
 
-void LogHandler::logWriteStderr(const QByteArray& msg) {
+void LogHandler::logWriteStderr(const QByteArray& msg, LogLevel level) {
 #if defined(MZ_ANDROID)
   const char* str = msg.constData();
   if (str) {
@@ -203,7 +203,7 @@ void LogHandler::logWriteStderr(const QByteArray& msg) {
   }
 #elif defined(MZ_IOS)
   QString logstr = QString::fromUtf8(msg);
-  switch (log.m_logLevel) {
+  switch (level) {
     case Error:
     case Warning:
       os_log_error(m_ioslog, "%s", qPrintable(logstr));
@@ -335,7 +335,7 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
   // Re-create the original log file and copy the truncated contents.
   QFile* newLogFile = new QFile(s_filename);
   if (!newLogFile->open(QIODevice::ReadWrite | QIODevice::Truncate |
-                       QIODevice::Text)) {
+                        QIODevice::Text)) {
     delete newLogFile;
     return;
   }

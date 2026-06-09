@@ -107,7 +107,7 @@ class LogHandler final : public QObject, public LogSerializer {
   void unregisterLogSerializer(LogSerializer* logSerializer);
 
  signals:
-  void logEntryAdded(const QByteArray& log);
+  void logEntryAdded(const QByteArray& log, LogLevel level);
   void viewLogsNeeded();
   void logsReady(const QString& logs);
   void cleanupLogsNeeded();
@@ -122,7 +122,7 @@ class LogHandler final : public QObject, public LogSerializer {
   void addLog(const Log& log, const QMutexLocker<QMutex>& proofOfLock);
 
   static bool makeLogDir(const QDir& dir);
-  void setLogDevice(QFileDevice* device, const QMutexLocker<QMutex>& proofOfLock);
+  void setLogDevice(QFileDevice* d, const QMutexLocker<QMutex>& proofOfLock);
 
   void openLogFile(const QMutexLocker<QMutex>& proofOfLock);
 
@@ -133,7 +133,7 @@ class LogHandler final : public QObject, public LogSerializer {
   void truncateLogFile(const QMutexLocker<QMutex>& proofOfLock,
                        const QString& filename);
 
-  void logWriteStderr(const QByteArray& msg);
+  void logWriteStderr(const QByteArray& msg, LogLevel level);
 
   QMutex m_mutex;
   QString m_shortname;

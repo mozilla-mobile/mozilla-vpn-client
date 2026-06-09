@@ -56,7 +56,9 @@ void TestLogger::logTruncation() {
   // Keep track of how much data was written.
   qsizetype total = 0;
   QObject::connect(LogHandler::instance(), &LogHandler::logEntryAdded, this,
-                   [&total](const QByteArray& msg) { total += msg.size(); });
+                   [&total](const QByteArray& msg, LogLevel level) {
+                     total += msg.size();
+                   });
 
   // Log truncation is somewhat inexact, and can vary by a line or two in either
   // direction.
