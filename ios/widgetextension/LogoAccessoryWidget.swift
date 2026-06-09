@@ -22,7 +22,7 @@ struct LogoCircularAccessoryWidget: View {
           .resizable()
           .frame(width: 16, height: 16)
           .containerRelativeFrame(.horizontal, alignment: .center)
-        Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
+        Image(systemName: entry.sysImageName)
           .font(.system(size: 22))
           .containerRelativeFrame(.horizontal, alignment: .center)
       }
@@ -41,7 +41,7 @@ struct LogoInlineAccessoryWidget: View {
   var body: some View {
     ViewThatFits(in: .horizontal) {
       HStack(spacing: 4) {
-        Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
+        Image(systemName: entry.sysImageName)
           .font(.system(size: 26))
         Text(entry.isConnected ? LocalizedStringResource("vpn.logoAccessoryWidget.vpnOn", defaultValue: "Mozilla VPN on") : LocalizedStringResource("vpn.logoAccessoryWidget.vpnOff", defaultValue: "Mozilla VPN off"))
       }

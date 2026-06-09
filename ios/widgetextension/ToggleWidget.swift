@@ -12,6 +12,10 @@ struct VPNStatusEntry: TimelineEntry {
   let isConnected: Bool
   let entryCity: String?
   let exitCity: String?
+
+  var sysImageName: String {
+    return isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash"
+  }
 }
 
 struct VPNStatusProvider: TimelineProvider {

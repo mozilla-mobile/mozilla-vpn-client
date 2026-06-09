@@ -14,7 +14,7 @@ struct CityInlineAccessoryWidget: View {
   var body: some View {
     ViewThatFits(in: .horizontal) {
       HStack(spacing: 4) {
-        Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
+        Image(systemName: entry.sysImageName)
           .font(.system(size: 26))
         if let exitCity = entry.exitCity, !exitCity.isEmpty {
           if let entryCity = entry.entryCity, !entryCity.isEmpty {
@@ -43,7 +43,7 @@ struct CityRectangularAccessoryWidget: View {
             .resizable()
             .frame(width: 22, height: 22)
           Spacer()
-          Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
+          Image(systemName: entry.sysImageName)
             .font(.system(size: 22))
         }
         Spacer()
@@ -74,7 +74,7 @@ struct CityCircularAccessoryWidget: View {
           .padding(5)
       }
       VStack(spacing: 7) {
-        Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
+        Image(systemName: entry.sysImageName)
           .font(.system(size: 20))
         if let exitCity = entry.exitCity, !exitCity.isEmpty {
           if let entryCity = entry.entryCity, !entryCity.isEmpty {
