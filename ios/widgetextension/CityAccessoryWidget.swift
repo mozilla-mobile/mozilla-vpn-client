@@ -56,6 +56,10 @@ struct CityRectangularAccessoryWidget: View {
     .containerBackground(for: .widget) { // need this for AccessoryWidgetBackground to work, it seems
       WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
     }
+    .containerRelativeFrame([.horizontal, .vertical])
+    .mask {
+      RoundedRectangle(cornerRadius: 10, style: .continuous)
+    }
   }
 }
 
