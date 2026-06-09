@@ -73,7 +73,7 @@ struct LogoAccessoryWidget: Widget {
             LogoAccessoryWidgetView(entry: entry)
           }
           .configurationDisplayName(LocalizedStringResource("vpn.mobileOnboarding.panelOneTitle", defaultValue: "Mozilla VPN"))
-          // .description(LocalizedStringResfource("vpn.accessoryLogoWidget.description", defaultValue: "See current Mozilla VPN status")) // PUT THIS IN ALL THINGS
+          .description(LocalizedStringResource("vpn.logoAccessoryWidget.description", defaultValue: "See current Mozilla VPN status."))
           .supportedFamilies([.accessoryCircular, .accessoryInline])
   }
 }

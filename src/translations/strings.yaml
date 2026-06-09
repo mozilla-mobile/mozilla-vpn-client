@@ -1146,6 +1146,16 @@ toggleWidget:
     value: Turn Mozilla VPN on and off, and see the current location.
     comment: More information about what the Mozilla VPN widget contains.
 
+logoAccessoryWidget:
+  description:
+    value: See current Mozilla VPN status.
+    comment: More information about what the logo widget contains - which is simply current VPN status.
+
+cityAccessoryWidget:
+  description:
+    value: See current Mozilla VPN status, along with the current server.
+    comment: More information about what the city widget contains - which is current VPN status and the current city server.
+
 iosAppIntentsActivate:
   phrases:
     value: |

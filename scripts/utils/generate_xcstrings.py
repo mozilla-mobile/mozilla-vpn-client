@@ -258,10 +258,19 @@ def main():
             exit(1)
         shortcut_strings.append(current_string_set)
 
+    WIDGET_STRING_PREFIXES = (
+      "vpn.iosAppIntentsMain",
+      "vpn.mobileOnboarding.panelOneTitle",
+      "vpn.toggleWidget",
+      "vpn.cityAccessoryWidget",
+      "vpn.logoAccessoryWidget",
+      "vpn.multiHopFeature.multiHopToggleCTA"
+    )
+
     main_strings = {
         k: v
         for k, v in all_strings.items()
-        if v["string_id"].startswith("vpn.iosAppIntentsMain") or v["string_id"].startswith("vpn.mobileOnboarding.panelOneTitle") or v["string_id"].startswith("vpn.toggleWidget") or v["string_id"].startswith("vpn.multiHopFeature.multiHopToggleCTA")
+        if v["string_id"].startswith(WIDGET_STRING_PREFIXES)
     }
 
     intent_titles = ["vpn.iosAppIntentsMain.statusQueryTitle", "vpn.iosAppIntentsMain.turnOffAction", "vpn.iosAppIntentsMain.turnOnAction"]

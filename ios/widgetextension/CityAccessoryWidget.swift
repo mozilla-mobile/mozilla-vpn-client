@@ -128,7 +128,7 @@ struct CityAccessoryWidget: Widget {
             CityAccessoryWidgetView(entry: entry)
           }
           .configurationDisplayName(LocalizedStringResource("vpn.mobileOnboarding.panelOneTitle", defaultValue: "Mozilla VPN"))
-          // .description(LocalizedStringResfource("vpn.accessoryCityWidget.description", defaultValue: "See current Mozilla VPN status")) // PUT THIS IN ALL THINGS
+           .description(LocalizedStringResource("vpn.cityAccessoryWidget.description", defaultValue: "See current Mozilla VPN status, along with the current server."))
           .supportedFamilies([.accessoryCircular, .accessoryInline, .accessoryRectangular])
   }
 }
