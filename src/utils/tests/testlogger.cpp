@@ -69,7 +69,7 @@ void TestLogger::logTruncation() {
   const QString example = "All work and no play makes Jack a dull boy";
   qsizetype count = MEGABYTE / example.size();
   while (count-- > 0) {
-    l.info() << example;
+    l.debug() << example;
 
     // At no point should the logs ever exceed LOG_MAX_FILE_SIZE plus one line.
     QFileInfo info(LogHandler::s_filename);
@@ -84,17 +84,26 @@ void TestLogger::logTruncation() {
     if (info.size() >= LogHandler::LOG_MAX_FILE_SIZE) {
       break;
     }
-    l.info() << example;
+    l.debug() << example;
   }
 
   // The next line written should truncate the logs.
-  l.info() << "REDRUM";
+  l.warning() << "REDRUM";
 
   // Write the logs, and we should get approximately half the max log size.
-  QString logBuffer;
+  QByteArray logBuffer;
   QTextStream out(&logBuffer);
   lh->writeLogs(out);
-  QVERIFY(logBuffer.size() > (LogHandler::LOG_MAX_FILE_SIZE / 2) - EPSILON);
+
+  // Due to line-ending conversion - we may need a little more wiggle room
+  // on Windows since the length will strink as carriage-returns get stripped.
+#ifdef Q_OS_WIN
+  const int NEWLINE_SHRINKAGE = logBuffer.size() / example.size();
+#else
+  const int NEWLINE_SHRINKAGE = 0;
+#endif
+
+  QVERIFY(logBuffer.size() > (LogHandler::LOG_MAX_FILE_SIZE / 2) - EPSILON - NEWLINE_SHRINKAGE);
   QVERIFY(logBuffer.size() < (LogHandler::LOG_MAX_FILE_SIZE / 2) + EPSILON);
   QVERIFY(logBuffer.last(EPSILON).contains("REDRUM"));
 }
