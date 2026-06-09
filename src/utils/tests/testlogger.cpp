@@ -58,7 +58,8 @@ void TestLogger::logTruncation() {
   QObject::connect(LogHandler::instance(), &LogHandler::logEntryAdded, this,
                    [&total](const QByteArray& msg) { total += msg.size(); });
 
-  // Log truncation is somewhat inexact, and can vary by a line or two in either direction.
+  // Log truncation is somewhat inexact, and can vary by a line or two in either
+  // direction.
   constexpr const int EPSILON = 1024;
   constexpr const int MEGABYTE = 1024 * 1024;
 
@@ -68,13 +69,14 @@ void TestLogger::logTruncation() {
   while (count-- > 0) {
     l.info() << example;
 
-    // At no point should the log size ever exceed LOG_MAX_FILE_SIZE plus one line.
+    // At no point should the log size ever exceed LOG_MAX_FILE_SIZE plus one
+    // line.
     QFileInfo info(LogHandler::s_filename);
     QVERIFY(info.size() < LogHandler::LOG_MAX_FILE_SIZE + EPSILON);
   }
   // There should be well over 1MB of text written so far.
   QVERIFY(total > MEGABYTE);
-  
+
   // Write some more messages until we get close to truncation.
   while (true) {
     l.info() << example;

@@ -6,17 +6,15 @@
 
 #include "leakdetector.h"
 
-bool NullDevice::isSequential() const {
-  return true;
-}
+bool NullDevice::isSequential() const { return true; }
 
-qint64 NullDevice::readData(char *data, qint64 maxSize) {
+qint64 NullDevice::readData(char* data, qint64 maxSize) {
   Q_UNUSED(data);
   Q_UNUSED(maxSize);
   return -1;
 }
 
-qint64 NullDevice::writeData(const char *data, qint64 maxSize) {
+qint64 NullDevice::writeData(const char* data, qint64 maxSize) {
   Q_UNUSED(data);
   return maxSize;
 }

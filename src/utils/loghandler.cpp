@@ -314,7 +314,8 @@ void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
 
   // If the log file is undersize, no truncation is needed.
   if (file->size() < LOG_MAX_FILE_SIZE) {
-    if (!file->open(QIODevice::ReadWrite | QIODevice::Append | QIODevice::Text)) {
+    if (!file->open(QIODevice::ReadWrite | QIODevice::Append |
+                    QIODevice::Text)) {
       setLogDevice(new NullDevice(), proofOfLock);
       delete file;
     } else {
