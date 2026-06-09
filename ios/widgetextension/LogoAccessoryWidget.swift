@@ -15,14 +15,15 @@ struct LogoCircularAccessoryWidget: View {
     ZStack {
       if entry.isConnected {
         AccessoryWidgetBackground()
+          .padding(5)
       }
       VStack(spacing: 7) {
         Image("logo")
           .resizable()
-          .frame(width: 18, height: 18)
+          .frame(width: 16, height: 16)
           .containerRelativeFrame(.horizontal, alignment: .center)
         Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
-          .font(.system(size: 25))
+          .font(.system(size: 22))
           .containerRelativeFrame(.horizontal, alignment: .center)
       }
       .containerRelativeFrame(.vertical, alignment: .center)
@@ -42,7 +43,7 @@ struct LogoInlineAccessoryWidget: View {
       HStack(spacing: 4) {
         Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
           .font(.system(size: 26))
-        Text(entry.isConnected ? "Mozilla VPN On" : "Mozilla VPN Off") // GET TRANSLATIONS FOR THIS
+        Text(entry.isConnected ? LocalizedStringResource("vpn.logoAccessoryWidget.vpnOn", defaultValue: "Mozilla VPN on") : LocalizedStringResource("vpn.logoAccessoryWidget.vpnOff", defaultValue: "Mozilla VPN off"))
       }
     }
   }

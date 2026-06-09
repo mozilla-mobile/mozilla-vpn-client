@@ -1150,6 +1150,12 @@ logoAccessoryWidget:
   description:
     value: See current Mozilla VPN status.
     comment: More information about what the logo widget contains - which is simply current VPN status.
+  vpnOn:
+    value: Mozilla VPN on
+    comment: Very short string shown when VPN is active
+  vpnOff:
+    value: Mozilla VPN off
+    comment: Very short string shown when VPN is inactive
 
 cityAccessoryWidget:
   description:

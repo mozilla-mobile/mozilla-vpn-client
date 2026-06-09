@@ -41,17 +41,17 @@ struct CityRectangularAccessoryWidget: View {
         VStack {
           Image("logo")
             .resizable()
-            .frame(width: 25, height: 25)
+            .frame(width: 22, height: 22)
           Spacer()
           Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
-            .font(.system(size: 25))
+            .font(.system(size: 22))
         }
         Spacer()
         CityTextComponentView(entry: entry)
           .allowsTightening(true)
           .minimumScaleFactor(0.5)
         }
-        .padding(8)
+        .padding(10)
     }
     .containerBackground(for: .widget) { // need this for AccessoryWidgetBackground to work, it seems
       WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
@@ -71,10 +71,11 @@ struct CityCircularAccessoryWidget: View {
     ZStack {
       if entry.isConnected {
         AccessoryWidgetBackground()
+          .padding(5)
       }
       VStack(spacing: 7) {
         Image(systemName: entry.isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash")
-          .font(.system(size: 25))
+          .font(.system(size: 20))
         if let exitCity = entry.exitCity, !exitCity.isEmpty {
           if let entryCity = entry.entryCity, !entryCity.isEmpty {
             formattedText(String(localized: LocalizedStringResource("vpn.multiHopFeature.multiHopToggleCTA", defaultValue: "Multi-hop")))
@@ -83,7 +84,7 @@ struct CityCircularAccessoryWidget: View {
           }
         }
       }
-      .padding(8)
+      .padding(12)
       .containerRelativeFrame([.vertical, .horizontal])
     }
     .containerBackground(for: .widget) { // need this for AccessoryWidgetBackground to work, it seems
