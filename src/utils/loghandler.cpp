@@ -260,7 +260,6 @@ void LogHandler::setLogfile(const QString& path) {
 
 // static
 bool LogHandler::makeLogDir(const QDir& dir) {
-  qDebug() << "Creating:" << dir.absolutePath();
   if (dir.exists()) {
     return true;
   }
