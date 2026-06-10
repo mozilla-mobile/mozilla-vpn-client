@@ -25,6 +25,7 @@
 #include "theme.h"
 #include "urlopener.h"
 #include "utils.h"
+#include "validator.h"
 
 #ifdef SENTRY_ENABLED
 #  include "sentry/sentryadapter.h"
@@ -84,7 +85,8 @@ QmlEngineHolder::QmlEngineHolder(QQmlEngine* engine) : m_engine(engine) {
                                UrlOpener::instance());
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZUtils",
                                Utils::instance());
-
+  qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZValidator",
+                               Validator::instance());
   Theme::instance()->initialize(engine);
   qmlRegisterSingletonInstance("Mozilla.Shared", 1, 0, "MZTheme",
                                Theme::instance());

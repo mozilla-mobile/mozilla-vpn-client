@@ -87,20 +87,22 @@ MZViewBase {
 
                     MZTextField {
                         id: emailInput
+                        objectName: "contactUs-emailInput"
 
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
-                        hasError: !MZAuthInApp.validateEmailAddress(emailInput.text)
+                        hasError: !MZValidator.validateEmailAddress(emailInput.text)
                         _placeholderText: MZI18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
                     }
                 }
 
                 MZTextField {
                     id: confirmEmailInput
+                    objectName: "contactUs-confirmEmailInput"
 
                     verticalAlignment: Text.AlignVCenter
                     Layout.fillWidth: true
-                    hasError: !MZAuthInApp.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
+                    hasError: !MZValidator.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
                     _placeholderText: MZI18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
                 }
             }
@@ -202,7 +204,7 @@ MZViewBase {
                     }
                     enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
                              (VPN.userAuthenticated  ? true :
-                                (MZAuthInApp.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
+                                (MZValidator.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
                              )
                     opacity: enabled ? 1 : .5
                     Layout.preferredHeight: MZTheme.theme.rowHeight

@@ -77,6 +77,8 @@ add_library(mzutils STATIC
     taskgroup.h
     taskscheduler.cpp
     taskscheduler.h
+    validator.cpp
+    validator.h
 )
 
 # Signal handling for unix platforms
