@@ -30,6 +30,7 @@ class ConnectionHealth(service: VPNService) {
     private var mAltEndpoint: String = ""
     private var mResetUsed = false
     private var mPanicStateReached = false
+    private var mLastCheckSucceeded: Boolean? = null
 
     private val SERVER_SWITCH_COOLDOWN_MINUTES: Long = 15
     private var nextPossibleServerSwitch = LocalDateTime.now().plusMinutes(SERVER_SWITCH_COOLDOWN_MINUTES)
@@ -55,6 +56,7 @@ class ConnectionHealth(service: VPNService) {
         }
         mResetUsed = false
         mPanicStateReached = false
+        mLastCheckSucceeded = null
         val mConnectivityManager = mService.getSystemService(Context.CONNECTIVITY_SERVICE)
             as ConnectivityManager
         mConnectivityManager.registerNetworkCallback(vpnNetworkRequest, networkCallbackHandler)
@@ -175,18 +177,31 @@ class ConnectionHealth(service: VPNService) {
             val canReachGateway = vpnNetwork.getByName(gateway).isReachable(PING_TIMEOUT)
             // For DNS, we check both the main DNS (gateway) and the specific value (which could be user-input DNS or privacy DNS, or may be gateway)
             val canReachDNS = vpnNetwork.getByName(dns).isReachable(PING_TIMEOUT) || vpnNetwork.getByName(endpoint).isReachable(PING_TIMEOUT)
+
+            val handshakeInfo = {
+                when (val hs = mService.lastHandshakeTimeSec()) {
+                    null -> "unknown"
+                    0L -> "never"
+                    else -> "${System.currentTimeMillis() / 1000 - hs}s ago"
+                }
+            }
+
             if (canReachGateway && canReachDNS) {
-                // Internet should be fine :)
+                if (mLastCheckSucceeded != true) {
+                    Log.i(TAG, "Connection is healthy (last handshake: ${handshakeInfo()})")
+                }
+                mLastCheckSucceeded = true
                 mResetUsed = false
                 taskDone()
                 return@Runnable
             }
+            mLastCheckSucceeded = false
 
             if (!canReachGateway) {
-                Log.e(TAG, "Failed to Reach VPN-Gateway")
+                Log.e(TAG, "Failed to Reach VPN-Gateway (last handshake: ${handshakeInfo()})")
             }
             if (!canReachDNS) {
-                Log.e(TAG, "Failed to reach DNS")
+                Log.e(TAG, "Failed to reach DNS (last handshake: ${handshakeInfo()})")
             }
 
             // Step 3: We have found a connection Issue, check if we can ping the wireguard
@@ -231,9 +246,39 @@ class ConnectionHealth(service: VPNService) {
             // If we land here: The server and the fallback are unreachable
             // Nothing we can do here to help.
             Log.e(TAG, "Both Server / Serverfallback seem to be unreachable.")
+            logUnderlyingNetworks(mConnectivityManager)
 
             mPanicStateReached = true
             taskDone()
+        }
+    }
+
+    private fun logUnderlyingNetworks(cm: ConnectivityManager) {
+        try {
+            for (network in cm.allNetworks) {
+                val caps = cm.getNetworkCapabilities(network) ?: continue
+                if (caps.hasTransport(NetworkCapabilities.TRANSPORT_VPN)) {
+                    continue
+                }
+                val transport = when {
+                    caps.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> "wifi"
+                    caps.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> "cellular"
+                    caps.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> "ethernet"
+                    else -> "other"
+                }
+                val link = cm.getLinkProperties(network)
+                val hasIpv4 = link?.linkAddresses?.any { it.address is java.net.Inet4Address } ?: false
+                val hasIpv6 = link?.linkAddresses?.any { it.address is java.net.Inet6Address } ?: false
+                val validated = caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_VALIDATED)
+                val metered = !caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_NOT_METERED)
+                Log.i(
+                    TAG,
+                    "Underlying network: transport=$transport validated=$validated metered=$metered " +
+                        "ipv4=$hasIpv4 ipv6=$hasIpv6 mtu=${link?.mtu} iface=${link?.interfaceName}",
+                )
+            }
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to log underlying networks: ${e.message}")
         }
     }
 }

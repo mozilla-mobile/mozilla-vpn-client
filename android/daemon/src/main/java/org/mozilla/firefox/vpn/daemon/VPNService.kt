@@ -396,6 +396,13 @@ class VPNService : android.net.VpnService() {
         builder.setBlocking(true)
     }
 
+    /**
+     * Seconds since the UNIX epoch of the most recent WireGuard handshake.
+     * Returns null if there is no tunnel or the value is unavailable, and 0 if
+     * a handshake has never happened on the current tunnel.
+     */
+    fun lastHandshakeTimeSec(): Long? = getConfigValue("last_handshake_time_sec")?.toLongOrNull()
+
     /** Gets config value for {key} from the Current running Wireguard tunnel */
     private fun getConfigValue(key: String): String? {
         if (!isUp) {
