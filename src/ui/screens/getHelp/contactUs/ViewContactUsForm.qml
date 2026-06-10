@@ -87,6 +87,7 @@ MZViewBase {
 
                     MZTextField {
                         id: emailInput
+                        objectName: "contactUs-emailInput"
 
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
@@ -97,6 +98,7 @@ MZViewBase {
 
                 MZTextField {
                     id: confirmEmailInput
+                    objectName: "contactUs-confirmEmailInput"
 
                     verticalAlignment: Text.AlignVCenter
                     Layout.fillWidth: true

@@ -9,28 +9,89 @@ const {validators} = require('./servers/guardian_endpoints.js');
 
 
 describe('Contact us view', function() {
-  it('VPNUserInfo is not visible to unathenticated users', async () => {
-    await vpn.waitForQueryAndClick(queries.screenInitialize.GET_HELP_LINK);
-    await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
+  describe('Contact us view - unauthenticated user', function() {
+    this.ctx.authenticationNeeded = false;
 
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT);
+    const ticket = {
+      email: null,
+      logs: null,
+      versionString: null,
+      platformVersion: null,
+      subject: null,
+      issueText: null,
+      category: null
+    };
 
-    await vpn.waitForQuery(
-        queries.screenGetHelp.contactSupportView.USER_INFO.hidden());
-    assert.equal(
-        await vpn.getQueryProperty(
-            queries.screenGetHelp.contactSupportView.USER_INFO, 'visible'),
-        'false');
-  });
+    this.ctx.guardianOverrideEndpoints = {
+      POSTs: {
+        '/api/v1/vpn/createGuestSupportTicket': {
+          status: 201,
+          callback: (req) => {
+            ticket.email = req.body.email;
+            ticket.logs = req.body.logs;
+            ticket.subject = req.body.subject;
+            ticket.issueText = req.body.issueText;
+            ticket.category = req.body.category;
+          },
+          body: {},
+        },
+      }
+    };
 
-  it('Email inputs are visible to unauthenticated user', async () => {
-    await vpn.waitForQueryAndClick(queries.screenInitialize.GET_HELP_LINK);
-    await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
+    it('Unauthenticated user can create support ticket', async () => {
+      await vpn.waitForQueryAndClick(queries.screenInitialize.GET_HELP_LINK);
+      await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
+      await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT);
+      await vpn.waitForQuery(queries.screenGetHelp.contactSupportView
+                                 .UNAUTH_USER_INPUTS.visible());
+      await vpn.setQueryProperty(
+          queries.screenGetHelp.contactSupportView.EMAIL_INPUT, 'text',
+          'test@test.com');
+      await vpn.setQueryProperty(
+          queries.screenGetHelp.contactSupportView.CONFIRM_EMAIL_INPUT, 'text',
+          'test@test.com');
+      await vpn.waitForQuery(
+          queries.screenGetHelp.contactSupportView.DROPDOWN.visible());
+      await vpn.setQueryProperty(
+          queries.screenGetHelp.contactSupportView.DROPDOWN, 'currentIndex', 1);
+      await vpn.setQueryProperty(
+          queries.screenGetHelp.contactSupportView.TEXTAREA, 'text',
+          'user issue description');
+      await vpn.setQueryProperty(
+          queries.screenGetHelp.contactSupportView.SUBJECT_INPUT, 'text',
+          'user issue subject');
+      await vpn.wait(200);
+      await vpn.scrollToQuery(
+          queries.screenGetHelp.contactSupportView.VIEW,
+          queries.screenGetHelp.contactSupportView.SUBMIT_BUTTON);
+      await vpn.waitForQueryAndClick(
+          queries.screenGetHelp.contactSupportView.SUBMIT_BUTTON.enabled());
+      await vpn.waitForQuery(
+          queries.screenGetHelp.contactSupportView.THANK_YOU_PANEL.visible());
+      await vpn.waitForQueryAndClick(
+          queries.screenGetHelp.contactSupportView.DONE_BUTTON);
+      await vpn.waitForQuery(queries.screenGetHelp.STACKVIEW.ready());
 
-    await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT);
+      assert.equal(ticket.category, 'account');
+      assert.equal(ticket.issueText, 'user issue description');
+      assert.equal(ticket.subject, 'user issue subject');
+      assert.equal(ticket.email, 'test@test.com');
+      assert.notEqual(ticket.logs, 'Logs not shared.');
+    });
 
-    await vpn.waitForQuery(
-        queries.screenGetHelp.contactSupportView.UNAUTH_USER_INPUTS.visible());
+    it('VPNUserInfo is not visible to unathenticated users', async () => {
+      await vpn.waitForQueryAndClick(queries.screenInitialize.GET_HELP_LINK);
+      await vpn.waitForQuery(queries.screenGetHelp.LINKS.visible());
+
+      await vpn.waitForQueryAndClick(queries.screenGetHelp.SUPPORT);
+
+      await vpn.waitForQuery(
+          queries.screenGetHelp.contactSupportView.USER_INFO.hidden());
+      assert.equal(
+          await vpn.getQueryProperty(
+              queries.screenGetHelp.contactSupportView.USER_INFO, 'visible'),
+          'false');
+    });
   });
 
   describe('Contact us view - authenticated user', function() {
@@ -44,9 +105,9 @@ describe('Contact us view', function() {
       subject: null,
       issueText: null,
       category: null
-    }
+    };
 
-                   this.ctx.guardianOverrideEndpoints = {
+    this.ctx.guardianOverrideEndpoints = {
       POSTs: {
         '/api/v1/vpn/createSupportTicket': {
           status: 201,

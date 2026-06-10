@@ -259,6 +259,8 @@ const screenGetHelp = {
   contactSupportView: {
     VIEW: new QmlQueryComposer('//contactUs-flickable'),
     UNAUTH_USER_INPUTS: new QmlQueryComposer('//contactUs-unauthedUserInputs'),
+    EMAIL_INPUT: new QmlQueryComposer('//contactUs-emailInput'),
+    CONFIRM_EMAIL_INPUT: new QmlQueryComposer('//contactUs-confirmEmailInput'),
     USER_INFO: new QmlQueryComposer('//contactUs-userInfo'),
     SHARE_LOGS_CHECKBOX: new QmlQueryComposer('//contactUs-shareLogsCheckBox'),
     DROPDOWN: new QmlQueryComposer('//contactUs-dropDown'),
