@@ -271,6 +271,8 @@ target_sources(unit_tests PRIVATE
     testserverlatency.h
     teststatusicon.cpp
     teststatusicon.h
+    testvalidator.cpp
+    testvalidator.h
 )
 
 # Generate the version header
