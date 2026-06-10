@@ -42,7 +42,10 @@ runs:
         # even though the archive is truncated.
         curl -sSL -r0-4096 "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${NAME}" -o qt-toolchain-head.tar.xz
         TARBALL_PATH=$((xzcat qt-toolchain-head.tar.xz | tar t | head -1 | grep -o '^[^/]*') 2>/dev/null || true)
-        echo "toolchain-path=${GITHUB_WORKSPACE}/3rdparty/${TARBALL_PATH}" >> $GITHUB_OUTPUT
+        # On Windows, $GITHUB_WORKSPACE uses backslashes; normalize to forward
+        # slashes so the path isn't a mix of both separators, causing failure.
+        ADJUSTED_WORKSPACE="${GITHUB_WORKSPACE//\\//}"
+        echo "toolchain-path=${ADJUSTED_WORKSPACE}/3rdparty/${TARBALL_PATH}" >> $GITHUB_OUTPUT
 
     - name: Cache Qt toolchain
       uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
