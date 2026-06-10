@@ -16,10 +16,6 @@ import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
 class ConnectionHealth(service: VPNService) {
-    enum class ConnectionStability {
-        NoSignal, Unstable, Stable
-    }
-
     private val TAG = "DaemonConnectionHealth"
     private val mService: VPNService = service
     private val PING_TIMEOUT = 3000 // ms
@@ -29,7 +25,6 @@ class ConnectionHealth(service: VPNService) {
     private var mGateway: String = ""
     private var mAltEndpoint: String = ""
     private var mResetUsed = false
-    private var mPanicStateReached = false
     private var mLastCheckSucceeded: Boolean? = null
 
     private val SERVER_SWITCH_COOLDOWN_MINUTES: Long = 15
@@ -55,7 +50,6 @@ class ConnectionHealth(service: VPNService) {
             return
         }
         mResetUsed = false
-        mPanicStateReached = false
         mLastCheckSucceeded = null
         val mConnectivityManager = mService.getSystemService(Context.CONNECTIVITY_SERVICE)
             as ConnectivityManager
@@ -247,8 +241,6 @@ class ConnectionHealth(service: VPNService) {
             // Nothing we can do here to help.
             Log.e(TAG, "Both Server / Serverfallback seem to be unreachable.")
             logUnderlyingNetworks(mConnectivityManager)
-
-            mPanicStateReached = true
             taskDone()
         }
     }
