@@ -30,20 +30,12 @@
         "type": "ulist",
         "content": [
           {
-            "id": "l_1",
-            "content": "vpn.237updateMessage.bullet1"
-          },
-          {
             "id": "l_2",
             "content": "vpn.237updateMessage.bullet2"
           },
           {
             "id": "l_3",
             "content": "vpn.238updateMessage.bullet1"
-          },
-          {
-            "id": "l_4",
-            "content": "vpn.237updateMessage.bullet6"
           },
           {
             "id": "l_5",
