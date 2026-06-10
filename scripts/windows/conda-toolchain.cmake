@@ -17,9 +17,7 @@ endif()
 # Specify default system configuration, if cross compiling
 set(CMAKE_SYSTEM_NAME "Windows" CACHE STRING "Target operating system name")
 set(CMAKE_SYSTEM_VERSION "10.0" CACHE STRING "Target operating system version")
-if(NOT CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows")
-    set(CMAKE_CROSSCOMPILING TRUE CACHE BOOL "Target is cross compiled")
-elseif(NOT CMAKE_HOST_SYSTEM_PROCESSOR)
+if((CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows") AND (NOT CMAKE_HOST_SYSTEM_PROCESSOR))
     string(TOLOWER "$ENV{PROCESSOR_ARCHITECTURE}" CMAKE_HOST_SYSTEM_PROCESSOR)
 endif()
 
@@ -43,6 +41,13 @@ elseif(LOWERCASE_SYSTEM_PROCESSOR STREQUAL "arm64")
     set(CMAKE_RC_COMPILER_TARGET aarch64-pc-windows-msvc)
 else()
     message(FATAL_ERROR "Unsupported system processor: ${CMAKE_SYSTEM_PROCESSOR}")
+endif()
+
+# We are not considered cross compiling iff building on Windows and the processor matches.
+if((CMAKE_HOST_SYSTEM_NAME STREQUAL "Windows") AND (LOWERCASE_SYSTEM_PROCESSOR STREQUAL CMAKE_HOST_SYSTEM_PROCESSOR))
+    set(CMAKE_CROSSCOMPILING FALSE CACHE BOOL "Target is natively compiled")
+else()
+    set(CMAKE_CROSSCOMPILING TRUE CACHE BOOL "Target is cross compiled")
 endif()
 
 # Set the C++ compiler and tools.
