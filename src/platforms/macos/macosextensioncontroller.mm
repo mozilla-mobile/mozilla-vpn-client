@@ -147,6 +147,15 @@ void MacOSExtensionController::extStatusChange(int status) {
   }
   if (status == NEVPNStatusDisconnected) {
     emit disconnected();
+    // Log the disconnection error, if any.
+    if (!m_session) {
+      return;
+    }
+    [m_session fetchLastDisconnectErrorWithCompletionHandler:^(NSError *err){
+      if (err) {
+        logger.warning() << "tunnel disconnected:" << err;
+      }
+    }];
   }
 }
 
