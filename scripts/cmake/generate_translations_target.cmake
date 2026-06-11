@@ -146,7 +146,13 @@ function(generate_translations_target TARGET_NAME ASSETS_DIRECTORY TRANSLATIONS_
             OUTPUT_STRIP_TRAILING_WHITESPACE
             OUTPUT_VARIABLE I18N_COMPLETENESS
             COMMAND ${PYTHON_EXECUTABLE} ${MVPN_SCRIPT_DIR}/utils/xlifftool.py -C --locale=${LOCALE} ${TRANSLATIONS_DIRECTORY}/${LOCALE}/mozillavpn.xliff
+            RESULT_VARIABLE xliff_result
         )
+
+        if(NOT xliff_result EQUAL 0)
+            message(FATAL_ERROR "xlifftool failed: ${xliff_result}")
+        endif()
+
         file(APPEND ${GENERATED_DIR}/translations.qrc "        <file>mozillavpn_${LOCALE}.qm</file>\n")
 
         if (NOT EXISTS ${ASSETS_DIRECTORY}/extras/translations.completeness)
