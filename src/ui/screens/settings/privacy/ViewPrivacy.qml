@@ -136,7 +136,6 @@ MZViewBase {
         title: MZI18n.HelpSheetsPrivacyTitle
 
         model: [
-            {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsPrivacyHeader},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsPrivacyBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsPrivacyBody2, margin: MZTheme.theme.helpSheetBodySpacing},
             {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "learnMoreLink", action: () => {

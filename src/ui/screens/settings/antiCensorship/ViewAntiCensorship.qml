@@ -58,9 +58,17 @@ MZViewBase {
                 MZTextBlock {
                     Layout.fillWidth: true
                     width: undefined
-                    text: MZI18n.SettingsAntiCensorshipSettingsWarning
+                    text: MZI18n.SettingsAntiCensorshipSettingsWarning1
                     verticalAlignment: Text.AlignVCenter
                 }
+
+                MZTextBlock {
+                    Layout.fillWidth: true
+                    width: undefined
+                    text: MZI18n.SettingsAntiCensorshipSettingsWarning2
+                    verticalAlignment: Text.AlignVCenter
+                }
+
                 Loader {
                     active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
                     Layout.fillWidth: true
@@ -89,7 +97,6 @@ MZViewBase {
         title: MZI18n.HelpSheetsAntiCensorshipTitle
 
         model: [
-            {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsAntiCensorshipHeader},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsAntiCensorshipBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsAntiCensorshipBody2, margin: MZTheme.theme.helpSheetBodySpacing}
         ]
