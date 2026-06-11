@@ -27,9 +27,6 @@
 
 #include "logger.h"
 
-constexpr qint64 LOG_MAX_FILE_SIZE = 204800;
-constexpr const char* LOG_FILE_SUFFIX = ".log";
-
 namespace {
 LogLevel qtTypeToLogLevel(QtMsgType type) {
   switch (type) {
@@ -139,8 +136,14 @@ void LogHandler::prettyOutput(QTextStream& out, const LogHandler::Log& log) {
 }
 
 void LogHandler::setStderr(bool enabled) {
-  QMutexLocker<QMutex> lock(&m_mutex);
-  m_stderrEnabled = enabled;
+  if (enabled) {
+    auto flags = Qt::DirectConnection | Qt::UniqueConnection;
+    connect(this, &LogHandler::logEntryAdded, this, &LogHandler::logWriteStderr,
+            static_cast<Qt::ConnectionType>(flags));
+  } else {
+    disconnect(this, &LogHandler::logEntryAdded, this,
+               &LogHandler::logWriteStderr);
+  }
 }
 
 LogHandler::LogHandler() : QObject(nullptr) {
@@ -150,7 +153,7 @@ LogHandler::LogHandler() : QObject(nullptr) {
   m_shortname = qApp->applicationName().toLower().remove(nonAlpha);
 
 #if defined(MZ_DEBUG)
-  m_stderrEnabled = true;
+  setStderr(true);
 #endif
 
 #if defined(MZ_IOS)
@@ -180,57 +183,54 @@ void LogHandler::addLog(const Log& log) {
 
 void LogHandler::addLog(const Log& log,
                         const QMutexLocker<QMutex>& proofOfLock) {
-  if (m_output) {
-    prettyOutput(*m_output, log);
+  // If the log file has grown too big, truncate it before writing more logs.
+  if (m_output && m_output->size() >= LOG_MAX_FILE_SIZE) {
+    openLogFile(proofOfLock);
   }
 
   QByteArray buffer;
-  {
-    QTextStream out(&buffer);
-    prettyOutput(out, log);
+  QTextStream out(&buffer);
+  prettyOutput(out, log);
+
+  if (m_output) {
+    m_output->write(buffer);
+    m_output->flush();
   }
 
-  if (m_stderrEnabled) {
+  emit logEntryAdded(buffer, log.m_logLevel);
+}
+
+void LogHandler::logWriteStderr(const QByteArray& msg, LogLevel level) {
 #if defined(MZ_ANDROID)
-    const char* str = buffer.constData();
-    if (str) {
-      __android_log_write(ANDROID_LOG_DEBUG, qPrintable(m_shortname), str);
-    }
-#elif defined(MZ_IOS)
-    QString logstr = QString::fromUtf8(buffer);
-    switch (log.m_logLevel) {
-      case Error:
-      case Warning:
-        os_log_error(m_ioslog, "%s", qPrintable(logstr));
-        break;
-      case Info:
-        os_log_info(m_ioslog, "%s", qPrintable(logstr));
-        break;
-      default:
-        os_log_debug(m_ioslog, "%s", qPrintable(logstr));
-        break;
-    }
-#else
-    QTextStream out(stderr);
-    prettyOutput(out, log);
-#endif
+  const char* str = msg.constData();
+  if (str) {
+    __android_log_write(ANDROID_LOG_DEBUG, qPrintable(m_shortname), str);
   }
-
-  emit logEntryAdded(buffer);
+#elif defined(MZ_IOS)
+  QString logstr = QString::fromUtf8(msg);
+  switch (level) {
+    case Error:
+    case Warning:
+      os_log_error(m_ioslog, "%s", qPrintable(logstr));
+      break;
+    case Info:
+      os_log_info(m_ioslog, "%s", qPrintable(logstr));
+      break;
+    default:
+      os_log_debug(m_ioslog, "%s", qPrintable(logstr));
+      break;
+  }
+#else
+  fwrite(msg.constData(), msg.size(), 1, stderr);
+#endif
 }
 
 void LogHandler::writeLogs(QTextStream& out) {
   QMutexLocker<QMutex> lock(&m_mutex);
-  if (!m_logFile) {
-    return;
-  }
-
-  if (m_logFile->seek(0)) {
-    out << m_logFile->readAll();
-
-    // Re-open the log file after reading.
-    closeLogFile(lock);
-    openLogFile(lock);
+  if (m_output) {
+    m_output->flush();
+    m_output->seek(0);
+    out << m_output->readAll();
   }
 }
 
@@ -240,14 +240,12 @@ void LogHandler::cleanupLogs() {
 }
 
 void LogHandler::cleanupLogFile(const QMutexLocker<QMutex>& proofOfLock) {
-  if (!m_logFile) {
-    return;
-  }
-  m_logFile->close();
-  m_logFile->remove();
+  Q_UNUSED(proofOfLock);
 
-  closeLogFile(proofOfLock);
-  openLogFile(proofOfLock);
+  if (m_output) {
+    m_output->seek(0);
+    m_output->resize(0);
+  }
 }
 
 // static
@@ -259,42 +257,7 @@ void LogHandler::setLogfile(const QString& path) {
 
   QMutexLocker<QMutex> lock(&logHandler->m_mutex);
   s_filename = path;
-  if (logHandler->m_logFile) {
-    logHandler->cleanupLogFile(lock);
-  }
-}
-
-void LogHandler::truncateLogFile(const QMutexLocker<QMutex>& proofOfLock,
-                                 const QString& filename) {
-  QFile oldLogFile(filename);
-
-  // Nothing to do if the log file is already undersize.
-  if (!oldLogFile.exists()) {
-    return;
-  }
-  if (oldLogFile.size() < LOG_MAX_FILE_SIZE) {
-    return;
-  }
-
-  // Rename the old log file while we truncate and ensure it gets cleaned up.
-  auto guard = qScopeGuard([&] { oldLogFile.remove(); });
-  if (!oldLogFile.rename(filename + ".bak")) {
-    return;
-  }
-
-  // Discard all but the tail of the log and align to the next new line.
-  if (!oldLogFile.open(QIODevice::ReadOnly | QIODevice::Text)) {
-    return;
-  }
-  oldLogFile.seek(oldLogFile.size() - (LOG_MAX_FILE_SIZE / 2));
-  oldLogFile.readLine();
-
-  // Re-create the original log file and copy the truncated contents.
-  QFile newLogFile(filename);
-  if (newLogFile.open(QIODevice::WriteOnly | QIODevice::Truncate |
-                      QIODevice::Text)) {
-    newLogFile.write(oldLogFile.readAll());
-  }
+  logHandler->cleanupLogFile(lock);
 }
 
 // static
@@ -317,44 +280,67 @@ bool LogHandler::makeLogDir(const QDir& dir) {
   return parent.mkdir(dir.dirName(), perms);
 }
 
-void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
+void LogHandler::setLogDevice(QFileDevice* device,
+                              const QMutexLocker<QMutex>& proofOfLock) {
   Q_UNUSED(proofOfLock);
-  Q_ASSERT(!m_logFile);
-  Q_ASSERT(!m_output);
+  Q_ASSERT(device);
 
+  m_output.reset(device);
+
+#ifdef MZ_DEBUG
+  QString msg = QString("Log file: %1").arg(m_output->fileName());
+  addLog(Log(Debug, "LogHandler", msg), proofOfLock);
+#endif
+}
+
+void LogHandler::openLogFile(const QMutexLocker<QMutex>& proofOfLock) {
+  // Cleanup the current log file device, if any.
+  m_output.reset(nullptr);
+
+  // Create the log directory and file device.
   QDir appDataLocation = QFileInfo(s_filename).dir();
   if (!makeLogDir(appDataLocation)) {
     return;
   }
+  QFile* file = new QFile(s_filename);
 
-  truncateLogFile(proofOfLock, s_filename);
-
-  m_logFile = new QFile(s_filename);
-  if (!m_logFile->open(QIODevice::ReadWrite | QIODevice::Append |
-                       QIODevice::Text)) {
-    delete m_logFile;
-    m_logFile = nullptr;
+  // If the log file is undersize, no truncation is needed.
+  if (file->size() < LOG_MAX_FILE_SIZE) {
+    if (!file->open(QIODevice::ReadWrite | QIODevice::Append |
+                    QIODevice::Text)) {
+      delete file;
+    } else {
+      setLogDevice(file, proofOfLock);
+    }
     return;
   }
 
-  m_output = new QTextStream(m_logFile);
-
-#ifdef MZ_DEBUG
-  addLog(Log(Debug, "LogHandler", QString("Log file: %1").arg(s_filename)),
-         proofOfLock);
-#endif
-}
-
-void LogHandler::closeLogFile(const QMutexLocker<QMutex>& proofOfLock) {
-  Q_UNUSED(proofOfLock);
-
-  if (m_logFile) {
-    delete m_output;
-    m_output = nullptr;
-
-    delete m_logFile;
-    m_logFile = nullptr;
+  // Rename the log file, and delete it when finished.
+  if (!file->rename(s_filename + ".bak")) {
+    setLogDevice(file, proofOfLock);
+    return;
   }
+  auto guard = qScopeGuard([file] {
+    file->remove();
+    delete file;
+  });
+
+  // Open the log, discard all but the tail, and align to the next new line.
+  if (!file->open(QIODevice::ReadOnly | QIODevice::Text)) {
+    return;
+  }
+  file->seek(file->size() - (LOG_MAX_FILE_SIZE / 2));
+  file->readLine();
+
+  // Re-create the original log file and copy the truncated contents.
+  QFile* newLogFile = new QFile(s_filename);
+  if (!newLogFile->open(QIODevice::ReadWrite | QIODevice::Truncate |
+                        QIODevice::Text)) {
+    delete newLogFile;
+    return;
+  }
+  newLogFile->write(file->readAll());
+  setLogDevice(newLogFile, proofOfLock);
 }
 
 void LogHandler::requestViewLogs() {

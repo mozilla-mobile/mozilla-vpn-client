@@ -8,6 +8,8 @@
 #include <QApplication>
 #include <QObject>
 
+#include "loglevel.h"
+
 struct sentry_ucontext_s;
 struct sentry_envelope_s;
 union sentry_value_u;
@@ -47,7 +49,7 @@ class SentryAdapter final : public QObject {
    *
    * @param line - UTF-8 encoded bytes of the logline.
    */
-  Q_SLOT void onLoglineAdded(const QByteArray& line);
+  Q_SLOT void onLoglineAdded(const QByteArray& line, LogLevel level);
 
   /**
    * @brief Event Slot for when the client is about to Shut down
