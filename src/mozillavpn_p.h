@@ -11,7 +11,6 @@
 #include "controller.h"
 #include "feature/taskgetfeaturelistworker.h"
 #include "ipaddresslookup.h"
-#include "localizer.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
 #include "models/location.h"
