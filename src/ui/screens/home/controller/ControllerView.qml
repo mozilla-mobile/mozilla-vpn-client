@@ -489,6 +489,7 @@ Item {
         id: ipInfoToggleButton
         objectName: "ipInfoToggleButton"
 
+        property bool ready: visible && !opacityAnimation.running
         property var connectionInfoCloseText: MZI18n.GlobalClose
 
         anchors {
@@ -528,6 +529,7 @@ Item {
 
         Behavior on opacity {
             NumberAnimation {
+                id: opacityAnimation
                 duration: 300
             }
         }
