@@ -14,8 +14,7 @@ describe('IP info', function() {
     await vpn.activate(true);
 
     // Open IP info panel
-    await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.visible());
-    await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.ready());
+    await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.ready());
     await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.opened());
 
     // Close IP info panel
@@ -28,8 +27,7 @@ describe('IP info', function() {
     await vpn.activate(true);
 
     // Open IP info panel
-    await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.visible());
-    await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.ready());
+    await vpn.waitForQueryAndClick(queries.screenHome.IP_INFO_TOGGLE.ready());
     await vpn.waitForQuery(queries.screenHome.IP_INFO_PANEL.opened());
 
     // Deactivate VPN
