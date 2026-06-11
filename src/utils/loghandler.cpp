@@ -192,6 +192,11 @@ void LogHandler::addLog(const Log& log,
   QTextStream out(&buffer);
   prettyOutput(out, log);
 
+  if (m_output) {
+    m_output->write(buffer);
+    m_output->flush();
+  }
+
   emit logEntryAdded(buffer, log.m_logLevel);
 }
 
@@ -281,11 +286,6 @@ void LogHandler::setLogDevice(QFileDevice* device,
   Q_ASSERT(device);
 
   m_output.reset(device);
-  connect(this, &LogHandler::logEntryAdded, device,
-          [device](const QByteArray& data) {
-            device->write(data);
-            device->flush();
-          });
 
 #ifdef MZ_DEBUG
   QString msg = QString("Log file: %1").arg(m_output->fileName());
