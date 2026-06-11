@@ -27,13 +27,13 @@
 
 - (BOOL)handleNewFlow:(NEAppProxyFlow *)flow;
 
-- (BOOL)matchAppFlow:(NEAppProxyFlow *)flow;
+- (BOOL)matchExcludedFlow:(NEAppProxyFlow *)flow;
 
 @property (strong) NETransparentProxyNetworkSettings* settings;
 @property (strong) WireguardTunnel* wireguard;
 @property (strong) InterfaceConfig* config;
 
-@property (strong) NSMutableArray* vpnDisabledApps;
+@property (strong) NSSet* vpnDisabledApps;
 
 @end
 
@@ -47,7 +47,7 @@
   self = [super init];
   NSLog(@"init proxy class");
 
-  self.vpnDisabledApps = [NSMutableArray new];
+  self.vpnDisabledApps = [NSSet set];
 
   m_handledTcpFlows = 0;
   m_handledUdpFlows = 0;
@@ -206,19 +206,12 @@
   self.settings.excludedNetworkRules = excludeRules;
 
   // Initialize the excluded application list.
-  [self.vpnDisabledApps removeAllObjects];
   NSArray* apps = [options objectForKey:@"apps"];
-  if (apps) {
-    NSEnumerator* iter = [apps objectEnumerator];
-    while (id appId = [iter nextObject]) {
-      if (![appId isKindOfClass:[NSString class]]) {
-        continue;
-      }
-#ifdef MZ_DEBUG
-      NSLog(@"excluding app %@ from VPN", appId);
-#endif
-      [self.vpnDisabledApps addObject: appId];
-    }
+  if ([apps isKindOfClass:[NSArray class]]) {
+    NSPredicate* p = [NSPredicate predicateWithFormat:@"self isKindOfClass: %@", [NSString class]];
+    self.vpnDisabledApps = [NSSet setWithArray:[apps filteredArrayUsingPredicate:p]];
+  } else {
+    self.vpnDisabledApps = [NSSet set];
   }
 
   // Configure the settings.
@@ -287,32 +280,26 @@
     return;
   }
 
-  // Update the app exclusion settings.
-  [self.vpnDisabledApps removeAllObjects];
-  NSArray* apps = [proto.providerConfiguration objectForKey:@"apps"];
-  if (apps) {
-    NSEnumerator* iter = [apps objectEnumerator];
-    while (id appId = [iter nextObject]) {
-      if (![appId isKindOfClass:[NSString class]]) {
-        continue;
-      }
-#ifdef MZ_DEBUG
-      NSLog(@"excluding app %@ from VPN", appId);
-#endif
-      [self.vpnDisabledApps addObject: appId];
-    }
+  // If the applications being excluded have changed, then we need to restart
+  // the transparent proxy so that connections from the applications get closed
+  // and re-evaluated.
+  NSArray<NSString*>* apps = [proto.providerConfiguration objectForKey:@"apps"];
+  NSPredicate* p = [NSPredicate predicateWithFormat:@"self isKindOfClass: %@", [NSString class]];
+  NSSet* newDisabledApps;
+  if ([apps isKindOfClass:[NSArray class]]) {
+    newDisabledApps = [NSSet setWithArray:[apps filteredArrayUsingPredicate:p]];
+  } else {
+    newDisabledApps = [NSSet set];
   }
-  // TODO: We probably need to update/reset connections if they changed their exclusion status.
-  // but how?
 
-  // YOLO: Does this do anything....
-  [self performSelector:@selector(fetchFlowStatesWithCompletionHandler:)
-             withObject:^(NSArray* result){
-    NSLog(@"flow count: %lu", result.count);
-    for (NSObject* obj in result) {
-      NSLog(@"flow state: %@", NSStringFromClass(obj.class));
-    }
-  }];
+  // TODO: It would be nice if there was a way we could automatically restart
+  // ourself in this case, but I can't figure out how to do this.
+  if (![self.vpnDisabledApps isEqualToSet:newDisabledApps]) {
+    [self stopProxyWithReason:NEProviderStopReasonSuperceded completionHandler:^(){
+      [self cancelProxyWithError:vpnProviderError(NEProviderStopReasonSuperceded)];
+    }];
+    return;
+  }
 
   // Check if the server identitiy changed. Do nothing if no changes.
   NETunnelProviderProtocol* old = [change objectForKey:@"old"];
@@ -343,7 +330,7 @@
   }];
 }
 
-- (BOOL)matchAppFlow:(NEAppProxyFlow*)flow {
+- (BOOL)matchExcludedFlow:(NEAppProxyFlow*)flow {
   // Without metadata - always direct the flow into the VPN.
   if (flow.metaData == nil) {
     return YES;
@@ -362,8 +349,7 @@
   NSLog(@"new flow: %@ -> %@", sourceId, flow.remoteHostname);
 #endif
 
-  NSEnumerator* iter = [self.vpnDisabledApps objectEnumerator];
-  while (NSString* appId = [iter nextObject]) {
+  for (NSString* appId in self.vpnDisabledApps) {
     if (sourceId.length < appId.length) {
       continue;
     }
@@ -374,9 +360,8 @@
       continue;
     }
 
-    NSComparisonResult result = [sourceId compare:appId
-                                          options:NSLiteralSearch
-                                            range:NSMakeRange(0, appId.length)];
+    NSRange range = NSMakeRange(0, sourceId.length);
+    NSComparisonResult result = [sourceId compare:appId options:NSLiteralSearch range:range];
     if (result == NSOrderedSame) {
       return NO;
     }
@@ -387,12 +372,11 @@
 }
 
 - (BOOL)handleNewFlow:(NEAppProxyFlow*) flow {
-  // Evaluate whether the source of this flow should be redirected into the VPN.
-  if (![self matchAppFlow:flow]) {
+  if (![self matchExcludedFlow:flow]) {
     return NO;
   }
 
-  // Perform flow bypassing.
+  // Redirect these flows into the VPN.
   flow.networkInterface = self.wireguard.virtualInterface;
   if ([flow isKindOfClass:[NEAppProxyTCPFlow class]]) {
     std::atomic_fetch_add(&m_handledTcpFlows, 1);
@@ -401,11 +385,7 @@
   } else {
     std::atomic_fetch_add(&m_handledUnknown, 1);
   }
-  return YES;
-}
-
-- (void)cancelProxyWithError:(NSError *)error {
-  NSLog(@"cancel proxy: %@", error.localizedDescription);
+  return NO;
 }
 
 - (void)handleAppMessage:(NSData *)messageData
@@ -448,17 +428,6 @@
     [VPNSplitTunnelProvider sendAppResponse:self.wireguard.status
                           completionHandler:completionHandler];
     return;
-  }
-
-  // Application exclusion messages.
-  if ([action isEqualToString: @"clear"]) {
-    [self.vpnDisabledApps removeAllObjects];
-  } else if ([action isEqualToString: @"add"]) {
-    [self.vpnDisabledApps addObjectsFromArray:apps];
-  } else if ([action isEqualToString: @"delete"]) {
-    [self.vpnDisabledApps removeObjectsInArray:apps];
-  } else {
-    NSLog(@"unsupported app message: %@", action);  
   }
 
   [VPNSplitTunnelProvider sendAppResponse:nil completionHandler:completionHandler];

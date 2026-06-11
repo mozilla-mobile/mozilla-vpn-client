@@ -146,14 +146,38 @@ void MacOSExtensionController::extStatusChange(int status) {
     emit connected(m_serverPublicKey);
   }
   if (status == NEVPNStatusDisconnected) {
-    emit disconnected();
     // Log the disconnection error, if any.
     if (!m_session) {
+      emit disconnected();
       return;
     }
     [m_session fetchLastDisconnectErrorWithCompletionHandler:^(NSError *err){
-      if (err) {
-        logger.warning() << "tunnel disconnected:" << err;
+      auto guard = qScopeGuard([this](){ emit disconnected(); });
+      if (!err) {
+        return;
+      }
+      logger.warning() << "tunnel disconnected:" << err;
+
+      // Special handling for errors originating in the network extension.
+      if (![err.domain isEqualToString:extIdentifier()]) {
+        return;
+      }
+
+      // Special case: If the tunnel closed due to a superseded configuration
+      // change, then restart it with the updated configuration.
+      if (err.code == NEProviderStopReasonSuperceded) {
+        logger.info() << "connection restarting";
+        NETunnelProviderProtocol* proto = 
+            static_cast<NETunnelProviderProtocol*>(m_manager.protocolConfiguration);
+        NSError* startError = nil;
+        [m_session startTunnelWithOptions:proto.providerConfiguration
+                           andReturnError:&startError];
+        if (startError) {
+          logger.info() << "connection restart failed:" << startError;
+        } else {
+          logger.info() << "connection restart succeeded";
+          guard.dismiss();
+        }
       }
     }];
   }
