@@ -1152,10 +1152,10 @@ logoAccessoryWidget:
     comment: More information about what the logo widget contains - which is simply current VPN status.
   vpnOn:
     value: Mozilla VPN on
-    comment: Very short string shown when VPN is active
+    comment: Shown as part of inline widget when VPN is active. If translation will be more than 16 characters, instead translate `VPN on` to keep this within available space.
   vpnOff:
     value: Mozilla VPN off
-    comment: Very short string shown when VPN is inactive
+    comment: Shown as part of inline widget when VPN is inactive.  If translation will be more than 16 characters, instead translate `VPN on` to keep this within available space.
 
 cityAccessoryWidget:
   description:
