@@ -162,6 +162,15 @@
   }
   config.routes = [NSArray arrayWithArray:routes];
 
+  // Parse the DNS servers list.
+  // TODO: We should validate that the strings are valid IP addresses.
+  NSObject* dnsObject = [config.dict objectForKey:@"dnsServers"];
+  if ([dnsObject isKindOfClass:[NSArray<NSString*> class]]) {
+    config.dnsServers = dnsObject;
+  } else {
+    config.dnsServers = @[];
+  }
+
   return config;
 }
 

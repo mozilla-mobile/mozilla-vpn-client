@@ -35,6 +35,8 @@
 
 @property (strong) NSSet* vpnDisabledApps;
 
+@property (strong) NSTask* dnsManager;
+
 @end
 
 @implementation VPNSplitTunnelProvider {
@@ -128,6 +130,63 @@
     return [rule initWithDestinationNetwork:host
                                      prefix:prefix
                                    protocol:NENetworkRuleProtocolAny];
+  }
+}
+
+- (void)startDnsManager:(NEDNSSettings*)settings {
+  // Encode the settings as the arguments to the dnsmanager.
+  NSMutableArray* args = [NSMutableArray arrayWithObject:@"dnsmanager"];
+  [args addObjectsFromArray:settings.servers];
+
+  // Setup the new DNS manager task.
+  NSTask* task = [NSTask new];
+  NSPipe* pipe = [NSPipe new];
+  task.standardError = pipe;
+  task.standardOutput = pipe;
+  task.executableURL = [[NSBundle mainBundle] executableURL];
+  task.arguments = args;
+
+  // Forward the output from the pipe to the logs.
+  pipe.fileHandleForReading.readabilityHandler = ^(NSFileHandle* handle){
+    NSData* data = handle.availableData;
+    // Check for EOF.
+    if (data.length == 0) {
+      handle.readabilityHandler = nil;
+      return;
+    }
+
+    // Parse the buffer as a sequence of newline-terminated UTF-8 strings.
+    NSString* buffer = [[NSString alloc] initWithData:data
+                                             encoding:NSUTF8StringEncoding];
+    NSCharacterSet* newlines = [NSCharacterSet newlineCharacterSet];
+    NSCharacterSet* whitespaces = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+    for (NSString* line in [buffer componentsSeparatedByCharactersInSet:newlines]) {
+      NSString* trimmed = [line stringByTrimmingCharactersInSet:whitespaces];
+      if (trimmed.length) {
+        NSLog(@"dnsmanager: %@", trimmed);
+      }
+    }
+  };
+
+  if (self.dnsManager) {
+    NSTask* prev = self.dnsManager;
+    self.dnsManager = task;
+
+    // Terminate the previous task and then launch the DNS manager.
+    prev.terminationHandler = ^(NSTask* task){
+      NSError* err;
+      if (![task launchAndReturnError:&err]) {
+        NSLog(@"dns manager failed to launch: %@", err);
+      }
+    };
+    [prev terminate];
+  } else {
+    // Launch the DNS manager to reconfigure the system DNS.
+    NSError* err;
+    self.dnsManager = task;
+    if (![task launchAndReturnError:&err]) {
+      NSLog(@"dns manager failed to launch: %@", err);
+    }
   }
 }
 
@@ -230,6 +289,12 @@
           return;
         }
 
+        // Start the DNS manager, if configured.
+        if (weakSelf.config.dnsServers.count > 0) {
+          NEDNSSettings* dnsSettings = [[NEDNSSettings alloc] initWithServers:weakSelf.config.dnsServers];
+          [weakSelf startDnsManager:dnsSettings];
+        }
+
         // Register a KVO observer to switch servers upon configuration change.
         [weakSelf addObserver:weakSelf
                    forKeyPath:@"protocolConfiguration"
@@ -253,6 +318,11 @@
 
   [self removeObserver:self
             forKeyPath:@"protocolConfiguration"];
+
+  if (self.dnsManager) {
+    [self.dnsManager terminate];
+    self.dnsManager = nil;
+  }
 
   [self.wireguard stopTunnelWithReason:reason
                      completionHandler:completionHandler];
@@ -299,6 +369,16 @@
       [self cancelProxyWithError:vpnProviderError(NEProviderStopReasonSuperceded)];
     }];
     return;
+  }
+
+  // (Re)start the DNS manager, if configured.
+  if (self.config.dnsServers.count > 0) {
+    NEDNSSettings* dnsSettings = [[NEDNSSettings alloc] initWithServers:self.config.dnsServers];
+    [self startDnsManager:dnsSettings];
+  } else if (self.dnsManager) {
+    // Otherwise, stop the DNS manager if it was running.
+    [self.dnsManager terminate];
+    self.dnsManager = nil;
   }
 
   // Check if the server identitiy changed. Do nothing if no changes.

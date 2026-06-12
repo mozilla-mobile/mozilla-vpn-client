@@ -31,6 +31,8 @@
 
 @property (strong) NSArray<RoutePrefix*>* routes;
 
+@property (strong) NSArray<NSString*>* dnsServers;
+
 @property (strong, readonly) NSDictionary<NSString *,id>* dict;
 
 @end
