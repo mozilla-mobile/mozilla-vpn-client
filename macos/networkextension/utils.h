@@ -13,4 +13,6 @@ NSUInteger getWorkerCount();
 NSError* vpnProviderError(NEProviderStopReason reason);
 NSError* vpnPosixError(int code, NSString* msg);
 
+int dnsManagerMain(int argc, char* argv[]);
+
 #endif  // UTILS_H

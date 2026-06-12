@@ -8,7 +8,7 @@
 
 #include <sys/event.h>
 #include <unistd.h>
-
+#include "utils.h"
 
 static const char* scErrorMessage() {
   return SCErrorString(SCError());
@@ -19,7 +19,6 @@ static void usage(int argc, char** argv) {
 
     printf("Update macOS DNS configuration\n\n");
 }
-
 
 static void restoreSnapshot(SCDynamicStoreRef store, NSDictionary* snapshot) {
   [snapshot enumerateKeysAndObjectsUsingBlock:^(NSString* uuid, NSDictionary* config, BOOL* stop){
@@ -87,7 +86,7 @@ static int waitForTermination(void) {
   }
 }
 
-int main(int argc, char** argv) {
+int dnsManagerMain(int argc, char* argv[]) {
   const char* shortopts = "h";
 
   // Parse options

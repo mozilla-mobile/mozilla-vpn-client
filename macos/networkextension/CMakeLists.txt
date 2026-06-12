@@ -4,8 +4,6 @@
 
 cmake_minimum_required(VERSION 3.20)
 
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
-
 project(networkextension VERSION 0.1 LANGUAGES C CXX OBJC
         DESCRIPTION "Mozilla VPN Network Extension"
         HOMEPAGE_URL "https://vpn.mozilla.org"
@@ -26,6 +24,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 endif()
 
 find_library(FW_FOUNDATION Foundation)
+find_library(FW_SYSTEMCONFIG SystemConfiguration)
 find_library(FW_NW_EXTENSION NetworkExtension)
 
 # The VPN Split Tunnel extension
@@ -64,8 +63,10 @@ add_custom_command(TARGET networkextension POST_BUILD
 )
 
 target_link_libraries(networkextension PRIVATE ${FW_FOUNDATION})
+target_link_libraries(networkextension PRIVATE ${FW_SYSTEMCONFIG})
 target_link_libraries(networkextension PRIVATE ${FW_NW_EXTENSION})
 target_sources(networkextension PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/dnsmanager.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.h
     ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/main.mm
@@ -99,23 +100,5 @@ if((NOT XCODE) AND (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile
     )
 endif()
 
-# Create a target for the DNS manager tool.
-add_executable(dnsmanager ${CMAKE_CURRENT_SOURCE_DIR}/dnsmanager.mm)
-find_library(FW_SYSTEMCONFIG SystemConfiguration)
-target_compile_options(dnsmanager PUBLIC "-fobjc-arc" "-fno-objc-arc-exceptions")
-target_compile_definitions(dnsmanager PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
-target_link_libraries(dnsmanager PRIVATE ${FW_FOUNDATION} ${FW_SYSTEMCONFIG})
-osx_codesign_target(dnsmanager)
-
-# Set the DNS manager tool up as a link dependency to ensure the codesign gets updated.
-add_dependencies(networkextension dnsmanager)
-set_target_properties(networkextension PROPERTIES LINK_DEPENDS $<TARGET_FILE:dnsmanager>)
-
-target_sources(networkextension PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/dnsmanager)
-set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/dnsmanager PROPERTIES
-    MACOSX_PACKAGE_LOCATION MacOS
-    HEADER_FILE_ONLY TRUE
-    GENERATED TRUE
-)
-
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 osx_codesign_target(networkextension FORCE)
