@@ -97,5 +97,23 @@ if((NOT XCODE) AND (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile
     )
 endif()
 
+# Create a target for the DNS manager tool.
+add_executable(dnsmanager ${CMAKE_CURRENT_SOURCE_DIR}/dnsmanager.mm)
+find_library(FW_SYSTEMCONFIG SystemConfiguration)
+target_compile_options(dnsmanager PUBLIC "-fobjc-arc" "-fno-objc-arc-exceptions")
+target_compile_definitions(dnsmanager PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
+target_link_libraries(dnsmanager PRIVATE ${FW_FOUNDATION} ${FW_SYSTEMCONFIG})
+
+# Set the DNS manager tool up as a link dependency to ensure the codesign gets updated.
+add_dependencies(networkextension dnsmanager)
+set_target_properties(networkextension PROPERTIES LINK_DEPENDS $<TARGET_FILE:dnsmanager>)
+
+target_sources(networkextension PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/dnsmanager)
+set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/dnsmanager PROPERTIES
+    MACOSX_PACKAGE_LOCATION MacOS
+    HEADER_FILE_ONLY TRUE
+    GENERATED TRUE
+)
+
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 osx_codesign_target(networkextension FORCE)
