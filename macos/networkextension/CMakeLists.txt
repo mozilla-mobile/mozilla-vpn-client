@@ -4,6 +4,8 @@
 
 cmake_minimum_required(VERSION 3.20)
 
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
+
 project(networkextension VERSION 0.1 LANGUAGES C CXX OBJC
         DESCRIPTION "Mozilla VPN Network Extension"
         HOMEPAGE_URL "https://vpn.mozilla.org"
@@ -103,6 +105,7 @@ find_library(FW_SYSTEMCONFIG SystemConfiguration)
 target_compile_options(dnsmanager PUBLIC "-fobjc-arc" "-fno-objc-arc-exceptions")
 target_compile_definitions(dnsmanager PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 target_link_libraries(dnsmanager PRIVATE ${FW_FOUNDATION} ${FW_SYSTEMCONFIG})
+osx_codesign_target(dnsmanager)
 
 # Set the DNS manager tool up as a link dependency to ensure the codesign gets updated.
 add_dependencies(networkextension dnsmanager)
@@ -115,5 +118,4 @@ set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/dnsmanager PROPERTIES
     GENERATED TRUE
 )
 
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
 osx_codesign_target(networkextension FORCE)
