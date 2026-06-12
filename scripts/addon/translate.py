@@ -329,152 +329,155 @@ def transform_shared_strings(input_file, output_file, relevant_strings, short_ve
     with open(output_file, 'wb') as f:
         tree.write(f, encoding='utf-8', xml_declaration=True)
 
-def translate_addon(manifest, qtsearchpath, source, dest, i18npath, script_path):
-    # Lookup our required tools for addon generation.
-    lconvert = shutil.which("lconvert", path=qtsearchpath)
-    if lconvert is None:
-        print("Unable to locate lconvert path.", file=sys.stderr)
-        sys.exit(1)
+def translate_addon(qtsearchpath, source, dest, i18npath, script_path):
+    with open(source, "r", encoding="utf-8") as file:
+        manifest = json.load(file)
 
-    lrelease = shutil.which("lrelease", path=qtsearchpath)
-    if lrelease is None:
-        print("Unable to locate lrelease path.", file=sys.stderr)
+        # Lookup our required tools for addon generation.
+        lconvert = shutil.which("lconvert", path=qtsearchpath)
+        if lconvert is None:
+            print("Unable to locate lconvert path.", file=sys.stderr)
+            sys.exit(1)
 
-    lrelease_flags = ""
-    lrelease_verstr = subprocess.run([lrelease, "-version"], stdout=subprocess.PIPE).stdout.decode('utf-8').split()[-1]
-    lrelease_version = tuple(int(x) for x in lrelease_verstr.split('.')[0:2])
-    if lrelease_version < (6, 10):
-        lrelease_flags = "-idbased" 
+        lrelease = shutil.which("lrelease", path=qtsearchpath)
+        if lrelease is None:
+            print("Unable to locate lrelease path.", file=sys.stderr)
 
-    print("Reading the translation fallback file...")
-    translations_fallback = {}
-    with open( os.path.join(os.path.dirname(script_path), "src", "translations", "extras", "translations_fallback.json"), "r", encoding="utf-8") as file:
-        translations_fallback = json.load(file)
+        lrelease_flags = ""
+        lrelease_verstr = subprocess.run([lrelease, "-version"], stdout=subprocess.PIPE).stdout.decode('utf-8').split()[-1]
+        lrelease_version = tuple(int(x) for x in lrelease_verstr.split('.')[0:2])
+        if lrelease_version < (6, 10):
+            lrelease_flags = "-idbased" 
 
-        print("Copying files in a temporary folder...")
-        tmp_path = tempfile.mkdtemp()
-        copy_files(os.path.dirname(source), tmp_path)
+        print("Reading the translation fallback file...")
+        translations_fallback = {}
+        with open( os.path.join(os.path.dirname(script_path), "src", "translations", "extras", "translations_fallback.json"), "r", encoding="utf-8") as file:
+            translations_fallback = json.load(file)
 
-        strings = {}
+            print("Copying files in a temporary folder...")
+            tmp_path = tempfile.mkdtemp()
+            copy_files(os.path.dirname(source), tmp_path)
 
-        if "translatable" not in manifest or manifest["translatable"] == True:
-            print("Retrieving strings...")
-            if manifest["type"] == "tutorial":
-                strings = retrieve_strings_tutorial(manifest, source)
-            elif manifest["type"] == "guide":
-                strings = retrieve_strings_guide(manifest, source)
-            elif manifest["type"] == "message":
-                strings = retrieve_strings_message(manifest, source)
-            elif manifest["type"] == "replacer":
-              pass
-            else:
-                exit(f"Unsupported manifest type `{manifest['type']}`")
+            strings = {}
 
-            print("Create localization file...")
-            os.mkdir(os.path.join(tmp_path, "i18n"))
-            template_ts_file = os.path.join(dest, f"{manifest['id']}.ts")
-            write_en_language(template_ts_file, strings, True)
+            if "translatable" not in manifest or manifest["translatable"] == True:
+                print("Retrieving strings...")
+                if manifest["type"] == "tutorial":
+                    strings = retrieve_strings_tutorial(manifest, source)
+                elif manifest["type"] == "guide":
+                    strings = retrieve_strings_guide(manifest, source)
+                elif manifest["type"] == "message":
+                    strings = retrieve_strings_message(manifest, source)
+                elif manifest["type"] == "replacer":
+                  pass
+                else:
+                    exit(f"Unsupported manifest type `{manifest['type']}`")
 
-            # This will be probably replaced by the en locale if it exists
-            en_ts_file = os.path.join(tmp_path, "i18n", "locale_en.ts")
-            shutil.copyfile(template_ts_file, en_ts_file)
-            os.system(f"{lrelease} {lrelease_flags} {en_ts_file}")
+                print("Create localization file...")
+                os.mkdir(os.path.join(tmp_path, "i18n"))
+                template_ts_file = os.path.join(dest, f"{manifest['id']}.ts")
+                write_en_language(template_ts_file, strings, True)
 
-            # Fallback
-            ts_file = os.path.join(tmp_path, "i18n", "locale.ts")
-            shutil.copyfile(template_ts_file, ts_file)
-            os.system(f"{lrelease} {lrelease_flags} {ts_file}")
+                # This will be probably replaced by the en locale if it exists
+                en_ts_file = os.path.join(tmp_path, "i18n", "locale_en.ts")
+                shutil.copyfile(template_ts_file, en_ts_file)
+                os.system(f"{lrelease} {lrelease_flags} {en_ts_file}")
 
-            # Prepare for shared strings, if they will be used
-            use_shared_strings = "message" in manifest and "usesSharedStrings" in manifest["message"] and manifest["message"]["usesSharedStrings"] == True
-            short_version = None
-            if use_shared_strings:
-                # Confirm that shortVersion exists and is a string
-                if "shortVersion" not in manifest["message"] or type(manifest["message"]["shortVersion"]) is not str:
-                    exit("shortVersion string required when usesSharedStrings is true")
-                short_version = manifest["message"]["shortVersion"]
+                # Fallback
+                ts_file = os.path.join(tmp_path, "i18n", "locale.ts")
+                shutil.copyfile(template_ts_file, ts_file)
+                os.system(f"{lrelease} {lrelease_flags} {ts_file}")
 
-            # Include internationalization if the i18n path was specified.
-            completeness = []
-            i18nlocales = []
-            if i18npath is not None:
-                i18nlocales = os.listdir(i18npath)
-            for locale in i18nlocales:
-                if not os.path.isdir(os.path.join(i18npath, locale)) or locale.startswith("."):
-                    continue
-
-                xliff_path = os.path.join(i18npath, locale, "addons", manifest["id"], "strings.xliff")
+                # Prepare for shared strings, if they will be used
+                use_shared_strings = "message" in manifest and "usesSharedStrings" in manifest["message"] and manifest["message"]["usesSharedStrings"] == True
+                short_version = None
                 if use_shared_strings:
-                    shared_xliff_path = os.path.join(i18npath, locale, "addons", "strings.xliff")
-                    # make sure we have a shared translation file
-                    if not os.path.isfile(shared_xliff_path):
+                    # Confirm that shortVersion exists and is a string
+                    if "shortVersion" not in manifest["message"] or type(manifest["message"]["shortVersion"]) is not str:
+                        exit("shortVersion string required when usesSharedStrings is true")
+                    short_version = manifest["message"]["shortVersion"]
+
+                # Include internationalization if the i18n path was specified.
+                completeness = []
+                i18nlocales = []
+                if i18npath is not None:
+                    i18nlocales = os.listdir(i18npath)
+                for locale in i18nlocales:
+                    if not os.path.isdir(os.path.join(i18npath, locale)) or locale.startswith("."):
                         continue
 
-                    xliff_path = os.path.join(tmp_path, "i18n", locale, "addons", manifest["id"], "strings.xliff")
-                    transform_shared_strings(shared_xliff_path, xliff_path, strings, short_version)
+                    xliff_path = os.path.join(i18npath, locale, "addons", manifest["id"], "strings.xliff")
+                    if use_shared_strings:
+                        shared_xliff_path = os.path.join(i18npath, locale, "addons", "strings.xliff")
+                        # make sure we have a shared translation file
+                        if not os.path.isfile(shared_xliff_path):
+                            continue
 
-                if os.path.isfile(xliff_path):
-                    locale_file = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
+                        xliff_path = os.path.join(tmp_path, "i18n", locale, "addons", manifest["id"], "strings.xliff")
+                        transform_shared_strings(shared_xliff_path, xliff_path, strings, short_version)
 
-                    # When 2.15 will be the min-required version, we can remove
-                    # this block and generate TS files with `no-untranslated'
-                    # option. But to be back-compatible, we need to compute the
-                    # language fallback here instead of in the client.
-                    if locale in translations_fallback:
-                        # The fallback translations are computed in reverse order.
-                        # First "en" where we have 100% of translations by default.
-                        xliff_path_en = os.path.join(i18npath, "en", "addons", manifest["id"], "strings.xliff")
-                        if use_shared_strings:
-                            shared_xliff_path = os.path.join(i18npath, "en", "addons", "strings.xliff")
-                            xliff_path_en = os.path.join(tmp_path, "i18n", "en", "addons", manifest["id"], "strings.xliff")
-                            transform_shared_strings(shared_xliff_path, xliff_path_en, strings, short_version)
-                        locale_file_en = os.path.join(tmp_path, "i18n", "locale_en_fallback.ts")
-                        os.system(f"{lconvert} -if xlf -i {xliff_path_en} -o {locale_file_en}")
+                    if os.path.isfile(xliff_path):
+                        locale_file = os.path.join(tmp_path, "i18n", f"locale_{locale}.ts")
 
-                        # Then the fallback languages
-                        locale_file_fallbacks = []
-                        for fallback in translations_fallback[locale]:
-                            xliff_path_fallback = os.path.join(i18npath, fallback, "addons", manifest["id"], "strings.xliff")
+                        # When 2.15 will be the min-required version, we can remove
+                        # this block and generate TS files with `no-untranslated'
+                        # option. But to be back-compatible, we need to compute the
+                        # language fallback here instead of in the client.
+                        if locale in translations_fallback:
+                            # The fallback translations are computed in reverse order.
+                            # First "en" where we have 100% of translations by default.
+                            xliff_path_en = os.path.join(i18npath, "en", "addons", manifest["id"], "strings.xliff")
                             if use_shared_strings:
-                                shared_xliff_path = os.path.join(i18npath, fallback, "addons", "strings.xliff")
-                                if not os.path.isfile(shared_xliff_path):
-                                    continue
-                                xliff_path_fallback = os.path.join(tmp_path, "i18n", fallback, "addons", manifest["id"], "strings.xliff")
-                                transform_shared_strings(shared_xliff_path, xliff_path_fallback, strings, short_version)
-                            locale_file_fallback = os.path.join(tmp_path, "i18n", f"locale_{fallback}.ts")
-                            locale_file_fallbacks.append(locale_file_fallback)
-                            os.system(f"{lconvert} -if xlf -i {xliff_path_fallback} -no-untranslated -o {locale_file_fallback}")
+                                shared_xliff_path = os.path.join(i18npath, "en", "addons", "strings.xliff")
+                                xliff_path_en = os.path.join(tmp_path, "i18n", "en", "addons", manifest["id"], "strings.xliff")
+                                transform_shared_strings(shared_xliff_path, xliff_path_en, strings, short_version)
+                            locale_file_en = os.path.join(tmp_path, "i18n", "locale_en_fallback.ts")
+                            os.system(f"{lconvert} -if xlf -i {xliff_path_en} -o {locale_file_en}")
 
-                        # Finally, the current language
-                        os.system(f"{lconvert} -if xlf -i {xliff_path} -no-untranslated -o {locale_file}")
+                            # Then the fallback languages
+                            locale_file_fallbacks = []
+                            for fallback in translations_fallback[locale]:
+                                xliff_path_fallback = os.path.join(i18npath, fallback, "addons", manifest["id"], "strings.xliff")
+                                if use_shared_strings:
+                                    shared_xliff_path = os.path.join(i18npath, fallback, "addons", "strings.xliff")
+                                    if not os.path.isfile(shared_xliff_path):
+                                        continue
+                                    xliff_path_fallback = os.path.join(tmp_path, "i18n", fallback, "addons", manifest["id"], "strings.xliff")
+                                    transform_shared_strings(shared_xliff_path, xliff_path_fallback, strings, short_version)
+                                locale_file_fallback = os.path.join(tmp_path, "i18n", f"locale_{fallback}.ts")
+                                locale_file_fallbacks.append(locale_file_fallback)
+                                os.system(f"{lconvert} -if xlf -i {xliff_path_fallback} -no-untranslated -o {locale_file_fallback}")
 
-                        # All is unified in reverse order.
-                        os.system(f"{lconvert} -i {locale_file_en} {' '.join(locale_file_fallbacks)} {locale_file} -o {locale_file}")
-                    else:
-                        os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
+                            # Finally, the current language
+                            os.system(f"{lconvert} -if xlf -i {xliff_path} -no-untranslated -o {locale_file}")
 
-                    os.system(f"{lrelease} {lrelease_flags} {locale_file}")
+                            # All is unified in reverse order.
+                            os.system(f"{lconvert} -i {locale_file_en} {' '.join(locale_file_fallbacks)} {locale_file} -o {locale_file}")
+                        else:
+                            os.system(f"{lconvert} -if xlf -i {xliff_path} -o {locale_file}")
 
-                    xlifftool_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "xlifftool.py")
-                    xlifftool_cmd = [sys.executable, xlifftool_path, "-C", f"--locale={locale}", xliff_path]
-                    xlifftool = subprocess.run(xlifftool_cmd, stdout=subprocess.PIPE)
-                    # This completeness metric can be out-of-date, sometimes reporting a higher-than-actual completeness after a new string is
-                    # added to the app. This happens because the .xliff file doesn't have all the source strings, so an incorrect denominator is used.
-                    # To show up in the .xliff, there must be a complete cycle of a new string being pulled into Pontoon (via the `extract new strings`
-                    # job being run and merged into the translation repo) and then the VPN repo merging in a new translations commit.
-                    # We protect against this by always loading English as a fallback language.
-                    completeness_output = xlifftool.stdout.decode("utf-8")
-                    completeness.append(f"{locale}:{completeness_output}")
+                        os.system(f"{lrelease} {lrelease_flags} {locale_file}")
 
-            # If we don't have translations yet, we still have English at 100%.
-            if not completeness:
-                completeness.append("en:1.0")
+                        xlifftool_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "xlifftool.py")
+                        xlifftool_cmd = [sys.executable, xlifftool_path, "-C", f"--locale={locale}", xliff_path]
+                        xlifftool = subprocess.run(xlifftool_cmd, stdout=subprocess.PIPE)
+                        # This completeness metric can be out-of-date, sometimes reporting a higher-than-actual completeness after a new string is
+                        # added to the app. This happens because the .xliff file doesn't have all the source strings, so an incorrect denominator is used.
+                        # To show up in the .xliff, there must be a complete cycle of a new string being pulled into Pontoon (via the `extract new strings`
+                        # job being run and merged into the translation repo) and then the VPN repo merging in a new translations commit.
+                        # We protect against this by always loading English as a fallback language.
+                        completeness_output = xlifftool.stdout.decode("utf-8")
+                        completeness.append(f"{locale}:{completeness_output}")
 
-            completeness_file = os.path.join(tmp_path, "i18n", f"translations.completeness")
-            with open(completeness_file, "w", encoding="utf-8") as f:
-                f.write("".join(completeness))
+                # If we don't have translations yet, we still have English at 100%.
+                if not completeness:
+                    completeness.append("en:1.0")
 
-        else:
-          print("Addon not translatable")
+                completeness_file = os.path.join(tmp_path, "i18n", f"translations.completeness")
+                with open(completeness_file, "w", encoding="utf-8") as f:
+                    f.write("".join(completeness))
 
-        return tmp_path
+            else:
+              print("Addon not translatable")
+
+            return tmp_path, manifest['id']

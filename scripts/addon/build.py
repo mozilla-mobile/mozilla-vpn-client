@@ -117,33 +117,30 @@ jsonSchema = os.path.join(script_path, "ci", "jsonSchemas", "addon.json")
 if not os.path.isfile(jsonSchema):
     exit(f"The JSONSchema {jsonSchema} does not exist")
 
-with open(args.source, "r", encoding="utf-8") as file:
-    manifest = json.load(file)
-    tmp_path = translate_addon(manifest, qtsearchpath, args.source, args.dest, args.i18npath, script_path)
-    print(f'MATTHEW {tmp_path}')
+tmp_path, addon_id = translate_addon(qtsearchpath, args.source, args.dest, args.i18npath, script_path)
 
-    if args.depfile is not None:
-        print("Generate the dependency file...")
-        with open(args.depfile, "w") as f:
-            f.write(f"{os.path.join(args.dest, manifest['id'])}.rcc: {args.source}")
-            srcdir = os.path.dirname(args.source)
-            for file in get_file_list(srcdir, ""):
-                f.write(f" {os.path.join(srcdir, file)}")
+if args.depfile is not None:
+    print("Generate the dependency file...")
+    with open(args.depfile, "w") as f:
+        f.write(f"{os.path.join(args.dest, addon_id)}.rcc: {args.source}")
+        srcdir = os.path.dirname(args.source)
+        for file in get_file_list(srcdir, ""):
+            f.write(f" {os.path.join(srcdir, file)}")
 
-    print("Generate the RCC file...")
-    files = get_file_list(tmp_path, "")
+print("Generate the RCC file...")
+files = get_file_list(tmp_path, "")
 
-    qrc_file = os.path.join(tmp_path, f"{manifest['id']}.qrc")
-    with open(qrc_file, "w", encoding="utf-8") as f:
-        rcc_elm = ET.Element("RCC")
-        qresource = ET.SubElement(rcc_elm, "qresource")
-        qresource.set("prefix", "/")
-        for file in files:
-            elm = ET.SubElement(qresource, "file")
-            elm.text = file
-        f.write(ET.tostring(rcc_elm, encoding="unicode"))
+qrc_file = os.path.join(tmp_path, f"{addon_id}.qrc")
+with open(qrc_file, "w", encoding="utf-8") as f:
+    rcc_elm = ET.Element("RCC")
+    qresource = ET.SubElement(rcc_elm, "qresource")
+    qresource.set("prefix", "/")
+    for file in files:
+        elm = ET.SubElement(qresource, "file")
+        elm.text = file
+    f.write(ET.tostring(rcc_elm, encoding="unicode"))
 
-    print("Creating the final addon...")
-    rcc_file = os.path.join(args.dest, f"{manifest['id']}.rcc")
-    os.system(f"{rcc} --binary --no-zstd --output {rcc_file} {qrc_file}")
-    print(f"Done: {rcc_file}")
+print("Creating the final addon...")
+rcc_file = os.path.join(args.dest, f"{addon_id}.rcc")
+os.system(f"{rcc} --binary --no-zstd --output {rcc_file} {qrc_file}")
+print(f"Done: {rcc_file}")
