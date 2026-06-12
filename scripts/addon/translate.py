@@ -1,3 +1,4 @@
+import argparse
 import json
 import os
 import shutil
@@ -481,3 +482,89 @@ def translate_addon(qtsearchpath, source, dest, i18npath, script_path):
               print("Addon not translatable")
 
             return tmp_path, manifest['id']
+
+if __name__ == "__main__":
+
+    parser = argparse.ArgumentParser(description="Generate an addon package")
+    parser.add_argument(
+        "source",
+        metavar="MANIFEST",
+        type=str,
+        action="store",
+        help="The addon manifest",
+    )
+    parser.add_argument(
+        "dest",
+        metavar="DEST",
+        type=str,
+        action="store",
+        help="The destination folder",
+    )
+    parser.add_argument(
+        "-q",
+        "--qt_path",
+        default=[],
+        action='append',
+        dest="qtpath",
+        help="The QT binary path. If not set, we try to guess.",
+    )
+    parser.add_argument(
+        "-i",
+        "--i18n",
+        default=None,
+        dest="i18npath",
+        help="Internationalization project path"
+    )
+    args = parser.parse_args()
+
+    qtpathsep = ";" if (os.name == "nt") else ":"
+
+    if len(args.qtpath) == 0:
+        # Try to get the Qt tooling paths from qmake.
+        p = qtquery("qmake", "QT_INSTALL_BINS")
+        if p is not None:
+            args.qtpath.append(p)
+        p = qtquery("qmake", "QT_INSTALL_LIBEXECS")
+        if p is not None:
+            args.qtpath.append(p)
+
+        p = qtquery("qmake6", "QT_INSTALL_BINS")
+        if p is not None:
+            args.qtpath.append(p)
+        p = qtquery("qmake6", "QT_INSTALL_LIBEXECS")
+        if p is not None:
+            args.qtpath.append(p)
+    else:
+        # If we can find a qmake, then add libexec to our search path too.
+        qmake = shutil.which("qmake", path=qtpathsep.join(args.qtpath))
+        libexecs = qtquery(qmake, "QT_INSTALL_LIBEXECS")
+        if libexecs is not None:
+            args.qtpath.append(libexecs)
+
+    qtsearchpath=qtpathsep.join(args.qtpath)
+
+    script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
+    tmp_dest_path = tempfile.mkdtemp()
+    tmp_path, addon_id = translate_addon(qtsearchpath, args.source, tmp_dest_path, args.i18npath, script_path)
+
+    locales_not_fully_translated = []
+    with open(os.path.join(tmp_path, "i18n", "translations.completeness"), "r", encoding="utf-8") as f:
+        for line in f:
+            parts = line.rstrip("\n").split(":")
+            if len(parts) != 2:
+                print("Error parsing translations file")
+                exit(1)
+            if float(parts[1]) < 1:
+                locales_not_fully_translated.append(parts[0])
+
+    # if there are no locales add some text - otherwise locales condition will not be considered
+    if len(locales_not_fully_translated) == 0:
+        locales_not_fully_translated.append("fake")
+
+    quoted_locales = [f'\"{locale}\"' for locale in locales_not_fully_translated]
+
+    skipped_locales_file = os.path.join(args.dest, "locales_skipped.txt")
+    with open(skipped_locales_file, "w", encoding="utf-8") as f:
+        f.write(",".join(quoted_locales))
+
+    print(f"Skipped locales: {skipped_locales_file}")

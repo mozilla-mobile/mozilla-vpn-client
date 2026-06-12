@@ -28,3 +28,10 @@ property object with the following properties:
 | badge | A label used to tag a message (options: `warning`, `critical`, `new_update`, `whats_new`, `survey`, `subscription` ) | String | No |
 | notify | Should we notify the user about this message via system notifications (Default: true) | Boolean | No |
 | blocks | An array of graphical blocks that compose the user interface of the message's contents (see more info [here](https://github.com/mozilla-mobile/mozilla-vpn-client/wiki/guides#block-object)) | Array of Block objects | Yes |
+
+## Default Update Message
+
+`message_update_default` is a special message. Without it, locales that have not translated every bullet point string in the latest update message will not
+show a "please update" message. This would cause users to stay on old versions, which would be a bummer. Thus, we have a default update message that just
+uses the simple update message, which all locales generally have translated. When building addons, this default manifest gets updated with a few pieces of info
+from the most recent "please update" addon message.
