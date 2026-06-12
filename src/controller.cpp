@@ -88,17 +88,6 @@ Controller::Controller() {
   connect(&m_handshakeTimer, &QTimer::timeout, this,
           &Controller::handshakeTimeout);
 
-  // if the locale changed, send the new translation for the city name to iOS
-  // widget
-  connect(Localizer::instance(), &Localizer::localeChanged, this, [this]() {
-    if (SettingsHolder::instance()->languageCode().isEmpty()) {
-      // If setting is empty, this was called while tearing down the client
-      return;
-    }
-    const ServerData& serverData = *MozillaVPN::instance()->serverData();
-    maybeSendUpdatedConfig(serverData);
-  });
-
   LogHandler::instance()->registerLogSerializer(this);
 }
 
@@ -194,6 +183,17 @@ void Controller::initialize() {
 
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
+
+  // if the locale changed, send the new translation for the city name to iOS
+  // widget
+  connect(Localizer::instance(), &Localizer::localeChanged, this, [this]() {
+    if (SettingsHolder::instance()->languageCode().isEmpty()) {
+      // If setting is empty, this was called while tearing down the client
+      return;
+    }
+    const ServerData& serverData = *MozillaVPN::instance()->serverData();
+    maybeSendUpdatedConfig(serverData);
+  });
 }
 
 void Controller::implPermRequired() {

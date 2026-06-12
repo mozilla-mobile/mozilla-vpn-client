@@ -261,11 +261,17 @@ void Localizer::loadLanguagesFromI18n() {
         parts[0].remove(0, strlen(Constants::LOCALIZER_FILENAME_PREFIX) +
                                /* the final '_': */ 1);
 
-    if (Constants::inProduction() &&
-        m_translationCompleteness.value(code, 0) < 0.7) {
-      logger.debug() << "Language excluded:" << code << "completeness:"
-                     << m_translationCompleteness.value(code, 0);
-      continue;
+    QString appendText = "";
+    double translationPercent = m_translationCompleteness.value(code, 0);
+    if (translationPercent < 0.7) {
+      logger.debug() << "Language below threshold:" << code
+                     << "completeness:" << translationPercent;
+      if (Constants::inProduction()) {
+        continue;
+      } else {
+        appendText = QString(" (stage only: %1%)")
+                         .arg(translationPercent * 100, 0, 'f', 0);
+      }
     }
 
     QStringList codeParts = code.split("_");
@@ -277,7 +283,7 @@ void Localizer::loadLanguagesFromI18n() {
 
     Language language{code, codeParts[0],
                       codeParts.length() > 1 ? codeParts[1] : QString(),
-                      nativeLanguageName(locale, code),
+                      nativeLanguageName(locale, code) + appendText,
                       locale.textDirection() == Qt::RightToLeft};
     m_languages.append(language);
   }
