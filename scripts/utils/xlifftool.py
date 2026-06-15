@@ -151,8 +151,7 @@ class xliff_language:
         else:
             # If here, we will report a completeness score of 0, causing it to potentially erroneously
             # skip being included as an available language.
-            print(f'{self.locale} not found in target or source.')
-            sys.exit(1)
+            sys.exit(f'{self.locale} not found in target or source')
 
     ## Parse an XLIFF file for translation data.
     def parse_xliff(self, filename):
