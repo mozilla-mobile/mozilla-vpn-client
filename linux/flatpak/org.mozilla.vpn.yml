@@ -33,13 +33,6 @@ modules:
     cleanup:
       - '*'
 
-  - name: qt5compat
-    buildsystem: cmake-ninja
-    sources:
-      - type: git
-        tag: v6.10.1
-        url: https://github.com/qt/qt5compat
-
   - name: mozillavpn
     buildsystem: cmake-ninja
     config-opts:
