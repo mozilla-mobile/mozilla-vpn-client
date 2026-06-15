@@ -3,16 +3,18 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.0
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
-import compat 0.1
-
-MZAnimatedRingsShader {
+ShaderEffect {
     id: ringAnimation
 
+    property string shaderSrc: MZAssetLookup.getAnimationSource("RingsShader")
     property bool isCurrentyVisible: false
     property bool startAnimation: false
     property real animationProgress
     property real animationOpacity
+
+    fragmentShader: shaderSrc
 
     anchors.horizontalCenter: parent.horizontalCenter
     animationProgress: 0.0
