@@ -3,17 +3,15 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.0
+import QtQuick.Effects
 import Mozilla.VPN 1.0
 import Mozilla.Shared 1.0
 
-import compat 0.1
-
-MZDropShadow {
+RectangularShadow {
     id: dropShadow
 
-    horizontalOffset: 1
-    verticalOffset: 1
-    radius: 5.5
+    offset: Qt.vector2d(1, 1)
+    blur: 5.5
     color: MZTheme.colors.dropShadow
     opacity: .1
     state: VPNController.state

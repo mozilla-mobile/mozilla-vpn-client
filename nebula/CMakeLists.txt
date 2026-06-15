@@ -5,7 +5,6 @@
 qt_add_library(nebula STATIC)
 
 add_subdirectory(ui/components)
-add_subdirectory(ui/compat)
 add_subdirectory(ui/themes)
 add_subdirectory(ui/resources)
 add_subdirectory(ui/utils)
@@ -16,8 +15,6 @@ target_link_libraries(nebula PRIVATE
     Qt6::Quick
     components
     componentsplugin
-    compat
-    compatplugin
     themes
     themesplugin
     resources

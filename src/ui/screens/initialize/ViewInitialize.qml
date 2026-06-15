@@ -9,7 +9,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
-import compat 0.1
+import QtQuick.Shapes
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
@@ -22,7 +22,7 @@ Item {
         // difference for other platforms. (In main.qml, we set the background color to the general bgColor,
         // so this only is needed on this screen - it is the only one that has a custom background color.)
         id: fallBackBackground
-        // This is a fallback for MZRadialGradient
+        // This is a fallback for the radial gradient
         color: MZTheme.colors.onBoardingGradient.end
         height: Screen.height + 200
         width: Screen.width
@@ -33,22 +33,35 @@ Item {
         }
     }
 
-    MZRadialGradient {
+    Shape {
         anchors.fill: fallBackBackground
 
-        gradient: Gradient {
-            GradientStop {
-                color: MZTheme.colors.onBoardingGradient.start
-                position: 0.0
+        ShapePath {
+            strokeColor: "transparent"
+            fillGradient: RadialGradient {
+                centerX: fallBackBackground.width / 2
+                centerY: fallBackBackground.height / 2
+                centerRadius: Math.sqrt(fallBackBackground.width * fallBackBackground.width + fallBackBackground.height * fallBackBackground.height)
+                focalX: centerX
+                focalY: centerY
+                GradientStop {
+                    color: MZTheme.colors.onBoardingGradient.start
+                    position: 0.0
+                }
+                GradientStop {
+                    color: MZTheme.colors.onBoardingGradient.middle
+                    position: 0.2
+                }
+                GradientStop {
+                    color: MZTheme.colors.onBoardingGradient.end
+                    position: 0.5
+                }
             }
-            GradientStop {
-                color: MZTheme.colors.onBoardingGradient.middle
-                position: 0.2
-            }
-            GradientStop {
-                color: MZTheme.colors.onBoardingGradient.end
-                position: 0.5
-            }
+            startX: 0; startY: 0
+            PathLine { x: fallBackBackground.width; y: 0 }
+            PathLine { x: fallBackBackground.width; y: fallBackBackground.height }
+            PathLine { x: 0; y: fallBackBackground.height }
+            PathLine { x: 0; y: 0 }
         }
     }
 

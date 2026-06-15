@@ -95,9 +95,8 @@ image_list = imagesDefinedInFile(asset_lookup_path + "/MZAssetLookup.js")
 #    (All QML files are in one of these 3 directories or a subdirectory of one: nebula/ui/compat, nebula/ui/components, src/ui)
 script_path = os.path.dirname(os.path.abspath(__file__))
 src_ui_path = os.path.join(script_path, os.path.pardir, os.path.pardir, "src", "ui")
-nebula_compat_path = os.path.join(script_path, os.path.pardir, os.path.pardir, "nebula", "ui", "compat")
 nebula_component_path = os.path.join(script_path, os.path.pardir, os.path.pardir, "nebula", "ui", "components")
-qml_directories = [src_ui_path, nebula_compat_path, nebula_component_path]
+qml_directories = [src_ui_path, nebula_component_path]
 all_qml_files = []
 for direc in qml_directories:
     all_qml_files = all_qml_files + getQmlFiles(direc)
