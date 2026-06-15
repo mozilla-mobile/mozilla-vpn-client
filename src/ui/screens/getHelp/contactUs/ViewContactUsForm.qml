@@ -75,14 +75,13 @@ MZViewBase {
                     MZBoldLabel {
                         property string enterEmailAddress: MZI18n.InAppSupportWorkflowSupportEmailFieldLabel
 
-                        text: enterEmailAddress
+                        text: enterEmailAddress + " *"
                         lineHeight: MZTheme.theme.labelLineHeight
                         lineHeightMode: Text.FixedHeight
                         wrapMode: Text.WordWrap
                         verticalAlignment: Text.AlignVCenter
                         Layout.fillWidth: true
                         width: undefined
-
                     }
 
                     MZTextField {
@@ -126,7 +125,7 @@ MZViewBase {
                 MZBoldLabel {
                     property string enterEmailAddress: MZI18n.InAppSupportWorkflowSupportFieldHeader
 
-                    text: enterEmailAddress
+                    text: enterEmailAddress + " *"
                     lineHeight: MZTheme.theme.labelLineHeight
                     lineHeightMode: Text.FixedHeight
                     wrapMode: Text.WordWrap
