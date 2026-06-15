@@ -18,7 +18,7 @@ if(IOS)
     set(TRANSLATIONS_OUT_DIR "${CMAKE_CURRENT_BINARY_DIR}/generated")
     file(MAKE_DIRECTORY "${TRANSLATIONS_OUT_DIR}")
 
-    # `execute_process` runs when steting up the Xcode Project. This has the downside
+    # `execute_process` runs when setting up the Xcode Project. This has the downside
     # of not re-running unless the iOS build folder is deleted - so new translations
     # are not added until the folder is removed.
     # Running the Python script was previously done at build time, with `execute_process` being

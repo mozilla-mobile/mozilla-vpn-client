@@ -264,13 +264,14 @@ void Localizer::loadLanguagesFromI18n() {
     QString appendText = "";
     double translationPercent = m_translationCompleteness.value(code, 0);
     if (translationPercent < 0.7) {
+      QString formattedPercent =
+          QString("%1%").arg(translationPercent * 100, 0, 'f', 0);
       logger.debug() << "Language below threshold:" << code
-                     << "completeness:" << translationPercent;
+                     << "completeness:" << formattedPercent;
       if (Constants::inProduction()) {
         continue;
       } else {
-        appendText = QString(" (stage only: %1%)")
-                         .arg(translationPercent * 100, 0, 'f', 0);
+        appendText = QString(" (stage only: " + formattedPercent + ")");
       }
     }
 

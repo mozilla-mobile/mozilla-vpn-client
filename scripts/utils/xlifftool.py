@@ -148,6 +148,10 @@ class xliff_language:
                     'source': unit.findtext('{urn:oasis:names:tc:xliff:document:1.2}source', default=''),
                     'target': unit.findtext('{urn:oasis:names:tc:xliff:document:1.2}source', default='')
                 }
+        else:
+            # If here, we will report a completeness score of 0, causing it to potentially erroneously
+            # skip being included as an available language.
+            sys.exit(f'{self.locale} not found in target or source')
 
     ## Parse an XLIFF file for translation data.
     def parse_xliff(self, filename):
