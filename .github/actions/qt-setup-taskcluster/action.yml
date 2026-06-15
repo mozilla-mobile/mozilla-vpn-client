@@ -42,10 +42,7 @@ runs:
         # even though the archive is truncated.
         curl -sSL -r0-4096 "https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${TASKID}/artifacts/${NAME}" -o qt-toolchain-head.tar.xz
         TARBALL_PATH=$((xzcat qt-toolchain-head.tar.xz | tar t | head -1 | grep -o '^[^/]*') 2>/dev/null || true)
-        # On Windows, $GITHUB_WORKSPACE uses backslashes; normalize to forward
-        # slashes so the path isn't a mix of both separators, causing failure.
-        ADJUSTED_WORKSPACE="${GITHUB_WORKSPACE//\\//}"
-        echo "toolchain-path=${ADJUSTED_WORKSPACE}/3rdparty/${TARBALL_PATH}" >> $GITHUB_OUTPUT
+        echo "toolchain-path=${GITHUB_WORKSPACE}/3rdparty/${TARBALL_PATH}" >> $GITHUB_OUTPUT
 
     - name: Cache Qt toolchain
       uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
@@ -59,14 +56,14 @@ runs:
     - name: Install Qt toolchain
       if: ${{ inputs.cache != 'true' || steps.qt-toolchain-cache.outputs.cache-hit != 'true' }}
       id: qt-toolchain-install
-      working-directory: ${{ runner.temp }}
+      working-directory: ${{ github.workspace }}/3rdparty
       shell: bash
       env:
         QT6_TOOLCHAIN_URL: https://firefox-ci-tc.services.mozilla.com/api/queue/v1/task/${{ steps.resolve.outputs.taskid }}/artifacts/${{ steps.resolve.outputs.filename }}
       run: |
         FILENAME=$(basename "${QT6_TOOLCHAIN_URL}")
         curl -sSL "${QT6_TOOLCHAIN_URL}" -o ${FILENAME}
-        tar -C ${GITHUB_WORKSPACE}/3rdparty/ -xf ${FILENAME}
+        tar -xf ${FILENAME}
 
     - name: Save Qt toolchain
       uses: actions/cache/save@0057852bfaa89a56745cba8c7296529d2fc39830 # v4

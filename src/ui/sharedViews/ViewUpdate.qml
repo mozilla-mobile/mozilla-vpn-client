@@ -96,7 +96,7 @@ MZFlickable {
 
     MZDropShadowWithStates {
         anchors.fill: alertWrapperBackground
-        source: alertWrapperBackground
+        radius: alertWrapperBackground.radius
     }
 
     Rectangle {

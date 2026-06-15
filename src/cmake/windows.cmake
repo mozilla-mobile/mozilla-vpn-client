@@ -65,13 +65,6 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/windows/windowsstartatbootwatcher.h
 )
 
-# Windows Qt6 UI workaround resources
-if(Qt6_VERSION VERSION_GREATER_EQUAL 6.3.0)
-    message(WARNING "Remove the Qt6 windows hack!")
-else()
-    target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/ui/qt6winhack.qrc)
-endif()
-
 # Use Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
 target_sources(mozillavpn PRIVATE

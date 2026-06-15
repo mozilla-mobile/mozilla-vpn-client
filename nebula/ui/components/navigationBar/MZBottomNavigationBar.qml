@@ -8,7 +8,7 @@ import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
 import components 0.1
-import compat 0.1
+import QtQuick.Effects
 
 Rectangle {
     id: root
@@ -25,16 +25,13 @@ Rectangle {
         bottomMargin: MZTheme.theme.navBarBottomMargin
     }
 
-    MZDropShadow {
-        source: outline
+    RectangularShadow {
         anchors.fill: outline
-        transparentBorder: true
-        verticalOffset: 2
+        offset: Qt.vector2d(0, 2)
         opacity: 0.6
-        spread: 0
-        radius: 6
+        blur: 6
         color: MZTheme.colors.dropShadow
-        cached: true
+        radius: outline.radius
     }
 
     MouseArea {

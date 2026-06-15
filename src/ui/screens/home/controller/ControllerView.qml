@@ -8,7 +8,6 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
-import compat 0.1
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
@@ -55,9 +54,7 @@ Item {
 
     MZDropShadowWithStates {
         anchors.fill: boxBackground
-        source: boxBackground
-        cached: true
-        transparentBorder: true
+        radius: boxBackground.radius
         z: -1
     }
 
@@ -489,6 +486,7 @@ Item {
         id: ipInfoToggleButton
         objectName: "ipInfoToggleButton"
 
+        property bool ready: visible && !opacityAnimation.running
         property var connectionInfoCloseText: MZI18n.GlobalClose
 
         anchors {
@@ -528,6 +526,7 @@ Item {
 
         Behavior on opacity {
             NumberAnimation {
+                id: opacityAnimation
                 duration: 300
             }
         }
