@@ -179,7 +179,6 @@ inAppSupportWorkflow:
   supportNavLinkText: Contact support
   supportEmailFieldLabel: Enter your email
   supportEmailFieldPlaceholder: Email address
-  supportConfirmEmailPlaceholder: Confirm email address
   supportFieldHeader: How can we help you with Mozilla VPN?
   dropdownLabel:
     value: Choose a category
