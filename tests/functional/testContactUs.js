@@ -47,9 +47,6 @@ describe('Contact us view', function() {
       await vpn.setQueryProperty(
           queries.screenGetHelp.contactSupportView.EMAIL_INPUT, 'text',
           'test@test.com');
-      await vpn.setQueryProperty(
-          queries.screenGetHelp.contactSupportView.CONFIRM_EMAIL_INPUT, 'text',
-          'test@test.com');
       await vpn.waitForQuery(
           queries.screenGetHelp.contactSupportView.DROPDOWN.visible());
       await vpn.setQueryProperty(
