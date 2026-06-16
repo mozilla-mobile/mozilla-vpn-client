@@ -66,44 +66,31 @@ MZViewBase {
 
             ColumnLayout {
                 objectName: "contactUs-unauthedUserInputs"
-                spacing: 24
+                spacing: 10
                 visible: !VPN.userAuthenticated
                 Layout.alignment: Qt.AlignHCenter
 
-                ColumnLayout {
-                    spacing: 10
-                    MZBoldLabel {
-                        property string enterEmailAddress: MZI18n.InAppSupportWorkflowSupportEmailFieldLabel
+                MZBoldLabel {
+                    property string enterEmailAddress: MZI18n.InAppSupportWorkflowSupportEmailFieldLabel
 
-                        text: enterEmailAddress
-                        lineHeight: MZTheme.theme.labelLineHeight
-                        lineHeightMode: Text.FixedHeight
-                        wrapMode: Text.WordWrap
-                        verticalAlignment: Text.AlignVCenter
-                        Layout.fillWidth: true
-                        width: undefined
+                    text: enterEmailAddress
+                    lineHeight: MZTheme.theme.labelLineHeight
+                    lineHeightMode: Text.FixedHeight
+                    wrapMode: Text.WordWrap
+                    verticalAlignment: Text.AlignVCenter
+                    Layout.fillWidth: true
+                    width: undefined
 
-                    }
-
-                    MZTextField {
-                        id: emailInput
-                        objectName: "contactUs-emailInput"
-
-                        verticalAlignment: Text.AlignVCenter
-                        Layout.fillWidth: true
-                        hasError: !MZValidator.validateEmailAddress(emailInput.text)
-                        _placeholderText: MZI18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
-                    }
                 }
 
                 MZTextField {
-                    id: confirmEmailInput
-                    objectName: "contactUs-confirmEmailInput"
+                    id: emailInput
+                    objectName: "contactUs-emailInput"
 
                     verticalAlignment: Text.AlignVCenter
                     Layout.fillWidth: true
-                    hasError: !MZValidator.validateEmailAddress(confirmEmailInput.text) || emailInput.text != confirmEmailInput.text
-                    _placeholderText: MZI18n.InAppSupportWorkflowSupportConfirmEmailPlaceholder
+                    hasError: !MZValidator.validateEmailAddress(emailInput.text)
+                    _placeholderText: MZI18n.InAppSupportWorkflowSupportEmailFieldPlaceholder
                 }
             }
 
@@ -204,7 +191,7 @@ MZViewBase {
                     }
                     enabled: dropDown.currentValue != null && textArea.userEntry != "" &&
                              (VPN.userAuthenticated  ? true :
-                                (MZValidator.validateEmailAddress(emailInput.text) && emailInput.text == confirmEmailInput.text)
+                                MZValidator.validateEmailAddress(emailInput.text)
                              )
                     opacity: enabled ? 1 : .5
                     Layout.preferredHeight: MZTheme.theme.rowHeight
