@@ -36,7 +36,7 @@ target_compile_definitions(unit_tests PRIVATE UNIT_TEST)
 if (QT_FEATURE_static)
     qt_import_plugins(unit_tests INCLUDE Qt6::QOffscreenIntegrationPlugin)
 endif()
-target_link_libraries(unit_tests PRIVATE lottie mzutils nebula translations)
+target_link_libraries(unit_tests PRIVATE mzutils nebula translations)
 
 # VPN Client source files
 target_sources(unit_tests PRIVATE

@@ -30,7 +30,6 @@ linux/netfilter/vendor/
 .venv
 .cache/clangd
 __pycache__
-lottie.mjs
 qml_lint_result.txt
 .qmlls.ini
 release_notes.txt
@@ -46,8 +45,6 @@ cmake_install.cmake
 CMakeCache.txt
 CMakeFiles/
 compile_commands.json
-lottie/lottie_autogen/
-lottie/liblottie.a
 nebula/nebula_autogen/
 nebula/libnebula.a
 src/mozillavpn_autogen/
