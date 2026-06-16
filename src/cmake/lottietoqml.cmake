@@ -30,7 +30,8 @@ function(mz_target_qml_from_lottie target)
 
         add_custom_command(
             OUTPUT "${result}"
-            COMMAND Qt6::lottietoqml -c -p "${file_absolute}" "${result}"
+            COMMAND ${CMAKE_COMMAND} -E env QT_QPA_PLATFORM=offscreen
+                    $<TARGET_FILE:Qt6::lottietoqml> -c -p "${file_absolute}" "${result}"
             DEPENDS "${file_absolute}" Qt6::lottietoqml
             VERBATIM
         )

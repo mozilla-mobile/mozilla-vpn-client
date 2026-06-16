@@ -165,34 +165,28 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
 endif()
 
 
-# The onboarding animations are plain QML generated from the Lottie JSON. When
-# the Qt lottietoqml generator is available (Qt 6.11+) we regenerate it at build
-# time; otherwise we fall back to the checked-in copies under animations/. Either
-# way no Lottie runtime is bundled.
+# The onboarding animations are plain QML generated from the Lottie JSON at build
+# time by the Qt6::lottietoqml tool. No Lottie runtime is bundled.
 include(${CMAKE_SOURCE_DIR}/src/cmake/lottietoqml.cmake)
 find_package(Qt6 QUIET COMPONENTS LottieTools)
-if(TARGET Qt6::lottietoqml)
-    message(STATUS "Onboarding animations: regenerating QML from Lottie JSON with Qt6::lottietoqml")
-    mz_target_qml_from_lottie(
-        mozillavpn-ui
-        FILES
-           resources/animations/globe_animation.json
-           resources/animations/lock_animation.json
-           resources/animations/vpnactive_animation.json
-           resources/animations/vpnlogo-drop_animation.json
-        OUTPUTS
-           animations/GlobeAnimation.qml
-           animations/LockAnimation.qml
-           animations/VpnActiveAnimation.qml
-           animations/VpnLogoDropAnimation.qml
-    )
-else()
-    message(STATUS "Onboarding animations: Qt6::lottietoqml not found, using checked-in QML under src/ui/animations/")
-    qt_target_qml_sources(mozillavpn-ui
-        QML_FILES
-           animations/GlobeAnimation.qml
-           animations/LockAnimation.qml
-           animations/VpnActiveAnimation.qml
-           animations/VpnLogoDropAnimation.qml
-    )
+if(NOT TARGET Qt6::lottietoqml)
+    message(FATAL_ERROR
+        "Qt6::lottietoqml not found. It is required to generate the onboarding "
+        "animations from Lottie JSON. Install the Qt Lottie tools in the toolchain "
+        "(note: finding the LottieTools package is not enough - the generator tool "
+        "ships separately).")
 endif()
+message(STATUS "Onboarding animations: regenerating QML from Lottie JSON with Qt6::lottietoqml")
+mz_target_qml_from_lottie(
+    mozillavpn-ui
+    FILES
+       resources/animations/globe_animation.json
+       resources/animations/lock_animation.json
+       resources/animations/vpnactive_animation.json
+       resources/animations/vpnlogo-drop_animation.json
+    OUTPUTS
+       animations/GlobeAnimation.qml
+       animations/LockAnimation.qml
+       animations/VpnActiveAnimation.qml
+       animations/VpnLogoDropAnimation.qml
+)
