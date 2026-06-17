@@ -4,6 +4,7 @@
 
 #import <Foundation/Foundation.h>
 #import <Network/Network.h>
+#import <NetworkExtension/NetworkExtension.h>
 
 @interface RoutePrefix : NSObject
 
@@ -31,7 +32,7 @@
 
 @property (strong) NSArray<RoutePrefix*>* routes;
 
-@property (strong) NSArray<NSString*>* dnsServers;
+@property (strong) NEDNSSettings* dnsSettings;
 
 @property (strong, readonly) NSDictionary<NSString *,id>* dict;
 

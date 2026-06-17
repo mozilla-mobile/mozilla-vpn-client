@@ -163,12 +163,31 @@
   config.routes = [NSArray arrayWithArray:routes];
 
   // Parse the DNS servers list.
-  // TODO: We should validate that the strings are valid IP addresses.
-  NSObject* dnsObject = [config.dict objectForKey:@"dnsServers"];
-  if ([dnsObject isKindOfClass:[NSArray<NSString*> class]]) {
-    config.dnsServers = dnsObject;
-  } else {
-    config.dnsServers = @[];
+  NSObject* dnsObject = [config.dict objectForKey:@"dnsSettings"];
+  config.dnsSettings = nil;
+  if ([dnsObject isKindOfClass:[NEDNSSettings class]]) {
+    config.dnsSettings = (NEDNSSettings*)dnsObject;
+  } else if ([dnsObject isKindOfClass:[NSArray<NSString*> class]]) {
+    // Parse and validate the addresses.
+    NSMutableArray<NSString*>* dnsServers = [NSMutableArray new];
+    for (NSString* server in (NSArray*)dnsObject) {
+      if ([server containsString:@":"]) {
+        struct in6_addr addr;
+        if (inet_pton(AF_INET6, server.UTF8String, &addr)) {
+          [dnsServers addObject:server];
+        }
+      } else {
+        struct in_addr addr;
+        if (inet_pton(AF_INET, server.UTF8String, &addr)) {
+          [dnsServers addObject:server];
+        }
+      }
+    }
+
+    if (dnsServers.count > 0) {
+      NEDNSSettings* settings = [NEDNSSettings alloc];
+      config.dnsSettings = [settings initWithServers:dnsServers];
+    }
   }
 
   return config;

@@ -207,7 +207,9 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
   [options setObject:config.m_serverIpv4Gateway.toNSString() forKey:@"serverIpv4Gateway"];
   [options setObject:config.m_serverIpv6Gateway.toNSString() forKey:@"serverIpv6Gateway"];
   [options setObject:[NSNumber numberWithInt:config.m_serverPort] forKey:@"serverPort"];
-  [options setObject:@[config.m_dnsServer.toNSString()] forKey:@"dnsServers"];
+  if (!config.m_dnsServer.isEmpty()) {
+    [options setObject:@[config.m_dnsServer.toNSString()] forKey:@"dnsSettings"];
+  }
 
   NSMutableArray* ipAddressRanges =
       [NSMutableArray arrayWithCapacity:config.m_allowedIPAddressRanges.length()];

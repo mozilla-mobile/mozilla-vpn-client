@@ -290,9 +290,8 @@
         }
 
         // Start the DNS manager, if configured.
-        if (weakSelf.config.dnsServers.count > 0) {
-          NEDNSSettings* dnsSettings = [[NEDNSSettings alloc] initWithServers:weakSelf.config.dnsServers];
-          [weakSelf startDnsManager:dnsSettings];
+        if (weakSelf.config.dnsSettings) {
+          [weakSelf startDnsManager:weakSelf.config.dnsSettings];
         }
 
         // Register a KVO observer to switch servers upon configuration change.
@@ -372,9 +371,8 @@
   }
 
   // (Re)start the DNS manager, if configured.
-  if (self.config.dnsServers.count > 0) {
-    NEDNSSettings* dnsSettings = [[NEDNSSettings alloc] initWithServers:self.config.dnsServers];
-    [self startDnsManager:dnsSettings];
+  if (self.config.dnsSettings) {
+    [self startDnsManager:self.config.dnsSettings];
   } else if (self.dnsManager) {
     // Otherwise, stop the DNS manager if it was running.
     [self.dnsManager terminate];
