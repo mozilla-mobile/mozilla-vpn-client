@@ -275,6 +275,12 @@ inline const OverridableFeature recommendedServers = {
     .evaluator = +[] { return true; },
 };
 
+inline const OverridableFeature showRotateIPAddressButton = {
+    .id = "showRotateIPAddressButton",
+    .name = "Show Rotate IP address button",
+    .evaluator = +[] { return false; },
+};
+
 inline const OverridableFeature subscriptionManagement = {
     .id = "subscriptionManagement",
     .name = "Subscription management",

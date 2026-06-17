@@ -36,6 +36,7 @@ inline const AnyFeature s_exposedFeatures[] = {
     ref(replacerAddon),
     ref(serverUnavailableNotification),
     ref(shareLogs),
+    ref(showRotateIPAddressButton),
     ref(startOnBoot),
     ref(subscriptionManagement),
     ref(themeSelectionIncludesAutomatic),

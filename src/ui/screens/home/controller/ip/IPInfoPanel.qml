@@ -8,6 +8,7 @@ import QtQuick.Layouts 1.14
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
+import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Rectangle {
     property bool isOpen: false
@@ -16,6 +17,36 @@ Rectangle {
     anchors.fill: parent
     color: MZTheme.colors.primary
     radius: boxBackground.radius
+
+    MZIconButton {
+        id: ipRefreshToggleButton
+        visible: MZFeatureList.get("showRotateIPAddressButton").isSupported
+
+        anchors {
+            left: parent.left
+            leftMargin: MZTheme.theme.windowMargin / 2
+            top: parent.top
+            topMargin: MZTheme.theme.windowMargin / 2
+            bottomMargin: MZTheme.theme.windowMargin
+        }
+        accessibleName: MZI18n.ConnectionInfoRotateIPAddress
+        buttonColorScheme: MZTheme.colors.iconButtonDarkBackground
+        z: 1
+        onClicked: {
+            VPN.silentSwitch();
+        }
+
+        Image {
+            property int iconSize: MZTheme.theme.iconSize * 1.5
+
+            anchors.centerIn: ipRefreshToggleButton
+            source: MZAssetLookup.getImageSource("RefreshArrowsIPInfo")
+            sourceSize {
+                height: iconSize
+                width: iconSize
+            }
+        }
+    }
 
     // IP Adresses
     ColumnLayout {

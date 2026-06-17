@@ -49,6 +49,8 @@ void IpAddressLookup::reset() {
     m_ipv6Address = qtTrId("vpn.connectionInfo.loading");
 
     m_state = StateWaiting;
+    emit ipv4AddressChanged();
+    emit ipv6AddressChanged();
   }
 }
 

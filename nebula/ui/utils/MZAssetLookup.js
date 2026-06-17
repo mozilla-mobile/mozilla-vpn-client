@@ -27,6 +27,10 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/refresh.svg',
     filenameDark: 'qrc:/nebula/resources/refresh-dark.svg'
   },
+  'RefreshArrowsIPInfo': {
+    filenameLight: 'qrc:/nebula/resources/refresh.svg',
+    filenameDark: 'qrc:/nebula/resources/refresh.svg'
+  },
   'RefreshArrowsForShield': {
     filenameLight: 'qrc:/ui/resources/switching.svg',
     filenameDark: 'qrc:/ui/resources/switching-dark.svg'
