@@ -18,8 +18,7 @@ FocusScope {
 
     property real listOffset: (MZTheme.theme.menuHeight * 2)
     property bool showRecentConnections: false
-    property bool showRecommendedConnections: (showRecentConnections
-                                               && MZFeatureList.get("recommendedServers").isSupported)
+    property bool showRecommendedConnections: showRecentConnections
     property var currentServer
 
     function setSelectedServer(countryCode, cityName, localizedCityName) {

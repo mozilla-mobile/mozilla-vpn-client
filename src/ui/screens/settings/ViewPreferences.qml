@@ -115,7 +115,6 @@ MZViewBase {
                     }
                     stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewNotifications.qml")
                 }
-                visible: MZFeatureList.get("captivePortal").isSupported || MZFeatureList.get("unsecuredNetworkNotification").isSupported || MZFeatureList.get("notificationControl").isSupported
             }
 
             MZSettingsItem {

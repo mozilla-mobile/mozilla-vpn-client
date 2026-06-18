@@ -56,7 +56,6 @@ MZViewBase {
             //% "Get notified when you successfully switched servers"
             subLabelText: qsTrId("vpn.settings.notification.serverSwitch.description")
             checked: MZSettings.serverSwitchNotification
-            visible: MZFeatureList.get("notificationControl").isSupported
             dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
             onClicked: MZSettings.serverSwitchNotification = !MZSettings.serverSwitchNotification
         }
@@ -69,7 +68,6 @@ MZViewBase {
             //% "Get notified when the connection status changes"
             subLabelText: qsTrId("vpn.settings.notification.connectionChange.description")
             checked: MZSettings.connectionChangeNotification
-            visible: MZFeatureList.get("notificationControl").isSupported
             dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
             onClicked: MZSettings.connectionChangeNotification = !MZSettings.connectionChangeNotification
         }
@@ -80,7 +78,6 @@ MZViewBase {
             labelText: MZI18n.ServerUnavailableNotificationPreferencesLabel
             subLabelText: MZI18n.ServerUnavailableNotificationPreferencesSubLabel
             checked: MZSettings.serverUnavailableNotification
-            visible: MZFeatureList.get("serverUnavailableNotification").isSupported
             dividerTopMargin: MZTheme.theme.toggleRowDividerSpacing
             onClicked: MZSettings.serverUnavailableNotification = !MZSettings.serverUnavailableNotification
         }

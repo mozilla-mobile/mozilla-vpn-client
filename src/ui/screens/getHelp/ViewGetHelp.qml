@@ -66,7 +66,6 @@ MZViewBase {
             iconSource: MZAssetLookup.getImageSource("Chevron")
             iconMirror: MZLocalizer.isRightToLeft
             backgroundColor: MZTheme.colors.iconButtonLightBackground
-            visible: MZFeatureList.get("factoryReset").isSupported
 
             onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/ViewReset.qml");
 
