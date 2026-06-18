@@ -18,6 +18,7 @@ class IpAddressLookup final : public QObject {
 
   Q_PROPERTY(QString ipv4Address READ ipv4Address NOTIFY ipv4AddressChanged)
   Q_PROPERTY(QString ipv6Address READ ipv6Address NOTIFY ipv6AddressChanged)
+  Q_PROPERTY(bool isFinished READ isFinished NOTIFY lookupStateChanged)
 
  public:
   IpAddressLookup();
@@ -27,23 +28,10 @@ class IpAddressLookup final : public QObject {
 
   const QString& ipv4Address() const { return m_ipv4Address; }
   const QString& ipv6Address() const { return m_ipv6Address; }
+  bool isFinished() const { return m_state == StateUpdated; }
 
  private:
-  void updateIpAddress();
-
-  void reset();
-
-  void stateChanged();
-
- signals:
-  // for testing.
-  void ipAddressChecked();
-
-  void ipv4AddressChanged();
-  void ipv6AddressChanged();
-
- private:
-  enum {
+  enum IpAddressLookupState {
     // Waiting for the VPN to turn on.
     StateWaiting,
 
@@ -52,8 +40,28 @@ class IpAddressLookup final : public QObject {
 
     // IP address is a known.
     StateUpdated,
-  }  // Let's use `StateUpdated` to force a refresh in the CTOR.
-  m_state = StateUpdated;
+  };
+
+  void updateIpAddress();
+
+  void reset();
+
+  void stateChanged();
+
+  void setLookupState(IpAddressLookupState state);
+
+ signals:
+  // for testing.
+  void ipAddressChecked();
+
+  void ipv4AddressChanged();
+  void ipv6AddressChanged();
+
+  void lookupStateChanged();
+
+ private:
+  // Let's use `StateUpdated` to force a refresh in the CTOR.
+  IpAddressLookupState m_state = StateUpdated;
 
   QString m_ipv4Address;
   QString m_ipv6Address;
