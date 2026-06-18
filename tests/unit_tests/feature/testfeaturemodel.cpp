@@ -32,18 +32,18 @@ void TestFeatureModel::flipOnOff() {
   QVERIFY(!isEnabled(alwaysPort53));
   QVERIFY(!settings->featuresFlippedOn().contains("alwaysPort53"));
 
-  // recommendedServers: default on, flippable
-  QVERIFY(isEnabled(recommendedServers));
+  // addonSignature: default on, flippable when on stage
+  QVERIFY(isEnabled(addonSignature));
 
   // Toggle off
-  FeatureModel::instance()->toggle("recommendedServers");
-  QVERIFY(!isEnabled(recommendedServers));
-  QVERIFY(settings->featuresFlippedOff().contains("recommendedServers"));
+  FeatureModel::instance()->toggle("addonSignature");
+  QVERIFY(!isEnabled(addonSignature));
+  QVERIFY(settings->featuresFlippedOff().contains("addonSignature"));
 
   // Toggle back on
-  FeatureModel::instance()->toggle("recommendedServers");
-  QVERIFY(isEnabled(recommendedServers));
-  QVERIFY(!settings->featuresFlippedOff().contains("recommendedServers"));
+  FeatureModel::instance()->toggle("addonSignature");
+  QVERIFY(isEnabled(addonSignature));
+  QVERIFY(!settings->featuresFlippedOff().contains("addonSignature"));
 }
 
 void TestFeatureModel::updateFeatureListOverwriteFeatures() {
