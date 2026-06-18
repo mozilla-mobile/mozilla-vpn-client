@@ -251,6 +251,12 @@ inline const OverridableFeature replacerAddon = {
     .evaluator = +[] { return false; },
 };
 
+inline const OverridableFeature showRotateIPAddressButton = {
+    .id = "showRotateIPAddressButton",
+    .name = "Show Rotate IP address button",
+    .evaluator = +[] { return false; },
+};
+
 inline constexpr ConstantFeature startOnBoot = {
     .id = "startOnBoot",
     .name = "Start on boot",

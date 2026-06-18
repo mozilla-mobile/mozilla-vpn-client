@@ -32,6 +32,7 @@ inline const AnyFeature s_exposedFeatures[] = {
     ref(networkExtension),
     ref(replacerAddon),
     ref(shareLogs),
+    ref(showRotateIPAddressButton),
     ref(startOnBoot),
     ref(themeSelectionIncludesAutomatic),
     ref(unsecuredNetworkNotification),

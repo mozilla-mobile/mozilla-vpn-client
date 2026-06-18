@@ -48,7 +48,9 @@ void IpAddressLookup::reset() {
     m_ipv4Address = qtTrId("vpn.connectionInfo.loading");
     m_ipv6Address = qtTrId("vpn.connectionInfo.loading");
 
-    m_state = StateWaiting;
+    setLookupState(StateWaiting);
+    emit ipv4AddressChanged();
+    emit ipv6AddressChanged();
   }
 }
 
@@ -58,7 +60,7 @@ void IpAddressLookup::updateIpAddress() {
   if (m_state == StateUpdating) {
     return;
   }
-  m_state = StateUpdating;
+  setLookupState(StateUpdating);
 
   TaskIPFinder* ipfinder = new TaskIPFinder();
   connect(
@@ -66,7 +68,7 @@ void IpAddressLookup::updateIpAddress() {
       [this](const QString& ipv4, const QString& ipv6, const QString& country) {
         if (ipv4.isEmpty() && ipv6.isEmpty()) {
           logger.error() << "IP address request failed";
-          m_state = StateUpdated;
+          setLookupState(StateUpdated);
           emit ipAddressChecked();
           return;
         }
@@ -112,7 +114,7 @@ void IpAddressLookup::updateIpAddress() {
                        << "ipv6:" << logger.sensitive(m_ipv6Address) << "in"
                        << logger.sensitive(country);
 
-        m_state = StateUpdated;
+        setLookupState(StateUpdated);
         emit ipAddressChecked();
       });
 
@@ -131,4 +133,9 @@ void IpAddressLookup::stateChanged() {
   }
 
   updateIpAddress();
+}
+
+void IpAddressLookup::setLookupState(IpAddressLookupState state) {
+  m_state = state;
+  emit lookupStateChanged();
 }
