@@ -42,6 +42,8 @@ target_compile_options(widgetextension PRIVATE -DGROUP_ID=\"${BUILD_IOS_GROUP_ID
 target_compile_options(widgetextension PRIVATE -DNETWORK_EXTENSION=1)
 
 target_sources(widgetextension PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}/CityAccessoryWidget.swift
+    ${CMAKE_CURRENT_SOURCE_DIR}/LogoAccessoryWidget.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/ToggleIntent.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/ToggleWidgetBundle.swift
     ${CMAKE_CURRENT_SOURCE_DIR}/ToggleWidgetControl.swift

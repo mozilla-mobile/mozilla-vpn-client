@@ -12,11 +12,15 @@ struct VPNStatusEntry: TimelineEntry {
   let isConnected: Bool
   let entryCity: String?
   let exitCity: String?
+
+  var sysImageName: String {
+    return isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash"
+  }
 }
 
 struct VPNStatusProvider: TimelineProvider {
   func placeholder(in context: Context) -> VPNStatusEntry {
-    VPNStatusEntry(date: Date(), isConnected: true, entryCity: "-------", exitCity: nil)
+    VPNStatusEntry(date: Date(), isConnected: true, entryCity: "Portland", exitCity: nil)
   }
 
   func getSnapshot(in context: Context, completion: @escaping (VPNStatusEntry) -> Void) {
@@ -113,6 +117,29 @@ struct CityTextToggleComponentView: View {
   @ViewBuilder
   var body: some View {
 
+    CityTextComponentView(entry: entry, largeText: largeText)
+
+    Spacer(minLength: 10)
+
+    Toggle("VPN", isOn: entry.isConnected, intent: ToggleIntent(value: !entry.isConnected))
+      .toggleStyle(WidgetSwitchToggleStyle(capsuleColor: WidgetColors.toggleBackground(colorScheme, isConnected: entry.isConnected), circleColor: WidgetColors.toggleCircle(colorScheme, isConnected: entry.isConnected)))
+      .labelsHidden()
+      .frame(maxWidth: .infinity, alignment: .center)
+  }
+}
+
+struct CityTextComponentView: View {
+  @Environment(\.colorScheme) var colorScheme
+  let entry: VPNStatusEntry
+  let largeText: Bool
+
+  init(entry: VPNStatusEntry, largeText: Bool = false) {
+    self.entry = entry
+    self.largeText = largeText
+  }
+
+  @ViewBuilder
+  var body: some View {
     if let exitCity = entry.exitCity, !exitCity.isEmpty {
 
       if let entryCity = entry.entryCity, !entryCity.isEmpty {
@@ -133,15 +160,11 @@ struct CityTextToggleComponentView: View {
           .font(Font.custom("Metropolis", size: largeText ? 25 : 16))
           .foregroundStyle(WidgetColors.cityTextColor(colorScheme, isConnected: entry.isConnected))
           .multilineTextAlignment(.center)
+          .lineSpacing(5.0)
       }
-
-      Spacer(minLength: 10)
+    } else {
+      EmptyView()
     }
-
-    Toggle("VPN", isOn: entry.isConnected, intent: ToggleIntent(value: !entry.isConnected))
-      .toggleStyle(WidgetSwitchToggleStyle(capsuleColor: WidgetColors.toggleBackground(colorScheme, isConnected: entry.isConnected), circleColor: WidgetColors.toggleCircle(colorScheme, isConnected: entry.isConnected)))
-      .labelsHidden()
-      .frame(maxWidth: .infinity, alignment: .center)
   }
 }
 
@@ -172,20 +195,6 @@ struct WidgetSwitchToggleStyle: ToggleStyle {
   }
 }
 
-struct ToggleWidget: Widget {
-  static let kind = "org.mozilla.ios.FirefoxVPN.ToggleWidget"
-
-  var body: some WidgetConfiguration {
-    StaticConfiguration(kind: Self.kind, provider: VPNStatusProvider()) { entry in
-      ToggleWidgetView(entry: entry)
-    }
-    .configurationDisplayName(LocalizedStringResource("vpn.mobileOnboarding.panelOneTitle", defaultValue: "Mozilla VPN"))
-    .description(LocalizedStringResource("vpn.toggleWidget.description", defaultValue: "Turn Mozilla VPN on and off, and see the current location."))
-    .supportedFamilies([.systemSmall, .systemMedium])
-  }
-}
-
-
 struct ToggleWidgetView: View {
   @Environment(\.widgetFamily) var family
   let entry: VPNStatusEntry
@@ -199,6 +208,24 @@ struct ToggleWidgetView: View {
     default:
       // This should never be seen
       Text("Error: Unsupported widget size")
+    }
+  }
+}
+
+struct ToggleWidget: Widget {
+  static let kind = "org.mozilla.ios.FirefoxVPN.ToggleWidget"
+
+  var body: some WidgetConfiguration {
+      let config = StaticConfiguration(kind: Self.kind, provider: VPNStatusProvider()) { entry in
+            ToggleWidgetView(entry: entry)
+          }
+          .configurationDisplayName(LocalizedStringResource("vpn.mobileOnboarding.panelOneTitle", defaultValue: "Mozilla VPN"))
+          .description(LocalizedStringResource("vpn.toggleWidget.description", defaultValue: "Turn Mozilla VPN on and off, and see the current location."))
+          .supportedFamilies([.systemSmall, .systemMedium])
+    if #available(iOS 26.0, *) {
+      return config.disfavoredLocations([.carPlay, .iPhoneWidgetsOnMac, .standBy], for: [.systemSmall, .systemMedium])
+    } else {
+      return config.disfavoredLocations([.iPhoneWidgetsOnMac, .standBy], for: [.systemSmall, .systemMedium])
     }
   }
 }
