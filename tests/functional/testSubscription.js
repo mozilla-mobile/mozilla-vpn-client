@@ -334,9 +334,6 @@ describe('Subscription view', function() {
   this.ctx.resetCallbacks();
 
   beforeEach(async () => {
-    if (!(await vpn.isFeatureFlippedOn('subscriptionManagement'))) {
-      await vpn.flipFeatureOn('subscriptionManagement');
-    }
     if ((await vpn.isFeatureFlippedOn('accountDeletion'))) {
       await vpn.flipFeatureOff('accountDeletion');
     }
@@ -349,9 +346,6 @@ describe('Subscription view', function() {
   it('Checking the logout', async () => {
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
     await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
 
     await vpn.waitForQuery(
         queries.screenSettings.SIGN_OUT.visible());
@@ -359,13 +353,4 @@ describe('Subscription view', function() {
         queries.screenSettings.SIGN_OUT.visible());
     await vpn.waitForInitialView();
   });
-
-  async function openSubscriptionManagement() {
-    await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-    await vpn.waitForQuery(queries.global.SCREEN_LOADER.ready());
-    await vpn.waitForQueryAndClick(
-        queries.screenSettings.USER_PROFILE.visible());
-    await vpn.waitForQuery(queries.screenSettings.subscriptionView.SCREEN.visible());
-    await vpn.waitForQuery(queries.screenSettings.STACKVIEW.ready());
-  }
 });

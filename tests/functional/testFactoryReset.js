@@ -12,10 +12,6 @@ describe('Factory Reset', function() {
   this.ctx.authenticationNeeded = true;
 
   beforeEach(async () => {
-    if (!(await vpn.isFeatureFlippedOn('factoryReset'))) {
-      await vpn.flipFeatureOn('factoryReset');
-    }
-
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
   	await vpn.waitForQueryAndClick(queries.screenSettings.GET_HELP.visible());
   	await vpn.waitForQueryAndClick(queries.screenGetHelp.STACKVIEW.ready());
@@ -85,5 +81,4 @@ describe('Factory Reset', function() {
 	//Check that settings were reset to factory
 	assert.equal(await vpn.getSetting('dnsProviderFlags'), 0);
   });
-
 });
