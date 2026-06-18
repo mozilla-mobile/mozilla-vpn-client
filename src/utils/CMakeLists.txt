@@ -23,8 +23,6 @@ add_library(mzutils STATIC
     hacl-star/Hacl_Chacha20Poly1305_32.c
     hacl-star/Hacl_Curve25519_51.c
     hacl-star/Hacl_Poly1305_32.c
-    hawkauth.cpp
-    hawkauth.h
     hkdf.cpp
     hkdf.h
     interfaceconfig.cpp
