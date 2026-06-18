@@ -368,21 +368,6 @@ bool WireguardUtilsWindows::deleteInterface() {
   return true;
 }
 
-static bool hasRouteToIPv4(const QString& ipv4addr) {
-  SOCKADDR_INET dest = {};
-  dest.Ipv4.sin_family = AF_INET;
-
-  if (InetPtonA(AF_INET, qPrintable(ipv4addr), &dest.Ipv4.sin_addr) != 1) {
-    return true;
-  }
-
-  MIB_IPFORWARD_ROW2 bestRoute = {};
-  SOCKADDR_INET bestSource = {};
-  DWORD result =
-      GetBestRoute2(nullptr, 0, nullptr, &dest, 0, &bestRoute, &bestSource);
-  return result == NO_ERROR;
-}
-
 bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   // Enable the windows firewall for this peer.
   if (!m_firewall->enablePeerTraffic(config)) {
@@ -399,10 +384,23 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   auto wgnt_conf = WireGuardNTConfig{.interface{.PeersCount = 1}};
   wgnt_conf.peer.PersistentKeepalive = WG_KEEPALIVE_PERIOD;
 
+  bool hasIpv4 = true;
+
+  // Exclude the server address, except for multihop exit servers.
+  if (m_routeMonitor && (config.m_hopType != InterfaceConfig::MultiHopExit)) {
+    if (!config.m_serverIpv4AddrIn.isEmpty()) {
+      IPAddress serverIpv4(config.m_serverIpv4AddrIn);
+      m_routeMonitor->addExclusionRoute(serverIpv4);
+      hasIpv4 = m_routeMonitor->getExclusionRouteLuid(serverIpv4) != 0;
+    }
+    if (!config.m_serverIpv6AddrIn.isEmpty()) {
+      m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+    }
+  }
+
   // Prefer IPv4, but fall back to IPv6 on IPv6-only networks.
   const bool useIPv4 = !config.m_serverIpv4AddrIn.isEmpty() &&
-                       (config.m_serverIpv6AddrIn.isEmpty() ||
-                        hasRouteToIPv4(config.m_serverIpv4AddrIn));
+                       (config.m_serverIpv6AddrIn.isEmpty() || hasIpv4);
 
   if (useIPv4) {
     wgnt_conf.peer.Endpoint.si_family = AF_INET;
@@ -451,15 +449,6 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
                                          sizeof(wgnt_conf))) {
     logger.error() << "Failed setting Wireguard Adapter Config";
     return false;
-  }
-  // Exclude the server address, except for multihop exit servers.
-  if (m_routeMonitor && (config.m_hopType != InterfaceConfig::MultiHopExit)) {
-    if (!config.m_serverIpv4AddrIn.isEmpty()) {
-      m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-    }
-    if (!config.m_serverIpv6AddrIn.isEmpty()) {
-      m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
-    }
   }
   return true;
 }

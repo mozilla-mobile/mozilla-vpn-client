@@ -435,6 +435,12 @@ bool WindowsRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
   return true;
 }
 
+quint64 WindowsRouteMonitor::getExclusionRouteLuid(
+    const IPAddress& prefix) const {
+  MIB_IPFORWARD_ROW2* data = m_exclusionRoutes.value(prefix, nullptr);
+  return data ? data->InterfaceLuid.Value : 0;
+}
+
 bool WindowsRouteMonitor::deleteExclusionRoute(const IPAddress& prefix) {
   logger.debug() << "Deleting exclusion route for"
                  << logger.sensitive(prefix.address().toString());
