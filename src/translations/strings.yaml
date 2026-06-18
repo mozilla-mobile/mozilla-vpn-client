@@ -541,7 +541,7 @@ connectionInfo:
     comment: Accessible label for the button to restart the speed test upon its completion.
   rotateIPAddress:
     value: Attempt to change IP address
-    comment: Accessible label for the button to try to get a new server in the same locale
+    comment: Accessible label for the button to try to get a new server in the same location
 
 crashreporter:
   mainTitle:
