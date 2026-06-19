@@ -142,11 +142,11 @@ void Controller::initialize() {
 #elif defined(MZ_LINUX)
     m_impl.reset(new LinuxController());
 #elif defined(MZ_MACOS)
-  if (Feature::isEnabled(Feature::networkExtension)) {
-    m_impl.reset(new MacOSExtensionController());
-  } else {
-    m_impl.reset(new MacOSController());
-  }
+    if (Feature::isEnabled(Feature::networkExtension)) {
+      m_impl.reset(new MacOSExtensionController());
+    } else {
+      m_impl.reset(new MacOSController());
+    }
 #elif defined(MZ_IOS)
     m_impl.reset(new IOSController());
 #elif defined(MZ_ANDROID)

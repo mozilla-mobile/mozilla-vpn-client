@@ -13,23 +13,23 @@
 @interface WireguardTunnel : NSObject
 
 - (void) startTunnelWithOptions:(InterfaceConfig*) options
-              completionHandler:(void (^)(NSError *error)) completionHandler;
+              completionHandler:(void (^)(NSError *error))completionHandler;
 
 - (void) stopTunnelWithReason:(NEProviderStopReason)reason 
-            completionHandler:(void (^)()) completionHandler;
+            completionHandler:(void (^)())completionHandler;
 
-- (void) cancelTunnelWithError:(NSError*)error;
+- (void)cancelTunnelWithError:(NSError*)error;
 
-- (NSError*) setTunnelAddress:(nw_endpoint_t)endpoint;
+- (NSError*)setTunnelAddress:(nw_endpoint_t)endpoint;
 
-- (void) addRoute:(RoutePrefix*)prefix;
-- (void) removeRoute:(RoutePrefix*)prefix;
+- (void)addRoute:(RoutePrefix*)prefix;
+- (void)removeRoute:(RoutePrefix*)prefix;
 
-@property (nonatomic) NSUInteger mtu;
-@property (strong) WireguardPeer* peer;
-@property (readonly, getter=getTunfd) int tunfd;
-@property (strong, readonly, getter=getStatus) WireguardStatus* status;
-@property (strong) nw_endpoint_t ipv4address;
-@property (strong) nw_endpoint_t ipv6address;
-@property (strong) nw_interface_t virtualInterface;
+@property(nonatomic) NSUInteger mtu;
+@property(strong) WireguardPeer* peer;
+@property(readonly, getter=getTunfd) int tunfd;
+@property(strong, readonly, getter=getStatus) WireguardStatus* status;
+@property(strong) nw_endpoint_t ipv4address;
+@property(strong) nw_endpoint_t ipv6address;
+@property(strong) nw_interface_t virtualInterface;
 @end
