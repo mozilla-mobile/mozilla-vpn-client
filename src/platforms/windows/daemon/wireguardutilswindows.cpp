@@ -384,16 +384,42 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
   auto wgnt_conf = WireGuardNTConfig{.interface{.PeersCount = 1}};
   wgnt_conf.peer.PersistentKeepalive = WG_KEEPALIVE_PERIOD;
 
-  // TODO: We currently assume an ipv4 reachable endpoint
-  // we need to make sure this is the right decision.
-  wgnt_conf.peer.Endpoint.si_family = AF_INET;
-  wgnt_conf.peer.Endpoint.Ipv4.sin_family = AF_INET;
-  wgnt_conf.peer.Endpoint.Ipv4.sin_port = htons(config.m_serverPort);
+  bool hasIpv4 = true;
 
-  if (!inet_pton(AF_INET, qPrintable(config.m_serverIpv4AddrIn),
-                 &wgnt_conf.peer.Endpoint.Ipv4.sin_addr)) {
-    logger.error() << "Failed to parse m_serverIpv4AddrIn";
-    return false;
+  // Exclude the server address, except for multihop exit servers.
+  if (m_routeMonitor && (config.m_hopType != InterfaceConfig::MultiHopExit)) {
+    if (!config.m_serverIpv4AddrIn.isEmpty()) {
+      IPAddress serverIpv4(config.m_serverIpv4AddrIn);
+      m_routeMonitor->addExclusionRoute(serverIpv4);
+      hasIpv4 = m_routeMonitor->getExclusionRouteLuid(serverIpv4) != 0;
+    }
+    if (!config.m_serverIpv6AddrIn.isEmpty()) {
+      m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+    }
+  }
+
+  // Prefer IPv4, but fall back to IPv6 on IPv6-only networks.
+  const bool useIPv4 = !config.m_serverIpv4AddrIn.isEmpty() &&
+                       (config.m_serverIpv6AddrIn.isEmpty() || hasIpv4);
+
+  if (useIPv4) {
+    wgnt_conf.peer.Endpoint.si_family = AF_INET;
+    wgnt_conf.peer.Endpoint.Ipv4.sin_family = AF_INET;
+    wgnt_conf.peer.Endpoint.Ipv4.sin_port = htons(config.m_serverPort);
+    if (!InetPtonA(AF_INET, qPrintable(config.m_serverIpv4AddrIn),
+                   &wgnt_conf.peer.Endpoint.Ipv4.sin_addr)) {
+      logger.error() << "Failed to parse m_serverIpv4AddrIn";
+      return false;
+    }
+  } else {
+    wgnt_conf.peer.Endpoint.si_family = AF_INET6;
+    wgnt_conf.peer.Endpoint.Ipv6.sin6_family = AF_INET6;
+    wgnt_conf.peer.Endpoint.Ipv6.sin6_port = htons(config.m_serverPort);
+    if (!InetPtonA(AF_INET6, qPrintable(config.m_serverIpv6AddrIn),
+                   &wgnt_conf.peer.Endpoint.Ipv6.sin6_addr)) {
+      logger.error() << "Failed to parse m_serverIpv6AddrIn";
+      return false;
+    }
   }
 
   const auto peerPubKey = QByteArray::fromBase64Encoding(
@@ -410,7 +436,9 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
       WIREGUARD_PEER_HAS_ENDPOINT | WIREGUARD_PEER_REPLACE_ALLOWED_IPS;
 
   logger.debug() << "Configuring peer" << logger.keys(config.m_serverPublicKey)
-                 << "via" << config.m_serverIpv4AddrIn;
+                 << "via"
+                 << (useIPv4 ? config.m_serverIpv4AddrIn
+                             : config.m_serverIpv6AddrIn);
 
   // Everything that has reached the wireguard adapter should be accepted
   wgnt_conf.peer.AllowedIPsCount = 2;
@@ -421,13 +449,6 @@ bool WireguardUtilsWindows::updatePeer(const InterfaceConfig& config) {
                                          sizeof(wgnt_conf))) {
     logger.error() << "Failed setting Wireguard Adapter Config";
     return false;
-  }
-  // Exclude the server address, except for multihop exit servers.
-  if (m_routeMonitor && (config.m_hopType != InterfaceConfig::MultiHopExit)) {
-    m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-    if (!config.m_serverIpv6AddrIn.isEmpty()) {
-      m_routeMonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
-    }
   }
   return true;
 }

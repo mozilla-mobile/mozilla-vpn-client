@@ -30,6 +30,8 @@ class WindowsRouteMonitor final : public QObject {
   bool deleteExclusionRoute(const IPAddress& prefix);
   void flushExclusionRoutes() { return flushRouteTable(m_exclusionRoutes); };
 
+  quint64 getExclusionRouteLuid(const IPAddress& prefix) const;
+
   quint64 getLuid() const { return m_luid; }
 
  public slots:

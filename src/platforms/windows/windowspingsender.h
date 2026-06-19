@@ -24,10 +24,12 @@ class WindowsPingSender final : public PingSender {
 
  private slots:
   void pingEventReady();
+  void pingEvent6Ready();
 
  private:
   QHostAddress m_source;
   QWinEventNotifier* m_notifier = nullptr;
+  QWinEventNotifier* m_notifier6 = nullptr;
   struct WindowsPingSenderPrivate* m_private = nullptr;
 };
 
