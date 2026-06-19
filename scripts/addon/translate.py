@@ -460,7 +460,13 @@ def translate_addon(qtsearchpath, source, dest, i18npath, script_path):
                         os.system(f"{lrelease} {lrelease_flags} {locale_file}")
 
                         xlifftool_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "..", "utils", "xlifftool.py")
-                        xlifftool_cmd = [sys.executable, xlifftool_path, "-C", f"--locale={locale}", xliff_path]
+                        if "message" in manifest and "promo_text" in manifest["message"]:
+                            # Whether using shared strings or not, at this point it is in the legacy format
+                            message_id = manifest["id"]
+                            promo_id = f"message.{message_id}.promo_text"
+                            xlifftool_cmd = [sys.executable, xlifftool_path, "-C",f"-S={promo_id}", f"--locale={locale}", xliff_path]
+                        else:
+                            xlifftool_cmd = [sys.executable, xlifftool_path, "-C", f"--locale={locale}", xliff_path]
                         xlifftool = subprocess.run(xlifftool_cmd, stdout=subprocess.PIPE)
                         # This completeness metric can be out-of-date, sometimes reporting a higher-than-actual completeness after a new string is
                         # added to the app. This happens because the .xliff file doesn't have all the source strings, so an incorrect denominator is used.

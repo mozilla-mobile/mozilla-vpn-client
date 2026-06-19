@@ -25,8 +25,12 @@ class xliff_language:
     def completeness(self):
         sources = len(self.__stringdb)
         translations = 0
-        for x in self.__stringdb.values():
-            if len(x['target']) != 0:
+        for key, values in self.__stringdb.items():
+            if key == args.skipid:
+                # This is already counted in sources, so need to remove 1
+                sources = sources-1
+                continue
+            if len(values['target']) != 0:
                 translations += 1
         return translations / (sources * 1.0) if sources > 0 else 0.0
 
@@ -201,6 +205,8 @@ Output format can take one of the following values:
         help='Check if the XLIFF file is ready for import')
     parsegroup.add_argument('-C', '--completeness', default=False, action='store_true',
         help='Print the completeness level of the XLIFF file')
+    parsegroup.add_argument('-S', '--skipid', metavar='SKIP', type=str, default='',
+        help='When calculating completeness, skip strings matching this ID')
     parsegroup.add_argument('-t', '--threshold', metavar='VAL', type=float, default=0.7,
         help='Minimum required threshold of completed translations (0.0 to 1.0)')
     parsegroup.add_argument('-l', '--locale', metavar='LANG', type=str, action='store',
