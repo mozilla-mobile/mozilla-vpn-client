@@ -66,7 +66,8 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
   }
   m_uuid = uuid.toString(QUuid::WithoutBraces);
 
-  m_deviceIpv4Address = device->ipv4Address();
+  m_deviceIpv4Address = QHostAddress(device->ipv4Address().split('/').first());
+  m_deviceIpv6Address = QHostAddress(device->ipv6Address().split('/').first());
 
   // Generic connection settings.
   m_config.insert("id", QCoreApplication::applicationName());
@@ -248,11 +249,16 @@ void NetmgrController::activate(const InterfaceConfig& config,
   m_ipv6config.insert("route-data", ipv6routes);
   m_wireguard.insert("peers", peers);
 
+  // Keep the server details for later.
+  m_serverPublicKey = config.m_serverPublicKey;
+  m_serverIpv4Gateway = QHostAddress(config.m_serverIpv4Gateway);
+  m_serverIpv6Gateway = QHostAddress(config.m_serverIpv6Gateway);
+
   // Update the DNS server.
   if ((config.m_dnsServer == config.m_serverIpv4Gateway) ||
       (config.m_dnsServer == config.m_serverIpv6Gateway)) {
-    setDnsConfig(m_ipv4config, QHostAddress(config.m_serverIpv4Gateway));
-    setDnsConfig(m_ipv6config, QHostAddress(config.m_serverIpv6Gateway));
+    setDnsConfig(m_ipv4config, m_serverIpv4Gateway);
+    setDnsConfig(m_ipv6config, m_serverIpv6Gateway);
   } else if (config.m_dnsServer.contains(':')) {
     setDnsConfig(m_ipv4config, QHostAddress());
     setDnsConfig(m_ipv6config, QHostAddress(config.m_dnsServer));
@@ -260,10 +266,6 @@ void NetmgrController::activate(const InterfaceConfig& config,
     setDnsConfig(m_ipv4config, QHostAddress(config.m_dnsServer));
     setDnsConfig(m_ipv6config, QHostAddress());
   }
-
-  // Keep the server details for later.
-  m_serverPublicKey = config.m_serverPublicKey;
-  m_serverIpv4Gateway = config.m_serverIpv4Gateway;
 
   // Update the connection settings.
   QList<QVariant> args;
@@ -390,10 +392,18 @@ void NetmgrController::checkStatus() {
       QString("/sys/class/net/%1/statistics/tx_bytes").arg(WG_INTERFACE_NAME);
   QString rxPath =
       QString("/sys/class/net/%1/statistics/rx_bytes").arg(WG_INTERFACE_NAME);
-  uint64_t tx = readSysfsFile(txPath);
-  uint64_t rx = readSysfsFile(rxPath);
-  logger.info() << "Status:" << m_deviceIpv4Address << tx << rx;
-  emit statusUpdated(m_serverIpv4Gateway, m_deviceIpv4Address, tx, rx);
+
+  ControllerStatus st;
+  st.m_connected = true;
+  st.m_timestamp = guessUptime();
+  st.m_ipv4Gateway = m_serverIpv4Gateway;
+  st.m_ipv6Gateway = m_serverIpv6Gateway;
+  st.m_ipv4Address = m_deviceIpv4Address;
+  st.m_ipv6Address = m_deviceIpv6Address;
+  st.m_rxBytes = readSysfsFile(rxPath);
+  st.m_txBytes = readSysfsFile(txPath);
+
+  emit statusUpdated(st);
 }
 
 QDateTime NetmgrController::guessUptime() {

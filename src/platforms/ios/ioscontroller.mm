@@ -267,8 +267,14 @@ void IOSController::checkStatus() {
     logger.debug() << "ServerIpv4Gateway:" << serverIpv4Gateway
                    << "DeviceIpv4Address:" << deviceIpv4Address << "RxBytes:" << rxBytes
                    << "TxBytes:" << txBytes;
-    emit statusUpdated(QString::fromNSString(serverIpv4Gateway),
-                       QString::fromNSString(deviceIpv4Address), txBytes, rxBytes);
+    ControllerStatus st;
+    st.m_connected = true;
+    st.m_ipv4Gateway = QHostAddress(QString::fromNSString(serverIpv4Gateway));
+    st.m_ipv4Address = QHostAddress(QString::fromNSString(deviceIpv4Address));
+    st.m_rxBytes = rxBytes;
+    st.m_txBytes = txBytes;
+
+    emit statusUpdated(st);
   }];
 }
 

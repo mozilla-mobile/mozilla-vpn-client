@@ -92,8 +92,7 @@ void ConnectionHealth::stop() {
   m_dnsPingTimer.stop();
 }
 
-void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
-                                   const QString& deviceIpv4Address) {
+void ConnectionHealth::startActive(const ControllerStatus& status) {
   logger.debug() << "ConnectionHealth active started";
 
   bool isNotOnOrOnPartial =
@@ -101,14 +100,14 @@ void ConnectionHealth::startActive(const QString& serverIpv4Gateway,
       MozillaVPN::instance()->controller()->state() !=
           Controller::StateOnPartial;
 
-  if (serverIpv4Gateway.isEmpty() || isNotOnOrOnPartial) {
+  if (status.m_ipv4Gateway.isNull() || isNotOnOrOnPartial) {
     logger.info() << "ConnectionHealth not starting because no connection";
     return;
   }
 
-  m_currentGateway = serverIpv4Gateway;
-  m_deviceAddress = deviceIpv4Address;
-  m_pingHelper.start(serverIpv4Gateway, deviceIpv4Address);
+  m_currentGateway = status.m_ipv4Gateway;
+  m_deviceAddress = status.m_ipv4Address;
+  m_pingHelper.start(m_currentGateway.toString(), m_deviceAddress.toString());
   m_noSignalTimer.start(PING_TIME_NOSIGNAL);
   m_healthCheckTimer.start(PING_TIME_UNSTABLE);
 
@@ -163,7 +162,8 @@ void ConnectionHealth::setStability(ConnectionStability stability) {
 }
 
 void ConnectionHealth::connectionStateChanged() {
-  Controller::State state = MozillaVPN::instance()->controller()->state();
+  Controller* controller = MozillaVPN::instance()->controller();
+  Controller::State state = controller->state();
   logger.debug() << "Connection state changed to" << state;
 
   if ((state != Controller::StateInitializing) &&
@@ -174,16 +174,10 @@ void ConnectionHealth::connectionStateChanged() {
   switch (state) {
     case Controller::StateOnPartial:
     case Controller::StateOn:
-      MozillaVPN::instance()->controller()->getStatus(
-          [this](const QString& serverIpv4Gateway,
-                 const QString& deviceIpv4Address, uint64_t txBytes,
-                 uint64_t rxBytes) {
-            Q_UNUSED(txBytes);
-            Q_UNUSED(rxBytes);
-
-            stop();
-            startActive(serverIpv4Gateway, deviceIpv4Address);
-          });
+      QObject::connect(controller, &Controller::statusUpdated, this,
+                       &ConnectionHealth::startActive,
+                       Qt::SingleShotConnection);
+      controller->refreshStatus();
       break;
 
     case Controller::StateOff:

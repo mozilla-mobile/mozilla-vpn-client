@@ -211,7 +211,7 @@ void LinuxController::checkStatusCompleted(QDBusPendingCallWatcher* call) {
     return;
   }
 
-  emitStatusFromJson(obj);
+  emit statusUpdated(ControllerStatus(obj));
 }
 
 void LinuxController::getBackendLogs(QIODevice* device) {

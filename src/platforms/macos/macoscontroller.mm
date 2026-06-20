@@ -307,7 +307,7 @@ void MacOSController::checkStatus() {
   [remoteObject() getStatus:^(NSString* status){
     QByteArray jsBlob = QString::fromNSString(status).toUtf8();
     QJsonObject obj = QJsonDocument::fromJson(jsBlob).object();
-    emitStatusFromJson(obj);
+    emit statusUpdated(ControllerStatus(obj));
   }];
 }
 
