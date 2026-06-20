@@ -14,6 +14,8 @@
 
 #ifdef Q_OS_APPLE
 #  include <CoreFoundation/CoreFoundation.h>
+#  include <QtDarwinHelpers>
+Q_FORWARD_DECLARE_OBJC_CLASS(NSError);
 #endif
 
 class QJsonObject;
@@ -39,6 +41,7 @@ class Logger {
     Log& operator<<(const void* t);
 #ifdef Q_OS_APPLE
     Log& operator<<(const NSString* t);
+    Log& operator<<(const NSError* t);
     Log& operator<<(CFStringRef t);
     Log& operator<<(CFErrorRef t);
 #endif
