@@ -5,6 +5,8 @@
 #include "controller.h"
 
 #include <QFileInfo>
+#include <QJsonObject>
+#include <QJsonValue>
 #include <QNetworkInformation>
 
 #include "constants.h"
@@ -161,7 +163,11 @@ void Controller::initialize() {
   connect(m_impl.get(), &ControllerImpl::permissionRequired, this,
           &Controller::implPermRequired);
   connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
-          &Controller::statusUpdated);
+          [this](const ControllerStatus& status) {
+            logger.debug() << "Status updated";
+            m_status = status;
+            emit statusUpdated(status);
+          });
   connect(m_impl.get(), &ControllerImpl::backendFailure, this,
           &Controller::handleBackendFailure);
   connect(this, &Controller::stateChanged, this,
@@ -849,40 +855,14 @@ void Controller::cleanupBackendLogs() {
   }
 }
 
-void Controller::getStatus(
-    std::function<void(const QString& serverIpv4Gateway,
-                       const QString& deviceIpv4Address, uint64_t txByte,
-                       uint64_t rxBytes)>&& a_callback) {
+void Controller::refreshStatus() {
   logger.debug() << "check status";
 
-  std::function<void(const QString& serverIpv4Gateway,
-                     const QString& deviceIpv4Address, uint64_t txBytes,
-                     uint64_t rxBytes)>
-      callback = std::move(a_callback);
-
-  bool requestStatus = m_getStatusCallbacks.isEmpty();
-
-  m_getStatusCallbacks.append(std::move(callback));
-
-  if (m_impl && requestStatus) {
+  if (m_impl) {
     m_impl->checkStatus();
-  }
-}
-
-void Controller::statusUpdated(const QString& serverIpv4Gateway,
-                               const QString& deviceIpv4Address,
-                               uint64_t txBytes, uint64_t rxBytes) {
-  logger.debug() << "Status updated";
-  QList<std::function<void(const QString& serverIpv4Gateway,
-                           const QString& deviceIpv4Address, uint64_t txBytes,
-                           uint64_t rxBytes)> >
-      list;
-
-  list.swap(m_getStatusCallbacks);
-  for (const std::function<void(
-           const QString& serverIpv4Gateway, const QString& deviceIpv4Address,
-           uint64_t txBytes, uint64_t rxBytes)>&func : list) {
-    func(serverIpv4Gateway, deviceIpv4Address, txBytes, rxBytes);
+  } else {
+    // Nothing changed - but emit it anyways.
+    emit statusUpdated(m_status);
   }
 }
 
@@ -1181,4 +1161,18 @@ bool Controller::shouldSuppressNextNotification() {
     logger.error() << "No implementation found for notification check.";
     return false;
   }
+}
+
+ControllerStatus::ControllerStatus(const QJsonObject& obj) {
+  m_connected = obj.value("connected").toBool();
+  if (m_connected) {
+    QString dateString = obj.value("date").toString();
+    m_timestamp = QDateTime::fromString(dateString, Qt::ISODate);
+  }
+  m_ipv4Address = QHostAddress(obj.value("deviceIpv4Address").toString());
+  m_ipv6Address = QHostAddress(obj.value("deviceIpv6Address").toString());
+  m_ipv4Gateway = QHostAddress(obj.value("serverIpv4Gateway").toString());
+  m_ipv6Gateway = QHostAddress(obj.value("serverIpv6Gateway").toString());
+  m_rxBytes = obj.value("rxBytes").toInteger();
+  m_txBytes = obj.value("txBytes").toInteger();
 }
