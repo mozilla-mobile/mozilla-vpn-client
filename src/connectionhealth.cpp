@@ -259,11 +259,14 @@ void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
 #else
   switch (state) {
     case Qt::ApplicationState::ApplicationActive:
-      if (!m_suspended) return;
-
-      m_suspended = false;
-      logger.debug() << "Resuming connection check from suspension";
-      startActive(m_currentGateway, m_deviceAddress);
+      if (m_suspended) {
+        m_suspended = false;
+        logger.debug() << "Resuming connection check from suspension";
+        ControllerStatus st;
+        st.m_ipv4Address = m_deviceAddress;
+        st.m_ipv4Gateway = m_currentGateway;
+        startActive(st);
+      }
       break;
 
     case Qt::ApplicationState::ApplicationSuspended:
