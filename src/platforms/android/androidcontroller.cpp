@@ -80,8 +80,8 @@ AndroidController::AndroidController() {
         st.m_connected = true;
         st.m_ipv4Gateway = QHostAddress(doc.object()["endpoint"].toString());
         st.m_ipv4Address = QHostAddress(doc.object()["deviceIpv4"].toString());
-        st.m_rxBytes = doc.object()["tx_bytes"].toInteger();
-        st.m_txBytes = doc.object()["rx_bytes"].toInteger();
+        st.m_rxBytes = doc.object()["rx_bytes"].toInteger();
+        st.m_txBytes = doc.object()["tx_bytes"].toInteger();
         emit statusUpdated(st);
       },
       Qt::QueuedConnection);
