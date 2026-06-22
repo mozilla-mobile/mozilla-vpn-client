@@ -117,7 +117,7 @@ jsonSchema = os.path.join(script_path, "ci", "jsonSchemas", "addon.json")
 if not os.path.isfile(jsonSchema):
     exit(f"The JSONSchema {jsonSchema} does not exist")
 
-tmp_path, addon_id = translate_addon(qtsearchpath, args.source, args.dest, args.i18npath, script_path)
+tmp_path, addon_id, unneeded_1, unneeded_2 = translate_addon(qtsearchpath, args.source, args.dest, args.i18npath, script_path)
 
 if args.depfile is not None:
     print("Generate the dependency file...")

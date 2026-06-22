@@ -360,6 +360,7 @@ def translate_addon(qtsearchpath, source, dest, i18npath, script_path):
             copy_files(os.path.dirname(source), tmp_path)
 
             strings = {}
+            completeness = []
 
             if "translatable" not in manifest or manifest["translatable"] == True:
                 print("Retrieving strings...")
@@ -399,7 +400,6 @@ def translate_addon(qtsearchpath, source, dest, i18npath, script_path):
                     short_version = manifest["message"]["shortVersion"]
 
                 # Include internationalization if the i18n path was specified.
-                completeness = []
                 i18nlocales = []
                 if i18npath is not None:
                     i18nlocales = os.listdir(i18npath)
@@ -487,7 +487,38 @@ def translate_addon(qtsearchpath, source, dest, i18npath, script_path):
             else:
               print("Addon not translatable")
 
-            return tmp_path, manifest['id']
+            return tmp_path, manifest['id'], completeness, translations_fallback
+
+def process_completeness_entry(entry):
+    parts = entry.rstrip("\n").split(':')
+    if len(parts) != 2:
+        print(f"Did not split into two parts: {entry}")
+        sys.exit(1)
+
+    return parts[0], float(parts[1])
+
+def find_untranslated_locales(completeness_array, fallback_dictionary, threshold):
+    untranslated_locales = []
+    print(completeness_array)
+    for entry in completeness_array:
+        locale, completeness = process_completeness_entry(entry)
+        if completeness < threshold:
+            # first check if a fallback locale is fully translated
+            cleared = False
+            if locale in fallback_dictionary:
+                for fallback in fallback_dictionary[locale]:
+                    matches = [s for s in completeness_array if s.startswith(fallback)]
+                    fallback_completeness_entry = matches[0] if matches else None
+                    if not fallback_completeness_entry:
+                        print(f"Cannot find completeness for {fallback}, a fallback locale for {locale}")
+                        sys.exit(1)
+                    unused, fallback_completeness = process_completeness_entry(fallback_completeness_entry)
+                    if fallback_completeness >= threshold:
+                        cleared = True
+                        break
+            if not cleared:
+                untranslated_locales.append(locale)
+    return untranslated_locales
 
 if __name__ == "__main__":
 
@@ -551,17 +582,10 @@ if __name__ == "__main__":
 
     script_path = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
     tmp_dest_path = tempfile.mkdtemp()
-    tmp_path, addon_id = translate_addon(qtsearchpath, args.source, tmp_dest_path, args.i18npath, script_path)
+    tmp_path, addon_id, completeness_array, fallback_dictionary = translate_addon(qtsearchpath, args.source, tmp_dest_path, args.i18npath, script_path)
 
-    locales_not_fully_translated = []
-    with open(os.path.join(tmp_path, "i18n", "translations.completeness"), "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.rstrip("\n").split(":")
-            if len(parts) != 2:
-                print("Error parsing translations file")
-                exit(1)
-            if float(parts[1]) < 1:
-                locales_not_fully_translated.append(parts[0])
+    translation_threshold = 1.0 # UPDATE THIS IF IN CONDITION
+    locales_not_fully_translated = find_untranslated_locales(completeness_array, fallback_dictionary, translation_threshold)
 
     # if there are no locales add some text - otherwise locales condition will not be considered
     if len(locales_not_fully_translated) == 0:
