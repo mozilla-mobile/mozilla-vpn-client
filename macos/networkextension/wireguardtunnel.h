@@ -12,11 +12,11 @@
 
 @interface WireguardTunnel : NSObject
 
-- (void) startTunnelWithOptions:(InterfaceConfig*) options
-              completionHandler:(void (^)(NSError *error))completionHandler;
+- (void)startTunnelWithOptions:(InterfaceConfig*) options
+             completionHandler:(void (^)(NSError *error))completionHandler;
 
-- (void) stopTunnelWithReason:(NEProviderStopReason)reason 
-            completionHandler:(void (^)())completionHandler;
+- (void)stopTunnelWithReason:(NEProviderStopReason)reason 
+           completionHandler:(void (^)())completionHandler;
 
 - (void)cancelTunnelWithError:(NSError*)error;
 

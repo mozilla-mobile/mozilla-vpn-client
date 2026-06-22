@@ -20,21 +20,18 @@ extern "C" struct wireguard_tunnel;
 
 @interface WireguardPeer : NSObject
 
-- (id) initWithOptions:(InterfaceConfig*)options
-             andTunnel:(WireguardTunnel*)tunnel;
+- (id)initWithOptions:(InterfaceConfig*)options andTunnel:(WireguardTunnel*)tunnel;
 
-- (void) startWithOptions:(InterfaceConfig*)options
-        completionHandler:(void (^)(NSError *error))completionHandler;
+- (void)startWithOptions:(InterfaceConfig*)options
+       completionHandler:(void (^)(NSError *error))completionHandler;
 
-- (void) stopWithReason:(NEProviderStopReason)reason 
-      completionHandler:(void (^)())completionHandler;
+- (void)stopWithReason:(NEProviderStopReason)reason completionHandler:(void (^)())completionHandler;
 
-- (void) cancelWithError:(NSError*)error;
+- (void)cancelWithError:(NSError*)error;
 
-- (void) renegotiate:(void (^)(NSError *error))completionHandler;
+- (void)renegotiate:(void (^)(NSError *error))completionHandler;
 
-- (void) writePacket:(int)protocol
-            withData:(NSData*)data;
+- (void)writePacket:(int)protocol withData:(NSData*)data;
 
 @property(strong, readonly, getter=getStatus) WireguardStatus* status;
 @property(weak, readonly) WireguardTunnel* tunnel;

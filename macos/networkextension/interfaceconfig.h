@@ -16,7 +16,7 @@
 
 @interface InterfaceConfig : NSObject
 
-- (id)initFromDict:(NSDictionary<NSString*,id>*)dict;
+- (id)initFromDict:(NSDictionary<NSString*, id>*)dict;
 - (id)initFromCoder:(NSCoder*)coder;
 
 @property(strong) NSString* privateKey;
@@ -34,6 +34,6 @@
 
 @property(strong) NEDNSSettings* dnsSettings;
 
-@property(strong, readonly) NSDictionary<NSString*,id>* dict;
+@property(strong, readonly) NSDictionary<NSString*, id>* dict;
 
 @end
