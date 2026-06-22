@@ -23,13 +23,13 @@ extern "C" struct wireguard_tunnel;
 - (id)initWithOptions:(InterfaceConfig*)options andTunnel:(WireguardTunnel*)tunnel;
 
 - (void)startWithOptions:(InterfaceConfig*)options
-       completionHandler:(void (^)(NSError *error))completionHandler;
+       completionHandler:(void (^)(NSError* error))completionHandler;
 
 - (void)stopWithReason:(NEProviderStopReason)reason completionHandler:(void (^)())completionHandler;
 
 - (void)cancelWithError:(NSError*)error;
 
-- (void)renegotiate:(void (^)(NSError *error))completionHandler;
+- (void)renegotiate:(void (^)(NSError* error))completionHandler;
 
 - (void)writePacket:(int)protocol withData:(NSData*)data;
 
