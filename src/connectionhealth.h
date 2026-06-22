@@ -8,6 +8,8 @@
 #include "dnspingsender.h"
 #include "pinghelper.h"
 
+class ControllerStatus;
+
 // The baseline latency measurement averaged using an Exponentially Weighted
 // Moving Average (EWMA), this defines the decay rate.
 constexpr uint32_t PING_BASELINE_EWMA_DIVISOR = 8;
@@ -55,8 +57,7 @@ class ConnectionHealth final : public QObject {
 
  private:
   void stop();
-  void startActive(const QString& serverIpv4Gateway,
-                   const QString& deviceIpv4Address);
+  void startActive(const ControllerStatus& status);
   void startIdle();
 
   void pingSentAndReceived(qint64 msec);
@@ -89,8 +90,8 @@ class ConnectionHealth final : public QObject {
   bool m_dnsPingInitialized = false;
 
   bool m_suspended = false;
-  QString m_currentGateway;
-  QString m_deviceAddress;
+  QHostAddress m_currentGateway;
+  QHostAddress m_deviceAddress;
 
 #ifdef UNIT_TEST
   friend class TestConnectionHealth;

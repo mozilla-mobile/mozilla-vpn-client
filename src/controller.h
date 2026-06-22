@@ -20,6 +20,34 @@
 class Controller;
 class ControllerImpl;
 
+class ControllerStatus {
+  Q_GADGET
+
+  Q_PROPERTY(bool connected MEMBER m_connected);
+  Q_PROPERTY(QDateTime timestamp MEMBER m_timestamp);
+  Q_PROPERTY(QHostAddress ipv4Address MEMBER m_ipv4Address);
+  Q_PROPERTY(QHostAddress ipv6Address MEMBER m_ipv6Address);
+  Q_PROPERTY(QHostAddress ipv4Gateway MEMBER m_ipv4Gateway);
+  Q_PROPERTY(QHostAddress ipv6Gateway MEMBER m_ipv6Gateway);
+  Q_PROPERTY(quint64 rxBytes MEMBER m_rxBytes);
+  Q_PROPERTY(quint64 txBytes MEMBER m_txBytes);
+
+ public:
+  ControllerStatus() {}
+  ControllerStatus(const QJsonObject& obj);
+
+  void clear();
+
+  bool m_connected = false;
+  QDateTime m_timestamp;
+  QHostAddress m_ipv4Address;
+  QHostAddress m_ipv6Address;
+  QHostAddress m_ipv4Gateway;
+  QHostAddress m_ipv6Gateway;
+  quint64 m_rxBytes = 0;
+  quint64 m_txBytes = 0;
+};
+
 class Controller : public QObject, public LogSerializer {
   Q_OBJECT
   Q_DISABLE_COPY_MOVE(Controller)
@@ -134,6 +162,7 @@ class Controller : public QObject, public LogSerializer {
   Q_INVOKABLE bool isActive() const { return m_state > StateOff; }
 
   const ServerData& currentServer() const { return m_serverData; }
+  const ControllerStatus& getStatus() const { return m_status; }
 
   bool enableDisconnectInConfirming() const {
     return m_enableDisconnectInConfirming;
@@ -155,10 +184,7 @@ class Controller : public QObject, public LogSerializer {
   QString logName() const override { return "Mozilla VPN backend logs"; }
   void logSerialize(QIODevice* device) override;
 
-  void getStatus(
-      std::function<void(const QString& serverIpv4Gateway,
-                         const QString& deviceIpv4Address, uint64_t txBytes,
-                         uint64_t rxBytes)>&& callback);
+  void refreshStatus();
 
   QString currentServerString() const;
 
@@ -193,13 +219,12 @@ class Controller : public QObject, public LogSerializer {
   Q_PROPERTY(QString currentServerString READ currentServerString NOTIFY
                  currentServerChanged);
 
+  Q_PROPERTY(ControllerStatus status READ getStatus NOTIFY statusUpdated);
+
  private slots:
   void handshakeTimeout();
   void connected(const QString& pubkey);
   void disconnected();
-  void statusUpdated(const QString& serverIpv4Gateway,
-                     const QString& deviceIpv4Address, uint64_t txBytes,
-                     uint64_t rxBytes);
   void implInitialized(bool status, bool connected,
                        const QDateTime& connectionDate);
   void implPermRequired();
@@ -208,6 +233,7 @@ class Controller : public QObject, public LogSerializer {
  signals:
   void stateChanged();
   void errorChanged();
+  void statusUpdated(const ControllerStatus& status);
   void timestampChanged();
   void enableDisconnectInConfirmingChanged();
   void connectionRetryChanged();
@@ -284,6 +310,7 @@ class Controller : public QObject, public LogSerializer {
   QTimer m_handshakeTimer;
 
   QDateTime m_connectedTimeInUTC;
+  ControllerStatus m_status;
 
   State m_state = StateInitializing;
   ActivationPrincipal m_initiator = Null;
@@ -316,12 +343,6 @@ class Controller : public QObject, public LogSerializer {
 
   PingHelper m_pingCanary;
   bool m_pingReceived = false;
-
-  QList<std::function<void(const QString& serverIpv4Gateway,
-                           const QString& deviceIpv4Address, uint64_t txBytes,
-                           uint64_t rxBytes)>>
-      m_getStatusCallbacks;
-
 };  // namespace Controller
 
 #endif  // CONTROLLER_H

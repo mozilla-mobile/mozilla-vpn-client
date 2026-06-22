@@ -6,6 +6,7 @@
 #define NETWORKMANAGERCONTROLLER_H
 
 #include <QDBusObjectPath>
+#include <QHostAddress>
 #include <QObject>
 #include <QVariant>
 #include <QVersionNumber>
@@ -75,8 +76,10 @@ class NetmgrController final : public ControllerImpl {
   QVariantMap m_wireguard;
 
   QString m_serverPublicKey;
-  QString m_serverIpv4Gateway;
-  QString m_deviceIpv4Address;
+  QHostAddress m_serverIpv4Gateway;
+  QHostAddress m_serverIpv6Gateway;
+  QHostAddress m_deviceIpv4Address;
+  QHostAddress m_deviceIpv6Address;
   QString m_uuid;
 
   QVersionNumber m_version;

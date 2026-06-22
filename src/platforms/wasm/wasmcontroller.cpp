@@ -42,4 +42,6 @@ void WasmController::deactivate() {
   QMetaObject::invokeMethod(m_mock, "deactivate", Qt::QueuedConnection);
 }
 
-void WasmController::checkStatus() { emitStatusFromJson(m_mock->getStatus()); }
+void WasmController::checkStatus() {
+  emit statusUpdated(ControllerStatus(m_mock->getStatus()));
+}

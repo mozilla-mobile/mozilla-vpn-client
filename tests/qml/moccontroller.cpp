@@ -45,9 +45,6 @@ void Controller::setError(ErrorCode) {}
 
 qint64 Controller::connectionTimestamp() const { return 42; }
 
-void Controller::statusUpdated(const QString&, const QString&, uint64_t,
-                               uint64_t) {}
-
 QList<IPAddress> Controller::getAllowedIPAddressRanges(const Server& server) {
   Q_UNUSED(server);
   return QList<IPAddress>();
@@ -61,16 +58,7 @@ Controller::ErrorCode Controller::error() const {
 
 void Controller::updateRequired() {}
 
-void Controller::getStatus(
-    std::function<void(const QString& serverIpv4Gateway,
-                       const QString& deviceIpv4Address, uint64_t txBytes,
-                       uint64_t rxBytes)>&& a_callback) {
-  std::function<void(const QString& serverIpv4Gateway,
-                     const QString& deviceIpv4Address, uint64_t txBytes,
-                     uint64_t rxBytes)>
-      callback = std::move(a_callback);
-  callback("127.0.0.1", "127.0.0.1", 0, 0);
-}
+void Controller::refreshStatus() { emit statusUpdated(m_status); }
 
 void Controller::quit() {}
 

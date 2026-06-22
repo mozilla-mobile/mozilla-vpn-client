@@ -269,7 +269,7 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
   }
 
   if (type == "status") {
-    emitStatusFromJson(obj);
+    emit statusUpdated(ControllerStatus(obj));
     return;
   }
 

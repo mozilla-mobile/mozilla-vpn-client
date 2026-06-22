@@ -76,10 +76,13 @@ AndroidController::AndroidController() {
       activity, &AndroidVPNActivity::eventStatisticUpdate, this,
       [this](const QString& parcelBody) {
         auto doc = QJsonDocument::fromJson(parcelBody.toUtf8());
-        emit statusUpdated(doc.object()["endpoint"].toString(),
-                           doc.object()["deviceIpv4"].toString(),
-                           doc.object()["tx_bytes"].toInt(),
-                           doc.object()["rx_bytes"].toInt());
+        ControllerStatus st;
+        st.m_connected = true;
+        st.m_ipv4Gateway = QHostAddress(doc.object()["endpoint"].toString());
+        st.m_ipv4Address = QHostAddress(doc.object()["deviceIpv4"].toString());
+        st.m_rxBytes = doc.object()["rx_bytes"].toInteger();
+        st.m_txBytes = doc.object()["tx_bytes"].toInteger();
+        emit statusUpdated(st);
       },
       Qt::QueuedConnection);
   connect(
