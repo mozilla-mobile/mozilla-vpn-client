@@ -5,11 +5,9 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import argparse
-import json
 import os
 import xml.etree.ElementTree as ET
 import shutil
-import subprocess
 import sys
 from translate import translate_addon
 
