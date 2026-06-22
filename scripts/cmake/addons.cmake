@@ -91,28 +91,34 @@ function(add_addon_target NAME)
     find_latest_update_addon(LATEST_UPDATE_MANIFEST ${ADDON_SOURCES})
     message(STATUS "Latest update addon manifest: ${LATEST_UPDATE_MANIFEST}")
 
-    # Future todo: Ensure that all non-manifest files are identical-ish between latest update message and default update message,
-    # to ensure we keep default's js files up-to-date.
+    # Only adjust the default update addon when this target actually contains a
+    # latest "update" addon to derive from. Subset targets (e.g. the functional
+    # test addons) don't, and the adjustment also needs ADDON_SOURCE_DIR, which
+    # isn't set when building from an explicit SOURCES list.
+    if(LATEST_UPDATE_MANIFEST)
+        # Future todo: Ensure that all non-manifest files are identical-ish between latest update message and default update message,
+        # to ensure we keep default's js files up-to-date.
 
-    # Get translations.completeness for latest update file
-    # Get list of locales that are not equal to 1. If list is empty, append "fake" to it
-    add_custom_command(
-        OUTPUT ${ADDON_OUTPUT_DIR}/locales_skipped.txt
-        DEPENDS ${LATEST_UPDATE_MANIFEST}
-        COMMAND ${PYTHON_EXECUTABLE} ${ADDON_SCRIPT_DIR}/translate.py
-                    ${ADDON_BUILD_ARGS} ${LATEST_UPDATE_MANIFEST} ${ADDON_OUTPUT_DIR}
-    )
-    message(STATUS "Skipped locales file: ${ADDON_OUTPUT_DIR}/locales_skipped.txt")
+        # Get translations.completeness for latest update file
+        # Get list of locales that are not equal to 1. If list is empty, append "fake" to it
+        add_custom_command(
+            OUTPUT ${ADDON_OUTPUT_DIR}/locales_skipped.txt
+            DEPENDS ${LATEST_UPDATE_MANIFEST}
+            COMMAND ${PYTHON_EXECUTABLE} ${ADDON_SCRIPT_DIR}/translate.py
+                        ${ADDON_BUILD_ARGS} ${LATEST_UPDATE_MANIFEST} ${ADDON_OUTPUT_DIR}
+        )
+        message(STATUS "Skipped locales file: ${ADDON_OUTPUT_DIR}/locales_skipped.txt")
 
-    # Get date, max_client_version, and short_version lines in latest file
-    # copy these 4 things to appropriate spot in default file
-    add_custom_command(
-        OUTPUT ${ADDON_SOURCE_DIR}/message_update_default/manifest.json
-        DEPENDS ${ADDON_OUTPUT_DIR}/locales_skipped.txt
-        COMMAND ${PYTHON_EXECUTABLE} ${ADDON_SCRIPT_DIR}/adjust_default_update_addon.py
-                    ${LATEST_UPDATE_MANIFEST} ${ADDON_SOURCE_DIR}/message_update_default/manifest.json ${ADDON_OUTPUT_DIR}/locales_skipped.txt
-    )
-    message(STATUS "Default update addon has been adjusted")
+        # Get date, max_client_version, and short_version lines in latest file
+        # copy these 4 things to appropriate spot in default file
+        add_custom_command(
+            OUTPUT ${ADDON_SOURCE_DIR}/message_update_default/manifest.json
+            DEPENDS ${ADDON_OUTPUT_DIR}/locales_skipped.txt
+            COMMAND ${PYTHON_EXECUTABLE} ${ADDON_SCRIPT_DIR}/adjust_default_update_addon.py
+                        ${LATEST_UPDATE_MANIFEST} ${ADDON_SOURCE_DIR}/message_update_default/manifest.json ${ADDON_OUTPUT_DIR}/locales_skipped.txt
+        )
+        message(STATUS "Default update addon has been adjusted")
+    endif()
 
     # Add commands to build the addons
     foreach(MANIFEST_FILE ${ADDON_SOURCES})

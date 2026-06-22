@@ -14,19 +14,14 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../../scripts/cmake/addons.cmake)
 
 # Build the needed production addons.
-add_addon_target(prod_addon_expiring
+add_addon_target(prod_addon
     OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/prod/
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../addons/message_subscription_expiring/
+    SOURCES
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../addons/message_subscription_expiring/manifest.json
+        ${CMAKE_CURRENT_SOURCE_DIR}/../../../addons/message_upgrade_to_annual_plan/manifest.json
     I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rdparty/i18n
 )
-set_target_properties(prod_addon_expiring PROPERTIES EXCLUDE_FROM_ALL FALSE)
-
-add_addon_target(prod_addon_upgrade
-    OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/prod/
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../addons/message_upgrade_to_annual_plan/
-    I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rdparty/i18n
-)
-set_target_properties(prod_addon_upgrade PROPERTIES EXCLUDE_FROM_ALL FALSE)
+set_target_properties(prod_addon PROPERTIES EXCLUDE_FROM_ALL FALSE)
 
 # Build the addons for testing.
 add_custom_target(test_01_empty_manifest
