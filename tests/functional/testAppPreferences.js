@@ -13,10 +13,6 @@ describe('Settings', function() {
 
   beforeEach(async () => {
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-
-    if (!(await vpn.isFeatureFlippedOff('subscriptionManagement'))) {
-      await vpn.flipFeatureOff('subscriptionManagement');
-    }
   });
 
   // TODO: Create relevant tests

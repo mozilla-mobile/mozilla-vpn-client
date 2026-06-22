@@ -445,14 +445,14 @@ SETTING_BOOL(serverSwitchNotification,        // getter
              false                            // sensitive (do not log)
 )
 
-SETTING_BOOL(serverUnavailableNotification,                     // getter
-             setServerUnavailableNotification,                  // setter
-             removeServerUnavailableNotification,               // remover
-             hasServerUnavailableNotification,                  // has
-             "serverUnavailableNotification",                   // key
-             Feature::serverUnavailableNotification.supported,  // default value
-             false,  // remove when reset
-             false   // sensitive (do not log)
+SETTING_BOOL(serverUnavailableNotification,        // getter
+             setServerUnavailableNotification,     // setter
+             removeServerUnavailableNotification,  // remover
+             hasServerUnavailableNotification,     // has
+             "serverUnavailableNotification",      // key
+             true,                                 // default value
+             false,                                // remove when reset
+             false                                 // sensitive (do not log)
 )
 
 SETTING_BOOL(recommendedServerSelected,        // getter

@@ -165,12 +165,6 @@ inline constexpr ConstantFeature multiHop = {
     .supported = true,
 };
 
-inline constexpr ConstantFeature notificationControl = {
-    .id = "notificationControl",
-    .name = "Notification control",
-    .supported = true,
-};
-
 inline constexpr ConstantFeature sentry = {
     .id = "sentry",
     .name = "Sentry Crash Report SDK",
@@ -180,12 +174,6 @@ inline constexpr ConstantFeature sentry = {
 inline constexpr ConstantFeature serverConnectionScore = {
     .id = "serverConnectionScore",
     .name = "Server connection score",
-    .supported = true,
-};
-
-inline constexpr ConstantFeature serverUnavailableNotification = {
-    .id = "serverUnavailableNotification",
-    .name = "Server unavailable notification",
     .supported = true,
 };
 
@@ -251,12 +239,6 @@ inline constexpr ConstantFeature checkConnectivityOnActivation = {
     .supported = false,
 };
 
-inline const OverridableFeature factoryReset = {
-    .id = "factoryReset",
-    .name = "Factory reset",
-    .evaluator = +[] { return true; },
-};
-
 inline constexpr ConstantFeature freeTrial = {
     .id = "freeTrial",
     .name = "Free trial",
@@ -269,22 +251,10 @@ inline const OverridableFeature replacerAddon = {
     .evaluator = +[] { return false; },
 };
 
-inline const OverridableFeature recommendedServers = {
-    .id = "recommendedServers",
-    .name = "Recommended servers",
-    .evaluator = +[] { return true; },
-};
-
 inline const OverridableFeature showRotateIPAddressButton = {
     .id = "showRotateIPAddressButton",
     .name = "Show Rotate IP address button",
     .evaluator = +[] { return false; },
-};
-
-inline const OverridableFeature subscriptionManagement = {
-    .id = "subscriptionManagement",
-    .name = "Subscription management",
-    .evaluator = +[] { return true; },
 };
 
 inline constexpr ConstantFeature startOnBoot = {

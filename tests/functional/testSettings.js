@@ -13,10 +13,6 @@ describe('Settings', function() {
 
   beforeEach(async () => {
     await vpn.waitForQueryAndClick(queries.navBar.SETTINGS.visible());
-
-    if (!(await vpn.isFeatureFlippedOff('subscriptionManagement'))) {
-      await vpn.flipFeatureOff('subscriptionManagement');
-    }
   });
 
   async function checkSetting(query, settingKey) {
@@ -43,14 +39,12 @@ describe('Settings', function() {
   it('Checking settings entries', async () => {
     await vpn.waitForQuery(queries.screenSettings.USER_PROFILE.visible());
 
-    if ((await vpn.isFeatureFlippedOff('subscriptionManagement'))) {
-      await vpn.clickOnQuery(queries.screenSettings.USER_PROFILE.visible());
-      await vpn.waitForCondition(async () => {
-        const url = await vpn.getLastUrl();
-        return url.includes('https://accounts.stage.mozaws.net') &&
-            url.includes('?email=test@mozilla.com');
-      });
-    }
+    await vpn.clickOnQuery(queries.screenSettings.USER_PROFILE.visible());
+    await vpn.waitForCondition(async () => {
+      const url = await vpn.getLastUrl();
+      return url.includes('https://accounts.stage.mozaws.net') &&
+          url.includes('?email=test@mozilla.com');
+    });
 
     await vpn.waitForQuery(queries.screenSettings.PRIVACY.visible());
     await vpn.waitForQuery(queries.screenSettings.APP_EXCLUSIONS.visible());
