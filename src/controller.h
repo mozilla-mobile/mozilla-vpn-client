@@ -38,14 +38,14 @@ class ControllerStatus {
 
   void clear();
 
-  bool m_connected;
+  bool m_connected = false;
   QDateTime m_timestamp;
   QHostAddress m_ipv4Address;
   QHostAddress m_ipv6Address;
   QHostAddress m_ipv4Gateway;
   QHostAddress m_ipv6Gateway;
-  quint64 m_rxBytes;
-  quint64 m_txBytes;
+  quint64 m_rxBytes = 0;
+  quint64 m_txBytes = 0;
 };
 
 class Controller : public QObject, public LogSerializer {
