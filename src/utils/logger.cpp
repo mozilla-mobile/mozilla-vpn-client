@@ -56,16 +56,22 @@ Logger::Log& Logger::Log::operator<<(QTextStreamFunction t) {
 
 #ifdef Q_OS_APPLE
 Logger::Log& Logger::Log::operator<<(const NSString* t) {
-  m_data->m_ts << QString::fromNSString(t);
+  m_data->m_ts << QString::fromNSString(t) << ' ';
+  return *this;
+}
+Logger::Log& Logger::Log::operator<<(const NSError* t) {
+  CFStringRef ref = CFErrorCopyDescription((CFErrorRef)t);
+  m_data->m_ts << QString::fromCFString(ref) << ' ';
+  CFRelease(ref);
   return *this;
 }
 Logger::Log& Logger::Log::operator<<(CFStringRef t) {
-  m_data->m_ts << QString::fromCFString(t);
+  m_data->m_ts << QString::fromCFString(t) << ' ';
   return *this;
 }
 Logger::Log& Logger::Log::operator<<(CFErrorRef t) {
   CFStringRef ref = CFErrorCopyDescription(t);
-  m_data->m_ts << QString::fromCFString(ref);
+  m_data->m_ts << QString::fromCFString(ref) << ' ';
   CFRelease(ref);
   return *this;
 }
