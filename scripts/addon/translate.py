@@ -499,7 +499,6 @@ def process_completeness_entry(entry):
 
 def find_untranslated_locales(completeness_array, fallback_dictionary, threshold):
     untranslated_locales = []
-    print(completeness_array)
     for entry in completeness_array:
         locale, completeness = process_completeness_entry(entry)
         if completeness < threshold:
@@ -519,6 +518,15 @@ def find_untranslated_locales(completeness_array, fallback_dictionary, threshold
             if not cleared:
                 untranslated_locales.append(locale)
     return untranslated_locales
+
+def get_translation_threshold(source):
+    threshold = 1.0
+    with open(source, "r", encoding="utf-8") as file:
+        manifest = json.load(file)
+        if "conditions" in manifest:
+            if "translation_threshold" in manifest["conditions"]:
+                threshold = float(manifest["conditions"]["translation_threshold"])
+    return threshold
 
 if __name__ == "__main__":
 
@@ -584,7 +592,7 @@ if __name__ == "__main__":
     tmp_dest_path = tempfile.mkdtemp()
     tmp_path, addon_id, completeness_array, fallback_dictionary = translate_addon(qtsearchpath, args.source, tmp_dest_path, args.i18npath, script_path)
 
-    translation_threshold = 1.0 # UPDATE THIS IF IN CONDITION
+    translation_threshold = get_translation_threshold(args.source)
     locales_not_fully_translated = find_untranslated_locales(completeness_array, fallback_dictionary, translation_threshold)
 
     # if there are no locales add some text - otherwise locales condition will not be considered
