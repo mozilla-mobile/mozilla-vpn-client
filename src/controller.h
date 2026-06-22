@@ -36,6 +36,8 @@ class ControllerStatus {
   ControllerStatus() {}
   ControllerStatus(const QJsonObject& obj);
 
+  void clear();
+
   bool m_connected;
   QDateTime m_timestamp;
   QHostAddress m_ipv4Address;

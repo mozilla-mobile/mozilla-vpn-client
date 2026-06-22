@@ -221,6 +221,12 @@ void Controller::implInitialized(bool status, bool a_connected,
 
   setState(a_connected ? StateOn : StateOff);
 
+  // Update the connection status.
+  m_status.clear();
+  m_status.m_connected = a_connected;
+  m_status.m_timestamp = connectionDate;
+  emit statusUpdated(m_status);
+
   // If we are connected already at startup time, we can trigger the connection
   // sequence of tasks.
   if (a_connected) {
@@ -784,8 +790,10 @@ void Controller::disconnected() {
   }
 
   // clear the connection time.
+  m_status.clear();
   m_connectedTimeInUTC = QDateTime();
   emit timestampChanged();
+  emit statusUpdated(m_status);
 
   m_initiator = Null;
   setState(StateOff);
@@ -1175,4 +1183,15 @@ ControllerStatus::ControllerStatus(const QJsonObject& obj) {
   m_ipv6Gateway = QHostAddress(obj.value("serverIpv6Gateway").toString());
   m_rxBytes = obj.value("rxBytes").toInteger();
   m_txBytes = obj.value("txBytes").toInteger();
+}
+
+void ControllerStatus::clear() {
+  m_connected = false;
+  m_timestamp = QDateTime();
+  m_ipv4Address.clear();
+  m_ipv6Address.clear();
+  m_ipv4Gateway.clear();
+  m_ipv6Gateway.clear();
+  m_rxBytes = 0;
+  m_txBytes = 0;
 }
