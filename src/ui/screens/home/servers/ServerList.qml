@@ -255,7 +255,7 @@ FocusScope {
 
                                 MultiEffect {
                                     anchors.fill: parent
-
+                                    brightness: 1.0
                                     colorization: 1.0
                                     colorizationColor: MZTheme.colors.normalButton.defaultColor
                                     source: refreshIcon

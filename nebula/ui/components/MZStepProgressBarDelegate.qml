@@ -99,7 +99,7 @@ Column {
 
             MultiEffect {
                 anchors.fill: parent
-
+                brightness: 1.0
                 colorization: 1.0
                 colorizationColor: delegate.currentState === MZStepProgressBarDelegate.State.Complete ? MZTheme.colors.stepProgressIconComplete : MZTheme.colors.stepProgressIconIncomplete
                 source: icon
