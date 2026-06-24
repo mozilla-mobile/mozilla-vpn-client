@@ -64,8 +64,12 @@ static void wgLog(const char* msg) {
   m_tunfd = -1;
   m_rtseq = 0;
   m_rtsock = socket(PF_ROUTE, SOCK_RAW, 0);
+  if (m_rtsock < 0) {
+    return nil;
+  }
   m_tunfd = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
   if (m_tunfd < 0) {
+    close(m_rtsock);
     return nil;
   }
 
@@ -74,6 +78,7 @@ static void wgLog(const char* msg) {
   int err = ioctl(m_tunfd, CTLIOCGINFO, &info);
   if (err < 0) {
     close(m_tunfd);
+    close(m_rtsock);
     return nil;
   }
   struct sockaddr_ctl addr = {};
@@ -85,6 +90,7 @@ static void wgLog(const char* msg) {
   err = connect(m_tunfd, (struct sockaddr*)&addr, sizeof(addr));
   if (err < 0) {
     close(m_tunfd);
+    close(m_rtsock);
     return nil;
   }
 
@@ -100,6 +106,7 @@ static void wgLog(const char* msg) {
                    &ifnamesize);
   if (err < 0) {
     close(m_tunfd);
+    close(m_rtsock);
     return nil;
   }
   int ifindex = if_nametoindex(ifr.ifr_name);
