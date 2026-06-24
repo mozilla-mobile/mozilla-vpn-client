@@ -22,6 +22,9 @@ struct CityInlineAccessoryWidget: View {
           } else {
             Text(exitCity)
           }
+        } else {
+          Text(LocalizedStringResource("vpn.logoAccessoryWidget.unauthenticatedMessage", defaultValue: "Turn on via app"))
+            .allowsTightening(true)
         }
       }
     }
@@ -47,11 +50,18 @@ struct CityRectangularAccessoryWidget: View {
             .font(.system(size: 22))
         }
         Spacer()
-        CityTextComponentView(entry: entry)
-          .allowsTightening(true)
-          .minimumScaleFactor(0.5)
+        if !entry.isDataIncomplete {
+          CityTextComponentView(entry: entry)
+            .allowsTightening(true)
+            .minimumScaleFactor(0.5)
+            .padding(10)
+        } else {
+          Text(LocalizedStringResource("vpn.logoAccessoryWidget.unauthenticatedMessage", defaultValue: "Turn on via app"))
+            .allowsTightening(true)
+            .padding(10)
+          Spacer()
         }
-        .padding(10)
+      }
     }
     .containerBackground(for: .widget) { // need this for AccessoryWidgetBackground to work, it seems
       WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
@@ -82,6 +92,8 @@ struct CityCircularAccessoryWidget: View {
           } else {
             formattedText(exitCity)
           }
+        } else {
+          formattedText(String(localized: LocalizedStringResource("vpn.logoAccessoryWidget.unauthenticatedMessage", defaultValue: "Turn on via app")))
         }
       }
       .padding(12)

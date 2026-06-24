@@ -16,6 +16,10 @@ struct VPNStatusEntry: TimelineEntry {
   var sysImageName: String {
     return isConnected ? "shield.lefthalf.filled" : "shield.lefthalf.filled.slash"
   }
+
+  var isDataIncomplete: Bool {
+    return entryCity == nil && exitCity == nil && !isConnected
+  }
 }
 
 struct VPNStatusProvider: TimelineProvider {
@@ -62,19 +66,25 @@ struct SmallToggleWidget: View {
   let entry: VPNStatusEntry
 
   var body: some View {
-  VStack(alignment: .leading, spacing: 0) {
-    Image("logo")
-      .resizable()
-      .frame(width: 30, height: 30)
-      .frame(maxWidth: .infinity, alignment: .center)
-      .foregroundStyle(WidgetColors.logoColor(colorScheme, isConnected: entry.isConnected))
-    Spacer(minLength: 10)
-    CityTextToggleComponentView(entry: entry)
+    ZStack {
+      if entry.isDataIncomplete {
+        UnauthenticatedMessageView()
+      } else {
+        VStack(alignment: .leading, spacing: 0) {
+          Image("logo")
+            .resizable()
+            .frame(width: 30, height: 30)
+            .frame(maxWidth: .infinity, alignment: .center)
+            .foregroundStyle(WidgetColors.logoColor(colorScheme, isConnected: entry.isConnected))
+          Spacer(minLength: 10)
+          CityTextToggleComponentView(entry: entry)
+        }
+      }
+    }
+    .containerBackground(for: .widget) {
+      WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
+    }
   }
-  .containerBackground(for: .widget) {
-    WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
-  }
-}
 }
 
 struct MediumToggleWidget: View {
@@ -83,23 +93,29 @@ struct MediumToggleWidget: View {
 
   var body: some View {
     ZStack {
-      Image("logo")
-        .resizable()
-        .frame(width: 75, height: 75)
-        .padding(.leading, 30)
-        .containerRelativeFrame(.horizontal, alignment: .leading)
-        .containerRelativeFrame(.vertical, alignment: .center)
-        .foregroundStyle(WidgetColors.logoColor(colorScheme, isConnected: entry.isConnected))
-      VStack {
-        Spacer()
-        CityTextToggleComponentView(entry: entry, largeText: true)
-        Spacer()
+      if entry.isDataIncomplete {
+        UnauthenticatedMessageView()
+      } else {
+        ZStack {
+          Image("logo")
+            .resizable()
+            .frame(width: 75, height: 75)
+            .padding(.leading, 30)
+            .containerRelativeFrame(.horizontal, alignment: .leading)
+            .containerRelativeFrame(.vertical, alignment: .center)
+            .foregroundStyle(WidgetColors.logoColor(colorScheme, isConnected: entry.isConnected))
+          VStack {
+            Spacer()
+            CityTextToggleComponentView(entry: entry, largeText: true)
+            Spacer()
+          }
+          .padding(20)
+          .padding(.leading, 95)
+        }
       }
-      .padding(20)
-      .padding(.leading, 95)
-      }
+    }
     .containerBackground(for: .widget) {
-        WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
+      WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
     }
   }
 }
@@ -164,6 +180,32 @@ struct CityTextComponentView: View {
       }
     } else {
       EmptyView()
+    }
+  }
+}
+
+struct UnauthenticatedMessageView: View {
+  @Environment(\.colorScheme) var colorScheme
+  let largeText: Bool
+
+  init(largeText: Bool = false) {
+    self.largeText = largeText
+  }
+
+  @ViewBuilder
+  var body: some View {
+    VStack(alignment: .leading, spacing: 0) {
+      Spacer(minLength: 0)
+      Image("logo")
+        .resizable()
+        .frame(width: 30, height: 30)
+        .frame(maxWidth: .infinity, alignment: .center)
+      Spacer(minLength: 10)
+      Text(LocalizedStringResource("vpn.toggleWidget.unauthenticatedMessage", defaultValue: "Before using widget, first turn on Mozilla VPN from app."))
+        .allowsTightening(true)
+        .multilineTextAlignment(.center)
+        .frame(maxWidth: .infinity, alignment: .center)
+      Spacer(minLength: 0)
     }
   }
 }
