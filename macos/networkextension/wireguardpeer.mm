@@ -155,14 +155,13 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
         clock_gettime(CLOCK_MONOTONIC, &m_lastHandshake);
         memset(&m_handshakeTimeout, 0, sizeof(m_handshakeTimeout));
 
-        // The conneciton is now up.
-        if (m_completionHandler) {
-          auto block = m_completionHandler;
-          m_completionHandler = nil;
-
-          // We have to do this from the main thread or it all falls apart.
-          dispatch_async(dispatch_get_main_queue(), ^(){ block(nil); });
-        }
+        // The conneciton is now up. Run the completion handler (from the main thread).
+        dispatch_async(dispatch_get_main_queue(), ^(){
+          if (m_completionHandler) {
+            m_completionHandler(nil);
+            m_completionHandler = nil;
+          }
+        });
       }
     }
   }
