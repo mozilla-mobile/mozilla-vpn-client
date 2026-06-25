@@ -1163,7 +1163,7 @@ logoAccessoryWidget:
     comment: Shown as part of inline widget when VPN is inactive.  If translation will be more than 16 characters, instead translate `VPN on` to keep this within available space.
   unauthenticatedMessage:
     value: Turn on via app
-    comment: Shown in small widgets when user is not signed in, or has rmoeved the network extension. For the inline widget, this must be kept to 16 characters or less. If translation will be more than 16 characters, instead translate `Open app` to keep this within available space.
+    comment: Shown in small widgets when user is not signed in, or has removed the network extension. For the inline widget, this must be kept to 16 characters or less. If translation will be more than 16 characters, instead translate as `Open app` to keep this within available space.
 
 cityAccessoryWidget:
   description:
