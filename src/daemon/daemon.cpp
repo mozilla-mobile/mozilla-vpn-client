@@ -161,7 +161,11 @@ bool Daemon::activate(const InterfaceConfig& config) {
     peerConfig.m_serverIpv6AddrIn = "::1";
     peerConfig.m_serverPort = obfuscator->localPort();
   }
-  m_obfuscator = std::move(obfuscator);
+  // The exit hop never needs an obfuscator, assign the empty obfuscator to
+  // allow changing of the obfuscation method on server switch.
+  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
+    m_obfuscator = std::move(obfuscator);
+  }
 
   // Add the peer to this interface.
   if (!wgutils()->updatePeer(peerConfig)) {
@@ -484,7 +488,12 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     peerConfig.m_serverIpv6AddrIn = QString();
     peerConfig.m_serverPort = obfuscator->localPort();
   }
-  m_obfuscator = std::move(obfuscator);
+
+  // The exit hop never needs an obfuscator, assign the empty obfuscator to
+  // allow changing of the obfuscation method on server switch.
+  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
+    m_obfuscator = std::move(obfuscator);
+  }
 
   // Activate the new peer and its routes.
   if (!wgutils()->updatePeer(peerConfig)) {
