@@ -213,12 +213,6 @@ inline const OverridableFeature accountDeletion = {
     .evaluator = +[] { return Platform::android || Platform::ios; },
 };
 
-inline const OverridableFeature alwaysPort53 = {
-    .id = "alwaysPort53",
-    .name = "Always use port 53",
-    .evaluator = +[] { return false; },
-};
-
 inline constexpr ConstantFeature annualUpgrade = {
     .id = "annualUpgrade",
     .name = "Annual upgrade",

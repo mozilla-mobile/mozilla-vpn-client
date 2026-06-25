@@ -158,8 +158,9 @@ target_include_directories(mozillavpn-uiplugin PUBLIC
 
 target_sources(mozillavpn-ui PRIVATE singletons/BatteryOptimizer.h)
 
+target_compile_definitions(mozillavpn-ui PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
-    target_compile_definitions(mozillavpn-ui PRIVATE MZ_ANDROID)
     target_sources(mozillavpn-ui PRIVATE singletons/VPNAndroidUtils.h)
     target_sources(mozillavpn-ui PRIVATE singletons/VPNAndroidCommons.h)
 endif()

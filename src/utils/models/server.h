@@ -23,7 +23,7 @@ class Server final : public QObject {
   ~Server();
 
   // Obfuscation methods enum, remember to keep in sync with the one in
-  // settingsholder.h and in the obfuscators crate
+  // and in the obfuscators crate
   enum ObfuscationMethod {
     NoObfuscation,
     LWO,

@@ -47,16 +47,16 @@ class SettingsHolder final : public QObject {
   };
   Q_ENUM(DNSProviderFlags)
 
-  // Obfuscation methods enum, remember to keep in sync with the one in server.h
-  // and in the obfuscators crate
-  enum ObfuscationMethod {
-    NoObfuscation,
+  enum AntiCensorshipPolicy {
+    NoAntiCensorship,
+    Port53,
     LWO,
+    LwoOverPort53,
     Masque,
     UdpOverTcp,
     Shadowsocks,
   };
-  Q_ENUM(ObfuscationMethod)
+  Q_ENUM(AntiCensorshipPolicy)
 
 #define SETTING(type, toType, getter, setter, remover, has, ...) \
   bool has() const { return m_##getter->isSet(); }               \
