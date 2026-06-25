@@ -232,33 +232,31 @@ describe('Addons', function() {
   });
 
   describe('test message_upgrade_to_annual_plan addon condition', async () => {
-
     const testCases = [
-      [() => Date.now() - 1000 * 60 * 60 * 24 * 13,
-             "",
-             false, 
-             '13 days after subscription created'],
-      [() => Date.now() - 1000 * 60 * 60 * 24 * 14,
-             "time",
-             true, 
-             '14 days after subscription created'],
-      [() => Date.now() - 1000 * 60 * 60 * 24 * 15,
-             "yesterday",
-             true, 
-             '15 days after subscription created'],
-      [() => Date.now() - 1000 * 60 * 60 * 24 * 86,
-             "date",
-             true, 
-             '86 days after subscription created'],
-      //Fails by an hour (due to daylight savings time?)
-      // [() => Date.now() - 1000 * 60 * 60 * 24 * 87,
-      //        "time",
-      //        true, 
-      //        '87 days after subscription created'],
-      [() => Date.now() - 1000 * 60 * 60 * 24 * 88,
-             "yesterday",
-             true, 
-             '88 days after subscription created'],
+      [
+        () => Date.now() - 1000 * 60 * 60 * 24 * 13, '', false,
+        '13 days after subscription created'
+      ],
+      [
+        () => Date.now() - 1000 * 60 * 60 * 24 * 14, 'time', true,
+        '14 days after subscription created'
+      ],
+      [
+        () => Date.now() - 1000 * 60 * 60 * 24 * 15, 'yesterday', true,
+        '15 days after subscription created'
+      ],
+      [
+        () => Date.now() - 1000 * 60 * 60 * 24 * 86, 'date', true,
+        '86 days after subscription created'
+      ],
+      [
+        () => Date.now() - 1000 * 60 * 60 * 24 * 87, 'time', true,
+        '87 days after subscription created'
+      ],
+      [
+        () => Date.now() - 1000 * 60 * 60 * 24 * 88, 'yesterday', true,
+        '88 days after subscription created'
+      ],
     ];
 
     const getNextTestCase = testCases[Symbol.iterator]();
@@ -295,6 +293,18 @@ describe('Addons', function() {
     testCases.forEach(([createdAtTimestamp, expectedTimeFormat, shouldBeAvailable, testCase]) => {
       it(`message display is correct when subscription started at ${testCase}`, async () => {
         await vpn.resetAddons('prod');
+
+        // Ensure subscription data has completed loading
+        await vpn.waitForCondition(async () => {
+          const raw = await vpn.getSetting('subscriptionData');
+          if (!raw) {
+            return false;
+          }
+          const created = JSON.parse(raw).subscription.created;  // seconds
+          // Within a minute
+          return Math.abs(created * 1000 - createdAtTimestamp()) < 60 * 1000;
+        });
+
 
         //Load messages
         const loadedMessages = await vpn.messages();
