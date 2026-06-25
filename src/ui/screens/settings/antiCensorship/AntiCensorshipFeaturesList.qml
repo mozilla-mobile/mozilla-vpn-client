@@ -6,7 +6,9 @@ import QtQuick 2.15
 import QtQuick.Layouts 1.15
 
 import Mozilla.Shared 1.0
+import Mozilla.VPN 1.0
 import components 0.1
+import components.forms 0.1
 
 ColumnLayout {
     id: root
@@ -15,23 +17,30 @@ ColumnLayout {
 
 
     spacing: dividerSpacing
-    MZToggleRow {
-            objectName: "alwaysUsePort53"
 
-            labelText: MZI18n.SettingsAntiCensorshipPort53Title
-            subLabelText: MZI18n.SettingsAntiCensorshipPort53Body
-            checked: MZFeatureList.get("alwaysPort53").isSupported
+    MZToggleRow {
+            objectName: "enableAntiCensorshipFeatures"
+            id: antiCensorshipFeaturesToggle
+
+            labelText: MZI18n.SettingsAntiCensorshipSettingsEnable
+            checked: MZSettings.antiCensorshipPolicy != MZSettings.NoAntiCensorship
             dividerTopMargin: dividerSpacing
             onClicked: {
-                MZFeatureList.toggle("alwaysPort53");
+                MZSettings.antiCensorshipPolicy = antiCensorshipFeaturesToggle.checked ? MZSettings.NoAntiCensorship : MZSettings.lastAntiCensorshipPolicy;
             }
     }
+
 
     Repeater {
         id: repeater
 
         model: [
             {
+                objectName: "alwaysUsePort53",
+                settingValue: MZSettings.Port53,
+                settingTitle: MZI18n.SettingsAntiCensorshipPort53Title,
+                settingDescription: MZI18n.SettingsAntiCensorshipPort53Body,
+            }, {
                 objectName: "obfuscationUdpOverTcp",
                 settingValue: MZSettings.UdpOverTcp,
                 settingTitle: MZI18n.SettingsAntiCensorshipUdpOverTcpTitle,
@@ -41,6 +50,11 @@ ColumnLayout {
                 settingValue: MZSettings.LWO,
                 settingTitle: MZI18n.SettingsAntiCensorshipLwoTitle,
                 settingDescription: MZI18n.SettingsAntiCensorshipLwoBody,
+            }, {
+                objectName: "obfuscationLwoOverPort53",
+                settingValue: MZSettings.LwoOverPort53,
+                settingTitle: MZI18n.SettingsAntiCensorshipLwoOverPort53Title,
+                settingDescription: MZI18n.SettingsAntiCensorshipLwoOverPort53Body,
             }, {
                 objectName: "obfuscationMasque",
                 settingValue: MZSettings.Masque,
@@ -54,23 +68,54 @@ ColumnLayout {
             }
         ];
 
-        delegate: MZToggleRow {
-            objectName: modelData.objectName
+        delegate: RowLayout {
+            spacing: MZTheme.theme.windowMargin
+            Layout.rightMargin: MZTheme.theme.windowMargin / 2
 
-            labelText: modelData.settingTitle
-            subLabelText: modelData.settingDescription
-            checked: MZSettings.obfuscationMethod == modelData.settingValue
-            dividerTopMargin: dividerSpacing
-            visible: MZFeatureList.get(modelData.objectName).isSupported
-            showDivider: !isOnboarding || index + 1 !== repeater.model.length
+            MZRadioButton {
+                objectName: modelData.objectName
 
-            onClicked: {
-                if(MZSettings.obfuscationMethod == modelData.settingValue) {
-                    MZSettings.obfuscationMethod = MZSettings.NoObfuscation;
-                } else {
-                    MZSettings.obfuscationMethod = modelData.settingValue;
-                    // Maybe automatically disable alwaysPort53 when enabling an obfuscation method 
-                    // that requires a specific port. Right now the port it's overridden in the controller.
+                Layout.preferredWidth: MZTheme.theme.vSpacing
+                Layout.preferredHeight: MZTheme.theme.rowHeight
+                Layout.alignment: Qt.AlignTop
+                checked: MZSettings.antiCensorshipPolicy == modelData.settingValue || MZSettings.lastAntiCensorshipPolicy == modelData.settingValue
+                accessibleName: `${modelData.settingTitle}. ${modelData.settingDescription}`
+                enabled: antiCensorshipFeaturesToggle.checked
+                onClicked: () => {
+                    MZSettings.antiCensorshipPolicy = modelData.settingValue;
+                    MZSettings.lastAntiCensorshipPolicy = modelData.settingValue;
+                }
+            }
+
+            ColumnLayout {
+                spacing: 4
+
+                MZInterLabel {
+                    Layout.fillWidth: true
+
+                    color: MZTheme.colors.fontColorDark
+                    text: modelData.settingTitle
+                    wrapMode: Text.WordWrap
+                    horizontalAlignment: Text.AlignLeft
+                    enabled: antiCensorshipFeaturesToggle.checked
+                }
+
+                MZTextBlock {
+                    text: modelData.settingDescription
+                    Layout.fillWidth: true
+                    enabled: antiCensorshipFeaturesToggle.checked
+                }
+            }
+
+            MZMouseArea {
+                anchors.fill: parent
+
+                enabled: MZSettings.antiCensorshipPolicy == modelData.settingValue && antiCensorshipFeaturesToggle.checked
+                width: Math.min(parent.implicitWidth, parent.width)
+                propagateClickToParent: false
+                onClicked: () => {
+                    MZSettings.antiCensorshipPolicy = modelData.settingValue;
+                    MZSettings.lastAntiCensorshipPolicy = modelData.settingValue;
                 }
             }
         }

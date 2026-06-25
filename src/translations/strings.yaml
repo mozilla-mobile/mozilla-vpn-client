@@ -331,6 +331,7 @@ settings:
   antiCensorshipSettings: Anti-censorship features
   antiCensorshipSettingsWarning1: These features will not help when a specific website or app blocks content because of the VPN.
   antiCensorshipSettingsWarning2: They may cause degraded network speed.
+  antiCensorshipSettingsEnable: Enable Anti-censorship features
   antiCensorshipPort53Title: Always connect using port 53
   antiCensorshipPort53Body: Routes traffic through the port commonly used for DNS. May help on networks that block UDP traffic.
   antiCensorshipMasqueTitle: MASQUE
@@ -341,6 +342,8 @@ settings:
   antiCensorshipShadowsocksBody: May help bypass restrictive or heavily filtered networks, and sometimes works when all others do not.
   antiCensorshipUdpOverTcpTitle: UDP over TCP
   antiCensorshipUdpOverTcpBody: Tunnels UDP traffic over TCP. May help on networks that block UDP traffic.
+  antiCensorshipLwoOverPort53Title: LWO over port 53
+  antiCensorshipLwoOverPort53Body: Combines the benefits of LWO and port 53.
   appExclusionTitle: Excluded apps
   appearance:
     value: Appearance

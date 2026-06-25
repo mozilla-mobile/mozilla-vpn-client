@@ -634,14 +634,14 @@ Item {
         }
 
         MZInterLabel {
-            id: obfuscationMethodDescription
-            objectName: "obfuscationMethodDescription"
+            id: antiCensorshipEnabled
             anchors.horizontalCenter: parent.horizontalCenter
             opacity: 0.8
             color: MZTheme.colors.fontColorInverted
             lineHeight: MZTheme.theme.controllerInterLineHeight
             visible: VPNController.state === VPNController.StateOn &&
-                     MZSettings.obfuscationMethod !== MZSettings.NoObfuscation
+                     MZSettings.antiCensorshipPolicy !== MZSettings.NoAntiCensorship &&
+                     MZSettings.antiCensorshipPolicy !== MZSettings.Port53
             Accessible.ignored: ipInfoPanel.isOpen || !visible
 
             text: MZI18n.ControllerAntiCensorshipOn
