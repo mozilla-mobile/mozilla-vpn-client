@@ -43,7 +43,6 @@ class DBusService final : public Daemon, protected QDBusContext {
   WireguardUtils* wgutils() const override { return m_wgutils; }
   IPUtils* iputils() override;
   DnsUtils* dnsutils() override;
-  void markObfuscatorSockets(int v4, int v6);
 
  private:
   bool removeInterfaceIfExists();

@@ -293,15 +293,3 @@ bool DBusService::isCallerAuthorized(const QString& actionId) {
   logger.warning() << "Polkit authorization denied";
   return false;
 }
-
-void DBusService::markObfuscatorSockets(int v4, int v6) {
-  constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
-  for (int fd : {v4, v6}) {
-    if (fd < 0) continue;
-    if (::setsockopt(fd, SOL_SOCKET, SO_MARK, &WG_FIREWALL_MARK,
-                     sizeof(WG_FIREWALL_MARK)) < 0) {
-      logger.warning() << "Failed to mark obfuscator socket:"
-                       << strerror(errno);
-    }
-  }
-}
