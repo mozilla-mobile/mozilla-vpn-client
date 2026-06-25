@@ -10,11 +10,27 @@ import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
 import components 0.1
 import QtQuick.Shapes
-import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 Item {
     property int safeAreaHeight: window.safeContentHeight
     property string logoSubtitle: MZI18n.ProductDescription
+
+    // Maps the onboarding animation name to the QML generated from the Lottie
+    // JSON. The components are loaded by URL rather than instantiated directly.
+    function animationUrl(name) {
+        switch (name) {
+        case "Onboarding1":
+            return "qrc:/qt/qml/Mozilla/VPN/animations/VpnLogoDropAnimation.qml";
+        case "Onboarding2":
+            return "qrc:/qt/qml/Mozilla/VPN/animations/GlobeAnimation.qml";
+        case "Onboarding3":
+            return "qrc:/qt/qml/Mozilla/VPN/animations/VpnActiveAnimation.qml";
+        case "Onboarding4":
+            return "qrc:/qt/qml/Mozilla/VPN/animations/LockAnimation.qml";
+        default:
+            return "";
+        }
+    }
 
     Rectangle {
         // The +100 and -50 in this rectangle is an awful hack to allow the purple color to cover
@@ -76,7 +92,6 @@ Item {
             id: onboardingModel
 
             ListElement {
-                animationSpeed: 1.5
                 animationSrc: "Onboarding1"
                 loopAnimation: false
                 titleStringId: "MobileOnboardingPanelOneTitle"
@@ -84,7 +99,6 @@ Item {
                 panelId: "mozilla-vpn"
             }
             ListElement {
-                animationSpeed: 1
                 animationSrc: "Onboarding2"
                 loopAnimation: true
                 titleStringId: "OnboardingPanelTwoTitle"
@@ -92,7 +106,6 @@ Item {
                 panelId: "encrypt-your-activity"
             }
             ListElement {
-                animationSpeed: 1
                 animationSrc: "Onboarding3"
                 loopAnimation: true
                 titleStringId: "OnboardingPanelThreeTitle"
@@ -100,7 +113,6 @@ Item {
                 panelId: "protect-your-privacy"
             }
             ListElement {
-                animationSpeed: 1
                 animationSrc: "Onboarding4"
                 loopAnimation: true
                 titleStringId: "OnboardingPanelFourTitle"
@@ -136,20 +148,17 @@ Item {
                     sourceComponent: SwipeDelegate {
                         background: Item {}
 
-                        MZLottieAnimation {
+                        Item {
                             id: panelAnimation
 
                             property real imageScaleValue: 0.9
                             property real imageOpacityValue: 0.0
-                            speed: animationSpeed
-                            anchors.fill: undefined
+
                             anchors.horizontalCenter: parent.horizontalCenter
                             anchors.top: parent.top
                             anchors.topMargin: swipeView._isFirstSlide ? 0 : currentPanelValues._topMargin
                             height: currentPanelValues._animationHeight + (swipeView._isFirstSlide ? currentPanelValues._topMargin : 0)
-                            loop: loopAnimation
                             opacity: panelAnimation.imageOpacityValue
-                            source: MZAssetLookup.getAnimationSource(animationSrc)
                             transform: Scale {
                                 origin.x: panelAnimation.width / 2
                                 origin.y: panelAnimation.height / 2
@@ -157,6 +166,30 @@ Item {
                                 yScale: panelAnimation.imageScaleValue
                             }
                             width: parent.width
+
+                            function play() {
+                                if (animationLoader.item && animationLoader.item.animations)
+                                    animationLoader.item.animations.restart();
+                            }
+
+                            Loader {
+                                id: animationLoader
+
+                                anchors.horizontalCenter: parent.horizontalCenter
+                                anchors.verticalCenter: parent.verticalCenter
+                                source: animationUrl(animationSrc)
+
+                                onLoaded: {
+                                    // Animation.Infinite is -1; 1 plays once.
+                                    item.animations.loops = loopAnimation ? -1 : 1;
+                                    // Fit the available height while preserving the
+                                    // animation's intrinsic aspect ratio.
+                                    item.height = Qt.binding(() => panelAnimation.height);
+                                    item.width = Qt.binding(() => item.implicitHeight > 0
+                                        ? panelAnimation.height * (item.implicitWidth / item.implicitHeight)
+                                        : panelAnimation.width);
+                                }
+                            }
 
                             SequentialAnimation {
                                 id: updatePanel

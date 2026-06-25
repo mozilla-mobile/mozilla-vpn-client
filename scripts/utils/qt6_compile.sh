@@ -204,7 +204,6 @@ mkdir -p $BUILDDIR
   -skip qtdatavis3d  \
   -skip qtgrpc  \
   -skip qtremoteobjects  \
-  -skip qtlottie  \
   -skip qtmqtt  \
   -skip qtopcua  \
   -skip qtpositioning  \

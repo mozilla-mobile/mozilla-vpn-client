@@ -4,7 +4,6 @@
 
 #include "commandui.h"
 
-#include <lottie.h>
 #include <nebula.h>
 
 #include <QQmlApplicationEngine>
@@ -27,7 +26,6 @@
 #include "logger.h"
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
-#include "networkmanager.h"
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
@@ -231,7 +229,6 @@ int CommandUI::run(QStringList& tokens) {
     auto const engine =
         static_cast<QQmlApplicationEngine*>(engineHolder->engine());
     Q_ASSERT(engine);
-    Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
 
     // Cleanup previous temporary files.
