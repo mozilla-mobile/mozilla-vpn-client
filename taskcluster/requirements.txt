@@ -552,15 +552,15 @@ mohawk==1.1.0 \
     --hash=sha256:3ed296a30453d0b724679e0fd41e4e940497f8e461a9a9c3b7f36e43bab0fa09 \
     --hash=sha256:d2a0e3ab10a209cc79e95e28f2dd54bd4a73fd1998ffe27b7ba0f962b6be9723
     # via taskcluster
-mozilla-repo-urls==0.1.1 \
-    --hash=sha256:30510d3519479aa70211145d0ac9cf6e2fadcb8d30fa3b196bb957bd773502ba \
-    --hash=sha256:7364da790751db2a060eb45adbf1d7db89a145ed279ba235f3425db9dd255915
+mozilla-repo-urls==0.2.2 \
+    --hash=sha256:161ab84cac58c0bef2c9ce0c414aaec5483fc9593fc5616c5b186e0cccff4984 \
+    --hash=sha256:f6e6e037ed28b38956624dfc6b40ed78247e747f13157863ab39ac89ecd7ffd6
     # via
     #   -r taskcluster/requirements.in
     #   taskcluster-taskgraph
-mozilla-taskgraph==4.1.1 \
-    --hash=sha256:43ef061caf80ad0dcb3c8a3e29fa6e547fe6f8a11b77a63f8cce2bede58e428f \
-    --hash=sha256:553935ba90b34476b2d190ba9857b067e8165b35bffbad8cb54e22504ab40f56
+mozilla-taskgraph==4.1.2 \
+    --hash=sha256:22d7d439cc35768d17f43197c71fe7aa5ffa974d486543450f4ab785e74c2008 \
+    --hash=sha256:5e79169bd83dfb0b10ae8d0d87523f534d70f79e2d64cf9534e4f061f25e7f3b
     # via -r taskcluster/requirements.in
 msgspec==0.21.1 \
     --hash=sha256:0d03867786e5d7ba25d666df4b11320c27170f4aeafcb8e3a8b0a50a4fb742ca \
@@ -1011,9 +1011,9 @@ taskcluster==99.2.1 \
     --hash=sha256:31fe0db2d5f5e5144719885632965ed04c1321cc42b42c8e6ea72bafadcba2dd \
     --hash=sha256:5d1cda6142470e98ff3587e3762cf19dbcbad716c5455f9f9738825b07d42104
     # via taskcluster-taskgraph
-taskcluster-taskgraph==20.0.0 \
-    --hash=sha256:cbf0064f39d42303458bbd22ccf0b28597f07fd752254333584149eb0a255a10 \
-    --hash=sha256:ee4536a8f0c9f1668c6a11546361cf4539ff94a3a2e0bdd1fca7871c2a5b55c8
+taskcluster-taskgraph==23.0.0 \
+    --hash=sha256:21f1c482f12608e585e1b74341786b0a20b081edd87e14a59399058fbe49c344 \
+    --hash=sha256:cac5460db5a9d30ab6c8aeb3799f2fc9bae12be62c899e10147b12e947bd93dc
     # via
     #   -r taskcluster/requirements.in
     #   mozilla-taskgraph
