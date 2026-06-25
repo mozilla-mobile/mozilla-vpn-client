@@ -302,16 +302,30 @@ void Controller::handshakeTimeout() {
   InterfaceConfig& exit_hop = m_activationQueue.last();
   Q_ASSERT(exit_hop.m_hopType != InterfaceConfig::HopType::MultiHopEntry);
 
-  if (m_connectionRetry == 1 &&
-      antiCensorshipPolicy ==
-          SettingsHolder::AntiCensorshipPolicy::NoAntiCensorship) {
-    logger.info() << "Connection Attempt: Using Port 53 Option this time.";
-    // On the first retry, opportunisticly try again using the port 53
-    // option enabled, if that feature is disabled.
-    activateInternal(SettingsHolder::AntiCensorshipPolicy::Port53,
-                     RandomizeServerSelection, m_initiator);
-    return;
-  } else if (m_connectionRetry < CONNECTION_MAX_RETRY) {
+  // On the first retry, opportunistically escalate to the port-53 variant of
+  // the configured policy.
+  // Policies that already use port 53, or obfuscation methods that have no
+  // port-53 variant, are retried unchanged.
+  if (m_connectionRetry == 1) {
+    SettingsHolder::AntiCensorshipPolicy port53Policy = antiCensorshipPolicy;
+    switch (antiCensorshipPolicy) {
+      case SettingsHolder::AntiCensorshipPolicy::NoAntiCensorship:
+        port53Policy = SettingsHolder::AntiCensorshipPolicy::Port53;
+        break;
+      case SettingsHolder::AntiCensorshipPolicy::LWO:
+        port53Policy = SettingsHolder::AntiCensorshipPolicy::LwoOverPort53;
+        break;
+      default:
+        break;
+    }
+    if (port53Policy != antiCensorshipPolicy) {
+      logger.info() << "Connection Attempt: opportunistically trying port 53.";
+      activateInternal(port53Policy, RandomizeServerSelection, m_initiator);
+      return;
+    }
+  }
+
+  if (m_connectionRetry < CONNECTION_MAX_RETRY) {
     activateInternal(antiCensorshipPolicy, RandomizeServerSelection,
                      m_initiator);
     return;
@@ -533,7 +547,7 @@ auto Controller::setupConfigs(
     }
     // If UDP over TCP is enabled choose a dedicated port
     if (obfuscationMethod == Server::ObfuscationMethod::UdpOverTcp) {
-      entryConfig.m_serverPort = exitServer.chooseTcpPort();
+      entryConfig.m_serverPort = entryServer.chooseTcpPort();
     }
 
     returnList.append(entryConfig);
