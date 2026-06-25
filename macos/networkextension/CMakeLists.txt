@@ -83,7 +83,7 @@ target_sources(networkextension PRIVATE
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 add_rust_library(boringtun
-    PACKAGE_DIR ${CMAKE_SOURCE_DIR}/3rdparty/boringtun
+    PACKAGE_DIR ${CMAKE_SOURCE_DIR}
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
     FEATURES ffi-bindings
     CRATE_NAME boringtun
