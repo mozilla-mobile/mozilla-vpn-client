@@ -51,7 +51,9 @@ TODO: Add details on several other scripts in the `utils` directory
 # Addons
 
 - ./addon/build.py - generate a single addon
+- ./addon/translate.py - handles translation for a single addon
 - ./addon/index.py - TODO: add description
+- ./addon/adjust_default_update_addon.py - Takes some basic info, and re-writes the message_update_default manifest
 
 # Others
 

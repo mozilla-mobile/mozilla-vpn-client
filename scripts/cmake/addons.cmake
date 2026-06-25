@@ -4,6 +4,39 @@
 
 get_filename_component(ADDON_SCRIPT_DIR ${CMAKE_CURRENT_LIST_DIR}/../addon REALPATH)
 
+### Find the "latest update" addon manifest.
+#
+# Given a list of addon manifest paths, this picks the one whose addon
+# directory name contains the word "update" and carries the highest
+# vMAJOR.MINOR version (e.g. message_update_v2.38). Manifests with no version
+# in the name (like message_update_default) are ignored. The result is
+# returned in the caller's scope via OUTVAR (empty string if none match).
+function(find_latest_update_addon OUTVAR)
+    set(_best_path "")
+    set(_best_value -1)
+    foreach(_manifest ${ARGN})
+        # Match against the addon's directory name, not the full path, so we
+        # don't pick up version-looking digits from elsewhere in the path.
+        get_filename_component(_dir ${_manifest} DIRECTORY)
+        get_filename_component(_name ${_dir} NAME)
+
+        if(NOT _name MATCHES "update")
+            continue()
+        endif()
+        if(NOT _name MATCHES "v([0-9]+)\\.([0-9]+)")
+            continue()
+        endif()
+
+        # Fold MAJOR.MINOR into a single integer so v2.38 > v2.9 numerically.
+        math(EXPR _value "${CMAKE_MATCH_1} * 1000 + ${CMAKE_MATCH_2}")
+        if(_value GREATER _best_value)
+            set(_best_value ${_value})
+            set(_best_path ${_manifest})
+        endif()
+    endforeach()
+    set(${OUTVAR} "${_best_path}" PARENT_SCOPE)
+endfunction()
+
 ### Helper function to build a VPN Addon
 #
 # This function takes one mandatory argument: ADDON_DIR which provides
@@ -50,6 +83,41 @@ function(add_addon_target NAME)
     set(ADDON_BUILD_ARGS -q ${QT_TOOL_BIN_PATH} -q ${QT_TOOL_LIBEXEC_PATH})
     if (ADDON_I18N_DIR)
         list(APPEND ADDON_BUILD_ARGS -i ${ADDON_I18N_DIR})
+    endif()
+
+    ## Update default update file (for languages that haven't translated latest bullet points)
+
+    # Get latest update file
+    find_latest_update_addon(LATEST_UPDATE_MANIFEST ${ADDON_SOURCES})
+    message(STATUS "Latest update addon manifest: ${LATEST_UPDATE_MANIFEST}")
+
+    # Only adjust the default update addon when this target actually contains a
+    # latest "update" addon to derive from. Subset targets (e.g. the functional
+    # test addons) don't, and the adjustment also needs ADDON_SOURCE_DIR, which
+    # isn't set when building from an explicit SOURCES list.
+    if(LATEST_UPDATE_MANIFEST)
+        # Future todo: Ensure that all non-manifest files are identical-ish between latest update message and default update message,
+        # to ensure we keep default's js files up-to-date.
+
+        # Get translations.completeness for latest update file
+        # Get list of locales that are not equal to 1. If list is empty, append "fake" to it
+        add_custom_command(
+            OUTPUT ${ADDON_OUTPUT_DIR}/locales_skipped.txt
+            DEPENDS ${LATEST_UPDATE_MANIFEST}
+            COMMAND ${PYTHON_EXECUTABLE} ${ADDON_SCRIPT_DIR}/translate.py
+                        ${ADDON_BUILD_ARGS} ${LATEST_UPDATE_MANIFEST} ${ADDON_OUTPUT_DIR}
+        )
+        message(STATUS "Skipped locales file: ${ADDON_OUTPUT_DIR}/locales_skipped.txt")
+
+        # Get date, max_client_version, and short_version lines in latest file
+        # copy these 4 things to appropriate spot in default file
+        add_custom_command(
+            OUTPUT ${ADDON_SOURCE_DIR}/message_update_default/manifest.json
+            DEPENDS ${ADDON_OUTPUT_DIR}/locales_skipped.txt
+            COMMAND ${PYTHON_EXECUTABLE} ${ADDON_SCRIPT_DIR}/adjust_default_update_addon.py
+                        ${LATEST_UPDATE_MANIFEST} ${ADDON_SOURCE_DIR}/message_update_default/manifest.json ${ADDON_OUTPUT_DIR}/locales_skipped.txt
+        )
+        message(STATUS "Default update addon has been adjusted")
     endif()
 
     # Add commands to build the addons
