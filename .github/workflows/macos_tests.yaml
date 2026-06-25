@@ -35,13 +35,13 @@ jobs:
       matrix: ${{ steps.testGen.outputs.tests }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           submodules: "recursive"
           persist-credentials: false
 
       - name: Checkout macOS SDK
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           repository: alexey-lysiuk/macos-sdk
           path: 3rdparty/macos-sdk
@@ -140,7 +140,7 @@ jobs:
         test: ${{ fromJson(needs.build_test_app.outputs.matrix) }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
         with:
           persist-credentials: false
 
