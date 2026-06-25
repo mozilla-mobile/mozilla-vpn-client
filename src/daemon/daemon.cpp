@@ -158,7 +158,9 @@ bool Daemon::activate(const InterfaceConfig& config) {
       return false;
     }
     peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
-    peerConfig.m_serverIpv6AddrIn = "::1";
+    // The obfuscator only binds 127.0.0.1, so clear the IPv6 endpoint to keep
+    // WireGuard from selecting an [::1]
+    peerConfig.m_serverIpv6AddrIn = QString();
     peerConfig.m_serverPort = obfuscator->localPort();
   }
   // The exit hop never needs an obfuscator, assign the empty obfuscator to
@@ -485,6 +487,8 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
       return false;
     }
     peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
+    // The obfuscator only binds 127.0.0.1, so clear the IPv6 endpoint to keep
+    // WireGuard from selecting an [::1]
     peerConfig.m_serverIpv6AddrIn = QString();
     peerConfig.m_serverPort = obfuscator->localPort();
   }
