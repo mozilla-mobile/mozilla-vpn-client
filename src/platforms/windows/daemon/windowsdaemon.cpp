@@ -64,23 +64,32 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
     m_splitTunnelManager->stop();
     return true;
   }
+
   if (config.m_vpnDisabledApps.length() > 0) {
     // Before creating the interface we need to check which adapter routes to
     // the entry server endpoint. This will be selected as the outgoing
     // interface for split-tunnelled traffic.
-    QHostAddress entryServerAddr;
-    if (config.m_hopType == InterfaceConfig::HopType::SingleHop) {
-      entryServerAddr.setAddress(config.m_serverIpv4AddrIn);
-    } else if (config.m_hopType == InterfaceConfig::HopType::MultiHopExit) {
-      auto entry = m_connections.value(InterfaceConfig::HopType::MultiHopEntry);
-      entryServerAddr.setAddress(entry.m_config.m_serverIpv4AddrIn);
-    } else {
+    InterfaceConfig entry = config;
+
+    if (config.m_hopType == InterfaceConfig::HopType::MultiHopExit) {
+      entry =
+          m_connections.value(InterfaceConfig::HopType::MultiHopEntry).m_config;
+    } else if (config.m_hopType != InterfaceConfig::HopType::SingleHop) {
       return true;
     }
 
-    int inetAdapterIndex = WindowsCommons::AdapterIndexTo(entryServerAddr);
+    int inetAdapterIndex = -1;
+
+    for (const QString& a :
+         {entry.m_serverIpv4AddrIn, entry.m_serverIpv6AddrIn}) {
+      if (a.isEmpty()) continue;
+      inetAdapterIndex = WindowsCommons::AdapterIndexTo(QHostAddress(a));
+      if (inetAdapterIndex >= 0) break;
+    }
+
     if (inetAdapterIndex < 0) {
       emit backendFailure(DaemonError::ERROR_SPLIT_TUNNEL_START_FAILURE);
+      return true;
     }
 
     if (!m_splitTunnelManager->start(inetAdapterIndex)) {

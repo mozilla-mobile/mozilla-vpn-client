@@ -9,6 +9,8 @@
 #include <dxgi.h>
 #include <iphlpapi.h>
 #include <shlobj_core.h>
+#include <winsock2.h>
+#include <ws2ipdef.h>
 
 #include <QDir>
 #include <QHostAddress>
@@ -115,9 +117,22 @@ QString WindowsCommons::getTunnelLogFilePath() {
 int WindowsCommons::AdapterIndexTo(const QHostAddress& dst) {
   logger.debug() << "Getting Current Internet Adapter that routes to"
                  << logger.sensitive(dst.toString());
-  quint32 ipv4be = qToBigEndian<quint32>(dst.toIPv4Address());
   DWORD index = 0;
-  DWORD result = GetBestInterface(ipv4be, &index);
+  DWORD result;
+
+  if (dst.protocol() == QAbstractSocket::IPv6Protocol) {
+    sockaddr_in6 addr = {};
+    addr.sin6_family = AF_INET6;
+    Q_IPV6ADDR buf = dst.toIPv6Address();
+    memcpy(&addr.sin6_addr, &buf, sizeof(buf));
+    result = GetBestInterfaceEx(reinterpret_cast<sockaddr*>(&addr), &index);
+  } else {
+    sockaddr_in addr = {};
+    addr.sin_family = AF_INET;
+    addr.sin_addr.s_addr = qToBigEndian<quint32>(dst.toIPv4Address());
+    result = GetBestInterfaceEx(reinterpret_cast<sockaddr*>(&addr), &index);
+  }
+
   if (result != NO_ERROR) {
     logger.warning() << "Interface lookup failed:"
                      << WindowsUtils::getErrorMessage(result);
