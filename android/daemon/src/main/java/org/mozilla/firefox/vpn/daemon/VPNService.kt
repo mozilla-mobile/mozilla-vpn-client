@@ -228,8 +228,8 @@ class VPNService : android.net.VpnService() {
 
         // If an obfuscator is configured, start its proxy now and rewrite the
         // WireGuard endpoint to its loopback port. The relay's outbound socket
-        // is protected below (after the tunnel is up) so its packets bypass
-        // the VPN.
+        // is protected before the tunnel is established so its packets
+        // always bypass the VPN.
         val obfuscationMethodRaw = json.optInt("obfuscationMethod", 0)
         val obfuscationMethod = Obfuscator.Method.fromValue(obfuscationMethodRaw)
         Log.i(tag, "Attempt to start obfuscator '$obfuscationMethodRaw'")
@@ -256,6 +256,12 @@ class VPNService : android.net.VpnService() {
 
         if (checkPermissions() != null) {
             throw Error("turn on was called without vpn-permission!")
+        }
+
+        // Mark the obfuscator's outbound socket so its packets bypass the VPN.
+        obfuscator?.let {
+            if (it.socketV4 >= 0) protect(it.socketV4)
+            if (it.socketV6 >= 0) protect(it.socketV6)
         }
 
         val builder = Builder()
@@ -293,12 +299,7 @@ class VPNService : android.net.VpnService() {
         protect(WireGuardGo.wgGetSocketV4(currentTunnelHandle))
         protect(WireGuardGo.wgGetSocketV6(currentTunnelHandle))
 
-        // Mark the obfuscator's outbound socket so its packets bypass the VPN.
-        obfuscator?.let {
-            if (it.socketV4 >= 0) protect(it.socketV4)
-            if (it.socketV6 >= 0) protect(it.socketV6)
-            mObfuscator = it
-        }
+        obfuscator?.let { mObfuscator = it }
 
         mConfig = json
         // We don't want to update connection health in several situations:
