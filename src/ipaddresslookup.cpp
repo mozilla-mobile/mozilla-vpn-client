@@ -44,12 +44,9 @@ void IpAddressLookup::reset() {
   logger.debug() << "Resetting the data";
 
   if (m_state != StateWaiting) {
-    // On iOS (and possibly Android), we need to ensure the Localizer
-    // is initialized before setting it to the loading string ID in
-    // a few lines. This is a hacky way to do it, but it works.
-    // See VPN-7659 for more info.
-    bool unusedBooleanUsedForInitialization =
-        Localizer::instance()->isRightToLeft();
+    // VPN-7659: On iOS and Android, we need to ensure the Localizer
+    // is initialized before setting it to the loading string ID.
+    Localizer::instance();
 
     //% "Loading"
     //: This refers to the current IP address, i.e. "IP: Loading".
