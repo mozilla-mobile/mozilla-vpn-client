@@ -15,8 +15,10 @@
 #include <net/if_utun.h>
 #include <net/route.h>
 #include <netinet/in.h>
+#include <netinet/ip_var.h>
 #include <netinet/ip6.h>
 #include <netinet/in_var.h>
+#include <netinet/udp.h>
 #include <sys/ioctl.h>
 #include <sys/kern_control.h>
 #include <sys/random.h>
@@ -156,8 +158,8 @@ static void wgLog(const char* msg) {
       return;
     }
 
-    // Update the MTU once the socket is open
-    //self.mtu = nw_connection_get_maximum_datagram_size(self.peer.connection) - WG_PACKET_OVERHEAD;
+    // Set the MTU according to the Wireguard peer.
+    [self syncMtu:options.serverIpv4Addr];
 
     // Bring the device up, if not already done.
     struct ifreq ifr;
@@ -400,6 +402,23 @@ static void wgLog(const char* msg) {
   }
 }
 
+- (void)syncMtu:(nw_endpoint_t)dest {
+  // Get the MTU and subtract the wireguard overhead.
+  const struct sockaddr* sa = nw_endpoint_get_address(dest);
+  NSUInteger wgMtu = [self rtmFetchMtu:sa] - WG_PACKET_OVERHEAD - sizeof(struct udphdr);
+  if (sa->sa_family == AF_INET6) {
+    wgMtu -= sizeof(struct ip6_hdr);
+  } else {
+    wgMtu -= sizeof(struct ipovly);
+  }
+
+  if (wgMtu >= IPV6_MMTU) {
+    self.mtu = wgMtu;
+  } else {
+    self.mtu = IPV6_MMTU;
+  }
+}
+
 static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, const void* sa) {
   size_t sa_len = ((const struct sockaddr*)sa)->sa_len;
   if ((rtm->rtm_addrs & rtaddr) != 0) {
@@ -497,6 +516,55 @@ static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, cons
     return;
   }
   NSLog(@"Failed to send route to kernel: %s", strerror(errno));
+}
+
+- (NSUInteger)rtmFetchMtu:(const struct sockaddr*)dest {
+  int rtsock = socket(PF_ROUTE, SOCK_RAW, 0);
+  if (rtsock < 0) {
+    return IPV6_MMTU;
+  }
+  
+  constexpr size_t rtm_max_size = sizeof(struct rt_msghdr) +
+                                  sizeof(struct sockaddr_in6);
+  char buf[rtm_max_size] = {0};
+  struct rt_msghdr* rtm = (struct rt_msghdr*)buf;
+
+  rtm->rtm_msglen = sizeof(struct rt_msghdr);
+  rtm->rtm_version = RTM_VERSION;
+  rtm->rtm_type = RTM_GET;
+  rtm->rtm_index = 0;
+  rtm->rtm_flags = 0;
+  rtm->rtm_addrs = 0;
+  rtm->rtm_pid = 0;
+  rtm->rtm_seq = m_rtseq++;
+  rtm->rtm_errno = 0;
+  rtm->rtm_inits = 0;
+  memset(&rtm->rtm_rmx, 0, sizeof(rtm->rtm_rmx));
+  rtmAppendAddr(rtm, rtm_max_size, RTA_DST, dest);
+
+  // Send the routing message into the kernel.
+  if (write(m_rtsock, rtm, rtm->rtm_msglen) != rtm->rtm_msglen) {
+    NSLog(@"Failed to send RTM_GET to kernel: %s", strerror(errno));
+    close(rtsock);
+    return IPV6_MMTU;
+  }
+
+  // Read the response from the kernel.
+  ssize_t rxlen = recv(rtsock, buf, rtm_max_size, MSG_DONTWAIT);
+  if (rxlen < 0) {
+    NSLog(@"Failed to read route from kernel: %s", strerror(errno));
+    close(rtsock);
+    return IPV6_MMTU;
+  }
+  close(rtsock);
+
+  if ((rxlen < sizeof(struct rt_msghdr)) || (rtm->rtm_msglen < sizeof(struct rt_msghdr))) {
+    return IPV6_MMTU;
+  }
+  if (rtm->rtm_rmx.rmx_mtu < IPV6_MMTU) {
+    return IPV6_MMTU;
+  }
+  return rtm->rtm_rmx.rmx_mtu;
 }
 
 - (void) addRoute:(RoutePrefix*)prefix {

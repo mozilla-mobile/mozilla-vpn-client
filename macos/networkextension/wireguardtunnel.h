@@ -25,6 +25,8 @@
 - (void)addRoute:(RoutePrefix*)prefix;
 - (void)removeRoute:(RoutePrefix*)prefix;
 
+- (void)syncMtu:(nw_endpoint_t)dest;
+
 @property(nonatomic) NSUInteger mtu;
 @property(strong) WireguardPeer* peer;
 @property(readonly, getter=getTunfd) int tunfd;

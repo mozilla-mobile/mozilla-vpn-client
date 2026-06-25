@@ -35,5 +35,4 @@ extern "C" struct wireguard_tunnel;
 
 @property(strong, readonly, getter=getStatus) WireguardStatus* status;
 @property(weak, readonly) WireguardTunnel* tunnel;
-@property(strong) nw_connection_t connection;
 @end

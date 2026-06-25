@@ -402,6 +402,7 @@
       if (err) {
         [self cancelProxyWithError:err];
       } else {
+        [self.wireguard syncMtu:self.config.serverIpv4Addr];
         self.reasserting = FALSE;
       }
     }];
