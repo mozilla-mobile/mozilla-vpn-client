@@ -1148,7 +1148,7 @@ toggleWidget:
     value: Turn Mozilla VPN on and off, and see the current location.
     comment: More information about what the Mozilla VPN widget contains.
   unauthenticatedMessage:
-    value: Before using widget, first turn on Mozilla VPN from app.
+    value: Before using the widget, first turn on Mozilla VPN from app.
     comment: Text shown to users in the widget when they haven't signed in, or have removed the network extension.
 
 logoAccessoryWidget:

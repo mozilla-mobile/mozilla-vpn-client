@@ -201,7 +201,7 @@ struct UnauthenticatedMessageView: View {
         .frame(width: 30, height: 30)
         .frame(maxWidth: .infinity, alignment: .center)
       Spacer(minLength: 10)
-      Text(LocalizedStringResource("vpn.toggleWidget.unauthenticatedMessage", defaultValue: "Before using widget, first turn on Mozilla VPN from app."))
+      Text(LocalizedStringResource("vpn.toggleWidget.unauthenticatedMessage", defaultValue: "Before using the widget, first turn on Mozilla VPN from app."))
         .allowsTightening(true)
         .multilineTextAlignment(.center)
         .frame(maxWidth: .infinity, alignment: .center)
