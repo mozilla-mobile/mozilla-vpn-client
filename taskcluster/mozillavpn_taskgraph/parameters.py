@@ -3,9 +3,11 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
 import os
+from typing import Optional, Annotated
 
+import msgspec
 from taskgraph.parameters import extend_parameters_schema
-from voluptuous import All, Any, Range, Required
+from taskgraph.util.schema import Schema
 
 
 def get_defaults(repo_root):
@@ -14,12 +16,11 @@ def get_defaults(repo_root):
         "version": "",
     }
 
-
 extend_parameters_schema(
-    {
-        Required("pull_request_number"): Any(All(int, Range(min=1)), None),
-        Required("version"): str,
-    },
+    Schema.from_dict({
+        "pull_request_number": Optional[Annotated[int, msgspec.Meta(gt=0)]],
+        "version": str,
+    }, kw_only=True),
     defaults_fn=get_defaults,
 )
 
