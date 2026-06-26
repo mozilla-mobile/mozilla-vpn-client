@@ -211,7 +211,10 @@ describe('Server', function() {
       await vpn.waitForCondition(async () => {
         let connectingMsg = await vpn.getQueryProperty(
             queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
-        return connectingMsg === 'Switching…';
+        // Sometimes it switches so quickly it is past "Switching" by the time
+        // code gets here. In those cases, test was timing out, as it was
+        // already on "VPN is on". Thus, allow for both.
+        return connectingMsg === 'Switching…' || connectingMsg === 'VPN is on';
       });
 
       await vpn.waitForCondition(async () => {
