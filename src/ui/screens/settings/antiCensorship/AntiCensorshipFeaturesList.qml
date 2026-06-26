@@ -37,31 +37,37 @@ ColumnLayout {
         model: [
             {
                 objectName: "alwaysUsePort53",
+                visible: true,
                 settingValue: MZSettings.Port53,
                 settingTitle: MZI18n.SettingsAntiCensorshipPort53Title,
                 settingDescription: MZI18n.SettingsAntiCensorshipPort53Body,
             }, {
-                objectName: "obfuscationUdpOverTcp",
+                objectName: "udpOverTcp",
+                visible: MZFeatureList.get("obfuscationUdpOverTcp").isSupported,
                 settingValue: MZSettings.UdpOverTcp,
                 settingTitle: MZI18n.SettingsAntiCensorshipUdpOverTcpTitle,
                 settingDescription: MZI18n.SettingsAntiCensorshipUdpOverTcpBody,
             }, {
-                objectName: "obfuscationLwo",
+                objectName: "lwo",
+                visible: MZFeatureList.get("obfuscationLwo").isSupported,
                 settingValue: MZSettings.LWO,
                 settingTitle: MZI18n.SettingsAntiCensorshipLwoTitle,
                 settingDescription: MZI18n.SettingsAntiCensorshipLwoBody,
             }, {
-                objectName: "obfuscationLwoOverPort53",
+                objectName: "lwoOverPort53",
+                visible: MZFeatureList.get("obfuscationLwo").isSupported,
                 settingValue: MZSettings.LwoOverPort53,
                 settingTitle: MZI18n.SettingsAntiCensorshipLwoOverPort53Title,
                 settingDescription: MZI18n.SettingsAntiCensorshipLwoOverPort53Body,
             }, {
-                objectName: "obfuscationMasque",
+                objectName: "masque",
+                visible: MZFeatureList.get("obfuscationMasque").isSupported,
                 settingValue: MZSettings.Masque,
                 settingTitle: MZI18n.SettingsAntiCensorshipMasqueTitle,
                 settingDescription: MZI18n.SettingsAntiCensorshipMasqueBody,
             },{
-                objectName: "obfuscationShadowsocks",
+                objectName: "shadowsocks",
+                visible: MZFeatureList.get("obfuscationShadowsocks").isSupported,
                 settingValue: MZSettings.Shadowsocks,
                 settingTitle: MZI18n.SettingsAntiCensorshipShadowsocksTitle,
                 settingDescription: MZI18n.SettingsAntiCensorshipShadowsocksBody,
@@ -71,6 +77,8 @@ ColumnLayout {
         delegate: RowLayout {
             spacing: MZTheme.theme.windowMargin
             Layout.rightMargin: MZTheme.theme.windowMargin / 2
+            visible: modelData.visible
+            enabled: antiCensorshipFeaturesToggle.checked
 
             MZRadioButton {
                 objectName: modelData.objectName
@@ -80,7 +88,6 @@ ColumnLayout {
                 Layout.alignment: Qt.AlignTop
                 checked: MZSettings.antiCensorshipPolicy == modelData.settingValue || MZSettings.lastAntiCensorshipPolicy == modelData.settingValue
                 accessibleName: `${modelData.settingTitle}. ${modelData.settingDescription}`
-                enabled: antiCensorshipFeaturesToggle.checked
                 onClicked: () => {
                     MZSettings.antiCensorshipPolicy = modelData.settingValue;
                     MZSettings.lastAntiCensorshipPolicy = modelData.settingValue;
@@ -97,20 +104,17 @@ ColumnLayout {
                     text: modelData.settingTitle
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignLeft
-                    enabled: antiCensorshipFeaturesToggle.checked
                 }
 
                 MZTextBlock {
                     text: modelData.settingDescription
                     Layout.fillWidth: true
-                    enabled: antiCensorshipFeaturesToggle.checked
                 }
             }
 
             MZMouseArea {
                 anchors.fill: parent
 
-                enabled: MZSettings.antiCensorshipPolicy == modelData.settingValue && antiCensorshipFeaturesToggle.checked
                 width: Math.min(parent.implicitWidth, parent.width)
                 propagateClickToParent: false
                 onClicked: () => {
