@@ -24,6 +24,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 endif()
 
 find_library(FW_FOUNDATION Foundation)
+find_library(FW_SYSTEMCONFIG SystemConfiguration)
 find_library(FW_NW_EXTENSION NetworkExtension)
 
 # The VPN Split Tunnel extension
@@ -52,18 +53,43 @@ set_target_properties(networkextension PROPERTIES
 target_compile_options(networkextension PUBLIC "-fobjc-arc" "-fno-objc-arc-exceptions")
 target_compile_definitions(networkextension PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 
+# Improve the macOS debug experience - tune for LLDB and copy dSYM into
+# the bundle when we are building for the Debug configuration.
+target_compile_options(networkextension PRIVATE $<$<CONFIG:Debug>:-O0 -gfull -glldb>)
+target_link_options(networkextension PRIVATE $<$<CONFIG:Debug>:-O0 -gfull -glldb>)
+add_custom_command(TARGET networkextension POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E rm -rf $<TARGET_FILE:networkextension>.dSYM
+    COMMAND ${CMAKE_COMMAND} -E $<IF:$<CONFIG:Debug>,env,true> -- dsymutil $<TARGET_FILE:networkextension> -o $<TARGET_FILE:networkextension>.dSYM
+)
+
 target_link_libraries(networkextension PRIVATE ${FW_FOUNDATION})
+target_link_libraries(networkextension PRIVATE ${FW_SYSTEMCONFIG})
 target_link_libraries(networkextension PRIVATE ${FW_NW_EXTENSION})
 target_sources(networkextension PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/bypasstcpflow.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/bypasstcpflow.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/bypassudpflow.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/bypassudpflow.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/dnsmanager.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/main.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/routemanager.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/routemanager.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/utils.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardpeer.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardpeer.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardstatus.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardstatus.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardtunnel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardtunnel.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/VPNSplitTunnelProvider.mm
 )
+
+include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
+add_rust_library(boringtun
+    PACKAGE_DIR ${CMAKE_SOURCE_DIR}
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}
+    FEATURES ffi-bindings
+    CRATE_NAME boringtun
+)
+target_include_directories(networkextension PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/boringtun/boringtun/src)
+target_link_libraries(networkextension PRIVATE boringtun)
 
 # Install an embedded provisioning profile if one exists in the source directory.
 if((NOT XCODE) AND (EXISTS ${CMAKE_CURRENT_SOURCE_DIR}/embedded.provisionprofile))

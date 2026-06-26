@@ -50,6 +50,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscontroller.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macoscryptosettings.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosextensioncontroller.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosextensioncontroller.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosmenubar.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macospingsender.cpp
@@ -60,8 +62,6 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macossystemtraynotificationhandler.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosnetworkwatcher.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosnetworkwatcher.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosextensionloader.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosextensionloader.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosstatusicon.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosstatusicon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macosutils.mm
