@@ -259,119 +259,119 @@ describe('Addons', function() {
       ],
     ];
 
-    const getNextTestCase = testCases[Symbol.iterator]();
-    function setNextSubscriptionStarted(ctx) {
-      const mockDetails = {...SubscriptionDetails};
-      const nextTestCase = getNextTestCase.next().value;
+    testCases.forEach(([
+                        createdAtTimestamp, expectedTimeFormat,
+                        shouldBeAvailable, testCase
+                      ]) => {
+      it(`message display is correct when subscription started at ${testCase}`,
+          async () => {
+            // Evaluate the timestamp ONCE and reuse it for both the installed
+            // subscription and the expected string below, so the app's computed
+            // date and our expectation can't drift apart (per-test app reload +
+            // re-auth can take well over a minute). Writing the setting
+            // directly synchronously reloads SubscriptionData and re-runs the
+            // addon condition, so there's no async network fetch to race.
+            const createdAtMs = createdAtTimestamp();
+            const mockDetails = JSON.parse(JSON.stringify(SubscriptionDetails));
+            mockDetails.subscription._subscription_type = 'web';
+            mockDetails.subscription.created =
+                Math.trunc(createdAtMs / 1000);  // Stripe value is in seconds
+            mockDetails.plan.interval = 'month';
+            await vpn.setSetting(
+                'subscriptionData', JSON.stringify(mockDetails));
 
-      if (nextTestCase) {
-        const [createdAt] = nextTestCase;
-        // We are faking a Stripe subscription, so this value is expected to be
-        // in seconds.
-        mockDetails.subscription.created = createdAt() / 1000;
-        mockDetails.subscription._subscription_type = "web";
-        mockDetails.plan.interval = "month";
-
-        ctx.guardianSubscriptionDetailsCallback = () => {
-          ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
-              .status = 200;
-          ctx.guardianOverrideEndpoints.GETs['/api/v1/vpn/subscriptionDetails']
-              .body = mockDetails;
-        };
-      }
-    }
-
-    // We call this once before all tests to set up the first test,
-    // we can't use beforeEach because that is executed after the guardian
-    // endpoints are overriden.
-    //
-    // We need to setup for the next test before it even starts for the
-    // overrides to apply.
-    setNextSubscriptionStarted(this.ctx);
-    afterEach(() => setNextSubscriptionStarted(this.ctx));
-
-    testCases.forEach(([createdAtTimestamp, expectedTimeFormat, shouldBeAvailable, testCase]) => {
-      it(`message display is correct when subscription started at ${testCase}`, async () => {
-        await vpn.resetAddons('prod');
-
-        // Ensure subscription data has completed loading
-        await vpn.waitForCondition(async () => {
-          const raw = await vpn.getSetting('subscriptionData');
-          if (!raw) {
-            return false;
-          }
-          const created = JSON.parse(raw).subscription.created;  // seconds
-          // Within a minute
-          return Math.abs(created * 1000 - createdAtTimestamp()) < 60 * 1000;
-        });
+            await vpn.resetAddons('prod');
 
 
-        //Load messages
-        const loadedMessages = await vpn.messages();
+            // Load messages
+            const loadedMessages = await vpn.messages();
 
-        //If the message is supposed to be enabled, lets check the timestamp
-        if (shouldBeAvailable) {
-            await vpn.waitForCondition(async () => (parseInt(await vpn.getMozillaProperty('Mozilla.Shared', 'MZAddonManager', 'count'), 10) > 0));
-            
-            await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
-            await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
+            // If the message is supposed to be enabled, lets check the
+            // timestamp
+            if (shouldBeAvailable) {
+              await vpn.waitForCondition(
+                  async () =>
+                      (parseInt(
+                           await vpn.getMozillaProperty(
+                               'Mozilla.Shared', 'MZAddonManager', 'count'),
+                           10) > 0));
 
-            //Check timestamp
-            let expectedTimestamp
-            let expectedTimestampAlt;
-            let actualTimestamp = await vpn.getQueryProperty(queries.screenMessaging.messageItem('message_upgrade_to_annual_plan'), 'formattedDate');
-            //Maybe add 14 days to account for the timestamp that starts 14 days into the subscription
-            const addedTime =  Date.now() > Date.now() - (14 * 24 * 60 * 60 * 1000) ? 1000 * 60 * 60 * 24 * 14 : 0;
-            const addedTimeAlt = addedTime -
-                (60 * 1000);  // in case the clock turned over during setup
+              await vpn.waitForQueryAndClick(queries.navBar.MESSAGES.visible());
+              await vpn.waitForQuery(queries.screenMessaging.SCREEN.visible());
 
-            if (expectedTimeFormat === "time") {
-              expectedTimestamp = new Date(createdAtTimestamp() + addedTime).toLocaleTimeString('en-US', { hour: 'numeric', minute: 'numeric', hour12: true });
-              expectedTimestampAlt =
-                  new Date(createdAtTimestamp() + addedTimeAlt)
-                      .toLocaleTimeString(
-                          'en-US',
-                          {hour: 'numeric', minute: 'numeric', hour12: true});
+              // Check timestamp
+              let expectedTimestamp
+              let expectedTimestampAlt;
+              let actualTimestamp = await vpn.getQueryProperty(
+                  queries.screenMessaging.messageItem(
+                      'message_upgrade_to_annual_plan'),
+                  'formattedDate');
+              // Maybe add 14 days to account for the timestamp that starts 14
+              // days into the subscription
+              const addedTime =
+                  Date.now() > Date.now() - (14 * 24 * 60 * 60 * 1000) ?
+                  1000 * 60 * 60 * 24 * 14 :
+                  0;
+              const addedTimeAlt = addedTime -
+                  (60 * 1000);  // in case the clock turned over during setup
+
+              if (expectedTimeFormat === "time") {
+                expectedTimestamp =
+                    new Date(createdAtMs + addedTime)
+                        .toLocaleTimeString(
+                            'en-US',
+                            {hour: 'numeric', minute: 'numeric', hour12: true});
+                expectedTimestampAlt =
+                    new Date(createdAtMs + addedTimeAlt)
+                        .toLocaleTimeString(
+                            'en-US',
+                            {hour: 'numeric', minute: 'numeric', hour12: true});
+              } else if (expectedTimeFormat === "date") {
+                expectedTimestamp = new Date(createdAtMs + addedTime)
+                                        .toLocaleDateString('en-US', {
+                                          month: 'numeric',
+                                          day: 'numeric',
+                                          year: '2-digit'
+                                        });
+                expectedTimestampAlt = expectedTimestamp
+              } else if (expectedTimeFormat === "yesterday") {
+                expectedTimestamp = "Yesterday";
+                expectedTimestampAlt = expectedTimestamp
+              }
+
+              /*
+
+                CLDR (Common Locale Data Repository) 42 changed the formatting
+                here from a white space to a Narrow No-Break Space. Qt adopted
+                CLDR 42 in Qt6.5. This means that tests run with Qt6.2.4 should
+                expect a white space, and tests run with Qt6.6 should expect a
+                Narrow No-Break Space (U+202F). We can remove this workaround
+                once all the tests are running on 6.6
+
+                CLDR change: https://unicode-org.atlassian.net/browse/CLDR-14032
+                Qt6.5 CLDR change note:
+                https://doc.qt.io/qt-6/license-changes.html#qt-6-5-0
+
+              */
+
+              const betterActualTimestamp = actualTimestamp.replace(/\s/g, '');
+              const betterExpectedTimestamp =
+                  expectedTimestamp.replace(/\s/g, '');
+              const betterExpectedTimestampAlt =
+                  expectedTimestampAlt.replace(/\s/g, '');
+
+              assert(
+                  [
+                    betterExpectedTimestamp, betterExpectedTimestampAlt
+                  ].includes(betterActualTimestamp),
+                  `Incorrect timestamp ${betterActualTimestamp}, expected ${
+                      betterExpectedTimestamp} or ${
+                      betterExpectedTimestampAlt}`);
             }
-            else if (expectedTimeFormat === "date") {
-              expectedTimestamp = new Date(createdAtTimestamp() + addedTime).toLocaleDateString('en-US', { month: 'numeric', day: 'numeric', year: '2-digit' });
-              expectedTimestampAlt = expectedTimestamp
-            }
-            else if (expectedTimeFormat === "yesterday") {
-              expectedTimestamp = "Yesterday";
-              expectedTimestampAlt = expectedTimestamp
-            }
-
-            /*
-
-              CLDR (Common Locale Data Repository) 42 changed the formatting
-              here from a white space to a Narrow No-Break Space. Qt adopted
-              CLDR 42 in Qt6.5. This means that tests run with Qt6.2.4 should
-              expect a white space, and tests run with Qt6.6 should expect a
-              Narrow No-Break Space (U+202F). We can remove this workaround once
-              all the tests are running on 6.6
-
-              CLDR change: https://unicode-org.atlassian.net/browse/CLDR-14032
-              Qt6.5 CLDR change note:
-              https://doc.qt.io/qt-6/license-changes.html#qt-6-5-0
-
-            */
-
-            const betterActualTimestamp = actualTimestamp.replace(/\s/g, '');
-            const betterExpectedTimestamp =
-                expectedTimestamp.replace(/\s/g, '');
-            const betterExpectedTimestampAlt =
-                expectedTimestampAlt.replace(/\s/g, '');
-
-            assert(
-                [betterExpectedTimestamp, betterExpectedTimestampAlt].includes(
-                    betterActualTimestamp),
-                `Incorrect timestamp ${betterActualTimestamp}, expected ${
-                    betterExpectedTimestamp} or ${betterExpectedTimestampAlt}`);
-        }
-        assert.equal(shouldBeAvailable, loadedMessages.includes('message_upgrade_to_annual_plan'));
-
-      });
+            assert.equal(
+                shouldBeAvailable,
+                loadedMessages.includes('message_upgrade_to_annual_plan'));
+          });
     });
   });
 });
