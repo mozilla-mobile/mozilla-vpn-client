@@ -288,6 +288,7 @@ public class IOSControllerImpl: NSObject {
                             try TunnelManager.session?.sendProviderMessage(message.encode()) {_ in return}
                         } else {
                             try TunnelManager.session?.startTunnel(options: ["source":"app"])
+                            TurnOnIntent().donate()
                         }
                         // If `try` didn't throw, run onboarding callback. This callback only matters when onboarding.
                         onboardingCompletedCallback()
@@ -365,6 +366,7 @@ public class IOSControllerImpl: NSObject {
 
     @objc func disconnect() {
       IOSControllerImpl.staticDisconnect()
+      TurnOffIntent().donate()
     }
 
     static func staticDisconnect() {
