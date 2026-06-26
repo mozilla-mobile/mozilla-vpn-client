@@ -32,8 +32,19 @@ QProcessObfuscator::QProcessObfuscator(const InterfaceConfig& config) {
     return;
   }
 
-  const QString binary = binaryName();
-  m_process.setProgram(binary);
+  QString binaryFile = binaryName();
+  if (binaryFile.isEmpty()) {
+    return;
+  }
+
+  binaryFile =
+      QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(binaryFile);
+  if (!QFileInfo::exists(binaryFile)) {
+    logger.error() << "Obfuscator binary not found at" << binaryFile;
+    return;
+  }
+
+  m_process.setProgram(binaryFile);
   m_process.setArguments(args);
   // Merge stderr into stdout so we can read the "listening on" announce line
   m_process.setProcessChannelMode(QProcess::MergedChannels);
