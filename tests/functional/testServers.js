@@ -208,11 +208,10 @@ describe('Server', function() {
       await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
       await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());
 
-      await vpn.waitForCondition(async () => {
-        let connectingMsg = await vpn.getQueryProperty(
-            queries.screenHome.CONTROLLER_TITLE.visible(), 'text');
-        return connectingMsg === 'Switching…';
-      });
+      // Before it switches, will have "No Signal" visible.
+      // Sometimes it switches faster than we get here, so cannot gate
+      // on "Switching" being visible or it will sometimes hang.
+      await vpn.waitForQuery(queries.screenHome.STABILITY_LABEL.hidden());
 
       await vpn.waitForCondition(async () => {
         return await vpn.getQueryProperty(
