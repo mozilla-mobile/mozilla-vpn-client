@@ -4,6 +4,8 @@
 
 #include "addonconditionwatcherlocales.h"
 
+#include <QRegularExpression>
+
 #include "leakdetector.h"
 #include "localizer.h"
 #include "settingsholder.h"
@@ -54,7 +56,10 @@ bool AddonConditionWatcherLocales::conditionApplied() const {
 
   if (m_majorLanguageCodePolicy == CheckMajorLanguageCode) {
     code = Localizer::majorLanguageCode(code);
-    return m_locales.contains(code);
+    const QRegularExpression matchingCodeRegEx =
+        QRegularExpression(QString("^") + code + QString("[_-]{0,1}.*"));
+    QStringList filteredList = m_locales.filter(matchingCodeRegEx);
+    return filteredList.size() > 0;
   }
 
   return false;
