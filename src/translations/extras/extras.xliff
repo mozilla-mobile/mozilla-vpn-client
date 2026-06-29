@@ -89,8 +89,14 @@
       <trans-unit id="languages.ko" xml:space="preserve">
         <source>Korean</source>
       </trans-unit>
+      <trans-unit id="languages.nb_NO" xml:space="preserve">
+        <source>Norwegian Bokmål</source>
+      </trans-unit>
       <trans-unit id="languages.nl" xml:space="preserve">
         <source>Dutch</source>
+      </trans-unit>
+      <trans-unit id="languages.nn_NO" xml:space="preserve">
+        <source>Norwegian Nynorsk</source>
       </trans-unit>
       <trans-unit id="languages.oc" xml:space="preserve">
         <source>Occitan</source>
