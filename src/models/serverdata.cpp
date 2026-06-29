@@ -46,6 +46,7 @@ ServerData& ServerData::operator=(const ServerData& other) {
   m_previousExitCityName = other.m_previousExitCityName;
   m_exitServerPublicKey = other.m_exitServerPublicKey;
   m_entryServerPublicKey = other.m_entryServerPublicKey;
+  m_obfuscationMethod = other.m_obfuscationMethod;
 
   return *this;
 }
@@ -54,6 +55,10 @@ void ServerData::initialize() {
   m_initialized = true;
 
   connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
+          &ServerData::settingsChanged);
+
+  connect(SettingsHolder::instance(),
+          &SettingsHolder::antiCensorshipPolicyChanged, this,
           &ServerData::settingsChanged);
 }
 
@@ -158,6 +163,10 @@ bool ServerData::settingsChanged() {
     m_entryCountryName = obj[ENTER_COUNTRY_NAME].toString();
   }
 
+  m_obfuscationMethod = antiCensorshipPolicyToObfuscationMethod(
+      static_cast<SettingsHolder::AntiCensorshipPolicy>(
+          settingsHolder->antiCensorshipPolicy()));
+
   emit changed();
   emit retranslationNeeded();
   return true;
@@ -242,11 +251,13 @@ void ServerData::forget() {
   m_previousExitCountryCode.clear();
   m_previousExitCountryName.clear();
   m_previousExitCityName.clear();
+  m_obfuscationMethod = Server::NoObfuscation;
 }
 
 // static
-QList<Server> ServerData::getServerList(const QString& countryCode,
-                                        const QString& cityName) {
+QList<Server> ServerData::getServerList(
+    const QString& countryCode, const QString& cityName,
+    const Server::ObfuscationMethod obfuscationMethod) {
   ServerCountryModel* scm = MozillaVPN::instance()->serverCountryModel();
   ServerLatency* serverLatency = MozillaVPN::instance()->serverLatency();
   const ServerCity& city = scm->findCity(countryCode, cityName);
@@ -255,7 +266,8 @@ QList<Server> ServerData::getServerList(const QString& countryCode,
 
   for (const QString& pubkey : city.servers()) {
     const Server& server = scm->server(pubkey);
-    if (server.initialized() && (serverLatency->getCooldown(pubkey) <= now)) {
+    if (server.initialized() && (serverLatency->getCooldown(pubkey) <= now) &&
+        server.supportObfuscationMethod(obfuscationMethod)) {
       results.append(server);
     }
   }
@@ -264,7 +276,10 @@ QList<Server> ServerData::getServerList(const QString& countryCode,
 }
 
 const QList<Server> ServerData::exitServers() const {
-  return getServerList(m_exitCountryCode, m_exitCityName);
+  // Obfuscation is not needed on multihop exit servers
+  return getServerList(
+      m_exitCountryCode, m_exitCityName,
+      multihop() ? Server::NoObfuscation : m_obfuscationMethod);
 }
 
 const QList<Server> ServerData::entryServers() const {
@@ -272,7 +287,8 @@ const QList<Server> ServerData::entryServers() const {
     return exitServers();
   }
 
-  return getServerList(m_entryCountryCode, m_entryCityName);
+  return getServerList(m_entryCountryCode, m_entryCityName,
+                       m_obfuscationMethod);
 }
 
 void ServerData::setEntryServerPublicKey(const QString& publicKey) {
@@ -299,4 +315,25 @@ const QList<Server> ServerData::backupServers(
     }
   }
   return backupServers;
+}
+
+Server::ObfuscationMethod ServerData::antiCensorshipPolicyToObfuscationMethod(
+    SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy) {
+  switch (antiCensorshipPolicy) {
+    case SettingsHolder::AntiCensorshipPolicy::NoAntiCensorship:
+      [[fallthrough]];
+    case SettingsHolder::AntiCensorshipPolicy::Port53:
+      return Server::ObfuscationMethod::NoObfuscation;
+    case SettingsHolder::AntiCensorshipPolicy::LWO:
+      [[fallthrough]];
+    case SettingsHolder::AntiCensorshipPolicy::LwoOverPort53:
+      return Server::ObfuscationMethod::LWO;
+    case SettingsHolder::AntiCensorshipPolicy::Masque:
+      return Server::ObfuscationMethod::Masque;
+    case SettingsHolder::AntiCensorshipPolicy::UdpOverTcp:
+      return Server::ObfuscationMethod::UdpOverTcp;
+    case SettingsHolder::AntiCensorshipPolicy::Shadowsocks:
+      return Server::ObfuscationMethod::Shadowsocks;
+  }
+  Q_UNREACHABLE();
 }

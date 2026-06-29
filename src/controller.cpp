@@ -409,33 +409,13 @@ void Controller::updateRequired() {
   }
 }
 
-Server::ObfuscationMethod Controller::antiCensorshipPolicyToObfuscationMethod(
-    SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy) {
-  switch (antiCensorshipPolicy) {
-    case SettingsHolder::AntiCensorshipPolicy::NoAntiCensorship:
-      [[fallthrough]];
-    case SettingsHolder::AntiCensorshipPolicy::Port53:
-      return Server::ObfuscationMethod::NoObfuscation;
-    case SettingsHolder::AntiCensorshipPolicy::LWO:
-      [[fallthrough]];
-    case SettingsHolder::AntiCensorshipPolicy::LwoOverPort53:
-      return Server::ObfuscationMethod::LWO;
-    case SettingsHolder::AntiCensorshipPolicy::Masque:
-      return Server::ObfuscationMethod::Masque;
-    case SettingsHolder::AntiCensorshipPolicy::UdpOverTcp:
-      return Server::ObfuscationMethod::UdpOverTcp;
-    case SettingsHolder::AntiCensorshipPolicy::Shadowsocks:
-      return Server::ObfuscationMethod::Shadowsocks;
-  }
-  Q_UNREACHABLE();
-}
-
 auto Controller::setupConfigs(
     SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy,
     ServerSelectionPolicy serverSelectionPolicy) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Server::ObfuscationMethod obfuscationMethod =
-      antiCensorshipPolicyToObfuscationMethod(antiCensorshipPolicy);
+      m_serverData.antiCensorshipPolicyToObfuscationMethod(
+          antiCensorshipPolicy);
 
   Server exitServer =
       serverSelectionPolicy == DoNotRandomizeServerSelection &&

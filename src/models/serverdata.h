@@ -5,12 +5,15 @@
 #ifndef SERVERDATA_H
 #define SERVERDATA_H
 
+#include <models/server.h>
+
 #include <QObject>
+
+#include "settingsholder.h"
 
 class ServerCountryModel;
 class ServerCountry;
 class ServerCity;
-class Server;
 
 class ServerData final : public QObject {
   Q_OBJECT
@@ -97,6 +100,8 @@ class ServerData final : public QObject {
 
   const QString& exitServerPublicKey() const { return m_exitServerPublicKey; }
   const QString& entryServerPublicKey() const { return m_entryServerPublicKey; }
+  Server::ObfuscationMethod antiCensorshipPolicyToObfuscationMethod(
+      SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy);
 
  signals:
   void changed();
@@ -104,8 +109,9 @@ class ServerData final : public QObject {
 
  private:
   bool settingsChanged();
-  static QList<Server> getServerList(const QString& countryCode,
-                                     const QString& cityName);
+  static QList<Server> getServerList(
+      const QString& countryCode, const QString& cityName,
+      const Server::ObfuscationMethod obfuscationMethod);
 
  private:
   bool m_initialized = false;
@@ -124,6 +130,7 @@ class ServerData final : public QObject {
 
   QString m_exitServerPublicKey;
   QString m_entryServerPublicKey;
+  Server::ObfuscationMethod m_obfuscationMethod = Server::NoObfuscation;
 };
 
 #endif  // SERVERDATA_H

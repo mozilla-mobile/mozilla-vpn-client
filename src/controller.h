@@ -295,8 +295,6 @@ class Controller : public QObject, public LogSerializer {
   void setState(State state);
   void setError(ErrorCode code);
   void maybeEnableDisconnectInConfirming();
-  Server::ObfuscationMethod antiCensorshipPolicyToObfuscationMethod(
-      SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy);
   void serverDataChanged();
   auto setupConfigs(SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy,
                     ServerSelectionPolicy serverSelectionPolicy);
