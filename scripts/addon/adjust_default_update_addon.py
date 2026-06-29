@@ -39,7 +39,8 @@ if __name__ == "__main__":
                 dateLine = line
             if '"max_client_version"' in line:
                 maxClientLine = line
-localesLine = None
+
+    localesLine = None
     with open(os.path.join(args.skipped_locales_file), "r", encoding="utf-8") as f:
         for line in f:
           localesLine = f'    "locales": [{line.strip()}],\n'
