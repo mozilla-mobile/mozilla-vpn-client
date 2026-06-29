@@ -576,6 +576,9 @@
       <trans-unit id="servers.BuenosAires" xml:space="preserve">
         <source>Buenos Aires</source>
       </trans-unit>
+      <trans-unit id="servers.SanFrancisco" xml:space="preserve">
+        <source>San Francisco, CA</source>
+      </trans-unit>
     </body>
   </file>
 </xliff>
