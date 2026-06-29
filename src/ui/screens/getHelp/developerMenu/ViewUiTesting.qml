@@ -41,15 +41,6 @@ MZViewBase {
         }
 
         MZSettingsItem {
-            settingTitle: "Animations playground"
-            imageRightSrc: MZAssetLookup.getImageSource("Chevron")
-            imageRightMirror: MZLocalizer.isRightToLeft
-            onClicked: getHelpStackView.push("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/developerMenu/ViewAnimationsPlayground.qml")
-            Layout.leftMargin: MZTheme.theme.windowMargin / 2
-            Layout.rightMargin: MZTheme.theme.windowMargin / 2
-        }
-
-        MZSettingsItem {
             settingTitle: "Color objects"
             imageRightSrc: MZAssetLookup.getImageSource("Chevron")
             imageRightMirror: MZLocalizer.isRightToLeft

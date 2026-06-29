@@ -35,7 +35,6 @@ qt_add_qml_module(components
          MZHeadline.qml
          MZHelpSheet.qml
          MZLinkRow.qml
-         MZLottieAnimation.qml
          MZIconAndLabel.qml
          MZIconButton.qml
          MZIcon.qml

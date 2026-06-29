@@ -20,7 +20,6 @@ qt_add_qml_module(mozillavpn-ui
         screens/getHelp/ViewGetHelp.qml
         screens/getHelp/contactUs/ViewContactUsForm.qml
         screens/getHelp/contactUs/ViewContactUsThankYou.qml
-        screens/getHelp/developerMenu/ViewAnimationsPlayground.qml
         screens/getHelp/developerMenu/ViewColorObjects.qml
         screens/getHelp/developerMenu/ViewImagesPlayground.qml
         screens/getHelp/developerMenu/ViewDeveloperMenu.qml
@@ -164,3 +163,30 @@ endif()
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     target_sources(mozillavpn-ui PRIVATE singletons/VPNMacOSUtils.h)
 endif()
+
+
+# The onboarding animations are plain QML generated from the Lottie JSON at build
+# time by the Qt6::lottietoqml tool. No Lottie runtime is bundled.
+include(${CMAKE_SOURCE_DIR}/src/cmake/lottietoqml.cmake)
+find_package(Qt6 QUIET COMPONENTS LottieTools)
+if(NOT TARGET Qt6::lottietoqml)
+    message(FATAL_ERROR
+        "Qt6::lottietoqml not found. It is required to generate the onboarding "
+        "animations from Lottie JSON. Install the Qt Lottie tools in the toolchain "
+        "(note: finding the LottieTools package is not enough - the generator tool "
+        "ships separately).")
+endif()
+message(STATUS "Onboarding animations: regenerating QML from Lottie JSON with Qt6::lottietoqml")
+mz_target_qml_from_lottie(
+    mozillavpn-ui
+    FILES
+       resources/animations/globe_animation.json
+       resources/animations/lock_animation.json
+       resources/animations/vpnactive_animation.json
+       resources/animations/vpnlogo-drop_animation.json
+    OUTPUTS
+       animations/GlobeAnimation.qml
+       animations/LockAnimation.qml
+       animations/VpnActiveAnimation.qml
+       animations/VpnLogoDropAnimation.qml
+)
