@@ -12,32 +12,18 @@ class AddonConditionWatcherLocales final : public AddonConditionWatcher {
   Q_DISABLE_COPY_MOVE(AddonConditionWatcherLocales)
 
  public:
-  enum MajorLanguageCodePolicy {
-    // if the current locale is 'xx_YY' and the condition is 'xx', the addon is
-    // enabled.
-    CheckMajorLanguageCode,
-
-    // if the current locale is 'xx_YY' and the condition is 'xx', the addon is
-    // not enabled.
-    DoNotCheckMajorLanguageCode,
-  };
-
   ~AddonConditionWatcherLocales();
 
-  static AddonConditionWatcher* maybeCreate(
-      QObject* parent, const QStringList& locales,
-      MajorLanguageCodePolicy majorLanguageCodePolicy = CheckMajorLanguageCode);
+  static AddonConditionWatcher* maybeCreate(QObject* parent,
+                                            const QStringList& locales);
 
   bool conditionApplied() const override;
 
  private:
-  AddonConditionWatcherLocales(QObject* parent, const QStringList& locales,
-                               MajorLanguageCodePolicy majorLanguageCodePolicy);
+  AddonConditionWatcherLocales(QObject* parent, const QStringList& locales);
 
  private:
   const QStringList m_locales;
-  const MajorLanguageCodePolicy m_majorLanguageCodePolicy =
-      CheckMajorLanguageCode;
 
   bool m_currentStatus = false;
 };
