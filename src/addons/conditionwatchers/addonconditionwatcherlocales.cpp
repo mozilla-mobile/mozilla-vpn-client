@@ -54,7 +54,7 @@ bool AddonConditionWatcherLocales::conditionApplied() const {
 
   if (m_majorLanguageCodePolicy == CheckMajorLanguageCode) {
     code = Localizer::majorLanguageCode(code);
-    return m_locales.contains(code.toLower());
+    return m_locales.contains(code);
   }
 
   return false;

@@ -10,6 +10,7 @@
 
 #include "controller.h"
 #include "leakdetector.h"
+#include "localizer.h"
 #include "logger.h"
 #include "mozillavpn.h"
 #include "tasks/ipfinder/taskipfinder.h"
@@ -43,6 +44,10 @@ void IpAddressLookup::reset() {
   logger.debug() << "Resetting the data";
 
   if (m_state != StateWaiting) {
+    // VPN-7659: On iOS and Android, we need to ensure the Localizer
+    // is initialized before setting it to the loading string ID.
+    Localizer::instance();
+
     //% "Loading"
     //: This refers to the current IP address, i.e. "IP: Loading".
     m_ipv4Address = qtTrId("vpn.connectionInfo.loading");

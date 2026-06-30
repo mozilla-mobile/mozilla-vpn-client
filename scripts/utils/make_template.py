@@ -46,9 +46,9 @@ for keyfile in args.keyfile:
 # to any already-transformed text.
 def transform(text):
     start = 0
-    ac_regex = re.compile('@[\w.]+@') ## Autoconf style match: @VARNAME@
-    cm_regex = re.compile('\${[\w.]+}') ## CMake style match: ${VARNAME}
-    xc_regex = re.compile('\$\([\w.]+\)') ## Xcode style match: $(VARNAME)
+    ac_regex = re.compile(r'@[\w.]+@') ## Autoconf style match: @VARNAME@
+    cm_regex = re.compile(r'\${[\w.]+}') ## CMake style match: ${VARNAME}
+    xc_regex = re.compile(r'\$\([\w.]+\)') ## Xcode style match: $(VARNAME)
     while start < len(text):
         ## Search for the next variable to substitute.
         ac_match = ac_regex.search(text, start)

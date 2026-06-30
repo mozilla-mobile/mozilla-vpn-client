@@ -241,7 +241,7 @@ QList<ConditionCallback> s_conditionCallbacks{
        QStringList locales;
        QJsonArray localeArray = value.toArray();
        for (const QJsonValue& v : localeArray) {
-         locales.append(v.toString().toLower());
+         locales.append(v.toString());
        }
 
        return AddonConditionWatcherLocales::maybeCreate(addon, locales);

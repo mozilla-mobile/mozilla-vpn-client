@@ -530,11 +530,16 @@ bool WindowsSplitTunnel::getAddress(int adapterIndex, IN_ADDR* out_ipv4,
     }
   }
 
-  // An IPv4 address is required for split tunnelling.
+  // At least one address family is required for split tunnelling.
+  if (!bestIpv4 && !bestIpv6) {
+    return false;
+  }
+
+  // Output the IPv4 address, if any.
   if (bestIpv4) {
     out_ipv4->s_addr = bestIpv4->Address.Ipv4.sin_addr.s_addr;
   } else {
-    return false;
+    out_ipv4->s_addr = 0;
   }
 
   // Output the IPv6 address, if any.
