@@ -1,5 +1,6 @@
 [workspace]
 members = [
+    "3rdparty/boringtun/boringtun",
     "signature",
 ]
 resolver = "2"

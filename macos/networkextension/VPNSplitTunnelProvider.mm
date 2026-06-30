@@ -4,9 +4,9 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
-#import "bypasstcpflow.h"
-#import "bypassudpflow.h"
-#import "routemanager.h"
+#import "interfaceconfig.h"
+#import "utils.h"
+#import "wireguardtunnel.h"
 
 #include <atomic>
 #include <arpa/inet.h>
@@ -17,7 +17,7 @@
 #include <sys/ioctl.h>
 #include <sys/socket.h>
 
-@interface VPNSplitTunnelProvider : NETransparentProxyProvider<RouteManagerDelegate>
+@interface VPNSplitTunnelProvider : NETransparentProxyProvider
 
 - (void)startProxyWithOptions:(NSDictionary<NSString *,id> *)options
             completionHandler:(void (^)(NSError *))completionHandler;
@@ -27,19 +27,15 @@
 
 - (BOOL)handleNewFlow:(NEAppProxyFlow *)flow;
 
-- (BOOL)matchAppFlow:(NEAppProxyFlow *)flow;
-
-- (void)defaultRouteChanged:(int)family
-               viaInterface:(nw_interface_t)interface
-                withGateway:(NSData*)gateway;
+- (BOOL)matchExcludedFlow:(NEAppProxyFlow *)flow;
 
 @property (strong) NETransparentProxyNetworkSettings* settings;
-@property (strong) RouteManager* routeManager;
-@property (strong) nw_interface_t ipv4Interface;
-@property (strong) nw_interface_t ipv6Interface;
-@property (strong) nw_interface_t vpnInterface;
+@property (strong) WireguardTunnel* wireguard;
+@property (strong) InterfaceConfig* config;
 
-@property (strong) NSMutableArray* vpnDisabledApps;
+@property (strong) NSSet* vpnDisabledApps;
+
+@property (strong) NSTask* dnsManager;
 
 @end
 
@@ -53,20 +49,13 @@
   self = [super init];
   NSLog(@"init proxy class");
 
-  self.vpnDisabledApps = [NSMutableArray new];
+  self.vpnDisabledApps = [NSSet set];
 
   m_handledTcpFlows = 0;
   m_handledUdpFlows = 0;
   m_handledUnknown = 0;
 
   return self;
-}
-
-+ (NSError*) makeError:(NSInteger)code
-       withDescription:(NSString*)desc {
-  return [NSError errorWithDomain:[[NSBundle mainBundle] bundleIdentifier]
-                             code:code
-                         userInfo:@{NSLocalizedDescriptionKey: desc}];
 }
 
 + (nw_endpoint_t)convertEndpoint:(NWEndpoint*)old {
@@ -144,6 +133,63 @@
   }
 }
 
+- (void)startDnsManager:(NEDNSSettings*)settings {
+  // Encode the settings as the arguments to the dnsmanager.
+  NSMutableArray* args = [NSMutableArray arrayWithObject:@"dnsmanager"];
+  [args addObjectsFromArray:settings.servers];
+
+  // Setup the new DNS manager task.
+  NSTask* task = [NSTask new];
+  NSPipe* pipe = [NSPipe new];
+  task.standardError = pipe;
+  task.standardOutput = pipe;
+  task.executableURL = [[NSBundle mainBundle] executableURL];
+  task.arguments = args;
+
+  // Forward the output from the pipe to the logs.
+  pipe.fileHandleForReading.readabilityHandler = ^(NSFileHandle* handle){
+    NSData* data = handle.availableData;
+    // Check for EOF.
+    if (data.length == 0) {
+      handle.readabilityHandler = nil;
+      return;
+    }
+
+    // Parse the buffer as a sequence of newline-terminated UTF-8 strings.
+    NSString* buffer = [[NSString alloc] initWithData:data
+                                             encoding:NSUTF8StringEncoding];
+    NSCharacterSet* newlines = [NSCharacterSet newlineCharacterSet];
+    NSCharacterSet* whitespaces = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+    for (NSString* line in [buffer componentsSeparatedByCharactersInSet:newlines]) {
+      NSString* trimmed = [line stringByTrimmingCharactersInSet:whitespaces];
+      if (trimmed.length) {
+        NSLog(@"dnsmanager: %@", trimmed);
+      }
+    }
+  };
+
+  if (self.dnsManager) {
+    NSTask* prev = self.dnsManager;
+    self.dnsManager = task;
+
+    // Terminate the previous task and then launch the DNS manager.
+    prev.terminationHandler = ^(NSTask* task){
+      NSError* err;
+      if (![task launchAndReturnError:&err]) {
+        NSLog(@"dns manager failed to launch: %@", err);
+      }
+    };
+    [prev terminate];
+  } else {
+    // Launch the DNS manager to reconfigure the system DNS.
+    NSError* err;
+    self.dnsManager = task;
+    if (![task launchAndReturnError:&err]) {
+      NSLog(@"dns manager failed to launch: %@", err);
+    }
+  }
+}
+
 - (void)startProxyWithOptions:(NSDictionary<NSString *,id> *)options
             completionHandler:(void (^)(NSError *error))completionHandler {
   NSLog(@"starting proxy");
@@ -155,10 +201,14 @@
   m_handledUdpFlows = 0;
   m_handledUnknown = 0;
 
-  // Start the route manager
-  _routeManager = [RouteManager new];
-  [self.routeManager startWithDelegate:self];
+  // Parse the configuration
+  _config = [[InterfaceConfig alloc] initFromDict:options];
+  if (!self.config) {
+    completionHandler(vpnProviderError(NEProviderStopReasonConfigurationFailed));
+    return;
+  }
 
+  self.wireguard = [WireguardTunnel new];
   self.settings = [[NETransparentProxyNetworkSettings alloc] initWithTunnelRemoteAddress:self.protocolConfiguration.serverAddress];
 
   // Configure the proxy to capture all traffic
@@ -215,95 +265,162 @@
   self.settings.excludedNetworkRules = excludeRules;
 
   // Initialize the excluded application list.
-  [self.vpnDisabledApps removeAllObjects];
   NSArray* apps = [options objectForKey:@"apps"];
-  if (apps) {
-    NSEnumerator* iter = [apps objectEnumerator];
-    while (id appId = [iter nextObject]) {
-      if (![appId isKindOfClass:[NSString class]]) {
-        continue;
-      }
-#ifdef MZ_DEBUG
-      NSLog(@"excluding app %@ from VPN", appId);
-#endif
-      [self.vpnDisabledApps addObject: appId];
-    }
+  if ([apps isKindOfClass:[NSArray class]]) {
+    NSPredicate* p = [NSPredicate predicateWithFormat:@"self isKindOfClass: %@", [NSString class]];
+    self.vpnDisabledApps = [NSSet setWithArray:[apps filteredArrayUsingPredicate:p]];
+  } else {
+    self.vpnDisabledApps = [NSSet set];
   }
 
   // Configure the settings.
+  __unsafe_unretained VPNSplitTunnelProvider* weakSelf = self;
   [self setTunnelNetworkSettings: self.settings
                completionHandler:^(NSError* error){
     if (error != nil) {
       NSLog(@"settings error: %@", error.localizedDescription);
+      completionHandler(error);
     } else {
       NSLog(@"settings applied");
+      [weakSelf.wireguard startTunnelWithOptions:weakSelf.config
+                               completionHandler:^(NSError* wgError){
+        if (wgError != nil) {
+          completionHandler(wgError);
+          return;
+        }
+
+        // Start the DNS manager, if configured.
+        if (weakSelf.config.dnsSettings) {
+          [weakSelf startDnsManager:weakSelf.config.dnsSettings];
+        }
+
+        // Register a KVO observer to switch servers upon configuration change.
+        [weakSelf addObserver:weakSelf
+                   forKeyPath:@"protocolConfiguration"
+                      options:NSKeyValueObservingOptionOld | NSKeyValueObservingOptionNew
+                      context:nil];
+
+        // Success
+        completionHandler(nil);
+      }];
     }
-    completionHandler(error);
   }];
 }
 
 - (void)stopProxyWithReason:(NEProviderStopReason)reason 
           completionHandler:(void (^)(void))completionHandler {
-    NSLog(@"stopping proxy");
+  NSLog(@"stopping proxy");
 
-    // Remove captured default routes, if known.
-    if (self.ipv4Interface) {
-      NSLog(@"clearing cloned ipv4 route");
+  NSLog(@"handled tcp flows: %lld", std::atomic_load(&m_handledTcpFlows));
+  NSLog(@"handled udp flows: %lld", std::atomic_load(&m_handledUdpFlows));
+  NSLog(@"handled unknown flows: %lld", std::atomic_load(&m_handledUnknown));
 
-      struct sockaddr_in sin;
-      memset(&sin, 0, sizeof(sin));
-      sin.sin_family = AF_INET;
-      sin.sin_len = sizeof(sin);
-      NSData* dst = [NSData dataWithBytes:&sin length:sizeof(sin)];
+  [self removeObserver:self
+            forKeyPath:@"protocolConfiguration"];
 
-      [self.routeManager rtmSendRoute:RTM_DELETE
-                        toDestination:dst
-                           withPrefix:0
-                         viaInterface:nw_interface_get_index(self.ipv4Interface)
-                          withGateway:nil
-                             andFlags:RTF_IFSCOPE];
-
-      self.ipv4Interface = nil;
-    }
-    if (self.ipv6Interface) {
-      NSLog(@"clearing cloned ipv6 route");
-
-      struct sockaddr_in6 sin6;
-      memset(&sin6, 0, sizeof(sin6));
-      sin6.sin6_family = AF_INET6;
-      sin6.sin6_len = sizeof(sin6);
-      NSData* dst = [NSData dataWithBytes:&sin6 length:sizeof(sin6)];
-
-      [self.routeManager rtmSendRoute:RTM_DELETE
-                        toDestination:dst
-                           withPrefix:0
-                         viaInterface:nw_interface_get_index(self.ipv6Interface)
-                          withGateway:nil
-                             andFlags:RTF_IFSCOPE];
-
-      self.ipv6Interface = nil;
-    }
-    self.routeManager = nil;
-
-    NSLog(@"handled tcp flows: %lld", std::atomic_load(&m_handledTcpFlows));
-    NSLog(@"handled udp flows: %lld", std::atomic_load(&m_handledUdpFlows));
-    NSLog(@"handled unknown flows: %lld", std::atomic_load(&m_handledUnknown));
-
-    completionHandler();
-}
-
-- (BOOL)matchAppFlow:(NEAppProxyFlow*)flow {
-  // Without metadata - do not exclude the application.
-  if (flow.metaData == nil) {
-    return NO;
+  if (self.dnsManager) {
+    [self.dnsManager terminate];
+    self.dnsManager = nil;
   }
 
-  // If not signed - do not exclude the application.
+  [self.wireguard stopTunnelWithReason:reason
+                     completionHandler:completionHandler];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath
+                      ofObject:(id)object
+                        change:(NSDictionary *)change
+                       context:(void *)context {
+  // The only thing we should be observing is the protocolConfiguration
+  if (![keyPath isEqual:@"protocolConfiguration"]) {
+    return;
+  }
+  NSLog(@"configuration changed");
+
+  // Parse and update the configuration
+  NETunnelProviderProtocol* proto = (NETunnelProviderProtocol*)self.protocolConfiguration;
+  _config = [[InterfaceConfig alloc] initFromDict:proto.providerConfiguration];
+  if (!self.config) {
+    // We can't make sense of this configuration.
+    [self.wireguard stopTunnelWithReason:NEProviderStopReasonConfigurationFailed
+                       completionHandler:^(){
+      [self cancelProxyWithError:vpnProviderError(NEProviderStopReasonConfigurationFailed)];
+    }];
+    return;
+  }
+
+  // If the applications being excluded have changed, then we need to restart
+  // the transparent proxy so that connections from the applications get closed
+  // and re-evaluated.
+  NSArray<NSString*>* apps = [proto.providerConfiguration objectForKey:@"apps"];
+  NSPredicate* p = [NSPredicate predicateWithFormat:@"self isKindOfClass: %@", [NSString class]];
+  NSSet* newDisabledApps;
+  if ([apps isKindOfClass:[NSArray class]]) {
+    newDisabledApps = [NSSet setWithArray:[apps filteredArrayUsingPredicate:p]];
+  } else {
+    newDisabledApps = [NSSet set];
+  }
+
+  // TODO: It would be nice if there was a way we could automatically restart
+  // ourself in this case, but I can't figure out how to do this.
+  if (![self.vpnDisabledApps isEqualToSet:newDisabledApps]) {
+    [self stopProxyWithReason:NEProviderStopReasonSuperceded completionHandler:^(){
+      [self cancelProxyWithError:vpnProviderError(NEProviderStopReasonSuperceded)];
+    }];
+    return;
+  }
+
+  // (Re)start the DNS manager, if configured.
+  if (self.config.dnsSettings) {
+    [self startDnsManager:self.config.dnsSettings];
+  } else if (self.dnsManager) {
+    // Otherwise, stop the DNS manager if it was running.
+    [self.dnsManager terminate];
+    self.dnsManager = nil;
+  }
+
+  // Check if the server identitiy changed. Do nothing if no changes.
+  NETunnelProviderProtocol* old = [change objectForKey:@"old"];
+  if (old && [old isKindOfClass:NETunnelProviderProtocol.class]) {
+    NSString* oldPubKey = [old.providerConfiguration objectForKey:@"serverPublicKey"];
+    if (oldPubKey && [oldPubKey isKindOfClass:NSString.class]) {
+      if ([oldPubKey isEqual:self.config.serverPublicKey]) {
+        return;
+      }
+    }
+  }
+
+  // Shutdown the old wireguard peer and start a new one.
+  self.reasserting = TRUE;
+  [self.wireguard.peer stopWithReason:NEProviderStopReasonSuperceded
+                    completionHandler:^(){
+    // Create and start a new peer.
+    self.wireguard.peer = [[WireguardPeer alloc] initWithOptions:self.config
+                                                       andTunnel:self.wireguard];
+    [self.wireguard.peer startWithOptions:self.config
+                        completionHandler:^(NSError*err){
+      if (err) {
+        [self cancelProxyWithError:err];
+      } else {
+        [self.wireguard syncMtu:self.config.serverIpv4Addr];
+        self.reasserting = FALSE;
+      }
+    }];
+  }];
+}
+
+- (BOOL)matchExcludedFlow:(NEAppProxyFlow*)flow {
+  // Without metadata - always direct the flow into the VPN.
+  if (flow.metaData == nil) {
+    return YES;
+  }
+
+  // If not signed - always direct the flow into the VPN.
   if (flow.metaData.sourceAppSigningIdentifier == nil) {
 #ifdef MZ_DEBUG
     NSLog(@"new flow: unsigned -> %@", flow.remoteHostname);
 #endif
-    return NO;
+    return YES;
   }
 
   NSString* sourceId = flow.metaData.sourceAppSigningIdentifier;
@@ -311,8 +428,7 @@
   NSLog(@"new flow: %@ -> %@", sourceId, flow.remoteHostname);
 #endif
 
-  NSEnumerator* iter = [self.vpnDisabledApps objectEnumerator];
-  while (NSString* appId = [iter nextObject]) {
+  for (NSString* appId in self.vpnDisabledApps) {
     if (sourceId.length < appId.length) {
       continue;
     }
@@ -323,94 +439,35 @@
       continue;
     }
 
-    NSComparisonResult result = [sourceId compare:appId
-                                          options:NSLiteralSearch
-                                            range:NSMakeRange(0, appId.length)];
+    NSRange range = NSMakeRange(0, sourceId.length);
+    NSComparisonResult result = [sourceId compare:appId options:NSLiteralSearch range:range];
     if (result == NSOrderedSame) {
-      return YES;
+      return NO;
     }
   }
 
-  // No application matches this signing identifier.
-  return NO;
+  // No application matches this signing identifier - direct the flow into the VPN.
+  return YES;
 }
 
 - (BOOL)handleNewFlow:(NEAppProxyFlow*) flow {
-  // Evaluate whether the source of this flow should be excluded from the VPN.
-  if (![self matchAppFlow:flow]) {
+  if (![self matchExcludedFlow:flow]) {
     return NO;
   }
 
-  // Perform flow bypassing.
+  // Redirect these flows into the VPN.
+  flow.networkInterface = self.wireguard.virtualInterface;
   if ([flow isKindOfClass:[NEAppProxyTCPFlow class]]) {
-    NEAppProxyTCPFlow* tcpFlow = (NEAppProxyTCPFlow*)flow;
-    nw_interface_t via = self.ipv4Interface;
-    nw_endpoint_t dest = nil;
-    if (@available(macOS 15, *)) {
-      dest = tcpFlow.remoteFlowEndpoint;
-    } else {
-      dest = [VPNSplitTunnelProvider convertEndpoint:tcpFlow.remoteEndpoint];
-    }
-    if (nw_endpoint_get_type(dest) == nw_endpoint_type_address &&
-        nw_endpoint_get_address(dest)->sa_family == AF_INET6) {
-      via = self.ipv6Interface;
-    }
-
-    BypassTcpFlow* handler = [BypassTcpFlow createBypass:tcpFlow
-                                              toEndpoint:dest
-                                           withInterface:via];
-    if (!handler) {
-      return NO;
-    }
-
-    [handler startBypass:^(NSError* error){
-      if (error) {
-        NSLog(@"flow closed with error: %@", error);
-      }
-    }];
-
     std::atomic_fetch_add(&m_handledTcpFlows, 1);
-    return YES;
   } else if ([flow isKindOfClass:[NEAppProxyUDPFlow class]]) {
-    NEAppProxyUDPFlow* udpFlow = (NEAppProxyUDPFlow*)flow;
-    nw_interface_t via = self.ipv4Interface;
-    nw_endpoint_t source;
-    if (@available(macOS 15, *)) {
-      source = udpFlow.localFlowEndpoint;
-    } else {
-      source = [VPNSplitTunnelProvider convertEndpoint:udpFlow.localEndpoint];
-    }
-    if (source && (nw_endpoint_get_type(source) == nw_endpoint_type_address) &&
-        (nw_endpoint_get_address(source)->sa_family == AF_INET6)) {
-      via = self.ipv6Interface;
-    }
-
-    BypassUdpFlow* handler = [BypassUdpFlow createBypass:udpFlow
-                                           localEndpoint:source
-                                           withInterface:via];
-    if (!handler) {
-      return NO;
-    }
-
-    [handler startBypass:^(NSError* error){
-      if (error) {
-        NSLog(@"flow closed with error: %@", error);
-      }
-    }];
-
     std::atomic_fetch_add(&m_handledUdpFlows, 1);
-    return YES;
   } else {
     std::atomic_fetch_add(&m_handledUnknown, 1);
   }
   return NO;
 }
 
-- (void)cancelProxyWithError:(NSError *) error {
-  NSLog(@"cancel proxy: %@", error.localizedDescription);
-}
-
-- (void)handleAppMessage:(NSData *) messageData
+- (void)handleAppMessage:(NSData *)messageData
        completionHandler:(void (^)(NSData*)) completionHandler {
   NSError* error;
   NSKeyedUnarchiver* msg =
@@ -418,14 +475,14 @@
                                                 error:&error];
   if (error != nil) {
       NSLog(@"app message error: %@", error.localizedDescription);
-      [VPNSplitTunnelProvider sendAppError:error completionHandler:completionHandler];
+      [VPNSplitTunnelProvider sendAppResponse:error completionHandler:completionHandler];
       return;
   }
   NSString* action = [msg decodeObjectOfClass:NSString.class forKey:@"action"];
   if (!action) {
       NSLog(@"app message invalid action");
-      NSError* error = [VPNSplitTunnelProvider makeError:1 withDescription:@"invalid app message invalid"];
-      [VPNSplitTunnelProvider sendAppError:error completionHandler:completionHandler];
+      NSError* error = vpnProviderError(NEProviderStopReasonConfigurationFailed);
+      [VPNSplitTunnelProvider sendAppResponse:error completionHandler:completionHandler];
       return;
   }
 
@@ -445,122 +502,30 @@
   }
   [msg finishDecoding];
 
-  if ([action isEqualToString: @"clear"]) {
-    [self.vpnDisabledApps removeAllObjects];
-  } else if ([action isEqualToString: @"add"]) {
-    [self.vpnDisabledApps addObjectsFromArray:apps];
-  } else if ([action isEqualToString: @"delete"]) {
-    [self.vpnDisabledApps removeObjectsInArray:apps];
-  } else {
-    NSLog(@"unsupported app message: %@", action);  
+  // Wireguard Tunnel messages
+  if ([action isEqualToString:@"status"]) {
+    [VPNSplitTunnelProvider sendAppResponse:self.wireguard.status
+                          completionHandler:completionHandler];
+    return;
   }
 
   [VPNSplitTunnelProvider sendAppResponse:nil completionHandler:completionHandler];
 }
 
-+ (void)sendAppResponse:(NSData*) responseData
++ (void)sendAppResponse:(id) obj
       completionHandler:(void (^)(NSData*)) completionHandler {
   if (!completionHandler) {
     return;
   }
-  completionHandler(responseData);
-}
 
-+ (void)sendAppError:(NSError*) error
-   completionHandler:(void (^)(NSData*)) completionHandler {
-  if (!completionHandler) {
-    return;
-  }
   NSKeyedArchiver* encoder = [[NSKeyedArchiver alloc] initRequiringSecureCoding:YES];
-  [encoder encodeObject:error forKey:@"error"];
+  if ([obj isKindOfClass:[NSError class]]) {
+    [encoder encodeObject:obj forKey:@"error"];
+  } else if ([obj respondsToSelector:@selector(encodeWithCoder:)]) {
+    [obj encodeWithCoder: encoder];
+  }
   [encoder finishEncoding];
   completionHandler(encoder.encodedData);
-}
-
-- (void)defaultRouteChanged:(int)family
-               viaInterface:(nw_interface_t)interface
-                withGateway:(NSData*)gateway {
-  int action = RTM_ADD;
-  int ifindex = interface ? nw_interface_get_index(interface) : 0;
-
-  if (family == AF_INET) {
-    struct sockaddr_in dst;
-    memset(&dst, 0, sizeof(dst));
-    dst.sin_family = AF_INET;
-    dst.sin_len = sizeof(dst);
-    NSData* dstAddr = [NSData dataWithBytes:&dst length:sizeof(dst)];
-
-    if (interface) {
-      NSLog(@"default ipv4 route via %s", nw_interface_get_name(interface));
-      if (!self.ipv4Interface) {
-        action = RTM_ADD;
-      } else if (ifindex == nw_interface_get_index(self.ipv4Interface)) {
-        action = RTM_CHANGE;
-      } else {
-        action = RTM_ADD;
-        [self.routeManager rtmSendRoute:RTM_DELETE
-                          toDestination:dstAddr
-                            withPrefix:0
-                          viaInterface:nw_interface_get_index(self.ipv4Interface)
-                            withGateway:nil
-                              andFlags:RTF_IFSCOPE];
-      }
-    } else if (self.ipv4Interface) {
-      NSLog(@"default ipv4 route lost");
-      action = RTM_DELETE;
-      ifindex = nw_interface_get_index(self.ipv4Interface);
-    }
-
-    // Update the cloned IPv4 default route.
-    self.ipv4Interface = interface;
-    if (ifindex != 0) {
-      [self.routeManager rtmSendRoute:action
-                        toDestination:dstAddr
-                          withPrefix:0
-                        viaInterface:ifindex
-                          withGateway:gateway
-                            andFlags:RTF_IFSCOPE];
-    }
-  } else if (family == AF_INET6) {
-    struct sockaddr_in6 dst;
-    memset(&dst, 0, sizeof(dst));
-    dst.sin6_family = AF_INET6;
-    dst.sin6_len = sizeof(dst);
-    NSData* dstAddr = [NSData dataWithBytes:&dst length:sizeof(dst)];
-
-    if (interface) {
-      NSLog(@"default ipv6 route via %s", nw_interface_get_name(interface));
-
-      if (!self.ipv6Interface) {
-        action = RTM_ADD;
-      } else if (ifindex == nw_interface_get_index(self.ipv6Interface)) {
-        action = RTM_CHANGE;
-      } else {
-        action = RTM_ADD;
-        [self.routeManager rtmSendRoute:RTM_DELETE
-                          toDestination:dstAddr
-                            withPrefix:0
-                          viaInterface:nw_interface_get_index(self.ipv6Interface)
-                            withGateway:nil
-                              andFlags:RTF_IFSCOPE];
-      }
-    } else if (self.ipv6Interface) {
-      NSLog(@"default ipv6 route lost");
-      action = RTM_DELETE;
-      ifindex = nw_interface_get_index(self.ipv6Interface);
-    }
-
-    // Update the cloned IPv6 default route.
-    self.ipv6Interface = interface;
-    if (ifindex != 0) {
-      [self.routeManager rtmSendRoute:action
-                        toDestination:dstAddr
-                           withPrefix:0
-                         viaInterface:ifindex
-                          withGateway:gateway
-                             andFlags:RTF_IFSCOPE];
-    }
-  }
 }
 
 @end
