@@ -336,24 +336,24 @@ settings:
   antiCensorshipPort53Body: Routes traffic through the port commonly used for DNS. May help on networks that block UDP traffic.
   antiCensorshipMasqueTitle:
     value: MASQUE
-    comment: MASQUE is an acronym it should NOT be translated and should be written in all caps.
+    comment: MASQUE is an acronym, it should NOT be translated.
   antiCensorshipMasqueBody: Disguises VPN traffic as regular HTTPS traffic. May help on networks that block VPN protocols.
   antiCensorshipLwoTitle:
     value: LWO
-    comment: LWO is an acronym it should NOT be translated and should be written in all caps.
+    comment: LWO is an acronym, it should NOT be translated.
   antiCensorshipLwoBody: Fastest obfuscation method. May help on networks that detect or block WireGuard traffic without adding significant overhead.
   antiCensorshipShadowsocksTitle:
-    value: Shadowsockss
-    comment: Shadowsocks is a protocol name it should NOT be translated.
-  antiCensorshipShadowsocksBody: May help bypass restrictive or heavily filtered networks, and sometimes works when all others do not.
+    value: Shadowsocks
+    comment: Shadowsocks is a protocol name, it should NOT be translated.
+  antiCensorshipShadowsocksBody: May help bypass restrictive or heavily filtered networks, and could work when all other approaches do not.
   antiCensorshipUdpOverTcpTitle: UDP over TCP
   antiCensorshipUdpOverTcpBody: Tunnels UDP traffic over TCP. May help on networks that block UDP traffic.
   antiCensorshipLwoOverPort53Title:
     value: LWO over port 53
-    comment: LWO is an acronym it should NOT be translated and should be written in all caps.
+    comment: LWO is an acronym, it should NOT be translated.
   antiCensorshipLwoOverPort53Body:
     value: Combines the benefits of LWO and port 53.
-    comment: LWO is an acronym it should NOT be translated and should be written in all caps.
+    comment: LWO is an acronym, it should NOT be translated.
   appExclusionTitle: Excluded apps
   appearance:
     value: Appearance
