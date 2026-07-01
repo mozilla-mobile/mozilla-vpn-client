@@ -22,7 +22,6 @@
 #include "networkwatcher.h"
 #include "releasemonitor.h"
 #include "serverlatency.h"
-#include "settingsholder.h"
 #include "statusicon.h"
 
 struct MozillaVPNPrivate {

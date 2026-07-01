@@ -43,8 +43,9 @@ Rectangle {
 
             // Exit IP:
             ipVersionText: MZI18n.ConnectionInfoExitServerLabelIp
-            ipAddressText: VPNIPAddressLookup.ipv4Address
-            visible: VPNIPAddressLookup.ipv4Address !== ""
+            ipAddressText: VPNIPAddressLookup.ipv4Address !== "" ? VPNIPAddressLookup.ipv4Address : MZI18n.ConnectionInfoLoading
+            // Show when it has an IP address OR when neither have an IP address (and we default to showing "Loading")
+            visible: VPNIPAddressLookup.ipv4Address !== "" || VPNIPAddressLookup.ipv6Address === ""
         }
 
         Rectangle {
@@ -60,8 +61,9 @@ Rectangle {
 
             // Exit IPv6:
             ipVersionText: MZI18n.ConnectionInfoExitServerLabelIpv6
-            ipAddressText: VPNIPAddressLookup.ipv6Address
-            visible: VPNIPAddressLookup.ipv6Address !== ""
+            ipAddressText: VPNIPAddressLookup.ipv6Address !== "" ? VPNIPAddressLookup.ipv6Address : MZI18n.ConnectionInfoLoading
+            // Show when it has an IP address OR when neither have an IP address (and we default to showing "Loading")
+            visible: VPNIPAddressLookup.ipv6Address !== "" || VPNIPAddressLookup.ipv4Address === ""
         }
 
         Rectangle {
