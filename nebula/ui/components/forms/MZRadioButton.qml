@@ -18,10 +18,11 @@ RadioDelegate {
 
     signal clicked()
 
-    activeFocusOnTab: true
+    activeFocusOnTab: enabled
+    opacity: enabled ? 1 : 0.5
 
     Component.onCompleted: {
-        state = uiState.stateDefault
+        state = enabled ? uiState.stateDefault : uiState.stateDisabled
     }
 
     onActiveFocusChanged: {
@@ -106,6 +107,21 @@ RadioDelegate {
                 border.color: radioControl.checked ? MZTheme.colors.normalButton.buttonPressed : MZTheme.colors.fontColor
             }
 
+        },
+        State {
+            name: uiState.stateDisabled
+
+            PropertyChanges {
+                target: radioButtonInsetCircle
+                color: radioControl.checked ? MZTheme.colors.fontColor : MZTheme.colors.bgColor
+                scale: 0.6
+            }
+
+            PropertyChanges {
+                target: radioButton
+                border.color: MZTheme.colors.fontColor
+            }
+
         }
     ]
 
@@ -115,6 +131,7 @@ RadioDelegate {
 
     MZMouseArea {
         id: mouseArea
+        hoverEnabled: radioControl.enabled && radioControl.isHoverable
     }
 
     indicator: Rectangle {

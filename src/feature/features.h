@@ -213,12 +213,6 @@ inline const OverridableFeature accountDeletion = {
     .evaluator = +[] { return Platform::android || Platform::ios; },
 };
 
-inline const OverridableFeature alwaysPort53 = {
-    .id = "alwaysPort53",
-    .name = "Always use port 53",
-    .evaluator = +[] { return false; },
-};
-
 inline constexpr ConstantFeature annualUpgrade = {
     .id = "annualUpgrade",
     .name = "Annual upgrade",
@@ -243,6 +237,30 @@ inline constexpr ConstantFeature freeTrial = {
     .id = "freeTrial",
     .name = "Free trial",
     .supported = false,
+};
+
+inline constexpr ConstantFeature obfuscationLwo = {
+    .id = "obfuscationLwo",
+    .name = "LWO obfuscation",
+    .supported = false,
+};
+
+inline constexpr ConstantFeature obfuscationMasque = {
+    .id = "obfuscationMasque",
+    .name = "MASQUE obfuscation",
+    .supported = false,
+};
+
+inline constexpr ConstantFeature obfuscationShadowsocks = {
+    .id = "obfuscationShadowsocks",
+    .name = "SHADOWSOCKS obfuscation",
+    .supported = false,
+};
+
+inline constexpr ConstantFeature obfuscationUdpOverTcp = {
+    .id = "obfuscationUdpOverTcp",
+    .name = "UDP over TCP",
+    .supported = Platform::linux_ || Platform::android,
 };
 
 inline const OverridableFeature replacerAddon = {

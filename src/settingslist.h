@@ -315,6 +315,27 @@ SETTING_STRINGLIST(missingApps,        // getter
                    false               // sensitive (do not log)
 )
 
+SETTING_INT(
+    antiCensorshipPolicy,                                    // getter
+    setAntiCensorshipPolicy,                                 // setter
+    removeAntiCensorshipPolicy,                              // remover
+    hasAntiCensorshipPolicy,                                 // has
+    "antiCensorshipPolicy",                                  // key
+    SettingsHolder::AntiCensorshipPolicy::NoAntiCensorship,  // default value
+    false,  // remove when reset
+    false   // sensitive (do not log)
+)
+
+SETTING_INT(lastAntiCensorshipPolicy,                      // getter
+            setLastAntiCensorshipPolicy,                   // setter
+            removeLastAntiCensorshipPolicy,                // remover
+            hasLastAntiCensorshipPolicy,                   // has
+            "lastAntiCensorshipPolicy",                    // key
+            SettingsHolder::AntiCensorshipPolicy::Port53,  // default value
+            false,                                         // remove when reset
+            false  // sensitive (do not log)
+)
+
 SETTING_BOOL(onboardingCompleted,        // getter
              setOnboardingCompleted,     // setter
              removeOnboardingCompleted,  // remover

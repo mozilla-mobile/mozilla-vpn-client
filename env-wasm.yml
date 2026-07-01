@@ -5,8 +5,8 @@ dependencies:
   - python=3.12
   - nodejs=20.*
   - pip=25.0
-  - rust=1.85
-  - rust-std-wasm32-unknown-emscripten=1.85
+  - rust=1.91
+  - rust-std-wasm32-unknown-emscripten=1.91
   - cmake=3.26.3
   - ninja=1.11.0
   - pip:

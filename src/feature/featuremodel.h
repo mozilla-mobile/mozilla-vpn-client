@@ -20,7 +20,6 @@ using namespace Feature;
 inline const AnyFeature s_exposedFeatures[] = {
     ref(accountDeletion),
     ref(addonSignature),
-    ref(alwaysPort53),
     ref(annualUpgrade),
     ref(appReview),
     ref(captivePortal),
@@ -30,6 +29,10 @@ inline const AnyFeature s_exposedFeatures[] = {
     ref(freeTrial),
     ref(multiHop),
     ref(networkExtension),
+    ref(obfuscationLwo),
+    ref(obfuscationMasque),
+    ref(obfuscationShadowsocks),
+    ref(obfuscationUdpOverTcp),
     ref(replacerAddon),
     ref(shareLogs),
     ref(showRotateIPAddressButton),

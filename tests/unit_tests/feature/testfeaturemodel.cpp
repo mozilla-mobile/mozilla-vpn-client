@@ -19,18 +19,18 @@ void TestFeatureModel::cleanup() { SettingsHolder::testCleanup(); }
 void TestFeatureModel::flipOnOff() {
   auto* settings = SettingsHolder::instance();
 
-  // alwaysPort53: default off, flippable
-  QVERIFY(!isEnabled(alwaysPort53));
+  // showRotateIPAddressButton: default off, flippable
+  QVERIFY(!isEnabled(showRotateIPAddressButton));
 
   // Toggle on
-  FeatureModel::instance()->toggle("alwaysPort53");
-  QVERIFY(isEnabled(alwaysPort53));
-  QVERIFY(settings->featuresFlippedOn().contains("alwaysPort53"));
+  FeatureModel::instance()->toggle("showRotateIPAddressButton");
+  QVERIFY(isEnabled(showRotateIPAddressButton));
+  QVERIFY(settings->featuresFlippedOn().contains("showRotateIPAddressButton"));
 
   // Toggle back off
-  FeatureModel::instance()->toggle("alwaysPort53");
-  QVERIFY(!isEnabled(alwaysPort53));
-  QVERIFY(!settings->featuresFlippedOn().contains("alwaysPort53"));
+  FeatureModel::instance()->toggle("showRotateIPAddressButton");
+  QVERIFY(!isEnabled(showRotateIPAddressButton));
+  QVERIFY(!settings->featuresFlippedOn().contains("showRotateIPAddressButton"));
 
   // addonSignature: default on, flippable when on stage
   QVERIFY(isEnabled(addonSignature));
@@ -47,24 +47,24 @@ void TestFeatureModel::flipOnOff() {
 }
 
 void TestFeatureModel::updateFeatureListOverwriteFeatures() {
-  // alwaysPort53 is off by default, flippable
-  QVERIFY(!isEnabled(alwaysPort53));
+  // showRotateIPAddressButton is off by default, flippable
+  QVERIFY(!isEnabled(showRotateIPAddressButton));
 
   // Server says: flip on
   QJsonObject overwrite;
-  overwrite["alwaysPort53"] = true;
+  overwrite["showRotateIPAddressButton"] = true;
   QJsonObject json;
   json["featuresOverwrite"] = overwrite;
 
   FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
-  QVERIFY(isEnabled(alwaysPort53));
+  QVERIFY(isEnabled(showRotateIPAddressButton));
 
   // Server says: flip off
-  overwrite["alwaysPort53"] = false;
+  overwrite["showRotateIPAddressButton"] = false;
   json["featuresOverwrite"] = overwrite;
 
   FeatureModel::instance()->updateFeatureList(QJsonDocument(json).toJson());
-  QVERIFY(!isEnabled(alwaysPort53));
+  QVERIFY(!isEnabled(showRotateIPAddressButton));
 }
 
 void TestFeatureModel::updateFeatureListExperimentalFeaturesEmpty() {
@@ -119,7 +119,7 @@ void TestFeatureModel::
   auto initialCount = settings->featuresFlippedOn().count();
 
   QJsonObject experimental;
-  experimental["alwaysPort53"] = "notanobject";
+  experimental["showRotateIPAddressButton"] = "notanobject";
   QJsonObject json;
   json["experimentalFeatures"] = experimental;
 

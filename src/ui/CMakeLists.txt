@@ -93,6 +93,8 @@ qt_add_qml_module(mozillavpn-ui
         screens/settings/ViewSettingsMenu.qml
         screens/settings/privacy/ViewPrivacy.qml
         screens/settings/privacy/PrivacyFeaturesList.qml
+        screens/settings/antiCensorship/ViewAntiCensorship.qml
+        screens/settings/antiCensorship/AntiCensorshipFeaturesList.qml
         screens/subscriptionNeeded/ViewSubscriptionNeeded.qml
         sharedViews/ViewErrorFullScreen.qml
         sharedViews/ViewPermissionRequiredOSX.qml
@@ -156,8 +158,9 @@ target_include_directories(mozillavpn-uiplugin PUBLIC
 
 target_sources(mozillavpn-ui PRIVATE singletons/BatteryOptimizer.h)
 
+target_compile_definitions(mozillavpn-ui PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
+
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Android")
-    target_compile_definitions(mozillavpn-ui PRIVATE MZ_ANDROID)
     target_sources(mozillavpn-ui PRIVATE singletons/VPNAndroidUtils.h)
     target_sources(mozillavpn-ui PRIVATE singletons/VPNAndroidCommons.h)
 endif()

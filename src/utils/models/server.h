@@ -6,12 +6,15 @@
 #define SERVER_H
 
 #include <QList>
+#include <QObject>
 #include <QPair>
 #include <QString>
 
 class QJsonObject;
 
-class Server final {
+class Server final : public QObject {
+  Q_OBJECT
+
  public:
   Server();
   Server(const QString& countryCode, const QString& cityName);
@@ -19,12 +22,25 @@ class Server final {
   Server& operator=(const Server& other);
   ~Server();
 
+  // Obfuscation methods enum, remember to keep in sync with the one in
+  // and in the obfuscators crate
+  enum ObfuscationMethod {
+    NoObfuscation,
+    LWO,
+    Masque,
+    UdpOverTcp,
+    Shadowsocks
+  };
+  Q_ENUM(ObfuscationMethod)
+
   [[nodiscard]] bool fromJson(const QJsonObject& obj);
   bool fromMultihop(const Server& exit, const Server& entry);
 
   static const Server& weightChooser(const QList<Server>& servers);
 
   bool initialized() const { return !m_hostname.isEmpty(); }
+
+  bool supportObfuscationMethod(const ObfuscationMethod method) const;
 
   const QString& hostname() const { return m_hostname; }
 
@@ -42,7 +58,9 @@ class Server final {
 
   uint32_t weight() const { return m_weight; }
 
-  uint32_t choosePort() const;
+  uint32_t choosePort(bool tcp = false) const;
+
+  uint32_t chooseTcpPort() const { return choosePort(true); }
 
   uint32_t multihopPort() const { return m_multihopPort; }
 
@@ -68,6 +86,11 @@ class Server final {
   QString m_ipv6AddrIn;
   QString m_ipv6Gateway;
   QList<QPair<uint32_t, uint32_t>> m_portRanges;
+  // Mullvad ports for UDP over TCP obfuscation, hardcoded as specified
+  // Use QPair so we can reuse choosePort logic, maybe expose these ports in
+  // guardian APIs in the future
+  QList<QPair<uint32_t, uint32_t>> m_udpOverTcpPorts{
+      {80, 80}, {443, 443}, {5001, 5001}};
   QString m_publicKey;
   QString m_socksName;
   uint32_t m_weight = 0;

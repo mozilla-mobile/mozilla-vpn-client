@@ -39,13 +39,15 @@ RUN apt-get update -qq \
                           git \
                           wget \
                           zip \
-                          cargo-1.85 \
+                          cargo-1.91 \
                           curl \
                           rpm \
                           libglib2.0-0 \
                           ccache \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN ln -s /usr/bin/cargo-1.91 /usr/bin/cargo
 
 # Install the taskcluster script's package dependencies
 # %include taskcluster/scripts/requirements.txt

@@ -31,7 +31,8 @@ bool Controller::silentSwitchServers(ServerCoolDownPolicyForSilentSwitch) {
 
 bool Controller::silentServerSwitchingSupported() const { return false; }
 
-void Controller::activateInternal(DNSPortPolicy, ServerSelectionPolicy,
+void Controller::activateInternal(SettingsHolder::AntiCensorshipPolicy,
+                                  ServerSelectionPolicy,
                                   ActivationPrincipal user) {}
 
 bool Controller::deactivate(ActivationPrincipal user) {

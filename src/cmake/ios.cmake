@@ -104,6 +104,8 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/macos/macospingsender.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/purchase/taskpurchase.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator/dummyobfuscator.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator/dummyobfuscator.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosauthenticationlistener.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosauthenticationlistener.h
     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/ios/iosiaphandler.swift
