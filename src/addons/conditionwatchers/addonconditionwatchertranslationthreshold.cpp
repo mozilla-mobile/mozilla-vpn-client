@@ -41,6 +41,5 @@ AddonConditionWatcher* AddonConditionWatcherTranslationThreshold::maybeCreate(
     }
   }
 
-  return AddonConditionWatcherLocales::maybeCreate(
-      addon, locales, AddonConditionWatcherLocales::CheckMajorLanguageCode);
+  return AddonConditionWatcherLocales::maybeCreate(addon, locales);
 }
