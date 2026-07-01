@@ -396,6 +396,11 @@ public class IOSControllerImpl: NSObject {
           if let error = error {
             IOSControllerImpl.logger.info(message: "Error when removing tunnel \(error.localizedDescription)")
           }
+          // Update widgets to unauthenticated text
+          WidgetCenter.shared.reloadAllTimelines()
+          if #available(iOS 18.0, *) {
+              ControlCenter.shared.reloadAllControls()
+          }
         })
       }
     }

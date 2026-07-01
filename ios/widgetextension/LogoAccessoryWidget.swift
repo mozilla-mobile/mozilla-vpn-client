@@ -22,9 +22,14 @@ struct LogoCircularAccessoryWidget: View {
           .resizable()
           .frame(width: 16, height: 16)
           .containerRelativeFrame(.horizontal, alignment: .center)
-        Image(systemName: entry.sysImageName)
-          .font(.system(size: 22))
-          .containerRelativeFrame(.horizontal, alignment: .center)
+        if !entry.isDataIncomplete {
+          Image(systemName: entry.sysImageName)
+            .font(.system(size: 22))
+            .containerRelativeFrame(.horizontal, alignment: .center)
+        } else {
+          Text(LocalizedStringResource("vpn.logoAccessoryWidget.unauthenticatedMessage", defaultValue: "Turn on via app"))
+            .allowsTightening(true)
+        }
       }
       .containerRelativeFrame(.vertical, alignment: .center)
     }
@@ -43,7 +48,12 @@ struct LogoInlineAccessoryWidget: View {
       HStack(spacing: 4) {
         Image(systemName: entry.sysImageName)
           .font(.system(size: 26))
-        Text(entry.isConnected ? LocalizedStringResource("vpn.logoAccessoryWidget.vpnOn", defaultValue: "Mozilla VPN on") : LocalizedStringResource("vpn.logoAccessoryWidget.vpnOff", defaultValue: "Mozilla VPN off"))
+        if !entry.isDataIncomplete {
+          Text(entry.isConnected ? LocalizedStringResource("vpn.logoAccessoryWidget.vpnOn", defaultValue: "Mozilla VPN on") : LocalizedStringResource("vpn.logoAccessoryWidget.vpnOff", defaultValue: "Mozilla VPN off"))
+        } else {
+          Text(LocalizedStringResource("vpn.logoAccessoryWidget.unauthenticatedMessage", defaultValue: "Turn on via app"))
+            .allowsTightening(true)
+        }
       }
     }
   }
