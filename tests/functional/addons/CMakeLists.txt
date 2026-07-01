@@ -13,10 +13,16 @@ find_package(Qt6 REQUIRED COMPONENTS Core)
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/../../../scripts/cmake/addons.cmake)
 
-# Build the production addons.
+# Build the production addons -- all of them except message_update_default,
+# whose manifest is generated at build time by the main `addons` target (and
+# building it here would re-trigger a source-mutating step, causing build failure).
+file(GLOB PROD_ADDON_MANIFESTS
+    ${CMAKE_CURRENT_SOURCE_DIR}/../../../addons/*/manifest.json)
+list(FILTER PROD_ADDON_MANIFESTS EXCLUDE REGEX "/message_update_default/manifest.json$")
+
 add_addon_target(prod_addon
     OUTPUT_DIR ${CMAKE_CURRENT_BINARY_DIR}/prod/
-    SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../addons/
+    SOURCES ${PROD_ADDON_MANIFESTS}
     I18N_DIR ${CMAKE_CURRENT_SOURCE_DIR}/../../../3rdparty/i18n
 )
 set_target_properties(prod_addon PROPERTIES EXCLUDE_FROM_ALL FALSE)
