@@ -328,30 +328,30 @@ systray:
 
 settings:
   privacySettings: Privacy features
-  antiCensorshipSettings: Anti-censorship features
-  antiCensorshipSettingsWarning1: These features will not help when a specific website or app blocks content because of the VPN.
-  antiCensorshipSettingsWarning2: They may cause degraded network speed.
-  antiCensorshipSettingsEnable: Enable Anti-censorship features
-  antiCensorshipPort53Title: Always connect using port 53
-  antiCensorshipPort53Body: Routes traffic through the port commonly used for DNS. May help on networks that block UDP traffic.
-  antiCensorshipMasqueTitle:
+  firewallBypassSettings: Firewall bypass features
+  firewallBypassSettingsWarning1: These features will not help when a specific website or app blocks content because of the VPN.
+  firewallBypassSettingsWarning2: They may cause degraded network speed.
+  firewallBypassSettingsEnable: Enable Firewall bypass features
+  firewallBypassPort53Title: Always connect using port 53
+  firewallBypassPort53Body: Routes traffic through the port commonly used for DNS. May help on networks that block UDP traffic.
+  firewallBypassMasqueTitle:
     value: MASQUE
     comment: MASQUE is an acronym, it should NOT be translated.
-  antiCensorshipMasqueBody: Disguises VPN traffic as regular HTTPS traffic. May help on networks that block VPN protocols.
-  antiCensorshipLwoTitle:
+  firewallBypassMasqueBody: Disguises VPN traffic as regular HTTPS traffic. May help on networks that block VPN protocols.
+  firewallBypassLwoTitle:
     value: LWO
     comment: LWO is an acronym, it should NOT be translated.
-  antiCensorshipLwoBody: Fastest obfuscation method. May help on networks that detect or block WireGuard traffic without adding significant overhead.
-  antiCensorshipShadowsocksTitle:
+  firewallBypassLwoBody: Fastest obfuscation method. May help on networks that detect or block WireGuard traffic without adding significant overhead.
+  firewallBypassShadowsocksTitle:
     value: Shadowsocks
     comment: Shadowsocks is a protocol name, it should NOT be translated.
-  antiCensorshipShadowsocksBody: May help bypass restrictive or heavily filtered networks, and could work when all other approaches do not.
-  antiCensorshipUdpOverTcpTitle: UDP over TCP
-  antiCensorshipUdpOverTcpBody: Tunnels UDP traffic over TCP. May help on networks that block UDP traffic.
-  antiCensorshipLwoOverPort53Title:
+  firewallBypassShadowsocksBody: May help bypass restrictive or heavily filtered networks, and could work when all other approaches do not.
+  firewallBypassUdpOverTcpTitle: UDP over TCP
+  firewallBypassUdpOverTcpBody: Tunnels UDP traffic over TCP. May help on networks that block UDP traffic.
+  firewallBypassLwoOverPort53Title:
     value: LWO over port 53
     comment: LWO is an acronym, it should NOT be translated.
-  antiCensorshipLwoOverPort53Body:
+  firewallBypassLwoOverPort53Body:
     value: Combines the benefits of LWO and port 53.
     comment: LWO is an acronym, it should NOT be translated.
   appExclusionTitle: Excluded apps
@@ -908,15 +908,15 @@ devices:
     comment: Title for the menu bar when viewing the devices or device limit pages
 
 helpSheets:
-  antiCensorshipTitle:
-    value: Anti-censorship features
-    comment: Title label for the Anti-censorship features help sheet
-  antiCensorshipBody1:
+  firewallBypassTitle:
+    value: Firewall bypass features
+    comment: Title label for the Firewall bypass features help sheet
+  firewallBypassBody1:
     value: These options should be used when a network is blocking connections to VPN servers. They will not help when a specific website or app blocks content because of the VPN.
-    comment: Body label for the Anti-censorship features help sheet
-  antiCensorshipBody2:
+    comment: Body label for the Firewall bypass features help sheet
+  firewallBypassBody2:
     value: These features may slow down the connection, so turn them off when they are not needed.
-    comment: Body label for the Anti-censorship features help sheet
+    comment: Body label for the Firewall bypass features help sheet
   dnsTitle:
     value: Custom DNS settings
     comment: Title label for the custom dns help sheet
@@ -1118,9 +1118,9 @@ controller:
   regeneratingKey:
     value: Preparing your connection
     comment: Connection subtitle label for the main screen when the app is regenerating WireGuard keys
-  antiCensorshipOn:
-    value: Anti-censorship is on
-    comment: Label for the main screen when Anti-censorship features are enabled
+  firewallBypassOn:
+    value: Firewall bypass is on
+    comment: Label for the main screen when Firewall bypass features are enabled
 
 iosAppIntentsMain:
   turnOnAction:

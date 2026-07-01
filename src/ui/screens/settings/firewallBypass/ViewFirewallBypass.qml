@@ -14,13 +14,13 @@ import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 MZViewBase {
     id: root
-    objectName: "antiCensorshipSettingsView"
+    objectName: "firewallBypassSettingsView"
 
     property Component rightMenuButton: Component {
         Loader {
             active: true
             sourceComponent: MZIconButton {
-                objectName: "antiCensorshipHelpButton"
+                objectName: "firewallBypassHelpButton"
 
                 onClicked: {
                     helpSheet.open()
@@ -38,14 +38,14 @@ MZViewBase {
         }
     }
 
-    _menuTitle: MZI18n.SettingsAntiCensorshipSettings
+    _menuTitle: MZI18n.SettingsFirewallBypassSettings
 
     _viewContentData: ColumnLayout {
         spacing: MZTheme.theme.windowMargin * 1.5
         Layout.preferredWidth: parent.width
 
         MZInformationCard {
-            objectName: "antiCensorshipSettingsViewInformationCard"
+            objectName: "firewallBypassSettingsViewInformationCard"
             cardType: MZInformationCard.CardType.Warning
             Layout.preferredWidth: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
             Layout.alignment: Qt.AlignHCenter
@@ -57,14 +57,14 @@ MZViewBase {
                 MZTextBlock {
                     Layout.fillWidth: true
                     width: undefined
-                    text: MZI18n.SettingsAntiCensorshipSettingsWarning1
+                    text: MZI18n.SettingsFirewallBypassSettingsWarning1
                     verticalAlignment: Text.AlignVCenter
                 }
 
                 MZTextBlock {
                     Layout.fillWidth: true
                     width: undefined
-                    text: MZI18n.SettingsAntiCensorshipSettingsWarning2
+                    text: MZI18n.SettingsFirewallBypassSettingsWarning2
                     verticalAlignment: Text.AlignVCenter
                 }
 
@@ -81,8 +81,8 @@ MZViewBase {
             }
         }
 
-        AntiCensorshipFeaturesList {
-            id: antiCensorshipFeaturesList
+        FirewallBypassFeaturesList {
+            id: firewallBypassFeaturesList
             Layout.leftMargin: 16
             Layout.rightMargin: 16
             Layout.fillWidth: true
@@ -91,13 +91,13 @@ MZViewBase {
 
     MZHelpSheet {
         id: helpSheet
-        objectName: "antiCensorshipHelpSheet"
+        objectName: "firewallBypassHelpSheet"
 
-        title: MZI18n.HelpSheetsAntiCensorshipTitle
+        title: MZI18n.HelpSheetsFirewallBypassTitle
 
         model: [
-            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsAntiCensorshipBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
-            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsAntiCensorshipBody2, margin: MZTheme.theme.helpSheetBodySpacing}
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsFirewallBypassBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
+            {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsFirewallBypassBody2, margin: MZTheme.theme.helpSheetBodySpacing}
         ]
     }
 }

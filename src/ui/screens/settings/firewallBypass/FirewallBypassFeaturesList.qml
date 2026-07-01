@@ -19,14 +19,14 @@ ColumnLayout {
     spacing: dividerSpacing
 
     MZToggleRow {
-            objectName: "enableAntiCensorshipFeatures"
-            id: antiCensorshipFeaturesToggle
+            objectName: "enableFirewallBypassFeatures"
+            id: firewallBypassFeaturesToggle
 
-            labelText: MZI18n.SettingsAntiCensorshipSettingsEnable
-            checked: MZSettings.antiCensorshipPolicy != MZSettings.NoAntiCensorship
+            labelText: MZI18n.SettingsFirewallBypassSettingsEnable
+            checked: MZSettings.firewallBypassPolicy != MZSettings.NoFirewallBypass
             dividerTopMargin: dividerSpacing
             onClicked: {
-                MZSettings.antiCensorshipPolicy = antiCensorshipFeaturesToggle.checked ? MZSettings.NoAntiCensorship : MZSettings.lastAntiCensorshipPolicy;
+                MZSettings.firewallBypassPolicy = firewallBypassFeaturesToggle.checked ? MZSettings.NoFirewallBypass : MZSettings.lastFirewallBypassPolicy;
             }
     }
 
@@ -39,38 +39,38 @@ ColumnLayout {
                 objectName: "alwaysUsePort53",
                 visible: true,
                 settingValue: MZSettings.Port53,
-                settingTitle: MZI18n.SettingsAntiCensorshipPort53Title,
-                settingDescription: MZI18n.SettingsAntiCensorshipPort53Body,
+                settingTitle: MZI18n.SettingsFirewallBypassPort53Title,
+                settingDescription: MZI18n.SettingsFirewallBypassPort53Body,
             }, {
                 objectName: "udpOverTcp",
                 visible: MZFeatureList.get("obfuscationUdpOverTcp").isSupported,
                 settingValue: MZSettings.UdpOverTcp,
-                settingTitle: MZI18n.SettingsAntiCensorshipUdpOverTcpTitle,
-                settingDescription: MZI18n.SettingsAntiCensorshipUdpOverTcpBody,
+                settingTitle: MZI18n.SettingsFirewallBypassUdpOverTcpTitle,
+                settingDescription: MZI18n.SettingsFirewallBypassUdpOverTcpBody,
             }, {
                 objectName: "lwo",
                 visible: MZFeatureList.get("obfuscationLwo").isSupported,
                 settingValue: MZSettings.LWO,
-                settingTitle: MZI18n.SettingsAntiCensorshipLwoTitle,
-                settingDescription: MZI18n.SettingsAntiCensorshipLwoBody,
+                settingTitle: MZI18n.SettingsFirewallBypassLwoTitle,
+                settingDescription: MZI18n.SettingsFirewallBypassLwoBody,
             }, {
                 objectName: "lwoOverPort53",
                 visible: MZFeatureList.get("obfuscationLwo").isSupported,
                 settingValue: MZSettings.LwoOverPort53,
-                settingTitle: MZI18n.SettingsAntiCensorshipLwoOverPort53Title,
-                settingDescription: MZI18n.SettingsAntiCensorshipLwoOverPort53Body,
+                settingTitle: MZI18n.SettingsFirewallBypassLwoOverPort53Title,
+                settingDescription: MZI18n.SettingsFirewallBypassLwoOverPort53Body,
             }, {
                 objectName: "masque",
                 visible: MZFeatureList.get("obfuscationMasque").isSupported,
                 settingValue: MZSettings.Masque,
-                settingTitle: MZI18n.SettingsAntiCensorshipMasqueTitle,
-                settingDescription: MZI18n.SettingsAntiCensorshipMasqueBody,
+                settingTitle: MZI18n.SettingsFirewallBypassMasqueTitle,
+                settingDescription: MZI18n.SettingsFirewallBypassMasqueBody,
             },{
                 objectName: "shadowsocks",
                 visible: MZFeatureList.get("obfuscationShadowsocks").isSupported,
                 settingValue: MZSettings.Shadowsocks,
-                settingTitle: MZI18n.SettingsAntiCensorshipShadowsocksTitle,
-                settingDescription: MZI18n.SettingsAntiCensorshipShadowsocksBody,
+                settingTitle: MZI18n.SettingsFirewallBypassShadowsocksTitle,
+                settingDescription: MZI18n.SettingsFirewallBypassShadowsocksBody,
             }
         ];
 
@@ -78,7 +78,7 @@ ColumnLayout {
             spacing: MZTheme.theme.windowMargin
             Layout.rightMargin: MZTheme.theme.windowMargin / 2
             visible: modelData.visible
-            enabled: antiCensorshipFeaturesToggle.checked
+            enabled: firewallBypassFeaturesToggle.checked
 
             MZRadioButton {
                 objectName: modelData.objectName
@@ -86,11 +86,11 @@ ColumnLayout {
                 Layout.preferredWidth: MZTheme.theme.vSpacing
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignTop
-                checked: MZSettings.antiCensorshipPolicy == modelData.settingValue || MZSettings.lastAntiCensorshipPolicy == modelData.settingValue
+                checked: MZSettings.firewallBypassPolicy == modelData.settingValue || MZSettings.lastFirewallBypassPolicy == modelData.settingValue
                 accessibleName: `${modelData.settingTitle}. ${modelData.settingDescription}`
                 onClicked: () => {
-                    MZSettings.antiCensorshipPolicy = modelData.settingValue;
-                    MZSettings.lastAntiCensorshipPolicy = modelData.settingValue;
+                    MZSettings.firewallBypassPolicy = modelData.settingValue;
+                    MZSettings.lastFirewallBypassPolicy = modelData.settingValue;
                 }
             }
 
@@ -118,8 +118,8 @@ ColumnLayout {
                 width: Math.min(parent.implicitWidth, parent.width)
                 propagateClickToParent: false
                 onClicked: () => {
-                    MZSettings.antiCensorshipPolicy = modelData.settingValue;
-                    MZSettings.lastAntiCensorshipPolicy = modelData.settingValue;
+                    MZSettings.firewallBypassPolicy = modelData.settingValue;
+                    MZSettings.lastFirewallBypassPolicy = modelData.settingValue;
                 }
             }
         }

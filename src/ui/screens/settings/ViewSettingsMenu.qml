@@ -75,13 +75,13 @@ MZViewBase {
             }
 
             MZSettingsItem {
-                objectName: "antiCensorshipSettings"
-                settingTitle: MZI18n.SettingsAntiCensorshipSettings
+                objectName: "firewallBypassSettings"
+                settingTitle: MZI18n.SettingsFirewallBypassSettings
                 imageLeftSrc: MZAssetLookup.getImageSource("EyeHidden")
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/antiCensorship/ViewAntiCensorship.qml")
+                    stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/firewallBypass/ViewFirewallBypass.qml")
                 }
             }
 

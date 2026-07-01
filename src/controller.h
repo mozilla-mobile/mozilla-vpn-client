@@ -287,7 +287,7 @@ class Controller : public QObject, public LogSerializer {
   NextStep m_nextStep = None;
 
   void activateInternal(
-      SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy,
+      SettingsHolder::FirewallBypassPolicy firewallBypassPolicy,
       ServerSelectionPolicy serverSelectionPolicy, ActivationPrincipal);
 
   void clearRetryCounter();
@@ -296,7 +296,7 @@ class Controller : public QObject, public LogSerializer {
   void setError(ErrorCode code);
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
-  auto setupConfigs(SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy,
+  auto setupConfigs(SettingsHolder::FirewallBypassPolicy firewallBypassPolicy,
                     ServerSelectionPolicy serverSelectionPolicy);
   void maybeSendUpdatedConfig(const ServerData& serverData);
   QString useLocalSocketPath() const;

@@ -47,8 +47,8 @@ class SettingsHolder final : public QObject {
   };
   Q_ENUM(DNSProviderFlags)
 
-  enum AntiCensorshipPolicy {
-    NoAntiCensorship,
+  enum FirewallBypassPolicy {
+    NoFirewallBypass,
     Port53,
     LWO,
     LwoOverPort53,
@@ -56,7 +56,7 @@ class SettingsHolder final : public QObject {
     UdpOverTcp,
     Shadowsocks,
   };
-  Q_ENUM(AntiCensorshipPolicy)
+  Q_ENUM(FirewallBypassPolicy)
 
 #define SETTING(type, toType, getter, setter, remover, has, ...) \
   bool has() const { return m_##getter->isSet(); }               \

@@ -93,8 +93,8 @@ qt_add_qml_module(mozillavpn-ui
         screens/settings/ViewSettingsMenu.qml
         screens/settings/privacy/ViewPrivacy.qml
         screens/settings/privacy/PrivacyFeaturesList.qml
-        screens/settings/antiCensorship/ViewAntiCensorship.qml
-        screens/settings/antiCensorship/AntiCensorshipFeaturesList.qml
+        screens/settings/firewallBypass/ViewFirewallBypass.qml
+        screens/settings/firewallBypass/FirewallBypassFeaturesList.qml
         screens/subscriptionNeeded/ViewSubscriptionNeeded.qml
         sharedViews/ViewErrorFullScreen.qml
         sharedViews/ViewPermissionRequiredOSX.qml

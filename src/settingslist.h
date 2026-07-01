@@ -316,22 +316,22 @@ SETTING_STRINGLIST(missingApps,        // getter
 )
 
 SETTING_INT(
-    antiCensorshipPolicy,                                    // getter
-    setAntiCensorshipPolicy,                                 // setter
-    removeAntiCensorshipPolicy,                              // remover
-    hasAntiCensorshipPolicy,                                 // has
-    "antiCensorshipPolicy",                                  // key
-    SettingsHolder::AntiCensorshipPolicy::NoAntiCensorship,  // default value
+    firewallBypassPolicy,                                    // getter
+    setFirewallBypassPolicy,                                 // setter
+    removeFirewallBypassPolicy,                              // remover
+    hasFirewallBypassPolicy,                                 // has
+    "firewallBypassPolicy",                                  // key
+    SettingsHolder::FirewallBypassPolicy::NoFirewallBypass,  // default value
     false,  // remove when reset
     false   // sensitive (do not log)
 )
 
-SETTING_INT(lastAntiCensorshipPolicy,                      // getter
-            setLastAntiCensorshipPolicy,                   // setter
-            removeLastAntiCensorshipPolicy,                // remover
-            hasLastAntiCensorshipPolicy,                   // has
-            "lastAntiCensorshipPolicy",                    // key
-            SettingsHolder::AntiCensorshipPolicy::Port53,  // default value
+SETTING_INT(lastFirewallBypassPolicy,                      // getter
+            setLastFirewallBypassPolicy,                   // setter
+            removeLastFirewallBypassPolicy,                // remover
+            hasLastFirewallBypassPolicy,                   // has
+            "lastFirewallBypassPolicy",                    // key
+            SettingsHolder::FirewallBypassPolicy::Port53,  // default value
             false,                                         // remove when reset
             false  // sensitive (do not log)
 )
