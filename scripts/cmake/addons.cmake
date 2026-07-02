@@ -95,7 +95,7 @@ function(add_addon_target NAME)
     # latest "update" addon to derive from. Subset targets (e.g. the functional
     # test addons) don't, and the adjustment also needs ADDON_SOURCE_DIR, which
     # isn't set when building from an explicit SOURCES list.
-    if(LATEST_UPDATE_MANIFEST)
+    if(LATEST_UPDATE_MANIFEST AND ADDON_SOURCE_DIR)
         set(DEFAULT_UPDATE_SRC_DIR ${ADDON_SOURCE_DIR}/message_update_default)
         set(DEFAULT_UPDATE_GEN_PARENT ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_generated)
         set(DEFAULT_UPDATE_GEN_DIR ${DEFAULT_UPDATE_GEN_PARENT}/message_update_default)
