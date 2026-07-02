@@ -542,6 +542,9 @@ connectionInfo:
   rotateIPAddress:
     value: Attempt to change IP address
     comment: Accessible label for the button to try to get a new server in the same location
+  loading:
+    value: Loading
+    comment: Label when currently loading new information
 
 crashreporter:
   mainTitle:

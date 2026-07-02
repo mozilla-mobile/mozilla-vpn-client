@@ -44,14 +44,8 @@ void IpAddressLookup::reset() {
   logger.debug() << "Resetting the data";
 
   if (m_state != StateWaiting) {
-    // VPN-7659: On iOS and Android, we need to ensure the Localizer
-    // is initialized before setting it to the loading string ID.
-    Localizer::instance();
-
-    //% "Loading"
-    //: This refers to the current IP address, i.e. "IP: Loading".
-    m_ipv4Address = qtTrId("vpn.connectionInfo.loading");
-    m_ipv6Address = qtTrId("vpn.connectionInfo.loading");
+    m_ipv4Address = "";
+    m_ipv6Address = "";
 
     setLookupState(StateWaiting);
     emit ipv4AddressChanged();

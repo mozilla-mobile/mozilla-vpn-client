@@ -31,14 +31,13 @@ void TestIpAddressLookup::checkIpAddressSucceess_data() {
   QTest::addColumn<QString>("ipAddress");
   QTest::addColumn<bool>("signal");
 
-  QTest::addRow("invalid") << QByteArray("") << "Loading" << false;
+  QTest::addRow("invalid") << QByteArray("") << "" << false;
 
   QJsonObject json;
-  QTest::addRow("empty") << QJsonDocument(json).toJson() << "Loading" << false;
+  QTest::addRow("empty") << QJsonDocument(json).toJson() << "" << false;
 
   json.insert("ip", 42);
-  QTest::addRow("invalid ip")
-      << QJsonDocument(json).toJson() << "Loading" << false;
+  QTest::addRow("invalid ip") << QJsonDocument(json).toJson() << "" << false;
 
   json.insert("ip", "42");
   QTest::addRow("valid ip") << QJsonDocument(json).toJson() << "42" << true;
