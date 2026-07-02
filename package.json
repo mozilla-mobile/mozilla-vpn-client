@@ -7,13 +7,13 @@
     "wasm:dev": "node tests/functional/wasm.js"
   },
   "devDependencies": {
-    "body-parser": "^2.2.2",
+    "body-parser": "^2.3.0",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonschema": "^1.5.0",
     "mocha": "^11.7.6",
-    "selenium-webdriver": "^4.44.0",
+    "selenium-webdriver": "^4.45.0",
     "websocket": "^1.0.35"
   }
 }
