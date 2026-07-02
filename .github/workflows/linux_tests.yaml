@@ -49,14 +49,14 @@ jobs:
       - run: pip install -r requirements.txt
 
       - name: Setup compiler cache
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: ~/.cache/ccache
           key: ccache-linux-${{ runner.arch }}-${{ github.sha }}
           restore-keys: ccache-linux-${{ runner.arch }}-${{ github.event.pull_request.base.sha }}
 
       - name: Fetch cached rust crates
-        uses: actions/cache/restore@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
           path: 3rdparty/cargo-vendor
           key: cargo-vendor-${{ hashFiles('Cargo.lock') }}
