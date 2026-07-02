@@ -96,6 +96,10 @@ function(add_addon_target NAME)
     # test addons) don't, and the adjustment also needs ADDON_SOURCE_DIR, which
     # isn't set when building from an explicit SOURCES list.
     if(LATEST_UPDATE_MANIFEST)
+        set(DEFAULT_UPDATE_SRC_DIR ${ADDON_SOURCE_DIR}/message_update_default)
+        set(DEFAULT_UPDATE_GEN_PARENT ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_generated)
+        set(DEFAULT_UPDATE_GEN_DIR ${DEFAULT_UPDATE_GEN_PARENT}/message_update_default)
+
         # Future todo: Ensure that all non-manifest files are identical-ish between latest update message and default update message,
         # to ensure we keep default's js files up-to-date.
 
@@ -109,15 +113,28 @@ function(add_addon_target NAME)
         )
         message(STATUS "Skipped locales file: ${ADDON_OUTPUT_DIR}/locales_skipped.txt")
 
+
+        # Create a build-tree copy of the default update addon and adjust
         # Get date, max_client_version, and short_version lines in latest file
         # copy these 4 things to appropriate spot in default file
+        # The shared strings.yaml is copied alongside the generated addon dir because
+        # translate.py resolves it as "<manifest_dir>/../strings.yaml".
+        file(GLOB DEFAULT_UPDATE_SRC_FILES ${DEFAULT_UPDATE_SRC_DIR}/*)
         add_custom_command(
-            OUTPUT ${ADDON_SOURCE_DIR}/message_update_default/manifest.json
-            DEPENDS ${ADDON_OUTPUT_DIR}/locales_skipped.txt
+            OUTPUT ${DEFAULT_UPDATE_GEN_DIR}/manifest.json
+            DEPENDS ${DEFAULT_UPDATE_SRC_FILES} ${ADDON_SOURCE_DIR}/strings.yaml ${ADDON_OUTPUT_DIR}/locales_skipped.txt
+            COMMAND ${CMAKE_COMMAND} -E copy_directory ${DEFAULT_UPDATE_SRC_DIR} ${DEFAULT_UPDATE_GEN_DIR}
+            COMMAND ${CMAKE_COMMAND} -E copy ${ADDON_SOURCE_DIR}/strings.yaml ${DEFAULT_UPDATE_GEN_PARENT}/strings.yaml
             COMMAND ${PYTHON_EXECUTABLE} ${ADDON_SCRIPT_DIR}/adjust_default_update_addon.py
-                        ${LATEST_UPDATE_MANIFEST} ${ADDON_SOURCE_DIR}/message_update_default/manifest.json ${ADDON_OUTPUT_DIR}/locales_skipped.txt
+                        ${LATEST_UPDATE_MANIFEST} ${DEFAULT_UPDATE_GEN_DIR}/manifest.json ${ADDON_OUTPUT_DIR}/locales_skipped.txt
         )
-        message(STATUS "Default update addon has been adjusted")
+        message(STATUS "Default update addon generated at: ${DEFAULT_UPDATE_GEN_DIR}/manifest.json")
+
+        file(COPY ${DEFAULT_UPDATE_SRC_DIR}/manifest.json DESTINATION ${DEFAULT_UPDATE_GEN_DIR})
+
+        # Replace the placeholder manifest with the generated one.
+        list(REMOVE_ITEM ADDON_SOURCES ${DEFAULT_UPDATE_SRC_DIR}/manifest.json)
+        list(APPEND ADDON_SOURCES ${DEFAULT_UPDATE_GEN_DIR}/manifest.json)
     endif()
 
     # Add commands to build the addons
