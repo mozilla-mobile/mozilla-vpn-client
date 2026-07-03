@@ -20,7 +20,6 @@ class QProcessObfuscator final : public Obfuscator {
   quint16 localPort() const override { return m_localPort; }
 
  private:
-  bool isRunning() const { return m_process.state() != QProcess::NotRunning; }
   quint16 parseListeningPort(const QByteArray& line) const;
   QStringList buildArgs(const InterfaceConfig& config);
   QString binaryName() const;
