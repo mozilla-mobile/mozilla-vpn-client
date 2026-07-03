@@ -12,8 +12,8 @@
 
 class QJsonObject;
 
-class Server final : public QObject {
-  Q_OBJECT
+class Server final {
+  Q_GADGET
 
  public:
   Server();
