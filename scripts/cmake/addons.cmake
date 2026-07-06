@@ -96,8 +96,12 @@ function(add_addon_target NAME)
     # test addons) don't, and the adjustment also needs ADDON_SOURCE_DIR, which
     # isn't set when building from an explicit SOURCES list.
     if(LATEST_UPDATE_MANIFEST AND ADDON_SOURCE_DIR)
+        # Must live outside ADDON_SOURCE_DIR, and CMAKE_CURRENT_BINARY_DIR is
+        # ADDON_SOURCE_DIR here. Since this is CONFIGURE_DEPENDS glob and
+        # CMAKE_CURRENT_BINARY_DIR is inside the globbed directory, a generated
+        # manifest would trip VerifyGlobs and force an endless reconfigure.
+        set(DEFAULT_UPDATE_GEN_PARENT ${CMAKE_BINARY_DIR}/addons_generated/${NAME})
         set(DEFAULT_UPDATE_SRC_DIR ${ADDON_SOURCE_DIR}/message_update_default)
-        set(DEFAULT_UPDATE_GEN_PARENT ${CMAKE_CURRENT_BINARY_DIR}/${NAME}_generated)
         set(DEFAULT_UPDATE_GEN_DIR ${DEFAULT_UPDATE_GEN_PARENT}/message_update_default)
 
         # Future todo: Ensure that all non-manifest files are identical-ish between latest update message and default update message,
