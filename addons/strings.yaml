@@ -236,10 +236,19 @@ commonStrings:
     value: "[iOS] When on Airplane Mode, trying to start the VPN gives an error. However if starting via Siri or Shortcuts, the VPN would be turned on after Airplane Mode was deactivated. This no longer happens."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to iOS platform.
 
-#2026q3:
+# Has not been used yet (from above)
+# 237updateMessage.bullet1
+
+2026q3:
   # vpn7655:
     # value: This is an example. Draft a release note for your feature. It's ID should be the Jira issue. Please leave it as comment to allow for edits.
     # comment: Bullet point with a specific update. Should have tag that indicates it applies to [all/iOS/Linux/whichever] platform.
+  vpn7646: # Used in 2.39
+    value: "[iOS] Even more widgets are now available! Lock screen widgets are included in this release."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to iOS platform.
+  pr11382: # No Jira ticket, so using PR for identifier. Used in 2.39
+    value: "[macOS] Improved logging of some errors, allowing easier diagnoses of problems."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to macOS platform.
 
 tryFirefoxExtension:
   title:
