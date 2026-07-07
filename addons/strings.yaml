@@ -247,7 +247,7 @@ commonStrings:
     value: "[iOS] Even more widgets are now available! Lock screen widgets are included in this release."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to iOS platform.
   pr11382: # No Jira ticket, so using PR for identifier. Used in 2.39
-    value: "[macOS] Improved logging of some errors, allowing easier diagnoses of problems."
+    value: "[macOS] Improved logging of some errors, allowing easier diagnosis of problems."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to macOS platform.
 
 tryFirefoxExtension:
