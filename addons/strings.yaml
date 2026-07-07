@@ -244,7 +244,7 @@ commonStrings:
     # value: This is an example. Draft a release note for your feature. It's ID should be the Jira issue. Please leave it as comment to allow for edits.
     # comment: Bullet point with a specific update. Should have tag that indicates it applies to [all/iOS/Linux/whichever] platform.
   vpn7646: # Used in 2.39
-    value: "[iOS] Even more widgets are now available! Lock screen widgets are included in this release."
+    value: "[iOS] Even more widgets are now available! Lock Screen widgets are included in this release."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to iOS platform.
   pr11382: # No Jira ticket, so using PR for identifier. Used in 2.39
     value: "[macOS] Improved logging of some errors, allowing easier diagnosis of problems."
