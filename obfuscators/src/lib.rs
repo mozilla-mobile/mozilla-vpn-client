@@ -13,9 +13,10 @@ pub mod factory;
 mod logger;
 #[allow(dead_code)]
 mod obfuscator;
+mod lwo;
 mod udp_over_tcp;
 
-pub use obfuscator::{Config, ObfuscationMethod, Obfuscator, ObfuscatorConfig};
+pub use obfuscator::{Config, LwoVersion, ObfuscationMethod, Obfuscator, ObfuscatorConfig};
 
 /// Opaque handle held by the JNA caller.
 /// Owns the runner thread and the shutdown flag dropping it stops the obfuscator.
@@ -51,6 +52,7 @@ pub unsafe extern "C" fn obfuscator_start(
     let local_port = obf.local_port();
     let socket_v4 = obf.socket_v4();
     let socket_v6 = obf.socket_v6();
+
 
     let shutdown = Arc::new(AtomicBool::new(false));
     let shutdown_run = Arc::clone(&shutdown);

@@ -482,6 +482,7 @@ dependencies = [
  "base64",
  "clap",
  "log",
+ "nix",
  "once_cell",
  "rand",
  "tokio",
