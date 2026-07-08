@@ -40,6 +40,8 @@ Server& Server::operator=(const Server& other) {
   m_multihopPort = other.m_multihopPort;
   m_countryCode = other.m_countryCode;
   m_cityName = other.m_cityName;
+  m_supportsLwoV1 = other.m_supportsLwoV1;
+  m_supportsLwoV2 = other.m_supportsLwoV2;
 
   return *this;
 }
@@ -115,6 +117,20 @@ bool Server::fromJson(const QJsonObject& obj) {
     prList.append(QPair<uint32_t, uint32_t>(a.toInt(), b.toInt()));
   }
 
+  // Server features / obfuscation methods
+  QJsonValue features = obj.value("features");
+  if (features.isObject()) {
+    QJsonObject featuresObj = features.toObject();
+    QJsonValue supportsLWOv1 = featuresObj.value("lwo");
+    if (supportsLWOv1.isObject()) {
+      m_supportsLwoV1 = true;
+    }
+    QJsonValue supportsLWOv2 = featuresObj.value("lwo_v2");
+    if (supportsLWOv2.isObject()) {
+      m_supportsLwoV2 = true;
+    }
+  }
+
   m_hostname = hostname.toString();
   m_ipv4AddrIn = ipv4AddrIn.toString();
   m_ipv4Gateway = ipv4Gateway.toString();
@@ -155,7 +171,7 @@ bool Server::supportObfuscationMethod(const ObfuscationMethod method) const {
     case UdpOverTcp:
       return true;
     case LWO:
-      [[fallthrough]];
+      return m_supportsLwoV1 || m_supportsLwoV2;
     case Masque:
       [[fallthrough]];
     case Shadowsocks:

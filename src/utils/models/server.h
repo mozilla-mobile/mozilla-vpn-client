@@ -68,6 +68,8 @@ class Server final {
 
   const QString& cityName() const { return m_cityName; }
 
+  bool supportsLwoV2() const { return m_supportsLwoV2; }
+
   bool forcePort(uint32_t port);
 
   bool operator==(const Server& other) const {
@@ -97,6 +99,8 @@ class Server final {
   uint32_t m_multihopPort = 0;
   QString m_countryCode;
   QString m_cityName;
+  bool m_supportsLwoV1 = false;
+  bool m_supportsLwoV2 = false;
 };
 
 #endif  // SERVER_H
