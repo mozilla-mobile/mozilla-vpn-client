@@ -14,7 +14,6 @@ use base64::Engine;
 
 pub const WG_KEY_LEN: usize = 32;
 
-
 /// An obfuscator is a self-contained proxy. Implementations bind their own
 /// sockets in their constructor, expose the bound port + outbound socket FDs.
 pub trait Obfuscator: Send {
@@ -61,6 +60,24 @@ impl ObfuscationMethod {
     }
 }
 
+/// LWO protocol version. Ignored by non-LWO obfuscation methods
+#[repr(u32)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum LwoVersion {
+    V1 = 1,
+    V2 = 2,
+}
+
+impl LwoVersion {
+    /// Map the JNA-supplied flag to a version, defaulting to v1 for unknown values.
+    pub fn from_u32(v: u32) -> Self {
+        match v {
+            2 => Self::V2,
+            _ => Self::V1,
+        }
+    }
+}
+
 /// C-ABI view: what the JNA caller actually fills in and passes across the FFI.
 #[repr(C)]
 pub struct ObfuscatorConfig {
@@ -74,8 +91,9 @@ pub struct ObfuscatorConfig {
     // Wireguard keys required by LWO
     pub server_public_key: *const c_char,
     pub public_key: *const c_char,
-    #[cfg(target_os = "linux")]
-    pub fwmark: u32,
+    /// LWO protocol version (1 or 2). Ignored by non-LWO methods
+    /// unknown values fall back to v1.
+    pub lwo_version: u32,
 }
 
 /// Safe Rust mirror used inside the crate.
@@ -88,12 +106,13 @@ pub struct Config {
     pub server_port: u16,
     pub listen_port: u16,
     pub server_public_key: Option<[u8; WG_KEY_LEN]>,
+    pub lwo_version: LwoVersion,
     #[cfg(target_os = "linux")]
     pub fwmark: Option<u32>,
 }
 
 impl Config {
-    /// Convert a C struct from C++ into a safe Rust value.
+    /// Convert the C-ABI struct passed by the JNA caller into a safe Rust value.
     /// Returns None in case of error: obfuscation method is unknown, the port is zero, or both addresses are missing / unparseable.
     pub unsafe fn from_c(cfg: *const ObfuscatorConfig) -> Option<Self> {
         if cfg.is_null() {
@@ -120,8 +139,9 @@ impl Config {
             server_port: cfg.server_port,
             listen_port: cfg.listen_port,
             server_public_key,
+            lwo_version: LwoVersion::from_u32(cfg.lwo_version),
             #[cfg(target_os = "linux")]
-            fwmark: if cfg.fwmark == 0 { None } else { Some(cfg.fwmark) },
+            fwmark: None,
         })
     }
 

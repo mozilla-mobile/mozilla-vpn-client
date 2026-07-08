@@ -11,7 +11,7 @@ use std::time::Duration;
 use tokio::runtime::Runtime;
 use udp_over_tcp::{TcpOptions, Udp2Tcp};
 
-use crate::obfuscator::{Obfuscator, Config};
+use crate::obfuscator::{Config, Obfuscator};
 
 const SHUTDOWN_POLL: Duration = Duration::from_millis(200);
 
