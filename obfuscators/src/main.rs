@@ -9,7 +9,7 @@ use std::sync::atomic::AtomicBool;
 use std::sync::Arc;
 
 use base64::Engine;
-use clap::{Parser, Subcommand, ValueEnum};
+use clap::{Args, Parser, Subcommand, ValueEnum};
 
 use obfuscators::factory::create_obfuscator;
 use obfuscators::{Config, LwoVersion, ObfuscationMethod};
@@ -21,38 +21,36 @@ use obfuscators::{Config, LwoVersion, ObfuscationMethod};
     version
 )]
 struct Cli {
+    #[command(flatten)]
+    common: CommonArgs,
     #[command(subcommand)]
     obfuscator: Obfuscator,
+}
+
+/// Common arguments specified before the obfuscator name,
+#[derive(Args)]
+struct CommonArgs {
+    /// Server IPv4 or IPv6 address.
+    #[arg(short, long)]
+    server: IpAddr,
+    /// Server port.
+    #[arg(short, long, value_parser = parse_nonzero_port)]
+    port: u16,
+    /// Local UDP port to listen on (127.0.0.1). Defaults to OS-assigned.
+    #[arg(short, long, value_parser = parse_nonzero_port)]
+    listen_port: Option<u16>,
+    /// Fwmark applied to the obfuscator's outbound socket (Linux only).
+    #[cfg(target_os = "linux")]
+    #[arg(long)]
+    fwmark: Option<u32>,
 }
 
 #[derive(Subcommand)]
 enum Obfuscator {
     /// Tunnel WireGuard UDP through a TCP stream.
-    UdpOverTcp {
-        /// Server IPv4 or IPv6 address.
-        #[arg(short, long)]
-        server: IpAddr,
-        /// Server TCP port.
-        #[arg(short, long, value_parser = parse_nonzero_port)]
-        port: u16,
-        /// Local UDP port to listen on (127.0.0.1). Defaults to OS-assigned.
-        #[arg(short, long, value_parser = parse_nonzero_port)]
-        listen_port: Option<u16>,
-        /// Fwmark
-        #[arg(long)]
-        fwmark: Option<u32>,
-    },
+    UdpOverTcp,
     /// Obfuscate WireGuard UDP with Lightweight Obfuscation (LWO).
     Lwo {
-        /// Server IPv4 or IPv6 address.
-        #[arg(short, long)]
-        server: IpAddr,
-        /// Server UDP port.
-        #[arg(short, long, value_parser = parse_nonzero_port)]
-        port: u16,
-        /// Local UDP port to listen on (127.0.0.1). Defaults to OS-assigned.
-        #[arg(short, long, value_parser = parse_nonzero_port)]
-        listen_port: Option<u16>,
         /// Server WireGuard public key (base64). Required by LWO.
         #[arg(long, value_parser = parse_wg_key)]
         server_public_key: [u8; 32],
@@ -62,9 +60,6 @@ enum Obfuscator {
         /// LWO protocol version.
         #[arg(long, value_enum, default_value_t = LwoVersionArg::V1)]
         lwo_version: LwoVersionArg,
-        /// Fwmark
-        #[arg(long)]
-        fwmark: Option<u32>,
     },
 }
 
@@ -105,54 +100,47 @@ fn main() -> ExitCode {
     let cli = Cli::parse();
     obfuscators::obfuscators_set_log_handler(log_to_stderr);
 
+    let CommonArgs {
+        server,
+        port,
+        listen_port,
+        #[cfg(target_os = "linux")]
+        fwmark,
+    } = cli.common;
+    let (server_ipv4, server_ipv6) = match server {
+        IpAddr::V4(v4) => (Some(v4), None),
+        IpAddr::V6(v6) => (None, Some(v6)),
+    };
+
     let cfg = match cli.obfuscator {
-        Obfuscator::UdpOverTcp {
-            server,
-            port,
-            listen_port,
+        Obfuscator::UdpOverTcp => Config {
+            method: ObfuscationMethod::UdpOverTcp,
+            public_key: None,
+            server_ipv4,
+            server_ipv6,
+            server_port: port,
+            listen_port: listen_port.unwrap_or(0),
+            server_public_key: None,
+            lwo_version: LwoVersion::V1,
+            #[cfg(target_os = "linux")]
             fwmark,
-        } => {
-            let (server_ipv4, server_ipv6) = match server {
-                IpAddr::V4(v4) => (Some(v4), None),
-                IpAddr::V6(v6) => (None, Some(v6)),
-            };
-            Config {
-                method: ObfuscationMethod::UdpOverTcp,
-                public_key: None,
-                server_ipv4,
-                server_ipv6,
-                server_port: port,
-                listen_port: listen_port.unwrap_or(0),
-                server_public_key: None,
-                lwo_version: LwoVersion::V1,
-                fwmark,
-            }
-        }
+        },
         Obfuscator::Lwo {
-            server,
-            port,
-            listen_port,
             server_public_key,
             public_key,
             lwo_version,
+        } => Config {
+            method: ObfuscationMethod::Lwo,
+            public_key,
+            server_ipv4,
+            server_ipv6,
+            server_port: port,
+            listen_port: listen_port.unwrap_or(0),
+            server_public_key: Some(server_public_key),
+            lwo_version: lwo_version.into(),
+            #[cfg(target_os = "linux")]
             fwmark,
-        } => {
-            let (server_ipv4, server_ipv6) = match server {
-                IpAddr::V4(v4) => (Some(v4), None),
-                IpAddr::V6(v6) => (None, Some(v6)),
-            };
-            Config {
-                method: ObfuscationMethod::Lwo,
-                public_key,
-                server_ipv4,
-                server_ipv6,
-                server_port: port,
-                listen_port: listen_port.unwrap_or(0),
-                server_public_key: Some(server_public_key),
-                lwo_version: lwo_version.into(),
-                fwmark,
-            }
-        }
+        },
     };
 
     let mut obf = match create_obfuscator(&cfg) {
