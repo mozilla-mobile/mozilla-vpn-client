@@ -66,6 +66,7 @@ class Obfuscator private constructor(
             "listen_port",
             "server_public_key",
             "public_key",
+            "lwo_version",
         )
         open class Config : Structure() {
             @JvmField var obfuscation_method: Int = 0
@@ -75,6 +76,7 @@ class Obfuscator private constructor(
             @JvmField var listen_port: Short = 0
             @JvmField var server_public_key: String? = null
             @JvmField var public_key: String? = null
+            @JvmField var lwo_version: Int = 1
 
             class ByReference : Config(), Structure.ByReference
         }
@@ -123,6 +125,7 @@ class Obfuscator private constructor(
             serverPort: Int,
             serverPublicKey: String? = null,
             publicKey: String? = null,
+            lwoVersion: Int = 1,
         ): Obfuscator? {
             val cfg = Config.ByReference().apply {
                 this.obfuscation_method = method.value
@@ -131,6 +134,7 @@ class Obfuscator private constructor(
                 this.server_port = serverPort.toShort()
                 this.server_public_key = serverPublicKey
                 this.public_key = publicKey
+                this.lwo_version = lwoVersion
             }
             val handle = LIB.obfuscator_start(cfg) ?: return null
             val localPort = LIB.obfuscator_local_port(handle).toInt() and 0xFFFF

@@ -75,6 +75,15 @@ class VPNService : android.net.VpnService() {
             return
         }
         Log.init(this)
+        // Route logs from the Rust obfuscator
+        // Levels mirror obfuscators/src/logger.rs: 4=Error, 3=Warn, 2=Info, 1=Debug, 0=Trace
+        Obfuscator.setLogHandler { level, message ->
+            when (level) {
+                4, 3 -> Log.e("Obfuscator", message)
+                2 -> Log.i("Obfuscator", message)
+                else -> Log.v("Obfuscator", message)
+            }
+        }
         // No need to load the library here; WireGuardGo does it statically.
         Log.i(tag, "Initialised Service with Wireguard Version ${WireGuardGo.wgVersion()}")
 
@@ -241,6 +250,7 @@ class VPNService : android.net.VpnService() {
                 serverPort = jServer.getInt("port"),
                 serverPublicKey = jServer.optString("publicKey").ifEmpty { null },
                 publicKey = json.optJSONObject("device")?.optString("publicKey")?.ifEmpty { null },
+                lwoVersion = json.optInt("lwoVersion", 1)
             ) ?: throw Error("Failed to start obfuscator method: $obfuscationMethod")
             Log.i(tag, "Obfuscator '$obfuscationMethod' listening on 127.0.0.1:${r.localPort}")
             r
