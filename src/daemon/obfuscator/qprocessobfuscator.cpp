@@ -100,6 +100,13 @@ QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config) {
     case Server::ObfuscationMethod::UdpOverTcp:
       args << QStringLiteral("udp-over-tcp");
       break;
+    case Server::ObfuscationMethod::LWO:
+      args << QStringLiteral("lwo");
+      args << QStringLiteral("--lwo-version")
+           << QStringLiteral("v%1").arg(config.m_lwoVersion);
+      args << QStringLiteral("--public-key") << config.m_publicKey;
+      args << QStringLiteral("--server-public-key") << config.m_serverPublicKey;
+      break;
     default:
       return {};
   }
