@@ -2,18 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
+use logger::Logger;
 use std::os::raw::c_char;
 use std::ptr;
 use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Arc;
 use std::thread::{self, JoinHandle};
-use logger::Logger;
 
 pub mod factory;
 mod logger;
+mod lwo;
 #[allow(dead_code)]
 mod obfuscator;
-mod lwo;
 mod udp_over_tcp;
 
 pub use obfuscator::{Config, LwoVersion, ObfuscationMethod, Obfuscator, ObfuscatorConfig};
@@ -38,9 +38,7 @@ impl Drop for ObfuscatorHandle {
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn obfuscator_start(
-    cfg: *const ObfuscatorConfig,
-) -> *mut ObfuscatorHandle {
+pub unsafe extern "C" fn obfuscator_start(cfg: *const ObfuscatorConfig) -> *mut ObfuscatorHandle {
     let Some(cfg) = Config::from_c(cfg) else {
         return ptr::null_mut();
     };
@@ -52,7 +50,6 @@ pub unsafe extern "C" fn obfuscator_start(
     let local_port = obf.local_port();
     let socket_v4 = obf.socket_v4();
     let socket_v6 = obf.socket_v6();
-
 
     let shutdown = Arc::new(AtomicBool::new(false));
     let shutdown_run = Arc::clone(&shutdown);
@@ -73,9 +70,7 @@ pub unsafe extern "C" fn obfuscator_start(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn obfuscator_local_port(
-    handle: *const ObfuscatorHandle,
-) -> u16 {
+pub unsafe extern "C" fn obfuscator_local_port(handle: *const ObfuscatorHandle) -> u16 {
     if handle.is_null() {
         return 0;
     }
@@ -83,20 +78,15 @@ pub unsafe extern "C" fn obfuscator_local_port(
 }
 
 #[no_mangle]
-pub unsafe extern "C" fn obfuscator_socket_v4(
-    handle: *const ObfuscatorHandle,
-) -> i32 {
+pub unsafe extern "C" fn obfuscator_socket_v4(handle: *const ObfuscatorHandle) -> i32 {
     if handle.is_null() {
         return -1;
     }
     (*handle).socket_v4
 }
 
-
 #[no_mangle]
-pub unsafe extern "C" fn obfuscator_socket_v6(
-    handle: *const ObfuscatorHandle,
-) -> i32 {
+pub unsafe extern "C" fn obfuscator_socket_v6(handle: *const ObfuscatorHandle) -> i32 {
     if handle.is_null() {
         return -1;
     }
@@ -112,6 +102,6 @@ pub unsafe extern "C" fn obfuscator_stop(handle: *mut ObfuscatorHandle) {
 }
 
 #[no_mangle]
-pub extern "C" fn obfuscators_set_log_handler(message_handler: extern "C" fn(i32, *mut c_char)){
+pub extern "C" fn obfuscators_set_log_handler(message_handler: extern "C" fn(i32, *mut c_char)) {
     Logger::init(message_handler);
 }

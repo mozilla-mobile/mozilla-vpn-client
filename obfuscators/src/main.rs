@@ -106,7 +106,12 @@ fn main() -> ExitCode {
     obfuscators::obfuscators_set_log_handler(log_to_stderr);
 
     let cfg = match cli.obfuscator {
-        Obfuscator::UdpOverTcp { server, port, listen_port, fwmark } => {
+        Obfuscator::UdpOverTcp {
+            server,
+            port,
+            listen_port,
+            fwmark,
+        } => {
             let (server_ipv4, server_ipv6) = match server {
                 IpAddr::V4(v4) => (Some(v4), None),
                 IpAddr::V6(v6) => (None, Some(v6)),

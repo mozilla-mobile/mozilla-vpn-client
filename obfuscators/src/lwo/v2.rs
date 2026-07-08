@@ -2,13 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-
 /// The LWO v2 spec also jitters selected WireGuard timers
 /// (keepalive, rekey, retransmit). That is intentionally not done
 /// here: this obfuscator is a userspace UDP proxy and does not drive
 /// the WireGuard state machine, so it cannot adjust those timers.
 /// Only the packet obfuscation is applied.
-
 use std::sync::Arc;
 
 use rand::rngs::OsRng;
@@ -16,11 +14,16 @@ use rand::RngCore;
 use tokio::net::UdpSocket;
 
 use super::{
-    MessageType, WgAddr, DATA, HANDSHAKE_INIT, HANDSHAKE_INIT_SZ, HANDSHAKE_RESP, HANDSHAKE_RESP_SZ,
-    MAX_PACKET,
+    MessageType, WgAddr, DATA, HANDSHAKE_INIT, HANDSHAKE_INIT_SZ, HANDSHAKE_RESP,
+    HANDSHAKE_RESP_SZ, MAX_PACKET,
 };
 
-pub async fn outbound(local: Arc<UdpSocket>, remote: Arc<UdpSocket>, wg_addr: WgAddr, key: [u8; 32]) {
+pub async fn outbound(
+    local: Arc<UdpSocket>,
+    remote: Arc<UdpSocket>,
+    wg_addr: WgAddr,
+    key: [u8; 32],
+) {
     let mut buf = vec![0u8; MAX_PACKET];
     let mut rng = OsRng;
     loop {
@@ -33,7 +36,12 @@ pub async fn outbound(local: Arc<UdpSocket>, remote: Arc<UdpSocket>, wg_addr: Wg
     }
 }
 
-pub async fn inbound(local: Arc<UdpSocket>, remote: Arc<UdpSocket>, wg_addr: WgAddr, key: [u8; 32]) {
+pub async fn inbound(
+    local: Arc<UdpSocket>,
+    remote: Arc<UdpSocket>,
+    wg_addr: WgAddr,
+    key: [u8; 32],
+) {
     let mut buf = vec![0u8; MAX_PACKET];
     loop {
         let Ok(n) = remote.recv(&mut buf).await else {
@@ -225,7 +233,10 @@ mod tests {
         let sent = obfuscate(&mut OsRng, &mut buf, len, &key);
         assert_eq!(sent, len, "data packets are not padded");
         assert_eq!(buf[1] & V2_MARKER_MASK, V2_MARKER);
-        assert_ne!(&buf[..DATA_PROTECTED_SZ_V2], &original[..DATA_PROTECTED_SZ_V2]);
+        assert_ne!(
+            &buf[..DATA_PROTECTED_SZ_V2],
+            &original[..DATA_PROTECTED_SZ_V2]
+        );
 
         let out = deobfuscate(&mut buf, sent, &key).expect("must forward");
         assert_eq!(out, len);
@@ -243,7 +254,11 @@ mod tests {
 
         let sent = obfuscate(&mut OsRng, &mut buf, COOKIE_REPLY_SZ, &key);
         assert_eq!(sent, COOKIE_REPLY_SZ);
-        assert_eq!(&buf[..COOKIE_REPLY_SZ], &before[..], "cookie reply untouched");
+        assert_eq!(
+            &buf[..COOKIE_REPLY_SZ],
+            &before[..],
+            "cookie reply untouched"
+        );
 
         // A plain packet whose byte 1 lacks the marker passes through on receive.
         let out = deobfuscate(&mut buf, COOKIE_REPLY_SZ, &key).expect("pass through");

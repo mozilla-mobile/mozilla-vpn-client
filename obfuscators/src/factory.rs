@@ -4,7 +4,7 @@
 
 use std::io;
 
-use crate::obfuscator::{Config, Obfuscator, ObfuscationMethod};
+use crate::obfuscator::{Config, ObfuscationMethod, Obfuscator};
 
 use crate::lwo::LwoObfuscator;
 use crate::udp_over_tcp::UdpOverTcpObfuscator;

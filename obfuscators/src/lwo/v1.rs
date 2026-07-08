@@ -18,7 +18,12 @@ use super::{
 /// Bit to set in the second byte of the WG header to enable LWO
 const OBFUSCATION_BIT: u8 = 0b10000000;
 
-pub async fn outbound(local: Arc<UdpSocket>, remote: Arc<UdpSocket>, wg_addr: WgAddr, key: [u8; 32]) {
+pub async fn outbound(
+    local: Arc<UdpSocket>,
+    remote: Arc<UdpSocket>,
+    wg_addr: WgAddr,
+    key: [u8; 32],
+) {
     let mut buf = vec![0u8; MAX_PACKET];
     let mut rng = OsRng;
     loop {
@@ -31,7 +36,12 @@ pub async fn outbound(local: Arc<UdpSocket>, remote: Arc<UdpSocket>, wg_addr: Wg
     }
 }
 
-pub async fn inbound(local: Arc<UdpSocket>, remote: Arc<UdpSocket>, wg_addr: WgAddr, key: [u8; 32]) {
+pub async fn inbound(
+    local: Arc<UdpSocket>,
+    remote: Arc<UdpSocket>,
+    wg_addr: WgAddr,
+    key: [u8; 32],
+) {
     let mut buf = vec![0u8; MAX_PACKET];
     loop {
         let Ok(n) = remote.recv(&mut buf).await else {
@@ -58,7 +68,6 @@ pub fn obfuscate(rng: &mut impl RngCore, packet: &mut [u8], key: &[u8; 32]) {
     // Generate 7 random bits and set the MSB to mark the packet
     header[1] = (rng.next_u32() as u8 & 0x7F) | OBFUSCATION_BIT;
 }
-
 
 pub fn deobfuscate(packet: &mut [u8], key: &[u8; 32]) {
     log::info!("Deobfuscating packet of size {}", packet.len());
@@ -99,7 +108,6 @@ fn resolve_packet_header<'a>(pkt: &'a mut [u8], seed: u8) -> Option<&'a mut [u8]
     pkt.get_mut(..expected_len)
 }
 
-
 fn apply_cyclic_xor(buf: &mut [u8], key: &[u8; 32]) {
     for (b, k) in buf.iter_mut().zip(key.iter().cycle()) {
         *b ^= *k;
@@ -139,7 +147,11 @@ mod tests {
         let mut buf = original.clone();
 
         obfuscate(&mut OsRng, &mut buf, &key);
-        assert_ne!(&buf[..HANDSHAKE_INIT_SZ], &original[..], "header obfuscated");
+        assert_ne!(
+            &buf[..HANDSHAKE_INIT_SZ],
+            &original[..],
+            "header obfuscated"
+        );
         assert_ne!(buf[1] & OBFUSCATION_BIT, 0, "marker bit set");
 
         deobfuscate(&mut buf, &key);
@@ -189,7 +201,10 @@ mod tests {
         for (ty, sz) in sizes {
             let mut buf = vec![0u8; 256];
             buf[0] = ty;
-            assert_eq!(resolve_packet_header(&mut buf, 0).map(|h| h.len()), Some(sz));
+            assert_eq!(
+                resolve_packet_header(&mut buf, 0).map(|h| h.len()),
+                Some(sz)
+            );
         }
 
         let mut buf = vec![0u8; 256];
