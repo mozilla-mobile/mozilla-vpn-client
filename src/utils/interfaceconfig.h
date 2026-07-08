@@ -44,6 +44,7 @@ class InterfaceConfig {
   QList<IPAddress> m_allowedIPAddressRanges;
   QStringList m_vpnDisabledApps;
   Server::ObfuscationMethod m_obfuscationMethod;
+  int m_lwoVersion = 1;
 
   QJsonObject toJson() const;
   QString toWgConf(

@@ -52,6 +52,8 @@ QJsonObject InterfaceConfig::toJson() const {
   json.insert("obfuscationMethod",
               QJsonValue(obfuscationMetaEnum.valueToKey(m_obfuscationMethod)));
 
+  json.insert("lwoVersion", QJsonValue((double)m_lwoVersion));
+
   return json;
 }
 
