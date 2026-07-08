@@ -283,13 +283,13 @@ static void wgLog(const char* msg) {
     if (rx == 0) {
       // Socket has closed.
       NSLog(@"utun closed");
-      return;
+      break;
     }
     if (rx < 0) {
       // Socket error occurred.
       NSLog(@"utun error: %s", strerror(errno));
       if (errno == EINTR) continue;
-      return;
+      break;
     }
     if ((rx < sizeof(header)) || (rx > (mtu - sizeof(header)))) {
       continue;
@@ -313,6 +313,8 @@ static void wgLog(const char* msg) {
     [self.peer writePacket:htonl(header)
                   withData:buffer];
   }
+
+  dispatch_semaphore_signal(m_semaphore);
 }
 
 - (void)shutdownTunnel {
