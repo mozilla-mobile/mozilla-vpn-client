@@ -16,9 +16,6 @@ task-defaults:
     description: Import .deb package into Google Artifact Registry
     run-on-tasks-for: [action]
     from-deps:
-        with-attributes:
-            build-type:
-                - linux64/release-deb
         set-name: null
     worker:
         product: vpn
@@ -27,10 +24,36 @@ task-defaults:
 tasks:
     promote-linux64-deb:
         worker-type: beetmover-apt-stage
+        from-deps:
+            with-attributes:
+                build-type:
+                    - linux64/release-deb
+        attributes:
+            shipping-phase: promote-client
+
+    promote-linux-aarch64-deb:
+        worker-type: beetmover-apt-stage
+        from-deps:
+            with-attributes:
+                build-type:
+                    - linux-aarch64/release-deb
         attributes:
             shipping-phase: promote-client
 
     ship-linux64-deb:
         worker-type: beetmover-apt
+        from-deps:
+            with-attributes:
+                build-type:
+                    - linux64/release-deb
+        attributes:
+            shipping-phase: ship-client
+
+    ship-linux-aarch64-deb:
+        worker-type: beetmover-apt
+        from-deps:
+            with-attributes:
+                build-type:
+                    - linux-aarch64/release-deb
         attributes:
             shipping-phase: ship-client
