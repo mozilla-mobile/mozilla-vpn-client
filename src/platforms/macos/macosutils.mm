@@ -41,7 +41,7 @@ void MacOSUtils::openSystemSettingsLink() {
     // When using a daemon installed via the SMAppService API, there is a
     // helper method to go directly to the appropriate settings screen.
     [SMAppService openSystemSettingsLoginItems];
-  } else if (@available(iOS 15.0, *)) {
+  } else if (@available(macOS 15.0, *)) {
     // Users on macOS 15 and later: System extensions are managed via a special
     // section in the Login Items panel. We can navigate directly to the
     // extensions section and, from there, the user must find the Mozilla VPN
