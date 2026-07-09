@@ -36,7 +36,7 @@ QString MacOSUtils::appId(const QString& suffix) {
   return QString::fromNSString(appId) + suffix;
 }
 
-void MacOSUtils::openSystemSettingsLoginItems() {
+void MacOSUtils::openSystemSettingsLink() {
   if (!Feature::isEnabled(Feature::networkExtension)) {
     // When using a daemon installed via the SMAppService API, there is a
     // helper method to go directly to the appropriate settings screen.
@@ -44,7 +44,7 @@ void MacOSUtils::openSystemSettingsLoginItems() {
   } else if (@available(iOS 15.0, *)) {
     // Users on macOS 15 and later: System extensions are managed via a special
     // section in the Login Items panel. We can navigate directly to the
-    // extensions section, from there, the user must find the Mozilla VPN
+    // extensions section and, from there, the user must find the Mozilla VPN
     // network extension and enable it.
     NSString* url = @"x-apple.systempreferences:com.apple.LoginItems-Settings.extension?ExtensionItems";
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];

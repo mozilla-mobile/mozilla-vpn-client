@@ -17,7 +17,7 @@ class MacOSUtils final : public QObject {
 
   static MacOSUtils* instance();
 
-  Q_INVOKABLE void openSystemSettingsLoginItems();
+  Q_INVOKABLE void openSystemSettingsLink();
 
   Q_INVOKABLE int getMacOSMajorVersion();
 

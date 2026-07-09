@@ -80,7 +80,7 @@ MZFlickable {
             text: VPNMacOSUtils.getMacOSMajorVersion() > 14 ? MZI18n.PermissionMacosOpenSettingsButtonLabelMacOS15 : MZI18n.PermissionMacosOpenSettingsButtonLabel
             Layout.preferredHeight: MZTheme.theme.rowHeight
             loaderVisible: false
-            onClicked: VPNMacOSUtils.openSystemSettingsLoginItems()
+            onClicked: VPNMacOSUtils.openSystemSettingsLink()
         }
 
         MZLinkButton {
