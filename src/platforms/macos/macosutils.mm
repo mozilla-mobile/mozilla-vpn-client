@@ -49,9 +49,9 @@ void MacOSUtils::openSystemSettingsLink() {
     NSString* url = @"x-apple.systempreferences:com.apple.LoginItems-Settings.extension?ExtensionItems";
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
   } else {
-    // Users on macOS 13/14: When the system extension is blocked, and a message
+    // Users on macOS 13/14: When the system extension is blocked, a message
     // along the lines of "System software from application 'Mozilla VPN' was
-    // blocked from loading" will be displated in the Security panel. The users
+    // blocked from loading" will be displayed in the Security panel. The users
     // must click "Allow" on this screen to install the system extension.
     NSString* url = @"x-apple.systempreferences:com.apple.preference.security?Security";
     [[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]];
