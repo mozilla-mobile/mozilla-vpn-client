@@ -3,6 +3,8 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #include "macosutils.h"
+
+#include "feature/features.h"
 #include "logger.h"
 #include "qmlengineholder.h"
 
@@ -12,6 +14,7 @@
 #include <objc/objc.h>
 
 #import <Cocoa/Cocoa.h>
+#import <Foundation/Foundation.h>
 #import <ServiceManagement/ServiceManagement.h>
 
 namespace {
@@ -33,8 +36,30 @@ QString MacOSUtils::appId(const QString& suffix) {
   return QString::fromNSString(appId) + suffix;
 }
 
-void MacOSUtils::openSystemSettingsLoginItems() {
-  [SMAppService openSystemSettingsLoginItems];
+void MacOSUtils::openSystemSettingsLink() {
+  if (!Feature::isEnabled(Feature::networkExtension)) {
+    // When using a daemon installed via the SMAppService API, there is a
+    // helper method to go directly to the appropriate settings screen.
+    [SMAppService openSystemSettingsLoginItems];
+  } else if (@available(macOS 15.0, *)) {
+    // Users on macOS 15 and later: System extensions are managed via a special
+    // section in the Login Items panel. We can navigate directly to the
+    // extensions section and, from there, the user must find the Mozilla VPN
+    // network extension and enable it.
+    NSString* url = @"x-apple.systempreferences:com.apple.LoginItems-Settings.extension?ExtensionItems";
+    if (![[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]]) {
+      logger.warning() << "Unable to open settings to the Extensions panel";
+    }
+  } else {
+    // Users on macOS 13/14: When the system extension is blocked, a message
+    // along the lines of "System software from application 'Mozilla VPN' was
+    // blocked from loading" will be displayed in the Security panel. The users
+    // must click "Allow" on this screen to install the system extension.
+    NSString* url = @"x-apple.systempreferences:com.apple.preference.security?Security";
+    if (![[NSWorkspace sharedWorkspace] openURL:[NSURL URLWithString:url]]) {
+      logger.warning() << "Unable to open settings to the Security panel";
+    }
+  }
 }
 
 // static
