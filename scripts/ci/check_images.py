@@ -8,7 +8,7 @@ import os
 import re
 import sys
 
-# This file checks to make sure all images in QML use the style that allows for different assets for dark mode and light mode. More information available in `assets.md`.
+# This file checks to make sure all images in QML use the style that allows for different assets for dark mode and light mode. More information available in `assets-and-colors.md`.
 
 IMAGE_REGEX = r"qrc.*(svg)|(png)"
 IMAGE_DEF_REGEX = r"'.*': \{"

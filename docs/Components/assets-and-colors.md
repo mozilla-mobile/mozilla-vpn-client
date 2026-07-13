@@ -1,4 +1,4 @@
-# Assets used in app
+# Assets
 
 To support theming, there are two different versions of all assets (images and animations). There is one for darker themes, and another for lighter themes.
 
@@ -19,3 +19,23 @@ Within each theme's `theme.js` file, there is a line that controls which set of 
 1. All image and animation names used in `MZAssetLookup` are unique (there are no duplicates).
 2. No QML file uses an explicit image (instead of the proper `MZAssetLookup.getImageSource`), except the expected flags.
 3. The image names called in all `MZAssetLookup.getImageSource` actually exist in the `imageLookup` within `MZAssetLookup`.
+
+# Colors
+
+There are three layers to the color files, which build off each other:
+1. `colors.js`: Names the explicit hex colors used.
+2. Several files in the `color-themes` directory. The name of each file is the name of the theme. This assigns the named hex colors from `colors.js` to variables.
+3. `theme-derived.js`: Using the variables from the second step, it names additionable variable groups that are dervied from the step 2.
+
+When the client uses colors, it merges three files - `colors.js`, the one for the theme, and `theme-derived.js`. There is a hacky piece at the top of `colors.js` and the bottom of `derived-theme.js` to allow this merged file to be read as a JS object. This is well-commented in those files.
+
+### Rules
+`check_colors.py` is run on every PR, as part of the linter check. It ensures that colors stay orderly, by checking for bad patterns:
+1. `theme.js` files and the `derived-theme.js` file cannot contain color hex codes. (Hex codes only belong in `colors.js`.)
+2. QML files cannot contain color hex codes. (Hex codes only belong in `colors.js`.)
+3. All theme files (in `color-themes` directory) must have the exact same list of theme-defined colors. (All variables must be available in all themes.)
+4. All colors in QML files must be a variable appearing in the theme files or `theme-derived.js`. (Again, no explicit hex codes or color variables - like red20 - should be in QML.)
+5. Since iOS widgets are called by a separate system process, it uses colors from `ios/widgetextension/WidgetColors.swift`. To ensure consistency, we check that every color defined in that file is also in `colors.js`, and has a matching RGB value.
+
+These checks keep the color structure flexible, and allows additional themes to be easily added.
+

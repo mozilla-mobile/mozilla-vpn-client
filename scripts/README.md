@@ -24,8 +24,8 @@ See Android build documentation for details on these scripts.
 
 # CI tools
 
-- ./ci/check_colors.py - check QML files and color files to ensure multiple themes are supported
-- ./ci/check_images.py - check QML files to ensure they use the style that allows for different assets for dark mode and light mode. More information available in `assets.md`.
+- ./ci/check_colors.py - check QML files and color files to ensure multiple themes are supported. More information available in `assets-and-colors.md`.
+- ./ci/check_images.py - check QML files to ensure they use the style that allows for different assets for dark mode and light mode. More information available in `assets-and-colors.md`.
 - ./ci/check_jsonschema.py - check JSON schemas for addons, guides, etc.
 - ./ci/check_lang_names.py - confirms all language names are set up for translation in the other languages
 - ./ci/check_qrc.py - check qrc files to avoid duplicate entries and other errors
