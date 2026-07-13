@@ -36,6 +36,7 @@ color.fontColorInvertedMuted = color.grey20;
 color.fontTitleColor = color.black;
 color.normalButtonFont = color.white;
 color.destructiveButtonFont = color.white;
+color.macosPermissionTitleFont = color.grey55;
 
 // Dividers and borders
 color.divider = color.grey10;
