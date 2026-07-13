@@ -37,7 +37,7 @@ MZFlickable {
                 text: getImageTitle()
                 horizontalAlignment: Text.AlignLeft
 
-                color: MZTheme.colors.useDarkAssets ? MZTheme.colors.grey15 : MZTheme.colors.grey55
+                color: MZTheme.colors.macosPermissionTitleFont
                 font.pixelSize: 12
                 font.family: MZTheme.theme.fontBoldFamily
 
@@ -67,7 +67,7 @@ MZFlickable {
                 text: MZI18n.ProductName
                 horizontalAlignment: Text.AlignLeft
 
-                color: MZTheme.colors.useDarkAssets ? MZTheme.colors.grey15 : MZTheme.colors.grey55
+                color: MZTheme.colors.macosPermissionTitleFont
                 font.pixelSize: 12
                 font.family: MZTheme.theme.fontBoldFamily
 
