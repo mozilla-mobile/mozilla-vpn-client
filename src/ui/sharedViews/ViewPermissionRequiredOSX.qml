@@ -37,7 +37,7 @@ MZFlickable {
                 text: getImageTitle()
                 horizontalAlignment: Text.AlignLeft
 
-                color: MZTheme.colors.useDarkAssets ? "#DFDEDE" : "#1E1E1E"
+                color: MZTheme.colors.useDarkAssets ? MZTheme.colors.grey15 : MZTheme.colors.grey55
                 font.pixelSize: 12
                 font.family: MZTheme.theme.fontBoldFamily
 
@@ -59,6 +59,26 @@ MZFlickable {
                     }
                     return MZI18n.PermissionMacosImageTitleBackground;
                 }
+            }
+
+            Text {
+                id: imageAppName
+
+                text: MZI18n.ProductName
+                horizontalAlignment: Text.AlignLeft
+
+                color: MZTheme.colors.useDarkAssets ? MZTheme.colors.grey15 : MZTheme.colors.grey55
+                font.pixelSize: 12
+                font.family: MZTheme.theme.fontBoldFamily
+
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                topPadding: 91
+                leftPadding: 85
+
+                Accessible.ignored: true
             }
         }
 
