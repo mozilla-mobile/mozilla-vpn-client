@@ -1013,7 +1013,7 @@ permissionMacos:
     value: Open Login Items & Extensions
     comment: Label for the button that opens the login items settings page on macOS 15 and above
   openSettingsButtonLabelGeneric:
-    value: Open System Preferences
+    value: Open System Settings
     comment: Label for the button that opens the system settings page without specifying a specific section
 
 global:
