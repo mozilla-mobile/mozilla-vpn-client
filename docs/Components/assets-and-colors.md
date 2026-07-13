@@ -25,7 +25,7 @@ Within each theme's `theme.js` file, there is a line that controls which set of 
 There are three layers to the color files, which build off each other:
 1. `colors.js`: Names the explicit hex colors used.
 2. Several files in the `color-themes` directory. The name of each file is the name of the theme. This assigns the named hex colors from `colors.js` to variables.
-3. `theme-derived.js`: Using the variables from the second step, it names additionable variable groups that are dervied from the step 2.
+3. `theme-derived.js`: Using the variables from the second step, it names additional variable groups that are derived from the step 2.
 
 When the client uses colors, it merges three files - `colors.js`, the one for the theme, and `theme-derived.js`. There is a hacky piece at the top of `colors.js` and the bottom of `derived-theme.js` to allow this merged file to be read as a JS object. This is well-commented in those files.
 
