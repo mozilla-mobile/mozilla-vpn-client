@@ -60,7 +60,8 @@ MZViewBase {
             _filterProxyCallback: obj => {
                                       const filterValue = getSearchBarText();
                                       return obj.nativeLanguageName.toLowerCase().includes(filterValue) ||
-                                      obj.localizedLanguageName.toLowerCase().includes(filterValue);
+                                      obj.localizedLanguageName.toLowerCase().includes(filterValue) ||
+                                      obj.code.toLowerCase().includes(filterValue);
                                   }
             _searchBarHasError: repeater.count === 0
             _searchBarPlaceholderText: MZI18n.LanguageViewSearchPlaceholder
@@ -171,7 +172,7 @@ MZViewBase {
                     Layout.rightMargin: MZTheme.theme.windowMargin
                     Layout.fillWidth: true
 
-                    text: localizedLanguageName
+                    text: localizedLanguageName + " (" + code + ")"
                 }
             }
         }
