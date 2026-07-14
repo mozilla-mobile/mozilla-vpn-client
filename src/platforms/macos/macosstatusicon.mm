@@ -108,10 +108,26 @@
 }
 @end
 
+@interface MacOSNotificationDelegate : NSObject <UNUserNotificationCenterDelegate>
+@end
+
+@implementation MacOSNotificationDelegate
+- (void)userNotificationCenter:(UNUserNotificationCenter*)center
+       willPresentNotification:(UNNotification*)notification
+         withCompletionHandler:
+             (void (^)(UNNotificationPresentationOptions options))completionHandler {
+  Q_UNUSED(center);
+  Q_UNUSED(notification);
+  completionHandler(UNNotificationPresentationOptionBanner | UNNotificationPresentationOptionList |
+                    UNNotificationPresentationOptionSound);
+}
+@end
+
 namespace {
 Logger logger("MacOSStatusIcon");
 
 MacOSStatusIconDelegate* m_statusBarIcon = nullptr;
+MacOSNotificationDelegate* m_notificationDelegate = nullptr;
 }
 
 MacOSStatusIcon::MacOSStatusIcon(QObject* parent) : QObject(parent) {
@@ -171,6 +187,13 @@ void MacOSStatusIcon::showMessage(const QString& title, const QString& message) 
   logger.debug() << "Show message";
 
   UNUserNotificationCenter* center = [UNUserNotificationCenter currentNotificationCenter];
+
+  // Delegate is needed so notifications are shown as banners even when VPN client is
+  // foregrounded (otherwise macOS puts to Notification Center, but doesn't show banner).
+  if (!m_notificationDelegate) {
+    m_notificationDelegate = [[MacOSNotificationDelegate alloc] init];
+  }
+  center.delegate = m_notificationDelegate;
 
   // This is a no-op is authorization has been granted.
   [center requestAuthorizationWithOptions:(UNAuthorizationOptionSound | UNAuthorizationOptionAlert |
