@@ -4,7 +4,7 @@
 from itertools import islice
 
 from taskgraph.transforms.base import TransformSequence
-from taskgraph.util.dependencies import get_primary_dependency
+from taskgraph.util.dependencies import get_dependencies
 
 from urllib.parse import urlparse
 
@@ -44,9 +44,9 @@ def get_gcs_sources(dependent_task):
 @transforms.add
 def beetmover_apt(config, tasks):
     for task in tasks:
-        dep = get_primary_dependency(config, task)
-        assert dep
-        gcs_sources = get_gcs_sources(dep)
+        gcs_sources = []
+        for dep in get_dependencies(config, task):
+            gcs_sources.extend(get_gcs_sources(dep))
         if len(gcs_sources) == 0:
             # We do have nothing to ship, skip this task
             continue
