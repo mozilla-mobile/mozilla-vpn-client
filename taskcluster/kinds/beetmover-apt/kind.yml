@@ -5,7 +5,6 @@
 loader: taskgraph.loader.transform:loader
 
 transforms:
-    - taskgraph.transforms.from_deps
     - mozillavpn_taskgraph.transforms.beetmover_apt
     - taskgraph.transforms.task:transforms
 
@@ -15,11 +14,6 @@ kind-dependencies:
 task-defaults:
     description: Import .deb package into Google Artifact Registry
     run-on-tasks-for: [action]
-    from-deps:
-        with-attributes:
-            build-type:
-                - linux64/release-deb
-        set-name: null
     worker:
         product: vpn
         max-run-time: 1800
@@ -27,10 +21,16 @@ task-defaults:
 tasks:
     promote-linux64-deb:
         worker-type: beetmover-apt-stage
+        dependencies:
+            linux64: beetmover-promote-linux64-deb
+            linux-aarch64: beetmover-promote-linux-aarch64-deb
         attributes:
             shipping-phase: promote-client
 
     ship-linux64-deb:
         worker-type: beetmover-apt
+        dependencies:
+            linux64: beetmover-promote-linux64-deb
+            linux-aarch64: beetmover-promote-linux-aarch64-deb
         attributes:
             shipping-phase: ship-client

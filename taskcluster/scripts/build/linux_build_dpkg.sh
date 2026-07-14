@@ -148,5 +148,11 @@ for FILENAME in ${BUILD_ARTIFACTS}; do
   if echo "${PACKAGE_NAME}" | grep -q -e "-dbgsym$"; then
     PACKAGE_EXT="ddeb"
   fi
-  cp -v "${FILENAME}" "/builds/worker/artifacts/${PACKAGE_NAME}.${PACKAGE_EXT}"
+  # Preserve the architecture in the artifact filename when cross-compiling so
+  # the cross-compiled packages does not collide with the adm64 one on archive.mozilla.org
+  PACKAGE_SUFFIX=""
+  if [[ -n "$DEB_HOST_ARCH" ]]; then
+    PACKAGE_SUFFIX="_${DEB_HOST_ARCH}"
+  fi
+  cp -v "${FILENAME}" "/builds/worker/artifacts/${PACKAGE_NAME}${PACKAGE_SUFFIX}.${PACKAGE_EXT}"
 done
