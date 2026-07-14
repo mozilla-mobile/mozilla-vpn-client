@@ -990,13 +990,13 @@ permissionMacos:
     comment: Paragraph requesting the user to allow the VPN to run in the background.
   imageTitleBackground:
     value: Allow in the Background
-    comment: Title in the permission required image, showing the Allow in the Background section of Login Items screen.
+    comment: Title in the permission required image, showing the Allow in the Background section of Login Items screen. The translated text should match the strings from the macOS system settings app.
   imageTitleBackgroundMacOS26:
     value: App Background Activity
-    comment: Title in the permission required image, showing the App Background Acitivty section of the Login Items screen for macOS 26 and later.
+    comment: Title in the permission required image, showing the App Background Acitivty section of the Login Items screen for macOS 26 and later.  The translated text should match the strings from the macOS system settings app.
   imageTitleNetworkExtension:
     value: Network Extensions
-    comment: Title in the permission required image for network extension installation.
+    comment: Title in the permission required image for network extension installation, showing the Network Extensions categry popup of the Login Items and Extensions panel.  The translated text should match the strings from the macOS system settings app.
   instructions:
     value: In order to do this, please click the button below to open the <i>Login Items</i> of your <i>System Preferences</i>, and enable <i>Allow in the background</i> for Mozilla VPN.
     comment: Paragraph explaining how to enable the VPN to run in the background on macOS 14, see https://support.apple.com/guide/mac-help/mtusr003/mac for reference translations of these features on different versions of macOS.
