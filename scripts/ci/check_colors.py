@@ -14,6 +14,9 @@ COLOR_USE_REGEX = r"MZTheme\.colors\.[0-9A-Za-z]+"
 JS_COLOR_CAPTURE_REGEX = r"color\.(\w+)\s*=\s*'#([0-9A-Fa-f]{6,8})'"
 SWIFT_COLOR_CAPTURE_REGEX = r'static let (\w+)\s*=\s*"([0-9A-Fa-f]{6})"'
 
+# DID THE LINTER JUST FAIL YOUR PR BECAUSE OF COLORS?
+# `assets-and-colors.md` describes the color rules that this file enforces.
+
 def fileContents(filepath):
     try:
         with open(filepath, 'r') as file:
