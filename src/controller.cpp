@@ -192,9 +192,8 @@ void Controller::initialize() {
   connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
           &Controller::serverDataChanged);
 
-  connect(SettingsHolder::instance(),
-          &SettingsHolder::antiCensorshipPolicyChanged, this,
-          &Controller::serverDataChanged);
+  connect(SettingsHolder::instance(), &SettingsHolder::obfuscationPolicyChanged,
+          this, &Controller::serverDataChanged);
 
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
@@ -283,9 +282,9 @@ void Controller::handshakeTimeout() {
   logger.debug() << "Timeout while waiting for handshake";
 
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy =
-      static_cast<SettingsHolder::AntiCensorshipPolicy>(
-          settingsHolder->antiCensorshipPolicy());
+  SettingsHolder::ObfuscationPolicy obfuscationPolicy =
+      static_cast<SettingsHolder::ObfuscationPolicy>(
+          settingsHolder->obfuscationPolicy());
 
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(!m_activationQueue.isEmpty());
@@ -312,18 +311,18 @@ void Controller::handshakeTimeout() {
   // Policies that already use port 53, or obfuscation methods that have no
   // port-53 variant, are retried unchanged.
   if (m_connectionRetry == 1) {
-    SettingsHolder::AntiCensorshipPolicy port53Policy = antiCensorshipPolicy;
-    switch (antiCensorshipPolicy) {
-      case SettingsHolder::AntiCensorshipPolicy::NoAntiCensorship:
-        port53Policy = SettingsHolder::AntiCensorshipPolicy::Port53;
+    SettingsHolder::ObfuscationPolicy port53Policy = obfuscationPolicy;
+    switch (obfuscationPolicy) {
+      case SettingsHolder::ObfuscationPolicy::NoObfuscation:
+        port53Policy = SettingsHolder::ObfuscationPolicy::Port53;
         break;
-      case SettingsHolder::AntiCensorshipPolicy::LWO:
-        port53Policy = SettingsHolder::AntiCensorshipPolicy::LwoOverPort53;
+      case SettingsHolder::ObfuscationPolicy::LWO:
+        port53Policy = SettingsHolder::ObfuscationPolicy::LwoOverPort53;
         break;
       default:
         break;
     }
-    if (port53Policy != antiCensorshipPolicy) {
+    if (port53Policy != obfuscationPolicy) {
       logger.info() << "Connection Attempt: opportunistically trying port 53.";
       activateInternal(port53Policy, RandomizeServerSelection, m_initiator);
       return;
@@ -331,8 +330,7 @@ void Controller::handshakeTimeout() {
   }
 
   if (m_connectionRetry < CONNECTION_MAX_RETRY) {
-    activateInternal(antiCensorshipPolicy, RandomizeServerSelection,
-                     m_initiator);
+    activateInternal(obfuscationPolicy, RandomizeServerSelection, m_initiator);
     return;
   }
 
@@ -410,12 +408,11 @@ void Controller::updateRequired() {
 }
 
 auto Controller::setupConfigs(
-    SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy,
+    SettingsHolder::ObfuscationPolicy obfuscationPolicy,
     ServerSelectionPolicy serverSelectionPolicy) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Server::ObfuscationMethod obfuscationMethod =
-      m_serverData.antiCensorshipPolicyToObfuscationMethod(
-          antiCensorshipPolicy);
+      m_serverData.obfuscationPolicyToObfuscationMethod(obfuscationPolicy);
 
   Server exitServer =
       serverSelectionPolicy == DoNotRandomizeServerSelection &&
@@ -471,9 +468,8 @@ auto Controller::setupConfigs(
     exitConfig.m_obfuscationMethod = obfuscationMethod;
 
     // If requested, force the use of port 53/DNS.
-    if (antiCensorshipPolicy == SettingsHolder::AntiCensorshipPolicy::Port53 ||
-        antiCensorshipPolicy ==
-            SettingsHolder::AntiCensorshipPolicy::LwoOverPort53) {
+    if (obfuscationPolicy == SettingsHolder::ObfuscationPolicy::Port53 ||
+        obfuscationPolicy == SettingsHolder::ObfuscationPolicy::LwoOverPort53) {
       logger.info() << "Forcing port 53";
       exitConfig.m_serverPort = 53;
     }
@@ -524,9 +520,8 @@ auto Controller::setupConfigs(
         Localizer::instance()->getTranslatedCityName(entryServer.cityName());
 
     // If requested, force the use of port 53/DNS.
-    if (antiCensorshipPolicy == SettingsHolder::AntiCensorshipPolicy::Port53 ||
-        antiCensorshipPolicy ==
-            SettingsHolder::AntiCensorshipPolicy::LwoOverPort53) {
+    if (obfuscationPolicy == SettingsHolder::ObfuscationPolicy::Port53 ||
+        obfuscationPolicy == SettingsHolder::ObfuscationPolicy::LwoOverPort53) {
       logger.info() << "Forcing port 53";
       entryConfig.m_serverPort = 53;
     }
@@ -577,7 +572,7 @@ auto Controller::setupConfigs(
 }
 
 void Controller::activateInternal(
-    SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy,
+    SettingsHolder::ObfuscationPolicy obfuscationPolicy,
     ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection,
     ActivationPrincipal initiator = ClientUser) {
   logger.debug() << "Activation internal";
@@ -588,7 +583,7 @@ void Controller::activateInternal(
   m_activationQueue.clear();
 
   QList<InterfaceConfig> serverConfigs =
-      setupConfigs(antiCensorshipPolicy, serverSelectionPolicy);
+      setupConfigs(obfuscationPolicy, serverSelectionPolicy);
   if (serverConfigs.isEmpty()) {
     logger.info() << "Config setup error";
     // Error in setupConfigs, so do not continue
@@ -734,8 +729,8 @@ bool Controller::silentSwitchServers(
   clearRetryCounter();
 
   setState(StateSilentSwitching);
-  activateInternal(static_cast<SettingsHolder::AntiCensorshipPolicy>(
-                       settingsHolder->antiCensorshipPolicy()),
+  activateInternal(static_cast<SettingsHolder::ObfuscationPolicy>(
+                       settingsHolder->obfuscationPolicy()),
                    selectionPolicy, m_initiator);
   return true;
 }
@@ -843,8 +838,8 @@ void Controller::disconnected() {
       m_serverData = m_nextServerData;
       emit currentServerChanged();
       SettingsHolder* settingsHolder = SettingsHolder::instance();
-      activateInternal(static_cast<SettingsHolder::AntiCensorshipPolicy>(
-                           settingsHolder->antiCensorshipPolicy()),
+      activateInternal(static_cast<SettingsHolder::ObfuscationPolicy>(
+                           settingsHolder->obfuscationPolicy()),
                        RandomizeServerSelection, m_initiator);
       return;
     }
@@ -984,8 +979,8 @@ void Controller::maybeSendUpdatedConfig(const ServerData& serverData) {
     m_serverData = serverData;
     SettingsHolder* settingsHolder = SettingsHolder::instance();
     QList<InterfaceConfig> serverConfigs =
-        setupConfigs(static_cast<SettingsHolder::AntiCensorshipPolicy>(
-                         settingsHolder->antiCensorshipPolicy()),
+        setupConfigs(static_cast<SettingsHolder::ObfuscationPolicy>(
+                         settingsHolder->obfuscationPolicy()),
                      RandomizeServerSelection);
     if (serverConfigs.isEmpty()) {
       // Error in setupConfigs, so do not continue
@@ -1043,8 +1038,8 @@ bool Controller::switchServers(const ServerData& serverData) {
   m_serverData = serverData;
   emit currentServerChanged();
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  activateInternal(static_cast<SettingsHolder::AntiCensorshipPolicy>(
-                       settingsHolder->antiCensorshipPolicy()),
+  activateInternal(static_cast<SettingsHolder::ObfuscationPolicy>(
+                       settingsHolder->obfuscationPolicy()),
                    RandomizeServerSelection, m_initiator);
   return true;
 }
@@ -1071,9 +1066,9 @@ bool Controller::activate(const ServerData& serverData,
     return false;
   }
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy =
-      static_cast<SettingsHolder::AntiCensorshipPolicy>(
-          settingsHolder->antiCensorshipPolicy());
+  SettingsHolder::ObfuscationPolicy obfuscationPolicy =
+      static_cast<SettingsHolder::ObfuscationPolicy>(
+          settingsHolder->obfuscationPolicy());
 
   setError(ErrorNone);
   m_serverData = serverData;
@@ -1114,7 +1109,7 @@ bool Controller::activate(const ServerData& serverData,
 
     connect(
         request, &NetworkRequest::requestFailed, this,
-        [this, serverSelectionPolicy, initiator, antiCensorshipPolicy](
+        [this, serverSelectionPolicy, initiator, obfuscationPolicy](
             QNetworkReply::NetworkError error, const QByteArray&) {
           logger.error() << "Account request failed" << error;
           REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
@@ -1135,13 +1130,12 @@ bool Controller::activate(const ServerData& serverData,
           }
 
           clearRetryCounter();
-          activateInternal(antiCensorshipPolicy, serverSelectionPolicy,
-                           initiator);
+          activateInternal(obfuscationPolicy, serverSelectionPolicy, initiator);
         });
 
     connect(request, &NetworkRequest::requestCompleted, this,
             [this, serverSelectionPolicy, initiator,
-             antiCensorshipPolicy](const QByteArray& data) {
+             obfuscationPolicy](const QByteArray& data) {
               MozillaVPN::instance()->accountChecked(data);
 
               if (initiator != ExtensionUser) {
@@ -1149,7 +1143,7 @@ bool Controller::activate(const ServerData& serverData,
               }
 
               clearRetryCounter();
-              activateInternal(antiCensorshipPolicy, serverSelectionPolicy,
+              activateInternal(obfuscationPolicy, serverSelectionPolicy,
                                initiator);
             });
 
@@ -1171,7 +1165,7 @@ bool Controller::activate(const ServerData& serverData,
 #endif
 
   clearRetryCounter();
-  activateInternal(antiCensorshipPolicy, serverSelectionPolicy, initiator);
+  activateInternal(obfuscationPolicy, serverSelectionPolicy, initiator);
   return true;
 }
 

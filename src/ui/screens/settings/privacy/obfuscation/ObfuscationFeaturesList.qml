@@ -19,14 +19,14 @@ ColumnLayout {
     spacing: dividerSpacing
 
     MZToggleRow {
-            objectName: "enableAntiCensorshipFeatures"
-            id: antiCensorshipFeaturesToggle
+            objectName: "enableObfuscationFeatures"
+            id: obfuscationFeaturesToggle
 
-            labelText: MZI18n.SettingsAntiCensorshipSettingsEnable
-            checked: MZSettings.antiCensorshipPolicy != MZSettings.NoAntiCensorship
+            labelText: MZI18n.SettingsObfuscationSettingsEnable
+            checked: MZSettings.obfuscationPolicy != MZSettings.NoObfuscation
             dividerTopMargin: dividerSpacing
             onClicked: {
-                MZSettings.antiCensorshipPolicy = antiCensorshipFeaturesToggle.checked ? MZSettings.NoAntiCensorship : MZSettings.lastAntiCensorshipPolicy;
+                MZSettings.obfuscationPolicy = obfuscationFeaturesToggle.checked ? MZSettings.NoObfuscation : MZSettings.lastObfuscationPolicy;
             }
     }
 
@@ -39,38 +39,38 @@ ColumnLayout {
                 objectName: "alwaysUsePort53",
                 visible: true,
                 settingValue: MZSettings.Port53,
-                settingTitle: MZI18n.SettingsAntiCensorshipPort53Title,
-                settingDescription: MZI18n.SettingsAntiCensorshipPort53Body,
+                settingTitle: MZI18n.SettingsObfuscationPort53Title,
+                settingDescription: MZI18n.SettingsObfuscationPort53Body,
             }, {
                 objectName: "udpOverTcp",
                 visible: MZFeatureList.get("obfuscationUdpOverTcp").isSupported,
                 settingValue: MZSettings.UdpOverTcp,
-                settingTitle: MZI18n.SettingsAntiCensorshipUdpOverTcpTitle,
-                settingDescription: MZI18n.SettingsAntiCensorshipUdpOverTcpBody,
+                settingTitle: MZI18n.SettingsObfuscationUdpOverTcpTitle,
+                settingDescription: MZI18n.SettingsObfuscationUdpOverTcpBody,
             }, {
                 objectName: "lwo",
                 visible: MZFeatureList.get("obfuscationLwo").isSupported,
                 settingValue: MZSettings.LWO,
-                settingTitle: MZI18n.SettingsAntiCensorshipLwoTitle,
-                settingDescription: MZI18n.SettingsAntiCensorshipLwoBody,
+                settingTitle: MZI18n.SettingsObfuscationLwoTitle,
+                settingDescription: MZI18n.SettingsObfuscationLwoBody,
             }, {
                 objectName: "lwoOverPort53",
                 visible: MZFeatureList.get("obfuscationLwo").isSupported,
                 settingValue: MZSettings.LwoOverPort53,
-                settingTitle: MZI18n.SettingsAntiCensorshipLwoOverPort53Title,
-                settingDescription: MZI18n.SettingsAntiCensorshipLwoOverPort53Body,
+                settingTitle: MZI18n.SettingsObfuscationLwoOverPort53Title,
+                settingDescription: MZI18n.SettingsObfuscationLwoOverPort53Body,
             }, {
                 objectName: "masque",
                 visible: MZFeatureList.get("obfuscationMasque").isSupported,
                 settingValue: MZSettings.Masque,
-                settingTitle: MZI18n.SettingsAntiCensorshipMasqueTitle,
-                settingDescription: MZI18n.SettingsAntiCensorshipMasqueBody,
+                settingTitle: MZI18n.SettingsObfuscationMasqueTitle,
+                settingDescription: MZI18n.SettingsObfuscationMasqueBody,
             },{
                 objectName: "shadowsocks",
                 visible: MZFeatureList.get("obfuscationShadowsocks").isSupported,
                 settingValue: MZSettings.Shadowsocks,
-                settingTitle: MZI18n.SettingsAntiCensorshipShadowsocksTitle,
-                settingDescription: MZI18n.SettingsAntiCensorshipShadowsocksBody,
+                settingTitle: MZI18n.SettingsObfuscationShadowsocksTitle,
+                settingDescription: MZI18n.SettingsObfuscationShadowsocksBody,
             }
         ];
 
@@ -78,7 +78,7 @@ ColumnLayout {
             spacing: MZTheme.theme.windowMargin
             Layout.rightMargin: MZTheme.theme.windowMargin / 2
             visible: modelData.visible
-            enabled: antiCensorshipFeaturesToggle.checked
+            enabled: obfuscationFeaturesToggle.checked
 
             MZRadioButton {
                 objectName: modelData.objectName
@@ -86,11 +86,11 @@ ColumnLayout {
                 Layout.preferredWidth: MZTheme.theme.vSpacing
                 Layout.preferredHeight: MZTheme.theme.rowHeight
                 Layout.alignment: Qt.AlignTop
-                checked: MZSettings.antiCensorshipPolicy == modelData.settingValue || MZSettings.lastAntiCensorshipPolicy == modelData.settingValue
+                checked: MZSettings.obfuscationPolicy == modelData.settingValue || MZSettings.lastObfuscationPolicy == modelData.settingValue
                 accessibleName: `${modelData.settingTitle}. ${modelData.settingDescription}`
                 onClicked: () => {
-                    MZSettings.antiCensorshipPolicy = modelData.settingValue;
-                    MZSettings.lastAntiCensorshipPolicy = modelData.settingValue;
+                    MZSettings.obfuscationPolicy = modelData.settingValue;
+                    MZSettings.lastObfuscationPolicy = modelData.settingValue;
                 }
             }
 
@@ -118,8 +118,8 @@ ColumnLayout {
                 width: Math.min(parent.implicitWidth, parent.width)
                 propagateClickToParent: false
                 onClicked: () => {
-                    MZSettings.antiCensorshipPolicy = modelData.settingValue;
-                    MZSettings.lastAntiCensorshipPolicy = modelData.settingValue;
+                    MZSettings.obfuscationPolicy = modelData.settingValue;
+                    MZSettings.lastObfuscationPolicy = modelData.settingValue;
                 }
             }
         }

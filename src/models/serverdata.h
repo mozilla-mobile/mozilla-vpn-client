@@ -100,8 +100,8 @@ class ServerData final : public QObject {
 
   const QString& exitServerPublicKey() const { return m_exitServerPublicKey; }
   const QString& entryServerPublicKey() const { return m_entryServerPublicKey; }
-  Server::ObfuscationMethod antiCensorshipPolicyToObfuscationMethod(
-      SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy);
+  Server::ObfuscationMethod obfuscationPolicyToObfuscationMethod(
+      SettingsHolder::ObfuscationPolicy obfuscationPolicy);
 
  signals:
   void changed();

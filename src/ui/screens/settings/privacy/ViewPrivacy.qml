@@ -84,6 +84,17 @@ MZViewBase {
                 privacyOverwriteLoader.active = active;
             }
         }
+
+        MZSettingsItem {
+            objectName: "obfuscationSettings"
+            settingTitle: MZI18n.SettingsObfuscationSettings
+            imageLeftSrc: MZAssetLookup.getImageSource("EyeHidden")
+            imageRightSrc: MZAssetLookup.getImageSource("Chevron")
+            imageRightMirror: MZLocalizer.isRightToLeft
+            onClicked: {
+                stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/privacy/obfuscation/ViewObfuscation.qml")
+            }
+        }
     }
 
     Loader {

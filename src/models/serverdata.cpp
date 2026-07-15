@@ -57,9 +57,8 @@ void ServerData::initialize() {
   connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
           &ServerData::settingsChanged);
 
-  connect(SettingsHolder::instance(),
-          &SettingsHolder::antiCensorshipPolicyChanged, this,
-          &ServerData::settingsChanged);
+  connect(SettingsHolder::instance(), &SettingsHolder::obfuscationPolicyChanged,
+          this, &ServerData::settingsChanged);
 }
 
 bool ServerData::fromSettings() {
@@ -163,9 +162,9 @@ bool ServerData::settingsChanged() {
     m_entryCountryName = obj[ENTER_COUNTRY_NAME].toString();
   }
 
-  m_obfuscationMethod = antiCensorshipPolicyToObfuscationMethod(
-      static_cast<SettingsHolder::AntiCensorshipPolicy>(
-          settingsHolder->antiCensorshipPolicy()));
+  m_obfuscationMethod = obfuscationPolicyToObfuscationMethod(
+      static_cast<SettingsHolder::ObfuscationPolicy>(
+          settingsHolder->obfuscationPolicy()));
 
   emit changed();
   emit retranslationNeeded();
@@ -317,22 +316,22 @@ const QList<Server> ServerData::backupServers(
   return backupServers;
 }
 
-Server::ObfuscationMethod ServerData::antiCensorshipPolicyToObfuscationMethod(
-    SettingsHolder::AntiCensorshipPolicy antiCensorshipPolicy) {
-  switch (antiCensorshipPolicy) {
-    case SettingsHolder::AntiCensorshipPolicy::NoAntiCensorship:
+Server::ObfuscationMethod ServerData::obfuscationPolicyToObfuscationMethod(
+    SettingsHolder::ObfuscationPolicy obfuscationPolicy) {
+  switch (obfuscationPolicy) {
+    case SettingsHolder::ObfuscationPolicy::NoObfuscation:
       [[fallthrough]];
-    case SettingsHolder::AntiCensorshipPolicy::Port53:
+    case SettingsHolder::ObfuscationPolicy::Port53:
       return Server::ObfuscationMethod::NoObfuscation;
-    case SettingsHolder::AntiCensorshipPolicy::LWO:
+    case SettingsHolder::ObfuscationPolicy::LWO:
       [[fallthrough]];
-    case SettingsHolder::AntiCensorshipPolicy::LwoOverPort53:
+    case SettingsHolder::ObfuscationPolicy::LwoOverPort53:
       return Server::ObfuscationMethod::LWO;
-    case SettingsHolder::AntiCensorshipPolicy::Masque:
+    case SettingsHolder::ObfuscationPolicy::Masque:
       return Server::ObfuscationMethod::Masque;
-    case SettingsHolder::AntiCensorshipPolicy::UdpOverTcp:
+    case SettingsHolder::ObfuscationPolicy::UdpOverTcp:
       return Server::ObfuscationMethod::UdpOverTcp;
-    case SettingsHolder::AntiCensorshipPolicy::Shadowsocks:
+    case SettingsHolder::ObfuscationPolicy::Shadowsocks:
       return Server::ObfuscationMethod::Shadowsocks;
   }
   Q_UNREACHABLE();

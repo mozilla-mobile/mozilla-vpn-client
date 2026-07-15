@@ -634,17 +634,17 @@ Item {
         }
 
         MZInterLabel {
-            id: antiCensorshipEnabled
+            id: obfuscationEnabled
             anchors.horizontalCenter: parent.horizontalCenter
             opacity: 0.8
             color: MZTheme.colors.fontColorInverted
             lineHeight: MZTheme.theme.controllerInterLineHeight
             visible: VPNController.state === VPNController.StateOn &&
-                     MZSettings.antiCensorshipPolicy !== MZSettings.NoAntiCensorship &&
-                     MZSettings.antiCensorshipPolicy !== MZSettings.Port53
+                     MZSettings.obfuscationPolicy !== MZSettings.NoObfuscation &&
+                     MZSettings.obfuscationPolicy !== MZSettings.Port53
             Accessible.ignored: ipInfoPanel.isOpen || !visible
 
-            text: MZI18n.ControllerAntiCensorshipOn
+            text: MZI18n.ControllerObfuscationOn
         }
 
     }
