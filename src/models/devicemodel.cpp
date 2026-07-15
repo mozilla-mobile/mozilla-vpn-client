@@ -299,7 +299,8 @@ void DeviceModel::logSerialize(QIODevice* device) {
   out << "OS Version (Reg) -> " << WindowsUtils::windowsVersion() << Qt::endl;
 #endif
 #ifdef MZ_LINUX
-  out << "OS Shell -> " << qEnvironmentVariable("XDG_CURRENT_DESKTOP") << Qt::endl;
+  out << "OS Shell -> " << qEnvironmentVariable("XDG_CURRENT_DESKTOP")
+      << Qt::endl;
 #endif
   out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
 
