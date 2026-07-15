@@ -85,14 +85,64 @@ MZViewBase {
             }
         }
 
-        MZSettingsItem {
+        MZClickableRow {
+            id: obfuscationSettings
             objectName: "obfuscationSettings"
-            settingTitle: MZI18n.SettingsObfuscationSettings
-            imageLeftSrc: MZAssetLookup.getImageSource("EyeHidden")
-            imageRightSrc: MZAssetLookup.getImageSource("Chevron")
-            imageRightMirror: MZLocalizer.isRightToLeft
+
+            accessibleName: obfuscationTitle.text
+
+            anchors.left: undefined
+            anchors.right: undefined
+
+            Layout.leftMargin: 16
+            Layout.rightMargin: 16
+            Layout.topMargin: -MZTheme.theme.windowMargin / 2
+            Layout.fillWidth: true
+            Layout.minimumHeight: MZTheme.theme.rowHeight
+            canGrowVertical: true
+            Layout.preferredHeight: Math.max(MZTheme.theme.rowHeight, obfuscationContent.implicitHeight)
+
             onClicked: {
                 stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/privacy/obfuscation/ViewObfuscation.qml")
+            }
+
+            RowLayout {
+                spacing: MZTheme.theme.windowMargin
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+
+                ColumnLayout {
+                    id: obfuscationContent
+                    spacing: 0
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+
+                    MZInterLabel {
+                        id: obfuscationTitle
+                        Accessible.ignored: true
+                        Layout.fillWidth: true
+                        text: MZI18n.SettingsObfuscationSettings
+                        color: MZTheme.colors.fontColorDark
+                        horizontalAlignment: Text.AlignLeft
+                        wrapMode: Text.WordWrap
+                    }
+
+                    MZTextBlock {
+                        id: obfuscationSubtitle
+                        Layout.fillWidth: true
+                        text: MZI18n.SettingsObfuscationSettingsDescription
+                        font.pixelSize: MZTheme.theme.fontSizeSmall
+                        horizontalAlignment: Text.AlignLeft
+                        wrapMode: Text.Wrap
+                        verticalAlignment: Text.AlignVCenter
+                        visible: !!text.length
+                    }
+                }
+
+                MZChevron {
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                }
             }
         }
     }
