@@ -28,8 +28,58 @@ MZFlickable {
             Layout.alignment: Qt.AlignHCenter
             Layout.topMargin: MZTheme.theme.contentTopMarginDesktop
 
-            source: VPNMacOSUtils.getMacOSMajorVersion() > 25 ? MZAssetLookup.getLocalizedImageSource("MacosPermissionBackgroundMacOS26") : MZAssetLookup.getLocalizedImageSource("MacosPermissionBackground")
+            source: MZAssetLookup.getImageSource("MacosPermissionGeneric")
             fillMode: Image.PreserveAspectFit
+
+            Text {
+                id: imageTitle
+
+                text: getImageTitle()
+                horizontalAlignment: Text.AlignLeft
+
+                color: MZTheme.colors.macosPermissionTitleFont
+                font.pixelSize: 12
+                font.family: MZTheme.theme.fontBoldFamily
+
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                topPadding: 16
+                leftPadding: 16
+
+                Accessible.ignored: true
+
+                function getImageTitle() {
+                    if (MZFeatureList.get("networkExtension").isSupported) {
+                        return MZI18n.PermissionMacosImageTitleNetworkExtension;
+                    }
+                    if (VPNMacOSUtils.getMacOSMajorVersion() > 25) {
+                        return MZI18n.PermissionMacosImageTitleBackgroundMacOS26;
+                    }
+                    return MZI18n.PermissionMacosImageTitleBackground;
+                }
+            }
+
+            Text {
+                id: imageAppName
+
+                text: MZI18n.ProductName
+                horizontalAlignment: Text.AlignLeft
+
+                color: MZTheme.colors.macosPermissionTitleFont
+                font.pixelSize: 12
+                font.family: MZTheme.theme.fontBoldFamily
+
+                anchors.top: parent.top
+                anchors.left: parent.left
+                anchors.right: parent.right
+
+                topPadding: 91
+                leftPadding: 85
+
+                Accessible.ignored: true
+            }
         }
 
         MZHeadline {
@@ -77,10 +127,21 @@ MZFlickable {
         MZButton {
             id: openSettingsButton
 
-            text: VPNMacOSUtils.getMacOSMajorVersion() > 14 ? MZI18n.PermissionMacosOpenSettingsButtonLabelMacOS15 : MZI18n.PermissionMacosOpenSettingsButtonLabel
+            text: getButtonText()
+
             Layout.preferredHeight: MZTheme.theme.rowHeight
             loaderVisible: false
             onClicked: VPNMacOSUtils.openSystemSettingsLink()
+
+            function getButtonText() {
+                if (MZFeatureList.get("networkExtension").isSupported) {
+                    return MZI18n.PermissionMacosOpenSettingsButtonLabelGeneric
+                }
+                if (VPNMacOSUtils.getMacOSMajorVersion() > 14) {
+                    return MZI18n.PermissionMacosOpenSettingsButtonLabelMacOS15;
+                }
+                return MZI18n.PermissionMacosOpenSettingsButtonLabel
+            }
         }
 
         MZLinkButton {
