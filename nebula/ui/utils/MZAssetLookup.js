@@ -367,10 +367,6 @@ var imageLookup = {
     filenameLight: 'qrc:/ui/resources/qrcodes/app-store-qrcode.png',
     filenameDark: 'qrc:/ui/resources/qrcodes/app-store-qrcode.png'
   },
-  'MacosPermissionGeneric': {
-    filenameLight: 'qrc:/ui/resources/permissions/macos-permission-light.svg',
-    filenameDark: 'qrc:/ui/resources/permissions/macos-permission-dark.svg'
-  },
 }
 
 var localizedImageLookup =
