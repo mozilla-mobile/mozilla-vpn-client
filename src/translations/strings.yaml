@@ -329,10 +329,10 @@ systray:
 settings:
   privacySettings: Privacy features
   obfuscationSettings: Obfuscation
-  obfuscationSettingsDescription: These features may help you bypass network restrictions and censorship.
+  obfuscationSettingsDescription: May help bypass network restrictions and censorship.
   obfuscationSettingsWarning1: These features will not help when a specific website or app blocks content because of the VPN.
   obfuscationSettingsWarning2: They may cause degraded network speed.
-  obfuscationSettingsEnable: Enable Obfuscation features
+  obfuscationSettingsEnable: Enable Obfuscation
   obfuscationPort53Title: Always connect using port 53
   obfuscationPort53Body: Routes traffic through the port commonly used for DNS. May help on networks that block UDP traffic.
   obfuscationMasqueTitle:
@@ -595,11 +595,28 @@ crashreporter:
 
 serverUnavailableModal:
   headerText: Server unavailable
-  bodyText: This server location is temporarily unavailable. Choose a new location.
+  bodyText1:
+    value: This server location is temporarily unavailable.
+    comment: First part of the server unavailable modal body. Followed by bodyText2NoObfuscation when obfuscation is disabled, or bodyText2Obfuscation when obfuscation is enabled.
+  bodyText2ChangeObfuscation:
+    value: Choose a new location or try a different obfuscation method.
+    comment: Second part of the server unavailable modal body, shown when an obfuscation policy is selected. Follows bodyText1.
+  bodyText2EnableObfuscation:
+    value: Choose a new location or try to enable obfuscation.
+    comment: Second part of the server unavailable modal body, shown when no obfuscation policy is selected. Follows bodyText1.
   buttonLabel: Choose a new location
+  configureObfuscationButtonLabel: Configure obfuscation
 
 serverUnavailableNotification:
-  bodyText: This server location is temporarily unavailable. Please open the app to choose a new location.
+  bodyText1:
+    value: This server location is temporarily unavailable.
+    comment: First part of the server unavailable notification. Followed by bodyText2NoObfuscation when obfuscation is disabled, or bodyText2Obfuscation when obfuscation is enabled.
+  bodyText2ChangeObfuscation:
+    value: Please open the app to choose a new location or try a different obfuscation method.
+    comment: Second part of the server unavailable notification, shown when an obfuscation policy is selected. Follows bodyText1 or bodyTextFireWallBlocked.
+  bodyText2EnableObfuscation:
+    value: Please open the app to choose a new location or try to enable obfuscation.
+    comment: Second part of the server unavailable notification, shown when no obfuscation policy is selected. Follows bodyText1 or bodyTextFireWallBlocked.
   bodyTextFireWallBlocked: The server has been blocked. Check your firewall settings.
   preferencesLabel: Server unavailable notification
   preferencesSubLabel: Get notified when connecting to a server location failed
@@ -913,7 +930,7 @@ devices:
 
 helpSheets:
   obfuscationTitle:
-    value: Obfuscation features
+    value: Obfuscation
     comment: Title label for the Obfuscation features help sheet
   obfuscationBody1:
     value: These options should be used when a network is blocking connections to VPN servers. They will not help when a specific website or app blocks content because of the VPN.
