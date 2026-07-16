@@ -9,6 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QtEnvironmentVariables>
 
 #include "constants.h"
 #include "leakdetector.h"
@@ -296,6 +297,10 @@ void DeviceModel::logSerialize(QIODevice* device) {
   out << "OS -> " << QSysInfo::productType() << Qt::endl;
 #ifdef MZ_WINDOWS
   out << "OS Version (Reg) -> " << WindowsUtils::windowsVersion() << Qt::endl;
+#endif
+#ifdef MZ_LINUX
+  out << "OS Shell -> " << qEnvironmentVariable("XDG_CURRENT_DESKTOP")
+      << Qt::endl;
 #endif
   out << "OS Version -> " << QSysInfo::productVersion() << Qt::endl;
 
