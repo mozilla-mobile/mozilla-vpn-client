@@ -18,8 +18,14 @@ MZSimplePopup {
     imageSrc: MZAssetLookup.getImageSource("GlobeNoConnection")
     imageSize: Qt.size(80, 80)
     title: MZI18n.ServerUnavailableModalHeaderText
-    // In case the handshake failed but the ping succeeded - use the Firewall Error Message
-    description: receivedPing ? MZI18n.ServerUnavailableNotificationBodyTextFireWallBlocked : MZI18n.ServerUnavailableModalBodyText
+    description: {
+        // In case the handshake failed but the ping succeeded - use the Firewall Error Message as the first sentence
+        const firstPart = receivedPing ? MZI18n.ServerUnavailableNotificationBodyTextFireWallBlocked
+                                        : MZI18n.ServerUnavailableModalBodyText1
+        const secondPart = MZSettings.obfuscationPolicy === MZSettings.NoObfuscation ?
+                     MZI18n.ServerUnavailableModalBodyText2EnableObfuscation : MZI18n.ServerUnavailableModalBodyText2ChangeObfuscation
+        return firstPart + " " + secondPart
+    }
     closeButtonObjectName: "serverUnavailablePopup-closeButton"
     buttons: [
         MZButton {
@@ -29,6 +35,16 @@ MZSimplePopup {
             onClicked: {
                 MZNavigator.requestScreen(VPN.ScreenHome)
                 window.showServerList(true);
+                root.close();
+            }
+        },
+        MZButton {
+            text: MZI18n.ServerUnavailableModalConfigureObfuscationButtonLabel
+            objectName: "serverUnavailablePopup-configureObfuscationButton"
+            Layout.fillWidth: true
+            onClicked: {
+                window.pendingShowObfuscationSettings = true;
+                MZNavigator.requestScreen(VPN.ScreenSettings);
                 root.close();
             }
         }]
