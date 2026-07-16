@@ -253,7 +253,7 @@ inline constexpr ConstantFeature obfuscationMasque = {
 
 inline constexpr ConstantFeature obfuscationShadowsocks = {
     .id = "obfuscationShadowsocks",
-    .name = "SHADOWSOCKS obfuscation",
+    .name = "Shadowsocks obfuscation",
     .supported = false,
 };
 
