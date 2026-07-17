@@ -127,7 +127,7 @@ MZViewBase {
                     placeholderText: MZI18n.InAppSupportWorkflowDropdownLabel
                     model: VPNSupportCategoryModel
                     Layout.fillWidth: true
-                    Layout.preferredWidth: undefined
+                    Layout.preferredWidth: -1
                     onCurrentValueChanged: {
                         shareLogsCheckBox.isChecked = currentValue === 'account' || currentValue === 'technical';
                     }
