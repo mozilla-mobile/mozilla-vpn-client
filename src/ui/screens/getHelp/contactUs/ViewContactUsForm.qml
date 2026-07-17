@@ -16,7 +16,7 @@ MZViewBase {
 
     objectName: "contactUs"
     _menuTitle: MZI18n.InAppSupportWorkflowSupportNavLinkText
-   _viewContentData: ColumnLayout {
+    _viewContentData: ColumnLayout {
        property string _emailAddress: ""
        Layout.preferredWidth: parent.width
 
@@ -61,7 +61,6 @@ MZViewBase {
 
         ColumnLayout {
             Layout.alignment: Qt.AlignTop
-
             spacing: 24
 
             ColumnLayout {
@@ -173,8 +172,7 @@ MZViewBase {
             spacing: 24
 
             MZLinkButton {
-                anchors.left: parent.left
-                anchors.right: parent.right
+                Layout.fillWidth: true
                 labelText: MZI18n.InAppSupportWorkflowPrivacyNoticeLinkText
                 onClicked: MZUrlOpener.openUrlLabel("privacyNotice")
             }
