@@ -9,8 +9,7 @@ import Mozilla.Shared 1.0
 
 // MZTextBlock
 Text {
-    color: MZTheme.colors.fontColor
-    opacity: enabled ? 1 : 0.5
+    color: enabled ? MZTheme.colors.fontColor : MZTheme.colors.fontColorMuted
     font.family: MZTheme.theme.fontInterFamily
     font.pixelSize: MZTheme.theme.fontSizeSmall
     linkColor: MZTheme.colors.normalButtonDefault

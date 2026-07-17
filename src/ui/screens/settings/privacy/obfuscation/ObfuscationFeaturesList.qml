@@ -100,7 +100,7 @@ ColumnLayout {
                 MZInterLabel {
                     Layout.fillWidth: true
 
-                    color: MZTheme.colors.fontColorDark
+                    color: enabled ? MZTheme.colors.fontColorDark : MZTheme.colors.fontColorDarkMuted
                     text: modelData.settingTitle
                     wrapMode: Text.WordWrap
                     horizontalAlignment: Text.AlignLeft
