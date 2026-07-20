@@ -52,7 +52,7 @@ MZViewBase {
 
             _infoContent: ColumnLayout {
                 id: textBlocks
-                spacing: 0
+                spacing: 5
 
                 MZTextBlock {
                     Layout.fillWidth: true
@@ -66,17 +66,6 @@ MZViewBase {
                     width: undefined
                     text: MZI18n.SettingsObfuscationSettingsWarning2
                     verticalAlignment: Text.AlignVCenter
-                }
-
-                Loader {
-                    active: !VPNController.silentServerSwitchingSupported && VPNController.state !== VPNController.StateOff
-                    Layout.fillWidth: true
-                    visible: active
-                    sourceComponent: MZTextBlock {
-                        width: parent.width
-                        text: MZI18n.SettingsDnsSettingsDisconnectWarning
-                        verticalAlignment: Text.AlignVCenter
-                    }
                 }
             }
         }

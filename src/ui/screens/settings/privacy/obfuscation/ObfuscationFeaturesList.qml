@@ -74,48 +74,53 @@ ColumnLayout {
             }
         ];
 
-        delegate: RowLayout {
-            spacing: MZTheme.theme.windowMargin
-            Layout.rightMargin: MZTheme.theme.windowMargin / 2
+        delegate: Item {
+            id: delegateRoot
             visible: modelData.visible
             enabled: obfuscationFeaturesToggle.checked
+            Layout.fillWidth: true
+            Layout.rightMargin: MZTheme.theme.windowMargin / 2
+            implicitHeight: featureRow.implicitHeight
 
-            MZRadioButton {
-                objectName: modelData.objectName
+            RowLayout {
+                id: featureRow
+                anchors.fill: parent
+                spacing: MZTheme.theme.windowMargin
 
-                Layout.preferredWidth: MZTheme.theme.vSpacing
-                Layout.preferredHeight: MZTheme.theme.rowHeight
-                Layout.alignment: Qt.AlignTop
-                checked: MZSettings.obfuscationPolicy == modelData.settingValue || MZSettings.lastObfuscationPolicy == modelData.settingValue
-                accessibleName: `${modelData.settingTitle}. ${modelData.settingDescription}`
-                onClicked: () => {
-                    MZSettings.obfuscationPolicy = modelData.settingValue;
-                    MZSettings.lastObfuscationPolicy = modelData.settingValue;
-                }
-            }
+                MZRadioButton {
+                    objectName: modelData.objectName
 
-            ColumnLayout {
-                spacing: 4
-
-                MZInterLabel {
-                    Layout.fillWidth: true
-
-                    color: enabled ? MZTheme.colors.fontColorDark : MZTheme.colors.fontColorDarkMuted
-                    text: modelData.settingTitle
-                    wrapMode: Text.WordWrap
-                    horizontalAlignment: Text.AlignLeft
+                    Layout.preferredWidth: MZTheme.theme.vSpacing
+                    Layout.preferredHeight: MZTheme.theme.rowHeight
+                    Layout.alignment: Qt.AlignTop
+                    checked: MZSettings.obfuscationPolicy == modelData.settingValue || MZSettings.lastObfuscationPolicy == modelData.settingValue
+                    accessibleName: `${modelData.settingTitle}. ${modelData.settingDescription}`
+                    onClicked: () => {
+                        MZSettings.obfuscationPolicy = modelData.settingValue;
+                        MZSettings.lastObfuscationPolicy = modelData.settingValue;
+                    }
                 }
 
-                MZTextBlock {
-                    text: modelData.settingDescription
-                    Layout.fillWidth: true
+                ColumnLayout {
+                    spacing: 4
+
+                    MZInterLabel {
+                        Layout.fillWidth: true
+
+                        color: enabled ? MZTheme.colors.fontColorDark : MZTheme.colors.fontColorDarkMuted
+                        text: modelData.settingTitle
+                        wrapMode: Text.WordWrap
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    MZTextBlock {
+                        text: modelData.settingDescription
+                        Layout.fillWidth: true
+                    }
                 }
             }
 
             MZMouseArea {
-                anchors.fill: parent
-
-                width: Math.min(parent.implicitWidth, parent.width)
                 propagateClickToParent: false
                 onClicked: () => {
                     MZSettings.obfuscationPolicy = modelData.settingValue;
