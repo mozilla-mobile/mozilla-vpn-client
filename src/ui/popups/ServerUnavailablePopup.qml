@@ -19,12 +19,16 @@ MZSimplePopup {
     imageSize: Qt.size(80, 80)
     title: MZI18n.ServerUnavailableModalHeaderText
     description: {
-        // In case the handshake failed but the ping succeeded - use the Firewall Error Message as the first sentence
-        const firstPart = receivedPing ? MZI18n.ServerUnavailableNotificationBodyTextFireWallBlocked
-                                        : MZI18n.ServerUnavailableModalBodyText1
-        const secondPart = MZSettings.obfuscationPolicy === MZSettings.NoObfuscation ?
-                     MZI18n.ServerUnavailableModalBodyText2EnableObfuscation : MZI18n.ServerUnavailableModalBodyText2ChangeObfuscation
-        return firstPart + " " + secondPart
+        // In case the handshake failed but the ping succeeded - use the Firewall Error Message.
+        // When no obfuscation policy is selected, suggest enabling obfuscation
+        // when an obfuscation policy is selected, suggest changing the obfuscation
+        if(receivedPing) {
+            return MZSettings.obfuscationPolicy === MZSettings.NoObfuscation ?
+                    MZI18n.ServerUnavailableNotificationBodyTextFireWallBlockedEnableObfuscation
+                    : MZI18n.ServerUnavailableNotificationBodyTextFireWallBlockedChangeObfuscation;
+        }
+        return MZSettings.obfuscationPolicy === MZSettings.NoObfuscation ?
+                MZI18n.ServerUnavailableModalBodyTextEnableObfuscation : MZI18n.ServerUnavailableModalBodyTextChangeObfuscation
     }
     closeButtonObjectName: "serverUnavailablePopup-closeButton"
     buttons: [

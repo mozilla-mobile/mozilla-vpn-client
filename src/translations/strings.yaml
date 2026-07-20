@@ -595,29 +595,28 @@ crashreporter:
 
 serverUnavailableModal:
   headerText: Server unavailable
-  bodyText1:
-    value: This server location is temporarily unavailable.
-    comment: First part of the server unavailable modal body. Followed by bodyText2NoObfuscation when obfuscation is disabled, or bodyText2Obfuscation when obfuscation is enabled.
-  bodyText2ChangeObfuscation:
-    value: Choose a new location or try a different obfuscation method.
-    comment: Second part of the server unavailable modal body, shown when an obfuscation policy is selected. Follows bodyText1.
-  bodyText2EnableObfuscation:
-    value: Choose a new location or try to enable obfuscation.
-    comment: Second part of the server unavailable modal body, shown when no obfuscation policy is selected. Follows bodyText1.
+  bodyTextChangeObfuscation:
+    value: This server location is temporarily unavailable. Choose a new location or try a different obfuscation method.
+    comment: Server unavailable modal body shown when an obfuscation policy is selected.
+  bodyTextEnableObfuscation:
+    value: This server location is temporarily unavailable. Choose a new location or try to enable obfuscation.
+    comment: Server unavailable modal body shown when no obfuscation policy is selected.
   buttonLabel: Choose a new location
   configureObfuscationButtonLabel: Configure obfuscation
 
 serverUnavailableNotification:
-  bodyText1:
-    value: This server location is temporarily unavailable.
-    comment: First part of the server unavailable notification. Followed by bodyText2NoObfuscation when obfuscation is disabled, or bodyText2Obfuscation when obfuscation is enabled.
-  bodyText2ChangeObfuscation:
-    value: Please open the app to choose a new location or try a different obfuscation method.
-    comment: Second part of the server unavailable notification, shown when an obfuscation policy is selected. Follows bodyText1 or bodyTextFireWallBlocked.
-  bodyText2EnableObfuscation:
-    value: Please open the app to choose a new location or try to enable obfuscation.
-    comment: Second part of the server unavailable notification, shown when no obfuscation policy is selected. Follows bodyText1 or bodyTextFireWallBlocked.
-  bodyTextFireWallBlocked: The server has been blocked. Check your firewall settings.
+  bodyTextFireWallBlockedChangeObfuscation:
+    value: The server has been blocked. Check your firewall settings or try a different obfuscation method.
+    comment: Server unavailable notification or modal body, shown when an obfuscation policy is selected.
+  bodyTextFireWallBlockedEnableObfuscation:
+    value: The server has been blocked. Check your firewall settings or try to enable obfuscation.
+    comment: Server unavailable notification or modal body, shown when no obfuscation policy is selected.
+  bodyTextChangeObfuscation:
+    value: This server location is temporarily unavailable. Please open the app to choose a new location or try a different obfuscation method.
+    comment: Server unavailable notification, shown when an obfuscation policy is selected.
+  bodyTextEnableObfuscation:
+    value: This server location is temporarily unavailable. Please open the app to choose a new location or try to enable obfuscation.
+    comment: Server unavailable notification, shown when no obfuscation policy is selected.
   preferencesLabel: Server unavailable notification
   preferencesSubLabel: Get notified when connecting to a server location failed
 
