@@ -17,8 +17,6 @@ CheckBox {
 
     id: checkBox
 
-    signal clicked()
-
     Layout.preferredHeight: MZTheme.theme.checkBoxHeightWidth
     Layout.preferredWidth: MZTheme.theme.checkBoxHeightWidth
     Layout.margins: MZTheme.theme.checkBoxRowSubLabelTopMargin
