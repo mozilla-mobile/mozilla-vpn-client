@@ -48,7 +48,7 @@ def load_xliff_translations(xliff_path, isEnglish):
 
 
 def using_app_placeholder(value):
-    return value.replace("%@", "\\(.applicationName)")
+    return value.replace("%@", "${applicationName}")
 
 
 SPECIAL_LOCALE_MAP = {
@@ -180,7 +180,7 @@ def build_phrase_section(phrase_strings, locale_translations):
         else:
             print(f"No translations found for {string_id} in {locale}")
 
-    return {"localizations": localizations}, error_locales
+    return {"extractionState": "extracted_with_value", "localizations": localizations}, error_locales
 
 
 def build_appshortcuts_xcstrings(intent_phrase_array, intent_title_array, locale_translations):
