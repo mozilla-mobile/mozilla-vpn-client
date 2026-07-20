@@ -47,8 +47,6 @@ RUN apt-get update -qq \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN ln -s /usr/bin/cargo-1.91 /usr/bin/cargo
-
 # Install the taskcluster script's package dependencies
 # %include taskcluster/scripts/requirements.txt
 ADD topsrcdir/taskcluster/scripts/requirements.txt /root/pip-requirements.txt
@@ -60,7 +58,7 @@ RUN locale-gen "$LANG"
 
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \
-    PATH="/builds/worker/.local/bin:/usr/lib/rust-1.85/bin:$PATH"
+    PATH="/builds/worker/.local/bin:/usr/lib/rust-1.91/bin:$PATH"
 
 # The build will be run as worker, which has no access
 # thus we should prep the folders
