@@ -171,6 +171,10 @@ void WindowsUtils::lockDownDLLSearchPath() {
   // Change the load order of DLLs to prefer system32 images
   PROCESS_MITIGATION_IMAGE_LOAD_POLICY pol = {};
   pol.PreferSystem32Images = 1;
-
   SetProcessMitigationPolicy(ProcessImageLoadPolicy, &pol, sizeof(pol));
+
+  // Deny loading of DLLs unless they are signed by microsoft.
+  PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY sig = {};
+  sig.MicrosoftSignedOnly = 1;
+  SetProcessMitigationPolicy(ProcessSignaturePolicy, &sig, sizeof(sig));
 }
