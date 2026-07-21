@@ -1335,8 +1335,9 @@ void MozillaVPN::scheduleRefreshDataTasks() {
   // https://mozilla-hub.atlassian.net/browse/VPN-3726 for more information.
   if (!m_private->m_location.initialized() &&
       !m_private->m_controller.isActive()) {
+    // Location is best-effort: failure should not abort a successful login.
     TaskGetLocation* locationTask =
-        new TaskGetLocation(ErrorHandler::PropagateError);
+        new TaskGetLocation(ErrorHandler::DoNotPropagateError);
     connect(locationTask, &TaskGetLocation::completed, [this]() {
       if (!m_locationInitialized) {
         logger.debug() << "Location initialized";
