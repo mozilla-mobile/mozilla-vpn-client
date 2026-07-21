@@ -138,7 +138,7 @@ set_property(GLOBAL PROPERTY AUTOGEN_TARGETS_FOLDER "Autogen")
 set_property(GLOBAL PROPERTY AUTOMOC_TARGETS_FOLDER "Autogen")
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "Autogen")
 
-find_package(Qt6 6.9 REQUIRED COMPONENTS
+find_package(Qt6 6.10 REQUIRED COMPONENTS
     Core
     Gui
     Network
@@ -152,8 +152,8 @@ find_package(Qt6 6.9 REQUIRED COMPONENTS
     Xml
     Svg
 )
-if(Qt6_VERSION VERSION_LESS 6.9.0)
-    message(FATAL_ERROR "Qt 6.9.0 or higher is required.  You are building with version ${Qt6_VERSION}")
+if(Qt6_VERSION VERSION_LESS 6.10.0)
+    message(FATAL_ERROR "Qt 6.10.0 or higher is required.  You are building with version ${Qt6_VERSION}")
 endif()
 
 if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
@@ -172,7 +172,6 @@ add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 
 # VPN Client build targets
 add_subdirectory(src)
-add_subdirectory(lottie)
 add_subdirectory(nebula)
 add_subdirectory(addons)
 
