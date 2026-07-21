@@ -2,5 +2,5 @@
 # https://taskcluster-taskgraph.readthedocs.io/en/latest/howto/bootstrap-taskgraph.html
 
 mozilla-repo-urls==0.2.2
-mozilla-taskgraph>=4.2.0
+mozilla-taskgraph>=4.4.0
 taskcluster-taskgraph>=24.1.1
