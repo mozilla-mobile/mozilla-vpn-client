@@ -104,6 +104,19 @@ if(NOT BUILD_FLATPAK)
     include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
     add_go_library(netfilter ${CMAKE_SOURCE_DIR}/linux/netfilter/netfilter.go)
     target_link_libraries(mozillavpn PRIVATE netfilter)
+
+    # Add the obfuscator binary
+    add_rust_binary(mozillavpn-obfuscator
+        PACKAGE_DIR ${CMAKE_SOURCE_DIR}/obfuscators
+        BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/obfuscators_target
+        CRATE_NAME obfuscators
+        BIN_NAME mozillavpn-obfuscator
+        CARGO_ENV CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}/obfuscators_target
+    )
+    add_dependencies(mozillavpn mozillavpn-obfuscator)
+
+    # Install the obfuscator binary
+    install(PROGRAMS ${mozillavpn-obfuscator_EXECUTABLE} DESTINATION bin)
 else()
     # Linux source files for sandboxed builds
     target_compile_definitions(mozillavpn PRIVATE MZ_FLATPAK)

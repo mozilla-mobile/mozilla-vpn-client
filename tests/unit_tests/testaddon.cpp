@@ -362,15 +362,15 @@ void TestAddon::conditionWatcher_featuresEnabled() {
   QVERIFY(!AddonConditionWatcherFeaturesEnabled::maybeCreate(
       &parent, QStringList{"invalid"}));
 
-  // alwaysPort53 is an OverridableFeature, default off.
+  // showRotateIPAddressButton is an OverridableFeature, default off.
   // Ensure it starts disabled for this test.
-  Feature::toggle(Feature::alwaysPort53, false);
-  QVERIFY(!Feature::isEnabled(Feature::alwaysPort53));
+  Feature::toggle(Feature::showRotateIPAddressButton, false);
+  QVERIFY(!Feature::isEnabled(Feature::showRotateIPAddressButton));
 
   // A condition not enabled by default
   AddonConditionWatcher* acw =
       AddonConditionWatcherFeaturesEnabled::maybeCreate(
-          &parent, QStringList{"alwaysPort53"});
+          &parent, QStringList{"showRotateIPAddressButton"});
   QVERIFY(!!acw);
   QVERIFY(!acw->conditionApplied());
 
@@ -379,8 +379,8 @@ void TestAddon::conditionWatcher_featuresEnabled() {
 
   FeatureModel* fm = FeatureModel::instance();
 
-  fm->toggle("alwaysPort53");
-  QVERIFY(Feature::isEnabled(Feature::alwaysPort53));
+  fm->toggle("showRotateIPAddressButton");
+  QVERIFY(Feature::isEnabled(Feature::showRotateIPAddressButton));
   QCOMPARE(signalSpy.count(), 1);
   QVERIFY(acw->conditionApplied());
 
@@ -388,13 +388,13 @@ void TestAddon::conditionWatcher_featuresEnabled() {
   {
     AddonConditionWatcher* acw2 =
         AddonConditionWatcherFeaturesEnabled::maybeCreate(
-            &parent, QStringList{"alwaysPort53"});
+            &parent, QStringList{"showRotateIPAddressButton"});
     QVERIFY(!!acw2);
     QVERIFY(acw2->conditionApplied());
   }
 
-  fm->toggle("alwaysPort53");
-  QVERIFY(!Feature::isEnabled(Feature::alwaysPort53));
+  fm->toggle("showRotateIPAddressButton");
+  QVERIFY(!Feature::isEnabled(Feature::showRotateIPAddressButton));
   QCOMPARE(signalSpy.count(), 2);
   QVERIFY(!acw->conditionApplied());
 }

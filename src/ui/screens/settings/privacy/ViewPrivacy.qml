@@ -84,6 +84,67 @@ MZViewBase {
                 privacyOverwriteLoader.active = active;
             }
         }
+
+        MZClickableRow {
+            id: obfuscationSettings
+            objectName: "obfuscationSettings"
+
+            accessibleName: obfuscationTitle.text
+
+            anchors.left: undefined
+            anchors.right: undefined
+
+            Layout.leftMargin: 16
+            Layout.rightMargin: 16
+            Layout.topMargin: -MZTheme.theme.windowMargin / 2
+            Layout.fillWidth: true
+            Layout.minimumHeight: MZTheme.theme.rowHeight
+            canGrowVertical: true
+            Layout.preferredHeight: Math.max(MZTheme.theme.rowHeight, obfuscationContent.implicitHeight)
+
+            onClicked: {
+                stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/privacy/obfuscation/ViewObfuscation.qml")
+            }
+
+            RowLayout {
+                spacing: MZTheme.theme.windowMargin
+                anchors.left: parent.left
+                anchors.right: parent.right
+                anchors.verticalCenter: parent.verticalCenter
+
+                ColumnLayout {
+                    id: obfuscationContent
+                    spacing: 0
+                    Layout.alignment: Qt.AlignVCenter
+                    Layout.fillWidth: true
+
+                    MZInterLabel {
+                        id: obfuscationTitle
+                        Accessible.ignored: true
+                        Layout.fillWidth: true
+                        text: MZI18n.SettingsObfuscationSettings
+                        color: MZTheme.colors.fontColorDark
+                        horizontalAlignment: Text.AlignLeft
+                        wrapMode: Text.WordWrap
+                    }
+
+                    MZTextBlock {
+                        id: obfuscationSubtitle
+                        Layout.fillWidth: true
+                        text: MZI18n.SettingsObfuscationSettingsDescription
+                        font.pixelSize: MZTheme.theme.fontSizeSmall
+                        horizontalAlignment: Text.AlignLeft
+                        wrapMode: Text.Wrap
+                        verticalAlignment: Text.AlignVCenter
+                        visible: !!text.length
+                    }
+                }
+
+                MZChevron {
+                    Layout.alignment: Qt.AlignRight | Qt.AlignVCenter
+                }
+            }
+        }
     }
 
     Loader {
@@ -136,7 +197,6 @@ MZViewBase {
         title: MZI18n.HelpSheetsPrivacyTitle
 
         model: [
-            {type: MZHelpSheet.BlockType.Title, text: MZI18n.HelpSheetsPrivacyHeader},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsPrivacyBody1, margin: MZTheme.theme.helpSheetTitleBodySpacing},
             {type: MZHelpSheet.BlockType.Text, text: MZI18n.HelpSheetsPrivacyBody2, margin: MZTheme.theme.helpSheetBodySpacing},
             {type: MZHelpSheet.BlockType.LinkButton, text: MZI18n.GlobalLearnMore, margin: MZTheme.theme.helpSheetBodyButtonSpacing, objectName: "learnMoreLink", action: () => {

@@ -99,4 +99,5 @@ dependencies {
 
     implementation project(path: ':common')
     implementation project(path: ':tunnel')
+    implementation project(path: ':obfuscator')
 }

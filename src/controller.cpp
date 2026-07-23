@@ -192,6 +192,9 @@ void Controller::initialize() {
   connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
           &Controller::serverDataChanged);
 
+  connect(SettingsHolder::instance(), &SettingsHolder::obfuscationPolicyChanged,
+          this, &Controller::serverDataChanged);
+
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
 
@@ -278,6 +281,11 @@ void Controller::startHandshakeTimer() {
 void Controller::handshakeTimeout() {
   logger.debug() << "Timeout while waiting for handshake";
 
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  SettingsHolder::ObfuscationPolicy obfuscationPolicy =
+      static_cast<SettingsHolder::ObfuscationPolicy>(
+          settingsHolder->obfuscationPolicy());
+
   MozillaVPN* vpn = MozillaVPN::instance();
   Q_ASSERT(!m_activationQueue.isEmpty());
 
@@ -298,14 +306,31 @@ void Controller::handshakeTimeout() {
   InterfaceConfig& exit_hop = m_activationQueue.last();
   Q_ASSERT(exit_hop.m_hopType != InterfaceConfig::HopType::MultiHopEntry);
 
+  // On the first retry, opportunistically escalate to the port-53 variant of
+  // the configured policy.
+  // Policies that already use port 53, or obfuscation methods that have no
+  // port-53 variant, are retried unchanged.
   if (m_connectionRetry == 1) {
-    logger.info() << "Connection Attempt: Using Port 53 Option this time.";
-    // On the first retry, opportunisticly try again using the port 53
-    // option enabled, if that feature is disabled.
-    activateInternal(ForceDNSPort, RandomizeServerSelection, m_initiator);
-    return;
-  } else if (m_connectionRetry < CONNECTION_MAX_RETRY) {
-    activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
+    SettingsHolder::ObfuscationPolicy port53Policy = obfuscationPolicy;
+    switch (obfuscationPolicy) {
+      case SettingsHolder::ObfuscationPolicy::NoObfuscation:
+        port53Policy = SettingsHolder::ObfuscationPolicy::Port53;
+        break;
+      case SettingsHolder::ObfuscationPolicy::LWO:
+        port53Policy = SettingsHolder::ObfuscationPolicy::LwoOverPort53;
+        break;
+      default:
+        break;
+    }
+    if (port53Policy != obfuscationPolicy) {
+      logger.info() << "Connection Attempt: opportunistically trying port 53.";
+      activateInternal(port53Policy, RandomizeServerSelection, m_initiator);
+      return;
+    }
+  }
+
+  if (m_connectionRetry < CONNECTION_MAX_RETRY) {
+    activateInternal(obfuscationPolicy, RandomizeServerSelection, m_initiator);
     return;
   }
 
@@ -382,8 +407,13 @@ void Controller::updateRequired() {
   }
 }
 
-auto Controller::setupConfigs(DNSPortPolicy dnsPort,
-                              ServerSelectionPolicy serverSelectionPolicy) {
+auto Controller::setupConfigs(
+    SettingsHolder::ObfuscationPolicy obfuscationPolicy,
+    ServerSelectionPolicy serverSelectionPolicy) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  Server::ObfuscationMethod obfuscationMethod =
+      m_serverData.obfuscationPolicyToObfuscationMethod(obfuscationPolicy);
+
   Server exitServer =
       serverSelectionPolicy == DoNotRandomizeServerSelection &&
               !m_serverData.exitServerPublicKey().isEmpty()
@@ -403,7 +433,6 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
     m_nextStep = Disconnect;
     return QList<InterfaceConfig>();
   }
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
   QList<InterfaceConfig> returnList;
 
   auto allowedIPList = m_initiator == ExtensionUser
@@ -412,6 +441,7 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
   // Prepare the exit server's connection data.
   InterfaceConfig exitConfig;
   exitConfig.m_privateKey = vpn->keys()->privateKey();
+  exitConfig.m_publicKey = vpn->keys()->publicKey();
   exitConfig.m_deviceIpv4Address = device->ipv4Address();
   exitConfig.m_deviceIpv6Address = device->ipv6Address();
   exitConfig.m_serverIpv4Gateway = exitServer.ipv4Gateway();
@@ -424,24 +454,29 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
   exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
   exitConfig.m_exitCity =
       Localizer::instance()->getTranslatedCityName(exitServer.cityName());
+  exitConfig.m_obfuscationMethod = Server::ObfuscationMethod::NoObfuscation;
   logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
 
   if (m_impl->splitTunnelSupported()) {
     exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
-  }
-  if (Feature::isEnabled(Feature::alwaysPort53)) {
-    dnsPort = ForceDNSPort;
   }
 
   // For single-hop connections, exclude the entry server
   if (!Feature::multiHop.supported || !m_serverData.multihop()) {
     logger.info() << "Activating single hop";
     exitConfig.m_hopType = InterfaceConfig::SingleHop;
+    exitConfig.m_obfuscationMethod = obfuscationMethod;
 
     // If requested, force the use of port 53/DNS.
-    if (dnsPort == ForceDNSPort) {
+    if (obfuscationPolicy == SettingsHolder::ObfuscationPolicy::Port53 ||
+        obfuscationPolicy == SettingsHolder::ObfuscationPolicy::LwoOverPort53) {
       logger.info() << "Forcing port 53";
       exitConfig.m_serverPort = 53;
+    }
+
+    // If UDP over TCP is enabled choose a dedicated port
+    if (obfuscationMethod == Server::ObfuscationMethod::UdpOverTcp) {
+      exitConfig.m_serverPort = exitServer.chooseTcpPort();
     }
   }
   // For controllers that support multiple hops, create a queue of connections.
@@ -465,6 +500,7 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
 
     InterfaceConfig entryConfig;
     entryConfig.m_privateKey = vpn->keys()->privateKey();
+    entryConfig.m_publicKey = vpn->keys()->publicKey();
     entryConfig.m_deviceIpv4Address = device->ipv4Address();
     entryConfig.m_deviceIpv6Address = device->ipv6Address();
     entryConfig.m_serverPublicKey = entryServer.publicKey();
@@ -472,6 +508,7 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
     entryConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
     entryConfig.m_serverPort = entryServer.choosePort();
     entryConfig.m_hopType = InterfaceConfig::MultiHopEntry;
+    entryConfig.m_obfuscationMethod = obfuscationMethod;
     entryConfig.m_allowedIPAddressRanges.append(
         IPAddress(exitServer.ipv4AddrIn()));
     if (!exitServer.ipv6AddrIn().isEmpty()) {
@@ -483,9 +520,14 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
         Localizer::instance()->getTranslatedCityName(entryServer.cityName());
 
     // If requested, force the use of port 53/DNS.
-    if (dnsPort == ForceDNSPort) {
+    if (obfuscationPolicy == SettingsHolder::ObfuscationPolicy::Port53 ||
+        obfuscationPolicy == SettingsHolder::ObfuscationPolicy::LwoOverPort53) {
       logger.info() << "Forcing port 53";
       entryConfig.m_serverPort = 53;
+    }
+    // If UDP over TCP is enabled choose a dedicated port
+    if (obfuscationMethod == Server::ObfuscationMethod::UdpOverTcp) {
+      entryConfig.m_serverPort = entryServer.chooseTcpPort();
     }
 
     returnList.append(entryConfig);
@@ -517,6 +559,12 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
     exitConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
     exitConfig.m_entryCity =
         Localizer::instance()->getTranslatedCityName(entryServer.cityName());
+    // We cannot emulate multihop and use UDP over TCP at the same time, LWO
+    // will work
+    exitConfig.m_obfuscationMethod =
+        obfuscationMethod == Server::ObfuscationMethod::LWO
+            ? Server::ObfuscationMethod::LWO
+            : Server::ObfuscationMethod::NoObfuscation;
   }
 
   returnList.append(exitConfig);
@@ -524,7 +572,7 @@ auto Controller::setupConfigs(DNSPortPolicy dnsPort,
 }
 
 void Controller::activateInternal(
-    DNSPortPolicy dnsPort,
+    SettingsHolder::ObfuscationPolicy obfuscationPolicy,
     ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection,
     ActivationPrincipal initiator = ClientUser) {
   logger.debug() << "Activation internal";
@@ -535,7 +583,7 @@ void Controller::activateInternal(
   m_activationQueue.clear();
 
   QList<InterfaceConfig> serverConfigs =
-      setupConfigs(dnsPort, serverSelectionPolicy);
+      setupConfigs(obfuscationPolicy, serverSelectionPolicy);
   if (serverConfigs.isEmpty()) {
     logger.info() << "Config setup error";
     // Error in setupConfigs, so do not continue
@@ -650,6 +698,7 @@ Controller::ErrorCode Controller::error() const { return m_errorCode; }
 
 bool Controller::silentSwitchServers(
     ServerCoolDownPolicyForSilentSwitch serverCoolDownPolicy) {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
   logger.debug() << "Silently switch servers" << serverCoolDownPolicy;
 
   if (m_state != StateOn) {
@@ -680,7 +729,9 @@ bool Controller::silentSwitchServers(
   clearRetryCounter();
 
   setState(StateSilentSwitching);
-  activateInternal(DoNotForceDNSPort, selectionPolicy, m_initiator);
+  activateInternal(static_cast<SettingsHolder::ObfuscationPolicy>(
+                       settingsHolder->obfuscationPolicy()),
+                   selectionPolicy, m_initiator);
   return true;
 }
 
@@ -783,12 +834,15 @@ void Controller::disconnected() {
       setState(StateOff);
       return;
 
-    case Reconnect:
+    case Reconnect: {
       m_serverData = m_nextServerData;
       emit currentServerChanged();
-      activateInternal(DoNotForceDNSPort, RandomizeServerSelection,
-                       m_initiator);
+      SettingsHolder* settingsHolder = SettingsHolder::instance();
+      activateInternal(static_cast<SettingsHolder::ObfuscationPolicy>(
+                           settingsHolder->obfuscationPolicy()),
+                       RandomizeServerSelection, m_initiator);
       return;
+    }
 
     default:
       break;
@@ -923,8 +977,11 @@ void Controller::maybeSendUpdatedConfig(const ServerData& serverData) {
   if (m_impl->canSendUpdatedConfig()) {
     logger.debug() << "Sending updated config";
     m_serverData = serverData;
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
     QList<InterfaceConfig> serverConfigs =
-        setupConfigs(DoNotForceDNSPort, RandomizeServerSelection);
+        setupConfigs(static_cast<SettingsHolder::ObfuscationPolicy>(
+                         settingsHolder->obfuscationPolicy()),
+                     RandomizeServerSelection);
     if (serverConfigs.isEmpty()) {
       // Error in setupConfigs, so do not continue
       // This most commonly happens when signing out -
@@ -980,7 +1037,10 @@ bool Controller::switchServers(const ServerData& serverData) {
   // Otherwise proceed directly to activation.
   m_serverData = serverData;
   emit currentServerChanged();
-  activateInternal(DoNotForceDNSPort, RandomizeServerSelection, m_initiator);
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  activateInternal(static_cast<SettingsHolder::ObfuscationPolicy>(
+                       settingsHolder->obfuscationPolicy()),
+                   RandomizeServerSelection, m_initiator);
   return true;
 }
 
@@ -1005,6 +1065,10 @@ bool Controller::activate(const ServerData& serverData,
     logger.debug() << "Already connected";
     return false;
   }
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  SettingsHolder::ObfuscationPolicy obfuscationPolicy =
+      static_cast<SettingsHolder::ObfuscationPolicy>(
+          settingsHolder->obfuscationPolicy());
 
   setError(ErrorNone);
   m_serverData = serverData;
@@ -1045,7 +1109,7 @@ bool Controller::activate(const ServerData& serverData,
 
     connect(
         request, &NetworkRequest::requestFailed, this,
-        [this, serverSelectionPolicy, initiator](
+        [this, serverSelectionPolicy, initiator, obfuscationPolicy](
             QNetworkReply::NetworkError error, const QByteArray&) {
           logger.error() << "Account request failed" << error;
           REPORTNETWORKERROR(error, ErrorHandler::DoNotPropagateError,
@@ -1066,11 +1130,12 @@ bool Controller::activate(const ServerData& serverData,
           }
 
           clearRetryCounter();
-          activateInternal(DoNotForceDNSPort, serverSelectionPolicy, initiator);
+          activateInternal(obfuscationPolicy, serverSelectionPolicy, initiator);
         });
 
     connect(request, &NetworkRequest::requestCompleted, this,
-            [this, serverSelectionPolicy, initiator](const QByteArray& data) {
+            [this, serverSelectionPolicy, initiator,
+             obfuscationPolicy](const QByteArray& data) {
               MozillaVPN::instance()->accountChecked(data);
 
               if (initiator != ExtensionUser) {
@@ -1078,7 +1143,7 @@ bool Controller::activate(const ServerData& serverData,
               }
 
               clearRetryCounter();
-              activateInternal(DoNotForceDNSPort, serverSelectionPolicy,
+              activateInternal(obfuscationPolicy, serverSelectionPolicy,
                                initiator);
             });
 
@@ -1100,7 +1165,7 @@ bool Controller::activate(const ServerData& serverData,
 #endif
 
   clearRetryCounter();
-  activateInternal(DoNotForceDNSPort, serverSelectionPolicy, initiator);
+  activateInternal(obfuscationPolicy, serverSelectionPolicy, initiator);
   return true;
 }
 

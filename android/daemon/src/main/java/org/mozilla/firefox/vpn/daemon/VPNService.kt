@@ -18,6 +18,7 @@ import com.wireguard.crypto.Key
 import org.json.JSONObject
 import org.mozilla.firefox.qt.common.CoreBinder
 import org.mozilla.firefox.qt.common.Prefs
+import org.mozilla.firefox.vpn.obfuscator.Obfuscator
 import org.mozilla.guardian.tunnel.WireGuardGo
 import java.util.*
 
@@ -30,6 +31,7 @@ class VPNService : android.net.VpnService() {
     private var mAlreadyInitialised = false
     val mConnectionHealth = ConnectionHealth(this)
     private var mCityname = ""
+    private var mObfuscator: Obfuscator? = null
     private val mBackgroundPingTimerMSec: Long = 3 * 60 * 60 * 1000 // 3 hours, in milliseconds
     private val mShortTimerBackgroundPingMSec: Long = 3 * 60 * 1000 // 3 minutes, in milliseconds
 
@@ -223,15 +225,43 @@ class VPNService : android.net.VpnService() {
         }
         Log.sensitive(tag, json.toString())
         val jServer: JSONObject = getNextServerConfig(json, useFallbackServer)
-        val wireguard_conf = buildWireguardConfig(jServer, json)
+
+        // If an obfuscator is configured, start its proxy now and rewrite the
+        // WireGuard endpoint to its loopback port. The relay's outbound socket
+        // is protected before the tunnel is established so its packets
+        // always bypass the VPN.
+        val obfuscationMethodRaw = json.optInt("obfuscationMethod", 0)
+        val obfuscationMethod = Obfuscator.Method.fromValue(obfuscationMethodRaw)
+        Log.i(tag, "Attempt to start obfuscator '$obfuscationMethodRaw'")
+        val obfuscator: Obfuscator? = if (obfuscationMethod != null && obfuscationMethod != Obfuscator.Method.NoObfuscation) {
+            val r = Obfuscator.start(
+                method = obfuscationMethod,
+                serverIpv4 = jServer.optString("ipv4AddrIn").ifEmpty { null },
+                serverIpv6 = jServer.optString("ipv6AddrIn").ifEmpty { null },
+                serverPort = jServer.getInt("port"),
+                serverPublicKey = jServer.optString("publicKey").ifEmpty { null },
+                publicKey = json.optJSONObject("device")?.optString("publicKey")?.ifEmpty { null },
+            ) ?: throw Error("Failed to start obfuscator method: $obfuscationMethod")
+            Log.i(tag, "Obfuscator '$obfuscationMethod' listening on 127.0.0.1:${r.localPort}")
+            r
+        } else { null }
+
+        val wireguard_conf = buildWireguardConfig(jServer, json, obfuscator)
         val wgConfig: String = wireguard_conf.toWgUserspaceString()
         if (wgConfig.isEmpty()) {
+            obfuscator?.stop()
             throw Error("WG_Userspace config is empty, can't continue")
         }
         mCityname = json.getString("city")
 
         if (checkPermissions() != null) {
             throw Error("turn on was called without vpn-permission!")
+        }
+
+        // Mark the obfuscator's outbound socket so its packets bypass the VPN.
+        obfuscator?.let {
+            if (it.socketV4 >= 0) protect(it.socketV4)
+            if (it.socketV6 >= 0) protect(it.socketV6)
         }
 
         val builder = Builder()
@@ -247,6 +277,7 @@ class VPNService : android.net.VpnService() {
         builder.establish().use { tun ->
             if (tun == null) {
                 Log.e(tag, "Activation Error: did not get a TUN handle")
+                obfuscator?.stop()
                 return
             }
             // We should have everything to establish a new connection, turn down the old tunnel
@@ -254,16 +285,21 @@ class VPNService : android.net.VpnService() {
             if (currentTunnelHandle != -1) {
                 Log.i(tag, "Currently have a connection, close old handle")
                 WireGuardGo.wgTurnOff(currentTunnelHandle)
+                mObfuscator?.stop()
+                mObfuscator = null
             }
             currentTunnelHandle = WireGuardGo.wgTurnOn("mvpn0", tun.detachFd(), wgConfig)
         }
         if (currentTunnelHandle < 0) {
+            obfuscator?.stop()
             throw Error("Activation Error Wireguard-Error -> $currentTunnelHandle")
         } else {
             Log.i(tag, "Updated tunnel handle to: " + currentTunnelHandle)
         }
         protect(WireGuardGo.wgGetSocketV4(currentTunnelHandle))
         protect(WireGuardGo.wgGetSocketV6(currentTunnelHandle))
+
+        obfuscator?.let { mObfuscator = it }
 
         mConfig = json
         // We don't want to update connection health in several situations:
@@ -355,6 +391,8 @@ class VPNService : android.net.VpnService() {
 
         WireGuardGo.wgTurnOff(currentTunnelHandle)
         currentTunnelHandle = -1
+        mObfuscator?.stop()
+        mObfuscator = null
         // If the client is "dead", on a disconnect the
         // message won't be updated to 'you disconnected from X'
         // so we should get rid of it. :)
@@ -425,14 +463,23 @@ class VPNService : android.net.VpnService() {
      * Create a Wireguard [Config] from a [json] string - The [json] will be created in
      * AndroidController.cpp
      */
-    private fun buildWireguardConfig(jServer: JSONObject, obj: JSONObject): Config {
+    private fun buildWireguardConfig(
+        jServer: JSONObject,
+        obj: JSONObject,
+        obfuscator: Obfuscator? = null,
+    ): Config {
         val confBuilder = Config.Builder()
 
         val peerBuilder = Peer.Builder()
-        val ep =
+        val ep = if (obfuscator != null) {
+            // Send WireGuard traffic to the local obfuscator instead of the
+            // real server
+            InetEndpoint.parse("127.0.0.1:${obfuscator.localPort}")
+        } else {
             InetEndpoint.parse(
                 jServer.getString("ipv4AddrIn") + ":" + jServer.getString("port"),
             )
+        }
         peerBuilder.setEndpoint(ep)
         peerBuilder.setPublicKey(Key.fromBase64(jServer.getString("publicKey")))
 

@@ -328,6 +328,33 @@ systray:
 
 settings:
   privacySettings: Privacy features
+  obfuscationSettings: Obfuscation
+  obfuscationSettingsDescription: May help bypass network restrictions and censorship.
+  obfuscationSettingsWarning1: These features will not help when a specific website or app blocks content because of the VPN.
+  obfuscationSettingsWarning2: They may cause degraded network speed.
+  obfuscationSettingsEnable: Enable Obfuscation
+  obfuscationPort53Title: Always connect using port 53
+  obfuscationPort53Body: Routes traffic through the port commonly used for DNS. May help on networks that block UDP traffic.
+  obfuscationMasqueTitle:
+    value: MASQUE
+    comment: MASQUE is an acronym, it should NOT be translated.
+  obfuscationMasqueBody: Disguises VPN traffic as regular HTTPS traffic. May help on networks that block VPN protocols.
+  obfuscationLwoTitle:
+    value: LWO
+    comment: LWO is an acronym, it should NOT be translated.
+  obfuscationLwoBody: Fastest obfuscation method. May help on networks that detect or block WireGuard traffic without adding significant overhead.
+  obfuscationShadowsocksTitle:
+    value: Shadowsocks
+    comment: Shadowsocks is a protocol name, it should NOT be translated.
+  obfuscationShadowsocksBody: May help bypass restrictive or heavily filtered networks, and could work when all other approaches do not.
+  obfuscationUdpOverTcpTitle: UDP over TCP
+  obfuscationUdpOverTcpBody: Tunnels UDP traffic over TCP. May help on networks that block UDP traffic.
+  obfuscationLwoOverPort53Title:
+    value: LWO over port 53
+    comment: LWO is an acronym, it should NOT be translated.
+  obfuscationLwoOverPort53Body:
+    value: Combines the benefits of LWO and port 53.
+    comment: LWO is an acronym, it should NOT be translated.
   appExclusionTitle: Excluded apps
   appearance:
     value: Appearance
@@ -568,12 +595,28 @@ crashreporter:
 
 serverUnavailableModal:
   headerText: Server unavailable
-  bodyText: This server location is temporarily unavailable. Choose a new location.
+  bodyTextChangeObfuscation:
+    value: This server location is temporarily unavailable. Choose a new location or try a different obfuscation method.
+    comment: Server unavailable modal body shown when an obfuscation policy is selected.
+  bodyTextEnableObfuscation:
+    value: This server location is temporarily unavailable. Choose a new location or try to enable obfuscation.
+    comment: Server unavailable modal body shown when no obfuscation policy is selected.
   buttonLabel: Choose a new location
+  configureObfuscationButtonLabel: Configure obfuscation
 
 serverUnavailableNotification:
-  bodyText: This server location is temporarily unavailable. Please open the app to choose a new location.
-  bodyTextFireWallBlocked: The server has been blocked. Check your firewall settings.
+  bodyTextFireWallBlockedChangeObfuscation:
+    value: The server has been blocked. Check your firewall settings or try a different obfuscation method.
+    comment: Server unavailable notification or modal body, shown when an obfuscation policy is selected.
+  bodyTextFireWallBlockedEnableObfuscation:
+    value: The server has been blocked. Check your firewall settings or try to enable obfuscation.
+    comment: Server unavailable notification or modal body, shown when no obfuscation policy is selected.
+  bodyTextChangeObfuscation:
+    value: This server location is temporarily unavailable. Please open the app to choose a new location or try a different obfuscation method.
+    comment: Server unavailable notification, shown when an obfuscation policy is selected.
+  bodyTextEnableObfuscation:
+    value: This server location is temporarily unavailable. Please open the app to choose a new location or try to enable obfuscation.
+    comment: Server unavailable notification, shown when no obfuscation policy is selected.
   preferencesLabel: Server unavailable notification
   preferencesSubLabel: Get notified when connecting to a server location failed
 
@@ -885,6 +928,15 @@ devices:
     comment: Title for the menu bar when viewing the devices or device limit pages
 
 helpSheets:
+  obfuscationTitle:
+    value: Obfuscation
+    comment: Title label for the Obfuscation features help sheet
+  obfuscationBody1:
+    value: These options should be used when a network is blocking connections to VPN servers. They will not help when a specific website or app blocks content because of the VPN.
+    comment: Body label for the Obfuscation features help sheet
+  obfuscationBody2:
+    value: These features may slow down the connection, so turn them off when they are not needed.
+    comment: Body label for the Obfuscation features help sheet
   dnsTitle:
     value: Custom DNS settings
     comment: Title label for the custom dns help sheet
@@ -900,9 +952,6 @@ helpSheets:
   privacyTitle:
     value: Privacy features
     comment: Title label for the privacy features help sheet
-  privacyHeader:
-    value: What can privacy features do for me?
-    comment: Header label for the privacy features help sheet
   privacyBody1:
     value: Privacy features give you greater control over the types of content you see, helping you stay safe online.
     comment: Body label for the privacy features help sheet
@@ -1089,6 +1138,9 @@ controller:
   regeneratingKey:
     value: Preparing your connection
     comment: Connection subtitle label for the main screen when the app is regenerating WireGuard keys
+  obfuscationOn:
+    value: Obfuscation is on
+    comment: Label for the main screen when Obfuscation features are enabled
 
 iosAppIntentsMain:
   turnOnAction:

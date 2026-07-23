@@ -16,6 +16,7 @@
 #include "models/server.h"
 #include "models/serverdata.h"
 #include "pinghelper.h"
+#include "settingsholder.h"
 
 class Controller;
 class ControllerImpl;
@@ -285,12 +286,7 @@ class Controller : public QObject, public LogSerializer {
 
   NextStep m_nextStep = None;
 
-  enum DNSPortPolicy {
-    ForceDNSPort,
-    DoNotForceDNSPort,
-  };
-
-  void activateInternal(DNSPortPolicy dnsPort,
+  void activateInternal(SettingsHolder::ObfuscationPolicy obfuscationPolicy,
                         ServerSelectionPolicy serverSelectionPolicy,
                         ActivationPrincipal);
 
@@ -300,7 +296,7 @@ class Controller : public QObject, public LogSerializer {
   void setError(ErrorCode code);
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
-  auto setupConfigs(DNSPortPolicy dnsPort,
+  auto setupConfigs(SettingsHolder::ObfuscationPolicy obfuscationPolicy,
                     ServerSelectionPolicy serverSelectionPolicy);
   void maybeSendUpdatedConfig(const ServerData& serverData);
   QString useLocalSocketPath() const;
