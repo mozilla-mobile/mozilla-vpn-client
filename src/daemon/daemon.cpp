@@ -163,16 +163,15 @@ bool Daemon::activate(const InterfaceConfig& config) {
     peerConfig.m_serverIpv6AddrIn = QString();
     peerConfig.m_serverPort = obfuscator->localPort();
   }
-  // The exit hop never needs an obfuscator, assign the empty obfuscator to
-  // allow changing of the obfuscation method on server switch.
-  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
-    m_obfuscator = std::move(obfuscator);
-  }
-
   // Add the peer to this interface.
   if (!wgutils()->updatePeer(peerConfig)) {
     logger.error() << "Peer creation failed.";
     return false;
+  }
+
+  // Take ownership of the new obfuscator (entry hop only).
+  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
+    m_obfuscator = std::move(obfuscator);
   }
 
   if (!maybeUpdateResolvers(config)) {
@@ -493,18 +492,18 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     peerConfig.m_serverPort = obfuscator->localPort();
   }
 
-  // The exit hop never needs an obfuscator, assign the empty obfuscator to
-  // allow changing of the obfuscation method on server switch.
-  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
-    m_obfuscator = std::move(obfuscator);
-  }
-
   // Activate the new peer and its routes.
   if (!wgutils()->updatePeer(peerConfig)) {
     logger.error()
         << "Server switch failed to update the peer wireguard config";
     return false;
   }
+
+  // Take ownership of the new obfuscator (entry hop only).
+  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
+    m_obfuscator = std::move(obfuscator);
+  }
+
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     if (!wgutils()->updateRoutePrefix(ip)) {
       logger.error() << "Server switch failed to update the routing table";
