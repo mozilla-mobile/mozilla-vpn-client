@@ -210,6 +210,27 @@ impl<'a> Balrog<'_> {
         Err(BalrogError::HostnameMismatch)
     }
 
+    /* ASN.1 integers are signed, but ECDSA signature points are always unsigned.
+     * If the leading bit is zero, we must append an extra leading zero byte to
+     * ensure the sign is positive.
+     */
+    fn ecdsa_uint_to_asn1(value: &[u8]) -> Vec<u8> {
+        // Add padding to ensure the sign is positive.
+        if value[0] & 0x80 != 0 {
+            let mut result = Vec::from(&[0u8]);
+            result.extend_from_slice(value);
+            return result;
+        }
+
+        // Strip unnecessary padding.
+        let mut strip = 0;
+        while (value[strip] == 0x00) && (value[strip+1] & 0x80 == 0) {
+            strip = strip+1;
+        }
+
+        Vec::from(&value[strip..])
+    }
+
     /* Take a fixed-length ECDSA signature and convert into ASN.1 DER encoding */
     fn ecdsa_signature_to_asn1(input: &[u8]) -> Result<Vec<u8>, BalrogError> {
         /* ECDSA signatures take the ASN.1 form of:
@@ -220,19 +241,8 @@ impl<'a> Balrog<'_> {
          */
         /* Cut the fixed signature into component r and s values. */
         let (r, s) = input.split_at(input.len() / 2);
-        let mut r = r.to_vec();
-        let mut s = s.to_vec();
-
-        /* ASN.1 integers are signed, but ECDSA signature points are always unsigned.
-         * If the leading bit is zero, we must append an extra leading zero byte to
-         * ensure the sign is positive.
-         */
-        if r[0] & 0x80 != 0 {
-            r.insert(0, 0x00);
-        }
-        if s[0] & 0x80 != 0 {
-            s.insert(0, 0x00);
-        }
+        let r = Self::ecdsa_uint_to_asn1(r);
+        let s = Self::ecdsa_uint_to_asn1(s);
 
         /* Encode into an ASN.1 sequence. */
         let vec = vec![asn1_rs::Integer::new(&r), asn1_rs::Integer::new(&s)];
