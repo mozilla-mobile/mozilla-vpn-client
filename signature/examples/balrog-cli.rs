@@ -1,12 +1,15 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
+
 use clap::Parser;
 use ureq;
+use ring::digest;
 use std::{io, process};
 use std::io::Write;
 use x509_parser::time::ASN1Time;
 
 use signature::{Balrog, BalrogError, parse_pem_chain};
-
-const PROD_ROOT_HASH: &str = "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e";
 
 /// Program arguments
 #[derive(Parser, Debug)]
@@ -14,10 +17,6 @@ const PROD_ROOT_HASH: &str = "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea0
 struct Args {
     /// Balrog update URL
     url: String,
-
-    /// Root certificate hash
-    #[arg(short, long, default_value_t = PROD_ROOT_HASH.to_string())]
-    root: String,
 }
 
 struct BalrogData {
@@ -67,7 +66,7 @@ fn fetch(args: &Args) -> Result<BalrogData, ureq::Error> {
     })
 }
 
-fn run(args: &Args, data: &BalrogData) -> Result<(), BalrogError> {
+fn run(data: &BalrogData) -> Result<(), BalrogError> {
     let chain = parse_pem_chain(data.chain.as_slice())?;
     let balrog = Balrog::new(&chain)?;
 
@@ -84,8 +83,22 @@ fn run(args: &Args, data: &BalrogData) -> Result<(), BalrogError> {
             }
         }
     }
+    if balrog.chain.len() >= 2 {
+        let root = balrog.chain.last().unwrap();
+        for cn in root.subject().iter_common_name() {
+            let name = cn.as_str()?;
+            eprintln!("Root hostname: {}", name);
+        }
 
-    //let roothash = hex::decode(args.root.as_str()).unwrap();
+        if let Some(ext) = root.subject_alternative_name()? {
+            for san in ext.value.general_names.iter() {
+                eprintln!("Root alternative name: {}", san);
+            }
+        }
+
+        let digest = digest::digest(&digest::SHA256, root.as_raw());
+        eprintln!("Root hash: {}", hex::encode(digest));
+    } 
 
     balrog.verify(
         data.payload.as_slice(),
@@ -114,7 +127,7 @@ fn main() {
     };
 
     // Run the cryptographic validation
-    let result = run(&args, &data);
+    let result = run(&data);
 
     // Write the payload data to stdout.
     let _ = io::stdout().write_all(data.payload.as_slice());
