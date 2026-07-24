@@ -82,6 +82,8 @@ fn run(data: &BalrogData) -> Result<(), BalrogError> {
                 eprintln!("Leaf alternative name: {}", san);
             }
         }
+
+        eprintln!("Leaf expiration: {}", leaf.validity().not_after);
     }
     if balrog.chain.len() >= 2 {
         let root = balrog.chain.last().unwrap();
@@ -95,6 +97,8 @@ fn run(data: &BalrogData) -> Result<(), BalrogError> {
                 eprintln!("Root alternative name: {}", san);
             }
         }
+
+        eprintln!("Root expiration: {}", root.validity().not_after);
 
         let digest = digest::digest(&digest::SHA256, root.as_raw());
         eprintln!("Root hash: {}", hex::encode(digest));
