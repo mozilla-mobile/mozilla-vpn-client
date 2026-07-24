@@ -72,36 +72,26 @@ fn run(data: &BalrogData) -> Result<(), BalrogError> {
 
     // Print some details about the certificate chain.
     if let Some(leaf) = balrog.chain.first() {
-        for cn in leaf.subject().iter_common_name() {
-            let name = cn.as_str()?;
-            eprintln!("Leaf hostname: {}", name);
-        }
-
+        eprintln!("Leaf subject: {}", leaf.subject());
+        eprintln!("Leaf expiration: {}", leaf.validity().not_after);
         if let Some(ext) = leaf.subject_alternative_name()? {
             for san in ext.value.general_names.iter() {
                 eprintln!("Leaf alternative name: {}", san);
             }
         }
-
-        eprintln!("Leaf expiration: {}", leaf.validity().not_after);
     }
     if balrog.chain.len() >= 2 {
         let root = balrog.chain.last().unwrap();
-        for cn in root.subject().iter_common_name() {
-            let name = cn.as_str()?;
-            eprintln!("Root hostname: {}", name);
-        }
-
+        eprintln!("Root subject: {}", root.subject());
+        eprintln!("Root expiration: {}", root.validity().not_after);
         if let Some(ext) = root.subject_alternative_name()? {
             for san in ext.value.general_names.iter() {
                 eprintln!("Root alternative name: {}", san);
             }
         }
 
-        eprintln!("Root expiration: {}", root.validity().not_after);
-
         let digest = digest::digest(&digest::SHA256, root.as_raw());
-        eprintln!("Root hash: {}", hex::encode(digest));
+        eprintln!("Root digest: {}", hex::encode(digest));
     } 
 
     balrog.verify(
