@@ -346,7 +346,9 @@ settings:
   obfuscationShadowsocksTitle:
     value: Shadowsocks
     comment: Shadowsocks is a protocol name, it should NOT be translated.
-  obfuscationShadowsocksBody: May help bypass restrictive or heavily filtered networks, and could work when all other approaches do not.
+  obfuscationShadowsocksBody:
+    value: Wraps VPN traffic in an encrypted Shadowsocks connection to make it less identifiable. Could work when all other approaches do not.
+    comment: Shadowsocks is a protocol name, it should NOT be translated.
   obfuscationUdpOverTcpTitle: UDP over TCP
   obfuscationUdpOverTcpBody: Tunnels UDP traffic over TCP. May help on networks that block UDP traffic.
   obfuscationLwoOverPort53Title:
