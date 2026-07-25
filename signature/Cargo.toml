@@ -1,7 +1,7 @@
 [package]
 name = "signature"
 version = "0.2.0"
-edition = "2021"
+edition = "2024"
 
 [dependencies]
 asn1-rs = { version = "0.7.2", features=["datetime"] }
@@ -13,7 +13,14 @@ hex = "0.4"
 ring = "0.17.14"
 x509-parser = { version = "0.18.1", features = ["verify", "validate"] }
 
+[dev-dependencies]
+clap = { version = "4.6", features=["derive"] }
+ureq = "3.3.0"
+
+[[example]]
+name = "balrog-cli"
+
 [lib]
 name = "signature"
 path = "src/lib.rs"
-crate-type = ["staticlib"]
+crate-type = ["staticlib", "rlib"]
