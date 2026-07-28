@@ -131,7 +131,7 @@ QHostAddress IPAddress::hostmask() const {
       return QHostAddress(zero);
     }
   }
-  
+
   return QHostAddress();
 }
 
