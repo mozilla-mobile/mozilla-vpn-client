@@ -250,7 +250,7 @@ class VPNService : android.net.VpnService() {
                 serverPort = jServer.getInt("port"),
                 serverPublicKey = jServer.optString("publicKey").ifEmpty { null },
                 publicKey = json.optJSONObject("device")?.optString("publicKey")?.ifEmpty { null },
-                lwoVersion = json.optInt("lwoVersion", 1)
+                lwoVersion = json.optInt("lwoVersion", 1),
             ) ?: throw Error("Failed to start obfuscator method: $obfuscationMethod")
             Log.i(tag, "Obfuscator '$obfuscationMethod' listening on 127.0.0.1:${r.localPort}")
             r
