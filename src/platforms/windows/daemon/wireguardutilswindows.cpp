@@ -608,7 +608,7 @@ bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
   // Install the route
   DWORD result = CreateIpForwardEntry2(&entry);
   if ((result == ERROR_NOT_FOUND) &&
-      (prefix.type() == QAbstractSocket::IPv6Protocol)) {
+      (prefix.protocol() == QAbstractSocket::IPv6Protocol)) {
     return true;
   }
   if (result == ERROR_OBJECT_ALREADY_EXISTS) {
