@@ -15,6 +15,9 @@ class TestIpAddress final : public QObject, TestHelper<TestIpAddress> {
   void basic_data();
   void basic();
 
+  void invalid_data();
+  void invalid();
+
   void overlaps_data();
   void overlaps();
 

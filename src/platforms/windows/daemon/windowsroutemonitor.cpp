@@ -372,9 +372,8 @@ bool WindowsRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
                  << logger.sensitive(prefix.toString());
 
   // Silently ignore non-routeable addresses.
-  QHostAddress addr = prefix.address();
-  if (addr.isLoopback() || addr.isBroadcast() || addr.isLinkLocal() ||
-      addr.isMulticast()) {
+  if (prefix.isLoopback() || prefix.isBroadcast() || prefix.isLinkLocal() ||
+      prefix.isMulticast()) {
     return true;
   }
 
@@ -386,14 +385,14 @@ bool WindowsRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
   // Allocate and initialize the MIB routing table row.
   MIB_IPFORWARD_ROW2* data = new MIB_IPFORWARD_ROW2;
   InitializeIpForwardEntry(data);
-  if (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) {
-    Q_IPV6ADDR buf = prefix.address().toIPv6Address();
+  if (prefix.protocol() == QAbstractSocket::IPv6Protocol) {
+    Q_IPV6ADDR buf = prefix.toIPv6Address();
 
     memcpy(&data->DestinationPrefix.Prefix.Ipv6.sin6_addr, &buf, sizeof(buf));
     data->DestinationPrefix.Prefix.Ipv6.sin6_family = AF_INET6;
     data->DestinationPrefix.PrefixLength = prefix.prefixLength();
   } else {
-    quint32 buf = prefix.address().toIPv4Address();
+    quint32 buf = prefix.toIPv4Address();
 
     data->DestinationPrefix.Prefix.Ipv4.sin_addr.s_addr = htonl(buf);
     data->DestinationPrefix.Prefix.Ipv4.sin_family = AF_INET;
@@ -414,7 +413,7 @@ bool WindowsRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
 
   PMIB_IPFORWARD_TABLE2 table;
   int family;
-  if (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) {
+  if (prefix.protocol() == QAbstractSocket::IPv6Protocol) {
     family = AF_INET6;
   } else {
     family = AF_INET;
@@ -443,7 +442,7 @@ quint64 WindowsRouteMonitor::getExclusionRouteLuid(
 
 bool WindowsRouteMonitor::deleteExclusionRoute(const IPAddress& prefix) {
   logger.debug() << "Deleting exclusion route for"
-                 << logger.sensitive(prefix.address().toString());
+                 << logger.sensitive(prefix.toHostString());
 
   MIB_IPFORWARD_ROW2* data = m_exclusionRoutes.take(prefix);
   if (data == nullptr) {

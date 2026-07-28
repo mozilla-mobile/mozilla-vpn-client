@@ -68,7 +68,7 @@ ulong setIPv4AddressAndMask(NET_IFINDEX ifindex, const IPAddress address) {
   ULONG nteContext = 0;
   ULONG nteInstance = 0;
   IN_ADDR ipAddrBinary, subnetMaskBinary;
-  if (InetPtonA(AF_INET, qPrintable(address.address().toString()),
+  if (InetPtonA(AF_INET, qPrintable(address.toHostString()),
                 &ipAddrBinary) != 1) {
     return 0;
   }
@@ -97,10 +97,10 @@ bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress ipAddress) {
   MIB_UNICASTIPADDRESS_ROW row;
   SOCKADDR_IN6 sockaddr = {};
   sockaddr.sin6_family = AF_INET6;
-  if (InetPtonA(AF_INET6, qPrintable(ipAddress.address().toString()),
+  if (InetPtonA(AF_INET6, qPrintable(ipAddress.toHostString()),
                 &sockaddr.sin6_addr) != 1) {
     logger.error() << "Failed to assign ivp6: Cannot Parse IPv6 Address "
-                   << ipAddress.address().toString();
+                   << ipAddress.toHostString();
     return false;
   }
 
@@ -568,13 +568,13 @@ void WireguardUtilsWindows::buildMibForwardRow(const IPAddress& prefix,
   InitializeIpForwardEntry(entry);
 
   // Populate the next hop
-  if (prefix.type() == QAbstractSocket::IPv6Protocol) {
-    InetPtonA(AF_INET6, qPrintable(prefix.address().toString()),
+  if (prefix.protocol() == QAbstractSocket::IPv6Protocol) {
+    InetPtonA(AF_INET6, qPrintable(prefix.toHostString()),
               &entry->DestinationPrefix.Prefix.Ipv6.sin6_addr);
     entry->DestinationPrefix.Prefix.Ipv6.sin6_family = AF_INET6;
     entry->DestinationPrefix.PrefixLength = prefix.prefixLength();
   } else {
-    InetPtonA(AF_INET, qPrintable(prefix.address().toString()),
+    InetPtonA(AF_INET, qPrintable(prefix.toHostString()),
               &entry->DestinationPrefix.Prefix.Ipv4.sin_addr);
     entry->DestinationPrefix.Prefix.Ipv4.sin_family = AF_INET;
     entry->DestinationPrefix.PrefixLength = prefix.prefixLength();
