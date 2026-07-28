@@ -3,17 +3,17 @@ if (!('featureList' in api)) {
   return;
 }
 
-if (!api.featureList.get('alwaysPort53')) {
+if (!api.featureList.get('showRotateIPAddressButton')) {
   return;
 }
 
-if (api.featureList.get('alwaysPort53').isSupported) {
+if (api.featureList.get('showRotateIPAddressButton').isSupported) {
   return;
 }
 
-api.featureList.toggle('alwaysPort53');
+api.featureList.toggle('showRotateIPAddressButton');
 
-if (!api.featureList.get('alwaysPort53').isSupported) {
+if (!api.featureList.get('showRotateIPAddressButton').isSupported) {
   return;
 }
 

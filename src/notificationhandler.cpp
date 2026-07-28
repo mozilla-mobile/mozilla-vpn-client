@@ -315,12 +315,31 @@ void NotificationHandler::serverUnavailableNotification(bool pingRecieved) {
   Q_ASSERT(i18nStrings);
 
   QString title = i18nStrings->t(I18nStrings::ServerUnavailableModalHeaderText);
-  QString message =
-      pingRecieved
-          ? i18nStrings->t(
-                I18nStrings::
-                    ServerUnavailableNotificationBodyTextFireWallBlocked)
-          : i18nStrings->t(I18nStrings::ServerUnavailableNotificationBodyText);
+
+  QString message;
+  bool noObfuscation = SettingsHolder::instance()->obfuscationPolicy() ==
+                       SettingsHolder::NoObfuscation;
+
+  // When no obfuscation policy is selected, suggest enabling obfuscation
+  // when an obfuscation policy is selected, suggest changing the obfuscation
+  // method.
+  if (pingRecieved) {
+    message =
+        noObfuscation
+            ? i18nStrings->t(
+                  I18nStrings::
+                      ServerUnavailableNotificationBodyTextFireWallBlockedEnableObfuscation)
+            : i18nStrings->t(
+                  I18nStrings::
+                      ServerUnavailableNotificationBodyTextFireWallBlockedChangeObfuscation);
+  } else {
+    message =
+        noObfuscation
+            ? i18nStrings->t(
+                  I18nStrings::ServerUnavailableModalBodyTextEnableObfuscation)
+            : i18nStrings->t(
+                  I18nStrings::ServerUnavailableModalBodyTextChangeObfuscation);
+  }
 
   notifyInternal(ServerUnavailable, title, message,
                  Constants::SERVER_UNAVAILABLE_ALERT_MSEC);

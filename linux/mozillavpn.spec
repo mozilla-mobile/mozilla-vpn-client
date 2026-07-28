@@ -18,7 +18,7 @@ Requires:  wireguard-tools
 
 BuildRequires: cmake
 BuildRequires: cmake-rpm-macros
-BuildRequires: cargo >= 1.85
+BuildRequires: cargo >= 1.91
 BuildRequires: golang >= 1.18
 BuildRequires: (gcc >= 10.0.0 or gcc-toolset-10)
 BuildRequires: (gcc-c++ >= 10.0.0 or gcc-toolset-10)
@@ -67,6 +67,7 @@ install %{_srcdir}/LICENSE.md %{buildroot}/%{_licensedir}/%{name}/
 %{_unitdir}/mozillavpn.service
 %{_unitdir}/socksproxy.service
 %{_bindir}/mozillavpn
+%{_bindir}/mozillavpn-obfuscator
 %{_bindir}/socksproxy
 %{_prefix}/lib/mozilla/native-messaging-hosts/mozillavpn.json
 %{_datadir}/applications/org.mozilla.vpn.desktop

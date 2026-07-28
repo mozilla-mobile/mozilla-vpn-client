@@ -39,7 +39,7 @@ RUN apt-get update -qq \
                           git \
                           wget \
                           zip \
-                          cargo-1.85 \
+                          cargo-1.91 \
                           curl \
                           rpm \
                           libglib2.0-0 \
@@ -58,7 +58,7 @@ RUN locale-gen "$LANG"
 
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \
-    PATH="/builds/worker/.local/bin:/usr/lib/rust-1.85/bin:$PATH"
+    PATH="/builds/worker/.local/bin:/usr/lib/rust-1.91/bin:$PATH"
 
 # The build will be run as worker, which has no access
 # thus we should prep the folders

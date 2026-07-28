@@ -16,6 +16,7 @@ QJsonObject InterfaceConfig::toJson() const {
 
   json.insert("hopType", QJsonValue(metaEnum.valueToKey(m_hopType)));
   json.insert("privateKey", QJsonValue(m_privateKey));
+  json.insert("publicKey", QJsonValue(m_publicKey));
   json.insert("deviceIpv4Address", QJsonValue(m_deviceIpv4Address));
   json.insert("deviceIpv6Address", QJsonValue(m_deviceIpv6Address));
   json.insert("serverPublicKey", QJsonValue(m_serverPublicKey));
@@ -45,6 +46,11 @@ QJsonObject InterfaceConfig::toJson() const {
     disabledApps.append(QJsonValue(i));
   }
   json.insert("vpnDisabledApps", disabledApps);
+
+  QMetaEnum obfuscationMetaEnum =
+      QMetaEnum::fromType<Server::ObfuscationMethod>();
+  json.insert("obfuscationMethod",
+              QJsonValue(obfuscationMetaEnum.valueToKey(m_obfuscationMethod)));
 
   return json;
 }

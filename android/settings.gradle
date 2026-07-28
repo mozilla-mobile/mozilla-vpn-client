@@ -12,6 +12,7 @@ buildCache {
 
 include ':tunnel'
 include ':daemon'
+include ':obfuscator'
 include ':ClientCommon'
 include ':vpnClient'
 include ':common'

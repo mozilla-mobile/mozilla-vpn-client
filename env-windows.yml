@@ -11,9 +11,9 @@ dependencies:
   - python=3.12
   - nodejs=20.*
   - pip=25.0
-  - rust=1.85.0
-  - rust-std-aarch64-pc-windows-msvc=1.85.0
-  - rust-std-x86_64-pc-windows-msvc=1.85.0
+  - rust=1.91.0
+  - rust-std-aarch64-pc-windows-msvc=1.91.0
+  - rust-std-x86_64-pc-windows-msvc=1.91.0
   - compiler-rt=20.1.8
   - compiler-rt_win-64
   - cmake=4.2.1

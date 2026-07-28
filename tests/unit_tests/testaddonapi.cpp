@@ -52,17 +52,17 @@ void TestAddonApi::featurelist() {
   Addon* message = AddonMessage::create(&parent, "foo", "bar", "name", obj);
   QVERIFY(!!message);
 
-  // alwaysPort53 is an OverridableFeature, default off.
+  // showRotateIPAddressButton is an OverridableFeature, default off.
   // Ensure it starts disabled for this test.
-  Feature::toggle(Feature::alwaysPort53, false);
-  QVERIFY(!Feature::isEnabled(Feature::alwaysPort53));
+  Feature::toggle(Feature::showRotateIPAddressButton, false);
+  QVERIFY(!Feature::isEnabled(Feature::showRotateIPAddressButton));
 
   AddonConditionWatcher* a = AddonConditionWatcherJavascript::maybeCreate(
       message, ":/addons_test/api_featurelist.js");
   QVERIFY(!!a);
   QVERIFY(a->conditionApplied());
 
-  QVERIFY(Feature::isEnabled(Feature::alwaysPort53));
+  QVERIFY(Feature::isEnabled(Feature::showRotateIPAddressButton));
 }
 
 void TestAddonApi::navigator() {

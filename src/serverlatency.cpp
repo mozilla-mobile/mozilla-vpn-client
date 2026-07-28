@@ -19,6 +19,7 @@
 #include "models/servercountrymodel.h"
 #include "mozillavpn.h"
 #include "pingsenderfactory.h"
+#include "settingsholder.h"
 #include "tcppingsender.h"
 
 constexpr const int SERVER_LATENCY_MAX_PARALLEL = 8;
@@ -94,6 +95,20 @@ void ServerLatency::initialize() {
 
   connect(qApp, &QApplication::applicationStateChanged, this,
           &ServerLatency::applicationStateChanged);
+
+  // When obfuscation is turned on or changed, servers that were previously
+  // unreachable may become available again. Reset the availability so the user
+  // is not stuck seeing them on cooldown.
+  connect(
+      SettingsHolder::instance(), &SettingsHolder::obfuscationPolicyChanged,
+      this, [this]() {
+        if (SettingsHolder::instance()->obfuscationPolicy() ==
+            SettingsHolder::NoObfuscation) {
+          return;
+        }
+        logger.debug() << "Obfuscation enabled, resetting server availability";
+        clearAllCooldowns();
+      });
 }
 
 void ServerLatency::start() {
@@ -453,6 +468,21 @@ void ServerLatency::setCityCooldown(const QString& countryCode,
   int next = m_cooldownTimer.remainingTime();
   if ((next <= 0) || (timeout < next)) {
     m_cooldownTimer.start(timeout);
+  }
+}
+
+void ServerLatency::clearAllCooldowns() {
+  if (m_cooldown.isEmpty()) {
+    return;
+  }
+
+  const QList<QString> pubkeys = m_cooldown.keys();
+  m_cooldown.clear();
+  m_cooldownTimer.stop();
+
+  // Recompute the connection score for every server that was on cooldown.
+  for (const QString& pubkey : pubkeys) {
+    updateConnectionScore(pubkey);
   }
 }
 
