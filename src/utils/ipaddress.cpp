@@ -55,7 +55,7 @@ IPAddress::IPAddress(const QHostAddress& address) : QHostAddress(address) {
 
   if (address.protocol() == QAbstractSocket::IPv4Protocol) {
     m_prefixLength = 32;
-  } else if(address.protocol() == QAbstractSocket::IPv6Protocol) {
+  } else if (address.protocol() == QAbstractSocket::IPv6Protocol) {
     m_prefixLength = 128;
   } else if (address.isNull()) {
     m_prefixLength = -1;
@@ -87,10 +87,6 @@ IPAddress::~IPAddress() { MZ_COUNT_DTOR(IPAddress); }
 
 QString IPAddress::toString() const {
   return QString("%1/%2").arg(toHostString()).arg(m_prefixLength);
-}
-
-QString IPAddress::toHostString() const  {
-  return reinterpret_cast<const QHostAddress*>(this)->toString();
 }
 
 QHostAddress IPAddress::netmask() const {
@@ -126,7 +122,7 @@ QHostAddress IPAddress::hostmask() const {
     }
     return QHostAddress(rawHostmask);
   }
-  
+
   if (protocol() == QAbstractSocket::IPv4Protocol) {
     if (m_prefixLength < 32) {
       return QHostAddress(0xffffffff >> m_prefixLength);
@@ -151,9 +147,9 @@ QHostAddress IPAddress::broadcastAddress() const {
     if (m_prefixLength % 8) {
       rawAddress[m_prefixLength / 8] |= 0xFF >> (m_prefixLength % 8);
     }
-    return QHostAddress(rawAddress);    
+    return QHostAddress(rawAddress);
   }
-  
+
   if (protocol() == QAbstractSocket::IPv4Protocol) {
     quint32 rawAddress = toIPv4Address();
     if (m_prefixLength < 32) {
@@ -161,7 +157,7 @@ QHostAddress IPAddress::broadcastAddress() const {
     }
     return QHostAddress(rawAddress);
   }
-  
+
   return QHostAddress();
 }
 

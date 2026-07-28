@@ -33,7 +33,7 @@ QJsonObject InterfaceConfig::toJson() const {
   QJsonArray allowedIPAddesses;
   for (const IPAddress& i : m_allowedIPAddressRanges) {
     QJsonObject range;
-    range.insert("address", QJsonValue(static_cast<const QHostAddress&>(i).toString()));
+    range.insert("address", QJsonValue(i.toHostString()));
     range.insert("range", QJsonValue((double)i.prefixLength()));
     range.insert("isIpv6",
                  QJsonValue(i.protocol() == QAbstractSocket::IPv6Protocol));

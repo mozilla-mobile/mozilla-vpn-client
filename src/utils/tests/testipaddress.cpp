@@ -118,7 +118,7 @@ void TestIpAddress::invalid_data() {
 void TestIpAddress::invalid() {
   QFETCH(QString, input);
 
-  // Initialize as a string. 
+  // Initialize as a string.
   IPAddress ipAddress = IPAddress(input);
   QVERIFY(ipAddress.prefixLength() < 0);
   QVERIFY(ipAddress.isNull());
@@ -132,7 +132,7 @@ void TestIpAddress::invalid() {
     return;
   }
   bool okay = false;
-  int plen = input.mid(i+1).toInt(&okay);
+  int plen = input.mid(i + 1).toInt(&okay);
   if (!okay) {
     plen = -1;
   }

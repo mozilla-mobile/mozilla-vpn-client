@@ -21,7 +21,7 @@ class IPAddress final : public QHostAddress {
   ~IPAddress();
 
   QString toString() const;
-  QString toHostString() const;
+  QString toHostString() const { return QHostAddress::toString(); }
   int prefixLength() const { return m_prefixLength; }
   QHostAddress netmask() const;
   QHostAddress hostmask() const;

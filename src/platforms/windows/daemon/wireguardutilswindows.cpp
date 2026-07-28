@@ -60,32 +60,30 @@ static void CALLBACK WireGuardLogger(_In_ WIREGUARD_LOGGER_LEVEL Level,
  * @brief Assigns an ipv4 address to a network device with a given LUID
  *
  * @param ifindex - Interface Index of the Adapter
- * @param address - Address and NetMask of the Adapter
+ * @param addr - Address and NetMask of the Adapter
  * @return ulong - nteContext - Call DeleteIPAddress(nteContext) to remove the
  * assignment.
  */
-ulong setIPv4AddressAndMask(NET_IFINDEX ifindex, const IPAddress address) {
+ulong setIPv4AddressAndMask(NET_IFINDEX ifindex, const IPAddress& addr) {
   ULONG nteContext = 0;
   ULONG nteInstance = 0;
-  IN_ADDR ipAddrBinary, subnetMaskBinary;
-  if (InetPtonA(AF_INET, qPrintable(address.toHostString()),
-                &ipAddrBinary) != 1) {
+  IN_ADDR inAddr, inMask;
+  if (InetPtonA(AF_INET, qPrintable(addr.toHostString()), &inAddr) != 1) {
     return 0;
   }
-  if (InetPtonA(AF_INET, qPrintable(address.netmask().toString()),
-                &subnetMaskBinary) != 1) {
+  if (InetPtonA(AF_INET, qPrintable(addr.netmask().toString()), &inMask) != 1) {
     return 0;
   }
   // Add IP address and subnet mask
-  DWORD dwResult =
-      AddIPAddress(ipAddrBinary.S_un.S_addr, subnetMaskBinary.S_un.S_addr,
-                   ifindex, &nteContext, &nteInstance);
+  DWORD dwResult = AddIPAddress(inAddr.S_un.S_addr, inMask.S_un.S_addr, ifindex,
+                                &nteContext, &nteInstance);
   if (dwResult != NO_ERROR) {
     WindowsUtils::windowsLog("WELP, failed to add ip address to adapter");
     return 0;
   }
   return nteContext;
 }
+
 /**
  * @brief
  *
@@ -93,7 +91,7 @@ ulong setIPv4AddressAndMask(NET_IFINDEX ifindex, const IPAddress address) {
  * @param ipAddress - Address and NetMask of the Adapter
  * @return bool - If the assignment was successful
  */
-bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress ipAddress) {
+bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress& ipAddress) {
   MIB_UNICASTIPADDRESS_ROW row;
   SOCKADDR_IN6 sockaddr = {};
   sockaddr.sin6_family = AF_INET6;
