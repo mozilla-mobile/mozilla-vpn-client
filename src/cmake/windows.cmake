@@ -72,7 +72,20 @@ target_sources(mozillavpn PRIVATE
      ${CMAKE_CURRENT_SOURCE_DIR}/update/balrog.h
 )
 
+# Build the obfuscator binary.
+add_rust_binary(mozillavpn-obfuscator
+    PACKAGE_DIR ${CMAKE_SOURCE_DIR}/obfuscators
+    BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/obfuscators_target
+    CRATE_NAME obfuscators
+    BIN_NAME mozillavpn-obfuscator
+    CARGO_ENV CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}/obfuscators_target
+)
+add_dependencies(mozillavpn mozillavpn-obfuscator)
+
 install(TARGETS mozillavpn DESTINATION .)
+
+# Install the obfuscator binary next to the main application.
+install(PROGRAMS ${mozillavpn-obfuscator_EXECUTABLE} DESTINATION .)
 install(FILES $<TARGET_PDB_FILE:mozillavpn> DESTINATION . OPTIONAL)
 
 # Deploy Qt runtime dependencies during installation.
