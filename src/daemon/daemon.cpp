@@ -157,6 +157,19 @@ bool Daemon::activate(const InterfaceConfig& config) {
                      << config.m_obfuscationMethod;
       return false;
     }
+#if defined(MZ_WINDOWS)
+    // Add exclusion route for exit server to prevent loopbacks
+    {
+      QList<IPAddress> obfuscatorServer;
+      if (!config.m_serverIpv4AddrIn.isEmpty()) {
+        obfuscatorServer.append(IPAddress(config.m_serverIpv4AddrIn));
+      }
+      if (!config.m_serverIpv6AddrIn.isEmpty()) {
+        obfuscatorServer.append(IPAddress(config.m_serverIpv6AddrIn));
+      }
+      wgutils()->excludeLocalNetworks(obfuscatorServer);
+    }
+#endif
     peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
     // The obfuscator only binds 127.0.0.1, so clear the IPv6 endpoint to keep
     // WireGuard from selecting an [::1]
@@ -501,6 +514,19 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
                      << config.m_obfuscationMethod;
       return false;
     }
+#if defined(MZ_WINDOWS)
+    // Add exclusion route for exit server to prevent loopbacks
+    {
+      QList<IPAddress> obfuscatorServer;
+      if (!config.m_serverIpv4AddrIn.isEmpty()) {
+        obfuscatorServer.append(IPAddress(config.m_serverIpv4AddrIn));
+      }
+      if (!config.m_serverIpv6AddrIn.isEmpty()) {
+        obfuscatorServer.append(IPAddress(config.m_serverIpv6AddrIn));
+      }
+      wgutils()->excludeLocalNetworks(obfuscatorServer);
+    }
+#endif
     peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
     // The obfuscator only binds 127.0.0.1, so clear the IPv6 endpoint to keep
     // WireGuard from selecting an [::1]
