@@ -56,8 +56,6 @@ pub async fn inbound(
 }
 
 pub fn obfuscate(rng: &mut impl RngCore, packet: &mut [u8], key: &[u8; 32]) {
-    log::error!("Obfuscating packet of size {}", packet.len());
-
     let Some(header) = resolve_packet_header(packet, 0) else {
         return;
     };
@@ -70,8 +68,6 @@ pub fn obfuscate(rng: &mut impl RngCore, packet: &mut [u8], key: &[u8; 32]) {
 }
 
 pub fn deobfuscate(packet: &mut [u8], key: &[u8; 32]) {
-    log::info!("Deobfuscating packet of size {}", packet.len());
-
     let Some(header) = resolve_packet_header(packet, key[0]) else {
         return;
     };
