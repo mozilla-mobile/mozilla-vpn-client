@@ -539,13 +539,13 @@ auto Controller::setupConfigs(
     switch (obfuscationMethod) {
       case Server::ObfuscationMethod::UdpOverTcp:
         // If UDP over TCP is enabled choose a dedicated port
-        exitConfig.m_serverPort = exitServer.chooseTcpPort();
+        entryConfig.m_serverPort = entryServer.chooseTcpPort();
         break;
       case Server::ObfuscationMethod::LWO:
-        // If LWO is enabled, silently set the version based on the exit
+        // If LWO is enabled, silently set the version based on the entry
         // server's capabilities
-        exitConfig.m_lwoVersion = exitServer.supportsLwoV2() ? 2 : 1;
-        logger.info() << "LWO version set to" << exitConfig.m_lwoVersion;
+        entryConfig.m_lwoVersion = entryServer.supportsLwoV2() ? 2 : 1;
+        logger.info() << "LWO version set to" << entryConfig.m_lwoVersion;
         break;
       default:
         break;
