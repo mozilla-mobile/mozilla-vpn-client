@@ -158,7 +158,7 @@ class InAppPurchase private constructor(ctx: Context) :
         }
     }
 
-    fun initiatePurchase(productToPurchase: String, activity: Activity) { // PRODUCTTOPURCHASE MUST BE PRODUCTID
+    fun initiatePurchase(productToPurchase: String, activity: Activity) {
         val productDetails = idsWithProductDetails[productToPurchase]
         if (productDetails == null) {
             Log.wtf(TAG, "Attempting to purchase a product with no productDetails")
