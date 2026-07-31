@@ -20,6 +20,14 @@ class WindowsUtils final {
 
   static void lockDownDLLSearchPath();
 
+  /**
+   * @brief Maps a DLL keeps it loaded for the lifetime of the process.
+   *
+   * This must be called before lockDownDLLSearchPath() for libraries that are
+   * not signed by Microsoft.
+   */
+  static bool preloadLibrary(const QString& name);
+
   // Returns the major version of Windows
   static QString windowsVersion();
 

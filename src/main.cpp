@@ -47,6 +47,12 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
       std::cout.clear();
     }
   }
+  // wireguard.dll is signed by WireGuard LLC so it cannot be loaded
+  // once the Microsoft signed-only policy is enabled.
+  // Preload it when running as windowsdaemon.
+  if (argc > 1 && QString(argv[1]) == "windowsdaemon") {
+    WindowsUtils::preloadLibrary("wireguard.dll");
+  }
   WindowsUtils::lockDownDLLSearchPath();
 #endif
 

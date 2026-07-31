@@ -178,3 +178,24 @@ void WindowsUtils::lockDownDLLSearchPath() {
   sig.MicrosoftSignedOnly = 1;
   SetProcessMitigationPolicy(ProcessSignaturePolicy, &sig, sizeof(sig));
 }
+
+bool WindowsUtils::preloadLibrary(const QString& name) {
+  HMODULE handle = LoadLibraryExW(
+      (const wchar_t*)name.utf16(), nullptr,
+      LOAD_LIBRARY_SEARCH_APPLICATION_DIR | LOAD_LIBRARY_SEARCH_SYSTEM32);
+  if (handle == nullptr) {
+    windowsLog(QString("Failed to preload %1").arg(name));
+    return false;
+  }
+
+  // Pin the module so it stays mapped until the process exits.
+  HMODULE pinned = nullptr;
+  if (!GetModuleHandleExW(GET_MODULE_HANDLE_EX_FLAG_PIN,
+                          (const wchar_t*)name.utf16(), &pinned)) {
+    windowsLog(QString("Failed to pin %1").arg(name));
+    return false;
+  }
+
+  windowsLog(QString("Preloaded %1").arg(name));
+  return true;
+}
