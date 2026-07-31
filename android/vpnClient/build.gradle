@@ -59,6 +59,14 @@ android {
     testOptions {
         unitTests {
             includeAndroidResources = true
+            all {
+                testLogging {
+                    events "failed"
+                    exceptionFormat = "full"
+                    showStackTraces = true
+                    showCauses = true
+                }
+            }
         }
     }
 
