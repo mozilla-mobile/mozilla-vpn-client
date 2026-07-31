@@ -18,6 +18,10 @@ ApplicationWindow {
     signal screenClicked(double x, double y)
     signal unwindStackView
 
+    // Set before navigating to ScreenSettings to deep-link into the obfuscation
+    // settings.
+    property bool pendingShowObfuscationSettings: false
+
     property var safeContentHeight: window.height
     property string promotedAddonId: ""
 

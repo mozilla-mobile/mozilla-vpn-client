@@ -35,13 +35,13 @@ jobs:
       matrix: ${{ steps.testGen.outputs.tests }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           submodules: "recursive"
           persist-credentials: false
 
       - name: Checkout macOS SDK
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           repository: alexey-lysiuk/macos-sdk
           path: 3rdparty/macos-sdk
@@ -140,7 +140,7 @@ jobs:
         test: ${{ fromJson(needs.build_test_app.outputs.matrix) }}
     steps:
       - name: Clone repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
 
@@ -154,7 +154,7 @@ jobs:
           name: test-addons-${{ github.sha }}
           path: build/addons/
 
-      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6.3.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         env:
           PIP_DISABLE_PIP_VERSION_CHECK: 1
         with:

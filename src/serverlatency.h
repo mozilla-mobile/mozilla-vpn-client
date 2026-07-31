@@ -65,6 +65,7 @@ class ServerLatency final : public QObject {
   void setCooldown(const QString& pubkey, qint64 timeout);
   void setCityCooldown(const QString& countryCode, const QString& cityCode,
                        qint64 timeout);
+  void clearAllCooldowns();
 
   void initialize();
   void start();

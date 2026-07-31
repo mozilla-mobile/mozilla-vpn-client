@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use crate::balrog::*;
-use crate::logger::*;
+pub use crate::balrog::*;
+pub use crate::logger::*;
 use ring::digest;
 use ring::signature;
 use std::ffi::CStr;
@@ -11,8 +11,8 @@ use std::os::raw::c_char;
 use std::os::raw::c_uchar;
 use x509_parser::prelude::*;
 
-pub mod balrog;
-pub mod logger;
+mod balrog;
+mod logger;
 
 /* FFI interface to verify an RSA signature
  *
@@ -25,7 +25,7 @@ pub mod logger;
  *  - message_signature_length: Length of the RSA signature (in bytes).
  *  - log_fn: callback function for log messages (optional)
  */
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn verify_rsa(
     public_key_ptr: *const c_uchar,
     public_key_length: usize,
@@ -62,7 +62,7 @@ pub extern "C" fn verify_rsa(
  *  - root_hash_out: Output pointer for the SHA256 hash.
  *  - root_hash_len: Size of the root hash buffer (in bytes).
  */
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn compute_root_certificate_hash(
     x5u_ptr: *const c_uchar,
     x5u_length: usize,
@@ -104,7 +104,7 @@ pub extern "C" fn compute_root_certificate_hash(
  *  - leaf_subject: hostname from which the content signature was received.
  *  - log_fn: callback function for log messages (optional)
  */
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn verify_content_signature(
     x5u_ptr: *const c_uchar,
     x5u_length: usize,
@@ -171,20 +171,35 @@ pub extern "C" fn verify_content_signature(
 mod test {
     use super::*;
     use std::ffi::CString;
+    use std::sync::atomic::{AtomicBool, Ordering};
 
     // An RSA signature of an addon manifest from prod.
     const RSA_PUBLIC_KEY: &[u8] = include_bytes!("../../src/resources/public_keys/production.der");
     const RSA_ADDON_MESSAGE_BASE64: &[u8] = include_bytes!("../assets/addon_manifest_base64.txt");
     const RSA_ADDON_SIGNATURE: &[u8] = include_bytes!("../assets/addon_signature.sig");
 
-    // Fetched from: https://content-signature-2.cdn.mozilla.net/chains/aus.content-signature.mozilla.org-2023-11-18-16-07-40.chain
-    const PROD_CERT_CHAIN: &[u8] =
-        include_bytes!("../assets/aus.content-signature.mozilla.org-2023-11-18-16-07-40.chain");
-    const PROD_ROOT_HASH: &str = "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e";
+    // Some signatures from prod.
+    const EXPIRED_ROOT_HASH: &str = "97e8ba9cf12fb3de53cc42a4e6577ed64df493c247b414fea036818d3823560e";
+    const PROD_ROOT_HASH: &str = "c8a80e9afaef4e219b6fb5d7a71d0f101223bac5001ac28f9b0d43dc59a106db";
     const PROD_HOSTNAME: &str = "aus.content-signature.mozilla.org";
+
+    // Fetched from: https://content-signature-2.cdn.mozilla.net/chains/aus.content-signature.mozilla.org-2023-11-18-16-07-40.chain
+    const EXPIRED_CERT_CHAIN: &[u8] =
+        include_bytes!("../assets/aus.content-signature.mozilla.org-2023-11-18-16-07-40.chain");
     // Fetched from: https://aus5.mozilla.org/json/1/FirefoxVPN/2.14.0/WINNT_x86_64/release-cdntest/update.json
-    const PROD_SIGNATURE: &str = "znYFqdKKFgijVgUhnq5VuZxtI5Zay8MARVFr3cG1CbB9eH9slQFkE9ZjMdLzbf5OZqj2gds1OqbCm45L38e2joKD_mCAUGtajebztDdWx9Rqgmn-9vu6t-SCl6HQrzbh";
+    const EXPIRED_SIGNATURE: &str = "znYFqdKKFgijVgUhnq5VuZxtI5Zay8MARVFr3cG1CbB9eH9slQFkE9ZjMdLzbf5OZqj2gds1OqbCm45L38e2joKD_mCAUGtajebztDdWx9Rqgmn-9vu6t-SCl6HQrzbh";
+    const EXPIRED_INPUT_DATA: &[u8] = include_bytes!("../assets/expired_update_data.json");
+
+    // Fetched from: https://content-signature-2.cdn.mozilla.net/g/chains/202402/aus.content-signature.mozilla.org-2026-08-24-11-20-59.chain
+    const PROD_CERT_CHAIN: &[u8] =
+        include_bytes!("../assets/aus.content-signature.mozilla.org-2026-08-24-11-20-59.chain");
+     // Fetched from: https://aus5.mozilla.org/json/2/FirefoxVPN/2.37.0/WINNT_aarch64/release/26200/update.json
+    const PROD_SIGNATURE: &str = "DCjgdMZ-ncvapzrB5MbD8YEmju_uKYuKV6Tu4JQpSsMbxDtVEK2yChrTLJpO_pevAEpN7FVX6eueGKBnLaY6Ofb2bx_gmVu2gS2W8aYl_7Ew8tx83qD6YBecIrx7tx5e";
     const PROD_INPUT_DATA: &[u8] = include_bytes!("../assets/prod_update_data.json");
+
+     // Fetched from: https://aus5.mozilla.org/json/2/FirefoxVPN/2.37.0/WINNT_aarch64/release-cdntest/26200/update.json
+    const STAGE_SIGNATURE: &str = "Z0Ui7aT5aVHr0VTCsUm-50Vf6AuBbaGuYIWzdWjDOJ70KOzJyczWEncOYUgMsTFrS8du0pez-VogmRSecGE4hEHWq6o1W09DeCB-6W1gj0fj5vCgrJTH5L2JKkw4xhPE";
+    const STAGE_INPUT_DATA: &[u8] = include_bytes!("../assets/stage_update_data.json");
 
     /* Extract a timestamp from a certificate, suitable for mocking. */
     #[cfg(test)]
@@ -267,9 +282,11 @@ mod test {
         addon_message.extend_from_slice(b"Hello World");
 
         // Capture the FFI log message via a callback.
-        static mut LOG_MESSAGE: String = String::new();
+        static LOG_OKAY: AtomicBool = AtomicBool::new(false);
         extern "C" fn callback(msg: *const c_char) {
-            unsafe { LOG_MESSAGE.push_str(CStr::from_ptr(msg).to_str().unwrap()); }
+            let msg = unsafe { CStr::from_ptr(msg).to_str().unwrap() };
+            assert_eq!(msg, "ring::error::Unspecified");
+            LOG_OKAY.store(true, Ordering::Release);
         }
 
         let r = verify_rsa(
@@ -282,21 +299,30 @@ mod test {
             Some(callback),
         );
         assert!(!r, "RSA signature check failed to catch an error");
-        unsafe { assert_eq!(LOG_MESSAGE, "ring::error::Unspecified"); }
+        assert!(LOG_OKAY.load(Ordering::Acquire), "Expected log message not found");
     }
 
     #[test]
-    fn test_compute_root_hash() {
+    fn test_compute_root_hashes() {
         let mut hash_result = [0u8; digest::SHA256_OUTPUT_LEN];
-        let expect = hex::decode(PROD_ROOT_HASH).unwrap();
 
+        let expect = hex::decode(PROD_ROOT_HASH).unwrap();
         let r = compute_root_certificate_hash(
             PROD_CERT_CHAIN.as_ptr(),
             PROD_CERT_CHAIN.len(),
             hash_result.as_mut_ptr(),
             hash_result.len(),
         );
+        assert!(r, "Root hash computation failed");
+        assert_eq!(hash_result, expect.as_slice());
 
+        let expect = hex::decode(EXPIRED_ROOT_HASH).unwrap();
+        let r = compute_root_certificate_hash(
+            EXPIRED_CERT_CHAIN.as_ptr(),
+            EXPIRED_CERT_CHAIN.len(),
+            hash_result.as_mut_ptr(),
+            hash_result.len(),
+        );
         assert!(r, "Root hash computation failed");
         assert_eq!(hash_result, expect.as_slice());
     }
@@ -354,13 +380,30 @@ WW91IGFyZSBhd2Vzb21lISBHb29kIEpvYiEK
     }
 
     #[test]
-    fn test_verify_prod_example() {
+    fn test_verify_prod_examples() {
+        let chain = parse_pem_chain(EXPIRED_CERT_CHAIN).unwrap();
+        let balrog = Balrog::new(&chain).unwrap();
+        let r = balrog.verify(
+            EXPIRED_INPUT_DATA,
+            EXPIRED_SIGNATURE,
+            mock_x5u_timestamp(EXPIRED_CERT_CHAIN),
+            PROD_HOSTNAME,
+        );
+        assert!(r.is_ok(), "Found unexpected error: {}", r.unwrap_err());
+
         let chain = parse_pem_chain(PROD_CERT_CHAIN).unwrap();
         let balrog = Balrog::new(&chain).unwrap();
-
         let r = balrog.verify(
             PROD_INPUT_DATA,
             PROD_SIGNATURE,
+            mock_x5u_timestamp(PROD_CERT_CHAIN),
+            PROD_HOSTNAME,
+        );
+        assert!(r.is_ok(), "Found unexpected error: {}", r.unwrap_err());
+
+        let r = balrog.verify(
+            STAGE_INPUT_DATA,
+            STAGE_SIGNATURE,
             mock_x5u_timestamp(PROD_CERT_CHAIN),
             PROD_HOSTNAME,
         );
@@ -396,9 +439,11 @@ WW91IGFyZSBhd2Vzb21lISBHb29kIEpvYiEK
         let invalid_hostname_cstr = CString::new("example.com").unwrap().into_raw();
 
         // Capture the FFI log message via a callback.
-        static mut LOG_MESSAGE: String = String::new();
+        static LOG_OKAY: AtomicBool = AtomicBool::new(false);
         extern "C" fn callback(msg: *const c_char) {
-            unsafe { LOG_MESSAGE.push_str(CStr::from_ptr(msg).to_str().unwrap()); }
+            let msg = unsafe { CStr::from_ptr(msg).to_str().unwrap() };
+            assert_eq!(msg, "Hostname mismatch");
+            LOG_OKAY.store(true, Ordering::Release);
         }
 
         let r = verify_content_signature(
@@ -411,7 +456,7 @@ WW91IGFyZSBhd2Vzb21lISBHb29kIEpvYiEK
             Some(callback),
         );
         assert!(!r, "Verification failed to catch invalid hostname via FFI");
-        unsafe { assert_eq!(LOG_MESSAGE, "Hostname mismatch"); };
+        assert!(LOG_OKAY.load(Ordering::Acquire), "Expected log message not found");
 
         // Retake pointers for garbage collection.
         unsafe {

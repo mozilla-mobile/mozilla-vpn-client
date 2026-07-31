@@ -18,7 +18,14 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "obfuscator/obfuscator.h"
 #include "wireguardutils.h"
+
+#if defined(MZ_WASM) || defined(MZ_IOS)
+#  include "obfuscator/dummyobfuscator.h"
+#else
+#  include "obfuscator/qprocessobfuscator.h"
+#endif
 
 constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 constexpr int HANDSHAKE_POLL_MSEC = 250;
@@ -137,10 +144,34 @@ bool Daemon::activate(const InterfaceConfig& config) {
     }
   }
 
+  // If an obfuscator is configured, start the relay and rewrite the peer
+  // endpoint so WireGuard talks to it instead of the real server.
+  // For multi-hop configure obfuscator only on the entry node.
+  std::unique_ptr<Obfuscator> obfuscator;
+  InterfaceConfig peerConfig = config;
+  if (config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
+      config.m_hopType != InterfaceConfig::MultiHopExit) {
+    obfuscator = createObfuscator(config);
+    if (!obfuscator->start()) {
+      logger.error() << "Failed to start obfuscator"
+                     << config.m_obfuscationMethod;
+      return false;
+    }
+    peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
+    // The obfuscator only binds 127.0.0.1, so clear the IPv6 endpoint to keep
+    // WireGuard from selecting an [::1]
+    peerConfig.m_serverIpv6AddrIn = QString();
+    peerConfig.m_serverPort = obfuscator->localPort();
+  }
   // Add the peer to this interface.
-  if (!wgutils()->updatePeer(config)) {
+  if (!wgutils()->updatePeer(peerConfig)) {
     logger.error() << "Peer creation failed.";
     return false;
+  }
+
+  // Take ownership of the new obfuscator (entry hop only).
+  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
+    m_obfuscator = std::move(obfuscator);
   }
 
   if (!maybeUpdateResolvers(config)) {
@@ -224,6 +255,7 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   }
 
   GETVALUE("privateKey", config.m_privateKey, String);
+  GETVALUE("publicKey", config.m_publicKey, String);
   GETVALUE("serverPublicKey", config.m_serverPublicKey, String);
   GETVALUE("serverPort", config.m_serverPort, Double);
 
@@ -332,6 +364,27 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
   if (!parseStringList(obj, "vpnDisabledApps", config.m_vpnDisabledApps)) {
     return false;
   }
+
+  if (!obj.contains("obfuscationMethod")) {
+    config.m_obfuscationMethod = Server::ObfuscationMethod::NoObfuscation;
+  } else {
+    QJsonValue value = obj.value("obfuscationMethod");
+    if (!value.isString()) {
+      logger.error() << "obfuscationMethod is not a string";
+      return false;
+    }
+
+    bool okay;
+    QMetaEnum meta = QMetaEnum::fromType<Server::ObfuscationMethod>();
+    config.m_obfuscationMethod = Server::ObfuscationMethod(
+        meta.keyToValue(value.toString().toUtf8().constData(), &okay));
+    if (!okay) {
+      logger.error() << "obfuscationMethod" << value.toString()
+                     << "is not valid";
+      return false;
+    }
+  }
+
   return true;
 }
 
@@ -369,6 +422,9 @@ bool Daemon::deactivate(bool emitSignals) {
   }
   m_connections.clear();
 
+  // Delete the obfuscator
+  m_obfuscator.reset();
+
   // Delete the interface
   return wgutils()->deleteInterface();
 }
@@ -385,6 +441,15 @@ QString Daemon::logs() {
 }
 
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
+
+std::unique_ptr<Obfuscator> Daemon::createObfuscator(
+    const InterfaceConfig& config) {
+#if defined(MZ_WASM) || defined(MZ_IOS)
+  return std::make_unique<DummyObfuscator>(config);
+#else
+  return std::make_unique<QProcessObfuscator>(config);
+#endif
+}
 
 bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
   if (!m_connections.contains(config.m_hopType)) {
@@ -409,12 +474,36 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   const InterfaceConfig& lastConfig =
       m_connections.value(config.m_hopType).m_config;
 
+  // Stand up a new obfuscator for the new endpoint (entry hop only)
+  std::unique_ptr<Obfuscator> obfuscator;
+  InterfaceConfig peerConfig = config;
+  if (config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
+      config.m_hopType != InterfaceConfig::MultiHopExit) {
+    obfuscator = createObfuscator(config);
+    if (!obfuscator->start()) {
+      logger.error() << "Failed to start obfuscator on switch"
+                     << config.m_obfuscationMethod;
+      return false;
+    }
+    peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
+    // The obfuscator only binds 127.0.0.1, so clear the IPv6 endpoint to keep
+    // WireGuard from selecting an [::1]
+    peerConfig.m_serverIpv6AddrIn = QString();
+    peerConfig.m_serverPort = obfuscator->localPort();
+  }
+
   // Activate the new peer and its routes.
-  if (!wgutils()->updatePeer(config)) {
+  if (!wgutils()->updatePeer(peerConfig)) {
     logger.error()
         << "Server switch failed to update the peer wireguard config";
     return false;
   }
+
+  // Take ownership of the new obfuscator (entry hop only).
+  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
+    m_obfuscator = std::move(obfuscator);
+  }
+
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     if (!wgutils()->updateRoutePrefix(ip)) {
       logger.error() << "Server switch failed to update the routing table";

@@ -47,6 +47,17 @@ class SettingsHolder final : public QObject {
   };
   Q_ENUM(DNSProviderFlags)
 
+  enum ObfuscationPolicy {
+    NoObfuscation,
+    Port53,
+    LWO,
+    LwoOverPort53,
+    Masque,
+    UdpOverTcp,
+    Shadowsocks,
+  };
+  Q_ENUM(ObfuscationPolicy)
+
 #define SETTING(type, toType, getter, setter, remover, has, ...) \
   bool has() const { return m_##getter->isSet(); }               \
   type getter() const { return m_##getter->get().toType(); }     \

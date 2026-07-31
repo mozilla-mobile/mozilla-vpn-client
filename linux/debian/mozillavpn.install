@@ -4,6 +4,7 @@ etc/opt/chrome/native-messaging-hosts/mozillavpn.json
 ${env:SYSTEMD_UNIT_PATH}/mozillavpn.service
 ${env:SYSTEMD_UNIT_PATH}/socksproxy.service
 usr/bin/mozillavpn
+usr/bin/mozillavpn-obfuscator
 usr/bin/socksproxy
 lib/mozilla/native-messaging-hosts/mozillavpn.json
 usr/share/applications/org.mozilla.vpn.desktop

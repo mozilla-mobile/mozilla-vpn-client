@@ -6,10 +6,10 @@ DEB_HOST_MULTIARCH ?= $(shell dpkg-architecture -qDEB_HOST_MULTIARCH)
 DEB_HOST_ARCH ?= $(shell dpkg-architecture -qDEB_HOST_ARCH)
 DEB_VERSION ?= $(shell dpkg-parsechangelog -SVersion)
 
-# Ensure we use cargo/rust 1.85 or later.
+# Ensure we use cargo/rust 1.91 or later.
 RUSTLANG_NATIVE_VERSION = $(shell dpkg-query --showformat='${Version}' --show rustc 2>/dev/null || echo 0)
-ifneq (ok,$(shell dpkg --compare-versions $(RUSTLANG_NATIVE_VERSION) ge 1.85 && echo ok))
-	export PATH := /usr/lib/rust-1.85/bin:$(PATH)
+ifneq (ok,$(shell dpkg --compare-versions $(RUSTLANG_NATIVE_VERSION) ge 1.91 && echo ok))
+	export PATH := /usr/lib/rust-1.91/bin:$(PATH)
 endif
 
 # Check Qt features.
