@@ -192,9 +192,6 @@ void Controller::initialize() {
   connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
           &Controller::serverDataChanged);
 
-  connect(SettingsHolder::instance(), &SettingsHolder::obfuscationPolicyChanged,
-          this, &Controller::serverDataChanged);
-
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
 

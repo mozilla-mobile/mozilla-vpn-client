@@ -64,6 +64,10 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
           m_operationRunning = false;
         }
       }));
+
+  m_connections.append(connect(settingsHolder,
+                               &SettingsHolder::obfuscationPolicyChanged, this,
+                               [this]() { maybeServerSwitch(); }));
 }
 
 void SettingsWatcher::stop() {
