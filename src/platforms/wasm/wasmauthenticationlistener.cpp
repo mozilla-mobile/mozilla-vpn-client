@@ -45,6 +45,7 @@ void WasmAuthenticationListener::start(Task* task, const QString& codeChallenge,
 
   // Unless we're in an automated test environment, mock out a successful auth.
   if (!isTesting()) {
+    logger.debug() << "Not in testing";
     QTimer* timer = new QTimer(this);
     connect(timer, &QTimer::timeout, this,
             [this]() { emit completed("WASM"); });
