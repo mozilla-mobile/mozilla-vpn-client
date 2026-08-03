@@ -54,14 +54,13 @@ struct CityRectangularAccessoryWidget: View {
           CityTextComponentView(entry: entry)
             .allowsTightening(true)
             .minimumScaleFactor(0.5)
-            .padding(10)
         } else {
           Text(LocalizedStringResource("vpn.logoAccessoryWidget.unauthenticatedMessage", defaultValue: "Turn on via app"))
             .allowsTightening(true)
-            .padding(10)
           Spacer()
         }
       }
+      .padding(10)
     }
     .containerBackground(for: .widget) { // need this for AccessoryWidgetBackground to work, it seems
       WidgetColors.backgroundColor(colorScheme, isConnected: entry.isConnected)
