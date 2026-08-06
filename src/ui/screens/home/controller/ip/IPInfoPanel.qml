@@ -13,6 +13,8 @@ Rectangle {
     property bool isOpen: false
     property bool ready: !opacityAnimation.running
 
+    readonly property bool showDetailedInfo: MZFeatureList.get("showDetailedConnectionInfo").isSupported
+
     anchors.fill: parent
     color: MZTheme.colors.primary
     radius: boxBackground.radius
@@ -25,8 +27,9 @@ Rectangle {
             right: parent.right
             rightMargin: MZTheme.theme.windowMargin * 1.5
             top: parent.top
-            topMargin: MZTheme.theme.windowMargin * 3
+            topMargin: MZTheme.theme.windowMargin * (showDetailedInfo ? 1.5 : 3)
         }
+        spacing: showDetailedInfo ? 2 : 5
         width: parent.width
 
         MZBoldLabel {
@@ -72,6 +75,47 @@ Rectangle {
             opacity: 0.2
             visible: ipv6Address.visible
             Layout.fillWidth: true
+        }
+
+        // The addresses this connection dials
+        IPAddress {
+            ipAddressText: VPNConnectionInfo.entryIpv4Address
+            ipVersionText: MZI18n.ConnectionInfoEntryEndpointLabelIp
+            showCopyButton: true
+            stackAddress: true
+            showRotateButton: false
+            visible: showDetailedInfo && ipAddressText !== ""
+
+            Layout.topMargin: MZTheme.theme.listSpacing / 2
+        }
+
+        IPAddress {
+            ipAddressText: VPNConnectionInfo.entryIpv6Address
+            ipVersionText: MZI18n.ConnectionInfoEntryEndpointLabelIpv6
+            showCopyButton: true
+            stackAddress: true
+            showRotateButton: false
+            visible: showDetailedInfo && ipAddressText !== ""
+        }
+
+        IPAddress {
+            ipAddressText: VPNConnectionInfo.exitIpv4Address
+            ipVersionText: MZI18n.ConnectionInfoExitEndpointLabelIp
+            showCopyButton: true
+            stackAddress: true
+            showRotateButton: false
+            visible: showDetailedInfo && ipAddressText !== ""
+
+            Layout.topMargin: MZTheme.theme.listSpacing / 2
+        }
+
+        IPAddress {
+            ipAddressText: VPNConnectionInfo.exitIpv6Address
+            ipVersionText: MZI18n.ConnectionInfoExitEndpointLabelIpv6
+            showCopyButton: true
+            stackAddress: true
+            showRotateButton: false
+            visible: showDetailedInfo && ipAddressText !== ""
         }
     }
 

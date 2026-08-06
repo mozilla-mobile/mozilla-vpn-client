@@ -562,6 +562,29 @@ connectionInfo:
     comment:
       - Exit server IP label for IPv6.
       - IPv6 is the abbreviation for Internet Procol version 6. This is followed by the user’s IPv6 address.
+  entryEndpointLabelIp:
+    value: "Entry Server endpoint IP:"
+    comment:
+      - Label for the IPv4 address the app connects to for the entry server of a multi-hop connection.
+      - IP is the abbreviation for Internet Procol. This is followed by an IPv4 address.
+  entryEndpointLabelIpv6:
+    value: "Entry Server endpoint IPv6:"
+    comment:
+      - Label for the IPv6 address the app connects to for the entry server of a multi-hop connection.
+      - IPv6 is the abbreviation for Internet Procol version 6. This is followed by an IPv6 address.
+  exitEndpointLabelIp:
+    value: "Exit Server endpoint IP:"
+    comment:
+      - Label for the IPv4 address the app connects to for the exit server.
+      - IP is the abbreviation for Internet Procol. This is followed by an IPv4 address.
+  exitEndpointLabelIpv6:
+    value: "Exit Server endpoint IPv6:"
+    comment:
+      - Label for the IPv6 address the app connects to for the exit server.
+      - IPv6 is the abbreviation for Internet Procol version 6. This is followed by an IPv6 address.
+  copyEndpointAddress:
+    value: Copy %1
+    comment: Accessible name for a button. %1 is a server endpoint address, which the button copies to the clipboard.
   connectionInformation:
     value: Connection information
     comment: Accessible label for the button that shows the IP info panel when clicked.
