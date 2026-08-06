@@ -255,6 +255,10 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/copy.svg',
     filenameDark: 'qrc:/nebula/resources/copy-dark.svg'
   },
+  'CopyIPInfo': {
+    filenameLight: 'qrc:/nebula/resources/copy-dark.svg',
+    filenameDark: 'qrc:/nebula/resources/copy-dark.svg'
+  },
   'CopyLinkColor': {
     filenameLight: 'qrc:/ui/resources/copy.svg',
     filenameDark: 'qrc:/ui/resources/copy-dark.svg'
