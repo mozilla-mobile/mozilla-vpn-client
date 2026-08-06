@@ -271,7 +271,7 @@ inline const OverridableFeature replacerAddon = {
 
 inline const OverridableFeature showDetailedConnectionInfo = {
     .id = "showDetailedConnectionInfo",
-    .name = "Show detailed connection info in the Connection info panel",
+    .name = "Show detailed connection info",
     .evaluator = +[] { return false; },
 };
 

@@ -42,6 +42,16 @@ class ServerData final : public QObject {
                  localizedPreviousExitCountryName NOTIFY retranslationNeeded)
   Q_PROPERTY(QString localizedPreviousExitCityName READ
                  localizedPreviousExitCityName NOTIFY retranslationNeeded)
+  // Addresses of the servers that are currently being used for the connection.
+  // Set when the connection is established.
+  Q_PROPERTY(QString entryServerIpv4Address READ entryServerIpv4Address NOTIFY
+                 serverChanged)
+  Q_PROPERTY(QString entryServerIpv6Address READ entryServerIpv6Address NOTIFY
+                 serverChanged)
+  Q_PROPERTY(QString exitServerIpv4Address READ exitServerIpv4Address NOTIFY
+                 serverChanged)
+  Q_PROPERTY(QString exitServerIpv6Address READ exitServerIpv6Address NOTIFY
+                 serverChanged)
 
  public:
   ServerData();
@@ -102,13 +112,20 @@ class ServerData final : public QObject {
   const QString& entryServerPublicKey() const { return m_entryServerPublicKey; }
   Server::ObfuscationMethod obfuscationPolicyToObfuscationMethod(
       SettingsHolder::ObfuscationPolicy obfuscationPolicy);
+  QString entryServerIpv4Address() const { return entryServer().ipv4AddrIn(); }
+  QString entryServerIpv6Address() const { return entryServer().ipv6AddrIn(); }
+  QString exitServerIpv4Address() const { return exitServer().ipv4AddrIn(); }
+  QString exitServerIpv6Address() const { return exitServer().ipv6AddrIn(); }
 
  signals:
   void changed();
   void retranslationNeeded();
+  void serverChanged();
 
  private:
   bool settingsChanged();
+  const Server& entryServer() const;
+  const Server& exitServer() const;
   static QList<Server> getServerList(
       const QString& countryCode, const QString& cityName,
       const Server::ObfuscationMethod obfuscationMethod);
