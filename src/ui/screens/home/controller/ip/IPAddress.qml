@@ -11,9 +11,6 @@ import components 0.1
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 RowLayout {
-    property real maxPaintedTextWidth: box.width - MZTheme.theme.windowMargin
-                                       - (stackAddress ? 0 : ipVersion.paintedWidth)
-                                       - (showCopyButton ? MZTheme.theme.iconSize * 2 : 0)
     property alias ipVersionText: ipVersion.text
     property alias ipAddressText: ipAddress.text
     property bool showRotateButton: true
@@ -30,13 +27,18 @@ RowLayout {
         columnSpacing: MZTheme.theme.listSpacing
         rowSpacing: 0
 
+        Layout.fillWidth: true
+
         MZBoldInterLabel {
             id: ipVersion
 
             color: MZTheme.colors.fontColorInverted
             font.pixelSize: MZTheme.theme.fontSizeSmall
-            lineHeight: MZTheme.theme.labelLineHeight * (stackAddress ? 1 : 1.25)
+            lineHeight: stackAddress
+                ? MZTheme.theme.controllerInterLineHeight
+                : MZTheme.theme.labelLineHeight * 1.25
             verticalAlignment: Text.AlignVCenter
+            Layout.fillWidth: stackAddress
         }
 
         MZInterLabel {
@@ -48,13 +50,8 @@ RowLayout {
             lineHeight: MZTheme.theme.labelLineHeight * (stackAddress ? 1 : 1.25)
             opacity: 0.8
 
-            Layout.maximumWidth: maxPaintedTextWidth
+            Layout.fillWidth: true
         }
-    }
-
-    // spacer
-    Item {
-        Layout.fillWidth: true
     }
 
     MZIconButton {
@@ -81,8 +78,6 @@ RowLayout {
     MZIconButton {
         id: ipCopyButton
 
-        height: MZTheme.theme.iconSize * 2
-        width: MZTheme.theme.iconSize * 2
         visible: showCopyButton
         accessibleName: MZI18n.ConnectionInfoCopyEndpointAddress.arg(ipAddress.text)
         buttonColorScheme: MZTheme.colors.iconButtonDarkBackground
@@ -90,6 +85,10 @@ RowLayout {
             MZUtils.storeInClipboard(ipAddress.text);
             MZErrorHandler.requestAlert(MZErrorHandler.CopiedToClipboardConfirmationAlert);
         }
+
+        Layout.alignment: Qt.AlignVCenter
+        Layout.preferredHeight: MZTheme.theme.rowHeight
+        Layout.preferredWidth: MZTheme.theme.rowHeight
 
         Image {
             property int iconSize: MZTheme.theme.iconSize * 1.25

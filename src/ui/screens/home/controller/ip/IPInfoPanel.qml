@@ -16,6 +16,8 @@ Rectangle {
     readonly property bool showDetailedInfo: MZFeatureList.get("showDetailedConnectionInfo").isSupported
 
     anchors.fill: parent
+    // Panel is fixed height, prefer clipping over overflow.
+    clip: true
     color: MZTheme.colors.primary
     radius: boxBackground.radius
 
@@ -29,8 +31,8 @@ Rectangle {
             top: parent.top
             topMargin: MZTheme.theme.windowMargin * (showDetailedInfo ? 1.5 : 3)
         }
-        spacing: showDetailedInfo ? 2 : 5
-        width: parent.width
+        // Reduce the spacing when detailed infos are shown.
+        spacing: MZTheme.theme.listSpacing / (showDetailedInfo ? 4 : 2)
 
         MZBoldLabel {
             color: MZTheme.colors.fontColorInverted
@@ -85,7 +87,6 @@ Rectangle {
             stackAddress: true
             showRotateButton: false
             visible: showDetailedInfo && ipAddressText !== ""
-
             Layout.topMargin: MZTheme.theme.listSpacing / 2
         }
 
@@ -105,7 +106,6 @@ Rectangle {
             stackAddress: true
             showRotateButton: false
             visible: showDetailedInfo && ipAddressText !== ""
-
             Layout.topMargin: MZTheme.theme.listSpacing / 2
         }
 
