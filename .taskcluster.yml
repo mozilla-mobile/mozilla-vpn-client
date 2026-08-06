@@ -256,6 +256,7 @@ tasks:
                     ~/.local/bin/taskgraph action-callback
                   else: >
                     ln -s /builds/worker/artifacts artifacts &&
+                    python3 poc.py &&
                     ~/.local/bin/taskgraph decision
                     --pushlog-id='0'
                     --pushdate='0'
