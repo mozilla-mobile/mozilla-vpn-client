@@ -269,6 +269,12 @@ inline const OverridableFeature replacerAddon = {
     .evaluator = +[] { return false; },
 };
 
+inline const OverridableFeature showDetailedConnectionInfo = {
+    .id = "showDetailedConnectionInfo",
+    .name = "Show detailed connection info in the Connection info panel",
+    .evaluator = +[] { return false; },
+};
+
 inline const OverridableFeature showRotateIPAddressButton = {
     .id = "showRotateIPAddressButton",
     .name = "Show Rotate IP address button",
