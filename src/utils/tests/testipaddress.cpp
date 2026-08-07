@@ -90,7 +90,7 @@ void TestIpAddress::basic() {
   IPAddress ipAddress = IPAddress(input);
 
   QFETCH(QString, address);
-  QCOMPARE(ipAddress.address().toString(), address);
+  QCOMPARE(static_cast<QHostAddress>(ipAddress).toString(), address);
   QFETCH(int, prefixLength);
   QCOMPARE(ipAddress.prefixLength(), prefixLength);
   QFETCH(QString, netmask);
@@ -99,6 +99,50 @@ void TestIpAddress::basic() {
   QCOMPARE(ipAddress.hostmask().toString(), hostmask);
   QFETCH(QString, broadcastAddress);
   QCOMPARE(ipAddress.broadcastAddress().toString(), broadcastAddress);
+}
+
+void TestIpAddress::invalid_data() {
+  QTest::addColumn<QString>("input");
+
+  QTest::addRow("junk ipv4 address") << "192.168.1.abc/24";
+  QTest::addRow("junk ipv4 prefix") << "192.168.1.123/4foo";
+  QTest::addRow("negative ipv4 prefix") << "192.168.1.123/-42";
+  QTest::addRow("overflow ipv4 prefix") << "192.168.1.132/33";
+
+  QTest::addRow("junk ipv6 address") << "fe80::123z/64";
+  QTest::addRow("junk ipv6 prefix") << "fe80::1234/4foo";
+  QTest::addRow("negative ipv6 prefix") << "fe80::1234/-42";
+  QTest::addRow("overflow ipv6 prefix") << "fe80::1234/129";
+}
+
+void TestIpAddress::invalid() {
+  QFETCH(QString, input);
+
+  // Initialize as a string.
+  IPAddress ipAddress = IPAddress(input);
+  QVERIFY(ipAddress.prefixLength() < 0);
+  QVERIFY(ipAddress.isNull());
+  QVERIFY(ipAddress.netmask().isNull());
+  QVERIFY(ipAddress.hostmask().isNull());
+  QVERIFY(ipAddress.broadcastAddress().isNull());
+
+  // Manually split it and try as parts and check again.
+  qsizetype i = input.indexOf('/');
+  if (i < 0) {
+    return;
+  }
+  bool okay = false;
+  int plen = input.mid(i + 1).toInt(&okay);
+  if (!okay) {
+    plen = -1;
+  }
+
+  IPAddress ipAddress2 = IPAddress(QHostAddress(input.first(i)), plen);
+  QVERIFY(ipAddress2.prefixLength() < 0);
+  QVERIFY(ipAddress2.isNull());
+  QVERIFY(ipAddress2.netmask().isNull());
+  QVERIFY(ipAddress2.hostmask().isNull());
+  QVERIFY(ipAddress2.broadcastAddress().isNull());
 }
 
 void TestIpAddress::overlaps_data() {

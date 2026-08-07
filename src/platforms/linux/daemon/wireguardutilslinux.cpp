@@ -639,12 +639,12 @@ bool WireguardUtilsLinux::rtmIncludePeer(int action, const IPAddress& prefix,
   nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_FWMARK, WG_FIREWALL_MARK);
   nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_TABLE, WG_ROUTE_TABLE);
 
-  if (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) {
-    Q_IPV6ADDR dst = prefix.address().toIPv6Address();
+  if (prefix.protocol() == QAbstractSocket::IPv6Protocol) {
+    Q_IPV6ADDR dst = prefix.toIPv6Address();
     nlmsg_append_attr(nlmsg, sizeof(buf), FRA_DST, &dst, sizeof(dst));
     rule->family = AF_INET6;
-  } else if (prefix.address().protocol() == QAbstractSocket::IPv4Protocol) {
-    quint32 dst = prefix.address().toIPv4Address();
+  } else if (prefix.protocol() == QAbstractSocket::IPv4Protocol) {
+    quint32 dst = prefix.toIPv4Address();
     nlmsg_append_attr32(nlmsg, sizeof(buf), FRA_DST, htonl(dst));
     rule->family = AF_INET;
   } else {
@@ -828,13 +828,13 @@ void WireguardUtilsLinux::resetAllCgroups() {
 // static
 bool WireguardUtilsLinux::buildAllowedIp(wg_allowedip* ip,
                                          const IPAddress& prefix) {
-  const char* addrString = qPrintable(prefix.address().toString());
-  if (prefix.type() == QAbstractSocket::IPv4Protocol) {
+  const char* addrString = qPrintable(prefix.toHostString());
+  if (prefix.protocol() == QAbstractSocket::IPv4Protocol) {
     ip->family = AF_INET;
     ip->cidr = prefix.prefixLength();
     return inet_pton(AF_INET, addrString, &ip->ip4) == 1;
   }
-  if (prefix.type() == QAbstractSocket::IPv6Protocol) {
+  if (prefix.protocol() == QAbstractSocket::IPv6Protocol) {
     ip->family = AF_INET6;
     ip->cidr = prefix.prefixLength();
     return inet_pton(AF_INET6, addrString, &ip->ip6) == 1;

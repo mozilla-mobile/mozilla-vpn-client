@@ -60,32 +60,30 @@ static void CALLBACK WireGuardLogger(_In_ WIREGUARD_LOGGER_LEVEL Level,
  * @brief Assigns an ipv4 address to a network device with a given LUID
  *
  * @param ifindex - Interface Index of the Adapter
- * @param address - Address and NetMask of the Adapter
+ * @param addr - Address and NetMask of the Adapter
  * @return ulong - nteContext - Call DeleteIPAddress(nteContext) to remove the
  * assignment.
  */
-ulong setIPv4AddressAndMask(NET_IFINDEX ifindex, const IPAddress address) {
+ulong setIPv4AddressAndMask(NET_IFINDEX ifindex, const IPAddress& addr) {
   ULONG nteContext = 0;
   ULONG nteInstance = 0;
-  IN_ADDR ipAddrBinary, subnetMaskBinary;
-  if (InetPtonA(AF_INET, qPrintable(address.address().toString()),
-                &ipAddrBinary) != 1) {
+  IN_ADDR inAddr, inMask;
+  if (InetPtonA(AF_INET, qPrintable(addr.toHostString()), &inAddr) != 1) {
     return 0;
   }
-  if (InetPtonA(AF_INET, qPrintable(address.netmask().toString()),
-                &subnetMaskBinary) != 1) {
+  if (InetPtonA(AF_INET, qPrintable(addr.netmask().toString()), &inMask) != 1) {
     return 0;
   }
   // Add IP address and subnet mask
-  DWORD dwResult =
-      AddIPAddress(ipAddrBinary.S_un.S_addr, subnetMaskBinary.S_un.S_addr,
-                   ifindex, &nteContext, &nteInstance);
+  DWORD dwResult = AddIPAddress(inAddr.S_un.S_addr, inMask.S_un.S_addr, ifindex,
+                                &nteContext, &nteInstance);
   if (dwResult != NO_ERROR) {
     WindowsUtils::windowsLog("WELP, failed to add ip address to adapter");
     return 0;
   }
   return nteContext;
 }
+
 /**
  * @brief
  *
@@ -93,14 +91,14 @@ ulong setIPv4AddressAndMask(NET_IFINDEX ifindex, const IPAddress address) {
  * @param ipAddress - Address and NetMask of the Adapter
  * @return bool - If the assignment was successful
  */
-bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress ipAddress) {
+bool setIPv6AddressAndMask(NET_LUID luid, const IPAddress& ipAddress) {
   MIB_UNICASTIPADDRESS_ROW row;
   SOCKADDR_IN6 sockaddr = {};
   sockaddr.sin6_family = AF_INET6;
-  if (InetPtonA(AF_INET6, qPrintable(ipAddress.address().toString()),
+  if (InetPtonA(AF_INET6, qPrintable(ipAddress.toHostString()),
                 &sockaddr.sin6_addr) != 1) {
     logger.error() << "Failed to assign ivp6: Cannot Parse IPv6 Address "
-                   << ipAddress.address().toString();
+                   << ipAddress.toHostString();
     return false;
   }
 
@@ -568,13 +566,13 @@ void WireguardUtilsWindows::buildMibForwardRow(const IPAddress& prefix,
   InitializeIpForwardEntry(entry);
 
   // Populate the next hop
-  if (prefix.type() == QAbstractSocket::IPv6Protocol) {
-    InetPtonA(AF_INET6, qPrintable(prefix.address().toString()),
+  if (prefix.protocol() == QAbstractSocket::IPv6Protocol) {
+    InetPtonA(AF_INET6, qPrintable(prefix.toHostString()),
               &entry->DestinationPrefix.Prefix.Ipv6.sin6_addr);
     entry->DestinationPrefix.Prefix.Ipv6.sin6_family = AF_INET6;
     entry->DestinationPrefix.PrefixLength = prefix.prefixLength();
   } else {
-    InetPtonA(AF_INET, qPrintable(prefix.address().toString()),
+    InetPtonA(AF_INET, qPrintable(prefix.toHostString()),
               &entry->DestinationPrefix.Prefix.Ipv4.sin_addr);
     entry->DestinationPrefix.Prefix.Ipv4.sin_family = AF_INET;
     entry->DestinationPrefix.PrefixLength = prefix.prefixLength();
@@ -608,7 +606,7 @@ bool WireguardUtilsWindows::updateRoutePrefix(const IPAddress& prefix) {
   // Install the route
   DWORD result = CreateIpForwardEntry2(&entry);
   if ((result == ERROR_NOT_FOUND) &&
-      (prefix.type() == QAbstractSocket::IPv6Protocol)) {
+      (prefix.protocol() == QAbstractSocket::IPv6Protocol)) {
     return true;
   }
   if (result == ERROR_OBJECT_ALREADY_EXISTS) {

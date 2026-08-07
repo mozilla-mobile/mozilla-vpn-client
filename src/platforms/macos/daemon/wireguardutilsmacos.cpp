@@ -411,11 +411,11 @@ bool WireguardUtilsMacos::updateRoutePrefix(const IPAddress& prefix) {
   }
 
   // Ensure that we do not replace the default route.
-  if (prefix.type() == QAbstractSocket::IPv4Protocol) {
+  if (prefix.protocol() == QAbstractSocket::IPv4Protocol) {
     return m_rtmonitor->insertRoute(IPAddress("0.0.0.0/1")) &&
            m_rtmonitor->insertRoute(IPAddress("128.0.0.0/1"));
   }
-  if (prefix.type() == QAbstractSocket::IPv6Protocol) {
+  if (prefix.protocol() == QAbstractSocket::IPv6Protocol) {
     return m_rtmonitor->insertRoute(IPAddress("::/1")) &&
            m_rtmonitor->insertRoute(IPAddress("8000::/1"));
   }
@@ -433,10 +433,10 @@ bool WireguardUtilsMacos::deleteRoutePrefix(const IPAddress& prefix) {
   }
 
   // Ensure that we do not replace the default route.
-  if (prefix.type() == QAbstractSocket::IPv4Protocol) {
+  if (prefix.protocol() == QAbstractSocket::IPv4Protocol) {
     return m_rtmonitor->deleteRoute(IPAddress("0.0.0.0/1")) &&
            m_rtmonitor->deleteRoute(IPAddress("128.0.0.0/1"));
-  } else if (prefix.type() == QAbstractSocket::IPv6Protocol) {
+  } else if (prefix.protocol() == QAbstractSocket::IPv6Protocol) {
     return m_rtmonitor->deleteRoute(IPAddress("::/1")) &&
            m_rtmonitor->deleteRoute(IPAddress("8000::/1"));
   } else {

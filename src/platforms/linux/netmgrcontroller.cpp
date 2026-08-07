@@ -234,10 +234,10 @@ void NetmgrController::activate(const InterfaceConfig& config,
   NetmgrDataList ipv6routes;
   for (const IPAddress& i : config.m_allowedIPAddressRanges) {
     QVariantMap route;
-    route.insert("dest", i.address().toString());
+    route.insert("dest", i.toHostString());
     route.insert("prefix", (uint)i.prefixLength());
     route.insert("table", WG_FIREWALL_MARK);
-    if (i.address().protocol() == QAbstractSocket::IPv6Protocol) {
+    if (i.protocol() == QAbstractSocket::IPv6Protocol) {
       ipv6routes.append(route);
     } else {
       ipv4routes.append(route);

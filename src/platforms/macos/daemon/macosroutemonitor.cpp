@@ -149,7 +149,7 @@ void MacosRouteMonitor::handleRtmDelete(const struct rt_msghdr* rtm,
   logger.debug() << "Lost default route via" << ifname
                  << logger.sensitive(addrToString(addrlist[1]));
   for (const IPAddress& prefix : m_exclusionRoutes) {
-    if (prefix.address().protocol() == protocol) {
+    if (prefix.protocol() == protocol) {
       logger.debug() << "Removing exclusion route to"
                      << logger.sensitive(prefix.toString());
       rtmSendRoute(RTM_DELETE, prefix, rtm->rtm_index, nullptr);
@@ -264,7 +264,7 @@ void MacosRouteMonitor::handleRtmUpdate(const struct rt_msghdr* rtm,
   logger.debug() << "Updating default route via" << ifname
                  << addrToString(addrlist[1]);
   for (const IPAddress& prefix : m_exclusionRoutes) {
-    if (prefix.address().protocol() == protocol) {
+    if (prefix.protocol() == protocol) {
       logger.debug() << "Updating exclusion route to"
                      << logger.sensitive(prefix.toString());
       rtmSendRoute(rtm_type, prefix, ifindex, addrlist[1].constData());
@@ -372,9 +372,9 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const IPAddress& prefix,
   // by RTF_IFSCOPE|RTF_REJECT routes. isHostRoute identifies a /32 or
   // /128 route so we can set RTF_HOST and omit RTA_NETMASK later.
   const bool isHostRoute =
-      (prefix.address().protocol() == QAbstractSocket::IPv6Protocol &&
+      (prefix.protocol() == QAbstractSocket::IPv6Protocol &&
        prefix.prefixLength() == 128) ||
-      (prefix.address().protocol() == QAbstractSocket::IPv4Protocol &&
+      (prefix.protocol() == QAbstractSocket::IPv4Protocol &&
        prefix.prefixLength() == 32);
 
   if (isHostRoute) {
@@ -394,9 +394,9 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const IPAddress& prefix,
   memset(&rtm->rtm_rmx, 0, sizeof(rtm->rtm_rmx));
 
   // Append RTA_DST
-  if (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) {
+  if (prefix.protocol() == QAbstractSocket::IPv6Protocol) {
     struct sockaddr_in6 sin6;
-    Q_IPV6ADDR dst = prefix.address().toIPv6Address();
+    Q_IPV6ADDR dst = prefix.toIPv6Address();
     memset(&sin6, 0, sizeof(sin6));
     sin6.sin6_family = AF_INET6;
     sin6.sin6_len = sizeof(sin6);
@@ -404,7 +404,7 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const IPAddress& prefix,
     rtmAppendAddr(rtm, rtm_max_size, RTA_DST, &sin6);
   } else {
     struct sockaddr_in sin;
-    quint32 dst = prefix.address().toIPv4Address();
+    quint32 dst = prefix.toIPv4Address();
     memset(&sin, 0, sizeof(sin));
     sin.sin_family = AF_INET;
     sin.sin_len = sizeof(sin);
@@ -425,7 +425,7 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const IPAddress& prefix,
 
   // RTF_HOST implies an all-ones netmask; do not append RTA_NETMASK with it.
   if (!isHostRoute) {
-    if (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) {
+    if (prefix.protocol() == QAbstractSocket::IPv6Protocol) {
       struct sockaddr_in6 sin6;
       memset(&sin6, 0, sizeof(sin6));
 
@@ -438,7 +438,7 @@ bool MacosRouteMonitor::rtmSendRoute(int action, const IPAddress& prefix,
       }
 
       rtmAppendAddr(rtm, rtm_max_size, RTA_NETMASK, &sin6);
-    } else if (prefix.address().protocol() == QAbstractSocket::IPv4Protocol) {
+    } else if (prefix.protocol() == QAbstractSocket::IPv4Protocol) {
       struct sockaddr_in sin;
       memset(&sin, 0, sizeof(sin));
 
@@ -545,12 +545,12 @@ bool MacosRouteMonitor::addExclusionRoute(const IPAddress& prefix) {
   m_exclusionRoutes.append(prefix);
 
   // If the default route is known, then updte the routing table immediately.
-  if ((prefix.address().protocol() == QAbstractSocket::IPv4Protocol) &&
+  if ((prefix.protocol() == QAbstractSocket::IPv4Protocol) &&
       (m_defaultIfindexIpv4 != 0) && !m_defaultGatewayIpv4.isEmpty()) {
     return rtmSendRoute(RTM_ADD, prefix, m_defaultIfindexIpv4,
                         m_defaultGatewayIpv4.constData());
   }
-  if ((prefix.address().protocol() == QAbstractSocket::IPv6Protocol) &&
+  if ((prefix.protocol() == QAbstractSocket::IPv6Protocol) &&
       (m_defaultIfindexIpv6 != 0) && !m_defaultGatewayIpv6.isEmpty()) {
     return rtmSendRoute(RTM_ADD, prefix, m_defaultIfindexIpv6,
                         m_defaultGatewayIpv6.constData());
@@ -565,9 +565,9 @@ bool MacosRouteMonitor::deleteExclusionRoute(const IPAddress& prefix) {
                  << logger.sensitive(prefix.toString());
 
   m_exclusionRoutes.removeAll(prefix);
-  if (prefix.address().protocol() == QAbstractSocket::IPv4Protocol) {
+  if (prefix.protocol() == QAbstractSocket::IPv4Protocol) {
     return rtmSendRoute(RTM_DELETE, prefix, m_defaultIfindexIpv4, nullptr);
-  } else if (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) {
+  } else if (prefix.protocol() == QAbstractSocket::IPv6Protocol) {
     return rtmSendRoute(RTM_DELETE, prefix, m_defaultIfindexIpv6, nullptr);
   } else {
     return false;
@@ -577,9 +577,9 @@ bool MacosRouteMonitor::deleteExclusionRoute(const IPAddress& prefix) {
 void MacosRouteMonitor::flushExclusionRoutes() {
   while (!m_exclusionRoutes.isEmpty()) {
     IPAddress prefix = m_exclusionRoutes.takeFirst();
-    if (prefix.address().protocol() == QAbstractSocket::IPv4Protocol) {
+    if (prefix.protocol() == QAbstractSocket::IPv4Protocol) {
       rtmSendRoute(RTM_DELETE, prefix, m_defaultIfindexIpv4, nullptr);
-    } else if (prefix.address().protocol() == QAbstractSocket::IPv6Protocol) {
+    } else if (prefix.protocol() == QAbstractSocket::IPv6Protocol) {
       rtmSendRoute(RTM_DELETE, prefix, m_defaultIfindexIpv6, nullptr);
     }
   }
