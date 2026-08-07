@@ -29,6 +29,7 @@ class ServerCountryModel final : public QAbstractListModel {
   ~ServerCountryModel();
 
   [[nodiscard]] bool fromJson(const QByteArray& data);
+  bool appendFromJson(const QByteArray& json);
 
   bool initialized() const { return !m_rawJson.isEmpty(); }
 
@@ -61,7 +62,7 @@ class ServerCountryModel final : public QAbstractListModel {
   void changed();
 
  private:
-  [[nodiscard]] bool fromJsonInternal(const QByteArray& data);
+  [[nodiscard]] bool fromJsonInternal(const QByteArray& data, bool append);
 
   void sortCountries();
 
