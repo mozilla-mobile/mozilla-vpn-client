@@ -72,7 +72,7 @@ MZViewBase {
                 MZBoldLabel {
                     property string enterEmailAddress: MZI18n.InAppSupportWorkflowSupportEmailFieldLabel
 
-                    text: enterEmailAddress
+                    text: enterEmailAddress + " *"
                     lineHeight: MZTheme.theme.labelLineHeight
                     lineHeightMode: Text.FixedHeight
                     wrapMode: Text.WordWrap
@@ -85,7 +85,7 @@ MZViewBase {
                 MZTextField {
                     id: emailInput
                     objectName: "contactUs-emailInput"
-
+                    Accessible.name: enterEmailAddress
                     verticalAlignment: Text.AlignVCenter
                     Layout.fillWidth: true
                     hasError: !MZValidator.validateEmailAddress(emailInput.text)
