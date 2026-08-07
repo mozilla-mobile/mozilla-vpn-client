@@ -79,7 +79,7 @@ RowLayout {
         id: ipCopyButton
 
         visible: showCopyButton
-        accessibleName: MZI18n.ConnectionInfoCopyEndpointAddress.arg(ipAddress.text)
+        accessibleName: "Copy %1".arg(ipAddress.text)
         buttonColorScheme: MZTheme.colors.iconButtonDarkBackground
         onClicked: {
             MZUtils.storeInClipboard(ipAddress.text);

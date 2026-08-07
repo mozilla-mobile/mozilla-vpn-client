@@ -82,7 +82,7 @@ Rectangle {
         // The addresses this connection dials
         IPAddress {
             ipAddressText: VPNCurrentServer.entryServerIpv4Address
-            ipVersionText: MZI18n.ConnectionInfoEntryEndpointLabelIp
+            ipVersionText: "Entry Server endpoint IP:"
             showCopyButton: true
             stackAddress: true
             showRotateButton: false
@@ -92,7 +92,7 @@ Rectangle {
 
         IPAddress {
             ipAddressText: VPNCurrentServer.entryServerIpv6Address
-            ipVersionText: MZI18n.ConnectionInfoEntryEndpointLabelIpv6
+            ipVersionText: "Entry Server endpoint IPv6:"
             showCopyButton: true
             stackAddress: true
             showRotateButton: false
@@ -101,7 +101,7 @@ Rectangle {
 
         IPAddress {
             ipAddressText: VPNCurrentServer.exitServerIpv4Address
-            ipVersionText: MZI18n.ConnectionInfoExitEndpointLabelIp
+            ipVersionText: "Exit Server endpoint IP:"
             showCopyButton: true
             stackAddress: true
             showRotateButton: false
@@ -111,7 +111,7 @@ Rectangle {
 
         IPAddress {
             ipAddressText: VPNCurrentServer.exitServerIpv6Address
-            ipVersionText: MZI18n.ConnectionInfoExitEndpointLabelIpv6
+            ipVersionText: "Exit Server endpoint IPv6:"
             showCopyButton: true
             stackAddress: true
             showRotateButton: false
