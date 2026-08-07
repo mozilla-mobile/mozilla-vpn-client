@@ -13,7 +13,11 @@ Rectangle {
     property bool isOpen: false
     property bool ready: !opacityAnimation.running
 
+    readonly property bool showDetailedInfo: MZFeatureList.get("showDetailedConnectionInfo").isSupported
+
     anchors.fill: parent
+    // Panel is fixed height, prefer clipping over overflow.
+    clip: true
     color: MZTheme.colors.primary
     radius: boxBackground.radius
 
@@ -25,9 +29,10 @@ Rectangle {
             right: parent.right
             rightMargin: MZTheme.theme.windowMargin * 1.5
             top: parent.top
-            topMargin: MZTheme.theme.windowMargin * 3
+            topMargin: MZTheme.theme.windowMargin * (showDetailedInfo ? 1.5 : 3)
         }
-        width: parent.width
+        // Reduce the spacing when detailed infos are shown.
+        spacing: MZTheme.theme.listSpacing / (showDetailedInfo ? 4 : 2)
 
         MZBoldLabel {
             color: MZTheme.colors.fontColorInverted
@@ -72,6 +77,45 @@ Rectangle {
             opacity: 0.2
             visible: ipv6Address.visible
             Layout.fillWidth: true
+        }
+
+        // The addresses this connection dials
+        IPAddress {
+            ipAddressText: VPNCurrentServer.entryServerIpv4Address
+            ipVersionText: "Entry Server endpoint IP:"
+            showCopyButton: true
+            stackAddress: true
+            showRotateButton: false
+            visible: showDetailedInfo && ipAddressText !== ""
+            Layout.topMargin: MZTheme.theme.listSpacing / 2
+        }
+
+        IPAddress {
+            ipAddressText: VPNCurrentServer.entryServerIpv6Address
+            ipVersionText: "Entry Server endpoint IPv6:"
+            showCopyButton: true
+            stackAddress: true
+            showRotateButton: false
+            visible: showDetailedInfo && ipAddressText !== ""
+        }
+
+        IPAddress {
+            ipAddressText: VPNCurrentServer.exitServerIpv4Address
+            ipVersionText: "Exit Server endpoint IP:"
+            showCopyButton: true
+            stackAddress: true
+            showRotateButton: false
+            visible: showDetailedInfo && ipAddressText !== ""
+            Layout.topMargin: MZTheme.theme.listSpacing / 2
+        }
+
+        IPAddress {
+            ipAddressText: VPNCurrentServer.exitServerIpv6Address
+            ipVersionText: "Exit Server endpoint IPv6:"
+            showCopyButton: true
+            stackAddress: true
+            showRotateButton: false
+            visible: showDetailedInfo && ipAddressText !== ""
         }
     }
 

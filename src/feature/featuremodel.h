@@ -35,6 +35,7 @@ inline const AnyFeature s_exposedFeatures[] = {
     ref(obfuscationUdpOverTcp),
     ref(replacerAddon),
     ref(shareLogs),
+    ref(showDetailedConnectionInfo),
     ref(showRotateIPAddressButton),
     ref(startOnBoot),
     ref(themeSelectionIncludesAutomatic),

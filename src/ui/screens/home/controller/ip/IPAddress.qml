@@ -11,42 +11,52 @@ import components 0.1
 import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 
 RowLayout {
-    property real maxPaintedTextWidth: box.width - ipVersion.paintedWidth - MZTheme.theme.windowMargin
     property alias ipVersionText: ipVersion.text
     property alias ipAddressText: ipAddress.text
+    property bool showRotateButton: true
+    // Detailed rows offer a copy button
+    property bool showCopyButton: false
+    // Detailed rows have long labels so we stack the ip under the label
+    property bool stackAddress: false
 
     spacing: MZTheme.theme.listSpacing
     Layout.fillWidth: true
 
-    MZBoldInterLabel {
-        id: ipVersion
+    GridLayout {
+        columns: stackAddress ? 1 : 2
+        columnSpacing: MZTheme.theme.listSpacing
+        rowSpacing: 0
 
-        color: MZTheme.colors.fontColorInverted
-        font.pixelSize: MZTheme.theme.fontSizeSmall
-        lineHeight: MZTheme.theme.labelLineHeight * 1.25
-        verticalAlignment: Text.AlignVCenter
-    }
-
-    MZInterLabel {
-        id: ipAddress
-
-        color: MZTheme.colors.fontColorInverted
-        font.pixelSize: MZTheme.theme.fontSizeSmall
-        horizontalAlignment: Text.AlignLeft
-        lineHeight: MZTheme.theme.labelLineHeight * 1.25
-        opacity: 0.8
-
-        Layout.maximumWidth: maxPaintedTextWidth
-    }
-
-    // spacer
-    Item {
         Layout.fillWidth: true
+
+        MZBoldInterLabel {
+            id: ipVersion
+
+            color: MZTheme.colors.fontColorInverted
+            font.pixelSize: MZTheme.theme.fontSizeSmall
+            lineHeight: stackAddress
+                ? MZTheme.theme.controllerInterLineHeight
+                : MZTheme.theme.labelLineHeight * 1.25
+            verticalAlignment: Text.AlignVCenter
+            Layout.fillWidth: stackAddress
+        }
+
+        MZInterLabel {
+            id: ipAddress
+
+            color: MZTheme.colors.fontColorInverted
+            font.pixelSize: MZTheme.theme.fontSizeSmall
+            horizontalAlignment: Text.AlignLeft
+            lineHeight: MZTheme.theme.labelLineHeight * (stackAddress ? 1 : 1.25)
+            opacity: 0.8
+
+            Layout.fillWidth: true
+        }
     }
 
     MZIconButton {
         id: ipRefreshToggleButton
-        visible: MZFeatureList.get("showRotateIPAddressButton").isSupported && VPNIPAddressLookup.isFinished
+        visible: showRotateButton && MZFeatureList.get("showRotateIPAddressButton").isSupported && VPNIPAddressLookup.isFinished
         accessibleName: MZI18n.ConnectionInfoRotateIPAddress
         buttonColorScheme: MZTheme.colors.iconButtonDarkBackground
         onClicked: {
@@ -58,6 +68,33 @@ RowLayout {
 
             anchors.centerIn: ipRefreshToggleButton
             source: MZAssetLookup.getImageSource("RefreshArrowsIPInfo")
+            sourceSize {
+                height: iconSize
+                width: iconSize
+            }
+        }
+    }
+
+    MZIconButton {
+        id: ipCopyButton
+
+        visible: showCopyButton
+        accessibleName: "Copy %1".arg(ipAddress.text)
+        buttonColorScheme: MZTheme.colors.iconButtonDarkBackground
+        onClicked: {
+            MZUtils.storeInClipboard(ipAddress.text);
+            MZErrorHandler.requestAlert(MZErrorHandler.CopiedToClipboardConfirmationAlert);
+        }
+
+        Layout.alignment: Qt.AlignVCenter
+        Layout.preferredHeight: MZTheme.theme.rowHeight
+        Layout.preferredWidth: MZTheme.theme.rowHeight
+
+        Image {
+            property int iconSize: MZTheme.theme.iconSize * 1.25
+
+            anchors.centerIn: ipCopyButton
+            source: MZAssetLookup.getImageSource("CopyIPInfo")
             sourceSize {
                 height: iconSize
                 width: iconSize
