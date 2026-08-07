@@ -222,6 +222,9 @@ class MozillaVPN final : public QObject {
     emit ticketCreationAnswer(successful);
   }
 
+  void setToken(const QString& token) { m_token = token; }
+  const QString& token() const { return m_token; }
+
   void requestAbout();
 
   static QString appVersionForUpdate();
@@ -317,6 +320,7 @@ class MozillaVPN final : public QObject {
   struct MozillaVPNPrivate* m_private = nullptr;
 
   QTimer m_periodicOperationsTimer;
+  QString m_token;
 
   bool m_startMinimized = false;
   bool m_updating = false;

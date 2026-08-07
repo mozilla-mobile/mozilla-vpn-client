@@ -29,7 +29,7 @@ bool ServerCountryModel::fromJson(const QByteArray& json) {
     return true;
   }
 
-  if (!fromJsonInternal(json)) {
+  if (!fromJsonInternal(json, false)) {
     return false;
   }
 
@@ -38,14 +38,30 @@ bool ServerCountryModel::fromJson(const QByteArray& json) {
   return true;
 }
 
-bool ServerCountryModel::fromJsonInternal(const QByteArray& s) {
+bool ServerCountryModel::appendFromJson(const QByteArray& json) {
+  logger.debug() << "Appending from JSON";
+
+  if (json.isEmpty()) {
+    logger.debug() << "Nothing to append";
+    return true;
+  }
+
+  if (!fromJsonInternal(json, true)) {
+    return false;
+  }
+  emit changed();
+  return true;
+}
+
+bool ServerCountryModel::fromJsonInternal(const QByteArray& s, bool append) {
   beginResetModel();
 
   m_rawJson = "";
-  m_countries.clear();
-  m_cities.clear();
-  m_servers.clear();
-
+  if (!append) {
+    m_countries.clear();
+    m_cities.clear();
+    m_servers.clear();
+  }
   QJsonDocument doc = QJsonDocument::fromJson(s);
   if (!doc.isObject()) {
     return false;
