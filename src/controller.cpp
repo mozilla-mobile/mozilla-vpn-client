@@ -461,6 +461,11 @@ auto Controller::setupConfigs(
     exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
+  // Track the logical entry server independently of how many WireGuard peers
+  // the connection ends up using. For single-hop the entry and exit servers are
+  // the same, the multihop branches below override this with the real entry.
+  QString entryPublicKey = exitServer.publicKey();
+
   // For single-hop connections, exclude the entry server
   if (!Feature::multiHop.supported || !m_serverData.multihop()) {
     logger.info() << "Activating single hop";
@@ -497,6 +502,8 @@ auto Controller::setupConfigs(
       serverUnavailable();
       return QList<InterfaceConfig>();
     }
+
+    entryPublicKey = entryServer.publicKey();
 
     InterfaceConfig entryConfig;
     entryConfig.m_privateKey = vpn->keys()->privateKey();
@@ -551,6 +558,8 @@ auto Controller::setupConfigs(
       return QList<InterfaceConfig>();
     }
 
+    entryPublicKey = entryServer.publicKey();
+
     // NOTE: For platforms without multihop support, we cannot emulate multihop
     // and use port 53 at the same time. If the user has selected both options
     // then let's choose multihop.
@@ -566,6 +575,9 @@ auto Controller::setupConfigs(
             ? Server::ObfuscationMethod::LWO
             : Server::ObfuscationMethod::NoObfuscation;
   }
+
+  m_serverData.setEntryServerPublicKey(entryPublicKey);
+  m_serverData.setExitServerPublicKey(exitServer.publicKey());
 
   returnList.append(exitConfig);
   return returnList;
@@ -597,10 +609,6 @@ void Controller::activateInternal(
     m_activationQueue.append(entryConfig);
   }
   m_activationQueue.append(exitConfig);
-  m_serverData.setEntryServerPublicKey(
-      m_activationQueue.first().m_serverPublicKey);
-  m_serverData.setExitServerPublicKey(
-      m_activationQueue.last().m_serverPublicKey);
 
   m_pingReceived = false;
   {
@@ -998,11 +1006,7 @@ void Controller::maybeSendUpdatedConfig(const ServerData& serverData) {
     if (!serverConfigs.isEmpty()) {
       entryConfig = serverConfigs.takeFirst();
       m_activationQueue.append(entryConfig);
-      m_serverData.setEntryServerPublicKey(entryConfig.m_serverPublicKey);
-    } else {
-      m_serverData.setEntryServerPublicKey(exitConfig.m_serverPublicKey);
     }
-    m_serverData.setExitServerPublicKey(exitConfig.m_serverPublicKey);
     m_impl->sendUpdatedConfig(entryConfig, exitConfig);
   } else {
     logger.debug() << "Skipping sending updated config";
