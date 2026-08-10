@@ -89,6 +89,7 @@ class ServerData final : public QObject {
   QString localizedEntryCountryName() const;
 
   bool serverLocatedInUserCountry();
+  bool supportsCurrentObfuscationMethod();
 
   const QString& previousExitCountryCode() const {
     return m_previousExitCountryCode;

@@ -719,6 +719,14 @@ bool Controller::silentSwitchServers(
         m_serverData.exitServerPublicKey(),
         Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
 
+    logger.debug()
+        << "Randomizing server selection because cooldown is required";
+    selectionPolicy = RandomizeServerSelection;
+  } else if (!m_serverData.supportsCurrentObfuscationMethod()) {
+    // If doing a silent switch because obfuscation method was added/changed,
+    // check if current server supports the method. If not, pick a new server.
+    logger.debug() << "Randomizing server selection because current server "
+                      "does not support obfuscation method";
     selectionPolicy = RandomizeServerSelection;
   }
 

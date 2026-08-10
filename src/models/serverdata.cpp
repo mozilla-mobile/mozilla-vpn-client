@@ -207,6 +207,14 @@ bool ServerData::serverLocatedInUserCountry() {
   return trueCountryCode.toUpper() == exitCountryCode().toUpper();
 }
 
+bool ServerData::supportsCurrentObfuscationMethod() {
+  Server::ObfuscationMethod currentObfuscationMethod =
+      obfuscationPolicyToObfuscationMethod(
+          static_cast<SettingsHolder::ObfuscationPolicy>(
+              SettingsHolder::instance()->obfuscationPolicy()));
+  return exitServer().supportObfuscationMethod(currentObfuscationMethod);
+}
+
 void ServerData::changeServer(const QString& countryCode,
                               const QString& cityName,
                               const QString& entryCountryCode,
