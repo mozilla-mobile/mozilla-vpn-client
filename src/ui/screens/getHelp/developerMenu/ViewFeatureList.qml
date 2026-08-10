@@ -36,17 +36,20 @@ MZViewBase {
                         MZLightLabel {
                             text: feature.name
                             color: MZTheme.colors.fontColorDark
+                            wrapMode: Text.WordWrap
+                            Layout.fillWidth: true
                         }
 
                         MZTextBlock {
                             text: `id: ${feature.id}`
                             font.pixelSize: MZTheme.theme.fontSizeSmall
+                            Layout.fillWidth: true
                         }
                     }
 
                     Rectangle {
                         Layout.preferredHeight: 1
-                        Layout.fillWidth: true
+                        Layout.preferredWidth: MZTheme.theme.windowMargin
                         color: MZTheme.colors.transparent
                     }
 

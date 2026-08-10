@@ -340,6 +340,8 @@
         <file>resources/permissions/macos-background-light-fr.svg</file>
         <file>resources/permissions/macos-background-light-it.svg</file>
         <file>resources/permissions/macos-background-light-nl.svg</file>
+        <file>resources/permissions/macos-permission-dark.svg</file>
+        <file>resources/permissions/macos-permission-light.svg</file>
         <file>resources/permissions/macos-tahoe-background-dark-de.svg</file>
         <file>resources/permissions/macos-tahoe-background-dark-en.svg</file>
         <file>resources/permissions/macos-tahoe-background-dark-es.svg</file>

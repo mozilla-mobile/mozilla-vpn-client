@@ -150,7 +150,9 @@ class SettingsManager final : public QObject, public LogSerializer {
 
   void registerSetting(Setting* setting);
 
-  static QString getOrganizationName();
+  static void useBackupSettingsPath();
+  static QString getOrganizationNameAndCheckPath();
+  static QString formatOrganizationName();
   static QSettings::Format getFormat();
 
  private:

@@ -479,7 +479,7 @@ bool WindowsFirewall::allowTrafficTo(const IPAddress& addr, int weight,
                                      const QString& peer) {
   GUID layerKeyOut;
   GUID layerKeyIn;
-  if (addr.type() == QAbstractSocket::IPv4Protocol) {
+  if (addr.protocol() == QAbstractSocket::IPv4Protocol) {
     layerKeyOut = FWPM_LAYER_ALE_AUTH_CONNECT_V4;
     layerKeyIn = FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4;
   } else {
@@ -493,7 +493,7 @@ bool WindowsFirewall::allowTrafficTo(const IPAddress& addr, int weight,
   QByteArray lowIpV6Buffer;
   QByteArray highIpV6Buffer;
 
-  importAddress(addr.address(), ipRange.valueLow, &lowIpV6Buffer);
+  importAddress(addr, ipRange.valueLow, &lowIpV6Buffer);
   importAddress(addr.broadcastAddress(), ipRange.valueHigh, &highIpV6Buffer);
 
   cond[0].fieldKey = FWPM_CONDITION_IP_REMOTE_ADDRESS;
@@ -769,10 +769,7 @@ bool WindowsFirewall::blockTrafficTo(const IPAddress& addr, uint8_t weight,
                                      const QString& peer) {
   QString description("Block traffic %1 %2 ");
 
-  auto lower = addr.address();
-  auto upper = addr.broadcastAddress();
-
-  const bool isV4 = addr.type() == QAbstractSocket::IPv4Protocol;
+  const bool isV4 = addr.protocol() == QAbstractSocket::IPv4Protocol;
   const GUID layerKeyOut =
       isV4 ? FWPM_LAYER_ALE_AUTH_CONNECT_V4 : FWPM_LAYER_ALE_AUTH_CONNECT_V6;
   const GUID layerKeyIn = isV4 ? FWPM_LAYER_ALE_AUTH_RECV_ACCEPT_V4
@@ -791,8 +788,8 @@ bool WindowsFirewall::blockTrafficTo(const IPAddress& addr, uint8_t weight,
   QByteArray lowIpV6Buffer;
   QByteArray highIpV6Buffer;
 
-  importAddress(lower, ipRange.valueLow, &lowIpV6Buffer);
-  importAddress(upper, ipRange.valueHigh, &highIpV6Buffer);
+  importAddress(addr, ipRange.valueLow, &lowIpV6Buffer);
+  importAddress(addr.broadcastAddress(), ipRange.valueHigh, &highIpV6Buffer);
 
   cond[0].fieldKey = FWPM_CONDITION_IP_REMOTE_ADDRESS;
   cond[0].matchType = FWP_MATCH_RANGE;

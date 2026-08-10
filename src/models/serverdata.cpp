@@ -293,11 +293,13 @@ const QList<Server> ServerData::entryServers() const {
 void ServerData::setEntryServerPublicKey(const QString& publicKey) {
   logger.debug() << "Set entry-server public key:" << logger.keys(publicKey);
   m_entryServerPublicKey = publicKey;
+  emit serverChanged();
 }
 
 void ServerData::setExitServerPublicKey(const QString& publicKey) {
   logger.debug() << "Set exit-server public key:" << logger.keys(publicKey);
   m_exitServerPublicKey = publicKey;
+  emit serverChanged();
 }
 
 const QList<Server> ServerData::backupServers(
@@ -314,6 +316,17 @@ const QList<Server> ServerData::backupServers(
     }
   }
   return backupServers;
+}
+
+const Server& ServerData::entryServer() const {
+  return MozillaVPN::instance()->serverCountryModel()->server(
+      m_entryServerPublicKey == m_exitServerPublicKey ? QString()
+                                                      : m_entryServerPublicKey);
+}
+
+const Server& ServerData::exitServer() const {
+  return MozillaVPN::instance()->serverCountryModel()->server(
+      m_exitServerPublicKey);
 }
 
 Server::ObfuscationMethod ServerData::obfuscationPolicyToObfuscationMethod(

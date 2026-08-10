@@ -7,7 +7,7 @@
 
 #include <QHostAddress>
 
-class IPAddress final {
+class IPAddress final : public QHostAddress {
  public:
   static QList<IPAddress> excludeAddresses(const QList<IPAddress>& sourceList,
                                            const QList<IPAddress>& excludeList);
@@ -20,11 +20,8 @@ class IPAddress final {
   IPAddress& operator=(const IPAddress& other);
   ~IPAddress();
 
-  QString toString() const {
-    return QString("%1/%2").arg(m_address.toString()).arg(m_prefixLength);
-  }
-
-  const QHostAddress& address() const { return m_address; }
+  QString toString() const;
+  QString toHostString() const { return QHostAddress::toString(); }
   int prefixLength() const { return m_prefixLength; }
   QHostAddress netmask() const;
   QHostAddress hostmask() const;
@@ -43,18 +40,15 @@ class IPAddress final {
 
   QList<IPAddress> excludeAddresses(const IPAddress& ip) const;
 
-  QAbstractSocket::NetworkLayerProtocol type() const;
-
   static QList<IPAddress> lanAddressRanges();
 
  private:
-  QHostAddress m_address;
   int m_prefixLength;
 };
 
 inline size_t qHash(const IPAddress& key, size_t seed) {
-  const QHostAddress& address = key.address();
-  return qHash(address, seed) ^ key.prefixLength();
+  const QHostAddress& hostpart = static_cast<const QHostAddress&>(key);
+  return qHash(hostpart, seed) ^ key.prefixLength();
 }
 
 #endif  // IPADDRESS_H

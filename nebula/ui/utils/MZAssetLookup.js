@@ -255,6 +255,10 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/copy.svg',
     filenameDark: 'qrc:/nebula/resources/copy-dark.svg'
   },
+  'CopyIPInfo': {
+    filenameLight: 'qrc:/nebula/resources/copy-dark.svg',
+    filenameDark: 'qrc:/nebula/resources/copy-dark.svg'
+  },
   'CopyLinkColor': {
     filenameLight: 'qrc:/ui/resources/copy.svg',
     filenameDark: 'qrc:/ui/resources/copy-dark.svg'
@@ -366,6 +370,10 @@ var imageLookup = {
   'AppStoreQRCode': {
     filenameLight: 'qrc:/ui/resources/qrcodes/app-store-qrcode.png',
     filenameDark: 'qrc:/ui/resources/qrcodes/app-store-qrcode.png'
+  },
+  'MacosPermissionGeneric': {
+    filenameLight: 'qrc:/ui/resources/permissions/macos-permission-light.svg',
+    filenameDark: 'qrc:/ui/resources/permissions/macos-permission-dark.svg'
   },
 }
 

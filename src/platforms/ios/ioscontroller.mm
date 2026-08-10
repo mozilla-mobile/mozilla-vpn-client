@@ -132,9 +132,9 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
       arrayWithCapacity:config.m_allowedIPAddressRanges.length()];
   for (const IPAddress& i : config.m_allowedIPAddressRanges) {
     VPNIPAddressRange* range =
-        [[VPNIPAddressRange alloc] initWithAddress:i.address().toString().toNSString()
+        [[VPNIPAddressRange alloc] initWithAddress:i.toHostString().toNSString()
                                networkPrefixLength:i.prefixLength()
-                                            isIpv6:i.type() == QAbstractSocket::IPv6Protocol];
+                                            isIpv6:i.protocol() == QAbstractSocket::IPv6Protocol];
     [allowedIPAddressRangesNS addObject:[range autorelease]];
   }
 

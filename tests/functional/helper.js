@@ -413,7 +413,7 @@ module.exports = {
         });
         req.end();
       });
-    } else if (process.platform == 'linux') {
+    } else if (process.platform == 'linux' && !this.runningOnWasm()) {
       // On Windows and Linux, launching the client with the deep-link as an
       // argument will pass it to the test process using the EventListener.
       setup.startAndDetach(['ui', 'mozilla-vpn://login/success?code=the_code']);

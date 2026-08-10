@@ -1190,6 +1190,18 @@ void MozillaVPN::controllerStateChanged() {
     maybeConnectOnStartup();
   }
 
+  // Update the server public keys in the server data model.
+  // This is needed for detailed connection info reporting.
+  if (controllerState == Controller::StateOn) {
+    m_private->m_serverData.setEntryServerPublicKey(
+        m_private->m_controller.currentServer().entryServerPublicKey());
+    m_private->m_serverData.setExitServerPublicKey(
+        m_private->m_controller.currentServer().exitServerPublicKey());
+  } else {
+    m_private->m_serverData.setEntryServerPublicKey(QString());
+    m_private->m_serverData.setExitServerPublicKey(QString());
+  }
+
   if (m_updating && controllerState == Controller::StateOff) {
     update();
   }

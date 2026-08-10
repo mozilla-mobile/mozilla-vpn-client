@@ -41,7 +41,48 @@ SettingsManager* SettingsManager::instance() {
 }
 
 // static
-QString SettingsManager::getOrganizationName() {
+QString SettingsManager::getOrganizationNameAndCheckPath() {
+  QString mainOrgName = formatOrganizationName();
+
+  // Occasionally users report having to re-authenticate every time the client
+  // is opened. In VPN-7666, we realized one cause was the ~/.config directory
+  // (where we save the settings file) being owned by root. Since the client is
+  // launched by a non-root user account, it was unable to save the settings
+  // file to disk, causing the re-authentication on each launch.
+
+  // We must set the backup location before we initialize m_settings, which is
+  // why we create a testSettings and hack this in here.
+
+  // We want to use main location if it is readable and writable.
+  // If main file is not readable or writable, then use the backup location.
+
+  QSettings testSettings(getFormat(), QSettings::UserScope, mainOrgName,
+                         SETTINGS_APP_NAME);
+  if (!testSettings.isWritable()) {
+    logger.error() << "Unable to write to main settings file.";
+    useBackupSettingsPath();
+  } else if (testSettings.status() == QSettings::FormatError) {
+    logger.error() << "Failed to read main settings file.";
+    useBackupSettingsPath();
+  } else if (testSettings.status() == QSettings::AccessError) {
+    logger.warning() << "Failed to access main settings file.";
+    useBackupSettingsPath();
+  }
+  return mainOrgName;
+}
+
+// static
+void SettingsManager::useBackupSettingsPath() {
+  logger.warning() << "Attempting to use backup settings path:"
+                   << QStandardPaths::writableLocation(
+                          QStandardPaths::GenericDataLocation);
+  QSettings::setPath(
+      getFormat(), QSettings::UserScope,
+      QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation));
+}
+
+// static
+QString SettingsManager::formatOrganizationName() {
   QString name = QApplication::organizationName().toLower();
   // Replace all non-alphanumeric chars with underscores.
   for (qsizetype i = 0; i < name.size(); i++) {
@@ -73,14 +114,17 @@ void SettingsManager::testCleanup() {
 
 SettingsManager::SettingsManager(QObject* parent)
     : QObject(parent),
-      m_settings(getFormat(), QSettings::UserScope, getOrganizationName(),
-                 SETTINGS_APP_NAME),
+      m_settings(getFormat(), QSettings::UserScope,
+                 getOrganizationNameAndCheckPath(), SETTINGS_APP_NAME),
       m_settingsConnector(this, &m_settings) {
   MZ_COUNT_CTOR(SettingsManager);
 
   logger.debug() << "Initializing SettingsManager";
 
-  if (m_settings.status() == QSettings::FormatError) {
+  if (!m_settings.isWritable()) {
+    logger.error() << "Unable to write to settings file:"
+                   << m_settings.fileName();
+  } else if (m_settings.status() == QSettings::FormatError) {
     logger.error() << "Failed to read settings file:" << m_settings.fileName();
   } else if (m_settings.status() == QSettings::AccessError) {
     logger.warning() << "Failed to access settings file:"
