@@ -706,15 +706,6 @@ bool Controller::silentSwitchServers(
   ServerSelectionPolicy selectionPolicy = DoNotRandomizeServerSelection;
   if (serverCoolDownPolicy == eServerCoolDownNeeded) {
     // Set a cooldown timer on the current server.
-    QList<Server> servers = m_serverData.exitServers();
-    Q_ASSERT(!servers.isEmpty());
-
-    if (servers.length() <= 1) {
-      logger.warning()
-          << "Cannot silent switch servers because there is only one available";
-      return false;
-    }
-
     MozillaVPN::instance()->serverLatency()->setCooldown(
         m_serverData.exitServerPublicKey(),
         Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
@@ -728,6 +719,18 @@ bool Controller::silentSwitchServers(
     logger.debug() << "Randomizing server selection because current server "
                       "does not support obfuscation method";
     selectionPolicy = RandomizeServerSelection;
+  }
+
+  if (selectionPolicy == RandomizeServerSelection) {
+    QList<Server> servers = m_serverData.exitServers();
+    Q_ASSERT(!servers.isEmpty());
+
+    if (servers.length() <= 1) {
+      logger.warning()
+          << "Cannot silent switch servers because must pick new server, and "
+             "the only available one is current server";
+      return false;
+    }
   }
 
   logger.debug() << "Switching to a different server";
