@@ -192,9 +192,6 @@ void Controller::initialize() {
   connect(SettingsHolder::instance(), &SettingsHolder::serverDataChanged, this,
           &Controller::serverDataChanged);
 
-  connect(SettingsHolder::instance(), &SettingsHolder::obfuscationPolicyChanged,
-          this, &Controller::serverDataChanged);
-
   connect(LogHandler::instance(), &LogHandler::cleanupLogsNeeded, this,
           &Controller::cleanupBackendLogs);
 
@@ -709,20 +706,31 @@ bool Controller::silentSwitchServers(
   ServerSelectionPolicy selectionPolicy = DoNotRandomizeServerSelection;
   if (serverCoolDownPolicy == eServerCoolDownNeeded) {
     // Set a cooldown timer on the current server.
+    MozillaVPN::instance()->serverLatency()->setCooldown(
+        m_serverData.exitServerPublicKey(),
+        Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
+
+    logger.debug()
+        << "Randomizing server selection because cooldown is required";
+    selectionPolicy = RandomizeServerSelection;
+  } else if (!m_serverData.supportsCurrentObfuscationMethod()) {
+    // If doing a silent switch because obfuscation method was added/changed,
+    // check if current server supports the method. If not, pick a new server.
+    logger.debug() << "Randomizing server selection because current server "
+                      "does not support obfuscation method";
+    selectionPolicy = RandomizeServerSelection;
+  }
+
+  if (selectionPolicy == RandomizeServerSelection) {
     QList<Server> servers = m_serverData.exitServers();
     Q_ASSERT(!servers.isEmpty());
 
     if (servers.length() <= 1) {
       logger.warning()
-          << "Cannot silent switch servers because there is only one available";
+          << "Cannot silent switch servers because must pick new server, and "
+             "the only available one is current server";
       return false;
     }
-
-    MozillaVPN::instance()->serverLatency()->setCooldown(
-        m_serverData.exitServerPublicKey(),
-        Constants::SERVER_UNRESPONSIVE_COOLDOWN_SEC);
-
-    selectionPolicy = RandomizeServerSelection;
   }
 
   logger.debug() << "Switching to a different server";
