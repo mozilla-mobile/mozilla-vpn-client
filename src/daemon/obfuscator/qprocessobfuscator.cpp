@@ -96,13 +96,6 @@ quint16 QProcessObfuscator::parseListeningPort(const QByteArray& line) const {
 
 QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config) {
   QStringList args;
-  switch (config.m_obfuscationMethod) {
-    case Server::ObfuscationMethod::UdpOverTcp:
-      args << QStringLiteral("udp-over-tcp");
-      break;
-    default:
-      return {};
-  }
 
   const QString server = !config.m_serverIpv4AddrIn.isEmpty()
                              ? config.m_serverIpv4AddrIn
@@ -112,7 +105,22 @@ QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config) {
 #ifdef MZ_LINUX
   args << QStringLiteral("--fwmark") << QString::number(WG_FIREWALL_MARK);
 #endif
-  // The obfuscator needs to bind to the same interface as the WireGuard peer
+
+  switch (config.m_obfuscationMethod) {
+    case Server::ObfuscationMethod::UdpOverTcp:
+      args << QStringLiteral("udp-over-tcp");
+      break;
+    case Server::ObfuscationMethod::LWO:
+      args << QStringLiteral("lwo");
+      args << QStringLiteral("--lwo-version")
+           << QStringLiteral("v%1").arg(config.m_lwoVersion);
+      args << QStringLiteral("--public-key") << config.m_publicKey;
+      args << QStringLiteral("--server-public-key") << config.m_serverPublicKey;
+      break;
+    default:
+      return {};
+  }
+
   return args;
 }
 

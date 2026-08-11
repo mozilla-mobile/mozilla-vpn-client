@@ -471,9 +471,19 @@ auto Controller::setupConfigs(
       exitConfig.m_serverPort = 53;
     }
 
-    // If UDP over TCP is enabled choose a dedicated port
-    if (obfuscationMethod == Server::ObfuscationMethod::UdpOverTcp) {
-      exitConfig.m_serverPort = exitServer.chooseTcpPort();
+    switch (obfuscationMethod) {
+      case Server::ObfuscationMethod::UdpOverTcp:
+        // If UDP over TCP is enabled choose a dedicated port
+        exitConfig.m_serverPort = exitServer.chooseTcpPort();
+        break;
+      case Server::ObfuscationMethod::LWO:
+        // If LWO is enabled, silently set the version based on the exit
+        // server's capabilities
+        exitConfig.m_lwoVersion = exitServer.supportsLwoV2() ? 2 : 1;
+        logger.info() << "LWO version set to" << exitConfig.m_lwoVersion;
+        break;
+      default:
+        break;
     }
   }
   // For controllers that support multiple hops, create a queue of connections.
@@ -522,9 +532,20 @@ auto Controller::setupConfigs(
       logger.info() << "Forcing port 53";
       entryConfig.m_serverPort = 53;
     }
-    // If UDP over TCP is enabled choose a dedicated port
-    if (obfuscationMethod == Server::ObfuscationMethod::UdpOverTcp) {
-      entryConfig.m_serverPort = entryServer.chooseTcpPort();
+
+    switch (obfuscationMethod) {
+      case Server::ObfuscationMethod::UdpOverTcp:
+        // If UDP over TCP is enabled choose a dedicated port
+        entryConfig.m_serverPort = entryServer.chooseTcpPort();
+        break;
+      case Server::ObfuscationMethod::LWO:
+        // If LWO is enabled, silently set the version based on the entry
+        // server's capabilities
+        entryConfig.m_lwoVersion = entryServer.supportsLwoV2() ? 2 : 1;
+        logger.info() << "LWO version set to" << entryConfig.m_lwoVersion;
+        break;
+      default:
+        break;
     }
 
     returnList.append(entryConfig);

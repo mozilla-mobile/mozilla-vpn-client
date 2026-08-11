@@ -385,6 +385,22 @@ bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
     }
   }
 
+  if (!obj.contains("lwoVersion")) {
+    config.m_lwoVersion = 1;
+  } else {
+    QJsonValue value = obj.value("lwoVersion");
+    if (!value.isDouble()) {
+      logger.error() << "lwoVersion is not a number";
+      return false;
+    }
+    int lwoVersion = value.toInt();
+    if (lwoVersion < 1 || lwoVersion > 2) {
+      logger.error() << "lwoVersion" << lwoVersion << "is not valid";
+      return false;
+    }
+    config.m_lwoVersion = lwoVersion;
+  }
+
   return true;
 }
 

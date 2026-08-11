@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-use std::os::raw::c_char;
 use std::ffi::CString;
+use std::os::raw::c_char;
 
 use log::{Level, LevelFilter, Log, Metadata, Record};
 use once_cell::sync::OnceCell;
@@ -12,16 +12,14 @@ use once_cell::sync::OnceCell;
 //
 // This message handler should be initialized alogside the Qt message handler.
 pub struct Logger {
-    message_handler: extern "C" fn(i32, *mut c_char)
+    message_handler: extern "C" fn(i32, *mut c_char),
 }
 
 static LOGGER: OnceCell<Logger> = OnceCell::new();
 
 impl Logger {
     fn new(f: extern "C" fn(i32, *mut c_char)) -> Logger {
-        Logger {
-            message_handler: f
-        }
+        Logger { message_handler: f }
     }
 
     pub fn init(f: extern "C" fn(i32, *mut c_char)) {
