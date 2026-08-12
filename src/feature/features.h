@@ -242,7 +242,7 @@ inline constexpr ConstantFeature freeTrial = {
 inline constexpr ConstantFeature obfuscationLwo = {
     .id = "obfuscationLwo",
     .name = "LWO obfuscation",
-    .supported = Platform::linux_ || Platform::android,
+    .supported = Platform::linux_ || Platform::android || Platform::windows,
 };
 
 inline constexpr ConstantFeature obfuscationMasque = {
