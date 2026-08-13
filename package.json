@@ -12,7 +12,7 @@
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
     "jsonschema": "^1.5.0",
-    "mocha": "^11.7.6",
+    "mocha": "^11.8.0",
     "selenium-webdriver": "^4.46.0",
     "websocket": "^1.0.35"
   }
