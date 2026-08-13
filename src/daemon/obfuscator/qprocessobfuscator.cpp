@@ -14,7 +14,8 @@
 #include "logger.h"
 
 constexpr int OBFUSCATOR_PROC_TIMEOUT_MS = 5000;
-// SO_MARK set is not available in the Flatpak sandbox, so we only use it on non-Flatpak Linux builds.
+// SO_MARK set is not available in the Flatpak sandbox, so we only use it on
+// non-Flatpak Linux builds.
 #if defined(MZ_LINUX) && !defined(MZ_FLATPAK)
 constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
 #endif
