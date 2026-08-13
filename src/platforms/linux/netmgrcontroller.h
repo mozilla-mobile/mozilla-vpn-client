@@ -10,7 +10,6 @@
 #include <QObject>
 #include <QVariant>
 #include <QVersionNumber>
-
 #include <memory>
 
 #include "controllerimpl.h"
