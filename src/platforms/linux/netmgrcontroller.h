@@ -11,9 +11,12 @@
 #include <QVariant>
 #include <QVersionNumber>
 
+#include <memory>
+
 #include "controllerimpl.h"
 
 class NetmgrDevice;
+class Obfuscator;
 class QDateTime;
 class QDBusInterface;
 class QDBusError;
@@ -88,6 +91,8 @@ class NetmgrController final : public ControllerImpl {
 
   QString m_connectionPath;
   NetmgrDevice* m_device = nullptr;
+
+  std::unique_ptr<Obfuscator> m_obfuscator;
 };
 
 #endif  // NETWORKMANAGERCONTROLLER_H
