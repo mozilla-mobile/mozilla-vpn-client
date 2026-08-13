@@ -78,6 +78,7 @@
         <File Source="mullvad-split-tunnel.inf" />
         <File Source="mullvad-split-tunnel.sys" />
         <File Source="mozillavpn.json" />
+        <File Source="mozillavpn-obfuscator.exe" />
 
         <!-- Broker Service -->
         <ServiceInstall
