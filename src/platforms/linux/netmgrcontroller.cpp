@@ -15,6 +15,7 @@
 #include <QScopeGuard>
 #include <QUuid>
 
+#include "daemon/obfuscator/qprocessobfuscator.h"
 #include "dbustypes.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -229,6 +230,10 @@ QVariant NetmgrController::serializeConfig() const {
 
 void NetmgrController::activate(const InterfaceConfig& config,
                                 Controller::Reason reason) {
+  const bool obfuscate =
+      config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
+      config.m_hopType != InterfaceConfig::MultiHopExit;
+
   // Update routes and allowedIpAddreses
   NetmgrDataList ipv4routes;
   NetmgrDataList ipv6routes;
@@ -244,7 +249,58 @@ void NetmgrController::activate(const InterfaceConfig& config,
     }
   }
 
-  NetmgrDataList peers(wgPeer(config));
+  // The traffic to the real server must bypass the tunnel.
+  // In the Flatpak sandbox, we cannot use SO_MARK so instead we set
+  // "throw" route for each server endpoint into the WireGuard policy table
+  // "throw" needs NetworkManager >= 1.38.
+  if (obfuscate) {
+    static const QVersionNumber kThrowRouteMinVersion(1, 38);
+    if (m_version < kThrowRouteMinVersion) {
+      logger.warning() << "NetworkManager" << m_version.toString()
+                       << "is too old for obfuscation bypass routes (need"
+                       << kThrowRouteMinVersion.toString() << "or newer);"
+                       << "server traffic may loop back into wg0";
+    } else {
+      for (const QString& addr :
+           {config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn}) {
+        if (addr.isEmpty()) {
+          continue;
+        }
+        QVariantMap route;
+        route.insert("dest", addr);
+        route.insert("type", QStringLiteral("throw"));
+        route.insert("table", WG_FIREWALL_MARK);
+        if (QHostAddress(addr).protocol() == QAbstractSocket::IPv6Protocol) {
+          route.insert("prefix", (uint)128);
+          ipv6routes.append(route);
+        } else {
+          route.insert("prefix", (uint)32);
+          ipv4routes.append(route);
+        }
+      }
+    }
+  }
+
+  // Start the obfuscator proxy and point the WireGuard peer at it.
+  InterfaceConfig peerConfig = config;
+  m_obfuscator.reset();
+  if (obfuscate) {
+    auto obfuscator = std::make_unique<QProcessObfuscator>(config);
+    if (!obfuscator->start()) {
+      logger.error() << "Failed to start obfuscator"
+                     << config.m_obfuscationMethod;
+      emit backendFailure(Controller::ErrorFatal);
+      return;
+    }
+    peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
+    // The relay only binds 127.0.0.1, so clear the IPv6 endpoint to stop
+    // WireGuard from selecting [::1].
+    peerConfig.m_serverIpv6AddrIn = QString();
+    peerConfig.m_serverPort = obfuscator->localPort();
+    m_obfuscator = std::move(obfuscator);
+  }
+
+  NetmgrDataList peers(wgPeer(peerConfig));
   m_ipv4config.insert("route-data", ipv4routes);
   m_ipv6config.insert("route-data", ipv6routes);
   m_wireguard.insert("peers", peers);
@@ -305,6 +361,8 @@ void NetmgrController::activateCompleted(const QDBusObjectPath& path) {
 }
 
 void NetmgrController::deactivate() {
+  m_obfuscator.reset();
+
   if (!m_device || m_device->uuid() != m_uuid) {
     logger.warning() << "Client already disconnected";
     emit disconnected();
