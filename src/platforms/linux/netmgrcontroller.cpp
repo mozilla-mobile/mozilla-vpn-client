@@ -260,6 +260,8 @@ void NetmgrController::activate(const InterfaceConfig& config,
                        << "is too old for obfuscation bypass routes (need"
                        << kThrowRouteMinVersion.toString() << "or newer);"
                        << "server traffic may loop back into wg0";
+      emit backendFailure(Controller::ErrorFatal);
+      return;
     } else {
       for (const QString& addr :
            {config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn}) {
