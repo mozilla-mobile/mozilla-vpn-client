@@ -15,12 +15,15 @@ import com.android.billingclient.api.BillingClient
 import com.android.billingclient.api.BillingClientStateListener
 import com.android.billingclient.api.BillingFlowParams
 import com.android.billingclient.api.BillingResult
+import com.android.billingclient.api.QueryProductDetailsParams
+import com.android.billingclient.api.QueryProductDetailsResult
+import com.android.billingclient.api.QueryPurchasesParams
+import com.android.billingclient.api.PendingPurchasesParams
+import com.android.billingclient.api.ProductDetails
+import com.android.billingclient.api.ProductDetailsResponseListener
 import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.PurchasesResponseListener
 import com.android.billingclient.api.PurchasesUpdatedListener
-import com.android.billingclient.api.SkuDetails
-import com.android.billingclient.api.SkuDetailsParams
-import com.android.billingclient.api.SkuDetailsResponseListener
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.decodeFromString
 import kotlinx.serialization.encodeToString
@@ -73,21 +76,24 @@ class InAppPurchase private constructor(ctx: Context) :
     BillingClientStateListener,
     PurchasesResponseListener,
     PurchasesUpdatedListener,
-    SkuDetailsResponseListener {
+    ProductDetailsResponseListener {
 
     /**
-     * SkuDetails, monthCounts, and Purchase by SKU
+     * ProductDetails, monthCounts, and Purchase by SKU
      */
-    val skusWithSkuDetails = HashMap<String, SkuDetails>()
-    val skusWithMonthCount = HashMap<String, Int>()
-    val skusWithPurchase = HashMap<String, Purchase>()
+    val idsWithProductDetails = HashMap<String, ProductDetails>()
+    val idsWithMonthCount = HashMap<String, Int>()
 
     /**
      * The billingClient instance
      */
+
+    val pendingPurchasesParams = PendingPurchasesParams.newBuilder()
+        .enableOneTimeProducts()
+        .build()
     private var billingClient = BillingClient.newBuilder(ctx)
         .setListener(this)
-        .enablePendingPurchases() // Not used for subscriptions, but required.
+        .enablePendingPurchases(pendingPurchasesParams)
         .build()
 
     /**
@@ -142,7 +148,7 @@ class InAppPurchase private constructor(ctx: Context) :
     fun initiateProductLookup(productsToLookupRaw: String) {
         val productsToLookup = Json.decodeFromString<MozillaSubscriptions>(productsToLookupRaw)
         for (product in productsToLookup.products) {
-            skusWithMonthCount[product.id] = product.monthCount
+            idsWithMonthCount[product.id] = product.monthCount
         }
         if (!billingClient.isReady) {
             Log.d(TAG, "BillingClient: Start connection...")
@@ -153,9 +159,9 @@ class InAppPurchase private constructor(ctx: Context) :
     }
 
     fun initiatePurchase(productToPurchase: String, activity: Activity) {
-        val skuDetails = skusWithSkuDetails[productToPurchase]
-        if (skuDetails == null) {
-            Log.wtf(TAG, "Attempting to purchase a product with no skuDetails")
+        val productDetails = idsWithProductDetails[productToPurchase]
+        if (productDetails == null) {
+            Log.wtf(TAG, "Attempting to purchase a product with no productDetails")
             onSubscriptionFailed(
                 Json.encodeToString(
                     BillingResultData(
@@ -166,11 +172,30 @@ class InAppPurchase private constructor(ctx: Context) :
             )
             return
         }
-        val billingParams = BillingFlowParams
-            .newBuilder()
-            .setSkuDetails(skuDetails)
-            // TODO - https://github.com/mozilla-mobile/mozilla-vpn-client/issues/1537
-            // .setObfuscatedAccountId(fxaId)
+        val offerToken = productDetails.subscriptionOfferDetails
+            ?.firstOrNull()
+            ?.offerToken
+            ?: run {
+                onSubscriptionFailed(
+                  Json.encodeToString(
+                    BillingResultData(
+                        code = -96,
+                        message = "No offer found",
+                    ),
+                ),
+                )
+                return
+            }
+
+        val billingParams = BillingFlowParams.newBuilder()
+            .setProductDetailsParamsList(
+                listOf(
+                    BillingFlowParams.ProductDetailsParams.newBuilder()
+                        .setProductDetails(productDetails)
+                        .setOfferToken(offerToken)
+                        .build()
+                )
+            )
             .build()
         val billingResult = billingClient.launchBillingFlow(activity, billingParams)
         if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
@@ -199,9 +224,8 @@ class InAppPurchase private constructor(ctx: Context) :
 
     override fun onBillingServiceDisconnected() {
         Log.i(TAG, "Billing Service Disconnected")
-        skusWithSkuDetails.clear()
-        skusWithMonthCount.clear()
-        skusWithPurchase.clear()
+        idsWithProductDetails.clear()
+        idsWithMonthCount.clear()
         onBillingNotAvailable(
             Json.encodeToString(
                 BillingResultData(
@@ -212,28 +236,19 @@ class InAppPurchase private constructor(ctx: Context) :
         )
     }
 
-    override fun onSkuDetailsResponse(
+    override fun onProductDetailsResponse(
         billingResult: BillingResult,
-        skuDetailsList: MutableList<SkuDetails>?,
+        result: QueryProductDetailsResult,
     ) {
         if (billingResult.responseCode != BillingClient.BillingResponseCode.OK) {
-            onSkuDetailsFailed(billingResultToJson(billingResult, "onSkuDetailsResponse"))
+            onSkuDetailsFailed(billingResultToJson(billingResult, "onProductDetailsResponse"))
             return
         }
-        if (skuDetailsList == null) {
-            onSkuDetailsFailed(
-                Json.encodeToString(
-                    BillingResultData(
-                        code = -97,
-                        message = "No sku details returned",
-                    ),
-                ),
-            )
-            return
-        }
+        val productDetailsList = result.productDetailsList
         val googleProducts = GooglePlaySubscriptions(products = arrayListOf())
-        for (details in skuDetailsList) {
-            val parsedDetails = skuDetailsToGooglePlaySubscriptionInfo(details)
+        for (details in productDetailsList) {
+            val parsedDetails = productDetailsToGooglePlaySubscriptionInfo(details)
+            Log.d(TAG, "Sending $parsedDetails")
             if (parsedDetails != null) {
                 googleProducts.products.add(parsedDetails)
             }
@@ -291,17 +306,27 @@ class InAppPurchase private constructor(ctx: Context) :
             Log.d(TAG, "BillingClient: Start connection...")
             billingClient.startConnection(this)
         }
-        val params = SkuDetailsParams.newBuilder()
-            .setType(BillingClient.SkuType.SUBS)
-            .setSkusList(skusWithMonthCount.keys.toList())
+        val params = QueryProductDetailsParams.newBuilder()
+            .setProductList(
+                idsWithMonthCount.keys.map { productId ->
+                    QueryProductDetailsParams.Product.newBuilder()
+                        .setProductId(productId)
+                        .setProductType(BillingClient.ProductType.SUBS)
+                        .build()
+                }
+            )
             .build()
+
         // Query skus
-        params.let { skuDetailsParams ->
+        params.let { productDetailsParams ->
             Log.i(TAG, "querySkuDetailsAsync")
-            billingClient.querySkuDetailsAsync(skuDetailsParams, this)
+            billingClient.queryProductDetailsAsync(productDetailsParams, this)
         }
         // Query existing subscription purchases
-        billingClient.queryPurchasesAsync(BillingClient.SkuType.SUBS, this)
+        val queryParams = QueryPurchasesParams.newBuilder()
+            .setProductType(BillingClient.ProductType.SUBS)
+            .build()
+        billingClient.queryPurchasesAsync(queryParams, this)
     }
 
     fun processPurchases(purchases: MutableList<Purchase>?) {
@@ -317,48 +342,53 @@ class InAppPurchase private constructor(ctx: Context) :
         }
     }
 
-    fun skuDetailsToGooglePlaySubscriptionInfo(details: SkuDetails): GooglePlaySubscriptionInfo? {
-        val sku = details.sku
-        skusWithSkuDetails[sku] = details
-        val priceMicros = details.priceAmountMicros
-        val monthCount = skusWithMonthCount[sku]
-        if (monthCount == null) {
-            Log.e(TAG, "We did not get a monthCount for sku: $sku")
-            return null
-        }
-        Log.d(TAG, "For sku $sku, we have $priceMicros priceMicros $monthCount months")
-        val monthlyPrice = priceMicros / 1000000.00 / monthCount
-        val formatter = NumberFormat.getCurrencyInstance()
-        formatter.maximumFractionDigits = 2
-        formatter.currency = Currency.getInstance(details.priceCurrencyCode)
-        val monthlyPriceString = formatter.format(monthlyPrice)
+    fun productDetailsToGooglePlaySubscriptionInfo(details: ProductDetails): GooglePlaySubscriptionInfo? {
+        val productId = details.productId
+        idsWithProductDetails[productId] = details
 
         // freeTrialPeriod is a ISO 8601 duration i.e P7D == 7 days
-        val trialDays = if (details.freeTrialPeriod.isEmpty()) {
+        val offers = details.subscriptionOfferDetails ?: return null
+        val allPhases = offers.flatMap { it.pricingPhases.pricingPhaseList }
+        val trialPhase = allPhases.firstOrNull { it.priceAmountMicros == 0L }
+        val trialDays = if ((trialPhase?.billingPeriod ?: "").isEmpty()) {
             0
         } else {
             try {
-                val duration = Duration.parse(details.freeTrialPeriod)
+                val duration = Duration.parse(trialPhase?.billingPeriod)
                 duration.toDays().toInt()
             } catch (e: DateTimeParseException) {
-                if (details.freeTrialPeriod == "P1W") {
+                if (trialPhase?.billingPeriod == "P1W") {
                     // Google Play store and Java seem to disagree on ISO 8601
                     // Google will use 1W for 7 days, java.Duration however forbids using W
                     7
                 } else {
-                    Log.e(TAG, "Failed to Parse Free Trial duration ${details.freeTrialPeriod}")
+                    Log.e(TAG, "Failed to Parse Trial duration ${trialPhase?.billingPeriod}")
                     0
                 }
             }
         }
 
+        val monthCount = idsWithMonthCount[productId]
+        if (monthCount == null) {
+            Log.e(TAG, "We did not get a monthCount for productId: $productId")
+            return null
+        }
+        val basePhase = allPhases.lastOrNull { it.priceAmountMicros != 0L } ?: return null
+        Log.d(TAG, "For productId $productId, we have $basePhase.priceAmountMicros priceMicros $monthCount months")
+        val monthlyPrice = basePhase.priceAmountMicros / 1000000.00 / monthCount
+
+        val formatter = NumberFormat.getCurrencyInstance()
+        formatter.maximumFractionDigits = 2
+        formatter.currency = Currency.getInstance(basePhase.priceCurrencyCode)
+        val monthlyPriceString = formatter.format(monthlyPrice)
+
         return GooglePlaySubscriptionInfo(
-            currencyCode = details.priceCurrencyCode,
-            totalPriceString = details.price,
+            currencyCode = basePhase.priceCurrencyCode,
+            totalPriceString = basePhase.formattedPrice,
             trialDays = trialDays,
             monthlyPriceString = monthlyPriceString,
             monthlyPrice = monthlyPrice,
-            sku = sku,
+            sku = productId,
         )
     }
 
