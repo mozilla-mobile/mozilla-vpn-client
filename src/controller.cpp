@@ -1034,7 +1034,6 @@ void Controller::maybeSendUpdatedConfig(const ServerData& serverData) {
     InterfaceConfig entryConfig;
     if (!serverConfigs.isEmpty()) {
       entryConfig = serverConfigs.takeFirst();
-      m_activationQueue.append(entryConfig);
     }
     m_impl->sendUpdatedConfig(entryConfig, exitConfig);
   } else {
