@@ -94,8 +94,8 @@ MZViewBase {
             anchors.left: undefined
             anchors.right: undefined
 
-            Layout.leftMargin: 16
-            Layout.rightMargin: 16
+            Layout.leftMargin: MZTheme.theme.windowMargin / 2
+            Layout.rightMargin: MZTheme.theme.windowMargin / 2
             Layout.topMargin: -MZTheme.theme.windowMargin / 2
             Layout.fillWidth: true
             Layout.minimumHeight: MZTheme.theme.rowHeight
@@ -111,6 +111,8 @@ MZViewBase {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 anchors.verticalCenter: parent.verticalCenter
+                anchors.leftMargin: MZTheme.theme.windowMargin / 2
+                anchors.rightMargin: MZTheme.theme.windowMargin / 2
 
                 ColumnLayout {
                     id: obfuscationContent
