@@ -13,4 +13,4 @@ The client has 2 “force update” mechanisms. Both the `VersionAPI` class and 
 1. Balrog: Make a new release that is marked `required`. (See `FirefoxVPN-2.22.1-Required` for an example.) Make a rule that maps this release to specific versions. (This will change the minimum for Windows, Windows ARM, and macOS.)
 2. In the product details repository, change the minimum version for platforms. (This will change the minimum for Android, iOS, and Linux. Windows and macOS are affected by Balrog - not this - but their minimums should be updated here for posterity.) There are two mechanisms that product details repo controls:
    A. The `VersionAPI` check described above
-   B. If for some reason the `VersionAPI` check fails, during authentication the Guardian server will redirect to a webpage that explains an update is required (see VPN-6526).
+   B. If for some reason the `VersionAPI` check fails, during authentication the Guardian server will redirect to a web page that explains an update is required (see VPN-6526).
