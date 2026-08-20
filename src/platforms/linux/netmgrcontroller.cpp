@@ -39,6 +39,10 @@ NetmgrController::NetmgrController() {
   m_client =
       new QDBusInterface(DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_NM_INTERFACE,
                          QDBusConnection::systemBus(), this);
+  if (!m_client->isValid()) {
+    logger.warning() << "NetworkManager is not available";
+    return;
+  }
 
   QVariant version = m_client->property("Version");
   m_version = QVersionNumber::fromString(version.toString());
@@ -56,6 +60,12 @@ QString NetmgrController::nmInterface(const QString& name) {
 }
 
 void NetmgrController::initialize(const Device* device, const Keys* keys) {
+  if (!m_client || !m_client->isValid()) {
+    logger.warning() << "NetworkManager client is not available";
+    emit initialized(false, false, QDateTime());
+    return;
+  }
+
   // Ensure we use a consistent UUID for the wireguard interface.
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   Q_ASSERT(settingsHolder);
@@ -109,6 +119,11 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
   QString path = QStringLiteral(DBUS_NM_PATH) + "/Settings";
   QDBusInterface iface(DBUS_NM_SERVICE, path, nmInterface("Settings"),
                        m_client->connection());
+  if (!iface.isValid()) {
+    logger.warning() << "NetworkManager settings interface is not available";
+    emit initialized(false, false, QDateTime());
+    return;
+  }
 
   // Check if the connection already exists.
   QDBusReply<QDBusObjectPath> reply = iface.call("GetConnectionByUuid", m_uuid);
@@ -140,6 +155,11 @@ void NetmgrController::initCompleted(const QDBusObjectPath& path,
   m_remote = new QDBusInterface(DBUS_NM_SERVICE, path.path(),
                                 nmInterface("Settings.Connection"),
                                 m_client->connection(), this);
+  if (!m_remote->isValid()) {
+    logger.warning() << "NetworkManager connection is not available";
+    emit initialized(false, false, QDateTime());
+    return;
+  }
 
   // Monitor for changes in the connected devices.
   connect(m_client, SIGNAL(DeviceAdded(QDBusObjectPath)), this,
@@ -229,6 +249,13 @@ QVariant NetmgrController::serializeConfig() const {
 
 void NetmgrController::activate(const InterfaceConfig& config,
                                 Controller::Reason reason) {
+  if (!m_client || !m_client->isValid() || !m_remote || !m_remote->isValid()) {
+    logger.warning() << "Cannot activate without a valid NetworkManager "
+                        "connection";
+    emit backendFailure(Controller::ErrorFatal);
+    return;
+  }
+
   // Update routes and allowedIpAddreses
   NetmgrDataList ipv4routes;
   NetmgrDataList ipv6routes;
@@ -277,6 +304,7 @@ void NetmgrController::activate(const InterfaceConfig& config,
       SLOT(dbusBackendError(const QDBusError&)));
   if (!okay) {
     logger.debug() << "Update2 failed";
+    emit backendFailure(Controller::ErrorFatal);
   }
 }
 
@@ -287,6 +315,13 @@ void NetmgrController::peerCompleted(const QVariantMap& results) {
   }
 
   // activate the vpn
+  if (!m_client || !m_client->isValid() || !m_remote || !m_remote->isValid()) {
+    logger.warning() << "Cannot activate without a valid NetworkManager "
+                        "connection";
+    emit backendFailure(Controller::ErrorFatal);
+    return;
+  }
+
   QList<QVariant> args;
   args << QDBusObjectPath(m_remote->path());
   args << QDBusObjectPath("/");
@@ -297,6 +332,7 @@ void NetmgrController::peerCompleted(const QVariantMap& results) {
       SLOT(dbusBackendError(const QDBusError&)));
   if (!okay) {
     logger.debug() << "ActivateConnection failed";
+    emit backendFailure(Controller::ErrorFatal);
   }
 }
 
