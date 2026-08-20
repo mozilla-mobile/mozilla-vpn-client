@@ -160,6 +160,22 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
   NSString* mainServerGateway = config.m_serverIpv4Gateway.toNSString();
   BOOL isUsingNormalDns = [mainServerDns isEqualToString:mainServerGateway];
 
+  // Fallback/backup servers must pick their port the same way the main server
+  // did in Controller::setupConfigs(), otherwise a switch to a fallback server
+  // will silently drops the forced port.
+  SettingsHolder::ObfuscationPolicy obfuscationPolicy =
+      static_cast<SettingsHolder::ObfuscationPolicy>(settingsHolder->obfuscationPolicy());
+  auto fallbackPort = [&](const Server& server) -> uint32_t {
+    if (obfuscationPolicy == SettingsHolder::ObfuscationPolicy::Port53 ||
+        obfuscationPolicy == SettingsHolder::ObfuscationPolicy::LwoOverPort53) {
+      return 53;
+    }
+    if (config.m_obfuscationMethod == Server::ObfuscationMethod::UdpOverTcp) {
+      return server.chooseTcpPort();
+    }
+    return server.choosePort();
+  };
+
   const QList<Server> fallbackServers = mainServerData.backupServers(config.m_serverPublicKey);
   for (const Server& fallbackServer : fallbackServers) {
     NSString* dnsServer;
@@ -173,7 +189,7 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
                                ipv6Gateway:fallbackServer.ipv6Gateway().toNSString()
                                  publicKey:fallbackServer.publicKey().toNSString()
                                 ipv4AddrIn:fallbackServer.ipv4AddrIn().toNSString()
-                                      port:fallbackServer.choosePort()
+                                      port:fallbackPort(fallbackServer)
                                  // Reusing config here - city names will be identical, and no good
                                  // way to get entry city otherwise.
                                  entryCity:config.m_entryCity.toNSString()
