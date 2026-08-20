@@ -8,21 +8,72 @@
 #include <QEventLoop>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QRandomGenerator>
 #include <QTextStream>
 
+#include "authenticationlistener.h"
 #include "commandlineparser.h"
 #include "constants.h"
 #include "controller.h"
 #include "dnshelper.h"
+#include "errorhandler.h"
 #include "interfaceconfig.h"
 #include "leakdetector.h"
 #include "loghandler.h"
+#include "models/apierror.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
 #include "models/server.h"
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
+#include "networkrequest.h"
+#include "task.h"
+#include "tasks/adddevice/taskadddevice.h"
+#include "tasks/authenticate/taskauthenticate.h"
+
+namespace {
+
+// Auth helper: runs a headless authentication and returns the token, or an
+// empty string in case of failure. The login URL is printed on the console, and
+// the code is read from stdin.
+
+QString authenticate() {
+  TaskAuthenticate task(
+      AuthenticationListener::AuthenticationInBrowserHeadless);
+
+  QString token;
+  QEventLoop loop;
+
+  QObject::connect(&task, &TaskAuthenticate::authenticationCompleted, &task,
+                   [&](const QByteArray&, const QString& authToken) {
+                     token = authToken;
+                     loop.exit();
+                   });
+  QObject::connect(&task, &TaskAuthenticate::authenticationAborted, &task,
+                   [&] { loop.exit(); });
+  QObject::connect(&task, &Task::completed, &task, [&] { loop.exit(); });
+  QObject::connect(
+      ErrorHandler::instance(), &ErrorHandler::alertChanged, &task, [&] {
+        if (ErrorHandler::instance()->alert() != ErrorHandler::NoAlert) {
+          loop.exit();
+        }
+      });
+
+  QObject::connect(&task, &TaskAuthenticate::authenticationStarted, &task, [&] {
+    QTextStream stream(stdout);
+    stream << "Enter the code:" << " ";
+    stream.flush();
+    task.authenticatePkceSuccess(QTextStream(stdin).readLine());
+  });
+
+  task.run();
+  loop.exec();
+
+  return token;
+}
+
+}  // anonymous namespace
 
 CommandWgConf::CommandWgConf(QObject* parent)
     : Command(parent, "wgconf", "Generate a wireguard configuration file.") {
@@ -40,6 +91,10 @@ int CommandWgConf::run(QStringList& tokens) {
       "m", "mullvad-multihop", "Generate config for Mullvad multihop.");
   CommandLineParser::Option wireguardMultihop(
       "w", "wireguard-multihop", "Generate config for Wireguard multihop.");
+  CommandLineParser::Option createSharedDevice(
+      "s", "shared-device",
+      "Register a shared device and generate its config. It requires a new "
+      "authentication, new keys will be generated and printed only once.");
   CommandLineParser::Option testingOption("t", "testing",
                                           "Run in testing mode.");
 
@@ -48,6 +103,7 @@ int CommandWgConf::run(QStringList& tokens) {
   options.append(&mullvadMultihop);
   options.append(&wireguardMultihop);
   options.append(&testingOption);
+  options.append(&createSharedDevice);
 
   CommandLineParser clp;
   if (clp.parse(tokens, options, false)) {
@@ -67,6 +123,14 @@ int CommandWgConf::run(QStringList& tokens) {
   QTextStream stream(stdout);
   if (mullvadMultihop.m_set && wireguardMultihop.m_set) {
     stream << "Cannot use both --mullvad-multihop and --wireguard-multihop"
+           << Qt::endl;
+    return 1;
+  }
+
+  if (tokens.length() > 1 || (!tokens.isEmpty() && !createSharedDevice.m_set)) {
+    stream << "usage: " << appName << " [options] [<device_name>]" << Qt::endl;
+    stream << Qt::endl;
+    stream << "<device_name> can be used with --shared-device only."
            << Qt::endl;
     return 1;
   }
@@ -96,22 +160,72 @@ int CommandWgConf::run(QStringList& tokens) {
     InterfaceConfig entryConfig;
     InterfaceConfig exitConfig;
     QString entryPeerComment;
+
+    QString devicePrivateKey;
+    QString deviceIpv4Address;
+    QString deviceIpv6Address;
+    QString newDeviceComment;
+
     DeviceModel* dm = vpn.deviceModel();
     Q_ASSERT(dm);
     if (!dm->hasCurrentDevice(vpn.keys())) {
       stream << "Device is not registered" << Qt::endl;
       return 1;
     }
-    const Device* cd = dm->currentDevice(vpn.keys());
+
+    if (createSharedDevice.m_set) {
+      QString deviceName =
+          tokens.isEmpty()
+              ? QString("%1 (wgconf)").arg(Device::currentDeviceName())
+              : tokens[0];
+
+      QString token = authenticate();
+      if (token.isEmpty()) {
+        stream << "Authentication failed" << Qt::endl;
+        return 1;
+      }
+      QString errorMessage;
+
+      QEventLoop loop;
+      TaskAddDevice deviceTask(deviceName, QString(), true, token);
+      QObject::connect(&deviceTask, &Task::completed, &deviceTask,
+                       [&] { loop.exit(); });
+      deviceTask.run();
+      loop.exec();
+
+      if (deviceTask.error().errnum() != ApiError::NoError) {
+        stream << "Failed to add the device: " << deviceTask.error().message()
+               << Qt::endl;
+        return 1;
+      }
+
+      devicePrivateKey = deviceTask.privateKey();
+      deviceIpv4Address = deviceTask.device().ipv4Address();
+      deviceIpv6Address = deviceTask.device().ipv6Address();
+
+      newDeviceComment =
+          QString(
+              "# A new device has been registered: %1\n"
+              "# Neither the device nor its keys are stored by this client.\n"
+              "# Public key: %2\n"
+              "# Private key: %3\n\n")
+              .arg(deviceName, deviceTask.publicKey(), devicePrivateKey);
+    } else {
+      const Device* cd = dm->currentDevice(vpn.keys());
+
+      devicePrivateKey = vpn.keys()->privateKey();
+      deviceIpv4Address = cd->ipv4Address();
+      deviceIpv6Address = cd->ipv6Address();
+    }
 
     ServerData* sd = vpn.serverData();
     Q_ASSERT(sd);
     // Now we need to select a server.
     Server exitServer = Server::weightChooser(sd->exitServers());
     exitConfig.m_hopType = InterfaceConfig::SingleHop;
-    exitConfig.m_privateKey = vpn.keys()->privateKey();
-    exitConfig.m_deviceIpv4Address = cd->ipv4Address();
-    exitConfig.m_deviceIpv6Address = cd->ipv6Address();
+    exitConfig.m_privateKey = devicePrivateKey;
+    exitConfig.m_deviceIpv4Address = deviceIpv4Address;
+    exitConfig.m_deviceIpv6Address = deviceIpv6Address;
     exitConfig.m_serverIpv4Gateway = exitServer.ipv4Gateway();
     exitConfig.m_serverIpv6Gateway = exitServer.ipv6Gateway();
     exitConfig.m_serverPublicKey = exitServer.publicKey();
@@ -132,9 +246,9 @@ int CommandWgConf::run(QStringList& tokens) {
       if (useWireguardMultihop) {
         exitConfig.m_hopType = InterfaceConfig::MultiHopExit;
         entryConfig.m_hopType = InterfaceConfig::MultiHopEntry;
-        entryConfig.m_privateKey = vpn.keys()->privateKey();
-        entryConfig.m_deviceIpv4Address = cd->ipv4Address();
-        entryConfig.m_deviceIpv6Address = cd->ipv6Address();
+        entryConfig.m_privateKey = devicePrivateKey;
+        entryConfig.m_deviceIpv4Address = deviceIpv4Address;
+        entryConfig.m_deviceIpv6Address = deviceIpv6Address;
         entryConfig.m_serverPublicKey = entryServer.publicKey();
         entryConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
         entryConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
@@ -158,6 +272,7 @@ int CommandWgConf::run(QStringList& tokens) {
         Controller::getAllowedIPAddressRanges(exitServer);
 
     // Stream it out to the user.
+    stream << newDeviceComment;
     if (sd->multihop() && useWireguardMultihop) {
       stream << "# This file contains configuration settings for a multi-hop "
                 "WireGuard setup\n";
