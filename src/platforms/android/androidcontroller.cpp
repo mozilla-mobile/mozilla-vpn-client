@@ -27,6 +27,7 @@
 #include "models/server.h"
 #include "mozillavpn.h"
 #include "notificationhandler.h"
+#include "settingsholder.h"
 
 namespace {
 Logger logger("AndroidController");
@@ -194,7 +195,7 @@ void AndroidController::activate(const InterfaceConfig& config,
   // will silently drop the forced port.
   SettingsHolder::ObfuscationPolicy obfuscationPolicy =
       static_cast<SettingsHolder::ObfuscationPolicy>(
-          settingsHolder->obfuscationPolicy());
+          SettingsHolder::instance()->obfuscationPolicy());
   auto fallbackPort = [&](const Server& server) -> uint32_t {
     if (obfuscationPolicy == SettingsHolder::ObfuscationPolicy::Port53 ||
         obfuscationPolicy == SettingsHolder::ObfuscationPolicy::LwoOverPort53) {
