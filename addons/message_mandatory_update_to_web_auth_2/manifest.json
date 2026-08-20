@@ -16,7 +16,7 @@
     "shortVersion": "2.40", 
     "id": "message_mandatory_update_to_web_auth_2",
     "title": "vpn.mandatoryUpdate.title",
-    "subtitle": "vpn.mandatoryUpdate.body1",
+    "subtitle": "vpn.mandatoryUpdate.title",
     "badge": "critical",
     "blocks": [
       {
