@@ -188,6 +188,24 @@ void AndroidController::activate(const InterfaceConfig& config,
   QJsonArray jServers;
 
   jServers.append(jMainServer);
+
+  // Fallback/backup servers must pick their port the same way the main server
+  // did in Controller::setupConfigs(), otherwise a switch to a fallback server
+  // will silently drop the forced port.
+  SettingsHolder::ObfuscationPolicy obfuscationPolicy =
+      static_cast<SettingsHolder::ObfuscationPolicy>(
+          settingsHolder->obfuscationPolicy());
+  auto fallbackPort = [&](const Server& server) -> uint32_t {
+    if (obfuscationPolicy == SettingsHolder::ObfuscationPolicy::Port53 ||
+        obfuscationPolicy == SettingsHolder::ObfuscationPolicy::LwoOverPort53) {
+      return 53;
+    }
+    if (config.m_obfuscationMethod == Server::ObfuscationMethod::UdpOverTcp) {
+      return server.chooseTcpPort();
+    }
+    return server.choosePort();
+  };
+
   foreach (auto fallbackServer, fallbackServers) {
     QJsonObject jFallbackServer;
     jFallbackServer["ipv4AddrIn"] = fallbackServer.ipv4AddrIn();
@@ -195,7 +213,7 @@ void AndroidController::activate(const InterfaceConfig& config,
     jFallbackServer["ipv6AddrIn"] = fallbackServer.ipv6AddrIn();
     jFallbackServer["ipv6Gateway"] = fallbackServer.ipv6Gateway();
     jFallbackServer["publicKey"] = fallbackServer.publicKey();
-    jFallbackServer["port"] = (double)fallbackServer.choosePort();
+    jFallbackServer["port"] = (double)fallbackPort(fallbackServer);
     jServers.append(jFallbackServer);
   }
 
