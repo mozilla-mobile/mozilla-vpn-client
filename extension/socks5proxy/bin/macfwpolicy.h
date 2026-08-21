@@ -18,6 +18,7 @@ class MacFwPolicy final : public QObject {
   ~MacFwPolicy() = default;
 
  private:
+  void enumerateBrowsers(const QString& appDir);
   void checkLocalSocket(ProxyConnection* connection);
 
   // The signing identifiers of known web browsers.
