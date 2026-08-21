@@ -10,8 +10,8 @@
 #include <QFileDevice>
 #include <QJsonDocument>
 #include <QJsonObject>
-#include <QMetaObject>
 #include <QMetaMethod>
+#include <QMetaObject>
 
 #include "webextreader.h"
 
