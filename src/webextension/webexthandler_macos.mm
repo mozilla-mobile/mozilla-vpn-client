@@ -5,6 +5,7 @@
 #include "webexthandler.h"
 
 #include <QJsonObject>
+#include <QStandardPaths>
 #include <QString>
 
 #include <libproc.h>
@@ -30,6 +31,16 @@ void WebExtHandler::proc_info(const QByteArray& msg) {
   if (ret > 0) {
     obj["exe"] = QString(path);
   }
+  writeJsonStdout(obj);
+}
+
+void WebExtHandler::proxy_info(const QByteArray& msg) {
+  Q_UNUSED(msg);
+  QJsonObject obj;
+  obj["type"] = "socks";
+  obj["host"] = QString("file:/var/tmp/mozillavpn.proxy");
+  obj["port"] = QJsonValue(1234);
+  obj["proxyDNS"] = QJsonValue(true);
   writeJsonStdout(obj);
 }
 

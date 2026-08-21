@@ -36,6 +36,17 @@ static DWORD getParentProcessId(DWORD pid) {
   return 0;
 }
 
+void WebExtHandler::proxy_info(const QByteArray& msg) {
+  Q_UNUSED(msg);
+
+  QJsonObject obj;
+  obj["type"] = "socks";
+  obj["host"] = "socks5://127.0.0.1";
+  obj["port"] = QJsonValue(8123);
+  obj["proxyDNS"] = QJsonValue(true);
+  writeJsonStdout(obj);
+}
+
 void WebExtHandler::proc_info(const QByteArray& msg) {
   Q_UNUSED(msg);
 
