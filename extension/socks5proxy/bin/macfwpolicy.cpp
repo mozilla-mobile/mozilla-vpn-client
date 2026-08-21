@@ -8,9 +8,9 @@ extern "C" {
 #include <CoreFoundation/CoreFoundation.h>
 };
 
-#include <QtDebug>
 #include <QLocalServer>
 #include <QProcessEnvironment>
+#include <QtDebug>
 
 #include "proxyconnection.h"
 #include "socks5.h"
@@ -41,7 +41,8 @@ MacFwPolicy::MacFwPolicy(Socks5* proxy) : QObject(proxy) {
 void MacFwPolicy::enumerateBrowsers(const QString& appDir) {
   static const CFStringRef kBundleTypeApp = CFSTR(".app");
   static const CFStringRef kActivityTypes = CFSTR("NSUserActivityTypes");
-  static const CFStringRef kActivityBrowser = CFSTR("NSUserActivityTypeBrowsingWeb");
+  static const CFStringRef kActivityBrowser =
+      CFSTR("NSUserActivityTypeBrowsingWeb");
 
   CFStringRef s = appDir.toCFString();
   CFURLRef url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, s,
@@ -50,8 +51,8 @@ void MacFwPolicy::enumerateBrowsers(const QString& appDir) {
                                                        kBundleTypeApp);
   for (CFIndex i = 0; list && i < CFArrayGetCount(list); i++) {
     CFBundleRef bundle = (CFBundleRef)CFArrayGetValueAtIndex(list, i);
-    CFArrayRef values =
-        (CFArrayRef)CFBundleGetValueForInfoDictionaryKey(bundle, kActivityTypes);
+    CFArrayRef values = (CFArrayRef)CFBundleGetValueForInfoDictionaryKey(
+        bundle, kActivityTypes);
     if ((!values) || (CFGetTypeID(values) != CFArrayGetTypeID())) {
       continue;
     }
@@ -60,9 +61,9 @@ void MacFwPolicy::enumerateBrowsers(const QString& appDir) {
         .length = CFArrayGetCount(values),
     };
     if (CFArrayContainsValue(values, range, kActivityBrowser)) {
-        QString id = QString::fromCFString(CFBundleGetIdentifier(bundle));
-        qDebug() << "Authorizing browser:" << id;
-        m_browsers.append(id);
+      QString id = QString::fromCFString(CFBundleGetIdentifier(bundle));
+      qDebug() << "Authorizing browser:" << id;
+      m_browsers.append(id);
     }
   }
   CFRelease(url);
