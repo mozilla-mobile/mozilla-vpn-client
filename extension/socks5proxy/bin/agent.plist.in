@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>AssociatedBundleIdentifiers</key>
+    <string>${BUILD_OSX_APP_IDENTIFIER}</string>
+    <key>Label</key>
+    <string>${BUILD_OSX_APP_IDENTIFIER}.socksproxy</string>
+    <key>BundleProgram</key>
+    <string>Contents/Library/LaunchServices/${BUILD_OSX_APP_IDENTIFIER}.socksproxy</string>
+    <key>ProgramArguments</key>
+    <array>
+        <string>${BUILD_OSX_APP_IDENTIFIER}.socksproxy</string>
+        <string>-l</string>
+        <string>-n</string>
+        <string>/var/tmp/mozillavpn.proxy</string>
+    </array>
+    <key>RunAtLoad</key>
+    <true/>
+    <key>KeepAlive</key>
+    <true/>
+    <key>SoftResourceLimits</key>
+    <dict>
+        <key>NumberOfFiles</key>
+        <integer>8192</integer>
+    </dict>
+</dict>
+</plist>

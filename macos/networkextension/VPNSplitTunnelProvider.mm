@@ -34,6 +34,7 @@
 @property (strong) InterfaceConfig* config;
 
 @property (strong) NSSet* vpnDisabledApps;
+@property (strong) NSSet* vpnBypassApps;
 
 @property (strong) NSTask* dnsManager;
 
@@ -49,7 +50,14 @@
   self = [super init];
   NSLog(@"init proxy class");
 
+  NSString* extensionId = [[NSBundle mainBundle] bundleIdentifier];
+  NSMutableArray* parts = [NSMutableArray new];
+  [parts setArray:[extensionId componentsSeparatedByString:@"."]];
+  [parts replaceObjectAtIndex:parts.count-1
+                   withObject:@"socksproxy"];
+
   self.vpnDisabledApps = [NSSet set];
+  self.vpnBypassApps = [NSSet setWithObject:[parts componentsJoinedByString:@"."]];
 
   m_handledTcpFlows = 0;
   m_handledUdpFlows = 0;
@@ -427,6 +435,11 @@
 #ifdef MZ_DEBUG
   NSLog(@"new flow: %@ -> %@", sourceId, flow.remoteHostname);
 #endif
+
+  // Check if the app has been hard-coded to bypass the VPN.
+  if ([self.vpnBypassApps containsObject:sourceId]) {
+    return NO;
+  }
 
   for (NSString* appId in self.vpnDisabledApps) {
     if (sourceId.length < appId.length) {

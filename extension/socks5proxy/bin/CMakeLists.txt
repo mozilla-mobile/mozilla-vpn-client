@@ -54,10 +54,35 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     endif()
 
     install(TARGETS socksproxy)
-else()
-    # TODO: This is currently pointless on macos, 
-    # so no point in shipping it.
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    target_compile_definitions(socksproxy PRIVATE PROXY_OS_MACOS)
+    target_sources(socksproxy PRIVATE
+        macfwpolicy.cpp
+        macfwpolicy.h
+    )
+
+    set_target_properties(socksproxy PROPERTIES
+        OUTPUT_NAME "${BUILD_OSX_APP_IDENTIFIER}.socksproxy"
+        XCODE_ATTRIBUTE_PRODUCT_BUNDLE_IDENTIFIER "${BUILD_OSX_APP_IDENTIFIER}.socksproxy"
+        XCODE_ATTRIBUTE_MARKETING_VERSION "${CMAKE_PROJECT_VERSION}"
+        XCODE_GENERATE_SCHEME TRUE
+    )
+
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/agent.plist.in ${BUILD_OSX_APP_IDENTIFIER}.socksproxy.plist)
+
+    # Embed the property list into the binary.
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/info.plist.in info.plist)
+    if(XCODE)
+        set_target_properties(socksproxy PROPERTIES
+            XCODE_ATTRIBUTE_INFOPLIST_FILE ${CMAKE_CURRENT_BINARY_DIR}/info.plist
+            XCODE_ATTRIBUTE_CREATE_INFOPLIST_SECTION_IN_BINARY YES
+        )
+    else()
+        target_link_options(socksproxy PRIVATE
+            LINKER:-sectcreate,__TEXT,__info_plist,${CMAKE_CURRENT_BINARY_DIR}/info.plist
+        )
+    endif()
+
+    include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
+    osx_codesign_target(socksproxy FORCE)
 endif()
-
-
-add_dependencies(mozillavpn socksproxy)
