@@ -8,6 +8,7 @@ extern "C" {
 #include <CoreFoundation/CoreFoundation.h>
 };
 
+#include <QtDebug>
 #include <QLocalServer>
 #include <QProcessEnvironment>
 
