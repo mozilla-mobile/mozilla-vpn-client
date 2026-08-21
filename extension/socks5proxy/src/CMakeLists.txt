@@ -41,8 +41,10 @@ if(WIN32)
         winutils.cpp
         winutils.h
     )
-elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_sources(libSocks5proxy PRIVATE proxylocal_linux.cpp)
+elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    target_sources(libSocks5proxy PRIVATE proxylocal_macos.cpp)
 else()
     target_sources(libSocks5proxy PRIVATE proxylocal_default.cpp)
 endif()
