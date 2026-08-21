@@ -56,6 +56,10 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     install(TARGETS socksproxy)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_compile_definitions(socksproxy PRIVATE PROXY_OS_MACOS)
+    target_sources(socksproxy PRIVATE
+        macfwpolicy.cpp
+        macfwpolicy.h
+    )
 
     set_target_properties(socksproxy PROPERTIES
         OUTPUT_NAME "${BUILD_OSX_APP_IDENTIFIER}.socksproxy"
