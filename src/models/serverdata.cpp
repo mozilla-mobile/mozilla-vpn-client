@@ -341,7 +341,7 @@ Server::ObfuscationMethod ServerData::obfuscationPolicyToObfuscationMethod(
     case SettingsHolder::ObfuscationPolicy::LwoOverPort53:
       return Server::ObfuscationMethod::LWO;
     case SettingsHolder::ObfuscationPolicy::Masque:
-      return Server::ObfuscationMethod::Masque;
+      return Server::ObfuscationMethod::MasqueProxy;
     case SettingsHolder::ObfuscationPolicy::UdpOverTcp:
       return Server::ObfuscationMethod::UdpOverTcp;
     case SettingsHolder::ObfuscationPolicy::Shadowsocks:

@@ -54,6 +54,7 @@
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/removedevice/taskremovedevice.h"
 #include "tasks/servers/taskservers.h"
+#include "tasks/token/tasktoken.h"
 #include "taskscheduler.h"
 #include "update/updater.h"
 #include "urlopener.h"
@@ -185,6 +186,12 @@ MozillaVPN::MozillaVPN()
          new TaskGetSubscriptionDetails(
              TaskGetSubscriptionDetails::NoAuthenticationFlow,
              ErrorHandler::PropagateError)}));
+  });
+
+  // Periodically refresh the MASQUE token so it never goes stale.
+  connect(&m_masqueTokenTimer, &QTimer::timeout, []() {
+    TaskScheduler::scheduleTask(
+        new TaskToken(ErrorHandler::DoNotPropagateError));
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -940,11 +947,13 @@ void MozillaVPN::onboardingCompleted() {
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
   m_periodicOperationsTimer.start(Constants::Timers::schedulePeriodicTask());
+  m_masqueTokenTimer.start(Constants::Timers::masqueTokenRotation());
 }
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {
   logger.debug() << "Stop scheduling account and servers";
   m_periodicOperationsTimer.stop();
+  m_masqueTokenTimer.stop();
 }
 
 bool MozillaVPN::modelsInitialized() const {

@@ -47,6 +47,10 @@ class ControllerImpl : public QObject {
   // "disconnecting" state until the "disconnected" signal is received.
   virtual void deactivate() = 0;
 
+  // Hand a new token to a running token-based backend (MASQUE). Others ignore
+  // it.
+  virtual void rotateToken(const QString& token) { Q_UNUSED(token); }
+
   // This method is used to remove the tunnel config from the operating
   // system. This is used upon logging out and resetting, so the
   // tunnel cannot be reactivated in system settings.

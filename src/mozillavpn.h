@@ -320,6 +320,7 @@ class MozillaVPN final : public QObject {
   struct MozillaVPNPrivate* m_private = nullptr;
 
   QTimer m_periodicOperationsTimer;
+  QTimer m_masqueTokenTimer;
   QString m_token;
 
   bool m_startMinimized = false;

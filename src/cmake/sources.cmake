@@ -71,6 +71,12 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator/obfuscator.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/protocols/tunnel.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/protocols/tunnel.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/protocols/wireguard.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/protocols/wireguard.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/protocols/masque.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/protocols/masque.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/daemonlocalserverconnection.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/dnsutils.h
@@ -82,6 +88,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/mockdaemon.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/mockdaemonserver.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/mockdaemonserver.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/mocktunnelwireguard.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/mocktunnelmasque.h
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/wireguardutilsmock.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/daemon/mock/wireguardutilsmock.h
     ${CMAKE_CURRENT_SOURCE_DIR}/dnshelper.cpp
@@ -173,6 +181,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/removedevice/taskremovedevice.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskservers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskservers.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/token/tasktoken.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/token/tasktoken.h
     ${CMAKE_CURRENT_SOURCE_DIR}/update/updater.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/update/updater.h
     ${CMAKE_CURRENT_SOURCE_DIR}/update/versionapi.cpp

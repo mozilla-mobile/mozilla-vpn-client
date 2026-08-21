@@ -340,7 +340,7 @@ void NetmgrController::deviceAdded(const QDBusObjectPath& devpath) {
   if (m_device) {
     delete m_device;
   }
-  m_device = device;
+  m_device = std::move(device);
   guard.dismiss();
 
   // Watch it for state changes.

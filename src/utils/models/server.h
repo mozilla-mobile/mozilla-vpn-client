@@ -27,11 +27,20 @@ class Server final {
   enum ObfuscationMethod {
     NoObfuscation,
     LWO,
-    Masque,
+    MasqueProxy,
     UdpOverTcp,
     Shadowsocks
   };
   Q_ENUM(ObfuscationMethod)
+
+  // The tunnel protocol used to reach this server. Not the same as
+  // ObfuscationMethod, which only disguises a WireGuard transport.
+  enum ProtocolType { WireGuard, Masque };
+  Q_ENUM(ProtocolType)
+
+  // How we authenticate: WireGuard uses the key pair, MASQUE uses a token.
+  enum AuthType { KeyPair, Token };
+  Q_ENUM(AuthType)
 
   [[nodiscard]] bool fromJson(const QJsonObject& obj);
   bool fromMultihop(const Server& exit, const Server& entry);
@@ -41,6 +50,10 @@ class Server final {
   bool initialized() const { return !m_hostname.isEmpty(); }
 
   bool supportObfuscationMethod(const ObfuscationMethod method) const;
+
+  ProtocolType protocol() const { return m_protocol; }
+
+  AuthType authType() const { return m_authType; }
 
   const QString& hostname() const { return m_hostname; }
 
@@ -80,6 +93,8 @@ class Server final {
   }
 
  private:
+  ProtocolType m_protocol = ProtocolType::WireGuard;
+  AuthType m_authType = AuthType::KeyPair;
   QString m_hostname;
   QString m_ipv4AddrIn;
   QString m_ipv4Gateway;

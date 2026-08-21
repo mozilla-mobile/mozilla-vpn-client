@@ -197,6 +197,9 @@ class Controller : public QObject, public LogSerializer {
       ServerSelectionPolicy serverSelectionPolicy = RandomizeServerSelection);
   bool deactivate(ActivationPrincipal = ClientUser);
 
+  // Hand a new token to the running backend (MASQUE). No-op if not active.
+  void rotateToken(const QString& token);
+
   Q_INVOKABLE void quit();
   Q_INVOKABLE void forceDaemonCrash();
   Q_INVOKABLE void forceDaemonSilentServerSwitch();

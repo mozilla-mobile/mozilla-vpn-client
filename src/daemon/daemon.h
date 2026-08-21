@@ -7,17 +7,12 @@
 
 #include <QDateTime>
 #include <QTimer>
-#include <memory>
 
 #include "daemon/daemonerrors.h"
 #include "daemonerrors.h"
+#include "dnsutils.h"
 #include "interfaceconfig.h"
-#include "obfuscator/obfuscator.h"
-
-class DnsUtils;
-class IPUtils;
-class Obfuscator;
-class WireguardUtils;
+#include "protocols/tunnel.h"
 
 class Daemon : public QObject {
   Q_OBJECT
@@ -32,10 +27,18 @@ class Daemon : public QObject {
   explicit Daemon(QObject* parent);
   ~Daemon();
 
+  static Daemon* instance();
+
   static bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
 
   virtual bool activate(const InterfaceConfig& config);
   virtual bool deactivate(bool emitSignals);
+
+  // Create the tunnels this platform supports. Called once before activation.
+  virtual void initializeTunnels() = 0;
+
+  // Set m_tunnel to the tunnel for protocolType. False if none exists.
+  virtual bool selectTunnel(Server::ProtocolType protocolType) = 0;
 
   virtual QStringList getFeatures() const { return QStringList(); }
 
@@ -59,18 +62,8 @@ class Daemon : public QObject {
 
  private:
   bool maybeUpdateResolvers(const InterfaceConfig& config);
-  std::unique_ptr<Obfuscator> createObfuscator(const InterfaceConfig& config);
 
  protected:
-  virtual bool run(Op op, const InterfaceConfig& config) {
-    Q_UNUSED(op);
-    Q_UNUSED(config);
-    return true;
-  }
-  virtual bool supportServerSwitching(const InterfaceConfig& config) const;
-  virtual bool switchServer(const InterfaceConfig& config);
-  virtual WireguardUtils* wgutils() const = 0;
-  virtual IPUtils* iputils() { return nullptr; }
   virtual DnsUtils* dnsutils() { return nullptr; }
 
   static bool parseStringList(const QJsonObject& obj, const QString& name,
@@ -79,16 +72,8 @@ class Daemon : public QObject {
   void abortBackendFailure();
   void checkHandshake();
 
-  class ConnectionState {
-   public:
-    ConnectionState() {};
-    ConnectionState(const InterfaceConfig& config) { m_config = config; }
-    QDateTime m_date;
-    InterfaceConfig m_config;
-  };
-  QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
   QTimer m_handshakeTimer;
-  std::unique_ptr<Obfuscator> m_obfuscator;
+  Tunnel* m_tunnel = nullptr;
 };
 
 #endif  // DAEMON_H

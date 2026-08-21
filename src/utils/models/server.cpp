@@ -8,9 +8,15 @@
 #include <QJsonArray>
 #include <QJsonObject>
 #include <QJsonValue>
+#include <QMetaEnum>
 #include <QRandomGenerator>
 
 #include "leakdetector.h"
+#include "logger.h"
+
+namespace {
+Logger logger("Server");
+}  // namespace
 
 Server::Server() { MZ_COUNT_CTOR(Server); }
 
@@ -28,6 +34,8 @@ Server::Server(const Server& other) {
 Server& Server::operator=(const Server& other) {
   if (this == &other) return *this;
 
+  m_protocol = other.m_protocol;
+  m_authType = other.m_authType;
   m_hostname = other.m_hostname;
   m_ipv4AddrIn = other.m_ipv4AddrIn;
   m_ipv4Gateway = other.m_ipv4Gateway;
@@ -53,6 +61,37 @@ bool Server::fromJson(const QJsonObject& obj) {
   QJsonValue hostname = obj.value("hostname");
   if (!hostname.isString()) {
     return false;
+  }
+
+  // "protocol" is optional; older servers omit it and default to WireGuard.
+  QJsonValue protocol = obj.value("protocol");
+  if (!protocol.isString()) {
+    m_protocol = ProtocolType::WireGuard;
+  } else {
+    bool ok = true;
+    QMetaEnum meta = QMetaEnum::fromType<ProtocolType>();
+    m_protocol = ProtocolType(
+        meta.keyToValue(protocol.toString().toUtf8().constData(), &ok));
+    if (!ok) {
+      logger.warning() << "Unknown protocol type:" << protocol.toString();
+      return false;
+    }
+  }
+
+  // "auth_type" is also optional: key pair for WireGuard, token for MASQUE.
+  QJsonValue authType = obj.value("auth_type");
+  if (!authType.isString()) {
+    m_authType = m_protocol == ProtocolType::WireGuard ? AuthType::KeyPair
+                                                       : AuthType::Token;
+  } else {
+    bool ok = true;
+    QMetaEnum meta = QMetaEnum::fromType<AuthType>();
+    m_authType = AuthType(
+        meta.keyToValue(authType.toString().toUtf8().constData(), &ok));
+    if (!ok) {
+      logger.warning() << "Unknown auth type:" << authType.toString();
+      return false;
+    }
   }
 
   QJsonValue ipv4AddrIn = obj.value("ipv4_addr_in");
@@ -156,7 +195,7 @@ bool Server::supportObfuscationMethod(const ObfuscationMethod method) const {
       return true;
     case LWO:
       [[fallthrough]];
-    case Masque:
+    case MasqueProxy:
       [[fallthrough]];
     case Shadowsocks:
       // Shadowsocks currently falls under false as it looks like it's not
