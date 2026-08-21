@@ -3,6 +3,7 @@
 package main
 
 import (
+	"bufio"
 	"context"
 	"flag"
 	"fmt"
@@ -13,6 +14,7 @@ import (
 	"os"
 	"os/exec"
 	"os/signal"
+	"strings"
 	"sync"
 	"syscall"
 	"time"
@@ -601,6 +603,56 @@ func connectMasque() (*MasqueClient, error) {
 	return c, nil
 }
 
+// readTokenLoop listens on stdin for rotated auth tokens, one token per line.
+// When a new (non-empty) token arrives it is applied to the running client so
+// that subsequently created TCP/UDP streams authenticate with the fresh token.
+// Existing connections are deliberately left untouched, so rotation happens
+// without interrupting ongoing traffic.
+//
+// Closing stdin (EOF) ends the loop but does NOT tear down the VPN: the tunnel
+// keeps running with the last token it received.
+func readTokenLoop(ctx context.Context, c *MasqueClient) {
+	logger.Info("Listening for token rotations on stdin...")
+
+	// Scan in a goroutine so a blocking Read on stdin can't prevent shutdown.
+	lines := make(chan string)
+	go func() {
+		defer close(lines)
+		scanner := bufio.NewScanner(os.Stdin)
+		// Allow generously long tokens (default bufio limit is 64KiB).
+		scanner.Buffer(make([]byte, 0, 64*1024), 1024*1024)
+		for scanner.Scan() {
+			lines <- scanner.Text()
+		}
+		if err := scanner.Err(); err != nil {
+			logger.Error("stdin token reader error", "err", err)
+		} else {
+			logger.Info("stdin closed; token rotation listener stopped")
+		}
+	}()
+
+	for {
+		select {
+		case <-ctx.Done():
+			return
+		case line, ok := <-lines:
+			if !ok {
+				return
+			}
+			newToken := strings.TrimSpace(line)
+			if newToken == "" {
+				continue
+			}
+			if newToken == c.AuthToken() {
+				logger.Debug("Received token identical to current one; ignoring")
+				continue
+			}
+			c.SetAuthToken(newToken)
+			logger.Info("Auth token rotated; new streams will use the refreshed token")
+		}
+	}
+}
+
 func main() {
 	relay = flag.String("relay", "", "MASQUE relay server")
 	relayPort = flag.Int("port", 443, "Relay port")
@@ -823,6 +875,11 @@ func main() {
 		defer wg.Done()
 		tun.writeLoop(ctx)
 	}()
+
+	// Listen for rotated auth tokens on stdin. Not part of the WaitGroup: the
+	// tunnel should stay up even after stdin is closed, and the loop exits on
+	// ctx cancellation during shutdown.
+	go readTokenLoop(ctx, client)
 
 	// Setup system routing
 	if err := setupRouting(tun.iface.Name()); err != nil {

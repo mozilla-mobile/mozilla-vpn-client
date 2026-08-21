@@ -11,6 +11,7 @@ import (
 	"net"
 	"net/http"
 	"strings"
+	"sync"
 	"time"
 
 	masquehttp3 "github.com/invisv-privacy/masque/http3"
@@ -19,15 +20,37 @@ import (
 
 // MasqueClient implements MASQUE protocol over HTTP/2 and HTTP/3
 type MasqueClient struct {
-	proxyAddr   string
-	proxyHost   string // hostname extracted from proxyAddr for TLS SNI
-	authToken   string
+	proxyAddr string
+	proxyHost string // hostname extracted from proxyAddr for TLS SNI
+
+	// authToken is the bearer/privacy token sent with every new stream. It can
+	// be rotated at runtime via SetAuthToken while connections are in flight, so
+	// all access goes through the mutex. Existing streams keep the token they
+	// were created with; only streams created after a rotation use the new one.
+	authMu    sync.RWMutex
+	authToken string
+
 	tlsConfig   *tls.Config
 	logger      *slog.Logger
 	h2Transport *http2.Transport
-	
+
 	// masque HTTP/3 client for UDP streams
 	masqueH3Client *masquehttp3.Client
+}
+
+// AuthToken returns the current auth token in a thread-safe way.
+func (c *MasqueClient) AuthToken() string {
+	c.authMu.RLock()
+	defer c.authMu.RUnlock()
+	return c.authToken
+}
+
+// SetAuthToken rotates the auth token used for new streams. Ongoing connections
+// are left untouched; the next TCP/UDP stream created will use the new token.
+func (c *MasqueClient) SetAuthToken(token string) {
+	c.authMu.Lock()
+	defer c.authMu.Unlock()
+	c.authToken = token
 }
 
 // ClientConfig holds configuration for MASQUE client
@@ -99,8 +122,8 @@ func (c *MasqueClient) ConnectToProxy() error {
 		return fmt.Errorf("create test request: %w", err)
 	}
 
-	if c.authToken != "" {
-		req.Header.Set("Authorization", "Bearer "+c.authToken)
+	if token := c.AuthToken(); token != "" {
+		req.Header.Set("Proxy-Authorization", "Bearer "+token)
 	}
 
 	// Use HTTP/2 transport
@@ -175,8 +198,8 @@ func (c *MasqueClient) CreateTCPStream(target string) (net.Conn, error) {
 	// Set the target as the Host (becomes :authority pseudo-header in HTTP/2)
 	req.Host = target
 	req.Header.Set("User-Agent", "masque-vpn/1.0")
-	if c.authToken != "" {
-		req.Header.Set("Authorization", "Bearer "+c.authToken)
+	if token := c.AuthToken(); token != "" {
+		req.Header.Set("Proxy-Authorization", "Bearer "+token)
 	}
 
 	// Debug: Dump the HTTP/2 request details
@@ -328,7 +351,7 @@ func (c *MasqueClient) CreateUDPStream(target string) (*UDPStreamWrapper, error)
 	c.logger.Info("Creating dedicated HTTP/3 client for UDP stream", "target", target)
 	dedicatedClient, err := masquehttp3.NewClient(masquehttp3.ClientConfig{
 		ProxyAddr:  c.proxyAddr,
-		AuthToken:  c.authToken,
+		AuthToken:  c.AuthToken(),
 		CertData:   nil, // Will use insecure for now
 		Insecure:   true,
 		Logger:     c.logger,
