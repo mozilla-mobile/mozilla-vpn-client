@@ -34,16 +34,6 @@ void WebExtHandler::proc_info(const QByteArray& msg) {
   writeJsonStdout(obj);
 }
 
-void WebExtHandler::proxy_info(const QByteArray& msg) {
-  Q_UNUSED(msg);
-  QJsonObject obj;
-  obj["type"] = "socks";
-  obj["host"] = QString("file:/var/tmp/mozillavpn.proxy");
-  obj["port"] = QJsonValue(1234);
-  obj["proxyDNS"] = QJsonValue(true);
-  writeJsonStdout(obj);
-}
-
 void WebExtHandler::start(const QByteArray& msg) {
   Q_UNUSED(msg);
 

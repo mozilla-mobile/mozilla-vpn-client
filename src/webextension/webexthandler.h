@@ -24,7 +24,6 @@ class WebExtHandler final : public QObject {
   // The methods we can handle locally are exposed as meta-methods.
   Q_INVOKABLE void bridge_ping(const QByteArray& msg);
   Q_INVOKABLE void proc_info(const QByteArray& msg);
-  Q_INVOKABLE void proxy_info(const QByteArray& msg);
   Q_INVOKABLE void start(const QByteArray& msg);
 
   void writeMsgStdout(const QByteArray& msg);
