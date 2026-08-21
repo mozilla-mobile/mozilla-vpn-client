@@ -88,6 +88,15 @@ QDBusPendingCallWatcher* DBusClient::getLogs() {
   return watcher;
 }
 
+QDBusPendingCallWatcher* DBusClient::rotateToken(const QString& token) {
+  logger.debug() << "Rotate token via DBus";
+  QDBusPendingReply<bool> reply = m_dbus->rotateToken(token);
+  QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
+  QObject::connect(watcher, &QDBusPendingCallWatcher::finished, watcher,
+                   &QDBusPendingCallWatcher::deleteLater);
+  return watcher;
+}
+
 QDBusPendingCallWatcher* DBusClient::cleanupLogs() {
   logger.debug() << "Cleanup logs via DBus";
   QDBusPendingReply<QString> reply = m_dbus->cleanupLogs();

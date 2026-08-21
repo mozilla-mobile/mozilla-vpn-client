@@ -38,6 +38,8 @@ class DBusClient final : public QObject {
 
   QDBusPendingCallWatcher* cleanupLogs();
 
+  QDBusPendingCallWatcher* rotateToken(const QString& token);
+
   QString serviceName() const;
 
  signals:

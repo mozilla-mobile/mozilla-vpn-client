@@ -27,7 +27,7 @@ namespace {
 Logger logger("IPUtilsMacos");
 }
 
-IPUtilsMacos::IPUtilsMacos(Daemon* daemon) : IPUtils(daemon) {
+IPUtilsMacos::IPUtilsMacos(QObject* parent) : IPUtils(parent) {
   MZ_COUNT_CTOR(IPUtilsMacos);
   logger.debug() << "IPUtilsMacos created.";
   m_daemon = daemon;

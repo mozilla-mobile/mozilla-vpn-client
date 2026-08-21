@@ -157,6 +157,8 @@ using namespace std::chrono_literals;
 TIMEREXPR(releaseMonitor, 6h, 30s, 0s)
 // How often should we do periodic things (i.e update Serverlist)
 TIMEREXPR(schedulePeriodicTask, 60min, 5min, 0ms)
+// How often we refresh the MASQUE auth token and rotate it into the daemon
+TIMEREXPR(masqueTokenRotation, 10min, 10min, 0ms)
 // How often we should check for a Captive portal
 TIMEREXPR(captivePortalRequest, 10s, 30s, 0ms)
 // How fast the animated icon should move
