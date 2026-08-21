@@ -21,7 +21,6 @@ $QT_MOD_EXCLUDE = @(
   'qthttpserver'
   'qtlanguageserver'
   'qtlocation'
-  'qtlottie'
   'qtmqtt'
   'qtmultimedia'
   'qtopcua'

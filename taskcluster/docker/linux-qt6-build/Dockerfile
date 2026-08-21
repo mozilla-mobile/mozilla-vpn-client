@@ -35,6 +35,7 @@ RUN apt-get -y install build-essential \
                        libclang-16-dev \
                        libdbus-1-3 \
                        libgl1-mesa-dev \
+                       libxkbcommon0 \
                        locales \
                        ninja-build \
                        patchelf \
