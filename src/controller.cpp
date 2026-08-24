@@ -751,10 +751,12 @@ bool Controller::silentSwitchServers(
   }
 
   if (selectionPolicy == RandomizeServerSelection) {
+    // The current server is usually filtered out of this list already by the
+    // cooldown set above, or by obfuscation, so an empty list is expected.
     QList<Server> servers = m_serverData.exitServers();
-    Q_ASSERT(!servers.isEmpty());
-
-    if (servers.length() <= 1) {
+    if (servers.isEmpty() ||
+        (servers.length() == 1 &&
+         servers.first().publicKey() == m_serverData.exitServerPublicKey())) {
       logger.warning()
           << "Cannot silent switch servers because must pick new server, and "
              "the only available one is current server";
