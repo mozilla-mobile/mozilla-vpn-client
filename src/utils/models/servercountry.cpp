@@ -72,6 +72,19 @@ bool ServerCountry::fromJson(const QJsonObject& countryObj) {
   return true;
 }
 
+void ServerCountry::initialize(const QString& code, const QString& name) {
+  m_code = code;
+  m_name = name;
+}
+
+void ServerCountry::addCity(const QString& cityName) {
+  if (m_cities.contains(cityName)) {
+    return;
+  }
+  m_cities.append(cityName);
+  sortCities();
+}
+
 // static
 QString ServerCountry::localizedName(const QString& code, const QString& name) {
   return QCoreApplication::translate("ServerCountry", qPrintable(code),

@@ -176,6 +176,12 @@ constexpr auto CRASH_STAGING_URL = "https://crash-reports.allizom.org/submit";
 
 constexpr const char* LOGO_URL = ":/ui/resources/logo-dock.png";
 
+// Remote Settings collection listing the MASQUE servers. The "_expected" query
+// parameter is a mandatory cache-buster; any value returns the full list.
+constexpr const char* MASQUE_SERVERS_URL =
+    "https://firefox.settings.services.mozilla.com/v1/buckets/main/collections/"
+    "vpn-serverlist/changeset?_expected=0";
+
 constexpr const char* APPLE_SUBSCRIPTIONS_URL =
     "https://apps.apple.com/account/subscriptions";
 

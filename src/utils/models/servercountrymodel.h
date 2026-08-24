@@ -31,6 +31,12 @@ class ServerCountryModel final : public QAbstractListModel {
   [[nodiscard]] bool fromJson(const QByteArray& data);
   bool appendFromJson(const QByteArray& json);
 
+  // Merge MASQUE servers, fetched from the Remote Settings "vpn-serverlist"
+  // changeset, into the model. MASQUE locations appear as extra cities under
+  // their country, tagged with the MASQUE protocol. The raw changeset is kept
+  // so it can be re-applied whenever the (WireGuard) server list is reloaded.
+  bool appendMasqueServers(const QByteArray& changeset);
+
   bool initialized() const { return !m_rawJson.isEmpty(); }
 
   bool exists(const QString& countryCode, const QString& cityName) const;
@@ -64,10 +70,16 @@ class ServerCountryModel final : public QAbstractListModel {
  private:
   [[nodiscard]] bool fromJsonInternal(const QByteArray& data, bool append);
 
+  // Merge the parsed MASQUE changeset into the current lists without touching
+  // model-reset signalling; callers wrap this in begin/endResetModel.
+  bool mergeMasqueChangeset(const QByteArray& changeset);
+
   void sortCountries();
 
  private:
   QByteArray m_rawJson;
+  // Raw MASQUE changeset, re-applied after every (WireGuard) list reload.
+  QByteArray m_masqueRawJson;
 
   QList<ServerCountry> m_countries;
   QHash<QString, ServerCity> m_cities;

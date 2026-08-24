@@ -21,6 +21,14 @@ class ServerCountry final {
 
   [[nodiscard]] bool fromJson(const QJsonObject& obj);
 
+  // Set up an empty country (no cities yet). Used when merging MASQUE locations
+  // into a country that is not already present in the model.
+  void initialize(const QString& code, const QString& name);
+
+  // Add a city name to this country if it is not already listed, keeping the
+  // city list sorted. Used to merge MASQUE cities into an existing country.
+  void addCity(const QString& cityName);
+
   const QString& name() const { return m_name; }
 
   const QString& code() const { return m_code; }

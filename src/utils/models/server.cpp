@@ -36,6 +36,7 @@ Server& Server::operator=(const Server& other) {
 
   m_protocol = other.m_protocol;
   m_authType = other.m_authType;
+  m_provider = other.m_provider;
   m_hostname = other.m_hostname;
   m_ipv4AddrIn = other.m_ipv4AddrIn;
   m_ipv4Gateway = other.m_ipv4Gateway;
@@ -164,6 +165,39 @@ bool Server::fromJson(const QJsonObject& obj) {
   m_weight = weight.toInt();
   m_socksName = socks5_name.toString();
   m_multihopPort = multihop_port.toInt();
+
+  return true;
+}
+
+bool Server::fromMasqueJson(const QJsonObject& obj) {
+  // Reset.
+  m_hostname = "";
+
+  QJsonValue hostname = obj.value("hostname");
+  if (!hostname.isString()) {
+    return false;
+  }
+
+  QJsonValue port = obj.value("port");
+  if (!port.isDouble()) {
+    return false;
+  }
+
+  m_protocol = ProtocolType::Masque;
+  m_authType = AuthType::Token;
+  m_provider = "mullvad";
+  m_hostname = hostname.toString();
+
+  // Addresses are resolved from the hostname by TaskMasqueServers; they may be
+  // absent if the DNS lookup failed.
+  m_ipv4AddrIn = obj.value("ipv4_addr_in").toString();
+  m_ipv6AddrIn = obj.value("ipv6_addr_in").toString();
+
+  // MASQUE servers advertise a single port; reuse the port-range machinery so
+  // choosePort() keeps working.
+  uint32_t p = static_cast<uint32_t>(port.toInt());
+  m_portRanges.clear();
+  m_portRanges.append(QPair<uint32_t, uint32_t>(p, p));
 
   return true;
 }

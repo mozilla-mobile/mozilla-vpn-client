@@ -445,6 +445,16 @@ SETTING_BYTEARRAY(servers,        // getter
                   true  // sensitive (do not log) - noisy and limited value
 )
 
+SETTING_BYTEARRAY(masqueServers,        // getter
+                  setMasqueServers,     // setter
+                  removeMasqueServers,  // remover
+                  hasMasqueServers,     // has
+                  "masqueServers",      // key
+                  "",                   // default value
+                  true,                 // remove when reset
+                  true  // sensitive (do not log) - noisy and limited value
+)
+
 SETTING_BYTEARRAY(serverData,        // getter
                   setServerData,     // setter
                   removeServerData,  // remover

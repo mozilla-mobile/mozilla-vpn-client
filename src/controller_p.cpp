@@ -17,8 +17,11 @@ namespace ControllerPrivate {
 QList<IPAddress> getExtensionProxyAddressRanges(
     const Server& exitServer, std::optional<const dnsData> dnsServer) {
   QList<IPAddress> ranges = {
-      IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32),
       IPAddress(QHostAddress{MULLVAD_PROXY_RANGE}, MULLVAD_PROXY_RANGE_LENGTH)};
+  // MASQUE servers have no WireGuard-style gateway, so it may be absent.
+  if (!exitServer.ipv4Gateway().isEmpty()) {
+    ranges.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
+  }
   if (!exitServer.ipv6Gateway().isEmpty()) {
     ranges.append(IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128));
   }

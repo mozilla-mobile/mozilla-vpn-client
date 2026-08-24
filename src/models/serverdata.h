@@ -77,6 +77,10 @@ class ServerData final : public QObject {
   const QString& exitCityName() const { return m_exitCityName; }
   QString localizedExitCountryName() const;
   QString localizedExitCityName() const;
+  // Resolve a city's human-facing localized name via the model, so MASQUE
+  // locations show their real city rather than their (country) identity name.
+  static QString localizedCityName(const QString& countryCode,
+                                   const QString& cityName);
   const QList<Server> backupServers(const QString& currentPublicKey) const;
 
   bool multihop() const {

@@ -159,6 +159,12 @@ void ServerLatency::start() {
           vpn->location()->distance(city.latitude(), city.longitude());
       Q_ASSERT(city.initialized());
 
+      // MASQUE servers are reached by hostname over QUIC and have no routable
+      // address to ICMP ping, so skip them from the latency sweep.
+      if (city.isMasque()) {
+        continue;
+      }
+
       // Search for where in the list to insert this city's servers.
       auto i = m_pingSendQueue.begin();
       while (i != m_pingSendQueue.end()) {

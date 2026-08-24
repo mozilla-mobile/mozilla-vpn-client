@@ -188,6 +188,7 @@ class MozillaVPN final : public QObject {
   void deviceRemovalCompleted(const QString& publicKey);
 
   void serversFetched(const QByteArray& serverData);
+  void masqueServersFetched(const QByteArray& serverData);
 
   void accountChecked(const QByteArray& json);
 

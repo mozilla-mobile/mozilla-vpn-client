@@ -658,9 +658,12 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   logger.debug() << "Catch all IPv6";
   list.append(IPAddress("::0/0"));
 
-  // Allow access to the internal gateway addresses.
-  logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
-  list.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
+  // Allow access to the internal gateway addresses. MASQUE servers have no
+  // WireGuard-style gateway, so it may be absent.
+  if (!exitServer.ipv4Gateway().isEmpty()) {
+    logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
+    list.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
+  }
   if (!exitServer.ipv6Gateway().isEmpty()) {
     logger.debug() << "Allow the IPv6 gateway:" << exitServer.ipv6Gateway();
     list.append(IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128));
