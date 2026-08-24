@@ -18,6 +18,7 @@
 #include <unistd.h>
 
 #include <QCoreApplication>
+#include <QDir>
 #include <QEventLoop>
 #include <QFileInfo>
 #include <QProcess>
@@ -68,7 +69,9 @@ bool MasqueTunnelLinux::addInterface(const InterfaceConfig& config) {
     logger.warning() << "Unable to start: daemon process already running";
     return false;
   }
-  QString programPath = "/usr/bin/masque-vpn";
+  const QString binaryName = "masque-vpn";
+  QString programPath =
+      QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(binaryName);
 
   // Check if the executable exists and is executable
   QFileInfo programInfo(programPath);
@@ -87,6 +90,9 @@ bool MasqueTunnelLinux::addInterface(const InterfaceConfig& config) {
   // CRITICAL - This approach is UNSAFE and experiment only
   // command injection can happen here, this should be done via config file,
   // stdin or parameter should be sanitized
+  logger.debug() << "Starting MASQUE daemon with command:" << programPath
+                 << "-verbose -token <token> -relay" << config.m_hostname
+                 << "-tun" << interfaceName() << "-insecure -port 2499";
   m_daemonProcess.setArguments(QStringList(
       {"-verbose", "-token", config.m_privateKey, "-relay", config.m_hostname,
        "-tun", interfaceName(), "-insecure", "-port", "2499"}));
