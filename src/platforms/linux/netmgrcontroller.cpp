@@ -53,6 +53,18 @@ NetmgrController::NetmgrController() {
 NetmgrController::~NetmgrController() {
   MZ_COUNT_DTOR(NetmgrController);
   logger.debug() << "Destroying NetmgrController";
+
+  // Stop the obfuscator relay first so its process doesn't outlive us.
+  m_obfuscator.reset();
+
+  // Remove the connection from NetworkManager 
+  if (m_remote) {
+    QDBusReply<void> reply = m_remote->call("Delete");
+    if (!reply.isValid()) {
+      logger.warning() << "Failed to delete connection on shutdown:"
+                       << reply.error().message();
+    }
+  }
 }
 
 // static
