@@ -53,6 +53,7 @@
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/removedevice/taskremovedevice.h"
+#include "tasks/servers/taskmasqueservers.h"
 #include "tasks/servers/taskservers.h"
 #include "tasks/token/tasktoken.h"
 #include "taskscheduler.h"
@@ -181,6 +182,7 @@ MozillaVPN::MozillaVPN()
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(ErrorHandler::DoNotPropagateError),
          new TaskServers(ErrorHandler::DoNotPropagateError),
+         new TaskMasqueServers(ErrorHandler::DoNotPropagateError),
          new TaskCaptivePortalLookup(ErrorHandler::DoNotPropagateError),
          new TaskHeartbeat(), new TaskAddonIndex(),
          new TaskGetSubscriptionDetails(
@@ -403,6 +405,10 @@ void MozillaVPN::initialize() {
     return;
   }
 
+  // Best-effort: re-apply any cached MASQUE servers on top of the list.
+  m_private->m_serverCountryModel.appendMasqueServers(
+      settingsHolder->masqueServers());
+
   if (!m_private->m_deviceModel.fromSettings(keys())) {
     logger.error() << "No devices found";
     SettingsManager::instance()->reset();
@@ -456,6 +462,10 @@ bool MozillaVPN::loadModels() {
       !m_private->m_serverData.fromSettings() || !modelsInitialized()) {
     return false;
   }
+
+  // Best-effort: re-apply any cached MASQUE servers on top of the list.
+  m_private->m_serverCountryModel.appendMasqueServers(
+      settingsHolder->masqueServers());
 
   if (!m_private->m_captivePortal.fromSettings()) {
     // We do not care about these settings.
@@ -749,6 +759,17 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
     m_private->m_serverData.update(city->country(), city->name());
     Q_ASSERT(m_private->m_serverData.hasServerData());
   }
+}
+
+void MozillaVPN::masqueServersFetched(const QByteArray& serverData) {
+  logger.debug() << "MASQUE servers fetched!";
+
+  if (!m_private->m_serverCountryModel.appendMasqueServers(serverData)) {
+    logger.error() << "Failed to store the MASQUE servers";
+    return;
+  }
+
+  SettingsHolder::instance()->setMasqueServers(serverData);
 }
 
 void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
@@ -1342,6 +1363,7 @@ void MozillaVPN::scheduleRefreshDataTasks() {
   QList<Task*> refreshTasks{
       new TaskAccount(ErrorHandler::PropagateError),
       new TaskServers(ErrorHandler::PropagateError),
+      new TaskMasqueServers(ErrorHandler::PropagateError),
       new TaskCaptivePortalLookup(ErrorHandler::PropagateError),
       new TaskGetSubscriptionDetails(
           TaskGetSubscriptionDetails::NoAuthenticationFlow,

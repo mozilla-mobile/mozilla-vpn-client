@@ -181,6 +181,8 @@ target_sources(mozillavpn-sources INTERFACE
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/removedevice/taskremovedevice.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskservers.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskservers.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskmasqueservers.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/tasks/servers/taskmasqueservers.h
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/token/tasktoken.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/tasks/token/tasktoken.h
     ${CMAKE_CURRENT_SOURCE_DIR}/update/updater.cpp

@@ -24,6 +24,9 @@ class ServerCity final : public QObject {
   Q_PROPERTY(double longitude READ longitude CONSTANT)
   Q_PROPERTY(qint64 latency READ latency NOTIFY latencyChanged)
   Q_PROPERTY(int connectionScore READ connectionScore NOTIFY scoreChanged)
+  // True when this city groups MASQUE servers rather than WireGuard ones. Used
+  // by the server list to show a protocol badge.
+  Q_PROPERTY(bool isMasque READ isMasque CONSTANT)
 
  public:
   ServerCity();
@@ -32,6 +35,11 @@ class ServerCity final : public QObject {
   ~ServerCity();
 
   [[nodiscard]] bool fromJson(const QJsonObject& obj, const QString& country);
+  // Build a MASQUE city from a Remote Settings city entry. Its servers are
+  // referenced by hostname (MASQUE servers have no public key) and the whole
+  // city is tagged with the MASQUE protocol.
+  [[nodiscard]] bool fromMasqueJson(const QJsonObject& obj,
+                                    const QString& country);
 
   bool initialized() const { return !m_name.isEmpty(); }
 
@@ -41,8 +49,19 @@ class ServerCity final : public QObject {
 
   const QString& country() const { return m_country; }
 
+  // Human-facing city name. For MASQUE cities the identity name (name()) is the
+  // country name to avoid colliding with WireGuard cities, so the real city is
+  // kept separately here and used for display only. Falls back to name().
+  const QString& displayName() const {
+    return m_displayName.isEmpty() ? m_name : m_displayName;
+  }
+
+  // Map a MASQUE city code (an IATA/ICAO airport code from Remote Settings) to
+  // a real city name. Returns an empty string for unknown/generic codes.
+  static QString masqueCityName(const QString& code);
+
   static QString localizedName(const QString& name);
-  const QString localizedName() const { return localizedName(m_name); }
+  const QString localizedName() const { return localizedName(displayName()); }
 
   const QString& hashKey() const { return m_hashKey; }
   static QString hashKey(const QString& country, const QString cityName);
@@ -50,6 +69,10 @@ class ServerCity final : public QObject {
   double latitude() const { return m_latitude; }
 
   double longitude() const { return m_longitude; }
+
+  Server::ProtocolType protocol() const { return m_protocol; }
+
+  bool isMasque() const { return m_protocol == Server::ProtocolType::Masque; }
 
   const QList<QString> servers() const { return m_servers; }
 
@@ -68,8 +91,10 @@ class ServerCity final : public QObject {
   QString m_name;
   QString m_code;
   QString m_hashKey;
+  QString m_displayName;
   double m_latitude;
   double m_longitude;
+  Server::ProtocolType m_protocol = Server::ProtocolType::WireGuard;
 
   QList<QString> m_servers;
 
