@@ -240,9 +240,9 @@ mandatoryUpdate:
   title:
     value: "Action required: Update to the latest version"
     comment: Title of a message. Should make it clear the user must take action.
-  # body1:
-  #   value: This version of Mozilla VPN will no longer be supported as of October 19, 2026.
-  #   comment: Line explaining end-of-life for some Mozilla VPN versions. Include the deadline date.
+  body1:
+    value: This version of Mozilla VPN will no longer be supported as of October 19, 2026.
+    comment: Line explaining end-of-life for some Mozilla VPN versions. Include the deadline date.
   body2:
     value: Please update to the latest version to continue using Mozilla VPN.
     comment: Line asking users to update. This should be kind, yet firm. It should not include any language that implies this is optional.
