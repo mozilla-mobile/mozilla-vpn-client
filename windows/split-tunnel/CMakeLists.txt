@@ -8,7 +8,11 @@ FetchContent_Declare(
     win_split_tunnel
     DOWNLOAD_EXTRACT_TIMESTAMP true
     GIT_REPOSITORY https://github.com/mullvad/mullvadvpn-app-binaries.git
-    GIT_TAG 84b943f9dfce49a571092846effa44e8200ec33f # Latest commit as of December 8, 2025
+    GIT_TAG cc0affb2f06e870fb594e2dd6d61049611991586 # Latest commit as of August 24, 2026
+    # We only need the prebuilt driver files, which live in the top-level tree.
+    # Skip the submodules: libmnl and libnftnl are Linux-only netfilter libraries
+    # served over git:// from git.netfilter.org, which CI cannot reach.
+    GIT_SUBMODULES ""
 )
 FetchContent_MakeAvailable(win_split_tunnel)
 
