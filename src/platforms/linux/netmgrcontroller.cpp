@@ -57,7 +57,7 @@ NetmgrController::~NetmgrController() {
   // Stop the obfuscator relay first so its process doesn't outlive us.
   m_obfuscator.reset();
 
-  // Remove the connection from NetworkManager 
+  // Remove the connection from NetworkManager
   if (m_remote) {
     QDBusReply<void> reply = m_remote->call("Delete");
     if (!reply.isValid()) {
@@ -474,6 +474,25 @@ void NetmgrController::deviceStateChanged(uint state, uint prev, uint reason) {
 
   if (m_device->uuid() != m_uuid) {
     return;
+  }
+
+  // The connection can be toggled directly from NetworkManager, bypassing
+  // activate()/deactivate(). When obfuscation is in use, the relay
+  // process may have exited while the tunnel was down, but the connection
+  // still points at 127.0.0.1:<port>.
+  // Detect a fresh (re)activation coming from NetworkManager and bring the
+  // relay back on the same local port.
+  bool reactivating = prevstate < NetmgrDevice::PREPARE &&
+                      newstate >= NetmgrDevice::PREPARE &&
+                      newstate <= NetmgrDevice::ACTIVATED;
+  if (m_obfuscator && reactivating && !m_obfuscator->isRunning()) {
+    logger.warning() << "Obfuscator not running on reactivation; restarting on"
+                     << "port" << m_obfuscator->localPort();
+    if (!m_obfuscator->restart()) {
+      logger.error() << "Failed to restart obfuscator";
+      emit backendFailure(Controller::ErrorFatal);
+      return;
+    }
   }
 
   if (newstate == NetmgrDevice::ACTIVATED) {

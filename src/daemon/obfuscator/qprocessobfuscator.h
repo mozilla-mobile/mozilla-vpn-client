@@ -23,7 +23,8 @@ class QProcessObfuscator final : public Obfuscator {
 
  private:
   quint16 parseListeningPort(const QByteArray& line) const;
-  QStringList buildArgs(const InterfaceConfig& config, quint16 listenPort) const;
+  QStringList buildArgs(const InterfaceConfig& config,
+                        quint16 listenPort) const;
   QString binaryName() const;
   // Launch the relay, blocking until it announces its listening port.
   // A non-zero listenPort forces the relay onto that local port.
