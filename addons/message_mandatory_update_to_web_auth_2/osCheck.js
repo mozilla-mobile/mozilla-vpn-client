@@ -49,20 +49,7 @@ function computeCondition() {
     return;
   }
 
-  // We've confirme we're in a version that may require this addon. Now check
-  // the date.
-  let now = Date.now();
-  let startTime = 1791478800000  // 10am Pacific on Oct 8 2026
-
-  if (now < startTime) {
-    condition.disable()
-    // Set callback - if app isn't closed, we need to turn on this addon at the
-    // appropriate time
-    api.setTimedCallback(startTime, () => computeCondition());
-  }
-  else {
-    condition.enable()
-  }
+  condition.enable();
 }
 
 computeCondition();
