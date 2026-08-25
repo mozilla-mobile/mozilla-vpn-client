@@ -24,15 +24,9 @@ namespace {
 Logger logger("QProcessObfuscator");
 }
 
-QProcessObfuscator::QProcessObfuscator(const InterfaceConfig& config) {
+QProcessObfuscator::QProcessObfuscator(const InterfaceConfig& config)
+    : m_config(config) {
   MZ_COUNT_CTOR(QProcessObfuscator);
-
-  const QStringList args = buildArgs(config);
-  if (args.isEmpty()) {
-    logger.error() << "Unsupported obfuscation method"
-                   << config.m_obfuscationMethod;
-    return;
-  }
 
   QString obfuscatorExecPath = getObfuscatorExecutablePath();
   if (obfuscatorExecPath.isEmpty()) {
@@ -43,14 +37,39 @@ QProcessObfuscator::QProcessObfuscator(const InterfaceConfig& config) {
     logger.error() << "Obfuscator binary not found at" << obfuscatorExecPath;
     return;
   }
+  m_binaryFile = obfuscatorExecPath;
 
-  m_process.setProgram(obfuscatorExecPath);
-  m_process.setArguments(args);
   // Merge stderr into stdout so we can read the "listening on" announce line
   m_process.setProcessChannelMode(QProcess::MergedChannels);
 }
 
-bool QProcessObfuscator::start() {
+bool QProcessObfuscator::start() { return launch(0); }
+
+bool QProcessObfuscator::restart() {
+  stop();
+  // Reuse the port assigned by the previous launch so the WireGuard peer config
+  // that still points at 127.0.0.1:<port> keeps working.
+  return launch(m_localPort);
+}
+
+bool QProcessObfuscator::isRunning() const {
+  return m_process.state() == QProcess::Running;
+}
+
+bool QProcessObfuscator::launch(quint16 listenPort) {
+  if (m_binaryFile.isEmpty()) {
+    return false;
+  }
+
+  const QStringList args = buildArgs(m_config, listenPort);
+  if (args.isEmpty()) {
+    logger.error() << "Unsupported obfuscation method"
+                   << m_config.m_obfuscationMethod;
+    return false;
+  }
+  m_process.setProgram(m_binaryFile);
+  m_process.setArguments(args);
+
   logger.debug() << "Starting obfuscator";
   m_process.start();
   if (!m_process.waitForStarted(OBFUSCATOR_PROC_TIMEOUT_MS)) {
@@ -94,7 +113,8 @@ quint16 QProcessObfuscator::parseListeningPort(const QByteArray& line) const {
   return ok ? port : 0;
 }
 
-QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config) {
+QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config,
+                                          quint16 listenPort) const {
   QStringList args;
 
   const QString server = !config.m_serverIpv4AddrIn.isEmpty()
@@ -102,6 +122,9 @@ QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config) {
                              : config.m_serverIpv6AddrIn;
   args << QStringLiteral("--server") << server;
   args << QStringLiteral("--port") << QString::number(config.m_serverPort);
+  if (listenPort != 0) {
+    args << QStringLiteral("--listen-port") << QString::number(listenPort);
+  }
 #if defined(MZ_LINUX) && !defined(MZ_FLATPAK)
   args << QStringLiteral("--fwmark") << QString::number(WG_FIREWALL_MARK);
 #endif
@@ -139,8 +162,7 @@ QString QProcessObfuscator::getObfuscatorExecutablePath() {
       .absoluteFilePath(binaryFile);
 }
 
-QProcessObfuscator::~QProcessObfuscator() {
-  MZ_COUNT_DTOR(QProcessObfuscator);
+void QProcessObfuscator::stop() {
   if (m_process.state() == QProcess::NotRunning) {
     return;
   }
@@ -157,4 +179,9 @@ QProcessObfuscator::~QProcessObfuscator() {
     m_process.waitForFinished(OBFUSCATOR_PROC_TIMEOUT_MS);
   }
 #endif
+}
+
+QProcessObfuscator::~QProcessObfuscator() {
+  MZ_COUNT_DTOR(QProcessObfuscator);
+  stop();
 }
