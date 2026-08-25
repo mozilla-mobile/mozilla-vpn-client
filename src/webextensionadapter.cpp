@@ -218,7 +218,7 @@ QJsonObject WebExtensionAdapter::serializeFeaturelist() {
       WindowsUtils::getServiceStatus(Constants::SOCKSPROXY_SERVICE_NAME);
 #elif defined(MZ_MACOS)
   out["localProxy"] = Feature::isEnabled(Feature::networkExtension) &&
-      QFileInfo::exists(Constants::SOCKSPROXY_MACOS_PATH);
+                      QFileInfo::exists(Constants::SOCKSPROXY_MACOS_PATH);
 #else
   out["localProxy"] = false;
 #endif
