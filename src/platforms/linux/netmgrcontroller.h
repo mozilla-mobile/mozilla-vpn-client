@@ -49,11 +49,9 @@ class NetmgrController final : public ControllerImpl {
   Q_ENUM(Flags);
 
  private slots:
-  void initCompleted(const QDBusObjectPath& path, const QVariantMap& results);
   void peerCompleted(const QVariantMap& results);
   void activateCompleted(const QDBusObjectPath& path);
 
-  void dbusInitError(const QDBusError& error);
   void dbusBackendError(const QDBusError& error);
 
   void deviceAdded(const QDBusObjectPath& path);
