@@ -393,7 +393,11 @@ void NetmgrController::activateCompleted(const QDBusObjectPath& path) {
 }
 
 void NetmgrController::deactivate() {
-  m_obfuscator.reset();
+  // Stop the obfuscator relay but keep the instance, so it can be restarted on
+  // the same local port if the tunnel is reactivated from NetworkManager.
+  if (m_obfuscator) {
+    m_obfuscator->stop();
+  }
 
   if (!m_device || m_device->uuid() != m_uuid) {
     logger.warning() << "Client already disconnected";

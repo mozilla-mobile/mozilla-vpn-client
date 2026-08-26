@@ -17,6 +17,9 @@ class Obfuscator {
 
   virtual bool start() = 0;
 
+  
+  virtual void stop() = 0;
+
   // Relaunch the relay reusing the local port assigned by the previous start().
   // Used when the tunnel is toggled outside the app and the relay must come
   // back on the same 127.0.0.1:<port> the WireGuard peer still points at.

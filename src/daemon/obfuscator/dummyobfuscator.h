@@ -17,6 +17,7 @@ class DummyObfuscator final : public Obfuscator {
   ~DummyObfuscator() override;
 
   bool start() override;
+  void stop() override {};
   bool restart() override;
   bool isRunning() const override;
   quint16 localPort() const override { return m_localPort; }
