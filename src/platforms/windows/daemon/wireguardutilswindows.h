@@ -40,6 +40,7 @@ class WireguardUtilsWindows final : public WireguardUtils {
   bool updateRoutePrefix(const IPAddress& prefix) override;
   bool deleteRoutePrefix(const IPAddress& prefix) override;
   bool excludeLocalNetworks(const QList<IPAddress>& addresses) override;
+  bool allowObfuscatorTraffic(const InterfaceConfig& config);
 
  private:
   WireguardUtilsWindows(QObject* parent, WindowsFirewall* fw,

@@ -663,3 +663,8 @@ bool WireguardUtilsWindows::excludeLocalNetworks(
 
   return result;
 }
+
+bool WireguardUtilsWindows::allowObfuscatorTraffic(
+    const InterfaceConfig& config) {
+  return m_firewall->allowObfuscatorTraffic(config);
+}

@@ -299,6 +299,48 @@ bool WindowsFirewall::enablePeerTraffic(const InterfaceConfig& config) {
   return true;
 }
 
+bool WindowsFirewall::allowObfuscatorTraffic(const InterfaceConfig& config) {
+  // Traffic on port 53 is probaby blocked by an MID_WEIGHT dns kill rule
+  auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
+  if (result != ERROR_SUCCESS) {
+    disableKillSwitch();
+    return false;
+  }
+  auto cleanup = qScopeGuard([&] {
+    FwpmTransactionAbort0(m_sessionHandle);
+    disableKillSwitch();
+  });
+
+  logger.info() << "Permitting obfuscator traffic to server on port"
+                << config.m_serverPort;
+  if (!config.m_serverIpv4AddrIn.isEmpty()) {
+    if (!allowTrafficTo(QHostAddress(config.m_serverIpv4AddrIn),
+                        config.m_serverPort, HIGH_WEIGHT,
+                        "Allow obfuscator server traffic",
+                        config.m_serverPublicKey)) {
+      return false;
+    }
+  }
+  if (!config.m_serverIpv6AddrIn.isEmpty()) {
+    if (!allowTrafficTo(QHostAddress(config.m_serverIpv6AddrIn),
+                        config.m_serverPort, HIGH_WEIGHT,
+                        "Allow obfuscator server traffic (IPv6)",
+                        config.m_serverPublicKey)) {
+      return false;
+    }
+  }
+
+  result = FwpmTransactionCommit0(m_sessionHandle);
+  if (result != ERROR_SUCCESS) {
+    logger.error() << "FwpmTransactionCommit0 failed:"
+                   << QString::number(result, 16);
+    return false;
+  }
+
+  cleanup.dismiss();
+  return true;
+}
+
 bool WindowsFirewall::disablePeerTraffic(const QString& pubkey) {
   auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
   auto cleanup = qScopeGuard([&] {

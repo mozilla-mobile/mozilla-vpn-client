@@ -167,6 +167,10 @@ bool Daemon::activate(const InterfaceConfig& config) {
       if (!config.m_serverIpv6AddrIn.isEmpty()) {
         obfuscatorServer.append(IPAddress(config.m_serverIpv6AddrIn));
       }
+      if (!wgutils()->allowObfuscatorTraffic(config)) {
+        logger.error() << "Failed to allow obfuscator traffic through firewall";
+        return false;
+      }
       wgutils()->excludeLocalNetworks(obfuscatorServer);
     }
 #endif
@@ -524,9 +528,14 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
       if (!config.m_serverIpv6AddrIn.isEmpty()) {
         obfuscatorServer.append(IPAddress(config.m_serverIpv6AddrIn));
       }
+      if (!wgutils()->allowObfuscatorTraffic(config)) {
+        logger.error() << "Failed to allow obfuscator traffic through firewall";
+        return false;
+      }
       wgutils()->excludeLocalNetworks(obfuscatorServer);
     }
 #endif
+
     peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
     // The obfuscator only binds 127.0.0.1, so clear the IPv6 endpoint to keep
     // WireGuard from selecting an [::1]

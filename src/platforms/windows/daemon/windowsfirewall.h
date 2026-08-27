@@ -41,6 +41,7 @@ class WindowsFirewall final : public QObject {
   bool enableInterface(int vpnAdapterIndex);
   bool enableLanBypass(const QList<IPAddress>& ranges);
   bool enablePeerTraffic(const InterfaceConfig& config);
+  bool allowObfuscatorTraffic(const InterfaceConfig& config);
   bool disablePeerTraffic(const QString& pubkey);
   bool disableKillSwitch();
 
