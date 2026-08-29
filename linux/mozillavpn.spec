@@ -14,6 +14,7 @@ Requires:  qt6-qtbase >= 6.0
 Requires:  qt6-qtnetworkauth >= 6.0
 Requires:  qt6-qtquickcontrols2 >= 6.0
 Requires:  qt6-qtsvg >= 6.0
+Requires:  qt6-qtlottie >= 6.0
 Requires:  wireguard-tools
 
 BuildRequires: cmake
@@ -29,6 +30,7 @@ BuildRequires: qt6-qtbase-devel >= 6.0
 BuildRequires: qt6-qtbase-private-devel >= 6.0
 BuildRequires: qt6-qtnetworkauth-devel >= 6.0
 BuildRequires: qt6-qtdeclarative-devel >= 6.0
+BuildRequires: qt6-qtlottie-devel >= 6.0
 BuildRequires: qt6-qtsvg-devel >= 6.0
 BuildRequires: qt6-qttools-devel >= 6.0
 BuildRequires: qt6-qtwebsockets-devel >= 6.0
