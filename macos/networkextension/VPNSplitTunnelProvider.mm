@@ -34,7 +34,7 @@
 @property (strong) InterfaceConfig* config;
 
 @property (strong) NSSet* vpnDisabledApps;
-@property (strong) NSSet* vpnBypassApps;
+@property (strong) NSSet* vpnHardcodeApps;
 
 @property (strong) NSTask* dnsManager;
 
@@ -57,7 +57,7 @@
                    withObject:@"socksproxy"];
 
   self.vpnDisabledApps = [NSSet set];
-  self.vpnBypassApps = [NSSet setWithObject:[parts componentsJoinedByString:@"."]];
+  self.vpnHardcodeApps = [NSSet setWithObject:[parts componentsJoinedByString:@"."]];
 
   m_handledTcpFlows = 0;
   m_handledUdpFlows = 0;
@@ -437,7 +437,7 @@
 #endif
 
   // Check if the app has been hard-coded to bypass the VPN.
-  if ([self.vpnBypassApps containsObject:sourceId]) {
+  if ([self.vpnHardcodeApps containsObject:sourceId]) {
     return NO;
   }
 
