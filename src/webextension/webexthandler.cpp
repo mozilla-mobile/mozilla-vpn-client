@@ -10,6 +10,7 @@
 #include <QFileDevice>
 #include <QJsonDocument>
 #include <QJsonObject>
+#include <QMetaMethod>
 #include <QMetaObject>
 
 #include "webextreader.h"
@@ -61,14 +62,19 @@ void WebExtHandler::handleMessage(const QByteArray& msg) {
   QString name = msgType.toString();
   QByteArray signature = QString("%1(QByteArray)").arg(name).toLocal8Bit();
   int index = this->metaObject()->indexOfMethod(signature.constData());
-  if (index >= 0) {
-    // This command can be handled locally.
-    QMetaObject::invokeMethod(this, name.toLocal8Bit().constData(),
-                              Q_ARG(QByteArray, msg));
-  } else {
-    // Otherwise - we cannot handle this message.
-    emit unhandledMessage(msg);
+  while (index >= 0) {
+    QMetaMethod m = this->metaObject()->method(index);
+    if (m.methodType() != QMetaMethod::Method) {
+      break;
+    }
+    if (!m.invoke(this, Q_ARG(QByteArray, msg))) {
+      break;
+    }
+    return;
   }
+
+  // Otherwise - we cannot handle this message.
+  emit unhandledMessage(msg);
 }
 
 void WebExtHandler::bridge_ping(const QByteArray& msg) {

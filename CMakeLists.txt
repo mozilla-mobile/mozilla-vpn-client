@@ -170,18 +170,18 @@ message("Using Qt version ${Qt6_VERSION}")
 add_definitions(-DQT_DEPRECATED_WARNINGS)
 add_definitions(-DQT_DISABLE_DEPRECATED_BEFORE=0x050F00)
 
-# VPN Client build targets
-add_subdirectory(src)
-add_subdirectory(lottie)
-add_subdirectory(nebula)
-add_subdirectory(addons)
-
 # Build the extension for desktop targets
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
    ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
    ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     add_subdirectory(extension)
 endif()
+
+# VPN Client build targets
+add_subdirectory(src)
+add_subdirectory(lottie)
+add_subdirectory(nebula)
+add_subdirectory(addons)
 
 if(NOT CMAKE_CROSSCOMPILING AND BUILD_TESTS)
     # Unit Tests

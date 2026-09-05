@@ -5,6 +5,7 @@
 #include "webexthandler.h"
 
 #include <QJsonObject>
+#include <QStandardPaths>
 #include <QString>
 
 #include <libproc.h>

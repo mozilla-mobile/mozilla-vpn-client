@@ -22,7 +22,6 @@
 #import <Security/Authorization.h>
 #import <Security/AuthorizationTags.h>
 #import <ServiceManagement/ServiceManagement.h>
-#import <SystemExtensions/SystemExtensions.h>
 
 namespace {
 Logger logger("MacOSController");
