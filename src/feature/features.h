@@ -30,6 +30,12 @@ inline constexpr bool linux_ = true;
 inline constexpr bool linux_ = false;
 #endif
 
+#ifdef MZ_FLATPAK
+inline constexpr bool flatpak = true;
+#else
+inline constexpr bool flatpak = false;
+#endif
+
 #ifdef MZ_ANDROID
 inline constexpr bool android = true;
 #else
@@ -242,7 +248,8 @@ inline constexpr ConstantFeature freeTrial = {
 inline constexpr ConstantFeature obfuscationLwo = {
     .id = "obfuscationLwo",
     .name = "LWO obfuscation",
-    .supported = Platform::linux_ || Platform::android || Platform::windows,
+    .supported = (Platform::linux_ && !Platform::flatpak) ||
+                 Platform::android || Platform::windows,
 };
 
 inline constexpr ConstantFeature obfuscationMasque = {
@@ -260,7 +267,8 @@ inline constexpr ConstantFeature obfuscationShadowsocks = {
 inline constexpr ConstantFeature obfuscationUdpOverTcp = {
     .id = "obfuscationUdpOverTcp",
     .name = "UDP over TCP",
-    .supported = Platform::linux_ || Platform::android || Platform::windows,
+    .supported = (Platform::linux_ && !Platform::flatpak) ||
+                 Platform::android || Platform::windows,
 };
 
 inline const OverridableFeature replacerAddon = {
