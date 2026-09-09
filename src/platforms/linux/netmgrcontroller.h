@@ -10,10 +10,12 @@
 #include <QObject>
 #include <QVariant>
 #include <QVersionNumber>
+#include <memory>
 
 #include "controllerimpl.h"
 
 class NetmgrDevice;
+class Obfuscator;
 class QDateTime;
 class QDBusInterface;
 class QDBusError;
@@ -47,11 +49,9 @@ class NetmgrController final : public ControllerImpl {
   Q_ENUM(Flags);
 
  private slots:
-  void initCompleted(const QDBusObjectPath& path, const QVariantMap& results);
   void peerCompleted(const QVariantMap& results);
   void activateCompleted(const QDBusObjectPath& path);
 
-  void dbusInitError(const QDBusError& error);
   void dbusBackendError(const QDBusError& error);
 
   void deviceAdded(const QDBusObjectPath& path);
@@ -88,6 +88,8 @@ class NetmgrController final : public ControllerImpl {
 
   QString m_connectionPath;
   NetmgrDevice* m_device = nullptr;
+
+  std::unique_ptr<Obfuscator> m_obfuscator;
 };
 
 #endif  // NETWORKMANAGERCONTROLLER_H

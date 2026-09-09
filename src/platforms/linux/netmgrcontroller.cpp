@@ -15,6 +15,7 @@
 #include <QScopeGuard>
 #include <QUuid>
 
+#include "daemon/obfuscator/qprocessobfuscator.h"
 #include "dbustypes.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -52,6 +53,18 @@ NetmgrController::NetmgrController() {
 NetmgrController::~NetmgrController() {
   MZ_COUNT_DTOR(NetmgrController);
   logger.debug() << "Destroying NetmgrController";
+
+  // Stop the obfuscator relay first so its process doesn't outlive us.
+  m_obfuscator.reset();
+
+  // Remove the connection from NetworkManager
+  if (m_remote) {
+    QDBusReply<void> reply = m_remote->call("Delete");
+    if (!reply.isValid()) {
+      logger.warning() << "Failed to delete connection on shutdown:"
+                       << reply.error().message();
+    }
+  }
 }
 
 // static
@@ -125,67 +138,28 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
     return;
   }
 
-  // Check if the connection already exists.
-  QDBusReply<QDBusObjectPath> reply = iface.call("GetConnectionByUuid", m_uuid);
-  if (reply.isValid()) {
-    logger.info() << "Connection" << m_uuid << "already exists";
-    initCompleted(reply.value(), QVariantMap());
-    return;
-  }
-
-  // Create the connection
-  logger.info() << "Adding connection:" << m_uuid;
-  QVariantList args;
-  args << serializeConfig();
-  args << (uint)IN_MEMORY;
-  args << QVariantMap();
-  bool okay = iface.callWithCallback(
-      "AddConnection2", args, this,
-      SLOT(initCompleted(const QDBusObjectPath&, const QVariantMap&)),
-      SLOT(dbusInitError(const QDBusError&)));
-  if (!okay) {
-    logger.debug() << "AddConnection2 failed";
-    emit initialized(false, false, QDateTime());
-  }
-}
-
-void NetmgrController::initCompleted(const QDBusObjectPath& path,
-                                     const QVariantMap& results) {
-  logger.debug() << "connection created:" << path.path();
-  m_remote = new QDBusInterface(DBUS_NM_SERVICE, path.path(),
-                                nmInterface("Settings.Connection"),
-                                m_client->connection(), this);
-  if (!m_remote->isValid()) {
-    logger.warning() << "NetworkManager connection is not available";
-    emit initialized(false, false, QDateTime());
-    return;
-  }
-
   // Monitor for changes in the connected devices.
   connect(m_client, SIGNAL(DeviceAdded(QDBusObjectPath)), this,
           SLOT(deviceAdded(QDBusObjectPath)));
   connect(m_client, SIGNAL(DeviceRemoved(QDBusObjectPath)), this,
           SLOT(deviceRemoved(QDBusObjectPath)));
 
-  // Fetch the device in case it already exists.
-  bool isConnected = false;
-  QDBusReply<QDBusObjectPath> reply =
-      m_client->call("GetDeviceByIpIface", WG_INTERFACE_NAME);
+  // Delete any profile left over from a previous session, it should not exist and can't be trusted.
+  // If obfuscation was in use the process died with that session.
+  // WireGuard peer points to a dead 127.0.0.1:<port> and we have no InterfaceConfig
+  // to rebuild the obfuscator.
+  QDBusReply<QDBusObjectPath> reply = iface.call("GetConnectionByUuid", m_uuid);
   if (reply.isValid()) {
-    m_device = new NetmgrDevice(reply.value().path(), this);
-    connect(m_device, &NetmgrDevice::stateChanged, this,
-            &NetmgrController::deviceStateChanged);
-
-    isConnected = m_device->state() == NetmgrDevice::ACTIVATED &&
-                  m_device->uuid() == m_uuid;
+    logger.info() << "Deleting stale connection:" << m_uuid;
+    QDBusInterface stale(DBUS_NM_SERVICE, reply.value().path(),
+                         nmInterface("Settings.Connection"),
+                         m_client->connection());
+    stale.call("Delete");
   }
 
-  emit initialized(true, isConnected, guessUptime());
-}
+  // Interface creation is deferred until the first activation.
 
-void NetmgrController::dbusInitError(const QDBusError& error) {
-  logger.warning() << "initialization failed:" << error.message();
-  emit initialized(false, false, QDateTime());
+  emit initialized(true, false, QDateTime());
 }
 
 void NetmgrController::dbusBackendError(const QDBusError& error) {
@@ -249,12 +223,15 @@ QVariant NetmgrController::serializeConfig() const {
 
 void NetmgrController::activate(const InterfaceConfig& config,
                                 Controller::Reason reason) {
-  if (!m_client || !m_client->isValid() || !m_remote || !m_remote->isValid()) {
+  if (!m_client || !m_client->isValid()) {
     logger.warning() << "Cannot activate without a valid NetworkManager "
                         "connection";
     emit backendFailure(Controller::ErrorFatal);
     return;
   }
+  const bool obfuscate =
+      config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
+      config.m_hopType != InterfaceConfig::MultiHopExit;
 
   // Update routes and allowedIpAddreses
   NetmgrDataList ipv4routes;
@@ -271,7 +248,60 @@ void NetmgrController::activate(const InterfaceConfig& config,
     }
   }
 
-  NetmgrDataList peers(wgPeer(config));
+  // The traffic to the real server must bypass the tunnel.
+  // In the Flatpak sandbox, we cannot use SO_MARK so instead we set
+  // "throw" route for each server endpoint into the WireGuard policy table
+  // "throw" needs NetworkManager >= 1.38.
+  if (obfuscate) {
+    static const QVersionNumber kThrowRouteMinVersion(1, 38);
+    if (m_version < kThrowRouteMinVersion) {
+      logger.warning() << "NetworkManager" << m_version.toString()
+                       << "is too old for obfuscation bypass routes (need"
+                       << kThrowRouteMinVersion.toString() << "or newer);"
+                       << "server traffic may loop back into wg0";
+      emit backendFailure(Controller::ErrorFatal);
+      return;
+    } else {
+      for (const QString& addr :
+           {config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn}) {
+        if (addr.isEmpty()) {
+          continue;
+        }
+        QVariantMap route;
+        route.insert("dest", addr);
+        route.insert("type", QStringLiteral("throw"));
+        route.insert("table", WG_FIREWALL_MARK);
+        if (QHostAddress(addr).protocol() == QAbstractSocket::IPv6Protocol) {
+          route.insert("prefix", (uint)128);
+          ipv6routes.append(route);
+        } else {
+          route.insert("prefix", (uint)32);
+          ipv4routes.append(route);
+        }
+      }
+    }
+  }
+
+  // Start the obfuscator proxy and point the WireGuard peer at it.
+  InterfaceConfig peerConfig = config;
+  m_obfuscator.reset();
+  if (obfuscate) {
+    auto obfuscator = std::make_unique<QProcessObfuscator>(config);
+    if (!obfuscator->start()) {
+      logger.error() << "Failed to start obfuscator"
+                     << config.m_obfuscationMethod;
+      emit backendFailure(Controller::ErrorFatal);
+      return;
+    }
+    peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
+    // The relay only binds 127.0.0.1, so clear the IPv6 endpoint to stop
+    // WireGuard from selecting [::1].
+    peerConfig.m_serverIpv6AddrIn = QString();
+    peerConfig.m_serverPort = obfuscator->localPort();
+    m_obfuscator = std::move(obfuscator);
+  }
+
+  NetmgrDataList peers(wgPeer(peerConfig));
   m_ipv4config.insert("route-data", ipv4routes);
   m_ipv6config.insert("route-data", ipv6routes);
   m_wireguard.insert("peers", peers);
@@ -292,6 +322,28 @@ void NetmgrController::activate(const InterfaceConfig& config,
   } else {
     setDnsConfig(m_ipv4config, QHostAddress(config.m_dnsServer));
     setDnsConfig(m_ipv6config, QHostAddress());
+  }
+
+  if (!m_remote) {
+    logger.info() << "Adding connection:" << m_uuid;
+    QString path = QStringLiteral(DBUS_NM_PATH) + "/Settings";
+    QDBusInterface iface(DBUS_NM_SERVICE, path, nmInterface("Settings"),
+                         m_client->connection());
+    QVariantList addArgs;
+    addArgs << serializeConfig();
+    addArgs << (uint)IN_MEMORY;
+    addArgs << QVariantMap();
+    // Use a blocking AddConnection2 to keep the flow simple
+    QDBusReply<QDBusObjectPath> added =
+        iface.callWithArgumentList(QDBus::Block, "AddConnection2", addArgs);
+    if (!added.isValid()) {
+      logger.warning() << "AddConnection2 failed:" << added.error().message();
+      emit backendFailure(Controller::ErrorFatal);
+      return;
+    }
+    m_remote = new QDBusInterface(DBUS_NM_SERVICE, added.value().path(),
+                                  nmInterface("Settings.Connection"),
+                                  m_client->connection(), this);
   }
 
   // Update the connection settings.
@@ -341,6 +393,12 @@ void NetmgrController::activateCompleted(const QDBusObjectPath& path) {
 }
 
 void NetmgrController::deactivate() {
+  // Stop the obfuscator relay but keep the instance, so it can be restarted on
+  // the same local port if the tunnel is reactivated from NetworkManager.
+  if (m_obfuscator) {
+    m_obfuscator->stop();
+  }
+
   if (!m_device || m_device->uuid() != m_uuid) {
     logger.warning() << "Client already disconnected";
     emit disconnected();
@@ -403,6 +461,25 @@ void NetmgrController::deviceStateChanged(uint state, uint prev, uint reason) {
 
   if (m_device->uuid() != m_uuid) {
     return;
+  }
+
+  // The connection can be toggled directly from NetworkManager, bypassing
+  // activate()/deactivate(). When obfuscation is in use, the relay
+  // process may have exited while the tunnel was down, but the connection
+  // still points at 127.0.0.1:<port>.
+  // Detect a fresh (re)activation coming from NetworkManager and bring the
+  // relay back on the same local port.
+  bool reactivating = prevstate < NetmgrDevice::PREPARE &&
+                      newstate >= NetmgrDevice::PREPARE &&
+                      newstate <= NetmgrDevice::ACTIVATED;
+  if (m_obfuscator && reactivating && !m_obfuscator->isRunning()) {
+    logger.warning() << "Obfuscator not running on reactivation; restarting on"
+                     << "port" << m_obfuscator->localPort();
+    if (!m_obfuscator->restart()) {
+      logger.error() << "Failed to restart obfuscator";
+      emit backendFailure(Controller::ErrorFatal);
+      return;
+    }
   }
 
   if (newstate == NetmgrDevice::ACTIVATED) {
