@@ -55,7 +55,9 @@ ColumnLayout {
                 settingDescription: MZI18n.SettingsObfuscationLwoBody,
             }, {
                 objectName: "lwoOverPort53",
-                visible: MZFeatureList.get("obfuscationLwo").isSupported,
+                // LWO over port 53 is broken on Windows and Android, so only
+                // show it on Linux. See VPN-7739.
+                visible: MZFeatureList.get("obfuscationLwo").isSupported && MZEnv.platform === "linux",
                 settingValue: MZSettings.LwoOverPort53,
                 settingTitle: MZI18n.SettingsObfuscationLwoOverPort53Title,
                 settingDescription: MZI18n.SettingsObfuscationLwoOverPort53Body,
