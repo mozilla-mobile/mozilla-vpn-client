@@ -269,6 +269,12 @@ inline const OverridableFeature replacerAddon = {
     .evaluator = +[] { return false; },
 };
 
+inline const OverridableFeature showAddonId = {
+    .id = "showAddonId",
+    .name = "Show addon ID in message view",
+    .evaluator = +[] { return false; },
+};
+
 inline const OverridableFeature showDetailedConnectionInfo = {
     .id = "showDetailedConnectionInfo",
     .name = "Show detailed connection info",
