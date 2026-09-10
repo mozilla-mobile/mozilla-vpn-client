@@ -77,6 +77,18 @@ MZViewBase {
 
         spacing: 0
 
+        MZTextBlock {
+            objectName: "messageAddonId"
+
+            Layout.fillWidth: true
+            Layout.bottomMargin: MZTheme.theme.listSpacing
+
+            text: message.id
+            font.pixelSize: MZTheme.theme.fontSizeSmall
+            wrapMode: Text.WrapAnywhere
+            visible: MZFeatureList.get("showAddonId").isSupported
+        }
+
         RowLayout {
             id: badgeAndTimestampRow
 
