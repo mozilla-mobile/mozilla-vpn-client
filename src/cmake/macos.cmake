@@ -215,6 +215,29 @@ set_source_files_properties(${CMAKE_SOURCE_DIR}/extension/manifests/macos/mozill
     HEADER_FILE_ONLY TRUE
 )
 
+# Install the extension proxy into the bundle.
+add_dependencies(mozillavpn socksproxy)
+get_target_property(PROXY_BINARY_DIR socksproxy BINARY_DIR)
+get_target_property(PROXY_OUTPUT_NAME socksproxy OUTPUT_NAME)
+if(XCODE)
+    set_property(TARGET mozillavpn APPEND PROPERTY XCODE_EMBED_XPC_SERVICES socksproxy)
+else()
+    get_target_property(PROXY_BINARY_DIR socksproxy BINARY_DIR)
+    get_target_property(PROXY_OUTPUT_NAME socksproxy OUTPUT_NAME)
+    target_sources(mozillavpn PRIVATE ${PROXY_BINARY_DIR}/${PROXY_OUTPUT_NAME})
+    set_source_files_properties(${PROXY_BINARY_DIR}/${PROXY_OUTPUT_NAME} PROPERTIES
+        MACOSX_PACKAGE_LOCATION "Library/LaunchServices"
+        HEADER_FILE_ONLY TRUE
+        GENERATED TRUE
+    )
+endif()
+
+target_sources(mozillavpn PRIVATE ${PROXY_BINARY_DIR}/${PROXY_OUTPUT_NAME}.plist)
+set_source_files_properties(${PROXY_BINARY_DIR}/${PROXY_OUTPUT_NAME}.plist PROPERTIES
+    MACOSX_PACKAGE_LOCATION Library/LaunchAgents
+    HEADER_FILE_ONLY TRUE
+)
+
 # Install the lproj translation files into the bundle.
 get_filename_component(I18N_DIR ${CMAKE_SOURCE_DIR}/3rdparty/i18n ABSOLUTE)
 file(GLOB I18N_LOCALES LIST_DIRECTORIES true RELATIVE ${I18N_DIR} ${I18N_DIR}/*)

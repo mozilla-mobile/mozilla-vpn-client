@@ -21,6 +21,8 @@
 #  include "windowsbypass.h"
 #  include "winfwpolicy.h"
 #  include "winsvcthread.h"
+#elif defined(PROXY_OS_MACOS)
+#  include "macfwpolicy.h"
 #endif
 
 struct CliOptions {
@@ -191,6 +193,8 @@ int main(int argc, char** argv) {
 #elif defined(PROXY_OS_WIN)
   new WindowsBypass(socks5);
   WinFwPolicy::create(socks5);
+#elif defined(PROXY_OS_MACOS)
+  new MacFwPolicy(socks5);
 #endif
 
   QObject::connect(qApp, &QCoreApplication::aboutToQuit,

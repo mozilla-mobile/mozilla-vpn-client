@@ -130,6 +130,11 @@ void ProxyConnection::setState(int newstate) {
   }
 }
 
+void ProxyConnection::abort(const QString& reason) {
+  m_errorString = reason;
+  setState(Closed);
+}
+
 template <typename T>
 void ProxyConnection::clientErrorOccurred(int error) {
   auto socket = qobject_cast<T*>(QObject::sender());
