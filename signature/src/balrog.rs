@@ -215,6 +215,12 @@ impl<'a> Balrog<'_> {
      * ensure the sign is positive.
      */
     fn ecdsa_uint_to_asn1(value: &[u8]) -> Vec<u8> {
+        // 8.3.1: The encoding of an integer value shall be primitive. The
+        // contents octets shall consist of one or more octets. 
+        if value.is_empty() {
+            return Vec::from(&[0u8]);
+        }
+
         // Add padding to ensure the sign is positive.
         if value[0] & 0x80 != 0 {
             let mut result = Vec::from(&[0u8]);
@@ -222,13 +228,17 @@ impl<'a> Balrog<'_> {
             return result;
         }
 
-        // Strip unnecessary padding.
-        let mut strip = 0;
-        while (value[strip] == 0x00) && (value[strip+1] & 0x80 == 0) {
-            strip = strip+1;
+        // 8.3.2: If the contents octets of an integer value encoding consist
+        // of more than one octet, then the bits of the first octet and bit 8
+        // of the second octet:
+        //   1. Shall not be all ones; and
+        //   2. Shall not be all zero.
+        let mut strip = value;
+        while (strip.len() > 1) && (strip[0] == 0x00) && (strip[1] & 0x80 == 0) {
+            strip = &strip[1..];
         }
 
-        Vec::from(&value[strip..])
+        Vec::from(strip)
     }
 
     /* Take a fixed-length ECDSA signature and convert into ASN.1 DER encoding */
@@ -643,5 +653,38 @@ culpa qui officia deserunt mollit anim id est laborum.";
 
         let r = b.verify_content_signature(VALID_INPUT, VALID_SIGNATURE);
         assert_eq!(r, Err(BalrogError::CertificateNotFound));
+    }
+
+    #[test]
+    fn test_ecdsa_asn1_conversion() {
+        // All zero values should encode to a single byte in ASN.1 DER.
+        let r = Balrog::ecdsa_uint_to_asn1(&[0u8; 0]);
+        assert_eq!(r, vec![0u8]);
+        let r = Balrog::ecdsa_uint_to_asn1(&[0u8; 1]);
+        assert_eq!(r, vec![0u8]);
+        let r = Balrog::ecdsa_uint_to_asn1(&[0u8; 2]);
+        assert_eq!(r, vec![0u8]);
+        let r = Balrog::ecdsa_uint_to_asn1(&[0u8; 3]);
+        assert_eq!(r, vec![0u8]);
+
+        // A leading bit should result in an extra padding byte being added.
+        let r = Balrog::ecdsa_uint_to_asn1(&[0xff]);
+        assert_eq!(r, vec![0x00, 0xff]);
+        let r = Balrog::ecdsa_uint_to_asn1(&[0xff, 0xff]);
+        assert_eq!(r, vec![0x00, 0xff, 0xff]);
+        let r = Balrog::ecdsa_uint_to_asn1(&[0x80, 0x00]);
+        assert_eq!(r, vec![0x00, 0x80, 0x00]);
+        let r = Balrog::ecdsa_uint_to_asn1(&[0xDE, 0xAD, 0xBE, 0xEF]);
+        assert_eq!(r, vec![0x00, 0xDE, 0xAD, 0xBE, 0xEF]);
+
+        // Otherwise, this should just convert a slice to a vec.
+        let input = vec![0x7f];
+        assert_eq!(Balrog::ecdsa_uint_to_asn1(input.as_slice()), input);
+        let input = vec![0x7f, 0xff];
+        assert_eq!(Balrog::ecdsa_uint_to_asn1(input.as_slice()), input);
+        let input = vec![0x00, 0x80, 0x00];
+        assert_eq!(Balrog::ecdsa_uint_to_asn1(input.as_slice()), input);
+        let input = vec![0x5E, 0xAD, 0xBE, 0xEF];
+        assert_eq!(Balrog::ecdsa_uint_to_asn1(input.as_slice()), input);
     }
 }
