@@ -139,10 +139,6 @@ var imageLookup = {
     filenameLight: 'qrc:/ui/resources/settings/privacy.svg',
     filenameDark: 'qrc:/ui/resources/settings/privacy-dark.svg'
   },
-  'IconPuzzlePiece': {
-    filenameLight: 'qrc:/ui/resources/settings/extension-icon.svg',
-    filenameDark: 'qrc:/ui/resources/settings/extension-icon-dark.svg'
-  },
   'IconLock': {
     filenameLight: 'qrc:/nebula/resources/lock.svg',
     filenameDark: 'qrc:/nebula/resources/lock.svg'
@@ -379,24 +375,6 @@ var imageLookup = {
 
 var localizedImageLookup =
     {
-      'Extension': {
-        filenameLight: {
-          en: 'qrc:/ui/resources/extension.svg',
-          fr: 'qrc:/ui/resources/extension-french.svg',
-          it: 'qrc:/ui/resources/extension-italian.svg',
-          de: 'qrc:/ui/resources/extension-german.svg',
-          nl: 'qrc:/ui/resources/extension-dutch.svg',
-          es: 'qrc:/ui/resources/extension-spanish.svg'
-        },
-        filenameDark: {
-          en: 'qrc:/ui/resources/extension-dark.svg',
-          fr: 'qrc:/ui/resources/extension-french-dark.svg',
-          it: 'qrc:/ui/resources/extension-italian-dark.svg',
-          de: 'qrc:/ui/resources/extension-german-dark.svg',
-          nl: 'qrc:/ui/resources/extension-dutch-dark.svg',
-          es: 'qrc:/ui/resources/extension-spanish-dark.svg'
-        }
-      },
       'MacosPermissionBackground': {
         filenameLight: {
           de: 'qrc:/ui/resources/permissions/macos-background-light-de.svg',

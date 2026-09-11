@@ -83,7 +83,6 @@ qt_add_qml_module(mozillavpn-ui
         screens/settings/ViewAboutUs.qml
         screens/settings/ViewAppearance.qml
         screens/settings/ViewDNSSettings.qml
-        screens/settings/ViewFirefoxExtensionInfo.qml
         screens/settings/ViewLanguage.qml
         screens/settings/ViewLicense.qml
         screens/settings/ViewLicenses.qml
