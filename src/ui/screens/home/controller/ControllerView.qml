@@ -689,8 +689,9 @@ Item {
         Connections {
             target: VPNController
             function onStateChanged() {
-                if (VPNController.state === VPNController.StateDisconnecting || VPNController.state === VPNController.StateOff) {
-                    ipInfoPanel.isOpen = false
+                if (VPNController.state === VPNController.StateDisconnecting || VPNController.state === VPNController.StateOff
+                    || VPNController.state === VPNController.StateConnectionError || VPNController.state === VPNController.StateSwitching) {
+                        ipInfoPanel.isOpen = false
                 }
             }
         }
