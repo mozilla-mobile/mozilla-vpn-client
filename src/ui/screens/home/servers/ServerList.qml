@@ -248,7 +248,7 @@ FocusScope {
 
                                 MZIcon {
                                     id: refreshIcon
-                                    source: MZAssetLookup.getImageSource("RefreshArrows")
+                                    source: MZAssetLookup.getImageSource("RefreshArrowsTintable")
                                     sourceSize.height: parent.height
                                     sourceSize.width: parent.width
                                 }
