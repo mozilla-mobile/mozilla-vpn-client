@@ -44,12 +44,25 @@ void MacFwPolicy::enumerateBrowsers(const QString& appDir) {
   static const CFStringRef kActivityBrowser =
       CFSTR("NSUserActivityTypeBrowsingWeb");
 
-  CFStringRef s = appDir.toCFString();
-  CFURLRef url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, s,
+  CFStringRef dirString = appDir.toCFString();
+  if (!dirString) {
+    return;
+  }
+  CFURLRef url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, dirString,
                                                kCFURLPOSIXPathStyle, TRUE);
+  CFRelease(dirString);
+  if (!url) {
+    return;
+  }
+
   CFArrayRef list = CFBundleCreateBundlesFromDirectory(kCFAllocatorDefault, url,
                                                        kBundleTypeApp);
-  for (CFIndex i = 0; list && i < CFArrayGetCount(list); i++) {
+  CFRelease(url);
+  if (!list) {
+    return;
+  }
+
+  for (CFIndex i = 0; i < CFArrayGetCount(list); i++) {
     CFBundleRef bundle = (CFBundleRef)CFArrayGetValueAtIndex(list, i);
     CFArrayRef values = (CFArrayRef)CFBundleGetValueForInfoDictionaryKey(
         bundle, kActivityTypes);
@@ -66,9 +79,7 @@ void MacFwPolicy::enumerateBrowsers(const QString& appDir) {
       m_browsers.append(id);
     }
   }
-  CFRelease(url);
   CFRelease(list);
-  CFRelease(s);
 }
 
 void MacFwPolicy::checkLocalSocket(ProxyConnection* connection) {
