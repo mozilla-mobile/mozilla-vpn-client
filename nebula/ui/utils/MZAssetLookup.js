@@ -31,6 +31,11 @@ var imageLookup = {
     filenameLight: 'qrc:/nebula/resources/refresh.svg',
     filenameDark: 'qrc:/nebula/resources/refresh.svg'
   },
+  // Tinting the icon works best in black
+  'RefreshArrowsTintable': {
+    filenameLight: 'qrc:/nebula/resources/refresh-dark.svg',
+    filenameDark: 'qrc:/nebula/resources/refresh-dark.svg'
+  },
   'RefreshArrowsForShield': {
     filenameLight: 'qrc:/ui/resources/switching.svg',
     filenameDark: 'qrc:/ui/resources/switching-dark.svg'
