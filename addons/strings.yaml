@@ -261,29 +261,3 @@ mandatoryUpdate:
   pr11382: # No Jira ticket, so using PR for identifier. Used in 2.39
     value: "[macOS] Improved logging of some errors, allowing easier diagnosis of problems."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to macOS platform.
-
-tryFirefoxExtension:
-  title:
-    value: Try the Firefox extension
-    comment: Title for message
-  subtitle:
-    value: Personalize your VPN protections to meet your web browsing needs.
-    comment: Subtitle for message
-  bullet1:
-    value: Turn off VPN for specific websites
-    comment: First bullet point
-  bullet2:
-    value: Set different locations for different websites, to see the web as you prefer
-    comment: Second bullet point
-  bullet3:
-    value: Keep protection for Firefox on, even when the Mozilla VPN app is off
-    comment: Third bullet point
-  finalLine:
-    value: Not using Firefox to browse? Give it a try.
-    comment: Final 'call to action' line of message
-  getExtension:
-    value: Get the extension
-    comment: Button label
-  downloadFirefox:
-    value: Download Firefox
-    comment: Button label
