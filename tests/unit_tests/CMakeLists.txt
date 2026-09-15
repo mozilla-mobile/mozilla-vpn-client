@@ -91,8 +91,6 @@ target_sources(app_unit_tests PRIVATE
     testresourceloader.h
     testtasksentry.cpp
     testtasksentry.h
-    testtemporarydir.cpp
-    testtemporarydir.h
     testthemes.cpp
     testthemes.h
     testurlopener.cpp
