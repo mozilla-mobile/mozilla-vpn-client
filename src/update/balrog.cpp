@@ -13,6 +13,7 @@
 #include <QScopeGuard>
 #include <QSslCertificate>
 #include <QSslKey>
+#include <QTemporaryDir>
 
 #include "constants.h"
 #include "env.h"
