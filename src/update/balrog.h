@@ -9,7 +9,6 @@
 #include <QNetworkReply>
 
 #include "errorhandler.h"
-#include "temporarydir.h"
 #include "updater.h"
 
 class NetworkRequest;
@@ -45,7 +44,6 @@ class Balrog final : public Updater {
   static QString buildTarget();
   static QString balrogUrl();
   static QStringList rootCertHashes();
-  TemporaryDir m_tmpDir;
   bool m_downloadAndInstall;
   ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
       ErrorHandler::DoNotPropagateError;

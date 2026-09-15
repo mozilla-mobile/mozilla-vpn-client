@@ -5,6 +5,7 @@
 #include "balrog.h"
 
 #include <QCryptographicHash>
+#include <QDir>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -12,6 +13,7 @@
 #include <QScopeGuard>
 #include <QSslCertificate>
 #include <QSslKey>
+#include <QTemporaryDir>
 
 #include "constants.h"
 #include "env.h"
@@ -364,15 +366,21 @@ bool Balrog::saveFileAndInstall(const QString& url, const QByteArray& data) {
   QString fileName = url.right(url.length() - pos - 1);
   logger.debug() << "Filename:" << fileName;
 
-  if (!m_tmpDir.isValid()) {
-    logger.error() << "Cannot create a temporary directory"
-                   << m_tmpDir.errorString();
+#ifdef MZ_WINDOWS
+  QTemporaryDir* d = new QTemporaryDir();
+  d->setAutoRemove(true);
+  connect(this, &QObject::destroyed, [d]() { delete d; });
+  QDir dest = QDir(d->path());
+#else
+  QDir dest = QDir::temp();
+#endif
+
+  if (!dest.exists()) {
+    logger.error() << "Cannot create a temporary directory";
     return false;
   }
 
-  QDir dir(m_tmpDir.path());
-  QString tmpFile = dir.filePath(fileName);
-
+  QString tmpFile = dest.filePath(fileName);
   QFile file(tmpFile);
   if (!file.open(QIODevice::ReadWrite)) {
     logger.error() << "Unable to create a file in the temporary folder";
@@ -394,7 +402,7 @@ bool Balrog::install(const QString& filePath) {
   logger.debug() << "Install the package:" << filePath;
 
 #if defined(MZ_WINDOWS)
-  QString logFile = m_tmpDir.filePath("msiexec.log");
+  QString logFile = QFileInfo(filePath).absoluteDir().filePath("msiexec.log");
   QStringList arguments;
   arguments << "/qb!+"
             << "/i" << QDir::toNativeSeparators(filePath) << "/lv!"
@@ -464,16 +472,7 @@ bool Balrog::install(const QString& filePath) {
         logger.info() << "Stderr:" << Qt::endl
                       << qUtf8Printable(process->readAllStandardError())
                       << Qt::endl;
-
-        if (exitCode != 0) {
-          deleteLater();
-          return;
-        }
-
-        // We leak the object because the installer will restart the
-        // app and we need to keep the temporary folder alive during the
-        // whole process.
-        exit(0);
+        deleteLater();
       });
 #endif
 

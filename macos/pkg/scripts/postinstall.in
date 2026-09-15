@@ -58,6 +58,7 @@ if [ -f "${APP_DIR}/Contents/Resources/utils/mozillavpn.json" ]; then
 fi
 
 echo "Install Complete Run the app"
+export TMPDIR=$(sudo --user="${USER}" getconf DARWIN_USER_TEMP_DIR)
 if [ "$UPDATING" ]; then
   open -a "$APP_DIR" --args ui --updated
 else
