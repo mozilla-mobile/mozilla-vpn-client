@@ -45,6 +45,11 @@ elseif(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     target_sources(libSocks5proxy PRIVATE proxylocal_linux.cpp)
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     target_sources(libSocks5proxy PRIVATE proxylocal_macos.cpp)
+
+    # Qt6::Core does not bring these along on macOS.
+    find_library(FW_COREFOUNDATION CoreFoundation)
+    find_library(FW_SECURITY Security)
+    target_link_libraries(libSocks5proxy PUBLIC ${FW_COREFOUNDATION} ${FW_SECURITY})
 else()
     target_sources(libSocks5proxy PRIVATE proxylocal_default.cpp)
 endif()
