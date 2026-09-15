@@ -43,6 +43,8 @@ class ProxyConnection : public QObject {
 
   int state() const { return m_state; }
 
+  void abort(const QString& reason = "connection aborted");
+
   // Proxy protocols must implement these methods to read data off the client
   // socket in the Handshake and Proxy states, respectively.
   virtual void handshakeRead() = 0;

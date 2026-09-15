@@ -88,7 +88,7 @@ else()
 
     add_custom_command(
         OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/install-stamp.txt
-        DEPENDS mozillavpn
+        DEPENDS mozillavpn socksproxy
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${WIX_STAGING_DIR}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${WIX_STAGING_DIR}
         COMMAND ${CMAKE_COMMAND} --install ${CMAKE_BINARY_DIR} --prefix ${WIX_STAGING_DIR} --config $<CONFIG>

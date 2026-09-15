@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 #import <NetworkExtension/NetworkExtension.h>
+#import <ServiceManagement/ServiceManagement.h>
 #import <SystemExtensions/SystemExtensions.h>
 
 #include <QMetaMethod>
@@ -47,6 +48,16 @@ void MacOSExtensionController::initialize(const Device* device, const Keys* keys
   // Start the request
   logger.debug() << "activation request started:" << req.identifier;
   [[OSSystemExtensionManager sharedManager] submitRequest: req];
+
+  // Attempt to register the socks proxy tool.
+  NSError* err = nil;
+  NSString* proxyPlistName = MacOSUtils::appId(".socksproxy.plist").toNSString();
+  SMAppService* proxy = [SMAppService agentServiceWithPlistName:proxyPlistName];
+  if (![proxy registerAndReturnError:&err]) {
+    logger.debug() << "socks proxy agent registration failed:" << err;
+  } else {
+    logger.debug() << "socks proxy agent registration successful";
+  }
 }
 
 NSString* MacOSExtensionController::extIdentifier() {

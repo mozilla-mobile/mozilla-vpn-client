@@ -299,6 +299,7 @@ constexpr const char* WINDOWS_DAEMON_PATH = "\\\\.\\pipe\\mozillavpn";
 constexpr const char* MACOS_DAEMON_PATH = "/var/run/mozillavpn/daemon.socket";
 
 constexpr const char* SOCKSPROXY_UNIX_PATH = "/var/run/mozillavpn.proxy";
+constexpr const char* SOCKSPROXY_MACOS_PATH = "/var/tmp/mozillavpn.proxy";
 constexpr const char* SOCKSPROXY_SERVICE_NAME = "MozillaVPNProxy";
 
 constexpr const char* SUBPLAT_PRODUCT_ID_VPN_PRODUCTION = "prod_FvnsFHIfezy3ZI";
