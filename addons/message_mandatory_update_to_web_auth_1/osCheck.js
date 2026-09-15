@@ -39,6 +39,26 @@ function computeCondition() {
     }
   }
 
+  // also do not show for iOS 16 or below, as they (for now) will retain access
+  if (isIOS) {
+    // Pre iOS 16
+    const maxVersionStayingAlive = 16;
+    const osVersion = api.env.osVersion;
+    if (!osVersion || (typeof osVersion !== 'string') ||
+        osVersion.length === 0) {
+      // Something unexpected happened. Enable on failure.
+      condition.enable();
+      return;
+    }
+    const majorVersionString = osVersion.split('.', 1)[0];
+    const majorVersion = Number(majorVersionString);
+
+    if (majorVersion <= maxVersionStayingAlive) {
+      condition.disable();
+      return;
+    }
+  }
+
   // Covers Android
   // Additionally, we fail restrictive - any unknown or poorly-formed platform
   //   must be on 2.35 or later (guaranteed okay on all platforms) to not see
