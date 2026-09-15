@@ -2,11 +2,6 @@
 // "Extra" fields are used only to get a localized string.
 api.addon.composer.remove('extra_1');
 
-if (('updateTime' in api.settings)) {
-  api.addon.date = (api.settings.updateTime.getTime() / 1000);
-}
-
-
 // Macos v2.16.0 requires a web-based update.
 if (api.env.platform === 'macos' && api.env.versionString === '2.16.0') {
   api.addon.setTitle(
