@@ -535,11 +535,15 @@ Item {
     Column {
         id: col
 
+        property int baseTopMargin: 24
+
         spacing: 0
         anchors.left: box.left
         anchors.right: box.right
         anchors.top: logo.bottom
-        anchors.topMargin: 24
+        // When the obfuscation label is shown it adds a line at the bottom of the
+        // column, to shift the column a little up and avoid overlap with the toggle.
+        anchors.topMargin: baseTopMargin - (obfuscationEnabled.visible ? 8 : 0)
         width: parent.width
 
         function handleMultilineText() {
@@ -548,23 +552,23 @@ Item {
             const subTitleIsWrapped = (logoSubtitle.visible && logoSubtitle.lineCount > 1 || (connectionStability.visible && connectionStability.gridFlow === Grid.TopToBottom));
 
             if (titleIsWrapped && subTitleIsWrapped) {
-                col.anchors.topMargin = 12
+                col.baseTopMargin = 12
                 spacer.height = 6;
                 return;
             }
 
             if (subTitleIsWrapped) {
-                col.anchors.topMargin = 24
+                col.baseTopMargin = 24
                 spacer.height = 4;
                 return;
             }
 
             if (titleIsWrapped) {
-                col.anchors.topMargin = 16
+                col.baseTopMargin = 16
                 spacer.height = 12;
                 return;
             }
-            col.anchors.topMargin = 24
+            col.baseTopMargin = 24
             spacer.height = 16;
         }
 
@@ -636,6 +640,7 @@ Item {
         MZInterLabel {
             id: obfuscationEnabled
             anchors.horizontalCenter: parent.horizontalCenter
+            topPadding: 8
             opacity: 0.8
             color: MZTheme.colors.fontColorInverted
             lineHeight: MZTheme.theme.controllerInterLineHeight
