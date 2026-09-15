@@ -168,8 +168,6 @@ target_sources(qml_tests PRIVATE
     ${MZ_SOURCE_DIR}/tasks/addonindex/taskaddonindex.h
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.cpp
     ${MZ_SOURCE_DIR}/tasks/authenticate/desktopauthenticationlistener.h
-    ${MZ_SOURCE_DIR}/temporarydir.cpp
-    ${MZ_SOURCE_DIR}/temporarydir.h
     ${MZ_SOURCE_DIR}/theme.cpp
     ${MZ_SOURCE_DIR}/theme.h
     ${MZ_SOURCE_DIR}/ui/composer/composer.cpp

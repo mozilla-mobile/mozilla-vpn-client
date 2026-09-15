@@ -31,7 +31,6 @@
 #include "notificationhandler.h"
 #include "qmlengineholder.h"
 #include "settingsholder.h"
-#include "temporarydir.h"
 
 #ifdef MZ_DEBUG
 #  include <QQmlDebuggingEnabler>
@@ -233,9 +232,6 @@ int CommandUI::run(QStringList& tokens) {
     Q_ASSERT(engine);
     Lottie::initialize(engine, QString(NetworkManager::userAgent()));
     Nebula::Initialize(engine);
-
-    // Cleanup previous temporary files.
-    TemporaryDir::cleanupAll();
 
     vpn->setStartMinimized(minimizedOption.m_set ||
                            (qgetenv("MVPN_MINIMIZED") == "1"));
