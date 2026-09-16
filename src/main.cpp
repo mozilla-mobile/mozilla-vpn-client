@@ -32,6 +32,10 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
   Q_UNUSED(leakDetector);
 #endif
 
+  QCoreApplication::setApplicationName("Mozilla VPN");
+  QCoreApplication::setOrganizationName("Mozilla");
+  QCoreApplication::setApplicationVersion(APP_VERSION);
+
 #ifdef MZ_WINDOWS
   if (AttachConsole(ATTACH_PARENT_PROCESS) != 0) {
     FILE* unusedFile;
@@ -55,10 +59,6 @@ Q_DECL_EXPORT int main(int argc, char* argv[]) {
   }
   WindowsUtils::lockDownDLLSearchPath();
 #endif
-
-  QCoreApplication::setApplicationName("Mozilla VPN");
-  QCoreApplication::setOrganizationName("Mozilla");
-  QCoreApplication::setApplicationVersion(APP_VERSION);
 
 #ifdef MVPN_WEBEXTENSION
   // Special case - if the first argument is a path to a file named
