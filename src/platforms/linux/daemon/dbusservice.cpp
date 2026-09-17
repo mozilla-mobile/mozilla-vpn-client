@@ -50,11 +50,13 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
   if (!bus.isConnected()) {
     logger.error() << "System bus is not connected?";
   }
-  if (!bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserNew", this,
+  if (!bus.connect(DBUS_LOGIN_SERVICE, DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER,
+                   "UserNew", this,
                    SLOT(userCreated(uint, QDBusObjectPath)))) {
     logger.error() << "Failed to connect to UserNew signal";
   }
-  if (!bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserRemoved", this,
+  if (!bus.connect(DBUS_LOGIN_SERVICE, DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER,
+                   "UserRemoved", this,
                    SLOT(userRemoved(uint, QDBusObjectPath)))) {
     logger.error() << "Failed to connect to UserRemoved signal";
   }
@@ -205,7 +207,7 @@ void DBusService::userCreated(uint uid, const QDBusObjectPath& path) {
     logger.error() << "User" << uid << "has invalid runtime path";
     return;
   }
-  m_appTracker->userCreated(uid, runtime.toString());
+  m_appTracker->userCreated(runtime.toString());
 }
 
 void DBusService::userRemoved(uint uid, const QDBusObjectPath& path) {

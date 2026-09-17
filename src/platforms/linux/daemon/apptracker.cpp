@@ -5,6 +5,7 @@
 #include "apptracker.h"
 
 #include <unistd.h>
+#include <sys/stat.h>
 
 #include <QDBusConnection>
 #include <QDBusInterface>
@@ -42,8 +43,18 @@ AppTracker::~AppTracker() {
   m_runningCgroups.clear();
 }
 
-void AppTracker::userCreated(uint userid, const QString& xdgRuntimePath) {
-  logger.debug() << "User created uid:" << userid << "at:" << xdgRuntimePath;
+void AppTracker::userCreated(const QString& xdgRuntimePath) {
+  logger.debug() << "User runtime created at:" << xdgRuntimePath;
+
+  // Determine the UID of the user runtime.
+  struct stat st;
+  if (stat(qPrintable(xdgRuntimePath), &st) != 0) {
+    logger.warning() << "Failed to stat XDG runtime path:" << strerror(errno);
+    return;
+  }
+  if (st.st_uid == 0) {
+    return;
+  }
 
   /* Acquire the effective UID of the user to connect to their session bus. */
   uid_t realuid = getuid();
@@ -52,17 +63,17 @@ void AppTracker::userCreated(uint userid, const QString& xdgRuntimePath) {
       logger.warning() << "Failed to restore effective UID";
     }
   });
-  if (realuid == userid) {
-    guard.dismiss();
-  } else if (seteuid(userid) < 0) {
+  if (seteuid(st.st_uid) < 0) {
     logger.warning() << "Failed to set effective UID";
+    guard.dismiss();
+    return;
   }
 
   /* Connect to the user's session bus. */
   QString busPath = "unix:path=" + xdgRuntimePath + "/bus";
   logger.debug() << "Connection to" << busPath;
   QDBusConnection connection =
-      QDBusConnection::connectToBus(busPath, "user-" + QString::number(userid));
+      QDBusConnection::connectToBus(busPath, "user-" + QString::number(st.st_uid));
 
   // Watch the user's control groups for new application scopes.
   m_systemdInterface =
@@ -178,14 +189,19 @@ QString AppTracker::findDesktopFileId(const QString& cgroup) {
 
 void AppTracker::cgroupsChanged(const QString& directory) {
   QDir dir(directory);
-  QDir mountpoint(m_cgroupMount);
   QFileInfoList newScopes = dir.entryInfoList(
       QStringList{"*.scope", "*@autostart.service"}, QDir::Dirs);
   QStringList oldScopes = m_runningCgroups.keys();
 
+  if (!dir.exists()) {
+    cgroupsRemoved(directory);
+    return;
+  }
+
   // Figure out what has been added.
   for (const QFileInfo& scope : newScopes) {
     // We need the path starting from the Cgroupv2 mount point.
+    QDir mountpoint(m_cgroupMount);
     QString path = mountpoint.relativeFilePath(scope.canonicalFilePath());
     if (!path.startsWith('/')) {
       path.prepend('/');
@@ -209,6 +225,28 @@ void AppTracker::cgroupsChanged(const QString& directory) {
       Q_ASSERT(m_runningCgroups.contains(scope));
       QString desktopFileId = m_runningCgroups.take(scope);
 
+      emit appTerminated(scope, desktopFileId);
+    }
+  }
+}
+
+void AppTracker::cgroupsRemoved(const QString& directory) {
+  QDir mountpoint(m_cgroupMount);
+  logger.debug() << "cgroups removed:" << directory;
+  QString scope = mountpoint.relativeFilePath(directory);
+  if (!scope.startsWith('/')) {
+    scope.prepend('/');
+  }
+
+  // When removing a cgroup, drop any tracked apps that are children.
+  for (const QString& entry : m_runningCgroups.keys()) {
+    if (!entry.startsWith(scope)) {
+      continue;
+    }
+
+    if ((entry.size() == scope.size()) || (entry.at(scope.size()) == '/')) {
+      logger.debug() << "Control group removed:" << scope;
+      QString desktopFileId = m_runningCgroups.take(entry);
       emit appTerminated(scope, desktopFileId);
     }
   }
