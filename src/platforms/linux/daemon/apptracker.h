@@ -50,10 +50,9 @@ class AppTracker final : public QObject {
    * @brief Track a new user session for control group scopes where applications
    *        may be running.
    *
-   * @param userid Unix User identifier.
    * @param xdgRuntimePath User's runtime path (eg: "/run/user/<uid>").
    */
-  void userCreated(uint userid, const QString& xdgRuntimePath);
+  void userCreated(const QString& xdgRuntimePath);
 
   /**
    * @brief Terminate tracking of a user session.
@@ -79,6 +78,7 @@ class AppTracker final : public QObject {
 
  private slots:
   void cgroupsChanged(const QString& directory);
+  void cgroupsRemoved(const QString& directory);
 
  private:
   QString findDesktopFileId(const QString& cgroup);
