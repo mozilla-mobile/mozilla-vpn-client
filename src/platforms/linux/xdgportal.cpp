@@ -50,7 +50,7 @@ XdgPortal::~XdgPortal() { MZ_COUNT_DTOR(XdgPortal); }
 QVariant XdgPortal::xdgProperty(const QString& name) const {
   QDBusMessage msg =
       QDBusMessage::createMethodCall(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH,
-                                     "org.freedesktop.DBus.Properties", "Get");
+                                     DBUS_PROPERTY_INTERFACE, "Get");
   msg << interface();
   msg << name;
 

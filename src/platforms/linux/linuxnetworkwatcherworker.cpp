@@ -6,8 +6,10 @@
 
 #include <QtDBus/QtDBus>
 
+#include "dbustypes.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "netmgrtypes.h"
 
 // https://developer.gnome.org/NetworkManager/stable/nm-dbus-types.html#NMDeviceType
 #ifndef NM_DEVICE_TYPE_WIFI
@@ -73,7 +75,7 @@ void LinuxNetworkWatcherWorker::initialize() {
   // documentation:
   // https://developer.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
 
-  QDBusInterface nm(DBUS_NETWORKMANAGER, "/org/freedesktop/NetworkManager",
+  QDBusInterface nm(DBUS_NM_SERVICE, "/org/freedesktop/NetworkManager",
                     DBUS_NETWORKMANAGER, QDBusConnection::systemBus());
   if (!nm.isValid()) {
     logger.error()
@@ -91,7 +93,7 @@ void LinuxNetworkWatcherWorker::initialize() {
   QList<QDBusObjectPath> paths = qdbus_cast<QList<QDBusObjectPath> >(arg);
   for (const QDBusObjectPath& path : paths) {
     QString devicePath = path.path();
-    QDBusInterface device(DBUS_NETWORKMANAGER, devicePath,
+    QDBusInterface device(DBUS_NM_SERVICE, devicePath,
                           "org.freedesktop.NetworkManager.Device",
                           QDBusConnection::systemBus());
     if (device.property("DeviceType").toInt() != NM_DEVICE_TYPE_WIFI) {
@@ -103,7 +105,7 @@ void LinuxNetworkWatcherWorker::initialize() {
 
     // Here we monitor the changes.
     QDBusConnection::systemBus().connect(
-        DBUS_NETWORKMANAGER, devicePath, "org.freedesktop.DBus.Properties",
+        DBUS_NM_SERVICE, devicePath, DBUS_PROPERTY_INTERFACE,
         "PropertiesChanged", this,
         SLOT(propertyChanged(QString, QVariantMap, QStringList)));
   }
@@ -136,7 +138,7 @@ void LinuxNetworkWatcherWorker::checkDevices() {
   logger.debug() << "Checking devices";
 
   for (const QString& devicePath : m_devicePaths) {
-    QDBusInterface wifiDevice(DBUS_NETWORKMANAGER, devicePath,
+    QDBusInterface wifiDevice(DBUS_NM_SERVICE, devicePath,
                               "org.freedesktop.NetworkManager.Device.Wireless",
                               QDBusConnection::systemBus());
 
@@ -149,7 +151,7 @@ void LinuxNetworkWatcherWorker::checkDevices() {
       continue;
     }
 
-    QDBusInterface ap(DBUS_NETWORKMANAGER, accessPointPath,
+    QDBusInterface ap(DBUS_NM_SERVICE, accessPointPath,
                       "org.freedesktop.NetworkManager.AccessPoint",
                       QDBusConnection::systemBus());
 
