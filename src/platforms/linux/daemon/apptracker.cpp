@@ -27,6 +27,8 @@ constexpr const char* DBUS_SYSTEMD_UNIT = "org.freedesktop.systemd1.Unit";
 constexpr const char* DBUS_LOGIN_SERVICE = "org.freedesktop.login1";
 constexpr const char* DBUS_LOGIN_USER = "org.freedesktop.login1.User";
 
+constexpr const char* DBUS_PROP_INTERFACE = "org.freedesktop.DBus.Properties";
+
 namespace {
 Logger logger("AppTracker");
 }  // namespace
@@ -42,13 +44,8 @@ AppTracker::AppTracker(const QString& path, QObject* parent)
   /* Monitor for changes to the user's application control groups. */
   m_cgroupMount = LinuxUtils::findCgroup2Path();
 
-  // Get the user's runtime path.
-  QDBusInterface iface(DBUS_LOGIN_SERVICE, m_userObject, DBUS_LOGIN_USER,
-                       QDBusConnection::systemBus());
-  QVariant runtime = iface.property("RuntimePath");
-  if (runtime.isValid()) {
-    userCreated(runtime.toString());
-  }
+  // Fetch the user's runtime properties.
+  userFetch();
 }
 
 AppTracker::~AppTracker() {
@@ -62,14 +59,35 @@ AppTracker::~AppTracker() {
   m_runningCgroups.clear();
 }
 
-void AppTracker::clear() {
-  for (const QString& scope : m_runningCgroups) {
-    QString desktopFileId = m_runningCgroups.take(scope);
-    emit appTerminated(scope, desktopFileId);
+void AppTracker::userFetch() {
+  auto msg = QDBusMessage::createMethodCall(DBUS_LOGIN_SERVICE, m_userObject,
+                                            DBUS_PROP_INTERFACE, "GetAll");
+  msg << QVariant(DBUS_LOGIN_USER);
+
+  QDBusConnection bus = QDBusConnection::systemBus();
+  bus.callWithCallback(msg, this, SLOT(userPropsFinished(const QVariantMap&)),
+                       SLOT(dbusErrorOccurred(const QDBusError&)));
+}
+
+void AppTracker::userPropsFinished(const QVariantMap& props) {
+  QVariant state = props.value("State");
+  if (!state.isValid()) {
+    logger.error() << "User has invalid user state";
+    return;
+  }
+  logger.debug() << "User state is:" << state.toString();
+  if (state.toString() == "opening") {
+    // I can't find a signal to hook into, so we are reduced to polling.
+    QTimer::singleShot(100, this, &AppTracker::userFetch);
+    return;
   }
 
-  m_runningCgroups.clear();
-  m_cgroupWatcher.removePaths(m_cgroupWatcher.directories());
+  if (!props.contains("RuntimePath")) {
+    logger.warning() << "Failed to find XDG runtime path";
+    return;
+  }
+
+  userCreated(props.value("RuntimePath").toString());
 }
 
 void AppTracker::userCreated(const QString& xdgRuntimePath) {
@@ -101,25 +119,50 @@ void AppTracker::userCreated(const QString& xdgRuntimePath) {
   /* Connect to the user's session bus. */
   QString busPath = "unix:path=" + xdgRuntimePath + "/bus";
   logger.debug() << "Connection to" << busPath;
-  QDBusConnection connection =
+  QDBusConnection conn =
       QDBusConnection::connectToBus(busPath, m_connectionName);
 
   // Watch the user's control groups for new application scopes.
   m_systemdInterface =
       new QDBusInterface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
-                         DBUS_SYSTEMD_MANAGER, connection, this);
-  QVariant qv = m_systemdInterface->property("ControlGroup");
-  if (!m_cgroupMount.isEmpty() && qv.typeId() == QMetaType::QString) {
-    m_userCgroup = qv.toString();
-    logger.debug() << "Monitoring Control Groups v2 at:" << m_userCgroup;
+                         DBUS_SYSTEMD_MANAGER, conn, this);
 
-    QString userCgroupPath = m_cgroupMount + m_userCgroup;
-    m_cgroupWatcher.addPath(userCgroupPath);
-    m_cgroupWatcher.addPath(userCgroupPath + "/app.slice");
+  // Fetch the user's control group to begin monitoring application scopes.
+  auto msg =
+      QDBusMessage::createMethodCall(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
+                                     DBUS_PROP_INTERFACE, "Get");
+  msg << QVariant(DBUS_SYSTEMD_MANAGER);
+  msg << QVariant("ControlGroup");
+  conn.callWithCallback(msg, this,
+                        SLOT(cgroupPropFinished(const QDBusVariant&)),
+                        SLOT(dbusErrorOccurred(const QDBusError&)));
+}
 
-    cgroupsChanged(userCgroupPath);
-    cgroupsChanged(userCgroupPath + "/app.slice");
+void AppTracker::cgroupPropFinished(const QDBusVariant& cgroup) {
+  m_userCgroup = cgroup.variant().toString();
+  if (m_cgroupMount.isEmpty() || m_userCgroup.isEmpty()) {
+    return;
   }
+
+  QDir mountpoint(m_cgroupMount);
+  if (m_userCgroup.front() != '/') {
+    return;
+  }
+  if (!mountpoint.exists(m_userCgroup.sliced(1))) {
+    return;
+  }
+
+  QString userCgroupPath = m_cgroupMount + m_userCgroup;
+  logger.debug() << "Monitoring Control Groups v2 at:" << m_userCgroup;
+  m_cgroupWatcher.addPath(userCgroupPath);
+  m_cgroupWatcher.addPath(userCgroupPath + "/app.slice");
+
+  cgroupsChanged(userCgroupPath);
+  cgroupsChanged(userCgroupPath + "/app.slice");
+}
+
+void AppTracker::dbusErrorOccurred(const QDBusError& err) {
+  logger.warning() << "dbus error:" << err.message();
 }
 
 // The naming convention for snaps follows one of the following formats:

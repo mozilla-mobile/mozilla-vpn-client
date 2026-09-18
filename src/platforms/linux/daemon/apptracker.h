@@ -11,7 +11,9 @@
 
 #include "leakdetector.h"
 
+class QDBusError;
 class QDBusInterface;
+class QDBusVariant;
 
 // Applications on Linux can be a bit vague and hard to define at runtime, so
 // we need to make some assumptions to try and tackle the problem.
@@ -57,8 +59,7 @@ class AppTracker final : public QObject {
     return m_runningCgroups.keys(desktopFileId);
   }
 
-  void clear();
-
+  const QStringList appControlGroups() const { return m_runningCgroups.keys(); }
   const QString& userObjectPath() const { return m_userObject; }
   const QString& userControlGroup() const { return m_userCgroup; }
 
@@ -69,12 +70,16 @@ class AppTracker final : public QObject {
  private slots:
   void cgroupsChanged(const QString& directory);
   void cgroupsRemoved(const QString& directory);
+  void dbusErrorOccurred(const QDBusError& err);
+  void userPropsFinished(const QVariantMap& props);
+  void cgroupPropFinished(const QDBusVariant& cgroup);
 
  private:
   QString findDesktopFileId(const QString& cgroup);
   static QString snapDesktopFileId(const QString& cgroup);
   static QString decodeUnicodeEscape(const QString& str);
 
+  void userFetch();
   void userCreated(const QString& xdgRuntimePath);
 
  private:
