@@ -45,8 +45,7 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
     logger.error() << "System bus is not connected?";
   }
   if (!bus.connect(DBUS_LOGIN_SERVICE, DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER,
-                   "UserNew", this,
-                   SLOT(userCreated(uint, QDBusObjectPath)))) {
+                   "UserNew", this, SLOT(userCreated(uint, QDBusObjectPath)))) {
     logger.error() << "Failed to connect to UserNew signal";
   }
   if (!bus.connect(DBUS_LOGIN_SERVICE, DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER,

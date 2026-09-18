@@ -28,8 +28,8 @@ NetmgrDevice::NetmgrDevice(const QString& path, QObject* parent)
 
   // Watch for property changes
   m_interface.connection().connect(
-      DBUS_NM_SERVICE, path, DBUS_PROPERTY_INTERFACE, "PropertiesChanged",
-      this, SLOT(propertyChanged(QString, QVariantMap, QStringList)));
+      DBUS_NM_SERVICE, path, DBUS_PROPERTY_INTERFACE, "PropertiesChanged", this,
+      SLOT(propertyChanged(QString, QVariantMap, QStringList)));
 
   m_state = m_interface.property("State").toUInt();
 

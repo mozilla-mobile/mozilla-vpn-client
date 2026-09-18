@@ -4,8 +4,8 @@
 
 #include "apptracker.h"
 
-#include <unistd.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <QDBusConnection>
 #include <QDBusInterface>
@@ -32,7 +32,9 @@ Logger logger("AppTracker");
 }  // namespace
 
 AppTracker::AppTracker(const QString& path, QObject* parent)
-    : QObject(parent), m_connectionName("apptracker-" + path), m_userObject(path) {
+    : QObject(parent),
+      m_connectionName("apptracker-" + path),
+      m_userObject(path) {
   MZ_COUNT_CTOR(AppTracker);
   logger.debug() << "AppTracker created:" << path;
 
@@ -126,9 +128,8 @@ void AppTracker::userCreated(const QString& xdgRuntimePath) {
                          DBUS_SYSTEMD_MANAGER, conn, this);
 
   // Fetch the user's control group to begin monitoring application scopes.
-  auto msg =
-      QDBusMessage::createMethodCall(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
-                                     DBUS_PROPERTY_INTERFACE, "Get");
+  auto msg = QDBusMessage::createMethodCall(
+      DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH, DBUS_PROPERTY_INTERFACE, "Get");
   msg << QVariant(DBUS_SYSTEMD_MANAGER);
   msg << QVariant("ControlGroup");
   conn.callWithCallback(msg, this,
