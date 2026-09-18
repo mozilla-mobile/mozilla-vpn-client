@@ -109,21 +109,29 @@ void SettingsWatcher::maybeReconnectAfterObfuscationChange() {
 
   Controller* controller = MozillaVPN::instance()->controller();
 
-  // While connected, apply the new obfuscation policy with a silent server
-  // switch, so there is no user-visible disruption (VPN-7726).
-  if (controller->state() == Controller::StateOn) {
-    maybeServerSwitch();
-    return;
-  }
-
-  // If the previous activation failed and the "server unavailable"
-  // the controller is in StateConnectionError, no silent switch is possible.
-  if (controller->state() == Controller::StateConnectionError &&
-      !m_operationRunning) {
-    m_operationRunning = true;
-    TaskScheduler::deleteTasks();
-    TaskScheduler::scheduleTask(
-        new TaskControllerAction(TaskControllerAction::eSwitch));
+  if (!m_operationRunning) {
+    switch (controller->state()) {
+      // If the previous activation failed and the "server unavailable"
+      // the controller is in StateConnectionError, no silent switch is
+      // possible.
+      case Controller::StateConnectionError:
+        [[fallthrough]];
+      case Controller::StateConnecting:
+        [[fallthrough]];
+      case Controller::StateConfirming:
+        m_operationRunning = true;
+        TaskScheduler::deleteTasks();
+        TaskScheduler::scheduleTask(
+            new TaskControllerAction(TaskControllerAction::eSwitch));
+        break;
+      case Controller::StateOn:
+        // While connected, apply the new obfuscation policy with a silent
+        // server switch, so there is no user-visible disruption (VPN-7726).
+        maybeServerSwitch();
+        break;
+      default:
+        return;
+    }
   }
 }
 
