@@ -124,12 +124,12 @@ void SettingsWatcher::maybeReconnectAfterObfuscationChange() {
         TaskScheduler::scheduleTask(
             new TaskControllerAction(TaskControllerAction::eSwitch));
         break;
-      case Controller::StateOn:
+      default:
         // While connected, apply the new obfuscation policy with a silent
         // server switch, so there is no user-visible disruption (VPN-7726).
+        // / Controller::StateOn will be handled by maybeServerSwitch() other
+        // states are a no-op.
         maybeServerSwitch();
-        break;
-      default:
         return;
     }
   }
