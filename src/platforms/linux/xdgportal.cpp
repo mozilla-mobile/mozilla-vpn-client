@@ -48,9 +48,8 @@ XdgPortal::XdgPortal(const char* interface, QObject* parent)
 XdgPortal::~XdgPortal() { MZ_COUNT_DTOR(XdgPortal); }
 
 QVariant XdgPortal::xdgProperty(const QString& name) const {
-  QDBusMessage msg =
-      QDBusMessage::createMethodCall(XDG_PORTAL_SERVICE, XDG_PORTAL_PATH,
-                                     DBUS_PROPERTY_INTERFACE, "Get");
+  QDBusMessage msg = QDBusMessage::createMethodCall(
+      XDG_PORTAL_SERVICE, XDG_PORTAL_PATH, DBUS_PROPERTY_INTERFACE, "Get");
   msg << interface();
   msg << name;
 
