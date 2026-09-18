@@ -11,7 +11,9 @@
 
 #include "leakdetector.h"
 
+class QDBusError;
 class QDBusInterface;
+class QDBusVariant;
 
 // Applications on Linux can be a bit vague and hard to define at runtime, so
 // we need to make some assumptions to try and tackle the problem.
@@ -43,24 +45,8 @@ class AppTracker final : public QObject {
   Q_DISABLE_COPY_MOVE(AppTracker)
 
  public:
-  explicit AppTracker(QObject* parent = nullptr);
+  explicit AppTracker(const QString& path, QObject* parent = nullptr);
   ~AppTracker();
-
-  /**
-   * @brief Track a new user session for control group scopes where applications
-   *        may be running.
-   *
-   * @param userid Unix User identifier.
-   * @param xdgRuntimePath User's runtime path (eg: "/run/user/<uid>").
-   */
-  void userCreated(uint userid, const QString& xdgRuntimePath);
-
-  /**
-   * @brief Terminate tracking of a user session.
-   *
-   * @param userid Unix User identifier.
-   */
-  void userRemoved(uint userid);
 
   /**
    * @brief Return a list of control groups matching a given desktop file ID.
@@ -73,19 +59,37 @@ class AppTracker final : public QObject {
     return m_runningCgroups.keys(desktopFileId);
   }
 
+  const QStringList appControlGroups() const { return m_runningCgroups.keys(); }
+  const QString& userObjectPath() const { return m_userObject; }
+  const QString& userControlGroup() const { return m_userCgroup; }
+
  signals:
   void appLaunched(const QString& cgroup, const QString& desktopFileId);
   void appTerminated(const QString& cgroup, const QString& desktopFileId);
 
  private slots:
   void cgroupsChanged(const QString& directory);
+  void cgroupsRemoved(const QString& directory);
+  void dbusErrorOccurred(const QDBusError& err);
+  void userPropsFinished(const QVariantMap& props);
+  void cgroupPropFinished(const QDBusVariant& cgroup);
 
  private:
   QString findDesktopFileId(const QString& cgroup);
   static QString snapDesktopFileId(const QString& cgroup);
   static QString decodeUnicodeEscape(const QString& str);
 
+  void userFetch();
+  void userCreated(const QString& xdgRuntimePath);
+
  private:
+  // D-Bus connection name to the user's D-Bus session.
+  const QString m_connectionName;
+
+  // Systemd login session.
+  const QString m_userObject;
+  QString m_userCgroup;
+
   // Monitoring of the user's control groups.
   QString m_cgroupMount;
   QFileSystemWatcher m_cgroupWatcher;
