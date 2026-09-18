@@ -173,28 +173,7 @@ void DBusService::userListCompleted(QDBusPendingCallWatcher* watcher) {
 }
 
 void DBusService::userCreated(uint uid, const QDBusObjectPath& path) {
-  QDBusInterface iface(DBUS_LOGIN_SERVICE, path.path(), DBUS_LOGIN_USER,
-                       QDBusConnection::systemBus());
-  if (!iface.isValid()) {
-    return;
-  }
-
-  // Ensure that systemd has finished creating the user object.
-  QVariant state = iface.property("State");
-  if (!state.isValid()) {
-    logger.error() << "User" << uid << "has invalid user state";
-    return;
-  }
-  logger.debug() << "User" << uid << "state is:" << state.toString();
-  if (state.toString() == "opening") {
-    // I can't find a signal to hook into, so we are reduced to polling.
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this,
-            [this, uid, path]() { userCreated(uid, path); });
-    timer->setSingleShot(true);
-    timer->start(100);
-    return;
-  }
+  Q_UNUSED(uid);
 
   // Create a new AppTracker instance for this user.
   if (!m_appTrackers.contains(path.path())) {
@@ -212,7 +191,17 @@ void DBusService::userRemoved(uint uid, const QDBusObjectPath& path) {
   Q_UNUSED(uid);
 
   AppTracker* tracker = m_appTrackers.take(path.path());
-  tracker->clear();
+  if (!tracker) {
+    return;
+  }
+
+  // Drop all control groups from this user.
+  for (const QString& cgroup : tracker->appControlGroups()) {
+    if (m_excludedCgroups.remove(cgroup)) {
+      m_wgutils->resetCgroup(cgroup);
+    }
+  }
+
   delete tracker;
 }
 
