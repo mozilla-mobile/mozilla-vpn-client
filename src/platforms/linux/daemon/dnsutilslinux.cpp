@@ -15,8 +15,6 @@
 constexpr const char* DBUS_RESOLVE_SERVICE = "org.freedesktop.resolve1";
 constexpr const char* DBUS_RESOLVE_PATH = "/org/freedesktop/resolve1";
 constexpr const char* DBUS_RESOLVE_MANAGER = "org.freedesktop.resolve1.Manager";
-constexpr const char* DBUS_PROPERTY_INTERFACE =
-    "org.freedesktop.DBus.Properties";
 
 namespace {
 Logger logger("DnsUtilsLinux");

@@ -27,8 +27,6 @@ constexpr const char* DBUS_SYSTEMD_UNIT = "org.freedesktop.systemd1.Unit";
 constexpr const char* DBUS_LOGIN_SERVICE = "org.freedesktop.login1";
 constexpr const char* DBUS_LOGIN_USER = "org.freedesktop.login1.User";
 
-constexpr const char* DBUS_PROP_INTERFACE = "org.freedesktop.DBus.Properties";
-
 namespace {
 Logger logger("AppTracker");
 }  // namespace
@@ -61,7 +59,7 @@ AppTracker::~AppTracker() {
 
 void AppTracker::userFetch() {
   auto msg = QDBusMessage::createMethodCall(DBUS_LOGIN_SERVICE, m_userObject,
-                                            DBUS_PROP_INTERFACE, "GetAll");
+                                            DBUS_PROPERTY_INTERFACE, "GetAll");
   msg << QVariant(DBUS_LOGIN_USER);
 
   QDBusConnection bus = QDBusConnection::systemBus();
@@ -130,7 +128,7 @@ void AppTracker::userCreated(const QString& xdgRuntimePath) {
   // Fetch the user's control group to begin monitoring application scopes.
   auto msg =
       QDBusMessage::createMethodCall(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
-                                     DBUS_PROP_INTERFACE, "Get");
+                                     DBUS_PROPERTY_INTERFACE, "Get");
   msg << QVariant(DBUS_SYSTEMD_MANAGER);
   msg << QVariant("ControlGroup");
   conn.callWithCallback(msg, this,
