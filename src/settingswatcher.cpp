@@ -65,9 +65,9 @@ SettingsWatcher::SettingsWatcher(QObject* parent) : QObject(parent) {
         }
       }));
 
-  m_connections.append(connect(settingsHolder,
-                               &SettingsHolder::obfuscationPolicyChanged, this,
-                               &SettingsWatcher::maybeServerSwitch));
+  m_connections.append(
+      connect(settingsHolder, &SettingsHolder::obfuscationPolicyChanged, this,
+              &SettingsWatcher::maybeReconnectAfterObfuscationChange));
 }
 
 void SettingsWatcher::stop() {
@@ -102,6 +102,37 @@ void SettingsWatcher::maybeServerSwitch() {
   TaskScheduler::scheduleTask(
       new TaskControllerAction(TaskControllerAction::eSilentSwitch,
                                Controller::eServerCoolDownNotNeeded));
+}
+
+void SettingsWatcher::maybeReconnectAfterObfuscationChange() {
+  logger.debug() << "Obfuscation policy changed!";
+
+  Controller* controller = MozillaVPN::instance()->controller();
+
+  if (!m_operationRunning) {
+    switch (controller->state()) {
+      // If the previous activation failed and the "server unavailable"
+      // the controller is in StateConnectionError, no silent switch is
+      // possible.
+      case Controller::StateConnectionError:
+        [[fallthrough]];
+      case Controller::StateConnecting:
+        [[fallthrough]];
+      case Controller::StateConfirming:
+        m_operationRunning = true;
+        TaskScheduler::deleteTasks();
+        TaskScheduler::scheduleTask(
+            new TaskControllerAction(TaskControllerAction::eSwitch));
+        break;
+      default:
+        // While connected, apply the new obfuscation policy with a silent
+        // server switch, so there is no user-visible disruption (VPN-7726).
+        // / Controller::StateOn will be handled by maybeServerSwitch() other
+        // states are a no-op.
+        maybeServerSwitch();
+        return;
+    }
+  }
 }
 
 void SettingsWatcher::operationCompleted() { m_operationRunning = false; }
