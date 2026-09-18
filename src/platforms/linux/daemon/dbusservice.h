@@ -48,6 +48,8 @@ class DBusService final : public Daemon, protected QDBusContext {
   bool removeInterfaceIfExists();
   bool isCallerAuthorized(const QString& actionId);
 
+
+  QStringList findByDesktopFileId(const QString& id) const;
   void setAppState(const QString& desktopFileId, AppState state);
   void clearAppStates();
 
@@ -64,7 +66,7 @@ class DBusService final : public Daemon, protected QDBusContext {
   IPUtilsLinux* m_iputils = nullptr;
   DnsUtilsLinux* m_dnsutils = nullptr;
 
-  AppTracker* m_appTracker = nullptr;
+  QMap<QString, AppTracker*> m_appTrackers;
   QHash<QString, AppState> m_excludedApps;
   QHash<QString, AppState> m_excludedCgroups;
 };

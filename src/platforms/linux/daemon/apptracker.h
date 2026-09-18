@@ -43,23 +43,8 @@ class AppTracker final : public QObject {
   Q_DISABLE_COPY_MOVE(AppTracker)
 
  public:
-  explicit AppTracker(QObject* parent = nullptr);
+  explicit AppTracker(const QString& path, QObject* parent = nullptr);
   ~AppTracker();
-
-  /**
-   * @brief Track a new user session for control group scopes where applications
-   *        may be running.
-   *
-   * @param xdgRuntimePath User's runtime path (eg: "/run/user/<uid>").
-   */
-  void userCreated(const QString& xdgRuntimePath);
-
-  /**
-   * @brief Terminate tracking of a user session.
-   *
-   * @param userid Unix User identifier.
-   */
-  void userRemoved(uint userid);
 
   /**
    * @brief Return a list of control groups matching a given desktop file ID.
@@ -71,6 +56,11 @@ class AppTracker final : public QObject {
   QStringList findByDesktopFileId(const QString& desktopFileId) const {
     return m_runningCgroups.keys(desktopFileId);
   }
+
+  void clear();
+
+  const QString& userObjectPath() const { return m_userObject; }
+  const QString& userControlGroup() const { return m_userCgroup; }
 
  signals:
   void appLaunched(const QString& cgroup, const QString& desktopFileId);
@@ -85,7 +75,16 @@ class AppTracker final : public QObject {
   static QString snapDesktopFileId(const QString& cgroup);
   static QString decodeUnicodeEscape(const QString& str);
 
+  void userCreated(const QString& xdgRuntimePath);
+
  private:
+  // D-Bus connection name to the user's D-Bus session.
+  const QString m_connectionName;
+
+  // Systemd login session.
+  const QString m_userObject;
+  QString m_userCgroup;
+
   // Monitoring of the user's control groups.
   QString m_cgroupMount;
   QFileSystemWatcher m_cgroupWatcher;
