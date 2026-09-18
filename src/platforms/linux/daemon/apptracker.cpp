@@ -24,23 +24,52 @@ constexpr const char* DBUS_SYSTEMD_PATH = "/org/freedesktop/systemd1";
 constexpr const char* DBUS_SYSTEMD_MANAGER = "org.freedesktop.systemd1.Manager";
 constexpr const char* DBUS_SYSTEMD_UNIT = "org.freedesktop.systemd1.Unit";
 
+constexpr const char* DBUS_LOGIN_SERVICE = "org.freedesktop.login1";
+constexpr const char* DBUS_LOGIN_USER = "org.freedesktop.login1.User";
+
 namespace {
 Logger logger("AppTracker");
 }  // namespace
 
-AppTracker::AppTracker(QObject* parent) : QObject(parent) {
+AppTracker::AppTracker(const QString& path, QObject* parent)
+    : QObject(parent), m_connectionName("apptracker-" + path), m_userObject(path) {
   MZ_COUNT_CTOR(AppTracker);
-  logger.debug() << "AppTracker created.";
+  logger.debug() << "AppTracker created:" << path;
+
+  connect(&m_cgroupWatcher, &QFileSystemWatcher::directoryChanged, this,
+          &AppTracker::cgroupsChanged);
 
   /* Monitor for changes to the user's application control groups. */
   m_cgroupMount = LinuxUtils::findCgroup2Path();
+
+  // Get the user's runtime path.
+  QDBusInterface iface(DBUS_LOGIN_SERVICE, m_userObject, DBUS_LOGIN_USER,
+                       QDBusConnection::systemBus());
+  QVariant runtime = iface.property("RuntimePath");
+  if (runtime.isValid()) {
+    userCreated(runtime.toString());
+  }
 }
 
 AppTracker::~AppTracker() {
   MZ_COUNT_DTOR(AppTracker);
-  logger.debug() << "AppTracker destroyed.";
+  logger.debug() << "AppTracker destroyed:" << m_userObject;
+
+  if (m_systemdInterface) {
+    QDBusConnection::disconnectFromBus(m_connectionName);
+  }
 
   m_runningCgroups.clear();
+}
+
+void AppTracker::clear() {
+  for (const QString& scope : m_runningCgroups) {
+    QString desktopFileId = m_runningCgroups.take(scope);
+    emit appTerminated(scope, desktopFileId);
+  }
+
+  m_runningCgroups.clear();
+  m_cgroupWatcher.removePaths(m_cgroupWatcher.directories());
 }
 
 void AppTracker::userCreated(const QString& xdgRuntimePath) {
@@ -58,7 +87,7 @@ void AppTracker::userCreated(const QString& xdgRuntimePath) {
 
   /* Acquire the effective UID of the user to connect to their session bus. */
   uid_t realuid = getuid();
-  auto guard = qScopeGuard([&] {
+  auto guard = qScopeGuard([realuid] {
     if (seteuid(realuid) < 0) {
       logger.warning() << "Failed to restore effective UID";
     }
@@ -73,7 +102,7 @@ void AppTracker::userCreated(const QString& xdgRuntimePath) {
   QString busPath = "unix:path=" + xdgRuntimePath + "/bus";
   logger.debug() << "Connection to" << busPath;
   QDBusConnection connection =
-      QDBusConnection::connectToBus(busPath, "user-" + QString::number(st.st_uid));
+      QDBusConnection::connectToBus(busPath, m_connectionName);
 
   // Watch the user's control groups for new application scopes.
   m_systemdInterface =
@@ -81,24 +110,16 @@ void AppTracker::userCreated(const QString& xdgRuntimePath) {
                          DBUS_SYSTEMD_MANAGER, connection, this);
   QVariant qv = m_systemdInterface->property("ControlGroup");
   if (!m_cgroupMount.isEmpty() && qv.typeId() == QMetaType::QString) {
-    QString userCgroupPath = m_cgroupMount + qv.toString();
-    logger.debug() << "Monitoring Control Groups v2 at:" << userCgroupPath;
+    m_userCgroup = qv.toString();
+    logger.debug() << "Monitoring Control Groups v2 at:" << m_userCgroup;
 
-    connect(&m_cgroupWatcher, SIGNAL(directoryChanged(QString)), this,
-            SLOT(cgroupsChanged(QString)));
-
+    QString userCgroupPath = m_cgroupMount + m_userCgroup;
     m_cgroupWatcher.addPath(userCgroupPath);
     m_cgroupWatcher.addPath(userCgroupPath + "/app.slice");
 
     cgroupsChanged(userCgroupPath);
     cgroupsChanged(userCgroupPath + "/app.slice");
   }
-}
-
-void AppTracker::userRemoved(uint userid) {
-  logger.debug() << "User removed uid:" << userid;
-
-  QDBusConnection::disconnectFromBus("user-" + QString::number(userid));
 }
 
 // The naming convention for snaps follows one of the following formats:
