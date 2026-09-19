@@ -26,6 +26,7 @@ class SettingsWatcher final : public QObject {
  private:
   explicit SettingsWatcher(QObject* parent);
   void maybeServerSwitch();
+  void maybeReconnectAfterObfuscationChange();
   void operationCompleted();
 
   // Store connections to allow disconnecting
