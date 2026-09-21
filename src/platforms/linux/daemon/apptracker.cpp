@@ -70,12 +70,16 @@ void AppTracker::userFetch() {
 }
 
 void AppTracker::userPropsFinished(const QVariantMap& props) {
+  if (props.contains("UID")) {
+    m_userId = props.value("UID").toUInt();
+  }
+
   QVariant state = props.value("State");
   if (!state.isValid()) {
-    logger.error() << "User has invalid user state";
+    logger.error() << "User" << m_userId << "has invalid user state";
     return;
   }
-  logger.debug() << "User state is:" << state.toString();
+  logger.debug() << "User" << m_userId << "state is:" << state.toString();
   if (state.toString() == "opening") {
     // I can't find a signal to hook into, so we are reduced to polling.
     QTimer::singleShot(100, this, &AppTracker::userFetch);
@@ -91,7 +95,7 @@ void AppTracker::userPropsFinished(const QVariantMap& props) {
 }
 
 void AppTracker::userCreated(const QString& xdgRuntimePath) {
-  logger.debug() << "User runtime created at:" << xdgRuntimePath;
+  logger.debug() << "User" << m_userId << "runtime created at:" << xdgRuntimePath;
 
   // Determine the UID of the user runtime.
   struct stat st;
@@ -152,7 +156,8 @@ void AppTracker::cgroupPropFinished(const QDBusVariant& cgroup) {
   }
 
   QString userCgroupPath = m_cgroupMount + m_userCgroup;
-  logger.debug() << "Monitoring Control Groups v2 at:" << m_userCgroup;
+  logger.debug() << QString("cgroup(%1)").arg(m_userId)
+                 << "tracking:" << m_userCgroup;
   m_cgroupWatcher.addPath(userCgroupPath);
   m_cgroupWatcher.addPath(userCgroupPath + "/app.slice");
 
@@ -252,19 +257,36 @@ QString AppTracker::findDesktopFileId(const QString& cgroup) {
 
 void AppTracker::cgroupsChanged(const QString& directory) {
   QDir dir(directory);
-  QFileInfoList newScopes = dir.entryInfoList(
-      QStringList{"*.scope", "*@autostart.service"}, QDir::Dirs);
+  QDir mountpoint(m_cgroupMount);
   QStringList oldScopes = m_runningCgroups.keys();
 
+  // The entire directory has been removed.
   if (!dir.exists()) {
-    cgroupsRemoved(directory);
+    QString cgroup = mountpoint.relativeFilePath(directory);
+    if (!cgroup.startsWith('/')) {
+      cgroup.prepend('/');
+    }
+    logger.debug() << QString("cgroup(%1)").arg(m_userId)
+                   << "removed:" << cgroup;
+
+    for (const QString& scope : oldScopes) {
+      if (!scope.startsWith(cgroup)) {
+        continue;
+      }
+
+      if ((scope.size() == cgroup.size()) || (scope.at(cgroup.size()) == '/')) {
+        QString desktopFileId = m_runningCgroups.take(scope);
+        emit appTerminated(scope, desktopFileId);
+      }
+    }
     return;
   }
 
   // Figure out what has been added.
+  QFileInfoList newScopes = dir.entryInfoList(
+      QStringList{"*.scope", "*@autostart.service"}, QDir::Dirs);
   for (const QFileInfo& scope : newScopes) {
     // We need the path starting from the Cgroupv2 mount point.
-    QDir mountpoint(m_cgroupMount);
     QString path = mountpoint.relativeFilePath(scope.canonicalFilePath());
     if (!path.startsWith('/')) {
       path.prepend('/');
@@ -272,7 +294,6 @@ void AppTracker::cgroupsChanged(const QString& directory) {
 
     if (oldScopes.removeAll(path) == 0) {
       // This is a new scope, let's add it.
-      logger.debug() << "Control group created:" << path;
       QString desktopFileId = findDesktopFileId(path);
       m_runningCgroups[path] = desktopFileId;
 
@@ -284,32 +305,9 @@ void AppTracker::cgroupsChanged(const QString& directory) {
   for (const QString& scope : oldScopes) {
     QFileInfo scopeInfo(m_cgroupMount + scope);
     if (scopeInfo.absolutePath() == directory) {
-      logger.debug() << "Control group removed:" << scope;
       Q_ASSERT(m_runningCgroups.contains(scope));
       QString desktopFileId = m_runningCgroups.take(scope);
 
-      emit appTerminated(scope, desktopFileId);
-    }
-  }
-}
-
-void AppTracker::cgroupsRemoved(const QString& directory) {
-  QDir mountpoint(m_cgroupMount);
-  logger.debug() << "cgroups removed:" << directory;
-  QString scope = mountpoint.relativeFilePath(directory);
-  if (!scope.startsWith('/')) {
-    scope.prepend('/');
-  }
-
-  // When removing a cgroup, drop any tracked apps that are children.
-  for (const QString& entry : m_runningCgroups.keys()) {
-    if (!entry.startsWith(scope)) {
-      continue;
-    }
-
-    if ((entry.size() == scope.size()) || (entry.at(scope.size()) == '/')) {
-      logger.debug() << "Control group removed:" << scope;
-      QString desktopFileId = m_runningCgroups.take(entry);
       emit appTerminated(scope, desktopFileId);
     }
   }

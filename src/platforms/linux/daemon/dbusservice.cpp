@@ -206,7 +206,10 @@ void DBusService::userRemoved(uint uid, const QDBusObjectPath& path) {
 
 void DBusService::appLaunched(const QString& cgroup,
                               const QString& desktopFileId) {
-  logger.debug() << "tracking:" << cgroup << "id:" << desktopFileId;
+  AppTracker* sender = qobject_cast<AppTracker*>(QObject::sender());
+  uint uid = sender ? sender->userId() : 0;
+  logger.debug() << QString("tracking(%1):").arg(uid)
+                 << basename(qPrintable(cgroup)) << "id:" << desktopFileId;
 
   AppState state = m_excludedApps.value(desktopFileId, Active);
   if (state == Active) {
@@ -223,7 +226,10 @@ void DBusService::appLaunched(const QString& cgroup,
 
 void DBusService::appTerminated(const QString& cgroup,
                                 const QString& desktopFileId) {
-  logger.debug() << "terminate:" << cgroup << "id:" << desktopFileId;
+  AppTracker* sender = qobject_cast<AppTracker*>(QObject::sender());
+  uint uid = sender ? sender->userId() : 0;
+  logger.debug() << QString("terminate(%1):").arg(uid)
+                 << basename(qPrintable(cgroup)) << "id:" << desktopFileId;
 
   // Remove any firewall rules applied to this control group.
   if (m_excludedCgroups.remove(cgroup)) {

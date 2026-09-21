@@ -59,6 +59,7 @@ class AppTracker final : public QObject {
     return m_runningCgroups.keys(desktopFileId);
   }
 
+  uint userId() const { return m_userId; }
   const QStringList appControlGroups() const { return m_runningCgroups.keys(); }
   const QString& userObjectPath() const { return m_userObject; }
   const QString& userControlGroup() const { return m_userCgroup; }
@@ -69,7 +70,6 @@ class AppTracker final : public QObject {
 
  private slots:
   void cgroupsChanged(const QString& directory);
-  void cgroupsRemoved(const QString& directory);
   void dbusErrorOccurred(const QDBusError& err);
   void userPropsFinished(const QVariantMap& props);
   void cgroupPropFinished(const QDBusVariant& cgroup);
@@ -89,6 +89,7 @@ class AppTracker final : public QObject {
   // Systemd login session.
   const QString m_userObject;
   QString m_userCgroup;
+  uint m_userId = 0;
 
   // Monitoring of the user's control groups.
   QString m_cgroupMount;
