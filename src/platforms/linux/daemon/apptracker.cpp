@@ -95,7 +95,7 @@ void AppTracker::userPropsFinished(const QVariantMap& props) {
 }
 
 void AppTracker::userCreated(const QString& xdgRuntimePath) {
-  logger.debug() << "User" << m_userId << "runtime created at:" << xdgRuntimePath;
+  logger.debug() << "User" << m_userId << "runtime created:" << xdgRuntimePath;
 
   // Determine the UID of the user runtime.
   struct stat st;
