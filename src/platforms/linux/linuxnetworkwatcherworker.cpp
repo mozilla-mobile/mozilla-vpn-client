@@ -35,8 +35,6 @@
 #define NM_802_11_AP_SEC_WEAK_CRYPTO \
   (NM_802_11_AP_SEC_PAIR_WEP40 | NM_802_11_AP_SEC_PAIR_WEP104)
 
-constexpr const char* DBUS_NETWORKMANAGER = "org.freedesktop.NetworkManager";
-
 namespace {
 Logger logger("LinuxNetworkWatcherWorker");
 }
@@ -75,8 +73,8 @@ void LinuxNetworkWatcherWorker::initialize() {
   // documentation:
   // https://developer.gnome.org/NetworkManager/stable/gdbus-org.freedesktop.NetworkManager.html
 
-  QDBusInterface nm(DBUS_NM_SERVICE, "/org/freedesktop/NetworkManager",
-                    DBUS_NETWORKMANAGER, QDBusConnection::systemBus());
+  QDBusInterface nm(DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_NM_INTERFACE,
+                    QDBusConnection::systemBus());
   if (!nm.isValid()) {
     logger.error()
         << "Failed to connect to the network manager via system dbus";
