@@ -21,6 +21,8 @@ MZScreenBase {
             getStack().push("qrc:/qt/qml/Mozilla/VPN/sharedViews/ViewPermissionRequiredOSX.qml")
             return;
         }
-        // TODO: What to display otherwise?
+        // Otherwise we are on Flatpak: only NetmgrController blocks
+        // initialization on any other platform.
+        getStack().push("qrc:/qt/qml/Mozilla/VPN/sharedViews/ViewNetworkManagerUnavailable.qml")
     }
 }

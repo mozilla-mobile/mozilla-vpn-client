@@ -1059,6 +1059,14 @@ permissionMacos:
     value: Open System Settings
     comment: Label for the button that opens the system settings page without specifying a specific section
 
+networkManagerUnavailable:
+  title:
+    value: NetworkManager is required
+    comment: Title of the screen shown when the Flatpak version of the VPN cannot find NetworkManager. "NetworkManager" is a Linux system service name and should be left untranslated.
+  body:
+    value: Mozilla VPN uses NetworkManager to create your VPN connection. Please make sure NetworkManager is installed and running on your device, then restart Mozilla VPN.
+    comment: Paragraph explaining that the NetworkManager system service must be installed and running before the VPN can connect. "NetworkManager" is a Linux system service name and should be left untranslated.
+
 global:
   expand:
     value: Expand

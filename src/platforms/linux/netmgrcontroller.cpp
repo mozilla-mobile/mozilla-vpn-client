@@ -62,7 +62,7 @@ QString NetmgrController::nmInterface(const QString& name) {
 void NetmgrController::initialize(const Device* device, const Keys* keys) {
   if (!m_client || !m_client->isValid()) {
     logger.warning() << "NetworkManager client is not available";
-    emit initialized(false, false, QDateTime());
+    emit networkManagerUnavailable();
     return;
   }
 
