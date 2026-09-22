@@ -167,8 +167,6 @@ void Controller::initialize() {
           &Controller::implInitialized);
   connect(m_impl.get(), &ControllerImpl::permissionRequired, this,
           &Controller::implPermRequired);
-  connect(m_impl.get(), &ControllerImpl::networkManagerUnavailable, this,
-          &Controller::implNetworkManagerUnavailable);
   connect(m_impl.get(), &ControllerImpl::statusUpdated, this,
           [this](const ControllerStatus& status) {
             logger.debug() << "Status updated";
@@ -211,11 +209,6 @@ void Controller::initialize() {
 
 void Controller::implPermRequired() {
   logger.debug() << "Initialization blocked: permission required";
-  setState(StatePermissionRequired);
-}
-
-void Controller::implNetworkManagerUnavailable() {
-  logger.warning() << "Initialization blocked: NetworkManager unavailable";
   setState(StatePermissionRequired);
 }
 

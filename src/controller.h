@@ -229,7 +229,6 @@ class Controller : public QObject, public LogSerializer {
   void implInitialized(bool status, bool connected,
                        const QDateTime& connectionDate);
   void implPermRequired();
-  void implNetworkManagerUnavailable();
   void handleBackendFailure(ErrorCode code);
 
  signals:

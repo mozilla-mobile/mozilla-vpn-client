@@ -100,10 +100,6 @@ class ControllerImpl : public QObject {
   // system settings to enable the VPN backend.
   void permissionRequired();
 
-  // Emitted when NetworkManager, which creates the tunnel in Flatpak builds,
-  // is not available on the system bus.
-  void networkManagerUnavailable();
-
   // These 2 signals can be dispatched at any time.
   void connected(const QString& pubkey,
                  const QDateTime& connectionTimestamp = QDateTime());

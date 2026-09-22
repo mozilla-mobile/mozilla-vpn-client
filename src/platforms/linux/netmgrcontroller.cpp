@@ -62,7 +62,9 @@ QString NetmgrController::nmInterface(const QString& name) {
 void NetmgrController::initialize(const Device* device, const Keys* keys) {
   if (!m_client || !m_client->isValid()) {
     logger.warning() << "NetworkManager client is not available";
-    emit networkManagerUnavailable();
+    // Not a permission problem, but the same semantics: blocked until the user
+    // acts outside the app. Shows ViewNetworkManagerUnavailable.
+    emit permissionRequired();
     return;
   }
 
