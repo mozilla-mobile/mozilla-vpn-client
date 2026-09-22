@@ -283,8 +283,8 @@ void AppTracker::cgroupsChanged(const QString& directory) {
   }
 
   // Figure out what has been added.
-  QFileInfoList newScopes = dir.entryInfoList(
-      QStringList{"*.scope", "*@autostart.service"}, QDir::Dirs);
+  QFileInfoList newScopes =
+      dir.entryInfoList(QStringList{"*.scope", "*.service"}, QDir::Dirs);
   for (const QFileInfo& scope : newScopes) {
     // We need the path starting from the Cgroupv2 mount point.
     QString path = mountpoint.relativeFilePath(scope.canonicalFilePath());
