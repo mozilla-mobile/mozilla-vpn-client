@@ -5,6 +5,7 @@
 #ifndef APPTRACKER_H
 #define APPTRACKER_H
 
+#include <QDBusContext>
 #include <QFileSystemWatcher>
 #include <QHash>
 #include <QString>
@@ -13,6 +14,7 @@
 
 class QDBusError;
 class QDBusInterface;
+class QDBusObjectPath;
 class QDBusVariant;
 
 // Applications on Linux can be a bit vague and hard to define at runtime, so
@@ -69,22 +71,23 @@ class AppTracker final : public QObject {
   void appTerminated(const QString& cgroup, const QString& desktopFileId);
 
  private slots:
+  void cgroupCreated(const QString& cgroup);
   void cgroupsChanged(const QString& directory);
   void dbusErrorOccurred(const QDBusError& err);
   void userPropsFinished(const QVariantMap& props);
   void cgroupPropFinished(const QDBusVariant& cgroup);
 
  private:
-  QString findDesktopFileId(const QString& cgroup);
   static QString snapDesktopFileId(const QString& cgroup);
   static QString decodeUnicodeEscape(const QString& str);
+  void cgroupResolved(const QString& cgroup, const QString& desktopFileId);
 
   void userFetch();
   void userCreated(const QString& xdgRuntimePath);
 
  private:
   // D-Bus connection name to the user's D-Bus session.
-  const QString m_connectionName;
+  QString m_connectionName;
 
   // Systemd login session.
   const QString m_userObject;
@@ -94,13 +97,35 @@ class AppTracker final : public QObject {
   // Monitoring of the user's control groups.
   QString m_cgroupMount;
   QFileSystemWatcher m_cgroupWatcher;
-  QDBusInterface* m_systemdInterface = nullptr;
-
+  
   // The set of control groups that are currently running, and the desktop file
   // IDs to which we have mapped them. The key to this QHash is the control
   // group path, and the value is the mapped desktop file ID, or an empty
   // QString if unknown.
   QHash<QString, QString> m_runningCgroups;
+};
+
+// A helper class to perform the KDE fallback asynchronously, which attempts
+// to fetch the systemd unit for a cgroup and then get the SourcePath property.
+class KdeFallbackTracker : public QObject, protected QDBusContext {
+ Q_OBJECT
+
+ public:
+  KdeFallbackTracker(const QString& cgroup, const QDBusConnection &connection,
+                     QObject *parent = nullptr);
+
+  const QString& cgroup() const { return m_cgroup; }
+
+ signals:
+  void errorOccurred(const QDBusError& err);
+  void finished(const QString& cgroup, const QString& desktopFileId);
+
+ private slots:
+  void unitLookupFinished(const QDBusObjectPath& unit);
+  void sourceLookupFinished(const QDBusVariant& source);
+
+ private:
+  const QString m_cgroup;
 };
 
 #endif  // APPTRACKER_H
