@@ -1041,6 +1041,10 @@ func NetfilterIsolateIpv6(ifname string, ipv6addr string) int32 {
 
 //export NetfilterMarkCgroupV1
 func NetfilterMarkCgroupV1(cgroup uint32) int32 {
+	if mozvpn_ctx.table == nil {
+		log.Println("Unable to mark traffic: tables uninitialized")
+		return -1;
+	}
 	if mozvpn_ctx.fwmark == 0 {
 		log.Println("Unable to mark traffic: no fwmark")
 		return -1
@@ -1054,6 +1058,10 @@ func NetfilterMarkCgroupV1(cgroup uint32) int32 {
 
 //export NetfilterMarkCgroupV2
 func NetfilterMarkCgroupV2(cgroup string) int32 {
+	if mozvpn_ctx.table == nil {
+		log.Println("Unable to mark traffic: tables uninitialized")
+		return -1;
+	}
 	if mozvpn_ctx.fwmark == 0 {
 		log.Println("Unable to mark traffic: no fwmark")
 		return -1
@@ -1068,6 +1076,9 @@ func NetfilterMarkCgroupV2(cgroup string) int32 {
 //export NetfilterResetCgroupV2
 func NetfilterResetCgroupV2(cgroup string) int32 {
 	xtcgroup := nftXtCgroupMatch(cgroup)
+	if mozvpn_ctx.table == nil {
+		return 0;
+	}
 
 	// Delete all mangle rules matching against the cgroup.
 	rules, err := mozvpn_ctx.conn.GetRules(mozvpn_ctx.table, mozvpn_ctx.cgroup_mark)
@@ -1091,6 +1102,9 @@ func NetfilterResetCgroupV2(cgroup string) int32 {
 //export NetfilterResetAllCgroupsV2
 func NetfilterResetAllCgroupsV2() int32 {
 	log.Println("Clearing all cgroup traffic marks")
+	if mozvpn_ctx.table == nil {
+		return 0;
+	}
 	mozvpn_ctx.conn.FlushChain(mozvpn_ctx.cgroup_mark)
 	mozvpn_ctx.conn.FlushChain(mozvpn_ctx.cgroup_nat)
 	return mozvpn_ctx.nftCommit()
