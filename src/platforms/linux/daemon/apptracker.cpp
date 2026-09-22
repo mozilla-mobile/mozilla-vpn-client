@@ -33,8 +33,7 @@ Logger logger("AppTracker");
 }  // namespace
 
 AppTracker::AppTracker(const QString& path, QObject* parent)
-    : QObject(parent),
-      m_userObject(path) {
+    : QObject(parent), m_userObject(path) {
   MZ_COUNT_CTOR(AppTracker);
   logger.debug() << "AppTracker created:" << path;
 
@@ -316,12 +315,10 @@ void AppTracker::cgroupsChanged(const QString& directory) {
   }
 }
 
-KdeFallbackTracker::KdeFallbackTracker(
-    const QString& cgroup, const QDBusConnection& bus, QObject* parent) :
-    QObject(parent), m_cgroup(cgroup) {
-
-  logger.debug() << "kde fallback start:" << m_cgroup;
-
+KdeFallbackTracker::KdeFallbackTracker(const QString& cgroup,
+                                       const QDBusConnection& bus,
+                                       QObject* parent)
+    : QObject(parent), m_cgroup(cgroup) {
   auto msg = QDBusMessage::createMethodCall(
       DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH, DBUS_SYSTEMD_MANAGER,
       "GetUnitByControlGroup");
@@ -332,8 +329,6 @@ KdeFallbackTracker::KdeFallbackTracker(
 }
 
 void KdeFallbackTracker::unitLookupFinished(const QDBusObjectPath& unit) {
-  logger.debug() << "kde fallback unit:" << unit.path();
-  
   auto msg = QDBusMessage::createMethodCall(DBUS_SYSTEMD_SERVICE, unit.path(),
                                             DBUS_PROPERTY_INTERFACE, "Get");
   msg << QVariant(DBUS_SYSTEMD_UNIT);
@@ -345,7 +340,6 @@ void KdeFallbackTracker::unitLookupFinished(const QDBusObjectPath& unit) {
 
 void KdeFallbackTracker::sourceLookupFinished(const QDBusVariant& source) {
   QString path = source.variant().toString();
-  logger.debug() << "kde fallback source:" << path; 
   if (!path.endsWith(".desktop")) {
     emit finished(m_cgroup, QString());
   } else {

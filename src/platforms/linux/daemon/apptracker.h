@@ -79,7 +79,6 @@ class AppTracker final : public QObject {
 
  private:
   static QString snapDesktopFileId(const QString& cgroup);
-  static QString decodeUnicodeEscape(const QString& str);
   void cgroupResolved(const QString& cgroup, const QString& desktopFileId);
 
   void userFetch();
@@ -97,7 +96,7 @@ class AppTracker final : public QObject {
   // Monitoring of the user's control groups.
   QString m_cgroupMount;
   QFileSystemWatcher m_cgroupWatcher;
-  
+
   // The set of control groups that are currently running, and the desktop file
   // IDs to which we have mapped them. The key to this QHash is the control
   // group path, and the value is the mapped desktop file ID, or an empty
@@ -108,11 +107,11 @@ class AppTracker final : public QObject {
 // A helper class to perform the KDE fallback asynchronously, which attempts
 // to fetch the systemd unit for a cgroup and then get the SourcePath property.
 class KdeFallbackTracker : public QObject, protected QDBusContext {
- Q_OBJECT
+  Q_OBJECT
 
  public:
-  KdeFallbackTracker(const QString& cgroup, const QDBusConnection &connection,
-                     QObject *parent = nullptr);
+  KdeFallbackTracker(const QString& cgroup, const QDBusConnection& connection,
+                     QObject* parent = nullptr);
 
   const QString& cgroup() const { return m_cgroup; }
 
