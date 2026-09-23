@@ -4,6 +4,7 @@
   "name": "Action Required: Update to the latest version",
   "type": "message",
   "conditions": {
+    "env": "off",
     "max_client_version": "2.34.9",
     "javascript": "osCheck.js",
     "start_time": 1790874000,
