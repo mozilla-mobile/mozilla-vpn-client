@@ -7,6 +7,7 @@
 /// here: this obfuscator is a userspace UDP proxy and does not drive
 /// the WireGuard state machine, so it cannot adjust those timers.
 /// Only the packet obfuscation is applied.
+use std::net::SocketAddr;
 use std::sync::Arc;
 
 use rand::rngs::OsRng;
@@ -22,6 +23,7 @@ pub async fn outbound(
     local: Arc<UdpSocket>,
     remote: Arc<UdpSocket>,
     wg_addr: WgAddr,
+    server: SocketAddr,
     key: [u8; 32],
 ) {
     let mut buf = vec![0u8; MAX_PACKET];
@@ -32,7 +34,7 @@ pub async fn outbound(
         };
         *wg_addr.lock().unwrap() = Some(src);
         let send_len = obfuscate(&mut rng, &mut buf, n, &key);
-        let _ = remote.send(&buf[..send_len]).await;
+        let _ = remote.send_to(&buf[..send_len], server).await;
     }
 }
 
@@ -40,13 +42,18 @@ pub async fn inbound(
     local: Arc<UdpSocket>,
     remote: Arc<UdpSocket>,
     wg_addr: WgAddr,
+    server: SocketAddr,
     key: [u8; 32],
 ) {
     let mut buf = vec![0u8; MAX_PACKET];
     loop {
-        let Ok(n) = remote.recv(&mut buf).await else {
+        let Ok((n, src)) = remote.recv_from(&mut buf).await else {
             break;
         };
+        // Drop anything not from the server
+        if src != server {
+            continue;
+        }
         let Some(addr) = *wg_addr.lock().unwrap() else {
             continue;
         };
