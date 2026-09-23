@@ -74,8 +74,8 @@ class AppTracker final : public QObject {
   void cgroupCreated(const QString& cgroup);
   void cgroupsChanged(const QString& directory);
   void dbusErrorOccurred(const QDBusError& err);
-  void userPropsFinished(const QVariantMap& props);
-  void cgroupPropFinished(const QDBusVariant& cgroup);
+  void userRuntimeFinished(const QDBusVariant& props);
+  void userCgroupFinished(const QDBusVariant& cgroup);
 
  private:
   static QString snapDesktopFileId(const QString& cgroup);

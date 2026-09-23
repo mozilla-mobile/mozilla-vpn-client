@@ -60,51 +60,26 @@ AppTracker::~AppTracker() {
 
 void AppTracker::userFetch() {
   auto msg = QDBusMessage::createMethodCall(DBUS_LOGIN_SERVICE, m_userObject,
-                                            DBUS_PROPERTY_INTERFACE, "GetAll");
+                                            DBUS_PROPERTY_INTERFACE, "Get");
   msg << QVariant(DBUS_LOGIN_USER);
+  msg << QVariant("RuntimePath");
 
   QDBusConnection bus = QDBusConnection::systemBus();
-  bus.callWithCallback(msg, this, SLOT(userPropsFinished(const QVariantMap&)),
+  bus.callWithCallback(msg, this,
+                       SLOT(userRuntimeFinished(const QDBusVariant&)),
                        SLOT(dbusErrorOccurred(const QDBusError&)));
 }
 
-void AppTracker::userPropsFinished(const QVariantMap& props) {
-  if (props.contains("UID")) {
-    m_userId = props.value("UID").toUInt();
-  }
+void AppTracker::userRuntimeFinished(const QDBusVariant& value) {
+  QString xdgRuntimePath = value.variant().toString();
 
-  QVariant state = props.value("State");
-  if (!state.isValid()) {
-    logger.error() << "User" << m_userId << "has invalid user state";
-    return;
-  }
-  logger.debug() << "User" << m_userId << "state is:" << state.toString();
-  if (state.toString() == "opening") {
-    // I can't find a signal to hook into, so we are reduced to polling.
+  // Get the UID from the user's runtime path.
+  struct stat st;
+  if (stat(qPrintable(xdgRuntimePath), &st) != 0) {
     QTimer::singleShot(100, this, &AppTracker::userFetch);
     return;
   }
-
-  if (!props.contains("RuntimePath")) {
-    logger.warning() << "Failed to find XDG runtime path";
-    return;
-  }
-
-  userCreated(props.value("RuntimePath").toString());
-}
-
-void AppTracker::userCreated(const QString& xdgRuntimePath) {
-  logger.debug() << "User" << m_userId << "runtime created:" << xdgRuntimePath;
-
-  // Determine the UID of the user runtime.
-  struct stat st;
-  if (stat(qPrintable(xdgRuntimePath), &st) != 0) {
-    logger.warning() << "Failed to stat XDG runtime path:" << strerror(errno);
-    return;
-  }
-  if (st.st_uid == 0) {
-    return;
-  }
+  m_userId = st.st_uid;
 
   /* Acquire the effective UID of the user to connect to their session bus. */
   uid_t realuid = getuid();
@@ -113,17 +88,27 @@ void AppTracker::userCreated(const QString& xdgRuntimePath) {
       logger.warning() << "Failed to restore effective UID";
     }
   });
-  if (seteuid(st.st_uid) < 0) {
+  if (m_userId == 0) {
+    guard.dismiss();
+  } else if (seteuid(m_userId) < 0) {
     logger.warning() << "Failed to set effective UID";
     guard.dismiss();
     return;
   }
 
+  // Wait for the user's session bus socket to exist.
+  QString busPath = xdgRuntimePath + "/bus";
+  if (stat(qPrintable(busPath), &st) != 0) {
+    QTimer::singleShot(100, this, &AppTracker::userFetch);
+    return;
+  }
+
   /* Connect to the user's session bus. */
-  QString busPath = "unix:path=" + xdgRuntimePath + "/bus";
-  logger.debug() << "Connection to" << busPath;
+  logger.debug() << QString("user(%1)").arg(m_userId)
+                 << "session bus:" << busPath;
   m_connectionName = "apptracker-" + xdgRuntimePath;
-  auto conn = QDBusConnection::connectToBus(busPath, m_connectionName);
+  QDBusConnection conn =
+      QDBusConnection::connectToBus("unix:path=" + busPath, m_connectionName);
 
   // Fetch the user's control group to begin monitoring application scopes.
   auto msg = QDBusMessage::createMethodCall(
@@ -131,11 +116,11 @@ void AppTracker::userCreated(const QString& xdgRuntimePath) {
   msg << QVariant(DBUS_SYSTEMD_MANAGER);
   msg << QVariant("ControlGroup");
   conn.callWithCallback(msg, this,
-                        SLOT(cgroupPropFinished(const QDBusVariant&)),
+                        SLOT(userCgroupFinished(const QDBusVariant&)),
                         SLOT(dbusErrorOccurred(const QDBusError&)));
 }
 
-void AppTracker::cgroupPropFinished(const QDBusVariant& cgroup) {
+void AppTracker::userCgroupFinished(const QDBusVariant& cgroup) {
   m_userCgroup = cgroup.variant().toString();
   if (m_cgroupMount.isEmpty() || m_userCgroup.isEmpty()) {
     return;
