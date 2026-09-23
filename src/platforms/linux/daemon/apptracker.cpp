@@ -254,17 +254,29 @@ void AppTracker::cgroupCreated(const QString& cgroup) {
           &QObject::deleteLater);
 }
 
+QString AppTracker::path2cgroup(const QString& path) const {
+  if (!path.startsWith(m_cgroupMount)) {
+    return QString();
+  }
+  QString cgroup = path.sliced(m_cgroupMount.size());
+  if (cgroup.isEmpty() || cgroup.front() != '/') {
+    return QString();
+  }
+  return cgroup;
+}
+
 void AppTracker::cgroupsChanged(const QString& directory) {
   QDir dir(directory);
   QDir mountpoint(m_cgroupMount);
+  QString cgroup = path2cgroup(directory);
+  if (cgroup.isEmpty()) {
+    return;
+  }
+
   QHash<QString, QString> oldCgroups(m_runningCgroups);
 
   // The entire directory has been removed.
   if (!dir.exists()) {
-    QString cgroup = mountpoint.relativeFilePath(directory);
-    if (!cgroup.startsWith('/')) {
-      cgroup.prepend('/');
-    }
     logger.debug() << QString("cgroup(%1)").arg(m_userId)
                    << "removed:" << cgroup;
 
@@ -288,16 +300,15 @@ void AppTracker::cgroupsChanged(const QString& directory) {
   QFileInfoList newScopes =
       dir.entryInfoList(QStringList{"*.scope", "*.service"}, QDir::Dirs);
   for (const QFileInfo& scope : newScopes) {
-    // We need the path starting from the Cgroupv2 mount point.
-    QString path = mountpoint.relativeFilePath(scope.canonicalFilePath());
-    if (!path.startsWith('/')) {
-      path.prepend('/');
+    QString newCgroup = path2cgroup(scope.canonicalFilePath());
+    if (newCgroup.isEmpty()) {
+      continue;
     }
 
-    if (!oldCgroups.remove(path)) {
+    if (!oldCgroups.remove(newCgroup)) {
       // This is a new scope, let's add it.
-      m_runningCgroups[path] = QString();
-      cgroupCreated(path);
+      m_runningCgroups[newCgroup] = QString();
+      cgroupCreated(newCgroup);
     }
   }
 

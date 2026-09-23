@@ -79,6 +79,7 @@ class AppTracker final : public QObject {
 
  private:
   static QString snapDesktopFileId(const QString& cgroup);
+  QString path2cgroup(const QString& path) const;
   void cgroupResolved(const QString& cgroup, const QString& desktopFileId);
 
   void userFetch();
