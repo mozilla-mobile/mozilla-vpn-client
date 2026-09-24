@@ -91,6 +91,12 @@ class ServerData final : public QObject {
   bool serverLocatedInUserCountry();
   bool supportsCurrentObfuscationMethod();
 
+  Q_INVOKABLE bool currentCityOffersObfuscationMethod(
+      SettingsHolder::ObfuscationPolicy obfuscationPolicy);
+
+  Q_INVOKABLE bool cityOffersSelectedObfuscationMethod(
+      const QString& countryCode, const QString& cityName);
+
   const QString& previousExitCountryCode() const {
     return m_previousExitCountryCode;
   }
