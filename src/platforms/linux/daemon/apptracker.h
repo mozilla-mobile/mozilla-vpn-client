@@ -83,7 +83,7 @@ class AppTracker final : public QObject {
   void cgroupResolved(const QString& cgroup, const QString& desktopFileId);
 
   void userFetch();
-  void userCreated(const QString& xdgRuntimePath);
+  void userConnect();
 
  private:
   // D-Bus connection name to the user's D-Bus session.
@@ -92,6 +92,7 @@ class AppTracker final : public QObject {
   // Systemd login session.
   const QString m_userObject;
   QString m_userCgroup;
+  QString m_userSocket;
   uint m_userId = 0;
 
   // Monitoring of the user's control groups.

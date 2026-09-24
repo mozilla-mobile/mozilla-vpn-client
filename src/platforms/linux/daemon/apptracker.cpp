@@ -80,7 +80,12 @@ void AppTracker::userRuntimeFinished(const QDBusVariant& value) {
     return;
   }
   m_userId = st.st_uid;
+  m_userSocket = xdgRuntimePath + "/bus";
 
+  userConnect();
+}
+
+void AppTracker::userConnect() {
   /* Acquire the effective UID of the user to connect to their session bus. */
   uid_t realuid = getuid();
   auto guard = qScopeGuard([realuid] {
@@ -97,18 +102,18 @@ void AppTracker::userRuntimeFinished(const QDBusVariant& value) {
   }
 
   // Wait for the user's session bus socket to exist.
-  QString busPath = xdgRuntimePath + "/bus";
-  if (stat(qPrintable(busPath), &st) != 0) {
-    QTimer::singleShot(100, this, &AppTracker::userFetch);
+  struct stat st;
+  if (stat(qPrintable(m_userSocket), &st) != 0) {
+    QTimer::singleShot(100, this, &AppTracker::userConnect);
     return;
   }
 
   /* Connect to the user's session bus. */
   logger.debug() << QString("user(%1)").arg(m_userId)
-                 << "session bus:" << busPath;
-  m_connectionName = "apptracker-" + xdgRuntimePath;
-  QDBusConnection conn =
-      QDBusConnection::connectToBus("unix:path=" + busPath, m_connectionName);
+                 << "session bus:" << m_userSocket;
+  m_connectionName = "apptracker-" + m_userSocket;
+  auto conn = QDBusConnection::connectToBus("unix:path=" + m_userSocket,
+                                            m_connectionName);
 
   // Fetch the user's control group to begin monitoring application scopes.
   auto msg = QDBusMessage::createMethodCall(
