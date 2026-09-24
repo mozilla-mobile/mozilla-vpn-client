@@ -97,6 +97,7 @@ qt_add_qml_module(mozillavpn-ui
         screens/subscriptionNeeded/ViewSubscriptionNeeded.qml
         sharedViews/ViewErrorFullScreen.qml
         sharedViews/ViewPermissionRequiredOSX.qml
+        sharedViews/ViewNetworkManagerUnavailable.qml
         sharedViews/ViewUpdate.qml
     SOURCES
         composer/composer.cpp

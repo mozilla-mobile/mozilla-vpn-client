@@ -21,6 +21,8 @@ MZScreenBase {
             getStack().push("qrc:/qt/qml/Mozilla/VPN/sharedViews/ViewPermissionRequiredOSX.qml")
             return;
         }
-        // TODO: What to display otherwise?
+        if (MZEnv.isFlatpak) {
+            getStack().push("qrc:/qt/qml/Mozilla/VPN/sharedViews/ViewNetworkManagerUnavailable.qml")
+        }
     }
 }

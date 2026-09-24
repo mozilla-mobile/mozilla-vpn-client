@@ -26,6 +26,7 @@ class Env final : public QObject {
   Q_PROPERTY(QString osVersion READ osVersion CONSTANT)
   Q_PROPERTY(QString architecture READ architecture CONSTANT)
   Q_PROPERTY(QString platform READ platform CONSTANT)
+  Q_PROPERTY(bool isFlatpak READ isFlatpak CONSTANT)
 
 #ifdef UNIT_TEST
   Q_PROPERTY(
@@ -56,6 +57,13 @@ class Env final : public QObject {
   }
   static QString architecture() { return QSysInfo::currentCpuArchitecture(); }
   static QString platform() { return Constants::PLATFORM_NAME; }
+  static bool isFlatpak() {
+#ifdef MZ_FLATPAK
+    return true;
+#else
+    return false;
+#endif
+  }
   static QString devVersion();
   static QString graphicsApi();
 
