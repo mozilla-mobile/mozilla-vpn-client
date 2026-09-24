@@ -1,4 +1,4 @@
-multidict >= 5.0.0 
-yarl>=1.24.2
-taskcluster==101.1.0
-sentry-cli==3.6.0
+multidict >= 6.8.0 
+yarl>=1.25.1
+taskcluster==110.0.0
+sentry-cli==3.8.0
