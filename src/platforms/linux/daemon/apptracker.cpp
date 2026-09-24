@@ -185,7 +185,7 @@ QString AppTracker::snapDesktopFileId(const QString& scope) {
 }
 
 void AppTracker::cgroupResolved(const QString& cgroup, const QString& fileId) {
-  if (!fileId.isEmpty()) {
+  if (m_runningCgroups.contains(cgroup) && !fileId.isEmpty()) {
     m_runningCgroups[cgroup] = fileId;
     emit appLaunched(cgroup, fileId);
   }
