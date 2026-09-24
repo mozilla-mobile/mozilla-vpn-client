@@ -68,7 +68,7 @@ class MVPNWasm {
     const u = new URL(url);
 
     let obj;
-    if (u.hostname === 'stage.guardian.nonprod.cloudops.mozgcp.net') {
+    if (u.hostname === 'vpn.allizom.org') {
       obj = this._findResponse(
           method, u, body, guardianEndpoints.endpoints,
           this._guardianOverrideEndpoints,
@@ -76,8 +76,7 @@ class MVPNWasm {
     } else if (u.hostname === 'api-accounts.stage.mozaws.net') {
       obj = this._findResponse(
           method, u, body,
-          fxaEndpoints.generateEndpoints(
-              'https://stage.guardian.nonprod.cloudops.mozgcp.net'),
+          fxaEndpoints.generateEndpoints('https://vpn.allizom.org'),
           this._fxaOverrideEndpoints, this._fxaOverrideEndpointsPreset);
     } else if (
         url == 'https://archive.mozilla.org/pub/vpn/speedtest/50m.data') {

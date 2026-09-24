@@ -165,8 +165,7 @@ TIMEREXPR(statusIconAnimation, 200ms, 200ms, 0ms)
 }  // namespace Timers
 
 constexpr const char* API_PRODUCTION_URL = "https://vpn.mozilla.org";
-constexpr const char* API_STAGING_URL =
-    "https://stage.guardian.nonprod.cloudops.mozgcp.net";
+constexpr const char* API_STAGING_URL = "https://vpn.allizom.org";
 
 constexpr auto CRASH_PRODUCTION_URL =
     "https://crash-reports.mozilla.com/submit";

@@ -14,16 +14,21 @@ void TestIpAddressLookup::checkIpAddressFailure() {
   IpAddressLookup ial;
   ial.reset();
 
-  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-      TestHelper::NetworkConfig::Failure, QByteArray()));
-  TestHelper::networkConfig.append(TestHelper::NetworkConfig(
-      TestHelper::NetworkConfig::Failure, QByteArray()));
+  // TaskIPFinder creates one request per resolved address of the staging
+  // host, and that count varies (CDN-backed). Queue enough responses.
+  TestHelper::networkConfig.clear();
+  for (int i = 0; i < 16; ++i) {
+    TestHelper::networkConfig.append(TestHelper::NetworkConfig(
+        TestHelper::NetworkConfig::Failure, QByteArray()));
+  }
 
   QEventLoop loop;
   connect(&ial, &IpAddressLookup::ipAddressChecked, &ial, [&] { loop.exit(); });
 
   ial.updateIpAddress();
   loop.exec();
+
+  TestHelper::networkConfig.clear();
 }
 
 void TestIpAddressLookup::checkIpAddressSucceess_data() {
@@ -54,10 +59,10 @@ void TestIpAddressLookup::checkIpAddressSucceess() {
   TestHelper::networkConfig.clear();
 
   QFETCH(QByteArray, json);
-  TestHelper::networkConfig.append(
-      TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
-  TestHelper::networkConfig.append(
-      TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
+  for (int i = 0; i < 16; ++i) {
+    TestHelper::networkConfig.append(
+        TestHelper::NetworkConfig(TestHelper::NetworkConfig::Success, json));
+  }
 
   QEventLoop loop;
   connect(&ial, &IpAddressLookup::ipAddressChecked, &ial, [&] {
@@ -71,6 +76,8 @@ void TestIpAddressLookup::checkIpAddressSucceess() {
 
   ial.updateIpAddress();
   loop.exec();
+
+  TestHelper::networkConfig.clear();
 }
 
 static TestIpAddressLookup s_testIpAddressLookup;
