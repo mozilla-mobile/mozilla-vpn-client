@@ -6,6 +6,12 @@
 
 FetchContent_Declare(libcares SOURCE_DIR "${CMAKE_CURRENT_LIST_DIR}/c-ares")
 
+# It seems like the pipe2 syscall was added in version 27.0, but this throws
+# compile warnings when we target an earlier deployment target.
+if(APPLE AND (CMAKE_OSX_DEPLOYMENT_TARGET VERSION_LESS "27.0"))
+    set(HAVE_PIPE2 OFF CACHE BOOL "Force disable pipe2" FORCE)
+endif()
+
 # Set options before calling FetchContent_MakeAvailable
 set(CARES_STATIC ON CACHE BOOL "Build static c-ares" FORCE)
 set(CARES_SHARED OFF CACHE BOOL "Disable shared c-ares" FORCE)
