@@ -106,6 +106,8 @@ MZFlickable {
             spacing: MZTheme.theme.listSpacing
 
             MZInterLabel {
+                visible: !extension
+
                 Layout.topMargin: 8
                 Layout.fillWidth: true
 
