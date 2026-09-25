@@ -21,4 +21,8 @@ bool DummyObfuscator::start() {
   return false;
 }
 
+bool DummyObfuscator::restart() { return start(); }
+
+bool DummyObfuscator::isRunning() const { return false; }
+
 DummyObfuscator::~DummyObfuscator() { MZ_COUNT_DTOR(DummyObfuscator); }
