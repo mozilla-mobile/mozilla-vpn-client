@@ -39,22 +39,17 @@ DBusService::DBusService(QObject* parent) : Daemon(parent) {
            WG_INTERFACE);
   }
 
-  m_appTracker = new AppTracker(this);
-  connect(m_appTracker, SIGNAL(appLaunched(QString, QString)), this,
-          SLOT(appLaunched(QString, QString)));
-  connect(m_appTracker, SIGNAL(appTerminated(QString, QString)), this,
-          SLOT(appTerminated(QString, QString)));
-
   // Setup to track user login sessions.
   QDBusConnection bus = QDBusConnection::systemBus();
   if (!bus.isConnected()) {
     logger.error() << "System bus is not connected?";
   }
-  if (!bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserNew", this,
-                   SLOT(userCreated(uint, QDBusObjectPath)))) {
+  if (!bus.connect(DBUS_LOGIN_SERVICE, DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER,
+                   "UserNew", this, SLOT(userCreated(uint, QDBusObjectPath)))) {
     logger.error() << "Failed to connect to UserNew signal";
   }
-  if (!bus.connect("", DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER, "UserRemoved", this,
+  if (!bus.connect(DBUS_LOGIN_SERVICE, DBUS_LOGIN_PATH, DBUS_LOGIN_MANAGER,
+                   "UserRemoved", this,
                    SLOT(userRemoved(uint, QDBusObjectPath)))) {
     logger.error() << "Failed to connect to UserRemoved signal";
   }
@@ -177,45 +172,44 @@ void DBusService::userListCompleted(QDBusPendingCallWatcher* watcher) {
 }
 
 void DBusService::userCreated(uint uid, const QDBusObjectPath& path) {
-  QDBusInterface iface(DBUS_LOGIN_SERVICE, path.path(), DBUS_LOGIN_USER,
-                       QDBusConnection::systemBus());
-  if (!iface.isValid()) {
-    return;
-  }
+  Q_UNUSED(uid);
 
-  // Ensure that systemd has finished creating the user object.
-  QVariant state = iface.property("State");
-  if (!state.isValid()) {
-    logger.error() << "User" << uid << "has invalid user state";
-    return;
-  }
-  logger.debug() << "User" << uid << "state is:" << state.toString();
-  if (state.toString() == "opening") {
-    // I can't find a signal to hook into, so we are reduced to polling.
-    QTimer* timer = new QTimer(this);
-    connect(timer, &QTimer::timeout, this,
-            [this, uid, path]() { userCreated(uid, path); });
-    timer->setSingleShot(true);
-    timer->start(100);
-    return;
-  }
+  // Create a new AppTracker instance for this user.
+  if (!m_appTrackers.contains(path.path())) {
+    AppTracker* tracker = new AppTracker(path.path(), this);
+    m_appTrackers.insert(path.path(), tracker);
 
-  QVariant runtime = iface.property("RuntimePath");
-  if (!runtime.isValid()) {
-    logger.error() << "User" << uid << "has invalid runtime path";
-    return;
+    connect(tracker, SIGNAL(appLaunched(QString, QString)), this,
+            SLOT(appLaunched(QString, QString)));
+    connect(tracker, SIGNAL(appTerminated(QString, QString)), this,
+            SLOT(appTerminated(QString, QString)));
   }
-  m_appTracker->userCreated(uid, runtime.toString());
 }
 
 void DBusService::userRemoved(uint uid, const QDBusObjectPath& path) {
-  Q_UNUSED(path);
-  m_appTracker->userRemoved(uid);
+  Q_UNUSED(uid);
+
+  AppTracker* tracker = m_appTrackers.take(path.path());
+  if (!tracker) {
+    return;
+  }
+
+  // Drop all control groups from this user.
+  for (const QString& cgroup : tracker->appControlGroups()) {
+    if (m_excludedCgroups.remove(cgroup)) {
+      m_wgutils->resetCgroup(cgroup);
+    }
+  }
+
+  delete tracker;
 }
 
 void DBusService::appLaunched(const QString& cgroup,
                               const QString& desktopFileId) {
-  logger.debug() << "tracking:" << cgroup << "id:" << desktopFileId;
+  AppTracker* sender = qobject_cast<AppTracker*>(QObject::sender());
+  uint uid = sender ? sender->userId() : 0;
+  logger.debug() << QString("tracking(%1):").arg(uid)
+                 << basename(qPrintable(cgroup)) << "id:" << desktopFileId;
 
   AppState state = m_excludedApps.value(desktopFileId, Active);
   if (state == Active) {
@@ -232,12 +226,23 @@ void DBusService::appLaunched(const QString& cgroup,
 
 void DBusService::appTerminated(const QString& cgroup,
                                 const QString& desktopFileId) {
-  logger.debug() << "terminate:" << cgroup << "id:" << desktopFileId;
+  AppTracker* sender = qobject_cast<AppTracker*>(QObject::sender());
+  uint uid = sender ? sender->userId() : 0;
+  logger.debug() << QString("terminate(%1):").arg(uid)
+                 << basename(qPrintable(cgroup)) << "id:" << desktopFileId;
 
   // Remove any firewall rules applied to this control group.
   if (m_excludedCgroups.remove(cgroup)) {
     m_wgutils->resetCgroup(cgroup);
   }
+}
+
+QStringList DBusService::findByDesktopFileId(const QString& id) const {
+  QStringList result;
+  for (auto i = m_appTrackers.cbegin(); i != m_appTrackers.cend(); i++) {
+    result.append(i.value()->findByDesktopFileId(id));
+  }
+  return result;
 }
 
 void DBusService::setAppState(const QString& desktopFileId, AppState state) {
@@ -246,8 +251,7 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
   // When the App is "Active" there is no special manipulation to do.
   if (state == Active) {
     m_excludedApps.remove(desktopFileId);
-    for (const QString& cgroup :
-         m_appTracker->findByDesktopFileId(desktopFileId)) {
+    for (const QString& cgroup : findByDesktopFileId(desktopFileId)) {
       m_wgutils->resetCgroup(cgroup);
     }
     return;
@@ -255,8 +259,7 @@ void DBusService::setAppState(const QString& desktopFileId, AppState state) {
 
   // Otherwise, apply special handling to any matching control groups.
   m_excludedApps[desktopFileId] = state;
-  for (const QString& cgroup :
-       m_appTracker->findByDesktopFileId(desktopFileId)) {
+  for (const QString& cgroup : findByDesktopFileId(desktopFileId)) {
     if (m_excludedCgroups.contains(cgroup)) {
       m_wgutils->resetCgroup(cgroup);
     }
