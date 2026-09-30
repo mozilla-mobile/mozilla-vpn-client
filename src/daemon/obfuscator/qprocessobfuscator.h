@@ -18,11 +18,11 @@ class QProcessObfuscator final : public Obfuscator {
 
   bool start() override;
   quint16 localPort() const override { return m_localPort; }
+  static QString getObfuscatorExecutablePath();
 
  private:
   quint16 parseListeningPort(const QByteArray& line) const;
   QStringList buildArgs(const InterfaceConfig& config);
-  QString binaryName() const;
 
   QProcess m_process;
   quint16 m_localPort = 0;
