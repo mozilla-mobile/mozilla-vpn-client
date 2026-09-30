@@ -23,6 +23,7 @@
 #include <QtEndian>
 #include <utility>
 
+#include "daemon/obfuscator/qprocessobfuscator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -200,6 +201,17 @@ bool WindowsFirewall::enableInterface(int vpnAdapterIndex) {
   }
   msg = "Allow all for Mozilla VPN.exe";
   if (!allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT, msg)) {
+    return false;
+  }
+  // We use excludeLocalNetworks to make the obfuscator escape the tunnel.
+  // excludeLocalNetworks sets the correct routes, but the firewall rules
+  // it creates are LOW_WEIGHT. As a result, obfuscators using port 53
+  // will still be caught by the MED_WEIGHT DNS blocking rule.
+  // Adding a firewall exception for the obfuscator daemon allows it to
+  // bypass the firewall rules.
+  msg = "Allow all for mozillavpn-obfuscator.exe";
+  if (!allowTrafficForAppOnAll(
+          QProcessObfuscator::getObfuscatorExecutablePath(), MAX_WEIGHT, msg)) {
     return false;
   }
   if (!blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS")) {
