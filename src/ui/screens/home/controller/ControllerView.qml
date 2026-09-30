@@ -630,7 +630,6 @@ Item {
             id: connectionStability
             Accessible.ignored: !visible
             width: parent.width
-            implicitHeight: childrenRect.height
         }
 
         MZInterLabel {
