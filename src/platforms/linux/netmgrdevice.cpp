@@ -4,6 +4,7 @@
 
 #include "netmgrdevice.h"
 
+#include "dbustypes.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "netmgrtypes.h"
@@ -27,8 +28,7 @@ NetmgrDevice::NetmgrDevice(const QString& path, QObject* parent)
 
   // Watch for property changes
   m_interface.connection().connect(
-      DBUS_NM_SERVICE, path, "org.freedesktop.DBus.Properties",
-      "PropertiesChanged", this,
+      DBUS_NM_SERVICE, path, DBUS_PROPERTY_INTERFACE, "PropertiesChanged", this,
       SLOT(propertyChanged(QString, QVariantMap, QStringList)));
 
   m_state = m_interface.property("State").toUInt();

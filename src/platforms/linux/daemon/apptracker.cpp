@@ -4,10 +4,12 @@
 
 #include "apptracker.h"
 
+#include <sys/stat.h>
 #include <unistd.h>
 
 #include <QDBusConnection>
 #include <QDBusInterface>
+#include <QDBusObjectPath>
 #include <QMetaType>
 #include <QScopeGuard>
 #include <QtDBus/QtDBus>
@@ -23,71 +25,132 @@ constexpr const char* DBUS_SYSTEMD_PATH = "/org/freedesktop/systemd1";
 constexpr const char* DBUS_SYSTEMD_MANAGER = "org.freedesktop.systemd1.Manager";
 constexpr const char* DBUS_SYSTEMD_UNIT = "org.freedesktop.systemd1.Unit";
 
+constexpr const char* DBUS_LOGIN_SERVICE = "org.freedesktop.login1";
+constexpr const char* DBUS_LOGIN_USER = "org.freedesktop.login1.User";
+
 namespace {
 Logger logger("AppTracker");
 }  // namespace
 
-AppTracker::AppTracker(QObject* parent) : QObject(parent) {
+AppTracker::AppTracker(const QString& path, QObject* parent)
+    : QObject(parent), m_userObject(path) {
   MZ_COUNT_CTOR(AppTracker);
-  logger.debug() << "AppTracker created.";
+  logger.debug() << "AppTracker created:" << path;
+
+  connect(&m_cgroupWatcher, &QFileSystemWatcher::directoryChanged, this,
+          &AppTracker::cgroupsChanged);
 
   /* Monitor for changes to the user's application control groups. */
   m_cgroupMount = LinuxUtils::findCgroup2Path();
+
+  // Fetch the user's runtime properties.
+  userFetch();
 }
 
 AppTracker::~AppTracker() {
   MZ_COUNT_DTOR(AppTracker);
-  logger.debug() << "AppTracker destroyed.";
+  logger.debug() << "AppTracker destroyed:" << m_userObject;
+
+  if (!m_connectionName.isEmpty()) {
+    QDBusConnection::disconnectFromBus(m_connectionName);
+  }
 
   m_runningCgroups.clear();
 }
 
-void AppTracker::userCreated(uint userid, const QString& xdgRuntimePath) {
-  logger.debug() << "User created uid:" << userid << "at:" << xdgRuntimePath;
+void AppTracker::userFetch() {
+  auto msg = QDBusMessage::createMethodCall(DBUS_LOGIN_SERVICE, m_userObject,
+                                            DBUS_PROPERTY_INTERFACE, "Get");
+  msg << QVariant(DBUS_LOGIN_USER);
+  msg << QVariant("RuntimePath");
 
+  QDBusConnection bus = QDBusConnection::systemBus();
+  bus.callWithCallback(msg, this,
+                       SLOT(userRuntimeFinished(const QDBusVariant&)),
+                       SLOT(dbusErrorOccurred(const QDBusError&)));
+}
+
+void AppTracker::userRuntimeFinished(const QDBusVariant& value) {
+  QString xdgRuntimePath = value.variant().toString();
+
+  // Get the UID from the user's runtime path.
+  struct stat st;
+  if (stat(qPrintable(xdgRuntimePath), &st) != 0) {
+    QTimer::singleShot(100, this, &AppTracker::userFetch);
+    return;
+  }
+  m_userId = st.st_uid;
+  m_userSocket = xdgRuntimePath + "/bus";
+
+  userConnect();
+}
+
+void AppTracker::userConnect() {
   /* Acquire the effective UID of the user to connect to their session bus. */
   uid_t realuid = getuid();
-  auto guard = qScopeGuard([&] {
+  auto guard = qScopeGuard([realuid] {
     if (seteuid(realuid) < 0) {
       logger.warning() << "Failed to restore effective UID";
     }
   });
-  if (realuid == userid) {
+  if (m_userId == 0) {
     guard.dismiss();
-  } else if (seteuid(userid) < 0) {
+  } else if (seteuid(m_userId) < 0) {
     logger.warning() << "Failed to set effective UID";
+    guard.dismiss();
+    return;
+  }
+
+  // Wait for the user's session bus socket to exist.
+  struct stat st;
+  if (stat(qPrintable(m_userSocket), &st) != 0) {
+    QTimer::singleShot(100, this, &AppTracker::userConnect);
+    return;
   }
 
   /* Connect to the user's session bus. */
-  QString busPath = "unix:path=" + xdgRuntimePath + "/bus";
-  logger.debug() << "Connection to" << busPath;
-  QDBusConnection connection =
-      QDBusConnection::connectToBus(busPath, "user-" + QString::number(userid));
+  logger.debug() << QString("user(%1)").arg(m_userId)
+                 << "session bus:" << m_userSocket;
+  m_connectionName = "apptracker-" + m_userSocket;
+  auto conn = QDBusConnection::connectToBus("unix:path=" + m_userSocket,
+                                            m_connectionName);
 
-  // Watch the user's control groups for new application scopes.
-  m_systemdInterface =
-      new QDBusInterface(DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH,
-                         DBUS_SYSTEMD_MANAGER, connection, this);
-  QVariant qv = m_systemdInterface->property("ControlGroup");
-  if (!m_cgroupMount.isEmpty() && qv.typeId() == QMetaType::QString) {
-    QString userCgroupPath = m_cgroupMount + qv.toString();
-    logger.debug() << "Monitoring Control Groups v2 at:" << userCgroupPath;
-
-    connect(&m_cgroupWatcher, SIGNAL(directoryChanged(QString)), this,
-            SLOT(cgroupsChanged(QString)));
-
-    m_cgroupWatcher.addPath(userCgroupPath);
-    m_cgroupWatcher.addPath(userCgroupPath + "/app.slice");
-
-    cgroupsChanged(userCgroupPath);
-    cgroupsChanged(userCgroupPath + "/app.slice");
-  }
+  // Fetch the user's control group to begin monitoring application scopes.
+  auto msg = QDBusMessage::createMethodCall(
+      DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH, DBUS_PROPERTY_INTERFACE, "Get");
+  msg << QVariant(DBUS_SYSTEMD_MANAGER);
+  msg << QVariant("ControlGroup");
+  conn.callWithCallback(msg, this,
+                        SLOT(userCgroupFinished(const QDBusVariant&)),
+                        SLOT(dbusErrorOccurred(const QDBusError&)));
 }
 
-void AppTracker::userRemoved(uint userid) {
-  logger.debug() << "User removed uid:" << userid;
+void AppTracker::userCgroupFinished(const QDBusVariant& cgroup) {
+  m_userCgroup = cgroup.variant().toString();
+  if (m_cgroupMount.isEmpty() || m_userCgroup.isEmpty()) {
+    return;
+  }
 
-  QDBusConnection::disconnectFromBus("user-" + QString::number(userid));
+  QDir mountpoint(m_cgroupMount);
+  if (m_userCgroup.front() != '/') {
+    return;
+  }
+  if (!mountpoint.exists(m_userCgroup.sliced(1))) {
+    return;
+  }
+
+  QString userCgroupPath = m_cgroupMount + m_userCgroup;
+  logger.debug() << QString("cgroup(%1)").arg(m_userId)
+                 << "tracking:" << m_userCgroup;
+  m_cgroupWatcher.addPath(userCgroupPath);
+  m_cgroupWatcher.addPath(userCgroupPath + "/app.slice");
+
+  cgroupsChanged(userCgroupPath);
+  cgroupsChanged(userCgroupPath + "/app.slice");
+}
+
+void AppTracker::dbusErrorOccurred(const QDBusError& err) {
+  logger.warning() << "dbus error:" << err.message();
 }
 
 // The naming convention for snaps follows one of the following formats:
@@ -126,15 +189,23 @@ QString AppTracker::snapDesktopFileId(const QString& scope) {
   return QString("%1_%2.desktop").arg(package).arg(app);
 }
 
+void AppTracker::cgroupResolved(const QString& cgroup, const QString& fileId) {
+  if (m_runningCgroups.contains(cgroup) && !fileId.isEmpty()) {
+    m_runningCgroups[cgroup] = fileId;
+    emit appLaunched(cgroup, fileId);
+  }
+}
+
 // Make an attempt to resolve the desktop ID from a cgroup scope.
-QString AppTracker::findDesktopFileId(const QString& cgroup) {
+void AppTracker::cgroupCreated(const QString& cgroup) {
   QString scopeName = QFileInfo(cgroup).fileName();
 
   // Reverse the desktop ID from a cgroup scope and known launcher tools.
   if (scopeName.startsWith("app-")) {
     QString appId = XdgPortal::parseCgroupAppId(scopeName);
     if (!appId.isEmpty()) {
-      return appId + ".desktop";
+      cgroupResolved(cgroup, appId + ".desktop");
+      return;
     }
   }
 
@@ -150,66 +221,129 @@ QString AppTracker::findDesktopFileId(const QString& cgroup) {
     qsizetype start = gnomeLaunchdPrefix.length();
     qsizetype end = scopeName.lastIndexOf('-');
     if (end > start) {
-      return scopeName.mid(start, end - start);
+      cgroupResolved(cgroup, scopeName.mid(start, end - start));
+      return;
     }
   }
 
   // Snaps have their own format.
   if (scopeName.startsWith("snap.")) {
-    return snapDesktopFileId(scopeName);
+    cgroupResolved(cgroup, snapDesktopFileId(scopeName));
+    return;
   }
 
   // Otherwise, query the systemd unit for its SourcePath property, which is set
   // to the desktop file's full path on KDE.
-  QDBusReply<QDBusObjectPath> objPath =
-      m_systemdInterface->call("GetUnit", scopeName);
+  QDBusConnection bus(m_connectionName);
+  KdeFallbackTracker* fallback = new KdeFallbackTracker(cgroup, bus, this);
+  connect(fallback, &KdeFallbackTracker::errorOccurred, this,
+          &AppTracker::dbusErrorOccurred);
+  connect(fallback, &KdeFallbackTracker::finished, this,
+          &AppTracker::cgroupResolved);
+  connect(fallback, &KdeFallbackTracker::finished, fallback,
+          &QObject::deleteLater);
+}
 
-  QDBusInterface interface(DBUS_SYSTEMD_SERVICE, objPath.value().path(),
-                           DBUS_SYSTEMD_UNIT, m_systemdInterface->connection(),
-                           this);
-  QString source = interface.property("SourcePath").toString();
-  if (!source.isEmpty() && source.endsWith(".desktop")) {
-    return LinuxUtils::desktopFileId(source);
+QString AppTracker::path2cgroup(const QString& path) const {
+  if (!path.startsWith(m_cgroupMount)) {
+    return QString();
   }
-
-  // We don't know the desktop ID for this control group.
-  return QString();
+  QString cgroup = path.sliced(m_cgroupMount.size());
+  if (cgroup.isEmpty() || cgroup.front() != '/') {
+    return QString();
+  }
+  return cgroup;
 }
 
 void AppTracker::cgroupsChanged(const QString& directory) {
   QDir dir(directory);
   QDir mountpoint(m_cgroupMount);
-  QFileInfoList newScopes = dir.entryInfoList(
-      QStringList{"*.scope", "*@autostart.service"}, QDir::Dirs);
-  QStringList oldScopes = m_runningCgroups.keys();
+  QString cgroup = path2cgroup(directory);
+  if (cgroup.isEmpty()) {
+    return;
+  }
+
+  QHash<QString, QString> oldCgroups(m_runningCgroups);
+
+  // The entire directory has been removed.
+  if (!dir.exists()) {
+    logger.debug() << QString("cgroup(%1)").arg(m_userId)
+                   << "removed:" << cgroup;
+
+    for (auto i = oldCgroups.cbegin(); i != oldCgroups.cend(); i++) {
+      const QString& scope = i.key();
+      if (!scope.startsWith(cgroup)) {
+        continue;
+      }
+
+      if ((scope.size() == cgroup.size()) || (scope.at(cgroup.size()) == '/')) {
+        QString desktopFileId = m_runningCgroups.take(scope);
+        if (!desktopFileId.isEmpty()) {
+          emit appTerminated(scope, desktopFileId);
+        }
+      }
+    }
+    return;
+  }
 
   // Figure out what has been added.
+  QFileInfoList newScopes =
+      dir.entryInfoList(QStringList{"*.scope", "*.service"}, QDir::Dirs);
   for (const QFileInfo& scope : newScopes) {
-    // We need the path starting from the Cgroupv2 mount point.
-    QString path = mountpoint.relativeFilePath(scope.canonicalFilePath());
-    if (!path.startsWith('/')) {
-      path.prepend('/');
+    QString newCgroup = path2cgroup(scope.canonicalFilePath());
+    if (newCgroup.isEmpty()) {
+      continue;
     }
 
-    if (oldScopes.removeAll(path) == 0) {
+    if (!oldCgroups.remove(newCgroup)) {
       // This is a new scope, let's add it.
-      logger.debug() << "Control group created:" << path;
-      QString desktopFileId = findDesktopFileId(path);
-      m_runningCgroups[path] = desktopFileId;
-
-      emit appLaunched(path, desktopFileId);
+      m_runningCgroups[newCgroup] = QString();
+      cgroupCreated(newCgroup);
     }
   }
 
   // Anything left, if it shares the same root directory, has been removed.
-  for (const QString& scope : oldScopes) {
+  for (auto i = oldCgroups.cbegin(); i != oldCgroups.cend(); i++) {
+    const QString& scope = i.key();
     QFileInfo scopeInfo(m_cgroupMount + scope);
     if (scopeInfo.absolutePath() == directory) {
-      logger.debug() << "Control group removed:" << scope;
       Q_ASSERT(m_runningCgroups.contains(scope));
       QString desktopFileId = m_runningCgroups.take(scope);
-
-      emit appTerminated(scope, desktopFileId);
+      if (!desktopFileId.isEmpty()) {
+        emit appTerminated(scope, desktopFileId);
+      }
     }
+  }
+}
+
+KdeFallbackTracker::KdeFallbackTracker(const QString& cgroup,
+                                       const QDBusConnection& bus,
+                                       QObject* parent)
+    : QObject(parent), m_cgroup(cgroup) {
+  auto msg = QDBusMessage::createMethodCall(
+      DBUS_SYSTEMD_SERVICE, DBUS_SYSTEMD_PATH, DBUS_SYSTEMD_MANAGER,
+      "GetUnitByControlGroup");
+  msg << QVariant(cgroup);
+  bus.callWithCallback(msg, this,
+                       SLOT(unitLookupFinished(const QDBusObjectPath&)),
+                       SIGNAL(errorOccurred(const QDBusError&)));
+}
+
+void KdeFallbackTracker::unitLookupFinished(const QDBusObjectPath& unit) {
+  auto msg = QDBusMessage::createMethodCall(DBUS_SYSTEMD_SERVICE, unit.path(),
+                                            DBUS_PROPERTY_INTERFACE, "Get");
+  msg << QVariant(DBUS_SYSTEMD_UNIT);
+  msg << QVariant("SourcePath");
+  connection().callWithCallback(msg, this,
+                                SLOT(sourceLookupFinished(const QDBusVariant&)),
+                                SIGNAL(errorOccurred(const QDBusError&)));
+}
+
+void KdeFallbackTracker::sourceLookupFinished(const QDBusVariant& source) {
+  QString path = source.variant().toString();
+  if (!path.endsWith(".desktop")) {
+    emit finished(m_cgroup, QString());
+  } else {
+    emit finished(m_cgroup, LinuxUtils::desktopFileId(path));
   }
 }
