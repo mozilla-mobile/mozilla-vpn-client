@@ -32,19 +32,17 @@ QProcessObfuscator::QProcessObfuscator(const InterfaceConfig& config) {
     return;
   }
 
-  QString binaryFile = binaryName();
-  if (binaryFile.isEmpty()) {
+  QString obfuscatorExecPath = getObfuscatorExecutablePath();
+  if (obfuscatorExecPath.isEmpty()) {
     return;
   }
 
-  binaryFile =
-      QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(binaryFile);
-  if (!QFileInfo::exists(binaryFile)) {
-    logger.error() << "Obfuscator binary not found at" << binaryFile;
+  if (!QFileInfo::exists(obfuscatorExecPath)) {
+    logger.error() << "Obfuscator binary not found at" << obfuscatorExecPath;
     return;
   }
 
-  m_process.setProgram(binaryFile);
+  m_process.setProgram(obfuscatorExecPath);
   m_process.setArguments(args);
   // Merge stderr into stdout so we can read the "listening on" announce line
   m_process.setProcessChannelMode(QProcess::MergedChannels);
@@ -124,15 +122,18 @@ QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config) {
   return args;
 }
 
-QString QProcessObfuscator::binaryName() const {
+// static
+QString QProcessObfuscator::getObfuscatorExecutablePath() {
+  QString binaryFile;
 #if defined(MZ_WINDOWS)
-  return QStringLiteral("mozillavpn-obfuscator.exe");
+  binaryFile = QStringLiteral("mozillavpn-obfuscator.exe");
 #elif defined(MZ_LINUX)
-  return QStringLiteral("mozillavpn-obfuscator");
+  binaryFile = QStringLiteral("mozillavpn-obfuscator");
 #else
   logger.error() << "Obfuscation is not supported on this platform";
   return QString();
 #endif
+  return QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(binaryFile);
 }
 
 QProcessObfuscator::~QProcessObfuscator() {
