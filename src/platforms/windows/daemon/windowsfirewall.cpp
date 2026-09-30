@@ -23,12 +23,12 @@
 #include <QtEndian>
 #include <utility>
 
+#include "daemon/obfuscator/qprocessobfuscator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
 #include "platforms/windows/windowsutils.h"
 #include "winsock.h"
-#include "daemon/obfuscator/qprocessobfuscator.h"
 
 #define IPV6_ADDRESS_SIZE 16
 
@@ -210,7 +210,8 @@ bool WindowsFirewall::enableInterface(int vpnAdapterIndex) {
   // Adding a firewall exception for the obfuscator daemon allows it to
   // bypass the firewall rules.
   msg = "Allow all for mozillavpn-obfuscator.exe";
-  if (!allowTrafficForAppOnAll(QProcessObfuscator::getObfuscatorExecutablePath(), MAX_WEIGHT, msg)) {
+  if (!allowTrafficForAppOnAll(
+          QProcessObfuscator::getObfuscatorExecutablePath(), MAX_WEIGHT, msg)) {
     return false;
   }
   if (!blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS")) {

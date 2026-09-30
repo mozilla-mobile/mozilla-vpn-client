@@ -133,7 +133,8 @@ QString QProcessObfuscator::getObfuscatorExecutablePath() {
   logger.error() << "Obfuscation is not supported on this platform";
   return QString();
 #endif
-  return QDir(QCoreApplication::applicationDirPath()).absoluteFilePath(binaryFile);
+  return QDir(QCoreApplication::applicationDirPath())
+      .absoluteFilePath(binaryFile);
 }
 
 QProcessObfuscator::~QProcessObfuscator() {
