@@ -1,0 +1,6 @@
+# one originalTransactionId per line
+
+# fake simulated data
+247591748348424
+189438943713794
+517501332114093
