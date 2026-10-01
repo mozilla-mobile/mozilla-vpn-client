@@ -55,6 +55,17 @@ TODO: Add details on several other scripts in the `utils` directory
 - ./addon/index.py - TODO: add description
 - ./addon/adjust_default_update_addon.py - Takes some basic info, and re-writes the message_update_default manifest
 
+
+# In App Purchase
+Apple and Google make APIs available for extending active subscriptions. This is useful when there
+is an outage and we want to extend service as an apology. These scripts extend service. After calling
+these APIs, Apple/Google hit an SubPlat webhook, and so Mozilla's subscription data is kept in sync.
+More details about authentication at the top of script files.
+
+- ./in_app_purchase/android-extension.py - for Android extensions
+- ./in_app_purchase/apple-extension.py - for iOS extensions
+
+
 # Others
 
 - ./tooltool.py - utility used in taskcluster

@@ -98,6 +98,7 @@ SettingsHolder
 Spacebar
 Speedtest
 Stenberg
+SubPlat
 SwiftyPing
 TBD
 TODO
@@ -318,6 +319,7 @@ votre
 vpn
 vscode
 wasm
+webhook
 webservice
 websocket
 wgconf
