@@ -215,6 +215,33 @@ bool ServerData::supportsCurrentObfuscationMethod() {
   return exitServer().supportObfuscationMethod(currentObfuscationMethod);
 }
 
+bool ServerData::currentCityOffersObfuscationMethod(
+    SettingsHolder::ObfuscationPolicy obfuscationPolicy) {
+  Server::ObfuscationMethod method =
+      obfuscationPolicyToObfuscationMethod(obfuscationPolicy);
+
+  // Obfuscation is applied on the entry hop for multi hop, exit hop for single
+  // hop.
+  const QString& countryCode =
+      multihop() ? m_entryCountryCode : m_exitCountryCode;
+  const QString& cityName = multihop() ? m_entryCityName : m_exitCityName;
+
+  return MozillaVPN::instance()
+      ->serverCountryModel()
+      ->cityOffersObfuscationMethod(countryCode, cityName, method);
+}
+
+bool ServerData::cityOffersSelectedObfuscationMethod(const QString& countryCode,
+                                                     const QString& cityName) {
+  Server::ObfuscationMethod method = obfuscationPolicyToObfuscationMethod(
+      static_cast<SettingsHolder::ObfuscationPolicy>(
+          SettingsHolder::instance()->obfuscationPolicy()));
+
+  return MozillaVPN::instance()
+      ->serverCountryModel()
+      ->cityOffersObfuscationMethod(countryCode, cityName, method);
+}
+
 void ServerData::changeServer(const QString& countryCode,
                               const QString& cityName,
                               const QString& entryCountryCode,

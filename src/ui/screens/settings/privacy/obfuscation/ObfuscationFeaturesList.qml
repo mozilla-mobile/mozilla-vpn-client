@@ -76,8 +76,21 @@ ColumnLayout {
 
         delegate: Item {
             id: delegateRoot
+
+            // While connected switching the obfuscation policy triggers a switch
+            // that can only pick another server in the current city.
+            // Disable methods the current city has no server for, so we don't confuse users.
+            // Keep it enabled only when off otherwise it's impossible to switch obfuscation method.
+            readonly property bool cityOffersMethod: {
+
+                VPNCurrentServer.exitCityName;
+                VPNCurrentServer.entryCityName;
+                return VPNController.state === VPNController.StateOff
+                    || VPNCurrentServer.currentCityOffersObfuscationMethod(modelData.settingValue);
+            }
+
             visible: modelData.visible
-            enabled: obfuscationFeaturesToggle.checked
+            enabled: obfuscationFeaturesToggle.checked && cityOffersMethod
             Layout.fillWidth: true
             Layout.rightMargin: MZTheme.theme.windowMargin / 2
             implicitHeight: featureRow.implicitHeight

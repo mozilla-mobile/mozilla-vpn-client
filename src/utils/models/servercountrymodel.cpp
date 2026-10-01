@@ -200,6 +200,19 @@ const Server& ServerCountryModel::server(const QString& pubkey) const {
   return emptyserver;
 }
 
+bool ServerCountryModel::cityOffersObfuscationMethod(
+    const QString& countryCode, const QString& cityName,
+    Server::ObfuscationMethod method) const {
+  const ServerCity& city = findCity(countryCode, cityName);
+  for (const QString& pubkey : city.servers()) {
+    const Server& s = server(pubkey);
+    if (s.initialized() && s.supportObfuscationMethod(method)) {
+      return true;
+    }
+  }
+  return false;
+}
+
 const QString ServerCountryModel::countryName(
     const QString& countryCode) const {
   for (const ServerCountry& country : m_countries) {

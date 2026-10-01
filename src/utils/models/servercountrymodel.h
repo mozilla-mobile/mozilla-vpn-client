@@ -39,6 +39,10 @@ class ServerCountryModel final : public QAbstractListModel {
 
   const Server& server(const QString& pubkey) const;
 
+  bool cityOffersObfuscationMethod(const QString& countryCode,
+                                   const QString& cityName,
+                                   Server::ObfuscationMethod method) const;
+
   const QString countryName(const QString& countryCode) const;
 
   const QHash<QString, ServerCity>& cities() const { return m_cities; }
