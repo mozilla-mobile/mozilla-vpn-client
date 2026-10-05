@@ -33,7 +33,12 @@ MZClickableRow {
     // where we need to use the scoring between the entry and exit locations instead.
     property bool useMultiHopScore: (focusScope.currentServer.whichHop === "multiHopExitServer")
 
-    property bool hasAvailableCities: cities.reduce((initialValue, city) => (initialValue || city.connectionScore >= 0), false)
+    property bool hasAvailableCities: {
+        MZSettings.obfuscationPolicy;
+        return cities.reduce((initialValue, city) => (initialValue || (city.connectionScore >= 0
+            && (useMultiHopScore
+                || VPNCurrentServer.cityOffersSelectedObfuscationMethod(code, city.name)))), false);
+    }
 
     function openCityList() {
         if(!cityListVisible){
@@ -177,7 +182,13 @@ MZClickableRow {
                     property string _cityName: modelData.name
                     property string _countryCode: code
                     property string _localizedCityName: modelData.localizedName
-                    property bool isAvailable: modelData.connectionScore >= 0
+                    // A city is unavailable if it has no reachable server, or
+                    // (except when picking the multihop exit, which does not
+                    // obfuscate) no server able to serve the selected
+                    // obfuscation method.
+                    property bool isAvailable: (MZSettings.obfuscationPolicy, modelData.connectionScore >= 0)
+                        && (useMultiHopScore
+                            || VPNCurrentServer.cityOffersSelectedObfuscationMethod(code, modelData.name))
                     property int itemHeight: 54
 
                     id: del
