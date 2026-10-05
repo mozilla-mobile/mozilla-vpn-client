@@ -98,6 +98,11 @@ Item {
                 visible: false
             }
 
+            PropertyChanges {
+                target: obfuscationEnabled
+                visible: false
+            }
+
         },
         State {
             name: "stateOff"
@@ -135,6 +140,11 @@ Item {
 
             PropertyChanges {
                 target: animatedRings
+                visible: false
+            }
+
+            PropertyChanges {
+                target: obfuscationEnabled
                 visible: false
             }
 
@@ -177,6 +187,11 @@ Item {
                 visible: false
             }
 
+            PropertyChanges {
+                target: obfuscationEnabled
+                visible: false
+            }
+
         },
         State {
             name: "stateConnecting"
@@ -215,6 +230,11 @@ Item {
 
             PropertyChanges {
                 target: animatedRings
+                visible: false
+            }
+
+            PropertyChanges {
+                target: obfuscationEnabled
                 visible: false
             }
 
@@ -260,6 +280,11 @@ Item {
                 visible: false
             }
 
+            PropertyChanges {
+                target: obfuscationEnabled
+                visible: false
+            }
+
         },
         State {
             name: "stateOn"
@@ -293,6 +318,11 @@ Item {
                 visible: true
                 opacity: 1
                 startAnimation: true
+            }
+
+            PropertyChanges {
+                target: obfuscationEnabled
+                visible: true // stays at 0 opacity unless obfuscation is actually enabled
             }
         },
         State {
@@ -334,6 +364,11 @@ Item {
                 target: animatedRings
                 visible: false
             }
+
+            PropertyChanges {
+                target: obfuscationEnabled
+                visible: false
+            }
         },
         State {
             name: "stateConnectionError"
@@ -371,6 +406,10 @@ Item {
                 visible: false
             }
 
+            PropertyChanges {
+                target: obfuscationEnabled
+                visible: false
+            }
         },
         State {
             name: "stateSwitching"
@@ -413,6 +452,11 @@ Item {
                 visible: false
                 opacity: 1
                 startAnimation: false
+            }
+
+            PropertyChanges {
+                target: obfuscationEnabled
+                visible: false
             }
         }
     ]
@@ -598,49 +642,58 @@ Item {
         }
 
         RowLayout {
-          id: logoSubtitleOn
+            // logoSubtitleOn and connectionStability are never shown at same time.
+            // However, they must be in a row so that it does not adversely affect the
+            // obfuscation text layout in certain situations. (See VPN-7794)
+            anchors.horizontalCenter: parent.horizontalCenter
 
-          anchors.horizontalCenter: parent.horizontalCenter
-          opacity: 0.8
-          onVisibleChanged: handleConnectionStateChange()
+            RowLayout {
+              id: logoSubtitleOn
+              Layout.alignment: Qt.AlignHCenter
 
-          MZInterLabel {
-            id: connectedStateDescription
-            objectName: "secureAndPrivateSubtitle"
+              anchors.horizontalCenter: parent.horizontalCenter
+              opacity: 0.8
+              onVisibleChanged: handleConnectionStateChange()
 
-            color: MZTheme.colors.fontColorInverted
-            lineHeight: MZTheme.theme.controllerInterLineHeight
-            Accessible.ignored: ipInfoPanel.isOpen || !visible
+              MZInterLabel {
+                id: connectedStateDescription
+                objectName: "secureAndPrivateSubtitle"
 
-            //% "Secure and private"
-            //: This refers to the user’s internet connection.
-            text: qsTrId("vpn.controller.active") + " • "
-            onPaintedHeightChanged: if (visible) col.handleMultilineText()
-            onVisibleChanged: if (visible) col.handleMultilineText()
-          }
+                color: MZTheme.colors.fontColorInverted
+                lineHeight: MZTheme.theme.controllerInterLineHeight
+                Accessible.ignored: ipInfoPanel.isOpen || !visible
 
-          ConnectionTimer {
-            id: connectionTime
-            objectName: "connectionTimer"
-            ignoreForAccessibility: true
-          }
-        }
+                //% "Secure and private"
+                //: This refers to the user’s internet connection.
+                text: qsTrId("vpn.controller.active") + " • "
+                onPaintedHeightChanged: if (visible) col.handleMultilineText()
+                onVisibleChanged: if (visible) col.handleMultilineText()
+              }
 
-        ConnectionStability {
-            id: connectionStability
-            Accessible.ignored: !visible
-            width: parent.width
+              ConnectionTimer {
+                id: connectionTime
+                objectName: "connectionTimer"
+                ignoreForAccessibility: true
+              }
+            }
+
+            ConnectionStability {
+                id: connectionStability
+                Accessible.ignored: !visible
+                width: parent.width
+                implicitHeight: childrenRect.height
+            }
         }
 
         MZInterLabel {
             id: obfuscationEnabled
             anchors.horizontalCenter: parent.horizontalCenter
-            opacity: 0.8
+            opacity: MZSettings.obfuscationPolicy !== MZSettings.NoObfuscation &&
+                     MZSettings.obfuscationPolicy !== MZSettings.Port53 ? 0.8 : 0
             color: MZTheme.colors.fontColorInverted
             lineHeight: MZTheme.theme.controllerInterLineHeight
-            visible: VPNController.state === VPNController.StateOn &&
-                     MZSettings.obfuscationPolicy !== MZSettings.NoObfuscation &&
-                     MZSettings.obfuscationPolicy !== MZSettings.Port53
+            visible: false
+
             Accessible.ignored: ipInfoPanel.isOpen || !visible
 
             text: MZI18n.ControllerObfuscationOn
