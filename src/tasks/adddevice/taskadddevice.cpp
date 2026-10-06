@@ -13,6 +13,7 @@
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "models/apierror.h"
 #include "mozillavpn.h"
 #include "networkrequest.h"
 
@@ -41,39 +42,67 @@ TaskAddDevice::TaskAddDevice(const QString& deviceName, const QString& deviceID)
   MZ_COUNT_CTOR(TaskAddDevice);
 }
 
+TaskAddDevice::TaskAddDevice(const QString& deviceName, const QString& deviceID,
+                             bool shared, const QString& token)
+    : Task("TaskAddDevice"),
+      m_deviceName(deviceName),
+      m_deviceID(deviceID),
+      m_shared(shared),
+      m_token(token) {
+  MZ_COUNT_CTOR(TaskAddDevice);
+}
+
 TaskAddDevice::~TaskAddDevice() { MZ_COUNT_DTOR(TaskAddDevice); }
 
 void TaskAddDevice::run() {
   logger.debug() << "Adding the device" << logger.sensitive(m_deviceName);
 
-  QByteArray privateKey = generatePrivateKey();
-  QByteArray publicKey = Curve25519::generatePublicKey(privateKey);
+  m_privateKey = generatePrivateKey();
+  m_publicKey = Curve25519::generatePublicKey(m_privateKey);
 
-  logger.debug() << "Private key: " << logger.sensitive(privateKey);
-  logger.debug() << "Public key: " << logger.sensitive(publicKey);
+  logger.debug() << "Private key: " << logger.sensitive(m_privateKey);
+  logger.debug() << "Public key: " << logger.sensitive(m_publicKey);
 
   NetworkRequest* request = new NetworkRequest(this, 201);
-  request->auth();
+  if (!m_token.isEmpty()) {
+    request->auth(QByteArray("Bearer ") + m_token.toLocal8Bit());
+  } else {
+    request->auth();
+  }
   request->post(Constants::apiUrl(Constants::Device),
                 QJsonObject{{"name", m_deviceName},
                             {"unique_id", m_deviceID},
-                            {"pubkey", QString(publicKey)}});
+                            {"pubkey", m_publicKey}});
   request->disableTimeout();
 
   connect(request, &NetworkRequest::requestFailed, this,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to add the device" << error;
-            REPORTNETWORKERROR(error, ErrorHandler::PropagateError, name());
+            if (!m_shared) {
+              REPORTNETWORKERROR(error, ErrorHandler::PropagateError, name());
+            } else {
+              ApiError apiError;
+              // how do i handle an invalid response from the server?
+              // m_apiError and m_error?
+              Q_ASSERT(apiError.fromJson(data));
+              m_apiError = apiError;
+            }
             emit completed();
           });
 
-  connect(request, &NetworkRequest::requestCompleted, this,
-          [this, publicKey, privateKey](const QByteArray&) {
-            logger.debug() << "Device added";
-            MozillaVPN* vpn = MozillaVPN::instance();
-            Q_ASSERT(vpn);
-
-            vpn->deviceAdded(m_deviceName, publicKey, privateKey);
-            emit completed();
-          });
+  connect(
+      request, &NetworkRequest::requestCompleted, this,
+      [this](const QByteArray& data) {
+        logger.debug() << "Device added";
+        if (!m_shared) {
+          MozillaVPN* vpn = MozillaVPN::instance();
+          Q_ASSERT(vpn);
+          vpn->deviceAdded(m_deviceName, m_publicKey, m_privateKey);
+        } else {
+          // how do i handle an invalid response from the server?
+          // m_apiError and m_error?
+          Q_ASSERT(m_device.fromJson(QJsonDocument::fromJson(data).object()));
+        }
+        emit completed();
+      });
 }
