@@ -23,6 +23,7 @@ mac-signing:
           # These files are signed without entitlements
           globs:
             - "/Contents/Library/LaunchServices/org.mozilla.macos.FirefoxVPN.daemon"
+            - "/Contents/Library/LaunchServices/org.mozilla.macos.FirefoxVPN.socksproxy"
             - "/Contents/Resources/utils/wireguard-go"
 
         - deep: false
