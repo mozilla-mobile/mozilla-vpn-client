@@ -8,7 +8,6 @@
 #include <unistd.h>
 
 #include <QDBusConnection>
-#include <QDBusInterface>
 #include <QDBusObjectPath>
 #include <QMetaType>
 #include <QScopeGuard>
@@ -238,6 +237,8 @@ void AppTracker::cgroupCreated(const QString& cgroup) {
   KdeFallbackTracker* fallback = new KdeFallbackTracker(cgroup, bus, this);
   connect(fallback, &KdeFallbackTracker::errorOccurred, this,
           &AppTracker::dbusErrorOccurred);
+  connect(fallback, &KdeFallbackTracker::errorOccurred, fallback,
+          &QObject::deleteLater);
   connect(fallback, &KdeFallbackTracker::finished, this,
           &AppTracker::cgroupResolved);
   connect(fallback, &KdeFallbackTracker::finished, fallback,

@@ -13,7 +13,6 @@
 #include "leakdetector.h"
 
 class QDBusError;
-class QDBusInterface;
 class QDBusObjectPath;
 class QDBusVariant;
 
@@ -63,8 +62,6 @@ class AppTracker final : public QObject {
 
   uint userId() const { return m_userId; }
   const QStringList appControlGroups() const { return m_runningCgroups.keys(); }
-  const QString& userObjectPath() const { return m_userObject; }
-  const QString& userControlGroup() const { return m_userCgroup; }
 
  signals:
   void appLaunched(const QString& cgroup, const QString& desktopFileId);
@@ -114,8 +111,6 @@ class KdeFallbackTracker : public QObject, protected QDBusContext {
  public:
   KdeFallbackTracker(const QString& cgroup, const QDBusConnection& connection,
                      QObject* parent = nullptr);
-
-  const QString& cgroup() const { return m_cgroup; }
 
  signals:
   void errorOccurred(const QDBusError& err);
