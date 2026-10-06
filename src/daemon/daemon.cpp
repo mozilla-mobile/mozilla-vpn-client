@@ -539,6 +539,10 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     // WireGuard from selecting an [::1]
     peerConfig.m_serverIpv6AddrIn = QString();
     peerConfig.m_serverPort = obfuscator->localPort();
+    // Tear down the old obfuscator before updating the peer (entry hop only).
+    // While alive, it keeps relaying server packets to WireGuard, and WireGuard
+    // roaming would move the peer endpoint back to the old obfuscator's port.
+    m_obfuscator = std::move(obfuscator);
   }
 
   // Activate the new peer and its routes.
@@ -546,11 +550,6 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     logger.error()
         << "Server switch failed to update the peer wireguard config";
     return false;
-  }
-
-  // Take ownership of the new obfuscator (entry hop only).
-  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
-    m_obfuscator = std::move(obfuscator);
   }
 
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
