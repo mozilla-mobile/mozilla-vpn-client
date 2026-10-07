@@ -337,8 +337,8 @@ void MacOSExtensionController::checkStatus() {
 
 - (void) request:(OSSystemExtensionRequest *) request
 didFailWithError:(NSError *) error {
-  QMetaObject::invokeMethod(self.parent, "extLoaderFailure"),
-                            Q_ARG(QString, QString::fromNSString(error.localizedDescription));
+  QMetaObject::invokeMethod(self.parent, "extLoaderFailure",
+                            Q_ARG(QString, QString::fromNSString(error.localizedDescription)));
 }
 
 - (void) requestNeedsUserApproval:(OSSystemExtensionRequest *) request {
