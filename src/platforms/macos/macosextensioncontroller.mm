@@ -15,7 +15,7 @@
 #include "macosutils.h"
 
 // An extension loader - used to forward Obj-C messages back to Qt.
-@interface MacOSExtensionDelegate : NSObject <OSSystemExtensionRequestDelegate>
+@interface MacOSExtensionDelegate : NSObject <OSSystemExtensionRequestDelegate, OSSystemExtensionsWorkspaceObserver>
 @property MacOSExtensionController* parent;
 - (id)initWithObject:(MacOSExtensionController*)controller;
 - (void)notifyEnabledChanged:(NSNotification*)notify;
@@ -30,6 +30,15 @@ MacOSExtensionController::MacOSExtensionController() : ControllerImpl()  {
   // Create the system extension loader delegate.
   m_delegate = [[MacOSExtensionDelegate alloc] initWithObject:this];
   [m_delegate retain];
+
+  // For macOS 15.1 and beyond - observe system extension status changes.
+  if (@available(macOS 15.1, *)) {
+    NSError* err = nil;
+    OSSystemExtensionsWorkspace* workspace = [OSSystemExtensionsWorkspace sharedWorkspace];
+    if (![workspace addObserver:m_delegate error:&err]) {
+      logger.warning() << "sysex observer error:" << err;
+    }
+  }
 }
 
 MacOSExtensionController::~MacOSExtensionController() {
@@ -366,6 +375,19 @@ didFinishWithResult:(OSSystemExtensionRequestResult) result {
 - (void)notifyStatusChanged:(NSNotification*)notify {
   NEVPNConnection* conn = static_cast<NEVPNConnection*>(notify.object);
   QMetaObject::invokeMethod(self.parent, "extStatusChange", Q_ARG(int, conn.status));
+}
+
+// These observation methods are only supported for macOS 15.1 and beyond.
+- (void)systemExtensionWillBecomeDisabled:(OSSystemExtensionInfo *)info API_AVAILABLE(macos(15.1)) {
+  logger.debug() << "sysex disabled:" << info.bundleIdentifier << "version:" << info.bundleVersion;
+}
+
+- (void)systemExtensionWillBecomeEnabled:(OSSystemExtensionInfo *)info API_AVAILABLE(macos(15.1)) {
+  logger.debug() << "sysex enabled:" << info.bundleIdentifier << "version:" << info.bundleVersion;
+}
+
+- (void)systemExtensionWillBecomeInactive:(OSSystemExtensionInfo *)info API_AVAILABLE(macos(15.1)) {
+  logger.debug() << "sysex inactive:" << info.bundleIdentifier << "version:" << info.bundleVersion;
 }
 
 @end
