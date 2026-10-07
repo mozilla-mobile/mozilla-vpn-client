@@ -111,6 +111,7 @@ void MacOSExtensionController::extLoaderSuccess(int result) {
     protocol.providerBundleIdentifier = extId;
     protocol.serverAddress = @"127.0.0.1";
     m_manager.protocolConfiguration = protocol;
+    m_manager.enabled = true;
 
     // Register the delegate to receive updates when the extension state is changed.
     NSNotificationCenter* notify = [NSNotificationCenter defaultCenter];
@@ -119,26 +120,33 @@ void MacOSExtensionController::extLoaderSuccess(int result) {
                    name:NEVPNConfigurationChangeNotification
                  object:m_manager];
 
-    // Enable the manager and sync preferences
-    m_manager.enabled = true;
+    [notify addObserver:m_delegate
+               selector:@selector(notifyStatusChanged:)
+                   name:NEVPNStatusDidChangeNotification
+                 object:m_manager.connection];
+
+    // Sync the manager to preferences
     [m_manager saveToPreferencesWithCompletionHandler:^(NSError* saveErr){
       if (saveErr != nil) {
+        // We still consider the extension loaded - and thus the permission
+        // request state can be passed. However, setup is not yet fully
+        // complete and we will have to retry on the next activation.
         logger.debug() << "proxy prefs setup failed:"
                        << saveErr.localizedDescription;
+        emit initialized(true, false, QDateTime());
+        return;
       }
+
+      // Re-load the connecion manager from prefernces to complete the sync.
       [m_manager loadFromPreferencesWithCompletionHandler:^(NSError* loadErr){
         if (loadErr != nil) {
           logger.debug() << "proxy prefs load failed:"
                          << loadErr.localizedDescription;
         }
-        NEVPNConnection* conn = m_manager.connection;
-        [notify addObserver:m_delegate
-                   selector:@selector(notifyStatusChanged:)
-                       name:NEVPNStatusDidChangeNotification
-                     object:conn];
 
-        if (conn.status == NEVPNStatusConnected) {
-          emit initialized(true, true, QDateTime::fromCFDate((CFDateRef)conn.connectedDate));
+        if (m_manager.connection.status == NEVPNStatusConnected) {
+          CFDateRef date = (CFDateRef)m_manager.connection.connectedDate;
+          emit initialized(true, true, QDateTime::fromCFDate(date));
         } else {
           emit initialized(true, false, QDateTime());
         }
@@ -250,28 +258,51 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
   NETunnelProviderProtocol* proto =
       static_cast<NETunnelProviderProtocol*>(m_manager.protocolConfiguration);
   proto.providerConfiguration = options;
-  [m_manager saveToPreferencesWithCompletionHandler:^(NSError* error) {
-    if (error) {
-      logger.warning() << "prefs update error:" << error.localizedDescription;
+  [m_manager saveToPreferencesWithCompletionHandler:^(NSError* saveErr) {
+    if (saveErr) {
+      logger.warning() << "prefs update error:" << saveErr;
       return;
     }
 
-    // If we don't already have a session - start one.
-    if (m_session) {
+    // Start the tunnel if the extension configuration exists.
+    if (m_manager.connection.status != NEVPNStatusInvalid) {
+      startTunnel();
       return;
     }
-    NETunnelProviderSession* session =
-        static_cast<NETunnelProviderSession*>(m_manager.connection);
-    BOOL okay = [session startTunnelWithOptions:options andReturnError:&error];
-    if (error) {
-      logger.warning() << "proxy start error:" << error.localizedDescription;
-    } else if (!okay) {
-      logger.warning() << "proxy start failed";
-    } else {
-      // Save the session and retain it.
-      m_session = [session retain];
-    }
+
+    // We must re-load from preferences first.
+    logger.debug() << "extension sync required:" << m_manager.connection.status;
+    [m_manager loadFromPreferencesWithCompletionHandler:^(NSError* loadErr) {
+      if (loadErr) {
+        logger.warning() << "prefs sync error:" << loadErr;
+      } else {
+        startTunnel();
+      }
+    }];
   }];
+}
+
+void MacOSExtensionController::startTunnel() {
+  if (m_session != nil) {
+    return;
+  }
+
+  NETunnelProviderProtocol* proto =
+      static_cast<NETunnelProviderProtocol*>(m_manager.protocolConfiguration);
+  NETunnelProviderSession* session =
+      static_cast<NETunnelProviderSession*>(m_manager.connection);
+
+  NSError* error = nil;
+  BOOL okay = [session startTunnelWithOptions:proto.providerConfiguration
+                               andReturnError:&error];
+  if (error) {
+    logger.warning() << "proxy start error:" << error.localizedDescription;
+  } else if (!okay) {
+    logger.warning() << "proxy start failed";
+  } else {
+    // Save the session and retain it.
+    m_session = [session retain];
+  }
 }
 
 void MacOSExtensionController::deactivate() {
