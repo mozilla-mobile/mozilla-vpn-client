@@ -17,6 +17,9 @@
 // An extension loader - used to forward Obj-C messages back to Qt.
 @interface MacOSExtensionDelegate : NSObject <OSSystemExtensionRequestDelegate, OSSystemExtensionsWorkspaceObserver>
 @property MacOSExtensionController* parent;
+@property (readonly, getter=getBundleVersion) NSString* bundleVersion;
+@property (readonly, getter=getQueue) dispatch_queue_t queue;
+
 - (id)initWithObject:(MacOSExtensionController*)controller;
 - (void)notifyEnabledChanged:(NSNotification*)notify;
 - (void)notifyStatusChanged:(NSNotification*)notify;
@@ -46,16 +49,14 @@ MacOSExtensionController::~MacOSExtensionController() {
 }
 
 void MacOSExtensionController::initialize(const Device* device, const Keys* keys) {
-  // Create a request to install the system extension.
-  dispatch_queue_t queue =
-      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  // Fetch the currently installed system extensions.
   OSSystemExtensionRequest* req =
-      [OSSystemExtensionRequest activationRequestForExtension: extIdentifier()
-                                                        queue: queue];
-  req.delegate = m_delegate;
+      [OSSystemExtensionRequest propertiesRequestForExtension: extIdentifier()
+                                                        queue: m_delegate.queue];
 
   // Start the request
-  logger.debug() << "activation request started:" << req.identifier;
+  logger.debug() << "property request started:" << req.identifier;
+  req.delegate = m_delegate;
   [[OSSystemExtensionManager sharedManager] submitRequest: req];
 
   // Attempt to register the socks proxy tool.
@@ -373,6 +374,73 @@ void MacOSExtensionController::checkStatus() {
   self = [super init];
   self.parent = controller;
   return self;
+}
+
+- (dispatch_queue_t) getQueue {
+  return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+}
+
+- (NSString*) getBundleVersion {
+  NSBundle* appBundle = [NSBundle mainBundle];
+  return [appBundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+}
+
+- (void) request:(OSSystemExtensionRequest *) request
+ foundProperties:(NSArray<OSSystemExtensionProperties *> *) properties {
+#ifdef MZ_DEBUG
+  // Log the discovered extensions for debugging purposes.
+  logger.debug() << "sysex properties for:" << request.identifier;
+  for (OSSystemExtensionProperties* ext in properties) {
+    if ([ext.bundleIdentifier compare:request.identifier] != NSOrderedSame) {
+      continue;
+    }
+
+    logger.debug() << "sysex:" << ext.URL.path;
+    auto log = logger.debug();
+    log << "version:" << ext.bundleVersion;
+    if (ext.isUninstalling) {
+      log << "uninstall";
+    }
+    if (ext.isAwaitingUserApproval) {
+      log << "await";
+    }
+    if (ext.isEnabled) {
+      log << "enabled";
+    }
+  }
+#endif
+
+  for (OSSystemExtensionProperties* ext in properties) {
+    // Ignore extensions with a different identifier or version.
+    if ([ext.bundleIdentifier compare:request.identifier] != NSOrderedSame) {
+      continue;
+    }
+    if ([ext.bundleVersion compare:self.bundleVersion] != NSOrderedSame) {
+      continue;
+    }
+
+    if (ext.isUninstalling) {
+      continue;
+    }
+    if (ext.isAwaitingUserApproval) {
+      QMetaObject::invokeMethod(self.parent, "extNeedsApproval");
+      return;
+    }
+    if (ext.isEnabled) {
+      QMetaObject::invokeMethod(self.parent, "extLoaderSuccess", Q_ARG(int, 0));
+      return;
+    }
+  }
+
+  // Otherwise, we were unable to find a matching extension. Start a request
+  // to install the VPN network extension.
+  OSSystemExtensionRequest* activationRequest =
+      [OSSystemExtensionRequest activationRequestForExtension: request.identifier
+                                                        queue: self.queue];
+
+  logger.debug() << "activation request started:" << request.identifier;
+  activationRequest.delegate = self;
+  [[OSSystemExtensionManager sharedManager] submitRequest: activationRequest];
 }
 
 - (void) request:(OSSystemExtensionRequest *) request
