@@ -418,22 +418,24 @@ void MacOSExtensionController::checkStatus() {
     if ([ext.bundleVersion compare:self.bundleVersion] != NSOrderedSame) {
       continue;
     }
-
     if (ext.isUninstalling) {
       continue;
     }
-    if (ext.isAwaitingUserApproval) {
-      QMetaObject::invokeMethod(self.parent, "extNeedsApproval");
-      return;
-    }
+
     if (ext.isEnabled) {
       QMetaObject::invokeMethod(self.parent, "extLoaderSuccess", Q_ARG(int, 0));
+      return;
+    } else if (@available(macOS 15.1, *)) {
+      QMetaObject::invokeMethod(self.parent, "extNeedsApproval");
+      return;
+    } else if (ext.isAwaitingUserApproval) {
+      QMetaObject::invokeMethod(self.parent, "extNeedsApproval");
       return;
     }
   }
 
   // Otherwise, we were unable to find a matching extension. Start a request
-  // to install the VPN network extension.
+  // to install (or reinstall) the VPN network extension.
   OSSystemExtensionRequest* activationRequest =
       [OSSystemExtensionRequest activationRequestForExtension: request.identifier
                                                         queue: self.queue];
@@ -483,6 +485,7 @@ didFinishWithResult:(OSSystemExtensionRequestResult) result {
 
 - (void)systemExtensionWillBecomeEnabled:(OSSystemExtensionInfo *)info API_AVAILABLE(macos(15.1)) {
   logger.debug() << "sysex enabled:" << info.bundleIdentifier << "version:" << info.bundleVersion;
+  QMetaObject::invokeMethod(self.parent, "extLoaderSuccess", Q_ARG(int, 0));
 }
 
 - (void)systemExtensionWillBecomeInactive:(OSSystemExtensionInfo *)info API_AVAILABLE(macos(15.1)) {
