@@ -369,25 +369,7 @@ Rectangle {
     Connections{
         target: VPNConnectionHealth
         function onStabilityChanged() {
-            if (VPNController.state === VPNController.StateOnPartial) {
-                return;
-            }
-            switch(VPNConnectionHealth.stability) {
-                case(VPNConnectionHealth.NoSignal):
-                    insetCircle.color = MZTheme.colors.errorAccentLight;
-                    insetIcon.source = MZAssetLookup.getImageSource("ShieldOff");
-                    break;
-            
-                case(VPNConnectionHealth.Stable):
-                    insetCircle.color = MZTheme.colors.successAlert.defaultColor;
-                    insetIcon.source = MZAssetLookup.getImageSource("ShieldOn");
-                    break;
-            
-                case(VPNConnectionHealth.Unstable):
-                    insetCircle.color = MZTheme.colors.warningAccent;
-                    break;
-            
-            }
+            updateInset();
         }
     }
 
@@ -439,5 +421,31 @@ Rectangle {
         sourceSize.height: logo.height
         sourceSize.width: logo.width
         visible: true
+    }
+
+    Component.onCompleted: {
+      updateInset();
+    }
+
+    function updateInset() {
+        if (VPNController.state !== VPNController.StateOn) {
+            return;
+        }
+        switch(VPNConnectionHealth.stability) {
+            case(VPNConnectionHealth.NoSignal):
+                insetCircle.color = MZTheme.colors.errorAccentLight;
+                insetIcon.source = MZAssetLookup.getImageSource("ShieldOff");
+                break;
+
+            case(VPNConnectionHealth.Stable):
+                insetCircle.color = MZTheme.colors.successAlert.defaultColor;
+                insetIcon.source = MZAssetLookup.getImageSource("ShieldOn");
+                break;
+
+            case(VPNConnectionHealth.Unstable):
+                insetCircle.color = MZTheme.colors.warningAccent;
+                break;
+
+        }
     }
 }

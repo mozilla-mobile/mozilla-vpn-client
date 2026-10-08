@@ -308,10 +308,7 @@ Item {
                 visible: false
             }
 
-            PropertyChanges {
-                target: logoSubtitleOn
-                visible: true
-            }
+            // logoSubtitleOn is controlled by ConnectionStability for StateOn
 
             PropertyChanges {
                 target: animatedRings
@@ -680,7 +677,7 @@ Item {
             ConnectionStability {
                 id: connectionStability
                 Accessible.ignored: !visible
-                width: parent.width
+                Layout.preferredWidth: col.width
                 implicitHeight: childrenRect.height
             }
         }
