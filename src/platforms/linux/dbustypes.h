@@ -12,6 +12,9 @@
 #include <QHostAddress>
 #include <QtDBus/QtDBus>
 
+constexpr const char* DBUS_PROPERTY_INTERFACE =
+    "org.freedesktop.DBus.Properties";
+
 /* D-Bus metatype for marshalling arguments to the SetLinkDNS method */
 class DnsResolver : public QHostAddress {
  public:
