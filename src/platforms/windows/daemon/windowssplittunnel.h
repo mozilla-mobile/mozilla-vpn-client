@@ -77,6 +77,7 @@ class WindowsSplitTunnel final {
   static bool initDriver(HANDLE driverIO);
   static DRIVER_STATE getState(HANDLE driverIO);
   static bool resetDriver(HANDLE driverIO);
+  static bool sendInitialize(HANDLE driverIO);
 
   HANDLE m_driver = INVALID_HANDLE_VALUE;
   DRIVER_STATE getState();
