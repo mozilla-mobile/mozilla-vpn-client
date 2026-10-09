@@ -159,11 +159,6 @@ bool Daemon::activate(const InterfaceConfig& config) {
   if (config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
       config.m_hopType != InterfaceConfig::MultiHopExit) {
     obfuscator = createObfuscator(config);
-    if (!obfuscator->start()) {
-      logger.error() << "Failed to start obfuscator"
-                     << config.m_obfuscationMethod;
-      return false;
-    }
 #if defined(MZ_WINDOWS)
     // Add exclusion route for exit server to prevent loopbacks
     {
@@ -177,6 +172,11 @@ bool Daemon::activate(const InterfaceConfig& config) {
       wgutils()->excludeLocalNetworks(obfuscatorServer);
     }
 #endif
+    if (!obfuscator->start()) {
+      logger.error() << "Failed to start obfuscator"
+                     << config.m_obfuscationMethod;
+      return false;
+    }
     peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
     // The obfuscator only binds 127.0.0.1, so clear the IPv6 endpoint to keep
     // WireGuard from selecting an [::1]
@@ -516,11 +516,6 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
   if (config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
       config.m_hopType != InterfaceConfig::MultiHopExit) {
     obfuscator = createObfuscator(config);
-    if (!obfuscator->start()) {
-      logger.error() << "Failed to start obfuscator on switch"
-                     << config.m_obfuscationMethod;
-      return false;
-    }
 #if defined(MZ_WINDOWS)
     // Add exclusion route for exit server to prevent loopbacks
     {
@@ -534,6 +529,11 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
       wgutils()->excludeLocalNetworks(obfuscatorServer);
     }
 #endif
+    if (!obfuscator->start()) {
+      logger.error() << "Failed to start obfuscator on switch"
+                     << config.m_obfuscationMethod;
+      return false;
+    }
     peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
     // The obfuscator only binds 127.0.0.1, so clear the IPv6 endpoint to keep
     // WireGuard from selecting an [::1]

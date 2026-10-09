@@ -28,6 +28,7 @@ pub struct LwoObfuscator {
     local_port: u16,
     socket_v4: i32,
     socket_v6: i32,
+    server: SocketAddr,
     version: LwoVersion,
     server_public_key: [u8; 32],
     public_key: [u8; 32],
@@ -71,13 +72,16 @@ impl LwoObfuscator {
                 SocketAddr::V6(_) => UdpSocket::bind(("::", 0)).await?,
             };
             // Protect the outbound socket so its packets are routed around the
-            // VPN tunnel instead of back into it. Must be set before connect()
-            // so route selection observes the mark.
+            // VPN tunnel instead of back into it.
+            // Leave the socket unconnected and explicitly specify the server address with
+            // send_to() for every packet (see v1/v2). This is necessary because, after a
+            // server switch, the route will fall into the tunnel. Android's protect() and
+            // excludeLocalNetwork() are called after connect(), but cannot exclude a
+            // socket that is already connected.
             #[cfg(target_os = "linux")]
             if let Some(fwmark) = fwmark {
                 set_fwmark(&remote, fwmark)?;
             }
-            remote.connect(server).await?;
             io::Result::Ok((local, remote))
         })?;
 
@@ -95,6 +99,7 @@ impl LwoObfuscator {
             local_port,
             socket_v4,
             socket_v6,
+            server,
             version: cfg.lwo_version,
             server_public_key,
             public_key,
@@ -124,6 +129,7 @@ impl Obfuscator for LwoObfuscator {
             return;
         };
 
+        let server = self.server;
         let server_public_key = self.server_public_key;
         let public_key = self.public_key;
         let version = self.version;
@@ -137,12 +143,14 @@ impl Obfuscator for LwoObfuscator {
                         Arc::clone(&local),
                         Arc::clone(&remote),
                         Arc::clone(&wg_addr),
+                        server,
                         server_public_key,
                     )),
                     tokio::spawn(v1::inbound(
                         Arc::clone(&local),
                         Arc::clone(&remote),
                         Arc::clone(&wg_addr),
+                        server,
                         public_key,
                     )),
                 ),
@@ -151,12 +159,14 @@ impl Obfuscator for LwoObfuscator {
                         Arc::clone(&local),
                         Arc::clone(&remote),
                         Arc::clone(&wg_addr),
+                        server,
                         server_public_key,
                     )),
                     tokio::spawn(v2::inbound(
                         Arc::clone(&local),
                         Arc::clone(&remote),
                         Arc::clone(&wg_addr),
+                        server,
                         server_public_key,
                     )),
                 ),
