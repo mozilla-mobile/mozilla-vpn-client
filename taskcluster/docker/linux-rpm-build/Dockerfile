@@ -14,7 +14,7 @@ MAINTAINER Naomi Kirby <naomi@mozilla.com>
 RUN yum -y install git python3 rpm-build rpmdevtools yum-utils sudo
 
 # Enable extra repositories depending on base image
-RUN if [[ -f /etc/almalinux-release ]]; then yum -y install dnf-plugins-core epel-release almalinux-release-devel && dnf config-manager --enable powertools; fi
+RUN if [[ -f /etc/almalinux-release ]]; then yum -y install dnf-plugins-core epel-release almalinux-release-devel && dnf config-manager --enable powertools && dnf -y install python39 python39-pyyaml && alternatives --set python3 /usr/bin/python3.9; fi
 
 # Install indirect Qt6 Build Dependencies
 RUN yum -y install \
