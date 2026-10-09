@@ -20,6 +20,10 @@
 
 #include "interfaceconfig.h"
 
+// Defined in windowsfirewall.cpp
+extern "C" const GUID ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
+extern "C" const GUID ST_FW_WINFW_DNS_SUBLAYER_KEY;
+
 class IpAdressRange;
 struct FWP_VALUE0_;
 struct FWP_CONDITION_VALUE0_;
