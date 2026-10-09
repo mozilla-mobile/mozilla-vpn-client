@@ -71,6 +71,11 @@ using PROCESS_DISCOVERY_ENTRY = struct {
   USHORT ImageNameLength;
 };
 
+using SUBLAYER_GUIDS = struct {
+  GUID Baseline;
+  GUID Dns;
+};
+
 using ProcessInfo = struct {
   DWORD ProcessId;
   DWORD ParentProcessId;
@@ -91,7 +96,7 @@ using ProcessInfo = struct {
 #endif
 
 // Known ControlCodes
-#define IOCTL_INITIALIZE CTL_CODE(0x8000, 1, METHOD_NEITHER, FILE_ANY_ACCESS)
+#define IOCTL_INITIALIZE CTL_CODE(0x8000, 1, METHOD_BUFFERED, FILE_ANY_ACCESS)
 
 #define IOCTL_DEQUEUE_EVENT \
   CTL_CODE(0x8000, 2, METHOD_BUFFERED, FILE_ANY_ACCESS)
@@ -151,7 +156,6 @@ ProcessInfo getProcessInfo(HANDLE process, const PROCESSENTRY32W& processMeta) {
   }
   return pi;
 }
-
 }  // namespace
 
 std::unique_ptr<WindowsSplitTunnel> WindowsSplitTunnel::create(
@@ -256,10 +260,7 @@ bool WindowsSplitTunnel::initDriver(HANDLE driverIO) {
     }
   }
 
-  DWORD bytesReturned;
-  auto ok = DeviceIoControl(driverIO, IOCTL_INITIALIZE, nullptr, 0, nullptr, 0,
-                            &bytesReturned, nullptr);
-  if (!ok) {
+  if (!sendInitialize(driverIO)) {
     auto err = GetLastError();
     logger.error() << "Driver init failed err -" << err;
     logger.error() << "State:" << getState(driverIO);
@@ -314,10 +315,7 @@ bool WindowsSplitTunnel::start(int inetAdapterIndex) {
 
   if (getState() == STATE_STARTED) {
     logger.debug() << "Driver needs Init Call";
-    DWORD bytesReturned;
-    auto ok = DeviceIoControl(m_driver, IOCTL_INITIALIZE, nullptr, 0, nullptr,
-                              0, &bytesReturned, nullptr);
-    if (!ok) {
+    if (!sendInitialize(m_driver)) {
       logger.error() << "Driver init failed";
       return false;
     }
@@ -750,6 +748,18 @@ bool WindowsSplitTunnel::detectConflict() {
   err = GetLastError();
   CloseServiceHandle(servicehandle);
   return err == ERROR_SERVICE_DOES_NOT_EXIST;
+}
+
+// static
+bool WindowsSplitTunnel::sendInitialize(HANDLE driverIO) {
+  SUBLAYER_GUIDS sublayers;
+  sublayers.Baseline = ST_FW_WINFW_BASELINE_SUBLAYER_KEY;
+  sublayers.Dns = ST_FW_WINFW_DNS_SUBLAYER_KEY;
+
+  DWORD bytesReturned;
+  return DeviceIoControl(driverIO, IOCTL_INITIALIZE, &sublayers,
+                         sizeof(sublayers), nullptr, 0, &bytesReturned,
+                         nullptr);
 }
 
 bool WindowsSplitTunnel::isRunning() { return getState() == STATE_RUNNING; }
