@@ -15,8 +15,11 @@
 #include "macosutils.h"
 
 // An extension loader - used to forward Obj-C messages back to Qt.
-@interface MacOSExtensionDelegate : NSObject <OSSystemExtensionRequestDelegate>
+@interface MacOSExtensionDelegate : NSObject <OSSystemExtensionRequestDelegate, OSSystemExtensionsWorkspaceObserver>
 @property MacOSExtensionController* parent;
+@property (readonly, getter=getBundleVersion) NSString* bundleVersion;
+@property (readonly, getter=getQueue) dispatch_queue_t queue;
+
 - (id)initWithObject:(MacOSExtensionController*)controller;
 - (void)notifyEnabledChanged:(NSNotification*)notify;
 - (void)notifyStatusChanged:(NSNotification*)notify;
@@ -30,6 +33,15 @@ MacOSExtensionController::MacOSExtensionController() : ControllerImpl()  {
   // Create the system extension loader delegate.
   m_delegate = [[MacOSExtensionDelegate alloc] initWithObject:this];
   [m_delegate retain];
+
+  // For macOS 15.1 and beyond - observe system extension status changes.
+  if (@available(macOS 15.1, *)) {
+    NSError* err = nil;
+    OSSystemExtensionsWorkspace* workspace = [OSSystemExtensionsWorkspace sharedWorkspace];
+    if (![workspace addObserver:m_delegate error:&err]) {
+      logger.warning() << "sysex observer error:" << err;
+    }
+  }
 }
 
 MacOSExtensionController::~MacOSExtensionController() {
@@ -37,16 +49,14 @@ MacOSExtensionController::~MacOSExtensionController() {
 }
 
 void MacOSExtensionController::initialize(const Device* device, const Keys* keys) {
-  // Create a request to install the system extension.
-  dispatch_queue_t queue =
-      dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+  // Fetch the currently installed system extensions.
   OSSystemExtensionRequest* req =
-      [OSSystemExtensionRequest activationRequestForExtension: extIdentifier()
-                                                        queue: queue];
-  req.delegate = m_delegate;
+      [OSSystemExtensionRequest propertiesRequestForExtension: extIdentifier()
+                                                        queue: m_delegate.queue];
 
   // Start the request
-  logger.debug() << "activation request started:" << req.identifier;
+  logger.debug() << "property request started:" << req.identifier;
+  req.delegate = m_delegate;
   [[OSSystemExtensionManager sharedManager] submitRequest: req];
 
   // Attempt to register the socks proxy tool.
@@ -102,6 +112,7 @@ void MacOSExtensionController::extLoaderSuccess(int result) {
     protocol.providerBundleIdentifier = extId;
     protocol.serverAddress = @"127.0.0.1";
     m_manager.protocolConfiguration = protocol;
+    m_manager.enabled = true;
 
     // Register the delegate to receive updates when the extension state is changed.
     NSNotificationCenter* notify = [NSNotificationCenter defaultCenter];
@@ -110,26 +121,33 @@ void MacOSExtensionController::extLoaderSuccess(int result) {
                    name:NEVPNConfigurationChangeNotification
                  object:m_manager];
 
-    // Enable the manager and sync preferences
-    m_manager.enabled = true;
+    [notify addObserver:m_delegate
+               selector:@selector(notifyStatusChanged:)
+                   name:NEVPNStatusDidChangeNotification
+                 object:m_manager.connection];
+
+    // Sync the manager to preferences
     [m_manager saveToPreferencesWithCompletionHandler:^(NSError* saveErr){
       if (saveErr != nil) {
+        // We still consider the extension loaded - and thus the permission
+        // request state can be passed. However, setup is not yet fully
+        // complete and we will have to retry on the next activation.
         logger.debug() << "proxy prefs setup failed:"
                        << saveErr.localizedDescription;
+        emit initialized(true, false, QDateTime());
+        return;
       }
+
+      // Re-load the connecion manager from prefernces to complete the sync.
       [m_manager loadFromPreferencesWithCompletionHandler:^(NSError* loadErr){
         if (loadErr != nil) {
           logger.debug() << "proxy prefs load failed:"
                          << loadErr.localizedDescription;
         }
-        NEVPNConnection* conn = m_manager.connection;
-        [notify addObserver:m_delegate
-                   selector:@selector(notifyStatusChanged:)
-                       name:NEVPNStatusDidChangeNotification
-                     object:conn];
 
-        if (conn.status == NEVPNStatusConnected) {
-          emit initialized(true, true, QDateTime::fromCFDate((CFDateRef)conn.connectedDate));
+        if (m_manager.connection.status == NEVPNStatusConnected) {
+          CFDateRef date = (CFDateRef)m_manager.connection.connectedDate;
+          emit initialized(true, true, QDateTime::fromCFDate(date));
         } else {
           emit initialized(true, false, QDateTime());
         }
@@ -241,28 +259,51 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
   NETunnelProviderProtocol* proto =
       static_cast<NETunnelProviderProtocol*>(m_manager.protocolConfiguration);
   proto.providerConfiguration = options;
-  [m_manager saveToPreferencesWithCompletionHandler:^(NSError* error) {
-    if (error) {
-      logger.warning() << "prefs update error:" << error.localizedDescription;
+  [m_manager saveToPreferencesWithCompletionHandler:^(NSError* saveErr) {
+    if (saveErr) {
+      logger.warning() << "prefs update error:" << saveErr;
       return;
     }
 
-    // If we don't already have a session - start one.
-    if (m_session) {
+    // Start the tunnel if the extension configuration exists.
+    if (m_manager.connection.status != NEVPNStatusInvalid) {
+      startTunnel();
       return;
     }
-    NETunnelProviderSession* session =
-        static_cast<NETunnelProviderSession*>(m_manager.connection);
-    BOOL okay = [session startTunnelWithOptions:options andReturnError:&error];
-    if (error) {
-      logger.warning() << "proxy start error:" << error.localizedDescription;
-    } else if (!okay) {
-      logger.warning() << "proxy start failed";
-    } else {
-      // Save the session and retain it.
-      m_session = [session retain];
-    }
+
+    // We must re-load from preferences first.
+    logger.debug() << "extension sync required:" << m_manager.connection.status;
+    [m_manager loadFromPreferencesWithCompletionHandler:^(NSError* loadErr) {
+      if (loadErr) {
+        logger.warning() << "prefs sync error:" << loadErr;
+      } else {
+        startTunnel();
+      }
+    }];
   }];
+}
+
+void MacOSExtensionController::startTunnel() {
+  if (m_session != nil) {
+    return;
+  }
+
+  NETunnelProviderProtocol* proto =
+      static_cast<NETunnelProviderProtocol*>(m_manager.protocolConfiguration);
+  NETunnelProviderSession* session =
+      static_cast<NETunnelProviderSession*>(m_manager.connection);
+
+  NSError* error = nil;
+  BOOL okay = [session startTunnelWithOptions:proto.providerConfiguration
+                               andReturnError:&error];
+  if (error) {
+    logger.warning() << "proxy start error:" << error.localizedDescription;
+  } else if (!okay) {
+    logger.warning() << "proxy start failed";
+  } else {
+    // Save the session and retain it.
+    m_session = [session retain];
+  }
 }
 
 void MacOSExtensionController::deactivate() {
@@ -335,10 +376,79 @@ void MacOSExtensionController::checkStatus() {
   return self;
 }
 
+- (dispatch_queue_t) getQueue {
+  return dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+}
+
+- (NSString*) getBundleVersion {
+  NSBundle* appBundle = [NSBundle mainBundle];
+  return [appBundle objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
+}
+
+- (void) request:(OSSystemExtensionRequest *) request
+ foundProperties:(NSArray<OSSystemExtensionProperties *> *) properties {
+#ifdef MZ_DEBUG
+  // Log the discovered extensions for debugging purposes.
+  logger.debug() << "sysex properties for:" << request.identifier;
+  for (OSSystemExtensionProperties* ext in properties) {
+    if ([ext.bundleIdentifier compare:request.identifier] != NSOrderedSame) {
+      continue;
+    }
+
+    logger.debug() << "sysex:" << ext.URL.path;
+    auto log = logger.debug();
+    log << "version:" << ext.bundleVersion;
+    if (ext.isUninstalling) {
+      log << "uninstall";
+    }
+    if (ext.isAwaitingUserApproval) {
+      log << "await";
+    }
+    if (ext.isEnabled) {
+      log << "enabled";
+    }
+  }
+#endif
+
+  for (OSSystemExtensionProperties* ext in properties) {
+    // Ignore extensions with a different identifier or version.
+    if ([ext.bundleIdentifier compare:request.identifier] != NSOrderedSame) {
+      continue;
+    }
+    if ([ext.bundleVersion compare:self.bundleVersion] != NSOrderedSame) {
+      continue;
+    }
+    if (ext.isUninstalling) {
+      continue;
+    }
+
+    if (ext.isEnabled) {
+      QMetaObject::invokeMethod(self.parent, "extLoaderSuccess", Q_ARG(int, 0));
+      return;
+    } else if (@available(macOS 15.1, *)) {
+      QMetaObject::invokeMethod(self.parent, "extNeedsApproval");
+      return;
+    } else if (ext.isAwaitingUserApproval) {
+      QMetaObject::invokeMethod(self.parent, "extNeedsApproval");
+      return;
+    }
+  }
+
+  // Otherwise, we were unable to find a matching extension. Start a request
+  // to install (or reinstall) the VPN network extension.
+  OSSystemExtensionRequest* activationRequest =
+      [OSSystemExtensionRequest activationRequestForExtension: request.identifier
+                                                        queue: self.queue];
+
+  logger.debug() << "activation request started:" << request.identifier;
+  activationRequest.delegate = self;
+  [[OSSystemExtensionManager sharedManager] submitRequest: activationRequest];
+}
+
 - (void) request:(OSSystemExtensionRequest *) request
 didFailWithError:(NSError *) error {
-  QMetaObject::invokeMethod(self.parent, "extLoaderFailure"),
-                            Q_ARG(QString, QString::fromNSString(error.localizedDescription));
+  QMetaObject::invokeMethod(self.parent, "extLoaderFailure",
+                            Q_ARG(QString, QString::fromNSString(error.localizedDescription)));
 }
 
 - (void) requestNeedsUserApproval:(OSSystemExtensionRequest *) request {
@@ -366,6 +476,20 @@ didFinishWithResult:(OSSystemExtensionRequestResult) result {
 - (void)notifyStatusChanged:(NSNotification*)notify {
   NEVPNConnection* conn = static_cast<NEVPNConnection*>(notify.object);
   QMetaObject::invokeMethod(self.parent, "extStatusChange", Q_ARG(int, conn.status));
+}
+
+// These observation methods are only supported for macOS 15.1 and beyond.
+- (void)systemExtensionWillBecomeDisabled:(OSSystemExtensionInfo *)info API_AVAILABLE(macos(15.1)) {
+  logger.debug() << "sysex disabled:" << info.bundleIdentifier << "version:" << info.bundleVersion;
+}
+
+- (void)systemExtensionWillBecomeEnabled:(OSSystemExtensionInfo *)info API_AVAILABLE(macos(15.1)) {
+  logger.debug() << "sysex enabled:" << info.bundleIdentifier << "version:" << info.bundleVersion;
+  QMetaObject::invokeMethod(self.parent, "extLoaderSuccess", Q_ARG(int, 0));
+}
+
+- (void)systemExtensionWillBecomeInactive:(OSSystemExtensionInfo *)info API_AVAILABLE(macos(15.1)) {
+  logger.debug() << "sysex inactive:" << info.bundleIdentifier << "version:" << info.bundleVersion;
 }
 
 @end
