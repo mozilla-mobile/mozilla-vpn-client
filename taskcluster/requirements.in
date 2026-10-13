@@ -3,4 +3,4 @@
 
 mozilla-repo-urls==0.2.2
 mozilla-taskgraph>=5.0.1
-taskcluster-taskgraph>=24.2.3
+taskcluster-taskgraph>=24.3.0
