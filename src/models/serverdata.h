@@ -111,7 +111,7 @@ class ServerData final : public QObject {
 
   const QString& exitServerPublicKey() const { return m_exitServerPublicKey; }
   const QString& entryServerPublicKey() const { return m_entryServerPublicKey; }
-  Server::ObfuscationMethod obfuscationPolicyToObfuscationMethod(
+  static Server::ObfuscationMethod obfuscationPolicyToObfuscationMethod(
       SettingsHolder::ObfuscationPolicy obfuscationPolicy);
   QString entryServerIpv4Address() const { return entryServer().ipv4AddrIn(); }
   QString entryServerIpv6Address() const { return entryServer().ipv6AddrIn(); }
@@ -127,6 +127,7 @@ class ServerData final : public QObject {
   bool settingsChanged();
   const Server& entryServer() const;
   const Server& exitServer() const;
+  static Server::ObfuscationMethod currentObfuscationMethod();
   static QList<Server> getServerList(
       const QString& countryCode, const QString& cityName,
       const Server::ObfuscationMethod obfuscationMethod);
@@ -148,7 +149,6 @@ class ServerData final : public QObject {
 
   QString m_exitServerPublicKey;
   QString m_entryServerPublicKey;
-  Server::ObfuscationMethod m_obfuscationMethod = Server::NoObfuscation;
 };
 
 #endif  // SERVERDATA_H

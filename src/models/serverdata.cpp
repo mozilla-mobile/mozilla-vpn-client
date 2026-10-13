@@ -46,7 +46,6 @@ ServerData& ServerData::operator=(const ServerData& other) {
   m_previousExitCityName = other.m_previousExitCityName;
   m_exitServerPublicKey = other.m_exitServerPublicKey;
   m_entryServerPublicKey = other.m_entryServerPublicKey;
-  m_obfuscationMethod = other.m_obfuscationMethod;
 
   return *this;
 }
@@ -162,10 +161,6 @@ bool ServerData::settingsChanged() {
     m_entryCountryName = obj[ENTER_COUNTRY_NAME].toString();
   }
 
-  m_obfuscationMethod = obfuscationPolicyToObfuscationMethod(
-      static_cast<SettingsHolder::ObfuscationPolicy>(
-          settingsHolder->obfuscationPolicy()));
-
   emit changed();
   emit retranslationNeeded();
   return true;
@@ -207,12 +202,15 @@ bool ServerData::serverLocatedInUserCountry() {
   return trueCountryCode.toUpper() == exitCountryCode().toUpper();
 }
 
+// static
+Server::ObfuscationMethod ServerData::currentObfuscationMethod() {
+  return obfuscationPolicyToObfuscationMethod(
+      static_cast<SettingsHolder::ObfuscationPolicy>(
+          SettingsHolder::instance()->obfuscationPolicy()));
+}
+
 bool ServerData::supportsCurrentObfuscationMethod() {
-  Server::ObfuscationMethod currentObfuscationMethod =
-      obfuscationPolicyToObfuscationMethod(
-          static_cast<SettingsHolder::ObfuscationPolicy>(
-              SettingsHolder::instance()->obfuscationPolicy()));
-  return exitServer().supportObfuscationMethod(currentObfuscationMethod);
+  return exitServer().supportObfuscationMethod(currentObfuscationMethod());
 }
 
 void ServerData::changeServer(const QString& countryCode,
@@ -258,7 +256,6 @@ void ServerData::forget() {
   m_previousExitCountryCode.clear();
   m_previousExitCountryName.clear();
   m_previousExitCityName.clear();
-  m_obfuscationMethod = Server::NoObfuscation;
 }
 
 // static
@@ -286,7 +283,7 @@ const QList<Server> ServerData::exitServers() const {
   // Obfuscation is not needed on multihop exit servers
   return getServerList(
       m_exitCountryCode, m_exitCityName,
-      multihop() ? Server::NoObfuscation : m_obfuscationMethod);
+      multihop() ? Server::NoObfuscation : currentObfuscationMethod());
 }
 
 const QList<Server> ServerData::entryServers() const {
@@ -295,7 +292,7 @@ const QList<Server> ServerData::entryServers() const {
   }
 
   return getServerList(m_entryCountryCode, m_entryCityName,
-                       m_obfuscationMethod);
+                       currentObfuscationMethod());
 }
 
 void ServerData::setEntryServerPublicKey(const QString& publicKey) {
