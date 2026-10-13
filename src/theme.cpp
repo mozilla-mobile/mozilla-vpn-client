@@ -61,13 +61,6 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
           });
 #endif
 
-  connect(SettingsHolder::instance(), &SettingsHolder::usingSystemThemeChanged,
-          this, [this]() {
-            if (SettingsHolder::instance()->usingSystemTheme()) {
-              setToSystemTheme();
-            }
-          });
-
   connect(SettingsHolder::instance(), &SettingsHolder::themeChanged, this,
           [this]() {
             if (!SettingsHolder::instance()->hasTheme() &&
@@ -216,6 +209,10 @@ void Theme::setCurrentTheme(const QString& themeName) {
 
 void Theme::setUsingSystemTheme(const bool usingSystemTheme) {
   SettingsHolder::instance()->setUsingSystemTheme(usingSystemTheme);
+
+  if (usingSystemTheme) {
+    setToSystemTheme();
+  }
 }
 
 void Theme::setToSystemTheme() {
