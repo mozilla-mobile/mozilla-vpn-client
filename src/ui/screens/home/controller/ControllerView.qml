@@ -648,7 +648,6 @@ Item {
               id: logoSubtitleOn
               Layout.alignment: Qt.AlignHCenter
 
-              anchors.horizontalCenter: parent.horizontalCenter
               opacity: 0.8
               onVisibleChanged: handleConnectionStateChange()
 
