@@ -733,6 +733,7 @@ bool Controller::silentSwitchServers(
   }
 
   ServerSelectionPolicy selectionPolicy = DoNotRandomizeServerSelection;
+  bool obfuscationUnsupported = false;
   if (serverCoolDownPolicy == eServerCoolDownNeeded) {
     // Set a cooldown timer on the current server.
     MozillaVPN::instance()->serverLatency()->setCooldown(
@@ -748,12 +749,21 @@ bool Controller::silentSwitchServers(
     logger.debug() << "Randomizing server selection because current server "
                       "does not support obfuscation method";
     selectionPolicy = RandomizeServerSelection;
+    obfuscationUnsupported = true;
   }
 
   if (selectionPolicy == RandomizeServerSelection) {
     // The current server is usually filtered out of this list already by the
     // cooldown set above, or by obfuscation, so an empty list is expected.
     QList<Server> servers = m_serverData.exitServers();
+    if (servers.isEmpty() && obfuscationUnsupported) {
+      // Staying on the current server would silently ignore the new
+      // obfuscation method, so report the location as unavailable instead.
+      logger.warning() << "No server in this location supports the "
+                          "current obfuscation method";
+      serverUnavailable();
+      return false;
+    }
     if (servers.isEmpty() ||
         (servers.length() == 1 &&
          servers.first().publicKey() == m_serverData.exitServerPublicKey())) {
