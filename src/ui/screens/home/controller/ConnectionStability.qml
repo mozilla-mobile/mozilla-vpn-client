@@ -72,7 +72,7 @@ Item {
                 }
                 PropertyChanges {
                     target: logoSubtitleOn
-                    visible: VPNController.state === VPNController.StateOn
+                    visible: VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateSilentSwitching
                 }
             },
             State {
