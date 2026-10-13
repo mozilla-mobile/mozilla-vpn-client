@@ -14,25 +14,12 @@ endif()
 ## This is used by Android via JNA.
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 
-if(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "aarch64")
-    set(OBFUSCATORS_RUST_ARCH "aarch64-linux-android")
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "armv7-a")
-    set(OBFUSCATORS_RUST_ARCH "armv7-linux-androideabi")
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "i686")
-    set(OBFUSCATORS_RUST_ARCH "i686-linux-android")
-elseif(${CMAKE_SYSTEM_PROCESSOR} STREQUAL "x86_64")
-    set(OBFUSCATORS_RUST_ARCH "x86_64-linux-android")
-else()
-    message(FATAL_ERROR "Unsupported Android architecture for obfuscators: ${CMAKE_SYSTEM_PROCESSOR}")
-endif()
-
 set(OBFUSCATORS_CARGO_ENV
     CARGO_TARGET_DIR=${CMAKE_CURRENT_BINARY_DIR}/obfuscators
     "RUSTFLAGS=-Ctarget-feature=-crt-static -C link-arg=-Wl,-z,max-page-size=16384 -C link-arg=-Wl,-z,common-page-size=16384"
 )
 
 add_rust_library(obfuscators
-    ARCH ${OBFUSCATORS_RUST_ARCH}
     PACKAGE_DIR ${CMAKE_SOURCE_DIR}/obfuscators
     BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/obfuscators
     CRATE_NAME obfuscators
