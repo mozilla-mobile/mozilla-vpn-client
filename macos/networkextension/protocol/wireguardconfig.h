@@ -15,7 +15,7 @@
 @property(readonly) NSUInteger prefixLength;
 @end
 
-@interface InterfaceConfig : NSObject
+@interface WireguardConfig : NSObject
 
 - (id)initFromDict:(NSDictionary<NSString*, id>*)dict;
 - (void)encodeWithDict:(NSMutableDictionary<NSString*,id> *)dict;
