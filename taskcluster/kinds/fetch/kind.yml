@@ -39,9 +39,9 @@ tasks:
         description: Wireguard Driver
         fetch: 
             type: static-url 
-            url: https://download.wireguard.com/wireguard-nt/wireguard-nt-0.10.1.zip
-            sha256: 772c0b1463d8d2212716f43f06f4594d880dea4f735165bd68e388fc41b81605
-            size: 1774096
+            url: https://download.wireguard.com/wireguard-nt/wireguard-nt-1.1.zip
+            sha256: dceb30a9bc4be48cce0f74160fc88a585a2c2627366e8f846fc6658f9038dace
+            size: 1372955
     wix-toolset:
         description: Wix Toolset CLI
         fetch:
