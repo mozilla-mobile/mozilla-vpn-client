@@ -37,8 +37,12 @@ MZSimplePopup {
             objectName: "serverUnavailablePopup-button"
             Layout.fillWidth: true
             onClicked: {
-                MZNavigator.requestScreen(VPN.ScreenHome)
-                window.showServerList(true);
+                if (MZNavigator.screen === VPN.ScreenHome) {
+                    window.showServerList(true);
+                } else {
+                    window.pendingShowServerList = true;
+                    MZNavigator.requestScreen(VPN.ScreenHome);
+                }
                 root.close();
             }
         },
