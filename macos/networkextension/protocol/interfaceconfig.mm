@@ -61,8 +61,9 @@
 @end
 
 @implementation InterfaceConfig
-- (NSString*)findString:(NSString*)key {
-  NSObject* value = [self.dict objectForKey:key];
++ (NSString*)findString:(NSDictionary<NSString *,id> *)dict
+                 forKey:(NSString*)key {
+  NSObject* value = [dict objectForKey:key];
   if (value == nil) {
     return nil;
   }
@@ -72,9 +73,10 @@
   return (NSString*)value;
 }
 
-- (nw_endpoint_t)findAddress:(NSString*)key
++ (nw_endpoint_t)findAddress:(NSDictionary<NSString *,id> *)dict
+                      forKey:(NSString*)key
                     withPort:(NSUInteger)port {
-  NSString* addr = [self findString:key];
+  NSString* addr = [InterfaceConfig findString:dict forKey:key];
   if (!addr) {
     return nil;
   }
@@ -106,49 +108,48 @@
   }
 }
 
-- (id)parseFromDict:(NSDictionary<NSString *,id> *)dict {
-  InterfaceConfig* config = [InterfaceConfig new];
-  config->_dict = dict;
+- (id)initFromDict:(NSDictionary<NSString *,id> *)dict {
+  self = [super init];
 
-  config.privateKey = [config findString:@"privateKey"];
-  if (!config.privateKey) {
+  self.privateKey = [InterfaceConfig findString:dict forKey:@"privateKey"];
+  if (!self.privateKey) {
     return nil;
   }
-  config.deviceIpv4Addr = [config findAddress:@"deviceIpv4Addr" withPort:0];
-  if ((!config.deviceIpv4Addr) ||
-      (nw_endpoint_get_address(config.deviceIpv4Addr)->sa_family != AF_INET)) {
+  self.deviceIpv4Addr = [InterfaceConfig findAddress:dict forKey:@"deviceIpv4Addr" withPort:0];
+  if ((!self.deviceIpv4Addr) ||
+      (nw_endpoint_get_address(self.deviceIpv4Addr)->sa_family != AF_INET)) {
     return nil;
   }
-  config.deviceIpv6Addr = [config findAddress:@"deviceIpv6Addr" withPort:0];
-  if ((!config.deviceIpv6Addr) ||
-      (nw_endpoint_get_address(config.deviceIpv6Addr)->sa_family != AF_INET6)) {
-    return nil;
-  }
-
-  config.serverPublicKey = [config findString:@"serverPublicKey"];
-  if (!config.serverPublicKey) {
+  self.deviceIpv6Addr = [InterfaceConfig findAddress:dict forKey:@"deviceIpv6Addr" withPort:0];
+  if ((!self.deviceIpv6Addr) ||
+      (nw_endpoint_get_address(self.deviceIpv6Addr)->sa_family != AF_INET6)) {
     return nil;
   }
 
-  NSObject* serverPort = [config.dict objectForKey:@"serverPort"];
+  self.serverPublicKey = [InterfaceConfig findString:dict forKey:@"serverPublicKey"];
+  if (!self.serverPublicKey) {
+    return nil;
+  }
+
+  NSObject* serverPort = [dict objectForKey:@"serverPort"];
   if ([serverPort isKindOfClass:[NSString class]]) {
-    config.serverPort = [(NSString*)serverPort intValue];
+    self.serverPort = [(NSString*)serverPort intValue];
   } else if ([serverPort isKindOfClass:[NSNumber class]]) {
-    config.serverPort = [(NSNumber*)serverPort intValue];
+    self.serverPort = [(NSNumber*)serverPort intValue];
   } else {
     // default wireguard port.
-    config.serverPort = 51820;
+    self.serverPort = 51820;
   }
 
-  config.serverIpv4Addr = [config findAddress:@"serverIpv4AddrIn" withPort:config.serverPort];
-  config.serverIpv6Addr = [config findAddress:@"serverIpv6AddrIn" withPort:config.serverPort];
+  self.serverIpv4Addr = [InterfaceConfig findAddress:dict forKey:@"serverIpv4AddrIn" withPort:self.serverPort];
+  self.serverIpv6Addr = [InterfaceConfig findAddress:dict forKey:@"serverIpv6AddrIn" withPort:self.serverPort];
 
   // We don't actually use this, but parse it anyways.
-  config.serverIpv4Gateway = [config findAddress:@"serverIpv4Gateway" withPort:0];
-  config.serverIpv6Gateway = [config findAddress:@"serverIpv6Gateway" withPort:0];
+  self.serverIpv4Gateway = [InterfaceConfig findAddress:dict forKey:@"serverIpv4Gateway" withPort:0];
+  self.serverIpv6Gateway = [InterfaceConfig findAddress:dict forKey:@"serverIpv6Gateway" withPort:0];
 
   // Parse the allowed IP address ranges.
-  NSObject* rangesObject = [config.dict objectForKey:@"routes"];
+  NSObject* rangesObject = [dict objectForKey:@"routes"];
   NSMutableArray<RoutePrefix*>* routes = [NSMutableArray new];
   if ([rangesObject isKindOfClass:[NSArray<NSString*> class]]) {
     NSArray<NSString*>* list = (NSArray<NSString*>*)rangesObject;
@@ -160,13 +161,13 @@
       [routes addObject:prefix];
     }
   }
-  config.routes = [NSArray arrayWithArray:routes];
+  self.routes = [NSArray arrayWithArray:routes];
 
   // Parse the DNS servers list.
-  NSObject* dnsObject = [config.dict objectForKey:@"dnsSettings"];
-  config.dnsSettings = nil;
+  NSObject* dnsObject = [dict objectForKey:@"dnsSettings"];
+  self.dnsSettings = nil;
   if ([dnsObject isKindOfClass:[NEDNSSettings class]]) {
-    config.dnsSettings = (NEDNSSettings*)dnsObject;
+    self.dnsSettings = (NEDNSSettings*)dnsObject;
   } else if ([dnsObject isKindOfClass:[NSArray<NSString*> class]]) {
     // Parse and validate the addresses.
     NSMutableArray<NSString*>* dnsServers = [NSMutableArray new];
@@ -186,21 +187,19 @@
 
     if (dnsServers.count > 0) {
       NEDNSSettings* settings = [NEDNSSettings alloc];
-      config.dnsSettings = [settings initWithServers:dnsServers];
+      self.dnsSettings = [settings initWithServers:dnsServers];
     }
   }
 
-  return config;
-}
+  NSArray* apps = [dict objectForKey:@"apps"];
+  if ([apps isKindOfClass:[NSArray class]]) {
+    NSPredicate* p = [NSPredicate predicateWithFormat:@"self isKindOfClass: %@", [NSString class]];
+    self.excludedApps = [NSSet setWithArray:[apps filteredArrayUsingPredicate:p]];
+  } else {
+    self.excludedApps = [NSSet set];
+  }
 
-- (id)initFromCoder:(NSCoder*)coder {
-  self = [super init];
-  return [self parseFromDict:[[NSDictionary alloc] initWithCoder:coder]];
-}
-
-- (id)initFromDict:(NSDictionary<NSString *,id> *)dict {
-  self = [super init];
-  return [self parseFromDict:dict];
+  return self;
 }
 
 @end

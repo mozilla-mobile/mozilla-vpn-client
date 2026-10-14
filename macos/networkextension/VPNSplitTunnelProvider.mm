@@ -33,7 +33,6 @@
 @property (strong) WireguardTunnel* wireguard;
 @property (strong) InterfaceConfig* config;
 
-@property (strong) NSSet* vpnDisabledApps;
 @property (strong) NSSet* vpnHardcodeApps;
 
 @property (strong) NSTask* dnsManager;
@@ -56,7 +55,6 @@
   [parts replaceObjectAtIndex:parts.count-1
                    withObject:@"socksproxy"];
 
-  self.vpnDisabledApps = [NSSet set];
   self.vpnHardcodeApps = [NSSet setWithObject:[parts componentsJoinedByString:@"."]];
 
   m_handledTcpFlows = 0;
@@ -272,15 +270,6 @@
 
   self.settings.excludedNetworkRules = excludeRules;
 
-  // Initialize the excluded application list.
-  NSArray* apps = [options objectForKey:@"apps"];
-  if ([apps isKindOfClass:[NSArray class]]) {
-    NSPredicate* p = [NSPredicate predicateWithFormat:@"self isKindOfClass: %@", [NSString class]];
-    self.vpnDisabledApps = [NSSet setWithArray:[apps filteredArrayUsingPredicate:p]];
-  } else {
-    self.vpnDisabledApps = [NSSet set];
-  }
-
   // Configure the settings.
   __unsafe_unretained VPNSplitTunnelProvider* weakSelf = self;
   [self setTunnelNetworkSettings: self.settings
@@ -345,6 +334,8 @@
   }
   NSLog(@"configuration changed");
 
+  NSSet* prevExcludedApps = [NSSet setWithSet:self.config.excludedApps];
+
   // Parse and update the configuration
   NETunnelProviderProtocol* proto = (NETunnelProviderProtocol*)self.protocolConfiguration;
   _config = [[InterfaceConfig alloc] initFromDict:proto.providerConfiguration];
@@ -357,21 +348,10 @@
     return;
   }
 
-  // If the applications being excluded have changed, then we need to restart
-  // the transparent proxy so that connections from the applications get closed
-  // and re-evaluated.
-  NSArray<NSString*>* apps = [proto.providerConfiguration objectForKey:@"apps"];
-  NSPredicate* p = [NSPredicate predicateWithFormat:@"self isKindOfClass: %@", [NSString class]];
-  NSSet* newDisabledApps;
-  if ([apps isKindOfClass:[NSArray class]]) {
-    newDisabledApps = [NSSet setWithArray:[apps filteredArrayUsingPredicate:p]];
-  } else {
-    newDisabledApps = [NSSet set];
-  }
-
-  // TODO: It would be nice if there was a way we could automatically restart
-  // ourself in this case, but I can't figure out how to do this.
-  if (![self.vpnDisabledApps isEqualToSet:newDisabledApps]) {
+  // Special case: we cannot gracefully update configuration if the excluded
+  // applications change. So lets throw a special error here to let the client
+  // know that an explicit restart is necessary.
+  if (![self.config.excludedApps isEqualToSet:prevExcludedApps]) {
     [self stopProxyWithReason:NEProviderStopReasonSuperceded completionHandler:^(){
       [self cancelProxyWithError:vpnProviderError(NEProviderStopReasonSuperceded)];
     }];
@@ -441,7 +421,7 @@
     return NO;
   }
 
-  for (NSString* appId in self.vpnDisabledApps) {
+  for (NSString* appId in self.config.excludedApps) {
     if (sourceId.length < appId.length) {
       continue;
     }
