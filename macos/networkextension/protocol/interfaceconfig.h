@@ -11,12 +11,16 @@
 + (id)parseRoute:(NSString*)routeString;
 
 @property(readonly, getter=getDestination) const struct sockaddr* destination;
+@property(readonly, getter=getString) NSString* string;
 @property(readonly) NSUInteger prefixLength;
 @end
 
 @interface InterfaceConfig : NSObject
 
 - (id)initFromDict:(NSDictionary<NSString*, id>*)dict;
+- (void)encodeWithDict:(NSMutableDictionary<NSString*,id> *)dict;
+
+@property(readonly, getter=encodeToDict) NSDictionary<NSString*,id>* dict;
 
 @property(strong) NSString* privateKey;
 @property(strong) nw_endpoint_t deviceIpv4Addr;
