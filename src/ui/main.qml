@@ -22,6 +22,10 @@ ApplicationWindow {
     // settings.
     property bool pendingShowObfuscationSettings: false
 
+    // Set before navigating to ScreenHome to open the server list once the
+    // screen is loaded.
+    property bool pendingShowServerList: false
+
     property var safeContentHeight: window.height
     property string promotedAddonId: ""
 
