@@ -39,6 +39,7 @@ target_link_libraries(mozillavpn PRIVATE ${FW_NETWORK})
 target_link_libraries(mozillavpn PRIVATE ${FW_USER_NOTIFICATIONS})
 target_link_libraries(mozillavpn PRIVATE ${FW_NW_EXTENSION})
 target_link_libraries(mozillavpn PRIVATE ${FW_SYS_EXTENSION})
+target_link_libraries(mozillavpn PRIVATE networkextensionproto)
 
 # MacOS platform source files
 target_sources(mozillavpn PRIVATE

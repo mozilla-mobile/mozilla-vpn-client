@@ -50,6 +50,16 @@ set_target_properties(networkextension PROPERTIES
     XCODE_ATTRIBUTE_CODE_SIGN_ENTITLEMENTS ${CMAKE_CURRENT_SOURCE_DIR}/network-extension.entitlements
 )
 
+# A library for the type encoding between extension and client.
+add_library(networkextensionproto STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/protocol/interfaceconfig.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/protocol/interfaceconfig.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/protocol/wireguardstatus.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/protocol/wireguardstatus.mm
+)
+target_include_directories(networkextensionproto PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/protocol)
+target_link_libraries(networkextension PRIVATE networkextensionproto)
+
 target_compile_options(networkextension PUBLIC "-fobjc-arc" "-fno-objc-arc-exceptions")
 target_compile_definitions(networkextension PRIVATE "$<$<CONFIG:Debug>:MZ_DEBUG>")
 
@@ -67,15 +77,11 @@ target_link_libraries(networkextension PRIVATE ${FW_SYSTEMCONFIG})
 target_link_libraries(networkextension PRIVATE ${FW_NW_EXTENSION})
 target_sources(networkextension PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/dnsmanager.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/interfaceconfig.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/main.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardpeer.h
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardpeer.mm
-    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardstatus.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/wireguardstatus.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardtunnel.h
     ${CMAKE_CURRENT_SOURCE_DIR}/wireguardtunnel.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/VPNSplitTunnelProvider.mm

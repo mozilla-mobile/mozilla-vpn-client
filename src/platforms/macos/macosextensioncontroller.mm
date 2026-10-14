@@ -13,6 +13,7 @@
 
 #include "logger.h"
 #include "macosutils.h"
+#include "wireguardstatus.h"
 
 // An extension loader - used to forward Obj-C messages back to Qt.
 @interface MacOSExtensionDelegate : NSObject <OSSystemExtensionRequestDelegate, OSSystemExtensionsWorkspaceObserver>
@@ -315,17 +316,6 @@ void MacOSExtensionController::deactivate() {
   }
 }
 
-QString MacOSExtensionController::parseArchivedString(NSCoder* archive,
-                                                      NSString* key) {
-  NSString* s = [archive decodeObjectOfClass:[NSString class] forKey:key];
-  return QString::fromNSString(s);
-}
-
-QHostAddress MacOSExtensionController::parseArchivedAddress(NSCoder* archive,
-                                                            NSString* key) {
-  return QHostAddress(parseArchivedString(archive, key));
-}
-
 void MacOSExtensionController::checkStatus() {
   if (!m_session) {
     // Extension is not running.
@@ -347,18 +337,31 @@ void MacOSExtensionController::checkStatus() {
       return;
     }
 
+    WireguardStatus* wgStats = [[WireguardStatus new] initWithCoder:archive];
     ControllerStatus st;
-    NSDate* timestamp = [archive decodeObjectOfClass:[NSDate class] forKey:@"lastHandshake"];
-    if (timestamp) {
-      st.m_connected = true; 
-      st.m_timestamp = QDateTime::fromCFDate((CFDateRef)timestamp);
+    if (!wgStats) {
+      emit statusUpdated(st);
+      return;
     }
-    st.m_ipv4Gateway = parseArchivedAddress(archive, @"ipv4gateway");
-    st.m_ipv6Gateway = parseArchivedAddress(archive, @"ipv6gateway");
-    st.m_ipv4Address = parseArchivedAddress(archive, @"ipv4address");
-    st.m_ipv6Address = parseArchivedAddress(archive, @"ipv6address");
-    st.m_rxBytes = [archive decodeInt64ForKey:@"rxBytes"];
-    st.m_txBytes = [archive decodeInt64ForKey:@"txBytes"];
+
+    if (wgStats.lastHandshake) {
+      st.m_connected = true; 
+      st.m_timestamp = QDateTime::fromCFDate((CFDateRef)wgStats.lastHandshake);
+    }
+    if (wgStats.ipv4gateway) {
+      st.m_ipv4Gateway = QHostAddress(QString::fromNSString(wgStats.ipv4gateway));
+    }
+    if (wgStats.ipv6gateway) {
+      st.m_ipv6Gateway = QHostAddress(QString::fromNSString(wgStats.ipv6gateway));
+    }
+    if (wgStats.ipv4address) {
+      st.m_ipv4Address = QHostAddress(QString::fromNSString(wgStats.ipv4address));
+    }
+    if (wgStats.ipv6gateway) {
+      st.m_ipv6Address = QHostAddress(QString::fromNSString(wgStats.ipv6gateway));
+    }
+    st.m_rxBytes = wgStats.rxBytes;
+    st.m_txBytes = wgStats.txBytes;
     emit statusUpdated(st);
   }];
 
