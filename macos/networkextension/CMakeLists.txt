@@ -52,8 +52,8 @@ set_target_properties(networkextension PROPERTIES
 
 # A library for the type encoding between extension and client.
 add_library(networkextensionproto STATIC
-    ${CMAKE_CURRENT_SOURCE_DIR}/protocol/interfaceconfig.h
-    ${CMAKE_CURRENT_SOURCE_DIR}/protocol/interfaceconfig.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/protocol/wireguardconfig.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/protocol/wireguardconfig.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/protocol/wireguardstatus.h
     ${CMAKE_CURRENT_SOURCE_DIR}/protocol/wireguardstatus.mm
 )

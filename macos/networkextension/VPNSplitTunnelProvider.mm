@@ -4,8 +4,8 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
-#import "interfaceconfig.h"
 #import "utils.h"
+#import "wireguardconfig.h"
 #import "wireguardtunnel.h"
 
 #include <atomic>
@@ -31,7 +31,7 @@
 
 @property (strong) NETransparentProxyNetworkSettings* settings;
 @property (strong) WireguardTunnel* wireguard;
-@property (strong) InterfaceConfig* config;
+@property (strong) WireguardConfig* config;
 
 @property (strong) NSSet* vpnHardcodeApps;
 
@@ -208,7 +208,7 @@
   m_handledUnknown = 0;
 
   // Parse the configuration
-  _config = [[InterfaceConfig alloc] initFromDict:options];
+  _config = [[WireguardConfig alloc] initFromDict:options];
   if (!self.config) {
     completionHandler(vpnProviderError(NEProviderStopReasonConfigurationFailed));
     return;
@@ -338,7 +338,7 @@
 
   // Parse and update the configuration
   NETunnelProviderProtocol* proto = (NETunnelProviderProtocol*)self.protocolConfiguration;
-  _config = [[InterfaceConfig alloc] initFromDict:proto.providerConfiguration];
+  _config = [[WireguardConfig alloc] initFromDict:proto.providerConfiguration];
   if (!self.config) {
     // We can't make sense of this configuration.
     [self.wireguard stopTunnelWithReason:NEProviderStopReasonConfigurationFailed

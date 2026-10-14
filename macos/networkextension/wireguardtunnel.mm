@@ -134,7 +134,7 @@ static void wgLog(const char* msg) {
   return self;
 }
 
-- (void) startTunnelWithOptions:(InterfaceConfig *)options 
+- (void) startTunnelWithOptions:(WireguardConfig *)options 
               completionHandler:(void (^)(NSError *error)) completionHandler {
   m_ipv4gateway = options.serverIpv4Gateway;
   m_ipv6gateway = options.serverIpv6Gateway;

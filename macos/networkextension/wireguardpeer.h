@@ -6,7 +6,7 @@
 #import <Network/Network.h>
 #import <NetworkExtension/NetworkExtension.h>
 
-#import "interfaceconfig.h"
+#import "wireguardconfig.h"
 #import "wireguardstatus.h"
 
 constexpr const int WG_PACKET_OVERHEAD = 32;
@@ -20,9 +20,9 @@ extern "C" struct wireguard_tunnel;
 
 @interface WireguardPeer : NSObject
 
-- (id)initWithOptions:(InterfaceConfig*)options andTunnel:(WireguardTunnel*)tunnel;
+- (id)initWithOptions:(WireguardConfig*)options andTunnel:(WireguardTunnel*)tunnel;
 
-- (void)startWithOptions:(InterfaceConfig*)options
+- (void)startWithOptions:(WireguardConfig*)options
        completionHandler:(void (^)(NSError* error))completionHandler;
 
 - (void)stopWithReason:(NEProviderStopReason)reason completionHandler:(void (^)())completionHandler;
