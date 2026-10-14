@@ -16,6 +16,12 @@ MZScreenBase {
     Component.onCompleted: () => {
         MZNavigator.addStackView(VPN.ScreenHome, getStack())
         getStack().push("qrc:/qt/qml/Mozilla/VPN/screens/home/ViewHome.qml")
+
+        // Show the server list when requested from the server unavailable popup and not in ScreenHome
+        if (window.pendingShowServerList) {
+            window.pendingShowServerList = false;
+            getStack().push("qrc:/qt/qml/Mozilla/VPN/screens/home/ViewServers.qml", StackView.Immediate);
+        }
     }
 
     Connections {
