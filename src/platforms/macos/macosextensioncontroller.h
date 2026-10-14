@@ -42,9 +42,6 @@ class MacOSExtensionController final : public ControllerImpl {
  private:
   static NSString* extIdentifier();
 
-  static QString parseArchivedString(NSCoder* archive, NSString* key);
-  static QHostAddress parseArchivedAddress(NSCoder* archive, NSString* key);
-
   void startTunnel();
 
  private:
