@@ -58,6 +58,26 @@
   return (const struct sockaddr*)&m_storage;
 }
 
+- (NSString*)getString {
+  if (m_storage.ss_family == AF_INET) {
+    char buf[INET_ADDRSTRLEN];
+    const struct sockaddr_in* sin = (struct sockaddr_in*)&m_storage;
+    if (inet_ntop(AF_INET, &sin->sin_addr.s_addr, buf, sizeof(buf))) {
+      return [NSString stringWithFormat:@"%s/%lu", buf, (unsigned long)_prefixLength];
+    }
+  }
+
+  if (m_storage.ss_family == AF_INET6) {
+    char buf[INET6_ADDRSTRLEN];
+    const struct sockaddr_in6* sin6 = (struct sockaddr_in6*)&m_storage;
+    if (inet_ntop(AF_INET6, &sin6->sin6_addr.s6_addr, buf, sizeof(buf))) {
+      return [NSString stringWithFormat:@"%s/%lu", buf, (unsigned long)_prefixLength];
+    }
+  }
+
+  return @"";
+}
+
 @end
 
 @implementation InterfaceConfig
@@ -200,6 +220,45 @@
   }
 
   return self;
+}
+
++ (NSString*)encodeAddr:(nw_endpoint_t)ep {
+  char* s = nw_endpoint_copy_address_string(ep);
+  return [[NSString alloc] initWithBytesNoCopy:s
+                                        length:strlen(s)
+                                      encoding:NSASCIIStringEncoding
+                                  freeWhenDone:true];
+}
+
+- (void)encodeWithDict:(NSMutableDictionary<NSString*,id> *)dict {
+  [dict setObject:self.privateKey forKey:@"privateKey"];
+  [dict setObject:[InterfaceConfig encodeAddr:self.deviceIpv4Addr] forKey:@"deviceIpv4Addr"];
+  [dict setObject:[InterfaceConfig encodeAddr:self.deviceIpv4Addr]forKey:@"deviceIpv6Addr"];
+
+  [dict setObject:self.serverPublicKey forKey:@"serverPublicKey"];
+  [dict setObject:[InterfaceConfig encodeAddr:self.serverIpv4Addr] forKey:@"serverIpv4AddrIn"];
+  [dict setObject:[InterfaceConfig encodeAddr:self.serverIpv6Addr] forKey:@"serverIpv6AddrIn"];
+  [dict setObject:[InterfaceConfig encodeAddr:self.serverIpv4Gateway] forKey:@"serverIpv4Gateway"];
+  [dict setObject:[InterfaceConfig encodeAddr:self.serverIpv6Gateway] forKey:@"serverIpv6Gateway"];
+  [dict setObject:[NSNumber numberWithInt:self.serverPort] forKey:@"serverPort"];
+
+  if (self.dnsSettings) {
+    [dict setObject:self.dnsSettings.servers.firstObject forKey:@"dnsSettings"];
+  }
+
+  NSMutableArray* ipAddressRanges = [NSMutableArray arrayWithCapacity:self.routes.count];
+  for (RoutePrefix* range in self.routes) {
+    [ipAddressRanges addObject:range.string];
+  }
+  [dict setObject:ipAddressRanges forKey:@"routes"];
+
+  [dict setObject:self.excludedApps.allObjects forKey:@"apps"];
+}
+
+- (NSDictionary<NSString*,id>*)encodeToDict {
+  NSMutableDictionary* dict = [NSMutableDictionary dictionary];
+  [self encodeWithDict:dict];
+  return dict;
 }
 
 @end
