@@ -43,7 +43,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   [peer handleTimer];
 }
 
-- (id) initWithOptions:(InterfaceConfig*) options
+- (id) initWithOptions:(WireguardConfig*) options
              andTunnel:(WireguardTunnel*) tunnel {
   self = [super init];
   self->m_tunfd = tunnel.tunfd;
@@ -85,7 +85,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 #endif
 }
 
-- (void) startWithOptions:(InterfaceConfig*) options
+- (void) startWithOptions:(WireguardConfig*) options
         completionHandler:(void (^)(NSError *error)) completionHandler {
 #ifdef MZ_DEBUG
   char *addrstr = nw_endpoint_copy_address_string(options.serverIpv4Addr);

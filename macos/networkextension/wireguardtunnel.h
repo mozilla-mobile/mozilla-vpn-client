@@ -6,13 +6,13 @@
 #import <Network/Network.h>
 #import <NetworkExtension/NetworkExtension.h>
 
-#import "interfaceconfig.h"
+#import "wireguardconfig.h"
 #import "wireguardpeer.h"
 #import "wireguardstatus.h"
 
 @interface WireguardTunnel : NSObject
 
-- (void)startTunnelWithOptions:(InterfaceConfig*)options
+- (void)startTunnelWithOptions:(WireguardConfig*)options
              completionHandler:(void (^)(NSError* error))completionHandler;
 
 - (void)stopTunnelWithReason:(NEProviderStopReason)reason
