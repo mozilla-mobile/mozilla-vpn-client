@@ -5,9 +5,9 @@
 set(WIREGUARD_FOLDER $ENV{WIREGUARD_FOLDER} CACHE STRING "Path to Extracted WireGuardNT Folder")
 
 if(NOT WIREGUARD_FOLDER)
-    file(DOWNLOAD https://download.wireguard.com/wireguard-nt/wireguard-nt-0.10.1.zip
+    file(DOWNLOAD https://download.wireguard.com/wireguard-nt/wireguard-nt-1.1.zip
         ${CMAKE_CURRENT_BINARY_DIR}/.deps/wg-nt.zip
-        EXPECTED_HASH SHA256=772c0b1463d8d2212716f43f06f4594d880dea4f735165bd68e388fc41b81605)
+        EXPECTED_HASH SHA256=dceb30a9bc4be48cce0f74160fc88a585a2c2627366e8f846fc6658f9038dace)
 
     file(ARCHIVE_EXTRACT INPUT ${CMAKE_CURRENT_BINARY_DIR}/.deps/wg-nt.zip DESTINATION ${CMAKE_CURRENT_BINARY_DIR}/.deps)
 

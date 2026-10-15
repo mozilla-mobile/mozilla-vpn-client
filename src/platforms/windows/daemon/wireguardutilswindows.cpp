@@ -20,8 +20,6 @@
 #include "windowsfirewall.h"
 #include "windowsroutemonitor.h"
 #include "wireguard.h"
-DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_PEER_FLAG)
-DEFINE_ENUM_FLAG_OPERATORS(WIREGUARD_INTERFACE_FLAG)
 
 #pragma comment(lib, "Dbghelp.lib")
 #pragma comment(lib, "iphlpapi.lib")
