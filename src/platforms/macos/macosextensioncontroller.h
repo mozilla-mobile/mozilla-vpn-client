@@ -7,6 +7,7 @@
 
 #include "controllerimpl.h"
 
+#include <Network/Network.h>
 #include <QtDarwinHelpers>
 
 Q_FORWARD_DECLARE_OBJC_CLASS(MacOSExtensionDelegate);
@@ -41,6 +42,7 @@ class MacOSExtensionController final : public ControllerImpl {
 
  private:
   static NSString* extIdentifier();
+  static nw_endpoint_t encodeAddress(const QString& addr);
 
   void startTunnel();
 
