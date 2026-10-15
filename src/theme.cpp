@@ -68,7 +68,7 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
               // If the user signs out, all settings get reset. In this case, we
               // want them to see the system theme. This was not getting reset
               // though (VPN-7814):
-              // 1. The usingSystemTheme setting is has a key of
+              // 1. The usingSystemTheme setting has a key of
               // `theme/usingSystemTheme`, while the theme string has a key of
               // `theme`.
               // 2. Resetting `theme` (which happens before we try to reset
