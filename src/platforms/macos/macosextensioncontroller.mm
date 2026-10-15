@@ -13,6 +13,7 @@
 
 #include "logger.h"
 #include "macosutils.h"
+#include "wireguardconfig.h"
 #include "wireguardstatus.h"
 
 // An extension loader - used to forward Obj-C messages back to Qt.
@@ -213,6 +214,29 @@ void MacOSExtensionController::extStatusChange(int status) {
   }
 }
 
+nw_endpoint_t MacOSExtensionController::encodeAddress(const QString& addr) {
+  QHostAddress hostaddr(addr);
+
+  if (hostaddr.protocol() == QAbstractSocket::IPv4Protocol) {
+    struct sockaddr_in sin = {};
+    sin.sin_family = AF_INET;
+    sin.sin_len = sizeof(struct sockaddr_in);
+    sin.sin_addr.s_addr = hostaddr.toIPv4Address();
+    return nw_endpoint_create_address((const struct sockaddr*)&sin);
+  }
+
+  if (hostaddr.protocol() == QAbstractSocket::IPv6Protocol) {
+    Q_IPV6ADDR raw = hostaddr.toIPv6Address();
+    struct sockaddr_in6 sin6 = {};
+    sin6.sin6_family = AF_INET6;
+    sin6.sin6_len = sizeof(struct sockaddr_in6);
+    memcpy(sin6.sin6_addr.s6_addr, &raw, sizeof(Q_IPV6ADDR));
+    return nw_endpoint_create_address((const struct sockaddr*)&sin6);
+  }
+
+  return nil;
+}
+
 void MacOSExtensionController::activate(const InterfaceConfig& config,
                                         Controller::Reason reason) {
   Q_UNUSED(reason);
@@ -227,18 +251,20 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
   m_serverPublicKey = config.m_serverPublicKey;
 
   // Serialize the interface configuration.
-  NSMutableDictionary* options = [NSMutableDictionary dictionary];
-  [options setObject:config.m_privateKey.toNSString() forKey:@"privateKey"];
-  [options setObject:config.m_deviceIpv4Address.toNSString() forKey:@"deviceIpv4Addr"];
-  [options setObject:config.m_deviceIpv6Address.toNSString() forKey:@"deviceIpv6Addr"];
-  [options setObject:config.m_serverPublicKey.toNSString() forKey:@"serverPublicKey"];
-  [options setObject:config.m_serverIpv4AddrIn.toNSString() forKey:@"serverIpv4AddrIn"];
-  [options setObject:config.m_serverIpv6AddrIn.toNSString() forKey:@"serverIpv6AddrIn"];
-  [options setObject:config.m_serverIpv4Gateway.toNSString() forKey:@"serverIpv4Gateway"];
-  [options setObject:config.m_serverIpv6Gateway.toNSString() forKey:@"serverIpv6Gateway"];
-  [options setObject:[NSNumber numberWithInt:config.m_serverPort] forKey:@"serverPort"];
+  WireguardConfig* options = [WireguardConfig new];
+  options.privateKey = config.m_privateKey.toNSString();
+  options.deviceIpv4Addr = encodeAddress(config.m_deviceIpv4Address);
+  options.deviceIpv6Addr = encodeAddress(config.m_deviceIpv6Address);
+  
+  options.serverPublicKey = config.m_serverPublicKey.toNSString();
+  options.serverIpv4Addr = encodeAddress(config.m_serverIpv4AddrIn);
+  options.serverIpv6Addr = encodeAddress(config.m_serverIpv6AddrIn);
+  options.serverIpv4Gateway = encodeAddress(config.m_serverIpv4Gateway);
+  options.serverIpv6Gateway = encodeAddress(config.m_serverIpv6Gateway);
+  options.serverPort = config.m_serverPort;
+
   if (!config.m_dnsServer.isEmpty()) {
-    [options setObject:@[config.m_dnsServer.toNSString()] forKey:@"dnsSettings"];
+    options.dnsSettings = [[NEDNSSettings alloc] initWithServers:@[config.m_dnsServer.toNSString()]];
   }
 
   NSMutableArray* ipAddressRanges =
@@ -246,20 +272,19 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
   for (const IPAddress& range : config.m_allowedIPAddressRanges) {
     [ipAddressRanges addObject:range.toString().toNSString()];
   }
-  [options setObject:ipAddressRanges forKey:@"routes"];
+  options.routes = ipAddressRanges;
 
   // Serialize the excluded application list.
-  NSMutableArray* vpnDisabledApps =
-      [NSMutableArray arrayWithCapacity:config.m_vpnDisabledApps.length()];
+  NSMutableSet* apps = [NSMutableSet setWithCapacity:config.m_vpnDisabledApps.length()];
   for (const QString& appId : config.m_vpnDisabledApps) {
-    [vpnDisabledApps addObject:appId.toNSString()];
+    [apps addObject:appId.toNSString()];
   }
-  [options setObject:vpnDisabledApps forKey:@"apps"];
+  options.excludedApps = apps;
 
   // Update the tunnel configuration.
   NETunnelProviderProtocol* proto =
       static_cast<NETunnelProviderProtocol*>(m_manager.protocolConfiguration);
-  proto.providerConfiguration = options;
+  proto.providerConfiguration = options.dict;
   [m_manager saveToPreferencesWithCompletionHandler:^(NSError* saveErr) {
     if (saveErr) {
       logger.warning() << "prefs update error:" << saveErr;
