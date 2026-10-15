@@ -4,7 +4,9 @@
 
 #include "netmgrcontroller.h"
 
+#include <pwd.h>
 #include <sys/stat.h>
+#include <unistd.h>
 
 #include <QDBusConnection>
 #include <QDBusInterface>
@@ -87,7 +89,16 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
   m_config.insert("type", QString("wireguard"));
   m_config.insert("uuid", m_uuid);
   m_config.insert("autoconnect", false);
-  // TODO: Permissions?
+  // Make the connection private to the user, so NetworkManager checks
+  // settings.modify.own instead of settings.modify.system. That is also
+  // granted to inactive sessions, e.g. when reconnecting behind a lock screen.
+  struct passwd* pw = getpwuid(getuid());
+  if (pw) {
+    m_config.insert("permissions",
+                    QStringList{"user:" + QString::fromLocal8Bit(pw->pw_name)});
+  } else {
+    logger.warning() << "Unable to determine the user name";
+  }
   // TODO: Timestamp?
 
   QStringList ipv4split = device->ipv4Address().split('/');
