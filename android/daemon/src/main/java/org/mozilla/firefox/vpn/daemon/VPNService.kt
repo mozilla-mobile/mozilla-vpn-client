@@ -157,6 +157,7 @@ class VPNService : android.net.VpnService() {
                 return super.onStartCommand(intent, flags, startId)
             }
             this.mConfig = JSONObject(lastConfString)
+            this.mConfig?.put("reason", 0) // Without this, the timer will incorrectly think this is a silent server switch (if the last activation was due to server switch)
         }
         try {
             turnOn(this.mConfig!!)
@@ -369,6 +370,10 @@ class VPNService : android.net.VpnService() {
                 }
                 JSONObject(lastConfString)
             }
+
+        if (source == "system") {
+            config?.put("reason", 0) // Without this, the timer will incorrectly think this is a silent server switch (if the last activation was due to server switch)
+        }
 
         Log.v(tag, "Try to reconnect tunnel with same conf")
         try {
