@@ -144,7 +144,12 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
         ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/desktopauthenticationlistener.cpp
         ${CMAKE_SOURCE_DIR}/src/tasks/authenticate/desktopauthenticationlistener.h
     )
+endif()
 
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
+   ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR
+   ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin" OR
+   ANDROID)
     # Compile and link the signature library.
     include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
     add_rust_library(signature
