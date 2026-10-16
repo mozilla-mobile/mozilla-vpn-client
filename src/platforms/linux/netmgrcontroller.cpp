@@ -8,7 +8,9 @@
 
 #include <QDBusConnection>
 #include <QDBusInterface>
+#include <QDBusMessage>
 #include <QDBusObjectPath>
+#include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
 #include <QDBusReply>
 #include <QFile>
@@ -29,6 +31,9 @@ constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
 constexpr const char* WG_INTERFACE_NAME = "wg0";
 constexpr uint16_t WG_KEEPALIVE_PERIOD = 60;
 constexpr uint16_t WG_EXCLUDE_RULE_PRIO = 100;
+// NMDeviceStateReason: the device is deactivated because a new activation
+// replaces the current one, e.g. activate() switching servers.
+constexpr uint NM_DEVICE_STATE_REASON_NEW_ACTIVATION = 60;
 
 namespace {
 Logger logger("NetmgrController");
@@ -146,17 +151,50 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
   connect(m_client, SIGNAL(DeviceRemoved(QDBusObjectPath)), this,
           SLOT(deviceRemoved(QDBusObjectPath)));
 
-  // Delete any profile left over from a previous session, it should not exist and can't be trusted.
-  // If obfuscation was in use the process died with that session.
-  // WireGuard peer points to a dead 127.0.0.1:<port> and we have no InterfaceConfig
-  // to rebuild the obfuscator.
+  // DeviceAdded only reports new devices, so pick up wg0 if it already exists.
+  QDBusReply<QDBusObjectPath> devReply =
+      m_client->call("GetDeviceByIpIface", WG_INTERFACE_NAME);
+  if (devReply.isValid()) {
+    m_device = new NetmgrDevice(devReply.value().path(), this);
+    connect(m_device, &NetmgrDevice::stateChanged, this,
+            &NetmgrController::deviceStateChanged);
+  }
+
+  // Delete any profile left over from a previous session, it should not exist
+  // and can't be trusted. If obfuscation was in use the process died with that
+  // session: the WireGuard peer points to a dead 127.0.0.1:<port> and we have
+  // no InterfaceConfig to rebuild the obfuscator.
   QDBusReply<QDBusObjectPath> reply = iface.call("GetConnectionByUuid", m_uuid);
   if (reply.isValid()) {
     logger.info() << "Deleting stale connection:" << m_uuid;
-    QDBusInterface stale(DBUS_NM_SERVICE, reply.value().path(),
-                         nmInterface("Settings.Connection"),
-                         m_client->connection());
-    stale.call("Delete");
+    // activate() must not add the new connection until the delete finishes,
+    // or AddConnection2 fails on the duplicate UUID.
+    setProfileState(ProfileState::Cleaning);
+    QDBusMessage del = QDBusMessage::createMethodCall(
+        DBUS_NM_SERVICE, reply.value().path(),
+        nmInterface("Settings.Connection"), "Delete");
+    QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(
+        m_client->connection().asyncCall(del), this);
+    connect(watcher, &QDBusPendingCallWatcher::finished, this,
+            [this,
+             stalePath = reply.value().path()](QDBusPendingCallWatcher* call) {
+              auto guard = qScopeGuard([call] { call->deleteLater(); });
+              if (call->isError()) {
+                // The profile still exists, so AddConnection2 would fail on
+                // the duplicate UUID. Reuse it instead, Update2 overwrites its
+                // settings before it is activated.
+                logger.warning() << "Failed to delete stale connection:"
+                                 << call->error().message();
+                m_remote =
+                    new QDBusInterface(DBUS_NM_SERVICE, stalePath,
+                                       nmInterface("Settings.Connection"),
+                                       m_client->connection(), this);
+                setProfileState(ProfileState::Ready);
+              } else {
+                setProfileState(ProfileState::Absent);
+              }
+              advance();
+            });
   }
 
   // Interface creation is deferred until the first activation.
@@ -164,8 +202,37 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
   emit initialized(true, false, QDateTime());
 }
 
+void NetmgrController::setProfileState(ProfileState state) {
+  logger.debug() << "Profile state:" << m_profileState << "->" << state;
+  m_profileState = state;
+}
+
+// Take the next step towards the user's intent, given the profile state.
+// Called whenever the intent or the profile state changes.
+void NetmgrController::advance() {
+  if (!m_wantActive) {
+    return;
+  }
+  switch (m_profileState) {
+    case ProfileState::Absent:
+      addConnection();
+      break;
+    case ProfileState::Cleaning:
+    case ProfileState::Adding:
+      // Wait for the pending reply, it calls advance() again.
+      break;
+    case ProfileState::Ready:
+      updateConnection();
+      break;
+  }
+}
+
 void NetmgrController::dbusBackendError(const QDBusError& error) {
   logger.warning() << "DBus message failed:" << error.message();
+  if (!m_wantActive) {
+    // The user already disconnected; nothing to fail.
+    return;
+  }
   emit backendFailure(Controller::ErrorFatal);
 }
 
@@ -326,46 +393,81 @@ void NetmgrController::activate(const InterfaceConfig& config,
     setDnsConfig(m_ipv6config, QHostAddress());
   }
 
-  if (!m_remote) {
-    logger.info() << "Adding connection:" << m_uuid;
-    QString path = QStringLiteral(DBUS_NM_PATH) + "/Settings";
-    QDBusInterface iface(DBUS_NM_SERVICE, path, nmInterface("Settings"),
-                         m_client->connection());
-    QVariantList addArgs;
-    addArgs << serializeConfig();
-    addArgs << (uint)IN_MEMORY;
-    addArgs << QVariantMap();
-    // Use a blocking AddConnection2 to keep the flow simple
-    QDBusReply<QDBusObjectPath> added =
-        iface.callWithArgumentList(QDBus::Block, "AddConnection2", addArgs);
-    if (!added.isValid()) {
-      logger.warning() << "AddConnection2 failed:" << added.error().message();
-      emit backendFailure(Controller::ErrorFatal);
-      return;
-    }
-    m_remote = new QDBusInterface(DBUS_NM_SERVICE, added.value().path(),
-                                  nmInterface("Settings.Connection"),
-                                  m_client->connection(), this);
-  }
+  m_wantActive = true;
+  advance();
+}
 
-  // Update the connection settings.
+void NetmgrController::addConnection() {
+  logger.info() << "Adding connection:" << m_uuid;
+  Q_ASSERT(m_profileState == ProfileState::Absent);
+  setProfileState(ProfileState::Adding);
+  QString path = QStringLiteral(DBUS_NM_PATH) + "/Settings";
+  QDBusInterface iface(DBUS_NM_SERVICE, path, nmInterface("Settings"),
+                       m_client->connection());
+  QVariantList addArgs;
+  addArgs << serializeConfig();
+  addArgs << (uint)IN_MEMORY;
+  addArgs << QVariantMap();
+  QDBusPendingReply<QDBusObjectPath, QVariantMap> added =
+      iface.asyncCallWithArgumentList("AddConnection2", addArgs);
+  QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(added, this);
+  connect(watcher, &QDBusPendingCallWatcher::finished, this,
+          [this](QDBusPendingCallWatcher* call) {
+            auto guard = qScopeGuard([call] { call->deleteLater(); });
+            QDBusPendingReply<QDBusObjectPath, QVariantMap> added = *call;
+            if (!added.isValid()) {
+              logger.warning()
+                  << "AddConnection2 failed:" << added.error().message();
+              // Don't advance() here, it would retry forever. The next
+              // activate() tries again from Absent.
+              setProfileState(ProfileState::Absent);
+              if (m_wantActive) {
+                emit backendFailure(Controller::ErrorFatal);
+              }
+              return;
+            }
+            // Keep the connection even if the user disconnected meanwhile,
+            // the next activate() reuses it.
+            m_remote = new QDBusInterface(DBUS_NM_SERVICE,
+                                          added.argumentAt<0>().path(),
+                                          nmInterface("Settings.Connection"),
+                                          m_client->connection(), this);
+            setProfileState(ProfileState::Ready);
+            advance();
+          });
+}
+
+void NetmgrController::updateConnection() {
+  Q_ASSERT(m_remote);
+
   QList<QVariant> args;
   args << serializeConfig();
   args << (uint)IN_MEMORY;
   args << QVariantMap();
-  bool okay = m_remote->callWithCallback(
-      "Update2", args, this, SLOT(peerCompleted(const QVariantMap&)),
-      SLOT(dbusBackendError(const QDBusError&)));
-  if (!okay) {
-    logger.debug() << "Update2 failed";
-    emit backendFailure(Controller::ErrorFatal);
-  }
+  QDBusPendingReply<QVariantMap> reply =
+      m_remote->asyncCallWithArgumentList("Update2", args);
+  QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
+  connect(watcher, &QDBusPendingCallWatcher::finished, this,
+          [this](QDBusPendingCallWatcher* call) {
+            auto guard = qScopeGuard([call] { call->deleteLater(); });
+            QDBusPendingReply<QVariantMap> reply = *call;
+            if (!reply.isValid()) {
+              dbusBackendError(reply.error());
+              return;
+            }
+            peerCompleted(reply.value());
+          });
 }
 
 void NetmgrController::peerCompleted(const QVariantMap& results) {
   logger.debug() << "Peer configured";
   for (auto i = results.constBegin(); i != results.constEnd(); i++) {
     logger.debug() << "peer result:" << i.key() << "->" << i.value().toString();
+  }
+
+  if (!m_wantActive) {
+    logger.info() << "Deactivated while updating the connection";
+    return;
   }
 
   // activate the vpn
@@ -380,21 +482,39 @@ void NetmgrController::peerCompleted(const QVariantMap& results) {
   args << QDBusObjectPath(m_remote->path());
   args << QDBusObjectPath("/");
   args << QDBusObjectPath("/");
-  bool okay = m_client->callWithCallback(
-      "ActivateConnection", args, this,
-      SLOT(activateCompleted(const QDBusObjectPath&)),
-      SLOT(dbusBackendError(const QDBusError&)));
-  if (!okay) {
-    logger.debug() << "ActivateConnection failed";
-    emit backendFailure(Controller::ErrorFatal);
-  }
+  QDBusPendingReply<QDBusObjectPath> reply =
+      m_client->asyncCallWithArgumentList("ActivateConnection", args);
+  QDBusPendingCallWatcher* watcher = new QDBusPendingCallWatcher(reply, this);
+  connect(watcher, &QDBusPendingCallWatcher::finished, this,
+          [this](QDBusPendingCallWatcher* call) {
+            auto guard = qScopeGuard([call] { call->deleteLater(); });
+            QDBusPendingReply<QDBusObjectPath> reply = *call;
+            if (!reply.isValid()) {
+              dbusBackendError(reply.error());
+              return;
+            }
+            activateCompleted(reply.value());
+          });
 }
 
 void NetmgrController::activateCompleted(const QDBusObjectPath& path) {
   logger.info() << "Connection activated:" << path.path();
+
+  if (!m_wantActive) {
+    // deactivate() ran while ActivateConnection was in progress. It found no
+    // device and reported disconnected already, so take the tunnel down here.
+    logger.info() << "Deactivated while activating; tearing down";
+    QDBusMessage call = QDBusMessage::createMethodCall(
+        DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_NM_INTERFACE,
+        "DeactivateConnection");
+    call << path;
+    m_client->connection().asyncCall(call);
+  }
 }
 
 void NetmgrController::deactivate() {
+  m_wantActive = false;
+
   // Stop the obfuscator relay but keep the instance, so it can be restarted on
   // the same local port if the tunnel is reactivated from NetworkManager.
   if (m_obfuscator) {
@@ -451,6 +571,10 @@ void NetmgrController::deviceRemoved(const QDBusObjectPath& path) {
     delete m_device;
     m_device = nullptr;
 
+    if (m_obfuscator) {
+      m_obfuscator->stop();
+    }
+
     m_connectionPath = "/";
     emit disconnected();
   }
@@ -461,7 +585,23 @@ void NetmgrController::deviceStateChanged(uint state, uint prev, uint reason) {
   auto prevstate = static_cast<NetmgrDevice::State>(prev);
   logger.debug() << "device state changed:" << prevstate << "->" << newstate;
 
+  // Stop the relay when the tunnel is deactivated from NetworkManager, which
+  // bypasses deactivate(). This runs before the uuid check because the device
+  // drops its active connection, and with it the uuid, as it disconnects.
+  // A new activation replacing this one keeps the relay it was set up with.
+  if (m_obfuscator && prevstate >= NetmgrDevice::PREPARE &&
+      prevstate <= NetmgrDevice::ACTIVATED &&
+      (newstate < NetmgrDevice::PREPARE ||
+       newstate > NetmgrDevice::ACTIVATED) &&
+      reason != NM_DEVICE_STATE_REASON_NEW_ACTIVATION) {
+    logger.info() << "Tunnel deactivated; stopping obfuscator";
+    m_obfuscator->stop();
+  }
+
   if (m_device->uuid() != m_uuid) {
+    return;
+  }
+  if (m_device->activeConnection() == m_relayFailedConnection) {
     return;
   }
 
@@ -469,16 +609,24 @@ void NetmgrController::deviceStateChanged(uint state, uint prev, uint reason) {
   // activate()/deactivate(). When obfuscation is in use, the relay
   // process may have exited while the tunnel was down, but the connection
   // still points at 127.0.0.1:<port>.
-  // Detect a fresh (re)activation coming from NetworkManager and bring the
-  // relay back on the same local port.
-  bool reactivating = prevstate < NetmgrDevice::PREPARE &&
-                      newstate >= NetmgrDevice::PREPARE &&
-                      newstate <= NetmgrDevice::ACTIVATED;
-  if (m_obfuscator && reactivating && !m_obfuscator->isRunning()) {
-    logger.warning() << "Obfuscator not running on reactivation; restarting on"
+  // Bring the relay back on the same local port while the tunnel activates.
+  // Check every activation state, not only the transition into PREPARE: the
+  // device's uuid comes from a separate PropertiesChanged signal and may only
+  // match from a later transition on.
+  if (m_obfuscator && newstate >= NetmgrDevice::PREPARE &&
+      newstate <= NetmgrDevice::ACTIVATED && !m_obfuscator->isRunning()) {
+    logger.warning() << "Obfuscator not running on activation; restarting on"
                      << "port" << m_obfuscator->localPort();
     if (!m_obfuscator->restart()) {
+      // Without the relay the tunnel carries no traffic. Take it down so the
+      // later transition to ACTIVATED doesn't report connected().
       logger.error() << "Failed to restart obfuscator";
+      m_relayFailedConnection = m_device->activeConnection();
+      QDBusMessage call = QDBusMessage::createMethodCall(
+          DBUS_NM_SERVICE, DBUS_NM_PATH, DBUS_NM_INTERFACE,
+          "DeactivateConnection");
+      call << QDBusObjectPath(m_relayFailedConnection);
+      m_client->connection().asyncCall(call);
       emit backendFailure(Controller::ErrorFatal);
       return;
     }
