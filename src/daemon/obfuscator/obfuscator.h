@@ -17,7 +17,6 @@ class Obfuscator {
 
   virtual bool start() = 0;
 
-  
   virtual void stop() = 0;
 
   // Relaunch the relay reusing the local port assigned by the previous start().
