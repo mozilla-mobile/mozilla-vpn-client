@@ -37,6 +37,8 @@ class NetmgrController final : public ControllerImpl {
 
   void checkStatus() override;
 
+  bool obfuscationSupported() const override;
+
   enum Flags {
     TO_DISK = 0x01,
     IN_MEMORY = 0x02,

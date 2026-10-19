@@ -934,6 +934,10 @@ bool Controller::splitTunnelSupported() const {
   }
 }
 
+bool Controller::obfuscationSupported() const {
+  return !m_impl || m_impl->obfuscationSupported();
+}
+
 void Controller::logSerialize(QIODevice* device) {
   if (m_impl) {
     m_impl->getBackendLogs(device);

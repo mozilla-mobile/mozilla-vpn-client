@@ -45,6 +45,21 @@ MZViewBase {
         Layout.preferredWidth: parent.width
 
         MZInformationCard {
+            objectName: "obfuscationNetworkManagerOutdatedCard"
+            visible: MZEnv.isFlatpak && !VPNController.obfuscationSupported
+            cardType: MZInformationCard.CardType.Warning
+            Layout.preferredWidth: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)
+            Layout.alignment: Qt.AlignHCenter
+
+            _infoContent: MZTextBlock {
+                Layout.fillWidth: true
+                width: undefined
+                text: MZI18n.SettingsObfuscationNetworkManagerOutdated
+                verticalAlignment: Text.AlignVCenter
+            }
+        }
+
+        MZInformationCard {
             objectName: "obfuscationSettingsViewInformationCard"
             cardType: MZInformationCard.CardType.Warning
             Layout.preferredWidth: Math.min(window.width - MZTheme.theme.windowMargin * 2, MZTheme.theme.navBarMaxWidth)

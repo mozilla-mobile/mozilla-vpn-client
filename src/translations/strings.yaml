@@ -333,6 +333,9 @@ settings:
   obfuscationSettingsWarning1: These features will not help when a specific website or app blocks content because of the VPN.
   obfuscationSettingsWarning2: They may cause degraded network speed.
   obfuscationSettingsEnable: Enable Obfuscation
+  obfuscationNetworkManagerOutdated:
+    value: Some obfuscation methods are unavailable because your version of NetworkManager is too old. Update NetworkManager to version 1.38 or newer to use them.
+    comment: Shown in the obfuscation settings of the Flatpak version when the installed NetworkManager is too old. "NetworkManager" is a Linux system service name and should NOT be translated.
   obfuscationPort53Title: Always connect using port 53
   obfuscationPort53Body: Routes traffic through the port commonly used for DNS. May help on networks that block UDP traffic.
   obfuscationMasqueTitle:

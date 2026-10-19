@@ -72,6 +72,12 @@ NetmgrController::~NetmgrController() {
   }
 }
 
+bool NetmgrController::obfuscationSupported() const {
+  // Obfuscation bypass routes use the "throw" route type, which needs
+  // NetworkManager >= 1.38.
+  return m_version >= QVersionNumber(1, 38);
+}
+
 // static
 QString NetmgrController::nmInterface(const QString& name) {
   return QStringLiteral(DBUS_NM_INTERFACE) + "." + name;
@@ -95,6 +101,22 @@ void NetmgrController::initialize(const Device* device, const Keys* keys) {
     settingsHolder->setTunnelUuid(uuid.toString(QUuid::WithoutBraces));
   }
   m_uuid = uuid.toString(QUuid::WithoutBraces);
+
+  // Port 53 doesn't need the obfuscator relay, every other method does.
+  if (!obfuscationSupported()) {
+    if (settingsHolder->obfuscationPolicy() !=
+            SettingsHolder::ObfuscationPolicy::NoObfuscation &&
+        settingsHolder->obfuscationPolicy() !=
+            SettingsHolder::ObfuscationPolicy::Port53) {
+      logger.warning()
+          << "NetworkManager" << m_version.toString()
+          << "is too old for this obfuscation method, disabling it";
+      settingsHolder->setObfuscationPolicy(
+          SettingsHolder::ObfuscationPolicy::NoObfuscation);
+    }
+    settingsHolder->setLastObfuscationPolicy(
+        SettingsHolder::ObfuscationPolicy::Port53);
+  }
 
   m_deviceIpv4Address = QHostAddress(device->ipv4Address().split('/').first());
   m_deviceIpv6Address = QHostAddress(device->ipv6Address().split('/').first());
@@ -322,11 +344,9 @@ void NetmgrController::activate(const InterfaceConfig& config,
   // "throw" route for each server endpoint into the WireGuard policy table
   // "throw" needs NetworkManager >= 1.38.
   if (obfuscate) {
-    static const QVersionNumber kThrowRouteMinVersion(1, 38);
-    if (m_version < kThrowRouteMinVersion) {
+    if (!obfuscationSupported()) {
       logger.warning() << "NetworkManager" << m_version.toString()
-                       << "is too old for obfuscation bypass routes (need"
-                       << kThrowRouteMinVersion.toString() << "or newer);"
+                       << "is too old for obfuscation bypass routes;"
                        << "server traffic may loop back into wg0";
       emit backendFailure(Controller::ErrorFatal);
       return;
