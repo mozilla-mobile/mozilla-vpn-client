@@ -935,7 +935,13 @@ bool Controller::splitTunnelSupported() const {
 }
 
 bool Controller::obfuscationSupported() const {
-  return !m_impl || m_impl->obfuscationSupported();
+  return !m_obfuscationForcedUnsupported &&
+         (!m_impl || m_impl->obfuscationSupported());
+}
+
+void Controller::forceObfuscationUnsupported() {
+  m_obfuscationForcedUnsupported = true;
+  emit obfuscationSupportedChanged();
 }
 
 void Controller::logSerialize(QIODevice* device) {
