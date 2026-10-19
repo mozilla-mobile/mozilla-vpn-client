@@ -233,13 +233,21 @@
 - (void)encodeWithDict:(NSMutableDictionary<NSString*,id> *)dict {
   [dict setObject:self.privateKey forKey:@"privateKey"];
   [dict setObject:[WireguardConfig encodeAddr:self.deviceIpv4Addr] forKey:@"deviceIpv4Addr"];
-  [dict setObject:[WireguardConfig encodeAddr:self.deviceIpv4Addr]forKey:@"deviceIpv6Addr"];
+  [dict setObject:[WireguardConfig encodeAddr:self.deviceIpv6Addr]forKey:@"deviceIpv6Addr"];
 
   [dict setObject:self.serverPublicKey forKey:@"serverPublicKey"];
-  [dict setObject:[WireguardConfig encodeAddr:self.serverIpv4Addr] forKey:@"serverIpv4AddrIn"];
-  [dict setObject:[WireguardConfig encodeAddr:self.serverIpv6Addr] forKey:@"serverIpv6AddrIn"];
-  [dict setObject:[WireguardConfig encodeAddr:self.serverIpv4Gateway] forKey:@"serverIpv4Gateway"];
-  [dict setObject:[WireguardConfig encodeAddr:self.serverIpv6Gateway] forKey:@"serverIpv6Gateway"];
+  if (self.serverIpv4Addr) {
+    [dict setObject:[WireguardConfig encodeAddr:self.serverIpv4Addr] forKey:@"serverIpv4AddrIn"];
+  }
+  if (self.serverIpv6Addr) {
+    [dict setObject:[WireguardConfig encodeAddr:self.serverIpv6Addr] forKey:@"serverIpv6AddrIn"];
+  }
+  if (self.serverIpv4Gateway) {
+    [dict setObject:[WireguardConfig encodeAddr:self.serverIpv4Gateway] forKey:@"serverIpv4Gateway"];
+  }
+  if (self.serverIpv6Gateway) {
+    [dict setObject:[WireguardConfig encodeAddr:self.serverIpv6Gateway] forKey:@"serverIpv6Gateway"];
+  }
   [dict setObject:[NSNumber numberWithInt:self.serverPort] forKey:@"serverPort"];
 
   if (self.dnsSettings) {

@@ -10,6 +10,7 @@
 #import <SystemExtensions/SystemExtensions.h>
 
 #include <QMetaMethod>
+#include <QtEndian>
 
 #include "logger.h"
 #include "macosutils.h"
@@ -215,13 +216,19 @@ void MacOSExtensionController::extStatusChange(int status) {
 }
 
 nw_endpoint_t MacOSExtensionController::encodeAddress(const QString& addr) {
-  QHostAddress hostaddr(addr);
+  QHostAddress hostaddr;
+  if (addr.contains('/')) {
+    hostaddr.setAddress(addr.section('/', 0, 0));
+  } else {
+    hostaddr.setAddress(addr);
+  }
 
   if (hostaddr.protocol() == QAbstractSocket::IPv4Protocol) {
     struct sockaddr_in sin = {};
+    quint32 ipv4addr = hostaddr.toIPv4Address();
     sin.sin_family = AF_INET;
     sin.sin_len = sizeof(struct sockaddr_in);
-    sin.sin_addr.s_addr = hostaddr.toIPv4Address();
+    sin.sin_addr.s_addr = qToBigEndian<quint32>(ipv4addr);
     return nw_endpoint_create_address((const struct sockaddr*)&sin);
   }
 
@@ -270,7 +277,11 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
   NSMutableArray* ipAddressRanges =
       [NSMutableArray arrayWithCapacity:config.m_allowedIPAddressRanges.length()];
   for (const IPAddress& range : config.m_allowedIPAddressRanges) {
-    [ipAddressRanges addObject:range.toString().toNSString()];
+    RoutePrefix* entry = [RoutePrefix parseRoute:range.toString().toNSString()];
+    if (entry == nil) {
+      continue;
+    }
+    [ipAddressRanges addObject:entry];
   }
   options.routes = ipAddressRanges;
 
