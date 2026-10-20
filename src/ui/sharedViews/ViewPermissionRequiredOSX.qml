@@ -16,6 +16,9 @@ MZFlickable {
     width: parent.width
     flickContentHeight: col.implicitHeight + col.anchors.topMargin
 
+    property var extension: MZFeatureList.get("networkExtension").isSupported
+    property var osVersion: VPNMacOSUtils.getMacOSMajorVersion()
+
     ColumnLayout {
         id: col
 
@@ -51,10 +54,10 @@ MZFlickable {
                 Accessible.ignored: true
 
                 function getImageTitle() {
-                    if (MZFeatureList.get("networkExtension").isSupported) {
+                    if (extension) {
                         return MZI18n.PermissionMacosImageTitleNetworkExtension;
                     }
-                    if (VPNMacOSUtils.getMacOSMajorVersion() > 25) {
+                    if (osVersion >= 26) {
                         return MZI18n.PermissionMacosImageTitleBackgroundMacOS26;
                     }
                     return MZI18n.PermissionMacosImageTitleBackground;
@@ -85,7 +88,7 @@ MZFlickable {
         MZHeadline {
             id: headline
 
-            text: MZI18n.PermissionMacosTitle
+            text: extension ? MZI18n.PermissionMacosTitleExtension : MZI18n.PermissionMacosTitle;
             horizontalAlignment: Text.AlignLeft
 
             Layout.fillWidth: true
@@ -103,6 +106,8 @@ MZFlickable {
             spacing: MZTheme.theme.listSpacing
 
             MZInterLabel {
+                visible: !extension
+
                 Layout.topMargin: 8
                 Layout.fillWidth: true
 
@@ -114,8 +119,35 @@ MZFlickable {
                 Layout.topMargin: 8
                 Layout.fillWidth: true
 
-                text: VPNMacOSUtils.getMacOSMajorVersion() > 25 ? MZI18n.PermissionMacosInstructionsMacOS26 :
-                      VPNMacOSUtils.getMacOSMajorVersion() > 14 ? MZI18n.PermissionMacosInstructionsMacOS15 : MZI18n.PermissionMacosInstructions
+                text: extension ? getInstructionsExtension() : getInstructionsText()
+                horizontalAlignment: Text.AlignLeft
+
+                function getInstructionsText() {
+                    if (osVersion >= 26) {
+                        return MZI18n.PermissionMacosInstructionsMacOS26;
+                    }
+                    if (osVersion >= 15) {
+                        return MZI18n.PermissionMacosInstructionsMacOS15;
+                    }
+                    return MZI18n.PermissionMacosInstructions;
+                }
+
+                function getInstructionsExtension() {
+                    if (osVersion >= 15) {
+                        return MZI18n.PermissionMacosInstructionsExtMacOS15;
+                    } else {
+                        return MZI18n.PermissionMacosInstructionsExtLegacy;
+                    }
+                }
+            }
+
+            MZInterLabel {
+                visible: extension
+
+                Layout.topMargin: 8
+                Layout.fillWidth: true
+
+                text: MZI18n.PermissionMacosInstructionsExtConfig
                 horizontalAlignment: Text.AlignLeft
             }
         }
@@ -134,10 +166,10 @@ MZFlickable {
             onClicked: VPNMacOSUtils.openSystemSettingsLink()
 
             function getButtonText() {
-                if (MZFeatureList.get("networkExtension").isSupported) {
+                if (extension) {
                     return MZI18n.PermissionMacosOpenSettingsButtonLabelGeneric
                 }
-                if (VPNMacOSUtils.getMacOSMajorVersion() > 14) {
+                if (osVersion >= 15) {
                     return MZI18n.PermissionMacosOpenSettingsButtonLabelMacOS15;
                 }
                 return MZI18n.PermissionMacosOpenSettingsButtonLabel
