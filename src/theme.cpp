@@ -60,6 +60,36 @@ Theme::Theme(QObject* parent) : QAbstractListModel(parent) {
             }
           });
 #endif
+
+  connect(SettingsHolder::instance(), &SettingsHolder::themeChanged, this,
+          [this]() {
+            if (!SettingsHolder::instance()->hasTheme() &&
+                !SettingsHolder::instance()->hasUsingSystemTheme()) {
+              // If the user signs out, all settings get reset. In this case, we
+              // want them to see the system theme. This was not getting reset
+              // though (VPN-7814):
+              // 1. The usingSystemTheme setting has a key of
+              // `theme/usingSystemTheme`, while the theme string has a key of
+              // `theme`.
+              // 2. Resetting `theme` (which happens before we try to reset
+              // `theme/usingSystemTheme`, because of alphabetization) resets
+              // both these settings - because QSettings resets all subkeys of a
+              // key. In other words: When QSettings clears `theme`, it clears
+              // both these keys.
+              // 3. We emit `changed` only for the `theme` key - because that is
+              // something we do in `settings.cpp`, and it's unrelated to the
+              // QSettings removal. Soon after, we try to reset
+              // `usingSystemTheme`. However, in `Setting::remove`, we find that
+              // `usingSystemTheme` is not set (because it was just removed),
+              // and we no-op and do not emit a changed signal for
+              // `usingSystemTheme`.
+              // 4. This awful hack covers for this specific situation - if
+              // neither theme settings are set, we show system theme.
+              setToSystemTheme();
+            } else {
+              loadTheme(SettingsHolder::instance()->theme());
+            }
+          });
 }
 
 Theme::~Theme() { MZ_COUNT_DTOR(Theme); }
@@ -174,7 +204,6 @@ void Theme::parseSizing(QJSEngine* engine) {
 
 void Theme::setCurrentTheme(const QString& themeName) {
   logger.info() << "Setting theme to" << themeName;
-  loadTheme(themeName);
   SettingsHolder::instance()->setTheme(themeName);
 }
 
