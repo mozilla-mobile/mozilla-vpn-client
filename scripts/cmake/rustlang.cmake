@@ -188,6 +188,8 @@ function(__rust_guess_target_arch OUT_VAR)
         endforeach()
     elseif(NOT CMAKE_CROSSCOMPILING)
         set(_arch ${RUSTC_HOST_ARCH})
+    elseif(ANDROID)
+        set(_arch ${RUSTC_ANDROID_ARCH})
     elseif(CMAKE_C_COMPILER_TARGET)
         # If set, the C compiler triple makes a reasonable guess.
         set(_arch ${CMAKE_C_COMPILER_TARGET})

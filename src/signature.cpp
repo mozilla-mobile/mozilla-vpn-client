@@ -10,10 +10,6 @@
 #  include "platforms/ios/ioscommons.h"
 #endif
 
-#ifdef MZ_ANDROID
-#  include "platforms/android/androidcommons.h"
-#endif
-
 #ifdef MZ_SIGNATURE
 namespace {
 Logger logger("Signature");
@@ -44,8 +40,6 @@ bool Signature::verify(const QByteArray& publicKey, const QByteArray& content,
                     signature.constData(), signature.length(), signatureLogger);
 #elif defined(MZ_IOS)
   return IOSCommons::verifySignature(publicKey, content, signature);
-#elif defined(MZ_ANDROID)
-  return AndroidCommons::verifySignature(publicKey, content, signature);
 #elif defined(MZ_WASM) or defined(UNIT_TEST)
   Q_UNUSED(publicKey);
   Q_UNUSED(content);
