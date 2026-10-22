@@ -43,6 +43,11 @@ RUN apt-get update -qq \
                           curl \
                           rpm \
                           libglib2.0-0 \
+                          libxkbcommon0 \
+                          libgl1 \
+                          libegl1 \
+                          libfontconfig1 \
+                          libdbus-1-3 \
                           ccache \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
