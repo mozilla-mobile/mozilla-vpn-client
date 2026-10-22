@@ -15,6 +15,14 @@
 @property(readonly) NSUInteger prefixLength;
 @end
 
+enum ObfuscationMethod {
+    kObfuscationNone = 0,
+    kObfuscationLwo,
+    kObfuscationLwoV2,
+    kObfuscationTcp,
+    kObfuscationShadowsocks
+};
+
 @interface WireguardConfig : NSObject
 
 - (id)initFromDict:(NSDictionary<NSString*, id>*)dict;
@@ -37,6 +45,7 @@
 
 @property(strong) NEDNSSettings* dnsSettings;
 
+@property(assign) ObfuscationMethod obfuscation;
 @property(strong) NSSet<NSString*>* excludedApps;
 
 @end
