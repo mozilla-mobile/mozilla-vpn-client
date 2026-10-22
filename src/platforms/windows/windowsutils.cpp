@@ -173,9 +173,7 @@ void WindowsUtils::lockDownDLLSearchPath() {
   pol.PreferSystem32Images = 1;
   SetProcessMitigationPolicy(ProcessImageLoadPolicy, &pol, sizeof(pol));
 
-  // Third-party DLLs (NVIDIA) injected into the process will be rejected
-  // by the signature policy below. Make sure the loader fails silently
-  // instead of showing a "Bad Image" dialog.
+  // Handle DLL loader failures gracefully to prevent the process from hanging or terminating
   SetErrorMode(GetErrorMode() | SEM_FAILCRITICALERRORS);
 
   // Deny loading of DLLs unless they are signed by microsoft.
