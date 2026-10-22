@@ -173,6 +173,10 @@ void WindowsUtils::lockDownDLLSearchPath() {
   pol.PreferSystem32Images = 1;
   SetProcessMitigationPolicy(ProcessImageLoadPolicy, &pol, sizeof(pol));
 
+  // Handle DLL loader failures gracefully to prevent the process from hanging
+  // or terminating
+  SetErrorMode(GetErrorMode() | SEM_FAILCRITICALERRORS);
+
   // Deny loading of DLLs unless they are signed by microsoft.
   PROCESS_MITIGATION_BINARY_SIGNATURE_POLICY sig = {};
   sig.MicrosoftSignedOnly = 1;
