@@ -211,6 +211,13 @@
     }
   }
 
+  NSObject* obfuscation = [dict objectForKey:@"obfuscation"];
+  if ([obfuscation isKindOfClass:[NSNumber class]]) {
+    self.obfuscation = (ObfuscationMethod)[(NSNumber*)obfuscation intValue];
+  } else {
+    self.obfuscation = kObfuscationNone;
+  }
+
   NSArray* apps = [dict objectForKey:@"apps"];
   if ([apps isKindOfClass:[NSArray class]]) {
     NSPredicate* p = [NSPredicate predicateWithFormat:@"self isKindOfClass: %@", [NSString class]];
@@ -260,6 +267,7 @@
   }
   [dict setObject:ipAddressRanges forKey:@"routes"];
 
+  [dict setObject:[NSNumber numberWithInt:self.obfuscation] forKey:@"obfuscation"];
   [dict setObject:self.excludedApps.allObjects forKey:@"apps"];
 }
 
