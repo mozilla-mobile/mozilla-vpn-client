@@ -78,6 +78,9 @@ class ControllerImpl : public QObject {
   // Whether the controller supports split tunneling
   virtual bool splitTunnelSupported() const { return false; }
 
+  // Whether the controller supports obfuscation methods other than port 53
+  virtual bool obfuscationSupported() const { return true; }
+
   virtual bool silentServerSwitchingSupported() const { return true; }
 
   virtual bool shouldSuppressNextNotification() { return false; }

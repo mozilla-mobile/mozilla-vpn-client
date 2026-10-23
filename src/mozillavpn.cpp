@@ -1991,6 +1991,14 @@ void MozillaVPN::registerInspectorCommands() {
       });
 
   InspectorHandler::registerCommand(
+      "force_obfuscation_unsupported",
+      "Simulate a backend without obfuscation support", 0,
+      [](InspectorHandler*, const QList<QByteArray>&) {
+        MozillaVPN::instance()->controller()->forceObfuscationUnsupported();
+        return QJsonObject();
+      });
+
+  InspectorHandler::registerCommand(
       "force_server_unavailable",
       "Timeout all servers in a city using force_server_unavailable "
       "{countryCode} "

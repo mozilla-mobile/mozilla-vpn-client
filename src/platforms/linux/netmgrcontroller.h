@@ -10,10 +10,12 @@
 #include <QObject>
 #include <QVariant>
 #include <QVersionNumber>
+#include <memory>
 
 #include "controllerimpl.h"
 
 class NetmgrDevice;
+class Obfuscator;
 class QDateTime;
 class QDBusInterface;
 class QDBusError;
@@ -35,6 +37,8 @@ class NetmgrController final : public ControllerImpl {
 
   void checkStatus() override;
 
+  bool obfuscationSupported() const override;
+
   enum Flags {
     TO_DISK = 0x01,
     IN_MEMORY = 0x02,
@@ -47,22 +51,35 @@ class NetmgrController final : public ControllerImpl {
   Q_ENUM(Flags);
 
  private slots:
-  void initCompleted(const QDBusObjectPath& path, const QVariantMap& results);
-  void peerCompleted(const QVariantMap& results);
-  void activateCompleted(const QDBusObjectPath& path);
-
-  void dbusInitError(const QDBusError& error);
-  void dbusBackendError(const QDBusError& error);
-
   void deviceAdded(const QDBusObjectPath& path);
   void deviceRemoved(const QDBusObjectPath& path);
   void deviceStateChanged(uint state, uint prev, uint reason);
 
  private:
+  enum class ProfileState {
+    // No profile with our UUID exists in NetworkManager.
+    Absent,
+    // Deleting a stale profile left over from a previous session.
+    Cleaning,
+    // AddConnection2 is in progress.
+    Adding,
+    // The profile exists and m_remote points at it.
+    Ready,
+  };
+  Q_ENUM(ProfileState)
+
   static QVariantMap wgPeer(const InterfaceConfig& config);
   static void setDnsConfig(QVariantMap& map, const QHostAddress& server);
   static uint64_t readSysfsFile(const QString& path);
   void setActiveConnection(const QString& path);
+  void peerCompleted(const QVariantMap& results);
+  void activateCompleted(const QDBusObjectPath& path);
+  void dbusBackendError(const QDBusError& error);
+
+  void setProfileState(ProfileState state);
+  void advance();
+  void addConnection();
+  void updateConnection();
   QVariant serializeConfig() const;
 
   static QString nmInterface(const QString& name);
@@ -86,8 +103,21 @@ class NetmgrController final : public ControllerImpl {
   QDBusInterface* m_client = nullptr;
   QDBusInterface* m_remote = nullptr;
 
+  ProfileState m_profileState = ProfileState::Absent;
+
+  // True between activate() and deactivate(). deactivate() can arrive while
+  // activation requests are in progress and their replies must not bring the
+  // tunnel up. Split from ProfileState because they change independently.
+  bool m_wantActive = false;
+
   QString m_connectionPath;
   NetmgrDevice* m_device = nullptr;
+
+  // Active connection that was taken down because its obfuscator relay could
+  // not be restarted, its device events are ignored.
+  QString m_relayFailedConnection;
+
+  std::unique_ptr<Obfuscator> m_obfuscator;
 };
 
 #endif  // NETWORKMANAGERCONTROLLER_H

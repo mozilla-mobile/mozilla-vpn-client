@@ -179,6 +179,8 @@ class Controller : public QObject, public LogSerializer {
   ErrorCode error() const;
   bool silentServerSwitchingSupported() const;
   bool splitTunnelSupported() const;
+  bool obfuscationSupported() const;
+  void forceObfuscationUnsupported();
   void cleanupBackendLogs();
 
   // LogSerializer interface
@@ -215,6 +217,8 @@ class Controller : public QObject, public LogSerializer {
   Q_PROPERTY(bool isDeviceConnected READ isDeviceConnected NOTIFY
                  isDeviceConnectedChanged);
   Q_PROPERTY(bool splitTunnelSupported READ splitTunnelSupported CONSTANT);
+  Q_PROPERTY(bool obfuscationSupported READ obfuscationSupported NOTIFY
+                 obfuscationSupportedChanged);
 
   // This is just for testing purposes.
   Q_PROPERTY(QString currentServerString READ currentServerString NOTIFY
@@ -243,6 +247,7 @@ class Controller : public QObject, public LogSerializer {
   void readyToServerUnavailable(bool pingReceived);
   void activationBlockedForCaptivePortal();
   void isDeviceConnectedChanged();
+  void obfuscationSupportedChanged();
 
   void currentServerChanged();
 
@@ -317,6 +322,7 @@ class Controller : public QObject, public LogSerializer {
   QScopedPointer<ControllerImpl> m_impl;
   bool m_portalDetected = false;
   bool m_isDeviceConnected = true;
+  bool m_obfuscationForcedUnsupported = false;
   ErrorCode m_errorCode = ErrorNone;
 
   // Server data can change while the controller is busy completing an
