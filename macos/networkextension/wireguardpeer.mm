@@ -314,18 +314,14 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 
   if (version >= 2) {
     // LWO Version 2
-    uint8_t len_mix = dgram.length;
     uint8_t prot_len = 0;
-    uint8_t pad_len = 0;
     switch (msg_type) {
       case WG_MSG_TYPE_HANDSHAKE_INIT:
         prot_len = WG_MSG_LEN_HANDSHAKE_INIT;
-        // TODO: Apply random padding.
         break;
 
       case WG_MSG_TYPE_HANDSHAKE_RESP:
         prot_len = WG_MSG_LEN_HANDSHAKE_RESP;
-        // TODO: Apply random padding.
         break;
 
       case WG_MSG_TYPE_DATA:
@@ -337,9 +333,20 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
         return dgram;
     }
 
-    // Obfuscate the protected region.
-    NSMutableData* ciphertext = [NSMutableData dataWithCapacity:dgram.length + pad_len];
+    // Prepare a copy of the packet for encoding.
+    uint8_t padding[256];
+    NSMutableData* ciphertext = [NSMutableData dataWithCapacity:dgram.length + sizeof(padding)];
     [ciphertext appendData:dgram];
+
+    // Apply padding to non-data packets.
+    if (msg_type != WG_MSG_TYPE_DATA) {
+      size_t pad_len = 1 + (rand() % sizeof(padding));
+      getentropy(padding, pad_len);
+      [ciphertext appendBytes:padding length:pad_len];
+    }
+
+    // Obfuscate the protected region.
+    uint8_t len_mix = ciphertext.length & 0xff;
     uint8_t* ctbytes = (uint8_t*)ciphertext.mutableBytes;
     for (int i = 0; i < prot_len; i++) {
       ctbytes[i] ^= (m_serverkey.key[i % 32] + len_mix + (uint8_t)i);
