@@ -40,8 +40,13 @@ extern "C" {
     return nil;
   }
 
-  // TODO: Select this from the options, but we need the client to set it.
-  m_version = 2;
+  if (options.obfuscation == kObfuscationLWOv2) {
+    m_version = 2;
+  } else if (options.obfuscation == kObfuscationLWO) {
+    m_version = 1;
+  } else {
+    m_version = 0;
+  }
 
   return self;
 }

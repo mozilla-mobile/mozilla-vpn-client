@@ -22,4 +22,13 @@ const RuntimeFeature shareLogs = {
 };
 #endif
 
+// --- macOS features ---
+#ifdef MZ_MACOS
+const RuntimeFeature obfuscationLwo = {
+    .id = "obfuscationLwo",
+    .name = "LWO obfuscation",
+    .evaluator = +[] { return Feature::isEnabled(networkExtension); },
+};
+#endif
+
 }  // namespace Feature
