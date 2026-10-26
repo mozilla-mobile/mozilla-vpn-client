@@ -77,6 +77,8 @@ target_link_libraries(networkextension PRIVATE ${FW_SYSTEMCONFIG})
 target_link_libraries(networkextension PRIVATE ${FW_NW_EXTENSION})
 target_sources(networkextension PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/dnsmanager.mm
+    ${CMAKE_CURRENT_SOURCE_DIR}/lwo.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/lwo.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/main.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.h
     ${CMAKE_CURRENT_SOURCE_DIR}/utils.mm
