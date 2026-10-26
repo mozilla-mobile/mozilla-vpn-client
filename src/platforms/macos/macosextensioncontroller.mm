@@ -292,6 +292,23 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
   }
   options.excludedApps = apps;
 
+  // Setup the obfuscation algorithm, if any.
+  switch (config.m_obfuscationMethod) {
+    case Server::ObfuscationMethod::UdpOverTcp:
+      options.obfuscation = kObfuscationTCP;
+      break;
+    case Server::ObfuscationMethod::LWO:
+      if (config.m_lwoVersion >= 2) {
+        options.obfuscation = kObfuscationLWOv2;
+      } else {
+        options.obfuscation = kObfuscationLWO;
+      }
+      break;
+    default:
+      options.obfuscation = kObfuscationNone;
+      break;
+  }
+
   // Update the tunnel configuration.
   NETunnelProviderProtocol* proto =
       static_cast<NETunnelProviderProtocol*>(m_manager.protocolConfiguration);

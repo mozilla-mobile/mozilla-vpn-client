@@ -17,9 +17,9 @@
 
 enum ObfuscationMethod {
     kObfuscationNone = 0,
-    kObfuscationLwo,
-    kObfuscationLwoV2,
-    kObfuscationTcp,
+    kObfuscationLWO,
+    kObfuscationLWOv2,
+    kObfuscationTCP,
     kObfuscationShadowsocks
 };
 

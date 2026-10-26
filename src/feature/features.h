@@ -239,11 +239,16 @@ inline constexpr ConstantFeature freeTrial = {
     .supported = false,
 };
 
+#ifndef MZ_MACOS
 inline constexpr ConstantFeature obfuscationLwo = {
     .id = "obfuscationLwo",
     .name = "LWO obfuscation",
     .supported = Platform::linux_ || Platform::android || Platform::windows,
 };
+#else
+// For macOS this feature depends on the networkExtension
+extern const RuntimeFeature obfuscationLwo;
+#endif
 
 inline constexpr ConstantFeature obfuscationMasque = {
     .id = "obfuscationMasque",
