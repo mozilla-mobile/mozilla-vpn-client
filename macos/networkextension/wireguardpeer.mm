@@ -9,7 +9,9 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "lwo.h"
 #include "utils.h"
+#include "wireguardproto.h"
 #include "wireguardtunnel.h"
 
 extern "C" {
@@ -18,17 +20,6 @@ extern "C" {
 
 constexpr const int64_t PEER_WORKQUEUE_TIMEOUT = 30;
 constexpr const size_t PEER_DATAGRAM_BUFSIZE = 4096;
-
-constexpr const uint8_t WG_MSG_TYPE_HANDSHAKE_INIT = 0x01;
-constexpr const uint8_t WG_MSG_TYPE_HANDSHAKE_RESP = 0x02;
-constexpr const uint8_t WG_MSG_TYPE_COOKIE_REPLY = 0x03;
-constexpr const uint8_t WG_MSG_TYPE_DATA = 0x04;
-
-constexpr const size_t WG_MSG_LEN_MIN = 4;
-constexpr const size_t WG_MSG_LEN_HANDSHAKE_INIT = 148;
-constexpr const size_t WG_MSG_LEN_HANDSHAKE_RESP = 92;
-constexpr const size_t WG_MSG_LEN_COOKIE_REPLY = 64;
-constexpr const size_t WG_MSG_LEN_DATA_HEADER = 16;
 
 @implementation WireguardPeer {
   // The wireguard tunnel provided by boringtun.
@@ -45,10 +36,8 @@ constexpr const size_t WG_MSG_LEN_DATA_HEADER = 16;
   // Routes owned by this peer.
   NSArray<RoutePrefix*>*    m_routes;
 
-  // Server public key for LWO
-  ObfuscationMethod         m_obfuscation;
-  struct x25519_key         m_serverkey;
-  struct x25519_key         m_clientkey;
+  // Obfuscation implementations
+  LwoObfuscator*            m_lwo;
 
   // The completion handler to run on initial handshake or timeout. 
   void (^m_completionHandler)(NSError *error);
@@ -71,23 +60,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   }
 
   // Prepare obfuscation data.
-  NSUInteger b64opts = NSDataBase64DecodingIgnoreUnknownCharacters;
-  NSData* pubkey = [[NSData alloc] initWithBase64EncodedString:options.serverPublicKey options:b64opts];
-  NSData* privkey = [[NSData alloc] initWithBase64EncodedString:options.privateKey options:b64opts];
-  if (privkey.length >= 32) {
-    // Determine our wireguard public key.
-    struct x25519_key xprivate;
-    [privkey getBytes:xprivate.key length:32];
-    m_clientkey = x25519_public_key(xprivate);
-  } else {
-    return nil;
-  }
-  if (privkey.length >= 32) {
-    [pubkey getBytes:m_serverkey.key length:32];
-  } else {
-    return nil;
-  }
-  m_obfuscation = kObfuscationLwoV2;
+  m_lwo = [[LwoObfuscator alloc] initWithOptions:options];
 
   // Create the wireguard tunnel.
   uint32_t index;
@@ -179,10 +152,8 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
     dgram.length = rx;
 
     // Peek the LWO type and decapsulate if needed.
-    uint8_t lwo;
-    [dgram getBytes:&lwo range:NSMakeRange(1, 1)];
-    if ((lwo & 0xc0) != 0) {
-      if (![self decryptLwo:dgram]) {
+    if (m_lwo && [LwoObfuscator isObfuscated:dgram]) {
+      if (![m_lwo decryptLwo:dgram]) {
         continue;
       }
     }
@@ -214,191 +185,6 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
       }
     }
   }
-}
-
-- (BOOL) decryptLwo:(NSMutableData*)dgram {
-  uint8_t* packet = (uint8_t *)dgram.mutableBytes;
-  uint8_t lwo_type = packet[1] & 0xc0;
-  if (lwo_type == 0x40) {
-    // LWO Version 2.
-    uint8_t len_mix = dgram.length & 0xff;
-    uint8_t msg_type = packet[0] ^ (m_serverkey.key[0] + len_mix);
-
-    // Validate bytes 1-3
-    if (packet[1] != (((m_serverkey.key[0] + len_mix) & 0x3f) | 0x40)) return FALSE;
-    if (packet[2] != ((m_serverkey.key[2] + len_mix + 2) & 0xff)) return FALSE;
-    if (packet[3] != ((m_serverkey.key[3] + len_mix + 3) & 0xff)) return FALSE;
-  
-    // The protected area varies by packet type.
-    uint8_t prot_len = 0;
-    switch (msg_type) {
-      case WG_MSG_TYPE_HANDSHAKE_INIT:
-        prot_len = WG_MSG_LEN_HANDSHAKE_INIT;
-        break;
-
-      case WG_MSG_TYPE_HANDSHAKE_RESP:
-        prot_len = WG_MSG_LEN_HANDSHAKE_RESP;
-        break;
-
-      case WG_MSG_TYPE_DATA:
-        prot_len = WG_MSG_LEN_DATA_HEADER;
-        break;
-
-      default:
-        // LWO decapsulation is not supported for this msg type.
-        return FALSE;
-    }
-
-    if (dgram.length < prot_len) {
-      // Packet appears to be truncated.
-      return FALSE;
-    }
-
-    // Decrypt the protected area.
-    for (int i = 0; i < prot_len; i++) {
-      packet[i] ^= (m_serverkey.key[i % 32] + len_mix + (uint8_t)i);
-    }
-    packet[1] = 0x00;
-
-    // Trim padding from non-data packets.
-    if ((msg_type != WG_MSG_TYPE_DATA) && (dgram.length > prot_len)) {
-      dgram.length = prot_len;
-    }
-    return TRUE;
-  }
-
-  if (lwo_type & 0x80) {
-    // LWO Version 1.
-    uint8_t msg_type = packet[0] ^ m_clientkey.key[0];
-    uint8_t prot_len = 0;
-    switch (msg_type) {
-      case WG_MSG_TYPE_HANDSHAKE_INIT:
-        prot_len = WG_MSG_LEN_HANDSHAKE_INIT;
-        break;
-
-      case WG_MSG_TYPE_HANDSHAKE_RESP:
-        prot_len = WG_MSG_LEN_HANDSHAKE_RESP;
-        break;
-
-      case WG_MSG_TYPE_COOKIE_REPLY:
-        prot_len = WG_MSG_LEN_COOKIE_REPLY;
-        break;
-
-      case WG_MSG_TYPE_DATA:
-        // Is this a bug? The data header is only actually 16 bytes long, but
-        // the Mullvad implementation obfuscates the first 32 bytes. 
-        prot_len = 32;
-        break;
-
-      default:
-        // LWO decapsulation is not supported for this msg type.
-        return FALSE;
-    }
-
-    // Decrypt the protected area.
-    for (int i = 0; i < prot_len; i++) {
-      packet[i] ^= m_clientkey.key[i % 32];
-    }
-    packet[1] = 0;
-    return TRUE;
-  }
-
-  // Otherwise, we don't understand this LWO type.
-  return TRUE;
-}
-
-- (NSData*) encryptLwo:(NSData*)dgram
-               version:(NSUInteger)version {
-  const uint8_t* packet = (uint8_t *)dgram.bytes;
-  uint8_t msg_type = packet[0];
-
-  if (version >= 2) {
-    // LWO Version 2
-    uint8_t prot_len = 0;
-    switch (msg_type) {
-      case WG_MSG_TYPE_HANDSHAKE_INIT:
-        prot_len = WG_MSG_LEN_HANDSHAKE_INIT;
-        break;
-
-      case WG_MSG_TYPE_HANDSHAKE_RESP:
-        prot_len = WG_MSG_LEN_HANDSHAKE_RESP;
-        break;
-
-      case WG_MSG_TYPE_DATA:
-        prot_len = WG_MSG_LEN_DATA_HEADER;
-        break;
-
-      default:
-        // No encapsulation for these packets.
-        return dgram;
-    }
-
-    // Prepare a copy of the packet for encoding.
-    uint8_t padding[256];
-    NSMutableData* ciphertext = [NSMutableData dataWithCapacity:dgram.length + sizeof(padding)];
-    [ciphertext appendData:dgram];
-
-    // Apply padding to non-data packets.
-    if (msg_type != WG_MSG_TYPE_DATA) {
-      size_t pad_len = 1 + (rand() % sizeof(padding));
-      getentropy(padding, pad_len);
-      [ciphertext appendBytes:padding length:pad_len];
-    }
-
-    // Obfuscate the protected region.
-    uint8_t len_mix = ciphertext.length & 0xff;
-    uint8_t* ctbytes = (uint8_t*)ciphertext.mutableBytes;
-    for (int i = 0; i < prot_len; i++) {
-      ctbytes[i] ^= (m_serverkey.key[i % 32] + len_mix + (uint8_t)i);
-    }
-
-    // Finalize byte 1.
-    ctbytes[1] = ((m_serverkey.key[0] + len_mix) & 0x3f) | 0x40;
-    return ciphertext;
-  }
-
-  if (version == 1) {
-    // LWO Version 1
-    uint8_t prot_len = 0;
-    switch (msg_type) {
-      case WG_MSG_TYPE_HANDSHAKE_INIT:
-        prot_len = WG_MSG_LEN_HANDSHAKE_INIT;
-        break;
-
-      case WG_MSG_TYPE_HANDSHAKE_RESP:
-        prot_len = WG_MSG_LEN_HANDSHAKE_RESP;
-        break;
-
-      case WG_MSG_TYPE_COOKIE_REPLY:
-        prot_len = WG_MSG_LEN_COOKIE_REPLY;
-        break;
-
-      case WG_MSG_TYPE_DATA:
-        // Is this a bug? The data header is only actually 16 bytes long, but
-        // the Mullvad implementation obfuscates the first 32 bytes. 
-        prot_len = 32;
-        break;
-
-      default:
-        // LWO decapsulation is not supported for this msg type.
-        return dgram;
-    }
-
-    // Obfuscate the protected region.
-    NSMutableData* ciphertext = [NSMutableData dataWithData:dgram];
-    uint8_t* ctbytes = (uint8_t*)ciphertext.mutableBytes;
-    for (int i = 0; i < prot_len; i++) {
-      ctbytes[i] ^= m_serverkey.key[i % 32];
-    }
-
-    // Finalize byte 1.
-    getentropy(&ctbytes[1], 1);
-    ctbytes[1] |= 0x80;
-    return ciphertext;
-  }
-
-  // Otherwise - no LWO to perform.
-  return dgram;
 }
 
 - (void) stopWithReason:(NEProviderStopReason)reason 
@@ -511,26 +297,12 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 }
 
 - (void) sendToNetwork:(NSData*)dgram {
-  switch (m_obfuscation) {
-    case kObfuscationNone:
-      send(m_socket, dgram.bytes, dgram.length, MSG_DONTWAIT);
-      break;
-
-    case kObfuscationLwo:{
-      NSData* lwo = [self encryptLwo:dgram version:1];
-      send(m_socket, lwo.bytes, lwo.length, MSG_DONTWAIT);
-      break;
-    }
-
-    case kObfuscationLwoV2:{
-      NSData* lwo = [self encryptLwo:dgram version:2];
-      send(m_socket, lwo.bytes, lwo.length, MSG_DONTWAIT);
-      break;
-    }
-
-    default:
-      // TODO: Obfuscation algorithms.
-      break;
+  if (m_lwo) {
+    NSData* lwo = [m_lwo encryptLwo:dgram];
+    send(m_socket, lwo.bytes, lwo.length, MSG_DONTWAIT);
+  } else {
+    // No obfuscation methods to apply.
+    send(m_socket, dgram.bytes, dgram.length, MSG_DONTWAIT);
   }
 }
 
