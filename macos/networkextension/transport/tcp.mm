@@ -9,7 +9,7 @@
 constexpr const int STREAM_HEADER_SIZE = 2;
 constexpr const int DGRAM_MAX_SIZE = PIPE_BUF;
 
-struct pktbuffer {
+struct txbuffer {
     uint8_t data[STREAM_HEADER_SIZE + DGRAM_MAX_SIZE];
     size_t  length;
     size_t  offset;
@@ -20,17 +20,19 @@ struct pktbuffer {
   struct sockaddr_storage m_destaddr;
 
   // The sockets.
-  int       m_socket;
-  int       m_sockerr;
-  int       m_downstream;
-  int       m_upstream;
+  int             m_socket;
+  int             m_sockerr;
+  int             m_downstream;
+  int             m_upstream;
 
   // Packet buffers.
-  struct pktbuffer  m_txbuf;
-  struct pktbuffer  m_rxbuf;
+  struct txbuffer m_txbuf;
+  uint8_t         m_rxbuf[DGRAM_MAX_SIZE];
+  size_t          m_rxoff;
+  size_t          m_rxlen;
 
   // A packet worker thread.
-  NSThread*         m_worker;
+  NSThread*       m_worker;
 }
 
 - (id) initWithEndpoint:(nw_endpoint_t) ep {
@@ -55,26 +57,26 @@ struct pktbuffer {
   // Create a TCP socket for the outbound data stream.
   m_socket = socket(dest->sa_family, SOCK_STREAM, 0);
   if (m_socket < 0) {
-    m_sockerr = errno;
     close(m_upstream);
     close(m_downstream);
     return nil;
   }
 
   m_sockerr = 0;
+  m_worker = [[NSThread alloc] initWithTarget:self
+                                     selector:@selector(tcpWorker:)
+                                       object:nil];
   return self;
 }
 
 - (int) connect {
   int err = connect(m_socket, (struct sockaddr*)&m_destaddr, m_destaddr.ss_len);
   if (err < 0) {
-    m_sockerr = errno;
     return err;
   }
 
-  m_worker = [[NSThread alloc] initWithTarget:self
-                                     selector:@selector(tcpWorker:)
-                                       object:nil];
+  // Start the socket worker
+  [m_worker start];
   return 0;
 }
 
@@ -92,87 +94,18 @@ struct pktbuffer {
     FD_ZERO(&rfds);
     FD_ZERO(&wfds);
 
-    FD_SET(m_socket, &rfds);
     if (m_txbuf.length == 0) {
       FD_SET(m_downstream, &rfds);
+    } else {
+      FD_SET(m_socket, &wfds);
     }
     int result = select(nfds, &rfds, &wfds, NULL, NULL);
     if (result < 0) {
       continue;
     }
 
-    if (FD_ISSET(m_socket, &rfds)) {
-      [self handleInbound];
-    }
     [self handleOutbound];
   }
-}
-
-- (void) handleInbound {
-  while (true) {
-    // Get the next packet length.
-    if (m_rxbuf.offset < STREAM_HEADER_SIZE) {
-      int len = recv(m_socket, m_rxbuf.data + m_rxbuf.offset, STREAM_HEADER_SIZE - m_rxbuf.offset, MSG_DONTWAIT);
-      if (len == 0) {
-        m_sockerr = ECONNRESET;
-        return;
-      }
-      if (len < 0) {
-        break;
-      }
-      m_rxbuf.length = (m_rxbuf.data[0] << 8) + m_rxbuf.data[1] + STREAM_HEADER_SIZE;
-      if (m_rxbuf.length <= STREAM_HEADER_SIZE) {
-        m_rxbuf.length = 0;
-        m_rxbuf.offset = 0;
-        continue;
-      }
-    }
-
-    size_t remainder = m_rxbuf.length - m_rxbuf.offset;
-
-    // If the packet is too big, read and discard it.
-    if (m_rxbuf.length > sizeof(m_rxbuf.data)) {
-      if (remainder > sizeof(m_rxbuf.data)) {
-        remainder = sizeof(m_rxbuf.data);
-      }
-      int len = recv(m_socket, m_rxbuf.data, remainder, MSG_DONTWAIT);
-      if (len == 0) {
-        m_sockerr = ECONNRESET;
-        return;
-      }
-      if (len < 0) {
-        break;
-      }
-      m_rxbuf.offset += len;
-      continue;
-    }
-
-    // Receive more data from the socket.
-    if (m_rxbuf.offset < m_rxbuf.length) {
-      int len = recv(m_socket, m_rxbuf.data + m_rxbuf.offset, remainder, MSG_DONTWAIT);
-      if (len == 0) {
-        m_sockerr = ECONNRESET;
-        return;
-      }
-      if (len < 0) {
-        break;
-      }
-      m_rxbuf.offset += len;
-    }
-
-    // If the packet is complete, send it to the UNIX datagram socket.
-    if (m_rxbuf.offset >= m_rxbuf.length) {
-      send(m_downstream, m_rxbuf.data + STREAM_HEADER_SIZE,
-           m_rxbuf.length - STREAM_HEADER_SIZE, MSG_DONTWAIT);
-      m_rxbuf.length = 0;
-      m_rxbuf.offset = 0;
-    }
-  }
-
-  // Save fatal errors for reporting.
-  if (errno == EAGAIN) return;
-  if (errno == EINTR) return;
-  m_sockerr = errno;
 }
 
 - (void) handleOutbound {
@@ -185,7 +118,7 @@ struct pktbuffer {
         // Some data was sent.
         m_txbuf.offset += len;
         if (m_txbuf.offset < m_txbuf.length) {
-          return;
+          continue;
         }
         m_txbuf.offset = 0;
         m_txbuf.length = 0;
@@ -217,17 +150,69 @@ struct pktbuffer {
 }
 
 - (int)recv:(NSMutableData*)dgram {
-  // Propagate TCP socket errors to the caller.
-  if (m_sockerr != 0) {
-    errno = m_sockerr;
+  if (m_rxlen == 0) {
+    // Peek the length and start a new packet reception.
+    uint8_t header[STREAM_HEADER_SIZE];
+    int rx = recv(m_socket, header, sizeof(header), MSG_PEEK);
+    if (rx <= 0) {
+      return rx;
+    }
+    if (rx < sizeof(header)) {
+      errno = EAGAIN;
+      return -1;
+    }
+
+    // Read and discard the header, it would be an error to fail after
+    // a successful peek though.
+    int drop = recv(m_socket, header, sizeof(header), MSG_DONTWAIT);
+    if (drop <= 0) {
+      return drop;
+    }
+    if (drop < sizeof(header)) {
+      errno = EPROTO;
+      return -1;
+    }
+    m_rxoff = 0;
+    m_rxlen = (header[0] << 8) + header[1];
+    if (!m_rxlen) {
+      // Empty packet.
+      errno = EAGAIN;
+      return -1;
+    }
+  }
+
+  // Receive the packet body.
+  while (m_rxoff < m_rxlen) {
+    size_t remainder = m_rxlen - m_rxoff;
+    uint8_t* ptr = m_rxbuf;
+
+    if (m_rxlen <= sizeof(m_rxbuf)) {
+      ptr += m_rxoff;
+    } else if (remainder > sizeof(m_rxbuf)) {
+      remainder = sizeof(m_rxbuf);
+    }
+
+    int rx = recv(m_socket, ptr, remainder, 0);
+    if (rx <= 0) {
+      return rx;
+    }
+    m_rxoff += rx;
+  }
+
+  if (m_rxlen > sizeof(m_rxbuf)) {
+    // Packet overflow - discard the buffer contents.
+    m_rxoff = 0;
+    m_rxlen = 0;
+    errno = EAGAIN;
     return -1;
   }
 
-  int rx = read(m_upstream, dgram.mutableBytes, dgram.length);
-  if (rx > 0) {
-    dgram.length = rx;
-  }
-  return rx;
+  // Return the packet to the caller.
+  memcpy(dgram.mutableBytes, m_rxbuf, m_rxlen);
+  dgram.length = m_rxlen;
+  m_rxlen = 0;
+  m_rxoff = 0;
+  return dgram.length;
 }
 
 @end
