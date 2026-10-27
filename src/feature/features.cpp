@@ -29,6 +29,12 @@ const RuntimeFeature obfuscationLwo = {
     .name = "LWO obfuscation",
     .evaluator = +[] { return Feature::isEnabled(networkExtension); },
 };
+
+const RuntimeFeature obfuscationUdpOverTcp = {
+    .id = "obfuscationUdpOverTcp",
+    .name = "UDP over TCP",
+    .evaluator = +[] { return Feature::isEnabled(networkExtension); },
+};
 #endif
 
 }  // namespace Feature

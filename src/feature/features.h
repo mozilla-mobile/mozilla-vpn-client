@@ -262,11 +262,17 @@ inline constexpr ConstantFeature obfuscationShadowsocks = {
     .supported = false,
 };
 
+#ifndef MZ_MACOS
 inline constexpr ConstantFeature obfuscationUdpOverTcp = {
     .id = "obfuscationUdpOverTcp",
     .name = "UDP over TCP",
     .supported = Platform::linux_ || Platform::android || Platform::windows,
 };
+#else
+// For macOS this feature depends on the networkExtension
+extern const RuntimeFeature obfuscationUdpOverTcp;
+#endif
+
 
 inline const OverridableFeature replacerAddon = {
     .id = "replacerAddon",
