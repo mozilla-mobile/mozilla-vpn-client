@@ -5,18 +5,21 @@
 #import "lwo.h"
 
 #include <sys/random.h>
+#include <sys/socket.h>
 
 #import "wireguardconfig.h"
-#import "wireguardproto.h"
 
 extern "C" {
 #include "wireguard_ffi.h"
 };
 
-@implementation LwoObfuscator {
-  NSUInteger        m_version;
-  struct x25519_key m_serverkey;
-  struct x25519_key m_clientkey;
+@implementation LwoTransport {
+  int                     m_sockfd;
+  struct sockaddr_storage m_destaddr;
+
+  NSUInteger              m_version;
+  struct x25519_key       m_serverkey;
+  struct x25519_key       m_clientkey;
 }
 
 - (id) initWithOptions:(WireguardConfig*) options {
@@ -48,7 +51,25 @@ extern "C" {
     m_version = 0;
   }
 
+  const struct sockaddr* dest = nw_endpoint_get_address(options.serverIpv4Addr);
+  if (dest->sa_len > sizeof(m_destaddr)) {
+    return nil;
+  }
+  memcpy(&m_destaddr, dest, dest->sa_len);
+
+  m_sockfd = socket(dest->sa_family, SOCK_DGRAM, IPPROTO_UDP);
+  if (m_sockfd < 0) {
+    return nil;
+  }
+
   return self;
+}
+
+- (void) dealloc {
+  close(m_sockfd);
+#if !__has_feature(objc_arc)
+  [super dealloc];
+#endif
 }
 
 + (BOOL) isObfuscated:(NSData*)dgram {
@@ -57,7 +78,7 @@ extern "C" {
   return (lwo_type != 0x00);
 }
 
-- (BOOL) decryptLwo:(NSMutableData*)dgram {
+- (BOOL) decrypt:(NSMutableData*)dgram {
   uint8_t* packet = (uint8_t *)dgram.mutableBytes;
   uint8_t lwo_type = packet[1] & 0xc0;
   if (lwo_type == 0x40) {
@@ -148,7 +169,7 @@ extern "C" {
   return TRUE;
 }
 
-- (NSData*) encryptLwo:(NSData*)dgram {
+- (NSData*) encrypt:(NSData*)dgram {
   const uint8_t* packet = (uint8_t *)dgram.bytes;
   uint8_t msg_type = packet[0];
 
@@ -239,6 +260,39 @@ extern "C" {
 
   // Otherwise - no LWO to perform.
   return dgram;
+}
+
+- (int)connect {
+  return connect(m_sockfd, (struct sockaddr*)&m_destaddr, m_destaddr.ss_len);
+}
+
+- (void)send:(NSData*)dgram {
+  NSData* lwo = [self encrypt:dgram];
+  send(m_sockfd, lwo.bytes, lwo.length, MSG_DONTWAIT);
+}
+
+- (int)recv:(NSMutableData*)dgram {
+  int rx = read(m_sockfd, dgram.mutableBytes, dgram.length);
+  if (rx <= 0) {
+    return rx;
+  }
+  dgram.length = rx;
+
+  if (rx < WG_MSG_LEN_MIN) {
+    // Packet appears to be truncated.
+    errno = EAGAIN;
+    return -1;
+  }
+
+  if ([LwoTransport isObfuscated:dgram]) {
+    if (![self decrypt:dgram]) {
+      // Decryption failed
+      errno = EAGAIN;
+      return -1;
+    }
+  }
+
+  return dgram.length;
 }
 
 @end

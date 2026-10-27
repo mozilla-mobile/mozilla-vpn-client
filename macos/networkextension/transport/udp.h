@@ -3,16 +3,12 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 #import <Foundation/Foundation.h>
+#import <Network/Network.h>
 
-@class WireguardConfig;
+#import "wgtransport.h"
 
-@interface LwoObfuscator : NSObject
+@interface UdpTransport : NSObject<WgTransport>
 
-- (id)initWithOptions:(WireguardConfig*)options;
-
-- (NSData*) encryptLwo:(NSData*)dgram;
-- (BOOL) decryptLwo:(NSMutableData*)dgram;
-
-+ (BOOL) isObfuscated:(NSData*)dgram;
+- (id)initWithEndpoint:(nw_endpoint_t)dest;
 
 @end
