@@ -9,9 +9,11 @@
 #include <time.h>
 #include <unistd.h>
 
-#include "lwo.h"
+#include "transport/lwo.h"
+#include "transport/tcp.h"
+#include "transport/udp.h"
+#include "transport/wgtransport.h"
 #include "utils.h"
-#include "wireguardproto.h"
 #include "wireguardtunnel.h"
 
 extern "C" {
@@ -37,7 +39,7 @@ constexpr const size_t PEER_DATAGRAM_BUFSIZE = 4096;
   NSArray<RoutePrefix*>*    m_routes;
 
   // Obfuscation implementations
-  LwoObfuscator*            m_lwo;
+  NSObject<WgTransport>*    m_transport;
 
   // The completion handler to run on initial handshake or timeout. 
   void (^m_completionHandler)(NSError *error);
@@ -54,13 +56,25 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   self->m_tunfd = tunnel.tunfd;
   self->_tunnel = tunnel;
 
-  m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-  if (m_socket < 0) {
-    return nil;
-  }
+  // Prepare the wireguard transport
+  switch (options.obfuscation) {
+    case kObfuscationNone:
+      m_transport = [[UdpTransport alloc] initWithEndpoint:options.serverIpv4Addr];
+      break;
 
-  // Prepare obfuscation data.
-  m_lwo = [[LwoObfuscator alloc] initWithOptions:options];
+    case kObfuscationLWO:
+    case kObfuscationLWOv2:
+      m_transport = [[LwoTransport alloc] initWithOptions:options];
+      break;
+
+    case kObfuscationTCP:
+      m_transport = [[TcpTransport alloc] initWithEndpoint:options.serverIpv4Addr];
+      break;
+
+    default:
+      // Unsupported transport.
+      return nil;
+  }
 
   // Create the wireguard tunnel.
   uint32_t index;
@@ -82,9 +96,6 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 }
 
 - (void) dealloc {
-  if (m_socket >= 0) {
-    close(m_socket);
-  }
   if (m_wireguard) {
     tunnel_free(m_wireguard);
   }
@@ -102,8 +113,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   free(addrstr);
 #endif
 
-  const struct sockaddr* dest = nw_endpoint_get_address(options.serverIpv4Addr);
-  if (connect(m_socket, dest, dest->sa_len) < 0) {
+  if ([m_transport connect] < 0) {
     completionHandler(vpnPosixError(errno, @"socket connect failed"));
     return;
   }
@@ -133,7 +143,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   NSThread* thread = [NSThread currentThread];
   while (!thread.cancelled) {
     NSMutableData* dgram = [NSMutableData dataWithLength:PEER_DATAGRAM_BUFSIZE];
-    int rx = read(m_socket, dgram.mutableBytes, dgram.length);
+    int rx = [m_transport recv:dgram];
     if (rx == 0) {
       // Socket has closed.
       NSLog(@"socket closed");
@@ -142,20 +152,13 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
     if (rx < 0) {
       // Socket error occurred.
       if (errno == EINTR) continue;
+      if (errno == EAGAIN) continue;
       NSLog(@"socket error: %s", strerror(errno));
       return;
     }
     if (rx < WG_MSG_LEN_MIN) {
       // Packet truncated.
       continue;
-    }
-    dgram.length = rx;
-
-    // Peek the LWO type and decapsulate if needed.
-    if (m_lwo && [LwoObfuscator isObfuscated:dgram]) {
-      if (![m_lwo decryptLwo:dgram]) {
-        continue;
-      }
     }
 
     const uint8_t* packet = (const uint8_t *)dgram.bytes;
@@ -272,7 +275,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
       break;
 
     case WRITE_TO_NETWORK:
-      [self sendToNetwork:[NSData dataWithBytes:data length:result.size]];
+      [m_transport send:[NSData dataWithBytes:data length:result.size]];
       break;
 
     case WIREGUARD_ERROR:
@@ -293,16 +296,6 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
       };
       ssize_t err = sendmsg(m_tunfd, &msg, MSG_DONTWAIT);
       break;
-  }
-}
-
-- (void) sendToNetwork:(NSData*)dgram {
-  if (m_lwo) {
-    NSData* lwo = [m_lwo encryptLwo:dgram];
-    send(m_socket, lwo.bytes, lwo.length, MSG_DONTWAIT);
-  } else {
-    // No obfuscation methods to apply.
-    send(m_socket, dgram.bytes, dgram.length, MSG_DONTWAIT);
   }
 }
 
