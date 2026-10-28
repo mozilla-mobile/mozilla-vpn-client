@@ -44,6 +44,11 @@ constexpr const size_t WG_MSG_LEN_DATA_HEADER = 16;
 // wireguard session.
 - (int) recv:(NSMutableData*)dgram;
 
+// Terminate the transport, closing sockets and reparing for garbage collection.
+// If there is a recv() call in progress, it must terminate with return code of
+// zero after calling this method.
+- (void) shutdown;
+
 @end
 
 #endif  // WGTRANSPORT_H

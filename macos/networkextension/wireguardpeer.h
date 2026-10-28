@@ -8,6 +8,7 @@
 
 #import "wireguardconfig.h"
 #import "wireguardstatus.h"
+#import "transport/wgtransport.h"
 
 constexpr const int WG_PACKET_OVERHEAD = 32;
 constexpr const int WG_PACKET_ALIGN = 16;
@@ -34,5 +35,6 @@ extern "C" struct wireguard_tunnel;
 - (void)writePacket:(int)protocol withData:(NSData*)data;
 
 @property(strong, readonly, getter=getStatus) WireguardStatus* status;
+@property(strong, readonly) NSObject<WgTransport>* transport;
 @property(weak, readonly) WireguardTunnel* tunnel;
 @end

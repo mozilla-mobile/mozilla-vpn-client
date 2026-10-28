@@ -31,15 +31,11 @@ constexpr const size_t PEER_DATAGRAM_BUFSIZE = 4096;
   struct timespec           m_lastHandshake;
   struct timespec           m_handshakeTimeout;
 
-  int                       m_socket;
   int                       m_tunfd;
   NSThread*                 m_worker;
 
   // Routes owned by this peer.
   NSArray<RoutePrefix*>*    m_routes;
-
-  // Obfuscation implementations
-  NSObject<WgTransport>*    m_transport;
 
   // The completion handler to run on initial handshake or timeout. 
   void (^m_completionHandler)(NSError *error);
@@ -59,16 +55,16 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   // Prepare the wireguard transport
   switch (options.obfuscation) {
     case kObfuscationNone:
-      m_transport = [[UdpTransport alloc] initWithEndpoint:options.serverIpv4Addr];
+      self->_transport = [[UdpTransport alloc] initWithEndpoint:options.serverIpv4Addr];
       break;
 
     case kObfuscationLWO:
     case kObfuscationLWOv2:
-      m_transport = [[LwoTransport alloc] initWithOptions:options];
+      self->_transport = [[LwoTransport alloc] initWithOptions:options];
       break;
 
     case kObfuscationTCP:
-      m_transport = [[TcpTransport alloc] initWithEndpoint:options.serverIpv4Addr];
+      self->_transport = [[TcpTransport alloc] initWithEndpoint:options.serverIpv4Addr];
       break;
 
     default:
@@ -96,6 +92,8 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 }
 
 - (void) dealloc {
+  NSLog(@"wireguard peer dealloc");
+
   if (m_wireguard) {
     tunnel_free(m_wireguard);
   }
@@ -113,7 +111,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   free(addrstr);
 #endif
 
-  if ([m_transport connect] < 0) {
+  if ([self.transport connect] < 0) {
     completionHandler(vpnPosixError(errno, @"socket connect failed"));
     return;
   }
@@ -143,7 +141,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   NSThread* thread = [NSThread currentThread];
   while (!thread.cancelled) {
     NSMutableData* dgram = [NSMutableData dataWithLength:PEER_DATAGRAM_BUFSIZE];
-    int rx = [m_transport recv:dgram];
+    int rx = [self.transport recv:dgram];
     if (rx == 0) {
       // Socket has closed.
       NSLog(@"socket closed");
@@ -197,10 +195,8 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 }
 
 - (void) cancelWithError:(NSError*)error {
-  if (m_worker) {
-    [m_worker cancel];
-  }
-  shutdown(m_socket, SHUT_RDWR);
+  [self.transport shutdown];
+  [m_worker cancel];
 
   // Drop routes into the tunnel.
   for (RoutePrefix* prefix in m_routes) {
@@ -275,7 +271,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
       break;
 
     case WRITE_TO_NETWORK:
-      [m_transport send:[NSData dataWithBytes:data length:result.size]];
+      [self.transport send:[NSData dataWithBytes:data length:result.size]];
       break;
 
     case WIREGUARD_ERROR:
