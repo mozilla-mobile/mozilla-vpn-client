@@ -80,6 +80,7 @@ def add_beetmover_worker_config(config, tasks):
         "linux64/release-deb": "linux",
         "linux-aarch64/release-deb": "linux",
         "linux64/release-rpm": "linux",
+        "linux-aarch64/release-rpm": "linux",
         "source/vpn" : "source",
     }
 
