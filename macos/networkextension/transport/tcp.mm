@@ -5,9 +5,10 @@
 #import "tcp.h"
 
 #include <sys/socket.h>
+#include <netinet/tcp.h>
 
 constexpr const int STREAM_HEADER_SIZE = 2;
-constexpr const int DGRAM_MAX_SIZE = PIPE_BUF;
+constexpr const int DGRAM_MAX_SIZE = 4096;
 
 struct txbuffer {
     uint8_t data[STREAM_HEADER_SIZE + DGRAM_MAX_SIZE];
@@ -62,11 +63,25 @@ struct txbuffer {
     return nil;
   }
 
+  // Attempt to minimize TCP queueing.
+  int enable = 1;
+  setsockopt(m_socket, IPPROTO_TCP, TCP_NODELAY, &enable, sizeof(enable));
+
   m_sockerr = 0;
   m_worker = [[NSThread alloc] initWithTarget:self
                                      selector:@selector(tcpWorker:)
                                        object:nil];
   return self;
+}
+
+- (void) dealloc {
+  NSLog(@"tcp dealloc");
+  close(m_upstream);
+  close(m_downstream);
+  close(m_socket);
+#if !__has_feature(objc_arc)
+  [super dealloc];
+#endif
 }
 
 - (int) connect {
@@ -78,6 +93,10 @@ struct txbuffer {
   // Start the socket worker
   [m_worker start];
   return 0;
+}
+
+- (void)shutdown {
+  shutdown(m_socket, SHUT_RDWR);
 }
 
 - (void) tcpWorker:(id)arg {
@@ -104,45 +123,61 @@ struct txbuffer {
       continue;
     }
 
-    [self handleOutbound];
+    // Fetch more packets, if possible.
+    if (m_txbuf.length == 0) {
+      // Try to read another packet from the downstream socket.
+      int rx = recv(m_downstream, m_txbuf.data + STREAM_HEADER_SIZE, DGRAM_MAX_SIZE, MSG_DONTWAIT);
+      if (rx < 0) {
+        if (errno == EAGAIN) continue;
+        if (errno == EINTR) continue;
+        NSLog(@"tcp dgram error: %s", strerror(errno));
+        break;
+      }
+      if (rx == 0) {
+        NSLog(@"tcp dgram closed");
+        break;
+      }
+      m_txbuf.data[0] = (rx >> 8) & 0xff;
+      m_txbuf.data[1] = rx & 0xff;
+      m_txbuf.length = rx + STREAM_HEADER_SIZE;
+      m_txbuf.offset = 0;
+    }
+
+    // Send any queued packets.
+    int tx = [self sendOutbound];
+    if (tx < 0) {
+      if (errno == EAGAIN) continue;
+      if (errno == EINTR) continue;
+      NSLog(@"tcp socket error: %s", strerror(errno));
+      break;
+    }
+    if (tx == 0) {
+      NSLog(@"tcp socket closed");
+      break;
+    }
   }
 }
 
-- (void) handleOutbound {
-  while (true) {
-    // The buffer is in use, there is data to be sent.
-    if (m_txbuf.length) {
-      int len = send(m_socket, m_txbuf.data + m_txbuf.offset,
-                     m_txbuf.length - m_txbuf.offset, MSG_DONTWAIT);
-      if (len > 0) {
-        // Some data was sent.
-        m_txbuf.offset += len;
-        if (m_txbuf.offset < m_txbuf.length) {
-          continue;
-        }
-        m_txbuf.offset = 0;
-        m_txbuf.length = 0;
-      } else if (len == 0) {
-        m_sockerr = ECONNRESET;
-        return;
-      } else {
-        if (errno == EAGAIN) return;
-        if (errno == EINTR) return;
-        m_sockerr = errno;
-        return;
-      }
-    }
-
-    // Try to read another packet from the downstream socket.
-    int len = recv(m_downstream, m_txbuf.data + STREAM_HEADER_SIZE, DGRAM_MAX_SIZE, MSG_DONTWAIT);
-    if (len <= 0) {
-      return;
-    }
-    m_txbuf.data[0] = (len >> 8) & 0xff;
-    m_txbuf.data[1] = len & 0xff;
-    m_txbuf.length = len + STREAM_HEADER_SIZE;
-    m_txbuf.offset = 0;
+- (int) sendOutbound {
+  if (m_txbuf.length == 0) {
+    errno = EAGAIN;
+    return -1;
   }
+
+  while (m_txbuf.offset < m_txbuf.length) {
+    // The buffer is in use, there is data to be sent.
+    int tx = send(m_socket, m_txbuf.data + m_txbuf.offset,
+                  m_txbuf.length - m_txbuf.offset, MSG_DONTWAIT);
+    if (tx <= 0) {
+      return tx;
+    }
+    m_txbuf.offset += tx;
+  }
+
+  int result = m_txbuf.length;
+  m_txbuf.length = 0;
+  m_txbuf.offset = 0;
+  return result;
 }
 
 - (void)send:(NSData*)dgram {

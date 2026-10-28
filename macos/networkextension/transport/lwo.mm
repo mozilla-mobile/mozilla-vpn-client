@@ -66,6 +66,7 @@ extern "C" {
 }
 
 - (void) dealloc {
+  NSLog(@"lwo dealloc");
   close(m_sockfd);
 #if !__has_feature(objc_arc)
   [super dealloc];
@@ -264,6 +265,10 @@ extern "C" {
 
 - (int)connect {
   return connect(m_sockfd, (struct sockaddr*)&m_destaddr, m_destaddr.ss_len);
+}
+
+- (void)shutdown {
+  shutdown(m_sockfd, SHUT_RDWR);
 }
 
 - (void)send:(NSData*)dgram {
