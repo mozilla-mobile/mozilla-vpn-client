@@ -5,6 +5,8 @@
 #import "tcp.h"
 
 #include <sys/socket.h>
+#include <netinet/ip6.h>
+#include <netinet/ip_var.h>
 #include <netinet/tcp.h>
 
 constexpr const int STREAM_HEADER_SIZE = 2;
@@ -258,6 +260,14 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
   m_rxlen = 0;
   m_rxoff = 0;
   return dgram.length;
+}
+
+- (NSUInteger)overhead {
+  if (m_destaddr.ss_family == AF_INET6) {
+    return sizeof(struct tcphdr) + sizeof(struct ip6_hdr) + STREAM_HEADER_SIZE;
+  } else {
+    return sizeof(struct tcphdr) + sizeof(struct ipovly) + STREAM_HEADER_SIZE;
+  }
 }
 
 @end

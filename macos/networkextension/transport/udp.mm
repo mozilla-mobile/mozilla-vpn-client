@@ -6,6 +6,9 @@
 
 #include <sys/socket.h>
 #include <netinet/in.h>
+#include <netinet/ip6.h>
+#include <netinet/ip_var.h>
+#include <netinet/udp.h>
 
 @implementation UdpTransport {
   struct sockaddr_storage m_destaddr;
@@ -55,6 +58,14 @@
     dgram.length = rx;
   }
   return rx;
+}
+
+- (NSUInteger)overhead {
+  if (m_destaddr.ss_family == AF_INET6) {
+    return sizeof(struct udphdr) + sizeof(struct ip6_hdr);
+  } else {
+    return sizeof(struct udphdr) + sizeof(struct ipovly);
+  }
 }
 
 @end

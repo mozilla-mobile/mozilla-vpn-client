@@ -4,6 +4,9 @@
 
 #import "lwo.h"
 
+#include <netinet/ip6.h>
+#include <netinet/ip_var.h>
+#include <netinet/udp.h>
 #include <sys/random.h>
 #include <sys/socket.h>
 
@@ -290,6 +293,14 @@ extern "C" {
   }
 
   return dgram.length;
+}
+
+- (NSUInteger)overhead {
+  if (m_destaddr.ss_family == AF_INET6) {
+    return sizeof(struct udphdr) + sizeof(struct ip6_hdr);
+  } else {
+    return sizeof(struct udphdr) + sizeof(struct ipovly);
+  }
 }
 
 @end
