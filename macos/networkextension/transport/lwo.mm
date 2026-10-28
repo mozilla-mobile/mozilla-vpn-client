@@ -5,6 +5,8 @@
 #import "lwo.h"
 
 #include <sys/random.h>
+#include <sys/socket.h>
+#include <sys/uio.h>
 
 #import "wgconfig.h"
 
@@ -166,7 +168,7 @@ extern "C" {
 }
 
 - (void)send:(NSData*)dgram {
-  const uint8_t* packet = (uint8_t *)dgram.bytes;
+  const uint8_t* packet = (const uint8_t *)dgram.bytes;
   uint8_t msg_type = packet[0];
 
   if (m_version >= 2) {
@@ -191,28 +193,35 @@ extern "C" {
         return;
     }
 
-    // Prepare a copy of the packet for encoding.
+    // Encrypt the packet header.
     uint8_t padding[256];
-    NSMutableData* ciphertext = [NSMutableData dataWithCapacity:dgram.length + sizeof(padding)];
-    [ciphertext appendData:dgram];
+    uint8_t header[WG_MSG_LEN_HANDSHAKE_INIT];
+    struct iovec iov[2];
+    iov[0].iov_base = header;
+    iov[0].iov_len = prot_len;
 
-    // Apply padding to non-data packets.
     if (msg_type != WG_MSG_TYPE_DATA) {
-      size_t pad_len = 1 + (rand() % sizeof(padding));
-      getentropy(padding, pad_len);
-      [ciphertext appendBytes:padding length:pad_len];
+      iov[1].iov_base = padding;
+      iov[1].iov_len = 1 + (rand() % sizeof(padding));
+      getentropy(padding, iov[1].iov_len);
+    } else {
+      iov[1].iov_base = (uint8_t*)packet + WG_MSG_LEN_DATA_HEADER;
+      iov[1].iov_len = dgram.length - WG_MSG_LEN_DATA_HEADER;
     }
 
     // Obfuscate the protected region.
-    uint8_t len_mix = ciphertext.length & 0xff;
-    uint8_t* ctbytes = (uint8_t*)ciphertext.mutableBytes;
+    uint8_t len_mix = (iov[0].iov_len + iov[1].iov_len) & 0xff;
+    uint8_t marker = ((m_serverkey.key[0] + len_mix) & 0x3f) | 0x40;
     for (int i = 0; i < prot_len; i++) {
-      ctbytes[i] ^= (m_serverkey.key[i % 32] + len_mix + (uint8_t)i);
+      header[i] = packet[i] ^ (m_serverkey.key[i % 32] + len_mix + (uint8_t)i);
     }
+    header[1] = marker;
 
-    // Finalize byte 1.
-    ctbytes[1] = ((m_serverkey.key[0] + len_mix) & 0x3f) | 0x40;
-    [super send:ciphertext];
+    // Send the packet.
+    struct msghdr msg = {};
+    msg.msg_iov = iov;
+    msg.msg_iovlen = 2;
+    sendmsg(self.sockfd, &msg, MSG_DONTWAIT);
   } else if (m_version == 1) {
     // LWO Version 1
     uint8_t prot_len = 0;
@@ -242,16 +251,23 @@ extern "C" {
     }
 
     // Obfuscate the protected region.
-    NSMutableData* ciphertext = [NSMutableData dataWithData:dgram];
-    uint8_t* ctbytes = (uint8_t*)ciphertext.mutableBytes;
+    uint8_t header[WG_MSG_LEN_HANDSHAKE_INIT];
     for (int i = 0; i < prot_len; i++) {
-      ctbytes[i] ^= m_serverkey.key[i % 32];
+      header[i] = packet[i] ^ m_serverkey.key[i % 32];
     }
-
     // Finalize byte 1.
-    getentropy(&ctbytes[1], 1);
-    ctbytes[1] |= 0x80;
-    [super send:ciphertext];
+    header[1] = (rand() & 0x7f) | 0x80;
+
+    struct iovec iov[2];
+    iov[0].iov_base = header;
+    iov[0].iov_len = prot_len;
+    iov[1].iov_base = (uint8_t*)packet + prot_len;
+    iov[1].iov_len = dgram.length - prot_len;
+
+    struct msghdr msg = {};
+    msg.msg_iov = iov;
+    msg.msg_iovlen = (iov[1].iov_len) ? 2 : 1;
+    sendmsg(self.sockfd, &msg, MSG_DONTWAIT);
   } else {
     // Otherwise - no LWO to perform.
     [super send:dgram];

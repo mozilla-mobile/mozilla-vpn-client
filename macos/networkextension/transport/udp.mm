@@ -12,7 +12,6 @@
 
 @implementation UdpTransport {
   struct sockaddr_storage m_destaddr;
-  int                     m_sockfd;
 }
 
 - (id)initWithEndpoint:(nw_endpoint_t)ep {
@@ -24,8 +23,8 @@
   }
   memcpy(&m_destaddr, dest, dest->sa_len);
 
-  m_sockfd = socket(dest->sa_family, SOCK_DGRAM, IPPROTO_UDP);
-  if (m_sockfd < 0) {
+  self->_sockfd = socket(dest->sa_family, SOCK_DGRAM, IPPROTO_UDP);
+  if (self->_sockfd < 0) {
     return nil;
   }
 
@@ -34,26 +33,26 @@
 
 - (void) dealloc {
   NSLog(@"udp dealloc");
-  close(m_sockfd);
+  close(self.sockfd);
 #if !__has_feature(objc_arc)
   [super dealloc];
 #endif
 }
 
 - (int)connect {
-  return connect(m_sockfd, (struct sockaddr*)&m_destaddr, m_destaddr.ss_len);
+  return connect(self.sockfd, (struct sockaddr*)&m_destaddr, m_destaddr.ss_len);
 }
 
 - (void)shutdown {
-  shutdown(m_sockfd, SHUT_RDWR);
+  shutdown(self.sockfd, SHUT_RDWR);
 }
 
 - (void)send:(NSData*)dgram {
-  send(m_sockfd, dgram.bytes, dgram.length, MSG_DONTWAIT);
+  send(self.sockfd, dgram.bytes, dgram.length, MSG_DONTWAIT);
 }
 
 - (int)recv:(NSMutableData*)dgram {
-  int rx = read(m_sockfd, dgram.mutableBytes, dgram.length);
+  int rx = read(self.sockfd, dgram.mutableBytes, dgram.length);
   if (rx > 0) {
     dgram.length = rx;
   }
