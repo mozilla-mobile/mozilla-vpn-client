@@ -9,7 +9,7 @@
 
 constexpr const int STREAM_HEADER_SIZE = 2;
 constexpr const int DGRAM_MAX_SIZE = 4096;
-constexpr const int DGRAM_QUEUE_SIZE = 8;
+constexpr const int DGRAM_QUEUE_SIZE = 64;
 
 @implementation TcpTransport {
   // The destination
@@ -63,6 +63,7 @@ constexpr const int DGRAM_QUEUE_SIZE = 8;
 
 - (void) dealloc {
   NSLog(@"tcp dealloc");
+  [self shutdown];
   close(m_socket);
 #if !__has_feature(objc_arc)
   [super dealloc];
@@ -82,6 +83,10 @@ constexpr const int DGRAM_QUEUE_SIZE = 8;
 
 - (void)shutdown {
   shutdown(m_socket, SHUT_RDWR);
+
+  // Instruct the tcp worker to shutdown.
+  [m_worker cancel];
+  [m_condition signal];
 }
 
 - (void) tcpWorker:(id)arg {
@@ -91,13 +96,12 @@ constexpr const int DGRAM_QUEUE_SIZE = 8;
   while (true) {
     // Wait for another packet.
     [m_condition lock];
-    while (m_txcount == 0) {
-      if (thread.cancelled) {
-        [m_condition unlock];
-        NSLog(@"tcp worker exited");
-        return;
-      }
+    while (!thread.cancelled && (m_txcount == 0)) {
       [m_condition wait];
+    }
+    if (thread.cancelled) {
+      [m_condition unlock];
+      break;
     }
 
     // Pull the next packet off the queue.
@@ -118,41 +122,66 @@ constexpr const int DGRAM_QUEUE_SIZE = 8;
       break;
     }
   }
+
+  NSLog(@"tcp worker exited");
 }
 
 - (int) sendDgram:(NSData*)dgram {
   // Send the stream header.
+  const uint8_t* data = (const uint8_t*)dgram.bytes;
   uint8_t header[STREAM_HEADER_SIZE] = {};
   header[0] = (dgram.length >> 8) & 0xff;
   header[1] = dgram.length & 0xff;
-  NSUInteger offset = 0;
-  while (offset < sizeof(header)) {
-    int tx = send(m_socket, header + offset, sizeof(header) - offset, 0);
-    if (tx > 0) {
-      offset += tx;
-    } else if (tx == 0) {
-      return 0;
-    } else if ((errno != EAGAIN) && (errno != EINTR)) {
-      return tx;
-    }
-  }
 
-  // Send packet data.
-  offset = 0;
-  while (offset < dgram.length) {
-    const uint8_t* data = (const uint8_t*)dgram.bytes;
-    int tx = send(m_socket, data + offset, dgram.length - offset, 0);
+  // We are going to do this in one crazy loop to try and gather as much
+  // of the outbound data together into single system calls. We do this
+  // because want to use both TCP_NODELAY to disable nagling and MSG_DONTWAIT
+  // to avoid blocking for TCP acks.
+  NSUInteger offset = 0;
+  NSUInteger total = dgram.length + STREAM_HEADER_SIZE;
+  while (offset < total) {
+    int tx;
+    if (offset >= STREAM_HEADER_SIZE) {
+      // Header has been sent.
+      tx = send(m_socket, data + offset - STREAM_HEADER_SIZE, total - offset, MSG_DONTWAIT);
+    } else {
+      // Still have header bytes to send.
+      struct iovec iov[2];
+      iov[0].iov_base = header + offset;
+      iov[0].iov_len = STREAM_HEADER_SIZE - offset;
+      iov[1].iov_base = (void*)data;
+      iov[1].iov_len = dgram.length;
+
+      struct msghdr msg = {};
+      msg.msg_iov = iov;
+      msg.msg_iovlen = 2;
+      tx = sendmsg(m_socket, &msg, MSG_DONTWAIT);
+    }
+
     if (tx > 0) {
       offset += tx;
-    } else if (tx == 0) {
+      continue;
+    } if (tx == 0) {
       return 0;
-    } else if ((errno != EAGAIN) && (errno != EINTR)) {
-      return tx;
     }
+
+    if (errno == EAGAIN) {
+      // Wait for the socket to become writeable.
+      fd_set fds;
+      FD_ZERO(&fds);
+      FD_SET(m_socket, &fds);
+      if (select(m_socket + 1, NULL, &fds, &fds, NULL) >= 0) {
+        continue;
+      }
+    }
+    if (errno == EINTR) {
+      continue;
+    }
+    return -1;
   }
 
   // Success
-  return dgram.length + STREAM_HEADER_SIZE;
+  return total;
 }
 
 - (void)send:(NSData*)dgram {
