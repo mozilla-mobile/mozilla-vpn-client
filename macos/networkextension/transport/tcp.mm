@@ -9,12 +9,7 @@
 
 constexpr const int STREAM_HEADER_SIZE = 2;
 constexpr const int DGRAM_MAX_SIZE = 4096;
-
-struct txbuffer {
-    uint8_t data[STREAM_HEADER_SIZE + DGRAM_MAX_SIZE];
-    size_t  length;
-    size_t  offset;
-};
+constexpr const int DGRAM_QUEUE_SIZE = 8;
 
 @implementation TcpTransport {
   // The destination
@@ -22,17 +17,20 @@ struct txbuffer {
 
   // The sockets.
   int             m_socket;
-  int             m_sockerr;
   int             m_downstream;
   int             m_upstream;
 
   // Packet buffers.
-  struct txbuffer m_txbuf;
+  NSData*         m_txqueue[DGRAM_QUEUE_SIZE];
+  uint8_t         m_txnext;
+  uint8_t         m_txcount;
+
   uint8_t         m_rxbuf[DGRAM_MAX_SIZE];
   size_t          m_rxoff;
   size_t          m_rxlen;
 
   // A packet worker thread.
+  NSCondition*    m_condition;
   NSThread*       m_worker;
 }
 
@@ -46,20 +44,9 @@ struct txbuffer {
   }
   memcpy(&m_destaddr, dest, dest->sa_len);
 
-  // Create a datagram socket pair to pass wireguard packets.
-  int sv[2];
-  int err = socketpair(AF_UNIX, SOCK_DGRAM, 0, sv);
-  if (err != 0) {
-    return nil;
-  }
-  m_upstream = sv[0];
-  m_downstream = sv[1];
-
   // Create a TCP socket for the outbound data stream.
   m_socket = socket(dest->sa_family, SOCK_STREAM, 0);
   if (m_socket < 0) {
-    close(m_upstream);
-    close(m_downstream);
     return nil;
   }
 
@@ -67,7 +54,7 @@ struct txbuffer {
   int enable = 1;
   setsockopt(m_socket, IPPROTO_TCP, TCP_NODELAY, &enable, sizeof(enable));
 
-  m_sockerr = 0;
+  m_condition = [NSCondition new];
   m_worker = [[NSThread alloc] initWithTarget:self
                                      selector:@selector(tcpWorker:)
                                        object:nil];
@@ -76,8 +63,6 @@ struct txbuffer {
 
 - (void) dealloc {
   NSLog(@"tcp dealloc");
-  close(m_upstream);
-  close(m_downstream);
   close(m_socket);
 #if !__has_feature(objc_arc)
   [super dealloc];
@@ -101,87 +86,83 @@ struct txbuffer {
 
 - (void) tcpWorker:(id)arg {
   NSLog(@"tcp worker started");
-  int nfds = m_downstream;
-  if (m_socket > m_downstream) {
-    nfds = m_socket;
-  }
 
   NSThread* thread = [NSThread currentThread];
-  while (!thread.cancelled) {
-    fd_set rfds;
-    fd_set wfds;
-    FD_ZERO(&rfds);
-    FD_ZERO(&wfds);
-
-    if (m_txbuf.length == 0) {
-      FD_SET(m_downstream, &rfds);
-    } else {
-      FD_SET(m_socket, &wfds);
-    }
-    int result = select(nfds, &rfds, &wfds, NULL, NULL);
-    if (result < 0) {
-      continue;
-    }
-
-    // Fetch more packets, if possible.
-    if (m_txbuf.length == 0) {
-      // Try to read another packet from the downstream socket.
-      int rx = recv(m_downstream, m_txbuf.data + STREAM_HEADER_SIZE, DGRAM_MAX_SIZE, MSG_DONTWAIT);
-      if (rx < 0) {
-        if (errno == EAGAIN) continue;
-        if (errno == EINTR) continue;
-        NSLog(@"tcp dgram error: %s", strerror(errno));
-        break;
+  while (true) {
+    // Wait for another packet.
+    [m_condition lock];
+    while (m_txcount == 0) {
+      if (thread.cancelled) {
+        [m_condition unlock];
+        NSLog(@"tcp worker exited");
+        return;
       }
-      if (rx == 0) {
-        NSLog(@"tcp dgram closed");
-        break;
-      }
-      m_txbuf.data[0] = (rx >> 8) & 0xff;
-      m_txbuf.data[1] = rx & 0xff;
-      m_txbuf.length = rx + STREAM_HEADER_SIZE;
-      m_txbuf.offset = 0;
+      [m_condition wait];
     }
 
-    // Send any queued packets.
-    int tx = [self sendOutbound];
-    if (tx < 0) {
-      if (errno == EAGAIN) continue;
-      if (errno == EINTR) continue;
-      NSLog(@"tcp socket error: %s", strerror(errno));
-      break;
-    }
+    // Pull the next packet off the queue.
+    NSData* dgram = m_txqueue[m_txnext];
+    m_txqueue[m_txnext] = nil;
+    m_txnext = (m_txnext + 1) % DGRAM_QUEUE_SIZE;
+    m_txcount--;
+    [m_condition unlock];
+
+    // Send the datagram out the TCP socket.
+    int tx = [self sendDgram:dgram];
     if (tx == 0) {
       NSLog(@"tcp socket closed");
       break;
     }
+    if (tx < 0) {
+      NSLog(@"tcp socket error: %s", strerror(errno));
+      break;
+    }
   }
 }
 
-- (int) sendOutbound {
-  if (m_txbuf.length == 0) {
-    errno = EAGAIN;
-    return -1;
-  }
-
-  while (m_txbuf.offset < m_txbuf.length) {
-    // The buffer is in use, there is data to be sent.
-    int tx = send(m_socket, m_txbuf.data + m_txbuf.offset,
-                  m_txbuf.length - m_txbuf.offset, MSG_DONTWAIT);
-    if (tx <= 0) {
+- (int) sendDgram:(NSData*)dgram {
+  // Send the stream header.
+  uint8_t header[STREAM_HEADER_SIZE] = {};
+  header[0] = (dgram.length >> 8) & 0xff;
+  header[1] = dgram.length & 0xff;
+  NSUInteger offset = 0;
+  while (offset < sizeof(header)) {
+    int tx = send(m_socket, header + offset, sizeof(header) - offset, 0);
+    if (tx > 0) {
+      offset += tx;
+    } else if (tx == 0) {
+      return 0;
+    } else if ((errno != EAGAIN) && (errno != EINTR)) {
       return tx;
     }
-    m_txbuf.offset += tx;
   }
 
-  int result = m_txbuf.length;
-  m_txbuf.length = 0;
-  m_txbuf.offset = 0;
-  return result;
+  // Send packet data.
+  offset = 0;
+  while (offset < dgram.length) {
+    const uint8_t* data = (const uint8_t*)dgram.bytes;
+    int tx = send(m_socket, data + offset, dgram.length - offset, 0);
+    if (tx > 0) {
+      offset += tx;
+    } else if (tx == 0) {
+      return 0;
+    } else if ((errno != EAGAIN) && (errno != EINTR)) {
+      return tx;
+    }
+  }
+
+  // Success
+  return dgram.length + STREAM_HEADER_SIZE;
 }
 
 - (void)send:(NSData*)dgram {
-  send(m_upstream, dgram.bytes, dgram.length, MSG_DONTWAIT);
+  [m_condition lock];
+  if (m_txcount < DGRAM_QUEUE_SIZE) {
+    m_txqueue[(m_txnext + m_txcount) % DGRAM_QUEUE_SIZE] = [NSData dataWithData:dgram];
+    m_txcount++;
+    [m_condition signal];
+  }
+  [m_condition unlock];
 }
 
 - (int)recv:(NSMutableData*)dgram {

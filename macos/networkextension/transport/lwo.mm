@@ -73,12 +73,6 @@ extern "C" {
 #endif
 }
 
-+ (BOOL) isObfuscated:(NSData*)dgram {
-  uint8_t* packet = (uint8_t *)dgram.bytes;
-  uint8_t lwo_type = packet[1] & 0xc0;
-  return (lwo_type != 0x00);
-}
-
 - (BOOL) decrypt:(NSMutableData*)dgram {
   uint8_t* packet = (uint8_t *)dgram.mutableBytes;
   uint8_t lwo_type = packet[1] & 0xc0;
@@ -289,12 +283,10 @@ extern "C" {
     return -1;
   }
 
-  if ([LwoTransport isObfuscated:dgram]) {
-    if (![self decrypt:dgram]) {
-      // Decryption failed
-      errno = EAGAIN;
-      return -1;
-    }
+  if (![self decrypt:dgram]) {
+    // Decryption failed
+    errno = EAGAIN;
+    return -1;
   }
 
   return dgram.length;
