@@ -407,12 +407,8 @@ static void wgLog(const char* msg) {
 - (void)syncMtu:(nw_endpoint_t)dest {
   // Get the MTU and subtract the wireguard overhead.
   const struct sockaddr* sa = nw_endpoint_get_address(dest);
-  NSUInteger wgMtu = [self rtmFetchMtu:sa] - WG_PACKET_OVERHEAD - sizeof(struct udphdr);
-  if (sa->sa_family == AF_INET6) {
-    wgMtu -= sizeof(struct ip6_hdr);
-  } else {
-    wgMtu -= sizeof(struct ipovly);
-  }
+  NSUInteger wgMtu = [self rtmFetchMtu:sa] - WG_PACKET_OVERHEAD;
+  wgMtu -= [self.peer.transport overhead];
 
   if (wgMtu >= IPV6_MMTU) {
     self.mtu = wgMtu;

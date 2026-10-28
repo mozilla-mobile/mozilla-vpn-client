@@ -49,6 +49,11 @@ constexpr const size_t WG_MSG_LEN_DATA_HEADER = 16;
 // zero after calling this method.
 - (void) shutdown;
 
+// Return the packet overhead used by this transport. It must include the size
+// of the network and transport headers (eg: IP and UDP), plus any additional
+// capacity lost due to the obfuscation.
+- (NSUInteger) overhead;
+
 @end
 
 #endif  // WGTRANSPORT_H
