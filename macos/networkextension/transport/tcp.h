@@ -7,8 +7,6 @@
 
 #import "wgtransport.h"
 
-@class WireguardConfig;
-
 @interface TcpTransport : NSObject<WgTransport>
 
 - (id)initWithEndpoint:(nw_endpoint_t)dest;

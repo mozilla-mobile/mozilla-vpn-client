@@ -6,10 +6,10 @@
 
 #import "wgtransport.h"
 
-@class WireguardConfig;
+@class WgConfig;
 
 @interface LwoTransport : NSObject<WgTransport>
 
-- (id)initWithOptions:(WireguardConfig*)options;
+- (id)initWithOptions:(WgConfig*)options;
 
 @end

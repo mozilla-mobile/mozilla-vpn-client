@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#import "wireguardconfig.h"
+#import "wgconfig.h"
 
 #import <Foundation/Foundation.h>
 
@@ -80,7 +80,7 @@
 
 @end
 
-@implementation WireguardConfig
+@implementation WgConfig
 + (NSString*)findString:(NSDictionary<NSString *,id> *)dict
                  forKey:(NSString*)key {
   NSObject* value = [dict objectForKey:key];
@@ -96,7 +96,7 @@
 + (nw_endpoint_t)findAddress:(NSDictionary<NSString *,id> *)dict
                       forKey:(NSString*)key
                     withPort:(NSUInteger)port {
-  NSString* addr = [WireguardConfig findString:dict forKey:key];
+  NSString* addr = [WgConfig findString:dict forKey:key];
   if (!addr) {
     return nil;
   }
@@ -131,22 +131,22 @@
 - (id)initFromDict:(NSDictionary<NSString *,id> *)dict {
   self = [super init];
 
-  self.privateKey = [WireguardConfig findString:dict forKey:@"privateKey"];
+  self.privateKey = [WgConfig findString:dict forKey:@"privateKey"];
   if (!self.privateKey) {
     return nil;
   }
-  self.deviceIpv4Addr = [WireguardConfig findAddress:dict forKey:@"deviceIpv4Addr" withPort:0];
+  self.deviceIpv4Addr = [WgConfig findAddress:dict forKey:@"deviceIpv4Addr" withPort:0];
   if ((!self.deviceIpv4Addr) ||
       (nw_endpoint_get_address(self.deviceIpv4Addr)->sa_family != AF_INET)) {
     return nil;
   }
-  self.deviceIpv6Addr = [WireguardConfig findAddress:dict forKey:@"deviceIpv6Addr" withPort:0];
+  self.deviceIpv6Addr = [WgConfig findAddress:dict forKey:@"deviceIpv6Addr" withPort:0];
   if ((!self.deviceIpv6Addr) ||
       (nw_endpoint_get_address(self.deviceIpv6Addr)->sa_family != AF_INET6)) {
     return nil;
   }
 
-  self.serverPublicKey = [WireguardConfig findString:dict forKey:@"serverPublicKey"];
+  self.serverPublicKey = [WgConfig findString:dict forKey:@"serverPublicKey"];
   if (!self.serverPublicKey) {
     return nil;
   }
@@ -161,12 +161,12 @@
     self.serverPort = 51820;
   }
 
-  self.serverIpv4Addr = [WireguardConfig findAddress:dict forKey:@"serverIpv4AddrIn" withPort:self.serverPort];
-  self.serverIpv6Addr = [WireguardConfig findAddress:dict forKey:@"serverIpv6AddrIn" withPort:self.serverPort];
+  self.serverIpv4Addr = [WgConfig findAddress:dict forKey:@"serverIpv4AddrIn" withPort:self.serverPort];
+  self.serverIpv6Addr = [WgConfig findAddress:dict forKey:@"serverIpv6AddrIn" withPort:self.serverPort];
 
   // We don't actually use this, but parse it anyways.
-  self.serverIpv4Gateway = [WireguardConfig findAddress:dict forKey:@"serverIpv4Gateway" withPort:0];
-  self.serverIpv6Gateway = [WireguardConfig findAddress:dict forKey:@"serverIpv6Gateway" withPort:0];
+  self.serverIpv4Gateway = [WgConfig findAddress:dict forKey:@"serverIpv4Gateway" withPort:0];
+  self.serverIpv6Gateway = [WgConfig findAddress:dict forKey:@"serverIpv6Gateway" withPort:0];
 
   // Parse the allowed IP address ranges.
   NSObject* rangesObject = [dict objectForKey:@"routes"];
@@ -239,21 +239,21 @@
 
 - (void)encodeWithDict:(NSMutableDictionary<NSString*,id> *)dict {
   [dict setObject:self.privateKey forKey:@"privateKey"];
-  [dict setObject:[WireguardConfig encodeAddr:self.deviceIpv4Addr] forKey:@"deviceIpv4Addr"];
-  [dict setObject:[WireguardConfig encodeAddr:self.deviceIpv6Addr]forKey:@"deviceIpv6Addr"];
+  [dict setObject:[WgConfig encodeAddr:self.deviceIpv4Addr] forKey:@"deviceIpv4Addr"];
+  [dict setObject:[WgConfig encodeAddr:self.deviceIpv6Addr]forKey:@"deviceIpv6Addr"];
 
   [dict setObject:self.serverPublicKey forKey:@"serverPublicKey"];
   if (self.serverIpv4Addr) {
-    [dict setObject:[WireguardConfig encodeAddr:self.serverIpv4Addr] forKey:@"serverIpv4AddrIn"];
+    [dict setObject:[WgConfig encodeAddr:self.serverIpv4Addr] forKey:@"serverIpv4AddrIn"];
   }
   if (self.serverIpv6Addr) {
-    [dict setObject:[WireguardConfig encodeAddr:self.serverIpv6Addr] forKey:@"serverIpv6AddrIn"];
+    [dict setObject:[WgConfig encodeAddr:self.serverIpv6Addr] forKey:@"serverIpv6AddrIn"];
   }
   if (self.serverIpv4Gateway) {
-    [dict setObject:[WireguardConfig encodeAddr:self.serverIpv4Gateway] forKey:@"serverIpv4Gateway"];
+    [dict setObject:[WgConfig encodeAddr:self.serverIpv4Gateway] forKey:@"serverIpv4Gateway"];
   }
   if (self.serverIpv6Gateway) {
-    [dict setObject:[WireguardConfig encodeAddr:self.serverIpv6Gateway] forKey:@"serverIpv6Gateway"];
+    [dict setObject:[WgConfig encodeAddr:self.serverIpv6Gateway] forKey:@"serverIpv6Gateway"];
   }
   [dict setObject:[NSNumber numberWithInt:self.serverPort] forKey:@"serverPort"];
 

@@ -134,7 +134,7 @@ static void wgLog(const char* msg) {
   return self;
 }
 
-- (void) startTunnelWithOptions:(WireguardConfig *)options 
+- (void) startTunnelWithOptions:(WgConfig *)options 
               completionHandler:(void (^)(NSError *error)) completionHandler {
   m_ipv4gateway = options.serverIpv4Gateway;
   m_ipv6gateway = options.serverIpv6Gateway;
@@ -354,11 +354,11 @@ static void wgLog(const char* msg) {
   return m_tunfd;
 }
 
-- (WireguardStatus*)getStatus {
+- (WgStatus*)getStatus {
   if (!self.peer) {
-    return [WireguardStatus new];
+    return [WgStatus new];
   }
-  WireguardStatus* result = self.peer.status;
+  WgStatus* result = self.peer.status;
 
   // Get the interface addresses.
   if (self.ipv4address) {

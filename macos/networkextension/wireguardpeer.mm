@@ -46,7 +46,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   [peer handleTimer];
 }
 
-- (id) initWithOptions:(WireguardConfig*) options
+- (id) initWithOptions:(WgConfig*) options
              andTunnel:(WireguardTunnel*) tunnel {
   self = [super init];
   self->m_tunfd = tunnel.tunfd;
@@ -103,7 +103,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 #endif
 }
 
-- (void) startWithOptions:(WireguardConfig*) options
+- (void) startWithOptions:(WgConfig*) options
         completionHandler:(void (^)(NSError *error)) completionHandler {
 #ifdef MZ_DEBUG
   char *addrstr = nw_endpoint_copy_address_string(options.serverIpv4Addr);
@@ -295,8 +295,8 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   }
 }
 
-- (WireguardStatus*)getStatus {
-  WireguardStatus* result = [WireguardStatus new];
+- (WgStatus*)getStatus {
+  WgStatus* result = [WgStatus new];
 
   // Get the handshake time from the timestamp of the last received handshake
   // response packet, this will yeild better precision than the stats we get

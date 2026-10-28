@@ -2,9 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "wireguardstatus.h"
+#include "wgstatus.h"
 
-@implementation WireguardStatus
+@implementation WgStatus
 + (BOOL)supportsSecureCoding {
   return YES;
 }
