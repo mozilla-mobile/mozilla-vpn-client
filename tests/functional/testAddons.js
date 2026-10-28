@@ -271,12 +271,7 @@ describe('Addons', function() {
             // re-auth can take well over a minute). Writing the setting
             // directly synchronously reloads SubscriptionData and re-runs the
             // addon condition, so there's no async network fetch to race.
-            const createdAtBase = new Date(createdAtTimestamp());
-            const currentHour =
-                new Date(Date.now())
-                    .getHours();  // hack because of daylight savings - ensure
-                                  // the `time` cases work
-            const createdAtMs = createdAtBase.setHours(currentHour).valueOf();
+            const createdAtMs = createdAtTimestamp();
             const mockDetails = JSON.parse(JSON.stringify(SubscriptionDetails));
             mockDetails.subscription._subscription_type = 'web';
             mockDetails.subscription.created =
@@ -311,12 +306,12 @@ describe('Addons', function() {
                   queries.screenMessaging.messageItem(
                       'message_upgrade_to_annual_plan'),
                   'formattedDate');
-              // Maybe add 14 days to account for the timestamp that starts 14
-              // days into the subscription
-              const addedTime =
-                  Date.now() > Date.now() - (14 * 24 * 60 * 60 * 1000) ?
-                  1000 * 60 * 60 * 24 * 14 :
-                  0;
+              // conditions.js sets timestamp of addon tocreatedAt + 14d, or
+              // createdAt + 87d if the subscription is 87+ days old.
+              const DAY_MS = 24 * 60 * 60 * 1000;
+              const addedTime = (Date.now() - createdAtMs) >= 87 * DAY_MS ?
+                  87 * DAY_MS :
+                  14 * DAY_MS;
               const addedTimeAlt = addedTime -
                   (60 * 1000);  // in case the clock turned over during setup
 
