@@ -4,11 +4,12 @@
 
 #import <Foundation/Foundation.h>
 
+#import "udp.h"
 #import "wgtransport.h"
 
 @class WgConfig;
 
-@interface LwoTransport : NSObject<WgTransport>
+@interface LwoTransport : UdpTransport
 
 - (id)initWithOptions:(WgConfig*)options;
 
