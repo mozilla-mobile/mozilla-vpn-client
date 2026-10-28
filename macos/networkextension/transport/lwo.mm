@@ -4,11 +4,7 @@
 
 #import "lwo.h"
 
-#include <netinet/ip6.h>
-#include <netinet/ip_var.h>
-#include <netinet/udp.h>
 #include <sys/random.h>
-#include <sys/socket.h>
 
 #import "wgconfig.h"
 
@@ -17,16 +13,16 @@ extern "C" {
 };
 
 @implementation LwoTransport {
-  int                     m_sockfd;
-  struct sockaddr_storage m_destaddr;
-
   NSUInteger              m_version;
   struct x25519_key       m_serverkey;
   struct x25519_key       m_clientkey;
 }
 
 - (id) initWithOptions:(WgConfig*) options {
-  self = [super init];
+  self = [super initWithEndpoint:options.serverIpv4Addr];
+  if (!self) {
+    return nil;
+  }
 
   NSUInteger b64opts = NSDataBase64DecodingIgnoreUnknownCharacters;
   NSData* privkey = [[NSData alloc] initWithBase64EncodedString:options.privateKey options:b64opts];
@@ -54,41 +50,34 @@ extern "C" {
     m_version = 0;
   }
 
-  const struct sockaddr* dest = nw_endpoint_get_address(options.serverIpv4Addr);
-  if (dest->sa_len > sizeof(m_destaddr)) {
-    return nil;
-  }
-  memcpy(&m_destaddr, dest, dest->sa_len);
-
-  m_sockfd = socket(dest->sa_family, SOCK_DGRAM, IPPROTO_UDP);
-  if (m_sockfd < 0) {
-    return nil;
-  }
-
   return self;
 }
 
-- (void) dealloc {
-  NSLog(@"lwo dealloc");
-  close(m_sockfd);
-#if !__has_feature(objc_arc)
-  [super dealloc];
-#endif
-}
+- (int)recv:(NSMutableData*)dgram {
+  // Receive a packet from the UDP transport.
+  int rx = [super recv:dgram];
+  if (rx <= 0) {
+    return rx;
+  }
+  if (rx < WG_MSG_LEN_MIN) {
+    // Packet appears to be truncated.
+    errno = EAGAIN;
+    return -1;
+  }
 
-- (BOOL) decrypt:(NSMutableData*)dgram {
+  // Check for LWO encryption, and decapsulate if required.
   uint8_t* packet = (uint8_t *)dgram.mutableBytes;
   uint8_t lwo_type = packet[1] & 0xc0;
   if (lwo_type == 0x40) {
     // LWO Version 2.
     uint8_t len_mix = dgram.length & 0xff;
     uint8_t msg_type = packet[0] ^ (m_serverkey.key[0] + len_mix);
+    uint8_t marker = ((m_serverkey.key[0] + len_mix) & 0x3f) | 0x40;
+    if (packet[1] != marker) {
+      errno = EAGAIN;
+      return -1;
+    }
 
-    // Validate bytes 1-3
-    if (packet[1] != (((m_serverkey.key[0] + len_mix) & 0x3f) | 0x40)) return FALSE;
-    if (packet[2] != ((m_serverkey.key[2] + len_mix + 2) & 0xff)) return FALSE;
-    if (packet[3] != ((m_serverkey.key[3] + len_mix + 3) & 0xff)) return FALSE;
-  
     // The protected area varies by packet type.
     uint8_t prot_len = 0;
     switch (msg_type) {
@@ -106,12 +95,14 @@ extern "C" {
 
       default:
         // LWO decapsulation is not supported for this msg type.
-        return FALSE;
+        errno = EAGAIN;
+        return -1;
     }
 
     if (dgram.length < prot_len) {
       // Packet appears to be truncated.
-      return FALSE;
+      errno = EAGAIN;
+      return -1;
     }
 
     // Decrypt the protected area.
@@ -120,11 +111,17 @@ extern "C" {
     }
     packet[1] = 0x00;
 
+    // Verify that bytes 2-3 decoded as zero.
+    if (packet[2] || packet[3]) {
+      errno = EAGAIN;
+      return -1;
+    }
+
     // Trim padding from non-data packets.
     if ((msg_type != WG_MSG_TYPE_DATA) && (dgram.length > prot_len)) {
       dgram.length = prot_len;
     }
-    return TRUE;
+    return dgram.length;
   }
 
   if (lwo_type & 0x80) {
@@ -152,7 +149,8 @@ extern "C" {
 
       default:
         // LWO decapsulation is not supported for this msg type.
-        return FALSE;
+        errno = EAGAIN;
+        return -1;
     }
 
     // Decrypt the protected area.
@@ -160,14 +158,14 @@ extern "C" {
       packet[i] ^= m_clientkey.key[i % 32];
     }
     packet[1] = 0;
-    return TRUE;
+    return dgram.length;
   }
 
-  // Otherwise, we don't understand this LWO type.
-  return TRUE;
+  // Otherwise, the packet does not seem to be obfuscated.
+  return dgram.length;
 }
 
-- (NSData*) encrypt:(NSData*)dgram {
+- (void)send:(NSData*)dgram {
   const uint8_t* packet = (uint8_t *)dgram.bytes;
   uint8_t msg_type = packet[0];
 
@@ -189,7 +187,8 @@ extern "C" {
 
       default:
         // No encapsulation for these packets.
-        return dgram;
+        [super send:dgram];
+        return;
     }
 
     // Prepare a copy of the packet for encoding.
@@ -213,10 +212,8 @@ extern "C" {
 
     // Finalize byte 1.
     ctbytes[1] = ((m_serverkey.key[0] + len_mix) & 0x3f) | 0x40;
-    return ciphertext;
-  }
-
-  if (m_version == 1) {
+    [super send:ciphertext];
+  } else if (m_version == 1) {
     // LWO Version 1
     uint8_t prot_len = 0;
     switch (msg_type) {
@@ -239,8 +236,9 @@ extern "C" {
         break;
 
       default:
-        // LWO decapsulation is not supported for this msg type.
-        return dgram;
+        // No encapsulation for these packets.
+        [super send:dgram];
+        return;
     }
 
     // Obfuscate the protected region.
@@ -253,53 +251,10 @@ extern "C" {
     // Finalize byte 1.
     getentropy(&ctbytes[1], 1);
     ctbytes[1] |= 0x80;
-    return ciphertext;
-  }
-
-  // Otherwise - no LWO to perform.
-  return dgram;
-}
-
-- (int)connect {
-  return connect(m_sockfd, (struct sockaddr*)&m_destaddr, m_destaddr.ss_len);
-}
-
-- (void)shutdown {
-  shutdown(m_sockfd, SHUT_RDWR);
-}
-
-- (void)send:(NSData*)dgram {
-  NSData* lwo = [self encrypt:dgram];
-  send(m_sockfd, lwo.bytes, lwo.length, MSG_DONTWAIT);
-}
-
-- (int)recv:(NSMutableData*)dgram {
-  int rx = read(m_sockfd, dgram.mutableBytes, dgram.length);
-  if (rx <= 0) {
-    return rx;
-  }
-  dgram.length = rx;
-
-  if (rx < WG_MSG_LEN_MIN) {
-    // Packet appears to be truncated.
-    errno = EAGAIN;
-    return -1;
-  }
-
-  if (![self decrypt:dgram]) {
-    // Decryption failed
-    errno = EAGAIN;
-    return -1;
-  }
-
-  return dgram.length;
-}
-
-- (NSUInteger)overhead {
-  if (m_destaddr.ss_family == AF_INET6) {
-    return sizeof(struct udphdr) + sizeof(struct ip6_hdr);
+    [super send:ciphertext];
   } else {
-    return sizeof(struct udphdr) + sizeof(struct ipovly);
+    // Otherwise - no LWO to perform.
+    [super send:dgram];
   }
 }
 
