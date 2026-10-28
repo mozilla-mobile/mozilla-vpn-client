@@ -38,6 +38,7 @@ class WindowsDaemon final : public Daemon {
   std::unique_ptr<WireguardUtilsWindows> m_wgutils;
   DnsUtilsWindows* m_dnsutils = nullptr;
   std::unique_ptr<WindowsSplitTunnel> m_splitTunnelManager;
+  bool m_splitTunnelConflict = false;
   QPointer<WindowsFirewall> m_firewallManager;
 };
 

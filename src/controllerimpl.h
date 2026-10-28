@@ -76,7 +76,9 @@ class ControllerImpl : public QObject {
   virtual bool multihopSupported() { return false; }
 
   // Whether the controller supports split tunneling
-  virtual bool splitTunnelSupported() const { return false; }
+  virtual Controller::SplitTunnelSupport splitTunnelSupport() const {
+    return Controller::SplitTunnelUnsupported;
+  }
 
   // Whether the controller supports obfuscation methods other than port 53
   virtual bool obfuscationSupported() const { return true; }
