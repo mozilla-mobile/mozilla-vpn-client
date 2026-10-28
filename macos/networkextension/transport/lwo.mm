@@ -7,7 +7,7 @@
 #include <sys/random.h>
 #include <sys/socket.h>
 
-#import "wireguardconfig.h"
+#import "wgconfig.h"
 
 extern "C" {
 #include "wireguard_ffi.h"
@@ -22,7 +22,7 @@ extern "C" {
   struct x25519_key       m_clientkey;
 }
 
-- (id) initWithOptions:(WireguardConfig*) options {
+- (id) initWithOptions:(WgConfig*) options {
   self = [super init];
 
   NSUInteger b64opts = NSDataBase64DecodingIgnoreUnknownCharacters;

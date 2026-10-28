@@ -14,8 +14,8 @@
 
 #include "logger.h"
 #include "macosutils.h"
-#include "wireguardconfig.h"
-#include "wireguardstatus.h"
+#include "wgconfig.h"
+#include "wgstatus.h"
 
 // An extension loader - used to forward Obj-C messages back to Qt.
 @interface MacOSExtensionDelegate : NSObject <OSSystemExtensionRequestDelegate, OSSystemExtensionsWorkspaceObserver>
@@ -258,7 +258,7 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
   m_serverPublicKey = config.m_serverPublicKey;
 
   // Serialize the interface configuration.
-  WireguardConfig* options = [WireguardConfig new];
+  WgConfig* options = [WgConfig new];
   options.privateKey = config.m_privateKey.toNSString();
   options.deviceIpv4Addr = encodeAddress(config.m_deviceIpv4Address);
   options.deviceIpv6Addr = encodeAddress(config.m_deviceIpv6Address);
@@ -390,7 +390,7 @@ void MacOSExtensionController::checkStatus() {
       return;
     }
 
-    WireguardStatus* wgStats = [[WireguardStatus new] initWithCoder:archive];
+    WgStatus* wgStats = [[WgStatus new] initWithCoder:archive];
     ControllerStatus st;
     if (!wgStats) {
       emit statusUpdated(st);

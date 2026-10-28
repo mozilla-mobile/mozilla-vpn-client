@@ -23,7 +23,7 @@ enum ObfuscationMethod {
     kObfuscationShadowsocks
 };
 
-@interface WireguardConfig : NSObject
+@interface WgConfig : NSObject
 
 - (id)initFromDict:(NSDictionary<NSString*, id>*)dict;
 - (void)encodeWithDict:(NSMutableDictionary<NSString*,id> *)dict;

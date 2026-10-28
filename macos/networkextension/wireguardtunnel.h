@@ -6,13 +6,13 @@
 #import <Network/Network.h>
 #import <NetworkExtension/NetworkExtension.h>
 
-#import "wireguardconfig.h"
 #import "wireguardpeer.h"
-#import "wireguardstatus.h"
+#import "wgconfig.h"
+#import "wgstatus.h"
 
 @interface WireguardTunnel : NSObject
 
-- (void)startTunnelWithOptions:(WireguardConfig*)options
+- (void)startTunnelWithOptions:(WgConfig*)options
              completionHandler:(void (^)(NSError* error))completionHandler;
 
 - (void)stopTunnelWithReason:(NEProviderStopReason)reason
@@ -30,7 +30,7 @@
 @property(nonatomic) NSUInteger mtu;
 @property(strong) WireguardPeer* peer;
 @property(readonly, getter=getTunfd) int tunfd;
-@property(strong, readonly, getter=getStatus) WireguardStatus* status;
+@property(strong, readonly, getter=getStatus) WgStatus* status;
 @property(strong) nw_endpoint_t ipv4address;
 @property(strong) nw_endpoint_t ipv6address;
 @property(strong) nw_interface_t virtualInterface;
