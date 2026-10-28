@@ -11,4 +11,6 @@
 
 - (id)initWithEndpoint:(nw_endpoint_t)dest;
 
+@property(readonly) int sockfd;
+
 @end
