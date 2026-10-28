@@ -271,7 +271,12 @@ describe('Addons', function() {
             // re-auth can take well over a minute). Writing the setting
             // directly synchronously reloads SubscriptionData and re-runs the
             // addon condition, so there's no async network fetch to race.
-            const createdAtMs = createdAtTimestamp();
+            const createdAtBase = new Date(createdAtTimestamp());
+            const currentHour =
+                new Date(Date.now())
+                    .getHours();  // hack because of daylight savings - ensure
+                                  // the `time` cases work
+            const createdAtMs = createdAtBase.setHours(currentHour).valueOf();
             const mockDetails = JSON.parse(JSON.stringify(SubscriptionDetails));
             mockDetails.subscription._subscription_type = 'web';
             mockDetails.subscription.created =
