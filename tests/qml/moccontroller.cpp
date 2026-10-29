@@ -86,3 +86,5 @@ void Controller::startKeyRegeneration() {}
 bool Controller::shouldSuppressNextNotification() { return false; }
 
 bool Controller::splitTunnelSupported() const { return true; }
+
+bool Controller::obfuscationSupported() const { return true; }
