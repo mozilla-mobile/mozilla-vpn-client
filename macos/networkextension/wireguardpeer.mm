@@ -108,10 +108,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   free(addrstr);
 #endif
 
-  if ([self.transport connect] < 0) {
-    completionHandler(vpnPosixError(errno, @"socket connect failed"));
-    return;
-  }
+  m_completionHandler = completionHandler;
 
   // Configure routes into the tunnel interface.
   m_routes = [NSArray arrayWithArray:options.routes];
@@ -125,15 +122,21 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
                                  wgTimerCallback, &timerContext);
   CFRunLoopAddTimer(CFRunLoopGetMain(), m_timer, kCFRunLoopDefaultMode);
 
-  // Force an initial handshake.
-  [self renegotiate:completionHandler];
-
   // Start the socket worker
   [m_worker start];
 }
 
 - (void) socketWorker:(id)arg {
   NSLog(@"socket worker started");
+
+  if ([self.transport connect] < 0) {
+    m_completionHandler(vpnPosixError(errno, @"socket connect failed"));
+    m_completionHandler = nil;
+    return;
+  }
+
+  // Once the socket is connected, start an initial handshake.
+  [self renegotiate:nil];
 
   NSThread* thread = [NSThread currentThread];
   while (!thread.cancelled) {
@@ -218,7 +221,9 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   // Set a timeout for the handshake to finish.
   clock_gettime(CLOCK_MONOTONIC, &m_handshakeTimeout);
   m_handshakeTimeout.tv_sec += WG_MAX_HANDSHAKE_TIMEOUT;
-  m_completionHandler = completionHandler;
+  if (completionHandler) {
+    m_completionHandler = completionHandler;
+  }
 
   [self handleWireguard:result withBuffer:handshake];
 }
