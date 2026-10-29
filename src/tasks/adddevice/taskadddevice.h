@@ -7,35 +7,39 @@
 
 #include <QObject>
 
+#include "errorhandler.h"
 #include "models/apierror.h"
-#include "models/devicemodel.h"
+#include "models/device.h"
 #include "task.h"
 
 class TaskAddDevice final : public Task {
+  Q_OBJECT
   Q_DISABLE_COPY_MOVE(TaskAddDevice)
 
  public:
-  TaskAddDevice(const QString& deviceName, const QString& deviceID);
-  TaskAddDevice(const QString& deviceName, const QString& deviceID, bool shared,
-                const QString& token);
+  TaskAddDevice(const QString& deviceName, const QString& deviceID,
+                ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy =
+                    ErrorHandler::PropagateError,
+                const QString& token = QString());
   ~TaskAddDevice();
 
   void run() override;
 
   DeletePolicy deletePolicy() const override { return NonDeletable; }
-  const QString& publicKey() const { return m_publicKey; }
-  QString privateKey() const { return QString(m_privateKey); }
   const ApiError& error() const { return m_apiError; }
   const Device& device() const { return m_device; }
+
+ signals:
+  void deviceAdded(const QString& deviceName, const QString& publicKey,
+                   const QString& privateKey);
 
  private:
   QString m_deviceName;
   QString m_deviceID;
-  Device m_device;
-  QString m_publicKey;
-  QByteArray m_privateKey;
-  bool m_shared = false;
+  ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+      ErrorHandler::PropagateError;
   QString m_token;
+  Device m_device;
   ApiError m_apiError;
 };
 

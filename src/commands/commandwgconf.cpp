@@ -27,7 +27,6 @@
 #include "models/servercountrymodel.h"
 #include "models/serverdata.h"
 #include "mozillavpn.h"
-#include "networkrequest.h"
 #include "task.h"
 #include "tasks/adddevice/taskadddevice.h"
 #include "tasks/authenticate/taskauthenticate.h"
@@ -38,7 +37,7 @@ namespace {
 // empty string in case of failure. The login URL is printed on the console, and
 // the code is read from stdin.
 
-QString authenticate() {
+const QString authenticate() {
   TaskAuthenticate task(
       AuthenticationListener::AuthenticationInBrowserHeadless);
 
@@ -72,7 +71,6 @@ QString authenticate() {
 
   return token;
 }
-
 }  // anonymous namespace
 
 CommandWgConf::CommandWgConf(QObject* parent)
@@ -91,10 +89,10 @@ int CommandWgConf::run(QStringList& tokens) {
       "m", "mullvad-multihop", "Generate config for Mullvad multihop.");
   CommandLineParser::Option wireguardMultihop(
       "w", "wireguard-multihop", "Generate config for Wireguard multihop.");
-  CommandLineParser::Option createSharedDevice(
-      "s", "shared-device",
-      "Register a shared device and generate its config. It requires a new "
-      "authentication, new keys will be generated and printed only once.");
+  CommandLineParser::Option useCurrentDevice(
+      "c", "current-device",
+      "Generate the config for the device used by this client, instead of "
+      "registering a new one.");
   CommandLineParser::Option testingOption("t", "testing",
                                           "Run in testing mode.");
 
@@ -103,7 +101,7 @@ int CommandWgConf::run(QStringList& tokens) {
   options.append(&mullvadMultihop);
   options.append(&wireguardMultihop);
   options.append(&testingOption);
-  options.append(&createSharedDevice);
+  options.append(&useCurrentDevice);
 
   CommandLineParser clp;
   if (clp.parse(tokens, options, false)) {
@@ -127,11 +125,10 @@ int CommandWgConf::run(QStringList& tokens) {
     return 1;
   }
 
-  if (tokens.length() > 1 || (!tokens.isEmpty() && !createSharedDevice.m_set)) {
+  if (tokens.length() > 1 || (!tokens.isEmpty() && useCurrentDevice.m_set)) {
     stream << "usage: " << appName << " [options] [<device_name>]" << Qt::endl;
     stream << Qt::endl;
-    stream << "<device_name> can be used with --shared-device only."
-           << Qt::endl;
+    stream << "<device_name> cannot be used with --current-device." << Qt::endl;
     return 1;
   }
 
@@ -166,51 +163,56 @@ int CommandWgConf::run(QStringList& tokens) {
     QString deviceIpv6Address;
     QString newDeviceComment;
 
-    DeviceModel* dm = vpn.deviceModel();
-    Q_ASSERT(dm);
-    if (!dm->hasCurrentDevice(vpn.keys())) {
-      stream << "Device is not registered" << Qt::endl;
-      return 1;
-    }
-
-    if (createSharedDevice.m_set) {
+    if (!useCurrentDevice.m_set) {
+      // By default a new device is registered. It requires a new
+      // authentication, and its keys are printed only once.
       QString deviceName =
-          tokens.isEmpty()
-              ? QString("%1 (wgconf)").arg(Device::currentDeviceName())
-              : tokens[0];
+          tokens.isEmpty() ? QString("wgconf-%1")
+                                 .arg(QRandomGenerator::system()->generate(), 8,
+                                      16, QChar('0'))
+                           : tokens[0];
 
       QString token = authenticate();
       if (token.isEmpty()) {
         stream << "Authentication failed" << Qt::endl;
         return 1;
       }
-      QString errorMessage;
+      bool deviceAdded = false;
 
       QEventLoop loop;
-      TaskAddDevice deviceTask(deviceName, QString(), true, token);
+      TaskAddDevice deviceTask(deviceName, QString(),
+                               ErrorHandler::DoNotPropagateError, token);
+      QObject::connect(
+          &deviceTask, &TaskAddDevice::deviceAdded, &deviceTask,
+          [&](const QString&, const QString&, const QString& privateKey) {
+            devicePrivateKey = privateKey;
+            deviceAdded = true;
+          });
       QObject::connect(&deviceTask, &Task::completed, &deviceTask,
                        [&] { loop.exit(); });
       deviceTask.run();
       loop.exec();
 
-      if (deviceTask.error().errnum() != ApiError::NoError) {
-        stream << "Failed to add the device: " << deviceTask.error().message()
-               << Qt::endl;
+      if (!deviceAdded) {
+        stream << "Failed to add the device";
+        if (deviceTask.error().errnum() != ApiError::NoError) {
+          stream << ": " << deviceTask.error().message();
+        }
+        stream << Qt::endl;
         return 1;
       }
 
-      devicePrivateKey = deviceTask.privateKey();
       deviceIpv4Address = deviceTask.device().ipv4Address();
       deviceIpv6Address = deviceTask.device().ipv6Address();
-
-      newDeviceComment =
-          QString(
-              "# A new device has been registered: %1\n"
-              "# Neither the device nor its keys are stored by this client.\n"
-              "# Public key: %2\n"
-              "# Private key: %3\n\n")
-              .arg(deviceName, deviceTask.publicKey(), devicePrivateKey);
+      newDeviceComment = QString("# New device: %1\n\n").arg(deviceName);
     } else {
+      DeviceModel* dm = vpn.deviceModel();
+      Q_ASSERT(dm);
+      if (!dm->hasCurrentDevice(vpn.keys())) {
+        stream << "Device is not registered" << Qt::endl;
+        return 1;
+      }
+
       const Device* cd = dm->currentDevice(vpn.keys());
 
       devicePrivateKey = vpn.keys()->privateKey();
