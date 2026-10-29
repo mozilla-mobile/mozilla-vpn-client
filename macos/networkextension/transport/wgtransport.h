@@ -27,20 +27,19 @@ constexpr const size_t WG_MSG_LEN_DATA_HEADER = 16;
 // cannot be sent immediately, it should be dropped.
 - (void)send:(NSData*)dgram;
 
-// Receive a datagram from the transport and copy it into a pre-allocated
-// buffer. This call is permitted to block until a datagram is received.
+// Receive a datagram from the transport. This call is permitted to block
+// until a datagram is received.
 //
-// Returns <0 if an error occurred and will set errno accordingly.
-// Returns 0 if the transport has closed gracefully.
-// Otherwise returns the number of bytes received.
+// Returns nil if an error occurred and will set errno accordingly.
 //
 // Non fatal errors may include:
 //    EAGAIN - No packet was ready, or the packet was silently dropped.
 //    EINTR - Packet reception was interrupted by a signal.
+//    ESHUTDOWN - socket has shutdown.
 //
 // All other errors are considered fatal, and should result in a closure of the
 // wireguard session.
-- (int)recv:(NSMutableData*)dgram;
+- (NSMutableData*)recv;
 
 // Terminate the transport, closing sockets and reparing for garbage collection.
 // If there is a recv() call in progress, it must terminate with return code of

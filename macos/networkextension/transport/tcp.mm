@@ -194,28 +194,28 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
   [m_condition unlock];
 }
 
-- (int)recv:(NSMutableData*)dgram {
+- (NSMutableData*)recv {
   if (!m_rxbuf) {
     // Peek the length and start a new packet reception.
     uint8_t header[STREAM_HEADER_SIZE];
     int rx = recv(m_socket, header, sizeof(header), MSG_PEEK);
     if (rx <= 0) {
-      return rx;
+      if (rx == 0) {
+        errno = ESHUTDOWN;
+      }
+      return nil;
     }
     if (rx < sizeof(header)) {
       errno = EAGAIN;
-      return -1;
+      return nil;
     }
 
     // Read and discard the header, it would be an error to fail after
     // a successful peek though.
     int drop = recv(m_socket, header, sizeof(header), MSG_DONTWAIT);
-    if (drop <= 0) {
-      return drop;
-    }
     if (drop < sizeof(header)) {
       errno = EPROTO;
-      return -1;
+      return nil;
     }
 
     // Allocate a buffer for the packet reception.
@@ -223,7 +223,7 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
     if (!rxlen) {
       // Empty packet.
       errno = EAGAIN;
-      return -1;
+      return nil;
     }
     m_rxbuf = [NSMutableData dataWithLength:rxlen];
     m_rxoff = 0;
@@ -231,21 +231,23 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
 
   // Receive the packet body.
   while (m_rxoff < m_rxbuf.length) {
-    size_t remainder = m_rxbuf.length - m_rxoff;
     uint8_t* ptr = (uint8_t*)m_rxbuf.mutableBytes + m_rxoff;
-
-    int rx = recv(m_socket, ptr, remainder, 0);
-    if (rx <= 0) {
-      return rx;
+    int rx = recv(m_socket, ptr, m_rxbuf.length - m_rxoff, 0);
+    if (rx > 0) {
+      m_rxoff += rx;
+      continue;
     }
-    m_rxoff += rx;
+    if (rx == 0) {
+      errno = ESHUTDOWN;
+    }
+    return nil;
   }
 
   // Return the packet to the caller.
-  [dgram setData:m_rxbuf];
+  NSMutableData* dgram = m_rxbuf;
   m_rxbuf = nil;
   m_rxoff = 0;
-  return dgram.length;
+  return dgram;
 }
 
 - (NSUInteger)overhead {

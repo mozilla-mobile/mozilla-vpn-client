@@ -20,9 +20,6 @@ extern "C" {
 #include "wireguard_ffi.h"
 };
 
-constexpr const int64_t PEER_WORKQUEUE_TIMEOUT = 30;
-constexpr const size_t PEER_DATAGRAM_BUFSIZE = 4096;
-
 @implementation WireguardPeer {
   // The wireguard tunnel provided by boringtun.
   struct wireguard_tunnel*  m_wireguard;
@@ -140,35 +137,31 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 
   NSThread* thread = [NSThread currentThread];
   while (!thread.cancelled) {
-    NSMutableData* dgram = [NSMutableData dataWithLength:PEER_DATAGRAM_BUFSIZE];
-    int rx = [self.transport recv:dgram];
-    if (rx == 0) {
-      // Socket has closed.
-      NSLog(@"socket closed");
-      return;
-    }
-    if (rx < 0) {
-      // Socket error occurred.
+    NSMutableData* dgram = [self.transport recv];
+    if (!dgram) {
       if (errno == EINTR) continue;
       if (errno == EAGAIN) continue;
-      NSLog(@"socket error: %s", strerror(errno));
+      if (errno == ESHUTDOWN) {
+        NSLog(@"socket closed");
+      } else {
+        NSLog(@"socket error: %s", strerror(errno));
+      }
       return;
     }
-    if (rx < WG_MSG_LEN_MIN) {
+    if (dgram.length < WG_MSG_LEN_MIN) {
       // Packet truncated.
       continue;
     }
 
-    const uint8_t* packet = (const uint8_t *)dgram.bytes;
-    uint8_t plaintext[PEER_DATAGRAM_BUFSIZE];
-    struct wireguard_result result;
-    result = wireguard_read(m_wireguard, packet, dgram.length, plaintext,
-                            PEER_DATAGRAM_BUFSIZE);
+    const uint8_t* ciphertext = (const uint8_t *)dgram.bytes;
+    uint8_t plaintext[dgram.length];
+    struct wireguard_result result =
+        wireguard_read(m_wireguard, ciphertext, dgram.length, plaintext, dgram.length);
     [self handleWireguard:result withBuffer:plaintext];
 
     // After processing a handshake response, update the lastHandshake time
     // if it looks and smells like the handshake was successful.
-    if (packet[0] == WG_MSG_TYPE_HANDSHAKE_RESP) {
+    if (ciphertext[0] == WG_MSG_TYPE_HANDSHAKE_RESP) {
       struct stats wgStats = wireguard_stats(m_wireguard);
       if (wgStats.time_since_last_handshake < 0) {
         memset(&m_lastHandshake, 0, sizeof(m_lastHandshake));
