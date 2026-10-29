@@ -80,6 +80,7 @@ qt_add_qml_module(mozillavpn-ui
         screens/ScreenViewLogs.qml
         screens/settings/appPermissions/ViewAppPermissions.qml
         screens/settings/appPermissions/AppPermissionsList.qml
+        screens/settings/appPermissions/ViewAppPermissionsDisabled.qml
         screens/settings/ViewAboutUs.qml
         screens/settings/ViewAppearance.qml
         screens/settings/ViewDNSSettings.qml

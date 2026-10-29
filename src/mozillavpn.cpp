@@ -2221,6 +2221,29 @@ void MozillaVPN::registerInspectorCommands() {
 #endif
 
   InspectorHandler::registerCommand(
+      "force_split_tunnel_support",
+      "Force the split tunnel support. Available values are: "
+      "unsupported, supported, conflict, error",
+      1, [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        static const QMap<QByteArray, Controller::SplitTunnelSupport> values{
+            {"unsupported", Controller::SplitTunnelUnsupported},
+            {"supported", Controller::SplitTunnelSupported},
+            {"conflict", Controller::SplitTunnelDisabledConflict},
+            {"error", Controller::SplitTunnelDisabledError},
+        };
+
+        QJsonObject obj;
+        Controller* controller = MozillaVPN::instance()->controller();
+        if (values.contains(arguments[1])) {
+          controller->forceSplitTunnelSupport(values.value(arguments[1]));
+        } else {
+          obj["error"] = QString(
+              "Please enter unsupported, supported, conflict or error.");
+        }
+        return obj;
+      });
+
+  InspectorHandler::registerCommand(
       "deeplink", "Send a deep link to the VPN client", 1,
       [](InspectorHandler*, const QList<QByteArray>& arguments) {
         QUrl url = QUrl(QString::fromUtf8(arguments[1]));

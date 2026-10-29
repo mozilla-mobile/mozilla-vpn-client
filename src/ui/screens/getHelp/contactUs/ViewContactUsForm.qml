@@ -15,6 +15,9 @@ MZViewBase {
     id: vpnFlickable
 
     objectName: "contactUs"
+    // The form can be pushed on any StackView (Get help, Settings), so don't
+    // assume which one.
+    readonly property var _stackView: StackView.view
     _menuTitle: MZI18n.InAppSupportWorkflowSupportNavLinkText
     _viewContentData: ColumnLayout {
        property string _emailAddress: ""
@@ -23,7 +26,7 @@ MZViewBase {
        id: contactUsRoot
 
        function createSupportTicket(email, subject, issueText, category, shareLogs) {
-           getHelpStackView.push("qrc:/nebula/components/MZLoader.qml", {
+           vpnFlickable._stackView.push("qrc:/nebula/components/MZLoader.qml", {
                footerLinkIsVisible: false
            });
            VPN.createSupportTicket(email, subject, issueText, category, shareLogs);
@@ -33,21 +36,21 @@ MZViewBase {
            target: VPN
            function onTicketCreationAnswer(successful) {
                if(successful) {
-                   getHelpStackView.replace("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/contactUs/ViewContactUsThankYou.qml", {_emailAddress: contactUsRoot._emailAddress}, StackView.Immediate);
+                   vpnFlickable._stackView.replace("qrc:/qt/qml/Mozilla/VPN/screens/getHelp/contactUs/ViewContactUsThankYou.qml", {_emailAddress: contactUsRoot._emailAddress}, StackView.Immediate);
                } else {
                    // TODO: Navigator.GetTheThing
-                   getHelpStackView.replace("qrc:/qt/qml/Mozilla/VPN/sharedViews/ViewErrorFullScreen.qml", {
+                   vpnFlickable._stackView.replace("qrc:/qt/qml/Mozilla/VPN/sharedViews/ViewErrorFullScreen.qml", {
                        headlineText: MZI18n.InAppSupportWorkflowSupportErrorHeader,
                        errorMessage: MZI18n.InAppSupportWorkflowSupportErrorText,
                        primaryButtonText: MZI18n.InAppSupportWorkflowSupportErrorButton,
-                       primaryButtonOnClick: () => getHelpStackView.pop(),
+                       primaryButtonOnClick: () => vpnFlickable._stackView.pop(),
                        primaryButtonObjectName: "errorTryAgainButton",
                        secondaryButtonIsSignOff: false,
                        secondaryButtonText: MZI18n.InAppSupportWorkflowSupportErrorBrowserButton,
                        secondaryButtonObjectName: "errorFxALinkButton",
                        secondaryButtonOnClick: () => {
                                MZUrlOpener.openUrlLabel("sumo");
-                               getHelpStackView.pop();
+                               vpnFlickable._stackView.pop();
                            },
                        }
                    );
@@ -207,7 +210,7 @@ MZViewBase {
                     Layout.minimumHeight: MZTheme.theme.rowHeight
                     Layout.preferredWidth: width
                     Layout.alignment: Qt.AlignHCenter
-                    onClicked: getHelpStackView.pop()
+                    onClicked: vpnFlickable._stackView.pop()
                 }
             }
         }

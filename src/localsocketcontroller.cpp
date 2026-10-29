@@ -232,7 +232,15 @@ void LocalSocketController::parseCommand(const QByteArray& command) {
         features.append(i->toString());
       }
     }
-    m_splitTunnelSupported = features.contains("splitTunnel");
+    if (features.contains("splitTunnel")) {
+      m_splitTunnelSupport = Controller::SplitTunnelSupported;
+    } else if (features.contains("splitTunnelDisabled:conflict")) {
+      m_splitTunnelSupport = Controller::SplitTunnelDisabledConflict;
+    } else if (features.contains("splitTunnelDisabled:error")) {
+      m_splitTunnelSupport = Controller::SplitTunnelDisabledError;
+    } else {
+      m_splitTunnelSupport = Controller::SplitTunnelUnsupported;
+    }
 
     if (m_daemonState == eInitializing) {
       m_daemonState = eReady;
