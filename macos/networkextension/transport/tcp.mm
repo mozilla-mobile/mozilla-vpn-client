@@ -50,9 +50,10 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
     return nil;
   }
 
-  // Attempt to minimize TCP queueing.
+  // Attempt to minimize TCP queueing and disable signal generation.
   int enable = 1;
   setsockopt(m_socket, IPPROTO_TCP, TCP_NODELAY, &enable, sizeof(enable));
+  setsockopt(m_socket, SOL_SOCKET, SO_NOSIGPIPE, &enable, sizeof(enable));
 
   m_condition = [NSCondition new];
   m_worker = [[NSThread alloc] initWithTarget:self
