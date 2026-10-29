@@ -5,11 +5,11 @@
 #ifndef TASKADDDEVICE_H
 #define TASKADDDEVICE_H
 
+#include <QJsonObject>
 #include <QObject>
 
 #include "errorhandler.h"
 #include "models/apierror.h"
-#include "models/device.h"
 #include "task.h"
 
 class TaskAddDevice final : public Task {
@@ -27,11 +27,10 @@ class TaskAddDevice final : public Task {
 
   DeletePolicy deletePolicy() const override { return NonDeletable; }
   const ApiError& error() const { return m_apiError; }
-  const Device& device() const { return m_device; }
 
  signals:
   void deviceAdded(const QString& deviceName, const QString& publicKey,
-                   const QString& privateKey);
+                   const QString& privateKey, const QJsonObject& response);
 
  private:
   QString m_deviceName;
@@ -39,7 +38,6 @@ class TaskAddDevice final : public Task {
   ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
       ErrorHandler::PropagateError;
   QString m_token;
-  Device m_device;
   ApiError m_apiError;
 };
 

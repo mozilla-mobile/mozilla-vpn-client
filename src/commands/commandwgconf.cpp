@@ -21,6 +21,7 @@
 #include "leakdetector.h"
 #include "loghandler.h"
 #include "models/apierror.h"
+#include "models/device.h"
 #include "models/devicemodel.h"
 #include "models/keys.h"
 #include "models/server.h"
@@ -178,15 +179,19 @@ int CommandWgConf::run(QStringList& tokens) {
         return 1;
       }
       bool deviceAdded = false;
+      Device device;
+      bool deviceParsed = false;
 
       QEventLoop loop;
       TaskAddDevice deviceTask(deviceName, QString(),
                                ErrorHandler::DoNotPropagateError, token);
       QObject::connect(
           &deviceTask, &TaskAddDevice::deviceAdded, &deviceTask,
-          [&](const QString&, const QString&, const QString& privateKey) {
+          [&](const QString&, const QString&, const QString& privateKey,
+              const QJsonObject& response) {
             devicePrivateKey = privateKey;
             deviceAdded = true;
+            deviceParsed = device.fromJson(response);
           });
       QObject::connect(&deviceTask, &Task::completed, &deviceTask,
                        [&] { loop.exit(); });
@@ -202,8 +207,13 @@ int CommandWgConf::run(QStringList& tokens) {
         return 1;
       }
 
-      deviceIpv4Address = deviceTask.device().ipv4Address();
-      deviceIpv6Address = deviceTask.device().ipv6Address();
+      if (!deviceParsed) {
+        stream << "Invalid response from the server" << Qt::endl;
+        return 1;
+      }
+
+      deviceIpv4Address = device.ipv4Address();
+      deviceIpv6Address = device.ipv6Address();
       newDeviceComment = QString("# New device: %1\n\n").arg(deviceName);
     } else {
       DeviceModel* dm = vpn.deviceModel();

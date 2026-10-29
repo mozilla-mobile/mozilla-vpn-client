@@ -85,9 +85,8 @@ void TaskAddDevice::run() {
   connect(request, &NetworkRequest::requestCompleted, this,
           [this, publicKey, privateKey](const QByteArray& data) {
             logger.debug() << "Device added";
-            // A malformed response is ignored: the device is added anyway.
-            (void)m_device.fromJson(QJsonDocument::fromJson(data).object());
-            emit deviceAdded(m_deviceName, publicKey, privateKey);
+            emit deviceAdded(m_deviceName, publicKey, privateKey,
+                             QJsonDocument::fromJson(data).object());
             emit completed();
           });
 }
