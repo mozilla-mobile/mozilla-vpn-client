@@ -83,8 +83,9 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 }
 
 - (void) dealloc {
+#ifdef MZ_DEBUG
   NSLog(@"wireguard peer dealloc");
-
+#endif
   if (m_wireguard) {
     tunnel_free(m_wireguard);
   }

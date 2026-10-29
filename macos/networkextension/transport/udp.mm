@@ -34,7 +34,6 @@ constexpr const size_t PEER_DATAGRAM_BUFSIZE = 4096;
 }
 
 - (void) dealloc {
-  NSLog(@"udp dealloc");
   close(self.sockfd);
 #if !__has_feature(objc_arc)
   [super dealloc];
