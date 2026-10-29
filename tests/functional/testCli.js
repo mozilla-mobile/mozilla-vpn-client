@@ -5,6 +5,7 @@
 const assert = require('assert');
 const {spawn} = require('child_process');
 const guardian = require('./servers/guardian.js');
+const guardianEndpoints = require('./servers/guardian_endpoints.js');
 const fxaServer = require('./servers/fxa.js');
 const addonServer = require('./servers/addon.js');
 const helper = require('./helper.js');
@@ -66,6 +67,7 @@ describe('CLI Tests', function() {
   afterEach(async function() {
     // Logout after each test to reset vpn
     await execCli(['logout', '-t']);
+    guardian.overrideEndpoints = null;
     // If a test failed dump stdout and stderr for debugging
     if (!this.currentTest.state || this.currentTest.state === 'failed') {
       console.log('::group::Stdout Logs');
@@ -318,7 +320,7 @@ describe('CLI Tests', function() {
 
       // Get wgconf output and check the selected server is included in the
       // config by checking the comment
-      const wgconf = await execCli(['wgconf', '-t']);
+      const wgconf = await execCli(['wgconf', '-t', '-c']);
       assert(wgconf.code === 0, 'Should exit successfully');
       assert(wgconf.stdout.includes('[Peer]'), 'Should contain a Peer section');
       assert(
@@ -337,7 +339,7 @@ describe('CLI Tests', function() {
       // included in the config by checking the comments Check only one Peer is
       // present for the mullvad multihop config
       const wgconfMullvadMultihop =
-          await execCli(['wgconf', '-t', '--mullvad-multihop']);
+          await execCli(['wgconf', '-t', '-c', '--mullvad-multihop']);
       assert(wgconfMullvadMultihop.code === 0, 'Should exit successfully');
       assert(
           (wgconfMullvadMultihop.stdout.match(/\[Peer\]/g) || []).length == 1,
@@ -354,7 +356,7 @@ describe('CLI Tests', function() {
       // Check two Peers are present for the wireguard multihop config (one for
       // entry and one for exit server)
       const wgconfWireguardMultihop =
-          await execCli(['wgconf', '-t', '--wireguard-multihop']);
+          await execCli(['wgconf', '-t', '-c', '--wireguard-multihop']);
       assert(wgconfWireguardMultihop.code === 0, 'Should exit successfully');
       assert(
           (wgconfWireguardMultihop.stdout.match(/\[Peer\]/g) || []).length == 2,
@@ -367,6 +369,122 @@ describe('CLI Tests', function() {
           wgconfWireguardMultihop.stdout.includes(
               '# Exit Server: host-at-vie - Vienna (at)'),
           'Should show Vienna as exit server');
+    });
+  });
+
+  describe('Wgconf new device', () => {
+    // The new device is registered on top of the current one, so the mock
+    // returns it without touching the devices of the user.
+    function overrideAddDevice(onRequest) {
+      guardian.overrideEndpoints = {
+        GETs: {},
+        POSTs: {
+          '/api/v1/vpn/device': {
+            status: 201,
+            requiredHeaders: ['Authorization'],
+            bodyValidator: guardianEndpoints.validators.guardianDevice,
+            callback: onRequest,
+            body: {
+              name: 'wgconf device',
+              unique_id: '',
+              pubkey: 'the_pubkey',
+              ipv4_address: '10.64.0.42/32',
+              ipv6_address: 'fc00:bbbb:bbbb:bb01::42/128',
+              created_at: new Date().toISOString()
+            }
+          },
+        },
+        DELETEs: {},
+      };
+    }
+
+    function execWgconfNewDevice(args) {
+      return execCli(['wgconf', '-t', ...args], {
+        onStdout: (output, child) => {
+          if (output.includes('Enter the code:')) {
+            child.stdin.write('the_code\n');
+          }
+        }
+      });
+    }
+
+    it('Registers a new device by default', async () => {
+      await cliLogin();
+      const selectResult = await execCli(['select', '-t', 'host-be-bru']);
+      assert(selectResult.code === 0, 'Should exit successfully');
+
+      let deviceName = null;
+      overrideAddDevice(req => {
+        deviceName = req.body.name;
+      });
+
+      const wgconf = await execWgconfNewDevice([]);
+      assert(wgconf.code === 0, 'Should exit successfully');
+      assert(
+          /^wgconf-[0-9a-f]{8}$/.test(deviceName),
+          'Should register the device with a random name');
+      assert(
+          wgconf.stdout.includes(`# New device: ${deviceName}`),
+          'Should show the name of the new device');
+      const address = wgconf.stdout.match(/^Address\s*=\s*(.*)$/m);
+      assert(address, 'Should contain an Address');
+      assert(
+          address[1].includes('10.64.0.42/32'),
+          'Should use the address of the new device');
+      assert(
+          !address[1].includes('127.0.0.1'),
+          'Should not use the address of the current device');
+      assert(
+          wgconf.stdout.includes('# Exit Server: host-be-bru - Brussels (be)'),
+          'Should show Brussels as current server');
+    });
+
+    it('Registers a new device with the given name', async () => {
+      await cliLogin();
+
+      let deviceName = null;
+      overrideAddDevice(req => {
+        deviceName = req.body.name;
+      });
+
+      const wgconf = await execWgconfNewDevice(['my-router']);
+      assert(wgconf.code === 0, 'Should exit successfully');
+      assert(deviceName === 'my-router', 'Should use the given device name');
+      assert(
+          wgconf.stdout.includes('# New device: my-router'),
+          'Should show the name of the new device');
+    });
+
+    it('Fails when the device cannot be added', async () => {
+      await cliLogin();
+
+      guardian.overrideEndpoints = {
+        GETs: {},
+        POSTs: {
+          '/api/v1/vpn/device': {
+            status: 400,
+            requiredHeaders: ['Authorization'],
+            body: {code: 400, errno: 104, error: 'Key limit reached'}
+          },
+        },
+        DELETEs: {},
+      };
+
+      const wgconf = await execWgconfNewDevice([]);
+      assert(wgconf.code === 1, 'Should fail');
+      assert(
+          wgconf.stdout.includes('Failed to add the device'),
+          'Should report the failure');
+      assert(!wgconf.stdout.includes('[Peer]'), 'Should not print a config');
+    });
+
+    it('Does not accept a device name with --current-device', async () => {
+      const wgconf = await execCli(['wgconf', '-t', '-c', 'my-router']);
+      assert(wgconf.code === 1, 'Should fail');
+      assert(
+          wgconf.stdout.includes(
+              '<device_name> cannot be used with --current-device.'),
+          'Should show the usage');
     });
   });
 
