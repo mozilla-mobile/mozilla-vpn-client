@@ -10,7 +10,6 @@
 #include <netinet/tcp.h>
 
 constexpr const int STREAM_HEADER_SIZE = 2;
-constexpr const int DGRAM_MAX_SIZE = 4096;
 constexpr const int DGRAM_QUEUE_SIZE = 64;
 
 @implementation TcpTransport {
@@ -27,9 +26,8 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
   uint8_t         m_txnext;
   uint8_t         m_txcount;
 
-  uint8_t         m_rxbuf[DGRAM_MAX_SIZE];
+  NSMutableData*  m_rxbuf;
   size_t          m_rxoff;
-  size_t          m_rxlen;
 
   // A packet worker thread.
   NSCondition*    m_condition;
@@ -197,7 +195,7 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
 }
 
 - (int)recv:(NSMutableData*)dgram {
-  if (m_rxlen == 0) {
+  if (!m_rxbuf) {
     // Peek the length and start a new packet reception.
     uint8_t header[STREAM_HEADER_SIZE];
     int rx = recv(m_socket, header, sizeof(header), MSG_PEEK);
@@ -219,25 +217,22 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
       errno = EPROTO;
       return -1;
     }
-    m_rxoff = 0;
-    m_rxlen = (header[0] << 8) + header[1];
-    if (!m_rxlen) {
+
+    // Allocate a buffer for the packet reception.
+    uint16_t rxlen = (header[0] << 8) + header[1];
+    if (!rxlen) {
       // Empty packet.
       errno = EAGAIN;
       return -1;
     }
+    m_rxbuf = [NSMutableData dataWithLength:rxlen];
+    m_rxoff = 0;
   }
 
   // Receive the packet body.
-  while (m_rxoff < m_rxlen) {
-    size_t remainder = m_rxlen - m_rxoff;
-    uint8_t* ptr = m_rxbuf;
-
-    if (m_rxlen <= sizeof(m_rxbuf)) {
-      ptr += m_rxoff;
-    } else if (remainder > sizeof(m_rxbuf)) {
-      remainder = sizeof(m_rxbuf);
-    }
+  while (m_rxoff < m_rxbuf.length) {
+    size_t remainder = m_rxbuf.length - m_rxoff;
+    uint8_t* ptr = (uint8_t*)m_rxbuf.mutableBytes + m_rxoff;
 
     int rx = recv(m_socket, ptr, remainder, 0);
     if (rx <= 0) {
@@ -246,18 +241,9 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
     m_rxoff += rx;
   }
 
-  if (m_rxlen > sizeof(m_rxbuf)) {
-    // Packet overflow - discard the buffer contents.
-    m_rxoff = 0;
-    m_rxlen = 0;
-    errno = EAGAIN;
-    return -1;
-  }
-
   // Return the packet to the caller.
-  memcpy(dgram.mutableBytes, m_rxbuf, m_rxlen);
-  dgram.length = m_rxlen;
-  m_rxlen = 0;
+  [dgram setData:m_rxbuf];
+  m_rxbuf = nil;
   m_rxoff = 0;
   return dgram.length;
 }
