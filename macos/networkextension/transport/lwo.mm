@@ -55,16 +55,16 @@ extern "C" {
   return self;
 }
 
-- (int)recv:(NSMutableData*)dgram {
+- (NSMutableData*)recv {
   // Receive a packet from the UDP transport.
-  int rx = [super recv:dgram];
-  if (rx <= 0) {
-    return rx;
+  NSMutableData *dgram = [super recv];
+  if (!dgram) {
+    return nil;
   }
-  if (rx < WG_MSG_LEN_MIN) {
+  if (dgram.length < WG_MSG_LEN_MIN) {
     // Packet appears to be truncated.
     errno = EAGAIN;
-    return -1;
+    return nil;
   }
 
   // Check for LWO encryption, and decapsulate if required.
@@ -77,7 +77,7 @@ extern "C" {
     uint8_t marker = ((m_serverkey.key[0] + len_mix) & 0x3f) | 0x40;
     if (packet[1] != marker) {
       errno = EAGAIN;
-      return -1;
+      return nil;
     }
 
     // The protected area varies by packet type.
@@ -98,13 +98,13 @@ extern "C" {
       default:
         // LWO decapsulation is not supported for this msg type.
         errno = EAGAIN;
-        return -1;
+        return nil;
     }
 
     if (dgram.length < prot_len) {
       // Packet appears to be truncated.
       errno = EAGAIN;
-      return -1;
+      return nil;
     }
 
     // Decrypt the protected area.
@@ -116,17 +116,14 @@ extern "C" {
     // Verify that bytes 2-3 decoded as zero.
     if (packet[2] || packet[3]) {
       errno = EAGAIN;
-      return -1;
+      return nil;
     }
 
     // Trim padding from non-data packets.
     if ((msg_type != WG_MSG_TYPE_DATA) && (dgram.length > prot_len)) {
       dgram.length = prot_len;
     }
-    return dgram.length;
-  }
-
-  if (lwo_type & 0x80) {
+  } else if (lwo_type & 0x80) {
     // LWO Version 1.
     uint8_t msg_type = packet[0] ^ m_clientkey.key[0];
     uint8_t prot_len = 0;
@@ -152,7 +149,7 @@ extern "C" {
       default:
         // LWO decapsulation is not supported for this msg type.
         errno = EAGAIN;
-        return -1;
+        return nil;
     }
 
     // Decrypt the protected area.
@@ -160,11 +157,9 @@ extern "C" {
       packet[i] ^= m_clientkey.key[i % 32];
     }
     packet[1] = 0;
-    return dgram.length;
   }
 
-  // Otherwise, the packet does not seem to be obfuscated.
-  return dgram.length;
+  return dgram;
 }
 
 - (void)send:(NSData*)dgram {

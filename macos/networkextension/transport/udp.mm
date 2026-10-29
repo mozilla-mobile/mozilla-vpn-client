@@ -14,6 +14,8 @@
   struct sockaddr_storage m_destaddr;
 }
 
+constexpr const size_t PEER_DATAGRAM_BUFSIZE = 4096;
+
 - (id)initWithEndpoint:(nw_endpoint_t)ep {
   self = [super init];
 
@@ -51,12 +53,18 @@
   send(self.sockfd, dgram.bytes, dgram.length, MSG_DONTWAIT);
 }
 
-- (int)recv:(NSMutableData*)dgram {
+- (NSMutableData*)recv {
+  NSMutableData* dgram = [NSMutableData dataWithLength:PEER_DATAGRAM_BUFSIZE];
   int rx = read(self.sockfd, dgram.mutableBytes, dgram.length);
-  if (rx > 0) {
-    dgram.length = rx;
+  if (rx < 0) {
+    return nil;
   }
-  return rx;
+  if (rx == 0) {
+    errno = ESHUTDOWN;
+    return nil;
+  }
+  dgram.length = rx;
+  return dgram;
 }
 
 - (NSUInteger)overhead {
