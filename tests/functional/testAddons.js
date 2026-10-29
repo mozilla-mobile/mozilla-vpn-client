@@ -306,7 +306,7 @@ describe('Addons', function() {
                   queries.screenMessaging.messageItem(
                       'message_upgrade_to_annual_plan'),
                   'formattedDate');
-              // conditions.js sets timestamp of addon tocreatedAt + 14d, or
+              // conditions.js sets timestamp of addon to createdAt + 14d, or
               // createdAt + 87d if the subscription is 87+ days old.
               const DAY_MS = 24 * 60 * 60 * 1000;
               const addedTime = (Date.now() - createdAtMs) >= 87 * DAY_MS ?
