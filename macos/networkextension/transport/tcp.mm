@@ -63,7 +63,6 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
 }
 
 - (void) dealloc {
-  NSLog(@"tcp dealloc");
   [self shutdown];
   close(m_socket);
 #if !__has_feature(objc_arc)
