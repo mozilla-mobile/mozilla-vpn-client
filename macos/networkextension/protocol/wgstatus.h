@@ -4,7 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface WgStatus : NSObject<NSCoding>
+@interface WgStatus : NSObject <NSSecureCoding>
 
 @property(strong) NSDate* lastHandshake;
 @property(strong) NSString* ipv4address;

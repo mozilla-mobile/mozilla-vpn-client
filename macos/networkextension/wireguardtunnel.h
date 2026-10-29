@@ -6,9 +6,9 @@
 #import <Network/Network.h>
 #import <NetworkExtension/NetworkExtension.h>
 
-#import "wireguardpeer.h"
 #import "wgconfig.h"
 #import "wgstatus.h"
+#import "wireguardpeer.h"
 
 @interface WireguardTunnel : NSObject
 

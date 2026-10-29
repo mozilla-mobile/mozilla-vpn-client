@@ -273,7 +273,6 @@ inline constexpr ConstantFeature obfuscationUdpOverTcp = {
 extern const RuntimeFeature obfuscationUdpOverTcp;
 #endif
 
-
 inline const OverridableFeature replacerAddon = {
     .id = "replacerAddon",
     .name = "Replacer Addon",
