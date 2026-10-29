@@ -21,12 +21,12 @@ extern "C" struct wireguard_tunnel;
 
 @interface WireguardPeer : NSObject
 
-- (id)initWithOptions:(WgConfig*)options andTunnel:(WireguardTunnel*)tunnel;
+- (id)initWithOptions:(WgConfig*)options;
 
 - (void)startWithOptions:(WgConfig*)options
        completionHandler:(void (^)(NSError* error))completionHandler;
 
-- (void)stopWithReason:(NEProviderStopReason)reason completionHandler:(void (^)())completionHandler;
+- (void)stopWithReason:(NEProviderStopReason)reason;
 
 - (void)cancelWithError:(NSError*)error;
 
@@ -36,5 +36,5 @@ extern "C" struct wireguard_tunnel;
 
 @property(strong, readonly, getter=getStatus) WgStatus* status;
 @property(strong, readonly) NSObject<WgTransport>* transport;
-@property(weak, readonly) WireguardTunnel* tunnel;
+@property(assign) int tunfd;
 @end
