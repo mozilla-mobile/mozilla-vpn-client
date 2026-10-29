@@ -6,14 +6,7 @@
 #import <Network/Network.h>
 #import <NetworkExtension/NetworkExtension.h>
 
-@interface RoutePrefix : NSObject
-
-+ (id)parseRoute:(NSString*)routeString;
-
-@property(readonly, getter=getDestination) const struct sockaddr* destination;
-@property(readonly, getter=getString) NSString* string;
-@property(readonly) NSUInteger prefixLength;
-@end
+#import "routeprefix.h"
 
 enum ObfuscationMethod {
   kObfuscationNone = 0,

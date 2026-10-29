@@ -52,6 +52,8 @@ set_target_properties(networkextension PROPERTIES
 
 # A library for the type encoding between extension and client.
 add_library(networkextensionproto STATIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/protocol/routeprefix.h
+    ${CMAKE_CURRENT_SOURCE_DIR}/protocol/routeprefix.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/protocol/wgconfig.h
     ${CMAKE_CURRENT_SOURCE_DIR}/protocol/wgconfig.mm
     ${CMAKE_CURRENT_SOURCE_DIR}/protocol/wgstatus.h
