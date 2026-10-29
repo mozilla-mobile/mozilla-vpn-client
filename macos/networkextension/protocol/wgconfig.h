@@ -26,7 +26,7 @@ enum ObfuscationMethod {
 @interface WgConfig : NSObject
 
 - (id)initFromDict:(NSDictionary<NSString*, id>*)dict;
-- (void)encodeWithDict:(NSMutableDictionary<NSString*, id> *)dict;
+- (void)encodeWithDict:(NSMutableDictionary<NSString*, id>*)dict;
 
 @property(readonly, getter=encodeToDict) NSDictionary<NSString*, id>* dict;
 
