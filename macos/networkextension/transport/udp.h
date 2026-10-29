@@ -7,7 +7,7 @@
 
 #import "wgtransport.h"
 
-@interface UdpTransport : NSObject<WgTransport>
+@interface UdpTransport : NSObject <WgTransport>
 
 - (id)initWithEndpoint:(nw_endpoint_t)dest;
 

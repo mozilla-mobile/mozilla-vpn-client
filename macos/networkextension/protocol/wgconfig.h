@@ -16,19 +16,19 @@
 @end
 
 enum ObfuscationMethod {
-    kObfuscationNone = 0,
-    kObfuscationLWO,
-    kObfuscationLWOv2,
-    kObfuscationTCP,
-    kObfuscationShadowsocks
+  kObfuscationNone = 0,
+  kObfuscationLWO,
+  kObfuscationLWOv2,
+  kObfuscationTCP,
+  kObfuscationShadowsocks
 };
 
 @interface WgConfig : NSObject
 
 - (id)initFromDict:(NSDictionary<NSString*, id>*)dict;
-- (void)encodeWithDict:(NSMutableDictionary<NSString*,id> *)dict;
+- (void)encodeWithDict:(NSMutableDictionary<NSString*, id> *)dict;
 
-@property(readonly, getter=encodeToDict) NSDictionary<NSString*,id>* dict;
+@property(readonly, getter=encodeToDict) NSDictionary<NSString*, id>* dict;
 
 @property(strong) NSString* privateKey;
 @property(strong) nw_endpoint_t deviceIpv4Addr;
