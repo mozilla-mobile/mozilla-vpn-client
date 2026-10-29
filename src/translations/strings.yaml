@@ -365,7 +365,7 @@ settings:
     value: Excluded apps cannot be used because of other software installed on the computer.
     comment: Shown on Windows in place of the excluded apps list when the feature has been disabled because of conflicting software.
   appExclusionDisabledError:
-    value: Something went wrong and Excluded apps couldn't turn on. Contact support and we'll help you fix it.
+    value: Something went wrong and Excluded apps couldn’t turn on. Contact support and we'll help you fix it.
     comment: Shown on Windows in place of the excluded apps list when the feature failed to start.
   appearance:
     value: Appearance
