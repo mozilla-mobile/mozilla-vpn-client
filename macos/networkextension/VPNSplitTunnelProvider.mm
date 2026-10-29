@@ -286,6 +286,9 @@
           return;
         }
 
+        // Configure the routes into the tunnel.
+        [weakSelf.wireguard setRoutes:weakSelf.config.routes];
+
         // Start the DNS manager, if configured.
         if (weakSelf.config.dnsSettings) {
           [weakSelf startDnsManager:weakSelf.config.dnsSettings];
@@ -380,20 +383,25 @@
 
   // Shutdown the old wireguard peer and start a new one.
   self.reasserting = TRUE;
-  [self.wireguard.peer stopWithReason:NEProviderStopReasonSuperceded
-                    completionHandler:^(){
-    // Create and start a new peer.
-    self.wireguard.peer = [[WireguardPeer alloc] initWithOptions:self.config
-                                                       andTunnel:self.wireguard];
-    [self.wireguard.peer startWithOptions:self.config
-                        completionHandler:^(NSError*err){
-      if (err) {
-        [self cancelProxyWithError:err];
-      } else {
-        [self.wireguard syncMtu:self.config.serverIpv4Addr];
-        self.reasserting = FALSE;
-      }
-    }];
+
+  // Start the new peer.
+  WireguardPeer* wgPeer = [[WireguardPeer alloc] initWithOptions:self.config];
+  wgPeer.tunfd = self.wireguard.tunfd;
+
+  [wgPeer startWithOptions:self.config completionHandler:^(NSError*err){
+    if (err) {
+      [self cancelProxyWithError:err];
+      return;
+    }
+
+    // Terminate the old peer and replace it with the new one.
+    [self.wireguard.peer stopWithReason:NEProviderStopReasonSuperceded];
+    self.wireguard.peer = wgPeer;
+
+    // Update the MTU and routes.
+    [self.wireguard setRoutes:self.config.routes];
+    [self.wireguard syncMtu:self.config.serverIpv4Addr];
+    self.reasserting = FALSE;
   }];
 }
 
@@ -485,7 +493,7 @@
     NSEnumerator* iter = [msgAppList objectEnumerator];
     while (id appId = [iter nextObject]) {
       if (![appId isKindOfClass:[NSString class]]) {
-      continue;
+        continue;
       }
 #ifdef MZ_DEBUG
       NSLog(@"msg %@ %@ from excluded application set", action, appId);

@@ -22,8 +22,10 @@
 
 - (NSError*)setTunnelAddress:(nw_endpoint_t)endpoint;
 
-- (void)addRoute:(RoutePrefix*)prefix;
+- (void)setRoutes:(id)routes;
+- (void)insertRoute:(RoutePrefix*)prefix;
 - (void)removeRoute:(RoutePrefix*)prefix;
+- (void)flushRoutes;
 
 - (void)syncMtu:(nw_endpoint_t)dest;
 
@@ -31,6 +33,7 @@
 @property(strong) WireguardPeer* peer;
 @property(readonly, getter=getTunfd) int tunfd;
 @property(strong, readonly, getter=getStatus) WgStatus* status;
+@property(strong, readonly, getter=getRoutes) NSSet<RoutePrefix*>* routes;
 @property(strong) nw_endpoint_t ipv4address;
 @property(strong) nw_endpoint_t ipv6address;
 @property(strong) nw_interface_t virtualInterface;

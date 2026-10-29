@@ -28,11 +28,7 @@ extern "C" {
   struct timespec           m_lastHandshake;
   struct timespec           m_handshakeTimeout;
 
-  int                       m_tunfd;
   NSThread*                 m_worker;
-
-  // Routes owned by this peer.
-  NSArray<RoutePrefix*>*    m_routes;
 
   // The completion handler to run on initial handshake or timeout. 
   void (^m_completionHandler)(NSError *error);
@@ -43,11 +39,9 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   [peer handleTimer];
 }
 
-- (id) initWithOptions:(WgConfig*) options
-             andTunnel:(WireguardTunnel*) tunnel {
+- (id) initWithOptions:(WgConfig*) options {
   self = [super init];
-  self->m_tunfd = tunnel.tunfd;
-  self->_tunnel = tunnel;
+  self->_tunfd = -1;
 
   // Prepare the wireguard transport
   switch (options.obfuscation) {
@@ -109,12 +103,6 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 #endif
 
   m_completionHandler = completionHandler;
-
-  // Configure routes into the tunnel interface.
-  m_routes = [NSArray arrayWithArray:options.routes];
-  for (RoutePrefix* prefix in m_routes) {
-    [self.tunnel addRoute:prefix];
-  }
 
   // Start the timer.
   CFRunLoopTimerContext timerContext = { .info = (__bridge void *)self };
@@ -184,20 +172,13 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   }
 }
 
-- (void) stopWithReason:(NEProviderStopReason)reason 
-      completionHandler:(void (^)()) completionHandler {
+- (void) stopWithReason:(NEProviderStopReason)reason {
   [self cancelWithError:vpnProviderError(reason)];
-  completionHandler();
 }
 
 - (void) cancelWithError:(NSError*)error {
   [self.transport shutdown];
   [m_worker cancel];
-
-  // Drop routes into the tunnel.
-  for (RoutePrefix* prefix in m_routes) {
-    [self.tunnel removeRoute:prefix];
-  }
 
   if (m_timer) {
     CFRunLoopRemoveTimer(CFRunLoopGetMain(), m_timer, kCFRunLoopDefaultMode);
@@ -288,7 +269,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
         .msg_iov = iov,
         .msg_iovlen = 2,
       };
-      ssize_t err = sendmsg(m_tunfd, &msg, MSG_DONTWAIT);
+      ssize_t err = sendmsg(self->_tunfd, &msg, MSG_DONTWAIT);
       break;
   }
 }
