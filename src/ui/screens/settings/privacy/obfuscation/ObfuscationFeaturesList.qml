@@ -77,7 +77,7 @@ ColumnLayout {
         delegate: Item {
             id: delegateRoot
             visible: modelData.visible
-            enabled: obfuscationFeaturesToggle.checked
+            enabled: obfuscationFeaturesToggle.checked && (VPNController.obfuscationSupported || modelData.settingValue === MZSettings.Port53)
             Layout.fillWidth: true
             Layout.rightMargin: MZTheme.theme.windowMargin / 2
             implicitHeight: featureRow.implicitHeight
