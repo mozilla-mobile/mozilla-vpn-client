@@ -455,27 +455,59 @@ describe('CLI Tests', function() {
           'Should show the name of the new device');
     });
 
-    it('Fails when the device cannot be added', async () => {
+    it('Fails when the user already has 5 devices', async () => {
       await cliLogin();
 
+      // The account has the current device plus 4 more: the limit is reached.
+      const account =
+          guardianEndpoints.endpoints.GETs['/api/v1/vpn/account'].body;
+      const devices = [...account.devices];
+      for (let i = 1; devices.length < account.max_devices; ++i) {
+        devices.push({
+          name: `Device ${i}`,
+          unique_id: `device-${i}`,
+          pubkey: `pubkey-${i}`,
+          ipv4_address: `10.64.0.${i}/32`,
+          ipv6_address: `fc00:bbbb:bbbb:bb01::${i}/128`,
+          created_at: new Date().toISOString()
+        });
+      }
+      assert(devices.length === 5, 'Should have 5 devices');
+
+      // Like guardian, reject the new device if the limit is reached.
+      const addDevice = {
+        requiredHeaders: ['Authorization'],
+        bodyValidator: guardianEndpoints.validators.guardianDevice,
+        callback: (req) => {
+          if (devices.length >= account.max_devices) {
+            addDevice.status = 400;
+            addDevice.body = {code: 400, errno: 104, error: 'Too many devices'};
+            return;
+          }
+          devices.push(req.body);
+          addDevice.status = 201;
+          addDevice.body = {};
+        },
+      };
       guardian.overrideEndpoints = {
-        GETs: {},
-        POSTs: {
-          '/api/v1/vpn/device': {
-            status: 400,
+        GETs: {
+          '/api/v1/vpn/account': {
+            status: 200,
             requiredHeaders: ['Authorization'],
-            body: {code: 400, errno: 104, error: 'Key limit reached'}
+            body: {...account, devices},
           },
         },
+        POSTs: {'/api/v1/vpn/device': addDevice},
         DELETEs: {},
       };
 
       const wgconf = await execWgconfNewDevice([]);
       assert(wgconf.code === 1, 'Should fail');
       assert(
-          wgconf.stdout.includes('Failed to add the device'),
-          'Should report the failure');
+          wgconf.stdout.includes('Failed to add the device: Too many devices'),
+          'Should show the error of the server');
       assert(!wgconf.stdout.includes('[Peer]'), 'Should not print a config');
+      assert(devices.length === 5, 'Should not register the device');
     });
 
     it('Does not accept a device name with --current-device', async () => {
