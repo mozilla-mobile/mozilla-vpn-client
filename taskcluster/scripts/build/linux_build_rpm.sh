@@ -96,6 +96,7 @@ if [[ -n "$CROSS_ARCH" ]]; then
     -DCMAKE_INSTALL_PREFIX=/usr
     # Cross compilers, binutils and search paths for the target architecture.
     -DCMAKE_TOOLCHAIN_FILE=%{_srcdir}/scripts/linux/${CROSS_ARCH}-toolchain.cmake
+    -DCMAKE_LIBRARY_ARCHITECTURE=${CROSS_TRIPLE}
     -DCMAKE_PREFIX_PATH=${QT_CROSS_PATH}
     -DQT_HOST_PATH=${QT_HOST_PATH}
     # These default to the build host, which is Debian, so override them for the RPM build.
