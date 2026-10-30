@@ -113,7 +113,7 @@ tasks:
             build-type: linux64/release-rpm
     linux-aarch64-rpm:
         run-on-tasks-for: [action]
-        release-artifacts: [mozillavpn_aarch64.rpm]
+        release-artifacts: [mozillavpn_arm64.rpm]
         dependencies:
             build: build-linux-aarch64/release-rpm
         attributes:

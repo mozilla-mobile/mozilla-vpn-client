@@ -59,7 +59,7 @@ done
 # Validate the cross-compilation architecture
 if [[ -n "$CROSS_ARCH" ]]; then
   case "$CROSS_ARCH" in
-    aarch64) CROSS_TRIPLE="aarch64-linux-gnu" ;;
+    aarch64) CROSS_TRIPLE="aarch64-linux-gnu"; PACKAGE_SUFFIX="_arm64" ;;
     *) echo "ERROR: unsupported --cross-arch value: ${CROSS_ARCH}" >&2; exit 1 ;;
   esac
   DIST="static"
@@ -119,7 +119,6 @@ if [[ -n "$CROSS_ARCH" ]]; then
     -D "cmake_install DESTDIR=%{buildroot} cmake --install build-${CROSS_ARCH}"
   )
   RPM_BUILD_ARCH=${CROSS_ARCH}
-  PACKAGE_SUFFIX="_${CROSS_ARCH}"
 else
   if [[ "$DIST" == "static" ]]; then
     export PATH=${MOZ_FETCHES_DIR}/qt-linux/bin:${PATH}
