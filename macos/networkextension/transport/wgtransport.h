@@ -21,7 +21,7 @@ constexpr const size_t WG_MSG_LEN_DATA_HEADER = 16;
 
 // Connect to the transport. This call is permitted to block until such
 // time as the transport connects and is ready to send and receive datagrams.
-// 
+//
 // Returns -1 if an error occurred and will set errno accordingly, otherwise
 // this returns zero on success.
 - (int)connect;

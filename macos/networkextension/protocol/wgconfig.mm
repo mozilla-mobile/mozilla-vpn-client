@@ -188,7 +188,7 @@
   [dict setObject:[NSNumber numberWithInt:self.serverPort] forKey:@"serverPort"];
 
   if (self.dnsSettings) {
-    [dict setObject:self.dnsSettings.servers.firstObject forKey:@"dnsSettings"];
+    [dict setObject:self.dnsSettings.servers forKey:@"dnsSettings"];
   }
 
   NSMutableArray* ipAddressRanges = [NSMutableArray arrayWithCapacity:self.routes.count];
