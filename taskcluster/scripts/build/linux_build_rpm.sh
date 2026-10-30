@@ -91,30 +91,30 @@ if [[ -n "$CROSS_ARCH" ]]; then
 
   CMAKE_CROSS_ARGS=(
     -G Ninja
+    # Without a build type CMake adds no optimization flags.
     -DCMAKE_BUILD_TYPE=RelWithDebInfo
     -DCMAKE_INSTALL_PREFIX=/usr
-    -DCMAKE_TOOLCHAIN_FILE='${PWD}'/scripts/linux/${CROSS_ARCH}-toolchain.cmake
-    -DCMAKE_FIND_ROOT_PATH=/
-    -DCMAKE_LIBRARY_ARCHITECTURE=${CROSS_TRIPLE}
+    # Cross compilers, binutils and search paths for the target architecture.
+    -DCMAKE_TOOLCHAIN_FILE=%{_srcdir}/scripts/linux/${CROSS_ARCH}-toolchain.cmake
     -DCMAKE_PREFIX_PATH=${QT_CROSS_PATH}
     -DQT_HOST_PATH=${QT_HOST_PATH}
-    -DQT_HOST_PATH_CMAKE_DIR=${QT_HOST_PATH}/lib/cmake
-    -DBUILD_TESTS=OFF
+    # These default to the build host, which is Debian, so override them for the RPM build.
     -DBUILD_APPARMOR=OFF
     -DLINUX_POLKIT_RULES=others
-    -DSYSTEMD_UNIT_DIR=/usr/lib/systemd/system
+    -DSYSTEMD_UNIT_DIR=%{_unitdir}
   )
 
   RPMBUILD_ARGS+=(
     --target ${CROSS_ARCH}
     --nodeps
     -D "_buildshell /bin/bash"
+    # Normally provided by systemd-rpm-macros.
     -D "_unitdir /usr/lib/systemd/system"
-    -D "debug_package %{nil}"
-    -D "_build_id_links none"
+    # Strip the target binaries with the cross binutils.
     -D "__strip /usr/bin/${CROSS_TRIPLE}-strip"
     -D "__objdump /usr/bin/${CROSS_TRIPLE}-objdump"
-    -D "cmake cmake -S . -B build-${CROSS_ARCH} ${CMAKE_CROSS_ARGS[*]}"
+    # Normally provided by cmake-rpm-macros.
+    -D "cmake cmake -S %{_srcdir} -B build-${CROSS_ARCH} ${CMAKE_CROSS_ARGS[*]}"
     -D "cmake_build cmake --build build-${CROSS_ARCH}"
     -D "cmake_install DESTDIR=%{buildroot} cmake --install build-${CROSS_ARCH}"
   )
