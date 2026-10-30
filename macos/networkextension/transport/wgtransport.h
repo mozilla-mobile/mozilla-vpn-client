@@ -19,7 +19,11 @@ constexpr const size_t WG_MSG_LEN_DATA_HEADER = 16;
 
 @protocol WgTransport
 
-// Connect to the transport. Same semantics as the socket connect() function.
+// Connect to the transport. This call is permitted to block until such
+// time as the transport connects and is ready to send and receive datagrams.
+// 
+// Returns -1 if an error occurred and will set errno accordingly, otherwise
+// this returns zero on success.
 - (int)connect;
 
 // Send a datagram to the transport. This must not block, and should be
@@ -41,9 +45,9 @@ constexpr const size_t WG_MSG_LEN_DATA_HEADER = 16;
 // wireguard session.
 - (NSMutableData*)recv;
 
-// Terminate the transport, closing sockets and reparing for garbage collection.
-// If there is a recv() call in progress, it must terminate with return code of
-// zero after calling this method.
+// Terminate the transport and prepare for garbage collection. If there is a
+// recv() call in progress, it must terminate and return an ESHUTDOWN error
+// code after calling this method.
 - (void)shutdown;
 
 // Return the packet overhead used by this transport. It must include the size

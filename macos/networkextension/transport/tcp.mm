@@ -122,7 +122,7 @@ constexpr const int PRIO_PACKET_SIZE = 256;
     }
 
     // Send the datagram out the TCP socket.
-    int tx = [self sendDgram:dgram];
+    int tx = [self tcpOutput:dgram];
     if (tx == 0) {
       NSLog(@"tcp socket closed");
       break;
@@ -136,7 +136,7 @@ constexpr const int PRIO_PACKET_SIZE = 256;
   NSLog(@"tcp worker exited");
 }
 
-- (int) sendDgram:(NSData*)dgram {
+- (int) tcpOutput:(NSData*)dgram {
   // Send the stream header.
   const uint8_t* data = (const uint8_t*)dgram.bytes;
   uint8_t header[STREAM_HEADER_SIZE] = {};
