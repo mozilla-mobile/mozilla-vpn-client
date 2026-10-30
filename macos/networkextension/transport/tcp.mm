@@ -10,7 +10,8 @@
 #include <netinet/tcp.h>
 
 constexpr const int STREAM_HEADER_SIZE = 2;
-constexpr const int DGRAM_QUEUE_SIZE = 64;
+constexpr const int PACKET_QUEUE_SIZE = 128;
+constexpr const int PRIO_PACKET_SIZE = 256;
 
 @implementation TcpTransport {
   // The destination
@@ -22,10 +23,9 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
   int             m_upstream;
 
   // Packet buffers.
-  NSData*         m_txqueue[DGRAM_QUEUE_SIZE];
+  NSData*         m_txqueue[PACKET_QUEUE_SIZE];
   uint8_t         m_txnext;
   uint8_t         m_txcount;
-
   NSMutableData*  m_rxbuf;
   size_t          m_rxoff;
 
@@ -89,27 +89,37 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
   [m_condition signal];
 }
 
+- (NSData*)fetchNextPacket {
+  NSData* packet = nil;
+  NSThread* thread = [NSThread currentThread];
+
+  [m_condition lock];
+  while (true) {
+    if (thread.cancelled) {
+      break;
+    }
+    if (m_txcount) {
+      packet = m_txqueue[m_txnext];
+      m_txqueue[m_txnext] = nil;
+      m_txnext = (m_txnext + 1) % PACKET_QUEUE_SIZE;
+      m_txcount--;
+      break;
+    }
+    [m_condition wait];
+  }
+  [m_condition unlock];
+  return packet;
+}
+
 - (void) tcpWorker:(id)arg {
   NSLog(@"tcp worker started");
 
-  NSThread* thread = [NSThread currentThread];
   while (true) {
-    // Wait for another packet.
-    [m_condition lock];
-    while (!thread.cancelled && (m_txcount == 0)) {
-      [m_condition wait];
-    }
-    if (thread.cancelled) {
-      [m_condition unlock];
+    // Pull the next packet off the queue.
+    NSData* dgram = [self fetchNextPacket];
+    if (!dgram) {
       break;
     }
-
-    // Pull the next packet off the queue.
-    NSData* dgram = m_txqueue[m_txnext];
-    m_txqueue[m_txnext] = nil;
-    m_txnext = (m_txnext + 1) % DGRAM_QUEUE_SIZE;
-    m_txcount--;
-    [m_condition unlock];
 
     // Send the datagram out the TCP socket.
     int tx = [self sendDgram:dgram];
@@ -186,9 +196,16 @@ constexpr const int DGRAM_QUEUE_SIZE = 64;
 
 - (void)send:(NSData*)dgram {
   [m_condition lock];
-  if (m_txcount < DGRAM_QUEUE_SIZE) {
-    m_txqueue[(m_txnext + m_txcount) % DGRAM_QUEUE_SIZE] = [NSData dataWithData:dgram];
+  if (m_txcount < PACKET_QUEUE_SIZE) {
+    m_txqueue[(m_txnext + m_txcount) % PACKET_QUEUE_SIZE] = [NSData dataWithData:dgram];
     m_txcount++;
+    [m_condition signal];
+  } else if (dgram.length < PRIO_PACKET_SIZE) {
+    // If this is a small packet it is more likely to be something important
+    // for control and signalling rather than bulk data transfer. Give it a
+    // priority boost by replacing the oldest packet in the queue.
+    m_txqueue[m_txnext] = [NSData dataWithData:dgram];
+    m_txnext = (m_txnext + 1) % PACKET_QUEUE_SIZE;
     [m_condition signal];
   }
   [m_condition unlock];
