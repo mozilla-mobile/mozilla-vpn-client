@@ -4,6 +4,7 @@
 
 #include "taskadddevice.h"
 
+#include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QRandomGenerator>
@@ -13,7 +14,7 @@
 #include "errorhandler.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mozillavpn.h"
+#include "models/apierror.h"
 #include "networkrequest.h"
 
 namespace {
@@ -36,8 +37,15 @@ QByteArray generatePrivateKey() {
 
 }  // anonymous namespace
 
-TaskAddDevice::TaskAddDevice(const QString& deviceName, const QString& deviceID)
-    : Task("TaskAddDevice"), m_deviceName(deviceName), m_deviceID(deviceID) {
+TaskAddDevice::TaskAddDevice(
+    const QString& deviceName, const QString& deviceID,
+    ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy,
+    const QString& token)
+    : Task("TaskAddDevice"),
+      m_deviceName(deviceName),
+      m_deviceID(deviceID),
+      m_errorPropagationPolicy(errorPropagationPolicy),
+      m_token(token) {
   MZ_COUNT_CTOR(TaskAddDevice);
 }
 
@@ -53,7 +61,11 @@ void TaskAddDevice::run() {
   logger.debug() << "Public key: " << logger.sensitive(publicKey);
 
   NetworkRequest* request = new NetworkRequest(this, 201);
-  request->auth();
+  if (!m_token.isEmpty()) {
+    request->auth(QByteArray("Bearer ") + m_token.toLocal8Bit());
+  } else {
+    request->auth();
+  }
   request->post(Constants::apiUrl(Constants::Device),
                 QJsonObject{{"name", m_deviceName},
                             {"unique_id", m_deviceID},
@@ -61,19 +73,20 @@ void TaskAddDevice::run() {
   request->disableTimeout();
 
   connect(request, &NetworkRequest::requestFailed, this,
-          [this](QNetworkReply::NetworkError error, const QByteArray&) {
+          [this](QNetworkReply::NetworkError error, const QByteArray& data) {
             logger.error() << "Failed to add the device" << error;
-            REPORTNETWORKERROR(error, ErrorHandler::PropagateError, name());
+            if (!m_apiError.fromJson(data)) {
+              logger.error() << "Unable to parse the error response";
+            }
+            REPORTNETWORKERROR(error, m_errorPropagationPolicy, name());
             emit completed();
           });
 
   connect(request, &NetworkRequest::requestCompleted, this,
-          [this, publicKey, privateKey](const QByteArray&) {
+          [this, publicKey, privateKey](const QByteArray& data) {
             logger.debug() << "Device added";
-            MozillaVPN* vpn = MozillaVPN::instance();
-            Q_ASSERT(vpn);
-
-            vpn->deviceAdded(m_deviceName, publicKey, privateKey);
+            emit deviceAdded(m_deviceName, publicKey, privateKey,
+                             QJsonDocument::fromJson(data).object());
             emit completed();
           });
 }

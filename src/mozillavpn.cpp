@@ -1255,8 +1255,10 @@ void MozillaVPN::triggerHeartbeat() {
 }
 
 void MozillaVPN::addCurrentDeviceAndRefreshData() {
-  TaskScheduler::scheduleTask(
-      new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
+  TaskAddDevice* task =
+      new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId());
+  connect(task, &TaskAddDevice::deviceAdded, this, &MozillaVPN::deviceAdded);
+  TaskScheduler::scheduleTask(task);
   scheduleRefreshDataTasks();
 }
 
