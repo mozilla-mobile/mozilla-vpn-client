@@ -152,6 +152,12 @@ extern "C" {
         return nil;
     }
 
+    if (dgram.length < prot_len) {
+      // Packet appears to be truncated.
+      errno = EAGAIN;
+      return nil;
+    }
+
     // Decrypt the protected area.
     for (int i = 0; i < prot_len; i++) {
       packet[i] ^= m_clientkey.key[i % 32];

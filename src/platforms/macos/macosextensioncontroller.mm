@@ -410,8 +410,8 @@ void MacOSExtensionController::checkStatus() {
     if (wgStats.ipv4address) {
       st.m_ipv4Address = QHostAddress(QString::fromNSString(wgStats.ipv4address));
     }
-    if (wgStats.ipv6gateway) {
-      st.m_ipv6Address = QHostAddress(QString::fromNSString(wgStats.ipv6gateway));
+    if (wgStats.ipv6address) {
+      st.m_ipv6Address = QHostAddress(QString::fromNSString(wgStats.ipv6address));
     }
     st.m_rxBytes = wgStats.rxBytes;
     st.m_txBytes = wgStats.txBytes;
