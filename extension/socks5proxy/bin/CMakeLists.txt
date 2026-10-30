@@ -40,11 +40,13 @@ elseif(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
     find_package(PkgConfig REQUIRED)
 
     # Install a Systemd service to run the proxy, if supported.
-    pkg_check_modules(SYSTEMD systemd)
-    if("${SYSTEMD_FOUND}" EQUAL 1)
-        pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
-    elseif(NOT DEFINED ENV{container})
-        set(SYSTEMD_UNIT_DIR /lib/systemd/system)
+    if(NOT SYSTEMD_UNIT_DIR)
+        pkg_check_modules(SYSTEMD systemd)
+        if("${SYSTEMD_FOUND}" EQUAL 1)
+            pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
+        elseif(NOT DEFINED ENV{container})
+            set(SYSTEMD_UNIT_DIR /lib/systemd/system)
+        endif()
     endif()
     if(SYSTEMD_UNIT_DIR)
         configure_file(${CMAKE_CURRENT_SOURCE_DIR}/socksproxy.service.in
