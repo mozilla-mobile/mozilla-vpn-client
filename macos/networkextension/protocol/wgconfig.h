@@ -6,18 +6,22 @@
 #import <Network/Network.h>
 #import <NetworkExtension/NetworkExtension.h>
 
-@interface RoutePrefix : NSObject
+#import "routeprefix.h"
 
-+ (id)parseRoute:(NSString*)routeString;
+enum ObfuscationMethod {
+  kObfuscationNone = 0,
+  kObfuscationLWO,
+  kObfuscationLWOv2,
+  kObfuscationTCP,
+  kObfuscationShadowsocks
+};
 
-@property(readonly, getter=getDestination) const struct sockaddr* destination;
-@property(readonly) NSUInteger prefixLength;
-@end
-
-@interface InterfaceConfig : NSObject
+@interface WgConfig : NSObject
 
 - (id)initFromDict:(NSDictionary<NSString*, id>*)dict;
-- (id)initFromCoder:(NSCoder*)coder;
+- (void)encodeWithDict:(NSMutableDictionary<NSString*, id>*)dict;
+
+@property(readonly, getter=encodeToDict) NSDictionary<NSString*, id>* dict;
 
 @property(strong) NSString* privateKey;
 @property(strong) nw_endpoint_t deviceIpv4Addr;
@@ -34,6 +38,7 @@
 
 @property(strong) NEDNSSettings* dnsSettings;
 
-@property(strong, readonly) NSDictionary<NSString*, id>* dict;
+@property(assign) ObfuscationMethod obfuscation;
+@property(strong) NSSet<NSString*>* excludedApps;
 
 @end
