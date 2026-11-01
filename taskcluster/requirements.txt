@@ -1011,9 +1011,9 @@ taskcluster==101.1.0 \
     --hash=sha256:44f0bfd00769e4c897ae84f19fb7a576dfe23975f30ba66381d118169edb174c \
     --hash=sha256:9b2c2310ca95e144bab68e1a2953efa9837fa93eafd9866bf748e4bfb0956596
     # via taskcluster-taskgraph
-taskcluster-taskgraph==24.3.0 \
-    --hash=sha256:2bf8c165244ea8c190632f61dec5414ae56a807d8bbbee21a8cd94bbbdc4ccba \
-    --hash=sha256:bb1282a3f7b92c786bd27e5e914181a0dc71a17a056fca2d981e3a2b2fd7b21e
+taskcluster-taskgraph==24.5.1 \
+    --hash=sha256:1b460fa7f16a58ae85a8cbd7d4e4dcc9e816a93b60ff0301194a6c5d3aa626af \
+    --hash=sha256:40db5be961a4665b978b194f32224bd5ef783794bb779f4242f2cc6cdb08bf22
     # via
     #   -r taskcluster/requirements.in
     #   mozilla-taskgraph
