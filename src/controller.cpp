@@ -434,11 +434,10 @@ auto Controller::setupConfigs(
   }
 
   logger.debug() << "Selected exit server:" << exitServer.hostname()
-                 << "with protocol" << exitServer.protocol() << "and auth type"
-                 << exitServer.authType();
+                 << "with protocol" << exitServer.protocol();
   // MASQUE servers need a token before we can build the config. Fetch one
   // synchronously if we don't have it.
-  if (exitServer.authType() == Server::AuthType::Token &&
+  if (exitServer.protocol() == Server::ProtocolType::Masque &&
       vpn->token().isEmpty()) {
     TaskScheduler::deleteTasks();
     Task* task = new TaskToken(ErrorHandler::PropagateError);
@@ -460,9 +459,10 @@ auto Controller::setupConfigs(
   exitConfig.m_protocolType = exitServer.protocol();
   exitConfig.m_hostname = exitServer.hostname();
   // WireGuard authenticates with the device key pair; MASQUE with a token.
-  exitConfig.m_privateKey = exitServer.authType() == Server::AuthType::KeyPair
-                                ? vpn->keys()->privateKey()
-                                : vpn->token();
+  exitConfig.m_privateKey =
+      exitServer.protocol() == Server::ProtocolType::WireGuard
+          ? vpn->keys()->privateKey()
+          : vpn->token();
   exitConfig.m_publicKey = vpn->keys()->publicKey();
   exitConfig.m_deviceIpv4Address = device->ipv4Address();
   exitConfig.m_deviceIpv6Address = device->ipv6Address();
@@ -541,7 +541,7 @@ auto Controller::setupConfigs(
     entryConfig.m_protocolType = entryServer.protocol();
     entryConfig.m_hostname = entryServer.hostname();
     entryConfig.m_privateKey =
-        entryServer.authType() == Server::AuthType::KeyPair
+        entryServer.protocol() == Server::ProtocolType::WireGuard
             ? vpn->keys()->privateKey()
             : vpn->token();
     entryConfig.m_publicKey = vpn->keys()->publicKey();

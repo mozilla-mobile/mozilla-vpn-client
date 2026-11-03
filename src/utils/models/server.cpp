@@ -35,7 +35,6 @@ Server& Server::operator=(const Server& other) {
   if (this == &other) return *this;
 
   m_protocol = other.m_protocol;
-  m_authType = other.m_authType;
   m_provider = other.m_provider;
   m_hostname = other.m_hostname;
   m_ipv4AddrIn = other.m_ipv4AddrIn;
@@ -77,22 +76,6 @@ bool Server::fromJson(const QJsonObject& obj) {
         meta.keyToValue(protocol.toString().toUtf8().constData(), &ok));
     if (!ok) {
       logger.warning() << "Unknown protocol type:" << protocol.toString();
-      return false;
-    }
-  }
-
-  // "auth_type" is also optional: key pair for WireGuard, token for MASQUE.
-  QJsonValue authType = obj.value("auth_type");
-  if (!authType.isString()) {
-    m_authType = m_protocol == ProtocolType::WireGuard ? AuthType::KeyPair
-                                                       : AuthType::Token;
-  } else {
-    bool ok = true;
-    QMetaEnum meta = QMetaEnum::fromType<AuthType>();
-    m_authType = AuthType(
-        meta.keyToValue(authType.toString().toUtf8().constData(), &ok));
-    if (!ok) {
-      logger.warning() << "Unknown auth type:" << authType.toString();
       return false;
     }
   }
@@ -200,7 +183,6 @@ bool Server::fromMasqueJson(const QJsonObject& obj) {
   }
 
   m_protocol = ProtocolType::Masque;
-  m_authType = AuthType::Token;
   m_provider = "mullvad";
   m_hostname = hostname.toString();
 

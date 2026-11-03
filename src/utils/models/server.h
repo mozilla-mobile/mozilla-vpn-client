@@ -38,10 +38,6 @@ class Server final {
   enum ProtocolType { WireGuard, Masque };
   Q_ENUM(ProtocolType)
 
-  // How we authenticate: WireGuard uses the key pair, MASQUE uses a token.
-  enum AuthType { KeyPair, Token };
-  Q_ENUM(AuthType)
-
   [[nodiscard]] bool fromJson(const QJsonObject& obj);
   // Build a MASQUE server from a Remote Settings server entry, which only
   // carries "hostname" and "port" (no key pair, IPs or weight).
@@ -55,8 +51,6 @@ class Server final {
   bool supportObfuscationMethod(const ObfuscationMethod method) const;
 
   ProtocolType protocol() const { return m_protocol; }
-
-  AuthType authType() const { return m_authType; }
 
   const QString& provider() const { return m_provider; }
 
@@ -107,7 +101,6 @@ class Server final {
 
  private:
   ProtocolType m_protocol = ProtocolType::WireGuard;
-  AuthType m_authType = AuthType::KeyPair;
   // The entity operating this server. All servers are Mullvad for now, but the
   // field is populated so the UI/logic can distinguish providers later.
   QString m_provider = "mullvad";
