@@ -37,6 +37,9 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
   m_wgutils = WireguardUtilsWindows::create(m_firewallManager, this);
   m_dnsutils = new DnsUtilsWindows(this);
   m_splitTunnelManager = WindowsSplitTunnel::create(m_firewallManager);
+  if (!m_splitTunnelManager) {
+    m_splitTunnelConflict = WindowsSplitTunnel::detectConflict();
+  }
 
   connect(m_wgutils.get(), &WireguardUtils::backendFailure, this,
           &WindowsDaemon::abortBackendFailure);
@@ -110,8 +113,12 @@ bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
 
 QStringList WindowsDaemon::getFeatures() const {
   QStringList list;
-  if (!WindowsSplitTunnel::detectConflict()) {
+  if (m_splitTunnelManager) {
     list.append("splitTunnel");
+  } else if (m_splitTunnelConflict) {
+    list.append("splitTunnelDisabled:conflict");
+  } else {
+    list.append("splitTunnelDisabled:error");
   }
   return list;
 }

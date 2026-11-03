@@ -48,8 +48,10 @@ ColumnLayout {
         text: MZI18n.InAppSupportWorkflowSupportResponseButton
 
         onClicked: {
-            getHelpStackView.pop();
-            getHelpStackView.pop();
+            // Capture the StackView: it is detached from it after the first pop.
+            const stackView = base.StackView.view;
+            stackView.pop();
+            stackView.pop();
         }
     }
 

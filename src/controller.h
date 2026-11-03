@@ -9,6 +9,7 @@
 #include <QList>
 #include <QObject>
 #include <QTimer>
+#include <optional>
 
 #include "interfaceconfig.h"
 #include "ipaddress.h"
@@ -148,6 +149,18 @@ class Controller : public QObject, public LogSerializer {
   };
   Q_ENUM(ActivationPrincipal)
 
+  enum SplitTunnelSupport {
+    // The platform has no split tunneling, the feature is hidden.
+    SplitTunnelUnsupported,
+    SplitTunnelSupported,
+    // Available on this platform, but turned off because of conflicting
+    // software.
+    SplitTunnelDisabledConflict,
+    // Available on this platform, but it failed to start.
+    SplitTunnelDisabledError,
+  };
+  Q_ENUM(SplitTunnelSupport)
+
  public:
   qint64 connectionTimestamp() const;
   void serverUnavailable();
@@ -178,7 +191,11 @@ class Controller : public QObject, public LogSerializer {
   State state() const;
   ErrorCode error() const;
   bool silentServerSwitchingSupported() const;
-  bool splitTunnelSupported() const;
+  SplitTunnelSupport splitTunnelSupport() const;
+  bool splitTunnelSupported() const {
+    return splitTunnelSupport() == SplitTunnelSupported;
+  }
+  void forceSplitTunnelSupport(SplitTunnelSupport support);
   bool obfuscationSupported() const;
   void forceObfuscationUnsupported();
   void cleanupBackendLogs();
@@ -216,7 +233,8 @@ class Controller : public QObject, public LogSerializer {
                  silentServerSwitchingSupported CONSTANT);
   Q_PROPERTY(bool isDeviceConnected READ isDeviceConnected NOTIFY
                  isDeviceConnectedChanged);
-  Q_PROPERTY(bool splitTunnelSupported READ splitTunnelSupported CONSTANT);
+  Q_PROPERTY(SplitTunnelSupport splitTunnelSupport READ splitTunnelSupport
+                 NOTIFY splitTunnelSupportChanged);
   Q_PROPERTY(bool obfuscationSupported READ obfuscationSupported NOTIFY
                  obfuscationSupportedChanged);
 
@@ -241,6 +259,7 @@ class Controller : public QObject, public LogSerializer {
   void statusUpdated(const ControllerStatus& status);
   void timestampChanged();
   void enableDisconnectInConfirmingChanged();
+  void splitTunnelSupportChanged();
   void connectionRetryChanged();
   void readyToQuit();
   void readyToUpdate();
@@ -316,6 +335,7 @@ class Controller : public QObject, public LogSerializer {
   State m_state = StateInitializing;
   ActivationPrincipal m_initiator = Null;
   bool m_enableDisconnectInConfirming = false;
+  std::optional<SplitTunnelSupport> m_forcedSplitTunnelSupport;
   QList<InterfaceConfig> m_activationQueue;
   int m_connectionRetry = 0;
 

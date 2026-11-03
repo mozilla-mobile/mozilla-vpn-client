@@ -32,7 +32,9 @@ class AndroidController final : public ControllerImpl {
 
   void cleanupBackendLogs() override;
 
-  bool splitTunnelSupported() const override { return true; }
+  Controller::SplitTunnelSupport splitTunnelSupport() const override {
+    return Controller::SplitTunnelSupported;
+  }
 
   void forceDaemonSilentServerSwitch() override;
 

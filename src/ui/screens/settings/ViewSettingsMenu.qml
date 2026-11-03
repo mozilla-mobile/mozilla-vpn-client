@@ -81,9 +81,13 @@ MZViewBase {
                 imageRightSrc: MZAssetLookup.getImageSource("Chevron")
                 imageRightMirror: MZLocalizer.isRightToLeft
                 onClicked: {
-                    stackview.push("qrc:/qt/qml/Mozilla/VPN/screens/settings/appPermissions/ViewAppPermissions.qml")
+                    stackview.push(VPNController.splitTunnelSupport === VPNController.SplitTunnelSupported
+                                   ? "qrc:/qt/qml/Mozilla/VPN/screens/settings/appPermissions/ViewAppPermissions.qml"
+                                   : "qrc:/qt/qml/Mozilla/VPN/screens/settings/appPermissions/ViewAppPermissionsDisabled.qml")
                 }
-                visible: VPNController.splitTunnelSupported
+                // Stays visible when the feature has been disabled, so the
+                // user can find out why.
+                visible: VPNController.splitTunnelSupport !== VPNController.SplitTunnelUnsupported
             }
 
             MZSettingsItem {

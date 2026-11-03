@@ -33,7 +33,9 @@ class WasmController final : public ControllerImpl {
 
   void checkStatus() override;
 
-  bool splitTunnelSupported() const override { return true; }
+  Controller::SplitTunnelSupport splitTunnelSupport() const override {
+    return Controller::SplitTunnelSupported;
+  }
 
  private:
   MockDaemon* m_mock = nullptr;

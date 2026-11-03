@@ -36,7 +36,10 @@ class LinuxController final : public ControllerImpl {
 
   bool multihopSupported() override { return true; }
 
-  bool splitTunnelSupported() const override;
+  Controller::SplitTunnelSupport splitTunnelSupport() const override {
+    return splitTunnelSupported() ? Controller::SplitTunnelSupported
+                                  : Controller::SplitTunnelUnsupported;
+  }
 
  private slots:
   void checkStatusCompleted(QDBusPendingCallWatcher* call);
@@ -46,6 +49,8 @@ class LinuxController final : public ControllerImpl {
                             const QString& newOwner);
 
  private:
+  bool splitTunnelSupported() const;
+
   DBusClient* m_dbus = nullptr;
   QDBusServiceWatcher* m_serviceWatcher = nullptr;
 };

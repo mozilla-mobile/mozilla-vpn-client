@@ -30,7 +30,9 @@ class MacOSExtensionController final : public ControllerImpl {
 
   void checkStatus() override;
 
-  bool splitTunnelSupported() const override { return true; }
+  Controller::SplitTunnelSupport splitTunnelSupport() const override {
+    return Controller::SplitTunnelSupported;
+  }
 
  private slots:
   void extLoaderSuccess(int result);

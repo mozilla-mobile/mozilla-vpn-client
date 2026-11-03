@@ -218,6 +218,8 @@ void Controller::implInitialized(bool status, bool a_connected,
                  << "connected:" << a_connected
                  << "connectionDate:" << connectionDate.toString();
 
+  emit splitTunnelSupportChanged();
+
   if (!status) {
     REPORTERROR(ErrorHandler::ControllerError, "controller");
     setState(StateOff);
@@ -454,7 +456,7 @@ auto Controller::setupConfigs(
   exitConfig.m_obfuscationMethod = Server::ObfuscationMethod::NoObfuscation;
   logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
 
-  if (m_impl->splitTunnelSupported()) {
+  if (splitTunnelSupported()) {
     exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
@@ -923,14 +925,17 @@ bool Controller::silentServerSwitchingSupported() const {
   return m_impl->silentServerSwitchingSupported();
 }
 
-bool Controller::splitTunnelSupported() const {
+Controller::SplitTunnelSupport Controller::splitTunnelSupport() const {
+  if (m_forcedSplitTunnelSupport) {
+    return *m_forcedSplitTunnelSupport;
+  }
   if (m_impl) {
-    return m_impl->splitTunnelSupported();
+    return m_impl->splitTunnelSupport();
   } else {
     // Fix for VPN-7599 - when signed out, we need this to
     // resolve when resetting client, as one line is shown
     // depending on whether split tunnel is supported.
-    return false;
+    return SplitTunnelUnsupported;
   }
 }
 
@@ -942,6 +947,11 @@ bool Controller::obfuscationSupported() const {
 void Controller::forceObfuscationUnsupported() {
   m_obfuscationForcedUnsupported = true;
   emit obfuscationSupportedChanged();
+}
+
+void Controller::forceSplitTunnelSupport(SplitTunnelSupport support) {
+  m_forcedSplitTunnelSupport = support;
+  emit splitTunnelSupportChanged();
 }
 
 void Controller::logSerialize(QIODevice* device) {
