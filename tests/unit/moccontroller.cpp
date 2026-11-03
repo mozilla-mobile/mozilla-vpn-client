@@ -65,6 +65,8 @@ Controller::ErrorCode Controller::error() const {
 
 void Controller::updateRequired() {}
 
+void Controller::rotateToken(const QString&) {}
+
 void Controller::refreshStatus() { emit statusUpdated(m_status); }
 
 void Controller::quit() {}
