@@ -19,6 +19,10 @@
     </method>
     <method name="cleanupLogs">
     </method>
+    <method name="rotateToken">
+      <arg type="b" direction="out"/>
+      <arg name="token" type="s" direction="in"/>
+    </method>
     <signal name="connected">
       <arg name="pubkey" type="s" direction="out"/>
     </signal>

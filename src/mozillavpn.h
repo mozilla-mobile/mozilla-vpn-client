@@ -188,6 +188,7 @@ class MozillaVPN final : public QObject {
   void deviceRemovalCompleted(const QString& publicKey);
 
   void serversFetched(const QByteArray& serverData);
+  void masqueServersFetched(const QByteArray& serverData);
 
   void accountChecked(const QByteArray& json);
 
@@ -221,6 +222,9 @@ class MozillaVPN final : public QObject {
   void createTicketAnswerRecieved(bool successful) {
     emit ticketCreationAnswer(successful);
   }
+
+  void setToken(const QString& token) { m_token = token; }
+  const QString& token() const { return m_token; }
 
   void requestAbout();
 
@@ -317,6 +321,8 @@ class MozillaVPN final : public QObject {
   struct MozillaVPNPrivate* m_private = nullptr;
 
   QTimer m_periodicOperationsTimer;
+  QTimer m_masqueTokenTimer;
+  QString m_token;
 
   bool m_startMinimized = false;
   bool m_updating = false;

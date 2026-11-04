@@ -168,12 +168,26 @@ bool ServerData::settingsChanged() {
 
 QString ServerData::localizedExitCityName() const {
   Q_ASSERT(m_initialized);
-  return Localizer::instance()->getTranslatedCityName(m_exitCityName);
+  return localizedCityName(m_exitCountryCode, m_exitCityName);
 }
 
 QString ServerData::localizedEntryCityName() const {
   Q_ASSERT(m_initialized);
-  return Localizer::instance()->getTranslatedCityName(m_entryCityName);
+  return localizedCityName(m_entryCountryCode, m_entryCityName);
+}
+
+// static
+QString ServerData::localizedCityName(const QString& countryCode,
+                                      const QString& cityName) {
+  // Prefer the city's display name, which resolves the real city for MASQUE
+  // locations (whose identity name is the country name to avoid collisions).
+  const ServerCity& city =
+      MozillaVPN::instance()->serverCountryModel()->findCity(countryCode,
+                                                             cityName);
+  if (city.initialized()) {
+    return city.localizedName();
+  }
+  return Localizer::instance()->getTranslatedCityName(cityName);
 }
 
 QString ServerData::localizedPreviousExitCountryName() const {
@@ -346,7 +360,7 @@ Server::ObfuscationMethod ServerData::obfuscationPolicyToObfuscationMethod(
     case SettingsHolder::ObfuscationPolicy::LwoOverPort53:
       return Server::ObfuscationMethod::LWO;
     case SettingsHolder::ObfuscationPolicy::Masque:
-      return Server::ObfuscationMethod::Masque;
+      return Server::ObfuscationMethod::MasqueProxy;
     case SettingsHolder::ObfuscationPolicy::UdpOverTcp:
       return Server::ObfuscationMethod::UdpOverTcp;
     case SettingsHolder::ObfuscationPolicy::Shadowsocks:

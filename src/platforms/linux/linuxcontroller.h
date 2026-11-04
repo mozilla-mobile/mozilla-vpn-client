@@ -28,6 +28,8 @@ class LinuxController final : public ControllerImpl {
 
   void deactivate() override;
 
+  void rotateToken(const QString& token) override;
+
   void checkStatus() override;
 
   void getBackendLogs(QIODevice* device) override;

@@ -10,7 +10,7 @@
 
 #include "daemon/daemon.h"
 #include "dnsutilsmock.h"
-#include "wireguardutilsmock.h"
+#include "mocktunnelwireguard.h"
 
 class MockDaemon final : public Daemon {
   Q_OBJECT
@@ -27,15 +27,27 @@ class MockDaemon final : public Daemon {
     return QStringList("splitTunnel");
   }
 
+  void initializeTunnels() override {
+    if (m_wireguardTunnel == nullptr) {
+      m_wireguardTunnel = new MockWireGuardTunnel(this);
+    }
+  }
+  bool selectTunnel(Server::ProtocolType protocolType) override {
+    Q_UNUSED(protocolType);
+    // The mock daemon only speaks WireGuard.
+    initializeTunnels();
+    m_tunnel = m_wireguardTunnel;
+    return true;
+  }
+
  protected:
-  WireguardUtils* wgutils() const override { return m_wgutils; }
   DnsUtils* dnsutils() override { return m_dnsutils; }
 
  private:
   QString m_socketName;
   QLocalServer m_server;
   DnsUtilsMock* m_dnsutils = nullptr;
-  WireguardUtilsMock* m_wgutils = nullptr;
+  MockWireGuardTunnel* m_wireguardTunnel = nullptr;
 };
 
 #endif  // MOCKDAEMON_H

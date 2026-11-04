@@ -4,6 +4,7 @@
 
 #include "controller.h"
 
+#include <QCoreApplication>
 #include <QFileInfo>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -35,6 +36,7 @@
 #include "settingsholder.h"
 #include "taskfunction.h"
 #include "tasks/controlleraction/taskcontrolleraction.h"
+#include "tasks/token/tasktoken.h"
 #include "taskscheduler.h"
 
 #if defined(MZ_FLATPAK)
@@ -432,6 +434,23 @@ auto Controller::setupConfigs(
     m_nextStep = Disconnect;
     return QList<InterfaceConfig>();
   }
+
+  logger.debug() << "Selected exit server:" << exitServer.hostname()
+                 << "with protocol" << exitServer.protocol();
+  // MASQUE servers need a token before we can build the config. Fetch one
+  // synchronously if we don't have it.
+  if (exitServer.protocol() == Server::ProtocolType::Masque &&
+      vpn->token().isEmpty()) {
+    TaskScheduler::deleteTasks();
+    Task* task = new TaskToken(ErrorHandler::PropagateError);
+    bool waiting = true;
+    connect(task, &Task::completed, this, [&]() { waiting = false; });
+    TaskScheduler::scheduleTask(task);
+    while (waiting) {
+      QCoreApplication::processEvents();
+    }
+  }
+
   QList<InterfaceConfig> returnList;
 
   auto allowedIPList = m_initiator == ExtensionUser
@@ -439,7 +458,13 @@ auto Controller::setupConfigs(
                            : getAllowedIPAddressRanges(exitServer);
   // Prepare the exit server's connection data.
   InterfaceConfig exitConfig;
-  exitConfig.m_privateKey = vpn->keys()->privateKey();
+  exitConfig.m_protocolType = exitServer.protocol();
+  exitConfig.m_hostname = exitServer.hostname();
+  // WireGuard authenticates with the device key pair; MASQUE with a token.
+  exitConfig.m_privateKey =
+      exitServer.protocol() == Server::ProtocolType::WireGuard
+          ? vpn->keys()->privateKey()
+          : vpn->token();
   exitConfig.m_publicKey = vpn->keys()->publicKey();
   exitConfig.m_deviceIpv4Address = device->ipv4Address();
   exitConfig.m_deviceIpv6Address = device->ipv6Address();
@@ -515,7 +540,12 @@ auto Controller::setupConfigs(
     entryPublicKey = entryServer.publicKey();
 
     InterfaceConfig entryConfig;
-    entryConfig.m_privateKey = vpn->keys()->privateKey();
+    entryConfig.m_protocolType = entryServer.protocol();
+    entryConfig.m_hostname = entryServer.hostname();
+    entryConfig.m_privateKey =
+        entryServer.protocol() == Server::ProtocolType::WireGuard
+            ? vpn->keys()->privateKey()
+            : vpn->token();
     entryConfig.m_publicKey = vpn->keys()->publicKey();
     entryConfig.m_deviceIpv4Address = device->ipv4Address();
     entryConfig.m_deviceIpv6Address = device->ipv6Address();
@@ -656,9 +686,12 @@ QList<IPAddress> Controller::getAllowedIPAddressRanges(
   logger.debug() << "Catch all IPv6";
   list.append(IPAddress("::0/0"));
 
-  // Allow access to the internal gateway addresses.
-  logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
-  list.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
+  // Allow access to the internal gateway addresses. MASQUE servers have no
+  // WireGuard-style gateway, so it may be absent.
+  if (!exitServer.ipv4Gateway().isEmpty()) {
+    logger.debug() << "Allow the IPv4 gateway:" << exitServer.ipv4Gateway();
+    list.append(IPAddress(QHostAddress(exitServer.ipv4Gateway()), 32));
+  }
   if (!exitServer.ipv6Gateway().isEmpty()) {
     logger.debug() << "Allow the IPv6 gateway:" << exitServer.ipv6Gateway();
     list.append(IPAddress(QHostAddress(exitServer.ipv6Gateway()), 128));
@@ -1279,6 +1312,23 @@ bool Controller::deactivate(ActivationPrincipal user) {
   Q_ASSERT(m_impl);
   m_impl->deactivate();
   return true;
+}
+
+void Controller::rotateToken(const QString& token) {
+  if (token.isEmpty()) {
+    logger.warning() << "Ignoring empty token rotation request";
+    return;
+  }
+  if (!m_impl) {
+    logger.debug() << "No controller impl; skipping token rotation";
+    return;
+  }
+  if (!isActive()) {
+    logger.debug() << "VPN not active; skipping token rotation";
+    return;
+  }
+  logger.debug() << "Rotating backend token";
+  m_impl->rotateToken(token);
 }
 
 void Controller::forceDaemonSilentServerSwitch() {

@@ -53,7 +53,9 @@
 #include "tasks/getsubscriptiondetails/taskgetsubscriptiondetails.h"
 #include "tasks/heartbeat/taskheartbeat.h"
 #include "tasks/removedevice/taskremovedevice.h"
+#include "tasks/servers/taskmasqueservers.h"
 #include "tasks/servers/taskservers.h"
+#include "tasks/token/tasktoken.h"
 #include "taskscheduler.h"
 #include "update/updater.h"
 #include "urlopener.h"
@@ -180,11 +182,18 @@ MozillaVPN::MozillaVPN()
     TaskScheduler::scheduleTask(new TaskGroup(
         {new TaskAccount(ErrorHandler::DoNotPropagateError),
          new TaskServers(ErrorHandler::DoNotPropagateError),
+         new TaskMasqueServers(ErrorHandler::DoNotPropagateError),
          new TaskCaptivePortalLookup(ErrorHandler::DoNotPropagateError),
          new TaskHeartbeat(), new TaskAddonIndex(),
          new TaskGetSubscriptionDetails(
              TaskGetSubscriptionDetails::NoAuthenticationFlow,
              ErrorHandler::PropagateError)}));
+  });
+
+  // Periodically refresh the MASQUE token so it never goes stale.
+  connect(&m_masqueTokenTimer, &QTimer::timeout, []() {
+    TaskScheduler::scheduleTask(
+        new TaskToken(ErrorHandler::DoNotPropagateError));
   });
 
   connect(this, &MozillaVPN::stateChanged, [this]() {
@@ -396,6 +405,10 @@ void MozillaVPN::initialize() {
     return;
   }
 
+  // Best-effort: re-apply any cached MASQUE servers on top of the list.
+  m_private->m_serverCountryModel.appendMasqueServers(
+      settingsHolder->masqueServers());
+
   if (!m_private->m_deviceModel.fromSettings(keys())) {
     logger.error() << "No devices found";
     SettingsManager::instance()->reset();
@@ -449,6 +462,10 @@ bool MozillaVPN::loadModels() {
       !m_private->m_serverData.fromSettings() || !modelsInitialized()) {
     return false;
   }
+
+  // Best-effort: re-apply any cached MASQUE servers on top of the list.
+  m_private->m_serverCountryModel.appendMasqueServers(
+      settingsHolder->masqueServers());
 
   if (!m_private->m_captivePortal.fromSettings()) {
     // We do not care about these settings.
@@ -744,6 +761,17 @@ void MozillaVPN::serversFetched(const QByteArray& serverData) {
   }
 }
 
+void MozillaVPN::masqueServersFetched(const QByteArray& serverData) {
+  logger.debug() << "MASQUE servers fetched!";
+
+  if (!m_private->m_serverCountryModel.appendMasqueServers(serverData)) {
+    logger.error() << "Failed to store the MASQUE servers";
+    return;
+  }
+
+  SettingsHolder::instance()->setMasqueServers(serverData);
+}
+
 void MozillaVPN::deviceRemovalCompleted(const QString& publicKey) {
   logger.debug() << "Device removal task completed";
   m_private->m_deviceModel.stopDeviceRemovalFromPublicKey(publicKey, keys());
@@ -940,11 +968,13 @@ void MozillaVPN::onboardingCompleted() {
 
 void MozillaVPN::startSchedulingPeriodicOperations() {
   m_periodicOperationsTimer.start(Constants::Timers::schedulePeriodicTask());
+  m_masqueTokenTimer.start(Constants::Timers::masqueTokenRotation());
 }
 
 void MozillaVPN::stopSchedulingPeriodicOperations() {
   logger.debug() << "Stop scheduling account and servers";
   m_periodicOperationsTimer.stop();
+  m_masqueTokenTimer.stop();
 }
 
 bool MozillaVPN::modelsInitialized() const {
@@ -1333,6 +1363,7 @@ void MozillaVPN::scheduleRefreshDataTasks() {
   QList<Task*> refreshTasks{
       new TaskAccount(ErrorHandler::PropagateError),
       new TaskServers(ErrorHandler::PropagateError),
+      new TaskMasqueServers(ErrorHandler::PropagateError),
       new TaskCaptivePortalLookup(ErrorHandler::PropagateError),
       new TaskGetSubscriptionDetails(
           TaskGetSubscriptionDetails::NoAuthenticationFlow,
@@ -2029,6 +2060,16 @@ void MozillaVPN::registerInspectorCommands() {
       [](InspectorHandler*, const QList<QByteArray>& arguments) {
         s_updateVersion = arguments[1];
         MozillaVPN::instance()->releaseMonitor()->runSoon();
+        return QJsonObject();
+      });
+
+  InspectorHandler::registerCommand(
+      "append_servers", "Append servers from JSON", 1,
+      [](InspectorHandler*, const QList<QByteArray>& arguments) {
+        logger.debug() << "Appending servers from JSON:" << arguments[1];
+        qDebug() << "Appending servers from JSON:" << arguments[1];
+        MozillaVPN::instance()->serverCountryModel()->appendFromJson(
+            arguments[1]);
         return QJsonObject();
       });
 

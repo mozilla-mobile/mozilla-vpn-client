@@ -23,9 +23,13 @@ class InterfaceConfig {
   enum HopType { SingleHop, MultiHopEntry, MultiHopExit };
   Q_ENUM(HopType)
 
+  Server::ProtocolType m_protocolType = Server::ProtocolType::WireGuard;
   HopType m_hopType;
   QString m_privateKey;
   QString m_publicKey;
+  // Server hostname. Only the MASQUE tunnel needs it; WireGuard connects by
+  // address.
+  QString m_hostname;
   QString m_deviceIpv4Address;
   QString m_deviceIpv6Address;
   QString m_serverIpv4Gateway;

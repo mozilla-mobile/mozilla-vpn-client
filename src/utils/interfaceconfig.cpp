@@ -14,9 +14,14 @@ QJsonObject InterfaceConfig::toJson() const {
   QJsonObject json;
   QMetaEnum metaEnum = QMetaEnum::fromType<HopType>();
 
+  QMetaEnum protocolMetaEnum = QMetaEnum::fromType<Server::ProtocolType>();
+
   json.insert("hopType", QJsonValue(metaEnum.valueToKey(m_hopType)));
+  json.insert("protocolType",
+              QJsonValue(protocolMetaEnum.valueToKey(m_protocolType)));
   json.insert("privateKey", QJsonValue(m_privateKey));
   json.insert("publicKey", QJsonValue(m_publicKey));
+  json.insert("hostname", QJsonValue(m_hostname));
   json.insert("deviceIpv4Address", QJsonValue(m_deviceIpv4Address));
   json.insert("deviceIpv6Address", QJsonValue(m_deviceIpv6Address));
   json.insert("serverPublicKey", QJsonValue(m_serverPublicKey));

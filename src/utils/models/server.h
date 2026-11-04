@@ -27,13 +27,21 @@ class Server final {
   enum ObfuscationMethod {
     NoObfuscation,
     LWO,
-    Masque,
+    MasqueProxy,
     UdpOverTcp,
     Shadowsocks
   };
   Q_ENUM(ObfuscationMethod)
 
+  // The tunnel protocol used to reach this server. Not the same as
+  // ObfuscationMethod, which only disguises a WireGuard transport.
+  enum ProtocolType { WireGuard, Masque };
+  Q_ENUM(ProtocolType)
+
   [[nodiscard]] bool fromJson(const QJsonObject& obj);
+  // Build a MASQUE server from a Remote Settings server entry, which only
+  // carries "hostname" and "port" (no key pair, IPs or weight).
+  [[nodiscard]] bool fromMasqueJson(const QJsonObject& obj);
   bool fromMultihop(const Server& exit, const Server& entry);
 
   static const Server& weightChooser(const QList<Server>& servers);
@@ -41,6 +49,16 @@ class Server final {
   bool initialized() const { return !m_hostname.isEmpty(); }
 
   bool supportObfuscationMethod(const ObfuscationMethod method) const;
+
+  ProtocolType protocol() const { return m_protocol; }
+
+  const QString& provider() const { return m_provider; }
+
+  // Stable identity for this server inside the model: WireGuard servers are
+  // keyed by their public key, MASQUE servers (which have none) by hostname.
+  const QString& identifier() const {
+    return m_publicKey.isEmpty() ? m_hostname : m_publicKey;
+  }
 
   const QString& hostname() const { return m_hostname; }
 
@@ -82,6 +100,10 @@ class Server final {
   }
 
  private:
+  ProtocolType m_protocol = ProtocolType::WireGuard;
+  // The entity operating this server. All servers are Mullvad for now, but the
+  // field is populated so the UI/logic can distinguish providers later.
+  QString m_provider = "mullvad";
   QString m_hostname;
   QString m_ipv4AddrIn;
   QString m_ipv4Gateway;

@@ -178,6 +178,7 @@ MZClickableRow {
                     property string _countryCode: code
                     property string _localizedCityName: modelData.localizedName
                     property bool isAvailable: modelData.connectionScore >= 0
+                    property bool _isMasque: modelData.isMasque
                     property int itemHeight: 54
 
                     id: del
@@ -191,8 +192,8 @@ MZClickableRow {
                     // provides all the necessary information
                     isRadioButtonLabelAccessible: false
                     implicitWidth: parent.width
-                    // Reserve space for the latency indicator
-                    labelRightPadding: latencyIndicator.implicitWidth + MZTheme.theme.hSpacing
+                    // Reserve space for the protocol badge and latency indicator
+                    labelRightPadding: latencyIndicator.implicitWidth + protocolBadge.implicitWidth + MZTheme.theme.hSpacing * 2
 
                     onClicked: {
                         if (!isAvailable) {
@@ -209,6 +210,34 @@ MZClickableRow {
                     Component.onCompleted: {
                         if (checked) {
                             currentCityIndex = index;
+                        }
+                    }
+
+                    // Badge showing the tunnel protocol (MASQUE or WireGuard)
+                    // this location uses.
+                    Rectangle {
+                        id: protocolBadge
+
+                        anchors {
+                            right: latencyIndicator.left
+                            rightMargin: MZTheme.theme.hSpacing
+                            verticalCenter: parent.verticalCenter
+                        }
+                        implicitWidth: protocolLabel.implicitWidth + MZTheme.theme.listSpacing * 2
+                        implicitHeight: protocolLabel.implicitHeight + MZTheme.theme.listSpacing
+                        radius: height / 2
+                        color: "transparent"
+                        border.width: 1
+                        border.color: MZTheme.colors.fontColor
+                        opacity: del.isAvailable ? 1.0 : 0.5
+
+                        MZInterLabel {
+                            id: protocolLabel
+                            anchors.centerIn: parent
+                            text: del._isMasque ? "MASQUE" : "WireGuard"
+                            color: MZTheme.colors.fontColor
+                            font.pixelSize: MZTheme.theme.fontSizeSmallest
+                            verticalAlignment: Text.AlignVCenter
                         }
                     }
 

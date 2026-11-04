@@ -111,6 +111,13 @@ void LinuxController::deactivate() {
           &LinuxController::operationCompleted);
 }
 
+void LinuxController::rotateToken(const QString& token) {
+  logger.debug() << "LinuxController rotating token";
+
+  // Fire-and-forget: nothing to update here, and the watcher self-deletes.
+  m_dbus->rotateToken(token);
+}
+
 bool LinuxController::splitTunnelSupported() const {
   static int splitTunnelSupported = -1;
   if (splitTunnelSupported >= 0) {

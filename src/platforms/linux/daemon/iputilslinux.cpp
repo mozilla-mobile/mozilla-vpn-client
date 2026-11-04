@@ -23,7 +23,7 @@ namespace {
 Logger logger("IPUtilsLinux");
 }
 
-IPUtilsLinux::IPUtilsLinux(Daemon* daemon) : IPUtils(daemon) {
+IPUtilsLinux::IPUtilsLinux(QObject* parent) : IPUtils(parent) {
   MZ_COUNT_CTOR(IPUtilsLinux);
   logger.debug() << "IPUtilsLinux created.";
 }

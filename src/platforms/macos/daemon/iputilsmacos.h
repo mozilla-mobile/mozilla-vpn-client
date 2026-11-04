@@ -11,7 +11,7 @@
 
 class IPUtilsMacos final : public IPUtils {
  public:
-  IPUtilsMacos(Daemon* daemon);
+  IPUtilsMacos(QObject* parent);
   ~IPUtilsMacos();
 
   bool addInterfaceIPs(const InterfaceConfig& config) override;
