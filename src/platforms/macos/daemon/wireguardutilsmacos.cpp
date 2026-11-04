@@ -4,6 +4,7 @@
 
 #include "wireguardutilsmacos.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 #include <Security/SecCertificate.h>
 #include <Security/SecRequirement.h>
 #include <Security/SecStaticCode.h>
@@ -73,19 +74,15 @@ void WireguardUtilsMacos::tunnelFinished(int exitCode,
 
 // static
 QString WireguardUtilsMacos::wireguardGoPath() {
-  QString osVersion = QSysInfo::productVersion();
-  if (QVersionNumber::fromString(osVersion) >= QVersionNumber(13, 0)) {
-    // For macOS 13 and later this can be a relative path to the daemon.
-    QDir appPath(QCoreApplication::applicationDirPath());
-    appPath.cdUp();
-    appPath.cdUp();
-    appPath.cd("Resources");
-    appPath.cd("utils");
-    return appPath.filePath("wireguard-go");
-  }
+  CFBundleRef bundle = CFBundleGetMainBundle();
+  CFStringRef ident = CFBundleGetIdentifier(bundle);
+  QStringList parts = QString::fromCFString(ident).split('.');
+  CFRelease(bundle);
+  CFRelease(ident);
 
-  // For earlier versions of macOS - this must be a fixed path
-  return "/Applications/Mozilla VPN.app/Contents/Resources/utils/wireguard-go";
+  parts.last() = "wireguard";
+  QString wgHelperName = parts.join('.');
+  return QDir(QCoreApplication::applicationDirPath()).filePath(wgHelperName);
 }
 
 // static
