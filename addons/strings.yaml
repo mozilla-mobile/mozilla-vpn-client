@@ -247,17 +247,27 @@ mandatoryUpdate:
     value: Please update to the latest version to continue using Mozilla VPN.
     comment: Line asking users to update. This should be kind, yet firm. It should not include any language that implies this is optional.
 
-
-# Has not been used yet (from above)
-# 237updateMessage.bullet1
-
 2026q3:
-  # vpn7655:
-    # value: This is an example. Draft a release note for your feature. It's ID should be the Jira issue. Please leave it as comment to allow for edits.
-    # comment: Bullet point with a specific update. Should have tag that indicates it applies to [all/iOS/Linux/whichever] platform.
   vpn7646: # Used in 2.39
     value: "[iOS] Even more widgets are now available! Lock Screen widgets are included in this release."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to iOS platform.
   pr11382: # No Jira ticket, so using PR for identifier. Used in 2.39
     value: "[macOS] Improved logging of some errors, allowing easier diagnosis of problems."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to macOS platform.
+
+2026q4:
+  # vpn7655:
+    # value: This is an example. Draft a release note for your feature. It's ID should be the Jira issue. Please leave it as comment to allow for edits.
+    # comment: Bullet point with a specific update. Should have tag that indicates it applies to [all/iOS/Linux/whichever] platform.
+  vpn7565: # Used in 2.41
+    value: "[All] Obfuscation: New privacy settings may help when VPN usage is blocked by a network provider. (Unfortunately, it will not help when a specific website or app blocks content.)"
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to all platforms.
+  vpn7749: # Used in 2.41
+    value: "[Windows] Clearer error messages when there is a problem with Excluded Apps."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to Windows platform.
+  vpn7821: # Used in 2.41
+    value: "[Android] When starting the VPN from the tile or on boot, the connection timer should now be more accurate."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to Android platform.
+
+# Has not been used yet (from above)
+# 237updateMessage.bullet1
