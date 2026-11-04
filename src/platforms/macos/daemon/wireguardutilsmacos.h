@@ -39,9 +39,11 @@ class WireguardUtilsMacos final : public WireguardUtils {
   void tunnelFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
  private:
+  static QString uapiSocket(const QString& ifname);
   QString uapiCommand(const QString& command);
   static int uapiErrno(const QString& command);
-  QString waitForTunnelName(const QString& filename);
+  int createTunnelFd();
+  int createUapiListener(const QString& ifname);
   static QString wireguardGoPath();
   static bool wireguardGoCodesign(const QProcess& process);
   static QString wireguardGoRequirements();

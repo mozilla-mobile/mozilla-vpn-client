@@ -10,7 +10,6 @@
 
 #include "leakdetector.h"
 #include "logger.h"
-#include "platforms/macos/macosutils.h"
 #include "platforms/macos/xpcdaemonprotocol.h"
 
 constexpr const int XPC_SESSION_MAX_BACKLOG = 32;

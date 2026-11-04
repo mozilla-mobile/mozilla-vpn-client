@@ -10,6 +10,14 @@
 #include <Security/SecStaticCode.h>
 #include <Security/SecTask.h>
 #include <net/route.h>
+#include <net/if_utun.h>
+#include <netinet/ip6.h>
+#include <sys/ioctl.h>
+#include <sys/kern_control.h>
+#include <sys/stat.h>
+#include <sys/sys_domain.h>
+#include <sys/sysctl.h>
+#include <sys/un.h>
 
 #include <QByteArray>
 #include <QDir>
@@ -206,6 +214,88 @@ bool WireguardUtilsMacos::wireguardGoCodesign(const QProcess& process) {
   return (status == errSecSuccess);
 }
 
+int WireguardUtilsMacos::createTunnelFd() {
+  int tunfd = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
+  if (tunfd < 0) {
+    return -1;
+  }
+
+  // Connect to the utun control kernel service.
+  struct ctl_info info = {.ctl_name = UTUN_CONTROL_NAME};
+  int err = ioctl(tunfd, CTLIOCGINFO, &info);
+  if (err < 0) {
+    close(tunfd);
+    return -1;
+  }
+  struct sockaddr_ctl addr = {};
+  addr.sc_len = sizeof(addr);
+  addr.sc_family = AF_SYSTEM;
+  addr.ss_sysaddr = AF_SYS_CONTROL;
+  addr.sc_id = info.ctl_id;
+  addr.sc_unit = 0;
+  if (::connect(tunfd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+    close(tunfd);
+    return -1;
+  }
+
+  // Allow packets to queue up in the kernel when under load.
+  uint32_t utun_max_backlog = 64;
+  setsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_MAX_PENDING_PACKETS,
+             &utun_max_backlog, sizeof(utun_max_backlog));
+
+  return tunfd;
+
+  struct ifreq ifr;
+  socklen_t ifnamesize = sizeof(ifr.ifr_name);
+  err = getsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifr.ifr_name,
+                   &ifnamesize);
+  if (err < 0) {
+    close(tunfd);
+    return -1;
+  }
+
+  // Set a base MTU, it will get updated later.
+  ifr.ifr_mtu = IPV6_MMTU;
+  ioctl(tunfd, SIOCSIFMTU, &ifr);
+  return tunfd;
+}
+
+int WireguardUtilsMacos::createUapiListener(const QString& ifname) {
+  QDir wgRuntimeDir(WG_RUNTIME_DIR);
+  if (!wgRuntimeDir.exists()) {
+    if (mkdir(WG_RUNTIME_DIR, S_IRWXU | S_IRWXG |  S_IROTH | S_IXOTH) < 0) {
+      return -1;
+    }
+  }
+
+  int uapifd = socket(AF_UNIX, SOCK_STREAM, 0);
+  if (uapifd < 0) {
+    return -1;
+  }
+
+  struct sockaddr_un sun = {};
+  sun.sun_family = AF_UNIX;
+  sun.sun_len = sizeof(sun);
+  strncpy(sun.sun_path, qPrintable(uapiSocket(ifname)), sizeof(sun.sun_path));
+  unlink(sun.sun_path);
+  if (bind(uapifd, (struct sockaddr*)&sun, sizeof(sun)) < 0) {
+    close(uapifd);
+    return -1;
+  }
+  if (listen(uapifd, 8) < 0) {
+    close(uapifd);
+    unlink(sun.sun_path);
+    return -1;
+  }
+
+  return uapifd;
+}
+
+// static
+QString WireguardUtilsMacos::uapiSocket(const QString& ifname) {
+  return QDir(WG_RUNTIME_DIR).filePath(ifname + ".sock");
+}
+
 bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   Q_UNUSED(config);
   if (m_tunnel.state() != QProcess::NotRunning) {
@@ -213,14 +303,33 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
     return false;
   }
 
-  QDir wgRuntimeDir(WG_RUNTIME_DIR);
-  if (!wgRuntimeDir.exists()) {
-    wgRuntimeDir.mkpath(".");
+  int tunfd = createTunnelFd();
+  if (tunfd < 0) {
+    logger.error() << "Failed to create utun device:" << strerror(errno);
+    return false;
   }
+  // We can close the tunnel FD as soon as the process has started, the child
+  // will keep the tunnel open.
+  auto tunfdGuard = qScopeGuard([tunfd]() { close(tunfd); });
+
+  char ifname[IFNAMSIZ];
+  socklen_t bufsize = sizeof(ifname);
+  if (getsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifname, &bufsize) < 0) {
+    logger.error() << "Failed to get utun name:" << strerror(errno);
+    return false;
+  }
+  logger.debug() << "Created wireguard interface" << ifname;
+
+  int uapifd = createUapiListener(ifname);
+  if (uapifd < 0) {
+    logger.error() << "Failed to create uapi socket:" << strerror(errno);
+    return false;
+  }
+  auto uapiGuard = qScopeGuard([uapifd]() { close(uapifd); });
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  QString wgNameFile = wgRuntimeDir.filePath(QString(WG_INTERFACE) + ".name");
-  pe.insert("WG_TUN_NAME_FILE", wgNameFile);
+  pe.insert("WG_TUN_FD", QString::number(tunfd));
+  pe.insert("WG_UAPI_FD", QString::number(uapifd));
 #ifdef MZ_DEBUG
   pe.insert("LOG_LEVEL", "debug");
 #endif
@@ -239,13 +348,7 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
     return false;
   }
 
-  m_ifname = waitForTunnelName(wgNameFile);
-  if (m_ifname.isNull()) {
-    logger.error() << "Unable to read tunnel interface name";
-    m_tunnel.kill();
-    return false;
-  }
-  logger.debug() << "Created wireguard interface" << m_ifname;
+  m_ifname = QString(ifname);
 
   // Start the routing table monitor.
   m_rtmonitor = new MacosRouteMonitor(m_ifname, this);
@@ -462,15 +565,12 @@ bool WireguardUtilsMacos::excludeLocalNetworks(const QList<IPAddress>& routes) {
 }
 
 QString WireguardUtilsMacos::uapiCommand(const QString& command) {
-  QLocalSocket socket;
   QTimer uapiTimeout;
-  QDir wgRuntimeDir(WG_RUNTIME_DIR);
-  QString wgSocketFile = wgRuntimeDir.filePath(m_ifname + ".sock");
-
   uapiTimeout.setSingleShot(true);
   uapiTimeout.start(WG_TUN_PROC_TIMEOUT);
 
-  socket.connectToServer(wgSocketFile, QIODevice::ReadWrite);
+  QLocalSocket socket;
+  socket.connectToServer(uapiSocket(m_ifname), QIODevice::ReadWrite);
   if (!socket.waitForConnected(WG_TUN_PROC_TIMEOUT)) {
     logger.error() << "QLocalSocket::waitForConnected() failed:"
                    << socket.errorString();
@@ -509,31 +609,4 @@ int WireguardUtilsMacos::uapiErrno(const QString& reply) {
     }
   }
   return EINVAL;
-}
-
-QString WireguardUtilsMacos::waitForTunnelName(const QString& filename) {
-  QTimer timeout;
-  timeout.setSingleShot(true);
-  timeout.start(WG_TUN_PROC_TIMEOUT);
-
-  QFile file(filename);
-  while ((m_tunnel.state() == QProcess::Running) && timeout.isActive()) {
-    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-      continue;
-    }
-    QString ifname = QString::fromLocal8Bit(file.readLine()).trimmed();
-    file.close();
-
-    // Test-connect to the UAPI socket.
-    QLocalSocket sock;
-    QDir wgRuntimeDir(WG_RUNTIME_DIR);
-    QString sockName = wgRuntimeDir.filePath(ifname + ".sock");
-    sock.connectToServer(sockName, QIODevice::ReadWrite);
-    if (sock.waitForConnected(100)) {
-      return ifname;
-    }
-  }
-
-  return QString();
 }
