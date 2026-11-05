@@ -1,20 +1,20 @@
 {
   "api_version": "0.1",
-  "id": "message_update_v2.40",
-  "name": "Update to Mozilla VPN 2.40",
+  "id": "message_update_v2.41",
+  "name": "Update to Mozilla VPN 2.41",
   "type": "message",
   "conditions": {
-    "max_client_version": "2.39.9",
+    "max_client_version": "2.40.9",
     "javascript": "osCheck.js"
   },
   "javascript": {
     "enable": "enable.js"
   },
   "message": {
-    "date": 1790182800,
+    "date": 1795024800,
     "usesSharedStrings": true,
-    "shortVersion": "2.40",
-    "id": "message_update_v2.40",
+    "shortVersion": "2.41",
+    "id": "message_update_v2.41",
     "title": "vpn.commonStrings.updateTitle",
     "subtitle": "vpn.commonStrings.subtitle",
     "promo_text": "vpn.commonStrings.updatePromo",
@@ -24,6 +24,24 @@
         "id": "c_1",
         "type": "text",
         "content": "vpn.commonStrings.generalUpdateContent"
+      },
+      {
+        "id": "c_2",
+        "type": "ulist",
+        "content": [
+          {
+            "id": "l_1",
+            "content": "vpn.2026q4.vpn7565"
+          },
+          {
+            "id": "l_2",
+            "content": "vpn.2026q4.vpn7749"
+          },
+          {
+            "id": "l_3",
+            "content": "vpn.2026q4.vpn7821"
+          }
+        ]
       },
       {
         "id": "c_3",
