@@ -9,6 +9,7 @@
 #include <QProcess>
 
 #include "daemon/wireguardutils.h"
+#include "macoshelperprocess.h"
 #include "macosroutemonitor.h"
 
 class WireguardUtilsMacos final : public WireguardUtils {
@@ -34,7 +35,6 @@ class WireguardUtilsMacos final : public WireguardUtils {
   bool excludeLocalNetworks(const QList<IPAddress>& lanAddressRanges) override;
 
  private slots:
-  void tunnelStdoutReady();
   void tunnelErrorOccurred(QProcess::ProcessError error);
   void tunnelFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
@@ -44,12 +44,10 @@ class WireguardUtilsMacos final : public WireguardUtils {
   static int uapiErrno(const QString& command);
   int createTunnelFd();
   int createUapiListener(const QString& ifname);
-  static QString wireguardGoPath();
-  static bool wireguardGoCodesign(const QProcess& process);
-  static QString wireguardGoRequirements();
+  static QString wireguardGoHelper();
 
   QString m_ifname;
-  QProcess m_tunnel;
+  MacOSHelperProcess m_tunnel;
   MacosRouteMonitor* m_rtmonitor = nullptr;
 };
 
