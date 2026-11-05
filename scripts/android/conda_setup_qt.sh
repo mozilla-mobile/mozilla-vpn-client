@@ -42,8 +42,8 @@ fi
 export QT_DIR=$CONDA_PREFIX/Qt
 
 # QT_Host Tools
-echo "aqt install-qt --outputdir $QT_DIR $HOST_TARGET"
-python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET
+echo "aqt install-qt --outputdir $QT_DIR $HOST_TARGET -m qtlottie"
+python -m aqt install-qt --outputdir $QT_DIR $HOST_TARGET -m qtlottie
 for QT_HOST_DIR in $(find ${QT_DIR} -type d -name "${HOST_FOLDER_NAME}"); do
     find ${QT_HOST_DIR} -type f -name 'lib*.a' -delete
 done

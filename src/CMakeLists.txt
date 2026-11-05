@@ -55,7 +55,6 @@ add_subdirectory(utils)
 target_link_libraries(mozillavpn PRIVATE
     shared-sources
     mozillavpn-sources
-    lottie
     mzutils
     nebula
     translations
