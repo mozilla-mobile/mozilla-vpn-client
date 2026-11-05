@@ -4,7 +4,7 @@
 
 #import <Foundation/Foundation.h>
 
-@interface WireguardStatus : NSObject
+@interface WgStatus : NSObject <NSSecureCoding>
 
 @property(strong) NSDate* lastHandshake;
 @property(strong) NSString* ipv4address;
@@ -16,5 +16,4 @@
 @property(assign) float estimatedLoss;
 @property(assign) NSUInteger estimatedRtt;
 
-- (void)encodeWithCoder:(NSCoder*)coder;
 @end

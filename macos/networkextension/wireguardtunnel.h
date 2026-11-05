@@ -6,13 +6,13 @@
 #import <Network/Network.h>
 #import <NetworkExtension/NetworkExtension.h>
 
-#import "interfaceconfig.h"
+#import "wgconfig.h"
+#import "wgstatus.h"
 #import "wireguardpeer.h"
-#import "wireguardstatus.h"
 
 @interface WireguardTunnel : NSObject
 
-- (void)startTunnelWithOptions:(InterfaceConfig*)options
+- (void)startTunnelWithOptions:(WgConfig*)options
              completionHandler:(void (^)(NSError* error))completionHandler;
 
 - (void)stopTunnelWithReason:(NEProviderStopReason)reason
@@ -22,15 +22,18 @@
 
 - (NSError*)setTunnelAddress:(nw_endpoint_t)endpoint;
 
-- (void)addRoute:(RoutePrefix*)prefix;
+- (void)setRoutes:(id)routes;
+- (void)insertRoute:(RoutePrefix*)prefix;
 - (void)removeRoute:(RoutePrefix*)prefix;
+- (void)flushRoutes;
 
 - (void)syncMtu:(nw_endpoint_t)dest;
 
 @property(nonatomic) NSUInteger mtu;
 @property(strong) WireguardPeer* peer;
 @property(readonly, getter=getTunfd) int tunfd;
-@property(strong, readonly, getter=getStatus) WireguardStatus* status;
+@property(strong, readonly, getter=getStatus) WgStatus* status;
+@property(strong, readonly, getter=getRoutes) NSSet<RoutePrefix*>* routes;
 @property(strong) nw_endpoint_t ipv4address;
 @property(strong) nw_endpoint_t ipv6address;
 @property(strong) nw_interface_t virtualInterface;

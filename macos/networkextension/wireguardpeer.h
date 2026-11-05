@@ -6,8 +6,9 @@
 #import <Network/Network.h>
 #import <NetworkExtension/NetworkExtension.h>
 
-#import "interfaceconfig.h"
-#import "wireguardstatus.h"
+#import "transport/wgtransport.h"
+#import "wgconfig.h"
+#import "wgstatus.h"
 
 constexpr const int WG_PACKET_OVERHEAD = 32;
 constexpr const int WG_PACKET_ALIGN = 16;
@@ -20,12 +21,12 @@ extern "C" struct wireguard_tunnel;
 
 @interface WireguardPeer : NSObject
 
-- (id)initWithOptions:(InterfaceConfig*)options andTunnel:(WireguardTunnel*)tunnel;
+- (id)initWithOptions:(WgConfig*)options;
 
-- (void)startWithOptions:(InterfaceConfig*)options
+- (void)startWithOptions:(WgConfig*)options
        completionHandler:(void (^)(NSError* error))completionHandler;
 
-- (void)stopWithReason:(NEProviderStopReason)reason completionHandler:(void (^)())completionHandler;
+- (void)stopWithReason:(NEProviderStopReason)reason;
 
 - (void)cancelWithError:(NSError*)error;
 
@@ -33,6 +34,7 @@ extern "C" struct wireguard_tunnel;
 
 - (void)writePacket:(int)protocol withData:(NSData*)data;
 
-@property(strong, readonly, getter=getStatus) WireguardStatus* status;
-@property(weak, readonly) WireguardTunnel* tunnel;
+@property(strong, readonly, getter=getStatus) WgStatus* status;
+@property(strong, readonly) NSObject<WgTransport>* transport;
+@property(assign) int tunfd;
 @end

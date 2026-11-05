@@ -44,9 +44,10 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
   dispatch_semaphore_t m_semaphore; 
   NSThread *           m_worker;
 
-  // The routing socket
-  int                  m_rtseq;
-  int                  m_rtsock;
+  // Routes managed by this tunnel.
+  NSMutableSet<RoutePrefix*>* m_routes;
+  int                         m_rtseq;
+  int                         m_rtsock;
 
   // Not used for anything, we just hold them for status generation.
   nw_endpoint_t        m_ipv4gateway;
@@ -134,7 +135,7 @@ static void wgLog(const char* msg) {
   return self;
 }
 
-- (void) startTunnelWithOptions:(InterfaceConfig *)options 
+- (void) startTunnelWithOptions:(WgConfig *)options 
               completionHandler:(void (^)(NSError *error)) completionHandler {
   m_ipv4gateway = options.serverIpv4Gateway;
   m_ipv6gateway = options.serverIpv6Gateway;
@@ -150,7 +151,8 @@ static void wgLog(const char* msg) {
   }
 
   // Configure the peer
-  self.peer = [[WireguardPeer alloc] initWithOptions:options andTunnel:self];
+  self.peer = [[WireguardPeer alloc] initWithOptions:options];
+  self.peer.tunfd = m_tunfd;
   [self.peer startWithOptions:options completionHandler:^(NSError* error){
     NSLog(@"handshake completed");
     if (error) {
@@ -193,11 +195,9 @@ static void wgLog(const char* msg) {
     completionHandler();
   }
 
-  [self.peer stopWithReason:reason
-          completionHandler:^(){
-    [self shutdownTunnel];
-    completionHandler();
-  }];
+  [self.peer stopWithReason:reason];
+  [self shutdownTunnel];
+  completionHandler();
 }
 
 - (NSError*)setTunnelAddress:(nw_endpoint_t)endpoint {
@@ -330,6 +330,9 @@ static void wgLog(const char* msg) {
     dispatch_semaphore_wait(m_semaphore, delay);
   }
 
+  // Drop all routes into the tunnel
+  [self flushRoutes];
+
   if (m_tunfd >= 0) {
     close(m_tunfd);
     m_tunfd = -1;
@@ -354,11 +357,11 @@ static void wgLog(const char* msg) {
   return m_tunfd;
 }
 
-- (WireguardStatus*)getStatus {
+- (WgStatus*)getStatus {
   if (!self.peer) {
-    return [WireguardStatus new];
+    return [WgStatus new];
   }
-  WireguardStatus* result = self.peer.status;
+  WgStatus* result = self.peer.status;
 
   // Get the interface addresses.
   if (self.ipv4address) {
@@ -407,12 +410,8 @@ static void wgLog(const char* msg) {
 - (void)syncMtu:(nw_endpoint_t)dest {
   // Get the MTU and subtract the wireguard overhead.
   const struct sockaddr* sa = nw_endpoint_get_address(dest);
-  NSUInteger wgMtu = [self rtmFetchMtu:sa] - WG_PACKET_OVERHEAD - sizeof(struct udphdr);
-  if (sa->sa_family == AF_INET6) {
-    wgMtu -= sizeof(struct ip6_hdr);
-  } else {
-    wgMtu -= sizeof(struct ipovly);
-  }
+  NSUInteger wgMtu = [self rtmFetchMtu:sa] - WG_PACKET_OVERHEAD;
+  wgMtu -= [self.peer.transport overhead];
 
   if (wgMtu >= IPV6_MMTU) {
     self.mtu = wgMtu;
@@ -569,13 +568,44 @@ static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, cons
   return rtm->rtm_rmx.rmx_mtu;
 }
 
-- (void) addRoute:(RoutePrefix*)prefix {
+- (NSSet<RoutePrefix*>*) getRoutes {
+  return [NSSet setWithSet:m_routes];
+}
+
+- (void) setRoutes:(id)routes {
+  if (![routes conformsToProtocol:@protocol(NSFastEnumeration)]) {
+    [self flushRoutes];
+    return;
+  }
+
+  // Insert new routes into the kernel.
+  NSMutableSet<RoutePrefix*>* old = [NSMutableSet setWithSet:m_routes];
+  for (RoutePrefix* prefix in routes) {
+    if ([old containsObject:prefix]) {
+      [old removeObject:prefix];
+    } else {
+      [self rtmSendRoute:RTM_ADD
+          toDestination:prefix.destination
+              withPrefix:prefix.prefixLength
+                andFlags:(prefix.prefixLength == 0) ? RTF_IFSCOPE : 0];
+    }
+  }
+
+  // Remove unused routes from the kernel.
+  for (RoutePrefix* prefix in old) {
+    [self removeRoute:prefix];
+  }
+}
+
+- (void) insertRoute:(RoutePrefix*)prefix {
   // Note that the default route should set RTF_IFSCOPE so that we
   // leave the real default route untouched.
   [self rtmSendRoute:RTM_ADD
        toDestination:prefix.destination
           withPrefix:prefix.prefixLength
             andFlags:(prefix.prefixLength == 0) ? RTF_IFSCOPE : 0];
+  
+  [m_routes addObject:[prefix copy]];
 }
 
 - (void) removeRoute:(RoutePrefix*)prefix {
@@ -583,6 +613,18 @@ static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, cons
        toDestination:prefix.destination
           withPrefix:prefix.prefixLength
             andFlags:(prefix.prefixLength == 0) ? RTF_IFSCOPE : 0];
+
+  [m_routes removeObject:prefix];
+}
+
+- (void) flushRoutes {
+  for (RoutePrefix* prefix in m_routes) {
+    [self rtmSendRoute:RTM_DELETE
+        toDestination:prefix.destination
+            withPrefix:prefix.prefixLength
+              andFlags:(prefix.prefixLength == 0) ? RTF_IFSCOPE : 0];
+  }
+  [m_routes removeAllObjects];
 }
 
 @end
