@@ -260,14 +260,14 @@ mandatoryUpdate:
     # value: This is an example. Draft a release note for your feature. It's ID should be the Jira issue. Please leave it as comment to allow for edits.
     # comment: Bullet point with a specific update. Should have tag that indicates it applies to [all/iOS/Linux/whichever] platform.
   vpn7565: # Used in 2.41
-    value: "[All] Obfuscation: New privacy settings may help when VPN usage is blocked by a network provider. (Unfortunately, it will not help when a specific website or app blocks content.)"
+    value: "[All] Obfuscation: New privacy settings may help when VPN usage is blocked by a network provider. This will not help when a specific website or app blocks content."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to all platforms.
   vpn7749: # Used in 2.41
     value: "[Windows] Clearer error messages when there is a problem with Excluded Apps."
     comment: Bullet point with a specific update. Should have tag that indicates it applies to Windows platform.
   vpn7821: # Used in 2.41
-    value: "[Android] When starting the VPN from the tile or on boot, the connection timer should now be more accurate."
-    comment: Bullet point with a specific update. Should have tag that indicates it applies to Android platform.
+    value: "[Android] When starting the VPN from the settings tile or on boot, the connection timer should now be more accurate."
+    comment: Bullet point with a specific update. Should have tag that indicates it applies to Android platform. ’Tile’ is a technical android term for an optional settings toggle.
 
 # Has not been used yet (from above)
 # 237updateMessage.bullet1
