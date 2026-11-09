@@ -19,8 +19,6 @@ constexpr const int PRIO_PACKET_SIZE = 256;
 
   // The sockets.
   int             m_socket;
-  int             m_downstream;
-  int             m_upstream;
 
   // Packet buffers.
   NSData*         m_txqueue[PACKET_QUEUE_SIZE];
@@ -36,6 +34,7 @@ constexpr const int PRIO_PACKET_SIZE = 256;
 
 - (id) initWithEndpoint:(nw_endpoint_t) ep {
   self = [super init];
+  m_socket = -1;
 
   // Save the address for use in connect().
   const struct sockaddr* dest = nw_endpoint_get_address(ep);
@@ -64,7 +63,9 @@ constexpr const int PRIO_PACKET_SIZE = 256;
 
 - (void) dealloc {
   [self shutdown];
-  close(m_socket);
+  if (m_socket >= 0) {
+    close(m_socket);
+  }
 #if !__has_feature(objc_arc)
   [super dealloc];
 #endif

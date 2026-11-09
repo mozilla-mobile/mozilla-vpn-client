@@ -18,6 +18,7 @@ constexpr const size_t PEER_DATAGRAM_BUFSIZE = 4096;
 
 - (id)initWithEndpoint:(nw_endpoint_t)ep {
   self = [super init];
+  self->_sockfd = -1;
 
   const struct sockaddr* dest = nw_endpoint_get_address(ep);
   if (dest->sa_len > sizeof(m_destaddr)) {
@@ -34,7 +35,9 @@ constexpr const size_t PEER_DATAGRAM_BUFSIZE = 4096;
 }
 
 - (void) dealloc {
-  close(self.sockfd);
+  if (self.sockfd >= 0) {
+    close(self.sockfd);
+  }
 #if !__has_feature(objc_arc)
   [super dealloc];
 #endif
