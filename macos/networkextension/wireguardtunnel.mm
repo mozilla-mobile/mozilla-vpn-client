@@ -75,6 +75,7 @@ static void wgLog(const char* msg) {
     close(m_rtsock);
     return nil;
   }
+  m_routes = [NSMutableSet new];
 
   // Connect to the utun control kernel service.
   struct ctl_info info = {.ctl_name = UTUN_CONTROL_NAME};
@@ -584,10 +585,7 @@ static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, cons
     if ([old containsObject:prefix]) {
       [old removeObject:prefix];
     } else {
-      [self rtmSendRoute:RTM_ADD
-          toDestination:prefix.destination
-              withPrefix:prefix.prefixLength
-                andFlags:(prefix.prefixLength == 0) ? RTF_IFSCOPE : 0];
+      [self insertRoute:prefix];
     }
   }
 

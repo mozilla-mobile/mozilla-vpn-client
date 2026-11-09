@@ -92,7 +92,7 @@
   if (m_storage.ss_family == AF_INET6) {
     const struct sockaddr_in6* a = (struct sockaddr_in6*)&m_storage;
     const struct sockaddr_in6* b = (struct sockaddr_in6*)other.destination;
-    return memcmp(a->sin6_addr.s6_addr, b->sin6_addr.s6_addr, 16);
+    return memcmp(a->sin6_addr.s6_addr, b->sin6_addr.s6_addr, 16) == 0;
   }
 
   // TODO: We don't recognize this address family, assume non-equal?
