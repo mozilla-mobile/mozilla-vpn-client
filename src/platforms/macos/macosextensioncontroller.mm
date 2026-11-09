@@ -10,9 +10,12 @@
 #import <SystemExtensions/SystemExtensions.h>
 
 #include <QMetaMethod>
+#include <QtEndian>
 
 #include "logger.h"
 #include "macosutils.h"
+#include "wgconfig.h"
+#include "wgstatus.h"
 
 // An extension loader - used to forward Obj-C messages back to Qt.
 @interface MacOSExtensionDelegate : NSObject <OSSystemExtensionRequestDelegate, OSSystemExtensionsWorkspaceObserver>
@@ -212,6 +215,35 @@ void MacOSExtensionController::extStatusChange(int status) {
   }
 }
 
+nw_endpoint_t MacOSExtensionController::encodeAddress(const QString& addr) {
+  QHostAddress hostaddr;
+  if (addr.contains('/')) {
+    hostaddr.setAddress(addr.section('/', 0, 0));
+  } else {
+    hostaddr.setAddress(addr);
+  }
+
+  if (hostaddr.protocol() == QAbstractSocket::IPv4Protocol) {
+    struct sockaddr_in sin = {};
+    quint32 ipv4addr = hostaddr.toIPv4Address();
+    sin.sin_family = AF_INET;
+    sin.sin_len = sizeof(struct sockaddr_in);
+    sin.sin_addr.s_addr = qToBigEndian<quint32>(ipv4addr);
+    return nw_endpoint_create_address((const struct sockaddr*)&sin);
+  }
+
+  if (hostaddr.protocol() == QAbstractSocket::IPv6Protocol) {
+    Q_IPV6ADDR raw = hostaddr.toIPv6Address();
+    struct sockaddr_in6 sin6 = {};
+    sin6.sin6_family = AF_INET6;
+    sin6.sin6_len = sizeof(struct sockaddr_in6);
+    memcpy(sin6.sin6_addr.s6_addr, &raw, sizeof(Q_IPV6ADDR));
+    return nw_endpoint_create_address((const struct sockaddr*)&sin6);
+  }
+
+  return nil;
+}
+
 void MacOSExtensionController::activate(const InterfaceConfig& config,
                                         Controller::Reason reason) {
   Q_UNUSED(reason);
@@ -226,39 +258,61 @@ void MacOSExtensionController::activate(const InterfaceConfig& config,
   m_serverPublicKey = config.m_serverPublicKey;
 
   // Serialize the interface configuration.
-  NSMutableDictionary* options = [NSMutableDictionary dictionary];
-  [options setObject:config.m_privateKey.toNSString() forKey:@"privateKey"];
-  [options setObject:config.m_deviceIpv4Address.toNSString() forKey:@"deviceIpv4Addr"];
-  [options setObject:config.m_deviceIpv6Address.toNSString() forKey:@"deviceIpv6Addr"];
-  [options setObject:config.m_serverPublicKey.toNSString() forKey:@"serverPublicKey"];
-  [options setObject:config.m_serverIpv4AddrIn.toNSString() forKey:@"serverIpv4AddrIn"];
-  [options setObject:config.m_serverIpv6AddrIn.toNSString() forKey:@"serverIpv6AddrIn"];
-  [options setObject:config.m_serverIpv4Gateway.toNSString() forKey:@"serverIpv4Gateway"];
-  [options setObject:config.m_serverIpv6Gateway.toNSString() forKey:@"serverIpv6Gateway"];
-  [options setObject:[NSNumber numberWithInt:config.m_serverPort] forKey:@"serverPort"];
+  WgConfig* options = [WgConfig new];
+  options.privateKey = config.m_privateKey.toNSString();
+  options.deviceIpv4Addr = encodeAddress(config.m_deviceIpv4Address);
+  options.deviceIpv6Addr = encodeAddress(config.m_deviceIpv6Address);
+  
+  options.serverPublicKey = config.m_serverPublicKey.toNSString();
+  options.serverIpv4Addr = encodeAddress(config.m_serverIpv4AddrIn);
+  options.serverIpv6Addr = encodeAddress(config.m_serverIpv6AddrIn);
+  options.serverIpv4Gateway = encodeAddress(config.m_serverIpv4Gateway);
+  options.serverIpv6Gateway = encodeAddress(config.m_serverIpv6Gateway);
+  options.serverPort = config.m_serverPort;
+
   if (!config.m_dnsServer.isEmpty()) {
-    [options setObject:@[config.m_dnsServer.toNSString()] forKey:@"dnsSettings"];
+    options.dnsSettings = [[NEDNSSettings alloc] initWithServers:@[config.m_dnsServer.toNSString()]];
   }
 
   NSMutableArray* ipAddressRanges =
       [NSMutableArray arrayWithCapacity:config.m_allowedIPAddressRanges.length()];
   for (const IPAddress& range : config.m_allowedIPAddressRanges) {
-    [ipAddressRanges addObject:range.toString().toNSString()];
+    RoutePrefix* entry = [RoutePrefix parseRoute:range.toString().toNSString()];
+    if (entry == nil) {
+      continue;
+    }
+    [ipAddressRanges addObject:entry];
   }
-  [options setObject:ipAddressRanges forKey:@"routes"];
+  options.routes = ipAddressRanges;
 
   // Serialize the excluded application list.
-  NSMutableArray* vpnDisabledApps =
-      [NSMutableArray arrayWithCapacity:config.m_vpnDisabledApps.length()];
+  NSMutableSet* apps = [NSMutableSet setWithCapacity:config.m_vpnDisabledApps.length()];
   for (const QString& appId : config.m_vpnDisabledApps) {
-    [vpnDisabledApps addObject:appId.toNSString()];
+    [apps addObject:appId.toNSString()];
   }
-  [options setObject:vpnDisabledApps forKey:@"apps"];
+  options.excludedApps = apps;
+
+  // Setup the obfuscation algorithm, if any.
+  switch (config.m_obfuscationMethod) {
+    case Server::ObfuscationMethod::UdpOverTcp:
+      options.obfuscation = kObfuscationTCP;
+      break;
+    case Server::ObfuscationMethod::LWO:
+      if (config.m_lwoVersion >= 2) {
+        options.obfuscation = kObfuscationLWOv2;
+      } else {
+        options.obfuscation = kObfuscationLWO;
+      }
+      break;
+    default:
+      options.obfuscation = kObfuscationNone;
+      break;
+  }
 
   // Update the tunnel configuration.
   NETunnelProviderProtocol* proto =
       static_cast<NETunnelProviderProtocol*>(m_manager.protocolConfiguration);
-  proto.providerConfiguration = options;
+  proto.providerConfiguration = options.dict;
   [m_manager saveToPreferencesWithCompletionHandler:^(NSError* saveErr) {
     if (saveErr) {
       logger.warning() << "prefs update error:" << saveErr;
@@ -315,17 +369,6 @@ void MacOSExtensionController::deactivate() {
   }
 }
 
-QString MacOSExtensionController::parseArchivedString(NSCoder* archive,
-                                                      NSString* key) {
-  NSString* s = [archive decodeObjectOfClass:[NSString class] forKey:key];
-  return QString::fromNSString(s);
-}
-
-QHostAddress MacOSExtensionController::parseArchivedAddress(NSCoder* archive,
-                                                            NSString* key) {
-  return QHostAddress(parseArchivedString(archive, key));
-}
-
 void MacOSExtensionController::checkStatus() {
   if (!m_session) {
     // Extension is not running.
@@ -347,18 +390,31 @@ void MacOSExtensionController::checkStatus() {
       return;
     }
 
+    WgStatus* wgStats = [[WgStatus new] initWithCoder:archive];
     ControllerStatus st;
-    NSDate* timestamp = [archive decodeObjectOfClass:[NSDate class] forKey:@"lastHandshake"];
-    if (timestamp) {
-      st.m_connected = true; 
-      st.m_timestamp = QDateTime::fromCFDate((CFDateRef)timestamp);
+    if (!wgStats) {
+      emit statusUpdated(st);
+      return;
     }
-    st.m_ipv4Gateway = parseArchivedAddress(archive, @"ipv4gateway");
-    st.m_ipv6Gateway = parseArchivedAddress(archive, @"ipv6gateway");
-    st.m_ipv4Address = parseArchivedAddress(archive, @"ipv4address");
-    st.m_ipv6Address = parseArchivedAddress(archive, @"ipv6address");
-    st.m_rxBytes = [archive decodeInt64ForKey:@"rxBytes"];
-    st.m_txBytes = [archive decodeInt64ForKey:@"txBytes"];
+
+    if (wgStats.lastHandshake) {
+      st.m_connected = true; 
+      st.m_timestamp = QDateTime::fromCFDate((CFDateRef)wgStats.lastHandshake);
+    }
+    if (wgStats.ipv4gateway) {
+      st.m_ipv4Gateway = QHostAddress(QString::fromNSString(wgStats.ipv4gateway));
+    }
+    if (wgStats.ipv6gateway) {
+      st.m_ipv6Gateway = QHostAddress(QString::fromNSString(wgStats.ipv6gateway));
+    }
+    if (wgStats.ipv4address) {
+      st.m_ipv4Address = QHostAddress(QString::fromNSString(wgStats.ipv4address));
+    }
+    if (wgStats.ipv6address) {
+      st.m_ipv6Address = QHostAddress(QString::fromNSString(wgStats.ipv6address));
+    }
+    st.m_rxBytes = wgStats.rxBytes;
+    st.m_txBytes = wgStats.txBytes;
     emit statusUpdated(st);
   }];
 

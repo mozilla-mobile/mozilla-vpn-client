@@ -4,8 +4,8 @@
 
 #import <NetworkExtension/NetworkExtension.h>
 
-#import "interfaceconfig.h"
 #import "utils.h"
+#import "wgconfig.h"
 #import "wireguardtunnel.h"
 
 #include <atomic>
@@ -31,9 +31,8 @@
 
 @property (strong) NETransparentProxyNetworkSettings* settings;
 @property (strong) WireguardTunnel* wireguard;
-@property (strong) InterfaceConfig* config;
+@property (strong) WgConfig* config;
 
-@property (strong) NSSet* vpnDisabledApps;
 @property (strong) NSSet* vpnHardcodeApps;
 
 @property (strong) NSTask* dnsManager;
@@ -56,7 +55,6 @@
   [parts replaceObjectAtIndex:parts.count-1
                    withObject:@"socksproxy"];
 
-  self.vpnDisabledApps = [NSSet set];
   self.vpnHardcodeApps = [NSSet setWithObject:[parts componentsJoinedByString:@"."]];
 
   m_handledTcpFlows = 0;
@@ -210,7 +208,7 @@
   m_handledUnknown = 0;
 
   // Parse the configuration
-  _config = [[InterfaceConfig alloc] initFromDict:options];
+  _config = [[WgConfig alloc] initFromDict:options];
   if (!self.config) {
     completionHandler(vpnProviderError(NEProviderStopReasonConfigurationFailed));
     return;
@@ -272,15 +270,6 @@
 
   self.settings.excludedNetworkRules = excludeRules;
 
-  // Initialize the excluded application list.
-  NSArray* apps = [options objectForKey:@"apps"];
-  if ([apps isKindOfClass:[NSArray class]]) {
-    NSPredicate* p = [NSPredicate predicateWithFormat:@"self isKindOfClass: %@", [NSString class]];
-    self.vpnDisabledApps = [NSSet setWithArray:[apps filteredArrayUsingPredicate:p]];
-  } else {
-    self.vpnDisabledApps = [NSSet set];
-  }
-
   // Configure the settings.
   __unsafe_unretained VPNSplitTunnelProvider* weakSelf = self;
   [self setTunnelNetworkSettings: self.settings
@@ -296,6 +285,9 @@
           completionHandler(wgError);
           return;
         }
+
+        // Configure the routes into the tunnel.
+        [weakSelf.wireguard setRoutes:weakSelf.config.routes];
 
         // Start the DNS manager, if configured.
         if (weakSelf.config.dnsSettings) {
@@ -345,9 +337,11 @@
   }
   NSLog(@"configuration changed");
 
+  NSSet* prevExcludedApps = [NSSet setWithSet:self.config.excludedApps];
+
   // Parse and update the configuration
   NETunnelProviderProtocol* proto = (NETunnelProviderProtocol*)self.protocolConfiguration;
-  _config = [[InterfaceConfig alloc] initFromDict:proto.providerConfiguration];
+  _config = [[WgConfig alloc] initFromDict:proto.providerConfiguration];
   if (!self.config) {
     // We can't make sense of this configuration.
     [self.wireguard stopTunnelWithReason:NEProviderStopReasonConfigurationFailed
@@ -357,21 +351,10 @@
     return;
   }
 
-  // If the applications being excluded have changed, then we need to restart
-  // the transparent proxy so that connections from the applications get closed
-  // and re-evaluated.
-  NSArray<NSString*>* apps = [proto.providerConfiguration objectForKey:@"apps"];
-  NSPredicate* p = [NSPredicate predicateWithFormat:@"self isKindOfClass: %@", [NSString class]];
-  NSSet* newDisabledApps;
-  if ([apps isKindOfClass:[NSArray class]]) {
-    newDisabledApps = [NSSet setWithArray:[apps filteredArrayUsingPredicate:p]];
-  } else {
-    newDisabledApps = [NSSet set];
-  }
-
-  // TODO: It would be nice if there was a way we could automatically restart
-  // ourself in this case, but I can't figure out how to do this.
-  if (![self.vpnDisabledApps isEqualToSet:newDisabledApps]) {
+  // Special case: we cannot gracefully update configuration if the excluded
+  // applications change. So lets throw a special error here to let the client
+  // know that an explicit restart is necessary.
+  if (![self.config.excludedApps isEqualToSet:prevExcludedApps]) {
     [self stopProxyWithReason:NEProviderStopReasonSuperceded completionHandler:^(){
       [self cancelProxyWithError:vpnProviderError(NEProviderStopReasonSuperceded)];
     }];
@@ -400,20 +383,25 @@
 
   // Shutdown the old wireguard peer and start a new one.
   self.reasserting = TRUE;
-  [self.wireguard.peer stopWithReason:NEProviderStopReasonSuperceded
-                    completionHandler:^(){
-    // Create and start a new peer.
-    self.wireguard.peer = [[WireguardPeer alloc] initWithOptions:self.config
-                                                       andTunnel:self.wireguard];
-    [self.wireguard.peer startWithOptions:self.config
-                        completionHandler:^(NSError*err){
-      if (err) {
-        [self cancelProxyWithError:err];
-      } else {
-        [self.wireguard syncMtu:self.config.serverIpv4Addr];
-        self.reasserting = FALSE;
-      }
-    }];
+
+  // Start the new peer.
+  WireguardPeer* wgPeer = [[WireguardPeer alloc] initWithOptions:self.config];
+  wgPeer.tunfd = self.wireguard.tunfd;
+
+  [wgPeer startWithOptions:self.config completionHandler:^(NSError*err){
+    if (err) {
+      [self cancelProxyWithError:err];
+      return;
+    }
+
+    // Terminate the old peer and replace it with the new one.
+    [self.wireguard.peer stopWithReason:NEProviderStopReasonSuperceded];
+    self.wireguard.peer = wgPeer;
+
+    // Update the MTU and routes.
+    [self.wireguard setRoutes:self.config.routes];
+    [self.wireguard syncMtu:self.config.serverIpv4Addr];
+    self.reasserting = FALSE;
   }];
 }
 
@@ -441,7 +429,7 @@
     return NO;
   }
 
-  for (NSString* appId in self.vpnDisabledApps) {
+  for (NSString* appId in self.config.excludedApps) {
     if (sourceId.length < appId.length) {
       continue;
     }
@@ -505,7 +493,7 @@
     NSEnumerator* iter = [msgAppList objectEnumerator];
     while (id appId = [iter nextObject]) {
       if (![appId isKindOfClass:[NSString class]]) {
-      continue;
+        continue;
       }
 #ifdef MZ_DEBUG
       NSLog(@"msg %@ %@ from excluded application set", action, appId);

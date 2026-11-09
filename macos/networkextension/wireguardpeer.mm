@@ -9,15 +9,16 @@
 #include <time.h>
 #include <unistd.h>
 
+#include "transport/lwo.h"
+#include "transport/tcp.h"
+#include "transport/udp.h"
+#include "transport/wgtransport.h"
 #include "utils.h"
 #include "wireguardtunnel.h"
 
 extern "C" {
 #include "wireguard_ffi.h"
 };
-
-constexpr const int64_t PEER_WORKQUEUE_TIMEOUT = 30;
-constexpr const size_t PEER_DATAGRAM_BUFSIZE = 4096;
 
 @implementation WireguardPeer {
   // The wireguard tunnel provided by boringtun.
@@ -27,12 +28,7 @@ constexpr const size_t PEER_DATAGRAM_BUFSIZE = 4096;
   struct timespec           m_lastHandshake;
   struct timespec           m_handshakeTimeout;
 
-  int                       m_socket;
-  int                       m_tunfd;
   NSThread*                 m_worker;
-
-  // Routes owned by this peer.
-  NSArray<RoutePrefix*>*    m_routes;
 
   // The completion handler to run on initial handshake or timeout. 
   void (^m_completionHandler)(NSError *error);
@@ -43,17 +39,31 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   [peer handleTimer];
 }
 
-- (id) initWithOptions:(InterfaceConfig*) options
-             andTunnel:(WireguardTunnel*) tunnel {
+- (id) initWithOptions:(WgConfig*) options {
   self = [super init];
-  self->m_tunfd = tunnel.tunfd;
-  self->_tunnel = tunnel;
+  self->_tunfd = -1;
 
-  m_socket = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
-  if (m_socket < 0) {
-    return nil;
+  // Prepare the wireguard transport
+  switch (options.obfuscation) {
+    case kObfuscationNone:
+      self->_transport = [[UdpTransport alloc] initWithEndpoint:options.serverIpv4Addr];
+      break;
+
+    case kObfuscationLWO:
+    case kObfuscationLWOv2:
+      self->_transport = [[LwoTransport alloc] initWithOptions:options];
+      break;
+
+    case kObfuscationTCP:
+      self->_transport = [[TcpTransport alloc] initWithEndpoint:options.serverIpv4Addr];
+      break;
+
+    default:
+      // Unsupported transport.
+      return nil;
   }
 
+  // Create the wireguard tunnel.
   uint32_t index;
   getentropy(&index, sizeof(index));
   m_wireguard = new_tunnel(options.privateKey.UTF8String,
@@ -66,16 +76,16 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   }
 
   // Give the socket its own worker.
-  self->m_worker = [[NSThread alloc] initWithTarget:self
-                                           selector:@selector(socketWorker:)
-                                             object:nil];
+  m_worker = [[NSThread alloc] initWithTarget:self
+                                     selector:@selector(socketWorker:)
+                                       object:nil];
   return self;
 }
 
 - (void) dealloc {
-  if (m_socket >= 0) {
-    close(m_socket);
-  }
+#ifdef MZ_DEBUG
+  NSLog(@"wireguard peer dealloc");
+#endif
   if (m_wireguard) {
     tunnel_free(m_wireguard);
   }
@@ -85,7 +95,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 #endif
 }
 
-- (void) startWithOptions:(InterfaceConfig*) options
+- (void) startWithOptions:(WgConfig*) options
         completionHandler:(void (^)(NSError *error)) completionHandler {
 #ifdef MZ_DEBUG
   char *addrstr = nw_endpoint_copy_address_string(options.serverIpv4Addr);
@@ -93,26 +103,13 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   free(addrstr);
 #endif
 
-  const struct sockaddr* dest = nw_endpoint_get_address(options.serverIpv4Addr);
-  if (connect(m_socket, dest, dest->sa_len) < 0) {
-    completionHandler(vpnPosixError(errno, @"socket connect failed"));
-    return;
-  }
-
-  // Configure routes into the tunnel interface.
-  m_routes = [NSArray arrayWithArray:options.routes];
-  for (RoutePrefix* prefix in m_routes) {
-    [self.tunnel addRoute:prefix];
-  }
+  m_completionHandler = completionHandler;
 
   // Start the timer.
   CFRunLoopTimerContext timerContext = { .info = (__bridge void *)self };
   m_timer = CFRunLoopTimerCreate(kCFAllocatorDefault, 0, 0.1, 0, 0,
                                  wgTimerCallback, &timerContext);
   CFRunLoopAddTimer(CFRunLoopGetMain(), m_timer, kCFRunLoopDefaultMode);
-
-  // Force an initial handshake.
-  [self renegotiate:completionHandler];
 
   // Start the socket worker
   [m_worker start];
@@ -121,33 +118,42 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 - (void) socketWorker:(id)arg {
   NSLog(@"socket worker started");
 
+  if ([self.transport connect] < 0) {
+    m_completionHandler(vpnPosixError(errno, @"socket connect failed"));
+    m_completionHandler = nil;
+    return;
+  }
+
+  // Once the socket is connected, start an initial handshake.
+  [self renegotiate:nil];
+
   NSThread* thread = [NSThread currentThread];
   while (!thread.cancelled) {
-    NSMutableData* dgram = [NSMutableData dataWithLength:PEER_DATAGRAM_BUFSIZE];
-    int rx = read(m_socket, dgram.mutableBytes, dgram.length);
-    if (rx == 0) {
-      // Socket has closed.
-      NSLog(@"socket closed");
-      return;
-    }
-    if (rx < 0) {
-      // Socket error occurred.
+    NSMutableData* dgram = [self.transport recv];
+    if (!dgram) {
       if (errno == EINTR) continue;
-      NSLog(@"socket error: %s", strerror(errno));
+      if (errno == EAGAIN) continue;
+      if (errno == ESHUTDOWN) {
+        NSLog(@"socket closed");
+      } else {
+        NSLog(@"socket error: %s", strerror(errno));
+      }
       return;
     }
-    dgram.length = rx;
-    uint8_t wgMsgtype = *(const uint8_t *)dgram.bytes;
+    if (dgram.length < WG_MSG_LEN_MIN) {
+      // Packet truncated.
+      continue;
+    }
 
-    uint8_t plaintext[PEER_DATAGRAM_BUFSIZE];
-    struct wireguard_result result;
-    result = wireguard_read(m_wireguard, (const uint8_t *)dgram.bytes,
-                            dgram.length, plaintext, PEER_DATAGRAM_BUFSIZE);
+    const uint8_t* ciphertext = (const uint8_t *)dgram.bytes;
+    uint8_t plaintext[dgram.length];
+    struct wireguard_result result =
+        wireguard_read(m_wireguard, ciphertext, dgram.length, plaintext, dgram.length);
     [self handleWireguard:result withBuffer:plaintext];
 
     // After processing a handshake response, update the lastHandshake time
     // if it looks and smells like the handshake was successful.
-    if (wgMsgtype == 0x02) {
+    if (ciphertext[0] == WG_MSG_TYPE_HANDSHAKE_RESP) {
       struct stats wgStats = wireguard_stats(m_wireguard);
       if (wgStats.time_since_last_handshake < 0) {
         memset(&m_lastHandshake, 0, sizeof(m_lastHandshake));
@@ -167,22 +173,13 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   }
 }
 
-- (void) stopWithReason:(NEProviderStopReason)reason 
-      completionHandler:(void (^)()) completionHandler {
+- (void) stopWithReason:(NEProviderStopReason)reason {
   [self cancelWithError:vpnProviderError(reason)];
-  completionHandler();
 }
 
 - (void) cancelWithError:(NSError*)error {
-  if (m_worker) {
-    [m_worker cancel];
-  }
-  shutdown(m_socket, SHUT_RDWR);
-
-  // Drop routes into the tunnel.
-  for (RoutePrefix* prefix in m_routes) {
-    [self.tunnel removeRoute:prefix];
-  }
+  [self.transport shutdown];
+  [m_worker cancel];
 
   if (m_timer) {
     CFRunLoopRemoveTimer(CFRunLoopGetMain(), m_timer, kCFRunLoopDefaultMode);
@@ -206,7 +203,9 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
   // Set a timeout for the handshake to finish.
   clock_gettime(CLOCK_MONOTONIC, &m_handshakeTimeout);
   m_handshakeTimeout.tv_sec += WG_MAX_HANDSHAKE_TIMEOUT;
-  m_completionHandler = completionHandler;
+  if (completionHandler) {
+    m_completionHandler = completionHandler;
+  }
 
   [self handleWireguard:result withBuffer:handshake];
 }
@@ -252,7 +251,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
       break;
 
     case WRITE_TO_NETWORK:
-      err = send(m_socket, data, result.size, MSG_DONTWAIT);
+      [self.transport send:[NSData dataWithBytes:data length:result.size]];
       break;
 
     case WIREGUARD_ERROR:
@@ -271,13 +270,13 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
         .msg_iov = iov,
         .msg_iovlen = 2,
       };
-      ssize_t err = sendmsg(m_tunfd, &msg, MSG_DONTWAIT);
+      ssize_t err = sendmsg(self->_tunfd, &msg, MSG_DONTWAIT);
       break;
   }
 }
 
-- (WireguardStatus*)getStatus {
-  WireguardStatus* result = [WireguardStatus new];
+- (WgStatus*)getStatus {
+  WgStatus* result = [WgStatus new];
 
   // Get the handshake time from the timestamp of the last received handshake
   // response packet, this will yeild better precision than the stats we get
