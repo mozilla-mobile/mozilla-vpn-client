@@ -175,6 +175,8 @@ describe('Connectivity', function() {
        // Wait for state to settle
        await vpn.wait();
        // Close the popup using close button
+       await vpn.waitForQuery(
+           queries.screenHome.SERVER_UNAVAILABLE_POPUP.ready());
        await vpn.waitForQueryAndClick(
            queries.screenHome.SERVER_UNAVAILABLE_POPUP_CLOSE_BUTTON.visible());
 

@@ -16,6 +16,7 @@ Popup {
     property alias popupContentItem: popupContent //this is exposed so popupContent implicitHeight can (and should) be set externally
     property bool showCloseButton: true
     property bool startContentBeneathCloseButton: showCloseButton //popup content will appear under the close button
+    property bool ready: opacity >= 1.0
     property string closeButtonObjectName: ""
 
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside

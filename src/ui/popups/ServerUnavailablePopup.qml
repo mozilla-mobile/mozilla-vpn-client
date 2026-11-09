@@ -13,6 +13,7 @@ import "qrc:/nebula/utils/MZAssetLookup.js" as MZAssetLookup
 MZSimplePopup {
     id: root
     property bool receivedPing: false;
+    objectName: "serverUnavailablePopup"
 
     anchors.centerIn: parent
     imageSrc: MZAssetLookup.getImageSource("GlobeNoConnection")

@@ -200,6 +200,8 @@ describe('Server', function() {
       await vpn.setSetting('recommendedServerSelected', 'false');
 
       // click the button
+      await vpn.waitForQuery(
+          queries.screenHome.SERVER_UNAVAILABLE_POPUP.ready());
       await vpn.waitForQueryAndClick(
           queries.screenHome.SERVER_UNAVAILABLE_POPUP_BUTTON.visible());
 
