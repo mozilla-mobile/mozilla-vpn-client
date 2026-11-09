@@ -16,6 +16,7 @@ Popup {
     property alias popupContentItem: popupContent //this is exposed so popupContent implicitHeight can (and should) be set externally
     property bool showCloseButton: true
     property bool startContentBeneathCloseButton: showCloseButton //popup content will appear under the close button
+    property bool ready: visible && !enterAnimation.running && !exitAnimation.running;
     property string closeButtonObjectName: ""
 
     closePolicy: Popup.CloseOnEscape | Popup.CloseOnPressOutside
@@ -38,6 +39,7 @@ Popup {
     // Close button
     MZIconButton {
         id: closeButton
+        property alias ready: popup.ready
 
         anchors.top: parent.top
         anchors.right: parent.right
@@ -96,6 +98,8 @@ Popup {
 
     enter: Transition {
         NumberAnimation {
+            id: enterAnimation
+
             property: "opacity"
             duration: 120
             from: 0.0
@@ -106,6 +110,8 @@ Popup {
 
     exit: Transition {
         NumberAnimation {
+            id: exitAnimation
+
             property: "opacity"
             duration: 120
             from: 1.0
