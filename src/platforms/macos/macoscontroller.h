@@ -34,14 +34,16 @@ class MacOSController final : public ControllerImpl {
 
   bool multihopSupported() override { return true; }
 
+  static void removeService();
+
  private slots:
   void upgradeService();
   void registerService();
   void connectService();
 
  private:
-  NSString* plist() const;
-  NSString* machServiceName() const;
+  static NSString* plist();
+  static NSString* machServiceName();
 
  private:
   QString plistName() const;
