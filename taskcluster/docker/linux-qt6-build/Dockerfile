@@ -48,7 +48,8 @@ RUN if [ "$DEB_HOST_ARCH" != "amd64" ]; then \
                 crossbuild-essential-${DEB_HOST_ARCH} \
                 gcc-${DEB_HOST_GNU_CPU}-linux-gnu \
                 g++-${DEB_HOST_GNU_CPU}-linux-gnu \
-                binutils-${DEB_HOST_GNU_CPU}-linux-gnu; \
+                binutils-${DEB_HOST_GNU_CPU}-linux-gnu \
+                rpm; \
     fi
 
 # Also pull in packages from build-depends as early as possible
@@ -91,6 +92,8 @@ RUN echo "worker ALL=(ALL) SETENV:NOPASSWD:/usr/bin/apt,/usr/bin/apt-get,/usr/bi
 # %include-run-task
 # %include taskcluster/scripts/build/linux_build_dpkg.sh
 ADD topsrcdir/taskcluster/scripts/build/linux_build_dpkg.sh /builds/worker/builder.sh
+# %include taskcluster/scripts/build/linux_build_rpm.sh
+ADD topsrcdir/taskcluster/scripts/build/linux_build_rpm.sh /builds/worker/rpm-builder.sh
 
 ENV SHELL=/bin/bash \
     HOME=/builds/worker \

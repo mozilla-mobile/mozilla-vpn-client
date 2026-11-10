@@ -12,6 +12,15 @@ if(EXISTS /etc/debian_version)
 endif()
 option(BUILD_APPARMOR "Build AppArmor profile" ${DEFAULT_APPARMOR})
 
+# Select which flavor of polkit rules to install. This defaults to the build
+# host distribution, but can be overridden when cross-building packages.
+if(EXISTS /etc/debian_version)
+    set(DEFAULT_POLKIT_RULES debian)
+elseif(EXISTS /etc/redhat-release)
+    set(DEFAULT_POLKIT_RULES others)
+endif()
+set(LINUX_POLKIT_RULES "${DEFAULT_POLKIT_RULES}" CACHE STRING "Polkit rules to install (debian or others)")
+
 find_package(Qt6 REQUIRED COMPONENTS DBus)
 target_link_libraries(mozillavpn PRIVATE Qt6::DBus)
 
@@ -199,13 +208,13 @@ if(NOT BUILD_FLATPAK)
     if(NOT POLKIT_DATA_DIR)
         set(POLKIT_DATA_DIR "/usr/share")
     endif()
-    if(EXISTS /etc/debian_version)
+    if(LINUX_POLKIT_RULES STREQUAL "debian")
         install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.rules-debian
             RENAME org.mozilla.vpn.rules
             DESTINATION ${POLKIT_DATA_DIR}/polkit-1/rules.d)
         install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.pkla
             DESTINATION /var/lib/polkit-1/localauthority/55-org.mozilla.d/)
-    elseif(EXISTS /etc/redhat-release)
+    elseif(LINUX_POLKIT_RULES STREQUAL "others")
         install(FILES ${CMAKE_SOURCE_DIR}/linux/org.mozilla.vpn.rules-others
             RENAME org.mozilla.vpn.rules
             DESTINATION ${POLKIT_DATA_DIR}/polkit-1/rules.d)
@@ -213,11 +222,13 @@ if(NOT BUILD_FLATPAK)
         message(INFO "Unknown Linux distribution, please install polkit rules manually")
     endif()
 
-    pkg_check_modules(SYSTEMD systemd)
-    if("${SYSTEMD_FOUND}" EQUAL 1)
-        pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
-    else()
-        set(SYSTEMD_UNIT_DIR /lib/systemd/system)
+    if(NOT SYSTEMD_UNIT_DIR)
+        pkg_check_modules(SYSTEMD systemd)
+        if("${SYSTEMD_FOUND}" EQUAL 1)
+            pkg_get_variable(SYSTEMD_UNIT_DIR systemd systemdsystemunitdir)
+        else()
+            set(SYSTEMD_UNIT_DIR /lib/systemd/system)
+        endif()
     endif()
     configure_file(${CMAKE_SOURCE_DIR}/linux/mozillavpn.service.in
         ${CMAKE_CURRENT_BINARY_DIR}/mozillavpn.service)
