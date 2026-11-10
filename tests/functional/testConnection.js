@@ -176,7 +176,7 @@ describe('Connectivity', function() {
        await vpn.wait();
        // Close the popup using close button
        await vpn.waitForQueryAndClick(
-           queries.screenHome.SERVER_UNAVAILABLE_POPUP_CLOSE_BUTTON.visible());
+           queries.screenHome.SERVER_UNAVAILABLE_POPUP_CLOSE_BUTTON.ready());
 
        await vpn.waitForQuery(queries.screenHome.STACKVIEW.ready());
        await vpn.waitForQuery(queries.screenHome.CONTROLLER_TITLE.visible());

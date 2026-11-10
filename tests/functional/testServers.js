@@ -201,7 +201,7 @@ describe('Server', function() {
 
       // click the button
       await vpn.waitForQueryAndClick(
-          queries.screenHome.SERVER_UNAVAILABLE_POPUP_BUTTON.visible());
+          queries.screenHome.SERVER_UNAVAILABLE_POPUP_BUTTON.ready());
 
       await vpn.selectNewServer(servers, currentCountryCode);
 

@@ -35,6 +35,8 @@ MZSimplePopup {
         MZButton {
             text: MZI18n.ServerUnavailableModalButtonLabel
             objectName: "serverUnavailablePopup-button"
+            property alias ready: root.ready
+
             Layout.fillWidth: true
             onClicked: {
                 if (MZNavigator.screen === VPN.ScreenHome) {
