@@ -122,8 +122,17 @@ bool CommandLineParser::parseOptions(QStringList& tokens,
       shortOption = false;
     }
 
-    if (!parseOption(opt, shortOption, options)) {
+    Option* o = parseOption(opt, shortOption, options);
+    if (!o) {
       return false;
+    }
+
+    if (o->m_valueName) {
+      if (tokens.length() < 2) {
+        return false;
+      }
+      tokens.removeFirst();
+      o->m_value = tokens[0];
     }
 
     tokens.removeFirst();
@@ -133,21 +142,17 @@ bool CommandLineParser::parseOptions(QStringList& tokens,
 }
 
 // static
-bool CommandLineParser::parseOption(const QString& option, bool shortOption,
-                                    QList<Option*>& options) {
+CommandLineParser::Option* CommandLineParser::parseOption(
+    const QString& option, bool shortOption, QList<Option*>& options) {
   for (Option* o : options) {
-    if (shortOption && o->m_short == option) {
+    if ((shortOption && o->m_short == option) ||
+        (!shortOption && o->m_long == option)) {
       o->m_set = true;
-      return true;
-    }
-
-    if (!shortOption && o->m_long == option) {
-      o->m_set = true;
-      return true;
+      return o;
     }
   }
 
-  return false;
+  return nullptr;
 }
 
 // static
@@ -156,7 +161,21 @@ int CommandLineParser::unknownOption(QObject* parent, const QString& option,
                                      QList<Option*>& options,
                                      bool hasCommands) {
   QTextStream stream(stderr);
-  stream << "unknown option: " << option << Qt::endl;
+  bool missingValue = false;
+  for (const Option* o : options) {
+    if (o->m_set && o->m_valueName &&
+        (option == QString("-%1").arg(o->m_short) ||
+         option == QString("--%1").arg(o->m_long))) {
+      missingValue = true;
+      break;
+    }
+  }
+
+  if (missingValue) {
+    stream << "missing value for option: " << option << Qt::endl;
+  } else {
+    stream << "unknown option: " << option << Qt::endl;
+  }
   showHelp(parent, app, options, hasCommands, true);
   return 1;
 }
@@ -169,7 +188,11 @@ void CommandLineParser::showHelp(QObject* parent, const QString& app,
   stream << "usage: " << app;
 
   for (const Option* o : options) {
-    stream << " [-" << o->m_short << " | --" << o->m_long << "]";
+    stream << " [-" << o->m_short << " | --" << o->m_long;
+    if (o->m_valueName) {
+      stream << " <" << o->m_valueName << ">";
+    }
+    stream << "]";
   }
 
   if (hasCommands) {
@@ -187,6 +210,9 @@ void CommandLineParser::showHelp(QObject* parent, const QString& app,
     stream << "List of options:" << Qt::endl;
     for (const Option* o : options) {
       QString desc = QString("-%1 | --%2").arg(o->m_short, o->m_long);
+      if (o->m_valueName) {
+        desc.append(QString(" <%1>").arg(o->m_valueName));
+      }
       stream << "  " << desc << " ";
 
       for (qsizetype i = desc.length(); i < 20; ++i) {

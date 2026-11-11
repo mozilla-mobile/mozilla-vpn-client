@@ -74,3 +74,47 @@ void TestCommandLineParser::basic() {
   QFETCH(bool, uiExecuted);
   QCOMPARE(s_executed, uiExecuted);
 }
+
+void TestCommandLineParser::valueOption_data() {
+  QTest::addColumn<QStringList>("args");
+  QTest::addColumn<int>("result");
+  QTest::addColumn<bool>("set");
+  QTest::addColumn<QString>("value");
+  QTest::addColumn<QStringList>("remaining");
+
+  QTest::addRow("not set") << QStringList{"app", "pos"} << 0 << false
+                           << QString() << QStringList{"pos"};
+  QTest::addRow("short") << QStringList{"app", "-o", "file"} << 0 << true
+                         << "file" << QStringList{};
+  QTest::addRow("long") << QStringList{"app", "--output", "file"} << 0 << true
+                        << "file" << QStringList{};
+  QTest::addRow("value starting with dash")
+      << QStringList{"app", "-o", "-file", "pos"} << 0 << true << "-file"
+      << QStringList{"pos"};
+  QTest::addRow("with flag and positional")
+      << QStringList{"app", "-o", "file", "-f", "pos"} << 0 << true << "file"
+      << QStringList{"pos"};
+  QTest::addRow("missing value") << QStringList{"app", "-o"} << 1 << true
+                                 << QString() << QStringList{"-o"};
+}
+
+void TestCommandLineParser::valueOption() {
+  QFETCH(QStringList, args);
+
+  CommandLineParser::Option output("o", "output", "output file", "file");
+  CommandLineParser::Option flag("f", "flag", "a flag");
+  QList<CommandLineParser::Option*> options{&output, &flag};
+
+  CommandLineParser clp;
+  QFETCH(int, result);
+  QCOMPARE(clp.parse(args, options, false), result);
+
+  QFETCH(bool, set);
+  QCOMPARE(output.m_set, set);
+
+  QFETCH(QString, value);
+  QCOMPARE(output.m_value, value);
+
+  QFETCH(QStringList, remaining);
+  QCOMPARE(args, remaining);
+}
