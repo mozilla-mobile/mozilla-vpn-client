@@ -175,7 +175,7 @@ build_deb_source() {
   cp -r ../linux/debian $WORKDIR || die "Failed"
 
   mv $WORKDIR/debian/changelog.template $WORKDIR/debian/changelog || die "Failed"
-  sed -i -e "s/SHORTVERSION/$SHORTVERSION/g" $WORKDIR/debian/changelog || die "Failed"
+  sed -i -e "s/SHORTVERSION/$SHORTVERSION-$REVISION/g" $WORKDIR/debian/changelog || die "Failed"
   sed -i -e "s/DATE/$(date -R)/g" $WORKDIR/debian/changelog || die "Failed"
 
   (cd $WORKDIR && dpkg-buildpackage --build=source $DPKG_SIGN --no-check-builddeps) || die "Failed"

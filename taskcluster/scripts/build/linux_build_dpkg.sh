@@ -85,8 +85,9 @@ else
 fi
 
 DPKG_PACKAGE_SRCNAME=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Source)
-DPKG_PACKAGE_BASE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version)
-DPKG_PACKAGE_DIST_VERSION="${DPKG_PACKAGE_BASE_VERSION}-${DIST}1"
+DPKG_PACKAGE_VERSION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version | cut -d- -f1)
+DPKG_PACKAGE_REVISION=$(dpkg-parsechangelog -l mozillavpn-source/debian/changelog -S Version | cut -d- -f2)
+DPKG_PACKAGE_DIST_VERSION="${DPKG_PACKAGE_VERSION}-${DIST}${DPKG_PACKAGE_REVISION}"
 DPKG_PACKAGE_BUILD_ARGS="--unsigned-source --build=full"
 
 # Update the changelog entry for this distribution
