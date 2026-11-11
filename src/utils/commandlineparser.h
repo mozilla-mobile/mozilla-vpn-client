@@ -18,14 +18,20 @@ class CommandLineParser final : QObject {
   ~CommandLineParser();
 
   struct Option {
-    Option(const char* a_short, const char* a_long, const char* description)
-        : m_short(a_short), m_long(a_long), m_description(description) {}
+    Option(const char* a_short, const char* a_long, const char* description,
+           const char* valueName = nullptr)
+        : m_short(a_short),
+          m_long(a_long),
+          m_description(description),
+          m_valueName(valueName) {}
 
     const char* m_short;
     const char* m_long;
     const char* m_description;
+    const char* m_valueName;
 
     bool m_set = false;
+    QString m_value;
   };
 
   [[nodiscard]] int parse(int argc, char* argv[], const QString& defaultCmd);
@@ -49,8 +55,8 @@ class CommandLineParser final : QObject {
 
  private:
   static bool parseOptions(QStringList& tokens, QList<Option*>& options);
-  static bool parseOption(const QString& option, bool shortOption,
-                          QList<Option*>& options);
+  static Option* parseOption(const QString& option, bool shortOption,
+                             QList<Option*>& options);
 };
 
 #endif  // COMMANDLINEPARSER_H

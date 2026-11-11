@@ -5,24 +5,40 @@
 #ifndef TASKADDDEVICE_H
 #define TASKADDDEVICE_H
 
+#include <QJsonObject>
 #include <QObject>
 
+#include "errorhandler.h"
+#include "models/apierror.h"
 #include "task.h"
 
 class TaskAddDevice final : public Task {
+  Q_OBJECT
   Q_DISABLE_COPY_MOVE(TaskAddDevice)
 
  public:
-  TaskAddDevice(const QString& deviceName, const QString& deviceID);
+  TaskAddDevice(const QString& deviceName, const QString& deviceID,
+                ErrorHandler::ErrorPropagationPolicy errorPropagationPolicy =
+                    ErrorHandler::PropagateError,
+                const QString& token = QString());
   ~TaskAddDevice();
 
   void run() override;
 
   DeletePolicy deletePolicy() const override { return NonDeletable; }
+  const ApiError& error() const { return m_apiError; }
+
+ signals:
+  void deviceAdded(const QString& deviceName, const QString& publicKey,
+                   const QString& privateKey, const QJsonObject& response);
 
  private:
   QString m_deviceName;
   QString m_deviceID;
+  ErrorHandler::ErrorPropagationPolicy m_errorPropagationPolicy =
+      ErrorHandler::PropagateError;
+  QString m_token;
+  ApiError m_apiError;
 };
 
 #endif  // TASKADDDEVICE_H

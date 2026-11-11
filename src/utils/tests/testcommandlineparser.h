@@ -13,4 +13,7 @@ class TestCommandLineParser : public QObject,
  private slots:
   void basic_data();
   void basic();
+
+  void valueOption_data();
+  void valueOption();
 };

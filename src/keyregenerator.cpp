@@ -79,8 +79,11 @@ void KeyRegenerator::stateChanged() {
 
   logger.debug() << "Triggering the key regeneration";
 
-  TaskScheduler::scheduleTask(
-      new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId()));
+  TaskAddDevice* task =
+      new TaskAddDevice(Device::currentDeviceName(), Device::uniqueDeviceId());
+  connect(task, &TaskAddDevice::deviceAdded, MozillaVPN::instance(),
+          &MozillaVPN::deviceAdded);
+  TaskScheduler::scheduleTask(task);
   TaskScheduler::scheduleTask(new TaskAccount(ErrorHandler::PropagateError));
 
   CheckedInt<int> value(Constants::keyRegeneratorTimeSec());
