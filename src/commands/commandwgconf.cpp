@@ -189,6 +189,11 @@ int CommandWgConf::run(QStringList& tokens) {
                                       16, QChar('0'))
                            : tokens[0];
 
+      // Disconnect the error handler to prevent a failed CLI login from
+      // resetting the current VPN state.
+      QObject::disconnect(ErrorHandler::instance(), &ErrorHandler::errorHandled,
+                          &vpn, nullptr);
+
       QString token = authenticate();
       if (token.isEmpty()) {
         stream << "Authentication failed" << Qt::endl;
