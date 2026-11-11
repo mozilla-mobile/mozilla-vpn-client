@@ -9,6 +9,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QRandomGenerator>
+#include <QSaveFile>
 #include <QTextStream>
 
 #include "authenticationlistener.h"
@@ -96,6 +97,9 @@ int CommandWgConf::run(QStringList& tokens) {
       "registering a new one.");
   CommandLineParser::Option testingOption("t", "testing",
                                           "Run in testing mode.");
+  CommandLineParser::Option outputOption(
+      "o", "output", "Write the configuration to a file instead of stdout.",
+      "file");
 
   QList<CommandLineParser::Option*> options;
   options.append(&hOption);
@@ -103,6 +107,7 @@ int CommandWgConf::run(QStringList& tokens) {
   options.append(&wireguardMultihop);
   options.append(&testingOption);
   options.append(&useCurrentDevice);
+  options.append(&outputOption);
 
   CommandLineParser clp;
   if (clp.parse(tokens, options, false)) {
@@ -131,6 +136,17 @@ int CommandWgConf::run(QStringList& tokens) {
     stream << Qt::endl;
     stream << "<device_name> cannot be used with --current-device." << Qt::endl;
     return 1;
+  }
+
+  QSaveFile outputFile;
+  if (outputOption.m_set) {
+    outputFile.setFileName(outputOption.m_value);
+    if (!outputFile.open(QIODevice::WriteOnly | QIODevice::Text)) {
+      stream << "Unable to open " << outputOption.m_value << ": "
+             << outputFile.errorString() << Qt::endl;
+      return 1;
+    }
+    outputFile.setPermissions(QFileDevice::ReadOwner | QFileDevice::WriteOwner);
   }
 
   return MozillaVPN::runCommandLineApp([&]() {
@@ -283,49 +299,66 @@ int CommandWgConf::run(QStringList& tokens) {
     exitConfig.m_allowedIPAddressRanges =
         Controller::getAllowedIPAddressRanges(exitServer);
 
-    // Stream it out to the user.
-    stream << newDeviceComment;
+    QString conf;
+    QTextStream out(&conf);
+    out << newDeviceComment;
     if (sd->multihop() && useWireguardMultihop) {
-      stream << "# This file contains configuration settings for a multi-hop "
-                "WireGuard setup\n";
-      stream << "# The configuration is intended for Linux systems and has "
-                "been tested to work\n";
-      stream << "# with both wg-quick and NetworkManager-managed WireGuard "
-                "connections.\n";
-      stream << "# IMPORTANT:\n";
-      stream << "# For a proper multi-hop setup, the client must configure "
-                "specific routes so\n";
-      stream << "# that traffic is correctly forwarded through each WireGuard "
-                "hop. If these\n";
-      stream << "# routes are missing or incorrect, the configuration may "
-                "silently degrade into\n";
-      stream << "# a single-hop setup.\n";
-      stream << "# If you are unsure how to check the required routes, you can "
-                "generate a\n";
-      stream << "# configuration that works across all supported systems by "
-                "using the\n";
-      stream << "# --mullvad-multihop flag.\n\n";
-      stream << entryConfig.toMultiHopWgConf(exitConfig,
-                                             QMap<QString, QString>(),
-                                             exitPeerComment, entryPeerComment)
-             << Qt::endl;
+      out << "# This file contains configuration settings for a multi-hop "
+             "WireGuard setup\n";
+      out << "# The configuration is intended for Linux systems and has "
+             "been tested to work\n";
+      out << "# with both wg-quick and NetworkManager-managed WireGuard "
+             "connections.\n";
+      out << "# IMPORTANT:\n";
+      out << "# For a proper multi-hop setup, the client must configure "
+             "specific routes so\n";
+      out << "# that traffic is correctly forwarded through each WireGuard "
+             "hop. If these\n";
+      out << "# routes are missing or incorrect, the configuration may "
+             "silently degrade into\n";
+      out << "# a single-hop setup.\n";
+      out << "# If you are unsure how to check the required routes, you can "
+             "generate a\n";
+      out << "# configuration that works across all supported systems by "
+             "using the\n";
+      out << "# --mullvad-multihop flag.\n\n";
+      out << entryConfig.toMultiHopWgConf(exitConfig, QMap<QString, QString>(),
+                                          exitPeerComment, entryPeerComment)
+          << Qt::endl;
     } else {
       if (sd->multihop()) {
-        stream << "# This file contains configuration settings for a multi-hop "
-                  "WireGuard setup\n";
-        stream << "# It utilizes Mullvad's Multi-Hop feature, which routes "
-                  "traffic through multiple\n";
-        stream << "# WireGuard nodes. In this setup, data is sent to the entry "
-                  "server using a\n";
-        stream << "# specific port and the exit server's public key, allowing "
-                  "the entry server to\n";
-        stream << "# forward the traffic to the exit server.\n";
-        stream << "# For more information see: "
-                  "https://mullvad.net/en/help/wireguard-multi-hop/\n\n";
+        out << "# This file contains configuration settings for a multi-hop "
+               "WireGuard setup\n";
+        out << "# It utilizes Mullvad's Multi-Hop feature, which routes "
+               "traffic through multiple\n";
+        out << "# WireGuard nodes. In this setup, data is sent to the entry "
+               "server using a\n";
+        out << "# specific port and the exit server's public key, allowing "
+               "the entry server to\n";
+        out << "# forward the traffic to the exit server.\n";
+        out << "# For more information see: "
+               "https://mullvad.net/en/help/wireguard-multi-hop/\n\n";
       }
-      stream << exitConfig.toWgConf(QMap<QString, QString>(), exitPeerComment)
-             << Qt::endl;
+      out << exitConfig.toWgConf(QMap<QString, QString>(), exitPeerComment)
+          << Qt::endl;
     }
+    out.flush();
+
+    if (!outputOption.m_set) {
+      stream << conf;
+      return 0;
+    }
+
+    outputFile.write(conf.toUtf8());
+    if (!outputFile.commit()) {
+      // Don't lose the keys of a newly registered device.
+      stream << "Unable to write " << outputOption.m_value << ": "
+             << outputFile.errorString() << Qt::endl;
+      stream << conf;
+      return 1;
+    }
+
+    stream << "Configuration written to " << outputOption.m_value << Qt::endl;
     return 0;
   });
 }
