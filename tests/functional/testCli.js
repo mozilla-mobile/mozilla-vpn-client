@@ -11,6 +11,9 @@ const addonServer = require('./servers/addon.js');
 const helper = require('./helper.js');
 const captivePortalServer = require('./servers/captivePortalServer.js');
 const crypto = require('crypto');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
 
 let stdout = '';
 let stderr = '';
@@ -369,6 +372,48 @@ describe('CLI Tests', function() {
           wgconfWireguardMultihop.stdout.includes(
               '# Exit Server: host-at-vie - Vienna (at)'),
           'Should show Vienna as exit server');
+    });
+  });
+
+  describe('Wgconf output file', () => {
+    let tmpDir = null;
+
+    beforeEach(() => {
+      tmpDir = fs.mkdtempSync(path.join(os.tmpdir(), 'wgconf-'));
+    });
+
+    afterEach(() => {
+      fs.rmSync(tmpDir, {recursive: true, force: true});
+    });
+
+    it('Writes the config to the given file', async () => {
+      await cliLogin();
+      const selectResult = await execCli(['select', '-t', 'host-be-bru']);
+      assert(selectResult.code === 0, 'Should exit successfully');
+
+      const file = path.join(tmpDir, 'mozillavpn.conf');
+      const wgconf = await execCli(['wgconf', '-t', '-c', '-o', file]);
+      assert(wgconf.code === 0, 'Should exit successfully');
+      assert(
+          !wgconf.stdout.includes('[Peer]'),
+          'Should not print the config on stdout');
+      assert(
+          wgconf.stdout.includes(`Configuration written to ${file}`),
+          'Should show where the config has been written');
+
+      const conf = fs.readFileSync(file, 'utf8');
+      assert(conf.includes('[Peer]'), 'Should contain a Peer section');
+      assert(
+          conf.includes('# Exit Server: host-be-bru - Brussels (be)'),
+          'Should show Brussels as current server');
+    });
+
+    it('Fails without a file name', async () => {
+      const wgconf = await execCli(['wgconf', '-t', '-c', '-o']);
+      assert(wgconf.code === 1, 'Should fail');
+      assert(
+          wgconf.stderr.includes('missing value for option: -o'),
+          'Should report the missing value');
     });
   });
 
