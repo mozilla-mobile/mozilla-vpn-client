@@ -67,7 +67,9 @@ QFuture<QByteArray> connectTo(uint serverPort, quint16 proxyPort,
   auto prom = std::make_unique<QPromise<QByteArray>>();
   auto out = prom->future();
   auto socket = new QTcpSocket();
-  socket->setProxy(QNetworkProxy{proxtType, "localhost", proxyPort});
+  // Use an explicit IPv4 address: the proxy only listens on 127.0.0.1, and
+  // resolving "localhost" may try ::1 first.
+  socket->setProxy(QNetworkProxy{proxtType, "127.0.0.1", proxyPort});
   prom->start();
   QObject::connect(socket, &QTcpSocket::readyRead,
                    [prom = std::move(prom), socket]() {
@@ -121,9 +123,22 @@ void TestSocks5::proxyTCP() {
             QtFuture::connect(conn, &ProxyConnection::dataSentReceived);
       });
 
-  while (!connectionToServer.isFinished()) {
-    QTest::qWait(250);
-  };
+  // Fail with a useful message instead of hanging until the QtTest watchdog
+  // aborts the whole test binary.
+  constexpr int stepTimeoutMs = 10000;
+  QTRY_VERIFY2_WITH_TIMEOUT(!proxyClientName.isEmpty(),
+                            "The proxy never received a client connection",
+                            stepTimeoutMs);
+  QTRY_VERIFY2_WITH_TIMEOUT(serverHadConnection.isFinished(),
+                            "The target server never received a connection",
+                            stepTimeoutMs);
+  QTRY_VERIFY2_WITH_TIMEOUT(connectionToServer.isFinished(),
+                            "The client never received data from the server",
+                            stepTimeoutMs);
+  QTRY_VERIFY2_WITH_TIMEOUT(proxyHadData.isFinished(),
+                            "The proxy never reported its data counters",
+                            stepTimeoutMs);
+
   // The TCP Server should have gotten a connection
   QCOMPARE(serverHadConnection.result(), true);
   // Data Recieved should be 0
