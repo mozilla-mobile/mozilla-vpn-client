@@ -9,6 +9,9 @@
 #include <Security/SecRequirement.h>
 #include <Security/SecStaticCode.h>
 #include <Security/SecTask.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <pwd.h>
 
 #include <QCoreApplication>
 #include <QDir>
@@ -17,12 +20,26 @@
 
 #include "leakdetector.h"
 
+constexpr const char* PROCESS_TEMP_DIR = "/var/run/mozillavpn-XXXXXX";
+
 MacOSHelperProcess::MacOSHelperProcess(const QString& name, QObject* parent) :
-    QProcess(parent), m_logger(name) {
+    QProcess(parent), m_tempdir(PROCESS_TEMP_DIR), m_logger(name) {
   MZ_COUNT_CTOR(MacOSHelperProcess);
 
-  // The helper tool must exist in the same location as the daemon.
-  setProgram(QDir(QCoreApplication::applicationDirPath()).filePath(name));
+  // Copy the helper tool into the protected temporary dir.
+  QString program = m_tempdir.filePath(name);
+  int perms = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
+  if (chmod(qPrintable(m_tempdir.path()), perms) < 0) {
+    m_logger.debug() << "chmod" << m_tempdir.path() << "failed:" << strerror(errno);
+  } else {
+    QFile srcFile(QDir(QCoreApplication::applicationDirPath()).filePath(name));
+    if (srcFile.copy(program)) {
+      chmod(qPrintable(program), perms);
+    }
+    m_logger.debug() << "program:" << program;
+  }
+  setProgram(program);
+  setChildProcessModifier(MacOSHelperProcess::dropPermissions);
 
   // Set a handler to receive and log the tunnel stdout/stderr
   setProcessChannelMode(QProcess::MergedChannels);
@@ -49,6 +66,7 @@ void MacOSHelperProcess::start() {
     return;
   }
 
+  // Start it.
   QProcess::start();
 }
 
@@ -147,4 +165,21 @@ OSStatus MacOSHelperProcess::enforceCodesign() {
   CFRelease(code);
   CFRelease(codesignRequirements);
   return status;
+}
+
+void MacOSHelperProcess::dropPermissions() {
+  // Get the nobody user details
+  char username[] = "nobody";
+  struct passwd user = {
+    .pw_name = username,
+    .pw_uid = (uid_t)-2,
+    .pw_gid = (uid_t)-2,
+  };
+  struct passwd *fetch = getpwnam(username);
+  if (fetch) memcpy(&user, fetch, sizeof(struct passwd));
+
+  // Switch to the nobody user to drop permissions.
+  setgroups(0, nullptr);
+  setgid(user.pw_gid);
+  setuid(user.pw_uid);
 }

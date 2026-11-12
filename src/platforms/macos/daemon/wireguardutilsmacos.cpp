@@ -38,15 +38,9 @@ namespace {
 Logger logger("WireguardUtilsMacos");
 };  // namespace
 
-WireguardUtilsMacos::WireguardUtilsMacos(QObject* parent)
-    : WireguardUtils(parent), m_tunnel(wireguardGoHelper(), this) {
+WireguardUtilsMacos::WireguardUtilsMacos(QObject* p) : WireguardUtils(p) {
   MZ_COUNT_CTOR(WireguardUtilsMacos);
   logger.debug() << "WireguardUtilsMacos created.";
-
-  connect(&m_tunnel, SIGNAL(errorOccurred(QProcess::ProcessError)), this,
-          SLOT(tunnelErrorOccurred(QProcess::ProcessError)));
-  connect(&m_tunnel, SIGNAL(finished(int, QProcess::ExitStatus)), this,
-          SLOT(tunnelFinished(int, QProcess::ExitStatus)));
 }
 
 WireguardUtilsMacos::~WireguardUtilsMacos() {
@@ -57,14 +51,19 @@ WireguardUtilsMacos::~WireguardUtilsMacos() {
 void WireguardUtilsMacos::tunnelErrorOccurred(QProcess::ProcessError error) {
   logger.warning() << "Tunnel process encountered an error:" << error;
   emit backendFailure();
+  m_tunnel.reset(nullptr);
 }
 
 void WireguardUtilsMacos::tunnelFinished(int exitCode,
                                          QProcess::ExitStatus exitStatus) {
-  if ((exitStatus != QProcess::NormalExit) || (exitCode != 0)) {
+  if (exitStatus != QProcess::NormalExit) {
+    tunnelErrorOccurred(QProcess::Crashed);
+    return;
+  } else if (exitCode != 0) {
     logger.warning() << "Tunnel process exited with code:" << exitCode;
     emit backendFailure();
   }
+  m_tunnel.reset(nullptr);
 }
 
 // static
@@ -161,7 +160,7 @@ QString WireguardUtilsMacos::uapiSocket(const QString& ifname) {
 
 bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   Q_UNUSED(config);
-  if (m_tunnel.state() != QProcess::NotRunning) {
+  if (m_tunnel) {
     logger.warning() << "Unable to start: tunnel process already running";
     return false;
   }
@@ -190,25 +189,30 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   }
   auto uapiGuard = qScopeGuard([uapifd]() { close(uapifd); });
 
+  m_tunnel.reset(new MacOSHelperProcess(wireguardGoHelper()));
+  auto guard = qScopeGuard([this]() { m_tunnel.reset(nullptr); });
+
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   pe.insert("WG_TUN_FD", QString::number(tunfd));
   pe.insert("WG_UAPI_FD", QString::number(uapifd));
 #ifdef MZ_DEBUG
   pe.insert("LOG_LEVEL", "debug");
 #endif
-  m_tunnel.setProcessEnvironment(pe);
-  m_tunnel.setArguments(QStringList({"-f", "utun"}));
-  m_tunnel.start();
-  if (!m_tunnel.waitForStarted(WG_TUN_PROC_TIMEOUT)) {
+  m_tunnel->setProcessEnvironment(pe);
+  m_tunnel->setArguments(QStringList({"-f", "utun"}));
+  m_tunnel->start();
+  if (!m_tunnel->waitForStarted(WG_TUN_PROC_TIMEOUT)) {
     logger.error() << "Unable to start tunnel process due to timeout";
-    m_tunnel.kill();
     return false;
   }
 
-  m_ifname = QString(ifname);
+  // Watch the tunnel for unexpected closure.
+  connect(m_tunnel.get(), SIGNAL(errorOccurred(QProcess::ProcessError)), this,
+          SLOT(tunnelErrorOccurred(QProcess::ProcessError)));
+  connect(m_tunnel.get(), SIGNAL(finished(int, QProcess::ExitStatus)), this,
+          SLOT(tunnelFinished(int, QProcess::ExitStatus)));
 
-  // Start the routing table monitor.
-  m_rtmonitor = new MacosRouteMonitor(m_ifname, this);
+  m_ifname = QString(ifname);
 
   // Send a UAPI command to configure the interface
   QString message("set=1\n");
@@ -219,8 +223,13 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   int err = uapiErrno(uapiCommand(message));
   if (err != 0) {
     logger.error() << "Interface configuration failed:" << strerror(err);
+    return false;
   }
-  return (err == 0);
+
+  // Start the routing table monitor.
+  m_rtmonitor = new MacosRouteMonitor(m_ifname, this);
+  guard.dismiss();
+  return true;
 }
 
 bool WireguardUtilsMacos::deleteInterface() {
@@ -229,16 +238,17 @@ bool WireguardUtilsMacos::deleteInterface() {
     m_rtmonitor = nullptr;
   }
 
-  if (m_tunnel.state() == QProcess::NotRunning) {
+  if (!m_tunnel) {
     return false;
   }
 
   // Attempt to terminate gracefully.
-  m_tunnel.terminate();
-  if (!m_tunnel.waitForFinished(WG_TUN_PROC_TIMEOUT)) {
-    m_tunnel.kill();
-    m_tunnel.waitForFinished(WG_TUN_PROC_TIMEOUT);
+  m_tunnel->terminate();
+  if (!m_tunnel->waitForFinished(WG_TUN_PROC_TIMEOUT)) {
+    m_tunnel->kill();
+    m_tunnel->waitForFinished(WG_TUN_PROC_TIMEOUT);
   }
+  m_tunnel.reset(nullptr);
 
   // Garbage collect.
   QDir wgRuntimeDir(WG_RUNTIME_DIR);

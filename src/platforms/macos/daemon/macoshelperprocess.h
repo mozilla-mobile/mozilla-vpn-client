@@ -6,6 +6,7 @@
 #define MACOSHELPERPROCESS_H
 
 #include <QProcess>
+#include <QTemporaryDir>
 
 #include "logger.h"
 
@@ -20,11 +21,13 @@ class MacOSHelperProcess final : public QProcess {
   QProcess::ProcessError error() const;
 
  private:
+  static void dropPermissions();
   static QStringList genericCodesignRequirements();
   OSStatus enforceCodesign();
   void stdoutReady();
 
   QStringList m_codesignRequires;
+  QTemporaryDir m_tempdir;
   OSStatus m_codesignResult;
   Logger m_logger;
 };

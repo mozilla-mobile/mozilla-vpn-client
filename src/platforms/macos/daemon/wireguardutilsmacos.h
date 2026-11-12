@@ -19,9 +19,7 @@ class WireguardUtilsMacos final : public WireguardUtils {
   WireguardUtilsMacos(QObject* parent);
   ~WireguardUtilsMacos();
 
-  bool interfaceExists() override {
-    return m_tunnel.state() == QProcess::Running;
-  }
+  bool interfaceExists() override { return !m_tunnel.isNull(); }
   QString interfaceName() override { return m_ifname; }
   bool addInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
@@ -47,7 +45,7 @@ class WireguardUtilsMacos final : public WireguardUtils {
   static QString wireguardGoHelper();
 
   QString m_ifname;
-  MacOSHelperProcess m_tunnel;
+  QScopedPointer<MacOSHelperProcess> m_tunnel;
   MacosRouteMonitor* m_rtmonitor = nullptr;
 };
 
