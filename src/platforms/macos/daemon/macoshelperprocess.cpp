@@ -9,6 +9,7 @@
 #include <Security/SecRequirement.h>
 #include <Security/SecStaticCode.h>
 #include <Security/SecTask.h>
+#include <sys/clonefile.h>
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <pwd.h>
@@ -28,18 +29,20 @@ MacOSHelperProcess::MacOSHelperProcess(const QString& name, QObject* parent) :
   m_codesignResult = errSecSuccess;
 
   // Copy the helper tool into a protected temporary dir.
-  QString program = m_tempdir.filePath(name);
   int perms = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
   if (chmod(qPrintable(m_tempdir.path()), perms) < 0) {
-    m_logger.debug() << "chmod" << m_tempdir.path() << "failed:" << strerror(errno);
+    m_logger.debug() << "chmod" << m_tempdir.path()
+                     << "failed:"<< strerror(errno);
     m_codesignResult = errSecWrPerm;
   } else {
-    QFile srcFile(QDir(QCoreApplication::applicationDirPath()).filePath(name));
-    if (srcFile.copy(program)) {
+    QString src = QDir(QCoreApplication::applicationDirPath()).filePath(name);
+    QString program = m_tempdir.filePath(name);
+    if (clonefile(qPrintable(src), qPrintable(program), 0) < 0) {
+      m_logger.debug() << "clone" << src << "failed:" << strerror(errno);
+      m_codesignResult = errSecWrPerm;
+    } else {
       chmod(qPrintable(program), perms);
       setProgram(program);
-    } else {
-      m_codesignResult = errSecWrPerm;
     }
   }
   setChildProcessModifier(MacOSHelperProcess::dropPermissions);
