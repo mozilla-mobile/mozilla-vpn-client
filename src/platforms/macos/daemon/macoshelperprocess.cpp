@@ -9,10 +9,10 @@
 #include <Security/SecRequirement.h>
 #include <Security/SecStaticCode.h>
 #include <Security/SecTask.h>
+#include <pwd.h>
 #include <sys/clonefile.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <pwd.h>
 
 #include <QCoreApplication>
 #include <QDir>
@@ -23,8 +23,8 @@
 
 constexpr const char* PROCESS_TEMP_DIR = "/var/run/mozillavpn-XXXXXX";
 
-MacOSHelperProcess::MacOSHelperProcess(const QString& name, QObject* parent) :
-    QProcess(parent), m_tempdir(PROCESS_TEMP_DIR), m_logger(name) {
+MacOSHelperProcess::MacOSHelperProcess(const QString& name, QObject* parent)
+    : QProcess(parent), m_tempdir(PROCESS_TEMP_DIR), m_logger(name) {
   MZ_COUNT_CTOR(MacOSHelperProcess);
   m_codesignResult = errSecSuccess;
 
@@ -32,7 +32,7 @@ MacOSHelperProcess::MacOSHelperProcess(const QString& name, QObject* parent) :
   int perms = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
   if (chmod(qPrintable(m_tempdir.path()), perms) < 0) {
     m_logger.debug() << "chmod" << m_tempdir.path()
-                     << "failed:"<< strerror(errno);
+                     << "failed:" << strerror(errno);
     m_codesignResult = errSecWrPerm;
   } else {
     QString src = QDir(QCoreApplication::applicationDirPath()).filePath(name);
@@ -59,9 +59,7 @@ MacOSHelperProcess::MacOSHelperProcess(const QString& name, QObject* parent) :
 #endif
 }
 
-MacOSHelperProcess::~MacOSHelperProcess() {
-  MZ_COUNT_DTOR(MacOSHelperProcess);
-}
+MacOSHelperProcess::~MacOSHelperProcess() { MZ_COUNT_DTOR(MacOSHelperProcess); }
 
 void MacOSHelperProcess::start() {
   // Check the codesign, unless some other error has already occurred.
@@ -124,7 +122,8 @@ QStringList MacOSHelperProcess::codesignRequirements() {
   }
 
   CFDictionaryRef dict = nullptr;
-  OSStatus status = SecCodeCopySigningInformation(code, kSecCSSigningInformation, &dict);
+  OSStatus status =
+      SecCodeCopySigningInformation(code, kSecCSSigningInformation, &dict);
   CFRelease(code);
   if (status != errSecSuccess) {
     return QStringList();
@@ -157,7 +156,7 @@ QStringList MacOSHelperProcess::codesignRequirements() {
 
 OSStatus MacOSHelperProcess::enforceCodesign() {
   if (m_codesignRequires.isEmpty()) {
-    // If the daemon is not signed, then we shouldn't expect the helper tool to be.
+    // The daemon isn't signed, then we dont't expect the helper tool to be.
     return errSecSuccess;
   }
 
@@ -194,11 +193,11 @@ void MacOSHelperProcess::dropPermissions() {
   // Get the nobody user details
   char username[] = "nobody";
   struct passwd user = {
-    .pw_name = username,
-    .pw_uid = (uid_t)-2,
-    .pw_gid = (uid_t)-2,
+      .pw_name = username,
+      .pw_uid = (uid_t)-2,
+      .pw_gid = (uid_t)-2,
   };
-  struct passwd *fetch = getpwnam(username);
+  struct passwd* fetch = getpwnam(username);
   if (fetch) memcpy(&user, fetch, sizeof(struct passwd));
 
   // Switch to the nobody user to drop permissions.

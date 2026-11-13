@@ -9,8 +9,8 @@
 #include <Security/SecRequirement.h>
 #include <Security/SecStaticCode.h>
 #include <Security/SecTask.h>
-#include <net/route.h>
 #include <net/if_utun.h>
+#include <net/route.h>
 #include <netinet/ip6.h>
 #include <sys/ioctl.h>
 #include <sys/kern_control.h>
@@ -51,6 +51,7 @@ WireguardUtilsMacos::~WireguardUtilsMacos() {
 void WireguardUtilsMacos::tunnelErrorOccurred(QProcess::ProcessError error) {
   logger.warning() << "Tunnel process encountered an error:" << error;
   emit backendFailure();
+  m_ifname.clear();
   m_tunnel.reset(nullptr);
 }
 
@@ -63,6 +64,7 @@ void WireguardUtilsMacos::tunnelFinished(int exitCode,
     logger.warning() << "Tunnel process exited with code:" << exitCode;
     emit backendFailure();
   }
+  m_ifname.clear();
   m_tunnel.reset(nullptr);
 }
 
@@ -125,7 +127,7 @@ int WireguardUtilsMacos::createTunnelFd() {
 int WireguardUtilsMacos::createUapiListener(const QString& ifname) {
   QDir wgRuntimeDir(WG_RUNTIME_DIR);
   if (!wgRuntimeDir.exists()) {
-    if (mkdir(WG_RUNTIME_DIR, S_IRWXU | S_IRWXG |  S_IROTH | S_IXOTH) < 0) {
+    if (mkdir(WG_RUNTIME_DIR, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) < 0) {
       return -1;
     }
   }
@@ -175,12 +177,11 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   auto tunfdGuard = qScopeGuard([tunfd]() { close(tunfd); });
 
   char ifname[IFNAMSIZ];
-  socklen_t bufsize = sizeof(ifname);
-  if (getsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifname, &bufsize) < 0) {
+  socklen_t len = sizeof(ifname);
+  if (getsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifname, &len) < 0) {
     logger.error() << "Failed to get utun name:" << strerror(errno);
     return false;
   }
-  logger.debug() << "Created wireguard interface" << ifname;
 
   int uapifd = createUapiListener(ifname);
   if (uapifd < 0) {
@@ -189,8 +190,9 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   }
   auto uapiGuard = qScopeGuard([uapifd]() { close(uapifd); });
 
+  m_ifname = QString(ifname);
   m_tunnel.reset(new MacOSHelperProcess(wireguardGoHelper()));
-  auto guard = qScopeGuard([this]() { m_tunnel.reset(nullptr); });
+  logger.debug() << "Starting wireguard interface" << m_ifname;
 
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
   pe.insert("WG_TUN_FD", QString::number(tunfd));
@@ -203,16 +205,16 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   m_tunnel->start();
   if (!m_tunnel->waitForStarted(WG_TUN_PROC_TIMEOUT)) {
     logger.error() << "Unable to start tunnel process due to timeout";
+    m_tunnel.reset(nullptr);
     return false;
   }
 
-  // Watch the tunnel for unexpected closure.
+  // Handle tunnel shutdown
+  auto guard = qScopeGuard([this]() { m_tunnel->terminate(); });
   connect(m_tunnel.get(), SIGNAL(errorOccurred(QProcess::ProcessError)), this,
           SLOT(tunnelErrorOccurred(QProcess::ProcessError)));
   connect(m_tunnel.get(), SIGNAL(finished(int, QProcess::ExitStatus)), this,
           SLOT(tunnelFinished(int, QProcess::ExitStatus)));
-
-  m_ifname = QString(ifname);
 
   // Send a UAPI command to configure the interface
   QString message("set=1\n");

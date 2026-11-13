@@ -33,4 +33,4 @@ class MacOSHelperProcess final : public QProcess {
   Logger m_logger;
 };
 
-#endif // MACOSHELPERPROCESS_H
+#endif  // MACOSHELPERPROCESS_H
