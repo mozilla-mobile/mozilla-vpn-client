@@ -93,15 +93,4 @@ set_target_properties(wireguard-go PROPERTIES
 )
 
 # Sign the wireguard-go binary.
-if(XCODE)
-    # We need to manually sign, because our executable overwrite hack will blow away the Xcode signature.
-    add_custom_command(TARGET wireguard-go POST_BUILD
-        COMMENT "Signing wireguard-go"
-        COMMAND codesign --timestamp -f 
-            -s $<QUOTE>$EXPANDED_CODE_SIGN_IDENTITY$<QUOTE>
-            -i ${BUILD_OSX_APP_IDENTIFIER}.wireguard
-            $<TARGET_FILE:wireguard-go>
-    )
-else()
-    osx_codesign_target(wireguard-go)
-endif()
+osx_codesign_target(wireguard-go)
