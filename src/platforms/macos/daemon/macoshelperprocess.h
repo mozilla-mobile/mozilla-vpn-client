@@ -22,9 +22,10 @@ class MacOSHelperProcess final : public QProcess {
 
  private:
   static void dropPermissions();
-  static QStringList genericCodesignRequirements();
+  static QStringList codesignRequirements();
   OSStatus enforceCodesign();
   void stdoutReady();
+  void stderrReady();
 
   QStringList m_codesignRequires;
   QTemporaryDir m_tempdir;

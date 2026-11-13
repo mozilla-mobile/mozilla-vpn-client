@@ -25,28 +25,32 @@ constexpr const char* PROCESS_TEMP_DIR = "/var/run/mozillavpn-XXXXXX";
 MacOSHelperProcess::MacOSHelperProcess(const QString& name, QObject* parent) :
     QProcess(parent), m_tempdir(PROCESS_TEMP_DIR), m_logger(name) {
   MZ_COUNT_CTOR(MacOSHelperProcess);
+  m_codesignResult = errSecSuccess;
 
-  // Copy the helper tool into the protected temporary dir.
+  // Copy the helper tool into a protected temporary dir.
   QString program = m_tempdir.filePath(name);
   int perms = S_IRWXU | S_IRGRP | S_IXGRP | S_IROTH | S_IXOTH;
   if (chmod(qPrintable(m_tempdir.path()), perms) < 0) {
     m_logger.debug() << "chmod" << m_tempdir.path() << "failed:" << strerror(errno);
+    m_codesignResult = errSecWrPerm;
   } else {
     QFile srcFile(QDir(QCoreApplication::applicationDirPath()).filePath(name));
     if (srcFile.copy(program)) {
       chmod(qPrintable(program), perms);
+      setProgram(program);
+    } else {
+      m_codesignResult = errSecWrPerm;
     }
-    m_logger.debug() << "program:" << program;
   }
-  setProgram(program);
   setChildProcessModifier(MacOSHelperProcess::dropPermissions);
 
   // Set a handler to receive and log the tunnel stdout/stderr
-  setProcessChannelMode(QProcess::MergedChannels);
   connect(this, &QProcess::readyReadStandardOutput, this,
           &MacOSHelperProcess::stdoutReady);
+  connect(this, &QProcess::readyReadStandardError, this,
+          &MacOSHelperProcess::stderrReady);
 
-  m_codesignRequires = genericCodesignRequirements();
+  m_codesignRequires = codesignRequirements();
 #ifdef MZ_DEBUG
   m_logger.debug() << "codesign requires:" << m_codesignRequires.join(" and ");
 #endif
@@ -57,7 +61,11 @@ MacOSHelperProcess::~MacOSHelperProcess() {
 }
 
 void MacOSHelperProcess::start() {
-  m_codesignResult = enforceCodesign();
+  // Check the codesign, unless some other error has already occurred.
+  if (m_codesignResult == errSecSuccess) {
+    m_codesignResult = enforceCodesign();
+  }
+
   if (m_codesignResult != errSecSuccess) {
     CFStringRef msg = SecCopyErrorMessageString(m_codesignResult, nullptr);
     m_logger.debug() << "codesign failed:" << msg;
@@ -79,17 +87,29 @@ QProcess::ProcessError MacOSHelperProcess::error() const {
 }
 
 void MacOSHelperProcess::stdoutReady() {
+  setReadChannel(QProcess::StandardOutput);
   for (;;) {
     QByteArray line = readLine();
     if (line.length() <= 0) {
       break;
     }
-    m_logger.debug() << QString::fromUtf8(line);
+    m_logger.info() << QString::fromUtf8(line);
+  }
+}
+
+void MacOSHelperProcess::stderrReady() {
+  setReadChannel(QProcess::StandardError);
+  for (;;) {
+    QByteArray line = readLine();
+    if (line.length() <= 0) {
+      break;
+    }
+    m_logger.warning() << QString::fromUtf8(line);
   }
 }
 
 // static
-QStringList MacOSHelperProcess::genericCodesignRequirements() {
+QStringList MacOSHelperProcess::codesignRequirements() {
   static QStringList requirements;
   if (!requirements.isEmpty()) {
     return requirements;
