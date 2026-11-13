@@ -4,11 +4,20 @@
 
 #include "wireguardutilsmacos.h"
 
+#include <CoreFoundation/CoreFoundation.h>
 #include <Security/SecCertificate.h>
 #include <Security/SecRequirement.h>
 #include <Security/SecStaticCode.h>
 #include <Security/SecTask.h>
+#include <net/if_utun.h>
 #include <net/route.h>
+#include <netinet/ip6.h>
+#include <sys/ioctl.h>
+#include <sys/kern_control.h>
+#include <sys/stat.h>
+#include <sys/sys_domain.h>
+#include <sys/sysctl.h>
+#include <sys/un.h>
 
 #include <QByteArray>
 #include <QDir>
@@ -27,20 +36,11 @@ constexpr const char* WG_RUNTIME_DIR = "/var/run/wireguard";
 
 namespace {
 Logger logger("WireguardUtilsMacos");
-Logger logwireguard("WireguardGo");
 };  // namespace
 
-WireguardUtilsMacos::WireguardUtilsMacos(QObject* parent)
-    : WireguardUtils(parent), m_tunnel(this) {
+WireguardUtilsMacos::WireguardUtilsMacos(QObject* p) : WireguardUtils(p) {
   MZ_COUNT_CTOR(WireguardUtilsMacos);
   logger.debug() << "WireguardUtilsMacos created.";
-
-  connect(&m_tunnel, SIGNAL(readyReadStandardOutput()), this,
-          SLOT(tunnelStdoutReady()));
-  connect(&m_tunnel, SIGNAL(errorOccurred(QProcess::ProcessError)), this,
-          SLOT(tunnelErrorOccurred(QProcess::ProcessError)));
-  connect(&m_tunnel, SIGNAL(finished(int, QProcess::ExitStatus)), this,
-          SLOT(tunnelFinished(int, QProcess::ExitStatus)));
 }
 
 WireguardUtilsMacos::~WireguardUtilsMacos() {
@@ -48,210 +48,173 @@ WireguardUtilsMacos::~WireguardUtilsMacos() {
   logger.debug() << "WireguardUtilsMacos destroyed.";
 }
 
-void WireguardUtilsMacos::tunnelStdoutReady() {
-  for (;;) {
-    QByteArray line = m_tunnel.readLine();
-    if (line.length() <= 0) {
-      break;
-    }
-    logwireguard.debug() << QString::fromUtf8(line);
-  }
-}
-
 void WireguardUtilsMacos::tunnelErrorOccurred(QProcess::ProcessError error) {
   logger.warning() << "Tunnel process encountered an error:" << error;
   emit backendFailure();
+  m_ifname.clear();
+  m_tunnel.reset(nullptr);
 }
 
 void WireguardUtilsMacos::tunnelFinished(int exitCode,
                                          QProcess::ExitStatus exitStatus) {
-  if ((exitStatus != QProcess::NormalExit) || (exitCode != 0)) {
+  if (exitStatus != QProcess::NormalExit) {
+    tunnelErrorOccurred(QProcess::Crashed);
+    return;
+  } else if (exitCode != 0) {
     logger.warning() << "Tunnel process exited with code:" << exitCode;
     emit backendFailure();
   }
+  m_ifname.clear();
+  m_tunnel.reset(nullptr);
 }
 
 // static
-QString WireguardUtilsMacos::wireguardGoPath() {
-  QString osVersion = QSysInfo::productVersion();
-  if (QVersionNumber::fromString(osVersion) >= QVersionNumber(13, 0)) {
-    // For macOS 13 and later this can be a relative path to the daemon.
-    QDir appPath(QCoreApplication::applicationDirPath());
-    appPath.cdUp();
-    appPath.cdUp();
-    appPath.cd("Resources");
-    appPath.cd("utils");
-    return appPath.filePath("wireguard-go");
+QString WireguardUtilsMacos::wireguardGoHelper() {
+  CFBundleRef bundle = CFBundleGetMainBundle();
+  CFStringRef ident = CFBundleGetIdentifier(bundle);
+  QStringList parts = QString::fromCFString(ident).split('.');
+
+  parts.last() = "wireguard";
+  return parts.join('.');
+}
+
+int WireguardUtilsMacos::createTunnelFd() {
+  int tunfd = socket(PF_SYSTEM, SOCK_DGRAM, SYSPROTO_CONTROL);
+  if (tunfd < 0) {
+    return -1;
   }
 
-  // For earlier versions of macOS - this must be a fixed path
-  return "/Applications/Mozilla VPN.app/Contents/Resources/utils/wireguard-go";
+  // Connect to the utun control kernel service.
+  struct ctl_info info = {.ctl_name = UTUN_CONTROL_NAME};
+  int err = ioctl(tunfd, CTLIOCGINFO, &info);
+  if (err < 0) {
+    close(tunfd);
+    return -1;
+  }
+  struct sockaddr_ctl addr = {};
+  addr.sc_len = sizeof(addr);
+  addr.sc_family = AF_SYSTEM;
+  addr.ss_sysaddr = AF_SYS_CONTROL;
+  addr.sc_id = info.ctl_id;
+  addr.sc_unit = 0;
+  if (::connect(tunfd, (struct sockaddr*)&addr, sizeof(addr)) < 0) {
+    close(tunfd);
+    return -1;
+  }
+
+  // Allow packets to queue up in the kernel when under load.
+  uint32_t utun_max_backlog = 64;
+  setsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_MAX_PENDING_PACKETS,
+             &utun_max_backlog, sizeof(utun_max_backlog));
+
+  return tunfd;
+
+  struct ifreq ifr;
+  socklen_t ifnamesize = sizeof(ifr.ifr_name);
+  err = getsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifr.ifr_name,
+                   &ifnamesize);
+  if (err < 0) {
+    close(tunfd);
+    return -1;
+  }
+
+  // Set a base MTU, it will get updated later.
+  ifr.ifr_mtu = IPV6_MMTU;
+  ioctl(tunfd, SIOCSIFMTU, &ifr);
+  return tunfd;
+}
+
+int WireguardUtilsMacos::createUapiListener(const QString& ifname) {
+  QDir wgRuntimeDir(WG_RUNTIME_DIR);
+  if (!wgRuntimeDir.exists()) {
+    if (mkdir(WG_RUNTIME_DIR, S_IRWXU | S_IRWXG | S_IROTH | S_IXOTH) < 0) {
+      return -1;
+    }
+  }
+
+  int uapifd = socket(AF_UNIX, SOCK_STREAM, 0);
+  if (uapifd < 0) {
+    return -1;
+  }
+
+  struct sockaddr_un sun = {};
+  sun.sun_family = AF_UNIX;
+  sun.sun_len = sizeof(sun);
+  strncpy(sun.sun_path, qPrintable(uapiSocket(ifname)), sizeof(sun.sun_path));
+  unlink(sun.sun_path);
+  if (bind(uapifd, (struct sockaddr*)&sun, sizeof(sun)) < 0) {
+    close(uapifd);
+    return -1;
+  }
+  if (listen(uapifd, 8) < 0) {
+    close(uapifd);
+    unlink(sun.sun_path);
+    return -1;
+  }
+
+  return uapifd;
 }
 
 // static
-QString WireguardUtilsMacos::wireguardGoRequirements() {
-  static QString requirements;
-  if (!requirements.isEmpty()) {
-    return requirements;
-  }
-
-  OSStatus status = errSecSuccess;
-  SecCodeRef code = nullptr;
-  CFDictionaryRef dict = nullptr;
-  auto guard = qScopeGuard([&]() {
-    if (status != errSecSuccess) {
-      CFStringRef msg = SecCopyErrorMessageString(status, nullptr);
-      logger.warning() << "Requirements failed:" << msg;
-      CFRelease(msg);
-    }
-    CFRelease(code);
-    CFRelease(dict);
-  });
-
-  status = SecCodeCopySelf(kSecCSDefaultFlags, &code);
-  if (status != errSecSuccess) {
-    return QString();
-  }
-  status = SecCodeCopySigningInformation(code, kSecCSSigningInformation, &dict);
-  if (status != errSecSuccess) {
-    return QString();
-  }
-
-  // Build the signing requirements.
-  QStringList reqList("anchor apple generic");
-  CFTypeRef value;
-  value = CFDictionaryGetValue(dict, kSecCodeInfoTeamIdentifier);
-  if ((value != nullptr) && (CFGetTypeID(value) == CFStringGetTypeID())) {
-    QString team = QString::fromCFString(static_cast<CFStringRef>(value));
-    reqList << QString("certificate leaf[subject.OU] = \"%1\"").arg(team);
-  }
-
-  value = CFDictionaryGetValue(dict, kSecCodeInfoCertificates);
-  if ((value != nullptr) && (CFGetTypeID(value) == CFArrayGetTypeID()) &&
-      (CFArrayGetCount(static_cast<CFArrayRef>(value)) != 0)) {
-    CFTypeRef leaf = CFArrayGetValueAtIndex(static_cast<CFArrayRef>(value), 0);
-    if ((leaf != nullptr) && (CFGetTypeID(leaf) == SecCertificateGetTypeID())) {
-      CFStringRef name;
-      QString nameReqTemplate = "certificate leaf[subject.CN] = \"%1\"";
-      SecCertificateCopyCommonName((SecCertificateRef)leaf, &name);
-      reqList << nameReqTemplate.arg(QString::fromCFString(name));
-      CFRelease(name);
-    }
-  }
-
-  requirements = reqList.join(" and ");
-  return requirements;
-}
-
-// static
-bool WireguardUtilsMacos::wireguardGoCodesign(const QProcess& process) {
-  // No need to verify the codesign on macOS >= 13.0 as the daemon is running
-  // as a part of the bundle, so we ought to get codesign verification for free
-  QString osVersion = QSysInfo::productVersion();
-  if (QVersionNumber::fromString(osVersion) >= QVersionNumber(13, 0)) {
-    return true;
-  }
-
-  QString requirements = wireguardGoRequirements();
-  if (requirements.isEmpty()) {
-    // If the daemon is not signed, then we shouldn't expect wireguard-go to be.
-    return true;
-  }
-
-  OSStatus status = errSecSuccess;
-  CFErrorRef err = nullptr;
-  CFURLRef url = nullptr;
-  SecRequirementRef req = nullptr;
-  SecStaticCodeRef code = nullptr;
-  auto guard = qScopeGuard([&]() {
-    if (err != nullptr) {
-      logger.warning() << "Codesign failed:" << err;
-      CFRelease(err);
-    } else if (status != errSecSuccess) {
-      CFStringRef msg = SecCopyErrorMessageString(status, nullptr);
-      logger.warning() << "Codesign failed:" << msg;
-      CFRelease(msg);
-    }
-    CFRelease(url);
-    CFRelease(req);
-    CFRelease(code);
-  });
-
-  // Get the URL to the QProcess's program
-  CFStringRef urlString = process.program().toCFString();
-  url = CFURLCreateWithFileSystemPath(kCFAllocatorDefault, urlString,
-                                      kCFURLPOSIXPathStyle, false);
-  CFRelease(urlString);
-  if (!url) {
-    logger.warning() << "Unable to generate URL for" << process.program();
-    return false;
-  }
-  logger.debug() << "Codesign verifying:" << CFURLGetString(url);
-  logger.debug() << "Codesign requirements:" << requirements;
-
-  // Prepare the codesign requirements.
-  CFStringRef reqString = requirements.toCFString();
-  status = SecRequirementCreateWithString(reqString, kSecCSDefaultFlags, &req);
-  CFRelease(reqString);
-  if (status != errSecSuccess) {
-    return false;
-  }
-
-  // Validate the codesign.
-  logger.debug() << "Codesign get code object";
-  status = SecStaticCodeCreateWithPath(url, kSecCSDefaultFlags, &code);
-  if (status != errSecSuccess) {
-    return false;
-  }
-  logger.debug() << "Codesign verify code object";
-  status =
-      SecStaticCodeCheckValidityWithErrors(code, kSecCSDefaultFlags, req, &err);
-  return (status == errSecSuccess);
+QString WireguardUtilsMacos::uapiSocket(const QString& ifname) {
+  return QDir(WG_RUNTIME_DIR).filePath(ifname + ".sock");
 }
 
 bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   Q_UNUSED(config);
-  if (m_tunnel.state() != QProcess::NotRunning) {
+  if (m_tunnel) {
     logger.warning() << "Unable to start: tunnel process already running";
     return false;
   }
 
-  QDir wgRuntimeDir(WG_RUNTIME_DIR);
-  if (!wgRuntimeDir.exists()) {
-    wgRuntimeDir.mkpath(".");
+  int tunfd = createTunnelFd();
+  if (tunfd < 0) {
+    logger.error() << "Failed to create utun device:" << strerror(errno);
+    return false;
+  }
+  // We can close the tunnel FD as soon as the process has started, the child
+  // will keep the tunnel open.
+  auto tunfdGuard = qScopeGuard([tunfd]() { close(tunfd); });
+
+  char ifname[IFNAMSIZ];
+  socklen_t len = sizeof(ifname);
+  if (getsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifname, &len) < 0) {
+    logger.error() << "Failed to get utun name:" << strerror(errno);
+    return false;
   }
 
+  int uapifd = createUapiListener(ifname);
+  if (uapifd < 0) {
+    logger.error() << "Failed to create uapi socket:" << strerror(errno);
+    return false;
+  }
+  auto uapiGuard = qScopeGuard([uapifd]() { close(uapifd); });
+
+  m_ifname = QString(ifname);
+  m_tunnel.reset(new MacOSHelperProcess(wireguardGoHelper()));
+  logger.debug() << "Starting wireguard interface" << m_ifname;
+
   QProcessEnvironment pe = QProcessEnvironment::systemEnvironment();
-  QString wgNameFile = wgRuntimeDir.filePath(QString(WG_INTERFACE) + ".name");
-  pe.insert("WG_TUN_NAME_FILE", wgNameFile);
+  pe.insert("WG_TUN_FD", QString::number(tunfd));
+  pe.insert("WG_UAPI_FD", QString::number(uapifd));
 #ifdef MZ_DEBUG
   pe.insert("LOG_LEVEL", "debug");
 #endif
-  m_tunnel.setProcessEnvironment(pe);
-  m_tunnel.setProgram(wireguardGoPath());
-  m_tunnel.setArguments(QStringList({"-f", "utun"}));
-  if (!wireguardGoCodesign(m_tunnel)) {
-    logger.error() << "Unable to validate tunnel process code signature";
-    return false;
-  }
-
-  m_tunnel.start();
-  if (!m_tunnel.waitForStarted(WG_TUN_PROC_TIMEOUT)) {
+  m_tunnel->setProcessEnvironment(pe);
+  m_tunnel->setArguments(QStringList({"-f", "utun"}));
+  m_tunnel->start();
+  if (!m_tunnel->waitForStarted(WG_TUN_PROC_TIMEOUT)) {
     logger.error() << "Unable to start tunnel process due to timeout";
-    m_tunnel.kill();
+    m_tunnel.reset(nullptr);
     return false;
   }
 
-  m_ifname = waitForTunnelName(wgNameFile);
-  if (m_ifname.isNull()) {
-    logger.error() << "Unable to read tunnel interface name";
-    m_tunnel.kill();
-    return false;
-  }
-  logger.debug() << "Created wireguard interface" << m_ifname;
-
-  // Start the routing table monitor.
-  m_rtmonitor = new MacosRouteMonitor(m_ifname, this);
+  // Handle tunnel shutdown
+  auto guard = qScopeGuard([this]() { m_tunnel->terminate(); });
+  connect(m_tunnel.get(), SIGNAL(errorOccurred(QProcess::ProcessError)), this,
+          SLOT(tunnelErrorOccurred(QProcess::ProcessError)));
+  connect(m_tunnel.get(), SIGNAL(finished(int, QProcess::ExitStatus)), this,
+          SLOT(tunnelFinished(int, QProcess::ExitStatus)));
 
   // Send a UAPI command to configure the interface
   QString message("set=1\n");
@@ -262,8 +225,13 @@ bool WireguardUtilsMacos::addInterface(const InterfaceConfig& config) {
   int err = uapiErrno(uapiCommand(message));
   if (err != 0) {
     logger.error() << "Interface configuration failed:" << strerror(err);
+    return false;
   }
-  return (err == 0);
+
+  // Start the routing table monitor.
+  m_rtmonitor = new MacosRouteMonitor(m_ifname, this);
+  guard.dismiss();
+  return true;
 }
 
 bool WireguardUtilsMacos::deleteInterface() {
@@ -272,16 +240,17 @@ bool WireguardUtilsMacos::deleteInterface() {
     m_rtmonitor = nullptr;
   }
 
-  if (m_tunnel.state() == QProcess::NotRunning) {
+  if (!m_tunnel) {
     return false;
   }
 
   // Attempt to terminate gracefully.
-  m_tunnel.terminate();
-  if (!m_tunnel.waitForFinished(WG_TUN_PROC_TIMEOUT)) {
-    m_tunnel.kill();
-    m_tunnel.waitForFinished(WG_TUN_PROC_TIMEOUT);
+  m_tunnel->terminate();
+  if (!m_tunnel->waitForFinished(WG_TUN_PROC_TIMEOUT)) {
+    m_tunnel->kill();
+    m_tunnel->waitForFinished(WG_TUN_PROC_TIMEOUT);
   }
+  m_tunnel.reset(nullptr);
 
   // Garbage collect.
   QDir wgRuntimeDir(WG_RUNTIME_DIR);
@@ -465,15 +434,12 @@ bool WireguardUtilsMacos::excludeLocalNetworks(const QList<IPAddress>& routes) {
 }
 
 QString WireguardUtilsMacos::uapiCommand(const QString& command) {
-  QLocalSocket socket;
   QTimer uapiTimeout;
-  QDir wgRuntimeDir(WG_RUNTIME_DIR);
-  QString wgSocketFile = wgRuntimeDir.filePath(m_ifname + ".sock");
-
   uapiTimeout.setSingleShot(true);
   uapiTimeout.start(WG_TUN_PROC_TIMEOUT);
 
-  socket.connectToServer(wgSocketFile, QIODevice::ReadWrite);
+  QLocalSocket socket;
+  socket.connectToServer(uapiSocket(m_ifname), QIODevice::ReadWrite);
   if (!socket.waitForConnected(WG_TUN_PROC_TIMEOUT)) {
     logger.error() << "QLocalSocket::waitForConnected() failed:"
                    << socket.errorString();
@@ -512,31 +478,4 @@ int WireguardUtilsMacos::uapiErrno(const QString& reply) {
     }
   }
   return EINVAL;
-}
-
-QString WireguardUtilsMacos::waitForTunnelName(const QString& filename) {
-  QTimer timeout;
-  timeout.setSingleShot(true);
-  timeout.start(WG_TUN_PROC_TIMEOUT);
-
-  QFile file(filename);
-  while ((m_tunnel.state() == QProcess::Running) && timeout.isActive()) {
-    QCoreApplication::processEvents(QEventLoop::AllEvents, 100);
-    if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
-      continue;
-    }
-    QString ifname = QString::fromLocal8Bit(file.readLine()).trimmed();
-    file.close();
-
-    // Test-connect to the UAPI socket.
-    QLocalSocket sock;
-    QDir wgRuntimeDir(WG_RUNTIME_DIR);
-    QString sockName = wgRuntimeDir.filePath(ifname + ".sock");
-    sock.connectToServer(sockName, QIODevice::ReadWrite);
-    if (sock.waitForConnected(100)) {
-      return ifname;
-    }
-  }
-
-  return QString();
 }

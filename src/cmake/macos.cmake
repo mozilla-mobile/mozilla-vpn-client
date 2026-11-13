@@ -73,20 +73,9 @@ target_sources(mozillavpn PRIVATE
 )
 
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/osxtools.cmake)
-include(${CMAKE_SOURCE_DIR}/scripts/cmake/golang.cmake)
 include(${CMAKE_SOURCE_DIR}/scripts/cmake/rustlang.cmake)
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/macos-daemon.cmake)
 
-# Find the SDK root
-if(IS_DIRECTORY ${CMAKE_OSX_SYSROOT})
-    set(OSX_SDK_PATH ${CMAKE_OSX_SYSROOT})
-elseif(CMAKE_OSX_SYSROOT)
-    execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
-        COMMAND xcrun --sdk ${CMAKE_OSX_SYSROOT} --show-sdk-path)
-else()
-    execute_process(OUTPUT_VARIABLE OSX_SDK_PATH OUTPUT_STRIP_TRAILING_WHITESPACE
-        COMMAND xcrun --sdk macosx --show-sdk-path)
-endif()
 
 # Enable Balrog for update support.
 target_compile_definitions(mozillavpn PRIVATE MVPN_BALROG)
@@ -95,106 +84,32 @@ target_sources(mozillavpn PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/update/balrog.h
 )
 
-# Build the Wireguard Go tunnel
-file(GLOB_RECURSE WIREGUARD_GO_DEPS ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/*.go)
-set(WIREGUARD_GO_ENV
-    GOCACHE=${CMAKE_BINARY_DIR}/go-cache
-    CC=${CMAKE_C_COMPILER}
-    CXX=${CMAKE_CXX_COMPILER}
-    GOROOT=${GOLANG_GOROOT}
-    SDKROOT=${OSX_SDK_PATH}
-    MACOSX_DEPLOYMENT_TARGET=${CMAKE_OSX_DEPLOYMENT_TARGET}
-    GOOS=darwin
-    CGO_ENABLED=1
-    GO111MODULE=on
-)
-if (CMAKE_CROSSCOMPILING)
-    list(APPEND WIREGUARD_GO_ENV
-        CGO_CFLAGS='-target ${CMAKE_SYSTEM_PROCESSOR}-apple-darwin${CMAKE_SYSTEM_VERSION}'
-        CGO_LDFLAGS='-target ${CMAKE_SYSTEM_PROCESSOR}-apple-darwin${CMAKE_SYSTEM_VERSION}'
-    )
-endif()
-
-if(CMAKE_OSX_ARCHITECTURES)
-    foreach(OSXARCH ${CMAKE_OSX_ARCHITECTURES})
-        string(REPLACE "x86_64" "amd64" GOARCH ${OSXARCH})
-        add_custom_command(
-            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH}
-            COMMENT "Building wireguard-go for ${OSXARCH}"
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go
-            DEPENDS
-                ${WIREGUARD_GO_DEPS}
-                ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
-                ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
-            COMMAND ${CMAKE_COMMAND} -E env ${WIREGUARD_GO_ENV} GOARCH=${GOARCH}
-                    ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v -ldflags='-s -w'
-                        -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH}
-        )
-        list(APPEND WG_GO_ARCH_BUILDS ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go-${OSXARCH})
-    endforeach()
-
-    add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
-        COMMENT "Building wireguard-go"
-        DEPENDS ${WG_GO_ARCH_BUILDS}
-        COMMAND ${LIPO_BUILD_TOOL} -create -output ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go ${WG_GO_ARCH_BUILDS}
-    )
-else()
-    # This only builds for the host architecture.
-    add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
-        COMMENT "Building wireguard-go"
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go
-        DEPENDS
-            ${WIREGUARD_GO_DEPS}
-            ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.mod
-            ${CMAKE_SOURCE_DIR}/3rdparty/wireguard-go/go.sum
-        COMMAND ${CMAKE_COMMAND} -E env ${WIREGUARD_GO_ENV}
-                ${GOLANG_BUILD_TOOL} build -buildmode exe -buildvcs=false -trimpath -v -ldflags='-s -w'
-                    -o ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
-    )
-endif()
-
-# Manually sign the wireguard-go binary.
-if(XCODE)
-    add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
-        COMMAND codesign --timestamp -f -s $<QUOTE>$EXPANDED_CODE_SIGN_IDENTITY$<QUOTE> ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
-        APPEND
-    )
-elseif(CODE_SIGN_IDENTITY)
-    add_custom_command(
-        OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
-        COMMAND ${CODESIGN_BIN} --timestamp -f -s "${CODE_SIGN_IDENTITY}" ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go
-        APPEND
-    )
-endif()
-
-target_sources(mozillavpn PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/wireguard-go)
-set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/wireguard-go PROPERTIES
-    MACOSX_PACKAGE_LOCATION Resources/utils
-    HEADER_FILE_ONLY TRUE
-    GENERATED TRUE
-)
-
 # Install the daemon into the bundle.
-add_dependencies(mozillavpn daemon)
+add_dependencies(mozillavpn daemon wireguard-go)
 if(XCODE)
     # We can't use target_sources here as that would require a generator
     # expression to resolve the object file path, and that will break Xcode.
     # Fortunately, Xcode supports embedding targets into the bundle.
     set_target_properties(mozillavpn PROPERTIES
-        XCODE_EMBED_XPC_SERVICES daemon
+        XCODE_EMBED_XPC_SERVICES "daemon;wireguard-go"
         XCODE_EMBED_XPC_SERVICES_PATH "$(CONTENTS_FOLDER_PATH)/Library/LaunchServices"
     )
 else()
     get_target_property(DAEMON_BINARY_DIR daemon BINARY_DIR)
     get_target_property(DAEMON_OUTPUT_NAME daemon OUTPUT_NAME)
-    target_sources(mozillavpn PRIVATE ${DAEMON_BINARY_DIR}/${DAEMON_OUTPUT_NAME})
-    set_source_files_properties(${DAEMON_BINARY_DIR}/${DAEMON_OUTPUT_NAME} PROPERTIES
-        MACOSX_PACKAGE_LOCATION "Library/LaunchServices"
-        HEADER_FILE_ONLY TRUE
-        GENERATED TRUE
+    get_target_property(WIREGUARD_BINARY_DIR wireguard-go BINARY_DIR)
+    get_target_property(WIREGUARD_OUTPUT_NAME wireguard-go OUTPUT_NAME)
+    target_sources(mozillavpn PRIVATE
+        ${DAEMON_BINARY_DIR}/${DAEMON_OUTPUT_NAME}
+        ${WIREGUARD_BINARY_DIR}/${WIREGUARD_OUTPUT_NAME}
+    )
+    set_source_files_properties(
+        ${DAEMON_BINARY_DIR}/${DAEMON_OUTPUT_NAME}
+        ${WIREGUARD_BINARY_DIR}/${WIREGUARD_OUTPUT_NAME}
+        PROPERTIES
+            MACOSX_PACKAGE_LOCATION "Library/LaunchServices"
+            HEADER_FILE_ONLY TRUE
+            GENERATED TRUE
     )
 endif()
 

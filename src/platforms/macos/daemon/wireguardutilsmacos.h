@@ -9,6 +9,7 @@
 #include <QProcess>
 
 #include "daemon/wireguardutils.h"
+#include "macoshelperprocess.h"
 #include "macosroutemonitor.h"
 
 class WireguardUtilsMacos final : public WireguardUtils {
@@ -18,9 +19,7 @@ class WireguardUtilsMacos final : public WireguardUtils {
   WireguardUtilsMacos(QObject* parent);
   ~WireguardUtilsMacos();
 
-  bool interfaceExists() override {
-    return m_tunnel.state() == QProcess::Running;
-  }
+  bool interfaceExists() override { return !m_tunnel.isNull(); }
   QString interfaceName() override { return m_ifname; }
   bool addInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
@@ -34,20 +33,19 @@ class WireguardUtilsMacos final : public WireguardUtils {
   bool excludeLocalNetworks(const QList<IPAddress>& lanAddressRanges) override;
 
  private slots:
-  void tunnelStdoutReady();
   void tunnelErrorOccurred(QProcess::ProcessError error);
   void tunnelFinished(int exitCode, QProcess::ExitStatus exitStatus);
 
  private:
+  static QString uapiSocket(const QString& ifname);
   QString uapiCommand(const QString& command);
   static int uapiErrno(const QString& command);
-  QString waitForTunnelName(const QString& filename);
-  static QString wireguardGoPath();
-  static bool wireguardGoCodesign(const QProcess& process);
-  static QString wireguardGoRequirements();
+  int createTunnelFd();
+  int createUapiListener(const QString& ifname);
+  static QString wireguardGoHelper();
 
   QString m_ifname;
-  QProcess m_tunnel;
+  QScopedPointer<MacOSHelperProcess> m_tunnel;
   MacosRouteMonitor* m_rtmonitor = nullptr;
 };
 
