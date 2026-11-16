@@ -19,7 +19,6 @@ permissions: {}
 jobs:
   build_test_addons:
     name: Build Test Addons
-    runs-on: ubuntu-24.04
     uses: ./.github/workflows/build_addons.yaml
     with:
       test-addons-name: test-addons-${{ github.sha }}
