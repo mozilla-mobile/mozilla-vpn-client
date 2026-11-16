@@ -20,13 +20,27 @@ class WireguardUtils : public QObject {
   Q_OBJECT
 
  public:
-  class PeerStatus {
+  class PeerConfig {
    public:
-    PeerStatus(const QString& pubkey = QString()) { m_pubkey = pubkey; }
+    PeerConfig(const QString& pubkey = QString()) : m_pubkey(pubkey) {};
     QString m_pubkey;
+    QHostAddress m_address;
+    QList<IPAddress> m_allowedips;
+    int m_port = 51820;
+    bool m_multihop = false;
+  };
+
+  class PeerStatus : public PeerConfig {
+   public:
+    PeerStatus(const QString& pubkey = QString()) : PeerConfig(pubkey) {};
     qint64 m_handshake = 0;
     qint64 m_rxBytes = 0;
     qint64 m_txBytes = 0;
+
+    PeerStatus(const PeerConfig& config) : PeerConfig(config) {}
+    PeerStatus& operator=(const PeerConfig& config) {
+      return *this = PeerStatus(config);
+    }
   };
 
   explicit WireguardUtils(QObject* parent) : QObject(parent) {};
@@ -37,13 +51,15 @@ class WireguardUtils : public QObject {
   virtual bool addInterface(const InterfaceConfig& config) = 0;
   virtual bool deleteInterface() = 0;
 
-  virtual bool updatePeer(const InterfaceConfig& config) = 0;
-  virtual bool deletePeer(const InterfaceConfig& config) = 0;
+  virtual bool updatePeer(const PeerConfig& config) = 0;
+  virtual bool deletePeer(const PeerConfig& config) = 0;
   virtual QList<PeerStatus> getPeerStatus() = 0;
 
   virtual bool updateRoutePrefix(const IPAddress& prefix) = 0;
   virtual bool deleteRoutePrefix(const IPAddress& prefix) = 0;
   virtual bool excludeLocalNetworks(const QList<IPAddress>& addresses) = 0;
+
+  virtual bool isRouteReachable(const QHostAddress& address) { return true; }
 
  signals:
   void backendFailure();

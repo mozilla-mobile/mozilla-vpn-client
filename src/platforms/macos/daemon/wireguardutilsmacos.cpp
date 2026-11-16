@@ -290,45 +290,32 @@ bool WireguardUtilsMacos::deleteInterface() {
 }
 
 // dummy implementations for now
-bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
-  QByteArray publicKey =
-      QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
-
-  const bool useIPv4 = !config.m_serverIpv4AddrIn.isNull() &&
-                       (config.m_serverIpv6AddrIn.isNull() ||
-                        m_rtmonitor->hasIpv4DefaultRoute());
-  const QString endpointAddr =
-      useIPv4 ? config.m_serverIpv4AddrIn : config.m_serverIpv6AddrIn;
-
-  logger.debug() << "Configuring peer" << logger.keys(config.m_serverPublicKey)
-                 << "via" << endpointAddr;
+bool WireguardUtilsMacos::updatePeer(const PeerConfig& config) {
+  QByteArray publicKey = QByteArray::fromBase64(qPrintable(config.m_pubkey));
+  logger.debug() << "Configuring peer" << logger.keys(config.m_pubkey)
+                 << "via" << config.m_address.toString();
 
   // Update/create the peer config
   QString message;
   QTextStream out(&message);
   out << "set=1\n";
   out << "public_key=" << QString(publicKey.toHex()) << "\n";
-  if (useIPv4) {
-    out << "endpoint=" << endpointAddr << ":";
-  } else if (!endpointAddr.isNull()) {
-    out << "endpoint=[" << endpointAddr << "]:";
+  if (config.m_address.protocol() != QAbstractSocket::IPv6Protocol) {
+    out << "endpoint=" << config.m_address.toString() << ":";
   } else {
-    logger.warning() << "Failed to create peer with no endpoints";
-    return false;
+    out << "endpoint=[" << config.m_address.toString() << "]:" ;
   }
-  out << config.m_serverPort << "\n";
+  out << config.m_port << "\n";
 
   out << "replace_allowed_ips=true\n";
   out << "persistent_keepalive_interval=" << WG_KEEPALIVE_PERIOD << "\n";
-  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : config.m_allowedips) {
     out << "allowed_ip=" << ip.toString() << "\n";
   }
 
   // Exclude the server address, except for multihop exit servers.
-  if ((config.m_hopType != InterfaceConfig::MultiHopExit) &&
-      (m_rtmonitor != nullptr)) {
-    m_rtmonitor->addExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-    m_rtmonitor->addExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+  if (!config.m_multihop && m_rtmonitor) {
+    m_rtmonitor->addExclusionRoute(IPAddress(config.m_address));
   }
 
   int err = uapiErrno(uapiCommand(message));
@@ -338,15 +325,12 @@ bool WireguardUtilsMacos::updatePeer(const InterfaceConfig& config) {
   return (err == 0);
 }
 
-bool WireguardUtilsMacos::deletePeer(const InterfaceConfig& config) {
-  QByteArray publicKey =
-      QByteArray::fromBase64(qPrintable(config.m_serverPublicKey));
+bool WireguardUtilsMacos::deletePeer(const PeerConfig& config) {
+  QByteArray publicKey = QByteArray::fromBase64(qPrintable(config.m_pubkey));
 
   // Clear exclustion routes for this peer.
-  if ((config.m_hopType != InterfaceConfig::MultiHopExit) &&
-      (m_rtmonitor != nullptr)) {
-    m_rtmonitor->deleteExclusionRoute(IPAddress(config.m_serverIpv4AddrIn));
-    m_rtmonitor->deleteExclusionRoute(IPAddress(config.m_serverIpv6AddrIn));
+  if (!config.m_multihop && m_rtmonitor) {
+    m_rtmonitor->deleteExclusionRoute(IPAddress(config.m_address));
   }
 
   QString message;
@@ -462,6 +446,20 @@ bool WireguardUtilsMacos::excludeLocalNetworks(const QList<IPAddress>& routes) {
 
   // TODO: A kill switch would be nice though :)
   return result;
+}
+
+// TODO: A smarter check might be more appropriate later.
+bool WireguardUtilsMacos::isRouteReachable(const QHostAddress& dest) {
+  switch (dest.protocol()) {
+    case QAbstractSocket::IPv6Protocol:
+      return true;
+    
+    case QAbstractSocket::IPv4Protocol:
+      return m_rtmonitor->hasIpv4DefaultRoute();
+    
+    default:
+      return false;
+  }
 }
 
 QString WireguardUtilsMacos::uapiCommand(const QString& command) {

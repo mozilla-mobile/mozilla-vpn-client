@@ -25,13 +25,15 @@ class WireguardUtilsMacos final : public WireguardUtils {
   bool addInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
 
-  bool updatePeer(const InterfaceConfig& config) override;
-  bool deletePeer(const InterfaceConfig& config) override;
+  bool updatePeer(const PeerConfig& config) override;
+  bool deletePeer(const PeerConfig& config) override;
   QList<PeerStatus> getPeerStatus() override;
 
   bool updateRoutePrefix(const IPAddress& prefix) override;
   bool deleteRoutePrefix(const IPAddress& prefix) override;
   bool excludeLocalNetworks(const QList<IPAddress>& lanAddressRanges) override;
+
+  bool isRouteReachable(const QHostAddress& dest) override;
 
  private slots:
   void tunnelStdoutReady();

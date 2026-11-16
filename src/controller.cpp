@@ -302,8 +302,6 @@ void Controller::handshakeTimeout() {
   ++m_connectionRetry;
   emit connectionRetryChanged();
   logger.info() << "Connection attempt " << m_connectionRetry;
-  InterfaceConfig& exit_hop = m_activationQueue.last();
-  Q_ASSERT(exit_hop.m_hopType != InterfaceConfig::HopType::MultiHopEntry);
 
   // On the first retry, opportunistically escalate to the port-53 variant of
   // the configured policy.
@@ -406,12 +404,27 @@ void Controller::updateRequired() {
   }
 }
 
-auto Controller::setupConfigs(
+int Controller::choosePort(const Server& server,
+                           SettingsHolder::ObfuscationPolicy policy) {
+  switch (policy) {
+    case SettingsHolder::ObfuscationPolicy::UdpOverTcp:
+      return server.chooseTcpPort();
+
+    case SettingsHolder::ObfuscationPolicy::Port53:
+      [[fallthrough]];
+    case SettingsHolder::ObfuscationPolicy::LwoOverPort53:
+      logger.info() << "Forcing port 53";
+      return 53;
+
+    default:
+      return server.choosePort();
+  }
+}
+
+InterfaceConfig Controller::makeConfig(
     SettingsHolder::ObfuscationPolicy obfuscationPolicy,
     ServerSelectionPolicy serverSelectionPolicy) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Server::ObfuscationMethod obfuscationMethod =
-      m_serverData.obfuscationPolicyToObfuscationMethod(obfuscationPolicy);
 
   Server exitServer =
       serverSelectionPolicy == DoNotRandomizeServerSelection &&
@@ -422,7 +435,7 @@ auto Controller::setupConfigs(
   if (!exitServer.initialized()) {
     logger.error() << "Empty exit server list in state" << m_state;
     serverUnavailable();
-    return QList<InterfaceConfig>();
+    return InterfaceConfig();
   }
 
   MozillaVPN* vpn = MozillaVPN::instance();
@@ -430,75 +443,40 @@ auto Controller::setupConfigs(
   if (!device) {
     logger.warning() << "No current device. Aborting activation.";
     m_nextStep = Disconnect;
-    return QList<InterfaceConfig>();
+    return InterfaceConfig();
   }
-  QList<InterfaceConfig> returnList;
 
   auto allowedIPList = m_initiator == ExtensionUser
                            ? getExtensionProxyAddressRanges(exitServer)
                            : getAllowedIPAddressRanges(exitServer);
   // Prepare the exit server's connection data.
-  InterfaceConfig exitConfig;
-  exitConfig.m_privateKey = vpn->keys()->privateKey();
-  exitConfig.m_publicKey = vpn->keys()->publicKey();
-  exitConfig.m_deviceIpv4Address = device->ipv4Address();
-  exitConfig.m_deviceIpv6Address = device->ipv6Address();
-  exitConfig.m_serverIpv4Gateway = exitServer.ipv4Gateway();
-  exitConfig.m_serverIpv6Gateway = exitServer.ipv6Gateway();
-  exitConfig.m_serverPublicKey = exitServer.publicKey();
-  exitConfig.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
-  exitConfig.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
-  exitConfig.m_serverPort = exitServer.choosePort();
-  exitConfig.m_allowedIPAddressRanges = allowedIPList;
-  exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
-  exitConfig.m_exitCity =
+  InterfaceConfig config;
+  config.m_privateKey = vpn->keys()->privateKey();
+  config.m_publicKey = vpn->keys()->publicKey();
+  config.m_deviceIpv4Address = device->ipv4Address();
+  config.m_deviceIpv6Address = device->ipv6Address();
+  config.m_serverIpv4Gateway = exitServer.ipv4Gateway();
+  config.m_serverIpv6Gateway = exitServer.ipv6Gateway();
+  config.m_serverPublicKey = exitServer.publicKey();
+  config.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
+  config.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
+  config.m_allowedIPAddressRanges = allowedIPList;
+  config.m_serverCityName =
       Localizer::instance()->getTranslatedCityName(exitServer.cityName());
-  exitConfig.m_obfuscationMethod = Server::ObfuscationMethod::NoObfuscation;
-  logger.debug() << "DNS Set" << exitConfig.m_dnsServer;
+
+  config.m_obfuscationMethod =
+      m_serverData.obfuscationPolicyToObfuscationMethod(obfuscationPolicy);
+  config.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
+  logger.debug() << "DNS Set" << config.m_dnsServer;
 
   if (splitTunnelSupported()) {
-    exitConfig.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
+    config.m_vpnDisabledApps = settingsHolder->vpnDisabledApps();
   }
 
-  // Track the logical entry server independently of how many WireGuard peers
-  // the connection ends up using. For single-hop the entry and exit servers are
-  // the same, the multihop branches below override this with the real entry.
-  QString entryPublicKey = exitServer.publicKey();
-
-  // For single-hop connections, exclude the entry server
-  if (!Feature::multiHop.supported || !m_serverData.multihop()) {
-    logger.info() << "Activating single hop";
-    exitConfig.m_hopType = InterfaceConfig::SingleHop;
-    exitConfig.m_obfuscationMethod = obfuscationMethod;
-
-    // If requested, force the use of port 53/DNS.
-    if (obfuscationPolicy == SettingsHolder::ObfuscationPolicy::Port53 ||
-        obfuscationPolicy == SettingsHolder::ObfuscationPolicy::LwoOverPort53) {
-      logger.info() << "Forcing port 53";
-      exitConfig.m_serverPort = 53;
-    }
-
-    switch (obfuscationMethod) {
-      case Server::ObfuscationMethod::UdpOverTcp:
-        // If UDP over TCP is enabled choose a dedicated port
-        exitConfig.m_serverPort = exitServer.chooseTcpPort();
-        break;
-      case Server::ObfuscationMethod::LWO:
-        // If LWO is enabled, silently set the version based on the exit
-        // server's capabilities
-        exitConfig.m_lwoVersion = exitServer.supportsLwoV2() ? 2 : 1;
-        logger.info() << "LWO version set to" << exitConfig.m_lwoVersion;
-        break;
-      default:
-        break;
-    }
-  }
   // For controllers that support multiple hops, create a queue of connections.
   // The entry server should start first, followed by the exit server.
-  else if (m_impl->multihopSupported()) {
-    logger.info() << "Activating multi-hop (through platform controller)";
-    exitConfig.m_hopType = InterfaceConfig::MultiHopExit;
-
+  if (Feature::multiHop.supported && m_serverData.multihop()) {
+    logger.info() << "Activating multi-hop";
     Server entryServer =
         serverSelectionPolicy == DoNotRandomizeServerSelection &&
                 !m_serverData.entryServerPublicKey().isEmpty()
@@ -509,98 +487,34 @@ auto Controller::setupConfigs(
     if (!entryServer.initialized()) {
       logger.error() << "Empty entry server list in state" << m_state;
       serverUnavailable();
-      return QList<InterfaceConfig>();
+      return InterfaceConfig();
     }
 
-    entryPublicKey = entryServer.publicKey();
-
-    InterfaceConfig entryConfig;
-    entryConfig.m_privateKey = vpn->keys()->privateKey();
-    entryConfig.m_publicKey = vpn->keys()->publicKey();
-    entryConfig.m_deviceIpv4Address = device->ipv4Address();
-    entryConfig.m_deviceIpv6Address = device->ipv6Address();
-    entryConfig.m_serverPublicKey = entryServer.publicKey();
-    entryConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
-    entryConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
-    entryConfig.m_serverPort = entryServer.choosePort();
-    entryConfig.m_hopType = InterfaceConfig::MultiHopEntry;
-    entryConfig.m_obfuscationMethod = obfuscationMethod;
-    entryConfig.m_allowedIPAddressRanges.append(
-        IPAddress(exitServer.ipv4AddrIn()));
-    if (!exitServer.ipv6AddrIn().isEmpty()) {
-      entryConfig.m_allowedIPAddressRanges.append(
-          IPAddress(exitServer.ipv6AddrIn()));
-    }
-    // always pulls city names from exitConfig, so put entry city in exitConfig
-    exitConfig.m_entryCity =
+    config.m_multihopPublicKey = entryServer.publicKey();
+    config.m_multihopIpv4AddrIn = entryServer.ipv4AddrIn();
+    config.m_multihopIpv6AddrIn = entryServer.ipv6AddrIn();
+    config.m_multihopCityName =
         Localizer::instance()->getTranslatedCityName(entryServer.cityName());
 
-    // If requested, force the use of port 53/DNS.
-    if (obfuscationPolicy == SettingsHolder::ObfuscationPolicy::Port53 ||
-        obfuscationPolicy == SettingsHolder::ObfuscationPolicy::LwoOverPort53) {
-      logger.info() << "Forcing port 53";
-      entryConfig.m_serverPort = 53;
+    // Choose ports
+    config.m_serverPort = exitServer.choosePort();
+    if (!m_impl->multihopSupported()) {
+      // we can approximate multihop support by redirecting the
+      // connection to the exit server via the multihop port.
+      config.m_serverPort = exitServer.multihopPort();
+      // It's unclear if this should reflect the entry or exit server. It
+      // depends on how and where mulvad performs the deobfuscation algorithm.
+      config.m_lwoVersion = exitServer.supportsLwoV2() ? 2 : 1;
+    } else {
+      config.m_multihopPort = choosePort(entryServer, obfuscationPolicy);
+      config.m_lwoVersion = entryServer.supportsLwoV2() ? 2 : 1;
     }
-
-    switch (obfuscationMethod) {
-      case Server::ObfuscationMethod::UdpOverTcp:
-        // If UDP over TCP is enabled choose a dedicated port
-        entryConfig.m_serverPort = entryServer.chooseTcpPort();
-        break;
-      case Server::ObfuscationMethod::LWO:
-        // If LWO is enabled, silently set the version based on the entry
-        // server's capabilities
-        entryConfig.m_lwoVersion = entryServer.supportsLwoV2() ? 2 : 1;
-        logger.info() << "LWO version set to" << entryConfig.m_lwoVersion;
-        break;
-      default:
-        break;
-    }
-
-    returnList.append(entryConfig);
-  }
-  // Otherwise, we can approximate multihop support by redirecting the
-  // connection to the exit server via the multihop port.
-  else {
-    logger.info() << "Activating multi-hop (through multihop port)";
-    exitConfig.m_hopType = InterfaceConfig::SingleHop;
-
-    Server entryServer =
-        serverSelectionPolicy == DoNotRandomizeServerSelection &&
-                !m_serverData.entryServerPublicKey().isEmpty()
-            ? MozillaVPN::instance()->serverCountryModel()->server(
-                  m_serverData.entryServerPublicKey())
-            : Server::weightChooser(m_serverData.entryServers());
-
-    if (!entryServer.initialized()) {
-      logger.error() << "Empty entry server list in state" << m_state;
-      serverUnavailable();
-      return QList<InterfaceConfig>();
-    }
-
-    entryPublicKey = entryServer.publicKey();
-
-    // NOTE: For platforms without multihop support, we cannot emulate multihop
-    // and use port 53 at the same time. If the user has selected both options
-    // then let's choose multihop.
-    exitConfig.m_serverPort = exitServer.multihopPort();
-    exitConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
-    exitConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
-    exitConfig.m_entryCity =
-        Localizer::instance()->getTranslatedCityName(entryServer.cityName());
-    // We cannot emulate multihop and use UDP over TCP at the same time, LWO
-    // will work
-    exitConfig.m_obfuscationMethod =
-        obfuscationMethod == Server::ObfuscationMethod::LWO
-            ? Server::ObfuscationMethod::LWO
-            : Server::ObfuscationMethod::NoObfuscation;
+  } else {
+    config.m_serverPort = choosePort(exitServer, obfuscationPolicy);
+    config.m_lwoVersion = exitServer.supportsLwoV2() ? 2 : 1;
   }
 
-  m_serverData.setEntryServerPublicKey(entryPublicKey);
-  m_serverData.setExitServerPublicKey(exitServer.publicKey());
-
-  returnList.append(exitConfig);
-  return returnList;
+  return config;
 }
 
 void Controller::activateInternal(
@@ -614,30 +528,26 @@ void Controller::activateInternal(
   m_handshakeTimer.stop();
   m_activationQueue.clear();
 
-  QList<InterfaceConfig> serverConfigs =
-      setupConfigs(obfuscationPolicy, serverSelectionPolicy);
-  if (serverConfigs.isEmpty()) {
+  InterfaceConfig config = makeConfig(obfuscationPolicy, serverSelectionPolicy);
+  if (!config.isValid()) {
     logger.info() << "Config setup error";
     // Error in setupConfigs, so do not continue
     return;
   }
-
-  Q_ASSERT(serverConfigs.size() == 1 || serverConfigs.size() == 2);
-  InterfaceConfig exitConfig = serverConfigs.takeLast();
-  if (!serverConfigs.isEmpty()) {
-    InterfaceConfig entryConfig = serverConfigs.takeFirst();
-    m_activationQueue.append(entryConfig);
+  m_activationQueue.append(config);
+  m_serverData.setExitServerPublicKey(config.m_serverPublicKey);
+  if (!config.m_multihopPublicKey.isEmpty()) {
+    m_serverData.setEntryServerPublicKey(config.m_multihopPublicKey);
+  } else {
+    m_serverData.setEntryServerPublicKey(config.m_serverPublicKey);
   }
-  m_activationQueue.append(exitConfig);
 
   m_pingReceived = false;
-  {
-    const auto& firstConfig = m_activationQueue.first();
-    if (firstConfig.m_serverIpv4AddrIn.isNull()) {
-      m_pingCanary.start(firstConfig.m_serverIpv6AddrIn);
-    } else {
-      m_pingCanary.start(firstConfig.m_serverIpv4AddrIn);
-    }
+
+  if (config.m_serverIpv4AddrIn.isNull()) {
+    m_pingCanary.start(config.m_serverIpv6AddrIn);
+  } else {
+    m_pingCanary.start(config.m_serverIpv4AddrIn);
   }
   logger.info() << "Canary Ping Started";
   activateNext();
@@ -1047,11 +957,11 @@ void Controller::maybeSendUpdatedConfig(const ServerData& serverData) {
     logger.debug() << "Sending updated config";
     m_serverData = serverData;
     SettingsHolder* settingsHolder = SettingsHolder::instance();
-    QList<InterfaceConfig> serverConfigs =
-        setupConfigs(static_cast<SettingsHolder::ObfuscationPolicy>(
+    InterfaceConfig config =
+        makeConfig(static_cast<SettingsHolder::ObfuscationPolicy>(
                          settingsHolder->obfuscationPolicy()),
                      RandomizeServerSelection);
-    if (serverConfigs.isEmpty()) {
+    if (!config.isValid()) {
       // Error in setupConfigs, so do not continue
       // This most commonly happens when signing out -
       // Controller::serverDataChanged is called because all settings emit a
@@ -1060,14 +970,8 @@ void Controller::maybeSendUpdatedConfig(const ServerData& serverData) {
       logger.info() << "Error setting up configs";
       return;
     }
-    Q_ASSERT(serverConfigs.size() == 1 || serverConfigs.size() == 2);
 
-    InterfaceConfig exitConfig = serverConfigs.takeLast();
-    InterfaceConfig entryConfig;
-    if (!serverConfigs.isEmpty()) {
-      entryConfig = serverConfigs.takeFirst();
-    }
-    m_impl->sendUpdatedConfig(entryConfig, exitConfig);
+    m_impl->sendUpdatedConfig(config);
   } else {
     logger.debug() << "Skipping sending updated config";
   }

@@ -320,8 +320,10 @@ class Controller : public QObject, public LogSerializer {
   void setError(ErrorCode code);
   void maybeEnableDisconnectInConfirming();
   void serverDataChanged();
-  auto setupConfigs(SettingsHolder::ObfuscationPolicy obfuscationPolicy,
-                    ServerSelectionPolicy serverSelectionPolicy);
+  InterfaceConfig makeConfig(
+      SettingsHolder::ObfuscationPolicy obfuscationPolicy,
+      ServerSelectionPolicy serverSelectionPolicy);
+  static int choosePort(const Server& s, SettingsHolder::ObfuscationPolicy p);
   void maybeSendUpdatedConfig(const ServerData& serverData);
   QString useLocalSocketPath() const;
 

@@ -12,6 +12,7 @@
 #include "daemonerrors.h"
 #include "interfaceconfig.h"
 #include "obfuscator/obfuscator.h"
+#include "wireguardutils.h"
 
 class DnsUtils;
 class IPUtils;
@@ -30,8 +31,6 @@ class Daemon : public QObject {
 
   explicit Daemon(QObject* parent);
   ~Daemon();
-
-  static bool parseConfig(const QJsonObject& obj, InterfaceConfig& config);
 
   virtual bool activate(const InterfaceConfig& config);
   virtual bool deactivate(bool emitSignals);
@@ -73,20 +72,16 @@ class Daemon : public QObject {
   virtual IPUtils* iputils() { return nullptr; }
   virtual DnsUtils* dnsutils() { return nullptr; }
 
-  static bool parseStringList(const QJsonObject& obj, const QString& name,
-                              QStringList& list);
-
   void abortBackendFailure();
   void checkHandshake();
 
-  class ConnectionState {
-   public:
-    ConnectionState() {};
-    ConnectionState(const InterfaceConfig& config) { m_config = config; }
-    QDateTime m_date;
-    InterfaceConfig m_config;
-  };
-  QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
+  QHostAddress chooseAddress(const QStringList& candidates);
+  bool activateObfuscator(const InterfaceConfig& config,
+                           WireguardUtils::PeerConfig &peer);
+
+  QMap<QString, WireguardUtils::PeerConfig> m_connections;
+  QStringList m_awaiting;
+  InterfaceConfig m_config;
   QTimer m_handshakeTimer;
   std::unique_ptr<Obfuscator> m_obfuscator;
 

@@ -21,10 +21,6 @@ class InterfaceConfig {
   InterfaceConfig() {}
   InterfaceConfig(const QJsonObject&);
 
-  enum HopType { SingleHop, MultiHopEntry, MultiHopExit };
-  Q_ENUM(HopType)
-  HopType m_hopType = SingleHop;
-
   // Device configuration
   QString m_privateKey;
   QString m_publicKey;
@@ -33,16 +29,19 @@ class InterfaceConfig {
 
   // Wireguard server configuration.
   QString m_serverPublicKey;
+  QString m_serverCityName;
   QString m_serverIpv4Gateway;
   QString m_serverIpv6Gateway;
   QString m_serverIpv4AddrIn;
   QString m_serverIpv6AddrIn;
   int m_serverPort = 0;
 
-  // These are localized city names. They are used for iOS widgets and other
-  // situations where city name is needed, but the client is not running.
-  QString m_entryCity;
-  QString m_exitCity;
+  // Multihop entry server configuration.
+  QString m_multihopPublicKey;
+  QString m_multihopCityName;
+  QString m_multihopIpv4AddrIn;
+  QString m_multihopIpv6AddrIn;
+  int m_multihopPort = 0;
 
   // Misc configuration
   QString m_dnsServer;
@@ -57,11 +56,6 @@ class InterfaceConfig {
   QString toWgConf(
       const QMap<QString, QString>& extra = QMap<QString, QString>(),
       const QString peerComment = "") const;
-  QString toMultiHopWgConf(
-      const InterfaceConfig& exitConfig,
-      const QMap<QString, QString>& extra = QMap<QString, QString>(),
-      const QString exitPeerComment = "",
-      const QString entryPeerComment = "") const;
 
  private:
   // Helper methods for parsing JSON

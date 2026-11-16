@@ -115,7 +115,7 @@ InterfaceConfig TestDaemon::exampleConfig() {
 
   // Wireguard server configuration.
   config.m_serverPublicKey = exampleKey("ServerPublicKey");
-  config.m_exitCity = "Mordor";
+  config.m_serverCityName = "Mordor";
   config.m_serverIpv4Gateway = "127.16.1.1";
   config.m_serverIpv6Gateway = "fc02::1/128";
   config.m_serverIpv4AddrIn = "10.123.45.67";

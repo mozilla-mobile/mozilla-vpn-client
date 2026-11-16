@@ -46,14 +46,14 @@ bool WireguardUtilsMock::deleteInterface() {
   return true;
 }
 
-bool WireguardUtilsMock::updatePeer(const InterfaceConfig& config) {
+bool WireguardUtilsMock::updatePeer(const PeerConfig& config) {
   qint64 now = QDateTime::currentMSecsSinceEpoch();
-  m_handshakes[config.m_serverPublicKey] = now + m_handshakeDelayMsec;
+  m_handshakes[config.m_pubkey] = now + m_handshakeDelayMsec;
   return true;
 }
 
-bool WireguardUtilsMock::deletePeer(const InterfaceConfig& config) {
-  return m_handshakes.remove(config.m_serverPublicKey) > 0;
+bool WireguardUtilsMock::deletePeer(const PeerConfig& config) {
+  return m_handshakes.remove(config.m_pubkey) > 0;
 }
 
 QList<WireguardUtils::PeerStatus> WireguardUtilsMock::getPeerStatus() {

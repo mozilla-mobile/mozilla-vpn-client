@@ -41,6 +41,7 @@ InterfaceConfig::InterfaceConfig(const QJsonObject& json) {
   // Parse the wireguard configuration.
   if (!getRequiredString(json, "serverPublicKey", m_serverPublicKey)) return;
   m_serverPort = json.value("serverPort").toInt(51820);
+  m_serverCityName = json.value("serverCityName").toString();
   m_serverIpv4AddrIn = json.value("serverIpv4AddrIn").toString();
   m_serverIpv6AddrIn = json.value("serverIpv6AddrIn").toString();
   if (m_serverIpv4AddrIn.isEmpty() && m_serverIpv6AddrIn.isEmpty()) {
@@ -49,6 +50,13 @@ InterfaceConfig::InterfaceConfig(const QJsonObject& json) {
   }
   m_serverIpv4Gateway = json.value("serverIpv4Gateway").toString();
   m_serverIpv6Gateway = json.value("serverIpv6Gateway").toString();
+
+  // Parse the multihop configuration.
+  m_multihopPublicKey = json.value("multihopPublicKey").toString();
+  m_multihopPort = json.value("multihopPort").toInt(51820);
+  m_multihopCityName = json.value("multihopCityName").toString();
+  m_multihopIpv4AddrIn = json.value("multihopIpv4AddrIn").toString();
+  m_multihopIpv6AddrIn = json.value("multihopIpv6AddrIn").toString();
 
   if (!json.contains("dnsServer")) {
     m_dnsServer = QString();
@@ -105,11 +113,9 @@ InterfaceConfig::InterfaceConfig(const QJsonObject& json) {
               return a.prefixLength() > b.prefixLength();
             });
 
-  m_hopType = getStringEnum(json, "hopType", SingleHop);
   m_vpnDisabledApps = getStringList(json.value("vpnDisabledApps"));
   m_obfuscationMethod = getStringEnum(json, "obfuscationMethod",
                                       Server::ObfuscationMethod::NoObfuscation);
-
   if (!json.contains("lwoVersion")) {
     m_lwoVersion = 1;
   } else {
@@ -187,23 +193,29 @@ bool InterfaceConfig::isValid() const {
 
 QJsonObject InterfaceConfig::toJson() const {
   QJsonObject json;
-  QMetaEnum metaEnum = QMetaEnum::fromType<HopType>();
 
-  json.insert("hopType", QJsonValue(metaEnum.valueToKey(m_hopType)));
   json.insert("privateKey", QJsonValue(m_privateKey));
   json.insert("publicKey", QJsonValue(m_publicKey));
   json.insert("deviceIpv4Address", QJsonValue(m_deviceIpv4Address));
   json.insert("deviceIpv6Address", QJsonValue(m_deviceIpv6Address));
+
   json.insert("serverPublicKey", QJsonValue(m_serverPublicKey));
+  json.insert("serverCityName", QJsonValue(m_serverCityName));
   json.insert("serverIpv4AddrIn", QJsonValue(m_serverIpv4AddrIn));
   json.insert("serverIpv6AddrIn", QJsonValue(m_serverIpv6AddrIn));
   json.insert("serverPort", QJsonValue((double)m_serverPort));
-  if ((m_hopType == InterfaceConfig::MultiHopExit) ||
-      (m_hopType == InterfaceConfig::SingleHop)) {
-    json.insert("serverIpv4Gateway", QJsonValue(m_serverIpv4Gateway));
-    json.insert("serverIpv6Gateway", QJsonValue(m_serverIpv6Gateway));
-    json.insert("dnsServer", QJsonValue(m_dnsServer));
+  json.insert("serverIpv4Gateway", QJsonValue(m_serverIpv4Gateway));
+  json.insert("serverIpv6Gateway", QJsonValue(m_serverIpv6Gateway));
+
+  if (!m_multihopPublicKey.isEmpty()) {
+    json.insert("multihopPublicKey", QJsonValue(m_multihopPublicKey));
+    json.insert("multihopCityName", QJsonValue(m_multihopCityName));
+    json.insert("multihopIpv4AddrIn", QJsonValue(m_multihopIpv4AddrIn));
+    json.insert("multihopIpv6AddrIn", QJsonValue(m_multihopIpv6AddrIn));
+    json.insert("multihopPort", QJsonValue((double)m_multihopPort));
   }
+
+  json.insert("dnsServer", QJsonValue(m_dnsServer));
 
   QJsonArray allowedIPAddesses;
   for (const IPAddress& i : m_allowedIPAddressRanges) {
@@ -297,41 +309,26 @@ QString InterfaceConfig::toWgConf(const QMap<QString, QString>& extra,
   }
   out << "AllowedIPs = " << ranges.join(", ") << "\n";
 
-  return content;
-}
-
-QString InterfaceConfig::toMultiHopWgConf(
-    const InterfaceConfig& exitConfig, const QMap<QString, QString>& extra,
-    const QString exitPeerComment, const QString entryPeerComment) const {
-  QString content = toWgConf(extra, entryPeerComment);
-  QTextStream out(&content);
-
-#define VALIDATE(x) \
-  if (x.contains("\n")) return "";
-  VALIDATE(exitConfig.m_serverPublicKey);
-  VALIDATE(exitConfig.m_serverIpv4AddrIn);
-#undef VALIDATE
-
-  out << "\n[Peer]\n";
-  if (!exitPeerComment.isEmpty()) {
-    for (const QString& line : exitPeerComment.split('\n')) {
-      out << "# " << line << "\n";
+  // If multihop is used, append a second peer for the entry server.
+  if (!m_multihopPublicKey.isEmpty()) {
+    out << "\n[Peer]\n";
+    out << " Multihop entry via " << m_multihopCityName << "\n";
+    out << "PublicKey = " << m_multihopPublicKey << "\n";
+    if (!m_multihopIpv4AddrIn.isEmpty()) {
+      out << "Endpoint = " << m_multihopIpv4AddrIn
+          << ":" << m_multihopPort << "\n";
+    } else if (!m_multihopIpv6AddrIn.isEmpty()) {
+      out << "Endpoint = [" << m_multihopIpv6AddrIn
+          << "]:" << m_multihopPort << "\n";
+    } else {
+      return "";
+    }
+    if (!m_serverIpv4AddrIn.isEmpty()) {
+      out << "AllowedIPs = " << IPAddress(m_serverIpv4AddrIn).toString() << "\n";
+    } else if (!m_serverIpv6AddrIn.isEmpty()) {
+      out << "AllowedIPs = " << IPAddress(m_serverIpv6AddrIn).toString() << "\n";
     }
   }
-  out << "PublicKey = " << exitConfig.m_serverPublicKey << "\n";
-  if (!exitConfig.m_serverIpv4AddrIn.isNull()) {
-    out << "Endpoint = " << exitConfig.m_serverIpv4AddrIn << ":"
-        << exitConfig.m_serverPort << "\n";
-  } else if (!exitConfig.m_serverIpv6AddrIn.isNull()) {
-    out << "Endpoint = [" << exitConfig.m_serverIpv6AddrIn
-        << "]:" << exitConfig.m_serverPort << "\n";
-  }
-
-  QStringList ranges;
-  for (const IPAddress& ip : exitConfig.m_allowedIPAddressRanges) {
-    ranges.append(ip.toString());
-  }
-  out << "AllowedIPs = " << ranges.join(", ") << "\n";
 
   return content;
 }

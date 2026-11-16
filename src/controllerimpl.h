@@ -88,8 +88,7 @@ class ControllerImpl : public QObject {
   virtual bool shouldSuppressNextNotification() { return false; }
 
   virtual bool canSendUpdatedConfig() const { return false; }
-  virtual void sendUpdatedConfig(InterfaceConfig& entryConfig,
-                                 InterfaceConfig& exitConfig) {};
+  virtual void sendUpdatedConfig(const InterfaceConfig& config) {};
 
  signals:
   // This signal is emitted when the controller is initialized. Note that the

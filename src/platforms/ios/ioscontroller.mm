@@ -107,7 +107,7 @@ void IOSController::initialize(const Device* device, const Keys* keys) {
 
 void IOSController::activate(const InterfaceConfig& config, Controller::Reason reason) {
   // These features are not supported on ios yet.
-  Q_ASSERT(config.m_hopType == InterfaceConfig::SingleHop);
+  Q_ASSERT(config.m_multihopPublicKey.isEmpty());
   Q_ASSERT(config.m_vpnDisabledApps.isEmpty());
 
   logger.debug() << "IOSController activating" << config.m_serverPublicKey;
@@ -150,8 +150,8 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
                                publicKey:config.m_serverPublicKey.toNSString()
                               ipv4AddrIn:config.m_serverIpv4AddrIn.toNSString()
                                     port:config.m_serverPort
-                               entryCity:config.m_entryCity.toNSString()
-                                exitCity:config.m_exitCity.toNSString()];
+                               entryCity:config.m_multihopCityName.toNSString()
+                                exitCity:config.m_serverCityName.toNSString()];
   [serverData addObject:mainServer];
 
   // Select the best DNS - if user is using a special privacy or user-specified DNS, use that.
@@ -192,8 +192,8 @@ void IOSController::activate(const InterfaceConfig& config, Controller::Reason r
                                       port:fallbackPort(fallbackServer)
                                  // Reusing config here - city names will be identical, and no good
                                  // way to get entry city otherwise.
-                                 entryCity:config.m_entryCity.toNSString()
-                                  exitCity:config.m_exitCity.toNSString()];
+                                 entryCity:config.m_multihopCityName.toNSString()
+                                  exitCity:config.m_serverCityName.toNSString()];
     [serverData addObject:backupServerData];
   }
 
@@ -309,6 +309,6 @@ bool IOSController::shouldSuppressNextNotification() {
   return [impl shouldSuppressNextNotification];
 }
 
-void IOSController::sendUpdatedConfig(InterfaceConfig& entryConfig, InterfaceConfig& exitConfig) {
-  activate(exitConfig, Controller::ReasonUpdating);
+void IOSController::sendUpdatedConfig(const InterfaceConfig& config) {
+  activate(config, Controller::ReasonUpdating);
 }

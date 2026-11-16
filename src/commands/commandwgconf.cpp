@@ -171,8 +171,7 @@ int CommandWgConf::run(QStringList& tokens) {
         wireguardMultihop.m_set;
 #endif
 
-    InterfaceConfig entryConfig;
-    InterfaceConfig exitConfig;
+    InterfaceConfig config;
     QString entryPeerComment;
 
     QString devicePrivateKey;
@@ -255,53 +254,44 @@ int CommandWgConf::run(QStringList& tokens) {
     Q_ASSERT(sd);
     // Now we need to select a server.
     Server exitServer = Server::weightChooser(sd->exitServers());
-    exitConfig.m_hopType = InterfaceConfig::SingleHop;
-    exitConfig.m_privateKey = devicePrivateKey;
-    exitConfig.m_deviceIpv4Address = deviceIpv4Address;
-    exitConfig.m_deviceIpv6Address = deviceIpv6Address;
-    exitConfig.m_serverIpv4Gateway = exitServer.ipv4Gateway();
-    exitConfig.m_serverIpv6Gateway = exitServer.ipv6Gateway();
-    exitConfig.m_serverPublicKey = exitServer.publicKey();
-    exitConfig.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
-    exitConfig.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
-    exitConfig.m_serverPort = exitServer.choosePort();
-    QString exitPeerComment = QString("Exit Server: %1 - %2 (%3)")
-                                  .arg(exitServer.hostname())
-                                  .arg(sd->localizedExitCityName())
-                                  .arg(sd->exitCountryCode());
+    config.m_privateKey = devicePrivateKey;
+    config.m_deviceIpv4Address = deviceIpv4Address;
+    config.m_deviceIpv6Address = deviceIpv6Address;
+  
+    config.m_serverPublicKey = exitServer.publicKey();
+    config.m_serverCityName = sd->localizedExitCityName();
+    config.m_serverIpv4Gateway = exitServer.ipv4Gateway();
+    config.m_serverIpv6Gateway = exitServer.ipv6Gateway();
+    config.m_serverIpv4AddrIn = exitServer.ipv4AddrIn();
+    config.m_serverIpv6AddrIn = exitServer.ipv6AddrIn();
+    config.m_serverPort = exitServer.choosePort();
+    QString peerComment = QString("Exit Server: %1 - %2 (%3)")
+                              .arg(exitServer.hostname())
+                              .arg(sd->localizedExitCityName())
+                              .arg(sd->exitCountryCode());
+
     if (sd->multihop()) {
       // Configure entry server
       Server entryServer = Server::weightChooser(sd->entryServers());
-      entryPeerComment = QString("Entry Server: %1 - %2 (%3)")
-                             .arg(entryServer.hostname())
-                             .arg(sd->localizedEntryCityName())
-                             .arg(sd->entryCountryCode());
       if (useWireguardMultihop) {
-        exitConfig.m_hopType = InterfaceConfig::MultiHopExit;
-        entryConfig.m_hopType = InterfaceConfig::MultiHopEntry;
-        entryConfig.m_privateKey = devicePrivateKey;
-        entryConfig.m_deviceIpv4Address = deviceIpv4Address;
-        entryConfig.m_deviceIpv6Address = deviceIpv6Address;
-        entryConfig.m_serverPublicKey = entryServer.publicKey();
-        entryConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
-        entryConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
-        entryConfig.m_serverPort = entryServer.choosePort();
-        entryConfig.m_allowedIPAddressRanges.append(
-            IPAddress(exitServer.ipv4AddrIn()));
-        if (!exitServer.ipv6AddrIn().isEmpty()) {
-          entryConfig.m_allowedIPAddressRanges.append(
-              IPAddress(exitServer.ipv6AddrIn()));
-        }
+        config.m_multihopPublicKey = entryServer.publicKey();
+        config.m_multihopCityName = sd->localizedEntryCityName();
+        config.m_multihopIpv4AddrIn = entryServer.ipv4AddrIn();
+        config.m_multihopIpv6AddrIn = entryServer.ipv6AddrIn();
+        config.m_multihopPort = entryServer.choosePort();
       } else {
         // configure main peer for Mullvad multihop
-        exitPeerComment = entryPeerComment + "\n" + exitPeerComment;
-        exitConfig.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
-        exitConfig.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
-        exitConfig.m_serverPort = exitServer.multihopPort();
+        config.m_serverIpv4AddrIn = entryServer.ipv4AddrIn();
+        config.m_serverIpv6AddrIn = entryServer.ipv6AddrIn();
+        config.m_serverPort = exitServer.multihopPort();
+        peerComment += QString("\nEntry Server: %1 - %2 (%3)")
+                           .arg(entryServer.hostname())
+                           .arg(sd->localizedEntryCityName())
+                           .arg(sd->entryCountryCode());
       }
     }
-    exitConfig.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
-    exitConfig.m_allowedIPAddressRanges =
+    config.m_dnsServer = DNSHelper::getDNS(exitServer.ipv4Gateway());
+    config.m_allowedIPAddressRanges =
         Controller::getAllowedIPAddressRanges(exitServer);
 
     QString conf;
@@ -327,26 +317,20 @@ int CommandWgConf::run(QStringList& tokens) {
       out << "# configuration that works across all supported systems by "
              "using the\n";
       out << "# --mullvad-multihop flag.\n\n";
-      out << entryConfig.toMultiHopWgConf(exitConfig, QMap<QString, QString>(),
-                                          exitPeerComment, entryPeerComment)
-          << Qt::endl;
-    } else {
-      if (sd->multihop()) {
-        out << "# This file contains configuration settings for a multi-hop "
-               "WireGuard setup\n";
-        out << "# It utilizes Mullvad's Multi-Hop feature, which routes "
-               "traffic through multiple\n";
-        out << "# WireGuard nodes. In this setup, data is sent to the entry "
-               "server using a\n";
-        out << "# specific port and the exit server's public key, allowing "
-               "the entry server to\n";
-        out << "# forward the traffic to the exit server.\n";
-        out << "# For more information see: "
-               "https://mullvad.net/en/help/wireguard-multi-hop/\n\n";
-      }
-      out << exitConfig.toWgConf(QMap<QString, QString>(), exitPeerComment)
-          << Qt::endl;
+    } else if (sd->multihop()) {
+      out << "# This file contains configuration settings for a multi-hop "
+              "WireGuard setup\n";
+      out << "# It utilizes Mullvad's Multi-Hop feature, which routes "
+              "traffic through multiple\n";
+      out << "# WireGuard nodes. In this setup, data is sent to the entry "
+              "server using a\n";
+      out << "# specific port and the exit server's public key, allowing "
+              "the entry server to\n";
+      out << "# forward the traffic to the exit server.\n";
+      out << "# For more information see: "
+              "https://mullvad.net/en/help/wireguard-multi-hop/\n\n";
     }
+    out << config.toWgConf(QMap<QString, QString>(), peerComment) << Qt::endl;
     out.flush();
 
     if (!outputOption.m_set) {
