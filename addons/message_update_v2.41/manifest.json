@@ -23,7 +23,7 @@
       {
         "id": "c_1",
         "type": "text",
-        "content": "vpn.commonStrings.generalUpdateContent"
+        "content": "vpn.commonStrings.generalUpdateBulletIntro"
       },
       {
         "id": "c_2",
