@@ -106,8 +106,7 @@ void ConnectionHealth::startActive(const ControllerStatus& status) {
   }
 
   m_currentGateway = status.m_ipv4Gateway;
-  m_deviceAddress = status.m_ipv4Address;
-  m_pingHelper.start(m_currentGateway.toString(), m_deviceAddress.toString());
+  m_pingHelper.start(m_currentGateway.toString());
   m_noSignalTimer.start(PING_TIME_NOSIGNAL);
   m_healthCheckTimer.start(PING_TIME_UNSTABLE);
 
