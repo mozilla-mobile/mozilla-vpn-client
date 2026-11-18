@@ -2,6 +2,8 @@
 # License, v. 2.0. If a copy of the MPL was not distributed with this
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
+include(${CMAKE_SOURCE_DIR}/scripts/tests/moc-testcases.cmake)
+
 # The tests
 qt_add_executable(utest-chacha20poly testchacha20poly.cpp testchacha20poly.h)
 qt_add_executable(utest-commandlineparser testcommandlineparser.cpp testcommandlineparser.h)
@@ -24,6 +26,9 @@ foreach(UTEST_TARGET ${UTEST_ALL_TARGETS})
         FOLDER "Tests"
     )
     add_dependencies(build_tests ${UTEST_TARGET})
+
+    # Auto-generate the test list by post-processing the moc output.
+    moc_generate_testcases(${UTEST_TARGET} PARENT_CLASS TestHelper)
 
     # Register the test with ctest
     add_test(NAME ${UTEST_TARGET} COMMAND ${UTEST_TARGET})
