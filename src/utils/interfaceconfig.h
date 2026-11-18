@@ -19,28 +19,33 @@ class InterfaceConfig {
 
  public:
   InterfaceConfig() {}
+  InterfaceConfig(const QJsonObject&);
 
   enum HopType { SingleHop, MultiHopEntry, MultiHopExit };
   Q_ENUM(HopType)
+  HopType m_hopType = SingleHop;
 
-  HopType m_hopType;
+  // Device configuration
   QString m_privateKey;
   QString m_publicKey;
   QString m_deviceIpv4Address;
   QString m_deviceIpv6Address;
+
+  // Wireguard server configuration.
+  QString m_serverPublicKey;
   QString m_serverIpv4Gateway;
   QString m_serverIpv6Gateway;
-  QString m_serverPublicKey;
   QString m_serverIpv4AddrIn;
   QString m_serverIpv6AddrIn;
-  QString m_dnsServer;
+  int m_serverPort = 0;
 
   // These are localized city names. They are used for iOS widgets and other
   // situations where city name is needed, but the client is not running.
   QString m_entryCity;
   QString m_exitCity;
 
-  int m_serverPort = 0;
+  // Misc configuration
+  QString m_dnsServer;
   QList<IPAddress> m_allowedIPAddressRanges;
   QStringList m_vpnDisabledApps;
   Server::ObfuscationMethod m_obfuscationMethod = Server::NoObfuscation;
@@ -57,6 +62,16 @@ class InterfaceConfig {
       const QMap<QString, QString>& extra = QMap<QString, QString>(),
       const QString exitPeerComment = "",
       const QString entryPeerComment = "") const;
+
+ private:
+  // Helper methods for parsing JSON
+  static bool getRequiredString(const QJsonObject& obj, const QString& name,
+                                QString& out);
+  static QStringList getStringList(const QJsonValue& obj);
+
+  template <typename T>
+  static T getStringEnum(const QJsonObject& obj, const QString& name,
+                         T defaultValue = 0);
 };
 
 #endif  // INTERFACECONFIG_H

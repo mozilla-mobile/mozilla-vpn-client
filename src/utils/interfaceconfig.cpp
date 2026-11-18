@@ -9,10 +9,181 @@
 #include <QJsonObject>
 #include <QJsonValue>
 #include <QMetaEnum>
+#include <QScopeGuard>
+
+#include "logger.h"
+
+namespace {
+Logger logger("InterfaceConfig");
+}  // namespace
+
+constexpr const char* JSON_ALLOWED_ADDRESS_RANGES = "allowedIPAddressRanges";
+
+InterfaceConfig::InterfaceConfig(const QJsonObject& json) {
+  // If anything goes wrong during parsing, make sure isValid() returns false.
+  auto guard = qScopeGuard([this]() {
+    m_privateKey.clear();
+    m_publicKey.clear();
+    m_deviceIpv4Address.clear();
+    m_deviceIpv6Address.clear();
+  });
+
+  // Parse the device configuration.
+  if (!getRequiredString(json, "privateKey", m_privateKey)) return;
+  if (!getRequiredString(json, "publicKey", m_publicKey)) return;
+  m_deviceIpv4Address = json.value("deviceIpv4Address").toString();
+  m_deviceIpv6Address = json.value("deviceIpv6Address").toString();
+  if (m_deviceIpv4Address.isEmpty() && m_deviceIpv6Address.isEmpty()) {
+    logger.warning() << "no device addresses found in json input";
+    return;
+  }
+
+  // Parse the wireguard configuration.
+  if (!getRequiredString(json, "serverPublicKey", m_serverPublicKey)) return;
+  m_serverPort = json.value("serverPort").toInt(51820);
+  m_serverIpv4AddrIn = json.value("serverIpv4AddrIn").toString();
+  m_serverIpv6AddrIn = json.value("serverIpv6AddrIn").toString();
+  if (m_serverIpv4AddrIn.isEmpty() && m_serverIpv6AddrIn.isEmpty()) {
+    logger.warning() << "no server addresses found in json input";
+    return;
+  }
+  m_serverIpv4Gateway = json.value("serverIpv4Gateway").toString();
+  m_serverIpv6Gateway = json.value("serverIpv6Gateway").toString();
+
+  if (!json.contains("dnsServer")) {
+    m_dnsServer = QString();
+  } else {
+    QJsonValue value = json.value("dnsServer");
+    if (!value.isString()) {
+      logger.error() << "dnsServer is not a string";
+      return;
+    }
+    m_dnsServer = value.toString();
+  }
+
+  QJsonArray addrRanges = json.value(JSON_ALLOWED_ADDRESS_RANGES).toArray();
+  if (addrRanges.isEmpty()) {
+    logger.error() << JSON_ALLOWED_ADDRESS_RANGES << "is empty";
+    return;
+  }
+  for (const QJsonValue& i : addrRanges) {
+    // An allowed IP range can be a string of the form: <PREFIX>/<LEN>
+    if (i.isString()) {
+      m_allowedIPAddressRanges.append(IPAddress(i.toString()));
+      continue;
+    }
+
+    // Otherwise, it must be an object with separate address and range fields.
+    if (!i.isObject()) {
+      logger.error() << JSON_ALLOWED_ADDRESS_RANGES
+                     << "contains invalid object";
+      return;
+    }
+
+    QJsonObject ipObj = i.toObject();
+    QJsonValue address = ipObj.value("address");
+    if (!address.isString()) {
+      logger.error() << JSON_ALLOWED_ADDRESS_RANGES
+                     << "objects must have a string address";
+      return;
+    }
+
+    QJsonValue range = ipObj.value("range");
+    if (!range.isDouble()) {
+      logger.error() << JSON_ALLOWED_ADDRESS_RANGES
+                     << "object must have a numberic range";
+      return;
+    }
+
+    m_allowedIPAddressRanges.append(
+        IPAddress(QHostAddress(address.toString()), range.toInt()));
+  }
+
+  // Sort allowed IPs by decreasing prefix length.
+  std::sort(m_allowedIPAddressRanges.begin(),
+            m_allowedIPAddressRanges.end(),
+            [&](const IPAddress& a, const IPAddress& b) -> bool {
+              return a.prefixLength() > b.prefixLength();
+            });
+
+  m_hopType = getStringEnum(json, "hopType", SingleHop);
+  m_vpnDisabledApps = getStringList(json.value("vpnDisabledApps"));
+  m_obfuscationMethod = getStringEnum(json, "obfuscationMethod",
+                                      Server::ObfuscationMethod::NoObfuscation);
+
+  if (!json.contains("lwoVersion")) {
+    m_lwoVersion = 1;
+  } else {
+    QJsonValue value = json.value("lwoVersion");
+    if (!value.isDouble()) {
+      logger.error() << "lwoVersion is not a number";
+      return;
+    }
+    int lwoVersion = value.toInt();
+    if (lwoVersion < 1 || lwoVersion > 2) {
+      logger.error() << "lwoVersion" << lwoVersion << "is not valid";
+      return;
+    }
+    m_lwoVersion = lwoVersion;
+  }
+
+  // Success!
+  guard.dismiss();
+}
+
+bool InterfaceConfig::getRequiredString(
+    const QJsonObject& obj, const QString& name, QString& output) {
+  if (!obj.contains(name)) {
+    logger.debug() << name << "missing in the json input";
+    return false;
+  }
+
+  QJsonValue value = obj.value(name);
+  if (value.type() != QJsonValue::String) {
+    logger.error() << name << " is not a string";
+    return false;
+  }
+  output = value.toString();
+  return true;
+}
+
+QStringList InterfaceConfig::getStringList(const QJsonValue& value) {
+  QStringList list;
+  for (const QJsonValue& i : value.toArray()) {
+    if (!i.isString()) {
+      continue;
+    }
+    list.append(i.toString());
+  }
+  return list;
+}
+
+template <typename T>
+T InterfaceConfig::getStringEnum(
+    const QJsonObject& obj, const QString& name, T defaultValue) {
+  if (!obj.contains(name)) {
+    return defaultValue;
+  }
+  QJsonValue value = obj.value(name);
+  if (!value.isString()) {
+    logger.error() << name << " is not a string";
+    return defaultValue;
+  }
+
+  bool okay;
+  QMetaEnum meta = QMetaEnum::fromType<T>();
+  T result = T(meta.keyToValue(value.toString().toUtf8().constData(), &okay));
+  if (okay) {
+    return result;
+  }
+
+  logger.error() << name << value.toString() << "is not valid";
+  return defaultValue;
+}
 
 bool InterfaceConfig::isValid() const {
   return !m_privateKey.isEmpty() && !m_publicKey.isEmpty() &&
-      !m_deviceIpv4Address.isEmpty() && !m_deviceIpv4Address.isEmpty();
+      !m_deviceIpv4Address.isEmpty() && !m_deviceIpv6Address.isEmpty();
 }
 
 QJsonObject InterfaceConfig::toJson() const {
@@ -116,9 +287,9 @@ QString InterfaceConfig::toWgConf(const QMap<QString, QString>& extra,
     }
   }
   out << "PublicKey = " << m_serverPublicKey << "\n";
-  if (!m_serverIpv4AddrIn.isNull()) {
+  if (!m_serverIpv4AddrIn.isEmpty()) {
     out << "Endpoint = " << m_serverIpv4AddrIn << ":" << m_serverPort << "\n";
-  } else if (!m_serverIpv6AddrIn.isNull()) {
+  } else if (!m_serverIpv6AddrIn.isEmpty()) {
     out << "Endpoint = [" << m_serverIpv6AddrIn << "]:" << m_serverPort << "\n";
   }
   QStringList ranges;
