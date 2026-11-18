@@ -24,14 +24,19 @@ class AppListProvider : public QObject {
   class AppDescription {
    public:
     AppDescription(const QString& appId, const QString& appName = "",
-                   bool isSystem = false) {
+                   bool isSystem = false, const QString& group = QString()) {
       name = appName;
       id = appId;
       isSystemApp = isSystem;
+      appGroup = group;
     };
     QString name;
     AppId id;
     bool isSystemApp;
+    // Apps with the same non-empty appGroup cannot be excluded
+    // independently (e.g. Android packages sharing a UID) and are
+    // toggled together.
+    QString appGroup;
 
     bool operator<(const AppDescription& other) const {
       return name.compare(other.name, Qt::CaseInsensitive) < 0;

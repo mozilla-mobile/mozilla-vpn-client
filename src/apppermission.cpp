@@ -6,6 +6,7 @@
 
 #include <QApplication>
 #include <QVector>
+#include <algorithm>
 #include <utility>
 
 #include "applistprovider.h"
@@ -16,7 +17,9 @@
 #include "platforms/dummy/dummyapplistprovider.h"
 #include "settingsholder.h"
 
-#if defined(MZ_ANDROID)
+#if defined(UNIT_TEST)
+// Unit tests use the DummyAppListProvider.
+#elif defined(MZ_ANDROID)
 #  include "platforms/android/androidapplistprovider.h"
 #elif defined(MZ_LINUX)
 #  include "platforms/linux/linuxapplistprovider.h"
@@ -47,6 +50,32 @@ bool sortApplicationCallback(const AppDescription& a, const AppDescription& b,
   }
 
   return appADisabled;
+}
+
+// Returns the IDs of all members of app's app group in applist, including
+// app itself. If app has no app group, returns just app's ID.
+QStringList groupMemberIds(const QList<AppDescription>& applist,
+                           const AppDescription& app) {
+  QStringList ids{app.id};
+  if (app.appGroup.isEmpty()) {
+    return ids;
+  }
+  for (const auto& other : applist) {
+    if (other.id != app.id && other.appGroup == app.appGroup) {
+      ids.append(other.id);
+    }
+  }
+  return ids;
+}
+
+// Same as above, looking up appID in applist first.
+QStringList groupMemberIds(const QList<AppDescription>& applist,
+                           const QString& appID) {
+  auto it = std::find(applist.begin(), applist.end(), appID);
+  if (it == applist.end()) {
+    return {appID};
+  }
+  return groupMemberIds(applist, *it);
 }
 
 }  // namespace
@@ -88,7 +117,9 @@ AppPermission::~AppPermission() {
 // static
 AppPermission* AppPermission::instance() {
   if (s_instance == nullptr) {
-#if defined(MZ_ANDROID)
+#if defined(UNIT_TEST)
+    s_instance = new AppPermission(new DummyAppListProvider(qApp));
+#elif defined(MZ_ANDROID)
     s_instance = new AppPermission(new AndroidAppListProvider(qApp));
 #elif defined(MZ_LINUX)
     s_instance = new AppPermission(new LinuxAppListProvider(qApp));
@@ -115,6 +146,7 @@ QHash<int, QByteArray> AppPermission::roleNames() const {
   roles[AppIdRole] = "appID";
   roles[AppEnabledRole] = "appIsEnabled";
   roles[AppIsSystemAppRole] = "isSystemApp";
+  roles[AppGroupNamesRole] = "appGroupNames";
   return roles;
 }
 int AppPermission::rowCount(const QModelIndex&) const {
@@ -133,12 +165,28 @@ QVariant AppPermission::data(const QModelIndex& index, int role) const {
       return QVariant(app.id);
     case AppIsSystemAppRole:
       return app.isSystemApp;
-    case AppEnabledRole:
-      if (SettingsHolder::instance()->vpnDisabledApps().isEmpty()) {
-        // All are enabled then
-        return true;
+    case AppEnabledRole: {
+      const QStringList disabledApps =
+          SettingsHolder::instance()->vpnDisabledApps();
+      for (const QString& id : groupMemberIds(m_applist, app)) {
+        if (disabledApps.contains(id)) {
+          return false;
+        }
       }
-      return !SettingsHolder::instance()->vpnDisabledApps().contains(app.id);
+      return true;
+    }
+    case AppGroupNamesRole: {
+      if (app.appGroup.isEmpty()) {
+        return QString();
+      }
+      QStringList names;
+      for (const auto& other : m_applist) {
+        if (other.id != app.id && other.appGroup == app.appGroup) {
+          names.append(other.name);
+        }
+      }
+      return names.join(", ");
+    }
     default:
       return QVariant();
   }
@@ -153,17 +201,22 @@ int AppPermission::disabledAppCount() {
 void AppPermission::flip(const QString& appID) {
   SettingsHolder* settingsHolder = SettingsHolder::instance();
   QStringList applist = settingsHolder->vpnDisabledApps();
-  if (settingsHolder->vpnDisabledApps().contains(appID)) {
-    logger.debug() << "Enabled --" << appID << " for VPN";
-    applist.removeAll(appID);
-  } else {
-    logger.debug() << "Disabled --" << appID << " for VPN";
-    applist.append(appID);
+  // Apps in the same app group are always excluded together.
+  const QStringList group = groupMemberIds(m_applist, appID);
+  const bool enable = std::any_of(
+      group.begin(), group.end(),
+      [&applist](const QString& id) { return applist.contains(id); });
+  for (const QString& id : group) {
+    applist.removeAll(id);
+    if (!enable) {
+      applist.append(id);
+    }
   }
+  logger.debug() << (enable ? "Enabled --" : "Disabled --") << group
+                 << " for VPN";
+  // This resets the model (see the vpnDisabledAppsChanged connection in the
+  // constructor), which refreshes every row of the group.
   settingsHolder->setVpnDisabledApps(applist);
-
-  int index = static_cast<int>(m_applist.indexOf(AppDescription(appID)));
-  emit dataChanged(createIndex(index, 0), createIndex(index, 0));
 }
 
 void AppPermission::requestApplist() {
@@ -179,6 +232,22 @@ void AppPermission::receiveAppList(
 
   // Add all missed apps to the current app list
   applistCopy.append(missedApps.missedApps);
+
+  // Pre-app-group settings may exclude only some group members: add the rest.
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  const QStringList disabledApps = settingsHolder->vpnDisabledApps();
+  QStringList addedApps;
+  for (const QString& appID : disabledApps) {
+    for (const QString& memberID : groupMemberIds(applistCopy, appID)) {
+      if (!disabledApps.contains(memberID) && !addedApps.contains(memberID)) {
+        addedApps.append(memberID);
+      }
+    }
+  }
+  if (!addedApps.isEmpty()) {
+    logger.debug() << "Excluding app group members" << addedApps;
+    settingsHolder->setVpnDisabledApps(disabledApps + addedApps);
+  }
 
   beginResetModel();
   logger.debug() << "Received new Applist -- Entries: " << applistCopy.size();
@@ -197,9 +266,6 @@ void AppPermission::receiveAppList(
     return;
   }
   // Remove the no longer Valid APP id's from the settings
-  SettingsHolder* settingsHolder = SettingsHolder::instance();
-  Q_ASSERT(settingsHolder);
-
   auto settings_missedApps = settingsHolder->missingApps();
   for (const QString& appToRemove : missedApps.appsToRemove) {
     settings_missedApps.removeAll(appToRemove);
