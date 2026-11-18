@@ -106,6 +106,11 @@ target_sources(unit_tests PRIVATE
     ${MZ_SOURCE_DIR}/update/versionapi.h
     ${MZ_SOURCE_DIR}/update/webupdater.cpp
     ${MZ_SOURCE_DIR}/update/webupdater.h
+    ${MZ_SOURCE_DIR}/applistprovider.h
+    ${MZ_SOURCE_DIR}/apppermission.cpp
+    ${MZ_SOURCE_DIR}/apppermission.h
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummyapplistprovider.cpp
+    ${MZ_SOURCE_DIR}/platforms/dummy/dummyapplistprovider.h
     ${MZ_SOURCE_DIR}/addons/addon.cpp
     ${MZ_SOURCE_DIR}/addons/addon.h
     ${MZ_SOURCE_DIR}/addons/addonapi.cpp
@@ -267,6 +272,8 @@ target_sources(unit_tests PRIVATE
     testreleasemonitor.h
     testserverlatency.cpp
     testserverlatency.h
+    testapppermission.cpp
+    testapppermission.h
     teststatusicon.cpp
     teststatusicon.h
     testvalidator.cpp
