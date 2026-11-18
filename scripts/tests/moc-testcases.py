@@ -15,9 +15,10 @@ def parseClasssList(args, file):
         for i in entry["classes"]:
             if i["className"] == args.parent:
                 args.parent_header = entry["inputFile"]
-
-            if not "superClasses" in i:
                 continue
+            elif not "superClasses" in i:
+                continue
+
             for sc in i["superClasses"]:
                 if sc["name"] == args.parent:
                     classlist.append(i)
@@ -34,10 +35,9 @@ def formatClassList(args, classlist, file):
 
     # Assemble the list of headers to include.
     print("#include <QList>", file=file)
+    print("#include <QObject>", file=file)
     if args.parent_header:
         print(f'#include "{args.parent_header}"', file=file)
-    #else:
-    #    print(f'#include "{args.parent.lower()}.h"', file=file)
     for entry in classlist:
         print(f'#include "{entry["inputFile"]}"', file=file)
     print('', file=file)
@@ -63,8 +63,6 @@ def main():
     parser.add_argument('--parent-header', metavar="", type=str,
                         help='include filename for parent class')
     args = parser.parse_args()
-
-
 
     # Load the classes processed by moc.
     classlist = []
