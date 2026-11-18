@@ -8,7 +8,7 @@
 #include <QLocalServer>
 #include <QString>
 
-#include "daemon/daemon.h"
+#include "daemon.h"
 #include "dnsutilsmock.h"
 #include "wireguardutilsmock.h"
 

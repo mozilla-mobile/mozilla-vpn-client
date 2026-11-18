@@ -12,7 +12,6 @@
 #include <QMetaEnum>
 #include <QTimer>
 
-#include "controller.h"
 #include "dnsutils.h"
 #include "iputils.h"
 #include "leakdetector.h"

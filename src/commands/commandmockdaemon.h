@@ -2,17 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#ifndef MOCKDAEMONSERVER_H
-#define MOCKDAEMONSERVER_H
+#ifndef COMMANDMOCKDAEMON_H
+#define COMMANDMOCKDAEMON_H
 
 #include "command.h"
 
-class MockDaemonServer final : public Command {
+class CommandMockDaemon final : public Command {
  public:
-  explicit MockDaemonServer(QObject* parent);
-  ~MockDaemonServer();
+  explicit CommandMockDaemon(QObject* parent);
+  ~CommandMockDaemon();
 
   int run(QStringList& tokens) override;
 };
 
-#endif  // MOCKDAEMONSERVER_H
+#endif  // COMMANDMOCKDAEMON_H

@@ -10,6 +10,11 @@
 #include <QJsonValue>
 #include <QMetaEnum>
 
+bool InterfaceConfig::isValid() const {
+  return !m_privateKey.isEmpty() && !m_publicKey.isEmpty() &&
+      !m_deviceIpv4Address.isEmpty() && !m_deviceIpv4Address.isEmpty();
+}
+
 QJsonObject InterfaceConfig::toJson() const {
   QJsonObject json;
   QMetaEnum metaEnum = QMetaEnum::fromType<HopType>();

@@ -9,7 +9,7 @@
 #include <QProcess>
 #include <QString>
 
-#include "daemon/dnsutils.h"
+#include "dnsutils.h"
 
 class DnsUtilsMock final : public DnsUtils {
   Q_OBJECT

@@ -9,7 +9,6 @@
 #include <QTimer>
 #include <memory>
 
-#include "daemon/daemonerrors.h"
 #include "daemonerrors.h"
 #include "interfaceconfig.h"
 #include "obfuscator/obfuscator.h"
@@ -47,6 +46,9 @@ class Daemon : public QObject {
   Q_INVOKABLE bool deactivate() { return deactivate(true); };
   Q_INVOKABLE void cleanLogs();
 
+  virtual bool supportServerSwitching(const InterfaceConfig& config) const;
+  virtual bool switchServer(const InterfaceConfig& config);
+
  signals:
   void connected(const QString& pubkey);
   /**
@@ -67,8 +69,6 @@ class Daemon : public QObject {
     Q_UNUSED(config);
     return true;
   }
-  virtual bool supportServerSwitching(const InterfaceConfig& config) const;
-  virtual bool switchServer(const InterfaceConfig& config);
   virtual WireguardUtils* wgutils() const = 0;
   virtual IPUtils* iputils() { return nullptr; }
   virtual DnsUtils* dnsutils() { return nullptr; }
@@ -89,6 +89,8 @@ class Daemon : public QObject {
   QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
   QTimer m_handshakeTimer;
   std::unique_ptr<Obfuscator> m_obfuscator;
+
+  friend class TestDaemon;
 };
 
 #endif  // DAEMON_H
