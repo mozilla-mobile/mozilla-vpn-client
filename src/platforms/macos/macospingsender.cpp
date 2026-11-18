@@ -28,13 +28,12 @@ int identifier() { return (getpid() & 0xFFFF); }
 
 };  // namespace
 
-MacOSPingSender::MacOSPingSender(const QHostAddress& source, QObject* parent)
-    : PingSender(parent) {
+MacOSPingSender::MacOSPingSender(NetworkProtocol proto, QObject* parent)
+    : PingSender(proto, parent) {
   MZ_COUNT_CTOR(MacOSPingSender);
 
-  if (source.protocol() == QAbstractSocket::IPv6Protocol) {
+  if (proto == QAbstractSocket::IPv6Protocol) {
     m_socket6 = socket(AF_INET6, SOCK_DGRAM, IPPROTO_ICMPV6);
-
     if (m_socket6 < 0) {
       logger.error() << "IPv6 socket creation failed";
       return;
@@ -44,8 +43,6 @@ MacOSPingSender::MacOSPingSender(const QHostAddress& source, QObject* parent)
     bzero(&addr6, sizeof(addr6));
     addr6.sin6_family = AF_INET6;
     addr6.sin6_len = sizeof(addr6);
-    Q_IPV6ADDR qaddr = source.toIPv6Address();
-    memcpy(&addr6.sin6_addr, &qaddr, sizeof(addr6.sin6_addr));
 
     if (bind(m_socket6, (struct sockaddr*)&addr6, sizeof(addr6)) != 0) {
       close(m_socket6);
@@ -76,15 +73,11 @@ MacOSPingSender::MacOSPingSender(const QHostAddress& source, QObject* parent)
     return;
   }
 
-  quint32 ipv4addr = INADDR_ANY;
-  if (!source.isNull()) {
-    ipv4addr = source.toIPv4Address();
-  }
   struct sockaddr_in addr;
   bzero(&addr, sizeof(addr));
   addr.sin_family = AF_INET;
   addr.sin_len = sizeof(addr);
-  addr.sin_addr.s_addr = qToBigEndian<quint32>(ipv4addr);
+  addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
   if (bind(m_socket, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
     close(m_socket);

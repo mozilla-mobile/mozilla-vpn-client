@@ -41,7 +41,7 @@ constexpr double PING_LOSS_UNSTABLE_THRESHOLD = 0.10;
 constexpr const char* PING_WELL_KNOWN_ANYCAST_DNS = "194.242.2.2";
 }  // namespace
 
-ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
+ConnectionHealth::ConnectionHealth() {
   MZ_COUNT_CTOR(ConnectionHealth);
 
   m_noSignalTimer.setSingleShot(true);

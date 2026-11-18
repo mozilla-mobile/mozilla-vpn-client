@@ -93,29 +93,13 @@ int LinuxPingSender::createSocket6() {
   return m_socket;
 }
 
-LinuxPingSender::LinuxPingSender(const QHostAddress& source, QObject* parent)
-    : PingSender(parent) {
+LinuxPingSender::LinuxPingSender(NetworkProtocol proto, QObject* parent)
+    : PingSender(proto, parent) {
   MZ_COUNT_CTOR(LinuxPingSender);
 
-  logger.debug() << "LinuxPingSender(" + logger.sensitive(source.toString()) +
-                        ") created";
-
-  if (source.protocol() == QAbstractSocket::IPv6Protocol) {
+  if (proto == QAbstractSocket::IPv6Protocol) {
     m_socket = createSocket6();
     if (m_socket < 0) {
-      return;
-    }
-
-    struct sockaddr_in6 addr{};
-    addr.sin6_family = AF_INET6;
-    if (!source.isNull()) {
-      Q_IPV6ADDR qaddr = source.toIPv6Address();
-      memcpy(&addr.sin6_addr, &qaddr, sizeof(addr.sin6_addr));
-    }
-    if (bind(m_socket, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
-      close(m_socket);
-      m_socket = -1;
-      logger.error() << "bind error:" << strerror(errno);
       return;
     }
 
@@ -128,22 +112,6 @@ LinuxPingSender::LinuxPingSender(const QHostAddress& source, QObject* parent)
   m_socket = createSocket();
   if (m_socket < 0) {
     logger.error() << "Socket creation error: " << strerror(errno);
-    return;
-  }
-
-  quint32 ipv4addr = INADDR_ANY;
-  if (!source.isNull()) {
-    ipv4addr = source.toIPv4Address();
-  }
-  struct sockaddr_in addr;
-  memset(&addr, 0, sizeof addr);
-  addr.sin_family = AF_INET;
-  addr.sin_addr.s_addr = qToBigEndian<quint32>(ipv4addr);
-
-  if (bind(m_socket, (struct sockaddr*)&addr, sizeof(addr)) != 0) {
-    close(m_socket);
-    m_socket = -1;
-    logger.error() << "bind error:" << strerror(errno);
     return;
   }
 

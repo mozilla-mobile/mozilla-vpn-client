@@ -123,11 +123,9 @@ static DWORD icmpCleanupHelper(LPVOID data) {
   return 0;
 }
 
-WindowsPingSender::WindowsPingSender(const QHostAddress& source,
-                                     QObject* parent)
-    : PingSender(parent) {
+WindowsPingSender::WindowsPingSender(NetworkProtocol proto, QObject* parent)
+    : PingSender(proto, parent) {
   MZ_COUNT_CTOR(WindowsPingSender);
-  m_source = source;
   m_private = new struct WindowsPingSenderPrivate;
 
   m_private->m_handle = IcmpCreateFile();
@@ -181,11 +179,6 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
 
     sockaddr_in6 src6 = {};
     src6.sin6_family = AF_INET6;
-    // Use the unspecified address (::) as source unless set.
-    if (!m_source.isNull()) {
-      Q_IPV6ADDR v6src = m_source.toIPv6Address();
-      memcpy(&src6.sin6_addr, &v6src, sizeof(src6.sin6_addr));
-    }
 
     Icmp6SendEcho2(m_private->m_handle6,               // IcmpHandle
                    m_private->m_event6,                // Event
@@ -209,35 +202,18 @@ void WindowsPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
     }
 
     quint32 v4dst = dest.toIPv4Address();
-    if (m_source.isNull()) {
-      IcmpSendEcho2(m_private->m_handle,               // IcmpHandle,
-                    m_private->m_event,                // Event
-                    nullptr,                           // ApcRoutine
-                    nullptr,                           // ApcContext
-                    qToBigEndian<quint32>(v4dst),      // DestinationAddress
-                    &sequence,                         // RequestData
-                    sizeof(sequence),                  // RequestSize
-                    nullptr,                           // RequestOptions
-                    &m_private->m_replyBuffer,         // [OUT] ReplyBuffer
-                    sizeof(m_private->m_replyBuffer),  // ReplySize
-                    10000                              // Timeout
-      );
-    } else {
-      quint32 v4src = m_source.toIPv4Address();
-      IcmpSendEcho2Ex(m_private->m_handle,               // IcmpHandle
-                      m_private->m_event,                // Event
-                      nullptr,                           // ApcRoutine
-                      nullptr,                           // ApcContext
-                      qToBigEndian<quint32>(v4src),      // SourceAddress
-                      qToBigEndian<quint32>(v4dst),      // DestinationAddress
-                      &sequence,                         // RequestData
-                      sizeof(sequence),                  // RequestSize
-                      nullptr,                           // RequestOptions
-                      &m_private->m_replyBuffer,         // [OUT] ReplyBuffer
-                      sizeof(m_private->m_replyBuffer),  // ReplySize
-                      10000                              // Timeout
-      );
-    }
+    IcmpSendEcho2(m_private->m_handle,               // IcmpHandle,
+                  m_private->m_event,                // Event
+                  nullptr,                           // ApcRoutine
+                  nullptr,                           // ApcContext
+                  qToBigEndian<quint32>(v4dst),      // DestinationAddress
+                  &sequence,                         // RequestData
+                  sizeof(sequence),                  // RequestSize
+                  nullptr,                           // RequestOptions
+                  &m_private->m_replyBuffer,         // [OUT] ReplyBuffer
+                  sizeof(m_private->m_replyBuffer),  // ReplySize
+                  10000                              // Timeout
+    );
   }
 
   DWORD status = GetLastError();

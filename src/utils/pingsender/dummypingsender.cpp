@@ -11,10 +11,9 @@ namespace {
 Logger logger("DummyPingSender");
 }
 
-DummyPingSender::DummyPingSender(const QHostAddress& source, QObject* parent)
-    : PingSender(parent) {
+DummyPingSender::DummyPingSender(NetworkProtocol proto, QObject* parent)
+    : PingSender(proto, parent) {
   MZ_COUNT_CTOR(DummyPingSender);
-  Q_UNUSED(source);
 }
 
 DummyPingSender::~DummyPingSender() { MZ_COUNT_DTOR(DummyPingSender); }

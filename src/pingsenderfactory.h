@@ -5,14 +5,12 @@
 #ifndef PINGSENDERFACTORY_H
 #define PINGSENDERFACTORY_H
 
-class PingSender;
-class QHostAddress;
-class QObject;
+#include "pingsender.h"
 
 class PingSenderFactory final {
  public:
   PingSenderFactory() = delete;
-  static PingSender* create(const QHostAddress& source, QObject* parent);
+  static PingSender* create(PingSender::NetworkProtocol proto, QObject* parent);
 };
 
 #endif  // PINGSENDERFACTORY_H

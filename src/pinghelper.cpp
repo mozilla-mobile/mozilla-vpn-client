@@ -40,9 +40,7 @@ void PingHelper::start(const QString& serverGateway) {
                  << logger.sensitive(serverGateway);
 
   m_gateway = QHostAddress(serverGateway);
-  QHostAddress source(m_gateway.protocol() == QAbstractSocket::IPv6Protocol ?
-                      QHostAddress::AnyIPv4 : QHostAddress::AnyIPv6);
-  m_pingSender = PingSenderFactory::create(source, this);
+  m_pingSender = PingSenderFactory::create(m_gateway.protocol(), this);
 
   // Some platforms require root access to send and receive ICMP pings. If
   // we happen to be on one of these unlucky devices, create a DnsPingSender
@@ -50,12 +48,11 @@ void PingHelper::start(const QString& serverGateway) {
   if (!m_pingSender->isValid()) {
     logger.warning() << "PingSenderFactory is not valid, trying DnsPingSender.";
     m_pingSender->deleteLater();
-    m_pingSender = new DnsPingSender(source, this);
+    m_pingSender = new DnsPingSender(m_gateway.protocol(), this);
     if (!m_pingSender->isValid()) {
-      logger.error()
-          << "DnsPingSender is also not valid, using DummyPingSender.";
+      logger.error() << "DnsPingSender is also invalid, using DummyPingSender.";
       m_pingSender->deleteLater();
-      m_pingSender = new DummyPingSender(source, this);
+      m_pingSender = new DummyPingSender(m_gateway.protocol(), this);
     }
   }
 

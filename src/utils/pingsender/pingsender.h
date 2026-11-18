@@ -14,7 +14,10 @@ class PingSender : public QObject {
   Q_DISABLE_COPY_MOVE(PingSender)
 
  public:
-  PingSender(QObject* parent = nullptr) : QObject(parent) {}
+  using NetworkProtocol = QAbstractSocket::NetworkLayerProtocol;
+
+  PingSender(NetworkProtocol proto, QObject* parent = nullptr)
+      : QObject(parent), m_protocol(proto) {}
   virtual ~PingSender() = default;
 
   virtual bool isValid() { return true; };
@@ -26,6 +29,9 @@ class PingSender : public QObject {
  signals:
   void recvPing(quint16 sequence);
   void criticalPingError();
+
+ protected:
+  NetworkProtocol m_protocol;
 };
 
 #endif  // PINGSENDER_H
