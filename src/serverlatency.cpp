@@ -132,9 +132,8 @@ void ServerLatency::start() {
   m_sequence = 0;
   m_wantRefresh = false;
   m_hasIPv4Connectivity = hasIPv4Connectivity();
-  auto proto = m_hasIPv4Connectivity
-             ? QAbstractSocket::IPv4Protocol
-             : QAbstractSocket::IPv6Protocol;
+  auto proto = m_hasIPv4Connectivity ? QAbstractSocket::IPv4Protocol
+                                     : QAbstractSocket::IPv6Protocol;
   m_pingSender = PingSenderFactory::create(proto, this);
   if (!m_pingSender->isValid()) {
     // Fallback to using TCP handshake times for pings if we can't create an

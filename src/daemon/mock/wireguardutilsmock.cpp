@@ -37,7 +37,7 @@ bool WireguardUtilsMock::deleteInterface() {
   // with it, but for the purpose of testing, only automatically delete
   // exclusion routes. This lets us test that the daemon handles refcounting
   // and garbage collection correctly.
-  m_routes.removeIf([](QHash<IPAddress, RouteType>::iterator i){
+  m_routes.removeIf([](QHash<IPAddress, RouteType>::iterator i) {
     return i.value() == RouteExclusion;
   });
 
@@ -72,8 +72,8 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsMock::getPeerStatus() {
   return peerList;
 }
 
-void WireguardUtilsMock::setRoutePrefix(const IPAddress& prefix, RouteType type) {
-  m_routes[prefix] = type;
+void WireguardUtilsMock::setRoutePrefix(const IPAddress& dest, RouteType type) {
+  m_routes[dest] = type;
 }
 
 bool WireguardUtilsMock::updateRoutePrefix(const IPAddress& prefix) {

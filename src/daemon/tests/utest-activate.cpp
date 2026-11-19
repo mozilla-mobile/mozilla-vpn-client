@@ -35,7 +35,8 @@ void TestActivate::activate() {
   // Verify the routing table.
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     const QString msg("m_wgutils->routeTable().contains() failed for %1");
-    QVERIFY2(m_wgutils->routes().contains(ip), qPrintable(msg.arg(ip.toString())));
+    QVERIFY2(m_wgutils->routes().contains(ip),
+             qPrintable(msg.arg(ip.toString())));
     QCOMPARE(m_wgutils->routes().value(ip), WireguardUtilsMock::RoutePeer);
   }
 }

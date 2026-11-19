@@ -6,9 +6,9 @@
 
 #include <QDir>
 #include <QLocalSocket>
-#include <QString>
 #include <QProcess>
 #include <QProcessEnvironment>
+#include <QString>
 #include <QtTest/QtTest>
 
 #include "curve25519.h"
@@ -17,11 +17,11 @@
 #include "mock/wireguardutilsmock.h"
 
 static QString randomSocketPath() {
-  QString suffix = QString::number(QRandomGenerator::global()->generate64(), 16);
+  QString tail = QString::number(QRandomGenerator::global()->generate64(), 16);
 #if defined(Q_OS_WIN)
-  return QString("\\\\.\\pipe\\mozillavpn-mock-%1").arg(suffix);
+  return QString("\\\\.\\pipe\\mozillavpn-mock-%1").arg(tail);
 #else
-  return QString("/var/tmp/mozillavpn-mock-%1.sock").arg(suffix);
+  return QString("/var/tmp/mozillavpn-mock-%1.sock").arg(tail);
 #endif
 }
 

@@ -32,10 +32,11 @@ void TestInterfaceConfig::json_data() {
   // Check some malformed JSON cases
   QTest::addRow("empty") << QString("{}").toUtf8() << InterfaceConfig();
   QTest::addRow("malformed") << QString("{").toUtf8() << InterfaceConfig();
-  QTest::addRow("junk") << QString("{\"test\": 12345}").toUtf8() << InterfaceConfig();
+  QTest::addRow("junk") << QString("{\"test\": 12345}").toUtf8()
+                        << InterfaceConfig();
   QTest::addRow("array") << QString("[]").toUtf8() << InterfaceConfig();
 
-  auto encode = [](const InterfaceConfig& cfg) {
+  auto jsEncode = [](const InterfaceConfig& cfg) {
     return QJsonDocument(cfg.toJson()).toJson();
   };
 
@@ -52,7 +53,7 @@ void TestInterfaceConfig::json_data() {
   config.m_serverIpv4AddrIn = "127.0.0.1";
   config.m_serverPort = 51820;
   config.m_allowedIPAddressRanges.append(IPAddress("0.0.0.0/0"));
-  QTest::addRow("minimal") << encode(config) << config;
+  QTest::addRow("minimal") << jsEncode(config) << config;
 
   // Test that encoding still succeeds even when an extra "type" field is
   // present. Some of the daemon impementations do this to set an action.
@@ -62,23 +63,23 @@ void TestInterfaceConfig::json_data() {
 
   // Build up the server configuration.
   config.m_allowedIPAddressRanges.append(IPAddress("10.64.0.0/16"));
-  QTest::addRow("allowedips extra") << encode(config) << config;
+  QTest::addRow("allowedips extra") << jsEncode(config) << config;
   config.m_serverIpv6Gateway = "fc02::1";
-  QTest::addRow("server gateway v6") << encode(config) << config;
+  QTest::addRow("server gateway v6") << jsEncode(config) << config;
   config.m_serverIpv6AddrIn = "::1";
-  QTest::addRow("server addr v6") << encode(config) << config;
+  QTest::addRow("server addr v6") << jsEncode(config) << config;
   config.m_allowedIPAddressRanges.append(IPAddress("::/0"));
   config.m_allowedIPAddressRanges.append(IPAddress("fc02::/64"));
-  QTest::addRow("allowedips v6") << encode(config) << config;
+  QTest::addRow("allowedips v6") << jsEncode(config) << config;
   config.m_dnsServer = "dns.example.com";
-  QTest::addRow("dns servers") << encode(config) << config;
+  QTest::addRow("dns servers") << jsEncode(config) << config;
   config.m_vpnDisabledApps << "example-app-1";
   config.m_vpnDisabledApps << "example-app-2";
-  QTest::addRow("split tunnel") << encode(config) << config;
+  QTest::addRow("split tunnel") << jsEncode(config) << config;
   config.m_obfuscationMethod = Server::ObfuscationMethod::LWO;
-  QTest::addRow("lwo obfuscation") << encode(config) << config;
+  QTest::addRow("lwo obfuscation") << jsEncode(config) << config;
   config.m_lwoVersion = 2;
-  QTest::addRow("lwo version") << encode(config) << config;
+  QTest::addRow("lwo version") << jsEncode(config) << config;
 }
 
 // Test that we can encode/decode an interface config through JSON and
@@ -106,7 +107,8 @@ void TestInterfaceConfig::json() {
   compare(roundtrip, expect);
 }
 
-void TestInterfaceConfig::compare(const InterfaceConfig& a, const InterfaceConfig &b) {
+void TestInterfaceConfig::compare(const InterfaceConfig& a,
+                                  const InterfaceConfig& b) {
   QCOMPARE(a.m_hopType, b.m_hopType);
 
   // Device configuration
@@ -135,7 +137,8 @@ void TestInterfaceConfig::compare(const InterfaceConfig& a, const InterfaceConfi
   QCOMPARE(a.m_lwoVersion, b.m_lwoVersion);
 
   // The allowed ip list may be sorted, so take a bit more care.
-  QCOMPARE(a.m_allowedIPAddressRanges.count(), b.m_allowedIPAddressRanges.count());
+  QCOMPARE(a.m_allowedIPAddressRanges.count(),
+           b.m_allowedIPAddressRanges.count());
   for (auto i : a.m_allowedIPAddressRanges) {
     QVERIFY(b.m_allowedIPAddressRanges.contains(i));
   }

@@ -100,8 +100,7 @@ InterfaceConfig::InterfaceConfig(const QJsonObject& json) {
   }
 
   // Sort allowed IPs by decreasing prefix length.
-  std::sort(m_allowedIPAddressRanges.begin(),
-            m_allowedIPAddressRanges.end(),
+  std::sort(m_allowedIPAddressRanges.begin(), m_allowedIPAddressRanges.end(),
             [&](const IPAddress& a, const IPAddress& b) -> bool {
               return a.prefixLength() > b.prefixLength();
             });
@@ -131,8 +130,8 @@ InterfaceConfig::InterfaceConfig(const QJsonObject& json) {
   guard.dismiss();
 }
 
-bool InterfaceConfig::getRequiredString(
-    const QJsonObject& obj, const QString& name, QString& output) {
+bool InterfaceConfig::getRequiredString(const QJsonObject& obj,
+                                        const QString& name, QString& output) {
   if (!obj.contains(name)) {
     logger.debug() << name << "missing in the json input";
     return false;
@@ -159,8 +158,8 @@ QStringList InterfaceConfig::getStringList(const QJsonValue& value) {
 }
 
 template <typename T>
-T InterfaceConfig::getStringEnum(
-    const QJsonObject& obj, const QString& name, T defaultValue) {
+T InterfaceConfig::getStringEnum(const QJsonObject& obj, const QString& name,
+                                 T defaultValue) {
   if (!obj.contains(name)) {
     return defaultValue;
   }
@@ -183,7 +182,7 @@ T InterfaceConfig::getStringEnum(
 
 bool InterfaceConfig::isValid() const {
   return !m_privateKey.isEmpty() && !m_publicKey.isEmpty() &&
-      !m_deviceIpv4Address.isEmpty() && !m_deviceIpv6Address.isEmpty();
+         !m_deviceIpv4Address.isEmpty() && !m_deviceIpv6Address.isEmpty();
 }
 
 QJsonObject InterfaceConfig::toJson() const {

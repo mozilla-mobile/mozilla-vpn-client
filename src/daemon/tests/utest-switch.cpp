@@ -27,7 +27,8 @@ void TestSwitch::init() {
   // Verify the routing table.
   for (const IPAddress& ip : m_config.m_allowedIPAddressRanges) {
     const QString msg("m_wgutils->routeTable().contains() failed for %1");
-    QVERIFY2(m_wgutils->routes().contains(ip), qPrintable(msg.arg(ip.toString())));
+    QVERIFY2(m_wgutils->routes().contains(ip),
+             qPrintable(msg.arg(ip.toString())));
     QCOMPARE(m_wgutils->routes().value(ip), WireguardUtilsMock::RoutePeer);
   }
 }
@@ -69,11 +70,13 @@ void TestSwitch::basicSwitch() {
   // Verify the routing table.
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     const QString msg("m_wgutils->routeTable().contains() failed for %1");
-    QVERIFY2(m_wgutils->routes().contains(ip), qPrintable(msg.arg(ip.toString())));
+    QVERIFY2(m_wgutils->routes().contains(ip),
+             qPrintable(msg.arg(ip.toString())));
     QCOMPARE(m_wgutils->routes().value(ip), WireguardUtilsMock::RoutePeer);
   }
   // Check for stale routes that were owned by the old peer.
-  for (auto i = m_wgutils->routes().begin(); i != m_wgutils->routes().end(); i++) {
+  for (auto i = m_wgutils->routes().begin(); i != m_wgutils->routes().end();
+       i++) {
     if (i.value() != WireguardUtilsMock::RoutePeer) {
       continue;
     }
@@ -123,12 +126,14 @@ void TestSwitch::hardSwitch() {
   // Verify the routing table.
   for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
     const QString msg("m_wgutils->routeTable().contains() failed for %1");
-    QVERIFY2(m_wgutils->routes().contains(ip), qPrintable(msg.arg(ip.toString())));
+    QVERIFY2(m_wgutils->routes().contains(ip),
+             qPrintable(msg.arg(ip.toString())));
     QCOMPARE(m_wgutils->routes().value(ip), WireguardUtilsMock::RoutePeer);
   }
 
   // Check for stale routes that were owned by the old peer.
-  for (auto i = m_wgutils->routes().begin(); i != m_wgutils->routes().end(); i++) {
+  for (auto i = m_wgutils->routes().begin(); i != m_wgutils->routes().end();
+       i++) {
     if (i.value() != WireguardUtilsMock::RoutePeer) {
       continue;
     }

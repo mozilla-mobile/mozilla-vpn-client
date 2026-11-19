@@ -16,7 +16,7 @@
 
 class QJsonObject;
 
-// Base test case that starts the mock daemon, with some helpers to interact with it.
+// Base test case that starts and stops a mock daemon
 class TestDaemon : public QObject {
   Q_OBJECT
 

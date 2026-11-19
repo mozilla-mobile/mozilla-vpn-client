@@ -17,5 +17,5 @@ class TestInterfaceConfig : public TestHelper {
   void json();
 
  private:
-  static void compare(const InterfaceConfig& a, const InterfaceConfig &b);
+  static void compare(const InterfaceConfig& a, const InterfaceConfig& b);
 };
