@@ -21,7 +21,10 @@ bool DnsUtilsMock::updateResolvers(const QString& ifname,
   Q_UNUSED(ifname);
   Q_UNUSED(resolvers);
 
-  // Success!
+  if (m_willFailUpdate) {
+    m_willFailUpdate--;
+    return false;
+  }
   return true;
 }
 

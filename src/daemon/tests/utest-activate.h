@@ -13,4 +13,5 @@ class TestActivate : public TestDaemon {
   void activate();
   void exclusionFailure();
   void routeFailure();
+  void dnsFailure();
 };

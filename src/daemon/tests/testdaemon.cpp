@@ -131,9 +131,3 @@ InterfaceConfig TestDaemon::exampleConfig() {
 
   return config;
 }
-
-// This should be implemented by moc-testlist.py
-__attribute__((weak))
-QList<const QMetaObject*> TestDaemon::testcases() {
-  return QList<const QMetaObject*>();
-}

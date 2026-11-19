@@ -54,10 +54,16 @@ void TestActivate::exclusionFailure() {
   // Activate it.
   QVERIFY(!m_daemon->activate(config));
 
-  // Check the connected signal.
+  // Check the activationFailure signal.
   QTRY_VERIFY_WITH_TIMEOUT(!spyFailure.isEmpty(), 5000);
   QVERIFY(spyConnected.isEmpty());
   QVERIFY(spyDisconnected.isEmpty());
+
+  // Check that we are not connected.
+  QJsonObject status = m_daemon->getStatus();
+  QCOMPARE(status.value("connected"), QJsonValue(false));
+  QVERIFY(!status.contains("date"));
+
 }
 
 void TestActivate::routeFailure() {
@@ -73,8 +79,36 @@ void TestActivate::routeFailure() {
   // Activate it.
   QVERIFY(!m_daemon->activate(config));
 
-  // Check the connected signal.
+  // Check the activationFailure signal.
   QTRY_VERIFY_WITH_TIMEOUT(!spyFailure.isEmpty(), 5000);
   QVERIFY(spyConnected.isEmpty());
   QVERIFY(spyDisconnected.isEmpty());
+
+  // Check that we are not connected.
+  QJsonObject status = m_daemon->getStatus();
+  QCOMPARE(status.value("connected"), QJsonValue(false));
+  QVERIFY(!status.contains("date"));
+}
+
+void TestActivate::dnsFailure() {
+  InterfaceConfig config = exampleConfig();
+  QSignalSpy spyConnected(m_daemon.get(), SIGNAL(connected(QString)));
+  QSignalSpy spyDisconnected(m_daemon.get(), SIGNAL(disconnected()));
+  QSignalSpy spyFailure(m_daemon.get(), SIGNAL(activationFailure()));
+
+  // Flag the dnsutils to fail the next update.
+  m_dnsutils->m_willFailUpdate = 1;
+
+  // Activate it.
+  QVERIFY(!m_daemon->activate(config));
+
+  // Check the activationFailure signal.
+  QTRY_VERIFY_WITH_TIMEOUT(!spyFailure.isEmpty(), 5000);
+  QVERIFY(spyConnected.isEmpty());
+  QVERIFY(spyDisconnected.isEmpty());
+
+  // Check that we are not connected.
+  QJsonObject status = m_daemon->getStatus();
+  QCOMPARE(status.value("connected"), QJsonValue(false));
+  QVERIFY(!status.contains("date"));
 }
