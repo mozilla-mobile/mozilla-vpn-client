@@ -6,7 +6,7 @@
 
 #include "testhelper.h"
 
-class TestChaCha20Poly : public QObject, TestHelper<TestChaCha20Poly> {
+class TestChaCha20Poly : public TestHelper {
   Q_OBJECT
 
  private slots:

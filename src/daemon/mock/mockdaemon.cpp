@@ -7,7 +7,7 @@
 #include <QLocalSocket>
 #include <QRandomGenerator>
 
-#include "daemon/daemonlocalserverconnection.h"
+#include "daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
 
@@ -69,8 +69,6 @@ bool MockDaemon::activate(const InterfaceConfig& config) {
   InterfaceConfig mockConfig(config);
   mockConfig.m_serverIpv4Gateway = "127.0.0.1";
   mockConfig.m_serverIpv6Gateway = "::1";
-  mockConfig.m_deviceIpv4Address = "127.0.0.1";
-  mockConfig.m_deviceIpv6Address = "::1";
 
   return Daemon::activate(mockConfig);
 }

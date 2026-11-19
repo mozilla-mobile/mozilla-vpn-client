@@ -48,11 +48,9 @@ namespace {
 Logger logger("DnsPingSender");
 }
 
-DnsPingSender::DnsPingSender(const QHostAddress& source, QObject* parent)
-    : PingSender(parent) {
+DnsPingSender::DnsPingSender(NetworkProtocol proto, QObject* parent)
+    : PingSender(proto, parent) {
   MZ_COUNT_CTOR(DnsPingSender);
-
-  m_source = source;
 
   connect(&m_socket, &QUdpSocket::readyRead, this, &DnsPingSender::readData);
 
@@ -64,14 +62,15 @@ DnsPingSender::DnsPingSender(const QHostAddress& source, QObject* parent)
     m_socket.abort();
   }
 
-  bool bindResult = false;
-  if (m_source.isNull()) {
-    bindResult = m_socket.bind();
+  bool result = false;
+  if (proto == QAbstractSocket::IPv4Protocol) {
+    result = m_socket.bind(QHostAddress(QHostAddress::AnyIPv4));
+  } else if (proto == QAbstractSocket::IPv6Protocol) {
+    result = m_socket.bind(QHostAddress(QHostAddress::AnyIPv6));
   } else {
-    bindResult = m_socket.bind(m_source);
+    result = m_socket.bind();
   }
-
-  if (!bindResult) {
+  if (!result) {
     logger.error() << "Unable to bind UDP socket. Socket state:" << state;
     m_socket.abort();
   }

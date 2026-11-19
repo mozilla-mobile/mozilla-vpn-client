@@ -35,14 +35,12 @@ PingHelper::PingHelper() {
 
 PingHelper::~PingHelper() { MZ_COUNT_DTOR(PingHelper); }
 
-void PingHelper::start(const QString& serverGateway,
-                       const QString& deviceAddress) {
+void PingHelper::start(const QString& serverGateway) {
   logger.debug() << "PingHelper activated for server:"
                  << logger.sensitive(serverGateway);
 
   m_gateway = QHostAddress(serverGateway);
-  m_source = QHostAddress(deviceAddress.section('/', 0, 0));
-  m_pingSender = PingSenderFactory::create(m_source, this);
+  m_pingSender = PingSenderFactory::create(m_gateway.protocol(), this);
 
   // Some platforms require root access to send and receive ICMP pings. If
   // we happen to be on one of these unlucky devices, create a DnsPingSender
@@ -50,12 +48,11 @@ void PingHelper::start(const QString& serverGateway,
   if (!m_pingSender->isValid()) {
     logger.warning() << "PingSenderFactory is not valid, trying DnsPingSender.";
     m_pingSender->deleteLater();
-    m_pingSender = new DnsPingSender(m_source, this);
+    m_pingSender = new DnsPingSender(m_gateway.protocol(), this);
     if (!m_pingSender->isValid()) {
-      logger.error()
-          << "DnsPingSender is also not valid, using DummyPingSender.";
+      logger.error() << "DnsPingSender is also invalid, using DummyPingSender.";
       m_pingSender->deleteLater();
-      m_pingSender = new DummyPingSender(m_source, this);
+      m_pingSender = new DummyPingSender(m_gateway.protocol(), this);
     }
   }
 

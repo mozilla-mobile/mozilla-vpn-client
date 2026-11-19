@@ -9,8 +9,6 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-constexpr int MOCK_HANDSHAKE_DELAY_MSEC = 1500;
-
 namespace {
 Logger logger("WireguardUtilsMock");
 };  // namespace
@@ -27,15 +25,30 @@ WireguardUtilsMock::~WireguardUtilsMock() {
 }
 
 bool WireguardUtilsMock::addInterface(const InterfaceConfig& config) {
-  Q_UNUSED(config);
+  if (m_config.isValid()) {
+    return false;
+  }
+  m_config = config;
+  return m_config.isValid();
+}
+
+bool WireguardUtilsMock::deleteInterface() {
+  // Normally, the interface going down would drop all routes associated
+  // with it, but for the purpose of testing, only automatically delete
+  // exclusion routes. This lets us test that the daemon handles refcounting
+  // and garbage collection correctly.
+  m_routes.removeIf([](QHash<IPAddress, RouteType>::iterator i) {
+    return i.value() == RouteExclusion;
+  });
+
+  m_handshakes.clear();
+  m_config = InterfaceConfig();
   return true;
 }
 
-bool WireguardUtilsMock::deleteInterface() { return true; }
-
 bool WireguardUtilsMock::updatePeer(const InterfaceConfig& config) {
   qint64 now = QDateTime::currentMSecsSinceEpoch();
-  m_handshakes[config.m_serverPublicKey] = now + MOCK_HANDSHAKE_DELAY_MSEC;
+  m_handshakes[config.m_serverPublicKey] = now + m_handshakeDelayMsec;
   return true;
 }
 
@@ -59,14 +72,29 @@ QList<WireguardUtils::PeerStatus> WireguardUtilsMock::getPeerStatus() {
   return peerList;
 }
 
+void WireguardUtilsMock::setRoutePrefix(const IPAddress& dest, RouteType type) {
+  m_routes[dest] = type;
+}
+
 bool WireguardUtilsMock::updateRoutePrefix(const IPAddress& prefix) {
+  if (m_routes.value(prefix, RoutePeer) != RoutePeer) {
+    return false;
+  }
+  setRoutePrefix(prefix, RoutePeer);
   return true;
 }
 
 bool WireguardUtilsMock::deleteRoutePrefix(const IPAddress& prefix) {
-  return true;
+  return m_routes.remove(prefix);
 }
 
 bool WireguardUtilsMock::excludeLocalNetworks(const QList<IPAddress>& addrs) {
+  for (const IPAddress& prefix : addrs) {
+    if (m_routes.contains(prefix)) {
+      return false;
+    }
+    setRoutePrefix(prefix, RouteExclusion);
+  }
+
   return true;
 }

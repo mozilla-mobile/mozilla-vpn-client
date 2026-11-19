@@ -634,9 +634,9 @@ void Controller::activateInternal(
   {
     const auto& firstConfig = m_activationQueue.first();
     if (firstConfig.m_serverIpv4AddrIn.isNull()) {
-      m_pingCanary.start(firstConfig.m_serverIpv6AddrIn, "::/0");
+      m_pingCanary.start(firstConfig.m_serverIpv6AddrIn);
     } else {
-      m_pingCanary.start(firstConfig.m_serverIpv4AddrIn, "0.0.0.0/0");
+      m_pingCanary.start(firstConfig.m_serverIpv4AddrIn);
     }
   }
   logger.info() << "Canary Ping Started";

@@ -8,9 +8,8 @@
 
 #include "leakdetector.h"
 
-TcpPingSender::TcpPingSender(const QHostAddress& source, quint16 port,
-                             QObject* parent)
-    : PingSender(parent), m_source(source), m_port(port) {
+TcpPingSender::TcpPingSender(quint16 port, QObject* parent)
+    : PingSender(QHostAddress::AnyIPProtocol, parent), m_port(port) {
   MZ_COUNT_CTOR(TcpPingSender);
 }
 
@@ -18,9 +17,6 @@ TcpPingSender::~TcpPingSender() { MZ_COUNT_DTOR(TcpPingSender); }
 
 void TcpPingSender::sendPing(const QHostAddress& dest, quint16 sequence) {
   QTcpSocket* socket = new QTcpSocket(this);
-  if (!m_source.isNull()) {
-    socket->bind(m_source);
-  }
 
   // Consider the ping to be recieved once the TCP handshake is complete.
   connect(socket, &QAbstractSocket::connected, this,

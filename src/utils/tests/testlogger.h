@@ -6,7 +6,7 @@
 
 #include "testhelper.h"
 
-class TestLogger final : public QObject, TestHelper<TestLogger> {
+class TestLogger final : public TestHelper {
   Q_OBJECT
 
  private slots:

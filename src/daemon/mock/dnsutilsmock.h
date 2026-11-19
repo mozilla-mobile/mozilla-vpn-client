@@ -9,7 +9,7 @@
 #include <QProcess>
 #include <QString>
 
-#include "daemon/dnsutils.h"
+#include "dnsutils.h"
 
 class DnsUtilsMock final : public DnsUtils {
   Q_OBJECT
@@ -21,6 +21,8 @@ class DnsUtilsMock final : public DnsUtils {
   bool updateResolvers(const QString& ifname,
                        const QList<QHostAddress>& resolvers) override;
   bool restoreResolvers() override;
+
+  int m_willFailUpdate = 0;
 };
 
 #endif  // DNSUTILSMACOS_H

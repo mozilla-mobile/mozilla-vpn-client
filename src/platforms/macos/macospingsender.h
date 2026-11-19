@@ -14,7 +14,7 @@ class MacOSPingSender final : public PingSender {
   Q_DISABLE_COPY_MOVE(MacOSPingSender)
 
  public:
-  MacOSPingSender(const QHostAddress& source, QObject* parent = nullptr);
+  MacOSPingSender(NetworkProtocol proto, QObject* p = nullptr);
   ~MacOSPingSender();
 
   bool isValid() override { return (m_socket >= 0) || (m_socket6 >= 0); };

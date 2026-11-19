@@ -17,7 +17,7 @@ class WindowsPingSender final : public PingSender {
   Q_DISABLE_COPY_MOVE(WindowsPingSender)
 
  public:
-  WindowsPingSender(const QHostAddress& source, QObject* parent = nullptr);
+  WindowsPingSender(NetworkProtocol proto, QObject* parent = nullptr);
   ~WindowsPingSender();
 
   void sendPing(const QHostAddress& destination, quint16 sequence) override;

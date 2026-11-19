@@ -22,7 +22,7 @@ class PingHelper final : public QObject {
   PingHelper();
   ~PingHelper();
 
-  void start(const QString& serverGateway, const QString& deviceAddress);
+  void start(const QString& serverGateway);
 
   void stop();
   uint latency() const;
@@ -40,7 +40,6 @@ class PingHelper final : public QObject {
 
  private:
   QHostAddress m_gateway;
-  QHostAddress m_source;
   quint16 m_sequence = 0;
 
   class PingSendData {

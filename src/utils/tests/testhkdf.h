@@ -6,7 +6,7 @@
 
 #include "testhelper.h"
 
-class TestHKDF : public QObject, TestHelper<TestHKDF> {
+class TestHKDF : public TestHelper {
   Q_OBJECT
 
  private slots:

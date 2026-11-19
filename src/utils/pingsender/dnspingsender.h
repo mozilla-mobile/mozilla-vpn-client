@@ -14,7 +14,8 @@ class DnsPingSender final : public PingSender {
   Q_DISABLE_COPY_MOVE(DnsPingSender)
 
  public:
-  DnsPingSender(const QHostAddress& source, QObject* parent = nullptr);
+  DnsPingSender(NetworkProtocol proto = QAbstractSocket::AnyIPProtocol,
+                QObject* parent = nullptr);
   ~DnsPingSender();
 
   bool isValid() override { return m_socket.isValid(); };

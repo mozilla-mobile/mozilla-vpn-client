@@ -16,7 +16,7 @@ class LinuxPingSender final : public PingSender {
   Q_DISABLE_COPY_MOVE(LinuxPingSender)
 
  public:
-  LinuxPingSender(const QHostAddress& source, QObject* parent = nullptr);
+  LinuxPingSender(NetworkProtocol proto, QObject* parent = nullptr);
   ~LinuxPingSender();
 
   bool isValid() override { return (m_socket >= 0); };
