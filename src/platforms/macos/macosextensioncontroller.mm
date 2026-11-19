@@ -13,6 +13,7 @@
 #include <QtEndian>
 
 #include "logger.h"
+#include "macoscontroller.h"
 #include "macosutils.h"
 #include "wgconfig.h"
 #include "wgstatus.h"
@@ -71,6 +72,9 @@ void MacOSExtensionController::initialize(const Device* device, const Keys* keys
   } else {
     logger.debug() << "socks proxy agent registration successful";
   }
+
+  // Remove the old XPC daemon upon upgrade to network extension.
+  MacOSController::removeService();
 }
 
 NSString* MacOSExtensionController::extIdentifier() {

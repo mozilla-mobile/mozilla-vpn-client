@@ -331,7 +331,7 @@ inline const OverridableFeature webExtension = {
 const OverridableFeature networkExtension = {
     .id = "networkExtension",
     .name = "Network Extension",
-    .evaluator = +[] { return false; },
+    .evaluator = +[] { return true; },
     .canFlipOn = +[] { return Platform::macos; },
     .canFlipOff = +[] { return Platform::macos; },
 };

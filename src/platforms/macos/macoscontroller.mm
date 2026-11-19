@@ -53,11 +53,13 @@ MacOSController::~MacOSController() {
   }
 }
 
-NSString* MacOSController::plist() const {
+// static
+NSString* MacOSController::plist() {
   return MacOSUtils::appId(".xpc-daemon.plist").toNSString();
 }
 
-NSString* MacOSController::machServiceName() const {
+// static
+NSString* MacOSController::machServiceName() {
   return MacOSUtils::appId(".xpc-daemon").toNSString();
 }
 
@@ -159,6 +161,18 @@ void MacOSController::registerService(void) {
       m_registerTimer.start(SERVICE_INIT_POLL_INTERVAL_MSEC);
       break;
   }
+}
+
+void MacOSController::removeService() {
+  SMAppService* service = [SMAppService daemonServiceWithPlistName:plist()];
+
+  [service unregisterWithCompletionHandler:^(NSError* error){
+    if (error != nil) {
+      logger.warning() << "Mozilla VPN daemon removal failed:" << error;
+    } else {
+      logger.warning() << "Mozilla VPN daemon removed";
+    }
+  }];
 }
 
 void MacOSController::connectService(void) {
