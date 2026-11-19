@@ -181,14 +181,6 @@ if(NOT QT_FEATURE_zstd)
     set_property(SOURCE  ${CMAKE_CURRENT_SOURCE_DIR}/resources/public_keys/public_keys.qrc PROPERTY AUTORCC_OPTIONS "--no-zstd")
 endif()
 
-if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND
-   NOT ${CMAKE_SYSTEM_NAME} STREQUAL "iOS")
-    target_sources(mozillavpn-sources INTERFACE
-        ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator/qprocessobfuscator.cpp
-        ${CMAKE_CURRENT_SOURCE_DIR}/daemon/obfuscator/qprocessobfuscator.h
-       )
-endif()
-
 # Sources for desktop platforms.
 if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
    ${CMAKE_SYSTEM_NAME} STREQUAL "Windows" OR

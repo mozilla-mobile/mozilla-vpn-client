@@ -19,9 +19,15 @@ add_library(mzdaemon STATIC
     mock/wireguardutilsmock.h
     obfuscator/dummyobfuscator.cpp
     obfuscator/dummyobfuscator.h
-    obfuscator/qprocessobfuscator.cpp
-    obfuscator/qprocessobfuscator.h
 )
+
+if(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten" AND 
+   NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
+    target_sources(mzdaemon INTERFACE
+        obfuscator/qprocessobfuscator.cpp
+        obfuscator/qprocessobfuscator.h
+    )
+endif()
 
 target_include_directories(mzdaemon PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(mzdaemon PUBLIC Qt6::Core Qt6::Network)
