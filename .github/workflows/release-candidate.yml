@@ -11,6 +11,7 @@ jobs:
     name: Trigger Flathub Beta Checker 
     environment:
       name: flathub
+    runs-on: ubuntu-24.04
     steps:
       - name: Triger flathub updates
         id: curl
