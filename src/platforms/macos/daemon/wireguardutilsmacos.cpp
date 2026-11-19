@@ -5,10 +5,6 @@
 #include "wireguardutilsmacos.h"
 
 #include <CoreFoundation/CoreFoundation.h>
-#include <Security/SecCertificate.h>
-#include <Security/SecRequirement.h>
-#include <Security/SecStaticCode.h>
-#include <Security/SecTask.h>
 #include <net/if_utun.h>
 #include <net/route.h>
 #include <netinet/ip6.h>
@@ -24,9 +20,7 @@
 #include <QFile>
 #include <QLocalSocket>
 #include <QScopeGuard>
-#include <QSysInfo>
 #include <QTimer>
-#include <QVersionNumber>
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -107,18 +101,14 @@ int WireguardUtilsMacos::createTunnelFd() {
   setsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_MAX_PENDING_PACKETS,
              &utun_max_backlog, sizeof(utun_max_backlog));
 
-  return tunfd;
-
+  // Set a base MTU, it will get updated later.
   struct ifreq ifr;
-  socklen_t ifnamesize = sizeof(ifr.ifr_name);
-  err = getsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifr.ifr_name,
-                   &ifnamesize);
+  socklen_t sz = sizeof(ifr.ifr_name);
+  err = getsockopt(tunfd, SYSPROTO_CONTROL, UTUN_OPT_IFNAME, ifr.ifr_name, &sz);
   if (err < 0) {
     close(tunfd);
     return -1;
   }
-
-  // Set a base MTU, it will get updated later.
   ifr.ifr_mtu = IPV6_MMTU;
   ioctl(tunfd, SIOCSIFMTU, &ifr);
   return tunfd;
