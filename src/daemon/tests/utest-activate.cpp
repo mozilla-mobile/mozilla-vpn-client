@@ -63,7 +63,6 @@ void TestActivate::exclusionFailure() {
   QJsonObject status = m_daemon->getStatus();
   QCOMPARE(status.value("connected"), QJsonValue(false));
   QVERIFY(!status.contains("date"));
-
 }
 
 void TestActivate::routeFailure() {

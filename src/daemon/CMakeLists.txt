@@ -19,11 +19,12 @@ add_library(mzdaemon STATIC
     mock/wireguardutilsmock.h
     obfuscator/dummyobfuscator.cpp
     obfuscator/dummyobfuscator.h
+    obfuscator/obfuscator.h
 )
 
-if(NOT CMAKE_SYSTEM_NAME STREQUAL "Emscripten" AND 
-   NOT CMAKE_SYSTEM_NAME STREQUAL "iOS")
-    target_sources(mzdaemon INTERFACE
+# QProcess is not supported on these platforms.
+if(NOT ${CMAKE_SYSTEM_NAME} STREQUAL "Emscripten" AND NOT IOS)
+    target_sources(mzdaemon PRIVATE
         obfuscator/qprocessobfuscator.cpp
         obfuscator/qprocessobfuscator.h
     )
