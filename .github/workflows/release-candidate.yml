@@ -9,7 +9,6 @@ permissions: {}
 jobs:
   flathub-beta:
     name: Trigger Flathub Beta Checker 
-    runs-on: ubuntu-latest
     environment:
       name: flathub
     runs-on: ubuntu-24.04
