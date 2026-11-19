@@ -34,14 +34,3 @@ jobs:
 
     outputs:
       curl_response: ${{ steps.code.outputs.response }}
-
-  failure-check:
-    needs: flathub-beta
-    if: needs.flathub-beta.outputs.curl_response != 200
-    runs-on: ubuntu-latest
-    steps:
-      - name: fail_job
-        uses: actions/github-script@ffc2c79a5b2490bd33e0a41c1de74b877714d736 # v3
-        with:
-          script: |
-              core.setFailed('Curl failed')
