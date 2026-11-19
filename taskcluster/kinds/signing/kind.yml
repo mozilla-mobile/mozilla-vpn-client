@@ -20,11 +20,11 @@ mac-signing:
         - deep: false
           runtime: true
           force: true
-          # These files are signed without entitlements
+          # Sign everything in Library/LaunchServices with no entitlements.
           globs:
             - "/Contents/Library/LaunchServices/org.mozilla.macos.FirefoxVPN.daemon"
             - "/Contents/Library/LaunchServices/org.mozilla.macos.FirefoxVPN.socksproxy"
-            - "/Contents/Resources/utils/wireguard-go"
+            - "/Contents/Library/LaunchServices/org.mozilla.macos.FirefoxVPN.wireguard"
 
         - deep: false
           runtime: true
