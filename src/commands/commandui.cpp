@@ -362,7 +362,8 @@ int CommandUI::run(QStringList& tokens) {
     // If we are created with an url intent, auto pass that.
     QUrl maybeURL = AndroidVPNActivity::getOpenerURL();
     if (!maybeURL.isValid()) {
-      logger.error() << "Error in deep-link:" << maybeURL.toString();
+      logger.error() << "Error in deep-link:"
+                     << logger.sensitive(maybeURL.toString());
     } else {
       vpn->handleDeepLink(maybeURL);
     }

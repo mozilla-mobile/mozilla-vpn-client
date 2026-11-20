@@ -4,6 +4,7 @@
 
 #include "taskauthenticate.h"
 
+#include <QDateTime>
 #include <QJSValue>
 #include <QJsonDocument>
 #include <QJsonObject>
@@ -16,7 +17,11 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "networkrequest.h"
+#include "settings/settingsmanager.h"
 #include "settingsholder.h"
+
+// Expiration timeout for persisted PKCE code verifier
+constexpr int PENDING_AUTH_MAX_AGE_SECS = 15 * 60;
 
 namespace {
 Logger logger("TaskAuthenticate");
@@ -35,10 +40,6 @@ void TaskAuthenticate::run() {
 
   Q_ASSERT(!m_authenticationListener);
 
-  QByteArray challenge;
-  AuthenticationListener::generatePkceCodes(m_pkceCodeVerifier, challenge);
-  Q_ASSERT(!m_pkceCodeVerifier.isEmpty() && !challenge.isEmpty());
-
   m_authenticationListener =
       AuthenticationListener::create(this, m_authenticationType);
 
@@ -50,18 +51,41 @@ void TaskAuthenticate::run() {
 
   connect(m_authenticationListener, &AuthenticationListener::failed, this,
           [this](ErrorHandler::ErrorType error) {
+            clearPendingCodeVerifier();
             REPORTERROR(error, name());
             m_authenticationListener->aboutToFinish();
           });
 
   connect(m_authenticationListener, &AuthenticationListener::abortedByUser,
           this, [this]() {
+            clearPendingCodeVerifier();
             emit authenticationAborted();
             m_authenticationListener->aboutToFinish();
           });
 
   connect(m_authenticationListener, &AuthenticationListener::started, this,
           [this]() { emit authenticationStarted(); });
+
+  if (!m_resumeCode.isEmpty()) {
+    logger.debug() << "Resuming a previously started authentication";
+    Q_ASSERT(!m_pkceCodeVerifier.isEmpty());
+    authenticatePkceSuccess(m_resumeCode);
+    return;
+  }
+
+  QByteArray challenge;
+  AuthenticationListener::generatePkceCodes(m_pkceCodeVerifier, challenge);
+  Q_ASSERT(!m_pkceCodeVerifier.isEmpty() && !challenge.isEmpty());
+
+#ifdef MZ_ANDROID
+  if (m_authenticationType == AuthenticationListener::AuthenticationInBrowser) {
+    SettingsHolder* settingsHolder = SettingsHolder::instance();
+    settingsHolder->setPendingAuthCodeVerifier(
+        QString::fromLatin1(m_pkceCodeVerifier));
+    settingsHolder->setPendingAuthTime(QDateTime::currentDateTimeUtc());
+    SettingsManager::instance()->sync();
+  }
+#endif
 
   m_authenticationListener->start(this, challenge, CODE_CHALLENGE_METHOD,
                                   SettingsHolder::instance()->userEmail());
@@ -70,6 +94,8 @@ void TaskAuthenticate::run() {
 void TaskAuthenticate::authenticatePkceSuccess(const QString& code) {
   logger.debug() << "Authentication completed with code:"
                  << logger.sensitive(code);
+
+  clearPendingCodeVerifier();
 
   NetworkRequest* request = new NetworkRequest(this, 200);
   QJsonObject payload;
@@ -145,4 +171,39 @@ void TaskAuthenticate::handleDeepLink(const QUrl& url) {
              this, nullptr);
 
   authenticatePkceSuccess(query.queryItemValue("code"));
+}
+
+void TaskAuthenticate::resumeWithCode(const QString& code,
+                                      const QByteArray& codeVerifier) {
+  Q_ASSERT(!m_authenticationListener);
+  Q_ASSERT(!code.isEmpty() && !codeVerifier.isEmpty());
+  m_resumeCode = code;
+  m_pkceCodeVerifier = codeVerifier;
+}
+
+// static
+QByteArray TaskAuthenticate::consumePendingCodeVerifier() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  QByteArray verifier = settingsHolder->pendingAuthCodeVerifier().toLatin1();
+  QDateTime time = settingsHolder->pendingAuthTime();
+  clearPendingCodeVerifier();
+
+  if (verifier.isEmpty()) {
+    return QByteArray();
+  }
+
+  qint64 age = time.secsTo(QDateTime::currentDateTimeUtc());
+  if (!time.isValid() || age < 0 || age > PENDING_AUTH_MAX_AGE_SECS) {
+    logger.warning() << "Ignoring expired pending authentication";
+    return QByteArray();
+  }
+
+  return verifier;
+}
+
+// static
+void TaskAuthenticate::clearPendingCodeVerifier() {
+  SettingsHolder* settingsHolder = SettingsHolder::instance();
+  settingsHolder->removePendingAuthCodeVerifier();
+  settingsHolder->removePendingAuthTime();
 }

@@ -551,13 +551,17 @@ void MozillaVPN::authenticateWithType(
   // is a bug elsewhere.
   Q_ASSERT(state() == StateInitialize);
 
+  scheduleAuthenticationTask(new TaskAuthenticate(authenticationType));
+}
+
+void MozillaVPN::scheduleAuthenticationTask(
+    TaskAuthenticate* taskAuthenticate) {
   setState(StateAuthenticating);
 
   ErrorHandler::instance()->hideAlert();
 
   TaskScheduler::scheduleTask(new TaskHeartbeat());
 
-  TaskAuthenticate* taskAuthenticate = new TaskAuthenticate(authenticationType);
   connect(taskAuthenticate, &TaskAuthenticate::authenticationAborted, this,
           &MozillaVPN::abortAuthentication);
   connect(taskAuthenticate, &TaskAuthenticate::authenticationCompleted, this,
@@ -2416,6 +2420,39 @@ bool MozillaVPN::eventFilter(QObject* obj, QEvent* event) {
 }
 #endif
 
+#ifdef MZ_ANDROID
+void MozillaVPN::maybeResumeAuthentication(const QUrl& url) {
+  // On Android main activity may have been destroyed while the browser
+  // was in the foreground. If so, complete authentication flow using persisted
+  // PKCE code verifier.
+  if (url.path() != "/success") {
+    return;
+  }
+
+  QString code = QUrlQuery(url.query()).queryItemValue("code");
+  if (code.isEmpty()) {
+    return;
+  }
+
+  QByteArray codeVerifier = TaskAuthenticate::consumePendingCodeVerifier();
+  if (codeVerifier.isEmpty()) {
+    logger.warning() << "Login deep link received without a pending flow";
+    return;
+  }
+
+  if (state() != StateInitialize) {
+    logger.warning() << "Ignoring login deep link in state:" << state();
+    return;
+  }
+
+  logger.info() << "Resuming interrupted authentication";
+  TaskAuthenticate* taskAuthenticate =
+      new TaskAuthenticate(AuthenticationListener::AuthenticationInBrowser);
+  taskAuthenticate->resumeWithCode(code, codeVerifier);
+  scheduleAuthenticationTask(taskAuthenticate);
+}
+#endif
+
 void MozillaVPN::handleDeepLink(const QUrl& url) {
   // We only accept the mozilla-vpn scheme.
   if (url.scheme() != Constants::DEEP_LINK_SCHEME) {
@@ -2430,6 +2467,10 @@ void MozillaVPN::handleDeepLink(const QUrl& url) {
     auto task = qobject_cast<TaskAuthenticate*>(TaskScheduler::runningTask());
     if (task) {
       task->handleDeepLink(url);
+    } else {
+#ifdef MZ_ANDROID
+      maybeResumeAuthentication(url);
+#endif
     }
   } else {
     logger.info() << "Unknown deep link target:" << url.authority();

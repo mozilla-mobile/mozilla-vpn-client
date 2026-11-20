@@ -202,7 +202,7 @@ QUrl AndroidVPNActivity::getOpenerURL() {
   if (maybeURL.isEmpty()) {
     return QUrl();
   }
-  logger.debug() << "Got with deep-link:" << maybeURL;
+  logger.debug() << "Got with deep-link:" << logger.sensitive(maybeURL);
   QUrl url(maybeURL);
   if (!url.isValid()) {
     return QUrl();
