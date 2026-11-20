@@ -46,6 +46,11 @@ jobs:
           curl -sSL -o flathub/org.mozilla.vpn.releases.xml \
             https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml
 
+      - name: Insert release candidate
+        # For testing - remove before merge
+        #if: github.ref_type == 'tag'
+        run: python upstream/linux/flatpak/flatpak-append-release.py --tag v2.99.0-rc2 flathub/org.mozilla.vpn.yml
+
       - name: Update flatpak manifest
         run: python upstream/linux/flatpak/flatpak-update-ref.py upstream/linux/flatpak/org.mozilla.vpn.yml | tee flathub/org.mozilla.vpn.yml
 

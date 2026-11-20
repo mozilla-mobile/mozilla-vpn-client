@@ -55,8 +55,8 @@ if __name__ == "__main__":
         else:
             args.commit = gitcmd("rev-parse", args.branch)
 
-    # Find a source starting with '- type: dir' and swap it out with a git ref.
-    pattern = re.compile(r'\s+- type:\s+dir')
+    # Find a source starting with '- type: dir|git' and update the git ref
+    pattern = re.compile(r'\s+- type:\s+(dir|git)')
     with open(args.manifest, 'r') as fp:
         while True:
             line = fp.readline()
