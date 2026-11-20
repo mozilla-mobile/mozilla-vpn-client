@@ -40,6 +40,7 @@ object PackageManagerHelper {
             val entry = JSONObject();
             entry.put("name", it.applicationInfo?.loadLabel(pm).toString());
             entry.put("isSystemApp", isSystemPackage(it, pm) && !isAllowListed(it.packageName));
+            it.applicationInfo?.uid?.let { uid -> entry.put("uid", uid) }
             output.put(it.packageName, entry);
         }
         return output.toString()

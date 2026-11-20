@@ -153,6 +153,9 @@ splittunnel:
       - Success! You added “%1” to this list.
     comment:
       - Displayed in notification after the user added a missing app to the split-tunnel List; %1 is the name of the added application
+  appGroupAlsoExcludes:
+    value: Also excludes %1
+    comment: Shown below an app's name in the Excluded apps list when the system does not allow that app to be excluded on its own. Toggling the app also toggles the apps in %1. %1 is a single app name or a comma-separated list of app names.
   infoLinkText: Learn more
   infoCardDescription2:
     value: VPN must be off to edit Excluded apps

@@ -205,6 +205,7 @@ ColumnLayout {
                     checkBoxActiveFocusOnTab: false
                     Layout.alignment: Qt.AlignVCenter
                     Accessible.name: appName
+                    Accessible.description: appGroupNames !== "" ? MZI18n.SplittunnelAppGroupAlsoExcludes.arg(appGroupNames) : ""
                     focus: true
 
                     // Change list selection on focus change
@@ -266,13 +267,25 @@ ColumnLayout {
                     }
                 }
 
-                MZInterLabel {
-                    id: label
+                ColumnLayout {
                     Layout.alignment: Qt.AlignLeft | Qt.AlignVCenter
                     Layout.fillWidth: true
-                    text: appName
-                    color: MZTheme.colors.fontColorDark
-                    horizontalAlignment: Text.AlignLeft
+                    spacing: 0
+
+                    MZInterLabel {
+                        id: label
+                        Layout.fillWidth: true
+                        text: appName
+                        color: MZTheme.colors.fontColorDark
+                        horizontalAlignment: Text.AlignLeft
+                    }
+
+                    MZTextBlock {
+                        objectName: "appGroupNames"
+                        Layout.fillWidth: true
+                        visible: appGroupNames !== ""
+                        text: MZI18n.SplittunnelAppGroupAlsoExcludes.arg(appGroupNames)
+                    }
                 }
             }
         }
