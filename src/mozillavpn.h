@@ -31,6 +31,7 @@ class ServerLatency;
 class StatusIcon;
 class SubscriptionData;
 class SupportCategoryModel;
+class TaskAuthenticate;
 class User;
 class QEvent;
 class QUrl;
@@ -260,6 +261,10 @@ class MozillaVPN final : public QObject {
  private:
   void hardReset();
   void maybeStateMain();
+  void scheduleAuthenticationTask(TaskAuthenticate* taskAuthenticate);
+#ifdef MZ_ANDROID
+  void maybeResumeAuthentication(const QUrl& url);
+#endif
 
   void startSchedulingPeriodicOperations();
 
