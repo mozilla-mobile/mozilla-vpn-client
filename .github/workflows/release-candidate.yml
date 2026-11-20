@@ -3,18 +3,17 @@ on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+"
-  # For testing - remove before merge
-  pull_request:
+    # For testing - remove before merge
     branches:
-      - main
+      - "flathub-rc-workflow"
 
 permissions: {}
 
 jobs:
   flathub-beta:
     name: Submit Flathub Beta Release
-    #environment:
-    #  name: flathub
+    environment:
+      name: flathub
     runs-on: ubuntu-slim
     steps:
       - name: Checkout flathub
@@ -59,13 +58,10 @@ jobs:
         uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
         id: cpr
         with:
-          author: "${GITHUB_ACTOR} <${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com>"
           committer: "${GITHUB_ACTOR} <${GITHUB_ACTOR_ID}+${GITHUB_ACTOR}@users.noreply.github.com>"
           commit-message: "[beta] update mozillavpn to ${GITHUB_REF_NAME}"
           path: flathub
           branch: "beta-${GITHUB_REF_NAME}"
           delete-branch: true
           title: "[beta] update mozillavpn to ${GITHUB_REF_NAME}"
-          #token: ${{ secrets.FLATHUB_TOKEN }}
-          token: "${{ github.token }}"
-
+          token: ${{ secrets.FLATHUB_TOKEN }}
