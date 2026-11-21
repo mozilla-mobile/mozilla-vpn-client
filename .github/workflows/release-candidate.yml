@@ -3,34 +3,64 @@ on:
   push:
     tags:
       - "v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+"
+    # For testing - remove before merge
+    branches:
+      - "flathub-rc-workflow"
 
 permissions: {}
 
 jobs:
   flathub-beta:
-    name: Trigger Flathub Beta Checker 
+    name: Submit Flathub Beta Release
     environment:
       name: flathub
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-slim
     steps:
-      - name: Triger flathub updates
-        id: curl
-        env:
-          FLATHUB_TOKEN: ${{ secrets.FLATHUB_TOKEN }}
-          FLATHUB_API_URL: https://api.github.com/repos/flathub/org.mozilla.vpn/actions/workflows/update-check.yml/dispatches
+      - name: Checkout flathub
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: flathub
+          # For testing - remove before merge
+          #repository: flathub/org.mozilla.vpn
+          repository: oskirby/org.mozilla.vpn
+          ref: beta
+
+      - name: Checkout tools
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: tools
+          repository: flatpak/flatpak-builder-tools
+          ref: master
+
+      - name: Checkout release
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: upstream
+          sparse-checkout: |
+            linux/flatpak/
+            Cargo.lock
+            requirements.in
+
+      - name: Install python dependencies
+        run: pip install tomlkit aiohttp requests pyyaml
+
+      - name: Update flatpak manifest
+        working-directory: flathub
         run: |
-          response=$( \
-          curl -sSL -X POST -d '{"ref":"beta"}' \
-             -H "Accept: application/vnd.github+json" \
-             -H "Authorization: Bearer ${FLATHUB_TOKEN}" \
-             -H "X-GitHub-Api-Version: 2022-11-28" \
-             ${FLATHUB_API_URL}); \
-          echo "response=$response" >> $GITHUB_OUTPUT
+          python ../upstream/linux/flatpak/flatpak-release-manifest.py
+          cat org.mozilla.vpn.yml
 
-      - name: Response
-        run: echo ${CURL_RESPONSE}
-        env:
-          CURL_RESPONSE: ${{ steps.curl.outputs.response }}
+      - name: Update cargo dependencies
+        run: python tools/cargo/flatpak-cargo-generator.py -o flathub/flatpak-vpn-crates.json upstream/Cargo.lock
 
-    outputs:
-      curl_response: ${{ steps.code.outputs.response }}
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        id: cpr
+        with:
+          committer: "${{ github.actor }} <${{ github.actor_Id }}+${{ github.actor }}@users.noreply.github.com>"
+          commit-message: "[beta] update mozillavpn to ${{ github.ref_name }}"
+          path: flathub
+          branch: "beta-${{ github.ref_name }}"
+          delete-branch: true
+          title: "[beta] update mozillavpn to ${{ github.ref_name }}"
+          token: ${{ secrets.FLATHUB_TOKEN }}
