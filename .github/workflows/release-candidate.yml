@@ -41,11 +41,14 @@ jobs:
             Cargo.lock
             requirements.in
 
+      - name: Install python dependencies
+        run: pip install tomlkit aiohttp requests pyyaml
+
       - name: Update flatpak manifest
         working-directory: flathub
         run: |
-          pip install tomlkit aiohttp requests pyyaml
           python ../upstream/linux/flatpak/flatpak-release-manifest.py
+          cat org.mozilla.vpn.yml
 
       - name: Update cargo dependencies
         run: python tools/cargo/flatpak-cargo-generator.py -o flathub/flatpak-vpn-crates.json upstream/Cargo.lock
