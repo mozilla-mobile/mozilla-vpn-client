@@ -123,17 +123,29 @@ if __name__ == "__main__":
         version = args.tag[1:] if args.tag[0] == 'v' else args.tag
         version = version.replace('-', '~')
         details = {
-            "version": "1.2.3",
+            "version": version,
             "date": date.today().isoformat(),
             "type": "development"
         }
         release = etree.Element('release', attrib=details)
-        release.text = f'{indent}  '
         release.tail = indent
+        release.text = f'{indent}  '
+
         url = etree.SubElement(release, 'url', attrib={"type": "details"})
         url.text = f'{args.url}/releases/tag/{args.tag}'
         url.tail = indent
-        root.insert(0, release)
+    else:
+        filename = os.path.join(gitcmd('rev-parse', '--show-toplevel'), 'version.txt')
+        with open(filename, 'r') as fp:
+            version = f'{fp.read().strip()}~git{args.commit[0:8]}'
+        details = {
+            "version": version,
+            "date": date.today().isoformat(),
+            "type": "snapshot"
+        }
+        release = etree.Element('release', attrib=details)
+        release.tail = indent
 
+    root.insert(0, release)
     tree = etree.ElementTree(root)
     tree.write('org.mozilla.vpn.releases.xml')

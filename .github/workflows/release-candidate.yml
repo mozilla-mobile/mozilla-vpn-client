@@ -45,7 +45,7 @@ jobs:
         working-directory: flathub
         run: |
           pip install tomlkit aiohttp requests pyyaml
-          python ../upstream/linux/flatpak/flatpak-release-manifest.py -t v2.41.0-rc2 -c ${GITHUB_SHA}
+          python ../upstream/linux/flatpak/flatpak-release-manifest.py
 
       - name: Update cargo dependencies
         run: python tools/cargo/flatpak-cargo-generator.py -o flathub/flatpak-vpn-crates.json upstream/Cargo.lock
