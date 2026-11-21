@@ -98,9 +98,9 @@ if __name__ == "__main__":
 
         # Generate a source to replace the releases manifest.
         print(f'{indent}- type: file', file=fp)
-        print(f'{indent}  path: org.mozilla.vpn.release.xml', file=fp)
+        print(f'{indent}  path: org.mozilla.vpn.releases.xml', file=fp)
         print(f'{indent}  dest: linux/extra', file=fp)
-        print(f'{indent}  dest-filename: org.mozilla.vpn.release.xml.in', file=fp)
+        print(f'{indent}  dest-filename: org.mozilla.vpn.releases.xml.in', file=fp)
         print('', file=fp)
 
         # Discard until we find an empty line, then dump the remainder
