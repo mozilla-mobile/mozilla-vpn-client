@@ -45,10 +45,9 @@ jobs:
         run: pip install tomlkit aiohttp requests pyyaml
 
       - name: Update flatpak manifest
-        working-directory: flathub
         run: |
-          python ../upstream/linux/flatpak/flatpak-release-manifest.py
-          cat org.mozilla.vpn.yml
+          python upstream/linux/flatpak/flatpak-release-manifest.py -o flathub
+          cat flathub/org.mozilla.vpn.yml
 
       - name: Update cargo dependencies
         run: python tools/cargo/flatpak-cargo-generator.py -o flathub/flatpak-vpn-crates.json upstream/Cargo.lock

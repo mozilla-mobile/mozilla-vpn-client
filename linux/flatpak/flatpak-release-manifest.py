@@ -36,7 +36,7 @@ if __name__ == "__main__":
     defaultServer = os.getenv('GITHUB_SERVER_URL', 'https://github.com')
     defaultRepository = os.getenv('GITHUB_REPOSITORY', 'mozilla-mobile/mozilla-vpn-client')
 
-    ## Parse arguments for the control file and desired dependency section.
+    ## Parse arguments for the the release details
     parser = argparse.ArgumentParser(description='Update a flatpak manifest with a git ref')
     parser.add_argument('-t', '--tag', metavar='TAG', type=str, action='store',
                         help='git tag to use sof rthe source ref')
@@ -47,6 +47,9 @@ if __name__ == "__main__":
     parser.add_argument('-m', '--manifest', metavar='MANIFEST', type=str, action='store',
                         default=os.path.join(srcdir(), 'org.mozilla.vpn.yml'),
                         help='Flatpak manifest YAML to parse')
+    parser.add_argument('-o', '--outdir', metavar='DEST', type=str, action='store',
+                        default=os.getcwd(),
+                        help='Output directory for flatpak release manifest')
     parser.add_argument('-u', '--url', metavar='URL', type=str, action='store',
                         default=f'{defaultServer}/{defaultRepository}',
                         help='URL of the git repository')
@@ -77,7 +80,7 @@ if __name__ == "__main__":
         module = yaml.load(data, Loader=SafeLineLoader)["modules"][-1]
 
     # Generate an updated manifest YAML
-    with open('org.mozilla.vpn.yml', 'w') as fp:
+    with open(os.path.join(args.outdir, 'org.mozilla.vpn.yml'), 'w') as fp:
         lines = data.splitlines()
         source = module["sources"][0]
 
@@ -148,4 +151,4 @@ if __name__ == "__main__":
 
     root.insert(0, release)
     tree = etree.ElementTree(root)
-    tree.write('org.mozilla.vpn.releases.xml')
+    tree.write(os.path.join(args.outdir, 'org.mozilla.vpn.releases.xml'))
