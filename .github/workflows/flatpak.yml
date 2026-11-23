@@ -71,7 +71,6 @@ jobs:
     container:
       image: ghcr.io/flathub-infra/flatpak-github-actions:kde-${{ needs.manifest.outputs.runtime }}
       options: --privileged
-
     steps:
       - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
@@ -80,8 +79,7 @@ jobs:
 
       - name: Run manifest linters
         continue-on-error: true
-        shell: bash
-        run: flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest manifest/org.mozilla.vpn.yml
+        run: flatpak-builder-lint manifest manifest/org.mozilla.vpn.yml
 
       - name: Build flatpak
         uses: flathub-infra/flatpak-github-actions/flatpak-builder@master

@@ -4,6 +4,7 @@
 # file, You can obtain one at http://mozilla.org/MPL/2.0/.
 import argparse
 import os
+import json
 import requests
 import subprocess
 import sys
@@ -55,12 +56,18 @@ if __name__ == "__main__":
                         help='URL of the git repository')
     args = parser.parse_args()
 
-    # Autodetect the branch/tag to use from the github environment.
+    # Autodetect the branch or tag to use from the github environment.
     if args.tag is None and args.branch is None:
         reftype = os.getenv('GITHUB_REF_TYPE')
+        event = os.getenv('GITHUB_EVENT_NAME', '')
         if reftype == "tag":
             args.tag = os.getenv("GITHUB_REF_NAME")
             args.commit = os.getenv("GITHUB_SHA")
+        elif event.startswith("pull_request"):
+            args.branch = os.getenv("GITHUB_HEAD_REF")
+            with open(os.getenv("GITHUB_EVENT_PATH"), 'r') as fp:
+                webhook = json.load(fp)
+                args.commit = webhook["pull_request"]["head"]["sha"]
         elif reftype == "branch":
             args.branch = os.getenv("GITHUB_REF_NAME")
             args.commit = os.getenv("GITHUB_SHA")
