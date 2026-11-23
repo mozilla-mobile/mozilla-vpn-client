@@ -128,7 +128,7 @@ if __name__ == "__main__":
     r = requests.get('https://mozilla.github.io/mozillavpn-product-details/org.mozilla.vpn.releases.xml')
     r.raise_for_status()
     root = etree.fromstring(r.text)
-    indent = root.text if root.text.isspace() else 'foo'
+    indent = root.text if root.text.isspace() else '\n  '
 
     # Append a development release to the XML data.
     if args.tag:
@@ -149,12 +149,11 @@ if __name__ == "__main__":
     else:
         filename = os.path.join(gitcmd('rev-parse', '--show-toplevel'), 'version.txt')
         with open(filename, 'r') as fp:
-            version = f'{fp.read().strip()}~git{args.commit[0:8]}'
-        details = {
-            "version": version,
-            "date": date.today().isoformat(),
-            "type": "snapshot"
-        }
+            details = {
+                "version": f'{fp.read().strip()}~git{args.commit[0:8]}',
+                "date": date.today().isoformat(),
+                "type": "snapshot"
+            }
         release = etree.Element('release', attrib=details)
         release.tail = indent
 
