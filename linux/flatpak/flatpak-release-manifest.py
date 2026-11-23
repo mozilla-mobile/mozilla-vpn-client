@@ -79,6 +79,8 @@ if __name__ == "__main__":
         data = fp.read()
         module = yaml.load(data, Loader=SafeLineLoader)["modules"][-1]
 
+    os.makedirs(args.outdir, exist_ok=True)
+
     # Generate an updated manifest YAML
     with open(os.path.join(args.outdir, 'org.mozilla.vpn.yml'), 'w') as fp:
         lines = data.splitlines()

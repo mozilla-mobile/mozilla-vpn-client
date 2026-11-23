@@ -1,9 +1,13 @@
 name: Flatpak Packages
 on:
   push:
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+-rc[0-9]+"
     branches:
       - main
       - "releases/**"
+      # For testing - remove before merge
+      - "flathub-rc-workflow"
   pull_request:
     branches:
       - main
@@ -16,33 +20,114 @@ concurrency:
 permissions: {}
 
 jobs:
+  manifest:
+    name: Prepare flatpak manifest
+    runs-on: ubuntu-slim
+    outputs:
+      runtime: ${{ steps.update.outputs.runtime }}
+    steps:
+      - name: Checkout tools
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: tools
+          repository: flatpak/flatpak-builder-tools
+          ref: master
+
+      - name: Checkout release
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: upstream
+          sparse-checkout: |
+            linux/flatpak/
+            Cargo.lock
+            requirements.in
+            version.txt
+
+      - name: Install python dependencies
+        run: pip install tomlkit aiohttp requests pyyaml
+
+      - name: Update flatpak manifest
+        id: update
+        run: |
+          python upstream/linux/flatpak/flatpak-release-manifest.py -o manifest
+          cat manifest/org.mozilla.vpn.yml
+
+          echo -n "runtime=" >> $GITHUB_OUTPUT
+          yq '.runtime-version' manifest/org.mozilla.vpn.yml >> $GITHUB_OUTPUT
+
+      - name: Update cargo dependencies
+        run: python tools/cargo/flatpak-cargo-generator.py -o manifest/flatpak-vpn-crates.json upstream/Cargo.lock
+
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: Flatpak Manifest
+          path: manifest/
+
   build:
     name: "Build"
     runs-on: ubuntu-latest
+    needs:
+      - manifest
     container:
-      image: ghcr.io/flathub-infra/flatpak-github-actions:kde-6.10
+      image: ghcr.io/flathub-infra/flatpak-github-actions:kde-${{ needs.manifest.outputs.runtime }}
       options: --privileged
 
     steps:
-      - name: Checkout sources
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
         with:
-          submodules: "recursive"
-          persist-credentials: false
+          name: Flatpak Manifest
+          path: manifest/
 
       - name: Run manifest linters
         continue-on-error: true
         shell: bash
-        run: flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest linux/flatpak/org.mozilla.vpn.yml
+        run: flatpak run --command=flatpak-builder-lint org.flatpak.Builder manifest manifest/org.mozilla.vpn.yml
 
       - name: Build flatpak
         uses: flathub-infra/flatpak-github-actions/flatpak-builder@master
         with:
           bundle: mozillavpn.flatpak
-          manifest-path: linux/flatpak/org.mozilla.vpn.yml
+          manifest-path: manifest/org.mozilla.vpn.yml
           cache: ${{ github.event_name == 'push' }}
           cache-key: flatpak-builder-${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || github.sha }}
 
       - name: Run post-build linters
         continue-on-error: true
         run: flatpak-builder-lint builddir flatpak_app
+
+  flathub-beta:
+    name: Submit Flathub Beta Release
+    # For testing - remove before merge
+    if: ${{ github.ref_name == 'flathub-rc-workflow' }}
+    runs-on: ubuntu-slim
+    needs:
+      - manifest
+    environment:
+      name: flathub
+    steps:
+      - name: Checkout flathub
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          path: manifest
+          # For testing - remove before merge
+          #repository: flathub/org.mozilla.vpn
+          repository: oskirby/org.mozilla.vpn
+          ref: beta
+
+      - name: Download release manifest
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          name: Flatpak Manifest
+          path: manifest/
+
+      - name: Create pull request
+        uses: peter-evans/create-pull-request@5f6978faf089d4d20b00c7766989d076bb2fc7f1 # v8.1.1
+        id: cpr
+        with:
+          committer: "${{ github.actor }} <${{ github.actor_Id }}+${{ github.actor }}@users.noreply.github.com>"
+          commit-message: "[beta] update mozillavpn to ${{ github.ref_name }}"
+          path: manifest
+          branch: "beta-${{ github.ref_name }}"
+          delete-branch: true
+          title: "[beta] update mozillavpn to ${{ github.ref_name }}"
+          token: ${{ secrets.FLATHUB_TOKEN }}
