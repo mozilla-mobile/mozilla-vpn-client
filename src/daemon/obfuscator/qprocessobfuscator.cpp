@@ -27,8 +27,10 @@ Logger logger("QProcessObfuscator");
 
 QProcessObfuscator::QProcessObfuscator(
     const QString& path, const InterfaceConfig& config, QObject* parent)
-    : Obfuscator(parent), m_config(config) {
+    : Obfuscator(parent) {
   MZ_COUNT_CTOR(QProcessObfuscator);
+
+  m_arguments = buildArgs(config);
 
   m_process.setProgram(path);
   m_process.setProcessChannelMode(QProcess::SeparateChannels);
@@ -52,13 +54,19 @@ bool QProcessObfuscator::isRunning() const {
 }
 
 bool QProcessObfuscator::launch(quint16 listenPort) {
-  const QStringList args = buildArgs(m_config, listenPort);
-  if (args.isEmpty()) {
-    logger.error() << "Unsupported obfuscation method"
-                   << m_config.m_obfuscationMethod;
+  if (m_arguments.isEmpty()) {
+    logger.error() << "Unsupported obfuscation method";
     return false;
   }
-  m_process.setArguments(args);
+
+  // Add extra arguments.
+  QStringList args = m_arguments;
+  if (listenPort != 0) {
+    args << QStringLiteral("--listen-port") << QString::number(listenPort);
+  }
+  if (!m_extra.isEmpty()) {
+    args.append(m_extra);
+  }
 
   QTimer deadline;
   deadline.setSingleShot(true);
@@ -76,6 +84,7 @@ bool QProcessObfuscator::launch(quint16 listenPort) {
           });
 
   logger.debug() << "Starting obfuscator";
+  m_process.setArguments(args);
   m_process.start();
   m_localPort = loop.exec();
   if (m_localPort) {
@@ -126,8 +135,7 @@ void QProcessObfuscator::processFinished(int code, QProcess::ExitStatus st) {
   emit backendFailure(DaemonError::ERROR_OBFUSCATOR_CRASHED);
 }
 
-QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config,
-                                          quint16 listenPort) const {
+QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config) {
   QStringList args;
 
   const QString server = !config.m_serverIpv4AddrIn.isEmpty()
@@ -135,12 +143,6 @@ QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config,
                              : config.m_serverIpv6AddrIn;
   args << QStringLiteral("--server") << server;
   args << QStringLiteral("--port") << QString::number(config.m_serverPort);
-  if (listenPort != 0) {
-    args << QStringLiteral("--listen-port") << QString::number(listenPort);
-  }
-#if defined(MZ_LINUX) && !defined(MZ_FLATPAK)
-  args << QStringLiteral("--fwmark") << QString::number(WG_FIREWALL_MARK);
-#endif
 
   switch (config.m_obfuscationMethod) {
     case Server::ObfuscationMethod::UdpOverTcp:

@@ -69,11 +69,15 @@ MockDaemon::~MockDaemon() {
 
 Obfuscator* MockDaemon::createObfuscator(const InterfaceConfig& config) {
   QString script = QFileInfo(__FILE__).dir().absoluteFilePath("mockobfuscator.sh");
-  if (QFileInfo::exists(script)) {
-    return new QProcessObfuscator(script, config, this);
-  } else {
+  if (!QFileInfo::exists(script)) {
     return nullptr;
   }
+
+  auto obfuscator = new QProcessObfuscator(script, config, this);
+  if (!m_obfuscatorFlags.isEmpty()) {
+    obfuscator->addArguments(m_obfuscatorFlags);
+  }
+  return obfuscator;
 }
 
 bool MockDaemon::activate(const InterfaceConfig& config) {

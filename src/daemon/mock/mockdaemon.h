@@ -29,12 +29,14 @@ class MockDaemon final : public Daemon {
     return QStringList("splitTunnel");
   }
 
- protected:
+  void setObfuscatorFlags(const QStringList& args) { m_obfuscatorFlags = args; }
+
   WireguardUtils* wgutils() const override { return m_wgutils; }
   DnsUtils* dnsutils() override { return m_dnsutils; }
 
  private:
   QString m_socketName;
+  QStringList m_obfuscatorFlags;
   QLocalServer m_server;
   DnsUtilsMock* m_dnsutils = nullptr;
   WireguardUtilsMock* m_wgutils = nullptr;

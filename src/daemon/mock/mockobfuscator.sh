@@ -15,6 +15,15 @@ while [[ $# -gt 0 ]]; do
     shift
     shift
     ;;
+  --nolisten)
+    LISTEN=-1
+    shift
+    ;;
+  --exit)
+    exit $2
+    shift
+    shift
+    ;;
   *)
     shift
     ;;
@@ -25,8 +34,10 @@ done
 if [ $LISTEN -eq 0 ]; then
     LISTEN=$(($RANDOM % 16384 + 49152))
 fi
+if [ $LISTEN -gt 0 ]; then
+    echo "listening on 127.0.0.1:${LISTEN}"
+fi
 
-echo "listening on 127.0.0.1:${LISTEN}"
 while sleep 60; do
     true
 done

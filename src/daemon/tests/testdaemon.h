@@ -12,6 +12,7 @@
 
 #include "daemon.h"
 #include "mock/dnsutilsmock.h"
+#include "mock/mockdaemon.h"
 #include "mock/wireguardutilsmock.h"
 #include "obfuscator/qprocessobfuscator.h"
 
@@ -39,7 +40,7 @@ class TestDaemon : public QObject {
   void cleanup();
 
  protected:
-  QScopedPointer<Daemon> m_daemon;
+  QScopedPointer<MockDaemon> m_daemon;
   QScopedPointer<QLocalSocket> m_socket;
   DnsUtilsMock* m_dnsutils = nullptr;
   WireguardUtilsMock* m_wgutils = nullptr;

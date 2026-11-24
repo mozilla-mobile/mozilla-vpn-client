@@ -14,5 +14,6 @@ class TestObfuscator : public TestDaemon {
   void switchServersAndMethod();
   void switchServerAddObfuscator();
 
+  void startupFailure();
   void crash();
 };

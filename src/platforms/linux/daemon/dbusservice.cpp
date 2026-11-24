@@ -81,7 +81,11 @@ DnsUtils* DBusService::dnsutils() {
 Obfuscator* DBusService::createObfuscator(const InterfaceConfig& config) {
   QDir dir(QCoreApplication::applicationDirPath());
   QString binaryFile = dir.absoluteFilePath("mozillavpn-obfuscator");
-  return new QProcessObfuscator(binaryFile, config, this);
+
+  auto obfuscator = new QProcessObfuscator(binaryFile, config, this);
+  obfuscator->addArguments({"--fwmark", QString::number(WG_FIREWALL_MARK)});
+
+  return obfuscator;
 }
 
 bool DBusService::removeInterfaceIfExists() {

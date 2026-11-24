@@ -97,6 +97,30 @@ void TestObfuscator::switchServerAddObfuscator() {
   QVERIFY(obfuscator()->isRunning());
 }
 
+void TestObfuscator::startupFailure() {
+  InterfaceConfig config = exampleConfig();
+  config.m_obfuscationMethod = Server::ObfuscationMethod::LWO;
+
+  // Pass the --nolisten flag to the mock obfuscator, which should cause
+  // it to skip the port announcement line.
+  m_daemon->setObfuscatorFlags({"--nolisten"});
+
+  // Activate it.
+  QVERIFY(!m_daemon->activate(config));
+  QTRY_VERIFY_WITH_TIMEOUT(!m_failureEvents.isEmpty(), 5000);
+  QCOMPARE(m_failureEvents.takeFirst(), DaemonError::ERROR_ACTIVATION_FAILURE);
+  QVERIFY(m_connectedEvents.isEmpty());
+  QCOMPARE(m_disconnectedEventCount, 0);
+
+  // Try again with the obfuscator exiting immediately with an error code.
+  m_daemon->setObfuscatorFlags({"--exit", "1"});
+  QVERIFY(!m_daemon->activate(config));
+  QTRY_VERIFY_WITH_TIMEOUT(!m_failureEvents.isEmpty(), 5000);
+  QCOMPARE(m_failureEvents.takeFirst(), DaemonError::ERROR_ACTIVATION_FAILURE);
+  QVERIFY(m_connectedEvents.isEmpty());
+  QCOMPARE(m_disconnectedEventCount, 0);
+}
+
 void TestObfuscator::crash() {
   // Start with the activation test
   activate();

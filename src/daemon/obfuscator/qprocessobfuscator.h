@@ -28,6 +28,8 @@ class QProcessObfuscator final : public Obfuscator {
 
   qint64 processId() const { return m_process.processId(); }
 
+  void addArguments(const QStringList& args) { m_extra.append(args); }
+
  signals:
   void started(quint16 port);
 
@@ -36,13 +38,14 @@ class QProcessObfuscator final : public Obfuscator {
   void stdoutReady();
   void processFinished(int code, QProcess::ExitStatus status);
 
-  QStringList buildArgs(const InterfaceConfig& config,
-                        quint16 listenPort) const;
+  static QStringList buildArgs(const InterfaceConfig& config);
+
   // Launch the relay, blocking until it announces its listening port.
   // A non-zero listenPort forces the relay onto that local port.
   bool launch(quint16 listenPort);
 
-  const InterfaceConfig m_config;
+  QStringList m_arguments;
+  QStringList m_extra;
   QProcess m_process;
   quint16 m_localPort = 0;
 };
