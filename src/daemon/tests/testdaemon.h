@@ -43,6 +43,10 @@ class TestDaemon : public QObject {
   QScopedPointer<QLocalSocket> m_socket;
   DnsUtilsMock* m_dnsutils = nullptr;
   WireguardUtilsMock* m_wgutils = nullptr;
+
+  QStringList m_connectedEvents;
+  int m_disconnectedEventCount;
+  QList<DaemonError> m_failureEvents;
 };
 
 #endif  // TESTDAEMON_H

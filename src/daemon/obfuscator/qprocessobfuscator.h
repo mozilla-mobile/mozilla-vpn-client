@@ -18,7 +18,7 @@ class QProcessObfuscator final : public Obfuscator {
  public:
   explicit QProcessObfuscator(const QString& path, const InterfaceConfig& cfg,
                               QObject* parent = nullptr);
-  ~QProcessObfuscator() override;
+  ~QProcessObfuscator();
 
   bool start() override;
   void stop() override;
@@ -26,12 +26,15 @@ class QProcessObfuscator final : public Obfuscator {
   bool isRunning() const override;
   quint16 localPort() const override { return m_localPort; }
 
+  qint64 processId() const { return m_process.processId(); }
+
  signals:
   void started(quint16 port);
 
  private:
   void stderrReady();
   void stdoutReady();
+  void processFinished(int code, QProcess::ExitStatus status);
 
   QStringList buildArgs(const InterfaceConfig& config,
                         quint16 listenPort) const;

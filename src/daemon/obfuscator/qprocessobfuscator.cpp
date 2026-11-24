@@ -66,27 +66,28 @@ bool QProcessObfuscator::launch(quint16 listenPort) {
 
   QEventLoop loop;
   connect(this, &QProcessObfuscator::started, &loop, &QEventLoop::exit);
-  connect(&deadline, &QTimer::timeout, &loop, [&loop]() { loop.exit(); });
+  connect(&deadline, &QTimer::timeout, &loop, &QEventLoop::quit);
+  connect(&m_process, &QProcess::finished, &loop, &QEventLoop::quit);
   connect(&m_process, &QProcess::errorOccurred, &loop,
           [&](QProcess::ProcessError) {
             logger.error() << "Failed to start obfuscator process"
                            << m_process.errorString();
             loop.exit();
           });
-  connect(&m_process, &QProcess::finished, &loop,
-          [&loop](int code, QProcess::ExitStatus status) {
-            if (status == QProcess::CrashExit) {
-              logger.error() << "Obfuscator crashed with signal" << code;
-            } else {
-              logger.error() << "Obfuscator exited before announcing a port";
-            }
-            loop.exit();
-          });
 
   logger.debug() << "Starting obfuscator";
   m_process.start();
   m_localPort = loop.exec();
-  return (m_localPort != 0);
+  if (m_localPort) {
+    connect(&m_process, &QProcess::finished, this,
+            &QProcessObfuscator::processFinished);
+    return true;
+  }
+
+  // The obfuscator either failed to start, or never reported a listening port.
+  logger.error() << "Obfuscator exited before announcing a port";
+  m_process.kill();
+  return false;
 }
 
 void QProcessObfuscator::stderrReady() {
@@ -114,6 +115,15 @@ void QProcessObfuscator::stdoutReady() {
     }
     logger.info() << line;
   }
+}
+
+void QProcessObfuscator::processFinished(int code, QProcess::ExitStatus st) {
+  if (st == QProcess::CrashExit) {
+    logger.error() << "Obfuscator crashed with signal" << code;
+  } else {
+    logger.error() << "Obfuscator terminated with code" << code;
+  }
+  emit backendFailure(DaemonError::ERROR_OBFUSCATOR_CRASHED);
 }
 
 QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config,
@@ -151,6 +161,9 @@ QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config,
 }
 
 void QProcessObfuscator::stop() {
+  disconnect(&m_process, &QProcess::finished, this,
+             &QProcessObfuscator::processFinished);
+
   if (m_process.state() == QProcess::NotRunning) {
     return;
   }

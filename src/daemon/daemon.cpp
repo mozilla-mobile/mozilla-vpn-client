@@ -73,10 +73,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   // If the activation abort's for any reason `the `activationFailure` signal is
   // emitted.
   logger.debug() << "Activating interface.";
-  auto emit_failure_guard = qScopeGuard([this] {
-    m_obfuscator.reset(nullptr);
-    emit activationFailure();
-  });
+  auto emit_failure_guard = qScopeGuard([this] { emit activationFailure(); });
 
   if (m_connections.contains(config.m_hopType)) {
     if (supportServerSwitching(config)) {
@@ -163,17 +160,24 @@ bool Daemon::activate(const InterfaceConfig& config) {
       logger.error() << "Obfuscation is not supported on this platform";
       return false;
     }
+    connect(this, &Daemon::activationFailure, this,
+            [this]() { m_obfuscator.reset(nullptr); });
+    connect(m_obfuscator.get(), &Obfuscator::backendFailure, this,
+            &Daemon::backendFailure);
+
     if (!m_obfuscator->start()) {
       logger.error() << "Failed to start obfuscator"
                      << config.m_obfuscationMethod;
       return false;
     }
-    peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
+
     // The obfuscator only binds 127.0.0.1, so clear the IPv6 endpoint to keep
     // WireGuard from selecting an [::1]
+    peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
     peerConfig.m_serverIpv6AddrIn = QString();
     peerConfig.m_serverPort = m_obfuscator->localPort();
   }
+
   // Add the peer to this interface.
   if (!wgutils()->updatePeer(peerConfig)) {
     logger.error() << "Peer creation failed.";

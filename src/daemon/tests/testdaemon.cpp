@@ -38,6 +38,21 @@ void TestDaemon::init() {
   m_wgutils = qobject_cast<WireguardUtilsMock*>(m_daemon->wgutils());
   QVERIFY(m_wgutils);
 
+  // Reset the captured signal events.
+  m_connectedEvents.clear();
+  m_failureEvents.clear();
+  m_disconnectedEventCount = 0;
+  connect(m_daemon.get(), &Daemon::connected, this,
+          [this](const QString pubkey) { m_connectedEvents.append(pubkey); });
+  connect(m_daemon.get(), &Daemon::backendFailure, this,
+          [this](DaemonError error) { m_failureEvents.append(error); });
+  connect(m_daemon.get(), &Daemon::activationFailure, this,
+          [this]() {
+            m_failureEvents.append(DaemonError::ERROR_ACTIVATION_FAILURE);
+          });
+  connect(m_daemon.get(), &Daemon::disconnected, this,
+          [this]() { m_disconnectedEventCount++; });
+
   // Utilize shorter timeouts for unit testing.
   m_daemon->m_handshakeTimer.setInterval(10);
   m_wgutils->setHandshakeDelay(50);
@@ -68,6 +83,10 @@ void TestDaemon::cleanup() {
   m_daemon.reset(nullptr);
   m_dnsutils = nullptr;
   m_wgutils = nullptr;
+
+  m_connectedEvents.clear();
+  m_failureEvents.clear();
+  m_disconnectedEventCount = 0;
 }
 
 void TestDaemon::send(const QJsonObject& msg) {

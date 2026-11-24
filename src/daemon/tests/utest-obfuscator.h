@@ -12,4 +12,7 @@ class TestObfuscator : public TestDaemon {
  private slots:
   void activate();
   void switchServersAndMethod();
+  void switchServerAddObfuscator();
+
+  void crash();
 };
