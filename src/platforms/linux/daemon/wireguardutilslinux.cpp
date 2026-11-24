@@ -191,7 +191,7 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
   return true;
 }
 
-static bool hasRouteToIPv4(const QString& ipv4addr) {
+bool WireguardUtilsLinux::hasRouteToIPv4(const QString& ipv4addr) {
   int sock = ::socket(AF_INET, SOCK_DGRAM, 0);
 
   if (sock < 0) {

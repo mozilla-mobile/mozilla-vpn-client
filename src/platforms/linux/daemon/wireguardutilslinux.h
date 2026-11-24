@@ -55,6 +55,7 @@ class WireguardUtilsLinux final : public WireguardUtils {
   static bool setupCgroupClass(const QString& path, unsigned long classid);
   static bool moveCgroupProcs(const QString& src, const QString& dest);
   static bool buildAllowedIp(struct wg_allowedip*, const IPAddress& prefix);
+  static bool hasRouteToIPv4(const QString& ipv4addr);
 
   int m_nlsock = -1;
   int m_nlseq = 0;
