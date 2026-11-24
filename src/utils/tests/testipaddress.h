@@ -6,7 +6,7 @@
 
 #include "testhelper.h"
 
-class TestIpAddress final : public QObject, TestHelper<TestIpAddress> {
+class TestIpAddress final : public TestHelper {
   Q_OBJECT
 
  private slots:

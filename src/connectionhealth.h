@@ -57,7 +57,8 @@ class ConnectionHealth final : public QObject {
 
  private:
   void stop();
-  void startActive(const ControllerStatus& status);
+  void startWithStatus(const ControllerStatus& status);
+  void startWithGateway(const QHostAddress& gateway);
   void startIdle();
 
   void pingSentAndReceived(qint64 msec);
@@ -91,7 +92,6 @@ class ConnectionHealth final : public QObject {
 
   bool m_suspended = false;
   QHostAddress m_currentGateway;
-  QHostAddress m_deviceAddress;
 
 #ifdef UNIT_TEST
   friend class TestConnectionHealth;

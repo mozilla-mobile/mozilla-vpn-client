@@ -96,8 +96,8 @@ void DaemonLocalServerConnection::parseCommand(const QByteArray& data) {
   logger.debug() << "Command received:" << type;
 
   if (type == "activate") {
-    InterfaceConfig config;
-    if (!Daemon::parseConfig(obj, config)) {
+    InterfaceConfig config(obj);
+    if (!config.isValid()) {
       logger.error() << "Invalid configuration";
       emit disconnected();
       return;

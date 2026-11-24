@@ -49,6 +49,7 @@ endif()
 
 include(cmake/shared-sources.cmake)
 include(cmake/sources.cmake)
+add_subdirectory(daemon)
 add_subdirectory(inspector)
 add_subdirectory(utils)
 
@@ -56,6 +57,7 @@ target_link_libraries(mozillavpn PRIVATE
     shared-sources
     mozillavpn-sources
     lottie
+    mzdaemon
     mzutils
     nebula
     translations

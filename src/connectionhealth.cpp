@@ -41,7 +41,7 @@ constexpr double PING_LOSS_UNSTABLE_THRESHOLD = 0.10;
 constexpr const char* PING_WELL_KNOWN_ANYCAST_DNS = "194.242.2.2";
 }  // namespace
 
-ConnectionHealth::ConnectionHealth() : m_dnsPingSender(QHostAddress()) {
+ConnectionHealth::ConnectionHealth() {
   MZ_COUNT_CTOR(ConnectionHealth);
 
   m_noSignalTimer.setSingleShot(true);
@@ -92,22 +92,24 @@ void ConnectionHealth::stop() {
   m_dnsPingTimer.stop();
 }
 
-void ConnectionHealth::startActive(const ControllerStatus& status) {
-  logger.debug() << "ConnectionHealth active started";
+void ConnectionHealth::startWithStatus(const ControllerStatus& status) {
+  startWithGateway(status.m_ipv4Gateway);
+}
 
+void ConnectionHealth::startWithGateway(const QHostAddress& gateway) {
+  logger.debug() << "ConnectionHealth active started";
   bool isNotOnOrOnPartial =
       MozillaVPN::instance()->controller()->state() != Controller::StateOn &&
       MozillaVPN::instance()->controller()->state() !=
           Controller::StateOnPartial;
 
-  if (status.m_ipv4Gateway.isNull() || isNotOnOrOnPartial) {
+  if (gateway.isNull() || isNotOnOrOnPartial) {
     logger.info() << "ConnectionHealth not starting because no connection";
     return;
   }
 
-  m_currentGateway = status.m_ipv4Gateway;
-  m_deviceAddress = status.m_ipv4Address;
-  m_pingHelper.start(m_currentGateway.toString(), m_deviceAddress.toString());
+  m_currentGateway = gateway;
+  m_pingHelper.start(m_currentGateway.toString());
   m_noSignalTimer.start(PING_TIME_NOSIGNAL);
   m_healthCheckTimer.start(PING_TIME_UNSTABLE);
 
@@ -175,7 +177,7 @@ void ConnectionHealth::connectionStateChanged() {
     case Controller::StateOnPartial:
     case Controller::StateOn:
       QObject::connect(controller, &Controller::statusUpdated, this,
-                       &ConnectionHealth::startActive,
+                       &ConnectionHealth::startWithStatus,
                        Qt::SingleShotConnection);
       controller->refreshStatus();
       break;
@@ -262,10 +264,7 @@ void ConnectionHealth::applicationStateChanged(Qt::ApplicationState state) {
       if (m_suspended) {
         m_suspended = false;
         logger.debug() << "Resuming connection check from suspension";
-        ControllerStatus st;
-        st.m_ipv4Address = m_deviceAddress;
-        st.m_ipv4Gateway = m_currentGateway;
-        startActive(st);
+        startWithGateway(m_currentGateway);
       }
       break;
 

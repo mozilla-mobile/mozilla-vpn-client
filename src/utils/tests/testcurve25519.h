@@ -6,7 +6,7 @@
 
 #include "testhelper.h"
 
-class TestCurve25519 : public QObject, TestHelper<TestCurve25519> {
+class TestCurve25519 : public TestHelper {
   Q_OBJECT
 
  private slots:

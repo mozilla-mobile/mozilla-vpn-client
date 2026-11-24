@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
-#include "mockdaemonserver.h"
+#include "commandmockdaemon.h"
 
 #include <QCoreApplication>
 
@@ -10,7 +10,7 @@
 #include "constants.h"
 #include "leakdetector.h"
 #include "logger.h"
-#include "mockdaemon.h"
+#include "mock/mockdaemon.h"
 #include "version.h"
 
 #ifndef Q_OS_WIN
@@ -18,17 +18,17 @@
 #endif
 
 namespace {
-Logger logger("MockDaemonServer");
+Logger logger("CommandMockDaemon");
 }
 
-MockDaemonServer::MockDaemonServer(QObject* parent)
+CommandMockDaemon::CommandMockDaemon(QObject* parent)
     : Command(parent, "mockdaemon", "Activate the mock daemon") {
-  MZ_COUNT_CTOR(MockDaemonServer);
+  MZ_COUNT_CTOR(CommandMockDaemon);
 }
 
-MockDaemonServer::~MockDaemonServer() { MZ_COUNT_DTOR(MockDaemonServer); }
+CommandMockDaemon::~CommandMockDaemon() { MZ_COUNT_DTOR(CommandMockDaemon); }
 
-int MockDaemonServer::run(QStringList& tokens) {
+int CommandMockDaemon::run(QStringList& tokens) {
   Q_ASSERT(!tokens.isEmpty());
   QString appName = tokens[0];
 
@@ -66,4 +66,4 @@ int MockDaemonServer::run(QStringList& tokens) {
   return app.exec();
 }
 
-static Command::RegistrationProxy<MockDaemonServer> s_commandMockDaemon;
+static Command::RegistrationProxy<CommandMockDaemon> s_commandMockDaemon;

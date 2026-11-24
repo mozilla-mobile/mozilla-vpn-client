@@ -208,7 +208,8 @@ bool IPAddress::contains(const QHostAddress& address) const {
 
 bool IPAddress::operator==(const IPAddress& other) const {
   const QHostAddress* hostpart = reinterpret_cast<const QHostAddress*>(this);
-  return hostpart->isEqual(other) && m_prefixLength == other.m_prefixLength;
+  return hostpart->isEqual(other, QHostAddress::StrictConversion) &&
+         (m_prefixLength == other.m_prefixLength);
 }
 
 bool IPAddress::subnetOf(const IPAddress& other) const {

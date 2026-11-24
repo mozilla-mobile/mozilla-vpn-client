@@ -12,7 +12,6 @@
 #include <QMetaEnum>
 #include <QTimer>
 
-#include "controller.h"
 #include "dnsutils.h"
 #include "iputils.h"
 #include "leakdetector.h"
@@ -27,7 +26,6 @@
 #  include "obfuscator/qprocessobfuscator.h"
 #endif
 
-constexpr const char* JSON_ALLOWEDIPADDRESSRANGES = "allowedIPAddressRanges";
 constexpr int HANDSHAKE_POLL_MSEC = 250;
 
 namespace {
@@ -52,9 +50,9 @@ QString Daemon::interfaceName() const { return wgutils()->interfaceName(); }
 
 bool Daemon::activate(const QString& json) {
   QJsonDocument jsDocument = QJsonDocument::fromJson(json.toUtf8());
-  InterfaceConfig ifConfig;
+  InterfaceConfig ifConfig(jsDocument.object());
 
-  if (!Daemon::parseConfig(jsDocument.object(), ifConfig)) {
+  if (!ifConfig.isValid()) {
     return false;
   }
   return activate(ifConfig);
@@ -233,192 +231,6 @@ bool Daemon::maybeUpdateResolvers(const InterfaceConfig& config) {
     if (!dnsutils()->updateResolvers(wgutils()->interfaceName(), resolvers)) {
       return false;
     }
-  }
-
-  return true;
-}
-
-// static
-bool Daemon::parseStringList(const QJsonObject& obj, const QString& name,
-                             QStringList& list) {
-  if (obj.contains(name)) {
-    QJsonValue value = obj.value(name);
-    if (!value.isArray()) {
-      logger.error() << name << "is not an array";
-      return false;
-    }
-    QJsonArray array = value.toArray();
-    for (const QJsonValue& i : array) {
-      if (!i.isString()) {
-        logger.error() << name << "must contain only strings";
-        return false;
-      }
-      list.append(i.toString());
-    }
-  }
-  return true;
-}
-
-// static
-bool Daemon::parseConfig(const QJsonObject& obj, InterfaceConfig& config) {
-#define GETVALUE(name, where, jsontype)                           \
-  if (!obj.contains(name)) {                                      \
-    logger.debug() << name << " missing in the jsonConfig input"; \
-    return false;                                                 \
-  } else {                                                        \
-    QJsonValue value = obj.value(name);                           \
-    if (value.type() != QJsonValue::jsontype) {                   \
-      logger.error() << name << " is not a " #jsontype;           \
-      return false;                                               \
-    }                                                             \
-    where = value.to##jsontype();                                 \
-  }
-
-  GETVALUE("privateKey", config.m_privateKey, String);
-  GETVALUE("publicKey", config.m_publicKey, String);
-  GETVALUE("serverPublicKey", config.m_serverPublicKey, String);
-  GETVALUE("serverPort", config.m_serverPort, Double);
-
-  config.m_deviceIpv4Address = obj.value("deviceIpv4Address").toString();
-  config.m_deviceIpv6Address = obj.value("deviceIpv6Address").toString();
-  if (config.m_deviceIpv4Address.isNull() &&
-      config.m_deviceIpv6Address.isNull()) {
-    logger.warning() << "no device addresses found in jsonConfig input";
-    return false;
-  }
-  config.m_serverIpv4AddrIn = obj.value("serverIpv4AddrIn").toString();
-  config.m_serverIpv6AddrIn = obj.value("serverIpv6AddrIn").toString();
-  if (config.m_serverIpv4AddrIn.isNull() &&
-      config.m_serverIpv6AddrIn.isNull()) {
-    logger.error() << "no server addresses found in jsonConfig input";
-    return false;
-  }
-  config.m_serverIpv4Gateway = obj.value("serverIpv4Gateway").toString();
-  config.m_serverIpv6Gateway = obj.value("serverIpv6Gateway").toString();
-
-  if (!obj.contains("dnsServer")) {
-    config.m_dnsServer = QString();
-  } else {
-    QJsonValue value = obj.value("dnsServer");
-    if (!value.isString()) {
-      logger.error() << "dnsServer is not a string";
-      return false;
-    }
-    config.m_dnsServer = value.toString();
-  }
-
-  if (!obj.contains("hopType")) {
-    config.m_hopType = InterfaceConfig::SingleHop;
-  } else {
-    QJsonValue value = obj.value("hopType");
-    if (!value.isString()) {
-      logger.error() << "hopType is not a string";
-      return false;
-    }
-
-    bool okay;
-    QByteArray vdata = value.toString().toUtf8();
-    QMetaEnum meta = QMetaEnum::fromType<InterfaceConfig::HopType>();
-    config.m_hopType =
-        InterfaceConfig::HopType(meta.keyToValue(vdata.constData(), &okay));
-    if (!okay) {
-      logger.error() << "hopType" << value.toString() << "is not valid";
-      return false;
-    }
-  }
-
-  if (!obj.contains(JSON_ALLOWEDIPADDRESSRANGES)) {
-    logger.error() << JSON_ALLOWEDIPADDRESSRANGES
-                   << "missing in the jsonconfig input";
-    return false;
-  } else {
-    QJsonValue value = obj.value(JSON_ALLOWEDIPADDRESSRANGES);
-    if (!value.isArray()) {
-      logger.error() << JSON_ALLOWEDIPADDRESSRANGES << "is not an array";
-      return false;
-    }
-
-    QJsonArray array = value.toArray();
-    for (const QJsonValue& i : array) {
-      if (!i.isObject()) {
-        logger.error() << JSON_ALLOWEDIPADDRESSRANGES
-                       << "must contain only objects";
-        return false;
-      }
-
-      QJsonObject ipObj = i.toObject();
-
-      QJsonValue address = ipObj.value("address");
-      if (!address.isString()) {
-        logger.error() << JSON_ALLOWEDIPADDRESSRANGES
-                       << "objects must have a string address";
-        return false;
-      }
-
-      QJsonValue range = ipObj.value("range");
-      if (!range.isDouble()) {
-        logger.error() << JSON_ALLOWEDIPADDRESSRANGES
-                       << "object must have a numberic range";
-        return false;
-      }
-
-      QJsonValue isIpv6 = ipObj.value("isIpv6");
-      if (!isIpv6.isBool()) {
-        logger.error() << JSON_ALLOWEDIPADDRESSRANGES
-                       << "object must have a boolean isIpv6";
-        return false;
-      }
-
-      config.m_allowedIPAddressRanges.append(
-          IPAddress(QHostAddress(address.toString()), range.toInt()));
-    }
-
-    // Sort allowed IPs by decreasing prefix length.
-    std::sort(config.m_allowedIPAddressRanges.begin(),
-              config.m_allowedIPAddressRanges.end(),
-              [&](const IPAddress& a, const IPAddress& b) -> bool {
-                return a.prefixLength() > b.prefixLength();
-              });
-  }
-
-  if (!parseStringList(obj, "vpnDisabledApps", config.m_vpnDisabledApps)) {
-    return false;
-  }
-
-  if (!obj.contains("obfuscationMethod")) {
-    config.m_obfuscationMethod = Server::ObfuscationMethod::NoObfuscation;
-  } else {
-    QJsonValue value = obj.value("obfuscationMethod");
-    if (!value.isString()) {
-      logger.error() << "obfuscationMethod is not a string";
-      return false;
-    }
-
-    bool okay;
-    QMetaEnum meta = QMetaEnum::fromType<Server::ObfuscationMethod>();
-    config.m_obfuscationMethod = Server::ObfuscationMethod(
-        meta.keyToValue(value.toString().toUtf8().constData(), &okay));
-    if (!okay) {
-      logger.error() << "obfuscationMethod" << value.toString()
-                     << "is not valid";
-      return false;
-    }
-  }
-
-  if (!obj.contains("lwoVersion")) {
-    config.m_lwoVersion = 1;
-  } else {
-    QJsonValue value = obj.value("lwoVersion");
-    if (!value.isDouble()) {
-      logger.error() << "lwoVersion is not a number";
-      return false;
-    }
-    int lwoVersion = value.toInt();
-    if (lwoVersion < 1 || lwoVersion > 2) {
-      logger.error() << "lwoVersion" << lwoVersion << "is not valid";
-      return false;
-    }
-    config.m_lwoVersion = lwoVersion;
   }
 
   return true;

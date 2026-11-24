@@ -5,10 +5,10 @@
 #ifndef WIREGUARDUTILSMOCK_H
 #define WIREGUARDUTILSMOCK_H
 
-#include <QMap>
+#include <QHash>
 #include <QObject>
 
-#include "daemon/wireguardutils.h"
+#include "wireguardutils.h"
 
 class WireguardUtilsMock final : public WireguardUtils {
   Q_OBJECT
@@ -17,7 +17,7 @@ class WireguardUtilsMock final : public WireguardUtils {
   WireguardUtilsMock(QObject* parent);
   ~WireguardUtilsMock();
 
-  bool interfaceExists() override { return true; }
+  bool interfaceExists() override { return m_config.isValid(); }
   QString interfaceName() override { return WG_INTERFACE; }
   bool addInterface(const InterfaceConfig& config) override;
   bool deleteInterface() override;
@@ -30,12 +30,27 @@ class WireguardUtilsMock final : public WireguardUtils {
   bool deleteRoutePrefix(const IPAddress& prefix) override;
   bool excludeLocalNetworks(const QList<IPAddress>& addresses) override;
 
+  // Some extra stuff for testing.
+  enum RouteType {
+    RoutePeer = 0,
+    RouteExclusion,
+    RouteFailure,
+  };
+
+  void setHandshakeDelay(int msec) { m_handshakeDelayMsec = msec; }
+  void setRoutePrefix(const IPAddress& prefix, RouteType type);
+  const QHash<IPAddress, RouteType>& routes() const { return m_routes; }
+
  signals:
   void backendFailure();
 
  private:
-  // Keep a list of peers and when we added them.
-  QMap<QString, qint64> m_handshakes;
+  InterfaceConfig m_config;
+
+  int m_handshakeDelayMsec = 1500;
+  QHash<QString, qint64> m_handshakes;
+
+  QHash<IPAddress, RouteType> m_routes;
 };
 
 #endif  // WIREGUARDUTILSMOCK_H

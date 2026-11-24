@@ -16,15 +16,15 @@
 #  error "Unsupported platform"
 #endif
 
-PingSender* PingSenderFactory::create(const QHostAddress& source,
+PingSender* PingSenderFactory::create(PingSender::NetworkProtocol proto,
                                       QObject* parent) {
 #if defined(MZ_LINUX) || defined(MZ_ANDROID)
-  return new LinuxPingSender(source, parent);
+  return new LinuxPingSender(proto, parent);
 #elif defined(MZ_MACOS) || defined(MZ_IOS)
-  return new MacOSPingSender(source, parent);
+  return new MacOSPingSender(proto, parent);
 #elif defined(MZ_WINDOWS)
-  return new WindowsPingSender(source, parent);
+  return new WindowsPingSender(proto, parent);
 #else
-  return new DummyPingSender(source, parent);
+  return new DummyPingSender(proto, parent);
 #endif
 }

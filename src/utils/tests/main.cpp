@@ -22,12 +22,8 @@ int main(int argc, char* argv[]) {
 
   // Execute the tests
   int numFails = 0;
-  int numTests = 0;
-  for (auto test = TestRegistration::first(); test; test = test->next()) {
-    const QMetaObject* meta = test->metaObject();
+  for (const QMetaObject* meta : TestHelper::testcases()) {
     QObject* obj = reinterpret_cast<QObject*>(meta->metaType().create());
-
-    numTests++;
     if (QTest::qExec(obj) != 0) {
       numFails++;
     }
