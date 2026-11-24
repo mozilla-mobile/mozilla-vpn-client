@@ -8,7 +8,7 @@ import json
 import os
 import sys
 
-def parseClasssList(args, file):
+def parseClassList(args, file):
     result = []
     for entry in json.load(file):
         classlist = []
@@ -68,7 +68,7 @@ def main():
     classlist = []
     for filename in args.files:
         with open(filename, 'r') as fp:
-            classlist.extend(parseClasssList(args, fp))
+            classlist.extend(parseClassList(args, fp))
 
     if not args.output or args.output == '-':
         formatClassList(args, classlist, sys.stdout)
