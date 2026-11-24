@@ -8,6 +8,7 @@
 #include <qassert.h>
 
 #include <QCoreApplication>
+#include <QDir>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -20,6 +21,7 @@
 #include "dnsutilswindows.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "obfuscator/qprocessobfuscator.h"
 #include "platforms/windows/daemon/windowsfirewall.h"
 #include "platforms/windows/daemon/windowssplittunnel.h"
 #include "platforms/windows/windowscommons.h"

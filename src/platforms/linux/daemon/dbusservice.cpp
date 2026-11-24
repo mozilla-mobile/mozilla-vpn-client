@@ -17,6 +17,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "obfuscator/qprocessobfuscator.h"
 #include "platforms/linux/linuxutils.h"
 #include "polkithelper.h"
 
