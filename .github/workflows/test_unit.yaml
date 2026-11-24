@@ -120,17 +120,6 @@ jobs:
         id: setup-qt-win
         uses: ./.github/actions/qt-setup-taskcluster
 
-      - name: Install LLVM and Clang
-        uses: KyleMayes/install-llvm-action@ebc0426251bc40c7cd31162802432c68818ab8f0 # v2
-        with:
-          version: 20.1.4
-
-      - name: Setup clang env variables
-        id: set-compiler
-        run: |
-          echo "CC=${LLVM_PATH}/bin/clang-cl.exe" >> $GITHUB_OUTPUT
-          echo "CXX=${LLVM_PATH}/bin/clang-cl.exe" >> $GITHUB_OUTPUT
-
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
           python-version: "3.12"
@@ -153,8 +142,6 @@ jobs:
 
       - name: Building tests
         env:
-          CC: ${{ steps.set-compiler.outputs.CC }}
-          CXX: ${{ steps.set-compiler.outputs.CXX }}
           CMAKE_PREFIX_PATH: ${{ steps.setup-qt-win.outputs.path }}/lib/cmake
         run: |
           mkdir ./build-win
@@ -162,6 +149,7 @@ jobs:
           cmake -S . -B ./build-win -GNinja \
               -DCMAKE_BUILD_TYPE=RelWithDebInfo \
               -DWIREGUARD_FOLDER="$(pwd)/3rdparty/wireguard-nt"
+
           cmake --build ./build-win --target build_tests
 
       - name: Running QML tests
