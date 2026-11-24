@@ -15,11 +15,6 @@
 #include "logger.h"
 
 constexpr int OBFUSCATOR_PROC_TIMEOUT_MS = 5000;
-// SO_MARK set is not available in the Flatpak sandbox, so we only use it on
-// non-Flatpak Linux builds.
-#if defined(MZ_LINUX) && !defined(MZ_FLATPAK)
-constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
-#endif
 
 namespace {
 Logger logger("QProcessObfuscator");
@@ -63,9 +58,6 @@ bool QProcessObfuscator::launch(quint16 listenPort) {
   QStringList args = m_arguments;
   if (listenPort != 0) {
     args << QStringLiteral("--listen-port") << QString::number(listenPort);
-  }
-  if (!m_extra.isEmpty()) {
-    args.append(m_extra);
   }
 
   QTimer deadline;
@@ -180,8 +172,6 @@ void QProcessObfuscator::stop() {
   }
 #endif
 
-  // On Windows terminate() posts WM_CLOSE, which a console app without a
-  // message loop never receives so we just kill it.
   m_process.kill();
   m_process.waitForFinished(OBFUSCATOR_PROC_TIMEOUT_MS);
 }

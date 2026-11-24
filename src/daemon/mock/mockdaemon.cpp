@@ -75,8 +75,9 @@ Obfuscator* MockDaemon::createObfuscator(const InterfaceConfig& config) {
 
   auto obfuscator = new QProcessObfuscator(script, config, this);
   if (!m_obfuscatorFlags.isEmpty()) {
-    obfuscator->addArguments(m_obfuscatorFlags);
+    obfuscator->arguments().append(m_obfuscatorFlags);
   }
+
   return obfuscator;
 }
 

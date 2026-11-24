@@ -28,7 +28,7 @@ class QProcessObfuscator final : public Obfuscator {
 
   qint64 processId() const { return m_process.processId(); }
 
-  void addArguments(const QStringList& args) { m_extra.append(args); }
+  QStringList& arguments() { return m_arguments; }
 
  signals:
   void started(quint16 port);
@@ -45,7 +45,6 @@ class QProcessObfuscator final : public Obfuscator {
   bool launch(quint16 listenPort);
 
   QStringList m_arguments;
-  QStringList m_extra;
   QProcess m_process;
   quint16 m_localPort = 0;
 };

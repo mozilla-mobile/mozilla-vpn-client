@@ -82,10 +82,11 @@ Obfuscator* DBusService::createObfuscator(const InterfaceConfig& config) {
   QDir dir(QCoreApplication::applicationDirPath());
   QString binaryFile = dir.absoluteFilePath("mozillavpn-obfuscator");
 
-  auto obfuscator = new QProcessObfuscator(binaryFile, config, this);
-  obfuscator->addArguments({"--fwmark", QString::number(WG_FIREWALL_MARK)});
+  auto obfs = new QProcessObfuscator(binaryFile, config, this);
+  obfs->arguments() << "--fwmark"
+                    << QString::number(WireguardUtilsLinux::WG_FIREWALL_MARK);
 
-  return obfuscator;
+  return obfs;
 }
 
 bool DBusService::removeInterfaceIfExists() {

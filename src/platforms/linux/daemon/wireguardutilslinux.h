@@ -38,6 +38,8 @@ class WireguardUtilsLinux final : public WireguardUtils {
   void resetCgroup(const QString& cgroup);
   void resetAllCgroups();
 
+  static inline constexpr const uint32_t WG_FIREWALL_MARK = 0xca6c;
+
  private:
   QStringList currentInterfaces();
   bool setPeerEndpoint(struct sockaddr* sa, const QString& address, int port);

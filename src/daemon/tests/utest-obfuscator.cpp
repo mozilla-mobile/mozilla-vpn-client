@@ -48,7 +48,7 @@ void TestObfuscator::activate() {
   }
 }
 
-void TestObfuscator::switchServersAndMethod() {
+void TestObfuscator::switchServerAndMethod() {
   // Start with the activation test
   activate();
 
