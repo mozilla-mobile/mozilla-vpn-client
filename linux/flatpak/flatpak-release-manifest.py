@@ -40,7 +40,7 @@ if __name__ == "__main__":
     ## Parse arguments for the the release details
     parser = argparse.ArgumentParser(description='Update a flatpak manifest with a git ref')
     parser.add_argument('-t', '--tag', metavar='TAG', type=str, action='store',
-                        help='git tag to use sof rthe source ref')
+                        help='git tag to use for the source ref')
     parser.add_argument('-b', '--branch', metavar='NAME', type=str, action='store',
                         help='git branch to use for the source ref')
     parser.add_argument('-c', '--commit', metavar='SHA', type=str, action='store',
