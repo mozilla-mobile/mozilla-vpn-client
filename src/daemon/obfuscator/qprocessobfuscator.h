@@ -5,15 +5,19 @@
 #ifndef QPROCESSOBFUSCATOR_H
 #define QPROCESSOBFUSCATOR_H
 
+#include <QObject>
 #include <QProcess>
 #include <QtGlobal>
 
 #include "../utils/interfaceconfig.h"
 #include "obfuscator.h"
 
-class QProcessObfuscator final : public Obfuscator {
+class QProcessObfuscator final : public QObject, public Obfuscator {
+  Q_OBJECT
+
  public:
-  explicit QProcessObfuscator(const InterfaceConfig& config);
+  explicit QProcessObfuscator(const QString& path, const InterfaceConfig& cfg,
+                              QObject* parent = nullptr);
   ~QProcessObfuscator() override;
 
   bool start() override;
@@ -21,9 +25,14 @@ class QProcessObfuscator final : public Obfuscator {
   bool restart() override;
   bool isRunning() const override;
   quint16 localPort() const override { return m_localPort; }
-  static QString getObfuscatorExecutablePath();
+
+ signals:
+  void started(quint16 port);
 
  private:
+  void stderrReady();
+  void stdoutReady();
+
   quint16 parseListeningPort(const QByteArray& line) const;
   QStringList buildArgs(const InterfaceConfig& config,
                         quint16 listenPort) const;
@@ -32,7 +41,6 @@ class QProcessObfuscator final : public Obfuscator {
   bool launch(quint16 listenPort);
 
   const InterfaceConfig m_config;
-  QString m_binaryFile;
   QProcess m_process;
   quint16 m_localPort = 0;
 };

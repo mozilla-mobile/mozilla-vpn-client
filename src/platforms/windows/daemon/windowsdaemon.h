@@ -24,6 +24,8 @@ class WindowsDaemon final : public Daemon {
 
   QStringList getFeatures() const override;
 
+  Obfuscator* createObfuscator(const InterfaceConfig& config) override;
+
  protected:
   bool run(Op op, const InterfaceConfig& config) override;
   WireguardUtils* wgutils() const override { return m_wgutils.get(); }

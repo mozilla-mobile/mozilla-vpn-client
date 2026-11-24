@@ -52,6 +52,23 @@ WindowsDaemon::~WindowsDaemon() {
   logger.debug() << "Daemon released";
 }
 
+Obfuscator* WindowsDaemon::createObfuscator(const InterfaceConfig& config) {
+  // Add exclusion route for exit server to prevent loopbacks
+  QList<IPAddress> obfuscatorServer;
+  if (!config.m_serverIpv4AddrIn.isEmpty()) {
+    obfuscatorServer.append(IPAddress(config.m_serverIpv4AddrIn));
+  }
+  if (!config.m_serverIpv6AddrIn.isEmpty()) {
+    obfuscatorServer.append(IPAddress(config.m_serverIpv6AddrIn));
+  }
+  wgutils()->excludeLocalNetworks(obfuscatorServer);
+
+  // Create the obfuscator.
+  QDir dir(QCoreApplication::applicationDirPath());
+  QString binaryFile = dir.absoluteFilePath("mozillavpn-obfuscator.exe");
+  return new QProcessObfuscator(binaryFile, config, this);
+}
+
 bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {
   if (!m_splitTunnelManager) {
     if (config.m_vpnDisabledApps.length() > 0) {

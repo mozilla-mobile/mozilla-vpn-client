@@ -33,6 +33,8 @@ class DBusService final : public Daemon, protected QDBusContext {
   virtual bool activate(const InterfaceConfig& config) override;
   virtual bool deactivate(bool emitSignals = true) override;
 
+  Obfuscator* createObfuscator(const InterfaceConfig& config) override;
+
  public slots:
   QString status();
   QString version();

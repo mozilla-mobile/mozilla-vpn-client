@@ -24,23 +24,17 @@ namespace {
 Logger logger("QProcessObfuscator");
 }
 
-QProcessObfuscator::QProcessObfuscator(const InterfaceConfig& config)
-    : m_config(config) {
+QProcessObfuscator::QProcessObfuscator(
+    const QString& path, const InterfaceConfig& config, QObject* parent)
+    : QObject(parent), m_config(config) {
   MZ_COUNT_CTOR(QProcessObfuscator);
 
-  QString obfuscatorExecPath = getObfuscatorExecutablePath();
-  if (obfuscatorExecPath.isEmpty()) {
-    return;
-  }
-
-  if (!QFileInfo::exists(obfuscatorExecPath)) {
-    logger.error() << "Obfuscator binary not found at" << obfuscatorExecPath;
-    return;
-  }
-  m_binaryFile = obfuscatorExecPath;
-
-  // Merge stderr into stdout so we can read the "listening on" announce line
-  m_process.setProcessChannelMode(QProcess::MergedChannels);
+  m_process.setProgram(path);
+  m_process.setProcessChannelMode(QProcess::SeparateChannels);
+  connect(&m_process, &QProcess::readyReadStandardError, this,
+          &QProcessObfuscator::stderrReady);
+  connect(&m_process, &QProcess::readyReadStandardOutput, this,
+          &QProcessObfuscator::stdoutReady);
 }
 
 bool QProcessObfuscator::start() { return launch(0); }
@@ -57,60 +51,68 @@ bool QProcessObfuscator::isRunning() const {
 }
 
 bool QProcessObfuscator::launch(quint16 listenPort) {
-  if (m_binaryFile.isEmpty()) {
-    return false;
-  }
-
   const QStringList args = buildArgs(m_config, listenPort);
   if (args.isEmpty()) {
     logger.error() << "Unsupported obfuscation method"
                    << m_config.m_obfuscationMethod;
     return false;
   }
-  m_process.setProgram(m_binaryFile);
   m_process.setArguments(args);
+
+  QTimer deadline;
+  deadline.setSingleShot(true);
+  deadline.start(OBFUSCATOR_PROC_TIMEOUT_MS);
+
+  QEventLoop loop;
+  connect(this, &QProcessObfuscator::started, &loop, &QEventLoop::exit);
+  connect(&deadline, &QTimer::timeout, &loop, &QEventLoop::exit);
+  connect(&m_process, &QProcess::errorOccurred, &loop,
+          [&](QProcess::ProcessError) {
+            logger.error() << "Failed to start obfuscator process"
+                           << m_process.errorString();
+            loop.exit();
+          });
+  connect(&m_process, &QProcess::finished, &loop,
+          [&loop](int code, QProcess::ExitStatus status) {
+            if (status == QProcess::CrashExit) {
+              logger.error() << "Obfuscator crashed with signal" << code;
+            } else {
+              logger.error() << "Obfuscator exited before announcing a port";
+            }
+            loop.exit();
+          });
 
   logger.debug() << "Starting obfuscator";
   m_process.start();
-  if (!m_process.waitForStarted(OBFUSCATOR_PROC_TIMEOUT_MS)) {
-    logger.error() << "Failed to start obfuscator process"
-                   << m_process.errorString();
-    return false;
-  }
-
-  // Block until the helper either announces its port or exits
-  while (m_process.state() == QProcess::Running) {
-    if (!m_process.waitForReadyRead(OBFUSCATOR_PROC_TIMEOUT_MS)) {
-      logger.error() << "Obfuscator did not announce a listening port";
-      m_process.kill();
-      m_process.waitForFinished(OBFUSCATOR_PROC_TIMEOUT_MS);
-      return false;
-    }
-    while (m_process.canReadLine()) {
-      const QByteArray line = m_process.readLine().trimmed();
-      logger.debug() << "obf:" << QString::fromUtf8(line);
-      const quint16 port = parseListeningPort(line);
-      if (port != 0) {
-        m_localPort = port;
-        return true;
-      }
-    }
-  }
-
-  logger.error() << "Obfuscator exited before announcing a port"
-                 << m_process.exitCode();
-  return false;
+  m_localPort = loop.exec();
+  return (m_localPort != 0);
 }
 
-quint16 QProcessObfuscator::parseListeningPort(const QByteArray& line) const {
-  static const QByteArray prefix = "listening on 127.0.0.1:";
-  const int idx = line.indexOf(prefix);
-  if (idx < 0) {
-    return 0;
+void QProcessObfuscator::stderrReady() {
+  m_process.setReadChannel(QProcess::StandardError);
+  for (;;) {
+    QString line = QString::fromUtf8(m_process.readLine());
+    if (line.isEmpty()) {
+      break;
+    }
+    logger.warning() << line;
   }
-  bool ok = false;
-  const quint16 port = line.mid(idx + prefix.size()).toUShort(&ok);
-  return ok ? port : 0;
+}
+
+void QProcessObfuscator::stdoutReady() {
+  static const QString prefix("listening on 127.0.0.1:");
+
+  m_process.setReadChannel(QProcess::StandardOutput);
+  for (;;) {
+    QString line = QString::fromUtf8(m_process.readLine());
+    if (line.isEmpty()) {
+      break;
+    }
+    if (line.startsWith(prefix)) {
+      emit started(line.sliced(prefix.length()).toUShort());
+    }
+    logger.info() << line;
+  }
 }
 
 QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config,
@@ -147,38 +149,25 @@ QStringList QProcessObfuscator::buildArgs(const InterfaceConfig& config,
   return args;
 }
 
-// static
-QString QProcessObfuscator::getObfuscatorExecutablePath() {
-  QString binaryFile;
-#if defined(MZ_WINDOWS)
-  binaryFile = QStringLiteral("mozillavpn-obfuscator.exe");
-#elif defined(MZ_LINUX)
-  binaryFile = QStringLiteral("mozillavpn-obfuscator");
-#else
-  logger.error() << "Obfuscation is not supported on this platform";
-  return QString();
-#endif
-  return QDir(QCoreApplication::applicationDirPath())
-      .absoluteFilePath(binaryFile);
-}
-
 void QProcessObfuscator::stop() {
   if (m_process.state() == QProcess::NotRunning) {
     return;
   }
   logger.debug() << "Stopping obfuscator";
-#if defined(MZ_WINDOWS)
+
+  // On Windows terminate() posts WM_CLOSE, which a console app without a
+  // message loop never receives so we just kill it.  
+#if !defined(MZ_WINDOWS)
+  m_process.terminate();
+  if (m_process.waitForFinished(OBFUSCATOR_PROC_TIMEOUT_MS)) {
+    return;
+  }
+#endif
+
   // On Windows terminate() posts WM_CLOSE, which a console app without a
   // message loop never receives so we just kill it.
   m_process.kill();
   m_process.waitForFinished(OBFUSCATOR_PROC_TIMEOUT_MS);
-#else
-  m_process.terminate();
-  if (!m_process.waitForFinished(OBFUSCATOR_PROC_TIMEOUT_MS)) {
-    m_process.kill();
-    m_process.waitForFinished(OBFUSCATOR_PROC_TIMEOUT_MS);
-  }
-#endif
 }
 
 QProcessObfuscator::~QProcessObfuscator() {

@@ -78,6 +78,12 @@ DnsUtils* DBusService::dnsutils() {
   return m_dnsutils;
 }
 
+Obfuscator* DBusService::createObfuscator(const InterfaceConfig& config) {
+  QDir dir(QCoreApplication::applicationDirPath());
+  QString binaryFile = dir.absoluteFilePath("mozillavpn-obfuscator");
+  return new QProcessObfuscator(binaryFile, config, this);
+}
+
 bool DBusService::removeInterfaceIfExists() {
   if (m_wgutils->interfaceExists()) {
     logger.warning() << "Device already exists. Let's remove it.";
