@@ -8,8 +8,9 @@
 #include <QtGlobal>
 
 // Generic obfuscator interface.
-class Obfuscator {
+class Obfuscator : public QObject {
  public:
+  Obfuscator(QObject* parent = nullptr) : QObject(parent) {}
   virtual ~Obfuscator() = default;
 
   Obfuscator(const Obfuscator&) = delete;

@@ -13,6 +13,7 @@
 #include "daemon.h"
 #include "mock/dnsutilsmock.h"
 #include "mock/wireguardutilsmock.h"
+#include "obfuscator/qprocessobfuscator.h"
 
 class QJsonObject;
 
@@ -25,9 +26,13 @@ class TestDaemon : public QObject {
   bool recv(QJsonObject& obj, int timeout = 30000);
 
   static QString exampleKey(const char* prefix, char fill = 'A');
-  static InterfaceConfig exampleConfig();
+  static InterfaceConfig exampleConfig(char seed = 'A');
 
   static QList<const QMetaObject*> testcases();
+
+  QProcessObfuscator* obfuscator() const {
+    return qobject_cast<QProcessObfuscator*>(m_daemon->m_obfuscator.get());
+  }
 
  protected slots:
   void init();

@@ -4,12 +4,15 @@
 
 #include "mockdaemon.h"
 
+#include <QDir>
+#include <QFileInfo>
 #include <QLocalSocket>
 #include <QRandomGenerator>
 
 #include "daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "obfuscator/qprocessobfuscator.h"
 
 namespace {
 Logger logger("MockDaemon");
@@ -62,6 +65,15 @@ MockDaemon::~MockDaemon() {
 
   Q_ASSERT(s_daemon == this);
   s_daemon = nullptr;
+}
+
+Obfuscator* MockDaemon::createObfuscator(const InterfaceConfig& config) {
+  QString script = QFileInfo(__FILE__).dir().absoluteFilePath("mockobfuscator.sh");
+  if (QFileInfo::exists(script)) {
+    return new QProcessObfuscator(script, config, this);
+  } else {
+    return nullptr;
+  }
 }
 
 bool MockDaemon::activate(const InterfaceConfig& config) {

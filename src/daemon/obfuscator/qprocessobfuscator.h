@@ -12,7 +12,7 @@
 #include "../utils/interfaceconfig.h"
 #include "obfuscator.h"
 
-class QProcessObfuscator final : public QObject, public Obfuscator {
+class QProcessObfuscator final : public Obfuscator {
   Q_OBJECT
 
  public:
@@ -33,7 +33,6 @@ class QProcessObfuscator final : public QObject, public Obfuscator {
   void stderrReady();
   void stdoutReady();
 
-  quint16 parseListeningPort(const QByteArray& line) const;
   QStringList buildArgs(const InterfaceConfig& config,
                         quint16 listenPort) const;
   // Launch the relay, blocking until it announces its listening port.

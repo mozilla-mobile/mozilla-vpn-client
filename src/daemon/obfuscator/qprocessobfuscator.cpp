@@ -9,6 +9,7 @@
 #include <QDir>
 #include <QFileInfo>
 #include <QStringList>
+#include <QTimer>
 
 #include "leakdetector.h"
 #include "logger.h"
@@ -26,7 +27,7 @@ Logger logger("QProcessObfuscator");
 
 QProcessObfuscator::QProcessObfuscator(
     const QString& path, const InterfaceConfig& config, QObject* parent)
-    : QObject(parent), m_config(config) {
+    : Obfuscator(parent), m_config(config) {
   MZ_COUNT_CTOR(QProcessObfuscator);
 
   m_process.setProgram(path);
@@ -65,7 +66,7 @@ bool QProcessObfuscator::launch(quint16 listenPort) {
 
   QEventLoop loop;
   connect(this, &QProcessObfuscator::started, &loop, &QEventLoop::exit);
-  connect(&deadline, &QTimer::timeout, &loop, &QEventLoop::exit);
+  connect(&deadline, &QTimer::timeout, &loop, [&loop]() { loop.exit(); });
   connect(&m_process, &QProcess::errorOccurred, &loop,
           [&](QProcess::ProcessError) {
             logger.error() << "Failed to start obfuscator process"

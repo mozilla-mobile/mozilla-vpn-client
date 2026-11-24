@@ -17,8 +17,6 @@ add_library(mzdaemon STATIC
     mock/mockdaemon.h
     mock/wireguardutilsmock.cpp
     mock/wireguardutilsmock.h
-    obfuscator/dummyobfuscator.cpp
-    obfuscator/dummyobfuscator.h
     obfuscator/obfuscator.h
 )
 

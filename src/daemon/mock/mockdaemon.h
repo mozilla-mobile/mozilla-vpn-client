@@ -23,6 +23,8 @@ class MockDaemon final : public Daemon {
   bool activate(const InterfaceConfig& config) override;
   QString socketPath() const { return m_server.fullServerName(); }
 
+  Obfuscator* createObfuscator(const InterfaceConfig& config) override;
+
   QStringList getFeatures() const override {
     return QStringList("splitTunnel");
   }

@@ -103,7 +103,7 @@ QString TestDaemon::exampleKey(const char* prefix, char fill) {
   return key;
 }
 
-InterfaceConfig TestDaemon::exampleConfig() {
+InterfaceConfig TestDaemon::exampleConfig(char seed) {
   InterfaceConfig config;
 
   // Device configuration
@@ -114,12 +114,12 @@ InterfaceConfig TestDaemon::exampleConfig() {
   config.m_deviceIpv6Address = "fc02:1::dead:beef/128";
 
   // Wireguard server configuration.
-  config.m_serverPublicKey = exampleKey("ServerPublicKey");
+  config.m_serverPublicKey = exampleKey("ServerPublicKey", seed);
   config.m_exitCity = "Mordor";
   config.m_serverIpv4Gateway = "127.16.1.1";
   config.m_serverIpv6Gateway = "fc02::1/128";
-  config.m_serverIpv4AddrIn = "10.123.45.67";
-  config.m_serverIpv6AddrIn = "fc02:abcd::face:cafe";
+  config.m_serverIpv4AddrIn = QString("10.123.45.") + QString::number(seed);
+  config.m_serverIpv6AddrIn = QString("fc02:abcd::face:cafe:") + QString::number((seed << 8) + seed, 16);
   config.m_serverPort = 51820;
 
   // Misc configuration

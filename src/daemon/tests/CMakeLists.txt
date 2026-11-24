@@ -6,6 +6,7 @@ include(${CMAKE_SOURCE_DIR}/scripts/tests/moc-testcases.cmake)
 
 # The tests
 qt_add_executable(utest-activate utest-activate.cpp utest-activate.h)
+qt_add_executable(utest-obfuscator utest-obfuscator.cpp utest-obfuscator.h)
 qt_add_executable(utest-switch utest-switch.cpp utest-switch.h)
 qt_add_executable(utest-features utest-features.cpp utest-features.h)
 
