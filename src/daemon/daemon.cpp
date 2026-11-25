@@ -20,12 +20,6 @@
 #include "obfuscator/obfuscator.h"
 #include "wireguardutils.h"
 
-#if defined(MZ_WASM) || defined(MZ_IOS)
-#  include "obfuscator/dummyobfuscator.h"
-#else
-#  include "obfuscator/qprocessobfuscator.h"
-#endif
-
 constexpr int HANDSHAKE_POLL_MSEC = 250;
 
 namespace {

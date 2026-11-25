@@ -12,6 +12,11 @@
 #include "daemonlocalserverconnection.h"
 #include "leakdetector.h"
 #include "logger.h"
+
+#if !defined(MZ_WASM) && !defined(MZ_IOS)
+#  include "obfuscator/qprocessobfuscator.h"
+#endif
+
 #include "obfuscator/qprocessobfuscator.h"
 
 namespace {
@@ -68,6 +73,7 @@ MockDaemon::~MockDaemon() {
 }
 
 Obfuscator* MockDaemon::createObfuscator(const InterfaceConfig& config) {
+#if !defined(MZ_WASM) && !defined(MZ_IOS)
   QString script = QFileInfo(__FILE__).dir().absoluteFilePath("mockobfuscator.sh");
   if (!QFileInfo::exists(script)) {
     return nullptr;
@@ -79,6 +85,9 @@ Obfuscator* MockDaemon::createObfuscator(const InterfaceConfig& config) {
   }
 
   return obfuscator;
+#else
+  return nullptr;
+#endif
 }
 
 bool MockDaemon::activate(const InterfaceConfig& config) {
