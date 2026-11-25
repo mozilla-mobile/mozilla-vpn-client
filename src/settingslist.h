@@ -385,6 +385,29 @@ SETTING_INT(onboardingStep,        // getter
             false                  // sensitive (do not log)
 )
 
+// PKCE code verifier of an in-flight browser authentication. Persisted so the
+// flow can be completed if the process is killed while the browser is in the
+// foreground (e.g. Android destroying the activity).
+SETTING_STRING(pendingAuthCodeVerifier,        // getter
+               setPendingAuthCodeVerifier,     // setter
+               removePendingAuthCodeVerifier,  // remover
+               hasPendingAuthCodeVerifier,     // has
+               "pendingAuth/codeVerifier",     // key
+               "",                             // default value
+               true,                           // remove when reset
+               true                            // sensitive (do not log)
+)
+
+SETTING_DATETIME(pendingAuthTime,        // getter
+                 setPendingAuthTime,     // setter
+                 removePendingAuthTime,  // remover
+                 hasPendingAuthTime,     // has
+                 "pendingAuth/time",     // key
+                 QDateTime(),            // default value
+                 true,                   // remove when reset
+                 false                   // sensitive (do not log)
+)
+
 SETTING_STRING(previousLanguageCode,        // getter
                setPreviousLanguageCode,     // setter
                removePreviousLanguageCode,  // remover

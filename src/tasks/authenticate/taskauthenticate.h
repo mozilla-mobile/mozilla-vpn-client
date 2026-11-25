@@ -27,6 +27,12 @@ class TaskAuthenticate final : public Task {
   void handleDeepLink(const QUrl& url);
   void authenticatePkceSuccess(const QString& code);
 
+  // Finishes a flow started by a previous process. Must be called before run().
+  void resumeWithCode(const QString& code, const QByteArray& codeVerifier);
+
+  // Returns and clears the saved verifier or empty if missing or expired.
+  static QByteArray consumePendingCodeVerifier();
+
  signals:
   void authenticationAborted();
   void authenticationStarted();
@@ -34,6 +40,7 @@ class TaskAuthenticate final : public Task {
 
  private:
   void authenticationCompletedInternal(const QByteArray& data);
+  static void clearPendingCodeVerifier();
 
  private:
   AuthenticationListener* m_authenticationListener = nullptr;
@@ -41,6 +48,7 @@ class TaskAuthenticate final : public Task {
       AuthenticationListener::AuthenticationInBrowser;
 
   QByteArray m_pkceCodeVerifier;
+  QString m_resumeCode;
 };
 
 #endif  // TASKAUTHENTICATE_H
