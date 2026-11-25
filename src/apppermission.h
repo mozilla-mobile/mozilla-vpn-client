@@ -28,6 +28,7 @@ class AppPermission final : public QAbstractListModel {
     AppIdRole,
     AppEnabledRole,
     AppIsSystemAppRole,
+    AppGroupNamesRole,
   };
 
   static AppPermission* instance();
@@ -64,6 +65,7 @@ class AppPermission final : public QAbstractListModel {
 
  private:
   explicit AppPermission(AppListProvider* provider, QObject* parent = nullptr);
+  friend class TestAppPermission;
   struct MissingAppList;
   MissingAppList retrieveMissingApps(
       QList<AppListProvider::AppDescription> alreadyFoundApps);

@@ -6,6 +6,7 @@
 
 #include <jni.h>
 
+#include <QHash>
 #include <QJniEnvironment>
 #include <QJniObject>
 #include <QJsonDocument>
@@ -38,12 +39,27 @@ void AndroidAppListProvider::getApplicationList() {
   QJsonObject listObj = appList.object();
   QStringList keys = listObj.keys();
 
+  // Count packages per UID: only packages sharing a UID form an app group,
+  // as Android cannot exclude them from the VPN independently.
+  QHash<int, int> uidCount;
+  for (const QString& key : keys) {
+    const QJsonObject obj = listObj[key].toObject();
+    if (obj.contains("uid")) {
+      ++uidCount[obj["uid"].toInt()];
+    }
+  }
+
   QList<AppDescription> out;
   foreach (auto key, keys) {
     // Todo: get for android
     QJsonValue entry = listObj[key];
     auto const obj = entry.toObject();
-    out.append({key, obj["name"].toString(), obj["isSystemApp"].toBool()});
+    QString group;
+    if (obj.contains("uid") && uidCount.value(obj["uid"].toInt()) > 1) {
+      group = QString::number(obj["uid"].toInt());
+    }
+    out.append(
+        {key, obj["name"].toString(), obj["isSystemApp"].toBool(), group});
   }
 
   emit newAppList(out);
