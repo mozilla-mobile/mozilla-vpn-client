@@ -74,11 +74,12 @@ MockDaemon::~MockDaemon() {
 
 Obfuscator* MockDaemon::createObfuscator(const InterfaceConfig& config) {
 #if !defined(MZ_WASM) && !defined(MZ_IOS)
-  QString script = QFileInfo(__FILE__).dir().absoluteFilePath("mockobfuscator.sh");
-  if (!QFileInfo::exists(script)) {
+  QDir dir = QFileInfo(__FILE__).dir();
+  if (!dir.exists("mockobfuscator.sh")) {
     return nullptr;
   }
 
+  QString script = dir.absoluteFilePath("mockobfuscator.sh");
   auto obfuscator = new QProcessObfuscator(script, config, this);
   if (!m_obfuscatorFlags.isEmpty()) {
     obfuscator->arguments().append(m_obfuscatorFlags);

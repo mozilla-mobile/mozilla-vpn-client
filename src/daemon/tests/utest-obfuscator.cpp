@@ -4,11 +4,11 @@
 
 #include "utest-obfuscator.h"
 
-#include <QString>
-#include <QtTest/QtTest>
-
 #include <sys/types.h>
 #include <signal.h>
+
+#include <QString>
+#include <QtTest/QtTest>
 
 #include "curve25519.h"
 

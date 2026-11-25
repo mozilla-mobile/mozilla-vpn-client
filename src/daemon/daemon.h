@@ -49,7 +49,9 @@ class Daemon : public QObject {
   virtual bool supportServerSwitching(const InterfaceConfig& config) const;
   virtual bool switchServer(const InterfaceConfig& config);
 
-  virtual Obfuscator* createObfuscator(const InterfaceConfig& config) { return nullptr; }
+  virtual Obfuscator* createObfuscator(const InterfaceConfig& config) {
+    return nullptr;
+  }
 
  signals:
   void connected(const QString& pubkey);

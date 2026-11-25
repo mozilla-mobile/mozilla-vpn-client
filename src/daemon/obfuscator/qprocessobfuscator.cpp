@@ -20,8 +20,9 @@ namespace {
 Logger logger("QProcessObfuscator");
 }
 
-QProcessObfuscator::QProcessObfuscator(
-    const QString& path, const InterfaceConfig& config, QObject* parent)
+QProcessObfuscator::QProcessObfuscator(const QString& path,
+                                       const InterfaceConfig& config,
+                                       QObject* parent)
     : Obfuscator(parent) {
   MZ_COUNT_CTOR(QProcessObfuscator);
 
@@ -164,7 +165,7 @@ void QProcessObfuscator::stop() {
   logger.debug() << "Stopping obfuscator";
 
   // On Windows terminate() posts WM_CLOSE, which a console app without a
-  // message loop never receives so we just kill it.  
+  // message loop never receives so we just kill it.
 #if !defined(MZ_WINDOWS)
   m_process.terminate();
   if (m_process.waitForFinished(OBFUSCATOR_PROC_TIMEOUT_MS)) {

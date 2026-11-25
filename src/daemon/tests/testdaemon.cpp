@@ -46,12 +46,11 @@ void TestDaemon::init() {
           [this](const QString pubkey) { m_connectedEvents.append(pubkey); });
   connect(m_daemon.get(), &Daemon::backendFailure, this,
           [this](DaemonError error) { m_failureEvents.append(error); });
-  connect(m_daemon.get(), &Daemon::activationFailure, this,
-          [this]() {
-            m_failureEvents.append(DaemonError::ERROR_ACTIVATION_FAILURE);
-          });
   connect(m_daemon.get(), &Daemon::disconnected, this,
           [this]() { m_disconnectedEventCount++; });
+  connect(m_daemon.get(), &Daemon::activationFailure, this, [this]() {
+    m_failureEvents.append(DaemonError::ERROR_ACTIVATION_FAILURE);
+  });
 
   // Utilize shorter timeouts for unit testing.
   m_daemon->m_handshakeTimer.setInterval(10);
@@ -138,7 +137,8 @@ InterfaceConfig TestDaemon::exampleConfig(char seed) {
   config.m_serverIpv4Gateway = "127.16.1.1";
   config.m_serverIpv6Gateway = "fc02::1/128";
   config.m_serverIpv4AddrIn = QString("10.123.45.") + QString::number(seed);
-  config.m_serverIpv6AddrIn = QString("fc02:abcd::face:cafe:") + QString::number((seed << 8) + seed, 16);
+  config.m_serverIpv6AddrIn = QString("fc02:abcd::face:cafe:") +
+                              QString::number((seed << 8) + seed, 16);
   config.m_serverPort = 51820;
 
   // Misc configuration

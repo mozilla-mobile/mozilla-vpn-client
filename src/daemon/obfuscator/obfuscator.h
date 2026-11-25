@@ -5,8 +5,8 @@
 #ifndef OBFUSCATOR_H
 #define OBFUSCATOR_H
 
-#include <QtGlobal>
 #include <QObject>
+#include <QtGlobal>
 
 #include "daemonerrors.h"
 
