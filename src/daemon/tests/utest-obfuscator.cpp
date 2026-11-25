@@ -97,6 +97,20 @@ void TestObfuscator::switchServerAddObfuscator() {
   QVERIFY(obfuscator()->isRunning());
 }
 
+void TestObfuscator::switchServerAndFailure() {
+  // Start with the activation test
+  activate();
+
+  // Setup the mock obfuscator to fail.
+  m_daemon->setObfuscatorFlags({"--exit", "1"});
+  
+  // Perform a server switch.
+  InterfaceConfig next = exampleConfig('B');
+  next.m_obfuscationMethod = Server::ObfuscationMethod::LWO;
+  QVERIFY(m_daemon->supportServerSwitching(next));
+  QVERIFY(!m_daemon->activate(next));
+}
+
 void TestObfuscator::startupFailure() {
   InterfaceConfig config = exampleConfig();
   config.m_obfuscationMethod = Server::ObfuscationMethod::LWO;

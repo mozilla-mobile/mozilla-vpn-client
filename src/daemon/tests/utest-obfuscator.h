@@ -13,6 +13,7 @@ class TestObfuscator : public TestDaemon {
   void activate();
   void switchServerAndMethod();
   void switchServerAddObfuscator();
+  void switchServerAndFailure();
 
   void startupFailure();
   void crash();
