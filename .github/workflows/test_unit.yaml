@@ -121,6 +121,11 @@ jobs:
       - name: Setup Qt for Windows
         id: setup-qt-win
         uses: ./.github/actions/qt-setup-taskcluster
+      
+      - name: Setup MSVC dev environment
+        uses: TheMrMilchmann/setup-msvc-dev@b01428496a7be6ea8716337c299ffccc9fadc0c8 # v4.1.1
+        with:
+          arch: ${{ runner.arch }}
 
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
         with:
@@ -144,8 +149,6 @@ jobs:
 
       - name: Building tests
         env:
-          CC: "${{ env.VCINSTALLDIR }}/Tools/Llvm/${{ runner.arch }}/bin/clang-cl.exe"
-          CXX: "${{ env.VCINSTALLDIR }}/Tools/Llvm/${{ runner.arch }}/bin/clang-cl.exe"
           CMAKE_PREFIX_PATH: ${{ steps.setup-qt-win.outputs.path }}/lib/cmake
         run: |
           mkdir ./build-win
