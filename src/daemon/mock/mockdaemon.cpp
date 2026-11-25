@@ -4,6 +4,7 @@
 
 #include "mockdaemon.h"
 
+#include <QCoreApplication>
 #include <QDir>
 #include <QFileInfo>
 #include <QLocalSocket>
@@ -13,13 +14,12 @@
 #include "leakdetector.h"
 #include "logger.h"
 
-#if !defined(MZ_WASM) && !defined(MZ_IOS)
+#if !defined(Q_OS_WASM) && !defined(Q_OS_IOS)
 #  include "obfuscator/qprocessobfuscator.h"
 #endif
 
 namespace {
 Logger logger("MockDaemon");
-MockDaemon* s_daemon = nullptr;
 }  // namespace
 
 MockDaemon::MockDaemon(QObject* parent)
@@ -56,36 +56,33 @@ MockDaemon::MockDaemon(const QString& name, QObject* parent)
 
   m_dnsutils = new DnsUtilsMock(this);
   m_wgutils = new WireguardUtilsMock(this);
-
-  Q_ASSERT(s_daemon == nullptr);
-  s_daemon = this;
 }
 
 MockDaemon::~MockDaemon() {
   MZ_COUNT_DTOR(MockDaemon);
-
   logger.debug() << "Mock daemon released";
-
-  Q_ASSERT(s_daemon == this);
-  s_daemon = nullptr;
 }
 
 Obfuscator* MockDaemon::createObfuscator(const InterfaceConfig& config) {
-#if !defined(MZ_WASM) && !defined(MZ_IOS)
-  QDir dir = QFileInfo(__FILE__).dir();
-  if (!dir.exists("mockobfuscator.sh")) {
+#if defined(Q_OS_WASM) || defined(Q_OS_IOS)
+  return nullptr;
+#else
+#if defined(Q_OS_WIN)
+  const QString exename = QStringLiteral("mock-obfuscator.exe");
+#else
+  const QString exename = QStringLiteral("mock-obfuscator");
+#endif
+
+  QDir dir(QCoreApplication::applicationDirPath());
+  if (!dir.exists(exename)) {
     return nullptr;
   }
-
-  QString script = dir.absoluteFilePath("mockobfuscator.sh");
-  auto obfuscator = new QProcessObfuscator(script, config, this);
+  auto obfuscator = new QProcessObfuscator(dir.filePath(exename), config, this);
   if (!m_obfuscatorFlags.isEmpty()) {
     obfuscator->arguments().append(m_obfuscatorFlags);
   }
 
   return obfuscator;
-#else
-  return nullptr;
 #endif
 }
 

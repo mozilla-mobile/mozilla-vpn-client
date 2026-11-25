@@ -77,7 +77,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
         return false;
       }
 
-#if defined(MZ_MACOS)
+#if defined(Q_OS_MACOS)
       // macOS restores the resolvers by terminating the DNS manager process,
       // so they must be reverted before a new configuration can be applied
       // (see https://mozilla-hub.atlassian.net/browse/VPN-7752)

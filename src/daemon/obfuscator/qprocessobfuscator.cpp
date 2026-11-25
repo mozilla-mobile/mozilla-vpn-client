@@ -166,7 +166,7 @@ void QProcessObfuscator::stop() {
 
   // On Windows terminate() posts WM_CLOSE, which a console app without a
   // message loop never receives so we just kill it.
-#if !defined(MZ_WINDOWS)
+#if !defined(Q_OS_WIN)
   m_process.terminate();
   if (m_process.waitForFinished(OBFUSCATOR_PROC_TIMEOUT_MS)) {
     return;

@@ -10,7 +10,16 @@ qt_add_executable(utest-obfuscator utest-obfuscator.cpp utest-obfuscator.h)
 qt_add_executable(utest-switch utest-switch.cpp utest-switch.h)
 qt_add_executable(utest-features utest-features.cpp utest-features.h)
 
+# A mock obfuscator tool.
+add_executable(mock-obfuscator mock-obfuscator.c)
+set_target_properties(mock-obfuscator PROPERTIES
+    EXCLUDE_FROM_ALL ${BUILD_TESTS}
+    FOLDER "Tests"
+)
+add_dependencies(utest-obfuscator mock-obfuscator)
+
 get_directory_property(UTEST_ALL_TARGETS BUILDSYSTEM_TARGETS)
+list(FILTER UTEST_ALL_TARGETS INCLUDE REGEX "^utest-")
 foreach(UTEST_TARGET ${UTEST_ALL_TARGETS})
     # Every test should depend on `main.cpp` as its entry point and should link to the library.
     target_sources(${UTEST_TARGET} PRIVATE main.cpp testdaemon.cpp testdaemon.h)

@@ -31,7 +31,6 @@ endif()
 target_include_directories(mzdaemon PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(mzdaemon PUBLIC Qt6::Core Qt6::Network)
 target_link_libraries(mzdaemon PUBLIC mzutils)
-target_compile_definitions(mzdaemon PRIVATE "MZ_$<UPPER_CASE:${MZ_PLATFORM_NAME}>")
 
 if(NOT CMAKE_CROSSCOMPILING)
     add_subdirectory(tests)
