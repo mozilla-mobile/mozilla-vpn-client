@@ -65,9 +65,12 @@ Obfuscator* WindowsDaemon::createObfuscator(const InterfaceConfig& config) {
   }
   wgutils()->excludeLocalNetworks(obfuscatorServer);
 
-  // Create the obfuscator.
+  // Permit the obfuscator to bypass the firewall.
   QDir dir(QCoreApplication::applicationDirPath());
   QString binaryFile = dir.absoluteFilePath("mozillavpn-obfuscator.exe");
+  m_firewallManager->enableAppBypass(binaryFile);
+
+  // Create the obfuscator.
   return new QProcessObfuscator(binaryFile, config, this);
 }
 

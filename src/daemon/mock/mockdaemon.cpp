@@ -17,8 +17,6 @@
 #  include "obfuscator/qprocessobfuscator.h"
 #endif
 
-#include "obfuscator/qprocessobfuscator.h"
-
 namespace {
 Logger logger("MockDaemon");
 MockDaemon* s_daemon = nullptr;

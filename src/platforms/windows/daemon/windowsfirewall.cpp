@@ -23,10 +23,10 @@
 #include <QtEndian>
 #include <utility>
 
-#include "daemon/obfuscator/qprocessobfuscator.h"
 #include "ipaddress.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "obfuscator/qprocessobfuscator.h"
 #include "platforms/windows/windowsutils.h"
 #include "winsock.h"
 
@@ -203,17 +203,6 @@ bool WindowsFirewall::enableInterface(int vpnAdapterIndex) {
   if (!allowTrafficForAppOnAll(getCurrentPath(), MAX_WEIGHT, msg)) {
     return false;
   }
-  // We use excludeLocalNetworks to make the obfuscator escape the tunnel.
-  // excludeLocalNetworks sets the correct routes, but the firewall rules
-  // it creates are LOW_WEIGHT. As a result, obfuscators using port 53
-  // will still be caught by the MED_WEIGHT DNS blocking rule.
-  // Adding a firewall exception for the obfuscator daemon allows it to
-  // bypass the firewall rules.
-  msg = "Allow all for mozillavpn-obfuscator.exe";
-  if (!allowTrafficForAppOnAll(
-          QProcessObfuscator::getObfuscatorExecutablePath(), MAX_WEIGHT, msg)) {
-    return false;
-  }
   if (!blockTrafficOnPort(53, MED_WEIGHT, "Block all DNS")) {
     return false;
   }
@@ -230,6 +219,33 @@ bool WindowsFirewall::enableInterface(int vpnAdapterIndex) {
   }
   guard.dismiss();
   logger.debug() << "Killswitch on! Rules:" << m_activeRules.length();
+  return true;
+}
+
+bool WindowsFirewall::enableAppBypass(const QString& path) {
+  auto result = FwpmTransactionBegin(m_sessionHandle, NULL);
+  if (result != ERROR_SUCCESS) {
+    disableKillSwitch();
+    return false;
+  }
+  auto cleanup = qScopeGuard([&] {
+    FwpmTransactionAbort0(m_sessionHandle);
+    disableKillSwitch();
+  });
+
+  QString msg = QString("Allow all for %1").arg(QFileInfo(path).fileName());
+  if (!allowTrafficForAppOnAll(path, MAX_WEIGHT, msg)) {
+    return false;
+  }
+
+  result = FwpmTransactionCommit0(m_sessionHandle);
+  if (result != ERROR_SUCCESS) {
+    logger.error() << "FwpmTransactionCommit0 failed:"
+                   << QString::number(result, 16);
+    return false;
+  }
+
+  cleanup.dismiss();
   return true;
 }
 
