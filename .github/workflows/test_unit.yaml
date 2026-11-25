@@ -106,7 +106,7 @@ jobs:
     name: Run Unit tests on Windows
     runs-on: windows-latest
     env:
-      VCINSTALLDIR: C:\Program Files\Microsoft Visual Studio\18\Enterprise\VC
+      VCINSTALLDIR: C:/Program Files/Microsoft Visual Studio/18/Enterprise/VC
     defaults:
       run:
         shell: bash -el {0}
@@ -144,12 +144,12 @@ jobs:
 
       - name: Building tests
         env:
-          CC: "${{ env.VCINSTALLDIR }}\\Tools\\Llvm\\bin\\clang-cl.exe"
-          CXX: "${{ env.VCINSTALLDIR }}\\Tools\\Llvm\\bin\\clang-cl.exe"
+          CC: "${{ env.VCINSTALLDIR }}/Tools/Llvm/${{ runner.arch }}/bin/clang-cl.exe"
+          CXX: "${{ env.VCINSTALLDIR }}/Tools/Llvm/${{ runner.arch }}/bin/clang-cl.exe"
           CMAKE_PREFIX_PATH: ${{ steps.setup-qt-win.outputs.path }}/lib/cmake
         run: |
           mkdir ./build-win
-          ls -al "${VCINSTALLDIR}/Tools/Llvm/"
+          ls -al "${VCINSTALLDIR}/Tools/Llvm/${{ runner.arch }}/bin"
 
           cmake -S . -B ./build-win -GNinja \
               -DCMAKE_BUILD_TYPE=RelWithDebInfo \
