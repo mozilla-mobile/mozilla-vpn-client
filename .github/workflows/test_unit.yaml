@@ -105,8 +105,6 @@ jobs:
   windows-unit-tests:
     name: Run Unit tests on Windows
     runs-on: windows-latest
-    env:
-      VCINSTALLDIR: C:/Program Files/Microsoft Visual Studio/18/Enterprise/VC
     defaults:
       run:
         shell: bash -el {0}
@@ -149,6 +147,9 @@ jobs:
 
       - name: Building tests
         env:
+          CC: ${{ env.VCINSTALLDIR }}/Tools/Llvm/${{ runner.arch }}/bin/clang-cl.exe
+          CXX: ${{ env.VCINSTALLDIR }}/Tools/Llvm/${{ runner.arch }}/bin/clang-cl.exe
+          CMAKE_LINKER: ${{ env.VCINSTALLDIR }}/Tools/Llvm/${{ runner.arch }}/bin/lld-link.exe
           CMAKE_PREFIX_PATH: ${{ steps.setup-qt-win.outputs.path }}/lib/cmake
         run: |
           mkdir ./build-win
