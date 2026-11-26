@@ -27,11 +27,11 @@ There are three layers to the color files, which build off each other:
 2. Several files in the `color-themes` directory. The name of each file is the name of the theme. This assigns the named hex colors from `colors.js` to variables.
 3. `theme-derived.js`: Using the variables from the second step, it names additional variable groups that are derived from the step 2.
 
-When the client uses colors, it merges three files - `colors.js`, the one for the theme, and `theme-derived.js`. There is a hacky piece at the top of `colors.js` and the bottom of `derived-theme.js` to allow this merged file to be read as a JS object. This is well-commented in those files.
+When the client uses colors, it merges three files - `colors.js`, the one for the theme, and `theme-derived.js`. There is a hacky piece at the top of `colors.js` and the bottom of `theme-derived.js` to allow this merged file to be read as a JS object. This is well-commented in those files.
 
 ### Rules
 `check_colors.py` is run on every PR, as part of the linter check. It ensures that colors stay orderly, by checking for bad patterns:
-1. `theme.js` files and the `derived-theme.js` file cannot contain color hex codes. (Hex codes only belong in `colors.js`.)
+1. `theme.js` files and the `theme-derived.js` file cannot contain color hex codes. (Hex codes only belong in `colors.js`.)
 2. QML files cannot contain color hex codes. (Hex codes only belong in `colors.js`.)
 3. All theme files (in `color-themes` directory) must have the exact same list of theme-defined colors. (All variables must be available in all themes.)
 4. All colors in QML files must be a variable appearing in the theme files or `theme-derived.js`. (Again, no explicit hex codes or color variables - like red20 - should be in QML.)
