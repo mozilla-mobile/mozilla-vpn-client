@@ -319,7 +319,8 @@ static void wgLog(const char* msg) {
 }
 
 - (void)shutdownTunnel {
-  self.virtualInterface = nil;
+  // Drop all routes into the tunnel
+  [self flushRoutes];
 
   // Shutdown the tunnel worker.
   if (m_worker) {
@@ -331,9 +332,8 @@ static void wgLog(const char* msg) {
     dispatch_semaphore_wait(m_semaphore, delay);
   }
 
-  // Drop all routes into the tunnel
-  [self flushRoutes];
-
+  // Close the interface
+  self.virtualInterface = nil;
   if (m_tunfd >= 0) {
     close(m_tunfd);
     m_tunfd = -1;
@@ -343,6 +343,7 @@ static void wgLog(const char* msg) {
     close(m_rtsock);
     m_rtsock = -1;
   }
+
 }
 
 - (void)cancelTunnelWithError:(NSError*)error {
@@ -463,8 +464,8 @@ static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, cons
   // Append RTA_DST
   rtmAppendAddr(rtm, rtm_max_size, RTA_DST, dest);
 
-  // Append RTA_GATEWAY - unless deleting the route.
-  if (action != RTM_DELETE) {
+  // Append RTA_GATEWAY
+  if ((action != RTM_DELETE) || (flags & RTF_IFSCOPE)) {
     const char* ifname = nw_interface_get_name(self.virtualInterface);
     struct sockaddr_dl datalink;
     memset(&datalink, 0, sizeof(datalink));
