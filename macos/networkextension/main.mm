@@ -15,10 +15,7 @@ int main(int argc, char *argv[])
   }
 
   @autoreleasepool {
-    NSLog(@"started: %@ (pid: %d / uid: %d)", NSProcessInfo.processInfo.arguments.firstObject, getpid(), getuid());
-
     [NEProvider startSystemExtensionMode];
-
     [[NSRunLoop mainRunLoop] run];
   }
   return 0;

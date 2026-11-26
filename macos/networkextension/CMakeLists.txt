@@ -103,7 +103,10 @@ add_rust_library(boringtun
     FEATURES ffi-bindings
     CRATE_NAME boringtun
 )
-target_include_directories(networkextension PRIVATE ${CMAKE_SOURCE_DIR}/3rdparty/boringtun/boringtun/src)
+target_include_directories(networkextension PRIVATE
+    ${CMAKE_CURRENT_SOURCE_DIR}
+    ${CMAKE_SOURCE_DIR}/3rdparty/boringtun/boringtun/src
+)
 target_link_libraries(networkextension PRIVATE boringtun)
 
 # Install an embedded provisioning profile if one exists in the source directory.
