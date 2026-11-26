@@ -9,6 +9,7 @@
 #include <Security/SecRequirement.h>
 #include <Security/SecStaticCode.h>
 #include <Security/SecTask.h>
+#include <copyfile.h>
 #include <pwd.h>
 #include <sys/clonefile.h>
 #include <sys/stat.h>
@@ -36,13 +37,16 @@ MacOSHelperProcess::MacOSHelperProcess(const QString& name, QObject* parent)
     m_codesignResult = errSecWrPerm;
   } else {
     QString src = QDir(QCoreApplication::applicationDirPath()).filePath(name);
-    QString program = m_tempdir.filePath(name);
-    if (clonefile(qPrintable(src), qPrintable(program), 0) < 0) {
+    QString dst = m_tempdir.filePath(name);
+    copyfile_flags_t flags = COPYFILE_ALL | COPYFILE_UNLINK;
+    if ((clonefile(qPrintable(src), qPrintable(dst), 0) < 0) &&
+        (copyfile(qPrintable(src), qPrintable(dst), NULL, flags) < 0)) {
       m_logger.debug() << "clone" << src << "failed:" << strerror(errno);
       m_codesignResult = errSecWrPerm;
     } else {
-      chmod(qPrintable(program), perms);
-      setProgram(program);
+      chmod(qPrintable(dst), perms);
+      chown(qPrintable(dst), getuid(), getgid());
+      setProgram(dst);
     }
   }
   setChildProcessModifier(MacOSHelperProcess::dropPermissions);
