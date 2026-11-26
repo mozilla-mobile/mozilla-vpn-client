@@ -103,7 +103,7 @@ void IpAddressLookup::updateIpAddress() {
           emit ipv4AddressChanged();
         }
 
-        if (!ipv4.isEmpty()) {
+        if (!ipv6.isEmpty()) {
           m_ipv6Address = ipv6;
           emit ipv6AddressChanged();
         }
