@@ -140,6 +140,7 @@
 }
 
 + (void)dnsManagerPipeHandler:(NSFileHandle*)handle {
+  static os_log_t logger = vpn_log_create("dnsmanager");
   NSData* data = handle.availableData;
 
   // Check for EOF.
@@ -157,7 +158,7 @@
   for (NSString* line in [buffer componentsSeparatedByCharactersInSet:newlines]) {
     NSString* trimmed = [line stringByTrimmingCharactersInSet:whitespaces];
     if (trimmed.length) {
-      os_log_info(OS_LOG_DEFAULT, "dnsmanager: %{public}@", trimmed);
+      os_log_info(logger, "dnsmanager: %{public}@", trimmed);
     }
   }
 }

@@ -151,3 +151,8 @@ NSError* vpnPosixError(int code, NSString* desc) {
                              code:code
                          userInfo:@{NSLocalizedDescriptionKey: msg}];
 }
+
+os_log_t vpn_log_create(const char* module) {
+  NSBundle* bundle = [NSBundle mainBundle];
+  return os_log_create(bundle.bundleIdentifier.UTF8String, module);
+}
