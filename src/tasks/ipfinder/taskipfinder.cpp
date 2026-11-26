@@ -124,8 +124,10 @@ void TaskIPFinder::createRequest(const QHostAddress& address, bool ipv6) {
               REPORTERROR(errorType, name());
             }
 
-            m_requestCount = 0;
-            emit operationCompleted(QString(), QString(), QString());
+            --m_requestCount;
+            if (m_requestCount == 0) {
+              completeLookup();
+            }
           });
 
   connect(request, &NetworkRequest::requestCompleted, this,
