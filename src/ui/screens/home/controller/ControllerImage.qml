@@ -385,6 +385,8 @@ Rectangle {
         y: 4
         antialiasing: true
         smooth: true
+        border.width: 2
+        border.color: MZTheme.colors.fontColorInverted
 
         Image {
             id: insetIcon

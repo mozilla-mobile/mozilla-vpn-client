@@ -20,6 +20,8 @@ Rectangle {
     clip: true
     color: MZTheme.colors.primary
     radius: boxBackground.radius
+    border.width: MZTheme.colors.cardBorder !== MZTheme.colors.transparent ? 2 : 0
+    border.color: MZTheme.colors.cardBorder
 
     // IP Adresses
     ColumnLayout {

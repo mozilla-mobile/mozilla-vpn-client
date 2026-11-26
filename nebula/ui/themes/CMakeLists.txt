@@ -13,4 +13,6 @@ qt_add_qml_module(themes
         theme-derived.js
         color-themes/main.js
         color-themes/dark-mode.js
+        color-themes/high-contrast-light.js
+        color-themes/high-contrast-dark.js
 )

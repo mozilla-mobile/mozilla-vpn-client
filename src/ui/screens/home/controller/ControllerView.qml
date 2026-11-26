@@ -48,6 +48,9 @@ Item {
         radius: MZTheme.theme.cornerRadius * 2
         antialiasing: true
 
+        border.width: MZTheme.colors.cardBorder !== MZTheme.colors.transparent ? 2 : 0
+        border.color: MZTheme.colors.cardBorder
+
         height: box.height
         width: box.width
     }

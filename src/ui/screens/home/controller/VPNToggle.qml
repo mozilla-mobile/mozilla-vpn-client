@@ -260,6 +260,11 @@ MZButtonBase {
                 target: disconnectedOutline
                 opacity: 0
             }
+
+            PropertyChanges {
+                target: connectedOutline
+                opacity: 1
+            }
         },
 
         State {
@@ -286,6 +291,11 @@ MZButtonBase {
             PropertyChanges {
                 target: disconnectedOutline
                 opacity: 0
+            }
+
+            PropertyChanges {
+                target: connectedOutline
+                opacity: 1
             }
         },
         State {
@@ -369,6 +379,18 @@ MZButtonBase {
         border.color: MZTheme.colors.vpnToggleDisconnectedBorder
         color: MZTheme.colors.transparent
         opacity: 1
+    }
+
+    // Outline for connected state in high contrast and custom themes
+    MZFocusBorder {
+        id: connectedOutline
+
+        anchors.fill: toggle
+        anchors.margins: -2
+        radius: height / 2
+        border.color: MZTheme.colors.vpnToggleConnectedBorder
+        color: MZTheme.colors.transparent
+        opacity: 0
     }
 
     // Focus rings

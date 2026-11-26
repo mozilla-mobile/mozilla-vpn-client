@@ -44,8 +44,8 @@ Rectangle {
         color: MZTheme.colors.primary
         radius: parent.radius
         anchors.fill: parent
-        border.width: 0
-        border.color: MZTheme.colors.primary
+        border.width: MZTheme.colors.cardBorder !== MZTheme.colors.transparent ? 2 : 0
+        border.color: MZTheme.colors.cardBorder
     }
 
     RowLayout {
