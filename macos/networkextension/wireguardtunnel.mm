@@ -57,7 +57,25 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
 constexpr const int64_t WG_WORKQUEUE_TIMEOUT = 5LL * 1000000000LL;
 
 static void wgLog(const char* msg) {
-  NSLog(@"wg: %s", msg);
+  static os_log_t logger = vpn_log_create("wireguard");
+  static auto pattern = @"\\A\\d{4}-\\d{2}-\\d{2}\\S*\\s";
+  static auto regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                options:0
+                                                                  error:nil];
+
+  // Omit the timestamp, if present.
+  size_t length = strlen(msg);
+  auto text = [[NSMutableString alloc] initWithBytes:msg
+                                             length:length
+                                           encoding:NSUTF8StringEncoding];
+  auto match = [regex firstMatchInString:text
+                                 options:NSMatchingAnchored
+                                   range:NSMakeRange(0, length)];
+  if (match.range.length != NSNotFound) {
+    [text deleteCharactersInRange:match.range];
+  }
+  
+  os_log_debug(logger, "%{public}@", text);
 }
 
 - (id)init {
