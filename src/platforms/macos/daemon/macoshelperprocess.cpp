@@ -69,8 +69,12 @@ void MacOSHelperProcess::start() {
 
   if (m_codesignResult != errSecSuccess) {
     CFStringRef msg = SecCopyErrorMessageString(m_codesignResult, nullptr);
-    m_logger.debug() << "codesign failed:" << msg;
-    CFRelease(msg);
+    if (msg) {
+      m_logger.debug() << "codesign failed:" << msg;
+      CFRelease(msg);
+    } else {
+      m_logger.debug() << "codesign failed:" << (int)m_codesignResult;
+    }
     emit errorOccurred(QProcess::FailedToStart);
     return;
   }
@@ -145,9 +149,11 @@ QStringList MacOSHelperProcess::codesignRequirements() {
     if ((leaf != nullptr) && (CFGetTypeID(leaf) == SecCertificateGetTypeID())) {
       CFStringRef name;
       QString nameReqTemplate = "certificate leaf[subject.CN] = \"%1\"";
-      SecCertificateCopyCommonName((SecCertificateRef)leaf, &name);
-      requirements << nameReqTemplate.arg(QString::fromCFString(name));
-      CFRelease(name);
+      status = SecCertificateCopyCommonName((SecCertificateRef)leaf, &name);
+      if (status == errSecSuccess) {
+        requirements << nameReqTemplate.arg(QString::fromCFString(name));
+        CFRelease(name);
+      }
     }
   }
 
