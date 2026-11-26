@@ -139,60 +139,82 @@
   }
 }
 
++ (void)dnsManagerPipeHandler:(NSFileHandle*)handle {
+  NSData* data = handle.availableData;
+
+  // Check for EOF.
+  if (data.length == 0) {
+    handle.readabilityHandler = nil;
+    return;
+  }
+
+  // Parse the buffer as a sequence of newline-terminated UTF-8 strings.
+  NSString* buffer = [[NSString alloc] initWithData:data
+                                           encoding:NSUTF8StringEncoding];
+
+  NSCharacterSet* newlines = [NSCharacterSet newlineCharacterSet];
+  NSCharacterSet* whitespaces = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+  for (NSString* line in [buffer componentsSeparatedByCharactersInSet:newlines]) {
+    NSString* trimmed = [line stringByTrimmingCharactersInSet:whitespaces];
+    if (trimmed.length) {
+      os_log_info(OS_LOG_DEFAULT, "dnsmanager: %{public}@", trimmed);
+    }
+  }
+}
+
 - (void)startDnsManager:(NEDNSSettings*)settings {
   // Encode the settings as the arguments to the dnsmanager.
   NSMutableArray* args = [NSMutableArray arrayWithObject:@"dnsmanager"];
   [args addObjectsFromArray:settings.servers];
+  if (settings.domainName) {
+    [args addObjectsFromArray:@[@"--domain", settings.domainName]];
+  }
 
-  // Setup the new DNS manager task.
-  NSTask* task = [NSTask new];
-  NSPipe* pipe = [NSPipe new];
-  task.standardError = pipe;
-  task.standardOutput = pipe;
-  task.executableURL = [[NSBundle mainBundle] executableURL];
-  task.arguments = args;
+  // If the DNS manager exists - send it an update message.
+  if (self.dnsManager) {
+    [args replaceObjectAtIndex:0 withObject:@"update"];
+    NSString* message = [args componentsJoinedByString:@" "];
+    NSMutableData* payload = [NSMutableData data];
+    [payload appendData: [message dataUsingEncoding:NSUTF8StringEncoding]];
+    [payload appendBytes:"\n" length:1];
 
-  // Forward the output from the pipe to the logs.
-  pipe.fileHandleForReading.readabilityHandler = ^(NSFileHandle* handle){
-    NSData* data = handle.availableData;
-    // Check for EOF.
-    if (data.length == 0) {
-      handle.readabilityHandler = nil;
+    NSLog(@"dns manager sending: %@", message);
+    if (![self.dnsManager.standardInput isKindOfClass:[NSPipe class]]) {
+      NSLog(@"dns manager stdin is not a pipe");
       return;
     }
 
-    // Parse the buffer as a sequence of newline-terminated UTF-8 strings.
-    NSString* buffer = [[NSString alloc] initWithData:data
-                                             encoding:NSUTF8StringEncoding];
-    NSCharacterSet* newlines = [NSCharacterSet newlineCharacterSet];
-    NSCharacterSet* whitespaces = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-    for (NSString* line in [buffer componentsSeparatedByCharactersInSet:newlines]) {
-      NSString* trimmed = [line stringByTrimmingCharactersInSet:whitespaces];
-      if (trimmed.length) {
-        NSLog(@"dnsmanager: %@", trimmed);
-      }
+    NSError* error = nil;
+    NSPipe* pipe = (NSPipe*)self.dnsManager.standardInput;
+    if (![pipe.fileHandleForWriting writeData:payload error:&error]) {
+      NSLog(@"dns manager failed to update: %@", error);
     }
+    return;
+  }
+
+  // Create pipes to handle the stdout and stderr streams.
+  NSPipe* stdoutPipe = [NSPipe new];
+  stdoutPipe.fileHandleForReading.readabilityHandler = ^(NSFileHandle* handle){
+    [VPNSplitTunnelProvider dnsManagerPipeHandler:handle];
+  };
+  NSPipe* stderrPipe = [NSPipe new];
+  stderrPipe.fileHandleForReading.readabilityHandler = ^(NSFileHandle* handle){
+    [VPNSplitTunnelProvider dnsManagerPipeHandler:handle];
   };
 
-  if (self.dnsManager) {
-    NSTask* prev = self.dnsManager;
-    self.dnsManager = task;
+  // Setup the new DNS manager task.
+  NSTask* task = [NSTask new];
+  task.standardInput = [NSPipe new];
+  task.standardError = stderrPipe;
+  task.standardOutput = stdoutPipe;
+  task.executableURL = [[NSBundle mainBundle] executableURL];
+  task.arguments = args;
 
-    // Terminate the previous task and then launch the DNS manager.
-    prev.terminationHandler = ^(NSTask* task){
-      NSError* err;
-      if (![task launchAndReturnError:&err]) {
-        NSLog(@"dns manager failed to launch: %@", err);
-      }
-    };
-    [prev terminate];
-  } else {
-    // Launch the DNS manager to reconfigure the system DNS.
-    NSError* err;
-    self.dnsManager = task;
-    if (![task launchAndReturnError:&err]) {
-      NSLog(@"dns manager failed to launch: %@", err);
-    }
+  // Launch the DNS manager to reconfigure the system DNS.
+  NSError* err;
+  self.dnsManager = task;
+  if (![task launchAndReturnError:&err]) {
+    NSLog(@"dns manager failed to launch: %@", err);
   }
 }
 
