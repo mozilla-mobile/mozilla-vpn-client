@@ -177,7 +177,7 @@ Rectangle {
                                 if (MZTheme.colors.cardBorder !== MZTheme.colors.transparent) {
                                     return MZTheme.isThemeDark() ?
                                         MZTheme.colors.fontColor :
-                                        MZTheme.colors.fontColorInverted;
+                                        MZTheme.colors.normalLevelText;
                                 }
                                 return MZTheme.colors.fontColor
                             }

@@ -18,7 +18,9 @@ Rectangle {
     anchors.fill: parent
     // Panel is fixed height, prefer clipping over overflow.
     clip: true
-    color: MZTheme.colors.primary
+    color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ?
+        MZTheme.colors.bgColorStronger :
+        MZTheme.colors.primary
     radius: boxBackground.radius
     border.width: MZTheme.colors.cardBorder !== MZTheme.colors.transparent ? 2 : 0
     border.color: MZTheme.colors.cardBorder

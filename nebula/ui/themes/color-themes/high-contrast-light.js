@@ -17,7 +17,7 @@ color.primaryPressed = color.black;
 
 // Backgrounds
 color.bgColor = color.white;
-color.bgColorStronger = color.grey3;
+color.bgColorStronger = color.white;
 color.overlay = addTransparency(color.black, 0.6);
 
 // Fonts
@@ -27,8 +27,8 @@ color.fontColorDark = color.black;
 color.fontColorDarkMuted = color.grey60;
 color.fontColorWarningForConnectionBox = color.yellow90;
 color.fontColorWarningForBackground = color.yellow90;
-color.fontColorInverted = color.white;
-color.fontColorInvertedMuted = color.grey15;
+color.fontColorInverted = color.black;
+color.fontColorInvertedMuted = color.grey55;
 color.fontTitleColor = color.black;
 color.normalButtonFont = color.white;
 color.destructiveButtonFont = color.white;
@@ -95,7 +95,7 @@ color.vpnToggleDisconnected = {
 };
 
 color.vpnToggleDisconnectedBorder = color.transparent;
-color.vpnToggleConnectedBorder = color.white;
+color.vpnToggleConnectedBorder = color.transparent;
 
 color.connectedToggle = color.white;
 color.disconnectedToggle = color.white;
