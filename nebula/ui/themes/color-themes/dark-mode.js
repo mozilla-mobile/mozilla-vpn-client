@@ -42,6 +42,7 @@ color.destructiveButtonFont = color.grey55;
 color.macosPermissionTitleFont = color.grey15;
 
 // Dividers and borders
+color.cardBorder = color.transparent;
 color.divider = color.middlingGrey;
 color.dropShadow = color.grey60;
 color.scrollBar = color.grey40;
@@ -102,6 +103,7 @@ color.vpnToggleDisconnected = {
 };
 
 color.vpnToggleDisconnectedBorder = color.grey30;
+color.vpnToggleConnectedBorder = color.transparent;
 
 color.connectedToggle = color.grey50;
 color.disconnectedToggle = color.grey30;

@@ -140,5 +140,14 @@ Rectangle {
               onClicked: card._buttonAction()
           }
     }
-}
 
+    Rectangle {
+        id: cardOutline
+        anchors.fill: card
+        radius: card.radius
+        color: MZTheme.colors.transparent
+        border.width: MZTheme.colors.cardBorder !== MZTheme.colors.transparent ? 2 : 0
+        border.color: MZTheme.colors.cardBorder
+        z: 10
+    }
+}

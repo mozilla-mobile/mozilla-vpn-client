@@ -58,7 +58,9 @@ RowLayout {
         id: ipRefreshToggleButton
         visible: showRotateButton && MZFeatureList.get("showRotateIPAddressButton").isSupported && VPNIPAddressLookup.isFinished
         accessibleName: MZI18n.ConnectionInfoRotateIPAddress
-        buttonColorScheme: MZTheme.colors.iconButtonDarkBackground
+        buttonColorScheme: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark())
+            ? MZTheme.colors.iconButtonLightBackground
+            : MZTheme.colors.iconButtonDarkBackground
         onClicked: {
             VPN.silentSwitch();
         }
@@ -67,7 +69,9 @@ RowLayout {
             property int iconSize: MZTheme.theme.iconSize * 1.5
 
             anchors.centerIn: ipRefreshToggleButton
-            source: MZAssetLookup.getImageSource("RefreshArrowsIPInfo")
+            source: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark())
+                ? MZAssetLookup.getImageSource("RefreshArrowsTintable")
+                : MZAssetLookup.getImageSource("RefreshArrowsIPInfo")
             sourceSize {
                 height: iconSize
                 width: iconSize
@@ -80,7 +84,9 @@ RowLayout {
 
         visible: showCopyButton
         accessibleName: "Copy %1".arg(ipAddress.text)
-        buttonColorScheme: MZTheme.colors.iconButtonDarkBackground
+        buttonColorScheme: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark())
+            ? MZTheme.colors.iconButtonLightBackground
+            : MZTheme.colors.iconButtonDarkBackground
         onClicked: {
             MZUtils.storeInClipboard(ipAddress.text);
             MZErrorHandler.requestAlert(MZErrorHandler.CopiedToClipboardConfirmationAlert);

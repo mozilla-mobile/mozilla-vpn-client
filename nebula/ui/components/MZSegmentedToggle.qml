@@ -22,6 +22,8 @@ Rectangle {
     activeFocusOnTab: true
     color: MZTheme.colors.inputHighlight
     radius: 24
+    border.width: MZTheme.colors.cardBorder !== MZTheme.colors.transparent ? 2 : 0
+    border.color: MZTheme.colors.cardBorder
 
     onFocusChanged: if(focus) options.itemAt(selectedIndex).focus = true
 
@@ -56,7 +58,9 @@ Rectangle {
         }
 
         implicitWidth: (parent.width - 8) / model.count
-        color: MZTheme.colors.bgColor
+        color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && MZTheme.isThemeDark()) ?
+            MZTheme.colors.fontColor :
+            MZTheme.colors.bgColor
         radius: parent.radius
 
         Behavior on anchors.leftMargin {
@@ -156,7 +160,12 @@ Rectangle {
                         Accessible.ignored: true
                         color: {
                             if (root.selectedIndex === index) {
-                                return MZTheme.colors.primaryBrighter
+                                if (MZTheme.colors.cardBorder !== MZTheme.colors.transparent) {
+                                    return MZTheme.isThemeDark() ?
+                                        MZTheme.colors.primary :
+                                        MZTheme.colors.fontColor;
+                                }
+                                return MZTheme.colors.primaryBrighter;
                             }
 
                             switch(segment.state) {
@@ -165,6 +174,11 @@ Rectangle {
                             case MZTheme.theme.uiState.stateHovered:
                                 return MZTheme.colors.fontColorDark
                             default:
+                                if (MZTheme.colors.cardBorder !== MZTheme.colors.transparent) {
+                                    return MZTheme.isThemeDark() ?
+                                        MZTheme.colors.fontColor :
+                                        MZTheme.colors.normalLevelText;
+                                }
                                 return MZTheme.colors.fontColor
                             }
                         }

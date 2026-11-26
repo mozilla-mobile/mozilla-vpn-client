@@ -10,6 +10,7 @@ class TestThemes final : public TestHelper {
  private slots:
   void loadTheme_data();
   void loadTheme();
+  void isThemeDark();
 
   void model();
 };

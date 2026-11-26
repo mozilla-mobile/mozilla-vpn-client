@@ -42,9 +42,22 @@ class Theme final : public QAbstractListModel {
 
   const QString& currentTheme() const { return m_currentTheme; }
 
-  // Todo: Add a thing for themes to define, if they are using dark or light
-  // resources. `useDarkAssets` is available, add this to ThemeData and connect.
-  Q_INVOKABLE bool isThemeDark() { return m_currentTheme != "main"; }
+  // Returns whether the current theme uses dark mode assets and styling.
+  Q_INVOKABLE bool isThemeDark() const {
+    if (m_currentTheme == "main" || m_currentTheme == "high-contrast-light") {
+      return false;
+    }
+    if (m_currentTheme == "dark-mode" ||
+        m_currentTheme == "high-contrast-dark") {
+      return true;
+    }
+    // Fallback to checking the theme color property if defined.
+    if (readColors().hasProperty("useDarkAssets") &&
+        readColors().property("useDarkAssets").isBool()) {
+      return readColors().property("useDarkAssets").toBool();
+    }
+    return false;
+  }
 
   void setCurrentTheme(const QString& themeName);
 

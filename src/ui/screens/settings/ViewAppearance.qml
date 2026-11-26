@@ -48,6 +48,18 @@ MZViewBase {
                     radioButtonName: "darkAppearanceRadioButton"
                     radioButtonId: "darkRadioButton"
                 }
+
+                ListElement {
+                    textName: "SettingsAppearanceHighContrastLight"
+                    radioButtonName: "highContrastLightAppearanceRadioButton"
+                    radioButtonId: "highContrastLightRadioButton"
+                }
+
+                ListElement {
+                    textName: "SettingsAppearanceHighContrastDark"
+                    radioButtonName: "highContrastDarkAppearanceRadioButton"
+                    radioButtonId: "highContrastDarkRadioButton"
+                }
             }
 
             delegate: RowLayout {
@@ -107,6 +119,10 @@ MZViewBase {
             return MZTheme.currentTheme == "dark-mode" && !MZSettings.usingSystemTheme
         case "lightAppearanceRadioButton":
             return MZTheme.currentTheme == "main" && !MZSettings.usingSystemTheme
+        case "highContrastLightAppearanceRadioButton":
+            return MZTheme.currentTheme == "high-contrast-light" && !MZSettings.usingSystemTheme
+        case "highContrastDarkAppearanceRadioButton":
+            return MZTheme.currentTheme == "high-contrast-dark" && !MZSettings.usingSystemTheme
         default:
             console.error("Unable to find radio button type: " + buttonId)
             return false
@@ -123,6 +139,12 @@ MZViewBase {
             return
         case "lightAppearanceRadioButton":
             setTheme("main")
+            return
+        case "highContrastLightAppearanceRadioButton":
+            setTheme("high-contrast-light")
+            return
+        case "highContrastDarkAppearanceRadioButton":
+            setTheme("high-contrast-dark")
             return
         default:
             console.error("Unable to find radio button type: " + buttonId)

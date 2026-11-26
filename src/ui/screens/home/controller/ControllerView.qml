@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Effects
 import QtQuick.Layouts 1.14
 
 import Mozilla.Shared 1.0
@@ -47,6 +48,9 @@ Item {
 
         radius: MZTheme.theme.cornerRadius * 2
         antialiasing: true
+
+        border.width: MZTheme.colors.cardBorder !== MZTheme.colors.transparent ? 2 : 0
+        border.color: MZTheme.colors.cardBorder
 
         height: box.height
         width: box.width
@@ -155,7 +159,9 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: MZTheme.colors.primary
+                color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ?
+                    MZTheme.colors.bgColorStronger :
+                    MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -199,7 +205,9 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: MZTheme.colors.primary
+                color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ?
+                    MZTheme.colors.bgColorStronger :
+                    MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -245,7 +253,9 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: MZTheme.colors.primary
+                color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ?
+                    MZTheme.colors.bgColorStronger :
+                    MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -293,7 +303,9 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: MZTheme.colors.primary
+                color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ?
+                    MZTheme.colors.bgColorStronger :
+                    MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -373,7 +385,9 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: MZTheme.colors.primary
+                color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ?
+                    MZTheme.colors.bgColorStronger :
+                    MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -414,7 +428,9 @@ Item {
 
             PropertyChanges {
                 target: boxBackground
-                color: MZTheme.colors.primary
+                color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ?
+                    MZTheme.colors.bgColorStronger :
+                    MZTheme.colors.primary
             }
 
             PropertyChanges {
@@ -514,6 +530,18 @@ Item {
             Qt.application.state === Qt.ApplicationInactive)
     }
 
+    MultiEffect {
+        id: animatedRingsDarkEffect
+        anchors.fill: animatedRings
+        colorization: 1.0
+        colorizationColor: "#000000"
+        opacity: animatedRings.opacity
+        source: animatedRings
+        visible: animatedRings.visible
+            && MZTheme.colors.cardBorder !== MZTheme.colors.transparent
+            && !MZTheme.isThemeDark()
+    }
+
     ControllerImage {
         id: logo
 
@@ -540,7 +568,9 @@ Item {
             ? connectionInfoCloseText
             : MZI18n.ConnectionInfoConnectionInformation
         Accessible.ignored: !enabled || !visible
-        buttonColorScheme: MZTheme.colors.iconButtonDarkBackground
+        buttonColorScheme: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark())
+            ? MZTheme.colors.iconButtonLightBackground
+            : MZTheme.colors.iconButtonDarkBackground
         enabled: visible && VPNConnectionHealth.stability !== VPNConnectionHealth.NoSignal
         opacity: visible ? 1 : 0
         visible: VPNController.state === VPNController.StateOn || VPNController.state === VPNController.StateSilentSwitching
@@ -550,19 +580,36 @@ Item {
         }
 
         Image {
+            id: ipInfoToggleIcon
             property int iconSize: ipInfoPanel.isOpen
                 ? MZTheme.theme.iconSize
                 : MZTheme.theme.iconSize * 1.5
 
             anchors.centerIn: ipInfoToggleButton
-            source: ipInfoPanel.isOpen
-                ? MZAssetLookup.getImageSource("CloseWhite")
-                : MZAssetLookup.getImageSource("InfoIconControllerPanel")
+            source: {
+                if (ipInfoPanel.isOpen) {
+                    return MZAssetLookup.getImageSource("CloseWhite");
+                }
+                return (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark())
+                    ? MZAssetLookup.getImageSource("InfoIcon")
+                    : MZAssetLookup.getImageSource("InfoIconControllerPanel");
+            }
             sourceSize {
                 height: iconSize
                 width: iconSize
             }
             opacity: parent.enabled ? 1 : .6
+            visible: !ipInfoToggleIconBlackEffect.visible
+        }
+
+        MultiEffect {
+            id: ipInfoToggleIconBlackEffect
+            anchors.fill: ipInfoToggleIcon
+            colorization: 1.0
+            colorizationColor: "#000000"
+            opacity: ipInfoToggleIcon.opacity
+            source: ipInfoToggleIcon
+            visible: MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()
         }
 
         Behavior on opacity {

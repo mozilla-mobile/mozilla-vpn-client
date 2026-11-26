@@ -3,6 +3,7 @@
  * file, You can obtain one at http://mozilla.org/MPL/2.0/. */
 
 import QtQuick 2.5
+import QtQuick.Effects
 
 import Mozilla.Shared 1.0
 import Mozilla.VPN 1.0
@@ -27,7 +28,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAlert.defaultColor
+                color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ? MZTheme.colors.green50 : MZTheme.colors.successAlert.defaultColor
             }
             PropertyChanges {
                 target: insetIcon
@@ -44,7 +45,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAlert.defaultColor
+                color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ? MZTheme.colors.green50 : MZTheme.colors.successAlert.defaultColor
             }
             PropertyChanges {
                 target: insetIcon
@@ -62,7 +63,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAlert.defaultColor
+                color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ? MZTheme.colors.green50 : MZTheme.colors.successAlert.defaultColor
             }
             PropertyChanges {
                 target: insetIcon
@@ -100,7 +101,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAlert.defaultColor
+                color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ? MZTheme.colors.green50 : MZTheme.colors.successAlert.defaultColor
             }
             PropertyChanges {
                 target: switchingIcon
@@ -120,7 +121,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAlert.defaultColor
+                color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ? MZTheme.colors.green50 : MZTheme.colors.successAlert.defaultColor
             }
             PropertyChanges {
                 target: insetIcon
@@ -195,7 +196,7 @@ Rectangle {
             }
             PropertyChanges {
                 target: insetCircle
-                color: MZTheme.colors.successAlert.defaultColor
+                color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ? MZTheme.colors.green50 : MZTheme.colors.successAlert.defaultColor
             }
             PropertyChanges {
                 target: insetIcon
@@ -385,6 +386,8 @@ Rectangle {
         y: 4
         antialiasing: true
         smooth: true
+        border.width: 2
+        border.color: MZTheme.colors.fontColorInverted
 
         Image {
             id: insetIcon
@@ -393,6 +396,18 @@ Rectangle {
             sourceSize.width: 32
             anchors.centerIn: insetCircle
             opacity: 1
+            visible: !insetIconBlackEffect.visible
+        }
+
+        MultiEffect {
+            id: insetIconBlackEffect
+            anchors.fill: insetIcon
+            colorization: 1.0
+            colorizationColor: "#000000"
+            opacity: insetIcon.opacity
+            source: insetIcon
+            visible: MZTheme.colors.cardBorder !== MZTheme.colors.transparent
+                && insetIcon.source.toString() === MZAssetLookup.getImageSource("ShieldOn")
         }
 
         Image {
@@ -438,7 +453,11 @@ Rectangle {
                 break;
 
             case(VPNConnectionHealth.Stable):
-                insetCircle.color = MZTheme.colors.successAlert.defaultColor;
+                insetCircle.color = Qt.binding(function() {
+                    return (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark())
+                        ? MZTheme.colors.green50
+                        : MZTheme.colors.successAlert.defaultColor;
+                });
                 insetIcon.source = MZAssetLookup.getImageSource("ShieldOn");
                 break;
 

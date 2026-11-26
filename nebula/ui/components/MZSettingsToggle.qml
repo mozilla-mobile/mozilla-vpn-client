@@ -82,13 +82,28 @@ CheckBox {
         opacity: vpnSettingsToggle.activeFocus ? 1: 0
     }
 
+    MZFocusBorder {
+        id: toggleBoundaryOutline
+
+        anchors.fill: uiPlaceholder
+        anchors.margins: -2
+        radius: height / 2
+        border.color: checked ? MZTheme.colors.vpnToggleConnectedBorder : MZTheme.colors.vpnToggleDisconnectedBorder
+        color: MZTheme.colors.transparent
+        opacity: border.color !== MZTheme.colors.transparent ? 1 : 0
+    }
+
     Rectangle {
         id: cursor
 
         height: 18
         width: 18
         radius: 9
-        color: MZTheme.colors.bgColorStronger
+        color: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && MZTheme.isThemeDark()) ?
+            MZTheme.colors.fontColor :
+            MZTheme.colors.bgColorStronger
+        border.width: (MZTheme.colors.cardBorder !== MZTheme.colors.transparent && !MZTheme.isThemeDark()) ? 1 : 0
+        border.color: MZTheme.colors.primary
         z: 1
         anchors.verticalCenter: vpnSettingsToggle.verticalCenter
     }

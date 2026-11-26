@@ -416,6 +416,12 @@ settings:
   appearanceDark:
     value: Dark
     comment: Dark as in "dark mode theme"
+  appearanceHighContrastLight:
+    value: High contrast (light)
+    comment: High contrast light mode theme
+  appearanceHighContrastDark:
+    value: High contrast (dark)
+    comment: High contrast dark mode theme
   decryptionErrorText: We couldn’t access your saved VPN settings. Please sign in again.
 
 bypassVPN:

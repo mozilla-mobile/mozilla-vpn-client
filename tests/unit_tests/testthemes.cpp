@@ -47,6 +47,22 @@ void TestThemes::loadTheme() {
   QVERIFY(t->readColors().isObject());
 }
 
+void TestThemes::isThemeDark() {
+  Theme* t = Theme::instance();
+
+  t->setCurrentTheme("main");
+  QVERIFY(!t->isThemeDark());
+
+  t->setCurrentTheme("high-contrast-light");
+  QVERIFY(!t->isThemeDark());
+
+  t->setCurrentTheme("dark-mode");
+  QVERIFY(t->isThemeDark());
+
+  t->setCurrentTheme("high-contrast-dark");
+  QVERIFY(t->isThemeDark());
+}
+
 void TestThemes::model() {
   QQmlApplicationEngine engine;
   QmlEngineHolder qml(&engine);
