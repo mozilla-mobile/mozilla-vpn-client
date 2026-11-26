@@ -91,6 +91,17 @@ function(osx_codesign_target TARGET)
     endforeach()
 endfunction()
 
+# For diagnostic assistance, print the provisioning profile name.
+function(__osx_log_provision_profile TARGET FILENAME)
+    execute_process(
+        OUTPUT_VARIABLE PROFILE_NAME
+        OUTPUT_STRIP_TRAILING_WHITESPACE
+        COMMAND security cms -D -i ${FILENAME}
+        COMMAND plutil -extract Name raw -
+    )
+    message("${TARGET} using provisioning profile: ${PROFILE_NAME}")
+endfunction()
+
 function(osx_embed_provision_profile TARGET)
     ## Xcode should perform manage this for us.
     if(XCODE)
@@ -100,15 +111,13 @@ function(osx_embed_provision_profile TARGET)
     if(NOT CODE_SIGN_IDENTITY)
         return()
     endif()
-    ## A provisioning profile can be manually specified
-    if(CODE_SIGN_PROFILE)
-        add_custom_command(
-            OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile
-            DEPENDS ${CODE_SIGN_PROFILE}
-            COMMAND ${CMAKE_COMMAND} -E copy ${CODE_SIGN_PROFILE} ${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile
-        )
-        target_sources(${TARGET} PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile)
-        set_source_files_properties(${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile PROPERTIES
+
+    ## Check for an embedded provioning profile in the source dir.
+    get_target_property(TARGET_SOURCE_DIR ${TARGET} SOURCE_DIR)
+    if(EXISTS ${TARGET_SOURCE_DIR}/embedded.provisionprofile)
+        __osx_log_provision_profile(${TARGET} ${TARGET_SOURCE_DIR}/embedded.provisionprofile)
+        target_sources(${TARGET} PRIVATE ${TARGET_SOURCE_DIR}/embedded.provisionprofile)
+        set_source_files_properties(${TARGET_SOURCE_DIR}/embedded.provisionprofile PROPERTIES
             MACOSX_PACKAGE_LOCATION "/"
             HEADER_FILE_ONLY TRUE
             GENERATED TRUE
@@ -199,15 +208,7 @@ function(osx_embed_provision_profile TARGET)
 
     # If a provisioning profile was found - embed it into the bundle
     if(BEST_PROFILE)
-        # For diagnostic assistance, print the provisioning profile name.
-        execute_process(
-            OUTPUT_VARIABLE PROFILE_NAME
-            OUTPUT_STRIP_TRAILING_WHITESPACE
-            COMMAND security cms -D -i ${BEST_PROFILE}
-            COMMAND plutil -extract Name raw -
-        )
-        message("Using provisioning profile: ${PROFILE_NAME}")
-
+        __osx_log_provision_profile(${TARGET} ${TARGET_SOURCE_DIR}/embedded.provisionprofile)
         add_custom_command(
             OUTPUT ${CMAKE_CURRENT_BINARY_DIR}/embedded.provisionprofile
             DEPENDS ${BEST_PROFILE}
