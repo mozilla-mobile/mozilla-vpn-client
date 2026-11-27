@@ -4,8 +4,8 @@
 
 #include "utest-obfuscator.h"
 
-#include <sys/types.h>
 #include <signal.h>
+#include <sys/types.h>
 
 #include <QString>
 #include <QtTest/QtTest>

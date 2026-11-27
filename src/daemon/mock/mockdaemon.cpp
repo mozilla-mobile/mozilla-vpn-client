@@ -67,11 +67,11 @@ Obfuscator* MockDaemon::createObfuscator(const InterfaceConfig& config) {
 #if defined(Q_OS_WASM) || defined(Q_OS_IOS)
   return nullptr;
 #else
-#if defined(Q_OS_WIN)
+#  if defined(Q_OS_WIN)
   const QString exename = QStringLiteral("mock-obfuscator.exe");
-#else
+#  else
   const QString exename = QStringLiteral("mock-obfuscator");
-#endif
+#  endif
 
   QDir dir(QCoreApplication::applicationDirPath());
   if (!dir.exists(exename)) {

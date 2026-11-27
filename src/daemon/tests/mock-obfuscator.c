@@ -5,7 +5,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <sys/time.h>
+#include <time.h>
 #include <unistd.h>
 
 int main(int argc, char* argv[]) {
@@ -19,14 +19,14 @@ int main(int argc, char* argv[]) {
   int listen = 0;
   for (int i = 1; i < argc; i++) {
     const char* s = argv[i];
-    const char* next = (i + 1) < argc ? argv[i+1] : "";
+    const char* next = (i + 1) < argc ? argv[i + 1] : "";
 
     if (strcmp(s, "--listen-port") == 0) {
-        listen = atoi(next);
+      listen = atoi(next);
     } else if (strcmp(s, "--nolisten") == 0) {
-        listen = -1;
+      listen = -1;
     } else if (strcmp(s, "--exit") == 0) {
-        return atoi(next);
+      return atoi(next);
     }
   }
 
