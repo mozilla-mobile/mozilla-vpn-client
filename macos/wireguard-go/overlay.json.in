@@ -1,0 +1,5 @@
+{
+    "Replace": {
+        "tun/tun_darwin.go": "${CMAKE_CURRENT_BINARY_DIR}/tun_darwin_patch.go"
+    }
+}

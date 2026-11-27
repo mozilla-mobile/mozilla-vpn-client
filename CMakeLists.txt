@@ -176,6 +176,10 @@ if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" OR
    ${CMAKE_SYSTEM_NAME} STREQUAL "Darwin")
     add_subdirectory(extension)
 endif()
+if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+    add_subdirectory(macos/networkextension)
+    add_subdirectory(macos/wireguard-go)
+endif()
 
 # VPN Client build targets
 add_subdirectory(src)
@@ -201,7 +205,6 @@ if(WIN32)
 
 elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
     add_subdirectory(macos/pkg)
-    add_subdirectory(macos/networkextension)
 elseif(IOS)
     add_subdirectory(ios/networkextension)
     add_subdirectory(ios/widgetextension)

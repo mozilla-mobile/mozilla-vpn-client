@@ -1,0 +1,30 @@
+diff --git a/tun/tun_darwin.go b/tun/tun_darwin.go
+index 341afe3..f9db354 100644
+--- a/tun/tun_darwin.go
++++ b/tun/tun_darwin.go
+@@ -261,25 +261,6 @@ func (tun *NativeTun) Close() error {
+ }
+ 
+ func (tun *NativeTun) setMTU(n int) error {
+-	fd, err := socketCloexec(
+-		unix.AF_INET,
+-		unix.SOCK_DGRAM,
+-		0,
+-	)
+-	if err != nil {
+-		return err
+-	}
+-
+-	defer unix.Close(fd)
+-
+-	var ifr unix.IfreqMTU
+-	copy(ifr.Name[:], tun.name)
+-	ifr.MTU = int32(n)
+-	err = unix.IoctlSetIfreqMTU(fd, &ifr)
+-	if err != nil {
+-		return fmt.Errorf("failed to set MTU on %s: %w", tun.name, err)
+-	}
+-
+ 	return nil
+ }
+ 
