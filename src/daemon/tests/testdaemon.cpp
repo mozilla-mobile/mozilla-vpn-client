@@ -38,6 +38,20 @@ void TestDaemon::init() {
   m_wgutils = qobject_cast<WireguardUtilsMock*>(m_daemon->wgutils());
   QVERIFY(m_wgutils);
 
+  // Reset the captured signal events.
+  m_connectedEvents.clear();
+  m_failureEvents.clear();
+  m_disconnectedEventCount = 0;
+  connect(m_daemon.get(), &Daemon::connected, this,
+          [this](const QString pubkey) { m_connectedEvents.append(pubkey); });
+  connect(m_daemon.get(), &Daemon::backendFailure, this,
+          [this](DaemonError error) { m_failureEvents.append(error); });
+  connect(m_daemon.get(), &Daemon::disconnected, this,
+          [this]() { m_disconnectedEventCount++; });
+  connect(m_daemon.get(), &Daemon::activationFailure, this, [this]() {
+    m_failureEvents.append(DaemonError::ERROR_ACTIVATION_FAILURE);
+  });
+
   // Utilize shorter timeouts for unit testing.
   m_daemon->m_handshakeTimer.setInterval(10);
   m_wgutils->setHandshakeDelay(50);
@@ -68,6 +82,10 @@ void TestDaemon::cleanup() {
   m_daemon.reset(nullptr);
   m_dnsutils = nullptr;
   m_wgutils = nullptr;
+
+  m_connectedEvents.clear();
+  m_failureEvents.clear();
+  m_disconnectedEventCount = 0;
 }
 
 void TestDaemon::send(const QJsonObject& msg) {
@@ -103,7 +121,7 @@ QString TestDaemon::exampleKey(const char* prefix, char fill) {
   return key;
 }
 
-InterfaceConfig TestDaemon::exampleConfig() {
+InterfaceConfig TestDaemon::exampleConfig(char seed) {
   InterfaceConfig config;
 
   // Device configuration
@@ -114,12 +132,13 @@ InterfaceConfig TestDaemon::exampleConfig() {
   config.m_deviceIpv6Address = "fc02:1::dead:beef/128";
 
   // Wireguard server configuration.
-  config.m_serverPublicKey = exampleKey("ServerPublicKey");
+  config.m_serverPublicKey = exampleKey("ServerPublicKey", seed);
   config.m_exitCity = "Mordor";
   config.m_serverIpv4Gateway = "127.16.1.1";
   config.m_serverIpv6Gateway = "fc02::1/128";
-  config.m_serverIpv4AddrIn = "10.123.45.67";
-  config.m_serverIpv6AddrIn = "fc02:abcd::face:cafe";
+  config.m_serverIpv4AddrIn = QString("10.123.45.") + QString::number(seed);
+  config.m_serverIpv6AddrIn = QString("fc02:abcd::face:cafe:") +
+                              QString::number((seed << 8) + seed, 16);
   config.m_serverPort = 51820;
 
   // Misc configuration

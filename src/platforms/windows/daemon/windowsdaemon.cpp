@@ -8,6 +8,7 @@
 #include <qassert.h>
 
 #include <QCoreApplication>
+#include <QDir>
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QJsonValue>
@@ -20,6 +21,7 @@
 #include "dnsutilswindows.h"
 #include "leakdetector.h"
 #include "logger.h"
+#include "obfuscator/qprocessobfuscator.h"
 #include "platforms/windows/daemon/windowsfirewall.h"
 #include "platforms/windows/daemon/windowssplittunnel.h"
 #include "platforms/windows/windowscommons.h"
@@ -50,6 +52,26 @@ WindowsDaemon::WindowsDaemon() : Daemon(nullptr) {
 WindowsDaemon::~WindowsDaemon() {
   MZ_COUNT_DTOR(WindowsDaemon);
   logger.debug() << "Daemon released";
+}
+
+Obfuscator* WindowsDaemon::createObfuscator(const InterfaceConfig& config) {
+  // Add exclusion route for exit server to prevent loopbacks
+  QList<IPAddress> obfuscatorServer;
+  if (!config.m_serverIpv4AddrIn.isEmpty()) {
+    obfuscatorServer.append(IPAddress(config.m_serverIpv4AddrIn));
+  }
+  if (!config.m_serverIpv6AddrIn.isEmpty()) {
+    obfuscatorServer.append(IPAddress(config.m_serverIpv6AddrIn));
+  }
+  wgutils()->excludeLocalNetworks(obfuscatorServer);
+
+  // Permit the obfuscator to bypass the firewall.
+  QDir dir(QCoreApplication::applicationDirPath());
+  QString binaryFile = dir.absoluteFilePath("mozillavpn-obfuscator.exe");
+  m_firewallManager->enableAppBypass(binaryFile);
+
+  // Create the obfuscator.
+  return new QProcessObfuscator(binaryFile, config, this);
 }
 
 bool WindowsDaemon::run(Op op, const InterfaceConfig& config) {

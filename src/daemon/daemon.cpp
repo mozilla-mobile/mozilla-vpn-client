@@ -20,12 +20,6 @@
 #include "obfuscator/obfuscator.h"
 #include "wireguardutils.h"
 
-#if defined(MZ_WASM) || defined(MZ_IOS)
-#  include "obfuscator/dummyobfuscator.h"
-#else
-#  include "obfuscator/qprocessobfuscator.h"
-#endif
-
 constexpr int HANDSHAKE_POLL_MSEC = 250;
 
 namespace {
@@ -83,7 +77,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
         return false;
       }
 
-#if defined(MZ_MACOS)
+#if defined(Q_OS_MACOS)
       // macOS restores the resolvers by terminating the DNS manager process,
       // so they must be reverted before a new configuration can be applied
       // (see https://mozilla-hub.atlassian.net/browse/VPN-7752)
@@ -152,44 +146,36 @@ bool Daemon::activate(const InterfaceConfig& config) {
   // If an obfuscator is configured, start the relay and rewrite the peer
   // endpoint so WireGuard talks to it instead of the real server.
   // For multi-hop configure obfuscator only on the entry node.
-  std::unique_ptr<Obfuscator> obfuscator;
   InterfaceConfig peerConfig = config;
   if (config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
       config.m_hopType != InterfaceConfig::MultiHopExit) {
-    obfuscator = createObfuscator(config);
-#if defined(MZ_WINDOWS)
-    // Add exclusion route for exit server to prevent loopbacks
-    {
-      QList<IPAddress> obfuscatorServer;
-      if (!config.m_serverIpv4AddrIn.isEmpty()) {
-        obfuscatorServer.append(IPAddress(config.m_serverIpv4AddrIn));
-      }
-      if (!config.m_serverIpv6AddrIn.isEmpty()) {
-        obfuscatorServer.append(IPAddress(config.m_serverIpv6AddrIn));
-      }
-      wgutils()->excludeLocalNetworks(obfuscatorServer);
+    m_obfuscator.reset(createObfuscator(config));
+    if (!m_obfuscator) {
+      logger.error() << "Obfuscation is not supported on this platform";
+      return false;
     }
-#endif
-    if (!obfuscator->start()) {
+    connect(this, &Daemon::activationFailure, this,
+            [this]() { m_obfuscator.reset(nullptr); });
+    connect(m_obfuscator.get(), &Obfuscator::backendFailure, this,
+            &Daemon::backendFailure);
+
+    if (!m_obfuscator->start()) {
       logger.error() << "Failed to start obfuscator"
                      << config.m_obfuscationMethod;
       return false;
     }
-    peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
+
     // The obfuscator only binds 127.0.0.1, so clear the IPv6 endpoint to keep
     // WireGuard from selecting an [::1]
+    peerConfig.m_serverIpv4AddrIn = "127.0.0.1";
     peerConfig.m_serverIpv6AddrIn = QString();
-    peerConfig.m_serverPort = obfuscator->localPort();
+    peerConfig.m_serverPort = m_obfuscator->localPort();
   }
+
   // Add the peer to this interface.
   if (!wgutils()->updatePeer(peerConfig)) {
     logger.error() << "Peer creation failed.";
     return false;
-  }
-
-  // Take ownership of the new obfuscator (entry hop only).
-  if (config.m_hopType != InterfaceConfig::MultiHopExit) {
-    m_obfuscator = std::move(obfuscator);
   }
 
   if (!maybeUpdateResolvers(config)) {
@@ -290,15 +276,6 @@ QString Daemon::logs() {
 
 void Daemon::cleanLogs() { LogHandler::instance()->cleanupLogs(); }
 
-std::unique_ptr<Obfuscator> Daemon::createObfuscator(
-    const InterfaceConfig& config) {
-#if defined(MZ_WASM) || defined(MZ_IOS)
-  return std::make_unique<DummyObfuscator>(config);
-#else
-  return std::make_unique<QProcessObfuscator>(config);
-#endif
-}
-
 bool Daemon::supportServerSwitching(const InterfaceConfig& config) const {
   if (!m_connections.contains(config.m_hopType)) {
     return false;
@@ -323,24 +300,14 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
       m_connections.value(config.m_hopType).m_config;
 
   // Stand up a new obfuscator for the new endpoint (entry hop only)
-  std::unique_ptr<Obfuscator> obfuscator;
   InterfaceConfig peerConfig = config;
   if (config.m_obfuscationMethod != Server::ObfuscationMethod::NoObfuscation &&
       config.m_hopType != InterfaceConfig::MultiHopExit) {
-    obfuscator = createObfuscator(config);
-#if defined(MZ_WINDOWS)
-    // Add exclusion route for exit server to prevent loopbacks
-    {
-      QList<IPAddress> obfuscatorServer;
-      if (!config.m_serverIpv4AddrIn.isEmpty()) {
-        obfuscatorServer.append(IPAddress(config.m_serverIpv4AddrIn));
-      }
-      if (!config.m_serverIpv6AddrIn.isEmpty()) {
-        obfuscatorServer.append(IPAddress(config.m_serverIpv6AddrIn));
-      }
-      wgutils()->excludeLocalNetworks(obfuscatorServer);
+    Obfuscator* obfuscator = createObfuscator(config);
+    if (!obfuscator) {
+      logger.error() << "Obfuscation is not supported on this platform";
+      return false;
     }
-#endif
     if (!obfuscator->start()) {
       logger.error() << "Failed to start obfuscator on switch"
                      << config.m_obfuscationMethod;
@@ -354,7 +321,7 @@ bool Daemon::switchServer(const InterfaceConfig& config) {
     // Tear down the old obfuscator before updating the peer (entry hop only).
     // While alive, it keeps relaying server packets to WireGuard, and WireGuard
     // roaming would move the peer endpoint back to the old obfuscator's port.
-    m_obfuscator = std::move(obfuscator);
+    m_obfuscator.reset(obfuscator);
   }
 
   // Activate the new peer and its routes.

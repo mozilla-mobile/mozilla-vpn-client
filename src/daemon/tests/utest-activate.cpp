@@ -9,9 +9,6 @@
 
 void TestActivate::activate() {
   InterfaceConfig config = exampleConfig();
-  QSignalSpy spyConnected(m_daemon.get(), SIGNAL(connected(QString)));
-  QSignalSpy spyDisconnected(m_daemon.get(), SIGNAL(disconnected()));
-  QSignalSpy spyFailure(m_daemon.get(), SIGNAL(activationFailure()));
 
   // Check that we are not connected.
   QJsonObject status = m_daemon->getStatus();
@@ -22,10 +19,10 @@ void TestActivate::activate() {
   QVERIFY(m_daemon->activate(config));
 
   // Check the connected signal.
-  QTRY_VERIFY_WITH_TIMEOUT(!spyConnected.isEmpty(), 5000);
-  QVERIFY(spyDisconnected.isEmpty());
-  QString connected = spyConnected.takeFirst().at(0).toString();
-  QCOMPARE(connected, config.m_serverPublicKey);
+  QTRY_VERIFY_WITH_TIMEOUT(!m_connectedEvents.isEmpty(), 5000);
+  QCOMPARE(m_disconnectedEventCount, 0);
+  QVERIFY(m_failureEvents.isEmpty());
+  QCOMPARE(m_connectedEvents.takeFirst(), config.m_serverPublicKey);
 
   // Check that we are connected.
   status = m_daemon->getStatus();
@@ -43,9 +40,6 @@ void TestActivate::activate() {
 
 void TestActivate::exclusionFailure() {
   InterfaceConfig config = exampleConfig();
-  QSignalSpy spyConnected(m_daemon.get(), SIGNAL(connected(QString)));
-  QSignalSpy spyDisconnected(m_daemon.get(), SIGNAL(disconnected()));
-  QSignalSpy spyFailure(m_daemon.get(), SIGNAL(activationFailure()));
 
   // Insert a conflicting LAN route before activation.
   IPAddress conflict = IPAddress("192.168.0.0/16");
@@ -54,10 +48,11 @@ void TestActivate::exclusionFailure() {
   // Activate it.
   QVERIFY(!m_daemon->activate(config));
 
-  // Check the activationFailure signal.
-  QTRY_VERIFY_WITH_TIMEOUT(!spyFailure.isEmpty(), 5000);
-  QVERIFY(spyConnected.isEmpty());
-  QVERIFY(spyDisconnected.isEmpty());
+  // Check the backendFailure signal.
+  QTRY_VERIFY_WITH_TIMEOUT(!m_failureEvents.isEmpty(), 5000);
+  QCOMPARE(m_failureEvents.takeFirst(), DaemonError::ERROR_ACTIVATION_FAILURE);
+  QVERIFY(m_connectedEvents.isEmpty());
+  QCOMPARE(m_disconnectedEventCount, 0);
 
   // Check that we are not connected.
   QJsonObject status = m_daemon->getStatus();
@@ -67,9 +62,6 @@ void TestActivate::exclusionFailure() {
 
 void TestActivate::routeFailure() {
   InterfaceConfig config = exampleConfig();
-  QSignalSpy spyConnected(m_daemon.get(), SIGNAL(connected(QString)));
-  QSignalSpy spyDisconnected(m_daemon.get(), SIGNAL(disconnected()));
-  QSignalSpy spyFailure(m_daemon.get(), SIGNAL(activationFailure()));
 
   // Insert a conflicting route before activation.
   IPAddress conflict = config.m_allowedIPAddressRanges.last();
@@ -79,9 +71,10 @@ void TestActivate::routeFailure() {
   QVERIFY(!m_daemon->activate(config));
 
   // Check the activationFailure signal.
-  QTRY_VERIFY_WITH_TIMEOUT(!spyFailure.isEmpty(), 5000);
-  QVERIFY(spyConnected.isEmpty());
-  QVERIFY(spyDisconnected.isEmpty());
+  QTRY_VERIFY_WITH_TIMEOUT(!m_failureEvents.isEmpty(), 5000);
+  QCOMPARE(m_failureEvents.takeFirst(), DaemonError::ERROR_ACTIVATION_FAILURE);
+  QVERIFY(m_connectedEvents.isEmpty());
+  QCOMPARE(m_disconnectedEventCount, 0);
 
   // Check that we are not connected.
   QJsonObject status = m_daemon->getStatus();
@@ -91,9 +84,6 @@ void TestActivate::routeFailure() {
 
 void TestActivate::dnsFailure() {
   InterfaceConfig config = exampleConfig();
-  QSignalSpy spyConnected(m_daemon.get(), SIGNAL(connected(QString)));
-  QSignalSpy spyDisconnected(m_daemon.get(), SIGNAL(disconnected()));
-  QSignalSpy spyFailure(m_daemon.get(), SIGNAL(activationFailure()));
 
   // Flag the dnsutils to fail the next update.
   m_dnsutils->m_willFailUpdate = 1;
@@ -102,9 +92,10 @@ void TestActivate::dnsFailure() {
   QVERIFY(!m_daemon->activate(config));
 
   // Check the activationFailure signal.
-  QTRY_VERIFY_WITH_TIMEOUT(!spyFailure.isEmpty(), 5000);
-  QVERIFY(spyConnected.isEmpty());
-  QVERIFY(spyDisconnected.isEmpty());
+  QTRY_VERIFY_WITH_TIMEOUT(!m_failureEvents.isEmpty(), 5000);
+  QCOMPARE(m_failureEvents.takeFirst(), DaemonError::ERROR_ACTIVATION_FAILURE);
+  QVERIFY(m_connectedEvents.isEmpty());
+  QCOMPARE(m_disconnectedEventCount, 0);
 
   // Check that we are not connected.
   QJsonObject status = m_daemon->getStatus();

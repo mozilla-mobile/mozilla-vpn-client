@@ -5,11 +5,17 @@
 #ifndef OBFUSCATOR_H
 #define OBFUSCATOR_H
 
+#include <QObject>
 #include <QtGlobal>
 
+#include "daemonerrors.h"
+
 // Generic obfuscator interface.
-class Obfuscator {
+class Obfuscator : public QObject {
+  Q_OBJECT
+
  public:
+  Obfuscator(QObject* parent = nullptr) : QObject(parent) {}
   virtual ~Obfuscator() = default;
 
   Obfuscator(const Obfuscator&) = delete;
@@ -29,8 +35,8 @@ class Obfuscator {
 
   virtual quint16 localPort() const = 0;
 
- protected:
-  Obfuscator() = default;
+ signals:
+  void backendFailure(DaemonError error);
 };
 
 #endif  // OBFUSCATOR_H

@@ -49,6 +49,10 @@ class Daemon : public QObject {
   virtual bool supportServerSwitching(const InterfaceConfig& config) const;
   virtual bool switchServer(const InterfaceConfig& config);
 
+  virtual Obfuscator* createObfuscator(const InterfaceConfig& config) {
+    return nullptr;
+  }
+
  signals:
   void connected(const QString& pubkey);
   /**
@@ -61,7 +65,6 @@ class Daemon : public QObject {
 
  private:
   bool maybeUpdateResolvers(const InterfaceConfig& config);
-  std::unique_ptr<Obfuscator> createObfuscator(const InterfaceConfig& config);
 
  protected:
   virtual bool run(Op op, const InterfaceConfig& config) {
@@ -88,7 +91,7 @@ class Daemon : public QObject {
   };
   QMap<InterfaceConfig::HopType, ConnectionState> m_connections;
   QTimer m_handshakeTimer;
-  std::unique_ptr<Obfuscator> m_obfuscator;
+  QScopedPointer<Obfuscator> m_obfuscator;
 
   friend class TestDaemon;
 };

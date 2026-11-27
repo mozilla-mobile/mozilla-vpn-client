@@ -14,10 +14,12 @@ void TestSwitch::init() {
   TestDaemon::init();
 
   // Setup the initial connection.
-  QSignalSpy spyConnected(m_daemon.get(), SIGNAL(connected(QString)));
   m_config = exampleConfig();
   QVERIFY(m_daemon->activate(m_config));
-  QTRY_VERIFY_WITH_TIMEOUT(!spyConnected.isEmpty(), 5000);
+  QTRY_VERIFY_WITH_TIMEOUT(!m_connectedEvents.isEmpty(), 5000);
+  QCOMPARE(m_connectedEvents.takeFirst(), m_config.m_serverPublicKey);
+  QCOMPARE(m_disconnectedEventCount, 0);
+  QVERIFY(m_failureEvents.isEmpty());
 
   // Check that we are connected.
   QJsonObject status = m_daemon->getStatus();
@@ -35,32 +37,29 @@ void TestSwitch::init() {
 
 // Switch to a new peer.
 void TestSwitch::basicSwitch() {
-  InterfaceConfig config = exampleConfig();
-  QSignalSpy spyConnected(m_daemon.get(), SIGNAL(connected(QString)));
-  QSignalSpy spyDisconnected(m_daemon.get(), SIGNAL(disconnected()));
-  QSignalSpy spyFailure(m_daemon.get(), SIGNAL(activationFailure()));
+  InterfaceConfig next = exampleConfig();
 
   // Prepare a switch to a new server.
-  config.m_serverPublicKey = exampleKey("ServerPublicKey", 'B');
-  config.m_serverIpv4AddrIn = "10.66.77.88";
-  config.m_serverIpv6AddrIn = "fc02:dead::1234:5678";
-  config.m_serverPort = 53;
+  next.m_serverPublicKey = exampleKey("ServerPublicKey", 'B');
+  next.m_serverIpv4AddrIn = "10.66.77.88";
+  next.m_serverIpv6AddrIn = "fc02:dead::1234:5678";
+  next.m_serverPort = 53;
 
   // Change routes too
-  config.m_allowedIPAddressRanges.clear();
-  config.m_allowedIPAddressRanges.append(IPAddress("0.0.0.0/0"));
-  config.m_allowedIPAddressRanges.append(IPAddress("172.16.0.0/16"));
-  config.m_allowedIPAddressRanges.append(IPAddress("::/0"));
-  config.m_allowedIPAddressRanges.append(IPAddress("fc02:dead::/64"));
+  next.m_allowedIPAddressRanges.clear();
+  next.m_allowedIPAddressRanges.append(IPAddress("0.0.0.0/0"));
+  next.m_allowedIPAddressRanges.append(IPAddress("172.16.0.0/16"));
+  next.m_allowedIPAddressRanges.append(IPAddress("::/0"));
+  next.m_allowedIPAddressRanges.append(IPAddress("fc02:dead::/64"));
 
-  QVERIFY(m_daemon->supportServerSwitching(config));
-  QVERIFY(m_daemon->activate(config));
+  QVERIFY(m_daemon->supportServerSwitching(next));
+  QVERIFY(m_daemon->activate(next));
 
   // Check the connected signal.
-  QTRY_VERIFY_WITH_TIMEOUT(!spyConnected.isEmpty(), 5000);
-  QVERIFY(spyDisconnected.isEmpty());
-  QString connected = spyConnected.takeFirst().at(0).toString();
-  QCOMPARE(connected, config.m_serverPublicKey);
+  QTRY_VERIFY_WITH_TIMEOUT(!m_connectedEvents.isEmpty(), 5000);
+  QCOMPARE(m_connectedEvents.takeFirst(), next.m_serverPublicKey);
+  QCOMPARE(m_disconnectedEventCount, 0);
+  QVERIFY(m_failureEvents.isEmpty());
 
   // Check that we are connected.
   QJsonObject status = m_daemon->getStatus();
@@ -68,7 +67,7 @@ void TestSwitch::basicSwitch() {
   QVERIFY(status.contains("date"));
 
   // Verify the routing table.
-  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : next.m_allowedIPAddressRanges) {
     const QString msg("m_wgutils->routeTable().contains() failed for %1");
     QVERIFY2(m_wgutils->routes().contains(ip),
              qPrintable(msg.arg(ip.toString())));
@@ -80,43 +79,40 @@ void TestSwitch::basicSwitch() {
     if (i.value() != WireguardUtilsMock::RoutePeer) {
       continue;
     }
-    QVERIFY(config.m_allowedIPAddressRanges.contains(i.key()));
+    QVERIFY(next.m_allowedIPAddressRanges.contains(i.key()));
   }
 }
 
 // Full switching is required when the device configuration changes.
 void TestSwitch::hardSwitch() {
-  InterfaceConfig config = exampleConfig();
-  QSignalSpy spyConnected(m_daemon.get(), SIGNAL(connected(QString)));
-  QSignalSpy spyDisconnected(m_daemon.get(), SIGNAL(disconnected()));
-  QSignalSpy spyFailure(m_daemon.get(), SIGNAL(activationFailure()));
+  InterfaceConfig next = exampleConfig();
 
   // Change the device keys.
-  config.m_privateKey = exampleKey("TestPrivateKey", 'B');
-  QByteArray key = config.m_privateKey.toUtf8();
-  config.m_publicKey = QString::fromUtf8(Curve25519::generatePublicKey(key));
+  next.m_privateKey = exampleKey("TestPrivateKey", 'B');
+  QByteArray key = next.m_privateKey.toUtf8();
+  next.m_publicKey = QString::fromUtf8(Curve25519::generatePublicKey(key));
 
   // Prepare a switch to a new server.
-  config.m_serverPublicKey = exampleKey("ServerPublicKey", 'B');
-  config.m_serverIpv4AddrIn = "10.66.77.88";
-  config.m_serverIpv6AddrIn = "fc02:dead::1234:5678";
-  config.m_serverPort = 53;
+  next.m_serverPublicKey = exampleKey("ServerPublicKey", 'B');
+  next.m_serverIpv4AddrIn = "10.66.77.88";
+  next.m_serverIpv6AddrIn = "fc02:dead::1234:5678";
+  next.m_serverPort = 53;
 
   // Change routes too
-  config.m_allowedIPAddressRanges.clear();
-  config.m_allowedIPAddressRanges.append(IPAddress("0.0.0.0/0"));
-  config.m_allowedIPAddressRanges.append(IPAddress("172.16.0.0/16"));
-  config.m_allowedIPAddressRanges.append(IPAddress("::/0"));
-  config.m_allowedIPAddressRanges.append(IPAddress("fc02:dead::/64"));
+  next.m_allowedIPAddressRanges.clear();
+  next.m_allowedIPAddressRanges.append(IPAddress("0.0.0.0/0"));
+  next.m_allowedIPAddressRanges.append(IPAddress("172.16.0.0/16"));
+  next.m_allowedIPAddressRanges.append(IPAddress("::/0"));
+  next.m_allowedIPAddressRanges.append(IPAddress("fc02:dead::/64"));
 
-  QVERIFY(!m_daemon->supportServerSwitching(config));
-  QVERIFY(m_daemon->activate(config));
+  QVERIFY(!m_daemon->supportServerSwitching(next));
+  QVERIFY(m_daemon->activate(next));
 
   // Check the connected signal.
-  QTRY_VERIFY_WITH_TIMEOUT(!spyConnected.isEmpty(), 5000);
-  QVERIFY(spyDisconnected.isEmpty());
-  QString connected = spyConnected.takeFirst().at(0).toString();
-  QCOMPARE(connected, config.m_serverPublicKey);
+  QTRY_VERIFY_WITH_TIMEOUT(!m_connectedEvents.isEmpty(), 5000);
+  QCOMPARE(m_connectedEvents.takeFirst(), next.m_serverPublicKey);
+  QCOMPARE(m_disconnectedEventCount, 0);
+  QVERIFY(m_failureEvents.isEmpty());
 
   // Check that we are connected.
   QJsonObject status = m_daemon->getStatus();
@@ -124,7 +120,7 @@ void TestSwitch::hardSwitch() {
   QVERIFY(status.contains("date"));
 
   // Verify the routing table.
-  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : next.m_allowedIPAddressRanges) {
     const QString msg("m_wgutils->routeTable().contains() failed for %1");
     QVERIFY2(m_wgutils->routes().contains(ip),
              qPrintable(msg.arg(ip.toString())));
@@ -137,6 +133,6 @@ void TestSwitch::hardSwitch() {
     if (i.value() != WireguardUtilsMock::RoutePeer) {
       continue;
     }
-    QVERIFY(config.m_allowedIPAddressRanges.contains(i.key()));
+    QVERIFY(next.m_allowedIPAddressRanges.contains(i.key()));
   }
 }

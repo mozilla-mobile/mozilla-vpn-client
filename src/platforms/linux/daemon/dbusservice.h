@@ -9,7 +9,7 @@
 #include <QHash>
 
 #include "apptracker.h"
-#include "daemon/daemon.h"
+#include "daemon.h"
 #include "dnsutilslinux.h"
 #include "iputilslinux.h"
 #include "wireguardutilslinux.h"
@@ -32,6 +32,8 @@ class DBusService final : public Daemon, protected QDBusContext {
 
   virtual bool activate(const InterfaceConfig& config) override;
   virtual bool deactivate(bool emitSignals = true) override;
+
+  Obfuscator* createObfuscator(const InterfaceConfig& config) override;
 
  public slots:
   QString status();

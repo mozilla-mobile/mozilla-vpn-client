@@ -41,7 +41,6 @@ extern "C" {
  * to direct them appropriately. The value of the mark and the table ID
  * aren't important, so long as they are unique.
  */
-constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
 constexpr uint32_t WG_ROUTE_TABLE = 0xca6c;
 
 /* Traffic classifiers can be used to mark packets which should be either
@@ -192,7 +191,7 @@ bool WireguardUtilsLinux::addInterface(const InterfaceConfig& config) {
   return true;
 }
 
-static bool hasRouteToIPv4(const QString& ipv4addr) {
+bool WireguardUtilsLinux::hasRouteToIPv4(const QString& ipv4addr) {
   int sock = ::socket(AF_INET, SOCK_DGRAM, 0);
 
   if (sock < 0) {

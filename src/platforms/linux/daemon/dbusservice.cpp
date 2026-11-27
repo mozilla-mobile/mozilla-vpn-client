@@ -17,6 +17,7 @@
 #include "leakdetector.h"
 #include "logger.h"
 #include "loghandler.h"
+#include "obfuscator/qprocessobfuscator.h"
 #include "platforms/linux/linuxutils.h"
 #include "polkithelper.h"
 
@@ -76,6 +77,17 @@ DnsUtils* DBusService::dnsutils() {
     m_dnsutils = new DnsUtilsLinux(this);
   }
   return m_dnsutils;
+}
+
+Obfuscator* DBusService::createObfuscator(const InterfaceConfig& config) {
+  QDir dir(QCoreApplication::applicationDirPath());
+  QString binaryFile = dir.absoluteFilePath("mozillavpn-obfuscator");
+
+  auto obfs = new QProcessObfuscator(binaryFile, config, this);
+  obfs->arguments() << "--fwmark"
+                    << QString::number(WireguardUtilsLinux::WG_FIREWALL_MARK);
+
+  return obfs;
 }
 
 bool DBusService::removeInterfaceIfExists() {

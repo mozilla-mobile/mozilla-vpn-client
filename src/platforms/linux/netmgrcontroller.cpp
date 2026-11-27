@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 
+#include <QCoreApplication>
 #include <QDBusConnection>
 #include <QDBusInterface>
 #include <QDBusMessage>
@@ -15,11 +16,11 @@
 #include <QDBusPendingCallWatcher>
 #include <QDBusPendingReply>
 #include <QDBusReply>
+#include <QDir>
 #include <QFile>
 #include <QScopeGuard>
 #include <QUuid>
 
-#include "daemon/obfuscator/qprocessobfuscator.h"
 #include "dbustypes.h"
 #include "leakdetector.h"
 #include "logger.h"
@@ -27,6 +28,7 @@
 #include "models/keys.h"
 #include "netmgrdevice.h"
 #include "netmgrtypes.h"
+#include "obfuscator/qprocessobfuscator.h"
 #include "settingsholder.h"
 
 constexpr uint32_t WG_FIREWALL_MARK = 0xca6c;
@@ -386,7 +388,9 @@ void NetmgrController::activate(const InterfaceConfig& config,
   InterfaceConfig peerConfig = config;
   m_obfuscator.reset();
   if (obfuscate) {
-    auto obfuscator = std::make_unique<QProcessObfuscator>(config);
+    QDir dir(QCoreApplication::applicationDirPath());
+    QString path = dir.absoluteFilePath("mozillavpn-obfuscator");
+    auto obfuscator = std::make_unique<QProcessObfuscator>(path, config);
     if (!obfuscator->start()) {
       logger.error() << "Failed to start obfuscator"
                      << config.m_obfuscationMethod;
