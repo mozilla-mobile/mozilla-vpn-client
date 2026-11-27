@@ -81,11 +81,7 @@ bool Daemon::activate(const InterfaceConfig& config) {
   peer.m_port = config.m_serverPort;
   peer.m_allowedips = config.m_allowedIPAddressRanges;
   peer.m_multihop = !config.m_multihopPublicKey.isEmpty();
-
-  QStringList serverAddrs;
-  serverAddrs.append(config.m_serverIpv4AddrIn);
-  serverAddrs.append(config.m_serverIpv6AddrIn);
-  peer.m_address = chooseAddress(serverAddrs);
+  peer.m_address = chooseAddress({config.m_serverIpv4AddrIn, config.m_serverIpv6AddrIn});
   if (peer.m_address.isNull()) {
     logger.debug() << "Server is unreachable via any route";
     return false;
@@ -167,25 +163,8 @@ bool Daemon::activate(const InterfaceConfig& config) {
     }
   }
 
-  // Apply obfuscation to the peer.
-  if (!activateObfuscator(config, peer)) {
-    logger.error() << "Failed to start obfuscator"
-                   << config.m_obfuscationMethod;
-    return false;
-  }
-
-  // Add the peer to this interface.
-  if (!wgutils()->updatePeer(peer)) {
-    logger.error() << "Peer creation failed.";
-    return false;
-  }
-
-  if (!maybeUpdateResolvers(config)) {
-    return false;
-  }
-
   // set routing
-  for (const IPAddress& ip : config.m_allowedIPAddressRanges) {
+  for (const IPAddress& ip : peer.m_allowedips) {
     if (!wgutils()->updateRoutePrefix(ip)) {
       logger.debug() << "Routing configuration failed for"
                      << logger.sensitive(ip.toString());
@@ -193,17 +172,45 @@ bool Daemon::activate(const InterfaceConfig& config) {
     }
   }
 
+  // Run the daemon event hook.
   bool status = run(Up, config);
-  logger.debug() << "Connection status:" << status;
-  if (status) {
-    m_connections[peer.m_pubkey] = peer;
-    m_awaiting.append(peer.m_pubkey);
-    m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
-    m_config = config;
-    emit_failure_guard.dismiss();
-    return true;
+  if (!status) {
+    return false;
   }
-  return false;
+
+  // Setup DNS
+  if (!maybeUpdateResolvers(config)) {
+    return false;
+  }
+
+  // Start multihop peers first.
+  if (peer.m_multihop) {
+    if (!activateMultihop(config)) {
+      logger.error() << "Multihop peer creation failed";
+      return false;
+    }
+    // The rest of the connection activation will take place after we get a
+    // connected signal from the multihop peer.
+  }
+  // Apply obfuscation to the peer.
+  else if (!activateObfuscator(config, peer)) {
+    logger.error() << "Failed to start obfuscator"
+                   << config.m_obfuscationMethod;
+    return false;
+  }
+  // Add the peer to this interface.
+  else if (!wgutils()->updatePeer(peer)) {
+    logger.error() << "Peer creation failed.";
+    return false;
+  }
+
+  // Store the connection details and return success.
+  m_connections[peer.m_pubkey] = peer;
+  m_awaiting.append(peer.m_pubkey);
+  m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
+  m_config = config;
+  emit_failure_guard.dismiss();
+  return true;
 }
 
 // Select an address to reach the wireguard server from a list of candidates.
@@ -253,6 +260,56 @@ bool Daemon::activateObfuscator(const InterfaceConfig& config,
   peer.m_address = QHostAddress(QHostAddress::LocalHost);
   peer.m_port = obfuscator->localPort();
   return true;
+}
+
+bool Daemon::activateMultihop(const InterfaceConfig& config) {
+  WireguardUtils::PeerConfig peer(config.m_multihopPublicKey);
+  peer.m_port = config.m_multihopPort;
+  peer.m_allowedips.append(IPAddress(config.m_serverIpv4AddrIn));
+  peer.m_allowedips.append(IPAddress(config.m_serverIpv6AddrIn));
+  peer.m_address = chooseAddress({config.m_multihopIpv4AddrIn, config.m_multihopIpv6AddrIn});
+  if (peer.m_address.isNull()) {
+    logger.debug() << "Multihop server is unreachable via any route";
+    return false;
+  }
+
+  // Apply obfuscation to the peer.
+  if (!activateObfuscator(config, peer)) {
+    logger.error() << "Failed to start obfuscator"
+                   << config.m_obfuscationMethod;
+    return false;
+  }
+
+  // Add the peer to this interface.
+  if (!wgutils()->updatePeer(peer)) {
+    logger.error() << "Peer creation failed.";
+    return false;
+  }
+
+  // set routing
+  for (const IPAddress& ip : peer.m_allowedips) {
+    if (!wgutils()->updateRoutePrefix(ip)) {
+      logger.debug() << "Multihop routing failed for"
+                     << logger.sensitive(ip.toString());
+      return false;
+    }
+  }
+
+  m_connections[peer.m_pubkey] = peer;
+  m_awaiting.append(peer.m_pubkey);
+  m_handshakeTimer.start(HANDSHAKE_POLL_MSEC);
+  return true;
+}
+
+void Daemon::finishMultihop() {
+  if (!m_connections.contains(m_config.m_serverPublicKey)) {
+    return;
+  }
+
+  WireguardUtils::PeerConfig peer = m_connections.value(m_config.m_serverPublicKey);
+  if (!wgutils()->updatePeer(peer)) {
+    logger.error() << "Peer creation failed.";
+  }
 }
 
 bool Daemon::maybeUpdateResolvers(const InterfaceConfig& config) {
@@ -460,14 +517,17 @@ void Daemon::checkHandshake() {
 
     // Check if the handshake has completed.
     for (const WireguardUtils::PeerStatus& status : peers) {
-      if (status.m_pubkey != pubkey) {
-        continue;
-      }
-      if (status.m_handshake == 0) {
+      if ((status.m_pubkey != pubkey) || (status.m_handshake == 0)) {
         unfinished.append(pubkey);
         continue;
       }
-      
+
+      // Finish multihop activation after finding the entry peer has completed
+      // a handshake.
+      if (pubkey == m_config.m_multihopPublicKey) {
+        finishMultihop();
+      }
+
       emit connected(status.m_pubkey);
     }
   }

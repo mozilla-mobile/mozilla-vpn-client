@@ -76,6 +76,8 @@ class Daemon : public QObject {
   void checkHandshake();
 
   QHostAddress chooseAddress(const QStringList& candidates);
+  bool activateMultihop(const InterfaceConfig& config);
+  void finishMultihop();
   bool activateObfuscator(const InterfaceConfig& config,
                            WireguardUtils::PeerConfig &peer);
 
