@@ -43,6 +43,7 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
   int                  m_tunfd;
   dispatch_semaphore_t m_semaphore; 
   NSThread *           m_worker;
+  os_log_t             m_logger;
 
   // Routes managed by this tunnel.
   NSMutableSet<RoutePrefix*>* m_routes;
@@ -57,13 +58,32 @@ extern "C" nw_interface_t nw_interface_create_with_index_and_name(int ifindex, c
 constexpr const int64_t WG_WORKQUEUE_TIMEOUT = 5LL * 1000000000LL;
 
 static void wgLog(const char* msg) {
-  NSLog(@"wg: %s", msg);
+  static os_log_t logger = vpn_log_create(@"wireguard");
+  static auto pattern = @"\\A\\d{4}-\\d{2}-\\d{2}\\S*\\s";
+  static auto regex = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                options:0
+                                                                  error:nil];
+
+  // Omit the timestamp, if present.
+  size_t length = strlen(msg);
+  auto text = [[NSMutableString alloc] initWithBytes:msg
+                                             length:length
+                                           encoding:NSUTF8StringEncoding];
+  auto match = [regex firstMatchInString:text
+                                 options:NSMatchingAnchored
+                                   range:NSMakeRange(0, length)];
+  if (match.range.length != NSNotFound) {
+    [text deleteCharactersInRange:match.range];
+  }
+  
+  os_log_debug(logger, "%{public}@", text);
 }
 
 - (id)init {
   self = [super init];
   set_logging_function(wgLog);
 
+  m_logger = vpn_log_create(self);
   m_tunfd = -1;
   m_rtseq = 0;
   m_rtsock = socket(PF_ROUTE, SOCK_RAW, 0);
@@ -155,7 +175,7 @@ static void wgLog(const char* msg) {
   self.peer = [[WireguardPeer alloc] initWithOptions:options];
   self.peer.tunfd = m_tunfd;
   [self.peer startWithOptions:options completionHandler:^(NSError* error){
-    NSLog(@"handshake completed");
+    os_log_info(m_logger, "handshake completed");
     if (error) {
       completionHandler(error);
       return;
@@ -283,13 +303,13 @@ static void wgLog(const char* msg) {
     int rx = readv(m_tunfd, iov, 2);
     if (rx == 0) {
       // Socket has closed.
-      NSLog(@"utun closed");
+      os_log_info(m_logger, "utun closed");
       break;
     }
     if (rx < 0) {
       // Socket error occurred.
-      NSLog(@"utun error: %s", strerror(errno));
       if (errno == EINTR) continue;
+      os_log_error(m_logger, "utun error: %{darwin.errno}d", errno);
       break;
     }
     if ((rx < sizeof(header)) || (rx > (mtu - sizeof(header)))) {
@@ -319,7 +339,8 @@ static void wgLog(const char* msg) {
 }
 
 - (void)shutdownTunnel {
-  self.virtualInterface = nil;
+  // Drop all routes into the tunnel
+  [self flushRoutes];
 
   // Shutdown the tunnel worker.
   if (m_worker) {
@@ -331,9 +352,8 @@ static void wgLog(const char* msg) {
     dispatch_semaphore_wait(m_semaphore, delay);
   }
 
-  // Drop all routes into the tunnel
-  [self flushRoutes];
-
+  // Close the interface
+  self.virtualInterface = nil;
   if (m_tunfd >= 0) {
     close(m_tunfd);
     m_tunfd = -1;
@@ -343,6 +363,7 @@ static void wgLog(const char* msg) {
     close(m_rtsock);
     m_rtsock = -1;
   }
+
 }
 
 - (void)cancelTunnelWithError:(NSError*)error {
@@ -404,7 +425,7 @@ static void wgLog(const char* msg) {
   strncpy(ifr.ifr_name, nw_interface_get_name(self.virtualInterface), sizeof(ifr.ifr_name));
   ifr.ifr_mtu = _mtu;
   if (ioctl(m_tunfd, SIOCSIFMTU, &ifr) != 0) {
-    NSLog(@"mtu update failed: %s", strerror(errno));
+    os_log_error(m_logger, "mtu update failed: %{darwin.errno}d", errno);
   }
 }
 
@@ -463,8 +484,8 @@ static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, cons
   // Append RTA_DST
   rtmAppendAddr(rtm, rtm_max_size, RTA_DST, dest);
 
-  // Append RTA_GATEWAY - unless deleting the route.
-  if (action != RTM_DELETE) {
+  // Append RTA_GATEWAY
+  if ((action != RTM_DELETE) || (flags & RTF_IFSCOPE)) {
     const char* ifname = nw_interface_get_name(self.virtualInterface);
     struct sockaddr_dl datalink;
     memset(&datalink, 0, sizeof(datalink));
@@ -517,7 +538,7 @@ static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, cons
   if ((action == RTM_DELETE) && (errno == ESRCH)) {
     return;
   }
-  NSLog(@"Failed to send route to kernel: %s", strerror(errno));
+  os_log_error(m_logger, "Failed to send route to kernel: %{darwin.errno}d", errno);
 }
 
 - (NSUInteger)rtmFetchMtu:(const struct sockaddr*)dest {
@@ -546,7 +567,7 @@ static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, cons
 
   // Send the routing message into the kernel.
   if (write(m_rtsock, rtm, rtm->rtm_msglen) != rtm->rtm_msglen) {
-    NSLog(@"Failed to send RTM_GET to kernel: %s", strerror(errno));
+    os_log_error(m_logger, "Failed to send RTM_GET to kernel: %{darwin.errno}d", errno);
     close(rtsock);
     return IPV6_MMTU;
   }
@@ -554,7 +575,7 @@ static void rtmAppendAddr(struct rt_msghdr* rtm, size_t maxlen, int rtaddr, cons
   // Read the response from the kernel.
   ssize_t rxlen = recv(rtsock, buf, rtm_max_size, MSG_DONTWAIT);
   if (rxlen < 0) {
-    NSLog(@"Failed to read route from kernel: %s", strerror(errno));
+    os_log_error(m_logger, "Failed to read route from kernel: %{darwin.errno}d", errno);
     close(rtsock);
     return IPV6_MMTU;
   }

@@ -43,11 +43,14 @@
   std::atomic_uint64_t m_handledTcpFlows;
   std::atomic_uint64_t m_handledUdpFlows;
   std::atomic_uint64_t m_handledUnknown;
+
+  os_log_t m_logger;
 }
 
 - (id)init{
   self = [super init];
-  NSLog(@"init proxy class");
+  m_logger = vpn_log_create(self);
+  os_log_debug(m_logger, "init proxy class");
 
   NSString* extensionId = [[NSBundle mainBundle] bundleIdentifier];
   NSMutableArray* parts = [NSMutableArray new];
@@ -139,69 +142,88 @@
   }
 }
 
++ (void)dnsManagerPipeHandler:(NSFileHandle*)handle {
+  static os_log_t logger = vpn_log_create(@"dnsmanager");
+  NSData* data = handle.availableData;
+
+  // Check for EOF.
+  if (data.length == 0) {
+    handle.readabilityHandler = nil;
+    return;
+  }
+
+  // Parse the buffer as a sequence of newline-terminated UTF-8 strings.
+  NSString* buffer = [[NSString alloc] initWithData:data
+                                           encoding:NSUTF8StringEncoding];
+
+  NSCharacterSet* newlines = [NSCharacterSet newlineCharacterSet];
+  NSCharacterSet* whitespaces = [NSCharacterSet whitespaceAndNewlineCharacterSet];
+  for (NSString* line in [buffer componentsSeparatedByCharactersInSet:newlines]) {
+    NSString* trimmed = [line stringByTrimmingCharactersInSet:whitespaces];
+    if (trimmed.length) {
+      os_log_info(logger, "dnsmanager: %{public}@", trimmed);
+    }
+  }
+}
+
 - (void)startDnsManager:(NEDNSSettings*)settings {
   // Encode the settings as the arguments to the dnsmanager.
   NSMutableArray* args = [NSMutableArray arrayWithObject:@"dnsmanager"];
   [args addObjectsFromArray:settings.servers];
+  if (settings.domainName) {
+    [args addObjectsFromArray:@[@"--domain", settings.domainName]];
+  }
 
-  // Setup the new DNS manager task.
-  NSTask* task = [NSTask new];
-  NSPipe* pipe = [NSPipe new];
-  task.standardError = pipe;
-  task.standardOutput = pipe;
-  task.executableURL = [[NSBundle mainBundle] executableURL];
-  task.arguments = args;
+  // If the DNS manager exists - send it an update message.
+  if (self.dnsManager) {
+    [args replaceObjectAtIndex:0 withObject:@"update"];
+    NSString* message = [args componentsJoinedByString:@" "];
+    NSMutableData* payload = [NSMutableData data];
+    [payload appendData: [message dataUsingEncoding:NSUTF8StringEncoding]];
+    [payload appendBytes:"\n" length:1];
 
-  // Forward the output from the pipe to the logs.
-  pipe.fileHandleForReading.readabilityHandler = ^(NSFileHandle* handle){
-    NSData* data = handle.availableData;
-    // Check for EOF.
-    if (data.length == 0) {
-      handle.readabilityHandler = nil;
+    if (![self.dnsManager.standardInput isKindOfClass:[NSPipe class]]) {
+      os_log_error(m_logger, "dns manager stdin is not a pipe");
       return;
     }
 
-    // Parse the buffer as a sequence of newline-terminated UTF-8 strings.
-    NSString* buffer = [[NSString alloc] initWithData:data
-                                             encoding:NSUTF8StringEncoding];
-    NSCharacterSet* newlines = [NSCharacterSet newlineCharacterSet];
-    NSCharacterSet* whitespaces = [NSCharacterSet whitespaceAndNewlineCharacterSet];
-    for (NSString* line in [buffer componentsSeparatedByCharactersInSet:newlines]) {
-      NSString* trimmed = [line stringByTrimmingCharactersInSet:whitespaces];
-      if (trimmed.length) {
-        NSLog(@"dnsmanager: %@", trimmed);
-      }
+    NSError* error = nil;
+    NSPipe* pipe = (NSPipe*)self.dnsManager.standardInput;
+    if (![pipe.fileHandleForWriting writeData:payload error:&error]) {
+      os_log_error(m_logger, "dns manager failed to update: %{public}@", error);
     }
+    return;
+  }
+
+  // Create pipes to handle the stdout and stderr streams.
+  NSPipe* stdoutPipe = [NSPipe new];
+  stdoutPipe.fileHandleForReading.readabilityHandler = ^(NSFileHandle* handle){
+    [VPNSplitTunnelProvider dnsManagerPipeHandler:handle];
+  };
+  NSPipe* stderrPipe = [NSPipe new];
+  stderrPipe.fileHandleForReading.readabilityHandler = ^(NSFileHandle* handle){
+    [VPNSplitTunnelProvider dnsManagerPipeHandler:handle];
   };
 
-  if (self.dnsManager) {
-    NSTask* prev = self.dnsManager;
-    self.dnsManager = task;
+  // Setup the new DNS manager task.
+  NSTask* task = [NSTask new];
+  task.standardInput = [NSPipe new];
+  task.standardError = stderrPipe;
+  task.standardOutput = stdoutPipe;
+  task.executableURL = [[NSBundle mainBundle] executableURL];
+  task.arguments = args;
 
-    // Terminate the previous task and then launch the DNS manager.
-    prev.terminationHandler = ^(NSTask* task){
-      NSError* err;
-      if (![task launchAndReturnError:&err]) {
-        NSLog(@"dns manager failed to launch: %@", err);
-      }
-    };
-    [prev terminate];
-  } else {
-    // Launch the DNS manager to reconfigure the system DNS.
-    NSError* err;
-    self.dnsManager = task;
-    if (![task launchAndReturnError:&err]) {
-      NSLog(@"dns manager failed to launch: %@", err);
-    }
+  // Launch the DNS manager to reconfigure the system DNS.
+  NSError* err;
+  self.dnsManager = task;
+  if (![task launchAndReturnError:&err]) {
+    os_log_error(m_logger, "dns manager failed to launch: %{public}@", err);
   }
 }
 
 - (void)startProxyWithOptions:(NSDictionary<NSString *,id> *)options
             completionHandler:(void (^)(NSError *error))completionHandler {
-  NSLog(@"starting proxy");
-#ifdef MZ_DEBUG
-  NSLog(@"config serverAddress: %@", self.protocolConfiguration.serverAddress);
-#endif
+  os_log_info(m_logger, "starting proxy");
 
   m_handledTcpFlows = 0;
   m_handledUdpFlows = 0;
@@ -275,10 +297,10 @@
   [self setTunnelNetworkSettings: self.settings
                completionHandler:^(NSError* error){
     if (error != nil) {
-      NSLog(@"settings error: %@", error.localizedDescription);
+      os_log_error(weakSelf->m_logger, "settings error: %{public}@", error);
       completionHandler(error);
     } else {
-      NSLog(@"settings applied");
+      os_log_info(weakSelf->m_logger, "settings applied");
       [weakSelf.wireguard startTunnelWithOptions:weakSelf.config
                                completionHandler:^(NSError* wgError){
         if (wgError != nil) {
@@ -309,11 +331,11 @@
 
 - (void)stopProxyWithReason:(NEProviderStopReason)reason 
           completionHandler:(void (^)(void))completionHandler {
-  NSLog(@"stopping proxy");
+  os_log_info(m_logger, "stopping proxy");
 
-  NSLog(@"handled tcp flows: %lld", std::atomic_load(&m_handledTcpFlows));
-  NSLog(@"handled udp flows: %lld", std::atomic_load(&m_handledUdpFlows));
-  NSLog(@"handled unknown flows: %lld", std::atomic_load(&m_handledUnknown));
+  os_log_debug(m_logger, "handled tcp flows: %lld", std::atomic_load(&m_handledTcpFlows));
+  os_log_debug(m_logger, "handled udp flows: %lld", std::atomic_load(&m_handledUdpFlows));
+  os_log_debug(m_logger, "handled unknown flows: %lld", std::atomic_load(&m_handledUnknown));
 
   [self removeObserver:self
             forKeyPath:@"protocolConfiguration"];
@@ -335,7 +357,7 @@
   if (![keyPath isEqual:@"protocolConfiguration"]) {
     return;
   }
-  NSLog(@"configuration changed");
+  os_log_info(m_logger, "configuration changed");
 
   NSSet* prevExcludedApps = [NSSet setWithSet:self.config.excludedApps];
 
@@ -414,14 +436,14 @@
   // If not signed - always direct the flow into the VPN.
   if (flow.metaData.sourceAppSigningIdentifier == nil) {
 #ifdef MZ_DEBUG
-    NSLog(@"new flow: unsigned -> %@", flow.remoteHostname);
+    os_log_debug(m_logger, "new flow: unsigned -> %{public}@", flow.remoteHostname);
 #endif
     return YES;
   }
 
   NSString* sourceId = flow.metaData.sourceAppSigningIdentifier;
 #ifdef MZ_DEBUG
-  NSLog(@"new flow: %@ -> %@", sourceId, flow.remoteHostname);
+  os_log_debug(m_logger, "new flow: %{public}@ -> %{public}@", sourceId, flow.remoteHostname);
 #endif
 
   // Check if the app has been hard-coded to bypass the VPN.
@@ -475,31 +497,16 @@
     [[NSKeyedUnarchiver alloc] initForReadingFromData:messageData
                                                 error:&error];
   if (error != nil) {
-      NSLog(@"app message error: %@", error.localizedDescription);
+      os_log_error(m_logger, "app message error: %{public}@", error);
       [VPNSplitTunnelProvider sendAppResponse:error completionHandler:completionHandler];
       return;
   }
   NSString* action = [msg decodeObjectOfClass:NSString.class forKey:@"action"];
   if (!action) {
-      NSLog(@"app message invalid action");
+      os_log_error(m_logger, "app message invalid action");
       NSError* error = vpnProviderError(NEProviderStopReasonConfigurationFailed);
       [VPNSplitTunnelProvider sendAppResponse:error completionHandler:completionHandler];
       return;
-  }
-
-  NSMutableArray* apps = [NSMutableArray new];
-  NSArray* msgAppList = [msg decodeObjectOfClass:NSArray.class forKey:@"apps"];
-  if (msgAppList) {
-    NSEnumerator* iter = [msgAppList objectEnumerator];
-    while (id appId = [iter nextObject]) {
-      if (![appId isKindOfClass:[NSString class]]) {
-        continue;
-      }
-#ifdef MZ_DEBUG
-      NSLog(@"msg %@ %@ from excluded application set", action, appId);
-#endif
-      [apps addObject:appId];
-    }
   }
   [msg finishDecoding];
 

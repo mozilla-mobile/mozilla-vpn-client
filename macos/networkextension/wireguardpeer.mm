@@ -27,8 +27,8 @@ extern "C" {
   CFRunLoopTimerRef         m_timer;
   struct timespec           m_lastHandshake;
   struct timespec           m_handshakeTimeout;
-
   NSThread*                 m_worker;
+  os_log_t                  m_logger;
 
   // The completion handler to run on initial handshake or timeout. 
   void (^m_completionHandler)(NSError *error);
@@ -42,6 +42,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 - (id) initWithOptions:(WgConfig*) options {
   self = [super init];
   self->_tunfd = -1;
+  self->m_logger = vpn_log_create(self);
 
   // Prepare the wireguard transport
   switch (options.obfuscation) {
@@ -83,9 +84,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 }
 
 - (void) dealloc {
-#ifdef MZ_DEBUG
-  NSLog(@"wireguard peer dealloc");
-#endif
+  os_log_debug(m_logger, "wireguard peer dealloc");
   if (m_wireguard) {
     tunnel_free(m_wireguard);
   }
@@ -99,7 +98,8 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
         completionHandler:(void (^)(NSError *error)) completionHandler {
 #ifdef MZ_DEBUG
   char *addrstr = nw_endpoint_copy_address_string(options.serverIpv4Addr);
-  NSLog(@"wireguard peer: %s port=%d", addrstr, nw_endpoint_get_port(options.serverIpv4Addr));
+  os_log_debug(m_logger, "wireguard peer: %{public}s port=%d", addrstr,
+               nw_endpoint_get_port(options.serverIpv4Addr));
   free(addrstr);
 #endif
 
@@ -116,7 +116,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 }
 
 - (void) socketWorker:(id)arg {
-  NSLog(@"socket worker started");
+  os_log_debug(m_logger, "socket worker started");
 
   if ([self.transport connect] < 0) {
     m_completionHandler(vpnPosixError(errno, @"socket connect failed"));
@@ -134,9 +134,9 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
       if (errno == EINTR) continue;
       if (errno == EAGAIN) continue;
       if (errno == ESHUTDOWN) {
-        NSLog(@"socket closed");
+        os_log_debug(m_logger, "socket closed");
       } else {
-        NSLog(@"socket error: %s", strerror(errno));
+        os_log_error(m_logger, "socket error: %{darwin.errno}d", errno);
       }
       return;
     }
@@ -194,7 +194,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
 }
 
 - (void) renegotiate:(void (^)(NSError *error)) completionHandler {
-  NSLog(@"wireguard renegotiate");
+  os_log_info(m_logger, "wireguard renegotiate");
   uint8_t handshake[WG_MAX_HANDSHAKE_SIZE];
 
   struct wireguard_result result;
@@ -255,7 +255,7 @@ static void wgTimerCallback(CFRunLoopTimerRef t, void *info) {
       break;
 
     case WIREGUARD_ERROR:
-      NSLog(@"peer error: %zu", result.size);
+      os_log_error(m_logger, "peer error: %zu", result.size);
       break;
 
     case WRITE_TO_TUNNEL_IPV6:

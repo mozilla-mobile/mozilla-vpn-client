@@ -4,6 +4,8 @@
 
 #import "tcp.h"
 
+#import "utils.h"
+
 #include <sys/socket.h>
 #include <netinet/ip6.h>
 #include <netinet/ip_var.h>
@@ -30,11 +32,13 @@ constexpr const int PRIO_PACKET_SIZE = 256;
   // A packet worker thread.
   NSCondition*    m_condition;
   NSThread*       m_worker;
+  os_log_t        m_logger;
 }
 
 - (id) initWithEndpoint:(nw_endpoint_t) ep {
   self = [super init];
   m_socket = -1;
+  m_logger = vpn_log_create(self);
 
   // Save the address for use in connect().
   const struct sockaddr* dest = nw_endpoint_get_address(ep);
@@ -113,7 +117,7 @@ constexpr const int PRIO_PACKET_SIZE = 256;
 }
 
 - (void) tcpWorker:(id)arg {
-  NSLog(@"tcp worker started");
+  os_log_debug(m_logger, "tcp worker started");
 
   while (true) {
     // Pull the next packet off the queue.
@@ -125,16 +129,16 @@ constexpr const int PRIO_PACKET_SIZE = 256;
     // Send the datagram out the TCP socket.
     int tx = [self tcpOutput:dgram];
     if (tx == 0) {
-      NSLog(@"tcp socket closed");
+      os_log_debug(m_logger, "tcp socket closed");
       break;
     }
     if (tx < 0) {
-      NSLog(@"tcp socket error: %s", strerror(errno));
+      os_log_error(m_logger, "tcp socket error: %{darwin.errno}d", errno);
       break;
     }
   }
 
-  NSLog(@"tcp worker exited");
+  os_log_debug(m_logger, "tcp worker exited");
 }
 
 - (int) tcpOutput:(NSData*)dgram {
