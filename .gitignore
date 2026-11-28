@@ -141,7 +141,7 @@ windows/split-tunnel/*.dll
 windows/split-tunnel/.status
 
 # Mac OS X
-macos/networkextension/embedded.provisionprofile
+embedded.provisionprofile
 .DS_Store
 
 # Rust
